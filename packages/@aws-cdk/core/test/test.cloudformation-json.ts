@@ -59,9 +59,9 @@ export = {
     const embedded = `the number is ${num}`;
 
     // WHEN
-    test.equal(evaluateCFN(stack.resolve(embedded)), "the number is 1");
-    test.equal(evaluateCFN(stack.resolve(stack.toJsonString({ embedded }))), "{\"embedded\":\"the number is 1\"}");
-    test.equal(evaluateCFN(stack.resolve(stack.toJsonString({ num }))), "{\"num\":1}");
+    test.equal(evaluateCFN(stack.resolve(embedded)), 'the number is 1');
+    test.equal(evaluateCFN(stack.resolve(stack.toJsonString({ embedded }))), '{"embedded":"the number is 1"}');
+    test.equal(evaluateCFN(stack.resolve(stack.toJsonString({ num }))), '{"num":1}');
 
     test.done();
   },
@@ -89,7 +89,7 @@ export = {
     const resolved = stack.resolve(stack.toJsonString({ theBucket: bucketName }));
 
     // THEN
-    const context = {MyBucket: 'TheName'};
+    const context = { MyBucket: 'TheName' };
     test.equal(evaluateCFN(resolved, context), '{"theBucket":"TheName"}');
 
     test.done();
@@ -113,7 +113,7 @@ export = {
 
     const stringified = stack.toJsonString(fakeIntrinsics);
     test.equal(evaluateCFN(stack.resolve(stringified)),
-        '{"a":{"Fn::GetArtifactAtt":{"key":"val"}},"b":{"Fn::GetParam":["val1","val2"]}}');
+      '{"a":{"Fn::GetArtifactAtt":{"key":"val"}},"b":{"Fn::GetParam":["val1","val2"]}}');
 
     test.done();
   },
@@ -121,12 +121,12 @@ export = {
   'embedded string literals in intrinsics are escaped when calling TokenJSON.stringify()'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const token = Fn.join('', [ 'Hello', 'This\nIs', 'Very "cool"' ]);
+    const token = Fn.join('', ['Hello', 'This\nIs', 'Very "cool"']);
 
     // WHEN
     const resolved = stack.resolve(stack.toJsonString({
       literal: 'I can also "contain" quotes',
-      token
+      token,
     }));
 
     // THEN
@@ -140,13 +140,13 @@ export = {
     // GIVEN
     const stack = new Stack();
     const bucketName = new Intrinsic({ Ref: 'MyBucket' });
-    const combinedName = Fn.join('', [ 'The bucket name is ', bucketName.toString() ]);
+    const combinedName = Fn.join('', ['The bucket name is ', bucketName.toString()]);
 
     // WHEN
     const resolved = stack.resolve(stack.toJsonString({ theBucket: combinedName }));
 
     // THEN
-    const context = {MyBucket: 'TheName'};
+    const context = { MyBucket: 'TheName' };
     test.equal(evaluateCFN(resolved, context), '{"theBucket":"The bucket name is TheName"}');
 
     test.done();
@@ -159,7 +159,7 @@ export = {
 
     // WHEN
     const resolved = stack.resolve(stack.toJsonString({
-      information: `Did you know that Fido says: ${fidoSays}`
+      information: `Did you know that Fido says: ${fidoSays}`,
     }));
 
     // THEN
@@ -175,11 +175,11 @@ export = {
 
     // WHEN
     const resolved = stack.resolve(stack.toJsonString({
-      information: `Did you know that Fido says: ${fidoSays}`
+      information: `Did you know that Fido says: ${fidoSays}`,
     }));
 
     // THEN
-    const context = {Something: 'woof woof'};
+    const context = { Something: 'woof woof' };
     test.deepEqual(evaluateCFN(resolved, context), '{"information":"Did you know that Fido says: woof woof"}');
 
     test.done();
@@ -192,7 +192,7 @@ export = {
 
     // WHEN
     const resolved = stack.resolve(stack.toJsonString({
-      information: `Did you know that Fido says: ${fidoSays}`
+      information: `Did you know that Fido says: ${fidoSays}`,
     }));
 
     // THEN
@@ -208,10 +208,12 @@ export = {
     const stack2 = new Stack(app, 'Stack2');
 
     // WHEN
-    new CfnOutput(stack2, 'Stack1Id', { value: stack2.toJsonString({
-      Stack1Id: stack1.stackId,
-      Stack2Id: stack2.stackId,
-    })});
+    new CfnOutput(stack2, 'Stack1Id', {
+      value: stack2.toJsonString({
+        Stack1Id: stack1.stackId,
+        Stack2Id: stack2.stackId,
+      }),
+    });
 
     // THEN
     const asm = app.synth();
@@ -219,16 +221,16 @@ export = {
       Outputs: {
         Stack1Id: {
           Value: {
-            'Fn::Join': [ '', [
+            'Fn::Join': ['', [
               '{"Stack1Id":"',
               { 'Fn::ImportValue': 'Stack1:ExportsOutputRefAWSStackIdB2DD5BAA' },
               '","Stack2Id":"',
               { Ref: 'AWS::StackId' },
-              '"}'
-            ] ]
-          }
-        }
-      }
+              '"}',
+            ]],
+          },
+        },
+      },
     });
 
     test.done();
@@ -241,6 +243,6 @@ export = {
 function tokensThatResolveTo(value: any): Token[] {
   return [
     new Intrinsic(value),
-    Lazy.anyValue({ produce: () => value })
+    Lazy.anyValue({ produce: () => value }),
   ];
 }

@@ -27,16 +27,16 @@
         "MapPublicIpOnLaunch": true,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "aws-cdk-rds-instance/VPC/PublicSubnet1"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Public"
           },
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Public"
+          },
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-rds-instance/VPC/PublicSubnet1"
           }
         ]
       }
@@ -124,16 +124,16 @@
         "MapPublicIpOnLaunch": true,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "aws-cdk-rds-instance/VPC/PublicSubnet2"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Public"
           },
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Public"
+          },
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-rds-instance/VPC/PublicSubnet2"
           }
         ]
       }
@@ -221,16 +221,16 @@
         "MapPublicIpOnLaunch": false,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "aws-cdk-rds-instance/VPC/PrivateSubnet1"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Private"
           },
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Private"
+          },
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-rds-instance/VPC/PrivateSubnet1"
           }
         ]
       }
@@ -283,16 +283,16 @@
         "MapPublicIpOnLaunch": false,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "aws-cdk-rds-instance/VPC/PrivateSubnet2"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Private"
           },
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Private"
+          },
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-rds-instance/VPC/PrivateSubnet2"
           }
         ]
       }
@@ -359,8 +359,8 @@
     "ParameterGroup5E32DECB": {
       "Type": "AWS::RDS::DBParameterGroup",
       "Properties": {
-        "Description": "Parameter group for oracle-se1-11.2",
-        "Family": "oracle-se1-11.2",
+        "Description": "Parameter group for oracle-se2-19",
+        "Family": "oracle-se2-19",
         "Parameters": {
           "open_cursors": "2500"
         }
@@ -394,11 +394,11 @@
     "OptionGroupACA43DC1": {
       "Type": "AWS::RDS::OptionGroup",
       "Properties": {
-        "EngineName": "oracle-se1",
-        "MajorEngineVersion": "11.2",
+        "EngineName": "oracle-se2",
+        "MajorEngineVersion": "19",
         "OptionConfigurations": [
           {
-            "OptionName": "XMLDB"
+            "OptionName": "LOCATOR"
           },
           {
             "OptionName": "OEM",
@@ -413,7 +413,7 @@
             ]
           }
         ],
-        "OptionGroupDescription": "Option group for oracle-se1 11.2"
+        "OptionGroupDescription": "Option group for oracle-se2 19"
       }
     },
     "InstanceSubnetGroupF2CBA54F": {
@@ -636,7 +636,6 @@
         "DBSubnetGroupName": {
           "Ref": "InstanceSubnetGroupF2CBA54F"
         },
-        "DeletionProtection": true,
         "EnableCloudwatchLogsExports": [
           "trace",
           "audit",
@@ -644,7 +643,8 @@
           "listener"
         ],
         "EnablePerformanceInsights": true,
-        "Engine": "oracle-se1",
+        "Engine": "oracle-se2",
+        "EngineVersion": "19.0.0.0.ru-2020-04.rur-2020-04.r1",
         "Iops": 1000,
         "LicenseModel": "bring-your-own-license",
         "MasterUsername": {
@@ -694,8 +694,7 @@
           }
         ]
       },
-      "UpdateReplacePolicy": "Retain",
-      "DeletionPolicy": "Retain"
+      "UpdateReplacePolicy": "Snapshot"
     },
     "InstanceLogRetentiontrace487771C8": {
       "Type": "Custom::LogRetention",
@@ -814,7 +813,7 @@
       "Properties": {
         "Location": {
           "ApplicationId": "arn:aws:serverlessrepo:us-east-1:297356227824:applications/SecretsManagerRDSOracleRotationSingleUser",
-          "SemanticVersion": "1.1.3"
+          "SemanticVersion": "1.1.60"
         },
         "Parameters": {
           "endpoint": {
@@ -966,9 +965,11 @@
     "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
+        "Handler": "index.handler",
+        "Runtime": "nodejs10.x",
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParameters5c8f562bf5df6762658daef5776a5710bf97377b5129c14ef98dad430a546e0eS3BucketFCE6B300"
+            "Ref": "AssetParameters74a1cab76f5603c5e27101cb3809d8745c50f708b0f4b497ed0910eb533d437bS3Bucket48EF98C9"
           },
           "S3Key": {
             "Fn::Join": [
@@ -981,7 +982,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters5c8f562bf5df6762658daef5776a5710bf97377b5129c14ef98dad430a546e0eS3VersionKey98D205C3"
+                          "Ref": "AssetParameters74a1cab76f5603c5e27101cb3809d8745c50f708b0f4b497ed0910eb533d437bS3VersionKeyF33C73AF"
                         }
                       ]
                     }
@@ -994,7 +995,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters5c8f562bf5df6762658daef5776a5710bf97377b5129c14ef98dad430a546e0eS3VersionKey98D205C3"
+                          "Ref": "AssetParameters74a1cab76f5603c5e27101cb3809d8745c50f708b0f4b497ed0910eb533d437bS3VersionKeyF33C73AF"
                         }
                       ]
                     }
@@ -1004,14 +1005,12 @@
             ]
           }
         },
-        "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
             "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB",
             "Arn"
           ]
-        },
-        "Runtime": "nodejs10.x"
+        }
       },
       "DependsOn": [
         "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB",
@@ -1109,17 +1108,17 @@
     }
   },
   "Parameters": {
-    "AssetParameters5c8f562bf5df6762658daef5776a5710bf97377b5129c14ef98dad430a546e0eS3BucketFCE6B300": {
+    "AssetParameters74a1cab76f5603c5e27101cb3809d8745c50f708b0f4b497ed0910eb533d437bS3Bucket48EF98C9": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"5c8f562bf5df6762658daef5776a5710bf97377b5129c14ef98dad430a546e0e\""
+      "Description": "S3 bucket for asset \"74a1cab76f5603c5e27101cb3809d8745c50f708b0f4b497ed0910eb533d437b\""
     },
-    "AssetParameters5c8f562bf5df6762658daef5776a5710bf97377b5129c14ef98dad430a546e0eS3VersionKey98D205C3": {
+    "AssetParameters74a1cab76f5603c5e27101cb3809d8745c50f708b0f4b497ed0910eb533d437bS3VersionKeyF33C73AF": {
       "Type": "String",
-      "Description": "S3 key for asset version \"5c8f562bf5df6762658daef5776a5710bf97377b5129c14ef98dad430a546e0e\""
+      "Description": "S3 key for asset version \"74a1cab76f5603c5e27101cb3809d8745c50f708b0f4b497ed0910eb533d437b\""
     },
-    "AssetParameters5c8f562bf5df6762658daef5776a5710bf97377b5129c14ef98dad430a546e0eArtifactHash8EE34ABC": {
+    "AssetParameters74a1cab76f5603c5e27101cb3809d8745c50f708b0f4b497ed0910eb533d437bArtifactHash976CF1BD": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"5c8f562bf5df6762658daef5776a5710bf97377b5129c14ef98dad430a546e0e\""
+      "Description": "Artifact hash for asset \"74a1cab76f5603c5e27101cb3809d8745c50f708b0f4b497ed0910eb533d437b\""
     }
   }
 }

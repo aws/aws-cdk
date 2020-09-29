@@ -13,6 +13,4 @@ for file in ${files}; do
   cp $src/$file .
 done
 
-npx rewrite-imports {lib,test}/*.ts jest.ts
-
-
+npx rewrite-imports "**/*.ts"

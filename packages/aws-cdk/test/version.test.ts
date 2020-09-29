@@ -1,9 +1,8 @@
-import * as fs from 'fs-extra';
-import * as os from 'os';
 import * as path from 'path';
-import * as sinon from 'sinon';
 import { setTimeout as _setTimeout } from 'timers';
 import { promisify } from 'util';
+import * as fs from 'fs-extra';
+import * as sinon from 'sinon';
 import { latestVersionIfHigher, VersionCheckTTL } from '../lib/version';
 
 const setTimeout = promisify(_setTimeout);
@@ -56,12 +55,6 @@ test('Return null if version is higher than npm', async () => {
   const cache = new VersionCheckTTL(tmpfile(), 100);
   const result = await latestVersionIfHigher('100.100.100', cache);
   expect(result).toBeNull();
-});
-
-test('No homedir for the given user', () => {
-  sinon.stub(os, 'homedir').returns('');
-  sinon.stub(os, 'userInfo').returns({ username: '', uid: 10, gid: 11, shell: null, homedir: ''});
-  expect(() => new VersionCheckTTL()).toThrow(/Cannot determine home directory/);
 });
 
 test('Version specified is stored in the TTL file', async () => {

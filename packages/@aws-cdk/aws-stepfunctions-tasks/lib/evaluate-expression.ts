@@ -1,17 +1,17 @@
+import * as path from 'path';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
-import * as path from 'path';
 
 /**
  * Properties for EvaluateExpression
  *
  * @experimental
  */
-export interface EvaluateExpressionProps {
+export interface EvaluateExpressionProps extends sfn.TaskStateBaseProps {
   /**
-   * The expression to evaluate. It must contain state paths.
+   * The expression to evaluate. The expression may contain state paths.
    *
    * @example '$.a + $.b'
    */
@@ -49,37 +49,49 @@ export interface Event {
  *
  * @experimental
  */
-export class EvaluateExpression implements sfn.IStepFunctionsTask {
-  constructor(private readonly props: EvaluateExpressionProps) {
+export class EvaluateExpression extends sfn.TaskStateBase {
+  protected readonly taskMetrics?: sfn.TaskMetricsConfig;
+  protected readonly taskPolicies?: iam.PolicyStatement[];
+
+  private readonly evalFn: lambda.SingletonFunction;
+
+  constructor(scope: cdk.Construct, id: string, private readonly props: EvaluateExpressionProps) {
+    super(scope, id, props);
+
+    this.evalFn = createEvalFn(this.props.runtime || lambda.Runtime.NODEJS_10_X, this);
+
+    this.taskPolicies = [
+      new iam.PolicyStatement({
+        resources: [this.evalFn.functionArn],
+        actions: ['lambda:InvokeFunction'],
+      }),
+    ];
   }
 
-  public bind(task: sfn.Task): sfn.StepFunctionsTaskConfig {
+  /**
+   * @internal
+   */
+  protected _renderTask(): any {
     const matches = this.props.expression.match(/\$[.\[][.a-zA-Z[\]0-9]+/g);
 
-    if (!matches) {
-      throw new Error('No paths found in expression');
+    let expressionAttributeValues = {};
+    if (matches) {
+      expressionAttributeValues = matches.reduce(
+        (acc, m) => ({
+          ...acc,
+          [m]: sfn.JsonPath.stringAt(m), // It's okay to always use `stringAt` here
+        }),
+        {},
+      );
     }
 
-    const expressionAttributeValues = matches.reduce(
-      (acc, m) => ({
-        ...acc,
-        [m]: sfn.Data.stringAt(m) // It's okay to always use `stringAt` here
-      }),
-      {}
-    );
-
-    const evalFn = createEvalFn(this.props.runtime || lambda.Runtime.NODEJS_10_X, task);
-
+    const parameters: Event = {
+      expression: this.props.expression,
+      expressionAttributeValues,
+    };
     return {
-      resourceArn: evalFn.functionArn,
-      policyStatements: [new iam.PolicyStatement({
-        resources: [evalFn.functionArn],
-        actions: ['lambda:InvokeFunction'],
-      })],
-      parameters: {
-        expression: this.props.expression,
-        expressionAttributeValues,
-      } as Event
+      Resource: this.evalFn.functionArn,
+      Parameters: sfn.FieldUtils.renderObject(parameters),
     };
   }
 }

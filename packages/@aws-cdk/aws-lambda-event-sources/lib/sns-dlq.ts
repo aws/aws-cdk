@@ -1,4 +1,4 @@
-import { DlqDestinationConfig, IEventSourceDlq, IEventSourceMapping, IFunction } from "@aws-cdk/aws-lambda";
+import { DlqDestinationConfig, IEventSourceDlq, IEventSourceMapping, IFunction } from '@aws-cdk/aws-lambda';
 import * as sns from '@aws-cdk/aws-sns';
 
 /**
@@ -15,7 +15,7 @@ export class SnsDlq implements IEventSourceDlq {
     this.topic.grantPublish(targetHandler);
 
     return {
-      destination: this.topic.topicArn
+      destination: this.topic.topicArn,
     };
   }
 }

@@ -1,11 +1,11 @@
+import * as path from 'path';
 import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
-import * as path from 'path';
 import * as lambda from '../lib';
 
-// tslint:disable:no-string-literal
+/* eslint-disable dot-notation */
 
 export = {
   'lambda.Code.fromInline': {
@@ -19,7 +19,7 @@ export = {
         () => defineFunction(lambda.Code.fromInline(generateRandomString(4097)), lambda.Runtime.NODEJS_10_X),
         /Lambda source is too large, must be <= 4096 but is 4097/);
       test.done();
-    }
+    },
   },
   'lambda.Code.fromAsset': {
     'fails if a non-zip asset is used'(test: Test) {
@@ -41,13 +41,13 @@ export = {
       new lambda.Function(stack, 'Func1', {
         handler: 'foom',
         runtime: lambda.Runtime.NODEJS_10_X,
-        code: directoryAsset
+        code: directoryAsset,
       });
 
       new lambda.Function(stack, 'Func2', {
         handler: 'foom',
         runtime: lambda.Runtime.NODEJS_10_X,
-        code: directoryAsset
+        code: directoryAsset,
       });
 
       // THEN
@@ -77,11 +77,11 @@ export = {
       expect(stack).to(haveResource('AWS::Lambda::Function', {
         Metadata: {
           [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: 'asset.9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232',
-          [cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY]: 'Code'
-        }
+          [cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY]: 'Code',
+        },
       }, ResourcePart.CompleteDefinition));
       test.done();
-    }
+    },
   },
 
   'lambda.Code.fromCfnParameters': {
@@ -97,10 +97,10 @@ export = {
       expect(stack).to(haveResourceLike('AWS::Lambda::Function', {
         Code: {
           S3Bucket: {
-            Ref: "FunctionLambdaSourceBucketNameParameter9E9E108F",
+            Ref: 'FunctionLambdaSourceBucketNameParameter9E9E108F',
           },
           S3Key: {
-            Ref: "FunctionLambdaSourceObjectKeyParameter1C7AED11",
+            Ref: 'FunctionLambdaSourceObjectKeyParameter1C7AED11',
           },
         },
       }));
@@ -151,10 +151,10 @@ export = {
       expect(stack).to(haveResourceLike('AWS::Lambda::Function', {
         Code: {
           S3Bucket: {
-            Ref: "BucketNameParam",
+            Ref: 'BucketNameParam',
           },
           S3Key: {
-            Ref: "ObjectKeyParam",
+            Ref: 'ObjectKeyParam',
           },
         },
       }));
@@ -193,7 +193,8 @@ function defineFunction(code: lambda.Code, runtime: lambda.Runtime = lambda.Runt
   const stack = new cdk.Stack();
   return new lambda.Function(stack, 'Func', {
     handler: 'foom',
-    code, runtime
+    code,
+    runtime,
   });
 }
 

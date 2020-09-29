@@ -1,5 +1,5 @@
-import * as cfnspec from '@aws-cdk/cfnspec';
 import { AssertionError } from 'assert';
+import * as cfnspec from '@aws-cdk/cfnspec';
 import { IamChanges } from '../iam/iam-changes';
 import { SecurityGroupChanges } from '../network/security-group-changes';
 import { deepEqual } from './util';
@@ -119,7 +119,8 @@ export class TemplateDiff implements ITemplateDiff {
       const props = cfnspec.scrutinizablePropertyNames(resourceChange.newResourceType!, scrutinyTypes);
       for (const propertyName of props) {
         ret.push({
-          resourceLogicalId, propertyName,
+          resourceLogicalId,
+          propertyName,
           resourceType: resourceChange.resourceType,
           scrutinyType: cfnspec.propertySpecification(resourceChange.resourceType, propertyName).ScrutinyType!,
           oldValue: resourceChange.oldProperties && resourceChange.oldProperties[propertyName],
@@ -148,7 +149,7 @@ export class TemplateDiff implements ITemplateDiff {
       const commonProps = {
         oldProperties: resourceChange.oldProperties,
         newProperties: resourceChange.newProperties,
-        resourceLogicalId
+        resourceLogicalId,
       };
 
       // Even though it's not physically possible in CFN, let's pretend to handle a change of 'Type'.
@@ -503,13 +504,14 @@ export class ResourceDifference implements IDifference<Resource> {
   /** The resource type (or old and new type if it has changed) */
   private readonly resourceTypes: { readonly oldType?: string, readonly newType?: string };
 
-  constructor(public readonly oldValue: Resource | undefined,
-              public readonly newValue: Resource | undefined,
-              args: {
-          resourceType: { oldType?: string, newType?: string },
-          propertyDiffs: { [key: string]: PropertyDifference<any> },
-          otherDiffs: { [key: string]: Difference<any> }
-        }
+  constructor(
+    public readonly oldValue: Resource | undefined,
+    public readonly newValue: Resource | undefined,
+    args: {
+      resourceType: { oldType?: string, newType?: string },
+      propertyDiffs: { [key: string]: PropertyDifference<any> },
+      otherDiffs: { [key: string]: Difference<any> }
+    },
   ) {
     this.resourceTypes = args.resourceType;
     this.propertyDiffs = args.propertyDiffs;
@@ -616,8 +618,8 @@ export class ResourceDifference implements IDifference<Resource> {
     const baseImpact = Object.keys(this.otherChanges).length > 0 ? ResourceImpact.WILL_UPDATE : ResourceImpact.NO_CHANGE;
 
     return Object.values(this.propertyDiffs)
-           .map(elt => elt.changeImpact)
-           .reduce(worstImpact, baseImpact);
+      .map(elt => elt.changeImpact)
+      .reduce(worstImpact, baseImpact);
   }
 
   /**

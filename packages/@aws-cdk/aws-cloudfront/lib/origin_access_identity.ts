@@ -17,7 +17,7 @@ export interface OriginAccessIdentityProps {
 /**
  * Interface for CloudFront OriginAccessIdentity
  */
-export interface IOriginAccessIdentity extends cdk.IResource, iam.IGrantable  {
+export interface IOriginAccessIdentity extends cdk.IResource, iam.IGrantable {
   /**
    * The Origin Access Identity Name
    */
@@ -40,12 +40,12 @@ abstract class OriginAccessIdentityBase extends cdk.Resource {
   protected arn(): string {
     return cdk.Stack.of(this).formatArn(
       {
-        service: "iam",
-        region: "", // global
-        account: "cloudfront",
-        resource: "user",
-        resourceName: `CloudFront Origin Access Identity ${this.originAccessIdentityName}`
-      }
+        service: 'iam',
+        region: '', // global
+        account: 'cloudfront',
+        resource: 'user',
+        resourceName: `CloudFront Origin Access Identity ${this.originAccessIdentityName}`,
+      },
     );
   }
 }
@@ -106,10 +106,10 @@ export class OriginAccessIdentity extends OriginAccessIdentityBase implements IO
   constructor(scope: cdk.Construct, id: string, props?: OriginAccessIdentityProps) {
     super(scope, id);
 
-    this.resource = new CfnCloudFrontOriginAccessIdentity(this, "Resource", {
-      cloudFrontOriginAccessIdentityConfig: {
-        comment: (props && props.comment) || "Allows CloudFront to reach the bucket"
-      }
+    // Comment has a max length of 128.
+    const comment = (props?.comment ?? 'Allows CloudFront to reach the bucket').substr(0, 128);
+    this.resource = new CfnCloudFrontOriginAccessIdentity(this, 'Resource', {
+      cloudFrontOriginAccessIdentityConfig: { comment },
     });
     // physical id - OAI name
     this.originAccessIdentityName = this.getResourceNameAttribute(this.resource.ref);

@@ -1,4 +1,5 @@
-import { expect as expectCDK, haveResource } from '@aws-cdk/assert';
+import { expect as expectCDK, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import * as codecommit from '@aws-cdk/aws-codecommit';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import * as cloud9 from '../lib';
@@ -23,9 +24,9 @@ test('create resource correctly with both vpc and subnetSelectio', () => {
   new cloud9.Ec2Environment(stack, 'C9Env', {
     vpc,
     subnetSelection: {
-      subnetType: ec2.SubnetType.PRIVATE
-    }
-   });
+      subnetType: ec2.SubnetType.PRIVATE,
+    },
+  });
   // THEN
   expectCDK(stack).to(haveResource('AWS::Cloud9::EnvironmentEC2'));
 });
@@ -41,8 +42,8 @@ test('create correctly with instanceType specified', () => {
   // WHEN
   new cloud9.Ec2Environment(stack, 'C9Env', {
     vpc,
-    instanceType: ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.LARGE)
-   });
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.LARGE),
+  });
   // THEN
   expectCDK(stack).to(haveResource('AWS::Cloud9::EnvironmentEC2'));
 });
@@ -55,15 +56,52 @@ test('throw error when subnetSelection not specified and the provided VPC has no
       {
         subnetType: ec2.SubnetType.ISOLATED,
         name: 'IsolatedSubnet',
-        cidrMask: 24
-      }
-    ]
+        cidrMask: 24,
+      },
+    ],
   });
   // THEN
   expect(() => {
     new cloud9.Ec2Environment(stack, 'C9Env', {
       vpc: privateOnlyVpc,
-      instanceType: ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.LARGE)
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.LARGE),
     });
   }).toThrow(/no subnetSelection specified and no public subnet found in the vpc, please specify subnetSelection/);
+});
+
+test('can use CodeCommit repositories', () => {
+  // WHEN
+  const repo = codecommit.Repository.fromRepositoryName(stack, 'Repo', 'foo');
+
+  new cloud9.Ec2Environment(stack, 'C9Env', {
+    vpc,
+    clonedRepositories: [
+      cloud9.CloneRepository.fromCodeCommit(repo, '/src'),
+    ],
+  });
+  // THEN
+  expectCDK(stack).to(haveResourceLike('AWS::Cloud9::EnvironmentEC2', {
+    InstanceType: 't2.micro',
+    Repositories: [
+      {
+        PathComponent: '/src',
+        RepositoryUrl: {
+          'Fn::Join': [
+            '',
+            [
+              'https://git-codecommit.',
+              {
+                Ref: 'AWS::Region',
+              },
+              '.',
+              {
+                Ref: 'AWS::URLSuffix',
+              },
+              '/v1/repos/foo',
+            ],
+          ],
+        },
+      },
+    ],
+  }));
 });

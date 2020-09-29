@@ -19,18 +19,18 @@ const launchTemplate = new ec2.CfnLaunchTemplate(stack, 'ec2-launch-template', {
         ebs: {
           encrypted: true,
           volumeSize: 100,
-          volumeType: 'gp2'
-        }
-      }
-    ]
-  }
+          volumeType: 'gp2',
+        },
+      },
+    ],
+  },
 });
 
 new batch.JobQueue(stack, 'batch-job-queue', {
   computeEnvironments: [
     {
       computeEnvironment: new batch.ComputeEnvironment(stack, 'batch-unmanaged-compute-env', {
-        managed: false
+        managed: false,
       }),
       order: 1,
     },
@@ -42,6 +42,9 @@ new batch.JobQueue(stack, 'batch-job-queue', {
           vpc,
           launchTemplate: {
             launchTemplateName: launchTemplate.launchTemplateName as string,
+          },
+          computeResourcesTags: {
+            'compute-env-tag': '123XYZ',
           },
         },
       }),
@@ -58,7 +61,7 @@ new batch.JobQueue(stack, 'batch-job-queue', {
       }),
       order: 3,
     },
-  ]
+  ],
 });
 
 const repo = new ecr.Repository(stack, 'batch-job-repo');

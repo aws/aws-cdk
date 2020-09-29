@@ -1,13 +1,13 @@
+import * as fs from 'fs';
+import * as path from 'path';
 import { expect, haveResource } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { App, Lazy, Stack } from '@aws-cdk/core';
-import { ASSET_METADATA } from '@aws-cdk/cx-api';
-import * as fs from 'fs';
 import { Test } from 'nodeunit';
-import * as path from 'path';
 import { DockerImageAsset } from '../lib';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
   'test instantiating Asset Image'(test: Test) {
@@ -31,8 +31,8 @@ export = {
         id: 'baa2d6eb2a17c75424df631c8c70ff39f2d5f3bee8b9e1a109ee24ca17300540',
         packaging: 'container-image',
         path: 'asset.baa2d6eb2a17c75424df631c8c70ff39f2d5f3bee8b9e1a109ee24ca17300540',
-        sourceHash: 'baa2d6eb2a17c75424df631c8c70ff39f2d5f3bee8b9e1a109ee24ca17300540'
-      }
+        sourceHash: 'baa2d6eb2a17c75424df631c8c70ff39f2d5f3bee8b9e1a109ee24ca17300540',
+      },
     ]);
     test.done();
   },
@@ -45,13 +45,13 @@ export = {
     new DockerImageAsset(stack, 'Image', {
       directory: path.join(__dirname, 'demo-image'),
       buildArgs: {
-        a: 'b'
-      }
+        a: 'b',
+      },
     });
 
     // THEN
-    const assetMetadata = stack.node.metadata.find(({ type }) => type === ASSET_METADATA);
-    test.deepEqual(assetMetadata && assetMetadata.data.buildArgs, { a: 'b' });
+    const assetMetadata = stack.node.metadata.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
+    test.deepEqual(assetMetadata && (assetMetadata.data as cxschema.ContainerImageAssetMetadataEntry).buildArgs, { a: 'b' });
     test.done();
   },
 
@@ -63,14 +63,14 @@ export = {
     new DockerImageAsset(stack, 'Image', {
       directory: path.join(__dirname, 'demo-image'),
       buildArgs: {
-        a: 'b'
+        a: 'b',
       },
-      target: 'a-target'
+      target: 'a-target',
     });
 
     // THEN
-    const assetMetadata = stack.node.metadata.find(({ type }) => type === ASSET_METADATA);
-    test.deepEqual(assetMetadata && assetMetadata.data.target, 'a-target');
+    const assetMetadata = stack.node.metadata.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
+    test.deepEqual(assetMetadata && (assetMetadata.data as cxschema.ContainerImageAssetMetadataEntry).target, 'a-target');
     test.done();
   },
 
@@ -82,12 +82,12 @@ export = {
     // WHEN
     new DockerImageAsset(stack, 'Image', {
       directory: directoryPath,
-      file: 'Dockerfile.Custom'
+      file: 'Dockerfile.Custom',
     });
 
     // THEN
-    const assetMetadata = stack.node.metadata.find(({ type }) => type === ASSET_METADATA);
-    test.deepEqual(assetMetadata && assetMetadata.data.file, 'Dockerfile.Custom');
+    const assetMetadata = stack.node.metadata.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
+    test.deepEqual(assetMetadata && (assetMetadata.data as cxschema.ContainerImageAssetMetadataEntry).file, 'Dockerfile.Custom');
     test.done();
   },
 
@@ -96,7 +96,7 @@ export = {
     const stack = new Stack();
     const user = new iam.User(stack, 'MyUser');
     const asset = new DockerImageAsset(stack, 'Image', {
-      directory: path.join(__dirname, 'demo-image')
+      directory: path.join(__dirname, 'demo-image'),
     });
 
     // WHEN
@@ -105,49 +105,49 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::IAM::Policy', {
       PolicyDocument: {
-        "Statement": [
+        'Statement': [
           {
-            "Action": [
-              "ecr:BatchCheckLayerAvailability",
-              "ecr:GetDownloadUrlForLayer",
-              "ecr:BatchGetImage"
+            'Action': [
+              'ecr:BatchCheckLayerAvailability',
+              'ecr:GetDownloadUrlForLayer',
+              'ecr:BatchGetImage',
             ],
-            "Effect": "Allow",
-            "Resource": {
-              "Fn::Join": [
-                "",
+            'Effect': 'Allow',
+            'Resource': {
+              'Fn::Join': [
+                '',
                 [
-                  "arn:",
+                  'arn:',
                   {
-                    "Ref": "AWS::Partition"
+                    'Ref': 'AWS::Partition',
                   },
-                  ":ecr:",
+                  ':ecr:',
                   {
-                    "Ref": "AWS::Region"
+                    'Ref': 'AWS::Region',
                   },
-                  ":",
+                  ':',
                   {
-                    "Ref": "AWS::AccountId"
+                    'Ref': 'AWS::AccountId',
                   },
-                  ":repository/aws-cdk/assets"
-                ]
-              ]
-            }
+                  ':repository/aws-cdk/assets',
+                ],
+              ],
+            },
           },
           {
-            "Action": "ecr:GetAuthorizationToken",
-            "Effect": "Allow",
-            "Resource": "*"
-          }
+            'Action': 'ecr:GetAuthorizationToken',
+            'Effect': 'Allow',
+            'Resource': '*',
+          },
         ],
-        "Version": "2012-10-17"
+        'Version': '2012-10-17',
       },
-      "PolicyName": "MyUserDefaultPolicy7B897426",
-      "Users": [
+      'PolicyName': 'MyUserDefaultPolicy7B897426',
+      'Users': [
         {
-          "Ref": "MyUserDC45028B"
-        }
-      ]
+          'Ref': 'MyUserDC45028B',
+        },
+      ],
     }));
 
     test.done();
@@ -160,7 +160,7 @@ export = {
     // THEN
     test.throws(() => {
       new DockerImageAsset(stack, 'MyAsset', {
-        directory: `/does/not/exist/${Math.floor(Math.random() * 9999)}`
+        directory: `/does/not/exist/${Math.floor(Math.random() * 9999)}`,
       });
     }, /Cannot find image directory at/);
     test.done();
@@ -173,7 +173,7 @@ export = {
     // THEN
     test.throws(() => {
       new DockerImageAsset(stack, 'Asset', {
-        directory: __dirname
+        directory: __dirname,
       });
     }, /Cannot find file at/);
     test.done();
@@ -187,7 +187,7 @@ export = {
     test.throws(() => {
       new DockerImageAsset(stack, 'Asset', {
         directory: __dirname,
-        file: 'doesnt-exist'
+        file: 'doesnt-exist',
       });
     }, /Cannot find file at/);
     test.done();
@@ -198,7 +198,7 @@ export = {
     const stack = new Stack(app, 'stack');
 
     const image = new DockerImageAsset(stack, 'MyAsset', {
-      directory: path.join(__dirname, 'demo-image')
+      directory: path.join(__dirname, 'demo-image'),
     });
 
     const session = app.synth();
@@ -213,14 +213,14 @@ export = {
     const stack = new Stack(app, 'stack');
 
     const image = new DockerImageAsset(stack, 'MyAsset', {
-      directory: path.join(__dirname, 'dockerignore-image')
+      directory: path.join(__dirname, 'dockerignore-image'),
     });
 
     const session = app.synth();
 
     // .dockerignore itself should be included in output to be processed during docker build
     test.ok(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, '.dockerignore')));
-    test.ok(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, `Dockerfile`)));
+    test.ok(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'Dockerfile')));
     test.ok(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'index.py')));
     test.ok(!fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'foobar.txt')));
     test.ok(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'subdirectory')));
@@ -235,13 +235,13 @@ export = {
 
     const image = new DockerImageAsset(stack, 'MyAsset', {
       directory: path.join(__dirname, 'dockerignore-image'),
-      exclude: ['subdirectory']
+      exclude: ['subdirectory'],
     });
 
     const session = app.synth();
 
     test.ok(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, '.dockerignore')));
-    test.ok(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, `Dockerfile`)));
+    test.ok(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'Dockerfile')));
     test.ok(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'index.py')));
     test.ok(!fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'foobar.txt')));
     test.ok(!fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'subdirectory')));
@@ -259,12 +259,12 @@ export = {
     // THEN
     test.throws(() => new DockerImageAsset(stack, 'MyAsset1', {
       directory: path.join(__dirname, 'demo-image'),
-      buildArgs: { [token]: 'value' }
+      buildArgs: { [token]: 'value' },
     }), expected);
 
     test.throws(() => new DockerImageAsset(stack, 'MyAsset2', {
       directory: path.join(__dirname, 'demo-image'),
-      buildArgs: { key: token }
+      buildArgs: { key: token },
     }), expected);
 
     test.done();
@@ -278,7 +278,7 @@ export = {
     // THEN
     test.throws(() => new DockerImageAsset(stack, 'MyAsset1', {
       directory: path.join(__dirname, 'demo-image'),
-      repositoryName: token
+      repositoryName: token,
     }), /Cannot use Token as value of 'repositoryName'/);
 
     test.done();
@@ -305,5 +305,5 @@ export = {
     test.deepEqual(asset6.sourceHash, '594ae5a5d23367d18468fefca5a4e56ca83b077d1274a1f812f55c8c9ead9eaa');
     test.deepEqual(asset7.sourceHash, 'bc007f81fe1dd0f0bbb24af898eba3f4f15edbff19b7abb3fac928439486d667');
     test.done();
-  }
+  },
 };

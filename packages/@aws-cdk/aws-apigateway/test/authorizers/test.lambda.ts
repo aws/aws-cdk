@@ -16,19 +16,39 @@ export = {
     });
 
     const auth = new TokenAuthorizer(stack, 'myauthorizer', {
-      handler: func
+      handler: func,
     });
 
     const restApi = new RestApi(stack, 'myrestapi');
     restApi.root.addMethod('ANY', undefined, {
       authorizer: auth,
-      authorizationType: AuthorizationType.CUSTOM
+      authorizationType: AuthorizationType.CUSTOM,
     });
 
     expect(stack).to(haveResource('AWS::ApiGateway::Authorizer', {
       Type: 'TOKEN',
       RestApiId: stack.resolve(restApi.restApiId),
-      IdentitySource: 'method.request.header.Authorization'
+      IdentitySource: 'method.request.header.Authorization',
+      AuthorizerUri: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':apigateway:',
+            {
+              Ref: 'AWS::Region',
+            },
+            ':lambda:path/2015-03-31/functions/',
+            {
+              'Fn::GetAtt': ['myfunction9B95E948', 'Arn'],
+            },
+            '/invocations',
+          ],
+        ],
+      },
     }));
 
     expect(stack).to(haveResource('AWS::Lambda::Permission', {
@@ -59,12 +79,32 @@ export = {
     const restApi = new RestApi(stack, 'myrestapi');
     restApi.root.addMethod('ANY', undefined, {
       authorizer: auth,
-      authorizationType: AuthorizationType.CUSTOM
+      authorizationType: AuthorizationType.CUSTOM,
     });
 
     expect(stack).to(haveResource('AWS::ApiGateway::Authorizer', {
       Type: 'REQUEST',
       RestApiId: stack.resolve(restApi.restApiId),
+      AuthorizerUri: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':apigateway:',
+            {
+              Ref: 'AWS::Region',
+            },
+            ':lambda:path/2015-03-31/functions/',
+            {
+              'Fn::GetAtt': ['myfunction9B95E948', 'Arn'],
+            },
+            '/invocations',
+          ],
+        ],
+      },
     }));
 
     expect(stack).to(haveResource('AWS::Lambda::Permission', {
@@ -115,7 +155,7 @@ export = {
     const restApi = new RestApi(stack, 'myrestapi');
     restApi.root.addMethod('ANY', undefined, {
       authorizer: auth,
-      authorizationType: AuthorizationType.CUSTOM
+      authorizationType: AuthorizationType.CUSTOM,
     });
 
     expect(stack).to(haveResource('AWS::ApiGateway::Authorizer', {
@@ -124,7 +164,27 @@ export = {
       IdentitySource: 'method.request.header.whoami',
       IdentityValidationExpression: 'a-hacker',
       Name: 'myauthorizer',
-      AuthorizerResultTtlInSeconds: 60
+      AuthorizerResultTtlInSeconds: 60,
+      AuthorizerUri: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':apigateway:',
+            {
+              Ref: 'AWS::Region',
+            },
+            ':lambda:path/2015-03-31/functions/',
+            {
+              'Fn::GetAtt': ['myfunction9B95E948', 'Arn'],
+            },
+            '/invocations',
+          ],
+        ],
+      },
     }));
 
     test.done();
@@ -149,7 +209,7 @@ export = {
     const restApi = new RestApi(stack, 'myrestapi');
     restApi.root.addMethod('ANY', undefined, {
       authorizer: auth,
-      authorizationType: AuthorizationType.CUSTOM
+      authorizationType: AuthorizationType.CUSTOM,
     });
 
     expect(stack).to(haveResource('AWS::ApiGateway::Authorizer', {
@@ -157,7 +217,27 @@ export = {
       RestApiId: stack.resolve(restApi.restApiId),
       IdentitySource: 'method.request.header.whoami',
       Name: 'myauthorizer',
-      AuthorizerResultTtlInSeconds: 60
+      AuthorizerResultTtlInSeconds: 60,
+      AuthorizerUri: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':apigateway:',
+            {
+              Ref: 'AWS::Region',
+            },
+            ':lambda:path/2015-03-31/functions/',
+            {
+              'Fn::GetAtt': ['myfunction9B95E948', 'Arn'],
+            },
+            '/invocations',
+          ],
+        ],
+      },
     }));
 
     test.done();
@@ -174,30 +254,50 @@ export = {
 
     const role = new iam.Role(stack, 'authorizerassumerole', {
       assumedBy: new iam.ServicePrincipal('apigateway.amazonaws.com'),
-      roleName: 'authorizerassumerole'
+      roleName: 'authorizerassumerole',
     });
 
     const auth = new TokenAuthorizer(stack, 'myauthorizer', {
       handler: func,
-      assumeRole: role
+      assumeRole: role,
     });
 
     const restApi = new RestApi(stack, 'myrestapi');
     restApi.root.addMethod('ANY', undefined, {
       authorizer: auth,
-      authorizationType: AuthorizationType.CUSTOM
+      authorizationType: AuthorizationType.CUSTOM,
     });
 
     expect(stack).to(haveResource('AWS::ApiGateway::Authorizer', {
       Type: 'TOKEN',
       RestApiId: stack.resolve(restApi.restApiId),
+      AuthorizerUri: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':apigateway:',
+            {
+              Ref: 'AWS::Region',
+            },
+            ':lambda:path/2015-03-31/functions/',
+            {
+              'Fn::GetAtt': ['myfunction9B95E948', 'Arn'],
+            },
+            '/invocations',
+          ],
+        ],
+      },
     }));
 
     expect(stack).to(haveResource('AWS::IAM::Role'));
 
     expect(stack).to(haveResource('AWS::IAM::Policy', {
       Roles: [
-        stack.resolve(role.roleName)
+        stack.resolve(role.roleName),
       ],
       PolicyDocument: {
         Statement: [
@@ -205,9 +305,9 @@ export = {
             Resource: stack.resolve(func.functionArn),
             Action: 'lambda:InvokeFunction',
             Effect: 'Allow',
-          }
+          },
         ],
-      }
+      },
     }, ResourcePart.Properties, true));
 
     expect(stack).notTo(haveResource('AWS::Lambda::Permission'));
@@ -226,32 +326,52 @@ export = {
 
     const role = new iam.Role(stack, 'authorizerassumerole', {
       assumedBy: new iam.ServicePrincipal('apigateway.amazonaws.com'),
-      roleName: 'authorizerassumerole'
+      roleName: 'authorizerassumerole',
     });
 
     const auth = new RequestAuthorizer(stack, 'myauthorizer', {
       handler: func,
       assumeRole: role,
       resultsCacheTtl: Duration.seconds(0),
-      identitySources: []
+      identitySources: [],
     });
 
     const restApi = new RestApi(stack, 'myrestapi');
     restApi.root.addMethod('ANY', undefined, {
       authorizer: auth,
-      authorizationType: AuthorizationType.CUSTOM
+      authorizationType: AuthorizationType.CUSTOM,
     });
 
     expect(stack).to(haveResource('AWS::ApiGateway::Authorizer', {
       Type: 'REQUEST',
       RestApiId: stack.resolve(restApi.restApiId),
+      AuthorizerUri: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':apigateway:',
+            {
+              Ref: 'AWS::Region',
+            },
+            ':lambda:path/2015-03-31/functions/',
+            {
+              'Fn::GetAtt': ['myfunction9B95E948', 'Arn'],
+            },
+            '/invocations',
+          ],
+        ],
+      },
     }));
 
     expect(stack).to(haveResource('AWS::IAM::Role'));
 
     expect(stack).to(haveResource('AWS::IAM::Policy', {
       Roles: [
-        stack.resolve(role.roleName)
+        stack.resolve(role.roleName),
       ],
       PolicyDocument: {
         Statement: [
@@ -259,9 +379,9 @@ export = {
             Resource: stack.resolve(func.functionArn),
             Action: 'lambda:InvokeFunction',
             Effect: 'Allow',
-          }
+          },
         ],
-      }
+      },
     }, ResourcePart.Properties, true));
 
     expect(stack).notTo(haveResource('AWS::Lambda::Permission'));
@@ -294,7 +414,7 @@ export = {
     });
     const auth = new RequestAuthorizer(stack, 'myauthorizer', {
       handler: func,
-      identitySources: [ IdentitySource.header('myheader') ],
+      identitySources: [IdentitySource.header('myheader')],
     });
 
     test.throws(() => stack.resolve(auth.authorizerArn), /must be attached to a RestApi/);

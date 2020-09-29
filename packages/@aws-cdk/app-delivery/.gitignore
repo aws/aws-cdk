@@ -9,3 +9,6 @@ tsconfig.json
 *.d.ts
 *.snk
 coverage
+!.eslintrc.js
+
+junit.xml

@@ -9,7 +9,7 @@ class EksClusterStack extends cdk.Stack {
     const vpc = new ec2.Vpc(this, 'VPC');
 
     const cluster = new eks.Cluster(this, 'EKSCluster', {
-      vpc
+      vpc,
     });
 
     /// !show

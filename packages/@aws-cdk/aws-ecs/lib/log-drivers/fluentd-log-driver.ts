@@ -1,7 +1,7 @@
 import { Construct, Duration } from '@aws-cdk/core';
 import { ContainerDefinition } from '../container-definition';
 import { BaseLogDriverProps } from './base-log-driver';
-import { LogDriver, LogDriverConfig } from "./log-driver";
+import { LogDriver, LogDriverConfig } from './log-driver';
 import { renderCommonLogDriverOptions, stringifyOptions } from './utils';
 
 /**
@@ -82,7 +82,7 @@ export class FluentdLogDriver extends LogDriver {
         'fluentd-retry-wait': this.props.retryWait && this.props.retryWait.toSeconds(),
         'fluentd-max-retries': this.props.maxRetries,
         'fluentd-sub-second-precision': this.props.subSecondPrecision,
-        ...renderCommonLogDriverOptions(this.props)
+        ...renderCommonLogDriverOptions(this.props),
       }),
     };
   }

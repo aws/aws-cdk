@@ -3,7 +3,7 @@ import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { ReceiptRule, ReceiptRuleSet, TlsPolicy } from '../lib';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
   'can create receipt rules with second after first'(test: Test) {
@@ -21,50 +21,50 @@ export = {
           receiptRuleName: 'SecondRule',
           recipients: ['hello@aws.com'],
           scanEnabled: true,
-          tlsPolicy: TlsPolicy.REQUIRE
-        }
-      ]
+          tlsPolicy: TlsPolicy.REQUIRE,
+        },
+      ],
     });
 
     // THEN
     expect(stack).toMatch({
-      "Resources": {
-        "RuleSetE30C6C48": {
-          "Type": "AWS::SES::ReceiptRuleSet"
+      'Resources': {
+        'RuleSetE30C6C48': {
+          'Type': 'AWS::SES::ReceiptRuleSet',
         },
-        "RuleSetRule023C3B8E1": {
-          "Type": "AWS::SES::ReceiptRule",
-          "Properties": {
-            "Rule": {
-              "Name": "FirstRule",
-              "Enabled": true
+        'RuleSetRule023C3B8E1': {
+          'Type': 'AWS::SES::ReceiptRule',
+          'Properties': {
+            'Rule': {
+              'Name': 'FirstRule',
+              'Enabled': true,
             },
-            "RuleSetName": {
-              "Ref": "RuleSetE30C6C48"
-            }
-          }
+            'RuleSetName': {
+              'Ref': 'RuleSetE30C6C48',
+            },
+          },
         },
-        "RuleSetRule117041B57": {
-          "Type": "AWS::SES::ReceiptRule",
-          "Properties": {
-            "Rule": {
-              "Enabled": false,
-              "Name": "SecondRule",
-              "Recipients": [
-                "hello@aws.com"
+        'RuleSetRule117041B57': {
+          'Type': 'AWS::SES::ReceiptRule',
+          'Properties': {
+            'Rule': {
+              'Enabled': false,
+              'Name': 'SecondRule',
+              'Recipients': [
+                'hello@aws.com',
               ],
-              "ScanEnabled": true,
-              "TlsPolicy": "Require"
+              'ScanEnabled': true,
+              'TlsPolicy': 'Require',
             },
-            "RuleSetName": {
-              "Ref": "RuleSetE30C6C48"
+            'RuleSetName': {
+              'Ref': 'RuleSetE30C6C48',
             },
-            "After": {
-              "Ref": "RuleSetRule023C3B8E1"
-            }
-          }
-        }
-      }
+            'After': {
+              'Ref': 'RuleSetRule023C3B8E1',
+            },
+          },
+        },
+      },
     });
 
     test.done();
@@ -79,27 +79,27 @@ export = {
     const receiptRuleSet = new ReceiptRuleSet(stack, 'RuleSet');
 
     receiptRuleSet.addRule('MyRule', {
-      after: receiptRule
+      after: receiptRule,
     });
 
     // THEN
     expect(stack).toMatch({
-      "Resources": {
-        "RuleSetE30C6C48": {
-          "Type": "AWS::SES::ReceiptRuleSet"
+      'Resources': {
+        'RuleSetE30C6C48': {
+          'Type': 'AWS::SES::ReceiptRuleSet',
         },
-        "RuleSetMyRule60B1D107": {
-          "Type": "AWS::SES::ReceiptRule",
-          "Properties": {
-            "Rule": {
-              "Enabled": true
+        'RuleSetMyRule60B1D107': {
+          'Type': 'AWS::SES::ReceiptRule',
+          'Properties': {
+            'Rule': {
+              'Enabled': true,
             },
-            "RuleSetName": {
-              "Ref": "RuleSetE30C6C48"
+            'RuleSetName': {
+              'Ref': 'RuleSetE30C6C48',
             },
-            "After": "MyRule"
-          }
-        }
+            'After': 'MyRule',
+          },
+        },
       },
     });
 
@@ -117,28 +117,28 @@ export = {
         {
           bind: () => ({
             stopAction: {
-              scope: 'RuleSet'
-            }
-          })
-        }
-      ]
+              scope: 'RuleSet',
+            },
+          }),
+        },
+      ],
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::SES::ReceiptRule', {
-      "Rule": {
-        "Actions": [
+      'Rule': {
+        'Actions': [
           {
-            "StopAction": {
-              "Scope": "RuleSet"
-            }
-          }
+            'StopAction': {
+              'Scope': 'RuleSet',
+            },
+          },
         ],
-        "Enabled": true
+        'Enabled': true,
       },
-      "RuleSetName": {
-        "Ref": "RuleSetE30C6C48"
-      }
+      'RuleSetName': {
+        'Ref': 'RuleSetE30C6C48',
+      },
     }));
 
     test.done();
@@ -154,28 +154,28 @@ export = {
     rule.addAction({
       bind: () => ({
         stopAction: {
-          scope: 'RuleSet'
-        }
-      })
+          scope: 'RuleSet',
+        },
+      }),
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::SES::ReceiptRule', {
-      "Rule": {
-        "Actions": [
+      'Rule': {
+        'Actions': [
           {
-            "StopAction": {
-              "Scope": "RuleSet"
-            }
-          }
+            'StopAction': {
+              'Scope': 'RuleSet',
+            },
+          },
         ],
-        "Enabled": true
+        'Enabled': true,
       },
-      "RuleSetName": {
-        "Ref": "RuleSetE30C6C48"
-      }
+      'RuleSetName': {
+        'Ref': 'RuleSetE30C6C48',
+      },
     }));
 
     test.done();
-  }
+  },
 };

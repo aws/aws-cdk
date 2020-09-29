@@ -36,7 +36,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParameters2f85c70f49b4113160f0f47338db42d02f7f5891fbabdee17088496d43b4bf48S3Bucket1844A3AD"
+            "Ref": "AssetParameters640b7d3e1a6ff78c1cad25c2d7396d04c74d6eee31b116f4c86d910338d480d0S3BucketA16CB30E"
           },
           "S3Key": {
             "Fn::Join": [
@@ -49,7 +49,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters2f85c70f49b4113160f0f47338db42d02f7f5891fbabdee17088496d43b4bf48S3VersionKey89A7BB5B"
+                          "Ref": "AssetParameters640b7d3e1a6ff78c1cad25c2d7396d04c74d6eee31b116f4c86d910338d480d0S3VersionKey102DBBD9"
                         }
                       ]
                     }
@@ -62,7 +62,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters2f85c70f49b4113160f0f47338db42d02f7f5891fbabdee17088496d43b4bf48S3VersionKey89A7BB5B"
+                          "Ref": "AssetParameters640b7d3e1a6ff78c1cad25c2d7396d04c74d6eee31b116f4c86d910338d480d0S3VersionKey102DBBD9"
                         }
                       ]
                     }
@@ -142,32 +142,39 @@
     "StateMachine2E01A3A5": {
       "Type": "AWS::StepFunctions::StateMachine",
       "Properties": {
-        "DefinitionString": {
-          "Fn::Join": [
-            "",
-            [
-              "{\"StartAt\":\"Sum\",\"States\":{\"Sum\":{\"Next\":\"Multiply\",\"Parameters\":{\"expression\":\"$.a + $.b\",\"expressionAttributeValues\":{\"$.a.$\":\"$.a\",\"$.b.$\":\"$.b\"}},\"Type\":\"Task\",\"Resource\":\"",
-              {
-                "Fn::GetAtt": [
-                  "Evala0d2ce44871b4e7487a1f5e63d7c3bdc4DAC06E1",
-                  "Arn"
-                ]
-              },
-              "\",\"ResultPath\":\"$.c\"},\"Multiply\":{\"Next\":\"Wait\",\"Parameters\":{\"expression\":\"$.c * 2\",\"expressionAttributeValues\":{\"$.c.$\":\"$.c\"}},\"Type\":\"Task\",\"Resource\":\"",
-              {
-                "Fn::GetAtt": [
-                  "Evala0d2ce44871b4e7487a1f5e63d7c3bdc4DAC06E1",
-                  "Arn"
-                ]
-              },
-              "\",\"ResultPath\":\"$.waitSeconds\"},\"Wait\":{\"Type\":\"Wait\",\"SecondsPath\":\"$.waitSeconds\",\"End\":true}}}"
-            ]
-          ]
-        },
         "RoleArn": {
           "Fn::GetAtt": [
             "StateMachineRoleB840431D",
             "Arn"
+          ]
+        },
+        "DefinitionString": {
+          "Fn::Join": [
+            "",
+            [
+              "{\"StartAt\":\"Sum\",\"States\":{\"Sum\":{\"Next\":\"Multiply\",\"Type\":\"Task\",\"ResultPath\":\"$.c\",\"Resource\":\"",
+              {
+                "Fn::GetAtt": [
+                  "Evala0d2ce44871b4e7487a1f5e63d7c3bdc4DAC06E1",
+                  "Arn"
+                ]
+              },
+              "\",\"Parameters\":{\"expression\":\"$.a + $.b\",\"expressionAttributeValues\":{\"$.a.$\":\"$.a\",\"$.b.$\":\"$.b\"}}},\"Multiply\":{\"Next\":\"Wait\",\"Type\":\"Task\",\"ResultPath\":\"$.d\",\"Resource\":\"",
+              {
+                "Fn::GetAtt": [
+                  "Evala0d2ce44871b4e7487a1f5e63d7c3bdc4DAC06E1",
+                  "Arn"
+                ]
+              },
+              "\",\"Parameters\":{\"expression\":\"$.c * 2\",\"expressionAttributeValues\":{\"$.c.$\":\"$.c\"}}},\"Wait\":{\"Type\":\"Wait\",\"SecondsPath\":\"$.d\",\"Next\":\"Now\"},\"Now\":{\"End\":true,\"Type\":\"Task\",\"ResultPath\":\"$.now\",\"Resource\":\"",
+              {
+                "Fn::GetAtt": [
+                  "Evala0d2ce44871b4e7487a1f5e63d7c3bdc4DAC06E1",
+                  "Arn"
+                ]
+              },
+              "\",\"Parameters\":{\"expression\":\"(new Date()).toUTCString()\",\"expressionAttributeValues\":{}}}}}"
+            ]
           ]
         }
       },
@@ -178,17 +185,24 @@
     }
   },
   "Parameters": {
-    "AssetParameters2f85c70f49b4113160f0f47338db42d02f7f5891fbabdee17088496d43b4bf48S3Bucket1844A3AD": {
+    "AssetParameters640b7d3e1a6ff78c1cad25c2d7396d04c74d6eee31b116f4c86d910338d480d0S3BucketA16CB30E": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"2f85c70f49b4113160f0f47338db42d02f7f5891fbabdee17088496d43b4bf48\""
+      "Description": "S3 bucket for asset \"640b7d3e1a6ff78c1cad25c2d7396d04c74d6eee31b116f4c86d910338d480d0\""
     },
-    "AssetParameters2f85c70f49b4113160f0f47338db42d02f7f5891fbabdee17088496d43b4bf48S3VersionKey89A7BB5B": {
+    "AssetParameters640b7d3e1a6ff78c1cad25c2d7396d04c74d6eee31b116f4c86d910338d480d0S3VersionKey102DBBD9": {
       "Type": "String",
-      "Description": "S3 key for asset version \"2f85c70f49b4113160f0f47338db42d02f7f5891fbabdee17088496d43b4bf48\""
+      "Description": "S3 key for asset version \"640b7d3e1a6ff78c1cad25c2d7396d04c74d6eee31b116f4c86d910338d480d0\""
     },
-    "AssetParameters2f85c70f49b4113160f0f47338db42d02f7f5891fbabdee17088496d43b4bf48ArtifactHash43D5F111": {
+    "AssetParameters640b7d3e1a6ff78c1cad25c2d7396d04c74d6eee31b116f4c86d910338d480d0ArtifactHash43D553D7": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"2f85c70f49b4113160f0f47338db42d02f7f5891fbabdee17088496d43b4bf48\""
+      "Description": "Artifact hash for asset \"640b7d3e1a6ff78c1cad25c2d7396d04c74d6eee31b116f4c86d910338d480d0\""
+    }
+  },
+  "Outputs": {
+    "StateMachineARN": {
+      "Value": {
+        "Ref": "StateMachine2E01A3A5"
+      }
     }
   }
 }

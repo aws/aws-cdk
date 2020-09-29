@@ -1,10 +1,10 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import {
   CfnDynamicReference, CfnDynamicReferenceService, CfnParameter,
-  Construct, ContextProvider, Fn, IResource, Resource, Stack, Token
+  Construct, ContextProvider, Fn, IResource, Resource, Stack, Token,
 } from '@aws-cdk/core';
-import * as cxapi from '@aws-cdk/cx-api';
 import * as ssm from './ssm.generated';
 import { arnForParameterName, AUTOGEN_MARKER } from './util';
 
@@ -172,7 +172,7 @@ abstract class ParameterBase extends Resource implements IParameter {
         'ssm:DescribeParameters',
         'ssm:GetParameters',
         'ssm:GetParameter',
-        'ssm:GetParameterHistory'
+        'ssm:GetParameterHistory',
       ],
       resourceArns: [this.parameterArn],
     });
@@ -317,7 +317,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
    */
   public static fromStringParameterAttributes(scope: Construct, id: string, attrs: StringParameterAttributes): IStringParameter {
     if (!attrs.parameterName) {
-      throw new Error(`parameterName cannot be an empty string`);
+      throw new Error('parameterName cannot be an empty string');
     }
 
     const type = attrs.type || ParameterType.STRING;
@@ -362,9 +362,9 @@ export class StringParameter extends ParameterBase implements IStringParameter {
    */
   public static valueFromLookup(scope: Construct, parameterName: string): string {
     const value = ContextProvider.getValue(scope, {
-      provider: cxapi.SSM_PARAMETER_PROVIDER,
+      provider: cxschema.ContextProvider.SSM_PARAMETER_PROVIDER,
       props: { parameterName },
-      dummyValue: `dummy-value-for-${parameterName}`
+      dummyValue: `dummy-value-for-${parameterName}`,
     }).value;
 
     return value;
@@ -446,7 +446,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
     this.parameterName = this.getResourceNameAttribute(resource.ref);
     this.parameterArn = arnForParameterName(this, this.parameterName, {
       physicalName: props.parameterName || AUTOGEN_MARKER,
-      simpleName: props.simpleName
+      simpleName: props.simpleName,
     });
 
     this.parameterType = resource.attrType;
@@ -512,7 +512,7 @@ export class StringListParameter extends ParameterBase implements IStringListPar
     this.parameterName = this.getResourceNameAttribute(resource.ref);
     this.parameterArn = arnForParameterName(this, this.parameterName, {
       physicalName: props.parameterName || AUTOGEN_MARKER,
-      simpleName: props.simpleName
+      simpleName: props.simpleName,
     });
 
     this.parameterType = resource.attrType;

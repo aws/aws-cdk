@@ -3,7 +3,7 @@ import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { ReceiptRuleSet } from '../lib';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
   'can create a receipt rule set'(test: Test) {
@@ -17,7 +17,7 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::SES::ReceiptRuleSet', {
-      RuleSetName: 'MyRuleSet'
+      RuleSetName: 'MyRuleSet',
     }));
 
     test.done();
@@ -29,7 +29,7 @@ export = {
 
     // WHEN
     new ReceiptRuleSet(stack, 'RuleSet', {
-      dropSpam: true
+      dropSpam: true,
     });
 
     // THEN
@@ -41,16 +41,16 @@ export = {
               FunctionArn: {
                 'Fn::GetAtt': [
                   'SingletonLambda224e77f9a32e4b4dac32983477abba164533EA15',
-                  'Arn'
-                ]
+                  'Arn',
+                ],
               },
-              InvocationType: 'RequestResponse'
-            }
-          }
+              InvocationType: 'RequestResponse',
+            },
+          },
         ],
         Enabled: true,
-        ScanEnabled: true
-      }
+        ScanEnabled: true,
+      },
     }));
 
     expect(stack).to(haveResource('AWS::Lambda::Function'));
@@ -69,19 +69,19 @@ export = {
 
     // THEN
     expect(stack).toMatch({
-      "Resources": {
-        "ImportedRuleSetMyRule53EE2F7F": {
-          "Type": "AWS::SES::ReceiptRule",
-          "Properties": {
-            "Rule": {
-              "Enabled": true
+      'Resources': {
+        'ImportedRuleSetMyRule53EE2F7F': {
+          'Type': 'AWS::SES::ReceiptRule',
+          'Properties': {
+            'Rule': {
+              'Enabled': true,
             },
-            "RuleSetName": "MyRuleSet"
-          }
-        }
+            'RuleSetName': 'MyRuleSet',
+          },
+        },
       },
     });
 
     test.done();
-  }
+  },
 };

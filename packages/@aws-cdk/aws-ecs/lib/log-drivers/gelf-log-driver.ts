@@ -1,7 +1,7 @@
 import { Construct, Duration } from '@aws-cdk/core';
 import { ContainerDefinition } from '../container-definition';
 import { BaseLogDriverProps } from './base-log-driver';
-import { LogDriver, LogDriverConfig } from "./log-driver";
+import { LogDriver, LogDriverConfig } from './log-driver';
 import { ensureInRange, ensurePositiveInteger, renderCommonLogDriverOptions, stringifyOptions } from './utils';
 
 /**
@@ -93,7 +93,7 @@ export class GelfLogDriver extends LogDriver {
         'gelf-compression-level': this.props.compressionLevel,
         'gelf-tcp-max-reconnect': this.props.tcpMaxReconnect,
         'gelf-tcp-reconnect-delay': this.props.tcpReconnectDelay && this.props.tcpReconnectDelay.toSeconds(),
-        ...renderCommonLogDriverOptions(this.props)
+        ...renderCommonLogDriverOptions(this.props),
       }),
     };
   }

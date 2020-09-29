@@ -1,3 +1,4 @@
+import { expect, haveResourceLike } from '@aws-cdk/assert';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { Code, EventSourceMapping, Function, Runtime } from '../lib';
@@ -7,8 +8,8 @@ export = {
     const stack = new cdk.Stack();
     const fn = new Function(stack, 'fn', {
       handler: 'index.handler',
-      code: Code.fromInline(`exports.handler = \${handler.toString()}`),
-      runtime: Runtime.NODEJS_10_X
+      code: Code.fromInline('exports.handler = ${handler.toString()}'),
+      runtime: Runtime.NODEJS_10_X,
     });
 
     test.throws(() =>
@@ -18,7 +19,7 @@ export = {
         {
           target: fn,
           eventSourceArn: '',
-          maxBatchingWindow: cdk.Duration.seconds(301)
+          maxBatchingWindow: cdk.Duration.seconds(301),
         }), /maxBatchingWindow cannot be over 300 seconds/);
 
     test.done();
@@ -27,8 +28,8 @@ export = {
     const stack = new cdk.Stack();
     const fn = new Function(stack, 'fn', {
       handler: 'index.handler',
-      code: Code.fromInline(`exports.handler = \${handler.toString()}`),
-      runtime: Runtime.NODEJS_10_X
+      code: Code.fromInline('exports.handler = ${handler.toString()}'),
+      runtime: Runtime.NODEJS_10_X,
     });
 
     test.throws(() =>
@@ -38,7 +39,7 @@ export = {
         {
           target: fn,
           eventSourceArn: '',
-          maxRecordAge: cdk.Duration.seconds(59)
+          maxRecordAge: cdk.Duration.seconds(59),
         }), /maxRecordAge must be between 60 seconds and 7 days inclusive/);
 
     test.done();
@@ -47,8 +48,8 @@ export = {
     const stack = new cdk.Stack();
     const fn = new Function(stack, 'fn', {
       handler: 'index.handler',
-      code: Code.fromInline(`exports.handler = \${handler.toString()}`),
-      runtime: Runtime.NODEJS_10_X
+      code: Code.fromInline('exports.handler = ${handler.toString()}'),
+      runtime: Runtime.NODEJS_10_X,
     });
 
     test.throws(() =>
@@ -58,7 +59,7 @@ export = {
         {
           target: fn,
           eventSourceArn: '',
-          maxRecordAge: cdk.Duration.seconds(604801)
+          maxRecordAge: cdk.Duration.seconds(604801),
         }), /maxRecordAge must be between 60 seconds and 7 days inclusive/);
 
     test.done();
@@ -67,8 +68,8 @@ export = {
     const stack = new cdk.Stack();
     const fn = new Function(stack, 'fn', {
       handler: 'index.handler',
-      code: Code.fromInline(`exports.handler = \${handler.toString()}`),
-      runtime: Runtime.NODEJS_10_X
+      code: Code.fromInline('exports.handler = ${handler.toString()}'),
+      runtime: Runtime.NODEJS_10_X,
     });
 
     test.throws(() =>
@@ -78,7 +79,7 @@ export = {
         {
           target: fn,
           eventSourceArn: '',
-          retryAttempts: -1
+          retryAttempts: -1,
         }), /retryAttempts must be between 0 and 10000 inclusive, got -1/);
 
     test.done();
@@ -87,8 +88,8 @@ export = {
     const stack = new cdk.Stack();
     const fn = new Function(stack, 'fn', {
       handler: 'index.handler',
-      code: Code.fromInline(`exports.handler = \${handler.toString()}`),
-      runtime: Runtime.NODEJS_10_X
+      code: Code.fromInline('exports.handler = ${handler.toString()}'),
+      runtime: Runtime.NODEJS_10_X,
     });
 
     test.throws(() =>
@@ -98,8 +99,24 @@ export = {
         {
           target: fn,
           eventSourceArn: '',
-          retryAttempts: 10001
+          retryAttempts: 10001,
         }), /retryAttempts must be between 0 and 10000 inclusive, got 10001/);
+
+    test.done();
+  },
+  'accepts if retryAttempts is a token'(test: Test) {
+    const stack = new cdk.Stack();
+    const fn = new Function(stack, 'fn', {
+      handler: 'index.handler',
+      code: Code.fromInline('exports.handler = ${handler.toString()}'),
+      runtime: Runtime.NODEJS_10_X,
+    });
+
+    new EventSourceMapping(stack, 'test', {
+      target: fn,
+      eventSourceArn: '',
+      retryAttempts: cdk.Lazy.numberValue({ produce: () => 100 }),
+    });
 
     test.done();
   },
@@ -107,8 +124,8 @@ export = {
     const stack = new cdk.Stack();
     const fn = new Function(stack, 'fn', {
       handler: 'index.handler',
-      code: Code.fromInline(`exports.handler = \${handler.toString()}`),
-      runtime: Runtime.NODEJS_10_X
+      code: Code.fromInline('exports.handler = ${handler.toString()}'),
+      runtime: Runtime.NODEJS_10_X,
     });
 
     test.throws(() =>
@@ -118,7 +135,7 @@ export = {
         {
           target: fn,
           eventSourceArn: '',
-          parallelizationFactor: 0
+          parallelizationFactor: 0,
         }), /parallelizationFactor must be between 1 and 10 inclusive, got 0/);
 
     test.done();
@@ -127,8 +144,8 @@ export = {
     const stack = new cdk.Stack();
     const fn = new Function(stack, 'fn', {
       handler: 'index.handler',
-      code: Code.fromInline(`exports.handler = \${handler.toString()}`),
-      runtime: Runtime.NODEJS_10_X
+      code: Code.fromInline('exports.handler = ${handler.toString()}'),
+      runtime: Runtime.NODEJS_10_X,
     });
 
     test.throws(() =>
@@ -138,8 +155,25 @@ export = {
         {
           target: fn,
           eventSourceArn: '',
-          parallelizationFactor: 11
+          parallelizationFactor: 11,
         }), /parallelizationFactor must be between 1 and 10 inclusive, got 11/);
+
+    test.done();
+  },
+
+  'accepts if parallelizationFactor is a token'(test: Test) {
+    const stack = new cdk.Stack();
+    const fn = new Function(stack, 'fn', {
+      handler: 'index.handler',
+      code: Code.fromInline('exports.handler = ${handler.toString()}'),
+      runtime: Runtime.NODEJS_10_X,
+    });
+
+    new EventSourceMapping(stack, 'test', {
+      target: fn,
+      eventSourceArn: '',
+      parallelizationFactor: cdk.Lazy.numberValue({ produce: () => 20 }),
+    });
 
     test.done();
   },
@@ -150,6 +184,33 @@ export = {
 
     test.equals(imported.eventSourceMappingId, '14e0db71-5d35-4eb5-b481-8945cf9d10c2');
     test.equals(imported.stack.stackName, 'test-stack');
+    test.done();
+  },
+
+  'accepts if kafkaTopic is a parameter'(test: Test) {
+    const stack = new cdk.Stack();
+    const topicNameParam = new cdk.CfnParameter(stack, 'TopicNameParam', {
+      type: 'String',
+    });
+
+    const fn = new Function(stack, 'fn', {
+      handler: 'index.handler',
+      code: Code.fromInline('exports.handler = ${handler.toString()}'),
+      runtime: Runtime.NODEJS_10_X,
+    });
+
+    new EventSourceMapping(stack, 'test', {
+      target: fn,
+      eventSourceArn: '',
+      kafkaTopic: topicNameParam.valueAsString,
+    });
+
+    expect(stack).to(haveResourceLike('AWS::Lambda::EventSourceMapping', {
+      Topics: [{
+        Ref: 'TopicNameParam',
+      }],
+    }));
+
     test.done();
   },
 };

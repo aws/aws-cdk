@@ -1,6 +1,7 @@
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import { Construct, IConstruct, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
+import * as cr from '@aws-cdk/custom-resources';
 import { CfnRepository } from './ecr.generated';
 import { LifecycleRule, TagStatus } from './lifecycle';
 
@@ -41,7 +42,7 @@ export interface IRepository extends IResource {
   /**
    * Add a policy statement to the repository's resource policy
    */
-  addToResourcePolicy(statement: iam.PolicyStatement): void;
+  addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult;
 
   /**
    * Grant the given principal identity permissions to perform the actions on this repository
@@ -114,7 +115,7 @@ export abstract class RepositoryBase extends Resource implements IRepository {
   /**
    * Add a policy statement to the repository's resource policy
    */
-  public abstract addToResourcePolicy(statement: iam.PolicyStatement): void;
+  public abstract addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult;
 
   /**
    * The URI of this repository (represents the latest image):
@@ -157,8 +158,8 @@ export abstract class RepositoryBase extends Resource implements IRepository {
       detail: {
         requestParameters: {
           repositoryName: [this.repositoryName],
-        }
-      }
+        },
+      },
     });
     return rule;
   }
@@ -201,8 +202,8 @@ export abstract class RepositoryBase extends Resource implements IRepository {
       detail: {
         'repository-name': [this.repositoryName],
         'scan-status': ['COMPLETE'],
-        'image-tags': options.imageTags ? options.imageTags : undefined
-      }
+        'image-tags': options.imageTags ? options.imageTags : undefined,
+      },
     });
     return rule;
   }
@@ -215,7 +216,7 @@ export abstract class RepositoryBase extends Resource implements IRepository {
     const rule = new events.Rule(this, id, options);
     rule.addEventPattern({
       source: ['aws.ecr'],
-      resources: [this.repositoryArn]
+      resources: [this.repositoryArn],
     });
     rule.addTarget(options.target);
     return rule;
@@ -237,11 +238,11 @@ export abstract class RepositoryBase extends Resource implements IRepository {
    * Grant the given identity permissions to use the images in this repository
    */
   public grantPull(grantee: iam.IGrantable) {
-    const ret = this.grant(grantee, "ecr:BatchCheckLayerAvailability", "ecr:GetDownloadUrlForLayer", "ecr:BatchGetImage");
+    const ret = this.grant(grantee, 'ecr:BatchCheckLayerAvailability', 'ecr:GetDownloadUrlForLayer', 'ecr:BatchGetImage');
 
     iam.Grant.addToPrincipal({
       grantee,
-      actions: ["ecr:GetAuthorizationToken"],
+      actions: ['ecr:GetAuthorizationToken'],
       resourceArns: ['*'],
       scope: this,
     });
@@ -255,10 +256,10 @@ export abstract class RepositoryBase extends Resource implements IRepository {
   public grantPullPush(grantee: iam.IGrantable) {
     this.grantPull(grantee);
     return this.grant(grantee,
-      "ecr:PutImage",
-      "ecr:InitiateLayerUpload",
-      "ecr:UploadLayerPart",
-      "ecr:CompleteLayerUpload");
+      'ecr:PutImage',
+      'ecr:InitiateLayerUpload',
+      'ecr:UploadLayerPart',
+      'ecr:CompleteLayerUpload');
   }
 }
 
@@ -316,6 +317,13 @@ export interface RepositoryProps {
    * @default RemovalPolicy.Retain
    */
   readonly removalPolicy?: RemovalPolicy;
+
+  /**
+   * Enable the scan on push when creating the repository
+   *
+   *  @default false
+   */
+  readonly imageScanOnPush?: boolean;
 }
 
 export interface RepositoryAttributes {
@@ -335,8 +343,9 @@ export class Repository extends RepositoryBase {
       public readonly repositoryName = attrs.repositoryName;
       public readonly repositoryArn = attrs.repositoryArn;
 
-      public addToResourcePolicy(_statement: iam.PolicyStatement) {
+      public addToResourcePolicy(_statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
         // dropped
+        return { statementAdded: false };
       }
     }
 
@@ -358,8 +367,9 @@ export class Repository extends RepositoryBase {
       public repositoryName = repositoryName;
       public repositoryArn = repositoryArn;
 
-      public addToResourcePolicy(_statement: iam.PolicyStatement): void {
+      public addToResourcePolicy(_statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
         // dropped
+        return { statementAdded: false };
       }
     }
 
@@ -371,8 +381,9 @@ export class Repository extends RepositoryBase {
       public repositoryName = repositoryName;
       public repositoryArn = Repository.arnForLocalRepository(repositoryName, scope);
 
-      public addToResourcePolicy(_statement: iam.PolicyStatement): void {
+      public addToResourcePolicy(_statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
         // dropped
+        return { statementAdded: false };
       }
     }
 
@@ -383,11 +394,12 @@ export class Repository extends RepositoryBase {
    * Returns an ECR ARN for a repository that resides in the same account/region
    * as the current stack.
    */
-  public static arnForLocalRepository(repositoryName: string, scope: IConstruct): string {
+  public static arnForLocalRepository(repositoryName: string, scope: IConstruct, account?: string): string {
     return Stack.of(scope).formatArn({
+      account,
       service: 'ecr',
       resource: 'repository',
-      resourceName: repositoryName
+      resourceName: repositoryName,
     });
   }
 
@@ -422,13 +434,50 @@ export class Repository extends RepositoryBase {
       resource: 'repository',
       resourceName: this.physicalName,
     });
+
+    // image scanOnPush
+    if (props.imageScanOnPush) {
+      new cr.AwsCustomResource(this, 'ImageScanOnPush', {
+        resourceType: 'Custom::ECRImageScanOnPush',
+        onUpdate: {
+          service: 'ECR',
+          action: 'putImageScanningConfiguration',
+          parameters: {
+            repositoryName: this.repositoryName,
+            imageScanningConfiguration: {
+              scanOnPush: props.imageScanOnPush,
+            },
+          },
+          physicalResourceId: cr.PhysicalResourceId.of(this.repositoryArn),
+        },
+        onDelete: {
+          service: 'ECR',
+          action: 'putImageScanningConfiguration',
+          parameters: {
+            repositoryName: this.repositoryName,
+            imageScanningConfiguration: {
+              scanOnPush: false,
+            },
+          },
+          physicalResourceId: cr.PhysicalResourceId.of(this.repositoryArn),
+        },
+        policy: cr.AwsCustomResourcePolicy.fromSdkCalls({ resources: [this.repositoryArn] }),
+      });
+    }
   }
 
-  public addToResourcePolicy(statement: iam.PolicyStatement) {
+  public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
     if (this.policyDocument === undefined) {
       this.policyDocument = new iam.PolicyDocument();
     }
     this.policyDocument.addStatements(statement);
+    return { statementAdded: false, policyDependable: this.policyDocument };
+  }
+
+  protected validate(): string[] {
+    const errors = super.validate();
+    errors.push(...this.policyDocument?.validateForResourcePolicy() || []);
+    return errors;
   }
 
   /**
@@ -504,7 +553,7 @@ export class Repository extends RepositoryBase {
     for (const rule of prioritizedRules.concat(autoPrioritizedRules).concat(anyRules)) {
       ret.push({
         ...rule,
-        rulePriority: rule.rulePriority !== undefined ? rule.rulePriority : autoPrio++
+        rulePriority: rule.rulePriority !== undefined ? rule.rulePriority : autoPrio++,
       });
     }
 
@@ -539,8 +588,8 @@ function renderLifecycleRule(rule: LifecycleRule) {
       countUnit: rule.maxImageAge !== undefined ? 'days' : undefined,
     },
     action: {
-      type: 'expire'
-    }
+      type: 'expire',
+    },
   };
 }
 

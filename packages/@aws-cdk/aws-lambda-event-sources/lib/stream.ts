@@ -98,7 +98,7 @@ export abstract class StreamEventSource implements lambda.IEventSource {
       maxRecordAge: this.props.maxRecordAge,
       retryAttempts: this.props.retryAttempts,
       parallelizationFactor: this.props.parallelizationFactor,
-      onFailure: this.props.onFailure
+      onFailure: this.props.onFailure,
     };
   }
 }

@@ -1,16 +1,14 @@
-import * as cloudformation from '@aws-cdk/aws-cloudformation';
+import * as crypto from 'crypto';
+import * as fs from 'fs';
+import * as path from 'path';
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
-import * as crypto from 'crypto';
-import * as fs from 'fs';
-import * as path from 'path';
-import { ISource, SourceConfig } from "./source";
+import { ISource, SourceConfig } from './source';
 
-const now = Date.now();
-const handlerCodeBundle = path.join(__dirname, "..", "lambda", "bundle.zip");
+const handlerCodeBundle = path.join(__dirname, '..', 'lambda', 'bundle.zip');
 const handlerSourceDirectory = path.join(__dirname, '..', 'lambda', 'src');
 
 export interface BucketDeploymentProps {
@@ -30,6 +28,16 @@ export interface BucketDeploymentProps {
    * @default "/" (unzip to root of the destination bucket)
    */
   readonly destinationKeyPrefix?: string;
+
+  /**
+   * If this is set to false, files in the destination bucket that
+   * do not exist in the asset, will NOT be deleted during deployment (create/update).
+   *
+   * @see https://docs.aws.amazon.com/cli/latest/reference/s3/sync.html
+   *
+   * @default true
+   */
+  readonly prune?: boolean
 
   /**
    * If this is set to "false", the destination files will be deleted when the
@@ -120,7 +128,7 @@ export interface BucketDeploymentProps {
    * @default - The objects in the distribution will not expire.
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
    */
-  readonly expires?: Expires;
+  readonly expires?: cdk.Expiration;
   /**
    * System-defined x-amz-server-side-encryption metadata to be set on all objects in the deployment.
    * @default - Server side encryption is not used.
@@ -159,24 +167,26 @@ export class BucketDeployment extends cdk.Construct {
     super(scope, id);
 
     if (props.distributionPaths && !props.distribution) {
-      throw new Error("Distribution must be specified if distribution paths are specified");
+      throw new Error('Distribution must be specified if distribution paths are specified');
     }
 
-    const sourceHash = calcSourceHash(handlerSourceDirectory);
+    const assetHash = calcSourceHash(handlerSourceDirectory);
 
     const handler = new lambda.SingletonFunction(this, 'CustomResourceHandler', {
       uuid: this.renderSingletonUuid(props.memoryLimit),
-      code: lambda.Code.fromAsset(handlerCodeBundle, { sourceHash }),
+      code: lambda.Code.fromAsset(handlerCodeBundle, { assetHash }),
       runtime: lambda.Runtime.PYTHON_3_6,
       handler: 'index.handler',
       lambdaPurpose: 'Custom::CDKBucketDeployment',
       timeout: cdk.Duration.minutes(15),
       role: props.role,
-      memorySize: props.memoryLimit
+      memorySize: props.memoryLimit,
     });
 
-    const sources: SourceConfig[] = props.sources.map((source: ISource) => source.bind(this));
-    sources.forEach(source => source.bucket.grantRead(handler));
+    const handlerRole = handler.role;
+    if (!handlerRole) { throw new Error('lambda.SingletonFunction should have created a Role'); }
+
+    const sources: SourceConfig[] = props.sources.map((source: ISource) => source.bind(this, { handlerRole }));
 
     props.destinationBucket.grantReadWrite(handler);
     if (props.distribution) {
@@ -187,8 +197,8 @@ export class BucketDeployment extends cdk.Construct {
       }));
     }
 
-    new cloudformation.CustomResource(this, 'CustomResource', {
-      provider: cloudformation.CustomResourceProvider.lambda(handler),
+    new cdk.CustomResource(this, 'CustomResource', {
+      serviceToken: handler.functionArn,
       resourceType: 'Custom::CDKBucketDeployment',
       properties: {
         SourceBucketNames: sources.map(source => source.bucket.bucketName),
@@ -196,12 +206,14 @@ export class BucketDeployment extends cdk.Construct {
         DestinationBucketName: props.destinationBucket.bucketName,
         DestinationBucketKeyPrefix: props.destinationKeyPrefix,
         RetainOnDelete: props.retainOnDelete,
+        Prune: props.prune ?? true,
         UserMetadata: props.metadata ? mapUserMetadata(props.metadata) : undefined,
         SystemMetadata: mapSystemMetadata(props),
         DistributionId: props.distribution ? props.distribution.distributionId : undefined,
-        DistributionPaths: props.distributionPaths
-      }
+        DistributionPaths: props.distributionPaths,
+      },
     });
+
   }
 
   private renderSingletonUuid(memoryLimit?: number) {
@@ -212,7 +224,7 @@ export class BucketDeployment extends cdk.Construct {
     // configurations since we have a singleton.
     if (memoryLimit) {
       if (cdk.Token.isUnresolved(memoryLimit)) {
-        throw new Error(`Can't use tokens when specifying "memoryLimit" since we use it to identify the singleton custom resource handler`);
+        throw new Error('Can\'t use tokens when specifying "memoryLimit" since we use it to identify the singleton custom resource handler');
       }
 
       uuid += `-${memoryLimit.toString()}MiB`;
@@ -247,7 +259,7 @@ function calcSourceHash(srcDir: string): string {
 
 function mapUserMetadata(metadata: UserDefinedObjectMetadata) {
   const mapKey = (key: string) =>
-    key.toLowerCase().startsWith("x-amzn-meta-")
+    key.toLowerCase().startsWith('x-amzn-meta-')
       ? key.toLowerCase()
       : `x-amzn-meta-${key.toLowerCase()}`;
 
@@ -257,17 +269,17 @@ function mapUserMetadata(metadata: UserDefinedObjectMetadata) {
 function mapSystemMetadata(metadata: BucketDeploymentProps) {
   const res: { [key: string]: string } = {};
 
-  if (metadata.cacheControl) { res["cache-control"] = metadata.cacheControl.map(c => c.value).join(", "); }
-  if (metadata.expires) { res.expires = metadata.expires.value; }
-  if (metadata.contentDisposition) { res["content-disposition"] = metadata.contentDisposition; }
-  if (metadata.contentEncoding) { res["content-encoding"] = metadata.contentEncoding; }
-  if (metadata.contentLanguage) { res["content-language"] = metadata.contentLanguage; }
-  if (metadata.contentType) { res["content-type"] = metadata.contentType; }
+  if (metadata.cacheControl) { res['cache-control'] = metadata.cacheControl.map(c => c.value).join(', '); }
+  if (metadata.expires) { res.expires = metadata.expires.date.toUTCString(); }
+  if (metadata.contentDisposition) { res['content-disposition'] = metadata.contentDisposition; }
+  if (metadata.contentEncoding) { res['content-encoding'] = metadata.contentEncoding; }
+  if (metadata.contentLanguage) { res['content-language'] = metadata.contentLanguage; }
+  if (metadata.contentType) { res['content-type'] = metadata.contentType; }
   if (metadata.serverSideEncryption) { res.sse = metadata.serverSideEncryption; }
-  if (metadata.storageClass) { res["storage-class"] = metadata.storageClass; }
-  if (metadata.websiteRedirectLocation) { res["website-redirect"] = metadata.websiteRedirectLocation; }
-  if (metadata.serverSideEncryptionAwsKmsKeyId) { res["sse-kms-key-id"] = metadata.serverSideEncryptionAwsKmsKeyId; }
-  if (metadata.serverSideEncryptionCustomerAlgorithm) { res["sse-c-copy-source"] = metadata.serverSideEncryptionCustomerAlgorithm; }
+  if (metadata.storageClass) { res['storage-class'] = metadata.storageClass; }
+  if (metadata.websiteRedirectLocation) { res['website-redirect'] = metadata.websiteRedirectLocation; }
+  if (metadata.serverSideEncryptionAwsKmsKeyId) { res['sse-kms-key-id'] = metadata.serverSideEncryptionAwsKmsKeyId; }
+  if (metadata.serverSideEncryptionCustomerAlgorithm) { res['sse-c-copy-source'] = metadata.serverSideEncryptionCustomerAlgorithm; }
 
   return Object.keys(res).length === 0 ? undefined : res;
 }
@@ -277,15 +289,15 @@ function mapSystemMetadata(metadata: BucketDeploymentProps) {
  * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
  */
 export class CacheControl {
-  public static mustRevalidate() { return new CacheControl("must-revalidate"); }
-  public static noCache() { return new CacheControl("no-cache"); }
-  public static noTransform() { return new CacheControl("no-transform"); }
-  public static setPublic() { return new CacheControl("public"); }
-  public static setPrivate() { return new CacheControl("private"); }
-  public static proxyRevalidate() { return new CacheControl("proxy-revalidate"); }
+  public static mustRevalidate() { return new CacheControl('must-revalidate'); }
+  public static noCache() { return new CacheControl('no-cache'); }
+  public static noTransform() { return new CacheControl('no-transform'); }
+  public static setPublic() { return new CacheControl('public'); }
+  public static setPrivate() { return new CacheControl('private'); }
+  public static proxyRevalidate() { return new CacheControl('proxy-revalidate'); }
   public static maxAge(t: cdk.Duration) { return new CacheControl(`max-age=${t.toSeconds()}`); }
-  public static sMaxAge(t: cdk.Duration) { return new CacheControl(`s-max-age=${t.toSeconds()}`); }
-  public static fromString(s: string) {  return new CacheControl(s); }
+  public static sMaxAge(t: cdk.Duration) { return new CacheControl(`s-maxage=${t.toSeconds()}`); }
+  public static fromString(s: string) { return new CacheControl(s); }
 
   private constructor(public readonly value: any) {}
 }
@@ -317,6 +329,8 @@ export enum StorageClass {
 /**
  * Used for HTTP expires header, which influences downstream caches. Does NOT influence deletion of the object.
  * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
+ *
+ * @deprecated use core.Expiration
  */
 export class Expires {
   /**
@@ -335,7 +349,7 @@ export class Expires {
    * Expire once the specified duration has passed since deployment time
    * @param t the duration to wait before expiring
    */
-  public static after(t: cdk.Duration) { return Expires.atDate(new Date(now + t.toMilliseconds())); }
+  public static after(t: cdk.Duration) { return Expires.atDate(new Date(Date.now() + t.toMilliseconds())); }
 
   public static fromString(s: string) { return new Expires(s); }
 

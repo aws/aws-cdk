@@ -11,7 +11,7 @@ class TestStack extends Stack {
     const vpc = new Vpc(this, 'VPC');
 
     new FlowLog(this, 'FlowLogsCW', {
-      resourceType: FlowLogResourceType.fromVpc(vpc)
+      resourceType: FlowLogResourceType.fromVpc(vpc),
     });
 
     vpc.addFlowLog('FlowLogsS3', {

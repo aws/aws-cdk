@@ -47,7 +47,7 @@ export = {
     const r = new CfnResource(stack, 'x'.repeat(256), { type: 'Resource' });
 
     // THEN
-    test.equals(stack.resolve(r.logicalId), 'x'.repeat(240) + `C7A139A2`);
+    test.equals(stack.resolve(r.logicalId), 'x'.repeat(240) + 'C7A139A2');
     test.done();
   },
 
@@ -112,9 +112,9 @@ export = {
     test.deepEqual(template, {
       Resources: {
         ParentChildHeyThere35220347: {
-          Type: 'AWS::TAAS::Thing'
-        }
-      }
+          Type: 'AWS::TAAS::Thing',
+        },
+      },
     });
 
     test.done();
@@ -148,8 +148,8 @@ export = {
   },
 
   'non-alphanumeric characters are removed from the human part of the logical ID'(test: Test) {
-    const val1 = logicalForElementInPath([ 'Foo-bar', 'B00m', 'Hello_World', '&&Horray Horray.' ]);
-    const val2 = logicalForElementInPath([ 'Foobar', 'B00m', 'HelloWorld', 'HorrayHorray' ]);
+    const val1 = logicalForElementInPath(['Foo-bar', 'B00m', 'Hello_World', '&&Horray Horray.']);
+    const val2 = logicalForElementInPath(['Foobar', 'B00m', 'HelloWorld', 'HorrayHorray']);
 
     // same human part, different hash
     test.deepEqual(val1, 'FoobarB00mHelloWorldHorrayHorray640E99FB');
@@ -158,7 +158,7 @@ export = {
   },
 
   'non-alphanumeric characters are removed even if the ID has only one component'(test: Test) {
-    const val1 = logicalForElementInPath([ 'Foo-bar' ]);
+    const val1 = logicalForElementInPath(['Foo-bar']);
 
     // same human part, different hash
     test.deepEqual(val1, 'Foobar');
@@ -218,9 +218,9 @@ export = {
         Construct2: {
           Type: 'R2',
           Properties: { ReferenceToR1: { Ref: 'NewName' } },
-          DependsOn: [ 'NewName' ]
-        }
-      }
+          DependsOn: ['NewName'],
+        },
+      },
     });
 
     test.done();
@@ -231,7 +231,7 @@ export = {
       protected allocateLogicalId(element: CfnElement): string {
         if (element.node.id === 'A') { return 'LogicalIdOfA'; }
         if (element.node.id === 'B') { return 'LogicalIdOfB'; }
-        throw new Error(`Invalid element ID`);
+        throw new Error('Invalid element ID');
       }
     }
 
@@ -250,11 +250,26 @@ export = {
       Resources: {
         LogicalIdOfA: { Type: 'Type::Of::A' },
         BoomBoomB: { Type: 'Type::Of::B' },
-        TheC: { Type: 'Type::Of::C' }
-      }
+        TheC: { Type: 'Type::Of::C' },
+      },
     });
     test.done();
-  }
+  },
+
+  'detects duplicate logical IDs in the same Stack caused by overrideLogicalId'(test: Test) {
+    const stack = new Stack();
+    const resource1 = new CfnResource(stack, 'A', { type: 'Type::Of::A' });
+    const resource2 = new CfnResource(stack, 'B', { type: 'Type::Of::B' });
+
+    resource1.overrideLogicalId('C');
+    resource2.overrideLogicalId('C');
+
+    test.throws(() => {
+      toCloudFormation(stack);
+    }, /section 'Resources' already contains 'C'/);
+
+    test.done();
+  },
 };
 
 function generateString(chars: number) {

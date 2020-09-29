@@ -45,38 +45,38 @@ class ClusterStack extends TestStack {
     // these resources upon creation or `kubectl delete` upon removal.
     this.cluster.addResource('hello-kubernetes',
       {
-        apiVersion: "v1",
-        kind: "Service",
-        metadata: { name: "hello-kubernetes" },
+        apiVersion: 'v1',
+        kind: 'Service',
+        metadata: { name: 'hello-kubernetes' },
         spec: {
-          type: "LoadBalancer",
-          ports: [ { port: 80, targetPort: 8080 } ],
-          selector: { app: "hello-kubernetes" }
-        }
+          type: 'LoadBalancer',
+          ports: [{ port: 80, targetPort: 8080 }],
+          selector: { app: 'hello-kubernetes' },
+        },
       },
       {
-        apiVersion: "apps/v1",
-        kind: "Deployment",
-        metadata: { name: "hello-kubernetes" },
+        apiVersion: 'apps/v1',
+        kind: 'Deployment',
+        metadata: { name: 'hello-kubernetes' },
         spec: {
           replicas: 1,
-          selector: { matchLabels: { app: "hello-kubernetes" } },
+          selector: { matchLabels: { app: 'hello-kubernetes' } },
           template: {
             metadata: {
-              labels: { app: "hello-kubernetes" }
+              labels: { app: 'hello-kubernetes' },
             },
             spec: {
               containers: [
                 {
-                  name: "hello-kubernetes",
-                  image: "paulbouwer/hello-kubernetes:1.5",
-                  ports: [ { containerPort: 8080 } ]
-                }
-              ]
-            }
-          }
-        }
-      }
+                  name: 'hello-kubernetes',
+                  image: 'paulbouwer/hello-kubernetes:1.5',
+                  ports: [{ containerPort: 8080 }],
+                },
+              ],
+            },
+          },
+        },
+      },
     );
     /// !hide
   }

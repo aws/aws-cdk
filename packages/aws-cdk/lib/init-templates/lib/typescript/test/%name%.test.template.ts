@@ -1,21 +1,15 @@
-import { expect as expectCDK, haveResource, SynthUtils } from '@aws-cdk/assert';
+import { expect as expectCDK, countResources } from '@aws-cdk/assert';
 import * as cdk from '@aws-cdk/core';
-import %name.PascalCased% = require('../lib/index');
+import * as %name.PascalCased% from '../lib/index';
 
-test('SQS Queue Created', () => {
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, "TestStack");
-    // WHEN
-    new %name.PascalCased%.%name.PascalCased%(stack, 'MyTestConstruct');
-    // THEN
-    expectCDK(stack).to(haveResource("AWS::SQS::Queue"));
-});
-
+/*
+ * Example test 
+ */
 test('SNS Topic Created', () => {
   const app = new cdk.App();
   const stack = new cdk.Stack(app, "TestStack");
   // WHEN
   new %name.PascalCased%.%name.PascalCased%(stack, 'MyTestConstruct');
   // THEN
-  expectCDK(stack).to(haveResource("AWS::SNS::Topic"));
+  expectCDK(stack).to(countResources("AWS::SNS::Topic",0));
 });

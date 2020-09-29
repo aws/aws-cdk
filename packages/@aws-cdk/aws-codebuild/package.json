@@ -1,7 +1,7 @@
 {
   "name": "@aws-cdk/aws-codebuild",
   "version": "0.0.0",
-  "description": "CDK Constructs for AWS CodeBuild",
+  "description": "The CDK Construct Library for AWS::CodeBuild",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
@@ -23,9 +23,14 @@
       },
       "python": {
         "distName": "aws-cdk.aws-codebuild",
-        "module": "aws_cdk.aws_codebuild"
+        "module": "aws_cdk.aws_codebuild",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",
@@ -69,8 +74,8 @@
     "@aws-cdk/assert": "0.0.0",
     "@aws-cdk/aws-sns": "0.0.0",
     "@aws-cdk/aws-sqs": "0.0.0",
-    "@types/nodeunit": "^0.0.30",
-    "aws-sdk": "^2.644.0",
+    "@types/nodeunit": "^0.0.31",
+    "aws-sdk": "^2.739.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
@@ -91,7 +96,8 @@
     "@aws-cdk/aws-s3-assets": "0.0.0",
     "@aws-cdk/aws-secretsmanager": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^2.0.0"
+    "@aws-cdk/region-info": "0.0.0",
+    "constructs": "^3.0.4"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -108,10 +114,11 @@
     "@aws-cdk/aws-s3-assets": "0.0.0",
     "@aws-cdk/aws-secretsmanager": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^2.0.0"
+    "@aws-cdk/region-info": "0.0.0",
+    "constructs": "^3.0.4"
   },
   "engines": {
-    "node": ">= 10.3.0"
+    "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "awslint": {
     "exclude": [
@@ -176,7 +183,6 @@
       "docs-public-apis:@aws-cdk/aws-codebuild.Source.gitHubEnterprise",
       "docs-public-apis:@aws-cdk/aws-codebuild.Source.s3",
       "docs-public-apis:@aws-cdk/aws-codebuild.StateChangeEvent.currentPhase",
-      "docs-public-apis:@aws-cdk/aws-codebuild.WindowsBuildImage.WIN_SERVER_CORE_2016_BASE",
       "docs-public-apis:@aws-cdk/aws-codebuild.WindowsBuildImage.fromDockerRegistry",
       "docs-public-apis:@aws-cdk/aws-codebuild.WindowsBuildImage.fromEcrRepository",
       "props-default-doc:@aws-cdk/aws-codebuild.ArtifactsProps.identifier",
@@ -214,5 +220,6 @@
   "stability": "stable",
   "awscdkio": {
     "announce": false
-  }
+  },
+  "maturity": "stable"
 }

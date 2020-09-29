@@ -5,7 +5,7 @@ import { Test } from 'nodeunit';
 import * as sources from '../lib';
 import { TestFunction } from './test-function';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
   'defaults'(test: Test) {
@@ -19,39 +19,39 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::IAM::Policy', {
-      "PolicyDocument": {
-        "Statement": [
+      'PolicyDocument': {
+        'Statement': [
           {
-            "Action": [
-              "sqs:ReceiveMessage",
-              "sqs:ChangeMessageVisibility",
-              "sqs:GetQueueUrl",
-              "sqs:DeleteMessage",
-              "sqs:GetQueueAttributes"
+            'Action': [
+              'sqs:ReceiveMessage',
+              'sqs:ChangeMessageVisibility',
+              'sqs:GetQueueUrl',
+              'sqs:DeleteMessage',
+              'sqs:GetQueueAttributes',
             ],
-            "Effect": "Allow",
-            "Resource": {
-              "Fn::GetAtt": [
-                "Q63C6E3AB",
-                "Arn"
-              ]
-            }
-          }
+            'Effect': 'Allow',
+            'Resource': {
+              'Fn::GetAtt': [
+                'Q63C6E3AB',
+                'Arn',
+              ],
+            },
+          },
         ],
-        "Version": "2012-10-17"
-      }
+        'Version': '2012-10-17',
+      },
     }));
 
     expect(stack).to(haveResource('AWS::Lambda::EventSourceMapping', {
-      "EventSourceArn": {
-        "Fn::GetAtt": [
-          "Q63C6E3AB",
-          "Arn"
-        ]
+      'EventSourceArn': {
+        'Fn::GetAtt': [
+          'Q63C6E3AB',
+          'Arn',
+        ],
       },
-      "FunctionName": {
-        "Ref": "Fn9270CBC0"
-      }
+      'FunctionName': {
+        'Ref': 'Fn9270CBC0',
+      },
     }));
 
     test.done();
@@ -65,21 +65,21 @@ export = {
 
     // WHEN
     fn.addEventSource(new sources.SqsEventSource(q, {
-      batchSize: 5
+      batchSize: 5,
     }));
 
     // THEN
     expect(stack).to(haveResource('AWS::Lambda::EventSourceMapping', {
-      "EventSourceArn": {
-        "Fn::GetAtt": [
-          "Q63C6E3AB",
-          "Arn"
-        ]
+      'EventSourceArn': {
+        'Fn::GetAtt': [
+          'Q63C6E3AB',
+          'Arn',
+        ],
       },
-      "FunctionName": {
-        "Ref": "Fn9270CBC0"
+      'FunctionName': {
+        'Ref': 'Fn9270CBC0',
       },
-      "BatchSize": 5
+      'BatchSize': 5,
     }));
 
     test.done();
@@ -93,7 +93,7 @@ export = {
 
     // WHEN/THEN
     test.throws(() => fn.addEventSource(new sources.SqsEventSource(q, {
-      batchSize: 0
+      batchSize: 0,
     })), /Maximum batch size must be between 1 and 10 inclusive \(given 0\)/);
 
     test.done();
@@ -107,7 +107,7 @@ export = {
 
     // WHEN/THEN
     test.throws(() => fn.addEventSource(new sources.SqsEventSource(q, {
-      batchSize: 11
+      batchSize: 11,
     })), /Maximum batch size must be between 1 and 10 inclusive \(given 11\)/);
 
     test.done();

@@ -65,14 +65,14 @@ export function diffTemplate(currentTemplate: { [key: string]: any }, newTemplat
 
   // Copy "replaced" states from `diffWithReplacements` to `theDiff`.
   diffWithReplacements.resources
-      .filter(r => isReplacement(r!.changeImpact))
-      .forEachDifference((logicalId, downstreamReplacement) => {
-    const resource = theDiff.resources.get(logicalId);
+    .filter(r => isReplacement(r!.changeImpact))
+    .forEachDifference((logicalId, downstreamReplacement) => {
+      const resource = theDiff.resources.get(logicalId);
 
-    if (resource.changeImpact !== downstreamReplacement.changeImpact) {
-      propagatePropertyReplacement(downstreamReplacement, resource);
-    }
-  });
+      if (resource.changeImpact !== downstreamReplacement.changeImpact) {
+        propagatePropertyReplacement(downstreamReplacement, resource);
+      }
+    });
 
   return theDiff;
 }

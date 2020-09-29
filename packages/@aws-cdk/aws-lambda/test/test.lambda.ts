@@ -1,14 +1,14 @@
-import { expect, haveResource, MatchStyle, ResourcePart } from '@aws-cdk/assert';
+import * as path from 'path';
+import { ABSENT, expect, haveResource, MatchStyle, ResourcePart, arrayWith, objectLike } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import * as path from 'path';
 import * as lambda from '../lib';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
   'default function'(test: Test) {
@@ -34,15 +34,15 @@ export = {
                 [{
                   Action: 'sts:AssumeRole',
                   Effect: 'Allow',
-                  Principal: { Service: "lambda.amazonaws.com" }
+                  Principal: { Service: 'lambda.amazonaws.com' },
                 }],
-              Version: '2012-10-17'
+              Version: '2012-10-17',
             },
             ManagedPolicyArns:
               // arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
-              // tslint:disable-next-line:max-line-length
+              // eslint-disable-next-line max-len
               [{ 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole']] }],
-          }
+          },
         },
         MyLambdaCCE802FB:
         {
@@ -52,11 +52,11 @@ export = {
             Code: { ZipFile: 'foo' },
             Handler: 'index.handler',
             Role: { 'Fn::GetAtt': ['MyLambdaServiceRole4539ECB6', 'Arn'] },
-            Runtime: 'nodejs10.x'
+            Runtime: 'nodejs10.x',
           },
-          DependsOn: ['MyLambdaServiceRole4539ECB6']
-        }
-      }
+          DependsOn: ['MyLambdaServiceRole4539ECB6'],
+        },
+      },
     });
     test.done();
   },
@@ -67,7 +67,7 @@ export = {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_10_X,
-      initialPolicy: [new iam.PolicyStatement({ actions: ["*"], resources: ["*"] })]
+      initialPolicy: [new iam.PolicyStatement({ actions: ['*'], resources: ['*'] })],
     });
     expect(stack).toMatch({
       Resources:
@@ -83,35 +83,35 @@ export = {
                 [{
                   Action: 'sts:AssumeRole',
                   Effect: 'Allow',
-                  Principal: { Service: "lambda.amazonaws.com" }
+                  Principal: { Service: 'lambda.amazonaws.com' },
                 }],
-              Version: '2012-10-17'
+              Version: '2012-10-17',
             },
             ManagedPolicyArns:
-              // tslint:disable-next-line:max-line-length
+              // eslint-disable-next-line max-len
               [{ 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole']] }],
-          }
+          },
         },
         MyLambdaServiceRoleDefaultPolicy5BBC6F68: {
-          Type: "AWS::IAM::Policy",
+          Type: 'AWS::IAM::Policy',
           Properties: {
             PolicyDocument: {
               Statement: [
                 {
-                  Action: "*",
-                  Effect: "Allow",
-                  Resource: "*"
-                }
+                  Action: '*',
+                  Effect: 'Allow',
+                  Resource: '*',
+                },
               ],
-              Version: "2012-10-17"
+              Version: '2012-10-17',
             },
-            PolicyName: "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
+            PolicyName: 'MyLambdaServiceRoleDefaultPolicy5BBC6F68',
             Roles: [
               {
-                Ref: "MyLambdaServiceRole4539ECB6"
-              }
-            ]
-          }
+                Ref: 'MyLambdaServiceRole4539ECB6',
+              },
+            ],
+          },
         },
         MyLambdaCCE802FB:
         {
@@ -121,11 +121,11 @@ export = {
             Code: { ZipFile: 'foo' },
             Handler: 'index.handler',
             Role: { 'Fn::GetAtt': ['MyLambdaServiceRole4539ECB6', 'Arn'] },
-            Runtime: 'nodejs10.x'
+            Runtime: 'nodejs10.x',
           },
-          DependsOn: ['MyLambdaServiceRoleDefaultPolicy5BBC6F68', 'MyLambdaServiceRole4539ECB6']
-        }
-      }
+          DependsOn: ['MyLambdaServiceRoleDefaultPolicy5BBC6F68', 'MyLambdaServiceRole4539ECB6'],
+        },
+      },
     });
     test.done();
 
@@ -136,7 +136,7 @@ export = {
     test.throws(() => new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'bar',
-      runtime: lambda.Runtime.DOTNET_CORE_2
+      runtime: lambda.Runtime.DOTNET_CORE_2,
     }));
     test.done();
   },
@@ -150,68 +150,68 @@ export = {
         action: 'lambda:*',
         principal: new iam.ServicePrincipal('s3.amazonaws.com'),
         sourceAccount: stack.account,
-        sourceArn: 'arn:aws:s3:::my_bucket'
+        sourceArn: 'arn:aws:s3:::my_bucket',
       });
 
       expect(stack).toMatch({
-        "Resources": {
-          "MyLambdaServiceRole4539ECB6": {
-            "Type": "AWS::IAM::Role",
-            "Properties": {
-              "AssumeRolePolicyDocument": {
-                "Statement": [
+        'Resources': {
+          'MyLambdaServiceRole4539ECB6': {
+            'Type': 'AWS::IAM::Role',
+            'Properties': {
+              'AssumeRolePolicyDocument': {
+                'Statement': [
                   {
-                    "Action": "sts:AssumeRole",
-                    "Effect": "Allow",
-                    "Principal": {
-                      "Service": "lambda.amazonaws.com"
-                    }
-                  }
+                    'Action': 'sts:AssumeRole',
+                    'Effect': 'Allow',
+                    'Principal': {
+                      'Service': 'lambda.amazonaws.com',
+                    },
+                  },
                 ],
-                "Version": "2012-10-17"
+                'Version': '2012-10-17',
               },
-              "ManagedPolicyArns":
-                // tslint:disable-next-line:max-line-length
+              'ManagedPolicyArns':
+                // eslint-disable-next-line max-len
                 [{ 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole']] }],
-            }
-          },
-          "MyLambdaCCE802FB": {
-            "Type": "AWS::Lambda::Function",
-            "Properties": {
-              "Code": {
-                "ZipFile": "foo"
-              },
-              "Handler": "bar",
-              "Role": {
-                "Fn::GetAtt": [
-                  "MyLambdaServiceRole4539ECB6",
-                  "Arn"
-                ]
-              },
-              "Runtime": "python2.7"
             },
-            "DependsOn": [
-              "MyLambdaServiceRole4539ECB6"
-            ]
           },
-          "MyLambdaS3Permission99D0EA08": {
-            "Type": "AWS::Lambda::Permission",
-            "Properties": {
-              "Action": "lambda:*",
-              "FunctionName": {
-                "Fn::GetAtt": [
-                  "MyLambdaCCE802FB",
-                  "Arn"
-                ]
+          'MyLambdaCCE802FB': {
+            'Type': 'AWS::Lambda::Function',
+            'Properties': {
+              'Code': {
+                'ZipFile': 'foo',
               },
-              "Principal": "s3.amazonaws.com",
-              "SourceAccount": {
-                "Ref": "AWS::AccountId"
+              'Handler': 'bar',
+              'Role': {
+                'Fn::GetAtt': [
+                  'MyLambdaServiceRole4539ECB6',
+                  'Arn',
+                ],
               },
-              "SourceArn": "arn:aws:s3:::my_bucket"
-            }
-          }
-        }
+              'Runtime': 'python2.7',
+            },
+            'DependsOn': [
+              'MyLambdaServiceRole4539ECB6',
+            ],
+          },
+          'MyLambdaS3Permission99D0EA08': {
+            'Type': 'AWS::Lambda::Permission',
+            'Properties': {
+              'Action': 'lambda:*',
+              'FunctionName': {
+                'Fn::GetAtt': [
+                  'MyLambdaCCE802FB',
+                  'Arn',
+                ],
+              },
+              'Principal': 's3.amazonaws.com',
+              'SourceAccount': {
+                'Ref': 'AWS::AccountId',
+              },
+              'SourceArn': 'arn:aws:s3:::my_bucket',
+            },
+          },
+        },
       });
 
       test.done();
@@ -237,7 +237,7 @@ export = {
       const role = new iam.Role(stack, 'SomeRole', {
         assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
       });
-      role.addToPolicy(new iam.PolicyStatement({ actions: ['confirm:itsthesame'] }));
+      role.addToPolicy(new iam.PolicyStatement({ actions: ['confirm:itsthesame'], resources: ['*'] }));
 
       // WHEN
       const fn = new lambda.Function(stack, 'Function', {
@@ -246,26 +246,26 @@ export = {
         handler: 'index.test',
         role,
         initialPolicy: [
-          new iam.PolicyStatement({ actions: ['inline:inline'] })
-        ]
+          new iam.PolicyStatement({ actions: ['inline:inline'], resources: ['*'] }),
+        ],
       });
 
-      fn.addToRolePolicy(new iam.PolicyStatement({ actions: ['explicit:explicit'] }));
+      fn.addToRolePolicy(new iam.PolicyStatement({ actions: ['explicit:explicit'], resources: ['*'] }));
 
       // THEN
       expect(stack).to(haveResource('AWS::IAM::Policy', {
-        "PolicyDocument": {
-          "Version": "2012-10-17",
-          "Statement": [
-            { "Action": "confirm:itsthesame", "Effect": "Allow" },
-            { "Action": "inline:inline", "Effect": "Allow" },
-            { "Action": "explicit:explicit", "Effect": "Allow" }
+        'PolicyDocument': {
+          'Version': '2012-10-17',
+          'Statement': [
+            { 'Action': 'confirm:itsthesame', 'Effect': 'Allow', 'Resource': '*' },
+            { 'Action': 'inline:inline', 'Effect': 'Allow', 'Resource': '*' },
+            { 'Action': 'explicit:explicit', 'Effect': 'Allow', 'Resource': '*' },
           ],
         },
       }));
 
       test.done();
-    }
+    },
   },
 
   'fromFunctionArn'(test: Test) {
@@ -277,12 +277,65 @@ export = {
 
     // Can call addPermission() but it won't do anything
     imported.addPermission('Hello', {
-      principal: new iam.ServicePrincipal('harry')
+      principal: new iam.ServicePrincipal('harry'),
     });
 
     // THEN
     test.deepEqual(imported.functionArn, 'arn:aws:lambda:us-east-1:123456789012:function:ProcessKinesisRecords');
     test.deepEqual(imported.functionName, 'ProcessKinesisRecords');
+    expect(stack2).notTo(haveResource('AWS::Lambda::Permission'));
+    test.done();
+  },
+
+  'imported Function w/ resolved account and function arn can addPermissions'(test: Test) {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Imports', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+    const stack2 = new cdk.Stack(app, 'imported', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+    new lambda.Function(stack, 'BaseFunction', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_10_X,
+    });
+
+    // WHEN
+    const iFunc = lambda.Function.fromFunctionAttributes(stack2, 'iFunc', {
+      functionArn: 'arn:aws:lambda:us-east-1:123456789012:function:BaseFunction',
+    });
+    iFunc.addPermission('iFunc', {
+      principal: new iam.ServicePrincipal('cloudformation.amazonaws.com'),
+    });
+
+    // THEN
+    expect(stack2).to(haveResource('AWS::Lambda::Permission'));
+    test.done();
+  },
+
+  'imported Function w/o account cannot addPermissions'(test: Test) {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Base');
+    const importedStack = new cdk.Stack(app, 'Imported');
+    new lambda.Function(stack, 'BaseFunction', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_10_X,
+    });
+
+    // WHEN
+    const iFunc = lambda.Function.fromFunctionAttributes(importedStack, 'iFunc', {
+      functionArn: 'arn:aws:lambda:us-east-1:123456789012:function:BaseFunction',
+    });
+    iFunc.addPermission('iFunc', {
+      principal: new iam.ServicePrincipal('cloudformation.amazonaws.com'),
+    });
+
+    // THEN
+    expect(importedStack).notTo(haveResource('AWS::Lambda::Permission'));
     test.done();
   },
 
@@ -292,30 +345,30 @@ export = {
     new lambda.Function(stack, 'MyLambda', {
       code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
       handler: 'index.handler',
-      runtime: lambda.Runtime.PYTHON_3_6
+      runtime: lambda.Runtime.PYTHON_3_6,
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::Lambda::Function', {
-      "Code": {
-        "S3Bucket": {
-          "Ref": "AssetParameters9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232S3Bucket1354C645"
+      'Code': {
+        'S3Bucket': {
+          'Ref': 'AssetParameters9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232S3Bucket1354C645',
         },
-        "S3Key": {
-          "Fn::Join": ["", [
-            { "Fn::Select": [0, { "Fn::Split": ["||", { "Ref": "AssetParameters9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232S3VersionKey5D873FAC" }] }] },
-            { "Fn::Select": [1, { "Fn::Split": ["||", { "Ref": "AssetParameters9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232S3VersionKey5D873FAC" }] }] },
-          ]]
-        }
+        'S3Key': {
+          'Fn::Join': ['', [
+            { 'Fn::Select': [0, { 'Fn::Split': ['||', { 'Ref': 'AssetParameters9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232S3VersionKey5D873FAC' }] }] },
+            { 'Fn::Select': [1, { 'Fn::Split': ['||', { 'Ref': 'AssetParameters9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232S3VersionKey5D873FAC' }] }] },
+          ]],
+        },
       },
-      "Handler": "index.handler",
-      "Role": {
-        "Fn::GetAtt": [
-          "MyLambdaServiceRole4539ECB6",
-          "Arn"
-        ]
+      'Handler': 'index.handler',
+      'Role': {
+        'Fn::GetAtt': [
+          'MyLambdaServiceRole4539ECB6',
+          'Arn',
+        ],
       },
-      "Runtime": "python3.6"
+      'Runtime': 'python3.6',
     }));
 
     test.done();
@@ -329,106 +382,106 @@ export = {
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_10_X,
       functionName: 'OneFunctionToRuleThemAll',
-      deadLetterQueueEnabled: true
+      deadLetterQueueEnabled: true,
     });
 
     expect(stack).toMatch(
       {
-        "Resources": {
-          "MyLambdaServiceRole4539ECB6": {
-            "Type": "AWS::IAM::Role",
-            "Properties": {
-              "AssumeRolePolicyDocument": {
-                "Statement": [
+        'Resources': {
+          'MyLambdaServiceRole4539ECB6': {
+            'Type': 'AWS::IAM::Role',
+            'Properties': {
+              'AssumeRolePolicyDocument': {
+                'Statement': [
                   {
-                    "Action": "sts:AssumeRole",
-                    "Effect": "Allow",
-                    "Principal": {
-                      "Service": "lambda.amazonaws.com"
-                    }
-                  }
+                    'Action': 'sts:AssumeRole',
+                    'Effect': 'Allow',
+                    'Principal': {
+                      'Service': 'lambda.amazonaws.com',
+                    },
+                  },
                 ],
-                "Version": "2012-10-17"
+                'Version': '2012-10-17',
               },
-              "ManagedPolicyArns": [
+              'ManagedPolicyArns': [
                 {
-                  "Fn::Join": [
-                    "",
+                  'Fn::Join': [
+                    '',
                     [
-                      "arn:",
+                      'arn:',
                       {
-                        "Ref": "AWS::Partition"
+                        'Ref': 'AWS::Partition',
                       },
-                      ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-                    ]
-                  ]
-                }
-              ]
-            }
-          },
-          "MyLambdaServiceRoleDefaultPolicy5BBC6F68": {
-            "Type": "AWS::IAM::Policy",
-            "Properties": {
-              "PolicyDocument": {
-                "Statement": [
-                  {
-                    "Action": "sqs:SendMessage",
-                    "Effect": "Allow",
-                    "Resource": {
-                      "Fn::GetAtt": [
-                        "MyLambdaDeadLetterQueue399EEA2D",
-                        "Arn"
-                      ]
-                    }
-                  }
-                ],
-                "Version": "2012-10-17"
-              },
-              "PolicyName": "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
-              "Roles": [
-                {
-                  "Ref": "MyLambdaServiceRole4539ECB6"
-                }
-              ]
-            }
-          },
-          "MyLambdaDeadLetterQueue399EEA2D": {
-            "Type": "AWS::SQS::Queue",
-            "Properties": {
-              "MessageRetentionPeriod": 1209600
-            }
-          },
-          "MyLambdaCCE802FB": {
-            "Type": "AWS::Lambda::Function",
-            "Properties": {
-              "Code": {
-                "ZipFile": "foo"
-              },
-              "Handler": "index.handler",
-              "Role": {
-                "Fn::GetAtt": [
-                  "MyLambdaServiceRole4539ECB6",
-                  "Arn"
-                ]
-              },
-              "Runtime": "nodejs10.x",
-              "DeadLetterConfig": {
-                "TargetArn": {
-                  "Fn::GetAtt": [
-                    "MyLambdaDeadLetterQueue399EEA2D",
-                    "Arn"
-                  ]
-                }
-              },
-              "FunctionName": "OneFunctionToRuleThemAll"
+                      ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole',
+                    ],
+                  ],
+                },
+              ],
             },
-            "DependsOn": [
-              "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
-              "MyLambdaServiceRole4539ECB6"
-            ]
-          }
-        }
-      }
+          },
+          'MyLambdaServiceRoleDefaultPolicy5BBC6F68': {
+            'Type': 'AWS::IAM::Policy',
+            'Properties': {
+              'PolicyDocument': {
+                'Statement': [
+                  {
+                    'Action': 'sqs:SendMessage',
+                    'Effect': 'Allow',
+                    'Resource': {
+                      'Fn::GetAtt': [
+                        'MyLambdaDeadLetterQueue399EEA2D',
+                        'Arn',
+                      ],
+                    },
+                  },
+                ],
+                'Version': '2012-10-17',
+              },
+              'PolicyName': 'MyLambdaServiceRoleDefaultPolicy5BBC6F68',
+              'Roles': [
+                {
+                  'Ref': 'MyLambdaServiceRole4539ECB6',
+                },
+              ],
+            },
+          },
+          'MyLambdaDeadLetterQueue399EEA2D': {
+            'Type': 'AWS::SQS::Queue',
+            'Properties': {
+              'MessageRetentionPeriod': 1209600,
+            },
+          },
+          'MyLambdaCCE802FB': {
+            'Type': 'AWS::Lambda::Function',
+            'Properties': {
+              'Code': {
+                'ZipFile': 'foo',
+              },
+              'Handler': 'index.handler',
+              'Role': {
+                'Fn::GetAtt': [
+                  'MyLambdaServiceRole4539ECB6',
+                  'Arn',
+                ],
+              },
+              'Runtime': 'nodejs10.x',
+              'DeadLetterConfig': {
+                'TargetArn': {
+                  'Fn::GetAtt': [
+                    'MyLambdaDeadLetterQueue399EEA2D',
+                    'Arn',
+                  ],
+                },
+              },
+              'FunctionName': 'OneFunctionToRuleThemAll',
+            },
+            'DependsOn': [
+              'MyLambdaServiceRoleDefaultPolicy5BBC6F68',
+              'MyLambdaServiceRole4539ECB6',
+            ],
+          },
+        },
+      },
     );
     test.done();
   },
@@ -445,100 +498,100 @@ export = {
 
     expect(stack).toMatch(
       {
-        "Resources": {
-          "MyLambdaServiceRole4539ECB6": {
-            "Type": "AWS::IAM::Role",
-            "Properties": {
-              "AssumeRolePolicyDocument": {
-                "Statement": [
+        'Resources': {
+          'MyLambdaServiceRole4539ECB6': {
+            'Type': 'AWS::IAM::Role',
+            'Properties': {
+              'AssumeRolePolicyDocument': {
+                'Statement': [
                   {
-                    "Action": "sts:AssumeRole",
-                    "Effect": "Allow",
-                    "Principal": {
-                      "Service": "lambda.amazonaws.com"
-                    }
-                  }
+                    'Action': 'sts:AssumeRole',
+                    'Effect': 'Allow',
+                    'Principal': {
+                      'Service': 'lambda.amazonaws.com',
+                    },
+                  },
                 ],
-                "Version": "2012-10-17"
+                'Version': '2012-10-17',
               },
-              "ManagedPolicyArns": [
+              'ManagedPolicyArns': [
                 {
-                  "Fn::Join": [
-                    "",
+                  'Fn::Join': [
+                    '',
                     [
-                      "arn:",
+                      'arn:',
                       {
-                        "Ref": "AWS::Partition"
+                        'Ref': 'AWS::Partition',
                       },
-                      ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-                    ]
-                  ]
-                }
-              ]
-            }
-          },
-          "MyLambdaServiceRoleDefaultPolicy5BBC6F68": {
-            "Type": "AWS::IAM::Policy",
-            "Properties": {
-              "PolicyDocument": {
-                "Statement": [
-                  {
-                    "Action": "sqs:SendMessage",
-                    "Effect": "Allow",
-                    "Resource": {
-                      "Fn::GetAtt": [
-                        "MyLambdaDeadLetterQueue399EEA2D",
-                        "Arn"
-                      ]
-                    }
-                  }
-                ],
-                "Version": "2012-10-17"
-              },
-              "PolicyName": "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
-              "Roles": [
-                {
-                  "Ref": "MyLambdaServiceRole4539ECB6"
-                }
-              ]
-            }
-          },
-          "MyLambdaDeadLetterQueue399EEA2D": {
-            "Type": "AWS::SQS::Queue",
-            "Properties": {
-              "MessageRetentionPeriod": 1209600
-            }
-          },
-          "MyLambdaCCE802FB": {
-            "Type": "AWS::Lambda::Function",
-            "Properties": {
-              "Code": {
-                "ZipFile": "foo"
-              },
-              "Handler": "index.handler",
-              "Role": {
-                "Fn::GetAtt": [
-                  "MyLambdaServiceRole4539ECB6",
-                  "Arn"
-                ]
-              },
-              "Runtime": "nodejs10.x",
-              "DeadLetterConfig": {
-                "TargetArn": {
-                  "Fn::GetAtt": [
-                    "MyLambdaDeadLetterQueue399EEA2D",
-                    "Arn"
-                  ]
-                }
-              }
+                      ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole',
+                    ],
+                  ],
+                },
+              ],
             },
-            "DependsOn": [
-              "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
-              "MyLambdaServiceRole4539ECB6"
-            ]
-          }
-        }
-      }
+          },
+          'MyLambdaServiceRoleDefaultPolicy5BBC6F68': {
+            'Type': 'AWS::IAM::Policy',
+            'Properties': {
+              'PolicyDocument': {
+                'Statement': [
+                  {
+                    'Action': 'sqs:SendMessage',
+                    'Effect': 'Allow',
+                    'Resource': {
+                      'Fn::GetAtt': [
+                        'MyLambdaDeadLetterQueue399EEA2D',
+                        'Arn',
+                      ],
+                    },
+                  },
+                ],
+                'Version': '2012-10-17',
+              },
+              'PolicyName': 'MyLambdaServiceRoleDefaultPolicy5BBC6F68',
+              'Roles': [
+                {
+                  'Ref': 'MyLambdaServiceRole4539ECB6',
+                },
+              ],
+            },
+          },
+          'MyLambdaDeadLetterQueue399EEA2D': {
+            'Type': 'AWS::SQS::Queue',
+            'Properties': {
+              'MessageRetentionPeriod': 1209600,
+            },
+          },
+          'MyLambdaCCE802FB': {
+            'Type': 'AWS::Lambda::Function',
+            'Properties': {
+              'Code': {
+                'ZipFile': 'foo',
+              },
+              'Handler': 'index.handler',
+              'Role': {
+                'Fn::GetAtt': [
+                  'MyLambdaServiceRole4539ECB6',
+                  'Arn',
+                ],
+              },
+              'Runtime': 'nodejs10.x',
+              'DeadLetterConfig': {
+                'TargetArn': {
+                  'Fn::GetAtt': [
+                    'MyLambdaDeadLetterQueue399EEA2D',
+                    'Arn',
+                  ],
+                },
+              },
+            },
+            'DependsOn': [
+              'MyLambdaServiceRoleDefaultPolicy5BBC6F68',
+              'MyLambdaServiceRole4539ECB6',
+            ],
+          },
+        },
+      },
     );
     test.done();
   },
@@ -555,59 +608,59 @@ export = {
 
     expect(stack).toMatch(
       {
-        "Resources": {
-          "MyLambdaServiceRole4539ECB6": {
-            "Type": "AWS::IAM::Role",
-            "Properties": {
-              "AssumeRolePolicyDocument": {
-                "Statement": [
+        'Resources': {
+          'MyLambdaServiceRole4539ECB6': {
+            'Type': 'AWS::IAM::Role',
+            'Properties': {
+              'AssumeRolePolicyDocument': {
+                'Statement': [
                   {
-                    "Action": "sts:AssumeRole",
-                    "Effect": "Allow",
-                    "Principal": {
-                      "Service": "lambda.amazonaws.com"
-                    }
-                  }
+                    'Action': 'sts:AssumeRole',
+                    'Effect': 'Allow',
+                    'Principal': {
+                      'Service': 'lambda.amazonaws.com',
+                    },
+                  },
                 ],
-                "Version": "2012-10-17"
+                'Version': '2012-10-17',
               },
-              "ManagedPolicyArns": [
+              'ManagedPolicyArns': [
                 {
-                  "Fn::Join": [
-                    "",
+                  'Fn::Join': [
+                    '',
                     [
-                      "arn:",
+                      'arn:',
                       {
-                        "Ref": "AWS::Partition"
+                        'Ref': 'AWS::Partition',
                       },
-                      ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-                    ]
-                  ]
-                }
-              ]
-            }
-          },
-          "MyLambdaCCE802FB": {
-            "Type": "AWS::Lambda::Function",
-            "Properties": {
-              "Code": {
-                "ZipFile": "foo"
-              },
-              "Handler": "index.handler",
-              "Role": {
-                "Fn::GetAtt": [
-                  "MyLambdaServiceRole4539ECB6",
-                  "Arn"
-                ]
-              },
-              "Runtime": "nodejs10.x"
+                      ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole',
+                    ],
+                  ],
+                },
+              ],
             },
-            "DependsOn": [
-              "MyLambdaServiceRole4539ECB6"
-            ]
-          }
-        }
-      }
+          },
+          'MyLambdaCCE802FB': {
+            'Type': 'AWS::Lambda::Function',
+            'Properties': {
+              'Code': {
+                'ZipFile': 'foo',
+              },
+              'Handler': 'index.handler',
+              'Role': {
+                'Fn::GetAtt': [
+                  'MyLambdaServiceRole4539ECB6',
+                  'Arn',
+                ],
+              },
+              'Runtime': 'nodejs10.x',
+            },
+            'DependsOn': [
+              'MyLambdaServiceRole4539ECB6',
+            ],
+          },
+        },
+      },
     );
     test.done();
   },
@@ -617,7 +670,7 @@ export = {
 
     const dlQueue = new sqs.Queue(stack, 'DeadLetterQueue', {
       queueName: 'MyLambda_DLQ',
-      retentionPeriod: cdk.Duration.days(14)
+      retentionPeriod: cdk.Duration.days(14),
     });
 
     new lambda.Function(stack, 'MyLambda', {
@@ -629,93 +682,93 @@ export = {
 
     expect(stack).toMatch(
       {
-        "Resources": {
-          "MyLambdaServiceRole4539ECB6": {
-            "Type": "AWS::IAM::Role",
-            "Properties": {
-              "AssumeRolePolicyDocument": {
-                "Statement": [
+        'Resources': {
+          'MyLambdaServiceRole4539ECB6': {
+            'Type': 'AWS::IAM::Role',
+            'Properties': {
+              'AssumeRolePolicyDocument': {
+                'Statement': [
                   {
-                    "Action": "sts:AssumeRole",
-                    "Effect": "Allow",
-                    "Principal": {
-                      "Service": "lambda.amazonaws.com"
-                    }
-                  }
+                    'Action': 'sts:AssumeRole',
+                    'Effect': 'Allow',
+                    'Principal': {
+                      'Service': 'lambda.amazonaws.com',
+                    },
+                  },
                 ],
-                "Version": "2012-10-17"
+                'Version': '2012-10-17',
               },
-              "ManagedPolicyArns": [
+              'ManagedPolicyArns': [
                 {
-                  "Fn::Join": [
-                    "",
+                  'Fn::Join': [
+                    '',
                     [
-                      "arn:",
+                      'arn:',
                       {
-                        "Ref": "AWS::Partition"
+                        'Ref': 'AWS::Partition',
                       },
-                      ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-                    ]
-                  ]
-                }
-              ]
-            }
-          },
-          "MyLambdaServiceRoleDefaultPolicy5BBC6F68": {
-            "Type": "AWS::IAM::Policy",
-            "Properties": {
-              "PolicyDocument": {
-                "Statement": [
-                  {
-                    "Action": "sqs:SendMessage",
-                    "Effect": "Allow",
-                    "Resource": {
-                      "Fn::GetAtt": [
-                        "DeadLetterQueue9F481546",
-                        "Arn"
-                      ]
-                    }
-                  }
-                ],
-                "Version": "2012-10-17"
-              },
-              "PolicyName": "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
-              "Roles": [
-                {
-                  "Ref": "MyLambdaServiceRole4539ECB6"
-                }
-              ]
-            }
-          },
-          "MyLambdaCCE802FB": {
-            "Type": "AWS::Lambda::Function",
-            "Properties": {
-              "Code": {
-                "ZipFile": "foo"
-              },
-              "Handler": "index.handler",
-              "Role": {
-                "Fn::GetAtt": [
-                  "MyLambdaServiceRole4539ECB6",
-                  "Arn"
-                ]
-              },
-              "Runtime": "nodejs10.x",
-              "DeadLetterConfig": {
-                "TargetArn": {
-                  "Fn::GetAtt": [
-                    "DeadLetterQueue9F481546",
-                    "Arn"
-                  ]
-                }
-              }
+                      ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole',
+                    ],
+                  ],
+                },
+              ],
             },
-            "DependsOn": [
-              "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
-              "MyLambdaServiceRole4539ECB6"
-            ]
-          }
-        }
+          },
+          'MyLambdaServiceRoleDefaultPolicy5BBC6F68': {
+            'Type': 'AWS::IAM::Policy',
+            'Properties': {
+              'PolicyDocument': {
+                'Statement': [
+                  {
+                    'Action': 'sqs:SendMessage',
+                    'Effect': 'Allow',
+                    'Resource': {
+                      'Fn::GetAtt': [
+                        'DeadLetterQueue9F481546',
+                        'Arn',
+                      ],
+                    },
+                  },
+                ],
+                'Version': '2012-10-17',
+              },
+              'PolicyName': 'MyLambdaServiceRoleDefaultPolicy5BBC6F68',
+              'Roles': [
+                {
+                  'Ref': 'MyLambdaServiceRole4539ECB6',
+                },
+              ],
+            },
+          },
+          'MyLambdaCCE802FB': {
+            'Type': 'AWS::Lambda::Function',
+            'Properties': {
+              'Code': {
+                'ZipFile': 'foo',
+              },
+              'Handler': 'index.handler',
+              'Role': {
+                'Fn::GetAtt': [
+                  'MyLambdaServiceRole4539ECB6',
+                  'Arn',
+                ],
+              },
+              'Runtime': 'nodejs10.x',
+              'DeadLetterConfig': {
+                'TargetArn': {
+                  'Fn::GetAtt': [
+                    'DeadLetterQueue9F481546',
+                    'Arn',
+                  ],
+                },
+              },
+            },
+            'DependsOn': [
+              'MyLambdaServiceRoleDefaultPolicy5BBC6F68',
+              'MyLambdaServiceRole4539ECB6',
+            ],
+          },
+        },
       }
       , MatchStyle.SUPERSET);
     test.done();
@@ -726,7 +779,7 @@ export = {
 
     const dlQueue = new sqs.Queue(stack, 'DeadLetterQueue', {
       queueName: 'MyLambda_DLQ',
-      retentionPeriod: cdk.Duration.days(14)
+      retentionPeriod: cdk.Duration.days(14),
     });
 
     new lambda.Function(stack, 'MyLambda', {
@@ -739,93 +792,93 @@ export = {
 
     expect(stack).toMatch(
       {
-        "Resources": {
-          "MyLambdaServiceRole4539ECB6": {
-            "Type": "AWS::IAM::Role",
-            "Properties": {
-              "AssumeRolePolicyDocument": {
-                "Statement": [
+        'Resources': {
+          'MyLambdaServiceRole4539ECB6': {
+            'Type': 'AWS::IAM::Role',
+            'Properties': {
+              'AssumeRolePolicyDocument': {
+                'Statement': [
                   {
-                    "Action": "sts:AssumeRole",
-                    "Effect": "Allow",
-                    "Principal": {
-                      "Service": "lambda.amazonaws.com"
-                    }
-                  }
+                    'Action': 'sts:AssumeRole',
+                    'Effect': 'Allow',
+                    'Principal': {
+                      'Service': 'lambda.amazonaws.com',
+                    },
+                  },
                 ],
-                "Version": "2012-10-17"
+                'Version': '2012-10-17',
               },
-              "ManagedPolicyArns": [
+              'ManagedPolicyArns': [
                 {
-                  "Fn::Join": [
-                    "",
+                  'Fn::Join': [
+                    '',
                     [
-                      "arn:",
+                      'arn:',
                       {
-                        "Ref": "AWS::Partition"
+                        'Ref': 'AWS::Partition',
                       },
-                      ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-                    ]
-                  ]
-                }
-              ]
-            }
-          },
-          "MyLambdaServiceRoleDefaultPolicy5BBC6F68": {
-            "Type": "AWS::IAM::Policy",
-            "Properties": {
-              "PolicyDocument": {
-                "Statement": [
-                  {
-                    "Action": "sqs:SendMessage",
-                    "Effect": "Allow",
-                    "Resource": {
-                      "Fn::GetAtt": [
-                        "DeadLetterQueue9F481546",
-                        "Arn"
-                      ]
-                    }
-                  }
-                ],
-                "Version": "2012-10-17"
-              },
-              "PolicyName": "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
-              "Roles": [
-                {
-                  "Ref": "MyLambdaServiceRole4539ECB6"
-                }
-              ]
-            }
-          },
-          "MyLambdaCCE802FB": {
-            "Type": "AWS::Lambda::Function",
-            "Properties": {
-              "Code": {
-                "ZipFile": "foo"
-              },
-              "Handler": "index.handler",
-              "Role": {
-                "Fn::GetAtt": [
-                  "MyLambdaServiceRole4539ECB6",
-                  "Arn"
-                ]
-              },
-              "Runtime": "nodejs10.x",
-              "DeadLetterConfig": {
-                "TargetArn": {
-                  "Fn::GetAtt": [
-                    "DeadLetterQueue9F481546",
-                    "Arn"
-                  ]
-                }
-              }
+                      ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole',
+                    ],
+                  ],
+                },
+              ],
             },
-            "DependsOn": [
-              "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
-              "MyLambdaServiceRole4539ECB6",
-            ]
-          }
-        }
+          },
+          'MyLambdaServiceRoleDefaultPolicy5BBC6F68': {
+            'Type': 'AWS::IAM::Policy',
+            'Properties': {
+              'PolicyDocument': {
+                'Statement': [
+                  {
+                    'Action': 'sqs:SendMessage',
+                    'Effect': 'Allow',
+                    'Resource': {
+                      'Fn::GetAtt': [
+                        'DeadLetterQueue9F481546',
+                        'Arn',
+                      ],
+                    },
+                  },
+                ],
+                'Version': '2012-10-17',
+              },
+              'PolicyName': 'MyLambdaServiceRoleDefaultPolicy5BBC6F68',
+              'Roles': [
+                {
+                  'Ref': 'MyLambdaServiceRole4539ECB6',
+                },
+              ],
+            },
+          },
+          'MyLambdaCCE802FB': {
+            'Type': 'AWS::Lambda::Function',
+            'Properties': {
+              'Code': {
+                'ZipFile': 'foo',
+              },
+              'Handler': 'index.handler',
+              'Role': {
+                'Fn::GetAtt': [
+                  'MyLambdaServiceRole4539ECB6',
+                  'Arn',
+                ],
+              },
+              'Runtime': 'nodejs10.x',
+              'DeadLetterConfig': {
+                'TargetArn': {
+                  'Fn::GetAtt': [
+                    'DeadLetterQueue9F481546',
+                    'Arn',
+                  ],
+                },
+              },
+            },
+            'DependsOn': [
+              'MyLambdaServiceRoleDefaultPolicy5BBC6F68',
+              'MyLambdaServiceRole4539ECB6',
+            ],
+          },
+        },
       }
       , MatchStyle.SUPERSET);
     test.done();
@@ -857,52 +910,52 @@ export = {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_10_X,
-      tracing: lambda.Tracing.ACTIVE
+      tracing: lambda.Tracing.ACTIVE,
     });
 
     expect(stack).to(haveResource('AWS::IAM::Policy', {
-      "PolicyDocument": {
-        "Statement": [
+      'PolicyDocument': {
+        'Statement': [
           {
-            "Action": [
-              "xray:PutTraceSegments",
-              "xray:PutTelemetryRecords"
+            'Action': [
+              'xray:PutTraceSegments',
+              'xray:PutTelemetryRecords',
             ],
-            "Effect": "Allow",
-            "Resource": "*"
-          }
+            'Effect': 'Allow',
+            'Resource': '*',
+          },
         ],
-        "Version": "2012-10-17"
+        'Version': '2012-10-17',
       },
-      "PolicyName": "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
-      "Roles": [
+      'PolicyName': 'MyLambdaServiceRoleDefaultPolicy5BBC6F68',
+      'Roles': [
         {
-          "Ref": "MyLambdaServiceRole4539ECB6"
-        }
-      ]
+          'Ref': 'MyLambdaServiceRole4539ECB6',
+        },
+      ],
     }));
 
     expect(stack).to(haveResource('AWS::Lambda::Function', {
-      "Properties": {
-        "Code": {
-          "ZipFile": "foo"
+      'Properties': {
+        'Code': {
+          'ZipFile': 'foo',
         },
-        "Handler": "index.handler",
-        "Role": {
-          "Fn::GetAtt": [
-            "MyLambdaServiceRole4539ECB6",
-            "Arn"
-          ]
+        'Handler': 'index.handler',
+        'Role': {
+          'Fn::GetAtt': [
+            'MyLambdaServiceRole4539ECB6',
+            'Arn',
+          ],
         },
-        "Runtime": "nodejs10.x",
-        "TracingConfig": {
-          "Mode": "Active"
-        }
+        'Runtime': 'nodejs10.x',
+        'TracingConfig': {
+          'Mode': 'Active',
+        },
       },
-      "DependsOn": [
-        "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
-        "MyLambdaServiceRole4539ECB6",
-      ]
+      'DependsOn': [
+        'MyLambdaServiceRoleDefaultPolicy5BBC6F68',
+        'MyLambdaServiceRole4539ECB6',
+      ],
     }, ResourcePart.CompleteDefinition));
 
     test.done();
@@ -915,52 +968,52 @@ export = {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_10_X,
-      tracing: lambda.Tracing.PASS_THROUGH
+      tracing: lambda.Tracing.PASS_THROUGH,
     });
 
     expect(stack).to(haveResource('AWS::IAM::Policy', {
-      "PolicyDocument": {
-        "Statement": [
+      'PolicyDocument': {
+        'Statement': [
           {
-            "Action": [
-              "xray:PutTraceSegments",
-              "xray:PutTelemetryRecords"
+            'Action': [
+              'xray:PutTraceSegments',
+              'xray:PutTelemetryRecords',
             ],
-            "Effect": "Allow",
-            "Resource": "*"
-          }
+            'Effect': 'Allow',
+            'Resource': '*',
+          },
         ],
-        "Version": "2012-10-17"
+        'Version': '2012-10-17',
       },
-      "PolicyName": "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
-      "Roles": [
+      'PolicyName': 'MyLambdaServiceRoleDefaultPolicy5BBC6F68',
+      'Roles': [
         {
-          "Ref": "MyLambdaServiceRole4539ECB6"
-        }
-      ]
+          'Ref': 'MyLambdaServiceRole4539ECB6',
+        },
+      ],
     }));
 
     expect(stack).to(haveResource('AWS::Lambda::Function', {
-      "Properties": {
-        "Code": {
-          "ZipFile": "foo"
+      'Properties': {
+        'Code': {
+          'ZipFile': 'foo',
         },
-        "Handler": "index.handler",
-        "Role": {
-          "Fn::GetAtt": [
-            "MyLambdaServiceRole4539ECB6",
-            "Arn"
-          ]
+        'Handler': 'index.handler',
+        'Role': {
+          'Fn::GetAtt': [
+            'MyLambdaServiceRole4539ECB6',
+            'Arn',
+          ],
         },
-        "Runtime": "nodejs10.x",
-        "TracingConfig": {
-          "Mode": "PassThrough"
-        }
+        'Runtime': 'nodejs10.x',
+        'TracingConfig': {
+          'Mode': 'PassThrough',
+        },
       },
-      "DependsOn": [
-        "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
-        "MyLambdaServiceRole4539ECB6",
-      ]
+      'DependsOn': [
+        'MyLambdaServiceRoleDefaultPolicy5BBC6F68',
+        'MyLambdaServiceRole4539ECB6',
+      ],
     }, ResourcePart.CompleteDefinition));
 
     test.done();
@@ -973,58 +1026,205 @@ export = {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_10_X,
-      tracing: lambda.Tracing.DISABLED
+      tracing: lambda.Tracing.DISABLED,
     });
 
     expect(stack).notTo(haveResource('AWS::IAM::Policy', {
-      "PolicyDocument": {
-        "Statement": [
+      'PolicyDocument': {
+        'Statement': [
           {
-            "Action": [
-              "xray:PutTraceSegments",
-              "xray:PutTelemetryRecords"
+            'Action': [
+              'xray:PutTraceSegments',
+              'xray:PutTelemetryRecords',
             ],
-            "Effect": "Allow",
-            "Resource": "*"
-          }
+            'Effect': 'Allow',
+            'Resource': '*',
+          },
         ],
-        "Version": "2012-10-17"
+        'Version': '2012-10-17',
       },
-      "PolicyName": "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
-      "Roles": [
+      'PolicyName': 'MyLambdaServiceRoleDefaultPolicy5BBC6F68',
+      'Roles': [
         {
-          "Ref": "MyLambdaServiceRole4539ECB6"
-        }
-      ]
+          'Ref': 'MyLambdaServiceRole4539ECB6',
+        },
+      ],
     }));
 
     expect(stack).to(haveResource('AWS::Lambda::Function', {
-      "Properties": {
-        "Code": {
-          "ZipFile": "foo"
+      'Properties': {
+        'Code': {
+          'ZipFile': 'foo',
         },
-        "Handler": "index.handler",
-        "Role": {
-          "Fn::GetAtt": [
-            "MyLambdaServiceRole4539ECB6",
-            "Arn"
-          ]
+        'Handler': 'index.handler',
+        'Role': {
+          'Fn::GetAtt': [
+            'MyLambdaServiceRole4539ECB6',
+            'Arn',
+          ],
         },
-        "Runtime": "nodejs10.x"
+        'Runtime': 'nodejs10.x',
       },
-      "DependsOn": [
-        "MyLambdaServiceRole4539ECB6"
-      ]
+      'DependsOn': [
+        'MyLambdaServiceRole4539ECB6',
+      ],
     }, ResourcePart.CompleteDefinition));
 
     test.done();
   },
 
-  'grantInvoke adds iam:InvokeFunction'(test: Test) {
+  'grantInvoke': {
+
+    'adds iam:InvokeFunction'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const role = new iam.Role(stack, 'Role', {
+        assumedBy: new iam.AccountPrincipal('1234'),
+      });
+      const fn = new lambda.Function(stack, 'Function', {
+        code: lambda.Code.fromInline('xxx'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_10_X,
+      });
+
+      // WHEN
+      fn.grantInvoke(role);
+
+      // THEN
+      expect(stack).to(haveResource('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Version: '2012-10-17',
+          Statement: [
+            {
+              Action: 'lambda:InvokeFunction',
+              Effect: 'Allow',
+              Resource: { 'Fn::GetAtt': ['Function76856677', 'Arn'] },
+            },
+          ],
+        },
+      }));
+
+      test.done();
+    },
+
+    'with a service principal'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new lambda.Function(stack, 'Function', {
+        code: lambda.Code.fromInline('xxx'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_10_X,
+      });
+      const service = new iam.ServicePrincipal('apigateway.amazonaws.com');
+
+      // WHEN
+      fn.grantInvoke(service);
+
+      // THEN
+      expect(stack).to(haveResource('AWS::Lambda::Permission', {
+        Action: 'lambda:InvokeFunction',
+        FunctionName: {
+          'Fn::GetAtt': [
+            'Function76856677',
+            'Arn',
+          ],
+        },
+        Principal: 'apigateway.amazonaws.com',
+      }));
+
+      test.done();
+    },
+
+    'with an account principal'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new lambda.Function(stack, 'Function', {
+        code: lambda.Code.fromInline('xxx'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_10_X,
+      });
+      const account = new iam.AccountPrincipal('123456789012');
+
+      // WHEN
+      fn.grantInvoke(account);
+
+      // THEN
+      expect(stack).to(haveResource('AWS::Lambda::Permission', {
+        Action: 'lambda:InvokeFunction',
+        FunctionName: {
+          'Fn::GetAtt': [
+            'Function76856677',
+            'Arn',
+          ],
+        },
+        Principal: '123456789012',
+      }));
+
+      test.done();
+    },
+
+    'with an arn principal'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new lambda.Function(stack, 'Function', {
+        code: lambda.Code.fromInline('xxx'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_10_X,
+      });
+      const account = new iam.ArnPrincipal('arn:aws:iam::123456789012:role/someRole');
+
+      // WHEN
+      fn.grantInvoke(account);
+
+      // THEN
+      expect(stack).to(haveResource('AWS::Lambda::Permission', {
+        Action: 'lambda:InvokeFunction',
+        FunctionName: {
+          'Fn::GetAtt': [
+            'Function76856677',
+            'Arn',
+          ],
+        },
+        Principal: 'arn:aws:iam::123456789012:role/someRole',
+      }));
+
+      test.done();
+    },
+
+    'can be called twice for the same service principal'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new lambda.Function(stack, 'Function', {
+        code: lambda.Code.fromInline('xxx'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_10_X,
+      });
+      const service = new iam.ServicePrincipal('elasticloadbalancing.amazonaws.com');
+
+      // WHEN
+      fn.grantInvoke(service);
+      fn.grantInvoke(service);
+
+      // THEN
+      expect(stack).to(haveResource('AWS::Lambda::Permission', {
+        Action: 'lambda:InvokeFunction',
+        FunctionName: {
+          'Fn::GetAtt': [
+            'Function76856677',
+            'Arn',
+          ],
+        },
+        Principal: 'elasticloadbalancing.amazonaws.com',
+      }));
+
+      test.done();
+    },
+  },
+
+  'grantInvoke with an imported role (in the same account)'(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack();
-    const role = new iam.Role(stack, 'Role', {
-      assumedBy: new iam.AccountPrincipal('1234'),
+    const stack = new cdk.Stack(undefined, undefined, {
+      env: { account: '123456789012' },
     });
     const fn = new lambda.Function(stack, 'Function', {
       code: lambda.Code.fromInline('xxx'),
@@ -1033,37 +1233,38 @@ export = {
     });
 
     // WHEN
-    fn.grantInvoke(role);
+    fn.grantInvoke(iam.Role.fromRoleArn(stack, 'ForeignRole', 'arn:aws:iam::123456789012:role/someRole'));
 
     // THEN
     expect(stack).to(haveResource('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Version: '2012-10-17',
-        Statement: [
+      PolicyDocument: objectLike({
+        Statement: arrayWith(
           {
             Action: 'lambda:InvokeFunction',
             Effect: 'Allow',
-            Resource: { "Fn::GetAtt": ["Function76856677", "Arn"] }
-          }
-        ]
-      }
+            Resource: { 'Fn::GetAtt': ['Function76856677', 'Arn'] },
+          },
+        ),
+      }),
+      Roles: ['someRole'],
     }));
 
     test.done();
   },
 
-  'grantInvoke with a service principal'(test: Test) {
+  'grantInvoke with an imported role (from a different account)'(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack();
+    const stack = new cdk.Stack(undefined, undefined, {
+      env: { account: '3333' },
+    });
     const fn = new lambda.Function(stack, 'Function', {
       code: lambda.Code.fromInline('xxx'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_10_X,
     });
-    const service = new iam.ServicePrincipal('apigateway.amazonaws.com');
 
     // WHEN
-    fn.grantInvoke(service);
+    fn.grantInvoke(iam.Role.fromRoleArn(stack, 'ForeignRole', 'arn:aws:iam::123456789012:role/someRole'));
 
     // THEN
     expect(stack).to(haveResource('AWS::Lambda::Permission', {
@@ -1071,66 +1272,10 @@ export = {
       FunctionName: {
         'Fn::GetAtt': [
           'Function76856677',
-          'Arn'
-        ]
+          'Arn',
+        ],
       },
-      Principal: 'apigateway.amazonaws.com'
-    }));
-
-    test.done();
-  },
-
-  'grantInvoke with an account principal'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const fn = new lambda.Function(stack, 'Function', {
-      code: lambda.Code.fromInline('xxx'),
-      handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
-    });
-    const account = new iam.AccountPrincipal('123456789012');
-
-    // WHEN
-    fn.grantInvoke(account);
-
-    // THEN
-    expect(stack).to(haveResource('AWS::Lambda::Permission', {
-      Action: 'lambda:InvokeFunction',
-      FunctionName: {
-        'Fn::GetAtt': [
-          'Function76856677',
-          'Arn'
-        ]
-      },
-      Principal: '123456789012'
-    }));
-
-    test.done();
-  },
-
-  'grantInvoke with an arn principal'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const fn = new lambda.Function(stack, 'Function', {
-      code: lambda.Code.fromInline('xxx'),
-      handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
-    });
-    const account = new iam.ArnPrincipal('arn:aws:iam::123456789012:role/someRole');
-
-    // WHEN
-    fn.grantInvoke(account);
-
-    // THEN
-    expect(stack).to(haveResource('AWS::Lambda::Permission', {
-      Action: 'lambda:InvokeFunction',
-      FunctionName: {
-        'Fn::GetAtt': [
-          'Function76856677',
-          'Arn'
-        ]
-      },
-      Principal: 'arn:aws:iam::123456789012:role/someRole'
+      Principal: 'arn:aws:iam::123456789012:role/someRole',
     }));
 
     test.done();
@@ -1195,9 +1340,9 @@ export = {
       layers: [layer],
       runtime: lambda.Runtime.NODEJS_10_X,
       code: lambda.Code.fromInline('exports.main = function() { console.log("DONE"); }'),
-      handler: 'index.main'
+      handler: 'index.main',
     }),
-      /nodejs10.x is not in \[nodejs12.x\]/);
+    /nodejs10.x is not in \[nodejs12.x\]/);
 
     test.done();
   },
@@ -1215,9 +1360,9 @@ export = {
       layers,
       runtime: lambda.Runtime.NODEJS_10_X,
       code: lambda.Code.fromInline('exports.main = function() { console.log("DONE"); }'),
-      handler: 'index.main'
+      handler: 'index.main',
     }),
-      /Unable to add layer:/);
+    /Unable to add layer:/);
 
     test.done();
   },
@@ -1232,17 +1377,17 @@ export = {
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS,
       environment: {
-        SOME: 'Variable'
-      }
+        SOME: 'Variable',
+      },
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::Lambda::Function', {
       Environment: {
         Variables: {
-          SOME: "Variable"
-        }
-      }
+          SOME: 'Variable',
+        },
+      },
     }));
 
     test.done();
@@ -1258,17 +1403,17 @@ export = {
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS,
       environment: {
-        SOME: 'Variable'
-      }
+        SOME: 'Variable',
+      },
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::Lambda::Function', {
       Environment: {
         Variables: {
-          SOME: "Variable"
-        }
-      }
+          SOME: 'Variable',
+        },
+      },
     }));
 
     test.done();
@@ -1282,7 +1427,7 @@ export = {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS,
-      reservedConcurrentExecutions: 10
+      reservedConcurrentExecutions: 10,
     });
 
     expect(stack).toMatch({
@@ -1299,15 +1444,15 @@ export = {
                 [{
                   Action: 'sts:AssumeRole',
                   Effect: 'Allow',
-                  Principal: { Service: "lambda.amazonaws.com" }
+                  Principal: { Service: 'lambda.amazonaws.com' },
                 }],
-              Version: '2012-10-17'
+              Version: '2012-10-17',
             },
             ManagedPolicyArns:
               // arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
-              // tslint:disable-next-line:max-line-length
+              // eslint-disable-next-line max-len
               [{ 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole']] }],
-          }
+          },
         },
         MyLambdaCCE802FB:
         {
@@ -1318,11 +1463,11 @@ export = {
             Handler: 'index.handler',
             ReservedConcurrentExecutions: 10,
             Role: { 'Fn::GetAtt': ['MyLambdaServiceRole4539ECB6', 'Arn'] },
-            Runtime: 'nodejs'
+            Runtime: 'nodejs',
           },
-          DependsOn: ['MyLambdaServiceRole4539ECB6']
-        }
-      }
+          DependsOn: ['MyLambdaServiceRole4539ECB6'],
+        },
+      },
     });
     test.done();
   },
@@ -1347,7 +1492,7 @@ export = {
       events: [
         new EventSource(),
         new EventSource(),
-      ]
+      ],
     });
 
     // THEN
@@ -1373,7 +1518,7 @@ export = {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS,
-      logRetention: logs.RetentionDays.ONE_MONTH
+      logRetention: logs.RetentionDays.ONE_MONTH,
     });
 
     // THEN
@@ -1384,12 +1529,12 @@ export = {
           [
             '/aws/lambda/',
             {
-              Ref: 'MyLambdaCCE802FB'
-            }
-          ]
-        ]
+              Ref: 'MyLambdaCCE802FB',
+            },
+          ],
+        ],
       },
-      'RetentionInDays': 30
+      'RetentionInDays': 30,
     }));
 
     test.done();
@@ -1433,25 +1578,25 @@ export = {
         bind: () => ({ destination: 'on-success-arn' }),
       },
       maxEventAge: cdk.Duration.hours(1),
-      retryAttempts: 0
+      retryAttempts: 0,
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::Lambda::EventInvokeConfig', {
       FunctionName: {
-        Ref: 'fn5FF616E3'
+        Ref: 'fn5FF616E3',
       },
       Qualifier: '$LATEST',
       DestinationConfig: {
         OnFailure: {
-          Destination: 'on-failure-arn'
+          Destination: 'on-failure-arn',
         },
         OnSuccess: {
-          Destination: 'on-success-arn'
+          Destination: 'on-success-arn',
         },
       },
       MaximumEventAgeInSeconds: 3600,
-      MaximumRetryAttempts: 0
+      MaximumRetryAttempts: 0,
     }));
 
     test.done();
@@ -1477,19 +1622,19 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = lambda.Function.fromFunctionAttributes(stack, 'fn', {
-      functionArn: 'arn:aws:lambda:us-east-1:123456789012:function:my-function'
+      functionArn: 'arn:aws:lambda:us-east-1:123456789012:function:my-function',
     });
 
     // WHEN
     fn.configureAsyncInvoke({
-      retryAttempts: 1
+      retryAttempts: 1,
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::Lambda::EventInvokeConfig', {
       FunctionName: 'my-function',
       Qualifier: '$LATEST',
-      MaximumRetryAttempts: 1
+      MaximumRetryAttempts: 1,
     }));
 
     test.done();
@@ -1506,31 +1651,71 @@ export = {
 
     // WHEN
     fn.addVersion('1', 'sha256', 'desc', undefined, {
-      retryAttempts: 0
+      retryAttempts: 0,
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::Lambda::EventInvokeConfig', {
       FunctionName: {
-        Ref: 'fn5FF616E3'
+        Ref: 'fn5FF616E3',
       },
       Qualifier: {
         'Fn::GetAtt': [
           'fnVersion197FA813F',
-          'Version'
-        ]
+          'Version',
+        ],
       },
-      MaximumRetryAttempts: 0
+      MaximumRetryAttempts: 0,
     }));
 
     test.done();
-  }
+  },
+
+  'check edge compatibility with env vars that can be removed'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'fn', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_12_X,
+    });
+    fn.addEnvironment('KEY', 'value', { removeInEdge: true });
+
+    // WHEN
+    fn._checkEdgeCompatibility();
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::Function', {
+      Environment: ABSENT,
+    }));
+
+    test.done();
+  },
+
+  'check edge compatibility with env vars that cannot be removed'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'fn', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_12_X,
+      environment: {
+        KEY: 'value',
+      },
+    });
+    fn.addEnvironment('OTHER_KEY', 'other_value', { removeInEdge: true });
+
+    // THEN
+    test.throws(() => fn._checkEdgeCompatibility(), /The function Default\/fn contains environment variables \[KEY\] and is not compatible with Lambda@Edge/);
+
+    test.done();
+  },
 };
 
 function newTestLambda(scope: cdk.Construct) {
   return new lambda.Function(scope, 'MyLambda', {
     code: new lambda.InlineCode('foo'),
     handler: 'bar',
-    runtime: lambda.Runtime.PYTHON_2_7
+    runtime: lambda.Runtime.PYTHON_2_7,
   });
 }

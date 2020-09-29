@@ -21,7 +21,7 @@ export class SpecName {
       return new SpecName(module, lastParts[0]);
     }
 
-    throw new Error("Not a CloudFormation resource name: " + cfnName);
+    throw new Error('Not a CloudFormation resource name: ' + cfnName);
   }
 
   constructor(readonly module: string, readonly resourceName: string) {
@@ -43,7 +43,7 @@ export class SpecName {
  */
 export class PropertyAttributeName extends SpecName {
   public static parse(cfnName: string): PropertyAttributeName {
-    if (cfnName === "Tag") {
+    if (cfnName === 'Tag') {
       // Crazy
       return new PropertyAttributeName('', '', 'Tag');
     }
@@ -58,7 +58,7 @@ export class PropertyAttributeName extends SpecName {
       return new PropertyAttributeName(module, lastParts[0], lastParts[1]);
     }
 
-    throw new Error("Not a recognized PropertyType name: " + cfnName);
+    throw new Error('Not a recognized PropertyType name: ' + cfnName);
   }
 
   constructor(module: string, resourceName: string, readonly propAttrName: string) {
@@ -66,7 +66,7 @@ export class PropertyAttributeName extends SpecName {
   }
 
   public get fqn(): string {
-    return joinIf(super.fqn, '.',  this.propAttrName);
+    return joinIf(super.fqn, '.', this.propAttrName);
   }
 }
 
@@ -78,7 +78,7 @@ export function itemTypeNames(spec: schema.CollectionProperty): string[] {
 }
 
 function complexItemTypeNames(spec: schema.CollectionProperty): string[] {
-  if (schema.isComplexListProperty(spec) || schema.isComplexMapProperty(spec)) {
+  if (schema.isComplexListProperty(spec) || schema.isMapOfStructsProperty(spec)) {
     return [spec.ItemType];
   } else if (schema.isUnionProperty(spec)) {
     return spec.ItemTypes || [];
@@ -87,7 +87,9 @@ function complexItemTypeNames(spec: schema.CollectionProperty): string[] {
 }
 
 function primitiveItemTypeNames(spec: schema.CollectionProperty): string[] {
-  if (schema.isPrimitiveListProperty(spec) || schema.isPrimitiveMapProperty(spec)) {
+  if (schema.isMapOfListsOfPrimitivesProperty(spec)) {
+    return [`${spec.PrimitiveItemItemType}[]`]; // <--- read in specTypeToCodeType()
+  } else if (schema.isPrimitiveListProperty(spec) || schema.isPrimitiveMapProperty(spec)) {
     return [spec.PrimitiveItemType];
   } else if (schema.isUnionProperty(spec)) {
     return spec.PrimitiveItemTypes || [];

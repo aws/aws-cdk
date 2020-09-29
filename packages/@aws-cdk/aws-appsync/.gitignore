@@ -2,7 +2,6 @@
 *.js.map
 *.d.ts
 tsconfig.json
-tslint.json
 node_modules
 *.generated.ts
 dist
@@ -14,3 +13,8 @@ coverage
 nyc.config.js
 .LAST_PACKAGE
 *.snk
+!.eslintrc.js
+!jest.config.js
+
+!test/verify/*.js
+junit.xml

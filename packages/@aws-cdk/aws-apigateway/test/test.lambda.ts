@@ -12,7 +12,7 @@ export = {
     const handler = new lambda.Function(stack, 'Handler', {
       runtime: lambda.Runtime.PYTHON_2_7,
       handler: 'boom',
-      code: lambda.Code.fromInline('foo')
+      code: lambda.Code.fromInline('foo'),
     });
 
     // WHEN
@@ -22,32 +22,32 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::Method', {
       Integration: {
-        IntegrationHttpMethod: "POST",
-        Type: "AWS_PROXY",
+        IntegrationHttpMethod: 'POST',
+        Type: 'AWS_PROXY',
         Uri: {
-          "Fn::Join": [
-            "",
+          'Fn::Join': [
+            '',
             [
-              "arn:",
+              'arn:',
               {
-              Ref: "AWS::Partition"
+                Ref: 'AWS::Partition',
               },
-              ":apigateway:",
+              ':apigateway:',
               {
-              Ref: "AWS::Region"
+                Ref: 'AWS::Region',
               },
-              ":lambda:path/2015-03-31/functions/",
+              ':lambda:path/2015-03-31/functions/',
               {
-                "Fn::GetAtt": [
-                  "Handler886CB40B",
-                  "Arn"
-                ]
+                'Fn::GetAtt': [
+                  'Handler886CB40B',
+                  'Arn',
+                ],
               },
-              "/invocations"
-            ]
-          ]
-        }
-      }
+              '/invocations',
+            ],
+          ],
+        },
+      },
     }));
     test.done();
   },
@@ -58,7 +58,7 @@ export = {
     const fn = new lambda.Function(stack, 'Handler', {
       runtime: lambda.Runtime.NODEJS_10_X,
       code: lambda.Code.fromInline('foo'),
-      handler: 'index.handler'
+      handler: 'index.handler',
     });
 
     const api = new apigateway.RestApi(stack, 'api');
@@ -70,33 +70,33 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::Lambda::Permission', {
       SourceArn: {
-        "Fn::Join": [
-          "",
+        'Fn::Join': [
+          '',
           [
-            "arn:", { Ref: "AWS::Partition" }, ":execute-api:", { Ref: "AWS::Region" }, ":", { Ref: "AWS::AccountId" }, ":",
-            { Ref: "apiC8550315" }, "/", { Ref: "apiDeploymentStageprod896C8101" }, "/GET/"
-          ]
-        ]
-      }
+            'arn:', { Ref: 'AWS::Partition' }, ':execute-api:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':',
+            { Ref: 'apiC8550315' }, '/', { Ref: 'apiDeploymentStageprod896C8101' }, '/GET/',
+          ],
+        ],
+      },
     }));
 
     expect(stack).to(not(haveResource('AWS::Lambda::Permission', {
       SourceArn: {
-        "Fn::Join": [
-          "",
+        'Fn::Join': [
+          '',
           [
-          "arn:",
-          { Ref: "AWS::Partition" },
-          ":execute-api:",
-          { Ref: "AWS::Region" },
-          ":",
-          { Ref: "AWS::AccountId" },
-          ":",
-          { Ref: "apiC8550315" },
-          "/test-invoke-stage/GET/"
-          ]
-        ]
-      }
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':execute-api:',
+            { Ref: 'AWS::Region' },
+            ':',
+            { Ref: 'AWS::AccountId' },
+            ':',
+            { Ref: 'apiC8550315' },
+            '/test-invoke-stage/GET/',
+          ],
+        ],
+      },
     })));
 
     test.done();
@@ -108,7 +108,7 @@ export = {
     const fn = new lambda.Function(stack, 'Handler', {
       runtime: lambda.Runtime.NODEJS_10_X,
       code: lambda.Code.fromInline('foo'),
-      handler: 'index.handler'
+      handler: 'index.handler',
     });
 
     const api = new apigateway.RestApi(stack, 'api');
@@ -120,8 +120,8 @@ export = {
     // THEN
     expect(stack).to(haveResourceLike('AWS::ApiGateway::Method', {
       Integration: {
-        Type: 'AWS'
-      }
+        Type: 'AWS',
+      },
     }));
 
     test.done();
@@ -134,7 +134,7 @@ export = {
     const handler = new lambda.Function(stack, 'MyFunc', {
       runtime: lambda.Runtime.NODEJS_10_X,
       handler: 'index.handler',
-      code: lambda.Code.fromInline(`loo`)
+      code: lambda.Code.fromInline('loo'),
     });
 
     const target = new apigateway.LambdaIntegration(handler);
@@ -143,52 +143,139 @@ export = {
 
     expect(stack).to(haveResource('AWS::Lambda::Permission', {
       SourceArn: {
-        "Fn::Join": [
-          "",
+        'Fn::Join': [
+          '',
           [
-          "arn:",
-          { Ref: "AWS::Partition" },
-          ":execute-api:",
-          { Ref: "AWS::Region" },
-          ":",
-          { Ref: "AWS::AccountId" },
-          ":",
-          { Ref: "testapiD6451F70" },
-          "/test-invoke-stage/*/"
-          ]
-        ]
-        }
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':execute-api:',
+            { Ref: 'AWS::Region' },
+            ':',
+            { Ref: 'AWS::AccountId' },
+            ':',
+            { Ref: 'testapiD6451F70' },
+            '/test-invoke-stage/*/',
+          ],
+        ],
+      },
     }));
 
     expect(stack).to(haveResource('AWS::Lambda::Permission', {
       SourceArn: {
-        "Fn::Join": [
-          "",
+        'Fn::Join': [
+          '',
           [
-            "arn:",
+            'arn:',
             {
-              Ref: "AWS::Partition"
+              Ref: 'AWS::Partition',
             },
-            ":execute-api:",
+            ':execute-api:',
             {
-              Ref: "AWS::Region"
+              Ref: 'AWS::Region',
             },
-            ":",
+            ':',
             {
-              Ref: "AWS::AccountId"
+              Ref: 'AWS::AccountId',
             },
-            ":",
+            ':',
             {
-              Ref: "testapiD6451F70"
+              Ref: 'testapiD6451F70',
             },
-            "/",
-            { Ref: "testapiDeploymentStageprod5C9E92A4" },
-            "/*/"
-          ]
-        ]
-      }
+            '/',
+            { Ref: 'testapiDeploymentStageprod5C9E92A4' },
+            '/*/',
+          ],
+        ],
+      },
     }));
 
     test.done();
-  }
+  },
+
+  'works for imported RestApi'(test: Test) {
+    const stack = new cdk.Stack();
+    const api = apigateway.RestApi.fromRestApiAttributes(stack, 'RestApi', {
+      restApiId: 'imported-rest-api-id',
+      rootResourceId: 'imported-root-resource-id',
+    });
+
+    const handler = new lambda.Function(stack, 'MyFunc', {
+      runtime: lambda.Runtime.NODEJS_10_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('loo'),
+    });
+
+    api.root.addMethod('ANY', new apigateway.LambdaIntegration(handler));
+
+    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+      RestApiId: 'imported-rest-api-id',
+      ResourceId: 'imported-root-resource-id',
+      HttpMethod: 'ANY',
+    }));
+
+    test.done();
+  },
+
+  'fingerprint is computed when functionName is specified'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const restapi = new apigateway.RestApi(stack, 'RestApi');
+    const method = restapi.root.addMethod('ANY');
+    const handler = new lambda.Function(stack, 'MyFunc', {
+      functionName: 'ThisFunction',
+      runtime: lambda.Runtime.NODEJS_10_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('loo'),
+    });
+    const integration = new apigateway.LambdaIntegration(handler);
+
+    // WHEN
+    const bindResult = integration.bind(method);
+
+    // THEN
+    test.ok(bindResult?.deploymentToken);
+    test.deepEqual(bindResult!.deploymentToken, '{"functionName":"ThisFunction"}');
+
+    test.done();
+  },
+
+  'fingerprint is not computed when functionName is not specified'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const restapi = new apigateway.RestApi(stack, 'RestApi');
+    const method = restapi.root.addMethod('ANY');
+    const handler = new lambda.Function(stack, 'MyFunc', {
+      runtime: lambda.Runtime.NODEJS_10_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('loo'),
+    });
+    const integration = new apigateway.LambdaIntegration(handler);
+
+    // WHEN
+    const bindResult = integration.bind(method);
+
+    // THEN
+    test.equals(bindResult?.deploymentToken, undefined);
+
+    test.done();
+  },
+
+  'bind works for integration with imported functions'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const restapi = new apigateway.RestApi(stack, 'RestApi');
+    const method = restapi.root.addMethod('ANY');
+    const handler = lambda.Function.fromFunctionArn(stack, 'MyFunc', 'arn:aws:lambda:region:account:function:myfunc');
+    const integration = new apigateway.LambdaIntegration(handler);
+
+    // WHEN
+    const bindResult = integration.bind(method);
+
+    // the deployment token should be defined since the function name
+    // should be a literal string.
+    test.equal(bindResult?.deploymentToken, JSON.stringify({ functionName: 'myfunc' }));
+
+    test.done();
+  },
+
 };

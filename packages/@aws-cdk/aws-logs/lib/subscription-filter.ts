@@ -60,7 +60,7 @@ export class SubscriptionFilter extends Resource {
       logGroupName: props.logGroup.logGroupName,
       destinationArn: destProps.arn,
       roleArn: destProps.role && destProps.role.roleArn,
-      filterPattern: props.filterPattern.logPatternString
+      filterPattern: props.filterPattern.logPatternString,
     });
   }
 }

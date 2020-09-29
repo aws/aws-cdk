@@ -1,4 +1,4 @@
-import { Duration } from "@aws-cdk/core";
+import { Duration } from '@aws-cdk/core';
 
 /**
  * Schedule for scheduled event rules
@@ -7,7 +7,7 @@ export abstract class Schedule {
   /**
    * Construct a schedule from a literal schedule expression
    *
-   * @param expression The expression to use. Must be in a format that Cloudwatch Events will recognize
+   * @param expression The expression to use. Must be in a format that EventBridge will recognize
    */
   public static expression(expression: string): Schedule {
     return new LiteralSchedule(expression);
@@ -32,7 +32,7 @@ export abstract class Schedule {
    */
   public static cron(options: CronOptions): Schedule {
     if (options.weekDay !== undefined && options.day !== undefined) {
-      throw new Error(`Cannot supply both 'day' and 'weekDay', use at most one`);
+      throw new Error('Cannot supply both \'day\' and \'weekDay\', use at most one');
     }
 
     const minute = fallback(options.minute, '*');
@@ -59,10 +59,10 @@ export abstract class Schedule {
 /**
  * Options to configure a cron expression
  *
- * All fields are strings so you can use complex expresions. Absence of
+ * All fields are strings so you can use complex expressions. Absence of
  * a field implies '*' or '?', whichever one is appropriate.
  *
- * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html#CronExpressions
+ * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/scheduled-events.html#cron-expressions
  */
 export interface CronOptions {
   /**

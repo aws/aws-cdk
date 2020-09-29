@@ -1,7 +1,7 @@
 {
   "name": "@aws-cdk/aws-kms",
   "version": "0.0.0",
-  "description": "CDK Constructs for AWS KMS",
+  "description": "The CDK Construct Library for AWS::KMS",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
@@ -23,9 +23,14 @@
       },
       "python": {
         "distName": "aws-cdk.aws-kms",
-        "module": "aws_cdk.aws_kms"
+        "module": "aws_cdk.aws_kms",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",
@@ -63,7 +68,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
-    "@types/nodeunit": "^0.0.30",
+    "@types/nodeunit": "^0.0.31",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
@@ -73,28 +78,25 @@
   "dependencies": {
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^2.0.0"
+    "constructs": "^3.0.4"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^2.0.0"
+    "constructs": "^3.0.4"
   },
   "engines": {
-    "node": ">= 10.3.0"
+    "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "awslint": {
     "exclude": [
-      "props-physical-name:@aws-cdk/aws-kms.KeyProps",
-      "docs-public-apis:@aws-cdk/aws-kms.Alias.fromAliasAttributes",
-      "docs-public-apis:@aws-cdk/aws-kms.AliasAttributes",
-      "docs-public-apis:@aws-cdk/aws-kms.AliasAttributes.aliasName",
-      "docs-public-apis:@aws-cdk/aws-kms.AliasAttributes.aliasTargetKey"
+      "props-physical-name:@aws-cdk/aws-kms.KeyProps"
     ]
   },
   "stability": "stable",
   "awscdkio": {
     "announce": false
-  }
+  },
+  "maturity": "stable"
 }

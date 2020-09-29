@@ -9,8 +9,8 @@ let stack1: Stack;
 let stack2: Stack;
 export = {
   'setUp'(cb: () => void) {
-    stack1 = new Stack(undefined, undefined, { env: { region: 'pluto', account: '1234' }});
-    stack2 = new Stack(undefined, undefined, { env: { region: 'mars', account: '5678' }});
+    stack1 = new Stack(undefined, undefined, { env: { region: 'pluto', account: '1234' } });
+    stack2 = new Stack(undefined, undefined, { env: { region: 'mars', account: '5678' } });
     cb();
   },
 
@@ -19,13 +19,13 @@ export = {
       // GIVEN
       const graph = new GraphWidget({
         left: [
-          a.attachTo(stack1)
+          a.attachTo(stack1),
         ],
       });
 
       // THEN
       graphMetricsAre(test, stack1, graph, [
-        [ 'Test', 'ACount' ],
+        ['Test', 'ACount'],
       ]);
 
       test.done();
@@ -35,13 +35,13 @@ export = {
       // GIVEN
       const graph = new GraphWidget({
         left: [
-          a.attachTo(stack1)
+          a.attachTo(stack1),
         ],
       });
 
       // THEN
       graphMetricsAre(test, stack2, graph, [
-        [ 'Test', 'ACount', { region: 'pluto', accountId: '1234' } ],
+        ['Test', 'ACount', { region: 'pluto', accountId: '1234' }],
       ]);
 
       test.done();
@@ -51,13 +51,13 @@ export = {
       // GIVEN
       const graph = new GraphWidget({
         left: [
-          a.with({ account: '1234', region: 'us-north-5' })
+          a.with({ account: '1234', region: 'us-north-5' }),
         ],
       });
 
       // THEN
       graphMetricsAre(test, new Stack(), graph, [
-        [ 'Test', 'ACount', { accountId: '1234', region: 'us-north-5' }],
+        ['Test', 'ACount', { accountId: '1234', region: 'us-north-5' }],
       ]);
 
       test.done();
@@ -73,7 +73,7 @@ export = {
 
       // THEN
       graphMetricsAre(test, new Stack(), graph, [
-        [ 'Test', 'ACount' ],
+        ['Test', 'ACount'],
       ]);
 
       test.done();
@@ -84,14 +84,15 @@ export = {
     'metric attached to stack1 will not render region and account in stack1'(test: Test) {
       // GIVEN
       new Alarm(stack1, 'Alarm', {
-        threshold: 1, evaluationPeriods: 1,
+        threshold: 1,
+        evaluationPeriods: 1,
         metric: a.attachTo(stack1),
       });
 
       // THEN
       expect(stack1).to(haveResourceLike('AWS::CloudWatch::Alarm', {
-        MetricName: "ACount",
-        Namespace: "Test",
+        MetricName: 'ACount',
+        Namespace: 'Test',
         Period: 300,
       }));
 
@@ -104,24 +105,28 @@ export = {
       // GIVEN
       test.throws(() => {
         new Alarm(stack2, 'Alarm', {
-          threshold: 1, evaluationPeriods: 1,
+          threshold: 1,
+          evaluationPeriods: 1,
           metric: a.attachTo(stack1),
         });
       }, /Cannot create an Alarm in region 'mars' based on metric 'ACount' in 'pluto'/);
 
       test.done();
     },
-  }
+  },
 };
 
 function graphMetricsAre(test: Test, stack: Stack, w: IWidget, metrics: any[]) {
-  test.deepEqual(stack.resolve(w.toJson()), [ {
+  test.deepEqual(stack.resolve(w.toJson()), [{
     type: 'metric',
     width: 6,
     height: 6,
     properties:
-    { view: 'timeSeries',
+    {
+      view: 'timeSeries',
       region: { Ref: 'AWS::Region' },
       metrics,
-      yAxis: {} } }]);
+      yAxis: {},
+    },
+  }]);
 }

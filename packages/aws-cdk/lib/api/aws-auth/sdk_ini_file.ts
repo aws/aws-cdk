@@ -5,10 +5,10 @@
  * region at runtime, but unfortunately it is private upstream.
  */
 
-import * as AWS from 'aws-sdk';
-import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as path from 'path';
+import * as AWS from 'aws-sdk';
+import * as fs from 'fs-extra';
 
 export interface SharedIniFileOptions {
   isConfig?: boolean;
@@ -39,7 +39,7 @@ export class SharedIniFile {
     return path.join(
       os.homedir(),
       '.aws',
-      this.isConfig ? 'config' : 'credentials'
+      this.isConfig ? 'config' : 'credentials',
     );
   }
 

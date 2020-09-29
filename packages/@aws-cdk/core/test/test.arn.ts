@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { ArnComponents, CfnOutput, ScopedAws, Stack } from '../lib';
+import { ArnComponents, Aws, CfnOutput, ScopedAws, Stack } from '../lib';
 import { Intrinsic } from '../lib/private/intrinsic';
 import { toCloudFormation } from './util';
 
@@ -9,13 +9,13 @@ export = {
 
     const arn = stack.formatArn({
       service: 'sqs',
-      resource: 'myqueuename'
+      resource: 'myqueuename',
     });
 
     const pseudo = new ScopedAws(stack);
 
     test.deepEqual(stack.resolve(arn),
-                   stack.resolve(`arn:${pseudo.partition}:sqs:${pseudo.region}:${pseudo.accountId}:myqueuename`));
+      stack.resolve(`arn:${pseudo.partition}:sqs:${pseudo.region}:${pseudo.accountId}:myqueuename`));
     test.done();
   },
 
@@ -28,11 +28,11 @@ export = {
       account: '123456789012',
       region: 'us-east-1',
       partition: 'aws-cn',
-      resourceName: 'mytable/stream/label'
+      resourceName: 'mytable/stream/label',
     });
 
     test.deepEqual(stack.resolve(arn),
-                   'arn:aws-cn:dynamodb:us-east-1:123456789012:table/mytable/stream/label');
+      'arn:aws-cn:dynamodb:us-east-1:123456789012:table/mytable/stream/label');
     test.done();
   },
 
@@ -48,7 +48,7 @@ export = {
     });
 
     test.deepEqual(stack.resolve(arn),
-                   'arn:aws-cn:s3:::my-bucket');
+      'arn:aws-cn:s3:::my-bucket');
 
     test.done();
   },
@@ -60,13 +60,13 @@ export = {
       service: 'codedeploy',
       resource: 'application',
       sep: ':',
-      resourceName: 'WordPress_App'
+      resourceName: 'WordPress_App',
     });
 
     const pseudo = new ScopedAws(stack);
 
     test.deepEqual(stack.resolve(arn),
-                   stack.resolve(`arn:${pseudo.partition}:codedeploy:${pseudo.region}:${pseudo.accountId}:application:WordPress_App`));
+      stack.resolve(`arn:${pseudo.partition}:codedeploy:${pseudo.region}:${pseudo.accountId}:application:WordPress_App`));
     test.done();
   },
 
@@ -77,13 +77,13 @@ export = {
       service: 'ssm',
       resource: 'parameter',
       sep: '',
-      resourceName: '/parameter-name'
+      resourceName: '/parameter-name',
     });
 
     const pseudo = new ScopedAws(stack);
 
     test.deepEqual(stack.resolve(arn),
-                   stack.resolve(`arn:${pseudo.partition}:ssm:${pseudo.region}:${pseudo.accountId}:parameter/parameter-name`));
+      stack.resolve(`arn:${pseudo.partition}:ssm:${pseudo.region}:${pseudo.accountId}:parameter/parameter-name`));
     test.done();
   },
 
@@ -93,16 +93,17 @@ export = {
     test.throws(() => stack.formatArn({
       service: 'foo',
       resource: 'bar',
-      sep: 'x' }));
+      sep: 'x',
+    }));
     test.done();
   },
 
   'Arn.parse(s)': {
 
-    'fails': {
+    fails: {
       'if doesn\'t start with "arn:"'(test: Test) {
         const stack = new Stack();
-        test.throws(() => stack.parseArn("barn:foo:x:a:1:2"), /ARNs must start with "arn:": barn:foo/);
+        test.throws(() => stack.parseArn('barn:foo:x:a:1:2'), /ARNs must start with "arn:": barn:foo/);
         test.done();
       },
 
@@ -122,7 +123,7 @@ export = {
         const stack = new Stack();
         test.throws(() => stack.parseArn('arn:aws:service:::'), /The `resource` component \(6th component\) is required/);
         test.done();
-      }
+      },
     },
 
     'various successful parses'(test: Test) {
@@ -135,7 +136,7 @@ export = {
           account: 'accountid',
           resource: 'resourcetype',
           resourceName: 'resource',
-          sep: '/'
+          sep: '/',
         },
         'arn:aws:apigateway:us-east-1::a123456789012bc3de45678901f23a45:/test/mydemoresource/*': {
           partition: 'aws',
@@ -144,7 +145,7 @@ export = {
           account: '',
           resource: 'a123456789012bc3de45678901f23a45',
           sep: ':',
-          resourceName: '/test/mydemoresource/*'
+          resourceName: '/test/mydemoresource/*',
         },
         'arn:aws-cn:cloud9::123456789012:environment:81e900317347585a0601e04c8d52eaEX': {
           partition: 'aws-cn',
@@ -153,7 +154,7 @@ export = {
           account: '123456789012',
           resource: 'environment',
           resourceName: '81e900317347585a0601e04c8d52eaEX',
-          sep: ':'
+          sep: ':',
         },
         'arn::cognito-sync:::identitypool/us-east-1:1a1a1a1a-ffff-1111-9999-12345678:bla': {
           service: 'cognito-sync',
@@ -161,15 +162,15 @@ export = {
           account: '',
           resource: 'identitypool',
           resourceName: 'us-east-1:1a1a1a1a-ffff-1111-9999-12345678:bla',
-          sep: '/'
+          sep: '/',
         },
         'arn:aws:s3:::my_corporate_bucket': {
           partition: 'aws',
           service: 's3',
           region: '',
           account: '',
-          resource: 'my_corporate_bucket'
-        }
+          resource: 'my_corporate_bucket',
+        },
       };
 
       Object.keys(tests).forEach(arn => {
@@ -185,12 +186,12 @@ export = {
       const theToken = { Ref: 'SomeParameter' };
       const parsed = stack.parseArn(new Intrinsic(theToken).toString(), ':');
 
-      test.deepEqual(stack.resolve(parsed.partition), { 'Fn::Select': [ 1, { 'Fn::Split': [ ':', theToken ]} ]});
-      test.deepEqual(stack.resolve(parsed.service), { 'Fn::Select': [ 2, { 'Fn::Split': [ ':', theToken ]} ]});
-      test.deepEqual(stack.resolve(parsed.region), { 'Fn::Select': [ 3, { 'Fn::Split': [ ':', theToken ]} ]});
-      test.deepEqual(stack.resolve(parsed.account), { 'Fn::Select': [ 4, { 'Fn::Split': [ ':', theToken ]} ]});
-      test.deepEqual(stack.resolve(parsed.resource), { 'Fn::Select': [ 5, { 'Fn::Split': [ ':', theToken ]} ]});
-      test.deepEqual(stack.resolve(parsed.resourceName), { 'Fn::Select': [ 6, { 'Fn::Split': [ ':', theToken ]} ]});
+      test.deepEqual(stack.resolve(parsed.partition), { 'Fn::Select': [1, { 'Fn::Split': [':', theToken] }] });
+      test.deepEqual(stack.resolve(parsed.service), { 'Fn::Select': [2, { 'Fn::Split': [':', theToken] }] });
+      test.deepEqual(stack.resolve(parsed.region), { 'Fn::Select': [3, { 'Fn::Split': [':', theToken] }] });
+      test.deepEqual(stack.resolve(parsed.account), { 'Fn::Select': [4, { 'Fn::Split': [':', theToken] }] });
+      test.deepEqual(stack.resolve(parsed.resource), { 'Fn::Select': [5, { 'Fn::Split': [':', theToken] }] });
+      test.deepEqual(stack.resolve(parsed.resourceName), { 'Fn::Select': [6, { 'Fn::Split': [':', theToken] }] });
       test.equal(parsed.sep, ':');
 
       test.done();
@@ -203,10 +204,10 @@ export = {
 
       test.equal(parsed.sep, '/');
 
-      // tslint:disable-next-line:max-line-length
-      test.deepEqual(stack.resolve(parsed.resource), { 'Fn::Select': [ 0, { 'Fn::Split': [ '/', { 'Fn::Select': [ 5, { 'Fn::Split': [ ':', theToken ]} ]} ]} ]});
-      // tslint:disable-next-line:max-line-length
-      test.deepEqual(stack.resolve(parsed.resourceName), { 'Fn::Select': [ 1, { 'Fn::Split': [ '/', { 'Fn::Select': [ 5, { 'Fn::Split': [ ':', theToken ]} ]} ]} ]});
+      // eslint-disable-next-line max-len
+      test.deepEqual(stack.resolve(parsed.resource), { 'Fn::Select': [0, { 'Fn::Split': ['/', { 'Fn::Select': [5, { 'Fn::Split': [':', theToken] }] }] }] });
+      // eslint-disable-next-line max-len
+      test.deepEqual(stack.resolve(parsed.resourceName), { 'Fn::Select': [1, { 'Fn::Split': ['/', { 'Fn::Select': [5, { 'Fn::Split': [':', theToken] }] }] }] });
 
       test.done();
     },
@@ -221,18 +222,18 @@ export = {
         account: '123456789012',
         resource: 'role',
         resourceName: 'abc123',
-        sep: '/'
+        sep: '/',
       };
 
       test.deepEqual(stack.parseArn(arn), expected, arn);
       test.done();
-    }
+    },
   },
 
   'can use a fully specified ARN from a different stack without incurring an import'(test: Test) {
     // GIVEN
-    const stack1 = new Stack(undefined, 'Stack1', { env: { account: '12345678', region: 'us-turbo-5' }});
-    const stack2 = new Stack(undefined, 'Stack2', { env: { account: '87654321', region: 'us-turbo-1' }});
+    const stack1 = new Stack(undefined, 'Stack1', { env: { account: '12345678', region: 'us-turbo-5' } });
+    const stack2 = new Stack(undefined, 'Stack2', { env: { account: '87654321', region: 'us-turbo-1' } });
 
     // WHEN
     const arn = stack1.formatArn({
@@ -249,10 +250,30 @@ export = {
         SomeValue: {
           Value: {
             // Look ma, no Fn::ImportValue!
-            'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':bla:us-turbo-5:12345678:thing/thong']] }
-        }
-      }
+            'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':bla:us-turbo-5:12345678:thing/thong']],
+          },
+        },
+      },
     });
+
+    test.done();
+  },
+
+  'parse other fields if only some are tokens'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const parsed = stack.parseArn(`arn:${Aws.PARTITION}:iam::123456789012:role/S3Access`);
+
+    // THEN
+    test.deepEqual(stack.resolve(parsed.partition), { Ref: 'AWS::Partition' });
+    test.deepEqual(stack.resolve(parsed.service), 'iam');
+    test.equal(stack.resolve(parsed.region), '');
+    test.deepEqual(stack.resolve(parsed.account), '123456789012');
+    test.deepEqual(stack.resolve(parsed.resource), 'role');
+    test.deepEqual(stack.resolve(parsed.resourceName), 'S3Access');
+    test.equal(parsed.sep, '/');
 
     test.done();
   },

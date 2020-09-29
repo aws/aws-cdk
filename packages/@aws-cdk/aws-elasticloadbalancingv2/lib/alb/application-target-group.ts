@@ -1,9 +1,9 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
-import { Construct, Duration, IConstruct } from '@aws-cdk/core';
+import { Annotations, Construct, Duration, IConstruct } from '@aws-cdk/core';
 import {
   BaseTargetGroupProps, ITargetGroup, loadBalancerNameFromListenerArn, LoadBalancerTargetProps,
-  TargetGroupAttributes, TargetGroupBase, TargetGroupImportProps
+  TargetGroupAttributes, TargetGroupBase, TargetGroupImportProps,
 } from '../shared/base-target-group';
 import { ApplicationProtocol, Protocol, TargetType } from '../shared/enums';
 import { ImportedTargetGroupBase } from '../shared/imported';
@@ -190,7 +190,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
         TargetGroup: this.targetGroupFullName,
         LoadBalancer: this.firstLoadBalancerFullName,
       },
-      ...props
+      ...props,
     }).attachTo(this);
   }
 
@@ -202,7 +202,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
   public metricIpv6RequestCount(props?: cloudwatch.MetricOptions) {
     return this.metric('IPv6RequestCount', {
       statistic: 'Sum',
-      ...props
+      ...props,
     });
   }
 
@@ -216,7 +216,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
   public metricRequestCount(props?: cloudwatch.MetricOptions) {
     return this.metric('RequestCount', {
       statistic: 'Sum',
-      ...props
+      ...props,
     });
   }
 
@@ -228,7 +228,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
   public metricHealthyHostCount(props?: cloudwatch.MetricOptions) {
     return this.metric('HealthyHostCount', {
       statistic: 'Average',
-      ...props
+      ...props,
     });
   }
 
@@ -240,7 +240,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
   public metricUnhealthyHostCount(props?: cloudwatch.MetricOptions) {
     return this.metric('UnHealthyHostCount', {
       statistic: 'Average',
-      ...props
+      ...props,
     });
   }
 
@@ -254,7 +254,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
   public metricHttpCodeTarget(code: HttpCodeTarget, props?: cloudwatch.MetricOptions) {
     return this.metric(code, {
       statistic: 'Sum',
-      ...props
+      ...props,
     });
   }
 
@@ -268,7 +268,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
   public metricRequestCountPerTarget(props?: cloudwatch.MetricOptions) {
     return this.metric('RequestCountPerTarget', {
       statistic: 'Sum',
-      ...props
+      ...props,
     });
   }
 
@@ -280,7 +280,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
   public metricTargetConnectionErrorCount(props?: cloudwatch.MetricOptions) {
     return this.metric('TargetConnectionErrorCount', {
       statistic: 'Sum',
-      ...props
+      ...props,
     });
   }
 
@@ -292,7 +292,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
   public metricTargetResponseTime(props?: cloudwatch.MetricOptions) {
     return this.metric('TargetResponseTime', {
       statistic: 'Average',
-      ...props
+      ...props,
     });
   }
 
@@ -306,22 +306,22 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
   public metricTargetTLSNegotiationErrorCount(props?: cloudwatch.MetricOptions) {
     return this.metric('TargetTLSNegotiationErrorCount', {
       statistic: 'Sum',
-      ...props
+      ...props,
     });
   }
 
-  protected validate(): string[]  {
+  protected validate(): string[] {
     const ret = super.validate();
 
     if (this.targetType !== undefined && this.targetType !== TargetType.LAMBDA
       && (this.protocol === undefined || this.port === undefined)) {
-        ret.push(`At least one of 'port' or 'protocol' is required for a non-Lambda TargetGroup`);
+      ret.push('At least one of \'port\' or \'protocol\' is required for a non-Lambda TargetGroup');
     }
 
     if (this.healthCheck && this.healthCheck.protocol && !ALB_HEALTH_CHECK_PROTOCOLS.includes(this.healthCheck.protocol)) {
       ret.push([
         `Health check protocol '${this.healthCheck.protocol}' is not supported. `,
-        `Must be one of [${ALB_HEALTH_CHECK_PROTOCOLS.join(', ')}]`
+        `Must be one of [${ALB_HEALTH_CHECK_PROTOCOLS.join(', ')}]`,
       ].join(''));
     }
 
@@ -374,11 +374,11 @@ export interface IApplicationTargetGroup extends ITargetGroup {
 class ImportedApplicationTargetGroup extends ImportedTargetGroupBase implements IApplicationTargetGroup {
   public registerListener(_listener: IApplicationListener, _associatingConstruct?: IConstruct) {
     // Nothing to do, we know nothing of our members
-    this.node.addWarning(`Cannot register listener on imported target group -- security groups might need to be updated manually`);
+    Annotations.of(this).addWarning('Cannot register listener on imported target group -- security groups might need to be updated manually');
   }
 
   public registerConnectable(_connectable: ec2.IConnectable, _portRange?: ec2.Port | undefined): void {
-    this.node.addWarning(`Cannot register connectable on imported target group -- security groups might need to be updated manually`);
+    Annotations.of(this).addWarning('Cannot register connectable on imported target group -- security groups might need to be updated manually');
   }
 
   public addTarget(...targets: IApplicationLoadBalancerTarget[]) {

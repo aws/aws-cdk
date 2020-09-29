@@ -13,7 +13,7 @@ export const builder = {
     alias: 'e',
     desc: 'The context key (or its index) to reset',
     type: 'string',
-    requiresArg: true
+    requiresArg: true,
   },
   clear: {
     desc: 'Clear all context',
@@ -54,11 +54,11 @@ function listContext(context: any) {
   const keys = contextKeys(context);
 
   if (keys.length === 0) {
-    print(`This CDK application does not have any saved context values yet.`);
+    print('This CDK application does not have any saved context values yet.');
     print('');
-    print(`Context will automatically be saved when you synthesize CDK apps`);
-    print(`that use environment context information like AZ information, VPCs,`);
-    print(`SSM parameters, and so on.`);
+    print('Context will automatically be saved when you synthesize CDK apps');
+    print('that use environment context information like AZ information, VPCs,');
+    print('SSM parameters, and so on.');
 
     return;
   }
@@ -74,7 +74,7 @@ function listContext(context: any) {
 
   print(renderTable(data, process.stdout.columns));
 
-  // tslint:disable-next-line:max-line-length
+  // eslint-disable-next-line max-len
   print(`Run ${colors.blue('cdk context --reset KEY_OR_NUMBER')} to remove a context key. It will be refreshed on the next CDK synthesis run.`);
 }
 

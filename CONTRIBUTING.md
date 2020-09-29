@@ -18,8 +18,7 @@ and let us know if it's not up-to-date (even better, submit a PR with your  corr
   - [Main build scripts](#main-build-scripts)
   - [Partial build tools](#partial-build-tools)
   - [Useful aliases](#useful-aliases)
-  - [pkglint](#pkglint)
-  - [awslint](#awslint)
+  - [Linters](#linters)
   - [cfn2ts](#cfn2ts)
   - [scripts/foreach.sh](#scriptsforeachsh)
   - [Jetbrains support (WebStorm/IntelliJ)](#jetbrains-support-webstormintellij)
@@ -27,6 +26,7 @@ and let us know if it's not up-to-date (even better, submit a PR with your  corr
   - [Full clean build](#full-clean-build)
   - [Full Docker build](#full-docker-build)
   - [Partial build](#partial-build)
+  - [Partial pack](#partial-pack)
   - [Quick Iteration](#quick-iteration)
   - [Linking against this repository](#linking-against-this-repository)
   - [Running integration tests in parallel](#running-integration-tests-in-parallel)
@@ -35,6 +35,7 @@ and let us know if it's not up-to-date (even better, submit a PR with your  corr
   - [Finding dependency cycles between packages](#finding-dependency-cycles-between-packages)
   - [Updating all Dependencies](#updating-all-dependencies)
   - [Running CLI integration tests](#running-cli-integration-tests)
+  - [Changing the Cloud Assembly Schema](#changing-cloud-assembly-schema)
   - [API Compatibility Checks](#api-compatibility-checks)
   - [Examples](#examples)
   - [Feature Flags](#feature-flags)
@@ -42,25 +43,60 @@ and let us know if it's not up-to-date (even better, submit a PR with your  corr
 - [Troubleshooting](#troubleshooting)
 - [Debugging](#debugging)
   - [Connecting the VS Code Debugger](#connecting-the-vs-code-debugger)
+  - [Run a CDK unit test in the debugger](#run-a-cdk-unit-test-in-the-debugger)
 - [Related Repositories](#related-repositories)
 
 ## Getting Started
 
-For day-to-day development and normal contributions, the following SDKs and tools are required:
- - [Node.js 10.3.0](https://nodejs.org/download/release/latest-v10.x/)
- - [Yarn >= 1.19.1](https://yarnpkg.com/lang/en/docs/install)
- - [Java OpenJDK 8](http://openjdk.java.net/install/)
- - [.NET Core SDK 3.0](https://www.microsoft.com/net/download)
- - [Python 3.6.5](https://www.python.org/downloads/release/python-365/)
- - [Ruby 2.5.1](https://www.ruby-lang.org/en/news/2018/03/28/ruby-2-5-1-released/)
- 
+### Gitpod
+
+For setting up a local development environment,
+we recommend using [Gitpod](http://gitpod.io) -
+a service that allows you to spin up an in-browser
+Visual Studio Code-compatible editor,
+with everything set up and ready to go for CDK development.
+Just click the button below to create your private workspace:
+
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/aws/aws-cdk)
+
+This will start a new Gitpod workspace,
+and immediately kick off a build of the CDK code.
+Once it's done (it takes around an hour, unfortunately),
+you can work on any package that you want to modify,
+as described in ['Quick Iteration'](#quick-iteration) below.
+
+Gitpod is free for 50 hours per month -
+make sure to stop your workspace when you're done
+(you can always resume it later, and it won't need to run the build again).
+
+### Local dependencies
+
+If you don't want to use Gitpod,
+you need to have the following SDKs and tools locally:
+
+- [Node.js >= 10.13.0](https://nodejs.org/download/release/latest-v10.x/)
+  - We recommend using a version in [Active LTS](https://nodejs.org/en/about/releases/)
+  - ⚠️ versions `13.0.0` to `13.6.0` are not supported due to compatibility issues with our dependencies.
+- [Yarn >= 1.19.1, < 1.3](https://yarnpkg.com/lang/en/docs/install)
+- [Java >= OpenJDK 8, 11, 14](https://docs.aws.amazon.com/corretto/latest/corretto-8-ug/downloads-list.html)
+- [Apache Maven >= 3.6.0, < 4.0](http://maven.apache.org/install.html)
+- [.NET Core SDK 3.1.x](https://www.microsoft.com/net/download)
+- [Python >= 3.6.5, < 4.0](https://www.python.org/downloads/release/python-365/)
+- [Ruby >= 2.5.1, < 3.0](https://www.ruby-lang.org/en/news/2018/03/28/ruby-2-5-1-released/)
+- [Docker 19.03](https://docs.docker.com/get-docker/)
+
 The basic commands to get the repository cloned and built locally follow:
 
 ```console
 $ git clone https://github.com/aws/aws-cdk.git
 $ cd aws-cdk
-$ yarn install
 $ yarn build
+```
+
+If you get compiler errors when building, a common cause is a globally installed typescript. Try uninstalling it.
+
+```
+npm uninstall -g typescript
 ```
 
 Alternatively, the [Full Docker build](#full-docker-build) workflow can be used so
@@ -106,6 +142,9 @@ Sometimes, the GitHub issue is sufficient for such discussions, and can be suffi
 clarity on what you plan to do. Sometimes, a design document would work better, so people can provide
 iterative feedback.
 
+Before starting on a design, read through the [design guidelines](DESIGN_GUIDELINES.md) for general
+patterns and tips.
+
 In such cases, use the GitHub issue description to collect **requirements** and
 **use cases** for your feature.
 
@@ -130,6 +169,11 @@ Work your magic. Here are some guidelines:
 * Try to maintain a single feature/bugfix per pull request. It's okay to introduce a little bit of housekeeping
    changes along the way, but try to avoid conflating multiple features. Eventually all these are going to go into a
    single commit, so you can use that to frame your scope.
+* If your change introduces a new construct, take a look at the our
+  [example Construct Library](packages/@aws-cdk/example-construct-library) for an explanation of the common patterns we use.
+  Feel free to start your contribution by copy&pasting files from that project,
+  and then edit and rename them as appropriate -
+  it might be easier to get started that way.
 
 #### Integration Tests
 
@@ -142,7 +186,18 @@ Integration tests perform a few functions in the CDK code base -
 3. (Optionally) Acts as a way to validate that constructs set up the CloudFormation resources as expected. A successful
    CloudFormation deployment does not mean that the resources are set up correctly.
 
-If you are working on a new feature that is using previously unused CloudFormation resource types, or involves 
+For Gitpod users only! The best way to supply CDK with your AWS credentials is to add them as
+[persisting environment variables](https://www.gitpod.io/docs/environment-variables).
+Adding them works as follows via terminal:
+
+```shell
+eval $(gp env -e AWS_ACCESS_KEY_ID=XXXXXXXXX)
+eval $(gp env -e AWS_SECRET_ACCESS_KEY=YYYYYYY)
+eval $(gp env -e AWS_DEFAULT_REGION=ZZZZZZZZ)
+eval $(gp env -e)
+```
+
+If you are working on a new feature that is using previously unused CloudFormation resource types, or involves
 configuring resource types across services, you need to write integration tests that use these resource types or
 features.
 
@@ -164,7 +219,7 @@ Examples:
 
 ### Step 4: Commit
 
-Create a commit with the proposed change changes:
+Create a commit with the proposed changes:
 
 * Commit title and message (and PR title and description) must adhere to [conventionalcommits](https://www.conventionalcommits.org).
   * The title must begin with `feat(module): title`, `fix(module): title`, `refactor(module): title` or
@@ -193,7 +248,7 @@ BREAKING CHANGE: Description of what broke and how to achieve this behavior now
 ### Step 5: Pull Request
 
 * Push to a GitHub fork or to a branch (naming convention: `<user>/<feature-bug-name>`)
-* Submit a Pull Requests on GitHub and assign the PR for a review to the "awslabs/aws-cdk" team.
+* Submit a Pull Request on GitHub. A reviewer will later be assigned by the maintainers.
 * Please follow the PR checklist written below. We trust our contributors to self-check, and this helps that process!
 * Discuss review comments and iterate until you get at least one “Approve”. When iterating, push new commits to the
   same branch. Usually all these are going to be squashed when you merge to master. The commit messages should be hints
@@ -224,7 +279,7 @@ However, in many cases, you can probably get away with just building a portion o
 want to work on.
 
 We recommend that you use [Visual Studio Code](https://code.visualstudio.com/) to work on the CDK. Be sure to install
-the [tslint extension](https://marketplace.visualstudio.com/items?itemName=eg2.tslint) for it as well, since we have
+the [eslint extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) for it as well, since we have
 strict linting rules that will prevent your code from compiling, but with VSCode and this extension can be automatically
 fixed for you by hitting `Ctrl-.` when your cursor is on a red underline.
 
@@ -260,7 +315,32 @@ alias lt='lr test'
 alias lw='lr watch'
 ```
 
-### pkglint
+### Linters
+
+All linters are executed automatically as part of the build script, `yarn build`.
+
+They can also be executed independently of the build script. From the root of a specific package (e.g.
+`packages/@aws-cdk/aws-ec2`), run the following command to execute all the linters on that package -
+
+```bash
+yarn lint
+```
+
+The following linters are used -
+
+- [eslint](#eslint)
+- [pkglint](#pkglint)
+- [awslint](#awslint)
+
+#### eslint
+
+All packages in the repo use a standard base configuration found at [eslintrc.js](tools/cdk-build-tools/config/eslintrc.js).
+This can be customized for any package by modifying the `.eslintrc` file found at its root.
+
+If you're using the VS Code and would like to see eslint violations on it, install the [eslint
+extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint).
+
+#### pkglint
 
 The `pkglint` tool "lints" package.json files across the repo according to [rules.ts](tools/pkglint/lib/rules.ts).
 
@@ -277,18 +357,18 @@ You can also do that per package:
 $ lr pkglint
 ```
 
-### awslint
+#### awslint
 
 **awslint** is a linter for the AWS Construct Library APIs. It is executed as a
 part of the build of all AWS modules in the project and enforces the [AWS
-Construct Library Design Guidelines](./design/aws-guidelines.md).
+Construct Library Design Guidelines](./DESIGN_GUIDELINES.md).
 
 For more information about this tool, see the [awslint
-README](./tools/awslint/README.md).
+README](./packages/awslint/README.md).
 
 Generally speaking, if you make any changes which violate an awslint rule, build
 will fail with appropriate messages. All rules are documented and explained in
-the [guidelines](./design/aws-guidelines.md).
+the [guidelines](./DESIGN_GUIDELINES.md).
 
 Here are a few useful commands:
 
@@ -297,7 +377,7 @@ Here are a few useful commands:
  * `scripts/foreach.sh yarn awslint` will start linting the entire repo, progressively. Rerun `scripts/foreach.sh` after fixing to continue.
  * `lerna run awslint --no-bail --stream 2> awslint.txt` will run __awslint__ in all modules and collect all results into awslint.txt
  * `lerna run awslint -- -i <RULE>` will run awslint throughout the repo and
-   evaluate only the rule specified [awslint README](./tools/awslint/README.md)
+   evaluate only the rule specified [awslint README](./packages/awslint/README.md)
    for details on include/exclude rule patterns.
 
 ### cfn2ts
@@ -424,26 +504,55 @@ $ ../../../scripts/buildup
 Note that `buildup` uses `foreach.sh`, which means it's resumable. If your build fails and you wish to resume, just run
 `buildup --resume`. If you wish to restart, run `buildup` again.
 
+### Partial pack
+
+Packing involves generating CDK code in the various target languages, and packaged up ready to be published to the
+respective package managers. Once in a while, these will need to be generated either to test the experience of a new
+feature, or reproduce a packaging failure.
+
+Before running this, make sure either that the CDK module and all of its dependencies are already built. See [Partial
+build](#partial-build) or [Full clean build](#full-clean-build).
+
+To package a specific module, say the `@aws-cdk/aws-ec2` module:
+
+```console
+$ cd <root-of-cdk-repo>
+$ docker run --rm --net=host -it -v $PWD:$PWD -w $PWD jsii/superchain
+docker$ cd packages/@aws-cdk/aws-ec2
+docker$ ../../../scripts/foreach.sh --up yarn run package
+docker$ exit
+```
+
+The `dist/` folder within each module contains the packaged up language artifacts.
+
 ### Quick Iteration
 
-After you've built the modules you want to work on once, use `lr watch` for each module that you are modifying.
+After you've built the modules you want to work on once, use `yarn watch` for each module that you are modifying.
 
 Watch the EC2 and IAM modules in a second terminal session:
 
 ```console
 $ cd packages/@aws-cdk/aws-ec2
-$ lr watch & # runs in the background
+$ yarn watch & # runs in the background
 $ cd packages/@aws-cdk/aws-iam
-$ lr watch & # runs in the background
+$ yarn watch & # runs in the background
 ```
 
 Code...
 
-Now to test, you can either use `lr test` or invoke nodeunit directory (faster, since "test" will also build):
+Now to test, you can either use `yarn test` or invoke nodeunit/jest directly:
 
+Running nodeunit tests directly on a module
 ```console
 $ cd packages/@aws-cdk/aws-iam
 $ nodeunit test/test.*.js
+<BOOM>
+```
+
+Running jest tests directly on a module
+```console
+$ cd packages/@aws-cdk/aws-iam
+$ jest test/*test.js
 <BOOM>
 ```
 
@@ -533,6 +642,11 @@ The CLI package (`packages/aws-cdk`) has some integration tests that aren't
 run as part of the regular build, since they have some particular requirements.
 See the [CLI CONTRIBUTING.md file](packages/aws-cdk/CONTRIBUTING.md) for
 more information on running those tests.
+
+### Changing Cloud Assembly Schema
+
+If you plan on making changes to the `cloud-assembly-schema` package, make sure you familiarize yourself with
+its own [contribution guide](./packages/@aws-cdk/cloud-assembly-schema/CONTRIBUTING.md)
 
 ### API Compatibility Checks
 
@@ -806,6 +920,24 @@ To debug your CDK application along with the CDK repository,
 
 6. The debug view, should now have a launch configuration called 'Debug hello-cdk' and launching that will start the debugger.
 7. Any time you modify the CDK app or any of the CDK modules, they need to be re-built and depending on the change the `link-all.sh` script from step#2, may need to be re-run. Only then, would VS code recognize the change and potentially the breakpoint.
+
+### Run a CDK unit test in the debugger
+
+If you want to run the VSCode debugger on unit tests of the CDK project
+itself, do the following:
+
+1. Set a breakpoint inside your unit test.
+2. In your terminal, depending on the type of test, run either:
+
+```
+# (For tests names test.xxx.ts)
+$ node --inspect-brk /path/to/aws-cdk/node_modules/.bin/nodeunit -t 'TESTNAME'
+
+# (For tests names xxxx.test.ts)
+$ node --inspect-brk /path/to/aws-cdk/node_modules/.bin/jest -i -t 'TESTNAME'
+```
+
+3. On the `Run` pane of VSCode, select the run configuration **Attach to NodeJS** and click the button.
 
 ## Related Repositories
 

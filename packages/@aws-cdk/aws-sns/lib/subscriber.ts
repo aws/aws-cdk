@@ -30,5 +30,10 @@ export interface TopicSubscriptionConfig extends SubscriptionOptions {
  * Topic subscription
  */
 export interface ITopicSubscription {
+  /**
+   * Returns a configuration used to subscribe to an SNS topic
+   *
+   * @param topic topic for which subscription will be configured
+   */
   bind(topic: ITopic): TopicSubscriptionConfig;
 }

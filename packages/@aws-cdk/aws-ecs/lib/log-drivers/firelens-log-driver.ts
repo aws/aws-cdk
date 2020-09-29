@@ -1,7 +1,7 @@
 import { Construct } from '@aws-cdk/core';
 import { ContainerDefinition } from '../container-definition';
 import { BaseLogDriverProps } from './base-log-driver';
-import { LogDriver, LogDriverConfig } from "./log-driver";
+import { LogDriver, LogDriverConfig } from './log-driver';
 import { removeEmpty } from './utils';
 
 /**
@@ -42,7 +42,7 @@ export class FireLensLogDriver extends LogDriver {
   public bind(_scope: Construct, _containerDefinition: ContainerDefinition): LogDriverConfig {
     return {
       logDriver: 'awsfirelens',
-      ...(this.options && {options: removeEmpty(this.options)}),
+      ...(this.options && { options: removeEmpty(this.options) }),
     };
   }
 }

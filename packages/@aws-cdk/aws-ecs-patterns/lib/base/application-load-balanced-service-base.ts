@@ -1,8 +1,10 @@
-import { DnsValidatedCertificate, ICertificate } from '@aws-cdk/aws-certificatemanager';
+import { Certificate, CertificateValidation, ICertificate } from '@aws-cdk/aws-certificatemanager';
 import { IVpc } from '@aws-cdk/aws-ec2';
 import { AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerImage, ICluster, LogDriver, PropagatedTagSource, Secret } from '@aws-cdk/aws-ecs';
-import { ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationTargetGroup,
-  IApplicationLoadBalancer, ListenerCertificate} from '@aws-cdk/aws-elasticloadbalancingv2';
+import {
+  ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationTargetGroup,
+  IApplicationLoadBalancer, ListenerCertificate, ListenerAction,
+} from '@aws-cdk/aws-elasticloadbalancingv2';
 import { IRole } from '@aws-cdk/aws-iam';
 import { ARecord, IHostedZone, RecordTarget } from '@aws-cdk/aws-route53';
 import { LoadBalancerTarget } from '@aws-cdk/aws-route53-targets';
@@ -41,6 +43,13 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    * @default true
    */
   readonly publicLoadBalancer?: boolean;
+
+  /**
+   * Determines whether or not the Security Group for the Load Balancer's Listener will be open to all traffic by default.
+   *
+   * @default true -- The security group allows ingress from all IP addresses.
+   */
+  readonly openListener?: boolean;
 
   /**
    * The desired number of instantiations of the task definition to keep running on the service.
@@ -159,6 +168,14 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    * @default - AWS Cloud Map service discovery is not enabled.
    */
   readonly cloudMapOptions?: CloudMapOptions;
+
+  /**
+   * Specifies whether the load balancer should redirect traffic on port 80 to port 443 to support HTTP->HTTPS redirects
+   * This is only valid if the protocol of the ALB is HTTPS
+   *
+   * @default false
+   */
+  readonly redirectHTTP?: boolean;
 }
 
 export interface ApplicationLoadBalancedTaskImageOptions {
@@ -268,6 +285,11 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
   public readonly listener: ApplicationListener;
 
   /**
+   * The redirect listener for the service if redirectHTTP is enabled.
+   */
+  public readonly redirectListener?: ApplicationListener;
+
+  /**
    * The target group for the service.
    */
   public readonly targetGroup: ApplicationTargetGroup;
@@ -304,11 +326,11 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
 
     const lbProps = {
       vpc: this.cluster.vpc,
-      internetFacing
+      internetFacing,
     };
 
     const loadBalancer = props.loadBalancer !== undefined ? props.loadBalancer
-                        : new ApplicationLoadBalancer(this, 'LB', lbProps);
+      : new ApplicationLoadBalancer(this, 'LB', lbProps);
 
     if (props.certificate !== undefined && props.protocol !== undefined && props.protocol !== ApplicationProtocol.HTTPS) {
       throw new Error('The HTTPS protocol must be used when a certificate is given');
@@ -316,14 +338,18 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
     const protocol = props.protocol !== undefined ? props.protocol :
       (props.certificate ? ApplicationProtocol.HTTPS : ApplicationProtocol.HTTP);
 
+    if (protocol !== ApplicationProtocol.HTTPS && props.redirectHTTP === true) {
+      throw new Error('The HTTPS protocol must be used when redirecting HTTP traffic');
+    }
+
     const targetProps = {
-      port: 80
+      port: 80,
     };
 
     this.listener = loadBalancer.addListener('PublicListener', {
       protocol,
       port: props.listenerPort,
-      open: true
+      open: props.openListener ?? true,
     });
     this.targetGroup = this.listener.addTargets('ECS', targetProps);
 
@@ -335,14 +361,26 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
       if (props.certificate !== undefined) {
         this.certificate = props.certificate;
       } else {
-        this.certificate = new DnsValidatedCertificate(this, 'Certificate', {
+        this.certificate = new Certificate(this, 'Certificate', {
           domainName: props.domainName,
-          hostedZone: props.domainZone
+          validation: CertificateValidation.fromDns(props.domainZone),
         });
       }
     }
     if (this.certificate !== undefined) {
       this.listener.addCertificates('Arns', [ListenerCertificate.fromCertificateManager(this.certificate)]);
+    }
+    if (props.redirectHTTP) {
+      this.redirectListener = loadBalancer.addListener('PublicRedirectListener', {
+        protocol: ApplicationProtocol.HTTP,
+        port: 80,
+        open: true,
+        defaultAction: ListenerAction.redirect({
+          port: props.listenerPort?.toString() || '443',
+          protocol: ApplicationProtocol.HTTPS,
+          permanent: true,
+        }),
+      });
     }
 
     let domainName = loadBalancer.loadBalancerDnsName;
@@ -351,15 +389,13 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
         throw new Error('A Route53 hosted domain zone name is required to configure the specified domain name');
       }
 
-      if (internetFacing) {
-        const record = new ARecord(this, "DNS", {
-          zone: props.domainZone,
-          recordName: props.domainName,
-          target: RecordTarget.fromAlias(new LoadBalancerTarget(loadBalancer)),
-        });
+      const record = new ARecord(this, 'DNS', {
+        zone: props.domainZone,
+        recordName: props.domainName,
+        target: RecordTarget.fromAlias(new LoadBalancerTarget(loadBalancer)),
+      });
 
-        domainName = record.domainName;
-      }
+      domainName = record.domainName;
     }
 
     if (loadBalancer instanceof ApplicationLoadBalancer) {

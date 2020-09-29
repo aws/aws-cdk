@@ -167,6 +167,10 @@ function renderHealthCheck(hc: HealthCheck | undefined, pm: PortMapping): CfnVir
     throw new Error('The path property cannot be set with Protocol.TCP');
   }
 
+  if (hc.protocol === Protocol.GRPC && hc.path) {
+    throw new Error('The path property cannot be set with Protocol.GRPC');
+  }
+
   const healthCheck: CfnVirtualNode.HealthCheckProperty = {
     healthyThreshold: hc.healthyThreshold || 2,
     intervalMillis: (hc.interval || cdk.Duration.seconds(5)).toMilliseconds(), // min
@@ -179,9 +183,9 @@ function renderHealthCheck(hc: HealthCheck | undefined, pm: PortMapping): CfnVir
 
   (Object.keys(healthCheck) as Array<keyof CfnVirtualNode.HealthCheckProperty>)
     .filter((key) =>
-        HEALTH_CHECK_PROPERTY_THRESHOLDS[key] &&
+      HEALTH_CHECK_PROPERTY_THRESHOLDS[key] &&
           typeof healthCheck[key] === 'number' &&
-          !cdk.Token.isUnresolved(healthCheck[key])
+          !cdk.Token.isUnresolved(healthCheck[key]),
     ).map((key) => {
       const [min, max] = HEALTH_CHECK_PROPERTY_THRESHOLDS[key]!;
       const value = healthCheck[key]!;
@@ -220,7 +224,7 @@ export class VirtualNode extends VirtualNodeBase {
   public static fromVirtualNodeName(scope: cdk.Construct, id: string, meshName: string, virtualNodeName: string): IVirtualNode {
     return new ImportedVirtualNode(scope, id, {
       meshName,
-      virtualNodeName
+      virtualNodeName,
     });
   }
 
@@ -241,7 +245,7 @@ export class VirtualNode extends VirtualNodeBase {
 
   constructor(scope: cdk.Construct, id: string, props: VirtualNodeProps) {
     super(scope, id, {
-      physicalName: props.virtualNodeName || cdk.Lazy.stringValue({ produce: () => this.node.uniqueId })
+      physicalName: props.virtualNodeName || cdk.Lazy.stringValue({ produce: () => this.node.uniqueId }),
     });
 
     this.mesh = props.mesh;
@@ -260,7 +264,7 @@ export class VirtualNode extends VirtualNodeBase {
           awsCloudMap: props.cloudMapService !== undefined ? {
             serviceName: props.cloudMapService.serviceName,
             namespaceName: props.cloudMapService.namespace.namespaceName,
-            attributes: renderAttributes(props.cloudMapServiceInstanceAttributes)
+            attributes: renderAttributes(props.cloudMapServiceInstanceAttributes),
           } : undefined,
         },
         logging: {

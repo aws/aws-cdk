@@ -25,9 +25,9 @@ export = {
     '#setTag() creates the tag'(test: Test) {
       const mgr = new TagManager(TagType.STANDARD, 'AWS::Resource::Type');
       mgr.setTag('dne', 'notanymore');
-      test.deepEqual(mgr.renderTags(), [{key: 'dne', value: 'notanymore'}]);
+      test.deepEqual(mgr.renderTags(), [{ key: 'dne', value: 'notanymore' }]);
       test.done();
-    }
+    },
   },
   'when a tag does exist': {
     '#removeTag() deletes the tag'(test: Test) {
@@ -41,9 +41,9 @@ export = {
       const mgr = new TagManager(TagType.STANDARD, 'AWS::Resource::Type');
       mgr.setTag('dne', 'notanymore');
       mgr.setTag('dne', 'iwin');
-      test.deepEqual(mgr.renderTags(), [{key: 'dne', value: 'iwin'}]);
+      test.deepEqual(mgr.renderTags(), [{ key: 'dne', value: 'iwin' }]);
       test.done();
-    }
+    },
   },
   'when there are no tags': {
     '#renderTags() returns undefined'(test: Test) {
@@ -55,7 +55,7 @@ export = {
       const mgr = new TagManager(TagType.STANDARD, 'AWS::Resource::Type');
       test.equal(mgr.hasTags(), false);
       test.done();
-    }
+    },
   },
   '#renderTags() handles standard, map, keyValue, and ASG tag formats'(test: Test) {
     const tagged: TagManager[] = [];
@@ -72,16 +72,16 @@ export = {
       res.setTag('asg', 'only', 0, false);
     }
     test.deepEqual(standard.renderTags(), [
-      {key: 'foo', value: 'bar'},
-      {key: 'asg', value: 'only'},
+      { key: 'asg', value: 'only' },
+      { key: 'foo', value: 'bar' },
     ]);
     test.deepEqual(asg.renderTags(), [
-      {key: 'foo', value: 'bar', propagateAtLaunch: true},
-      {key: 'asg', value: 'only', propagateAtLaunch: false},
+      { key: 'asg', value: 'only', propagateAtLaunch: false },
+      { key: 'foo', value: 'bar', propagateAtLaunch: true },
     ]);
     test.deepEqual(keyValue.renderTags(), [
-      { Key: 'foo', Value : 'bar' },
-      { Key: 'asg', Value : 'only' }
+      { Key: 'asg', Value: 'only' },
+      { Key: 'foo', Value: 'bar' },
     ]);
     test.deepEqual(mapper.renderTags(), {
       foo: 'bar',
@@ -101,14 +101,33 @@ export = {
     mgr.setTag('key', 'myVal', 2);
     mgr.setTag('key', 'newVal', 1);
     test.deepEqual(mgr.renderTags(), [
-      {key: 'key', value: 'myVal'},
+      { key: 'key', value: 'myVal' },
     ]);
     mgr.removeTag('key', 1);
     test.deepEqual(mgr.renderTags(), [
-      {key: 'key', value: 'myVal'},
+      { key: 'key', value: 'myVal' },
     ]);
     mgr.removeTag('key', 2);
     test.deepEqual(mgr.renderTags(), undefined);
+    test.done();
+  },
+  'tags are always ordered by key name'(test: Test) {
+    const mgr = new TagManager(TagType.STANDARD, 'AWS::Resource::Type');
+    mgr.setTag('key', 'foo');
+    mgr.setTag('aardvark', 'zebra');
+    mgr.setTag('name', 'test');
+    test.deepEqual(mgr.renderTags(), [
+      { key: 'aardvark', value: 'zebra' },
+      { key: 'key', value: 'foo' },
+      { key: 'name', value: 'test' },
+    ]);
+    mgr.setTag('myKey', 'myVal');
+    test.deepEqual(mgr.renderTags(), [
+      { key: 'aardvark', value: 'zebra' },
+      { key: 'key', value: 'foo' },
+      { key: 'myKey', value: 'myVal' },
+      { key: 'name', value: 'test' },
+    ]);
     test.done();
   },
   'excludeResourceTypes only tags resources that do not match'(test: Test) {
@@ -126,5 +145,5 @@ export = {
     test.equal(false, mgr.applyTagAspectHere(['AWS::Wrong::Resource'], []));
 
     test.done();
-  }
+  },
 };

@@ -1,7 +1,7 @@
 import { IResource } from '@aws-cdk/core';
 import { IManagedPolicy } from './managed-policy';
-import { Policy } from "./policy";
-import { IPrincipal } from "./principals";
+import { Policy } from './policy';
+import { IPrincipal } from './principals';
 
 /**
  * A construct that represents an IAM principal, such as a user, group or role.

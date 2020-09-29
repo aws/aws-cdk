@@ -1,8 +1,10 @@
-import { FargateService, FargateTaskDefinition } from '@aws-cdk/aws-ecs';
+import { FargatePlatformVersion, FargateService, FargateTaskDefinition } from '@aws-cdk/aws-ecs';
 import { NetworkTargetGroup } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { Construct } from '@aws-cdk/core';
-import { NetworkMultipleTargetGroupsServiceBase,
-  NetworkMultipleTargetGroupsServiceBaseProps } from '../base/network-multiple-target-groups-service-base';
+import {
+  NetworkMultipleTargetGroupsServiceBase,
+  NetworkMultipleTargetGroupsServiceBaseProps,
+} from '../base/network-multiple-target-groups-service-base';
 
 /**
  * The properties for the NetworkMultipleTargetGroupsFargateService service.
@@ -67,6 +69,17 @@ export interface NetworkMultipleTargetGroupsFargateServiceProps extends NetworkM
    * @default false
    */
   readonly assignPublicIp?: boolean;
+
+  /**
+   * The platform version on which to run your service.
+   *
+   * If one is not specified, the LATEST platform version is used by default. For more information, see
+   * [AWS Fargate Platform Versions](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/platform_versions.html)
+   * in the Amazon Elastic Container Service Developer Guide.
+   *
+   * @default Latest
+   */
+  readonly platformVersion?: FargatePlatformVersion;
 }
 
 /**
@@ -126,7 +139,7 @@ export class NetworkMultipleTargetGroupsFargateService extends NetworkMultipleTa
       if (taskImageOptions.containerPorts) {
         for (const containerPort of taskImageOptions.containerPorts) {
           container.addPortMappings({
-            containerPort
+            containerPort,
           });
         }
       }
@@ -138,7 +151,7 @@ export class NetworkMultipleTargetGroupsFargateService extends NetworkMultipleTa
     }
     if (this.taskDefinition.defaultContainer.portMappings.length === 0) {
       this.taskDefinition.defaultContainer.addPortMappings({
-        containerPort: 80
+        containerPort: 80,
       });
     }
 
@@ -149,13 +162,13 @@ export class NetworkMultipleTargetGroupsFargateService extends NetworkMultipleTa
     } else {
       this.targetGroup = this.listener.addTargets('ECS', {
         targets: [this.service],
-        port: this.taskDefinition.defaultContainer.portMappings[0].containerPort
+        port: this.taskDefinition.defaultContainer.portMappings[0].containerPort,
       });
     }
   }
 
   private createFargateService(props: NetworkMultipleTargetGroupsFargateServiceProps): FargateService {
-    return new FargateService(this, "Service", {
+    return new FargateService(this, 'Service', {
       cluster: this.cluster,
       desiredCount: this.desiredCount,
       taskDefinition: this.taskDefinition,
@@ -165,6 +178,7 @@ export class NetworkMultipleTargetGroupsFargateService extends NetworkMultipleTa
       propagateTags: props.propagateTags,
       enableECSManagedTags: props.enableECSManagedTags,
       cloudMapOptions: props.cloudMapOptions,
+      platformVersion: props.platformVersion,
     });
   }
 }

@@ -1,10 +1,16 @@
-import * as cxapi from '@aws-cdk/cx-api';
+import { basename, dirname } from 'path';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { major as nodeMajorVersion } from './node-version';
+
+// list of NPM scopes included in version reporting e.g. @aws-cdk and @aws-solutions-konstruk
+const WHITELIST_SCOPES = ['@aws-cdk', '@aws-solutions-konstruk', '@aws-solutions-constructs', '@amzn'];
+// list of NPM packages included in version reporting
+const WHITELIST_PACKAGES = ['aws-rfdk'];
 
 /**
  * Returns a list of loaded modules and their versions.
  */
-export function collectRuntimeInformation(): cxapi.RuntimeInfo {
+export function collectRuntimeInformation(): cxschema.RuntimeInfo {
   const libraries: { [name: string]: string } = {};
 
   for (const fileName of Object.keys(require.cache)) {
@@ -14,9 +20,17 @@ export function collectRuntimeInformation(): cxapi.RuntimeInfo {
     }
   }
 
-  // include only libraries that are in the @aws-cdk npm scope
+  // include only libraries that are in the whitelistLibraries list
   for (const name of Object.keys(libraries)) {
-    if (!name.startsWith('@aws-cdk/')) {
+    let foundMatch = false;
+    for (const scope of WHITELIST_SCOPES) {
+      if (name.startsWith(`${scope}/`)) {
+        foundMatch = true;
+      }
+    }
+    foundMatch = foundMatch || WHITELIST_PACKAGES.includes(name);
+
+    if (!foundMatch) {
       delete libraries[name];
     }
   }
@@ -53,31 +67,28 @@ export function collectRuntimeInformation(): cxapi.RuntimeInfo {
  */
 function findNpmPackage(fileName: string): { name: string, version: string, private?: boolean } | undefined {
   const mod = require.cache[fileName];
-  const paths = mod.paths.map(stripNodeModules);
+
+  if (!mod?.paths) {
+    // sometimes this can be undefined. for example when querying for .json modules
+    // inside a jest runtime environment.
+    // see https://github.com/aws/aws-cdk/issues/7657
+    // potentially we can remove this if it turns out to be a bug in how jest implemented the 'require' module.
+    return undefined;
+  }
+
+  // For any path in ``mod.paths`` that is a node_modules folder, use its parent directory instead.
+  const paths = mod?.paths.map((path: string) => basename(path) === 'node_modules' ? dirname(path) : path);
 
   try {
     const packagePath = require.resolve(
       // Resolution behavior changed in node 12.0.0 - https://github.com/nodejs/node/issues/27583
       nodeMajorVersion >= 12 ? './package.json' : 'package.json',
-      { paths }
+      { paths },
     );
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     return require(packagePath);
   } catch (e) {
     return undefined;
-  }
-
-  /**
-   * @param s a path.
-   * @returns ``s`` with any terminating ``/node_modules``
-   *      (or ``\\node_modules``) stripped off.)
-   */
-  function stripNodeModules(s: string): string {
-    if (s.endsWith('/node_modules') || s.endsWith('\\node_modules')) {
-      // /node_modules is 13 characters
-      return s.substr(0, s.length - 13);
-    }
-    return s;
   }
 }
 

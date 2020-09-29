@@ -1,5 +1,5 @@
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct, IResource, RemovalPolicy, Resource, Stack } from '@aws-cdk/core';
+import { Construct, IConstruct, IResource, RemovalPolicy, Resource, Stack } from '@aws-cdk/core';
 import { Alias } from './alias';
 import { CfnKey } from './kms.generated';
 
@@ -34,7 +34,7 @@ export interface IKey extends IResource {
    * defined (i.e. external key), the operation will fail. Otherwise, it will
    * no-op.
    */
-  addToResourcePolicy(statement: iam.PolicyStatement, allowNoOp?: boolean): void;
+  addToResourcePolicy(statement: iam.PolicyStatement, allowNoOp?: boolean): iam.AddToResourcePolicyResult;
 
   /**
    * Grant the indicated permissions on this key to the given principal
@@ -107,15 +107,22 @@ abstract class KeyBase extends Resource implements IKey {
    * defined (i.e. external key), the operation will fail. Otherwise, it will
    * no-op.
    */
-  public addToResourcePolicy(statement: iam.PolicyStatement, allowNoOp = true) {
+  public addToResourcePolicy(statement: iam.PolicyStatement, allowNoOp = true): iam.AddToResourcePolicyResult {
     const stack = Stack.of(this);
 
     if (!this.policy) {
-      if (allowNoOp) { return; }
+      if (allowNoOp) { return { statementAdded: false }; }
       throw new Error(`Unable to add statement to IAM resource policy for KMS key: ${JSON.stringify(stack.resolve(this.keyArn))}`);
     }
 
     this.policy.addStatements(statement);
+    return { statementAdded: true, policyDependable: this.policy };
+  }
+
+  protected validate(): string[] {
+    const errors = super.validate();
+    errors.push(...this.policy?.validateForResourcePolicy() || []);
+    return errors;
   }
 
   /**
@@ -175,7 +182,7 @@ abstract class KeyBase extends Resource implements IKey {
     return this.grant(grantee,
       'kms:Encrypt',
       'kms:ReEncrypt*',
-      'kms:GenerateDataKey*'
+      'kms:GenerateDataKey*',
     );
   }
 
@@ -187,7 +194,7 @@ abstract class KeyBase extends Resource implements IKey {
       'kms:Decrypt',
       'kms:Encrypt',
       'kms:ReEncrypt*',
-      'kms:GenerateDataKey*'
+      'kms:GenerateDataKey*',
     );
   }
 
@@ -200,17 +207,32 @@ abstract class KeyBase extends Resource implements IKey {
    *   undefined otherwise
    */
   private granteeStackDependsOnKeyStack(grantee: iam.IGrantable): string | undefined {
-    if (!(Construct.isConstruct(grantee))) {
+    const grantPrincipal = grantee.grantPrincipal;
+    if (!(Construct.isConstruct(grantPrincipal))) {
       return undefined;
     }
+    // this logic should only apply to newly created
+    // (= not imported) resources
+    if (!this.principalIsANewlyCreatedResource(grantPrincipal)) {
+      return undefined;
+    }
+    // return undefined;
     const keyStack = Stack.of(this);
-    const granteeStack = Stack.of(grantee);
+    const granteeStack = Stack.of(grantPrincipal);
     if (keyStack === granteeStack) {
       return undefined;
     }
     return granteeStack.dependencies.includes(keyStack)
       ? granteeStack.account
       : undefined;
+  }
+
+  private principalIsANewlyCreatedResource(principal: IConstruct): boolean {
+    // yes, this sucks
+    // this is just a temporary stopgap to stem the bleeding while we work on a proper fix
+    return principal instanceof iam.Role ||
+      principal instanceof iam.User ||
+      principal instanceof iam.Group;
   }
 
   private isGranteeFromAnotherRegion(grantee: iam.IGrantable): boolean {
@@ -370,7 +392,7 @@ export class Key extends KeyBase {
     this.addToResourcePolicy(new iam.PolicyStatement({
       resources: ['*'],
       actions: ['kms:*'],
-      principals: [new iam.AccountRootPrincipal()]
+      principals: [new iam.AccountRootPrincipal()],
     }));
 
   }
@@ -381,27 +403,27 @@ export class Key extends KeyBase {
    */
   private allowAccountToAdmin() {
     const actions = [
-      "kms:Create*",
-      "kms:Describe*",
-      "kms:Enable*",
-      "kms:List*",
-      "kms:Put*",
-      "kms:Update*",
-      "kms:Revoke*",
-      "kms:Disable*",
-      "kms:Get*",
-      "kms:Delete*",
-      "kms:ScheduleKeyDeletion",
-      "kms:CancelKeyDeletion",
-      "kms:GenerateDataKey",
-      "kms:TagResource",
-      "kms:UntagResource"
+      'kms:Create*',
+      'kms:Describe*',
+      'kms:Enable*',
+      'kms:List*',
+      'kms:Put*',
+      'kms:Update*',
+      'kms:Revoke*',
+      'kms:Disable*',
+      'kms:Get*',
+      'kms:Delete*',
+      'kms:ScheduleKeyDeletion',
+      'kms:CancelKeyDeletion',
+      'kms:GenerateDataKey',
+      'kms:TagResource',
+      'kms:UntagResource',
     ];
 
     this.addToResourcePolicy(new iam.PolicyStatement({
       resources: ['*'],
       actions,
-      principals: [new iam.AccountRootPrincipal()]
+      principals: [new iam.AccountRootPrincipal()],
     }));
   }
 }

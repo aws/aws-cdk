@@ -1,11 +1,11 @@
 exports.handler = async (evt: any) => {
-  // tslint:disable-next-line:no-console
+  // eslint-disable-next-line no-console
   console.error(JSON.stringify(evt, undefined, 2));
   return {
     statusCode: 200,
     body: 'hello, cors!',
     headers: {
-      'Access-Control-Allow-Origin': '*'
-    }
+      'Access-Control-Allow-Origin': '*',
+    },
   };
 };

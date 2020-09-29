@@ -1,7 +1,6 @@
-import { CustomResource } from "@aws-cdk/aws-cloudformation";
-import { Construct, Stack } from "@aws-cdk/core";
-import { Cluster } from "./cluster";
-import { KubectlProvider } from "./kubectl-provider";
+import { Construct, CustomResource, Stack } from '@aws-cdk/core';
+import { ICluster } from './cluster';
+import { KubectlProvider } from './kubectl-provider';
 
 /**
  * Properties for KubernetesPatch
@@ -11,7 +10,7 @@ export interface KubernetesPatchProps {
    * The cluster to apply the patch to.
    * [disable-awslint:ref-via-interface]
    */
-  readonly cluster: Cluster;
+  readonly cluster: ICluster;
 
   /**
    * The JSON object to pass to `kubectl patch` when the resource is created/updated.
@@ -51,15 +50,15 @@ export enum PatchType {
   /**
    * JSON Patch, RFC 6902
    */
-  JSON = "json",
+  JSON = 'json',
   /**
    * JSON Merge patch
    */
-  MERGE = "merge",
+  MERGE = 'merge',
   /**
    * Strategic merge patch
    */
-  STRATEGIC = "strategic"
+  STRATEGIC = 'strategic'
 }
 
 /**
@@ -72,10 +71,10 @@ export class KubernetesPatch extends Construct {
     super(scope, id);
 
     const stack = Stack.of(this);
-    const provider = KubectlProvider.getOrCreate(stack);
+    const provider = KubectlProvider.getOrCreate(this, props.cluster);
 
     new CustomResource(this, 'Resource', {
-      provider: provider.provider,
+      serviceToken: provider.serviceToken,
       resourceType: 'Custom::AWSCDK-EKS-KubernetesPatch',
       properties: {
         ResourceName: props.resourceName,
@@ -83,9 +82,9 @@ export class KubernetesPatch extends Construct {
         ApplyPatchJson: stack.toJsonString(props.applyPatch),
         RestorePatchJson: stack.toJsonString(props.restorePatch),
         ClusterName: props.cluster.clusterName,
-        RoleArn: props.cluster._getKubectlCreationRoleArn(provider.role),
-        PatchType: props.patchType ?? PatchType.STRATEGIC
-      }
+        RoleArn: provider.roleArn, // TODO: bake into provider's environment
+        PatchType: props.patchType ?? PatchType.STRATEGIC,
+      },
     });
   }
 }

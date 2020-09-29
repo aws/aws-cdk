@@ -1,8 +1,8 @@
 import * as cdk from '@aws-cdk/core';
-import { IAlarm } from "./alarm";
-import { IMetric } from "./metric-types";
+import { IAlarm } from './alarm-base';
+import { IMetric } from './metric-types';
 import { allMetricsGraphJson } from './private/rendering';
-import { ConcreteWidget } from "./widget";
+import { ConcreteWidget } from './widget';
 
 /**
  * Basic properties for widgets that display metrics
@@ -10,13 +10,15 @@ import { ConcreteWidget } from "./widget";
 export interface MetricWidgetProps {
   /**
    * Title for the graph
+   *
+   * @default - None
    */
   readonly title?: string;
 
   /**
    * The region the metrics of this graph should be taken from
    *
-   * @default Current region
+   * @default - Current region
    */
   readonly region?: string;
 
@@ -30,7 +32,8 @@ export interface MetricWidgetProps {
   /**
    * Height of the widget
    *
-   * @default Depends on the type of widget
+   * @default - 6 for Alarm and Graph widgets.
+   *   3 for single value widgets where most recent value of a metric is displayed.
    */
   readonly height?: number;
 }
@@ -49,14 +52,14 @@ export interface YAxisProps {
   /**
    * The max value
    *
-   * @default No maximum value
+   * @default - No maximum value
    */
   readonly max?: number;
 
   /**
    * The label
    *
-   * @default No label
+   * @default - No label
    */
   readonly label?: string;
 
@@ -79,6 +82,8 @@ export interface AlarmWidgetProps extends MetricWidgetProps {
 
   /**
    * Left Y axis
+   *
+   * @default - No minimum or maximum values for the left Y-axis
    */
   readonly leftYAxis?: YAxisProps;
 }
@@ -106,12 +111,12 @@ export class AlarmWidget extends ConcreteWidget {
         title: this.props.title,
         region: this.props.region || cdk.Aws.REGION,
         annotations: {
-          alarms: [this.props.alarm.alarmArn]
+          alarms: [this.props.alarm.alarmArn],
         },
         yAxis: {
-          left: this.props.leftYAxis !== undefined ? this.props.leftYAxis : undefined
-        }
-      }
+          left: this.props.leftYAxis !== undefined ? this.props.leftYAxis : undefined,
+        },
+      },
     }];
   }
 }
@@ -122,38 +127,66 @@ export class AlarmWidget extends ConcreteWidget {
 export interface GraphWidgetProps extends MetricWidgetProps {
   /**
    * Metrics to display on left Y axis
+   *
+   * @default - No metrics
    */
   readonly left?: IMetric[];
 
   /**
    * Metrics to display on right Y axis
+   *
+   * @default - No metrics
    */
   readonly right?: IMetric[];
 
   /**
    * Annotations for the left Y axis
+   *
+   * @default - No annotations
    */
   readonly leftAnnotations?: HorizontalAnnotation[];
 
   /**
    * Annotations for the right Y axis
+   *
+   * @default - No annotations
    */
   readonly rightAnnotations?: HorizontalAnnotation[];
 
   /**
    * Whether the graph should be shown as stacked lines
+   *
+   * @default false
    */
   readonly stacked?: boolean;
 
   /**
    * Left Y axis
+   *
+   * @default - None
    */
   readonly leftYAxis?: YAxisProps;
 
   /**
    * Right Y axis
+   *
+   * @default - None
    */
   readonly rightYAxis?: YAxisProps;
+
+  /**
+   * Position of the legend
+   *
+   * @default - bottom
+   */
+  readonly legendPosition?: LegendPosition;
+
+  /**
+   * Whether the graph should show live data
+   *
+   * @default false
+   */
+  readonly liveData?: boolean;
 }
 
 /**
@@ -190,8 +223,10 @@ export class GraphWidget extends ConcreteWidget {
         yAxis: {
           left: this.props.leftYAxis !== undefined ? this.props.leftYAxis : undefined,
           right: this.props.rightYAxis !== undefined ? this.props.rightYAxis : undefined,
-        }
-      }
+        },
+        legend: this.props.legendPosition !== undefined ? { position: this.props.legendPosition } : undefined,
+        liveData: this.props.liveData,
+      },
     }];
   }
 }
@@ -236,8 +271,8 @@ export class SingleValueWidget extends ConcreteWidget {
         title: this.props.title,
         region: this.props.region || cdk.Aws.REGION,
         metrics: allMetricsGraphJson(this.props.metrics, []),
-        setPeriodToTimeRange: this.props.setPeriodToTimeRange
-      }
+        setPeriodToTimeRange: this.props.setPeriodToTimeRange,
+      },
     }];
   }
 }
@@ -281,6 +316,9 @@ export interface HorizontalAnnotation {
   readonly visible?: boolean;
 }
 
+/**
+ * Fill shading options that will be used with an annotation
+ */
 export enum Shading {
   /**
    * Don't add shading
@@ -325,6 +363,26 @@ export class Color {
 
   /** red - hex #d62728 */
   public static readonly RED = '#d62728';
+}
+
+/**
+ * The position of the legend on a GraphWidget.
+ */
+export enum LegendPosition {
+  /**
+   * Legend appears below the graph (default).
+   */
+  BOTTOM = 'bottom',
+
+  /**
+   * Add shading above the annotation
+   */
+  RIGHT = 'right',
+
+  /**
+   * Add shading below the annotation
+   */
+  HIDDEN = 'hidden'
 }
 
 function mapAnnotation(yAxis: string): ((x: HorizontalAnnotation) => any) {

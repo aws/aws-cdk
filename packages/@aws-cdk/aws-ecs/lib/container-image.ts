@@ -43,9 +43,9 @@ export abstract class ContainerImage {
       bind(_scope: cdk.Construct, containerDefinition: ContainerDefinition): ContainerImageConfig {
         asset.repository.grantPull(containerDefinition.taskDefinition.obtainExecutionRole());
         return {
-          imageName: asset.imageUri
+          imageName: asset.imageUri,
         };
-      }
+      },
     };
   }
 

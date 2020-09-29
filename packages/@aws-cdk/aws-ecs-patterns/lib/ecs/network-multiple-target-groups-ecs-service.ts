@@ -1,8 +1,10 @@
 import { Ec2Service, Ec2TaskDefinition } from '@aws-cdk/aws-ecs';
 import { NetworkTargetGroup } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { Construct } from '@aws-cdk/core';
-import { NetworkMultipleTargetGroupsServiceBase,
-  NetworkMultipleTargetGroupsServiceBaseProps } from '../base/network-multiple-target-groups-service-base';
+import {
+  NetworkMultipleTargetGroupsServiceBase,
+  NetworkMultipleTargetGroupsServiceBaseProps,
+} from '../base/network-multiple-target-groups-service-base';
 
 /**
  * The properties for the NetworkMultipleTargetGroupsEc2Service service.
@@ -88,7 +90,7 @@ export class NetworkMultipleTargetGroupsEc2Service extends NetworkMultipleTarget
       const taskImageOptions = props.taskImageOptions;
       this.taskDefinition = new Ec2TaskDefinition(this, 'TaskDef', {
         executionRole: taskImageOptions.executionRole,
-        taskRole: taskImageOptions.taskRole
+        taskRole: taskImageOptions.taskRole,
       });
 
       const containerName = taskImageOptions.containerName !== undefined ? taskImageOptions.containerName : 'web';
@@ -104,7 +106,7 @@ export class NetworkMultipleTargetGroupsEc2Service extends NetworkMultipleTarget
       if (taskImageOptions.containerPorts) {
         for (const containerPort of taskImageOptions.containerPorts) {
           container.addPortMappings({
-            containerPort
+            containerPort,
           });
         }
       }
@@ -117,7 +119,7 @@ export class NetworkMultipleTargetGroupsEc2Service extends NetworkMultipleTarget
     }
     if (this.taskDefinition.defaultContainer.portMappings.length === 0) {
       this.taskDefinition.defaultContainer.addPortMappings({
-        containerPort: 80
+        containerPort: 80,
       });
     }
 
@@ -128,13 +130,13 @@ export class NetworkMultipleTargetGroupsEc2Service extends NetworkMultipleTarget
     } else {
       this.targetGroup = this.listener.addTargets('ECS', {
         targets: [this.service],
-        port: this.taskDefinition.defaultContainer.portMappings[0].containerPort
+        port: this.taskDefinition.defaultContainer.portMappings[0].containerPort,
       });
     }
   }
 
   private createEc2Service(props: NetworkMultipleTargetGroupsEc2ServiceProps): Ec2Service {
-    return new Ec2Service(this, "Service", {
+    return new Ec2Service(this, 'Service', {
       cluster: this.cluster,
       desiredCount: this.desiredCount,
       taskDefinition: this.taskDefinition,

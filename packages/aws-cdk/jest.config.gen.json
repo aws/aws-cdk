@@ -1,0 +1,1 @@
+{"moduleFileExtensions":["js","ts"],"testEnvironment":"node","coverageThreshold":{"global":{"branches":45,"statements":60}},"collectCoverage":true,"coverageReporters":["lcov","html","text-summary"],"coveragePathIgnorePatterns":["<rootDir>/lib/.*\\.generated.js"],"preset":"ts-jest","testMatch":["**/?(*.)+(spec|test).ts?(x)"]}

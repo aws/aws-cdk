@@ -10,44 +10,55 @@ beforeEach(() => {
 
 test('Eval with Node.js', () => {
   // WHEN
-  const task = new sfn.Task(stack, 'Task', {
-    task: new tasks.EvaluateExpression({
-      expression: '$.a + $.b',
-    })
+  const task = new tasks.EvaluateExpression(stack, 'Task', {
+    expression: '$.a + $.b',
   });
   new sfn.StateMachine(stack, 'SM', {
-    definition: task
+    definition: task,
   });
 
   // THEN
   expect(stack).toHaveResource('AWS::StepFunctions::StateMachine', {
     DefinitionString: {
-      "Fn::Join": [
-        "",
+      'Fn::Join': [
+        '',
         [
-          "{\"StartAt\":\"Task\",\"States\":{\"Task\":{\"End\":true,\"Parameters\":{\"expression\":\"$.a + $.b\",\"expressionAttributeValues\":{\"$.a.$\":\"$.a\",\"$.b.$\":\"$.b\"}},\"Type\":\"Task\",\"Resource\":\"",
+          '{"StartAt":"Task","States":{"Task":{"End":true,"Type":"Task","Resource":"',
           {
-            "Fn::GetAtt": [
-              "Evala0d2ce44871b4e7487a1f5e63d7c3bdc4DAC06E1",
-              "Arn"
-            ]
+            'Fn::GetAtt': ['Evala0d2ce44871b4e7487a1f5e63d7c3bdc4DAC06E1', 'Arn'],
           },
-          "\"}}}"
-        ]
-      ]
+          '","Parameters":{"expression":"$.a + $.b","expressionAttributeValues":{"$.a.$":"$.a","$.b.$":"$.b"}}}}}',
+        ],
+      ],
     },
   });
 
   expect(stack).toHaveResource('AWS::Lambda::Function', {
-    Runtime: 'nodejs10.x'
+    Runtime: 'nodejs10.x',
   });
 });
 
-test('Throws when expression does not contain paths', () => {
+test('expression does not contain paths', () => {
   // WHEN
-  expect(() => new sfn.Task(stack, 'Task', {
-    task: new tasks.EvaluateExpression({
-      expression: '2 + 2',
-    })
-  })).toThrow(/No paths found in expression/);
+  const task = new tasks.EvaluateExpression(stack, 'Task', {
+    expression: '2 + 2',
+  });
+  new sfn.StateMachine(stack, 'SM', {
+    definition: task,
+  });
+
+  expect(stack).toHaveResource('AWS::StepFunctions::StateMachine', {
+    DefinitionString: {
+      'Fn::Join': [
+        '',
+        [
+          '{"StartAt":"Task","States":{"Task":{"End":true,"Type":"Task","Resource":"',
+          {
+            'Fn::GetAtt': ['Evala0d2ce44871b4e7487a1f5e63d7c3bdc4DAC06E1', 'Arn'],
+          },
+          '","Parameters":{"expression":"2 + 2","expressionAttributeValues":{}}}}}',
+        ],
+      ],
+    },
+  });
 });

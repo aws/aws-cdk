@@ -47,7 +47,7 @@ export class IdentitySource {
 
   private static toString(source: string, type: string) {
     if (!source.trim()) {
-      throw new Error(`IdentitySources must be a non-empty string.`);
+      throw new Error('IdentitySources must be a non-empty string.');
     }
 
     return `${type}.${source}`;

@@ -26,13 +26,13 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "codemaker": "^1.1.0",
-    "yaml": "1.8.3"
+    "codemaker": "^1.12.0",
+    "yaml": "1.10.0"
   },
   "devDependencies": {
-    "@types/jest": "^25.1.4",
-    "@types/yaml": "1.2.0",
-    "jest": "^24.9.0"
+    "@types/jest": "^26.0.14",
+    "@types/yaml": "1.9.7",
+    "jest": "^26.4.2"
   },
   "keywords": [
     "aws",

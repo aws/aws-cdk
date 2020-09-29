@@ -62,7 +62,7 @@ export class HttpNamespace extends Resource implements IHttpNamespace {
 
     const ns = new CfnHttpNamespace(this, 'Resource', {
       name: props.name,
-      description: props.description
+      description: props.description,
     });
 
     this.namespaceName = props.name;
@@ -86,7 +86,7 @@ export class HttpNamespace extends Resource implements IHttpNamespace {
   public createService(id: string, props?: BaseServiceProps): Service {
     return new Service(this, id, {
       namespace: this,
-      ...props
+      ...props,
     });
   }
 }

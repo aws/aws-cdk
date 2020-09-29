@@ -11,7 +11,8 @@ class TestStack extends cdk.Stack {
       reportBuildStatus: false,
     });
     new codebuild.Project(this, 'MyProject', {
-      source
+      source,
+      grantReportGroupPermissions: false,
     });
   }
 }

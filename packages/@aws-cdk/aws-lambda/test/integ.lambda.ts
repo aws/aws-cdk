@@ -14,7 +14,7 @@ const fn = new lambda.Function(stack, 'MyLambda', {
 
 fn.addToRolePolicy(new iam.PolicyStatement({
   resources: ['*'],
-  actions: ['*']
+  actions: ['*'],
 }));
 
 const version = fn.addVersion('1');
@@ -24,7 +24,7 @@ const alias = new lambda.Alias(stack, 'Alias', {
   version,
 });
 alias.addPermission('AliasPermission', {
-  principal: new iam.ServicePrincipal('cloudformation.amazonaws.com')
+  principal: new iam.ServicePrincipal('cloudformation.amazonaws.com'),
 });
 
 app.synth();

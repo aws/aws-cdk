@@ -1,6 +1,6 @@
 import '@aws-cdk/assert/jest';
 import { Stack } from '@aws-cdk/core';
-import {AnyPrincipal, PolicyDocument, PolicyStatement} from '../lib';
+import { AnyPrincipal, PolicyDocument, PolicyStatement } from '../lib';
 
 describe('IAM policy statement', () => {
 
@@ -127,38 +127,36 @@ describe('IAM policy statement', () => {
     test('the kitchen sink', () => {
       const stack = new Stack();
 
-      /* tslint:disable */
       const policyDocument = {
-        "Version": "2012-10-17",
-        "Statement": [
+        Version: '2012-10-17',
+        Statement: [
           {
-            "Sid": "FirstStatement",
-            "Effect": "Allow",
-            "Action": "iam:ChangePassword",
-            "Resource": "*"
+            Sid: 'FirstStatement',
+            Effect: 'Allow',
+            Action: 'iam:ChangePassword',
+            Resource: '*',
           },
           {
-            "Sid": "SecondStatement",
-            "Effect": "Allow",
-            "Action": "s3:ListAllMyBuckets",
-            "Resource": "*"
+            Sid: 'SecondStatement',
+            Effect: 'Allow',
+            Action: 's3:ListAllMyBuckets',
+            Resource: '*',
           },
           {
-            "Sid": "ThirdStatement",
-            "Effect": "Allow",
-            "Action": [
-              "s3:List*",
-              "s3:Get*"
+            Sid: 'ThirdStatement',
+            Effect: 'Allow',
+            Action: [
+              's3:List*',
+              's3:Get*',
             ],
-            "Resource": [
-              "arn:aws:s3:::confidential-data",
-              "arn:aws:s3:::confidential-data/*"
+            Resource: [
+              'arn:aws:s3:::confidential-data',
+              'arn:aws:s3:::confidential-data/*',
             ],
-            "Condition": {"Bool": {"aws:MultiFactorAuthPresent": "true"}}
-          }
-        ]
+            Condition: { Bool: { 'aws:MultiFactorAuthPresent': 'true' } },
+          },
+        ],
       };
-      /* tslint:enable */
 
       const doc = PolicyDocument.fromJson(policyDocument);
 
@@ -168,15 +166,15 @@ describe('IAM policy statement', () => {
     test('throws error with field data being object', () => {
       expect(() => {
         PolicyStatement.fromJson({
-          Action: {}
+          Action: {},
         });
       }).toThrow(/Fields must be either a string or an array of strings/);
     });
 
-    test('throws error with field data being object', () => {
+    test('throws error with field data being array of non-strings', () => {
       expect(() => {
         PolicyStatement.fromJson({
-          Action: [{}]
+          Action: [{}],
         });
       }).toThrow(/Fields must be either a string or an array of strings/);
     });

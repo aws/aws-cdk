@@ -15,12 +15,12 @@ class ConfigStack extends cdk.Stack {
     const fn = new lambda.Function(this, 'CustomFunction', {
       code: lambda.AssetCode.fromInline('exports.handler = (event) => console.log(event);'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X
+      runtime: lambda.Runtime.NODEJS_10_X,
     });
 
     const customRule = new config.CustomRule(this, 'Custom', {
       configurationChanges: true,
-      lambdaFunction: fn
+      lambdaFunction: fn,
     });
 
     customRule.scopeToResource('AWS::EC2::Instance');
@@ -33,7 +33,7 @@ class ConfigStack extends cdk.Stack {
 
     // Send notification on compliance change
     driftRule.onComplianceChange('ComplianceChange', {
-      target: new targets.SnsTopic(complianceTopic)
+      target: new targets.SnsTopic(complianceTopic),
     });
     /// !hide
   }

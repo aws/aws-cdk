@@ -1,4 +1,4 @@
-import { AssetMetadataEntry } from '@aws-cdk/cx-api';
+import { AssetMetadataEntry } from '@aws-cdk/cloud-assembly-schema';
 import { ToolkitInfo } from '../lib';
 import { addMetadataAssetsToManifest } from '../lib/assets';
 import { AssetManifestBuilder } from '../lib/util/asset-manifest-builder';
@@ -27,30 +27,30 @@ describe('file assets', () => {
         s3BucketParameter: 'BucketParameter',
         s3KeyParameter: 'KeyParameter',
         artifactHashParameter: 'ArtifactHashParameter',
-      }
+      },
     ]);
 
     // WHEN
     const params = await addMetadataAssetsToManifest(stack, assets, toolkit);
 
     // THEN
-    expect(params).toEqual([
-      { ParameterKey: 'BucketParameter', ParameterValue: 'bucket' },
-      { ParameterKey: 'KeyParameter', ParameterValue: 'assets/SomeStackSomeResource4567/||source-hash.js' },
-      { ParameterKey: 'ArtifactHashParameter', ParameterValue: 'source-hash' },
-    ]);
+    expect(params).toEqual({
+      BucketParameter: 'bucket',
+      KeyParameter: 'assets/SomeStackSomeResource4567/||source-hash.js',
+      ArtifactHashParameter: 'source-hash',
+    });
 
     expect(assets.toManifest('.').entries).toEqual([
       expect.objectContaining({
         destination: {
-          bucketName: "bucket",
-          objectKey: "assets/SomeStackSomeResource4567/source-hash.js",
+          bucketName: 'bucket',
+          objectKey: 'assets/SomeStackSomeResource4567/source-hash.js',
         },
         source: {
-          packaging: "file",
+          packaging: 'file',
           path: __filename,
         },
-      })
+      }),
     ]);
   });
 
@@ -65,7 +65,7 @@ describe('file assets', () => {
         s3BucketParameter: 'BucketParameter',
         s3KeyParameter: 'KeyParameter',
         artifactHashParameter: 'ArtifactHashParameter',
-      }
+      },
     ]);
 
     // WHEN
@@ -76,9 +76,9 @@ describe('file assets', () => {
       expect.objectContaining({
         destination: {
           bucketName: 'bucket',
-          objectKey: "assets/source-hash.js",
+          objectKey: 'assets/source-hash.js',
         },
-      })
+      }),
     ]);
   });
 
@@ -92,19 +92,16 @@ describe('file assets', () => {
         s3BucketParameter: 'BucketParameter',
         s3KeyParameter: 'KeyParameter',
         artifactHashParameter: 'ArtifactHashParameter',
-        sourceHash: 'boom'
-      }
+        sourceHash: 'boom',
+      },
     ]);
 
     // WHEN
     const params = await addMetadataAssetsToManifest(stack, assets, toolkit, ['SomeStackSomeResource4567']);
 
     // THEN
-    expect(params).toEqual([
-      { ParameterKey: 'BucketParameter', UsePreviousValue: true },
-      { ParameterKey: 'KeyParameter', UsePreviousValue: true },
-      { ParameterKey: 'ArtifactHashParameter', UsePreviousValue: true },
-    ]);
+    expect(params).toEqual({
+    });
 
     expect(assets.toManifest('.').entries).toEqual([]);
   });
@@ -120,7 +117,7 @@ describe('docker assets', () => {
         packaging: 'container-image',
         path: '/foo',
         sourceHash: '0123456789abcdef',
-      }
+      },
     ]);
     mockFn(toolkit.prepareEcrRepository).mockResolvedValue({ repositoryUri: 'docker.uri' });
 
@@ -129,20 +126,20 @@ describe('docker assets', () => {
 
     // THEN
     expect(toolkit.prepareEcrRepository).toHaveBeenCalledWith('cdk/stack-construct-abc123');
-    expect(params).toEqual([
-      { ParameterKey: 'MyParameter', ParameterValue: 'docker.uri:0123456789abcdef' },
-    ]);
+    expect(params).toEqual({
+      MyParameter: 'docker.uri:0123456789abcdef',
+    });
     expect(assets.toManifest('.').entries).toEqual([
       expect.objectContaining({
-        type: "docker-image",
+        type: 'docker-image',
         destination: {
-          imageTag: "0123456789abcdef",
-          repositoryName: "cdk/stack-construct-abc123",
+          imageTag: '0123456789abcdef',
+          repositoryName: 'cdk/stack-construct-abc123',
         },
         source: {
-          directory: "/foo",
+          directory: '/foo',
         },
-      })
+      }),
     ]);
   });
 
@@ -154,7 +151,7 @@ describe('docker assets', () => {
         packaging: 'container-image',
         path: '/foo',
         sourceHash: '0123456789abcdef',
-      }
+      },
     ]);
 
     await expect(addMetadataAssetsToManifest(stack, assets, toolkit)).rejects.toThrow('Invalid Docker image asset');
@@ -170,7 +167,7 @@ describe('docker assets', () => {
         packaging: 'container-image',
         path: '/foo',
         sourceHash: '0123456789abcdef',
-      }
+      },
     ]);
     mockFn(toolkit.prepareEcrRepository).mockResolvedValue({ repositoryUri: 'docker.uri' });
 
@@ -179,18 +176,18 @@ describe('docker assets', () => {
 
     // THEN
     expect(toolkit.prepareEcrRepository).toHaveBeenCalledWith('reponame');
-    expect(params).toEqual([]); // No parameters!
+    expect(params).toEqual({}); // No parameters!
     expect(assets.toManifest('.').entries).toEqual([
       expect.objectContaining({
-        type: "docker-image",
+        type: 'docker-image',
         destination: {
-          imageTag: "12345",
-          repositoryName: "reponame",
+          imageTag: '12345',
+          repositoryName: 'reponame',
         },
         source: {
-          directory: "/foo",
+          directory: '/foo',
         },
-      })
+      }),
     ]);
   });
 
@@ -202,17 +199,16 @@ describe('docker assets', () => {
         id: 'SomeStackSomeResource4567',
         packaging: 'container-image',
         imageNameParameter: 'asdf',
-        sourceHash: 'source-hash'
-      }
+        sourceHash: 'source-hash',
+      },
     ]);
 
     // WHEN
     const params = await addMetadataAssetsToManifest(stack, assets, toolkit, ['SomeStackSomeResource4567']);
 
     // THEN
-    expect(params).toEqual([
-      { ParameterKey: 'asdf', UsePreviousValue: true },
-    ]);
+    expect(params).toEqual({
+    });
 
     expect(assets.toManifest('.').entries).toEqual([]);
   });
@@ -225,10 +221,10 @@ function stackWithAssets(assetEntries: AssetMetadataEntry[]) {
     template: {
       Resources: {
         SomeResource: {
-          Type: 'AWS::Something::Something'
-        }
-      }
-    }
+          Type: 'AWS::Something::Something',
+        },
+      },
+    },
   });
 }
 

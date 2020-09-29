@@ -23,9 +23,14 @@
       },
       "python": {
         "distName": "aws-cdk.aws-iam",
-        "module": "aws_cdk.aws_iam"
+        "module": "aws_cdk.aws_iam",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",
@@ -47,14 +52,13 @@
     "compat": "cdk-compat"
   },
   "cdk-build": {
-    "cloudformation": "AWS::IAM"
+    "cloudformation": "AWS::IAM",
+    "jest": true
   },
   "keywords": [
     "aws",
     "cdk",
-    "cloudlib",
-    "aws-cloudlib",
-    "aws-clib",
+    "constructs",
     "iam"
   ],
   "author": {
@@ -68,98 +72,36 @@
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
-    "jest": "^24.9.0",
-    "pkglint": "0.0.0"
+    "jest": "^26.4.2",
+    "pkglint": "0.0.0",
+    "sinon": "^9.0.3"
   },
   "dependencies": {
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
-    "constructs": "^2.0.0"
+    "constructs": "^3.0.4"
   },
   "peerDependencies": {
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
-    "constructs": "^2.0.0"
-  },
-  "jest": {
-    "moduleFileExtensions": [
-      "js"
-    ],
-    "coverageThreshold": {
-      "global": {
-        "branches": 70,
-        "statements": 70
-      }
-    },
-    "collectCoverage": true,
-    "coverageReporters": [
-      "lcov",
-      "html",
-      "text-summary"
-    ]
+    "constructs": "^3.0.4"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 10.3.0"
+    "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "awslint": {
     "exclude": [
       "from-signature:@aws-cdk/aws-iam.Role.fromRoleArn",
       "construct-interface-extends-iconstruct:@aws-cdk/aws-iam.IManagedPolicy",
+      "props-physical-name:@aws-cdk/aws-iam.OpenIdConnectProviderProps",
       "resource-interface-extends-resource:@aws-cdk/aws-iam.IManagedPolicy",
-      "docs-public-apis:@aws-cdk/aws-iam.PolicyStatement.addArnPrincipal",
-      "docs-public-apis:@aws-cdk/aws-iam.Effect.DENY",
-      "docs-public-apis:@aws-cdk/aws-iam.Effect.ALLOW",
-      "docs-public-apis:@aws-cdk/aws-iam.Effect",
-      "docs-public-apis:@aws-cdk/aws-iam.UserProps",
-      "docs-public-apis:@aws-cdk/aws-iam.RoleProps",
-      "docs-public-apis:@aws-cdk/aws-iam.PolicyProps",
-      "docs-public-apis:@aws-cdk/aws-iam.ManagedPolicyProps",
-      "docs-public-apis:@aws-cdk/aws-iam.AccountPrincipal",
-      "docs-public-apis:@aws-cdk/aws-iam.AccountPrincipal.accountId",
-      "docs-public-apis:@aws-cdk/aws-iam.AccountRootPrincipal",
-      "docs-public-apis:@aws-cdk/aws-iam.ArnPrincipal",
-      "docs-public-apis:@aws-cdk/aws-iam.ArnPrincipal.arn",
-      "docs-public-apis:@aws-cdk/aws-iam.CanonicalUserPrincipal.canonicalUserId",
-      "docs-public-apis:@aws-cdk/aws-iam.CompositePrincipal",
-      "docs-public-apis:@aws-cdk/aws-iam.CompositePrincipal.addPrincipals",
-      "docs-public-apis:@aws-cdk/aws-iam.FederatedPrincipal",
-      "docs-public-apis:@aws-cdk/aws-iam.FederatedPrincipal.conditions",
-      "docs-public-apis:@aws-cdk/aws-iam.FederatedPrincipal.federated",
-      "docs-public-apis:@aws-cdk/aws-iam.Group",
-      "docs-public-apis:@aws-cdk/aws-iam.LazyRole.roleId",
-      "docs-public-apis:@aws-cdk/aws-iam.OrganizationPrincipal.organizationId",
-      "docs-public-apis:@aws-cdk/aws-iam.Policy.fromPolicyName",
-      "docs-public-apis:@aws-cdk/aws-iam.PolicyDocument.isEmpty",
-      "docs-public-apis:@aws-cdk/aws-iam.PolicyStatement.effect",
-      "docs-public-apis:@aws-cdk/aws-iam.PolicyStatement.addAccountRootPrincipal",
-      "docs-public-apis:@aws-cdk/aws-iam.PolicyStatement.addActions",
-      "docs-public-apis:@aws-cdk/aws-iam.PolicyStatement.addAnyPrincipal",
-      "docs-public-apis:@aws-cdk/aws-iam.LazyRoleProps",
-      "docs-public-apis:@aws-cdk/aws-iam.PolicyStatement.addAwsAccountPrincipal",
-      "docs-public-apis:@aws-cdk/aws-iam.PolicyStatement.addCanonicalUserPrincipal",
-      "docs-public-apis:@aws-cdk/aws-iam.PolicyStatement.addFederatedPrincipal",
-      "docs-public-apis:@aws-cdk/aws-iam.PolicyStatement.addNotActions",
-      "docs-public-apis:@aws-cdk/aws-iam.PolicyStatement.addNotPrincipals",
-      "docs-public-apis:@aws-cdk/aws-iam.PolicyStatement.addNotResources",
-      "docs-public-apis:@aws-cdk/aws-iam.PolicyStatement.addPrincipals",
-      "docs-public-apis:@aws-cdk/aws-iam.PolicyStatement.addResources",
-      "docs-public-apis:@aws-cdk/aws-iam.PolicyStatement.toStatementJson",
-      "docs-public-apis:@aws-cdk/aws-iam.PolicyStatement.toString",
-      "docs-public-apis:@aws-cdk/aws-iam.PrincipalBase.toJSON",
-      "docs-public-apis:@aws-cdk/aws-iam.PrincipalPolicyFragment.conditions",
-      "docs-public-apis:@aws-cdk/aws-iam.PrincipalPolicyFragment.principalJson",
-      "docs-public-apis:@aws-cdk/aws-iam.ServicePrincipal.service",
-      "props-default-doc:@aws-cdk/aws-iam.GrantOnPrincipalOptions.scope",
-      "docs-public-apis:@aws-cdk/aws-iam.GroupProps",
-      "docs-public-apis:@aws-cdk/aws-iam.IGroup",
-      "docs-public-apis:@aws-cdk/aws-iam.IPolicy",
-      "docs-public-apis:@aws-cdk/aws-iam.IPolicy.policyName",
       "docs-public-apis:@aws-cdk/aws-iam.IUser"
     ]
   },
   "stability": "stable",
   "awscdkio": {
     "announce": false
-  }
+  },
+  "maturity": "stable"
 }

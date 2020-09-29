@@ -1,7 +1,7 @@
 import { Construct } from '@aws-cdk/core';
 import { ContainerDefinition } from '../container-definition';
 import { BaseLogDriverProps } from './base-log-driver';
-import { LogDriver, LogDriverConfig } from "./log-driver";
+import { LogDriver, LogDriverConfig } from './log-driver';
 import { renderCommonLogDriverOptions, stringifyOptions } from './utils';
 
 /**
@@ -97,7 +97,7 @@ export class SyslogLogDriver extends LogDriver {
         'syslog-tls-key': this.props.tlsKey,
         'syslog-tls-skip-verify': this.props.tlsSkipVerify,
         'syslog-format': this.props.format,
-        ...renderCommonLogDriverOptions(this.props)
+        ...renderCommonLogDriverOptions(this.props),
       }),
     };
   }

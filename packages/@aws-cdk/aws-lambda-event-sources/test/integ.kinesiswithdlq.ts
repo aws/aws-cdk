@@ -1,7 +1,7 @@
 import * as kinesis from '@aws-cdk/aws-kinesis';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { App, CfnOutput, Stack } from "@aws-cdk/core";
+import { App, CfnOutput, Stack } from '@aws-cdk/core';
 import { KinesisEventSource, SqsDlq } from '../lib';
 
 /*
@@ -12,7 +12,7 @@ import { KinesisEventSource, SqsDlq } from '../lib';
  */
 
 async function handler(event: any) {
-  // tslint:disable-next-line:no-console
+  // eslint-disable-next-line no-console
   console.log('event:', JSON.stringify(event, undefined, 2));
   throw new Error();
 }
@@ -24,7 +24,7 @@ class KinesisWithDLQTest extends Stack {
     const fn = new lambda.Function(this, 'F', {
       runtime: lambda.Runtime.NODEJS_10_X,
       handler: 'index.handler',
-      code: lambda.Code.fromInline(`exports.handler = ${handler.toString()}`)
+      code: lambda.Code.fromInline(`exports.handler = ${handler.toString()}`),
     });
     new CfnOutput(this, 'FunctionArn', { value: fn.functionArn });
 

@@ -1,0 +1,6 @@
+Resources:
+  Bucket1:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        !ImportValue SomeSharedValue

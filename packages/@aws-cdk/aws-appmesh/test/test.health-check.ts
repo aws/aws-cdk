@@ -1,5 +1,5 @@
 import * as cdk from '@aws-cdk/core';
-import {Test} from 'nodeunit';
+import { Test } from 'nodeunit';
 
 import * as appmesh from '../lib';
 
@@ -22,7 +22,7 @@ export = {
 
     // WHEN
     const toThrow = (millis: number) => getNode(stack).addListeners({
-      healthCheck: {interval: cdk.Duration.millis(millis)}
+      healthCheck: { interval: cdk.Duration.millis(millis) },
     });
 
     // THEN
@@ -41,7 +41,7 @@ export = {
 
     // WHEN
     const toThrow = (millis: number) => getNode(stack).addListeners({
-      healthCheck: {timeout: cdk.Duration.millis(millis)}
+      healthCheck: { timeout: cdk.Duration.millis(millis) },
     });
 
     // THEN
@@ -60,7 +60,7 @@ export = {
 
     // WHEN
     const toThrow = (port: number) => getNode(stack).addListeners({
-      healthCheck: {port}
+      healthCheck: { port },
     });
 
     // THEN
@@ -80,7 +80,7 @@ export = {
 
     // WHEN
     const toThrow = (healthyThreshold: number) => getNode(stack).addListeners({
-      healthCheck: {healthyThreshold}
+      healthCheck: { healthyThreshold },
     });
 
     // THEN
@@ -99,7 +99,7 @@ export = {
 
     // WHEN
     const toThrow = (unhealthyThreshold: number) => getNode(stack).addListeners({
-      healthCheck: {unhealthyThreshold}
+      healthCheck: { unhealthyThreshold },
     });
 
     // THEN
@@ -118,8 +118,8 @@ export = {
     const toThrow = (protocol: appmesh.Protocol) => getNode(stack).addListeners({
       healthCheck: {
         protocol,
-        path: '/'
-      }
+        path: '/',
+      },
     });
 
     // THEN
@@ -128,4 +128,24 @@ export = {
 
     test.done();
   },
+
+  'throws if path and Protocol.GRPC'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const toThrow = (protocol: appmesh.Protocol) => getNode(stack).addListeners({
+      healthCheck: {
+        protocol,
+        path: '/',
+      },
+    });
+
+    // THEN
+    test.doesNotThrow(() => toThrow(appmesh.Protocol.HTTP));
+    test.throws(() => toThrow(appmesh.Protocol.GRPC), /The path property cannot be set with Protocol.GRPC/);
+
+    test.done();
+  },
+
 };

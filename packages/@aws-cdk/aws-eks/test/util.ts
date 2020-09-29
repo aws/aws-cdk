@@ -1,6 +1,8 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { App, Construct, Stack } from '@aws-cdk/core';
-import { Cluster } from '../lib';
+import { Cluster, KubernetesVersion } from '../lib';
+
+const CLUSTER_VERSION = KubernetesVersion.V1_16;
 
 export function testFixture() {
   const { stack, app } = testFixtureNoVpc();
@@ -11,13 +13,13 @@ export function testFixture() {
 
 export function testFixtureNoVpc() {
   const app = new App();
-  const stack = new Stack(app, 'Stack', { env: { region: 'us-east-1' }});
+  const stack = new Stack(app, 'Stack', { env: { region: 'us-east-1' } });
   return { stack, app };
 }
 
 export function testFixtureCluster() {
   const { stack, app } = testFixtureNoVpc();
-  const cluster = new Cluster(stack, 'Cluster');
+  const cluster = new Cluster(stack, 'Cluster', { version: CLUSTER_VERSION });
 
   return { stack, app, cluster };
 }
@@ -26,7 +28,7 @@ export function testFixtureCluster() {
 // keyed from the target region.
 const env = {
   region: process.env.CDK_INTEG_REGION || process.env.CDK_DEFAULT_REGION,
-  account: process.env.CDK_INTEG_ACCOUNT || process.env.CDK_DEFAULT_ACCOUNT
+  account: process.env.CDK_INTEG_ACCOUNT || process.env.CDK_DEFAULT_ACCOUNT,
 };
 
 export class TestStack extends Stack {

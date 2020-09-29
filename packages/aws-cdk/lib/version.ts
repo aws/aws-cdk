@@ -1,12 +1,12 @@
 import { exec as _exec } from 'child_process';
+import * as path from 'path';
+import { promisify } from 'util';
 import * as colors from 'colors/safe';
 import * as fs from 'fs-extra';
-import * as os from 'os';
-import * as path from 'path';
 import * as semver from 'semver';
-import { promisify } from 'util';
 import { debug, print } from '../lib/logging';
 import { formatAsBanner } from '../lib/util/console-formatters';
+import { cdkCacheDir } from './util/directories';
 
 const ONE_DAY_IN_SECONDS = 1 * 24 * 60 * 60;
 
@@ -26,13 +26,8 @@ function commit(): string {
 
 export class VersionCheckTTL {
   public static timestampFilePath(): string {
-    // Get the home directory from the OS, first. Fallback to $HOME.
-    const homedir = os.userInfo().homedir || os.homedir();
-    if (!homedir || !homedir.trim()) {
-      throw new Error('Cannot determine home directory');
-    }
     // Using the same path from account-cache.ts
-    return path.join(homedir, '.cdk', 'cache', 'repo-version-ttl');
+    return path.join(cdkCacheDir(), 'repo-version-ttl');
   }
 
   private readonly file: string;
@@ -84,7 +79,7 @@ export async function latestVersionIfHigher(currentVersion: string, cacheFile: V
     return null;
   }
 
-  const { stdout, stderr } = await exec(`npm view aws-cdk version`);
+  const { stdout, stderr } = await exec('npm view aws-cdk version');
   if (stderr && stderr.trim().length > 0) {
     debug(`The 'npm view' command generated an error stream with content [${stderr.trim()}]`);
   }
@@ -113,7 +108,7 @@ export async function displayVersionMessage(): Promise<void> {
     if (laterVersion) {
       const bannerMsg = formatAsBanner([
         `Newer version of CDK is available [${colors.green(laterVersion as string)}]`,
-        `Upgrade recommended`,
+        'Upgrade recommended',
       ]);
       bannerMsg.forEach((e) => print(e));
     }

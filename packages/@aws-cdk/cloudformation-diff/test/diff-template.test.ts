@@ -5,8 +5,8 @@ const BUCKET_POLICY_RESOURCE = {
   Type: 'AWS::S3::BucketPolicy',
   Properties: {
     PolicyDocument: POLICY_DOCUMENT,
-    Bucket: { Ref: 'BucketResource' }
-  }
+    Bucket: { Ref: 'BucketResource' },
+  },
 };
 
 test('when there is no difference', () => {
@@ -17,10 +17,10 @@ test('when there is no difference', () => {
       BucketResource: {
         Type: 'AWS::S3::Bucket',
         Properties: {
-          BucketName: bucketName
-        }
-      }
-    }
+          BucketName: bucketName,
+        },
+      },
+    },
   };
   // Making a JSON-clone, because === is cheating!
   const newTemplate = JSON.parse(JSON.stringify(currentTemplate));
@@ -48,14 +48,14 @@ test('when a resource is deleted (no DeletionPolicy)', () => {
   const currentTemplate = {
     Resources: {
       BucketResource: { Type: 'AWS::S3::Bucket' },
-      BucketPolicyResource: BUCKET_POLICY_RESOURCE
-    }
+      BucketPolicyResource: BUCKET_POLICY_RESOURCE,
+    },
   };
 
   const newTemplate = {
     Resources: {
-      BucketResource: { Type: 'AWS::S3::Bucket' }
-    }
+      BucketResource: { Type: 'AWS::S3::Bucket' },
+    },
   };
 
   const differences = diffTemplate(currentTemplate, newTemplate);
@@ -77,14 +77,14 @@ test('when a resource is deleted (DeletionPolicy=Retain)', () => {
         DeletionPolicy: 'Retain',
         Properties: {
           PolicyDocument: POLICY_DOCUMENT,
-          Bucket: { Ref: 'BucketResource' }
-        }
-      }
-    }
+          Bucket: { Ref: 'BucketResource' },
+        },
+      },
+    },
   };
 
   const newTemplate = {
-    Resources: { BucketResource: { Type: 'AWS::S3::Bucket' } }
+    Resources: { BucketResource: { Type: 'AWS::S3::Bucket' } },
   };
 
   const differences = diffTemplate(currentTemplate, newTemplate);
@@ -102,30 +102,30 @@ test('when a property changes', () => {
   const currentTemplate = {
     Resources: {
       QueueResource: {
-        Type: 'AWS::SQS::Queue'
+        Type: 'AWS::SQS::Queue',
       },
       BucketResource: {
         Type: 'AWS::S3::Bucket',
         Properties: {
-          BucketName: bucketName
-        }
-      }
-    }
+          BucketName: bucketName,
+        },
+      },
+    },
   };
 
   const newBucketName = `${bucketName}-v2`;
   const newTemplate = {
     Resources: {
       QueueResource: {
-        Type: 'AWS::SQS::Queue'
+        Type: 'AWS::SQS::Queue',
       },
       BucketResource: {
         Type: 'AWS::S3::Bucket',
         Properties: {
-          BucketName: newBucketName
-        }
-      }
-    }
+          BucketName: newBucketName,
+        },
+      },
+    },
   };
 
   const differences = diffTemplate(currentTemplate, newTemplate);
@@ -135,7 +135,7 @@ test('when a property changes', () => {
   expect(difference).not.toBeUndefined();
   expect(difference?.oldResourceType).toEqual('AWS::S3::Bucket');
   expect(difference?.propertyUpdates).toEqual({
-    BucketName: { oldValue: bucketName, newValue: newBucketName, changeImpact: ResourceImpact.WILL_REPLACE, isDifferent: true }
+    BucketName: { oldValue: bucketName, newValue: newBucketName, changeImpact: ResourceImpact.WILL_REPLACE, isDifferent: true },
   });
 });
 
@@ -145,9 +145,9 @@ test('change in dependencies counts as a simple update', () => {
     Resources: {
       BucketResource: {
         Type: 'AWS::S3::Bucket',
-        DependsOn: ['SomeResource']
-      }
-    }
+        DependsOn: ['SomeResource'],
+      },
+    },
   };
 
   // WHEN
@@ -155,9 +155,9 @@ test('change in dependencies counts as a simple update', () => {
     Resources: {
       BucketResource: {
         Type: 'AWS::S3::Bucket',
-        DependsOn: ['SomeResource', 'SomeOtherResource']
-      }
-    }
+        DependsOn: ['SomeResource', 'SomeOtherResource'],
+      },
+    },
   };
   const differences = diffTemplate(currentTemplate, newTemplate);
 
@@ -172,26 +172,26 @@ test('when a property is deleted', () => {
   const currentTemplate = {
     Resources: {
       QueueResource: {
-        Type: 'AWS::SQS::Queue'
+        Type: 'AWS::SQS::Queue',
       },
       BucketResource: {
         Type: 'AWS::S3::Bucket',
         Properties: {
-          BucketName: bucketName
-        }
-      }
-    }
+          BucketName: bucketName,
+        },
+      },
+    },
   };
 
   const newTemplate = {
     Resources: {
       QueueResource: {
-        Type: 'AWS::SQS::Queue'
+        Type: 'AWS::SQS::Queue',
       },
       BucketResource: {
-        Type: 'AWS::S3::Bucket'
-      }
-    }
+        Type: 'AWS::S3::Bucket',
+      },
+    },
   };
 
   const differences = diffTemplate(currentTemplate, newTemplate);
@@ -201,7 +201,7 @@ test('when a property is deleted', () => {
   expect(difference).not.toBeUndefined();
   expect(difference?.oldResourceType).toEqual('AWS::S3::Bucket');
   expect(difference?.propertyUpdates).toEqual({
-    BucketName: { oldValue: bucketName, newValue: undefined, changeImpact: ResourceImpact.WILL_REPLACE, isDifferent: true }
+    BucketName: { oldValue: bucketName, newValue: undefined, changeImpact: ResourceImpact.WILL_REPLACE, isDifferent: true },
   });
 });
 
@@ -210,26 +210,26 @@ test('when a property is added', () => {
   const currentTemplate = {
     Resources: {
       QueueResource: {
-        Type: 'AWS::SQS::Queue'
+        Type: 'AWS::SQS::Queue',
       },
       BucketResource: {
-        Type: 'AWS::S3::Bucket'
-      }
-    }
+        Type: 'AWS::S3::Bucket',
+      },
+    },
   };
 
   const newTemplate = {
     Resources: {
       QueueResource: {
-        Type: 'AWS::SQS::Queue'
+        Type: 'AWS::SQS::Queue',
       },
       BucketResource: {
         Type: 'AWS::S3::Bucket',
         Properties: {
-          BucketName: bucketName
-        }
-      }
-    }
+          BucketName: bucketName,
+        },
+      },
+    },
   };
 
   const differences = diffTemplate(currentTemplate, newTemplate);
@@ -239,7 +239,7 @@ test('when a property is added', () => {
   expect(difference).not.toBeUndefined();
   expect(difference?.oldResourceType).toEqual('AWS::S3::Bucket');
   expect(difference?.propertyUpdates).toEqual({
-    BucketName: { oldValue: undefined, newValue: bucketName, changeImpact: ResourceImpact.WILL_REPLACE, isDifferent: true }
+    BucketName: { oldValue: undefined, newValue: bucketName, changeImpact: ResourceImpact.WILL_REPLACE, isDifferent: true },
   });
 });
 
@@ -249,10 +249,10 @@ test('when a resource type changed', () => {
       BucketResource: {
         Type: 'AWS::IAM::Policy',
         Properties: {
-          PolicyName: 'PolicyName'
-        }
-      }
-    }
+          PolicyName: 'PolicyName',
+        },
+      },
+    },
   };
 
   const newTemplate = {
@@ -260,10 +260,10 @@ test('when a resource type changed', () => {
       BucketResource: {
         Type: 'AWS::S3::Bucket',
         Properties: {
-          BucketName: 'BucketName'
-        }
-      }
-    }
+          BucketName: 'BucketName',
+        },
+      },
+    },
   };
 
   const differences = diffTemplate(currentTemplate, newTemplate);
@@ -286,17 +286,17 @@ test('resource replacement is tracked through references', () => {
     Resources: {
       Bucket: {
         Type: 'AWS::S3::Bucket',
-        Properties: { BucketName: 'Name1', }, // Immutable prop
+        Properties: { BucketName: 'Name1' }, // Immutable prop
       },
       Queue: {
         Type: 'AWS::SQS::Queue',
-        Properties: { QueueName: { Ref: 'Bucket' }}, // Immutable prop
+        Properties: { QueueName: { Ref: 'Bucket' } }, // Immutable prop
       },
       Topic: {
         Type: 'AWS::SNS::Topic',
-        Properties: { TopicName: { Ref: 'Queue' }}, // Immutable prop
-      }
-    }
+        Properties: { TopicName: { Ref: 'Queue' } }, // Immutable prop
+      },
+    },
   };
 
   // WHEN
@@ -304,20 +304,252 @@ test('resource replacement is tracked through references', () => {
     Resources: {
       Bucket: {
         Type: 'AWS::S3::Bucket',
-        Properties: { BucketName: 'Name2', },
+        Properties: { BucketName: 'Name2' },
       },
       Queue: {
         Type: 'AWS::SQS::Queue',
-        Properties: { QueueName: { Ref: 'Bucket' }},
+        Properties: { QueueName: { Ref: 'Bucket' } },
       },
       Topic: {
         Type: 'AWS::SNS::Topic',
-        Properties: { TopicName: { Ref: 'Queue' }},
-      }
-    }
+        Properties: { TopicName: { Ref: 'Queue' } },
+      },
+    },
   };
   const differences = diffTemplate(currentTemplate, newTemplate);
 
   // THEN
   expect(differences.resources.differenceCount).toBe(3);
+});
+
+test('adding and removing quotes from a numeric property causes no changes', () => {
+  const currentTemplate = {
+    Resources: {
+      Bucket: {
+        Type: 'AWS::S3::Bucket',
+        Properties: {
+          CorsConfiguration: {
+            CorsRules: [
+              {
+                AllowedMethods: [
+                  'GET',
+                ],
+                AllowedOrigins: [
+                  '*',
+                ],
+                MaxAge: 10,
+              },
+            ],
+          },
+        },
+      },
+    },
+  };
+
+  const newTemplate = {
+    Resources: {
+      Bucket: {
+        Type: 'AWS::S3::Bucket',
+        Properties: {
+          CorsConfiguration: {
+            CorsRules: [
+              {
+                AllowedMethods: [
+                  'GET',
+                ],
+                AllowedOrigins: [
+                  '*',
+                ],
+                MaxAge: '10',
+              },
+            ],
+          },
+        },
+      },
+    },
+  };
+  let differences = diffTemplate(currentTemplate, newTemplate);
+  expect(differences.resources.differenceCount).toBe(0);
+
+  differences = diffTemplate(newTemplate, currentTemplate);
+  expect(differences.resources.differenceCount).toBe(0);
+});
+
+test('single element arrays are equivalent to the single element in DependsOn expressions', () => {
+  // GIVEN
+  const currentTemplate = {
+    Resources: {
+      BucketResource: {
+        Type: 'AWS::S3::Bucket',
+        DependsOn: ['SomeResource'],
+      },
+    },
+  };
+
+  // WHEN
+  const newTemplate = {
+    Resources: {
+      BucketResource: {
+        Type: 'AWS::S3::Bucket',
+        DependsOn: 'SomeResource',
+      },
+    },
+  };
+
+  let differences = diffTemplate(currentTemplate, newTemplate);
+  expect(differences.resources.differenceCount).toBe(0);
+
+  differences = diffTemplate(newTemplate, currentTemplate);
+  expect(differences.resources.differenceCount).toBe(0);
+});
+
+test('array equivalence is independent of element order in DependsOn expressions', () => {
+  // GIVEN
+  const currentTemplate = {
+    Resources: {
+      BucketResource: {
+        Type: 'AWS::S3::Bucket',
+        DependsOn: ['SomeResource', 'AnotherResource'],
+      },
+    },
+  };
+
+  // WHEN
+  const newTemplate = {
+    Resources: {
+      BucketResource: {
+        Type: 'AWS::S3::Bucket',
+        DependsOn: ['AnotherResource', 'SomeResource'],
+      },
+    },
+  };
+
+  let differences = diffTemplate(currentTemplate, newTemplate);
+  expect(differences.resources.differenceCount).toBe(0);
+
+  differences = diffTemplate(newTemplate, currentTemplate);
+  expect(differences.resources.differenceCount).toBe(0);
+});
+
+test('arrays of different length are considered unequal in DependsOn expressions', () => {
+  // GIVEN
+  const currentTemplate = {
+    Resources: {
+      BucketResource: {
+        Type: 'AWS::S3::Bucket',
+        DependsOn: ['SomeResource', 'AnotherResource', 'LastResource'],
+      },
+    },
+  };
+
+  // WHEN
+  const newTemplate = {
+    Resources: {
+      BucketResource: {
+        Type: 'AWS::S3::Bucket',
+        DependsOn: ['AnotherResource', 'SomeResource'],
+      },
+    },
+  };
+
+  let differences = diffTemplate(currentTemplate, newTemplate);
+  expect(differences.resources.differenceCount).toBe(1);
+
+  differences = diffTemplate(newTemplate, currentTemplate);
+  expect(differences.resources.differenceCount).toBe(1);
+});
+
+test('arrays that differ only in element order are considered unequal outside of DependsOn expressions', () => {
+  // GIVEN
+  const currentTemplate = {
+    Resources: {
+      BucketResource: {
+        Type: 'AWS::S3::Bucket',
+        BucketName: { 'Fn::Select': [0, ['name1', 'name2']] },
+      },
+    },
+  };
+
+  // WHEN
+  const newTemplate = {
+    Resources: {
+      BucketResource: {
+        Type: 'AWS::S3::Bucket',
+        BucketName: { 'Fn::Select': [0, ['name2', 'name1']] },
+      },
+    },
+  };
+
+  let differences = diffTemplate(currentTemplate, newTemplate);
+  expect(differences.resources.differenceCount).toBe(1);
+
+  differences = diffTemplate(newTemplate, currentTemplate);
+  expect(differences.resources.differenceCount).toBe(1);
+});
+
+test('boolean properties are considered equal with their stringified counterparts', () => {
+  // GIVEN
+  const currentTemplate = {
+    Resources: {
+      Bucket: {
+        Type: 'AWS::S3::Bucket',
+        Properties: {
+          PublicAccessBlockConfiguration: {
+            BlockPublicAcls: 'true',
+          },
+        },
+      },
+    },
+  };
+  const newTemplate = {
+    Resources: {
+      Bucket: {
+        Type: 'AWS::S3::Bucket',
+        Properties: {
+          PublicAccessBlockConfiguration: {
+            BlockPublicAcls: true,
+          },
+        },
+      },
+    },
+  };
+
+  // WHEN
+  const differences = diffTemplate(currentTemplate, newTemplate);
+
+  // THEN
+  expect(differences.differenceCount).toBe(0);
+});
+
+test('when a property changes including equivalent DependsOn', () => {
+  // GIVEN
+  const bucketName = 'ShineyBucketName';
+  const currentTemplate = {
+    Resources: {
+      BucketResource: {
+        Type: 'AWS::S3::Bucket',
+        DependsOn: ['SomeResource'],
+        BucketName: bucketName,
+      },
+    },
+  };
+
+  // WHEN
+  const newBucketName = `${bucketName}-v2`;
+  const newTemplate = {
+    Resources: {
+      BucketResource: {
+        Type: 'AWS::S3::Bucket',
+        DependsOn: ['SomeResource'],
+        BucketName: newBucketName,
+      },
+    },
+  };
+
+  // THEN
+  let differences = diffTemplate(currentTemplate, newTemplate);
+  expect(differences.resources.differenceCount).toBe(1);
+
+  differences = diffTemplate(newTemplate, currentTemplate);
+  expect(differences.resources.differenceCount).toBe(1);
 });

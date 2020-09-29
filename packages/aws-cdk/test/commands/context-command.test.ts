@@ -9,17 +9,17 @@ test('context reset can remove a context key', async () => {
 
   expect(configuration.context.all).toEqual({
     foo: 'bar',
-    baz: 'quux'
+    baz: 'quux',
   });
 
   // WHEN
   await realHandler({
     configuration,
-    args: { reset: 'foo' }
+    args: { reset: 'foo' },
   } as any);
 
   // THEN
   expect(configuration.context.all).toEqual({
-    baz: 'quux'
+    baz: 'quux',
   });
 });

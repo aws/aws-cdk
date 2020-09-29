@@ -35,7 +35,7 @@
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
-          "ZipFile": "exports.handler = function echoHandlerCode(event, _, callback) {\n    return callback(undefined, {\n        isBase64Encoded: false,\n        statusCode: 200,\n        headers: { 'content-type': 'application/json' },\n        body: JSON.stringify(event)\n    });\n}"
+          "ZipFile": "exports.handler = function echoHandlerCode(event, _, callback) {\n    return callback(undefined, {\n        isBase64Encoded: false,\n        statusCode: 200,\n        headers: { 'content-type': 'application/json' },\n        body: JSON.stringify(event),\n    });\n}"
         },
         "Handler": "index.handler",
         "Role": {
@@ -85,7 +85,7 @@
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
-          "ZipFile": "exports.handler = function echoHandlerCode(event, _, callback) {\n    return callback(undefined, {\n        isBase64Encoded: false,\n        statusCode: 200,\n        headers: { 'content-type': 'application/json' },\n        body: JSON.stringify(event)\n    });\n}"
+          "ZipFile": "exports.handler = function echoHandlerCode(event, _, callback) {\n    return callback(undefined, {\n        isBase64Encoded: false,\n        statusCode: 200,\n        headers: { 'content-type': 'application/json' },\n        body: JSON.stringify(event),\n    });\n}"
         },
         "Handler": "index.handler",
         "Role": {
@@ -135,7 +135,7 @@
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
-          "ZipFile": "exports.handler = function helloCode(_event, _context, callback) {\n    return callback(undefined, {\n        statusCode: 200,\n        body: 'hello, world!'\n    });\n}"
+          "ZipFile": "exports.handler = function helloCode(_event, _context, callback) {\n    return callback(undefined, {\n        statusCode: 200,\n        body: 'hello, world!',\n    });\n}"
         },
         "Handler": "index.handler",
         "Role": {
@@ -154,36 +154,6 @@
       "Type": "AWS::ApiGateway::RestApi",
       "Properties": {
         "Name": "books-api"
-      }
-    },
-    "booksapiDeployment308B08F1c828b08824c062376eba921738884f85": {
-      "Type": "AWS::ApiGateway::Deployment",
-      "Properties": {
-        "RestApiId": {
-          "Ref": "booksapiE1885304"
-        },
-        "Description": "Automatically created by the RestApi construct"
-      },
-      "DependsOn": [
-        "booksapiANYF4F0CDEB",
-        "booksapibooksbookidDELETE214F4059",
-        "booksapibooksbookidGETCCE21986",
-        "booksapibooksbookid5264BCA2",
-        "booksapibooksGETA776447A",
-        "booksapibooksPOSTF6C6559D",
-        "booksapibooks97D84727"
-      ]
-    },
-    "booksapiDeploymentStageprod55D8E03E": {
-      "Type": "AWS::ApiGateway::Stage",
-      "Properties": {
-        "RestApiId": {
-          "Ref": "booksapiE1885304"
-        },
-        "DeploymentId": {
-          "Ref": "booksapiDeployment308B08F1c828b08824c062376eba921738884f85"
-        },
-        "StageName": "prod"
       }
     },
     "booksapiCloudWatchRole089CB225": {
@@ -230,6 +200,36 @@
       "DependsOn": [
         "booksapiE1885304"
       ]
+    },
+    "booksapiDeployment308B08F132cc25cf8168bd5e99b9e6d4915866b5": {
+      "Type": "AWS::ApiGateway::Deployment",
+      "Properties": {
+        "RestApiId": {
+          "Ref": "booksapiE1885304"
+        },
+        "Description": "Automatically created by the RestApi construct"
+      },
+      "DependsOn": [
+        "booksapiANYF4F0CDEB",
+        "booksapibooksbookidDELETE214F4059",
+        "booksapibooksbookidGETCCE21986",
+        "booksapibooksbookid5264BCA2",
+        "booksapibooksGETA776447A",
+        "booksapibooksPOSTF6C6559D",
+        "booksapibooks97D84727"
+      ]
+    },
+    "booksapiDeploymentStageprod55D8E03E": {
+      "Type": "AWS::ApiGateway::Stage",
+      "Properties": {
+        "RestApiId": {
+          "Ref": "booksapiE1885304"
+        },
+        "DeploymentId": {
+          "Ref": "booksapiDeployment308B08F132cc25cf8168bd5e99b9e6d4915866b5"
+        },
+        "StageName": "prod"
+      }
     },
     "booksapiANYApiPermissionrestapibooksexamplebooksapi4538F335ANY73B3CDDC": {
       "Type": "AWS::Lambda::Permission",
@@ -650,7 +650,7 @@
               {
                 "Ref": "booksapiDeploymentStageprod55D8E03E"
               },
-              "/GET/books/{book_id}"
+              "/GET/books/*"
             ]
           ]
         }
@@ -687,7 +687,7 @@
               {
                 "Ref": "booksapiE1885304"
               },
-              "/test-invoke-stage/GET/books/{book_id}"
+              "/test-invoke-stage/GET/books/*"
             ]
           ]
         }
@@ -768,7 +768,7 @@
               {
                 "Ref": "booksapiDeploymentStageprod55D8E03E"
               },
-              "/DELETE/books/{book_id}"
+              "/DELETE/books/*"
             ]
           ]
         }
@@ -805,7 +805,7 @@
               {
                 "Ref": "booksapiE1885304"
               },
-              "/test-invoke-stage/DELETE/books/{book_id}"
+              "/test-invoke-stage/DELETE/books/*"
             ]
           ]
         }

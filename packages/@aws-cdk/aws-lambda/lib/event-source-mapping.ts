@@ -17,7 +17,7 @@ export interface EventSourceMappingOptions {
    *
    * Valid Range: Minimum value of 1. Maximum value of 10000.
    *
-   * @default - Amazon Kinesis and Amazon DynamoDB is 100 records.
+   * @default - Amazon Kinesis, Amazon DynamoDB, and Amazon MSK is 100 records.
    * Both the default and maximum for Amazon SQS are 10 messages.
    */
   readonly batchSize?: number;
@@ -44,12 +44,12 @@ export interface EventSourceMappingOptions {
   readonly enabled?: boolean;
 
   /**
-   * The position in the DynamoDB or Kinesis stream where AWS Lambda should
+   * The position in the DynamoDB, Kinesis or MSK stream where AWS Lambda should
    * start reading.
    *
    * @see https://docs.aws.amazon.com/kinesis/latest/APIReference/API_GetShardIterator.html#Kinesis-GetShardIterator-request-ShardIteratorType
    *
-   * @default - Required for Amazon Kinesis and Amazon DynamoDB Streams sources.
+   * @default - Required for Amazon Kinesis, Amazon DynamoDB, and Amazon MSK Streams sources.
    */
   readonly startingPosition?: StartingPosition;
 
@@ -91,6 +91,13 @@ export interface EventSourceMappingOptions {
    * @default 1
    */
   readonly parallelizationFactor?: number;
+
+  /**
+   * The name of the Kafka topic.
+   *
+   * @default - no topic
+   */
+  readonly kafkaTopic?: string;
 }
 
 /**
@@ -148,23 +155,28 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       throw new Error(`maxBatchingWindow cannot be over 300 seconds, got ${props.maxBatchingWindow.toSeconds()}`);
     }
 
-    if (props.maxRecordAge && (props.maxRecordAge.toSeconds() < 60 || props.maxRecordAge.toDays({integral: false}) > 7)) {
-     throw new Error('maxRecordAge must be between 60 seconds and 7 days inclusive');
+    if (props.maxRecordAge && (props.maxRecordAge.toSeconds() < 60 || props.maxRecordAge.toDays({ integral: false }) > 7)) {
+      throw new Error('maxRecordAge must be between 60 seconds and 7 days inclusive');
     }
 
-    if (props.retryAttempts && (props.retryAttempts < 0 || props.retryAttempts > 10000)) {
-      throw new Error(`retryAttempts must be between 0 and 10000 inclusive, got ${props.retryAttempts}`);
-    }
+    props.retryAttempts !== undefined && cdk.withResolved(props.retryAttempts, (attempts) => {
+      if (attempts < 0 || attempts > 10000) {
+        throw new Error(`retryAttempts must be between 0 and 10000 inclusive, got ${attempts}`);
+      }
+    });
 
-    if ((props.parallelizationFactor || props.parallelizationFactor === 0) && (props.parallelizationFactor < 1 || props.parallelizationFactor > 10)) {
-      throw new Error(`parallelizationFactor must be between 1 and 10 inclusive, got ${props.parallelizationFactor}`);
-    }
+    props.parallelizationFactor !== undefined && cdk.withResolved(props.parallelizationFactor, (factor) => {
+      if (factor < 1 || factor > 10) {
+        throw new Error(`parallelizationFactor must be between 1 and 10 inclusive, got ${factor}`);
+      }
+    });
+
 
     let destinationConfig;
 
     if (props.onFailure) {
       destinationConfig = {
-        onFailure: props.onFailure.bind(this, props.target)
+        onFailure: props.onFailure.bind(this, props.target),
       };
     }
 
@@ -179,14 +191,15 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       maximumBatchingWindowInSeconds: props.maxBatchingWindow?.toSeconds(),
       maximumRecordAgeInSeconds: props.maxRecordAge?.toSeconds(),
       maximumRetryAttempts: props.retryAttempts,
-      parallelizationFactor: props.parallelizationFactor
+      parallelizationFactor: props.parallelizationFactor,
+      topics: props.kafkaTopic !== undefined ? [props.kafkaTopic] : undefined,
     });
     this.eventSourceMappingId = cfnEventSourceMapping.ref;
   }
 }
 
 /**
- * The position in the DynamoDB or Kinesis stream where AWS Lambda should start
+ * The position in the DynamoDB, Kinesis or MSK stream where AWS Lambda should start
  * reading.
  */
 export enum StartingPosition {

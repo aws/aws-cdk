@@ -1,19 +1,22 @@
 import * as os from 'os';
-import { AssetManifest, AssetPublishing, ClientOptions, DestinationPattern, EventType, IAws, IPublishProgress, IPublishProgressListener } from "../lib";
+import {
+  AssetManifest, AssetPublishing, ClientOptions, DestinationPattern, EventType, IAws,
+  IPublishProgress, IPublishProgressListener,
+} from '../lib';
 import { Account } from '../lib/aws';
-import { log, LogLevel, VERSION } from "./logging";
+import { log, LogLevel, VERSION } from './logging';
 
 export async function publish(args: {
   path: string;
   assets?: string[];
   profile?: string;
-  }) {
+}) {
 
   let manifest = AssetManifest.fromPath(args.path);
   log('verbose', `Loaded manifest from ${args.path}: ${manifest.entries.length} assets found`);
 
   if (args.assets && args.assets.length > 0) {
-    const selection =  args.assets.map(a => DestinationPattern.parse(a));
+    const selection = args.assets.map(a => DestinationPattern.parse(a));
     manifest = manifest.select(selection);
     log('verbose', `Applied selection: ${manifest.entries.length} assets selected.`);
   }
@@ -28,7 +31,7 @@ export async function publish(args: {
 
   if (pub.hasFailures) {
     for (const failure of pub.failures) {
-      // tslint:disable-next-line:no-console
+      // eslint-disable-next-line no-console
       console.error('Failure:', failure.error.stack);
     }
 
@@ -63,7 +66,9 @@ class DefaultAwsClient implements IAws {
 
   constructor(profile?: string) {
     // Force AWS SDK to look in ~/.aws/credentials and potentially use the configured profile.
-    process.env.AWS_SDK_LOAD_CONFIG = "1";
+    process.env.AWS_SDK_LOAD_CONFIG = '1';
+    process.env.AWS_STS_REGIONAL_ENDPOINTS = 'regional';
+    process.env.AWS_NODEJS_CONNECTION_REUSE_ENABLED = '1';
     if (profile) {
       process.env.AWS_PROFILE = profile;
     }
@@ -127,7 +132,7 @@ class DefaultAwsClient implements IAws {
   private async assumeRole(region: string | undefined, roleArn: string, externalId?: string): Promise<AWS.Credentials> {
     const msg = [
       `Assume ${roleArn}`,
-      ...externalId ? [`(ExternalId ${externalId})`] : []
+      ...externalId ? [`(ExternalId ${externalId})`] : [],
     ];
     log('verbose', msg.join(' '));
 
@@ -135,7 +140,7 @@ class DefaultAwsClient implements IAws {
       params: {
         RoleArn: roleArn,
         ExternalId: externalId,
-        RoleSessionName: `cdk-assets-${os.userInfo().username}`,
+        RoleSessionName: `cdk-assets-${safeUsername()}`,
       },
       stsConfig: {
         region,
@@ -143,4 +148,13 @@ class DefaultAwsClient implements IAws {
       },
     });
   }
+}
+
+/**
+ * Return the username with characters invalid for a RoleSessionName removed
+ *
+ * @see https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html#API_AssumeRole_RequestParameters
+ */
+function safeUsername() {
+  return os.userInfo().username.replace(/[^\w+=,.@-]/g, '@');
 }

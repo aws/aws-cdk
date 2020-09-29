@@ -51,7 +51,9 @@ export class Fact {
     if (fact.name in regionFacts && regionFacts[fact.name] !== fact.value && !allowReplacing) {
       throw new Error(`Region ${fact.region} already has a fact ${fact.name}, with value ${regionFacts[fact.name]}`);
     }
-    regionFacts[fact.name] = fact.value;
+    if (fact.value !== undefined) {
+      regionFacts[fact.name] = fact.value;
+    }
   }
 
   /**
@@ -93,7 +95,7 @@ export interface IFact {
   /**
    * The value of this fact.
    */
-  readonly value: string;
+  readonly value: string | undefined;
 }
 
 /**
@@ -125,6 +127,24 @@ export class FactName {
    * The endpoint used for aliasing S3 static websites in Route 53
    */
   public static readonly S3_STATIC_WEBSITE_ZONE_53_HOSTED_ZONE_ID = 's3-static-website:route-53-hosted-zone-id';
+
+  /**
+   * The prefix for VPC Endpoint Service names,
+   * cn.com.amazonaws.vpce for China regions,
+   * com.amazonaws.vpce otherwise.
+   */
+  public static readonly VPC_ENDPOINT_SERVICE_NAME_PREFIX = 'vpcEndpointServiceNamePrefix';
+
+  /**
+   * The account for ELBv2 in this region
+   */
+  public static readonly ELBV2_ACCOUNT = 'elbv2Account';
+
+  /**
+   * The ID of the AWS account that owns the public ECR repository that contains the
+   * AWS Deep Learning Containers images in a given region.
+   */
+  public static readonly DLC_REPOSITORY_ACCOUNT = 'dlcRepositoryAccount';
 
   /**
    * The name of the regional service principal for a given service.

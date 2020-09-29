@@ -1,9 +1,12 @@
 #!/usr/bin/env node
 // Verify that all integration tests still match their expected output
+import { canonicalizeTemplate } from '@aws-cdk/assert';
 import { diffTemplate, formatDifferences } from '@aws-cdk/cloudformation-diff';
 import { DEFAULT_SYNTH_OPTIONS, IntegrationTests } from '../lib/integ-helpers';
 
-// tslint:disable:no-console
+/* eslint-disable no-console */
+
+const IGNORE_ASSETS_PRAGMA = 'pragma:ignore-assets';
 
 async function main() {
   const tests = await new IntegrationTests('test').fromCliArgs(); // always assert all tests
@@ -16,17 +19,13 @@ async function main() {
       throw new Error(`No such file: ${test.expectedFileName}. Run 'npm run integ'.`);
     }
 
-    const stackToDeploy = await test.determineTestStack();
-    const expected = await test.readExpected();
+    let expected = await test.readExpected();
+    let actual = await test.cdkSynthFast(DEFAULT_SYNTH_OPTIONS);
 
-    const args = new Array<string>();
-    args.push('--no-path-metadata');
-    args.push('--no-asset-metadata');
-    args.push('--no-staging');
-    const actual = await test.invoke(['--json', ...args, 'synth', ...stackToDeploy], {
-      json: true,
-      ...DEFAULT_SYNTH_OPTIONS
-    });
+    if ((await test.pragmas()).includes(IGNORE_ASSETS_PRAGMA)) {
+      expected = canonicalizeTemplate(expected);
+      actual = canonicalizeTemplate(actual);
+    }
 
     const diff = diffTemplate(expected, actual);
 
@@ -40,7 +39,7 @@ async function main() {
   }
 
   if (failures.length > 0) {
-    // tslint:disable-next-line:max-line-length
+    // eslint-disable-next-line max-len
     throw new Error(`Some stacks have changed. To verify that they still deploy successfully, run: 'npm run integ ${failures.join(' ')}'`);
   }
 }

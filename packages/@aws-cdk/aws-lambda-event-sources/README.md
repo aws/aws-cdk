@@ -1,10 +1,8 @@
 ## AWS Lambda Event Sources
 <!--BEGIN STABILITY BANNER-->
-
 ---
 
-![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
-
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
 <!--END STABILITY BANNER-->
@@ -27,7 +25,7 @@ The following code sets up a lambda function with an SQS queue event source -
 const fn = new lambda.Function(this, 'MyFunction', { /* ... */ });
 
 const queue = new sqs.Queue(this, 'MyQueue');
-const eventSource = lambda.addEventSource(new SqsEventSource(queue);
+const eventSource = fn.addEventSource(new SqsEventSource(queue));
 
 const eventSourceId = eventSource.eventSourceId;
 ```
@@ -55,7 +53,7 @@ behavior:
   duration. The default value is 20 seconds.
 
 ```ts
-import sqs = require('@aws-cdk/aws-sqs');
+import * as sqs from '@aws-cdk/aws-sqs';
 import { SqsEventSource } from '@aws-cdk/aws-lambda-event-sources';
 import { Duration } from '@aws-cdk/core';
 
@@ -81,7 +79,7 @@ configure the event source mapping, identifying the bucket events that you want
 Amazon S3 to publish and which Lambda function to invoke.
 
 ```ts
-import s3 = require('@aws-cdk/aws-s3');
+import * as s3 from '@aws-cdk/aws-s3';
 import { S3EventSource } from '@aws-cdk/aws-lambda-event-sources';
 
 const bucket = new s3.Bucket(...);
@@ -111,7 +109,7 @@ For an example use case, see [Using AWS Lambda with Amazon SNS from Different
 Accounts](https://docs.aws.amazon.com/lambda/latest/dg/with-sns.html).
 
 ```ts
-import sns = require('@aws-cdk/aws-sns');
+import * as sns from '@aws-cdk/aws-sns';
 import { SnsEventSource } from '@aws-cdk/aws-lambda-event-sources';
 
 const topic = new sns.Topic(...);
@@ -145,9 +143,9 @@ and add it to your Lambda function. The following parameters will impact Amazon 
 * __startingPosition__: Will determine where to being consumption, either at the most recent ('LATEST') record or the oldest record ('TRIM_HORIZON'). 'TRIM_HORIZON' will ensure you process all available data, while 'LATEST' will ignore all reocrds that arrived prior to attaching the event source.
 
 ```ts
-import dynamodb = require('@aws-cdk/aws-dynamodb');
-import lambda = require('@aws-cdk/aws-lambda');
-import sqs = require('@aws-cdk/aws-sqs');
+import * as dynamodb from '@aws-cdk/aws-dynamodb';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as sqs from '@aws-cdk/aws-sqs';
 import { DynamoEventSource, SqsDlq } from '@aws-cdk/aws-lambda-event-sources';
 
 const table = new dynamodb.Table(..., {
@@ -188,8 +186,8 @@ behavior:
 * __startingPosition__: Will determine where to being consumption, either at the most recent ('LATEST') record or the oldest record ('TRIM_HORIZON'). 'TRIM_HORIZON' will ensure you process all available data, while 'LATEST' will ignore all reocrds that arrived prior to attaching the event source.
 
 ```ts
-import lambda = require('@aws-cdk/aws-lambda');
-import kinesis = require('@aws-cdk/aws-kinesis');
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as kinesis from '@aws-cdk/aws-kinesis';
 import { KinesisEventSource } from '@aws-cdk/aws-lambda-event-sources';
 
 const stream = new kinesis.Stream(this, 'MyStream');

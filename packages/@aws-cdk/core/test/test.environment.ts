@@ -6,8 +6,8 @@ export = {
     const stack = new Stack();
     test.ok(Token.isUnresolved(stack.account));
     test.ok(Token.isUnresolved(stack.region));
-    test.deepEqual(stack.resolve(stack.account), { Ref: "AWS::AccountId" });
-    test.deepEqual(stack.resolve(stack.region), { Ref: "AWS::Region" });
+    test.deepEqual(stack.resolve(stack.account), { Ref: 'AWS::AccountId' });
+    test.deepEqual(stack.resolve(stack.region), { Ref: 'AWS::Region' });
     test.done();
   },
 
@@ -40,7 +40,7 @@ export = {
       test.deepEqual(app.synth().getStackByName(stack.stackName).environment, {
         account: 'unknown-account',
         region: 'unknown-region',
-        name: 'aws://unknown-account/unknown-region'
+        name: 'aws://unknown-account/unknown-region',
       });
 
       test.done();
@@ -51,7 +51,7 @@ export = {
       const app = new App();
 
       // WHEN
-      const stack = new Stack(app, 'stack', { env: { region: 'explicit-region' }});
+      const stack = new Stack(app, 'stack', { env: { region: 'explicit-region' } });
 
       // THEN
       test.deepEqual(stack.resolve(stack.account), { Ref: 'AWS::AccountId' });
@@ -59,7 +59,7 @@ export = {
       test.deepEqual(app.synth().getStackByName(stack.stackName).environment, {
         account: 'unknown-account',
         region: 'explicit-region',
-        name: 'aws://unknown-account/explicit-region'
+        name: 'aws://unknown-account/explicit-region',
       });
 
       test.done();
@@ -70,10 +70,12 @@ export = {
       const app = new App();
 
       // WHEN
-      const stack = new Stack(app, 'stack', { env: {
-        account: 'explicit-account',
-        region: 'explicit-region'
-      }});
+      const stack = new Stack(app, 'stack', {
+        env: {
+          account: 'explicit-account',
+          region: 'explicit-region',
+        },
+      });
 
       // THEN
       test.deepEqual(stack.resolve(stack.account), 'explicit-account');
@@ -81,7 +83,7 @@ export = {
       test.deepEqual(app.synth().getStackByName(stack.stackName).environment, {
         account: 'explicit-account',
         region: 'explicit-region',
-        name: 'aws://explicit-account/explicit-region'
+        name: 'aws://explicit-account/explicit-region',
       });
 
       test.done();
@@ -95,8 +97,8 @@ export = {
       const stack = new Stack(app, 'stack', {
         env: {
           account: Aws.ACCOUNT_ID,
-          region: Aws.REGION
-        }
+          region: Aws.REGION,
+        },
       });
 
       // THEN
@@ -105,7 +107,7 @@ export = {
       test.deepEqual(app.synth().getStackByName(stack.stackName).environment, {
         account: 'unknown-account',
         region: 'unknown-region',
-        name: 'aws://unknown-account/unknown-region'
+        name: 'aws://unknown-account/unknown-region',
       });
 
       test.done();
@@ -119,8 +121,8 @@ export = {
       const stack = new Stack(app, 'stack', {
         env: {
           account: Aws.ACCOUNT_ID,
-          region: 'us-east-2'
-        }
+          region: 'us-east-2',
+        },
       });
 
       // THEN
@@ -129,10 +131,10 @@ export = {
       test.deepEqual(app.synth().getStackByName(stack.stackName).environment, {
         account: 'unknown-account',
         region: 'us-east-2',
-        name: 'aws://unknown-account/us-east-2'
+        name: 'aws://unknown-account/us-east-2',
       });
 
       test.done();
-    }
+    },
   },
 };

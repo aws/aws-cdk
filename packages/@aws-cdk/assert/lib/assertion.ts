@@ -1,4 +1,4 @@
-import { Inspector } from "./inspector";
+import { Inspector } from './inspector';
 
 export abstract class Assertion<InspectorClass extends Inspector> {
   public abstract readonly description: string;
@@ -27,13 +27,13 @@ export abstract class JestFriendlyAssertion<InspectorClass extends Inspector> ex
   public abstract generateErrorMessage(): string;
 }
 
-import { AndAssertion } from "./assertions/and-assertion";
+import { AndAssertion } from './assertions/and-assertion';
 
 function and<I extends Inspector>(left: Assertion<I>, right: Assertion<I>): Assertion<I> {
   return new AndAssertion(left, right);
 }
 
-import { NegatedAssertion } from "./assertions/negated-assertion";
+import { NegatedAssertion } from './assertions/negated-assertion';
 
 export function not<T extends Inspector>(assertion: Assertion<T>): Assertion<T> {
   return new NegatedAssertion(assertion);

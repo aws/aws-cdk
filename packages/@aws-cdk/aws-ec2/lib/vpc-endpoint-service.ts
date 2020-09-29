@@ -1,5 +1,6 @@
 import { ArnPrincipal } from '@aws-cdk/aws-iam';
-import { Construct, IResource, Resource } from '@aws-cdk/core';
+import { Aws, Construct, Fn, IResource, Resource, Stack, Token } from '@aws-cdk/core';
+import { Default, RegionInfo } from '@aws-cdk/region-info';
 import { CfnVPCEndpointService, CfnVPCEndpointServicePermissions } from './ec2.generated';
 
 /**
@@ -19,10 +20,12 @@ export interface IVpcEndpointServiceLoadBalancer {
  */
 export interface IVpcEndpointService extends IResource {
   /**
-   * Name of the Vpc Endpoint Service
-   * @experimental
+   * The service name of the VPC Endpoint Service that clients use to connect to,
+   * like com.amazonaws.vpce.<region>.vpce-svc-xxxxxxxxxxxxxxxx
+   *
+   * @attribute
    */
-  readonly vpcEndpointServiceName?: string;
+  readonly vpcEndpointServiceName: string;
 }
 
 /**
@@ -33,7 +36,7 @@ export interface IVpcEndpointService extends IResource {
 export class VpcEndpointService extends Resource implements IVpcEndpointService {
 
   /**
-   * One or more network load balancer ARNs to host the service.
+   * One or more network load balancers to host the service.
    * @attribute
    */
   public readonly vpcEndpointServiceLoadBalancers: IVpcEndpointServiceLoadBalancer[];
@@ -50,13 +53,27 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
    */
   public readonly whitelistedPrincipals: ArnPrincipal[];
 
+  /**
+   * The id of the VPC Endpoint Service, like vpce-svc-xxxxxxxxxxxxxxxx.
+   * @attribute
+   */
+  public readonly vpcEndpointServiceId: string;
+
+  /**
+   * The service name of the VPC Endpoint Service that clients use to connect to,
+   * like com.amazonaws.vpce.<region>.vpce-svc-xxxxxxxxxxxxxxxx
+   *
+   * @attribute
+   */
+  public readonly vpcEndpointServiceName: string;
+
   private readonly endpointService: CfnVPCEndpointService;
 
   constructor(scope: Construct, id: string, props: VpcEndpointServiceProps) {
     super(scope, id);
 
     if (props.vpcEndpointServiceLoadBalancers === undefined || props.vpcEndpointServiceLoadBalancers.length === 0) {
-      throw new Error("VPC Endpoint Service must have at least one load balancer specified.");
+      throw new Error('VPC Endpoint Service must have at least one load balancer specified.');
     }
 
     this.vpcEndpointServiceLoadBalancers = props.vpcEndpointServiceLoadBalancers;
@@ -65,13 +82,22 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
 
     this.endpointService = new CfnVPCEndpointService(this, id, {
       networkLoadBalancerArns: this.vpcEndpointServiceLoadBalancers.map(lb => lb.loadBalancerArn),
-      acceptanceRequired: this.acceptanceRequired
+      acceptanceRequired: this.acceptanceRequired,
     });
 
+    this.vpcEndpointServiceId = this.endpointService.ref;
+
+    const { region } = Stack.of(this);
+    const serviceNamePrefix = !Token.isUnresolved(region) ?
+      RegionInfo.get(region).vpcEndpointServiceNamePrefix ??
+      Default.VPC_ENDPOINT_SERVICE_NAME_PREFIX :
+      Default.VPC_ENDPOINT_SERVICE_NAME_PREFIX;
+
+    this.vpcEndpointServiceName = Fn.join('.', [serviceNamePrefix, Aws.REGION, this.vpcEndpointServiceId]);
     if (this.whitelistedPrincipals.length > 0) {
-      new CfnVPCEndpointServicePermissions(this, "Permissions", {
+      new CfnVPCEndpointServicePermissions(this, 'Permissions', {
         serviceId: this.endpointService.ref,
-        allowedPrincipals: this.whitelistedPrincipals.map(x => x.arn)
+        allowedPrincipals: this.whitelistedPrincipals.map(x => x.arn),
       });
     }
   }
@@ -85,8 +111,8 @@ export interface VpcEndpointServiceProps {
 
   /**
    * Name of the Vpc Endpoint Service
+   * @deprecated This property is not used
    * @default - CDK generated name
-   * @experimental
    */
   readonly vpcEndpointServiceName?: string;
 

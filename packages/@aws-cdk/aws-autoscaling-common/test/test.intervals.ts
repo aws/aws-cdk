@@ -39,7 +39,7 @@ export = {
         return (alarms.lowerAlarmIntervalIndex === undefined
           || alarms.upperAlarmIntervalIndex === undefined
           || alarms.lowerAlarmIntervalIndex < alarms.upperAlarmIntervalIndex);
-      }
+      },
     ));
 
     test.done();
@@ -53,7 +53,7 @@ export = {
 
         return (alarms.lowerAlarmIntervalIndex === undefined || intervals[alarms.lowerAlarmIntervalIndex].change !== undefined)
           && (alarms.upperAlarmIntervalIndex === undefined || intervals[alarms.upperAlarmIntervalIndex].change !== undefined);
-      }
+      },
     ));
 
     test.done();
@@ -69,7 +69,7 @@ export = {
 
         const alarms = findAlarmThresholds(intervals);
         return (alarms.lowerAlarmIntervalIndex === i - 1 && alarms.upperAlarmIntervalIndex === i + 1);
-      }
+      },
     ));
 
     test.done();
@@ -83,7 +83,7 @@ export = {
         fc.pre(alarms.lowerAlarmIntervalIndex !== undefined);
 
         return intervals[alarms.lowerAlarmIntervalIndex!].upper !== Infinity;
-      }
+      },
     ));
 
     test.done();
@@ -97,7 +97,7 @@ export = {
         fc.pre(alarms.upperAlarmIntervalIndex !== undefined);
 
         return intervals[alarms.upperAlarmIntervalIndex!].lower !== 0;
-      }
+      },
     ));
 
     test.done();
@@ -106,7 +106,7 @@ export = {
 
 function realisticRelativeIntervals(): appscaling.ScalingInterval[] {
   // Function so we don't have to worry about cloning
-  return  [
+  return [
     { upper: 10, change: -2 },
     { upper: 20, change: -1 },
     { lower: 80, change: +1 },

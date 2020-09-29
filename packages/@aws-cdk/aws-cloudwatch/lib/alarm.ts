@@ -1,25 +1,13 @@
-import { Construct, IResource, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
-import { IAlarmAction } from './alarm-action';
-import { CfnAlarm } from './cloudwatch.generated';
+import { Construct, Lazy, Stack, Token } from '@aws-cdk/core';
+import { AlarmBase, IAlarm } from './alarm-base';
+import { CfnAlarm, CfnAlarmProps } from './cloudwatch.generated';
 import { HorizontalAnnotation } from './graph';
 import { CreateAlarmOptions } from './metric';
-import { IMetric, MetricStatConfig } from './metric-types';
+import { IMetric, MetricExpressionConfig, MetricStatConfig } from './metric-types';
 import { dispatchMetric, metricPeriod } from './private/metric-util';
 import { dropUndefined } from './private/object';
 import { MetricSet } from './private/rendering';
 import { parseStatistic } from './private/statistic';
-
-export interface IAlarm extends IResource {
-  /**
-   * @attribute
-   */
-  readonly alarmArn: string;
-
-  /**
-   * @attribute
-   */
-  readonly alarmName: string;
-}
 
 /**
  * Properties for Alarms
@@ -38,18 +26,50 @@ export interface AlarmProps extends CreateAlarmOptions {
  * Comparison operator for evaluating alarms
  */
 export enum ComparisonOperator {
+  /**
+   * Specified statistic is greater than or equal to the threshold
+   */
   GREATER_THAN_OR_EQUAL_TO_THRESHOLD = 'GreaterThanOrEqualToThreshold',
+
+  /**
+   * Specified statistic is strictly greater than the threshold
+   */
   GREATER_THAN_THRESHOLD = 'GreaterThanThreshold',
+
+  /**
+   * Specified statistic is strictly less than the threshold
+   */
   LESS_THAN_THRESHOLD = 'LessThanThreshold',
+
+  /**
+   * Specified statistic is less than or equal to the threshold.
+   */
   LESS_THAN_OR_EQUAL_TO_THRESHOLD = 'LessThanOrEqualToThreshold',
+
+  /**
+   * Specified statistic is lower than or greater than the anomaly model band.
+   * Used only for alarms based on anomaly detection models
+   */
   LESS_THAN_LOWER_OR_GREATER_THAN_UPPER_THRESHOLD = 'LessThanLowerOrGreaterThanUpperThreshold',
+
+  /**
+   * Specified statistic is greater than the anomaly model band.
+   * Used only for alarms based on anomaly detection models
+   */
+  GREATER_THAN_UPPER_THRESHOLD = 'GreaterThanUpperThreshold',
+
+  /**
+   * Specified statistic is lower than the anomaly model band.
+   * Used only for alarms based on anomaly detection models
+   */
+  LESS_THAN_LOWER_THRESHOLD = 'LessThanLowerThreshold',
 }
 
 const OPERATOR_SYMBOLS: {[key: string]: string} = {
   GreaterThanOrEqualToThreshold: '>=',
   GreaterThanThreshold: '>',
   LessThanThreshold: '<',
-  LessThanOrEqualToThreshold: '>=',
+  LessThanOrEqualToThreshold: '<=',
 };
 
 /**
@@ -80,10 +100,17 @@ export enum TreatMissingData {
 /**
  * An alarm on a CloudWatch metric
  */
-export class Alarm extends Resource implements IAlarm {
+export class Alarm extends AlarmBase {
 
+  /**
+   * Import an existing CloudWatch alarm provided an ARN
+   *
+   * @param scope The parent creating construct (usually `this`).
+   * @param id The construct's name
+   * @param alarmArn Alarm ARN (i.e. arn:aws:cloudwatch:<region>:<account-id>:alarm:Foo)
+   */
   public static fromAlarmArn(scope: Construct, id: string, alarmArn: string): IAlarm {
-    class Import extends Resource implements IAlarm {
+    class Import extends AlarmBase implements IAlarm {
       public readonly alarmArn = alarmArn;
       public readonly alarmName = Stack.of(scope).parseArn(alarmArn, ':').resourceName!;
     }
@@ -109,10 +136,6 @@ export class Alarm extends Resource implements IAlarm {
    */
   public readonly metric: IMetric;
 
-  private alarmActionArns?: string[];
-  private insufficientDataActionArns?: string[];
-  private okActionArns?: string[];
-
   /**
    * This metric as an annotation
    */
@@ -124,6 +147,21 @@ export class Alarm extends Resource implements IAlarm {
     });
 
     const comparisonOperator = props.comparisonOperator || ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD;
+
+    // Render metric, process potential overrides from the alarm
+    // (It would be preferable if the statistic etc. was worked into the metric,
+    // but hey we're allowing overrides...)
+    const metricProps: Writeable<Partial<CfnAlarmProps>> = this.renderMetric(props.metric);
+    if (props.period) {
+      metricProps.period = props.period.toSeconds();
+    }
+    if (props.statistic) {
+      // Will overwrite both fields if present
+      Object.assign(metricProps, {
+        statistic: renderIfSimpleStatistic(props.statistic),
+        extendedStatistic: renderIfExtendedStatistic(props.statistic),
+      });
+    }
 
     const alarm = new CfnAlarm(this, 'Resource', {
       // Meta
@@ -145,13 +183,7 @@ export class Alarm extends Resource implements IAlarm {
       okActions: Lazy.listValue({ produce: () => this.okActionArns }),
 
       // Metric
-      ...this.renderMetric(props.metric),
-      ...dropUndefined({
-        // Alarm overrides
-        period: props.period && props.period.toSeconds(),
-        statistic: renderIfSimpleStatistic(props.statistic),
-        extendedStatistic: renderIfExtendedStatistic(props.statistic),
-      })
+      ...metricProps,
     });
 
     this.alarmArn = this.getResourceArnAttribute(alarm.attrArn, {
@@ -163,50 +195,12 @@ export class Alarm extends Resource implements IAlarm {
     this.alarmName = this.getResourceNameAttribute(alarm.ref);
 
     this.metric = props.metric;
+    const datapoints = props.datapointsToAlarm || props.evaluationPeriods;
     this.annotation = {
-      // tslint:disable-next-line:max-line-length
-      label: `${this.metric} ${OPERATOR_SYMBOLS[comparisonOperator]} ${props.threshold} for ${props.evaluationPeriods} datapoints within ${describePeriod(props.evaluationPeriods * metricPeriod(props.metric).toSeconds())}`,
+      // eslint-disable-next-line max-len
+      label: `${this.metric} ${OPERATOR_SYMBOLS[comparisonOperator]} ${props.threshold} for ${datapoints} datapoints within ${describePeriod(props.evaluationPeriods * metricPeriod(props.metric).toSeconds())}`,
       value: props.threshold,
     };
-  }
-
-  /**
-   * Trigger this action if the alarm fires
-   *
-   * Typically the ARN of an SNS topic or ARN of an AutoScaling policy.
-   */
-  public addAlarmAction(...actions: IAlarmAction[]) {
-    if (this.alarmActionArns === undefined) {
-      this.alarmActionArns = [];
-    }
-
-    this.alarmActionArns.push(...actions.map(a => a.bind(this, this).alarmActionArn));
-  }
-
-  /**
-   * Trigger this action if there is insufficient data to evaluate the alarm
-   *
-   * Typically the ARN of an SNS topic or ARN of an AutoScaling policy.
-   */
-  public addInsufficientDataAction(...actions: IAlarmAction[]) {
-    if (this.insufficientDataActionArns === undefined) {
-      this.insufficientDataActionArns = [];
-    }
-
-    this.insufficientDataActionArns.push(...actions.map(a => a.bind(this, this).alarmActionArn));
-  }
-
-  /**
-   * Trigger this action if the alarm returns from breaching state into ok state
-   *
-   * Typically the ARN of an SNS topic or ARN of an AutoScaling policy.
-   */
-  public addOkAction(...actions: IAlarmAction[]) {
-    if (this.okActionArns === undefined) {
-      this.okActionArns = [];
-    }
-
-    this.okActionArns.push(...actions.map(a => a.bind(this, this).alarmActionArn));
   }
 
   /**
@@ -282,12 +276,13 @@ export class Alarm extends Resource implements IAlarm {
                 expression: expr.expression,
                 id: entry.id || uniqueMetricId(),
                 label: conf.renderingProperties?.label,
+                period: mathExprHasSubmetrics(expr) ? undefined : expr.period,
                 returnData: entry.tag ? undefined : false, // Tag stores "primary" attribute, default is "true"
               };
             },
-          }) as CfnAlarm.MetricDataQueryProperty)
+          }) as CfnAlarm.MetricDataQueryProperty),
         };
-      }
+      },
     });
   }
 
@@ -343,3 +338,9 @@ function renderIfExtendedStatistic(statistic?: string): string | undefined {
   }
   return undefined;
 }
+
+function mathExprHasSubmetrics(expr: MetricExpressionConfig) {
+  return Object.keys(expr.usingMetrics).length > 0;
+}
+
+type Writeable<T> = { -readonly [P in keyof T]: T[P] };

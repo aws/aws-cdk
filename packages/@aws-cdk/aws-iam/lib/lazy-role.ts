@@ -3,10 +3,12 @@ import { Grant } from './grant';
 import { IManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
 import { PolicyStatement } from './policy-statement';
-import { IPrincipal, PrincipalPolicyFragment } from './principals';
+import { AddToPrincipalPolicyResult, IPrincipal, PrincipalPolicyFragment } from './principals';
 import { IRole, Role, RoleProps } from './role';
 
-// tslint:disable-next-line:no-empty-interface
+/**
+ * Properties for defining a LazyRole
+ */
 export interface LazyRoleProps extends RoleProps {
 
 }
@@ -24,6 +26,7 @@ export interface LazyRoleProps extends RoleProps {
  */
 export class LazyRole extends cdk.Resource implements IRole {
   public readonly grantPrincipal: IPrincipal = this;
+  public readonly principalAccount: string | undefined = this.env.account;
   public readonly assumeRoleAction: string = 'sts:AssumeRole';
 
   private role?: Role;
@@ -40,13 +43,17 @@ export class LazyRole extends cdk.Resource implements IRole {
    * If there is no default policy attached to this role, it will be created.
    * @param statement The permission statement to add to the policy document
    */
-  public addToPolicy(statement: PolicyStatement): boolean {
+  public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
     if (this.role) {
-      return this.role.addToPolicy(statement);
+      return this.role.addToPrincipalPolicy(statement);
     } else {
       this.statements.push(statement);
-      return true;
+      return { statementAdded: true, policyDependable: this };
     }
+  }
+
+  public addToPolicy(statement: PolicyStatement): boolean {
+    return this.addToPrincipalPolicy(statement).statementAdded;
   }
 
   /**
@@ -80,7 +87,11 @@ export class LazyRole extends cdk.Resource implements IRole {
     return this.instantiate().roleArn;
   }
 
-  /** @attribute RoleId */
+  /**
+   * Returns the stable and unique string identifying the role (i.e. AIDAJQABLZS4A3QDU576Q)
+   *
+   * @attribute
+   */
   public get roleId(): string {
     return this.instantiate().roleId;
   }

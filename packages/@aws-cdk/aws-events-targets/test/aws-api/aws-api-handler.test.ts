@@ -1,4 +1,4 @@
-// tslint:disable:no-console
+/* eslint-disable no-console */
 import * as SDK from 'aws-sdk';
 import * as AWS from 'aws-sdk-mock';
 import { AwsApiProps } from '../../lib';
@@ -30,11 +30,11 @@ test('calls the SDK with the right parameters', async () => {
 
   expect(updateServiceMock).toHaveBeenCalledWith({
     service: 'cool-service',
-    forceNewDeployment: true
+    forceNewDeployment: true,
   }, expect.any(Function));
 
   expect(console.log).toHaveBeenLastCalledWith('Response: %j', {
-    success: true
+    success: true,
   });
 });
 
@@ -45,13 +45,13 @@ test('throws and logs in case of error', async () => {
 
   await expect(handler(event)).rejects.toEqual({ code: 'Error' });
 
-  expect(console.log).toHaveBeenLastCalledWith({ code: 'Error'});
+  expect(console.log).toHaveBeenLastCalledWith({ code: 'Error' });
 });
 
 test('catches and logs error', async () => {
   const catchEvent: AwsApiProps = {
-   ...event,
-    catchErrorPattern: 'Invalid'
+    ...event,
+    catchErrorPattern: 'Invalid',
   };
 
   const updateServiceMock = jest.fn().mockRejectedValue({ code: 'Invalid' });
@@ -60,5 +60,5 @@ test('catches and logs error', async () => {
 
   await handler(catchEvent);
 
-  expect(console.log).toHaveBeenLastCalledWith({ code: 'Invalid'});
+  expect(console.log).toHaveBeenLastCalledWith({ code: 'Invalid' });
 });

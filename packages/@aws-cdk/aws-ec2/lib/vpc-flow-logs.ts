@@ -69,7 +69,7 @@ export abstract class FlowLogResourceType {
   public static fromSubnet(subnet: ISubnet): FlowLogResourceType {
     return {
       resourceType: 'Subnet',
-      resourceId: subnet.subnetId
+      resourceId: subnet.subnetId,
     };
   }
 
@@ -79,7 +79,7 @@ export abstract class FlowLogResourceType {
   public static fromVpc(vpc: IVpc): FlowLogResourceType {
     return {
       resourceType: 'VPC',
-      resourceId: vpc.vpcId
+      resourceId: vpc.vpcId,
     };
   }
 
@@ -89,7 +89,7 @@ export abstract class FlowLogResourceType {
   public static fromNetworkInterfaceId(id: string): FlowLogResourceType {
     return {
       resourceType: 'NetworkInterface',
-      resourceId: id
+      resourceId: id,
     };
   }
 
@@ -117,7 +117,7 @@ export abstract class FlowLogDestination {
     return new CloudWatchLogsDestination({
       logDestinationType: FlowLogDestinationType.CLOUD_WATCH_LOGS,
       logGroup,
-      iamRole
+      iamRole,
     });
   }
 
@@ -127,7 +127,7 @@ export abstract class FlowLogDestination {
   public static toS3(bucket?: s3.IBucket): FlowLogDestination {
     return new S3Destination({
       logDestinationType: FlowLogDestinationType.S3,
-      s3Bucket: bucket
+      s3Bucket: bucket,
     });
   }
 
@@ -185,14 +185,14 @@ class S3Destination extends FlowLogDestination {
     if (this.props.s3Bucket === undefined) {
       s3Bucket = new s3.Bucket(scope, 'Bucket', {
         encryption: s3.BucketEncryption.UNENCRYPTED,
-        removalPolicy: RemovalPolicy.RETAIN
+        removalPolicy: RemovalPolicy.RETAIN,
       });
     } else {
       s3Bucket = this.props.s3Bucket;
     }
     return {
       logDestinationType: FlowLogDestinationType.S3,
-      s3Bucket
+      s3Bucket,
     };
   }
 }
@@ -211,7 +211,7 @@ class CloudWatchLogsDestination extends FlowLogDestination {
     if (this.props.iamRole === undefined) {
       iamRole = new iam.Role(scope, 'IAMRole', {
         roleName: PhysicalName.GENERATE_IF_NEEDED,
-        assumedBy: new iam.ServicePrincipal('vpc-flow-logs.amazonaws.com')
+        assumedBy: new iam.ServicePrincipal('vpc-flow-logs.amazonaws.com'),
       });
     } else {
       iamRole = this.props.iamRole;
@@ -228,25 +228,25 @@ class CloudWatchLogsDestination extends FlowLogDestination {
         actions: [
           'logs:CreateLogStream',
           'logs:PutLogEvents',
-          'logs:DescribeLogStreams'
+          'logs:DescribeLogStreams',
         ],
         effect: iam.Effect.ALLOW,
-        resources: [logGroup.logGroupArn]
-      })
+        resources: [logGroup.logGroupArn],
+      }),
     );
 
     iamRole.addToPolicy(
       new iam.PolicyStatement({
         actions: ['iam:PassRole'],
         effect: iam.Effect.ALLOW,
-        resources: [iamRole.roleArn]
-      })
+        resources: [iamRole.roleArn],
+      }),
     );
 
     return {
       logDestinationType: FlowLogDestinationType.CLOUD_WATCH_LOGS,
       logGroup,
-      iamRole
+      iamRole,
     };
   }
 }
@@ -351,7 +351,7 @@ export class FlowLog extends FlowLogBase {
 
   constructor(scope: Construct, id: string, props: FlowLogProps) {
     super(scope, id, {
-      physicalName: props.flowLogName
+      physicalName: props.flowLogName,
     });
 
     const destination = props.destination || FlowLogDestination.toCloudWatchLogs();
@@ -370,7 +370,7 @@ export class FlowLog extends FlowLogBase {
       trafficType: props.trafficType
         ? props.trafficType
         : FlowLogTrafficType.ALL,
-      logDestination: this.bucket ? this.bucket.bucketArn : undefined
+      logDestination: this.bucket ? this.bucket.bucketArn : undefined,
     });
 
     this.flowLogId = flowLog.ref;

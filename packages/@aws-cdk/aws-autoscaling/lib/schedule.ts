@@ -17,7 +17,7 @@ export abstract class Schedule {
    */
   public static cron(options: CronOptions): Schedule {
     if (options.weekDay !== undefined && options.day !== undefined) {
-      throw new Error(`Cannot supply both 'day' and 'weekDay', use at most one`);
+      throw new Error('Cannot supply both \'day\' and \'weekDay\', use at most one');
     }
 
     const minute = fallback(options.minute, '*');
@@ -41,7 +41,7 @@ export abstract class Schedule {
 /**
  * Options to configure a cron expression
  *
- * All fields are strings so you can use complex expresions. Absence of
+ * All fields are strings so you can use complex expressions. Absence of
  * a field implies '*' or '?', whichever one is appropriate.
  *
  * @see http://crontab.org/

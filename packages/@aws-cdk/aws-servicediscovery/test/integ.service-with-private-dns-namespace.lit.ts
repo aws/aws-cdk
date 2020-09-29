@@ -16,11 +16,11 @@ const namespace = new servicediscovery.PrivateDnsNamespace(stack, 'Namespace', {
 const service = namespace.createService('Service', {
   dnsRecordType: servicediscovery.DnsRecordType.A_AAAA,
   dnsTtl: cdk.Duration.seconds(30),
-  loadBalancer: true
+  loadBalancer: true,
 });
 
 const loadbalancer = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc, internetFacing: true });
 
-service.registerLoadBalancer("Loadbalancer", loadbalancer);
+service.registerLoadBalancer('Loadbalancer', loadbalancer);
 
 app.synth();

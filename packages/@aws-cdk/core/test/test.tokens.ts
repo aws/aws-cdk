@@ -5,10 +5,11 @@ import { Intrinsic } from '../lib/private/intrinsic';
 import { findTokens } from '../lib/private/resolve';
 import { IResolvable } from '../lib/resolvable';
 import { evaluateCFN } from './evaluate-cfn';
+import { reEnableStackTraceCollection, restoreStackTraceColection } from './util';
 
 export = {
   'resolve a plain old object should just return the object'(test: Test) {
-    const obj = { PlainOldObject: 123, Array: [ 1, 2, 3 ] };
+    const obj = { PlainOldObject: 123, Array: [1, 2, 3] };
     test.deepEqual(resolve(obj), obj);
     test.done();
   },
@@ -16,12 +17,12 @@ export = {
   'if a value is an object with a token value, it will be evaluated'(test: Test) {
     const obj = {
       RegularValue: 'hello',
-      LazyValue: new Intrinsic('World')
+      LazyValue: new Intrinsic('World'),
     };
 
     test.deepEqual(resolve(obj), {
       RegularValue: 'hello',
-      LazyValue: 'World'
+      LazyValue: 'World',
     });
 
     test.done();
@@ -34,20 +35,20 @@ export = {
     test.deepEqual(actual, {
       Obj: [
         {
-        Data: {
-          stringProp: "hello",
-          numberProp: 1234
-        },
-        Recurse: 42
+          Data: {
+            stringProp: 'hello',
+            numberProp: 1234,
+          },
+          Recurse: 42,
         },
         {
-        Data: {
-          stringProp: "hello",
-          numberProp: 1234
+          Data: {
+            stringProp: 'hello',
+            numberProp: 1234,
+          },
+          Recurse: 42,
         },
-        Recurse: 42
-        }
-      ]
+      ],
     });
 
     test.done();
@@ -60,20 +61,20 @@ export = {
     test.deepEqual(actual, {
       Obj: [
         {
-        Data: {
-          stringProp: "hello",
-          numberProp: 1234
-        },
-        Recurse: 42
+          Data: {
+            stringProp: 'hello',
+            numberProp: 1234,
+          },
+          Recurse: 42,
         },
         {
-        Data: {
-          stringProp: "hello",
-          numberProp: 1234
+          Data: {
+            stringProp: 'hello',
+            numberProp: 1234,
+          },
+          Recurse: 42,
         },
-        Recurse: 42
-        }
-      ]
+      ],
     });
 
     test.done();
@@ -81,46 +82,46 @@ export = {
 
   'empty arrays or objects are kept'(test: Test) {
     test.deepEqual(resolve({ }), { });
-    test.deepEqual(resolve([ ]), [ ]);
+    test.deepEqual(resolve([]), []);
 
     const obj = {
       Prop1: 1234,
       Prop2: { },
-      Prop3: [ ],
+      Prop3: [],
       Prop4: 'hello',
       Prop5: {
         PropA: { },
         PropB: {
-          PropC: [ undefined, undefined ],
-          PropD: 'Yoohoo'
-        }
-      }
+          PropC: [undefined, undefined],
+          PropD: 'Yoohoo',
+        },
+      },
     };
 
     test.deepEqual(resolve(obj), {
       Prop1: 1234,
       Prop2: { },
-      Prop3: [ ],
+      Prop3: [],
       Prop4: 'hello',
       Prop5: {
         PropA: { },
         PropB: {
-          PropC: [ ],
-          PropD: 'Yoohoo'
-        }
-      }
+          PropC: [],
+          PropD: 'Yoohoo',
+        },
+      },
     });
 
     test.done();
   },
 
   'if an object has a "resolve" property that is not a function, it is not considered a token'(test: Test) {
-    test.deepEqual(resolve({ a_token: { resolve: () => 78787 }}), { a_token: 78787 });
-    test.deepEqual(resolve({ not_a_token: { resolve: 12 } }),   { not_a_token: { resolve: 12 } });
+    test.deepEqual(resolve({ a_token: { resolve: () => 78787 } }), { a_token: 78787 });
+    test.deepEqual(resolve({ not_a_token: { resolve: 12 } }), { not_a_token: { resolve: 12 } });
     test.done();
   },
 
-  // tslint:disable-next-line:max-line-length
+  // eslint-disable-next-line max-len
   'if a resolvable object inherits from a class that is also resolvable, the "constructor" function will not get in the way (uses Object.keys instead of "for in")'(test: Test) {
     test.deepEqual(resolve({ prop: new DataType() }), { prop: { foo: 12, goo: 'hello' } });
     test.done();
@@ -136,7 +137,7 @@ export = {
   'Token can be used to create tokens that contain a constant value'(test: Test) {
     test.equal(resolve(new Intrinsic(12)), 12);
     test.equal(resolve(new Intrinsic('hello')), 'hello');
-    test.deepEqual(resolve(new Intrinsic([ 'hi', 'there' ])), [ 'hi', 'there' ]);
+    test.deepEqual(resolve(new Intrinsic(['hi', 'there'])), ['hi', 'there']);
     test.done();
   },
 
@@ -180,14 +181,14 @@ export = {
 
     // THEN
     test.deepEqual(resolved, {
-      'Fn::Join': ['', ['The dog says: ', { woof: 'woof' }]]
+      'Fn::Join': ['', ['The dog says: ', { woof: 'woof' }]],
     });
     test.done();
   },
 
   'Doubly nested strings evaluate correctly in scalar context'(test: Test) {
     // GIVEN
-    const token1 = new Intrinsic( "world");
+    const token1 = new Intrinsic( 'world');
     const token2 = new Intrinsic( `hello ${token1}`);
 
     // WHEN
@@ -195,8 +196,8 @@ export = {
     const resolved2 = resolve(token2);
 
     // THEN
-    test.deepEqual(evaluateCFN(resolved1), "hello world");
-    test.deepEqual(evaluateCFN(resolved2), "hello world");
+    test.deepEqual(evaluateCFN(resolved1), 'hello world');
+    test.deepEqual(evaluateCFN(resolved2), 'hello world');
 
     test.done();
   },
@@ -221,7 +222,7 @@ export = {
       const resolved = resolve(`my bucket is named ${bucketName}`);
 
       // THEN
-      const context = {MyBucket: 'TheName'};
+      const context = { MyBucket: 'TheName' };
       test.equal(evaluateCFN(resolved, context), 'my bucket is named TheName');
     }
 
@@ -262,7 +263,7 @@ export = {
 
     // WHEN
     const s = {
-      [token.toString()]: `boom ${token}`
+      [token.toString()]: `boom ${token}`,
     };
 
     // THEN
@@ -276,7 +277,7 @@ export = {
 
     // WHEN
     const s = {
-      [token.toString()]: `boom ${token}`
+      [token.toString()]: `boom ${token}`,
     };
 
     // THEN
@@ -291,7 +292,7 @@ export = {
 
     // WHEN
     const s = {
-      [token.toString()]: `boom chicago`
+      [token.toString()]: 'boom chicago',
     };
 
     // THEN
@@ -306,7 +307,7 @@ export = {
 
     // WHEN
     const s = {
-      [token.toString()]: `boom chicago`
+      [token.toString()]: 'boom chicago',
     };
 
     // THEN
@@ -322,7 +323,7 @@ export = {
 
     // WHEN
     const s = {
-      [token.toString()]: `boom ${token}`
+      [token.toString()]: `boom ${token}`,
     };
 
     // THEN
@@ -337,12 +338,12 @@ export = {
 
       // WHEN
       const struct = {
-        XYZ: Token.asList(token)
+        XYZ: Token.asList(token),
       };
 
       // THEN
       test.deepEqual(resolve(struct), {
-        XYZ: { Ref: 'Other'}
+        XYZ: { Ref: 'Other' },
       });
 
       test.done();
@@ -389,7 +390,7 @@ export = {
 
       // THEN
       test.deepEqual(resolve(struct), {
-        'Fn::Select': [1, { Ref: 'Other'}]
+        'Fn::Select': [1, { Ref: 'Other' }],
       });
 
       test.done();
@@ -404,7 +405,7 @@ export = {
 
       // THEN
       test.deepEqual(resolve(struct), {
-        'Fn::Join': ['/', { Ref: 'Other'}]
+        'Fn::Join': ['/', { Ref: 'Other' }],
       });
 
       test.done();
@@ -419,7 +420,7 @@ export = {
 
       // THEN
       test.deepEqual(resolve(struct), {
-        'Fn::Join': ['/', { Ref: 'Other'}]
+        'Fn::Join': ['/', { Ref: 'Other' }],
       });
 
       test.done();
@@ -487,7 +488,9 @@ export = {
       return fn2();
     }
 
+    const previousValue = reEnableStackTraceCollection();
     const token = fn1();
+    restoreStackTraceColection(previousValue);
     test.ok(token.creationTrace.find(x => x.includes('fn1')));
     test.ok(token.creationTrace.find(x => x.includes('fn2')));
     test.done();
@@ -509,7 +512,10 @@ export = {
       }
       return fn2();
     }
+
+    const previousValue = reEnableStackTraceCollection();
     const token = fn1();
+    restoreStackTraceColection(previousValue);
     test.throws(() => token.throwError('message!'), /Token created:/);
     test.done();
   },
@@ -521,8 +527,8 @@ export = {
       'a string',
       1234,
       { an_object: 1234 },
-      [ 1, 2, 3 ],
-      false
+      [1, 2, 3],
+      false,
     ];
 
     for (const input of inputs) {
@@ -588,12 +594,15 @@ export = {
       return Lazy.stringValue({ produce: () => { throw new Error('fooError'); } });
     }
 
+    const previousValue = reEnableStackTraceCollection();
     const x = showMeInTheStackTrace();
     let message;
     try {
       resolve(x);
     } catch (e) {
       message = e.message;
+    } finally {
+      restoreStackTraceColection(previousValue);
     }
 
     test.ok(message && message.includes('showMeInTheStackTrace'));
@@ -608,7 +617,7 @@ export = {
 
     'converts tokenized number to string'(test: Test) {
       test.equal(resolve(Tokenization.stringifyNumber({
-        resolve: () => 100
+        resolve: () => 100,
       } as any)), '100');
       test.done();
     },
@@ -627,7 +636,7 @@ export = {
     'lazy Ref remains the same'(test: Test) {
       const resolvedVal = { Ref: 'SomeLogicalId' };
       const tokenizedVal = Lazy.anyValue({
-        produce: () => resolvedVal
+        produce: () => resolvedVal,
       });
       const res = Tokenization.stringifyNumber(tokenizedVal as any) as any;
       test.notDeepEqual(res, resolvedVal);
@@ -643,7 +652,7 @@ export = {
       test.deepEqual(resolve(res), resolvedVal);
       test.done();
     },
-  }
+  },
 };
 
 class Promise2 implements IResolvable {
@@ -655,14 +664,14 @@ class Promise2 implements IResolvable {
         stringProp: 'hello',
         numberProp: 1234,
       },
-      Recurse: new Intrinsic( 42)
+      Recurse: new Intrinsic( 42),
     };
   }
 }
 
 class Promise1 implements IResolvable {
   public readonly creationStack = [];
-  public p2 = [ new Promise2(), new Promise2() ];
+  public p2 = [new Promise2(), new Promise2()];
 
   public resolve() {
     return this.p2;
@@ -688,7 +697,7 @@ class DataType extends BaseDataType {
 function tokensThatResolveTo(value: any): Token[] {
   return [
     new Intrinsic(value),
-    Lazy.anyValue({ produce: () => value })
+    Lazy.anyValue({ produce: () => value }),
   ];
 }
 

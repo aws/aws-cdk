@@ -22,14 +22,14 @@ export = testCase({
     },
 
     'extracts resource path and method correctly'(test: Test) {
-      test.deepEqual(parseMethodOptionsPath('/foo/GET'),   { resourcePath: '/~1foo', httpMethod: 'GET' });
+      test.deepEqual(parseMethodOptionsPath('/foo/GET'), { resourcePath: '/~1foo', httpMethod: 'GET' });
       test.deepEqual(parseMethodOptionsPath('/foo/bar/GET'), { resourcePath: '/~1foo~1bar', httpMethod: 'GET' });
-      test.deepEqual(parseMethodOptionsPath('/foo/*/GET'),   { resourcePath: '/~1foo~1*', httpMethod: 'GET' });
-      test.deepEqual(parseMethodOptionsPath('/*/GET'),     { resourcePath: '/*', httpMethod: 'GET' });
-      test.deepEqual(parseMethodOptionsPath('/*/*'),     { resourcePath: '/*', httpMethod: '*' });
-      test.deepEqual(parseMethodOptionsPath('//POST'),     { resourcePath: '/', httpMethod: 'POST' });
+      test.deepEqual(parseMethodOptionsPath('/foo/*/GET'), { resourcePath: '/~1foo~1*', httpMethod: 'GET' });
+      test.deepEqual(parseMethodOptionsPath('/*/GET'), { resourcePath: '/*', httpMethod: 'GET' });
+      test.deepEqual(parseMethodOptionsPath('/*/*'), { resourcePath: '/*', httpMethod: '*' });
+      test.deepEqual(parseMethodOptionsPath('//POST'), { resourcePath: '/', httpMethod: 'POST' });
       test.done();
-    }
+    },
   },
 
   'parseAwsApiCall': {
@@ -61,10 +61,10 @@ export = testCase({
     '"action" mode with parameters (url-encoded)'(test: Test) {
       test.deepEqual(parseAwsApiCall(undefined, 'GetObject', { Bucket: 'MyBucket', Key: 'MyKey' }), {
         apiType: 'action',
-        apiValue: 'GetObject&Bucket=MyBucket&Key=MyKey'
+        apiValue: 'GetObject&Bucket=MyBucket&Key=MyKey',
       });
       test.done();
-    }
+    },
   },
 
   'JsonSchemaMapper.toCfnJsonSchema': {

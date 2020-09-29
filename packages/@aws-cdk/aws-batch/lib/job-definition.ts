@@ -285,10 +285,12 @@ export class JobDefinition extends Resource implements IJobDefinition {
       containerProperties: this.buildJobContainer(props.container),
       type: 'container',
       nodeProperties: props.nodeProps
-      ? { mainNode: props.nodeProps.mainNode,
+        ? {
+          mainNode: props.nodeProps.mainNode,
           nodeRangeProperties: this.buildNodeRangeProps(props.nodeProps),
-          numNodes: props.nodeProps.count }
-      : undefined,
+          numNodes: props.nodeProps.count,
+        }
+        : undefined,
       parameters: props.parameters,
       retryStrategy: {
         attempts: props.retryAttempts || 1,
@@ -337,6 +339,9 @@ export class JobDefinition extends Resource implements IJobDefinition {
       memory: container.memoryLimitMiB || 4,
       mountPoints: container.mountPoints,
       privileged: container.privileged || false,
+      resourceRequirements: container.gpuCount
+        ? [{ type: 'GPU', value: String(container.gpuCount) }]
+        : undefined,
       readonlyRootFilesystem: container.readOnly || false,
       ulimits: container.ulimits,
       user: container.user,

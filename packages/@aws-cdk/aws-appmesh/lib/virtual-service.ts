@@ -76,7 +76,7 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
    * Import an existing VirtualService given an ARN
    */
   public static fromVirtualServiceArn(scope: cdk.Construct, id: string, virtualServiceArn: string): IVirtualService {
-    return new ImportedVirtualService(scope, id,  {
+    return new ImportedVirtualService(scope, id, {
       virtualServiceArn,
     });
   }
@@ -106,7 +106,7 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
 
   constructor(scope: cdk.Construct, id: string, props: VirtualServiceProps) {
     super(scope, id, {
-      physicalName: props.virtualServiceName || cdk.Lazy.stringValue({ produce: () => this.node.uniqueId })
+      physicalName: props.virtualServiceName || cdk.Lazy.stringValue({ produce: () => this.node.uniqueId }),
     });
 
     if (props.virtualNode && props.virtualRouter) {

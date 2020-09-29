@@ -1,5 +1,5 @@
 {
-  "version": "1.10.0",
+  "version": "0.0.0",
   "artifacts": {
     "MyStackName": {
       "type": "aws:cloudformation:stack",
@@ -15,19 +15,22 @@
               "packaging": "zip",
               "id": "logical-id-of-the-asset",
               "sourceHash": "xoxoxox",
-              "path": "asset-dir"
+              "path": "asset-dir",
+              "artifactHashParameter": "hashParameter",
+              "s3BucketParameter": "bucketParameter",
+              "s3KeyParameter": "keyParameter"
             },
-            "trace": "bam"
+            "trace": ["bam"]
           },
           {
             "type": "aws:cdk:asset",
             "data": {
-              "packaging": "docker",
+              "packaging": "container-image",
               "id": "logical-id-of-the-asset-x1234",
               "sourceHash": "docker-asset-source",
               "path": "docker-asset"
             },
-            "trace": "bam:ssss"
+            "trace": ["bam:ssss"]
           }
         ]
       }

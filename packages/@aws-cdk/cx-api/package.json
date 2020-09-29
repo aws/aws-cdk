@@ -23,9 +23,14 @@
       },
       "python": {
         "distName": "aws-cdk.cx-api",
-        "module": "aws_cdk.cx_api"
+        "module": "aws_cdk.cx_api",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
-    }
+    },
+    "projectReferences": true
   },
   "scripts": {
     "build": "cdk-build",
@@ -45,33 +50,20 @@
     "organization": true
   },
   "dependencies": {
-    "semver": "^7.1.3"
+    "@aws-cdk/cloud-assembly-schema": "0.0.0",
+    "semver": "^7.3.2"
   },
-  "jest": {
-    "moduleFileExtensions": [
-      "js"
-    ],
-    "coverageThreshold": {
-      "global": {
-        "branches": 80,
-        "statements": 80
-      }
-    },
-    "collectCoverage": true,
-    "coverageReporters": [
-      "lcov",
-      "html",
-      "text-summary"
-    ]
+  "peerDependencies": {
+    "@aws-cdk/cloud-assembly-schema": "0.0.0"
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/jest": "^25.1.4",
+    "@types/jest": "^26.0.14",
     "@types/mock-fs": "^4.10.0",
-    "@types/semver": "^7.1.0",
+    "@types/semver": "^7.3.4",
     "cdk-build-tools": "0.0.0",
-    "jest": "^24.9.0",
-    "mock-fs": "^4.11.0",
+    "jest": "^26.4.2",
+    "mock-fs": "^4.13.0",
     "pkglint": "0.0.0"
   },
   "repository": {
@@ -88,9 +80,10 @@
     "semver"
   ],
   "engines": {
-    "node": ">= 10.3.0"
+    "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "stability": "experimental",
+  "maturity": "experimental",
   "awslint": {
     "exclude": [
       "props-default-doc:@aws-cdk/cx-api.MetadataEntry.data",
@@ -113,6 +106,9 @@
       "props-default-doc:@aws-cdk/cx-api.AssemblyManifest.runtime",
       "props-default-doc:@aws-cdk/cx-api.AvailabilityZonesContextQuery.account",
       "props-default-doc:@aws-cdk/cx-api.AvailabilityZonesContextQuery.region",
+      "props-default-doc:@aws-cdk/cx-api.EndpointServiceAvailabilityZonesContextQuery.account",
+      "props-default-doc:@aws-cdk/cx-api.EndpointServiceAvailabilityZonesContextQuery.region",
+      "props-default-doc:@aws-cdk/cx-api.EndpointServiceAvailabilityZonesContextQuery.serviceName",
       "props-default-doc:@aws-cdk/cx-api.AwsCloudFormationStackProperties.parameters",
       "docs-public-apis:@aws-cdk/cx-api.ContainerImageAssetMetadataEntry",
       "docs-public-apis:@aws-cdk/cx-api.FileAssetMetadataEntry",
@@ -151,5 +147,8 @@
   },
   "awscdkio": {
     "announce": false
+  },
+  "cdk-build": {
+    "jest": true
   }
 }

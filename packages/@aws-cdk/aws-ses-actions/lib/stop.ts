@@ -23,8 +23,8 @@ export class Stop implements ses.IReceiptRuleAction {
     return {
       stopAction: {
         scope: 'RuleSet',
-        topicArn: this.props.topic ? this.props.topic.topicArn : undefined
-      }
+        topicArn: this.props.topic ? this.props.topic.topicArn : undefined,
+      },
     };
   }
 }

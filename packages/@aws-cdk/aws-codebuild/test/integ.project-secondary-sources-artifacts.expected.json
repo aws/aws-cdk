@@ -1,9 +1,9 @@
 {
   "Resources": {
     "MyBucketF68F3FF0": {
-      "DeletionPolicy": "Delete",
+      "Type": "AWS::S3::Bucket",
       "UpdateReplacePolicy": "Delete",
-      "Type": "AWS::S3::Bucket"
+      "DeletionPolicy": "Delete"
     },
     "MyProjectRole9BBE5233": {
       "Type": "AWS::IAM::Role",
@@ -180,6 +180,7 @@
           "BuildSpec": "{\n  \"version\": \"0.2\"\n}",
           "Type": "NO_SOURCE"
         },
+        "EncryptionKey": "alias/aws/s3",
         "SecondaryArtifacts": [
           {
             "ArtifactIdentifier": "AddArtifact1",

@@ -1,3 +1,4 @@
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
 import { Mode, SdkProvider } from '../api';
@@ -9,18 +10,18 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
   constructor(private readonly aws: SdkProvider) {
   }
 
-  public async getValue(args: cxapi.VpcContextQuery) {
+  public async getValue(args: cxschema.VpcContextQuery) {
     const account: string = args.account!;
     const region: string = args.region!;
 
-    const ec2 = (await this.aws.forEnvironment(account, region, Mode.ForReading)).ec2();
+    const ec2 = (await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(account, region), Mode.ForReading)).ec2();
 
     const vpcId = await this.findVpc(ec2, args);
 
-    return await this.readVpcProps(ec2, vpcId, args);
+    return this.readVpcProps(ec2, vpcId, args);
   }
 
-  private async findVpc(ec2: AWS.EC2, args: cxapi.VpcContextQuery): Promise<AWS.EC2.Vpc> {
+  private async findVpc(ec2: AWS.EC2, args: cxschema.VpcContextQuery): Promise<AWS.EC2.Vpc> {
     // Build request filter (map { Name -> Value } to list of [{ Name, Values }])
     const filters: AWS.EC2.Filter[] = Object.entries(args.filter).map(([tag, value]) => ({ Name: tag, Values: [value] }));
 
@@ -38,7 +39,7 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
     return vpcs[0];
   }
 
-  private async readVpcProps(ec2: AWS.EC2, vpc: AWS.EC2.Vpc, args: cxapi.VpcContextQuery): Promise<cxapi.VpcContextResponse> {
+  private async readVpcProps(ec2: AWS.EC2, vpc: AWS.EC2.Vpc, args: cxschema.VpcContextQuery): Promise<cxapi.VpcContextResponse> {
     const vpcId = vpc.VpcId!;
 
     debug(`Describing VPC ${vpcId}`);
@@ -69,7 +70,7 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
       if (type === undefined) { type = SubnetType.Private; }
 
       if (!isValidSubnetType(type)) {
-        // tslint:disable-next-line: max-line-length
+        // eslint-disable-next-line max-len
         throw new Error(`Subnet ${subnet.SubnetArn} has invalid subnet type ${type} (must be ${SubnetType.Public}, ${SubnetType.Private} or ${SubnetType.Isolated})`);
       }
 
@@ -105,17 +106,17 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
       Filters: [
         {
           Name: 'attachment.vpc-id',
-          Values: [vpcId]
+          Values: [vpcId],
         },
         {
           Name: 'attachment.state',
-          Values: ['attached']
+          Values: ['attached'],
         },
         {
           Name: 'state',
-          Values: ['available']
-        }
-      ]
+          Values: ['available'],
+        },
+      ],
     }).promise();
     const vpnGatewayId = vpnGatewayResponse.VpnGateways && vpnGatewayResponse.VpnGateways.length === 1
       ? vpnGatewayResponse.VpnGateways[0].VpnGatewayId

@@ -20,9 +20,27 @@ export interface IApp extends IResource {
 }
 
 /**
- * Properties for an App
+ * Configuration for the source code provider
  */
-export interface AppProps {
+export interface SourceCodeProviderConfig {
+  /**
+   * The repository for the application. Must use the `HTTPS` protocol.
+   *
+   * @example https://github.com/aws/aws-cdk
+   */
+  readonly repository: string;
+
+  /**
+   * OAuth token for 3rd party source control system for an Amplify App, used
+   * to create webhook and read-only deploy key. OAuth token is not stored.
+   *
+   * Either `accessToken` or `oauthToken` must be specified if `repository`
+   * is sepcified.
+   *
+   * @default - do not use a token
+   */
+  readonly oauthToken?: SecretValue;
+
   /**
    * Personal Access token for 3rd party source control system for an Amplify
    * App, used to create webhook and read-only deploy key. Token is not stored.
@@ -30,10 +48,27 @@ export interface AppProps {
    * Either `accessToken` or `oauthToken` must be specified if `repository`
    * is sepcified.
    *
-   * @default - use OAuth token
+   * @default - do not use a token
    */
   readonly accessToken?: SecretValue;
+}
 
+/**
+ * A source code provider
+ */
+export interface ISourceCodeProvider {
+  /**
+   * Binds the source code provider to an app
+   *
+   * @param app The app [disable-awslint:ref-via-interface]
+   */
+  bind(app: App): SourceCodeProviderConfig;
+}
+
+/**
+ * Properties for an App
+ */
+export interface AppProps {
   /**
    * The name for the application
    *
@@ -42,12 +77,27 @@ export interface AppProps {
   readonly appName?: string;
 
   /**
+   * The source code provider for this application
+   *
+   * @default - not connected to a source code provider
+   */
+  readonly sourceCodeProvider?: ISourceCodeProvider;
+
+  /**
    * The auto branch creation configuration. Use this to automatically create
    * branches that match a certain pattern.
    *
    * @default - no auto branch creation
    */
   readonly autoBranchCreation?: AutoBranchCreation;
+
+  /**
+   * Automatically disconnect a branch in the Amplify Console when you delete a
+   * branch from your Git repository.
+   *
+   * @default false
+   */
+  readonly autoBranchDeletion?: boolean;
 
   /**
    * The Basic Auth configuration. Use this to set password protection at an
@@ -92,31 +142,12 @@ export interface AppProps {
   readonly environmentVariables?: { [name: string]: string };
 
   /**
-   * The IAM service role to associate with the application
+   * The IAM service role to associate with the application. The App
+   * implements IGrantable.
    *
    * @default - a new role is created
    */
   readonly role?: iam.IRole;
-
-  /**
-   * OAuth token for 3rd party source control system for an Amplify App, used
-   * to create webhook and read-only deploy key. OAuth token is not stored.
-   *
-   * Either `accessToken` or `oauthToken` must be specified if `repository`
-   * is sepcified.
-   *
-   * @default - use access token
-   */
-  readonly oauthToken?: SecretValue;
-
-  /**
-   * The repository for the application. Must use the `HTTPS` protocol.
-   *
-   * @example https://github.com/aws/aws-cdk
-   *
-   * @default - not connected to a repository
-   */
-  readonly repository?: string;
 }
 
 /**
@@ -168,36 +199,31 @@ export class App extends Resource implements IApp, iam.IGrantable {
   constructor(scope: Construct, id: string, props: AppProps) {
     super(scope, id);
 
-    if (props.repository && !props.accessToken && !props.oauthToken) {
-      throw new Error('Either `accessToken` or `oauthToken` must be specified');
-    }
-
-    if (props.repository && !props.repository.startsWith('https://')) {
-      throw new Error('`repository` must use the HTTPS protocol');
-    }
-
     this.customRules = props.customRules || [];
     this.environmentVariables = props.environmentVariables || {};
     this.autoBranchEnvironmentVariables = props.autoBranchCreation && props.autoBranchCreation.environmentVariables || {};
 
     const role = props.role || new iam.Role(this, 'Role', {
-      assumedBy: new iam.ServicePrincipal('amplify.amazonaws.com')
+      assumedBy: new iam.ServicePrincipal('amplify.amazonaws.com'),
     });
     this.grantPrincipal = role;
 
+    const sourceCodeProviderOptions = props.sourceCodeProvider?.bind(this);
+
     const app = new CfnApp(this, 'Resource', {
-      accessToken: props.accessToken && props.accessToken.toString(),
+      accessToken: sourceCodeProviderOptions?.accessToken?.toString(),
       autoBranchCreationConfig: props.autoBranchCreation && {
         autoBranchCreationPatterns: props.autoBranchCreation.patterns,
         basicAuthConfig: props.autoBranchCreation.basicAuth && props.autoBranchCreation.basicAuth.bind(this, 'BranchBasicAuth'),
         buildSpec: props.autoBranchCreation.buildSpec && props.autoBranchCreation.buildSpec.toBuildSpec(),
         enableAutoBranchCreation: true,
         enableAutoBuild: props.autoBranchCreation.autoBuild === undefined ? true : props.autoBranchCreation.autoBuild,
-        environmentVariables: Lazy.anyValue({ produce: () => renderEnvironmentVariables(this.autoBranchEnvironmentVariables )}, { omitEmptyArray: true }), // tslint:disable-line max-line-length
+        environmentVariables: Lazy.anyValue({ produce: () => renderEnvironmentVariables(this.autoBranchEnvironmentVariables ) }, { omitEmptyArray: true }), // eslint-disable-line max-len
         enablePullRequestPreview: props.autoBranchCreation.pullRequestPreview === undefined ? true : props.autoBranchCreation.pullRequestPreview,
         pullRequestEnvironmentName: props.autoBranchCreation.pullRequestEnvironmentName,
         stage: props.autoBranchCreation.stage,
       },
+      enableBranchAutoDeletion: props.autoBranchDeletion,
       basicAuthConfig: props.basicAuth && props.basicAuth.bind(this, 'AppBasicAuth'),
       buildSpec: props.buildSpec && props.buildSpec.toBuildSpec(),
       customRules: Lazy.anyValue({ produce: () => this.customRules }, { omitEmptyArray: true }),
@@ -205,8 +231,8 @@ export class App extends Resource implements IApp, iam.IGrantable {
       environmentVariables: Lazy.anyValue({ produce: () => renderEnvironmentVariables(this.environmentVariables) }, { omitEmptyArray: true }),
       iamServiceRole: role.roleArn,
       name: props.appName || this.node.id,
-      oauthToken: props.oauthToken && props.oauthToken.toString(),
-      repository: props.repository,
+      oauthToken: sourceCodeProviderOptions?.oauthToken?.toString(),
+      repository: sourceCodeProviderOptions?.repository,
     });
 
     this.appId = app.attrAppId;
@@ -355,24 +381,35 @@ export enum RedirectStatus {
    * Not found (404)
    */
   NOT_FOUND = '404',
+
+  /**
+   * Not found rewrite (404)
+   */
+  NOT_FOUND_REWRITE = '404-200',
 }
 
 /**
- * Custom rewrite/redirect rule for an Amplify App.
+ * Options for a custom rewrite/redirect rule for an Amplify App.
  */
-export interface CustomRule {
+export interface CustomRuleOptions {
   /**
    * The source pattern for a URL rewrite or redirect rule.
+   *
+   * @see https://docs.aws.amazon.com/amplify/latest/userguide/redirects.html
    */
   readonly source: string;
 
   /**
    * The target pattern for a URL rewrite or redirect rule.
+   *
+   * @see https://docs.aws.amazon.com/amplify/latest/userguide/redirects.html
    */
   readonly target: string
 
   /**
    * The status code for a URL rewrite or redirect rule.
+   *
+   * @see https://docs.aws.amazon.com/amplify/latest/userguide/redirects.html
    *
    * @default PERMANENT_REDIRECT
    */
@@ -381,7 +418,65 @@ export interface CustomRule {
   /**
    * The condition for a URL rewrite or redirect rule, e.g. country code.
    *
+   * @see https://docs.aws.amazon.com/amplify/latest/userguide/redirects.html
+   *
    * @default - no condition
    */
   readonly condition?: string;
+}
+
+/**
+ * Custom rewrite/redirect rule for an Amplify App.
+ *
+ * @see https://docs.aws.amazon.com/amplify/latest/userguide/redirects.html
+ */
+export class CustomRule {
+  /**
+   * Sets up a 200 rewrite for all paths to `index.html` except for path
+   * containing a file extension.
+   */
+  public static readonly SINGLE_PAGE_APPLICATION_REDIRECT = new CustomRule({
+    source: '</^[^.]+$/>',
+    target: '/index.html',
+    status: RedirectStatus.REWRITE,
+  });
+
+  /**
+   * The source pattern for a URL rewrite or redirect rule.
+   *
+   * @see https://docs.aws.amazon.com/amplify/latest/userguide/redirects.html
+   */
+  public readonly source: string;
+
+  /**
+   * The target pattern for a URL rewrite or redirect rule.
+   *
+   * @see https://docs.aws.amazon.com/amplify/latest/userguide/redirects.html
+   */
+  public readonly target: string;
+
+  /**
+   * The status code for a URL rewrite or redirect rule.
+   *
+   * @see https://docs.aws.amazon.com/amplify/latest/userguide/redirects.html
+   *
+   * @default PERMANENT_REDIRECT
+   */
+  public readonly status?: RedirectStatus;
+
+  /**
+   * The condition for a URL rewrite or redirect rule, e.g. country code.
+   *
+   * @see https://docs.aws.amazon.com/amplify/latest/userguide/redirects.html
+   *
+   * @default - no condition
+   */
+  public readonly condition?: string;
+
+  constructor(options: CustomRuleOptions) {
+    this.source = options.source;
+    this.target = options.target;
+    this.status = options.status;
+    this.condition = options.condition;
+  }
 }

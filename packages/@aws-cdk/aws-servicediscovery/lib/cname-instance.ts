@@ -62,8 +62,8 @@ export class CnameInstance extends InstanceBase {
       serviceId: props.service.serviceId,
       instanceAttributes: {
         AWS_INSTANCE_CNAME: props.instanceCname,
-        ...props.customAttributes
-      }
+        ...props.customAttributes,
+      },
     });
 
     this.service = props.service;

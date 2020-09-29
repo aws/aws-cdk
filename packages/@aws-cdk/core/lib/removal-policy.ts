@@ -10,6 +10,17 @@ export enum RemovalPolicy {
    * in the account, but orphaned from the stack.
    */
   RETAIN = 'retain',
+
+  /**
+   * This retention policy deletes the resource,
+   * but saves a snapshot of its data before deleting,
+   * so that it can be re-created later.
+   * Only available for some stateful resources,
+   * like databases, EFS volumes, etc.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-deletionpolicy.html#aws-attribute-deletionpolicy-options
+   */
+  SNAPSHOT = 'snapshot',
 }
 
 export interface RemovalPolicyOptions {

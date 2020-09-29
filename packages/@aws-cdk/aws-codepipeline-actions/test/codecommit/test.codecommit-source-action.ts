@@ -1,12 +1,12 @@
-import { countResources, expect, haveResourceLike, not } from "@aws-cdk/assert";
+import { countResources, expect, haveResourceLike, not } from '@aws-cdk/assert';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codecommit from '@aws-cdk/aws-codecommit';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
-import { Stack } from "@aws-cdk/core";
+import { Stack, Lazy } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as cpactions from '../../lib';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
   'CodeCommit Source Action': {
@@ -16,12 +16,12 @@ export = {
       minimalPipeline(stack, undefined);
 
       expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
-        "Stages": [
+        'Stages': [
           {
-            "Actions": [
+            'Actions': [
               {
-                "Configuration": {
-                  "PollForSourceChanges": false,
+                'Configuration': {
+                  'PollForSourceChanges': false,
                 },
               },
             ],
@@ -41,12 +41,12 @@ export = {
       minimalPipeline(stack, cpactions.CodeCommitTrigger.EVENTS);
 
       expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
-        "Stages": [
+        'Stages': [
           {
-            "Actions": [
+            'Actions': [
               {
-                "Configuration": {
-                  "PollForSourceChanges": false,
+                'Configuration': {
+                  'PollForSourceChanges': false,
                 },
               },
             ],
@@ -66,12 +66,12 @@ export = {
       minimalPipeline(stack, cpactions.CodeCommitTrigger.POLL);
 
       expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
-        "Stages": [
+        'Stages': [
           {
-            "Actions": [
+            'Actions': [
               {
-                "Configuration": {
-                  "PollForSourceChanges": true,
+                'Configuration': {
+                  'PollForSourceChanges': true,
                 },
               },
             ],
@@ -91,12 +91,12 @@ export = {
       minimalPipeline(stack, cpactions.CodeCommitTrigger.NONE);
 
       expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
-        "Stages": [
+        'Stages': [
           {
-            "Actions": [
+            'Actions': [
               {
-                "Configuration": {
-                  "PollForSourceChanges": false,
+                'Configuration': {
+                  'PollForSourceChanges': false,
                 },
               },
             ],
@@ -106,6 +106,66 @@ export = {
       }));
 
       expect(stack).to(not(haveResourceLike('AWS::Events::Rule')));
+
+      test.done();
+    },
+
+    'cannot be created with an empty branch'(test: Test) {
+      const stack = new Stack();
+      const repo = new codecommit.Repository(stack, 'MyRepo', {
+        repositoryName: 'my-repo',
+      });
+
+      test.throws(() => {
+        new cpactions.CodeCommitSourceAction({
+          actionName: 'Source2',
+          repository: repo,
+          output: new codepipeline.Artifact(),
+          branch: '',
+        });
+      }, /'branch' parameter cannot be an empty string/);
+
+      test.done();
+    },
+
+    'allows using the same repository multiple times with different branches when trigger=EVENTS'(test: Test) {
+      const stack = new Stack();
+
+      const repo = new codecommit.Repository(stack, 'MyRepo', {
+        repositoryName: 'my-repo',
+      });
+      const sourceOutput1 = new codepipeline.Artifact();
+      const sourceOutput2 = new codepipeline.Artifact();
+      new codepipeline.Pipeline(stack, 'MyPipeline', {
+        stages: [
+          {
+            stageName: 'Source',
+            actions: [
+              new cpactions.CodeCommitSourceAction({
+                actionName: 'Source1',
+                repository: repo,
+                output: sourceOutput1,
+              }),
+              new cpactions.CodeCommitSourceAction({
+                actionName: 'Source2',
+                repository: repo,
+                output: sourceOutput2,
+                branch: 'develop',
+              }),
+            ],
+          },
+          {
+            stageName: 'Build',
+            actions: [
+              new cpactions.CodeBuildAction({
+                actionName: 'Build',
+                project: new codebuild.PipelineProject(stack, 'MyProject'),
+                input: sourceOutput1,
+              }),
+            ],
+          },
+        ],
+      });
 
       test.done();
     },
@@ -144,22 +204,65 @@ export = {
       });
 
       expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
-        "Stages": [
+        'Stages': [
           {
-            "Name": "Source",
+            'Name': 'Source',
           },
           {
-            "Name": "Build",
-            "Actions": [
+            'Name': 'Build',
+            'Actions': [
               {
-                "Name": "Build",
-                "Configuration": {
-                  "EnvironmentVariables": '[{"name":"AuthorDate","type":"PLAINTEXT","value":"#{Source_Source_NS.AuthorDate}"}]',
+                'Name': 'Build',
+                'Configuration': {
+                  'EnvironmentVariables': '[{"name":"AuthorDate","type":"PLAINTEXT","value":"#{Source_Source_NS.AuthorDate}"}]',
                 },
               },
             ],
           },
         ],
+      }));
+
+      test.done();
+    },
+
+    'allows using a Token for the branch name'(test: Test) {
+      const stack = new Stack();
+
+      const sourceOutput = new codepipeline.Artifact();
+      new codepipeline.Pipeline(stack, 'P', {
+        stages: [
+          {
+            stageName: 'Source',
+            actions: [
+              new cpactions.CodeCommitSourceAction({
+                actionName: 'CodeCommit',
+                repository: new codecommit.Repository(stack, 'R', {
+                  repositoryName: 'repository',
+                }),
+                branch: Lazy.stringValue({ produce: () => 'my-branch' }),
+                output: sourceOutput,
+              }),
+            ],
+          },
+          {
+            stageName: 'Build',
+            actions: [
+              new cpactions.CodeBuildAction({
+                actionName: 'Build',
+                project: new codebuild.PipelineProject(stack, 'CodeBuild'),
+                input: sourceOutput,
+              }),
+            ],
+          },
+        ],
+      });
+
+      expect(stack).to(haveResourceLike('AWS::Events::Rule', {
+        EventPattern: {
+          detail: {
+            referenceName: ['my-branch'],
+          },
+        },
       }));
 
       test.done();

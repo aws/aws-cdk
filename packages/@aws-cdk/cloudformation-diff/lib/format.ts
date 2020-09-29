@@ -1,5 +1,5 @@
-import * as colors from 'colors/safe';
 import { format } from 'util';
+import * as colors from 'colors/safe';
 import { Difference, isPropertyDifference, ResourceDifference, ResourceImpact } from './diff-template';
 import { DifferenceCollection, TemplateDiff } from './diff/types';
 import { deepEqual } from './diff/util';
@@ -11,7 +11,6 @@ import { SecurityGroupChanges } from './network/security-group-changes';
 const PATH_METADATA_KEY = 'aws:cdk:path';
 
 /* eslint-disable @typescript-eslint/no-require-imports */
-// tslint:disable-next-line:no-var-requires
 const { structuredPatch } = require('diff');
 /* eslint-enable */
 
@@ -28,10 +27,11 @@ export interface FormatStream extends NodeJS.WritableStream {
  *                         case there is no aws:cdk:path metadata in the template.
  * @param context          the number of context lines to use in arbitrary JSON diff (defaults to 3).
  */
-export function formatDifferences(stream: FormatStream,
-                                  templateDiff: TemplateDiff,
-                                  logicalToPathMap: { [logicalId: string]: string } = { },
-                                  context: number = 3) {
+export function formatDifferences(
+  stream: FormatStream,
+  templateDiff: TemplateDiff,
+  logicalToPathMap: { [logicalId: string]: string } = { },
+  context: number = 3) {
   const formatter = new Formatter(stream, logicalToPathMap, templateDiff, context);
 
   if (templateDiff.awsTemplateFormatVersion || templateDiff.transform || templateDiff.description) {
@@ -56,10 +56,11 @@ export function formatDifferences(stream: FormatStream,
 /**
  * Renders a diff of security changes to the given stream
  */
-export function formatSecurityChanges(stream: NodeJS.WriteStream,
-                                      templateDiff: TemplateDiff,
-                                      logicalToPathMap: {[logicalId: string]: string} = {},
-                                      context?: number) {
+export function formatSecurityChanges(
+  stream: NodeJS.WriteStream,
+  templateDiff: TemplateDiff,
+  logicalToPathMap: {[logicalId: string]: string} = {},
+  context?: number) {
   const formatter = new Formatter(stream, logicalToPathMap, templateDiff, context);
 
   formatSecurityChangesWithBanner(formatter, templateDiff);
@@ -70,20 +71,21 @@ function formatSecurityChangesWithBanner(formatter: Formatter, templateDiff: Tem
   formatter.formatIamChanges(templateDiff.iamChanges);
   formatter.formatSecurityGroupChanges(templateDiff.securityGroupChanges);
 
-  formatter.warning(`(NOTE: There may be security-related changes not in this list. See https://github.com/aws/aws-cdk/issues/1299)`);
+  formatter.warning('(NOTE: There may be security-related changes not in this list. See https://github.com/aws/aws-cdk/issues/1299)');
   formatter.printSectionFooter();
 }
 
 const ADDITION = colors.green('[+]');
-const CONTEXT  = colors.grey('[ ]');
-const UPDATE   = colors.yellow('[~]');
-const REMOVAL  = colors.red('[-]');
+const CONTEXT = colors.grey('[ ]');
+const UPDATE = colors.yellow('[~]');
+const REMOVAL = colors.red('[-]');
 
 class Formatter {
-  constructor(private readonly stream: FormatStream,
-              private readonly logicalToPathMap: { [logicalId: string]: string },
-              diff?: TemplateDiff,
-              private readonly context: number = 3) {
+  constructor(
+    private readonly stream: FormatStream,
+    private readonly logicalToPathMap: { [logicalId: string]: string },
+    diff?: TemplateDiff,
+    private readonly context: number = 3) {
     // Read additional construct paths from the diff if it is supplied
     if (diff) {
       this.readConstructPathsFrom(diff);
@@ -99,10 +101,10 @@ class Formatter {
   }
 
   public formatSection<V, T extends Difference<V>>(
-      title: string,
-      entryType: string,
-      collection: DifferenceCollection<V, T>,
-      formatter: (type: string, id: string, diff: T) => void = this.formatDifference.bind(this)) {
+    title: string,
+    entryType: string,
+    collection: DifferenceCollection<V, T>,
+    formatter: (type: string, id: string, diff: T) => void = this.formatDifference.bind(this)) {
 
     if (collection.differenceCount === 0) {
       return;
@@ -156,7 +158,7 @@ class Formatter {
 
     const resourceType = diff.isRemoval ? diff.oldResourceType : diff.newResourceType;
 
-    // tslint:disable-next-line:max-line-length
+    // eslint-disable-next-line max-len
     this.print(`${this.formatPrefix(diff)} ${this.formatValue(resourceType, colors.cyan)} ${this.formatLogicalId(logicalId)} ${this.formatImpact(diff.changeImpact)}`);
 
     if (diff.isUpdate) {
@@ -194,18 +196,18 @@ class Formatter {
    */
   public formatImpact(impact: ResourceImpact) {
     switch (impact) {
-    case ResourceImpact.MAY_REPLACE:
-      return colors.italic(colors.yellow('may be replaced'));
-    case ResourceImpact.WILL_REPLACE:
-      return colors.italic(colors.bold(colors.red('replace')));
-    case ResourceImpact.WILL_DESTROY:
-      return colors.italic(colors.bold(colors.red('destroy')));
-    case ResourceImpact.WILL_ORPHAN:
-      return colors.italic(colors.yellow('orphan'));
-    case ResourceImpact.WILL_UPDATE:
-    case ResourceImpact.WILL_CREATE:
-    case ResourceImpact.NO_CHANGE:
-      return ''; // no extra info is gained here
+      case ResourceImpact.MAY_REPLACE:
+        return colors.italic(colors.yellow('may be replaced'));
+      case ResourceImpact.WILL_REPLACE:
+        return colors.italic(colors.bold(colors.red('replace')));
+      case ResourceImpact.WILL_DESTROY:
+        return colors.italic(colors.bold(colors.red('destroy')));
+      case ResourceImpact.WILL_ORPHAN:
+        return colors.italic(colors.yellow('orphan'));
+      case ResourceImpact.WILL_UPDATE:
+      case ResourceImpact.WILL_CREATE:
+      case ResourceImpact.NO_CHANGE:
+        return ''; // no extra info is gained here
     }
   }
 
@@ -220,7 +222,7 @@ class Formatter {
     if (isPropertyDifference(diff)) {
       if (diff.changeImpact === ResourceImpact.MAY_REPLACE) {
         additionalInfo = ' (may cause replacement)';
-      } else if (diff.changeImpact ===  ResourceImpact.WILL_REPLACE) {
+      } else if (diff.changeImpact === ResourceImpact.WILL_REPLACE) {
         additionalInfo = ' (requires replacement)';
       }
     }
@@ -390,7 +392,7 @@ class Formatter {
   public substituteBracedLogicalIds(source: string): string {
     return source.replace(/\$\{([^.}]+)(.[^}]+)?\}/ig, (_match, logId, suffix) => {
       return '${' + (this.normalizedLogicalIdPath(logId) || logId) + (suffix || '') + '}';
-  });
+    });
   }
 }
 
@@ -436,17 +438,17 @@ function _diffStrings(oldStr: string, newStr: string, context: number): string[]
       const marker = line.charAt(0);
       const text = line.slice(1 + baseIndent);
       switch (marker) {
-      case ' ':
-        result.push(`${CONTEXT} ${text}`);
-        break;
-      case '+':
-        result.push(colors.bold(`${ADDITION} ${colors.green(text)}`));
-        break;
-      case '-':
-        result.push(colors.bold(`${REMOVAL} ${colors.red(text)}`));
-        break;
-      default:
-        throw new Error(`Unexpected diff marker: ${marker} (full line: ${line})`);
+        case ' ':
+          result.push(`${CONTEXT} ${text}`);
+          break;
+        case '+':
+          result.push(colors.bold(`${ADDITION} ${colors.green(text)}`));
+          break;
+        case '-':
+          result.push(colors.bold(`${REMOVAL} ${colors.red(text)}`));
+          break;
+        default:
+          throw new Error(`Unexpected diff marker: ${marker} (full line: ${line})`);
       }
     }
   }

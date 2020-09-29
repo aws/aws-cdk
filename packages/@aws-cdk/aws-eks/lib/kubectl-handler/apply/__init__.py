@@ -49,18 +49,21 @@ def apply_handler(event, context):
 
 
 def kubectl(verb, file):
-    retry = 3
+    maxAttempts = 3
+    retry = maxAttempts
     while retry > 0:
         try:
             cmd = ['kubectl', verb, '--kubeconfig', kubeconfig, '-f', file]
+            logger.info(f'Running command: {cmd}')
             output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as exc:
             output = exc.output
             if b'i/o timeout' in output and retry > 0:
-                logger.info("kubectl timed out, retries left: %s" % retry)
-                retry = retry - 1
+              retry = retry - 1
+              logger.info("kubectl timed out, retries left: %s" % retry)
             else:
                 raise Exception(output)
         else:
             logger.info(output)
             return
+    raise Exception(f'Operation failed after {maxAttempts} attempts: {output}')

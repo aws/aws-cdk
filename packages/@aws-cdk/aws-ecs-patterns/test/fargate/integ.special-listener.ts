@@ -9,21 +9,21 @@ const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2 });
 
 const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
-const fargateNlbService = new ecsPatterns.NetworkLoadBalancedFargateService(stack, "FargateNlbService", {
+const fargateNlbService = new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'FargateNlbService', {
   cluster,
   listenerPort: 2015,
   taskImageOptions: {
     containerPort: 2015,
-    image: ecs.ContainerImage.fromRegistry('abiosoft/caddy')
+    image: ecs.ContainerImage.fromRegistry('abiosoft/caddy'),
   },
 });
 
-const fargateAlbService = new ecsPatterns.ApplicationLoadBalancedFargateService(stack, "FargateAlbService", {
+const fargateAlbService = new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'FargateAlbService', {
   cluster,
   listenerPort: 2015,
   taskImageOptions: {
     containerPort: 2015,
-    image: ecs.ContainerImage.fromRegistry('abiosoft/caddy')
+    image: ecs.ContainerImage.fromRegistry('abiosoft/caddy'),
   },
 });
 

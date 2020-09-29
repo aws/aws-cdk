@@ -1,12 +1,13 @@
 import * as iam from '@aws-cdk/aws-iam';
-import { Aws, Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import { Aws, Construct, ContextProvider, IResource, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
 import { Connections, IConnectable } from './connections';
 import { CfnVPCEndpoint } from './ec2.generated';
 import { Peer } from './peer';
 import { Port } from './port';
 import { ISecurityGroup, SecurityGroup } from './security-group';
-import { allRouteTableIds } from './util';
-import { IVpc, SubnetSelection, SubnetType } from './vpc';
+import { allRouteTableIds, flatten } from './util';
+import { ISubnet, IVpc, SubnetSelection } from './vpc';
 
 /**
  * A VPC endpoint.
@@ -113,7 +114,21 @@ export interface GatewayVpcEndpointOptions {
   /**
    * Where to add endpoint routing.
    *
-   * @default private subnets
+   * By default, this endpoint will be routable from all subnets in the VPC.
+   * Specify a list of subnet selection objects here to be more specific.
+   *
+   * @default - All subnets in the VPC
+   * @example
+   *
+   * vpc.addGatewayEndpoint('DynamoDbEndpoint', {
+   *   service: ec2.GatewayVpcEndpointAwsService.DYNAMODB,
+   *   // Add only to ISOLATED subnets
+   *   subnets: [
+   *     { subnetType: ec2.SubnetType.ISOLATED }
+   *   ]
+   * });
+   *
+   *
    */
   readonly subnets?: SubnetSelection[]
 }
@@ -166,11 +181,13 @@ export class GatewayVpcEndpoint extends VpcEndpoint implements IGatewayVpcEndpoi
   constructor(scope: Construct, id: string, props: GatewayVpcEndpointProps) {
     super(scope, id);
 
-    const subnets = props.subnets || [{ subnetType: SubnetType.PRIVATE }];
-    const routeTableIds = allRouteTableIds(...subnets.map(s => props.vpc.selectSubnets(s)));
+    const subnets: ISubnet[] = props.subnets
+      ? flatten(props.subnets.map(s => props.vpc.selectSubnets(s).subnets))
+      : [...props.vpc.privateSubnets, ...props.vpc.publicSubnets, ...props.vpc.isolatedSubnets];
+    const routeTableIds = allRouteTableIds(subnets);
 
     if (routeTableIds.length === 0) {
-      throw new Error(`Can't add a gateway endpoint to VPC; route table IDs are not available`);
+      throw new Error('Can\'t add a gateway endpoint to VPC; route table IDs are not available');
     }
 
     const endpoint = new CfnVPCEndpoint(this, 'Resource', {
@@ -178,7 +195,7 @@ export class GatewayVpcEndpoint extends VpcEndpoint implements IGatewayVpcEndpoi
       routeTableIds,
       serviceName: props.service.name,
       vpcEndpointType: VpcEndpointType.GATEWAY,
-      vpcId: props.vpc.vpcId
+      vpcId: props.vpc.vpcId,
     });
 
     this.vpcEndpointId = endpoint.ref;
@@ -254,6 +271,8 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly ECS = new InterfaceVpcEndpointAwsService('ecs');
   public static readonly ECS_AGENT = new InterfaceVpcEndpointAwsService('ecs-agent');
   public static readonly ECS_TELEMETRY = new InterfaceVpcEndpointAwsService('ecs-telemetry');
+  public static readonly ELASTIC_FILESYSTEM = new InterfaceVpcEndpointAwsService('elasticfilesystem');
+  public static readonly ELASTIC_FILESYSTEM_FIPS = new InterfaceVpcEndpointAwsService('elasticfilesystem-fips');
   public static readonly ELASTIC_INFERENCE_RUNTIME = new InterfaceVpcEndpointAwsService('elastic-inference.runtime');
   public static readonly ELASTIC_LOAD_BALANCING = new InterfaceVpcEndpointAwsService('elasticloadbalancing');
   public static readonly CLOUDWATCH_EVENTS = new InterfaceVpcEndpointAwsService('events');
@@ -278,6 +297,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly STORAGE_GATEWAY = new InterfaceVpcEndpointAwsService('storagegateway');
   public static readonly REKOGNITION = new InterfaceVpcEndpointAwsService('rekognition');
   public static readonly REKOGNITION_FIPS = new InterfaceVpcEndpointAwsService('rekognition-fips');
+  public static readonly STEP_FUNCTIONS = new InterfaceVpcEndpointAwsService('states');
 
   /**
    * The name of the service.
@@ -295,7 +315,10 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public readonly privateDnsDefault?: boolean = true;
 
   constructor(name: string, prefix?: string, port?: number) {
-    this.name = `${prefix || 'com.amazonaws'}.${Aws.REGION}.${name}`;
+    const region = Lazy.stringValue({
+      produce: (context) => Stack.of(context.scope).region,
+    });
+    this.name = `${prefix || 'com.amazonaws'}.${region}.${name}`;
     this.port = port || 443;
   }
 }
@@ -342,6 +365,16 @@ export interface InterfaceVpcEndpointOptions {
    * @default true
    */
   readonly open?: boolean;
+
+  /**
+   * Limit to only those availability zones where the endpoint service can be created
+   *
+   * Setting this to 'true' requires a lookup to be performed at synthesis time. Account
+   * and region must be set on the containing stack for this to work.
+   *
+   * @default false
+   */
+  readonly lookupSupportedAzs?: boolean;
 }
 
 /**
@@ -428,21 +461,21 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
     super(scope, id);
 
     const securityGroups = props.securityGroups || [new SecurityGroup(this, 'SecurityGroup', {
-      vpc: props.vpc
+      vpc: props.vpc,
     })];
 
     this.securityGroupId = securityGroups[0].securityGroupId;
     this.connections = new Connections({
       defaultPort: Port.tcp(props.service.port),
-      securityGroups
+      securityGroups,
     });
 
     if (props.open !== false) {
       this.connections.allowDefaultPortFrom(Peer.ipv4(props.vpc.vpcCidrBlock));
     }
 
-    const subnets = props.vpc.selectSubnets({ ...props.subnets, onePerAz: true });
-    const subnetIds = subnets.subnetIds;
+    // Determine which subnets to place the endpoint in
+    const subnetIds = this.endpointSubnets(props);
 
     const endpoint = new CfnVPCEndpoint(this, 'Resource', {
       privateDnsEnabled: props.privateDnsEnabled ?? props.service.privateDnsDefault ?? true,
@@ -451,13 +484,83 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
       serviceName: props.service.name,
       vpcEndpointType: VpcEndpointType.INTERFACE,
       subnetIds,
-      vpcId: props.vpc.vpcId
+      vpcId: props.vpc.vpcId,
     });
 
     this.vpcEndpointId = endpoint.ref;
     this.vpcEndpointCreationTimestamp = endpoint.attrCreationTimestamp;
     this.vpcEndpointDnsEntries = endpoint.attrDnsEntries;
     this.vpcEndpointNetworkInterfaceIds = endpoint.attrNetworkInterfaceIds;
+  }
+
+  /**
+   * Determine which subnets to place the endpoint in. This is in its own function
+   * because there's a lot of code.
+   */
+  private endpointSubnets(props: InterfaceVpcEndpointProps) {
+    const lookupSupportedAzs = props.lookupSupportedAzs ?? false;
+    const subnetSelection = props.vpc.selectSubnets({ ...props.subnets, onePerAz: true });
+
+    // If we don't have an account/region, we will not be able to do filtering on AZs since
+    // they will be undefined
+    const agnosticAcct = Token.isUnresolved(this.stack.account);
+    const agnosticRegion = Token.isUnresolved(this.stack.region);
+
+    // Some service names, such as AWS service name references, use Tokens to automatically
+    // fill in the region
+    // If it is an InterfaceVpcEndpointAwsService, then the reference will be resolvable since
+    // only references the region
+    const isAwsService = Token.isUnresolved(props.service.name) && props.service instanceof InterfaceVpcEndpointAwsService;
+
+    // Determine what name we pass to the context provider, either the verbatim name
+    // or a resolved version if it is an AWS service reference
+    let lookupServiceName = props.service.name;
+    if (isAwsService && !agnosticRegion) {
+      lookupServiceName = Stack.of(this).resolve(props.service.name);
+    } else {
+      // It's an agnostic service and we don't know how to resolve it.
+      // This is ok if the stack is region agnostic and we're not looking up
+      // AZs
+      lookupServiceName = props.service.name;
+    }
+
+    // Check if lookup is impossible and throw an appropriate error
+    // Context provider cannot make an AWS call without an account/region
+    if ((agnosticAcct || agnosticRegion) && lookupSupportedAzs) {
+      throw new Error('Cannot look up VPC endpoint availability zones if account/region are not specified');
+    }
+    // Context provider doesn't know the name of the service if there is a Token
+    // in the name
+    const agnosticService = Token.isUnresolved(lookupServiceName);
+    if (agnosticService && lookupSupportedAzs) {
+      throw new Error(`Cannot lookup AZs for a service name with a Token: ${props.service.name}`);
+    }
+
+    // Here we do the actual lookup for AZs, if told to do so
+    let subnets;
+    if (lookupSupportedAzs) {
+      const availableAZs = this.availableAvailabilityZones(lookupServiceName);
+      subnets = subnetSelection.subnets.filter(s => availableAZs.includes(s.availabilityZone));
+    } else {
+      subnets = subnetSelection.subnets;
+    }
+    const subnetIds = subnets.map(s => s.subnetId);
+    return subnetIds;
+  }
+
+  private availableAvailabilityZones(serviceName: string): string[] {
+    // Here we check what AZs the endpoint service is available in
+    // If for whatever reason we can't retrieve the AZs, and no context is set,
+    // we will fall back to all AZs
+    const availableAZs = ContextProvider.getValue(this, {
+      provider: cxschema.ContextProvider.ENDPOINT_SERVICE_AVAILABILITY_ZONE_PROVIDER,
+      dummyValue: this.stack.availabilityZones,
+      props: { serviceName },
+    }).value;
+    if (!Array.isArray(availableAZs)) {
+      throw new Error(`Discovered AZs for endpoint service ${serviceName} must be an array`);
+    }
+    return availableAZs;
   }
 }
 

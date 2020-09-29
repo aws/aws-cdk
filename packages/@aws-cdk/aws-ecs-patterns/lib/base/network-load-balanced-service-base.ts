@@ -232,7 +232,7 @@ export abstract class NetworkLoadBalancedServiceBase extends cdk.Construct {
    */
   public get loadBalancer(): NetworkLoadBalancer {
     if (!this._networkLoadBalancer) {
-      throw new Error(".loadBalancer can only be accessed if the class was constructed with an owned, not imported, load balancer");
+      throw new Error('.loadBalancer can only be accessed if the class was constructed with an owned, not imported, load balancer');
     }
     return this._networkLoadBalancer;
   }
@@ -273,7 +273,7 @@ export abstract class NetworkLoadBalancedServiceBase extends cdk.Construct {
 
     const lbProps = {
       vpc: this.cluster.vpc,
-      internetFacing
+      internetFacing,
     };
 
     const loadBalancer = props.loadBalancer !== undefined ? props.loadBalancer :
@@ -282,7 +282,7 @@ export abstract class NetworkLoadBalancedServiceBase extends cdk.Construct {
     const listenerPort = props.listenerPort !== undefined ? props.listenerPort : 80;
 
     const targetProps = {
-      port: 80
+      port: 80,
     };
 
     this.listener = loadBalancer.addListener('PublicListener', { port: listenerPort });
@@ -293,13 +293,11 @@ export abstract class NetworkLoadBalancedServiceBase extends cdk.Construct {
         throw new Error('A Route53 hosted domain zone name is required to configure the specified domain name');
       }
 
-      if (internetFacing) {
-        new ARecord(this, "DNS", {
-          zone: props.domainZone,
-          recordName: props.domainName,
-          target: RecordTarget.fromAlias(new LoadBalancerTarget(loadBalancer)),
-        });
-      }
+      new ARecord(this, 'DNS', {
+        zone: props.domainZone,
+        recordName: props.domainName,
+        target: RecordTarget.fromAlias(new LoadBalancerTarget(loadBalancer)),
+      });
     }
 
     if (loadBalancer instanceof NetworkLoadBalancer) {

@@ -3,7 +3,7 @@ import { Test } from 'nodeunit';
 import * as codedeploy from '../../lib';
 
 export = {
-  "CodeDeploy ECS DeploymentGroup": {
+  'CodeDeploy ECS DeploymentGroup': {
     'imported with fromEcsDeploymentGroupAttributes': {
       'defaults the Deployment Config to AllAtOnce'(test: Test) {
         const stack = new cdk.Stack();

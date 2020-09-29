@@ -1,7 +1,7 @@
 {
   "name": "@aws-cdk/aws-events",
   "version": "0.0.0",
-  "description": "AWS CloudWatch Events Construct Library",
+  "description": "Amazon EventBridge Construct Library",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
@@ -23,9 +23,14 @@
       },
       "python": {
         "distName": "aws-cdk.aws-events",
-        "module": "aws_cdk.aws_events"
+        "module": "aws_cdk.aws_events",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",
@@ -52,9 +57,10 @@
   "keywords": [
     "aws",
     "cdk",
-    "cloudlib",
-    "aws-cloudlib",
-    "aws-clib"
+    "constructs",
+    "cloudwatch",
+    "events",
+    "eventbridge"
   ],
   "author": {
     "name": "Amazon Web Services",
@@ -64,7 +70,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
-    "@types/nodeunit": "^0.0.30",
+    "@types/nodeunit": "^0.0.31",
     "cdk-build-tools": "0.0.0",
     "cfn2ts": "0.0.0",
     "nodeunit": "^0.11.3",
@@ -73,31 +79,21 @@
   "dependencies": {
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^2.0.0"
+    "constructs": "^3.0.4"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^2.0.0"
+    "constructs": "^3.0.4"
   },
   "engines": {
-    "node": ">= 10.3.0"
+    "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "awslint": {
     "exclude": [
       "from-method:@aws-cdk/aws-events.Rule",
       "no-unused-type:@aws-cdk/aws-events.OnEventOptions",
-      "docs-public-apis:@aws-cdk/aws-events.RuleProps",
-      "props-default-doc:@aws-cdk/aws-events.RuleTargetInputProperties.inputTemplate",
-      "props-default-doc:@aws-cdk/aws-events.RuleTargetInputProperties.inputPathsMap",
-      "props-default-doc:@aws-cdk/aws-events.RuleTargetInputProperties.inputPath",
-      "docs-public-apis:@aws-cdk/aws-events.EventField.displayHint",
-      "docs-public-apis:@aws-cdk/aws-events.EventField.path",
-      "docs-public-apis:@aws-cdk/aws-events.EventField.toJSON",
-      "docs-public-apis:@aws-cdk/aws-events.Rule.fromEventRuleArn",
-      "docs-public-apis:@aws-cdk/aws-events.IRule",
-      "props-default-doc:@aws-cdk/aws-events.RuleTargetInputProperties.input",
       "props-default-doc:@aws-cdk/aws-events.RuleTargetConfig.ecsParameters",
       "props-default-doc:@aws-cdk/aws-events.RuleTargetConfig.kinesisParameters",
       "props-default-doc:@aws-cdk/aws-events.RuleTargetConfig.role",
@@ -108,5 +104,6 @@
   "stability": "stable",
   "awscdkio": {
     "announce": false
-  }
+  },
+  "maturity": "stable"
 }

@@ -1,6 +1,7 @@
 import { Test } from 'nodeunit';
-import { Construct, ConstructNode, Stack } from '../lib';
+import { Construct, Stack } from '../lib';
 import { ContextProvider } from '../lib/context-provider';
+import { synthesize } from '../lib/private/synthesis';
 
 export = {
   'AvailabilityZoneProvider returns a list with dummy values if the context is not available'(test: Test) {
@@ -14,7 +15,7 @@ export = {
   'AvailabilityZoneProvider will return context list if available'(test: Test) {
     const stack = new Stack(undefined, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
     const before = stack.availabilityZones;
-    test.deepEqual(before, [ 'dummy1a', 'dummy1b', 'dummy1c' ]);
+    test.deepEqual(before, ['dummy1a', 'dummy1b', 'dummy1c']);
     const key = expectedContextKey(stack);
 
     stack.node.setContext(key, ['us-east-1a', 'us-east-1b']);
@@ -28,13 +29,13 @@ export = {
   'AvailabilityZoneProvider will complain if not given a list'(test: Test) {
     const stack = new Stack(undefined, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
     const before = stack.availabilityZones;
-    test.deepEqual(before, [ 'dummy1a', 'dummy1b', 'dummy1c' ]);
+    test.deepEqual(before, ['dummy1a', 'dummy1b', 'dummy1c']);
     const key = expectedContextKey(stack);
 
     stack.node.setContext(key, 'not-a-list');
 
     test.throws(
-      () => stack.availabilityZones
+      () => stack.availabilityZones,
     );
 
     test.done();
@@ -46,7 +47,7 @@ export = {
       provider: 'ssm',
       props: {
         parameterName: 'foo',
-        anyStringParam: 'bar'
+        anyStringParam: 'bar',
       },
     });
 
@@ -56,8 +57,8 @@ export = {
         account: '12345',
         region: 'us-east-1',
         parameterName: 'foo',
-        anyStringParam: 'bar'
-      }
+        anyStringParam: 'bar',
+      },
     });
 
     const complexKey = ContextProvider.getKey(stack, {
@@ -66,7 +67,7 @@ export = {
         cidrBlock: '192.168.0.16',
         tags: { Name: 'MyVPC', Env: 'Preprod' },
         igw: false,
-      }
+      },
     });
     test.deepEqual(complexKey, {
       key: 'vpc:account=12345:cidrBlock=192.168.0.16:igw=false:region=us-east-1:tags.Env=Preprod:tags.Name=MyVPC',
@@ -76,7 +77,7 @@ export = {
         cidrBlock: '192.168.0.16',
         tags: { Name: 'MyVPC', Env: 'Preprod' },
         igw: false,
-      }
+      },
     });
     test.done();
   },
@@ -93,7 +94,7 @@ export = {
           { key: 'key1', value: 'value1' },
           { key: 'key2', value: 'value2' },
         ],
-      }
+      },
     });
 
     // THEN
@@ -106,7 +107,7 @@ export = {
           { key: 'key1', value: 'value1' },
           { key: 'key2', value: 'value2' },
         ],
-      }
+      },
     });
 
     test.done();
@@ -140,8 +141,8 @@ export = {
   },
 
   'context provider errors are attached to tree'(test: Test) {
-    const contextProps = { provider: 'bloop' };
-    const contextKey = 'bloop:account=12345:region=us-east-1';  // Depends on the mangling algo
+    const contextProps = { provider: 'availability-zones' };
+    const contextKey = 'availability-zones:account=12345:region=us-east-1'; // Depends on the mangling algo
 
     // GIVEN
     const stack = new Stack(undefined, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
@@ -172,9 +173,9 @@ export = {
  * Get the expected context key from a stack with missing parameters
  */
 function expectedContextKey(stack: Stack): string {
-  const missing = ConstructNode.synth(stack.node).manifest.missing;
+  const missing = synthesize(stack).manifest.missing;
   if (!missing || missing.length !== 1) {
-    throw new Error(`Expecting assembly to include a single missing context report`);
+    throw new Error('Expecting assembly to include a single missing context report');
   }
   return missing[0].key;
 }

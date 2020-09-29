@@ -10,7 +10,7 @@ describe('Batch Job Queue', () => {
   beforeEach(() => {
     stack = new cdk.Stack();
     computeEnvironment = new batch.ComputeEnvironment(stack, 'test-compute-env', {
-      managed: false
+      managed: false,
     });
   });
 
@@ -23,7 +23,7 @@ describe('Batch Job Queue', () => {
         {
           computeEnvironment,
           order: 1,
-        }
+        },
       ],
     });
     const jobQFromArn = batch.JobQueue.fromJobQueueArn(stack, 'test-job-queue-from-arn', existingJobQ.jobQueueArn);
@@ -43,7 +43,7 @@ describe('Batch Job Queue', () => {
           order: 1,
         },
       ],
-      jobQueueName: 'test-job-queue-name'
+      jobQueueName: 'test-job-queue-name',
     };
     new batch.JobQueue(stack, 'test-job-queue', props);
 
@@ -55,10 +55,10 @@ describe('Batch Job Queue', () => {
       ComputeEnvironmentOrder: [
         {
           ComputeEnvironment: {
-            Ref: 'testcomputeenv547FFD1A'
+            Ref: 'testcomputeenv547FFD1A',
           },
           Order: 1,
-        }
+        },
       ],
     }, ResourcePart.Properties);
   });
@@ -71,7 +71,7 @@ describe('Batch Job Queue', () => {
         {
           computeEnvironment,
           order: 1,
-        }
+        },
       ],
     });
 

@@ -1,4 +1,4 @@
-import { GRID_WIDTH, IWidget } from "./widget";
+import { GRID_WIDTH, IWidget } from './widget';
 
 // This file contains widgets that exist for layout purposes
 
@@ -35,7 +35,7 @@ export class Row implements IWidget {
         x = 0;
       }
 
-      this.offsets.push({x, y});
+      this.offsets.push({ x, y });
       this.width = Math.max(this.width, x + widget.width);
       this.height = Math.max(this.height, y + widget.height);
 
@@ -123,7 +123,7 @@ export class Spacer implements IWidget {
   public readonly width: number;
   public readonly height: number;
 
-  constructor(props: SpacerProps) {
+  constructor(props: SpacerProps = {}) {
     this.width = props.width || 1;
     this.height = props.height || 1;
   }

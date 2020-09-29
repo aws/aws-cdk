@@ -23,9 +23,14 @@
       },
       "python": {
         "distName": "aws-cdk.aws-cognito",
-        "module": "aws_cdk.aws_cognito"
+        "module": "aws_cdk.aws_cognito",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",
@@ -47,7 +52,8 @@
     "compat": "cdk-compat"
   },
   "cdk-build": {
-    "cloudformation": "AWS::Cognito"
+    "cloudformation": "AWS::Cognito",
+    "jest": true
   },
   "keywords": [
     "aws",
@@ -63,51 +69,55 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
-    "@types/nodeunit": "^0.0.30",
+    "@types/nodeunit": "^0.0.31",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
-    "jest": "^24.9.0",
+    "jest": "^26.4.2",
     "nodeunit": "^0.11.3",
     "pkglint": "0.0.0"
   },
   "dependencies": {
+    "@aws-cdk/aws-certificatemanager": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^2.0.0"
+    "@aws-cdk/custom-resources": "0.0.0",
+    "constructs": "^3.0.4"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
+    "@aws-cdk/aws-certificatemanager": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^2.0.0"
+    "@aws-cdk/custom-resources": "0.0.0",
+    "constructs": "^3.0.4"
   },
-  "jest": {},
   "engines": {
-    "node": ">= 10.3.0"
+    "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "awslint": {
     "exclude": [
-      "props-default-doc:@aws-cdk/aws-cognito.UserPoolTriggers.verifyAuthChallengeResponse",
-      "props-default-doc:@aws-cdk/aws-cognito.UserPoolTriggers.userMigration",
-      "props-default-doc:@aws-cdk/aws-cognito.UserPoolTriggers.preTokenGeneration",
-      "props-default-doc:@aws-cdk/aws-cognito.UserPoolTriggers.preSignUp",
-      "props-default-doc:@aws-cdk/aws-cognito.UserPoolTriggers.preAuthentication",
-      "props-default-doc:@aws-cdk/aws-cognito.UserPoolTriggers.postConfirmation",
-      "props-default-doc:@aws-cdk/aws-cognito.UserPoolTriggers.postAuthentication",
-      "props-default-doc:@aws-cdk/aws-cognito.UserPoolTriggers.defineAuthChallenge",
-      "props-default-doc:@aws-cdk/aws-cognito.UserPoolTriggers.customMessage",
-      "props-default-doc:@aws-cdk/aws-cognito.UserPoolTriggers.createAuthChallenge",
-      "docs-public-apis:@aws-cdk/aws-cognito.UserPoolTriggers",
-      "docs-public-apis:@aws-cdk/aws-cognito.UserPoolClient.userPoolClientClientSecret",
-      "docs-public-apis:@aws-cdk/aws-cognito.UserPoolClient.userPoolClientId",
-      "docs-public-apis:@aws-cdk/aws-cognito.UserPoolClient.userPoolClientName",
-      "docs-public-apis:@aws-cdk/aws-cognito.UserPoolClientProps"
+      "attribute-tag:@aws-cdk/aws-cognito.UserPoolClient.userPoolClientName",
+      "resource-attribute:@aws-cdk/aws-cognito.UserPoolClient.userPoolClientClientSecret",
+      "props-physical-name:@aws-cdk/aws-cognito.UserPoolDomainProps",
+      "props-physical-name:@aws-cdk/aws-cognito.UserPoolIdentityProviderFacebookProps",
+      "props-physical-name:@aws-cdk/aws-cognito.UserPoolIdentityProviderAmazonProps"
     ]
   },
   "stability": "experimental",
+  "maturity": "developer-preview",
+  "features": [
+    {
+      "name": "Higher level constructs for User Pools",
+      "stability": "Developer Preview"
+    },
+    {
+      "name": "Higher level constructs for Identity Pools",
+      "stability": "Not Implemented"
+    }
+  ],
   "awscdkio": {
     "announce": false
   }

@@ -1,10 +1,10 @@
+import * as path from 'path';
 import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as ssm from '@aws-cdk/aws-ssm';
-import { CfnOutput, Construct, Duration, IResource, Resource, Stack, Tag, Token } from '@aws-cdk/core';
-import * as path from 'path';
+import { Annotations, CfnOutput, Construct, Duration, IResource, Resource, Stack, Token, Tags } from '@aws-cdk/core';
 import { AwsAuth } from './aws-auth';
 import { ClusterResource } from './cluster-resource';
 import { CfnCluster, CfnClusterProps } from './eks.generated';
@@ -230,7 +230,7 @@ export interface ClusterProps {
  * This is a fully managed cluster of API Servers (control-plane)
  * The user is still required to create the worker nodes.
  *
- * @resource AWS::Eks-Legacy::Cluster
+ * @resource AWS::EKS::Cluster
  */
 export class Cluster extends Resource implements ICluster {
   /**
@@ -336,7 +336,7 @@ export class Cluster extends Resource implements ICluster {
       physicalName: props.clusterName,
     });
 
-    this.node.addWarning(`The @aws-cdk/aws-eks-legacy module will no longer be released as part of the AWS CDK starting March 1st, 2020. Please refer to https://github.com/aws/aws-cdk/issues/5544 for upgrade instructions`);
+    Annotations.of(this).addWarning('The @aws-cdk/aws-eks-legacy module will no longer be released as part of the AWS CDK starting March 1st, 2020. Please refer to https://github.com/aws/aws-cdk/issues/5544 for upgrade instructions');
 
     const stack = Stack.of(this);
 
@@ -373,8 +373,8 @@ export class Cluster extends Resource implements ICluster {
       version: props.version,
       resourcesVpcConfig: {
         securityGroupIds: [securityGroup.securityGroupId],
-        subnetIds
-      }
+        subnetIds,
+      },
     };
 
     let resource;
@@ -398,7 +398,7 @@ export class Cluster extends Resource implements ICluster {
 
     const updateConfigCommandPrefix = `aws eks update-kubeconfig --name ${this.clusterName}`;
     const getTokenCommandPrefix = `aws eks get-token --cluster-name ${this.clusterName}`;
-    const commonCommandOptions = [ `--region ${stack.region}` ];
+    const commonCommandOptions = [`--region ${stack.region}`];
 
     if (props.outputClusterName) {
       new CfnOutput(this, 'ClusterName', { value: this.clusterName });
@@ -412,7 +412,7 @@ export class Cluster extends Resource implements ICluster {
     // map the IAM role to the `system:masters` group.
     if (props.mastersRole) {
       if (!this.kubectlEnabled) {
-        throw new Error(`Cannot specify a "masters" role if kubectl is disabled`);
+        throw new Error('Cannot specify a "masters" role if kubectl is disabled');
       }
 
       this.awsAuth.addMastersRole(props.mastersRole);
@@ -466,7 +466,7 @@ export class Cluster extends Resource implements ICluster {
     this.addAutoScalingGroup(asg, {
       mapRole: options.mapRole,
       bootstrapOptions: options.bootstrapOptions,
-      bootstrapEnabled: options.bootstrapEnabled
+      bootstrapEnabled: options.bootstrapEnabled,
     });
 
     return asg;
@@ -510,7 +510,7 @@ export class Cluster extends Resource implements ICluster {
 
     const bootstrapEnabled = options.bootstrapEnabled !== undefined ? options.bootstrapEnabled : true;
     if (options.bootstrapOptions && !bootstrapEnabled) {
-      throw new Error(`Cannot specify "bootstrapOptions" if "bootstrapEnabled" is false`);
+      throw new Error('Cannot specify "bootstrapOptions" if "bootstrapEnabled" is false');
     }
 
     if (bootstrapEnabled) {
@@ -523,12 +523,12 @@ export class Cluster extends Resource implements ICluster {
     autoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryReadOnly'));
 
     // EKS Required Tags
-    Tag.add(autoScalingGroup, `kubernetes.io/cluster/${this.clusterName}`, 'owned', {
-      applyToLaunchedInstances: true
+    Tags.of(autoScalingGroup).add(`kubernetes.io/cluster/${this.clusterName}`, 'owned', {
+      applyToLaunchedInstances: true,
     });
 
     if (options.mapRole === true && !this.kubectlEnabled) {
-      throw new Error(`Cannot map instance IAM role to RBAC if kubectl is disabled for the cluster`);
+      throw new Error('Cannot map instance IAM role to RBAC if kubectl is disabled for the cluster');
     }
 
     // do not attempt to map the role if `kubectl` is not enabled for this
@@ -540,14 +540,14 @@ export class Cluster extends Resource implements ICluster {
         username: 'system:node:{{EC2PrivateDNSName}}',
         groups: [
           'system:bootstrappers',
-          'system:nodes'
-        ]
+          'system:nodes',
+        ],
       });
     } else {
       // since we are not mapping the instance role to RBAC, synthesize an
       // output so it can be pasted into `aws-auth-cm.yaml`
       new CfnOutput(autoScalingGroup, 'InstanceRoleARN', {
-        value: autoScalingGroup.role.roleArn
+        value: autoScalingGroup.role.roleArn,
       });
     }
 
@@ -562,7 +562,7 @@ export class Cluster extends Resource implements ICluster {
    */
   public get awsAuth() {
     if (!this.kubectlEnabled) {
-      throw new Error(`Cannot define aws-auth mappings if kubectl is disabled`);
+      throw new Error('Cannot define aws-auth mappings if kubectl is disabled');
     }
 
     if (!this._awsAuth) {
@@ -608,7 +608,7 @@ export class Cluster extends Resource implements ICluster {
       runtime: lambda.Runtime.PYTHON_3_7,
       handler: 'index.handler',
       timeout: Duration.minutes(15),
-      layers: [ KubectlLayer.getOrCreate(this) ],
+      layers: [KubectlLayer.getOrCreate(this)],
       memorySize: 256,
       environment: {
         CLUSTER_NAME: this.clusterName,
@@ -636,17 +636,17 @@ export class Cluster extends Resource implements ICluster {
           // message (if token): "could not auto-tag public/private subnet with tag..."
           // message (if not token): "count not auto-tag public/private subnet xxxxx with tag..."
           const subnetID = Token.isUnresolved(subnet.subnetId) ? '' : ` ${subnet.subnetId}`;
-          this.node.addWarning(`Could not auto-tag ${type} subnet${subnetID} with "${tag}=1", please remember to do this manually`);
+          Annotations.of(this).addWarning(`Could not auto-tag ${type} subnet${subnetID} with "${tag}=1", please remember to do this manually`);
           continue;
         }
 
-        subnet.node.applyAspect(new Tag(tag, "1"));
+        Tags.of(subnet).add(tag, '1');
       }
     };
 
     // https://docs.aws.amazon.com/eks/latest/userguide/network_reqs.html
-    tagAllSubnets('private', this.vpc.privateSubnets, "kubernetes.io/role/internal-elb");
-    tagAllSubnets('public', this.vpc.publicSubnets, "kubernetes.io/role/elb");
+    tagAllSubnets('private', this.vpc.privateSubnets, 'kubernetes.io/role/internal-elb');
+    tagAllSubnets('public', this.vpc.publicSubnets, 'kubernetes.io/role/elb');
   }
 }
 
@@ -783,7 +783,7 @@ class ImportedCluster extends Resource implements ICluster {
   constructor(scope: Construct, id: string, props: ClusterAttributes) {
     super(scope, id);
 
-    this.vpc = ec2.Vpc.fromVpcAttributes(this, "VPC", props.vpc);
+    this.vpc = ec2.Vpc.fromVpcAttributes(this, 'VPC', props.vpc);
     this.clusterName = props.clusterName;
     this.clusterEndpoint = props.clusterEndpoint;
     this.clusterArn = props.clusterArn;
@@ -834,9 +834,9 @@ export class EksOptimizedImage implements ec2.IMachineImage {
 
     // set the SSM parameter name
     this.amiParameterName = `/aws/service/eks/optimized-ami/${this.kubernetesVersion}/`
-      + ( this.nodeType === NodeType.STANDARD ? "amazon-linux-2/" : "" )
-      + ( this.nodeType === NodeType.GPU ? "amazon-linux2-gpu/" : "" )
-      + "recommended/image_id";
+      + ( this.nodeType === NodeType.STANDARD ? 'amazon-linux-2/' : '' )
+      + ( this.nodeType === NodeType.GPU ? 'amazon-linux2-gpu/' : '' )
+      + 'recommended/image_id';
   }
 
   /**

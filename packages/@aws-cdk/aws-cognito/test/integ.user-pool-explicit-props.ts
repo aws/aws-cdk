@@ -1,3 +1,4 @@
+import { Code, Function, IFunction, Runtime } from '@aws-cdk/aws-lambda';
 import { App, CfnOutput, Duration, Stack } from '@aws-cdk/core';
 import { BooleanAttribute, DateTimeAttribute, Mfa, NumberAttribute, StringAttribute, UserPool } from '../lib';
 
@@ -25,9 +26,14 @@ const userpool = new UserPool(stack, 'myuserpool', {
     email: true,
     phone: true,
   },
-  requiredAttributes: {
-    fullname: true,
-    email: true,
+  standardAttributes: {
+    fullname: {
+      required: true,
+      mutable: true,
+    },
+    email: {
+      required: true,
+    },
   },
   customAttributes: {
     'some-string-attr': new StringAttribute(),
@@ -54,8 +60,39 @@ const userpool = new UserPool(stack, 'myuserpool', {
     from: 'noreply@myawesomeapp.com',
     replyTo: 'support@myawesomeapp.com',
   },
+  lambdaTriggers: {
+    createAuthChallenge: dummyTrigger('createAuthChallenge'),
+    customMessage: dummyTrigger('customMessage'),
+    defineAuthChallenge: dummyTrigger('defineAuthChallenge'),
+    postAuthentication: dummyTrigger('postAuthentication'),
+    postConfirmation: dummyTrigger('postConfirmation'),
+    preAuthentication: dummyTrigger('preAuthentication'),
+    preSignUp: dummyTrigger('preSignUp'),
+    preTokenGeneration: dummyTrigger('preTokenGeneration'),
+    userMigration: dummyTrigger('userMigration'),
+    verifyAuthChallengeResponse: dummyTrigger('verifyAuthChallengeResponse'),
+  },
+});
+
+const cognitoDomain = userpool.addDomain('myuserpooldomain', {
+  cognitoDomain: {
+    domainPrefix: 'myawesomeapp',
+  },
 });
 
 new CfnOutput(stack, 'userpoolId', {
-  value: userpool.userPoolId
+  value: userpool.userPoolId,
 });
+
+new CfnOutput(stack, 'cognitoDomainName', {
+  value: `${cognitoDomain.domainName}.auth.${stack.region}.amazoncognito.com`,
+});
+
+function dummyTrigger(name: string): IFunction {
+  return new Function(stack, name, {
+    functionName: name,
+    handler: 'index.handler',
+    runtime: Runtime.NODEJS_12_X,
+    code: Code.fromInline('foo'),
+  });
+}

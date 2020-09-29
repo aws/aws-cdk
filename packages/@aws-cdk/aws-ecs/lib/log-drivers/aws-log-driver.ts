@@ -1,7 +1,7 @@
 import * as logs from '@aws-cdk/aws-logs';
 import { Construct, Stack } from '@aws-cdk/core';
 import { ContainerDefinition } from '../container-definition';
-import { LogDriver, LogDriverConfig } from "./log-driver";
+import { LogDriver, LogDriverConfig } from './log-driver';
 import { removeEmpty } from './utils';
 
 /**
@@ -89,7 +89,7 @@ export class AwsLogDriver extends LogDriver {
    */
   public bind(scope: Construct, containerDefinition: ContainerDefinition): LogDriverConfig {
     this.logGroup = this.props.logGroup || new logs.LogGroup(scope, 'LogGroup', {
-        retention: this.props.logRetention || Infinity,
+      retention: this.props.logRetention || Infinity,
     });
 
     this.logGroup.grantWrite(containerDefinition.taskDefinition.obtainExecutionRole());

@@ -19,7 +19,7 @@ export = {
           ['',
             ['arn:',
               { Ref: 'AWS::Partition' },
-              ':s3:::hello']]
+              ':s3:::hello']],
       });
       test.done();
     },
@@ -28,7 +28,7 @@ export = {
       const stack = new cdk.Stack();
       test.throws(() => parseBucketArn(stack, {}), /Cannot determine bucket ARN. At least `bucketArn` or `bucketName` is needed/);
       test.done();
-    }
+    },
   },
 
   parseBucketName: {
@@ -51,37 +51,10 @@ export = {
       const stack = new cdk.Stack();
       const bucketArn = `arn:aws:s3:::${cdk.Token.asString({ Ref: 'my-bucket' })}`;
 
-      test.deepEqual(stack.resolve(parseBucketName(stack, { bucketArn })), {
-        "Fn::Select": [
-          0,
-          {
-            "Fn::Split": [
-              "/",
-              {
-                "Fn::Select": [
-                  5,
-                  {
-                    "Fn::Split": [
-                      ":",
-                      {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn:aws:s3:::",
-                            {
-                              Ref: "my-bucket"
-                            }
-                          ]
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      });
+      test.deepEqual(
+        stack.resolve(parseBucketName(stack, { bucketArn })),
+        { Ref: 'my-bucket' },
+      );
       test.done();
     },
 

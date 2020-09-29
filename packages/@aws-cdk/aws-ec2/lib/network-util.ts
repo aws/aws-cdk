@@ -53,7 +53,7 @@ export class NetworkUtils {
       .split('.')
       .reduce(
         (p: number, c: string, i: number) => p + parseInt(c, 10) * 256 ** (3 - i),
-        0
+        0,
       );
   }
 
@@ -130,7 +130,7 @@ export class NetworkBuilder {
    * Add {count} number of subnets to the network and update the maxIpConsumed
    */
   public addSubnets(mask: number, count: number = 1): string[] {
-    if (mask < 16 || mask > 28  ) {
+    if (mask < 16 || mask > 28 ) {
       throw new InvalidCidrRangeError(`x.x.x.x/${mask}`);
     }
     const maxIp = this.nextAvailableIp + (CidrBlock.calculateNetsize(mask) * count);

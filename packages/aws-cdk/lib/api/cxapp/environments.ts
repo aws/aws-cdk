@@ -1,18 +1,19 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import * as minimatch from 'minimatch';
 import { SdkProvider } from '../aws-auth';
-import { AppStacks } from './stacks';
+import { StackCollection } from './cloud-assembly';
 
-export async function globEnvironmentsFromStacks(appStacks: AppStacks, environmentGlobs: string[], sdk: SdkProvider): Promise<cxapi.Environment[]> {
-  if (environmentGlobs.length === 0) {
-    environmentGlobs = [ '**' ]; // default to ALL
-  }
+export function looksLikeGlob(environment: string) {
+  return environment.indexOf('*') > -1;
+}
 
-  const stacks = await appStacks.listStacks();
+// eslint-disable-next-line max-len
+export async function globEnvironmentsFromStacks(stacks: StackCollection, environmentGlobs: string[], sdk: SdkProvider): Promise<cxapi.Environment[]> {
+  if (environmentGlobs.length === 0) { return []; }
 
   const availableEnvironments = new Array<cxapi.Environment>();
-  for (const stack of stacks) {
-    const actual = await sdk.resolveEnvironment(stack.environment.account, stack.environment.region);
+  for (const stack of stacks.stackArtifacts) {
+    const actual = await sdk.resolveEnvironment(stack.environment);
     availableEnvironments.push(actual);
   }
 
@@ -30,10 +31,6 @@ export async function globEnvironmentsFromStacks(appStacks: AppStacks, environme
  * Given a set of "<account>/<region>" strings, construct environments for them
  */
 export function environmentsFromDescriptors(envSpecs: string[]): cxapi.Environment[] {
-  if (envSpecs.length === 0) {
-    throw new Error(`Either specify an app with '--app', or specify an environment name like 'aws://123456789012/us-east-1'`);
-  }
-
   const ret = new Array<cxapi.Environment>();
 
   for (const spec of envSpecs) {
@@ -45,7 +42,7 @@ export function environmentsFromDescriptors(envSpecs: string[]): cxapi.Environme
     ret.push({
       name: spec,
       account: parts[0],
-      region: parts[1]
+      region: parts[1],
     });
   }
 

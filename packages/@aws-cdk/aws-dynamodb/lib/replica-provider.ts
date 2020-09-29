@@ -1,9 +1,8 @@
-import { NestedStack } from '@aws-cdk/aws-cloudformation';
+import * as path from 'path';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Construct, Duration, Stack } from '@aws-cdk/core';
+import { Construct, Duration, NestedStack, Stack } from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
-import * as path from 'path';
 
 export class ReplicaProvider extends NestedStack {
   /**
@@ -33,9 +32,11 @@ export class ReplicaProvider extends NestedStack {
   private constructor(scope: Construct, id: string) {
     super(scope, id);
 
+    const code = lambda.Code.fromAsset(path.join(__dirname, 'replica-handler'));
+
     // Issues UpdateTable API calls
     this.onEventHandler = new lambda.Function(this, 'OnEventHandler', {
-      code: lambda.Code.fromAsset(path.join(__dirname, 'replica-handler')),
+      code,
       runtime: lambda.Runtime.NODEJS_12_X,
       handler: 'index.onEventHandler',
       timeout: Duration.minutes(5),
@@ -43,7 +44,7 @@ export class ReplicaProvider extends NestedStack {
 
     // Checks if table is back to `ACTIVE` state
     this.isCompleteHandler = new lambda.Function(this, 'IsCompleteHandler', {
-      code: lambda.Code.fromAsset(path.join(__dirname, 'replica-handler')),
+      code,
       runtime: lambda.Runtime.NODEJS_12_X,
       handler: 'index.isCompleteHandler',
       timeout: Duration.seconds(30),
@@ -57,17 +58,17 @@ export class ReplicaProvider extends NestedStack {
           service: 'iam',
           region: '', // IAM is region-less
           resource: 'role',
-          resourceName: 'aws-service-role/replication.dynamodb.amazonaws.com/AWSServiceRoleForDynamoDBReplication'
+          resourceName: 'aws-service-role/replication.dynamodb.amazonaws.com/AWSServiceRoleForDynamoDBReplication',
         })],
-      })
+      }),
     );
 
     // Required for replica table creation
     this.onEventHandler.addToRolePolicy(
       new iam.PolicyStatement({
         actions: ['dynamodb:DescribeLimits'],
-        resources: ['*']
-      })
+        resources: ['*'],
+      }),
     );
 
     this.provider = new cr.Provider(this, 'Provider', {

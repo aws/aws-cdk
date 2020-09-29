@@ -1,4 +1,4 @@
-import { Construct, IResource, Lazy, Resource, ResourceProps, Stack, Token } from '@aws-cdk/core';
+import { Annotations, Construct, IResource, Lazy, Resource, ResourceProps, Stack, Token } from '@aws-cdk/core';
 import { Connections } from './connections';
 import { CfnSecurityGroup, CfnSecurityGroupEgress, CfnSecurityGroupIngress } from './ec2.generated';
 import { IPeer } from './peer';
@@ -86,7 +86,7 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
         groupId: this.securityGroupId,
         ...peer.toIngressRuleConfig(),
         ...connection.toRuleJson(),
-        description
+        description,
       });
     }
   }
@@ -104,7 +104,7 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
         groupId: this.securityGroupId,
         ...peer.toEgressRuleConfig(),
         ...connection.toRuleJson(),
-        description
+        description,
       });
     }
   }
@@ -167,11 +167,11 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
  *   ╚═══════════════════════════════════╝
  */
 function determineRuleScope(
-      group: SecurityGroupBase,
-      peer: IPeer,
-      connection: Port,
-      fromTo: 'from' | 'to',
-      remoteRule?: boolean): [SecurityGroupBase, string] {
+  group: SecurityGroupBase,
+  peer: IPeer,
+  connection: Port,
+  fromTo: 'from' | 'to',
+  remoteRule?: boolean): [SecurityGroupBase, string] {
 
   if (remoteRule && SecurityGroupBase.isSecurityGroup(peer) && differentStacks(group, peer)) {
     // Reversed
@@ -184,7 +184,7 @@ function determineRuleScope(
 }
 
 function renderPeer(peer: IPeer) {
-  return Token.isUnresolved(peer.uniqueId) ? `{IndirectPeer}` : peer.uniqueId;
+  return Token.isUnresolved(peer.uniqueId) ? '{IndirectPeer}' : peer.uniqueId;
 }
 
 function differentStacks(group1: SecurityGroupBase, group2: SecurityGroupBase) {
@@ -318,14 +318,14 @@ export class SecurityGroup extends SecurityGroupBase {
         // do nothing
       }
 
-      public addIngressRule(_peer: IPeer, _connection: Port, _description?: string, _remoteRule?: boolean)  {
+      public addIngressRule(_peer: IPeer, _connection: Port, _description?: string, _remoteRule?: boolean) {
         // do nothing
       }
     }
 
     return options.mutable !== false
-    ? new MutableImport(scope, id)
-    : new ImmutableImport(scope, id);
+      ? new MutableImport(scope, id)
+      : new ImmutableImport(scope, id);
   }
 
   /**
@@ -360,7 +360,7 @@ export class SecurityGroup extends SecurityGroupBase {
 
   constructor(scope: Construct, id: string, props: SecurityGroupProps) {
     super(scope, id, {
-      physicalName: props.securityGroupName
+      physicalName: props.securityGroupName,
     });
 
     const groupDescription = props.description || this.node.path;
@@ -370,8 +370,8 @@ export class SecurityGroup extends SecurityGroupBase {
     this.securityGroup = new CfnSecurityGroup(this, 'Resource', {
       groupName: this.physicalName,
       groupDescription,
-      securityGroupIngress: Lazy.anyValue({ produce: () => this.directIngressRules}, { omitEmptyArray: true} ),
-      securityGroupEgress: Lazy.anyValue({ produce: () => this.directEgressRules }, { omitEmptyArray: true} ),
+      securityGroupIngress: Lazy.anyValue({ produce: () => this.directIngressRules }, { omitEmptyArray: true } ),
+      securityGroupEgress: Lazy.anyValue({ produce: () => this.directEgressRules }, { omitEmptyArray: true } ),
       vpcId: props.vpc.vpcId,
     });
 
@@ -395,7 +395,7 @@ export class SecurityGroup extends SecurityGroupBase {
     this.addDirectIngressRule({
       ...peer.toIngressRuleConfig(),
       ...connection.toRuleJson(),
-      description
+      description,
     });
   }
 
@@ -404,6 +404,7 @@ export class SecurityGroup extends SecurityGroupBase {
       // In the case of "allowAllOutbound", we don't add any more rules. There
       // is only one rule which allows all traffic and that subsumes any other
       // rule.
+      Annotations.of(this).addWarning('Ignoring Egress rule since \'allowAllOutbound\' is set to true; To add customize rules, set allowAllOutbound=false on the SecurityGroup');
       return;
     } else {
       // Otherwise, if the bogus rule exists we can now remove it because the
@@ -424,7 +425,7 @@ export class SecurityGroup extends SecurityGroupBase {
     const rule = {
       ...peer.toEgressRuleConfig(),
       ...connection.toRuleJson(),
-      description
+      description,
     };
 
     if (isAllTrafficRule(rule)) {
@@ -518,7 +519,7 @@ const MATCH_NO_TRAFFIC = {
   description: 'Disallow all traffic',
   ipProtocol: 'icmp',
   fromPort: 252,
-  toPort: 86
+  toPort: 86,
 };
 
 /**

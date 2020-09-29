@@ -1,7 +1,7 @@
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { Construct, Token } from '@aws-cdk/core';
-import { ContainerDefinition } from "../container-definition";
-import { ContainerImage, ContainerImageConfig } from "../container-image";
+import { Annotations, Construct, Token } from '@aws-cdk/core';
+import { ContainerDefinition } from '../container-definition';
+import { ContainerImage, ContainerImageConfig } from '../container-image';
 
 /**
  * Regex pattern to check if it is an ECR image URL.
@@ -37,7 +37,7 @@ export class RepositoryImage extends ContainerImage {
   public bind(scope: Construct, containerDefinition: ContainerDefinition): ContainerImageConfig {
     // name could be a Token - in that case, skip validation altogether
     if (!Token.isUnresolved(this.imageName) && ECR_IMAGE_REGEX.test(this.imageName)) {
-      scope.node.addWarning("Proper policies need to be attached before pulling from ECR repository, or use 'fromEcrRepository'.");
+      Annotations.of(scope).addWarning("Proper policies need to be attached before pulling from ECR repository, or use 'fromEcrRepository'.");
     }
 
     if (this.props.credentials) {
@@ -47,8 +47,8 @@ export class RepositoryImage extends ContainerImage {
     return {
       imageName: this.imageName,
       repositoryCredentials: this.props.credentials && {
-        credentialsParameter: this.props.credentials.secretArn
-      }
+        credentialsParameter: this.props.credentials.secretArn,
+      },
     };
   }
 }

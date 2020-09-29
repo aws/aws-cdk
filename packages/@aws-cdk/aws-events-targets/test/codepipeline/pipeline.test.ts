@@ -21,8 +21,9 @@ describe('CodePipeline event target', () => {
         actionName: 'Hello',
         category: codepipeline.ActionCategory.SOURCE,
         provider: 'x',
-        artifactBounds: { minInputs: 0, maxInputs: 0 , minOutputs: 1, maxOutputs: 1, },
-        outputs: [srcArtifact]})]
+        artifactBounds: { minInputs: 0, maxInputs: 0, minOutputs: 1, maxOutputs: 1 },
+        outputs: [srcArtifact],
+      })],
     });
     pipeline.addStage({
       stageName: 'Build',
@@ -32,19 +33,20 @@ describe('CodePipeline event target', () => {
         provider: 'y',
         inputs: [srcArtifact],
         outputs: [buildArtifact],
-        artifactBounds: { minInputs: 1, maxInputs: 1 , minOutputs: 1, maxOutputs: 1, }})]
+        artifactBounds: { minInputs: 1, maxInputs: 1, minOutputs: 1, maxOutputs: 1 },
+      })],
     });
     pipelineArn = {
-      "Fn::Join": [ "", [
-        "arn:",
-        { Ref: "AWS::Partition" },
-        ":codepipeline:",
-        { Ref: "AWS::Region" },
-        ":",
-        { Ref: "AWS::AccountId" },
-        ":",
-        { Ref: "PipelineC660917D" }]
-      ]
+      'Fn::Join': ['', [
+        'arn:',
+        { Ref: 'AWS::Partition' },
+        ':codepipeline:',
+        { Ref: 'AWS::Region' },
+        ':',
+        { Ref: 'AWS::AccountId' },
+        ':',
+        { Ref: 'PipelineC660917D' },
+      ]],
     };
   });
 
@@ -67,8 +69,8 @@ describe('CodePipeline event target', () => {
           Targets: [
             {
               Arn: pipelineArn,
-              Id: "Target0",
-              RoleArn: { "Fn::GetAtt": [ "PipelineEventsRole46BEEA7C", "Arn" ] },
+              Id: 'Target0',
+              RoleArn: { 'Fn::GetAtt': ['PipelineEventsRole46BEEA7C', 'Arn'] },
             },
           ],
         }));
@@ -79,13 +81,13 @@ describe('CodePipeline event target', () => {
           PolicyDocument: {
             Statement: [
               {
-                Action: "codepipeline:StartPipelineExecution",
-                Effect: "Allow",
+                Action: 'codepipeline:StartPipelineExecution',
+                Effect: 'Allow',
                 Resource: pipelineArn,
-              }
+              },
             ],
-            Version: "2012-10-17"
-          }
+            Version: '2012-10-17',
+          },
         }));
       });
     });
@@ -108,7 +110,7 @@ describe('CodePipeline event target', () => {
           Targets: [
             {
               Arn: pipelineArn,
-              RoleArn: { "Fn::GetAtt": ["MyRole", "Arn"] },
+              RoleArn: { 'Fn::GetAtt': ['MyRole', 'Arn'] },
             },
           ],
         }));
@@ -123,7 +125,7 @@ class TestAction implements codepipeline.IAction {
   }
 
   public bind(_scope: Construct, _stage: codepipeline.IStage, _options: codepipeline.ActionBindOptions):
-      codepipeline.ActionConfig {
+  codepipeline.ActionConfig {
     return {};
   }
 

@@ -7,19 +7,21 @@ export function mockAws() {
 
   // Sane defaults which can be overridden
   mockS3.getBucketLocation = mockedApiResult({});
-  mockEcr.describeRepositories = mockedApiResult({ repositories: [
-    {
-      repositoryUri: '12345.amazonaws.com/repo'
-    }
-  ] });
+  mockEcr.describeRepositories = mockedApiResult({
+    repositories: [
+      {
+        repositoryUri: '12345.amazonaws.com/repo',
+      },
+    ],
+  });
 
   return {
     mockEcr,
     mockS3,
     discoverCurrentAccount: jest.fn(() => Promise.resolve({ accountId: 'current_account', partition: 'swa' })),
     discoverDefaultRegion: jest.fn(() => Promise.resolve('current_region')),
-    ecrClient: jest.fn().mockReturnValue(Promise.resolve(mockEcr)),
-    s3Client: jest.fn().mockReturnValue(Promise.resolve(mockS3)),
+    ecrClient: jest.fn(() => Promise.resolve(mockEcr)),
+    s3Client: jest.fn(() => Promise.resolve(mockS3)),
   };
 }
 
@@ -31,13 +33,13 @@ export function errorWithCode(code: string, message: string) {
 
 export function mockedApiResult(returnValue: any) {
   return jest.fn().mockReturnValue({
-    promise: jest.fn().mockResolvedValue(returnValue)
+    promise: jest.fn().mockResolvedValue(returnValue),
   });
 }
 
 export function mockedApiFailure(code: string, message: string) {
   return jest.fn().mockReturnValue({
-    promise: jest.fn().mockRejectedValue(errorWithCode(code, message))
+    promise: jest.fn().mockRejectedValue(errorWithCode(code, message)),
   });
 }
 
@@ -60,6 +62,6 @@ export function mockUpload(expectContent?: string) {
         }
         ok();
       });
-    })
+    }),
   }));
 }

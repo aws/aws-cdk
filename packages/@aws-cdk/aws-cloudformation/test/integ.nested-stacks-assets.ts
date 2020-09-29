@@ -1,6 +1,7 @@
+/// !cdk-integ pragma:ignore-assets
+import * as path from 'path';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { App, Construct, Stack } from '@aws-cdk/core';
-import * as path from 'path';
 import * as cfn from '../lib';
 
 class NestedStack extends cfn.NestedStack {
@@ -10,7 +11,7 @@ class NestedStack extends cfn.NestedStack {
     new lambda.Function(this, 'Handler', {
       code: lambda.Code.asset(path.join(__dirname, 'asset-directory-fixture')),
       runtime: lambda.Runtime.NODEJS_10_X,
-      handler: 'index.handler'
+      handler: 'index.handler',
     });
   }
 }

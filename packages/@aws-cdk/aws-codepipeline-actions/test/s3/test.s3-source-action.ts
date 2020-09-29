@@ -1,12 +1,12 @@
-import { countResources, expect, haveResourceLike, not } from "@aws-cdk/assert";
+import { countResources, expect, haveResourceLike, not } from '@aws-cdk/assert';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as s3 from '@aws-cdk/aws-s3';
-import { Stack } from "@aws-cdk/core";
+import { Lazy, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as cpactions from '../../lib';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
   'S3 Source Action': {
@@ -16,11 +16,11 @@ export = {
       minimalPipeline(stack, undefined);
 
       expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
-        "Stages": [
+        'Stages': [
           {
-            "Actions": [
+            'Actions': [
               {
-                "Configuration": {
+                'Configuration': {
                 },
               },
             ],
@@ -40,12 +40,12 @@ export = {
       minimalPipeline(stack, { trigger: cpactions.S3Trigger.EVENTS });
 
       expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
-        "Stages": [
+        'Stages': [
           {
-            "Actions": [
+            'Actions': [
               {
-                "Configuration": {
-                  "PollForSourceChanges": false,
+                'Configuration': {
+                  'PollForSourceChanges': false,
                 },
               },
             ],
@@ -65,12 +65,12 @@ export = {
       minimalPipeline(stack, { trigger: cpactions.S3Trigger.POLL });
 
       expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
-        "Stages": [
+        'Stages': [
           {
-            "Actions": [
+            'Actions': [
               {
-                "Configuration": {
-                  "PollForSourceChanges": true,
+                'Configuration': {
+                  'PollForSourceChanges': true,
                 },
               },
             ],
@@ -90,12 +90,12 @@ export = {
       minimalPipeline(stack, { trigger: cpactions.S3Trigger.NONE });
 
       expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
-        "Stages": [
+        'Stages': [
           {
-            "Actions": [
+            'Actions': [
               {
-                "Configuration": {
-                  "PollForSourceChanges": false,
+                'Configuration': {
+                  'PollForSourceChanges': false,
                 },
               },
             ],
@@ -176,6 +176,45 @@ export = {
       test.done();
     },
 
+    'allows using a Token bucketKey with trigger = Events, multiple times'(test: Test) {
+      const stack = new Stack();
+
+      const bucket = new s3.Bucket(stack, 'MyBucket');
+      const sourceStage = minimalPipeline(stack, {
+        bucket,
+        bucketKey: Lazy.stringValue({ produce: () => 'my-bucket-key1' }),
+        trigger: cpactions.S3Trigger.EVENTS,
+      });
+      sourceStage.addAction(new cpactions.S3SourceAction({
+        actionName: 'Source2',
+        bucket,
+        bucketKey: Lazy.stringValue({ produce: () => 'my-bucket-key2' }),
+        trigger: cpactions.S3Trigger.EVENTS,
+        output: new codepipeline.Artifact(),
+      }));
+
+      expect(stack, /* skipValidation = */ true).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+        'Stages': [
+          {
+            'Actions': [
+              {
+                'Configuration': {
+                  'S3ObjectKey': 'my-bucket-key1',
+                },
+              },
+              {
+                'Configuration': {
+                  'S3ObjectKey': 'my-bucket-key2',
+                },
+              },
+            ],
+          },
+        ],
+      }));
+
+      test.done();
+    },
+
     'exposes variables for other actions to consume'(test: Test) {
       const stack = new Stack();
 
@@ -209,17 +248,17 @@ export = {
       });
 
       expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
-        "Stages": [
+        'Stages': [
           {
-            "Name": "Source",
+            'Name': 'Source',
           },
           {
-            "Name": "Build",
-            "Actions": [
+            'Name': 'Build',
+            'Actions': [
               {
-                "Name": "Build",
-                "Configuration": {
-                  "EnvironmentVariables": '[{"name":"VersionId","type":"PLAINTEXT","value":"#{Source_Source_NS.VersionId}"}]',
+                'Name': 'Build',
+                'Configuration': {
+                  'EnvironmentVariables': '[{"name":"VersionId","type":"PLAINTEXT","value":"#{Source_Source_NS.VersionId}"}]',
                 },
               },
             ],

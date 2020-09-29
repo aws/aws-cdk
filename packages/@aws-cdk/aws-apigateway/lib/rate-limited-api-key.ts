@@ -45,7 +45,7 @@ export class RateLimitedApiKey extends Resource implements IApiKey {
         apiKey: resource,
         apiStages: props.apiStages,
         quota: props.quota,
-        throttle: props.throttle
+        throttle: props.throttle,
       });
     }
 

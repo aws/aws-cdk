@@ -1,7 +1,75 @@
 import '@aws-cdk/assert/jest';
-import { BooleanAttribute, DateTimeAttribute, NumberAttribute, StringAttribute } from '../lib';
+import { CfnParameter, Stack } from '@aws-cdk/core';
+import { BooleanAttribute, CustomAttributeConfig, DateTimeAttribute, ICustomAttribute, NumberAttribute, StringAttribute } from '../lib';
 
 describe('User Pool Attributes', () => {
+
+  describe('mutable', () => {
+    test('default', () => {
+      // GIVEN
+      const allAttributes: ICustomAttribute[] = [
+        new StringAttribute(),
+        new NumberAttribute(),
+        new BooleanAttribute(),
+        new DateTimeAttribute(),
+      ];
+
+      // WHEN
+      const bounds: CustomAttributeConfig[] = allAttributes.map((attr) => attr.bind() );
+
+      // THEN
+      bounds.forEach((bound) => {
+        expect(bound.mutable).toBeUndefined();
+      });
+    });
+
+    describe('mutable is set to true when specified', () => {
+      // GIVEN
+      const allTrueProps = {
+        mutable: true,
+      };
+      const allAttributeTypes: ICustomAttribute[] = [
+        new StringAttribute(allTrueProps),
+        new NumberAttribute(allTrueProps),
+        new BooleanAttribute(allTrueProps),
+        new DateTimeAttribute(allTrueProps),
+      ];
+
+      // WHEN
+      const bounds: CustomAttributeConfig[] = allAttributeTypes.map((attr) => attr.bind() );
+
+      // THEN
+      bounds.forEach((bound) => {
+        test(`in attribute of type ${bound.dataType}:`, () => {
+          expect(bound.mutable).toEqual(true);
+        });
+      });
+    });
+
+    describe('mutable is set to false', () => {
+      // GIVEN
+      const allFalseProps = {
+        mutable: false,
+      };
+      const allAttributeTypes: ICustomAttribute[] = [
+        new StringAttribute(allFalseProps),
+        new NumberAttribute(allFalseProps),
+        new BooleanAttribute(allFalseProps),
+        new DateTimeAttribute(allFalseProps),
+      ];
+
+      // WHEN
+      const bounds: CustomAttributeConfig[] = allAttributeTypes.map((attr) => attr.bind() );
+
+      // THEN
+      bounds.forEach((bound) => {
+        test(`in attribute of type ${bound.dataType}`, () => {
+          expect(bound.mutable).toEqual(false);
+        });
+      });
+    });
+  });
+
   describe('StringAttribute', () => {
     test('default', () => {
       // GIVEN
@@ -36,6 +104,18 @@ describe('User Pool Attributes', () => {
         .toThrow(/minLen cannot be less than/);
       expect(() => new StringAttribute({ maxLen: 5000 }))
         .toThrow(/maxLen cannot be greater than/);
+    });
+
+    test('validation is skipped when minLen or maxLen are tokens', () => {
+      const stack = new Stack();
+      const parameter = new CfnParameter(stack, 'Parameter', {
+        type: 'Number',
+      });
+
+      expect(() => new StringAttribute({ minLen: parameter.valueAsNumber }))
+        .not.toThrow();
+      expect(() => new StringAttribute({ maxLen: parameter.valueAsNumber }))
+        .not.toThrow();
     });
   });
 

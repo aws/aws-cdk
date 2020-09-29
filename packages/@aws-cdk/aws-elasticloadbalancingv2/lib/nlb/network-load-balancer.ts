@@ -1,5 +1,7 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
+import { PolicyStatement, ServicePrincipal } from '@aws-cdk/aws-iam';
+import { IBucket } from '@aws-cdk/aws-s3';
 import { Construct, Resource } from '@aws-cdk/core';
 import { BaseLoadBalancer, BaseLoadBalancerProps, ILoadBalancerV2 } from '../shared/base-load-balancer';
 import { BaseNetworkListenerProps, NetworkListener } from './network-listener';
@@ -61,19 +63,19 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
       public addListener(lid: string, props: BaseNetworkListenerProps): NetworkListener {
         return new NetworkListener(this, lid, {
           loadBalancer: this,
-          ...props
+          ...props,
         });
       }
 
       public get loadBalancerCanonicalHostedZoneId(): string {
         if (attrs.loadBalancerCanonicalHostedZoneId) { return attrs.loadBalancerCanonicalHostedZoneId; }
-        // tslint:disable-next-line:max-line-length
+        // eslint-disable-next-line max-len
         throw new Error(`'loadBalancerCanonicalHostedZoneId' was not provided when constructing Network Load Balancer ${this.node.path} from attributes`);
       }
 
       public get loadBalancerDnsName(): string {
         if (attrs.loadBalancerDnsName) { return attrs.loadBalancerDnsName; }
-        // tslint:disable-next-line:max-line-length
+        // eslint-disable-next-line max-len
         throw new Error(`'loadBalancerDnsName' was not provided when constructing Network Load Balancer ${this.node.path} from attributes`);
       }
     }
@@ -83,7 +85,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
 
   constructor(scope: Construct, id: string, props: NetworkLoadBalancerProps) {
     super(scope, id, props, {
-      type: "network",
+      type: 'network',
     });
 
     if (props.crossZoneEnabled) { this.setAttribute('load_balancing.cross_zone.enabled', 'true'); }
@@ -97,8 +99,43 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
   public addListener(id: string, props: BaseNetworkListenerProps): NetworkListener {
     return new NetworkListener(this, id, {
       loadBalancer: this,
-      ...props
+      ...props,
     });
+  }
+
+  /**
+   * Enable access logging for this load balancer.
+   *
+   * A region must be specified on the stack containing the load balancer; you cannot enable logging on
+   * environment-agnostic stacks. See https://docs.aws.amazon.com/cdk/latest/guide/environments.html
+   *
+   * This is extending the BaseLoadBalancer.logAccessLogs method to match the bucket permissions described
+   * at https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-access-logs.html#access-logging-bucket-requirements
+   */
+  public logAccessLogs(bucket: IBucket, prefix?: string) {
+    super.logAccessLogs(bucket, prefix);
+
+    const logsDeliveryServicePrincipal = new ServicePrincipal('delivery.logs.amazonaws.com');
+
+    bucket.addToResourcePolicy(
+      new PolicyStatement({
+        actions: ['s3:PutObject'],
+        principals: [logsDeliveryServicePrincipal],
+        resources: [
+          bucket.arnForObjects(`${prefix ? prefix + '/' : ''}AWSLogs/${this.stack.account}/*`),
+        ],
+        conditions: {
+          StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' },
+        },
+      }),
+    );
+    bucket.addToResourcePolicy(
+      new PolicyStatement({
+        actions: ['s3:GetBucketAcl'],
+        principals: [logsDeliveryServicePrincipal],
+        resources: [bucket.bucketArn],
+      }),
+    );
   }
 
   /**
@@ -111,7 +148,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
       namespace: 'AWS/NetworkELB',
       metricName,
       dimensions: { LoadBalancer: this.loadBalancerFullName },
-      ...props
+      ...props,
     }).attachTo(this);
   }
 
@@ -127,7 +164,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
   public metricActiveFlowCount(props?: cloudwatch.MetricOptions) {
     return this.metric('ActiveFlowCount', {
       statistic: 'Average',
-      ...props
+      ...props,
     });
   }
 
@@ -139,7 +176,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
   public metricConsumedLCUs(props?: cloudwatch.MetricOptions) {
     return this.metric('ConsumedLCUs', {
       statistic: 'Sum',
-      ...props
+      ...props,
     });
   }
 
@@ -151,7 +188,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
   public metricHealthyHostCount(props?: cloudwatch.MetricOptions) {
     return this.metric('HealthyHostCount', {
       statistic: 'Average',
-      ...props
+      ...props,
     });
   }
 
@@ -163,7 +200,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
   public metricUnHealthyHostCount(props?: cloudwatch.MetricOptions) {
     return this.metric('UnHealthyHostCount', {
       statistic: 'Average',
-      ...props
+      ...props,
     });
   }
 
@@ -175,7 +212,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
   public metricNewFlowCount(props?: cloudwatch.MetricOptions) {
     return this.metric('NewFlowCount', {
       statistic: 'Sum',
-      ...props
+      ...props,
     });
   }
 
@@ -187,7 +224,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
   public metricProcessedBytes(props?: cloudwatch.MetricOptions) {
     return this.metric('ProcessedBytes', {
       statistic: 'Sum',
-      ...props
+      ...props,
     });
   }
 
@@ -201,7 +238,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
   public metricTcpClientResetCount(props?: cloudwatch.MetricOptions) {
     return this.metric('TCP_Client_Reset_Count', {
       statistic: 'Sum',
-      ...props
+      ...props,
     });
   }
 
@@ -213,7 +250,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
   public metricTcpElbResetCount(props?: cloudwatch.MetricOptions) {
     return this.metric('TCP_ELB_Reset_Count', {
       statistic: 'Sum',
-      ...props
+      ...props,
     });
   }
 
@@ -227,7 +264,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
   public metricTcpTargetResetCount(props?: cloudwatch.MetricOptions) {
     return this.metric('TCP_Target_Reset_Count', {
       statistic: 'Sum',
-      ...props
+      ...props,
     });
   }
 }

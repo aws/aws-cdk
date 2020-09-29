@@ -24,7 +24,9 @@ module.exports = {
     "examples/**",
     "lambda-packages/**",
     "lib/*.generated.js",
-    "build-tools/**"
+    "build-tools/**",
+    ".eslintrc.js",
+    "nyc.config.js"
   ],
   // Configuration in package.json supercedes that of the defaults above.
   ...nycConfig,

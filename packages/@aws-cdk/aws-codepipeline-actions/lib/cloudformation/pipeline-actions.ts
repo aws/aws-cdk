@@ -83,7 +83,7 @@ abstract class CloudFormationAction extends Action {
   }
 
   protected bound(_scope: cdk.Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
-      codepipeline.ActionConfig {
+  codepipeline.ActionConfig {
     const singletonPolicy = SingletonPolicy.forRole(options.role);
 
     if ((this.actionProperties.outputs || []).length > 0) {
@@ -124,7 +124,7 @@ export class CloudFormationExecuteChangeSetAction extends CloudFormationAction {
   }
 
   protected bound(scope: cdk.Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
-      codepipeline.ActionConfig {
+  codepipeline.ActionConfig {
     SingletonPolicy.forRole(options.role).grantExecuteChangeSet(this.props2);
 
     const actionConfig = super.bound(scope, stage, options);
@@ -139,7 +139,6 @@ export class CloudFormationExecuteChangeSetAction extends CloudFormationAction {
   }
 }
 
-// tslint:disable:max-line-length Because of long URLs in documentation
 /**
  * Properties common to CloudFormation actions that stage deployments
  */
@@ -235,7 +234,6 @@ interface CloudFormationDeployActionProps extends CloudFormationActionProps {
    */
   readonly extraInputs?: codepipeline.Artifact[];
 }
-// tslint:enable:max-line-length
 
 /**
  * Base class for all CloudFormation actions that execute or stage deployments.
@@ -262,7 +260,7 @@ abstract class CloudFormationDeployAction extends CloudFormationAction {
   }
 
   protected bound(scope: cdk.Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
-      codepipeline.ActionConfig {
+  codepipeline.ActionConfig {
     if (this.props2.deploymentRole) {
       this._deploymentRole = this.props2.deploymentRole;
     } else {
@@ -272,13 +270,13 @@ abstract class CloudFormationDeployAction extends CloudFormationAction {
         // pass role is not allowed for cross-account access - so,
         // create the deployment Role in the other account!
         this._deploymentRole = new iam.Role(roleStack,
-            `${stage.pipeline.node.uniqueId}-${stage.stageName}-${this.actionProperties.actionName}-DeploymentRole`, {
-          assumedBy: new iam.ServicePrincipal('cloudformation.amazonaws.com'),
-          roleName: cdk.PhysicalName.GENERATE_IF_NEEDED,
-        });
+          `${stage.pipeline.node.uniqueId}-${stage.stageName}-${this.actionProperties.actionName}-DeploymentRole`, {
+            assumedBy: new iam.ServicePrincipal('cloudformation.amazonaws.com'),
+            roleName: cdk.PhysicalName.GENERATE_IF_NEEDED,
+          });
       } else {
         this._deploymentRole = new iam.Role(scope, 'Role', {
-          assumedBy: new iam.ServicePrincipal('cloudformation.amazonaws.com')
+          assumedBy: new iam.ServicePrincipal('cloudformation.amazonaws.com'),
         });
       }
 
@@ -362,7 +360,7 @@ export class CloudFormationCreateReplaceChangeSetAction extends CloudFormationDe
   }
 
   protected bound(scope: cdk.Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
-      codepipeline.ActionConfig {
+  codepipeline.ActionConfig {
     // the super call order is to preserve the existing order of statements in policies
     const actionConfig = super.bound(scope, stage, options);
 
@@ -431,7 +429,7 @@ export class CloudFormationCreateUpdateStackAction extends CloudFormationDeployA
   }
 
   protected bound(scope: cdk.Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
-      codepipeline.ActionConfig {
+  codepipeline.ActionConfig {
     // the super call order is to preserve the existing order of statements in policies
     const actionConfig = super.bound(scope, stage, options);
 
@@ -451,7 +449,6 @@ export class CloudFormationCreateUpdateStackAction extends CloudFormationDeployA
 /**
  * Properties for the CloudFormationDeleteStackAction.
  */
-// tslint:disable-next-line:no-empty-interface
 export interface CloudFormationDeleteStackActionProps extends CloudFormationDeployActionProps {
 }
 
@@ -471,7 +468,7 @@ export class CloudFormationDeleteStackAction extends CloudFormationDeployAction 
   }
 
   protected bound(scope: cdk.Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
-      codepipeline.ActionConfig {
+  codepipeline.ActionConfig {
     // the super call order is to preserve the existing order of statements in policies
     const actionConfig = super.bound(scope, stage, options);
 
@@ -562,7 +559,7 @@ class SingletonPolicy extends cdk.Construct implements iam.IGrantable {
       actions: [
         'cloudformation:DescribeStack*',
         'cloudformation:DeleteStack',
-      ]
+      ],
     }).addResources(this.stackArnFromProps(props));
   }
 
@@ -607,7 +604,7 @@ class SingletonPolicy extends cdk.Construct implements iam.IGrantable {
       region: props.region,
       service: 'cloudformation',
       resource: 'stack',
-      resourceName: `${props.stackName}/*`
+      resourceName: `${props.stackName}/*`,
     });
   }
 }

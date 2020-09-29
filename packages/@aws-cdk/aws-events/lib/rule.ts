@@ -7,6 +7,9 @@ import { Schedule } from './schedule';
 import { IRuleTarget } from './target';
 import { mergeEventPattern } from './util';
 
+/**
+ * Properties for defining an EventBridge Rule
+ */
 export interface RuleProps {
   /**
    * A description of the rule's purpose.
@@ -31,11 +34,11 @@ export interface RuleProps {
   readonly enabled?: boolean;
 
   /**
-   * The schedule or rate (frequency) that determines when CloudWatch Events
+   * The schedule or rate (frequency) that determines when EventBridge
    * runs the rule. For more information, see Schedule Expression Syntax for
-   * Rules in the Amazon CloudWatch User Guide.
+   * Rules in the Amazon EventBridge User Guide.
    *
-   * @see http://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html
+   * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/scheduled-events.html
    *
    * You must specify this property, the `eventPattern` property, or both.
    *
@@ -44,12 +47,12 @@ export interface RuleProps {
   readonly schedule?: Schedule;
 
   /**
-   * Describes which events CloudWatch Events routes to the specified target.
+   * Describes which events EventBridge routes to the specified target.
    * These routed events are matched events. For more information, see Events
-   * and Event Patterns in the Amazon CloudWatch User Guide.
+   * and Event Patterns in the Amazon EventBridge User Guide.
    *
    * @see
-   * http://docs.aws.amazon.com/AmazonCloudWatch/latest/DeveloperGuide/CloudWatchEventsandEventPatterns.html
+   * https://docs.aws.amazon.com/eventbridge/latest/userguide/eventbridge-and-event-patterns.html
    *
    * You must specify this property (either via props or via
    * `addEventPattern`), the `scheduleExpression` property, or both. The
@@ -79,12 +82,19 @@ export interface RuleProps {
 }
 
 /**
- * Defines a CloudWatch Event Rule in this stack.
+ * Defines an EventBridge Rule in this stack.
  *
  * @resource AWS::Events::Rule
  */
 export class Rule extends Resource implements IRule {
 
+  /**
+   * Import an existing EventBridge Rule provided an ARN
+   *
+   * @param scope The parent creating construct (usually `this`).
+   * @param id The construct's name.
+   * @param eventRuleArn Event Rule ARN (i.e. arn:aws:events:<region>:<account-id>:rule/MyScheduledRule).
+   */
   public static fromEventRuleArn(scope: Construct, id: string, eventRuleArn: string): IRule {
     const parts = Stack.of(scope).parseArn(eventRuleArn);
 
@@ -110,7 +120,7 @@ export class Rule extends Resource implements IRule {
     });
 
     if (props.eventBus && props.schedule) {
-      throw new Error(`Cannot associate rule with 'eventBus' when using 'schedule'`);
+      throw new Error('Cannot associate rule with \'eventBus\' when using \'schedule\'');
     }
 
     this.description = props.description;
@@ -174,7 +184,7 @@ export class Rule extends Resource implements IRule {
       if (targetAccount !== sourceAccount) {
         // cross-account event - strap in, this works differently than regular events!
         // based on:
-        // https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/CloudWatchEvents-CrossAccountEventDelivery.html
+        // https://docs.aws.amazon.com/eventbridge/latest/userguide/eventbridge-cross-account-event-delivery.html
 
         // for cross-account events, we require concrete accounts
         if (Token.isUnresolved(targetAccount)) {
@@ -208,7 +218,7 @@ export class Rule extends Resource implements IRule {
         // Grant the source account permissions to publish events to the event bus of the target account.
         // Do it in a separate stack instead of the target stack (which seems like the obvious place to put it),
         // because it needs to be deployed before the rule containing the above event-bus target in the source stack
-        // (CloudWatch verifies whether you have permissions to the targets on rule creation),
+        // (EventBridge verifies whether you have permissions to the targets on rule creation),
         // but it's common for the target stack to depend on the source stack
         // (that's the case with CodePipeline, for example)
         const sourceApp = this.node.root;
@@ -232,9 +242,9 @@ export class Rule extends Resource implements IRule {
             },
             stackName: `${targetStack.stackName}-EventBusPolicy-support-${targetRegion}-${sourceAccount}`,
           });
-          new CfnEventBusPolicy(eventBusPolicyStack, `GivePermToOtherAccount`, {
+          new CfnEventBusPolicy(eventBusPolicyStack, 'GivePermToOtherAccount', {
             action: 'events:PutEvents',
-            statementId: 'MySid',
+            statementId: `Allow-account-${sourceAccount}`,
             principal: sourceAccount,
           });
         }
@@ -283,6 +293,7 @@ export class Rule extends Resource implements IRule {
       ecsParameters: targetProps.ecsParameters,
       kinesisParameters: targetProps.kinesisParameters,
       runCommandParameters: targetProps.runCommandParameters,
+      batchParameters: targetProps.batchParameters,
       sqsParameters: targetProps.sqsParameters,
       input: inputProps && inputProps.input,
       inputPath: inputProps && inputProps.inputPath,
@@ -360,7 +371,7 @@ export class Rule extends Resource implements IRule {
 
   protected validate() {
     if (Object.keys(this.eventPattern).length === 0 && !this.scheduleExpression) {
-      return [`Either 'eventPattern' or 'schedule' must be defined`];
+      return ['Either \'eventPattern\' or \'schedule\' must be defined'];
     }
 
     return [];

@@ -1,9 +1,10 @@
 import * as iam from '@aws-cdk/aws-iam';
+import { Connections, IConnectable } from './connections';
 import { Instance } from './instance';
 import { InstanceType } from './instance-types';
-import { IMachineImage, LookupMachineImage } from "./machine-image";
+import { IMachineImage, LookupMachineImage } from './machine-image';
 import { Port } from './port';
-import { SecurityGroup } from './security-group';
+import { ISecurityGroup, SecurityGroup } from './security-group';
 import { PrivateSubnet, PublicSubnet, RouterType, Vpc } from './vpc';
 
 /**
@@ -39,7 +40,7 @@ export abstract class NatProvider {
    * @see https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html
    */
   public static gateway(): NatProvider {
-    return new NatGateway();
+    return new NatGatewayProvider();
   }
 
   /**
@@ -53,8 +54,8 @@ export abstract class NatProvider {
    *
    * @see https://docs.aws.amazon.com/vpc/latest/userguide/VPC_NAT_Instance.html
    */
-  public static instance(props: NatInstanceProps): NatProvider {
-    return new NatInstance(props);
+  public static instance(props: NatInstanceProps): NatInstanceProvider {
+    return new NatInstanceProvider(props);
   }
 
   /**
@@ -64,11 +65,15 @@ export abstract class NatProvider {
 
   /**
    * Called by the VPC to configure NAT
+   *
+   * Don't call this directly, the VPC will call it automatically.
    */
   public abstract configureNat(options: ConfigureNatOptions): void;
 
   /**
    * Configures subnet with the gateway
+   *
+   * Don't call this directly, the VPC will call it automatically.
    */
   public abstract configureSubnet(subnet: PrivateSubnet): void;
 }
@@ -134,9 +139,32 @@ export interface NatInstanceProps {
    * @default - No SSH access will be possible.
    */
   readonly keyName?: string;
+
+  /**
+   * Security Group for NAT instances
+   *
+   * @default - A new security group will be created
+   */
+  readonly securityGroup?: ISecurityGroup;
+
+  /**
+   * Allow all traffic through the NAT instance
+   *
+   * If you set this to false, you must configure the NAT instance's security
+   * groups in another way, either by passing in a fully configured Security
+   * Group using the `securityGroup` property, or by configuring it using the
+   * `.securityGroup` or `.connections` members after passing the NAT Instance
+   * Provider to a Vpc.
+   *
+   * @default true
+   */
+  readonly allowAllTraffic?: boolean;
 }
 
-class NatGateway extends NatProvider {
+/**
+ * Provider for NAT Gateways
+ */
+class NatGatewayProvider extends NatProvider {
   private gateways: PrefSet<string> = new PrefSet<string>();
 
   public configureNat(options: ConfigureNatOptions) {
@@ -163,12 +191,17 @@ class NatGateway extends NatProvider {
   }
 
   public get configuredGateways(): GatewayConfig[] {
-    return this.gateways.values().map(x => ({az: x[0], gatewayId: x[1]}));
+    return this.gateways.values().map(x => ({ az: x[0], gatewayId: x[1] }));
   }
 }
 
-class NatInstance extends NatProvider {
+/**
+ * NAT provider which uses NAT Instances
+ */
+export class NatInstanceProvider extends NatProvider implements IConnectable {
   private gateways: PrefSet<Instance> = new PrefSet<Instance>();
+  private _securityGroup?: ISecurityGroup;
+  private _connections?: Connections;
 
   constructor(private readonly props: NatInstanceProps) {
     super();
@@ -177,28 +210,32 @@ class NatInstance extends NatProvider {
   public configureNat(options: ConfigureNatOptions) {
     // Create the NAT instances. They can share a security group and a Role.
     const machineImage = this.props.machineImage || new NatInstanceImage();
-    const sg = new SecurityGroup(options.vpc, 'NatSecurityGroup', {
+    this._securityGroup = this.props.securityGroup ?? new SecurityGroup(options.vpc, 'NatSecurityGroup', {
       vpc: options.vpc,
       description: 'Security Group for NAT instances',
     });
-    sg.connections.allowFromAnyIpv4(Port.allTcp());
+    this._connections = new Connections({ securityGroups: [this._securityGroup] });
+
+    if (this.props.allowAllTraffic ?? true) {
+      this.connections.allowFromAnyIpv4(Port.allTraffic());
+    }
 
     // FIXME: Ideally, NAT instances don't have a role at all, but
     // 'Instance' does not allow that right now.
     const role = new iam.Role(options.vpc, 'NatRole', {
-      assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')
+      assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
     });
 
     for (const sub of options.natSubnets) {
       const natInstance = new Instance(sub, 'NatInstance', {
         instanceType: this.props.instanceType,
         machineImage,
-        sourceDestCheck: false,  // Required for NAT
+        sourceDestCheck: false, // Required for NAT
         vpc: options.vpc,
         vpcSubnets: { subnets: [sub] },
-        securityGroup: sg,
+        securityGroup: this._securityGroup,
         role,
-        keyName: this.props.keyName
+        keyName: this.props.keyName,
       });
       // NAT instance routes all traffic, both ways
       this.gateways.add(sub.availabilityZone, natInstance);
@@ -210,6 +247,30 @@ class NatInstance extends NatProvider {
     }
   }
 
+  /**
+   * The Security Group associated with the NAT instances
+   */
+  public get securityGroup(): ISecurityGroup {
+    if (!this._securityGroup) {
+      throw new Error('Pass the NatInstanceProvider to a Vpc before accessing \'securityGroup\'');
+    }
+    return this._securityGroup;
+  }
+
+  /**
+   * Manage the Security Groups associated with the NAT instances
+   */
+  public get connections(): Connections {
+    if (!this._connections) {
+      throw new Error('Pass the NatInstanceProvider to a Vpc before accessing \'connections\'');
+    }
+    return this._connections;
+  }
+
+  public get configuredGateways(): GatewayConfig[] {
+    return this.gateways.values().map(x => ({ az: x[0], gatewayId: x[1].instanceId }));
+  }
+
   public configureSubnet(subnet: PrivateSubnet) {
     const az = subnet.availabilityZone;
     const gatewayId = this.gateways.pick(az).instanceId;
@@ -218,10 +279,6 @@ class NatInstance extends NatProvider {
       routerId: gatewayId,
       enablesInternetConnectivity: true,
     });
-  }
-
-  public get configuredGateways(): GatewayConfig[] {
-    return this.gateways.values().map(x => ({az: x[0], gatewayId: x[1].instanceId}));
   }
 }
 

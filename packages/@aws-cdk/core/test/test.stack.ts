@@ -1,7 +1,11 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
-import { App, CfnCondition, CfnInclude, CfnOutput, CfnParameter, CfnResource, Construct, ConstructNode, Lazy, ScopedAws, Stack, validateString } from '../lib';
+import {
+  App, CfnCondition, CfnInclude, CfnOutput, CfnParameter,
+  CfnResource, Construct, Lazy, ScopedAws, Stack, validateString, ISynthesisSession, Tags, LegacyStackSynthesizer, DefaultStackSynthesizer,
+} from '../lib';
 import { Intrinsic } from '../lib/private/intrinsic';
+import { resolveReferences } from '../lib/private/refs';
 import { PostResolveToken } from '../lib/util';
 import { toCloudFormation } from './util';
 
@@ -20,7 +24,7 @@ export = {
     test.deepEqual(toCloudFormation(stack), {
       Description: 'This is my description',
       AWSTemplateFormatVersion: 'MyTemplateVersion',
-      Transform: 'SAMy'
+      Transform: 'SAMy',
     });
     test.done();
   },
@@ -49,14 +53,14 @@ export = {
     stack.templateOptions.transform = 'DeprecatedField';
     stack.templateOptions.transforms = ['Transform'];
     stack.templateOptions.metadata = {
-      MetadataKey: 'MetadataValue'
+      MetadataKey: 'MetadataValue',
     };
 
     test.deepEqual(toCloudFormation(stack), {
       Description: 'StackDescription',
       Transform: ['Transform', 'DeprecatedField'],
       AWSTemplateFormatVersion: 'TemplateVersion',
-      Metadata: { MetadataKey: 'MetadataValue' }
+      Metadata: { MetadataKey: 'MetadataValue' },
     });
 
     test.done();
@@ -68,7 +72,7 @@ export = {
     stack.templateOptions.transforms = ['A', 'B', 'C', 'A'];
 
     test.deepEqual(toCloudFormation(stack), {
-      Transform: ['A', 'B', 'C']
+      Transform: ['A', 'B', 'C'],
     });
 
     test.done();
@@ -82,7 +86,7 @@ export = {
     stack.addTransform('C');
 
     test.deepEqual(toCloudFormation(stack), {
-      Transform: ['A', 'B', 'C']
+      Transform: ['A', 'B', 'C'],
     });
 
     test.done();
@@ -102,18 +106,26 @@ export = {
         MyProp1: 'hello',
         MyProp2: 'howdy',
         Environment: {
-          Key: 'value'
-        }
-      }
+          Key: 'value',
+        },
+      },
     });
 
-    test.deepEqual(stack._toCloudFormation(), { Resources:
-      { myResource:
-         { Type: 'AWS::MyResource',
-         Properties:
-          { MyProp1: 'hello',
-          MyProp2: 'howdy',
-          Environment: { key: 'value' } } } } });
+    test.deepEqual(stack._toCloudFormation(), {
+      Resources:
+      {
+        myResource:
+         {
+           Type: 'AWS::MyResource',
+           Properties:
+          {
+            MyProp1: 'hello',
+            MyProp2: 'howdy',
+            Environment: { key: 'value' },
+          },
+         },
+      },
+    });
 
     test.done();
   },
@@ -126,9 +138,9 @@ export = {
     const o = new CfnOutput(stack, 'MyOutput', { value: 'boom' });
     const c = new CfnCondition(stack, 'MyCondition');
 
-    test.equal(stack.node.findChild(p.node.path), p);
-    test.equal(stack.node.findChild(o.node.path), o);
-    test.equal(stack.node.findChild(c.node.path), c);
+    test.equal(stack.node.findChild(p.node.id), p);
+    test.equal(stack.node.findChild(o.node.id), o);
+    test.equal(stack.node.findChild(c.node.id), c);
 
     test.done();
   },
@@ -143,7 +155,7 @@ export = {
   },
 
   'Stacks can have a description given to them'(test: Test) {
-    const stack = new Stack(new App(), 'MyStack', { description: 'My stack, hands off!'});
+    const stack = new Stack(new App(), 'MyStack', { description: 'My stack, hands off!' });
     const output = toCloudFormation(stack);
     test.equal(output.Description, 'My stack, hands off!');
     test.done();
@@ -162,7 +174,7 @@ export = {
      morbi. Malesuada nunc vel risus commodo viverra maecenas accumsan lacus. Vulputate sapien nec sagittis
      aliquam malesuada bibendum arcu vitae. Augue neque gravida in fermentum et sollicitudin ac orci phasellus.
      Ultrices tincidunt arcu non sodales neque sodales.`;
-    test.throws(() => new Stack(new App(), 'MyStack', { description: desc}));
+    test.throws(() => new Stack(new App(), 'MyStack', { description: desc }));
     test.done();
   },
 
@@ -170,7 +182,7 @@ export = {
     const stack = new Stack();
 
     const template = {
-      Description: 'hello, world'
+      Description: 'hello, world',
     };
 
     new CfnInclude(stack, 'Include', { template });
@@ -200,18 +212,18 @@ export = {
       Outputs: {
         ExportsOutputRefAWSAccountIdAD568057: {
           Value: { Ref: 'AWS::AccountId' },
-          Export: { Name: 'Stack1:ExportsOutputRefAWSAccountIdAD568057' }
-        }
-      }
+          Export: { Name: 'Stack1:ExportsOutputRefAWSAccountIdAD568057' },
+        },
+      },
     });
 
     test.deepEqual(template2, {
       Parameters: {
         SomeParameter: {
           Type: 'String',
-          Default: { 'Fn::ImportValue': 'Stack1:ExportsOutputRefAWSAccountIdAD568057' }
-        }
-      }
+          Default: { 'Fn::ImportValue': 'Stack1:ExportsOutputRefAWSAccountIdAD568057' },
+        },
+      },
     });
 
     test.done();
@@ -225,9 +237,12 @@ export = {
     const stack2 = new Stack(app, 'Stack2');
 
     // WHEN - used in another resource
-    new CfnResource(stack2, 'SomeResource', { type: 'AWS::Some::Resource', properties: {
-      someProperty: new Intrinsic(resource1.ref),
-    }});
+    new CfnResource(stack2, 'SomeResource', {
+      type: 'AWS::Some::Resource',
+      properties: {
+        someProperty: new Intrinsic(resource1.ref),
+      },
+    });
 
     // THEN
     const assembly = app.synth();
@@ -238,10 +253,50 @@ export = {
         SomeResource: {
           Type: 'AWS::Some::Resource',
           Properties: {
-            someProperty: { 'Fn::ImportValue': 'Stack1:ExportsOutputRefResource1D5D905A' }
-          }
-        }
-      }
+            someProperty: { 'Fn::ImportValue': 'Stack1:ExportsOutputRefResource1D5D905A' },
+          },
+        },
+      },
+    });
+    test.done();
+  },
+
+  'Cross-stack reference export names are relative to the stack (when the flag is set)'(test: Test) {
+    // GIVEN
+    const app = new App({
+      context: {
+        '@aws-cdk/core:stackRelativeExports': 'true',
+      },
+    });
+    const indifferentScope = new Construct(app, 'ExtraScope');
+
+    const stack1 = new Stack(indifferentScope, 'Stack1', {
+      stackName: 'Stack1',
+    });
+    const resource1 = new CfnResource(stack1, 'Resource', { type: 'BLA' });
+    const stack2 = new Stack(indifferentScope, 'Stack2');
+
+    // WHEN - used in another resource
+    new CfnResource(stack2, 'SomeResource', {
+      type: 'AWS::Some::Resource',
+      properties: {
+        someProperty: new Intrinsic(resource1.ref),
+      },
+    });
+
+    // THEN
+    const assembly = app.synth();
+    const template2 = assembly.getStackByName(stack2.stackName).template;
+
+    test.deepEqual(template2, {
+      Resources: {
+        SomeResource: {
+          Type: 'AWS::Some::Resource',
+          Properties: {
+            someProperty: { 'Fn::ImportValue': 'Stack1:ExportsOutputRefResource1D5D905A' },
+          },
+        },
+      },
     });
     test.done();
   },
@@ -265,18 +320,18 @@ export = {
       Outputs: {
         ExportsOutputRefAWSAccountIdAD568057: {
           Value: { Ref: 'AWS::AccountId' },
-          Export: { Name: 'Stack1:ExportsOutputRefAWSAccountIdAD568057' }
-        }
-      }
+          Export: { Name: 'Stack1:ExportsOutputRefAWSAccountIdAD568057' },
+        },
+      },
     });
 
     test.deepEqual(template2, {
       Parameters: {
         SomeParameter: {
           Type: 'String',
-          Default: { 'Fn::ImportValue': 'Stack1:ExportsOutputRefAWSAccountIdAD568057' }
-        }
-      }
+          Default: { 'Fn::ImportValue': 'Stack1:ExportsOutputRefAWSAccountIdAD568057' },
+        },
+      },
     });
 
     test.done();
@@ -303,8 +358,8 @@ export = {
         },
         DemAccount: {
           Value: { Ref: 'AWS::AccountId' },
-        }
-      }
+        },
+      },
     });
 
     test.done();
@@ -328,9 +383,9 @@ export = {
       Parameters: {
         SomeParameter: {
           Type: 'String',
-          Default: { 'Fn::Join': [ '', [ 'TheAccountIs', { 'Fn::ImportValue': 'Stack1:ExportsOutputRefAWSAccountIdAD568057' } ]] }
-        }
-      }
+          Default: { 'Fn::Join': ['', ['TheAccountIs', { 'Fn::ImportValue': 'Stack1:ExportsOutputRefAWSAccountIdAD568057' }]] },
+        },
+      },
     });
 
     test.done();
@@ -349,8 +404,8 @@ export = {
     const resource2 = new CfnResource(child2, 'Resource1', {
       type: 'R2',
       properties: {
-        RefToResource1: resourceA.ref
-      }
+        RefToResource1: resourceA.ref,
+      },
     });
     resource2.addDependsOn(resourceB);
 
@@ -363,29 +418,29 @@ export = {
     test.deepEqual(parentTemplate, {});
     test.deepEqual(child1Template, {
       Resources: {
-        ResourceA: { Type: 'RA' } ,
-        ResourceB: { Type: 'RB' }
+        ResourceA: { Type: 'RA' },
+        ResourceB: { Type: 'RB' },
       },
       Outputs: {
         ExportsOutputRefResourceA461B4EF9: {
           Value: { Ref: 'ResourceA' },
-          Export: { Name: 'ParentChild18FAEF419:Child1ExportsOutputRefResourceA7BF20B37' }
-        }
-      }
+          Export: { Name: 'ParentChild18FAEF419:Child1ExportsOutputRefResourceA7BF20B37' },
+        },
+      },
     });
     test.deepEqual(child2Template, {
       Resources: {
         Resource1: {
           Type: 'R2',
           Properties: {
-            RefToResource1: { 'Fn::ImportValue': 'ParentChild18FAEF419:Child1ExportsOutputRefResourceA7BF20B37' }
-          }
-        }
-      }
+            RefToResource1: { 'Fn::ImportValue': 'ParentChild18FAEF419:Child1ExportsOutputRefResourceA7BF20B37' },
+          },
+        },
+      },
     });
 
     test.deepEqual(assembly.getStackArtifact(child1.artifactId).dependencies.map(x => x.id), []);
-    test.deepEqual(assembly.getStackArtifact(child2.artifactId).dependencies.map(x => x.id), [ 'ParentChild18FAEF419' ]);
+    test.deepEqual(assembly.getStackArtifact(child2.artifactId).dependencies.map(x => x.id), ['ParentChild18FAEF419']);
     test.done();
   },
 
@@ -398,7 +453,7 @@ export = {
     class CfnTest extends CfnResource {
       public _toCloudFormation() {
         return new PostResolveToken({
-          xoo: 1234
+          xoo: 1234,
         }, props => {
           validateString(props).assertSuccess();
         });
@@ -408,7 +463,8 @@ export = {
     new CfnTest(stack, 'MyThing', { type: 'AWS::Type' });
 
     // THEN
-    ConstructNode.prepare(stack.node);
+    resolveReferences(app);
+
     test.done();
   },
 
@@ -440,18 +496,20 @@ export = {
     new CfnResource(childStack, 'MyChildResource', {
       type: 'Resource::Child',
       properties: {
-        ChildProp: parentResource.getAtt('AttOfParentResource')
-      }
+        ChildProp: parentResource.getAtt('AttOfParentResource'),
+      },
     });
 
     // THEN
     const assembly = app.synth();
     test.deepEqual(assembly.getStackByName(parentStack.stackName).template, {
       Resources: { MyParentResource: { Type: 'Resource::Parent' } },
-      Outputs: { ExportsOutputFnGetAttMyParentResourceAttOfParentResourceC2D0BB9E: {
-        Value: { 'Fn::GetAtt': [ 'MyParentResource', 'AttOfParentResource' ] },
-        Export: { Name: 'parent:ExportsOutputFnGetAttMyParentResourceAttOfParentResourceC2D0BB9E' } }
-      }
+      Outputs: {
+        ExportsOutputFnGetAttMyParentResourceAttOfParentResourceC2D0BB9E: {
+          Value: { 'Fn::GetAtt': ['MyParentResource', 'AttOfParentResource'] },
+          Export: { Name: 'parent:ExportsOutputFnGetAttMyParentResourceAttOfParentResourceC2D0BB9E' },
+        },
+      },
     });
     test.deepEqual(assembly.getStackByName(childStack.stackName).template, {
       Resources: {
@@ -459,11 +517,11 @@ export = {
           Type: 'Resource::Child',
           Properties: {
             ChildProp: {
-              'Fn::ImportValue': 'parent:ExportsOutputFnGetAttMyParentResourceAttOfParentResourceC2D0BB9E'
-            }
-          }
-        }
-      }
+              'Fn::ImportValue': 'parent:ExportsOutputFnGetAttMyParentResourceAttOfParentResourceC2D0BB9E',
+            },
+          },
+        },
+      },
     });
     test.done();
   },
@@ -479,8 +537,8 @@ export = {
     new CfnResource(parentStack, 'MyParentResource', {
       type: 'Resource::Parent',
       properties: {
-        ParentProp: childResource.getAtt('AttributeOfChildResource')
-      }
+        ParentProp: childResource.getAtt('AttributeOfChildResource'),
+      },
     });
 
     // THEN
@@ -490,21 +548,20 @@ export = {
         MyParentResource: {
           Type: 'Resource::Parent',
           Properties: {
-            ParentProp: { 'Fn::ImportValue': 'parentchild13F9359B:childExportsOutputFnGetAttMyChildResourceAttributeOfChildResource420052FC' }
-          }
-        }
-      }
+            ParentProp: { 'Fn::ImportValue': 'parentchild13F9359B:childExportsOutputFnGetAttMyChildResourceAttributeOfChildResource420052FC' },
+          },
+        },
+      },
     });
 
     test.deepEqual(assembly.getStackByName(childStack.stackName).template, {
-      Resources: {
-        MyChildResource: { Type: 'Resource::Child' } },
+      Resources: { MyChildResource: { Type: 'Resource::Child' } },
       Outputs: {
         ExportsOutputFnGetAttMyChildResourceAttributeOfChildResource52813264: {
-          Value: { 'Fn::GetAtt': [ 'MyChildResource', 'AttributeOfChildResource' ] },
-          Export: { Name: 'parentchild13F9359B:childExportsOutputFnGetAttMyChildResourceAttributeOfChildResource420052FC' }
-        }
-      }
+          Value: { 'Fn::GetAtt': ['MyChildResource', 'AttributeOfChildResource'] },
+          Export: { Name: 'parentchild13F9359B:childExportsOutputFnGetAttMyChildResourceAttributeOfChildResource420052FC' },
+        },
+      },
     });
     test.done();
   },
@@ -522,8 +579,8 @@ export = {
     new CfnParameter(stack1, 'SomeParameter', { type: 'String', default: account2 });
 
     test.throws(() => {
-      ConstructNode.prepare(app.node);
-      // tslint:disable-next-line:max-line-length
+      app.synth();
+      // eslint-disable-next-line max-len
     }, "'Stack2' depends on 'Stack1' (Stack2/SomeParameter -> Stack1.AWS::AccountId). Adding this dependency (Stack1/SomeParameter -> Stack2.AWS::AccountId) would create a cyclic reference.");
 
     test.done();
@@ -539,7 +596,7 @@ export = {
     // WHEN
     new CfnParameter(stack2, 'SomeParameter', { type: 'String', default: account1 });
 
-    ConstructNode.prepare(app.node);
+    app.synth();
 
     // THEN
     test.deepEqual(stack2.dependencies.map(s => s.node.id), ['Stack1']);
@@ -550,15 +607,15 @@ export = {
   'cannot create references to stacks in other regions/accounts'(test: Test) {
     // GIVEN
     const app = new App();
-    const stack1 = new Stack(app, 'Stack1', { env: { account: '123456789012', region: 'es-norst-1' }});
+    const stack1 = new Stack(app, 'Stack1', { env: { account: '123456789012', region: 'es-norst-1' } });
     const account1 = new ScopedAws(stack1).accountId;
-    const stack2 = new Stack(app, 'Stack2', { env: { account: '123456789012', region: 'es-norst-2' }});
+    const stack2 = new Stack(app, 'Stack2', { env: { account: '123456789012', region: 'es-norst-2' } });
 
     // WHEN
     new CfnParameter(stack2, 'SomeParameter', { type: 'String', default: account1 });
 
     test.throws(() => {
-      ConstructNode.prepare(app.node);
+      app.synth();
     }, /Stack "Stack2" cannot consume a cross reference from stack "Stack1"/);
 
     test.done();
@@ -572,7 +629,7 @@ export = {
 
     // WHEN
     new CfnOutput(second, 'Output', {
-      value: first.urlSuffix
+      value: first.urlSuffix,
     });
 
     // THEN
@@ -586,7 +643,7 @@ export = {
   'stack with region supplied via props returns literal value'(test: Test) {
     // GIVEN
     const app = new App();
-    const stack = new Stack(app, 'Stack1', { env: { account: '123456789012', region: 'es-norst-1' }});
+    const stack = new Stack(app, 'Stack1', { env: { account: '123456789012', region: 'es-norst-1' } });
 
     // THEN
     test.equal(stack.resolve(stack.region), 'es-norst-1');
@@ -600,21 +657,32 @@ export = {
     const bonjour = new CfnResource(stack, 'BonjourResource', { type: 'Resource::Type' });
 
     // { Ref } and { GetAtt }
-    new CfnResource(stack, 'RefToBonjour', { type: 'Other::Resource', properties: {
-      RefToBonjour: bonjour.ref,
-      GetAttBonjour: bonjour.getAtt('TheAtt').toString()
-    }});
+    new CfnResource(stack, 'RefToBonjour', {
+      type: 'Other::Resource',
+      properties: {
+        RefToBonjour: bonjour.ref,
+        GetAttBonjour: bonjour.getAtt('TheAtt').toString(),
+      },
+    });
 
     bonjour.overrideLogicalId('BOOM');
 
     // THEN
-    test.deepEqual(toCloudFormation(stack), { Resources:
-      { BOOM: { Type: 'Resource::Type' },
+    test.deepEqual(toCloudFormation(stack), {
+      Resources:
+      {
+        BOOM: { Type: 'Resource::Type' },
         RefToBonjour:
-         { Type: 'Other::Resource',
+         {
+           Type: 'Other::Resource',
            Properties:
-            { RefToBonjour: { Ref: 'BOOM' },
-              GetAttBonjour: { 'Fn::GetAtt': [ 'BOOM', 'TheAtt' ] } } } } });
+            {
+              RefToBonjour: { Ref: 'BOOM' },
+              GetAttBonjour: { 'Fn::GetAtt': ['BOOM', 'TheAtt'] },
+            },
+         },
+      },
+    });
     test.done();
   },
 
@@ -646,7 +714,7 @@ export = {
 
     // WHEN
     const stack = new Stack(app, 'invalid as : stack name, but thats fine', {
-      stackName: 'valid-stack-name'
+      stackName: 'valid-stack-name',
     });
 
     // THEN
@@ -679,7 +747,7 @@ export = {
   'Stack.of() throws when there is no parent Stack'(test: Test) {
     const root = new Construct(undefined as any, 'Root');
     const construct = new Construct(root, 'Construct');
-    test.throws(() => Stack.of(construct), /No stack could be identified for the construct at path/);
+    test.throws(() => Stack.of(construct), /should be created in the scope of a Stack, but no Stack found/);
     test.done();
   },
 
@@ -713,8 +781,8 @@ export = {
 
     // THEN
     test.deepEqual(stack.resolve(azs), [
-      { "Fn::Select": [ 0, { "Fn::GetAZs": "" } ] },
-      { "Fn::Select": [ 1, { "Fn::GetAZs": "" } ] }
+      { 'Fn::Select': [0, { 'Fn::GetAZs': '' }] },
+      { 'Fn::Select': [1, { 'Fn::GetAZs': '' }] },
     ]);
     test.done();
   },
@@ -737,8 +805,8 @@ export = {
     // GIVEN
     const app = new App({
       context: {
-        [cxapi.ENABLE_STACK_NAME_DUPLICATES_CONTEXT]: 'true'
-      }
+        [cxapi.ENABLE_STACK_NAME_DUPLICATES_CONTEXT]: 'true',
+      },
     });
 
     // WHEN
@@ -768,7 +836,7 @@ export = {
         test.deepEqual(stack1.templateFile, 'thestack.template.json');
         test.deepEqual(assembly.getStackArtifact(stack1.artifactId).templateFile, 'thestack.template.json');
         test.done();
-      }
+      },
     },
 
     'enabled': {
@@ -802,8 +870,8 @@ export = {
         test.deepEqual(stack1.templateFile, 'MyStack1.template.json');
         test.deepEqual(assembly.getStackArtifact(stack1.artifactId).templateFile, 'MyStack1.template.json');
         test.done();
-      }
-    }
+      },
+    },
 
   },
 
@@ -811,8 +879,8 @@ export = {
     // GIVEN
     const app = new App({
       context: {
-        [cxapi.DISABLE_METADATA_STACK_TRACE]: 'true'
-      }
+        [cxapi.DISABLE_METADATA_STACK_TRACE]: 'true',
+      },
     });
     const parent = new Stack(app, 'parent');
     const child = new Stack(parent, 'child');
@@ -824,10 +892,125 @@ export = {
     const asm = app.synth();
     test.deepEqual(asm.getStackByName(parent.stackName).findMetadataByType('foo'), []);
     test.deepEqual(asm.getStackByName(child.stackName).findMetadataByType('foo'), [
-      { path: '/parent/child', type: 'foo', data: 'bar' }
+      { path: '/parent/child', type: 'foo', data: 'bar' },
     ]);
     test.done();
-  }
+  },
+
+  'stack tags are reflected in the stack cloud assembly artifact metadata'(test: Test) {
+    // GIVEN
+    const app = new App({ stackTraces: false });
+    const stack1 = new Stack(app, 'stack1');
+    const stack2 = new Stack(stack1, 'stack2');
+
+    // WHEN
+    Tags.of(app).add('foo', 'bar');
+
+    // THEN
+    const asm = app.synth();
+    const expected = [
+      {
+        type: 'aws:cdk:stack-tags',
+        data: [{ key: 'foo', value: 'bar' }],
+      },
+    ];
+
+    test.deepEqual(asm.getStackArtifact(stack1.artifactId).manifest.metadata, { '/stack1': expected });
+    test.deepEqual(asm.getStackArtifact(stack2.artifactId).manifest.metadata, { '/stack1/stack2': expected });
+    test.done();
+  },
+
+  'stack tags are reflected in the stack artifact properties'(test: Test) {
+    // GIVEN
+    const app = new App({ stackTraces: false });
+    const stack1 = new Stack(app, 'stack1');
+    const stack2 = new Stack(stack1, 'stack2');
+
+    // WHEN
+    Tags.of(app).add('foo', 'bar');
+
+    // THEN
+    const asm = app.synth();
+    const expected = { foo: 'bar' };
+
+    test.deepEqual(asm.getStackArtifact(stack1.artifactId).tags, expected);
+    test.deepEqual(asm.getStackArtifact(stack2.artifactId).tags, expected);
+    test.done();
+  },
+
+  'Termination Protection is reflected in Cloud Assembly artifact'(test: Test) {
+    // if the root is an app, invoke "synth" to avoid double synthesis
+    const app = new App();
+    const stack = new Stack(app, 'Stack', { terminationProtection: true });
+
+    const assembly = app.synth();
+    const artifact = assembly.getStackArtifact(stack.artifactId);
+
+    test.equals(artifact.terminationProtection, true);
+
+    test.done();
+  },
+
+  'users can (still) override "synthesize()" in stack'(test: Test) {
+    let called = false;
+
+    class MyStack extends Stack {
+      synthesize(session: ISynthesisSession) {
+        called = true;
+        test.ok(session.outdir);
+        test.equal(session.assembly.outdir, session.outdir);
+      }
+    }
+
+    const app = new App();
+    new MyStack(app, 'my-stack');
+
+    app.synth();
+    test.ok(called, 'synthesize() not called for Stack');
+    test.done();
+  },
+
+  'context can be set on a stack using a LegacySynthesizer'(test: Test) {
+    // WHEN
+    const stack = new Stack(undefined, undefined, {
+      synthesizer: new LegacyStackSynthesizer(),
+    });
+    stack.node.setContext('something', 'value');
+
+    // THEN: no exception
+
+    test.done();
+  },
+
+  'context can be set on a stack using a DefaultSynthesizer'(test: Test) {
+    // WHEN
+    const stack = new Stack(undefined, undefined, {
+      synthesizer: new DefaultStackSynthesizer(),
+    });
+    stack.node.setContext('something', 'value');
+
+    // THEN: no exception
+
+    test.done();
+  },
+
+  'version reporting can be configured on the app'(test: Test) {
+    const app = new App({ analyticsReporting: true });
+    test.ok(new Stack(app, 'Stack')._versionReportingEnabled);
+    test.done();
+  },
+
+  'version reporting can be configured with context'(test: Test) {
+    const app = new App({ context: { 'aws:cdk:version-reporting': true } });
+    test.ok(new Stack(app, 'Stack')._versionReportingEnabled);
+    test.done();
+  },
+
+  'version reporting can be configured on the stack'(test: Test) {
+    const app = new App();
+    test.ok(new Stack(app, 'Stack', { analyticsReporting: true })._versionReportingEnabled);
+    test.done();
+  },
 };
 
 class StackWithPostProcessor extends Stack {

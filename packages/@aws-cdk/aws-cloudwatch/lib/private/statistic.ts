@@ -1,4 +1,4 @@
-import { Statistic } from "../metric-types";
+import { Statistic } from '../metric-types';
 
 export interface SimpleStatistic {
   type: 'simple';
@@ -31,7 +31,7 @@ export function parseStatistic(stat: string): SimpleStatistic | PercentileStatis
   if (lowerStat in statMap) {
     return {
       type: 'simple',
-      statistic: statMap[lowerStat]
+      statistic: statMap[lowerStat],
     };
   }
 
@@ -41,7 +41,7 @@ export function parseStatistic(stat: string): SimpleStatistic | PercentileStatis
   if (m) {
     return {
       type: 'percentile',
-      percentile: parseFloat(m[1])
+      percentile: parseFloat(m[1]),
     };
   }
 

@@ -1,7 +1,7 @@
 {
   "name": "@aws-cdk/aws-kinesis",
   "version": "0.0.0",
-  "description": "CDK Constructs for AWS Kinesis",
+  "description": "The CDK Construct Library for AWS::Kinesis",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
@@ -23,9 +23,14 @@
       },
       "python": {
         "distName": "aws-cdk.aws-kinesis",
-        "module": "aws_cdk.aws_kinesis"
+        "module": "aws_cdk.aws_kinesis",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",
@@ -37,6 +42,7 @@
     "watch": "cdk-watch",
     "lint": "cdk-lint",
     "test": "cdk-test",
+    "integ": "cdk-integ",
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
@@ -46,7 +52,8 @@
     "compat": "cdk-compat"
   },
   "cdk-build": {
-    "cloudformation": "AWS::Kinesis"
+    "cloudformation": "AWS::Kinesis",
+    "jest": true
   },
   "keywords": [
     "aws",
@@ -62,10 +69,9 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
-    "@types/nodeunit": "^0.0.30",
     "cdk-build-tools": "0.0.0",
+    "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
-    "nodeunit": "^0.11.3",
     "pkglint": "0.0.0"
   },
   "dependencies": {
@@ -73,7 +79,7 @@
     "@aws-cdk/aws-kms": "0.0.0",
     "@aws-cdk/aws-logs": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^2.0.0"
+    "constructs": "^3.0.4"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -81,15 +87,13 @@
     "@aws-cdk/aws-kms": "0.0.0",
     "@aws-cdk/aws-logs": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^2.0.0"
+    "constructs": "^3.0.4"
   },
   "engines": {
-    "node": ">= 10.3.0"
+    "node": ">= 10.13.0 <13 || >=13.7.0"
   },
-  "stability": "experimental",
-  "awslint": {
-    "exclude": []
-  },
+  "stability": "stable",
+  "maturity": "stable",
   "awscdkio": {
     "announce": false
   }

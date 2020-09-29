@@ -12,29 +12,29 @@ export = {
     const rotationLambda = new lambda.Function(stack, 'Lambda', {
       runtime: lambda.Runtime.NODEJS_10_X,
       code: lambda.Code.fromInline('export.handler = event => event;'),
-      handler: 'index.handler'
+      handler: 'index.handler',
     });
 
     // WHEN
     new secretsmanager.RotationSchedule(stack, 'RotationSchedule', {
       secret,
-      rotationLambda
+      rotationLambda,
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::SecretsManager::RotationSchedule', {
       SecretId: {
-        Ref: 'SecretA720EF05'
+        Ref: 'SecretA720EF05',
       },
       RotationLambdaARN: {
         'Fn::GetAtt': [
           'LambdaD247545B',
-          'Arn'
-        ]
+          'Arn',
+        ],
       },
       RotationRules: {
-        AutomaticallyAfterDays: 30
-      }
+        AutomaticallyAfterDays: 30,
+      },
     }));
 
     test.done();

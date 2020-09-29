@@ -9,7 +9,7 @@ test('banner works as expected', () =>
     '************',
     '*** msg1 ***',
     '*** msg2 ***',
-    '************'
+    '************',
   ]));
 
 test('banner works for formatted msgs', () =>

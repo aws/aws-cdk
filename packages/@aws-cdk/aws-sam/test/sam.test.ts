@@ -8,12 +8,12 @@ test('construct an AWS::Serverless::Application', () => {
   new CfnApplication(stack, 'App', {
     location: {
       applicationId: 'arn:aws:serverlessrepo:us-east-1:077246666028:applications/aws-serverless-twitter-event-source',
-      semanticVersion: '2.0.0'
+      semanticVersion: '2.0.0',
     },
     parameters: {
       SearchText: '#serverless -filter:nativeretweets',
-      TweetProcessorFunctionName: 'test'
-    }
+      TweetProcessorFunctionName: 'test',
+    },
   });
 
   expect(stack).toMatchTemplate({
@@ -24,14 +24,14 @@ test('construct an AWS::Serverless::Application', () => {
         Properties: {
           Location: {
             ApplicationId: 'arn:aws:serverlessrepo:us-east-1:077246666028:applications/aws-serverless-twitter-event-source',
-            SemanticVersion: '2.0.0'
+            SemanticVersion: '2.0.0',
           },
           Parameters: {
             SearchText: '#serverless -filter:nativeretweets',
-            TweetProcessorFunctionName: 'test'
-          }
-        }
-      }
-    }
+            TweetProcessorFunctionName: 'test',
+          },
+        },
+      },
+    },
   });
 });

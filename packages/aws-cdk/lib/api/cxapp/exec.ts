@@ -1,7 +1,8 @@
-import * as cxapi from '@aws-cdk/cx-api';
 import * as childProcess from 'child_process';
-import * as fs from 'fs-extra';
 import * as path from 'path';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import * as cxapi from '@aws-cdk/cx-api';
+import * as fs from 'fs-extra';
 import { debug } from '../../logging';
 import { Configuration, PROJECT_CONFIG, USER_DEFAULTS } from '../../settings';
 import { versionNumber } from '../../version';
@@ -14,40 +15,28 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
   const context = config.context.all;
   await populateDefaultEnvironmentIfNeeded(aws, env);
 
-  let pathMetadata: boolean = config.settings.get(['pathMetadata']);
-  if (pathMetadata === undefined) {
-      pathMetadata = true; // defaults to true
-  }
-
+  const pathMetadata: boolean = config.settings.get(['pathMetadata']) ?? true;
   if (pathMetadata) {
     context[cxapi.PATH_METADATA_ENABLE_CONTEXT] = true;
   }
 
-  let assetMetadata: boolean = config.settings.get(['assetMetadata']);
-  if (assetMetadata === undefined) {
-    assetMetadata = true; // defaults to true
-  }
-
+  const assetMetadata: boolean = config.settings.get(['assetMetadata']) ?? true;
   if (assetMetadata) {
     context[cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT] = true;
   }
 
-  let versionReporting: boolean = config.settings.get(['versionReporting']);
-  if (versionReporting === undefined) {
-    versionReporting = true; // defaults to true
-  }
+  const versionReporting: boolean = config.settings.get(['versionReporting']) ?? true;
+  if (versionReporting) { context[cxapi.ANALYTICS_REPORTING_ENABLED_CONTEXT] = true; }
+  // We need to keep on doing this for framework version from before this flag was deprecated.
+  if (!versionReporting) { context['aws:cdk:disable-version-reporting'] = true; }
 
-  if (!versionReporting) {
-    context[cxapi.DISABLE_VERSION_REPORTING] = true;
-  }
-
-  let stagingEnabled = config.settings.get(['staging']);
-  if (stagingEnabled === undefined) {
-    stagingEnabled = true;
-  }
+  const stagingEnabled = config.settings.get(['staging']) ?? true;
   if (!stagingEnabled) {
     context[cxapi.DISABLE_ASSET_STAGING_CONTEXT] = true;
   }
+
+  const bundlingStacks = config.settings.get(['bundlingStacks']) ?? ['*'];
+  context[cxapi.BUNDLING_STACKS] = bundlingStacks;
 
   debug('context:', context);
   env[cxapi.CONTEXT_ENV] = JSON.stringify(context);
@@ -57,15 +46,15 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
     throw new Error(`--app is required either in command-line, in ${PROJECT_CONFIG} or in ${USER_DEFAULTS}`);
   }
 
-  // by pass "synth" if app points to a cloud assembly
+  // bypass "synth" if app points to a cloud assembly
   if (await fs.pathExists(app) && (await fs.stat(app)).isDirectory()) {
-    debug('--app points to a cloud assembly, so we by pass synth');
-    return new cxapi.CloudAssembly(app);
+    debug('--app points to a cloud assembly, so we bypass synth');
+    return createAssembly(app);
   }
 
   const commandLine = await guessExecutable(appToArray(app));
 
-  const outdir = config.settings.get([ 'output' ]);
+  const outdir = config.settings.get(['output']);
   if (!outdir) {
     throw new Error('unexpected: --output is required');
   }
@@ -75,14 +64,27 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
   env[cxapi.OUTDIR_ENV] = outdir;
 
   // Send version information
-  env[cxapi.CLI_ASM_VERSION_ENV] = cxapi.CLOUD_ASSEMBLY_VERSION;
+  env[cxapi.CLI_ASM_VERSION_ENV] = cxschema.Manifest.version();
   env[cxapi.CLI_VERSION_ENV] = versionNumber();
 
   debug('env:', env);
 
   await exec();
 
-  return new cxapi.CloudAssembly(outdir);
+  return createAssembly(outdir);
+
+  function createAssembly(appDir: string) {
+    try {
+      return new cxapi.CloudAssembly(appDir);
+    } catch (error) {
+      if (error.message.includes(cxschema.VERSION_MISMATCH)) {
+        // this means the CLI version is too old.
+        // we instruct the user to upgrade.
+        throw new Error(`This CDK CLI is not compatible with the CDK library used by your application. Please upgrade the CLI to the latest version.\n(${error.message})`);
+      }
+      throw error;
+    }
+  }
 
   async function exec() {
     return new Promise<string>((ok, fail) => {
@@ -93,7 +95,7 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
       //   (which would be different between Linux and Windows).
       //
       // - Inherit stderr from controlling terminal. We don't use the captured value
-      //   anway, and if the subprocess is printing to it for debugging purposes the
+      //   anyway, and if the subprocess is printing to it for debugging purposes the
       //   user gets to see it sooner. Plus, capturing doesn't interact nicely with some
       //   processes like Maven.
       const proc = childProcess.spawn(commandLine[0], commandLine.slice(1), {
@@ -102,8 +104,8 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
         shell: true,
         env: {
           ...process.env,
-          ...env
-        }
+          ...env,
+        },
       });
 
       proc.on('error', fail);
@@ -121,10 +123,10 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
 
 /**
  * If we don't have region/account defined in context, we fall back to the default SDK behavior
- * where region is retreived from ~/.aws/config and account is based on default credentials provider
+ * where region is retrieved from ~/.aws/config and account is based on default credentials provider
  * chain and then STS is queried.
  *
- * This is done opportunistically: for example, if we can't acccess STS for some reason or the region
+ * This is done opportunistically: for example, if we can't access STS for some reason or the region
  * is not configured, the context value will be 'null' and there could failures down the line. In
  * some cases, synthesis does not require region/account information at all, so that might be perfectly
  * fine in certain scenarios.
@@ -157,7 +159,7 @@ type CommandGenerator = (file: string) => string[];
  * Execute the given file with the same 'node' process as is running the current process
  */
 function executeNode(scriptFile: string): string[] {
-    return [process.execPath, scriptFile];
+  return [process.execPath, scriptFile];
 }
 
 /**
@@ -179,10 +181,18 @@ const EXTENSION_MAP = new Map<string, CommandGenerator>([
  */
 async function guessExecutable(commandLine: string[]) {
   if (commandLine.length === 1) {
-    const fstat = await fs.stat(commandLine[0]);
-    // tslint:disable-next-line:no-bitwise
+    let fstat;
+
+    try {
+      fstat = await fs.stat(commandLine[0]);
+    } catch (error) {
+      debug(`Not a file: '${commandLine[0]}'. Using '${commandLine}' as command-line`);
+      return commandLine;
+    }
+
+    // eslint-disable-next-line no-bitwise
     const isExecutable = (fstat.mode & fs.constants.X_OK) !== 0;
-    const isWindows = process.platform === "win32";
+    const isWindows = process.platform === 'win32';
 
     const handler = EXTENSION_MAP.get(path.extname(commandLine[0]));
     if (handler && (!isExecutable || isWindows)) {

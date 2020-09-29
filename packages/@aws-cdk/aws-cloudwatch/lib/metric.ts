@@ -177,7 +177,7 @@ export class Metric implements IMetric {
     return iam.Grant.addToPrincipal({
       grantee,
       actions: ['cloudwatch:PutMetricData'],
-      resourceArns: ['*']
+      resourceArns: ['*'],
     });
   }
 
@@ -216,7 +216,7 @@ export class Metric implements IMetric {
     this.namespace = props.namespace;
     this.metricName = props.metricName;
     // Try parsing, this will throw if it's not a valid stat
-    this.statistic = normalizeStatistic(props.statistic || "Average");
+    this.statistic = normalizeStatistic(props.statistic || 'Average');
     this.label = props.label;
     this.color = props.color;
     this.unit = props.unit;
@@ -256,7 +256,7 @@ export class Metric implements IMetric {
       label: ifUndefined(props.label, this.label),
       color: ifUndefined(props.color, this.color),
       account: ifUndefined(props.account, this.account),
-      region: ifUndefined(props.region, this.region)
+      region: ifUndefined(props.region, this.region),
     });
   }
 
@@ -296,15 +296,15 @@ export class Metric implements IMetric {
       },
       renderingProperties: {
         color: this.color,
-        label: this.label
-      }
+        label: this.label,
+      },
     };
   }
 
   public toAlarmConfig(): MetricAlarmConfig {
     const metricConfig = this.toMetricConfig();
     if (metricConfig.metricStat === undefined) {
-      throw new Error(`Using a math expression is not supported here. Pass a 'Metric' object instead`);
+      throw new Error('Using a math expression is not supported here. Pass a \'Metric\' object instead');
     }
 
     const stat = parseStatistic(metricConfig.metricStat.statistic);
@@ -315,14 +315,14 @@ export class Metric implements IMetric {
       period: metricConfig.metricStat.period.toSeconds(),
       statistic: stat.type === 'simple' ? stat.statistic : undefined,
       extendedStatistic: stat.type === 'percentile' ? 'p' + stat.percentile : undefined,
-      unit: this.unit
+      unit: this.unit,
     };
   }
 
   public toGraphConfig(): MetricGraphConfig {
     const metricConfig = this.toMetricConfig();
     if (metricConfig.metricStat === undefined) {
-      throw new Error(`Using a math expression is not supported here. Pass a 'Metric' object instead`);
+      throw new Error('Using a math expression is not supported here. Pass a \'Metric\' object instead');
     }
 
     return {
@@ -340,7 +340,7 @@ export class Metric implements IMetric {
       statistic: metricConfig.metricStat.statistic,
       color: asString(metricConfig.renderingProperties?.color),
       label: asString(metricConfig.renderingProperties?.label),
-      unit: this.unit
+      unit: this.unit,
     };
   }
 
@@ -475,23 +475,24 @@ export class MathExpression implements IMetric {
   }
 
   public toAlarmConfig(): MetricAlarmConfig {
-    throw new Error(`Using a math expression is not supported here. Pass a 'Metric' object instead`);
+    throw new Error('Using a math expression is not supported here. Pass a \'Metric\' object instead');
   }
 
   public toGraphConfig(): MetricGraphConfig {
-    throw new Error(`Using a math expression is not supported here. Pass a 'Metric' object instead`);
+    throw new Error('Using a math expression is not supported here. Pass a \'Metric\' object instead');
   }
 
   public toMetricConfig(): MetricConfig {
     return {
       mathExpression: {
+        period: this.period.toSeconds(),
         expression: this.expression,
         usingMetrics: this.usingMetrics,
       },
       renderingProperties: {
         label: this.label,
-        color: this.color
-      }
+        color: this.color,
+      },
     };
   }
 
@@ -540,7 +541,7 @@ export class MathExpression implements IMetric {
             seen.set(id, subMetric);
             visit(subMetric);
           }
-        }
+        },
       });
     }
   }

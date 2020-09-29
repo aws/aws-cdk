@@ -1,18 +1,17 @@
-// tslint:disable: no-console
-// tslint:disable: max-line-length
+/* eslint-disable max-len */
+/* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-require-imports */
 import cfnResponse = require('../../lib/provider-framework/runtime/cfn-response');
 import framework = require('../../lib/provider-framework/runtime/framework');
 import outbound = require('../../lib/provider-framework/runtime/outbound');
 import mocks = require('./mocks');
-/* eslint-enable */
 
 console.log = jest.fn();
 
 cfnResponse.includeStackTraces = false;
 
 const MOCK_PHYSICAL_ID = 'mock-physical-resource-id';
-const MOCK_PROPS = { Name: "Value", List: ["1", "2", "3"], ServiceToken: 'bla' };
+const MOCK_PROPS = { Name: 'Value', List: ['1', '2', '3'], ServiceToken: 'bla' };
 const MOCK_ATTRS = { MyAttribute: 'my-mock-attribute' };
 
 outbound.httpRequest = mocks.httpRequestMock;
@@ -31,34 +30,36 @@ test('async flow: isComplete returns true only after 3 times', async () => {
 
     return {
       PhysicalResourceId: MOCK_PHYSICAL_ID,
-      Data: MOCK_ATTRS
+      Data: MOCK_ATTRS,
+      ArbitraryField: 1234,
     };
   };
 
   mocks.isCompleteImplMock = async event => {
     isCompleteCalls++;
+    expect((event as any).ArbitraryField).toEqual(1234); // any field is passed through
     expect(event.PhysicalResourceId).toEqual(MOCK_PHYSICAL_ID); // physical ID returned from onEvent is passed to "isComplete"
     expect(event.Data).toStrictEqual(MOCK_ATTRS); // attributes are propagated between the calls
 
     const result = isCompleteCalls === 3;
     if (!result) {
       return {
-        IsComplete: false
+        IsComplete: false,
       };
     }
 
     return {
       IsComplete: true,
       Data: {
-        Additional: 'attribute' // additional attributes can be returned from "isComplete"
-      }
+        Additional: 'attribute', // additional attributes can be returned from "isComplete"
+      },
     };
   };
 
   // WHEN
   await simulateEvent({
     RequestType: 'Create',
-    ResourceProperties: MOCK_PROPS
+    ResourceProperties: MOCK_PROPS,
   });
 
   // THEN
@@ -68,23 +69,23 @@ test('async flow: isComplete returns true only after 3 times', async () => {
     PhysicalResourceId: MOCK_PHYSICAL_ID,
     Data: {
       ...MOCK_ATTRS,
-      Additional: 'attribute'
+      Additional: 'attribute',
     },
   });
 });
 
 test('isComplete throws in the first invocation', async () => {
   // GIVEN
-  mocks.onEventImplMock = async () => ({ PhysicalResourceId: MOCK_PHYSICAL_ID, });
+  mocks.onEventImplMock = async () => ({ PhysicalResourceId: MOCK_PHYSICAL_ID });
   mocks.isCompleteImplMock = async () => { throw new Error('Some failure'); };
 
   // WHEN
   await simulateEvent({
     RequestType: 'Create',
-    ResourceProperties: MOCK_PROPS
+    ResourceProperties: MOCK_PROPS,
   });
 
-  expectCloudFormationFailed('Some failure');
+  expectCloudFormationFailed('Some failure\n\nLogs: /aws/lambda/complete\n');
 });
 
 test('fails gracefully if "onEvent" throws an error', async () => {
@@ -94,11 +95,11 @@ test('fails gracefully if "onEvent" throws an error', async () => {
 
   // WHEN
   await simulateEvent({
-    RequestType: 'Create'
+    RequestType: 'Create',
   });
 
   // THEN
-  expectCloudFormationFailed('error thrown during onEvent');
+  expectCloudFormationFailed('error thrown during onEvent\n\nLogs: /aws/lambda/event\n');
   expectNoWaiter();
 });
 
@@ -112,11 +113,11 @@ describe('PhysicalResourceId', () => {
 
       // THEN
       await simulateEvent({
-        RequestType: 'Create'
+        RequestType: 'Create',
       });
 
       expectCloudFormationSuccess({
-        PhysicalResourceId: mocks.MOCK_REQUEST.RequestId
+        PhysicalResourceId: mocks.MOCK_REQUEST.RequestId,
       });
     });
 
@@ -127,11 +128,11 @@ describe('PhysicalResourceId', () => {
       // THEN
       await simulateEvent({
         RequestType: 'Update',
-        PhysicalResourceId: MOCK_PHYSICAL_ID
+        PhysicalResourceId: MOCK_PHYSICAL_ID,
       });
 
       expectCloudFormationSuccess({
-        PhysicalResourceId: MOCK_PHYSICAL_ID
+        PhysicalResourceId: MOCK_PHYSICAL_ID,
       });
     });
 
@@ -142,11 +143,11 @@ describe('PhysicalResourceId', () => {
       // THEN
       await simulateEvent({
         RequestType: 'Delete',
-        PhysicalResourceId: MOCK_PHYSICAL_ID
+        PhysicalResourceId: MOCK_PHYSICAL_ID,
       });
 
       expectCloudFormationSuccess({
-        PhysicalResourceId: MOCK_PHYSICAL_ID
+        PhysicalResourceId: MOCK_PHYSICAL_ID,
       });
     });
   });
@@ -159,12 +160,12 @@ describe('PhysicalResourceId', () => {
     // WHEN
     await simulateEvent({
       RequestType: 'Update',
-      PhysicalResourceId: 'CurrentPhysicalId'
+      PhysicalResourceId: 'CurrentPhysicalId',
     });
 
     // THEN
     expectCloudFormationSuccess({
-      PhysicalResourceId: 'NewPhysicalId'
+      PhysicalResourceId: 'NewPhysicalId',
     });
   });
 
@@ -176,7 +177,7 @@ describe('PhysicalResourceId', () => {
     // WHEN
     await simulateEvent({
       RequestType: 'Delete',
-      PhysicalResourceId: 'CurrentPhysicalId'
+      PhysicalResourceId: 'CurrentPhysicalId',
     });
 
     // THEN
@@ -194,11 +195,11 @@ test('isComplete always returns "false" and then a timeout occurs', async () => 
   // WHEN
   await simulateEvent({
     RequestType: 'Update',
-    PhysicalResourceId: MOCK_PHYSICAL_ID
+    PhysicalResourceId: MOCK_PHYSICAL_ID,
   });
 
   // THEN
-  expectCloudFormationFailed(`Operation timed out`);
+  expectCloudFormationFailed('Operation timed out');
 });
 
 test('isComplete: "Data" is not allowed if InComplete is "False"', async () => {
@@ -209,10 +210,10 @@ test('isComplete: "Data" is not allowed if InComplete is "False"', async () => {
   // WHEN
   await simulateEvent({
     RequestType: 'Update',
-    PhysicalResourceId: MOCK_PHYSICAL_ID
+    PhysicalResourceId: MOCK_PHYSICAL_ID,
   });
 
-  expectCloudFormationFailed(`"Data" is not allowed if "IsComplete" is "False"`);
+  expectCloudFormationFailed('"Data" is not allowed if "IsComplete" is "False"');
 });
 
 test('if there is no user-defined "isComplete", the waiter will not be triggered or needed', async () => {
@@ -249,10 +250,10 @@ describe('if CREATE fails, the subsequent DELETE will be ignored', () => {
 
     // THEN
     await simulateEvent({
-      RequestType: 'Create'
+      RequestType: 'Create',
     });
 
-    expectCloudFormationFailed('CREATE FAILED', {
+    expectCloudFormationFailed('CREATE FAILED\n\nLogs: /aws/lambda/event\n', {
       PhysicalResourceId: cfnResponse.CREATE_FAILED_PHYSICAL_ID_MARKER,
     });
   });
@@ -264,7 +265,7 @@ describe('if CREATE fails, the subsequent DELETE will be ignored', () => {
     // WHEN
     await simulateEvent({
       RequestType: 'Delete',
-      PhysicalResourceId: cfnResponse.CREATE_FAILED_PHYSICAL_ID_MARKER
+      PhysicalResourceId: cfnResponse.CREATE_FAILED_PHYSICAL_ID_MARKER,
     });
 
     // THEN
@@ -288,7 +289,7 @@ async function simulateEvent(req: Partial<AWSLambda.CloudFormationCustomResource
     RequestId: mocks.MOCK_REQUEST.RequestId,
     ResourceType: 'Custom::TestResource',
     LogicalResourceId: mocks.MOCK_REQUEST.LogicalResourceId,
-    ...req
+    ...req,
   };
 
   mocks.prepareForExecution();
@@ -328,7 +329,7 @@ function expectCloudFormationFailed(expectedReason: string, resp?: Partial<AWSLa
   expectCloudFormationResponse({
     Status: 'FAILED',
     Reason: expectedReason,
-    ...resp
+    ...resp,
   });
 }
 

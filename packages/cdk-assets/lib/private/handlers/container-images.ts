@@ -1,9 +1,9 @@
 import * as path from 'path';
 import { DockerImageManifestEntry } from '../../asset-manifest';
 import { EventType } from '../../progress';
-import { IAssetHandler, IHandlerHost } from "../asset-handler";
-import { Docker } from "../docker";
-import { replaceAwsPlaceholders } from "../placeholders";
+import { IAssetHandler, IHandlerHost } from '../asset-handler';
+import { Docker } from '../docker';
+import { replaceAwsPlaceholders } from '../placeholders';
 
 export class ContainerImageAssetHandler implements IAssetHandler {
   private readonly localTagName: string;
@@ -22,9 +22,11 @@ export class ContainerImageAssetHandler implements IAssetHandler {
 
     const ecr = await this.host.aws.ecrClient(destination);
 
+    const account = (await this.host.aws.discoverCurrentAccount()).accountId;
+
     const repoUri = await repositoryUri(ecr, destination.repositoryName);
     if (!repoUri) {
-      throw new Error(`No ECR repository with name '${destination.repositoryName}' in account. Is this account bootstrapped?`);
+      throw new Error(`No ECR repository named '${destination.repositoryName}' in account ${account}. Is this account bootstrapped?`);
     }
 
     const imageUri = `${repoUri}:${destination.imageTag}`;

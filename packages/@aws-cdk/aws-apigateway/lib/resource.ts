@@ -4,7 +4,7 @@ import { Cors, CorsOptions } from './cors';
 import { Integration } from './integration';
 import { MockIntegration } from './integrations';
 import { Method, MethodOptions } from './method';
-import { RestApi } from './restapi';
+import { IRestApi, RestApi } from './restapi';
 
 export interface IResource extends IResourceBase {
   /**
@@ -15,12 +15,19 @@ export interface IResource extends IResourceBase {
   /**
    * The rest API that this resource is part of.
    *
+   * @deprecated - Throws an error if this Resource is not associated with an instance of `RestApi`. Use `api` instead.
+   */
+  readonly restApi: RestApi;
+
+  /**
+   * The rest API that this resource is part of.
+   *
    * The reason we need the RestApi object itself and not just the ID is because the model
    * is being tracked by the top-level RestApi object for the purpose of calculating it's
    * hash to determine the ID of the deployment. This allows us to automatically update
    * the deployment when the model of the REST API changes.
    */
-  readonly restApi: RestApi;
+  readonly api: IRestApi;
 
   /**
    * The ID of the resource.
@@ -154,7 +161,11 @@ export interface ResourceProps extends ResourceOptions {
 
 export abstract class ResourceBase extends ResourceConstruct implements IResource {
   public abstract readonly parentResource?: IResource;
+  /**
+   * @deprecated -  Throws an error if this Resource is not associated with an instance of `RestApi`. Use `api` instead.
+   */
   public abstract readonly restApi: RestApi;
+  public abstract readonly api: IRestApi;
   public abstract readonly resourceId: string;
   public abstract readonly path: string;
   public abstract readonly defaultIntegration?: Integration;
@@ -207,7 +218,7 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
     // the "Vary" header is required if we allow a specific origin
     // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin#CORS_and_caching
     if (initialOrigin !== '*') {
-      headers.Vary = `'Origin'`;
+      headers.Vary = '\'Origin\'';
     }
 
     //
@@ -229,7 +240,7 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
     // Access-Control-Allow-Credentials
 
     if (options.allowCredentials) {
-      headers['Access-Control-Allow-Credentials'] = `'true'`;
+      headers['Access-Control-Allow-Credentials'] = '\'true\'';
     }
 
     //
@@ -238,7 +249,7 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
     let maxAgeSeconds;
 
     if (options.maxAge && options.disableCache) {
-      throw new Error(`The options "maxAge" and "disableCache" are mutually exclusive`);
+      throw new Error('The options "maxAge" and "disableCache" are mutually exclusive');
     }
 
     if (options.maxAge) {
@@ -272,7 +283,7 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
     const integrationResponseParams: { [p: string]: string } = { };
     const methodReponseParams: { [p: string]: boolean } = { };
 
-    for (const [ name, value ] of Object.entries(headers)) {
+    for (const [name, value] of Object.entries(headers)) {
       const key = `method.response.header.${name}`;
       integrationResponseParams[key] = value;
       methodReponseParams[key] = true;
@@ -281,12 +292,12 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
     return this.addMethod('OPTIONS', new MockIntegration({
       requestTemplates: { 'application/json': '{ statusCode: 200 }' },
       integrationResponses: [
-        { statusCode: `${statusCode}`, responseParameters: integrationResponseParams, responseTemplates: renderResponseTemplate() }
+        { statusCode: `${statusCode}`, responseParameters: integrationResponseParams, responseTemplates: renderResponseTemplate() },
       ],
     }), {
       methodResponses: [
-        { statusCode: `${statusCode}`, responseParameters: methodReponseParams }
-      ]
+        { statusCode: `${statusCode}`, responseParameters: methodReponseParams },
+      ],
     });
 
     // renders the response template to match all possible origins (if we have more than one)
@@ -299,17 +310,17 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
 
       const template = new Array<string>();
 
-      template.push(`#set($origin = $input.params("Origin"))`);
-      template.push(`#if($origin == "") #set($origin = $input.params("origin")) #end`);
+      template.push('#set($origin = $input.params("Origin"))');
+      template.push('#if($origin == "") #set($origin = $input.params("origin")) #end');
 
       const condition = origins.map(o => `$origin.matches("${o}")`).join(' || ');
 
       template.push(`#if(${condition})`);
-      template.push(`  #set($context.responseOverride.header.Access-Control-Allow-Origin = $origin)`);
+      template.push('  #set($context.responseOverride.header.Access-Control-Allow-Origin = $origin)');
       template.push('#end');
 
       return {
-        'application/json': template.join('\n')
+        'application/json': template.join('\n'),
       };
     }
   }
@@ -342,7 +353,7 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
     const parts = path.split('/');
     const next = parts.shift();
     if (!next || next === '') {
-      throw new Error(`resourceForPath cannot be called with an empty path`);
+      throw new Error('resourceForPath cannot be called with an empty path');
     }
 
     let resource = this.getResource(next);
@@ -353,6 +364,9 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
     return resource.resourceForPath(parts.join('/'));
   }
 
+  /**
+   * @deprecated - Throws error in some use cases that have been enabled since this deprecation notice. Use `RestApi.urlForPath()` instead.
+   */
   public get url(): string {
     return this.restApi.urlForPath(this.path);
   }
@@ -360,7 +374,7 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
 
 export class Resource extends ResourceBase {
   public readonly parentResource?: IResource;
-  public readonly restApi: RestApi;
+  public readonly api: IRestApi;
   public readonly resourceId: string;
   public readonly path: string;
 
@@ -380,21 +394,21 @@ export class Resource extends ResourceBase {
     }
 
     const resourceProps: CfnResourceProps = {
-      restApiId: props.parent.restApi.restApiId,
+      restApiId: props.parent.api.restApiId,
       parentId: props.parent.resourceId,
-      pathPart: props.pathPart
+      pathPart: props.pathPart,
     };
     const resource = new CfnResource(this, 'Resource', resourceProps);
 
     this.resourceId = resource.ref;
-    this.restApi = props.parent.restApi;
+    this.api = props.parent.api;
 
     // render resource path (special case for root)
     this.path = props.parent.path;
     if (!this.path.endsWith('/')) { this.path += '/'; }
     this.path += props.pathPart;
 
-    const deployment = props.parent.restApi.latestDeployment;
+    const deployment = props.parent.api.latestDeployment;
     if (deployment) {
       deployment.node.addDependency(resource);
       deployment.addToLogicalId({ resource: resourceProps });
@@ -405,13 +419,24 @@ export class Resource extends ResourceBase {
     this.defaultIntegration = props.defaultIntegration || props.parent.defaultIntegration;
     this.defaultMethodOptions = {
       ...props.parent.defaultMethodOptions,
-      ...props.defaultMethodOptions
+      ...props.defaultMethodOptions,
     };
     this.defaultCorsPreflightOptions = props.defaultCorsPreflightOptions || props.parent.defaultCorsPreflightOptions;
 
     if (this.defaultCorsPreflightOptions) {
       this.addCorsPreflight(this.defaultCorsPreflightOptions);
     }
+  }
+
+  /**
+   * The RestApi associated with this Resource
+   * @deprecated - Throws an error if this Resource is not associated with an instance of `RestApi`. Use `api` instead.
+   */
+  public get restApi(): RestApi {
+    if (!this.parentResource) {
+      throw new Error('parentResource was unexpectedly not defined');
+    }
+    return this.parentResource.restApi;
   }
 }
 

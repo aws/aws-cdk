@@ -1,11 +1,11 @@
-import { expect, haveResourceLike} from '@aws-cdk/assert';
+import { expect, haveResourceLike } from '@aws-cdk/assert';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as sns from '@aws-cdk/aws-sns';
 import { SecretValue, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as cpactions from '../lib';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
   'manual approval Action': {
@@ -53,18 +53,18 @@ export = {
       });
 
       expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
-        "Stages": [
+        'Stages': [
           {
-            "Name": "Source",
+            'Name': 'Source',
           },
           {
-            "Name": "Approve",
-            "Actions": [
+            'Name': 'Approve',
+            'Actions': [
               {
-                "Name": "Approval",
-                "Configuration": {
-                  "CustomData": "extra info",
-                  "ExternalEntityLink": "external link",
+                'Name': 'Approval',
+                'Configuration': {
+                  'CustomData': 'extra info',
+                  'ExternalEntityLink': 'external link',
                 },
               },
             ],

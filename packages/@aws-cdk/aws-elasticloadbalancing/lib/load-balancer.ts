@@ -1,5 +1,7 @@
-import { Connections, IConnectable, ISecurityGroup, IVpc, Peer, Port,
-  SecurityGroup, SelectedSubnets, SubnetSelection, SubnetType } from '@aws-cdk/aws-ec2';
+import {
+  Connections, IConnectable, ISecurityGroup, IVpc, Peer, Port,
+  SecurityGroup, SelectedSubnets, SubnetSelection, SubnetType,
+} from '@aws-cdk/aws-ec2';
 import { Construct, Duration, Lazy, Resource } from '@aws-cdk/core';
 import { CfnLoadBalancer } from './elasticloadbalancing.generated';
 
@@ -240,12 +242,12 @@ export class LoadBalancer extends Resource implements IConnectable {
     const selectedSubnets: SelectedSubnets = loadBalancerSubnets(props);
 
     this.elb = new CfnLoadBalancer(this, 'Resource', {
-      securityGroups: [ this.securityGroup.securityGroupId ],
+      securityGroups: [this.securityGroup.securityGroupId],
       subnets: selectedSubnets.subnetIds,
       listeners: Lazy.anyValue({ produce: () => this.listeners }),
       scheme: props.internetFacing ? 'internet-facing' : 'internal',
       healthCheck: props.healthCheck && healthCheckToJSON(props.healthCheck),
-      crossZone: (props.crossZone === undefined || props.crossZone) ? true : false
+      crossZone: (props.crossZone === undefined || props.crossZone) ? true : false,
     });
     if (props.internetFacing) {
       this.elb.node.addDependency(selectedSubnets.internetConnectivityEstablished);
@@ -264,8 +266,8 @@ export class LoadBalancer extends Resource implements IConnectable {
     const protocol = ifUndefinedLazy(listener.externalProtocol, () => wellKnownProtocol(listener.externalPort));
     const instancePort = listener.internalPort || listener.externalPort;
     const instanceProtocol = ifUndefined(listener.internalProtocol,
-                 ifUndefined(tryWellKnownProtocol(instancePort),
-                 isHttpProtocol(protocol) ? LoadBalancingProtocol.HTTP : LoadBalancingProtocol.TCP));
+      ifUndefined(tryWellKnownProtocol(instancePort),
+        isHttpProtocol(protocol) ? LoadBalancingProtocol.HTTP : LoadBalancingProtocol.TCP));
 
     this.listeners.push({
       loadBalancerPort: listener.externalPort.toString(),
@@ -273,7 +275,7 @@ export class LoadBalancer extends Resource implements IConnectable {
       instancePort: instancePort.toString(),
       instanceProtocol,
       sslCertificateId: listener.sslCertificateId,
-      policyNames: listener.policyNames
+      policyNames: listener.policyNames,
     });
 
     const port = new ListenerPort(this.securityGroup, Port.tcp(listener.externalPort));
@@ -422,10 +424,10 @@ function ifUndefinedLazy<T>(x: T | undefined, def: () => T): T {
  */
 function healthCheckToJSON(healthCheck: HealthCheck): CfnLoadBalancer.HealthCheckProperty {
   const protocol = ifUndefined(healthCheck.protocol,
-           ifUndefined(tryWellKnownProtocol(healthCheck.port),
-           LoadBalancingProtocol.TCP));
+    ifUndefined(tryWellKnownProtocol(healthCheck.port),
+      LoadBalancingProtocol.TCP));
 
-  const path = protocol === LoadBalancingProtocol.HTTP || protocol === LoadBalancingProtocol.HTTPS ? ifUndefined(healthCheck.path, "/") : "";
+  const path = protocol === LoadBalancingProtocol.HTTP || protocol === LoadBalancingProtocol.HTTPS ? ifUndefined(healthCheck.path, '/') : '';
 
   const target = `${protocol.toUpperCase()}:${healthCheck.port}${path}`;
 
@@ -443,11 +445,11 @@ function loadBalancerSubnets(props: LoadBalancerProps): SelectedSubnets {
     return props.vpc.selectSubnets(props.subnetSelection);
   } else if (props.internetFacing) {
     return props.vpc.selectSubnets({
-      subnetType: SubnetType.PUBLIC
+      subnetType: SubnetType.PUBLIC,
     });
   } else {
     return props.vpc.selectSubnets({
-      subnetType: SubnetType.PRIVATE
+      subnetType: SubnetType.PRIVATE,
     });
   }
 }

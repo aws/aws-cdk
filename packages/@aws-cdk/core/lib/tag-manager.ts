@@ -57,7 +57,7 @@ class StandardFormatter implements ITagFormatter {
       tags.push({
         key: `${tag.key}`,
         value: `${tag.value}`,
-        priority
+        priority,
       });
     }
     return tags;
@@ -68,7 +68,7 @@ class StandardFormatter implements ITagFormatter {
     for (const tag of tags) {
       cfnTags.push({
         key: tag.key,
-        value: tag.value
+        value: tag.value,
       });
     }
     return cfnTags.length === 0 ? undefined : cfnTags;
@@ -96,7 +96,7 @@ class AsgFormatter implements ITagFormatter {
         key: `${tag.key}`,
         value: `${tag.value}`,
         priority,
-        applyToLaunchedInstances: !!tag.propagateAtLaunch
+        applyToLaunchedInstances: !!tag.propagateAtLaunch,
       });
     }
 
@@ -130,7 +130,7 @@ class MapFormatter implements ITagFormatter {
       tags.push({
         key,
         value: `${value}`,
-        priority
+        priority,
       });
     }
 
@@ -158,7 +158,7 @@ class KeyValueFormatter implements ITagFormatter {
         tags.push({
           key,
           value,
-          priority
+          priority,
         });
       }
     }
@@ -169,7 +169,7 @@ class KeyValueFormatter implements ITagFormatter {
     unformattedTags.forEach(tag => {
       tags.push({
         Key: tag.key,
-        Value: tag.value
+        Value: tag.value,
       });
     });
     return tags;
@@ -279,7 +279,18 @@ export class TagManager {
    * Renders tags into the proper format based on TagType
    */
   public renderTags(): any {
-    return this.tagFormatter.formatTags(Array.from(this.tags.values()));
+    return this.tagFormatter.formatTags(this.sortedTags);
+  }
+
+  /**
+   * Render the tags in a readable format
+   */
+  public tagValues(): Record<string, string> {
+    const ret: Record<string, string> = {};
+    for (const tag of this.sortedTags) {
+      ret[tag.key] = tag.value;
+    }
+    return ret;
   }
 
   /**
@@ -313,5 +324,9 @@ export class TagManager {
         this.priorities.set(tag.key, tag.priority);
       }
     }
+  }
+
+  private get sortedTags() {
+    return Array.from(this.tags.values()).sort((a, b) => a.key.localeCompare(b.key));
   }
 }

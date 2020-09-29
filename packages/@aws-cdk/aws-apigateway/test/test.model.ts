@@ -18,22 +18,22 @@ export = {
       restApi: api,
       schema: {
         schema: apigw.JsonSchemaVersion.DRAFT4,
-        title: "test",
+        title: 'test',
         type: apigw.JsonSchemaType.OBJECT,
-        properties: { message: { type: apigw.JsonSchemaType.STRING } }
-      }
+        properties: { message: { type: apigw.JsonSchemaType.STRING } },
+      },
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::Model', {
       RestApiId: { Ref: stack.getLogicalId(api.node.findChild('Resource') as cdk.CfnElement) },
       Schema: {
-        $schema: "http://json-schema.org/draft-04/schema#",
-        title: "test",
-        type: "object",
-        properties: { message: { type: "string" } }
+        $schema: 'http://json-schema.org/draft-04/schema#',
+        title: 'test',
+        type: 'object',
+        properties: { message: { type: 'string' } },
       },
-      ContentType: 'application/json'
+      ContentType: 'application/json',
     }));
 
     test.done();
@@ -53,23 +53,23 @@ export = {
       restApi: api,
       schema: {
         schema: apigw.JsonSchemaVersion.DRAFT4,
-        title: "test",
+        title: 'test',
         type: apigw.JsonSchemaType.OBJECT,
-        properties: { message: { type: apigw.JsonSchemaType.STRING } }
-      }
+        properties: { message: { type: apigw.JsonSchemaType.STRING } },
+      },
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::Model', {
       RestApiId: { Ref: stack.getLogicalId(api.node.findChild('Resource') as cdk.CfnElement) },
       Schema: {
-        $schema: "http://json-schema.org/draft-04/schema#",
-        title: "test",
-        type: "object",
-        properties: { message: { type: "string" } }
-      }
+        $schema: 'http://json-schema.org/draft-04/schema#',
+        title: 'test',
+        type: 'object',
+        properties: { message: { type: 'string' } },
+      },
     }));
 
     test.done();
-  }
+  },
 };

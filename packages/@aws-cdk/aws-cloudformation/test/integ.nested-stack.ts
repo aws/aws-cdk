@@ -18,14 +18,14 @@ class MyNestedStack extends cfn.NestedStack {
 
     super(scope, id, {
       parameters: {
-        [topicNamePrefixLogicalId]: props.topicNamePrefix // pass in a parameter to the nested stack
-      }
+        [topicNamePrefixLogicalId]: props.topicNamePrefix, // pass in a parameter to the nested stack
+      },
     });
 
     const topicNamePrefixParameter = new CfnParameter(this, 'TopicNamePrefix', { type: 'String' });
 
     for (let i = 0; i < props.topicCount; ++i) {
-      const topic = new sns.Topic(this, `topic-${i}`, { displayName: `${topicNamePrefixParameter.valueAsString}-${i}`});
+      const topic = new sns.Topic(this, `topic-${i}`, { displayName: `${topicNamePrefixParameter.valueAsString}-${i}` });
 
       // since the subscription resources are defined in the subscriber's stack, this
       // will add an SNS subscription resource to the parent stack that reference this topic.
@@ -41,8 +41,8 @@ class MyNestedStack extends cfn.NestedStack {
         handler: 'index.handler',
         environment: {
           TOPIC_ARN: props.siblingTopic ? props.siblingTopic.topicArn : '',
-          QUEUE_URL: props.subscriber.queueUrl // nested stack references a resource in the parent
-        }
+          QUEUE_URL: props.subscriber.queueUrl, // nested stack references a resource in the parent
+        },
       });
     }
   }

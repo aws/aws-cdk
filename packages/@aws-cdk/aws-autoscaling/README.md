@@ -1,10 +1,10 @@
 ## Amazon EC2 Auto Scaling Construct Library
 <!--BEGIN STABILITY BANNER-->
-
 ---
 
-![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
+![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
 
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
 <!--END STABILITY BANNER-->
@@ -19,8 +19,8 @@ An `AutoScalingGroup` represents a number of instances on which you run your cod
 pick the size of the fleet, the instance type and the OS image:
 
 ```ts
-import autoscaling = require('@aws-cdk/aws-autoscaling');
-import ec2 = require('@aws-cdk/aws-ec2');
+import * as autoscaling from '@aws-cdk/aws-autoscaling';
+import * as ec2 from '@aws-cdk/aws-ec2';
 
 new autoscaling.AutoScalingGroup(this, 'ASG', {
   vpc,
@@ -29,9 +29,20 @@ new autoscaling.AutoScalingGroup(this, 'ASG', {
 });
 ```
 
-> NOTE: AutoScalingGroup has an property called `allowAllOutbound` (allowing the instances to contact the
-> internet) which is set to `true` by default. Be sure to set this to `false`  if you don't want
-> your instances to be able to start arbitrary connections.
+NOTE: AutoScalingGroup has an property called `allowAllOutbound` (allowing the instances to contact the
+internet) which is set to `true` by default. Be sure to set this to `false`  if you don't want
+your instances to be able to start arbitrary connections. Alternatively, you can specify an existing security
+group to attach to the instances that are launched, rather than have the group create a new one.
+
+```ts
+const mySecurityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', {...});
+new autoscaling.AutoScalingGroup(this, 'ASG', {
+  vpc,
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO),
+  machineImage: new ec2.AmazonLinuxImage(),
+  securityGroup: mySecurityGroup,
+});
+```
 
 ### Machine Images (AMIs)
 
@@ -217,6 +228,41 @@ autoScalingGroup.scaleOnSchedule('AllowDownscalingAtNight', {
 
 See the documentation of the `@aws-cdk/aws-ec2` package for more information
 about allowing connections between resources backed by instances.
+
+### Max Instance Lifetime
+
+To enable the max instance lifetime support, specify `maxInstanceLifetime` property
+for the `AutoscalingGroup` resource. The value must be between 7 and 365 days(inclusive).
+To clear a previously set value, leave this property undefined.
+
+### Instance Monitoring
+
+To disable detailed instance monitoring, specify `instanceMonitoring` property
+for the `AutoscalingGroup` resource as `Monitoring.BASIC`. Otherwise detailed monitoring
+will be enabled.
+
+### Monitoring Group Metrics
+
+Group metrics are used to monitor group level properties; they describe the group rather than any of its instances (e.g GroupMaxSize, the group maximum size). To enable group metrics monitoring, use the `groupMetrics` property.
+All group metrics are reported in a granularity of 1 minute at no additional charge.
+
+See [EC2 docs](https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-instance-monitoring.html#as-group-metrics) for a list of all available group metrics.
+
+To enable group metrics monitoring using the `groupMetrics` property:
+
+```ts
+// Enable monitoring of all group metrics
+new autoscaling.AutoScalingGroup(stack, 'ASG', {
+  groupMetrics: [GroupMetrics.all()],
+  // ...
+});
+
+// Enable monitoring for a subset of group metrics
+new autoscaling.AutoScalingGroup(stack, 'ASG', {
+  groupMetrics: [new autoscaling.GroupMetrics(GroupMetric.MIN_SIZE, GroupMetric.MAX_SIZE)],
+  // ...
+});
+```
 
 ### Future work
 

@@ -1,10 +1,11 @@
 import { expect, haveResource, SynthUtils } from '@aws-cdk/assert';
+import { ArnPrincipal, PolicyStatement } from '@aws-cdk/aws-iam';
 import { App, CfnOutput, Construct, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { Alias } from '../lib/alias';
 import { IKey, Key } from '../lib/key';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
   'default alias'(test: Test) {
@@ -16,7 +17,7 @@ export = {
 
     expect(stack).to(haveResource('AWS::KMS::Alias', {
       AliasName: 'alias/foo',
-      TargetKeyId: { 'Fn::GetAtt': [ 'Key961B73FD', 'Arn' ] }
+      TargetKeyId: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
     }));
 
     test.done();
@@ -28,17 +29,17 @@ export = {
 
     const key = new Key(stack, 'Key', {
       enableKeyRotation: true,
-      enabled: false
+      enabled: false,
     });
 
     new Alias(stack, 'Alias', {
       aliasName: 'foo',
-      targetKey: key
+      targetKey: key,
     });
 
     expect(stack).to(haveResource('AWS::KMS::Alias', {
       AliasName: 'alias/foo',
-      TargetKeyId: { 'Fn::GetAtt': [ 'Key961B73FD', 'Arn' ] }
+      TargetKeyId: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
     }));
 
     test.done();
@@ -56,7 +57,7 @@ export = {
 
     expect(stack).to(haveResource('AWS::KMS::Alias', {
       AliasName: 'alias/foo',
-      TargetKeyId: { 'Fn::GetAtt': [ 'Key961B73FD', 'Arn' ] }
+      TargetKeyId: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
     }));
 
     test.done();
@@ -68,12 +69,12 @@ export = {
 
     const key = new Key(stack, 'MyKey', {
       enableKeyRotation: true,
-      enabled: false
+      enabled: false,
     });
 
     test.throws(() => new Alias(stack, 'Alias', {
       aliasName: 'alias/',
-      targetKey: key
+      targetKey: key,
     }));
 
     test.done();
@@ -85,12 +86,12 @@ export = {
 
     const key = new Key(stack, 'MyKey', {
       enableKeyRotation: true,
-      enabled: false
+      enabled: false,
     });
 
     test.throws(() => new Alias(stack, 'Alias', {
       aliasName: 'alias/@Nope',
-      targetKey: key
+      targetKey: key,
     }), 'a-zA-Z0-9:/_-');
 
     test.done();
@@ -102,22 +103,22 @@ export = {
 
     const key = new Key(stack, 'MyKey', {
       enableKeyRotation: true,
-      enabled: false
+      enabled: false,
     });
 
     test.throws(() => new Alias(stack, 'Alias1', {
       aliasName: 'alias/aws/',
-      targetKey: key
+      targetKey: key,
     }), /Alias cannot start with alias\/aws\/: alias\/aws\//);
 
     test.throws(() => new Alias(stack, 'Alias2', {
       aliasName: 'alias/aws/Awesome',
-      targetKey: key
+      targetKey: key,
     }), /Alias cannot start with alias\/aws\/: alias\/aws\/Awesome/);
 
     test.throws(() => new Alias(stack, 'Alias3', {
       aliasName: 'alias/AWS/awesome',
-      targetKey: key
+      targetKey: key,
     }), /Alias cannot start with alias\/aws\/: alias\/AWS\/awesome/);
 
     test.done();
@@ -128,7 +129,7 @@ export = {
 
     const myKey = new Key(stack, 'MyKey', {
       enableKeyRotation: true,
-      enabled: false
+      enabled: false,
     });
     const myAlias = new Alias(stack, 'MyAlias', {
       targetKey: myKey,
@@ -153,24 +154,93 @@ export = {
     const template = SynthUtils.synthesize(stack).template.Outputs;
 
     test.deepEqual(template, {
-      "OutId": {
-        "Value": "alias/myAlias",
+      'OutId': {
+        'Value': 'alias/myAlias',
       },
-      "OutArn": {
-        "Value": {
-          "Fn::Join": ["", [
-            "arn:",
-            { Ref: "AWS::Partition" },
-            ":kms:",
-            { Ref: "AWS::Region" },
-            ":",
-            { Ref: "AWS::AccountId" },
-            ":alias/myAlias",
+      'OutArn': {
+        'Value': {
+          'Fn::Join': ['', [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':kms:',
+            { Ref: 'AWS::Region' },
+            ':',
+            { Ref: 'AWS::AccountId' },
+            ':alias/myAlias',
           ]],
         },
       },
     });
 
+    test.done();
+  },
+
+  'imported alias by name - can be used where a key is expected'(test: Test) {
+    const stack = new Stack();
+
+    const myAlias = Alias.fromAliasName(stack, 'MyAlias', 'alias/myAlias');
+
+    class MyConstruct extends Construct {
+      constructor(scope: Construct, id: string, key: IKey) {
+        super(scope, id);
+
+        new CfnOutput(stack, 'OutId', {
+          value: key.keyId,
+        });
+        new CfnOutput(stack, 'OutArn', {
+          value: key.keyArn,
+        });
+      }
+    }
+
+    new MyConstruct(stack, 'MyConstruct', myAlias);
+
+    const template = SynthUtils.synthesize(stack).template.Outputs;
+
+    test.deepEqual(template, {
+      'OutId': {
+        'Value': 'alias/myAlias',
+      },
+      'OutArn': {
+        'Value': {
+          'Fn::Join': ['', [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':kms:',
+            { Ref: 'AWS::Region' },
+            ':',
+            { Ref: 'AWS::AccountId' },
+            ':alias/myAlias',
+          ]],
+        },
+      },
+    });
+
+    test.done();
+  },
+
+  'imported alias by name - will throw an error when accessing the key'(test: Test) {
+    const stack = new Stack();
+
+    const myAlias = Alias.fromAliasName(stack, 'MyAlias', 'alias/myAlias');
+
+    test.throws(() => myAlias.aliasTargetKey, 'Cannot access aliasTargetKey on an Alias imported by Alias.fromAliasName().');
+
+    test.done();
+  },
+
+  'fails if alias policy is invalid'(test: Test) {
+    const app = new App();
+    const stack = new Stack(app, 'my-stack');
+    const key = new Key(stack, 'MyKey');
+    const alias = new Alias(stack, 'Alias', { targetKey: key, aliasName: 'alias/foo' });
+
+    alias.addToResourcePolicy(new PolicyStatement({
+      resources: ['*'],
+      principals: [new ArnPrincipal('arn')],
+    }));
+
+    test.throws(() => app.synth(), /A PolicyStatement must specify at least one \'action\' or \'notAction\'/);
     test.done();
   },
 };

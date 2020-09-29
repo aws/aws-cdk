@@ -1,7 +1,5 @@
-import { ResourceHandler } from "./common";
-
-// eslint-disable-next-line import/no-extraneous-dependencies
-import * as aws from 'aws-sdk';
+import * as aws from 'aws-sdk'; // eslint-disable-line import/no-extraneous-dependencies
+import { ResourceHandler } from './common';
 
 const MAX_NAME_LEN = 63;
 
@@ -11,7 +9,7 @@ export class FargateProfileResourceHandler extends ResourceHandler {
 
     const createFargateProfile: aws.EKS.CreateFargateProfileRequest = {
       fargateProfileName,
-      ...this.event.ResourceProperties.Config
+      ...this.event.ResourceProperties.Config,
     };
 
     this.log({ createFargateProfile });
@@ -19,25 +17,25 @@ export class FargateProfileResourceHandler extends ResourceHandler {
     this.log({ createFargateProfileResponse });
 
     if (!createFargateProfileResponse.fargateProfile) {
-      throw new Error(`invalid CreateFargateProfile response`);
+      throw new Error('invalid CreateFargateProfile response');
     }
 
     return {
       PhysicalResourceId: createFargateProfileResponse.fargateProfile.fargateProfileName,
       Data: {
         fargateProfileArn: createFargateProfileResponse.fargateProfile.fargateProfileArn,
-      }
+      },
     };
   }
 
   protected async onDelete() {
     if (!this.physicalResourceId) {
-      throw new Error(`Cannot delete a profile without a physical id`);
+      throw new Error('Cannot delete a profile without a physical id');
     }
 
     const deleteFargateProfile: aws.EKS.DeleteFargateProfileRequest = {
       clusterName: this.event.ResourceProperties.Config.clusterName,
-      fargateProfileName: this.physicalResourceId
+      fargateProfileName: this.physicalResourceId,
     };
 
     this.log({ deleteFargateProfile });
@@ -61,14 +59,14 @@ export class FargateProfileResourceHandler extends ResourceHandler {
   protected async isUpdateComplete() {
     const status = await this.queryStatus();
     return {
-      IsComplete: status === 'ACTIVE'
+      IsComplete: status === 'ACTIVE',
     };
   }
 
   protected async isDeleteComplete() {
     const status = await this.queryStatus();
     return {
-      IsComplete: status === 'NOT_FOUND'
+      IsComplete: status === 'NOT_FOUND',
     };
   }
 
@@ -87,12 +85,12 @@ export class FargateProfileResourceHandler extends ResourceHandler {
    */
   private async queryStatus(): Promise<aws.EKS.FargateProfileStatus | 'NOT_FOUND' | undefined> {
     if (!this.physicalResourceId) {
-      throw new Error(`Unable to determine status for fargate profile without a resource name`);
+      throw new Error('Unable to determine status for fargate profile without a resource name');
     }
 
     const describeFargateProfile: aws.EKS.DescribeFargateProfileRequest = {
       clusterName: this.event.ResourceProperties.Config.clusterName,
-      fargateProfileName: this.physicalResourceId
+      fargateProfileName: this.physicalResourceId,
     };
 
     try {

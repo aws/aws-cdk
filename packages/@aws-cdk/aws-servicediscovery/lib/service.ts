@@ -1,7 +1,7 @@
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import { Construct, Duration, IResource, Resource } from '@aws-cdk/core';
 import { AliasTargetInstance } from './alias-target-instance';
-import { CnameInstance, CnameInstanceBaseProps  } from './cname-instance';
+import { CnameInstance, CnameInstanceBaseProps } from './cname-instance';
 import { IInstance } from './instance';
 import { IpInstance, IpInstanceBaseProps } from './ip-instance';
 import { INamespace, NamespaceType } from './namespace';
@@ -123,7 +123,7 @@ export interface DnsServiceProps extends BaseServiceProps {
 
 export interface ServiceProps extends DnsServiceProps {
   /**
-   * The ID of the namespace that you want to use for DNS configuration.
+   * The namespace that you want to use for DNS configuration.
    */
   readonly namespace: INamespace;
 }
@@ -229,7 +229,7 @@ export class Service extends ServiceBase {
     if (props.healthCheck
         && props.healthCheck.type === HealthCheckType.TCP
         && props.healthCheck.resourcePath) {
-          throw new Error('Cannot specify `resourcePath` when using a `TCP` health check.');
+      throw new Error('Cannot specify `resourcePath` when using a `TCP` health check.');
     }
 
     // Set defaults where necessary
@@ -249,17 +249,17 @@ export class Service extends ServiceBase {
     const dnsConfig: CfnService.DnsConfigProperty | undefined = props.namespace.type === NamespaceType.HTTP
       ? undefined
       : {
-          dnsRecords: renderDnsRecords(dnsRecordType, props.dnsTtl),
-          namespaceId: props.namespace.namespaceId,
-          routingPolicy,
-        };
+        dnsRecords: renderDnsRecords(dnsRecordType, props.dnsTtl),
+        namespaceId: props.namespace.namespaceId,
+        routingPolicy,
+      };
 
     const healthCheckConfigDefaults = {
       type: HealthCheckType.HTTP,
       failureThreshold: 1,
       resourcePath: props.healthCheck && props.healthCheck.type !== HealthCheckType.TCP
         ? '/'
-        : undefined
+        : undefined,
     };
 
     const healthCheckConfig = props.healthCheck && { ...healthCheckConfigDefaults, ...props.healthCheck };
@@ -272,7 +272,7 @@ export class Service extends ServiceBase {
       dnsConfig,
       healthCheckConfig,
       healthCheckCustomConfig,
-      namespaceId: props.namespace.namespaceId
+      namespaceId: props.namespace.namespaceId,
     });
 
     this.serviceName = service.attrName;
@@ -290,7 +290,7 @@ export class Service extends ServiceBase {
     return new AliasTargetInstance(this, id, {
       service: this,
       dnsName: loadBalancer.loadBalancerDnsName,
-      customAttributes
+      customAttributes,
     });
   }
 
@@ -300,7 +300,7 @@ export class Service extends ServiceBase {
   public registerNonIpInstance(id: string, props: NonIpInstanceBaseProps): IInstance {
     return new NonIpInstance(this, id, {
       service: this,
-      ...props
+      ...props,
     });
   }
 
@@ -310,7 +310,7 @@ export class Service extends ServiceBase {
   public registerIpInstance(id: string, props: IpInstanceBaseProps): IInstance {
     return new IpInstance(this, id, {
       service: this,
-      ...props
+      ...props,
     });
   }
 
@@ -320,7 +320,7 @@ export class Service extends ServiceBase {
   public registerCnameInstance(id: string, props: CnameInstanceBaseProps): IInstance {
     return new CnameInstance(this, id, {
       service: this,
-      ...props
+      ...props,
     });
   }
 }
@@ -331,7 +331,7 @@ function renderDnsRecords(dnsRecordType: DnsRecordType, dnsTtl: Duration = Durat
   if (dnsRecordType === DnsRecordType.A_AAAA) {
     return [{
       type: DnsRecordType.A,
-      ttl
+      ttl,
     }, {
       type: DnsRecordType.AAAA,
       ttl,
@@ -387,27 +387,27 @@ export enum DnsRecordType {
   /**
    * An A record
    */
-  A = "A",
+  A = 'A',
 
   /**
    * An AAAA record
    */
-  AAAA = "AAAA",
+  AAAA = 'AAAA',
 
   /**
    * Both an A and AAAA record
    */
-  A_AAAA = "A, AAAA",
+  A_AAAA = 'A, AAAA',
 
   /**
    * A Srv record
    */
-  SRV = "SRV",
+  SRV = 'SRV',
 
   /**
    * A CNAME record
    */
-  CNAME = "CNAME",
+  CNAME = 'CNAME',
 }
 
 export enum RoutingPolicy {
@@ -415,13 +415,13 @@ export enum RoutingPolicy {
    * Route 53 returns the applicable value from one randomly selected instance from among the instances that you
    * registered using the same service.
    */
-  WEIGHTED = "WEIGHTED",
+  WEIGHTED = 'WEIGHTED',
 
   /**
    * If you define a health check for the service and the health check is healthy, Route 53 returns the applicable value
    * for up to eight instances.
    */
-  MULTIVALUE = "MULTIVALUE",
+  MULTIVALUE = 'MULTIVALUE',
 }
 
 export enum HealthCheckType {
@@ -429,18 +429,18 @@ export enum HealthCheckType {
    * Route 53 tries to establish a TCP connection. If successful, Route 53 submits an HTTP request and waits for an HTTP
    * status code of 200 or greater and less than 400.
    */
-  HTTP = "HTTP",
+  HTTP = 'HTTP',
 
   /**
    * Route 53 tries to establish a TCP connection. If successful, Route 53 submits an HTTPS request and waits for an
    * HTTP status code of 200 or greater and less than 400.  If you specify HTTPS for the value of Type, the endpoint
    * must support TLS v1.0 or later.
    */
-  HTTPS = "HTTPS",
+  HTTPS = 'HTTPS',
 
   /**
    * Route 53 tries to establish a TCP connection.
    * If you specify TCP for Type, don't specify a value for ResourcePath.
    */
-  TCP = "TCP",
+  TCP = 'TCP',
 }

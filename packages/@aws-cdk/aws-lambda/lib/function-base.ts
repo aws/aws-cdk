@@ -1,13 +1,15 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { ConstructNode, IResource, Resource } from '@aws-cdk/core';
+import { ConstructNode, IResource, Resource, Token } from '@aws-cdk/core';
+import { AliasOptions } from './alias';
 import { EventInvokeConfig, EventInvokeConfigOptions } from './event-invoke-config';
 import { IEventSource } from './event-source';
 import { EventSourceMapping, EventSourceMappingOptions } from './event-source-mapping';
 import { IVersion } from './lambda-version';
 import { CfnPermission } from './lambda.generated';
 import { Permission } from './permission';
+import { addAlias } from './util';
 
 export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
 
@@ -39,6 +41,13 @@ export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
 
   /**
    * The `$LATEST` version of this function.
+   *
+   * Note that this is reference to a non-specific AWS Lambda version, which
+   * means the function this version refers to can return different results in
+   * different invocations.
+   *
+   * To obtain a reference to an explicit version which references the current
+   * function configuration, use `lambdaFunction.currentVersion` instead.
    */
   readonly latestVersion: IVersion;
 
@@ -102,7 +111,7 @@ export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
   /**
    * Configures options for asynchronous invocation.
    */
-  configureAsyncInvoke(options: EventInvokeConfigOptions): void
+  configureAsyncInvoke(options: EventInvokeConfigOptions): void;
 }
 
 /**
@@ -173,7 +182,8 @@ export abstract class FunctionBase extends Resource implements IFunction {
   /**
    * Whether the addPermission() call adds any permissions
    *
-   * True for new Lambdas, false for imported Lambdas (they might live in different accounts).
+   * True for new Lambdas, false for version $LATEST and imported Lambdas
+   * from different accounts.
    */
   protected abstract readonly canCreatePermissions: boolean;
 
@@ -184,6 +194,14 @@ export abstract class FunctionBase extends Resource implements IFunction {
    * @internal
    */
   protected _connections?: ec2.Connections;
+
+  private _latestVersion?: LatestVersion;
+
+  /**
+   * Mapping of invocation principals to grants. Used to de-dupe `grantInvoke()` calls.
+   * @internal
+   */
+  protected _invocationGrants: Record<string, iam.Grant> = {};
 
   /**
    * Adds a permission to the Lambda resource policy.
@@ -228,15 +246,17 @@ export abstract class FunctionBase extends Resource implements IFunction {
    */
   public get connections(): ec2.Connections {
     if (!this._connections) {
-      // tslint:disable-next-line:max-line-length
+      // eslint-disable-next-line max-len
       throw new Error('Only VPC-associated Lambda Functions have security groups to manage. Supply the "vpc" parameter when creating the Lambda, or "securityGroupId" when importing it.');
     }
     return this._connections;
   }
 
   public get latestVersion(): IVersion {
-    // Dynamic to avoid invinite recursion when creating the LatestVersion instance...
-    return new LatestVersion(this);
+    if (!this._latestVersion) {
+      this._latestVersion = new LatestVersion(this);
+    }
+    return this._latestVersion;
   }
 
   /**
@@ -251,7 +271,7 @@ export abstract class FunctionBase extends Resource implements IFunction {
   public addEventSourceMapping(id: string, options: EventSourceMappingOptions): EventSourceMapping {
     return new EventSourceMapping(this, id, {
       target: this,
-      ...options
+      ...options,
     });
   }
 
@@ -259,25 +279,36 @@ export abstract class FunctionBase extends Resource implements IFunction {
    * Grant the given identity permissions to invoke this Lambda
    */
   public grantInvoke(grantee: iam.IGrantable): iam.Grant {
-    return iam.Grant.addToPrincipalOrResource({
-      grantee,
-      actions: ['lambda:InvokeFunction'],
-      resourceArns: [this.functionArn],
+    const identifier = `Invoke${grantee.grantPrincipal}`; // calls the .toString() of the principal
 
-      // Fake resource-like object on which to call addToResourcePolicy(), which actually
-      // calls addPermission()
-      resource: {
-        addToResourcePolicy: (_statement) => {
-          // Couldn't add permissions to the principal, so add them locally.
-          const identifier = `Invoke${grantee.grantPrincipal}`; // calls the .toString() of the princpal
-          this.addPermission(identifier, {
-            principal: grantee.grantPrincipal!,
-            action: 'lambda:InvokeFunction',
-          });
+    // Memoize the result so subsequent grantInvoke() calls are idempotent
+    let grant = this._invocationGrants[identifier];
+    if (!grant) {
+      grant = iam.Grant.addToPrincipalOrResource({
+        grantee,
+        actions: ['lambda:InvokeFunction'],
+        resourceArns: [this.functionArn],
+
+        // Fake resource-like object on which to call addToResourcePolicy(), which actually
+        // calls addPermission()
+        resource: {
+          addToResourcePolicy: (_statement) => {
+            // Couldn't add permissions to the principal, so add them locally.
+            this.addPermission(identifier, {
+              principal: grantee.grantPrincipal!,
+              action: 'lambda:InvokeFunction',
+            });
+
+            return { statementAdded: true, policyDependable: this._functionNode().findChild(identifier) } as iam.AddToResourcePolicyResult;
+          },
+          node: this.node,
+          stack: this.stack,
+          env: this.env,
         },
-        node: this.node,
-      },
-    });
+      });
+      this._invocationGrants[identifier] = grant;
+    }
+    return grant;
   }
 
   /**
@@ -303,26 +334,81 @@ export abstract class FunctionBase extends Resource implements IFunction {
 
     new EventInvokeConfig(this, 'EventInvokeConfig', {
       function: this,
-      ...options
+      ...options,
     });
   }
 
+  /**
+   * Returns the construct tree node that corresponds to the lambda function.
+   * For use internally for constructs, when the tree is set up in non-standard ways. Ex: SingletonFunction.
+   * @internal
+   */
+  protected _functionNode(): ConstructNode {
+    return this.node;
+  }
+
+  /**
+   * Given the function arn, check if the account id matches this account
+   *
+   * Function ARNs look like this:
+   *
+   *   arn:aws:lambda:region:account-id:function:function-name
+   *
+   * ..which means that in order to extract the `account-id` component from the ARN, we can
+   * split the ARN using ":" and select the component in index 4.
+   *
+   * @returns true if account id of function matches this account
+   *
+   * @internal
+   */
+  protected _isStackAccount(): boolean {
+    if (Token.isUnresolved(this.stack.account) || Token.isUnresolved(this.functionArn)) {
+      return false;
+    }
+    return this.stack.parseArn(this.functionArn).account === this.stack.account;
+  }
+
+  /**
+   * Translate IPrincipal to something we can pass to AWS::Lambda::Permissions
+   *
+   * Do some nasty things because `Permission` supports a subset of what the
+   * full IAM principal language supports, and we may not be able to parse strings
+   * outright because they may be tokens.
+   *
+   * Try to recognize some specific Principal classes first, then try a generic
+   * fallback.
+   */
   private parsePermissionPrincipal(principal?: iam.IPrincipal) {
     if (!principal) {
       return undefined;
     }
-    // use duck-typing, not instance of
 
+    // Try some specific common classes first.
+    // use duck-typing, not instance of
+    // @deprecated: after v2, we can change these to 'instanceof'
     if ('accountId' in principal) {
       return (principal as iam.AccountPrincipal).accountId;
     }
 
-    if (`service` in principal) {
+    if ('service' in principal) {
       return (principal as iam.ServicePrincipal).service;
     }
 
-    if (`arn` in principal) {
+    if ('arn' in principal) {
       return (principal as iam.ArnPrincipal).arn;
+    }
+
+    // Try a best-effort approach to support simple principals that are not any of the predefined
+    // classes, but are simple enough that they will fit into the Permission model. Main target
+    // here: imported Roles, Users, Groups.
+    //
+    // The principal cannot have conditions and must have a single { AWS: [arn] } entry.
+    const json = principal.policyFragment.principalJson;
+    if (Object.keys(principal.policyFragment.conditions).length === 0 && json.AWS) {
+      if (typeof json.AWS === 'string') { return json.AWS; }
+      if (Array.isArray(json.AWS) && json.AWS.length === 1 && typeof json.AWS[0] === 'string') {
+        return json.AWS[0];
+      }
     }
 
     throw new Error(`Invalid principal type for Lambda permission statement: ${principal.constructor.name}. ` +
@@ -354,7 +440,7 @@ export abstract class QualifiedFunctionBase extends FunctionBase {
     new EventInvokeConfig(this, 'EventInvokeConfig', {
       function: this.lambda,
       qualifier: this.qualifier,
-      ...options
+      ...options,
     });
   }
 }
@@ -367,7 +453,7 @@ class LatestVersion extends FunctionBase implements IVersion {
   public readonly version = '$LATEST';
   public readonly permissionsNode = this.node;
 
-  protected readonly canCreatePermissions = true;
+  protected readonly canCreatePermissions = false;
 
   constructor(lambda: FunctionBase) {
     super(lambda, '$LATEST');
@@ -392,5 +478,13 @@ class LatestVersion extends FunctionBase implements IVersion {
 
   public get role() {
     return this.lambda.role;
+  }
+
+  public addAlias(aliasName: string, options: AliasOptions = {}) {
+    return addAlias(this, this, aliasName, options);
+  }
+
+  public get edgeArn(): never {
+    throw new Error('$LATEST function version cannot be used for Lambda@Edge');
   }
 }

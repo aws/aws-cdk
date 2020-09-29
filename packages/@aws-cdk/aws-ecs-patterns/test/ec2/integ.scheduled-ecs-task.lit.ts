@@ -15,7 +15,7 @@ class EventStack extends cdk.Stack {
 
     const cluster = new ecs.Cluster(this, 'EcsCluster', { vpc });
     cluster.addCapacity('DefaultAutoScalingGroup', {
-      instanceType: new ec2.InstanceType('t2.micro')
+      instanceType: new ec2.InstanceType('t2.micro'),
     });
 
     /// !show

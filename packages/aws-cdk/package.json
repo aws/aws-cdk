@@ -17,21 +17,21 @@
     "package": "cdk-package",
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test",
-    "integ-cli": "test/integ/run-against-repo test/integ/cli/test.sh",
+    "integ-cli": "npm run integ-cli-regression && npm run integ-cli-no-regression",
+    "integ-cli-regression": "npm run integ-cli-regression-latest-release && npm run integ-cli-regression-latest-code",
+    "integ-cli-regression-latest-release": "test/integ/run-against-repo test/integ/test-cli-regression-against-latest-release.sh",
+    "integ-cli-regression-latest-code": "test/integ/run-against-repo test/integ/test-cli-regression-against-current-code.sh",
+    "integ-cli-no-regression": "test/integ/run-against-repo test/integ/cli/test.sh",
     "integ-init": "test/integ/run-against-dist test/integ/init/test-all.sh"
   },
   "cdk-build": {
+    "jest": true,
     "pre": [
       "./generate.sh"
-    ],
-    "eslint": {
-      "ignore-pattern": [
-        "lib/init-templates/*/typescript/**/*.ts",
-        "lib/init-templates/*/javascript/**/*.js",
-        "test/integ/cli/app/**/*.js",
-        "test/integ/cli/cloud-assemblies/**/*.json.js"
-      ]
-    }
+    ]
+  },
+  "cdk-package": {
+    "shrinkWrap": true
   },
   "author": {
     "name": "Amazon Web Services",
@@ -42,50 +42,52 @@
   "devDependencies": {
     "@aws-cdk/core": "0.0.0",
     "@types/archiver": "^3.1.0",
-    "@types/fs-extra": "^8.1.0",
-    "@types/glob": "^7.1.1",
-    "@types/jest": "^25.1.4",
+    "@types/fs-extra": "^8.1.1",
+    "@types/glob": "^7.1.3",
+    "@types/jest": "^26.0.14",
     "@types/minimatch": "^3.0.3",
     "@types/mockery": "^1.4.29",
-    "@types/node": "^10.17.17",
+    "@types/node": "^10.17.35",
     "@types/promptly": "^3.0.0",
-    "@types/semver": "^7.1.0",
-    "@types/sinon": "^7.5.2",
-    "@types/table": "^4.0.7",
-    "@types/uuid": "^7.0.2",
-    "@types/yaml": "^1.2.0",
-    "@types/yargs": "^15.0.4",
+    "@types/semver": "^7.3.4",
+    "@types/sinon": "^9.0.5",
+    "@types/table": "^5.0.0",
+    "@types/uuid": "^8.3.0",
+    "@types/wrap-ansi": "^3.0.0",
+    "@types/yargs": "^15.0.5",
     "aws-sdk-mock": "^5.1.0",
     "cdk-build-tools": "0.0.0",
-    "jest": "^24.9.0",
+    "jest": "^26.4.2",
     "mockery": "^2.1.0",
     "pkglint": "0.0.0",
-    "sinon": "^9.0.1",
-    "ts-jest": "^25.2.0"
+    "sinon": "^9.0.3",
+    "ts-jest": "^26.3.0",
+    "ts-mock-imports": "^1.3.0"
   },
   "dependencies": {
-    "@aws-cdk/cdk-assets-schema": "0.0.0",
+    "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/cloudformation-diff": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
-    "archiver": "^3.1.1",
-    "aws-sdk": "^2.644.0",
-    "camelcase": "^5.3.1",
+    "@aws-cdk/yaml-cfn": "0.0.0",
+    "archiver": "^5.0.2",
+    "aws-sdk": "^2.739.0",
+    "camelcase": "^6.0.0",
     "cdk-assets": "0.0.0",
     "colors": "^1.4.0",
     "decamelize": "^4.0.0",
-    "fs-extra": "^8.1.0",
+    "fs-extra": "^9.0.1",
     "glob": "^7.1.6",
     "json-diff": "^0.5.4",
     "minimatch": ">=3.0",
     "promptly": "^3.0.3",
     "proxy-agent": "^3.1.1",
-    "semver": "^7.1.3",
-    "source-map-support": "^0.5.16",
-    "table": "^5.4.6",
-    "uuid": "^7.0.2",
-    "yaml": "^1.8.3",
-    "yargs": "^15.3.1"
+    "semver": "^7.3.2",
+    "source-map-support": "^0.5.19",
+    "table": "^6.0.3",
+    "uuid": "^8.3.0",
+    "wrap-ansi": "^7.0.0",
+    "yargs": "^16.0.3"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",
@@ -98,21 +100,8 @@
   ],
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 10.3.0"
+    "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "stability": "stable",
-  "jest": {
-    "moduleFileExtensions": [
-      "js"
-    ],
-    "coverageThreshold": {
-      "global": {
-        "branches": 45,
-        "statements": 60
-      }
-    },
-    "testMatch": [
-      "**/?(*.)+(spec|test).js?(x)"
-    ]
-  }
+  "maturity": "stable"
 }

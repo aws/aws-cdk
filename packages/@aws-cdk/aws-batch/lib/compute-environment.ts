@@ -1,6 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { Aws, Construct, IResource, Resource, Stack, Tag } from '@aws-cdk/core';
+import { Construct, IResource, Resource, Stack } from '@aws-cdk/core';
 import { CfnComputeEnvironment } from './batch.generated';
 
 /**
@@ -11,7 +11,7 @@ export enum ComputeResourceType {
   /**
    * Resources will be EC2 On-Demand resources.
    */
-  ON_DEMAND  = 'EC2',
+  ON_DEMAND = 'EC2',
 
   /**
    * Resources will be EC2 SpotFleet resources.
@@ -170,9 +170,10 @@ export interface ComputeResources {
 
   /**
    * The minimum number of EC2 vCPUs that an environment should maintain (even if the compute environment state is DISABLED).
-   * Each vCPU is equivalent to 1,024 CPU shares. You must specify at least one vCPU.
+   * Each vCPU is equivalent to 1,024 CPU shares. By keeping this set to 0 you will not have instance time wasted when
+   * there is no work to be run. If you set this above zero you will maintain that number of vCPUs at all times.
    *
-   * @default 1
+   * @default 0
    */
   readonly minvCpus?: number;
 
@@ -209,7 +210,9 @@ export interface ComputeResources {
    *
    * @default - no tags will be assigned on compute resources.
    */
-  readonly computeResourcesTags?: Tag;
+  readonly computeResourcesTags?: {
+    [key: string]: string
+  };
 }
 
 /**
@@ -339,10 +342,10 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
       computeResources = {
         allocationStrategy: props.computeResources.allocationStrategy
          || (
-             props.computeResources.type === ComputeResourceType.SPOT
+           props.computeResources.type === ComputeResourceType.SPOT
              ? AllocationStrategy.SPOT_CAPACITY_OPTIMIZED
              : AllocationStrategy.BEST_FIT
-            ),
+         ),
         bidPercentage: props.computeResources.bidPercentage,
         desiredvCpus: props.computeResources.desiredvCpus,
         ec2KeyPair: props.computeResources.ec2KeyPair,
@@ -350,12 +353,12 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
         instanceRole: props.computeResources.instanceRole
           ? props.computeResources.instanceRole
           : new iam.CfnInstanceProfile(this, 'Instance-Profile', {
-              roles: [ new iam.Role(this, 'Ecs-Instance-Role', {
-                assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
-                managedPolicies: [
-                    iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonEC2ContainerServiceforEC2Role')
-                    ]
-              }).roleName]
+            roles: [new iam.Role(this, 'Ecs-Instance-Role', {
+              assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+              managedPolicies: [
+                iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonEC2ContainerServiceforEC2Role'),
+              ],
+            }).roleName],
           }).attrArn,
         instanceTypes: this.buildInstanceTypes(props.computeResources.instanceTypes),
         launchTemplate: props.computeResources.launchTemplate,
@@ -437,7 +440,7 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
         // Bid percentage must be from 0 - 100
         if (props.computeResources.bidPercentage !== undefined &&
           (props.computeResources.bidPercentage < 0 || props.computeResources.bidPercentage > 100)) {
-            throw new Error('Bid percentage can only be a value between 0 and 100');
+          throw new Error('Bid percentage can only be a value between 0 and 100');
         }
       }
 
@@ -450,7 +453,7 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
         // minvCpus cannot exceed max vCpus
         if (props.computeResources.maxvCpus &&
           props.computeResources.minvCpus > props.computeResources.maxvCpus) {
-            throw new Error('Minimum vCpus cannot be greater than the maximum vCpus');
+          throw new Error('Minimum vCpus cannot be greater than the maximum vCpus');
         }
       }
     }
@@ -492,7 +495,7 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
         return props.computeResources.spotFleetRole;
       } else if (props.computeResources.type === ComputeResourceType.SPOT) {
         return iam.Role.fromRoleArn(this, 'Resource-SpotFleet-Role',
-          `arn${Aws.PARTITION}iam::${this.stack.account}:role/aws-service-role/spotfleet.amazonaws.com/AWSServiceRoleForEC2SpotFleet`);
+          `arn:${this.stack.partition}:iam::${this.stack.account}:role/aws-service-role/spotfleet.amazonaws.com/AWSServiceRoleForEC2SpotFleet`);
       }
     }
 

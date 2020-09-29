@@ -31,10 +31,11 @@ function validatePropertyTypes(test: Test, specification: schema.Specification) 
   }
 }
 
-function validateProperties(typeName: string,
-                            test: Test,
-                            properties: { [name: string]: schema.Property },
-                            specification: schema.Specification) {
+function validateProperties(
+  typeName: string,
+  test: Test,
+  properties: { [name: string]: schema.Property },
+  specification: schema.Specification) {
   const expectedKeys = ['Documentation', 'Required', 'UpdateType', 'ScrutinyType'];
   for (const name of Object.keys(properties)) {
 
@@ -67,12 +68,17 @@ function validateProperties(typeName: string,
         test.ok(resolvedType, `${typeName}.Properties.${name} ItemType (${fqn}) resolves`);
       }
 
-    } else if (schema.isComplexMapProperty(property)) {
+    } else if (schema.isMapOfStructsProperty(property)) {
       expectedKeys.push('Type', 'DuplicatesAllowed', 'ItemType', 'Type');
       test.ok(property.ItemType, `${typeName}.Properties.${name} has a valid ItemType`);
       const fqn = `${typeName.split('.')[0]}.${property.ItemType}`;
       const resolvedType = specification.PropertyTypes && specification.PropertyTypes[fqn];
       test.ok(resolvedType, `${typeName}.Properties.${name} ItemType (${fqn}) resolves`);
+      test.ok(!property.DuplicatesAllowed, `${typeName}.Properties.${name} does not allow duplicates`);
+
+    } else if (schema.isMapOfListsOfPrimitivesProperty(property)) {
+      expectedKeys.push('Type', 'DuplicatesAllowed', 'ItemType', 'PrimitiveItemItemType', 'Type');
+      test.ok(schema.isPrimitiveType(property.PrimitiveItemItemType), `${typeName}.Properties.${name} has a valid PrimitiveItemItemType`);
       test.ok(!property.DuplicatesAllowed, `${typeName}.Properties.${name} does not allow duplicates`);
 
     } else if (schema.isComplexProperty(property)) {
@@ -109,15 +115,16 @@ function validateProperties(typeName: string,
     }
 
     test.deepEqual(
-        without(Object.keys(property), expectedKeys), [],
-        `${typeName}.Properties.${name} has no extra properties`);
+      without(Object.keys(property), expectedKeys), [],
+      `${typeName}.Properties.${name} has no extra properties`);
   }
 }
 
-function validateAttributes(typeName: string,
-                            test: Test,
-                            attributes: { [name: string]: schema.Attribute },
-                            specification: schema.Specification) {
+function validateAttributes(
+  typeName: string,
+  test: Test,
+  attributes: { [name: string]: schema.Attribute },
+  specification: schema.Specification) {
   for (const name of Object.keys(attributes)) {
     const attribute = attributes[name];
     test.ok(('Type' in attribute) !== ('PrimitiveType' in attribute), 'One of, and only one of, Type or PrimitiveType must be present');
@@ -136,6 +143,9 @@ function validateAttributes(typeName: string,
       const resolvedType = specification.PropertyTypes && specification.PropertyTypes[fqn];
       test.ok(resolvedType, `${typeName}.Attributes.${name} ItemType (${fqn}) resolves`);
       test.ok(!('PrimitiveItemType' in attribute), `${typeName}.Attributes.${name} has no PrimitiveItemType`);
+    } else if (schema.isPrimitiveMapAttribute(attribute)) {
+      test.ok(schema.isPrimitiveType(attribute.PrimitiveItemType), `${typeName}.Attributes.${name} has a valid PrimitiveItemType`);
+      test.ok(!('ItemType' in attribute), `${typeName}.Attributes.${name} has no ItemType`);
     } else {
       test.ok(false, `${typeName}.Attributes.${name} has a valid type`);
     }

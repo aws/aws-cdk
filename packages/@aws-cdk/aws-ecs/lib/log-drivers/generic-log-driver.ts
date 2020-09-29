@@ -1,6 +1,6 @@
 import { Construct } from '@aws-cdk/core';
 import { ContainerDefinition } from '../container-definition';
-import { LogDriver, LogDriverConfig } from "../index";
+import { LogDriver, LogDriverConfig } from '../index';
 import { removeEmpty } from './utils';
 
 /**

@@ -1,9 +1,9 @@
+import * as fs from 'fs';
+import * as path from 'path';
 import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
 import { App, CfnResource, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import * as fs from 'fs';
 import { Test } from 'nodeunit';
-import * as path from 'path';
 import { NestedStack } from '../lib';
 
 export = {
@@ -23,7 +23,7 @@ export = {
       // THEN
       test.deepEqual(app.synth().getStackArtifact(stack.artifactId).template, {
         Resources:
-          { r1: { Type: 'r1', DependsOn: ['r2'] }, r2: { Type: 'r2' } }
+          { r1: { Type: 'r1', DependsOn: ['r2'] }, r2: { Type: 'r2' } },
       });
 
       test.done();
@@ -42,8 +42,8 @@ export = {
       // THEN: the dependency needs to transfer from the resource within the
       // nested stack to the nested stack resource itself so the nested stack
       // will only be deployed the dependent resource
-      expect(parent).to(haveResource('AWS::CloudFormation::Stack', { DependsOn: [ 'ResourceInParent' ] }, ResourcePart.CompleteDefinition));
-      expect(nested).toMatch({ Resources: { ResourceInNested: { Type: "NESTED" } } }); // no DependsOn for the actual resource
+      expect(parent).to(haveResource('AWS::CloudFormation::Stack', { DependsOn: ['ResourceInParent'] }, ResourcePart.CompleteDefinition));
+      expect(nested).toMatch({ Resources: { ResourceInNested: { Type: 'NESTED' } } }); // no DependsOn for the actual resource
       test.done();
     }),
 
@@ -60,8 +60,8 @@ export = {
 
       // THEN: the dependency needs to transfer from the resource within the
       // nested stack to the *parent* nested stack
-      expect(grantparent).to(haveResource('AWS::CloudFormation::Stack', { DependsOn: [ 'ResourceInGrandparent' ] }, ResourcePart.CompleteDefinition));
-      expect(nested).toMatch({ Resources: { ResourceInNested: { Type: "NESTED" } } }); // no DependsOn for the actual resource
+      expect(grantparent).to(haveResource('AWS::CloudFormation::Stack', { DependsOn: ['ResourceInGrandparent'] }, ResourcePart.CompleteDefinition));
+      expect(nested).toMatch({ Resources: { ResourceInNested: { Type: 'NESTED' } } }); // no DependsOn for the actual resource
       test.done();
     }),
 
@@ -77,12 +77,12 @@ export = {
 
       // THEN: resource in parent needs to depend on the nested stack
       expect(parent).to(haveResource('PARENT', {
-        DependsOn: [ parent.resolve(nested.nestedStackResource!.logicalId) ]
+        DependsOn: [parent.resolve(nested.nestedStackResource!.logicalId)],
       }, ResourcePart.CompleteDefinition));
       test.done();
     }),
 
-  'resource in grantparent stack depends on resource in nested stack': matrixForResourceDependencyTest((test, addDep) => {
+    'resource in grantparent stack depends on resource in nested stack': matrixForResourceDependencyTest((test, addDep) => {
       // GIVEN
       const grandparent = new Stack(undefined, 'Grandparent');
       const parent = new NestedStack(grandparent, 'Parent');
@@ -95,7 +95,7 @@ export = {
 
       // THEN: resource in grantparent needs to depend on the top-level nested stack
       expect(grandparent).to(haveResource('GRANDPARENT', {
-        DependsOn: [ grandparent.resolve(parent.nestedStackResource!.logicalId) ]
+        DependsOn: [grandparent.resolve(parent.nestedStackResource!.logicalId)],
       }, ResourcePart.CompleteDefinition));
 
       test.done();
@@ -116,7 +116,7 @@ export = {
       // THEN: stack2 should depend on stack1 and no "DependsOn" inside templates
       const assembly = app.synth();
       assertAssemblyDependency(test, assembly, stack1, []);
-      assertAssemblyDependency(test, assembly, stack2, [ 'Stack1' ]);
+      assertAssemblyDependency(test, assembly, stack2, ['Stack1']);
       assertNoDependsOn(test, assembly, stack1);
       assertNoDependsOn(test, assembly, stack2);
       assertNoDependsOn(test, assembly, nested1);
@@ -137,8 +137,8 @@ export = {
 
       // THEN: stack1 should depend on stack2 and no "DependsOn" inside templates
       const assembly = app.synth();
-      assertAssemblyDependency(test, assembly, stack1, [ 'Stack2' ]);
-      assertAssemblyDependency(test, assembly, stack2, [ ]);
+      assertAssemblyDependency(test, assembly, stack1, ['Stack2']);
+      assertAssemblyDependency(test, assembly, stack2, []);
       assertNoDependsOn(test, assembly, stack1);
       assertNoDependsOn(test, assembly, stack2);
       assertNoDependsOn(test, assembly, nested1);
@@ -159,11 +159,11 @@ export = {
 
       // THEN: dependency transfered to nested stack resources
       expect(stack).to(haveResource('AWS::CloudFormation::Stack', {
-        DependsOn: [ stack.resolve(nested2.nestedStackResource!.logicalId) ]
+        DependsOn: [stack.resolve(nested2.nestedStackResource!.logicalId)],
       }, ResourcePart.CompleteDefinition));
 
       expect(stack).notTo(haveResource('AWS::CloudFormation::Stack', {
-        DependsOn: [ stack.resolve(nested1.nestedStackResource!.logicalId) ]
+        DependsOn: [stack.resolve(nested1.nestedStackResource!.logicalId)],
       }, ResourcePart.CompleteDefinition));
 
       test.done();
@@ -209,9 +209,9 @@ export = {
       const nested2 = new NestedStack(nested1, 'Nested2');
 
       // THEN
-      test.throws(() => nested1.addDependency(root), /Nested stack 'Nested1' cannot depend on a parent stack ''/);
-      test.throws(() => nested2.addDependency(nested1), /Nested stack 'Nested1\/Nested2' cannot depend on a parent stack 'Nested1'/);
-      test.throws(() => nested2.addDependency(root), /Nested stack 'Nested1\/Nested2' cannot depend on a parent stack ''/);
+      test.throws(() => nested1.addDependency(root), /Nested stack 'Default\/Nested1' cannot depend on a parent stack 'Default'/);
+      test.throws(() => nested2.addDependency(nested1), /Nested stack 'Default\/Nested1\/Nested2' cannot depend on a parent stack 'Default\/Nested1'/);
+      test.throws(() => nested2.addDependency(root), /Nested stack 'Default\/Nested1\/Nested2' cannot depend on a parent stack 'Default'/);
       test.done();
     },
 
@@ -241,7 +241,7 @@ export = {
 
       // THEN
       expect(stack).to(haveResource('AWS::CloudFormation::Stack', {
-        DependsOn: [ stack.resolve(nested2.nestedStackResource!.logicalId) ]
+        DependsOn: [stack.resolve(nested2.nestedStackResource!.logicalId)],
       }, ResourcePart.CompleteDefinition));
       test.done();
     },
@@ -258,7 +258,7 @@ export = {
 
       // THEN: transfered to a resource dep between the resources in the common stack
       expect(stack).to(haveResource('AWS::CloudFormation::Stack', {
-        DependsOn: [ stack.resolve(nested2.nestedStackResource!.logicalId) ]
+        DependsOn: [stack.resolve(nested2.nestedStackResource!.logicalId)],
       }, ResourcePart.CompleteDefinition));
       test.done();
     },
@@ -275,7 +275,7 @@ export = {
 
       // THEN: transfered to a resource dep between the resources in the common stack
       expect(stack).to(haveResource('AWS::CloudFormation::Stack', {
-        DependsOn: [ stack.resolve(nested1.nestedStackResource!.logicalId) ]
+        DependsOn: [stack.resolve(nested1.nestedStackResource!.logicalId)],
       }, ResourcePart.CompleteDefinition));
       test.done();
     },
@@ -292,8 +292,8 @@ export = {
 
       // THEN: assembly-level dependency between stack2 and stack1
       const assembly = app.synth();
-      assertAssemblyDependency(test, assembly, stack2, [ 'Stack1' ]);
-      assertAssemblyDependency(test, assembly, stack1, [ ]);
+      assertAssemblyDependency(test, assembly, stack2, ['Stack1']);
+      assertAssemblyDependency(test, assembly, stack1, []);
       assertNoDependsOn(test, assembly, stack1);
       assertNoDependsOn(test, assembly, stack2);
       assertNoDependsOn(test, assembly, nested1);
@@ -312,8 +312,8 @@ export = {
 
       // THEN: assembly-level dependency between stack2 and stack1
       const assembly = app.synth();
-      assertAssemblyDependency(test, assembly, stack2, [ ]);
-      assertAssemblyDependency(test, assembly, stack1, [ 'Stack2' ]);
+      assertAssemblyDependency(test, assembly, stack2, []);
+      assertAssemblyDependency(test, assembly, stack1, ['Stack2']);
       assertNoDependsOn(test, assembly, stack1);
       assertNoDependsOn(test, assembly, stack2);
       assertNoDependsOn(test, assembly, nested1);
@@ -339,7 +339,7 @@ function matrixForResourceDependencyTest(testFunction: (test: Test, addDep: (sou
     },
     'resource dependency'(test: Test) {
       testFunction(test, (source, target) => source.addDependsOn(target));
-    }
+    },
   };
 }
 

@@ -50,7 +50,7 @@ export function determineFullyQualifiedDomainName(providedName: string, hostedZo
     return providedName;
   }
 
-  const hostedZoneName =  hostedZone.zoneName.endsWith('.')
+  const hostedZoneName = hostedZone.zoneName.endsWith('.')
     ? hostedZone.zoneName.substring(0, hostedZone.zoneName.length - 1)
     : hostedZone.zoneName;
 
@@ -68,6 +68,6 @@ export function makeHostedZoneArn(construct: Construct, hostedZoneId: string): s
     region: '',
     service: 'route53',
     resource: 'hostedzone',
-    resourceName: hostedZoneId
+    resourceName: hostedZoneId,
   });
 }

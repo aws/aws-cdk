@@ -1,9 +1,9 @@
+import * as fs from 'fs';
+import * as path from 'path';
 import * as assets from '@aws-cdk/assets';
 import * as ecr from '@aws-cdk/aws-ecr';
-import { Construct, Stack, Token } from '@aws-cdk/core';
-import * as fs from 'fs';
+import { Annotations, Construct, Stack, Token } from '@aws-cdk/core';
 import * as minimatch from 'minimatch';
-import * as path from 'path';
 
 /**
  * Options for DockerImageAsset
@@ -112,15 +112,15 @@ export class DockerImageAsset extends Construct implements assets.IAsset {
     });
 
     if (props.repositoryName) {
-      this.node.addWarning(`DockerImageAsset.repositoryName is deprecated. Override "core.Stack.addDockerImageAsset" to control asset locations`);
+      Annotations.of(this).addWarning('DockerImageAsset.repositoryName is deprecated. Override "core.Stack.addDockerImageAsset" to control asset locations');
     }
 
     // include build context in "extra" so it will impact the hash
     const extraHash: { [field: string]: any } = { };
-    if (props.extraHash)      { extraHash.user = props.extraHash; }
-    if (props.buildArgs)      { extraHash.buildArgs = props.buildArgs; }
-    if (props.target)         { extraHash.target = props.target; }
-    if (props.file)           { extraHash.file = props.file; }
+    if (props.extraHash) { extraHash.user = props.extraHash; }
+    if (props.buildArgs) { extraHash.buildArgs = props.buildArgs; }
+    if (props.target) { extraHash.target = props.target; }
+    if (props.file) { extraHash.file = props.file; }
     if (props.repositoryName) { extraHash.repositoryName = props.repositoryName; }
 
     // add "salt" to the hash in order to invalidate the image in the upgrade to
@@ -134,13 +134,13 @@ export class DockerImageAsset extends Construct implements assets.IAsset {
       sourcePath: dir,
       extraHash: Object.keys(extraHash).length === 0
         ? undefined
-        : JSON.stringify(extraHash)
+        : JSON.stringify(extraHash),
     });
 
     this.sourceHash = staging.sourceHash;
 
     const stack = Stack.of(this);
-    const location = stack.addDockerImageAsset({
+    const location = stack.synthesizer.addDockerImageAsset({
       directoryName: staging.stagedPath,
       dockerBuildArgs: props.buildArgs,
       dockerBuildTarget: props.target,
@@ -167,7 +167,7 @@ function validateProps(props: DockerImageAssetProps) {
 function validateBuildArgs(buildArgs?: { [key: string]: string }) {
   for (const [key, value] of Object.entries(buildArgs || {})) {
     if (Token.isUnresolved(key) || Token.isUnresolved(value)) {
-      throw new Error(`Cannot use tokens in keys or values of "buildArgs" since they are needed before deployment`);
+      throw new Error('Cannot use tokens in keys or values of "buildArgs" since they are needed before deployment');
     }
   }
 }

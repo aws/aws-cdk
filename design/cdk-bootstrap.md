@@ -102,6 +102,9 @@ and need to be kept for backwards compatibility reasons:
 
 * `--bootstrap-kms-key-id`: optional identifier of the KMS key used for encrypting the file assets S3 bucket.
 
+* `--public-access-block-configuration`: allows you to explicitly enable or disable public access bucket block configuration
+  on the file assets S3 Bucket (enabled by default).
+
 #### New options
 
 These options will be added to the `bootstrap` command:

@@ -76,7 +76,7 @@ export class CrossAccountDestination extends cdk.Resource implements ILogSubscri
       // Must be stringified policy
       destinationPolicy: this.lazyStringifiedPolicyDocument(),
       roleArn: props.role.roleArn,
-      targetArn: props.targetArn
+      targetArn: props.targetArn,
     });
 
     this.destinationArn = this.getResourceArnAttribute(this.resource.attrArn, {
@@ -108,8 +108,9 @@ export class CrossAccountDestination extends cdk.Resource implements ILogSubscri
    * Return a stringified JSON version of the PolicyDocument
    */
   private lazyStringifiedPolicyDocument(): string {
-    return cdk.Lazy.stringValue({ produce: () =>
-      this.policyDocument.isEmpty ? '' : cdk.Stack.of(this).toJsonString(this.policyDocument)
+    return cdk.Lazy.stringValue({
+      produce: () =>
+        this.policyDocument.isEmpty ? '' : cdk.Stack.of(this).toJsonString(this.policyDocument),
     });
   }
 }

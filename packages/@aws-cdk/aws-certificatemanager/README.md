@@ -1,32 +1,85 @@
-## Amazon Certificate Manager Construct Library
-<!--BEGIN STABILITY BANNER-->
+## AWS Certificate Manager Construct Library
 
+<!--BEGIN STABILITY BANNER-->
 ---
 
-![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
+![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
 
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
 <!--END STABILITY BANNER-->
 
-This package provides Constructs for provisioning and referencing
-certificates which can be used in CloudFront and ELB.
+AWS Certificate Manager (ACM) handles the complexity of creating, storing, and renewing public and private SSL/TLS X.509 certificates and keys that
+protect your AWS websites and applications. ACM certificates can secure singular domain names, multiple specific domain names, wildcard domains, or
+combinations of these. ACM wildcard certificates can protect an unlimited number of subdomains.
 
-The following requests a certificate for a given domain:
-
-[request a certificate example](test/example.simple-request.lit.ts)
+This package provides Constructs for provisioning and referencing ACM certificates which can be used with CloudFront and ELB.
 
 After requesting a certificate, you will need to prove that you own the
 domain in question before the certificate will be granted. The CloudFormation
 deployment will wait until this verification process has been completed.
 
-Because of this wait time, it's better to provision your certificates
-either in a separate stack from your main service, or provision them
-manually and import them into your CDK application.
+Because of this wait time, when using manual validation methods, it's better
+to provision your certificates either in a separate stack from your main
+service, or provision them manually and import them into your CDK application.
 
-The CDK also provides a custom resource which can be used for automatic
-validation if the DNS records for the domain are managed through Route53 (see
-below).
+**Note:** There is a limit on total number of ACM certificates that can be requested on an account and region within a year.
+The default limit is 2000, but this limit may be (much) lower on new AWS accounts.
+See https://docs.aws.amazon.com/acm/latest/userguide/acm-limits.html for more information.
+
+### DNS validation
+
+DNS validation is the preferred method to validate domain ownership, as it has a number of advantages over email validation.
+See also [Validate with DNS](https://docs.aws.amazon.com/acm/latest/userguide/gs-acm-validate-dns.html)
+in the AWS Certificate Manager User Guide.
+
+If Amazon Route 53 is your DNS provider for the requested domain, the DNS record can be
+created automatically:
+
+```ts
+import * as acm from '@aws-cdk/aws-certificatemanager';
+import * as route53 from '@aws-cdk/aws-route53';
+
+const myHostedZone = new route53.HostedZone(this, 'HostedZone', {
+  zoneName: 'example.com',
+});
+new acm.Certificate(this, 'Certificate', {
+  domainName: 'hello.example.com',
+  validation: acm.CertificateValidation.fromDns(myHostedZone),
+});
+```
+
+If Route 53 is not your DNS provider, the DNS records must be added manually and the stack will not complete
+creating until the records are added.
+
+```ts
+new acm.Certificate(this, 'Certificate', {
+  domainName: 'hello.example.com',
+  validation: acm.CertificateValidation.fromDns(), // Records must be added manually
+});
+```
+
+When working with multiple domains, use the `CertificateValidation.fromDnsMultiZone()`:
+
+```ts
+const exampleCom = new route53.HostedZone(this, 'ExampleCom', {
+  zoneName: 'example.com',
+});
+const exampleNet = new route53.HostedZone(this, 'ExampelNet', {
+  zoneName: 'example.net',
+});
+
+const cert = new acm.Certificate(this, 'Certificate', {
+  domainName: 'test.example.com',
+  subjectAlternativeNames: ['cool.example.com', 'test.example.net'],
+  validation: acm.CertificateValidation.fromDnsMultiZone({
+    'text.example.com': exampleCom,
+    'cool.example.com': exampleCom,
+    'test.example.net': exampleNet,
+  }),
+});
+```
 
 ### Email validation
 
@@ -35,36 +88,35 @@ email on one of a number of predefined domains and following the instructions
 in the email.
 
 See [Validate with Email](https://docs.aws.amazon.com/acm/latest/userguide/gs-acm-validate-email.html)
-in the Amazon Certificate Manager User Guide.
+in the AWS Certificate Manager User Guide.
 
-### DNS validation
+```ts
+new acm.Certificate(this, 'Certificate', {
+  domainName: 'hello.example.com',
+  validation: acm.CertificateValidation.fromEmail(), // Optional, this is the default
+});
+```
 
-DNS-validated certificates are validated by configuring appropriate DNS
-records for your domain.
+### Cross-region Certificates
 
-See [Validate with DNS](https://docs.aws.amazon.com/acm/latest/userguide/gs-acm-validate-dns.html)
-in the Amazon Certificate Manager User Guide.
+ACM certificates that are used with CloudFront -- or higher-level constructs which rely on CloudFront -- must be in the `us-east-1` region.
+The `DnsValidatedCertificate` construct exists to faciliate creating these certificates cross-region. This resource can only be used with
+Route53-based DNS validation.
 
-### Automatic DNS-validated certificates using Route53
-
-The `DnsValidatedCertificateRequest` class provides a Custom Resource by which
-you can request a TLS certificate from AWS Certificate Manager that is
-automatically validated using a cryptographically secure DNS record. For this to
-work, there must be a Route 53 public zone that is responsible for serving
-records under the Domain Name of the requested certificate. For example, if you
-request a certificate for `www.example.com`, there must be a Route 53 public
-zone `example.com` that provides authoritative records for the domain.
-
-Example:
-
-[request a validated certificate example](test/example.dns-validated-request.lit.ts)
+```ts
+new acm.DnsValidatedCertificate(this, 'CrossRegionCertificate', {
+  domainName: 'hello.example.com',
+  hostedZone: myHostedZone,
+  region: 'us-east-1',
+});
+```
 
 ### Importing
 
 If you want to import an existing certificate, you can do so from its ARN:
 
 ```ts
-const arn = "arn:aws:...";
+const arn = 'arn:aws:...';
 const certificate = Certificate.fromCertificateArn(this, 'Certificate', arn);
 ```
 

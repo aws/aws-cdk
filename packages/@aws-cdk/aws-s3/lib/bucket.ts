@@ -1,8 +1,9 @@
+import { EOL } from 'os';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { Construct, Fn, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
-import { EOL } from 'os';
+import { Fn, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { BucketPolicy } from './bucket-policy';
 import { IBucketNotificationDestination } from './destination';
 import { BucketNotifications } from './notifications-resource';
@@ -55,6 +56,11 @@ export interface IBucket extends IResource {
   readonly bucketRegionalDomainName: string;
 
   /**
+   * If this bucket has been configured for static website hosting.
+   */
+  readonly isWebsite?: boolean;
+
+  /**
    * Optional KMS encryption key associated with this bucket.
    */
   readonly encryptionKey?: kms.IKey;
@@ -73,7 +79,7 @@ export interface IBucket extends IResource {
    * contents. Use `bucketArn` and `arnForObjects(keys)` to obtain ARNs for
    * this bucket or objects.
    */
-  addToResourcePolicy(permission: iam.PolicyStatement): void;
+  addToResourcePolicy(permission: iam.PolicyStatement): iam.AddToResourcePolicyResult;
 
   /**
    * The https URL of an S3 object. For example:
@@ -85,6 +91,16 @@ export interface IBucket extends IResource {
    * @returns an ObjectS3Url token
    */
   urlForObject(key?: string): string;
+
+  /**
+   * The S3 URL of an S3 object. For example:
+   * @example s3://onlybucket
+   * @example s3://bucket/key
+   * @param key The S3 key of the object. If not specified, the S3 URL of the
+   *      bucket is returned.
+   * @returns an ObjectS3Url token
+   */
+  s3UrlForObject(key?: string): string;
 
   /**
    * Returns an ARN that represents all objects within the bucket that match
@@ -269,6 +285,27 @@ export interface BucketAttributes {
   readonly bucketWebsiteNewUrlFormat?: boolean;
 
   readonly encryptionKey?: kms.IKey;
+
+  /**
+   * If this bucket has been configured for static website hosting.
+   *
+   * @default false
+   */
+  readonly isWebsite?: boolean;
+
+  /**
+   * The account this existing bucket belongs to.
+   *
+   * @default - it's assumed the bucket belongs to the same account as the scope it's being imported into
+   */
+  readonly account?: string;
+
+  /**
+   * The region this existing bucket is in.
+   *
+   * @default - it's assumed the bucket is in the same region as the scope it's being imported into
+   */
+  readonly region?: string;
 }
 
 /**
@@ -301,6 +338,11 @@ abstract class BucketBase extends Resource implements IBucket {
    * Optional KMS encryption key associated with this bucket.
    */
   public abstract readonly encryptionKey?: kms.IKey;
+
+  /**
+   * If this bucket has been configured for static website hosting.
+   */
+  public abstract readonly isWebsite?: boolean;
 
   /**
    * The resource policy associated with this bucket.
@@ -340,7 +382,7 @@ abstract class BucketBase extends Resource implements IBucket {
         resources: {
           ARN: options.paths ? options.paths.map(p => this.arnForObjects(p)) : [this.bucketArn],
         },
-      }
+      },
     });
     return rule;
   }
@@ -391,10 +433,10 @@ abstract class BucketBase extends Resource implements IBucket {
         eventName: [
           'CompleteMultipartUpload',
           'CopyObject',
-          'PutObject'
+          'PutObject',
         ],
         requestParameters: {
-          bucketName: [ this.bucketName ],
+          bucketName: [this.bucketName],
           key: options.paths,
         },
       },
@@ -408,14 +450,23 @@ abstract class BucketBase extends Resource implements IBucket {
    * contents. Use `bucketArn` and `arnForObjects(keys)` to obtain ARNs for
    * this bucket or objects.
    */
-  public addToResourcePolicy(permission: iam.PolicyStatement) {
+  public addToResourcePolicy(permission: iam.PolicyStatement): iam.AddToResourcePolicyResult {
     if (!this.policy && this.autoCreatePolicy) {
       this.policy = new BucketPolicy(this, 'Policy', { bucket: this });
     }
 
     if (this.policy) {
       this.policy.document.addStatements(permission);
+      return { statementAdded: true, policyDependable: this.policy };
     }
+
+    return { statementAdded: false };
+  }
+
+  protected validate(): string[] {
+    const errors = super.validate();
+    errors.push(...this.policy?.document.validateForResourcePolicy() || []);
+    return errors;
   }
 
   /**
@@ -429,17 +480,20 @@ abstract class BucketBase extends Resource implements IBucket {
    */
   public urlForObject(key?: string): string {
     const stack = Stack.of(this);
-    const components = [ `https://s3.${stack.region}.${stack.urlSuffix}/${this.bucketName}` ];
-    if (key) {
-      // trim prepending '/'
-      if (typeof key === 'string' && key.startsWith('/')) {
-        key = key.substr(1);
-      }
-      components.push('/');
-      components.push(key);
-    }
+    const prefix = `https://s3.${stack.region}.${stack.urlSuffix}/`;
+    return this.buildUrl(prefix, key);
+  }
 
-    return components.join('');
+  /**
+   * The S3 URL of an S3 object. For example:
+   * @example s3://onlybucket
+   * @example s3://bucket/key
+   * @param key The S3 key of the object. If not specified, the S3 URL of the
+   *      bucket is returned.
+   * @returns an ObjectS3Url token
+   */
+  public s3UrlForObject(key?: string): string {
+    return this.buildUrl('s3://', key);
   }
 
   /**
@@ -559,7 +613,7 @@ abstract class BucketBase extends Resource implements IBucket {
       throw new Error("Cannot grant public access when 'blockPublicPolicy' is enabled");
     }
 
-    allowedActions = allowedActions.length > 0 ? allowedActions : [ 's3:GetObject' ];
+    allowedActions = allowedActions.length > 0 ? allowedActions : ['s3:GetObject'];
 
     return iam.Grant.addToPrincipalOrResource({
       actions: allowedActions,
@@ -569,46 +623,43 @@ abstract class BucketBase extends Resource implements IBucket {
     });
   }
 
-  private grant(grantee: iam.IGrantable,
-                bucketActions: string[],
-                keyActions: string[],
-                resourceArn: string, ...otherResourceArns: string[]) {
-    const resources = [ resourceArn, ...otherResourceArns ];
+  private buildUrl(prefix: string, key?: string): string {
+    const components = [
+      prefix,
+      this.bucketName,
+    ];
 
-    const crossAccountAccess = this.isGranteeFromAnotherAccount(grantee);
-    let ret: iam.Grant;
-    if (crossAccountAccess) {
-      // if the access is cross-account, we need to trust the accessing principal in the bucket's policy
-      ret = iam.Grant.addToPrincipalAndResource({
-        grantee,
-        actions: bucketActions,
-        resourceArns: resources,
-        resource: this,
-      });
-    } else {
-      // if not, we don't need to modify the resource policy if the grantee is an identity principal
-      ret = iam.Grant.addToPrincipalOrResource({
-        grantee,
-        actions: bucketActions,
-        resourceArns: resources,
-        resource: this,
-      });
+    if (key) {
+      // trim prepending '/'
+      if (typeof key === 'string' && key.startsWith('/')) {
+        key = key.substr(1);
+      }
+      components.push('/');
+      components.push(key);
     }
 
-    if (this.encryptionKey) {
+    return components.join('');
+  }
+
+  private grant(
+    grantee: iam.IGrantable,
+    bucketActions: string[],
+    keyActions: string[],
+    resourceArn: string, ...otherResourceArns: string[]) {
+    const resources = [resourceArn, ...otherResourceArns];
+
+    const ret = iam.Grant.addToPrincipalOrResource({
+      grantee,
+      actions: bucketActions,
+      resourceArns: resources,
+      resource: this,
+    });
+
+    if (this.encryptionKey && keyActions && keyActions.length !== 0) {
       this.encryptionKey.grant(grantee, ...keyActions);
     }
 
     return ret;
-  }
-
-  private isGranteeFromAnotherAccount(grantee: iam.IGrantable): boolean {
-    if (!(Construct.isConstruct(grantee))) {
-      return false;
-    }
-    const bucketStack = Stack.of(this);
-    const identityStack = Stack.of(grantee);
-    return bucketStack.account !== identityStack.account;
   }
 }
 
@@ -647,12 +698,12 @@ export class BlockPublicAccess {
     blockPublicAcls: true,
     blockPublicPolicy: true,
     ignorePublicAcls: true,
-    restrictPublicBuckets: true
+    restrictPublicBuckets: true,
   });
 
   public static readonly BLOCK_ACLS = new BlockPublicAccess({
     blockPublicAcls: true,
-    ignorePublicAcls: true
+    ignorePublicAcls: true,
   });
 
   public blockPublicAcls: boolean | undefined;
@@ -694,23 +745,23 @@ export enum HttpMethods {
   /**
    * The GET method requests a representation of the specified resource.
    */
-  GET = "GET",
+  GET = 'GET',
   /**
    * The PUT method replaces all current representations of the target resource with the request payload.
    */
-  PUT = "PUT",
+  PUT = 'PUT',
   /**
    * The HEAD method asks for a response identical to that of a GET request, but without the response body.
    */
-  HEAD = "HEAD",
+  HEAD = 'HEAD',
   /**
    * The POST method is used to submit an entity to the specified resource, often causing a change in state or side effects on the server.
    */
-  POST = "POST",
+  POST = 'POST',
   /**
    * The DELETE method deletes the specified resource.
    */
-  DELETE = "DELETE",
+  DELETE = 'DELETE',
 }
 
 /**
@@ -774,6 +825,130 @@ export interface RedirectTarget {
    * @default - The protocol used in the original request.
    */
   readonly protocol?: RedirectProtocol;
+}
+
+/**
+ * All supported inventory list formats.
+ */
+export enum InventoryFormat {
+  /**
+   * Generate the inventory list as CSV.
+   */
+  CSV = 'CSV',
+  /**
+   * Generate the inventory list as Parquet.
+   */
+  PARQUET = 'Parquet',
+  /**
+   * Generate the inventory list as Parquet.
+   */
+  ORC = 'ORC',
+}
+
+/**
+ * All supported inventory frequencies.
+ */
+export enum InventoryFrequency {
+  /**
+   * A report is generated every day.
+   */
+  DAILY = 'Daily',
+  /**
+   * A report is generated every Sunday (UTC timezone) after the initial report.
+   */
+  WEEKLY = 'Weekly'
+}
+
+/**
+ * Inventory version support.
+ */
+export enum InventoryObjectVersion {
+  /**
+   * Includes all versions of each object in the report.
+   */
+  ALL = 'All',
+  /**
+   * Includes only the current version of each object in the report.
+   */
+  CURRENT = 'Current',
+}
+
+/**
+ * The destination of the inventory.
+ */
+export interface InventoryDestination {
+  /**
+   * Bucket where all inventories will be saved in.
+   */
+  readonly bucket: IBucket;
+  /**
+   * The prefix to be used when saving the inventory.
+   *
+   * @default - No prefix.
+   */
+  readonly prefix?: string;
+  /**
+   * The account ID that owns the destination S3 bucket.
+   * If no account ID is provided, the owner is not validated before exporting data.
+   * It's recommended to set an account ID to prevent problems if the destination bucket ownership changes.
+   *
+   * @default - No account ID.
+   */
+  readonly bucketOwner?: string;
+}
+
+/**
+ * Specifies the inventory configuration of an S3 Bucket.
+ *
+ * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/storage-inventory.html
+ */
+export interface Inventory {
+  /**
+   * The destination of the inventory.
+   */
+  readonly destination: InventoryDestination;
+  /**
+   * The inventory will only include objects that meet the prefix filter criteria.
+   *
+   * @default - No objects prefix
+   */
+  readonly objectsPrefix?: string;
+  /**
+   * The format of the inventory.
+   *
+   * @default InventoryFormat.CSV
+   */
+  readonly format?: InventoryFormat;
+  /**
+   * Whether the inventory is enabled or disabled.
+   *
+   * @default true
+   */
+  readonly enabled?: boolean;
+  /**
+   * The inventory configuration ID.
+   *
+   * @default - generated ID.
+   */
+  readonly inventoryId?: string;
+  /**
+   * Frequency at which the inventory should be generated.
+   *
+   * @default InventoryFrequency.WEEKLY
+   */
+  readonly frequency?: InventoryFrequency;
+  /**
+   * If the inventory should contain all the object versions or only the current one.
+   *
+   * @default InventoryObjectVersion.ALL
+   */
+  readonly includeObjectVersions?: InventoryObjectVersion;
+  /**
+   * A list of optional fields to be included in the inventory result.
+   *
+   * @default - No optional fields.
+   */
+  readonly optionalFields?: string[];
 }
 
 export interface BucketProps {
@@ -904,15 +1079,25 @@ export interface BucketProps {
 
   /**
    * Destination bucket for the server access logs.
-   * @default - Access logs are disabled
+   * @default - If "serverAccessLogsPrefix" undefined - access logs disabled, otherwise - log to current bucket.
    */
   readonly serverAccessLogsBucket?: IBucket;
 
   /**
    * Optional log file prefix to use for the bucket's access logs.
+   * If defined without "serverAccessLogsBucket", enables access logs to current bucket with this prefix.
    * @default - No log file prefix
    */
   readonly serverAccessLogsPrefix?: string;
+
+  /**
+   * The inventory configuration of the bucket.
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/storage-inventory.html
+   *
+   * @default - No inventory configuration
+   */
+  readonly inventories?: Inventory[];
 }
 
 /**
@@ -941,7 +1126,7 @@ export class Bucket extends BucketBase {
    */
   public static fromBucketAttributes(scope: Construct, id: string, attrs: BucketAttributes): IBucket {
     const stack = Stack.of(scope);
-    const region = stack.region;
+    const region = attrs.region ?? stack.region;
     const urlSuffix = stack.urlSuffix;
 
     const bucketName = parseBucketName(scope, attrs);
@@ -967,6 +1152,7 @@ export class Bucket extends BucketBase {
       public readonly bucketDualStackDomainName = attrs.bucketDualStackDomainName || `${bucketName}.s3.dualstack.${region}.${urlSuffix}`;
       public readonly bucketWebsiteNewUrlFormat = newUrlFormat;
       public readonly encryptionKey = attrs.encryptionKey;
+      public readonly isWebsite = attrs.isWebsite ?? false;
       public policy?: BucketPolicy = undefined;
       protected autoCreatePolicy = false;
       protected disallowPublicAccess = false;
@@ -979,7 +1165,10 @@ export class Bucket extends BucketBase {
       }
     }
 
-    return new Import(scope, id);
+    return new Import(scope, id, {
+      account: attrs.account,
+      region: attrs.region,
+    });
   }
 
   public readonly bucketArn: string;
@@ -991,6 +1180,7 @@ export class Bucket extends BucketBase {
   public readonly bucketRegionalDomainName: string;
 
   public readonly encryptionKey?: kms.IKey;
+  public readonly isWebsite?: boolean;
   public policy?: BucketPolicy;
   protected autoCreatePolicy = true;
   protected disallowPublicAccess?: boolean;
@@ -1000,6 +1190,7 @@ export class Bucket extends BucketBase {
   private readonly notifications: BucketNotifications;
   private readonly metrics: BucketMetrics[] = [];
   private readonly cors: CorsRule[] = [];
+  private readonly inventories: Inventory[] = [];
 
   constructor(scope: Construct, id: string, props: BucketProps = {}) {
     super(scope, id, {
@@ -1010,17 +1201,21 @@ export class Bucket extends BucketBase {
 
     this.validateBucketName(this.physicalName);
 
+    const websiteConfiguration = this.renderWebsiteConfiguration(props);
+    this.isWebsite = (websiteConfiguration !== undefined);
+
     const resource = new CfnBucket(this, 'Resource', {
       bucketName: this.physicalName,
       bucketEncryption,
       versioningConfiguration: props.versioned ? { status: 'Enabled' } : undefined,
       lifecycleConfiguration: Lazy.anyValue({ produce: () => this.parseLifecycleConfiguration() }),
-      websiteConfiguration: this.renderWebsiteConfiguration(props),
+      websiteConfiguration,
       publicAccessBlockConfiguration: props.blockPublicAccess,
       metricsConfigurations: Lazy.anyValue({ produce: () => this.parseMetricConfiguration() }),
       corsConfiguration: Lazy.anyValue({ produce: () => this.parseCorsConfiguration() }),
       accessControl: Lazy.stringValue({ produce: () => this.accessControl }),
       loggingConfiguration: this.parseServerAccessLogs(props),
+      inventoryConfigurations: Lazy.anyValue({ produce: () => this.parseInventoryConfiguration() }),
     });
 
     resource.applyRemovalPolicy(props.removalPolicy);
@@ -1047,6 +1242,10 @@ export class Bucket extends BucketBase {
 
     if (props.serverAccessLogsBucket instanceof Bucket) {
       props.serverAccessLogsBucket.allowLogDelivery();
+    }
+
+    for (const inventory of props.inventories ?? []) {
+      this.addInventory(inventory);
     }
 
     // Add all bucket metric configurations rules
@@ -1146,6 +1345,15 @@ export class Bucket extends BucketBase {
     return this.addEventNotification(EventType.OBJECT_REMOVED, dest, ...filters);
   }
 
+  /**
+   * Add an inventory configuration.
+   *
+   * @param inventory configuration to add
+   */
+  public addInventory(inventory: Inventory): void {
+    this.inventories.push(inventory);
+  }
+
   private validateBucketName(physicalName: string): void {
     const bucketName = physicalName;
     if (!bucketName || Token.isUnresolved(bucketName)) {
@@ -1213,7 +1421,7 @@ export class Bucket extends BucketBase {
 
     if (encryptionType === BucketEncryption.KMS) {
       const encryptionKey = props.encryptionKey || new kms.Key(this, 'Key', {
-        description: `Created by ${this.node.path}`
+        description: `Created by ${this.node.path}`,
       });
 
       const bucketEncryption = {
@@ -1221,10 +1429,10 @@ export class Bucket extends BucketBase {
           {
             serverSideEncryptionByDefault: {
               sseAlgorithm: 'aws:kms',
-              kmsMasterKeyId: encryptionKey.keyArn
-            }
-          }
-        ]
+              kmsMasterKeyId: encryptionKey.keyArn,
+            },
+          },
+        ],
       };
       return { encryptionKey, bucketEncryption };
     }
@@ -1232,8 +1440,8 @@ export class Bucket extends BucketBase {
     if (encryptionType === BucketEncryption.S3_MANAGED) {
       const bucketEncryption = {
         serverSideEncryptionConfiguration: [
-          { serverSideEncryptionByDefault: { sseAlgorithm: 'AES256' } }
-        ]
+          { serverSideEncryptionByDefault: { sseAlgorithm: 'AES256' } },
+        ],
       };
 
       return { bucketEncryption };
@@ -1242,8 +1450,8 @@ export class Bucket extends BucketBase {
     if (encryptionType === BucketEncryption.KMS_MANAGED) {
       const bucketEncryption = {
         serverSideEncryptionConfiguration: [
-          { serverSideEncryptionByDefault: { sseAlgorithm: 'aws:kms' } }
-        ]
+          { serverSideEncryptionByDefault: { sseAlgorithm: 'aws:kms' } },
+        ],
       };
       return { bucketEncryption };
     }
@@ -1268,7 +1476,7 @@ export class Bucket extends BucketBase {
       const enabled = rule.enabled !== undefined ? rule.enabled : true;
 
       const x: CfnBucket.RuleProperty = {
-        // tslint:disable-next-line:max-line-length
+        // eslint-disable-next-line max-len
         abortIncompleteMultipartUpload: rule.abortIncompleteMultipartUploadAfter !== undefined ? { daysAfterInitiation: rule.abortIncompleteMultipartUploadAfter.toDays() } : undefined,
         expirationDate: rule.expirationDate,
         expirationInDays: rule.expiration && rule.expiration.toDays(),
@@ -1276,16 +1484,16 @@ export class Bucket extends BucketBase {
         noncurrentVersionExpirationInDays: rule.noncurrentVersionExpiration && rule.noncurrentVersionExpiration.toDays(),
         noncurrentVersionTransitions: mapOrUndefined(rule.noncurrentVersionTransitions, t => ({
           storageClass: t.storageClass.value,
-          transitionInDays: t.transitionAfter.toDays()
+          transitionInDays: t.transitionAfter.toDays(),
         })),
         prefix: rule.prefix,
         status: enabled ? 'Enabled' : 'Disabled',
         transitions: mapOrUndefined(rule.transitions, t => ({
           storageClass: t.storageClass.value,
           transitionDate: t.transitionDate,
-          transitionInDays: t.transitionAfter && t.transitionAfter.toDays()
+          transitionInDays: t.transitionAfter && t.transitionAfter.toDays(),
         })),
-        tagFilters: self.parseTagFilters(rule.tagFilters)
+        tagFilters: self.parseTagFilters(rule.tagFilters),
       };
 
       return x;
@@ -1293,16 +1501,12 @@ export class Bucket extends BucketBase {
   }
 
   private parseServerAccessLogs(props: BucketProps): CfnBucket.LoggingConfigurationProperty | undefined {
-    if (props.serverAccessLogsPrefix && !props.serverAccessLogsBucket) {
-      throw new Error(`"serverAccessLogsBucket" is required if "serverAccessLogsPrefix" is set`);
-    }
-
-    if (!props.serverAccessLogsBucket) {
+    if (!props.serverAccessLogsBucket && !props.serverAccessLogsPrefix) {
       return undefined;
     }
 
     return {
-      destinationBucketName: props.serverAccessLogsBucket.bucketName,
+      destinationBucketName: props.serverAccessLogsBucket?.bucketName,
       logFilePrefix: props.serverAccessLogsPrefix,
     };
   }
@@ -1320,7 +1524,7 @@ export class Bucket extends BucketBase {
       return {
         id: metric.id,
         prefix: metric.prefix,
-        tagFilters: self.parseTagFilters(metric.tagFilters)
+        tagFilters: self.parseTagFilters(metric.tagFilters),
       };
     }
   }
@@ -1339,7 +1543,7 @@ export class Bucket extends BucketBase {
         allowedHeaders: rule.allowedHeaders,
         allowedMethods: rule.allowedMethods,
         allowedOrigins: rule.allowedOrigins,
-        exposedHeaders: rule.exposedHeaders
+        exposedHeaders: rule.exposedHeaders,
       };
     }
   }
@@ -1351,7 +1555,7 @@ export class Bucket extends BucketBase {
 
     return Object.keys(tagFilters).map(tag => ({
       key: tag,
-      value: tagFilters[tag]
+      value: tagFilters[tag],
     }));
   }
 
@@ -1361,14 +1565,14 @@ export class Bucket extends BucketBase {
     }
 
     if (props.websiteErrorDocument && !props.websiteIndexDocument) {
-      throw new Error(`"websiteIndexDocument" is required if "websiteErrorDocument" is set`);
+      throw new Error('"websiteIndexDocument" is required if "websiteErrorDocument" is set');
     }
 
     if (props.websiteRedirect && (props.websiteErrorDocument || props.websiteIndexDocument || props.websiteRoutingRules)) {
-        throw new Error('"websiteIndexDocument", "websiteErrorDocument" and, "websiteRoutingRules" cannot be set if "websiteRedirect" is used');
+      throw new Error('"websiteIndexDocument", "websiteErrorDocument" and, "websiteRoutingRules" cannot be set if "websiteRedirect" is used');
     }
 
-    const routingRules =  props.websiteRoutingRules ? props.websiteRoutingRules.map<CfnBucket.RoutingRuleProperty>((rule) => {
+    const routingRules = props.websiteRoutingRules ? props.websiteRoutingRules.map<CfnBucket.RoutingRuleProperty>((rule) => {
       if (rule.condition && !rule.condition.httpErrorCodeReturnedEquals && !rule.condition.keyPrefixEquals) {
         throw new Error('The condition property cannot be an empty object');
       }
@@ -1376,12 +1580,12 @@ export class Bucket extends BucketBase {
       return {
         redirectRule: {
           hostName: rule.hostName,
-            httpRedirectCode: rule.httpRedirectCode,
-            protocol: rule.protocol,
-            replaceKeyWith: rule.replaceKey && rule.replaceKey.withKey,
-            replaceKeyPrefixWith: rule.replaceKey && rule.replaceKey.prefixWithKey,
+          httpRedirectCode: rule.httpRedirectCode,
+          protocol: rule.protocol,
+          replaceKeyWith: rule.replaceKey && rule.replaceKey.withKey,
+          replaceKeyPrefixWith: rule.replaceKey && rule.replaceKey.prefixWithKey,
         },
-        routingRuleCondition: rule.condition
+        routingRuleCondition: rule.condition,
       };
     }) : undefined;
 
@@ -1389,7 +1593,7 @@ export class Bucket extends BucketBase {
       indexDocument: props.websiteIndexDocument,
       errorDocument: props.websiteErrorDocument,
       redirectAllRequestsTo: props.websiteRedirect,
-      routingRules
+      routingRules,
     };
   }
 
@@ -1405,6 +1609,50 @@ export class Bucket extends BucketBase {
     }
 
     this.accessControl = BucketAccessControl.LOG_DELIVERY_WRITE;
+  }
+
+  private parseInventoryConfiguration(): CfnBucket.InventoryConfigurationProperty[] | undefined {
+    if (!this.inventories || this.inventories.length === 0) {
+      return undefined;
+    }
+
+    return this.inventories.map((inventory, index) => {
+      const format = inventory.format ?? InventoryFormat.CSV;
+      const frequency = inventory.frequency ?? InventoryFrequency.WEEKLY;
+      const id = inventory.inventoryId ?? `${this.node.id}Inventory${index}`;
+
+      if (inventory.destination.bucket instanceof Bucket) {
+        inventory.destination.bucket.addToResourcePolicy(new iam.PolicyStatement({
+          effect: iam.Effect.ALLOW,
+          actions: ['s3:PutObject'],
+          resources: [
+            inventory.destination.bucket.bucketArn,
+            inventory.destination.bucket.arnForObjects(`${inventory.destination.prefix ?? ''}*`),
+          ],
+          principals: [new iam.ServicePrincipal('s3.amazonaws.com')],
+          conditions: {
+            ArnLike: {
+              'aws:SourceArn': this.bucketArn,
+            },
+          },
+        }));
+      }
+
+      return {
+        id,
+        destination: {
+          bucketArn: inventory.destination.bucket.bucketArn,
+          bucketAccountId: inventory.destination.bucketOwner,
+          prefix: inventory.destination.prefix,
+          format,
+        },
+        enabled: inventory.enabled ?? true,
+        includedObjectVersions: inventory.includeObjectVersions ?? InventoryObjectVersion.ALL,
+        scheduleFrequency: frequency,
+        optionalFields: inventory.optionalFields,
+        prefix: inventory.objectsPrefix,
+      };
+    });
   }
 }
 

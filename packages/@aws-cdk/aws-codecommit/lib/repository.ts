@@ -1,4 +1,5 @@
 import * as events from '@aws-cdk/aws-events';
+import * as iam from '@aws-cdk/aws-iam';
 import { Construct, IConstruct, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { CfnRepository } from './codecommit.generated';
 
@@ -76,6 +77,26 @@ export interface IRepository extends IResource {
    * Defines a CloudWatch event rule which triggers when a commit is pushed to a branch.
    */
   onCommit(id: string, options?: OnCommitOptions): events.Rule;
+
+  /**
+   * Grant the given principal identity permissions to perform the actions on this repository
+   */
+  grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
+
+  /**
+   * Grant the given identity permissions to pull this repository.
+   */
+  grantPull(grantee: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grant the given identity permissions to pull and push this repository.
+   */
+  grantPullPush(grantee: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grant the given identity permissions to read this repository.
+   */
+  grantRead(grantee: iam.IGrantable): iam.Grant;
 }
 
 /**
@@ -120,8 +141,8 @@ abstract class RepositoryBase extends Resource implements IRepository {
   public onEvent(id: string, options: events.OnEventOptions = {}) {
     const rule = new events.Rule(this, id, options);
     rule.addEventPattern({
-      source: [ 'aws.codecommit' ],
-      resources: [ this.repositoryArn ]
+      source: ['aws.codecommit'],
+      resources: [this.repositoryArn],
     });
     rule.addTarget(options.target);
     return rule;
@@ -134,7 +155,7 @@ abstract class RepositoryBase extends Resource implements IRepository {
   public onStateChange(id: string, options: events.OnEventOptions = {}) {
     const rule = this.onEvent(id, options);
     rule.addEventPattern({
-      detailType: [ 'CodeCommit Repository State Change' ],
+      detailType: ['CodeCommit Repository State Change'],
     });
     return rule;
   }
@@ -145,7 +166,7 @@ abstract class RepositoryBase extends Resource implements IRepository {
    */
   public onReferenceCreated(id: string, options: events.OnEventOptions = {}) {
     const rule = this.onStateChange(id, options);
-    rule.addEventPattern({ detail: { event: [ 'referenceCreated' ] } });
+    rule.addEventPattern({ detail: { event: ['referenceCreated'] } });
     return rule;
   }
 
@@ -155,7 +176,7 @@ abstract class RepositoryBase extends Resource implements IRepository {
    */
   public onReferenceUpdated(id: string, options: events.OnEventOptions = {}) {
     const rule = this.onStateChange(id, options);
-    rule.addEventPattern({ detail: { event: [ 'referenceCreated', 'referenceUpdated' ] } });
+    rule.addEventPattern({ detail: { event: ['referenceCreated', 'referenceUpdated'] } });
     return rule;
   }
 
@@ -165,7 +186,7 @@ abstract class RepositoryBase extends Resource implements IRepository {
    */
   public onReferenceDeleted(id: string, options: events.OnEventOptions = {}) {
     const rule = this.onStateChange(id, options);
-    rule.addEventPattern({ detail: { event: [ 'referenceDeleted' ] } });
+    rule.addEventPattern({ detail: { event: ['referenceDeleted'] } });
     return rule;
   }
 
@@ -174,7 +195,7 @@ abstract class RepositoryBase extends Resource implements IRepository {
    */
   public onPullRequestStateChange(id: string, options: events.OnEventOptions = {}) {
     const rule = this.onEvent(id, options);
-    rule.addEventPattern({ detailType: [ 'CodeCommit Pull Request State Change' ] });
+    rule.addEventPattern({ detailType: ['CodeCommit Pull Request State Change'] });
     return rule;
   }
 
@@ -183,7 +204,7 @@ abstract class RepositoryBase extends Resource implements IRepository {
    */
   public onCommentOnPullRequest(id: string, options: events.OnEventOptions = {}) {
     const rule = this.onEvent(id, options);
-    rule.addEventPattern({ detailType: [ 'CodeCommit Comment on Pull Request' ] });
+    rule.addEventPattern({ detailType: ['CodeCommit Comment on Pull Request'] });
     return rule;
   }
 
@@ -192,7 +213,7 @@ abstract class RepositoryBase extends Resource implements IRepository {
    */
   public onCommentOnCommit(id: string, options: events.OnEventOptions = {}) {
     const rule = this.onEvent(id, options);
-    rule.addEventPattern({ detailType: [ 'CodeCommit Comment on Commit' ] });
+    rule.addEventPattern({ detailType: ['CodeCommit Comment on Commit'] });
     return rule;
   }
 
@@ -202,9 +223,35 @@ abstract class RepositoryBase extends Resource implements IRepository {
   public onCommit(id: string, options: OnCommitOptions = {}) {
     const rule = this.onReferenceUpdated(id, options);
     if (options.branches) {
-      rule.addEventPattern({ detail: { referenceName: options.branches }});
+      rule.addEventPattern({ detail: { referenceName: options.branches } });
     }
     return rule;
+  }
+
+  public grant(grantee: iam.IGrantable, ...actions: string[]) {
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions,
+      resourceArns: [this.repositoryArn],
+    });
+  }
+
+  public grantPull(grantee: iam.IGrantable) {
+    return this.grant(grantee, 'codecommit:GitPull');
+  }
+
+  public grantPullPush(grantee: iam.IGrantable) {
+    this.grantPull(grantee);
+    return this.grant(grantee, 'codecommit:GitPush');
+  }
+
+  public grantRead(grantee: iam.IGrantable) {
+    this.grantPull(grantee);
+    return this.grant(grantee,
+      'codecommit:EvaluatePullRequestApprovalRules',
+      'codecommit:Get*',
+      'codecommit:Describe*',
+    );
   }
 }
 
@@ -285,7 +332,7 @@ export class Repository extends RepositoryBase {
     this.repository = new CfnRepository(this, 'Resource', {
       repositoryName: props.repositoryName,
       repositoryDescription: props.description,
-      triggers: Lazy.anyValue({ produce: () =>  this.triggers}, { omitEmptyArray: true}),
+      triggers: Lazy.anyValue({ produce: () => this.triggers }, { omitEmptyArray: true }),
     });
 
     this.repositoryName = this.getResourceNameAttribute(this.repository.attrName);
@@ -342,9 +389,9 @@ export class Repository extends RepositoryBase {
  * Creates for a repository trigger to an SNS topic or Lambda function.
  */
 export interface RepositoryTriggerOptions {
-   /**
-    * A name for the trigger.Triggers on a repository must have unique names
-    */
+  /**
+   * A name for the trigger.Triggers on a repository must have unique names
+   */
   readonly name?: string;
 
   /**

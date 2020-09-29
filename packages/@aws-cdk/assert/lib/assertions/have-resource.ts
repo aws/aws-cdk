@@ -1,5 +1,6 @@
-import { Assertion, JestFriendlyAssertion } from "../assertion";
-import { StackInspector } from "../inspector";
+import { Assertion, JestFriendlyAssertion } from '../assertion';
+import { StackInspector } from '../inspector';
+import { anything, deepObjectLike, match, objectLike } from './have-resource-matchers';
 
 /**
  * Magic value to signify that a certain key should be absent from the property bag.
@@ -22,36 +23,42 @@ export const ABSENT = '{{ABSENT}}';
  * @param allowValueExtension if properties is an object, tells whether values must match exactly, or if they are
  *                     allowed to be supersets of the reference values. Meaningless if properties is a function.
  */
-export function haveResource(resourceType: string,
-                             properties?: any,
-                             comparison?: ResourcePart,
-                             allowValueExtension: boolean = false): Assertion<StackInspector> {
+export function haveResource(
+  resourceType: string,
+  properties?: any,
+  comparison?: ResourcePart,
+  allowValueExtension: boolean = false): Assertion<StackInspector> {
   return new HaveResourceAssertion(resourceType, properties, comparison, allowValueExtension);
 }
 
 /**
  * Sugar for calling ``haveResources`` with ``allowValueExtension`` set to ``true``.
  */
-export function haveResourceLike(resourceType: string,
-                                 properties?: any,
-                                 comparison?: ResourcePart) {
+export function haveResourceLike(
+  resourceType: string,
+  properties?: any,
+  comparison?: ResourcePart) {
   return haveResource(resourceType, properties, comparison, true);
 }
 
-type PropertyPredicate = (props: any, inspection: InspectionFailure) => boolean;
+export type PropertyMatcher = (props: any, inspection: InspectionFailure) => boolean;
 
 export class HaveResourceAssertion extends JestFriendlyAssertion<StackInspector> {
   private readonly inspected: InspectionFailure[] = [];
   private readonly part: ResourcePart;
-  private readonly predicate: PropertyPredicate;
+  private readonly matcher: any;
 
-  constructor(private readonly resourceType: string,
-              private readonly properties?: any,
-              part?: ResourcePart,
-              allowValueExtension: boolean = false) {
+  constructor(
+    private readonly resourceType: string,
+    properties?: any,
+    part?: ResourcePart,
+    allowValueExtension: boolean = false) {
     super();
 
-    this.predicate = typeof properties === 'function' ? properties : makeSuperObjectPredicate(properties, allowValueExtension);
+    this.matcher = isCallable(properties) ? properties :
+      properties === undefined ? anything() :
+        allowValueExtension ? deepObjectLike(properties) :
+          objectLike(properties);
     this.part = part !== undefined ? part : ResourcePart.Properties;
   }
 
@@ -65,7 +72,7 @@ export class HaveResourceAssertion extends JestFriendlyAssertion<StackInspector>
         // to maintain backwards compatibility with old predicate API.
         const inspection = { resource, failureReason: 'Object did not match predicate' };
 
-        if (this.predicate(propsToCheck, inspection)) {
+        if (match(propsToCheck, this.matcher, inspection)) {
           return true;
         }
 
@@ -95,8 +102,8 @@ export class HaveResourceAssertion extends JestFriendlyAssertion<StackInspector>
   }
 
   public get description(): string {
-    // tslint:disable-next-line:max-line-length
-    return `resource '${this.resourceType}' with properties ${JSON.stringify(this.properties, undefined, 2)}`;
+    // eslint-disable-next-line max-len
+    return `resource '${this.resourceType}' with ${JSON.stringify(this.matcher, undefined, 2)}`;
   }
 }
 
@@ -105,111 +112,9 @@ function indent(n: number, s: string) {
   return prefix + s.replace(/\n/g, '\n' + prefix);
 }
 
-/**
- * Make a predicate that checks property superset
- */
-function makeSuperObjectPredicate(obj: any, allowValueExtension: boolean) {
-  return (resourceProps: any, inspection: InspectionFailure) => {
-    const errors: string[] = [];
-    const ret = isSuperObject(resourceProps, obj, errors, allowValueExtension);
-    inspection.failureReason = errors.join(',');
-    return ret;
-  };
-}
-
 export interface InspectionFailure {
   resource: any;
   failureReason: string;
-}
-
-/**
- * Return whether `superObj` is a super-object of `obj`.
- *
- * A super-object has the same or more property values, recursing into sub properties if ``allowValueExtension`` is true.
- */
-export function isSuperObject(superObj: any, pattern: any, errors: string[] = [], allowValueExtension: boolean = false): boolean {
-  if (pattern == null) { return true; }
-  if (Array.isArray(superObj) !== Array.isArray(pattern)) {
-    errors.push('Array type mismatch');
-    return false;
-  }
-  if (Array.isArray(superObj)) {
-    if (pattern.length !== superObj.length) {
-      errors.push('Array length mismatch');
-      return false;
-    }
-
-    // Do isSuperObject comparison for individual objects
-    for (let i = 0; i < pattern.length; i++) {
-      if (!isSuperObject(superObj[i], pattern[i], [], allowValueExtension)) {
-        errors.push(`Array element ${i} mismatch`);
-      }
-    }
-    return errors.length === 0;
-  }
-  if ((typeof superObj === 'object') !== (typeof pattern === 'object')) {
-    errors.push('Object type mismatch');
-    return false;
-  }
-  if (typeof pattern === 'object') {
-    for (const [patternKey, patternValue] of Object.entries(pattern)) {
-      if (patternValue === ABSENT) {
-        if (superObj[patternKey] !== undefined) { errors.push(`Field ${patternKey} present, but shouldn't be`); }
-        continue;
-      }
-
-      if (!(patternKey in superObj)) {
-        errors.push(`Field ${patternKey} missing`);
-        continue;
-      }
-
-      const innerErrors = new Array<string>();
-      const valueMatches = allowValueExtension
-                         ? isSuperObject(superObj[patternKey], patternValue, innerErrors, allowValueExtension)
-                         : isStrictlyEqual(superObj[patternKey], patternValue, innerErrors);
-      if (!valueMatches) {
-        errors.push(`Field ${patternKey} mismatch: ${innerErrors.join(', ')}`);
-      }
-    }
-    return errors.length === 0;
-  }
-
-  if (superObj !== pattern) {
-    errors.push('Different values');
-  }
-  return errors.length === 0;
-}
-
-function isStrictlyEqual(left: any, pattern: any, errors: string[]): boolean {
-  if (left === pattern) { return true; }
-  if (typeof left !== typeof pattern) {
-    errors.push(`${typeof left} !== ${typeof pattern}`);
-    return false;
-  }
-
-  if (typeof left === 'object' && typeof pattern === 'object') {
-    if (Array.isArray(left) !== Array.isArray(pattern)) { return false; }
-    const allKeys = new Set<string>([...Object.keys(left), ...Object.keys(pattern)]);
-    for (const key of allKeys) {
-      if (pattern[key] === ABSENT) {
-        if (left[key] !== undefined) {
-          errors.push(`Field ${key} present, but shouldn't be`);
-          return false;
-        }
-        return true;
-      }
-
-      const innerErrors = new Array<string>();
-      if (!isStrictlyEqual(left[key], pattern[key], innerErrors)) {
-        errors.push(`${Array.isArray(left) ? 'element ' : ''}${key}: ${innerErrors.join(', ')}`);
-        return false;
-      }
-    }
-    return true;
-  }
-
-  errors.push(`${left} !== ${pattern}`);
-  return false;
 }
 
 /**
@@ -227,4 +132,32 @@ export enum ResourcePart {
    * (including UpdateConfig, DependsOn, etc.)
    */
   CompleteDefinition
+}
+
+/**
+ * Whether a value is a callable
+ */
+function isCallable(x: any): x is ((...args: any[]) => any) {
+  return x && {}.toString.call(x) === '[object Function]';
+}
+
+/**
+ * Return whether `superObj` is a super-object of `obj`.
+ *
+ * A super-object has the same or more property values, recursing into sub properties if ``allowValueExtension`` is true.
+ *
+ * At any point in the object, a value may be replaced with a function which will be used to check that particular field.
+ * The type of a matcher function is expected to be of type PropertyMatcher.
+ *
+ * @deprecated - Use `objectLike` or a literal object instead.
+ */
+export function isSuperObject(superObj: any, pattern: any, errors: string[] = [], allowValueExtension: boolean = false): boolean {
+  const matcher = allowValueExtension ? deepObjectLike(pattern) : objectLike(pattern);
+
+  const inspection: InspectionFailure = { resource: superObj, failureReason: '' };
+  const ret = match(superObj, matcher, inspection);
+  if (!ret) {
+    errors.push(inspection.failureReason);
+  }
+  return ret;
 }

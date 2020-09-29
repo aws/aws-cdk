@@ -8,3 +8,6 @@ node_modules
 coverage
 nyc.config.js
 *.snk
+!.eslintrc.js
+
+junit.xml

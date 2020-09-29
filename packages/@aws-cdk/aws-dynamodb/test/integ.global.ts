@@ -1,3 +1,4 @@
+/// !cdk-integ pragma:ignore-assets
 import { App, Construct, RemovalPolicy, Stack, StackProps } from '@aws-cdk/core';
 import * as dynamodb from '../lib';
 
@@ -8,12 +9,12 @@ class TestStack extends Stack {
     const table = new dynamodb.Table(this, 'Table', {
       partitionKey: {
         name: 'id',
-        type: dynamodb.AttributeType.STRING
+        type: dynamodb.AttributeType.STRING,
       },
       removalPolicy: RemovalPolicy.DESTROY,
       replicationRegions: [
         'eu-west-2',
-        'eu-central-1'
+        'eu-central-1',
       ],
     });
 
@@ -21,8 +22,8 @@ class TestStack extends Stack {
       indexName: 'my-index',
       partitionKey: {
         name: 'key',
-        type: dynamodb.AttributeType.STRING
-      }
+        type: dynamodb.AttributeType.STRING,
+      },
     });
   }
 }

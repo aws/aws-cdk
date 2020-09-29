@@ -1,12 +1,12 @@
-import { FileAssetPackaging } from '@aws-cdk/cdk-assets-schema';
 import { createReadStream, promises as fs } from 'fs';
 import * as path from 'path';
+import { FileAssetPackaging } from '@aws-cdk/cloud-assembly-schema';
 import { FileManifestEntry } from '../../asset-manifest';
 import { EventType } from '../../progress';
 import { zipDirectory } from '../archive';
-import { IAssetHandler, IHandlerHost } from "../asset-handler";
+import { IAssetHandler, IHandlerHost } from '../asset-handler';
 import { pathExists } from '../fs-extra';
-import { replaceAwsPlaceholders } from "../placeholders";
+import { replaceAwsPlaceholders } from '../placeholders';
 
 export class FileAssetHandler implements IAssetHandler {
   private readonly fileCacheRoot: string;
@@ -25,14 +25,16 @@ export class FileAssetHandler implements IAssetHandler {
     const s3 = await this.host.aws.s3Client(destination);
     this.host.emitMessage(EventType.CHECK, `Check ${s3Url}`);
 
-    const account = await this.host.aws.discoverCurrentAccount();
+    // A thunk for describing the current account. Used when we need to format an error
+    // message, not in the success case.
+    const account = async () => (await this.host.aws.discoverCurrentAccount())?.accountId;
     switch (await bucketOwnership(s3, destination.bucketName)) {
       case BucketOwnership.MINE:
         break;
       case BucketOwnership.DOES_NOT_EXIST:
-        throw new Error(`No bucket named '${destination.bucketName}'. Is account ${account} bootstrapped?`);
+        throw new Error(`No bucket named '${destination.bucketName}'. Is account ${await account()} bootstrapped?`);
       case BucketOwnership.SOMEONE_ELSES_OR_NO_ACCESS:
-        throw new Error(`Bucket named '${destination.bucketName}' exists, but not in account ${account}. Wrong account?`);
+        throw new Error(`Bucket named '${destination.bucketName}' exists, but not in account ${await account()}. Wrong account?`);
     }
 
     if (await objectExists(s3, destination.bucketName, destination.objectKey)) {
@@ -49,7 +51,7 @@ export class FileAssetHandler implements IAssetHandler {
       Bucket: destination.bucketName,
       Key: destination.objectKey,
       Body: createReadStream(publishFile),
-      ContentType: contentType
+      ContentType: contentType,
     }).promise();
   }
 
@@ -93,14 +95,17 @@ async function bucketOwnership(s3: AWS.S3, bucket: string): Promise<BucketOwners
 }
 
 async function objectExists(s3: AWS.S3, bucket: string, key: string) {
-  try {
-    await s3.headObject({ Bucket: bucket, Key: key }).promise();
-    return true;
-  } catch (e) {
-    if (e.code === 'NotFound') {
-      return false;
-    }
-
-    throw e;
-  }
+  /*
+   * The object existence check here refrains from using the `headObject` operation because this
+   * would create a negative cache entry, making GET-after-PUT eventually consistent. This has been
+   * observed to result in CloudFormation issuing "ValidationError: S3 error: Access Denied", for
+   * example in https://github.com/aws/aws-cdk/issues/6430.
+   *
+   * To prevent this, we are instead using the listObjectsV2 call, using the looked up key as the
+   * prefix, and limiting results to 1. Since the list operation returns keys ordered by binary
+   * UTF-8 representation, the key we are looking for is guaranteed to always be the first match
+   * returned if it exists.
+   */
+  const response = await s3.listObjectsV2({ Bucket: bucket, Prefix: key, MaxKeys: 1 }).promise();
+  return response.Contents != null && response.Contents.some(object => object.Key === key);
 }

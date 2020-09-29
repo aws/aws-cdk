@@ -4,7 +4,6 @@ import { NamespaceType } from './namespace';
 import { IService } from './service';
 import { CfnInstance } from './servicediscovery.generated';
 
-// tslint:disable-next-line:no-empty-interface
 export interface NonIpInstanceBaseProps extends BaseInstanceProps {
 }
 
@@ -50,8 +49,8 @@ export class NonIpInstance extends InstanceBase {
       instanceId: props.instanceId || this.uniqueInstanceId(),
       serviceId: props.service.serviceId,
       instanceAttributes: {
-        ...props.customAttributes
-      }
+        ...props.customAttributes,
+      },
     });
 
     this.service = props.service;

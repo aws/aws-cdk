@@ -1,5 +1,5 @@
-import { Token } from "@aws-cdk/core";
-import { Connections, IConnectable } from "./connections";
+import { Token } from '@aws-cdk/core';
+import { Connections, IConnectable } from './connections';
 
 /**
  * Interface for classes that provide the peer-specification parts of a security group rule
@@ -122,7 +122,7 @@ class CidrIPv4 implements IPeer {
  */
 class AnyIPv4 extends CidrIPv4 {
   constructor() {
-    super("0.0.0.0/0");
+    super('0.0.0.0/0');
   }
 }
 
@@ -169,7 +169,7 @@ class CidrIPv6 implements IPeer {
  */
 class AnyIPv6 extends CidrIPv6 {
   constructor() {
-    super("::/0");
+    super('::/0');
   }
 }
 

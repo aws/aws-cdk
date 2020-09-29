@@ -26,15 +26,34 @@ export abstract class Secret {
   /**
    * Creates a environment variable value from a secret stored in AWS Secrets
    * Manager.
+   *
+   * @param secret the secret stored in AWS Secrets Manager
+   * @param field the name of the field with the value that you want to set as
+   * the environment variable value. Only values in JSON format are supported.
+   * If you do not specify a JSON field, then the full content of the secret is
+   * used.
    */
-  public static fromSecretsManager(secret: secretsmanager.ISecret): Secret {
+  public static fromSecretsManager(secret: secretsmanager.ISecret, field?: string): Secret {
     return {
-      arn: secret.secretArn,
+      arn: field ? `${secret.secretArn}:${field}::` : secret.secretArn,
+      hasField: !!field,
       grantRead: grantee => secret.grantRead(grantee),
     };
   }
 
+  /**
+   * The ARN of the secret
+   */
   public abstract readonly arn: string;
+
+  /**
+   * Whether this secret uses a specific JSON field
+   */
+  public abstract readonly hasField?: boolean;
+
+  /**
+   * Grants reading the secret to a principal
+   */
   public abstract grantRead(grantee: iam.IGrantable): iam.Grant;
 }
 
@@ -244,7 +263,7 @@ export interface ContainerDefinitionOptions {
    * Linux-specific modifications that are applied to the container, such as Linux kernel capabilities.
    * For more information see [KernelCapabilities](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_KernelCapabilities.html).
    *
-   * @default - No Linux paramters.
+   * @default - No Linux parameters.
    */
   readonly linuxParameters?: LinuxParameters;
 
@@ -280,28 +299,28 @@ export class ContainerDefinition extends cdk.Construct {
   /**
    * The mount points for data volumes in your container.
    */
-   public readonly mountPoints = new Array<MountPoint>();
+  public readonly mountPoints = new Array<MountPoint>();
 
   /**
    * The list of port mappings for the container. Port mappings allow containers to access ports
    * on the host container instance to send or receive traffic.
    */
-   public readonly portMappings = new Array<PortMapping>();
+  public readonly portMappings = new Array<PortMapping>();
 
-   /**
-    * The data volumes to mount from another container in the same task definition.
-    */
-   public readonly volumesFrom = new Array<VolumeFrom>();
+  /**
+   * The data volumes to mount from another container in the same task definition.
+   */
+  public readonly volumesFrom = new Array<VolumeFrom>();
 
-   /**
-    * An array of ulimits to set in the container.
-    */
-   public readonly ulimits = new Array<Ulimit>();
+  /**
+   * An array of ulimits to set in the container.
+   */
+  public readonly ulimits = new Array<Ulimit>();
 
-   /**
-    * An array dependencies defined for container startup and shutdown.
-    */
-   public readonly containerDependencies = new Array<ContainerDependency>();
+  /**
+   * An array dependencies defined for container startup and shutdown.
+   */
+  public readonly containerDependencies = new Array<ContainerDependency>();
 
   /**
    * Specifies whether the container will be marked essential.
@@ -315,9 +334,9 @@ export class ContainerDefinition extends cdk.Construct {
    */
   public readonly essential: boolean;
 
-   /**
-    * The name of this container
-    */
+  /**
+   * The name of this container
+   */
   public readonly containerName: string;
 
   /**
@@ -342,6 +361,8 @@ export class ContainerDefinition extends cdk.Construct {
 
   private readonly imageConfig: ContainerImageConfig;
 
+  private readonly secrets?: CfnTaskDefinition.SecretProperty[];
+
   /**
    * Constructs a new instance of the ContainerDefinition class.
    */
@@ -349,7 +370,7 @@ export class ContainerDefinition extends cdk.Construct {
     super(scope, id);
     if (props.memoryLimitMiB !== undefined && props.memoryReservationMiB !== undefined) {
       if (props.memoryLimitMiB < props.memoryReservationMiB) {
-        throw new Error(`MemoryLimitMiB should not be less than MemoryReservationMiB.`);
+        throw new Error('MemoryLimitMiB should not be less than MemoryReservationMiB.');
       }
     }
     this.essential = props.essential !== undefined ? props.essential : true;
@@ -363,6 +384,20 @@ export class ContainerDefinition extends cdk.Construct {
       this.logDriverConfig = props.logging.bind(this, this);
     }
     props.taskDefinition._linkContainer(this);
+
+    if (props.secrets) {
+      this.secrets = [];
+      for (const [name, secret] of Object.entries(props.secrets)) {
+        if (this.taskDefinition.isFargateCompatible && secret.hasField) {
+          throw new Error(`Cannot specify secret JSON field for a task using the FARGATE launch type: '${name}' in container '${this.node.id}'`);
+        }
+        secret.grantRead(this.taskDefinition.obtainExecutionRole());
+        this.secrets.push({
+          name,
+          valueFrom: secret.arn,
+        });
+      }
+    }
   }
 
   /**
@@ -373,7 +408,7 @@ export class ContainerDefinition extends cdk.Construct {
    */
   public addLink(container: ContainerDefinition, alias?: string) {
     if (this.taskDefinition.networkMode !== NetworkMode.BRIDGE) {
-      throw new Error(`You must use network mode Bridge to add container links.`);
+      throw new Error('You must use network mode Bridge to add container links.');
     }
     if (alias !== undefined) {
       this.links.push(`${container.containerName}:${alias}`);
@@ -398,14 +433,14 @@ export class ContainerDefinition extends cdk.Construct {
     const mountPoint = {
       containerPath: scratch.containerPath,
       readOnly: scratch.readOnly,
-      sourceVolume: scratch.name
+      sourceVolume: scratch.name,
     };
 
     const volume = {
       host: {
-        sourcePath: scratch.sourcePath
+        sourcePath: scratch.sourcePath,
       },
-      name: scratch.name
+      name: scratch.name,
     };
 
     this.taskDefinition.addVolume(volume);
@@ -427,7 +462,7 @@ export class ContainerDefinition extends cdk.Construct {
         if (pm.hostPort === undefined) {
           pm = {
             ...pm,
-            hostPort: 0
+            hostPort: 0,
           };
         }
       }
@@ -513,9 +548,9 @@ export class ContainerDefinition extends cdk.Construct {
   /**
    * Render this container definition to a CloudFormation object
    *
-   * @param taskDefinition [disable-awslint:ref-via-interface] (made optional to avoid breaking change)
+   * @param _taskDefinition [disable-awslint:ref-via-interface] (unused but kept to avoid breaking change)
    */
-  public renderContainerDefinition(taskDefinition?: TaskDefinition): CfnTaskDefinition.ContainerDefinitionProperty {
+  public renderContainerDefinition(_taskDefinition?: TaskDefinition): CfnTaskDefinition.ContainerDefinitionProperty {
     return {
       command: this.props.command,
       cpu: this.props.cpu,
@@ -545,16 +580,7 @@ export class ContainerDefinition extends cdk.Construct {
       workingDirectory: this.props.workingDirectory,
       logConfiguration: this.logDriverConfig,
       environment: this.props.environment && renderKV(this.props.environment, 'name', 'value'),
-      secrets: this.props.secrets && Object.entries(this.props.secrets)
-        .map(([k, v]) => {
-          if (taskDefinition) {
-            v.grantRead(taskDefinition.obtainExecutionRole());
-          }
-          return {
-            name: k,
-            valueFrom: v.arn
-          };
-        }),
+      secrets: this.secrets,
       extraHosts: this.props.extraHosts && renderKV(this.props.extraHosts, 'hostname', 'ipAddress'),
       healthCheck: this.props.healthCheck && renderHealthCheck(this.props.healthCheck),
       links: cdk.Lazy.listValue({ produce: () => this.links }, { omitEmpty: true }),
@@ -638,7 +664,7 @@ function getHealthCheckCommand(hc: HealthCheck): string[] {
   const hcCommand = new Array<string>();
 
   if (cmd.length === 0) {
-    throw new Error(`At least one argument must be supplied for health check command.`);
+    throw new Error('At least one argument must be supplied for health check command.');
   }
 
   if (cmd.length === 1) {
@@ -646,7 +672,7 @@ function getHealthCheckCommand(hc: HealthCheck): string[] {
     return hcCommand;
   }
 
-  if (cmd[0] !== "CMD" && cmd[0] !== 'CMD-SHELL') {
+  if (cmd[0] !== 'CMD' && cmd[0] !== 'CMD-SHELL') {
     hcCommand.push('CMD');
   }
 
@@ -689,21 +715,21 @@ export interface Ulimit {
  * Type of resource to set a limit on
  */
 export enum UlimitName {
-  CORE = "core",
-  CPU = "cpu",
-  DATA = "data",
-  FSIZE = "fsize",
-  LOCKS = "locks",
-  MEMLOCK = "memlock",
-  MSGQUEUE = "msgqueue",
-  NICE = "nice",
-  NOFILE = "nofile",
-  NPROC = "nproc",
-  RSS = "rss",
-  RTPRIO = "rtprio",
-  RTTIME = "rttime",
-  SIGPENDING = "sigpending",
-  STACK = "stack"
+  CORE = 'core',
+  CPU = 'cpu',
+  DATA = 'data',
+  FSIZE = 'fsize',
+  LOCKS = 'locks',
+  MEMLOCK = 'memlock',
+  MSGQUEUE = 'msgqueue',
+  NICE = 'nice',
+  NOFILE = 'nofile',
+  NPROC = 'nproc',
+  RSS = 'rss',
+  RTPRIO = 'rtprio',
+  RTTIME = 'rttime',
+  SIGPENDING = 'sigpending',
+  STACK = 'stack'
 }
 
 function renderUlimit(ulimit: Ulimit): CfnTaskDefinition.UlimitProperty {
@@ -762,7 +788,7 @@ export enum ContainerDependencyCondition {
 function renderContainerDependency(containerDependency: ContainerDependency): CfnTaskDefinition.ContainerDependencyProperty {
   return {
     containerName: containerDependency.container.containerName,
-    condition: containerDependency.condition || ContainerDependencyCondition.HEALTHY
+    condition: containerDependency.condition || ContainerDependencyCondition.HEALTHY,
   };
 }
 
@@ -811,12 +837,12 @@ export enum Protocol {
   /**
    * TCP
    */
-  TCP = "tcp",
+  TCP = 'tcp',
 
   /**
    * UDP
    */
-  UDP = "udp",
+  UDP = 'udp',
 }
 
 function renderPortMapping(pm: PortMapping): CfnTaskDefinition.PortMappingProperty {

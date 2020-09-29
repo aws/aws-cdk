@@ -423,7 +423,7 @@ Object {
       },
       "Type": "AWS::IAM::Role",
     },
-    "MyApiDeploymentECB0D05Ed646248a19f9620d956e9fa33de3ed89": Object {
+    "MyApiDeploymentECB0D05E0597cc4592870e54c401cccc6090bd86": Object {
       "DependsOn": Array [
         "GetRootA9424890",
         "MyApiproxyANYFCF46C66",
@@ -441,7 +441,7 @@ Object {
     "MyApiDeploymentStageprodE1054AF0": Object {
       "Properties": Object {
         "DeploymentId": Object {
-          "Ref": "MyApiDeploymentECB0D05Ed646248a19f9620d956e9fa33de3ed89",
+          "Ref": "MyApiDeploymentECB0D05E0597cc4592870e54c401cccc6090bd86",
         },
         "RestApiId": Object {
           "Ref": "MyApi49610EDF",
@@ -480,7 +480,7 @@ Object {
               Object {
                 "Ref": "MyApi49610EDF",
               },
-              "/test-invoke-stage/*/{proxy+}",
+              "/test-invoke-stage/*/*",
             ],
           ],
         },
@@ -521,7 +521,7 @@ Object {
               Object {
                 "Ref": "MyApiDeploymentStageprodE1054AF0",
               },
-              "/*/{proxy+}",
+              "/*/*",
             ],
           ],
         },
@@ -765,16 +765,16 @@ Object {
         "MapPublicIpOnLaunch": false,
         "Tags": Array [
           Object {
-            "Key": "Name",
-            "Value": "ecs/VPC/PrivateSubnet1",
-          },
-          Object {
             "Key": "aws-cdk:subnet-name",
             "Value": "Private",
           },
           Object {
             "Key": "aws-cdk:subnet-type",
             "Value": "Private",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "ecs/VPC/PrivateSubnet1",
           },
         ],
         "VpcId": Object {
@@ -869,16 +869,16 @@ Object {
         "MapPublicIpOnLaunch": true,
         "Tags": Array [
           Object {
-            "Key": "Name",
-            "Value": "ecs/VPC/PublicSubnet1",
-          },
-          Object {
             "Key": "aws-cdk:subnet-name",
             "Value": "Public",
           },
           Object {
             "Key": "aws-cdk:subnet-type",
             "Value": "Public",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "ecs/VPC/PublicSubnet1",
           },
         ],
         "VpcId": Object {
@@ -1213,7 +1213,7 @@ Object {
       },
       "Type": "AWS::IAM::Role",
     },
-    "lambdaeventsHelloWorldFunctionAB27BB65ApiEventSourceA7A86A4FDeploymentFF3F4A1Aa119fa0e654d84489ef88606c21a73fb": Object {
+    "lambdaeventsHelloWorldFunctionAB27BB65ApiEventSourceA7A86A4FDeploymentFF3F4A1Ac00dde791d2719be3e8ea69f9a61a5cd": Object {
       "DependsOn": Array [
         "lambdaeventsHelloWorldFunctionAB27BB65ApiEventSourceA7A86A4FhelloGET04FBC7F6",
         "lambdaeventsHelloWorldFunctionAB27BB65ApiEventSourceA7A86A4FhelloPOST53F177B1",
@@ -1230,7 +1230,7 @@ Object {
     "lambdaeventsHelloWorldFunctionAB27BB65ApiEventSourceA7A86A4FDeploymentStageprod6A86C016": Object {
       "Properties": Object {
         "DeploymentId": Object {
-          "Ref": "lambdaeventsHelloWorldFunctionAB27BB65ApiEventSourceA7A86A4FDeploymentFF3F4A1Aa119fa0e654d84489ef88606c21a73fb",
+          "Ref": "lambdaeventsHelloWorldFunctionAB27BB65ApiEventSourceA7A86A4FDeploymentFF3F4A1Ac00dde791d2719be3e8ea69f9a61a5cd",
         },
         "RestApiId": Object {
           "Ref": "lambdaeventsHelloWorldFunctionAB27BB65ApiEventSourceA7A86A4F12449C5F",
@@ -1743,6 +1743,39 @@ Object {
                   ],
                 },
               ],
+            },
+            Object {
+              "Action": Array [
+                "codebuild:CreateReportGroup",
+                "codebuild:CreateReport",
+                "codebuild:UpdateReport",
+                "codebuild:BatchPutTestCases",
+              ],
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::Join": Array [
+                  "",
+                  Array [
+                    "arn:",
+                    Object {
+                      "Ref": "AWS::Partition",
+                    },
+                    ":codebuild:",
+                    Object {
+                      "Ref": "AWS::Region",
+                    },
+                    ":",
+                    Object {
+                      "Ref": "AWS::AccountId",
+                    },
+                    ":report-group/",
+                    Object {
+                      "Ref": "BuildProject097C5DB7",
+                    },
+                    "-*",
+                  ],
+                ],
+              },
             },
             Object {
               "Action": Array [
@@ -3017,16 +3050,16 @@ Object {
         "MapPublicIpOnLaunch": false,
         "Tags": Array [
           Object {
-            "Key": "Name",
-            "Value": "vpc/VPC/PrivateSubnet1",
-          },
-          Object {
             "Key": "aws-cdk:subnet-name",
             "Value": "Private",
           },
           Object {
             "Key": "aws-cdk:subnet-type",
             "Value": "Private",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "vpc/VPC/PrivateSubnet1",
           },
         ],
         "VpcId": Object {
@@ -3086,16 +3119,16 @@ Object {
         "MapPublicIpOnLaunch": false,
         "Tags": Array [
           Object {
-            "Key": "Name",
-            "Value": "vpc/VPC/PrivateSubnet2",
-          },
-          Object {
             "Key": "aws-cdk:subnet-name",
             "Value": "Private",
           },
           Object {
             "Key": "aws-cdk:subnet-type",
             "Value": "Private",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "vpc/VPC/PrivateSubnet2",
           },
         ],
         "VpcId": Object {
@@ -3190,16 +3223,16 @@ Object {
         "MapPublicIpOnLaunch": true,
         "Tags": Array [
           Object {
-            "Key": "Name",
-            "Value": "vpc/VPC/PublicSubnet1",
-          },
-          Object {
             "Key": "aws-cdk:subnet-name",
             "Value": "Public",
           },
           Object {
             "Key": "aws-cdk:subnet-type",
             "Value": "Public",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "vpc/VPC/PublicSubnet1",
           },
         ],
         "VpcId": Object {
@@ -3294,16 +3327,16 @@ Object {
         "MapPublicIpOnLaunch": true,
         "Tags": Array [
           Object {
-            "Key": "Name",
-            "Value": "vpc/VPC/PublicSubnet2",
-          },
-          Object {
             "Key": "aws-cdk:subnet-name",
             "Value": "Public",
           },
           Object {
             "Key": "aws-cdk:subnet-type",
             "Value": "Public",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "vpc/VPC/PublicSubnet2",
           },
         ],
         "VpcId": Object {

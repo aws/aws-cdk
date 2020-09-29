@@ -1,5 +1,5 @@
-// tslint:disable: no-console
-// tslint:disable: max-line-length
+/* eslint-disable max-len */
+/* eslint-disable no-console */
 import { IsCompleteResponse, OnEventResponse } from '../types';
 import * as cfnResponse from './cfn-response';
 import * as consts from './consts';
@@ -10,7 +10,7 @@ import { getEnv, log } from './util';
 export = {
   [consts.FRAMEWORK_ON_EVENT_HANDLER_NAME]: cfnResponse.safeHandler(onEvent),
   [consts.FRAMEWORK_IS_COMPLETE_HANDLER_NAME]: cfnResponse.safeHandler(isComplete),
-  [consts.FRAMEWORK_ON_TIMEOUT_HANDLER_NAME]: onTimeout
+  [consts.FRAMEWORK_ON_TIMEOUT_HANDLER_NAME]: onTimeout,
 };
 
 /**
@@ -39,7 +39,7 @@ async function onEvent(cfnRequest: AWSLambda.CloudFormationCustomResourceEvent) 
   // determine if this is an async provider based on whether we have an isComplete handler defined.
   // if it is not defined, then we are basically ready to return a positive response.
   if (!process.env[consts.USER_IS_COMPLETE_FUNCTION_ARN_ENV]) {
-    return await cfnResponse.submitResponse('SUCCESS', resourceEvent);
+    return cfnResponse.submitResponse('SUCCESS', resourceEvent);
   }
 
   // ok, we are not complete, so kick off the waiter workflow
@@ -65,7 +65,7 @@ async function isComplete(event: AWSCDKAsyncCustomResource.IsCompleteRequest) {
   // if we are not complete, reeturn false, and don't send a response back.
   if (!isCompleteResult.IsComplete) {
     if (isCompleteResult.Data && Object.keys(isCompleteResult.Data).length > 0) {
-      throw new Error(`"Data" is not allowed if "IsComplete" is "False"`);
+      throw new Error('"Data" is not allowed if "IsComplete" is "False"');
     }
 
     throw new cfnResponse.Retry(JSON.stringify(event));
@@ -75,8 +75,8 @@ async function isComplete(event: AWSCDKAsyncCustomResource.IsCompleteRequest) {
     ...event,
     Data: {
       ...event.Data,
-      ...isCompleteResult.Data
-    }
+      ...isCompleteResult.Data,
+    },
   };
 
   await cfnResponse.submitResponse('SUCCESS', response);
@@ -88,7 +88,7 @@ async function onTimeout(timeoutEvent: any) {
 
   const isCompleteRequest = JSON.parse(JSON.parse(timeoutEvent.Cause).errorMessage) as AWSCDKAsyncCustomResource.IsCompleteRequest;
   await cfnResponse.submitResponse('FAILED', isCompleteRequest, {
-    reason: 'Operation timed out'
+    reason: 'Operation timed out',
   });
 }
 
@@ -101,7 +101,7 @@ async function invokeUserFunction(functionArnEnv: string, payload: any) {
   // automatically by the JavaScript SDK.
   const resp = await invokeFunction({
     FunctionName: functionArn,
-    Payload: JSON.stringify(payload)
+    Payload: JSON.stringify(payload),
   });
 
   log('user function response:', resp, typeof(resp));
@@ -109,11 +109,31 @@ async function invokeUserFunction(functionArnEnv: string, payload: any) {
   const jsonPayload = parseJsonPayload(resp.Payload);
   if (resp.FunctionError) {
     log('user function threw an error:', resp.FunctionError);
-    const errorMessage = jsonPayload.errorMessage || 'error';
-    const trace = jsonPayload.trace ? `\nRemote function error: ` + jsonPayload.trace.join('\n') : '';
 
-    const e = new Error(errorMessage);
-    e.stack += trace;
+    const errorMessage = jsonPayload.errorMessage || 'error';
+
+    // parse function name from arn
+    // arn:${Partition}:lambda:${Region}:${Account}:function:${FunctionName}
+    const arn = functionArn.split(':');
+    const functionName = arn[arn.length - 1];
+
+    // append a reference to the log group.
+    const message = [
+      errorMessage,
+      '',
+      `Logs: /aws/lambda/${functionName}`, // cloudwatch log group
+      '',
+    ].join('\n');
+
+    const e = new Error(message);
+
+    // the output that goes to CFN is what's in `stack`, not the error message.
+    // if we have a remote trace, construct a nice message with log group information
+    if (jsonPayload.trace) {
+      // skip first trace line because it's the message
+      e.stack = [message, ...jsonPayload.trace.slice(1)].join('\n');
+    }
+
     throw e;
   }
 

@@ -8,8 +8,8 @@ class TestStack extends cdk.Stack {
     new iam.Role(this, 'RoleWithCompositePrincipal', {
       assumedBy: new iam.CompositePrincipal(
         new iam.ServicePrincipal('ec2.amazonaws.com'),
-        new iam.AnyPrincipal()
-      )
+        new iam.AnyPrincipal(),
+      ),
     });
   }
 }

@@ -14,16 +14,16 @@ async function main() {
     .option('jsii', {
       type: 'string',
       desc: 'Specify a different jsii executable',
-      defaultDescription: 'jsii provided by node dependencies'
+      defaultDescription: 'jsii provided by node dependencies',
     })
     .option('tsc', {
       type: 'string',
       desc: 'Specify a different tsc executable',
-      defaultDescription: 'tsc provided by node dependencies'
+      defaultDescription: 'tsc provided by node dependencies',
     })
     .argv as any;
 
-  await shell(packageCompiler({ jsii: args.jsii, tsc: args.tsc }).concat(['-w']));
+  await shell(packageCompiler({ jsii: args.jsii, tsc: args.tsc }).concat(['-w']));
 }
 
 main().catch(e => {

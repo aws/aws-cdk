@@ -146,6 +146,24 @@ export interface TaskDefinitionProps extends CommonTaskDefinitionProps {
    * @default - Memory used by task is not specified.
    */
   readonly memoryMiB?: string;
+
+  /**
+   * The IPC resource namespace to use for the containers in the task.
+   *
+   * Not supported in Fargate and Windows containers.
+   *
+   * @default - IpcMode used by the task is not specified
+   */
+  readonly ipcMode?: IpcMode;
+
+  /**
+   * The process namespace to use for the containers in the task.
+   *
+   * Not supported in Fargate and Windows containers.
+   *
+   * @default - PidMode used by the task is not specified
+   */
+  readonly pidMode?: PidMode;
 }
 
 abstract class TaskDefinitionBase extends Resource implements ITaskDefinition {
@@ -256,7 +274,7 @@ export class TaskDefinition extends TaskDefinitionBase {
     }
 
     this.networkMode = props.networkMode !== undefined ? props.networkMode :
-                       this.isFargateCompatible ? NetworkMode.AWS_VPC : NetworkMode.BRIDGE;
+      this.isFargateCompatible ? NetworkMode.AWS_VPC : NetworkMode.BRIDGE;
     if (this.isFargateCompatible && this.networkMode !== NetworkMode.AWS_VPC) {
       throw new Error(`Fargate tasks can only have AwsVpc network mode, got: ${this.networkMode}`);
     }
@@ -274,26 +292,29 @@ export class TaskDefinition extends TaskDefinitionBase {
     this._executionRole = props.executionRole;
 
     this.taskRole = props.taskRole || new iam.Role(this, 'TaskRole', {
-        assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+      assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
     });
 
     const taskDef = new CfnTaskDefinition(this, 'Resource', {
       containerDefinitions: Lazy.anyValue({ produce: () => this.renderContainers() }, { omitEmptyArray: true }),
-      volumes: Lazy.anyValue({ produce: () => this.volumes }, { omitEmptyArray: true }),
+      volumes: Lazy.anyValue({ produce: () => this.renderVolumes() }, { omitEmptyArray: true }),
       executionRoleArn: Lazy.stringValue({ produce: () => this.executionRole && this.executionRole.roleArn }),
       family: this.family,
       taskRoleArn: this.taskRole.roleArn,
       requiresCompatibilities: [
-        ...(isEc2Compatible(props.compatibility) ? ["EC2"] : []),
-        ...(isFargateCompatible(props.compatibility) ? ["FARGATE"] : []),
+        ...(isEc2Compatible(props.compatibility) ? ['EC2'] : []),
+        ...(isFargateCompatible(props.compatibility) ? ['FARGATE'] : []),
       ],
       networkMode: this.renderNetworkMode(this.networkMode),
-      placementConstraints: Lazy.anyValue({ produce: () =>
-        !isFargateCompatible(this.compatibility) ? this.placementConstraints : undefined
+      placementConstraints: Lazy.anyValue({
+        produce: () =>
+          !isFargateCompatible(this.compatibility) ? this.placementConstraints : undefined,
       }, { omitEmptyArray: true }),
       proxyConfiguration: props.proxyConfiguration ? props.proxyConfiguration.bind(this.stack, this) : undefined,
       cpu: props.cpu,
       memory: props.memoryMiB,
+      ipcMode: props.ipcMode,
+      pidMode: props.pidMode,
     });
 
     if (props.placementConstraints) {
@@ -305,6 +326,32 @@ export class TaskDefinition extends TaskDefinitionBase {
 
   public get executionRole(): iam.IRole | undefined {
     return this._executionRole;
+  }
+
+  private renderVolumes(): CfnTaskDefinition.VolumeProperty[] {
+    return this.volumes.map(renderVolume);
+
+    function renderVolume(spec: Volume): CfnTaskDefinition.VolumeProperty {
+      return {
+        host: spec.host,
+        name: spec.name,
+        dockerVolumeConfiguration: spec.dockerVolumeConfiguration && {
+          autoprovision: spec.dockerVolumeConfiguration.autoprovision,
+          driver: spec.dockerVolumeConfiguration.driver,
+          driverOpts: spec.dockerVolumeConfiguration.driverOpts,
+          labels: spec.dockerVolumeConfiguration.labels,
+          scope: spec.dockerVolumeConfiguration.scope,
+        },
+        efsVolumeConfiguration: spec.efsVolumeConfiguration && {
+          fileSystemId: spec.efsVolumeConfiguration.fileSystemId,
+          authorizationConfig: spec.efsVolumeConfiguration.authorizationConfig,
+          rootDirectory: spec.efsVolumeConfiguration.rootDirectory,
+          transitEncryption: spec.efsVolumeConfiguration.transitEncryption,
+          transitEncryptionPort: spec.efsVolumeConfiguration.transitEncryptionPort,
+
+        },
+      };
+    }
   }
 
   /**
@@ -321,12 +368,12 @@ export class TaskDefinition extends TaskDefinitionBase {
     const targetContainerPort = options.containerPort || targetContainer.containerPort;
     const portMapping = targetContainer.findPortMapping(targetContainerPort, targetProtocol);
     if (portMapping === undefined) {
-      // tslint:disable-next-line:max-line-length
+      // eslint-disable-next-line max-len
       throw new Error(`Container '${targetContainer}' has no mapping for port ${options.containerPort} and protocol ${targetProtocol}. Did you call "container.addPortMappings()"?`);
     }
     return {
       containerName: options.containerName,
-      portMapping
+      portMapping,
     };
   }
 
@@ -477,7 +524,7 @@ export class TaskDefinition extends TaskDefinitionBase {
       }
     }
 
-    return this.containers.map(x => x.renderContainerDefinition(this));
+    return this.containers.map(x => x.renderContainerDefinition());
   }
 }
 
@@ -523,6 +570,44 @@ export enum NetworkMode {
 }
 
 /**
+ * The IPC resource namespace to use for the containers in the task.
+ */
+export enum IpcMode {
+  /**
+   * If none is specified, then IPC resources within the containers of a task are private and not
+   * shared with other containers in a task or on the container instance
+   */
+  NONE = 'none',
+
+  /**
+   * If host is specified, then all containers within the tasks that specified the host IPC mode on
+   * the same container instance share the same IPC resources with the host Amazon EC2 instance.
+   */
+  HOST = 'host',
+
+  /**
+   * If task is specified, all containers within the specified task share the same IPC resources.
+   */
+  TASK = 'task',
+}
+
+/**
+ * The process namespace to use for the containers in the task.
+ */
+export enum PidMode {
+  /**
+   * If host is specified, then all containers within the tasks that specified the host PID mode
+   * on the same container instance share the same process namespace with the host Amazon EC2 instance.
+   */
+  HOST = 'host',
+
+  /**
+   * If task is specified, all containers within the specified task share the same process namespace.
+   */
+  TASK = 'task',
+}
+
+/**
  * A data volume used in a task definition.
  *
  * For tasks that use a Docker volume, specify a DockerVolumeConfiguration.
@@ -558,6 +643,19 @@ export interface Volume {
    * To use bind mounts, specify a host instead.
    */
   readonly dockerVolumeConfiguration?: DockerVolumeConfiguration;
+
+  /**
+   * This property is specified when you are using Amazon EFS.
+   *
+   * When specifying Amazon EFS volumes in tasks using the Fargate launch type,
+   * Fargate creates a supervisor container that is responsible for managing the Amazon EFS volume.
+   * The supervisor container uses a small amount of the task's memory.
+   * The supervisor container is visible when querying the task metadata version 4 endpoint,
+   * but is not visible in CloudWatch Container Insights.
+   *
+   * @default No Elastic FileSystem is setup
+   */
+  readonly efsVolumeConfiguration?: EfsVolumeConfiguration;
 }
 
 /**
@@ -641,11 +739,76 @@ export interface DockerVolumeConfiguration {
    *
    * @default No labels
    */
-  readonly labels?: string[];
+  readonly labels?: { [key: string]: string; }
   /**
    * The scope for the Docker volume that determines its lifecycle.
    */
   readonly scope: Scope;
+}
+
+/**
+ * The authorization configuration details for the Amazon EFS file system.
+ */
+export interface AuthorizationConfig {
+  /**
+   * The access point ID to use.
+   * If an access point is specified, the root directory value will be
+   * relative to the directory set for the access point.
+   * If specified, transit encryption must be enabled in the EFSVolumeConfiguration.
+   *
+   * @default No id
+   */
+  readonly accessPointId?: string;
+  /**
+   * Whether or not to use the Amazon ECS task IAM role defined
+   * in a task definition when mounting the Amazon EFS file system.
+   * If enabled, transit encryption must be enabled in the EFSVolumeConfiguration.
+   *
+   * Valid values: ENABLED | DISABLED
+   *
+   * @default If this parameter is omitted, the default value of DISABLED is used.
+   */
+  readonly iam?: string;
+}
+
+/**
+ * The configuration for an Elastic FileSystem volume.
+ */
+export interface EfsVolumeConfiguration {
+  /**
+   * The Amazon EFS file system ID to use.
+   */
+  readonly fileSystemId: string;
+  /**
+   * The directory within the Amazon EFS file system to mount as the root directory inside the host.
+   * Specifying / will have the same effect as omitting this parameter.
+   *
+   * @default The root of the Amazon EFS volume
+   */
+  readonly rootDirectory?: string;
+  /**
+   * Whether or not to enable encryption for Amazon EFS data in transit between
+   * the Amazon ECS host and the Amazon EFS server.
+   * Transit encryption must be enabled if Amazon EFS IAM authorization is used.
+   *
+   * Valid values: ENABLED | DISABLED
+   *
+   * @default DISABLED
+   */
+  readonly transitEncryption?: string;
+  /**
+   * The port to use when sending encrypted data between
+   * the Amazon ECS host and the Amazon EFS server. EFS mount helper uses.
+   *
+   * @default Port selection strategy that the Amazon EFS mount helper uses.
+   */
+  readonly transitEncryptionPort?: number;
+  /**
+   * The authorization configuration details for the Amazon EFS file system.
+   *
+   * @default No configuration.
+   */
+  readonly authorizationConfig?: AuthorizationConfig;
 }
 
 /**
@@ -657,12 +820,12 @@ export enum Scope {
   /**
    * Docker volumes that are scoped to a task are automatically provisioned when the task starts and destroyed when the task stops.
    */
-  TASK = "task",
+  TASK = 'task',
 
   /**
    * Docker volumes that are scoped as shared persist after the task stops.
    */
-  SHARED = "shared"
+  SHARED = 'shared'
 }
 
 /**

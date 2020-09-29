@@ -46,7 +46,7 @@ class Stack2 extends cdk.Stack {
 
     // Pass the VPC to a construct that needs it
     new ConstructThatTakesAVpc(this, 'Construct', {
-      vpc: props.vpc
+      vpc: props.vpc,
     });
   }
 }

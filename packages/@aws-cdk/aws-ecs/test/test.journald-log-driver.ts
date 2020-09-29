@@ -20,9 +20,9 @@ export = {
     td.addContainer('Container', {
       image,
       logging: new ecs.JournaldLogDriver({
-        tag: 'hello'
+        tag: 'hello',
       }),
-      memoryLimitMiB: 128
+      memoryLimitMiB: 128,
     });
 
     // THEN
@@ -32,11 +32,11 @@ export = {
           LogConfiguration: {
             LogDriver: 'journald',
             Options: {
-              tag: 'hello'
-            }
-          }
-        }
-      ]
+              tag: 'hello',
+            },
+          },
+        },
+      ],
     }));
 
     test.done();
@@ -47,29 +47,7 @@ export = {
     td.addContainer('Container', {
       image,
       logging: new ecs.JournaldLogDriver(),
-      memoryLimitMiB: 128
-    });
-
-    // THEN
-    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
-      ContainerDefinitions: [
-        {
-          LogConfiguration: {
-            LogDriver: 'journald'
-          }
-        }
-      ]
-    }));
-
-    test.done();
-  },
-
-  "create a journald log driver using journald"(test: Test) {
-    // WHEN
-    td.addContainer('Container', {
-      image,
-      logging: ecs.LogDrivers.journald(),
-      memoryLimitMiB: 128
+      memoryLimitMiB: 128,
     });
 
     // THEN
@@ -78,10 +56,32 @@ export = {
         {
           LogConfiguration: {
             LogDriver: 'journald',
-            Options: {}
-          }
-        }
-      ]
+          },
+        },
+      ],
+    }));
+
+    test.done();
+  },
+
+  'create a journald log driver using journald'(test: Test) {
+    // WHEN
+    td.addContainer('Container', {
+      image,
+      logging: ecs.LogDrivers.journald(),
+      memoryLimitMiB: 128,
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          LogConfiguration: {
+            LogDriver: 'journald',
+            Options: {},
+          },
+        },
+      ],
     }));
 
     test.done();

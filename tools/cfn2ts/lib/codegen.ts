@@ -1,12 +1,11 @@
 import { schema } from '@aws-cdk/cfnspec';
 import { CodeMaker } from 'codemaker';
-import * as fs from 'fs-extra';
-import * as path from 'path';
 import * as genspec from './genspec';
 import { itemTypeNames, PropertyAttributeName, scalarTypeNames, SpecName } from './spec-utils';
 import { upcaseFirst } from './util';
 
 const CORE = genspec.CORE_NAMESPACE;
+const CFN_PARSE = genspec.CFN_PARSE_NAMESPACE;
 const RESOURCE_BASE_CLASS = `${CORE}.CfnResource`; // base class for all resources
 const CONSTRUCT_CLASS = `${CORE}.Construct`;
 const TAG_TYPE = `${CORE}.TagType`;
@@ -18,6 +17,15 @@ enum TreeAttributes {
 }
 
 interface Dictionary<T> { [key: string]: T; }
+
+export interface CodeGeneratorOptions {
+  /**
+   * How to import the core library.
+   *
+   * @default '@aws-cdk/core'
+   */
+  readonly coreImport?: string;
+}
 
 /**
  * Emits classes for all resource types
@@ -32,13 +40,14 @@ export default class CodeGenerator {
    * @param moduleName the name of the module (used to determine the file name).
    * @param spec     CloudFormation resource specification
    */
-  constructor(moduleName: string, private readonly spec: schema.Specification, private readonly affix: string) {
+  constructor(moduleName: string, private readonly spec: schema.Specification, private readonly affix: string, options: CodeGeneratorOptions = {}) {
     this.outputFile = `${moduleName}.generated.ts`;
     this.code.openFile(this.outputFile);
+    const coreImport = options.coreImport ?? '@aws-cdk/core';
 
     const meta = {
       generated: new Date(),
-      fingerprint: spec.Fingerprint
+      fingerprint: spec.Fingerprint,
     };
 
     this.code.line(`// Copyright 2012-${new Date().getFullYear()} Amazon.com, Inc. or its affiliates. All Rights Reserved.`);
@@ -46,29 +55,11 @@ export default class CodeGenerator {
     this.code.line('// See: docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-resource-specification.html');
     this.code.line(`// @cfn2ts:meta@ ${JSON.stringify(meta)}`);
     this.code.line();
-    this.code.line('// tslint:disable:max-line-length | This is generated code - line lengths are difficult to control');
+    this.code.line('/* eslint-disable max-len */ // This is generated code - line lengths are difficult to control');
     this.code.line();
-    this.code.line(`import * as ${CORE} from '@aws-cdk/core';`);
-  }
-
-  public async upToDate(outPath: string): Promise<boolean> {
-    const fullPath = path.join(outPath, this.outputFile);
-    if (!await fs.pathExists(fullPath)) {
-      return false;
-    }
-    const data = await fs.readFile(fullPath, { encoding: 'utf-8' });
-    const comment = data.match(/^\s*[/]{2}\s*@cfn2ts:meta@(.+)$/m);
-    if (comment) {
-      try {
-        const meta = JSON.parse(comment[1]);
-        if (meta.fingerprint === this.spec.Fingerprint) {
-          return true;
-        }
-      } catch {
-        return false;
-      }
-    }
-    return false;
+    this.code.line(`import * as ${CORE} from '${coreImport}';`);
+    // explicitly import the cfn-parse.ts file from @core, which is not part of the public API of the module
+    this.code.line(`import * as ${CFN_PARSE} from '${coreImport}/${coreImport === '.' ? '' : 'lib/'}cfn-parse';`);
   }
 
   public emitCode(): void {
@@ -89,7 +80,7 @@ export default class CodeGenerator {
    */
   public async save(dir: string): Promise<string[]> {
     this.code.closeFile(this.outputFile);
-    return await this.code.save(dir);
+    return this.code.save(dir);
   }
 
   /**
@@ -137,6 +128,7 @@ export default class CodeGenerator {
     this.emitValidator(resourceContext, name, spec.Properties, conversionTable);
     this.code.line();
     this.emitCloudFormationMapper(resourceContext, name, spec.Properties, conversionTable);
+    this.emitFromCfnFactoryFunction(resourceContext, name, spec.Properties, conversionTable, false);
 
     return name;
   }
@@ -160,8 +152,9 @@ export default class CodeGenerator {
         context: resource,
         propName,
         spec: propSpec,
-        additionalDocs: quoteCode(additionalDocs)},
-        container
+        additionalDocs: quoteCode(additionalDocs),
+      },
+      container,
       );
       propertyMap[propName] = newName;
     });
@@ -199,6 +192,10 @@ export default class CodeGenerator {
       this.code.line();
     }
 
+    //
+    // The class declaration representing this Resource
+    //
+
     this.docLink(spec.Documentation,
       `A CloudFormation \`${cfnName}\``,
       '',
@@ -212,7 +209,7 @@ export default class CodeGenerator {
 
     const cfnResourceTypeName = `${JSON.stringify(cfnName)}`;
     this.code.line('/**');
-    this.code.line(` * The CloudFormation resource type name for this resource class.`);
+    this.code.line(' * The CloudFormation resource type name for this resource class.');
     this.code.line(' */');
     this.code.line(`public static readonly CFN_RESOURCE_TYPE_NAME = ${cfnResourceTypeName};`);
 
@@ -222,6 +219,41 @@ export default class CodeGenerator {
       this.code.line(' */');
       this.code.line(`public static readonly REQUIRED_TRANSFORM = ${JSON.stringify(spec.RequiredTransform)};`);
     }
+
+    //
+    // The static fromCloudFormation() method,
+    // used in the @aws-cdk/cloudformation-include module
+    //
+
+    this.code.line();
+    this.code.line('/**');
+    this.code.line(' * A factory method that creates a new instance of this class from an object');
+    this.code.line(' * containing the CloudFormation properties of this resource.');
+    this.code.line(' * Used in the @aws-cdk/cloudformation-include module.');
+    this.code.line(' *');
+    this.code.line(' * @internal');
+    this.code.line(' */');
+    // eslint-disable-next-line max-len
+    this.code.openBlock(`public static _fromCloudFormation(scope: ${CONSTRUCT_CLASS}, id: string, resourceAttributes: any, options: ${CFN_PARSE}.FromCloudFormationOptions): ` +
+      `${resourceName.className}`);
+    this.code.line('resourceAttributes = resourceAttributes || {};');
+    if (propsType) {
+      // translate the template properties to CDK objects
+      this.code.line('const resourceProperties = options.parser.parseValue(resourceAttributes.Properties);');
+      // translate to props, using a (module-private) factory function
+      this.code.line(`const props = ${genspec.fromCfnFactoryName(propsType).fqn}(resourceProperties);`);
+      // finally, instantiate the resource class
+      this.code.line(`const ret = new ${resourceName.className}(scope, id, props);`);
+    } else {
+      // no props type - we simply instantiate the construct without the third argument
+      this.code.line(`const ret = new ${resourceName.className}(scope, id);`);
+    }
+    // handle all non-property attributes
+    // (retention policies, conditions, metadata, etc.)
+    this.code.line('options.parser.handleAttributes(ret, resourceAttributes, id);');
+
+    this.code.line('return ret;');
+    this.code.closeBlock();
 
     //
     // Attributes
@@ -244,7 +276,10 @@ export default class CodeGenerator {
       }
     }
 
-    // set class properties to match CloudFormation Properties spec
+    //
+    // Set class properties to match CloudFormation Properties spec
+    //
+
     let propMap;
     if (propsType) {
       propMap = this.emitPropsTypeProperties(resourceName, spec.Properties!, Container.Class);
@@ -258,9 +293,9 @@ export default class CodeGenerator {
     this.code.line('/**');
     this.code.line(` * Create a new ${quoteCode(resourceName.specName!.fqn)}.`);
     this.code.line(' *');
-    this.code.line(` * @param scope - scope in which this resource is defined`);
-    this.code.line(` * @param id    - scoped id of the resource`);
-    this.code.line(` * @param props - resource properties`);
+    this.code.line(' * @param scope - scope in which this resource is defined');
+    this.code.line(' * @param id    - scoped id of the resource');
+    this.code.line(' * @param props - resource properties');
     this.code.line(' */');
     const optionalProps = spec.Properties && !Object.values(spec.Properties).some(p => p.Required || false);
     const propsArgument = propsType ? `, props: ${propsType.className}${optionalProps ? ' = {}' : ''}` : '';
@@ -386,10 +421,11 @@ export default class CodeGenerator {
    *
    * Generated as a top-level function outside any namespace so we can hide it from library consumers.
    */
-  private emitCloudFormationMapper(resource: genspec.CodeName,
-                                   typeName: genspec.CodeName,
-                                   propSpecs: { [name: string]: schema.Property },
-                                   nameConversionTable: Dictionary<string>) {
+  private emitCloudFormationMapper(
+    resource: genspec.CodeName,
+    typeName: genspec.CodeName,
+    propSpecs: { [name: string]: schema.Property },
+    nameConversionTable: Dictionary<string>) {
     const mapperName = genspec.cfnMapperName(typeName);
 
     this.code.line('/**');
@@ -442,6 +478,9 @@ export default class CodeGenerator {
         visitMap(itemType: genspec.CodeName) {
           return `${CORE}.hashMapper(${this.visitAtom(itemType)})`;
         },
+        visitMapOfLists(itemType: genspec.CodeName) {
+          return `${CORE}.hashMapper(${CORE}.listMapper(${this.visitAtom(itemType)}))`;
+        },
         visitUnionMap(itemTypes: genspec.CodeName[]) {
           const validators = itemTypes.map(type => genspec.validatorName(type).fqn);
           const mappers = itemTypes.map(type => this.visitAtom(type));
@@ -454,7 +493,7 @@ export default class CodeGenerator {
           const scalarValidator = `${CORE}.unionValidator(${validatorNames})`;
           const listValidator = `${CORE}.listValidator(${CORE}.unionValidator(${itemValidatorNames}))`;
           const scalarMapper = `${CORE}.unionMapper([${validatorNames}], [${types.map(type => this.visitAtom(type)).join(', ')}])`;
-          // tslint:disable-next-line:max-line-length
+          // eslint-disable-next-line max-len
           const listMapper = `${CORE}.listMapper(${CORE}.unionMapper([${itemValidatorNames}], [${itemTypes.map(type => this.visitAtom(type)).join(', ')}]))`;
 
           return `${CORE}.unionMapper([${scalarValidator}, ${listValidator}], [${scalarMapper}, ${listMapper}])`;
@@ -468,14 +507,158 @@ export default class CodeGenerator {
   }
 
   /**
+   * Generates a function that converts from a pure CloudFormation value taken from a template
+   * to an instance of the given CDK struct.
+   * This involves changing the casing of the properties,
+   * from UpperCamelCase used by CloudFormation,
+   * to lowerCamelCase used by the CDK,
+   * and also translating things like IResolvable into strings, numbers or string arrays,
+   * depending on the type of the L1 property.
+   */
+  private emitFromCfnFactoryFunction(
+    resource: genspec.CodeName,
+    typeName: genspec.CodeName,
+    propSpecs: { [name: string]: schema.Property },
+    nameConversionTable: Dictionary<string>,
+    allowReturningIResolvable: boolean) {
+
+    const factoryName = genspec.fromCfnFactoryName(typeName);
+
+    this.code.line();
+    // Do not error out if this function is unused.
+    // Some types are declared in the CFN schema,
+    // but never used as types of properties,
+    // and in those cases this function will never be called.
+    this.code.line('// @ts-ignore TS6133');
+    this.code.openBlock(`function ${factoryName.functionName}(properties: any): ${typeName.fqn}` +
+      (allowReturningIResolvable ? ` | ${CORE}.IResolvable` : ''));
+
+    if (allowReturningIResolvable) {
+      this.code.openBlock(`if (${CORE}.isResolvableObject(properties))`);
+      this.code.line('return properties;');
+      this.code.closeBlock();
+    }
+
+    this.code.line('properties = properties || {};');
+    // Generate the return object
+    this.code.indent('return {');
+    const self = this;
+
+    // class used for the visitor
+    class FromCloudFormationFactoryVisitor implements genspec.PropertyVisitor<string> {
+      public visitAtom(type: genspec.CodeName): string {
+        const specType = type.specName && self.spec.PropertyTypes[type.specName.fqn];
+        if (specType && !schema.isRecordType(specType)) {
+          return genspec.typeDispatch(resource, specType, this);
+        } else {
+          return genspec.fromCfnFactoryName(type).fqn;
+        }
+      }
+
+      public visitList(itemType: genspec.CodeName): string {
+        return itemType.className === 'string'
+          // an array of strings is a special case,
+          // because it might need to be encoded as a Token directly
+          // (and not an array of tokens), for example,
+          // when a Ref expression references a parameter of type CommaDelimitedList
+          ? `${CFN_PARSE}.FromCloudFormation.getStringArray`
+          : `${CFN_PARSE}.FromCloudFormation.getArray(${this.visitAtom(itemType)})`;
+      }
+
+      public visitMap(itemType: genspec.CodeName): string {
+        return `${CFN_PARSE}.FromCloudFormation.getMap(${this.visitAtom(itemType)})`;
+      }
+
+      public visitMapOfLists(itemType: genspec.CodeName): string {
+        return `${CFN_PARSE}.FromCloudFormation.getMap(` +
+          `${CFN_PARSE}.FromCloudFormation.getArray(${this.visitAtom(itemType)}))`;
+      }
+
+      public visitAtomUnion(types: genspec.CodeName[]): string {
+        const validatorNames = types.map(type => genspec.validatorName(type).fqn).join(', ');
+        const mappers = types.map(type => this.visitAtom(type)).join(', ');
+
+        return `${CFN_PARSE}.FromCloudFormation.getTypeUnion([${validatorNames}], [${mappers}])`;
+      }
+
+      public visitUnionList(itemTypes: genspec.CodeName[]): string {
+        const validatorNames = itemTypes.map(type => genspec.validatorName(type).fqn).join(', ');
+        const mappers = itemTypes.map(type => this.visitAtom(type)).join(', ');
+
+        return `${CFN_PARSE}.FromCloudFormation.getArray(` +
+          `${CFN_PARSE}.FromCloudFormation.getTypeUnion([${validatorNames}], [${mappers}])` +
+          ')';
+      }
+
+      public visitUnionMap(itemTypes: genspec.CodeName[]): string {
+        const validatorNames = itemTypes.map(type => genspec.validatorName(type).fqn).join(', ');
+        const mappers = itemTypes.map(type => this.visitAtom(type)).join(', ');
+
+        return `${CFN_PARSE}.FromCloudFormation.getMap(` +
+          `${CFN_PARSE}.FromCloudFormation.getTypeUnion([${validatorNames}], [${mappers}])` +
+          ')';
+      }
+
+      public visitListOrAtom(scalarTypes: genspec.CodeName[], itemTypes: genspec.CodeName[]): any {
+        const scalarValidatorNames = scalarTypes.map(type => genspec.validatorName(type).fqn).join(', ');
+        const itemValidatorNames = itemTypes.map(type => genspec.validatorName(type).fqn).join(', ');
+
+        const scalarTypesMappers = scalarTypes.map(type => this.visitAtom(type)).join(', ');
+        const scalarMapper = `${CFN_PARSE}.FromCloudFormation.getTypeUnion([${scalarValidatorNames}], [${scalarTypesMappers}])`;
+
+        const itemTypeMappers = itemTypes.map(type => this.visitAtom(type)).join(', ');
+        const listMapper = `${CFN_PARSE}.FromCloudFormation.getArray(` +
+          `${CFN_PARSE}.FromCloudFormation.getTypeUnion([${itemValidatorNames}], [${itemTypeMappers}])` +
+          ')';
+
+        const scalarValidator = `${CORE}.unionValidator(${scalarValidatorNames})`;
+        const listValidator = `${CORE}.listValidator(${CORE}.unionValidator(${itemValidatorNames}))`;
+
+        return `${CFN_PARSE}.FromCloudFormation.getTypeUnion([${scalarValidator}, ${listValidator}], [${scalarMapper}, ${listMapper}])`;
+      }
+    }
+
+    Object.keys(nameConversionTable).forEach(cfnName => {
+      const propName = nameConversionTable[cfnName];
+      const propSpec = propSpecs[cfnName];
+
+      const simpleCfnPropAccessExpr = `properties.${cfnName}`;
+
+      const deserializer = genspec.typeDispatch<string>(resource, propSpec, new FromCloudFormationFactoryVisitor());
+      const deserialized = `${deserializer}(${simpleCfnPropAccessExpr})`;
+      let valueExpression = propSpec.Required ? deserialized : `${simpleCfnPropAccessExpr} != null ? ${deserialized} : undefined`;
+
+      if (schema.isTagPropertyName(cfnName)) {
+        // Properties that have names considered to denote tags
+        // have their type generated without a union with IResolvable.
+        // However, we can't possibly know that when generating the factory
+        // for that struct, and (in theory, at least)
+        // the same type can be used as the value of multiple properties,
+        // some of which do not have a tag-compatible name,
+        // so there is no way to pass allowReturningIResolvable=false correctly.
+        // Do the simple thing in that case, and just cast to any.
+        valueExpression += ' as any';
+      }
+
+      self.code.line(`${propName}: ${valueExpression},`);
+    });
+    // close the return object brace
+    this.code.unindent('};');
+
+    // close the function brace
+    this.code.closeBlock();
+  }
+
+  /**
    * Emit a function that will validate whether the given property bag matches the schema of this complex type
    *
    * Generated as a top-level function outside any namespace so we can hide it from library consumers.
    */
-  private emitValidator(resource: genspec.CodeName,
-                        typeName: genspec.CodeName,
-                        propSpecs: { [name: string]: schema.Property },
-                        nameConversionTable: Dictionary<string>): void {
+  private emitValidator(
+    resource: genspec.CodeName,
+    typeName: genspec.CodeName,
+    propSpecs: { [name: string]: schema.Property },
+    nameConversionTable: Dictionary<string>): void {
     const validatorName = genspec.validatorName(typeName);
 
     this.code.line('/**');
@@ -518,6 +701,9 @@ export default class CodeGenerator {
         },
         visitMap(itemType: genspec.CodeName) {
           return `${CORE}.hashValidator(${this.visitAtom(itemType)})`;
+        },
+        visitMapOfLists(itemType: genspec.CodeName) {
+          return `${CORE}.hashValidator(${CORE}.listValidator(${this.visitAtom(itemType)}))`;
         },
         visitUnionMap(itemTypes: genspec.CodeName[]) {
           return `${CORE}.hashValidator(${CORE}.unionValidator(${itemTypes.map(type => this.visitAtom(type)).join(', ')}))`;
@@ -597,9 +783,11 @@ export default class CodeGenerator {
     this.beginNamespace(typeName);
 
     this.docLink(propTypeSpec.Documentation, '@stability external');
+    /*
     if (!propTypeSpec.Properties || Object.keys(propTypeSpec.Properties).length === 0) {
-      this.code.line(`// tslint:disable-next-line:no-empty-interface | A genuine empty-object type`);
+      this.code.line('// eslint-disable-next-line somethingsomething | A genuine empty-object type');
     }
+    */
     this.code.openBlock(`export interface ${typeName.className}`);
     const conversionTable: Dictionary<string> = {};
     if (propTypeSpec.Properties) {
@@ -623,6 +811,7 @@ export default class CodeGenerator {
     this.emitValidator(resourceContext, typeName, propTypeSpec.Properties, conversionTable);
     this.code.line();
     this.emitCloudFormationMapper(resourceContext, typeName, propTypeSpec.Properties, conversionTable);
+    this.emitFromCfnFactoryFunction(resourceContext, typeName, propTypeSpec.Properties, conversionTable, true);
   }
 
   /**

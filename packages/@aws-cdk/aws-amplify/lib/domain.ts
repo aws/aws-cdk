@@ -1,4 +1,4 @@
-import { Construct, Lazy, Resource } from '@aws-cdk/core';
+import { Construct, Lazy, Resource, IResolvable } from '@aws-cdk/core';
 import { CfnDomain } from './amplify.generated';
 import { IApp } from './app';
 import { IBranch } from './branch';
@@ -72,6 +72,27 @@ export class Domain extends Resource {
    */
   public readonly statusReason: string;
 
+  /**
+   * Branch patterns for the automatically created subdomain.
+   *
+   * @attribute
+   */
+  public readonly domainAutoSubDomainCreationPatterns: string[];
+
+  /**
+   * The IAM service role for the subdomain.
+   *
+   * @attribute
+   */
+  public readonly domainAutoSubDomainIamRole: string;
+
+  /**
+   * Specifies whether the automated creation of subdomains for branches is enabled.
+   *
+   * @attribute
+   */
+  public readonly domainEnableAutoSubDomain: IResolvable;
+
   private readonly subDomains: SubDomain[];
 
   constructor(scope: Construct, id: string, props: DomainProps) {
@@ -91,19 +112,32 @@ export class Domain extends Resource {
     this.domainName = domain.attrDomainName;
     this.domainStatus = domain.attrDomainStatus;
     this.statusReason = domain.attrStatusReason;
+    this.domainAutoSubDomainCreationPatterns = domain.attrAutoSubDomainCreationPatterns;
+    this.domainAutoSubDomainIamRole = domain.attrAutoSubDomainIamRole;
+    this.domainEnableAutoSubDomain = domain.attrEnableAutoSubDomain;
   }
 
   /**
    * Maps a branch to a sub domain
+   *
+   * @param branch The branch
+   * @param prefix The prefix. Use '' to map to the root of the domain. Defaults to branch name.
    */
   public mapSubDomain(branch: IBranch, prefix?: string) {
     this.subDomains.push({ branch, prefix });
     return this;
   }
 
+  /**
+   * Maps a branch to the domain root
+   */
+  public mapRoot(branch: IBranch) {
+    return this.mapSubDomain(branch, '');
+  }
+
   protected validate() {
     if (this.subDomains.length === 0) {
-      return [`The domain doesn't contain any subdomains`];
+      return ['The domain doesn\'t contain any subdomains'];
     }
 
     return [];
@@ -112,7 +146,7 @@ export class Domain extends Resource {
   private renderSubDomainSettings() {
     return this.subDomains.map(s => ({
       branchName: s.branch.branchName,
-      prefix: s.prefix || s.branch.branchName,
+      prefix: s.prefix === undefined ? s.branch.branchName : s.prefix,
     }));
   }
 }
@@ -127,7 +161,7 @@ export interface SubDomain {
   readonly branch: IBranch;
 
   /**
-   * The prefix
+   * The prefix. Use '' to map to the root of the domain
    *
    * @default - the branch name
    */

@@ -1,10 +1,10 @@
 ## Amazon S3 Construct Library
 <!--BEGIN STABILITY BANNER-->
-
 ---
 
-![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
+![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
 
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
 <!--END STABILITY BANNER-->
@@ -29,8 +29,10 @@ new Bucket(this, 'MyFirstBucket');
  * `arnForObjects(pattern)` - the ARN of an object or objects within the bucket (i.e.
    `arn:aws:s3:::bucket_name/exampleobject.png` or
    `arn:aws:s3:::bucket_name/Development/*`)
- * `urlForObject(key)` - the URL of an object within the bucket (i.e.
+ * `urlForObject(key)` - the HTTP URL of an object within the bucket (i.e.
    `https://s3.cn-north-1.amazonaws.com.cn/china-bucket/mykey`)
+ * `s3UrlForObject(key)` - the S3 URL of an object within the bucket (i.e.
+   `s3://bucket/mykey`)
 
 ### Encryption
 
@@ -82,6 +84,13 @@ bucket.addToResourcePolicy(new iam.PolicyStatement({
 }));
 ```
 
+The bucket policy can be directly accessed after creation to add statements or
+adjust the removal policy.
+
+```ts
+bucket.policy?.applyRemovalPolicy(RemovalPolicy.RETAIN);
+```
+
 Most of the time, you won't have to manipulate the bucket policy directly.
 Instead, buckets have "grant" methods called to give prepackaged sets of permissions
 to other resources. For example:
@@ -126,6 +135,17 @@ const byName = Bucket.fromBucketName(this, 'BucketByName', 'my-bucket');
 const byArn  = Bucket.fromBucketArn(this, 'BucketByArn', 'arn:aws:s3:::my-bucket');
 ```
 
+The bucket's region defaults to the current stack's region, but can also be explicitly set in cases where one of the bucket's
+regional properties needs to contain the correct values.
+
+```ts
+const myCrossRegionBucket = Bucket.fromBucketAttributes(this, 'CrossRegionImport', {
+  bucketArn: 'arn:aws:s3:::my-bucket',
+  region: 'us-east-1',
+});
+// myCrossRegionBucket.bucketRegionalDomainName === 'my-bucket.s3.us-east-1.amazonaws.com'
+```
+
 ### Bucket Notifications
 
 The Amazon S3 notification feature enables you to receive notifications when
@@ -139,7 +159,7 @@ these common use cases.
 The following example will subscribe an SNS topic to be notified of all `s3:ObjectCreated:*` events:
 
 ```ts
-import s3n = require('@aws-cdk/aws-s3-notifications');
+import * as s3n from '@aws-cdk/aws-s3-notifications';
 
 const myTopic = new sns.Topic(this, 'MyTopic');
 bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.SnsDestination(topic));
@@ -214,6 +234,54 @@ const bucket = new Bucket(this, 'MyBucket', {
 ```
 
 [S3 Server access logging]: https://docs.aws.amazon.com/AmazonS3/latest/dev/ServerLogs.html
+
+### S3 Inventory
+
+An [inventory](https://docs.aws.amazon.com/AmazonS3/latest/dev/storage-inventory.html) contains a list of the objects in the source bucket and metadata for each object. The inventory lists are stored in the destination bucket as a CSV file compressed with GZIP, as an Apache optimized row columnar (ORC) file compressed with ZLIB, or as an Apache Parquet (Parquet) file compressed with Snappy.
+
+You can configure multiple inventory lists for a bucket. You can configure what object metadata to include in the inventory, whether to list all object versions or only current versions, where to store the inventory list file output, and whether to generate the inventory on a daily or weekly basis.
+
+```ts
+const inventoryBucket = new s3.Bucket(this, 'InventoryBucket');
+
+const dataBucket = new s3.Bucket(this, 'DataBucket', {
+  inventories: [
+    {
+      frequency: s3.InventoryFrequency.DAILY,
+      includeObjectVersions: s3.InventoryObjectVersion.CURRENT,
+      destination: {
+        bucket: inventoryBucket,
+      },
+    },
+    {
+      frequency: s3.InventoryFrequency.WEEKLY,
+      includeObjectVersions: s3.InventoryObjectVersion.ALL,
+      destination: {
+        bucket: inventoryBucket,
+        prefix: 'with-all-versions',
+      },
+    }
+  ]
+});
+```
+
+If the destination bucket is created as part of the same CDK application, the necessary permissions will be automatically added to the bucket policy.
+However, if you use an imported bucket (i.e `Bucket.fromXXX()`), you'll have to make sure it contains the following policy document:
+
+```
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "InventoryAndAnalyticsExamplePolicy",
+      "Effect": "Allow",
+      "Principal": { "Service": "s3.amazonaws.com" },
+      "Action": "s3:PutObject",
+      "Resource": ["arn:aws:s3:::destinationBucket/*"]
+    }
+  ]
+}
+```
 
 ### Website redirection
 

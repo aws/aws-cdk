@@ -55,9 +55,9 @@ export class S3 implements ses.IReceiptRuleAction {
       resources: [this.props.bucket.arnForObjects(`${keyPattern}*`)],
       conditions: {
         StringEquals: {
-          'aws:Referer': cdk.Aws.ACCOUNT_ID
-        }
-      }
+          'aws:Referer': cdk.Aws.ACCOUNT_ID,
+        },
+      },
     });
     this.props.bucket.addToResourcePolicy(s3Statement);
 
@@ -65,7 +65,7 @@ export class S3 implements ses.IReceiptRuleAction {
     if (policy) { // The bucket could be imported
       rule.node.addDependency(policy);
     } else {
-      rule.node.addWarning('This rule is using a S3 action with an imported bucket. Ensure permission is given to SES to write to that bucket.');
+      cdk.Annotations.of(rule).addWarning('This rule is using a S3 action with an imported bucket. Ensure permission is given to SES to write to that bucket.');
     }
 
     // Allow SES to use KMS master key
@@ -73,17 +73,17 @@ export class S3 implements ses.IReceiptRuleAction {
     if (this.props.kmsKey && !/alias\/aws\/ses$/.test(this.props.kmsKey.keyArn)) {
       const kmsStatement = new iam.PolicyStatement({
         actions: ['km:Encrypt', 'kms:GenerateDataKey'],
-        principals: [ new iam.ServicePrincipal('ses.amazonaws.com')],
+        principals: [new iam.ServicePrincipal('ses.amazonaws.com')],
         resources: ['*'],
         conditions: {
           Null: {
             'kms:EncryptionContext:aws:ses:rule-name': 'false',
-            'kms:EncryptionContext:aws:ses:message-id': 'false'
+            'kms:EncryptionContext:aws:ses:message-id': 'false',
           },
           StringEquals: {
-            'kms:EncryptionContext:aws:ses:source-account': cdk.Aws.ACCOUNT_ID
-          }
-        }
+            'kms:EncryptionContext:aws:ses:source-account': cdk.Aws.ACCOUNT_ID,
+          },
+        },
       });
 
       this.props.kmsKey.addToResourcePolicy(kmsStatement);
@@ -94,8 +94,8 @@ export class S3 implements ses.IReceiptRuleAction {
         bucketName: this.props.bucket.bucketName,
         kmsKeyArn: this.props.kmsKey ? this.props.kmsKey.keyArn : undefined,
         objectKeyPrefix: this.props.objectKeyPrefix,
-        topicArn: this.props.topic ? this.props.topic.topicArn : undefined
-      }
+        topicArn: this.props.topic ? this.props.topic.topicArn : undefined,
+      },
     };
   }
 }

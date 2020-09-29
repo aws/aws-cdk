@@ -1,0 +1,24 @@
+Resources:
+  ELB:
+    Type: AWS::ElasticLoadBalancing::LoadBalancer
+    Properties:
+      AvailabilityZones:
+        - us-east-1a
+      Listeners:
+        - LoadBalancerPort: '80'
+          InstancePort: '80'
+          Protocol: HTTP
+  Bucket0:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: some-bucket
+  Bucket1:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !GetAtt Bucket0.Arn
+      AccessControl: !GetAtt [ELB, SourceSecurityGroup.GroupName]
+  Bucket2:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !GetAtt [ Bucket1, Arn ]
+      AccessControl: !GetAtt 'ELB.SourceSecurityGroup.GroupName'

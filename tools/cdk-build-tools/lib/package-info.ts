@@ -9,6 +9,7 @@ const stat = util.promisify(fs.stat);
  * Return the package JSON for the current package
  */
 export function currentPackageJson(): any {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   return require(path.join(process.cwd(), 'package.json'));
 }
 
@@ -20,7 +21,7 @@ export function cdkBuildOptions(): CDKBuildOptions {
   // now it's easiest to just read them from the package JSON.
   // Our package directories are littered with .json files enough
   // already.
-  return currentPackageJson()["cdk-build"] || {};
+  return currentPackageJson()['cdk-build'] || {};
 }
 
 /**
@@ -75,18 +76,17 @@ export interface CompilerOverrides {
   eslint?: string;
   jsii?: string;
   tsc?: string;
-  tslint?: string;
 }
 
 /**
  * Return the compiler for this package (either tsc or jsii)
  */
 export function packageCompiler(compilers: CompilerOverrides): string[] {
-    if (isJsii()) {
-        return [compilers.jsii || require.resolve('jsii/bin/jsii'), '--project-references', '--silence-warnings=reserved-word'];
-    } else {
-        return [compilers.tsc || require.resolve('typescript/bin/tsc'), '--build'];
-    }
+  if (isJsii()) {
+    return [compilers.jsii || require.resolve('jsii/bin/jsii'), '--silence-warnings=reserved-word'];
+  } else {
+    return [compilers.tsc || require.resolve('typescript/bin/tsc'), '--build'];
+  }
 }
 
 export interface CDKBuildOptions {
@@ -104,15 +104,6 @@ export interface CDKBuildOptions {
      * @default false
      */
     disable?: boolean;
-
-    /**
-     * Patterns to be ignored.
-     */
-    "ignore-pattern"?: string[];
-  };
-
-  tslint?: {
-    disable?: boolean;
   };
 
   pkglint?: {
@@ -127,9 +118,28 @@ export interface CDKBuildOptions {
   pre?: string[];
 
   /**
+   * An optional command (formatted as a list of strings) to run after building
+   *
+   * (Schema generator for example)
+   */
+  post?: string[];
+
+  /**
    * An optional command (formatted as a list of strings) to run before testing.
    */
   test?: string[];
+
+  /**
+   * Whether the package uses Jest for tests.
+   * The default is NodeUnit,
+   * but we want to eventually move all of them to Jest.
+   */
+  jest?: boolean;
+
+  /**
+   * Environment variables to be passed to 'cdk-build' and all of its child processes.
+   */
+  env?: NodeJS.ProcessEnv;
 }
 
 /**

@@ -1,9 +1,0 @@
-{
-  "version": "1.10.0",
-  "artifacts": {
-    "MyArt": {
-      "type": "who:am:i",
-      "environment": "aws://37736633/us-region-1"
-    }
-  }
-}

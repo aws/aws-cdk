@@ -10,6 +10,9 @@ nyc.config.js
 coverage
 dist
 tsconfig.json
-tslint.json
 
 *.snk
+!.eslintrc.js
+!jest.config.js
+
+junit.xml

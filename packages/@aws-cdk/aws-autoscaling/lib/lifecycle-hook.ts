@@ -97,7 +97,7 @@ export class LifecycleHook extends Resource implements ILifecycleHook {
     });
 
     this.role = props.role || new iam.Role(this, 'Role', {
-      assumedBy: new iam.ServicePrincipal('autoscaling.amazonaws.com')
+      assumedBy: new iam.ServicePrincipal('autoscaling.amazonaws.com'),
     });
 
     const targetProps = props.notificationTarget.bind(this, this);

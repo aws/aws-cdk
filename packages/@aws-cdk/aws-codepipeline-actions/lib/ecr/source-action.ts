@@ -83,15 +83,15 @@ export class EcrSourceAction extends Action {
   }
 
   protected bound(_scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
-      codepipeline.ActionConfig {
+  codepipeline.ActionConfig {
     options.role.addToPolicy(new iam.PolicyStatement({
       actions: ['ecr:DescribeImages'],
-      resources: [this.props.repository.repositoryArn]
+      resources: [this.props.repository.repositoryArn],
     }));
 
     this.props.repository.onCloudTrailImagePushed(stage.pipeline.node.uniqueId + 'SourceEventRule', {
       target: new targets.CodePipeline(stage.pipeline),
-      imageTag: this.props.imageTag
+      imageTag: this.props.imageTag,
     });
 
     // the Action Role also needs to write to the Pipeline's bucket

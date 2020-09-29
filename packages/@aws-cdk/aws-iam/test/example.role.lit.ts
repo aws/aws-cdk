@@ -7,12 +7,13 @@ export class ExampleConstruct extends cdk.Construct {
 
     /// !show
     const role = new Role(this, 'MyRole', {
-      assumedBy: new ServicePrincipal('sns.amazonaws.com')
+      assumedBy: new ServicePrincipal('sns.amazonaws.com'),
     });
 
     role.addToPolicy(new PolicyStatement({
       resources: ['*'],
-      actions: ['lambda:InvokeFunction'] }));
+      actions: ['lambda:InvokeFunction'],
+    }));
     /// !hide
   }
 }

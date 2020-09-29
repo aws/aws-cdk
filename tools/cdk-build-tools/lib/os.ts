@@ -1,11 +1,12 @@
 import * as child_process from 'child_process';
-import * as colors from 'colors/safe';
 import * as fs from 'fs';
 import * as util from 'util';
-import { Timers } from "./timer";
+import * as colors from 'colors/safe';
+import { Timers } from './timer';
 
 interface ShellOptions {
   timers?: Timers;
+  env?: child_process.SpawnOptions['env'];
 }
 
 /**
@@ -21,7 +22,11 @@ export async function shell(command: string[], options: ShellOptions = {}): Prom
   const child = child_process.spawn(command[0], command.slice(1), {
     // Need this for Windows where we want .cmd and .bat to be found as well.
     shell: true,
-    stdio: [ 'ignore', 'pipe', 'pipe' ]
+    stdio: ['ignore', 'pipe', 'pipe'],
+    env: {
+      ...process.env,
+      ...options.env,
+    },
   });
 
   const makeRed = process.stderr.isTTY ? colors.red : (x: string) => x;

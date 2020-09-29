@@ -17,3 +17,23 @@ nyc.config.js
 
 !test/integ/run-wrappers/dist
 !test/integ/cli/**/*
+npm-shrinkwrap.json
+
+# Might be created when running regression tests.
+# But normally should be deleted after execution.
+test/integ/cli-backwards-tests-*
+!.eslintrc.js
+!jest.config.js
+
+# Might be created when running integ tests
+cdk.context.json
+
+# Exclude compiled integ tests specifically (but not any subdir
+# as the subdirs contain .js files that should be committed)
+test/integ/cli/*.js
+test/integ/cli/*.d.ts
+!test/integ/cli-regression-patches/**/*
+
+.DS_Store
+
+junit.xml

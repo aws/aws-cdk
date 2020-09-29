@@ -2,6 +2,7 @@ import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
+import { BitBucketSourceAction } from '..';
 import { Action } from '../action';
 
 /**
@@ -33,6 +34,13 @@ export interface CodeBuildActionProps extends codepipeline.CommonAwsActionProps 
 
   /**
    * The list of additional input Artifacts for this action.
+   *
+   * The directories the additional inputs will be available at are available
+   * during the project's build in the CODEBUILD_SRC_DIR_<artifact-name> environment variables.
+   * The project's build always starts in the directory with the primary input artifact checked out,
+   * the one pointed to by the {@link input} property.
+   * For more information,
+   * see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-multi-in-out.html .
    */
   readonly extraInputs?: codepipeline.Artifact[];
 
@@ -107,7 +115,7 @@ export class CodeBuildAction extends Action {
   }
 
   protected bound(scope: cdk.Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
-      codepipeline.ActionConfig {
+  codepipeline.ActionConfig {
     // check for a cross-account action if there are any outputs
     if ((this.actionProperties.outputs || []).length > 0) {
       const pipelineStack = cdk.Stack.of(scope);
@@ -126,7 +134,7 @@ export class CodeBuildAction extends Action {
         'codebuild:BatchGetBuilds',
         'codebuild:StartBuild',
         'codebuild:StopBuild',
-      ]
+      ],
     }));
 
     // allow the Project access to the Pipeline's artifact Bucket
@@ -144,6 +152,19 @@ export class CodeBuildAction extends Action {
       this.props.project.bindToCodePipeline(scope, {
         artifactBucket: options.bucket,
       });
+    }
+
+    // if any of the inputs come from the BitBucketSourceAction
+    // with codeBuildCloneOutput=true,
+    // grant the Project's Role to use the connection
+    for (const inputArtifact of this.actionProperties.inputs || []) {
+      const connectionArn = inputArtifact.getMetadata(BitBucketSourceAction._CONNECTION_ARN_PROPERTY);
+      if (connectionArn) {
+        this.props.project.addToRolePolicy(new iam.PolicyStatement({
+          actions: ['codestar-connections:UseConnection'],
+          resources: [connectionArn],
+        }));
+      }
     }
 
     const configuration: any = {

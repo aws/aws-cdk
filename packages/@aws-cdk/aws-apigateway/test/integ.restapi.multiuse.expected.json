@@ -35,7 +35,7 @@
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
-          "ZipFile": "exports.handler = function helloCode(_event, _context, callback) {\n    return callback(undefined, {\n        statusCode: 200,\n        body: 'hello, world!'\n    });\n}"
+          "ZipFile": "exports.handler = function helloCode(_event, _context, callback) {\n    return callback(undefined, {\n        statusCode: 200,\n        body: 'hello, world!',\n    });\n}"
         },
         "Handler": "index.handler",
         "Role": {
@@ -54,31 +54,6 @@
       "Type": "AWS::ApiGateway::RestApi",
       "Properties": {
         "Name": "hello-api"
-      }
-    },
-    "helloapiDeploymentFA89AEEC086c88c5044fbc117bd88fffcee53ab2": {
-      "Type": "AWS::ApiGateway::Deployment",
-      "Properties": {
-        "RestApiId": {
-          "Ref": "helloapi4446A35B"
-        },
-        "Description": "Automatically created by the RestApi construct"
-      },
-      "DependsOn": [
-        "helloapihelloGETE6A58337",
-        "helloapihello4AA00177"
-      ]
-    },
-    "helloapiDeploymentStageprod677E2C4F": {
-      "Type": "AWS::ApiGateway::Stage",
-      "Properties": {
-        "RestApiId": {
-          "Ref": "helloapi4446A35B"
-        },
-        "DeploymentId": {
-          "Ref": "helloapiDeploymentFA89AEEC086c88c5044fbc117bd88fffcee53ab2"
-        },
-        "StageName": "prod"
       }
     },
     "helloapiCloudWatchRoleD13E913E": {
@@ -125,6 +100,31 @@
       "DependsOn": [
         "helloapi4446A35B"
       ]
+    },
+    "helloapiDeploymentFA89AEEC3622d8c965f356a33fd95586d24bf138": {
+      "Type": "AWS::ApiGateway::Deployment",
+      "Properties": {
+        "RestApiId": {
+          "Ref": "helloapi4446A35B"
+        },
+        "Description": "Automatically created by the RestApi construct"
+      },
+      "DependsOn": [
+        "helloapihelloGETE6A58337",
+        "helloapihello4AA00177"
+      ]
+    },
+    "helloapiDeploymentStageprod677E2C4F": {
+      "Type": "AWS::ApiGateway::Stage",
+      "Properties": {
+        "RestApiId": {
+          "Ref": "helloapi4446A35B"
+        },
+        "DeploymentId": {
+          "Ref": "helloapiDeploymentFA89AEEC3622d8c965f356a33fd95586d24bf138"
+        },
+        "StageName": "prod"
+      }
     },
     "helloapihello4AA00177": {
       "Type": "AWS::ApiGateway::Resource",
@@ -265,31 +265,6 @@
         "Name": "second-api"
       }
     },
-    "secondapiDeployment20F2C7001932445454ace403a6bfe89c1430ff70": {
-      "Type": "AWS::ApiGateway::Deployment",
-      "Properties": {
-        "RestApiId": {
-          "Ref": "secondapi730EF3C7"
-        },
-        "Description": "Automatically created by the RestApi construct"
-      },
-      "DependsOn": [
-        "secondapihelloGETDC5BBB18",
-        "secondapihello7264EB69"
-      ]
-    },
-    "secondapiDeploymentStageprod40491DF0": {
-      "Type": "AWS::ApiGateway::Stage",
-      "Properties": {
-        "RestApiId": {
-          "Ref": "secondapi730EF3C7"
-        },
-        "DeploymentId": {
-          "Ref": "secondapiDeployment20F2C7001932445454ace403a6bfe89c1430ff70"
-        },
-        "StageName": "prod"
-      }
-    },
     "secondapiCloudWatchRole7FEC1028": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -334,6 +309,31 @@
       "DependsOn": [
         "secondapi730EF3C7"
       ]
+    },
+    "secondapiDeployment20F2C70088fa5a027620045bea3e5043c6d31f5a": {
+      "Type": "AWS::ApiGateway::Deployment",
+      "Properties": {
+        "RestApiId": {
+          "Ref": "secondapi730EF3C7"
+        },
+        "Description": "Automatically created by the RestApi construct"
+      },
+      "DependsOn": [
+        "secondapihelloGETDC5BBB18",
+        "secondapihello7264EB69"
+      ]
+    },
+    "secondapiDeploymentStageprod40491DF0": {
+      "Type": "AWS::ApiGateway::Stage",
+      "Properties": {
+        "RestApiId": {
+          "Ref": "secondapi730EF3C7"
+        },
+        "DeploymentId": {
+          "Ref": "secondapiDeployment20F2C70088fa5a027620045bea3e5043c6d31f5a"
+        },
+        "StageName": "prod"
+      }
     },
     "secondapihello7264EB69": {
       "Type": "AWS::ApiGateway::Resource",

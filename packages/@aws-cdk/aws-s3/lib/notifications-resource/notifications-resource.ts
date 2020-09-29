@@ -55,7 +55,7 @@ export class BucketNotifications extends cdk.Construct {
     // policies to allow this notification to happen.
     const targetProps = target.bind(this, this.bucket);
     const commonConfig: CommonConfiguration = {
-      Events: [ event ],
+      Events: [event],
       Filter: renderFilters(filters),
     };
 
@@ -89,7 +89,7 @@ export class BucketNotifications extends cdk.Construct {
     return {
       LambdaFunctionConfigurations: this.lambdaNotifications.length > 0 ? this.lambdaNotifications : undefined,
       QueueConfigurations: this.queueNotifications.length > 0 ? this.queueNotifications : undefined,
-      TopicConfigurations: this.topicNotifications.length > 0 ? this.topicNotifications : undefined
+      TopicConfigurations: this.topicNotifications.length > 0 ? this.topicNotifications : undefined,
     };
   }
 
@@ -107,8 +107,8 @@ export class BucketNotifications extends cdk.Construct {
         properties: {
           ServiceToken: handlerArn,
           BucketName: this.bucket.bucketName,
-          NotificationConfiguration: cdk.Lazy.anyValue({ produce: () => this.renderNotificationConfiguration() })
-        }
+          NotificationConfiguration: cdk.Lazy.anyValue({ produce: () => this.renderNotificationConfiguration() }),
+        },
       });
     }
 
@@ -149,8 +149,8 @@ function renderFilters(filters?: NotificationKeyFilter[]): Filter | undefined {
 
   return {
     Key: {
-      FilterRules: renderedRules
-    }
+      FilterRules: renderedRules,
+    },
   };
 }
 

@@ -12,8 +12,10 @@
 
 import * as cxapi from '@aws-cdk/cx-api';
 import * as constructs from 'constructs';
-import { IAspect } from './aspect';
+import { Annotations } from './annotations';
+import { IAspect, Aspects } from './aspect';
 import { IDependable } from './dependency';
+import { Token } from './token';
 
 const ORIGINAL_CONSTRUCT_NODE_SYMBOL = Symbol.for('@aws-cdk/core.ConstructNode');
 const CONSTRUCT_SYMBOL = Symbol.for('@aws-cdk/core.Construct');
@@ -62,20 +64,30 @@ export class Construct extends constructs.Construct implements IConstruct {
    */
   public readonly node: ConstructNode;
 
-  constructor(scope: Construct, id: string) {
+  constructor(scope: constructs.Construct, id: string) {
     super(scope, id, {
       nodeFactory: {
         createNode: (h: constructs.Construct, s: constructs.IConstruct, i: string) =>
-          new ConstructNode(h as Construct, s as IConstruct, i)._actualNode
-      }
+          new ConstructNode(h as Construct, s as IConstruct, i)._actualNode,
+      },
     });
+
+    if (Token.isUnresolved(id)) {
+      throw new Error(`Cannot use tokens in construct ID: ${id}`);
+    }
 
     Object.defineProperty(this, CONSTRUCT_SYMBOL, { value: true });
     this.node = ConstructNode._unwrap(constructs.Node.of(this));
 
-    const disableTrace = this.node.tryGetContext(cxapi.DISABLE_METADATA_STACK_TRACE);
+    const disableTrace =
+      this.node.tryGetContext(cxapi.DISABLE_METADATA_STACK_TRACE) ||
+      this.node.tryGetContext(constructs.ConstructMetadata.DISABLE_STACK_TRACE_IN_METADATA) ||
+      process.env.CDK_DISABLE_STACK_TRACE;
+
     if (disableTrace) {
+      this.node.setContext(cxapi.DISABLE_METADATA_STACK_TRACE, true);
       this.node.setContext(constructs.ConstructMetadata.DISABLE_STACK_TRACE_IN_METADATA, true);
+      process.env.CDK_DISABLE_STACK_TRACE = '1';
     }
   }
 
@@ -85,7 +97,7 @@ export class Construct extends constructs.Construct implements IConstruct {
    * This method can be implemented by derived constructs in order to perform
    * validation logic. It is called on all constructs before synthesis.
    *
-   * @returns An array of validation error messages, or an empty array if there the construct is valid.
+   * @returns An array of validation error messages, or an empty array if the construct is valid.
    */
   protected onValidate(): string[] {
     return this.validate();
@@ -116,7 +128,7 @@ export class Construct extends constructs.Construct implements IConstruct {
   protected onSynthesize(session: constructs.ISynthesisSession): void {
     this.synthesize({
       outdir: session.outdir,
-      assembly: session.assembly!
+      assembly: session.assembly!,
     });
   }
 
@@ -126,7 +138,7 @@ export class Construct extends constructs.Construct implements IConstruct {
    * This method can be implemented by derived constructs in order to perform
    * validation logic. It is called on all constructs before synthesis.
    *
-   * @returns An array of validation error messages, or an empty array if there the construct is valid.
+   * @returns An array of validation error messages, or an empty array if the construct is valid.
    */
   protected validate(): string[] {
     return [];
@@ -176,6 +188,8 @@ export enum ConstructOrder {
 
 /**
  * Options for synthesis.
+ *
+ * @deprecated use `app.synth()` or `stage.synth()` instead
  */
 export interface SynthesisOptions extends cxapi.AssemblyBuildOptions {
   /**
@@ -208,7 +222,7 @@ export class ConstructNode {
   public static _unwrap(c: constructs.Node): ConstructNode {
     const x = (c as any)[ORIGINAL_CONSTRUCT_NODE_SYMBOL];
     if (!x) {
-      throw new Error(`invalid ConstructNode type`);
+      throw new Error('invalid ConstructNode type');
     }
 
     return x;
@@ -216,28 +230,25 @@ export class ConstructNode {
 
   /**
    * Synthesizes a CloudAssembly from a construct tree.
-   * @param root The root of the construct tree.
+   * @param node The root of the construct tree.
    * @param options Synthesis options.
+   * @deprecated Use `app.synth()` or `stage.synth()` instead
    */
-  public static synth(root: ConstructNode, options: SynthesisOptions = { }): cxapi.CloudAssembly {
-    const builder = new cxapi.CloudAssemblyBuilder(options.outdir);
-
-    root._actualNode.synthesize({
-      outdir: builder.outdir,
-      skipValidation: options.skipValidation,
-      sessionContext: {
-        assembly: builder
-      }
-    });
-
-    return builder.buildAssembly(options);
+  public static synth(node: ConstructNode, options: SynthesisOptions = { }): cxapi.CloudAssembly {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const a: typeof import('././private/synthesis') = require('./private/synthesis');
+    return a.synthesize(node.root, options);
   }
 
   /**
    * Invokes "prepare" on all constructs (depth-first, post-order) in the tree under `node`.
    * @param node The root node
+   * @deprecated Use `app.synth()` instead
    */
   public static prepare(node: ConstructNode) {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const p: typeof import('./private/prepare-app') = require('./private/prepare-app');
+    p.prepareApp(node.root); // resolve cross refs and nested stack assets.
     return node._actualNode.prepare();
   }
 
@@ -256,14 +267,20 @@ export class ConstructNode {
    */
   public readonly _actualNode: constructs.Node;
 
+  /**
+   * The Construct class that hosts this API.
+   */
+  private readonly host: Construct;
+
   constructor(host: Construct, scope: IConstruct, id: string) {
+    this.host = host;
     this._actualNode = new constructs.Node(host, scope, id);
 
     // store a back reference on _actualNode so we can our ConstructNode from it
     Object.defineProperty(this._actualNode, ORIGINAL_CONSTRUCT_NODE_SYMBOL, {
       value: this,
       configurable: false,
-      enumerable: false
+      enumerable: false,
     });
   }
 
@@ -353,7 +370,12 @@ export class ConstructNode {
    * @param key The context key
    * @param value The context value
    */
-  public setContext(key: string, value: any) { this._actualNode.setContext(key, value); }
+  public setContext(key: string, value: any) {
+    if (Token.isUnresolved(key)) {
+      throw new Error('Invalid context key: context keys can\'t include tokens');
+    }
+    this._actualNode.setContext(key, value);
+  }
 
   /**
    * Retrieves a value from tree context.
@@ -361,9 +383,14 @@ export class ConstructNode {
    * Context is usually initialized at the root, but can be overridden at any point in the tree.
    *
    * @param key The context key
-   * @returns The context value or `undefined` if there is no context value for thie key.
+   * @returns The context value or `undefined` if there is no context value for the key.
    */
-  public tryGetContext(key: string): any { return this._actualNode.tryGetContext(key); }
+  public tryGetContext(key: string): any {
+    if (Token.isUnresolved(key)) {
+      throw new Error('Invalid context key: context keys can\'t include tokens');
+    }
+    return this._actualNode.tryGetContext(key);
+  }
 
   /**
    * An immutable array of metadata objects associated with this construct.
@@ -384,37 +411,46 @@ export class ConstructNode {
   public addMetadata(type: string, data: any, fromFunction?: any): void { this._actualNode.addMetadata(type, data, fromFunction); }
 
   /**
-   * Adds a { "info": <message> } metadata entry to this construct.
+   * DEPRECATED: Adds a { "info": <message> } metadata entry to this construct.
    * The toolkit will display the info message when apps are synthesized.
    * @param message The info message.
+   * @deprecated use `Annotations.of(construct).addInfo()`
    */
   public addInfo(message: string): void {
-    this._actualNode.addMetadata(cxapi.INFO_METADATA_KEY, message);
+    Annotations.of(this.host).addInfo(message);
   }
 
   /**
-   * Adds a { "warning": <message> } metadata entry to this construct.
+   * DEPRECATED: Adds a { "warning": <message> } metadata entry to this construct.
    * The toolkit will display the warning when an app is synthesized, or fail
    * if run in --strict mode.
    * @param message The warning message.
+   * @deprecated use `Annotations.of(construct).addWarning()`
    */
   public addWarning(message: string): void {
-    this._actualNode.addMetadata(cxapi.WARNING_METADATA_KEY, message);
+    Annotations.of(this.host).addWarning(message);
   }
 
   /**
-   * Adds an { "error": <message> } metadata entry to this construct.
+   * DEPRECATED: Adds an { "error": <message> } metadata entry to this construct.
    * The toolkit will fail synthesis when errors are reported.
    * @param message The error message.
+   * @deprecated use `Annotations.of(construct).addError()`
    */
   public addError(message: string) {
-    this._actualNode.addMetadata(cxapi.ERROR_METADATA_KEY, message);
+    Annotations.of(this.host).addError(message);
   }
 
   /**
-   * Applies the aspect to this Constructs node
+   * DEPRECATED: Applies the aspect to this Constructs node
+   *
+   * @deprecated This API is going to be removed in the next major version of
+   * the AWS CDK. Please use `Aspects.of(scope).add()` instead.
    */
-  public applyAspect(aspect: IAspect): void { this._actualNode.applyAspect(aspect); }
+  public applyAspect(aspect: IAspect): void {
+    Annotations.of(this.host).addDeprecation('@aws-cdk/core.ConstructNode.applyAspect', 'Use "Aspects.of(construct).add(aspect)" instead');
+    Aspects.of(this.host).add(aspect);
+  }
 
   /**
    * All parent scopes of this construct.

@@ -1,13 +1,25 @@
-import { Construct, Lazy, Resource, Stack, Token } from "@aws-cdk/core";
+import { Construct, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
 import { CfnDashboard } from './cloudwatch.generated';
-import { Column, Row } from "./layout";
-import { IWidget } from "./widget";
+import { Column, Row } from './layout';
+import { IWidget } from './widget';
 
+/**
+ * Specify the period for graphs when the CloudWatch dashboard loads
+ */
 export enum PeriodOverride {
+  /**
+   * Period of all graphs on the dashboard automatically adapt to the time range of the dashboard.
+   */
   AUTO = 'auto',
+  /**
+   * Period set for each graph will be used
+   */
   INHERIT = 'inherit',
 }
 
+/**
+ * Properties for defining a CloudWatch Dashboard
+ */
 export interface DashboardProps {
   /**
    * Name of the dashboard.
@@ -70,27 +82,29 @@ export class Dashboard extends Resource {
     });
 
     {
-      const {dashboardName} = props;
+      const { dashboardName } = props;
       if (dashboardName && !Token.isUnresolved(dashboardName) && !dashboardName.match(/^[\w-]+$/)) {
         throw new Error([
           `The value ${dashboardName} for field dashboardName contains invalid characters.`,
-          'It can only contain alphanumerics, dash (-) and underscore (_).'
+          'It can only contain alphanumerics, dash (-) and underscore (_).',
         ].join(' '));
       }
     }
 
     new CfnDashboard(this, 'Resource', {
       dashboardName: this.physicalName,
-      dashboardBody: Lazy.stringValue({ produce: () => {
-        const column = new Column(...this.rows);
-        column.position(0, 0);
-        return Stack.of(this).toJsonString({
-          start: props.start,
-          end: props.end,
-          periodOverride: props.periodOverride,
-          widgets: column.toJson(),
-        });
-      }})
+      dashboardBody: Lazy.stringValue({
+        produce: () => {
+          const column = new Column(...this.rows);
+          column.position(0, 0);
+          return Stack.of(this).toJsonString({
+            start: props.start,
+            end: props.end,
+            periodOverride: props.periodOverride,
+            widgets: column.toJson(),
+          });
+        },
+      }),
     });
 
     (props.widgets || []).forEach(row => {

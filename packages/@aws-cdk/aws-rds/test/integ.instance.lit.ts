@@ -1,3 +1,4 @@
+/// !cdk-integ pragma:ignore-assets
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as targets from '@aws-cdk/aws-events-targets';
@@ -17,26 +18,25 @@ class DatabaseInstanceStack extends cdk.Stack {
     /// !show
     // Set open cursors with parameter group
     const parameterGroup = new rds.ParameterGroup(this, 'ParameterGroup', {
-      family: 'oracle-se1-11.2',
+      engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19_0_0_0_2020_04_R1 }),
       parameters: {
-        open_cursors: '2500'
-      }
+        open_cursors: '2500',
+      },
     });
 
     /// Add XMLDB and OEM with option group
     const optionGroup = new rds.OptionGroup(this, 'OptionGroup', {
-      engine: rds.DatabaseInstanceEngine.ORACLE_SE1,
-      majorEngineVersion: '11.2',
+      engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19_0_0_0_2020_04_R1 }),
       configurations: [
         {
-          name: 'XMLDB'
+          name: 'LOCATOR',
         },
         {
           name: 'OEM',
           port: 1158,
-          vpc
-        }
-      ]
+          vpc,
+        },
+      ],
     });
 
     // Allow connections to OEM
@@ -44,12 +44,12 @@ class DatabaseInstanceStack extends cdk.Stack {
 
     // Database instance with production values
     const instance = new rds.DatabaseInstance(this, 'Instance', {
-      engine: rds.DatabaseInstanceEngine.ORACLE_SE1,
+      engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19_0_0_0_2020_04_R1 }),
       licenseModel: rds.LicenseModel.BRING_YOUR_OWN_LICENSE,
-      instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MEDIUM),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MEDIUM),
       multiAz: true,
       storageType: rds.StorageType.IO1,
-      masterUsername: 'syscdk',
+      credentials: rds.Credentials.fromUsername('syscdk'),
       vpc,
       databaseName: 'ORCL',
       storageEncrypted: true,
@@ -60,12 +60,12 @@ class DatabaseInstanceStack extends cdk.Stack {
         'trace',
         'audit',
         'alert',
-        'listener'
+        'listener',
       ],
       cloudwatchLogsRetention: logs.RetentionDays.ONE_MONTH,
       autoMinorVersionUpgrade: false,
       optionGroup,
-      parameterGroup
+      parameterGroup,
     });
 
     // Allow connections on default port from any IPV4
@@ -78,23 +78,23 @@ class DatabaseInstanceStack extends cdk.Stack {
     new cloudwatch.Alarm(this, 'HighCPU', {
       metric: instance.metricCPUUtilization(),
       threshold: 90,
-      evaluationPeriods: 1
+      evaluationPeriods: 1,
     });
 
     // Trigger Lambda function on instance availability events
     const fn = new lambda.Function(this, 'Function', {
       code: lambda.Code.fromInline('exports.handler = (event) => console.log(event);'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X
+      runtime: lambda.Runtime.NODEJS_10_X,
     });
 
     const availabilityRule = instance.onEvent('Availability', { target: new targets.LambdaFunction(fn) });
     availabilityRule.addEventPattern({
       detail: {
         EventCategories: [
-          'availability'
-        ]
-      }
+          'availability',
+        ],
+      },
     });
     /// !hide
   }
