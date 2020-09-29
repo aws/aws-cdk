@@ -40,7 +40,6 @@ Table Of Contents
 * [Querying Kubernetes Resources](#querying-kubernetes-resources)
 * [Using existing clusters](#using-existing-clusters)
 * [Known Issues and Limitations](#known-issues-and-limitations)
-* [RoadMap](#roadmap)
 
 ## Quick Start
 
@@ -917,21 +916,3 @@ Kubernetes [endpoint access](#endpoint-access), you must also specify:
 - [Object pruning](https://github.com/aws/aws-cdk/issues/10495)
 - [Service Account dependencies](https://github.com/aws/aws-cdk/issues/9910)
 - [Attach all Lambda Functions to VPC](https://github.com/aws/aws-cdk/issues/9509)
-
-## RoadMap
-
-We manage the road map via a GitHub project: [EKS Construct Library](https://github.com/aws/aws-cdk/projects/4). The columns in the board are as follows:
-
-- *Needs Triage*: Issue has been submitted but needs triage to determine validity.
-- *To Do*: Issue has been accepted and assigned labels.
-- *Planned*: Issue is planned for implementation. You won't find any concrete dates here, but it usually reflects a quarterly timeline.
-- *In Progress*: Issue is actively being worked on.
-- *Review*: Issue has a PR submitted and is under review.
-- *Done*: Issue has been implemented and is either released or will be released in the next version.
-
-In addition, we sometimes track long standing projects using GitHub milestones:
-
-- [EKS Developer Preview](https://github.com/aws/aws-cdk/milestone/6)
-- [CDK8s Integration](https://github.com/aws/aws-cdk/milestone/8)
-
-You can navigate to these milestone to quickly understand the status of each project.
