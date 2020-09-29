@@ -116,3 +116,9 @@ router.addRoute('route-3', {
     },
   ],
 });
+
+mesh.addVirtualGateway('gateway1', {
+  accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
+  listeners: [{}],
+  virtualGatewayName: 'gateway1',
+});

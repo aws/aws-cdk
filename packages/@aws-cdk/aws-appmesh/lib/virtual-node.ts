@@ -4,6 +4,7 @@ import { Construct } from 'constructs';
 import { CfnVirtualNode } from './appmesh.generated';
 import { IMesh } from './mesh';
 import { AccessLog, HealthCheck, PortMapping, Protocol, VirtualNodeListener } from './shared-interfaces';
+import { validateHealthChecks } from './utils';
 import { IVirtualService } from './virtual-service';
 
 /**
@@ -154,19 +155,6 @@ abstract class VirtualNodeBase extends cdk.Resource implements IVirtualNode {
   }
 }
 
-/**
- * Minimum and maximum thresholds for HeathCheck numeric properties
- *
- * @see https://docs.aws.amazon.com/app-mesh/latest/APIReference/API_HealthCheckPolicy.html
- */
-const HEALTH_CHECK_PROPERTY_THRESHOLDS: {[key in (keyof CfnVirtualNode.HealthCheckProperty)]?: [number, number]} = {
-  healthyThreshold: [2, 10],
-  intervalMillis: [5000, 300000],
-  port: [1, 65535],
-  timeoutMillis: [2000, 60000],
-  unhealthyThreshold: [2, 10],
-};
-
 function renderHealthCheck(hc: HealthCheck | undefined, pm: PortMapping): CfnVirtualNode.HealthCheckProperty | undefined {
   if (hc === undefined) { return undefined; }
 
@@ -188,28 +176,13 @@ function renderHealthCheck(hc: HealthCheck | undefined, pm: PortMapping): CfnVir
     unhealthyThreshold: hc.unhealthyThreshold || 2,
   };
 
-  (Object.keys(healthCheck) as Array<keyof CfnVirtualNode.HealthCheckProperty>)
-    .filter((key) =>
-      HEALTH_CHECK_PROPERTY_THRESHOLDS[key] &&
-          typeof healthCheck[key] === 'number' &&
-          !cdk.Token.isUnresolved(healthCheck[key]),
-    ).map((key) => {
-      const [min, max] = HEALTH_CHECK_PROPERTY_THRESHOLDS[key]!;
-      const value = healthCheck[key]!;
-
-      if (value < min) {
-        throw new Error(`The value of '${key}' is below the minimum threshold (expected >=${min}, got ${value})`);
-      }
-      if (value > max) {
-        throw new Error(`The value of '${key}' is above the maximum threshold (expected <=${max}, got ${value})`);
-      }
-    });
+  validateHealthChecks(healthCheck);
 
   return healthCheck;
 }
 
 /**
- * VirtualNode represents a newly defined AppMesh VirtualNode
+ * VirtualNode represents a newly defined App Mesh VirtualNode
  *
  * Any inbound traffic that your virtual node expects should be specified as a
  * listener. Any outbound traffic that your virtual node expects to reach
@@ -241,7 +214,7 @@ export class VirtualNode extends VirtualNodeBase {
   public readonly virtualNodeName: string;
 
   /**
-   * The Amazon Resource Name belonging to the VirtualNdoe
+   * The Amazon Resource Name belonging to the VirtualNode
    */
   public readonly virtualNodeArn: string;
 
@@ -316,7 +289,7 @@ interface VirtualNodeAttributes {
 }
 
 /**
- * Used to import a VirtualNode and read it's properties
+ * Used to import a VirtualNode and read its properties
  */
 class ImportedVirtualNode extends VirtualNodeBase {
   /**
