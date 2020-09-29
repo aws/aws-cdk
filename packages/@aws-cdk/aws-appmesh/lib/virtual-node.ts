@@ -276,11 +276,7 @@ export class VirtualNode extends VirtualNodeBase {
           } : undefined,
         },
         logging: accessLogging !== undefined ? {
-          accessLog: {
-            file: accessLogging.filePath != undefined ? {
-              path: accessLogging.filePath,
-            } : undefined,
-          },
+          accessLog: accessLogging.virtualNodeAccessLog,
         } : undefined,
       },
     });

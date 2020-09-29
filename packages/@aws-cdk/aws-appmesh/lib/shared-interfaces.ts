@@ -1,4 +1,5 @@
 import * as cdk from '@aws-cdk/core';
+import { CfnVirtualNode } from './appmesh.generated';
 
 /**
  * Enum of supported AppMesh protocols
@@ -103,12 +104,13 @@ export interface VirtualNodeListener {
  * All Properties for Envoy Access logs for mesh endpoints
  */
 export interface AccessLogConfig {
+
   /**
-   * Path to a file to write access logs to
+   * VirtualNode CFN configuration for Access Logging
    *
-   * @default - no file based access logging
+   * @default - no access logging
    */
-  readonly filePath?: string;
+  readonly virtualNodeAccessLog?: CfnVirtualNode.AccessLogProperty;
 }
 
 /**
@@ -127,7 +129,6 @@ export abstract class AccessLog {
   /**
    * Called when the AccessLog type is initialized. Can be used to enforce
    * mutual exclusivity with future properties
-   *
    */
   public abstract bind(scope: cdk.Construct): AccessLogConfig;
 }
@@ -135,7 +136,7 @@ export abstract class AccessLog {
 /**
  * Configuration for Envoy Access logs for mesh endpoints
  */
-export class FileAccessLog extends AccessLog {
+class FileAccessLog extends AccessLog {
   /**
    * Path to a file to write access logs to
    *
@@ -150,7 +151,11 @@ export class FileAccessLog extends AccessLog {
 
   public bind(_scope: cdk.Construct): AccessLogConfig {
     return {
-      filePath: this.filePath,
+      virtualNodeAccessLog: {
+        file: {
+          path: this.filePath,
+        },
+      },
     };
   }
 }
