@@ -285,9 +285,6 @@ This type of capacity is also commonly referred to as *EC2 Capacity** or *EC2 No
 
 For a detailed overview please visit [Self Managed Nodes](https://docs.aws.amazon.com/eks/latest/userguide/worker.html).
 
-These self-managed auto-scaling groups provide some additional capabilities over the managed node group, as detailed below.
-However, as they incur an extra maintenance overhead, they are usually not considered a best practice.
-
 Creating an auto-scaling group and connecting it to the cluster is done using the `cluster.addAutoScalingGroupCapacity` method:
 
 ```ts
