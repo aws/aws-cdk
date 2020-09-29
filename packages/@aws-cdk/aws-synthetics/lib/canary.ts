@@ -196,7 +196,7 @@ export interface CanaryProps {
    *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_Library.html
    *
-   * @default Runtime.SYNTHETICS_1_0
+   * @default Runtime.SYNTHETICS_NODEJS_2_0
    */
   readonly runtime?: Runtime;
 
