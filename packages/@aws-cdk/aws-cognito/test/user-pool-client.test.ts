@@ -175,6 +175,30 @@ describe('User Pool Client', () => {
     });
   });
 
+  test('callbackUrls are not rendered if OAuth is disabled ', () => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+
+    // WHEN
+    new UserPoolClient(stack, 'PoolClient', {
+      userPool: pool,
+      disableOAuth: true,
+    });
+
+    // THEN
+    expect(stack).not.toHaveResourceLike('AWS::CognitoUserPoolClient', {
+      CallbackURLs: ['https://example.com'],
+    });
+
+    expect(stack).toHaveResource('AWS::Cognito::UserPoolClient', {
+      AllowedOAuthFlowsUserPoolClient: false,
+      SupportedIdentityProviders: [
+        'COGNITO',
+      ],
+    });
+  });
+
   test('fails when callbackUrls is empty for codeGrant or implicitGrant', () => {
     const stack = new Stack();
     const pool = new UserPool(stack, 'Pool');
