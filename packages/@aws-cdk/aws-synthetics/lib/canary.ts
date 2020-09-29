@@ -3,6 +3,7 @@ import { Metric, MetricOptions } from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Code } from './code';
 import { Schedule } from './schedule';
 import { CfnCanary } from './synthetics.generated';
@@ -224,7 +225,7 @@ export class Canary extends cdk.Resource {
    */
   public readonly artifactsBucket: s3.IBucket;
 
-  public constructor(scope: cdk.Construct, id: string, props: CanaryProps) {
+  public constructor(scope: Construct, id: string, props: CanaryProps) {
     if (props.canaryName && !cdk.Token.isUnresolved(props.canaryName)) {
       validateName(props.canaryName);
     }
