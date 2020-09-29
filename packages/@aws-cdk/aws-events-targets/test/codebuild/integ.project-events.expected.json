@@ -226,7 +226,8 @@
             ]
           },
           "Type": "CODECOMMIT"
-        }
+        },
+        "EncryptionKey": "alias/aws/s3"
       }
     },
     "MyProjectStateChange2DAB75B7": {
