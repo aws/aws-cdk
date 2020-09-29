@@ -510,6 +510,14 @@ cluster.addAutoScalingGroupCapacity('self-ng-arm', {
 
 When you create a cluster, you can specify a `mastersRole`. The `Cluster` construct will associate this role with the `system:masters` [RBAC](https://kubernetes.io/docs/reference/access-authn-authz/rbac/) group, giving it super-user access to the cluster.
 
+```ts
+const role = new iam.Role(...);
+new eks.Cluster(this, 'HelloEKS', {
+  version: eks.KubernetesVersion.V1_17,
+  mastersRole: role,
+});
+```
+
 If you do not specify it, a default role will be created on your behalf, that can be assumed by anyone in the account with `sts:AssumeRole` permissions for this role.
 
 This is the role you see as part of the stack outputs mentioned in the [Quick Start](#quick-start).
