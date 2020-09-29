@@ -15,6 +15,18 @@
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
+### Connection
+
+TODO
+
+A `Connection` .
+
+```ts
+new glue.Connection(stack, 'MyConnection', {
+
+});
+```
+
 ### Database
 
 A `Database` is a logical grouping of `Tables` in the Glue Catalog.
