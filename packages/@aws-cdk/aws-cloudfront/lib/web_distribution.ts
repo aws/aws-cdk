@@ -3,6 +3,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnDistribution } from './cloudfront.generated';
 import { HttpVersion, IDistribution, LambdaEdgeEventType, OriginProtocolPolicy, PriceClass, ViewerProtocolPolicy, SSLMethod, SecurityPolicyProtocol } from './distribution';
 import { GeoRestriction } from './geo-restriction';
@@ -693,7 +694,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
   /**
    * Creates a construct that represents an external (imported) distribution.
    */
-  public static fromDistributionAttributes(scope: cdk.Construct, id: string, attrs: CloudFrontWebDistributionAttributes): IDistribution {
+  public static fromDistributionAttributes(scope: Construct, id: string, attrs: CloudFrontWebDistributionAttributes): IDistribution {
     return new class extends cdk.Resource implements IDistribution {
       public readonly domainName: string;
       public readonly distributionDomainName: string;
@@ -756,7 +757,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
     [SSLMethod.VIP]: [SecurityPolicyProtocol.SSL_V3, SecurityPolicyProtocol.TLS_V1],
   };
 
-  constructor(scope: cdk.Construct, id: string, props: CloudFrontWebDistributionProps) {
+  constructor(scope: Construct, id: string, props: CloudFrontWebDistributionProps) {
     super(scope, id);
 
     let distributionConfig: CfnDistribution.DistributionConfigProperty = {
