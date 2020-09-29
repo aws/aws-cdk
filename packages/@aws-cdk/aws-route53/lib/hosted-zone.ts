@@ -1,6 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { Construct, ContextProvider, Duration, Lazy, Resource, Stack } from '@aws-cdk/core';
+import { ContextProvider, Duration, Lazy, Resource, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { HostedZoneProviderProps } from './hosted-zone-provider';
 import { HostedZoneAttributes, IHostedZone } from './hosted-zone-ref';
 import { CaaAmazonRecord, ZoneDelegationRecord } from './record-set';

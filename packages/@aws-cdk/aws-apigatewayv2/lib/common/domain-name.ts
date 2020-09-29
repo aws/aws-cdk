@@ -1,5 +1,6 @@
 import { ICertificate } from '@aws-cdk/aws-certificatemanager';
-import { Construct, IResource, Resource, Token } from '@aws-cdk/core';
+import { IResource, Resource, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnDomainName, CfnDomainNameProps } from '../apigatewayv2.generated';
 
 /**

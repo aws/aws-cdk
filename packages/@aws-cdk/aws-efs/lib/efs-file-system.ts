@@ -1,6 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
-import { ConcreteDependable, Construct, IDependable, IResource, RemovalPolicy, Resource, Size, Tags } from '@aws-cdk/core';
+import { ConcreteDependable, IDependable, IResource, RemovalPolicy, Resource, Size, Tags } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { AccessPoint, AccessPointOptions } from './access-point';
 import { CfnFileSystem, CfnMountTarget } from './efs.generated';
 

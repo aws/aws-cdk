@@ -1,4 +1,5 @@
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { IEventSourceDlq } from './dlq';
 import { IFunction } from './function-base';
 import { CfnEventSourceMapping } from './lambda.generated';
@@ -139,7 +140,7 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
   /**
    * Import an event source into this stack from its event source id.
    */
-  public static fromEventSourceMappingId(scope: cdk.Construct, id: string, eventSourceMappingId: string): IEventSourceMapping {
+  public static fromEventSourceMappingId(scope: Construct, id: string, eventSourceMappingId: string): IEventSourceMapping {
     class Import extends cdk.Resource implements IEventSourceMapping {
       public readonly eventSourceMappingId = eventSourceMappingId;
     }
@@ -148,7 +149,7 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
 
   public readonly eventSourceMappingId: string;
 
-  constructor(scope: cdk.Construct, id: string, props: EventSourceMappingProps) {
+  constructor(scope: Construct, id: string, props: EventSourceMappingProps) {
     super(scope, id);
 
     if (props.maxBatchingWindow && props.maxBatchingWindow.toSeconds() > 300) {

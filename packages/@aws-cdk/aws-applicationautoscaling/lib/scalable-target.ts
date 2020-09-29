@@ -1,5 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct, IResource, Lazy, Resource, withResolved } from '@aws-cdk/core';
+import { IResource, Lazy, Resource, withResolved } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnScalableTarget } from './applicationautoscaling.generated';
 import { Schedule } from './schedule';
 import { BasicStepScalingPolicyProps, StepScalingPolicy } from './step-scaling-policy';

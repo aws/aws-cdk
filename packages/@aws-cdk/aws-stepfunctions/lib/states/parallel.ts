@@ -1,4 +1,4 @@
-import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Chain } from '../chain';
 import { StateGraph } from '../state-graph';
 import { CatchProps, IChainable, INextable, RetryProps } from '../types';
@@ -58,7 +58,7 @@ export interface ParallelProps {
 export class Parallel extends State implements INextable {
   public readonly endStates: INextable[];
 
-  constructor(scope: cdk.Construct, id: string, props: ParallelProps = {}) {
+  constructor(scope: Construct, id: string, props: ParallelProps = {}) {
     super(scope, id, props);
 
     this.endStates = [this];

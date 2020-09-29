@@ -1,4 +1,5 @@
-import { DefaultTokenResolver, IConstruct, Lazy, StringConcat, Tokenization } from '@aws-cdk/core';
+import { DefaultTokenResolver, Lazy, StringConcat, Tokenization } from '@aws-cdk/core';
+import { IConstruct } from 'constructs';
 import { IPolicy } from './policy';
 
 const MAX_POLICY_NAME_LEN = 128;

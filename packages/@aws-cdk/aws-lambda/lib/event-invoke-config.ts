@@ -1,4 +1,5 @@
-import { Construct, Duration, Resource } from '@aws-cdk/core';
+import { Duration, Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { DestinationType, IDestination } from './destination';
 import { IFunction } from './function-base';
 import { CfnEventInvokeConfig } from './lambda.generated';

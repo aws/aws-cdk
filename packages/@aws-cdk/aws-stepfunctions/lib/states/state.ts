@@ -1,4 +1,5 @@
 import * as cdk from '@aws-cdk/core';
+import { IConstruct, Construct, Node } from 'constructs';
 import { Condition } from '../condition';
 import { JsonPath } from '../fields';
 import { StateGraph } from '../state-graph';
@@ -63,14 +64,14 @@ export abstract class State extends cdk.Construct implements IChainable {
   /**
    * Add a prefix to the stateId of all States found in a construct tree
    */
-  public static prefixStates(root: cdk.IConstruct, prefix: string) {
+  public static prefixStates(root: IConstruct, prefix: string) {
     const queue = [root];
     while (queue.length > 0) {
       const el = queue.splice(0, 1)[0]!;
       if (isPrefixable(el)) {
         el.addPrefix(prefix);
       }
-      queue.push(...el.node.children);
+      queue.push(...Node.of(el).children);
     }
   }
 
@@ -173,7 +174,7 @@ export abstract class State extends cdk.Construct implements IChainable {
    */
   private readonly incomingStates: State[] = [];
 
-  constructor(scope: cdk.Construct, id: string, props: StateProps) {
+  constructor(scope: Construct, id: string, props: StateProps) {
     super(scope, id);
 
     this.startState = this;

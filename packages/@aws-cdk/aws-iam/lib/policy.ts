@@ -1,4 +1,5 @@
-import { Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
+import { IResource, Lazy, Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { IGroup } from './group';
 import { CfnPolicy } from './iam.generated';
 import { PolicyDocument } from './policy-document';

@@ -2,6 +2,7 @@ import * as path from 'path';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { RetentionDays } from './log-group';
 
 /**
@@ -71,7 +72,7 @@ export class LogRetention extends cdk.Construct {
    */
   public readonly logGroupArn: string;
 
-  constructor(scope: cdk.Construct, id: string, props: LogRetentionProps) {
+  constructor(scope: Construct, id: string, props: LogRetentionProps) {
     super(scope, id);
 
     // Custom resource provider
@@ -126,7 +127,7 @@ export class LogRetention extends cdk.Construct {
 class LogRetentionFunction extends cdk.Construct {
   public readonly functionArn: cdk.Reference;
 
-  constructor(scope: cdk.Construct, id: string, props: LogRetentionProps) {
+  constructor(scope: Construct, id: string, props: LogRetentionProps) {
     super(scope, id);
 
     // Code

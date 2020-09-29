@@ -54,7 +54,10 @@
   },
   "cdk-build": {
     "cloudformation": "AWS::IoTEvents",
-    "jest": true
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "keywords": [
     "aws",

@@ -1,4 +1,5 @@
-import { Construct, IResource, Resource, Stack } from '@aws-cdk/core';
+import { IResource, Resource, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnDatabase } from './glue.generated';
 
 export interface IDatabase extends IResource {

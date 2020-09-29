@@ -1,4 +1,5 @@
-import { Annotations, Construct, Lazy, Resource } from '@aws-cdk/core';
+import { Annotations, Lazy, Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnListener } from '../elasticloadbalancingv2.generated';
 import { IListenerAction } from './listener-action';
 

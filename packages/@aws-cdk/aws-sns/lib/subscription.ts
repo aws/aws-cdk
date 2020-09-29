@@ -1,6 +1,7 @@
 import { PolicyStatement, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { IQueue } from '@aws-cdk/aws-sqs';
-import { Construct, Resource } from '@aws-cdk/core';
+import { Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnSubscription } from './sns.generated';
 import { SubscriptionFilter } from './subscription-filter';
 import { ITopic } from './topic-base';

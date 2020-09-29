@@ -6,6 +6,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { ISource, SourceConfig } from './source';
 
 const handlerCodeBundle = path.join(__dirname, '..', 'lambda', 'bundle.zip');
@@ -163,7 +164,7 @@ export interface BucketDeploymentProps {
 }
 
 export class BucketDeployment extends cdk.Construct {
-  constructor(scope: cdk.Construct, id: string, props: BucketDeploymentProps) {
+  constructor(scope: Construct, id: string, props: BucketDeploymentProps) {
     super(scope, id);
 
     if (props.distributionPaths && !props.distribution) {

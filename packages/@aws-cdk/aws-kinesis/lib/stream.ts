@@ -1,6 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { Aws, CfnCondition, Construct, Duration, Fn, IResolvable, IResource, Resource, Stack, Token } from '@aws-cdk/core';
+import { Aws, CfnCondition, Duration, Fn, IResolvable, IResource, Resource, Stack, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnStream } from './kinesis.generated';
 
 const READ_OPERATIONS = [

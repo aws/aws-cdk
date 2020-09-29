@@ -1,4 +1,4 @@
-import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { arnForDeploymentConfig } from '../utils';
 
 /**
@@ -35,7 +35,7 @@ export class EcsDeploymentConfig {
    * @param ecsDeploymentConfigName the name of the referenced custom Deployment Configuration
    * @returns a Construct representing a reference to an existing custom Deployment Configuration
    */
-  public static fromEcsDeploymentConfigName(_scope: cdk.Construct, _id: string, ecsDeploymentConfigName: string): IEcsDeploymentConfig {
+  public static fromEcsDeploymentConfigName(_scope: Construct, _id: string, ecsDeploymentConfigName: string): IEcsDeploymentConfig {
     return deploymentConfig(ecsDeploymentConfigName);
   }
 

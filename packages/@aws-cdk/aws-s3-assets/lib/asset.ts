@@ -6,6 +6,7 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
+import { Construct } from 'constructs';
 import { toSymlinkFollow } from './compat';
 
 const ARCHIVE_EXTENSIONS = ['.zip', '.jar'];
@@ -110,7 +111,7 @@ export class Asset extends cdk.Construct implements cdk.IAsset {
 
   public readonly assetHash: string;
 
-  constructor(scope: cdk.Construct, id: string, props: AssetProps) {
+  constructor(scope: Construct, id: string, props: AssetProps) {
     super(scope, id);
 
     // stage the asset source (conditionally).

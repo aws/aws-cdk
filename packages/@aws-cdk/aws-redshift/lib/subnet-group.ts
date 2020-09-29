@@ -1,5 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
-import { Construct, IResource, RemovalPolicy, Resource } from '@aws-cdk/core';
+import { IResource, RemovalPolicy, Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnClusterSubnetGroup } from './redshift.generated';
 
 /**

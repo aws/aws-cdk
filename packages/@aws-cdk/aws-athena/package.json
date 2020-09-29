@@ -34,7 +34,10 @@
   },
   "cdk-build": {
     "cloudformation": "AWS::Athena",
-    "jest": true
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "repository": {
     "type": "git",

@@ -1,5 +1,6 @@
 import { Connections, ISecurityGroup, ISubnet, Port, SecurityGroup } from '@aws-cdk/aws-ec2';
-import { Aws, Construct, Token } from '@aws-cdk/core';
+import { Aws, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { FileSystemAttributes, FileSystemBase, FileSystemProps, IFileSystem } from './file-system';
 import { CfnFileSystem } from './fsx.generated';
 import { LustreMaintenanceTime } from './maintenance-time';

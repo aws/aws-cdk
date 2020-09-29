@@ -52,7 +52,10 @@
     "compat": "cdk-compat"
   },
   "cdk-build": {
-    "cloudformation": "AWS::SQS"
+    "cloudformation": "AWS::SQS",
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": "true"
+    }
   },
   "keywords": [
     "aws",

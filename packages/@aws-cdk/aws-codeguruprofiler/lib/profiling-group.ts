@@ -1,5 +1,6 @@
 import { Grant, IGrantable } from '@aws-cdk/aws-iam';
-import { Construct, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
+import { IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnProfilingGroup } from './codeguruprofiler.generated';
 
 /**
