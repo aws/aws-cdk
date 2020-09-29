@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-codedeploy",
-        "module": "aws_cdk.aws_codedeploy"
+        "module": "aws_cdk.aws_codedeploy",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
@@ -48,7 +52,10 @@
     "compat": "cdk-compat"
   },
   "cdk-build": {
-    "cloudformation": "AWS::CodeDeploy"
+    "cloudformation": "AWS::CodeDeploy",
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "nyc": {
     "statements": 79

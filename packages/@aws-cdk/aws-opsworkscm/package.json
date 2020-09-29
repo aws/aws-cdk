@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-opsworkscm",
-        "module": "aws_cdk.aws_opsworkscm"
+        "module": "aws_cdk.aws_opsworkscm",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
@@ -50,7 +54,10 @@
   },
   "cdk-build": {
     "cloudformation": "AWS::OpsWorksCM",
-    "jest": true
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "keywords": [
     "aws",
