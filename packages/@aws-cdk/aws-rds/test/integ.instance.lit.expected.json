@@ -549,7 +549,7 @@
           ]
         },
         "GenerateSecretString": {
-          "ExcludeCharacters": "\"@/\\",
+          "ExcludeCharacters": " %+~`#$&*()|[]{}:;<>?!'/@\"\\",
           "GenerateStringKey": "password",
           "PasswordLength": 30,
           "SecretStringTemplate": "{\"username\":\"syscdk\"}"
@@ -832,6 +832,7 @@
             ]
           },
           "functionName": "awscdkrdsinstanceInstanceRotationSingleUserAFE3C214",
+          "excludeCharacters": " %+~`#$&*()|[]{}:;<>?!'/@\"\\",
           "vpcSubnetIds": {
             "Fn::Join": [
               "",

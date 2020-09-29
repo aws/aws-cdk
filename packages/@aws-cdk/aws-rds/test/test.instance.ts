@@ -28,7 +28,9 @@ export = {
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MEDIUM),
       multiAz: true,
       storageType: rds.StorageType.IO1,
-      credentials: rds.Credentials.fromUsername('syscdk'),
+      credentials: rds.Credentials.fromUsername('syscdk', {
+        excludeCharacters: '"@/\\',
+      }),
       vpc,
       databaseName: 'ORCL',
       storageEncrypted: true,
@@ -291,7 +293,9 @@ export = {
         snapshotIdentifier: 'my-snapshot',
         engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
         vpc,
-        credentials: rds.SnapshotCredentials.fromGeneratedPassword('admin'),
+        credentials: rds.SnapshotCredentials.fromGeneratedPassword('admin', {
+          excludeCharacters: '"@/\\',
+        }),
       });
 
       expect(stack).to(haveResourceLike('AWS::RDS::DBInstance', {
