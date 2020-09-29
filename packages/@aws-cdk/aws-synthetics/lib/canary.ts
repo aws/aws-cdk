@@ -74,6 +74,8 @@ export class Runtime {
    * - Lambda runtime Node.js 10.x
    * - Puppeteer-core version 1.14.0
    * - The Chromium version that matches Puppeteer-core 1.14.0
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_Library.html#CloudWatch_Synthetics_runtimeversion-1.0
    */
   public static readonly SYNTHETICS_1_0 = new Runtime('syn-1.0');
 
@@ -82,6 +84,8 @@ export class Runtime {
    * - Lambda runtime Node.js 10.x
    * - Puppeteer-core version 3.3.0
    * - Chromium version 81.0.4044.0
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_Library.html#CloudWatch_Synthetics_runtimeversion-2.0
    */
   public static readonly SYNTHETICS_NODEJS_2_0 = new Runtime('syn-nodejs-2.0');
 
@@ -187,7 +191,9 @@ export interface CanaryProps {
   readonly canaryName?: string;
 
   /**
-   * Specify the runtime version to use for the canary. Currently, the only valid value is `Runtime.SYNTHETICS_1.0`.
+   * Specify the runtime version to use for the canary.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_Library.html
    *
    * @default Runtime.SYNTHETICS_1_0
    */
@@ -253,7 +259,7 @@ export class Canary extends cdk.Resource {
       artifactS3Location: this.artifactsBucket.s3UrlForObject(props.artifactsBucketLocation?.prefix),
       executionRoleArn: this.role.roleArn,
       startCanaryAfterCreation: props.startAfterCreation ?? true,
-      runtimeVersion: props.runtime?.name ?? Runtime.SYNTHETICS_1_0.name,
+      runtimeVersion: props.runtime?.name ?? Runtime.SYNTHETICS_NODEJS_2_0.name,
       name: this.physicalName,
       schedule: this.createSchedule(props),
       failureRetentionPeriod: props.failureRetentionPeriod?.toDays(),
