@@ -34,7 +34,7 @@ import * as synthetics from '@aws-cdk/aws-synthetics';
 const canary = new synthetics.Canary(this, 'MyCanary', {
   schedule: synthetics.Schedule.rate(Duration.minutes(5)),
   test: Test.custom({
-    code: Code.fromAsset(path.join(__dirname, 'canary'))),
+    code: Code.fromAsset(path.join(__dirname, 'canary')),
     handler: 'index.handler',
   }),
 });
