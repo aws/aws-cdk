@@ -3,14 +3,25 @@ import { Aws, Construct, IResource, Resource } from '@aws-cdk/core';
 import { CfnConnection } from './glue.generated';
 
 /**
- * Types of glue input connections
+ * The type of the glue connection
  */
 export enum ConnectionInputTypes {
   /**
-   * The type of the connection. Currently, only JDBC is supported;
-   * SFTP is not supported.
+   * Designates a connection to a database through Java Database Connectivity (JDBC).
+   * 
+   * SFTP is not supported. 
    */
   JDBC = 'JDBC',
+
+  /**
+   * Designates a connection to an Apache Kafka streaming platform.
+   */
+  KAFKA = 'KAFKA',
+
+  /**
+   * Designates a connection to a MongoDB document database. 
+   */
+  MONGODB = 'MONGODB'
 }
 
 export interface IConnection extends IResource {
