@@ -239,7 +239,7 @@ export = {
     const capacityStack = new CapacityStack(app, 'CapacityStack', { cluster: clusterStack.eksCluster });
 
     try {
-      clusterStack.eksCluster.addAutoScalingGroup(capacityStack.group, {});
+      clusterStack.eksCluster.connectAutoScalingGroupCapacity(capacityStack.group, {});
       test.ok(false, 'expected error');
     } catch (err) {
       test.equal(err.message, 'CapacityStackautoScalingInstanceRoleF041EB53 should be defined in the scope of the ClusterStack stack to prevent circular dependencies');
@@ -472,7 +472,7 @@ export = {
     });
 
     // WHEN
-    cluster.addCapacity('Default', {
+    cluster.addAutoScalingGroupCapacity('Default', {
       instanceType: new ec2.InstanceType('t2.medium'),
     });
 
@@ -490,7 +490,7 @@ export = {
     });
 
     // WHEN
-    cluster.addCapacity('Default', {
+    cluster.addAutoScalingGroupCapacity('Default', {
       instanceType: new ec2.InstanceType('t2.medium'),
     });
 
@@ -555,7 +555,7 @@ export = {
     });
 
     // WHEN
-    cluster.addCapacity('Bottlerocket', {
+    cluster.addAutoScalingGroupCapacity('Bottlerocket', {
       instanceType: new ec2.InstanceType('t2.medium'),
       machineImageType: eks.MachineImageType.BOTTLEROCKET,
     });
@@ -587,7 +587,7 @@ export = {
       version: CLUSTER_VERSION,
     });
 
-    test.throws(() => cluster.addCapacity('Bottlerocket', {
+    test.throws(() => cluster.addAutoScalingGroupCapacity('Bottlerocket', {
       instanceType: new ec2.InstanceType('t2.medium'),
       machineImageType: eks.MachineImageType.BOTTLEROCKET,
       bootstrapOptions: {},
@@ -785,7 +785,7 @@ export = {
     });
 
     // WHEN
-    cluster.addCapacity('default', {
+    cluster.addAutoScalingGroupCapacity('default', {
       instanceType: new ec2.InstanceType('t2.nano'),
     });
 
@@ -825,7 +825,7 @@ export = {
     test.done();
   },
 
-  'addCapacity will *not* map the IAM role if mapRole is false'(test: Test) {
+  'addAutoScalingGroupCapacity will *not* map the IAM role if mapRole is false'(test: Test) {
     // GIVEN
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
@@ -835,7 +835,7 @@ export = {
     });
 
     // WHEN
-    cluster.addCapacity('default', {
+    cluster.addAutoScalingGroupCapacity('default', {
       instanceType: new ec2.InstanceType('t2.nano'),
       mapRole: false,
     });
@@ -975,7 +975,7 @@ export = {
         const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION });
 
         // WHEN
-        cluster.addCapacity('MyCapcity', { instanceType: new ec2.InstanceType('m3.xlargs') });
+        cluster.addAutoScalingGroupCapacity('MyCapcity', { instanceType: new ec2.InstanceType('m3.xlargs') });
 
         // THEN
         const template = app.synth().getStackByName(stack.stackName).template;
@@ -990,7 +990,7 @@ export = {
         const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION });
 
         // WHEN
-        cluster.addCapacity('MyCapcity', {
+        cluster.addAutoScalingGroupCapacity('MyCapcity', {
           instanceType: new ec2.InstanceType('m3.xlargs'),
           bootstrapEnabled: false,
         });
@@ -1009,7 +1009,7 @@ export = {
         const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION });
 
         // WHEN
-        cluster.addCapacity('MyCapcity', {
+        cluster.addAutoScalingGroupCapacity('MyCapcity', {
           instanceType: new ec2.InstanceType('m3.xlargs'),
           bootstrapOptions: {
             kubeletExtraArgs: '--node-labels FOO=42',
@@ -1031,7 +1031,7 @@ export = {
           const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION });
 
           // WHEN
-          cluster.addCapacity('MyCapcity', {
+          cluster.addAutoScalingGroupCapacity('MyCapcity', {
             instanceType: new ec2.InstanceType('m3.xlargs'),
             spotPrice: '0.01',
           });
@@ -1049,7 +1049,7 @@ export = {
           const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION });
 
           // WHEN
-          cluster.addCapacity('MyCapcity', {
+          cluster.addAutoScalingGroupCapacity('MyCapcity', {
             instanceType: new ec2.InstanceType('m3.xlarge'),
             spotPrice: '0.01',
           });
@@ -1071,12 +1071,12 @@ export = {
           const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION });
 
           // WHEN
-          cluster.addCapacity('Spot1', {
+          cluster.addAutoScalingGroupCapacity('Spot1', {
             instanceType: new ec2.InstanceType('m3.xlarge'),
             spotPrice: '0.01',
           });
 
-          cluster.addCapacity('Spot2', {
+          cluster.addAutoScalingGroupCapacity('Spot2', {
             instanceType: new ec2.InstanceType('m4.xlarge'),
             spotPrice: '0.01',
           });
@@ -1096,7 +1096,7 @@ export = {
       const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION });
 
       // THEN
-      test.throws(() => cluster.addCapacity('MyCapcity', {
+      test.throws(() => cluster.addAutoScalingGroupCapacity('MyCapcity', {
         instanceType: new ec2.InstanceType('m3.xlargs'),
         bootstrapEnabled: false,
         bootstrapOptions: { awsApiRetryAttempts: 10 },
@@ -1174,7 +1174,7 @@ export = {
         defaultCapacity: 0,
         version: CLUSTER_VERSION,
         defaultCapacityInstance: new ec2.InstanceType('m6g.medium'),
-      }).addNodegroup('ng', {
+      }).addNodegroupCapacity('ng', {
         instanceType: new ec2.InstanceType('m6g.medium'),
       });
 
@@ -1185,7 +1185,7 @@ export = {
       test.done();
     },
 
-    'EKS-Optimized AMI with GPU support when addCapacity'(test: Test) {
+    'EKS-Optimized AMI with GPU support when addAutoScalingGroupCapacity'(test: Test) {
       // GIVEN
       const { app, stack } = testFixtureNoVpc();
 
@@ -1193,7 +1193,7 @@ export = {
       new eks.Cluster(stack, 'cluster', {
         defaultCapacity: 0,
         version: CLUSTER_VERSION,
-      }).addCapacity('GPUCapacity', {
+      }).addAutoScalingGroupCapacity('GPUCapacity', {
         instanceType: new ec2.InstanceType('g4dn.xlarge'),
       });
 
@@ -1206,7 +1206,7 @@ export = {
       test.done();
     },
 
-    'EKS-Optimized AMI with ARM64 when addCapacity'(test: Test) {
+    'EKS-Optimized AMI with ARM64 when addAutoScalingGroupCapacity'(test: Test) {
       // GIVEN
       const { app, stack } = testFixtureNoVpc();
 
@@ -1214,7 +1214,7 @@ export = {
       new eks.Cluster(stack, 'cluster', {
         defaultCapacity: 0,
         version: CLUSTER_VERSION,
-      }).addCapacity('ARMCapacity', {
+      }).addAutoScalingGroupCapacity('ARMCapacity', {
         instanceType: new ec2.InstanceType('m6g.medium'),
       });
 
@@ -1532,7 +1532,7 @@ export = {
       });
 
       // WHEN
-      cluster.addChart('MyChart', {
+      cluster.addHelmChart('MyChart', {
         chart: 'foo',
       });
 
@@ -1636,7 +1636,7 @@ export = {
       const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION });
 
       // WHEN
-      cluster.addCapacity('InferenceInstances', {
+      cluster.addAutoScalingGroupCapacity('InferenceInstances', {
         instanceType: new ec2.InstanceType('inf1.2xlarge'),
         minCapacity: 1,
       });
