@@ -52,6 +52,10 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
 - [SageMaker](#sagemaker)
   - [Create Training Job](#create-training-job)
   - [Create Transform Job](#create-transform-job)
+  - [Create Endpoint](#create-endpoint)
+  - [Create Endpoint Config](#create-endpoint-config)
+  - [Create Model](#create-model)
+  - [Update Endpoint](#update-endpoint)
 - [SNS](#sns)
 - [Step Functions](#step-functions)
   - [Start Execution](#start-execution)
@@ -772,6 +776,59 @@ new sfn.SagemakerTransformTask(this, 'Batch Inference', {
   }
 });
 
+```
+
+### Create Endpoint
+
+You can call the [`CreateEndpoint`](https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_CreateEndpoint.html) API from a `Task` state.
+
+```ts
+new sfn.SageMakerCreateEndpoint(this, 'SagemakerEndpoint', {
+  endpointName: sfn.JsonPath.stringAt('$.EndpointName'),
+  endpointConfigName: sfn.JsonPath.stringAt('$.EndpointConfigName'),
+});
+```
+
+### Create Endpoint Config
+
+You can call the [`CreateEndpointConfig`](https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_CreateEndpointConfig.html) API from a `Task` state.
+
+```ts
+new sfn.SageMakerCreateEndpointConfig(this, 'SagemakerEndpointConfig', {
+  endpointConfigName: 'MyEndpointConfig',
+  productionVariants: [{
+  initialInstanceCount: 2,
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE),
+     modelName: 'MyModel',
+     variantName: 'awesome-variant',
+   }],
+});
+```
+
+### Create Model
+
+You can call the [`CreateModel`](https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_CreateModel.html) API from a `Task` state.
+
+```ts
+new sfn.SageMakerCreateModel(this, 'Sagemaker', {
+  modelName: 'MyModel',
+  primaryContainer: new tasks.ContainerDefinition({
+   image: tasks.DockerImage.fromJsonExpression(sfn.JsonPath.stringAt('$.Model.imageName')),
+   mode: tasks.Mode.SINGLE_MODEL,
+   modelS3Location: tasks.S3Location.fromJsonExpression('$.TrainingJob.ModelArtifacts.S3ModelArtifacts'),
+  }),
+});
+```
+
+### Update Endpoint
+
+You can call the [`UpdateEndpoint`](https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_UpdateEndpoint.html) API from a `Task` state.
+
+```ts
+new sfn.SageMakerUpdateEndpoint(this, 'SagemakerEndpoint', {
+    endpointName: sfn.JsonPath.stringAt('$.Endpoint.Name'),
+    endpointConfigName: sfn.JsonPath.stringAt('$.Endpoint.EndpointConfig'),
+  });
 ```
 
 ## SNS
