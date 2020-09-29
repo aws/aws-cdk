@@ -247,6 +247,8 @@ export abstract class State extends cdk.Construct implements IChainable {
    * @internal
    */
   protected _addRetry(props: RetryProps = {}) {
+    validateErrors(props.errors);
+
     this.retries.push({
       ...props,
       errors: props.errors ? props.errors : [Errors.ALL],
@@ -258,6 +260,8 @@ export abstract class State extends cdk.Construct implements IChainable {
    * @internal
    */
   protected _addCatch(handler: State, props: CatchProps = {}) {
+    validateErrors(props.errors);
+
     this.catches.push({
       next: handler,
       props: {
@@ -386,8 +390,8 @@ export abstract class State extends cdk.Construct implements IChainable {
    */
   protected renderRetryCatch(): any {
     return {
-      Retry: renderList(this.retries, renderRetry),
-      Catch: renderList(this.catches, renderCatch),
+      Retry: renderList(this.retries, renderRetry, (a, b) => compareErrors(a.errors, b.errors)),
+      Catch: renderList(this.catches, renderCatch, (a, b) => compareErrors(a.props.errors, b.props.errors)),
     };
   }
 
@@ -502,11 +506,37 @@ function renderCatch(c: CatchTransition) {
 }
 
 /**
+ * Compares a list of Errors to move Errors.ALL last in a sort function
+ */
+function compareErrors(a?: string[], b?: string[]) {
+  if (a?.includes(Errors.ALL)) {
+    return 1;
+  }
+  if (b?.includes(Errors.ALL)) {
+    return -1;
+  }
+  return 0;
+}
+
+/**
+ * Validates an errors list
+ */
+function validateErrors(errors?: string[]) {
+  if (errors?.includes(Errors.ALL) && errors.length > 1) {
+    throw new Error(`${Errors.ALL} must appear alone in an error list`);
+  }
+}
+
+/**
  * Render a list or return undefined for an empty list
  */
-export function renderList<T>(xs: T[], fn: (x: T) => any): any {
+export function renderList<T>(xs: T[], mapFn: (x: T) => any, sortFn?: (a: T, b: T) => number): any {
   if (xs.length === 0) { return undefined; }
-  return xs.map(fn);
+  let list = xs;
+  if (sortFn) {
+    list = xs.sort(sortFn);
+  }
+  return list.map(mapFn);
 }
 
 /**
