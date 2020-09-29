@@ -56,6 +56,26 @@ export interface CdkPipelineProps {
   readonly pipelineName?: string;
 
   /**
+   * Create KMS keys for cross-account deployments
+   *
+   * This controls whether the pipeline is enabled for cross-account deployments.
+   *
+   * Can only be set if `codePipeline` is not set.
+   *
+   * By default cross-account deployments are enabled, but this feature requires
+   * that KMS Customer Master Keys are created which have a cost of $1/month.
+   *
+   * If you do not need cross-account deployments, you can set this to `false` to
+   * not create those keys and save on that cost (the artifact bucket will be
+   * encrypted with an AWS-managed key). However, cross-account deployments will
+   * no longer be possible.
+   *
+   * @default true
+   */
+  readonly crossAccountKeys?: boolean;
+  // @deprecated(v2): switch to default false
+
+  /**
    * CDK CLI version to use in pipeline
    *
    * Some Actions in the pipeline will download and run a version of the CDK
@@ -115,11 +135,15 @@ export class CdkPipeline extends Construct {
       if (props.pipelineName) {
         throw new Error('Cannot set \'pipelineName\' if an existing CodePipeline is given using \'codePipeline\'');
       }
+      if (props.crossAccountKeys !== undefined) {
+        throw new Error('Cannot set \'crossAccountKeys\' if an existing CodePipeline is given using \'codePipeline\'');
+      }
 
       this._pipeline = props.codePipeline;
     } else {
       this._pipeline = new codepipeline.Pipeline(this, 'Pipeline', {
         pipelineName: props.pipelineName,
+        crossAccountKeys: props.crossAccountKeys,
         restartExecutionOnUpdate: true,
       });
     }

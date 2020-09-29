@@ -1,10 +1,10 @@
 import * as events from '@aws-cdk/aws-events';
 import * as cdk from '@aws-cdk/core';
-import { IAction, IPipeline, IStage } from './action';
-import { Artifact } from './artifact';
-import { CfnPipeline } from './codepipeline.generated';
+import { IAction, IPipeline, IStage } from '../action';
+import { Artifact } from '../artifact';
+import { CfnPipeline } from '../codepipeline.generated';
+import { Pipeline, StageProps } from '../pipeline';
 import { FullActionDescriptor } from './full-action-descriptor';
-import { Pipeline, StageProps } from './pipeline';
 import * as validation from './validation';
 
 /**

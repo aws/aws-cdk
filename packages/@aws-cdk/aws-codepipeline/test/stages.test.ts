@@ -2,7 +2,7 @@ import { expect, haveResourceLike } from '@aws-cdk/assert';
 import * as cdk from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as codepipeline from '../lib';
-import { Stage } from '../lib/stage';
+import { Stage } from '../lib/private/stage';
 
 /* eslint-disable quote-props */
 

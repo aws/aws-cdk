@@ -114,6 +114,9 @@ export interface ActionConfig {
   readonly configuration?: any;
 }
 
+/**
+ * A Pipeline Action
+ */
 export interface IAction {
   readonly actionProperties: ActionProperties;
 
