@@ -17,6 +17,7 @@ This construct library allows you to define [Amazon Elastic Container Service fo
 In addition, the library also supports defining Kubernetes resource manifests within EKS clusters.
 
 * [Quick Start](#quick-start)
+* [API Reference](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-eks-readme.html)
 * [Architectural Overview](#architectural-overview)
 * [Provisioning clusters](#provisioning-clusters)
     * [Capacity Types](#capacity-types)
@@ -41,7 +42,7 @@ In addition, the library also supports defining Kubernetes resource manifests wi
 
 This example defines an Amazon EKS cluster with the following configuration:
 
-- Dedicated VPC with default configuration (see [ec2.Vpc](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-ec2-readme.html#vpc))
+- Dedicated VPC with default configuration (Implicitly created using [ec2.Vpc](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-ec2-readme.html#vpc))
 - A Kubernetes pod with a container based on the [paulbouwer/hello-kubernetes](https://github.com/paulbouwer/hello-kubernetes) image.
 
 ```ts
@@ -200,8 +201,6 @@ cluster.addNodegroupCapacity('custom-node-group', {
 });
 ```
 
-> For a complete API reference visit [`NodegroupOptions`](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-eks.NodegroupOptions.html).
-
 ##### Launch Template Support
 
 You can specify a launch template that the node group will use. Note that when using a custom AMI, Amazon EKS doesn't merge any user data.
@@ -254,8 +253,6 @@ cluster.addFargateProfile('MyProfile', {
 });
 ```
 
-> For a complete API reference visit [`FargateProfileOptions`](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-eks.FargateProfileOptions.html)
-
 You can also directly use the `FargateProfile` construct to create profiles under different scopes:
 
 ```ts
@@ -264,8 +261,6 @@ new eks.FargateProfile(scope, 'MyProfile', {
   ...
 });
 ```
-
-> For a complete API reference visit [`FargateProfileProps`](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-eks.FargateProfileProps.html)
 
 To create an EKS cluster that **only** uses Fargate capacity, you can use `FargateCluster`.
 The following code defines an Amazon EKS cluster with a default Fargate Profile that matches all pods from the "kube-system" and "default" namespaces. It is also configured to [run CoreDNS on Fargate](https://docs.aws.amazon.com/eks/latest/userguide/fargate-getting-started.html#fargate-gs-coredns).
@@ -317,9 +312,6 @@ cluster.addAutoScalingGroupCapacity('spot', {
 ```
 
 To disable bootstrapping altogether (i.e. to fully customize user-data), set `bootstrapEnabled` to `false`.
-
-> For a complete API reference please visit [`AutoScalingGroupCapacityOptions`](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-eks.CapacityOptions.html)
-
 You can also configure the cluster to use an auto-scaling group as the default capacity:
 
 ```ts
@@ -791,8 +783,6 @@ cluster.addHelmChart('NginxIngress', {
   namespace: 'kube-system'
 });
 ```
-
-> For a complete API reference visit [`HelmChartOptions`](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-eks.HelmChartOptions.html) and [`HelmChartProps`](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-eks.HelmChartProps.html).
 
 Helm charts will be installed and updated using `helm upgrade --install`, where a few parameters
 are being passed down (such as `repo`, `values`, `version`, `namespace`, `wait`, `timeout`, etc).
