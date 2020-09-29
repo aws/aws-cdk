@@ -156,6 +156,9 @@ async function main() {
       'cdk-build': {
         cloudformation: namespace,
         jest: true,
+        env: {
+          AWSLINT_BASE_CONSTRUCT: 'true',
+        },
       },
       keywords: [
         'aws',

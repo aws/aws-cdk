@@ -1,6 +1,7 @@
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct, IConstruct, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
+import { IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
+import { IConstruct, Construct } from 'constructs';
 import { CfnRepository } from './codecommit.generated';
 
 export interface IRepository extends IResource {
