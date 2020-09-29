@@ -137,7 +137,6 @@
       "docs-public-apis:@aws-cdk/aws-glue.ClassificationString.value"
     ]
   },
-  "jest": {},
   "awscdkio": {
     "announce": false
   }
