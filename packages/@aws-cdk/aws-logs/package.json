@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-logs",
-        "module": "aws_cdk.aws_logs"
+        "module": "aws_cdk.aws_logs",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
@@ -48,7 +52,10 @@
     "compat": "cdk-compat"
   },
   "cdk-build": {
-    "cloudformation": "AWS::Logs"
+    "cloudformation": "AWS::Logs",
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "keywords": [
     "aws",

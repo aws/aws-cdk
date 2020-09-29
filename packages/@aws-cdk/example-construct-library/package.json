@@ -24,7 +24,11 @@
       },
       "python": {
         "distName": "aws-cdk.example-construct-library",
-        "module": "aws_cdk.example_construct_library"
+        "module": "aws_cdk.example_construct_library",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true

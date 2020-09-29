@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-codepipeline",
-        "module": "aws_cdk.aws_codepipeline"
+        "module": "aws_cdk.aws_codepipeline",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
@@ -49,7 +53,10 @@
   },
   "cdk-build": {
     "cloudformation": "AWS::CodePipeline",
-    "jest": true
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "nyc": {
     "statements": 50,

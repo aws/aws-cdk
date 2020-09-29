@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-dlm",
-        "module": "aws_cdk.aws_dlm"
+        "module": "aws_cdk.aws_dlm",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
@@ -50,7 +54,10 @@
   },
   "cdk-build": {
     "cloudformation": "AWS::DLM",
-    "jest": true
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "keywords": [
     "aws",

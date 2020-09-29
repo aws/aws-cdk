@@ -369,6 +369,8 @@ export interface AssemblyBuildOptions {
   /**
    * Include the specified runtime information (module versions) in manifest.
    * @default - if this option is not specified, runtime info will not be included
+   * @deprecated All template modifications that should result from this should
+   * have already been inserted into the template.
    */
   readonly runtimeInfo?: RuntimeInfo;
 }
