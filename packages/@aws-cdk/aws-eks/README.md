@@ -23,7 +23,7 @@ Table Of Contents
 * [API Reference](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-eks-readme.html)
 * [Architectural Overview](#architectural-overview)
 * [Provisioning clusters](#provisioning-clusters)
-    * [Managed Node Groups](#managed-node-groups)
+    * [Managed node groups](#managed-node-groups)
     * [Fargate Profiles](#fargate-profiles)
     * [Self-managed nodes](#self-managed-nodes)
     * [Endpoint Access](#endpoint-access)
