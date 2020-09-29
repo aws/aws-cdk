@@ -24,7 +24,6 @@ new synthetics.Canary(stack, 'MyCanary', {
         console.log(\'hello world\');
       };`),
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_1_0,
   schedule: synthetics.Schedule.rate(cdk.Duration.minutes(1)),
   artifactsBucketLocation: { bucket, prefix },
 });

@@ -148,7 +148,7 @@
           ]
         },
         "Name": "assetcanary-one",
-        "RuntimeVersion": "syn-1.0",
+        "RuntimeVersion": "syn-nodejs-2.0",
         "Schedule": {
           "DurationInSeconds": "0",
           "Expression": "rate(5 minutes)"
@@ -304,7 +304,7 @@
           ]
         },
         "Name": "assetcanary-two",
-        "RuntimeVersion": "syn-1.0",
+        "RuntimeVersion": "syn-nodejs-2.0",
         "Schedule": {
           "DurationInSeconds": "0",
           "Expression": "rate(5 minutes)"
