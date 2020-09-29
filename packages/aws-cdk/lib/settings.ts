@@ -54,7 +54,7 @@ export class Configuration {
   public context = new Context();
 
   public readonly defaultConfig = new Settings({
-    analyticsReporting: true,
+    versionReporting: true,
     pathMetadata: true,
     output: 'cdk.out',
   });
@@ -239,7 +239,7 @@ export class Settings {
         bucketName: argv.bootstrapBucketName,
         kmsKeyId: argv.bootstrapKmsKeyId,
       },
-      analyticsReporting: argv.versionReporting,
+      versionReporting: argv.versionReporting,
       staging: argv.staging,
       output: argv.output,
       progress: argv.progress,
