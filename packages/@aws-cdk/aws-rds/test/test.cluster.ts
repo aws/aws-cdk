@@ -1394,6 +1394,29 @@ export = {
     test.done();
   },
 
+  "Aurora PostgreSQL cluster uses a different default master username than 'admin', which is a reserved word"(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.auroraPostgres({
+        version: AuroraPostgresEngineVersion.VER_9_6_12,
+      }),
+      instanceProps: { vpc },
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::SecretsManager::Secret', {
+      GenerateSecretString: {
+        SecretStringTemplate: '{"username":"adminuser"}',
+      },
+    }));
+
+    test.done();
+  },
+
   'MySQL cluster without S3 exports or imports references the correct default ParameterGroup'(test: Test) {
     // GIVEN
     const stack = testStack();
