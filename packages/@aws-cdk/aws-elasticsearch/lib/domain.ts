@@ -1264,6 +1264,7 @@ export class Domain extends DomainBase implements IDomain {
             username: masterUserName,
           }),
           generateStringKey: 'password',
+          excludeCharacters: "{}'\\*[]()`",
         },
       })
         .secretValueFromJson('password');
