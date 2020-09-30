@@ -275,6 +275,9 @@
     "aws",
     "cdk"
   ],
+  "nozem": {
+    "ostools": ["npm"],
+  },
   "awscdkio": {
     "announce": false
   }

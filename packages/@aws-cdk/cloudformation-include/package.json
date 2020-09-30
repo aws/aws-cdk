@@ -186,7 +186,6 @@
     "@aws-cdk/aws-wafv2": "0.0.0",
     "@aws-cdk/aws-workspaces": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "yaml": "1.10.0",
     "constructs": "^3.0.4",
     "@aws-cdk/yaml-cfn": "0.0.0"
   },
