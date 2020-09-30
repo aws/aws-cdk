@@ -74,12 +74,14 @@ export interface EventSourceMappingOptions {
 
   /**
    * The maximum number of times to retry when the function returns an error.
+   * Set to `undefined` if you want lambda to keep retrying infinitely or until
+   * the record expires.
    *
    * Valid Range:
    * * Minimum value of 0
    * * Maximum value of 10000
    *
-   * @default 10000
+   * @default - infinite or until the record expires.
    */
   readonly retryAttempts?: number;
 
