@@ -242,10 +242,27 @@ new batch.JobDefinition(stack, 'batch-job-def-from-local', {
 
 ### Importing an existing Job Definition
 
-To import an existing batch job definition, call `JobDefinition.fromJobDefinitionArn()`.
+#### From ARN
+
+To import an existing batch job definition from its ARN, call `JobDefinition.fromJobDefinitionArn()`.
 
 Below is an example:
 
 ```ts
 const job = batch.JobDefinition.fromJobDefinitionArn(this, 'imported-job-definition', 'arn:aws:batch:us-east-1:555555555555:job-definition/my-job-definition');
+```
+
+#### From Name
+
+To import an existing batch job definition from its name, call `JobDefinition.fromJobDefinitionName()`.
+If name is specified without a revision then the latest active revision is used.
+
+Below is an example:
+
+```ts
+// Without revision
+const job = batch.JobDefinition.fromJobDefinitionName(this, 'imported-job-definition', 'my-job-definition');
+
+// With revision
+const job = batch.JobDefinition.fromJobDefinitionName(this, 'imported-job-definition', 'my-job-definition:3');
 ```
