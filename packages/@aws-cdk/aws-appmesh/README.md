@@ -161,6 +161,7 @@ const node = mesh.addVirtualNode('virtual-node', {
       unhealthyThreshold: 2,
     },
   },
+  accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
 })
 ```
 
@@ -186,6 +187,7 @@ const node = new VirtualNode(this, 'node', {
       unhealthyThreshold: 2,
     },
   },
+  accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
 });
 
 cdk.Tag.add(node, 'Environment', 'Dev');
