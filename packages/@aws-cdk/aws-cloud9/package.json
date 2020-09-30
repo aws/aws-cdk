@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-cloud9",
-        "module": "aws_cdk.aws_cloud9"
+        "module": "aws_cdk.aws_cloud9",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
@@ -49,7 +53,10 @@
   },
   "cdk-build": {
     "cloudformation": "AWS::Cloud9",
-    "jest": true
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "keywords": [
     "aws",

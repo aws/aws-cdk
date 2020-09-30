@@ -1,5 +1,6 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Chain } from '../chain';
 import { FieldUtils } from '../fields';
 import { StateGraph } from '../state-graph';
@@ -108,7 +109,7 @@ export class Task extends State implements INextable {
   private readonly timeout?: cdk.Duration;
   private readonly taskProps: StepFunctionsTaskConfig;
 
-  constructor(scope: cdk.Construct, id: string, props: TaskProps) {
+  constructor(scope: Construct, id: string, props: TaskProps) {
     super(scope, id, props);
 
     this.timeout = props.timeout;

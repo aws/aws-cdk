@@ -1,4 +1,4 @@
-import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { BaseInstanceProps, InstanceBase } from './instance';
 import { NamespaceType } from './namespace';
 import { DnsRecordType, IService, RoutingPolicy } from './service';
@@ -41,7 +41,7 @@ export class AliasTargetInstance extends InstanceBase {
    */
   public readonly dnsName: string;
 
-  constructor(scope: cdk.Construct, id: string, props: AliasTargetInstanceProps) {
+  constructor(scope: Construct, id: string, props: AliasTargetInstanceProps) {
     super(scope, id);
 
     if (props.service.namespace.type === NamespaceType.HTTP) {

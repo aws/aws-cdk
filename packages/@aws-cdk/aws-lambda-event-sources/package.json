@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-lambda-event-sources",
-        "module": "aws_cdk.aws_lambda_event_sources"
+        "module": "aws_cdk.aws_lambda_event_sources",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
