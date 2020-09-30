@@ -15,7 +15,7 @@ export async function lintCurrentPackage(options: CDKBuildOptions, compilers: Co
   }
 
   if (!options.pkglint?.disable) {
-    // await shell(['pkglint'], { env });
+    await shell(['pkglint'], { env });
   }
 
   await shell([path.join(__dirname, '..', 'bin', 'cdk-awslint')], { env });
