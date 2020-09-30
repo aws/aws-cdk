@@ -12,6 +12,29 @@ import { CfnDBCluster } from './rds.generated';
 import { ISubnetGroup, SubnetGroup } from './subnet-group';
 
 /**
+  * Interface representing a serverless database cluster.
+  *
+  * @experimental
+ */
+export interface IServerlessCluster extends IResource, ec2.IConnectable, secretsmanager.ISecretAttachmentTarget {
+  /**
+   * Identifier of the cluster
+   */
+  readonly clusterIdentifier: string;
+
+  /**
+   * The endpoint to use for read/write operations
+   * @attribute EndpointAddress,EndpointPort
+   */
+  readonly clusterEndpoint: Endpoint;
+
+  /**
+   * Endpoint to use for load-balanced read-only operations.
+   * @attribute ReadEndpointAddress
+   */
+  readonly clusterReadEndpoint: Endpoint;
+}
+/**
  *  Properties to configure an Aurora Serverless Cluster
  *
  * @experimental
@@ -124,30 +147,6 @@ export interface ServerlessClusterProps {
 }
 
 /**
-  * Interface representing a serverless database cluster.
-  *
-  * @experimental
- */
-export interface IServerlessCluster extends IResource, ec2.IConnectable, secretsmanager.ISecretAttachmentTarget {
-  /**
-   * Identifier of the cluster
-   */
-  readonly clusterIdentifier: string;
-
-  /**
-   * The endpoint to use for read/write operations
-   * @attribute EndpointAddress,EndpointPort
-   */
-  readonly clusterEndpoint: Endpoint;
-
-  /**
-   * Endpoint to use for load-balanced read-only operations.
-   * @attribute ReadEndpointAddress
-   */
-  readonly clusterReadEndpoint: Endpoint;
-}
-
-/**
  * Properties that describe an existing cluster instance
  *
  * @experimental
@@ -197,45 +196,25 @@ export interface ServerlessClusterAttributes {
  * @experimental
  */
 export enum AuroraCapacityUnit {
-  /**
-   * 1 Aurora Capacity Unit
-   */
+  /** 1 Aurora Capacity Unit */
   ACU_1 = 1,
-  /**
-   * 2 Aurora Capacity Units
-   */
+  /** 2 Aurora Capacity Units */
   ACU_2 = 2,
-  /**
-   * 8 Aurora Capacity Units
-   */
+  /** 8 Aurora Capacity Units */
   ACU_8 = 8,
-  /**
-   * 16 Aurora Capacity Units
-   */
+  /** 16 Aurora Capacity Units */
   ACU_16 = 16,
-  /**
-   * 32 Aurora Capacity Units
-   */
+  /** 32 Aurora Capacity Units */
   ACU_32 = 32,
-  /**
-   * 64 Aurora Capacity Units
-   */
+  /** 64 Aurora Capacity Units */
   ACU_64 = 64,
-  /**
-   * 128 Aurora Capacity Units
-   */
+  /** 128 Aurora Capacity Units */
   ACU_128 = 128,
-  /**
-   * 192 Aurora Capacity Units
-   */
+  /** 192 Aurora Capacity Units */
   ACU_192 = 192,
-  /**
-   * 256 Aurora Capacity Units
-   */
+  /** 256 Aurora Capacity Units */
   ACU_256 = 256,
-  /**
-   * 384 Aurora Capacity Units
-   */
+  /** 384 Aurora Capacity Units */
   ACU_384 = 384
 }
 

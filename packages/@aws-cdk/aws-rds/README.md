@@ -424,15 +424,13 @@ import * as rds from '@aws-cdk/aws-rds';
 
 const vpc = new ec2.Vpc(this, 'myrdsvpc');
 
-const cluster = new rds.ServerlessDatabaseCluster(this, 'AnotherCluster', {
+const cluster = new rds.ServerlessCluster(this, 'AnotherCluster', {
   engine: rds.DatabaseClusterEngine.AURORA_POSTGRESQL,
-  parameterGroup: rds.ParameterGroup.fromParameterGroupName(this, 'ParameterGroup', 'default.aurora-postgresql10'),
   vpc,
-  vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE },
   scaling: {
-    autoPause: true,
-    minCapacity: 2,
-    maxCapacity: 32,
+    autoPause: Duration.minutes(10), // default is 5 minutes
+    minCapacity: 4, // default is 2 ACU
+    maxCapacity: 32, // default is 16 ACU
   }
 });
 ```
