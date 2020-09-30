@@ -6,7 +6,7 @@ import { IClusterEngine } from './cluster-engine';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { IParameterGroup } from './parameter-group';
-import { applyRemovalPolicy, DEFAULT_PASSWORD_EXCLUDE_CHARS } from './private/util';
+import { applyRemovalPolicy, defaultDeletionProtection, DEFAULT_PASSWORD_EXCLUDE_CHARS } from './private/util';
 import { Credentials, RotationMultiUserOptions, RotationSingleUserOptions } from './props';
 import { CfnDBCluster } from './rds.generated';
 import { ISubnetGroup, SubnetGroup } from './subnet-group';
@@ -374,7 +374,7 @@ export class ServerlessCluster extends ServerlessClusterBase {
       dbClusterIdentifier: props.clusterIdentifier,
       dbClusterParameterGroupName: clusterParameterGroupConfig?.parameterGroupName,
       dbSubnetGroupName: this.subnetGroup.subnetGroupName,
-      deletionProtection: props.deletionProtection,
+      deletionProtection: defaultDeletionProtection(props.deletionProtection, props.removalPolicy),
       engine: props.engine.engineType,
       engineVersion: props.engine.engineVersion?.fullVersion,
       engineMode: 'serverless',
