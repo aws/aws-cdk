@@ -997,6 +997,25 @@ export = {
 
     test.done();
   },
+
+  "PostgreSQL database instance uses a different default master username than 'admin', which is a reserved word"(test: Test) {
+    new rds.DatabaseInstance(stack, 'Instance', {
+      vpc,
+      engine: rds.DatabaseInstanceEngine.postgres({
+        version: rds.PostgresEngineVersion.VER_9_5_7,
+      }),
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::SecretsManager::Secret', {
+      GenerateSecretString: {
+        SecretStringTemplate: '{"username":"postgres"}',
+      },
+    }));
+
+    test.done();
+  },
+
   'S3 Import/Export': {
     'instance with s3 import and export buckets'(test: Test) {
       new rds.DatabaseInstance(stack, 'DB', {
