@@ -1,10 +1,15 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { ArnComponents, Construct, CustomResource, Token, Stack, Lazy } from '@aws-cdk/core';
+import { ArnComponents, CustomResource, Token, Stack, Lazy } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CLUSTER_RESOURCE_TYPE } from './cluster-resource-handler/consts';
 import { ClusterResourceProvider } from './cluster-resource-provider';
 import { CfnCluster } from './eks.generated';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 export interface ClusterResourceProps {
   readonly resourcesVpcConfig: CfnCluster.ResourcesVpcConfigProperty;
@@ -29,7 +34,7 @@ export interface ClusterResourceProps {
  * cluster via `kubectl` to enable Kubernetes management capabilities like apply
  * manifest and IAM role/user RBAC mapping.
  */
-export class ClusterResource extends Construct {
+export class ClusterResource extends CoreConstruct {
   public readonly attrEndpoint: string;
   public readonly attrArn: string;
   public readonly attrCertificateAuthorityData: string;
