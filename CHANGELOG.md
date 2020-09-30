@@ -17,9 +17,7 @@ UserPoolClient. It will be included if any other `authFlow` is enabled.
 * **eks:** `cluster.addAutoScalingGroup` renamed to `cluster.connectAutoScalingGroupCapacity`
 * **eks:** `cluster.addNodegroup` renamed to `cluster.addNoedgroupCapacity`
 * **eks:** `cluster.addCapacity` renamed to `cluster.addAutoScalingGroupCapacity`
-* **eks:** `CapacityOptions` renamed to `AutoScalingGroupCapacityOptions`.
-
-Resolves https://github.com/aws/aws-cdk/issues/10364
+* **eks:** `CapacityOptions` renamed to `AutoScalingGroupCapacityOptions`. Resolves [#10364](https://github.com/aws/aws-cdk/issues/10364)
 * **rds:** the default generated password exclude characters set for Instance, Cluster and `DatabaseSecret` is now ``" %+~`#$&*()|[]{}:;<>?!'/@\"\\"``
 * **rds**: the default generated password exclude characters for `addSingleUserRotation()` and `addMultiUserRotation()` in Cluster and Instance is now ``" %+~`#$&*()|[]{}:;<>?!'/@\"\\"``
 * **rds**: `Instance.addSingleUserRotation()` now takes options object as the first argument, instead of just `Duration`
@@ -73,7 +71,6 @@ to `credentials` as a new `Credentials` class.
 * **core:** bundling with staging disabled returns a relative path ([#10507](https://github.com/aws/aws-cdk/issues/10507)) ([e9b5b8c](https://github.com/aws/aws-cdk/commit/e9b5b8c16c11b6dab37d8d9c7fdba2265621eae7)), closes [#9576](https://github.com/aws/aws-cdk/issues/9576) [#10367](https://github.com/aws/aws-cdk/issues/10367)
 * **core:** properties set to false are not rendered in the template ([#10539](https://github.com/aws/aws-cdk/issues/10539)) ([b42d4e9](https://github.com/aws/aws-cdk/commit/b42d4e9e8ef6fd5dc20d48ee0bb82482a312cd7c)), closes [#10455](https://github.com/aws/aws-cdk/issues/10455)
 * **core:** write Metadata resource in core framework ([#10306](https://github.com/aws/aws-cdk/issues/10306)) ([fb39803](https://github.com/aws/aws-cdk/commit/fb39803b62bbd0ff62bf421464559c759ef0a923))
-* **eks:** `KubernetesPatch` and `FargateCluster` creates a circular dependency and breaks deployment ([#10536](https://github.com/aws/aws-cdk/issues/10536)) ([b23ce03](https://github.com/aws/aws-cdk/commit/b23ce03121466b686dfdd25731ea107e4e27d17b)), closes [40aws-cdk/aws-eks/lib/k8s-manifest.ts#L58](https://github.com/40aws-cdk/aws-eks/lib/k8s-manifest.ts/issues/L58) [40aws-cdk/aws-eks/lib/k8s-object-value.ts#L64](https://github.com/40aws-cdk/aws-eks/lib/k8s-object-value.ts/issues/L64) [40aws-cdk/aws-eks/lib/k8s-patch.ts#L74](https://github.com/40aws-cdk/aws-eks/lib/k8s-patch.ts/issues/L74)
 * **pipelines:** stack tags ([#10533](https://github.com/aws/aws-cdk/issues/10533)) ([97bfd10](https://github.com/aws/aws-cdk/commit/97bfd10fef4c23404ec3f5c6a6ca68604fc78aa8)), closes [#9260](https://github.com/aws/aws-cdk/issues/9260)
 * **rds:** allow creating Proxies for imported resources ([#10488](https://github.com/aws/aws-cdk/issues/10488)) ([c502114](https://github.com/aws/aws-cdk/commit/c5021147e5d6f2e2a91fe50daf3aacd149b0f895)), closes [#9195](https://github.com/aws/aws-cdk/issues/9195)
 * **rds:** default username 'admin' doesn't work for PostgreSQL ([#10597](https://github.com/aws/aws-cdk/issues/10597)) ([8a04014](https://github.com/aws/aws-cdk/commit/8a0401495e05e8ec7178d2ac57556434c853cabd)), closes [#10458](https://github.com/aws/aws-cdk/issues/10458) [#10579](https://github.com/aws/aws-cdk/issues/10579)
