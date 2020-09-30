@@ -192,7 +192,7 @@ export = {
 
     expect(stack).to(haveResource('AWS::SecretsManager::Secret', {
       GenerateSecretString: {
-        ExcludeCharacters: '\"@/\\',
+        ExcludeCharacters: " %+~`#$&*()|[]{}:;<>?!'/@\"\\",
         GenerateStringKey: 'password',
         PasswordLength: 30,
         SecretStringTemplate: '{"username":"admin"}',

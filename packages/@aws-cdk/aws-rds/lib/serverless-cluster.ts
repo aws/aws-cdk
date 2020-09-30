@@ -6,8 +6,8 @@ import { IClusterEngine } from './cluster-engine';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { IParameterGroup } from './parameter-group';
-import { applyRemovalPolicy } from './private/util';
-import { Credentials, RotationMultiUserOptions } from './props';
+import { applyRemovalPolicy, DEFAULT_PASSWORD_EXCLUDE_CHARS } from './private/util';
+import { Credentials, RotationMultiUserOptions, RotationSingleUserOptions } from './props';
 import { CfnDBCluster } from './rds.generated';
 import { ISubnetGroup, SubnetGroup } from './subnet-group';
 
@@ -421,7 +421,7 @@ export class ServerlessCluster extends ServerlessClusterBase {
    * @param [automaticallyAfter=Duration.days(30)] Specifies the number of days after the previous rotation
    * before Secrets Manager triggers the next automatic rotation.
    */
-  public addRotationSingleUser(automaticallyAfter?: Duration): secretsmanager.SecretRotation {
+  public addRotationSingleUser(options: RotationSingleUserOptions = {}): secretsmanager.SecretRotation {
     if (!this.secret) {
       throw new Error('Cannot add single user rotation for a cluster without secret.');
     }
@@ -434,11 +434,12 @@ export class ServerlessCluster extends ServerlessClusterBase {
 
     return new secretsmanager.SecretRotation(this, id, {
       secret: this.secret,
-      automaticallyAfter,
       application: this.singleUserRotationApplication,
       vpc: this.vpc,
       vpcSubnets: this.vpcSubnets,
       target: this,
+      ...options,
+      excludeCharacters: options.excludeCharacters ?? DEFAULT_PASSWORD_EXCLUDE_CHARS,
     });
   }
 
@@ -450,9 +451,9 @@ export class ServerlessCluster extends ServerlessClusterBase {
       throw new Error('Cannot add multi user rotation for a cluster without secret.');
     }
     return new secretsmanager.SecretRotation(this, id, {
-      secret: options.secret,
+      ...options,
+      excludeCharacters: options.excludeCharacters ?? DEFAULT_PASSWORD_EXCLUDE_CHARS,
       masterSecret: this.secret,
-      automaticallyAfter: options.automaticallyAfter,
       application: this.multiUserRotationApplication,
       vpc: this.vpc,
       vpcSubnets: this.vpcSubnets,
