@@ -13,7 +13,7 @@
   },
   "scripts": {
     "build": "cdk-build",
-    "watch": "tsc -b -w",
+    "watch": "cdk-watch",
     "pkglint": "pkglint -f",
     "test": "echo success",
     "build+test+package": "npm run build+test",
