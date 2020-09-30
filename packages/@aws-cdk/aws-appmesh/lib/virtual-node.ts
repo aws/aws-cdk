@@ -3,7 +3,7 @@ import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnVirtualNode } from './appmesh.generated';
 import { IMesh } from './mesh';
-import { HealthCheck, PortMapping, Protocol, VirtualNodeListener } from './shared-interfaces';
+import { AccessLog, HealthCheck, PortMapping, Protocol, VirtualNodeListener } from './shared-interfaces';
 import { IVirtualService } from './virtual-service';
 
 /**
@@ -90,6 +90,13 @@ export interface VirtualNodeBaseProps {
    * @default - No listeners
    */
   readonly listener?: VirtualNodeListener;
+
+  /**
+   * Access Logging Configuration for the virtual node
+   *
+   * @default - No access logging
+   */
+  readonly accessLog?: AccessLog;
 }
 
 /**
@@ -252,6 +259,7 @@ export class VirtualNode extends VirtualNodeBase {
 
     this.addBackends(...props.backends || []);
     this.addListeners(...props.listener ? [props.listener] : []);
+    const accessLogging = props.accessLog?.bind(this);
 
     const node = new CfnVirtualNode(this, 'Resource', {
       virtualNodeName: this.physicalName,
@@ -267,13 +275,9 @@ export class VirtualNode extends VirtualNodeBase {
             attributes: renderAttributes(props.cloudMapServiceInstanceAttributes),
           } : undefined,
         },
-        logging: {
-          accessLog: {
-            file: {
-              path: '/dev/stdout',
-            },
-          },
-        },
+        logging: accessLogging !== undefined ? {
+          accessLog: accessLogging.virtualNodeAccessLog,
+        } : undefined,
       },
     });
 

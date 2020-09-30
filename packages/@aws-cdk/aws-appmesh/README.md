@@ -161,6 +161,7 @@ const node = mesh.addVirtualNode('virtual-node', {
       unhealthyThreshold: 2,
     },
   },
+  accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
 })
 ```
 
@@ -186,12 +187,13 @@ const node = new VirtualNode(this, 'node', {
       unhealthyThreshold: 2,
     },
   },
+  accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
 });
 
 cdk.Tag.add(node, 'Environment', 'Dev');
 ```
 
-The listeners property can be left blank dded later with the `mesh.addListeners()` method. The `healthcheck` property is optional but if specifying a listener, the `portMappings` must contain at least one property.
+The listeners property can be left blank and added later with the `mesh.addListeners()` method. The `healthcheck` property is optional but if specifying a listener, the `portMappings` must contain at least one property.
 
 ## Adding a Route
 

@@ -672,13 +672,6 @@
               }
             }
           ],
-          "Logging": {
-            "AccessLog": {
-              "File": {
-                "Path": "/dev/stdout"
-              }
-            }
-          },
           "ServiceDiscovery": {
             "DNS": {
               "Hostname": "node1.domain.local"
@@ -727,13 +720,6 @@
               }
             }
           ],
-          "Logging": {
-            "AccessLog": {
-              "File": {
-                "Path": "/dev/stdout"
-              }
-            }
-          },
           "ServiceDiscovery": {
             "DNS": {
               "Hostname": "node2.domain.local"
