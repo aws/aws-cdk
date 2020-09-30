@@ -276,7 +276,7 @@
     "cdk"
   ],
   "nozem": {
-    "ostools": ["npm"],
+    "ostools": ["npm"]
   },
   "awscdkio": {
     "announce": false
