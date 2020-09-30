@@ -202,7 +202,7 @@ function concatAndDedup<T>(left: T[], right: T[]): T[] {
 function generateInterfaces(interfaceTypes?: InterfaceType[]): string {
   if (!interfaceTypes || interfaceTypes.length === 0) return '';
   return interfaceTypes.reduce((acc, interfaceType) =>
-    `${acc} ${interfaceType.name},`, ' implements').slice(0, -1);
+    `${acc} ${interfaceType.name} &`, ' implements').slice(0, -2);
 }
 
 /**
