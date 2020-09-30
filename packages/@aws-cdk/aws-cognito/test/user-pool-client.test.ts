@@ -187,15 +187,8 @@ describe('User Pool Client', () => {
     });
 
     // THEN
-    expect(stack).not.toHaveResourceLike('AWS::CognitoUserPoolClient', {
-      CallbackURLs: ['https://example.com'],
-    });
-
-    expect(stack).toHaveResource('AWS::Cognito::UserPoolClient', {
-      AllowedOAuthFlowsUserPoolClient: false,
-      SupportedIdentityProviders: [
-        'COGNITO',
-      ],
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolClient', {
+      CallbackURLs: ABSENT,
     });
   });
 
