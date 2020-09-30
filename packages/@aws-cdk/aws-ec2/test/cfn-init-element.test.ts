@@ -637,7 +637,7 @@ describe('InitSource', () => {
 
     // THEN
     expect(rendered).toEqual({
-      '/tmp/foo': expect.stringMatching(/^https:\/\/MyBucket.s3-testregion\..*\/myKey\/?$/),
+      '/tmp/foo': expect.stringContaining('/MyBucket/myKey'),
     });
   });
 

@@ -376,7 +376,7 @@ describe('assets n buckets', () => {
         config: {
           files: {
             '/etc/fun.js': {
-              source: { 'Fn::Join': ['', ['https://my-bucket.s3-testregion.', { Ref: 'AWS::URLSuffix' }, '/file.js']] },
+              source: { 'Fn::Join': ['', ['https://s3.testregion.', { Ref: 'AWS::URLSuffix' }, '/my-bucket/file.js']] },
             },
           },
         },
@@ -418,7 +418,7 @@ describe('assets n buckets', () => {
       'AWS::CloudFormation::Init': {
         config: {
           sources: {
-            '/etc/fun': { 'Fn::Join': ['', ['https://my-bucket.s3-testregion.', { Ref: 'AWS::URLSuffix' }, '/file.zip']] },
+            '/etc/fun': { 'Fn::Join': ['', ['https://s3.testregion.', { Ref: 'AWS::URLSuffix' }, '/my-bucket/file.zip']] },
           },
         },
       },
