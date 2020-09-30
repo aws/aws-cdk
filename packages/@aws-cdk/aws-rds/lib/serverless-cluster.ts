@@ -314,9 +314,8 @@ export class ServerlessCluster extends ServerlessClusterBase {
   /**
    * The secret attached to this cluster
    */
-  public readonly secret?: secretsmanager.ISecret;
-
-  protected readonly subnetGroup: ISubnetGroup;
+  private readonly secret?: secretsmanager.ISecret;
+  private readonly subnetGroup: ISubnetGroup;
   private readonly vpc: ec2.IVpc;
   private readonly vpcSubnets?: ec2.SubnetSelection;
 
@@ -346,7 +345,7 @@ export class ServerlessCluster extends ServerlessClusterBase {
       removalPolicy: props.removalPolicy === RemovalPolicy.RETAIN ? props.removalPolicy : undefined,
     });
 
-    let credentials = props.credentials ?? Credentials.fromUsername('admin');
+    let credentials = props.credentials ?? Credentials.fromUsername(props.engine.defaultUsername ?? 'admin');
     if (!credentials.secret && !credentials.password) {
       credentials = Credentials.fromSecret(new DatabaseSecret(this, 'Secret', {
         username: credentials.username,
