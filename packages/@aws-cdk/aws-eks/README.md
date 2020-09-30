@@ -828,6 +828,8 @@ dependencies: {
 }
 ```
 
+> Note that the version of `cdk8s` must be `>=0.29.0`.
+
 Next, install the `cdk8s-cli`:
 
 ```console
