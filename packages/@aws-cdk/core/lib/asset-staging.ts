@@ -123,9 +123,10 @@ export class AssetStaging extends Construct {
     // in multiple stacks). In this case we can completely skip file system and
     // bundling operations.
     const cacheKey = calculateCacheKey({
-      ...props,
       sourcePath: path.resolve(props.sourcePath),
+      bundling: props.bundling,
       assetHashType: hashType,
+      extraHash: props.extraHash,
     });
 
     if (props.bundling) {
