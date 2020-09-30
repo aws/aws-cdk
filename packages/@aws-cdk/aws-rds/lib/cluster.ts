@@ -430,7 +430,7 @@ export interface DatabaseClusterProps extends DatabaseClusterBaseProps {
   /**
    * Credentials for the administrative user
    *
-   * @default - A username of 'admin' (except for Postgres, which uses 'adminuser') and SecretsManager-generated password
+   * @default - A username of 'admin' (or 'postgres' for PostgreSQL) and SecretsManager-generated password
    */
   readonly credentials?: Credentials;
 

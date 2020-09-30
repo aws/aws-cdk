@@ -42,10 +42,8 @@ export interface IEngine {
 
   /**
    * The default name of the master database user if one was not provided explicitly.
-   * If this is `undefined`,
-   * the global default of 'admin' will be used,
-   * but that does not work for all the database engines -
-   * most notably, it's a reserved word in PostgreSQL.
+   * The global default of 'admin' will be used if this is `undefined`.
+   * Note that 'admin' is a reserved word in PostgreSQL and cannot be used.
    */
   readonly defaultUsername?: string;
 }

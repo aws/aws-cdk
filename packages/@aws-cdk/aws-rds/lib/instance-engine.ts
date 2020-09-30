@@ -578,7 +578,7 @@ export interface PostgresInstanceEngineProps {
  * The instance engine for PostgreSQL.
  */
 class PostgresInstanceEngine extends InstanceEngineBase {
-  public readonly defaultUsername = 'adminuser';
+  public readonly defaultUsername = 'postgres';
 
   constructor(version?: PostgresEngineVersion) {
     super({

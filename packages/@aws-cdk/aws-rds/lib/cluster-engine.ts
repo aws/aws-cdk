@@ -495,7 +495,7 @@ class AuroraPostgresClusterEngine extends ClusterEngineBase {
   private static readonly S3_EXPORT_FEATURE_NAME = 's3Export';
 
   public readonly engineFamily = 'POSTGRESQL';
-  public readonly defaultUsername = 'adminuser';
+  public readonly defaultUsername = 'postgres';
   public readonly supportedLogTypes: string[] = ['postgresql'];
 
   constructor(version?: AuroraPostgresEngineVersion) {

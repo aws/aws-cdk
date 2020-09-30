@@ -1410,7 +1410,7 @@ export = {
     // THEN
     expect(stack).to(haveResourceLike('AWS::SecretsManager::Secret', {
       GenerateSecretString: {
-        SecretStringTemplate: '{"username":"adminuser"}',
+        SecretStringTemplate: '{"username":"postgres"}',
       },
     }));
 
