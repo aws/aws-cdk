@@ -10,15 +10,14 @@ const GRANT_RESULT_FQN = '@aws-cdk/aws-iam.Grant';
 
 export const resourceLinter = new Linter(a => ResourceReflection.findAll(a));
 
+export enum AttributeSite {
+  Interface = 'interface',
+  Class = 'class'
+}
 export interface Attribute {
   site: AttributeSite;
   property: reflect.Property;
   cfnAttributeNames: string[]; // bucketArn
-}
-
-export enum AttributeSite {
-  Interface = 'interface',
-  Class = 'class'
 }
 
 export class ResourceReflection {

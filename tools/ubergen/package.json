@@ -12,7 +12,7 @@
     "ubergen": "bin/ubergen"
   },
   "scripts": {
-    "build": "tsc -b && chmod +x bin/ubergen && eslint . --ext=.ts",
+    "build": "cdk-build",
     "watch": "tsc -b -w",
     "pkglint": "pkglint -f",
     "test": "echo success",
@@ -38,6 +38,14 @@
     "aws",
     "cdk"
   ],
+  "nozem": {
+    "ostools": [
+      "chmod",
+      "yarn",
+      "dirname",
+      "rsync"
+    ]
+  },
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"

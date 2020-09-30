@@ -97,6 +97,6 @@ function isCfnType(ctx: DocsLinterContext) {
   }
 }
 
-function flatMap<T, U>(array: readonly T[], callbackfn: (value: T, index: number, array: readonly T[]) => U[]): U[] {
+function flatMap<T, U>(array: readonly T[], callbackfn: (value: T, index: number, arr: readonly T[]) => U[]): U[] {
   return Array.prototype.concat(...array.map(callbackfn));
 }
