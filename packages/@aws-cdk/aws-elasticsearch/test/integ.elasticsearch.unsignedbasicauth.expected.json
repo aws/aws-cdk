@@ -5,6 +5,7 @@
       "Properties": {
         "GenerateSecretString": {
           "GenerateStringKey": "password",
+          "ExcludeCharacters": "{}'\\*[]()`",
           "SecretStringTemplate": "{\"username\":\"admin\"}"
         }
       }
