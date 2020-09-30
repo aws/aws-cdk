@@ -161,5 +161,3 @@ const domain = new es.Domain(this, 'Domain', {
 
 const masterUserPassword = domain.masterUserPassword;
 ```
-
-```
