@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-eks",
-        "module": "aws_cdk.aws_eks"
+        "module": "aws_cdk.aws_eks",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
@@ -110,7 +114,7 @@
     ]
   },
   "stability": "experimental",
-  "maturity": "experimental",
+  "maturity": "developer-preview",
   "awscdkio": {
     "announce": false
   }

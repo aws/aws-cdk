@@ -27,9 +27,7 @@ your instances will be launched privately or publicly:
 ```ts
 const cluster = new rds.DatabaseCluster(this, 'Database', {
   engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_2_08_1 }),
-  masterUser: {
-    username: 'clusteradmin'
-  },
+  masterUser: rds.Login.fromUsername('clusteradmin'), // Optional - will default to admin
   instanceProps: {
     // optional, defaults to t3.medium
     instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
@@ -76,7 +74,7 @@ const instance = new rds.DatabaseInstance(this, 'Instance', {
   engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19_0_0_0_2020_04_R1 }),
   // optional, defaults to m5.large
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
-  masterUsername: 'syscdk',
+  masterUsername: rds.Login.fromUsername('syscdk'), // Optional - will default to admin
   vpc,
   vpcSubnets: {
     subnetType: ec2.SubnetType.PRIVATE
@@ -103,7 +101,6 @@ const instance = new rds.DatabaseInstance(this, 'Instance', {
   engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_12_3 }),
   // optional, defaults to m5.large
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
-  masterUsername: 'syscdk',
   vpc,
   maxAllocatedStorage: 200,
 });
@@ -141,6 +138,35 @@ method:
 const rule = instance.onEvent('InstanceEvent', { target: new targets.LambdaFunction(fn) });
 ```
 
+### Login credentials
+
+By default, database instances and clusters will have `admin` user with an auto-generated password.
+An alternative username (and password) may be specified for the admin user instead of the default.
+
+The following examples use a `DatabaseInstance`, but the same usage is applicable to `DatabaseCluster`.
+
+```ts
+const engine = rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_12_3 });
+new rds.DatabaseInstance(this, 'InstanceWithUsername', {
+  engine,
+  vpc,
+  credentials: rds.Credentials.fromUsername('postgres'), // Creates an admin user of postgres with a generated password
+});
+
+new rds.DatabaseInstance(this, 'InstanceWithUsernameAndPassword', {
+  engine,
+  vpc,
+  credentials: rds.Credentials.fromUsername('postgres', { password: SecretValue.ssmSecure('/dbPassword', 1) }), // Use password from SSM
+});
+
+const mySecret = secretsmanager.Secret.fromSecretName(this, 'DBSecret', 'myDBLoginInfo');
+new rds.DatabaseInstance(this, 'InstanceWithSecretLogin', {
+  engine,
+  vpc,
+  credentials: rds.Credentials.fromSecret(mySecret), // Get both username and password from existing secret
+});
+```
+
 ### Connecting
 
 To control who can access the cluster or instance, use the `.connections` attribute. RDS databases have
@@ -168,7 +194,10 @@ const address = instance.instanceEndpoint.socketAddress;   // "HOSTNAME:PORT"
 When the master password is generated and stored in AWS Secrets Manager, it can be rotated automatically:
 
 ```ts
-instance.addRotationSingleUser(); // Will rotate automatically after 30 days
+instance.addRotationSingleUser({
+  automaticallyAfter: cdk.Duration.days(7), // defaults to 30 days
+  excludeCharacters: '!@#$%^&*', // defaults to the set " %+~`#$&*()|[]{}:;<>?!'/@\"\\"
+});
 ```
 
 [example of setting up master password rotation for a cluster](test/integ.cluster-rotation.lit.ts)
@@ -187,6 +216,7 @@ It's also possible to create user credentials together with the instance/cluster
 const myUserSecret = new rds.DatabaseSecret(this, 'MyUserSecret', {
   username: 'myuser',
   masterSecret: instance.secret,
+  excludeCharacters: '{}[]()\'"/\\', // defaults to the set " %+~`#$&*()|[]{}:;<>?!'/@\"\\"
 });
 const myUserSecretAttached = myUserSecret.attach(instance); // Adds DB connections information in the secret
 
@@ -211,7 +241,6 @@ The following example shows enabling IAM authentication for a database instance 
 ```ts
 const instance = new rds.DatabaseInstance(stack, 'Instance', {
   engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
-  masterUsername: 'admin',
   vpc,
   iamAuthentication: true, // Optional - will be automatically set if you call grantConnect().
 });
@@ -240,7 +269,6 @@ const role = new iam.Role(stack, 'RDSDirectoryServicesRole', {
 });
 const instance = new rds.DatabaseInstance(stack, 'Instance', {
   engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
-  masterUsername: 'admin',
   vpc,
   domain: 'd-????????', // The ID of the domain for the instance to join.
   domainRole: role, // Optional - will be create automatically if not provided.

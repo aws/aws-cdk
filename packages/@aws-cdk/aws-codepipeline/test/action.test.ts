@@ -3,7 +3,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as codepipeline from '../lib';
-import * as validations from '../lib/validation';
+import * as validations from '../lib/private/validation';
 import { FakeBuildAction } from './fake-build-action';
 import { FakeSourceAction } from './fake-source-action';
 

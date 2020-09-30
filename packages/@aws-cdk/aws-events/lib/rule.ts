@@ -1,4 +1,5 @@
-import { App, Construct, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
+import { App, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
+import { Construct, Node } from 'constructs';
 import { IEventBus } from './event-bus';
 import { EventPattern } from './event-pattern';
 import { CfnEventBusPolicy, CfnRule } from './events.generated';
@@ -225,7 +226,7 @@ export class Rule extends Resource implements IRule {
         if (!sourceApp || !App.isApp(sourceApp)) {
           throw new Error('Event stack which uses cross-account targets must be part of a CDK app');
         }
-        const targetApp = targetResource.node.root;
+        const targetApp = Node.of(targetResource).root;
         if (!targetApp || !App.isApp(targetApp)) {
           throw new Error('Target stack which uses cross-account event targets must be part of a CDK app');
         }

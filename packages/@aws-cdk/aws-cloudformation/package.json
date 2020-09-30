@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-cloudformation",
-        "module": "aws_cdk.aws_cloudformation"
+        "module": "aws_cdk.aws_cloudformation",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
