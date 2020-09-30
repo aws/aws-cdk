@@ -1,11 +1,16 @@
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
-import { Construct, IResource, Lazy, Resource, Stack, Token, Duration } from '@aws-cdk/core';
+import { IResource, Lazy, Resource, Stack, Token, Duration } from '@aws-cdk/core';
+import { Construct, Node } from 'constructs';
 import { CfnDistribution } from './cloudfront.generated';
 import { GeoRestriction } from './geo-restriction';
 import { IOrigin, OriginBindConfig, OriginBindOptions } from './origin';
 import { CacheBehavior } from './private/cache-behavior';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Interface for CloudFront distributions
@@ -314,8 +319,8 @@ export class Distribution extends Resource implements IDistribution {
       return existingOrigin.originGroupId ?? existingOrigin.originId;
     } else {
       const originIndex = this.boundOrigins.length + 1;
-      const scope = new Construct(this, `Origin${originIndex}`);
-      const originId = scope.node.uniqueId;
+      const scope = new CoreConstruct(this, `Origin${originIndex}`);
+      const originId = Node.of(scope).uniqueId;
       const originBindConfig = origin.bind(scope, { originId });
       if (!originBindConfig.failoverConfig) {
         this.boundOrigins.push({ origin, originId, ...originBindConfig });
@@ -324,7 +329,7 @@ export class Distribution extends Resource implements IDistribution {
           throw new Error('An Origin cannot use an Origin with its own failover configuration as its fallback origin!');
         }
         const groupIndex = this.originGroups.length + 1;
-        const originGroupId = new Construct(this, `OriginGroup${groupIndex}`).node.uniqueId;
+        const originGroupId = Node.of(new CoreConstruct(this, `OriginGroup${groupIndex}`)).uniqueId;
         this.boundOrigins.push({ origin, originId, originGroupId, ...originBindConfig });
 
         const failoverOriginId = this.addOrigin(originBindConfig.failoverConfig.failoverOrigin, true);
@@ -412,7 +417,7 @@ export class Distribution extends Resource implements IDistribution {
 
     const bucket = props.logBucket ?? new s3.Bucket(this, 'LoggingBucket');
     return {
-      bucket: bucket.bucketRegionalDomainName,
+      bucket: bucket.bucketDomainName,
       includeCookies: props.logIncludesCookies,
       prefix: props.logFilePrefix,
     };

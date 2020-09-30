@@ -2,7 +2,6 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { IConstruct, Node } from 'constructs';
 import { Construct } from './construct-compat';
 import { Environment } from './environment';
-import { collectRuntimeInformation } from './private/runtime-info';
 import { synthesize } from './private/synthesis';
 
 /**
@@ -172,10 +171,8 @@ export class Stage extends Construct {
    */
   public synth(options: StageSynthesisOptions = { }): cxapi.CloudAssembly {
     if (!this.assembly || options.force) {
-      const runtimeInfo = this.node.tryGetContext(cxapi.DISABLE_VERSION_REPORTING) ? undefined : collectRuntimeInformation();
       this.assembly = synthesize(this, {
         skipValidation: options.skipValidation,
-        runtimeInfo,
       });
     }
 

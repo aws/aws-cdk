@@ -1,5 +1,6 @@
 import { IKey } from '@aws-cdk/aws-kms';
-import { Construct, Stack } from '@aws-cdk/core';
+import { Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnTopic } from './sns.generated';
 import { ITopic, TopicBase } from './topic-base';
 

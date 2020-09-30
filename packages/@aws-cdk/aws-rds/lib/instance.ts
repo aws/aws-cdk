@@ -11,8 +11,8 @@ import { Endpoint } from './endpoint';
 import { IInstanceEngine } from './instance-engine';
 import { IOptionGroup } from './option-group';
 import { IParameterGroup } from './parameter-group';
-import { applyRemovalPolicy, defaultDeletionProtection, engineDescription, setupS3ImportExport } from './private/util';
-import { Credentials, PerformanceInsightRetention, RotationMultiUserOptions, SnapshotCredentials } from './props';
+import { applyRemovalPolicy, DEFAULT_PASSWORD_EXCLUDE_CHARS, defaultDeletionProtection, engineDescription, setupS3ImportExport } from './private/util';
+import { Credentials, PerformanceInsightRetention, RotationMultiUserOptions, RotationSingleUserOptions, SnapshotCredentials } from './props';
 import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
 import { CfnDBInstance, CfnDBInstanceProps } from './rds.generated';
 import { ISubnetGroup, SubnetGroup } from './subnet-group';
@@ -851,10 +851,10 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
   /**
    * Adds the single user rotation of the master password to this instance.
    *
-   * @param [automaticallyAfter=Duration.days(30)] Specifies the number of days after the previous rotation
-   * before Secrets Manager triggers the next automatic rotation.
+   * @param options the options for the rotation,
+   *                if you want to override the defaults
    */
-  public addRotationSingleUser(automaticallyAfter?: Duration): secretsmanager.SecretRotation {
+  public addRotationSingleUser(options: RotationSingleUserOptions = {}): secretsmanager.SecretRotation {
     if (!this.secret) {
       throw new Error('Cannot add single user rotation for an instance without secret.');
     }
@@ -867,11 +867,12 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
 
     return new secretsmanager.SecretRotation(this, id, {
       secret: this.secret,
-      automaticallyAfter,
       application: this.singleUserRotationApplication,
       vpc: this.vpc,
       vpcSubnets: this.vpcPlacement,
       target: this,
+      ...options,
+      excludeCharacters: options.excludeCharacters ?? DEFAULT_PASSWORD_EXCLUDE_CHARS,
     });
   }
 
@@ -883,9 +884,9 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
       throw new Error('Cannot add multi user rotation for an instance without secret.');
     }
     return new secretsmanager.SecretRotation(this, id, {
-      secret: options.secret,
+      ...options,
+      excludeCharacters: options.excludeCharacters ?? DEFAULT_PASSWORD_EXCLUDE_CHARS,
       masterSecret: this.secret,
-      automaticallyAfter: options.automaticallyAfter,
       application: this.multiUserRotationApplication,
       vpc: this.vpc,
       vpcSubnets: this.vpcPlacement,
@@ -948,6 +949,7 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
       credentials = Credentials.fromSecret(new DatabaseSecret(this, 'Secret', {
         username: credentials.username,
         encryptionKey: credentials.encryptionKey,
+        excludeCharacters: credentials.excludeCharacters,
       }));
     }
     const secret = credentials.secret;
@@ -1026,6 +1028,7 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
       secret = new DatabaseSecret(this, 'Secret', {
         username: credentials.username,
         encryptionKey: credentials.encryptionKey,
+        excludeCharacters: credentials.excludeCharacters,
       });
     }
 

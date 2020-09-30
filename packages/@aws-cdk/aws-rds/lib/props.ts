@@ -63,6 +63,27 @@ export interface InstanceProps {
    * @default - default master key
    */
   readonly performanceInsightEncryptionKey?: kms.IKey;
+
+  /**
+   * Whether to enable automatic upgrade of minor version for the DB instance.
+   *
+   * @default - true
+   */
+  readonly autoMinorVersionUpgrade?: boolean;
+
+  /**
+   * Whether to allow upgrade of major version for the DB instance.
+   *
+   * @default - false
+   */
+  readonly allowMajorVersionUpgrade?: boolean;
+
+  /**
+   *  Whether to remove automated backups immediately after the DB instance is deleted for the DB instance.
+   *
+   * @default - true
+   */
+  readonly deleteAutomatedBackups?: boolean;
 }
 
 /**
@@ -113,6 +134,14 @@ export interface CredentialsFromUsernameOptions {
    * @default - default master key
    */
   readonly encryptionKey?: kms.IKey;
+
+  /**
+   * The characters to exclude from the generated password.
+   * Has no effect if {@link password} has been provided.
+   *
+   * @default - the DatabaseSecret default exclude character set (" %+~`#$&*()|[]{}:;<>?!'/@\"\\")
+   */
+  readonly excludeCharacters?: string;
 }
 
 /**
@@ -125,7 +154,10 @@ export abstract class Credentials {
    * If no password is provided, one will be generated and stored in SecretsManager.
    */
   public static fromUsername(username: string, options: CredentialsFromUsernameOptions = {}): Credentials {
-    return { username, password: options.password, encryptionKey: options.encryptionKey };
+    return {
+      ...options,
+      username,
+    };
   }
 
   /**
@@ -176,6 +208,33 @@ export abstract class Credentials {
    * @default - none
    */
   public abstract readonly secret?: secretsmanager.Secret;
+
+  /**
+   * The characters to exclude from the generated password.
+   * Only used if {@link password} has not been set.
+   *
+   * @default - the DatabaseSecret default exclude character set (" %+~`#$&*()|[]{}:;<>?!'/@\"\\")
+   */
+  public abstract readonly excludeCharacters?: string;
+}
+
+/**
+ * Options used in the {@link SnapshotCredentials.fromGeneratedPassword} method.
+ */
+export interface SnapshotCredentialsFromGeneratedPasswordOptions {
+  /**
+   * KMS encryption key to encrypt the generated secret.
+   *
+   * @default - default master key
+   */
+  readonly encryptionKey?: kms.IKey;
+
+  /**
+   * The characters to exclude from the generated password.
+   *
+   * @default - the DatabaseSecret default exclude character set (" %+~`#$&*()|[]{}:;<>?!'/@\"\\")
+   */
+  readonly excludeCharacters?: string;
 }
 
 /**
@@ -187,8 +246,12 @@ export abstract class SnapshotCredentials {
    *
    * Note - The username must match the existing master username of the snapshot.
    */
-  public static fromGeneratedPassword(username: string, encryptionKey?: kms.IKey): SnapshotCredentials {
-    return { generatePassword: true, username, encryptionKey };
+  public static fromGeneratedPassword(username: string, options: SnapshotCredentialsFromGeneratedPasswordOptions = {}): SnapshotCredentials {
+    return {
+      ...options,
+      generatePassword: true,
+      username,
+    };
   }
 
   /**
@@ -254,12 +317,46 @@ export abstract class SnapshotCredentials {
    * @default - none
    */
   public abstract readonly secret?: secretsmanager.Secret;
+
+  /**
+   * The characters to exclude from the generated password.
+   * Only used if {@link generatePassword} if true.
+   *
+   * @default - the DatabaseSecret default exclude character set (" %+~`#$&*()|[]{}:;<>?!'/@\"\\")
+   */
+  public abstract readonly excludeCharacters?: string;
+}
+
+/**
+ * Properties common to single-user and multi-user rotation options.
+ */
+interface CommonRotationUserOptions {
+  /**
+   * Specifies the number of days after the previous rotation
+   * before Secrets Manager triggers the next automatic rotation.
+   *
+   * @default - 30 days
+   */
+  readonly automaticallyAfter?: Duration;
+
+  /**
+   * Specifies characters to not include in generated passwords.
+   *
+   * @default " %+~`#$&*()|[]{}:;<>?!'/@\"\\"
+   */
+  readonly excludeCharacters?: string;
 }
 
 /**
  * Options to add the multi user rotation
  */
-export interface RotationMultiUserOptions {
+export interface RotationSingleUserOptions extends CommonRotationUserOptions {
+}
+
+/**
+ * Options to add the multi user rotation
+ */
+export interface RotationMultiUserOptions extends CommonRotationUserOptions {
   /**
    * The secret to rotate. It must be a JSON string with the following format:
    * ```
@@ -275,14 +372,6 @@ export interface RotationMultiUserOptions {
    * ```
    */
   readonly secret: secretsmanager.ISecret;
-
-  /**
-   * Specifies the number of days after the previous rotation before
-   * Secrets Manager triggers the next automatic rotation.
-   *
-   * @default Duration.days(30)
-   */
-  readonly automaticallyAfter?: Duration;
 }
 
 /**
