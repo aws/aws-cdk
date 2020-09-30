@@ -78,7 +78,6 @@ describe('User Pool Client', () => {
       authFlows: {
         adminUserPassword: true,
         custom: true,
-        refreshToken: true,
         userPassword: true,
         userSrp: true,
       },
@@ -89,6 +88,26 @@ describe('User Pool Client', () => {
         'ALLOW_USER_PASSWORD_AUTH',
         'ALLOW_ADMIN_USER_PASSWORD_AUTH',
         'ALLOW_CUSTOM_AUTH',
+        'ALLOW_USER_SRP_AUTH',
+        'ALLOW_REFRESH_TOKEN_AUTH',
+      ],
+    });
+  });
+
+  test('ExplicitAuthFlows makes refreshToken true by default', () => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+
+    // WHEN
+    pool.addClient('Client', {
+      authFlows: {
+        userSrp: true,
+      },
+    });
+
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolClient', {
+      ExplicitAuthFlows: [
         'ALLOW_USER_SRP_AUTH',
         'ALLOW_REFRESH_TOKEN_AUTH',
       ],

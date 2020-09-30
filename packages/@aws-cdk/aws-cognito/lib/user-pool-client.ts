@@ -30,12 +30,6 @@ export interface AuthFlow {
    * @default false
    */
   readonly userSrp?: boolean;
-
-  /**
-   * Enable authflow to refresh tokens
-   * @default false
-   */
-  readonly refreshToken?: boolean;
 }
 
 /**
@@ -343,12 +337,18 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
   }
 
   private configureAuthFlows(props: UserPoolClientProps): string[] | undefined {
+    if (!props.authFlows) return undefined;
+
     const authFlows: string[] = [];
-    if (props.authFlows?.userPassword) { authFlows.push('ALLOW_USER_PASSWORD_AUTH'); }
-    if (props.authFlows?.adminUserPassword) { authFlows.push('ALLOW_ADMIN_USER_PASSWORD_AUTH'); }
-    if (props.authFlows?.custom) { authFlows.push('ALLOW_CUSTOM_AUTH'); }
-    if (props.authFlows?.userSrp) { authFlows.push('ALLOW_USER_SRP_AUTH'); }
-    if (props.authFlows?.refreshToken) { authFlows.push('ALLOW_REFRESH_TOKEN_AUTH'); }
+    if (props.authFlows.userPassword) { authFlows.push('ALLOW_USER_PASSWORD_AUTH'); }
+    if (props.authFlows.adminUserPassword) { authFlows.push('ALLOW_ADMIN_USER_PASSWORD_AUTH'); }
+    if (props.authFlows.custom) { authFlows.push('ALLOW_CUSTOM_AUTH'); }
+    if (props.authFlows.userSrp) { authFlows.push('ALLOW_USER_SRP_AUTH'); }
+
+    // refreshToken should always be allowed if authFlows are present
+    if (authFlows.length > 0) {
+      authFlows.push('ALLOW_REFRESH_TOKEN_AUTH');
+    }
 
     if (authFlows.length === 0) {
       return undefined;
