@@ -1,6 +1,7 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
-import { Annotations, Construct, Duration, IConstruct } from '@aws-cdk/core';
+import { Annotations, Construct as CoreConstruct, Duration } from '@aws-cdk/core';
+import { IConstruct, Construct } from 'constructs';
 import {
   BaseTargetGroupProps, ITargetGroup, loadBalancerNameFromListenerArn, LoadBalancerTargetProps,
   TargetGroupAttributes, TargetGroupBase, TargetGroupImportProps,
@@ -159,7 +160,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
       listener.registerConnectable(member.connectable, member.portRange);
     }
     this.listeners.push(listener);
-    this.loadBalancerAttachedDependencies.add(associatingConstruct || listener);
+    this.loadBalancerAttachedDependencies.add((associatingConstruct || listener) as CoreConstruct);
   }
 
   /**
