@@ -115,6 +115,7 @@
       "props-physical-name:@aws-cdk/aws-rds.DatabaseInstanceFromSnapshotProps",
       "props-physical-name:@aws-cdk/aws-rds.DatabaseInstanceReadReplicaProps",
       "props-physical-name:@aws-cdk/aws-rds.DatabaseSecretProps",
+      "props-physical-name:@aws-cdk/aws-rds.ServerlessClusterProps",
       "props-physical-name:@aws-cdk/aws-rds.OptionGroupProps",
       "props-physical-name:@aws-cdk/aws-rds.SubnetGroupProps",
       "docs-public-apis:@aws-cdk/aws-rds.SecretRotationApplication.semanticVersion",
