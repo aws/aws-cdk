@@ -44,13 +44,7 @@ export class LogGroupResourcePolicy extends cr.AwsCustomResource {
         },
         ignoreErrorCodesMatching: '400',
       },
-      policy: cr.AwsCustomResourcePolicy.fromStatements([
-        new iam.PolicyStatement({
-          actions: ['logs:PutResourcePolicy', 'logs:DeleteResourcePolicy'],
-          // Resource Policies are global in Cloudwatch Logs per-region, per-account.
-          resources: ['*'],
-        }),
-      ]),
+      policy: cr.AwsCustomResourcePolicy.fromSdkCalls({ resources: ['*'] }),
     });
   }
 }
