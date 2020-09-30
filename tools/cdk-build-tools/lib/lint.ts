@@ -2,23 +2,21 @@ import * as path from 'path';
 import { shell } from './os';
 import { CDKBuildOptions, CompilerOverrides } from './package-info';
 
-export async function lintCurrentPackage(options: CDKBuildOptions, compilers: CompilerOverrides = {}): Promise<void> {
+export async function lintCurrentPackage(options: CDKBuildOptions, compilers: CompilerOverrides & { fix?: boolean } = {}): Promise<void> {
+  const env = options.env;
   if (!options.eslint?.disable) {
     await shell([
       compilers.eslint || require.resolve('eslint/bin/eslint'),
       '.',
       '--ext=.ts',
       `--resolve-plugins-relative-to=${__dirname}`,
-    ]);
-  }
-
-  if (!options.tslint?.disable) {
-    await shell([compilers.tslint || require.resolve('tslint/bin/tslint'), '--project', '.']);
+      ...compilers.fix ? ['--fix'] : [],
+    ], { env });
   }
 
   if (!options.pkglint?.disable) {
-    await shell(['pkglint']);
+    await shell(['pkglint'], { env });
   }
 
-  await shell([ path.join(__dirname, '..', 'bin', 'cdk-awslint') ]);
+  await shell([path.join(__dirname, '..', 'bin', 'cdk-awslint')], { env });
 }

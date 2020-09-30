@@ -1,7 +1,8 @@
 ---
 name: "\U00002753 General Issue"
 about: Create a new issue
-labels: needs-triage
+title: "[module] "
+labels: needs-triage, guidance
 ---
 
 <!-- NOTE:📕 If there is an issue regarding developer guide, please create an issue [here](https://github.com/awsdocs/aws-cdk-guide/issues) -->

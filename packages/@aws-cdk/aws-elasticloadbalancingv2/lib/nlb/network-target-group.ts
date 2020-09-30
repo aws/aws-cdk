@@ -1,8 +1,12 @@
 import * as cdk from '@aws-cdk/core';
-import { BaseTargetGroupProps, HealthCheck, ITargetGroup, loadBalancerNameFromListenerArn, LoadBalancerTargetProps,
-  TargetGroupAttributes, TargetGroupBase, TargetGroupImportProps } from '../shared/base-target-group';
+import { Construct } from 'constructs';
+import {
+  BaseTargetGroupProps, HealthCheck, ITargetGroup, loadBalancerNameFromListenerArn, LoadBalancerTargetProps,
+  TargetGroupAttributes, TargetGroupBase, TargetGroupImportProps,
+} from '../shared/base-target-group';
 import { Protocol } from '../shared/enums';
 import { ImportedTargetGroupBase } from '../shared/imported';
+import { validateNetworkProtocol } from '../shared/util';
 import { INetworkListener } from './network-listener';
 
 /**
@@ -13,6 +17,13 @@ export interface NetworkTargetGroupProps extends BaseTargetGroupProps {
    * The port on which the listener listens for requests.
    */
   readonly port: number;
+
+  /**
+   * Protocol for target group, expects TCP, TLS, UDP, or TCP_UDP.
+   *
+   * @default - TCP
+   */
+  readonly protocol?: Protocol;
 
   /**
    * Indicates whether Proxy Protocol version 2 is enabled.
@@ -40,7 +51,7 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
   /**
    * Import an existing target group
    */
-  public static fromTargetGroupAttributes(scope: cdk.Construct, id: string, attrs: TargetGroupAttributes): INetworkTargetGroup {
+  public static fromTargetGroupAttributes(scope: Construct, id: string, attrs: TargetGroupAttributes): INetworkTargetGroup {
     return new ImportedNetworkTargetGroup(scope, id, attrs);
   }
 
@@ -49,15 +60,18 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
    *
    * @deprecated Use `fromTargetGroupAttributes` instead
    */
-  public static import(scope: cdk.Construct, id: string, props: TargetGroupImportProps): INetworkTargetGroup {
+  public static import(scope: Construct, id: string, props: TargetGroupImportProps): INetworkTargetGroup {
     return NetworkTargetGroup.fromTargetGroupAttributes(scope, id, props);
   }
 
   private readonly listeners: INetworkListener[];
 
-  constructor(scope: cdk.Construct, id: string, props: NetworkTargetGroupProps) {
+  constructor(scope: Construct, id: string, props: NetworkTargetGroupProps) {
+    const proto = props.protocol || Protocol.TCP;
+    validateNetworkProtocol(proto);
+
     super(scope, id, props, {
-      protocol: Protocol.TCP,
+      protocol: proto,
       port: props.port,
     });
 
@@ -100,7 +114,7 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
     return loadBalancerNameFromListenerArn(this.listeners[0].listenerArn);
   }
 
-  protected validate(): string[]  {
+  protected validate(): string[] {
     const ret = super.validate();
 
     const healthCheck: HealthCheck = this.healthCheck || {};
@@ -111,6 +125,28 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
       if (!cdk.Token.isUnresolved(seconds) && !allowedIntervals.includes(seconds)) {
         ret.push(`Health check interval '${seconds}' not supported. Must be one of the following values '${allowedIntervals.join(',')}'.`);
       }
+    }
+
+    if (healthCheck.healthyThresholdCount) {
+      const thresholdCount = healthCheck.healthyThresholdCount;
+      if (thresholdCount < 2 || thresholdCount > 10) {
+        ret.push(`Healthy Threshold Count '${thresholdCount}' not supported. Must be a number between 2 and 10.`);
+      }
+    }
+
+    if (healthCheck.unhealthyThresholdCount) {
+      const thresholdCount = healthCheck.unhealthyThresholdCount;
+      if (thresholdCount < 2 || thresholdCount > 10) {
+        ret.push(`Unhealthy Threshold Count '${thresholdCount}' not supported. Must be a number between 2 and 10.`);
+      }
+    }
+
+    if (healthCheck.healthyThresholdCount && healthCheck.unhealthyThresholdCount &&
+        healthCheck.healthyThresholdCount !== healthCheck.unhealthyThresholdCount) {
+      ret.push([
+        `Healthy and Unhealthy Threshold Counts must be the same: ${healthCheck.healthyThresholdCount}`,
+        `is not equal to ${healthCheck.unhealthyThresholdCount}.`,
+      ].join(' '));
     }
 
     if (!healthCheck.protocol) {
@@ -140,7 +176,6 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
 /**
  * A network target group
  */
-// tslint:disable-next-line:no-empty-interface
 export interface INetworkTargetGroup extends ITargetGroup {
   /**
    * Register a listener that is load balancing to this target group.
@@ -188,7 +223,7 @@ export interface INetworkLoadBalancerTarget {
 
 const NLB_HEALTH_CHECK_PROTOCOLS = [Protocol.HTTP, Protocol.HTTPS, Protocol.TCP];
 const NLB_PATH_HEALTH_CHECK_PROTOCOLS = [Protocol.HTTP, Protocol.HTTPS];
-const NLB_HEALTH_CHECK_TIMEOUTS: {[protocol in Protocol]?: number} =  {
+const NLB_HEALTH_CHECK_TIMEOUTS: {[protocol in Protocol]?: number} = {
   [Protocol.HTTP]: 6,
   [Protocol.HTTPS]: 10,
   [Protocol.TCP]: 10,

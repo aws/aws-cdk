@@ -2,11 +2,12 @@ import { ContextProvider } from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
 import { CfnResource, Construct, Stack, StackProps } from '../lib';
+import { Annotations } from '../lib/annotations';
 import { App, AppProps } from '../lib/app';
+import { MetadataResource } from '../lib/private/metadata-resource';
 
 function withApp(props: AppProps, block: (app: App) => void): cxapi.CloudAssembly {
   const app = new App({
-    runtimeInfo: false,
     stackTraces: false,
     ...props,
   });
@@ -28,8 +29,8 @@ function synth(context?: { [key: string]: any }): cxapi.CloudAssembly {
 
     // add some metadata
     stack1.node.addMetadata('meta', 111);
-    r2.node.addWarning('warning1');
-    r2.node.addWarning('warning2');
+    Annotations.of(r2).addWarning('warning1');
+    Annotations.of(r2).addWarning('warning2');
     c1.node.addMetadata('meta', { key: 'value' });
     app.node.addMetadata('applevel', 123); // apps can also have metadata
   });
@@ -59,9 +60,13 @@ export = {
     test.deepEqual(stack1.environment.account, 12345);
     test.deepEqual(stack1.environment.region, 'us-east-1');
     test.deepEqual(stack1.environment.name, 'aws://12345/us-east-1');
-    test.deepEqual(stack1.template, { Resources:
-      { s1c1: { Type: 'DummyResource', Properties: { Prop1: 'Prop1' } },
-        s1c2: { Type: 'DummyResource', Properties: { Foo: 123 } } } });
+    test.deepEqual(stack1.template, {
+      Resources:
+      {
+        s1c1: { Type: 'DummyResource', Properties: { Prop1: 'Prop1' } },
+        s1c2: { Type: 'DummyResource', Properties: { Foo: 123 } },
+      },
+    });
     test.deepEqual(stack1.manifest.metadata, {
       '/stack1': [{ type: 'meta', data: 111 }],
       '/stack1/s1c1': [{ type: 'aws:cdk:logicalId', data: 's1c1' }],
@@ -75,10 +80,14 @@ export = {
     test.deepEqual(stack2.stackName, 'stack2');
     test.deepEqual(stack2.id, 'stack2');
     test.deepEqual(stack2.environment.name, 'aws://unknown-account/unknown-region');
-    test.deepEqual(stack2.template, { Resources:
-      { s2c1: { Type: 'DummyResource', Properties: { Prog2: 'Prog2' } },
+    test.deepEqual(stack2.template, {
+      Resources:
+      {
+        s2c1: { Type: 'DummyResource', Properties: { Prog2: 'Prog2' } },
         s1c2r1D1791C01: { Type: 'ResourceType1' },
-        s1c2r25F685FFF: { Type: 'ResourceType2' } } });
+        s1c2r25F685FFF: { Type: 'ResourceType2' },
+      },
+    });
     test.deepEqual(stack2.manifest.metadata, {
       '/stack2/s2c1': [{ type: 'aws:cdk:logicalId', data: 's2c1' }],
       '/stack2/s1c2': [{ type: 'meta', data: { key: 'value' } }],
@@ -236,11 +245,13 @@ export = {
     test.done();
   },
 
-  'runtime library versions disabled'(test: Test) {
-    const context: any = {};
-    context[cxapi.DISABLE_VERSION_REPORTING] = true;
-
-    const assembly = withApp(context, app => {
+  /**
+   * Runtime library versions are now synthesized into the Stack templates directly
+   *
+   * The are not emitted into Cloud Assembly metadata anymore
+   */
+  'runtime library versions are not emitted in asm anymore'(test: Test) {
+    const assembly = withApp({ analyticsReporting: true }, app => {
       const stack = new Stack(app, 'stack1');
       new CfnResource(stack, 'MyResource', { type: 'Resource::Type' });
     });
@@ -250,53 +261,83 @@ export = {
   },
 
   'runtime library versions'(test: Test) {
-    const response = withApp({ runtimeInfo: true }, app => {
+    MetadataResource.clearModulesCache();
+
+    const response = withApp({ analyticsReporting: true }, app => {
       const stack = new Stack(app, 'stack1');
       new CfnResource(stack, 'MyResource', { type: 'Resource::Type' });
     });
 
-    const libs = (response.runtime && response.runtime.libraries) || {};
+    const stackTemplate = response.getStackByName('stack1').template;
+    const libs = parseModules(stackTemplate.Resources?.CDKMetadata?.Properties?.Modules);
 
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const version = require('../package.json').version;
     test.deepEqual(libs['@aws-cdk/core'], version);
     test.deepEqual(libs['@aws-cdk/cx-api'], version);
     test.deepEqual(libs['jsii-runtime'], `node.js/${process.version}`);
+
+    test.done();
+  },
+
+  'CDK version'(test: Test) {
+    MetadataResource.clearModulesCache();
+
+    withCliVersion(() => {
+      const response = withApp({ analyticsReporting: true }, app => {
+        const stack = new Stack(app, 'stack1');
+        new CfnResource(stack, 'MyResource', { type: 'Resource::Type' });
+      });
+
+      const stackTemplate = response.getStackByName('stack1').template;
+      const libs = parseModules(stackTemplate.Resources?.CDKMetadata?.Properties?.Modules);
+
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      test.deepEqual(libs['aws-cdk'], '1.2.3');
+    });
+
     test.done();
   },
 
   'jsii-runtime version loaded from JSII_AGENT'(test: Test) {
     process.env.JSII_AGENT = 'Java/1.2.3.4';
+    MetadataResource.clearModulesCache();
 
-    const response = withApp({ runtimeInfo: true }, app => {
-      const stack = new Stack(app, 'stack1');
-      new CfnResource(stack, 'MyResource', { type: 'Resource::Type' });
+    withCliVersion(() => {
+      const response = withApp({ analyticsReporting: true }, app => {
+        const stack = new Stack(app, 'stack1');
+        new CfnResource(stack, 'MyResource', { type: 'Resource::Type' });
+      });
+
+      const stackTemplate = response.getStackByName('stack1').template;
+      const libs = parseModules(stackTemplate.Resources?.CDKMetadata?.Properties?.Modules);
+
+      test.deepEqual(libs['jsii-runtime'], 'Java/1.2.3.4');
     });
-
-    const libs = (response.runtime && response.runtime.libraries) || {};
-    test.deepEqual(libs['jsii-runtime'], 'Java/1.2.3.4');
 
     delete process.env.JSII_AGENT;
     test.done();
   },
 
   'version reporting includes only @aws-cdk, aws-cdk and jsii libraries'(test: Test) {
-    const response = withApp({ runtimeInfo: true }, app => {
+    MetadataResource.clearModulesCache();
+
+    const response = withApp({ analyticsReporting: true }, app => {
       const stack = new Stack(app, 'stack1');
       new CfnResource(stack, 'MyResource', { type: 'Resource::Type' });
     });
 
-    const libs = (response.runtime && response.runtime.libraries) || {};
+    const stackTemplate = response.getStackByName('stack1').template;
+    const libs = parseModules(stackTemplate.Resources?.CDKMetadata?.Properties?.Modules);
+    const libNames = Object.keys(libs).sort();
 
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const version = require('../package.json').version;
-    test.deepEqual(libs, {
-      '@aws-cdk/core': version,
-      '@aws-cdk/cx-api': version,
-      '@aws-cdk/cdk-assets-schema': version,
-      '@aws-cdk/cloud-assembly-schema': version,
-      'jsii-runtime': `node.js/${process.version}`,
-    });
+    test.deepEqual(libNames, [
+      '@aws-cdk/cloud-assembly-schema',
+      '@aws-cdk/core',
+      '@aws-cdk/cx-api',
+      '@aws-cdk/region-info',
+      'jsii-runtime',
+    ]);
 
     test.done();
   },
@@ -325,6 +366,48 @@ export = {
 
     test.done();
   },
+
+  'stacks are written to the assembly file in a topological order'(test: Test) {
+    // WHEN
+    const assembly = withApp({}, (app) => {
+      const stackC = new Stack(app, 'StackC');
+      const stackD = new Stack(app, 'StackD');
+      const stackA = new Stack(app, 'StackA');
+      const stackB = new Stack(app, 'StackB');
+
+      // Create the following dependency order:
+      // A ->
+      //      C -> D
+      // B ->
+      stackC.addDependency(stackA);
+      stackC.addDependency(stackB);
+      stackD.addDependency(stackC);
+    });
+
+    // THEN
+    const artifactsIds = assembly.artifacts.map(a => a.id);
+    test.ok(artifactsIds.indexOf('StackA') < artifactsIds.indexOf('StackC'));
+    test.ok(artifactsIds.indexOf('StackB') < artifactsIds.indexOf('StackC'));
+    test.ok(artifactsIds.indexOf('StackC') < artifactsIds.indexOf('StackD'));
+
+    test.done();
+  },
+
+  'application support any type in context'(test: Test) {
+    const app = new App({
+      context: {
+        isString: 'string',
+        isNumber: 10,
+        isObject: { isString: 'string', isNumber: 10 },
+      },
+    });
+
+    test.ok(app.node.tryGetContext('isString') === 'string');
+    test.ok(app.node.tryGetContext('isNumber') === 10);
+    test.deepEqual(app.node.tryGetContext('isObject'), { isString: 'string', isNumber: 10 });
+
+    test.done();
+  },
 };
 
 class MyConstruct extends Construct {
@@ -333,5 +416,32 @@ class MyConstruct extends Construct {
 
     new CfnResource(this, 'r1', { type: 'ResourceType1' });
     new CfnResource(this, 'r2', { type: 'ResourceType2', properties: { FromContext: this.node.tryGetContext('ctx1') } });
+  }
+}
+
+function parseModules(x?: string): Record<string, string> {
+  if (x === undefined) { return {}; }
+
+  const ret: Record<string, string> = {};
+  for (const clause of x.split(',')) {
+    const [key, value] = clause.split('=');
+    if (key !== undefined && value !== undefined) {
+      ret[key] = value;
+    }
+  }
+  return ret;
+}
+
+/**
+ * Set the CLI_VERSION_ENV environment variable
+ *
+ * This is necessary to get the Stack to emit the metadata resource
+ */
+function withCliVersion<A>(block: () => A): A {
+  process.env[cxapi.CLI_VERSION_ENV] = '1.2.3';
+  try {
+    return block();
+  } finally {
+    delete process.env[cxapi.CLI_VERSION_ENV];
   }
 }

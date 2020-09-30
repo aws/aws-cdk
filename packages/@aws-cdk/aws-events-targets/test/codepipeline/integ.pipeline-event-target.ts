@@ -45,12 +45,13 @@ pipeline.addStage({
     actionName: 'CodeCommit',
     category: codepipeline.ActionCategory.SOURCE,
     provider: 'CodeCommit',
-    artifactBounds: { minInputs: 0, maxInputs: 0 , minOutputs: 1, maxOutputs: 1 },
+    artifactBounds: { minInputs: 0, maxInputs: 0, minOutputs: 1, maxOutputs: 1 },
     configuration: {
       RepositoryName: repo.repositoryName,
       BranchName: 'master',
     },
-    outputs: [srcArtifact]})],
+    outputs: [srcArtifact],
+  })],
 });
 pipeline.addStage({
   stageName: 'Build',
@@ -58,7 +59,8 @@ pipeline.addStage({
     actionName: 'Hello',
     category: codepipeline.ActionCategory.APPROVAL,
     provider: 'Manual',
-    artifactBounds: { minInputs: 0, maxInputs: 0 , minOutputs: 0, maxOutputs: 0 }})],
+    artifactBounds: { minInputs: 0, maxInputs: 0, minOutputs: 0, maxOutputs: 0 },
+  })],
 });
 
 new events.Rule(stack, 'rule', {

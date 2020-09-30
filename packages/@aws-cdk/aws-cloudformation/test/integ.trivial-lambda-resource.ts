@@ -1,6 +1,6 @@
+import * as fs from 'fs';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
-import * as fs from 'fs';
 import { CustomResource, CustomResourceProvider } from '../lib';
 
 interface DemoResourceProps {

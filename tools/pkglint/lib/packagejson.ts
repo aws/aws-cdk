@@ -1,6 +1,9 @@
+import * as path from 'path';
 import * as colors from 'colors/safe';
 import * as fs from 'fs-extra';
-import * as path from 'path';
+
+// do not descend into these directories when searching for `package.json` files.
+export const PKGLINT_IGNORES = ['node_modules', 'cdk.out', '.cdk.staging'];
 
 /**
  * Return all package JSONs in the root directory
@@ -24,8 +27,8 @@ export function findPackageJsons(root: string): PackageJson[] {
         ret.push(new PackageJson(fullPath));
       }
 
-      // Recurse into all dirs except node_modules
-      if (file !== 'node_modules' && (fs.lstatSync(fullPath)).isDirectory()) {
+      // Recurse into all dirs except ignored dirs
+      if (!PKGLINT_IGNORES.includes(file) && (fs.lstatSync(fullPath)).isDirectory()) {
         recurse(fullPath);
       }
     }

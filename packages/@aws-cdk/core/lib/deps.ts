@@ -35,6 +35,7 @@ export function addDependency<T extends Element>(source: T, target: T, reason?: 
   const sourceStage = Stage.of(sourceStack);
   const targetStage = Stage.of(targetStack);
   if (sourceStage !== targetStage) {
+    // eslint-disable-next-line max-len
     throw new Error(`You cannot add a dependency from '${source.node.path}' (in ${describeStage(sourceStage)}) to '${target.node.path}' (in ${describeStage(targetStage)}): dependency cannot cross stage boundaries`);
   }
 

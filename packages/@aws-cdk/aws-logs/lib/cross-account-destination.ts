@@ -1,5 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { ILogGroup } from './log-group';
 import { CfnDestination } from './logs.generated';
 import { ILogSubscriptionDestination, LogSubscriptionDestinationConfig } from './subscription-filter';
@@ -64,7 +65,7 @@ export class CrossAccountDestination extends cdk.Resource implements ILogSubscri
    */
   private readonly resource: CfnDestination;
 
-  constructor(scope: cdk.Construct, id: string, props: CrossAccountDestinationProps) {
+  constructor(scope: Construct, id: string, props: CrossAccountDestinationProps) {
     super(scope, id, {
       physicalName: props.destinationName ||
         // In the underlying model, the name is not optional, but we make it so anyway.
@@ -108,8 +109,9 @@ export class CrossAccountDestination extends cdk.Resource implements ILogSubscri
    * Return a stringified JSON version of the PolicyDocument
    */
   private lazyStringifiedPolicyDocument(): string {
-    return cdk.Lazy.stringValue({ produce: () =>
-      this.policyDocument.isEmpty ? '' : cdk.Stack.of(this).toJsonString(this.policyDocument),
+    return cdk.Lazy.stringValue({
+      produce: () =>
+        this.policyDocument.isEmpty ? '' : cdk.Stack.of(this).toJsonString(this.policyDocument),
     });
   }
 }

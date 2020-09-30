@@ -1,7 +1,7 @@
 import * as fs from 'fs';
-import { Test } from 'nodeunit';
 import * as os from 'os';
 import * as path from 'path';
+import { Test } from 'nodeunit';
 import * as sinon from 'sinon';
 import { FileSystem } from '../../lib/fs';
 
@@ -27,7 +27,9 @@ export = {
     test.equal(p, fs.realpathSync(p));
     test.equal(fs.readFileSync(p, 'utf8'), 'tmpdir-test');
 
-    test.ok(tmpdirStub.calledOnce); // cached result
+    // check that tmpdir() is called either 0 times (in which case it was
+    // proabably cached from before) or once (for this test).
+    test.ok(tmpdirStub.callCount < 2);
 
     fs.unlinkSync(p);
     fs.unlinkSync(symlinkTmp);

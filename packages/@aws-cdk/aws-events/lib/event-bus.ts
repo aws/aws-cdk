@@ -1,5 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
+import { IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnEventBus } from './events.generated';
 
 /**
@@ -96,7 +97,7 @@ export interface EventBusAttributes {
 }
 
 /**
- * Define a CloudWatch EventBus
+ * Define an EventBridge EventBus
  *
  * @resource AWS::Events::EventBus
  */
@@ -145,7 +146,7 @@ export class EventBus extends Resource implements IEventBus {
    */
   public static grantPutEvents(grantee: iam.IGrantable): iam.Grant {
     // It's currently not possible to restrict PutEvents to specific resources.
-    // See https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/permissions-reference-cwe.html
+    // See https://docs.aws.amazon.com/eventbridge/latest/userguide/permissions-reference-eventbridge.html
     return iam.Grant.addToPrincipal({
       grantee,
       actions: ['events:PutEvents'],

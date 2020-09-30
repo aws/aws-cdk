@@ -1,17 +1,12 @@
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs';
-import { Test } from 'nodeunit';
 import * as os from 'os';
 import * as path from 'path';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import { Test } from 'nodeunit';
 import * as cdk from '../lib';
 
 function createModernApp() {
-  return new cdk.App({
-    context: {
-      [cxapi.DISABLE_VERSION_REPORTING]: 'true', // for test reproducibility
-    },
-  });
+  return new cdk.App();
 }
 
 export = {
@@ -24,7 +19,7 @@ export = {
 
     // THEN
     test.same(app.synth(), session); // same session if we synth() again
-    test.deepEqual(list(session.directory), [ 'cdk.out', 'manifest.json', 'tree.json' ]);
+    test.deepEqual(list(session.directory), ['cdk.out', 'manifest.json', 'tree.json']);
     test.deepEqual(readJson(session.directory, 'manifest.json').artifacts, {
       Tree: {
         type: 'cdk:tree',
@@ -49,7 +44,7 @@ export = {
       treeMetadata: false,
     });
     const assembly = app.synth();
-    test.deepEqual(list(assembly.directory), [ 'cdk.out', 'manifest.json' ]);
+    test.deepEqual(list(assembly.directory), ['cdk.out', 'manifest.json']);
     test.done();
   },
 
@@ -155,7 +150,7 @@ export = {
     const root = new SynthesizeMe();
     const assembly = cdk.ConstructNode.synth(root.node, { outdir: fs.mkdtempSync(path.join(os.tmpdir(), 'outdir')) });
 
-    test.deepEqual(calls, [ 'prepare', 'validate', 'synthesize' ]);
+    test.deepEqual(calls, ['prepare', 'validate', 'synthesize']);
     const stack = assembly.getStackByName('art');
     test.deepEqual(stack.template, { hello: 123 });
     test.deepEqual(stack.templateFile, 'hey.json');

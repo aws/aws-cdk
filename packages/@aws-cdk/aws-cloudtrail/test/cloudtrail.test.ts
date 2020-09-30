@@ -1,9 +1,11 @@
 import { ABSENT, SynthUtils } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { LogGroup, RetentionDays } from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
+import * as sns from '@aws-cdk/aws-sns';
 import { Stack } from '@aws-cdk/core';
 import { ReadWriteType, Trail } from '../lib';
 
@@ -101,6 +103,31 @@ describe('cloudtrail', () => {
       expect(stack).not.toHaveResource('AWS::Logs::LogGroup');
     });
 
+    test('with sns topic', () => {
+      const stack = getTestStack();
+      const topic = new sns.Topic(stack, 'Topic');
+
+
+      new Trail(stack, 'Trail', { snsTopic: topic });
+
+      expect(stack).toHaveResource('AWS::CloudTrail::Trail');
+      expect(stack).not.toHaveResource('AWS::Logs::LogGroup');
+      expect(stack).toHaveResource('AWS::SNS::TopicPolicy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: 'sns:Publish',
+              Effect: 'Allow',
+              Principal: { Service: 'cloudtrail.amazonaws.com' },
+              Resource: { Ref: 'TopicBFC7AF6E' },
+              Sid: '0',
+            },
+          ],
+          Version: '2012-10-17',
+        },
+      });
+    });
+
     test('with imported s3 bucket', () => {
       // GIVEN
       const stack = getTestStack();
@@ -153,6 +180,44 @@ describe('cloudtrail', () => {
           ],
           Version: '2012-10-17',
         },
+      });
+    });
+
+    test('encryption keys', () => {
+      const stack = new Stack();
+      const key = new kms.Key(stack, 'key');
+      new Trail(stack, 'EncryptionKeyTrail', {
+        trailName: 'EncryptionKeyTrail',
+        encryptionKey: key,
+      });
+      new Trail(stack, 'KmsKeyTrail', {
+        trailName: 'KmsKeyTrail',
+        kmsKey: key,
+      });
+      new Trail(stack, 'UnencryptedTrail', {
+        trailName: 'UnencryptedTrail',
+      });
+      expect(() => new Trail(stack, 'ErrorTrail', {
+        trailName: 'ErrorTrail',
+        encryptionKey: key,
+        kmsKey: key,
+      })).toThrow(/Both kmsKey and encryptionKey must not be specified/);
+
+      expect(stack).toHaveResource('AWS::CloudTrail::Trail', {
+        TrailName: 'EncryptionKeyTrail',
+        KMSKeyId: {
+          'Fn::GetAtt': ['keyFEDD6EC0', 'Arn'],
+        },
+      });
+      expect(stack).toHaveResource('AWS::CloudTrail::Trail', {
+        TrailName: 'KmsKeyTrail',
+        KMSKeyId: {
+          'Fn::GetAtt': ['keyFEDD6EC0', 'Arn'],
+        },
+      });
+      expect(stack).toHaveResource('AWS::CloudTrail::Trail', {
+        TrailName: 'UnencryptedTrail',
+        KMSKeyId: ABSENT,
       });
     });
 
@@ -299,7 +364,7 @@ describe('cloudtrail', () => {
                   'Fn::Join': [
                     '',
                     [
-                      { 'Fn::GetAtt': [ 'testBucketDF4D7D1A', 'Arn' ]},
+                      { 'Fn::GetAtt': ['testBucketDF4D7D1A', 'Arn'] },
                       '/',
                     ],
                   ],
@@ -313,7 +378,7 @@ describe('cloudtrail', () => {
                   'Fn::Join': [
                     '',
                     [
-                      { 'Fn::GetAtt': [ 'testBucketDF4D7D1A', 'Arn' ]},
+                      { 'Fn::GetAtt': ['testBucketDF4D7D1A', 'Arn'] },
                       '/prefix-1/prefix-2',
                     ],
                   ],
@@ -398,7 +463,7 @@ describe('cloudtrail', () => {
               DataResources: [{
                 Type: 'AWS::Lambda::Function',
                 Values: [{
-                  'Fn::GetAtt': [ 'LambdaFunctionBF21E41F', 'Arn' ],
+                  'Fn::GetAtt': ['LambdaFunctionBF21E41F', 'Arn'],
                 }],
               }],
             },

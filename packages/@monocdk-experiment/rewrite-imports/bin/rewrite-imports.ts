@@ -1,4 +1,4 @@
-// tslint:disable: no-console
+/* eslint-disable no-console */
 import * as fs from 'fs';
 import * as _glob from 'glob';
 
@@ -18,12 +18,15 @@ async function main() {
     'node_modules/**',
   ];
 
-  const files = await glob(process.argv[2], { ignore, matchBase: true });
-  for (const file of files) {
-    const input = await fs.promises.readFile(file, { encoding: 'utf8' });
-    const output = rewriteImports(input, file);
-    if (output.trim() !== input.trim()) {
-      await fs.promises.writeFile(file, output);
+  const args = process.argv.slice(2);
+  for (const arg of args) {
+    const files = await glob(arg, { ignore, matchBase: true });
+    for (const file of files) {
+      const input = await fs.promises.readFile(file, { encoding: 'utf8' });
+      const output = rewriteImports(input, file);
+      if (output.trim() !== input.trim()) {
+        await fs.promises.writeFile(file, output);
+      }
     }
   }
 }

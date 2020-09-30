@@ -77,5 +77,10 @@ export class ScopedAws {
 }
 
 function pseudoString(name: string): string {
-  return Token.asString({ Ref: name }, { displayHint: name });
+  // we don't want any ':' in the serialized form,
+  // as ':' is the ARN separator,
+  // and so we don't want ARN components
+  // (which these CFN references like AWS::Partition certainly can be)
+  // to contain ':'s themselves
+  return Token.asString({ Ref: name }, { displayHint: name.replace('::', '.') });
 }

@@ -541,7 +541,13 @@
             "Arn"
           ]
         },
-        "LogDestinationType": "s3"
+        "LogDestinationType": "s3",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "TestStack/VPC"
+          }
+        ]
       }
     },
     "FlowLogsCWIAMRole017AD736": {

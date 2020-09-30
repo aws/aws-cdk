@@ -16,12 +16,10 @@ import { CodePipelineArtifacts } from './codepipeline-artifacts';
 import { IFileSystemLocation } from './file-location';
 import { NoArtifacts } from './no-artifacts';
 import { NoSource } from './no-source';
+import { runScriptLinuxBuildSpec, S3_BUCKET_ENV, S3_KEY_ENV } from './private/run-script-linux-build-spec';
 import { renderReportGroupArn } from './report-group-utils';
 import { ISource } from './source';
 import { CODEPIPELINE_SOURCE_ARTIFACTS_TYPE, NO_SOURCE_TYPE } from './source-types';
-
-const S3_BUCKET_ENV = 'SCRIPT_S3_BUCKET';
-const S3_KEY_ENV = 'SCRIPT_S3_KEY';
 
 export interface IProject extends IResource, iam.IGrantable, ec2.IConnectable {
   /**
@@ -753,9 +751,11 @@ export class Project extends ProjectBase {
       artifacts: artifactsConfig.artifactsProperty,
       serviceRole: this.role.roleArn,
       environment: this.renderEnvironment(props.environment, environmentVariables),
-      fileSystemLocations: this.renderFileSystemLocations(),
+      fileSystemLocations: Lazy.anyValue({ produce: () => this.renderFileSystemLocations() }),
       // lazy, because we have a setter for it in setEncryptionKey
-      encryptionKey: Lazy.stringValue({ produce: () => this._encryptionKey && this._encryptionKey.keyArn }),
+      // The 'alias/aws/s3' default is necessary because leaving the `encryptionKey` field
+      // empty will not remove existing encryptionKeys during an update (ref. t/D17810523)
+      encryptionKey: Lazy.stringValue({ produce: () => this._encryptionKey ? this._encryptionKey.keyArn : 'alias/aws/s3' }),
       badgeEnabled: props.badge,
       cache: cache._toCloudFormation(),
       name: this.physicalName,
@@ -795,6 +795,12 @@ export class Project extends ProjectBase {
 
     if (props.encryptionKey) {
       this.encryptionKey = props.encryptionKey;
+    }
+
+    // bind
+    const bindFunction = (this.buildImage as any).bind;
+    if (bindFunction) {
+      bindFunction.call(this.buildImage, this, this, {});
     }
   }
 
@@ -939,6 +945,9 @@ export class Project extends ProjectBase {
         statement.sid = 'CodeBuild';
         this.buildImage.repository.addToResourcePolicy(statement);
       }
+    }
+    if (imagePullPrincipalType === ImagePullPrincipalType.SERVICE_ROLE) {
+      this.buildImage.secretsManagerCredentials?.grantRead(this);
     }
 
     return {
@@ -1193,6 +1202,21 @@ export interface IBuildImage {
   runScriptBuildspec(entrypoint: string): BuildSpec;
 }
 
+/** Optional arguments to {@link IBuildImage.binder} - currently empty. */
+export interface BuildImageBindOptions {}
+
+/** The return type from {@link IBuildImage.binder} - currently empty. */
+export interface BuildImageConfig {}
+
+// @deprecated(not in tsdoc on purpose): add bind() to IBuildImage
+// and get rid of IBindableBuildImage
+
+/** A variant of {@link IBuildImage} that allows binding to the project. */
+export interface IBindableBuildImage extends IBuildImage {
+  /** Function that allows the build image access to the construct tree. */
+  bind(scope: Construct, project: IProject, options: BuildImageBindOptions): BuildImageConfig;
+}
+
 class ArmBuildImage implements IBuildImage {
   public readonly type = 'ARM_CONTAINER';
   public readonly defaultComputeType = ComputeType.LARGE;
@@ -1420,32 +1444,19 @@ export class LinuxBuildImage implements IBuildImage {
   }
 }
 
-function runScriptLinuxBuildSpec(entrypoint: string) {
-  return BuildSpec.fromObject({
-    version: '0.2',
-    phases: {
-      pre_build: {
-        commands: [
-          // Better echo the location here; if this fails, the error message only contains
-          // the unexpanded variables by default. It might fail if you're running an old
-          // definition of the CodeBuild project--the permissions will have been changed
-          // to only allow downloading the very latest version.
-          `echo "Downloading scripts from s3://\${${S3_BUCKET_ENV}}/\${${S3_KEY_ENV}}"`,
-          `aws s3 cp s3://\${${S3_BUCKET_ENV}}/\${${S3_KEY_ENV}} /tmp`,
-          'mkdir -p /tmp/scriptdir',
-          `unzip /tmp/$(basename \$${S3_KEY_ENV}) -d /tmp/scriptdir`,
-        ],
-      },
-      build: {
-        commands: [
-          'export SCRIPT_DIR=/tmp/scriptdir',
-          `echo "Running ${entrypoint}"`,
-          `chmod +x /tmp/scriptdir/${entrypoint}`,
-          `/tmp/scriptdir/${entrypoint}`,
-        ],
-      },
-    },
-  });
+/**
+ * Environment type for Windows Docker images
+ */
+export enum WindowsImageType {
+  /**
+   * The standard environment type, WINDOWS_CONTAINER
+   */
+  STANDARD = 'WINDOWS_CONTAINER',
+
+  /**
+   * The WINDOWS_SERVER_2019_CONTAINER environment type
+   */
+  SERVER_2019 = 'WINDOWS_SERVER_2019_CONTAINER'
 }
 
 /**
@@ -1457,6 +1468,7 @@ interface WindowsBuildImageProps {
   readonly imagePullPrincipalType?: ImagePullPrincipalType;
   readonly secretsManagerCredentials?: secretsmanager.ISecret;
   readonly repository?: ecr.IRepository;
+  readonly imageType?: WindowsImageType;
 }
 
 /**
@@ -1466,9 +1478,9 @@ interface WindowsBuildImageProps {
  *
  * You can also specify a custom image using one of the static methods:
  *
- * - WindowsBuildImage.fromDockerRegistry(image[, { secretsManagerCredentials }])
- * - WindowsBuildImage.fromEcrRepository(repo[, tag])
- * - WindowsBuildImage.fromAsset(parent, id, props)
+ * - WindowsBuildImage.fromDockerRegistry(image[, { secretsManagerCredentials }, imageType])
+ * - WindowsBuildImage.fromEcrRepository(repo[, tag, imageType])
+ * - WindowsBuildImage.fromAsset(parent, id, props, [, imageType])
  *
  * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-available.html
  */
@@ -1493,13 +1505,28 @@ export class WindowsBuildImage implements IBuildImage {
   });
 
   /**
+   * The standard CodeBuild image `aws/codebuild/windows-base:2019-1.0`, which is
+   * based off Windows Server Core 2019.
+   */
+  public static readonly WIN_SERVER_CORE_2019_BASE: IBuildImage = new WindowsBuildImage({
+    imageId: 'aws/codebuild/windows-base:2019-1.0',
+    imagePullPrincipalType: ImagePullPrincipalType.CODEBUILD,
+    imageType: WindowsImageType.SERVER_2019,
+  });
+
+  /**
    * @returns a Windows build image from a Docker Hub image.
    */
-  public static fromDockerRegistry(name: string, options: DockerImageOptions): IBuildImage {
+  public static fromDockerRegistry(
+    name: string,
+    options: DockerImageOptions = {},
+    imageType: WindowsImageType = WindowsImageType.STANDARD): IBuildImage {
+
     return new WindowsBuildImage({
       ...options,
       imageId: name,
       imagePullPrincipalType: ImagePullPrincipalType.SERVICE_ROLE,
+      imageType,
     });
   }
 
@@ -1514,10 +1541,15 @@ export class WindowsBuildImage implements IBuildImage {
    * @param repository The ECR repository
    * @param tag Image tag (default "latest")
    */
-  public static fromEcrRepository(repository: ecr.IRepository, tag: string = 'latest'): IBuildImage {
+  public static fromEcrRepository(
+    repository: ecr.IRepository,
+    tag: string = 'latest',
+    imageType: WindowsImageType = WindowsImageType.STANDARD): IBuildImage {
+
     return new WindowsBuildImage({
       imageId: repository.repositoryUriForTag(tag),
       imagePullPrincipalType: ImagePullPrincipalType.SERVICE_ROLE,
+      imageType,
       repository,
     });
   }
@@ -1525,16 +1557,22 @@ export class WindowsBuildImage implements IBuildImage {
   /**
    * Uses an Docker image asset as a Windows build image.
    */
-  public static fromAsset(scope: Construct, id: string, props: DockerImageAssetProps): IBuildImage {
+  public static fromAsset(
+    scope: Construct,
+    id: string,
+    props: DockerImageAssetProps,
+    imageType: WindowsImageType = WindowsImageType.STANDARD): IBuildImage {
+
     const asset = new DockerImageAsset(scope, id, props);
     return new WindowsBuildImage({
       imageId: asset.imageUri,
       imagePullPrincipalType: ImagePullPrincipalType.SERVICE_ROLE,
+      imageType,
       repository: asset.repository,
     });
   }
 
-  public readonly type = 'WINDOWS_CONTAINER';
+  public readonly type: string;
   public readonly defaultComputeType = ComputeType.MEDIUM;
   public readonly imageId: string;
   public readonly imagePullPrincipalType?: ImagePullPrincipalType;
@@ -1542,6 +1580,7 @@ export class WindowsBuildImage implements IBuildImage {
   public readonly repository?: ecr.IRepository;
 
   private constructor(props: WindowsBuildImageProps) {
+    this.type = (props.imageType ?? WindowsImageType.STANDARD).toString();
     this.imageId = props.imageId;
     this.imagePullPrincipalType = props.imagePullPrincipalType;
     this.secretsManagerCredentials = props.secretsManagerCredentials;

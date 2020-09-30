@@ -4,11 +4,16 @@ import * as fs from 'fs-extra';
 import * as nock from 'nock';
 import * as sinon from 'sinon';
 import { AwsSdkCall, PhysicalResourceId } from '../../lib';
-import { flatten, handler } from '../../lib/aws-custom-resource/runtime';
+import { flatten, handler, forceSdkInstallation } from '../../lib/aws-custom-resource/runtime';
 
-AWS.setSDK(require.resolve('aws-sdk'));
 
-console.log = jest.fn(); // tslint:disable-line no-console
+// This test performs an 'npm install' which may take longer than the default
+// 5s timeout
+jest.setTimeout(60_000);
+
+/* eslint-disable no-console */
+
+console.log = jest.fn();
 
 const eventCommon = {
   ServiceToken: 'token',
@@ -26,13 +31,12 @@ function createRequest(bodyPredicate: (body: AWSLambda.CloudFormationCustomResou
 }
 
 beforeEach(() => {
-  process.env.USE_NORMAL_SDK = 'true';
+  AWS.setSDK(require.resolve('aws-sdk'));
 });
 
 afterEach(() => {
   AWS.restore();
   nock.cleanAll();
-  delete process.env.USE_NORMAL_SDK;
 });
 
 test('create event with physical resource id path', async () => {
@@ -412,10 +416,34 @@ test('flatten correctly flattens a nested object', () => {
   });
 });
 
+test('flatten correctly flattens an object with buffers', () => {
+  expect(flatten({
+    body: Buffer.from('body'),
+    nested: {
+      buffer: Buffer.from('buffer'),
+      array: [
+        Buffer.from('array.0'),
+        Buffer.from('array.1'),
+      ],
+    },
+  })).toEqual({
+    'body': 'body',
+    'nested.buffer': 'buffer',
+    'nested.array.0': 'array.0',
+    'nested.array.1': 'array.1',
+  });
+});
+
 test('installs the latest SDK', async () => {
   const tmpPath = '/tmp/node_modules/aws-sdk';
 
-  fs.remove(tmpPath);
+  // Symlink to normal SDK to be able to call AWS.setSDK()
+  await fs.ensureDir('/tmp/node_modules');
+  await fs.symlink(require.resolve('aws-sdk'), tmpPath);
+  AWS.setSDK(tmpPath);
+
+  // Now remove the symlink and let the handler install it
+  await fs.unlink(tmpPath);
 
   const publishFake = sinon.fake.resolves({});
 
@@ -435,6 +463,7 @@ test('installs the latest SDK', async () => {
         },
         physicalResourceId: PhysicalResourceId.of('id'),
       } as AwsSdkCall,
+      InstallLatestAwsSdk: 'true',
     },
   };
 
@@ -442,9 +471,14 @@ test('installs the latest SDK', async () => {
     body.Status === 'SUCCESS',
   );
 
+  // Reset to 'false' so that the next run will reinstall aws-sdk
+  forceSdkInstallation();
   await handler(event, {} as AWSLambda.Context);
 
   expect(request.isDone()).toBeTruthy();
 
   expect(() => require.resolve(tmpPath)).not.toThrow();
+
+  // clean up aws-sdk install
+  await fs.remove(tmpPath);
 });

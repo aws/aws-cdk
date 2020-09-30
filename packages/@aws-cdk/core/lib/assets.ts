@@ -60,17 +60,34 @@ export interface AssetOptions {
 
 /**
  * The type of asset hash
+ *
+ * NOTE: the hash is used in order to identify a specific revision of the asset, and
+ * used for optimizing and caching deployment activities related to this asset such as
+ * packaging, uploading to Amazon S3, etc.
  */
 export enum AssetHashType {
   /**
    * Based on the content of the source path
+   *
+   * When bundling, use `SOURCE` when the content of the bundling output is not
+   * stable across repeated bundling operations.
    */
   SOURCE = 'source',
 
   /**
    * Based on the content of the bundled path
+   *
+   * @deprecated use `OUTPUT` instead
    */
   BUNDLE = 'bundle',
+
+  /**
+   * Based on the content of the bundling output
+   *
+   * Use `OUTPUT` when the source of the asset is a top level folder containing
+   * code and/or dependencies that are not directly linked to the asset.
+   */
+  OUTPUT = 'output',
 
   /**
    * Use a custom hash
@@ -208,6 +225,25 @@ export interface FileAssetLocation {
    * @example s3://mybucket/myobject
    */
   readonly s3ObjectUrl: string;
+
+  /**
+   * The ARN of the KMS key used to encrypt the file asset bucket, if any
+   *
+   * If so, the consuming role should be given "kms:Decrypt" permissions in its
+   * identity policy.
+   *
+   * It's the responsibility of they key's creator to make sure that all
+   * consumers that the key's key policy is configured such that the key can be used
+   * by all consumers that need it.
+   *
+   * The default bootstrap stack provisioned by the CDK CLI ensures this, and
+   * can be used as an example for how to configure the key properly.
+   *
+   * @default - Asset bucket is not encrypted
+   * @deprecated Since bootstrap bucket v4, the key policy properly allows use of the
+   * key via the bucket and no additional parameters have to be granted anymore.
+   */
+  readonly kmsKeyArn?: string;
 }
 
 /**

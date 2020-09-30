@@ -1,4 +1,4 @@
-import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { INextable } from '../types';
 import { StateType } from './private/state-type';
 import { State } from './state';
@@ -17,7 +17,7 @@ export interface SucceedProps {
   /**
    * JSONPath expression to select part of the state to be the input to this state.
    *
-   * May also be the special value DISCARD, which will cause the effective
+   * May also be the special value JsonPath.DISCARD, which will cause the effective
    * input to be the empty object {}.
    *
    * @default $
@@ -27,7 +27,7 @@ export interface SucceedProps {
   /**
    * JSONPath expression to select part of the state to be the output to this state.
    *
-   * May also be the special value DISCARD, which will cause the effective
+   * May also be the special value JsonPath.DISCARD, which will cause the effective
    * output to be the empty object {}.
    *
    * @default $
@@ -44,7 +44,7 @@ export interface SucceedProps {
 export class Succeed extends State {
   public readonly endStates: INextable[] = [];
 
-  constructor(scope: cdk.Construct, id: string, props: SucceedProps = {}) {
+  constructor(scope: Construct, id: string, props: SucceedProps = {}) {
     super(scope, id, props);
   }
 

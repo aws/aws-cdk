@@ -23,9 +23,14 @@
       },
       "python": {
         "distName": "aws-cdk.aws-redshift",
-        "module": "aws_cdk.aws_redshift"
+        "module": "aws_cdk.aws_redshift",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",
@@ -48,7 +53,10 @@
   },
   "cdk-build": {
     "cloudformation": "AWS::Redshift",
-    "jest": true
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "keywords": [
     "aws",
@@ -66,7 +74,7 @@
     "@aws-cdk/assert": "0.0.0",
     "cdk-build-tools": "0.0.0",
     "cfn2ts": "0.0.0",
-    "jest": "^25.5.3",
+    "jest": "^26.4.2",
     "pkglint": "0.0.0"
   },
   "dependencies": {
@@ -76,7 +84,7 @@
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/aws-secretsmanager": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.0.4"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -86,16 +94,18 @@
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/aws-secretsmanager": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.0.4"
   },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "awslint": {
     "exclude": [
+      "attribute-tag:@aws-cdk/aws-redshift.DatabaseSecret.secretName",
       "docs-public-apis:@aws-cdk/aws-redshift.ParameterGroupParameters.parameterName",
       "docs-public-apis:@aws-cdk/aws-redshift.ParameterGroupParameters.parameterValue",
       "props-physical-name:@aws-cdk/aws-redshift.ClusterParameterGroupProps",
+      "props-physical-name:@aws-cdk/aws-redshift.ClusterSubnetGroupProps",
       "props-physical-name:@aws-cdk/aws-redshift.DatabaseSecretProps"
     ]
   },

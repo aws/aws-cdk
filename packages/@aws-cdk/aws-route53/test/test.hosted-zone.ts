@@ -39,7 +39,7 @@ export = {
     const hostedZone = new HostedZone(stack, 'HostedZone', {
       zoneName: 'test.zone',
     });
-    cdk.Tag.add(hostedZone, 'zoneTag', 'inMyZone');
+    cdk.Tags.of(hostedZone).add('zoneTag', 'inMyZone');
 
     // THEN
     expect(stack).toMatch({

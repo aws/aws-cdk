@@ -23,9 +23,14 @@
       },
       "python": {
         "distName": "aws-cdk.aws-backup",
-        "module": "aws_cdk.aws_backup"
+        "module": "aws_cdk.aws_backup",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",
@@ -81,7 +86,7 @@
     "@aws-cdk/aws-rds": "0.0.0",
     "@aws-cdk/aws-sns": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.0.4"
   },
   "peerDependencies": {
     "@aws-cdk/aws-dynamodb": "0.0.0",
@@ -93,13 +98,13 @@
     "@aws-cdk/aws-rds": "0.0.0",
     "@aws-cdk/aws-sns": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.0.4"
   },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "stability": "experimental",
-  "maturity": "cfn-only",
+  "maturity": "experimental",
   "awscdkio": {
     "announce": false
   }

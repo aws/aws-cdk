@@ -1,7 +1,9 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
-import { Construct, IResource, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
+import { IResource, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
+import { RegionInfo } from '@aws-cdk/region-info';
+import { Construct } from 'constructs';
 import { CfnLoadBalancer } from '../elasticloadbalancingv2.generated';
 import { Attributes, ifUndefined, renderAttributes } from './util';
 
@@ -128,7 +130,7 @@ export abstract class BaseLoadBalancer extends Resource {
     const internetFacing = ifUndefined(baseProps.internetFacing, false);
 
     const vpcSubnets = ifUndefined(baseProps.vpcSubnets,
-      (internetFacing ? {subnetType: ec2.SubnetType.PUBLIC} : {}) );
+      (internetFacing ? { subnetType: ec2.SubnetType.PUBLIC } : {}) );
     const { subnetIds, internetConnectivityEstablished } = baseProps.vpc.selectSubnets(vpcSubnets);
 
     this.vpc = baseProps.vpc;
@@ -137,14 +139,14 @@ export abstract class BaseLoadBalancer extends Resource {
       name: this.physicalName,
       subnets: subnetIds,
       scheme: internetFacing ? 'internet-facing' : 'internal',
-      loadBalancerAttributes: Lazy.anyValue({ produce: () => renderAttributes(this.attributes) }, {omitEmptyArray: true} ),
+      loadBalancerAttributes: Lazy.anyValue({ produce: () => renderAttributes(this.attributes) }, { omitEmptyArray: true } ),
       ...additionalProps,
     });
     if (internetFacing) {
       resource.node.addDependency(internetConnectivityEstablished);
     }
 
-    if (baseProps.deletionProtection) { this.setAttribute('deletion_protection.enabled', 'true'); }
+    this.setAttribute('deletion_protection.enabled', baseProps.deletionProtection ? 'true' : 'false');
 
     this.loadBalancerCanonicalHostedZoneId = resource.attrCanonicalHostedZoneId;
     this.loadBalancerDnsName = resource.attrDnsName;
@@ -170,7 +172,7 @@ export abstract class BaseLoadBalancer extends Resource {
       throw new Error('Region is required to enable ELBv2 access logging');
     }
 
-    const account = ELBV2_ACCOUNTS[region];
+    const account = RegionInfo.get(region).elbv2Account;
     if (!account) {
       throw new Error(`Cannot enable access logging; don't know ELBv2 account for region ${region}`);
     }
@@ -198,30 +200,3 @@ export abstract class BaseLoadBalancer extends Resource {
     this.setAttribute(key, undefined);
   }
 }
-
-// https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-access-logs.html#access-logging-bucket-permissions
-const ELBV2_ACCOUNTS: { [region: string]: string } = {
-  'us-east-1': '127311923021',
-  'us-east-2': '033677994240',
-  'us-west-1': '027434742980',
-  'us-west-2': '797873946194',
-  'ca-central-1': '985666609251',
-  'eu-central-1': '054676820928',
-  'eu-west-1': '156460612806',
-  'eu-west-2': '652711504416',
-  'eu-west-3': '009996457667',
-  'eu-north-1': '897822967062',
-  'ap-east-1': '754344448648',
-  'ap-northeast-1': '582318560864',
-  'ap-northeast-2': '600734575887',
-  'ap-northeast-3': '383597477331',
-  'ap-southeast-1': '114774131450',
-  'ap-southeast-2': '783225319266',
-  'ap-south-1': '718504428378',
-  'me-south-1': '076674570225',
-  'sa-east-1': '507241528517',
-  'us-gov-west-1': '048591011584',
-  'us-gov-east-1': '190560391635',
-  'cn-north-1': '638102146993',
-  'cn-northwest-1': '037604701340',
-};

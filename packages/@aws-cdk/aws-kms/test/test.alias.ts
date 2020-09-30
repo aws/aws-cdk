@@ -1,10 +1,11 @@
 import { expect, haveResource, SynthUtils } from '@aws-cdk/assert';
+import { ArnPrincipal, PolicyStatement } from '@aws-cdk/aws-iam';
 import { App, CfnOutput, Construct, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { Alias } from '../lib/alias';
 import { IKey, Key } from '../lib/key';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
   'default alias'(test: Test) {
@@ -16,7 +17,7 @@ export = {
 
     expect(stack).to(haveResource('AWS::KMS::Alias', {
       AliasName: 'alias/foo',
-      TargetKeyId: { 'Fn::GetAtt': [ 'Key961B73FD', 'Arn' ] },
+      TargetKeyId: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
     }));
 
     test.done();
@@ -38,7 +39,7 @@ export = {
 
     expect(stack).to(haveResource('AWS::KMS::Alias', {
       AliasName: 'alias/foo',
-      TargetKeyId: { 'Fn::GetAtt': [ 'Key961B73FD', 'Arn' ] },
+      TargetKeyId: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
     }));
 
     test.done();
@@ -56,7 +57,7 @@ export = {
 
     expect(stack).to(haveResource('AWS::KMS::Alias', {
       AliasName: 'alias/foo',
-      TargetKeyId: { 'Fn::GetAtt': [ 'Key961B73FD', 'Arn' ] },
+      TargetKeyId: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
     }));
 
     test.done();
@@ -171,6 +172,75 @@ export = {
       },
     });
 
+    test.done();
+  },
+
+  'imported alias by name - can be used where a key is expected'(test: Test) {
+    const stack = new Stack();
+
+    const myAlias = Alias.fromAliasName(stack, 'MyAlias', 'alias/myAlias');
+
+    class MyConstruct extends Construct {
+      constructor(scope: Construct, id: string, key: IKey) {
+        super(scope, id);
+
+        new CfnOutput(stack, 'OutId', {
+          value: key.keyId,
+        });
+        new CfnOutput(stack, 'OutArn', {
+          value: key.keyArn,
+        });
+      }
+    }
+
+    new MyConstruct(stack, 'MyConstruct', myAlias);
+
+    const template = SynthUtils.synthesize(stack).template.Outputs;
+
+    test.deepEqual(template, {
+      'OutId': {
+        'Value': 'alias/myAlias',
+      },
+      'OutArn': {
+        'Value': {
+          'Fn::Join': ['', [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':kms:',
+            { Ref: 'AWS::Region' },
+            ':',
+            { Ref: 'AWS::AccountId' },
+            ':alias/myAlias',
+          ]],
+        },
+      },
+    });
+
+    test.done();
+  },
+
+  'imported alias by name - will throw an error when accessing the key'(test: Test) {
+    const stack = new Stack();
+
+    const myAlias = Alias.fromAliasName(stack, 'MyAlias', 'alias/myAlias');
+
+    test.throws(() => myAlias.aliasTargetKey, 'Cannot access aliasTargetKey on an Alias imported by Alias.fromAliasName().');
+
+    test.done();
+  },
+
+  'fails if alias policy is invalid'(test: Test) {
+    const app = new App();
+    const stack = new Stack(app, 'my-stack');
+    const key = new Key(stack, 'MyKey');
+    const alias = new Alias(stack, 'Alias', { targetKey: key, aliasName: 'alias/foo' });
+
+    alias.addToResourcePolicy(new PolicyStatement({
+      resources: ['*'],
+      principals: [new ArnPrincipal('arn')],
+    }));
+
+    test.throws(() => app.synth(), /A PolicyStatement must specify at least one \'action\' or \'notAction\'/);
     test.done();
   },
 };

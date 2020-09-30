@@ -1,6 +1,6 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
-import { App, CfnResource, Construct, IAspect, IConstruct, Stack, Stage } from '../lib';
+import { App, CfnResource, Construct, IAspect, IConstruct, Stack, Stage, Aspects } from '../lib';
 
 export = {
   'Stack inherits unspecified part of the env from Stage'(test: Test) {
@@ -29,8 +29,8 @@ export = {
     });
 
     // WHEN
-    const innerAcct = new Stage(outer, 'Acct', { env: { account: 'tnuocca' }});
-    const innerRegion = new Stage(outer, 'Rgn', { env: { region: 'elsewhere' }});
+    const innerAcct = new Stage(outer, 'Acct', { env: { account: 'tnuocca' } });
+    const innerRegion = new Stage(outer, 'Rgn', { env: { region: 'elsewhere' } });
     const innerNeither = new Stage(outer, 'Neither');
 
     // THEN
@@ -148,7 +148,7 @@ export = {
 
     // WHEN
     const aspect = new TouchingAspect();
-    stack.node.applyAspect(aspect);
+    Aspects.of(stack).add(aspect);
 
     // THEN
     app.synth();
@@ -168,7 +168,7 @@ export = {
 
     // WHEN
     const aspect = new TouchingAspect();
-    app.node.applyAspect(aspect);
+    Aspects.of(app).add(aspect);
 
     // THEN
     app.synth();
@@ -209,7 +209,7 @@ export = {
 
   'Assemblies can be deeply nested'(test: Test) {
     // GIVEN
-    const app = new App({ runtimeInfo: false, treeMetadata: false });
+    const app = new App({ treeMetadata: false });
 
     const level1 = new Stage(app, 'StageLevel1');
     const level2 = new Stage(level1, 'StageLevel2');

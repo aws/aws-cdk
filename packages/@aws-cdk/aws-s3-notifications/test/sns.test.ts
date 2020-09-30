@@ -56,7 +56,7 @@ test('asBucketNotificationDestination adds bucket permissions only once for each
                 Action: 'sns:Publish',
                 Condition: {
                   ArnLike: {
-                    'aws:SourceArn': { 'Fn::GetAtt': ['Bucket25524B414', 'Arn' ]},
+                    'aws:SourceArn': { 'Fn::GetAtt': ['Bucket25524B414', 'Arn'] },
                   },
                 },
                 Effect: 'Allow',

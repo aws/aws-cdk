@@ -4,6 +4,7 @@ import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Construct, Duration, Lazy, Size, Stack } from '@aws-cdk/core';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 import { AlgorithmSpecification, Channel, InputMode, OutputDataConfig, ResourceConfig, S3DataType, StoppingCondition, VpcConfig } from './base-types';
+import { renderTags } from './private/utils';
 
 /**
  * Properties for creating an Amazon SageMaker training job
@@ -204,7 +205,10 @@ export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam
     this.securityGroups.push(securityGroup);
   }
 
-  protected renderTask(): any {
+  /**
+   * @internal
+   */
+  protected _renderTask(): any {
     return {
       Resource: integrationResourceArn('sagemaker', 'createTrainingJob', this.integrationPattern),
       Parameters: sfn.FieldUtils.renderObject(this.renderParameters()),
@@ -221,7 +225,7 @@ export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam
       ...this.renderResourceConfig(this.resourceConfig),
       ...this.renderStoppingCondition(this.stoppingCondition),
       ...this.renderHyperparameters(this.props.hyperparameters),
-      ...this.renderTags(this.props.tags),
+      ...renderTags(this.props.tags),
       ...this.renderVpcConfig(this.props.vpcConfig),
     };
   }
@@ -250,7 +254,7 @@ export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam
             ...(channel.dataSource.s3DataSource.s3DataDistributionType
               ? { S3DataDistributionType: channel.dataSource.s3DataSource.s3DataDistributionType }
               : {}),
-            ...(channel.dataSource.s3DataSource.attributeNames ? { AtttributeNames: channel.dataSource.s3DataSource.attributeNames } : {}),
+            ...(channel.dataSource.s3DataSource.attributeNames ? { AttributeNames: channel.dataSource.s3DataSource.attributeNames } : {}),
           },
         },
         ...(channel.compressionType ? { CompressionType: channel.compressionType } : {}),
@@ -291,10 +295,6 @@ export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam
 
   private renderHyperparameters(params: { [key: string]: any } | undefined): { [key: string]: any } {
     return params ? { HyperParameters: params } : {};
-  }
-
-  private renderTags(tags: { [key: string]: any } | undefined): { [key: string]: any } {
-    return tags ? { Tags: Object.keys(tags).map((key) => ({ Key: key, Value: tags[key] })) } : {};
   }
 
   private renderVpcConfig(config: VpcConfig | undefined): { [key: string]: any } {
@@ -374,7 +374,7 @@ export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam
             service: 'sagemaker',
             resource: 'training-job',
             // If the job name comes from input, we cannot target the policy to a particular ARN prefix reliably...
-            resourceName: sfn.Data.isJsonPathString(this.props.trainingJobName) ? '*' : `${this.props.trainingJobName}*`,
+            resourceName: sfn.JsonPath.isEncodedJsonPath(this.props.trainingJobName) ? '*' : `${this.props.trainingJobName}*`,
           }),
         ],
       }),

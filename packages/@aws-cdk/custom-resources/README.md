@@ -30,13 +30,15 @@ the actual handler.
 
 ```ts
 import { CustomResource } from '@aws-cdk/core';
+import * as logs from '@aws-cdk/aws-logs';
 import * as cr from '@aws-cdk/custom-resources';
 
 const onEvent = new lambda.Function(this, 'MyHandler', { /* ... */ });
 
 const myProvider = new cr.Provider(this, 'MyProvider', {
   onEventHandler: onEvent,
-  isCompleteHandler: isComplete // optional async "waiter"
+  isCompleteHandler: isComplete,        // optional async "waiter"
+  logRetention: logs.RetentionDays.ONE_DAY   // default is INFINITE
 });
 
 new CustomResource(this, 'Resource1', { serviceToken: myProvider.serviceToken });
@@ -260,8 +262,8 @@ This module includes a few examples for custom resource implementations:
 
 Provisions an object in an S3 bucket with textual contents. See the source code
 for the
-[construct](test/provider-framework/integration-test-fixtures/s3-file.ts) and
-[handler](test/provider-framework/integration-test-fixtures/s3-file-handler/index.ts).
+[construct](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.ts) and
+[handler](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file-handler/index.ts).
 
 The following example will create the file `folder/file1.txt` inside `myBucket`
 with the contents `hello!`.
@@ -325,6 +327,11 @@ Path to data must be specified using a dot notation, e.g. to get the string valu
 of the `Title` attribute for the first item returned by `dynamodb.query` it should
 be `Items.0.Title.S`.
 
+To make sure that the newest API calls are available the latest AWS SDK v2 is installed
+in the Lambda function implementing the custom resource. The installation takes around 60
+seconds. If you prefer to optimize for speed, you can disable the installation by setting
+the `installLatestAwsSdk` prop to `false`.
+
 ### Execution Policy
 
 You must provide the `policy` property defining the IAM Policy that will be applied to the API calls.
@@ -364,6 +371,31 @@ const awsCustom2 = new AwsCustomResource(this, 'API2', {
 })
 ```
 
+### Physical Resource Id Parameter
+Some AWS APIs may require passing the physical resource id in as a parameter for doing updates and deletes. You can pass it by using `PhysicalResourceIdReference`.
+
+```
+const awsCustom = new AwsCustomResource(this, '...', {
+  onCreate: {
+    service: '...',
+    action: '...'
+    parameters: {
+      text: '...'
+    },
+    physicalResourceId: PhysicalResourceId.of('...')
+  },
+  onUpdate: {
+    service: '...',
+    action: '...'.
+    parameters: {
+      text: '...',
+      resourceId: new PhysicalResourceIdReference()
+    }
+  },
+  policy: AwsCustomResourcePolicy.fromSdkCalls({resources: AwsCustomResourcePolicy.ANY_RESOURCE})
+})
+```
+
 ### Error Handling
 
 Every error produced by the API call is treated as is and will cause a "FAILED" response to be submitted to CloudFormation.
@@ -378,8 +410,8 @@ Since a successful resource provisioning might or might not produce outputs, thi
 In both the cases, you will get a synth time error if you attempt to use it in conjunction with `ignoreErrorCodesMatching`.
 
 ### Customizing the Lambda function implementing the custom resource
-Use the `role`, `timeout` and `logRetention` properties to customize the Lambda function implementing the custom
-resource:
+Use the `role`, `timeout`, `logRetention` and `functionName` properties to customize
+the Lambda function implementing the custom resource:
 
 ```ts
 new AwsCustomResource(this, 'Customized', {
@@ -387,6 +419,7 @@ new AwsCustomResource(this, 'Customized', {
   role: myRole, // must be assumable by the `lambda.amazonaws.com` service principal
   timeout: cdk.Duration.minutes(10) // defaults to 2 minutes
   logRetention: logs.RetentionDays.ONE_WEEK // defaults to never delete logs
+  functionName: 'my-custom-name', // defaults to a CloudFormation generated name
 })
 ```
 

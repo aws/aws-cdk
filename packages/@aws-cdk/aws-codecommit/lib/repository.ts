@@ -1,6 +1,7 @@
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct, IConstruct, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
+import { IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
+import { IConstruct, Construct } from 'constructs';
 import { CfnRepository } from './codecommit.generated';
 
 export interface IRepository extends IResource {
@@ -141,8 +142,8 @@ abstract class RepositoryBase extends Resource implements IRepository {
   public onEvent(id: string, options: events.OnEventOptions = {}) {
     const rule = new events.Rule(this, id, options);
     rule.addEventPattern({
-      source: [ 'aws.codecommit' ],
-      resources: [ this.repositoryArn ],
+      source: ['aws.codecommit'],
+      resources: [this.repositoryArn],
     });
     rule.addTarget(options.target);
     return rule;
@@ -155,7 +156,7 @@ abstract class RepositoryBase extends Resource implements IRepository {
   public onStateChange(id: string, options: events.OnEventOptions = {}) {
     const rule = this.onEvent(id, options);
     rule.addEventPattern({
-      detailType: [ 'CodeCommit Repository State Change' ],
+      detailType: ['CodeCommit Repository State Change'],
     });
     return rule;
   }
@@ -166,7 +167,7 @@ abstract class RepositoryBase extends Resource implements IRepository {
    */
   public onReferenceCreated(id: string, options: events.OnEventOptions = {}) {
     const rule = this.onStateChange(id, options);
-    rule.addEventPattern({ detail: { event: [ 'referenceCreated' ] } });
+    rule.addEventPattern({ detail: { event: ['referenceCreated'] } });
     return rule;
   }
 
@@ -176,7 +177,7 @@ abstract class RepositoryBase extends Resource implements IRepository {
    */
   public onReferenceUpdated(id: string, options: events.OnEventOptions = {}) {
     const rule = this.onStateChange(id, options);
-    rule.addEventPattern({ detail: { event: [ 'referenceCreated', 'referenceUpdated' ] } });
+    rule.addEventPattern({ detail: { event: ['referenceCreated', 'referenceUpdated'] } });
     return rule;
   }
 
@@ -186,7 +187,7 @@ abstract class RepositoryBase extends Resource implements IRepository {
    */
   public onReferenceDeleted(id: string, options: events.OnEventOptions = {}) {
     const rule = this.onStateChange(id, options);
-    rule.addEventPattern({ detail: { event: [ 'referenceDeleted' ] } });
+    rule.addEventPattern({ detail: { event: ['referenceDeleted'] } });
     return rule;
   }
 
@@ -195,7 +196,7 @@ abstract class RepositoryBase extends Resource implements IRepository {
    */
   public onPullRequestStateChange(id: string, options: events.OnEventOptions = {}) {
     const rule = this.onEvent(id, options);
-    rule.addEventPattern({ detailType: [ 'CodeCommit Pull Request State Change' ] });
+    rule.addEventPattern({ detailType: ['CodeCommit Pull Request State Change'] });
     return rule;
   }
 
@@ -204,7 +205,7 @@ abstract class RepositoryBase extends Resource implements IRepository {
    */
   public onCommentOnPullRequest(id: string, options: events.OnEventOptions = {}) {
     const rule = this.onEvent(id, options);
-    rule.addEventPattern({ detailType: [ 'CodeCommit Comment on Pull Request' ] });
+    rule.addEventPattern({ detailType: ['CodeCommit Comment on Pull Request'] });
     return rule;
   }
 
@@ -213,7 +214,7 @@ abstract class RepositoryBase extends Resource implements IRepository {
    */
   public onCommentOnCommit(id: string, options: events.OnEventOptions = {}) {
     const rule = this.onEvent(id, options);
-    rule.addEventPattern({ detailType: [ 'CodeCommit Comment on Commit' ] });
+    rule.addEventPattern({ detailType: ['CodeCommit Comment on Commit'] });
     return rule;
   }
 
@@ -223,7 +224,7 @@ abstract class RepositoryBase extends Resource implements IRepository {
   public onCommit(id: string, options: OnCommitOptions = {}) {
     const rule = this.onReferenceUpdated(id, options);
     if (options.branches) {
-      rule.addEventPattern({ detail: { referenceName: options.branches }});
+      rule.addEventPattern({ detail: { referenceName: options.branches } });
     }
     return rule;
   }
@@ -332,7 +333,7 @@ export class Repository extends RepositoryBase {
     this.repository = new CfnRepository(this, 'Resource', {
       repositoryName: props.repositoryName,
       repositoryDescription: props.description,
-      triggers: Lazy.anyValue({ produce: () =>  this.triggers}, { omitEmptyArray: true}),
+      triggers: Lazy.anyValue({ produce: () => this.triggers }, { omitEmptyArray: true }),
     });
 
     this.repositoryName = this.getResourceNameAttribute(this.repository.attrName);

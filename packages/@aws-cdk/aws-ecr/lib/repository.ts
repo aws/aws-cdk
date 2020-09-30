@@ -381,7 +381,7 @@ export class Repository extends RepositoryBase {
       public repositoryName = repositoryName;
       public repositoryArn = Repository.arnForLocalRepository(repositoryName, scope);
 
-      public addToResourcePolicy(_statement: iam.PolicyStatement): iam.AddToResourcePolicyResult  {
+      public addToResourcePolicy(_statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
         // dropped
         return { statementAdded: false };
       }
@@ -394,8 +394,9 @@ export class Repository extends RepositoryBase {
    * Returns an ECR ARN for a repository that resides in the same account/region
    * as the current stack.
    */
-  public static arnForLocalRepository(repositoryName: string, scope: IConstruct): string {
+  public static arnForLocalRepository(repositoryName: string, scope: IConstruct, account?: string): string {
     return Stack.of(scope).formatArn({
+      account,
       service: 'ecr',
       resource: 'repository',
       resourceName: repositoryName,
@@ -460,7 +461,7 @@ export class Repository extends RepositoryBase {
           },
           physicalResourceId: cr.PhysicalResourceId.of(this.repositoryArn),
         },
-        policy: cr.AwsCustomResourcePolicy.fromSdkCalls({ resources: [ this.repositoryArn ] }),
+        policy: cr.AwsCustomResourcePolicy.fromSdkCalls({ resources: [this.repositoryArn] }),
       });
     }
   }
@@ -471,6 +472,12 @@ export class Repository extends RepositoryBase {
     }
     this.policyDocument.addStatements(statement);
     return { statementAdded: false, policyDependable: this.policyDocument };
+  }
+
+  protected validate(): string[] {
+    const errors = super.validate();
+    errors.push(...this.policyDocument?.validateForResourcePolicy() || []);
+    return errors;
   }
 
   /**

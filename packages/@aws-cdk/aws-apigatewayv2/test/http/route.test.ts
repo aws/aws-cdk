@@ -1,7 +1,9 @@
 import '@aws-cdk/assert/jest';
 import { Stack } from '@aws-cdk/core';
-import { HttpApi, HttpIntegrationType, HttpMethod, HttpRoute, HttpRouteIntegrationConfig, HttpRouteKey, IHttpRouteIntegration,
-  PayloadFormatVersion } from '../../lib';
+import {
+  HttpApi, HttpIntegrationType, HttpMethod, HttpRoute, HttpRouteIntegrationConfig, HttpRouteKey, IHttpRouteIntegration,
+  PayloadFormatVersion,
+} from '../../lib';
 
 describe('HttpRoute', () => {
   test('default', () => {
@@ -52,11 +54,34 @@ describe('HttpRoute', () => {
       IntegrationUri: 'some-uri',
     });
   });
+
+  test('throws when path not start with /', () => {
+    const stack = new Stack();
+    const httpApi = new HttpApi(stack, 'HttpApi');
+
+    expect(() => new HttpRoute(stack, 'HttpRoute', {
+      httpApi,
+      integration: new DummyIntegration(),
+      routeKey: HttpRouteKey.with('books', HttpMethod.GET),
+    })).toThrowError(/path must always start with a "\/" and not end with a "\/"/);
+  });
+
+  test('throws when path ends with /', () => {
+    const stack = new Stack();
+    const httpApi = new HttpApi(stack, 'HttpApi');
+
+    expect(() => new HttpRoute(stack, 'HttpRoute', {
+      httpApi,
+      integration: new DummyIntegration(),
+      routeKey: HttpRouteKey.with('/books/', HttpMethod.GET),
+    })).toThrowError(/path must always start with a "\/" and not end with a "\/"/);
+  });
+
 });
 
 class DummyIntegration implements IHttpRouteIntegration {
   public bind(): HttpRouteIntegrationConfig {
-    return  {
+    return {
       type: HttpIntegrationType.HTTP_PROXY,
       payloadFormatVersion: PayloadFormatVersion.VERSION_2_0,
       uri: 'some-uri',

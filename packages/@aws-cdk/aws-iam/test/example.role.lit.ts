@@ -12,7 +12,8 @@ export class ExampleConstruct extends cdk.Construct {
 
     role.addToPolicy(new PolicyStatement({
       resources: ['*'],
-      actions: ['lambda:InvokeFunction'] }));
+      actions: ['lambda:InvokeFunction'],
+    }));
     /// !hide
   }
 }

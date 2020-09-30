@@ -269,6 +269,31 @@ export class JobDefinition extends Resource implements IJobDefinition {
     return new Import(scope, id);
   }
 
+  /**
+   * Imports an existing batch job definition by its name.
+   * If name is specified without a revision then the latest active revision is used.
+   *
+   * @param scope
+   * @param id
+   * @param jobDefinitionName
+   */
+  public static fromJobDefinitionName(scope: Construct, id: string, jobDefinitionName: string): IJobDefinition {
+    const stack = Stack.of(scope);
+    const jobDefArn = stack.formatArn({
+      service: 'batch',
+      resource: 'job-definition',
+      sep: '/',
+      resourceName: jobDefinitionName,
+    });
+
+    class Import extends Resource implements IJobDefinition {
+      public readonly jobDefinitionArn = jobDefArn;
+      public readonly jobDefinitionName = jobDefinitionName;
+    }
+
+    return new Import(scope, id);
+  }
+
   public readonly jobDefinitionArn: string;
   public readonly jobDefinitionName: string;
   private readonly imageConfig: JobDefinitionImageConfig;
@@ -285,9 +310,11 @@ export class JobDefinition extends Resource implements IJobDefinition {
       containerProperties: this.buildJobContainer(props.container),
       type: 'container',
       nodeProperties: props.nodeProps
-        ? { mainNode: props.nodeProps.mainNode,
+        ? {
+          mainNode: props.nodeProps.mainNode,
           nodeRangeProperties: this.buildNodeRangeProps(props.nodeProps),
-          numNodes: props.nodeProps.count }
+          numNodes: props.nodeProps.count,
+        }
         : undefined,
       parameters: props.parameters,
       retryStrategy: {

@@ -1,7 +1,7 @@
 {
   "name": "@aws-cdk/aws-events-targets",
   "version": "0.0.0",
-  "description": "Event targets for AWS CloudWatch Events",
+  "description": "Event targets for Amazon EventBridge",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
@@ -23,9 +23,14 @@
       },
       "python": {
         "distName": "aws-cdk.aws-events-targets",
-        "module": "aws_cdk.aws_events_targets"
+        "module": "aws_cdk.aws_events_targets",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",
@@ -56,7 +61,8 @@
     "cdk",
     "constructs",
     "cloudwatch",
-    "events"
+    "events",
+    "eventbridge"
   ],
   "author": {
     "name": "Amazon Web Services",
@@ -67,11 +73,11 @@
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
     "@aws-cdk/aws-codecommit": "0.0.0",
-    "aws-sdk": "^2.697.0",
+    "aws-sdk": "^2.739.0",
     "aws-sdk-mock": "^5.1.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
-    "jest": "^25.5.4",
+    "jest": "^26.4.2",
     "pkglint": "0.0.0"
   },
   "dependencies": {
@@ -89,7 +95,7 @@
     "@aws-cdk/aws-batch": "0.0.0",
     "@aws-cdk/aws-kinesis": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.0.4"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -106,7 +112,7 @@
     "@aws-cdk/aws-stepfunctions": "0.0.0",
     "@aws-cdk/aws-batch": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.2",
+    "constructs": "^3.0.4",
     "@aws-cdk/aws-kinesis": "0.0.0"
   },
   "engines": {

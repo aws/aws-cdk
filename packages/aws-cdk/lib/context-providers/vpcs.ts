@@ -18,7 +18,7 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
 
     const vpcId = await this.findVpc(ec2, args);
 
-    return await this.readVpcProps(ec2, vpcId, args);
+    return this.readVpcProps(ec2, vpcId, args);
   }
 
   private async findVpc(ec2: AWS.EC2, args: cxschema.VpcContextQuery): Promise<AWS.EC2.Vpc> {
@@ -70,7 +70,7 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
       if (type === undefined) { type = SubnetType.Private; }
 
       if (!isValidSubnetType(type)) {
-        // tslint:disable-next-line: max-line-length
+        // eslint-disable-next-line max-len
         throw new Error(`Subnet ${subnet.SubnetArn} has invalid subnet type ${type} (must be ${SubnetType.Public}, ${SubnetType.Private} or ${SubnetType.Isolated})`);
       }
 

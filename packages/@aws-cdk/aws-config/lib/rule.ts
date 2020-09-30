@@ -60,7 +60,7 @@ abstract class RuleBase extends Resource implements IRule {
   public onComplianceChange(id: string, options: events.OnEventOptions = {}): events.Rule {
     const rule = this.onEvent(id, options);
     rule.addEventPattern({
-      detailType: [ 'Config Rules Compliance Change' ],
+      detailType: ['Config Rules Compliance Change'],
     });
     return rule;
   }
@@ -71,7 +71,7 @@ abstract class RuleBase extends Resource implements IRule {
   public onReEvaluationStatus(id: string, options: events.OnEventOptions = {}): events.Rule {
     const rule = this.onEvent(id, options);
     rule.addEventPattern({
-      detailType: [ 'Config Rules Re-evaluation Status' ],
+      detailType: ['Config Rules Re-evaluation Status'],
     });
     return rule;
   }
@@ -122,10 +122,10 @@ abstract class RuleNew extends RuleBase {
    * @param identifier the resource identifier
    */
   public scopeToResource(type: string, identifier?: string) {
-    this.scopeTo({
+    this.scope = {
       complianceResourceId: identifier,
       complianceResourceTypes: [type],
-    });
+    };
   }
 
   /**
@@ -136,9 +136,9 @@ abstract class RuleNew extends RuleBase {
    * @param types resource types
    */
   public scopeToResources(...types: string[]) {
-    this.scopeTo({
+    this.scope = {
       complianceResourceTypes: types,
-    });
+    };
   }
 
   /**
@@ -148,18 +148,10 @@ abstract class RuleNew extends RuleBase {
    * @param value the tag value
    */
   public scopeToTag(key: string, value?: string) {
-    this.scopeTo({
+    this.scope = {
       tagKey: key,
       tagValue: value,
-    });
-  }
-
-  private scopeTo(scope: CfnConfigRule.ScopeProperty) {
-    if (!this.isManaged && !this.isCustomWithChanges) {
-      throw new Error('Cannot scope rule when `configurationChanges` is set to false.');
-    }
-
-    this.scope = scope;
+    };
   }
 }
 
@@ -201,28 +193,28 @@ export interface RuleProps {
   /**
    * A name for the AWS Config rule.
    *
-   * @default a CloudFormation generated name
+   * @default - CloudFormation generated name
    */
   readonly configRuleName?: string;
 
   /**
    * A description about this AWS Config rule.
    *
-   * @default no description
+   * @default - No description
    */
   readonly description?: string;
 
   /**
    * Input parameter values that are passed to the AWS Config rule.
    *
-   * @default no input parameters
+   * @default - No input parameters
    */
   readonly inputParameters?: { [key: string]: any };
 
   /**
    * The maximum frequency at which the AWS Config rule runs evaluations.
    *
-   * @default 24 hours
+   * @default MaximumExecutionFrequency.TWENTY_FOUR_HOURS
    */
   readonly maximumExecutionFrequency?: MaximumExecutionFrequency
 }
@@ -284,7 +276,7 @@ export class ManagedRule extends RuleNew {
 }
 
 /**
- * Consruction properties for a CustomRule.
+ * Construction properties for a CustomRule.
  */
 export interface CustomRuleProps extends RuleProps {
   /**

@@ -1,4 +1,5 @@
-import { spawnSync } from 'child_process';
+import { spawnSync, SpawnSyncOptions } from 'child_process';
+import { FileSystem } from './fs';
 
 /**
  * Bundling options
@@ -12,7 +13,7 @@ export interface BundlingOptions {
   readonly image: BundlingDockerImage;
 
   /**
-   * The command to run in the container.
+   * The command to run in the Docker container.
    *
    * @example ['npm', 'install']
    *
@@ -30,21 +31,21 @@ export interface BundlingOptions {
   readonly volumes?: DockerVolume[];
 
   /**
-   * The environment variables to pass to the container.
+   * The environment variables to pass to the Docker container.
    *
    * @default - no environment variables.
    */
   readonly environment?: { [key: string]: string; };
 
   /**
-   * Working directory inside the container.
+   * Working directory inside the Docker container.
    *
    * @default /asset-input
    */
   readonly workingDirectory?: string;
 
   /**
-   * The user to use when running the container.
+   * The user to use when running the Docker container.
    *
    *   user | user:group | uid | uid:gid | user:gid | uid:group
    *
@@ -53,6 +54,36 @@ export interface BundlingOptions {
    * @default - uid:gid of the current user or 1000:1000 on Windows
    */
   readonly user?: string;
+
+  /**
+   * Local bundling provider.
+   *
+   * The provider implements a method `tryBundle()` which should return `true`
+   * if local bundling was performed. If `false` is returned, docker bundling
+   * will be done.
+   *
+   * @default - bundling will only be performed in a Docker container
+   *
+   * @experimental
+   */
+  readonly local?: ILocalBundling;
+}
+
+/**
+ * Local bundling
+ *
+ * @experimental
+ */
+export interface ILocalBundling {
+  /**
+   * This method is called before attempting docker bundling to allow the
+   * bundler to be executed locally. If the local bundler exists, and bundling
+   * was performed locally, return `true`. Otherwise, return `false`.
+   *
+   * @param outputDir the directory where the bundled asset should be output
+   * @param options bundling options for this asset
+   */
+  tryBundle(outputDir: string, options: BundlingOptions): boolean;
 }
 
 /**
@@ -78,24 +109,39 @@ export class BundlingDockerImage {
     const buildArgs = options.buildArgs || {};
 
     const dockerArgs: string[] = [
-      'build',
+      'build', '-q',
       ...flatten(Object.entries(buildArgs).map(([k, v]) => ['--build-arg', `${k}=${v}`])),
       path,
     ];
 
     const docker = dockerExec(dockerArgs);
 
-    const match = docker.stdout.toString().match(/Successfully built ([a-z0-9]+)/);
+    const match = docker.stdout.toString().match(/sha256:([a-z0-9]+)/);
 
     if (!match) {
       throw new Error('Failed to extract image ID from Docker build output');
     }
 
-    return new BundlingDockerImage(match[1]);
+    // Fingerprints the directory containing the Dockerfile we're building and
+    // differentiates the fingerprint based on build arguments. We do this so
+    // we can provide a stable image hash. Otherwise, the image ID will be
+    // different every time the Docker layer cache is cleared, due primarily to
+    // timestamps.
+    const hash = FileSystem.fingerprint(path, { extraHash: JSON.stringify(options) });
+    return new BundlingDockerImage(match[1], hash);
   }
 
   /** @param image The Docker image */
-  private constructor(public readonly image: string) {}
+  private constructor(public readonly image: string, private readonly _imageHash?: string) {}
+
+  /**
+   * Provides a stable representation of this image for JSON serialization.
+   *
+   * @return The overridden image name if set or image hash name in that order
+   */
+  public toJSON() {
+    return this._imageHash ?? this.image;
+  }
 
   /**
    * Runs a Docker image
@@ -112,7 +158,7 @@ export class BundlingDockerImage {
       ...options.user
         ? ['-u', options.user]
         : [],
-      ...flatten(volumes.map(v => ['-v', `${v.hostPath}:${v.containerPath}`])),
+      ...flatten(volumes.map(v => ['-v', `${v.hostPath}:${v.containerPath}:${v.consistency ?? DockerVolumeConsistency.DELEGATED}`])),
       ...flatten(Object.entries(environment).map(([k, v]) => ['--env', `${k}=${v}`])),
       ...options.workingDirectory
         ? ['-w', options.workingDirectory]
@@ -121,7 +167,13 @@ export class BundlingDockerImage {
       ...command,
     ];
 
-    dockerExec(dockerArgs);
+    dockerExec(dockerArgs, {
+      stdio: [ // show Docker output
+        'ignore', // ignore stdio
+        process.stderr, // redirect stdout to stderr
+        'inherit', // inherit stderr
+      ],
+    });
   }
 }
 
@@ -138,6 +190,32 @@ export interface DockerVolume {
    * The path where the file or directory is mounted in the container
    */
   readonly containerPath: string;
+
+  /**
+   * Mount consistency. Only applicable for macOS
+   *
+   * @default DockerConsistency.DELEGATED
+   * @see https://docs.docker.com/storage/bind-mounts/#configure-mount-consistency-for-macos
+   */
+  readonly consistency?: DockerVolumeConsistency;
+}
+
+/**
+ * Supported Docker volume consistency types. Only valid on macOS due to the way file storage works on Mac
+ */
+export enum DockerVolumeConsistency {
+  /**
+   * Read/write operations inside the Docker container are applied immediately on the mounted host machine volumes
+   */
+  CONSISTENT = 'consistent',
+  /**
+   * Read/write operations on mounted Docker volumes are first written inside the container and then synchronized to the host machine
+   */
+  DELEGATED = 'delegated',
+  /**
+   * Read/write operations on mounted Docker volumes are first applied on the host machine and then synchronized to the container
+   */
+  CACHED = 'cached',
 }
 
 /**
@@ -196,16 +274,19 @@ function flatten(x: string[][]) {
   return Array.prototype.concat([], ...x);
 }
 
-function dockerExec(args: string[]) {
+function dockerExec(args: string[], options?: SpawnSyncOptions) {
   const prog = process.env.CDK_DOCKER ?? 'docker';
-  const proc = spawnSync(prog, args);
+  const proc = spawnSync(prog, args, options);
 
   if (proc.error) {
     throw proc.error;
   }
 
   if (proc.status !== 0) {
-    throw new Error(`[Status ${proc.status}] stdout: ${proc.stdout?.toString().trim()}\n\n\nstderr: ${proc.stderr?.toString().trim()}`);
+    if (proc.stdout || proc.stderr) {
+      throw new Error(`[Status ${proc.status}] stdout: ${proc.stdout?.toString().trim()}\n\n\nstderr: ${proc.stderr?.toString().trim()}`);
+    }
+    throw new Error(`${prog} exited with status ${proc.status}`);
   }
 
   return proc;

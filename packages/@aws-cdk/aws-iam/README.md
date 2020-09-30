@@ -313,3 +313,6 @@ const principal = new iam.OpenIdConnectPrincipal(provider);
  * Policy name uniqueness is enforced. If two policies by the same name are attached to the same
    principal, the attachment will fail.
  * Policy names are not required - the CDK logical ID will be used and ensured to be unique.
+ * Policies are validated during synthesis to ensure that they have actions, and that policies
+   attached to IAM principals specify relevant resources, while policies attached to resources
+   specify which IAM principals they apply to.

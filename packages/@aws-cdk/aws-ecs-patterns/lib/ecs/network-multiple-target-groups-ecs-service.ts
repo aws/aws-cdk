@@ -1,8 +1,10 @@
 import { Ec2Service, Ec2TaskDefinition } from '@aws-cdk/aws-ecs';
 import { NetworkTargetGroup } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { Construct } from '@aws-cdk/core';
-import { NetworkMultipleTargetGroupsServiceBase,
-  NetworkMultipleTargetGroupsServiceBaseProps } from '../base/network-multiple-target-groups-service-base';
+import {
+  NetworkMultipleTargetGroupsServiceBase,
+  NetworkMultipleTargetGroupsServiceBaseProps,
+} from '../base/network-multiple-target-groups-service-base';
 
 /**
  * The properties for the NetworkMultipleTargetGroupsEc2Service service.

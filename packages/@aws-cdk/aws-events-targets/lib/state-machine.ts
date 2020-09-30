@@ -10,13 +10,13 @@ export interface SfnStateMachineProps {
   /**
    * The input to the state machine execution
    *
-   * @default the entire CloudWatch event
+   * @default the entire EventBridge event
    */
   readonly input?: events.RuleTargetInput;
 }
 
 /**
- * Use a StepFunctions state machine as a target for AWS CloudWatch event rules.
+ * Use a StepFunctions state machine as a target for Amazon EventBridge rules.
  */
 export class SfnStateMachine implements events.IRuleTarget {
   constructor(public readonly machine: sfn.IStateMachine, private readonly props: SfnStateMachineProps = {}) {
@@ -25,7 +25,7 @@ export class SfnStateMachine implements events.IRuleTarget {
   /**
    * Returns a properties that are used in an Rule to trigger this State Machine
    *
-   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/resource-based-policies-cwe.html#sns-permissions
+   * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/resource-based-policies-eventbridge.html#sns-permissions
    */
   public bind(_rule: events.IRule, _id?: string): events.RuleTargetConfig {
     return {

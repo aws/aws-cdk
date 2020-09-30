@@ -1,6 +1,6 @@
-import {AmazonLinuxGeneration, AmazonLinuxImage, Instance, InstanceClass, InstanceSize, InstanceType, SubnetType, Vpc} from '@aws-cdk/aws-ec2';
-import {App, Stack} from '@aws-cdk/core';
-import {LustreDeploymentType, LustreFileSystem} from '../lib';
+import { AmazonLinuxGeneration, AmazonLinuxImage, Instance, InstanceClass, InstanceSize, InstanceType, SubnetType, Vpc } from '@aws-cdk/aws-ec2';
+import { App, Stack } from '@aws-cdk/core';
+import { LustreDeploymentType, LustreFileSystem } from '../lib';
 
 const app = new App();
 

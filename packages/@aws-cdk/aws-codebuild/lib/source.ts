@@ -119,6 +119,13 @@ interface GitSourceProps extends SourceProps {
    * @default the default branch's HEAD commit ID is used
    */
   readonly branchOrRef?: string;
+
+  /**
+   * Whether to fetch submodules while cloning git repo.
+   *
+   * @default false
+   */
+  readonly fetchSubmodules?: boolean;
 }
 
 /**
@@ -127,12 +134,14 @@ interface GitSourceProps extends SourceProps {
 abstract class GitSource extends Source {
   private readonly cloneDepth?: number;
   private readonly branchOrRef?: string;
+  private readonly fetchSubmodules?: boolean;
 
   protected constructor(props: GitSourceProps) {
     super(props);
 
     this.cloneDepth = props.cloneDepth;
     this.branchOrRef = props.branchOrRef;
+    this.fetchSubmodules = props.fetchSubmodules;
   }
 
   public bind(_scope: Construct, _project: IProject): SourceConfig {
@@ -142,6 +151,9 @@ abstract class GitSource extends Source {
       sourceProperty: {
         ...superConfig.sourceProperty,
         gitCloneDepth: this.cloneDepth,
+        gitSubmodulesConfig: this.fetchSubmodules ? {
+          fetchSubmodules: this.fetchSubmodules,
+        } : undefined,
       },
     };
   }
@@ -407,9 +419,6 @@ export class FilterGroup {
   }
 
   private addFilePathFilter(pattern: string, include: boolean): FilterGroup {
-    if (this.actions.size !== 1 || !this.actions.has(EventAction.PUSH)) {
-      throw new Error('A file path condition cannot be added if a Group contains any event action other than PUSH');
-    }
     return this.addFilter(FILE_PATH_WEBHOOK_COND, pattern, include);
   }
 
