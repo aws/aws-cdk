@@ -30,7 +30,7 @@ new Bucket(this, 'MyFirstBucket');
    `arn:aws:s3:::bucket_name/exampleobject.png` or
    `arn:aws:s3:::bucket_name/Development/*`)
  * `urlForObject(key)` - the HTTP URL of an object within the bucket (i.e.
-   `https://china-bucket.s3-cn-north-1.amazonaws.com.cn/mykey`)
+   `https://s3.cn-north-1.amazonaws.com.cn/china-bucket/mykey`)
  * `s3UrlForObject(key)` - the S3 URL of an object within the bucket (i.e.
    `s3://bucket/mykey`)
 
