@@ -238,7 +238,7 @@ export class SecretRotation extends CoreConstruct {
       vpcSecurityGroupIds: securityGroup.securityGroupId,
     };
 
-    if (props.excludeCharacters) {
+    if (props.excludeCharacters !== undefined) {
       parameters.excludeCharacters = props.excludeCharacters;
     }
 
