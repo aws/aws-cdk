@@ -14,7 +14,7 @@ class EksClusterStack extends cdk.Stack {
     });
 
     /// !show
-    const asg = cluster.addCapacity('Nodes', {
+    const asg = cluster.addAutoScalingGroupCapacity('Nodes', {
       instanceType: new ec2.InstanceType('t2.medium'),
       vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
       keyName: 'my-key-name',
