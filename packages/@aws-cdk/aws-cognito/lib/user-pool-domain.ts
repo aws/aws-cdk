@@ -80,6 +80,17 @@ export interface UserPoolDomainProps extends UserPoolDomainOptions {
  * Define a user pool domain
  */
 export class UserPoolDomain extends Resource implements IUserPoolDomain {
+  /**
+   * Import a UserPoolDomain given its domain name
+   */
+  public static fromDomainName(scope: Construct, id: string, userPoolDomainName: string): IUserPoolDomain {
+    class Import extends Resource implements IUserPoolDomain {
+      public readonly domainName = userPoolDomainName;
+    }
+
+    return new Import(scope, id);
+  }
+
   public readonly domainName: string;
   private isCognitoDomain: boolean;
 
