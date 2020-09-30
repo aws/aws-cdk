@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-fsx",
-        "module": "aws_cdk.aws_fsx"
+        "module": "aws_cdk.aws_fsx",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
@@ -50,7 +54,10 @@
   },
   "cdk-build": {
     "cloudformation": "AWS::FSx",
-    "jest": true
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "keywords": [
     "aws",

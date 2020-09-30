@@ -13,7 +13,7 @@ export = {
     const cluster = new eks.Cluster(stack, 'MyCluster', { version: CLUSTER_VERSION });
 
     // WHEN
-    new KubernetesPatch(stack, 'MyPatch', {
+    const patch = new KubernetesPatch(stack, 'MyPatch', {
       cluster,
       applyPatch: { patch: { to: 'apply' } },
       restorePatch: { restore: { patch: 123 } },
@@ -42,6 +42,10 @@ export = {
         ],
       },
     }));
+
+    // also make sure a dependency on the barrier is added to the patch construct.
+    test.deepEqual(patch.node.dependencies.map(d => d.target.node.uniqueId), ['MyClusterKubectlReadyBarrier7547948A']);
+
     test.done();
   },
   'defaults to "strategic" patch type if no patchType is specified'(test: Test) {

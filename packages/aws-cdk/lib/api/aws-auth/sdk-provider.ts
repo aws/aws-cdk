@@ -148,7 +148,7 @@ export class SdkProvider {
       params: {
         RoleArn: roleArn,
         ...externalId ? { ExternalId: externalId } : {},
-        RoleSessionName: `aws-cdk-${os.userInfo().username}`,
+        RoleSessionName: `aws-cdk-${safeUsername()}`,
       },
       stsConfig: {
         region,
@@ -362,4 +362,13 @@ function readIfPossible(filename: string): string | undefined {
     debug(e);
     return undefined;
   }
+}
+
+/**
+ * Return the username with characters invalid for a RoleSessionName removed
+ *
+ * @see https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html#API_AssumeRole_RequestParameters
+ */
+function safeUsername() {
+  return os.userInfo().username.replace(/[^\w+=,.@-]/g, '@');
 }

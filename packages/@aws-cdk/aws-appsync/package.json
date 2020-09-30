@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-appsync",
-        "module": "aws_cdk.aws_appsync"
+        "module": "aws_cdk.aws_appsync",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
