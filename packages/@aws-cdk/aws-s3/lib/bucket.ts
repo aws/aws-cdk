@@ -92,6 +92,17 @@ export interface IBucket extends IResource {
   urlForObject(key?: string): string;
 
   /**
+   * The virtual-hosted style URL of an S3 object. For example:
+   * @example https://only-bucket.s3-us-west-1.amazonaws.com
+   * @example https://bucket.s3-us-west-1.amazonaws.com/key
+   * @example https://china-bucket.s3-cn-north-1.amazonaws.com.cn/mykey
+   * @param key The S3 key of the object. If not specified, the URL of the
+   *      bucket is returned.
+   * @returns an ObjectS3Url token
+   */
+  virtualHostedUrlForObject(key?: string): string;
+
+  /**
    * The S3 URL of an S3 object. For example:
    * @example s3://onlybucket
    * @example s3://bucket/key
@@ -480,7 +491,28 @@ abstract class BucketBase extends Resource implements IBucket {
   public urlForObject(key?: string): string {
     const stack = Stack.of(this);
     const prefix = `https://s3.${stack.region}.${stack.urlSuffix}/`;
-    return this.buildUrl(prefix, key);
+    if (typeof key !== 'string') {
+      return this.urlJoin(prefix, this.bucketName);
+    }
+    return this.urlJoin(prefix, this.bucketName, key);
+  }
+
+  /**
+   * The virtual-hosted style URL of an S3 object. For example:
+   * @example https://only-bucket.s3-us-west-1.amazonaws.com
+   * @example https://bucket.s3-us-west-1.amazonaws.com/key
+   * @example https://china-bucket.s3-cn-north-1.amazonaws.com.cn/mykey
+   * @param key The S3 key of the object. If not specified, the URL of the
+   *      bucket is returned.
+   * @returns an ObjectS3Url token
+   */
+  public virtualHostedUrlForObject(key?: string): string {
+    const stack = Stack.of(this);
+    const prefix = `https://${this.bucketName}.s3-${stack.region}.${stack.urlSuffix}`;
+    if (typeof key !== 'string') {
+      return prefix;
+    }
+    return this.urlJoin(prefix, key);
   }
 
   /**
@@ -492,7 +524,11 @@ abstract class BucketBase extends Resource implements IBucket {
    * @returns an ObjectS3Url token
    */
   public s3UrlForObject(key?: string): string {
-    return this.buildUrl('s3://', key);
+    const prefix = 's3://';
+    if (typeof key !== 'string') {
+      return this.urlJoin(prefix, this.bucketName);
+    }
+    return this.urlJoin(prefix, this.bucketName, key);
   }
 
   /**
@@ -622,22 +658,16 @@ abstract class BucketBase extends Resource implements IBucket {
     });
   }
 
-  private buildUrl(prefix: string, key?: string): string {
-    const components = [
-      prefix,
-      this.bucketName,
-    ];
-
-    if (key) {
-      // trim prepending '/'
-      if (typeof key === 'string' && key.startsWith('/')) {
-        key = key.substr(1);
+  private urlJoin(...components: string[]): string {
+    return components.reduce((result, component) => {
+      if (result.endsWith('/')) {
+        result = result.slice(0, -1);
       }
-      components.push('/');
-      components.push(key);
-    }
-
-    return components.join('');
+      if (component.startsWith('/')) {
+        component = component.slice(1);
+      }
+      return `${result}/${component}`;
+    });
   }
 
   private grant(

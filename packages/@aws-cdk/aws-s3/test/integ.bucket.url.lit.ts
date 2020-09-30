@@ -12,6 +12,7 @@ class TestStack extends cdk.Stack {
 
     new cdk.CfnOutput(this, 'BucketURL', { value: bucket.bucketWebsiteUrl });
     new cdk.CfnOutput(this, 'ObjectURL', { value: bucket.urlForObject('myfolder/myfile.txt') });
+    new cdk.CfnOutput(this, 'VirtualHostedObjectURL', { value: bucket.virtualHostedUrlForObject('myfolder/myfile.txt') });
     new cdk.CfnOutput(this, 'S3ObjectURL', { value: bucket.s3UrlForObject('myfolder/myfile.txt') });
     /// !hide
   }
