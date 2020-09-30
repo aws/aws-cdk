@@ -82,7 +82,10 @@ export interface ServerlessClusterProps {
   readonly deletionProtection?: boolean;
 
   /**
-   * Whether to enable the HTTP endpoint for an Aurora Serverless database cluster
+   * Whether to enable the HTTP endpoint for an Aurora Serverless database cluster.
+   * The HTTP endpoint must be explicitly enabled to enable the Data API.
+   *
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/data-api.html
     *
    * @default false
    */
@@ -241,6 +244,7 @@ export interface ServerlessScalingOptions {
   /**
    * The time before an Aurora Serverless database cluster is paused.
    * A database cluster can be paused only when it is idle (it has no connections).
+   * Auto pause time must be between 5 minutes and 1 day.
    *
    * If a DB cluster is paused for more than seven days, the DB cluster might be
    * backed up with a snapshot. In this case, the DB cluster is restored when there
@@ -350,6 +354,7 @@ export class ServerlessCluster extends ServerlessClusterBase {
       credentials = Credentials.fromSecret(new DatabaseSecret(this, 'Secret', {
         username: credentials.username,
         encryptionKey: credentials.encryptionKey,
+        excludeCharacters: credentials.excludeCharacters,
       }));
     }
     const secret = credentials.secret;
@@ -378,7 +383,7 @@ export class ServerlessCluster extends ServerlessClusterBase {
       engine: props.engine.engineType,
       engineVersion: props.engine.engineVersion?.fullVersion,
       engineMode: 'serverless',
-      enableHttpEndpoint: props.enableHttpEndpoint ?? false,
+      enableHttpEndpoint: props.enableHttpEndpoint,
       kmsKeyId: props.storageEncryptionKey?.keyArn,
       masterUsername: credentials.username,
       masterUserPassword: credentials.password?.toString(),
@@ -407,9 +412,6 @@ export class ServerlessCluster extends ServerlessClusterBase {
 
   /**
    * Adds the single user rotation of the master password to this cluster.
-   *
-   * @param [automaticallyAfter=Duration.days(30)] Specifies the number of days after the previous rotation
-   * before Secrets Manager triggers the next automatic rotation.
    */
   public addRotationSingleUser(options: RotationSingleUserOptions = {}): secretsmanager.SecretRotation {
     if (!this.secret) {
@@ -459,11 +461,16 @@ export class ServerlessCluster extends ServerlessClusterBase {
       throw new Error('maximum capacity must be greater than or equal to minimum capacity.');
     }
 
+    const secondsToAutoPause = options.autoPause?.toSeconds();
+    if (secondsToAutoPause && (secondsToAutoPause < 300 || secondsToAutoPause > 86400)) {
+      throw new Error('auto pause time must be between 5 minutes and 1 day.');
+    }
+
     return {
-      autoPause: (options.autoPause?.toSeconds() === 0) ? false : true,
+      autoPause: (secondsToAutoPause === 0) ? false : true,
       minCapacity: options.minCapacity,
       maxCapacity: options.maxCapacity,
-      secondsUntilAutoPause: options.autoPause?.toSeconds(),
+      secondsUntilAutoPause: (secondsToAutoPause === 0) ? undefined : secondsToAutoPause,
     };
   }
 }

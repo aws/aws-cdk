@@ -14,11 +14,11 @@ export = {
     // WHEN
     new ServerlessCluster(stack, 'ServerlessDatabase', {
       engine: DatabaseClusterEngine.AURORA_POSTGRESQL,
+      vpc,
       credentials: {
         username: 'admin',
         password: cdk.SecretValue.plainText('tooshort'),
       },
-      vpc,
       parameterGroup: ParameterGroup.fromParameterGroupName(stack, 'ParameterGroup', 'default.aurora-postgresql10'),
     });
 
@@ -30,7 +30,6 @@ export = {
         DBSubnetGroupName: {
           Ref: 'ServerlessDatabaseSubnets5643CD76',
         },
-        EnableHttpEndpoint: false,
         EngineMode: 'serverless',
         MasterUsername: 'admin',
         MasterUserPassword: 'tooshort',
@@ -59,10 +58,6 @@ export = {
     // WHEN
     new ServerlessCluster(stack, 'ServerlessDatabase', {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
-      credentials: {
-        username: 'admin',
-        password: cdk.SecretValue.plainText('tooshort'),
-      },
       vpc,
     });
 
@@ -74,10 +69,31 @@ export = {
         DBSubnetGroupName: {
           Ref: 'ServerlessDatabaseSubnets5643CD76',
         },
-        EnableHttpEndpoint: false,
         EngineMode: 'serverless',
-        MasterUsername: 'admin',
-        MasterUserPassword: 'tooshort',
+        MasterUsername: {
+          'Fn::Join': [
+            '',
+            [
+              '{{resolve:secretsmanager:',
+              {
+                Ref: 'ServerlessDatabaseSecret1C9BF4F1',
+              },
+              ':SecretString:username::}}',
+            ],
+          ],
+        },
+        MasterUserPassword: {
+          'Fn::Join': [
+            '',
+            [
+              '{{resolve:secretsmanager:',
+              {
+                Ref: 'ServerlessDatabaseSecret1C9BF4F1',
+              },
+              ':SecretString:password::}}',
+            ],
+          ],
+        },
         StorageEncrypted: true,
         VpcSecurityGroupIds: [
           {
@@ -105,10 +121,6 @@ export = {
     // WHEN
     new ServerlessCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA_POSTGRESQL,
-      credentials: {
-        username: 'admin',
-        password: cdk.SecretValue.plainText('tooshort'),
-      },
       vpc,
       securityGroups: [sg],
       parameterGroup: ParameterGroup.fromParameterGroupName(stack, 'ParameterGroup', 'default.aurora-postgresql10'),
@@ -118,11 +130,32 @@ export = {
     expect(stack).to(haveResource('AWS::RDS::DBCluster', {
       Engine: 'aurora-postgresql',
       DBClusterParameterGroupName: 'default.aurora-postgresql10',
-      EnableHttpEndpoint: false,
       EngineMode: 'serverless',
       DBSubnetGroupName: { Ref: 'DatabaseSubnets56F17B9A' },
-      MasterUsername: 'admin',
-      MasterUserPassword: 'tooshort',
+      MasterUsername: {
+        'Fn::Join': [
+          '',
+          [
+            '{{resolve:secretsmanager:',
+            {
+              Ref: 'DatabaseSecret3B817195',
+            },
+            ':SecretString:username::}}',
+          ],
+        ],
+      },
+      MasterUserPassword: {
+        'Fn::Join': [
+          '',
+          [
+            '{{resolve:secretsmanager:',
+            {
+              Ref: 'DatabaseSecret3B817195',
+            },
+            ':SecretString:password::}}',
+          ],
+        ],
+      },
       VpcSecurityGroupIds: ['SecurityGroupId12345'],
     }));
 
@@ -134,7 +167,6 @@ export = {
     const vpc = new ec2.Vpc(stack, 'Vpc');
 
     new ServerlessCluster(stack, 'Cluster', {
-      credentials: { username: 'admin' },
       engine: DatabaseClusterEngine.AURORA_MYSQL,
       vpc,
       removalPolicy: cdk.RemovalPolicy.RETAIN,
@@ -157,7 +189,8 @@ export = {
     new ServerlessCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
       credentials: {
-        username: 'admin',
+        username: 'myuser',
+        excludeCharacters: '"@/\\',
       },
       vpc,
     });
@@ -192,10 +225,10 @@ export = {
 
     expect(stack).to(haveResource('AWS::SecretsManager::Secret', {
       GenerateSecretString: {
-        ExcludeCharacters: " %+~`#$&*()|[]{}:;<>?!'/@\"\\",
+        ExcludeCharacters: '"@/\\',
         GenerateStringKey: 'password',
         PasswordLength: 30,
-        SecretStringTemplate: '{"username":"admin"}',
+        SecretStringTemplate: '{"username":"myuser"}',
       },
     }));
 
@@ -210,9 +243,6 @@ export = {
     // WHEN
     new ServerlessCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
-      credentials: {
-        username: 'admin',
-      },
       vpc,
       storageEncryptionKey: new kms.Key(stack, 'Key'),
     });
@@ -240,9 +270,6 @@ export = {
       engine: DatabaseClusterEngine.auroraPostgres({
         version: AuroraPostgresEngineVersion.VER_10_7,
       }),
-      credentials: {
-        username: 'admin',
-      },
       vpc,
     });
 
@@ -396,10 +423,6 @@ export = {
     // WHEN
     new ServerlessCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
-      credentials: {
-        username: 'admin',
-        password: cdk.SecretValue.plainText('tooshort'),
-      },
       vpc,
       deletionProtection: true,
     });
@@ -407,6 +430,26 @@ export = {
     // THEN
     expect(stack).to(haveResourceLike('AWS::RDS::DBCluster', {
       DeletionProtection: true,
+    }));
+
+    test.done();
+  },
+
+  'can set backup retention'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new ServerlessCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      vpc,
+      backupRetention: cdk.Duration.days(2),
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::RDS::DBCluster', {
+      BackupRetentionPeriod: 2,
     }));
 
     test.done();
@@ -420,9 +463,6 @@ export = {
     // WHEN
     new ServerlessCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
-      credentials: {
-        username: 'admin',
-      },
       vpc,
       vpcSubnets: {
         subnetName: 'DefinitelyDoesNotExist',
@@ -445,10 +485,6 @@ export = {
     // WHEN
     new ServerlessCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
-      credentials: {
-        username: 'admin',
-        password: cdk.SecretValue.plainText('tooshort'),
-      },
       vpc,
       scaling: {
         minCapacity: AuroraCapacityUnit.ACU_1,
@@ -470,6 +506,99 @@ export = {
     test.done();
   },
 
+  'can enable http endpoint'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = ec2.Vpc.fromLookup(stack, 'VPC', { isDefault: true });
+
+    // WHEN
+    new ServerlessCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      vpc,
+      enableHttpEndpoint: true,
+    });
+
+    //THEN
+    expect(stack).to(haveResource('AWS::RDS::DBCluster', {
+      EnableHttpEndpoint: true,
+    }));
+
+    test.done();
+  },
+
+  'default scaling options'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = ec2.Vpc.fromLookup(stack, 'VPC', { isDefault: true });
+
+    // WHEN
+    new ServerlessCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      vpc,
+      scaling: {},
+    });
+
+    //THEN
+    expect(stack).to(haveResource('AWS::RDS::DBCluster', {
+      ScalingConfiguration: {
+        AutoPause: true,
+      },
+    }));
+
+    test.done();
+  },
+
+  'auto pause is disabled if a time of zero is specified'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = ec2.Vpc.fromLookup(stack, 'VPC', { isDefault: true });
+
+    // WHEN
+    new ServerlessCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      vpc,
+      scaling: {
+        autoPause: cdk.Duration.seconds(0),
+      },
+    });
+
+    //THEN
+    expect(stack).to(haveResource('AWS::RDS::DBCluster', {
+      ScalingConfiguration: {
+        AutoPause: false,
+      },
+    }));
+
+    test.done();
+  },
+
+  'throws when invalid auto pause time is specified'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = ec2.Vpc.fromLookup(stack, 'VPC', { isDefault: true });
+
+    // WHEN
+    test.throws(() =>
+      new ServerlessCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
+        vpc,
+        scaling: {
+          autoPause: cdk.Duration.seconds(30),
+        },
+      }), /auto pause time must be between 5 minutes and 1 day./);
+
+    test.throws(() =>
+      new ServerlessCluster(stack, 'Another Database', {
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
+        vpc,
+        scaling: {
+          autoPause: cdk.Duration.days(2),
+        },
+      }), /auto pause time must be between 5 minutes and 1 day./);
+
+    test.done();
+  },
+
   'throws error when min capacity is greater than max capacity'(test: Test) {
     // GIVEN
     const stack = testStack();
@@ -479,10 +608,6 @@ export = {
     test.throws(() =>
       new ServerlessCluster(stack, 'Database', {
         engine: DatabaseClusterEngine.AURORA_MYSQL,
-        credentials: {
-          username: 'admin',
-          password: cdk.SecretValue.plainText('tooshort'),
-        },
         vpc,
         scaling: {
           minCapacity: AuroraCapacityUnit.ACU_2,

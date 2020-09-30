@@ -410,7 +410,7 @@ new rds.OptionGroup(stack, 'Options', {
 ### Serverless
 
 [Amazon Aurora Serverless]((https://aws.amazon.com/rds/aurora/serverless/)) is an on-demand, auto-scaling configuration for Amazon
-Aurora. The databse will automatically start up, shut down, and scale capacity
+Aurora. The database will automatically start up, shut down, and scale capacity
 up or down based on your application's needs. It enables you to run your database
 in the cloud without managing any database instances.
 
@@ -426,11 +426,12 @@ const vpc = new ec2.Vpc(this, 'myrdsvpc');
 
 const cluster = new rds.ServerlessCluster(this, 'AnotherCluster', {
   engine: rds.DatabaseClusterEngine.AURORA_POSTGRESQL,
+  parameterGroup: rds.ParameterGroup.fromParameterGroupName(this, 'ParameterGroup', 'default.aurora-postgresql10'),
   vpc,
   scaling: {
-    autoPause: Duration.minutes(10), // default is 5 minutes
-    minCapacity: 4, // default is 2 ACU
-    maxCapacity: 32, // default is 16 ACU
+    autoPause: Duration.minutes(10), // default is to pause after 5 minutes of idle time
+    minCapacity: rds.AuroraCapacityUnit.ACU_8, // default is 2 Aurora capacity units (ACUs)
+    maxCapacity: rds.AuroraCapacityUnit.ACU_32, // default is 16 Aurora capacity units (ACUs)
   }
 });
 ```

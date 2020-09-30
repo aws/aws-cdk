@@ -419,7 +419,6 @@
         "DBSubnetGroupName": {
           "Ref": "ServerlessDatabaseSubnetsB39719DC"
         },
-        "EnableHttpEndpoint": false,
         "EngineMode": "serverless",
         "MasterUsername": "admin",
         "MasterUserPassword": "7959866cacc02c2d243ecfe177464fe6",
