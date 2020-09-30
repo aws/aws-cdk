@@ -32,7 +32,6 @@ class CognitoStack extends Stack {
       generateSecret: true,
       authFlows: {
         userPassword: true,
-        refreshToken: true,
       },
       oAuth: {
         flows: {
