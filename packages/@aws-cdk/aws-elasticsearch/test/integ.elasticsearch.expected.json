@@ -199,10 +199,12 @@
         "PolicyDocument": {
           "Statement": [
             {
-              "Action": [
-                "logs:PutResourcePolicy",
-                "logs:DeleteResourcePolicy"
-              ],
+              "Action": "logs:PutResourcePolicy",
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": "logs:DeleteResourcePolicy",
               "Effect": "Allow",
               "Resource": "*"
             }

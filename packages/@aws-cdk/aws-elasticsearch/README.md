@@ -143,10 +143,15 @@ policy that allows anyonmous requests, HTTPS required, node to node encryption,
 encryption at rest and fine grained access control.
 
 If the above settings are not set they will be configured as part of enabling
-unsigned basic auth.
+unsigned basic auth. If they are set with conflicting values, an error will be
+thrown.
 
 If no master user is configured a default master user is created with the
 username `admin`.
+
+If no password is configured a default master user password is created and
+stored in the AWS Secrets Manager as secret. The secret has the prefix
+`<domain id>MasterUser`.
 
 ```ts
 const domain = new es.Domain(this, 'Domain', {

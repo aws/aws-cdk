@@ -538,7 +538,7 @@ describe('advanced security options', () => {
               [
                 '{{resolve:secretsmanager:',
                 {
-                  Ref: 'DomainDomainPassword65DAD325',
+                  Ref: 'DomainMasterUserBFAFA7D9',
                 },
                 ':SecretString:password::}}',
               ],
@@ -864,27 +864,6 @@ describe('unsigned basic auth', () => {
     });
 
     expect(stack).toHaveResourceLike('AWS::Elasticsearch::Domain', {
-      AccessPolicies: [{
-        action: ['es:ESHttp*'],
-        principal: {
-          AWS: ['*'],
-        },
-        resource: [{
-          'Fn::Join': [
-            '',
-            [
-              {
-                'Fn::GetAtt': [
-                  'Domain66AC69E0',
-                  'Arn',
-                ],
-              },
-              '/*',
-            ],
-          ],
-        }],
-        effect: 'Allow',
-      }],
       AdvancedSecurityOptions: {
         Enabled: true,
         InternalUserDatabaseEnabled: true,

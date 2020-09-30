@@ -7,7 +7,9 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
+import { ElasticsearchAccessPolicy } from './elasticsearch-access-policy';
 import { CfnDomain } from './elasticsearch.generated';
 import { LogGroupResourcePolicy } from './log-group-resource-policy';
 import * as perms from './perms';
@@ -1096,7 +1098,7 @@ export class Domain extends DomainBase implements IDomain {
    * @param domainEndpoint The domain's endpoint.
    */
   public static fromDomainEndpoint(
-    scope: cdk.Construct,
+    scope: Construct,
     id: string,
     domainEndpoint: string,
   ): IDomain {
@@ -1121,7 +1123,7 @@ export class Domain extends DomainBase implements IDomain {
    * @param id The construct's name.
    * @param attrs A `DomainAttributes` object.
    */
-  public static fromDomainAttributes(scope: cdk.Construct, id: string, attrs: DomainAttributes): IDomain {
+  public static fromDomainAttributes(scope: Construct, id: string, attrs: DomainAttributes): IDomain {
     const { domainArn, domainEndpoint } = attrs;
     const domainName = extractNameFromEndpoint(domainEndpoint);
 
@@ -1167,7 +1169,7 @@ export class Domain extends DomainBase implements IDomain {
 
   private readonly domain: CfnDomain;
 
-  constructor(scope: cdk.Construct, id: string, props: DomainProps) {
+  constructor(scope: Construct, id: string, props: DomainProps) {
     super(scope, id, {
       physicalName: props.domainName,
     });
@@ -1256,7 +1258,7 @@ export class Domain extends DomainBase implements IDomain {
     const internalUserDatabaseEnabled = masterUserName != null;
     const masterUserPasswordProp = props.fineGrainedAccessControl?.masterUserPassword;
     const createMasterUserPassword = (): cdk.SecretValue => {
-      return new secretsmanager.Secret(this, `${id}Password`, {
+      return new secretsmanager.Secret(this, 'MasterUser', {
         generateSecretString: {
           secretStringTemplate: JSON.stringify({
             username: masterUserName,
@@ -1419,9 +1421,6 @@ export class Domain extends DomainBase implements IDomain {
     // Create the domain
     this.domain = new CfnDomain(this, 'Resource', {
       domainName: this.physicalName,
-      accessPolicies: unsignedBasicAuthEnabled
-        ? (props.accessPolicies ?? []).concat(unsignedAccessPolicy)
-        : props.accessPolicies,
       elasticsearchVersion,
       elasticsearchClusterConfig: {
         dedicatedMasterEnabled,
@@ -1505,6 +1504,20 @@ export class Domain extends DomainBase implements IDomain {
       resource: 'domain',
       resourceName: this.physicalName,
     });
+
+    const accessPolicyStatements: iam.PolicyStatement[] | undefined = unsignedBasicAuthEnabled
+      ? (props.accessPolicies ?? []).concat(unsignedAccessPolicy)
+      : props.accessPolicies;
+
+    if (accessPolicyStatements != null) {
+      const accessPolicy = new ElasticsearchAccessPolicy(this, 'ESAccessPolicy', {
+        domainName: this.domainName,
+        domainArn: this.domainArn,
+        accessPolicies: accessPolicyStatements,
+      });
+
+      accessPolicy.node.addDependency(this.domain);
+    }
   }
 }
 
