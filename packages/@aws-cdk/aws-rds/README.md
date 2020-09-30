@@ -194,7 +194,10 @@ const address = instance.instanceEndpoint.socketAddress;   // "HOSTNAME:PORT"
 When the master password is generated and stored in AWS Secrets Manager, it can be rotated automatically:
 
 ```ts
-instance.addRotationSingleUser(); // Will rotate automatically after 30 days
+instance.addRotationSingleUser({
+  automaticallyAfter: cdk.Duration.days(7), // defaults to 30 days
+  excludeCharacters: '!@#$%^&*', // defaults to the set " %+~`#$&*()|[]{}:;<>?!'/@\"\\"
+});
 ```
 
 [example of setting up master password rotation for a cluster](test/integ.cluster-rotation.lit.ts)
@@ -213,6 +216,7 @@ It's also possible to create user credentials together with the instance/cluster
 const myUserSecret = new rds.DatabaseSecret(this, 'MyUserSecret', {
   username: 'myuser',
   masterSecret: instance.secret,
+  excludeCharacters: '{}[]()\'"/\\', // defaults to the set " %+~`#$&*()|[]{}:;<>?!'/@\"\\"
 });
 const myUserSecretAttached = myUserSecret.attach(instance); // Adds DB connections information in the secret
 
