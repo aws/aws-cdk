@@ -71,7 +71,7 @@ export class KubernetesPatch extends Construct {
     super(scope, id);
 
     const stack = Stack.of(this);
-    const provider = KubectlProvider.getOrCreate(scope, props.cluster);
+    const provider = KubectlProvider.getOrCreate(this, props.cluster);
 
     new CustomResource(this, 'Resource', {
       serviceToken: provider.serviceToken,

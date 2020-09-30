@@ -109,6 +109,7 @@ interface InstanceEngineBaseProps {
   readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
   readonly version?: EngineVersion;
   readonly parameterGroupFamily?: string;
+  readonly engineFamily?: string;
   readonly features?: InstanceEngineFeatures;
 }
 
@@ -118,6 +119,7 @@ abstract class InstanceEngineBase implements IInstanceEngine {
   public readonly parameterGroupFamily?: string;
   public readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
   public readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
+  public readonly engineFamily?: string;
 
   private readonly features?: InstanceEngineFeatures;
 
@@ -129,6 +131,7 @@ abstract class InstanceEngineBase implements IInstanceEngine {
     this.engineVersion = props.version;
     this.parameterGroupFamily = props.parameterGroupFamily ??
       (this.engineVersion ? `${this.engineType}${this.engineVersion.majorVersion}` : undefined);
+    this.engineFamily = props.engineFamily;
   }
 
   public bindToInstance(_scope: core.Construct, options: InstanceEngineBindOptions): InstanceEngineConfig {
@@ -391,6 +394,7 @@ class MySqlInstanceEngine extends InstanceEngineBase {
           majorVersion: version.mysqlMajorVersion,
         }
         : undefined,
+      engineFamily: 'MYSQL',
     });
   }
 }
@@ -586,6 +590,7 @@ class PostgresInstanceEngine extends InstanceEngineBase {
         }
         : undefined,
       features: version ? version?._features : { s3Import: 's3Import' },
+      engineFamily: 'POSTGRESQL',
     });
   }
 }

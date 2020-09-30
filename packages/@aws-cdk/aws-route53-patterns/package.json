@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-route53-patterns",
-        "module": "aws_cdk.aws_route53_patterns"
+        "module": "aws_cdk.aws_route53_patterns",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
