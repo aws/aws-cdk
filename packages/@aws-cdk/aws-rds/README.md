@@ -406,3 +406,49 @@ new rds.OptionGroup(stack, 'Options', {
   ],
 });
 ```
+
+### Serverless
+
+[Amazon Aurora Serverless]((https://aws.amazon.com/rds/aurora/serverless/)) is an on-demand, auto-scaling configuration for Amazon
+Aurora. The database will automatically start up, shut down, and scale capacity
+up or down based on your application's needs. It enables you to run your database
+in the cloud without managing any database instances.
+
+The following example initializes an Aurora Serverless PostgreSql cluster.
+Aurora Serverless clusters can specify scaling properties which will be used to
+automatically scale the database cluster seamlessly based on the workload. 
+
+```ts
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as rds from '@aws-cdk/aws-rds';
+
+const vpc = new ec2.Vpc(this, 'myrdsvpc');
+
+const cluster = new rds.ServerlessCluster(this, 'AnotherCluster', {
+  engine: rds.DatabaseClusterEngine.AURORA_POSTGRESQL,
+  parameterGroup: rds.ParameterGroup.fromParameterGroupName(this, 'ParameterGroup', 'default.aurora-postgresql10'),
+  vpc,
+  scaling: {
+    autoPause: Duration.minutes(10), // default is to pause after 5 minutes of idle time
+    minCapacity: rds.AuroraCapacityUnit.ACU_8, // default is 2 Aurora capacity units (ACUs)
+    maxCapacity: rds.AuroraCapacityUnit.ACU_32, // default is 16 Aurora capacity units (ACUs)
+  }
+});
+```
+Aurora Serverless Clusters do not support the following features:
+* Loading data from an Amazon S3 bucket
+* Saving data to an Amazon S3 bucket
+* Invoking an AWS Lambda function with an Aurora MySQL native function
+* Aurora replicas
+* Backtracking
+* Multi-master clusters
+* Database cloning
+* IAM database cloning
+* IAM database authentication
+* Restoring a snapshot from MySQL DB instance
+* Performance Insights
+* RDS Proxy
+
+Read more about the [limitations of Aurora Serverless](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless.html#aurora-serverless.limitations)
+
+Learn more about using Amazon Aurora Serverless by reading the [documentation](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless.html)
