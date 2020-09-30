@@ -1,5 +1,6 @@
 import { Metric, MetricOptions } from '@aws-cdk/aws-cloudwatch';
-import { Construct, Resource } from '@aws-cdk/core';
+import { Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { ILogGroup, MetricFilterOptions } from './log-group';
 import { CfnMetricFilter } from './logs.generated';
 

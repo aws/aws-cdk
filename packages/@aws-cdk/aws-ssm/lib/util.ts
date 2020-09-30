@@ -1,4 +1,5 @@
-import { IConstruct, Stack, Token } from '@aws-cdk/core';
+import { Stack, Token } from '@aws-cdk/core';
+import { IConstruct } from 'constructs';
 
 export const AUTOGEN_MARKER = '$$autogen$$';
 

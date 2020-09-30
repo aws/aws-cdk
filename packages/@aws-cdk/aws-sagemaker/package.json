@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-sagemaker",
-        "module": "aws_cdk.aws_sagemaker"
+        "module": "aws_cdk.aws_sagemaker",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
@@ -50,7 +54,10 @@
   },
   "cdk-build": {
     "cloudformation": "AWS::SageMaker",
-    "jest": true
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "keywords": [
     "aws",
