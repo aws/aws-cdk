@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-codepipeline-actions",
-        "module": "aws_cdk.aws_codepipeline_actions"
+        "module": "aws_cdk.aws_codepipeline_actions",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
