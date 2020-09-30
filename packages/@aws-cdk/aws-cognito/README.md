@@ -566,3 +566,10 @@ const signInUrl = domain.signInUrl(client, {
 })
 ```
 
+Exisiting domains can be imported into CDK apps using `UserPoolDomain.fromDomainName()` API
+
+```ts
+const stack = new Stack(app, 'my-stack');
+
+const myUserPoolDomain = UserPoolDomain.fromDomainName(stack, 'my-user-pool-domain', 'domain-name');
+```
