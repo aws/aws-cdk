@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.cdk-assets-schema",
-        "module": "aws_cdk.cdk_assets_schema"
+        "module": "aws_cdk.cdk_assets_schema",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
@@ -48,9 +52,9 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@types/semver": "^7.2.0",
-    "@types/jest": "^26.0.10",
+    "@types/jest": "^26.0.14",
     "cdk-build-tools": "0.0.0",
-    "jest": "^25.5.4",
+    "jest": "^26.4.2",
     "pkglint": "0.0.0"
   },
   "repository": {

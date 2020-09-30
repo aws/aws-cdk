@@ -10,10 +10,10 @@ function joined(str: string): string {
 
 // GLOBAL GIVEN
 let stack: cdk.Stack;
-let api: appsync.GraphQLApi;
+let api: appsync.GraphqlApi;
 beforeEach(() => {
   stack = new cdk.Stack();
-  api = new appsync.GraphQLApi(stack, 'baseApi', {
+  api = new appsync.GraphqlApi(stack, 'baseApi', {
     name: 'api',
     schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
   });
@@ -75,7 +75,7 @@ describe('DynamoDb Data Source configuration', () => {
     expect(() => {
       api.addDynamoDbDataSource('ds', table);
       api.addDynamoDbDataSource('ds', table);
-    }).toThrow("There is already a Construct with name 'ds' in GraphQLApi [baseApi]");
+    }).toThrow("There is already a Construct with name 'ds' in GraphqlApi [baseApi]");
   });
 });
 
@@ -160,7 +160,7 @@ describe('adding DynamoDb data source from imported api', () => {
 
   test('imported api can add DynamoDbDataSource from id', () => {
     // WHEN
-    const importedApi = appsync.GraphQLApi.fromGraphqlApiAttributes(stack, 'importedApi', {
+    const importedApi = appsync.GraphqlApi.fromGraphqlApiAttributes(stack, 'importedApi', {
       graphqlApiId: api.apiId,
     });
     importedApi.addDynamoDbDataSource('ds', table);
@@ -174,7 +174,7 @@ describe('adding DynamoDb data source from imported api', () => {
 
   test('imported api can add DynamoDbDataSource from attributes', () => {
     // WHEN
-    const importedApi = appsync.GraphQLApi.fromGraphqlApiAttributes(stack, 'importedApi', {
+    const importedApi = appsync.GraphqlApi.fromGraphqlApiAttributes(stack, 'importedApi', {
       graphqlApiId: api.apiId,
       graphqlApiArn: api.arn,
     });

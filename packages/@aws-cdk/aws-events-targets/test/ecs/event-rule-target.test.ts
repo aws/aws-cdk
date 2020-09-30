@@ -403,3 +403,50 @@ test('uses existing IAM role', () => {
     ],
   });
 });
+
+test('uses the specific fargate platform version', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
+  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+  const platformVersion = ecs.FargatePlatformVersion.VERSION1_4;
+
+  const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
+  taskDefinition.addContainer('TheContainer', {
+    image: ecs.ContainerImage.fromRegistry('henk'),
+  });
+
+  const rule = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.expression('rate(1 min)'),
+  });
+
+  // WHEN
+  rule.addTarget(new targets.EcsTask({
+    cluster,
+    taskDefinition,
+    taskCount: 1,
+    containerOverrides: [{
+      containerName: 'TheContainer',
+      command: ['echo', events.EventField.fromPath('$.detail.event')],
+    }],
+    platformVersion,
+  }));
+
+  // THEN
+  expect(stack).toHaveResourceLike('AWS::Events::Rule', {
+    Targets: [
+      {
+        Arn: { 'Fn::GetAtt': ['EcsCluster97242B84', 'Arn'] },
+        EcsParameters: {
+          LaunchType: 'FARGATE',
+          TaskCount: 1,
+          TaskDefinitionArn: {
+            Ref: 'TaskDef54694570',
+          },
+          PlatformVersion: '1.4.0',
+        },
+        Id: 'Target0',
+      },
+    ],
+  });
+});

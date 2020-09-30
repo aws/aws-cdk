@@ -207,6 +207,7 @@ new cloudfront.Distribution(this, 'myDist', {
         {
           functionVersion: myFunc.currentVersion,
           eventType: cloudfront.LambdaEdgeEventType.ORIGIN_REQUEST,
+          includeBody: true, // Optional - defaults to false
         },
       ],
     },
@@ -221,6 +222,24 @@ myDistribution.addBehavior('images/*', myOrigin, {
       eventType: cloudfront.LambdaEdgeEventType.VIEWER_RESPONSE,
     },
   ],
+});
+```
+
+Adding an existing Lambda@Edge function created in a different stack to a CloudFront distribution.
+
+```ts
+const functionVersion = lambda.Version.fromVersionArn(this, 'Version', 'arn:aws:lambda:us-east-1:123456789012:function:functionName:1');
+
+new cloudfront.Distribution(this, 'distro', {
+  defaultBehavior: {
+    origin: new origins.S3Origin(s3Bucket),
+    edgeLambdas: [
+       {
+         functionVersion,
+         eventType: cloudfront.LambdaEdgeEventType.VIEWER_REQUEST
+       },
+    ],
+  },
 });
 ```
 

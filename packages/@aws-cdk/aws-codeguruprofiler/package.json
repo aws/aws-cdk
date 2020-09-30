@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-codeguruprofiler",
-        "module": "aws_cdk.aws_codeguruprofiler"
+        "module": "aws_cdk.aws_codeguruprofiler",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
@@ -50,7 +54,10 @@
   },
   "cdk-build": {
     "cloudformation": "AWS::CodeGuruProfiler",
-    "jest": true
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "keywords": [
     "aws",
@@ -75,7 +82,8 @@
   "dependencies": {
     "constructs": "^3.0.4",
     "@aws-cdk/aws-iam": "0.0.0",
-    "@aws-cdk/core": "0.0.0"
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^3.0.4"
   },
   "peerDependencies": {
     "@aws-cdk/core": "0.0.0",

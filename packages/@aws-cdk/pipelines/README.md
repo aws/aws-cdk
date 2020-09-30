@@ -102,6 +102,26 @@ following to `cdk.json`:
 }
 ```
 
+## A note on cost
+
+By default, the `CdkPipeline` construct creates an AWS Key Management Service
+(AWS KMS) Customer Master Key (CMK) for you to encrypt the artifacts in the
+artifact bucket, which incurs a cost of
+**$1/month**. This default configuration is necessary to allow cross-account
+deployments.
+
+If you do not intend to perform cross-account deployments, you can disable
+the creation of the Customer Master Keys by passing `crossAccountKeys: false`
+when defining the Pipeline:
+
+```ts
+const pipeline = new pipelines.CdkPipeline(this, 'Pipeline', {
+  crossAccountKeys: false,
+
+  // ...
+});
+```
+
 ## Defining the Pipeline (Source and Synth)
 
 The pipeline is defined by instantiating `CdkPipeline` in a Stack. This defines the
@@ -135,6 +155,9 @@ class MyPipelineStack extends Stack {
         sourceArtifact,
         cloudAssemblyArtifact,
 
+        // Optionally specify a VPC in which the action runs
+        vpc: new ec2.Vpc(this, 'NpmSynthVpc'),
+
         // Use this if you need a build step (if you're not using ts-node
         // or if you have TypeScript Lambdas that need to be compiled).
         buildCommand: 'npm run build',
@@ -149,6 +172,29 @@ new MyPipelineStack(this, 'PipelineStack', {
     account: '111111111111',
     region: 'eu-west-1',
   }
+});
+```
+
+If you prefer more control over the underlying CodePipeline object, you can
+create one yourself, including custom Source and Build stages:
+
+```ts
+const codePipeline = new cp.Pipeline(pipelineStack, 'CodePipeline', {
+  stages: [
+    {
+      stageName: 'CustomSource',
+      actions: [...],
+    },
+    {
+      stageName: 'CustomBuild',
+      actions: [...],
+    },
+  ],
+});
+
+const cdkPipeline = new CdkPipeline(this, 'CdkPipeline', {
+  codePipeline,
+  cloudAssemblyArtifact,
 });
 ```
 
@@ -199,8 +245,8 @@ const pipeline = new CdkPipeline(this, 'Pipeline', {
   synthAction: new SimpleSynthAction({
     sourceArtifact,
     cloudAssemblyArtifact,
-    installCommand: 'npm install -g aws-cdk',
-    buildCommand: 'mvn package',
+    installCommands: ['npm install -g aws-cdk'],
+    buildCommands: ['mvn package'],
     synthCommand: 'cdk synth',
   })
 });
@@ -305,6 +351,8 @@ const stage = pipeline.addApplicationStage(new MyApplication(/* ... */));
 stage.addActions(new ShellScriptAction({
   actionName: 'MyValidation',
   commands: ['curl -Ssf https://my.webservice.com/'],
+  // Optionally specify a VPC if, for example, the service is deployed with a private load balancer
+  vpc,
   // ... more configuration ...
 }));
 ```
@@ -361,6 +409,34 @@ files from several sources:
 * Directoy from the source repository
 * Additional compiled artifacts from the synth step
 
+### Controlling IAM permissions
+
+IAM permissions can be added to the execution role of a `ShellScriptAction` in
+two ways.
+
+Either pass additional policy statements in the `rolePolicyStatements` property:
+
+```ts
+new ShellScriptAction({
+  // ...
+  rolePolicyStatements: [
+    new iam.PolicyStatement({
+      actions: ['s3:GetObject'],
+      resources: ['*'],
+    }),
+  ],
+}));
+```
+
+The Action can also be used as a Grantable after having been added to a Pipeline:
+
+```ts
+const action = new ShellScriptAction({ /* ... */ });
+pipeline.addStage('Test').addActions(action);
+
+bucket.grantRead(action);
+```
+
 #### Additional files from the source repository
 
 Bringing in additional files from the source repository is appropriate if the
@@ -402,7 +478,7 @@ const pipeline = new CdkPipeline(this, 'Pipeline', {
   synthAction: SimpleSynthAction.standardNpmSynth({
     sourceArtifact,
     cloudAssemblyArtifact,
-    buildCommand: 'npm run build',
+    buildCommands: ['npm run build'],
     additionalArtifacts: [
       {
         directory: 'test',
@@ -449,7 +525,10 @@ class MyPipelineStack extends Stack {
         // Then you can login to codeartifact repository
         // and npm will now pull packages from your repository
         // Note the codeartifact login command requires more params to work.
-        buildCommand: 'aws codeartifact login --tool npm && npm run build',
+        buildCommands: [
+          'aws codeartifact login --tool npm',
+          'npm run build',
+        ],
       }),
     });
   }

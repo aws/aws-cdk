@@ -36,11 +36,11 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@types/fs-extra": "^8.1.1",
-    "@types/semver": "^7.3.3",
+    "@types/semver": "^7.3.4",
     "@types/glob": "^7.1.2",
     "@types/yargs": "^15.0.5",
     "tslint": "^5.20.1",
-    "jest": "^25.5.4",
+    "jest": "^26.4.2",
     "typescript": "~3.9.7",
     "@typescript-eslint/eslint-plugin": "^3.6.1",
     "@typescript-eslint/parser": "^2.19.2",
@@ -57,7 +57,7 @@
     "colors": "^1.4.0",
     "fs-extra": "^9.0.1",
     "glob": "^7.1.6",
-    "semver": "^7.2.2",
-    "yargs": "^15.4.1"
+    "semver": "^7.3.2",
+    "yargs": "^16.0.3"
   }
 }

@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { ABSENT, expect, haveResource, MatchStyle, ResourcePart } from '@aws-cdk/assert';
+import { ABSENT, expect, haveResource, MatchStyle, ResourcePart, arrayWith, objectLike } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
@@ -283,6 +283,59 @@ export = {
     // THEN
     test.deepEqual(imported.functionArn, 'arn:aws:lambda:us-east-1:123456789012:function:ProcessKinesisRecords');
     test.deepEqual(imported.functionName, 'ProcessKinesisRecords');
+    expect(stack2).notTo(haveResource('AWS::Lambda::Permission'));
+    test.done();
+  },
+
+  'imported Function w/ resolved account and function arn can addPermissions'(test: Test) {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Imports', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+    const stack2 = new cdk.Stack(app, 'imported', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+    new lambda.Function(stack, 'BaseFunction', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_10_X,
+    });
+
+    // WHEN
+    const iFunc = lambda.Function.fromFunctionAttributes(stack2, 'iFunc', {
+      functionArn: 'arn:aws:lambda:us-east-1:123456789012:function:BaseFunction',
+    });
+    iFunc.addPermission('iFunc', {
+      principal: new iam.ServicePrincipal('cloudformation.amazonaws.com'),
+    });
+
+    // THEN
+    expect(stack2).to(haveResource('AWS::Lambda::Permission'));
+    test.done();
+  },
+
+  'imported Function w/o account cannot addPermissions'(test: Test) {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Base');
+    const importedStack = new cdk.Stack(app, 'Imported');
+    new lambda.Function(stack, 'BaseFunction', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_10_X,
+    });
+
+    // WHEN
+    const iFunc = lambda.Function.fromFunctionAttributes(importedStack, 'iFunc', {
+      functionArn: 'arn:aws:lambda:us-east-1:123456789012:function:BaseFunction',
+    });
+    iFunc.addPermission('iFunc', {
+      principal: new iam.ServicePrincipal('cloudformation.amazonaws.com'),
+    });
+
+    // THEN
+    expect(importedStack).notTo(haveResource('AWS::Lambda::Permission'));
     test.done();
   },
 
@@ -1166,6 +1219,66 @@ export = {
 
       test.done();
     },
+  },
+
+  'grantInvoke with an imported role (in the same account)'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, undefined, {
+      env: { account: '123456789012' },
+    });
+    const fn = new lambda.Function(stack, 'Function', {
+      code: lambda.Code.fromInline('xxx'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_10_X,
+    });
+
+    // WHEN
+    fn.grantInvoke(iam.Role.fromRoleArn(stack, 'ForeignRole', 'arn:aws:iam::123456789012:role/someRole'));
+
+    // THEN
+    expect(stack).to(haveResource('AWS::IAM::Policy', {
+      PolicyDocument: objectLike({
+        Statement: arrayWith(
+          {
+            Action: 'lambda:InvokeFunction',
+            Effect: 'Allow',
+            Resource: { 'Fn::GetAtt': ['Function76856677', 'Arn'] },
+          },
+        ),
+      }),
+      Roles: ['someRole'],
+    }));
+
+    test.done();
+  },
+
+  'grantInvoke with an imported role (from a different account)'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, undefined, {
+      env: { account: '3333' },
+    });
+    const fn = new lambda.Function(stack, 'Function', {
+      code: lambda.Code.fromInline('xxx'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_10_X,
+    });
+
+    // WHEN
+    fn.grantInvoke(iam.Role.fromRoleArn(stack, 'ForeignRole', 'arn:aws:iam::123456789012:role/someRole'));
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::Permission', {
+      Action: 'lambda:InvokeFunction',
+      FunctionName: {
+        'Fn::GetAtt': [
+          'Function76856677',
+          'Arn',
+        ],
+      },
+      Principal: 'arn:aws:iam::123456789012:role/someRole',
+    }));
+
+    test.done();
   },
 
   'Can use metricErrors on a lambda Function'(test: Test) {

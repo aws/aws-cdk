@@ -3,6 +3,7 @@ import { IRole, ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { Construct, IResource, Resource } from '@aws-cdk/core';
 import { Cluster, ICluster } from './cluster';
 import { CfnNodegroup } from './eks.generated';
+import { INSTANCE_TYPES } from './instance-types';
 
 /**
  * NodeGroup interface
@@ -22,13 +23,17 @@ export interface INodegroup extends IResource {
  */
 export enum NodegroupAmiType {
   /**
-   * Amazon Linux 2
+   * Amazon Linux 2 (x86-64)
    */
   AL2_X86_64 = 'AL2_x86_64',
   /**
    * Amazon Linux 2 with GPU support
    */
   AL2_X86_64_GPU = 'AL2_x86_64_GPU',
+  /**
+   * Amazon Linux 2 (ARM-64)
+   */
+  AL2_ARM_64 = 'AL2_ARM_64'
 }
 
 /**
@@ -49,6 +54,22 @@ export interface NodegroupRemoteAccess {
    * @default - port 22 on the worker nodes is opened to the internet (0.0.0.0/0)
    */
   readonly sourceSecurityGroups?: ISecurityGroup[];
+}
+
+/**
+ * Launch template property specification
+ */
+export interface LaunchTemplateSpec {
+  /**
+   * The Launch template ID
+   */
+  readonly id: string;
+  /**
+   * The launch template version to be used (optional).
+   *
+   * @default - the default version of the launch template
+   */
+  readonly version?: string;
 }
 
 /**
@@ -73,7 +94,7 @@ export interface NodegroupOptions {
   /**
    * The AMI type for your node group.
    *
-   * @default AL2_x86_64
+   * @default - auto-determined from the instanceType property.
    */
   readonly amiType?: NodegroupAmiType;
   /**
@@ -155,6 +176,12 @@ export interface NodegroupOptions {
    * @default - None
    */
   readonly tags?: { [name: string]: string };
+  /**
+   * Launch template specification used for the nodegroup
+   * @see - https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html
+   * @default - no launch template
+   */
+  readonly launchTemplateSpec?: LaunchTemplateSpec;
 }
 
 /**
@@ -243,7 +270,8 @@ export class Nodegroup extends Resource implements INodegroup {
       nodegroupName: props.nodegroupName,
       nodeRole: this.role.roleArn,
       subnets: this.cluster.vpc.selectSubnets(props.subnets).subnetIds,
-      amiType: props.amiType,
+      amiType: props.amiType ?? (props.instanceType ? getAmiTypeForInstanceType(props.instanceType).toString() :
+        undefined),
       diskSize: props.diskSize,
       forceUpdateEnabled: props.forceUpdate ?? true,
       instanceTypes: props.instanceType ? [props.instanceType.toString()] : undefined,
@@ -261,6 +289,25 @@ export class Nodegroup extends Resource implements INodegroup {
       },
       tags: props.tags,
     });
+
+    if (props.launchTemplateSpec) {
+      if (props.diskSize) {
+        // see - https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html
+        // and https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eks-nodegroup.html#cfn-eks-nodegroup-disksize
+        throw new Error('diskSize must be specified within the launch template');
+      }
+      if (props.instanceType) {
+        // see - https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html
+        // and https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eks-nodegroup.html#cfn-eks-nodegroup-disksize
+        throw new Error('Instance types must be specified within the launch template');
+      }
+      // TODO: update this when the L1 resource spec is updated.
+      resource.addPropertyOverride('LaunchTemplate', {
+        Id: props.launchTemplateSpec.id,
+        Version: props.launchTemplateSpec.version,
+      });
+    }
+
 
     // managed nodegroups update the `aws-auth` on creation, but we still need to track
     // its state for consistency.
@@ -282,5 +329,13 @@ export class Nodegroup extends Resource implements INodegroup {
     });
     this.nodegroupName = this.getResourceNameAttribute(resource.ref);
   }
-
 }
+
+function getAmiTypeForInstanceType(instanceType: InstanceType) {
+  return INSTANCE_TYPES.graviton2.includes(instanceType.toString().substring(0, 3)) ? NodegroupAmiType.AL2_ARM_64 :
+    INSTANCE_TYPES.graviton.includes(instanceType.toString().substring(0, 2)) ? NodegroupAmiType.AL2_ARM_64 :
+      INSTANCE_TYPES.gpu.includes(instanceType.toString().substring(0, 2)) ? NodegroupAmiType.AL2_X86_64_GPU :
+        INSTANCE_TYPES.inferentia.includes(instanceType.toString().substring(0, 4)) ? NodegroupAmiType.AL2_X86_64_GPU :
+          NodegroupAmiType.AL2_X86_64;
+}
+

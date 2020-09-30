@@ -2,6 +2,7 @@ import * as path from 'path';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { RetentionDays } from './log-group';
 
 /**
@@ -12,6 +13,12 @@ export interface LogRetentionProps {
    * The log group name.
    */
   readonly logGroupName: string;
+
+  /**
+   * The region where the log group should be created
+   * @default - same region as the stack
+   */
+  readonly logGroupRegion?: string;
 
   /**
    * The number of days log events are kept in CloudWatch Logs.
@@ -55,6 +62,8 @@ export interface LogRetentionRetryOptions {
  * Creates a custom resource to control the retention policy of a CloudWatch Logs
  * log group. The log group is created if it doesn't already exist. The policy
  * is removed when `retentionDays` is `undefined` or equal to `Infinity`.
+ * Log group can be created in the region that is different from stack region by
+ * specifying `logGroupRegion`
  */
 export class LogRetention extends cdk.Construct {
 
@@ -63,7 +72,7 @@ export class LogRetention extends cdk.Construct {
    */
   public readonly logGroupArn: string;
 
-  constructor(scope: cdk.Construct, id: string, props: LogRetentionProps) {
+  constructor(scope: Construct, id: string, props: LogRetentionProps) {
     super(scope, id);
 
     // Custom resource provider
@@ -77,6 +86,7 @@ export class LogRetention extends cdk.Construct {
       properties: {
         ServiceToken: provider.functionArn,
         LogGroupName: props.logGroupName,
+        LogGroupRegion: props.logGroupRegion,
         SdkRetry: retryOptions ? {
           maxRetries: retryOptions.maxRetries,
           base: retryOptions.base?.toMilliseconds(),
@@ -89,6 +99,7 @@ export class LogRetention extends cdk.Construct {
     // Append ':*' at the end of the ARN to match with how CloudFormation does this for LogGroup ARNs
     // See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-loggroup.html#aws-resource-logs-loggroup-return-values
     this.logGroupArn = cdk.Stack.of(this).formatArn({
+      region: props.logGroupRegion,
       service: 'logs',
       resource: 'log-group',
       resourceName: `${logGroupName}:*`,
@@ -116,7 +127,7 @@ export class LogRetention extends cdk.Construct {
 class LogRetentionFunction extends cdk.Construct {
   public readonly functionArn: cdk.Reference;
 
-  constructor(scope: cdk.Construct, id: string, props: LogRetentionProps) {
+  constructor(scope: Construct, id: string, props: LogRetentionProps) {
     super(scope, id);
 
     // Code

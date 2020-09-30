@@ -1,6 +1,10 @@
-import { anything, arrayWith, deepObjectLike, encodedJson, objectLike, stringLike } from '@aws-cdk/assert';
+import * as fs from 'fs';
+import * as path from 'path';
+import { anything, arrayWith, Capture, deepObjectLike, encodedJson, objectLike, stringLike } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
-import { Construct, Stack, Stage, StageProps } from '@aws-cdk/core';
+import * as cp from '@aws-cdk/aws-codepipeline';
+import * as cpa from '@aws-cdk/aws-codepipeline-actions';
+import { Construct, Stack, Stage, StageProps, SecretValue, Tags } from '@aws-cdk/core';
 import * as cdkp from '../lib';
 import { BucketStack, PIPELINE_ENV, stackTemplate, TestApp, TestGitHubNpmPipeline } from './testutil';
 
@@ -38,6 +42,13 @@ test('references stack template in subassembly', () => {
       ),
     }),
   });
+});
+
+test('obvious error is thrown when stage contains no stacks', () => {
+  // WHEN
+  expect(() => {
+    pipeline.addApplicationStage(new Stage(app, 'EmptyStage'));
+  }).toThrow(/should contain at least one Stack/);
 });
 
 test('action has right settings for same-env deployment', () => {
@@ -371,6 +382,62 @@ test('can control fix/CLI version used in pipeline selfupdate', () => {
       })),
     },
   });
+});
+
+test('add another action to an existing stage', () => {
+  // WHEN
+  pipeline.stage('Source').addAction(new cpa.GitHubSourceAction({
+    actionName: 'GitHub2',
+    oauthToken: SecretValue.plainText('oops'),
+    output: new cp.Artifact(),
+    owner: 'OWNER',
+    repo: 'REPO',
+  }));
+
+  // THEN
+  expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+    Stages: arrayWith({
+      Name: 'Source',
+      Actions: [
+        objectLike({ Name: 'GitHub' }),
+        objectLike({ Name: 'GitHub2' }),
+      ],
+    }),
+  });
+});
+
+test('tags get reflected in pipeline', () => {
+  // WHEN
+  const stage = new OneStackApp(app, 'App');
+  Tags.of(stage).add('CostCenter', 'F00B4R');
+  pipeline.addApplicationStage(stage);
+
+  // THEN
+  const templateConfig = Capture.aString();
+  expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+    Stages: arrayWith({
+      Name: 'App',
+      Actions: arrayWith(
+        objectLike({
+          Name: 'Stack.Prepare',
+          InputArtifacts: [objectLike({})],
+          Configuration: objectLike({
+            StackName: 'App-Stack',
+            TemplateConfiguration: templateConfig.capture(stringLike('*::assembly-App/*.template.*json')),
+          }),
+        }),
+      ),
+    }),
+  });
+
+  const [, relConfigFile] = templateConfig.capturedValue.split('::');
+  const absConfigFile = path.join(app.outdir, relConfigFile);
+  const configFile = JSON.parse(fs.readFileSync(absConfigFile, { encoding: 'utf-8' }));
+  expect(configFile).toEqual(expect.objectContaining({
+    Tags: {
+      CostCenter: 'F00B4R',
+    },
+  }));
 });
 
 class OneStackApp extends Stage {

@@ -140,7 +140,7 @@ describe('CDK Include', () => {
         "Bucket1": {
           "Type": "AWS::S3::Bucket",
           "Properties": {
-            "BucketName": { "Fn::GetAtt": ["Bucket0", "Arn"] },
+            "BucketName": { "Fn::GetAtt": "Bucket0.Arn" },
             "AccessControl": { "Fn::GetAtt": ["ELB", "SourceSecurityGroup.GroupName"] },
           },
         },
@@ -148,7 +148,7 @@ describe('CDK Include', () => {
           "Type": "AWS::S3::Bucket",
           "Properties": {
             "BucketName": { "Fn::GetAtt": ["Bucket1", "Arn"] },
-            "AccessControl": { "Fn::GetAtt": ["ELB", "SourceSecurityGroup.GroupName"] },
+            "AccessControl": { "Fn::GetAtt": "ELB.SourceSecurityGroup.GroupName" },
           },
         },
       },
@@ -254,8 +254,8 @@ describe('CDK Include', () => {
     });
   });
 
-  // Note that this yaml template fails validation. It is unclear how to invoke !Transform.
   test('can ingest a template with the short form !Transform function', () => {
+    // Note that this yaml template fails validation. It is unclear how to invoke !Transform.
     includeTestTemplate(stack, 'invalid/short-form-transform.yaml');
 
     expect(stack).toMatchTemplate({

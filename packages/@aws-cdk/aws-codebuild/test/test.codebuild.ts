@@ -153,6 +153,7 @@ export = {
                 'Image': 'aws/codebuild/standard:1.0',
                 'ComputeType': 'BUILD_GENERAL1_SMALL',
               },
+              'EncryptionKey': 'alias/aws/s3',
             },
           },
         },
@@ -331,6 +332,7 @@ export = {
                 'GitCloneDepth': 2,
                 'Type': 'CODECOMMIT',
               },
+              'EncryptionKey': 'alias/aws/s3',
             },
           },
         },
@@ -532,6 +534,7 @@ export = {
                 },
                 'Type': 'S3',
               },
+              'EncryptionKey': 'alias/aws/s3',
             },
           },
         },
@@ -546,6 +549,7 @@ export = {
           owner: 'testowner',
           repo: 'testrepo',
           cloneDepth: 3,
+          fetchSubmodules: true,
           webhook: true,
           reportBuildStatus: false,
           webhookFilters: [
@@ -561,6 +565,9 @@ export = {
           Location: 'https://github.com/testowner/testrepo.git',
           ReportBuildStatus: false,
           GitCloneDepth: 3,
+          GitSubmodulesConfig: {
+            FetchSubmodules: true,
+          },
         },
       }));
 
@@ -792,6 +799,21 @@ export = {
 
       test.throws(() => project.connections,
         /Only VPC-associated Projects have security groups to manage. Supply the "vpc" parameter when creating the Project/);
+
+      test.done();
+    },
+
+    'no KMS Key defaults to default S3 managed key'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      new codebuild.PipelineProject(stack, 'MyProject');
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+        EncryptionKey: 'alias/aws/s3',
+      }));
 
       test.done();
     },
@@ -1032,12 +1054,6 @@ export = {
         buildSpec: codebuild.BuildSpec.fromObject({
           version: '0.2',
         }),
-        fileSystemLocations: [codebuild.FileSystemLocation.efs({
-          identifier: 'myidentifier2',
-          location: 'myclodation.mydnsroot.com:/loc',
-          mountPoint: '/media',
-          mountOptions: 'opts',
-        })],
       });
       project.addFileSystemLocation(codebuild.FileSystemLocation.efs({
         identifier: 'myidentifier3',
@@ -1048,13 +1064,6 @@ export = {
 
       expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
         'FileSystemLocations': [
-          {
-            'Identifier': 'myidentifier2',
-            'MountPoint': '/media',
-            'MountOptions': 'opts',
-            'Location': 'myclodation.mydnsroot.com:/loc',
-            'Type': 'EFS',
-          },
           {
             'Identifier': 'myidentifier3',
             'MountPoint': '/media',

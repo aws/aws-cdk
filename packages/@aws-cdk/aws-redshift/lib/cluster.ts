@@ -3,11 +3,13 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { Construct, Duration, IResource, RemovalPolicy, Resource, SecretValue, Token } from '@aws-cdk/core';
+import { Duration, IResource, RemovalPolicy, Resource, SecretValue, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { IClusterParameterGroup } from './parameter-group';
-import { CfnCluster, CfnClusterSubnetGroup } from './redshift.generated';
+import { CfnCluster } from './redshift.generated';
+import { ClusterSubnetGroup, IClusterSubnetGroup } from './subnet-group';
 
 /**
  * Possible Node Types to use in the cluster
@@ -245,16 +247,23 @@ export interface ClusterProps {
   /**
    * Where to place the instances within the VPC
    *
-   * @default private subnets
+   * @default - private subnets
    */
   readonly vpcSubnets?: ec2.SubnetSelection;
 
   /**
    * Security group.
    *
-   * @default a new security group is created.
+   * @default - a new security group is created.
    */
   readonly securityGroups?: ec2.ISecurityGroup[];
+
+  /**
+   * A cluster subnet group to use with this cluster.
+   *
+   * @default - a new subnet group will be created.
+   */
+  readonly subnetGroup?: IClusterSubnetGroup;
 
   /**
    * Username and password for the administrative user
@@ -396,15 +405,11 @@ export class Cluster extends ClusterBase {
 
     const removalPolicy = props.removalPolicy ? props.removalPolicy : RemovalPolicy.RETAIN;
 
-    const { subnetIds } = this.vpc.selectSubnets(this.vpcSubnets);
-
-    const subnetGroup = new CfnClusterSubnetGroup(this, 'Subnets', {
+    const subnetGroup = props.subnetGroup ?? new ClusterSubnetGroup(this, 'Subnets', {
       description: `Subnets for ${id} Redshift cluster`,
-      subnetIds,
-    });
-
-    subnetGroup.applyRemovalPolicy(removalPolicy, {
-      applyToUpdateReplacePolicy: true,
+      vpc: this.vpc,
+      vpcSubnets: this.vpcSubnets,
+      removalPolicy: removalPolicy,
     });
 
     const securityGroups = props.securityGroups !== undefined ?
@@ -448,7 +453,7 @@ export class Cluster extends ClusterBase {
       automatedSnapshotRetentionPeriod: 1,
       clusterType,
       clusterIdentifier: props.clusterName,
-      clusterSubnetGroupName: subnetGroup.ref,
+      clusterSubnetGroupName: subnetGroup.clusterSubnetGroupName,
       vpcSecurityGroupIds: securityGroupIds,
       port: props.port,
       clusterParameterGroupName: props.parameterGroup && props.parameterGroup.clusterParameterGroupName,

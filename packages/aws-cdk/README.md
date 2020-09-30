@@ -223,7 +223,7 @@ Example `outputs.json` after deployment of multiple stacks
   },
   "AnotherStack": {
     "VPCId": "vpc-z0mg270fee16693f"
-  }  
+  }
 }
 ```
 
@@ -277,8 +277,22 @@ $ # Deploys only to environments foo and bar
 $ cdk bootstrap --app='node bin/main.js' foo bar
 ```
 
-By default, bootstrap stack will be protected from stack termination. This can be disabled using 
+By default, bootstrap stack will be protected from stack termination. This can be disabled using
 `--termination-protection` argument.
+
+If you have specific needs, policies, or requirements not met by the default template, you can customize it
+to fit your own situation, by exporting the default one to a file and either deploying it yourself
+using CloudFormation directly, or by telling the CLI to use a custom template. That looks as follows:
+
+```console
+# Dump the built-in template to a file
+$ cdk bootstrap --show-template > bootstrap-template.yaml
+
+# Edit 'bootstrap-template.yaml' to your liking
+
+# Tell CDK to use the customized template
+$ cdk bootstrap --template bootstrap-template.yaml
+```
 
 #### `cdk doctor`
 Inspect the current command-line environment and configurations, and collect information that can be useful for
@@ -292,6 +306,11 @@ $ cdk doctor
   - AWS_EC2_METADATA_DISABLED = 1
   - AWS_SDK_LOAD_CONFIG = 1
 ```
+
+#### Bundling
+By default asset bundling is skipped for `cdk list` and `cdk destroy`. For `cdk deploy`, `cdk diff`
+and `cdk synthesize` the default is to bundle assets for all stacks unless `exclusively` is specified.
+In this case, only the listed stacks will have their assets bundled.
 
 ### MFA support
 

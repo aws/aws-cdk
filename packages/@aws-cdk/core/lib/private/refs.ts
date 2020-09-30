@@ -7,6 +7,7 @@ import { CfnElement } from '../cfn-element';
 import { CfnOutput } from '../cfn-output';
 import { CfnParameter } from '../cfn-parameter';
 import { Construct, IConstruct } from '../construct-compat';
+import { FeatureFlags } from '../feature-flags';
 import { Reference } from '../reference';
 import { IResolvable } from '../resolvable';
 import { Stack } from '../stack';
@@ -201,7 +202,7 @@ function getCreateExportsScope(stack: Stack) {
 }
 
 function generateExportName(stackExports: Construct, id: string) {
-  const stackRelativeExports = stackExports.node.tryGetContext(cxapi.STACK_RELATIVE_EXPORTS_CONTEXT);
+  const stackRelativeExports = FeatureFlags.of(stackExports).isEnabled(cxapi.STACK_RELATIVE_EXPORTS_CONTEXT);
   const stack = Stack.of(stackExports);
 
   const components = [

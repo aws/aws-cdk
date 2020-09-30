@@ -172,13 +172,22 @@ export class CloudAssembly {
    * @returns all the CloudFormation stack artifacts that are included in this assembly.
    */
   public get stacks(): CloudFormationStackArtifact[] {
-    const result = new Array<CloudFormationStackArtifact>();
-    for (const a of this.artifacts) {
-      if (a instanceof CloudFormationStackArtifact) {
-        result.push(a);
-      }
+    return this.artifacts.filter(isCloudFormationStackArtifact);
+
+    function isCloudFormationStackArtifact(x: any): x is CloudFormationStackArtifact {
+      return x instanceof CloudFormationStackArtifact;
     }
-    return result;
+  }
+
+  /**
+   * The nested assembly artifacts in this assembly
+   */
+  public get nestedAssemblies(): NestedCloudAssemblyArtifact[] {
+    return this.artifacts.filter(isNestedCloudAssemblyArtifact);
+
+    function isNestedCloudAssemblyArtifact(x: any): x is NestedCloudAssemblyArtifact {
+      return x instanceof NestedCloudAssemblyArtifact;
+    }
   }
 
   private validateDeps() {
@@ -359,6 +368,8 @@ export interface AssemblyBuildOptions {
   /**
    * Include the specified runtime information (module versions) in manifest.
    * @default - if this option is not specified, runtime info will not be included
+   * @deprecated All template modifications that should result from this should
+   * have already been inserted into the template.
    */
   readonly runtimeInfo?: RuntimeInfo;
 }

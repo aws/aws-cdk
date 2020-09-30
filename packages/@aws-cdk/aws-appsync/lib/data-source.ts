@@ -204,6 +204,21 @@ export class DynamoDbDataSource extends BackedDataSource {
 }
 
 /**
+ * The authorization config in case the HTTP endpoint requires authorization
+ */
+export interface AwsIamConfig {
+  /**
+   * The signing region for AWS IAM authorization
+   */
+  readonly signingRegion: string;
+
+  /**
+   * The signing service name for AWS IAM authorization
+   */
+  readonly signingServiceName: string;
+}
+
+/**
  * Properties for an AppSync http datasource
  */
 export interface HttpDataSourceProps extends BaseDataSourceProps {
@@ -211,6 +226,14 @@ export interface HttpDataSourceProps extends BaseDataSourceProps {
    * The http endpoint
    */
   readonly endpoint: string;
+
+  /**
+   * The authorization config in case the HTTP endpoint requires authorization
+   *
+   * @default - none
+   *
+   */
+  readonly authorizationConfig?: AwsIamConfig;
 }
 
 /**
@@ -218,11 +241,16 @@ export interface HttpDataSourceProps extends BaseDataSourceProps {
  */
 export class HttpDataSource extends BaseDataSource {
   constructor(scope: Construct, id: string, props: HttpDataSourceProps) {
+    const authorizationConfig = props.authorizationConfig ? {
+      authorizationType: 'AWS_IAM',
+      awsIamConfig: props.authorizationConfig,
+    } : undefined;
     super(scope, id, props, {
+      type: 'HTTP',
       httpConfig: {
         endpoint: props.endpoint,
+        authorizationConfig,
       },
-      type: 'HTTP',
     });
   }
 }

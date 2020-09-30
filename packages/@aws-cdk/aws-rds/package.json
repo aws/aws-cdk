@@ -1,7 +1,7 @@
 {
   "name": "@aws-cdk/aws-rds",
   "version": "0.0.0",
-  "description": "CDK Constructs for AWS RDS",
+  "description": "The CDK Construct Library for AWS::RDS",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-rds",
-        "module": "aws_cdk.aws_rds"
+        "module": "aws_cdk.aws_rds",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
@@ -103,13 +107,16 @@
   },
   "awslint": {
     "exclude": [
+      "attribute-tag:@aws-cdk/aws-rds.DatabaseSecret.secretName",
       "props-physical-name:@aws-cdk/aws-rds.ParameterGroupProps",
       "props-physical-name:@aws-cdk/aws-rds.DatabaseClusterProps",
+      "props-physical-name:@aws-cdk/aws-rds.DatabaseClusterFromSnapshotProps",
       "props-physical-name:@aws-cdk/aws-rds.DatabaseInstanceProps",
       "props-physical-name:@aws-cdk/aws-rds.DatabaseInstanceFromSnapshotProps",
       "props-physical-name:@aws-cdk/aws-rds.DatabaseInstanceReadReplicaProps",
       "props-physical-name:@aws-cdk/aws-rds.DatabaseSecretProps",
       "props-physical-name:@aws-cdk/aws-rds.OptionGroupProps",
+      "props-physical-name:@aws-cdk/aws-rds.SubnetGroupProps",
       "docs-public-apis:@aws-cdk/aws-rds.SecretRotationApplication.semanticVersion",
       "docs-public-apis:@aws-cdk/aws-rds.SecretRotationApplication.applicationId",
       "docs-public-apis:@aws-cdk/aws-rds.SecretRotationApplication.SQLSERVER_ROTATION_SINGLE_USER",

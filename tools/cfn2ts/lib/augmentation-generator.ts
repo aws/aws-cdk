@@ -17,12 +17,16 @@ export class AugmentationGenerator {
   }
 
   public emitCode(): boolean {
+    let importedCloudWatch = false;
     let hadAugmentations = false;
     for (const resourceTypeName of Object.keys(this.spec.ResourceTypes).sort()) {
       const aug = resourceAugmentation(resourceTypeName);
 
       if (aug.metrics) {
-        this.code.line("import * as cloudwatch from '@aws-cdk/aws-cloudwatch';");
+        if (!importedCloudWatch) {
+          this.code.line("import * as cloudwatch from '@aws-cdk/aws-cloudwatch';");
+          importedCloudWatch = true;
+        }
         this.emitMetricAugmentations(resourceTypeName, aug.metrics, aug.options);
         hadAugmentations = true;
       }
@@ -35,7 +39,7 @@ export class AugmentationGenerator {
    */
   public async save(dir: string): Promise<string[]> {
     this.code.closeFile(this.outputFile);
-    return await this.code.save(dir);
+    return this.code.save(dir);
   }
 
   private emitMetricAugmentations(resourceTypeName: string, metrics: schema.ResourceMetricAugmentations, options?: schema.AugmentationOptions): void {
@@ -46,11 +50,16 @@ export class AugmentationGenerator {
 
     const classFile = `./${(options && options.classFile) || `${kebabL2ClassName}-base`}`;
     const className = (options && options.class) || l2ClassName + 'Base';
+    const interfaceFile = (options && options.interfaceFile) ? `./${options.interfaceFile}` : classFile;
     const interfaceName = (options && options.interface) || 'I' + l2ClassName;
 
     this.code.line(`import { ${className} } from "${classFile}";`);
 
-    this.code.openBlock(`declare module "${classFile}"`);
+    if (classFile === interfaceFile) {
+      this.code.openBlock(`declare module "${classFile}"`);
+    } else {
+      this.code.openBlock(`declare module "${interfaceFile}"`);
+    }
 
     // Add to the interface
     this.code.openBlock(`interface ${interfaceName}`);
@@ -59,6 +68,11 @@ export class AugmentationGenerator {
       this.emitSpecificMetricFunctionDeclaration(m);
     }
     this.code.closeBlock();
+
+    if (classFile !== interfaceFile) {
+      this.code.closeBlock();
+      this.code.openBlock(`declare module "${classFile}"`);
+    }
 
     // Add declaration to the base class (implementation added below)
     this.code.openBlock(`interface ${className}`);

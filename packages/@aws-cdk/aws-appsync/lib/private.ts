@@ -1,3 +1,4 @@
+import { AuthorizationType } from './graphqlapi';
 import { Directive } from './schema-base';
 import { InterfaceType } from './schema-intermediate';
 
@@ -47,6 +48,10 @@ export interface SchemaAdditionOptions {
    * the fields to reduce onto the addition
    */
   readonly fields: string[];
+  /**
+   * the authorization modes for this graphql type
+   */
+  readonly modes?: AuthorizationType[];
 }
 
 /**
@@ -67,7 +72,10 @@ export interface SchemaAdditionOptions {
 export function shapeAddition(options: SchemaAdditionOptions): string {
   const typeName = (): string => { return options.name ? ` ${options.name}` : ''; };
   const interfaces = generateInterfaces(options.interfaceTypes);
-  const directives = generateDirectives(options.directives);
+  const directives = generateDirectives({
+    directives: options.directives,
+    modes: options.modes,
+  });
   return options.fields.reduce((acc, field) =>
     `${acc}  ${field}\n`, `${options.prefix}${typeName()}${interfaces}${directives} {\n`) + '}';
 }
@@ -198,13 +206,32 @@ function generateInterfaces(interfaceTypes?: InterfaceType[]): string {
 }
 
 /**
- * Utility function to generate directives
- *
- * @param directives the directives of a given type
- * @param delimiter the separator betweeen directives (by default we will add a space)
+ * options to generate directives
  */
-function generateDirectives(directives?: Directive[], delimiter?: string): string {
-  if (!directives || directives.length === 0) return '';
-  return directives.reduce((acc, directive) =>
-    `${acc}${directive.statement}${delimiter ?? ' '}`, ' ').slice(0, -1);
+interface generateDirectivesOptions {
+  /**
+   * the directives of a given type
+   */
+  readonly directives?: Directive[];
+  /**
+   * thee separator betweeen directives
+   *
+   * @default - a space
+   */
+  readonly delimiter?: string;
+  /**
+   * the authorization modes
+   */
+  readonly modes?: AuthorizationType[];
+}
+
+/**
+ * Utility function to generate directives
+ */
+function generateDirectives(options: generateDirectivesOptions): string {
+  if (!options.directives || options.directives.length === 0) return '';
+  // reduce over all directives and get string version of the directive
+  // pass in the auth modes for checks to happen on compile time
+  return options.directives.reduce((acc, directive) =>
+    `${acc}${directive._bindToAuthModes(options.modes).toString()}${options.delimiter ?? ' '}`, ' ').slice(0, -1);
 }

@@ -77,7 +77,7 @@ test('exhaustive example of props renders correctly', () => {
       HttpVersion: 'http1.1',
       IPV6Enabled: false,
       Logging: {
-        Bucket: { 'Fn::GetAtt': ['MyDistLoggingBucket9B8976BC', 'RegionalDomainName'] },
+        Bucket: { 'Fn::GetAtt': ['MyDistLoggingBucket9B8976BC', 'DomainName'] },
         IncludeCookies: true,
         Prefix: 'logs/',
       },
@@ -402,7 +402,7 @@ describe('logging', () => {
     expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
       DistributionConfig: {
         Logging: {
-          Bucket: { 'Fn::GetAtt': ['MyDistLoggingBucket9B8976BC', 'RegionalDomainName'] },
+          Bucket: { 'Fn::GetAtt': ['MyDistLoggingBucket9B8976BC', 'DomainName'] },
         },
       },
     });
@@ -419,7 +419,7 @@ describe('logging', () => {
     expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
       DistributionConfig: {
         Logging: {
-          Bucket: { 'Fn::GetAtt': ['MyLoggingBucket4382CD04', 'RegionalDomainName'] },
+          Bucket: { 'Fn::GetAtt': ['MyLoggingBucket4382CD04', 'DomainName'] },
         },
       },
     });
@@ -437,7 +437,7 @@ describe('logging', () => {
     expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
       DistributionConfig: {
         Logging: {
-          Bucket: { 'Fn::GetAtt': ['MyDistLoggingBucket9B8976BC', 'RegionalDomainName'] },
+          Bucket: { 'Fn::GetAtt': ['MyDistLoggingBucket9B8976BC', 'DomainName'] },
           IncludeCookies: true,
           Prefix: 'logs/',
         },
@@ -468,6 +468,7 @@ describe('with Lambda@Edge functions', () => {
           {
             functionVersion: lambdaFunction.currentVersion,
             eventType: LambdaEdgeEventType.ORIGIN_REQUEST,
+            includeBody: true,
           },
         ],
       },
@@ -479,6 +480,7 @@ describe('with Lambda@Edge functions', () => {
           LambdaFunctionAssociations: [
             {
               EventType: 'origin-request',
+              IncludeBody: true,
               LambdaFunctionARN: {
                 Ref: 'FunctionCurrentVersion4E2B2261477a5ae8059bbaa7813f752292c0f65e',
               },
