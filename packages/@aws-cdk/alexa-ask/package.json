@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.alexa-ask",
-        "module": "aws_cdk.alexa_ask"
+        "module": "aws_cdk.alexa_ask",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
@@ -50,7 +54,10 @@
   },
   "cdk-build": {
     "cloudformation": "Alexa::ASK",
-    "jest": true
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "keywords": [
     "aws",
