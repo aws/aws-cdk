@@ -119,6 +119,7 @@ The following targets are supported:
 * `targets.SfnStateMachine`: Trigger an AWS Step Functions state machine
 * `targets.BatchJob`: Queue an AWS Batch Job
 * `targets.AwsApi`: Make an AWS API call
+* `targets.ApiGateway`: Invoke an API Gateway endpoint
 
 ### Cross-account targets
 

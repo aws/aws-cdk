@@ -55,7 +55,8 @@ export interface RuleTargetConfig {
 
   /**
    * Parameters used when the rule invokes Amazon API Gateway
-   * @default no parameters set
+   *
+   * @default - no parameters set
    */
   readonly httpParameters?: CfnRule.HttpParametersProperty;
 

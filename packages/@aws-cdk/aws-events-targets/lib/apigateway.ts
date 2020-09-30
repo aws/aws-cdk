@@ -31,39 +31,20 @@ export interface ApiGatewayProps {
   /**
    * Header, Path, and Querystring parameters
    *
-   * @default no parameters set
+   * @default - no parameters set
    */
   readonly httpParameters?: events.CfnRule.HttpParametersProperty;
 
   /**
    * The payload to send to API Gateway
    *
-   * @default The event bridge payload
+   * @default - The event bridge payload
    */
   readonly input?: events.RuleTargetInput;
 }
 
 /**
  * Use API Gateway as a target for AWS EventBridge event rules.
- *
- * @example
- *
- *    // add API Gateway as a Target for a Rule
- *    myEventBridgeRule.addTarget(
- *        new ApiGateway(RestApi.fromRestApiId(this, 'RestApi', YOUR_REST_API_ID), {
- *            path: '/v1/*',
- *            method: 'PUT',
- *            stage: 'prod',
- *            input: RuleTargetInput.fromObject({
- *                foo: EventField.fromPath('$.detail.bar'),
- *                timestamp: EventField.time,
- *            }),
- *            httpParameters: {
- *                pathParameterValues: ['$.detail.id'],
- *            },
- *        }),
- *    );
- *
  */
 export class ApiGateway implements events.IRuleTarget {
   constructor(private readonly apiGateway: apigateway.IRestApi, private readonly props: ApiGatewayProps = {}) {}
