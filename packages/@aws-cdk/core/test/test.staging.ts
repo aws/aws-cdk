@@ -222,7 +222,7 @@ export = {
     test.done();
   },
 
-  'bundler uses asset cache with OUTPUT'(test: Test) {
+  'uses asset hash cache with AssetHashType.OUTPUT'(test: Test) {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'stack');
@@ -242,9 +242,9 @@ export = {
     new AssetStaging(stack, 'AssetDuplicate', {
       sourcePath: directory,
       assetHashType: AssetHashType.OUTPUT,
-      bundling: {
-        image: BundlingDockerImage.fromRegistry('alpine'),
+      bundling: { // Same bundling but with keys ordered differently
         command: [DockerStubCommand.SUCCESS],
+        image: BundlingDockerImage.fromRegistry('alpine'),
       },
     });
 
@@ -401,6 +401,10 @@ export = {
         command: [DockerStubCommand.SUCCESS],
       },
     });
+
+    // Clear asset hash cache to show that during the second synth bundling
+    // will consider the existing bundling dir (file system cache).
+    AssetStaging.clearAssetHashCache();
 
     // GIVEN
     const app2 = new App({ outdir: TEST_OUTDIR });
