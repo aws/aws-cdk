@@ -23,7 +23,33 @@ Currently supported are:
 * Queue a Batch job
 * Make an AWS API call
 * Put a record to a Kinesis stream
+* Log an event into a LogGroup
 
 See the README of the `@aws-cdk/aws-events` library for more information on
 EventBridge.
 
+## LogGroup
+
+Use the `LogGroup` target to log your events in a CloudWatch LogGroup.
+
+```ts
+const rule = new Rule(this, 'rule');
+
+const logGroup = new LogGroup(this, 'logGroup');
+
+rule.addTarget(targets.LogGroup(logGroup));
+```
+
+You can also use an [InputTransformer](https://docs.aws.amazon.com/eventbridge/latest/APIReference/API_InputTransformer.html).
+
+```ts
+const rule = new Rule(this, 'rule');
+
+const logGroup = new LogGroup(this, 'logGroup');
+
+rule.addTarget(targets.LogGroup(logGroup, {
+  event: events.RuleTargetInput.fromObject({
+    data: events.EventField.fromPath('$.detail.data'),
+  })
+}));
+```
