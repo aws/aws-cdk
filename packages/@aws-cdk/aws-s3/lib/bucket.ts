@@ -470,20 +470,17 @@ abstract class BucketBase extends Resource implements IBucket {
 
   /**
    * The https URL of an S3 object. For example:
-   * @example https://only-bucket.s3-us-west-1.amazonaws.com/
-   * @example https://bucket.s3-us-west-1.amazonaws.com/key
-   * @example https://china-bucket.s3-cn-north-1.amazonaws.com.cn/mykey
+   * @example https://s3.us-west-1.amazonaws.com/onlybucket
+   * @example https://s3.us-west-1.amazonaws.com/bucket/key
+   * @example https://s3.cn-north-1.amazonaws.com.cn/china-bucket/mykey
    * @param key The S3 key of the object. If not specified, the URL of the
    *      bucket is returned.
    * @returns an ObjectS3Url token
    */
   public urlForObject(key?: string): string {
     const stack = Stack.of(this);
-    const prefix = `https://${this.bucketName}.s3-${stack.region}.${stack.urlSuffix}/`;
-    if (typeof key !== 'string') {
-      return prefix;
-    }
-    return this.urlJoin(prefix, key);
+    const prefix = `https://s3.${stack.region}.${stack.urlSuffix}/`;
+    return this.buildUrl(prefix, key);
   }
 
   /**
@@ -495,11 +492,7 @@ abstract class BucketBase extends Resource implements IBucket {
    * @returns an ObjectS3Url token
    */
   public s3UrlForObject(key?: string): string {
-    const prefix = 's3://';
-    if (typeof key !== 'string') {
-      return this.urlJoin(prefix, this.bucketName);
-    }
-    return this.urlJoin(prefix, this.bucketName, key);
+    return this.buildUrl('s3://', key);
   }
 
   /**
@@ -629,16 +622,22 @@ abstract class BucketBase extends Resource implements IBucket {
     });
   }
 
-  private urlJoin(...components: string[]): string {
-    return components.reduce((result, component) => {
-      if (result.endsWith('/')) {
-        result = result.slice(0, -1);
+  private buildUrl(prefix: string, key?: string): string {
+    const components = [
+      prefix,
+      this.bucketName,
+    ];
+
+    if (key) {
+      // trim prepending '/'
+      if (typeof key === 'string' && key.startsWith('/')) {
+        key = key.substr(1);
       }
-      if (component.startsWith('/')) {
-        component = component.slice(1);
-      }
-      return `${result}/${component}`;
-    });
+      components.push('/');
+      components.push(key);
+    }
+
+    return components.join('');
   }
 
   private grant(

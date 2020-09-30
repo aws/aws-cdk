@@ -73,7 +73,7 @@ test('create basic training job', () => {
       ],
       OutputDataConfig: {
         S3OutputPath: {
-          'Fn::Join': ['', ['https://mybucket.s3-', { Ref: 'AWS::Region' }, '.', { Ref: 'AWS::URLSuffix' }, '/myoutputpath']],
+          'Fn::Join': ['', ['https://s3.', { Ref: 'AWS::Region' }, '.', { Ref: 'AWS::URLSuffix' }, '/mybucket/myoutputpath']],
         },
       },
       ResourceConfig: {
@@ -258,7 +258,7 @@ test('create complex training job', () => {
       ],
       OutputDataConfig: {
         S3OutputPath: {
-          'Fn::Join': ['', ['https://mybucket.s3-', { Ref: 'AWS::Region' }, '.', { Ref: 'AWS::URLSuffix' }, '/myoutputpath']],
+          'Fn::Join': ['', ['https://s3.', { Ref: 'AWS::Region' }, '.', { Ref: 'AWS::URLSuffix' }, '/mybucket/myoutputpath']],
         },
         KmsKeyId: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
       },
@@ -364,7 +364,7 @@ test('pass param to training job', () => {
       ],
       'OutputDataConfig': {
         S3OutputPath: {
-          'Fn::Join': ['', ['https://mybucket.s3-', { Ref: 'AWS::Region' }, '.', { Ref: 'AWS::URLSuffix' }, '/myoutputpath']],
+          'Fn::Join': ['', ['https://s3.', { Ref: 'AWS::Region' }, '.', { Ref: 'AWS::URLSuffix' }, '/mybucket/myoutputpath']],
         },
       },
       'ResourceConfig': {

@@ -364,11 +364,7 @@
                   "Arn"
                 ]
               },
-              "\",\"AlgorithmSpecification\":{\"TrainingInputMode\":\"File\",\"AlgorithmName\":\"arn:aws:sagemaker:us-east-1:865070037744:algorithm/scikit-decision-trees-15423055-57b73412d2e93e9239e4e16f83298b8f\"},\"InputDataConfig\":[{\"ChannelName\":\"InputData\",\"DataSource\":{\"S3DataSource\":{\"S3Uri\":\"https://",
-              {
-                "Ref": "TrainingData3FDB6D34"
-              },
-              ".s3-",
+              "\",\"AlgorithmSpecification\":{\"TrainingInputMode\":\"File\",\"AlgorithmName\":\"arn:aws:sagemaker:us-east-1:865070037744:algorithm/scikit-decision-trees-15423055-57b73412d2e93e9239e4e16f83298b8f\"},\"InputDataConfig\":[{\"ChannelName\":\"InputData\",\"DataSource\":{\"S3DataSource\":{\"S3Uri\":\"https://s3.",
               {
                 "Ref": "AWS::Region"
               },
@@ -376,17 +372,21 @@
               {
                 "Ref": "AWS::URLSuffix"
               },
-              "/data/\",\"S3DataType\":\"S3Prefix\"}}}],\"OutputDataConfig\":{\"S3OutputPath\":\"https://",
+              "/",
               {
                 "Ref": "TrainingData3FDB6D34"
               },
-              ".s3-",
+              "/data/\",\"S3DataType\":\"S3Prefix\"}}}],\"OutputDataConfig\":{\"S3OutputPath\":\"https://s3.",
               {
                 "Ref": "AWS::Region"
               },
               ".",
               {
                 "Ref": "AWS::URLSuffix"
+              },
+              "/",
+              {
+                "Ref": "TrainingData3FDB6D34"
               },
               "/result/\"},\"ResourceConfig\":{\"InstanceCount\":1,\"InstanceType\":\"ml.m4.xlarge\",\"VolumeSizeInGB\":10},\"StoppingCondition\":{\"MaxRuntimeInSeconds\":3600}}}}}"
             ]
