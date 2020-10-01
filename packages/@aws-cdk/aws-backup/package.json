@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-backup",
-        "module": "aws_cdk.aws_backup"
+        "module": "aws_cdk.aws_backup",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true

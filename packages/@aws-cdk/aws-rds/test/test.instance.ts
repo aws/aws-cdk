@@ -28,7 +28,9 @@ export = {
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MEDIUM),
       multiAz: true,
       storageType: rds.StorageType.IO1,
-      credentials: rds.Credentials.fromUsername('syscdk'),
+      credentials: rds.Credentials.fromUsername('syscdk', {
+        excludeCharacters: '"@/\\',
+      }),
       vpc,
       databaseName: 'ORCL',
       storageEncrypted: true,
@@ -291,7 +293,9 @@ export = {
         snapshotIdentifier: 'my-snapshot',
         engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
         vpc,
-        credentials: rds.SnapshotCredentials.fromGeneratedPassword('admin'),
+        credentials: rds.SnapshotCredentials.fromGeneratedPassword('admin', {
+          excludeCharacters: '"@/\\',
+        }),
       });
 
       expect(stack).to(haveResourceLike('AWS::RDS::DBInstance', {
@@ -993,6 +997,25 @@ export = {
 
     test.done();
   },
+
+  "PostgreSQL database instance uses a different default master username than 'admin', which is a reserved word"(test: Test) {
+    new rds.DatabaseInstance(stack, 'Instance', {
+      vpc,
+      engine: rds.DatabaseInstanceEngine.postgres({
+        version: rds.PostgresEngineVersion.VER_9_5_7,
+      }),
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::SecretsManager::Secret', {
+      GenerateSecretString: {
+        SecretStringTemplate: '{"username":"postgres"}',
+      },
+    }));
+
+    test.done();
+  },
+
   'S3 Import/Export': {
     'instance with s3 import and export buckets'(test: Test) {
       new rds.DatabaseInstance(stack, 'DB', {
