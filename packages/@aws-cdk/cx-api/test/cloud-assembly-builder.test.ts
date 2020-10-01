@@ -124,6 +124,12 @@ test('outdir must be a directory', () => {
   expect(() => new cxapi.CloudAssemblyBuilder(__filename)).toThrow('must be a directory');
 });
 
+test('outdir defaults to a temporary directory', () => {
+  const assembly = new cxapi.CloudAssemblyBuilder();
+  const realTmpDir = fs.realpathSync(os.tmpdir());
+  expect(assembly.outdir).toMatch(new RegExp(`^${path.join(realTmpDir, 'cdk.out')}`));
+});
+
 test('duplicate missing values with the same key are only reported once', () => {
   const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'cloud-assembly-builder-tests'));
   const session = new cxapi.CloudAssemblyBuilder(outdir);
