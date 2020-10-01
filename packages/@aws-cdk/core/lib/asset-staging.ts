@@ -127,6 +127,7 @@ export class AssetStaging extends Construct {
       bundling: props.bundling,
       assetHashType: hashType,
       extraHash: props.extraHash,
+      exclude: props.exclude,
     });
 
     if (props.bundling) {
