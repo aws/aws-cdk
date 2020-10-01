@@ -25,7 +25,7 @@ const cluster = new rds.DatabaseCluster(this, 'Database', {
   engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_2_08_1 }),
   masterUser: rds.Credentials.fromUsername('clusteradmin'), // Optional - will default to admin
   instanceProps: {
-    // optional, defaults to t3.medium
+    // optional , defaults to t3.medium
     instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
     vpcSubnets: {
       subnetType: ec2.SubnetType.PRIVATE,
