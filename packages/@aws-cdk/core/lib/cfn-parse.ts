@@ -10,7 +10,7 @@ import {
 } from './cfn-resource-policy';
 import { CfnTag } from './cfn-tag';
 import { Lazy } from './lazy';
-import { CfnReference } from './private/cfn-reference';
+import { CfnReference, ReferenceRendering } from './private/cfn-reference';
 import { IResolvable } from './resolvable';
 import { Mapper, Validator } from './runtime';
 import { isResolvableObject, Token } from './token';
@@ -284,6 +284,8 @@ export class CfnParser {
     cfnOptions.updatePolicy = this.parseUpdatePolicy(resourceAttributes.UpdatePolicy);
     cfnOptions.deletionPolicy = this.parseDeletionPolicy(resourceAttributes.DeletionPolicy);
     cfnOptions.updateReplacePolicy = this.parseDeletionPolicy(resourceAttributes.UpdateReplacePolicy);
+    cfnOptions.version = this.parseValue(resourceAttributes.Version);
+    cfnOptions.description = this.parseValue(resourceAttributes.Description);
     cfnOptions.metadata = this.parseValue(resourceAttributes.Metadata);
 
     // handle Condition
@@ -456,13 +458,29 @@ export class CfnParser {
         }
       }
       case 'Fn::GetAtt': {
-        // Fn::GetAtt takes a 2-element list as its argument
         const value = object[key];
-        const target = this.finder.findResource(value[0]);
-        if (!target) {
-          throw new Error(`Resource used in GetAtt expression with logical ID: '${value[0]}' not found`);
+        let logicalId: string, attributeName: string, stringForm: boolean;
+        // Fn::GetAtt takes as arguments either a string...
+        if (typeof value === 'string') {
+          // ...in which case the logical ID and the attribute name are separated with '.'
+          const dotIndex = value.indexOf('.');
+          if (dotIndex === -1) {
+            throw new Error(`Short-form Fn::GetAtt must contain a '.' in its string argument, got: '${value}'`);
+          }
+          logicalId = value.substr(0, dotIndex);
+          attributeName = value.substr(dotIndex + 1); // the +1 is to skip the actual '.'
+          stringForm = true;
+        } else {
+          // ...or a 2-element list
+          logicalId = value[0];
+          attributeName = value[1];
+          stringForm = false;
         }
-        return target.getAtt(value[1]);
+        const target = this.finder.findResource(logicalId);
+        if (!target) {
+          throw new Error(`Resource used in GetAtt expression with logical ID: '${logicalId}' not found`);
+        }
+        return CfnReference.for(target, attributeName, stringForm ? ReferenceRendering.GET_ATT_STRING : undefined);
       }
       case 'Fn::Join': {
         // Fn::Join takes a 2-element list as its argument,
@@ -617,7 +635,7 @@ export class CfnParser {
       if (!refElement) {
         throw new Error(`Element referenced in Fn::Sub expression with logical ID: '${refTarget}' was not found in the template`);
       }
-      return leftHalf + CfnReference.for(refElement, 'Ref', true).toString() + this.parseFnSubString(rightHalf, map);
+      return leftHalf + CfnReference.for(refElement, 'Ref', ReferenceRendering.FN_SUB).toString() + this.parseFnSubString(rightHalf, map);
     } else {
       const targetId = refTarget.substring(0, dotIndex);
       const refResource = this.finder.findResource(targetId);
@@ -625,7 +643,7 @@ export class CfnParser {
         throw new Error(`Resource referenced in Fn::Sub expression with logical ID: '${targetId}' was not found in the template`);
       }
       const attribute = refTarget.substring(dotIndex + 1);
-      return leftHalf + CfnReference.for(refResource, attribute, true).toString() + this.parseFnSubString(rightHalf, map);
+      return leftHalf + CfnReference.for(refResource, attribute, ReferenceRendering.FN_SUB).toString() + this.parseFnSubString(rightHalf, map);
     }
   }
 

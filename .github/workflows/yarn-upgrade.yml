@@ -43,16 +43,18 @@ jobs:
       - name: Run "ncu -u"
         # We special-case @types/node because we want to stay on the current major (minimum supported node release)
         # We special-case @types/fs-extra because the current major (9.x) is broken with @types/node >= 10
+        # We special-case parcel because we are currently on a pre-release and don't want to move to nightlies
+        # We special-case aws-sdk because of breaking changes with TS interface exports in recent minor versions - https://github.com/aws/aws-sdk-js/issues/3453
         # We special-case typescript because it's not semantically versionned
         run: |-
           # Upgrade dependencies at repository root
           ncu --upgrade --filter=@types/node,@types/fs-extra --target=minor
           ncu --upgrade --filter=typescript --target=patch
-          ncu --upgrade --reject=@types/node,@types/fs-extra,typescript
+          ncu --upgrade --reject=@types/node,@types/fs-extra,parcel,typescript --target=minor
           # Upgrade all the packages
           lerna exec --parallel ncu -- --upgrade --filter=@types/node,@types/fs-extra --target=minor
           lerna exec --parallel ncu -- --upgrade --filter=typescript --target=patch
-          lerna exec --parallel ncu -- --upgrade --reject='@types/node,@types/fs-extra,typescript,${{ steps.list-packages.outputs.list }}'
+          lerna exec --parallel ncu -- --upgrade --reject='@types/node,@types/fs-extra,parcel,typescript,aws-sdk,${{ steps.list-packages.outputs.list }}'  --target=minor
       # This will create a brand new `yarn.lock` file (this is more efficient than `yarn install && yarn upgrade`)
       - name: Run "yarn install --force"
         run: yarn install --force

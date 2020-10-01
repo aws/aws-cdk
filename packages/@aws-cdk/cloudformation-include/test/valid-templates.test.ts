@@ -232,6 +232,14 @@ describe('CDK Include', () => {
     );
   });
 
+  test('can ingest a JSON template with string-form Fn::GetAtt, and output it unchanged', () => {
+    includeTestTemplate(stack, 'get-att-string-form.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('get-att-string-form.json'),
+    );
+  });
+
   test('can ingest a template with Fn::Sub in string form with escaped and unescaped references and output it unchanged', () => {
     includeTestTemplate(stack, 'fn-sub-string.json');
 
