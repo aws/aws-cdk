@@ -27,7 +27,7 @@ new codebuild.Project(stack, 'MyProject', {
   securityGroups: [securityGroup],
   fileSystemLocations: [codebuild.FileSystemLocation.efs({
     identifier: 'myidentifier',
-    location: 'fs-c8d04839.efs.eu-west-2.amazonaws.com:/mnt',
+    location: `fs-c8d04839.efs.${cdk.Aws.REGION}.amazonaws.com:/mnt`,
     mountOptions: 'nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2',
     mountPoint: '/media',
   })],
