@@ -61,7 +61,7 @@ describe('testing Object Type properties', () => {
     api.addType(objectTest);
 
     const gql_interface = 'interface baseTest {\n  id: ID\n}\ninterface anotherTest {\n  id2: ID\n}\n';
-    const gql_object = 'type objectTest implements anotherTest, baseTest {\n  id3: ID\n  id2: ID\n  id: ID\n}\n';
+    const gql_object = 'type objectTest implements anotherTest & baseTest {\n  id3: ID\n  id2: ID\n  id: ID\n}\n';
     const out = `${gql_interface}${gql_object}`;
 
     // THEN

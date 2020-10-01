@@ -25,6 +25,30 @@ export = nodeunit.testCase({
 
       test.done();
     },
+
+    'renders "Properties" for a resource that has only properties set to "false"'(test: nodeunit.Test) {
+      const app = new core.App();
+      const stack = new core.Stack(app, 'TestStack');
+      new core.CfnResource(stack, 'Resource', {
+        type: 'Test::Resource::Fake',
+        properties: {
+          FakeProperty: false,
+        },
+      });
+
+      test.deepEqual(app.synth().getStackByName(stack.stackName).template, {
+        Resources: {
+          Resource: {
+            Type: 'Test::Resource::Fake',
+            Properties: {
+              FakeProperty: false,
+            },
+          },
+        },
+      });
+
+      test.done();
+    },
   },
 
   'applyRemovalPolicy default includes Update policy'(test: nodeunit.Test) {

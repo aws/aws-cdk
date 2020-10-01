@@ -2,6 +2,83 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.65.0](https://github.com/aws/aws-cdk/compare/v1.64.1...v1.65.0) (2020-09-30)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **aws-appmesh:** VirtualNode no longer has accessLog set to "/dev/stdout" by default
+* **cognito:** `refreshToken` property is now removed from
+UserPoolClient. It will be included if any other `authFlow` is enabled.
+* **synthetics:** the default runtime is now `syn-nodejs-2.0`
+* **eks:** `cluster.addChart` renamed to `cluster.addHelmChart`
+
+* **eks:** `NodegroupOptions.launchTemplate` renamed to `NodegroupOptions.launchTemplateSpec`
+* **eks:** `cluster.addAutoScalingGroup` renamed to `cluster.connectAutoScalingGroupCapacity`
+* **eks:** `cluster.addNodegroup` renamed to `cluster.addNoedgroupCapacity`
+* **eks:** `cluster.addCapacity` renamed to `cluster.addAutoScalingGroupCapacity`
+* **eks:** `CapacityOptions` renamed to `AutoScalingGroupCapacityOptions`. Resolves [#10364](https://github.com/aws/aws-cdk/issues/10364)
+* **rds:** the default generated password exclude characters set for Instance, Cluster and `DatabaseSecret` is now ``" %+~`#$&*()|[]{}:;<>?!'/@\"\\"``
+* **rds**: the default generated password exclude characters for `addSingleUserRotation()` and `addMultiUserRotation()` in Cluster and Instance is now ``" %+~`#$&*()|[]{}:;<>?!'/@\"\\"``
+* **rds**: `Instance.addSingleUserRotation()` now takes options object as the first argument, instead of just `Duration`
+* **rds**: `Cluster.addSingleUserRotation()` now takes options object as the first argument, instead of just `Duration`
+* **rds**: `SnapshotCredentials.fromGeneratedPassword()` now takes an option object as the second argument, instead of just `IKey`
+* **rds:** `DatabaseInstanceProps` and `DatabaseInstanceFromSnapshotProps` -
+`masterUsername`, `masterUserPassword` and `masterUserPasswordEncryptionKey` moved
+to `credentials` as a new `Credentials` class.
+* **rds:** `Login` renamed to `Credentials`. Use `Credentials.fromUsername` to replace existing usage.
+* **rds:** `DatabaseClusterProps` `masterUser` renamed to `credentials`.
+
+### Features
+
+* **aws-appmesh:** adds access logging configuration to Virtual Nodes ([#10490](https://github.com/aws/aws-cdk/issues/10490)) ([e96b5aa](https://github.com/aws/aws-cdk/commit/e96b5aa3d65c108f2cd26c17eb0cda4345182db7))
+* **aws-ecs-builder:** RFC 219 - An extendable service class for AWS ECS ([#10129](https://github.com/aws/aws-cdk/issues/10129)) ([d95af00](https://github.com/aws/aws-cdk/commit/d95af009a8d59393d019620aa8878098ce0aed1d))
+* **batch:** Importing a `JobDefinition` from name using `fromJobDefinitionName`  ([#10448](https://github.com/aws/aws-cdk/issues/10448)) ([7ce91e8](https://github.com/aws/aws-cdk/commit/7ce91e85b3eab19c0fbaf9f31f3b6f79827ff08f)), closes [#7172](https://github.com/aws/aws-cdk/issues/7172)
+* **cognito:** import existing user pool domain ([#10550](https://github.com/aws/aws-cdk/issues/10550)) ([37e2c35](https://github.com/aws/aws-cdk/commit/37e2c3580fdadc83edc57f077b8d2119189358c5)), closes [#9988](https://github.com/aws/aws-cdk/issues/9988)
+* **core:** add parseDomainName to Fn class ([#10465](https://github.com/aws/aws-cdk/issues/10465)) ([799da48](https://github.com/aws/aws-cdk/commit/799da4817770edf96708ad89cd64af3a7a02b554)), closes [#5433](https://github.com/aws/aws-cdk/issues/5433)
+* **ec2:** c6 graviton2 instance classes ([#10558](https://github.com/aws/aws-cdk/issues/10558)) ([0d4d44f](https://github.com/aws/aws-cdk/commit/0d4d44f01fc67bfc60e0b0994c7130ffbc4b65e5)), closes [#10372](https://github.com/aws/aws-cdk/issues/10372)
+* **ecs-patterns:** allow passthrough of security groups to service ([#10501](https://github.com/aws/aws-cdk/issues/10501)) ([e349004](https://github.com/aws/aws-cdk/commit/e349004a522e2123c1e93bd3402dd7c3f9c5c17c)), closes [#8953](https://github.com/aws/aws-cdk/issues/8953)
+* **eks:** EKS is now in Developer Preview ([#10518](https://github.com/aws/aws-cdk/issues/10518)) ([b2ce3aa](https://github.com/aws/aws-cdk/commit/b2ce3aaf3fcf3405c04b145cc6288e074da4f4fe))
+* **elasticsearch:** L2 for ElasticsearchDomain ([#8369](https://github.com/aws/aws-cdk/issues/8369)) ([33ce50f](https://github.com/aws/aws-cdk/commit/33ce50f9ae131730115b59e2c0a961692b27d6ee))
+* **lambda:** kafka topic as an event source ([#10445](https://github.com/aws/aws-cdk/issues/10445)) ([dac1e12](https://github.com/aws/aws-cdk/commit/dac1e12196c84b84820052f74b14c86a7d4dddc3))
+* **lambda-event-sources:** dead letter queue and filter policy for sns event source ([#10567](https://github.com/aws/aws-cdk/issues/10567)) ([d70808b](https://github.com/aws/aws-cdk/commit/d70808b42701d7bc24861e4c848b50def68c0b5d))
+* **pipelines:** allow disabling of KMS keys ([#10396](https://github.com/aws/aws-cdk/issues/10396)) ([1f7311f](https://github.com/aws/aws-cdk/commit/1f7311f56457556a6f229e745cd24e3f1e5fe1d3)), closes [#10115](https://github.com/aws/aws-cdk/issues/10115) [#10474](https://github.com/aws/aws-cdk/issues/10474)
+* **pipelines:** Allow specifying a VPC for pipelines.CdkPipeline, standardNpmSynth, and standardYarnSynth ([#10453](https://github.com/aws/aws-cdk/issues/10453)) ([2e0824b](https://github.com/aws/aws-cdk/commit/2e0824b3b2304275573030e295fdf0ccaab75649)), closes [#9982](https://github.com/aws/aws-cdk/issues/9982)
+* **rds:** add support for update and backup properties to Cluster instances ([#10324](https://github.com/aws/aws-cdk/issues/10324)) ([4a4c154](https://github.com/aws/aws-cdk/commit/4a4c154aa433a5c99994398c5b6798aaea75b7b6)), closes [#9926](https://github.com/aws/aws-cdk/issues/9926) [#10092](https://github.com/aws/aws-cdk/issues/10092)
+* **rds:** add the ability to exclude characters when generating passwords for Cluster, Instance, DatabaseSecret ([3b88256](https://github.com/aws/aws-cdk/commit/3b882562ccecb35c33a28d4ac84d424691cdac6b)), closes [#4144](https://github.com/aws/aws-cdk/issues/4144)
+* **rds:** construct for Aurora Serverless Clusters ([#10516](https://github.com/aws/aws-cdk/issues/10516)) ([0d7d07e](https://github.com/aws/aws-cdk/commit/0d7d07e684b616360f93f633fbdf9448ab4ca32d)), closes [#929](https://github.com/aws/aws-cdk/issues/929)
+* add configuration for GitHub CodeSpaces ([#10470](https://github.com/aws/aws-cdk/issues/10470)) ([bf3cc21](https://github.com/aws/aws-cdk/commit/bf3cc21c2d19cf344b706a4da2de939daded89a7)), closes [#10447](https://github.com/aws/aws-cdk/issues/10447)
+* **rds:** support setting database master users from existing secrets ([#10458](https://github.com/aws/aws-cdk/issues/10458)) ([c7c7851](https://github.com/aws/aws-cdk/commit/c7c78516e712051884999a9d1801e97bafe49c5b)), closes [#7927](https://github.com/aws/aws-cdk/issues/7927)
+* **rds:** the RDS Construct Library is now Generally Available ([#10610](https://github.com/aws/aws-cdk/issues/10610)) ([ccfa73f](https://github.com/aws/aws-cdk/commit/ccfa73f7a7d8294e2e0585bdcd67eda1dea7b721))
+* **rds:** the unversioned Cluster engine constants are no longer deprecated ([#10605](https://github.com/aws/aws-cdk/issues/10605)) ([86e6455](https://github.com/aws/aws-cdk/commit/86e64552174a9d349e626c1883b3dabb3df2b205))
+* **s3:** support replication and restore s3 notification event types ([#10552](https://github.com/aws/aws-cdk/issues/10552)) ([ee0db39](https://github.com/aws/aws-cdk/commit/ee0db39109824d3a511372c3337e0812e7a5fee9)), closes [#10498](https://github.com/aws/aws-cdk/issues/10498)
+* support the 'Description' resource attribute ([#10522](https://github.com/aws/aws-cdk/issues/10522)) ([d68ce2f](https://github.com/aws/aws-cdk/commit/d68ce2f4b42099064342baeb4b494810aa362e27))
+* **stepfunctions-tasks:** support for SageMaker APIs: CreateEndpoint, CreateEndpointConfig, CreateModel, and UpdateEndpoint ([#10187](https://github.com/aws/aws-cdk/issues/10187)) ([84738ee](https://github.com/aws/aws-cdk/commit/84738ee8d6d47ec19846c0e4bc7d7096333f96d3))
+* **synthetics:** syn-nodejs-2.0 runtime ([#10574](https://github.com/aws/aws-cdk/issues/10574)) ([a3c41ae](https://github.com/aws/aws-cdk/commit/a3c41ae64893fb19da30cbd400de9e114cec0b5a))
+
+
+### Bug Fixes
+
+* **appsync:** multiple interface types generates invalid schema ([#10481](https://github.com/aws/aws-cdk/issues/10481)) ([6f2d393](https://github.com/aws/aws-cdk/commit/6f2d3936071caafc624f6fd43b7bb6139c807d95)), closes [#10479](https://github.com/aws/aws-cdk/issues/10479)
+* **cfn-include:** Fn::GetAtt with a string argument fails to include ([#10546](https://github.com/aws/aws-cdk/issues/10546)) ([6a24026](https://github.com/aws/aws-cdk/commit/6a24026f30ee6af3c1778195b2db8b61537e3296))
+* **cli:** listing same stack multiple times fails ([#10554](https://github.com/aws/aws-cdk/issues/10554)) ([44c1f20](https://github.com/aws/aws-cdk/commit/44c1f208d4f284102bd5ce60025ab15c4af6081f)), closes [#9667](https://github.com/aws/aws-cdk/issues/9667)
+* **cli:** OS usernames cannot have Unicode characters ([#10451](https://github.com/aws/aws-cdk/issues/10451)) ([635f0ed](https://github.com/aws/aws-cdk/commit/635f0eda89ae0ae61fc2a562f7c097e61d647f29)), closes [#10401](https://github.com/aws/aws-cdk/issues/10401)
+* **cloudfront:** logging bucket uses regional domain name ([#10570](https://github.com/aws/aws-cdk/issues/10570)) ([19dd454](https://github.com/aws/aws-cdk/commit/19dd454c79b1be670b7bd7a4a99fcbde154f658a)), closes [#2554](https://github.com/aws/aws-cdk/issues/2554) [#10512](https://github.com/aws/aws-cdk/issues/10512)
+* **codebuild:** `encryptionKey` cannot be disabled ([#10474](https://github.com/aws/aws-cdk/issues/10474)) ([4aadaa7](https://github.com/aws/aws-cdk/commit/4aadaa779b48f35838cccd4e25107b2338f05547))
+* **codepipeline-actions:** use token as CodeCommitSourceAction branch ([#10463](https://github.com/aws/aws-cdk/issues/10463)) ([94bbabf](https://github.com/aws/aws-cdk/commit/94bbabfff8b785656a40e85539f97ae8cb83c818)), closes [#10263](https://github.com/aws/aws-cdk/issues/10263)
+* **cognito:** authFlows require refreshToken in all scenarios ([#10561](https://github.com/aws/aws-cdk/issues/10561)) ([c0a3cb4](https://github.com/aws/aws-cdk/commit/c0a3cb4e28604d1e78a1020279cc6f2c9e888f2a)), closes [#7625](https://github.com/aws/aws-cdk/issues/7625)
+* **cognito:** callback URLs are specified when OAuth is disabled for user pool clients ([#10588](https://github.com/aws/aws-cdk/issues/10588)) ([fbd48b2](https://github.com/aws/aws-cdk/commit/fbd48b2bf6fa9054d17bc6dc1b4cc57f237810a7)), closes [#10311](https://github.com/aws/aws-cdk/issues/10311)
+* **core:** bundling with staging disabled returns a relative path ([#10507](https://github.com/aws/aws-cdk/issues/10507)) ([e9b5b8c](https://github.com/aws/aws-cdk/commit/e9b5b8c16c11b6dab37d8d9c7fdba2265621eae7)), closes [#9576](https://github.com/aws/aws-cdk/issues/9576) [#10367](https://github.com/aws/aws-cdk/issues/10367)
+* **core:** properties set to false are not rendered in the template ([#10539](https://github.com/aws/aws-cdk/issues/10539)) ([b42d4e9](https://github.com/aws/aws-cdk/commit/b42d4e9e8ef6fd5dc20d48ee0bb82482a312cd7c)), closes [#10455](https://github.com/aws/aws-cdk/issues/10455)
+* **core:** write Metadata resource in core framework ([#10306](https://github.com/aws/aws-cdk/issues/10306)) ([fb39803](https://github.com/aws/aws-cdk/commit/fb39803b62bbd0ff62bf421464559c759ef0a923))
+* **pipelines:** stack tags ([#10533](https://github.com/aws/aws-cdk/issues/10533)) ([97bfd10](https://github.com/aws/aws-cdk/commit/97bfd10fef4c23404ec3f5c6a6ca68604fc78aa8)), closes [#9260](https://github.com/aws/aws-cdk/issues/9260)
+* **rds:** allow creating Proxies for imported resources ([#10488](https://github.com/aws/aws-cdk/issues/10488)) ([c502114](https://github.com/aws/aws-cdk/commit/c5021147e5d6f2e2a91fe50daf3aacd149b0f895)), closes [#9195](https://github.com/aws/aws-cdk/issues/9195)
+* **rds:** default username 'admin' doesn't work for PostgreSQL ([#10597](https://github.com/aws/aws-cdk/issues/10597)) ([8a04014](https://github.com/aws/aws-cdk/commit/8a0401495e05e8ec7178d2ac57556434c853cabd)), closes [#10458](https://github.com/aws/aws-cdk/issues/10458) [#10579](https://github.com/aws/aws-cdk/issues/10579)
+* **secretsmanager:** cannot import secrets by ARN without suffix ([#10609](https://github.com/aws/aws-cdk/issues/10609)) ([3a1d38e](https://github.com/aws/aws-cdk/commit/3a1d38ec5d2737212a5a3fdb4ae829efee23e03a)), closes [#10604](https://github.com/aws/aws-cdk/issues/10604)
+* **secretsmanager:** cannot import secrets if ARN is a token ([#10568](https://github.com/aws/aws-cdk/issues/10568)) ([350105a](https://github.com/aws/aws-cdk/commit/350105a7f27b6f7fafb5e5dd7f6b3a81a1f5baae)), closes [#10309](https://github.com/aws/aws-cdk/issues/10309) [#10520](https://github.com/aws/aws-cdk/issues/10520)
+* **stepfunctions:** JsonPath does not support path with array ([#10553](https://github.com/aws/aws-cdk/issues/10553)) ([07d14ae](https://github.com/aws/aws-cdk/commit/07d14aeb6a18e61be19047442e2058e2c7e5578a)), closes [#9403](https://github.com/aws/aws-cdk/issues/9403)
+* **stepfunctions:** States.ALL doesn't appear last in Retry and Catch arrays ([#10538](https://github.com/aws/aws-cdk/issues/10538)) ([a8d7282](https://github.com/aws/aws-cdk/commit/a8d7282934f02c9e773a0091129fba35b494f2e3)), closes [#10530](https://github.com/aws/aws-cdk/issues/10530)
+
 ## [1.64.1](https://github.com/aws/aws-cdk/compare/v1.64.0...v1.64.1) (2020-09-25)
 
 
