@@ -31,20 +31,6 @@ export = {
     alias = mockAlias(stack);
     cb();
   },
-  'can be created with name'(test: Test) {
-    new codedeploy.LambdaDeploymentGroup(stack, 'MyDG', {
-      application,
-      alias,
-      deploymentConfig: codedeploy.LambdaDeploymentConfig.ALL_AT_ONCE,
-      deploymentGroupName: 'test',
-    });
-
-    expect(stack).to(haveResourceLike('AWS::CodeDeploy::DeploymentGroup', {
-      DeploymentGroupName: 'test',
-    }));
-
-    test.done();
-  },
   'custom resource created'(test: Test) {
 
     // WHEN
