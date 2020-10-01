@@ -7,7 +7,9 @@ const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'log-group-events');
 
-const logGroup = new logs.LogGroup(stack, 'log-group');
+const logGroup = new logs.LogGroup(stack, 'log-group', {
+  logGroupName: '/aws/events/MyLogGroupName',
+});
 
 const timer = new events.Rule(stack, 'Timer', {
   schedule: events.Schedule.rate(cdk.Duration.minutes(1)),

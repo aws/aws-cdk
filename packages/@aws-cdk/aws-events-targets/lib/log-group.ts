@@ -15,10 +15,12 @@ export interface LogGroupProps {
 }
 
 /**
- * Use an AWS CloudWatch LogGroup as an event rule target
+ * Use an AWS CloudWatch LogGroup as an event rule target.
+ *
+ * The LogGroup name must start with /aws/events/.
  */
 export class LogGroup implements events.IRuleTarget {
-  constructor(private readonly handler: logs.ILogGroup, private readonly props: LogGroupProps = {}) {}
+  constructor(private readonly logGroup: logs.ILogGroup, private readonly props: LogGroupProps = {}) {}
 
   /**
    * Returns a RuleTarget that can be used to log an event into a CloudWatch LogGroup
@@ -26,9 +28,8 @@ export class LogGroup implements events.IRuleTarget {
   public bind(_rule: events.IRule, _id?: string): events.RuleTargetConfig {
     return {
       id: '',
-      arn: this.handler.logGroupArn,
+      arn: `arn:aws:logs:${this.logGroup.stack.region}:${this.logGroup.stack.account}:log-group:${this.logGroup.logGroupName}`,
       input: this.props.event,
-      targetResource: this.handler,
     };
   }
 }

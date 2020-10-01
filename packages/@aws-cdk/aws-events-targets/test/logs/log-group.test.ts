@@ -8,7 +8,9 @@ import * as targets from '../../lib';
 test('use log group as an event rule target', () => {
   // GIVEN
   const stack = new cdk.Stack();
-  const logGroup = new logs.LogGroup(stack, 'MyLogGroup');
+  const logGroup = new logs.LogGroup(stack, 'MyLogGroup', {
+    logGroupName: '/aws/events/MyLogGroup',
+  });
   const rule1 = new events.Rule(stack, 'Rule', {
     schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
   });
@@ -22,7 +24,25 @@ test('use log group as an event rule target', () => {
     State: 'ENABLED',
     Targets: [
       {
-        Arn: { 'Fn::GetAtt': ['MyLogGroup5C0DAD85', 'Arn'] },
+        Arn: {
+          'Fn::Join': [
+            '',
+            [
+              'arn:aws:logs:',
+              {
+                Ref: 'AWS::Region',
+              },
+              ':',
+              {
+                Ref: 'AWS::AccountId',
+              },
+              ':log-group:',
+              {
+                Ref: 'MyLogGroup5C0DAD85',
+              },
+            ],
+          ],
+        },
         Id: 'Target0',
       },
     ],
@@ -32,7 +52,9 @@ test('use log group as an event rule target', () => {
 test('use log group as an event rule target with rule target input', () => {
   // GIVEN
   const stack = new cdk.Stack();
-  const logGroup = new logs.LogGroup(stack, 'MyLogGroup');
+  const logGroup = new logs.LogGroup(stack, 'MyLogGroup', {
+    logGroupName: '/aws/events/MyLogGroup',
+  });
   const rule1 = new events.Rule(stack, 'Rule', {
     schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
   });
@@ -50,7 +72,25 @@ test('use log group as an event rule target with rule target input', () => {
     State: 'ENABLED',
     Targets: [
       {
-        Arn: { 'Fn::GetAtt': ['MyLogGroup5C0DAD85', 'Arn'] },
+        Arn: {
+          'Fn::Join': [
+            '',
+            [
+              'arn:aws:logs:',
+              {
+                Ref: 'AWS::Region',
+              },
+              ':',
+              {
+                Ref: 'AWS::AccountId',
+              },
+              ':log-group:',
+              {
+                Ref: 'MyLogGroup5C0DAD85',
+              },
+            ],
+          ],
+        },
         Id: 'Target0',
         InputTransformer: {
           InputPathsMap: {

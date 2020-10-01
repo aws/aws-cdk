@@ -32,10 +32,14 @@ EventBridge.
 
 Use the `LogGroup` target to log your events in a CloudWatch LogGroup.
 
+The LogGroup name must start with `/aws/events/`.
+
 ```ts
 const rule = new Rule(this, 'rule');
 
-const logGroup = new LogGroup(this, 'logGroup');
+const logGroup = new LogGroup(this, 'MyLogGroup', {
+  logGroupName: '/aws/events/MyLogGroup',
+});
 
 rule.addTarget(targets.LogGroup(logGroup));
 ```
@@ -45,11 +49,14 @@ You can also use an [InputTransformer](https://docs.aws.amazon.com/eventbridge/l
 ```ts
 const rule = new Rule(this, 'rule');
 
-const logGroup = new LogGroup(this, 'logGroup');
+const logGroup = new LogGroup(this, 'MyLogGroup', {
+  logGroupName: '/aws/events/MyLogGroup',
+});
 
 rule.addTarget(targets.LogGroup(logGroup, {
   event: events.RuleTargetInput.fromObject({
-    data: events.EventField.fromPath('$.detail.data'),
+    status: events.EventField.fromPath('$.detail.status'),
+    instanceId: events.EventField.fromPath('$.detail.instance-id'),
   })
 }));
 ```

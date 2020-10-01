@@ -3,6 +3,7 @@
     "loggroupB02AAEB1": {
       "Type": "AWS::Logs::LogGroup",
       "Properties": {
+        "LogGroupName": "/aws/events/MyLogGroupName",
         "RetentionInDays": 731
       },
       "UpdateReplacePolicy": "Retain",
@@ -16,9 +17,22 @@
         "Targets": [
           {
             "Arn": {
-              "Fn::GetAtt": [
-                "loggroupB02AAEB1",
-                "Arn"
+              "Fn::Join": [
+                "",
+                [
+                  "arn:aws:logs:",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ":",
+                  {
+                    "Ref": "AWS::AccountId"
+                  },
+                  ":log-group:",
+                  {
+                    "Ref": "loggroupB02AAEB1"
+                  }
+                ]
               ]
             },
             "Id": "Target0"
@@ -34,9 +48,22 @@
         "Targets": [
           {
             "Arn": {
-              "Fn::GetAtt": [
-                "loggroupB02AAEB1",
-                "Arn"
+              "Fn::Join": [
+                "",
+                [
+                  "arn:aws:logs:",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ":",
+                  {
+                    "Ref": "AWS::AccountId"
+                  },
+                  ":log-group:",
+                  {
+                    "Ref": "loggroupB02AAEB1"
+                  }
+                ]
               ]
             },
             "Id": "Target0",
