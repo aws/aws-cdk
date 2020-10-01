@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-lambda-nodejs",
-        "module": "aws_cdk.aws_lambda_nodejs"
+        "module": "aws_cdk.aws_lambda_nodejs",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
