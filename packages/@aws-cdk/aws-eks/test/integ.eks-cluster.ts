@@ -4,6 +4,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import { App, CfnOutput, Duration, Token, Fn } from '@aws-cdk/core';
 import * as cdk8s from 'cdk8s';
+import * as constructs from 'constructs';
 import * as eks from '../lib';
 import * as hello from './hello-k8s';
 import * as k8s from './imports/k8s-v1_17_0';
@@ -107,14 +108,21 @@ class EksClusterStack extends TestStack {
   }
 
   private assertSimpleCdk8sChart() {
-    const app = new cdk8s.App();
-    const chart = new cdk8s.Chart(app, 'Chart');
 
-    new k8s.ConfigMap(chart, 'config-map', {
-      data: {
-        clusterName: this.cluster.clusterName,
-      },
-    });
+    class Chart extends cdk8s.Chart {
+      constructor(scope: constructs.Construct, ns: string, cluster: eks.ICluster) {
+        super(scope, ns);
+
+        new k8s.ConfigMap(this, 'config-map', {
+          data: {
+            clusterName: cluster.clusterName,
+          },
+        });
+
+      }
+    }
+    const app = new cdk8s.App();
+    const chart = new Chart(app, 'Chart', this.cluster);
 
     this.cluster.addCdk8sChart('cdk8s-chart', chart);
   }
