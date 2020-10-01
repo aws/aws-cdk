@@ -1,4 +1,5 @@
-import { Construct, IResource, Resource } from '@aws-cdk/core';
+import { IResource, Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnRequestValidator, CfnRequestValidatorProps } from './apigateway.generated';
 import { IRestApi, RestApi } from './restapi';
 

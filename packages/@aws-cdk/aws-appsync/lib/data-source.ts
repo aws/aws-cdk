@@ -1,10 +1,15 @@
 import { ITable } from '@aws-cdk/aws-dynamodb';
 import { IGrantable, IPrincipal, IRole, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { IFunction } from '@aws-cdk/aws-lambda';
-import { Construct, IResolvable } from '@aws-cdk/core';
+import { IResolvable } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnDataSource } from './appsync.generated';
 import { IGraphqlApi } from './graphqlapi-base';
 import { BaseResolverProps, Resolver } from './resolver';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Base properties for an AppSync datasource
@@ -83,7 +88,7 @@ export interface ExtendedDataSourceProps {
 /**
  * Abstract AppSync datasource implementation. Do not use directly but use subclasses for concrete datasources
  */
-export abstract class BaseDataSource extends Construct {
+export abstract class BaseDataSource extends CoreConstruct {
   /**
    * the name of the data source
    */

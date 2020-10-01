@@ -1,6 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { Construct, IConstruct, IResource, RemovalPolicy, Resource, SecretValue, Stack, Token } from '@aws-cdk/core';
+import { IResource, RemovalPolicy, Resource, SecretValue, Stack, Token } from '@aws-cdk/core';
+import { IConstruct, Construct } from 'constructs';
 import { ResourcePolicy } from './policy';
 import { RotationSchedule, RotationScheduleOptions } from './rotation-schedule';
 import * as secretsmanager from './secretsmanager.generated';
@@ -326,7 +327,7 @@ export class Secret extends SecretBase {
 
     // @see https://docs.aws.amazon.com/kms/latest/developerguide/services-secrets-manager.html#asm-authz
     const principal =
-       new kms.ViaServicePrincipal(`secretsmanager.${Stack.of(this).region}.amazonaws.com`, new iam.AccountPrincipal(Stack.of(this).account));
+      new kms.ViaServicePrincipal(`secretsmanager.${Stack.of(this).region}.amazonaws.com`, new iam.AccountPrincipal(Stack.of(this).account));
     this.encryptionKey?.grantEncryptDecrypt(principal);
     this.encryptionKey?.grant(principal, 'kms:CreateGrant', 'kms:DescribeKey');
   }
@@ -604,8 +605,8 @@ function parseSecretName(construct: IConstruct, secretArn: string) {
     }
 
     // Secret resource names are in the format `${secretName}-${SecretsManager suffix}`
-    const secretNameFromArn = resourceName.substr(0, resourceName.lastIndexOf('-'));
-    if (secretNameFromArn) { return secretNameFromArn; }
+    // If there is no hyphen, assume no suffix was provided, and return the whole name.
+    return resourceName.substr(0, resourceName.lastIndexOf('-')) || resourceName;
   }
   throw new Error('invalid ARN format; no secret name provided');
 }
