@@ -58,7 +58,7 @@ export = {
         service: 'CodeDeploy',
         parameters: {
           computePlatform: 'Lambda',
-          deploymentConfigName: 'CustomConfigLambdaCanary5Percent1Minutes',
+          deploymentConfigName: 'CustomConfig.LambdaCanary5Percent1Minutes',
           trafficRoutingConfig: {
             timeBasedCanary: {
               canaryPercentage: '5',
@@ -68,7 +68,7 @@ export = {
           },
         },
         physicalResourceId: {
-          id: 'CustomConfigLambdaCanary5Percent1Minutes',
+          id: 'CustomConfig.LambdaCanary5Percent1Minutes',
         },
       },
       Update: {
@@ -76,7 +76,7 @@ export = {
         service: 'CodeDeploy',
         parameters: {
           computePlatform: 'Lambda',
-          deploymentConfigName: 'CustomConfigLambdaCanary5Percent1Minutes',
+          deploymentConfigName: 'CustomConfig.LambdaCanary5Percent1Minutes',
           trafficRoutingConfig: {
             timeBasedCanary: {
               canaryPercentage: '5',
@@ -86,14 +86,14 @@ export = {
           },
         },
         physicalResourceId: {
-          id: 'CustomConfigLambdaCanary5Percent1Minutes',
+          id: 'CustomConfig.LambdaCanary5Percent1Minutes',
         },
       },
       Delete: {
         action: 'deleteDeploymentConfig',
         service: 'CodeDeploy',
         parameters: {
-          deploymentConfigName: 'CustomConfigLambdaCanary5Percent1Minutes',
+          deploymentConfigName: 'CustomConfig.LambdaCanary5Percent1Minutes',
         },
       },
     }));
@@ -120,7 +120,7 @@ export = {
                   {
                     Ref: 'AWS::AccountId',
                   },
-                  ':deploymentconfig:CustomConfigLambdaCanary5Percent1Minutes',
+                  ':deploymentconfig:CustomConfig.LambdaCanary5Percent1Minutes',
                 ],
               ],
             },
@@ -144,7 +144,7 @@ export = {
                   {
                     Ref: 'AWS::AccountId',
                   },
-                  ':deploymentconfig:CustomConfigLambdaCanary5Percent1Minutes',
+                  ':deploymentconfig:CustomConfig.LambdaCanary5Percent1Minutes',
                 ],
               ],
             },
@@ -171,7 +171,7 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::CodeDeploy::DeploymentGroup', {
-      DeploymentConfigName: 'CustomConfigLambdaLinear5Percent1Minutes',
+      DeploymentConfigName: 'CustomConfig.LambdaLinear5Percent1Minutes',
       DeploymentStyle: {
         DeploymentOption: 'WITH_TRAFFIC_CONTROL',
         DeploymentType: 'BLUE_GREEN',
@@ -196,7 +196,7 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::CodeDeploy::DeploymentGroup', {
-      DeploymentConfigName: 'CustomConfigLambdaCanary5Percent1Minutes',
+      DeploymentConfigName: 'CustomConfig.LambdaCanary5Percent1Minutes',
       DeploymentStyle: {
         DeploymentOption: 'WITH_TRAFFIC_CONTROL',
         DeploymentType: 'BLUE_GREEN',
@@ -236,7 +236,7 @@ export = {
             'DEPLOYMENT_FAILURE',
           ],
         },
-        DeploymentConfigName: 'CustomConfigLambdaCanary5Percent1Minutes',
+        DeploymentConfigName: 'CustomConfig.LambdaCanary5Percent1Minutes',
         DeploymentStyle: {
           DeploymentOption: 'WITH_TRAFFIC_CONTROL',
           DeploymentType: 'BLUE_GREEN',

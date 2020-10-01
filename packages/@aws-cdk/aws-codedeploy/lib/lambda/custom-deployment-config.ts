@@ -95,7 +95,7 @@ export class CustomLambdaDeploymentConfig extends Resource implements ILambdaDep
     // What the config is called in the AWS console
     // We tack the id on so that, if the user has multiple configs with identical settings,
     // deleting one will not affect the other
-    const resourceName = id + customDeploymentConfigName;
+    const resourceName = this.node.uniqueId + '.' + customDeploymentConfigName;
     this.deploymentConfigName = resourceName;
     this.deploymentConfigArn = arnForDeploymentConfig(resourceName);
 
