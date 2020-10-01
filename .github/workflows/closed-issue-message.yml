@@ -1,4 +1,4 @@
-name: "Closed Issue Message"
+name: Closed Issue Message
 on:
     issues:
        types: [closed]
