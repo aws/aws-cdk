@@ -515,6 +515,7 @@ describe('assets n buckets', () => {
   test('fingerprint data changes on existing asset update, even for assets with unchanging URLs', () => {
     function calculateFingerprint(assetFilePath: string): string | undefined {
       resetStateWithSynthesizer(new SingletonLocationSythesizer());
+      AssetStaging.clearAssetHashCache(); // Needed so changing the content of the file will update the hash
       const init = ec2.CloudFormationInit.fromElements(
         ec2.InitFile.fromExistingAsset('/etc/myFile', new Asset(stack, 'FileAsset', { path: assetFilePath })),
       );
