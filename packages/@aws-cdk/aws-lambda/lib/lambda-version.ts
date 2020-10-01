@@ -1,5 +1,6 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-import { Construct, Fn, Lazy, RemovalPolicy } from '@aws-cdk/core';
+import { Fn, Lazy, RemovalPolicy } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Alias, AliasOptions } from './alias';
 import { EventInvokeConfigOptions } from './event-invoke-config';
 import { Function } from './function';
@@ -128,7 +129,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
       public readonly role = lambda.role;
 
       protected readonly qualifier = version;
-      protected readonly canCreatePermissions = false;
+      protected readonly canCreatePermissions = this._isStackAccount();
 
       public addAlias(name: string, opts: AliasOptions = { }): Alias {
         return addAlias(this, this, name, opts);
@@ -154,7 +155,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
       public readonly role = attrs.lambda.role;
 
       protected readonly qualifier = attrs.version;
-      protected readonly canCreatePermissions = false;
+      protected readonly canCreatePermissions = this._isStackAccount();
 
       public addAlias(name: string, opts: AliasOptions = { }): Alias {
         return addAlias(this, this, name, opts);

@@ -5,11 +5,7 @@
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
 
-> All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) are always stable and safe to use.
-
-![cdk-constructs: Developer Preview](https://img.shields.io/badge/cdk--constructs-developer--preview-informational.svg?style=for-the-badge)
-
-> The APIs of higher level constructs in this module are in **developer preview** before they become stable. We will only make breaking changes to address unforeseen API issues. Therefore, these APIs are not subject to [Semantic Versioning](https://semver.org/), and breaking changes will be announced in release notes. This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
 <!--END STABILITY BANNER-->
@@ -27,9 +23,7 @@ your instances will be launched privately or publicly:
 ```ts
 const cluster = new rds.DatabaseCluster(this, 'Database', {
   engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_2_08_1 }),
-  masterUser: {
-    username: 'clusteradmin'
-  },
+  masterUser: rds.Login.fromUsername('clusteradmin'), // Optional - will default to admin
   instanceProps: {
     // optional, defaults to t3.medium
     instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
@@ -76,7 +70,7 @@ const instance = new rds.DatabaseInstance(this, 'Instance', {
   engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19_0_0_0_2020_04_R1 }),
   // optional, defaults to m5.large
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
-  masterUsername: 'syscdk',
+  masterUsername: rds.Login.fromUsername('syscdk'), // Optional - will default to admin
   vpc,
   vpcSubnets: {
     subnetType: ec2.SubnetType.PRIVATE
@@ -103,7 +97,6 @@ const instance = new rds.DatabaseInstance(this, 'Instance', {
   engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_12_3 }),
   // optional, defaults to m5.large
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
-  masterUsername: 'syscdk',
   vpc,
   maxAllocatedStorage: 200,
 });
@@ -141,6 +134,35 @@ method:
 const rule = instance.onEvent('InstanceEvent', { target: new targets.LambdaFunction(fn) });
 ```
 
+### Login credentials
+
+By default, database instances and clusters will have `admin` user with an auto-generated password.
+An alternative username (and password) may be specified for the admin user instead of the default.
+
+The following examples use a `DatabaseInstance`, but the same usage is applicable to `DatabaseCluster`.
+
+```ts
+const engine = rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_12_3 });
+new rds.DatabaseInstance(this, 'InstanceWithUsername', {
+  engine,
+  vpc,
+  credentials: rds.Credentials.fromUsername('postgres'), // Creates an admin user of postgres with a generated password
+});
+
+new rds.DatabaseInstance(this, 'InstanceWithUsernameAndPassword', {
+  engine,
+  vpc,
+  credentials: rds.Credentials.fromUsername('postgres', { password: SecretValue.ssmSecure('/dbPassword', 1) }), // Use password from SSM
+});
+
+const mySecret = secretsmanager.Secret.fromSecretName(this, 'DBSecret', 'myDBLoginInfo');
+new rds.DatabaseInstance(this, 'InstanceWithSecretLogin', {
+  engine,
+  vpc,
+  credentials: rds.Credentials.fromSecret(mySecret), // Get both username and password from existing secret
+});
+```
+
 ### Connecting
 
 To control who can access the cluster or instance, use the `.connections` attribute. RDS databases have
@@ -168,7 +190,10 @@ const address = instance.instanceEndpoint.socketAddress;   // "HOSTNAME:PORT"
 When the master password is generated and stored in AWS Secrets Manager, it can be rotated automatically:
 
 ```ts
-instance.addRotationSingleUser(); // Will rotate automatically after 30 days
+instance.addRotationSingleUser({
+  automaticallyAfter: cdk.Duration.days(7), // defaults to 30 days
+  excludeCharacters: '!@#$%^&*', // defaults to the set " %+~`#$&*()|[]{}:;<>?!'/@\"\\"
+});
 ```
 
 [example of setting up master password rotation for a cluster](test/integ.cluster-rotation.lit.ts)
@@ -187,6 +212,7 @@ It's also possible to create user credentials together with the instance/cluster
 const myUserSecret = new rds.DatabaseSecret(this, 'MyUserSecret', {
   username: 'myuser',
   masterSecret: instance.secret,
+  excludeCharacters: '{}[]()\'"/\\', // defaults to the set " %+~`#$&*()|[]{}:;<>?!'/@\"\\"
 });
 const myUserSecretAttached = myUserSecret.attach(instance); // Adds DB connections information in the secret
 
@@ -211,7 +237,6 @@ The following example shows enabling IAM authentication for a database instance 
 ```ts
 const instance = new rds.DatabaseInstance(stack, 'Instance', {
   engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
-  masterUsername: 'admin',
   vpc,
   iamAuthentication: true, // Optional - will be automatically set if you call grantConnect().
 });
@@ -240,7 +265,6 @@ const role = new iam.Role(stack, 'RDSDirectoryServicesRole', {
 });
 const instance = new rds.DatabaseInstance(stack, 'Instance', {
   engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
-  masterUsername: 'admin',
   vpc,
   domain: 'd-????????', // The ID of the domain for the instance to join.
   domainRole: role, // Optional - will be create automatically if not provided.
@@ -268,20 +292,22 @@ const cpuUtilization = cluster.metricCPUUtilization();
 const readLatency = instance.metric('ReadLatency', { statistic: 'Average', periodSec: 60 });
 ```
 
-### Enabling S3 integration to a cluster (non-serverless Aurora only)
+### Enabling S3 integration
 
-Data in S3 buckets can be imported to and exported from Aurora databases using SQL queries. To enable this
+Data in S3 buckets can be imported to and exported from certain database engines using SQL queries. To enable this
 functionality, set the `s3ImportBuckets` and `s3ExportBuckets` properties for import and export respectively. When
 configured, the CDK automatically creates and configures IAM roles as required.
 Additionally, the `s3ImportRole` and `s3ExportRole` properties can be used to set this role directly.
 
-For Aurora MySQL, read more about [loading data from
-S3](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Integrating.LoadFromS3.html) and [saving
-data into S3](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Integrating.SaveIntoS3.html).
+You can read more about loading data to (or from) S3 here:
 
-For Aurora PostgreSQL, read more about [loading data from
-S3](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraPostgreSQL.Migrating.html) and [saving
-data into S3](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/postgresql-s3-export.html).
+* Aurora MySQL - [import](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Integrating.LoadFromS3.html)
+  and [export](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Integrating.SaveIntoS3.html).
+* Aurora PostgreSQL - [import](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraPostgreSQL.Migrating.html)
+  and [export](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/postgresql-s3-export.html).
+* Microsoft SQL Server - [import & export](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/SQLServer.Procedural.Importing.html)
+* PostgreSQL - [import](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/PostgreSQL.Procedural.Importing.html)
+* Oracle - [import & export](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/oracle-s3-integration.html)
 
 The following snippet sets up a database cluster with different S3 buckets where the data is imported and exported -
 
@@ -376,3 +402,49 @@ new rds.OptionGroup(stack, 'Options', {
   ],
 });
 ```
+
+### Serverless
+
+[Amazon Aurora Serverless]((https://aws.amazon.com/rds/aurora/serverless/)) is an on-demand, auto-scaling configuration for Amazon
+Aurora. The database will automatically start up, shut down, and scale capacity
+up or down based on your application's needs. It enables you to run your database
+in the cloud without managing any database instances.
+
+The following example initializes an Aurora Serverless PostgreSql cluster.
+Aurora Serverless clusters can specify scaling properties which will be used to
+automatically scale the database cluster seamlessly based on the workload. 
+
+```ts
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as rds from '@aws-cdk/aws-rds';
+
+const vpc = new ec2.Vpc(this, 'myrdsvpc');
+
+const cluster = new rds.ServerlessCluster(this, 'AnotherCluster', {
+  engine: rds.DatabaseClusterEngine.AURORA_POSTGRESQL,
+  parameterGroup: rds.ParameterGroup.fromParameterGroupName(this, 'ParameterGroup', 'default.aurora-postgresql10'),
+  vpc,
+  scaling: {
+    autoPause: Duration.minutes(10), // default is to pause after 5 minutes of idle time
+    minCapacity: rds.AuroraCapacityUnit.ACU_8, // default is 2 Aurora capacity units (ACUs)
+    maxCapacity: rds.AuroraCapacityUnit.ACU_32, // default is 16 Aurora capacity units (ACUs)
+  }
+});
+```
+Aurora Serverless Clusters do not support the following features:
+* Loading data from an Amazon S3 bucket
+* Saving data to an Amazon S3 bucket
+* Invoking an AWS Lambda function with an Aurora MySQL native function
+* Aurora replicas
+* Backtracking
+* Multi-master clusters
+* Database cloning
+* IAM database cloning
+* IAM database authentication
+* Restoring a snapshot from MySQL DB instance
+* Performance Insights
+* RDS Proxy
+
+Read more about the [limitations of Aurora Serverless](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless.html#aurora-serverless.limitations)
+
+Learn more about using Amazon Aurora Serverless by reading the [documentation](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless.html)

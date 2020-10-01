@@ -1,7 +1,7 @@
 {
   "name": "@aws-cdk/aws-lambda-python",
   "version": "0.0.0",
-  "description": "CDK Constructs for AWS Lambda in Python",
+  "description": "The CDK Construct Library for AWS Lambda in Python",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-lambda-python",
-        "module": "aws_cdk.aws_lambda_python"
+        "module": "aws_cdk.aws_lambda_python",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true

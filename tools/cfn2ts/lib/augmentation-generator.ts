@@ -39,7 +39,7 @@ export class AugmentationGenerator {
    */
   public async save(dir: string): Promise<string[]> {
     this.code.closeFile(this.outputFile);
-    return await this.code.save(dir);
+    return this.code.save(dir);
   }
 
   private emitMetricAugmentations(resourceTypeName: string, metrics: schema.ResourceMetricAugmentations, options?: schema.AugmentationOptions): void {
