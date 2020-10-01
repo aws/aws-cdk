@@ -1,4 +1,5 @@
 import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
+import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as apigateway from '../lib';
@@ -64,6 +65,164 @@ export = {
         Ref: 'testapiplan1B111AFF',
       },
     }));
+    test.done();
+  },
+
+  'grantRead'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const user = new iam.User(stack, 'User');
+    const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: true, deployOptions: { stageName: 'test' } });
+    api.root.addMethod('GET'); // api must have atleast one method.
+
+    // WHEN
+    const apiKey = new apigateway.ApiKey(stack, 'test-api-key', {
+      customerId: 'test-customer',
+      resources: [api],
+    });
+    apiKey.grantRead(user);
+
+    // THEN
+    expect(stack).to(haveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'apigateway:GET',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':apigateway:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  '::/apikeys/',
+                  {
+                    Ref: 'testapikeyE093E501',
+                  },
+                ],
+              ],
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    }));
+
+    test.done();
+  },
+
+  'grantWrite'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const user = new iam.User(stack, 'User');
+    const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: true, deployOptions: { stageName: 'test' } });
+    api.root.addMethod('GET'); // api must have atleast one method.
+
+    // WHEN
+    const apiKey = new apigateway.ApiKey(stack, 'test-api-key', {
+      customerId: 'test-customer',
+      resources: [api],
+    });
+    apiKey.grantWrite(user);
+
+    // THEN
+    expect(stack).to(haveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'apigateway:POST',
+              'apigateway:PUT',
+              'apigateway:PATCH',
+              'apigateway:DELETE',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':apigateway:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  '::/apikeys/',
+                  {
+                    Ref: 'testapikeyE093E501',
+                  },
+                ],
+              ],
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    }));
+
+    test.done();
+  },
+
+  'grantReadWrite'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const user = new iam.User(stack, 'User');
+    const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: true, deployOptions: { stageName: 'test' } });
+    api.root.addMethod('GET'); // api must have atleast one method.
+
+    // WHEN
+    const apiKey = new apigateway.ApiKey(stack, 'test-api-key', {
+      customerId: 'test-customer',
+      resources: [api],
+    });
+    apiKey.grantReadWrite(user);
+
+    // THEN
+    expect(stack).to(haveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'apigateway:GET',
+              'apigateway:POST',
+              'apigateway:PUT',
+              'apigateway:PATCH',
+              'apigateway:DELETE',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':apigateway:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  '::/apikeys/',
+                  {
+                    Ref: 'testapikeyE093E501',
+                  },
+                ],
+              ],
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    }));
+
     test.done();
   },
 };

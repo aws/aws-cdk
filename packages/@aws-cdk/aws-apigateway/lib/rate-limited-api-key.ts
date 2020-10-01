@@ -1,6 +1,5 @@
-import { Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { ApiKey, ApiKeyProps, IApiKey } from './api-key';
+import { ApiKey, ApiKeyBase, ApiKeyProps } from './api-key';
 import { QuotaSettings, ThrottleSettings, UsagePlan, UsagePlanPerApiStage } from './usage-plan';
 
 /**
@@ -31,12 +30,13 @@ export interface RateLimitedApiKeyProps extends ApiKeyProps {
  *
  * @resource AWS::ApiGateway::ApiKey
  */
-export class RateLimitedApiKey extends Resource implements IApiKey {
+export class RateLimitedApiKey extends ApiKeyBase {
   public readonly keyId: string;
+  public readonly keyArn: string;
 
   constructor(scope: Construct, id: string, props: RateLimitedApiKeyProps = { }) {
     super(scope, id, {
-      physicalName: props.apiKeyName,
+      apiKeyName: props.apiKeyName,
     });
 
     const resource = new ApiKey(this, 'Resource', props);
@@ -51,5 +51,6 @@ export class RateLimitedApiKey extends Resource implements IApiKey {
     }
 
     this.keyId = resource.keyId;
+    this.keyArn = resource.keyArn;
   }
 }
