@@ -903,7 +903,7 @@ export interface DatabaseInstanceProps extends DatabaseInstanceSourceProps {
   /**
    * Credentials for the administrative user
    *
-   * @default - A username of 'admin' and SecretsManager-generated password
+   * @default - A username of 'admin' (or 'postgres' for PostgreSQL) and SecretsManager-generated password
    */
   readonly credentials?: Credentials;
 
@@ -945,7 +945,7 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
   constructor(scope: Construct, id: string, props: DatabaseInstanceProps) {
     super(scope, id, props);
 
-    let credentials = props.credentials ?? Credentials.fromUsername('admin');
+    let credentials = props.credentials ?? Credentials.fromUsername(props.engine.defaultUsername ?? 'admin');
     if (!credentials.secret && !credentials.password) {
       credentials = Credentials.fromSecret(new DatabaseSecret(this, 'Secret', {
         username: credentials.username,
