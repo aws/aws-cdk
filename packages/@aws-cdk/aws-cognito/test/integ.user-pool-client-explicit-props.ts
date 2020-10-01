@@ -11,7 +11,6 @@ userpool.addClient('myuserpoolclient', {
   authFlows: {
     adminUserPassword: true,
     custom: true,
-    refreshToken: true,
     userPassword: true,
     userSrp: true,
   },
