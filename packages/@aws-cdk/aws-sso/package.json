@@ -24,7 +24,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-sso",
-        "module": "aws_cdk.aws_sso"
+        "module": "aws_cdk.aws_sso",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     }
   },
@@ -50,7 +54,10 @@
   },
   "cdk-build": {
     "cloudformation": "AWS::SSO",
-    "jest": true
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "keywords": [
     "aws",

@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-events",
-        "module": "aws_cdk.aws_events"
+        "module": "aws_cdk.aws_events",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
@@ -48,7 +52,10 @@
     "compat": "cdk-compat"
   },
   "cdk-build": {
-    "cloudformation": "AWS::Events"
+    "cloudformation": "AWS::Events",
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": "true"
+    }
   },
   "keywords": [
     "aws",

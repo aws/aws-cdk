@@ -2,7 +2,8 @@ import { EOL } from 'os';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { Construct, Fn, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
+import { Fn, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { BucketPolicy } from './bucket-policy';
 import { IBucketNotificationDestination } from './destination';
 import { BucketNotifications } from './notifications-resource';
@@ -1321,7 +1322,7 @@ export class Bucket extends BucketBase {
   }
 
   /**
-   * Subscribes a destination to receive notificatins when an object is
+   * Subscribes a destination to receive notifications when an object is
    * created in the bucket. This is identical to calling
    * `onEvent(EventType.ObjectCreated)`.
    *
@@ -1333,7 +1334,7 @@ export class Bucket extends BucketBase {
   }
 
   /**
-   * Subscribes a destination to receive notificatins when an object is
+   * Subscribes a destination to receive notifications when an object is
    * removed from the bucket. This is identical to calling
    * `onEvent(EventType.ObjectRemoved)`.
    *
@@ -1782,11 +1783,58 @@ export enum EventType {
   OBJECT_REMOVED_DELETE_MARKER_CREATED = 's3:ObjectRemoved:DeleteMarkerCreated',
 
   /**
+   * Using restore object event types you can receive notifications for
+   * initiation and completion when restoring objects from the S3 Glacier
+   * storage class.
+   *
+   * You use s3:ObjectRestore:Post to request notification of object restoration
+   * initiation.
+   */
+  OBJECT_RESTORE_POST = 's3:ObjectRestore:Post',
+
+  /**
+   * Using restore object event types you can receive notifications for
+   * initiation and completion when restoring objects from the S3 Glacier
+   * storage class.
+   *
+   * You use s3:ObjectRestore:Completed to request notification of
+   * restoration completion.
+   */
+  OBJECT_RESTORE_COMPLETED = 's3:ObjectRestore:Completed',
+
+  /**
    * You can use this event type to request Amazon S3 to send a notification
    * message when Amazon S3 detects that an object of the RRS storage class is
    * lost.
    */
   REDUCED_REDUNDANCY_LOST_OBJECT = 's3:ReducedRedundancyLostObject',
+
+  /**
+   * You receive this notification event when an object that was eligible for
+   * replication using Amazon S3 Replication Time Control failed to replicate.
+   */
+  REPLICATION_OPERATION_FAILED_REPLICATION = 's3:Replication:OperationFailedReplication',
+
+  /**
+   * You receive this notification event when an object that was eligible for
+   * replication using Amazon S3 Replication Time Control exceeded the 15-minute
+   * threshold for replication.
+   */
+  REPLICATION_OPERATION_MISSED_THRESHOLD = 's3:Replication:OperationMissedThreshold',
+
+  /**
+   * You receive this notification event for an object that was eligible for
+   * replication using the Amazon S3 Replication Time Control feature replicated
+   * after the 15-minute threshold.
+   */
+  REPLICATION_OPERATION_REPLICATED_AFTER_THRESHOLD = 's3:Replication:OperationReplicatedAfterThreshold',
+
+  /**
+   * You receive this notification event for an object that was eligible for
+   * replication using Amazon S3 Replication Time Control but is no longer tracked
+   * by replication metrics.
+   */
+  REPLICATION_OPERATION_NOT_TRACKED = 's3:Replication:OperationNotTracked',
 }
 
 export interface NotificationKeyFilter {

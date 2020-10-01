@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-docdb",
-        "module": "aws_cdk.aws_docdb"
+        "module": "aws_cdk.aws_docdb",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
@@ -50,7 +54,10 @@
   },
   "cdk-build": {
     "cloudformation": "AWS::DocDB",
-    "jest": true
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "keywords": [
     "aws",

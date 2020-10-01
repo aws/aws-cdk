@@ -1,4 +1,4 @@
-import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Chain } from '..';
 import { IChainable, INextable } from '../types';
 import { State } from './state';
@@ -28,7 +28,7 @@ export class CustomState extends State implements IChainable, INextable {
    */
   private readonly stateJson: { [key: string]: any};
 
-  constructor(scope: cdk.Construct, id: string, props: CustomStateProps) {
+  constructor(scope: Construct, id: string, props: CustomStateProps) {
     super(scope, id, {});
 
     this.endStates = [this];

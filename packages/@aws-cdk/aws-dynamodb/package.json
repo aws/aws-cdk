@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-dynamodb",
-        "module": "aws_cdk.aws_dynamodb"
+        "module": "aws_cdk.aws_dynamodb",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true

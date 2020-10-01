@@ -275,6 +275,13 @@
                         "type": "string"
                     }
                 },
+                "tags": {
+                    "description": "Values for CloudFormation stack tags that should be passed when the stack is deployed. (Default - No tags)",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
                 "stackName": {
                     "description": "The name to use for the CloudFormation stack. (Default - name derived from artifact ID)",
                     "type": "string"

@@ -1,5 +1,5 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { IConstruct } from './construct-compat';
+import { IConstruct, Node } from 'constructs';
 
 const DEPRECATIONS_SYMBOL = Symbol.for('@aws-cdk/core.deprecations');
 
@@ -70,7 +70,7 @@ export class Annotations {
 
     // throw if CDK_BLOCK_DEPRECATIONS is set
     if (process.env.CDK_BLOCK_DEPRECATIONS) {
-      throw new Error(`${this.scope.node.path}: ${text}`);
+      throw new Error(`${Node.of(this.scope).path}: ${text}`);
     }
 
     // de-dup based on api key
@@ -89,7 +89,7 @@ export class Annotations {
    * @param message The message itself
    */
   private addMessage(level: string, message: string) {
-    this.scope.node.addMetadata(level, message);
+    Node.of(this.scope).addMetadata(level, message);
   }
 
   /**

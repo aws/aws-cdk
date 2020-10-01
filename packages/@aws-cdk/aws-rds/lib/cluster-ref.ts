@@ -1,6 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { IResource } from '@aws-cdk/core';
+import { IClusterEngine } from './cluster-engine';
 import { Endpoint } from './endpoint';
 import { DatabaseProxy, DatabaseProxyOptions } from './proxy';
 
@@ -34,6 +35,12 @@ export interface IDatabaseCluster extends IResource, ec2.IConnectable, secretsma
    * Endpoints which address each individual replica.
    */
   readonly instanceEndpoints: Endpoint[];
+
+  /**
+   * The engine of this Cluster.
+   * May be not known for imported Clusters if it wasn't provided explicitly.
+   */
+  readonly engine?: IClusterEngine;
 
   /**
    * Add a new db proxy to this cluster.
@@ -92,4 +99,11 @@ export interface DatabaseClusterAttributes {
    * @default - no instance endpoints
    */
   readonly instanceEndpointAddresses?: string[];
+
+  /**
+   * The engine of the existing Cluster.
+   *
+   * @default - the imported Cluster's engine is unknown
+   */
+  readonly engine?: IClusterEngine;
 }

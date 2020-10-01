@@ -4,7 +4,7 @@ import { Test } from 'nodeunit';
 import * as s3 from '../lib';
 
 export = {
-  'when notification are added, a custom resource is provisioned + a lambda handler for it'(test: Test) {
+  'when notification is added a custom s3 bucket notification resource is provisioned'(test: Test) {
     const stack = new cdk.Stack();
 
     const bucket = new s3.Bucket(stack, 'MyBucket');
@@ -17,7 +17,18 @@ export = {
     });
 
     expect(stack).to(haveResource('AWS::S3::Bucket'));
-    expect(stack).to(haveResource('Custom::S3BucketNotifications'));
+    expect(stack).to(haveResource('Custom::S3BucketNotifications', {
+      NotificationConfiguration: {
+        TopicConfigurations: [
+          {
+            Events: [
+              's3:ObjectCreated:*',
+            ],
+            TopicArn: 'ARN',
+          },
+        ],
+      },
+    }));
 
     test.done();
   },

@@ -1,5 +1,5 @@
 import * as logs from '@aws-cdk/aws-logs';
-import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 /**
  * Retry options for all AWS API calls.
@@ -25,7 +25,7 @@ export interface LogRetentionProps extends logs.LogRetentionProps {
  * @deprecated use `LogRetention` from '@aws-cdk/aws-logs' instead
  */
 export class LogRetention extends logs.LogRetention {
-  constructor(scope: cdk.Construct, id: string, props: LogRetentionProps) {
+  constructor(scope: Construct, id: string, props: LogRetentionProps) {
     super(scope, id, { ...props });
   }
 }

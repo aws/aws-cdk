@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-route53resolver",
-        "module": "aws_cdk.aws_route53resolver"
+        "module": "aws_cdk.aws_route53resolver",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
@@ -50,7 +54,10 @@
   },
   "cdk-build": {
     "cloudformation": "AWS::Route53Resolver",
-    "jest": true
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "keywords": [
     "aws",

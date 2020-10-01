@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-kms",
-        "module": "aws_cdk.aws_kms"
+        "module": "aws_cdk.aws_kms",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
@@ -48,7 +52,10 @@
     "compat": "cdk-compat"
   },
   "cdk-build": {
-    "cloudformation": "AWS::KMS"
+    "cloudformation": "AWS::KMS",
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": "true"
+    }
   },
   "keywords": [
     "aws",

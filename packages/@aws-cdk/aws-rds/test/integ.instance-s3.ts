@@ -13,7 +13,6 @@ const exportBucket = new s3.Bucket(stack, 'ExportBucket', { removalPolicy: cdk.R
 
 new DatabaseInstance(stack, 'Database', {
   engine: DatabaseInstanceEngine.sqlServerSe({ version: SqlServerEngineVersion.VER_14_00_3192_2_V1 }),
-  masterUsername: 'admin',
   vpc,
   licenseModel: LicenseModel.LICENSE_INCLUDED,
   s3ImportBuckets: [importBucket],

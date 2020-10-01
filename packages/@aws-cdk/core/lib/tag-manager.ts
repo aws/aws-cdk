@@ -279,8 +279,18 @@ export class TagManager {
    * Renders tags into the proper format based on TagType
    */
   public renderTags(): any {
-    const sortedTags = Array.from(this.tags.values()).sort((a, b) => a.key.localeCompare(b.key));
-    return this.tagFormatter.formatTags(sortedTags);
+    return this.tagFormatter.formatTags(this.sortedTags);
+  }
+
+  /**
+   * Render the tags in a readable format
+   */
+  public tagValues(): Record<string, string> {
+    const ret: Record<string, string> = {};
+    for (const tag of this.sortedTags) {
+      ret[tag.key] = tag.value;
+    }
+    return ret;
   }
 
   /**
@@ -314,5 +324,9 @@ export class TagManager {
         this.priorities.set(tag.key, tag.priority);
       }
     }
+  }
+
+  private get sortedTags() {
+    return Array.from(this.tags.values()).sort((a, b) => a.key.localeCompare(b.key));
   }
 }

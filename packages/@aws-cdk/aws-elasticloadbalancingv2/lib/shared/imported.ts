@@ -1,4 +1,5 @@
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { ITargetGroup, TargetGroupImportProps } from './base-target-group';
 
 /**
@@ -20,7 +21,7 @@ export abstract class ImportedTargetGroupBase extends cdk.Construct implements I
    */
   public readonly loadBalancerAttached: cdk.IDependable = new cdk.ConcreteDependable();
 
-  constructor(scope: cdk.Construct, id: string, props: TargetGroupImportProps) {
+  constructor(scope: Construct, id: string, props: TargetGroupImportProps) {
     super(scope, id);
 
     this.targetGroupArn = props.targetGroupArn;

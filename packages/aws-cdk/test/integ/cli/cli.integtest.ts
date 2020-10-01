@@ -20,8 +20,8 @@ integTest('VPC Lookup', withDefaultFixture(async (fixture) => {
 }));
 
 integTest('Two ways of shoing the version', withDefaultFixture(async (fixture) => {
-  const version1 = await fixture.cdk(['version']);
-  const version2 = await fixture.cdk(['--version']);
+  const version1 = await fixture.cdk(['version'], { verbose: false });
+  const version2 = await fixture.cdk(['--version'], { verbose: false });
 
   expect(version1).toEqual(version2);
 }));
@@ -39,14 +39,14 @@ integTest('Termination protection', withDefaultFixture(async (fixture) => {
 }));
 
 integTest('cdk synth', withDefaultFixture(async (fixture) => {
-  await expect(fixture.cdk(['synth', fixture.fullStackName('test-1')])).resolves.toEqual(
+  await expect(fixture.cdk(['synth', fixture.fullStackName('test-1')], { verbose: false })).resolves.toEqual(
     `Resources:
   topic69831491:
     Type: AWS::SNS::Topic
     Metadata:
       aws:cdk:path: ${fixture.stackNamePrefix}-test-1/topic/Resource`);
 
-  await expect(fixture.cdk(['synth', fixture.fullStackName('test-2')])).resolves.toEqual(
+  await expect(fixture.cdk(['synth', fixture.fullStackName('test-2')], { verbose: false })).resolves.toEqual(
     `Resources:
   topic152D84A37:
     Type: AWS::SNS::Topic

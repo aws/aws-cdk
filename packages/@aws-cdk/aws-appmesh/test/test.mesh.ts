@@ -276,13 +276,6 @@ export = {
             },
             Spec: {
               // Specifically: no Listeners and Backends
-              Logging: {
-                AccessLog: {
-                  File: {
-                    Path: '/dev/stdout',
-                  },
-                },
-              },
               ServiceDiscovery: {
                 DNS: {
                   Hostname: 'test.domain.local',

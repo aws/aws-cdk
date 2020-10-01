@@ -234,7 +234,7 @@ export = {
     // GIVEN
     const { stack } = testFixtureNoVpc();
     const cluster = new Cluster(stack, 'Cluster', { version: CLUSTER_VERSION });
-    cluster.addNodegroup('NG');
+    cluster.addNodegroupCapacity('NG');
     const role = iam.Role.fromRoleArn(stack, 'imported-role', 'arn:aws:iam::123456789012:role/S3Access');
 
     // WHEN

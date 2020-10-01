@@ -1,7 +1,8 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
-import { Arn, Construct, Duration, IResource, Resource, Stack } from '@aws-cdk/core';
+import { Arn, Duration, IResource, Resource, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { StateGraph } from './state-graph';
 import { CfnStateMachine } from './stepfunctions.generated';
 import { IChainable } from './types';

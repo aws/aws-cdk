@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-ses-actions",
-        "module": "aws_cdk.aws_ses_actions"
+        "module": "aws_cdk.aws_ses_actions",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true

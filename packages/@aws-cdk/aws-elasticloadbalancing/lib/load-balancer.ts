@@ -2,7 +2,8 @@ import {
   Connections, IConnectable, ISecurityGroup, IVpc, Peer, Port,
   SecurityGroup, SelectedSubnets, SubnetSelection, SubnetType,
 } from '@aws-cdk/aws-ec2';
-import { Construct, Duration, Lazy, Resource } from '@aws-cdk/core';
+import { Duration, Lazy, Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnLoadBalancer } from './elasticloadbalancing.generated';
 
 /**

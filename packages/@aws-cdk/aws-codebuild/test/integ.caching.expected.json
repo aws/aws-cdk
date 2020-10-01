@@ -165,7 +165,8 @@
             ]
           },
           "Type": "S3"
-        }
+        },
+        "EncryptionKey": "alias/aws/s3"
       }
     }
   }

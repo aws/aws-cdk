@@ -209,7 +209,7 @@ export = {
 
   'Assemblies can be deeply nested'(test: Test) {
     // GIVEN
-    const app = new App({ runtimeInfo: false, treeMetadata: false });
+    const app = new App({ treeMetadata: false });
 
     const level1 = new Stage(app, 'StageLevel1');
     const level2 = new Stage(level1, 'StageLevel2');

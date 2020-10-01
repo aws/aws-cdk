@@ -21,14 +21,7 @@ export = {
     const runtimeInfo = collectRuntimeInformation();
 
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const version = require('../package.json').version;
-    test.deepEqual(runtimeInfo.libraries, {
-      '@aws-cdk/core': version,
-      '@aws-cdk/cx-api': version,
-      '@aws-cdk/cloud-assembly-schema': version,
-      '@aws-solutions-konstruk/foo': mockVersion,
-      'jsii-runtime': `node.js/${process.version}`,
-    });
+    test.deepEqual(runtimeInfo.libraries['@aws-solutions-konstruk/foo'], mockVersion);
     test.done();
   },
 
@@ -48,15 +41,7 @@ export = {
     const runtimeInfo = collectRuntimeInformation();
 
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const version = require('../package.json').version;
-    test.deepEqual(runtimeInfo.libraries, {
-      '@aws-cdk/core': version,
-      '@aws-cdk/cx-api': version,
-      '@aws-cdk/cloud-assembly-schema': version,
-      '@aws-solutions-konstruk/foo': mockVersion, // picks up the module from the other test.
-      'aws-rfdk': mockVersion,
-      'jsii-runtime': `node.js/${process.version}`,
-    });
+    test.deepEqual(runtimeInfo.libraries['aws-rfdk'], mockVersion);
     test.done();
   },
 

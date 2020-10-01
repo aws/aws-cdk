@@ -10,9 +10,6 @@ const vpc = new ec2.Vpc(stack, 'VPC');
 /// !show
 const cluster = new rds.DatabaseCluster(stack, 'Database', {
   engine: rds.DatabaseClusterEngine.AURORA,
-  masterUser: {
-    username: 'admin',
-  },
   instanceProps: {
     instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
     vpc,

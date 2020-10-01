@@ -474,11 +474,49 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     const arnWithoutResourceName = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret';
-    const arnWithoutSecretsManagerSuffix = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret';
 
     // WHEN
     test.throws(() => secretsmanager.Secret.fromSecretArn(stack, 'Secret1', arnWithoutResourceName), /invalid ARN format/);
-    test.throws(() => secretsmanager.Secret.fromSecretArn(stack, 'Secret2', arnWithoutSecretsManagerSuffix), /invalid ARN format/);
+
+    test.done();
+  },
+
+  'import by secretArn supports secret ARNs without suffixes'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const arnWithoutSecretsManagerSuffix = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret';
+
+    // WHEN
+    const secret = secretsmanager.Secret.fromSecretArn(stack, 'Secret', arnWithoutSecretsManagerSuffix);
+
+    // THEN
+    test.equals(secret.secretArn, arnWithoutSecretsManagerSuffix);
+    test.equals(secret.secretName, 'MySecret');
+
+    test.done();
+  },
+
+  'import by secretArn supports tokens for ARNs'(test: Test) {
+    // GIVEN
+    const app = new cdk.App();
+    const stackA = new cdk.Stack(app, 'StackA');
+    const stackB = new cdk.Stack(app, 'StackB');
+    const secretA = new secretsmanager.Secret(stackA, 'SecretA');
+
+    // WHEN
+    const secretB = secretsmanager.Secret.fromSecretArn(stackB, 'SecretB', secretA.secretArn);
+    new cdk.CfnOutput(stackB, 'secretBSecretName', { value: secretB.secretName });
+
+    // THEN
+    test.equals(secretB.secretArn, secretA.secretArn);
+    expect(stackB).toMatch({
+      Outputs: {
+        secretBSecretName: {
+          Value: { 'Fn::Select': [6, { 'Fn::Split': [':', { 'Fn::ImportValue': 'StackA:ExportsOutputRefSecretA188F281703FC8A52' }] }] },
+        },
+      },
+    });
+
     test.done();
   },
 

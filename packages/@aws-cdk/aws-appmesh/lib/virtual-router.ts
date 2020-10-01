@@ -1,5 +1,5 @@
 import * as cdk from '@aws-cdk/core';
-
+import { Construct } from 'constructs';
 import { CfnVirtualRouter } from './appmesh.generated';
 import { IMesh, Mesh } from './mesh';
 import { Route, RouteBaseProps } from './route';
@@ -108,21 +108,21 @@ export class VirtualRouter extends VirtualRouterBase {
   /**
    * Import an existing VirtualRouter given an ARN
    */
-  public static fromVirtualRouterArn(scope: cdk.Construct, id: string, virtualRouterArn: string): IVirtualRouter {
+  public static fromVirtualRouterArn(scope: Construct, id: string, virtualRouterArn: string): IVirtualRouter {
     return new ImportedVirtualRouter(scope, id, { virtualRouterArn });
   }
 
   /**
    * Import an existing VirtualRouter given names
    */
-  public static fromVirtualRouterName(scope: cdk.Construct, id: string, meshName: string, virtualRouterName: string): IVirtualRouter {
+  public static fromVirtualRouterName(scope: Construct, id: string, meshName: string, virtualRouterName: string): IVirtualRouter {
     return new ImportedVirtualRouter(scope, id, { meshName, virtualRouterName });
   }
 
   /**
    * Import an existing virtual router given attributes
    */
-  public static fromVirtualRouterAttributes(scope: cdk.Construct, id: string, attrs: VirtualRouterAttributes): IVirtualRouter {
+  public static fromVirtualRouterAttributes(scope: Construct, id: string, attrs: VirtualRouterAttributes): IVirtualRouter {
     return new ImportedVirtualRouter(scope, id, attrs);
   }
 
@@ -143,7 +143,7 @@ export class VirtualRouter extends VirtualRouterBase {
 
   private readonly listeners = new Array<CfnVirtualRouter.VirtualRouterListenerProperty>();
 
-  constructor(scope: cdk.Construct, id: string, props: VirtualRouterProps) {
+  constructor(scope: Construct, id: string, props: VirtualRouterProps) {
     super(scope, id, {
       physicalName: props.virtualRouterName || cdk.Lazy.stringValue({ produce: () => this.node.uniqueId }),
     });
@@ -219,7 +219,7 @@ class ImportedVirtualRouter extends VirtualRouterBase {
 
   private _mesh?: IMesh;
 
-  constructor(scope: cdk.Construct, id: string, props: VirtualRouterAttributes) {
+  constructor(scope: Construct, id: string, props: VirtualRouterAttributes) {
     super(scope, id);
 
     if (props.mesh) {

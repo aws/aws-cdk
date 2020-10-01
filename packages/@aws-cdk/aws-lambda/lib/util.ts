@@ -1,4 +1,4 @@
-import { Construct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Alias, AliasOptions } from './alias';
 import { IVersion } from './lambda-version';
 

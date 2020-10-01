@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-ssm",
-        "module": "aws_cdk.aws_ssm"
+        "module": "aws_cdk.aws_ssm",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
@@ -48,7 +52,10 @@
     "compat": "cdk-compat"
   },
   "cdk-build": {
-    "cloudformation": "AWS::SSM"
+    "cloudformation": "AWS::SSM",
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "keywords": [
     "aws",

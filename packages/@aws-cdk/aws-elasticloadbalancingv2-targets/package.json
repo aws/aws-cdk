@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-elasticloadbalancingv2-targets",
-        "module": "aws_cdk.aws_elasticloadbalancingv2_targets"
+        "module": "aws_cdk.aws_elasticloadbalancingv2_targets",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
@@ -98,6 +102,9 @@
     "announce": false
   },
   "cdk-build": {
-    "jest": true
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   }
 }

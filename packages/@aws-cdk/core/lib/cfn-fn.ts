@@ -135,6 +135,15 @@ export class Fn {
   }
 
   /**
+   * Given an url, parse the domain name
+   * @param url the url to parse
+   */
+  public static parseDomainName(url: string): string {
+    const noHttps = Fn.select(1, Fn.split('//', url));
+    return Fn.select(0, Fn.split('/', noHttps));
+  }
+
+  /**
    * The intrinsic function ``Fn::GetAZs`` returns an array that lists
    * Availability Zones for a specified region. Because customers have access to
    * different Availability Zones, the intrinsic function ``Fn::GetAZs`` enables
@@ -187,12 +196,18 @@ export class Fn {
    * Returns true if all the specified conditions evaluate to true, or returns
    * false if any one of the conditions evaluates to false. ``Fn::And`` acts as
    * an AND operator. The minimum number of conditions that you can include is
-   * 2, and the maximum is 10.
+   * 1.
    * @param conditions conditions to AND
    * @returns an FnCondition token
    */
   public static conditionAnd(...conditions: ICfnConditionExpression[]): ICfnConditionExpression {
-    return new FnAnd(...conditions);
+    if (conditions.length === 0) {
+      throw new Error('Fn.conditionAnd() needs at least one argument');
+    }
+    if (conditions.length === 1) {
+      return conditions[0];
+    }
+    return Fn.conditionAnd(..._inGroupsOf(conditions, 10).map(group => new FnAnd(...group)));
   }
 
   /**
@@ -240,12 +255,18 @@ export class Fn {
    * Returns true if any one of the specified conditions evaluate to true, or
    * returns false if all of the conditions evaluates to false. ``Fn::Or`` acts
    * as an OR operator. The minimum number of conditions that you can include is
-   * 2, and the maximum is 10.
+   * 1.
    * @param conditions conditions that evaluates to true or false.
    * @returns an FnCondition token
    */
   public static conditionOr(...conditions: ICfnConditionExpression[]): ICfnConditionExpression {
-    return new FnOr(...conditions);
+    if (conditions.length === 0) {
+      throw new Error('Fn.conditionOr() needs at least one argument');
+    }
+    if (conditions.length === 1) {
+      return conditions[0];
+    }
+    return Fn.conditionOr(..._inGroupsOf(conditions, 10).map(group => new FnOr(...group)));
   }
 
   /**
@@ -738,4 +759,12 @@ class FnJoin implements IResolvable {
     const resolvedValues = this.listOfValues.map(x => Reference.isReference(x) ? x : context.resolve(x));
     return minimalCloudFormationJoin(this.delimiter, resolvedValues);
   }
+}
+
+function _inGroupsOf<T>(array: T[], maxGroup: number): T[][] {
+  const result = new Array<T[]>();
+  for (let i = 0; i < array.length; i += maxGroup) {
+    result.push(array.slice(i, i + maxGroup));
+  }
+  return result;
 }

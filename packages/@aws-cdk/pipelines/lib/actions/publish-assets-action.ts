@@ -1,6 +1,7 @@
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
+import * as ec2 from '@aws-cdk/aws-ec2';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import { Construct, Lazy } from '@aws-cdk/core';
@@ -59,6 +60,22 @@ export interface PublishAssetsActionProps {
    * @default - Automatically generated
    */
   readonly role?: iam.IRole;
+
+  /**
+   * The VPC where to execute the PublishAssetsAction.
+   *
+   * @default - No VPC
+   */
+  readonly vpc?: ec2.IVpc;
+
+  /**
+   * Which subnets to use.
+   *
+   * Only used if 'vpc' is supplied.
+   *
+   * @default - All private subnets.
+   */
+  readonly subnetSelection?: ec2.SubnetSelection;
 }
 
 /**
@@ -85,6 +102,8 @@ export class PublishAssetsAction extends Construct implements codepipeline.IActi
         buildImage: codebuild.LinuxBuildImage.STANDARD_4_0,
         privileged: (props.assetType === AssetType.DOCKER_IMAGE) ? true : undefined,
       },
+      vpc: props.vpc,
+      subnetSelection: props.subnetSelection,
       buildSpec: codebuild.BuildSpec.fromObject({
         version: '0.2',
         phases: {

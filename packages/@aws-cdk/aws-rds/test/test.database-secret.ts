@@ -2,6 +2,7 @@ import { expect, haveResource } from '@aws-cdk/assert';
 import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { DatabaseSecret } from '../lib';
+import { DEFAULT_PASSWORD_EXCLUDE_CHARS } from '../lib/private/util';
 
 export = {
   'create a database secret'(test: Test) {
@@ -27,7 +28,7 @@ export = {
         ],
       },
       GenerateSecretString: {
-        ExcludeCharacters: '"@/\\',
+        ExcludeCharacters: DEFAULT_PASSWORD_EXCLUDE_CHARS,
         GenerateStringKey: 'password',
         PasswordLength: 30,
         SecretStringTemplate: '{"username":"admin-username"}',
@@ -48,6 +49,7 @@ export = {
     new DatabaseSecret(stack, 'UserSecret', {
       username: 'user-username',
       masterSecret,
+      excludeCharacters: '"@/\\',
     });
 
     // THEN

@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-resourcegroups",
-        "module": "aws_cdk.aws_resourcegroups"
+        "module": "aws_cdk.aws_resourcegroups",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
@@ -50,7 +54,10 @@
   },
   "cdk-build": {
     "cloudformation": "AWS::ResourceGroups",
-    "jest": true
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "keywords": [
     "aws",

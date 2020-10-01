@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-cloudtrail",
-        "module": "aws_cdk.aws_cloudtrail"
+        "module": "aws_cdk.aws_cloudtrail",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
@@ -49,7 +53,10 @@
   },
   "cdk-build": {
     "cloudformation": "AWS::CloudTrail",
-    "jest": true
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "keywords": [
     "aws",

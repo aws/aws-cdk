@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-elasticbeanstalk",
-        "module": "aws_cdk.aws_elasticbeanstalk"
+        "module": "aws_cdk.aws_elasticbeanstalk",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
@@ -49,7 +53,10 @@
   },
   "cdk-build": {
     "cloudformation": "AWS::ElasticBeanstalk",
-    "jest": true
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "keywords": [
     "aws",

@@ -1,5 +1,6 @@
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Construct, Duration, Resource } from '@aws-cdk/core';
+import { Duration, Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { ISecret } from './secret';
 import { CfnRotationSchedule } from './secretsmanager.generated';
 

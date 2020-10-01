@@ -23,14 +23,21 @@
       },
       "python": {
         "distName": "aws-cdk.aws-athena",
-        "module": "aws_cdk.aws_athena"
+        "module": "aws_cdk.aws_athena",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
   },
   "cdk-build": {
     "cloudformation": "AWS::Athena",
-    "jest": true
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "repository": {
     "type": "git",

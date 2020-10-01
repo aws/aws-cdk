@@ -1,0 +1,8 @@
+{
+    "name": "Dev Container Definition - AWS CDK",
+    "image": "jsii/superchain",
+    "postCreateCommand": "yarn build --skip-test --no-bail --skip-prereqs --skip-compat",
+    "extensions": [
+        "dbaeumer.vscode-eslint@2.1.5"
+    ]
+}

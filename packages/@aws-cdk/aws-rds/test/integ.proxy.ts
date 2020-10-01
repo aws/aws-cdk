@@ -10,7 +10,9 @@ const vpc = new ec2.Vpc(stack, 'vpc', { maxAzs: 2 });
 const dbInstance = new rds.DatabaseInstance(stack, 'dbInstance', {
   engine: rds.DatabaseInstanceEngine.POSTGRES,
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MEDIUM),
-  masterUsername: 'master',
+  credentials: rds.Credentials.fromUsername('master', {
+    excludeCharacters: '"@/\\',
+  }),
   vpc,
 });
 

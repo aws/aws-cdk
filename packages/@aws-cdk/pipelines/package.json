@@ -105,7 +105,11 @@
       },
       "python": {
         "distName": "aws-cdk.pipelines",
-        "module": "aws_cdk.pipelines"
+        "module": "aws_cdk.pipelines",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true

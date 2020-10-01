@@ -1,4 +1,5 @@
-import { Construct, Duration, IResource, Resource } from '@aws-cdk/core';
+import { Duration, IResource, Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnApi, CfnApiProps } from '../apigatewayv2.generated';
 import { DefaultDomainMappingOptions } from '../http/stage';
 import { IHttpRouteIntegration } from './integration';

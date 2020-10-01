@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-ecs",
-        "module": "aws_cdk.aws_ecs"
+        "module": "aws_cdk.aws_ecs",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
