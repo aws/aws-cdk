@@ -113,8 +113,12 @@ import * as sns from '@aws-cdk/aws-sns';
 import { SnsEventSource } from '@aws-cdk/aws-lambda-event-sources';
 
 const topic = new sns.Topic(...);
+const deadLetterQueue = new sqs.Queue(this, 'deadLetterQueue');
 
-lambda.addEventSource(new SnsEventSource(topic));
+lambda.addEventSource(new SnsEventSource(topic, {
+  filterPolicy: { ... },
+  deadLetterQueue: deadLetterQueue
+}));
 ```
 
 When a user calls the SNS Publish API on a topic that your Lambda function is

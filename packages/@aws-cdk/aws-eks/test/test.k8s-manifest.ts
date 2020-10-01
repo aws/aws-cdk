@@ -88,7 +88,7 @@ export = {
 
     // WHEN
     cluster.addManifest('foo', { bar: 2334 });
-    cluster.addChart('helm', { chart: 'hello-world' });
+    cluster.addHelmChart('helm', { chart: 'hello-world' });
 
     // THEN
     expect(stack).to(haveResource(KubernetesManifest.RESOURCE_TYPE, {

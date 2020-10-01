@@ -1,7 +1,8 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
-import { Construct, Fn, IResource, Resource, Stack } from '@aws-cdk/core';
+import { Fn, IResource, Resource, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { DataFormat } from './data-format';
 import { IDatabase } from './database';
 import { CfnTable } from './glue.generated';

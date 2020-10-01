@@ -34,7 +34,7 @@ import * as synthetics from '@aws-cdk/aws-synthetics';
 const canary = new synthetics.Canary(this, 'MyCanary', {
   schedule: synthetics.Schedule.rate(Duration.minutes(5)),
   test: Test.custom({
-    code: Code.fromAsset(path.join(__dirname, 'canary'))),
+    code: Code.fromAsset(path.join(__dirname, 'canary')),
     handler: 'index.handler',
   }),
 });
@@ -76,9 +76,11 @@ The canary will automatically produce a CloudWatch Dashboard:
 
 ![UI Screenshot](images/ui-screenshot.png)
 
-The Canary code will be executed in a lambda function created by Synthetics on your behalf. The Lambda function includes a custom [runtime](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_Library.html) provided by Synthetics. The provided runtime includes a variety of handy tools such as [Puppeteer](https://www.npmjs.com/package/puppeteer-core)  and Chromium. To learn more about Synthetics capabilities, check out the [docs](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries.html).
+The Canary code will be executed in a lambda function created by Synthetics on your behalf. The Lambda function includes a custom [runtime](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_Library.html) provided by Synthetics. The provided runtime includes a variety of handy tools such as [Puppeteer](https://www.npmjs.com/package/puppeteer-core) and Chromium. The default runtime is `syn-nodejs-2.0`.
 
-### Configuring the Canary Script 
+To learn more about Synthetics capabilities, check out the [docs](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries.html).
+
+### Configuring the Canary Script
 
 To configure the script the canary executes, use the `test` property. The `test` property accepts a `Test` instance that can be initialized by the `Test` class static methods. Currently, the only implemented method is `Test.custom()`, which allows you to bring your own code. In the future, other methods will be added. `Test.custom()` accepts `code` and `handler` properties -- both are required by Synthetics to create a lambda function on your behalf.
 

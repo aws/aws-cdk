@@ -1,4 +1,5 @@
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as ga from './globalaccelerator.generated';
 
 /**
@@ -62,7 +63,7 @@ export class Accelerator extends cdk.Resource implements IAccelerator {
   /**
    * import from attributes
    */
-  public static fromAcceleratorAttributes(scope: cdk.Construct, id: string, attrs: AcceleratorAttributes ): IAccelerator {
+  public static fromAcceleratorAttributes(scope: Construct, id: string, attrs: AcceleratorAttributes ): IAccelerator {
     class Import extends cdk.Resource implements IAccelerator {
       public readonly acceleratorArn = attrs.acceleratorArn;
       public readonly dnsName = attrs.dnsName;
@@ -80,7 +81,7 @@ export class Accelerator extends cdk.Resource implements IAccelerator {
    */
   public readonly dnsName: string;
 
-  constructor(scope: cdk.Construct, id: string, props: AcceleratorProps = {}) {
+  constructor(scope: Construct, id: string, props: AcceleratorProps = {}) {
     super(scope, id);
 
     const resource = new ga.CfnAccelerator(this, 'Resource', {

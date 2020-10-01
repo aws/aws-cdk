@@ -1,4 +1,5 @@
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import {
   BaseTargetGroupProps, HealthCheck, ITargetGroup, loadBalancerNameFromListenerArn, LoadBalancerTargetProps,
   TargetGroupAttributes, TargetGroupBase, TargetGroupImportProps,
@@ -50,7 +51,7 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
   /**
    * Import an existing target group
    */
-  public static fromTargetGroupAttributes(scope: cdk.Construct, id: string, attrs: TargetGroupAttributes): INetworkTargetGroup {
+  public static fromTargetGroupAttributes(scope: Construct, id: string, attrs: TargetGroupAttributes): INetworkTargetGroup {
     return new ImportedNetworkTargetGroup(scope, id, attrs);
   }
 
@@ -59,13 +60,13 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
    *
    * @deprecated Use `fromTargetGroupAttributes` instead
    */
-  public static import(scope: cdk.Construct, id: string, props: TargetGroupImportProps): INetworkTargetGroup {
+  public static import(scope: Construct, id: string, props: TargetGroupImportProps): INetworkTargetGroup {
     return NetworkTargetGroup.fromTargetGroupAttributes(scope, id, props);
   }
 
   private readonly listeners: INetworkListener[];
 
-  constructor(scope: cdk.Construct, id: string, props: NetworkTargetGroupProps) {
+  constructor(scope: Construct, id: string, props: NetworkTargetGroupProps) {
     const proto = props.protocol || Protocol.TCP;
     validateNetworkProtocol(proto);
 

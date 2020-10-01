@@ -69,6 +69,7 @@ export class CloudAssembly {
 
   public async selectStacks(selectors: string[], options: SelectStacksOptions): Promise<StackCollection> {
     selectors = selectors.filter(s => s != null); // filter null/undefined
+    selectors = [...new Set(selectors)]; // make them unique
 
     const stacks = this.assembly.stacks;
     if (stacks.length === 0) {

@@ -2,6 +2,8 @@ import '@aws-cdk/assert/jest';
 import { FieldUtils, JsonPath } from '../lib';
 
 describe('Fields', () => {
+  const jsonPathValidationErrorMsg = /exactly '\$', '\$\$', start with '\$.', start with '\$\$.' or start with '\$\['/;
+
   test('deep replace correctly handles fields in arrays', () => {
     expect(
       FieldUtils.renderObject({
@@ -70,16 +72,18 @@ describe('Fields', () => {
   test('datafield path must be correct', () => {
     expect(JsonPath.stringAt('$')).toBeDefined();
 
-    expect(() => JsonPath.stringAt('$hello')).toThrowError(/exactly '\$', '\$\$', start with '\$.' or start with '\$\$.'/);
-
-    expect(() => JsonPath.stringAt('hello')).toThrowError(/exactly '\$', '\$\$', start with '\$.' or start with '\$\$.'/);
+    expect(() => JsonPath.stringAt('$hello')).toThrowError(jsonPathValidationErrorMsg);
+    expect(() => JsonPath.stringAt('hello')).toThrowError(jsonPathValidationErrorMsg);
   }),
   test('context path must be correct', () => {
     expect(JsonPath.stringAt('$$')).toBeDefined();
 
-    expect(() => JsonPath.stringAt('$$hello')).toThrowError(/exactly '\$', '\$\$', start with '\$.' or start with '\$\$.'/);
-
-    expect(() => JsonPath.stringAt('hello')).toThrowError(/exactly '\$', '\$\$', start with '\$.' or start with '\$\$.'/);
+    expect(() => JsonPath.stringAt('$$hello')).toThrowError(jsonPathValidationErrorMsg);
+    expect(() => JsonPath.stringAt('hello')).toThrowError(jsonPathValidationErrorMsg);
+  }),
+  test('datafield path with array must be correct', () => {
+    expect(JsonPath.stringAt('$[0]')).toBeDefined();
+    expect(JsonPath.stringAt("$['abc']")).toBeDefined();
   }),
   test('test contains task token', () => {
     expect(true).toEqual(

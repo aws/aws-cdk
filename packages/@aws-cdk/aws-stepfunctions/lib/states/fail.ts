@@ -1,4 +1,4 @@
-import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { INextable } from '../types';
 import { StateType } from './private/state-type';
 import { State } from './state';
@@ -40,7 +40,7 @@ export class Fail extends State {
   private readonly error?: string;
   private readonly cause?: string;
 
-  constructor(scope: cdk.Construct, id: string, props: FailProps = {}) {
+  constructor(scope: Construct, id: string, props: FailProps = {}) {
     super(scope, id, props);
 
     this.error = props.error;

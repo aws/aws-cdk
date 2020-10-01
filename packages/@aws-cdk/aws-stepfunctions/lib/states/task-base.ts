@@ -1,6 +1,7 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Chain } from '../chain';
 import { StateGraph } from '../state-graph';
 import { CatchProps, IChainable, INextable, RetryProps } from '../types';
@@ -95,7 +96,7 @@ export abstract class TaskStateBase extends State implements INextable {
   private readonly timeout?: cdk.Duration;
   private readonly heartbeat?: cdk.Duration;
 
-  constructor(scope: cdk.Construct, id: string, props: TaskStateBaseProps) {
+  constructor(scope: Construct, id: string, props: TaskStateBaseProps) {
     super(scope, id, props);
     this.endStates = [this];
     this.timeout = props.timeout;

@@ -4,14 +4,15 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { Annotations, Construct, Duration, RemovalPolicy, Resource, Token } from '@aws-cdk/core';
+import { Annotations, Duration, RemovalPolicy, Resource, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { IClusterEngine } from './cluster-engine';
 import { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { IParameterGroup } from './parameter-group';
-import { applyRemovalPolicy, defaultDeletionProtection, setupS3ImportExport } from './private/util';
-import { BackupProps, Credentials, InstanceProps, PerformanceInsightRetention, RotationMultiUserOptions } from './props';
+import { applyRemovalPolicy, DEFAULT_PASSWORD_EXCLUDE_CHARS, defaultDeletionProtection, setupS3ImportExport } from './private/util';
+import { BackupProps, Credentials, InstanceProps, PerformanceInsightRetention, RotationSingleUserOptions, RotationMultiUserOptions } from './props';
 import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
 import { CfnDBCluster, CfnDBClusterProps, CfnDBInstance } from './rds.generated';
 import { ISubnetGroup, SubnetGroup } from './subnet-group';
@@ -430,7 +431,7 @@ export interface DatabaseClusterProps extends DatabaseClusterBaseProps {
   /**
    * Credentials for the administrative user
    *
-   * @default - A username of 'admin' and SecretsManager-generated password
+   * @default - A username of 'admin' (or 'postgres' for PostgreSQL) and SecretsManager-generated password
    */
   readonly credentials?: Credentials;
 
@@ -488,11 +489,12 @@ export class DatabaseCluster extends DatabaseClusterNew {
     this.singleUserRotationApplication = props.engine.singleUserRotationApplication;
     this.multiUserRotationApplication = props.engine.multiUserRotationApplication;
 
-    let credentials = props.credentials ?? Credentials.fromUsername('admin');
+    let credentials = props.credentials ?? Credentials.fromUsername(props.engine.defaultUsername ?? 'admin');
     if (!credentials.secret && !credentials.password) {
       credentials = Credentials.fromSecret(new DatabaseSecret(this, 'Secret', {
         username: credentials.username,
         encryptionKey: credentials.encryptionKey,
+        excludeCharacters: credentials.excludeCharacters,
       }));
     }
     const secret = credentials.secret;
@@ -530,11 +532,8 @@ export class DatabaseCluster extends DatabaseClusterNew {
 
   /**
    * Adds the single user rotation of the master password to this cluster.
-   *
-   * @param [automaticallyAfter=Duration.days(30)] Specifies the number of days after the previous rotation
-   * before Secrets Manager triggers the next automatic rotation.
    */
-  public addRotationSingleUser(automaticallyAfter?: Duration): secretsmanager.SecretRotation {
+  public addRotationSingleUser(options: RotationSingleUserOptions = {}): secretsmanager.SecretRotation {
     if (!this.secret) {
       throw new Error('Cannot add single user rotation for a cluster without secret.');
     }
@@ -547,11 +546,12 @@ export class DatabaseCluster extends DatabaseClusterNew {
 
     return new secretsmanager.SecretRotation(this, id, {
       secret: this.secret,
-      automaticallyAfter,
       application: this.singleUserRotationApplication,
       vpc: this.vpc,
       vpcSubnets: this.vpcSubnets,
       target: this,
+      ...options,
+      excludeCharacters: options.excludeCharacters ?? DEFAULT_PASSWORD_EXCLUDE_CHARS,
     });
   }
 
@@ -563,9 +563,9 @@ export class DatabaseCluster extends DatabaseClusterNew {
       throw new Error('Cannot add multi user rotation for a cluster without secret.');
     }
     return new secretsmanager.SecretRotation(this, id, {
-      secret: options.secret,
+      ...options,
+      excludeCharacters: options.excludeCharacters ?? DEFAULT_PASSWORD_EXCLUDE_CHARS,
       masterSecret: this.secret,
-      automaticallyAfter: options.automaticallyAfter,
       application: this.multiUserRotationApplication,
       vpc: this.vpc,
       vpcSubnets: this.vpcSubnets,

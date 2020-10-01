@@ -84,7 +84,10 @@
   "stability": "experimental",
   "maturity": "developer-preview",
   "cdk-build": {
-    "jest": true
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "jsii": {
     "outdir": "dist",

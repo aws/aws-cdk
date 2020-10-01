@@ -1,4 +1,4 @@
-import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { arnForDeploymentConfig } from '../utils';
 
 /**
@@ -56,7 +56,7 @@ export class LambdaDeploymentConfig {
    * @param props the properties of the referenced custom Deployment Configuration
    * @returns a Construct representing a reference to an existing custom Deployment Configuration
    */
-  public static import(_scope: cdk.Construct, _id: string, props: LambdaDeploymentConfigImportProps): ILambdaDeploymentConfig {
+  public static import(_scope:Construct, _id: string, props: LambdaDeploymentConfigImportProps): ILambdaDeploymentConfig {
     return deploymentConfig(props.deploymentConfigName);
   }
 

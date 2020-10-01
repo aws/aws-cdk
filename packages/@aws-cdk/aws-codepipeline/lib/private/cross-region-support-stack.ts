@@ -28,22 +28,42 @@ function lastNCharacters(str: string, n: number) {
   return str.substring(startIndex);
 }
 
+/**
+ * Props for the support stack
+ */
+export interface CrossRegionSupportConstructProps {
+  /**
+   * Whether to create the KMS CMK
+   *
+   * (Required for cross-account deployments)
+   *
+   * @default true
+   */
+  readonly createKmsKey?: boolean;
+}
+
 export class CrossRegionSupportConstruct extends cdk.Construct {
   public readonly replicationBucket: s3.IBucket;
 
-  constructor(scope: cdk.Construct, id: string) {
+  constructor(scope: cdk.Construct, id: string, props: CrossRegionSupportConstructProps = {}) {
     super(scope, id);
 
-    const encryptionKey = new kms.Key(this, 'CrossRegionCodePipelineReplicationBucketEncryptionKey', {
-      removalPolicy: cdk.RemovalPolicy.DESTROY,
-    });
-    const encryptionAlias = new AliasWithShorterGeneratedName(this, 'CrossRegionCodePipelineReplicationBucketEncryptionAlias', {
-      targetKey: encryptionKey,
-      aliasName: cdk.PhysicalName.GENERATE_IF_NEEDED,
-      removalPolicy: cdk.RemovalPolicy.DESTROY,
-    });
+    const createKmsKey = props.createKmsKey ?? true;
+
+    let encryptionAlias;
+    if (createKmsKey) {
+      const encryptionKey = new kms.Key(this, 'CrossRegionCodePipelineReplicationBucketEncryptionKey', {
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
+      });
+      encryptionAlias = new AliasWithShorterGeneratedName(this, 'CrossRegionCodePipelineReplicationBucketEncryptionAlias', {
+        targetKey: encryptionKey,
+        aliasName: cdk.PhysicalName.GENERATE_IF_NEEDED,
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
+      });
+    }
     this.replicationBucket = new s3.Bucket(this, 'CrossRegionCodePipelineReplicationBucket', {
       bucketName: cdk.PhysicalName.GENERATE_IF_NEEDED,
+      encryption: encryptionAlias ? s3.BucketEncryption.KMS : s3.BucketEncryption.KMS_MANAGED,
       encryptionKey: encryptionAlias,
     });
   }
@@ -73,6 +93,15 @@ export interface CrossRegionSupportStackProps {
   readonly account: string;
 
   readonly synthesizer: cdk.IStackSynthesizer | undefined;
+
+  /**
+   * Whether or not to create a KMS key in the support stack
+   *
+   * (Required for cross-account deployments)
+   *
+   * @default true
+   */
+  readonly createKmsKey?: boolean;
 }
 
 /**
@@ -95,7 +124,9 @@ export class CrossRegionSupportStack extends cdk.Stack {
       synthesizer: props.synthesizer,
     });
 
-    const crossRegionSupportConstruct = new CrossRegionSupportConstruct(this, 'Default');
+    const crossRegionSupportConstruct = new CrossRegionSupportConstruct(this, 'Default', {
+      createKmsKey: props.createKmsKey,
+    });
     this.replicationBucket = crossRegionSupportConstruct.replicationBucket;
   }
 }

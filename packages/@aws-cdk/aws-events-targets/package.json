@@ -54,7 +54,10 @@
     "pre": [
       "node ./build-tools/gen.js"
     ],
-    "jest": true
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "keywords": [
     "aws",

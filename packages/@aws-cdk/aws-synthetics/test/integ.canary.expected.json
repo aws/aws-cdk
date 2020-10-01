@@ -103,7 +103,7 @@
           ]
         },
         "Name": "canary-integ",
-        "RuntimeVersion": "syn-1.0",
+        "RuntimeVersion": "syn-nodejs-2.0",
         "Schedule": {
           "DurationInSeconds": "0",
           "Expression": "rate(1 minute)"

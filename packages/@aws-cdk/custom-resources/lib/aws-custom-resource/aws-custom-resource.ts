@@ -4,6 +4,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { PHYSICAL_RESOURCE_ID_REFERENCE, flatten } from './runtime';
 
 // don't use "require" since the typescript compiler emits errors since this
@@ -303,7 +304,7 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
 
   // 'props' cannot be optional, even though all its properties are optional.
   // this is because at least one sdk call must be provided.
-  constructor(scope: cdk.Construct, id: string, props: AwsCustomResourceProps) {
+  constructor(scope: Construct, id: string, props: AwsCustomResourceProps) {
     super(scope, id);
 
     if (!props.onCreate && !props.onUpdate && !props.onDelete) {

@@ -1,19 +1,31 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { ICallbackFunction, Test } from 'nodeunit';
 import * as secretsmanager from '../lib';
 
+let stack: cdk.Stack;
+let vpc: ec2.IVpc;
+let secret: secretsmanager.ISecret;
+let securityGroup: ec2.SecurityGroup;
+let target: ec2.Connections;
+
 export = {
+  'setUp'(cb: ICallbackFunction) {
+    stack = new cdk.Stack();
+    vpc = new ec2.Vpc(stack, 'VPC');
+    secret = new secretsmanager.Secret(stack, 'Secret');
+    securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc });
+    target = new ec2.Connections({
+      defaultPort: ec2.Port.tcp(3306),
+      securityGroups: [securityGroup],
+    });
+
+    cb();
+  },
+
   'secret rotation single user'(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'VPC');
-    const secret = new secretsmanager.Secret(stack, 'Secret');
-    const target = new ec2.Connections({
-      defaultPort: ec2.Port.tcp(3306),
-      securityGroups: [new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc })],
-    });
     const excludeCharacters = ' ;+%{}' + '@\'"`/\\#'; // DMS and BASH problem chars
 
     // WHEN
@@ -149,14 +161,7 @@ export = {
 
   'secret rotation multi user'(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'VPC');
-    const secret = new secretsmanager.Secret(stack, 'Secret');
     const masterSecret = new secretsmanager.Secret(stack, 'MasterSecret');
-    const target = new ec2.Connections({
-      defaultPort: ec2.Port.tcp(3306),
-      securityGroups: [new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc })],
-    });
 
     // WHEN
     new secretsmanager.SecretRotation(stack, 'SecretRotation', {
@@ -249,17 +254,29 @@ export = {
     test.done();
   },
 
-  'throws when connections object has no default port range'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'VPC');
-    const secret = new secretsmanager.Secret(stack, 'Secret');
-    const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
+  'secret rotation allows passing an empty string for excludeCharacters'(test: Test) {
+    // WHEN
+    new secretsmanager.SecretRotation(stack, 'SecretRotation', {
+      application: secretsmanager.SecretRotationApplication.MARIADB_ROTATION_SINGLE_USER,
+      secret,
+      target,
       vpc,
+      excludeCharacters: '',
     });
 
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::Serverless::Application', {
+      Parameters: {
+        excludeCharacters: '',
+      },
+    }));
+
+    test.done();
+  },
+
+  'throws when connections object has no default port range'(test: Test) {
     // WHEN
-    const target = new ec2.Connections({
+    const targetWithoutDefaultPort = new ec2.Connections({
       securityGroups: [securityGroup],
     });
 
@@ -268,22 +285,13 @@ export = {
       secret,
       application: secretsmanager.SecretRotationApplication.MYSQL_ROTATION_SINGLE_USER,
       vpc,
-      target,
+      target: targetWithoutDefaultPort,
     }), /`target`.+default port range/);
 
     test.done();
   },
 
   'throws when master secret is missing for a multi user application'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'VPC');
-    const secret = new secretsmanager.Secret(stack, 'Secret');
-    const target = new ec2.Connections({
-      defaultPort: ec2.Port.tcp(3306),
-      securityGroups: [new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc })],
-    });
-
     // THEN
     test.throws(() => new secretsmanager.SecretRotation(stack, 'Rotation', {
       secret,
@@ -296,15 +304,6 @@ export = {
   },
 
   'rotation function name does not exceed 64 chars'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'VPC');
-    const secret = new secretsmanager.Secret(stack, 'Secret');
-    const target = new ec2.Connections({
-      defaultPort: ec2.Port.tcp(3306),
-      securityGroups: [new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc })],
-    });
-
     // WHEN
     const id = 'SecretRotation'.repeat(5);
     new secretsmanager.SecretRotation(stack, id, {

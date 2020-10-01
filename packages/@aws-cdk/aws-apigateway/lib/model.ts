@@ -1,4 +1,5 @@
-import { Construct, Resource } from '@aws-cdk/core';
+import { Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnModel, CfnModelProps } from './apigateway.generated';
 import * as jsonSchema from './json-schema';
 import { IRestApi, RestApi } from './restapi';

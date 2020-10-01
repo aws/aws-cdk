@@ -1,6 +1,7 @@
 import { IUserPool } from '@aws-cdk/aws-cognito';
 import { ManagedPolicy, Role, ServicePrincipal, Grant, IGrantable } from '@aws-cdk/aws-iam';
-import { CfnResource, Construct, Duration, Expiration, IResolvable, Stack } from '@aws-cdk/core';
+import { CfnResource, Duration, Expiration, IResolvable, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnApiKey, CfnGraphQLApi, CfnGraphQLSchema } from './appsync.generated';
 import { IGraphqlApi, GraphqlApiBase } from './graphqlapi-base';
 import { Schema } from './schema';

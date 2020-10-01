@@ -181,7 +181,7 @@ Integration tests perform a few functions in the CDK code base -
 1. Acts as a regression detector. It does this by running `cdk synth` on the integration test and comparing it against
    the `*.expected.json` file. This highlights how a change affects the synthesized stacks.
 2. Allows for a way to verify if the stacks are still valid CloudFormation templates, as part of an intrusive change.
-   This is done by running `yarn integ` which will run `cdk deploy` across all of the integration tests in that package.
+   This is done by running `yarn integ` which will run `cdk deploy` across all of the integration tests in that package. If you are developing a new integration test or for some other reason want to work on a single integration test over and over again without running through all the integration tests you can do so using `yarn integ integ.test-name.js`
    Remember to set up AWS credentials before doing this.
 3. (Optionally) Acts as a way to validate that constructs set up the CloudFormation resources as expected. A successful
    CloudFormation deployment does not mean that the resources are set up correctly.
