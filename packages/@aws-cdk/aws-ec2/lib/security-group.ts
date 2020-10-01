@@ -1,4 +1,5 @@
-import { Annotations, Construct, IResource, Lazy, Resource, ResourceProps, Stack, Token } from '@aws-cdk/core';
+import { Annotations, IResource, Lazy, Resource, ResourceProps, Stack, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Connections } from './connections';
 import { CfnSecurityGroup, CfnSecurityGroupEgress, CfnSecurityGroupIngress } from './ec2.generated';
 import { IPeer } from './peer';
