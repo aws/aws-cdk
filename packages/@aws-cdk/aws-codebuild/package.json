@@ -52,7 +52,10 @@
     "compat": "cdk-compat"
   },
   "cdk-build": {
-    "cloudformation": "AWS::CodeBuild"
+    "cloudformation": "AWS::CodeBuild",
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "nyc": {
     "statements": 74,

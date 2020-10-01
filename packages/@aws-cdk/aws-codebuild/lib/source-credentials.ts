@@ -1,4 +1,5 @@
-import { Construct, Resource, SecretValue } from '@aws-cdk/core';
+import { Resource, SecretValue } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnSourceCredential } from './codebuild.generated';
 
 /**
