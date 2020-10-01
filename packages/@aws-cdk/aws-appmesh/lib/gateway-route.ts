@@ -1,4 +1,5 @@
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnGatewayRoute } from './appmesh.generated';
 import { IMesh } from './mesh';
 import { IVirtualGateway } from './virtual-gateway';
@@ -58,7 +59,7 @@ export class GatewayRoute extends cdk.Resource implements IGatewayRoute {
   /**
    * Import an existing Gateway Route given an ARN
    */
-  public static fromGatewayRouteArn(scope: cdk.Construct, id: string, gatewayRouteArn: string): IGatewayRoute {
+  public static fromGatewayRouteArn(scope: Construct, id: string, gatewayRouteArn: string): IGatewayRoute {
     return new ImportedGatewayRoute(scope, id, { gatewayRouteArn });
   }
 
@@ -66,7 +67,7 @@ export class GatewayRoute extends cdk.Resource implements IGatewayRoute {
    * Import an existing Gateway Route given its name
    */
   public static fromGatewayRouteName(
-    scope: cdk.Construct, id: string, meshName: string, virtualGatewayName: string, gatewayRouteName: string): IGatewayRoute {
+    scope: Construct, id: string, meshName: string, virtualGatewayName: string, gatewayRouteName: string): IGatewayRoute {
     return new ImportedGatewayRoute(scope, id, { meshName, virtualGatewayName, gatewayRouteName });
   }
 
@@ -85,7 +86,7 @@ export class GatewayRoute extends cdk.Resource implements IGatewayRoute {
    */
   public readonly virtualGateway: IVirtualGateway;
 
-  constructor(scope: cdk.Construct, id: string, props: GatewayRouteProps) {
+  constructor(scope: Construct, id: string, props: GatewayRouteProps) {
     super(scope, id, {
       physicalName: props.gatewayRouteName || cdk.Lazy.stringValue({ produce: () => this.node.uniqueId }),
     });
@@ -147,7 +148,7 @@ class ImportedGatewayRoute extends cdk.Resource implements IGatewayRoute {
    */
   public gatewayRouteArn: string;
 
-  constructor(scope: cdk.Construct, id: string, props: GatewayRouteAttributes) {
+  constructor(scope: Construct, id: string, props: GatewayRouteAttributes) {
     super(scope, id);
     if (props.gatewayRouteArn) {
       this.gatewayRouteArn = props.gatewayRouteArn;

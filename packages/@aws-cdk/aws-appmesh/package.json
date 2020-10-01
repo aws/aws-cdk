@@ -109,6 +109,7 @@
       "construct-ctor-props-type:@aws-cdk/aws-appmesh.ImportedVirtualService",
       "from-signature:@aws-cdk/aws-appmesh.GatewayRoute.fromGatewayRouteName",
       "from-signature:@aws-cdk/aws-appmesh.Route.fromRouteName",
+      "from-signature:@aws-cdk/aws-appmesh.VirtualGateway.fromVirtualGatewayName",
       "from-signature:@aws-cdk/aws-appmesh.VirtualNode.fromVirtualNodeName",
       "from-signature:@aws-cdk/aws-appmesh.VirtualRouter.fromVirtualRouterName",
       "from-signature:@aws-cdk/aws-appmesh.VirtualService.fromVirtualServiceName",

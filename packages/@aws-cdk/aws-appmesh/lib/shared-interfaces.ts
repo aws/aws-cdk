@@ -1,5 +1,5 @@
 import * as cdk from '@aws-cdk/core';
-import { CfnVirtualNode } from './appmesh.generated';
+import { CfnVirtualGateway, CfnVirtualNode } from './appmesh.generated';
 
 /**
  * Enum of supported AppMesh protocols
@@ -121,6 +121,13 @@ export interface AccessLogConfig {
    * @default - no access logging
    */
   readonly virtualNodeAccessLog?: CfnVirtualNode.AccessLogProperty;
+
+  /**
+   * VirtualGateway CFN configuration for Access Logging
+   *
+   * @default - no access logging
+   */
+  readonly virtualGatewayAccessLog?: CfnVirtualGateway.VirtualGatewayAccessLogProperty;
 }
 
 /**
@@ -162,6 +169,11 @@ class FileAccessLog extends AccessLog {
   public bind(_scope: cdk.Construct): AccessLogConfig {
     return {
       virtualNodeAccessLog: {
+        file: {
+          path: this.filePath,
+        },
+      },
+      virtualGatewayAccessLog: {
         file: {
           path: this.filePath,
         },

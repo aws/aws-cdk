@@ -1,4 +1,5 @@
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnGatewayRoute, CfnVirtualGateway } from './appmesh.generated';
 import { GatewayRoute, GatewayRouteBaseProps } from './gateway-route';
 import { IMesh, Mesh } from './mesh';
@@ -131,14 +132,14 @@ export class VirtualGateway extends VirtualGatewayBase {
   /**
    * Import an existing VirtualGateway given an ARN
    */
-  public static fromVirtualGatewayArn(scope: cdk.Construct, id: string, virtualGatewayArn: string): IVirtualGateway {
+  public static fromVirtualGatewayArn(scope: Construct, id: string, virtualGatewayArn: string): IVirtualGateway {
     return new ImportedVirtualGateway(scope, id, { virtualGatewayArn });
   }
 
   /**
    * Import an existing VirtualGateway given its name
    */
-  public static fromVirtualNodeName(scope: cdk.Construct, id: string, meshName: string, virtualGatewayName: string): IVirtualGateway {
+  public static fromVirtualGatewayName(scope: Construct, id: string, meshName: string, virtualGatewayName: string): IVirtualGateway {
     return new ImportedVirtualGateway(scope, id, {
       meshName,
       virtualGatewayName,
@@ -160,7 +161,7 @@ export class VirtualGateway extends VirtualGatewayBase {
    */
   public readonly mesh: IMesh;
 
-  constructor(scope: cdk.Construct, id: string, props: VirtualGatewayProps) {
+  constructor(scope: Construct, id: string, props: VirtualGatewayProps) {
     super(scope, id, {
       physicalName: props.virtualGatewayName || cdk.Lazy.stringValue({ produce: () => this.node.uniqueId }),
     });
@@ -176,11 +177,7 @@ export class VirtualGateway extends VirtualGatewayBase {
       spec: {
         listeners: cdk.Lazy.anyValue({ produce: () => this.listeners }, { omitEmptyArray: true }),
         logging: accessLogging !== undefined ? {
-          accessLog: {
-            file: accessLogging.filePath != undefined ? {
-              path: accessLogging.filePath,
-            } : undefined,
-          },
+          accessLog: accessLogging.virtualGatewayAccessLog,
         } : undefined,
       },
     });
@@ -264,7 +261,7 @@ class ImportedVirtualGateway extends VirtualGatewayBase {
    */
   public readonly mesh: IMesh;
 
-  constructor(scope: cdk.Construct, id: string, props: VirtualGatewayAttributes) {
+  constructor(scope: Construct, id: string, props: VirtualGatewayAttributes) {
     super(scope, id);
 
     if (props.mesh) {
