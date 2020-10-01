@@ -1,6 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as sns from '@aws-cdk/aws-sns';
-import { Construct, Duration, Lazy, Stack } from '@aws-cdk/core';
+import { Duration, Lazy, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { ManagedRule, RuleProps } from './rule';
 
 /**

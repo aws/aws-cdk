@@ -1,4 +1,5 @@
-import { Construct, Resource } from '@aws-cdk/core';
+import { Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CommonTaskDefinitionProps, Compatibility, IpcMode, ITaskDefinition, NetworkMode, PidMode, TaskDefinition } from '../base/task-definition';
 import { PlacementConstraint } from '../placement';
 

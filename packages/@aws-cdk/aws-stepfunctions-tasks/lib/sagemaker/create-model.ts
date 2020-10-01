@@ -2,6 +2,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 import { IContainerDefinition } from './base-types';
 
@@ -91,7 +92,7 @@ export class SageMakerCreateModel extends sfn.TaskStateBase implements iam.IGran
   private readonly subnets?: string[];
   private readonly integrationPattern: sfn.IntegrationPattern;
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: SageMakerCreateModelProps) {
+  constructor(scope: Construct, id: string, private readonly props: SageMakerCreateModelProps) {
     super(scope, id, props);
     this.integrationPattern = props.integrationPattern || sfn.IntegrationPattern.REQUEST_RESPONSE;
     validatePatternSupported(this.integrationPattern, SageMakerCreateModel.SUPPORTED_INTEGRATION_PATTERNS);

@@ -1,7 +1,8 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { Resource, Construct, Duration, Token, Annotations, RemovalPolicy, IResource } from '@aws-cdk/core';
+import { Resource, Duration, Token, Annotations, RemovalPolicy, IResource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { IClusterEngine } from './cluster-engine';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';

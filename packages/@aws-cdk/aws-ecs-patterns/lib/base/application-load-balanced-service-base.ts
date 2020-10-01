@@ -9,6 +9,7 @@ import { IRole } from '@aws-cdk/aws-iam';
 import { ARecord, IHostedZone, RecordTarget } from '@aws-cdk/aws-route53';
 import { LoadBalancerTarget } from '@aws-cdk/aws-route53-targets';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 /**
  * The properties for the base ApplicationLoadBalancedEc2Service or ApplicationLoadBalancedFargateService service.
@@ -309,7 +310,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
   /**
    * Constructs a new instance of the ApplicationLoadBalancedServiceBase class.
    */
-  constructor(scope: cdk.Construct, id: string, props: ApplicationLoadBalancedServiceBaseProps = {}) {
+  constructor(scope: Construct, id: string, props: ApplicationLoadBalancedServiceBaseProps = {}) {
     super(scope, id);
 
     if (props.cluster && props.vpc) {

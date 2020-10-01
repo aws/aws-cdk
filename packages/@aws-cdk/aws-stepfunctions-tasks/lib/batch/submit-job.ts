@@ -2,7 +2,8 @@ import * as batch from '@aws-cdk/aws-batch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
-import { Construct, Size, Stack, withResolved } from '@aws-cdk/core';
+import { Size, Stack, withResolved } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 /**

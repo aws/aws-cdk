@@ -1,5 +1,6 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CustomActionRegistration } from '../custom-action-registration';
 
 /**
@@ -107,7 +108,7 @@ export abstract class BaseJenkinsProvider extends cdk.Construct implements IJenk
   public abstract readonly serverUrl: string;
   public readonly version: string;
 
-  protected constructor(scope: cdk.Construct, id: string, version?: string) {
+  protected constructor(scope: Construct, id: string, version?: string) {
     super(scope, id);
 
     this.version = version || '1';
@@ -139,7 +140,7 @@ export class JenkinsProvider extends BaseJenkinsProvider {
    * @param attrs the properties used to identify the existing provider
    * @returns a new Construct representing a reference to an existing Jenkins provider
    */
-  public static fromJenkinsProviderAttributes(scope: cdk.Construct, id: string, attrs: JenkinsProviderAttributes): IJenkinsProvider {
+  public static fromJenkinsProviderAttributes(scope: Construct, id: string, attrs: JenkinsProviderAttributes): IJenkinsProvider {
     return new ImportedJenkinsProvider(scope, id, attrs);
   }
 
@@ -148,7 +149,7 @@ export class JenkinsProvider extends BaseJenkinsProvider {
   private buildIncluded = false;
   private testIncluded = false;
 
-  constructor(scope: cdk.Construct, id: string, props: JenkinsProviderProps) {
+  constructor(scope: Construct, id: string, props: JenkinsProviderProps) {
     super(scope, id, props.version);
 
     this.providerName = props.providerName;
@@ -208,7 +209,7 @@ class ImportedJenkinsProvider extends BaseJenkinsProvider {
   public readonly providerName: string;
   public readonly serverUrl: string;
 
-  constructor(scope: cdk.Construct, id: string, props: JenkinsProviderAttributes) {
+  constructor(scope: Construct, id: string, props: JenkinsProviderAttributes) {
     super(scope, id, props.version);
 
     this.providerName = props.providerName;

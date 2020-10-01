@@ -1,4 +1,5 @@
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnTaskDefinition } from './ecs.generated';
 
 /**
@@ -57,7 +58,7 @@ export class LinuxParameters extends cdk.Construct {
   /**
    * Constructs a new instance of the LinuxParameters class.
    */
-  constructor(scope: cdk.Construct, id: string, props: LinuxParametersProps = {}) {
+  constructor(scope: Construct, id: string, props: LinuxParametersProps = {}) {
     super(scope, id);
 
     this.sharedMemorySize = props.sharedMemorySize;

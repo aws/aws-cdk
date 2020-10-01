@@ -1,5 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
-import { Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
+import { IResource, Lazy, Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { IInstanceEngine } from './instance-engine';
 import { CfnOptionGroup } from './rds.generated';
 
