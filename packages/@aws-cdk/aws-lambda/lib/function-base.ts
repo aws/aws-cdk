@@ -299,7 +299,8 @@ export abstract class FunctionBase extends Resource implements IFunction {
               action: 'lambda:InvokeFunction',
             });
 
-            return { statementAdded: true, policyDependable: this._functionNode().findChild(identifier) } as iam.AddToResourcePolicyResult;
+            const permissionNode = this._functionNode().tryFindChild(identifier);
+            return { statementAdded: (permissionNode !== undefined), policyDependable: permissionNode };
           },
           node: this.node,
           stack: this.stack,

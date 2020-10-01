@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { ABSENT, expect, haveResource, MatchStyle, ResourcePart, arrayWith, objectLike } from '@aws-cdk/assert';
+import { ABSENT, expect, haveResource, MatchStyle, ResourcePart, arrayWith, objectLike, not } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
@@ -1220,66 +1220,101 @@ export = {
 
       test.done();
     },
-  },
 
-  'grantInvoke with an imported role (in the same account)'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack(undefined, undefined, {
-      env: { account: '123456789012' },
-    });
-    const fn = new lambda.Function(stack, 'Function', {
-      code: lambda.Code.fromInline('xxx'),
-      handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
-    });
+    'with an imported role (in the same account)'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack(undefined, undefined, {
+        env: { account: '123456789012' },
+      });
+      const fn = new lambda.Function(stack, 'Function', {
+        code: lambda.Code.fromInline('xxx'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_10_X,
+      });
 
-    // WHEN
-    fn.grantInvoke(iam.Role.fromRoleArn(stack, 'ForeignRole', 'arn:aws:iam::123456789012:role/someRole'));
+      // WHEN
+      fn.grantInvoke(iam.Role.fromRoleArn(stack, 'ForeignRole', 'arn:aws:iam::123456789012:role/someRole'));
 
-    // THEN
-    expect(stack).to(haveResource('AWS::IAM::Policy', {
-      PolicyDocument: objectLike({
-        Statement: arrayWith(
-          {
-            Action: 'lambda:InvokeFunction',
-            Effect: 'Allow',
-            Resource: { 'Fn::GetAtt': ['Function76856677', 'Arn'] },
-          },
-        ),
-      }),
-      Roles: ['someRole'],
-    }));
+      // THEN
+      expect(stack).to(haveResource('AWS::IAM::Policy', {
+        PolicyDocument: objectLike({
+          Statement: arrayWith(
+            {
+              Action: 'lambda:InvokeFunction',
+              Effect: 'Allow',
+              Resource: { 'Fn::GetAtt': ['Function76856677', 'Arn'] },
+            },
+          ),
+        }),
+        Roles: ['someRole'],
+      }));
 
-    test.done();
-  },
+      test.done();
+    },
 
-  'grantInvoke with an imported role (from a different account)'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack(undefined, undefined, {
-      env: { account: '3333' },
-    });
-    const fn = new lambda.Function(stack, 'Function', {
-      code: lambda.Code.fromInline('xxx'),
-      handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
-    });
+    'with an imported role (from a different account)'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack(undefined, undefined, {
+        env: { account: '3333' },
+      });
+      const fn = new lambda.Function(stack, 'Function', {
+        code: lambda.Code.fromInline('xxx'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_10_X,
+      });
 
-    // WHEN
-    fn.grantInvoke(iam.Role.fromRoleArn(stack, 'ForeignRole', 'arn:aws:iam::123456789012:role/someRole'));
+      // WHEN
+      fn.grantInvoke(iam.Role.fromRoleArn(stack, 'ForeignRole', 'arn:aws:iam::123456789012:role/someRole'));
 
-    // THEN
-    expect(stack).to(haveResource('AWS::Lambda::Permission', {
-      Action: 'lambda:InvokeFunction',
-      FunctionName: {
-        'Fn::GetAtt': [
-          'Function76856677',
-          'Arn',
-        ],
-      },
-      Principal: 'arn:aws:iam::123456789012:role/someRole',
-    }));
+      // THEN
+      expect(stack).to(haveResource('AWS::Lambda::Permission', {
+        Action: 'lambda:InvokeFunction',
+        FunctionName: {
+          'Fn::GetAtt': [
+            'Function76856677',
+            'Arn',
+          ],
+        },
+        Principal: 'arn:aws:iam::123456789012:role/someRole',
+      }));
 
-    test.done();
+      test.done();
+    },
+
+    'on an imported function (same account)'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack(undefined, undefined, {
+        env: { account: '123456789012' },
+      });
+      const fn = lambda.Function.fromFunctionArn(stack, 'Function', 'arn:aws:lambda:us-east-1:123456789012:function:MyFn');
+
+      // WHEN
+      fn.grantInvoke(new iam.ServicePrincipal('elasticloadbalancing.amazonaws.com'));
+
+      // THEN
+      expect(stack).to(haveResource('AWS::Lambda::Permission', {
+        Action: 'lambda:InvokeFunction',
+        FunctionName: 'arn:aws:lambda:us-east-1:123456789012:function:MyFn',
+        Principal: 'elasticloadbalancing.amazonaws.com',
+      }));
+
+      test.done();
+    },
+
+    'on an imported function (different account)'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack(); // Unresolved account
+      const fn = lambda.Function.fromFunctionArn(stack, 'Function', 'arn:aws:lambda:us-east-1:123456789012:function:MyFn');
+
+      // WHEN
+      fn.grantInvoke(new iam.ServicePrincipal('elasticloadbalancing.amazonaws.com'));
+
+      // THEN
+      expect(stack).to(not(haveResource('AWS::Lambda::Permission')));
+
+      test.done();
+    },
+
   },
 
   'Can use metricErrors on a lambda Function'(test: Test) {
