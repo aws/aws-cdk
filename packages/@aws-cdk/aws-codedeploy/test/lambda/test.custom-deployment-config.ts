@@ -217,7 +217,6 @@ export = {
       alias,
       deploymentConfig: config,
     });
-    //group.node.addDependency(config);
 
     // THEN
     expect(stack).to(haveResource('AWS::CodeDeploy::DeploymentGroup', {
