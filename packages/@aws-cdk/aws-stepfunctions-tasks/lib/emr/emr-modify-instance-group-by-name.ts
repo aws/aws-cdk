@@ -1,6 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { integrationResourceArn } from '../private/task-utils';
 import { EmrCreateCluster } from './emr-create-cluster';
 import { InstanceGroupModifyConfigPropertyToJson } from './private/cluster-utils';
@@ -40,7 +41,7 @@ export class EmrModifyInstanceGroupByName extends sfn.TaskStateBase {
   protected readonly taskPolicies?: iam.PolicyStatement[];
   protected readonly taskMetrics?: sfn.TaskMetricsConfig;
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: EmrModifyInstanceGroupByNameProps) {
+  constructor(scope: Construct, id: string, private readonly props: EmrModifyInstanceGroupByNameProps) {
     super(scope, id, props);
     this.taskPolicies = [
       new iam.PolicyStatement({

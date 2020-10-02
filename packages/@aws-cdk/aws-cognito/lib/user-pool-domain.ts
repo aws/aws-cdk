@@ -1,6 +1,7 @@
 import { ICertificate } from '@aws-cdk/aws-certificatemanager';
-import { Construct, IResource, Resource, Stack, Token } from '@aws-cdk/core';
+import { IResource, Resource, Stack, Token } from '@aws-cdk/core';
 import { AwsCustomResource, AwsCustomResourcePolicy, AwsSdkCall, PhysicalResourceId } from '@aws-cdk/custom-resources';
+import { Construct } from 'constructs';
 import { CfnUserPoolDomain } from './cognito.generated';
 import { IUserPool } from './user-pool';
 import { UserPoolClient } from './user-pool-client';
