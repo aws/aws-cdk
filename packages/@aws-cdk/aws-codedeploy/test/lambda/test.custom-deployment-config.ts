@@ -38,6 +38,7 @@ export = {
       type: codedeploy.CustomLambdaDeploymentConfigType.CANARY,
       interval: cdk.Duration.minutes(1),
       percentage: 5,
+      deploymentConfigName: 'MyDeploymentConfig',
     });
     new codedeploy.LambdaDeploymentGroup(stack, 'MyDG', {
       application,
@@ -58,7 +59,7 @@ export = {
         service: 'CodeDeploy',
         parameters: {
           computePlatform: 'Lambda',
-          deploymentConfigName: 'CustomConfig.LambdaCanary5Percent1Minutes',
+          deploymentConfigName: 'MyDeploymentConfig',
           trafficRoutingConfig: {
             timeBasedCanary: {
               canaryPercentage: '5',
@@ -76,7 +77,7 @@ export = {
         service: 'CodeDeploy',
         parameters: {
           computePlatform: 'Lambda',
-          deploymentConfigName: 'CustomConfig.LambdaCanary5Percent1Minutes',
+          deploymentConfigName: 'MyDeploymentConfig',
           trafficRoutingConfig: {
             timeBasedCanary: {
               canaryPercentage: '5',
@@ -93,7 +94,7 @@ export = {
         action: 'deleteDeploymentConfig',
         service: 'CodeDeploy',
         parameters: {
-          deploymentConfigName: 'CustomConfig.LambdaCanary5Percent1Minutes',
+          deploymentConfigName: 'MyDeploymentConfig',
         },
       },
     }));
@@ -120,7 +121,7 @@ export = {
                   {
                     Ref: 'AWS::AccountId',
                   },
-                  ':deploymentconfig:CustomConfig.LambdaCanary5Percent1Minutes',
+                  ':deploymentconfig:MyDeploymentConfig',
                 ],
               ],
             },
@@ -144,7 +145,7 @@ export = {
                   {
                     Ref: 'AWS::AccountId',
                   },
-                  ':deploymentconfig:CustomConfig.LambdaCanary5Percent1Minutes',
+                  ':deploymentconfig:MyDeploymentConfig',
                 ],
               ],
             },

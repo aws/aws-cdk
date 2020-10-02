@@ -42,6 +42,13 @@ export interface CustomLambdaDeploymentConfigProps {
    * - For CANARY, how long to shift traffic before the full deployment
    */
   readonly interval: Duration;
+
+  /**
+   * The verbatim name of the deployment config. Must be unique per account/region.
+   * Other parameters cannot be updated if this name is provided.
+   * @default - automatically generated name
+   */
+  readonly deploymentConfigName?: string;
 }
 
 /**
@@ -66,11 +73,15 @@ export class CustomLambdaDeploymentConfig extends Resource implements ILambdaDep
     super(scope, id);
     this.validateParameters(props);
 
+    // In this section we make the argument for the AWS API call
+    // The name of the config is <construct unique id>.Lambda<deployment type><percentage>Percent<interval>Minutes
+    // Unless the user provides an explicit name
+
     const deploymentType = 'TimeBased' + props.type.toString();
     const intervalMinutes = props.interval.toMinutes().toString();
     const percentage = props.percentage.toString();
 
-    let routingConfig;
+    let routingConfig; // The argument to the AWS API call
     let customDeploymentConfigName = `${percentage}Percent${intervalMinutes}Minutes`;
     if (props.type == CustomLambdaDeploymentConfigType.CANARY) {
       routingConfig = {
@@ -92,12 +103,22 @@ export class CustomLambdaDeploymentConfig extends Resource implements ILambdaDep
       customDeploymentConfigName = `LambdaLinear${customDeploymentConfigName}`;
     }
 
-    // What the config is called in the AWS console
-    // We tack the id on so that, if the user has multiple configs with identical settings,
-    // deleting one will not affect the other
-    const resourceName = this.node.uniqueId + '.' + customDeploymentConfigName;
-    this.deploymentConfigName = resourceName;
-    this.deploymentConfigArn = arnForDeploymentConfig(resourceName);
+    // What the physical resource ID is for Cloudformation
+    // Designed so that, if the construct name, percentage, or interval changes,
+    // the deployment config will be deleted and a new one created in its place
+    let resourceName = this.node.uniqueId + '.' + customDeploymentConfigName;
+
+    // If resource name is provided, add it to the physical resource ID so CFN will
+    // update it if the user changes it.
+    if (props.deploymentConfigName !== undefined) {
+      resourceName = props.deploymentConfigName + resourceName;
+    }
+
+    // What you would see in the AWS console
+    const consoleName = props.deploymentConfigName ?? resourceName;
+
+    this.deploymentConfigName = consoleName;
+    this.deploymentConfigArn = arnForDeploymentConfig(this.deploymentConfigName);
 
     // The AWS Custom Resource that calls CodeDeploy to create and delete the resource
     new AwsCustomResource(this, 'DeploymentConfig', {
@@ -105,7 +126,7 @@ export class CustomLambdaDeploymentConfig extends Resource implements ILambdaDep
         service: 'CodeDeploy',
         action: 'createDeploymentConfig',
         parameters: {
-          deploymentConfigName: resourceName,
+          deploymentConfigName: this.deploymentConfigName,
           computePlatform: 'Lambda',
           trafficRoutingConfig: routingConfig,
         },
@@ -116,7 +137,7 @@ export class CustomLambdaDeploymentConfig extends Resource implements ILambdaDep
         service: 'CodeDeploy',
         action: 'createDeploymentConfig',
         parameters: {
-          deploymentConfigName: resourceName,
+          deploymentConfigName: this.deploymentConfigName,
           computePlatform: 'Lambda',
           trafficRoutingConfig: routingConfig,
         },
@@ -128,7 +149,7 @@ export class CustomLambdaDeploymentConfig extends Resource implements ILambdaDep
         service: 'CodeDeploy',
         action: 'deleteDeploymentConfig',
         parameters: {
-          deploymentConfigName: resourceName,
+          deploymentConfigName: this.deploymentConfigName,
         },
       },
       // Least permissions, only have permission to create or delete this exact config
