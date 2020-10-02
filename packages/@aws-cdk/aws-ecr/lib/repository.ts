@@ -1,7 +1,8 @@
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct, IConstruct, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
+import { IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
+import { IConstruct, Construct } from 'constructs';
 import { CfnRepository } from './ecr.generated';
 import { LifecycleRule, TagStatus } from './lifecycle';
 

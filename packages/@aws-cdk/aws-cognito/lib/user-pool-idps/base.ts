@@ -1,4 +1,5 @@
-import { Construct, Resource } from '@aws-cdk/core';
+import { Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { StandardAttributeNames } from '../private/attr-names';
 import { IUserPool } from '../user-pool';
 import { IUserPoolIdentityProvider } from '../user-pool-idp';

@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.66.0](https://github.com/aws/aws-cdk/compare/v1.65.0...v1.66.0) (2020-10-02)
+
+### Features
+
+* **cfnspec:** cloudformation spec v18.4.0 ([#10493](https://github.com/aws/aws-cdk/issues/10493)) ([fa50369](https://github.com/aws/aws-cdk/commit/fa503692c14a45c130103415114f6818b3d79426))
+* **cfnspec:** cloudformation spec v18.5.0 ([#10636](https://github.com/aws/aws-cdk/issues/10636)) ([e99cf63](https://github.com/aws/aws-cdk/commit/e99cf631430ceca0b4fe9920f7189bc8b664acbf))
+* **events-targets:** option to provide an existing role to use with the StepFunctions State Machine target ([#10551](https://github.com/aws/aws-cdk/issues/10551)) ([b96efd8](https://github.com/aws/aws-cdk/commit/b96efd8aaa143845b9fe315a9ee1e8398c4d83c2)), closes [#8255](https://github.com/aws/aws-cdk/issues/8255)
+
+
+### Bug Fixes
+
+* **codebuild:** permissions for Project in VPC used incorrect AWS partition ([#10637](https://github.com/aws/aws-cdk/issues/10637)) ([b207888](https://github.com/aws/aws-cdk/commit/b2078881445850acf4877ffd2cf657cfdfa78e0f)), closes [#10634](https://github.com/aws/aws-cdk/issues/10634)
+* **codecommit:** use region given in fromRepositoryArn when creating clone urls ([#10639](https://github.com/aws/aws-cdk/issues/10639)) ([934553c](https://github.com/aws/aws-cdk/commit/934553cae4a9110f9109a978ab92a493f27dbfca)), closes [#10630](https://github.com/aws/aws-cdk/issues/10630)
+* **core,cx-api:** docker bundling fails during tests on macOS ([#10620](https://github.com/aws/aws-cdk/issues/10620)) ([0331508](https://github.com/aws/aws-cdk/commit/033150840a4f5bc21f85f0126b125e4f2a31a9bf)), closes [#10262](https://github.com/aws/aws-cdk/issues/10262)
+
 ## [1.65.0](https://github.com/aws/aws-cdk/compare/v1.64.1...v1.65.0) (2020-09-30)
 
 

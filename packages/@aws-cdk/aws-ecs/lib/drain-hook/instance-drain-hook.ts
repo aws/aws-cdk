@@ -6,6 +6,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { ICluster } from '../cluster';
 
 // Reference for the source in this package:
@@ -53,7 +54,7 @@ export class InstanceDrainHook extends cdk.Construct {
   /**
    * Constructs a new instance of the InstanceDrainHook class.
    */
-  constructor(scope: cdk.Construct, id: string, props: InstanceDrainHookProps) {
+  constructor(scope: Construct, id: string, props: InstanceDrainHookProps) {
     super(scope, id);
 
     const drainTime = props.drainTime || cdk.Duration.minutes(5);

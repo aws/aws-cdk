@@ -1,4 +1,5 @@
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { IAccelerator } from './accelerator';
 import * as ga from './globalaccelerator.generated';
 
@@ -104,7 +105,7 @@ export class Listener extends cdk.Resource implements IListener {
   /**
    * import from ARN
    */
-  public static fromListenerArn(scope: cdk.Construct, id: string, listenerArn: string): IListener {
+  public static fromListenerArn(scope: Construct, id: string, listenerArn: string): IListener {
     class Import extends cdk.Resource implements IListener {
       public readonly listenerArn = listenerArn;
     }
@@ -119,7 +120,7 @@ export class Listener extends cdk.Resource implements IListener {
    */
   public readonly listenerName: string;
 
-  constructor(scope: cdk.Construct, id: string, props: ListenerProps) {
+  constructor(scope: Construct, id: string, props: ListenerProps) {
     super(scope, id);
 
     const resource = new ga.CfnListener(this, 'Resource', {

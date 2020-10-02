@@ -1,4 +1,5 @@
-import { Construct, Lazy, Resource, IResolvable } from '@aws-cdk/core';
+import { Lazy, Resource, IResolvable } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnDomain } from './amplify.generated';
 import { IApp } from './app';
 import { IBranch } from './branch';

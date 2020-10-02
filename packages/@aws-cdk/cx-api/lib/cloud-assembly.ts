@@ -405,5 +405,5 @@ function ignore(_x: any) {
  * Turn the given optional output directory into a fixed output directory
  */
 function determineOutputDirectory(outdir?: string) {
-  return outdir ?? fs.mkdtempSync(path.join(os.tmpdir(), 'cdk.out'));
+  return outdir ?? fs.mkdtempSync(path.join(fs.realpathSync(os.tmpdir()), 'cdk.out'));
 }
