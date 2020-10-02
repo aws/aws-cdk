@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-s3",
-        "module": "aws_cdk.aws_s3"
+        "module": "aws_cdk.aws_s3",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
@@ -48,7 +52,10 @@
     "compat": "cdk-compat"
   },
   "cdk-build": {
-    "cloudformation": "AWS::S3"
+    "cloudformation": "AWS::S3",
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": "true"
+    }
   },
   "keywords": [
     "aws",

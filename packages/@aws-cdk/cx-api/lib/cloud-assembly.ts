@@ -369,6 +369,8 @@ export interface AssemblyBuildOptions {
   /**
    * Include the specified runtime information (module versions) in manifest.
    * @default - if this option is not specified, runtime info will not be included
+   * @deprecated All template modifications that should result from this should
+   * have already been inserted into the template.
    */
   readonly runtimeInfo?: RuntimeInfo;
 }
@@ -403,5 +405,5 @@ function ignore(_x: any) {
  * Turn the given optional output directory into a fixed output directory
  */
 function determineOutputDirectory(outdir?: string) {
-  return outdir ?? fs.mkdtempSync(path.join(os.tmpdir(), 'cdk.out'));
+  return outdir ?? fs.mkdtempSync(path.join(fs.realpathSync(os.tmpdir()), 'cdk.out'));
 }
