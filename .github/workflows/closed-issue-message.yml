@@ -1,7 +1,7 @@
 name: Closed Issue Message
 on:
    issues:
-      types: [closed]
+       types: [closed]
 jobs:
     auto_comment:
         runs-on: ubuntu-latest
