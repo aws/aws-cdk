@@ -1313,6 +1313,9 @@ export class Vpc extends VpcBase {
 
   private createNatGateways(provider: NatProvider, natCount: number, placement: SubnetSelection): void {
     const natSubnets: PublicSubnet[] = this.selectSubnetObjects(placement) as PublicSubnet[];
+    if (natSubnets.length === 0) {
+      throw new Error(`No subnets matched ${JSON.stringify(placement)} for placing NAT gateways`);
+    }
     for (const sub of natSubnets) {
       if (this.publicSubnets.indexOf(sub) === -1) {
         throw new Error(`natGatewayPlacement ${placement} contains non public subnet ${sub}`);

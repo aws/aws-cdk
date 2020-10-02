@@ -1449,6 +1449,32 @@ nodeunitShim({
       }));
       test.done();
     },
+    'repro #10475'(test: Test) {
+      const stack = getTestStack();
+
+      new Vpc(stack, 'odoo-vpc', {
+        cidr: '10.1.0.0/16',
+        enableDnsSupport: true,
+        enableDnsHostnames: true,
+        subnetConfiguration: [{
+          cidrMask: 24,
+          name: 'public',
+          subnetType: SubnetType.PUBLIC,
+        }, {
+          cidrMask: 24,
+          name: 'private',
+          subnetType: SubnetType.PRIVATE,
+        }],
+        natGateways: 1,
+        natGatewaySubnets: {
+          subnetType: SubnetType.PUBLIC,
+          availabilityZones: ['us-west-2b'],
+        },
+        defaultInstanceTenancy: DefaultInstanceTenancy.DEFAULT,
+      });
+
+      test.done();
+    },
   },
 });
 

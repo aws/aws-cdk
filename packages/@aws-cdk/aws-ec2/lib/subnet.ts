@@ -1,3 +1,4 @@
+import { Token } from '@aws-cdk/core';
 import { CidrBlock, NetworkUtils } from './network-util';
 import { ISubnet } from './vpc';
 
@@ -41,19 +42,25 @@ export abstract class SubnetFilter {
  * Chooses subnets which are in one of the given availability zones.
  */
 class AvailabilityZoneSubnetFilter extends SubnetFilter {
-
   private readonly availabilityZones: string[];
+  private readonly isUnresolved: boolean;
 
   constructor(availabilityZones: string[]) {
     super();
     this.availabilityZones = availabilityZones;
+    this.isUnresolved = availabilityZones.some(Token.isUnresolved);
   }
 
   /**
    * Executes the subnet filtering logic.
    */
   public selectSubnets(subnets: ISubnet[]): ISubnet[] {
-    return subnets.filter(s => this.availabilityZones.includes(s.availabilityZone));
+    return subnets.filter(s => {
+      if (Token.isUnresolved(s.availabilityZone) && !this.isUnresolved) {
+        throw new Error(`Cannot filter subnets by concrete availability zones (${this.availabilityZones}) if the VPC is environment agnostic (${s.availabilityZone})`);
+      }
+      return this.availabilityZones.includes(s.availabilityZone);
+    });
   }
 }
 
