@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-logs-destinations",
-        "module": "aws_cdk.aws_logs_destinations"
+        "module": "aws_cdk.aws_logs_destinations",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
@@ -92,6 +96,9 @@
   },
   "maturity": "stable",
   "cdk-build": {
-    "jest": true
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   }
 }

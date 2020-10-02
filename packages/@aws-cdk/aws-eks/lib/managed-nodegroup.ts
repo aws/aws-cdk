@@ -1,6 +1,7 @@
 import { InstanceType, ISecurityGroup, SubnetSelection } from '@aws-cdk/aws-ec2';
 import { IRole, ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
-import { Construct, IResource, Resource } from '@aws-cdk/core';
+import { IResource, Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Cluster, ICluster } from './cluster';
 import { CfnNodegroup } from './eks.generated';
 import { INSTANCE_TYPES } from './instance-types';
@@ -59,7 +60,7 @@ export interface NodegroupRemoteAccess {
 /**
  * Launch template property specification
  */
-export interface LaunchTemplate {
+export interface LaunchTemplateSpec {
   /**
    * The Launch template ID
    */
@@ -177,11 +178,11 @@ export interface NodegroupOptions {
    */
   readonly tags?: { [name: string]: string };
   /**
-   * Launch template used for the nodegroup
+   * Launch template specification used for the nodegroup
    * @see - https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html
    * @default - no launch template
    */
-  readonly launchTemplate?: LaunchTemplate;
+  readonly launchTemplateSpec?: LaunchTemplateSpec;
 }
 
 /**
@@ -290,7 +291,7 @@ export class Nodegroup extends Resource implements INodegroup {
       tags: props.tags,
     });
 
-    if (props.launchTemplate) {
+    if (props.launchTemplateSpec) {
       if (props.diskSize) {
         // see - https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html
         // and https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eks-nodegroup.html#cfn-eks-nodegroup-disksize
@@ -303,8 +304,8 @@ export class Nodegroup extends Resource implements INodegroup {
       }
       // TODO: update this when the L1 resource spec is updated.
       resource.addPropertyOverride('LaunchTemplate', {
-        Id: props.launchTemplate.id,
-        Version: props.launchTemplate.version,
+        Id: props.launchTemplateSpec.id,
+        Version: props.launchTemplateSpec.version,
       });
     }
 

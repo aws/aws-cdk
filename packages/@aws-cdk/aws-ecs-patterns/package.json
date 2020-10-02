@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-ecs-patterns",
-        "module": "aws_cdk.aws_ecs_patterns"
+        "module": "aws_cdk.aws_ecs_patterns",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
@@ -117,5 +121,10 @@
   "awscdkio": {
     "announce": false
   },
-  "maturity": "stable"
+  "maturity": "stable",
+  "cdk-build": {
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
+  }
 }

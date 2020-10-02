@@ -24,7 +24,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-applicationinsights",
-        "module": "aws_cdk.aws_applicationinsights"
+        "module": "aws_cdk.aws_applicationinsights",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     }
   },
@@ -50,7 +54,10 @@
   },
   "cdk-build": {
     "cloudformation": "AWS::ApplicationInsights",
-    "jest": true
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "keywords": [
     "aws",

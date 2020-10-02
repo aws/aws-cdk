@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-events-targets",
-        "module": "aws_cdk.aws_events_targets"
+        "module": "aws_cdk.aws_events_targets",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
@@ -50,7 +54,10 @@
     "pre": [
       "node ./build-tools/gen.js"
     ],
-    "jest": true
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "keywords": [
     "aws",

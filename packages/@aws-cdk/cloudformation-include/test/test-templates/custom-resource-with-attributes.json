@@ -27,9 +27,10 @@
       "DependsOn": [ "CustomResource" ]
     },
     "CustomResource": {
-      "Type": "AWS::MyService::AnotherCustom",
+      "Type": "AWS::CloudFormation::CustomResource",
+      "Description": "some random custom resource",
       "Properties": {
-        "CustomProp": "CustomValue",
+        "ServiceToken": "CustomValue",
         "CustomFuncProp": {
           "Ref": "AWS::NoValue"
         }
