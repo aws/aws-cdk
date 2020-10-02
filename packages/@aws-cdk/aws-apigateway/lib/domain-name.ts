@@ -1,4 +1,5 @@
 import * as acm from '@aws-cdk/aws-certificatemanager';
+import { IBucket } from '@aws-cdk/aws-s3';
 import { IResource, Resource, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnDomainName } from './apigateway.generated';
@@ -40,6 +41,12 @@ export interface DomainNameOptions {
    * @default SecurityPolicy.TLS_1_0
    */
   readonly securityPolicy?: SecurityPolicy
+
+  /**
+   * The mutual TLS authentication configuration for a custom domain name.
+   * @default - mTLS is not configured.
+   */
+  readonly mtls?: MTLSAttributes
 }
 
 export interface DomainNameProps extends DomainNameOptions {
@@ -76,6 +83,7 @@ export interface IDomainName extends IResource {
    * @attribute DistributionHostedZoneId,RegionalHostedZoneId
    */
   readonly domainNameAliasHostedZoneId: string;
+
 }
 
 export class DomainName extends Resource implements IDomainName {
@@ -102,17 +110,25 @@ export class DomainName extends Resource implements IDomainName {
 
     const endpointType = props.endpointType || EndpointType.REGIONAL;
     const edge = endpointType === EndpointType.EDGE;
-
+    const getMTLSConfiguration = (mtlsConfig?: MTLSAttributes): CfnDomainName.MutualTlsAuthenticationProperty | undefined => {
+      if (!mtlsConfig) return mtlsConfig;
+      mtlsConfig.bucket.s3UrlForObject;
+      return {
+        truststoreUri: mtlsConfig.bucket.s3UrlForObject(mtlsConfig.key),
+        truststoreVersion: mtlsConfig.version,
+      };
+    };
     if (!Token.isUnresolved(props.domainName) && /[A-Z]/.test(props.domainName)) {
       throw new Error('domainName does not support uppercase letters. ' +
         `got: '${props.domainName}'`);
     }
-
+    const mtlsConfig = getMTLSConfiguration(props.mtls);
     const resource = new CfnDomainName(this, 'Resource', {
       domainName: props.domainName,
       certificateArn: edge ? props.certificate.certificateArn : undefined,
       regionalCertificateArn: edge ? undefined : props.certificate.certificateArn,
       endpointConfiguration: { types: [endpointType] },
+      mutualTlsAuthentication: mtlsConfig,
       securityPolicy: props.securityPolicy,
     });
 
@@ -162,4 +178,46 @@ export interface DomainNameAttributes {
    * Thje Route53 hosted zone ID to use in order to connect a record set to this domain through an alias.
    */
   readonly domainNameAliasHostedZoneId: string;
+
+}
+
+/**
+ * The mTLS authentication configuration for a custom domain name.
+ */
+export interface MTLSAttributes {
+  /**
+   * The bucket that the trust store is hosted in.
+   */
+  readonly bucket: IBucket;
+  /**
+   * The key in S3 to look at for the trust store
+   */
+  readonly key: string;
+
+  /**
+   *  The version of the S3 object that contains your truststore.
+   *  To specify a version, you must have versioning enabled for the S3 bucket.
+   *  @default - Uses current version
+   */
+  readonly version?: string;
+}
+
+/**
+ * The mutual TLS authentication configuration for a custom domain name.
+ */
+export interface MutualTlsAuthenticationAttributes {
+  /**
+   * An Amazon S3 URL that specifies the truststore for mutual TLS authentication, for example, s3://bucket-name/key-name.
+   * The truststore can contain certificates from public or private certificate authorities.
+   * To update the truststore, upload a new version to S3, and then update your custom domain name to use the new version.
+   * To update the truststore, you must have permissions to access the S3 object.
+   */
+  readonly truststoreUri: string;
+
+  /**
+   *  The version of the S3 object that contains your truststore.
+   *  To specify a version, you must have versioning enabled for the S3 bucket.
+   *  @default - Uses current version
+   */
+  readonly truststoreVersion?: string;
 }
