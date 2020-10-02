@@ -5,13 +5,16 @@ import { Fn } from './cfn-fn';
 import { Aws } from './cfn-pseudo';
 import { CfnResource } from './cfn-resource';
 import { CfnStack } from './cloudformation.generated';
-import { Construct as CoreConstruct } from './construct-compat';
 import { Duration } from './duration';
 import { Lazy } from './lazy';
 import { IResolveContext } from './resolvable';
 import { Stack } from './stack';
 import { NestedStackSynthesizer } from './stack-synthesizers';
 import { Token } from './token';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from './construct-compat';
 
 const NESTED_STACK_SYMBOL = Symbol.for('@aws-cdk/core.NestedStack');
 

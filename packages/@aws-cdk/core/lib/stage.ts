@@ -1,8 +1,11 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { IConstruct, Construct, Node } from 'constructs';
-import { Construct as CoreConstruct } from './construct-compat';
 import { Environment } from './environment';
 import { synthesize } from './private/synthesis';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from './construct-compat';
 
 /**
  * Initialization props for a stage.

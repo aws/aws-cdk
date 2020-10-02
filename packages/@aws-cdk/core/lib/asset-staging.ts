@@ -6,10 +6,13 @@ import { Construct } from 'constructs';
 import * as fs from 'fs-extra';
 import { AssetHashType, AssetOptions } from './assets';
 import { BundlingOptions } from './bundling';
-import { Construct as CoreConstruct } from './construct-compat';
 import { FileSystem, FingerprintOptions } from './fs';
 import { Stack } from './stack';
 import { Stage } from './stage';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from './construct-compat';
 
 /**
  * Initialization properties for `AssetStaging`.

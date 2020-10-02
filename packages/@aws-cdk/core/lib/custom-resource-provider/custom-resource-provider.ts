@@ -4,7 +4,6 @@ import { Construct } from 'constructs';
 import { AssetStaging } from '../asset-staging';
 import { FileAssetPackaging } from '../assets';
 import { CfnResource } from '../cfn-resource';
-import { Construct as CoreConstruct } from '../construct-compat';
 import { Duration } from '../duration';
 import { Size } from '../size';
 import { Stack } from '../stack';
@@ -12,6 +11,10 @@ import { Token } from '../token';
 
 const ENTRYPOINT_FILENAME = '__entrypoint__';
 const ENTRYPOINT_NODEJS_SOURCE = path.join(__dirname, 'nodejs-entrypoint.js');
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '../construct-compat';
 
 /**
  * Initialization properties for `CustomResourceProvider`.
