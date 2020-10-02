@@ -495,6 +495,7 @@ class AuroraPostgresClusterEngine extends ClusterEngineBase {
   private static readonly S3_EXPORT_FEATURE_NAME = 's3Export';
 
   public readonly engineFamily = 'POSTGRESQL';
+  public readonly defaultUsername = 'postgres';
   public readonly supportedLogTypes: string[] = ['postgresql'];
 
   constructor(version?: AuroraPostgresEngineVersion) {
@@ -553,7 +554,8 @@ export class DatabaseClusterEngine {
   /**
    * The unversioned 'aurora' cluster engine.
    *
-   * @deprecated using unversioned engines is an availability risk.
+   * **Note**: we do not recommend using unversioned engines for non-serverless Clusters,
+   *   as that can pose an availability risk.
    *   We recommend using versioned engines created using the {@link aurora()} method
    */
   public static readonly AURORA: IClusterEngine = new AuroraClusterEngine();
@@ -561,7 +563,8 @@ export class DatabaseClusterEngine {
   /**
    * The unversioned 'aurora-msql' cluster engine.
    *
-   * @deprecated using unversioned engines is an availability risk.
+   * **Note**: we do not recommend using unversioned engines for non-serverless Clusters,
+   *   as that can pose an availability risk.
    *   We recommend using versioned engines created using the {@link auroraMysql()} method
    */
   public static readonly AURORA_MYSQL: IClusterEngine = new AuroraMysqlClusterEngine();
@@ -569,7 +572,8 @@ export class DatabaseClusterEngine {
   /**
    * The unversioned 'aurora-postgresql' cluster engine.
    *
-   * @deprecated using unversioned engines is an availability risk.
+   * **Note**: we do not recommend using unversioned engines for non-serverless Clusters,
+   *   as that can pose an availability risk.
    *   We recommend using versioned engines created using the {@link auroraPostgres()} method
    */
   public static readonly AURORA_POSTGRESQL: IClusterEngine = new AuroraPostgresClusterEngine();

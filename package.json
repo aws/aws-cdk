@@ -18,9 +18,9 @@
     "fs-extra": "^9.0.1",
     "graceful-fs": "^4.2.4",
     "jest-junit": "^11.1.0",
-    "jsii-diff": "^1.12.0",
-    "jsii-pacmak": "^1.12.0",
-    "jsii-rosetta": "^1.12.0",
+    "jsii-diff": "^1.13.0",
+    "jsii-pacmak": "^1.13.0",
+    "jsii-rosetta": "^1.13.0",
     "lerna": "^3.22.1",
     "standard-version": "^9.0.0",
     "typescript": "~3.9.7"
@@ -42,6 +42,7 @@
     "packages": [
       "packages/*",
       "packages/@aws-cdk/*",
+      "packages/@aws-cdk-containers/*",
       "packages/@monocdk-experiment/*",
       "packages/@aws-cdk/*/lambda-packages/*",
       "tools/*"
