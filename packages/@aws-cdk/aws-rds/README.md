@@ -5,11 +5,7 @@
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
 
-> All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) are always stable and safe to use.
-
-![cdk-constructs: Developer Preview](https://img.shields.io/badge/cdk--constructs-developer--preview-informational.svg?style=for-the-badge)
-
-> The APIs of higher level constructs in this module are in **developer preview** before they become stable. We will only make breaking changes to address unforeseen API issues. Therefore, these APIs are not subject to [Semantic Versioning](https://semver.org/), and breaking changes will be announced in release notes. This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
 <!--END STABILITY BANNER-->
@@ -27,9 +23,9 @@ your instances will be launched privately or publicly:
 ```ts
 const cluster = new rds.DatabaseCluster(this, 'Database', {
   engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_2_08_1 }),
-  masterUser: rds.Login.fromUsername('clusteradmin'), // Optional - will default to admin
+  masterUser: rds.Credentials.fromUsername('clusteradmin'), // Optional - will default to admin
   instanceProps: {
-    // optional, defaults to t3.medium
+    // optional , defaults to t3.medium
     instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
     vpcSubnets: {
       subnetType: ec2.SubnetType.PRIVATE,
@@ -74,7 +70,7 @@ const instance = new rds.DatabaseInstance(this, 'Instance', {
   engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19_0_0_0_2020_04_R1 }),
   // optional, defaults to m5.large
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
-  masterUsername: rds.Login.fromUsername('syscdk'), // Optional - will default to admin
+  masterUsername: rds.Credentials.fromUsername('syscdk'), // Optional - will default to admin
   vpc,
   vpcSubnets: {
     subnetType: ec2.SubnetType.PRIVATE
@@ -406,3 +402,49 @@ new rds.OptionGroup(stack, 'Options', {
   ],
 });
 ```
+
+### Serverless
+
+[Amazon Aurora Serverless]((https://aws.amazon.com/rds/aurora/serverless/)) is an on-demand, auto-scaling configuration for Amazon
+Aurora. The database will automatically start up, shut down, and scale capacity
+up or down based on your application's needs. It enables you to run your database
+in the cloud without managing any database instances.
+
+The following example initializes an Aurora Serverless PostgreSql cluster.
+Aurora Serverless clusters can specify scaling properties which will be used to
+automatically scale the database cluster seamlessly based on the workload. 
+
+```ts
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as rds from '@aws-cdk/aws-rds';
+
+const vpc = new ec2.Vpc(this, 'myrdsvpc');
+
+const cluster = new rds.ServerlessCluster(this, 'AnotherCluster', {
+  engine: rds.DatabaseClusterEngine.AURORA_POSTGRESQL,
+  parameterGroup: rds.ParameterGroup.fromParameterGroupName(this, 'ParameterGroup', 'default.aurora-postgresql10'),
+  vpc,
+  scaling: {
+    autoPause: Duration.minutes(10), // default is to pause after 5 minutes of idle time
+    minCapacity: rds.AuroraCapacityUnit.ACU_8, // default is 2 Aurora capacity units (ACUs)
+    maxCapacity: rds.AuroraCapacityUnit.ACU_32, // default is 16 Aurora capacity units (ACUs)
+  }
+});
+```
+Aurora Serverless Clusters do not support the following features:
+* Loading data from an Amazon S3 bucket
+* Saving data to an Amazon S3 bucket
+* Invoking an AWS Lambda function with an Aurora MySQL native function
+* Aurora replicas
+* Backtracking
+* Multi-master clusters
+* Database cloning
+* IAM database cloning
+* IAM database authentication
+* Restoring a snapshot from MySQL DB instance
+* Performance Insights
+* RDS Proxy
+
+Read more about the [limitations of Aurora Serverless](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless.html#aurora-serverless.limitations)
+
+Learn more about using Amazon Aurora Serverless by reading the [documentation](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless.html)

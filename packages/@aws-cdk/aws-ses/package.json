@@ -56,7 +56,10 @@
     "cloudformation": "AWS::SES",
     "pre": [
       "npm run gen"
-    ]
+    ],
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "keywords": [
     "aws",

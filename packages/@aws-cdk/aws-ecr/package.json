@@ -56,7 +56,10 @@
     "cloudformation": "AWS::ECR",
     "pre": [
       "npm run gen"
-    ]
+    ],
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "nyc": {
     "lines": 78,
