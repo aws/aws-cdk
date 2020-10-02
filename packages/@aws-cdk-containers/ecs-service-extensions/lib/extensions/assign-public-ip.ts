@@ -1,5 +1,6 @@
-import { ServiceExtension, ServiceBuild } from './extension-interfaces';
-
+import * as cdk from '@aws-cdk/core';
+import { Service } from '../service';
+import { ServiceExtension, ServiceBuild, EnvironmentCapacityType } from './extension-interfaces';
 
 /**
  * Modifies the service to assign a public to each task.
@@ -7,6 +8,12 @@ import { ServiceExtension, ServiceBuild } from './extension-interfaces';
 export class AssignPublicIpExtension extends ServiceExtension {
   constructor() {
     super('public-ip');
+  }
+
+  public prehook(service: Service, _scope: cdk.Construct) {
+    if (service.capacityType != EnvironmentCapacityType.FARGATE) {
+      throw new Error('AssignPublicIp only supports Fargate tasks');
+    }
   }
 
   public modifyServiceProps(props: ServiceBuild) {
