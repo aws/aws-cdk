@@ -1,6 +1,7 @@
 import { InstanceType, ISecurityGroup, SubnetSelection } from '@aws-cdk/aws-ec2';
 import { IRole, ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
-import { Construct, IResource, Resource } from '@aws-cdk/core';
+import { IResource, Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Cluster, ICluster } from './cluster';
 import { CfnNodegroup } from './eks.generated';
 import { INSTANCE_TYPES } from './instance-types';
@@ -54,6 +55,22 @@ export interface NodegroupRemoteAccess {
    * @default - port 22 on the worker nodes is opened to the internet (0.0.0.0/0)
    */
   readonly sourceSecurityGroups?: ISecurityGroup[];
+}
+
+/**
+ * Launch template property specification
+ */
+export interface LaunchTemplateSpec {
+  /**
+   * The Launch template ID
+   */
+  readonly id: string;
+  /**
+   * The launch template version to be used (optional).
+   *
+   * @default - the default version of the launch template
+   */
+  readonly version?: string;
 }
 
 /**
@@ -160,6 +177,12 @@ export interface NodegroupOptions {
    * @default - None
    */
   readonly tags?: { [name: string]: string };
+  /**
+   * Launch template specification used for the nodegroup
+   * @see - https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html
+   * @default - no launch template
+   */
+  readonly launchTemplateSpec?: LaunchTemplateSpec;
 }
 
 /**
@@ -267,6 +290,25 @@ export class Nodegroup extends Resource implements INodegroup {
       },
       tags: props.tags,
     });
+
+    if (props.launchTemplateSpec) {
+      if (props.diskSize) {
+        // see - https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html
+        // and https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eks-nodegroup.html#cfn-eks-nodegroup-disksize
+        throw new Error('diskSize must be specified within the launch template');
+      }
+      if (props.instanceType) {
+        // see - https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html
+        // and https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eks-nodegroup.html#cfn-eks-nodegroup-disksize
+        throw new Error('Instance types must be specified within the launch template');
+      }
+      // TODO: update this when the L1 resource spec is updated.
+      resource.addPropertyOverride('LaunchTemplate', {
+        Id: props.launchTemplateSpec.id,
+        Version: props.launchTemplateSpec.version,
+      });
+    }
+
 
     // managed nodegroups update the `aws-auth` on creation, but we still need to track
     // its state for consistency.

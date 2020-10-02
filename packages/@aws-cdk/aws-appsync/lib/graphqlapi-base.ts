@@ -24,6 +24,18 @@ export interface DataSourceOptions {
 }
 
 /**
+ * Optional configuration for Http data sources
+ */
+export interface HttpDataSourceOptions extends DataSourceOptions {
+  /**
+   * The authorization config in case the HTTP endpoint requires authorization
+   *
+   * @default - none
+   */
+  readonly authorizationConfig?: AwsIamConfig;
+}
+
+/**
  * Interface for GraphQL
  */
 export interface IGraphqlApi extends IResource {
@@ -68,7 +80,7 @@ export interface IGraphqlApi extends IResource {
    * @param endpoint The http endpoint
    * @param options The optional configuration for this data source
    */
-  addHttpDataSource(id: string, endpoint: string, options?: DataSourceOptions): HttpDataSource;
+  addHttpDataSource(id: string, endpoint: string, options?: HttpDataSourceOptions): HttpDataSource;
 
   /**
    * add a new Lambda data source to this API
@@ -146,12 +158,13 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
    * @param endpoint The http endpoint
    * @param options The optional configuration for this data source
    */
-  public addHttpDataSource(id: string, endpoint: string, options?: DataSourceOptions): HttpDataSource {
+  public addHttpDataSource(id: string, endpoint: string, options?: HttpDataSourceOptions): HttpDataSource {
     return new HttpDataSource(this, id, {
       api: this,
       endpoint,
       name: options?.name,
       description: options?.description,
+      authorizationConfig: options?.authorizationConfig,
     });
   }
 

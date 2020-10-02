@@ -18,8 +18,10 @@ APIs that use GraphQL.
 
 ### Example
 
+### DynamoDB
+
 Example of a GraphQL API with `AWS_IAM` authorization resolving into a DynamoDb
-backend data source. 
+backend data source.
 
 GraphQL schema file `schema.graphql`:
 
@@ -82,6 +84,83 @@ demoDS.createResolver({
 });
 ```
 
+#### HTTP Endpoints
+GraphQL schema file `schema.graphql`:
+
+```gql
+type job {
+  id: String!
+  version: String!
+}
+
+input DemoInput {
+  version: String!
+}
+
+type Mutation {
+  callStepFunction(input: DemoInput!): job
+}
+```
+
+GraphQL request mapping template `request.vtl`:
+
+```
+{
+  "version": "2018-05-29",
+  "method": "POST",
+  "resourcePath": "/",
+  "params": {
+    "headers": {
+      "content-type": "application/x-amz-json-1.0",
+      "x-amz-target":"AWSStepFunctions.StartExecution"
+    },
+    "body": {
+      "stateMachineArn": "<your step functions arn>",
+      "input": "{ \"id\": \"$context.arguments.id\" }"
+    }
+  }
+}
+```
+
+GraphQL response mapping template `response.vtl`:
+
+```
+{
+  "id": "${context.result.id}"
+}
+```
+
+CDK stack file `app-stack.ts`:
+
+```ts
+import * as appsync from '@aws-cdk/aws-appsync';
+
+const api = new appsync.GraphqlApi(scope, 'api', {
+  name: 'api',
+  schema: appsync.Schema.fromFile(join(__dirname, 'schema.graphql')),
+});
+
+const httpDs = api.addHttpDataSource(
+  'ds', 
+  'https://states.amazonaws.com', 
+  {
+    name: 'httpDsWithStepF',
+    description: 'from appsync to StepFunctions Workflow',
+    authorizationConfig: {
+      signingRegion: 'us-east-1',
+      signingServiceName: 'states'
+    }
+  }
+);
+
+httpDs.createResolver({
+  typeName: 'Mutation',
+  fieldName: 'callStepFunction',
+  requestMappingTemplate: MappingTemplate.fromFile('request.vtl'),
+  responseMappingTemplate: MappingTemplate.fromFile('response.vtl')
+});
+```
+
 ### Schema
 
 Every GraphQL Api needs a schema to define the Api. CDK offers `appsync.Schema`
@@ -129,7 +208,6 @@ const api = appsync.GraphqlApi(stack, 'api', {
 ```
 
 ### Imports
-
 Any GraphQL Api that has been created outside the stack can be imported from 
 another stack into your CDK app. Utilizing the `fromXxx` function, you have 
 the ability to add data sources and resolvers through a `IGraphqlApi` interface.
@@ -517,7 +595,9 @@ Types will be the meat of your GraphQL Schema as they are the types defined by y
 Intermediate Types include:
 - [**Interface Types**](#Interface-Types)
 - [**Object Types**](#Object-Types)
+- [**Enum Types**](#Enum-Types)
 - [**Input Types**](#Input-Types)
+- [**Union Types**](#Union-Types)
 
 #### Interface Types
 
@@ -534,7 +614,9 @@ const node = new appsync.InterfaceType('Node', {
 });
 ```
 
-#### Object Types
+To learn more about **Interface Types**, read the docs [here](https://graphql.org/learn/schema/#interfaces).
+
+##### Object Types
 
 **Object Types** are types that you declare. For example, in the [code-first example](#code-first-example)
 the `demo` variable is an **Object Type**. **Object Types** are defined by 
@@ -597,7 +679,40 @@ You can create Object Types in three ways:
     ```
     > This method allows for reusability and modularity, ideal for reducing code duplication.
 
-#### Input Types
+To learn more about **Object Types**, read the docs [here](https://graphql.org/learn/schema/#object-types-and-fields).
+
+### Enum Types
+
+**Enum Types** are a special type of Intermediate Type. They restrict a particular
+set of allowed values for other Intermediate Types.
+
+```gql
+enum Episode {
+  NEWHOPE
+  EMPIRE
+  JEDI
+}
+```
+
+> This means that wherever we use the type Episode in our schema, we expect it to
+> be exactly one of NEWHOPE, EMPIRE, or JEDI.
+
+The above GraphQL Enumeration Type can be expressed in CDK as the following:
+
+```ts
+const episode = new appsync.EnumType('Episode', {
+  definition: [
+    'NEWHOPE',
+    'EMPIRE',
+    'JEDI',
+  ],
+}); 
+api.addType(episode);
+```
+
+To learn more about **Enum Types**, read the docs [here](https://graphql.org/learn/schema/#enumeration-types).
+
+##### Input Types
 
 **Input Types** are special types of Intermediate Types. They give users an
 easy way to pass complex objects for top level Mutation and Queries.
@@ -622,6 +737,34 @@ api.addType(review);
 ```
 
 To learn more about **Input Types**, read the docs [here](https://graphql.org/learn/schema/#input-types).
+
+### Union Types
+
+**Union Types** are a special type of Intermediate Type. They are similar to
+Interface Types, but they cannot specify any common fields between types.
+
+**Note:** the fields of a union type need to be `Object Types`. In other words, you
+can't create a union type out of interfaces, other unions, or inputs.
+
+```gql
+union Search = Human | Droid | Starship
+```
+
+The above GraphQL Union Type encompasses the Object Types of Human, Droid and Starship. It
+can be expressed in CDK as the following:
+
+```ts
+const string = appsync.GraphqlType.string();
+const human = new appsync.ObjectType('Human', { definition: { name: string } });
+const droid = new appsync.ObjectType('Droid', { definition: { name: string } });
+const starship = new appsync.ObjectType('Starship', { definition: { name: string } }););
+const search = new appsync.UnionType('Search', {
+  definition: [ human, droid, starship ],
+}); 
+api.addType(search);
+```
+
+To learn more about **Union Types**, read the docs [here](https://graphql.org/learn/schema/#union-types).
 
 #### Query
 
@@ -668,3 +811,25 @@ api.addMutation('addFilm', new appsync.ResolvableField({
 ```
 
 To learn more about top level operations, check out the docs [here](https://docs.aws.amazon.com/appsync/latest/devguide/graphql-overview.html). 
+
+#### Subscription
+
+Every schema **can** have a top level Subscription type. The top level `Subscription` Type
+is the only exposed type that users can access to invoke a response to a mutation. `Subscriptions`
+notify users when a mutation specific mutation is called. This means you can make any data source
+real time by specify a GraphQL Schema directive on a mutation. 
+
+**Note**: The AWS AppSync client SDK automatically handles subscription connection management.
+
+To add fields for these subscriptions, we can simply run the `addSubscription` function to add
+to the schema's `Subscription` type.
+
+```ts
+api.addSubscription('addedFilm', new appsync.ResolvableField({
+  returnType: film.attribute(),
+  args: { id: appsync.GraphqlType.id({ isRequired: true }) },
+  directive: [appsync.Directive.subscribe('addFilm')],
+}));
+```
+
+To learn more about top level operations, check out the docs [here](https://docs.aws.amazon.com/appsync/latest/devguide/real-time-data.html). 

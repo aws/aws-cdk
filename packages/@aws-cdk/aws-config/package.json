@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-config",
-        "module": "aws_cdk.aws_config"
+        "module": "aws_cdk.aws_config",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
@@ -48,7 +52,10 @@
     "compat": "cdk-compat"
   },
   "cdk-build": {
-    "cloudformation": "AWS::Config"
+    "cloudformation": "AWS::Config",
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "keywords": [
     "aws",

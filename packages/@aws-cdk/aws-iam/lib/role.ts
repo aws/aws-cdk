@@ -1,4 +1,5 @@
-import { Construct, Duration, Lazy, Resource, Stack, Token, TokenComparison } from '@aws-cdk/core';
+import { Duration, Lazy, Resource, Stack, Token, TokenComparison } from '@aws-cdk/core';
+import { Construct, Node } from 'constructs';
 import { Grant } from './grant';
 import { CfnRole } from './iam.generated';
 import { IIdentity } from './identity-base';
@@ -101,7 +102,7 @@ export interface RoleProps {
    * Acknowledging IAM Resources in AWS CloudFormation Templates.
    *
    * @default - AWS CloudFormation generates a unique physical ID and uses that ID
-   * for the group name.
+   * for the role name.
    */
   readonly roleName?: string;
 
@@ -423,7 +424,7 @@ export class Role extends Resource implements IRole {
    */
   public withoutPolicyUpdates(): IRole {
     if (!this.immutableRole) {
-      this.immutableRole = new ImmutableRole(this.node.scope as Construct, `ImmutableRole${this.node.id}`, this);
+      this.immutableRole = new ImmutableRole(Node.of(this).scope as Construct, `ImmutableRole${this.node.id}`, this);
     }
 
     return this.immutableRole;

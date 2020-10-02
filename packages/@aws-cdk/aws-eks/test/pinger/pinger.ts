@@ -6,7 +6,7 @@ import * as cr from '@aws-cdk/custom-resources';
 export interface PingerProps {
   readonly url: string;
   readonly securityGroup?: ec2.SecurityGroup;
-  readonly vpc?: ec2.Vpc;
+  readonly vpc?: ec2.IVpc;
 }
 export class Pinger extends Construct {
 

@@ -3,6 +3,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as route53 from '@aws-cdk/aws-route53';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CertificateProps, ICertificate } from './certificate';
 
 /**
@@ -60,7 +61,7 @@ export class DnsValidatedCertificate extends cdk.Resource implements ICertificat
   private hostedZoneId: string;
   private domainName: string;
 
-  constructor(scope: cdk.Construct, id: string, props: DnsValidatedCertificateProps) {
+  constructor(scope: Construct, id: string, props: DnsValidatedCertificateProps) {
     super(scope, id);
 
     this.domainName = props.domainName;
