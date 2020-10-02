@@ -19,6 +19,19 @@ export = {
         mesh: mesh,
       });
 
+      new appmesh.VirtualGateway(stack, 'gateway2', {
+        mesh: mesh,
+        listeners: [{
+          healthCheck: {
+            interval: cdk.Duration.seconds(10),
+          },
+          portMapping: {
+            port: 443,
+            protocol: appmesh.Protocol.HTTP,
+          },
+        }],
+      });
+
       // THEN
       expect(stack).to(
         haveResourceLike('AWS::AppMesh::VirtualGateway', {
@@ -33,6 +46,32 @@ export = {
             ],
           },
           VirtualGatewayName: 'testGateway',
+        }),
+      );
+
+      // THEN
+      expect(stack).to(
+        haveResourceLike('AWS::AppMesh::VirtualGateway', {
+          Spec: {
+            Listeners: [
+              {
+                HealthCheck: {
+                  HealthyThreshold: 2,
+                  IntervalMillis: 10000,
+                  Port: 443,
+                  Protocol: appmesh.Protocol.HTTP,
+                  TimeoutMillis: 2000,
+                  UnhealthyThreshold: 2,
+                  Path: '/',
+                },
+                PortMapping: {
+                  Port: 443,
+                  Protocol: appmesh.Protocol.HTTP,
+                },
+              },
+            ],
+          },
+          VirtualGatewayName: 'gateway2',
         }),
       );
       test.done();

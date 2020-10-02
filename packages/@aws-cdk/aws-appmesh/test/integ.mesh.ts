@@ -119,6 +119,18 @@ router.addRoute('route-3', {
 
 mesh.addVirtualGateway('gateway1', {
   accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
-  listeners: [{}],
   virtualGatewayName: 'gateway1',
+});
+
+new appmesh.VirtualGateway(stack, 'gateway2', {
+  mesh: mesh,
+  listeners: [{
+    healthCheck: {
+      interval: cdk.Duration.seconds(10),
+    },
+    portMapping: {
+      port: 443,
+      protocol: appmesh.Protocol.HTTP,
+    },
+  }],
 });
