@@ -2,6 +2,7 @@ import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 /**
@@ -36,7 +37,7 @@ export class CodeBuildStartBuild extends sfn.TaskStateBase {
 
   private readonly integrationPattern: sfn.IntegrationPattern;
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: CodeBuildStartBuildProps) {
+  constructor(scope: Construct, id: string, private readonly props: CodeBuildStartBuildProps) {
     super(scope, id, props);
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
 
