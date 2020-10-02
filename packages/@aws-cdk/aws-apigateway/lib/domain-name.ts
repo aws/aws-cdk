@@ -201,23 +201,3 @@ export interface MTLSAttributes {
    */
   readonly version?: string;
 }
-
-/**
- * The mutual TLS authentication configuration for a custom domain name.
- */
-export interface MutualTlsAuthenticationAttributes {
-  /**
-   * An Amazon S3 URL that specifies the truststore for mutual TLS authentication, for example, s3://bucket-name/key-name.
-   * The truststore can contain certificates from public or private certificate authorities.
-   * To update the truststore, upload a new version to S3, and then update your custom domain name to use the new version.
-   * To update the truststore, you must have permissions to access the S3 object.
-   */
-  readonly truststoreUri: string;
-
-  /**
-   *  The version of the S3 object that contains your truststore.
-   *  To specify a version, you must have versioning enabled for the S3 bucket.
-   *  @default - Uses current version
-   */
-  readonly truststoreVersion?: string;
-}
