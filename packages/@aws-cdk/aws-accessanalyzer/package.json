@@ -51,7 +51,7 @@
     "compat": "cdk-compat",
     "build+test": "npm run build && npm test",
     "build+test+package": "npm run build+test && npm run package",
-    "gen": "cfn2s"
+    "gen": "cfn2ts"
   },
   "cdk-build": {
     "cloudformation": "AWS::AccessAnalyzer",
