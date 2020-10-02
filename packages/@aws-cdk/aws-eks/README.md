@@ -820,75 +820,97 @@ chart2.node.addDependency(chart1);
 
 The EKS module natively integrates with cdk8s and allows you to apply cdk8s charts on AWS EKS clusters via the `cluster.addCdk8sChart` method.
 
-To get started, add the `cdk8s` dependency to your `package.json` file.
+In addition to `cdk8s`, you can also use [`cdk8s+`](https://github.com/awslabs/cdk8s/tree/master/packages/cdk8s-plus), which provides higher level abstraction for the core kubernetes api objects.
+You can think of it like the `L2` constructs for Kubernetes.
+
+To get started, add the following dependencies to your `package.json` file:
 
 ```json
 dependencies: {
-  "cdk8s": "^0.29.0"
+  "cdk8s": "0.29.0",
+  "cdk8s-plus": "0.29.0",
+  "constructs": "3.0.4",
 }
 ```
 
 > Note that the version of `cdk8s` must be `>=0.29.0`.
 
-Next, install the `cdk8s-cli`:
+We recommend seperate the `cdk8s` charts to a different file and extend the `cdk8s.Chart` class.
+Notice that `cdk8s` uses the `Construct` class from the [`constructs`](https://github.com/aws/constructs) module, not from `@aws-cdk/core`.
 
-```console
-npm install -g cdk8s-cli
+You can freely pass cdk constructs to it and use any of its properties and attributes.
+
+In this example we create a chart that accepts an `s3.IBucket` and passes its name to a kubernetes pod as an environment variable.
+
+```ts
+import * as s3 from '@aws-cdk/aws-s3';
+import * as constructs from 'constructs';
+import * as cdk8s from 'cdk8s';
+import * as kplus from 'cdk8s-plus';
+
+export interface MyChartProps {
+
+  readonly bucket: s3.IBucket;
+}
+
+export class MyChart extends cdk8s.Chart {
+  constructor(scope: constructs.Construct, id: string, props: MyChartProps} ) {
+    super(scope, id);
+
+    new kplus.Pod(this, 'Pod', {
+      spec: {
+        containers: [
+          new kplus.Container({
+            image: 'my-image',
+            env: {
+              BUCKET_NAME: bucket.bucketName,
+            }
+          })
+        ]
+      }
+    });
+
+  }
+}
 ```
 
-The CLI is only used to import the core kubernetes api objects, and is not necessarily required as a runtime dependency. In your project directory, run the following command:
-
-```console
-cdk8s import k8s@{kubernetes-cluster-version} -l typescript
-```
-
-For example, for `eks.KubernetesVersion.V1_17` you would run:
-
-```console
-cdk8s import k8s@1.17.0 -l typescript
-```
-
-This will create an `imports` directory that contains the entire k8s object API, as typescript constructs. We recommend you commit this directory as part of your source code.
-
-In your application code:
+Then, in your cdk app:
 
 ```ts
 import * as eks from '@aws-cdk/aws-eks';
+import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk8s from 'cdk8s';
-import * as k8s from './imports/k8s';
+import { MyChart } from './my-chart'
 
 const cluster = new eks.Cluster(this, 'HelloCDK8s', {
   version: eks.KubernetesVersion.V1_17,
 });
 
-// create a cdk8s app
-const cdk8sApp = new cdk8s.App();
+// some bucket..
+const bucket = new s3.Bucket(this, 'Bucket');
 
-// create a cdk8s chart
-const proxy = new cdk8s.Chart(cdk8sApp, 'ProxyChart');
-
-// create a pod using strongly typed k8s api.
-new k8s.Pod(proxy, 'Pod', {
-  spec: {
-    containers: [{
-      name: 'nginx',
-      image: 'nginx',
-    }],
-  },
-});
+// create a cdk8s chart.
+const myChart = new MyChart(new cdk8s.App(), 'MyChart', { bucket });
 
 // add the cdk8s chart to the cluster
-cluster.addCdk8sChart('proxy', proxy);
+cluster.addCdk8sChart('my-chart', myChart);
 ```
 
 Note that at this moment, you cannot use AWS CDK constructs as scopes for CDK8s constructs.
-That is, make sure that the cdk8s chart (`proxy` in our case) is an ancestor of every cdk8s construct you define.
+This is why we use `new cdk8s.App()` as the scope of the chart itself.
 
-In addition to `cdk8s`, you can also use [`cdk8s+`](https://github.com/awslabs/cdk8s/tree/master/packages/cdk8s-plus), which is also part of the cdk8s toolchain, and is built on top of the core `cdk8s` API. It provides higher level abstraction for kubernetes api objects.
-You can think of it like the `L2` constructs for Kubernetes.
+##### Caveat
 
-To learn more about it, checkout this [example](https://github.com/awslabs/cdk8s/tree/master/examples/typescript/cdk8s-plus-elasticsearch-query) and blog post: [Introducing cdk8s+: Intent-driven APIs for Kubernetes objects](https://aws.amazon.com/blogs/containers/introducing-cdk8s-intent-driven-apis-for-kubernetes-objects/)
+`cdk8s+` is vended with a static version of the kubernetes API spec. See ...
 
+At the moment, there is no way to control which spec version `cdk8s+` uses, so if you need other versions, please refer to [Manual importing](#manually-importing-k8s-specs-and-crds) below.
+This would unfortunately mean you won't be able to utilize `cdk8s+` capabilities.
+
+##### Manually importing k8s specs and CRD's
+
+If you find yourself unable to use `cdk8s+`, or just like to directly use the `k8s` native objects or CRD's, you can do so by manually importing them using the `cdk8s-cli`.
+
+See [Importing kubernetes objects](https://github.com/awslabs/cdk8s/tree/master/packages/cdk8s-cli#import) for detailed instructions.
 
 ## Patching Kubernetes Resources
 
