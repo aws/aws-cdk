@@ -1,3 +1,48 @@
+# CloudFormation Resource Specification v18.5.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Amplify::Branch EnablePerformanceMode (__added__)
+* AWS::AppStream::Fleet IamRoleArn (__added__)
+* AWS::AppStream::Fleet StreamView (__added__)
+* AWS::AppStream::ImageBuilder IamRoleArn (__added__)
+* AWS::EKS::Cluster KubernetesNetworkConfig (__added__)
+* AWS::StepFunctions::Activity Name (__deleted__)
+* AWS::StepFunctions::Activity Arn (__added__)
+* AWS::StepFunctions::Activity Tags.DuplicatesAllowed (__added__)
+
+## Property Type Changes
+
+* AWS::Batch::JobDefinition.LogConfiguration (__added__)
+* AWS::Batch::JobDefinition.Secret (__added__)
+* AWS::Batch::JobDefinition.Tmpfs (__added__)
+* AWS::EKS::Cluster.KubernetesNetworkConfig (__added__)
+* AWS::Amplify::App.AutoBranchCreationConfig EnablePerformanceMode (__added__)
+* AWS::Batch::JobDefinition.ContainerProperties ExecutionRoleArn (__added__)
+* AWS::Batch::JobDefinition.ContainerProperties LogConfiguration (__added__)
+* AWS::Batch::JobDefinition.ContainerProperties Secrets (__added__)
+* AWS::Batch::JobDefinition.LinuxParameters InitProcessEnabled (__added__)
+* AWS::Batch::JobDefinition.LinuxParameters MaxSwap (__added__)
+* AWS::Batch::JobDefinition.LinuxParameters SharedMemorySize (__added__)
+* AWS::Batch::JobDefinition.LinuxParameters Swappiness (__added__)
+* AWS::Batch::JobDefinition.LinuxParameters Tmpfs (__added__)
+* AWS::CloudFront::CachePolicy.CachePolicyConfig DefaultTTL.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::CloudFront::CachePolicy.CachePolicyConfig MaxTTL.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::CloudFront::CachePolicy.CachePolicyConfig ParametersInCacheKeyAndForwardedToOrigin.Required (__changed__)
+  * Old: false
+  * New: true
+
+
 # CloudFormation Resource Specification v18.4.0
 
 ## New Resource Types
