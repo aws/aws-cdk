@@ -336,7 +336,7 @@ export class GraphqlApi extends GraphqlApiBase {
    * @param attrs GraphQL API Attributes of an API
    */
   public static fromGraphqlApiAttributes(scope: Construct, id: string, attrs: GraphqlApiAttributes): IGraphqlApi {
-    const arn = attrs.graphqlApiArn ?? Stack.of(this).formatArn({
+    const arn = attrs.graphqlApiArn ?? Stack.of(scope).formatArn({
       service: 'appsync',
       resource: `apis/${attrs.graphqlApiId}`,
     });

@@ -1,4 +1,5 @@
-import { Construct, Resource, IResource, Lazy, Fn } from '@aws-cdk/core';
+import { Resource, IResource, Lazy, Fn } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnFunctionConfiguration } from './appsync.generated';
 import { BaseDataSource } from './data-source';
 import { IGraphqlApi } from './graphqlapi-base';
