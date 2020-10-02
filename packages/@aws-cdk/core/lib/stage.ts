@@ -1,6 +1,6 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import { IConstruct, Node } from 'constructs';
-import { Construct } from './construct-compat';
+import { IConstruct, Construct, Node } from 'constructs';
+import { Construct as CoreConstruct } from './construct-compat';
 import { Environment } from './environment';
 import { synthesize } from './private/synthesis';
 
@@ -65,7 +65,7 @@ export interface StageProps {
  * copies of your application which should be be deployed to different
  * environments.
  */
-export class Stage extends Construct {
+export class Stage extends CoreConstruct {
   /**
    * Return the stage this construct is contained with, if available. If called
    * on a nested stage, returns its parent.

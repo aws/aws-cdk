@@ -1,9 +1,10 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { Construct } from 'constructs';
 import { AssetStaging } from '../asset-staging';
 import { FileAssetPackaging } from '../assets';
 import { CfnResource } from '../cfn-resource';
-import { Construct } from '../construct-compat';
+import { Construct as CoreConstruct } from '../construct-compat';
 import { Duration } from '../duration';
 import { Size } from '../size';
 import { Stack } from '../stack';
@@ -75,7 +76,7 @@ export enum CustomResourceProviderRuntime {
  *
  * @experimental
  */
-export class CustomResourceProvider extends Construct {
+export class CustomResourceProvider extends CoreConstruct {
   /**
    * Returns a stack-level singleton ARN (service token) for the custom resource
    * provider.

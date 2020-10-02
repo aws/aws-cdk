@@ -1,10 +1,11 @@
 import * as crypto from 'crypto';
+import { Construct, Node } from 'constructs';
 import { FileAssetPackaging } from './assets';
 import { Fn } from './cfn-fn';
 import { Aws } from './cfn-pseudo';
 import { CfnResource } from './cfn-resource';
 import { CfnStack } from './cloudformation.generated';
-import { Construct } from './construct-compat';
+import { Construct as CoreConstruct } from './construct-compat';
 import { Duration } from './duration';
 import { Lazy } from './lazy';
 import { IResolveContext } from './resolvable';
@@ -105,7 +106,7 @@ export class NestedStack extends Stack {
     this._parentStack = parentStack;
 
     // @deprecate: remove this in v2.0 (redundent)
-    const parentScope = new Construct(scope, id + '.NestedStack');
+    const parentScope = new CoreConstruct(scope, id + '.NestedStack');
 
     Object.defineProperty(this, NESTED_STACK_SYMBOL, { value: true });
 
@@ -223,7 +224,7 @@ function findParentStack(scope: Construct): Stack {
     throw new Error('Nested stacks cannot be defined as a root construct');
   }
 
-  const parentStack = scope.node.scopes.reverse().find(p => Stack.isStack(p));
+  const parentStack = Node.of(scope).scopes.reverse().find(p => Stack.isStack(p));
   if (!parentStack) {
     throw new Error('Nested stacks must be defined within scope of another non-nested stack');
   }

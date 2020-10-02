@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
-import { IConstruct, Node } from 'constructs';
+import { IConstruct, Construct, Node } from 'constructs';
 import { Annotations } from './annotations';
 import { App } from './app';
 import { Arn, ArnComponents } from './arn';
@@ -11,7 +11,7 @@ import { CfnElement } from './cfn-element';
 import { Fn } from './cfn-fn';
 import { Aws, ScopedAws } from './cfn-pseudo';
 import { CfnResource, TagType } from './cfn-resource';
-import { Construct, ISynthesisSession } from './construct-compat';
+import { Construct as CoreConstruct, ISynthesisSession } from './construct-compat';
 import { ContextProvider } from './context-provider';
 import { Environment } from './environment';
 import { FeatureFlags } from './feature-flags';
@@ -140,7 +140,7 @@ export interface StackProps {
 /**
  * A root construct which represents a single CloudFormation stack.
  */
-export class Stack extends Construct implements ITaggable {
+export class Stack extends CoreConstruct implements ITaggable {
   /**
    * Return whether the given object is a Stack.
    *
