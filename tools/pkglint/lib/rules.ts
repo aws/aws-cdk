@@ -195,6 +195,38 @@ export class ReadmeFile extends ValidationRule {
   }
 }
 
+
+/**
+ * There must be a README.md file.
+ */
+export class GenDirective extends ValidationRule {
+  public readonly name = 'package-info/gen-directive';
+
+  public validate(pkg: PackageJson): void {
+    if (!pkg.json['cdk-build'] || !pkg.json['cdk-build'].cloudformation) {
+      return;
+    }
+    const gen = pkg.json.scripts?.gen;
+    if (gen) {
+      return;
+    }
+
+    pkg.report({
+      ruleName: this.name,
+      message: 'There must be a gen script in package.json',
+      fix: () => {
+        pkg.json.scripts.gen = 'cfn2s';
+        if (pkg.json['cdk-build'].pre !== undefined) {
+          pkg.json['cdk-build'].pre.push('npm run gen');
+        } else {
+          pkg.json['cdk-build'].pre = ['npm run gen'];
+        }
+      },
+    });
+  }
+}
+
+
 /**
  * All packages must have a "maturity" declaration.
  *

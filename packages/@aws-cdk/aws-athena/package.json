@@ -37,7 +37,10 @@
     "jest": true,
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
-    }
+    },
+    "pre": [
+      "npm run gen"
+    ]
   },
   "repository": {
     "type": "git",
@@ -56,7 +59,8 @@
     "cfn2ts": "cfn2ts",
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test",
-    "compat": "cdk-compat"
+    "compat": "cdk-compat",
+    "gen": "cfn2s"
   },
   "keywords": [
     "aws",

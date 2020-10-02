@@ -33,15 +33,6 @@ async function main() {
     await shell(options.pre, { timers, env });
   }
 
-  // See if we need to call cfn2ts
-  if (options.cloudformation) {
-    if (typeof options.cloudformation === 'string') {
-      // There can be multiple scopes, ensuring it's always an array.
-      options.cloudformation = [options.cloudformation];
-    }
-    await shell(['cfn2ts', ...options.cloudformation.map(scope => `--scope=${scope}`)], { timers, env });
-  }
-
   const overrides: CompilerOverrides = { eslint: args.eslint, jsii: args.jsii, tsc: args.tsc };
   await compileCurrentPackage(options, timers, overrides);
   await lintCurrentPackage(options, overrides);

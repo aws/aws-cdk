@@ -152,9 +152,11 @@ async function main() {
         'build+test+package': 'npm run build+test && npm run package',
         'build+test': 'npm run build && npm test',
         compat: 'cdk-compat',
+        gen: 'cfn2ts',
       },
       'cdk-build': {
         cloudformation: namespace,
+        pre: 'npm run gen',
         jest: true,
         env: {
           AWSLINT_BASE_CONSTRUCT: 'true',

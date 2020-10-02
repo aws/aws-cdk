@@ -50,14 +50,18 @@
     "cfn2ts": "cfn2ts",
     "build+test": "npm run build && npm test",
     "build+test+package": "npm run build+test && npm run package",
-    "compat": "cdk-compat"
+    "compat": "cdk-compat",
+    "gen": "cfn2s"
   },
   "cdk-build": {
     "cloudformation": "AWS::MediaStore",
     "jest": true,
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
-    }
+    },
+    "pre": [
+      "npm run gen"
+    ]
   },
   "keywords": [
     "aws",

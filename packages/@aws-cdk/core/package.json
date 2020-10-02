@@ -140,7 +140,8 @@
     "cloudformation": "AWS::CloudFormation",
     "cfn2ts-core-import": ".",
     "pre": [
-      "rm -rf test/fs/fixtures && cd test/fs && tar -xzf fixtures.tar.gz"
+      "rm -rf test/fs/fixtures && cd test/fs && tar -xzf fixtures.tar.gz",
+      "npm run gen"
     ]
   },
   "nyc": {
