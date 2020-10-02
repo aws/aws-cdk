@@ -59,7 +59,7 @@ export interface IMesh extends cdk.IResource {
   /**
    * Adds a VirtualGateway to the Mesh
    */
-  addVirtualGateway(id: string, props: VirtualGatewayBaseProps): VirtualGateway;
+  addVirtualGateway(id: string, props?: VirtualGatewayBaseProps): VirtualGateway;
 }
 
 /**
@@ -109,7 +109,7 @@ abstract class MeshBase extends cdk.Resource implements IMesh {
   /**
    * Adds a VirtualGateway to the Mesh
    */
-  addVirtualGateway(id: string, props: VirtualGatewayBaseProps): VirtualGateway {
+  addVirtualGateway(id: string, props?: VirtualGatewayBaseProps): VirtualGateway {
     return new VirtualGateway(this, id, {
       ...props,
       mesh: this,

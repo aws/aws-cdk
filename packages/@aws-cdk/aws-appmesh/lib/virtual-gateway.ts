@@ -53,8 +53,10 @@ export interface VirtualGatewayBaseProps {
 
   /**
    * Listeners for the VirtualGateway. Only one is supported.
+   *
+   * @default - Single HTTP listener on port 8080
    */
-  readonly listeners: VirtualGatewayListener[];
+  readonly listeners?: VirtualGatewayListener[];
 
   /**
    * Access Logging Configuration for the VirtualGateway
@@ -115,7 +117,7 @@ abstract class VirtualGatewayBase extends cdk.Resource implements IVirtualGatewa
   public addGatewayRoute(id: string, props: GatewayRouteBaseProps): GatewayRoute {
     return new GatewayRoute(this, id, {
       ...props,
-      mesh: this.mesh,
+      virtualGateway: this,
     });
   }
 }
@@ -168,14 +170,15 @@ export class VirtualGateway extends VirtualGatewayBase {
 
     this.mesh = props.mesh;
 
-    this.addListeners(props.listeners ? props.listeners : []);
+    // Use listener default of http listener port 8080 if no listener is defined
+    this.addListeners(props.listeners ? props.listeners : [{}]);
     const accessLogging = props.accessLog?.bind(this);
 
     const node = new CfnVirtualGateway(this, 'Resource', {
       virtualGatewayName: this.physicalName,
       meshName: this.mesh.meshName,
       spec: {
-        listeners: cdk.Lazy.anyValue({ produce: () => this.listeners }, { omitEmptyArray: true }),
+        listeners: this.listeners,
         logging: accessLogging !== undefined ? {
           accessLog: accessLogging.virtualGatewayAccessLog,
         } : undefined,
@@ -271,8 +274,11 @@ class ImportedVirtualGateway extends VirtualGatewayBase {
         throw new Error('Supply either \'mesh\' or \'meshName\', but not both');
       }
       this.mesh = Mesh.fromMeshName(this, 'Mesh', props.meshName);
+    } else if (props.virtualGatewayArn) {
+      const meshName = cdk.Fn.select(0, cdk.Fn.split('/', cdk.Stack.of(scope).parseArn(props.virtualGatewayArn).resourceName!));
+      this.mesh = Mesh.fromMeshName(this, 'Mesh', meshName);
     } else {
-      throw new Error('Supply either \'mesh\' or \'meshName\'');
+      throw new Error('Supply either \'mesh\' or \'meshName\' or \'virtualGatewayArn\'');
     }
     if (props.virtualGatewayArn) {
       this.virtualGatewayArn = props.virtualGatewayArn;

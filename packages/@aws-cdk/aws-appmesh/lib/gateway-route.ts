@@ -1,7 +1,6 @@
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnGatewayRoute } from './appmesh.generated';
-import { IMesh } from './mesh';
 import { IVirtualGateway } from './virtual-gateway';
 
 /**
@@ -33,11 +32,6 @@ export interface GatewayRouteBaseProps {
    * @default - an automatically generated name
    */
   readonly gatewayRouteName?: string;
-
-  /**
-   * The Virtual Gateway this Gateway Route is associated with
-   */
-  readonly virtualGateway: IVirtualGateway;
 }
 
 /**
@@ -45,9 +39,9 @@ export interface GatewayRouteBaseProps {
  */
 export interface GatewayRouteProps extends GatewayRouteBaseProps {
   /**
-   * The mesh to define the Gateway Route in
+   * The Virtual Gateway this Gateway Route is associated with
    */
-  readonly mesh: IMesh;
+  readonly virtualGateway: IVirtualGateway;
 }
 
 /**
@@ -103,7 +97,7 @@ export class GatewayRoute extends cdk.Resource implements IGatewayRoute {
     this.gatewayRouteName = this.getResourceNameAttribute(gatewayRoute.attrGatewayRouteName);
     this.gatewayRouteArn = this.getResourceArnAttribute(gatewayRoute.ref, {
       service: 'appmesh',
-      resource: `mesh/${props.mesh.meshName}/virtualRouter/${this.virtualGateway.virtualGatewayName}/gatewayRoute`,
+      resource: `mesh/${props.virtualGateway.mesh.meshName}/virtualRouter/${this.virtualGateway.virtualGatewayName}/gatewayRoute`,
       resourceName: this.physicalName,
     });
   }

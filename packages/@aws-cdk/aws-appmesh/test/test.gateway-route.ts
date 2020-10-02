@@ -21,7 +21,6 @@ export = {
       });
 
       virtualGateway.addGatewayRoute('gateway-route', {
-        virtualGateway: virtualGateway,
         gatewayRouteName: 'gateway-route',
       });
 
