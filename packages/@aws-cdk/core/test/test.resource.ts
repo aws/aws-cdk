@@ -592,7 +592,11 @@ export = {
       const r = new CfnResource(stack, 'MyResource', { type: 'AWS::Resource::Type' });
 
       // WHEN
-      r.addOverride('Properties.Hello\\.World.Foo\\.Bar', 42);
+      r.addOverride('Properties.Hello\\.World.Foo\\.Bar\\.Baz', 42);
+      r.addOverride('Properties.Single\\Back\\Slashes', 42);
+      r.addOverride('Properties.Double\\\\Back\\\\Slashes', 42);
+      r.addOverride('Properties.Escaped\\\\.Back\\\\.Slashes', 42);
+      r.addOverride('Properties.DoublyEscaped\\\\\\.Back\\\\\\.Slashes', 42);
 
       // THEN
       test.deepEqual(toCloudFormation(stack), {
@@ -603,7 +607,11 @@ export = {
             Type: 'AWS::Resource::Type',
             Properties:
             {
-              'Hello.World': { 'Foo.Bar': 42 },
+              'Hello.World': { 'Foo.Bar.Baz': 42 },
+              'Single\\Back\\Slashes': 42,
+              'Double\\\\Back\\\\Slashes': 42,
+              'Escaped\\.Back\\.Slashes': 42,
+              'DoublyEscaped\\\\.Back\\\\.Slashes': 42,
             },
           },
         },
