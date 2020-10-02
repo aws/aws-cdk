@@ -289,6 +289,17 @@ beforehand.
 This can be useful for configuring routing using a combination of gateways:
 for more information see [Routing](#routing) below.
 
+### Accessing the NAT gateway
+
+If you need access to the NAT gateway resources, you can get IDs and AZs which they are located in like this:
+
+```ts
+const natGateways = vpc.natGateways.map(nat => ({
+  id: nat.natGatewayId,
+  availabilityZone: nat.availabilityZone
+}));
+```
+
 #### Routing
 
 It's possible to add routes to any subnets using the `addRoute()` method. If for

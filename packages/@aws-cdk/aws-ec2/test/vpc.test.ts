@@ -120,6 +120,23 @@ nodeunitShim({
       test.done();
     },
 
+    'can refer to NAT gateways'(test: Test) {
+      const stack = getTestStack();
+      const vpc = new Vpc(stack, 'TheVPC');
+      test.deepEqual(stack.resolve(vpc.natGateways[0].natGatewayId), { Ref: 'TheVPCPublicSubnet1NATGatewayC61D892B' });
+      test.deepEqual(stack.resolve(vpc.natGateways[1].natGatewayId), { Ref: 'TheVPCPublicSubnet2NATGatewayB437CFAF' });
+      test.deepEqual(stack.resolve(vpc.natGateways[2].natGatewayId), { Ref: 'TheVPCPublicSubnet3NATGateway3A4A718F' });
+
+      const natGatewayAZs = vpc.natGateways.map(nat => nat.availabilityZone);
+      const availabilityZones = stack.availabilityZones;
+      availabilityZones.forEach(az => {
+        natGatewayAZs.includes(az);
+      });
+      const zones = availabilityZones.length;
+      test.equal(vpc.natGateways.length, zones);
+      test.done();
+    },
+
     'with only isolated subnets, the VPC should not contain an IGW or NAT Gateways'(test: Test) {
       const stack = getTestStack();
       new Vpc(stack, 'TheVPC', {
