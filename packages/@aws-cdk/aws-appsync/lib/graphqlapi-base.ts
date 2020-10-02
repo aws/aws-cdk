@@ -1,7 +1,7 @@
 import { ITable } from '@aws-cdk/aws-dynamodb';
 import { IFunction } from '@aws-cdk/aws-lambda';
 import { CfnResource, IResource, Resource } from '@aws-cdk/core';
-import { DynamoDbDataSource, HttpDataSource, LambdaDataSource, NoneDataSource } from './data-source';
+import { AwsIamConfig, DynamoDbDataSource, HttpDataSource, LambdaDataSource, NoneDataSource } from './data-source';
 import { Resolver, ExtendedResolverProps } from './resolver';
 
 /**
