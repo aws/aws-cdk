@@ -2,7 +2,7 @@ import { countResources, expect, haveResource, haveResourceLike, isSuperObject, 
 import { CfnOutput, Lazy, Stack, Tags } from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import {
-  AclCidr, AclTraffic, BastionHostLinux, CfnSubnet, CfnVPC, SubnetFilter, DefaultInstanceTenancy, GenericLinuxImage,
+  AclCidr, AclTraffic, BastionHostLinux, CfnSubnet, CfnVPC, SubnetFilter, DefaultInstanceTenancy, GatewayConfig, GenericLinuxImage,
   InstanceType, InterfaceVpcEndpoint, InterfaceVpcEndpointService, NatProvider, NetworkAcl, NetworkAclEntry, Peer, Port, PrivateSubnet,
   PublicSubnet, RouterType, Subnet, SubnetType, TrafficDirection, Vpc,
 } from '../lib';
@@ -123,17 +123,14 @@ nodeunitShim({
     'can refer to NAT gateways'(test: Test) {
       const stack = getTestStack();
       const vpc = new Vpc(stack, 'TheVPC');
-      test.deepEqual(stack.resolve(vpc.natGateways[0].natGatewayId), { Ref: 'TheVPCPublicSubnet1NATGatewayC61D892B' });
-      test.deepEqual(stack.resolve(vpc.natGateways[1].natGatewayId), { Ref: 'TheVPCPublicSubnet2NATGatewayB437CFAF' });
-      test.deepEqual(stack.resolve(vpc.natGateways[2].natGatewayId), { Ref: 'TheVPCPublicSubnet3NATGateway3A4A718F' });
-
-      const natGatewayAZs = vpc.natGateways.map(nat => nat.availabilityZone);
-      const availabilityZones = stack.availabilityZones;
-      availabilityZones.forEach(az => {
+      const gatewayConfigs: GatewayConfig[] = vpc.natGatewayProvider!.configuredGateways;
+      test.deepEqual(stack.resolve(gatewayConfigs[0].gatewayId), { Ref: 'TheVPCPublicSubnet1NATGatewayC61D892B' });
+      test.deepEqual(stack.resolve(gatewayConfigs[1].gatewayId), { Ref: 'TheVPCPublicSubnet2NATGatewayB437CFAF' });
+      test.deepEqual(stack.resolve(gatewayConfigs[2].gatewayId), { Ref: 'TheVPCPublicSubnet3NATGateway3A4A718F' });
+      const natGatewayAZs = gatewayConfigs.map(config => config.az);
+      stack.availabilityZones.forEach(az => {
         natGatewayAZs.includes(az);
       });
-      const zones = availabilityZones.length;
-      test.equal(vpc.natGateways.length, zones);
       test.done();
     },
 

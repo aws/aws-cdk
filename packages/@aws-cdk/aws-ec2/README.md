@@ -294,9 +294,9 @@ for more information see [Routing](#routing) below.
 If you need access to the NAT gateway resources, you can get IDs and AZs which they are located in like this:
 
 ```ts
-const natGateways = vpc.natGateways.map(nat => ({
-  id: nat.natGatewayId,
-  availabilityZone: nat.availabilityZone
+const natGateways = vpc.natGatewayProvider?.configuredGateways.map(nat => ({
+  id: nat.gatewayId,
+  availabilityZone: nat.az,
 }));
 ```
 

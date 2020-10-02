@@ -61,21 +61,6 @@ export interface ISubnet extends IResource {
 }
 
 /**
- * An abstract Nat gateway
- */
-export interface INatGateway {
-  /**
-   * The Availability Zone the NatGateway resource is located in
-   */
-  readonly availabilityZone: string;
-
-  /**
-   * The particular NatGateway ID
-   */
-  readonly natGatewayId: string;
-}
-
-/**
  * An abstract route table
  */
 export interface IRouteTable {
@@ -1147,9 +1132,10 @@ export class Vpc extends VpcBase {
   public readonly internetConnectivityEstablished: IDependable;
 
   /**
-   * List of Nat gateways in this VPC
+   * Configured NAT gateways in this VPC.  Note that if there are no NAT gateways,
+   * this attribute will be `undefined`.
    */
-  public readonly natGateways: INatGateway[] = [];
+  public readonly natGatewayProvider?: NatProvider;
 
   /**
    * Indicates if instances launched in this VPC will have public DNS hostnames.
@@ -1261,6 +1247,7 @@ export class Vpc extends VpcBase {
       // if gateways are needed create them
       if (natGatewayCount > 0) {
         const provider = props.natGatewayProvider || NatProvider.gateway();
+        this.natGatewayProvider = provider;
         this.createNatGateways(provider, natGatewayCount, natGatewayPlacement);
       }
     }
@@ -1343,13 +1330,6 @@ export class Vpc extends VpcBase {
       vpc: this,
       natSubnets: natSubnets.slice(0, natCount),
       privateSubnets: this.privateSubnets as PrivateSubnet[],
-    });
-
-    provider.configuredGateways.forEach(config => {
-      this.natGateways.push({
-        availabilityZone: config.az,
-        natGatewayId: config.gatewayId,
-      });
     });
   }
 
