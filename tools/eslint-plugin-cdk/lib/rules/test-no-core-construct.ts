@@ -66,7 +66,7 @@ export function create(context: Rule.RuleContext): Rule.NodeListener {
         }
         context.report({
           node,
-          message: 'Cannot use this',
+          message: 'avoid Construct and IConstruct from "@aws-cdk/core"',
           fix: (fixer: Rule.RuleFixer) => {
             const fixes: Rule.Fix[] = [];
             if (!importsFixed) {
@@ -85,31 +85,31 @@ export function create(context: Rule.RuleContext): Rule.NodeListener {
         }
         context.report({
           node,
-          message: 'Cannot use this',
+          message: 'avoid Construct and IConstruct from "@aws-cdk/core"',
           fix: (fixer: Rule.RuleFixer) => {
             const fixes: Rule.Fix[] = [];
             if (!importsFixed) {
               fixes.push(fixer.insertTextAfter(importNode, "\nimport { Construct } from 'constructs';"));
-              importsFixed = true;
-            }
-            const specifiers = importNode.specifiers;
-            for (let i = 0; i < specifiers.length; i++) {
-              const s = specifiers[i];
-              if (s.imported.name === fqn) {
-                if (specifiers.length === 1) { // only node
-                  fixes.push(fixer.removeRange(importNode.range));
-                } else if (i === specifiers.length - 1) {
-                  fixes.push(fixer.removeRange([s.range[0] - 2, s.range[1]])); // include the leading comma
-                } else {
-                  fixes.push(fixer.removeRange([s.range[0], s.range[1] + 2])); // include the trailing comma
+              const specifiers = importNode.specifiers;
+              for (let i = 0; i < specifiers.length; i++) {
+                const s = specifiers[i];
+                if (s.imported.name === fqn) {
+                  if (specifiers.length === 1) { // only node
+                    fixes.push(fixer.removeRange(importNode.range));
+                  } else if (i === specifiers.length - 1) {
+                    fixes.push(fixer.removeRange([s.range[0] - 2, s.range[1]])); // include the leading comma
+                  } else {
+                    fixes.push(fixer.removeRange([s.range[0], s.range[1] + 2])); // include the trailing comma
+                  }
                 }
               }
+              importsFixed = true;
             }
             return fixes;
           }
         });
       } else {
-        throw new Error('Unknown type'); // FIXME
+        return;
       }
     },
   }

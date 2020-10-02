@@ -14,7 +14,7 @@ const linter = new ESLint({
 const outputDir = fs.mkdtempSync(os.tmpdir())
 const fixturesDir = path.join(__dirname, 'fixtures');
 
-describe('test-rule', () => {
+describe('test-no-core-construct', () => {
   const fixtureFiles = fs.readdirSync(fixturesDir).filter(f => f.endsWith('.ts') && !f.endsWith('.expected.ts'));
   fixtureFiles.forEach(f => {
     test(f, async (done) => {

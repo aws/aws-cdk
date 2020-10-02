@@ -7,6 +7,6 @@ module.exports = {
   plugins: ['rulesdir'],
   rules: {
     quotes: [ 'error', 'single', { avoidEscape: true }],
-    'rulesdir/test-rule': [ 'error' ],
+    'rulesdir/test-no-core-construct': [ 'error' ],
   }
 }
