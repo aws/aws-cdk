@@ -1,6 +1,6 @@
 import { FargatePlatformVersion, FargateService, FargateTaskDefinition } from '@aws-cdk/aws-ecs';
 import { ApplicationTargetGroup } from '@aws-cdk/aws-elasticloadbalancingv2';
-import { Construct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import {
   ApplicationMultipleTargetGroupsServiceBase,
   ApplicationMultipleTargetGroupsServiceBaseProps,

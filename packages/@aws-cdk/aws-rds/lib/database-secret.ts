@@ -1,6 +1,7 @@
 import * as kms from '@aws-cdk/aws-kms';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { Aws, Construct } from '@aws-cdk/core';
+import { Aws } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { DEFAULT_PASSWORD_EXCLUDE_CHARS } from './private/util';
 
 /**
