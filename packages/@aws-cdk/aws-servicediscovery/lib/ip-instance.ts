@@ -1,4 +1,4 @@
-import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { BaseInstanceProps, InstanceBase } from './instance';
 import { DnsRecordType, IService } from './service';
 import { CfnInstance } from './servicediscovery.generated';
@@ -74,7 +74,7 @@ export class IpInstance extends InstanceBase {
    */
   public readonly port: number;
 
-  constructor(scope: cdk.Construct, id: string, props: IpInstanceProps) {
+  constructor(scope: Construct, id: string, props: IpInstanceProps) {
     super(scope, id);
     const dnsRecordType = props.service.dnsRecordType;
 

@@ -6,7 +6,8 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as ssm from '@aws-cdk/aws-ssm';
-import { Annotations, CfnOutput, CfnResource, Construct, IResource, Resource, Stack, Tags, Token, Duration } from '@aws-cdk/core';
+import { Annotations, CfnOutput, CfnResource, IResource, Resource, Stack, Tags, Token, Duration } from '@aws-cdk/core';
+import { Construct, Node } from 'constructs';
 import * as YAML from 'yaml';
 import { AwsAuth } from './aws-auth';
 import { ClusterResource, clusterArnComponents } from './cluster-resource';
@@ -18,8 +19,13 @@ import { KubernetesObjectValue } from './k8s-object-value';
 import { KubernetesPatch } from './k8s-patch';
 import { KubectlProvider } from './kubectl-provider';
 import { Nodegroup, NodegroupOptions } from './managed-nodegroup';
+import { BottleRocketImage } from './private/bottlerocket';
 import { ServiceAccount, ServiceAccountOptions } from './service-account';
 import { LifecycleLabel, renderAmazonLinuxUserData, renderBottlerocketUserData } from './user-data';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 // defaults are based on https://eksctl.io
 const DEFAULT_CAPACITY_COUNT = 2;
@@ -125,7 +131,7 @@ export interface ICluster extends IResource, ec2.IConnectable {
    * @param options options of this chart.
    * @returns a `HelmChart` construct
    */
-  addChart(id: string, options: HelmChartOptions): HelmChart;
+  addHelmChart(id: string, options: HelmChartOptions): HelmChart;
 }
 
 /**
@@ -506,7 +512,7 @@ export interface ClusterProps extends ClusterOptions {
    * Instance type can be configured through `defaultCapacityInstanceType`,
    * which defaults to `m5.large`.
    *
-   * Use `cluster.addCapacity` to add additional customized capacity. Set this
+   * Use `cluster.addAutoScalingGroupCapacity` to add additional customized capacity. Set this
    * to `0` is you wish to avoid the initial capacity allocation.
    *
    * @default 2
@@ -608,7 +614,7 @@ abstract class ClusterBase extends Resource implements ICluster {
    * @param options options of this chart.
    * @returns a `HelmChart` construct
    */
-  public addChart(id: string, options: HelmChartOptions): HelmChart {
+  public addHelmChart(id: string, options: HelmChartOptions): HelmChart {
     return new HelmChart(this, `chart-${id}`, { cluster: this, ...options });
   }
 }
@@ -847,11 +853,6 @@ export class Cluster extends ClusterBase {
       description: 'EKS Control Plane Security Group',
     });
 
-    this.connections = new ec2.Connections({
-      securityGroups: [securityGroup],
-      defaultPort: ec2.Port.tcp(443), // Control Plane has an HTTPS API
-    });
-
     this.vpcSubnets = props.vpcSubnets ?? [{ subnetType: ec2.SubnetType.PUBLIC }, { subnetType: ec2.SubnetType.PRIVATE }];
 
     // Get subnetIds for all selected subnets
@@ -915,17 +916,9 @@ export class Cluster extends ClusterBase {
 
       this.kubectlPrivateSubnets = privateSubents;
 
-      this.kubectlSecurityGroup = new ec2.SecurityGroup(this, 'KubectlProviderSecurityGroup', {
-        vpc: this.vpc,
-        description: 'Comminication between KubectlProvider and EKS Control Plane',
-      });
-
-      // grant the kubectl provider access to the cluster control plane.
-      this.connections.allowFrom(this.kubectlSecurityGroup, this.connections.defaultPort!);
-
-      // the security group and vpc must exist in order to properly delete the cluster (since we run `kubectl delete`).
+      // the vpc must exist in order to properly delete the cluster (since we run `kubectl delete`).
       // this ensures that.
-      this._clusterResource.node.addDependency(this.kubectlSecurityGroup, this.vpc);
+      this._clusterResource.node.addDependency(this.vpc);
     }
 
     this.adminRole = resource.adminRole;
@@ -949,6 +942,17 @@ export class Cluster extends ClusterBase {
     this.clusterCertificateAuthorityData = resource.attrCertificateAuthorityData;
     this.clusterSecurityGroupId = resource.attrClusterSecurityGroupId;
     this.clusterEncryptionConfigKeyArn = resource.attrEncryptionConfigKeyArn;
+
+    const clusterSecurityGroup = ec2.SecurityGroup.fromSecurityGroupId(this, 'ClusterSecurityGroup', this.clusterSecurityGroupId);
+
+    this.connections = new ec2.Connections({
+      securityGroups: [clusterSecurityGroup, securityGroup],
+      defaultPort: ec2.Port.tcp(443), // Control Plane has an HTTPS API
+    });
+
+    // we can use the cluster security group since its already attached to the cluster
+    // and configured to allow connections from itself.
+    this.kubectlSecurityGroup = clusterSecurityGroup;
 
     // use the cluster creation role to issue kubectl commands against the cluster because when the
     // cluster is first created, that's the only role that has "system:masters" permissions
@@ -985,10 +989,10 @@ export class Cluster extends ClusterBase {
     if (minCapacity > 0) {
       const instanceType = props.defaultCapacityInstance || DEFAULT_CAPACITY_TYPE;
       this.defaultCapacity = props.defaultCapacityType === DefaultCapacityType.EC2 ?
-        this.addCapacity('DefaultCapacity', { instanceType, minCapacity }) : undefined;
+        this.addAutoScalingGroupCapacity('DefaultCapacity', { instanceType, minCapacity }) : undefined;
 
       this.defaultNodegroup = props.defaultCapacityType !== DefaultCapacityType.EC2 ?
-        this.addNodegroup('DefaultCapacity', { instanceType, minSize: minCapacity }) : undefined;
+        this.addNodegroupCapacity('DefaultCapacity', { instanceType, minSize: minCapacity }) : undefined;
     }
 
     const outputConfigCommand = props.outputConfigCommand === undefined ? true : props.outputConfigCommand;
@@ -1037,7 +1041,7 @@ export class Cluster extends ClusterBase {
    * daemon will be installed on all spot instances to handle
    * [EC2 Spot Instance Termination Notices](https://aws.amazon.com/blogs/aws/new-ec2-spot-instance-termination-notices/).
    */
-  public addCapacity(id: string, options: CapacityOptions): autoscaling.AutoScalingGroup {
+  public addAutoScalingGroupCapacity(id: string, options: AutoScalingGroupCapacityOptions): autoscaling.AutoScalingGroup {
     if (options.machineImageType === MachineImageType.BOTTLEROCKET && options.bootstrapOptions !== undefined ) {
       throw new Error('bootstrapOptions is not supported for Bottlerocket');
     }
@@ -1045,7 +1049,9 @@ export class Cluster extends ClusterBase {
       ...options,
       vpc: this.vpc,
       machineImage: options.machineImageType === MachineImageType.BOTTLEROCKET ?
-        new BottleRocketImage() :
+        new BottleRocketImage({
+          kubernetesVersion: this.version.version,
+        }) :
         new EksOptimizedImage({
           nodeType: nodeTypeForInstanceType(options.instanceType),
           cpuArch: cpuArchForInstanceType(options.instanceType),
@@ -1055,7 +1061,7 @@ export class Cluster extends ClusterBase {
       instanceType: options.instanceType,
     });
 
-    this.addAutoScalingGroup(asg, {
+    this.connectAutoScalingGroupCapacity(asg, {
       mapRole: options.mapRole,
       bootstrapOptions: options.bootstrapOptions,
       bootstrapEnabled: options.bootstrapEnabled,
@@ -1078,7 +1084,7 @@ export class Cluster extends ClusterBase {
    * @param id The ID of the nodegroup
    * @param options options for creating a new nodegroup
    */
-  public addNodegroup(id: string, options?: NodegroupOptions): Nodegroup {
+  public addNodegroupCapacity(id: string, options?: NodegroupOptions): Nodegroup {
     return new Nodegroup(this, `Nodegroup${id}`, {
       cluster: this,
       ...options,
@@ -1086,7 +1092,7 @@ export class Cluster extends ClusterBase {
   }
 
   /**
-   * Add compute capacity to this EKS cluster in the form of an AutoScalingGroup
+   * Connect capacity in the form of an existing AutoScalingGroup to the EKS cluster.
    *
    * The AutoScalingGroup must be running an EKS-optimized AMI containing the
    * /etc/eks/bootstrap.sh script. This method will configure Security Groups,
@@ -1099,13 +1105,13 @@ export class Cluster extends ClusterBase {
    * daemon will be installed on all spot instances to handle
    * [EC2 Spot Instance Termination Notices](https://aws.amazon.com/blogs/aws/new-ec2-spot-instance-termination-notices/).
    *
-   * Prefer to use `addCapacity` if possible.
+   * Prefer to use `addAutoScalingGroupCapacity` if possible.
    *
    * @see https://docs.aws.amazon.com/eks/latest/userguide/launch-workers.html
    * @param autoScalingGroup [disable-awslint:ref-via-interface]
    * @param options options for adding auto scaling groups, like customizing the bootstrap script
    */
-  public addAutoScalingGroup(autoScalingGroup: autoscaling.AutoScalingGroup, options: AutoScalingGroupOptions) {
+  public connectAutoScalingGroupCapacity(autoScalingGroup: autoscaling.AutoScalingGroup, options: AutoScalingGroupOptions) {
     // self rules
     autoScalingGroup.connections.allowInternally(ec2.Port.allTraffic());
 
@@ -1280,7 +1286,7 @@ export class Cluster extends ClusterBase {
    * @internal
    */
   public _attachKubectlResourceScope(resourceScope: Construct): KubectlProvider {
-    resourceScope.node.addDependency(this._kubectlReadyBarrier);
+    Node.of(resourceScope).addDependency(this._kubectlReadyBarrier);
     return this._kubectlResourceProvider;
   }
 
@@ -1332,9 +1338,9 @@ export class Cluster extends ClusterBase {
    */
   private addSpotInterruptHandler() {
     if (!this._spotInterruptHandler) {
-      this._spotInterruptHandler = this.addChart('spot-interrupt-handler', {
+      this._spotInterruptHandler = this.addHelmChart('spot-interrupt-handler', {
         chart: 'aws-node-termination-handler',
-        version: '0.7.3',
+        version: '0.9.5',
         repository: 'https://aws.github.io/eks-charts',
         namespace: 'kube-system',
         values: {
@@ -1429,7 +1435,7 @@ export class Cluster extends ClusterBase {
 /**
  * Options for adding worker nodes
  */
-export interface CapacityOptions extends autoscaling.CommonAutoScalingGroupProps {
+export interface AutoScalingGroupCapacityOptions extends autoscaling.CommonAutoScalingGroupProps {
   /**
    * Instance type of the instances to start
    */
@@ -1584,13 +1590,17 @@ class ImportedCluster extends ClusterBase implements ICluster {
     this.kubectlRole = props.kubectlRoleArn ? iam.Role.fromRoleArn(this, 'KubectlRole', props.kubectlRoleArn) : undefined;
     this.kubectlSecurityGroup = props.kubectlSecurityGroupId ? ec2.SecurityGroup.fromSecurityGroupId(this, 'KubectlSecurityGroup', props.kubectlSecurityGroupId) : undefined;
     this.kubectlEnvironment = props.kubectlEnvironment;
-    this.kubectlPrivateSubnets = props.kubectlPrivateSubnetIds ? props.kubectlPrivateSubnetIds.map(subnetid => ec2.Subnet.fromSubnetId(this, `KubectlSubnet${subnetid}`, subnetid)) : undefined;
+    this.kubectlPrivateSubnets = props.kubectlPrivateSubnetIds ? props.kubectlPrivateSubnetIds.map((subnetid, index) => ec2.Subnet.fromSubnetId(this, `KubectlSubnet${index}`, subnetid)) : undefined;
     this.kubectlLayer = props.kubectlLayer;
 
     let i = 1;
     for (const sgid of props.securityGroupIds ?? []) {
       this.connections.addSecurityGroup(ec2.SecurityGroup.fromSecurityGroupId(this, `SecurityGroup${i}`, sgid));
       i++;
+    }
+
+    if (props.clusterSecurityGroupId) {
+      this.connections.addSecurityGroup(ec2.SecurityGroup.fromSecurityGroupId(this, 'ClusterSecurityGroup', props.clusterSecurityGroupId));
     }
   }
 
@@ -1685,44 +1695,12 @@ export class EksOptimizedImage implements ec2.IMachineImage {
   /**
    * Return the correct image
    */
-  public getImage(scope: Construct): ec2.MachineImageConfig {
+  public getImage(scope: CoreConstruct): ec2.MachineImageConfig {
     const ami = ssm.StringParameter.valueForStringParameter(scope, this.amiParameterName);
     return {
       imageId: ami,
       osType: ec2.OperatingSystemType.LINUX,
       userData: ec2.UserData.forLinux(),
-    };
-  }
-}
-
-/**
- * Construct an Bottlerocket image from the latest AMI published in SSM
- */
-class BottleRocketImage implements ec2.IMachineImage {
-  private readonly kubernetesVersion?: string;
-
-  private readonly amiParameterName: string;
-
-  /**
-   * Constructs a new instance of the BottleRocketImage class.
-   */
-  public constructor() {
-    // only 1.15 is currently available
-    this.kubernetesVersion = '1.15';
-
-    // set the SSM parameter name
-    this.amiParameterName = `/aws/service/bottlerocket/aws-k8s-${this.kubernetesVersion}/x86_64/latest/image_id`;
-  }
-
-  /**
-   * Return the correct image
-   */
-  public getImage(scope: Construct): ec2.MachineImageConfig {
-    const ami = ssm.StringParameter.valueForStringParameter(scope, this.amiParameterName);
-    return {
-      imageId: ami,
-      osType: ec2.OperatingSystemType.LINUX,
-      userData: ec2.UserData.custom(''),
     };
   }
 }

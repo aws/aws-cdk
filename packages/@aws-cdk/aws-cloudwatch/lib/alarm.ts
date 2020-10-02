@@ -1,4 +1,5 @@
-import { Construct, Lazy, Stack, Token } from '@aws-cdk/core';
+import { Lazy, Stack, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { AlarmBase, IAlarm } from './alarm-base';
 import { CfnAlarm, CfnAlarmProps } from './cloudwatch.generated';
 import { HorizontalAnnotation } from './graph';
@@ -69,7 +70,7 @@ const OPERATOR_SYMBOLS: {[key: string]: string} = {
   GreaterThanOrEqualToThreshold: '>=',
   GreaterThanThreshold: '>',
   LessThanThreshold: '<',
-  LessThanOrEqualToThreshold: '>=',
+  LessThanOrEqualToThreshold: '<=',
 };
 
 /**
