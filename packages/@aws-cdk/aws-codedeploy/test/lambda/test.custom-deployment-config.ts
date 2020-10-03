@@ -69,7 +69,7 @@ export = {
           },
         },
         physicalResourceId: {
-          id: 'CustomConfig.LambdaCanary5Percent1Minutes',
+          id: 'MyDeploymentConfigCustomConfig.LambdaCanary5Percent1Minutes',
         },
       },
       Update: {
@@ -87,7 +87,7 @@ export = {
           },
         },
         physicalResourceId: {
-          id: 'CustomConfig.LambdaCanary5Percent1Minutes',
+          id: 'MyDeploymentConfigCustomConfig.LambdaCanary5Percent1Minutes',
         },
       },
       Delete: {
