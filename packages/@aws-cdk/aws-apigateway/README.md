@@ -39,6 +39,7 @@ running on AWS Lambda, or any web application.
 - [Gateway Response](#gateway-response)
 - [OpenAPI Definition](#openapi-definition)
   - [Endpoint configuration](#endpoint-configuration)
+- [Metrics](#metrics)
 - [APIGateway v2](#apigateway-v2)
 
 ## Defining APIs
@@ -1015,6 +1016,17 @@ const api = new apigateway.SpecRestApi(this, 'ExampleRestApi', {
 [`x-amazon-apigateway-policy`](https://docs.aws.amazon.com/apigateway/latest/developerguide/openapi-extensions-policy.html) and 
 [`x-amazon-apigateway-endpoint-configuration`](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-swagger-extensions-endpoint-configuration.html) 
 in your openApi file. 
+
+## Metrics
+
+The API Gateway service sends metrics around the performance of Rest APIs to Amazon CloudWatch.
+These metrics can be referred to using the metric APIs available on the `RestApi` construct.
+The APIs with the `metric` prefix can be used to get reference to specific metrics for this API. For example, the method below refers to the CloudWatch metric for all client side errors that have occurred for this API.
+
+```ts
+const api = new apigw.RestApi(stack, 'my-api');
+const clientErrorMetric = api.metricClientError();
+```
 
 ## APIGateway v2
 
