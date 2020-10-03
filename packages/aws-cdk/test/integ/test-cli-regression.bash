@@ -49,6 +49,8 @@ function run() {
   cp -r ${temp_dir}/package/test/integ/cli "${integ_under_test}"
 
   patch_dir="${integdir}/cli-regression-patches/v${SUPPLANT_VERSION}"
+  # delete possibly stale junit.xml file
+  rm -f ${integ_under_test}/junit.xml
   if [[ -d "$patch_dir" ]]; then
       echo "Hotpatching the tests with files from $patch_dir" >&2
       cp -r "$patch_dir"/* ${integ_under_test}

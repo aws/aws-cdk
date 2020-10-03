@@ -1,13 +1,16 @@
-import { DefaultTokenResolver, IConstruct, Lazy, StringConcat, Tokenization } from '@aws-cdk/core';
+import { DefaultTokenResolver, Lazy, StringConcat, Tokenization } from '@aws-cdk/core';
+import { IConstruct } from 'constructs';
 import { IPolicy } from './policy';
 
 const MAX_POLICY_NAME_LEN = 128;
 
 export function undefinedIfEmpty(f: () => string[]): string[] {
-  return Lazy.listValue({ produce: () => {
-    const array = f();
-    return (array && array.length > 0) ? array : undefined;
-  }});
+  return Lazy.listValue({
+    produce: () => {
+      const array = f();
+      return (array && array.length > 0) ? array : undefined;
+    },
+  });
 }
 
 /**
@@ -71,7 +74,7 @@ export function mergePrincipal(target: { [key: string]: string[] }, source: { [k
 
     let value = source[key];
     if (!Array.isArray(value)) {
-      value = [ value ];
+      value = [value];
     }
 
     target[key].push(...value);

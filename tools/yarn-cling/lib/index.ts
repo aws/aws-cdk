@@ -58,7 +58,7 @@ async function generateLockFile(pkgJson: PackageJson, yarnLock: YarnLock, rootDi
   };
 }
 
-// tslint:disable-next-line:max-line-length
+// eslint-disable-next-line max-len
 async function dependenciesFor(deps: Record<string, string>, yarnLock: YarnLock, rootDir: string): Promise<Record<string, PackageLockPackage>> {
   const ret: Record<string, PackageLockPackage> = {};
 
@@ -143,7 +143,7 @@ export function formatPackageLock(entry: PackageLockEntry) {
 
   function recurse(names: string[], thisEntry: PackageLockEntry) {
     if (names.length > 0) {
-      // tslint:disable-next-line:no-console
+      // eslint-disable-next-line no-console
       lines.push(`${names.join(' -> ')} @ ${thisEntry.version}`);
     }
     for (const [depName, depEntry] of Object.entries(thisEntry.dependencies || {})) {

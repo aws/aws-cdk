@@ -8,9 +8,9 @@
 //
 // The big downside compared to mockfs is that you need to use bockfs.path() to translate
 // fake paths to real paths.
-import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as path_ from 'path';
+import * as fs from 'fs-extra';
 
 const bockFsRoot = fs.mkdtempSync(path_.join(os.tmpdir(), 'bockfs'));
 let oldCwd: string | undefined;

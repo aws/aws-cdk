@@ -12,7 +12,7 @@
   "stability": "experimental",
   "maturity": "developer-preview",
   "scripts": {
-    "gen": "npx ts-node build-tools/gen.ts",
+    "gen": "ubergen",
     "build": "cdk-build",
     "lint": "cdk-lint",
     "test": "echo done",
@@ -30,9 +30,6 @@
   },
   "cdk-build": {
     "eslint": {
-      "disable": true
-    },
-    "tslint": {
       "disable": true
     },
     "pre": [
@@ -73,7 +70,8 @@
         "distName": "monocdk.experiment",
         "module": "monocdk_experiment"
       }
-    }
+    },
+    "projectReferences": false
   },
   "author": {
     "name": "Amazon Web Services",
@@ -91,11 +89,10 @@
   ],
   "dependencies": {
     "case": "1.6.3",
-    "constructs": "^3.0.2",
     "fs-extra": "^9.0.1",
-    "jsonschema": "^1.2.5",
+    "jsonschema": "^1.2.7",
     "minimatch": "^3.0.4",
-    "semver": "^7.2.2",
+    "semver": "^7.3.2",
     "yaml": "1.10.0"
   },
   "devDependencies": {
@@ -109,7 +106,9 @@
     "@aws-cdk/aws-apigateway": "0.0.0",
     "@aws-cdk/aws-apigatewayv2": "0.0.0",
     "@aws-cdk/aws-appconfig": "0.0.0",
+    "@aws-cdk/aws-appflow": "0.0.0",
     "@aws-cdk/aws-applicationautoscaling": "0.0.0",
+    "@aws-cdk/aws-applicationinsights": "0.0.0",
     "@aws-cdk/aws-appmesh": "0.0.0",
     "@aws-cdk/aws-appstream": "0.0.0",
     "@aws-cdk/aws-appsync": "0.0.0",
@@ -128,6 +127,7 @@
     "@aws-cdk/aws-cloud9": "0.0.0",
     "@aws-cdk/aws-cloudformation": "0.0.0",
     "@aws-cdk/aws-cloudfront": "0.0.0",
+    "@aws-cdk/aws-cloudfront-origins": "0.0.0",
     "@aws-cdk/aws-cloudtrail": "0.0.0",
     "@aws-cdk/aws-cloudwatch": "0.0.0",
     "@aws-cdk/aws-cloudwatch-actions": "0.0.0",
@@ -135,6 +135,7 @@
     "@aws-cdk/aws-codecommit": "0.0.0",
     "@aws-cdk/aws-codedeploy": "0.0.0",
     "@aws-cdk/aws-codeguruprofiler": "0.0.0",
+    "@aws-cdk/aws-codegurureviewer": "0.0.0",
     "@aws-cdk/aws-codepipeline": "0.0.0",
     "@aws-cdk/aws-codepipeline-actions": "0.0.0",
     "@aws-cdk/aws-codestar": "0.0.0",
@@ -187,12 +188,14 @@
     "@aws-cdk/aws-kinesis": "0.0.0",
     "@aws-cdk/aws-kinesisanalytics": "0.0.0",
     "@aws-cdk/aws-kinesisfirehose": "0.0.0",
+    "@aws-cdk/aws-kendra": "0.0.0",
     "@aws-cdk/aws-kms": "0.0.0",
     "@aws-cdk/aws-lakeformation": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-lambda-destinations": "0.0.0",
     "@aws-cdk/aws-lambda-event-sources": "0.0.0",
     "@aws-cdk/aws-lambda-nodejs": "0.0.0",
+    "@aws-cdk/aws-lambda-python": "0.0.0",
     "@aws-cdk/aws-logs": "0.0.0",
     "@aws-cdk/aws-logs-destinations": "0.0.0",
     "@aws-cdk/aws-macie": "0.0.0",
@@ -234,6 +237,7 @@
     "@aws-cdk/aws-sns-subscriptions": "0.0.0",
     "@aws-cdk/aws-sqs": "0.0.0",
     "@aws-cdk/aws-ssm": "0.0.0",
+    "@aws-cdk/aws-sso": "0.0.0",
     "@aws-cdk/aws-stepfunctions": "0.0.0",
     "@aws-cdk/aws-stepfunctions-tasks": "0.0.0",
     "@aws-cdk/aws-synthetics": "0.0.0",
@@ -247,17 +251,21 @@
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/custom-resources": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
+    "@aws-cdk/pipelines": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
+    "@aws-cdk/yaml-cfn": "0.0.0",
     "@types/fs-extra": "^8.1.1",
-    "@types/node": "^10.17.26",
+    "@types/node": "^10.17.35",
     "cdk-build-tools": "0.0.0",
+    "constructs": "^3.0.4",
     "fs-extra": "^9.0.1",
     "pkglint": "0.0.0",
-    "ts-node": "^8.10.2",
-    "typescript": "~3.8.3"
+    "ts-node": "^9.0.0",
+    "typescript": "~3.8.3",
+    "ubergen": "0.0.0"
   },
   "peerDependencies": {
-    "constructs": "^3.0.2"
+    "constructs": "^3.0.4"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {

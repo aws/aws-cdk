@@ -2,7 +2,7 @@ import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import { Stack } from '@aws-cdk/core';
 import { BootstrapOptions, ICluster } from './cluster';
 
-// tslint:disable-next-line:max-line-length
+// eslint-disable-next-line max-len
 export function renderAmazonLinuxUserData(clusterName: string, autoScalingGroup: autoscaling.AutoScalingGroup, options: BootstrapOptions = {}): string[] {
 
   const stack = Stack.of(autoScalingGroup);
@@ -20,7 +20,7 @@ export function renderAmazonLinuxUserData(clusterName: string, autoScalingGroup:
   }
 
   if (options.enableDockerBridge) {
-    extraArgs.push('--enable-docker-bridge');
+    extraArgs.push('--enable-docker-bridge true');
   }
 
   if (options.dockerConfigJson) {

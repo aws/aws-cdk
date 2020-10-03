@@ -1,4 +1,5 @@
-import { Construct, Resource, Stack } from '@aws-cdk/core';
+import { Resource, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnMethod, CfnMethodProps } from './apigateway.generated';
 import { Authorizer, IAuthorizer } from './authorizer';
 import { Integration, IntegrationConfig } from './integration';
@@ -270,7 +271,7 @@ export class Method extends Resource {
       credentials = options.credentialsRole.roleArn;
     } else if (options.credentialsPassthrough) {
       // arn:aws:iam::*:user/*
-      // tslint:disable-next-line:max-line-length
+      // eslint-disable-next-line max-len
       credentials = Stack.of(this).formatArn({ service: 'iam', region: '', account: '*', resource: 'user', sep: '/', resourceName: '*' });
     }
 

@@ -1,19 +1,18 @@
-import * as cxapi from '@aws-cdk/cx-api';
 import * as childProcess from 'child_process';
+import * as path from 'path';
+import * as cxapi from '@aws-cdk/cx-api';
 import * as colors from 'colors/safe';
 import * as fs from 'fs-extra';
-import * as path from 'path';
 import { error, print, warning } from './logging';
 import { cdkHomeDir } from './util/directories';
 
 export type InvokeHook = (targetDirectory: string) => Promise<void>;
 
-// tslint:disable:no-var-requires those libraries don't have up-to-date @types modules
+/* eslint-disable @typescript-eslint/no-var-requires */ // Packages don't have @types module
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const camelCase = require('camelcase');
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const decamelize = require('decamelize');
-// tslint:enable:no-var-requires
 
 const TEMPLATES_DIR = path.join(__dirname, 'init-templates');
 
@@ -275,13 +274,13 @@ async function initializeGitRepository(workDir: string) {
 async function postInstall(language: string, canUseNetwork: boolean, workDir: string) {
   switch (language) {
     case 'javascript':
-      return await postInstallJavascript(canUseNetwork, workDir);
+      return postInstallJavascript(canUseNetwork, workDir);
     case 'typescript':
-      return await postInstallTypescript(canUseNetwork, workDir);
+      return postInstallTypescript(canUseNetwork, workDir);
     case 'java':
-      return await postInstallJava(canUseNetwork, workDir);
+      return postInstallJava(canUseNetwork, workDir);
     case 'python':
-      return await postInstallPython(workDir);
+      return postInstallPython(workDir);
   }
 }
 
@@ -324,7 +323,7 @@ async function postInstallJava(canUseNetwork: boolean, cwd: string) {
 
 async function postInstallPython(cwd: string) {
   const python = pythonExecutable();
-  warning(`Please run ${python} -m venv .env'!`);
+  warning(`Please run '${python} -m venv .env'!`);
   print(`Executing ${colors.green('Creating virtualenv...')}`);
   try {
     await execute(python, ['-m venv', '.env'], { cwd });
@@ -363,7 +362,7 @@ function isRoot(dir: string) {
  * @returns STDOUT (if successful).
  */
 async function execute(cmd: string, args: string[], { cwd }: { cwd: string }) {
-  const child = childProcess.spawn(cmd, args, { cwd, shell: true, stdio: [ 'ignore', 'pipe', 'inherit' ] });
+  const child = childProcess.spawn(cmd, args, { cwd, shell: true, stdio: ['ignore', 'pipe', 'inherit'] });
   let stdout = '';
   child.stdout.on('data', chunk => stdout += chunk.toString());
   return new Promise<string>((ok, fail) => {

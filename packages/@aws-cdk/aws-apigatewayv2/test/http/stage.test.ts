@@ -19,6 +19,21 @@ describe('HttpStage', () => {
     });
   });
 
+  test('import', () => {
+    const stack = new Stack();
+    const api = new HttpApi(stack, 'Api', {
+      createDefaultStage: false,
+    });
+
+    const stage = new HttpStage(stack, 'Stage', {
+      httpApi: api,
+    });
+
+    const imported = HttpStage.fromStageName(stack, 'Import', stage.stageName );
+
+    expect(imported.stageName).toEqual(stage.stageName);
+  });
+
   test('url returns the correct path', () => {
     const stack = new Stack();
     const api = new HttpApi(stack, 'Api', {

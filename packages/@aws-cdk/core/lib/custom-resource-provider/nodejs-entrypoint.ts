@@ -134,6 +134,6 @@ async function defaultSendHttpRequest(options: https.RequestOptions, responseBod
 }
 
 function defaultLog(fmt: string, ...params: any[]) {
-  // tslint:disable-next-line:no-console
+  // eslint-disable-next-line no-console
   console.log(fmt, ...params);
 }

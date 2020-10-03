@@ -42,6 +42,13 @@ export class CloudFormationStack {
     return new CloudFormationStack(cfn, stackName);
   }
 
+  /**
+   * From static information (for testing)
+   */
+  public static fromStaticInformation(cfn: CloudFormation, stackName: string, stack: CloudFormation.Stack) {
+    return new CloudFormationStack(cfn, stackName, stack);
+  }
+
   private _template: any;
 
   protected constructor(private readonly cfn: CloudFormation, public readonly stackName: string, private readonly stack?: CloudFormation.Stack) {
@@ -200,7 +207,7 @@ async function waitFor<T>(valueProvider: () => Promise<T | null | undefined>, ti
  *
  * @returns       the CloudFormation description of the ChangeSet
  */
-// tslint:disable-next-line:max-line-length
+// eslint-disable-next-line max-len
 export async function waitForChangeSet(cfn: CloudFormation, stackName: string, changeSetName: string): Promise<CloudFormation.DescribeChangeSetOutput> {
   debug('Waiting for changeset %s on stack %s to finish creating...', changeSetName, stackName);
   const ret = await waitFor(async () => {
@@ -216,7 +223,7 @@ export async function waitForChangeSet(cfn: CloudFormation, stackName: string, c
       return description;
     }
 
-    // tslint:disable-next-line:max-line-length
+    // eslint-disable-next-line max-len
     throw new Error(`Failed to create ChangeSet ${changeSetName} on ${stackName}: ${description.Status || 'NO_STATUS'}, ${description.StatusReason || 'no reason provided'}`);
   });
 
@@ -241,33 +248,59 @@ export function changeSetHasNoChanges(description: CloudFormation.DescribeChange
 }
 
 /**
- * Waits for a CloudFormation stack to stabilize in a complete/available state.
+ * Waits for a CloudFormation stack to stabilize in a complete/available state
+ * after a delete operation is issued.
  *
- * Fails if the stacks is not in a SUCCESSFUL state.
+ * Fails if the stack is in a FAILED state. Will not fail if the stack was
+ * already deleted.
  *
  * @param cfn        a CloudFormation client
- * @param stackName      the name of the stack to wait for
- * @param failOnDeletedStack whether to fail if the awaited stack is deleted.
+ * @param stackName      the name of the stack to wait for after a delete
  *
- * @returns     the CloudFormation description of the stabilized stack
+ * @returns     the CloudFormation description of the stabilized stack after the delete attempt
  */
-export async function waitForStack(
+export async function waitForStackDelete(
   cfn: CloudFormation,
-  stackName: string,
-  failOnDeletedStack: boolean = true): Promise<CloudFormationStack | undefined> {
+  stackName: string): Promise<CloudFormationStack | undefined> {
 
   const stack = await stabilizeStack(cfn, stackName);
   if (!stack) { return undefined; }
 
   const status = stack.stackStatus;
-  if (status.isCreationFailure) {
-    throw new Error(`The stack named ${stackName} failed creation, it may need to be manually deleted from the AWS console: ${status}`);
-  } else if (!status.isSuccess) {
-    throw new Error(`The stack named ${stackName} is in a failed state: ${status}`);
+  if (status.isFailure) {
+    throw new Error(`The stack named ${stackName} is in a failed state. You may need to delete it from the AWS console : ${status}`);
   } else if (status.isDeleted) {
-    if (failOnDeletedStack) { throw new Error(`The stack named ${stackName} was deleted`); }
     return undefined;
   }
+  return stack;
+}
+
+/**
+ * Waits for a CloudFormation stack to stabilize in a complete/available state
+ * after an update/create operation is issued.
+ *
+ * Fails if the stack is in a FAILED state, ROLLBACK state, or DELETED state.
+ *
+ * @param cfn        a CloudFormation client
+ * @param stackName      the name of the stack to wait for after an update
+ *
+ * @returns     the CloudFormation description of the stabilized stack after the update attempt
+ */
+export async function waitForStackDeploy(
+  cfn: CloudFormation,
+  stackName: string): Promise<CloudFormationStack | undefined> {
+
+  const stack = await stabilizeStack(cfn, stackName);
+  if (!stack) { return undefined; }
+
+  const status = stack.stackStatus;
+
+  if (status.isCreationFailure) {
+    throw new Error(`The stack named ${stackName} failed creation, it may need to be manually deleted from the AWS console: ${status}`);
+  } else if (!status.isDeploySuccess) {
+    throw new Error(`The stack named ${stackName} failed to deploy: ${status}`);
+  }
+
   return stack;
 }
 
@@ -283,8 +316,8 @@ export async function stabilizeStack(cfn: CloudFormation, stackName: string) {
       return null;
     }
     const status = stack.stackStatus;
-    if (!status.isStable) {
-      debug('Stack %s is still not stable (%s)', stackName, status);
+    if (status.isInProgress) {
+      debug('Stack %s has an ongoing operation in progress and is not stable (%s)', stackName, status);
       return undefined;
     }
 
@@ -344,7 +377,7 @@ export class StackParameters {
         this._changes = true;
       }
 
-      if (key in updates && updates[key]) {
+      if (key in updates && updates[key] !== undefined) {
         this.apiParameters.push({ ParameterKey: key, ParameterValue: updates[key] });
 
         // If the updated value is different than the current value, this will lead to a change

@@ -22,3 +22,5 @@ assets.json
 npm-shrinkwrap.json
 !.eslintrc.js
 !jest.config.js
+
+junit.xml

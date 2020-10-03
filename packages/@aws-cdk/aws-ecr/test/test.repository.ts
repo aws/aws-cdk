@@ -4,7 +4,7 @@ import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as ecr from '../lib';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
   'construct repository'(test: Test) {
@@ -51,7 +51,7 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::ECR::Repository', {
       LifecyclePolicy: {
-        // tslint:disable-next-line:max-line-length
+        // eslint-disable-next-line max-len
         LifecyclePolicyText: '{"rules":[{"rulePriority":1,"selection":{"tagStatus":"tagged","tagPrefixList":["abc"],"countType":"imageCountMoreThan","countNumber":1},"action":{"type":"expire"}}]}',
       },
     }));
@@ -72,7 +72,7 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::ECR::Repository', {
       LifecyclePolicy: {
-        // tslint:disable-next-line:max-line-length
+        // eslint-disable-next-line max-len
         LifecyclePolicyText: '{"rules":[{"rulePriority":1,"selection":{"tagStatus":"any","countType":"sinceImagePushed","countNumber":5,"countUnit":"days"},"action":{"type":"expire"}}]}',
       },
     }));
@@ -93,7 +93,7 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::ECR::Repository', {
       LifecyclePolicy: {
-        // tslint:disable-next-line:max-line-length
+        // eslint-disable-next-line max-len
         LifecyclePolicyText: '{"rules":[{"rulePriority":1,"selection":{"tagStatus":"any","countType":"imageCountMoreThan","countNumber":5},"action":{"type":"expire"}}]}',
       },
     }));
@@ -113,7 +113,7 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::ECR::Repository', {
       LifecyclePolicy: {
-        // tslint:disable-next-line:max-line-length
+        // eslint-disable-next-line max-len
         LifecyclePolicyText: '{"rules":[{"rulePriority":10,"selection":{"tagStatus":"tagged","tagPrefixList":["b"],"countType":"imageCountMoreThan","countNumber":5},"action":{"type":"expire"}},{"rulePriority":11,"selection":{"tagStatus":"tagged","tagPrefixList":["a"],"countType":"imageCountMoreThan","countNumber":5},"action":{"type":"expire"}}]}',
       },
     }));
@@ -133,7 +133,7 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::ECR::Repository', {
       LifecyclePolicy: {
-        // tslint:disable-next-line:max-line-length
+        // eslint-disable-next-line max-len
         LifecyclePolicyText: '{"rules":[{"rulePriority":1,"selection":{"tagStatus":"tagged","tagPrefixList":["important"],"countType":"imageCountMoreThan","countNumber":999},"action":{"type":"expire"}},{"rulePriority":2,"selection":{"tagStatus":"any","countType":"imageCountMoreThan","countNumber":5},"action":{"type":"expire"}}]}',
       },
     }));
@@ -155,7 +155,7 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::ECR::Repository', {
       'LifecyclePolicy': {
-        // tslint:disable-next-line:max-line-length
+        // eslint-disable-next-line max-len
         'LifecyclePolicyText': '{"rules":[{"rulePriority":1,"selection":{"tagStatus":"any","countType":"imageCountMoreThan","countNumber":3},"action":{"type":"expire"}}]}',
       },
     }));
@@ -244,8 +244,8 @@ export = {
         { Ref: 'AWS::Region' },
         ':',
         { Ref: 'AWS::AccountId' },
-        ':repository/my-repo'],
-      ],
+        ':repository/my-repo',
+      ]],
     });
     test.deepEqual(stack.resolve(repo.repositoryName), 'my-repo');
     test.done();
@@ -273,7 +273,8 @@ export = {
         ':',
         { Ref: 'AWS::AccountId' },
         ':repository/',
-        { 'Fn::GetAtt': ['Boom', 'Name'] }]],
+        { 'Fn::GetAtt': ['Boom', 'Name'] },
+      ]],
     });
     test.done();
   },
@@ -284,7 +285,10 @@ export = {
     const repo = new ecr.Repository(stack, 'Repo');
 
     // WHEN
-    repo.addToResourcePolicy(new iam.PolicyStatement({ actions: ['*'] }));
+    repo.addToResourcePolicy(new iam.PolicyStatement({
+      actions: ['*'],
+      principals: [new iam.AnyPrincipal()],
+    }));
 
     // THEN
     expect(stack).to(haveResource('AWS::ECR::Repository', {
@@ -293,12 +297,47 @@ export = {
           {
             Action: '*',
             Effect: 'Allow',
+            Principal: '*',
           },
         ],
         Version: '2012-10-17',
       },
     }));
 
+    test.done();
+  },
+
+  'fails if repository policy has no actions'(test: Test) {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'my-stack');
+    const repo = new ecr.Repository(stack, 'Repo');
+
+    // WHEN
+    repo.addToResourcePolicy(new iam.PolicyStatement({
+      resources: ['*'],
+      principals: [new iam.ArnPrincipal('arn')],
+    }));
+
+    // THEN
+    test.throws(() => app.synth(), /A PolicyStatement must specify at least one \'action\' or \'notAction\'/);
+    test.done();
+  },
+
+  'fails if repository policy has no IAM principals'(test: Test) {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'my-stack');
+    const repo = new ecr.Repository(stack, 'Repo');
+
+    // WHEN
+    repo.addToResourcePolicy(new iam.PolicyStatement({
+      resources: ['*'],
+      actions: ['ecr:*'],
+    }));
+
+    // THEN
+    test.throws(() => app.synth(), /A PolicyStatement used in a resource-based policy must specify at least one IAM principal/);
     test.done();
   },
 

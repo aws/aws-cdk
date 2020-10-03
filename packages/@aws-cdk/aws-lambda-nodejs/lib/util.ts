@@ -1,3 +1,4 @@
+import { spawnSync, SpawnSyncOptions } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -54,12 +55,36 @@ export function nodeMajorVersion(): number {
  * Find a file by walking up parent directories
  */
 export function findUp(name: string, directory: string = process.cwd()): string | undefined {
-  const { root } = path.parse(directory);
-  if (directory === root && !fs.existsSync(path.join(directory, name))) {
-    return undefined;
-  }
+  const absoluteDirectory = path.resolve(directory);
+
   if (fs.existsSync(path.join(directory, name))) {
     return directory;
   }
-  return findUp(name, path.dirname(directory));
+
+  const { root } = path.parse(absoluteDirectory);
+  if (absoluteDirectory === root) {
+    return undefined;
+  }
+
+  return findUp(name, path.dirname(absoluteDirectory));
+}
+
+/**
+ * Spawn sync with error handling
+ */
+export function exec(cmd: string, args: string[], options?: SpawnSyncOptions) {
+  const proc = spawnSync(cmd, args, options);
+
+  if (proc.error) {
+    throw proc.error;
+  }
+
+  if (proc.status !== 0) {
+    if (proc.stdout || proc.stderr) {
+      throw new Error(`[Status ${proc.status}] stdout: ${proc.stdout?.toString().trim()}\n\n\nstderr: ${proc.stderr?.toString().trim()}`);
+    }
+    throw new Error(`${cmd} exited with status ${proc.status}`);
+  }
+
+  return proc;
 }

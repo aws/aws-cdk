@@ -1,10 +1,9 @@
-import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { BaseInstanceProps, InstanceBase } from './instance';
 import { NamespaceType } from './namespace';
 import { IService } from './service';
 import { CfnInstance } from './servicediscovery.generated';
 
-// tslint:disable-next-line:no-empty-interface
 export interface NonIpInstanceBaseProps extends BaseInstanceProps {
 }
 
@@ -35,7 +34,7 @@ export class NonIpInstance extends InstanceBase {
    */
   public readonly service: IService;
 
-  constructor(scope: cdk.Construct, id: string, props: NonIpInstanceProps) {
+  constructor(scope: Construct, id: string, props: NonIpInstanceProps) {
     super(scope, id);
 
     if (props.service.namespace.type !== NamespaceType.HTTP) {

@@ -24,6 +24,9 @@ export class ConstructReflection {
     return typeRef.fqn;
   }
 
+  /**
+   * @deprecated - use `CoreTypes.constructClass()` or `CoreTypes.baseConstructClass()` as appropriate
+   */
   public readonly ROOT_CLASS: reflect.ClassType; // cdk.Construct
 
   public readonly fqn: string;
@@ -79,7 +82,7 @@ export class ConstructReflection {
 
 constructLinter.add({
   code: 'construct-ctor',
-  message: 'signature of all construct constructors should be "scope, id, props"',
+  message: 'signature of all construct constructors should be "scope, id, props". ' + baseConstructAddendum(),
   eval: e => {
     // only applies to non abstract classes
     if (e.ctx.classType.abstract) {
@@ -93,14 +96,20 @@ constructLinter.add({
 
     const expectedParams = new Array<MethodSignatureParameterExpectation>();
 
+    let baseType;
+    if (process.env.AWSLINT_BASE_CONSTRUCT && !initializer.parentType.name.startsWith('Cfn')) {
+      baseType = e.ctx.core.baseConstructClass;
+    } else {
+      baseType = e.ctx.core.constructClass;
+    }
     expectedParams.push({
       name: 'scope',
-      type: e.ctx.core.constructClass.fqn
+      type: baseType.fqn,
     });
 
     expectedParams.push({
       name: 'id',
-      type: 'string'
+      type: 'string',
     });
 
     // it's okay for a construct not to have a "props" argument so we only
@@ -112,9 +121,9 @@ constructLinter.add({
     }
 
     e.assertSignature(initializer, {
-      parameters: expectedParams
+      parameters: expectedParams,
     });
-  }
+  },
 });
 
 constructLinter.add({
@@ -131,7 +140,7 @@ constructLinter.add({
     }
 
     e.assert(e.ctx.propsType, e.ctx.interfaceFqn);
-  }
+  },
 });
 
 constructLinter.add({
@@ -145,7 +154,7 @@ constructLinter.add({
       e.ctx.initializer.parameters[2].type.type === e.ctx.propsType,
       e.ctx.fqn,
       e.ctx.propsFqn);
-  }
+  },
 });
 
 constructLinter.add({
@@ -163,7 +172,7 @@ constructLinter.add({
     }
 
     e.assert(e.ctx.initializer.parameters[2].optional, e.ctx.fqn);
-  }
+  },
 });
 
 constructLinter.add({
@@ -173,7 +182,7 @@ constructLinter.add({
     if (!e.ctx.interfaceType) { return; }
     const interfaceBase = e.ctx.sys.findInterface(e.ctx.core.constructInterface.fqn);
     e.assert(e.ctx.interfaceType.extends(interfaceBase), e.ctx.interfaceType.fqn);
-  }
+  },
 });
 
 constructLinter.add({
@@ -184,7 +193,7 @@ constructLinter.add({
     if (!e.ctx.interfaceType) { return; }
     const baseFqn = `${e.ctx.classType.fqn}Base`;
     e.assert(!e.ctx.sys.tryFindFqn(baseFqn), baseFqn);
-  }
+  },
 });
 
 constructLinter.add({
@@ -200,7 +209,7 @@ constructLinter.add({
     for (const property of e.ctx.propsType.ownProperties) {
       e.assert(!property.type.unionOfTypes, `${e.ctx.propsFqn}.${property.name}`);
     }
-  }
+  },
 });
 
 constructLinter.add({
@@ -216,7 +225,7 @@ constructLinter.add({
     for (const property of e.ctx.propsType.ownProperties) {
       e.assert(!property.name.toLowerCase().endsWith('arn'), `${e.ctx.propsFqn}.${property.name}`);
     }
-  }
+  },
 });
 
 constructLinter.add({
@@ -237,7 +246,7 @@ constructLinter.add({
         e.assert(!(fqn === e.ctx.core.tokenInterface.fqn), `${e.ctx.propsFqn}.${property.name}`);
       }
     }
-  }
+  },
 });
 
 constructLinter.add({
@@ -258,7 +267,7 @@ constructLinter.add({
         e.assert(!found.name.toLowerCase().startsWith('cfn'), `${e.ctx.propsFqn}.${property.name}`);
       }
     }
-  }
+  },
 });
 
 constructLinter.add({
@@ -272,7 +281,14 @@ constructLinter.add({
     if (CoreTypes.isCfnResource(e.ctx.classType)) { return; }
 
     for (const property of e.ctx.propsType.ownProperties) {
-    e.assert(!property.type.isAny, `${e.ctx.propsFqn}.${property.name}`);
+      e.assert(!property.type.isAny, `${e.ctx.propsFqn}.${property.name}`);
     }
-  }
+  },
 });
+
+function baseConstructAddendum(): string {
+  if (!process.env.AWSLINT_BASE_CONSTRUCT) {
+    return 'If the construct is using the "constructs" module, set the environment variable "AWSLINT_BASE_CONSTRUCT" and re-run';
+  }
+  return '';
+}

@@ -1,9 +1,9 @@
-import { expect } from '@aws-cdk/assert';
+import { expect, haveResourceLike } from '@aws-cdk/assert';
 import { AccountRootPrincipal, Role } from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
-import { ProfilingGroup } from '../lib';
+import { ProfilingGroup, ComputePlatform } from '../lib';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 describe('profiling group', () => {
 
@@ -186,6 +186,18 @@ describe('profiling group', () => {
         },
       },
     });
+  });
+
+  test('allows setting its ComputePlatform', () => {
+    const stack = new Stack();
+    new ProfilingGroup(stack, 'MyProfilingGroup', {
+      profilingGroupName: 'MyAwesomeProfilingGroup',
+      computePlatform: ComputePlatform.AWS_LAMBDA,
+    });
+
+    expect(stack).to(haveResourceLike('AWS::CodeGuruProfiler::ProfilingGroup', {
+      'ComputePlatform': 'AWSLambda',
+    }));
   });
 
   test('default profiling group without name', () => {

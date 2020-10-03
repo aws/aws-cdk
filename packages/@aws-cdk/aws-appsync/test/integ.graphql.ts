@@ -1,16 +1,30 @@
+import { join } from 'path';
 import { UserPool } from '@aws-cdk/aws-cognito';
 import { AttributeType, BillingMode, Table } from '@aws-cdk/aws-dynamodb';
 import { App, RemovalPolicy, Stack } from '@aws-cdk/core';
-import { join } from 'path';
 import {
   AuthorizationType,
-  GraphQLApi,
+  GraphqlApi,
   KeyCondition,
   MappingTemplate,
   PrimaryKey,
-  UserPoolDefaultAction,
+  Schema,
   Values,
 } from '../lib';
+
+/*
+ * Creates an Appsync GraphQL API and with multiple tables.
+ * Testing for importing, querying, and mutability.
+ *
+ * Stack verification steps:
+ * Add to a table through appsync GraphQL API.
+ * Read from a table through appsync API.
+ *
+ * -- aws appsync list-graphql-apis                 -- obtain apiId               --
+ * -- aws appsync get-graphql-api --api-id [apiId]  -- obtain GraphQL endpoint    --
+ * -- aws appsync list-api-keys --api-id [apiId]    -- obtain api key             --
+ * -- bash verify.integ.graphql.sh [apiKey] [url]   -- shows query and mutation   --
+ */
 
 const app = new App();
 const stack = new Stack(app, 'aws-appsync-integ');
@@ -19,15 +33,14 @@ const userPool = new UserPool(stack, 'Pool', {
   userPoolName: 'myPool',
 });
 
-const api = new GraphQLApi(stack, 'Api', {
+const api = new GraphqlApi(stack, 'Api', {
   name: 'demoapi',
-  schemaDefinitionFile: join(__dirname, 'schema.graphql'),
+  schema: Schema.fromAsset(join(__dirname, 'integ.graphql.graphql')),
   authorizationConfig: {
     defaultAuthorization: {
       authorizationType: AuthorizationType.USER_POOL,
       userPoolConfig: {
         userPool,
-        defaultAction: UserPoolDefaultAction.ALLOW,
       },
     },
     additionalAuthorizationModes: [
@@ -38,7 +51,7 @@ const api = new GraphQLApi(stack, 'Api', {
   },
 });
 
-const noneDS = api.addNoneDataSource('None', 'Dummy data source');
+const noneDS = api.addNoneDataSource('none', { name: 'None' });
 
 noneDS.createResolver({
   typeName: 'Query',
@@ -72,8 +85,20 @@ const orderTable = new Table(stack, 'OrderTable', {
   removalPolicy: RemovalPolicy.DESTROY,
 });
 
-const customerDS = api.addDynamoDbDataSource('Customer', 'The customer data source', customerTable);
-const orderDS = api.addDynamoDbDataSource('Order', 'The order data source', orderTable);
+new Table(stack, 'PaymentTable', {
+  billingMode: BillingMode.PAY_PER_REQUEST,
+  partitionKey: {
+    name: 'id',
+    type: AttributeType.STRING,
+  },
+  removalPolicy: RemovalPolicy.DESTROY,
+});
+
+const paymentTable = Table.fromTableName(stack, 'ImportedPaymentTable', 'PaymentTable');
+
+const customerDS = api.addDynamoDbDataSource('customerDs', customerTable, { name: 'Customer' });
+const orderDS = api.addDynamoDbDataSource('orderDs', orderTable, { name: 'Order' });
+const paymentDS = api.addDynamoDbDataSource('paymentDs', paymentTable, { name: 'Payment' });
 
 customerDS.createResolver({
   typeName: 'Query',
@@ -119,13 +144,13 @@ customerDS.createResolver({
 });
 
 const ops = [
-  { suffix: 'Eq', op: KeyCondition.eq},
-  { suffix: 'Lt', op: KeyCondition.lt},
-  { suffix: 'Le', op: KeyCondition.le},
-  { suffix: 'Gt', op: KeyCondition.gt},
-  { suffix: 'Ge', op: KeyCondition.ge},
+  { suffix: 'Eq', op: KeyCondition.eq },
+  { suffix: 'Lt', op: KeyCondition.lt },
+  { suffix: 'Le', op: KeyCondition.le },
+  { suffix: 'Gt', op: KeyCondition.gt },
+  { suffix: 'Ge', op: KeyCondition.ge },
 ];
-for (const {suffix, op} of ops) {
+for (const { suffix, op } of ops) {
   orderDS.createResolver({
     typeName: 'Query',
     fieldName: 'getCustomerOrders' + suffix,
@@ -148,7 +173,20 @@ orderDS.createResolver({
   responseMappingTemplate: MappingTemplate.dynamoDbResultList(),
 });
 
-const httpDS = api.addHttpDataSource('http', 'The http data source', 'https://aws.amazon.com/');
+paymentDS.createResolver({
+  typeName: 'Query',
+  fieldName: 'getPayment',
+  requestMappingTemplate: MappingTemplate.dynamoDbGetItem('id', 'id'),
+  responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
+});
+paymentDS.createResolver({
+  typeName: 'Mutation',
+  fieldName: 'savePayment',
+  requestMappingTemplate: MappingTemplate.dynamoDbPutItem(PrimaryKey.partition('id').auto(), Values.projecting('payment')),
+  responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
+});
+
+const httpDS = api.addHttpDataSource('ds', 'https://aws.amazon.com/', { name: 'http' });
 
 httpDS.createResolver({
   typeName: 'Mutation',

@@ -1,6 +1,7 @@
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct, IResource, Lazy, Resource, SecretValue } from '@aws-cdk/core';
+import { IResource, Lazy, Resource, SecretValue } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnApp } from './amplify.generated';
 import { BasicAuth } from './basic-auth';
 import { Branch, BranchOptions } from './branch';
@@ -90,6 +91,14 @@ export interface AppProps {
    * @default - no auto branch creation
    */
   readonly autoBranchCreation?: AutoBranchCreation;
+
+  /**
+   * Automatically disconnect a branch in the Amplify Console when you delete a
+   * branch from your Git repository.
+   *
+   * @default false
+   */
+  readonly autoBranchDeletion?: boolean;
 
   /**
    * The Basic Auth configuration. Use this to set password protection at an
@@ -210,11 +219,12 @@ export class App extends Resource implements IApp, iam.IGrantable {
         buildSpec: props.autoBranchCreation.buildSpec && props.autoBranchCreation.buildSpec.toBuildSpec(),
         enableAutoBranchCreation: true,
         enableAutoBuild: props.autoBranchCreation.autoBuild === undefined ? true : props.autoBranchCreation.autoBuild,
-        environmentVariables: Lazy.anyValue({ produce: () => renderEnvironmentVariables(this.autoBranchEnvironmentVariables )}, { omitEmptyArray: true }), // tslint:disable-line max-line-length
+        environmentVariables: Lazy.anyValue({ produce: () => renderEnvironmentVariables(this.autoBranchEnvironmentVariables ) }, { omitEmptyArray: true }), // eslint-disable-line max-len
         enablePullRequestPreview: props.autoBranchCreation.pullRequestPreview === undefined ? true : props.autoBranchCreation.pullRequestPreview,
         pullRequestEnvironmentName: props.autoBranchCreation.pullRequestEnvironmentName,
         stage: props.autoBranchCreation.stage,
       },
+      enableBranchAutoDeletion: props.autoBranchDeletion,
       basicAuthConfig: props.basicAuth && props.basicAuth.bind(this, 'AppBasicAuth'),
       buildSpec: props.buildSpec && props.buildSpec.toBuildSpec(),
       customRules: Lazy.anyValue({ produce: () => this.customRules }, { omitEmptyArray: true }),

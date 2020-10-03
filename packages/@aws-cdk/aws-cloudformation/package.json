@@ -1,7 +1,7 @@
 {
   "name": "@aws-cdk/aws-cloudformation",
   "version": "0.0.0",
-  "description": "CDK Constructs for AWS CloudFormation",
+  "description": "The CDK Construct Library for AWS::CloudFormation",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
@@ -23,9 +23,14 @@
       },
       "python": {
         "distName": "aws-cdk.aws-cloudformation",
-        "module": "aws_cdk.aws_cloudformation"
+        "module": "aws_cdk.aws_cloudformation",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",
@@ -68,7 +73,7 @@
     "@aws-cdk/aws-sns-subscriptions": "0.0.0",
     "@aws-cdk/aws-sqs": "0.0.0",
     "@aws-cdk/aws-ssm": "0.0.0",
-    "@types/aws-lambda": "^8.10.39",
+    "@types/aws-lambda": "^8.10.63",
     "@types/nodeunit": "^0.0.31",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
@@ -83,7 +88,7 @@
     "@aws-cdk/aws-sns": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.0.4"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -93,7 +98,7 @@
     "@aws-cdk/aws-sns": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.0.4"
   },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"

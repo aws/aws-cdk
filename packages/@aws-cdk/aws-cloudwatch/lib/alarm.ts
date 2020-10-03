@@ -1,4 +1,5 @@
-import { Construct, Lazy, Stack, Token } from '@aws-cdk/core';
+import { Lazy, Stack, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { AlarmBase, IAlarm } from './alarm-base';
 import { CfnAlarm, CfnAlarmProps } from './cloudwatch.generated';
 import { HorizontalAnnotation } from './graph';
@@ -69,7 +70,7 @@ const OPERATOR_SYMBOLS: {[key: string]: string} = {
   GreaterThanOrEqualToThreshold: '>=',
   GreaterThanThreshold: '>',
   LessThanThreshold: '<',
-  LessThanOrEqualToThreshold: '>=',
+  LessThanOrEqualToThreshold: '<=',
 };
 
 /**
@@ -197,7 +198,7 @@ export class Alarm extends AlarmBase {
     this.metric = props.metric;
     const datapoints = props.datapointsToAlarm || props.evaluationPeriods;
     this.annotation = {
-      // tslint:disable-next-line:max-line-length
+      // eslint-disable-next-line max-len
       label: `${this.metric} ${OPERATOR_SYMBOLS[comparisonOperator]} ${props.threshold} for ${datapoints} datapoints within ${describePeriod(props.evaluationPeriods * metricPeriod(props.metric).toSeconds())}`,
       value: props.threshold,
     };

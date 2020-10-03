@@ -23,9 +23,14 @@
       },
       "python": {
         "distName": "aws-cdk.aws-glue",
-        "module": "aws_cdk.aws_glue"
+        "module": "aws_cdk.aws_glue",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",
@@ -47,7 +52,11 @@
     "compat": "cdk-compat"
   },
   "cdk-build": {
-    "cloudformation": "AWS::Glue"
+    "cloudformation": "AWS::Glue",
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": "true"
+    }
   },
   "keywords": [
     "aws",
@@ -67,7 +76,7 @@
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
-    "nodeunit": "^0.11.3",
+    "jest": "^26.4.2",
     "pkglint": "0.0.0"
   },
   "dependencies": {
@@ -75,7 +84,7 @@
     "@aws-cdk/aws-kms": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.0.4"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -83,7 +92,7 @@
     "@aws-cdk/aws-kms": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.0.4"
   },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
@@ -121,7 +130,14 @@
       "docs-public-apis:@aws-cdk/aws-glue.SerializationLibrary.ORC",
       "docs-public-apis:@aws-cdk/aws-glue.SerializationLibrary.PARQUET",
       "docs-public-apis:@aws-cdk/aws-glue.SerializationLibrary.REGEXP",
-      "docs-public-apis:@aws-cdk/aws-glue.SerializationLibrary.className"
+      "docs-public-apis:@aws-cdk/aws-glue.SerializationLibrary.className",
+      "docs-public-apis:@aws-cdk/aws-glue.ClassificationString.AVRO",
+      "docs-public-apis:@aws-cdk/aws-glue.ClassificationString.CSV",
+      "docs-public-apis:@aws-cdk/aws-glue.ClassificationString.JSON",
+      "docs-public-apis:@aws-cdk/aws-glue.ClassificationString.XML",
+      "docs-public-apis:@aws-cdk/aws-glue.ClassificationString.PARQUET",
+      "docs-public-apis:@aws-cdk/aws-glue.ClassificationString.ORC",
+      "docs-public-apis:@aws-cdk/aws-glue.ClassificationString.value"
     ]
   },
   "awscdkio": {

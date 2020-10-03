@@ -59,7 +59,7 @@ export class AwsAuth extends Construct {
   public addMastersRole(role: iam.IRole, username?: string) {
     this.addRoleMapping(role, {
       username,
-      groups: [ 'system:masters' ],
+      groups: ['system:masters'],
     });
   }
 

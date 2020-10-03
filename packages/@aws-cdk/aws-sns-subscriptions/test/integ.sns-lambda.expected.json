@@ -38,7 +38,7 @@
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
-          "ZipFile": "exports.handler = function handler(event, _context, callback) {\n    // tslint:disable:no-console\n    console.log('====================================================');\n    console.log(JSON.stringify(event, undefined, 2));\n    console.log('====================================================');\n    return callback(undefined, event);\n}"
+          "ZipFile": "exports.handler = function handler(event, _context, callback) {\n    /* eslint-disable no-console */\n    console.log('====================================================');\n    console.log(JSON.stringify(event, undefined, 2));\n    console.log('====================================================');\n    return callback(undefined, event);\n}"
         },
         "Handler": "index.handler",
         "Role": {
@@ -93,9 +93,7 @@
       }
     },
     "DeadLetterQueue9F481546": {
-      "Type": "AWS::SQS::Queue",
-      "Properties": {
-      }
+      "Type": "AWS::SQS::Queue"
     },
     "DeadLetterQueuePolicyB1FB890C": {
       "Type": "AWS::SQS::QueuePolicy",
@@ -167,7 +165,7 @@
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
-          "ZipFile": "exports.handler = function handler(event, _context, callback) {\n    // tslint:disable:no-console\n    console.log('====================================================');\n    console.log(JSON.stringify(event, undefined, 2));\n    console.log('====================================================');\n    return callback(undefined, event);\n}"
+          "ZipFile": "exports.handler = function handler(event, _context, callback) {\n    /* eslint-disable no-console */\n    console.log('====================================================');\n    console.log(JSON.stringify(event, undefined, 2));\n    console.log('====================================================');\n    return callback(undefined, event);\n}"
         },
         "Handler": "index.handler",
         "Role": {

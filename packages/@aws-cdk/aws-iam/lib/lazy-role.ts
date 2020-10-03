@@ -1,4 +1,5 @@
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Grant } from './grant';
 import { IManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
@@ -9,7 +10,6 @@ import { IRole, Role, RoleProps } from './role';
 /**
  * Properties for defining a LazyRole
  */
-// tslint:disable-next-line:no-empty-interface
 export interface LazyRoleProps extends RoleProps {
 
 }
@@ -27,6 +27,7 @@ export interface LazyRoleProps extends RoleProps {
  */
 export class LazyRole extends cdk.Resource implements IRole {
   public readonly grantPrincipal: IPrincipal = this;
+  public readonly principalAccount: string | undefined = this.env.account;
   public readonly assumeRoleAction: string = 'sts:AssumeRole';
 
   private role?: Role;
@@ -34,7 +35,7 @@ export class LazyRole extends cdk.Resource implements IRole {
   private readonly policies = new Array<Policy>();
   private readonly managedPolicies = new Array<IManagedPolicy>();
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: LazyRoleProps) {
+  constructor(scope: Construct, id: string, private readonly props: LazyRoleProps) {
     super(scope, id);
   }
 

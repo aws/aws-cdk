@@ -4,7 +4,7 @@ import { Test } from 'nodeunit';
 import * as s3 from '../lib';
 
 export = {
-  'when notification are added, a custom resource is provisioned + a lambda handler for it'(test: Test) {
+  'when notification is added a custom s3 bucket notification resource is provisioned'(test: Test) {
     const stack = new cdk.Stack();
 
     const bucket = new s3.Bucket(stack, 'MyBucket');
@@ -17,7 +17,18 @@ export = {
     });
 
     expect(stack).to(haveResource('AWS::S3::Bucket'));
-    expect(stack).to(haveResource('Custom::S3BucketNotifications'));
+    expect(stack).to(haveResource('Custom::S3BucketNotifications', {
+      NotificationConfiguration: {
+        TopicConfigurations: [
+          {
+            Events: [
+              's3:ObjectCreated:*',
+            ],
+            TopicArn: 'ARN',
+          },
+        ],
+      },
+    }));
 
     test.done();
   },
@@ -85,8 +96,9 @@ export = {
             'Arn',
           ],
         },
-      }, DependsOn: [ 'BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36',
-        'BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC' ],
+      },
+      DependsOn: ['BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36',
+        'BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC'],
     }, ResourcePart.CompleteDefinition ) );
 
     test.done();
@@ -102,7 +114,7 @@ export = {
         arn: 'ARN',
         type: s3.BucketNotificationDestinationType.TOPIC,
       }),
-    }, { prefix: 'images/'}, { prefix: 'archive/' }), /prefix rule/);
+    }, { prefix: 'images/' }, { prefix: 'archive/' }), /prefix rule/);
 
     test.done();
   },
@@ -117,7 +129,7 @@ export = {
         arn: 'ARN',
         type: s3.BucketNotificationDestinationType.TOPIC,
       }),
-    }, { suffix: '.png'}, { suffix: '.zip' }), /suffix rule/);
+    }, { suffix: '.png' }, { suffix: '.zip' }), /suffix rule/);
 
     test.done();
   },

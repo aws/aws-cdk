@@ -1,3 +1,4 @@
+/// !cdk-integ pragma:ignore-assets
 import * as events from '@aws-cdk/aws-events';
 import * as cdk from '@aws-cdk/core';
 import * as targets from '../../lib';

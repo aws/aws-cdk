@@ -4,7 +4,7 @@ import { Test } from 'nodeunit';
 import * as eks from '../lib';
 import { testFixtureCluster } from './util';
 
-// tslint:disable:max-line-length
+/* eslint-disable max-len */
 
 export = {
   'add Helm chart': {
@@ -79,7 +79,7 @@ export = {
       const { stack, cluster } = testFixtureCluster();
 
       // WHEN
-      new eks.HelmChart(stack, 'MyChart', { cluster, chart: 'chart', createNamespace: false  });
+      new eks.HelmChart(stack, 'MyChart', { cluster, chart: 'chart', createNamespace: false });
 
       // THEN
       expect(stack).notTo(haveResource(eks.HelmChart.RESOURCE_TYPE, { CreateNamespace: true }));

@@ -30,14 +30,14 @@ export class CacheControl {
   /** The 'proxy-revalidate' cache control directive. */
   public static proxyRevalidate() { return new CacheControl('proxy-revalidate'); }
   /** The 'max-age' cache control directive. */
-  public static maxAge(t: Duration) { return new CacheControl(`max-age: ${t.toSeconds()}`); }
+  public static maxAge(t: Duration) { return new CacheControl(`max-age=${t.toSeconds()}`); }
   /** The 's-max-age' cache control directive. */
-  public static sMaxAge(t: Duration) { return new CacheControl(`s-maxage: ${t.toSeconds()}`); }
+  public static sMaxAge(t: Duration) { return new CacheControl(`s-maxage=${t.toSeconds()}`); }
   /**
    * Allows you to create an arbitrary cache control directive,
    * in case our support is missing a method for a particular directive.
    */
-  public static fromString(s: string) {  return new CacheControl(s); }
+  public static fromString(s: string) { return new CacheControl(s); }
 
   /** @param value the actual text value of the created directive */
   private constructor(public value: string) {}

@@ -93,3 +93,6 @@ dist
 .LAST_BUILD
 *.snk
 nyc.config.js
+
+!.eslintrc.js
+junit.xml

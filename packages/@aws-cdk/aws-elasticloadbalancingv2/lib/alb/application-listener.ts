@@ -1,5 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
-import { Construct, Duration, IResource, Lazy, Resource, Token } from '@aws-cdk/core';
+import { Duration, IResource, Lazy, Resource, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { BaseListener } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
 import { ApplicationProtocol, IpAddressType, SslPolicy } from '../shared/enums';
@@ -308,7 +309,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
    */
   public addTargets(id: string, props: AddApplicationTargetsProps): ApplicationTargetGroup {
     if (!this.loadBalancer.vpc) {
-      // tslint:disable-next-line:max-line-length
+      // eslint-disable-next-line max-len
       throw new Error('Can only call addTargets() when using a constructed Load Balancer or an imported Load Balancer with specified vpc; construct a new TargetGroup and use addTargetGroup');
     }
 
@@ -571,6 +572,7 @@ class ImportedApplicationListener extends Resource implements IApplicationListen
       // New rule
       new ApplicationListenerRule(this, id, {
         listener: this,
+        conditions: props.conditions,
         hostHeader: props.hostHeader,
         pathPattern: props.pathPattern,
         pathPatterns: props.pathPatterns,
@@ -594,7 +596,7 @@ class ImportedApplicationListener extends Resource implements IApplicationListen
    * @returns The newly created target group
    */
   public addTargets(_id: string, _props: AddApplicationTargetsProps): ApplicationTargetGroup {
-    // tslint:disable-next-line:max-line-length
+    // eslint-disable-next-line max-len
     throw new Error('Can only call addTargets() when using a constructed ApplicationListener; construct a new TargetGroup and use addTargetGroup.');
   }
 

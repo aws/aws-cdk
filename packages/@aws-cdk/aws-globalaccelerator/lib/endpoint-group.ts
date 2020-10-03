@@ -1,4 +1,5 @@
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as ga from './globalaccelerator.generated';
 import { IListener } from './listener';
 
@@ -68,7 +69,7 @@ export interface LoadBalancer {
 /**
  * EC2 Instance interface
  */
-export interface Ec2Instance  {
+export interface Ec2Instance {
   /**
    * The id of the instance resource
    */
@@ -117,7 +118,7 @@ export class EndpointConfiguration extends cdk.Construct {
    * The property containing all the configuration to be rendered
    */
   public readonly props: EndpointConfigurationProps;
-  constructor(scope: cdk.Construct, id: string, props: EndpointConfigurationProps) {
+  constructor(scope: Construct, id: string, props: EndpointConfigurationProps) {
     super(scope, id);
     this.props = props;
     props.endpointGroup._linkEndpoint(this);
@@ -130,7 +131,7 @@ export class EndpointConfiguration extends cdk.Construct {
     return {
       clientIpPreservationEnabled: this.props.clientIpReservation,
       endpointId: this.props.endpointId,
-      weight:  this.props.weight,
+      weight: this.props.weight,
     };
   }
 }
@@ -142,7 +143,7 @@ export class EndpointGroup extends cdk.Resource implements IEndpointGroup {
   /**
    * import from ARN
    */
-  public static fromEndpointGroupArn(scope: cdk.Construct, id: string, endpointGroupArn: string): IEndpointGroup {
+  public static fromEndpointGroupArn(scope: Construct, id: string, endpointGroupArn: string): IEndpointGroup {
     class Import extends cdk.Resource implements IEndpointGroup {
       public readonly endpointGroupArn = endpointGroupArn;
     }
@@ -162,7 +163,7 @@ export class EndpointGroup extends cdk.Resource implements IEndpointGroup {
    */
   protected readonly endpoints = new Array<EndpointConfiguration>();
 
-  constructor(scope: cdk.Construct, id: string, props: EndpointGroupProps) {
+  constructor(scope: Construct, id: string, props: EndpointGroupProps) {
     super(scope, id);
 
     const resource = new ga.CfnEndpointGroup(this, 'Resource', {

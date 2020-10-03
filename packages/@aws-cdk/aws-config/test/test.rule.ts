@@ -204,7 +204,7 @@ export = {
     test.done();
   },
 
-  'throws when scoping a custom rule without configuration changes'(test: Test) {
+  'allows scoping a custom rule without configurationChanges enabled'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Function', {
@@ -220,7 +220,7 @@ export = {
     });
 
     // THEN
-    test.throws(() => rule.scopeToResource('resource'), /`configurationChanges`/);
+    test.doesNotThrow(() => rule.scopeToResource('resource'));
 
     test.done();
   },

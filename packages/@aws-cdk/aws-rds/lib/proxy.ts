@@ -2,9 +2,12 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { IDatabaseCluster } from './cluster-ref';
+import { IEngine } from './engine';
 import { IDatabaseInstance } from './instance';
-import { CfnDBCluster, CfnDBInstance, CfnDBProxy, CfnDBProxyTargetGroup } from './rds.generated';
+import { engineDescription } from './private/util';
+import { CfnDBProxy, CfnDBProxyTargetGroup } from './rds.generated';
 
 /**
  * SessionPinningFilter
@@ -47,7 +50,7 @@ export class ProxyTarget {
    * @param instance RDS database instance
    */
   public static fromInstance(instance: IDatabaseInstance): ProxyTarget {
-    return new ProxyTarget(instance);
+    return new ProxyTarget(instance, undefined);
   }
 
   /**
@@ -59,40 +62,32 @@ export class ProxyTarget {
     return new ProxyTarget(undefined, cluster);
   }
 
-  private constructor(private readonly dbInstance?: IDatabaseInstance, private readonly dbCluster?: IDatabaseCluster) {}
+  private constructor(
+    private readonly dbInstance: IDatabaseInstance | undefined,
+    private readonly dbCluster: IDatabaseCluster | undefined) {
+  }
 
   /**
    * Bind this target to the specified database proxy.
    */
   public bind(_: DatabaseProxy): ProxyTargetConfig {
-    let engine: string | undefined;
-    if (this.dbCluster && this.dbInstance) {
-      throw new Error('Proxy cannot target both database cluster and database instance.');
-    } else if (this.dbCluster) {
-      engine = (this.dbCluster.node.defaultChild as CfnDBCluster).engine;
-    } else if (this.dbInstance) {
-      engine = (this.dbInstance.node.defaultChild as CfnDBInstance).engine;
+    const engine: IEngine | undefined = this.dbInstance?.engine ?? this.dbCluster?.engine;
+
+    if (!engine) {
+      const errorResource = this.dbCluster ?? this.dbInstance;
+      throw new Error(`Could not determine engine for proxy target '${errorResource?.node.path}'. ` +
+        'Please provide it explicitly when importing the resource');
     }
 
-    let engineFamily;
-    switch (engine) {
-      case 'aurora':
-      case 'aurora-mysql':
-      case 'mysql':
-        engineFamily = 'MYSQL';
-        break;
-      case 'aurora-postgresql':
-      case 'postgres':
-        engineFamily = 'POSTGRESQL';
-        break;
-      default:
-        throw new Error(`Unsupported engine type - ${engine}`);
+    const engineFamily = engine.engineFamily;
+    if (!engineFamily) {
+      throw new Error(`Engine '${engineDescription(engine)}' does not support proxies`);
     }
 
     return {
       engineFamily,
-      dbClusters: this.dbCluster ? [ this.dbCluster ] : undefined,
-      dbInstances: this.dbInstance ? [ this.dbInstance ] : undefined,
+      dbClusters: this.dbCluster ? [this.dbCluster] : undefined,
+      dbInstances: this.dbInstance ? [this.dbInstance] : undefined,
     };
   }
 }
@@ -105,12 +100,14 @@ export interface ProxyTargetConfig {
    * The engine family of the database instance or cluster this proxy connects with.
    */
   readonly engineFamily: string;
+
   /**
    * The database instances to which this proxy connects.
    * Either this or `dbClusters` will be set and the other `undefined`.
    * @default - `undefined` if `dbClusters` is set.
    */
   readonly dbInstances?: IDatabaseInstance[];
+
   /**
    * The database clusters to which this proxy connects.
    * Either this or `dbInstances` will be set and the other `undefined`.
@@ -235,10 +232,9 @@ export interface DatabaseProxyOptions {
   /**
    * The secret that the proxy uses to authenticate to the RDS DB instance or Aurora DB cluster.
    * These secrets are stored within Amazon Secrets Manager.
-   *
-   * @default - no secret
+   * One or more secrets are required.
    */
-  readonly secret: secretsmanager.ISecret;
+  readonly secrets: secretsmanager.ISecret[];
 
   /**
    * One or more VPC security groups to associate with the new proxy.
@@ -332,7 +328,7 @@ export class DatabaseProxy extends cdk.Resource
    * Import an existing database proxy.
    */
   public static fromDatabaseProxyAttributes(
-    scope: cdk.Construct,
+    scope: Construct,
     id: string,
     attrs: DatabaseProxyAttributes,
   ): IDatabaseProxy {
@@ -372,27 +368,33 @@ export class DatabaseProxy extends cdk.Resource
 
   private readonly resource: CfnDBProxy;
 
-  constructor(scope: cdk.Construct, id: string, props: DatabaseProxyProps) {
+  constructor(scope: Construct, id: string, props: DatabaseProxyProps) {
     super(scope, id, { physicalName: props.dbProxyName || id });
 
     const role = props.role || new iam.Role(this, 'IAMRole', {
       assumedBy: new iam.ServicePrincipal('rds.amazonaws.com'),
     });
 
-    props.secret.grantRead(role);
+    for (const secret of props.secrets) {
+      secret.grantRead(role);
+    }
 
     this.connections = new ec2.Connections({ securityGroups: props.securityGroups });
 
     const bindResult = props.proxyTarget.bind(this);
 
+    if (props.secrets.length < 1) {
+      throw new Error('One or more secrets are required.');
+    }
+
     this.resource = new CfnDBProxy(this, 'Resource', {
-      auth: [
-        {
+      auth: props.secrets.map(_ => {
+        return {
           authScheme: 'SECRETS',
           iamAuth: props.iamAuth ? 'REQUIRED' : 'DISABLED',
-          secretArn: props.secret.secretArn,
-        },
-      ],
+          secretArn: _.secretArn,
+        };
+      }),
       dbProxyName: this.physicalName,
       debugLogging: props.debugLogging,
       engineFamily: bindResult.engineFamily,
@@ -408,18 +410,25 @@ export class DatabaseProxy extends cdk.Resource
     this.endpoint = this.resource.attrEndpoint;
 
     let dbInstanceIdentifiers: string[] | undefined;
-    if (bindResult.dbClusters) {
-      // support for only instances of a single cluster
-      dbInstanceIdentifiers = bindResult.dbClusters[0].instanceIdentifiers;
-    } else if (bindResult.dbInstances) {
+    if (bindResult.dbInstances) {
       // support for only single instance
-      dbInstanceIdentifiers = [ bindResult.dbInstances[0].instanceIdentifier ];
+      dbInstanceIdentifiers = [bindResult.dbInstances[0].instanceIdentifier];
+    }
+
+    let dbClusterIdentifiers: string[] | undefined;
+    if (bindResult.dbClusters) {
+      dbClusterIdentifiers = bindResult.dbClusters.map((c) => c.clusterIdentifier);
+    }
+
+    if (!!dbInstanceIdentifiers && !!dbClusterIdentifiers) {
+      throw new Error('Cannot specify both dbInstanceIdentifiers and dbClusterIdentifiers');
     }
 
     new CfnDBProxyTargetGroup(this, 'ProxyTargetGroup', {
+      targetGroupName: 'default',
       dbProxyName: this.dbProxyName,
       dbInstanceIdentifiers,
-      dbClusterIdentifiers: bindResult.dbClusters?.map((c) => c.clusterIdentifier),
+      dbClusterIdentifiers,
       connectionPoolConfigurationInfo: toConnectionPoolConfigurationInfo(props),
     });
   }

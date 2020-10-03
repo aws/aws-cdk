@@ -3,99 +3,17 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { Duration, SecretValue } from '@aws-cdk/core';
 import { IParameterGroup } from './parameter-group';
-import { compare } from './private/version';
-
-/**
- * Engine major version and parameter group family pairs.
- */
-export interface ParameterGroupFamily {
-  /**
-   * The engine major version name
-   */
-  readonly engineMajorVersion: string;
-
-  /**
-   * The parameter group family name
-   */
-  readonly parameterGroupFamily: string
-}
-
-/**
- * A database cluster engine. Provides mapping to the serverless application
- * used for secret rotation.
- */
-export class DatabaseClusterEngine {
-  /* tslint:disable max-line-length */
-  public static readonly AURORA = new DatabaseClusterEngine('aurora', secretsmanager.SecretRotationApplication.MYSQL_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.MYSQL_ROTATION_MULTI_USER, [
-    { engineMajorVersion: '5.6', parameterGroupFamily: 'aurora5.6' },
-  ]);
-
-  public static readonly AURORA_MYSQL = new DatabaseClusterEngine('aurora-mysql', secretsmanager.SecretRotationApplication.MYSQL_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.MYSQL_ROTATION_MULTI_USER, [
-    { engineMajorVersion: '5.7', parameterGroupFamily: 'aurora-mysql5.7' },
-  ]);
-
-  public static readonly AURORA_POSTGRESQL = new DatabaseClusterEngine('aurora-postgresql', secretsmanager.SecretRotationApplication.POSTGRES_ROTATION_SINGLE_USER, secretsmanager.SecretRotationApplication.POSTGRES_ROTATION_MULTI_USER, [
-    { engineMajorVersion: '9.6', parameterGroupFamily: 'aurora-postgresql9.6'},
-    { engineMajorVersion: '10', parameterGroupFamily: 'aurora-postgresql10' },
-    { engineMajorVersion: '11', parameterGroupFamily: 'aurora-postgresql11'},
-  ]);
-  /* tslint:enable max-line-length */
-
-  /**
-   * The engine.
-   */
-  public readonly name: string;
-
-  /**
-   * The single user secret rotation application.
-   */
-  public readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
-
-  /**
-   * The multi user secret rotation application.
-   */
-  public readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
-
-  private readonly parameterGroupFamilies?: ParameterGroupFamily[];
-
-  // tslint:disable-next-line max-line-length
-  constructor(name: string, singleUserRotationApplication: secretsmanager.SecretRotationApplication, multiUserRotationApplication: secretsmanager.SecretRotationApplication, parameterGroupFamilies?: ParameterGroupFamily[]) {
-    this.name = name;
-    this.singleUserRotationApplication = singleUserRotationApplication;
-    this.multiUserRotationApplication = multiUserRotationApplication;
-    this.parameterGroupFamilies = parameterGroupFamilies;
-  }
-
-  /**
-   * Get the latest parameter group family for this engine. Latest is determined using semver on the engine major version.
-   * When `engineVersion` is specified, return the parameter group family corresponding to that engine version.
-   * Return undefined if no parameter group family is defined for this engine or for the requested `engineVersion`.
-   */
-  public parameterGroupFamily(engineVersion?: string): string | undefined {
-    if (this.parameterGroupFamilies === undefined) { return undefined; }
-    if (engineVersion) {
-      const family = this.parameterGroupFamilies.find(x => engineVersion.startsWith(x.engineMajorVersion));
-      if (family) {
-        return family.parameterGroupFamily;
-      }
-    } else if (this.parameterGroupFamilies.length > 0) {
-      const sorted = this.parameterGroupFamilies.slice().sort((a, b) => {
-        return compare(a.engineMajorVersion, b.engineMajorVersion);
-      }).reverse();
-      return sorted[0].parameterGroupFamily;
-    }
-    return undefined;
-  }
-}
 
 /**
  * Instance properties for database instances
  */
 export interface InstanceProps {
   /**
-   * What type of instance to start for the replicas
+   * What type of instance to start for the replicas.
+   *
+   * @default - t3.medium (or, more precisely, db.t3.medium)
    */
-  readonly instanceType: ec2.InstanceType;
+  readonly instanceType?: ec2.InstanceType;
 
   /**
    * What subnets to run the RDS instances in.
@@ -124,6 +42,48 @@ export interface InstanceProps {
    * @default no parameter group
    */
   readonly parameterGroup?: IParameterGroup;
+
+  /**
+   * Whether to enable Performance Insights for the DB instance.
+   *
+   * @default - false, unless ``performanceInsightRentention`` or ``performanceInsightEncryptionKey`` is set.
+   */
+  readonly enablePerformanceInsights?: boolean;
+
+  /**
+   * The amount of time, in days, to retain Performance Insights data.
+   *
+   * @default 7
+   */
+  readonly performanceInsightRetention?: PerformanceInsightRetention;
+
+  /**
+   * The AWS KMS key for encryption of Performance Insights data.
+   *
+   * @default - default master key
+   */
+  readonly performanceInsightEncryptionKey?: kms.IKey;
+
+  /**
+   * Whether to enable automatic upgrade of minor version for the DB instance.
+   *
+   * @default - true
+   */
+  readonly autoMinorVersionUpgrade?: boolean;
+
+  /**
+   * Whether to allow upgrade of major version for the DB instance.
+   *
+   * @default - false
+   */
+  readonly allowMajorVersionUpgrade?: boolean;
+
+  /**
+   *  Whether to remove automated backups immediately after the DB instance is deleted for the DB instance.
+   *
+   * @default - true
+   */
+  readonly deleteAutomatedBackups?: boolean;
 }
 
 /**
@@ -156,35 +116,247 @@ export interface BackupProps {
 }
 
 /**
- * Username and password combination
+ * Options for creating a Login from a username.
  */
-export interface Login {
-  /**
-   * Username
-   */
-  readonly username: string;
-
+export interface CredentialsFromUsernameOptions {
   /**
    * Password
    *
    * Do not put passwords in your CDK code directly.
    *
-   * @default a Secrets Manager generated password
+   * @default - a Secrets Manager generated password
    */
   readonly password?: SecretValue;
 
   /**
    * KMS encryption key to encrypt the generated secret.
    *
-   * @default default master key
+   * @default - default master key
    */
   readonly encryptionKey?: kms.IKey;
+
+  /**
+   * The characters to exclude from the generated password.
+   * Has no effect if {@link password} has been provided.
+   *
+   * @default - the DatabaseSecret default exclude character set (" %+~`#$&*()|[]{}:;<>?!'/@\"\\")
+   */
+  readonly excludeCharacters?: string;
+}
+
+/**
+ * Username and password combination
+ */
+export abstract class Credentials {
+
+  /**
+   * Creates Credentials for the given username, and optional password and key.
+   * If no password is provided, one will be generated and stored in SecretsManager.
+   */
+  public static fromUsername(username: string, options: CredentialsFromUsernameOptions = {}): Credentials {
+    return {
+      ...options,
+      username,
+    };
+  }
+
+  /**
+   * Creates Credentials from an existing SecretsManager ``Secret`` (or ``DatabaseSecret``)
+   *
+   * The Secret must be a JSON string with a ``username`` and ``password`` field:
+   * ```
+   * {
+   *   ...
+   *   "username": <required: username>,
+   *   "password": <required: password>,
+   * }
+   * ```
+   */
+  public static fromSecret(secret: secretsmanager.Secret): Credentials {
+    return {
+      username: secret.secretValueFromJson('username').toString(),
+      password: secret.secretValueFromJson('password'),
+      encryptionKey: secret.encryptionKey,
+      secret,
+    };
+  }
+
+  /**
+   * Username
+   */
+  public abstract readonly username: string;
+
+  /**
+   * Password
+   *
+   * Do not put passwords in your CDK code directly.
+   *
+   * @default - a Secrets Manager generated password
+   */
+  public abstract readonly password?: SecretValue;
+
+  /**
+   * KMS encryption key to encrypt the generated secret.
+   *
+   * @default - default master key
+   */
+  public abstract readonly encryptionKey?: kms.IKey;
+
+  /**
+   * Secret used to instantiate this Login.
+   *
+   * @default - none
+   */
+  public abstract readonly secret?: secretsmanager.Secret;
+
+  /**
+   * The characters to exclude from the generated password.
+   * Only used if {@link password} has not been set.
+   *
+   * @default - the DatabaseSecret default exclude character set (" %+~`#$&*()|[]{}:;<>?!'/@\"\\")
+   */
+  public abstract readonly excludeCharacters?: string;
+}
+
+/**
+ * Options used in the {@link SnapshotCredentials.fromGeneratedPassword} method.
+ */
+export interface SnapshotCredentialsFromGeneratedPasswordOptions {
+  /**
+   * KMS encryption key to encrypt the generated secret.
+   *
+   * @default - default master key
+   */
+  readonly encryptionKey?: kms.IKey;
+
+  /**
+   * The characters to exclude from the generated password.
+   *
+   * @default - the DatabaseSecret default exclude character set (" %+~`#$&*()|[]{}:;<>?!'/@\"\\")
+   */
+  readonly excludeCharacters?: string;
+}
+
+/**
+ * Credentials to update the password for a ``DatabaseInstanceFromSnapshot``.
+ */
+export abstract class SnapshotCredentials {
+  /**
+   * Generate a new password for the snapshot, using the existing username and an optional encryption key.
+   *
+   * Note - The username must match the existing master username of the snapshot.
+   */
+  public static fromGeneratedPassword(username: string, options: SnapshotCredentialsFromGeneratedPasswordOptions = {}): SnapshotCredentials {
+    return {
+      ...options,
+      generatePassword: true,
+      username,
+    };
+  }
+
+  /**
+   * Update the snapshot login with an existing password.
+   */
+  public static fromPassword(password: SecretValue): SnapshotCredentials {
+    return { generatePassword: false, password };
+  }
+
+  /**
+   * Update the snapshot login with an existing password from a Secret.
+   *
+   * The Secret must be a JSON string with a ``password`` field:
+   * ```
+   * {
+   *   ...
+   *   "password": <required: password>,
+   * }
+   * ```
+   */
+  public static fromSecret(secret: secretsmanager.Secret): SnapshotCredentials {
+    return {
+      generatePassword: false,
+      password: secret.secretValueFromJson('password'),
+      secret,
+    };
+  }
+
+  /**
+   * The master user name.
+   *
+   * Must be the **current** master user name of the snapshot.
+   * It is not possible to change the master user name of a RDS instance.
+   *
+   * @default - the existing username from the snapshot
+   */
+  public abstract readonly username?: string;
+
+  /**
+   * Whether a new password should be generated.
+   */
+  public abstract readonly generatePassword: boolean;
+
+  /**
+   * The master user password.
+   *
+   * Do not put passwords in your CDK code directly.
+   *
+   * @default - the existing password from the snapshot
+   */
+  public abstract readonly password?: SecretValue;
+
+  /**
+   * KMS encryption key to encrypt the generated secret.
+   *
+   * @default - default master key
+   */
+  public abstract readonly encryptionKey?: kms.IKey;
+
+  /**
+   * Secret used to instantiate this Login.
+   *
+   * @default - none
+   */
+  public abstract readonly secret?: secretsmanager.Secret;
+
+  /**
+   * The characters to exclude from the generated password.
+   * Only used if {@link generatePassword} if true.
+   *
+   * @default - the DatabaseSecret default exclude character set (" %+~`#$&*()|[]{}:;<>?!'/@\"\\")
+   */
+  public abstract readonly excludeCharacters?: string;
+}
+
+/**
+ * Properties common to single-user and multi-user rotation options.
+ */
+interface CommonRotationUserOptions {
+  /**
+   * Specifies the number of days after the previous rotation
+   * before Secrets Manager triggers the next automatic rotation.
+   *
+   * @default - 30 days
+   */
+  readonly automaticallyAfter?: Duration;
+
+  /**
+   * Specifies characters to not include in generated passwords.
+   *
+   * @default " %+~`#$&*()|[]{}:;<>?!'/@\"\\"
+   */
+  readonly excludeCharacters?: string;
 }
 
 /**
  * Options to add the multi user rotation
  */
-export interface RotationMultiUserOptions {
+export interface RotationSingleUserOptions extends CommonRotationUserOptions {
+}
+
+/**
+ * Options to add the multi user rotation
+ */
+export interface RotationMultiUserOptions extends CommonRotationUserOptions {
   /**
    * The secret to rotate. It must be a JSON string with the following format:
    * ```
@@ -200,12 +372,19 @@ export interface RotationMultiUserOptions {
    * ```
    */
   readonly secret: secretsmanager.ISecret;
+}
+
+/**
+ * The retention period for Performance Insight.
+ */
+export enum PerformanceInsightRetention {
+  /**
+   * Default retention period of 7 days.
+   */
+  DEFAULT = 7,
 
   /**
-   * Specifies the number of days after the previous rotation before
-   * Secrets Manager triggers the next automatic rotation.
-   *
-   * @default Duration.days(30)
+   * Long term retention period of 2 years.
    */
-  readonly automaticallyAfter?: Duration;
+  LONG_TERM = 731
 }

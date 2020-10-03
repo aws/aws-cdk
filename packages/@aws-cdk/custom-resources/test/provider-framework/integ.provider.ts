@@ -1,5 +1,4 @@
-/// !cdk-integ *
-
+/// !cdk-integ * pragma:ignore-assets
 import * as s3 from '@aws-cdk/aws-s3';
 import { App, CfnOutput, Construct, Stack } from '@aws-cdk/core';
 import { S3Assert } from './integration-test-fixtures/s3-assert';

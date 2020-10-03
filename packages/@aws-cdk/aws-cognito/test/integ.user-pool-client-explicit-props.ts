@@ -11,7 +11,6 @@ userpool.addClient('myuserpoolclient', {
   authFlows: {
     adminUserPassword: true,
     custom: true,
-    refreshToken: true,
     userPassword: true,
     userSrp: true,
   },
@@ -28,7 +27,7 @@ userpool.addClient('myuserpoolclient', {
       OAuthScope.PROFILE,
       OAuthScope.COGNITO_ADMIN,
     ],
-    callbackUrls: [ 'https://redirect-here.myapp.com' ],
+    callbackUrls: ['https://redirect-here.myapp.com'],
   },
   preventUserExistenceErrors: true,
 });

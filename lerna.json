@@ -5,10 +5,11 @@
   "packages": [
     "packages/*",
     "packages/@aws-cdk/*",
+    "packages/@aws-cdk-containers/*",
     "packages/@monocdk-experiment/*",
     "packages/@aws-cdk/*/lambda-packages/*",
     "tools/*"
   ],
   "rejectCycles": "true",
-  "version": "1.49.1"
+  "version": "1.65.0"
 }

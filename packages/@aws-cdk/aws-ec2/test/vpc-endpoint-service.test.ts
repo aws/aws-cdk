@@ -3,7 +3,7 @@ import { ArnPrincipal } from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 
-// tslint:disable-next-line:max-line-length
+// eslint-disable-next-line max-len
 import { IVpcEndpointServiceLoadBalancer, Vpc, VpcEndpointService } from '../lib';
 
 /**

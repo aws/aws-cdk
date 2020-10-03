@@ -1,4 +1,5 @@
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnListenerRule } from '../elasticloadbalancingv2.generated';
 import { IListenerAction } from '../shared/listener-action';
 import { IApplicationListener } from './application-listener';
@@ -117,7 +118,7 @@ export interface ApplicationListenerRuleProps extends BaseApplicationListenerRul
 export enum ContentType {
   TEXT_PLAIN = 'text/plain',
   TEXT_CSS = 'text/css',
-  TEXT_HTML =  'text/html',
+  TEXT_HTML = 'text/html',
   APPLICATION_JAVASCRIPT = 'application/javascript',
   APPLICATION_JSON = 'application/json'
 }
@@ -205,7 +206,7 @@ export class ApplicationListenerRule extends cdk.Construct {
   private readonly listener: IApplicationListener;
   private action?: IListenerAction;
 
-  constructor(scope: cdk.Construct, id: string, props: ApplicationListenerRuleProps) {
+  constructor(scope: Construct, id: string, props: ApplicationListenerRuleProps) {
     super(scope, id);
 
     this.conditions = props.conditions || [];
@@ -298,7 +299,7 @@ export class ApplicationListenerRule extends cdk.Construct {
     // Instead, signal this through a warning.
     // @deprecate: upon the next major version bump, replace this with a `throw`
     if (this.action) {
-      this.node.addWarning('An Action already existed on this ListenerRule and was replaced. Configure exactly one default Action.');
+      cdk.Annotations.of(this).addWarning('An Action already existed on this ListenerRule and was replaced. Configure exactly one default Action.');
     }
 
     action.bind(this, this.listener, this);
