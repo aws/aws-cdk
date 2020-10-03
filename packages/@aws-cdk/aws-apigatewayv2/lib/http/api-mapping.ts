@@ -1,4 +1,5 @@
-import { Construct, Resource } from '@aws-cdk/core';
+import { Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnApiMapping, CfnApiMappingProps } from '../apigatewayv2.generated';
 import { IApiMapping, IDomainName } from '../common';
 import { IHttpApi } from '../http/api';
@@ -10,7 +11,7 @@ import { IHttpStage } from './stage';
 export interface HttpApiMappingProps {
   /**
    * Api mapping key. The path where this stage should be mapped to on the domain
-   * @default '/'
+   * @default - undefined for the root path mapping.
    */
   readonly apiMappingKey?: string;
 
@@ -61,18 +62,48 @@ export class HttpApiMapping extends Resource implements IApiMapping {
    */
   public readonly apiMappingId: string;
 
+  /**
+   * API Mapping key
+   */
+  public readonly mappingKey?: string;
+
   constructor(scope: Construct, id: string, props: HttpApiMappingProps) {
     super(scope, id);
+
+    if ((!props.stage?.stageName) && !props.api.defaultStage) {
+      throw new Error('stage is required if default stage is not available');
+    }
+
+    const paramRe = '^[a-zA-Z0-9]*[-_.+!,$]?[a-zA-Z0-9]*$';
+    if (props.apiMappingKey && !new RegExp(paramRe).test(props.apiMappingKey)) {
+      throw new Error('An ApiMapping key may contain only letters, numbers and one of $-_.+!*\'(),');
+    }
+
+    if (props.apiMappingKey === '') {
+      throw new Error('empty string for api mapping key not allowed');
+    }
 
     const apiMappingProps: CfnApiMappingProps = {
       apiId: props.api.httpApiId,
       domainName: props.domainName.domainName,
-      stage: props.stage?.stageName ?? '$default',
+      stage: props.stage?.stageName ?? props.api.defaultStage!.stageName,
       apiMappingKey: props.apiMappingKey,
     };
 
     const resource = new CfnApiMapping(this, 'Resource', apiMappingProps);
+
+    // ensure the dependency on the provided stage
+    if (props.stage) {
+      this.node.addDependency(props.stage);
+    }
+
+    // if stage not specified, we ensure the default stage is ready before we create the api mapping
+    if (!props.stage?.stageName && props.api.defaultStage) {
+      this.node.addDependency(props.api.defaultStage!);
+    }
+
     this.apiMappingId = resource.ref;
+    this.mappingKey = props.apiMappingKey;
   }
 
 }

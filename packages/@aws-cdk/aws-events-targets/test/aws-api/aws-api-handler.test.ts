@@ -1,4 +1,4 @@
-// tslint:disable:no-console
+/* eslint-disable no-console */
 import * as SDK from 'aws-sdk';
 import * as AWS from 'aws-sdk-mock';
 import { AwsApiProps } from '../../lib';
@@ -45,7 +45,7 @@ test('throws and logs in case of error', async () => {
 
   await expect(handler(event)).rejects.toEqual({ code: 'Error' });
 
-  expect(console.log).toHaveBeenLastCalledWith({ code: 'Error'});
+  expect(console.log).toHaveBeenLastCalledWith({ code: 'Error' });
 });
 
 test('catches and logs error', async () => {
@@ -60,5 +60,5 @@ test('catches and logs error', async () => {
 
   await handler(catchEvent);
 
-  expect(console.log).toHaveBeenLastCalledWith({ code: 'Invalid'});
+  expect(console.log).toHaveBeenLastCalledWith({ code: 'Invalid' });
 });

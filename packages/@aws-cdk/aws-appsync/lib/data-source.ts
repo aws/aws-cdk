@@ -1,10 +1,15 @@
 import { ITable } from '@aws-cdk/aws-dynamodb';
 import { IGrantable, IPrincipal, IRole, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { IFunction } from '@aws-cdk/aws-lambda';
-import { Construct, IResolvable } from '@aws-cdk/core';
+import { IResolvable } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnDataSource } from './appsync.generated';
-import { GraphQLApi } from './graphqlapi';
+import { IGraphqlApi } from './graphqlapi-base';
 import { BaseResolverProps, Resolver } from './resolver';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Base properties for an AppSync datasource
@@ -13,11 +18,13 @@ export interface BaseDataSourceProps {
   /**
    * The API to attach this data source to
    */
-  readonly api: GraphQLApi;
+  readonly api: IGraphqlApi;
   /**
    * The name of the data source
+   *
+   * @default - id of data source
    */
-  readonly name: string;
+  readonly name?: string;
   /**
    * the description of the data source
    *
@@ -81,7 +88,7 @@ export interface ExtendedDataSourceProps {
 /**
  * Abstract AppSync datasource implementation. Do not use directly but use subclasses for concrete datasources
  */
-export abstract class BaseDataSource extends Construct {
+export abstract class BaseDataSource extends CoreConstruct {
   /**
    * the name of the data source
    */
@@ -91,7 +98,7 @@ export abstract class BaseDataSource extends Construct {
    */
   public readonly ds: CfnDataSource;
 
-  protected api: GraphQLApi;
+  protected api: IGraphqlApi;
   protected serviceRole?: IRole;
 
   constructor(scope: Construct, id: string, props: BackedDataSourceProps, extended: ExtendedDataSourceProps) {
@@ -100,15 +107,15 @@ export abstract class BaseDataSource extends Construct {
     if (extended.type !== 'NONE') {
       this.serviceRole = props.serviceRole || new Role(this, 'ServiceRole', { assumedBy: new ServicePrincipal('appsync') });
     }
-
+    const name = props.name ?? id;
     this.ds = new CfnDataSource(this, 'Resource', {
       apiId: props.api.apiId,
-      name: props.name,
+      name: name,
       description: props.description,
       serviceRoleArn: this.serviceRole?.roleArn,
       ...extended,
     });
-    this.name = props.name;
+    this.name = name;
     this.api = props.api;
   }
 
@@ -202,6 +209,21 @@ export class DynamoDbDataSource extends BackedDataSource {
 }
 
 /**
+ * The authorization config in case the HTTP endpoint requires authorization
+ */
+export interface AwsIamConfig {
+  /**
+   * The signing region for AWS IAM authorization
+   */
+  readonly signingRegion: string;
+
+  /**
+   * The signing service name for AWS IAM authorization
+   */
+  readonly signingServiceName: string;
+}
+
+/**
  * Properties for an AppSync http datasource
  */
 export interface HttpDataSourceProps extends BaseDataSourceProps {
@@ -209,6 +231,14 @@ export interface HttpDataSourceProps extends BaseDataSourceProps {
    * The http endpoint
    */
   readonly endpoint: string;
+
+  /**
+   * The authorization config in case the HTTP endpoint requires authorization
+   *
+   * @default - none
+   *
+   */
+  readonly authorizationConfig?: AwsIamConfig;
 }
 
 /**
@@ -216,11 +246,16 @@ export interface HttpDataSourceProps extends BaseDataSourceProps {
  */
 export class HttpDataSource extends BaseDataSource {
   constructor(scope: Construct, id: string, props: HttpDataSourceProps) {
+    const authorizationConfig = props.authorizationConfig ? {
+      authorizationType: 'AWS_IAM',
+      awsIamConfig: props.authorizationConfig,
+    } : undefined;
     super(scope, id, props, {
+      type: 'HTTP',
       httpConfig: {
         endpoint: props.endpoint,
+        authorizationConfig,
       },
-      type: 'HTTP',
     });
   }
 }

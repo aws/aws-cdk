@@ -1,16 +1,16 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { countResources, expect, haveResource } from '@aws-cdk/assert';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { ClusterParameterGroup, ParameterGroup } from '../lib';
+import { DatabaseClusterEngine, ParameterGroup } from '../lib';
 
 export = {
-  'create a parameter group'(test: Test) {
+  "does not create a parameter group if it wasn't bound to a cluster or instance"(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
 
     // WHEN
     new ParameterGroup(stack, 'Params', {
-      family: 'hello',
+      engine: DatabaseClusterEngine.AURORA,
       description: 'desc',
       parameters: {
         key: 'value',
@@ -18,9 +18,30 @@ export = {
     });
 
     // THEN
+    expect(stack).to(countResources('AWS::RDS::DBParameterGroup', 0));
+    expect(stack).to(countResources('AWS::RDS::DBClusterParameterGroup', 0));
+
+    test.done();
+  },
+
+  'create a parameter group when bound to an instance'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const parameterGroup = new ParameterGroup(stack, 'Params', {
+      engine: DatabaseClusterEngine.AURORA,
+      description: 'desc',
+      parameters: {
+        key: 'value',
+      },
+    });
+    parameterGroup.bindToInstance({});
+
+    // THEN
     expect(stack).to(haveResource('AWS::RDS::DBParameterGroup', {
       Description: 'desc',
-      Family: 'hello',
+      Family: 'aurora5.6',
       Parameters: {
         key: 'value',
       },
@@ -29,27 +50,50 @@ export = {
     test.done();
   },
 
-  'create a cluster parameter group'(test: Test) {
+  'create a parameter group when bound to a cluster'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
 
     // WHEN
-    new ClusterParameterGroup(stack, 'Params', {
-      family: 'hello',
+    const parameterGroup = new ParameterGroup(stack, 'Params', {
+      engine: DatabaseClusterEngine.AURORA,
       description: 'desc',
       parameters: {
         key: 'value',
       },
     });
+    parameterGroup.bindToCluster({});
 
     // THEN
     expect(stack).to(haveResource('AWS::RDS::DBClusterParameterGroup', {
       Description: 'desc',
-      Family: 'hello',
+      Family: 'aurora5.6',
       Parameters: {
         key: 'value',
       },
     }));
+
+    test.done();
+  },
+
+  'creates 2 parameter groups when bound to a cluster and an instance'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const parameterGroup = new ParameterGroup(stack, 'Params', {
+      engine: DatabaseClusterEngine.AURORA,
+      description: 'desc',
+      parameters: {
+        key: 'value',
+      },
+    });
+    parameterGroup.bindToCluster({});
+    parameterGroup.bindToInstance({});
+
+    // THEN
+    expect(stack).to(countResources('AWS::RDS::DBParameterGroup', 1));
+    expect(stack).to(countResources('AWS::RDS::DBClusterParameterGroup', 1));
 
     test.done();
   },
@@ -59,20 +103,21 @@ export = {
     const stack = new cdk.Stack();
 
     // WHEN
-    const clusterParameterGroup = new ClusterParameterGroup(stack, 'Params', {
-      family: 'hello',
+    const clusterParameterGroup = new ParameterGroup(stack, 'Params', {
+      engine: DatabaseClusterEngine.AURORA,
       description: 'desc',
       parameters: {
         key1: 'value1',
       },
     });
+    clusterParameterGroup.bindToCluster({});
 
     clusterParameterGroup.addParameter('key2', 'value2');
 
     // THEN
     expect(stack).to(haveResource('AWS::RDS::DBClusterParameterGroup', {
       Description: 'desc',
-      Family: 'hello',
+      Family: 'aurora5.6',
       Parameters: {
         key1: 'value1',
         key2: 'value2',

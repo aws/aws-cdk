@@ -1,7 +1,9 @@
+import * as path from 'path';
 import * as cfn from '@aws-cdk/aws-cloudformation';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Construct, Duration } from '@aws-cdk/core';
-import * as path from 'path';
+import * as logs from '@aws-cdk/aws-logs';
+import { Construct as CoreConstruct, Duration } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as consts from './runtime/consts';
 import { calculateRetryPolicy } from './util';
 import { WaiterStateMachine } from './waiter-state-machine';
@@ -59,12 +61,21 @@ export interface ProviderProps {
    * @default Duration.minutes(30)
    */
   readonly totalTimeout?: Duration;
+
+  /**
+   * The number of days framework log events are kept in CloudWatch Logs. When
+   * updating this property, unsetting it doesn't remove the log retention policy.
+   * To remove the retention policy, set the value to `INFINITE`.
+   *
+   * @default logs.RetentionDays.INFINITE
+   */
+  readonly logRetention?: logs.RetentionDays;
 }
 
 /**
  * Defines an AWS CloudFormation custom resource provider.
  */
-export class Provider extends Construct implements cfn.ICustomResourceProvider {
+export class Provider extends CoreConstruct implements cfn.ICustomResourceProvider {
 
   /**
    * The user-defined AWS Lambda function which is invoked for all resource
@@ -85,6 +96,7 @@ export class Provider extends Construct implements cfn.ICustomResourceProvider {
   public readonly serviceToken: string;
 
   private readonly entrypoint: lambda.Function;
+  private readonly logRetention?: logs.RetentionDays;
 
   constructor(scope: Construct, id: string, props: ProviderProps) {
     super(scope, id);
@@ -96,6 +108,8 @@ export class Provider extends Construct implements cfn.ICustomResourceProvider {
 
     this.onEventHandler = props.onEventHandler;
     this.isCompleteHandler = props.isCompleteHandler;
+
+    this.logRetention = props.logRetention;
 
     const onEventFunction = this.createFunction(consts.FRAMEWORK_ON_EVENT_HANDLER_NAME);
 
@@ -125,7 +139,7 @@ export class Provider extends Construct implements cfn.ICustomResourceProvider {
    * Called by `CustomResource` which uses this provider.
    * @deprecated use `provider.serviceToken` instead
    */
-  public bind(_: Construct): cfn.CustomResourceProviderConfig {
+  public bind(_: CoreConstruct): cfn.CustomResourceProviderConfig {
     return {
       serviceToken: this.entrypoint.functionArn,
     };
@@ -138,6 +152,7 @@ export class Provider extends Construct implements cfn.ICustomResourceProvider {
       runtime: lambda.Runtime.NODEJS_10_X,
       handler: `framework.${entrypoint}`,
       timeout: FRAMEWORK_HANDLER_TIMEOUT,
+      logRetention: this.logRetention,
     });
 
     fn.addEnvironment(consts.USER_ON_EVENT_FUNCTION_ARN_ENV, this.onEventHandler.functionArn);

@@ -8,10 +8,14 @@ const amznLinux = ec2.MachineImage.latestAmazonLinux({
   edition: ec2.AmazonLinuxEdition.STANDARD,
   virtualization: ec2.AmazonLinuxVirt.HVM,
   storage: ec2.AmazonLinuxStorage.GENERAL_PURPOSE,
+  cpuType: ec2.AmazonLinuxCpuType.X86_64,
 });
 
 // Pick a Windows edition to use
 const windows = ec2.MachineImage.latestWindows(ec2.WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_FULL_BASE);
+
+// Read AMI id from SSM parameter store
+const ssm = ec2.MachineImage.fromSSMParameter('/my/ami', ec2.OperatingSystemType.LINUX);
 
 // Look up the most recent image matching a set of AMI filters.
 // In this case, look up the NAT instance AMI, by using a wildcard
@@ -41,5 +45,6 @@ const genericWindows = ec2.MachineImage.genericWindows({
 Array.isArray(windows);
 Array.isArray(amznLinux);
 Array.isArray(linux);
+Array.isArray(ssm);
 Array.isArray(genericWindows);
 Array.isArray(natAmi);

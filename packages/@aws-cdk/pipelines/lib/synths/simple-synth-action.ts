@@ -1,9 +1,12 @@
+import * as crypto from 'crypto';
+import * as path from 'path';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
+import * as ec2 from '@aws-cdk/aws-ec2';
 import * as events from '@aws-cdk/aws-events';
-import { Construct } from '@aws-cdk/core';
-import * as path from 'path';
+import * as iam from '@aws-cdk/aws-iam';
+import { Construct, Stack } from '@aws-cdk/core';
 import { cloudAssemblyBuildSpecDir } from '../private/construct-internals';
 import { copyEnvironmentVariables, filterEmpty } from './_util';
 
@@ -54,7 +57,7 @@ export interface SimpleSynthOptions {
   /**
    * Build environment to use for CodeBuild job
    *
-   * @default BuildEnvironment.LinuxBuildImage.STANDARD_1_0
+   * @default BuildEnvironment.LinuxBuildImage.STANDARD_4_0
    */
   readonly environment?: codebuild.BuildEnvironment;
 
@@ -77,6 +80,31 @@ export interface SimpleSynthOptions {
    * @default - No additional artifacts generated
    */
   readonly additionalArtifacts?: AdditionalArtifact[];
+
+  /**
+   * Policy statements to add to role used during the synth
+   *
+   * Can be used to add acces to a CodeArtifact repository etc.
+   *
+   * @default - No policy statements added to CodeBuild Project Role
+   */
+  readonly rolePolicyStatements?: iam.PolicyStatement[];
+
+  /**
+   * The VPC where to execute the SimpleSynth.
+   *
+   * @default - No VPC
+   */
+  readonly vpc?: ec2.IVpc;
+
+  /**
+   * Which subnets to use.
+   *
+   * Only used if 'vpc' is supplied.
+   *
+   * @default - All private subnets.
+   */
+  readonly subnetSelection?: ec2.SubnetSelection;
 }
 
 /**
@@ -91,21 +119,56 @@ export interface SimpleSynthActionProps extends SimpleSynthOptions {
   /**
    * The install command
    *
+   * If not provided by the build image or another dependency
+   * management tool, at least install the CDK CLI here using
+   * `npm install -g aws-cdk`.
+   *
    * @default - No install required
+   * @deprecated Use `installCommands` instead
    */
   readonly installCommand?: string;
 
   /**
    * The build command
    *
-   * By default, we assume NPM projects are either written in JavaScript or are
-   * using `ts-node`, so don't need a build command.
+   * If your programming language requires a compilation step, put the
+   * compilation command here.
    *
-   * Otherwise, put the build command here, for example `npm run build`.
+   * @default - No build required
+   * @deprecated Use `buildCommands` instead
+   */
+  readonly buildCommand?: string;
+
+  /**
+   * Install commands
+   *
+   * If not provided by the build image or another dependency
+   * management tool, at least install the CDK CLI here using
+   * `npm install -g aws-cdk`.
+   *
+   * @default - No install required
+   */
+  readonly installCommands?: string[];
+
+  /**
+   * The build commands
+   *
+   * If your programming language requires a compilation step, put the
+   * compilation command here.
    *
    * @default - No build required
    */
-  readonly buildCommand?: string;
+  readonly buildCommands?: string[];
+
+  /**
+   * Test commands
+   *
+   * These commands are run after the build commands but before the
+   * synth command.
+   *
+   * @default - No test commands
+   */
+  readonly testCommands?: string[];
 }
 
 /**
@@ -126,7 +189,7 @@ export interface AdditionalArtifact {
 /**
  * A standard synth with a generated buildspec
  */
-export class SimpleSynthAction implements codepipeline.IAction {
+export class SimpleSynthAction implements codepipeline.IAction, iam.IGrantable {
 
   /**
    * Create a standard NPM synth action
@@ -140,6 +203,8 @@ export class SimpleSynthAction implements codepipeline.IAction {
       ...options,
       installCommand: options.installCommand ?? 'npm ci',
       synthCommand: options.synthCommand ?? 'npx cdk synth',
+      vpc: options.vpc,
+      subnetSelection: options.subnetSelection,
     });
   }
 
@@ -153,13 +218,16 @@ export class SimpleSynthAction implements codepipeline.IAction {
   public static standardYarnSynth(options: StandardYarnSynthOptions) {
     return new SimpleSynthAction({
       ...options,
-      installCommand: options.synthCommand ?? 'yarn install --frozen-lockfile',
+      installCommand: options.installCommand ?? 'yarn install --frozen-lockfile',
       synthCommand: options.synthCommand ?? 'npx cdk synth',
+      vpc: options.vpc,
+      subnetSelection: options.subnetSelection,
     });
   }
 
   private _action?: codepipeline_actions.CodeBuildAction;
   private _actionProperties: codepipeline.ActionProperties;
+  private _project?: codebuild.IProject;
 
   constructor(private readonly props: SimpleSynthActionProps) {
     // A number of actionProperties get read before bind() is even called (so before we
@@ -179,6 +247,14 @@ export class SimpleSynthAction implements codepipeline.IAction {
       inputs: [props.sourceArtifact],
       outputs: [props.cloudAssemblyArtifact, ...(props.additionalArtifacts ?? []).map(a => a.artifact)],
     };
+
+    if (this.props.installCommand && this.props.installCommands) {
+      throw new Error('Pass either \'installCommand\' or \'installCommands\', but not both');
+    }
+
+    if (this.props.buildCommand && this.props.buildCommands) {
+      throw new Error('Pass either \'buildCommand\' or \'buildCommands\', but not both');
+    }
 
     const addls = props.additionalArtifacts ?? [];
     if (Object.keys(addls).length > 0) {
@@ -201,44 +277,90 @@ export class SimpleSynthAction implements codepipeline.IAction {
   }
 
   /**
+   * Project generated to run the synth command
+   */
+  public get project(): codebuild.IProject {
+    if (!this._project) {
+      throw new Error('Project becomes available after SimpleSynthAction has been bound to a stage');
+    }
+    return this._project;
+  }
+
+  /**
    * Exists to implement IAction
    */
   public bind(scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions): codepipeline.ActionConfig {
-    const buildCommand = this.props.buildCommand;
+    const buildCommands = this.props.buildCommands ?? [this.props.buildCommand];
+    const installCommands = this.props.installCommands ?? [this.props.installCommand];
+    const testCommands = this.props.testCommands ?? [];
     const synthCommand = this.props.synthCommand;
-    const installCommand = this.props.installCommand;
+
+    const buildSpec = codebuild.BuildSpec.fromObject({
+      version: '0.2',
+      phases: {
+        pre_build: {
+          commands: filterEmpty([
+            this.props.subdirectory ? `cd ${this.props.subdirectory}` : '',
+            ...installCommands,
+          ]),
+        },
+        build: {
+          commands: filterEmpty([
+            ...buildCommands,
+            ...testCommands,
+            synthCommand,
+          ]),
+        },
+      },
+      artifacts: renderArtifacts(this),
+    });
+
+    const environment = { buildImage: codebuild.LinuxBuildImage.STANDARD_4_0, ...this.props.environment };
+
+    const environmentVariables = {
+      ...copyEnvironmentVariables(...this.props.copyEnvironmentVariables || []),
+      ...this.props.environmentVariables,
+    };
+
+    // A hash over the values that make the CodeBuild Project unique (and necessary
+    // to restart the pipeline if one of them changes). projectName is not necessary to include
+    // here because the pipeline will definitely restart if projectName changes.
+    // (Resolve tokens)
+    const projectConfigHash = hash(Stack.of(scope).resolve({
+      environment,
+      buildSpecString: buildSpec.toBuildSpec(),
+      environmentVariables,
+    }));
 
     const project = new codebuild.PipelineProject(scope, 'CdkBuildProject', {
-      projectName: this.props.projectName ?? this.props.projectName,
-      environment: this.props.environment,
-      buildSpec: codebuild.BuildSpec.fromObject({
-        version: '0.2',
-        phases: {
-          pre_build: {
-            commands: filterEmpty([
-              this.props.subdirectory ? `cd ${this.props.subdirectory}` : '',
-              installCommand,
-            ]),
-          },
-          build: {
-            commands: filterEmpty([
-              buildCommand,
-              synthCommand,
-            ]),
-          },
-        },
-        artifacts: renderArtifacts(this),
-      }),
-      environmentVariables: {
-        ...copyEnvironmentVariables(...this.props.copyEnvironmentVariables || []),
-        ...this.props.environmentVariables,
-      },
+      projectName: this.props.projectName,
+      environment,
+      vpc: this.props.vpc,
+      subnetSelection: this.props.subnetSelection,
+      buildSpec,
+      environmentVariables,
     });
+
+    if (this.props.rolePolicyStatements !== undefined) {
+      this.props.rolePolicyStatements.forEach(policyStatement => {
+        project.addToRolePolicy(policyStatement);
+      });
+    }
+
+    this._project = project;
 
     this._action = new codepipeline_actions.CodeBuildAction({
       actionName: this.actionProperties.actionName,
       input: this.props.sourceArtifact,
       outputs: [this.props.cloudAssemblyArtifact, ...(this.props.additionalArtifacts ?? []).map(a => a.artifact)],
+
+      // Inclusion of the hash here will lead to the pipeline structure for any changes
+      // made the config of the underlying CodeBuild Project.
+      // Hence, the pipeline will be restarted. This is necessary if the users
+      // adds (for example) build or test commands to the buildspec.
+      environmentVariables: {
+        _PROJECT_CONFIG_HASH: { value: projectConfigHash },
+      },
       project,
     });
     this._actionProperties = this._action.actionProperties;
@@ -276,6 +398,13 @@ export class SimpleSynthAction implements codepipeline.IAction {
 
       return cloudAsmArtifactSpec;
     }
+  }
+
+  /**
+   * The CodeBuild Project's principal
+   */
+  public get grantPrincipal(): iam.IPrincipal {
+    return this.project.grantPrincipal;
   }
 
   /**
@@ -350,4 +479,10 @@ export interface StandardYarnSynthOptions extends SimpleSynthOptions {
    * @default 'npx cdk synth'
    */
   readonly synthCommand?: string;
+}
+
+function hash<A>(obj: A) {
+  const d = crypto.createHash('sha256');
+  d.update(JSON.stringify(obj));
+  return d.digest('hex');
 }

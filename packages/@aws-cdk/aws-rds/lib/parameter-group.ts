@@ -1,16 +1,53 @@
-import { Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
+import { IResource, Lazy, Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
+import { IEngine } from './engine';
 import { CfnDBClusterParameterGroup, CfnDBParameterGroup } from './rds.generated';
 
 /**
- * A parameter group
+ * Options for {@link IParameterGroup.bindToCluster}.
+ * Empty for now, but can be extended later.
+ */
+export interface ParameterGroupClusterBindOptions {
+}
+
+/**
+ * The type returned from {@link IParameterGroup.bindToCluster}.
+ */
+export interface ParameterGroupClusterConfig {
+  /** The name of this parameter group. */
+  readonly parameterGroupName: string;
+}
+
+/**
+ * Options for {@link IParameterGroup.bindToInstance}.
+ * Empty for now, but can be extended later.
+ */
+export interface ParameterGroupInstanceBindOptions {
+}
+
+/**
+ * The type returned from {@link IParameterGroup.bindToInstance}.
+ */
+export interface ParameterGroupInstanceConfig {
+  /** The name of this parameter group. */
+  readonly parameterGroupName: string;
+}
+
+/**
+ * A parameter group.
+ * Represents both a cluster parameter group,
+ * and an instance parameter group.
  */
 export interface IParameterGroup extends IResource {
   /**
-   * The name of this parameter group
-   *
-   * @attribute
+   * Method called when this Parameter Group is used when defining a database cluster.
    */
-  readonly parameterGroupName: string;
+  bindToCluster(options: ParameterGroupClusterBindOptions): ParameterGroupClusterConfig;
+
+  /**
+   * Method called when this Parameter Group is used when defining a database instance.
+   */
+  bindToInstance(options: ParameterGroupInstanceBindOptions): ParameterGroupInstanceConfig;
 
   /**
    * Adds a parameter to this group.
@@ -25,57 +62,13 @@ export interface IParameterGroup extends IResource {
 }
 
 /**
- * A new cluster or instance parameter group
- */
-abstract class ParameterGroupBase extends Resource implements IParameterGroup {
-  /**
-   * Imports a parameter group
-   */
-  public static fromParameterGroupName(scope: Construct, id: string, parameterGroupName: string): IParameterGroup {
-    class Import extends Resource implements IParameterGroup {
-      public readonly parameterGroupName = parameterGroupName;
-
-      public addParameter(): boolean { return false; }
-    }
-    return new Import(scope, id);
-  }
-
-  /**
-   * The name of the parameter group
-   */
-  public abstract readonly parameterGroupName: string;
-
-  /**
-   * Parameters of the parameter group
-   */
-  protected readonly parameters: { [key: string]: string };
-
-  constructor(scope: Construct, id: string, parameters: { [key: string]: string } | undefined) {
-    super(scope, id);
-
-    this.parameters = parameters ?? {};
-  }
-
-  /**
-   * Add a parameter to this parameter group
-   *
-   * @param key The key of the parameter to be added
-   * @param value The value of the parameter to be added
-   */
-  public addParameter(key: string, value: string): boolean {
-    this.parameters[key] = value;
-    return true;
-  }
-}
-
-/**
  * Properties for a parameter group
  */
 export interface ParameterGroupProps {
   /**
-   * Database family of this parameter group
+   * The database engine for this parameter group.
    */
-  readonly family: string;
+  readonly engine: IEngine;
 
   /**
    * Description for this parameter group
@@ -93,56 +86,89 @@ export interface ParameterGroupProps {
 }
 
 /**
- * A parameter group
+ * A parameter group.
+ * Represents both a cluster parameter group,
+ * and an instance parameter group.
  *
  * @resource AWS::RDS::DBParameterGroup
  */
-export class ParameterGroup extends ParameterGroupBase {
+export class ParameterGroup extends Resource implements IParameterGroup {
   /**
-   * The name of the parameter group
+   * Imports a parameter group
    */
-  public readonly parameterGroupName: string;
+  public static fromParameterGroupName(scope: Construct, id: string, parameterGroupName: string): IParameterGroup {
+    class Import extends Resource implements IParameterGroup {
+      public bindToCluster(_options: ParameterGroupClusterBindOptions): ParameterGroupClusterConfig {
+        return { parameterGroupName };
+      }
+
+      public bindToInstance(_options: ParameterGroupInstanceBindOptions): ParameterGroupInstanceConfig {
+        return { parameterGroupName };
+      }
+
+      public addParameter(_key: string, _value: string): boolean {
+        return false;
+      }
+    }
+
+    return new Import(scope, id);
+  }
+
+  private readonly parameters: { [key: string]: string };
+  private readonly family: string;
+  private readonly description?: string;
+
+  private clusterCfnGroup?: CfnDBClusterParameterGroup;
+  private instanceCfnGroup?: CfnDBParameterGroup;
 
   constructor(scope: Construct, id: string, props: ParameterGroupProps) {
-    super(scope, id, props.parameters);
+    super(scope, id);
 
-    const resource = new CfnDBParameterGroup(this, 'Resource', {
-      description: props.description || `Parameter group for ${props.family}`,
-      family: props.family,
-      parameters: Lazy.anyValue({ produce: () => this.parameters }),
-    });
-
-    this.parameterGroupName = resource.ref;
+    const family = props.engine.parameterGroupFamily;
+    if (!family) {
+      throw new Error("ParameterGroup cannot be used with an engine that doesn't specify a version");
+    }
+    this.family = family;
+    this.description = props.description;
+    this.parameters = props.parameters ?? {};
   }
-}
 
-/**
- * Construction properties for a ClusterParameterGroup
- */
-// tslint:disable-next-line:no-empty-interface
-export interface ClusterParameterGroupProps extends ParameterGroupProps {
+  public bindToCluster(_options: ParameterGroupClusterBindOptions): ParameterGroupClusterConfig {
+    if (!this.clusterCfnGroup) {
+      const id = this.instanceCfnGroup ? 'ClusterParameterGroup' : 'Resource';
+      this.clusterCfnGroup = new CfnDBClusterParameterGroup(this, id, {
+        description: this.description || `Cluster parameter group for ${this.family}`,
+        family: this.family,
+        parameters: Lazy.anyValue({ produce: () => this.parameters }),
+      });
+    }
+    return {
+      parameterGroupName: this.clusterCfnGroup.ref,
+    };
+  }
 
-}
-/**
- * A cluster parameter group
- *
- * @resource AWS::RDS::DBClusterParameterGroup
- */
-export class ClusterParameterGroup extends ParameterGroupBase {
+  public bindToInstance(_options: ParameterGroupInstanceBindOptions): ParameterGroupInstanceConfig {
+    if (!this.instanceCfnGroup) {
+      const id = this.clusterCfnGroup ? 'InstanceParameterGroup' : 'Resource';
+      this.instanceCfnGroup = new CfnDBParameterGroup(this, id, {
+        description: this.description || `Parameter group for ${this.family}`,
+        family: this.family,
+        parameters: Lazy.anyValue({ produce: () => this.parameters }),
+      });
+    }
+    return {
+      parameterGroupName: this.instanceCfnGroup.ref,
+    };
+  }
+
   /**
-   * The name of the parameter group
+   * Add a parameter to this parameter group
+   *
+   * @param key The key of the parameter to be added
+   * @param value The value of the parameter to be added
    */
-  public readonly parameterGroupName: string;
-
-  constructor(scope: Construct, id: string, props: ClusterParameterGroupProps) {
-    super(scope, id, props.parameters);
-
-    const resource = new CfnDBClusterParameterGroup(this, 'Resource', {
-      description: props.description || `Cluster parameter group for ${props.family}`,
-      family: props.family,
-      parameters: Lazy.anyValue({ produce: () => this.parameters }),
-    });
-
-    this.parameterGroupName = resource.ref;
+  public addParameter(key: string, value: string): boolean {
+    this.parameters[key] = value;
+    return true;
   }
 }

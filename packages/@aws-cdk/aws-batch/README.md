@@ -138,6 +138,36 @@ Below is an example:
 const computeEnv = batch.ComputeEnvironment.fromComputeEnvironmentArn(this, 'imported-compute-env', 'arn:aws:batch:us-east-1:555555555555:compute-environment/My-Compute-Env');
 ```
 
+### Change the baseline AMI of the compute resources
+
+Ocassionally, you will need to deviate from the default processing AMI.
+
+ECS Optimized Amazon Linux 2 example:
+
+```ts
+const myComputeEnv = new batch.ComputeEnvironment(this, 'ComputeEnv', {
+  computeResources: {
+    image: new ecs.EcsOptimizedAmi({
+      generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
+    }),
+    vpc,
+  }
+});
+```
+
+Custom based AMI example:
+
+```ts
+const myComputeEnv = new batch.ComputeEnvironment(this, 'ComputeEnv', {
+  computeResources: {
+    image: ec2.MachineImage.genericLinux({
+      "[aws-region]": "[ami-ID]",
+    })
+    vpc,
+  }
+});
+```
+
 ## Job Queue
 
 Jobs are always submitted to a specific queue. This means that you have to create a queue before you can start submitting jobs. Each queue is mapped to at least one (and no more than three) compute environment. When the job is scheduled for execution, AWS Batch will select the compute environment based on ordinal priority and available capacity in each environment.
@@ -212,10 +242,27 @@ new batch.JobDefinition(stack, 'batch-job-def-from-local', {
 
 ### Importing an existing Job Definition
 
-To import an existing batch job definition, call `JobDefinition.fromJobDefinitionArn()`.
+#### From ARN
+
+To import an existing batch job definition from its ARN, call `JobDefinition.fromJobDefinitionArn()`.
 
 Below is an example:
 
 ```ts
 const job = batch.JobDefinition.fromJobDefinitionArn(this, 'imported-job-definition', 'arn:aws:batch:us-east-1:555555555555:job-definition/my-job-definition');
+```
+
+#### From Name
+
+To import an existing batch job definition from its name, call `JobDefinition.fromJobDefinitionName()`.
+If name is specified without a revision then the latest active revision is used.
+
+Below is an example:
+
+```ts
+// Without revision
+const job = batch.JobDefinition.fromJobDefinitionName(this, 'imported-job-definition', 'my-job-definition');
+
+// With revision
+const job = batch.JobDefinition.fromJobDefinitionName(this, 'imported-job-definition', 'my-job-definition:3');
 ```

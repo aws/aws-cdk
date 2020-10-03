@@ -1,8 +1,8 @@
+import * as path from 'path';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import { Construct, CustomResource, Duration, Stack } from '@aws-cdk/core';
-import * as path from 'path';
 import * as cr from '../../../lib';
 
 export interface S3AssertProps {
@@ -75,7 +75,7 @@ class S3AssertProvider extends Construct {
       handler: 'index.is_complete',
       initialPolicy: [
         new iam.PolicyStatement({
-          resources: [ '*' ],
+          resources: ['*'],
           actions: [
             's3:GetObject*',
             's3:GetBucket*',

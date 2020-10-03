@@ -6,7 +6,6 @@ scripts/*.js
 node_modules
 dist
 tsconfig.json
-tslint.json
 .jsii
 
 .LAST_BUILD

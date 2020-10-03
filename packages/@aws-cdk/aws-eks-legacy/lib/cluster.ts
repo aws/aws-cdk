@@ -1,10 +1,10 @@
+import * as path from 'path';
 import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as ssm from '@aws-cdk/aws-ssm';
-import { CfnOutput, Construct, Duration, IResource, Resource, Stack, Tag, Token } from '@aws-cdk/core';
-import * as path from 'path';
+import { Annotations, CfnOutput, Construct, Duration, IResource, Resource, Stack, Token, Tags } from '@aws-cdk/core';
 import { AwsAuth } from './aws-auth';
 import { ClusterResource } from './cluster-resource';
 import { CfnCluster, CfnClusterProps } from './eks.generated';
@@ -336,7 +336,7 @@ export class Cluster extends Resource implements ICluster {
       physicalName: props.clusterName,
     });
 
-    this.node.addWarning('The @aws-cdk/aws-eks-legacy module will no longer be released as part of the AWS CDK starting March 1st, 2020. Please refer to https://github.com/aws/aws-cdk/issues/5544 for upgrade instructions');
+    Annotations.of(this).addWarning('The @aws-cdk/aws-eks-legacy module will no longer be released as part of the AWS CDK starting March 1st, 2020. Please refer to https://github.com/aws/aws-cdk/issues/5544 for upgrade instructions');
 
     const stack = Stack.of(this);
 
@@ -398,7 +398,7 @@ export class Cluster extends Resource implements ICluster {
 
     const updateConfigCommandPrefix = `aws eks update-kubeconfig --name ${this.clusterName}`;
     const getTokenCommandPrefix = `aws eks get-token --cluster-name ${this.clusterName}`;
-    const commonCommandOptions = [ `--region ${stack.region}` ];
+    const commonCommandOptions = [`--region ${stack.region}`];
 
     if (props.outputClusterName) {
       new CfnOutput(this, 'ClusterName', { value: this.clusterName });
@@ -523,7 +523,7 @@ export class Cluster extends Resource implements ICluster {
     autoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryReadOnly'));
 
     // EKS Required Tags
-    Tag.add(autoScalingGroup, `kubernetes.io/cluster/${this.clusterName}`, 'owned', {
+    Tags.of(autoScalingGroup).add(`kubernetes.io/cluster/${this.clusterName}`, 'owned', {
       applyToLaunchedInstances: true,
     });
 
@@ -608,7 +608,7 @@ export class Cluster extends Resource implements ICluster {
       runtime: lambda.Runtime.PYTHON_3_7,
       handler: 'index.handler',
       timeout: Duration.minutes(15),
-      layers: [ KubectlLayer.getOrCreate(this) ],
+      layers: [KubectlLayer.getOrCreate(this)],
       memorySize: 256,
       environment: {
         CLUSTER_NAME: this.clusterName,
@@ -636,11 +636,11 @@ export class Cluster extends Resource implements ICluster {
           // message (if token): "could not auto-tag public/private subnet with tag..."
           // message (if not token): "count not auto-tag public/private subnet xxxxx with tag..."
           const subnetID = Token.isUnresolved(subnet.subnetId) ? '' : ` ${subnet.subnetId}`;
-          this.node.addWarning(`Could not auto-tag ${type} subnet${subnetID} with "${tag}=1", please remember to do this manually`);
+          Annotations.of(this).addWarning(`Could not auto-tag ${type} subnet${subnetID} with "${tag}=1", please remember to do this manually`);
           continue;
         }
 
-        subnet.node.applyAspect(new Tag(tag, '1'));
+        Tags.of(subnet).add(tag, '1');
       }
     };
 

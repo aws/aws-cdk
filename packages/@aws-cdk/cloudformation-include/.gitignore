@@ -1,5 +1,4 @@
 *.js
-tslint.json
 *.js.map
 *.d.ts
 *.generated.ts

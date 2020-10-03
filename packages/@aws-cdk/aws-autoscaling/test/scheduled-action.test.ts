@@ -33,7 +33,7 @@ nodeunitShim({
     // WHEN
     asg.scaleOnSchedule('ScaleOutInTheMorning', {
       schedule: autoscaling.Schedule.cron({ hour: '8' }),
-      startTime: new Date(Date.UTC(2033, 8, 10, 12, 0, 0)),      // JavaScript's Date is a little silly.
+      startTime: new Date(Date.UTC(2033, 8, 10, 12, 0, 0)), // JavaScript's Date is a little silly.
       minCapacity: 11,
     });
 
@@ -69,7 +69,7 @@ nodeunitShim({
               {
                 Key: 'Name',
                 PropagateAtLaunch: true,
-                Value: 'ASG',
+                Value: 'Default/ASG',
               },
             ],
             VPCZoneIdentifier: [

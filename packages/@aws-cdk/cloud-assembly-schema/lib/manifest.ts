@@ -4,26 +4,22 @@ import * as semver from 'semver';
 import * as assets from './assets';
 import * as assembly from './cloud-assembly';
 
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable @typescript-eslint/no-require-imports */
+
 // this prefix is used by the CLI to identify this specific error.
 // in which case we want to instruct the user to upgrade his CLI.
 // see exec.ts#createAssembly
 export const VERSION_MISMATCH: string = 'Cloud assembly schema version mismatch';
 
-// tslint:disable: no-var-requires
-
-// eslint-disable-next-line @typescript-eslint/no-require-imports
 const ASSETS_SCHEMA = require('../schema/assets.schema.json');
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
 const ASSEMBLY_SCHEMA = require('../schema/cloud-assembly.schema.json');
 
 /**
  * Version is shared for both manifests
  */
-// eslint-disable-next-line @typescript-eslint/no-require-imports
 const SCHEMA_VERSION = require('../schema/cloud-assembly.version.json').version;
-
-// tslint:enable: no-var-requires
 
 /**
  * Protocol utility class.
@@ -36,7 +32,7 @@ export class Manifest {
    * @param filePath - output file path.
    */
   public static saveAssemblyManifest(manifest: assembly.AssemblyManifest, filePath: string) {
-    Manifest.saveManifest(manifest, filePath, ASSEMBLY_SCHEMA);
+    Manifest.saveManifest(manifest, filePath, ASSEMBLY_SCHEMA, Manifest.patchStackTagsOnWrite);
   }
 
   /**
@@ -45,7 +41,7 @@ export class Manifest {
    * @param filePath - path to the manifest file.
    */
   public static loadAssemblyManifest(filePath: string): assembly.AssemblyManifest {
-    return Manifest.loadManifest(filePath, ASSEMBLY_SCHEMA, obj => Manifest.patchStackTags(obj));
+    return Manifest.loadManifest(filePath, ASSEMBLY_SCHEMA, Manifest.patchStackTagsOnRead);
   }
 
   /**
@@ -55,7 +51,7 @@ export class Manifest {
    * @param filePath - output file path.
    */
   public static saveAssetManifest(manifest: assets.AssetManifest, filePath: string) {
-    Manifest.saveManifest(manifest, filePath, ASSETS_SCHEMA);
+    Manifest.saveManifest(manifest, filePath, ASSETS_SCHEMA, Manifest.patchStackTagsOnRead);
   }
 
   /**
@@ -122,9 +118,12 @@ export class Manifest {
 
   }
 
-  private static saveManifest(manifest: any, filePath: string, schema: jsonschema.Schema) {
-    const withVersion = { ...manifest, version: Manifest.version() };
+  private static saveManifest(manifest: any, filePath: string, schema: jsonschema.Schema, preprocess?: (obj: any) => any) {
+    let withVersion = { ...manifest, version: Manifest.version() };
     Manifest.validate(withVersion, schema);
+    if (preprocess) {
+      withVersion = preprocess(withVersion);
+    }
     fs.writeFileSync(filePath, JSON.stringify(withVersion, undefined, 2));
   }
 
@@ -152,23 +151,69 @@ export class Manifest {
    * Ideally, we would start writing the `camelCased` and translate to how CloudFormation expects it when needed. But this requires nasty
    * backwards-compatibility code and it just doesn't seem to be worth the effort.
    */
-  private static patchStackTags(manifest: assembly.AssemblyManifest) {
-    for (const artifact of Object.values(manifest.artifacts || [])) {
-      if (artifact.type === assembly.ArtifactType.AWS_CLOUDFORMATION_STACK) {
-        for (const metadataEntries of Object.values(artifact.metadata || [])) {
-          for (const metadataEntry of metadataEntries) {
-            if (metadataEntry.type === assembly.ArtifactMetadataEntryType.STACK_TAGS && metadataEntry.data) {
-              const metadataAny = metadataEntry as any;
-              metadataAny.data = metadataAny.data.map((t: any) => ({ key: t.Key, value: t.Value }));
-            }
-          }
-        }
-      }
-    }
+  private static patchStackTagsOnRead(manifest: assembly.AssemblyManifest) {
+    return Manifest.replaceStackTags(manifest, tags => tags.map((diskTag: any) => ({
+      key: diskTag.Key,
+      value: diskTag.Value,
+    })));
+  }
 
-    return manifest;
+  /**
+   * See explanation on `patchStackTagsOnRead`
+   *
+   * Translate stack tags metadata if it has the "right" casing.
+   */
+  private static patchStackTagsOnWrite(manifest: assembly.AssemblyManifest) {
+    return Manifest.replaceStackTags(manifest, tags => tags.map(memTag =>
+      // Might already be uppercased (because stack synthesis generates it in final form yet)
+      ('Key' in memTag ? memTag : { Key: memTag.key, Value: memTag.value }) as any,
+    ));
+  }
+
+  /**
+   * Recursively replace stack tags in the stack metadata
+   */
+  private static replaceStackTags(manifest: assembly.AssemblyManifest, fn: Endofunctor<assembly.StackTagsMetadataEntry>): assembly.AssemblyManifest {
+    // Need to add in the `noUndefined`s because otherwise jest snapshot tests are going to freak out
+    // about the keys with values that are `undefined` (even though they would never be JSON.stringified)
+    return noUndefined({
+      ...manifest,
+      artifacts: mapValues(manifest.artifacts, artifact => {
+        if (artifact.type !== assembly.ArtifactType.AWS_CLOUDFORMATION_STACK) { return artifact; }
+        return noUndefined({
+          ...artifact,
+          metadata: mapValues(artifact.metadata, metadataEntries => metadataEntries.map(metadataEntry => {
+            if (metadataEntry.type !== assembly.ArtifactMetadataEntryType.STACK_TAGS || !metadataEntry.data) { return metadataEntry; }
+            return {
+              ...metadataEntry,
+              data: fn(metadataEntry.data as assembly.StackTagsMetadataEntry),
+            };
+          })),
+        } as assembly.ArtifactManifest);
+      }),
+    });
   }
 
   private constructor() {}
+}
 
+type Endofunctor<A> = (x: A) => A;
+
+function mapValues<A, B>(xs: Record<string, A> | undefined, fn: (x: A) => B): Record<string, B> | undefined {
+  if (!xs) { return undefined; }
+  const ret: Record<string, B> | undefined = {};
+  for (const [k, v] of Object.entries(xs)) {
+    ret[k] = fn(v);
+  }
+  return ret;
+}
+
+function noUndefined<A extends object>(xs: A): A {
+  const ret: any = {};
+  for (const [k, v] of Object.entries(xs)) {
+    if (v !== undefined) {
+      ret[k] = v;
+    }
+  }
+  return ret;
 }

@@ -1,7 +1,7 @@
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { CloudFormationStackArtifact } from './artifacts/cloudformation-artifact';
 import { NestedCloudAssemblyArtifact } from './artifacts/nested-cloud-assembly-artifact';
 import { TreeCloudArtifact } from './artifacts/tree-cloud-artifact';
@@ -85,6 +85,7 @@ export class CloudAssembly {
     }
 
     if (artifacts.length > 1) {
+      // eslint-disable-next-line max-len
       throw new Error(`There are multiple stacks with the stack name "${stackName}" (${artifacts.map(a => a.id).join(',')}). Use "getStackArtifact(id)" instead`);
     }
 
@@ -171,13 +172,22 @@ export class CloudAssembly {
    * @returns all the CloudFormation stack artifacts that are included in this assembly.
    */
   public get stacks(): CloudFormationStackArtifact[] {
-    const result = new Array<CloudFormationStackArtifact>();
-    for (const a of this.artifacts) {
-      if (a instanceof CloudFormationStackArtifact) {
-        result.push(a);
-      }
+    return this.artifacts.filter(isCloudFormationStackArtifact);
+
+    function isCloudFormationStackArtifact(x: any): x is CloudFormationStackArtifact {
+      return x instanceof CloudFormationStackArtifact;
     }
-    return result;
+  }
+
+  /**
+   * The nested assembly artifacts in this assembly
+   */
+  public get nestedAssemblies(): NestedCloudAssemblyArtifact[] {
+    return this.artifacts.filter(isNestedCloudAssemblyArtifact);
+
+    function isNestedCloudAssemblyArtifact(x: any): x is NestedCloudAssemblyArtifact {
+      return x instanceof NestedCloudAssemblyArtifact;
+    }
   }
 
   private validateDeps() {
@@ -188,7 +198,7 @@ export class CloudAssembly {
 
   private renderArtifacts() {
     const result = new Array<CloudArtifact>();
-    for (const [ name, artifact ] of Object.entries(this.manifest.artifacts || { })) {
+    for (const [name, artifact] of Object.entries(this.manifest.artifacts || { })) {
       const cloudartifact = CloudArtifact.fromManifest(this, name, artifact);
       if (cloudartifact) {
         result.push(cloudartifact);
@@ -359,6 +369,8 @@ export interface AssemblyBuildOptions {
   /**
    * Include the specified runtime information (module versions) in manifest.
    * @default - if this option is not specified, runtime info will not be included
+   * @deprecated All template modifications that should result from this should
+   * have already been inserted into the template.
    */
   readonly runtimeInfo?: RuntimeInfo;
 }
@@ -393,5 +405,5 @@ function ignore(_x: any) {
  * Turn the given optional output directory into a fixed output directory
  */
 function determineOutputDirectory(outdir?: string) {
-  return outdir ?? fs.mkdtempSync(path.join(os.tmpdir(), 'cdk.out'));
+  return outdir ?? fs.mkdtempSync(path.join(fs.realpathSync(os.tmpdir()), 'cdk.out'));
 }

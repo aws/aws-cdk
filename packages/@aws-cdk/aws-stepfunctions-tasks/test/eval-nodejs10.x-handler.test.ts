@@ -44,3 +44,17 @@ test('with lists', async () => {
   const evaluated = await handler(event);
   expect(evaluated).toEqual([2, 4, 6]);
 });
+
+test('with duplicated entries', async () => {
+  // GIVEN
+  const event: Event = {
+    expression: '$.a + $.a',
+    expressionAttributeValues: {
+      '$.a': 1,
+    },
+  };
+
+  // THEN
+  const evaluated = await handler(event);
+  expect(evaluated).toBe(2);
+});

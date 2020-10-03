@@ -27,11 +27,29 @@ const anyValue = fc.oneof<any>(nonEmptyString, tokenish);
 export = nodeunit.testCase({
   'eager resolution for non-tokens': {
     'Fn.select'(test: nodeunit.Test) {
-      test.deepEqual(Fn.select(2, [ 'hello', 'you', 'dude' ]), 'dude');
+      test.deepEqual(Fn.select(2, ['hello', 'you', 'dude']), 'dude');
       test.done();
     },
     'Fn.split'(test: nodeunit.Test) {
-      test.deepEqual(Fn.split(':', 'hello:world:yeah'), [ 'hello', 'world', 'yeah' ]);
+      test.deepEqual(Fn.split(':', 'hello:world:yeah'), ['hello', 'world', 'yeah']);
+      test.done();
+    },
+  },
+  'FnParseDomainName': {
+    'parse domain name from resolved url'(test: nodeunit.Test) {
+      test.deepEqual(Fn.parseDomainName('https://test.com/'), 'test.com');
+      test.done();
+    },
+    'parse domain name on token'(test: nodeunit.Test) {
+      const stack = new Stack();
+      const url = Fn.join('//', [
+        'https:',
+        Fn.join('/', [
+          'test.com',
+          'graphql',
+        ]),
+      ]);
+      test.deepEqual(Fn.parseDomainName(stack.resolve(url)), 'test.com');
       test.done();
     },
   },
@@ -49,13 +67,14 @@ export = nodeunit.testCase({
         'd',
       ]);
 
-      test.deepEqual(stack.resolve(obj), { 'Fn::Join': [ '',
-        [
-          'a',
-          { 'Fn::GetAtt': ['a', 'bc'] },
-          'cd',
-        ],
-      ]});
+      test.deepEqual(stack.resolve(obj), {
+        'Fn::Join': ['',
+          [
+            'a',
+            { 'Fn::GetAtt': ['a', 'bc'] },
+            'cd',
+          ]],
+      });
 
       test.done();
     },
@@ -114,7 +133,7 @@ export = nodeunit.testCase({
           fc.array(anyValue, 1, 3),
           fc.array(tokenish, 2, 3),
           fc.array(anyValue, 3),
-          (delimiter1, delimiter2, prefix,  nested, suffix) => {
+          (delimiter1, delimiter2, prefix, nested, suffix) => {
             fc.pre(delimiter1 !== delimiter2);
             const join = Fn.join(delimiter1, [...prefix as string[], Fn.join(delimiter2, stringListToken(nested)), ...suffix as string[]]);
             const resolved = stack.resolve(join);
@@ -135,7 +154,7 @@ export = nodeunit.testCase({
       test.deepEqual(stack.resolve(eachMemberIn), {
         'Fn::EachMemberIn': [
           { 'Fn::ValueOfAll': ['AWS::EC2::Subnet::Id', 'VpcId'] },
-          { 'Fn::RefAll': 'AWS::EC2::VPC::Id'},
+          { 'Fn::RefAll': 'AWS::EC2::VPC::Id' },
         ],
       });
     }),
@@ -148,7 +167,7 @@ export = nodeunit.testCase({
 
       // WHEN
       new CfnOutput(stack2, 'Stack1Id', {
-        value: Fn.join(' = ', [ 'Stack1Id', stack1.stackId ]),
+        value: Fn.join(' = ', ['Stack1Id', stack1.stackId]),
       });
 
       // THEN
@@ -180,12 +199,12 @@ export = nodeunit.testCase({
   'nested Fn::Join with list token'(test: nodeunit.Test) {
     const stack = new Stack();
     const inner = Fn.join(',', Token.asList({ NotReallyList: true }));
-    const outer = Fn.join(',', [ inner, 'Foo' ]);
+    const outer = Fn.join(',', [inner, 'Foo']);
     test.deepEqual(stack.resolve(outer), {
       'Fn::Join': [
         ',',
         [
-          { 'Fn::Join': [ ',', { NotReallyList: true } ] },
+          { 'Fn::Join': [',', { NotReallyList: true }] },
           'Foo',
         ],
       ],

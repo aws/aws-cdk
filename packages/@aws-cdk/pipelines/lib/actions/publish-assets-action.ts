@@ -1,9 +1,15 @@
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
+import * as ec2 from '@aws-cdk/aws-ec2';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct, Lazy } from '@aws-cdk/core';
+import { Lazy } from '@aws-cdk/core';
+import { Construct } from 'constructs';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Type of the asset that is being published
@@ -52,6 +58,29 @@ export interface PublishAssetsActionProps {
    * @default - Automatically generated
    */
   readonly projectName?: string;
+
+  /**
+   * Role to use for CodePipeline and CodeBuild to build and publish the assets.
+   *
+   * @default - Automatically generated
+   */
+  readonly role?: iam.IRole;
+
+  /**
+   * The VPC where to execute the PublishAssetsAction.
+   *
+   * @default - No VPC
+   */
+  readonly vpc?: ec2.IVpc;
+
+  /**
+   * Which subnets to use.
+   *
+   * Only used if 'vpc' is supplied.
+   *
+   * @default - All private subnets.
+   */
+  readonly subnetSelection?: ec2.SubnetSelection;
 }
 
 /**
@@ -63,7 +92,7 @@ export interface PublishAssetsActionProps {
  * You do not need to instantiate this action -- it will automatically
  * be added by the pipeline when you add stacks that use assets.
  */
-export class PublishAssetsAction extends Construct implements codepipeline.IAction {
+export class PublishAssetsAction extends CoreConstruct implements codepipeline.IAction {
   private readonly action: codepipeline.IAction;
   private readonly commands = new Array<string>();
 
@@ -74,6 +103,12 @@ export class PublishAssetsAction extends Construct implements codepipeline.IActi
 
     const project = new codebuild.PipelineProject(this, 'Default', {
       projectName: this.props.projectName,
+      environment: {
+        buildImage: codebuild.LinuxBuildImage.STANDARD_4_0,
+        privileged: (props.assetType === AssetType.DOCKER_IMAGE) ? true : undefined,
+      },
+      vpc: props.vpc,
+      subnetSelection: props.subnetSelection,
       buildSpec: codebuild.BuildSpec.fromObject({
         version: '0.2',
         phases: {
@@ -85,8 +120,7 @@ export class PublishAssetsAction extends Construct implements codepipeline.IActi
           },
         },
       }),
-      // Needed to perform Docker builds
-      environment: props.assetType === AssetType.DOCKER_IMAGE ? { privileged: true } : undefined,
+      role: props.role,
     });
 
     const rolePattern = props.assetType === AssetType.DOCKER_IMAGE
@@ -102,6 +136,7 @@ export class PublishAssetsAction extends Construct implements codepipeline.IActi
       actionName: props.actionName,
       project,
       input: this.props.cloudAssemblyInput,
+      role: props.role,
     });
   }
 
@@ -120,7 +155,7 @@ export class PublishAssetsAction extends Construct implements codepipeline.IActi
   /**
    * Exists to implement IAction
    */
-  public bind(scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
+  public bind(scope: CoreConstruct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
   codepipeline.ActionConfig {
     return this.action.bind(scope, stage, options);
   }

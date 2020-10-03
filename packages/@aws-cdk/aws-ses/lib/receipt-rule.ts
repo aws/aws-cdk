@@ -1,9 +1,14 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Aws, Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
+import { Aws, IResource, Lazy, Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { IReceiptRuleAction } from './receipt-rule-action';
 import { IReceiptRuleSet } from './receipt-rule-set';
 import { CfnReceiptRule } from './ses.generated';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * A receipt rule.
@@ -154,7 +159,6 @@ export class ReceiptRule extends Resource implements IReceiptRule {
   }
 }
 
-// tslint:disable-next-line:no-empty-interface
 export interface DropSpamReceiptRuleProps extends ReceiptRuleProps {
 
 }
@@ -164,7 +168,7 @@ export interface DropSpamReceiptRuleProps extends ReceiptRuleProps {
  *
  * @see https://docs.aws.amazon.com/ses/latest/DeveloperGuide/receiving-email-action-lambda-example-functions.html
  */
-export class DropSpamReceiptRule extends Construct {
+export class DropSpamReceiptRule extends CoreConstruct {
   public readonly rule: ReceiptRule;
 
   constructor(scope: Construct, id: string, props: DropSpamReceiptRuleProps) {
@@ -201,7 +205,7 @@ export class DropSpamReceiptRule extends Construct {
 }
 
 // Adapted from https://docs.aws.amazon.com/ses/latest/DeveloperGuide/receiving-email-action-lambda-example-functions.html
-// tslint:disable:no-console
+/* eslint-disable no-console */
 function dropSpamCode(event: any, _: any, callback: any) {
   console.log('Spam filter');
 
@@ -216,7 +220,7 @@ function dropSpamCode(event: any, _: any, callback: any) {
     console.log('Dropping spam');
 
     // Stop processing rule set, dropping message
-    callback(null, { disposition : 'STOP_RULE_SET' });
+    callback(null, { disposition: 'STOP_RULE_SET' });
   } else {
     callback(null, null);
   }

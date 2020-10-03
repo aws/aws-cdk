@@ -1,7 +1,7 @@
 {
   "name": "@aws-cdk/aws-dynamodb",
   "version": "0.0.0",
-  "description": "CDK Constructs for AWS DynamoDB",
+  "description": "The CDK Construct Library for AWS::DynamoDB",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
@@ -23,9 +23,14 @@
       },
       "python": {
         "distName": "aws-cdk.aws-dynamodb",
-        "module": "aws_cdk.aws_dynamodb"
+        "module": "aws_cdk.aws_dynamodb",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",
@@ -48,7 +53,10 @@
   },
   "cdk-build": {
     "cloudformation": "AWS::DynamoDB",
-    "jest": true
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "keywords": [
     "aws",
@@ -64,37 +72,37 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
-    "@types/jest": "^26.0.3",
-    "aws-sdk": "^2.712.0",
+    "@types/jest": "^26.0.14",
+    "aws-sdk": "^2.739.0",
     "aws-sdk-mock": "^5.1.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
-    "jest": "^25.5.4",
+    "jest": "^26.4.2",
     "pkglint": "0.0.0",
-    "sinon": "^9.0.2",
-    "ts-jest": "^26.1.1"
+    "sinon": "^9.1.0",
+    "ts-jest": "^26.4.1"
   },
   "dependencies": {
     "@aws-cdk/aws-applicationautoscaling": "0.0.0",
     "@aws-cdk/aws-cloudwatch": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
-    "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-kms": "0.0.0",
+    "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/custom-resources": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.0.4"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/aws-applicationautoscaling": "0.0.0",
     "@aws-cdk/aws-cloudwatch": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
-    "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-kms": "0.0.0",
+    "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/custom-resources": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.0.4"
   },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"

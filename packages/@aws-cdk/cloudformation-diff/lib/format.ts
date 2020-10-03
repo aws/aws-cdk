@@ -1,5 +1,5 @@
-import * as colors from 'colors/safe';
 import { format } from 'util';
+import * as colors from 'colors/safe';
 import { Difference, isPropertyDifference, ResourceDifference, ResourceImpact } from './diff-template';
 import { DifferenceCollection, TemplateDiff } from './diff/types';
 import { deepEqual } from './diff/util';
@@ -11,7 +11,6 @@ import { SecurityGroupChanges } from './network/security-group-changes';
 const PATH_METADATA_KEY = 'aws:cdk:path';
 
 /* eslint-disable @typescript-eslint/no-require-imports */
-// tslint:disable-next-line:no-var-requires
 const { structuredPatch } = require('diff');
 /* eslint-enable */
 
@@ -77,9 +76,9 @@ function formatSecurityChangesWithBanner(formatter: Formatter, templateDiff: Tem
 }
 
 const ADDITION = colors.green('[+]');
-const CONTEXT  = colors.grey('[ ]');
-const UPDATE   = colors.yellow('[~]');
-const REMOVAL  = colors.red('[-]');
+const CONTEXT = colors.grey('[ ]');
+const UPDATE = colors.yellow('[~]');
+const REMOVAL = colors.red('[-]');
 
 class Formatter {
   constructor(
@@ -159,7 +158,7 @@ class Formatter {
 
     const resourceType = diff.isRemoval ? diff.oldResourceType : diff.newResourceType;
 
-    // tslint:disable-next-line:max-line-length
+    // eslint-disable-next-line max-len
     this.print(`${this.formatPrefix(diff)} ${this.formatValue(resourceType, colors.cyan)} ${this.formatLogicalId(logicalId)} ${this.formatImpact(diff.changeImpact)}`);
 
     if (diff.isUpdate) {
@@ -223,7 +222,7 @@ class Formatter {
     if (isPropertyDifference(diff)) {
       if (diff.changeImpact === ResourceImpact.MAY_REPLACE) {
         additionalInfo = ' (may cause replacement)';
-      } else if (diff.changeImpact ===  ResourceImpact.WILL_REPLACE) {
+      } else if (diff.changeImpact === ResourceImpact.WILL_REPLACE) {
         additionalInfo = ' (requires replacement)';
       }
     }

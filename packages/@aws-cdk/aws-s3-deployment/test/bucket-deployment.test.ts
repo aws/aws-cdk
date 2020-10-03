@@ -1,4 +1,3 @@
-import { arrayWith } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
 import * as iam from '@aws-cdk/aws-iam';
@@ -7,8 +6,7 @@ import * as cdk from '@aws-cdk/core';
 import * as path from 'path';
 import * as s3deploy from '../lib';
 
-// tslint:disable:max-line-length
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable max-len */
 
 test('deploy from local directory asset', () => {
   // GIVEN
@@ -23,16 +21,16 @@ test('deploy from local directory asset', () => {
 
   // THEN
   expect(stack).toHaveResource('Custom::CDKBucketDeployment', {
-    'ServiceToken': {
+    ServiceToken: {
       'Fn::GetAtt': [
         'CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536',
         'Arn',
       ],
     },
-    'SourceBucketNames': [{
-      'Ref': 'AssetParametersfc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222eS3Bucket9CD8B20A',
+    SourceBucketNames: [{
+      Ref: 'AssetParametersfc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222eS3Bucket9CD8B20A',
     }],
-    'SourceObjectKeys': [{
+    SourceObjectKeys: [{
       'Fn::Join': [
         '',
         [
@@ -43,7 +41,7 @@ test('deploy from local directory asset', () => {
                 'Fn::Split': [
                   '||',
                   {
-                    'Ref': 'AssetParametersfc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222eS3VersionKeyA58D380C',
+                    Ref: 'AssetParametersfc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222eS3VersionKeyA58D380C',
                   },
                 ],
               },
@@ -56,7 +54,7 @@ test('deploy from local directory asset', () => {
                 'Fn::Split': [
                   '||',
                   {
-                    'Ref': 'AssetParametersfc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222eS3VersionKeyA58D380C',
+                    Ref: 'AssetParametersfc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222eS3VersionKeyA58D380C',
                   },
                 ],
               },
@@ -65,8 +63,8 @@ test('deploy from local directory asset', () => {
         ],
       ],
     }],
-    'DestinationBucketName': {
-      'Ref': 'DestC383B82A',
+    DestinationBucketName: {
+      Ref: 'DestC383B82A',
     },
   });
 });
@@ -87,21 +85,21 @@ test('deploy from local directory assets', () => {
 
   // THEN
   expect(stack).toHaveResource('Custom::CDKBucketDeployment', {
-    'ServiceToken': {
+    ServiceToken: {
       'Fn::GetAtt': [
         'CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536',
         'Arn',
       ],
     },
-    'SourceBucketNames': [
+    SourceBucketNames: [
       {
-        'Ref': 'AssetParametersfc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222eS3Bucket9CD8B20A',
+        Ref: 'AssetParametersfc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222eS3Bucket9CD8B20A',
       },
       {
-        'Ref': 'AssetParametersa94977ede0211fd3b45efa33d6d8d1d7bbe0c5a96d977139d8b16abfa96fe9cbS3Bucket99793559',
+        Ref: 'AssetParametersa94977ede0211fd3b45efa33d6d8d1d7bbe0c5a96d977139d8b16abfa96fe9cbS3Bucket99793559',
       },
     ],
-    'SourceObjectKeys': [
+    SourceObjectKeys: [
       {
         'Fn::Join': [
           '',
@@ -113,7 +111,7 @@ test('deploy from local directory assets', () => {
                   'Fn::Split': [
                     '||',
                     {
-                      'Ref': 'AssetParametersfc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222eS3VersionKeyA58D380C',
+                      Ref: 'AssetParametersfc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222eS3VersionKeyA58D380C',
                     },
                   ],
                 },
@@ -126,7 +124,7 @@ test('deploy from local directory assets', () => {
                   'Fn::Split': [
                     '||',
                     {
-                      'Ref': 'AssetParametersfc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222eS3VersionKeyA58D380C',
+                      Ref: 'AssetParametersfc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222eS3VersionKeyA58D380C',
                     },
                   ],
                 },
@@ -146,7 +144,7 @@ test('deploy from local directory assets', () => {
                   'Fn::Split': [
                     '||',
                     {
-                      'Ref': 'AssetParametersa94977ede0211fd3b45efa33d6d8d1d7bbe0c5a96d977139d8b16abfa96fe9cbS3VersionKeyD9ACE665',
+                      Ref: 'AssetParametersa94977ede0211fd3b45efa33d6d8d1d7bbe0c5a96d977139d8b16abfa96fe9cbS3VersionKeyD9ACE665',
                     },
                   ],
                 },
@@ -159,7 +157,7 @@ test('deploy from local directory assets', () => {
                   'Fn::Split': [
                     '||',
                     {
-                      'Ref': 'AssetParametersa94977ede0211fd3b45efa33d6d8d1d7bbe0c5a96d977139d8b16abfa96fe9cbS3VersionKeyD9ACE665',
+                      Ref: 'AssetParametersa94977ede0211fd3b45efa33d6d8d1d7bbe0c5a96d977139d8b16abfa96fe9cbS3VersionKeyD9ACE665',
                     },
                   ],
                 },
@@ -169,8 +167,8 @@ test('deploy from local directory assets', () => {
         ],
       },
     ],
-    'DestinationBucketName': {
-      'Ref': 'DestC383B82A',
+    DestinationBucketName: {
+      Ref: 'DestC383B82A',
     },
   });
 });
@@ -215,16 +213,16 @@ test('honors passed asset options', () => {
 
   // THEN
   expect(stack).toHaveResource('Custom::CDKBucketDeployment', {
-    'ServiceToken': {
+    ServiceToken: {
       'Fn::GetAtt': [
         'CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536',
         'Arn',
       ],
     },
-    'SourceBucketNames': [{
-      'Ref': 'AssetParameters86f8bca4f28a0bcafef0a98fe4cea25c0071aca27401e35cfaecd06313373bcaS3BucketB41AE64D',
+    SourceBucketNames: [{
+      Ref: 'AssetParameters86f8bca4f28a0bcafef0a98fe4cea25c0071aca27401e35cfaecd06313373bcaS3BucketB41AE64D',
     }],
-    'SourceObjectKeys': [{
+    SourceObjectKeys: [{
       'Fn::Join': [
         '',
         [
@@ -235,7 +233,7 @@ test('honors passed asset options', () => {
                 'Fn::Split': [
                   '||',
                   {
-                    'Ref': 'AssetParameters86f8bca4f28a0bcafef0a98fe4cea25c0071aca27401e35cfaecd06313373bcaS3VersionKeyF3CBA38F',
+                    Ref: 'AssetParameters86f8bca4f28a0bcafef0a98fe4cea25c0071aca27401e35cfaecd06313373bcaS3VersionKeyF3CBA38F',
                   },
                 ],
               },
@@ -248,7 +246,7 @@ test('honors passed asset options', () => {
                 'Fn::Split': [
                   '||',
                   {
-                    'Ref': 'AssetParameters86f8bca4f28a0bcafef0a98fe4cea25c0071aca27401e35cfaecd06313373bcaS3VersionKeyF3CBA38F',
+                    Ref: 'AssetParameters86f8bca4f28a0bcafef0a98fe4cea25c0071aca27401e35cfaecd06313373bcaS3VersionKeyF3CBA38F',
                   },
                 ],
               },
@@ -257,8 +255,8 @@ test('honors passed asset options', () => {
         ],
       ],
     }],
-    'DestinationBucketName': {
-      'Ref': 'DestC383B82A',
+    DestinationBucketName: {
+      Ref: 'DestC383B82A',
     },
   });
 });
@@ -306,6 +304,7 @@ test('system metadata is correctly transformed', () => {
   // GIVEN
   const stack = new cdk.Stack();
   const bucket = new s3.Bucket(stack, 'Dest');
+  const expiration = cdk.Expiration.after(cdk.Duration.hours(12));
 
   // WHEN
   new s3deploy.BucketDeployment(stack, 'Deploy', {
@@ -320,7 +319,7 @@ test('system metadata is correctly transformed', () => {
     serverSideEncryptionCustomerAlgorithm: 'rot13',
     websiteRedirectLocation: 'example',
     cacheControl: [s3deploy.CacheControl.setPublic(), s3deploy.CacheControl.maxAge(cdk.Duration.hours(1))],
-    expires: s3deploy.Expires.after(cdk.Duration.hours(12)),
+    expires: expiration,
   });
 
   // THEN
@@ -333,7 +332,7 @@ test('system metadata is correctly transformed', () => {
       'sse': 'aws:kms',
       'sse-kms-key-id': 'mykey',
       'cache-control': 'public, max-age=3600',
-      'expires': s3deploy.Expires.after(cdk.Duration.hours(12)).value,
+      'expires': expiration.date.toUTCString(),
       'sse-c-copy-source': 'rot13',
       'website-redirect': 'example',
     },
@@ -341,11 +340,10 @@ test('system metadata is correctly transformed', () => {
 });
 
 test('expires type has correct values', () => {
-  expect(s3deploy.Expires.atDate(new Date('Sun, 26 Jan 2020 00:53:20 GMT')).value).toEqual('Sun, 26 Jan 2020 00:53:20 GMT');
-  expect(s3deploy.Expires.atTimestamp(1580000000000).value).toEqual('Sun, 26 Jan 2020 00:53:20 GMT');
-  expect(Math.abs(new Date(s3deploy.Expires.after(cdk.Duration.minutes(10)).value).getTime() - (Date.now() + 600000)) < 15000).toBeTruthy();
-  expect(s3deploy.Expires.fromString('Tue, 04 Feb 2020 08:45:33 GMT').value).toEqual('Tue, 04 Feb 2020 08:45:33 GMT');
-
+  expect(cdk.Expiration.atDate(new Date('Sun, 26 Jan 2020 00:53:20 GMT')).date.toUTCString()).toEqual('Sun, 26 Jan 2020 00:53:20 GMT');
+  expect(cdk.Expiration.atTimestamp(1580000000000).date.toUTCString()).toEqual('Sun, 26 Jan 2020 00:53:20 GMT');
+  expect(Math.abs(new Date(cdk.Expiration.after(cdk.Duration.minutes(10)).date.toUTCString()).getTime() - (Date.now() + 600000)) < 15000).toBeTruthy();
+  expect(cdk.Expiration.fromString('Tue, 04 Feb 2020 08:45:33 GMT').date.toUTCString()).toEqual('Tue, 04 Feb 2020 08:45:33 GMT');
 });
 
 test('cache control type has correct values', () => {
@@ -400,7 +398,7 @@ test('distribution can be used to provide a CloudFront distribution for invalida
 
   expect(stack).toHaveResource('Custom::CDKBucketDeployment', {
     DistributionId: {
-      'Ref': 'DistributionCFDistribution882A7313',
+      Ref: 'DistributionCFDistribution882A7313',
     },
     DistributionPaths: ['/images/*'],
   });
@@ -430,7 +428,7 @@ test('invalidation can happen without distributionPaths provided', () => {
 
   expect(stack).toHaveResource('Custom::CDKBucketDeployment', {
     DistributionId: {
-      'Ref': 'DistributionCFDistribution882A7313',
+      Ref: 'DistributionCFDistribution882A7313',
     },
   });
 
@@ -464,16 +462,16 @@ test('lambda execution role gets permissions to read from the source bucket and 
 
   // THEN
   expect(stack).toHaveResource('AWS::IAM::Policy', {
-    'PolicyDocument': {
-      'Statement': [
+    PolicyDocument: {
+      Statement: [
         {
-          'Action': [
+          Action: [
             's3:GetObject*',
             's3:GetBucket*',
             's3:List*',
           ],
-          'Effect': 'Allow',
-          'Resource': [
+          Effect: 'Allow',
+          Resource: [
             {
               'Fn::GetAtt': [
                 'Source71E471F1',
@@ -497,7 +495,7 @@ test('lambda execution role gets permissions to read from the source bucket and 
           ],
         },
         {
-          'Action': [
+          Action: [
             's3:GetObject*',
             's3:GetBucket*',
             's3:List*',
@@ -505,8 +503,8 @@ test('lambda execution role gets permissions to read from the source bucket and 
             's3:PutObject*',
             's3:Abort*',
           ],
-          'Effect': 'Allow',
-          'Resource': [
+          Effect: 'Allow',
+          Resource: [
             {
               'Fn::GetAtt': [
                 'DestC383B82A',
@@ -530,12 +528,12 @@ test('lambda execution role gets permissions to read from the source bucket and 
           ],
         },
       ],
-      'Version': '2012-10-17',
+      Version: '2012-10-17',
     },
-    'PolicyName': 'CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF',
-    'Roles': [
+    PolicyName: 'CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF',
+    Roles: [
       {
-        'Ref': 'CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265',
+        Ref: 'CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265',
       },
     ],
   });
@@ -597,7 +595,7 @@ test('deployment allows custom role to be supplied', () => {
   expect(stack).toCountResources('AWS::IAM::Role', 1);
   expect(stack).toCountResources('AWS::Lambda::Function', 1);
   expect(stack).toHaveResource('AWS::Lambda::Function', {
-    'Role': {
+    Role: {
       'Fn::GetAtt': [
         'Role1ABCC5F0',
         'Arn',
@@ -620,32 +618,6 @@ test('deploy without deleting missing files from destination', () => {
   });
 
   expect(stack).toHaveResourceLike('Custom::CDKBucketDeployment', {
-    'Prune': false,
+    Prune: false,
   });
-});
-
-test('Deployment role gets KMS permissions when using assets from new style synthesizer', () => {
-  const stack = new cdk.Stack(undefined, undefined, {
-    synthesizer: new cdk.DefaultStackSynthesizer(),
-  });
-  const bucket = new s3.Bucket(stack, 'Dest');
-
-  // WHEN
-  new s3deploy.BucketDeployment(stack, 'Deploy', {
-    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
-    destinationBucket: bucket,
-  });
-
-  // THEN
-  expect(stack).toHaveResource('AWS::IAM::Policy', {
-    PolicyDocument: {
-      Version: '2012-10-17',
-      Statement: arrayWith({
-        Action: ['kms:Decrypt', 'kms:DescribeKey'],
-        Effect: 'Allow',
-        Resource:  { 'Fn::ImportValue': 'CdkBootstrap-hnb659fds-FileAssetKeyArn' },
-      }),
-    },
-  });
-
 });

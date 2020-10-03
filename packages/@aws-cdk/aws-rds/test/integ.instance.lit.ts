@@ -1,3 +1,4 @@
+/// !cdk-integ pragma:ignore-assets
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as targets from '@aws-cdk/aws-events-targets';
@@ -17,7 +18,7 @@ class DatabaseInstanceStack extends cdk.Stack {
     /// !show
     // Set open cursors with parameter group
     const parameterGroup = new rds.ParameterGroup(this, 'ParameterGroup', {
-      family: 'oracle-se1-11.2',
+      engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19_0_0_0_2020_04_R1 }),
       parameters: {
         open_cursors: '2500',
       },
@@ -25,12 +26,10 @@ class DatabaseInstanceStack extends cdk.Stack {
 
     /// Add XMLDB and OEM with option group
     const optionGroup = new rds.OptionGroup(this, 'OptionGroup', {
-      engine: rds.DatabaseInstanceEngine.oracleSe1({
-        version: '11.2',
-      }),
+      engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19_0_0_0_2020_04_R1 }),
       configurations: [
         {
-          name: 'XMLDB',
+          name: 'LOCATOR',
         },
         {
           name: 'OEM',
@@ -45,12 +44,12 @@ class DatabaseInstanceStack extends cdk.Stack {
 
     // Database instance with production values
     const instance = new rds.DatabaseInstance(this, 'Instance', {
-      engine: rds.DatabaseInstanceEngine.ORACLE_SE1,
+      engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19_0_0_0_2020_04_R1 }),
       licenseModel: rds.LicenseModel.BRING_YOUR_OWN_LICENSE,
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MEDIUM),
       multiAz: true,
       storageType: rds.StorageType.IO1,
-      masterUsername: 'syscdk',
+      credentials: rds.Credentials.fromUsername('syscdk'),
       vpc,
       databaseName: 'ORCL',
       storageEncrypted: true,

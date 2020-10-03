@@ -1,8 +1,13 @@
-import { Construct, IResolvable } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnResolver } from './appsync.generated';
 import { BaseDataSource } from './data-source';
-import { GraphQLApi } from './graphqlapi';
+import { IGraphqlApi } from './graphqlapi-base';
 import { MappingTemplate } from './mapping-template';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
+
 /**
  * Basic properties for an AppSync resolver
  */
@@ -18,9 +23,10 @@ export interface BaseResolverProps {
   /**
    * configuration of the pipeline resolver
    *
-   * @default - create a UNIT resolver
+   * @default - no pipeline resolver configuration
+   * An empty array | undefined sets resolver to be of kind, unit
    */
-  readonly pipelineConfig?: CfnResolver.PipelineConfigProperty | IResolvable;
+  readonly pipelineConfig?: string[];
   /**
    * The request mapping template for this resolver
    *
@@ -42,7 +48,7 @@ export interface ResolverProps extends BaseResolverProps {
   /**
    * The API this resolver is attached to
    */
-  readonly api: GraphQLApi;
+  readonly api: IGraphqlApi;
   /**
    * The data source this resolver is using
    *
@@ -54,7 +60,7 @@ export interface ResolverProps extends BaseResolverProps {
 /**
  * An AppSync resolver
  */
-export class Resolver extends Construct {
+export class Resolver extends CoreConstruct {
   /**
    * the ARN of the resolver
    */
@@ -65,16 +71,19 @@ export class Resolver extends Construct {
   constructor(scope: Construct, id: string, props: ResolverProps) {
     super(scope, id);
 
+    const pipelineConfig = props.pipelineConfig && props.pipelineConfig.length ? { functions: props.pipelineConfig } : undefined;
+
     this.resolver = new CfnResolver(this, 'Resource', {
       apiId: props.api.apiId,
       typeName: props.typeName,
       fieldName: props.fieldName,
       dataSourceName: props.dataSource ? props.dataSource.name : undefined,
-      kind: props.pipelineConfig ? 'PIPELINE' : 'UNIT',
+      kind: pipelineConfig ? 'PIPELINE' : 'UNIT',
+      pipelineConfig: pipelineConfig,
       requestMappingTemplate: props.requestMappingTemplate ? props.requestMappingTemplate.renderTemplate() : undefined,
       responseMappingTemplate: props.responseMappingTemplate ? props.responseMappingTemplate.renderTemplate() : undefined,
     });
-    this.resolver.addDependsOn(props.api.schema);
+    props.api.addSchemaDependency(this.resolver);
     if (props.dataSource) {
       this.resolver.addDependsOn(props.dataSource.ds);
     }

@@ -2,7 +2,8 @@ import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { PolicyStatement, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { IBucket } from '@aws-cdk/aws-s3';
-import { Construct, Resource } from '@aws-cdk/core';
+import { Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { BaseLoadBalancer, BaseLoadBalancerProps, ILoadBalancerV2 } from '../shared/base-load-balancer';
 import { BaseNetworkListenerProps, NetworkListener } from './network-listener';
 
@@ -69,13 +70,13 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
 
       public get loadBalancerCanonicalHostedZoneId(): string {
         if (attrs.loadBalancerCanonicalHostedZoneId) { return attrs.loadBalancerCanonicalHostedZoneId; }
-        // tslint:disable-next-line:max-line-length
+        // eslint-disable-next-line max-len
         throw new Error(`'loadBalancerCanonicalHostedZoneId' was not provided when constructing Network Load Balancer ${this.node.path} from attributes`);
       }
 
       public get loadBalancerDnsName(): string {
         if (attrs.loadBalancerDnsName) { return attrs.loadBalancerDnsName; }
-        // tslint:disable-next-line:max-line-length
+        // eslint-disable-next-line max-len
         throw new Error(`'loadBalancerDnsName' was not provided when constructing Network Load Balancer ${this.node.path} from attributes`);
       }
     }

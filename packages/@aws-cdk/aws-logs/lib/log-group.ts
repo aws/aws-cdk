@@ -1,6 +1,7 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct, IResource, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
+import { IResource, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { LogStream } from './log-stream';
 import { CfnLogGroup } from './logs.generated';
 import { MetricFilter } from './metric-filter';
@@ -200,7 +201,7 @@ export enum RetentionDays {
   /**
    * 2 weeks
    */
-  TWO_WEEKS =  14,
+  TWO_WEEKS = 14,
 
   /**
    * 1 month

@@ -98,6 +98,48 @@ export class PolicyDocument implements cdk.IResolvable {
     return this.render();
   }
 
+  /**
+   * Validate that all policy statements in the policy document satisfies the
+   * requirements for any policy.
+   *
+   * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html#access_policies-json
+   */
+  public validateForAnyPolicy(): string[] {
+    const errors = new Array<string>();
+    for (const statement of this.statements) {
+      errors.push(...statement.validateForAnyPolicy());
+    }
+    return errors;
+  }
+
+  /**
+   * Validate that all policy statements in the policy document satisfies the
+   * requirements for a resource-based policy.
+   *
+   * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html#access_policies-json
+   */
+  public validateForResourcePolicy(): string[] {
+    const errors = new Array<string>();
+    for (const statement of this.statements) {
+      errors.push(...statement.validateForResourcePolicy());
+    }
+    return errors;
+  }
+
+  /**
+   * Validate that all policy statements in the policy document satisfies the
+   * requirements for an identity-based policy.
+   *
+   * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html#access_policies-json
+   */
+  public validateForIdentityPolicy(): string[] {
+    const errors = new Array<string>();
+    for (const statement of this.statements) {
+      errors.push(...statement.validateForIdentityPolicy());
+    }
+    return errors;
+  }
+
   private render(): any {
     if (this.isEmpty) {
       return undefined;

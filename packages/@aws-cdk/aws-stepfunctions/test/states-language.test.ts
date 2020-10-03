@@ -362,7 +362,7 @@ describe('States Language', () => {
   test('States can have error branches', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const task1 = new stepfunctions.Task(stack, 'Task1', { task: new FakeTask()});
+    const task1 = new stepfunctions.Task(stack, 'Task1', { task: new FakeTask() });
     const failure = new stepfunctions.Fail(stack, 'Failed', { error: 'DidNotWork', cause: 'We got stuck' });
 
     // WHEN
@@ -405,8 +405,8 @@ describe('States Language', () => {
         Task1: {
           Type: 'Task',
           Resource: 'resource',
-          Catch: [ { ErrorEquals: ['States.ALL'], Next: 'Failed', ResultPath: '$.some_error' } ],
-          Retry: [ { ErrorEquals: ['HTTPError'], MaxAttempts: 2 } ],
+          Catch: [{ ErrorEquals: ['States.ALL'], Next: 'Failed', ResultPath: '$.some_error' }],
+          Retry: [{ ErrorEquals: ['HTTPError'], MaxAttempts: 2 }],
           Next: 'Failed',
         },
         Failed: {
@@ -506,7 +506,7 @@ describe('States Language', () => {
       .next(task3.addCatch(errorHandler));
 
     // THEN
-    const sharedTaskProps = { Type: 'Task', Resource: 'resource', Catch: [ { ErrorEquals: ['States.ALL'], Next: 'ErrorHandler' } ] };
+    const sharedTaskProps = { Type: 'Task', Resource: 'resource', Catch: [{ ErrorEquals: ['States.ALL'], Next: 'ErrorHandler' }] };
     expect(render(chain)).toStrictEqual({
       StartAt: 'Task1',
       States: {

@@ -140,14 +140,17 @@ app.addBranch('feature/next', {
 });
 ```
 
-### Automatically creating branches
-Use the `autoBranchCreation` prop to automatically create new branches:
+### Automatically creating and deleting branches
+Use the `autoBranchCreation` and `autoBranchDeletion` props to control creation/deletion
+of branches:
+
 ```ts
 const amplifyApp = new amplify.App(this, 'MyApp', {
   repository: 'https://github.com/<user>/<repo>',
   oauthToken: cdk.SecretValue.secretsManager('my-github-token'),
-  autoBranchCreation: {
+  autoBranchCreation: { // Automatically connect branches that match a pattern set
     patterns: ['feature/*', 'test/*']
   }
+  autoBranchDeletion: true, // Automatically disconnect a branch when you delete a branch from your repository
 });
 ```

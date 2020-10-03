@@ -23,9 +23,14 @@
       },
       "python": {
         "distName": "aws-cdk.aws-events-targets",
-        "module": "aws_cdk.aws_events_targets"
+        "module": "aws_cdk.aws_events_targets",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",
@@ -49,7 +54,10 @@
     "pre": [
       "node ./build-tools/gen.js"
     ],
-    "jest": true
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "keywords": [
     "aws",
@@ -68,11 +76,11 @@
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
     "@aws-cdk/aws-codecommit": "0.0.0",
-    "aws-sdk": "^2.712.0",
+    "aws-sdk": "^2.739.0",
     "aws-sdk-mock": "^5.1.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
-    "jest": "^25.5.4",
+    "jest": "^26.4.2",
     "pkglint": "0.0.0"
   },
   "dependencies": {
@@ -90,7 +98,7 @@
     "@aws-cdk/aws-batch": "0.0.0",
     "@aws-cdk/aws-kinesis": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.0.4"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -107,7 +115,7 @@
     "@aws-cdk/aws-stepfunctions": "0.0.0",
     "@aws-cdk/aws-batch": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.2",
+    "constructs": "^3.0.4",
     "@aws-cdk/aws-kinesis": "0.0.0"
   },
   "engines": {

@@ -66,10 +66,15 @@ new codepipeline_actions.CodeBuildAction({
 
 If you want to use a GitHub repository as the source, you must create:
 
-* A [GitHub Access Token](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line)
-* A [Secrets Manager PlainText Secret](https://docs.aws.amazon.com/secretsmanager/latest/userguide/manage_create-basic-secret.html)
-  with the value of the **GitHub Access Token**. Pick whatever name you want
-  (for example `my-github-token`) and pass it as the argument of `oauthToken`.
+* A [GitHub Access Token](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line),
+  with scopes **repo** and **admin:repo_hook**.
+* A [Secrets Manager Secret](https://docs.aws.amazon.com/secretsmanager/latest/userguide/manage_create-basic-secret.html)
+  with the value of the **GitHub Access Token**. Pick whatever name you want (for example `my-github-token`).
+  This token can be stored either as Plaintext or as a Secret key/value. 
+  If you stored the token as Plaintext, 
+  set `cdk.SecretValue.secretsManager('my-github-token')` as the value of `oauthToken`. 
+  If you stored it as a Secret key/value, 
+  you must set `cdk.SecretValue.secretsManager('my-github-token', { jsonField : 'my-github-token' })` as the value of `oauthToken`.
 
 To use GitHub as the source of a CodePipeline:
 
@@ -83,7 +88,6 @@ const sourceAction = new codepipeline_actions.GitHubSourceAction({
   oauthToken: cdk.SecretValue.secretsManager('my-github-token'),
   output: sourceOutput,
   branch: 'develop', // default: 'master'
-  trigger: codepipeline_actions.GitHubTrigger.POLL // default: 'WEBHOOK', 'NONE' is also possible for no Source trigger
 });
 pipeline.addStage({
   stageName: 'Source',
@@ -164,6 +168,19 @@ const sourceAction = new codepipeline_actions.S3SourceAction({
 pipeline.addStage({
   stageName: 'Source',
   actions: [sourceAction],
+});
+```
+
+The region of the action will be determined by the region the bucket itself is in.
+When using a newly created bucket,
+that region will be taken from the stack the bucket belongs to;
+for an imported bucket,
+you can specify the region explicitly:
+
+```ts
+const sourceBucket = s3.Bucket.fromBucketAttributes(this, 'SourceBucket', {
+  bucketName: 'my-bucket',
+  region: 'ap-southeast-1',
 });
 ```
 
@@ -694,6 +711,29 @@ new codepipeline_actions.AlexaSkillDeployAction({
 });
 ```
 
+### AWS Service Catalog
+
+You can deploy a CloudFormation template to an existing Service Catalog product with the following action:
+
+```ts
+new codepipeline.Pipeline(this, 'Pipeline', {
+      stages: [
+          {
+            stageName: 'ServiceCatalogDeploy',
+            actions: [
+            new codepipeline_actions.ServiceCatalogDeployAction({
+                actionName: 'ServiceCatalogDeploy',
+                templatePath: cdkBuildOutput.atPath("Sample.template.json"),
+                productVersionName: "Version - " + Date.now.toString,
+                productType: "CLOUD_FORMATION_TEMPLATE",
+                productVersionDescription: "This is a version from the pipeline with a new description.",
+                productId: "prod-XXXXXXXX",
+            }),
+          },
+        ],
+});
+```
+
 ## Approve & invoke
 
 ### Manual approval Action
@@ -801,3 +841,52 @@ new codepipeline_actions.CodeBuildAction({
 
 See [the AWS documentation](https://docs.aws.amazon.com/codepipeline/latest/userguide/actions-invoke-lambda-function.html)
 on how to write a Lambda function invoked from CodePipeline.
+
+### AWS Step Functions
+
+This module contains an Action that allows you to invoke a Step Function in a Pipeline:
+
+```ts
+import * as stepfunction from '@aws-cdk/aws-stepfunctions';
+
+const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
+const startState = new stepfunction.Pass(stack, 'StartState');
+const simpleStateMachine  = new stepfunction.StateMachine(stack, 'SimpleStateMachine', {
+  definition: startState,
+});
+const stepFunctionAction = new codepipeline_actions.StepFunctionsInvokeAction({
+  actionName: 'Invoke',
+  stateMachine: simpleStateMachine,
+  stateMachineInput: codepipeline_actions.StateMachineInput.literal({ IsHelloWorldExample: true }),
+});
+pipeline.addStage({
+  stageName: 'StepFunctions',
+  actions: [stepFunctionAction],
+});
+```
+
+The `StateMachineInput` can be created with one of 2 static factory methods:
+`literal`, which takes an arbitrary map as its only argument, or `filePath`:
+
+```ts
+import * as stepfunction from '@aws-cdk/aws-stepfunctions';
+
+const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
+const inputArtifact = new codepipeline.Artifact();
+const startState = new stepfunction.Pass(stack, 'StartState');
+const simpleStateMachine  = new stepfunction.StateMachine(stack, 'SimpleStateMachine', {
+  definition: startState,
+});
+const stepFunctionAction = new codepipeline_actions.StepFunctionsInvokeAction({
+  actionName: 'Invoke',
+  stateMachine: simpleStateMachine,
+  stateMachineInput: codepipeline_actions.StateMachineInput.filePath(inputArtifact.atPath('assets/input.json')),
+});
+pipeline.addStage({
+  stageName: 'StepFunctions',
+  actions: [stepFunctionAction],
+});
+```
+
+See [the AWS documentation](https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-StepFunctions.html)
+for information on Action structure reference.

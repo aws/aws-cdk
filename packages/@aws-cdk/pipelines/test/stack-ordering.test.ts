@@ -55,6 +55,29 @@ test('multiple independent stacks go in parallel', () => {
   });
 });
 
+test('manual approval is inserted in correct location', () => {
+  // WHEN
+  pipeline.addApplicationStage(new TwoStackApp(app, 'MyApp'), {
+    manualApprovals: true,
+  });
+
+  // THEN
+  expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+    Stages: arrayWith({
+      Name: 'MyApp',
+      Actions: sortedByRunOrder([
+        objectLike({ Name: 'Stack1.Prepare' }),
+        objectLike({ Name: 'ManualApproval' }),
+        objectLike({ Name: 'Stack1.Deploy' }),
+        objectLike({ Name: 'Stack2.Prepare' }),
+        objectLike({ Name: 'ManualApproval2' }),
+        objectLike({ Name: 'Stack2.Deploy' }),
+      ]),
+    }),
+  });
+});
+
+
 class TwoStackApp extends Stage {
   constructor(scope: Construct, id: string, props?: StageProps) {
     super(scope, id, props);

@@ -1,8 +1,8 @@
 import { Test } from 'nodeunit';
-import { DatabaseClusterEngine } from '../lib';
+import { AuroraEngineVersion, AuroraMysqlEngineVersion, AuroraPostgresEngineVersion, DatabaseClusterEngine } from '../lib';
 
 export = {
-  'cluster parameter group correctly determined for AURORA'(test: Test) {
+  "default parameterGroupFamily for versionless Aurora cluster engine is 'aurora5.6'"(test: Test) {
     // GIVEN
     const engine = DatabaseClusterEngine.AURORA;
 
@@ -15,7 +15,7 @@ export = {
     test.done();
   },
 
-  'cluster parameter group correctly determined for AURORA_MYSQL'(test: Test) {
+  "default parameterGroupFamily for versionless Aurora MySQL cluster engine is 'aurora-mysql5.7'"(test: Test) {
     // GIVEN
     const engine = DatabaseClusterEngine.AURORA_MYSQL;
 
@@ -28,7 +28,7 @@ export = {
     test.done();
   },
 
-  'cluster parameter group correctly determined for AURORA_POSTGRESQL'(test: Test) {
+  'default parameterGroupFamily for versionless Aurora PostgreSQL is not defined'(test: Test) {
     // GIVEN
     const engine = DatabaseClusterEngine.AURORA_POSTGRESQL;
 
@@ -36,7 +36,7 @@ export = {
     const family = engine.parameterGroupFamily;
 
     // THEN
-    test.equals(family, 'aurora-postgresql11');
+    test.equals(family, undefined);
 
     test.done();
   },
@@ -44,7 +44,7 @@ export = {
   'cluster parameter group correctly determined for AURORA and given version'(test: Test) {
     // GIVEN
     const engine = DatabaseClusterEngine.aurora({
-      version: '5.6.mysql_aurora.1.22.2',
+      version: AuroraEngineVersion.VER_1_22_2,
     });
 
     // WHEN
@@ -59,7 +59,7 @@ export = {
   'cluster parameter group correctly determined for AURORA_MYSQL and given version'(test: Test) {
     // GIVEN
     const engine = DatabaseClusterEngine.auroraMysql({
-      version: '5.7.mysql_aurora.2.07.1',
+      version: AuroraMysqlEngineVersion.VER_2_07_1,
     });
 
     // WHEN
@@ -74,7 +74,7 @@ export = {
   'cluster parameter group correctly determined for AURORA_POSTGRESQL and given version'(test: Test) {
     // GIVEN
     const engine = DatabaseClusterEngine.auroraPostgres({
-      version: '11.6',
+      version: AuroraPostgresEngineVersion.VER_11_6,
     });
 
     // WHEN
@@ -89,25 +89,30 @@ export = {
   'parameter group family'(test: Test) {
     // the PostgreSQL engine knows about the following major versions: 9.6, 10 and 11
 
-    test.throws(() => {
-      DatabaseClusterEngine.auroraPostgres({ version: '8' });
-    }, /No parameter group family found for database engine aurora-postgresql with version 8/);
+    test.equals(DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.of('8', '8') }).parameterGroupFamily,
+      'aurora-postgresql8');
 
-    test.throws(() => {
-      DatabaseClusterEngine.auroraPostgres({ version: '9' });
-    }, /No parameter group family found for database engine aurora-postgresql with version 9/);
+    test.equals(DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.of('9', '9') }).parameterGroupFamily,
+      'aurora-postgresql9');
 
-    test.throws(() => {
-      DatabaseClusterEngine.auroraPostgres({ version: '9.7' });
-    }, /No parameter group family found for database engine aurora-postgresql with version 9\.7/);
+    test.equals(DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.of('9.7', '9.7') }).parameterGroupFamily,
+      'aurora-postgresql9.7');
 
-    test.equals(DatabaseClusterEngine.auroraPostgres({ version: '9.6' }).parameterGroupFamily,
+    test.equals(DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.of('9.6', '9.6') }).parameterGroupFamily,
       'aurora-postgresql9.6');
-    test.equals(DatabaseClusterEngine.auroraPostgres({ version: '9.6.1' }).parameterGroupFamily,
+    test.equals(DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.of('9.6.1', '9.6') }).parameterGroupFamily,
       'aurora-postgresql9.6');
-    test.equals(DatabaseClusterEngine.auroraPostgres({ version: '10.0' }).parameterGroupFamily,
+    test.equals(DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.of('10.0', '10') }).parameterGroupFamily,
       'aurora-postgresql10');
 
     test.done();
   },
-};
+
+  'supported log types'(test: Test) {
+    const mysqlLogTypes = ['error', 'general', 'slowquery', 'audit'];
+    test.deepEqual(DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }).supportedLogTypes, mysqlLogTypes);
+    test.deepEqual(DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_2_08_1 }).supportedLogTypes, mysqlLogTypes);
+    test.deepEqual(DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_9_6_9 }).supportedLogTypes, ['postgresql']);
+    test.done();
+  },
+}

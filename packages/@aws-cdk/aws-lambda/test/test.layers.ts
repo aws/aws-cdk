@@ -1,9 +1,9 @@
+import * as path from 'path';
 import { canonicalizeTemplate, expect, haveResource, ResourcePart, SynthUtils } from '@aws-cdk/assert';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Test, testCase } from 'nodeunit';
-import * as path from 'path';
 import * as lambda from '../lib';
 
 export = testCase({
@@ -43,7 +43,7 @@ export = testCase({
 
     // WHEN
     layer.addPermission('GrantUsage-123456789012', { accountId: '123456789012' });
-    layer.addPermission('GrantUsage-o-123456',     { accountId: '*', organizationId: 'o-123456' });
+    layer.addPermission('GrantUsage-o-123456', { accountId: '*', organizationId: 'o-123456' });
 
     // THEN
     expect(stack).to(haveResource('AWS::Lambda::LayerVersionPermission', {

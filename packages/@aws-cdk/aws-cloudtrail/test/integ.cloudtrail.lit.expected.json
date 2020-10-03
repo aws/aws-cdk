@@ -5,6 +5,35 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
+    "TopicBFC7AF6E": {
+      "Type": "AWS::SNS::Topic"
+    },
+    "TopicPolicyA1747468": {
+      "Type": "AWS::SNS::TopicPolicy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sns:Publish",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "cloudtrail.amazonaws.com"
+              },
+              "Resource": {
+                "Ref": "TopicBFC7AF6E"
+              },
+              "Sid": "0"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Topics": [
+          {
+            "Ref": "TopicBFC7AF6E"
+          }
+        ]
+      }
+    },
     "LambdaFunctionServiceRoleC555A460": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -165,7 +194,13 @@
           }
         ],
         "IncludeGlobalServiceEvents": true,
-        "IsMultiRegionTrail": true
+        "IsMultiRegionTrail": true,
+        "SnsTopicName": {
+          "Fn::GetAtt": [
+            "TopicBFC7AF6E",
+            "TopicName"
+          ]
+        }
       },
       "DependsOn": [
         "TrailS3PolicyE42170FE"

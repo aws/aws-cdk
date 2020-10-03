@@ -1,6 +1,7 @@
 import { IVpcEndpoint } from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { CfnOutput, Construct, IResource as IResourceBase, Resource, Stack } from '@aws-cdk/core';
+import { CfnOutput, IResource as IResourceBase, Resource, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { ApiDefinition } from './api-definition';
 import { ApiKey, ApiKeyOptions, IApiKey } from './api-key';
 import { CfnAccount, CfnRestApi } from './apigateway.generated';
@@ -67,7 +68,7 @@ export interface IRestApi extends IResourceBase {
 /**
  * Represents the props that all Rest APIs share
  */
-export interface RestApiOptions extends ResourceOptions {
+export interface RestApiBaseProps {
   /**
    * Indicates if a Deployment should be automatically created for this API,
    * and recreated when the API model (resources, methods) changes.
@@ -159,6 +160,21 @@ export interface RestApiOptions extends ResourceOptions {
    * @default - when no export name is given, output will be created without export
    */
   readonly endpointExportName?: string;
+
+  /**
+   * A list of the endpoint types of the API. Use this property when creating
+   * an API.
+   *
+   * @default EndpointType.EDGE
+   */
+  readonly endpointTypes?: EndpointType[];
+}
+
+/**
+ * Represents the props that all Rest APIs share.
+ * @deprecated - superceded by `RestApiBaseProps`
+ */
+export interface RestApiOptions extends RestApiBaseProps, ResourceOptions {
 }
 
 /**
@@ -211,25 +227,16 @@ export interface RestApiProps extends RestApiOptions {
    * The EndpointConfiguration property type specifies the endpoint types of a REST API
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-restapi-endpointconfiguration.html
    *
-   * @default - No endpoint configuration
+   * @default EndpointType.EDGE
    */
   readonly endpointConfiguration?: EndpointConfiguration;
-
-  /**
-   * A list of the endpoint types of the API. Use this property when creating
-   * an API.
-   *
-   * @default - No endpoint types.
-   * @deprecated this property is deprecated, use endpointConfiguration instead
-   */
-  readonly endpointTypes?: EndpointType[];
 }
 
 /**
  * Props to instantiate a new SpecRestApi
  * @experimental
  */
-export interface SpecRestApiProps extends RestApiOptions {
+export interface SpecRestApiProps extends RestApiBaseProps {
   /**
    * An OpenAPI definition compatible with API Gateway.
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-import-api.html
@@ -241,7 +248,6 @@ export interface SpecRestApiProps extends RestApiOptions {
  * Base implementation that are common to various implementations of IRestApi
  */
 export abstract class RestApiBase extends Resource implements IRestApi {
-
   /**
    * Checks if the given object is an instance of RestApiBase.
    * @internal
@@ -296,7 +302,7 @@ export abstract class RestApiBase extends Resource implements IRestApi {
   private _latestDeployment?: Deployment;
   private _domainName?: DomainName;
 
-  constructor(scope: Construct, id: string, props: RestApiOptions = { }) {
+  constructor(scope: Construct, id: string, props: RestApiBaseProps = { }) {
     super(scope, id, {
       physicalName: props.restApiName || id,
     });
@@ -377,6 +383,15 @@ export abstract class RestApiBase extends Resource implements IRestApi {
     ignore(method);
   }
 
+  /**
+   * Associates a Deployment resource with this REST API.
+   *
+   * @internal
+   */
+  public _attachDeployment(deployment: Deployment) {
+    ignore(deployment);
+  }
+
   protected configureCloudWatchRole(apiResource: CfnRestApi) {
     const role = new iam.Role(this, 'CloudWatchRole', {
       assumedBy: new iam.ServicePrincipal('apigateway.amazonaws.com'),
@@ -415,6 +430,25 @@ export abstract class RestApiBase extends Resource implements IRestApi {
         throw new Error('Cannot set \'deployOptions\' if \'deploy\' is disabled');
       }
     }
+  }
+
+  /**
+   * @internal
+   */
+  protected _configureEndpoints(props: RestApiProps): CfnRestApi.EndpointConfigurationProperty | undefined {
+    if (props.endpointTypes && props.endpointConfiguration) {
+      throw new Error('Only one of the RestApi props, endpointTypes or endpointConfiguration, is allowed');
+    }
+    if (props.endpointConfiguration) {
+      return {
+        types: props.endpointConfiguration.types,
+        vpcEndpointIds: props.endpointConfiguration?.vpcEndpoints?.map(vpcEndpoint => vpcEndpoint.vpcEndpointId),
+      };
+    }
+    if (props.endpointTypes) {
+      return { types: props.endpointTypes };
+    }
+    return undefined;
   }
 }
 
@@ -456,12 +490,13 @@ export class SpecRestApi extends RestApiBase {
       failOnWarnings: props.failOnWarnings,
       body: apiDefConfig.inlineDefinition ? apiDefConfig.inlineDefinition : undefined,
       bodyS3Location: apiDefConfig.inlineDefinition ? undefined : apiDefConfig.s3Location,
+      endpointConfiguration: this._configureEndpoints(props),
       parameters: props.parameters,
     });
     this.node.defaultChild = resource;
     this.restApiId = resource.ref;
     this.restApiRootResourceId = resource.attrRootResourceId;
-    this.root = new RootResource(this, props, this.restApiRootResourceId);
+    this.root = new RootResource(this, {}, this.restApiRootResourceId);
 
     this.configureDeployment(props);
     if (props.domainName) {
@@ -543,6 +578,11 @@ export class RestApi extends RestApiBase {
    */
   public readonly methods = new Array<Method>();
 
+  /**
+   * This list of deployments bound to this RestApi
+   */
+  private readonly deployments = new Array<Deployment>();
+
   constructor(scope: Construct, id: string, props: RestApiProps = { }) {
     super(scope, id, props);
 
@@ -553,7 +593,7 @@ export class RestApi extends RestApiBase {
       failOnWarnings: props.failOnWarnings,
       minimumCompressionSize: props.minimumCompressionSize,
       binaryMediaTypes: props.binaryMediaTypes,
-      endpointConfiguration: this.configureEndpoints(props),
+      endpointConfiguration: this._configureEndpoints(props),
       apiKeySourceType: props.apiKeySourceType,
       cloneFrom: props.cloneFrom ? props.cloneFrom.restApiId : undefined,
       parameters: props.parameters,
@@ -620,6 +660,29 @@ export class RestApi extends RestApiBase {
    */
   public _attachMethod(method: Method) {
     this.methods.push(method);
+
+    // add this method as a dependency to all deployments defined for this api
+    // when additional deployments are added, _attachDeployment is called and
+    // this method will be added there.
+    for (const dep of this.deployments) {
+      dep._addMethodDependency(method);
+    }
+  }
+
+  /**
+   * Attaches a deployment to this REST API.
+   *
+   * @internal
+   */
+  public _attachDeployment(deployment: Deployment) {
+    this.deployments.push(deployment);
+
+    // add all methods that were already defined as dependencies of this
+    // deployment when additional methods are added, _attachMethod is called and
+    // it will be added as a dependency to this deployment.
+    for (const method of this.methods) {
+      deployment._addMethodDependency(method);
+    }
   }
 
   /**
@@ -627,26 +690,10 @@ export class RestApi extends RestApiBase {
    */
   protected validate() {
     if (this.methods.length === 0) {
-      return [ "The REST API doesn't contain any methods" ];
+      return ["The REST API doesn't contain any methods"];
     }
 
     return [];
-  }
-
-  private configureEndpoints(props: RestApiProps): CfnRestApi.EndpointConfigurationProperty | undefined {
-    if (props.endpointTypes && props.endpointConfiguration) {
-      throw new Error('Only one of the RestApi props, endpointTypes or endpointConfiguration, is allowed');
-    }
-    if (props.endpointConfiguration) {
-      return {
-        types: props.endpointConfiguration.types,
-        vpcEndpointIds: props.endpointConfiguration?.vpcEndpoints?.map(vpcEndpoint => vpcEndpoint.vpcEndpointId),
-      };
-    }
-    if (props.endpointTypes) {
-      return { types: props.endpointTypes };
-    }
-    return undefined;
   }
 }
 
@@ -659,7 +706,7 @@ export interface EndpointConfiguration {
   /**
    * A list of endpoint types of an API or its custom domain name.
    *
-   * @default - no endpoint types.
+   * @default EndpointType.EDGE
    */
   readonly types: EndpointType[];
 

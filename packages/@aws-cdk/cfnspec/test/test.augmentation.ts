@@ -1,6 +1,6 @@
 import * as fs from 'fs';
-import { Test } from 'nodeunit';
 import * as path from 'path';
+import { Test } from 'nodeunit';
 import * as cfnspec from '../lib';
 import { MetricType } from '../lib/schema';
 

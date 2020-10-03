@@ -2,7 +2,7 @@ import { expect, haveResource } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { DatabaseInstanceEngine, OptionGroup } from '../lib';
+import { DatabaseInstanceEngine, OptionGroup, OracleEngineVersion, OracleLegacyEngineVersion } from '../lib';
 
 export = {
   'create an option group'(test: Test) {
@@ -12,7 +12,7 @@ export = {
     // WHEN
     new OptionGroup(stack, 'Options', {
       engine: DatabaseInstanceEngine.oracleSe1({
-        version: '11.2',
+        version: OracleLegacyEngineVersion.VER_11_2,
       }),
       configurations: [
         {
@@ -36,7 +36,7 @@ export = {
     test.done();
   },
 
-  'option group with security groups'(test: Test) {
+  'option group with new security group'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -44,7 +44,7 @@ export = {
     // WHEN
     const optionGroup = new OptionGroup(stack, 'Options', {
       engine: DatabaseInstanceEngine.oracleSe({
-        version: '11.2',
+        version: OracleLegacyEngineVersion.VER_11_2,
       }),
       configurations: [
         {
@@ -96,6 +96,51 @@ export = {
     test.done();
   },
 
+  'option group with existing security group'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    const securityGroup = new ec2.SecurityGroup(stack, 'CustomSecurityGroup', { vpc });
+    new OptionGroup(stack, 'Options', {
+      engine: DatabaseInstanceEngine.oracleSe({
+        version: OracleLegacyEngineVersion.VER_11_2,
+      }),
+      configurations: [
+        {
+          name: 'OEM',
+          port: 1158,
+          vpc,
+          securityGroups: [securityGroup],
+        },
+      ],
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::RDS::OptionGroup', {
+      EngineName: 'oracle-se',
+      MajorEngineVersion: '11.2',
+      OptionGroupDescription: 'Option group for oracle-se 11.2',
+      OptionConfigurations: [
+        {
+          OptionName: 'OEM',
+          Port: 1158,
+          VpcSecurityGroupMemberships: [
+            {
+              'Fn::GetAtt': [
+                'CustomSecurityGroupE5E500E5',
+                'GroupId',
+              ],
+            },
+          ],
+        },
+      ],
+    }));
+
+    test.done();
+  },
+
   'throws when using an option with port and no vpc'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -103,7 +148,7 @@ export = {
     // THEN
     test.throws(() => new OptionGroup(stack, 'Options', {
       engine: DatabaseInstanceEngine.oracleSe2({
-        version: '11.2',
+        version: OracleEngineVersion.VER_12_1,
       }),
       configurations: [
         {

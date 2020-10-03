@@ -1,4 +1,4 @@
-// tslint:disable: no-console
+/* eslint-disable no-console */
 import * as AWS from 'aws-sdk';
 import * as api from './api';
 
@@ -8,10 +8,10 @@ export async function onEvent(event: AWSCDKAsyncCustomResource.OnEventRequest) {
   switch (event.RequestType) {
     case 'Create':
     case 'Update':
-      return await putObject(event);
+      return putObject(event);
 
     case 'Delete':
-      return await deleteObject(event);
+      return deleteObject(event);
   }
 }
 

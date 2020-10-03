@@ -65,12 +65,13 @@ export class CloudFormationLang {
     }
 
     // We need a ResolveContext to get started so return a Token
-    return Lazy.stringValue({ produce: (ctx: IResolveContext) =>
-      JSON.stringify(resolve(obj, {
-        preparing: ctx.preparing,
-        scope: ctx.scope,
-        resolver: new IntrinsincWrapper(),
-      }), undefined, space),
+    return Lazy.stringValue({
+      produce: (ctx: IResolveContext) =>
+        JSON.stringify(resolve(obj, {
+          preparing: ctx.preparing,
+          scope: ctx.scope,
+          resolver: new IntrinsincWrapper(),
+        }), undefined, space),
     });
 
     function wrap(value: any): any {
@@ -172,9 +173,9 @@ export function minimalCloudFormationJoin(delimiter: string, values: any[]): any
 
   function isSplicableFnJoinIntrinsic(obj: any): boolean {
     if (!isIntrinsic(obj)) { return false; }
-    if (Object.keys(obj)[0] !== 'Fn::Join') { return false;  }
+    if (Object.keys(obj)[0] !== 'Fn::Join') { return false; }
 
-    const [ delim, list ] = obj['Fn::Join'];
+    const [delim, list] = obj['Fn::Join'];
     if (delim !== delimiter) { return false; }
 
     if (Token.isUnresolved(list)) { return false; }

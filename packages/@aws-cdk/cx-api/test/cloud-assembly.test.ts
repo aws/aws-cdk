@@ -94,11 +94,11 @@ test('dependencies', () => {
   expect(assembly.stacks).toHaveLength(4);
 
   // expect stacks to be listed in topological order
-  expect(assembly.stacks.map(s => s.id)).toEqual([ 'StackA', 'StackD', 'StackC', 'StackB' ]);
+  expect(assembly.stacks.map(s => s.id)).toEqual(['StackA', 'StackD', 'StackC', 'StackB']);
   expect(assembly.stacks[0].dependencies).toEqual([]);
   expect(assembly.stacks[1].dependencies).toEqual([]);
-  expect(assembly.stacks[2].dependencies.map(x => x.id)).toEqual([ 'StackD' ]);
-  expect(assembly.stacks[3].dependencies.map(x => x.id)).toEqual([ 'StackC', 'StackD' ]);
+  expect(assembly.stacks[2].dependencies.map(x => x.id)).toEqual(['StackD']);
+  expect(assembly.stacks[3].dependencies.map(x => x.id)).toEqual(['StackC', 'StackD']);
 });
 
 test('fails for invalid dependencies', () => {
@@ -118,6 +118,7 @@ test('stack artifacts can specify an explicit stack name that is different from 
 
 test('getStackByName fails if there are multiple stacks with the same name', () => {
   const assembly = new CloudAssembly(path.join(FIXTURES, 'multiple-stacks-same-name'));
+  // eslint-disable-next-line max-len
   expect(() => assembly.getStackByName('the-physical-name-of-the-stack')).toThrow(/There are multiple stacks with the stack name \"the-physical-name-of-the-stack\" \(stack1\,stack2\)\. Use \"getStackArtifact\(id\)\" instead/);
 });
 

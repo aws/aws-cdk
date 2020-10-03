@@ -50,7 +50,7 @@ class ClusterStack extends TestStack {
         metadata: { name: 'hello-kubernetes' },
         spec: {
           type: 'LoadBalancer',
-          ports: [ { port: 80, targetPort: 8080 } ],
+          ports: [{ port: 80, targetPort: 8080 }],
           selector: { app: 'hello-kubernetes' },
         },
       },
@@ -70,7 +70,7 @@ class ClusterStack extends TestStack {
                 {
                   name: 'hello-kubernetes',
                   image: 'paulbouwer/hello-kubernetes:1.5',
-                  ports: [ { containerPort: 8080 } ],
+                  ports: [{ containerPort: 8080 }],
                 },
               ],
             },

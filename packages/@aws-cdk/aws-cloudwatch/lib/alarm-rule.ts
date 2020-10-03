@@ -62,7 +62,6 @@ export class AlarmRule {
    * @param operand IAlarmRule to be wrapped in NOT operator.
    */
   public static not(operand: IAlarmRule): IAlarmRule {
-    // tslint:disable-next-line:new-parens
     return new class implements IAlarmRule {
       public renderAlarmRule(): string {
         return `(NOT (${operand.renderAlarmRule()}))`;
@@ -76,7 +75,6 @@ export class AlarmRule {
    * @param value boolean value to be used in rule expression.
    */
   public static fromBoolean(value: boolean): IAlarmRule {
-    // tslint:disable-next-line:new-parens
     return new class implements IAlarmRule {
       public renderAlarmRule(): string {
         return `${String(value).toUpperCase()}`;
@@ -91,7 +89,6 @@ export class AlarmRule {
    * @param alarmState AlarmState to be used in Rule Expression.
    */
   public static fromAlarm(alarm: IAlarm, alarmState: AlarmState): IAlarmRule {
-    // tslint:disable-next-line:new-parens
     return new class implements IAlarmRule {
       public renderAlarmRule(): string {
         return `${alarmState}(${alarm.alarmArn})`;
@@ -105,7 +102,6 @@ export class AlarmRule {
    * @param alarmRule string to be used in Rule Expression.
    */
   public static fromString(alarmRule: string): IAlarmRule {
-    // tslint:disable-next-line:new-parens
     return new class implements IAlarmRule {
       public renderAlarmRule(): string {
         return alarmRule;
@@ -114,7 +110,6 @@ export class AlarmRule {
   }
 
   private static concat(operator: Operator, ...operands: IAlarmRule[]): IAlarmRule {
-    // tslint:disable-next-line:new-parens
     return new class implements IAlarmRule {
       public renderAlarmRule(): string {
         const expression = operands

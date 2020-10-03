@@ -5,7 +5,8 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as sns from '@aws-cdk/aws-sns';
-import { Construct, Resource, Stack } from '@aws-cdk/core';
+import { Resource, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnTrail } from './cloudtrail.generated';
 
 /**
@@ -199,6 +200,7 @@ export class Trail extends Resource {
 
   private s3bucket: s3.IBucket;
   private eventSelectors: EventSelector[] = [];
+  private topic: sns.ITopic | undefined;
 
   constructor(scope: Construct, id: string, props: TrailProps = {}) {
     super(scope, id, {
@@ -225,6 +227,11 @@ export class Trail extends Resource {
         StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' },
       },
     }));
+
+    this.topic = props.snsTopic;
+    if (this.topic) {
+      this.topic.grantPublish(cloudTrailPrincipal);
+    }
 
     let logsRole: iam.IRole | undefined;
 
@@ -276,7 +283,7 @@ export class Trail extends Resource {
       s3KeyPrefix: props.s3KeyPrefix,
       cloudWatchLogsLogGroupArn: this.logGroup?.logGroupArn,
       cloudWatchLogsRoleArn: logsRole?.roleArn,
-      snsTopicName: props.snsTopic?.topicName,
+      snsTopicName: this.topic?.topicName,
       eventSelectors: this.eventSelectors,
     });
 
@@ -355,7 +362,7 @@ export class Trail extends Resource {
    * @default false
    */
   public logAllLambdaDataEvents(options: AddEventSelectorOptions = {}) {
-    return this.addEventSelector(DataResourceType.LAMBDA_FUNCTION, [ `arn:${this.stack.partition}:lambda` ], options);
+    return this.addEventSelector(DataResourceType.LAMBDA_FUNCTION, [`arn:${this.stack.partition}:lambda`], options);
   }
 
   /**
@@ -382,7 +389,7 @@ export class Trail extends Resource {
    * @default false
    */
   public logAllS3DataEvents(options: AddEventSelectorOptions = {}) {
-    return this.addEventSelector(DataResourceType.S3_OBJECT, [ `arn:${this.stack.partition}:s3:::` ], options);
+    return this.addEventSelector(DataResourceType.S3_OBJECT, [`arn:${this.stack.partition}:s3:::`], options);
   }
 
   /**

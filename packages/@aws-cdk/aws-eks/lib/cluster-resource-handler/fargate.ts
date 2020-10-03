@@ -1,7 +1,5 @@
+import * as aws from 'aws-sdk'; // eslint-disable-line import/no-extraneous-dependencies
 import { ResourceHandler } from './common';
-
-// eslint-disable-next-line import/no-extraneous-dependencies
-import * as aws from 'aws-sdk';
 
 const MAX_NAME_LEN = 63;
 

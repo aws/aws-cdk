@@ -1,6 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Construct, Duration, Lazy, Stack } from '@aws-cdk/core';
+import { Duration, Lazy, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnAuthorizer } from '../apigateway.generated';
 import { Authorizer, IAuthorizer } from '../authorizer';
 import { IRestApi } from '../restapi';
@@ -104,8 +105,8 @@ abstract class LambdaAuthorizer extends Authorizer implements IAuthorizer {
       this.role.attachInlinePolicy(new iam.Policy(this, 'authorizerInvokePolicy', {
         statements: [
           new iam.PolicyStatement({
-            resources: [ this.handler.functionArn ],
-            actions: [ 'lambda:InvokeFunction' ],
+            resources: [this.handler.functionArn],
+            actions: ['lambda:InvokeFunction'],
           }),
         ],
       }));

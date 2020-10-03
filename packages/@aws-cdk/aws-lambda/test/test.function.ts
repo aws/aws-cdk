@@ -1,4 +1,6 @@
-import { expect, haveOutput, haveResource } from '@aws-cdk/assert';
+import * as path from 'path';
+import { expect, haveResource, SynthUtils } from '@aws-cdk/assert';
+import { ProfilingGroup } from '@aws-cdk/aws-codeguruprofiler';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as efs from '@aws-cdk/aws-efs';
 import * as logs from '@aws-cdk/aws-logs';
@@ -6,9 +8,10 @@ import * as s3 from '@aws-cdk/aws-s3';
 import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
 import * as _ from 'lodash';
-import {Test, testCase} from 'nodeunit';
-import * as path from 'path';
+import { Test, testCase } from 'nodeunit';
 import * as lambda from '../lib';
+
+/* eslint-disable quote-props */
 
 export = testCase({
   'add incompatible layer'(test: Test) {
@@ -163,13 +166,11 @@ export = testCase({
       logRetention: logs.RetentionDays.FIVE_DAYS,
     });
 
-    // tslint:disable:no-unused-expression
     // Call logGroup a few times. If more than one instance of LogRetention was created,
     // the second call will fail on duplicate constructs.
     fn.logGroup;
     fn.logGroup;
     fn.logGroup;
-    // tslint:enable:no-unused-expression
 
     test.done();
   },
@@ -184,8 +185,206 @@ export = testCase({
     test.done();
   },
 
-  'currentVersion': {
+  'default function with CDK created Profiling Group'(test: Test) {
+    const stack = new cdk.Stack();
 
+    new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_10_X,
+      profiling: true,
+    });
+
+    expect(stack).to(haveResource('AWS::CodeGuruProfiler::ProfilingGroup', {
+      ProfilingGroupName: 'MyLambdaProfilingGroupC5B6CCD8',
+      ComputePlatform: 'AWSLambda',
+    }));
+
+    expect(stack).to(haveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'codeguru-profiler:ConfigureAgent',
+              'codeguru-profiler:PostAgentProfile',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': ['MyLambdaProfilingGroupEC6DE32F', 'Arn'],
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      PolicyName: 'MyLambdaServiceRoleDefaultPolicy5BBC6F68',
+      Roles: [
+        {
+          Ref: 'MyLambdaServiceRole4539ECB6',
+        },
+      ],
+    }));
+
+    expect(stack).to(haveResource('AWS::Lambda::Function', {
+      Environment: {
+        Variables: {
+          AWS_CODEGURU_PROFILER_GROUP_ARN: { 'Fn::GetAtt': ['MyLambdaProfilingGroupEC6DE32F', 'Arn'] },
+          AWS_CODEGURU_PROFILER_ENABLED: 'TRUE',
+        },
+      },
+    }));
+
+    test.done();
+  },
+
+  'default function with client provided Profiling Group'(test: Test) {
+    const stack = new cdk.Stack();
+
+    new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_10_X,
+      profilingGroup: new ProfilingGroup(stack, 'ProfilingGroup'),
+    });
+
+    expect(stack).to(haveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'codeguru-profiler:ConfigureAgent',
+              'codeguru-profiler:PostAgentProfile',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': ['ProfilingGroup26979FD7', 'Arn'],
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      PolicyName: 'MyLambdaServiceRoleDefaultPolicy5BBC6F68',
+      Roles: [
+        {
+          Ref: 'MyLambdaServiceRole4539ECB6',
+        },
+      ],
+    }));
+
+    expect(stack).to(haveResource('AWS::Lambda::Function', {
+      Environment: {
+        Variables: {
+          AWS_CODEGURU_PROFILER_GROUP_ARN: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:', { Ref: 'AWS::Partition' }, ':codeguru-profiler:', { Ref: 'AWS::Region' },
+                ':', { Ref: 'AWS::AccountId' }, ':profilingGroup/', { Ref: 'ProfilingGroup26979FD7' },
+              ],
+            ],
+          },
+          AWS_CODEGURU_PROFILER_ENABLED: 'TRUE',
+        },
+      },
+    }));
+
+    test.done();
+  },
+
+  'default function with client provided Profiling Group but profiling set to false'(test: Test) {
+    const stack = new cdk.Stack();
+
+    new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_10_X,
+      profiling: false,
+      profilingGroup: new ProfilingGroup(stack, 'ProfilingGroup'),
+    });
+
+    expect(stack).notTo(haveResource('AWS::IAM::Policy'));
+
+    expect(stack).notTo(haveResource('AWS::Lambda::Function', {
+      Environment: {
+        Variables: {
+          AWS_CODEGURU_PROFILER_GROUP_ARN: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:', { Ref: 'AWS::Partition' }, ':codeguru-profiler:', { Ref: 'AWS::Region' },
+                ':', { Ref: 'AWS::AccountId' }, ':profilingGroup/', { Ref: 'ProfilingGroup26979FD7' },
+              ],
+            ],
+          },
+          AWS_CODEGURU_PROFILER_ENABLED: 'TRUE',
+        },
+      },
+    }));
+
+    test.done();
+  },
+
+  'default function with profiling enabled and client provided env vars'(test: Test) {
+    const stack = new cdk.Stack();
+
+    test.throws(() => new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_10_X,
+      profiling: true,
+      environment: {
+        AWS_CODEGURU_PROFILER_GROUP_ARN: 'profiler_group_arn',
+        AWS_CODEGURU_PROFILER_ENABLED: 'yes',
+      },
+    }),
+    /AWS_CODEGURU_PROFILER_GROUP_ARN and AWS_CODEGURU_PROFILER_ENABLED must not be set when profiling options enabled/);
+
+    test.done();
+  },
+
+  'default function with client provided Profiling Group and client provided env vars'(test: Test) {
+    const stack = new cdk.Stack();
+
+    test.throws(() => new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_10_X,
+      profilingGroup: new ProfilingGroup(stack, 'ProfilingGroup'),
+      environment: {
+        AWS_CODEGURU_PROFILER_GROUP_ARN: 'profiler_group_arn',
+        AWS_CODEGURU_PROFILER_ENABLED: 'yes',
+      },
+    }),
+    /AWS_CODEGURU_PROFILER_GROUP_ARN and AWS_CODEGURU_PROFILER_ENABLED must not be set when profiling options enabled/);
+
+    test.done();
+  },
+
+  'multiple calls to latestVersion returns the same version'(test: Test) {
+    const stack = new cdk.Stack();
+
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NODEJS_10_X,
+    });
+
+    const version1 = fn.latestVersion;
+    const version2 = fn.latestVersion;
+
+    const expectedArn = {
+      'Fn::Join': ['', [
+        { 'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'] },
+        ':$LATEST',
+      ]],
+    };
+    test.equal(version1, version2);
+    test.deepEqual(stack.resolve(version1.functionArn), expectedArn);
+    test.deepEqual(stack.resolve(version2.functionArn), expectedArn);
+
+    test.done();
+  },
+
+  'currentVersion': {
     // see test.function-hash.ts for more coverage for this
     'logical id of version is based on the function hash'(test: Test) {
       // GIVEN
@@ -217,18 +416,13 @@ export = testCase({
       });
 
       // THEN
-      expect(stack1).to(haveOutput({
-        outputName: 'CurrentVersionArn',
-        outputValue: {
-          Ref: 'MyFunctionCurrentVersion197490AF1a9a73cf5c46aec5e40fb202042eb60b',
-        },
-      }));
-      expect(stack2).to(haveOutput({
-        outputName: 'CurrentVersionArn',
-        outputValue: {
-          Ref: 'MyFunctionCurrentVersion197490AF8360a045031060e3117269037b7bffd6',
-        },
-      }));
+      const template1 = SynthUtils.synthesize(stack1).template;
+      const template2 = SynthUtils.synthesize(stack2).template;
+
+      // these functions are different in their configuration but the original
+      // logical ID of the version would be the same unless the logical ID
+      // includes the hash of function's configuration.
+      test.notDeepEqual(template1.Outputs.CurrentVersionArn.Value, template2.Outputs.CurrentVersionArn.Value);
       test.done();
     },
   },
@@ -283,7 +477,8 @@ export = testCase({
               ],
             },
             LocalMountPath: '/mnt/msg',
-          }],
+          },
+        ],
       }));
       test.done();
     },

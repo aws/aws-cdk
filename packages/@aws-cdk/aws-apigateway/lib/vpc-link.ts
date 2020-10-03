@@ -1,5 +1,6 @@
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
-import { Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
+import { IResource, Lazy, Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnVpcLink } from './apigateway.generated';
 
 /**
@@ -87,7 +88,7 @@ export class VpcLink extends Resource implements IVpcLink {
 
   protected validate(): string[] {
     if (this.targets.length === 0) {
-      return [ 'No targets added to vpc link' ];
+      return ['No targets added to vpc link'];
     }
     return [];
   }

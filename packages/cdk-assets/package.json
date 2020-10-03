@@ -30,26 +30,26 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/archiver": "^3.1.0",
-    "@types/glob": "^7.1.2",
-    "@types/jest": "^26.0.3",
-    "@types/mock-fs": "^4.10.0",
-    "@types/node": "^10.17.26",
-    "@types/yargs": "^15.0.5",
+    "@types/archiver": "^3.1.1",
+    "@types/glob": "^7.1.3",
+    "@types/jest": "^26.0.14",
     "@types/jszip": "^3.4.1",
-    "jszip": "^3.5.0",
+    "@types/mock-fs": "^4.10.0",
+    "@types/node": "^10.17.35",
+    "@types/yargs": "^15.0.7",
     "cdk-build-tools": "0.0.0",
-    "jest": "^25.5.4",
-    "mock-fs": "^4.12.0",
+    "jest": "^26.4.2",
+    "jszip": "^3.5.0",
+    "mock-fs": "^4.13.0",
     "pkglint": "0.0.0"
   },
   "dependencies": {
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
-    "archiver": "^4.0.1",
-    "aws-sdk": "^2.712.0",
+    "archiver": "^5.0.2",
+    "aws-sdk": "^2.739.0",
     "glob": "^7.1.6",
-    "yargs": "^15.3.1"
+    "yargs": "^16.0.3"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",

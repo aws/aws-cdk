@@ -5,7 +5,7 @@
       "Properties": {
         "RepositoryName": "my-repository",
         "RepositoryDescription": {
-          "Fn::DoesNotExist": "my description, in base-64!"
+          "Fn::Select": [0, { "Fn::ValueOfAll": ["AWS::EC2::Subnet::Id", "VpcId"]}]
         }
       }
     }

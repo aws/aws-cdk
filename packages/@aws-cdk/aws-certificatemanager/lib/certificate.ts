@@ -1,5 +1,6 @@
 import * as route53 from '@aws-cdk/aws-route53';
-import { Construct, IResource, Resource, Token } from '@aws-cdk/core';
+import { IResource, Resource, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnCertificate } from './certificatemanager.generated';
 import { apexDomain } from './util';
 
@@ -232,13 +233,13 @@ export enum ValidationMethod {
   DNS = 'DNS',
 }
 
-// tslint:disable-next-line:max-line-length
+// eslint-disable-next-line max-len
 function renderDomainValidation(validation: CertificateValidation, domainNames: string[]): CfnCertificate.DomainValidationOptionProperty[] | undefined {
   const domainValidation: CfnCertificate.DomainValidationOptionProperty[] = [];
 
   switch (validation.method) {
     case ValidationMethod.DNS:
-      for (const domainName of domainNames) {
+      for (const domainName of getUniqueDnsDomainNames(domainNames)) {
         const hostedZone = validation.props.hostedZones?.[domainName] ?? validation.props.hostedZone;
         if (hostedZone) {
           domainValidation.push({ domainName, hostedZoneId: hostedZone.hostedZoneId });
@@ -259,4 +260,15 @@ function renderDomainValidation(validation: CertificateValidation, domainNames: 
   }
 
   return domainValidation.length !== 0 ? domainValidation : undefined;
+}
+
+/**
+ * Removes wildcard domains (*.example.com) where the base domain (example.com) is present.
+ * This is because the DNS validation treats them as the same thing, and the automated CloudFormation
+ * DNS validation errors out with the duplicate records.
+ */
+function getUniqueDnsDomainNames(domainNames: string[]) {
+  return domainNames.filter(domain => {
+    return Token.isUnresolved(domain) || !domain.startsWith('*.') || !domainNames.includes(domain.replace('*.', ''));
+  });
 }

@@ -1,9 +1,11 @@
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { basename, dirname } from 'path';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { major as nodeMajorVersion } from './node-version';
 
 // list of NPM scopes included in version reporting e.g. @aws-cdk and @aws-solutions-konstruk
-const WHITELIST_SCOPES = ['@aws-cdk', '@aws-solutions-konstruk', '@aws-solutions-constructs'];
+const WHITELIST_SCOPES = ['@aws-cdk', '@aws-solutions-konstruk', '@aws-solutions-constructs', '@amzn'];
+// list of NPM packages included in version reporting
+const WHITELIST_PACKAGES = ['aws-rfdk'];
 
 /**
  * Returns a list of loaded modules and their versions.
@@ -26,6 +28,7 @@ export function collectRuntimeInformation(): cxschema.RuntimeInfo {
         foundMatch = true;
       }
     }
+    foundMatch = foundMatch || WHITELIST_PACKAGES.includes(name);
 
     if (!foundMatch) {
       delete libraries[name];

@@ -1,15 +1,59 @@
 import { countResources, expect, haveResource } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { Cluster, KubernetesResource, KubernetesVersion } from '../lib';
+import { Cluster, KubernetesManifest, KubernetesVersion } from '../lib';
 import { AwsAuth } from '../lib/aws-auth';
 import { testFixtureNoVpc } from './util';
 
-// tslint:disable:max-line-length
+/* eslint-disable max-len */
 
 const CLUSTER_VERSION = KubernetesVersion.V1_16;
 
 export = {
+
+  'throws when adding a role from a different stack'(test: Test) {
+
+    const app = new cdk.App();
+    const clusterStack = new cdk.Stack(app, 'ClusterStack');
+    const roleStack = new cdk.Stack(app, 'RoleStack');
+    const awsAuth = new AwsAuth(clusterStack, 'Auth', {
+      cluster: new Cluster(clusterStack, 'Cluster', { version: KubernetesVersion.V1_17 }),
+    });
+    const role = new iam.Role(roleStack, 'Role', { assumedBy: new iam.AnyPrincipal() });
+
+    try {
+      awsAuth.addRoleMapping(role, { groups: ['group'] });
+      test.ok(false, 'expected error');
+    } catch (err) {
+      test.equal(err.message, 'RoleStackRole6729D0A7 should be defined in the scope of the ClusterStack stack to prevent circular dependencies');
+    }
+
+    test.done();
+
+  },
+
+  'throws when adding a user from a different stack'(test: Test) {
+
+    const app = new cdk.App();
+    const clusterStack = new cdk.Stack(app, 'ClusterStack');
+    const userStack = new cdk.Stack(app, 'UserStack');
+    const awsAuth = new AwsAuth(clusterStack, 'Auth', {
+      cluster: new Cluster(clusterStack, 'Cluster', { version: KubernetesVersion.V1_17 }),
+    });
+    const user = new iam.User(userStack, 'User');
+
+    try {
+      awsAuth.addUserMapping(user, { groups: ['group'] });
+      test.ok(false, 'expected error');
+    } catch (err) {
+      test.equal(err.message, 'UserStackUser0406F94E should be defined in the scope of the ClusterStack stack to prevent circular dependencies');
+    }
+
+    test.done();
+
+  },
+
   'empty aws-auth'(test: Test) {
     // GIVEN
     const { stack } = testFixtureNoVpc();
@@ -19,7 +63,7 @@ export = {
     new AwsAuth(stack, 'AwsAuth', { cluster });
 
     // THEN
-    expect(stack).to(haveResource(KubernetesResource.RESOURCE_TYPE, {
+    expect(stack).to(haveResource(KubernetesManifest.RESOURCE_TYPE, {
       Manifest: JSON.stringify([{
         apiVersion: 'v1',
         kind: 'ConfigMap',
@@ -46,13 +90,27 @@ export = {
     cluster.awsAuth.addAccount('5566776655');
 
     // THEN
-    expect(stack).to(countResources(KubernetesResource.RESOURCE_TYPE, 1));
-    expect(stack).to(haveResource(KubernetesResource.RESOURCE_TYPE, {
+    expect(stack).to(countResources(KubernetesManifest.RESOURCE_TYPE, 1));
+    expect(stack).to(haveResource(KubernetesManifest.RESOURCE_TYPE, {
       Manifest: {
         'Fn::Join': [
           '',
           [
             '[{"apiVersion":"v1","kind":"ConfigMap","metadata":{"name":"aws-auth","namespace":"kube-system"},"data":{"mapRoles":"[{\\"rolearn\\":\\"',
+            {
+              'Fn::GetAtt': [
+                'ClusterMastersRole9AA35625',
+                'Arn',
+              ],
+            },
+            '\\",\\"username\\":\\"',
+            {
+              'Fn::GetAtt': [
+                'ClusterMastersRole9AA35625',
+                'Arn',
+              ],
+            },
+            '\\",\\"groups\\":[\\"system:masters\\"]},{\\"rolearn\\":\\"',
             {
               'Fn::GetAtt': [
                 'ClusterNodegroupDefaultCapacityNodeGroupRole55953B04',
@@ -122,7 +180,7 @@ export = {
     cluster.awsAuth.addUserMapping(user, { groups: ['group2'] });
 
     // THEN
-    expect(stack).to(haveResource(KubernetesResource.RESOURCE_TYPE, {
+    expect(stack).to(haveResource(KubernetesManifest.RESOURCE_TYPE, {
       Manifest: {
         'Fn::Join': [
           '',
@@ -130,11 +188,25 @@ export = {
             '[{"apiVersion":"v1","kind":"ConfigMap","metadata":{"name":"aws-auth","namespace":"kube-system"},"data":{"mapRoles":"[{\\"rolearn\\":\\"',
             {
               'Fn::GetAtt': [
+                'ClusterMastersRole9AA35625',
+                'Arn',
+              ],
+            },
+            '\\",\\"username\\":\\"',
+            {
+              'Fn::GetAtt': [
+                'ClusterMastersRole9AA35625',
+                'Arn',
+              ],
+            },
+            '\\",\\"groups\\":[\\"system:masters\\"]},{\\"rolearn\\":\\"',
+            {
+              'Fn::GetAtt': [
                 'ClusterNodegroupDefaultCapacityNodeGroupRole55953B04',
                 'Arn',
               ],
             },
-            '\\",\\"username\\":\\"system:node:{{EC2PrivateDNSName}}\\",\\"groups\\":[\\"system:bootstrappers\\",\\"system:nodes\\"]},{\\"rolearn\\":\\"arn:aws:iam::123456789012:role/S3Access\\",\\"username\\":\\"arn:aws:iam::123456789012:role/S3Access\\",\\"groups\\":[\\"group1\\"]}]\",\"mapUsers\":\"[{\\"userarn\\":\\"arn:',
+            '\\",\\"username\\":\\"system:node:{{EC2PrivateDNSName}}\\",\\"groups\\":[\\"system:bootstrappers\\",\\"system:nodes\\"]},{\\"rolearn\\":\\"arn:aws:iam::123456789012:role/S3Access\\",\\"username\\":\\"arn:aws:iam::123456789012:role/S3Access\\",\\"groups\\":[\\"group1\\"]}]","mapUsers":"[{\\"userarn\\":\\"arn:',
             {
               Ref: 'AWS::Partition',
             },
@@ -162,19 +234,33 @@ export = {
     // GIVEN
     const { stack } = testFixtureNoVpc();
     const cluster = new Cluster(stack, 'Cluster', { version: CLUSTER_VERSION });
-    cluster.addNodegroup('NG');
+    cluster.addNodegroupCapacity('NG');
     const role = iam.Role.fromRoleArn(stack, 'imported-role', 'arn:aws:iam::123456789012:role/S3Access');
 
     // WHEN
     cluster.awsAuth.addMastersRole(role);
 
     // THEN
-    expect(stack).to(haveResource(KubernetesResource.RESOURCE_TYPE, {
+    expect(stack).to(haveResource(KubernetesManifest.RESOURCE_TYPE, {
       Manifest: {
         'Fn::Join': [
           '',
           [
             '[{"apiVersion":"v1","kind":"ConfigMap","metadata":{"name":"aws-auth","namespace":"kube-system"},"data":{"mapRoles":"[{\\"rolearn\\":\\"',
+            {
+              'Fn::GetAtt': [
+                'ClusterMastersRole9AA35625',
+                'Arn',
+              ],
+            },
+            '\\",\\"username\\":\\"',
+            {
+              'Fn::GetAtt': [
+                'ClusterMastersRole9AA35625',
+                'Arn',
+              ],
+            },
+            '\\",\\"groups\\":[\\"system:masters\\"]},{\\"rolearn\\":\\"',
             {
               'Fn::GetAtt': [
                 'ClusterNodegroupDefaultCapacityNodeGroupRole55953B04',

@@ -1,4 +1,5 @@
-import { Construct, Resource, Stack } from '@aws-cdk/core';
+import { Resource, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnStage } from '../apigatewayv2.generated';
 import { CommonStageOptions, IDomainName, IStage } from '../common';
 import { IHttpApi } from './api';
@@ -45,11 +46,10 @@ export interface DefaultDomainMappingOptions {
   readonly domainName: IDomainName;
 
   /**
-   * The API mapping key. Specify '/' for the root path mapping.
-   *
+   * The API mapping key. Leave it undefined for the root path mapping.
+   * @default - empty key for the root path mapping
    */
-  readonly mappingKey: string;
-
+  readonly mappingKey?: string;
 }
 
 /**
@@ -103,6 +103,8 @@ export class HttpStage extends Resource implements IStage {
         stage: this,
         apiMappingKey: props.domainMapping.mappingKey,
       });
+      // ensure the dependency
+      this.node.addDependency(props.domainMapping.domainName);
     }
 
   }

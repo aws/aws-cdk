@@ -23,7 +23,7 @@ class ImportsReflection {
     this.fromAttributesMethod = classType.allMethods.find(x => x.name === this.fromAttributesMethodName);
 
     this.fromMethods = classType.allMethods.filter(x =>
-        x.static
+      x.static
         && x.name.match(`^${this.prefix}[A-Z]`)
         && x.name !== this.fromAttributesMethodName);
 
@@ -45,7 +45,7 @@ importsLinter.add({
   eval: e => {
     const hasImport = e.ctx.resource.construct.classType.allMethods.find(x => x.static && x.name === 'import');
     e.assert(!hasImport, e.ctx.resource.fqn + '.import');
-  }
+  },
 });
 
 importsLinter.add({
@@ -58,46 +58,50 @@ importsLinter.add({
     }
 
     e.assert(e.ctx.fromMethods.length > 0 || e.ctx.fromAttributesMethod, e.ctx.resource.fqn);
-  }
+  },
 });
 
 importsLinter.add({
   code: 'from-signature',
-  message: 'invalid method signature for fromXxx method',
+  message: 'invalid method signature for fromXxx method. ' + baseConstructAddendum(),
   eval: e => {
     for (const method of e.ctx.fromMethods) {
 
       // "fromRoleArn" => "roleArn"
       const argName = e.ctx.resource.basename[0].toLocaleLowerCase() + method.name.slice('from'.length + 1);
 
+      const baseType = process.env.AWSLINT_BASE_CONSTRUCT ? e.ctx.resource.core.baseConstructClass :
+        e.ctx.resource.core.constructClass;
       e.assertSignature(method, {
         parameters: [
-          { name: 'scope', type: e.ctx.resource.construct.ROOT_CLASS },
+          { name: 'scope', type: baseType },
           { name: 'id', type: 'string' },
-          { name: argName, type: 'string' }
+          { name: argName, type: 'string' },
         ],
-        returns: e.ctx.resource.construct.interfaceType
+        returns: e.ctx.resource.construct.interfaceType,
       });
     }
-  }
+  },
 });
 
 importsLinter.add({
   code: 'from-attributes',
-  message: 'static fromXxxAttributes is a factory of IXxx from its primitive attributes',
+  message: 'static fromXxxAttributes is a factory of IXxx from its primitive attributes. ' + baseConstructAddendum(),
   eval: e => {
     if (!e.ctx.fromAttributesMethod) {
       return;
     }
 
+    const baseType = process.env.AWSLINT_BASE_CONSTRUCT ? e.ctx.resource.core.baseConstructClass
+      : e.ctx.resource.core.constructClass;
     e.assertSignature(e.ctx.fromAttributesMethod, {
       parameters: [
-        { name: 'scope', type: e.ctx.resource.construct.ROOT_CLASS },
+        { name: 'scope', type: baseType },
         { name: 'id', type: 'string' },
-        { name: 'attrs', type: e.ctx.attributesStruct }
-      ]
+        { name: 'attrs', type: e.ctx.attributesStruct },
+      ],
     });
-  }
+  },
 });
 
 importsLinter.add({
@@ -109,5 +113,12 @@ importsLinter.add({
     }
 
     e.assert(e.ctx.attributesStruct, e.ctx.attributesStructName);
-  }
+  },
 });
+
+function baseConstructAddendum(): string {
+  if (!process.env.AWSLINT_BASE_CONSTRUCT) {
+    return 'If the construct is using the "constructs" module, set the environment variable "AWSLINT_BASE_CONSTRUCT" and re-run';
+  }
+  return '';
+}

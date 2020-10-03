@@ -13,8 +13,8 @@ class S3EventSourceTest extends cdk.Stack {
     });
 
     fn.addEventSource(new S3EventSource(bucket, {
-      events: [ s3.EventType.OBJECT_CREATED ],
-      filters: [ { prefix: 'subdir/' } ],
+      events: [s3.EventType.OBJECT_CREATED],
+      filters: [{ prefix: 'subdir/' }],
     }));
   }
 }

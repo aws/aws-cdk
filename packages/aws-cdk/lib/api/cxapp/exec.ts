@@ -1,8 +1,8 @@
+import * as childProcess from 'child_process';
+import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
-import * as childProcess from 'child_process';
 import * as fs from 'fs-extra';
-import * as path from 'path';
 import { debug } from '../../logging';
 import { Configuration, PROJECT_CONFIG, USER_DEFAULTS } from '../../settings';
 import { versionNumber } from '../../version';
@@ -16,28 +16,27 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
   await populateDefaultEnvironmentIfNeeded(aws, env);
 
   const pathMetadata: boolean = config.settings.get(['pathMetadata']) ?? true;
-
   if (pathMetadata) {
     context[cxapi.PATH_METADATA_ENABLE_CONTEXT] = true;
   }
 
   const assetMetadata: boolean = config.settings.get(['assetMetadata']) ?? true;
-
   if (assetMetadata) {
     context[cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT] = true;
   }
 
   const versionReporting: boolean = config.settings.get(['versionReporting']) ?? true;
-
-  if (!versionReporting) {
-    context[cxapi.DISABLE_VERSION_REPORTING] = true;
-  }
+  if (versionReporting) { context[cxapi.ANALYTICS_REPORTING_ENABLED_CONTEXT] = true; }
+  // We need to keep on doing this for framework version from before this flag was deprecated.
+  if (!versionReporting) { context['aws:cdk:disable-version-reporting'] = true; }
 
   const stagingEnabled = config.settings.get(['staging']) ?? true;
-
   if (!stagingEnabled) {
     context[cxapi.DISABLE_ASSET_STAGING_CONTEXT] = true;
   }
+
+  const bundlingStacks = config.settings.get(['bundlingStacks']) ?? ['*'];
+  context[cxapi.BUNDLING_STACKS] = bundlingStacks;
 
   debug('context:', context);
   env[cxapi.CONTEXT_ENV] = JSON.stringify(context);
@@ -55,7 +54,7 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
 
   const commandLine = await guessExecutable(appToArray(app));
 
-  const outdir = config.settings.get([ 'output' ]);
+  const outdir = config.settings.get(['output']);
   if (!outdir) {
     throw new Error('unexpected: --output is required');
   }
@@ -191,7 +190,7 @@ async function guessExecutable(commandLine: string[]) {
       return commandLine;
     }
 
-    // tslint:disable-next-line:no-bitwise
+    // eslint-disable-next-line no-bitwise
     const isExecutable = (fstat.mode & fs.constants.X_OK) !== 0;
     const isWindows = process.platform === 'win32';
 

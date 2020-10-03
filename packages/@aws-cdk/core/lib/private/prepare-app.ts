@@ -16,10 +16,6 @@ import { resolveReferences } from './refs';
  * @param root The root of the construct tree.
  */
 export function prepareApp(root: IConstruct) {
-  if (root.node.scope && !Stage.isStage(root)) {
-    throw new Error('prepareApp can only be called on a stage or a root construct');
-  }
-
   // apply dependencies between resources in depending subtrees
   for (const dependency of root.node.dependencies) {
     const targetCfnResources = findCfnResources(dependency.target);
