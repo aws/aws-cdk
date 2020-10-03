@@ -319,7 +319,8 @@ export class ServerlessCluster extends ServerlessClusterBase {
   /**
    * The secret attached to this cluster
    */
-  private readonly secret?: secretsmanager.ISecret;
+  public readonly secret?: secretsmanager.ISecret;
+
   private readonly subnetGroup: ISubnetGroup;
   private readonly vpc: ec2.IVpc;
   private readonly vpcSubnets?: ec2.SubnetSelection;
@@ -327,7 +328,7 @@ export class ServerlessCluster extends ServerlessClusterBase {
   private readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
   private readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
 
-  constructor(scope:Construct, id: string, props: ServerlessClusterProps) {
+  constructor(scope: Construct, id: string, props: ServerlessClusterProps) {
     super(scope, id);
 
     this.vpc = props.vpc;
