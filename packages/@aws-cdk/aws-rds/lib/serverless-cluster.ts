@@ -1,7 +1,8 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { Resource, Construct, Duration, Token, Annotations, RemovalPolicy, IResource } from '@aws-cdk/core';
+import { Resource, Duration, Token, Annotations, RemovalPolicy, IResource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { IClusterEngine } from './cluster-engine';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
@@ -318,7 +319,8 @@ export class ServerlessCluster extends ServerlessClusterBase {
   /**
    * The secret attached to this cluster
    */
-  private readonly secret?: secretsmanager.ISecret;
+  public readonly secret?: secretsmanager.ISecret;
+
   private readonly subnetGroup: ISubnetGroup;
   private readonly vpc: ec2.IVpc;
   private readonly vpcSubnets?: ec2.SubnetSelection;
@@ -326,7 +328,7 @@ export class ServerlessCluster extends ServerlessClusterBase {
   private readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
   private readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
 
-  constructor(scope:Construct, id: string, props: ServerlessClusterProps) {
+  constructor(scope: Construct, id: string, props: ServerlessClusterProps) {
     super(scope, id);
 
     this.vpc = props.vpc;

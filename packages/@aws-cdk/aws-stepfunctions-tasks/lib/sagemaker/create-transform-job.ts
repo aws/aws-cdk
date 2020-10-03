@@ -1,7 +1,8 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
-import { Construct, Size, Stack } from '@aws-cdk/core';
+import { Size, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 import { BatchStrategy, S3DataType, TransformInput, TransformOutput, TransformResources } from './base-types';
 import { renderTags } from './private/utils';

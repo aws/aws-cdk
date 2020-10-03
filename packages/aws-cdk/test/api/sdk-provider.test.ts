@@ -2,7 +2,7 @@ import * as os from 'os';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
 import * as SDKMock from 'aws-sdk-mock';
-import { ConfigurationOptions } from 'aws-sdk/lib/config';
+import type { ConfigurationOptions } from 'aws-sdk/lib/config-base';
 import * as uuid from 'uuid';
 import { PluginHost } from '../../lib';
 import { ISDK, Mode, SdkProvider } from '../../lib/api/aws-auth';
