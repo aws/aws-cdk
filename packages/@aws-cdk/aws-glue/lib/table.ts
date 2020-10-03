@@ -406,6 +406,7 @@ const readPermissions = [
   'glue:GetPartitions',
   'glue:GetTable',
   'glue:GetTables',
+  'glue:GetTableVersion',
   'glue:GetTableVersions',
 ];
 
