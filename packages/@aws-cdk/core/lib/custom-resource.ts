@@ -1,5 +1,5 @@
+import { Construct } from 'constructs';
 import { CfnResource } from './cfn-resource';
-import { Construct } from './construct-compat';
 import { RemovalPolicy } from './removal-policy';
 import { Resource } from './resource';
 import { Token } from './token';
