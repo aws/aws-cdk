@@ -20,11 +20,9 @@ phases:
     commands:
       # we bump here so that our master version won't be identical to the latest published version during tests.
       # otherwise this causes problems with verdaccio mirroring.
-      - env
-      - git rev-parse --abbrev-ref HEAD
-      - if [ "$(git rev-parse --abbrev-ref HEAD)" = "epolon-regression" ]; then /bin/bash ./bump.sh minor rc; fi;
-      #- /bin/bash ./scripts/align-version.sh
-      #- /bin/bash ./build.sh
+      - /bin/bash ./bump.sh minor rc
+      - /bin/bash ./scripts/align-version.sh
+      - /bin/bash ./build.sh
   post_build:
     commands:
       - "[ -f .BUILD_COMPLETED ] && /bin/bash ./pack.sh"
