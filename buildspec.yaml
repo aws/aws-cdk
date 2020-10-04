@@ -20,7 +20,7 @@ phases:
     commands:
       # we bump here so that our master version won't be identical to the latest published version during tests.
       # otherwise this causes problems with verdaccio mirroring.
-      - '[ ${GITBRANCH} = "master" ] && /bin/bash ./bump.sh minor rc false'
+      - '[ ${GIT_BRANCH} = "epolon-regression" ] && PRE_RELEASE_TAG=rc SKIP_COMMIT=true /bin/bash ./bump.sh'
       - /bin/bash ./scripts/align-version.sh
       - /bin/bash ./build.sh
   post_build:
