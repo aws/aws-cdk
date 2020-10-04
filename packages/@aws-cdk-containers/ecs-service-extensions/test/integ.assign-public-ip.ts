@@ -1,5 +1,6 @@
 import { SubnetType, Vpc } from '@aws-cdk/aws-ec2';
 import { ContainerImage } from '@aws-cdk/aws-ecs';
+import { PublicHostedZone } from '@aws-cdk/aws-route53';
 import { App, Stack } from '@aws-cdk/core';
 import { AssignPublicIpExtension, Container, Environment, Service, ServiceDescription } from '../lib';
 
@@ -16,20 +17,28 @@ const vpc = new Vpc(stack, 'vpc', {
   ],
 });
 
+const dnsZone = new PublicHostedZone(stack, 'zone', {
+  zoneName: 'myexample.com',
+});
+
 const environment = new Environment(stack, 'production', { vpc });
 
 const nameDescription = new ServiceDescription();
 
 nameDescription.add(new Container({
-  cpu: 1024,
-  memoryMiB: 2048,
+  cpu: 256,
+  memoryMiB: 512,
   trafficPort: 80,
   image: ContainerImage.fromRegistry('nathanpeck/name'),
   environment: {
     PORT: '80',
   },
 }));
-nameDescription.add(new AssignPublicIpExtension());
+
+nameDescription.add(new AssignPublicIpExtension({
+  dnsZone: dnsZone,
+  dnsRecordName: 'test-record',
+}));
 
 new Service(stack, 'name', {
   environment: environment,
