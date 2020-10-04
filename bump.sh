@@ -17,6 +17,7 @@ version=${1:-minor}
 
 PRE_RELEASE_TAG=${PRE_RELEASE_TAG:-}
 SKIP_COMMIT=${SKIP_COMMIT:-false}
+SKIP_CHANGELOG=${SKIP_CHANGELOG:-false}
 
 echo "Starting ${version} version bump"
 
@@ -30,6 +31,10 @@ fi
 
 if [ ${SKIP_COMMIT} = "true" ]; then
   args="${args} --skip.commit"
+fi
+
+if [ ${SKIP_CHANGELOG} = "true" ]; then
+  args="${args} --skip.changelog"
 fi
 
 # Generate CHANGELOG and create a commit (see .versionrc.json)
