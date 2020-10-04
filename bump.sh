@@ -14,8 +14,9 @@
 # --------------------------------------------------------------------------------------------------
 set -euo pipefail
 version=${1:-minor}
-prerelease_tag=${2:-}
-commit=${3:-"true"}
+
+PRE_RELEASE_TAG=${PRE_RELEASE_TAG:-}
+SKIP_COMMIT=${SKIP_COMMIT:-false}
 
 echo "Starting ${version} version bump"
 
@@ -23,18 +24,18 @@ echo "Starting ${version} version bump"
 
 args="--release-as ${version}"
 
-if [ ! -z ${prerelease_tag} ]; then
-  args="${args} --prerelease=${prerelease_tag}"
+if [ ! -z ${PRE_RELEASE_TAG} ]; then
+  args="${args} --prerelease=${PRE_RELEASE_TAG}"
 fi
 
-if [ ${commit} = "false" ]; then
+if [ ${SKIP_COMMIT} = "true" ]; then
   args="${args} --skip.commit"
 fi
 
 # Generate CHANGELOG and create a commit (see .versionrc.json)
 npx standard-version ${args}
 
-if [ ${commit} = "true" ]; then
+if [ ${SKIP_COMMIT} = "false" ]; then
   # I am sorry.
   #
   # I've gone diving through the code of `conventional-changelog` to see if there
