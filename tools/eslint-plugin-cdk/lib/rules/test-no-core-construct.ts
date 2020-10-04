@@ -12,7 +12,7 @@ interface ImportCacheKey {
 let importCache: RecordCache<ImportCacheKey, Node>;
 let importsFixed: boolean;
 
-const BANNED_TYPES = [ 'Construct', 'IConstruct' ];
+const BANNED_TYPES = [ 'IConstruct', 'Construct' ];
 
 export function create(context: Rule.RuleContext): Rule.NodeListener {
   return {
@@ -81,9 +81,9 @@ export function create(context: Rule.RuleContext): Rule.NodeListener {
           }
         });
       } else if (type.type === 'Identifier') {
-        // identifier imports
-        const fqn = type.name;
-        const importNode = importCache.getRecord({ fileName: context.getFilename(), importName: fqn });
+        // named imports
+        const typename = type.name;
+        const importNode = importCache.getRecord({ fileName: context.getFilename(), importName: typename });
         if (!importNode) {
           return;
         }
@@ -93,17 +93,23 @@ export function create(context: Rule.RuleContext): Rule.NodeListener {
           fix: (fixer: Rule.RuleFixer) => {
             const fixes: Rule.Fix[] = [];
             if (!importsFixed) {
-              fixes.push(fixer.insertTextAfter(importNode, "\nimport { Construct } from 'constructs';"));
+              const typesToImport = BANNED_TYPES.filter(t => {
+                return importCache.getRecord({ fileName: context.getFilename(), importName: t });
+              });
+              fixes.push(fixer.insertTextAfter(importNode, `\nimport { ${typesToImport.join(', ')} } from 'constructs';`));
+
               const specifiers = importNode.specifiers;
-              for (let i = 0; i < specifiers.length; i++) {
-                const s = specifiers[i];
-                if (s.imported.name === fqn) {
-                  if (specifiers.length === 1) { // only node
-                    fixes.push(fixer.removeRange(importNode.range));
-                  } else if (i === specifiers.length - 1) {
-                    fixes.push(fixer.removeRange([s.range[0] - 2, s.range[1]])); // include the leading comma
-                  } else {
-                    fixes.push(fixer.removeRange([s.range[0], s.range[1] + 2])); // include the trailing comma
+              if (specifiers.length === typesToImport.length) {
+                fixes.push(fixer.removeRange(importNode.range));
+              } else {
+                for (let i = 0; i < specifiers.length; i++) {
+                  const s = specifiers[i];
+                  if (typesToImport.includes(s.imported.name)) {
+                    if (i === specifiers.length - 1) {
+                      fixes.push(fixer.removeRange([s.range[0] - 2, s.range[1]])); // include the leading comma
+                    } else {
+                      fixes.push(fixer.removeRange([s.range[0], s.range[1] + 2])); // include the trailing comma
+                    }
                   }
                 }
               }
