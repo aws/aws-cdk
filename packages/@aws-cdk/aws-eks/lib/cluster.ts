@@ -6,8 +6,9 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as ssm from '@aws-cdk/aws-ssm';
-import { Annotations, CfnOutput, CfnResource, Construct, IResource, Resource, Stack, Tags, Token, Duration } from '@aws-cdk/core';
 import * as cdk8s from 'cdk8s';
+import { Annotations, CfnOutput, CfnResource, IResource, Resource, Stack, Tags, Token, Duration } from '@aws-cdk/core';
+import { Construct, Node } from 'constructs';
 import * as YAML from 'yaml';
 import { AwsAuth } from './aws-auth';
 import { ClusterResource, clusterArnComponents } from './cluster-resource';
@@ -22,6 +23,10 @@ import { Nodegroup, NodegroupOptions } from './managed-nodegroup';
 import { BottleRocketImage } from './private/bottlerocket';
 import { ServiceAccount, ServiceAccountOptions } from './service-account';
 import { LifecycleLabel, renderAmazonLinuxUserData, renderBottlerocketUserData } from './user-data';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 // defaults are based on https://eksctl.io
 const DEFAULT_CAPACITY_COUNT = 2;
@@ -1303,7 +1308,7 @@ export class Cluster extends ClusterBase {
    * @internal
    */
   public _attachKubectlResourceScope(resourceScope: Construct): KubectlProvider {
-    resourceScope.node.addDependency(this._kubectlReadyBarrier);
+    Node.of(resourceScope).addDependency(this._kubectlReadyBarrier);
     return this._kubectlResourceProvider;
   }
 
@@ -1712,7 +1717,7 @@ export class EksOptimizedImage implements ec2.IMachineImage {
   /**
    * Return the correct image
    */
-  public getImage(scope: Construct): ec2.MachineImageConfig {
+  public getImage(scope: CoreConstruct): ec2.MachineImageConfig {
     const ami = ssm.StringParameter.valueForStringParameter(scope, this.amiParameterName);
     return {
       imageId: ami,

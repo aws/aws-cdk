@@ -39,4 +39,11 @@ export interface IEngine {
    * @default - the engine doesn't belong to any family
    */
   readonly engineFamily?: string;
+
+  /**
+   * The default name of the master database user if one was not provided explicitly.
+   * The global default of 'admin' will be used if this is `undefined`.
+   * Note that 'admin' is a reserved word in PostgreSQL and cannot be used.
+   */
+  readonly defaultUsername?: string;
 }
