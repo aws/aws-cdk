@@ -549,7 +549,7 @@
           ]
         },
         "GenerateSecretString": {
-          "ExcludeCharacters": "\"@/\\",
+          "ExcludeCharacters": " %+~`#$&*()|[]{}:;<>?!'/@\"\\",
           "GenerateStringKey": "password",
           "PasswordLength": 30,
           "SecretStringTemplate": "{\"username\":\"syscdk\"}"
@@ -636,7 +636,6 @@
         "DBSubnetGroupName": {
           "Ref": "InstanceSubnetGroupF2CBA54F"
         },
-        "DeletionProtection": true,
         "EnableCloudwatchLogsExports": [
           "trace",
           "audit",
@@ -833,6 +832,7 @@
             ]
           },
           "functionName": "awscdkrdsinstanceInstanceRotationSingleUserAFE3C214",
+          "excludeCharacters": " %+~`#$&*()|[]{}:;<>?!'/@\"\\",
           "vpcSubnetIds": {
             "Fn::Join": [
               "",

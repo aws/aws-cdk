@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-eks",
-        "module": "aws_cdk.aws_eks"
+        "module": "aws_cdk.aws_eks",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
@@ -48,7 +52,10 @@
     "compat": "cdk-compat"
   },
   "cdk-build": {
-    "cloudformation": "AWS::EKS"
+    "cloudformation": "AWS::EKS",
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "keywords": [
     "aws",
@@ -65,14 +72,14 @@
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
     "@types/nodeunit": "^0.0.31",
-    "@types/yaml": "1.2.0",
+    "@types/yaml": "1.9.6",
     "aws-sdk": "^2.739.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
     "nodeunit": "^0.11.3",
     "pkglint": "0.0.0",
-    "sinon": "^9.0.3"
+    "sinon": "^9.1.0"
   },
   "dependencies": {
     "@aws-cdk/aws-autoscaling": "0.0.0",
@@ -110,7 +117,7 @@
     ]
   },
   "stability": "experimental",
-  "maturity": "experimental",
+  "maturity": "developer-preview",
   "awscdkio": {
     "announce": false
   }

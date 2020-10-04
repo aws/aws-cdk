@@ -1,7 +1,7 @@
 {
   "name": "@aws-cdk/aws-sqs",
   "version": "0.0.0",
-  "description": "CDK Constructs for AWS SQS",
+  "description": "The CDK Construct Library for AWS::SQS",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-sqs",
-        "module": "aws_cdk.aws_sqs"
+        "module": "aws_cdk.aws_sqs",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
@@ -48,7 +52,10 @@
     "compat": "cdk-compat"
   },
   "cdk-build": {
-    "cloudformation": "AWS::SQS"
+    "cloudformation": "AWS::SQS",
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": "true"
+    }
   },
   "keywords": [
     "aws",

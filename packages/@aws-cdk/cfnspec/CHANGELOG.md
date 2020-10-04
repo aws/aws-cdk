@@ -1,3 +1,394 @@
+# CloudFormation Resource Specification v18.5.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Amplify::Branch EnablePerformanceMode (__added__)
+* AWS::AppStream::Fleet IamRoleArn (__added__)
+* AWS::AppStream::Fleet StreamView (__added__)
+* AWS::AppStream::ImageBuilder IamRoleArn (__added__)
+* AWS::EKS::Cluster KubernetesNetworkConfig (__added__)
+* AWS::StepFunctions::Activity Name (__deleted__)
+* AWS::StepFunctions::Activity Arn (__added__)
+* AWS::StepFunctions::Activity Tags.DuplicatesAllowed (__added__)
+
+## Property Type Changes
+
+* AWS::Batch::JobDefinition.LogConfiguration (__added__)
+* AWS::Batch::JobDefinition.Secret (__added__)
+* AWS::Batch::JobDefinition.Tmpfs (__added__)
+* AWS::EKS::Cluster.KubernetesNetworkConfig (__added__)
+* AWS::Amplify::App.AutoBranchCreationConfig EnablePerformanceMode (__added__)
+* AWS::Batch::JobDefinition.ContainerProperties ExecutionRoleArn (__added__)
+* AWS::Batch::JobDefinition.ContainerProperties LogConfiguration (__added__)
+* AWS::Batch::JobDefinition.ContainerProperties Secrets (__added__)
+* AWS::Batch::JobDefinition.LinuxParameters InitProcessEnabled (__added__)
+* AWS::Batch::JobDefinition.LinuxParameters MaxSwap (__added__)
+* AWS::Batch::JobDefinition.LinuxParameters SharedMemorySize (__added__)
+* AWS::Batch::JobDefinition.LinuxParameters Swappiness (__added__)
+* AWS::Batch::JobDefinition.LinuxParameters Tmpfs (__added__)
+* AWS::CloudFront::CachePolicy.CachePolicyConfig DefaultTTL.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::CloudFront::CachePolicy.CachePolicyConfig MaxTTL.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::CloudFront::CachePolicy.CachePolicyConfig ParametersInCacheKeyAndForwardedToOrigin.Required (__changed__)
+  * Old: false
+  * New: true
+
+
+# CloudFormation Resource Specification v18.4.0
+
+## New Resource Types
+
+* AWS::AppFlow::ConnectorProfile
+* AWS::AppFlow::Flow
+* AWS::CloudFormation::StackSet
+
+## Attribute Changes
+
+* AWS::ApiGatewayV2::Api ApiEndpoint (__added__)
+* AWS::Route53::HostedZone Id (__added__)
+* AWS::Route53::HostedZone NameServers.DuplicatesAllowed (__added__)
+
+## Property Changes
+
+* AWS::ApiGateway::DomainName MutualTlsAuthentication (__added__)
+* AWS::ApiGatewayV2::Api DisableExecuteApiEndpoint (__added__)
+* AWS::ApiGatewayV2::DomainName MutualTlsAuthentication (__added__)
+* AWS::CodeBuild::ReportGroup DeleteReports (__added__)
+* AWS::EC2::VPCEndpointService ApplianceLoadBalancerArns (__added__)
+* AWS::EC2::VPCEndpointService NetworkLoadBalancerArns.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::ECS::Service CapacityProviderStrategy (__added__)
+* AWS::ECS::Service ServiceArn (__added__)
+* AWS::ECS::Service LoadBalancers.DuplicatesAllowed (__deleted__)
+* AWS::ECS::Service PlacementConstraints.DuplicatesAllowed (__deleted__)
+* AWS::ECS::Service PlacementStrategies.DuplicatesAllowed (__deleted__)
+* AWS::ECS::Service ServiceRegistries.DuplicatesAllowed (__deleted__)
+* AWS::ECS::Service Tags.DuplicatesAllowed (__deleted__)
+* AWS::MediaLive::Channel EncoderSettings.PrimitiveType (__deleted__)
+* AWS::MediaLive::Channel EncoderSettings.Type (__added__)
+* AWS::MediaLive::Input InputDevices (__added__)
+* AWS::Route53::HostedZone HostedZoneTags.DuplicatesAllowed (__changed__)
+  * Old: true
+  * New: false
+* AWS::Route53::HostedZone VPCs.DuplicatesAllowed (__changed__)
+  * Old: true
+  * New: false
+* AWS::Route53::HostedZone VPCs.UpdateType (__changed__)
+  * Old: Conditional
+  * New: Mutable
+
+## Property Type Changes
+
+* AWS::ApiGateway::DomainName.MutualTlsAuthentication (__added__)
+* AWS::ApiGatewayV2::DomainName.MutualTlsAuthentication (__added__)
+* AWS::ECS::Service.CapacityProviderStrategyItem (__added__)
+* AWS::LakeFormation::Permissions.TableWildcard (__added__)
+* AWS::MediaLive::Channel.AacSettings (__added__)
+* AWS::MediaLive::Channel.Ac3Settings (__added__)
+* AWS::MediaLive::Channel.ArchiveContainerSettings (__added__)
+* AWS::MediaLive::Channel.ArchiveGroupSettings (__added__)
+* AWS::MediaLive::Channel.ArchiveOutputSettings (__added__)
+* AWS::MediaLive::Channel.AribDestinationSettings (__added__)
+* AWS::MediaLive::Channel.AudioChannelMapping (__added__)
+* AWS::MediaLive::Channel.AudioCodecSettings (__added__)
+* AWS::MediaLive::Channel.AudioDescription (__added__)
+* AWS::MediaLive::Channel.AudioNormalizationSettings (__added__)
+* AWS::MediaLive::Channel.AudioOnlyHlsSettings (__added__)
+* AWS::MediaLive::Channel.AudioTrack (__added__)
+* AWS::MediaLive::Channel.AudioTrackSelection (__added__)
+* AWS::MediaLive::Channel.AutomaticInputFailoverSettings (__added__)
+* AWS::MediaLive::Channel.AvailBlanking (__added__)
+* AWS::MediaLive::Channel.AvailConfiguration (__added__)
+* AWS::MediaLive::Channel.AvailSettings (__added__)
+* AWS::MediaLive::Channel.BlackoutSlate (__added__)
+* AWS::MediaLive::Channel.BurnInDestinationSettings (__added__)
+* AWS::MediaLive::Channel.CaptionDescription (__added__)
+* AWS::MediaLive::Channel.CaptionDestinationSettings (__added__)
+* AWS::MediaLive::Channel.CaptionLanguageMapping (__added__)
+* AWS::MediaLive::Channel.ColorSpacePassthroughSettings (__added__)
+* AWS::MediaLive::Channel.DvbNitSettings (__added__)
+* AWS::MediaLive::Channel.DvbSdtSettings (__added__)
+* AWS::MediaLive::Channel.DvbSubDestinationSettings (__added__)
+* AWS::MediaLive::Channel.DvbTdtSettings (__added__)
+* AWS::MediaLive::Channel.Eac3Settings (__added__)
+* AWS::MediaLive::Channel.EbuTtDDestinationSettings (__added__)
+* AWS::MediaLive::Channel.EmbeddedDestinationSettings (__added__)
+* AWS::MediaLive::Channel.EmbeddedPlusScte20DestinationSettings (__added__)
+* AWS::MediaLive::Channel.EncoderSettings (__added__)
+* AWS::MediaLive::Channel.FeatureActivations (__added__)
+* AWS::MediaLive::Channel.FecOutputSettings (__added__)
+* AWS::MediaLive::Channel.Fmp4HlsSettings (__added__)
+* AWS::MediaLive::Channel.FrameCaptureGroupSettings (__added__)
+* AWS::MediaLive::Channel.FrameCaptureOutputSettings (__added__)
+* AWS::MediaLive::Channel.FrameCaptureSettings (__added__)
+* AWS::MediaLive::Channel.GlobalConfiguration (__added__)
+* AWS::MediaLive::Channel.H264ColorSpaceSettings (__added__)
+* AWS::MediaLive::Channel.H264FilterSettings (__added__)
+* AWS::MediaLive::Channel.H264Settings (__added__)
+* AWS::MediaLive::Channel.H265ColorSpaceSettings (__added__)
+* AWS::MediaLive::Channel.H265FilterSettings (__added__)
+* AWS::MediaLive::Channel.H265Settings (__added__)
+* AWS::MediaLive::Channel.Hdr10Settings (__added__)
+* AWS::MediaLive::Channel.HlsAkamaiSettings (__added__)
+* AWS::MediaLive::Channel.HlsBasicPutSettings (__added__)
+* AWS::MediaLive::Channel.HlsCdnSettings (__added__)
+* AWS::MediaLive::Channel.HlsGroupSettings (__added__)
+* AWS::MediaLive::Channel.HlsMediaStoreSettings (__added__)
+* AWS::MediaLive::Channel.HlsOutputSettings (__added__)
+* AWS::MediaLive::Channel.HlsSettings (__added__)
+* AWS::MediaLive::Channel.HlsWebdavSettings (__added__)
+* AWS::MediaLive::Channel.InputChannelLevel (__added__)
+* AWS::MediaLive::Channel.InputLocation (__added__)
+* AWS::MediaLive::Channel.InputLossBehavior (__added__)
+* AWS::MediaLive::Channel.KeyProviderSettings (__added__)
+* AWS::MediaLive::Channel.M2tsSettings (__added__)
+* AWS::MediaLive::Channel.M3u8Settings (__added__)
+* AWS::MediaLive::Channel.MediaPackageGroupSettings (__added__)
+* AWS::MediaLive::Channel.MediaPackageOutputSettings (__added__)
+* AWS::MediaLive::Channel.Mp2Settings (__added__)
+* AWS::MediaLive::Channel.MsSmoothGroupSettings (__added__)
+* AWS::MediaLive::Channel.MsSmoothOutputSettings (__added__)
+* AWS::MediaLive::Channel.MultiplexGroupSettings (__added__)
+* AWS::MediaLive::Channel.MultiplexOutputSettings (__added__)
+* AWS::MediaLive::Channel.NielsenConfiguration (__added__)
+* AWS::MediaLive::Channel.Output (__added__)
+* AWS::MediaLive::Channel.OutputGroup (__added__)
+* AWS::MediaLive::Channel.OutputGroupSettings (__added__)
+* AWS::MediaLive::Channel.OutputLocationRef (__added__)
+* AWS::MediaLive::Channel.OutputSettings (__added__)
+* AWS::MediaLive::Channel.PassThroughSettings (__added__)
+* AWS::MediaLive::Channel.Rec601Settings (__added__)
+* AWS::MediaLive::Channel.Rec709Settings (__added__)
+* AWS::MediaLive::Channel.RemixSettings (__added__)
+* AWS::MediaLive::Channel.RtmpCaptionInfoDestinationSettings (__added__)
+* AWS::MediaLive::Channel.RtmpGroupSettings (__added__)
+* AWS::MediaLive::Channel.RtmpOutputSettings (__added__)
+* AWS::MediaLive::Channel.Scte20PlusEmbeddedDestinationSettings (__added__)
+* AWS::MediaLive::Channel.Scte27DestinationSettings (__added__)
+* AWS::MediaLive::Channel.Scte35SpliceInsert (__added__)
+* AWS::MediaLive::Channel.Scte35TimeSignalApos (__added__)
+* AWS::MediaLive::Channel.SmpteTtDestinationSettings (__added__)
+* AWS::MediaLive::Channel.StandardHlsSettings (__added__)
+* AWS::MediaLive::Channel.StaticKeySettings (__added__)
+* AWS::MediaLive::Channel.TeletextDestinationSettings (__added__)
+* AWS::MediaLive::Channel.TemporalFilterSettings (__added__)
+* AWS::MediaLive::Channel.TimecodeConfig (__added__)
+* AWS::MediaLive::Channel.TtmlDestinationSettings (__added__)
+* AWS::MediaLive::Channel.UdpContainerSettings (__added__)
+* AWS::MediaLive::Channel.UdpGroupSettings (__added__)
+* AWS::MediaLive::Channel.UdpOutputSettings (__added__)
+* AWS::MediaLive::Channel.VideoCodecSettings (__added__)
+* AWS::MediaLive::Channel.VideoDescription (__added__)
+* AWS::MediaLive::Channel.WebvttDestinationSettings (__added__)
+* AWS::MediaLive::Input.InputDeviceRequest (__added__)
+* AWS::MediaLive::Input.InputDeviceSettings (__added__)
+* AWS::ApiGatewayV2::DomainName.DomainNameConfiguration SecurityPolicy (__added__)
+* AWS::ECS::Service.AwsVpcConfiguration SecurityGroups.DuplicatesAllowed (__deleted__)
+* AWS::ECS::Service.AwsVpcConfiguration Subnets.DuplicatesAllowed (__deleted__)
+* AWS::ECS::Service.AwsVpcConfiguration Subnets.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::ECS::Service.LoadBalancer ContainerName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-service-loadbalancers.html#cfn-ecs-service-loadbalancers-containername
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-service-loadbalancer.html#cfn-ecs-service-loadbalancer-containername
+* AWS::ECS::Service.LoadBalancer ContainerPort.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-service-loadbalancers.html#cfn-ecs-service-loadbalancers-containerport
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-service-loadbalancer.html#cfn-ecs-service-loadbalancer-containerport
+* AWS::ECS::Service.LoadBalancer ContainerPort.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::ECS::Service.LoadBalancer LoadBalancerName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-service-loadbalancers.html#cfn-ecs-service-loadbalancers-loadbalancername
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-service-loadbalancer.html#cfn-ecs-service-loadbalancer-loadbalancername
+* AWS::ECS::Service.LoadBalancer TargetGroupArn.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-service-loadbalancers.html#cfn-ecs-service-loadbalancers-targetgrouparn
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-service-loadbalancer.html#cfn-ecs-service-loadbalancer-targetgrouparn
+* AWS::ECS::Service.NetworkConfiguration AwsvpcConfiguration (__deleted__)
+* AWS::ECS::Service.NetworkConfiguration AwsVpcConfiguration (__added__)
+* AWS::LakeFormation::Permissions.DataLocationResource CatalogId (__added__)
+* AWS::LakeFormation::Permissions.DatabaseResource CatalogId (__added__)
+* AWS::LakeFormation::Permissions.TableResource CatalogId (__added__)
+* AWS::LakeFormation::Permissions.TableResource TableWildcard (__added__)
+* AWS::LakeFormation::Permissions.TableWithColumnsResource CatalogId (__added__)
+* AWS::MediaLive::Channel.AudioSelectorSettings AudioTrackSelection (__added__)
+* AWS::MediaLive::Channel.InputAttachment AutomaticInputFailoverSettings (__added__)
+* AWS::MediaLive::Channel.InputSettings Smpte2038DataPreference (__added__)
+* AWS::Route53::HostedZone.HostedZoneTag Key.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53-hostedzone-hostedzonetags.html#cfn-route53-hostedzonetags-key
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53-hostedzone-hostedzonetag.html#cfn-route53-hostedzone-hostedzonetag-key
+* AWS::Route53::HostedZone.HostedZoneTag Value.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53-hostedzone-hostedzonetags.html#cfn-route53-hostedzonetags-value
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53-hostedzone-hostedzonetag.html#cfn-route53-hostedzone-hostedzonetag-value
+* AWS::Route53::HostedZone.VPC VPCId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53-hostedzone-hostedzonevpcs.html#cfn-route53-hostedzone-hostedzonevpcs-vpcid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53-hostedzone-vpc.html#cfn-route53-hostedzone-vpc-vpcid
+* AWS::Route53::HostedZone.VPC VPCRegion.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53-hostedzone-hostedzonevpcs.html#cfn-route53-hostedzone-hostedzonevpcs-vpcregion
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53-hostedzone-vpc.html#cfn-route53-hostedzone-vpc-vpcregion
+
+
+# CloudFormation Resource Specification v18.3.0
+
+## New Resource Types
+
+* AWS::ApplicationInsights::Application
+* AWS::CloudFront::CachePolicy
+* AWS::CloudFront::OriginRequestPolicy
+* AWS::CloudFront::RealtimeLogConfig
+* AWS::CodeGuruReviewer::RepositoryAssociation
+* AWS::EC2::CarrierGateway
+* AWS::EKS::FargateProfile
+* AWS::GameLift::GameServerGroup
+* AWS::IoT::Authorizer
+* AWS::Kendra::DataSource
+* AWS::Kendra::Faq
+* AWS::Kendra::Index
+* AWS::Route53Resolver::ResolverQueryLoggingConfig
+* AWS::Route53Resolver::ResolverQueryLoggingConfigAssociation
+* AWS::SSO::Assignment
+* AWS::SSO::PermissionSet
+* AWS::SageMaker::MonitoringSchedule
+
+## Attribute Changes
+
+* AWS::GameLift::Alias AliasId (__added__)
+* AWS::IoT::Certificate Id (__added__)
+* AWS::KMS::Key KeyId (__added__)
+* AWS::Lambda::EventSourceMapping Id (__added__)
+* AWS::OpsWorksCM::Server Id (__added__)
+* AWS::Route53::HealthCheck HealthCheckId (__added__)
+* AWS::StepFunctions::StateMachine Arn (__added__)
+
+## Property Changes
+
+* AWS::ApiGatewayV2::Authorizer AuthorizerPayloadFormatVersion (__added__)
+* AWS::ApiGatewayV2::Authorizer EnableSimpleResponses (__added__)
+* AWS::ApiGatewayV2::Integration IntegrationSubtype (__added__)
+* AWS::Cognito::UserPoolClient AccessTokenValidity (__added__)
+* AWS::Cognito::UserPoolClient IdTokenValidity (__added__)
+* AWS::Cognito::UserPoolClient TokenValidityUnits (__added__)
+* AWS::EC2::NetworkInterface Ipv6Addresses.DuplicatesAllowed (__added__)
+* AWS::EC2::NetworkInterface Ipv6Addresses.ItemType (__added__)
+* AWS::EC2::NetworkInterface Ipv6Addresses.Type (__changed__)
+  * Old: InstanceIpv6Address
+  * New: List
+* AWS::EC2::TransitGateway MulticastSupport (__added__)
+* AWS::ECR::Repository ImageScanningConfiguration (__added__)
+* AWS::ECR::Repository ImageTagMutability (__added__)
+* AWS::ECR::Repository RepositoryPolicyText.PrimitiveType (__deleted__)
+* AWS::ECR::Repository Tags.DuplicatesAllowed (__changed__)
+  * Old: true
+  * New: false
+* AWS::ECS::TaskDefinition TaskDefinitionStatus (__deleted__)
+* AWS::EKS::Nodegroup LaunchTemplate (__added__)
+* AWS::GuardDuty::Detector DataSources (__added__)
+* AWS::IoT::Certificate CACertificatePem (__added__)
+* AWS::IoT::Certificate CertificateMode (__added__)
+* AWS::IoT::Certificate CertificatePem (__added__)
+* AWS::IoT::Certificate CertificateSigningRequest.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::KMS::Key KeyPolicy.PrimitiveType (__deleted__)
+* AWS::KMS::Key Tags.DuplicatesAllowed (__changed__)
+  * Old: true
+  * New: false
+* AWS::Lambda::EventSourceMapping Topics (__added__)
+* AWS::Neptune::DBCluster AssociatedRoles (__added__)
+* AWS::OpsWorksCM::Server EngineAttributes.DuplicatesAllowed (__added__)
+* AWS::OpsWorksCM::Server SecurityGroupIds.DuplicatesAllowed (__added__)
+* AWS::OpsWorksCM::Server SubnetIds.DuplicatesAllowed (__added__)
+* AWS::OpsWorksCM::Server Tags.DuplicatesAllowed (__added__)
+* AWS::Route53::HealthCheck HealthCheckConfig.Type (__deleted__)
+* AWS::Route53::HealthCheck HealthCheckConfig.PrimitiveType (__added__)
+* AWS::Route53::HealthCheck HealthCheckConfig.UpdateType (__changed__)
+  * Old: Conditional
+  * New: Mutable
+* AWS::Route53::HealthCheck HealthCheckTags.DuplicatesAllowed (__changed__)
+  * Old: true
+  * New: false
+* AWS::SNS::Topic FifoTopic (__deleted__)
+* AWS::SageMaker::Model EnableNetworkIsolation (__added__)
+* AWS::ServiceCatalog::CloudFormationProvisionedProduct PathName (__added__)
+* AWS::StepFunctions::StateMachine StateMachineType.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::StepFunctions::StateMachine Tags.DuplicatesAllowed (__added__)
+* AWS::Transfer::Server SecurityPolicyName (__added__)
+
+## Property Type Changes
+
+* AWS::ECS::TaskDefinition.EfsVolumeConfiguration (__removed__)
+* AWS::ECS::TaskDefinition.Options (__removed__)
+* AWS::Route53::HealthCheck.AlarmIdentifier (__removed__)
+* AWS::Route53::HealthCheck.HealthCheckConfig (__removed__)
+* AWS::Cognito::UserPoolClient.TokenValidityUnits (__added__)
+* AWS::ECS::TaskDefinition.EFSVolumeConfiguration (__added__)
+* AWS::ECS::TaskDefinition.EnvironmentFile (__added__)
+* AWS::EKS::Nodegroup.LaunchTemplateSpecification (__added__)
+* AWS::GuardDuty::Detector.CFNDataSourceConfigurations (__added__)
+* AWS::GuardDuty::Detector.CFNS3LogsConfiguration (__added__)
+* AWS::MSK::Cluster.Sasl (__added__)
+* AWS::MSK::Cluster.Scram (__added__)
+* AWS::Macie::FindingsFilter.FindingsFilterListItem (__added__)
+* AWS::Neptune::DBCluster.DBClusterRole (__added__)
+* AWS::SSM::Association.ParameterValues (__added__)
+* AWS::CloudFront::Distribution.CacheBehavior RealtimeLogConfigArn (__added__)
+* AWS::CloudFront::Distribution.DefaultCacheBehavior RealtimeLogConfigArn (__added__)
+* AWS::CodeCommit::Repository.Code BranchName (__added__)
+* AWS::ECS::TaskDefinition.ContainerDefinition EnvironmentFiles (__added__)
+* AWS::ECS::TaskDefinition.AuthorizationConfig Iam (__deleted__)
+* AWS::ECS::TaskDefinition.AuthorizationConfig IAM (__added__)
+* AWS::ECS::TaskDefinition.AuthorizationConfig AccessPointId.Documentation (__changed__)
+  * Old: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/efs-volumes.html#specify-efs-config
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-taskdefinition-authorizationconfig.html#cfn-ecs-taskdefinition-authorizationconfig-accesspointid
+* AWS::ECS::TaskDefinition.FirelensConfiguration Options.PrimitiveItemType (__added__)
+* AWS::ECS::TaskDefinition.FirelensConfiguration Options.Type (__changed__)
+  * Old: Options
+  * New: Map
+* AWS::ECS::TaskDefinition.LogConfiguration Options.PrimitiveItemType (__added__)
+* AWS::ECS::TaskDefinition.LogConfiguration Options.Type (__changed__)
+  * Old: Options
+  * New: Map
+* AWS::ECS::TaskDefinition.Volume EfsVolumeConfiguration (__deleted__)
+* AWS::ECS::TaskDefinition.Volume EFSVolumeConfiguration (__added__)
+* AWS::FSx::FileSystem.LustreConfiguration DriveCacheType (__added__)
+* AWS::GameLift::Alias.RoutingStrategy Type.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Lambda::EventSourceMapping.DestinationConfig OnFailure.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Lambda::EventSourceMapping.OnFailure Destination.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::MSK::Cluster.ClientAuthentication Sasl (__added__)
+* AWS::Route53::HealthCheck.HealthCheckTag Key.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53-healthcheck-healthchecktag.html#cfn-route53-healthchecktags-key
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53-healthcheck-healthchecktag.html#cfn-route53-healthcheck-healthchecktag-key
+* AWS::Route53::HealthCheck.HealthCheckTag Value.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53-healthcheck-healthchecktag.html#cfn-route53-healthchecktags-value
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53-healthcheck-healthchecktag.html#cfn-route53-healthcheck-healthchecktag-value
+* AWS::StepFunctions::StateMachine.CloudWatchLogsLogGroup LogGroupArn.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-stepfunctions-statemachine-logdestination-cloudwatchlogsloggroup.html#cfn-stepfunctions-statemachine-logdestination-cloudwatchlogsloggroup-loggrouparn
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-stepfunctions-statemachine-cloudwatchlogsloggroup.html#cfn-stepfunctions-statemachine-cloudwatchlogsloggroup-loggrouparn
+* AWS::StepFunctions::StateMachine.CloudWatchLogsLogGroup LogGroupArn.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::StepFunctions::StateMachine.TracingConfiguration Enabled.Required (__changed__)
+  * Old: true
+  * New: false
+
+
 # CloudFormation Resource Specification v16.3.0
 
 ## New Resource Types

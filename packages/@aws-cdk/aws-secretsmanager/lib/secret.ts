@@ -1,6 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { Construct, IConstruct, IResource, RemovalPolicy, Resource, SecretValue, Stack } from '@aws-cdk/core';
+import { IResource, RemovalPolicy, Resource, SecretValue, Stack, Token } from '@aws-cdk/core';
+import { IConstruct, Construct } from 'constructs';
 import { ResourcePolicy } from './policy';
 import { RotationSchedule, RotationScheduleOptions } from './rotation-schedule';
 import * as secretsmanager from './secretsmanager.generated';
@@ -129,13 +130,6 @@ export interface SecretAttributes {
    * The ARN of the secret in SecretsManager.
    */
   readonly secretArn: string;
-
-  /**
-   * The name of the secret in SecretsManager.
-   *
-   * @default - the name is derived from the secretArn.
-   */
-  readonly secretName?: string;
 }
 
 /**
@@ -286,7 +280,7 @@ export class Secret extends SecretBase {
     class Import extends SecretBase {
       public readonly encryptionKey = attrs.encryptionKey;
       public readonly secretArn = attrs.secretArn;
-      public readonly secretName = parseSecretName(scope, attrs.secretArn, attrs.secretName);
+      public readonly secretName = parseSecretName(scope, attrs.secretArn);
       protected readonly autoCreatePolicy = false;
     }
 
@@ -333,7 +327,7 @@ export class Secret extends SecretBase {
 
     // @see https://docs.aws.amazon.com/kms/latest/developerguide/services-secrets-manager.html#asm-authz
     const principal =
-       new kms.ViaServicePrincipal(`secretsmanager.${Stack.of(this).region}.amazonaws.com`, new iam.AccountPrincipal(Stack.of(this).account));
+      new kms.ViaServicePrincipal(`secretsmanager.${Stack.of(this).region}.amazonaws.com`, new iam.AccountPrincipal(Stack.of(this).account));
     this.encryptionKey?.grantEncryptDecrypt(principal);
     this.encryptionKey?.grant(principal, 'kms:CreateGrant', 'kms:DescribeKey');
   }
@@ -601,14 +595,18 @@ export interface SecretStringGenerator {
   readonly generateStringKey?: string;
 }
 
-/** Returns the secret name if defined, otherwise attempts to parse it from the ARN. */
-export function parseSecretName(construct: IConstruct, secretArn: string, secretName?: string) {
-  if (secretName) { return secretName; }
-  const resourceName = Stack.of(construct).parseArn(secretArn).resourceName;
+/** Parses the secret name from the ARN. */
+function parseSecretName(construct: IConstruct, secretArn: string) {
+  const resourceName = Stack.of(construct).parseArn(secretArn, ':').resourceName;
   if (resourceName) {
+    // Can't operate on the token to remove the SecretsManager suffix, so just return the full secret name
+    if (Token.isUnresolved(resourceName)) {
+      return resourceName;
+    }
+
     // Secret resource names are in the format `${secretName}-${SecretsManager suffix}`
-    const secretNameFromArn = resourceName.substr(0, resourceName.lastIndexOf('-'));
-    if (secretNameFromArn) { return secretNameFromArn; }
+    // If there is no hyphen, assume no suffix was provided, and return the whole name.
+    return resourceName.substr(0, resourceName.lastIndexOf('-')) || resourceName;
   }
   throw new Error('invalid ARN format; no secret name provided');
 }

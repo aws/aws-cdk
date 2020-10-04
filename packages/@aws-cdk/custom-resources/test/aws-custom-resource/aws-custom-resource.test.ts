@@ -2,7 +2,7 @@ import '@aws-cdk/assert/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
-import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '../../lib';
+import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId, PhysicalResourceIdReference } from '../../lib';
 
 /* eslint-disable quote-props */
 
@@ -216,6 +216,63 @@ test('encodes booleans', () => {
         'trueString': 'true',
         'falseBoolean': 'FALSE:BOOLEAN',
         'falseString': 'false',
+      },
+      'physicalResourceId': {
+        'id': 'id',
+      },
+    },
+  });
+});
+
+test('fails PhysicalResourceIdReference is passed to onCreate parameters', () => {
+  const stack = new cdk.Stack();
+  expect(() => new AwsCustomResource(stack, 'AwsSdk', {
+    resourceType: 'Custom::ServiceAction',
+    onCreate: {
+      service: 'service',
+      action: 'action',
+      parameters: {
+        physicalResourceIdReference: new PhysicalResourceIdReference(),
+      },
+      physicalResourceId: PhysicalResourceId.of('id'),
+    },
+    policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+  })).toThrow('`PhysicalResourceIdReference` must not be specified in `onCreate` parameters.');
+});
+
+test('encodes physical resource id reference', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  new AwsCustomResource(stack, 'AwsSdk', {
+    resourceType: 'Custom::ServiceAction',
+    onUpdate: {
+      service: 'service',
+      action: 'action',
+      parameters: {
+        trueBoolean: true,
+        trueString: 'true',
+        falseBoolean: false,
+        falseString: 'false',
+        physicalResourceIdReference: new PhysicalResourceIdReference(),
+      },
+      physicalResourceId: PhysicalResourceId.of('id'),
+    },
+    policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+  });
+
+  // THEN
+  expect(stack).toHaveResource('Custom::ServiceAction', {
+    'Create': {
+      'service': 'service',
+      'action': 'action',
+      'parameters': {
+        'trueBoolean': 'TRUE:BOOLEAN',
+        'trueString': 'true',
+        'falseBoolean': 'FALSE:BOOLEAN',
+        'falseString': 'false',
+        'physicalResourceIdReference': 'PHYSICAL:RESOURCEID:',
       },
       'physicalResourceId': {
         'id': 'id',

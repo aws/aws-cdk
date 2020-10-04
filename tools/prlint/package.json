@@ -9,13 +9,9 @@
     "name": "Amazon Web Services",
     "url": "https://aws.amazon.com"
   },
-  "scripts": {
-    "build": "echo success"
-  },
   "license": "Apache-2.0",
   "dependencies": {
-    "github-api": "^3.3.0",
-    "make-runnable": "^1.3.6"
+    "github-api": "^3.3.0"
   },
   "scripts": {
     "build": "echo success",
