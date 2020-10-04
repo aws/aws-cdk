@@ -20,7 +20,7 @@ phases:
     commands:
       # we bump here so that our master version won't be identical to the latest published version during tests.
       # otherwise this causes problems with verdaccio mirroring.
-      - /bin/bash ./bump.sh minor rc
+      - '[ ${GITBRANCH} = "master" ] && /bin/bash ./bump.sh minor rc false'
       - /bin/bash ./scripts/align-version.sh
       - /bin/bash ./build.sh
   post_build:
