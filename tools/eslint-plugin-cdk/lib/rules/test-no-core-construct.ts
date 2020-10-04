@@ -12,7 +12,7 @@ interface ImportCacheKey {
 let importCache: RecordCache<ImportCacheKey, Node>;
 let importsFixed: boolean;
 
-const BANNED_CLASSES = [ 'Construct', 'IConstruct' ];
+const BANNED_TYPES = [ 'Construct', 'IConstruct' ];
 
 export function create(context: Rule.RuleContext): Rule.NodeListener {
   return {
@@ -36,12 +36,14 @@ export function create(context: Rule.RuleContext): Rule.NodeListener {
       }
       if (node.source.value === '@aws-cdk/core') {
         node.specifiers.forEach((s: any) => {
-          if (s.type === 'ImportSpecifier' && BANNED_CLASSES.includes(s.imported.name)) {
+          if (s.type === 'ImportSpecifier' && BANNED_TYPES.includes(s.imported.name)) {
             // named import
             importCache.pushRecord({ fileName: context.getFilename(), importName: s.imported.name }, node);
           } else if (s.type === 'ImportNamespaceSpecifier') {
             // barrel import
-            BANNED_CLASSES.forEach(c => importCache.pushRecord({ fileName: context.getFilename(), importName: `${s.local.name}.${c}` }, node));
+            BANNED_TYPES.forEach(typename => {
+              importCache.pushRecord({ fileName: context.getFilename(), importName: `${s.local.name}.${typename}` }, node);
+            });
           }
         });
       }
@@ -57,9 +59,10 @@ export function create(context: Rule.RuleContext): Rule.NodeListener {
       const type = node.typeAnnotation.typeAnnotation.typeName;
       if (!type) { return; }
       if (type.type === 'TSQualifiedName') {
-        // usage from barrel import
-        const fqn = `${type.left.name}.${type.right.name}`;
-        const key: ImportCacheKey = { fileName: context.getFilename(), importName: fqn };
+        // barrel import
+        const qualifier = type.left.name;
+        const typename = type.right.name;
+        const key: ImportCacheKey = { fileName: context.getFilename(), importName: `${qualifier}.${typename}` };
         const importNode = importCache.getRecord(key);
         if (!importNode) {
           return;
@@ -70,14 +73,15 @@ export function create(context: Rule.RuleContext): Rule.NodeListener {
           fix: (fixer: Rule.RuleFixer) => {
             const fixes: Rule.Fix[] = [];
             if (!importsFixed) {
-              fixes.push(fixer.insertTextAfter(importNode, "\nimport { Construct } from 'constructs';"));
+              fixes.push(fixer.insertTextAfter(importNode, "\nimport * as constructs from 'constructs';"));
               importsFixed = true;
             }
-            fixes.push(fixer.replaceTextRange(node.typeAnnotation.typeAnnotation.range, 'Construct'));
+            fixes.push(fixer.replaceTextRange(node.typeAnnotation.typeAnnotation.range, `constructs.${typename}`));
             return fixes;
           }
         });
       } else if (type.type === 'Identifier') {
+        // identifier imports
         const fqn = type.name;
         const importNode = importCache.getRecord({ fileName: context.getFilename(), importName: fqn });
         if (!importNode) {
