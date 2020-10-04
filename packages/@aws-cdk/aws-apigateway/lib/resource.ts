@@ -5,7 +5,7 @@ import { Cors, CorsOptions } from './cors';
 import { Integration } from './integration';
 import { MockIntegration } from './integrations';
 import { Method, MethodOptions } from './method';
-import { IRestApi, RestApi } from './restapi';
+import { IRestApi, RestApi } from './rest-api-base';
 
 export interface IResource extends IResourceBase {
   /**

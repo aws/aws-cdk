@@ -3,7 +3,7 @@ import { Construct as CoreConstruct, Lazy, RemovalPolicy, Resource, CfnResource 
 import { Construct } from 'constructs';
 import { CfnDeployment } from './apigateway.generated';
 import { Method } from './method';
-import { IRestApi, RestApi, SpecRestApi, RestApiBase } from './restapi';
+import { IRestApi, RestApi, SpecRestApi, RestApiBase } from './rest-api-base';
 
 export interface DeploymentProps {
   /**

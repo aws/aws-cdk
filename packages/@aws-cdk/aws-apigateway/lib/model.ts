@@ -2,7 +2,7 @@ import { Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnModel, CfnModelProps } from './apigateway.generated';
 import * as jsonSchema from './json-schema';
-import { IRestApi, RestApi } from './restapi';
+import { IRestApi, RestApi } from './rest-api-base';
 import * as util from './util';
 
 export interface IModel {

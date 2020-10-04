@@ -3,7 +3,7 @@ import { Construct } from 'constructs';
 import { AccessLogFormat, IAccessLogDestination } from './access-log';
 import { CfnStage } from './apigateway.generated';
 import { Deployment } from './deployment';
-import { IRestApi } from './restapi';
+import { IRestApi } from './rest-api-base';
 import { parseMethodOptionsPath } from './util';
 
 /**

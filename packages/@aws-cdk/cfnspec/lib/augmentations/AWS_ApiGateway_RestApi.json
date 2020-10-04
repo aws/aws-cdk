@@ -1,0 +1,41 @@
+{
+  "metrics": {
+    "namespace": "AWS/ApiGateway",
+    "dimensions": { "ApiName": "this.apiName", "Stage": "this.deploymentStage.stageName" },
+    "metrics": [
+      {
+        "name": "IntegrationLatency",
+        "documentation": "The time between when API Gateway relays a request to the backend and when it receives a response from the backend"
+      },
+      {
+        "name": "Latency",
+        "documentation": "The time between when API Gateway receives a request from a client and when it returns a response to the client"
+      },
+      {
+        "name": "Count",
+        "documentation": "The total number API requests",
+        "type": "count"
+      },
+      {
+        "name": "CacheHitCount",
+        "documentation": "The number of requests served from the API cache",
+        "type": "count"
+      },
+      {
+        "name": "CacheMissCount",
+        "documentation": "The number of requests served from the backend",
+        "type": "count"
+      },
+      {
+        "name": "5XXError",
+        "documentation": "The number of server-side errors captured",
+        "type": "count"
+      },
+      {
+        "name": "4XXError",
+        "documentation": "The number of client-side errors captured",
+        "type": "count"
+      }
+    ]
+  }
+}

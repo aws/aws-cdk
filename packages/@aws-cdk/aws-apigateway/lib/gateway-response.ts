@@ -1,7 +1,7 @@
 import { IResource, Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnGatewayResponse } from './apigateway.generated';
-import { IRestApi } from './restapi';
+import { IRestApi } from './rest-api-base';
 
 /**
  * Represents gateway response resource.

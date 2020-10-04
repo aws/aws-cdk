@@ -2,7 +2,7 @@ import { Resource, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnBasePathMapping } from './apigateway.generated';
 import { IDomainName } from './domain-name';
-import { IRestApi, RestApi } from './restapi';
+import { IRestApi, RestApi } from './rest-api-base';
 import { Stage } from './stage';
 
 export interface BasePathMappingOptions {

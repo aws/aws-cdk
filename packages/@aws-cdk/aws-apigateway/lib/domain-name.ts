@@ -3,7 +3,7 @@ import { IResource, Resource, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnDomainName } from './apigateway.generated';
 import { BasePathMapping, BasePathMappingOptions } from './base-path-mapping';
-import { EndpointType, IRestApi } from './restapi';
+import { EndpointType, IRestApi } from './rest-api-base';
 
 /**
  * The minimum version of the SSL protocol that you want API Gateway to use for HTTPS connections.

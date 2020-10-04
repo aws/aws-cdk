@@ -3,7 +3,7 @@ import { Construct } from 'constructs';
 import { IApiKey } from './api-key';
 import { CfnUsagePlan, CfnUsagePlanKey } from './apigateway.generated';
 import { Method } from './method';
-import { IRestApi } from './restapi';
+import { IRestApi } from './rest-api-base';
 import { Stage } from './stage';
 import { validateInteger } from './util';
 
