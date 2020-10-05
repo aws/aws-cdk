@@ -28,6 +28,8 @@ export class TaskRecordManager extends cdk.Construct {
       retentionPeriod: cdk.Duration.days(14),
     });
 
+    const visibilityTimeout = cdk.Duration.minutes(1);
+
     // This queue lets us batch together ecs task state events. This is useful
     // for when when we would be otherwise bombarded by them.
     const queue = new sqs.Queue(this, 'EventsQueue', {
@@ -35,6 +37,7 @@ export class TaskRecordManager extends cdk.Construct {
         maxReceiveCount: 500,
         queue: deadLetterQueue,
       },
+      visibilityTimeout,
     });
 
     const table = new dynamodb.Table(this, 'Records', {
@@ -60,12 +63,19 @@ export class TaskRecordManager extends cdk.Construct {
       ],
     });
 
+    const code = lambda.Code.fromAsset(path.join(__dirname, 'lambda'), {
+      exclude: [
+        '.coverage',
+        '*.pyc',
+      ],
+    });
+
     // This function consumes `queue`
     const taskStateHandler = new lambda.Function(this, 'EventHandler', {
-      code: lambda.Code.fromAsset(path.join(__dirname, 'lambda')),
+      code: code,
       handler: 'index.queue_handler',
       runtime: lambda.Runtime.PYTHON_3_8,
-      timeout: cdk.Duration.minutes(5),
+      timeout: visibilityTimeout,
       environment: {
         HOSTED_ZONE_ID: props.dnsZone.hostedZoneId,
         RECORD_NAME: cdk.Fn.join('.', [props.dnsRecordName, props.dnsZone.zoneName]),
