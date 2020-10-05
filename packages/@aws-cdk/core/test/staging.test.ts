@@ -4,7 +4,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as sinon from 'sinon';
-import { App, AssetHashType, AssetStaging, BundlingDockerImage, BundlingOptions, Stack } from '../lib';
+import { App, AssetHashType, AssetStaging, BundlingDockerImage, BundlingOptions, FileSystem, Stack } from '../lib';
 
 const STUB_INPUT_FILE = '/tmp/docker-stub.input';
 const STUB_INPUT_CONCAT_FILE = '/tmp/docker-stub.input.concat';
@@ -24,6 +24,7 @@ process.env.CDK_DOCKER = `${__dirname}/docker-stub.sh`;
 nodeunitShim({
 
   'tearDown'(cb: any) {
+    AssetStaging.clearAssetHashCache();
     if (fs.existsSync(STUB_INPUT_FILE)) {
       fs.unlinkSync(STUB_INPUT_FILE);
     }
@@ -221,6 +222,56 @@ nodeunitShim({
     test.done();
   },
 
+  'uses asset hash cache with AssetHashType.OUTPUT'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'stack');
+    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+    const fingerPrintSpy = sinon.spy(FileSystem, 'fingerprint');
+
+    // WHEN
+    new AssetStaging(stack, 'Asset', {
+      sourcePath: directory,
+      assetHashType: AssetHashType.OUTPUT,
+      bundling: {
+        image: BundlingDockerImage.fromRegistry('alpine'),
+        command: [DockerStubCommand.SUCCESS],
+      },
+    });
+
+    new AssetStaging(stack, 'AssetDuplicate', {
+      sourcePath: directory,
+      assetHashType: AssetHashType.OUTPUT,
+      bundling: { // Same bundling but with keys ordered differently
+        command: [DockerStubCommand.SUCCESS],
+        image: BundlingDockerImage.fromRegistry('alpine'),
+      },
+    });
+
+    // THEN
+    const assembly = app.synth();
+
+    // We're testing that docker was run exactly once even though there are two bundling assets
+    // and that the hash is based on the output
+    test.deepEqual(
+      readDockerStubInputConcat(),
+      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS`,
+    );
+
+    test.deepEqual(fs.readdirSync(assembly.directory), [
+      'asset.33cbf2cae5432438e0f046bc45ba8c3cef7b6afcf47b59d1c183775c1918fb1f',
+      'cdk.out',
+      'manifest.json',
+      'stack.template.json',
+      'tree.json',
+    ]);
+
+    // Only one fingerprinting
+    test.ok(fingerPrintSpy.calledOnce);
+
+    test.done();
+  },
+
   'bundler considers its options when reusing bundle output'(test: Test) {
     // GIVEN
     const app = new App();
@@ -350,6 +401,10 @@ nodeunitShim({
         command: [DockerStubCommand.SUCCESS],
       },
     });
+
+    // Clear asset hash cache to show that during the second synth bundling
+    // will consider the existing bundling dir (file system cache).
+    AssetStaging.clearAssetHashCache();
 
     // GIVEN
     const app2 = new App({ outdir: TEST_OUTDIR });
