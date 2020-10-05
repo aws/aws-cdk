@@ -82,7 +82,7 @@
     "exclude": []
   },
   "dependencies": {
-    "jsonschema": "^1.2.6",
+    "jsonschema": "^1.2.7",
     "semver": "^7.3.2"
   },
   "awscdkio": {

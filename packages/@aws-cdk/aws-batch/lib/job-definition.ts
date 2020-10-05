@@ -1,7 +1,8 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct, Duration, IResource, Resource, Stack } from '@aws-cdk/core';
+import { Duration, IResource, Resource, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnJobDefinition } from './batch.generated';
 import { JobDefinitionImageConfig } from './job-definition-image-config';
 

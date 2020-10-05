@@ -4,7 +4,7 @@ import { CfnCondition } from './cfn-condition';
 /* eslint-disable import/order */
 import { CfnRefElement } from './cfn-element';
 import { CfnCreationPolicy, CfnDeletionPolicy, CfnUpdatePolicy } from './cfn-resource-policy';
-import { Construct, IConstruct } from './construct-compat';
+import { Construct, IConstruct, Node } from 'constructs';
 import { addDependency } from './deps';
 import { CfnReference } from './private/cfn-reference';
 import { Reference } from './reference';
@@ -92,8 +92,8 @@ export class CfnResource extends CfnRefElement {
     // if aws:cdk:enable-path-metadata is set, embed the current construct's
     // path in the CloudFormation template, so it will be possible to trace
     // back to the actual construct path.
-    if (this.node.tryGetContext(cxapi.PATH_METADATA_ENABLE_CONTEXT)) {
-      this.addMetadata(cxapi.PATH_METADATA_KEY, this.node.path);
+    if (Node.of(this).tryGetContext(cxapi.PATH_METADATA_ENABLE_CONTEXT)) {
+      this.addMetadata(cxapi.PATH_METADATA_KEY, Node.of(this).path);
     }
   }
 
@@ -238,7 +238,7 @@ export class CfnResource extends CfnRefElement {
       return;
     }
 
-    addDependency(this, target, `"${this.node.path}" depends on "${target.node.path}"`);
+    addDependency(this, target, `"${Node.of(this).path}" depends on "${Node.of(target).path}"`);
   }
 
   /**
