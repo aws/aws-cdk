@@ -54,7 +54,10 @@
     "pre": [
       "node ./build.js"
     ],
-    "jest": true
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": "true"
+    }
   },
   "author": {
     "name": "Amazon Web Services",
@@ -187,7 +190,8 @@
     "@aws-cdk/aws-wafv2": "0.0.0",
     "@aws-cdk/aws-workspaces": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "@aws-cdk/yaml-cfn": "0.0.0"
+    "@aws-cdk/yaml-cfn": "0.0.0",
+    "constructs": "^3.0.4"
   },
   "peerDependencies": {
     "@aws-cdk/alexa-ask": "0.0.0",

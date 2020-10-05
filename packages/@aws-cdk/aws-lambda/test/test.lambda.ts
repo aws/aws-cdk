@@ -5,6 +5,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
+import * as constructs from 'constructs';
 import { Test } from 'nodeunit';
 import * as lambda from '../lib';
 
@@ -1712,7 +1713,7 @@ export = {
   },
 };
 
-function newTestLambda(scope: cdk.Construct) {
+function newTestLambda(scope: constructs.Construct) {
   return new lambda.Function(scope, 'MyLambda', {
     code: new lambda.InlineCode('foo'),
     handler: 'bar',

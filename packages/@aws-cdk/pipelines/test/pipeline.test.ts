@@ -4,7 +4,8 @@ import { anything, arrayWith, Capture, deepObjectLike, encodedJson, objectLike, 
 import '@aws-cdk/assert/jest';
 import * as cp from '@aws-cdk/aws-codepipeline';
 import * as cpa from '@aws-cdk/aws-codepipeline-actions';
-import { Construct, Stack, Stage, StageProps, SecretValue, Tags } from '@aws-cdk/core';
+import { Stack, Stage, StageProps, SecretValue, Tags } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as cdkp from '../lib';
 import { BucketStack, PIPELINE_ENV, stackTemplate, TestApp, TestGitHubNpmPipeline } from './testutil';
 

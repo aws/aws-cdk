@@ -1,5 +1,6 @@
 import { User } from '@aws-cdk/aws-iam';
-import { App, Construct, Stack, StackProps } from '@aws-cdk/core';
+import { App, Stack, StackProps } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as es from '../lib';
 
 class TestStack extends Stack {

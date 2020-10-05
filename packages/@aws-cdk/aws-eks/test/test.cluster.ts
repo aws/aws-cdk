@@ -7,6 +7,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
+import * as constructs from 'constructs';
 import { Test } from 'nodeunit';
 import * as YAML from 'yaml';
 import * as eks from '../lib';
@@ -42,7 +43,7 @@ export = {
     class ClusterStack extends cdk.Stack {
       public eksCluster: eks.Cluster;
 
-      constructor(scope: cdk.Construct, id: string, props: { sg: ec2.ISecurityGroup, vpc: ec2.IVpc }) {
+      constructor(scope: constructs.Construct, id: string, props: { sg: ec2.ISecurityGroup, vpc: ec2.IVpc }) {
         super(scope, id);
         this.eksCluster = new eks.Cluster(this, 'Cluster', {
           version: eks.KubernetesVersion.V1_17,
@@ -57,7 +58,7 @@ export = {
       public readonly securityGroup: ec2.ISecurityGroup;
       public readonly vpc: ec2.IVpc;
 
-      constructor(scope: cdk.Construct, id: string) {
+      constructor(scope: constructs.Construct, id: string) {
         super(scope, id);
         this.vpc = new ec2.Vpc(this, 'Vpc');
         this.securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', { vpc: this.vpc });
@@ -80,7 +81,7 @@ export = {
     class ClusterStack extends cdk.Stack {
       public eksCluster: eks.Cluster;
 
-      constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
+      constructor(scope: constructs.Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props);
         this.eksCluster = new eks.Cluster(this, 'Cluster', {
           version: eks.KubernetesVersion.V1_17,
@@ -89,7 +90,7 @@ export = {
     }
 
     class ManifestStack extends cdk.Stack {
-      constructor(scope: cdk.Construct, id: string, props: cdk.StackProps & { cluster: eks.Cluster }) {
+      constructor(scope: constructs.Construct, id: string, props: cdk.StackProps & { cluster: eks.Cluster }) {
         super(scope, id, props);
 
         // this role creates a dependency between this stack and the cluster stack
@@ -131,7 +132,7 @@ export = {
     class ClusterStack extends cdk.Stack {
       public eksCluster: eks.Cluster;
 
-      constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
+      constructor(scope: constructs.Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props);
         this.eksCluster = new eks.Cluster(this, 'Cluster', {
           version: eks.KubernetesVersion.V1_17,
@@ -140,7 +141,7 @@ export = {
     }
 
     class ChartStack extends cdk.Stack {
-      constructor(scope: cdk.Construct, id: string, props: cdk.StackProps & { cluster: eks.Cluster }) {
+      constructor(scope: constructs.Construct, id: string, props: cdk.StackProps & { cluster: eks.Cluster }) {
         super(scope, id, props);
 
         // this role creates a dependency between this stack and the cluster stack
@@ -173,7 +174,7 @@ export = {
     class ClusterStack extends cdk.Stack {
       public eksCluster: eks.Cluster;
 
-      constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
+      constructor(scope: constructs.Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props);
         this.eksCluster = new eks.Cluster(this, 'Cluster', {
           version: eks.KubernetesVersion.V1_17,
@@ -182,7 +183,7 @@ export = {
     }
 
     class ChartStack extends cdk.Stack {
-      constructor(scope: cdk.Construct, id: string, props: cdk.StackProps & { cluster: eks.Cluster }) {
+      constructor(scope: constructs.Construct, id: string, props: cdk.StackProps & { cluster: eks.Cluster }) {
         super(scope, id, props);
 
         const resource = new cdk.CfnResource(this, 'resource', { type: 'MyType' });
@@ -206,7 +207,7 @@ export = {
     class ClusterStack extends cdk.Stack {
       public eksCluster: eks.Cluster;
 
-      constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
+      constructor(scope: constructs.Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props);
         this.eksCluster = new eks.Cluster(this, 'Cluster', {
           version: eks.KubernetesVersion.V1_17,
@@ -218,7 +219,7 @@ export = {
 
       public group: asg.AutoScalingGroup;
 
-      constructor(scope: cdk.Construct, id: string, props: cdk.StackProps & { cluster: eks.Cluster }) {
+      constructor(scope: constructs.Construct, id: string, props: cdk.StackProps & { cluster: eks.Cluster }) {
         super(scope, id, props);
 
         // the role is create in this stack implicitly by the ASG
@@ -253,7 +254,7 @@ export = {
     class ClusterStack extends cdk.Stack {
       public eksCluster: eks.Cluster;
 
-      constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
+      constructor(scope: constructs.Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props);
         this.eksCluster = new eks.Cluster(this, 'EKSCluster', {
           version: eks.KubernetesVersion.V1_17,
@@ -262,7 +263,7 @@ export = {
     }
 
     class AppStack extends cdk.Stack {
-      constructor(scope: cdk.Construct, id: string, props: cdk.StackProps & { cluster: eks.Cluster }) {
+      constructor(scope: constructs.Construct, id: string, props: cdk.StackProps & { cluster: eks.Cluster }) {
         super(scope, id, props);
 
         new eks.ServiceAccount(this, 'testAccount', { cluster: props.cluster, name: 'test-account', namespace: 'test' });

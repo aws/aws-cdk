@@ -2,12 +2,13 @@
 
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
+import * as constructs from 'constructs';
 import * as apig from '../lib';
 
 class FirstStack extends cdk.Stack {
   public readonly firstLambda: lambda.Function;
 
-  constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
+  constructor(scope: constructs.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
     this.firstLambda = new lambda.Function(this, 'firstLambda', {
@@ -29,7 +30,7 @@ interface SecondStackProps extends cdk.StackProps {
 }
 
 class SecondStack extends cdk.Stack {
-  constructor(scope: cdk.Construct, id: string, props: SecondStackProps) {
+  constructor(scope: constructs.Construct, id: string, props: SecondStackProps) {
     super(scope, id, props);
 
     const api = new apig.RestApi(this, 'BooksApi', {
