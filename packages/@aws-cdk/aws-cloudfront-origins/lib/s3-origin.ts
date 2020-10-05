@@ -58,7 +58,16 @@ class S3BucketOrigin extends cloudfront.OriginBase {
 
   public bind(scope: cdk.Construct, options: cloudfront.OriginBindOptions): cloudfront.OriginBindConfig {
     if (!this.originAccessIdentity) {
-      this.originAccessIdentity = new cloudfront.OriginAccessIdentity(scope, 'S3Origin', {
+      // Using a bucket from another stack creates a cyclic reference with
+      // the bucket taking a dependency on the generated S3CanonicalUserId when `grantRead` is called,
+      // and the distribution having a dependency on the bucket's domain name.
+      // Fix this by parenting the OAI in the bucket's stack when cross-stack usage is detected.
+      const bucketStack = cdk.Stack.of(this.bucket);
+      const bucketInDifferentStack = bucketStack !== cdk.Stack.of(scope);
+      const oaiScope = bucketInDifferentStack ? bucketStack : scope;
+      const oaiId = bucketInDifferentStack ? `${scope.node.uniqueId}S3Origin` : 'S3Origin';
+
+      this.originAccessIdentity = new cloudfront.OriginAccessIdentity(oaiScope, oaiId, {
         comment: `Identity for ${options.originId}`,
       });
       this.bucket.grantRead(this.originAccessIdentity);
