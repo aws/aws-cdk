@@ -1491,13 +1491,6 @@
               }
             }
           ],
-          "Logging": {
-            "AccessLog": {
-              "File": {
-                "Path": "/dev/stdout"
-              }
-            }
-          },
           "ServiceDiscovery": {
             "AWSCloudMap": {
               "NamespaceName": "production",
@@ -2022,13 +2015,6 @@
               }
             }
           ],
-          "Logging": {
-            "AccessLog": {
-              "File": {
-                "Path": "/dev/stdout"
-              }
-            }
-          },
           "ServiceDiscovery": {
             "AWSCloudMap": {
               "NamespaceName": "development",
