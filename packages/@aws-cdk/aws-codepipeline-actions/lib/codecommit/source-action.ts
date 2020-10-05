@@ -165,7 +165,7 @@ export class CodeCommitSourceAction extends Action {
       } while (this.props.repository.node.tryFindChild(candidate) !== undefined);
       return candidate;
     } else {
-      const branchIdDisambiguator = this.branch === 'master' ? '' : '-${this.branch}-';
+      const branchIdDisambiguator = this.branch === 'master' ? '' : `-${this.branch}-`;
       return this.eventIdFromPrefix(`${baseId}${branchIdDisambiguator}`);
     }
   }
