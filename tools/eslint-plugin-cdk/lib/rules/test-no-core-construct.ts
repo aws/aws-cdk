@@ -1,15 +1,20 @@
 import { Rule } from 'eslint';
 import { RecordCache } from '../private/record-cache';
 
+interface ImportCacheKey {
+  readonly fileName: string;
+  readonly typeName: string;
+}
+
 // see comment later on why the type here is 'any'
 type Node = any;
 
-interface ImportCacheKey {
-  readonly fileName: string;
-  readonly importName: string;
+interface ImportCacheValue {
+  readonly importNode: Node;
+  readonly localName: string
 }
 
-let importCache: RecordCache<ImportCacheKey, Node>;
+let importCache: RecordCache<ImportCacheKey, ImportCacheValue>;
 let importsFixed: boolean;
 
 const BANNED_TYPES = [ 'IConstruct', 'Construct' ];
@@ -38,11 +43,17 @@ export function create(context: Rule.RuleContext): Rule.NodeListener {
         node.specifiers.forEach((s: any) => {
           if (s.type === 'ImportSpecifier' && BANNED_TYPES.includes(s.imported.name)) {
             // named import
-            importCache.pushRecord({ fileName: context.getFilename(), importName: s.imported.name }, node);
+            importCache.pushRecord(
+              { fileName: context.getFilename(), typeName: s.imported.name },
+              { importNode: node, localName: s.local.name }
+            );
           } else if (s.type === 'ImportNamespaceSpecifier') {
             // barrel import
-            BANNED_TYPES.forEach(typename => {
-              importCache.pushRecord({ fileName: context.getFilename(), importName: `${s.local.name}.${typename}` }, node);
+            BANNED_TYPES.forEach(typeName => {
+              importCache.pushRecord(
+                { fileName: context.getFilename(), typeName },
+                { importNode: node, localName: `${s.local.name}.${typeName}` }
+              );
             });
           }
         });
@@ -62,8 +73,7 @@ export function create(context: Rule.RuleContext): Rule.NodeListener {
         // barrel import
         const qualifier = type.left.name;
         const typename = type.right.name;
-        const key: ImportCacheKey = { fileName: context.getFilename(), importName: `${qualifier}.${typename}` };
-        const importNode = importCache.getRecord(key);
+        const importNode = findImportNode(`${qualifier}.${typename}`);
         if (!importNode) {
           return;
         }
@@ -82,8 +92,7 @@ export function create(context: Rule.RuleContext): Rule.NodeListener {
         });
       } else if (type.type === 'Identifier') {
         // named imports
-        const typename = type.name;
-        const importNode = importCache.getRecord({ fileName: context.getFilename(), importName: typename });
+        const importNode = findImportNode(type.name);
         if (!importNode) {
           return;
         }
@@ -93,9 +102,12 @@ export function create(context: Rule.RuleContext): Rule.NodeListener {
           fix: (fixer: Rule.RuleFixer) => {
             const fixes: Rule.Fix[] = [];
             if (!importsFixed) {
-              const typesToImport = BANNED_TYPES.filter(t => {
-                return importCache.getRecord({ fileName: context.getFilename(), importName: t });
-              });
+              const typesToImport = BANNED_TYPES.map(typeName => {
+                const val = importCache.getRecord({ fileName: context.getFilename(), typeName });
+                if (!val) { return undefined; }
+                if (typeName === val.localName) { return typeName; }
+                return `${typeName} as ${val.localName}`;
+              }).filter(x => x !== undefined);
               fixes.push(fixer.insertTextAfter(importNode, `\nimport { ${typesToImport.join(', ')} } from 'constructs';`));
 
               const specifiers = importNode.specifiers;
@@ -120,6 +132,17 @@ export function create(context: Rule.RuleContext): Rule.NodeListener {
         });
       } else {
         return;
+      }
+
+      function findImportNode(locaName: string): Node | undefined {
+        return BANNED_TYPES.map(typeName => {
+          const key: ImportCacheKey = { fileName: context.getFilename(), typeName };
+          const val = importCache.getRecord(key);
+          if (val && val.localName === locaName) {
+            return val.importNode;
+          }
+          return undefined;
+        }).find(x => x !== undefined);
       }
     },
   }
