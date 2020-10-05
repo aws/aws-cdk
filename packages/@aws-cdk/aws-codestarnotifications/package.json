@@ -74,16 +74,10 @@
   },
   "dependencies": {
     "@aws-cdk/core": "0.0.0",
-    "@aws-cdk/aws-sns": "0.0.0",
-    "@aws-cdk/aws-iam": "0.0.0",
-    "@aws-cdk/aws-chatbot": "0.0.0",
     "constructs": "^3.0.4"
   },
   "peerDependencies": {
     "@aws-cdk/core": "0.0.0",
-    "@aws-cdk/aws-sns": "0.0.0",
-    "@aws-cdk/aws-iam": "0.0.0",
-    "@aws-cdk/aws-chatbot": "0.0.0",
     "constructs": "^3.0.4"
   },
   "engines": {

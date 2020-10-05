@@ -1,6 +1,7 @@
 import * as cdk from '@aws-cdk/core';
 import { CfnNotificationRule } from './codestarnotifications.generated';
 import * as events from './event';
+import { INotificationSource, NotificationSourceConfig } from './source';
 import { INotificationTarget, NotificationTargetConfig } from './target';
 
 /**
@@ -85,11 +86,9 @@ export interface NotificationRuleProps extends RuleOptions {
 
   /**
    * The Amazon Resource Name (ARN) of the resource to associate with the notification rule.
-   * Supported resources include pipelines in AWS CodePipeline, repositories in AWS CodeCommit, and build projects in AWS CodeBuild.
+   * Supported sources include pipelines in AWS CodePipeline and build projects in AWS CodeBuild.
    */
-  readonly resource: string;
-
-  //@TODO use the interface ISource for codebuild, codepipeline, codecommit source
+  readonly source: INotificationSource;
 }
 
 /**
@@ -135,6 +134,11 @@ export class NotificationRule extends NotificationRuleBase {
   readonly notificationRuleArn: string;
 
   /**
+   * The source config of notification rule
+   */
+  readonly source: NotificationSourceConfig;
+
+  /**
    * The target config of notification rule
    */
   readonly targets: NotificationTargetConfig[] = [];
@@ -143,6 +147,8 @@ export class NotificationRule extends NotificationRuleBase {
     super(scope, id, {
       physicalName: props.notificationRuleName,
     });
+
+    this.source = props.source.bind(this);
 
     props.targets.forEach((target) => {
       this.addTarget(target);
@@ -154,7 +160,7 @@ export class NotificationRule extends NotificationRuleBase {
       detailType: props.detailType || DetailType.FULL,
       targets: this.targets,
       eventTypeIds: props.events,
-      resource: props.resource,
+      resource: this.source.arn,
     }).ref;
   }
 

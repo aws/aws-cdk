@@ -1,6 +1,3 @@
-import * as chatbot from '@aws-cdk/aws-chatbot';
-import * as iam from '@aws-cdk/aws-iam';
-import * as sns from '@aws-cdk/aws-sns';
 import { INotificationRule } from './notification-rule';
 
 /**
@@ -20,7 +17,7 @@ export enum TargetType {
 }
 
 /**
- * Information about the SNS topics or AWS Chatbot clients associated with a notification rule.
+ * Information about the SNS topics or AWS Chatbot client associated with a notification target.
  */
 export interface NotificationTargetConfig {
 
@@ -45,46 +42,4 @@ export interface INotificationTarget {
    * @param _notificationRule The notification rule
    */
   bind(_notificationRule: INotificationRule): NotificationTargetConfig;
-}
-
-/**
- * A Slack notification target
- */
-export class SlackNotificationTarget implements INotificationTarget {
-
-  /**
-   * @param slackChannel The Slack channel configuration
-   */
-  constructor(readonly slackChannel: chatbot.ISlackChannelConfiguration) {}
-
-  public bind(
-    _notificationRule: INotificationRule,
-  ): NotificationTargetConfig {
-    return {
-      targetType: TargetType.AWS_CHATBOT_SLACK,
-      targetAddress: this.slackChannel.slackChannelConfigurationArn,
-    };
-  }
-}
-
-/**
- * A SNS topic notification target
- */
-export class SnsTopicNotificationTarget implements INotificationTarget {
-
-  /**
-   * @param topic The SNS topic
-   */
-  constructor(readonly topic: sns.ITopic) {}
-
-  public bind(
-    _notificationRule: INotificationRule,
-  ): NotificationTargetConfig {
-    this.topic.grantPublish(new iam.ServicePrincipal('codestar-notifications.amazonaws.com'));
-
-    return {
-      targetType: TargetType.SNS,
-      targetAddress: this.topic.topicArn,
-    };
-  }
 }
