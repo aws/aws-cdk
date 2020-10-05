@@ -12,7 +12,7 @@ const linter = new ESLint({
 });
 
 const outputDir = fs.mkdtempSync(os.tmpdir())
-const fixturesDir = path.join(__dirname, 'fixtures');
+const fixturesDir = path.join(__dirname, 'fixtures', 'no-core-construct');
 
 describe('no-core-construct', () => {
   const fixtureFiles = fs.readdirSync(fixturesDir).filter(f => f.endsWith('.ts') && !f.endsWith('.expected.ts'));

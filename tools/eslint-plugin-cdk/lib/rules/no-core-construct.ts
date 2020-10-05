@@ -140,8 +140,5 @@ export function create(context: Rule.RuleContext): Rule.NodeListener {
 }
 
 function isTestFile(filename: string) {
-  const isJestTest = new RegExp(/\/test\/.*test\.ts$/).test(filename);;
-  const isNodeUnitTest = new RegExp(/\/test\/.*test\.[^/]+\.ts$/).test(filename);
-  const isIntegTest = new RegExp(/\/test\/.*integ\.[^/]+\.ts$/).test(filename);
-  return isJestTest || isNodeUnitTest || isIntegTest;
+  return new RegExp(/\/test\//).test(filename);
 }
