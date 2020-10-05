@@ -247,7 +247,7 @@ export class InitCommand extends InitElement {
     return {
       config: {
         [commandKey]: {
-          command: this.command,
+          command: this.command.length === 1 ? this.command[0] : this.command,
           env: this.options.env,
           cwd: this.options.cwd,
           test: this.options.testCmd,
