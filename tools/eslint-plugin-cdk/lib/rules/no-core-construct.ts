@@ -1,20 +1,7 @@
 import { Rule } from 'eslint';
-import { RecordCache } from '../private/record-cache';
+import { ImportCache, Node } from '../private/import-cache';
 
-interface ImportCacheKey {
-  readonly fileName: string;
-  readonly typeName: string;
-}
-
-// see comment later on why the type here is 'any'
-type Node = any;
-
-interface ImportCacheValue {
-  readonly importNode: Node;
-  readonly localName: string
-}
-
-let importCache: RecordCache<ImportCacheKey, ImportCacheValue>;
+let importCache: ImportCache;
 let importsFixed: boolean;
 
 const BANNED_TYPES = [ 'IConstruct', 'Construct' ];
@@ -31,7 +18,7 @@ export function create(context: Rule.RuleContext): Rule.NodeListener {
       if (!isTestFile(context.getFilename())) {
         return;
       }
-      importCache = new RecordCache();
+      importCache = new ImportCache();
       importsFixed = false;
     },
 
@@ -43,17 +30,21 @@ export function create(context: Rule.RuleContext): Rule.NodeListener {
         node.specifiers.forEach((s: any) => {
           if (s.type === 'ImportSpecifier' && BANNED_TYPES.includes(s.imported.name)) {
             // named import
-            importCache.pushRecord(
-              { fileName: context.getFilename(), typeName: s.imported.name },
-              { importNode: node, localName: s.local.name }
-            );
+            importCache.record({
+              fileName: context.getFilename(),
+              typeName: s.imported.name,
+              importNode: node,
+              localName: s.local.name
+            });
           } else if (s.type === 'ImportNamespaceSpecifier') {
             // barrel import
             BANNED_TYPES.forEach(typeName => {
-              importCache.pushRecord(
-                { fileName: context.getFilename(), typeName },
-                { importNode: node, localName: `${s.local.name}.${typeName}` }
-              );
+              importCache.record({
+                fileName: context.getFilename(),
+                typeName,
+                importNode: node,
+                localName: `${s.local.name}.${typeName}`
+              });
             });
           }
         });
@@ -64,10 +55,11 @@ export function create(context: Rule.RuleContext): Rule.NodeListener {
       if (!isTestFile(context.getFilename())) {
         return;
       }
-      if (!node.typeAnnotation?.typeAnnotation) {
+      const typeAnnotation = node.typeAnnotation?.typeAnnotation
+      if (!typeAnnotation) {
         return;
-      }
-      const type = node.typeAnnotation.typeAnnotation.typeName;
+      } 
+      const type = typeAnnotation.typeName;
       if (!type) { return; }
       if (type.type === 'TSQualifiedName') {
         // barrel import
@@ -86,7 +78,7 @@ export function create(context: Rule.RuleContext): Rule.NodeListener {
               fixes.push(fixer.insertTextAfter(importNode, "\nimport * as constructs from 'constructs';"));
               importsFixed = true;
             }
-            fixes.push(fixer.replaceTextRange(node.typeAnnotation.typeAnnotation.range, `constructs.${typename}`));
+            fixes.push(fixer.replaceTextRange(typeAnnotation.range, `constructs.${typename}`));
             return fixes;
           }
         });
@@ -103,7 +95,7 @@ export function create(context: Rule.RuleContext): Rule.NodeListener {
             const fixes: Rule.Fix[] = [];
             if (!importsFixed) {
               const typesToImport = BANNED_TYPES.map(typeName => {
-                const val = importCache.getRecord({ fileName: context.getFilename(), typeName });
+                const val = importCache.find({ fileName: context.getFilename(), typeName });
                 if (!val) { return undefined; }
                 if (typeName === val.localName) { return typeName; }
                 return `${typeName} as ${val.localName}`;
@@ -136,8 +128,7 @@ export function create(context: Rule.RuleContext): Rule.NodeListener {
 
       function findImportNode(locaName: string): Node | undefined {
         return BANNED_TYPES.map(typeName => {
-          const key: ImportCacheKey = { fileName: context.getFilename(), typeName };
-          const val = importCache.getRecord(key);
+          const val = importCache.find({ fileName: context.getFilename(), typeName });
           if (val && val.localName === locaName) {
             return val.importNode;
           }
