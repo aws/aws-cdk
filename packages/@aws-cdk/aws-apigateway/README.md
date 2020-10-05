@@ -29,7 +29,7 @@ running on AWS Lambda, or any web application.
   - [IAM-based authorizer](#iam-based-authorizer)
   - [Lambda-based token authorizer](#lambda-based-token-authorizer)
   - [Lambda-based request authorizer](#lambda-based-request-authorizer)
-- [MTLS](#mutal-tls-mtls)
+- [Mutual TLS](#mutal-tls-mtls)
 - [Deployments](#deployments)
   - [Deep dive: Invalidation of deployments](#deep-dive-invalidation-of-deployments)
 - [Custom Domains](#custom-domains)
@@ -563,7 +563,7 @@ Authorizers can also be passed via the `defaultMethodOptions` property within th
 explicitly overridden, the specified defaults will be applied across all `Method`s across the `RestApi` or across all `Resource`s,
 depending on where the defaults were specified.
 
-## Mutal TLS (mTLS)
+## Mutual TLS (mTLS)
 
 Mutual TLS can be configured to limit access to your API based by using client certificates instead of (or as an extension of) using authorization headers.
 

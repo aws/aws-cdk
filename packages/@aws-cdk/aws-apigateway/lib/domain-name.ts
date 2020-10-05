@@ -46,7 +46,7 @@ export interface DomainNameOptions {
    * The mutual TLS authentication configuration for a custom domain name.
    * @default - mTLS is not configured.
    */
-  readonly mtls?: MTLSAttributes
+  readonly mtls?: MTLSConfig
 }
 
 export interface DomainNameProps extends DomainNameOptions {
@@ -110,19 +110,12 @@ export class DomainName extends Resource implements IDomainName {
 
     const endpointType = props.endpointType || EndpointType.REGIONAL;
     const edge = endpointType === EndpointType.EDGE;
-    const getMTLSConfiguration = (mtlsConfig?: MTLSAttributes): CfnDomainName.MutualTlsAuthenticationProperty | undefined => {
-      if (!mtlsConfig) return mtlsConfig;
-      mtlsConfig.bucket.s3UrlForObject;
-      return {
-        truststoreUri: mtlsConfig.bucket.s3UrlForObject(mtlsConfig.key),
-        truststoreVersion: mtlsConfig.version,
-      };
-    };
+
     if (!Token.isUnresolved(props.domainName) && /[A-Z]/.test(props.domainName)) {
       throw new Error('domainName does not support uppercase letters. ' +
         `got: '${props.domainName}'`);
     }
-    const mtlsConfig = getMTLSConfiguration(props.mtls);
+    const mtlsConfig = this.getMTLSConfiguration(props.mtls);
     const resource = new CfnDomainName(this, 'Resource', {
       domainName: props.domainName,
       certificateArn: edge ? props.certificate.certificateArn : undefined,
@@ -161,6 +154,14 @@ export class DomainName extends Resource implements IDomainName {
       ...options,
     });
   }
+
+  private getMTLSConfiguration(mtlsConfig?: MTLSConfig): CfnDomainName.MutualTlsAuthenticationProperty | undefined {
+    if (!mtlsConfig) return undefined;
+    return {
+      truststoreUri: mtlsConfig.bucket.s3UrlForObject(mtlsConfig.key),
+      truststoreVersion: mtlsConfig.version,
+    };
+  };
 }
 
 export interface DomainNameAttributes {
@@ -184,7 +185,7 @@ export interface DomainNameAttributes {
 /**
  * The mTLS authentication configuration for a custom domain name.
  */
-export interface MTLSAttributes {
+export interface MTLSConfig {
   /**
    * The bucket that the trust store is hosted in.
    */
@@ -197,7 +198,7 @@ export interface MTLSAttributes {
   /**
    *  The version of the S3 object that contains your truststore.
    *  To specify a version, you must have versioning enabled for the S3 bucket.
-   *  @default - Uses current version
+   *  @default - latest version
    */
   readonly version?: string;
 }
