@@ -103,9 +103,9 @@ export interface ProductProps {
   readonly disableTemplateValidation?: boolean;
 
   /**
-   * assets.Asset to the CloudFormation template containing the product
+   * File path pointing to the template to use as the artifact.
    */
-  readonly asset: assets.Asset;
+  readonly templatePath: string;
 
   /**
    * The owner of the product.
@@ -170,11 +170,12 @@ export class Product extends ProductBase {
 
   constructor(scope: core.Construct, id: string, props: ProductProps) {
     super(scope, id, { physicalName: props.productName });
+    const asset = new assets.Asset(this, 'Asset', { path: props.templatePath });
     const provisioningArtifact = {
       description: props.description,
       disableTemplateValidation: props.disableTemplateValidation,
       name: props.artifactName,
-      info: { LoadTemplateFromURL: props.asset.httpUrl },
+      info: { LoadTemplateFromURL: asset.httpUrl },
     };
     const product = new CfnCloudFormationProduct(this, 'Resource', { name: props.productName, owner: props.owner, provisioningArtifactParameters: [provisioningArtifact] });
 
