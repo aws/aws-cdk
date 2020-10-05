@@ -814,7 +814,7 @@ chart2.node.addDependency(chart1);
 
 #### CDK8s Charts
 
-[CDK8s](https://cdk8s.io/) is an open-source library that enables Kubernetes manifest authoring using familiar programming languages. It is founded on the same technologies as the AWS CDK such as [`constructs`](https://github.com/aws/constructs) and [`jsii`](https://github.com/aws/jsii).
+[CDK8s](https://cdk8s.io/) is an open-source library that enables Kubernetes manifest authoring using familiar programming languages. It is founded on the same technologies as the AWS CDK, such as [`constructs`](https://github.com/aws/constructs) and [`jsii`](https://github.com/aws/jsii).
 
 > To learn more about cdk8s, visit the [Getting Started](https://github.com/awslabs/cdk8s/tree/master/docs/getting-started) tutorials.
 
@@ -827,20 +827,18 @@ To get started, add the following dependencies to your `package.json` file:
 
 ```json
 dependencies: {
-  "cdk8s": "0.29.0",
-  "cdk8s-plus": "0.29.0",
+  "cdk8s": "0.30.0",
+  "cdk8s-plus": "0.30.0",
   "constructs": "3.0.4",
 }
 ```
 
-> Note that the version of `cdk8s` must be `>=0.29.0`.
+> Note that the version of `cdk8s` must be `>=0.30.0`.
 
-We recommend seperate the `cdk8s` charts to a different file and extend the `cdk8s.Chart` class.
-Notice that `cdk8s` uses the `Construct` class from the [`constructs`](https://github.com/aws/constructs) module, not from `@aws-cdk/core`.
+We recommend to seperate the `cdk8s` charts to a different file and extend the `cdk8s.Chart` class.
+You can use `aws-cdk` construct attributes and properties inside your `cdk8s` construct freely.
 
-You can freely pass cdk constructs to it and use any of its properties and attributes.
-
-In this example we create a chart that accepts an `s3.IBucket` and passes its name to a kubernetes pod as an environment variable.
+In this example we create a chart that accepts an `s3.Bucket` and passes its name to a kubernetes pod as an environment variable.
 
 ```ts
 import * as s3 from '@aws-cdk/aws-s3';
@@ -850,7 +848,7 @@ import * as kplus from 'cdk8s-plus';
 
 export interface MyChartProps {
 
-  readonly bucket: s3.IBucket;
+  readonly bucket: s3.Bucket;
 }
 
 export class MyChart extends cdk8s.Chart {
@@ -877,27 +875,58 @@ export class MyChart extends cdk8s.Chart {
 Then, in your cdk app:
 
 ```ts
-import * as eks from '@aws-cdk/aws-eks';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk8s from 'cdk8s';
 import { MyChart } from './my-chart'
 
-const cluster = new eks.Cluster(this, 'HelloCDK8s', {
-  version: eks.KubernetesVersion.V1_17,
-});
-
 // some bucket..
 const bucket = new s3.Bucket(this, 'Bucket');
 
-// create a cdk8s chart.
+// create a cdk8s chart and use `cdk8s.App` as the scope.
 const myChart = new MyChart(new cdk8s.App(), 'MyChart', { bucket });
 
 // add the cdk8s chart to the cluster
 cluster.addCdk8sChart('my-chart', myChart);
 ```
 
-Note that at this moment, you cannot use AWS CDK constructs as scopes for CDK8s constructs.
+Note that at this moment, you cannot use AWS CDK constructs as scopes for CDK8s constructs, or vise versa.
 This is why we use `new cdk8s.App()` as the scope of the chart itself.
+
+##### Custom CDK8s Constructs
+
+You can also compose a few stock `cdk8s+` constructs into your own custom construct. However, since mixing scopes between `aws-cdk` and `cdk8s` is currently not supported, the `Construct` class
+you'll need to use is the one from the [`constructs`](https://github.com/aws/constructs) module, and not from `@aws-cdk/core` like you normally would.
+This is why we used `new cdk8s.App()` as the scope of the chart above.
+
+```ts
+import * as constructs from 'constructs';
+import * as cdk8s from 'cdk8s';
+import * as kplus from 'cdk8s-plus';
+
+export interface LoadBalancedWebService {
+  readonly port: number;
+  readonly image: string;
+  readonly replicas: number;
+}
+
+export class LoadBalancedWebService extends constructs.Construct {
+  constructor(scope: constructs.Construct, id: string, props: LoadBalancedWebService) {
+    super(scope, id);
+
+    const deployment = new kplus.Deployment(chart, 'Deployment', {
+      spec: {
+        replicas: props.replicas,
+        podSpecTemplate: {
+          containers: [ new kplus.Container({ image: props.image }) ]
+        }
+      },
+    });
+
+    deployment.expose({port: props.port, serviceType: kplus.ServiceType.LOAD_BALANCER})
+
+  }
+}
+```
 
 ##### Caveat
 
