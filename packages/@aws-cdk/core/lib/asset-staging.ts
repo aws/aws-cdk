@@ -2,13 +2,17 @@ import * as crypto from 'crypto';
 import * as os from 'os';
 import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
+import { Construct } from 'constructs';
 import * as fs from 'fs-extra';
 import { AssetHashType, AssetOptions } from './assets';
 import { BundlingOptions } from './bundling';
-import { Construct } from './construct-compat';
 import { FileSystem, FingerprintOptions } from './fs';
 import { Stack } from './stack';
 import { Stage } from './stage';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from './construct-compat';
 
 /**
  * Initialization properties for `AssetStaging`.
@@ -38,7 +42,7 @@ export interface AssetStagingProps extends FingerprintOptions, AssetOptions {
  * The file/directory are staged based on their content hash (fingerprint). This
  * means that only if content was changed, copy will happen.
  */
-export class AssetStaging extends Construct {
+export class AssetStaging extends CoreConstruct {
   /**
    * The directory inside the bundling container into which the asset sources will be mounted.
    * @experimental
