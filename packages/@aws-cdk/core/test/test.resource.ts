@@ -596,7 +596,8 @@ export = {
       r.addOverride('Properties.Single\\Back\\Slashes', 42);
       r.addOverride('Properties.Double\\\\Back\\\\Slashes', 42);
       r.addOverride('Properties.Escaped\\\\.Back\\\\.Slashes', 42);
-      r.addOverride('Properties.DoublyEscaped\\\\\\.Back\\\\\\.Slashes', 42);
+      r.addOverride('Properties.DoublyEscaped\\\\\\\\.Back\\\\\\\\.Slashes', 42);
+      r.addOverride('Properties.EndWith\\', 42);
 
       // THEN
       test.deepEqual(toCloudFormation(stack), {
@@ -608,10 +609,11 @@ export = {
             Properties:
             {
               'Hello.World': { 'Foo.Bar.Baz': 42 },
-              'Single\\Back\\Slashes': 42,
-              'Double\\\\Back\\\\Slashes': 42,
+              'SingleBackSlashes': 42,
+              'Double\\Back\\Slashes': 42,
               'Escaped\\.Back\\.Slashes': 42,
               'DoublyEscaped\\\\.Back\\\\.Slashes': 42,
+              'EndWith\\': 42,
             },
           },
         },
