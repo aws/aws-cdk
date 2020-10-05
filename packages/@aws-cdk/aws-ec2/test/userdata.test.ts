@@ -102,7 +102,7 @@ nodeunitShim({
 
     // THEN
     const rendered = userData.render();
-    test.equals(rendered, '<powershell>&\'C:\\test\\filename.bat\' undefined\n' +
+    test.equals(rendered, '<powershell>&\'C:\\test\\filename.bat\'\n' +
       'if (!$?) { Write-Error \'Failed to execute the file "C:\\test\\filename.bat"\' -ErrorAction Stop }\n' +
       '&\'C:\\test\\filename2.bat\' arg1 arg2 -arg $variable\n' +
       'if (!$?) { Write-Error \'Failed to execute the file "C:\\test\\filename2.bat"\' -ErrorAction Stop }</powershell>',
@@ -209,7 +209,7 @@ nodeunitShim({
     test.equals(rendered, '#!/bin/bash\n' +
       'set -e\n' +
       'chmod +x \'/tmp/filename.sh\'\n' +
-      '\'/tmp/filename.sh\' undefined\n' +
+      '\'/tmp/filename.sh\'\n' +
       'set -e\n' +
       'chmod +x \'/test/filename2.sh\'\n' +
       '\'/test/filename2.sh\' arg1 arg2 -arg $variable',
