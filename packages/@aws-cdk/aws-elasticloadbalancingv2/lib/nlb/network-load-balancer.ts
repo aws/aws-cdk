@@ -185,6 +185,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
    * The number of targets that are considered healthy.
    *
    * @default Average over 5 minutes
+   * @deprecated use ``NetworkTargetGroup.metricHealthyHostCount`` instead
    */
   public metricHealthyHostCount(props?: cloudwatch.MetricOptions) {
     return this.metric('HealthyHostCount', {
@@ -197,6 +198,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
    * The number of targets that are considered unhealthy.
    *
    * @default Average over 5 minutes
+   * @deprecated use ``NetworkTargetGroup.metricUnHealthyHostCount`` instead
    */
   public metricUnHealthyHostCount(props?: cloudwatch.MetricOptions) {
     return this.metric('UnHealthyHostCount', {
