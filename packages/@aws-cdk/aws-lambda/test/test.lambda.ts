@@ -4,6 +4,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import * as sqs from '@aws-cdk/aws-sqs';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cdk from '@aws-cdk/core';
 import * as constructs from 'constructs';
 import { Test } from 'nodeunit';
@@ -1311,6 +1312,8 @@ export = {
 
       // THEN
       expect(stack).to(not(haveResource('AWS::Lambda::Permission')));
+      test.deepEqual(fn.node.metadata[0].type, cxschema.ArtifactMetadataEntryType.WARN);
+      test.deepEqual(fn.node.metadata[0].data, 'attempted to call `addPermission` on unsupported function (either imported or $LATEST version).');
 
       test.done();
     },

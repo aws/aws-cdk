@@ -1,7 +1,7 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { ConstructNode, IResource, Resource, Token } from '@aws-cdk/core';
+import { Annotations, ConstructNode, IResource, Resource, Token } from '@aws-cdk/core';
 import { AliasOptions } from './alias';
 import { EventInvokeConfig, EventInvokeConfigOptions } from './event-invoke-config';
 import { IEventSource } from './event-source';
@@ -210,7 +210,7 @@ export abstract class FunctionBase extends Resource implements IFunction {
    */
   public addPermission(id: string, permission: Permission) {
     if (!this.canCreatePermissions) {
-      // FIXME: Report metadata
+      Annotations.of(this).addWarning('attempted to call `addPermission` on unsupported function (either imported or $LATEST version).');
       return;
     }
 
