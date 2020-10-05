@@ -153,7 +153,7 @@ function synthesizeTree(root: IConstruct, builder: cxapi.CloudAssemblyBuilder) {
       assembly: builder,
     };
 
-    if (construct instanceof Stack) {
+    if (Stack.isStack(construct)) {
       construct.synthesizer.synthesize(session);
     } else if (construct instanceof TreeMetadata) {
       construct._synthesizeTree(session);
