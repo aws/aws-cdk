@@ -24,9 +24,9 @@ async function main() {
       desc: 'Specify a different eslint executable',
       defaultDescription: 'eslint provided by node dependencies',
     })
-    .option('no-gen', { 
+    .option('no-gen', {
       type: 'boolean',
-      desc: 'skip executing gen'
+      desc: 'skip executing gen',
     })
     .argv;
 
