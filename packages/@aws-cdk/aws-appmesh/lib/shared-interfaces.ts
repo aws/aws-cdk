@@ -82,6 +82,88 @@ export interface PortMapping {
 }
 
 /**
+ * Represents timeouts for different protocols.
+ */
+export interface HttpTimeout {
+  /**
+   * Represents an idle timeout. The amount of time that a connection may be idle.
+   *
+   * @default - none
+   */
+  readonly idle?: cdk.Duration;
+
+  /**
+   * Represents per request timeout.
+   *
+   * @default - 15 s
+   */
+  readonly perRequest?: cdk.Duration;
+}
+
+/**
+ * Represents timeouts for different protocols.
+ */
+export interface GrpcTimeout {
+  /**
+   * Represents an idle timeout. The amount of time that a connection may be idle.
+   *
+   * @default - none
+   */
+  readonly idle?: cdk.Duration;
+
+  /**
+   * Represents per request timeout.
+   *
+   * @default - 15 s
+   */
+
+  readonly perRequest?: cdk.Duration;
+}
+
+/**
+ * Represents timeouts for different protocols.
+ */
+export interface TcpTimeout {
+  /**
+   * Represents an idle timeout. The amount of time that a connection may be idle.
+   *
+   * @default - none
+   */
+  readonly idle?: cdk.Duration;
+}
+
+/**
+ * Represents timeouts for different protocols.
+ */
+export interface ListenerTimeout {
+  /**
+   * Represents GrpcTimeout type.
+   *
+   * @default - none
+   */
+  readonly grpc?: GrpcTimeout;
+  /**
+   * Represents HttpTimeout type.
+   *
+   * @default - none
+   */
+  readonly http?: HttpTimeout;
+  /**
+   * Represents HttpTimeout type.
+   *
+   * @default - none
+   */
+  readonly http2?: HttpTimeout;
+  /**
+   * Represents TCPTimeout type.
+   *
+   * @default - none
+   */
+  readonly tcp?: TcpTimeout;
+
+}
+
+/**
  * Represents the properties needed to define healthy and active listeners for nodes.
  */
 export interface VirtualNodeListener {
@@ -98,6 +180,13 @@ export interface VirtualNodeListener {
    * @default - no healthcheck
    */
   readonly healthCheck?: HealthCheck;
+
+  /**
+   * Represents timeouts for different protocols.
+   *
+   * @default - none
+   */
+  readonly timeout?: ListenerTimeout;
 }
 
 /**

@@ -116,3 +116,36 @@ router.addRoute('route-3', {
     },
   ],
 });
+
+const router2 = mesh.addVirtualRouter('router2', {
+  listener: {
+    portMapping: {
+      port: 8080,
+      protocol: appmesh.Protocol.HTTP,
+    },
+  },
+});
+
+const node4 = mesh.addVirtualNode('node4', {
+  dnsHostName: `node4.${namespace.namespaceName}`,
+  listener: {
+    healthCheck: {
+      healthyThreshold: 3,
+      path: '/check-path4',
+    },
+    timeout: {
+      http: {
+        idle: cdk.Duration.seconds(10),
+      },
+    },
+  },
+});
+
+router2.addRoute('route-4', {
+  routeTargets: [
+    {
+      virtualNode: node4,
+      weight: 100,
+    },
+  ],
+});

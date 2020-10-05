@@ -3,7 +3,7 @@ import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnVirtualNode } from './appmesh.generated';
 import { IMesh } from './mesh';
-import { AccessLog, HealthCheck, PortMapping, Protocol, VirtualNodeListener } from './shared-interfaces';
+import { AccessLog, HealthCheck, ListenerTimeout, PortMapping, Protocol, VirtualNodeListener } from './shared-interfaces';
 import { IVirtualService } from './virtual-service';
 
 /**
@@ -149,9 +149,105 @@ abstract class VirtualNodeBase extends cdk.Resource implements IVirtualNode {
       this.listeners.push({
         portMapping,
         healthCheck: renderHealthCheck(listener.healthCheck, portMapping),
+        timeout: renderListenerTimeout(listener.timeout),
       });
     }
   }
+}
+
+/**
+ * Utility method to extract time unit and value.
+ *
+ * @param time
+ */
+function getTimeUnitAndValue(time: cdk.Duration) {
+  let timeUnit = time.toHumanString().split(' ')[1];
+  if (timeUnit === 'seconds' || 'second') {
+    let timeValue: number = time.toSeconds();
+    return { value: timeValue, unit: 's' };
+  } else {
+    let timeValue: number = time.toMilliseconds();
+    return { value: timeValue, unit: 'ms' };
+  }
+}
+
+/**
+ * Method to create ListenerTimeoutProperty object based on available timeout protocol
+ *
+ * @param timeout
+ */
+function renderListenerTimeout(timeout: ListenerTimeout | undefined): CfnVirtualNode.ListenerTimeoutProperty | undefined {
+
+  if (timeout===undefined) {
+    return undefined;
+  }
+
+  let listenerTimeout:CfnVirtualNode.ListenerTimeoutProperty = {};
+
+  (Object.keys(timeout) as Array<keyof CfnVirtualNode.ListenerTimeoutProperty>)
+    .filter((key) => timeout[key]!==undefined).map((key) => {
+      if (key!=='tcp') {
+        let idle: unknown = timeout[key]?.idle;
+        let perRequest: unknown = timeout[key]?.perRequest;
+        if (idle===undefined && perRequest===undefined) {
+          listenerTimeout = {
+            [key]: {},
+          };
+        }
+        if (idle===undefined && perRequest!==undefined) {
+          listenerTimeout = {
+            [key]: {
+              perRequest: {
+                unit: getTimeUnitAndValue(perRequest as cdk.Duration).unit,
+                value: getTimeUnitAndValue(perRequest as cdk.Duration).value,
+              },
+            },
+          };
+        }
+        if (perRequest==undefined && idle!==undefined) {
+          listenerTimeout = {
+            [key]: {
+              idle: {
+                unit: getTimeUnitAndValue(idle as cdk.Duration).unit,
+                value: getTimeUnitAndValue(idle as cdk.Duration).value,
+              },
+            },
+          };
+        }
+        if (perRequest!==undefined && idle!==undefined) {
+          listenerTimeout = {
+            [key]: {
+              idle: {
+                unit: getTimeUnitAndValue(idle as cdk.Duration).unit,
+                value: getTimeUnitAndValue(idle as cdk.Duration).value,
+              },
+              perRequest: {
+                unit: getTimeUnitAndValue(perRequest as cdk.Duration).unit,
+                value: getTimeUnitAndValue(perRequest as cdk.Duration).value,
+              },
+            },
+          };
+        }
+      } else {
+        let idle: unknown = timeout[key]?.idle;
+        if (idle===undefined) {
+          listenerTimeout = {
+            [key]: {},
+          };
+        } else {
+          listenerTimeout = {
+            [key]: {
+              idle: {
+                unit: getTimeUnitAndValue(idle as cdk.Duration).unit,
+                value: getTimeUnitAndValue(idle as cdk.Duration).value,
+              },
+            },
+          };
+        }
+      }
+    });
+
+  return listenerTimeout;
 }
 
 /**

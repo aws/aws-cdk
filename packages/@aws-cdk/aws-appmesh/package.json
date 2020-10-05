@@ -125,6 +125,7 @@
       "resource-attribute:@aws-cdk/aws-appmesh.Route.routeUid",
       "resource-attribute:@aws-cdk/aws-appmesh.Route.routeVirtualRouterName",
       "resource-attribute:@aws-cdk/aws-appmesh.VirtualNode.virtualNodeMeshName",
+      "duration-prop-type:@aws-cdk/aws-appmesh.VirtualNodeListener.timeout",
       "resource-attribute:@aws-cdk/aws-appmesh.VirtualNode.virtualNodeMeshOwner",
       "resource-attribute:@aws-cdk/aws-appmesh.VirtualNode.virtualNodeResourceOwner",
       "resource-attribute:@aws-cdk/aws-appmesh.VirtualNode.virtualNodeUid",

@@ -101,6 +101,49 @@ export = {
         test.done();
       },
     },
+    'when a listerner timeout is added': {
+      'should add the listener timeout to the resource'(test: Test) {
+        //GIVEN
+        const stack = new cdk.Stack();
+
+        // WHEN
+        const mesh = new appmesh.Mesh(stack, 'mesh', {
+          meshName: 'test-mesh',
+        });
+
+        const node = mesh.addVirtualNode('test-node', {
+          dnsHostName: 'test',
+        });
+
+        node.addListeners({
+          timeout: {
+            http: {
+              idle: cdk.Duration.seconds(10),
+            },
+          },
+        });
+
+        // THEN
+        expect(stack).to(
+          haveResourceLike('AWS::AppMesh::VirtualNode', {
+            Spec: {
+              Listeners: [
+                {
+                  Timeout: {
+                    HTTP: {
+                      Idle: {
+                        Unit: 's',
+                        Value: 10,
+                      },
+                    },
+                  },
+                },
+              ],
+            },
+          }));
+        test.done();
+      },
+    },
   },
   'Can export and import VirtualNode and perform actions'(test: Test) {
     // GIVEN
