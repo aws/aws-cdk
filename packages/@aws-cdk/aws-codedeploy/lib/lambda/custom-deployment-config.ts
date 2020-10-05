@@ -154,7 +154,7 @@ export class CustomLambdaDeploymentConfig extends Resource implements ILambdaDep
       },
       // Least permissions, only have permission to create or delete this exact config
       policy: AwsCustomResourcePolicy.fromSdkCalls({
-        resources: [this.deploymentConfigArn],
+        resources: AwsCustomResourcePolicy.ANY_RESOURCE,
       }),
     });
   }

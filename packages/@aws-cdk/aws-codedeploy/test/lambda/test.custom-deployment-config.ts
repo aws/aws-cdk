@@ -105,50 +105,12 @@ export = {
           {
             Action: 'codedeploy:CreateDeploymentConfig',
             Effect: 'Allow',
-            Resource: {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  {
-                    Ref: 'AWS::Partition',
-                  },
-                  ':codedeploy:',
-                  {
-                    Ref: 'AWS::Region',
-                  },
-                  ':',
-                  {
-                    Ref: 'AWS::AccountId',
-                  },
-                  ':deploymentconfig:MyDeploymentConfig',
-                ],
-              ],
-            },
+            Resource: '*',
           },
           {
             Action: 'codedeploy:DeleteDeploymentConfig',
             Effect: 'Allow',
-            Resource: {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  {
-                    Ref: 'AWS::Partition',
-                  },
-                  ':codedeploy:',
-                  {
-                    Ref: 'AWS::Region',
-                  },
-                  ':',
-                  {
-                    Ref: 'AWS::AccountId',
-                  },
-                  ':deploymentconfig:MyDeploymentConfig',
-                ],
-              ],
-            },
+            Resource: '*',
           },
         ],
         Version: '2012-10-17',
