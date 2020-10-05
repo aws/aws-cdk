@@ -44,7 +44,7 @@ describe('InitCommand', () => {
 
     // THEN
     expect(rendered).toEqual({
-      '000': { command: ['/bin/sh'] },
+      '000': { command: '/bin/sh' },
     });
   });
 
@@ -65,7 +65,7 @@ describe('InitCommand', () => {
     // THEN
     expect(rendered).toEqual({
       command_0: {
-        command: ['/bin/sh'],
+        command: '/bin/sh',
         env: { SECRETS_FILE: '/tmp/secrets' },
         cwd: '/home/myUser',
         test: 'test -d /home/myUser',
