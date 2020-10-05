@@ -41,7 +41,7 @@ What is the unexpected behavior you were seeing? If you got an error, paste it h
 
 ### Other
 
-<!-- e.g. detailed explanation, stacktraces, related issues, suggestions on how to fix, links for us to have context, eg. associated pull-request, stackoverflow, gitter, etc -->
+<!-- e.g. detailed explanation, stacktraces, related issues, suggestions on how to fix, links for us to have context, eg. associated pull-request, stackoverflow, slack, etc -->
 
 
 
