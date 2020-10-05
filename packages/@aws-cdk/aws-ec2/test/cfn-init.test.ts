@@ -80,7 +80,7 @@ test('CloudFormationInit can be added to after instantiation', () => {
     'AWS::CloudFormation::Init': {
       config: {
         commands: {
-          '000': { command: ['/bin/true'] },
+          '000': { command: '/bin/true' },
         },
       },
     },
@@ -109,7 +109,7 @@ test('empty configs are not rendered', () => {
       },
       config2: {
         commands: {
-          '000': { command: ['/bin/true'] },
+          '000': { command: '/bin/true' },
         },
       },
     },
