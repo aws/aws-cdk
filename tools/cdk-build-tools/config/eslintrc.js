@@ -39,7 +39,7 @@ module.exports = {
   },
   ignorePatterns: ['*.js', '*.d.ts', 'node_modules/', '*.generated.ts'],
   rules: {
-    'cdk/test-no-core-construct': [ 'error' ],
+    'cdk/no-core-construct': [ 'error' ],
     // Require use of the `import { foo } from 'bar';` form instead of `import foo = require('bar');`
     '@typescript-eslint/no-require-imports': ['error'],
     '@typescript-eslint/indent': ['error', 2],
