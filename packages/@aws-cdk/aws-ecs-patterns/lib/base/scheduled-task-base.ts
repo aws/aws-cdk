@@ -3,7 +3,12 @@ import { IVpc, SubnetSelection, SubnetType } from '@aws-cdk/aws-ec2';
 import { AwsLogDriver, Cluster, ContainerImage, ICluster, LogDriver, Secret, TaskDefinition } from '@aws-cdk/aws-ecs';
 import { Rule } from '@aws-cdk/aws-events';
 import { EcsTask } from '@aws-cdk/aws-events-targets';
-import { Construct, Stack } from '@aws-cdk/core';
+import { Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * The properties for the base ScheduledEc2Task or ScheduledFargateTask task.
@@ -92,7 +97,7 @@ export interface ScheduledTaskImageProps {
 /**
  * The base class for ScheduledEc2Task and ScheduledFargateTask tasks.
  */
-export abstract class ScheduledTaskBase extends Construct {
+export abstract class ScheduledTaskBase extends CoreConstruct {
   /**
    * The name of the cluster that hosts the service.
    */
@@ -159,11 +164,11 @@ export abstract class ScheduledTaskBase extends Construct {
   /**
    * Returns the default cluster.
    */
-  protected getDefaultCluster(scope: Construct, vpc?: IVpc): Cluster {
+  protected getDefaultCluster(scope: CoreConstruct, vpc?: IVpc): Cluster {
     // magic string to avoid collision with user-defined constructs
-    const DEFAULT_CLUSTER_ID = `EcsDefaultClusterMnL3mNNYN${vpc ? vpc.construct.id : ''}`;
+    const DEFAULT_CLUSTER_ID = `EcsDefaultClusterMnL3mNNYN${vpc ? vpc.node.id : ''}`;
     const stack = Stack.of(scope);
-    return stack.construct.tryFindChild(DEFAULT_CLUSTER_ID) as Cluster || new Cluster(stack, DEFAULT_CLUSTER_ID, { vpc });
+    return stack.node.tryFindChild(DEFAULT_CLUSTER_ID) as Cluster || new Cluster(stack, DEFAULT_CLUSTER_ID, { vpc });
   }
 
   /**

@@ -1,5 +1,6 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnScalingPolicy } from './applicationautoscaling.generated';
 import { IScalableTarget } from './scalable-target';
 
@@ -120,7 +121,7 @@ export class TargetTrackingScalingPolicy extends cdk.Construct {
    */
   public readonly scalingPolicyArn: string;
 
-  constructor(scope: cdk.Construct, id: string, props: TargetTrackingScalingPolicyProps) {
+  constructor(scope: Construct, id: string, props: TargetTrackingScalingPolicyProps) {
     if ((props.customMetric === undefined) === (props.predefinedMetric === undefined)) {
       throw new Error('Exactly one of \'customMetric\' or \'predefinedMetric\' must be specified.');
     }
@@ -132,7 +133,7 @@ export class TargetTrackingScalingPolicy extends cdk.Construct {
     super(scope, id);
 
     const resource = new CfnScalingPolicy(this, 'Resource', {
-      policyName: props.policyName || this.construct.uniqueId,
+      policyName: props.policyName || this.node.uniqueId,
       policyType: 'TargetTrackingScaling',
       scalingTargetId: props.scalingTarget.scalableTargetId,
       targetTrackingScalingPolicyConfiguration: {
@@ -224,7 +225,7 @@ export enum PredefinedMetric {
    */
   ECS_SERVICE_AVERAGE_CPU_UTILIZATION = 'ECSServiceAverageCPUUtilization',
   /**
-   * ECS_SERVICE_AVERAGE_CPU_UTILIZATION
+   * ECS_SERVICE_AVERAGE_MEMORY_UTILIZATION
    * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
    */
   ECS_SERVICE_AVERAGE_MEMORY_UTILIZATION = 'ECSServiceAverageMemoryUtilization',

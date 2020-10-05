@@ -502,9 +502,9 @@ export = {
       });
 
       // THEN
-      test.equal(ecsService.loadBalancer.construct.id, 'lb1');
-      test.equal(ecsService.listener.construct.id, 'listener1');
-      test.equal(ecsService.targetGroup.construct.id, 'ECSTargetGroupweb80Group');
+      test.equal(ecsService.loadBalancer.node.id, 'lb1');
+      test.equal(ecsService.listener.node.id, 'listener1');
+      test.equal(ecsService.targetGroup.node.id, 'ECSTargetGroupweb80Group');
 
       test.done();
     },
@@ -1241,9 +1241,9 @@ export = {
       });
 
       // THEN
-      test.equal(ecsService.loadBalancer.construct.id, 'lb1');
-      test.equal(ecsService.listener.construct.id, 'listener1');
-      test.equal(ecsService.targetGroup.construct.id, 'ECSTargetGroupweb80Group');
+      test.equal(ecsService.loadBalancer.node.id, 'lb1');
+      test.equal(ecsService.listener.node.id, 'listener1');
+      test.equal(ecsService.targetGroup.node.id, 'ECSTargetGroupweb80Group');
 
       test.done();
     },

@@ -6,9 +6,10 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as sns from '@aws-cdk/aws-sns';
 
 import {
-  CfnAutoScalingRollingUpdate, Construct, Duration, Fn, IResource, Lazy, PhysicalName, Resource, Stack,
-  Tag, Tokenization, withResolved,
+  Annotations, CfnAutoScalingRollingUpdate, Duration, Fn, IResource, Lazy, PhysicalName, Resource, Stack,
+  Tokenization, withResolved, Tags,
 } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnAutoScalingGroup, CfnAutoScalingGroupProps, CfnLaunchConfiguration } from './autoscaling.generated';
 import { BasicLifecycleHookProps, LifecycleHook } from './lifecycle-hook';
 import { BasicScheduledActionProps, ScheduledAction } from './scheduled-action';
@@ -471,7 +472,7 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
       ...props,
     });
 
-    policy.construct.addDependency(this.albTargetGroup.loadBalancerAttached);
+    policy.node.addDependency(this.albTargetGroup.loadBalancerAttached);
     return policy;
   }
 
@@ -595,7 +596,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     });
     this.connections = new ec2.Connections({ securityGroups: [this.securityGroup] });
     this.securityGroups.push(this.securityGroup);
-    this.construct.applyAspect(new Tag(NAME_TAG, this.construct.path));
+    Tags.of(this).add(NAME_TAG, this.node.path);
 
     this.role = props.role || new iam.Role(this, 'InstanceRole', {
       roleName: PhysicalName.GENERATE_IF_NEEDED,
@@ -609,7 +610,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     }
 
     const iamProfile = new iam.CfnInstanceProfile(this, 'InstanceProfile', {
-      roles: [ this.role.roleName ],
+      roles: [this.role.roleName],
     });
 
     // use delayed evaluation
@@ -632,7 +633,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
         synthesizeBlockDeviceMappings(this, props.blockDevices) : undefined),
     });
 
-    launchConfig.construct.addDependency(this.role);
+    launchConfig.node.addDependency(this.role);
 
     // desiredCapacity just reflects what the user has supplied.
     const desiredCapacity = props.desiredCapacity;
@@ -659,11 +660,11 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     });
 
     if (desiredCapacity !== undefined) {
-      this.construct.addWarning('desiredCapacity has been configured. Be aware this will reset the size of your AutoScalingGroup on every deployment. See https://github.com/aws/aws-cdk/issues/5215');
+      Annotations.of(this).addWarning('desiredCapacity has been configured. Be aware this will reset the size of your AutoScalingGroup on every deployment. See https://github.com/aws/aws-cdk/issues/5215');
     }
 
     this.maxInstanceLifetime = props.maxInstanceLifetime;
-    if (this.maxInstanceLifetime  &&
+    if (this.maxInstanceLifetime &&
       (this.maxInstanceLifetime.toSeconds() < 604800 || this.maxInstanceLifetime.toSeconds() > 31536000)) {
       throw new Error('maxInstanceLifetime must be between 7 and 365 days (inclusive)');
     }
@@ -715,7 +716,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       resource: 'autoScalingGroup:*:autoScalingGroupName',
       resourceName: this.autoScalingGroupName,
     });
-    this.construct.defaultChild = this.autoScalingGroup;
+    this.node.defaultChild = this.autoScalingGroup;
 
     this.applyUpdatePolicies(props);
 
@@ -912,7 +913,7 @@ export enum ScalingEvent {
   /**
    * Notify when an instance failed to launch
    */
-  INSTANCE_LAUNCH_ERROR =  'autoscaling:EC2_INSTANCE_LAUNCH_ERROR',
+  INSTANCE_LAUNCH_ERROR = 'autoscaling:EC2_INSTANCE_LAUNCH_ERROR',
 
   /**
    * Send a test notification to the topic
@@ -1259,7 +1260,7 @@ function synthesizeBlockDeviceMappings(construct: Construct, blockDevices: Block
           throw new Error('iops property is required with volumeType: EbsDeviceVolumeType.IO1');
         }
       } else if (volumeType !== EbsDeviceVolumeType.IO1) {
-        construct.construct.addWarning('iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
+        Annotations.of(construct).addWarning('iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
       }
     }
 

@@ -1,5 +1,5 @@
 import { FargatePlatformVersion, FargateService, FargateTaskDefinition } from '@aws-cdk/aws-ecs';
-import { Construct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { NetworkLoadBalancedServiceBase, NetworkLoadBalancedServiceBaseProps } from '../base/network-load-balanced-service-base';
 
 /**
@@ -118,7 +118,7 @@ export class NetworkLoadBalancedFargateService extends NetworkLoadBalancedServic
       const enableLogging = taskImageOptions.enableLogging !== undefined ? taskImageOptions.enableLogging : true;
       const logDriver = taskImageOptions.logDriver !== undefined
         ? taskImageOptions.logDriver : enableLogging
-          ? this.createAWSLogDriver(this.construct.id) : undefined;
+          ? this.createAWSLogDriver(this.node.id) : undefined;
 
       const containerName = taskImageOptions.containerName !== undefined ? taskImageOptions.containerName : 'web';
       const container = this.taskDefinition.addContainer(containerName, {

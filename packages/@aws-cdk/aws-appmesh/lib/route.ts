@@ -1,5 +1,5 @@
 import * as cdk from '@aws-cdk/core';
-
+import { Construct } from 'constructs';
 import { CfnRoute } from './appmesh.generated';
 import { IMesh } from './mesh';
 import { IVirtualNode } from './virtual-node';
@@ -113,14 +113,14 @@ export class Route extends cdk.Resource implements IRoute {
   /**
    * Import an existing route given an ARN
    */
-  public static fromRouteArn(scope: cdk.Construct, id: string, routeArn: string): IRoute {
+  public static fromRouteArn(scope: Construct, id: string, routeArn: string): IRoute {
     return new ImportedRoute(scope, id, { routeArn });
   }
 
   /**
    * Import an existing route given its name
    */
-  public static fromRouteName(scope: cdk.Construct, id: string, meshName: string, virtualRouterName: string, routeName: string): IRoute {
+  public static fromRouteName(scope: Construct, id: string, meshName: string, virtualRouterName: string, routeName: string): IRoute {
     return new ImportedRoute(scope, id, { meshName, virtualRouterName, routeName });
   }
 
@@ -143,9 +143,9 @@ export class Route extends cdk.Resource implements IRoute {
   private readonly httpRoute?: CfnRoute.HttpRouteProperty;
   private readonly tcpRoute?: CfnRoute.TcpRouteProperty;
 
-  constructor(scope: cdk.Construct, id: string, props: RouteProps) {
+  constructor(scope: Construct, id: string, props: RouteProps) {
     super(scope, id, {
-      physicalName: props.routeName || cdk.Lazy.stringValue({ produce: () => this.construct.uniqueId }),
+      physicalName: props.routeName || cdk.Lazy.stringValue({ produce: () => this.node.uniqueId }),
     });
 
     this.virtualRouter = props.virtualRouter;
@@ -251,7 +251,7 @@ class ImportedRoute extends cdk.Resource implements IRoute {
    */
   public readonly routeArn: string;
 
-  constructor(scope: cdk.Construct, id: string, props: RouteAttributes) {
+  constructor(scope: Construct, id: string, props: RouteAttributes) {
     super(scope, id);
 
     if (props.routeArn) {

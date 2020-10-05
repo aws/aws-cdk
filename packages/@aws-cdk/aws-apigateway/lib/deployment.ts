@@ -1,10 +1,11 @@
 import * as crypto from 'crypto';
-import { Construct, Lazy, RemovalPolicy, Resource, CfnResource } from '@aws-cdk/core';
+import { Construct as CoreConstruct, Lazy, RemovalPolicy, Resource, CfnResource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnDeployment } from './apigateway.generated';
-import { IRestApi, RestApi, SpecRestApi, RestApiBase } from './restapi';
 import { Method } from './method';
+import { IRestApi, RestApi, SpecRestApi, RestApiBase } from './restapi';
 
-export interface DeploymentProps  {
+export interface DeploymentProps {
   /**
    * The Rest API to deploy.
    */
@@ -118,7 +119,7 @@ export class Deployment extends Resource {
     // and the `AWS::Lambda::Permission` resources (children under Method),
     // causing cyclic dependency errors. Hence, falling back to declaring
     // dependencies between the underlying CfnResources.
-    this.construct.addDependency(method.construct.defaultChild as CfnResource);
+    this.node.addDependency(method.node.defaultChild as CfnResource);
   }
 }
 
@@ -132,7 +133,7 @@ class LatestDeploymentResource extends CfnDeployment {
   private readonly originalLogicalId: string;
   private readonly api: IRestApi;
 
-  constructor(scope: Construct, id: string, props: LatestDeploymentResourceProps) {
+  constructor(scope: CoreConstruct, id: string, props: LatestDeploymentResourceProps) {
     super(scope, id, {
       description: props.description,
       restApiId: props.restApi.restApiId,
@@ -150,7 +151,7 @@ class LatestDeploymentResource extends CfnDeployment {
   public addToLogicalId(data: unknown) {
     // if the construct is locked, it means we are already synthesizing and then
     // we can't modify the hash because we might have already calculated it.
-    if (this.construct.locked) {
+    if (this.node.locked) {
       throw new Error('Cannot modify the logical ID when the construct is locked');
     }
 
@@ -158,12 +159,12 @@ class LatestDeploymentResource extends CfnDeployment {
   }
 
   private calculateLogicalId() {
-    const hash = [ ...this.hashComponents ];
+    const hash = [...this.hashComponents];
 
     if (this.api instanceof RestApi || this.api instanceof SpecRestApi) { // Ignore IRestApi that are imported
 
       // Add CfnRestApi to the logical id so a new deployment is triggered when any of its properties change.
-      const cfnRestApiCF = (this.api.construct.defaultChild as any)._toCloudFormation();
+      const cfnRestApiCF = (this.api.node.defaultChild as any)._toCloudFormation();
       hash.push(this.stack.resolve(cfnRestApiCF));
     }
 

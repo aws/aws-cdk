@@ -2,7 +2,7 @@ import { countResources, expect, haveResourceLike, not } from '@aws-cdk/assert';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as s3 from '@aws-cdk/aws-s3';
-import { Stack } from '@aws-cdk/core';
+import { Lazy, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as cpactions from '../../lib';
 
@@ -172,6 +172,45 @@ export = {
       test.throws(() => {
         sourceStage.addAction(duplicateBucketAndPath);
       }, /S3 source action with path 'my\/other\/path' is already present in the pipeline for this source bucket/);
+
+      test.done();
+    },
+
+    'allows using a Token bucketKey with trigger = Events, multiple times'(test: Test) {
+      const stack = new Stack();
+
+      const bucket = new s3.Bucket(stack, 'MyBucket');
+      const sourceStage = minimalPipeline(stack, {
+        bucket,
+        bucketKey: Lazy.stringValue({ produce: () => 'my-bucket-key1' }),
+        trigger: cpactions.S3Trigger.EVENTS,
+      });
+      sourceStage.addAction(new cpactions.S3SourceAction({
+        actionName: 'Source2',
+        bucket,
+        bucketKey: Lazy.stringValue({ produce: () => 'my-bucket-key2' }),
+        trigger: cpactions.S3Trigger.EVENTS,
+        output: new codepipeline.Artifact(),
+      }));
+
+      expect(stack, /* skipValidation = */ true).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+        'Stages': [
+          {
+            'Actions': [
+              {
+                'Configuration': {
+                  'S3ObjectKey': 'my-bucket-key1',
+                },
+              },
+              {
+                'Configuration': {
+                  'S3ObjectKey': 'my-bucket-key2',
+                },
+              },
+            ],
+          },
+        ],
+      }));
 
       test.done();
     },

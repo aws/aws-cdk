@@ -1,4 +1,5 @@
-import { App, Construct, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
+import { App, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
+import { Construct, Node } from 'constructs';
 import { IEventBus } from './event-bus';
 import { EventPattern } from './event-pattern';
 import { CfnEventBusPolicy, CfnRule } from './events.generated';
@@ -221,11 +222,11 @@ export class Rule extends Resource implements IRule {
         // (EventBridge verifies whether you have permissions to the targets on rule creation),
         // but it's common for the target stack to depend on the source stack
         // (that's the case with CodePipeline, for example)
-        const sourceApp = this.construct.root;
+        const sourceApp = this.node.root;
         if (!sourceApp || !App.isApp(sourceApp)) {
           throw new Error('Event stack which uses cross-account targets must be part of a CDK app');
         }
-        const targetApp = targetProps.targetResource.construct.root;
+        const targetApp = Node.of(targetProps.targetResource).root;
         if (!targetApp || !App.isApp(targetApp)) {
           throw new Error('Target stack which uses cross-account event targets must be part of a CDK app');
         }
@@ -233,7 +234,7 @@ export class Rule extends Resource implements IRule {
           throw new Error('Event stack and target stack must belong to the same CDK app');
         }
         const stackId = `EventBusPolicy-${sourceAccount}-${targetRegion}-${targetAccount}`;
-        let eventBusPolicyStack: Stack = sourceApp.construct.tryFindChild(stackId) as Stack;
+        let eventBusPolicyStack: Stack = sourceApp.node.tryFindChild(stackId) as Stack;
         if (!eventBusPolicyStack) {
           eventBusPolicyStack = new Stack(sourceApp, stackId, {
             env: {
@@ -275,7 +276,7 @@ export class Rule extends Resource implements IRule {
           }
         }
 
-        new CopyRule(targetStack, `${this.construct.uniqueId}-${id}`, {
+        new CopyRule(targetStack, `${this.node.uniqueId}-${id}`, {
           targets: [target],
           eventPattern: this.eventPattern,
           schedule: this.scheduleExpression ? Schedule.expression(this.scheduleExpression) : undefined,

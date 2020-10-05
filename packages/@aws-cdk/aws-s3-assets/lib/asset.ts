@@ -6,9 +6,10 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
+import { Construct } from 'constructs';
 import { toSymlinkFollow } from './compat';
 
-const ARCHIVE_EXTENSIONS = [ '.zip', '.jar' ];
+const ARCHIVE_EXTENSIONS = ['.zip', '.jar'];
 
 export interface AssetOptions extends assets.CopyOptions, cdk.AssetOptions {
   /**
@@ -110,7 +111,7 @@ export class Asset extends cdk.Construct implements cdk.IAsset {
 
   public readonly assetHash: string;
 
-  constructor(scope: cdk.Construct, id: string, props: AssetProps) {
+  constructor(scope: Construct, id: string, props: AssetProps) {
     super(scope, id);
 
     // stage the asset source (conditionally).
@@ -176,7 +177,7 @@ export class Asset extends cdk.Construct implements cdk.IAsset {
    * (e.g. "Code" for AWS::Lambda::Function)
    */
   public addResourceMetadata(resource: cdk.CfnResource, resourceProperty: string) {
-    if (!this.construct.tryGetContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT)) {
+    if (!this.node.tryGetContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT)) {
       return; // not enabled
     }
 

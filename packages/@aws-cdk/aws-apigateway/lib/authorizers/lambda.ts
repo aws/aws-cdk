@@ -1,6 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Construct, Duration, Lazy, Stack } from '@aws-cdk/core';
+import { Duration, Lazy, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnAuthorizer } from '../apigateway.generated';
 import { Authorizer, IAuthorizer } from '../authorizer';
 import { IRestApi } from '../restapi';
@@ -12,7 +13,7 @@ export interface LambdaAuthorizerProps {
   /**
    * An optional human friendly name for the authorizer. Note that, this is not the primary identifier of the authorizer.
    *
-   * @default this.construct.uniqueId
+   * @default this.node.uniqueId
    */
   readonly authorizerName?: string;
 
@@ -96,7 +97,7 @@ abstract class LambdaAuthorizer extends Authorizer implements IAuthorizer {
    */
   protected setupPermissions() {
     if (!this.role) {
-      this.handler.addPermission(`${this.construct.uniqueId}:Permissions`, {
+      this.handler.addPermission(`${this.node.uniqueId}:Permissions`, {
         principal: new iam.ServicePrincipal('apigateway.amazonaws.com'),
         sourceArn: this.authorizerArn,
       });
@@ -104,8 +105,8 @@ abstract class LambdaAuthorizer extends Authorizer implements IAuthorizer {
       this.role.attachInlinePolicy(new iam.Policy(this, 'authorizerInvokePolicy', {
         statements: [
           new iam.PolicyStatement({
-            resources: [ this.handler.functionArn ],
-            actions: [ 'lambda:InvokeFunction' ],
+            resources: [this.handler.functionArn],
+            actions: ['lambda:InvokeFunction'],
           }),
         ],
       }));
@@ -120,7 +121,7 @@ abstract class LambdaAuthorizer extends Authorizer implements IAuthorizer {
     return Lazy.stringValue({
       produce: () => {
         if (!this.restApiId) {
-          throw new Error(`Authorizer (${this.construct.path}) must be attached to a RestApi`);
+          throw new Error(`Authorizer (${this.node.path}) must be attached to a RestApi`);
         }
         return this.restApiId;
       },
@@ -167,7 +168,7 @@ export class TokenAuthorizer extends LambdaAuthorizer {
 
     const restApiId = this.lazyRestApiId();
     const resource = new CfnAuthorizer(this, 'Resource', {
-      name: props.authorizerName ?? this.construct.uniqueId,
+      name: props.authorizerName ?? this.node.uniqueId,
       restApiId,
       type: 'TOKEN',
       authorizerUri: lambdaAuthorizerArn(props.handler),
@@ -229,7 +230,7 @@ export class RequestAuthorizer extends LambdaAuthorizer {
 
     const restApiId = this.lazyRestApiId();
     const resource = new CfnAuthorizer(this, 'Resource', {
-      name: props.authorizerName ?? this.construct.uniqueId,
+      name: props.authorizerName ?? this.node.uniqueId,
       restApiId,
       type: 'REQUEST',
       authorizerUri: lambdaAuthorizerArn(props.handler),

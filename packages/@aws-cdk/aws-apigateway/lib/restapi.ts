@@ -1,6 +1,7 @@
 import { IVpcEndpoint } from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { CfnOutput, Construct, IResource as IResourceBase, Resource, Stack } from '@aws-cdk/core';
+import { CfnOutput, IResource as IResourceBase, Resource, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { ApiDefinition } from './api-definition';
 import { ApiKey, ApiKeyOptions, IApiKey } from './api-key';
 import { CfnAccount, CfnRestApi } from './apigateway.generated';
@@ -401,7 +402,7 @@ export abstract class RestApiBase extends Resource implements IRestApi {
       cloudWatchRoleArn: role.roleArn,
     });
 
-    resource.construct.addDependency(apiResource);
+    resource.node.addDependency(apiResource);
   }
 
   protected configureDeployment(props: RestApiOptions) {
@@ -492,7 +493,7 @@ export class SpecRestApi extends RestApiBase {
       endpointConfiguration: this._configureEndpoints(props),
       parameters: props.parameters,
     });
-    this.construct.defaultChild = resource;
+    this.node.defaultChild = resource;
     this.restApiId = resource.ref;
     this.restApiRootResourceId = resource.attrRootResourceId;
     this.root = new RootResource(this, {}, this.restApiRootResourceId);
@@ -597,7 +598,7 @@ export class RestApi extends RestApiBase {
       cloneFrom: props.cloneFrom ? props.cloneFrom.restApiId : undefined,
       parameters: props.parameters,
     });
-    this.construct.defaultChild = resource;
+    this.node.defaultChild = resource;
     this.restApiId = resource.ref;
 
     const cloudWatchRole = props.cloudWatchRole !== undefined ? props.cloudWatchRole : true;
@@ -689,7 +690,7 @@ export class RestApi extends RestApiBase {
    */
   protected validate() {
     if (this.methods.length === 0) {
-      return [ "The REST API doesn't contain any methods" ];
+      return ["The REST API doesn't contain any methods"];
     }
 
     return [];

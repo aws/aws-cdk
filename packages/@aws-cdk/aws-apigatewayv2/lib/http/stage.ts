@@ -1,4 +1,5 @@
-import { Construct, Resource, Stack } from '@aws-cdk/core';
+import { Resource, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnStage } from '../apigatewayv2.generated';
 import { CommonStageOptions, IDomainName, IStage } from '../common';
 import { IHttpApi } from './api';
@@ -103,7 +104,7 @@ export class HttpStage extends Resource implements IStage {
         apiMappingKey: props.domainMapping.mappingKey,
       });
       // ensure the dependency
-      this.construct.addDependency(props.domainMapping.domainName);
+      this.node.addDependency(props.domainMapping.domainName);
     }
 
   }

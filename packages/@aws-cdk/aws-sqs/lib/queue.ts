@@ -1,5 +1,6 @@
 import * as kms from '@aws-cdk/aws-kms';
-import { Construct, Duration, Stack, Token } from '@aws-cdk/core';
+import { Duration, Stack, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { IQueue, QueueAttributes, QueueBase } from './queue-base';
 import { CfnQueue } from './sqs.generated';
 import { validateProps } from './validate-props';
@@ -302,7 +303,7 @@ export class Queue extends QueueBase {
 
       if (encryption === QueueEncryption.KMS) {
         const masterKey = props.encryptionMasterKey || new kms.Key(this, 'Key', {
-          description: `Created by ${this.construct.path}`,
+          description: `Created by ${this.node.path}`,
         });
 
         return {

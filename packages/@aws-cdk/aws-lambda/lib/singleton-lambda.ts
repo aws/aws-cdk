@@ -1,7 +1,9 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Function as LambdaFunction, FunctionProps } from './function';
-import { FunctionBase, IFunction } from './function-base';
+import { FunctionBase } from './function-base';
+import { Version } from './lambda-version';
 import { Permission } from './permission';
 
 /**
@@ -45,9 +47,9 @@ export class SingletonFunction extends FunctionBase {
   public readonly role?: iam.IRole;
   public readonly permissionsNode: cdk.ConstructNode;
   protected readonly canCreatePermissions: boolean;
-  private lambdaFunction: IFunction;
+  private lambdaFunction: LambdaFunction;
 
-  constructor(scope: cdk.Construct, id: string, props: SingletonFunctionProps) {
+  constructor(scope: Construct, id: string, props: SingletonFunctionProps) {
     super(scope, id);
 
     this.lambdaFunction = this.ensureLambda(props);
@@ -61,6 +63,18 @@ export class SingletonFunction extends FunctionBase {
     this.canCreatePermissions = true; // Doesn't matter, addPermission is overriden anyway
   }
 
+  /**
+   * Returns a `lambda.Version` which represents the current version of this
+   * singleton Lambda function. A new version will be created every time the
+   * function's configuration changes.
+   *
+   * You can specify options for this version using the `currentVersionOptions`
+   * prop when initializing the `lambda.SingletonFunction`.
+   */
+  public get currentVersion(): Version {
+    return this.lambdaFunction.currentVersion;
+  }
+
   public addPermission(name: string, permission: Permission) {
     return this.lambdaFunction.addPermission(name, permission);
   }
@@ -70,7 +84,7 @@ export class SingletonFunction extends FunctionBase {
    * as a singleton across the stack. Use this method instead to declare dependencies.
    */
   public addDependency(...up: cdk.IDependable[]) {
-    this.lambdaFunction.construct.addDependency(...up);
+    this.lambdaFunction.node.addDependency(...up);
   }
 
   /**
@@ -78,7 +92,12 @@ export class SingletonFunction extends FunctionBase {
    * node.addDependency(). Use this method instead to declare this as a dependency of another construct.
    */
   public dependOn(down: cdk.IConstruct) {
-    down.construct.addDependency(this.lambdaFunction);
+    down.node.addDependency(this.lambdaFunction);
+  }
+
+  /** @internal */
+  public _checkEdgeCompatibility() {
+    return this.lambdaFunction._checkEdgeCompatibility();
   }
 
   /**
@@ -89,12 +108,12 @@ export class SingletonFunction extends FunctionBase {
     return this.lambdaFunction.node;
   }
 
-  private ensureLambda(props: SingletonFunctionProps): IFunction {
+  private ensureLambda(props: SingletonFunctionProps): LambdaFunction {
     const constructName = (props.lambdaPurpose || 'SingletonLambda') + slugify(props.uuid);
-    const existing = cdk.Stack.of(this).construct.tryFindChild(constructName);
+    const existing = cdk.Stack.of(this).node.tryFindChild(constructName);
     if (existing) {
       // Just assume this is true
-      return existing as FunctionBase;
+      return existing as LambdaFunction;
     }
 
     return new LambdaFunction(cdk.Stack.of(this), constructName, props);

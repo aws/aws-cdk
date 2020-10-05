@@ -420,7 +420,7 @@ export class FeatureStabilityRule extends ValidationRule {
       notices.push('');
     }
 
-    const noticeOrder = [ 'Experimental', 'Developer Preview', 'Stable' ];
+    const noticeOrder = ['Experimental', 'Developer Preview', 'Stable'];
     const stabilities = pkg.json.features.map((f: { [k: string]: string }) => f.stability);
     const filteredNotices = noticeOrder.filter(v => stabilities.includes(v));
     filteredNotices.map((notice) => {
@@ -468,6 +468,26 @@ export class CDKKeywords extends ValidationRule {
 }
 
 /**
+ * Requires projectReferences to be set in the jsii configuration.
+ */
+export class JSIIProjectReferences extends ValidationRule {
+  public readonly name = 'jsii/project-references';
+
+  public validate(pkg: PackageJson): void {
+    if (!isJSII(pkg)) {
+      return;
+    }
+
+    expectJSON(
+      this.name,
+      pkg,
+      'jsii.projectReferences',
+      pkg.json.name !== 'monocdk-experiment' && pkg.json.name !== 'aws-cdk-lib',
+    );
+  }
+}
+
+/**
  * JSII Java package is required and must look sane
  */
 export class JSIIJavaPackageIsRequired extends ValidationRule {
@@ -505,8 +525,11 @@ export class JSIIPythonTarget extends ValidationRule {
 
     const moduleName = cdkModuleName(pkg.json.name);
 
+    // See: https://github.com/aws/jsii/blob/master/docs/configuration.md#configuring-python
+
     expectJSON(this.name, pkg, 'jsii.targets.python.distName', moduleName.python.distName);
     expectJSON(this.name, pkg, 'jsii.targets.python.module', moduleName.python.module);
+    expectJSON(this.name, pkg, 'jsii.targets.python.classifiers', ['Framework :: AWS CDK', 'Framework :: AWS CDK :: 1']);
   }
 }
 
@@ -842,6 +865,7 @@ export class MustDependonCdkByPointVersions extends ValidationRule {
       '@aws-cdk/cx-api',
       '@aws-cdk/cloud-assembly-schema',
       '@aws-cdk/region-info',
+      '@aws-cdk/yaml-cfn',
     ];
 
     for (const [depName, depVersion] of Object.entries(pkg.dependencies)) {
@@ -1228,7 +1252,7 @@ export class ConstructsDependency extends ValidationRule {
   public readonly name = 'constructs/dependency';
 
   public validate(pkg: PackageJson) {
-    const REQUIRED_VERSION = '^3.0.2';
+    const REQUIRED_VERSION = '^3.0.4';
 
     if (pkg.devDependencies?.constructs && pkg.devDependencies?.constructs !== REQUIRED_VERSION) {
       pkg.report({

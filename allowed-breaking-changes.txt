@@ -22,3 +22,27 @@ removed:@aws-cdk/cdk-assets-schema.FileAssetPackaging
 
 changed-type:@aws-cdk/aws-codedeploy.IServerDeploymentGroup.autoScalingGroups
 changed-type:@aws-cdk/aws-codedeploy.ServerDeploymentGroup.autoScalingGroups
+
+# We were leaking L1 types in L2 APIs, which now have changed required -> optional
+# when ECS moved to the CloudFormation Registry spec.
+change-return-type:@aws-cdk/aws-ecs.ContainerDefinition.renderContainerDefinition
+change-return-type:@aws-cdk/aws-ecs.FirelensLogRouter.renderContainerDefinition
+change-return-type:@aws-cdk/aws-ecs.LinuxParameters.renderLinuxParameters
+
+# These were accidentally not marked @experimental
+removed:@aws-cdk/core.BootstraplessSynthesizer.synthesizeStackArtifacts
+removed:@aws-cdk/core.DefaultStackSynthesizer.synthesizeStackArtifacts
+removed:@aws-cdk/core.LegacyStackSynthesizer.synthesizeStackArtifacts
+removed:@aws-cdk/core.NestedStackSynthesizer.synthesizeStackArtifacts
+removed:@aws-cdk/core.IStackSynthesizer.synthesizeStackArtifacts
+
+# DockerVolumeConfiguration.labels has changed types from string[] to map<string, string>
+# The string[] was actually a latent bug we weren't aware of because we passing volumes through
+# to the underlying CFN resource as Lazy.anyValue.
+# The change to map<string, string> caused all these inputs to break.
+incompatible-argument:@aws-cdk/aws-ecs.Ec2TaskDefinition.<initializer>
+incompatible-argument:@aws-cdk/aws-ecs.Ec2TaskDefinition.addVolume
+incompatible-argument:@aws-cdk/aws-ecs.FargateTaskDefinition.<initializer>
+incompatible-argument:@aws-cdk/aws-ecs.FargateTaskDefinition.addVolume
+incompatible-argument:@aws-cdk/aws-ecs.TaskDefinition.<initializer>
+incompatible-argument:@aws-cdk/aws-ecs.TaskDefinition.addVolume

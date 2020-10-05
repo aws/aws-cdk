@@ -1,5 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct, Duration, IResource, Resource } from '@aws-cdk/core';
+import { Duration, IResource, Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { IAutoScalingGroup } from './auto-scaling-group';
 import { CfnLifecycleHook } from './autoscaling.generated';
 import { ILifecycleHookTarget } from './lifecycle-hook-target';
@@ -116,7 +117,7 @@ export class LifecycleHook extends Resource implements ILifecycleHook {
     // A LifecycleHook resource is going to do a permissions test upon creation,
     // so we have to make sure the role has full permissions before creating the
     // lifecycle hook.
-    resource.construct.addDependency(this.role);
+    resource.node.addDependency(this.role);
 
     this.lifecycleHookName = resource.ref;
   }

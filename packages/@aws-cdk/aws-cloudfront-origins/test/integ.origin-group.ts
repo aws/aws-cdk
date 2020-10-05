@@ -17,6 +17,11 @@ const originGroup = new origins.OriginGroup({
 
 new cloudfront.Distribution(stack, 'Distribution', {
   defaultBehavior: { origin: originGroup },
+  additionalBehaviors: {
+    '/api': {
+      origin: originGroup,
+    },
+  },
 });
 
 app.synth();

@@ -23,9 +23,14 @@
       },
       "python": {
         "distName": "aws-cdk.cloud-assembly-schema",
-        "module": "aws_cdk.cloud_assembly_schema"
+        "module": "aws_cdk.cloud_assembly_schema",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
-    }
+    },
+    "projectReferences": true
   },
   "scripts": {
     "build": "cdk-build",
@@ -47,13 +52,13 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/jest": "^26.0.4",
+    "@types/jest": "^26.0.14",
     "@types/mock-fs": "^4.10.0",
     "cdk-build-tools": "0.0.0",
-    "jest": "^25.5.4",
-    "mock-fs": "^4.12.0",
+    "jest": "^26.4.2",
+    "mock-fs": "^4.13.0",
     "pkglint": "0.0.0",
-    "typescript-json-schema": "^0.42.0"
+    "typescript-json-schema": "^0.43.0"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",
@@ -77,8 +82,8 @@
     "exclude": []
   },
   "dependencies": {
-    "jsonschema": "^1.2.5",
-    "semver": "^7.2.2"
+    "jsonschema": "^1.2.7",
+    "semver": "^7.3.2"
   },
   "awscdkio": {
     "announce": false

@@ -1,5 +1,5 @@
 import * as cdk from '@aws-cdk/core';
-
+import { Construct } from 'constructs';
 import { CfnVirtualService } from './appmesh.generated';
 import { IMesh } from './mesh';
 import { IVirtualNode } from './virtual-node';
@@ -75,8 +75,8 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
   /**
    * Import an existing VirtualService given an ARN
    */
-  public static fromVirtualServiceArn(scope: cdk.Construct, id: string, virtualServiceArn: string): IVirtualService {
-    return new ImportedVirtualService(scope, id,  {
+  public static fromVirtualServiceArn(scope: Construct, id: string, virtualServiceArn: string): IVirtualService {
+    return new ImportedVirtualService(scope, id, {
       virtualServiceArn,
     });
   }
@@ -84,7 +84,7 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
   /**
    * Import an existing VirtualService given mesh and service names
    */
-  public static fromVirtualServiceName(scope: cdk.Construct, id: string, meshName: string, virtualServiceName: string): IVirtualService {
+  public static fromVirtualServiceName(scope: Construct, id: string, meshName: string, virtualServiceName: string): IVirtualService {
     return new ImportedVirtualService(scope, id, {
       meshName,
       virtualServiceName,
@@ -104,9 +104,9 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
   private readonly virtualServiceProvider?: CfnVirtualService.VirtualServiceProviderProperty;
   private readonly mesh: IMesh;
 
-  constructor(scope: cdk.Construct, id: string, props: VirtualServiceProps) {
+  constructor(scope: Construct, id: string, props: VirtualServiceProps) {
     super(scope, id, {
-      physicalName: props.virtualServiceName || cdk.Lazy.stringValue({ produce: () => this.construct.uniqueId }),
+      physicalName: props.virtualServiceName || cdk.Lazy.stringValue({ produce: () => this.node.uniqueId }),
     });
 
     if (props.virtualNode && props.virtualRouter) {
@@ -198,7 +198,7 @@ class ImportedVirtualService extends cdk.Resource implements IVirtualService {
    */
   public readonly virtualServiceArn: string;
 
-  constructor(scope: cdk.Construct, id: string, props: VirtualServiceAttributes) {
+  constructor(scope: Construct, id: string, props: VirtualServiceAttributes) {
     super(scope, id);
 
     if (props.virtualServiceArn) {

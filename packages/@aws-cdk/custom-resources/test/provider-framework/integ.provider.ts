@@ -30,7 +30,7 @@ class TestStack extends Stack {
     });
 
     // delay file2 updates so we can test async assertions
-    file2.construct.addDependency(file1);
+    file2.node.addDependency(file1);
 
     new CfnOutput(this, 'file1-url', { value: file1.url });
     new CfnOutput(this, 'file2-url', { value: file2.url });

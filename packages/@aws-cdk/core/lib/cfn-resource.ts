@@ -4,7 +4,7 @@ import { CfnCondition } from './cfn-condition';
 /* eslint-disable import/order */
 import { CfnRefElement } from './cfn-element';
 import { CfnCreationPolicy, CfnDeletionPolicy, CfnUpdatePolicy } from './cfn-resource-policy';
-import { Construct, IConstruct } from './construct-compat';
+import { Construct, IConstruct, Node } from 'constructs';
 import { addDependency } from './deps';
 import { CfnReference } from './private/cfn-reference';
 import { Reference } from './reference';
@@ -92,8 +92,8 @@ export class CfnResource extends CfnRefElement {
     // if aws:cdk:enable-path-metadata is set, embed the current construct's
     // path in the CloudFormation template, so it will be possible to trace
     // back to the actual construct path.
-    if (this.construct.tryGetContext(cxapi.PATH_METADATA_ENABLE_CONTEXT)) {
-      this.addMetadata(cxapi.PATH_METADATA_KEY, this.construct.path);
+    if (Node.of(this).tryGetContext(cxapi.PATH_METADATA_ENABLE_CONTEXT)) {
+      this.addMetadata(cxapi.PATH_METADATA_KEY, Node.of(this).path);
     }
   }
 
@@ -238,7 +238,7 @@ export class CfnResource extends CfnRefElement {
       return;
     }
 
-    addDependency(this, target, `"${this.construct.path}" depends on "${target.construct.path}"`);
+    addDependency(this, target, `"${Node.of(this).path}" depends on "${Node.of(target).path}"`);
   }
 
   /**
@@ -300,11 +300,16 @@ export class CfnResource extends CfnRefElement {
             UpdatePolicy: capitalizePropertyNames(this, this.cfnOptions.updatePolicy),
             UpdateReplacePolicy: capitalizePropertyNames(this, this.cfnOptions.updateReplacePolicy),
             DeletionPolicy: capitalizePropertyNames(this, this.cfnOptions.deletionPolicy),
+            Version: this.cfnOptions.version,
+            Description: this.cfnOptions.description,
             Metadata: ignoreEmpty(this.cfnOptions.metadata),
             Condition: this.cfnOptions.condition && this.cfnOptions.condition.logicalId,
           }, props => {
             const renderedProps = this.renderProperties(props.Properties || {});
-            props.Properties = renderedProps && (Object.values(renderedProps).find(v => !!v) ? renderedProps : undefined);
+            if (renderedProps) {
+              const hasDefined = Object.values(renderedProps).find(v => v !== undefined);
+              props.Properties = hasDefined !== undefined ? renderedProps : undefined;
+            }
             return deepMerge(props, this.rawOverrides);
           }),
         },
@@ -312,7 +317,7 @@ export class CfnResource extends CfnRefElement {
       return ret;
     } catch (e) {
       // Change message
-      e.message = `While synthesizing ${this.construct.path}: ${e.message}`;
+      e.message = `While synthesizing ${this.node.path}: ${e.message}`;
       // Adjust stack trace (make it look like node built it, too...)
       const trace = this.creationStack;
       if (trace) {
@@ -330,7 +335,7 @@ export class CfnResource extends CfnRefElement {
     function renderDependsOn(dependsOn: Set<CfnResource>) {
       return Array
         .from(dependsOn)
-        .sort((x, y) => x.construct.path.localeCompare(y.construct.path))
+        .sort((x, y) => x.node.path.localeCompare(y.node.path))
         .map(r => r.logicalId);
     }
 
@@ -428,6 +433,22 @@ export interface ICfnResourceOptions {
    * when it is replaced during a stack update operation.
    */
   updateReplacePolicy?: CfnDeletionPolicy;
+
+  /**
+   * The version of this resource.
+   * Used only for custom CloudFormation resources.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cfn-customresource.html
+   */
+  version?: string;
+
+  /**
+   * The description of this resource.
+   * Used for informational purposes only, is not processed in any way
+   * (and stays with the CloudFormation template, is not passed to the underlying resource,
+   * even if it does have a 'description' property).
+   */
+  description?: string;
 
   /**
    * Metadata associated with the CloudFormation resource. This is not the same as the construct metadata which can be added

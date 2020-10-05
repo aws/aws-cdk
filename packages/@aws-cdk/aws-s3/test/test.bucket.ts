@@ -31,7 +31,7 @@ export = {
   'CFN properties are type-validated during resolution'(test: Test) {
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket', {
-      bucketName: cdk.Token.asString(5),  // Oh no
+      bucketName: cdk.Token.asString(5), // Oh no
     });
 
     test.throws(() => {
@@ -663,7 +663,8 @@ export = {
       const user = new iam.User(stack, 'MyUser');
       user.addToPolicy(new iam.PolicyStatement({
         resources: [bucket.arnForObjects(`my/folder/${bucket.bucketName}`)],
-        actions: ['s3:*'] }));
+        actions: ['s3:*'],
+      }));
 
       expect(stack).toMatch({
         'Resources': {
@@ -693,6 +694,22 @@ export = {
           },
         },
       });
+
+      test.done();
+    },
+
+    'import can explicitly set bucket region'(test: Test) {
+      const stack = new cdk.Stack(undefined, undefined, {
+        env: { region: 'us-east-1' },
+      });
+
+      const bucket = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', {
+        bucketName: 'myBucket',
+        region: 'eu-west-1',
+      });
+
+      test.equals(bucket.bucketRegionalDomainName, `myBucket.s3.eu-west-1.${stack.urlSuffix}`);
+      test.equals(bucket.bucketWebsiteDomainName, `myBucket.s3-website-eu-west-1.${stack.urlSuffix}`);
 
       test.done();
     },
@@ -1222,12 +1239,12 @@ export = {
 
     'in different accounts'(test: Test) {
       // given
-      const stackA = new cdk.Stack(undefined, 'StackA', { env: { account: '123456789012' }});
+      const stackA = new cdk.Stack(undefined, 'StackA', { env: { account: '123456789012' } });
       const bucketFromStackA = new s3.Bucket(stackA, 'MyBucket', {
         bucketName: 'my-bucket-physical-name',
       });
 
-      const stackB = new cdk.Stack(undefined, 'StackB', { env: { account: '234567890123' }});
+      const stackB = new cdk.Stack(undefined, 'StackB', { env: { account: '234567890123' } });
       const roleFromStackB = new iam.Role(stackB, 'MyRole', {
         assumedBy: new iam.AccountPrincipal('234567890123'),
         roleName: 'MyRolePhysicalName',
@@ -1312,7 +1329,7 @@ export = {
 
     'in different accounts, with a KMS Key'(test: Test) {
       // given
-      const stackA = new cdk.Stack(undefined, 'StackA', { env: { account: '123456789012' }});
+      const stackA = new cdk.Stack(undefined, 'StackA', { env: { account: '123456789012' } });
       const key = new kms.Key(stackA, 'MyKey');
       const bucketFromStackA = new s3.Bucket(stackA, 'MyBucket', {
         bucketName: 'my-bucket-physical-name',
@@ -1320,7 +1337,7 @@ export = {
         encryption: s3.BucketEncryption.KMS,
       });
 
-      const stackB = new cdk.Stack(undefined, 'StackB', { env: { account: '234567890123' }});
+      const stackB = new cdk.Stack(undefined, 'StackB', { env: { account: '234567890123' } });
       const roleFromStackB = new iam.Role(stackB, 'MyRole', {
         assumedBy: new iam.AccountPrincipal('234567890123'),
         roleName: 'MyRolePhysicalName',
@@ -1707,7 +1724,7 @@ export = {
         'Fn::Select': [
           2,
           {
-            'Fn::Split': [ '/', { 'Fn::GetAtt': [ 'Website32962D0B', 'WebsiteURL' ] } ],
+            'Fn::Split': ['/', { 'Fn::GetAtt': ['Website32962D0B', 'WebsiteURL'] }],
           },
         ],
       });
@@ -2043,7 +2060,7 @@ export = {
     }));
 
     expect(stack).to(haveResourceLike('AWS::S3::BucketPolicy', {
-      Bucket: { Ref: 'InventoryBucketA869B8CB'},
+      Bucket: { Ref: 'InventoryBucketA869B8CB' },
       PolicyDocument: {
         Statement: arrayWith(objectLike({
           Action: 's3:PutObject',
@@ -2053,7 +2070,7 @@ export = {
               'Fn::GetAtt': ['InventoryBucketA869B8CB', 'Arn'],
             },
             {
-              'Fn::Join': ['', [{'Fn::GetAtt': ['InventoryBucketA869B8CB', 'Arn']}, '/*']],
+              'Fn::Join': ['', [{ 'Fn::GetAtt': ['InventoryBucketA869B8CB', 'Arn'] }, '/*']],
             },
           ],
         })),

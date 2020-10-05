@@ -10,9 +10,9 @@ export class ApiEventSource implements lambda.IEventSource {
   }
 
   public bind(target: lambda.IFunction): void {
-    const id = `${target.construct.uniqueId}:ApiEventSourceA7A86A4F`;
+    const id = `${target.node.uniqueId}:ApiEventSourceA7A86A4F`;
     const stack = Stack.of(target);
-    let api = stack.construct.tryFindChild(id) as apigw.RestApi;
+    let api = stack.node.tryFindChild(id) as apigw.RestApi;
     if (!api) {
       api = new apigw.RestApi(stack, id, {
         defaultIntegration: new apigw.LambdaIntegration(target),

@@ -60,6 +60,19 @@ test('select behavior: single', async () => {
     .rejects.toThrow('Since this app includes more than a single stack, specify which stacks to use (wildcards are supported)');
 });
 
+test('select behavior: repeat', async () => {
+  // GIVEN
+  const cxasm = await testCloudAssembly();
+
+  // WHEN
+  const x = await cxasm.selectStacks(['withouterrors', 'withouterrors'], {
+    defaultBehavior: DefaultSelection.AllStacks,
+  });
+
+  // THEN
+  expect(x.stackCount).toBe(1);
+});
+
 async function testCloudAssembly({ env }: { env?: string, versionReporting?: boolean } = {}) {
   const cloudExec = new MockCloudExecutable({
     stacks: [{
@@ -82,5 +95,5 @@ async function testCloudAssembly({ env }: { env?: string, versionReporting?: boo
     }],
   });
 
-  return await cloudExec.synthesize();
+  return cloudExec.synthesize();
 }

@@ -8,7 +8,7 @@ import * as s3 from '@aws-cdk/aws-s3';
 import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
 import * as _ from 'lodash';
-import {Test, testCase} from 'nodeunit';
+import { Test, testCase } from 'nodeunit';
 import * as lambda from '../lib';
 
 /* eslint-disable quote-props */
@@ -197,6 +197,7 @@ export = testCase({
 
     expect(stack).to(haveResource('AWS::CodeGuruProfiler::ProfilingGroup', {
       ProfilingGroupName: 'MyLambdaProfilingGroupC5B6CCD8',
+      ComputePlatform: 'AWSLambda',
     }));
 
     expect(stack).to(haveResource('AWS::IAM::Policy', {
@@ -358,6 +359,31 @@ export = testCase({
     test.done();
   },
 
+  'multiple calls to latestVersion returns the same version'(test: Test) {
+    const stack = new cdk.Stack();
+
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NODEJS_10_X,
+    });
+
+    const version1 = fn.latestVersion;
+    const version2 = fn.latestVersion;
+
+    const expectedArn = {
+      'Fn::Join': ['', [
+        { 'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'] },
+        ':$LATEST',
+      ]],
+    };
+    test.equal(version1, version2);
+    test.deepEqual(stack.resolve(version1.functionArn), expectedArn);
+    test.deepEqual(stack.resolve(version2.functionArn), expectedArn);
+
+    test.done();
+  },
+
   'currentVersion': {
     // see test.function-hash.ts for more coverage for this
     'logical id of version is based on the function hash'(test: Test) {
@@ -451,7 +477,8 @@ export = testCase({
               ],
             },
             LocalMountPath: '/mnt/msg',
-          }],
+          },
+        ],
       }));
       test.done();
     },

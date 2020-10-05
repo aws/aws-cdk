@@ -1,6 +1,8 @@
 import * as cdk from '@aws-cdk/core';
-import { AccountPrincipal, AccountRootPrincipal, Anyone, ArnPrincipal, CanonicalUserPrincipal,
-  FederatedPrincipal, IPrincipal, PrincipalBase, PrincipalPolicyFragment, ServicePrincipal, ServicePrincipalOpts } from './principals';
+import {
+  AccountPrincipal, AccountRootPrincipal, Anyone, ArnPrincipal, CanonicalUserPrincipal,
+  FederatedPrincipal, IPrincipal, PrincipalBase, PrincipalPolicyFragment, ServicePrincipal, ServicePrincipalOpts,
+} from './principals';
 import { mergePrincipal } from './util';
 
 const ensureArrayOrUndefined = (field: any) => {
@@ -35,8 +37,8 @@ export class PolicyStatement {
       effect: obj.Effect,
       notActions: ensureArrayOrUndefined(obj.NotAction),
       notResources: ensureArrayOrUndefined(obj.NotResource),
-      principals: obj.Principal ? [ new JsonPrincipal(obj.Principal) ] : undefined,
-      notPrincipals: obj.NotPrincipal ? [ new JsonPrincipal(obj.NotPrincipal) ] : undefined,
+      principals: obj.Principal ? [new JsonPrincipal(obj.Principal)] : undefined,
+      notPrincipals: obj.NotPrincipal ? [new JsonPrincipal(obj.NotPrincipal)] : undefined,
     });
   }
 

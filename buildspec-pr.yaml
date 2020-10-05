@@ -8,6 +8,8 @@ phases:
       # Start docker daemon inside the container
       - nohup /usr/bin/dockerd --host=unix:///var/run/docker.sock --host=tcp://127.0.0.1:2375 --storage-driver=overlay2&
       - timeout 15 sh -c "until docker info; do echo .; sleep 1; done"
+      # login to DockerHub to avoid throttling
+      - docker login -u ${DOCKERHUB_USERNAME} -p ${DOCKERHUB_PASSWORD}
 
       # Install yarn if it wasn't already present in the image
       - yarn --version || npm -g install yarn

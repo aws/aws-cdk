@@ -5,8 +5,8 @@ import { Fn } from '../cfn-fn';
 import { Construct, ISynthesisSession } from '../construct-compat';
 import { FileAssetParameters } from '../private/asset-parameters';
 import { Stack } from '../stack';
-import { addStackArtifactToAssembly, assertBound } from './_shared';
-import { IStackSynthesizer } from './types';
+import { assertBound } from './_shared';
+import { StackSynthesizer } from './stack-synthesizer';
 
 /**
  * The well-known name for the docker image asset ECR repository. All docker
@@ -32,7 +32,7 @@ const ASSETS_ECR_REPOSITORY_NAME_OVERRIDE_CONTEXT_KEY = 'assets-ecr-repository-n
  * This is the only StackSynthesizer that supports customizing asset behavior
  * by overriding `Stack.addFileAsset()` and `Stack.addDockerImageAsset()`.
  */
-export class LegacyStackSynthesizer implements IStackSynthesizer {
+export class LegacyStackSynthesizer extends StackSynthesizer {
   private stack?: Stack;
   private cycle = false;
 
@@ -65,6 +65,8 @@ export class LegacyStackSynthesizer implements IStackSynthesizer {
     //
     // Solution: delegate call to the stack, but if the stack delegates back to us again
     // then do the actual logic.
+    //
+    // @deprecated: this can be removed for v2
     if (this.cycle) {
       return this.doAddFileAsset(asset);
     }
@@ -80,6 +82,7 @@ export class LegacyStackSynthesizer implements IStackSynthesizer {
     assertBound(this.stack);
 
     // See `addFileAsset` for explanation.
+    // @deprecated: this can be removed for v2
     if (this.cycle) {
       return this.doAddDockerImageAsset(asset);
     }
@@ -91,18 +94,23 @@ export class LegacyStackSynthesizer implements IStackSynthesizer {
     }
   }
 
-  public synthesizeStackArtifacts(session: ISynthesisSession): void {
+  /**
+   * Synthesize the associated stack to the session
+   */
+  public synthesize(session: ISynthesisSession): void {
     assertBound(this.stack);
 
+    this.synthesizeStackTemplate(this.stack, session);
+
     // Just do the default stuff, nothing special
-    addStackArtifactToAssembly(session, this.stack, {}, []);
+    this.emitStackArtifact(this.stack, session);
   }
 
   private doAddDockerImageAsset(asset: DockerImageAssetSource): DockerImageAssetLocation {
     assertBound(this.stack);
 
     // check if we have an override from context
-    const repositoryNameOverride = this.stack.construct.tryGetContext(ASSETS_ECR_REPOSITORY_NAME_OVERRIDE_CONTEXT_KEY);
+    const repositoryNameOverride = this.stack.node.tryGetContext(ASSETS_ECR_REPOSITORY_NAME_OVERRIDE_CONTEXT_KEY);
     const repositoryName = asset.repositoryName ?? repositoryNameOverride ?? ASSETS_ECR_REPOSITORY_NAME;
     const imageTag = asset.sourceHash;
     const assetId = asset.sourceHash;
@@ -121,7 +129,7 @@ export class LegacyStackSynthesizer implements IStackSynthesizer {
         file: asset.dockerFile,
       };
 
-      this.stack.construct.addMetadata(cxschema.ArtifactMetadataEntryType.ASSET, metadata);
+      this.stack.node.addMetadata(cxschema.ArtifactMetadataEntryType.ASSET, metadata);
       this.addedImageAssets.add(assetId);
     }
 
@@ -134,7 +142,7 @@ export class LegacyStackSynthesizer implements IStackSynthesizer {
   private doAddFileAsset(asset: FileAssetSource): FileAssetLocation {
     assertBound(this.stack);
 
-    let params = this.assetParameters.construct.tryFindChild(asset.sourceHash) as FileAssetParameters;
+    let params = this.assetParameters.node.tryFindChild(asset.sourceHash) as FileAssetParameters;
     if (!params) {
       params = new FileAssetParameters(this.assetParameters, asset.sourceHash);
 
@@ -149,7 +157,7 @@ export class LegacyStackSynthesizer implements IStackSynthesizer {
         artifactHashParameter: params.artifactHashParameter.logicalId,
       };
 
-      this.stack.construct.addMetadata(cxschema.ArtifactMetadataEntryType.ASSET, metadata);
+      this.stack.node.addMetadata(cxschema.ArtifactMetadataEntryType.ASSET, metadata);
     }
 
     const bucketName = params.bucketNameParameter.valueAsString;

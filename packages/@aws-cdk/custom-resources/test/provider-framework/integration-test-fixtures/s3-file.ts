@@ -65,7 +65,7 @@ class S3FileProvider extends Construct {
   public static getOrCreate(scope: Construct) {
     const stack = Stack.of(scope);
     const id = 'com.amazonaws.cdk.custom-resources.s3file-provider';
-    const x = stack.construct.tryFindChild(id) as S3FileProvider || new S3FileProvider(stack, id);
+    const x = stack.node.tryFindChild(id) as S3FileProvider || new S3FileProvider(stack, id);
     return x.provider.serviceToken;
   }
 
@@ -81,7 +81,7 @@ class S3FileProvider extends Construct {
         handler: 'index.onEvent',
         initialPolicy: [
           new iam.PolicyStatement({
-            resources: [ '*' ],
+            resources: ['*'],
             actions: [
               's3:GetObject*',
               's3:GetBucket*',
@@ -89,7 +89,8 @@ class S3FileProvider extends Construct {
               's3:DeleteObject*',
               's3:PutObject*',
               's3:Abort*',
-            ] }),
+            ],
+          }),
         ],
       }),
     });

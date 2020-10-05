@@ -1,7 +1,8 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { CfnResource, Construct, Duration, RemovalPolicy, Resource, Token } from '@aws-cdk/core';
+import { CfnResource, Duration, RemovalPolicy, Resource, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
 import { DatabaseSecret } from './database-secret';
 import { CfnDBCluster, CfnDBInstance, CfnDBSubnetGroup } from './docdb.generated';
@@ -303,7 +304,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
       });
       // HACK: Use an escape-hatch to apply a consistent removal policy to the
       // security group so we don't get errors when trying to delete the stack
-      (securityGroup.construct.defaultChild as CfnResource).applyRemovalPolicy(props.removalPolicy, {
+      (securityGroup.node.defaultChild as CfnResource).applyRemovalPolicy(props.removalPolicy, {
         applyToUpdateReplacePolicy: true,
       });
     }
@@ -389,7 +390,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
 
       // We must have a dependency on the NAT gateway provider here to create
       // things in the right order.
-      instance.construct.addDependency(internetConnectivityEstablished);
+      instance.node.addDependency(internetConnectivityEstablished);
 
       this.instanceIdentifiers.push(instance.ref);
       this.instanceEndpoints.push(new Endpoint(instance.attrEndpoint, port));
@@ -413,7 +414,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
     }
 
     const id = 'RotationSingleUser';
-    const existing = this.construct.tryFindChild(id);
+    const existing = this.node.tryFindChild(id);
     if (existing) {
       throw new Error('A single user rotation was already added to this cluster.');
     }

@@ -28,20 +28,20 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::DomainName', {
       'DomainName': 'example.com',
-      'EndpointConfiguration': { 'Types': [ 'REGIONAL' ] },
+      'EndpointConfiguration': { 'Types': ['REGIONAL'] },
       'RegionalCertificateArn': { 'Ref': 'Cert5C9FAEC1' },
     }));
 
     expect(stack).to(haveResource('AWS::ApiGateway::DomainName', {
       'DomainName': 'example.com',
-      'EndpointConfiguration': { 'Types': [ 'EDGE' ] },
+      'EndpointConfiguration': { 'Types': ['EDGE'] },
       'CertificateArn': { 'Ref': 'Cert5C9FAEC1' },
     }));
 
-    test.deepEqual(stack.resolve(regionalDomain.domainNameAliasDomainName), { 'Fn::GetAtt': [ 'mydomain592C948B', 'RegionalDomainName' ] });
-    test.deepEqual(stack.resolve(regionalDomain.domainNameAliasHostedZoneId), { 'Fn::GetAtt': [ 'mydomain592C948B', 'RegionalHostedZoneId' ] });
-    test.deepEqual(stack.resolve(edgeDomain.domainNameAliasDomainName), { 'Fn::GetAtt': [ 'yourdomain5FE30C81', 'DistributionDomainName' ] });
-    test.deepEqual(stack.resolve(edgeDomain.domainNameAliasHostedZoneId), { 'Fn::GetAtt': [ 'yourdomain5FE30C81', 'DistributionHostedZoneId' ] });
+    test.deepEqual(stack.resolve(regionalDomain.domainNameAliasDomainName), { 'Fn::GetAtt': ['mydomain592C948B', 'RegionalDomainName'] });
+    test.deepEqual(stack.resolve(regionalDomain.domainNameAliasHostedZoneId), { 'Fn::GetAtt': ['mydomain592C948B', 'RegionalHostedZoneId'] });
+    test.deepEqual(stack.resolve(edgeDomain.domainNameAliasDomainName), { 'Fn::GetAtt': ['yourdomain5FE30C81', 'DistributionDomainName'] });
+    test.deepEqual(stack.resolve(edgeDomain.domainNameAliasHostedZoneId), { 'Fn::GetAtt': ['yourdomain5FE30C81', 'DistributionHostedZoneId'] });
 
     test.done();
   },
@@ -60,7 +60,7 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::DomainName', {
       'DomainName': 'example.com',
-      'EndpointConfiguration': { 'Types': [ 'REGIONAL' ] },
+      'EndpointConfiguration': { 'Types': ['REGIONAL'] },
       'RegionalCertificateArn': { 'Ref': 'Cert5C9FAEC1' },
     }));
     test.done();
@@ -92,21 +92,21 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::DomainName', {
       'DomainName': 'old.example.com',
-      'EndpointConfiguration': { 'Types': [ 'REGIONAL' ] },
+      'EndpointConfiguration': { 'Types': ['REGIONAL'] },
       'RegionalCertificateArn': { 'Ref': 'Cert5C9FAEC1' },
       'SecurityPolicy': 'TLS_1_0',
     }));
 
     expect(stack).to(haveResource('AWS::ApiGateway::DomainName', {
       'DomainName': 'new.example.com',
-      'EndpointConfiguration': { 'Types': [ 'REGIONAL' ] },
+      'EndpointConfiguration': { 'Types': ['REGIONAL'] },
       'RegionalCertificateArn': { 'Ref': 'Cert5C9FAEC1' },
       'SecurityPolicy': 'TLS_1_2',
     }));
 
     expect(stack).to(haveResource('AWS::ApiGateway::DomainName', {
       'DomainName': 'default.example.com',
-      'EndpointConfiguration': { 'Types': [ 'REGIONAL' ] },
+      'EndpointConfiguration': { 'Types': ['REGIONAL'] },
       'RegionalCertificateArn': { 'Ref': 'Cert5C9FAEC1' },
       'SecurityPolicy': ABSENT,
     }));
@@ -275,7 +275,7 @@ export = {
 
     // WHEN
     test.throws(() => {
-      new apigw.DomainName(stack, 'someDomain', {domainName: 'someDomainWithUpercase.domain.com', certificate});
+      new apigw.DomainName(stack, 'someDomain', { domainName: 'someDomainWithUpercase.domain.com', certificate });
     }, /uppercase/);
 
     // THEN

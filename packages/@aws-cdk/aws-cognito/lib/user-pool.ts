@@ -1,6 +1,7 @@
 import { IRole, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Construct, Duration, IResource, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
+import { Duration, IResource, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnUserPool } from './cognito.generated';
 import { StandardAttributeNames } from './private/attr-names';
 import { ICustomAttribute, StandardAttribute, StandardAttributes } from './user-pool-attr';
@@ -865,7 +866,7 @@ export class UserPool extends UserPoolBase {
       return undefined;
     }
 
-    const smsRoleExternalId = this.construct.uniqueId.substr(0, 1223); // sts:ExternalId max length of 1224
+    const smsRoleExternalId = this.node.uniqueId.substr(0, 1223); // sts:ExternalId max length of 1224
     const smsRole = props.smsRole ?? new Role(this, 'smsRole', {
       assumedBy: new ServicePrincipal('cognito-idp.amazonaws.com', {
         conditions: {
@@ -881,8 +882,8 @@ export class UserPool extends UserPoolBase {
         'sns-publish': new PolicyDocument({
           statements: [
             new PolicyStatement({
-              actions: [ 'sns:Publish' ],
-              resources: [ '*' ],
+              actions: ['sns:Publish'],
+              resources: ['*'],
             }),
           ],
         }),
@@ -900,7 +901,7 @@ export class UserPool extends UserPoolBase {
       return undefined;
     } else if (props.mfaSecondFactor === undefined &&
       (props.mfa === Mfa.OPTIONAL || props.mfa === Mfa.REQUIRED)) {
-      return [ 'SMS_MFA' ];
+      return ['SMS_MFA'];
     } else {
       const enabledMfas = [];
       if (props.mfaSecondFactor!.sms) {

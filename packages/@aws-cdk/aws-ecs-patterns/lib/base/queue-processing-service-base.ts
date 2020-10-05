@@ -2,7 +2,12 @@ import { ScalingInterval } from '@aws-cdk/aws-applicationautoscaling';
 import { IVpc } from '@aws-cdk/aws-ec2';
 import { AwsLogDriver, BaseService, Cluster, ContainerImage, ICluster, LogDriver, PropagatedTagSource, Secret } from '@aws-cdk/aws-ecs';
 import { IQueue, Queue } from '@aws-cdk/aws-sqs';
-import { CfnOutput, Construct, Duration, Stack } from '@aws-cdk/core';
+import { CfnOutput, Duration, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * The properties for the base QueueProcessingEc2Service or QueueProcessingFargateService service.
@@ -170,7 +175,7 @@ export interface QueueProcessingServiceBaseProps {
 /**
  * The base class for QueueProcessingEc2Service and QueueProcessingFargateService services.
  */
-export abstract class QueueProcessingServiceBase extends Construct {
+export abstract class QueueProcessingServiceBase extends CoreConstruct {
   /**
    * The SQS queue that the service will process from
    */
@@ -256,7 +261,7 @@ export abstract class QueueProcessingServiceBase extends Construct {
     this.logDriver = props.logDriver !== undefined
       ? props.logDriver
       : enableLogging
-        ? this.createAWSLogDriver(this.construct.id)
+        ? this.createAWSLogDriver(this.node.id)
         : undefined;
 
     // Add the queue name to environment variables
@@ -304,9 +309,9 @@ export abstract class QueueProcessingServiceBase extends Construct {
    */
   protected getDefaultCluster(scope: Construct, vpc?: IVpc): Cluster {
     // magic string to avoid collision with user-defined constructs
-    const DEFAULT_CLUSTER_ID = `EcsDefaultClusterMnL3mNNYN${vpc ? vpc.construct.id : ''}`;
+    const DEFAULT_CLUSTER_ID = `EcsDefaultClusterMnL3mNNYN${vpc ? vpc.node.id : ''}`;
     const stack = Stack.of(scope);
-    return stack.construct.tryFindChild(DEFAULT_CLUSTER_ID) as Cluster || new Cluster(stack, DEFAULT_CLUSTER_ID, { vpc });
+    return stack.node.tryFindChild(DEFAULT_CLUSTER_ID) as Cluster || new Cluster(stack, DEFAULT_CLUSTER_ID, { vpc });
   }
 
   /**

@@ -1,6 +1,7 @@
 import { expect, haveResource, haveResourceLike, not } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as eks from '../lib';
@@ -276,11 +277,10 @@ export = {
 
     // WHEN
     const imported = eks.LegacyCluster.fromClusterAttributes(stack2, 'Imported', {
-      clusterArn: cluster.clusterArn,
       vpc: cluster.vpc,
       clusterEndpoint: cluster.clusterEndpoint,
       clusterName: cluster.clusterName,
-      securityGroups: cluster.connections.securityGroups,
+      securityGroupIds: cluster.connections.securityGroups.map(s => s.securityGroupId),
       clusterCertificateAuthorityData: cluster.clusterCertificateAuthorityData,
       clusterSecurityGroupId: cluster.clusterSecurityGroupId,
       clusterEncryptionConfigKeyArn: cluster.clusterEncryptionConfigKeyArn,
@@ -294,7 +294,23 @@ export = {
       Outputs: {
         ClusterARN: {
           Value: {
-            'Fn::ImportValue': 'Stack:ExportsOutputFnGetAttClusterEB0386A7Arn2F2E3C3F',
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':eks:us-east-1:',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':cluster/',
+                {
+                  'Fn::ImportValue': 'Stack:ExportsOutputRefClusterEB0386A796A0E3FE',
+                },
+              ],
+            ],
           },
         },
       },
@@ -332,7 +348,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(not(haveResource(eks.KubernetesResource.RESOURCE_TYPE)));
+    expect(stack).to(not(haveResource(eks.KubernetesManifest.RESOURCE_TYPE)));
     test.done();
   },
 
@@ -351,7 +367,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(not(haveResource(eks.KubernetesResource.RESOURCE_TYPE)));
+    expect(stack).to(not(haveResource(eks.KubernetesManifest.RESOURCE_TYPE)));
     test.done();
   },
 
@@ -501,7 +517,7 @@ export = {
           });
 
           // THEN
-          expect(stack).notTo(haveResource(eks.KubernetesResource.RESOURCE_TYPE));
+          expect(stack).notTo(haveResource(eks.KubernetesManifest.RESOURCE_TYPE));
           test.done();
         },
 
@@ -586,5 +602,34 @@ export = {
       ), 'EKS AMI with GPU should be in ssm parameters');
       test.done();
     },
+  },
+
+  'create a cluster with secrets encryption using KMS CMK'(test: Test) {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+
+    // WHEN
+    new eks.LegacyCluster(stack, 'Cluster', {
+      vpc,
+      version: CLUSTER_VERSION,
+      secretsEncryptionKey: new kms.Key(stack, 'Key'),
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::EKS::Cluster', {
+      EncryptionConfig: [{
+        Provider: {
+          KeyArn: {
+            'Fn::GetAtt': [
+              'Key961B73FD',
+              'Arn',
+            ],
+          },
+        },
+        Resources: ['secrets'],
+      }],
+    }));
+
+    test.done();
   },
 };

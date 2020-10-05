@@ -16,7 +16,7 @@ export = {
       new eks.ServiceAccount(stack, 'MyServiceAccount', { cluster });
 
       // THEN
-      expect(stack).to(haveResource(eks.KubernetesResource.RESOURCE_TYPE, {
+      expect(stack).to(haveResource(eks.KubernetesManifest.RESOURCE_TYPE, {
         ServiceToken: {
           'Fn::GetAtt': [
             'awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B',
@@ -74,7 +74,7 @@ export = {
       cluster.addServiceAccount('MyOtherServiceAccount');
 
       // THEN
-      expect(stack).to(haveResource(eks.KubernetesResource.RESOURCE_TYPE, {
+      expect(stack).to(haveResource(eks.KubernetesManifest.RESOURCE_TYPE, {
         ServiceToken: {
           'Fn::GetAtt': [
             'awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B',

@@ -12,12 +12,12 @@
     "build+test": "npm run build && npm test"
   },
   "devDependencies": {
-    "@types/node": "^10.17.27",
-    "typescript": "~3.9.6",
-    "@types/jest": "^26.0.4"
+    "@types/jest": "^26.0.14",
+    "@types/node": "^10.17.35",
+    "typescript": "~3.9.7"
   },
   "dependencies": {
-    "jest": "^25.5.4"
+    "jest": "^26.4.2"
   },
   "keywords": [],
   "author": "",

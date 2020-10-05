@@ -2,6 +2,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as ssm from '@aws-cdk/aws-ssm';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { NetworkMode, TaskDefinition } from './base/task-definition';
 import { ContainerImage, ContainerImageConfig } from './container-image';
 import { CfnTaskDefinition } from './ecs.generated';
@@ -366,7 +367,7 @@ export class ContainerDefinition extends cdk.Construct {
   /**
    * Constructs a new instance of the ContainerDefinition class.
    */
-  constructor(scope: cdk.Construct, id: string, private readonly props: ContainerDefinitionProps) {
+  constructor(scope: Construct, id: string, private readonly props: ContainerDefinitionProps) {
     super(scope, id);
     if (props.memoryLimitMiB !== undefined && props.memoryReservationMiB !== undefined) {
       if (props.memoryLimitMiB < props.memoryReservationMiB) {
@@ -377,7 +378,7 @@ export class ContainerDefinition extends cdk.Construct {
     this.taskDefinition = props.taskDefinition;
     this.memoryLimitSpecified = props.memoryLimitMiB !== undefined || props.memoryReservationMiB !== undefined;
     this.linuxParameters = props.linuxParameters;
-    this.containerName = this.construct.id;
+    this.containerName = this.node.id;
 
     this.imageConfig = props.image.bind(this, this);
     if (props.logging) {
@@ -389,7 +390,7 @@ export class ContainerDefinition extends cdk.Construct {
       this.secrets = [];
       for (const [name, secret] of Object.entries(props.secrets)) {
         if (this.taskDefinition.isFargateCompatible && secret.hasField) {
-          throw new Error(`Cannot specify secret JSON field for a task using the FARGATE launch type: '${name}' in container '${this.construct.id}'`);
+          throw new Error(`Cannot specify secret JSON field for a task using the FARGATE launch type: '${name}' in container '${this.node.id}'`);
         }
         secret.grantRead(this.taskDefinition.obtainExecutionRole());
         this.secrets.push({

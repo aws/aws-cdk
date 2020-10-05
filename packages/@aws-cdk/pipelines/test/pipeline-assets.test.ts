@@ -1,9 +1,9 @@
+import * as path from 'path';
 import { arrayWith, deepObjectLike, encodedJson, notMatching, objectLike, stringLike } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as ecr_assets from '@aws-cdk/aws-ecr-assets';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import { Construct, Stack, Stage, StageProps } from '@aws-cdk/core';
-import * as path from 'path';
 import * as cdkp from '../lib';
 import { BucketStack, PIPELINE_ENV, TestApp, TestGitHubNpmPipeline } from './testutil';
 
@@ -156,6 +156,39 @@ test('docker image asset publishers use privilegedmode, have right AssumeRole', 
   });
 });
 
+test('docker image asset can use a VPC', () => {
+  // WHEN
+  pipeline.addApplicationStage(new DockerAssetApp(app, 'DockerAssetApp'));
+
+  // THEN
+  expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    VpcConfig: objectLike({
+      SecurityGroupIds: [
+        {
+          'Fn::GetAtt': [
+            'CdkAssetsDockerAsset1SecurityGroup078F5C66',
+            'GroupId',
+          ],
+        },
+      ],
+      Subnets: [
+        {
+          Ref: 'TestVpcPrivateSubnet1SubnetCC65D771',
+        },
+        {
+          Ref: 'TestVpcPrivateSubnet2SubnetDE0C64A2',
+        },
+        {
+          Ref: 'TestVpcPrivateSubnet3Subnet2311D32F',
+        },
+      ],
+      VpcId: {
+        Ref: 'TestVpcE77CE678',
+      },
+    }),
+  });
+});
+
 test('can control fix/CLI version used in pipeline selfupdate', () => {
   // WHEN
   const stack2 = new Stack(app, 'Stack2', { env: PIPELINE_ENV });
@@ -192,9 +225,11 @@ describe('asset roles and policies', () => {
           Effect: 'Allow',
           Principal: {
             Service: 'codebuild.amazonaws.com',
-            AWS: { 'Fn::Join': [ '', [
-              'arn:', { Ref: 'AWS::Partition' }, `:iam::${PIPELINE_ENV.account}:root`,
-            ] ] },
+            AWS: {
+              'Fn::Join': ['', [
+                'arn:', { Ref: 'AWS::Partition' }, `:iam::${PIPELINE_ENV.account}:root`,
+              ]],
+            },
           },
         }],
       },
@@ -213,9 +248,11 @@ describe('asset roles and policies', () => {
           Effect: 'Allow',
           Principal: {
             Service: 'codebuild.amazonaws.com',
-            AWS: { 'Fn::Join': [ '', [
-              'arn:', { Ref: 'AWS::Partition' }, `:iam::${PIPELINE_ENV.account}:root`,
-            ] ] },
+            AWS: {
+              'Fn::Join': ['', [
+                'arn:', { Ref: 'AWS::Partition' }, `:iam::${PIPELINE_ENV.account}:root`,
+              ]],
+            },
           },
         }],
       },
@@ -284,7 +321,7 @@ function expectedAssetRolePolicy(assumeRolePattern: string, attachedRole: string
         Resource: {
           'Fn::Join': ['', [
             'arn:',
-            {Ref: 'AWS::Partition'},
+            { Ref: 'AWS::Partition' },
             `:logs:${PIPELINE_ENV.region}:${PIPELINE_ENV.account}:log-group:/aws/codebuild/*`,
           ]],
         },
@@ -295,7 +332,7 @@ function expectedAssetRolePolicy(assumeRolePattern: string, attachedRole: string
         Resource: {
           'Fn::Join': ['', [
             'arn:',
-            {Ref: 'AWS::Partition'},
+            { Ref: 'AWS::Partition' },
             `:codebuild:${PIPELINE_ENV.region}:${PIPELINE_ENV.account}:report-group/*`,
           ]],
         },
@@ -314,16 +351,16 @@ function expectedAssetRolePolicy(assumeRolePattern: string, attachedRole: string
         Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
         Effect: 'Allow',
         Resource: [
-          { 'Fn::GetAtt': ['CdkPipelineArtifactsBucket7B46C7BF', 'Arn' ] },
-          { 'Fn::Join': ['', [{'Fn::GetAtt': ['CdkPipelineArtifactsBucket7B46C7BF', 'Arn']}, '/*']] },
+          { 'Fn::GetAtt': ['CdkPipelineArtifactsBucket7B46C7BF', 'Arn'] },
+          { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['CdkPipelineArtifactsBucket7B46C7BF', 'Arn'] }, '/*']] },
         ],
       },
       {
         Action: ['kms:Decrypt', 'kms:DescribeKey'],
         Effect: 'Allow',
-        Resource: { 'Fn::GetAtt': [ 'CdkPipelineArtifactsBucketEncryptionKeyDDD3258C', 'Arn' ]},
+        Resource: { 'Fn::GetAtt': ['CdkPipelineArtifactsBucketEncryptionKeyDDD3258C', 'Arn'] },
       }],
     },
-    Roles: [ {Ref: attachedRole} ],
+    Roles: [{ Ref: attachedRole }],
   };
 }

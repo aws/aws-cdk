@@ -3,6 +3,7 @@ import * as ecs from '@aws-cdk/aws-ecs';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { ContainerOverride } from '..';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
@@ -235,7 +236,7 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
   private networkConfiguration?: any;
   private readonly integrationPattern: sfn.IntegrationPattern;
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: EcsRunTaskProps) {
+  constructor(scope: Construct, id: string, private readonly props: EcsRunTaskProps) {
     super(scope, id, props);
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
 
@@ -260,7 +261,7 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
     for (const override of this.props.containerOverrides ?? []) {
       const name = override.containerDefinition.containerName;
       if (!cdk.Token.isUnresolved(name)) {
-        const cont = this.props.taskDefinition.construct.tryFindChild(name);
+        const cont = this.props.taskDefinition.node.tryFindChild(name);
         if (!cont) {
           throw new Error(`Overrides mention container with name '${name}', but no such container in task definition`);
         }
@@ -281,7 +282,7 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
         TaskDefinition: this.props.taskDefinition.taskDefinitionArn,
         NetworkConfiguration: this.networkConfiguration,
         Overrides: renderOverrides(this.props.containerOverrides),
-        ...this.props.launchTarget.bind(this, {taskDefinition: this.props.taskDefinition, cluster: this.props.cluster}).parameters,
+        ...this.props.launchTarget.bind(this, { taskDefinition: this.props.taskDefinition, cluster: this.props.cluster }).parameters,
       }),
     };
   }

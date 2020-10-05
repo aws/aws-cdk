@@ -1,6 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
-import { ConcreteDependable, Construct, IDependable, IResource, RemovalPolicy, Resource, Size, Tag } from '@aws-cdk/core';
+import { ConcreteDependable, IDependable, IResource, RemovalPolicy, Resource, Size, Tags } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { AccessPoint, AccessPointOptions } from './access-point';
 import { CfnFileSystem, CfnMountTarget } from './efs.generated';
 
@@ -255,7 +256,7 @@ export class FileSystem extends Resource implements IFileSystem {
     filesystem.applyRemovalPolicy(props.removalPolicy);
 
     this.fileSystemId = filesystem.ref;
-    Tag.add(this, 'Name', props.fileSystemName || this.construct.path);
+    Tags.of(this).add('Name', props.fileSystemName || this.node.path);
 
     const securityGroup = (props.securityGroup || new ec2.SecurityGroup(this, 'EfsSecurityGroup', {
       vpc: props.vpc,

@@ -18,7 +18,7 @@ const lambdaFunction = new lambda.Function(stack, 'LambdaFunction', {
 // using exctecy the same code as inside the cloudtrail class to produce the supplied bucket and policy
 const cloudTrailPrincipal = new iam.ServicePrincipal('cloudtrail.amazonaws.com');
 
-const Trailbucket = new s3.Bucket(stack, 'S3', {encryption: s3.BucketEncryption.UNENCRYPTED});
+const Trailbucket = new s3.Bucket(stack, 'S3', { encryption: s3.BucketEncryption.UNENCRYPTED });
 
 Trailbucket.addToResourcePolicy(new iam.PolicyStatement({
   resources: [Trailbucket.bucketArn],
@@ -31,13 +31,13 @@ Trailbucket.addToResourcePolicy(new iam.PolicyStatement({
   actions: ['s3:PutObject'],
   principals: [cloudTrailPrincipal],
   conditions: {
-    StringEquals: {'s3:x-amz-acl': 'bucket-owner-full-control'},
+    StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' },
   },
 }));
 
-const trail = new cloudtrail.Trail(stack, 'Trail', {bucket: Trailbucket});
+const trail = new cloudtrail.Trail(stack, 'Trail', { bucket: Trailbucket });
 
 trail.addLambdaEventSelector([lambdaFunction]);
-trail.addS3EventSelector([{bucket}]);
+trail.addS3EventSelector([{ bucket }]);
 
 app.synth();

@@ -1,4 +1,5 @@
-import { Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
+import { IResource, Lazy, Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnBackupPlan } from './backup.generated';
 import { BackupPlanRule } from './rule';
 import { BackupSelection, BackupSelectionOptions } from './selection';
@@ -161,7 +162,7 @@ export class BackupPlan extends Resource implements IBackupPlan {
         deleteAfterDays: rule.props.deleteAfter?.toDays(),
         moveToColdStorageAfterDays: rule.props.moveToColdStorageAfter?.toDays(),
       },
-      ruleName: rule.props.ruleName ?? `${this.construct.id}Rule${this.rules.length}`,
+      ruleName: rule.props.ruleName ?? `${this.node.id}Rule${this.rules.length}`,
       scheduleExpression: rule.props.scheduleExpression?.expressionString,
       startWindowMinutes: rule.props.startWindow?.toMinutes(),
       targetBackupVault: vault.backupVaultName,

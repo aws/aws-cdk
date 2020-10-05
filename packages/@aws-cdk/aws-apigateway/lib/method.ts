@@ -1,4 +1,5 @@
-import { Construct, Resource, Stack } from '@aws-cdk/core';
+import { Resource, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnMethod, CfnMethodProps } from './apigateway.generated';
 import { Authorizer, IAuthorizer } from './authorizer';
 import { Integration, IntegrationConfig } from './integration';
@@ -221,7 +222,7 @@ export class Method extends Resource {
 
     const deployment = props.resource.api.latestDeployment;
     if (deployment) {
-      deployment.construct.addDependency(resource);
+      deployment.node.addDependency(resource);
       deployment.addToLogicalId({
         method: {
           ...methodProps,

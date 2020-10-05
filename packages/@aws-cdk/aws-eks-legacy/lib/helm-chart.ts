@@ -1,7 +1,7 @@
+import * as path from 'path';
 import { CustomResource, CustomResourceProvider } from '@aws-cdk/aws-cloudformation';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Construct, Duration, Stack } from '@aws-cdk/core';
-import * as path from 'path';
 import { Cluster } from './cluster';
 import { KubectlLayer } from './kubectl-layer';
 
@@ -84,7 +84,7 @@ export class HelmChart extends Construct {
       provider: CustomResourceProvider.lambda(handler),
       resourceType: HelmChart.RESOURCE_TYPE,
       properties: {
-        Release: props.release || this.construct.uniqueId.slice(-63).toLowerCase(), // Helm has a 63 character limit for the name
+        Release: props.release || this.node.uniqueId.slice(-63).toLowerCase(), // Helm has a 63 character limit for the name
         Chart: props.chart,
         Version: props.version,
         Values: (props.values ? stack.toJsonString(props.values) : undefined),
@@ -99,14 +99,14 @@ export class HelmChart extends Construct {
       return undefined;
     }
 
-    let handler = cluster.construct.tryFindChild('HelmChartHandler') as lambda.IFunction;
+    let handler = cluster.node.tryFindChild('HelmChartHandler') as lambda.IFunction;
     if (!handler) {
       handler = new lambda.Function(cluster, 'HelmChartHandler', {
         code: lambda.Code.fromAsset(path.join(__dirname, 'helm-chart')),
         runtime: lambda.Runtime.PYTHON_3_7,
         handler: 'index.handler',
         timeout: Duration.minutes(15),
-        layers: [ KubectlLayer.getOrCreate(this, { version: '2.0.0-beta1' }) ],
+        layers: [KubectlLayer.getOrCreate(this, { version: '2.0.0-beta1' })],
         memorySize: 256,
         environment: {
           CLUSTER_NAME: cluster.clusterName,

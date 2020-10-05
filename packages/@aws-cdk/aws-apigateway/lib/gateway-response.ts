@@ -1,4 +1,5 @@
-import { Construct, IResource, Resource } from '@aws-cdk/core';
+import { IResource, Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnGatewayResponse } from './apigateway.generated';
 import { IRestApi } from './restapi';
 
@@ -65,7 +66,7 @@ export class GatewayResponse extends Resource implements IGatewayResponse {
       statusCode: props.statusCode,
     });
 
-    this.construct.defaultChild = resource;
+    this.node.defaultChild = resource;
   }
 
   private buildResponseParameters(responseHeaders?: { [key: string]: string }): { [key: string]: string } | undefined {

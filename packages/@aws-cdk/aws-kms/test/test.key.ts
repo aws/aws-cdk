@@ -8,7 +8,7 @@ import {
   SynthUtils,
 } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
-import { App, CfnOutput, RemovalPolicy, Stack, Tag } from '@aws-cdk/core';
+import { App, CfnOutput, RemovalPolicy, Stack, Tags } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { Key } from '../lib';
 
@@ -160,9 +160,9 @@ export = {
     p.addArnPrincipal('arn');
     key.addToResourcePolicy(p);
 
-    key.construct.applyAspect(new Tag('tag1', 'value1'));
-    key.construct.applyAspect(new Tag('tag2', 'value2'));
-    key.construct.applyAspect(new Tag('tag3', ''));
+    Tags.of(key).add('tag1', 'value1');
+    Tags.of(key).add('tag2', 'value2');
+    Tags.of(key).add('tag3', '');
 
     expect(stack).to(exactlyMatchTemplate({
       Resources: {

@@ -1,8 +1,9 @@
 import * as path from 'path';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Construct, Duration, NestedStack, Stack } from '@aws-cdk/core';
+import { Construct as CoreConstruct, Duration, NestedStack, Stack } from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
+import { Construct } from 'constructs';
 
 export class ReplicaProvider extends NestedStack {
   /**
@@ -11,7 +12,7 @@ export class ReplicaProvider extends NestedStack {
   public static getOrCreate(scope: Construct) {
     const stack = Stack.of(scope);
     const uid = '@aws-cdk/aws-dynamodb.ReplicaProvider';
-    return stack.construct.tryFindChild(uid) as ReplicaProvider || new ReplicaProvider(stack, uid);
+    return stack.node.tryFindChild(uid) as ReplicaProvider || new ReplicaProvider(stack, uid);
   }
 
   /**
@@ -30,7 +31,7 @@ export class ReplicaProvider extends NestedStack {
   public readonly isCompleteHandler: lambda.Function;
 
   private constructor(scope: Construct, id: string) {
-    super(scope, id);
+    super(scope as CoreConstruct, id);
 
     const code = lambda.Code.fromAsset(path.join(__dirname, 'replica-handler'));
 

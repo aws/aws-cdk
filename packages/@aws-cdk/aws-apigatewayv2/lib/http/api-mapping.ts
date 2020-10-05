@@ -1,4 +1,5 @@
-import { Construct, Resource } from '@aws-cdk/core';
+import { Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnApiMapping, CfnApiMappingProps } from '../apigatewayv2.generated';
 import { IApiMapping, IDomainName } from '../common';
 import { IHttpApi } from '../http/api';
@@ -93,12 +94,12 @@ export class HttpApiMapping extends Resource implements IApiMapping {
 
     // ensure the dependency on the provided stage
     if (props.stage) {
-      this.construct.addDependency(props.stage);
+      this.node.addDependency(props.stage);
     }
 
     // if stage not specified, we ensure the default stage is ready before we create the api mapping
     if (!props.stage?.stageName && props.api.defaultStage) {
-      this.construct.addDependency(props.api.defaultStage!);
+      this.node.addDependency(props.api.defaultStage!);
     }
 
     this.apiMappingId = resource.ref;

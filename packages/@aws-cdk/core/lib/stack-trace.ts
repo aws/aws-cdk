@@ -1,6 +1,6 @@
 export function captureStackTrace(below?: Function): string[] {
   if (process.env.CDK_DISABLE_STACK_TRACE) {
-    return [ 'stack traces disabled' ];
+    return ['stack traces disabled'];
   }
 
   below = below || captureStackTrace; // hide myself if nothing else

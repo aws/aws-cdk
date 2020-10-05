@@ -1,5 +1,6 @@
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
+import { HostedZone } from '../lib';
 import * as util from '../lib/util';
 
 export = {
@@ -20,14 +21,10 @@ export = {
 
     // WHEN
     const providedName = 'test.domain.com.';
-    const qualified = util.determineFullyQualifiedDomainName(providedName, {
+    const qualified = util.determineFullyQualifiedDomainName(providedName, HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
       hostedZoneId: 'fakeId',
       zoneName: 'ignored',
-      hostedZoneArn: 'arn:aws:route53:::hostedzone/fakeId',
-      stack,
-      node: stack.node,
-      construct: stack.construct,
-    });
+    }));
 
     // THEN
     test.equal(qualified, 'test.domain.com.');
@@ -40,14 +37,10 @@ export = {
 
     // WHEN
     const providedName = 'test.domain.com';
-    const qualified = util.determineFullyQualifiedDomainName(providedName, {
+    const qualified = util.determineFullyQualifiedDomainName(providedName, HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
       hostedZoneId: 'fakeId',
       zoneName: 'test.domain.com.',
-      hostedZoneArn: 'arn:aws:route53:::hostedzone/fakeId',
-      stack,
-      node: stack.node,
-      construct: stack.construct,
-    });
+    }));
 
     // THEN
     test.equal(qualified, 'test.domain.com.');
@@ -60,14 +53,10 @@ export = {
 
     // WHEN
     const providedName = 'test.domain.com';
-    const qualified = util.determineFullyQualifiedDomainName(providedName, {
+    const qualified = util.determineFullyQualifiedDomainName(providedName, HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
       hostedZoneId: 'fakeId',
       zoneName: 'domain.com.',
-      hostedZoneArn: 'arn:aws:route53:::hostedzone/fakeId',
-      stack,
-      node: stack.node,
-      construct: stack.construct,
-    });
+    }));
 
     // THEN
     test.equal(qualified, 'test.domain.com.');
@@ -80,14 +69,10 @@ export = {
 
     // WHEN
     const providedName = 'test';
-    const qualified = util.determineFullyQualifiedDomainName(providedName, {
+    const qualified = util.determineFullyQualifiedDomainName(providedName, HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
       hostedZoneId: 'fakeId',
       zoneName: 'domain.com.',
-      hostedZoneArn: 'arn:aws:route53:::hostedzone/fakeId',
-      stack,
-      node: stack.node,
-      construct: stack.construct,
-    });
+    }));
 
     // THEN
     test.equal(qualified, 'test.domain.com.');

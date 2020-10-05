@@ -1,10 +1,10 @@
 import { Writable } from 'stream';
-import { NodeStringDecoder, StringDecoder  } from 'string_decoder';
+import { NodeStringDecoder, StringDecoder } from 'string_decoder';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { CloudFormationStackArtifact } from '@aws-cdk/cx-api';
 import { CloudFormationDeployments } from '../lib/api/cloudformation-deployments';
 import { CdkToolkit } from '../lib/cdk-toolkit';
-import { classMockOf, MockCloudExecutable } from './util';
+import { instanceMockFrom, MockCloudExecutable } from './util';
 
 let cloudExecutable: MockCloudExecutable;
 let cloudFormation: jest.Mocked<CloudFormationDeployments>;
@@ -23,7 +23,7 @@ beforeEach(() => {
     {
       stackName: 'C',
       depends: ['A'],
-      template: { resource: 'C'},
+      template: { resource: 'C' },
       metadata: {
         '/resource': [
           {
@@ -39,7 +39,7 @@ beforeEach(() => {
     }],
   });
 
-  cloudFormation = classMockOf(CloudFormationDeployments);
+  cloudFormation = instanceMockFrom(CloudFormationDeployments);
 
   toolkit = new CdkToolkit({
     cloudExecutable,

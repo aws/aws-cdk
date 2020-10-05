@@ -4,11 +4,13 @@ import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetPackaging, FileAssetSource } from '../assets';
 import { Fn } from '../cfn-fn';
+import { CfnParameter } from '../cfn-parameter';
+import { CfnRule } from '../cfn-rule';
 import { ISynthesisSession } from '../construct-compat';
 import { Stack } from '../stack';
 import { Token } from '../token';
-import { addStackArtifactToAssembly, assertBound, contentHash } from './_shared';
-import { IStackSynthesizer } from './types';
+import { assertBound, contentHash } from './_shared';
+import { StackSynthesizer } from './stack-synthesizer';
 
 export const BOOTSTRAP_QUALIFIER_CONTEXT = '@aws-cdk/core:bootstrapQualifier';
 
@@ -17,7 +19,7 @@ export const BOOTSTRAP_QUALIFIER_CONTEXT = '@aws-cdk/core:bootstrapQualifier';
 /**
  * The minimum bootstrap stack version required by this app.
  */
-const MIN_BOOTSTRAP_STACK_VERSION = 3;
+const MIN_BOOTSTRAP_STACK_VERSION = 4;
 
 /**
  * Configuration properties for DefaultStackSynthesizer
@@ -125,6 +127,7 @@ export interface DefaultStackSynthesizerProps {
    * respectively.
    *
    * @default DefaultStackSynthesizer.DEFAULT_FILE_ASSET_KEY_ARN_EXPORT_NAME
+   * @deprecated This property is not used anymore
    */
   readonly fileAssetKeyArnExportName?: string;
 
@@ -137,6 +140,16 @@ export interface DefaultStackSynthesizerProps {
    * @default - Value of context key '@aws-cdk/core:bootstrapQualifier' if set, otherwise `DefaultStackSynthesizer.DEFAULT_QUALIFIER`
    */
   readonly qualifier?: string;
+
+  /**
+   * Whether to add a Rule to the stack template verifying the bootstrap stack version
+   *
+   * This generally should be left set to `true`, unless you explicitly
+   * want to be able to deploy to an unbootstrapped environment.
+   *
+   * @default true
+   */
+  readonly generateBootstrapVersionRule?: boolean;
 }
 
 /**
@@ -148,7 +161,7 @@ export interface DefaultStackSynthesizerProps {
  *
  * Requires the environment to have been bootstrapped with Bootstrap Stack V2.
  */
-export class DefaultStackSynthesizer implements IStackSynthesizer {
+export class DefaultStackSynthesizer extends StackSynthesizer {
   /**
    * Default ARN qualifier
    */
@@ -193,21 +206,23 @@ export class DefaultStackSynthesizer implements IStackSynthesizer {
   private bucketName?: string;
   private repositoryName?: string;
   private _deployRoleArn?: string;
-  private _kmsKeyArnExportName?: string;
   private _cloudFormationExecutionRoleArn?: string;
   private fileAssetPublishingRoleArn?: string;
   private imageAssetPublishingRoleArn?: string;
+  private qualifier?: string;
 
   private readonly files: NonNullable<cxschema.AssetManifest['files']> = {};
   private readonly dockerImages: NonNullable<cxschema.AssetManifest['dockerImages']> = {};
 
   constructor(private readonly props: DefaultStackSynthesizerProps = {}) {
+    super();
   }
 
   public bind(stack: Stack): void {
     this._stack = stack;
 
-    const qualifier = this.props.qualifier ?? stack.construct.tryGetContext(BOOTSTRAP_QUALIFIER_CONTEXT) ?? DefaultStackSynthesizer.DEFAULT_QUALIFIER;
+    const qualifier = this.props.qualifier ?? stack.node.tryGetContext(BOOTSTRAP_QUALIFIER_CONTEXT) ?? DefaultStackSynthesizer.DEFAULT_QUALIFIER;
+    this.qualifier = qualifier;
 
     // Function to replace placeholders in the input string as much as possible
     //
@@ -231,14 +246,12 @@ export class DefaultStackSynthesizer implements IStackSynthesizer {
     this._cloudFormationExecutionRoleArn = specialize(this.props.cloudFormationExecutionRole ?? DefaultStackSynthesizer.DEFAULT_CLOUDFORMATION_ROLE_ARN);
     this.fileAssetPublishingRoleArn = specialize(this.props.fileAssetPublishingRoleArn ?? DefaultStackSynthesizer.DEFAULT_FILE_ASSET_PUBLISHING_ROLE_ARN);
     this.imageAssetPublishingRoleArn = specialize(this.props.imageAssetPublishingRoleArn ?? DefaultStackSynthesizer.DEFAULT_IMAGE_ASSET_PUBLISHING_ROLE_ARN);
-    this._kmsKeyArnExportName = specialize(this.props.fileAssetKeyArnExportName ?? DefaultStackSynthesizer.DEFAULT_FILE_ASSET_KEY_ARN_EXPORT_NAME);
     /* eslint-enable max-len */
   }
 
   public addFileAsset(asset: FileAssetSource): FileAssetLocation {
     assertBound(this.stack);
     assertBound(this.bucketName);
-    assertBound(this._kmsKeyArnExportName);
 
     const objectKey = asset.sourceHash + (asset.packaging === FileAssetPackaging.ZIP_DIRECTORY ? '.zip' : '');
 
@@ -270,7 +283,6 @@ export class DefaultStackSynthesizer implements IStackSynthesizer {
       httpUrl,
       s3ObjectUrl,
       s3Url: httpUrl,
-      kmsKeyArn: Fn.importValue(cfnify(this._kmsKeyArnExportName)),
     };
   }
 
@@ -308,20 +320,36 @@ export class DefaultStackSynthesizer implements IStackSynthesizer {
     };
   }
 
-  public synthesizeStackArtifacts(session: ISynthesisSession): void {
+  /**
+   * Synthesize the associated stack to the session
+   */
+  public synthesize(session: ISynthesisSession): void {
     assertBound(this.stack);
+    assertBound(this.qualifier);
+
+    // Must be done here -- if it's done in bind() (called in the Stack's constructor)
+    // then it will become impossible to set context after that.
+    //
+    // If it's done AFTER _synthesizeTemplate(), then the template won't contain the
+    // right constructs.
+    if (this.props.generateBootstrapVersionRule ?? true) {
+      addBootstrapVersionRule(this.stack, MIN_BOOTSTRAP_STACK_VERSION, this.qualifier);
+    }
+
+    this.synthesizeStackTemplate(this.stack, session);
 
     // Add the stack's template to the artifact manifest
     const templateManifestUrl = this.addStackTemplateToAssetManifest(session);
 
     const artifactId = this.writeAssetManifest(session);
 
-    addStackArtifactToAssembly(session, this.stack, {
+    this.emitStackArtifact(this.stack, session, {
       assumeRoleArn: this._deployRoleArn,
       cloudFormationExecutionRoleArn: this._cloudFormationExecutionRoleArn,
       stackTemplateAssetObjectUrl: templateManifestUrl,
       requiresBootstrapStackVersion: MIN_BOOTSTRAP_STACK_VERSION,
-    }, [artifactId]);
+      additionalDependencies: [artifactId],
+    });
   }
 
   /**
@@ -461,4 +489,44 @@ function stackLocationOrInstrinsics(stack: Stack) {
     region: resolvedOr(stack.region, '${AWS::Region}'),
     urlSuffix: resolvedOr(stack.urlSuffix, '${AWS::URLSuffix}'),
   };
+}
+
+/**
+ * Add a CfnRule to the Stack which checks the current version of the bootstrap stack this template is targeting
+ *
+ * The CLI normally checks this, but in a pipeline the CLI is not involved
+ * so we encode this rule into the template in a way that CloudFormation will check it.
+ */
+function addBootstrapVersionRule(stack: Stack, requiredVersion: number, qualifier: string) {
+  // Because of https://github.com/aws/aws-cdk/blob/master/packages/@aws-cdk/assert/lib/synth-utils.ts#L74
+  // synthesize() may be called more than once on a stack in unit tests, and the below would break
+  // if we execute it a second time. Guard against the constructs already existing.
+  if (stack.node.tryFindChild('BootstrapVersion')) { return; }
+
+  const param = new CfnParameter(stack, 'BootstrapVersion', {
+    type: 'AWS::SSM::Parameter::Value<String>',
+    description: 'Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store.',
+    default: `/cdk-bootstrap/${qualifier}/version`,
+  });
+
+  // There is no >= check in CloudFormation, so we have to check the number
+  // is NOT in [1, 2, 3, ... <required> - 1]
+  const oldVersions = range(1, requiredVersion).map(n => `${n}`);
+
+  new CfnRule(stack, 'CheckBootstrapVersion', {
+    assertions: [
+      {
+        assert: Fn.conditionNot(Fn.conditionContains(oldVersions, param.valueAsString)),
+        assertDescription: `CDK bootstrap stack version ${requiredVersion} required. Please run 'cdk bootstrap' with a recent version of the CDK CLI.`,
+      },
+    ],
+  });
+}
+
+function range(startIncl: number, endExcl: number) {
+  const ret = new Array<number>();
+  for (let i = startIncl; i < endExcl; i++) {
+    ret.push(i);
+  }
+  return ret;
 }

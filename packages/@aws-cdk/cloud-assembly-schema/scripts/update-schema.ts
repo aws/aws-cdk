@@ -39,7 +39,7 @@ export function bump() {
   const newVersion = semver.inc(oldVersion, 'major');
 
   log(`Updating schema version: ${oldVersion} -> ${newVersion}`);
-  fs.writeFileSync(versionFile, JSON.stringify({version: newVersion}));
+  fs.writeFileSync(versionFile, JSON.stringify({ version: newVersion }));
 }
 
 /**
@@ -64,7 +64,7 @@ export function generateSchema(schemaName: string, saveToFile: boolean = true) {
     strictNullChecks: true,
   };
 
-  const program = tjs.getProgramFromFiles([ path.join(__dirname, '../lib/index.d.ts') ], compilerOptions);
+  const program = tjs.getProgramFromFiles([path.join(__dirname, '../lib/index.d.ts')], compilerOptions);
   const schema = tjs.generateSchema(program, spec.rootTypeName, settings);
 
   augmentDescription(schema);
@@ -124,5 +124,5 @@ function augmentDescription(schema: any) {
  * compatibility checks.
  */
 function addAnyMetadataEntry(schema: any) {
-  schema.definitions.MetadataEntry?.properties.data.anyOf.push({description: 'Free form data.'});
+  schema.definitions.MetadataEntry?.properties.data.anyOf.push({ description: 'Free form data.' });
 }

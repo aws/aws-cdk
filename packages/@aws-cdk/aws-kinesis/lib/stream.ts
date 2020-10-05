@@ -1,6 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { Aws, CfnCondition, Construct, Duration, Fn, IResolvable, IResource, Resource, Stack, Token } from '@aws-cdk/core';
+import { Aws, CfnCondition, Duration, Fn, IResolvable, IResource, Resource, Stack, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnStream } from './kinesis.generated';
 
 const READ_OPERATIONS = [
@@ -299,7 +300,7 @@ export class Stream extends StreamBase {
     if (!props.encryption && !props.encryptionKey) {
 
       const conditionName = 'AwsCdkKinesisEncryptedStreamsUnsupportedRegions';
-      const existing = Stack.of(this).construct.tryFindChild(conditionName);
+      const existing = Stack.of(this).node.tryFindChild(conditionName);
 
       // create a single condition for the Stack
       if (!existing) {
@@ -314,7 +315,7 @@ export class Stream extends StreamBase {
       return {
         streamEncryption: Fn.conditionIf(conditionName,
           Aws.NO_VALUE,
-          { EncryptionType: 'KMS', KeyId: 'alias/aws/kinesis'}),
+          { EncryptionType: 'KMS', KeyId: 'alias/aws/kinesis' }),
       };
     }
 
@@ -332,13 +333,13 @@ export class Stream extends StreamBase {
     }
 
     if (encryptionType === StreamEncryption.MANAGED) {
-      const encryption = { encryptionType: 'KMS', keyId: 'alias/aws/kinesis'};
+      const encryption = { encryptionType: 'KMS', keyId: 'alias/aws/kinesis' };
       return { streamEncryption: encryption };
     }
 
     if (encryptionType === StreamEncryption.KMS) {
       const encryptionKey = props.encryptionKey || new kms.Key(this, 'Key', {
-        description: `Created by ${this.construct.path}`,
+        description: `Created by ${this.node.path}`,
       });
 
       const streamEncryption: CfnStream.StreamEncryptionProperty = {

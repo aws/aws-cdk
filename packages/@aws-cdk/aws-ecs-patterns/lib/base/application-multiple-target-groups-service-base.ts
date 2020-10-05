@@ -1,12 +1,19 @@
 import { Certificate, CertificateValidation, ICertificate } from '@aws-cdk/aws-certificatemanager';
 import { IVpc } from '@aws-cdk/aws-ec2';
-import { AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerDefinition, ContainerImage, ICluster, LogDriver, PropagatedTagSource,
-  Protocol, Secret } from '@aws-cdk/aws-ecs';
+import {
+  AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerDefinition, ContainerImage, ICluster, LogDriver, PropagatedTagSource,
+  Protocol, Secret,
+} from '@aws-cdk/aws-ecs';
 import { ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationTargetGroup } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { IRole } from '@aws-cdk/aws-iam';
 import { ARecord, IHostedZone, RecordTarget } from '@aws-cdk/aws-route53';
 import { LoadBalancerTarget } from '@aws-cdk/aws-route53-targets';
-import { CfnOutput, Construct, Duration, Stack } from '@aws-cdk/core';
+import { CfnOutput, Duration, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * The properties for the base ApplicationMultipleTargetGroupsEc2Service or ApplicationMultipleTargetGroupsFargateService service.
@@ -321,7 +328,7 @@ export interface ApplicationListenerProps {
 /**
  * The base class for ApplicationMultipleTargetGroupsEc2Service and ApplicationMultipleTargetGroupsFargateService classes.
  */
-export abstract class ApplicationMultipleTargetGroupsServiceBase extends Construct {
+export abstract class ApplicationMultipleTargetGroupsServiceBase extends CoreConstruct {
 
   /**
    * The desired number of instantiations of the task definition to keep running on the service.
@@ -385,9 +392,9 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
           this.listeners.push(listener);
         }
         const domainName = this.createDomainName(lb, lbProps.domainName, lbProps.domainZone);
-        new CfnOutput(this, `LoadBalancerDNS${lb.construct.id}`, { value: lb.loadBalancerDnsName });
+        new CfnOutput(this, `LoadBalancerDNS${lb.node.id}`, { value: lb.loadBalancerDnsName });
         for (const protocol of protocolType) {
-          new CfnOutput(this, `ServiceURL${lb.construct.id}${protocol.toLowerCase()}`, { value: protocol.toLowerCase() + '://' + domainName });
+          new CfnOutput(this, `ServiceURL${lb.node.id}${protocol.toLowerCase()}`, { value: protocol.toLowerCase() + '://' + domainName });
         }
       }
       // set up default load balancer and listener.
@@ -412,9 +419,9 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
    */
   protected getDefaultCluster(scope: Construct, vpc?: IVpc): Cluster {
     // magic string to avoid collision with user-defined constructs.
-    const DEFAULT_CLUSTER_ID = `EcsDefaultClusterMnL3mNNYN${vpc ? vpc.construct.id : ''}`;
+    const DEFAULT_CLUSTER_ID = `EcsDefaultClusterMnL3mNNYN${vpc ? vpc.node.id : ''}`;
     const stack = Stack.of(scope);
-    return stack.construct.tryFindChild(DEFAULT_CLUSTER_ID) as Cluster || new Cluster(stack, DEFAULT_CLUSTER_ID, { vpc });
+    return stack.node.tryFindChild(DEFAULT_CLUSTER_ID) as Cluster || new Cluster(stack, DEFAULT_CLUSTER_ID, { vpc });
   }
 
   protected createAWSLogDriver(prefix: string): AwsLogDriver {
@@ -426,7 +433,7 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
       return this.listener;
     }
     for (const listener of this.listeners) {
-      if (listener.construct.id === name) {
+      if (listener.node.id === name) {
         return listener;
       }
     }
@@ -474,7 +481,7 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
     const enableLogging = enableLoggingProp !== undefined ? enableLoggingProp : true;
     const logDriver = logDriverProp !== undefined
       ? logDriverProp : enableLogging
-        ? this.createAWSLogDriver(this.construct.id) : undefined;
+        ? this.createAWSLogDriver(this.node.id) : undefined;
     return logDriver;
   }
 
@@ -558,7 +565,7 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
         throw new Error('A Route53 hosted domain zone name is required to configure the specified domain name');
       }
 
-      const record = new ARecord(this, `DNS${loadBalancer.construct.id}`, {
+      const record = new ARecord(this, `DNS${loadBalancer.node.id}`, {
         zone,
         recordName: name,
         target: RecordTarget.fromAlias(new LoadBalancerTarget(loadBalancer)),

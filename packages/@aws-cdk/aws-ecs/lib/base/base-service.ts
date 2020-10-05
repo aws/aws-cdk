@@ -5,7 +5,8 @@ import * as elb from '@aws-cdk/aws-elasticloadbalancing';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
-import { Construct, Duration, IResolvable, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
+import { Annotations, Duration, IResolvable, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { LoadBalancerTargetOptions, NetworkMode, TaskDefinition } from '../base/task-definition';
 import { ICluster } from '../cluster';
 import { Protocol } from '../container-definition';
@@ -356,7 +357,7 @@ export abstract class BaseService extends Resource
     });
 
     if (props.deploymentController?.type === DeploymentControllerType.EXTERNAL) {
-      this.construct.addWarning('taskDefinition and launchType are blanked out when using external deployment controller.');
+      Annotations.of(this).addWarning('taskDefinition and launchType are blanked out when using external deployment controller.');
     }
 
     this.serviceArn = this.getResourceArnAttribute(this.resource.ref, {
@@ -515,7 +516,7 @@ export abstract class BaseService extends Resource
     let dnsRecordType = options.dnsRecordType;
 
     if (networkMode === NetworkMode.BRIDGE || networkMode === NetworkMode.HOST) {
-      if (dnsRecordType ===  undefined) {
+      if (dnsRecordType === undefined) {
         dnsRecordType = cloudmap.DnsRecordType.SRV;
       }
       if (dnsRecordType !== cloudmap.DnsRecordType.SRV) {
@@ -525,7 +526,7 @@ export abstract class BaseService extends Resource
 
     // Default DNS record type for AwsVpc network mode is A Records
     if (networkMode === NetworkMode.AWS_VPC) {
-      if (dnsRecordType ===  undefined) {
+      if (dnsRecordType === undefined) {
         dnsRecordType = cloudmap.DnsRecordType.A;
       }
     }
@@ -619,7 +620,7 @@ export abstract class BaseService extends Resource
       vpcSubnets = assignPublicIp ? { subnetType: ec2.SubnetType.PUBLIC } : {};
     }
     if (securityGroups === undefined || securityGroups.length === 0) {
-      securityGroups = [ new ec2.SecurityGroup(this, 'SecurityGroup', { vpc }) ];
+      securityGroups = [new ec2.SecurityGroup(this, 'SecurityGroup', { vpc })];
     }
 
     securityGroups.forEach((sg) => { this.connections.addSecurityGroup(sg); }, this);
@@ -675,7 +676,7 @@ export abstract class BaseService extends Resource
 
     // Service creation can only happen after the load balancer has
     // been associated with our target group(s), so add ordering dependency.
-    this.resource.construct.addDependency(targetGroup.loadBalancerAttached);
+    this.resource.node.addDependency(targetGroup.loadBalancerAttached);
 
     const targetType = this.taskDefinition.networkMode === NetworkMode.AWS_VPC ? elbv2.TargetType.IP : elbv2.TargetType.INSTANCE;
     return { targetType };

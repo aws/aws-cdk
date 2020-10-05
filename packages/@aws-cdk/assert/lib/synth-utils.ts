@@ -65,7 +65,7 @@ export class SynthUtils {
  * Synthesizes the app in which a stack resides and returns the cloud assembly object.
  */
 function synthesizeApp(stack: core.Stack, options: core.SynthesisOptions) {
-  const root = stack.construct.root;
+  const root = stack.node.root;
   if (!core.Stage.isStage(root)) {
     throw new Error('unexpected: all stacks must be part of a Stage or an App');
   }

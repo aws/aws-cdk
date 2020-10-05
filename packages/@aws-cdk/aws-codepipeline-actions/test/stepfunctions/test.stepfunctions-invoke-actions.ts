@@ -92,7 +92,7 @@ export = {
 function minimalPipeline(stack: Stack): codepipeline.IStage {
   const sourceOutput = new codepipeline.Artifact();
   const startState = new stepfunction.Pass(stack, 'StartState');
-  const simpleStateMachine  = new stepfunction.StateMachine(stack, 'SimpleStateMachine', {
+  const simpleStateMachine = new stepfunction.StateMachine(stack, 'SimpleStateMachine', {
     definition: startState,
   });
   const pipeline = new codepipeline.Pipeline(stack, 'MyPipeline');
@@ -114,7 +114,7 @@ function minimalPipeline(stack: Stack): codepipeline.IStage {
       new cpactions.StepFunctionInvokeAction({
         actionName: 'Invoke',
         stateMachine: simpleStateMachine,
-        stateMachineInput: cpactions.StateMachineInput.literal({IsHelloWorldExample: true}),
+        stateMachineInput: cpactions.StateMachineInput.literal({ IsHelloWorldExample: true }),
       }),
     ],
   });

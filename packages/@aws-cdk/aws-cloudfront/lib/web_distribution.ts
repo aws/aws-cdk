@@ -3,14 +3,11 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnDistribution } from './cloudfront.generated';
-import { IDistribution, LambdaEdgeEventType, OriginProtocolPolicy, PriceClass, ViewerProtocolPolicy, SSLMethod, SecurityPolicyProtocol } from './distribution';
+import { HttpVersion, IDistribution, LambdaEdgeEventType, OriginProtocolPolicy, PriceClass, ViewerProtocolPolicy, SSLMethod, SecurityPolicyProtocol } from './distribution';
+import { GeoRestriction } from './geo-restriction';
 import { IOriginAccessIdentity } from './origin_access_identity';
-
-export enum HttpVersion {
-  HTTP1_1 = 'http1.1',
-  HTTP2 = 'http2'
-}
 
 /**
  * HTTP status code to failover to second origin
@@ -251,7 +248,7 @@ export interface CustomOriginConfig {
   /**
    * The SSL versions to use when interacting with the origin.
    *
-   * @default OriginSslPolicy.TLSv1_2
+   * @default OriginSslPolicy.TLS_V1_2
    */
   readonly allowedOriginSSLVersions?: OriginSslPolicy[];
 
@@ -428,6 +425,15 @@ export interface LambdaFunctionAssociation {
    * A version of the lambda to associate
    */
   readonly lambdaFunction: lambda.IVersion;
+
+  /**
+   * Allows a Lambda function to have read access to the body content.
+   * Only valid for "request" event types (`ORIGIN_REQUEST` or `VIEWER_REQUEST`).
+   * See https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-include-body-access.html
+   *
+   * @default false
+   */
+  readonly includeBody?: boolean;
 }
 
 export interface ViewerCertificateOptions {
@@ -513,59 +519,6 @@ export class ViewerCertificate {
   private constructor(
     public readonly props: CfnDistribution.ViewerCertificateProperty,
     public readonly aliases: string[] = []) { }
-}
-
-/**
- * Controls the countries in which your content is distributed.
- */
-export class GeoRestriction {
-
-  /**
-   * Whitelist specific countries which you want CloudFront to distribute your content.
-   *
-   * @param locations Two-letter, uppercase country code for a country
-   * that you want to whitelist. Include one element for each country.
-   * See ISO 3166-1-alpha-2 code on the *International Organization for Standardization* website
-   */
-  public static whitelist(...locations: string[]) {
-    return new GeoRestriction('whitelist', GeoRestriction.validateLocations(locations));
-  }
-
-  /**
-   * Blacklist specific countries which you don't want CloudFront to distribute your content.
-   *
-   * @param locations Two-letter, uppercase country code for a country
-   * that you want to blacklist. Include one element for each country.
-   * See ISO 3166-1-alpha-2 code on the *International Organization for Standardization* website
-   */
-  public static blacklist(...locations: string[]) {
-    return new GeoRestriction('blacklist', GeoRestriction.validateLocations(locations));
-  }
-
-  private static LOCATION_REGEX = /^[A-Z]{2}$/;
-
-  private static validateLocations(locations: string[]) {
-    if (locations.length === 0) {
-      throw new Error('Should provide at least 1 location');
-    }
-    locations.forEach(location => {
-      if (!GeoRestriction.LOCATION_REGEX.test(location)) {
-        // eslint-disable-next-line max-len
-        throw new Error(`Invalid location format for location: ${location}, location should be two-letter and uppercase country ISO 3166-1-alpha-2 code`);
-      }
-    });
-    return locations;
-  }
-
-  /**
-   * Creates an instance of GeoRestriction for internal use
-   *
-   * @param restrictionType Specifies the restriction type to impose (whitelist or blacklist)
-   * @param locations Two-letter, uppercase country code for a country
-   * that you want to whitelist/blacklist. Include one element for each country.
-   * See ISO 3166-1-alpha-2 code on the *International Organization for Standardization* website
-   */
-  private constructor(readonly restrictionType: 'whitelist' | 'blacklist', readonly locations: string[]) {}
 }
 
 export interface CloudFrontWebDistributionProps {
@@ -686,6 +639,27 @@ interface BehaviorWithOrigin extends Behavior {
 }
 
 /**
+ * Attributes used to import a Distribution.
+ *
+ * @experimental
+ */
+export interface CloudFrontWebDistributionAttributes {
+  /**
+   * The generated domain name of the Distribution, such as d111111abcdef8.cloudfront.net.
+   *
+   * @attribute
+   */
+  readonly domainName: string;
+
+  /**
+   * The distribution ID for this distribution.
+   *
+   * @attribute
+   */
+  readonly distributionId: string;
+}
+
+/**
  * Amazon CloudFront is a global content delivery network (CDN) service that securely delivers data, videos,
  * applications, and APIs to your viewers with low latency and high transfer speeds.
  * CloudFront fronts user provided content and caches it at edge locations across the world.
@@ -716,6 +690,25 @@ interface BehaviorWithOrigin extends Behavior {
  * @resource AWS::CloudFront::Distribution
  */
 export class CloudFrontWebDistribution extends cdk.Resource implements IDistribution {
+
+  /**
+   * Creates a construct that represents an external (imported) distribution.
+   */
+  public static fromDistributionAttributes(scope: Construct, id: string, attrs: CloudFrontWebDistributionAttributes): IDistribution {
+    return new class extends cdk.Resource implements IDistribution {
+      public readonly domainName: string;
+      public readonly distributionDomainName: string;
+      public readonly distributionId: string;
+
+      constructor() {
+        super(scope, id);
+        this.domainName = attrs.domainName;
+        this.distributionDomainName = attrs.domainName;
+        this.distributionId = attrs.distributionId;
+      }
+    }();
+  }
+
   /**
    * The logging bucket for this CloudFront distribution.
    * If logging is not enabled for this distribution - this property will be undefined.
@@ -759,11 +752,12 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
     [SSLMethod.SNI]: [
       SecurityPolicyProtocol.TLS_V1, SecurityPolicyProtocol.TLS_V1_1_2016,
       SecurityPolicyProtocol.TLS_V1_2016, SecurityPolicyProtocol.TLS_V1_2_2018,
+      SecurityPolicyProtocol.TLS_V1_2_2019,
     ],
     [SSLMethod.VIP]: [SecurityPolicyProtocol.SSL_V3, SecurityPolicyProtocol.TLS_V1],
   };
 
-  constructor(scope: cdk.Construct, id: string, props: CloudFrontWebDistributionProps) {
+  constructor(scope: Construct, id: string, props: CloudFrontWebDistributionProps) {
     super(scope, id);
 
     let distributionConfig: CfnDistribution.DistributionConfigProperty = {
@@ -871,7 +865,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
 
     let _viewerCertificate = props.viewerCertificate;
     if (props.aliasConfiguration) {
-      const {acmCertRef, securityPolicy, sslMethod, names: aliases} = props.aliasConfiguration;
+      const { acmCertRef, securityPolicy, sslMethod, names: aliases } = props.aliasConfiguration;
 
       _viewerCertificate = ViewerCertificate.fromAcmCertificate(
         certificatemanager.Certificate.fromCertificateArn(this, 'AliasConfigurationCert', acmCertRef),
@@ -880,10 +874,10 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
     }
 
     if (_viewerCertificate) {
-      const {props: viewerCertificate, aliases} = _viewerCertificate;
-      Object.assign(distributionConfig, {aliases, viewerCertificate});
+      const { props: viewerCertificate, aliases } = _viewerCertificate;
+      Object.assign(distributionConfig, { aliases, viewerCertificate });
 
-      const {minimumProtocolVersion, sslSupportMethod} = viewerCertificate;
+      const { minimumProtocolVersion, sslSupportMethod } = viewerCertificate;
 
       if (minimumProtocolVersion != null && sslSupportMethod != null) {
         const validProtocols = this.VALID_SSL_PROTOCOLS[sslSupportMethod as SSLMethod];
@@ -894,7 +888,8 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
         }
       }
     } else {
-      distributionConfig = { ...distributionConfig,
+      distributionConfig = {
+        ...distributionConfig,
         viewerCertificate: { cloudFrontDefaultCertificate: true },
       };
     }
@@ -904,7 +899,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
       distributionConfig = {
         ...distributionConfig,
         logging: {
-          bucket: this.loggingBucket.bucketRegionalDomainName,
+          bucket: this.loggingBucket.bucketDomainName,
           includeCookies: props.loggingConfig.includeCookies || false,
           prefix: props.loggingConfig.prefix,
         },
@@ -924,7 +919,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
     }
 
     const distribution = new CfnDistribution(this, 'CFDistribution', { distributionConfig });
-    this.construct.defaultChild = distribution;
+    this.node.defaultChild = distribution;
     this.domainName = distribution.attrDomainName;
     this.distributionDomainName = distribution.attrDomainName;
     this.distributionId = distribution.ref;
@@ -947,11 +942,17 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
       toReturn = Object.assign(toReturn, { pathPattern: input.pathPattern });
     }
     if (input.lambdaFunctionAssociations) {
+      const includeBodyEventTypes = [LambdaEdgeEventType.ORIGIN_REQUEST, LambdaEdgeEventType.VIEWER_REQUEST];
+      if (input.lambdaFunctionAssociations.some(fna => fna.includeBody && !includeBodyEventTypes.includes(fna.eventType))) {
+        throw new Error('\'includeBody\' can only be true for ORIGIN_REQUEST or VIEWER_REQUEST event types.');
+      }
+
       toReturn = Object.assign(toReturn, {
         lambdaFunctionAssociations: input.lambdaFunctionAssociations
           .map(fna => ({
             eventType: fna.eventType,
-            lambdaFunctionArn: fna.lambdaFunction && fna.lambdaFunction.functionArn,
+            lambdaFunctionArn: fna.lambdaFunction && fna.lambdaFunction.edgeArn,
+            includeBody: fna.includeBody,
           })),
       });
 
@@ -959,8 +960,8 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
       for (const a of input.lambdaFunctionAssociations) {
         if (a.lambdaFunction.role && a.lambdaFunction.role instanceof iam.Role && a.lambdaFunction.role.assumeRolePolicy) {
           a.lambdaFunction.role.assumeRolePolicy.addStatements(new iam.PolicyStatement({
-            actions: [ 'sts:AssumeRole' ],
-            principals: [ new iam.ServicePrincipal('edgelambda.amazonaws.com') ],
+            actions: ['sts:AssumeRole'],
+            principals: [new iam.ServicePrincipal('edgelambda.amazonaws.com')],
           }));
         }
       }

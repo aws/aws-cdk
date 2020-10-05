@@ -72,17 +72,17 @@ export = {
 
     new Rule(stack, 'MyRule', {
       eventPattern: {
-        account: [ 'account1', 'account2' ],
+        account: ['account1', 'account2'],
         detail: {
-          foo: [ 1, 2 ],
+          foo: [1, 2],
         },
-        detailType: [ 'detailType1' ],
-        id: [ 'id1', 'id2' ],
-        region: [ 'region1', 'region2', 'region3' ],
-        resources: [ 'r1' ],
-        source: [ 'src1', 'src2' ],
-        time: [ 't1' ],
-        version: [ '0' ],
+        detailType: ['detailType1'],
+        id: ['id1', 'id2'],
+        region: ['region1', 'region2', 'region3'],
+        resources: ['r1'],
+        source: ['src1', 'src2'],
+        time: ['t1'],
+        version: ['0'],
       },
     });
 
@@ -92,15 +92,15 @@ export = {
           'Type': 'AWS::Events::Rule',
           'Properties': {
             'EventPattern': {
-              account: [ 'account1', 'account2' ],
-              detail: { foo: [ 1, 2 ] },
-              'detail-type': [ 'detailType1' ],
-              id: [ 'id1', 'id2' ],
-              region: [ 'region1', 'region2', 'region3' ],
-              resources: [ 'r1' ],
-              source: [ 'src1', 'src2' ],
-              time: [ 't1' ],
-              version: [ '0' ],
+              account: ['account1', 'account2'],
+              detail: { foo: [1, 2] },
+              'detail-type': ['detailType1'],
+              id: ['id1', 'id2'],
+              region: ['region1', 'region2', 'region3'],
+              resources: ['r1'],
+              source: ['src1', 'src2'],
+              time: ['t1'],
+              version: ['0'],
             },
             'State': 'ENABLED',
           },
@@ -124,18 +124,18 @@ export = {
 
     const rule = new Rule(stack, 'MyRule');
     rule.addEventPattern({
-      account: [ '12345' ],
+      account: ['12345'],
       detail: {
-        foo: [ 'hello' ],
+        foo: ['hello'],
       },
     });
 
     rule.addEventPattern({
-      source: [ 'aws.source' ],
+      source: ['aws.source'],
       detail: {
-        foo: [ 'bar' ],
+        foo: ['bar'],
         goo: {
-          hello: [ 'world' ],
+          hello: ['world'],
         },
       },
     });
@@ -191,7 +191,7 @@ export = {
     };
 
     const rule = new Rule(stack, 'EventRule', {
-      targets: [ t1 ],
+      targets: [t1],
       schedule: Schedule.rate(cdk.Duration.minutes(5)),
     });
 
@@ -249,8 +249,9 @@ export = {
     rule.addTarget({
       bind: () => ({
         id: '',
-        arn: 'ARN1', kinesisParameters: { partitionKeyPath: 'partitionKeyPath' },
-        input: RuleTargetInput.fromText(cdk.Fn.join('', [ 'a', 'b' ]).toString()),
+        arn: 'ARN1',
+        kinesisParameters: { partitionKeyPath: 'partitionKeyPath' },
+        input: RuleTargetInput.fromText(cdk.Fn.join('', ['a', 'b']).toString()),
       }),
     });
 
@@ -344,7 +345,7 @@ export = {
         {
           'Arn': 'ARN2',
           'Id': 'Target0',
-          'RoleArn': {'Fn::GetAtt': ['SomeRole6DDC54DD', 'Arn']},
+          'RoleArn': { 'Fn::GetAtt': ['SomeRole6DDC54DD', 'Arn'] },
         },
       ],
     }));
@@ -361,7 +362,7 @@ export = {
     const t1: IRuleTarget = {
       bind: (eventRule: IRule) => {
         receivedRuleArn = eventRule.ruleArn;
-        receivedRuleId = eventRule.construct.uniqueId;
+        receivedRuleId = eventRule.node.uniqueId;
 
         return {
           id: '',
@@ -375,7 +376,7 @@ export = {
     rule.addTarget(t1);
 
     test.deepEqual(stack.resolve(receivedRuleArn), stack.resolve(rule.ruleArn));
-    test.deepEqual(receivedRuleId, rule.construct.uniqueId);
+    test.deepEqual(receivedRuleId, rule.node.uniqueId);
     test.done();
   },
 
@@ -471,7 +472,7 @@ export = {
 
     new Rule(stack, 'EventRule', {
       schedule: Schedule.rate(cdk.Duration.minutes(5)),
-      targets: [ t1 ],
+      targets: [t1],
     });
 
     expect(stack).to(haveResource('AWS::Events::Rule', {
@@ -678,7 +679,7 @@ export = {
         ],
       }));
 
-      const eventBusPolicyStack = app.construct.findChild(`EventBusPolicy-${sourceAccount}-us-west-2-${targetAccount}`) as cdk.Stack;
+      const eventBusPolicyStack = app.node.findChild(`EventBusPolicy-${sourceAccount}-us-west-2-${targetAccount}`) as cdk.Stack;
       expect(eventBusPolicyStack).to(haveResourceLike('AWS::Events::EventBusPolicy', {
         'Action': 'events:PutEvents',
         'StatementId': `Allow-account-${sourceAccount}`,
@@ -742,7 +743,8 @@ class SomeTarget implements IRuleTarget {
   public bind(): RuleTargetConfig {
     return {
       id: this.id || '',
-      arn: 'ARN1', kinesisParameters: { partitionKeyPath: 'partitionKeyPath' },
+      arn: 'ARN1',
+      kinesisParameters: { partitionKeyPath: 'partitionKeyPath' },
       targetResource: this.resource,
     };
   }

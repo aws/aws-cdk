@@ -1,4 +1,4 @@
-import { IConstruct } from './construct-compat';
+import { IConstruct } from 'constructs';
 import { Intrinsic } from './private/intrinsic';
 import { IPostProcessor, IResolveContext } from './resolvable';
 import { Stack } from './stack';
@@ -80,7 +80,7 @@ export function filterUndefined(obj: any): any {
  */
 export class PostResolveToken extends Intrinsic implements IPostProcessor {
   constructor(value: any, private readonly processor: (x: any) => any) {
-    super(value);
+    super(value, { stackTrace: false });
   }
 
   public resolve(context: IResolveContext) {
@@ -98,9 +98,9 @@ export class PostResolveToken extends Intrinsic implements IPostProcessor {
  */
 export function pathToTopLevelStack(s: Stack): Stack[] {
   if (s.nestedStackParent) {
-    return [ ...pathToTopLevelStack(s.nestedStackParent), s ];
+    return [...pathToTopLevelStack(s.nestedStackParent), s];
   } else {
-    return [ s ];
+    return [s];
   }
 }
 

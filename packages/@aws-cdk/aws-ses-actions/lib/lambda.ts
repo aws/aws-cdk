@@ -68,10 +68,10 @@ export class Lambda implements ses.IReceiptRuleAction {
     // Ensure permission is deployed before rule
     const permission = this.props.function.permissionsNode.tryFindChild(permissionId) as lambda.CfnPermission;
     if (permission) { // The Lambda could be imported
-      rule.construct.addDependency(permission);
+      rule.node.addDependency(permission);
     } else {
       // eslint-disable-next-line max-len
-      rule.construct.addWarning('This rule is using a Lambda action with an imported function. Ensure permission is given to SES to invoke that function.');
+      cdk.Annotations.of(rule).addWarning('This rule is using a Lambda action with an imported function. Ensure permission is given to SES to invoke that function.');
     }
 
     return {

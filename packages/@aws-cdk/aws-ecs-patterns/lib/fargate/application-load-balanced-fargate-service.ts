@@ -1,5 +1,6 @@
+import { ISecurityGroup } from '@aws-cdk/aws-ec2';
 import { FargatePlatformVersion, FargateService, FargateTaskDefinition } from '@aws-cdk/aws-ecs';
-import { Construct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { ApplicationLoadBalancedServiceBase, ApplicationLoadBalancedServiceBaseProps } from '../base/application-load-balanced-service-base';
 
 /**
@@ -75,6 +76,13 @@ export interface ApplicationLoadBalancedFargateServiceProps extends ApplicationL
    * @default Latest
    */
   readonly platformVersion?: FargatePlatformVersion;
+
+  /**
+   * The security groups to associate with the service. If you do not specify a security group, the default security group for the VPC is used.
+   *
+   * @default - A new security group is created.
+   */
+  readonly securityGroups?: ISecurityGroup[];
 }
 
 /**
@@ -122,7 +130,7 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
       const enableLogging = taskImageOptions.enableLogging !== undefined ? taskImageOptions.enableLogging : true;
       const logDriver = taskImageOptions.logDriver !== undefined
         ? taskImageOptions.logDriver : enableLogging
-          ? this.createAWSLogDriver(this.construct.id) : undefined;
+          ? this.createAWSLogDriver(this.node.id) : undefined;
 
       const containerName = taskImageOptions.containerName !== undefined ? taskImageOptions.containerName : 'web';
       const container = this.taskDefinition.addContainer(containerName, {
@@ -151,6 +159,7 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
       enableECSManagedTags: props.enableECSManagedTags,
       cloudMapOptions: props.cloudMapOptions,
       platformVersion: props.platformVersion,
+      securityGroups: props.securityGroups,
     });
     this.addServiceAsTarget(this.service);
   }

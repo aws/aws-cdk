@@ -28,11 +28,6 @@ export interface IConstruct extends constructs.IConstruct, IDependable {
    * The construct tree node for this construct.
    */
   readonly node: ConstructNode;
-
-  /**
-   * The construct tree node for this construct.
-   */
-  readonly construct: ConstructNode;
 }
 
 /**
@@ -66,19 +61,10 @@ export class Construct extends constructs.Construct implements IConstruct {
 
   /**
    * The construct tree node associated with this construct.
-   *
-   * @deprecate `Construct.node` is being deprecated in favor of
-   * `Construct.construct`. This API will be removed in the next major version
-   * of the AWS CDK, please migrate your code to use `construct` instead.
    */
   public readonly node: ConstructNode;
 
-  /**
-   * Construct API.
-   */
-  public readonly construct: ConstructNode;
-
-  constructor(scope: Construct, id: string) {
+  constructor(scope: constructs.Construct, id: string) {
     super(scope, id, {
       nodeFactory: {
         createNode: (h: constructs.Construct, s: constructs.IConstruct, i: string) =>
@@ -91,17 +77,16 @@ export class Construct extends constructs.Construct implements IConstruct {
     }
 
     Object.defineProperty(this, CONSTRUCT_SYMBOL, { value: true });
-    this.construct = ConstructNode._unwrap(constructs.Node.of(this));
-    this.node = this.construct;
+    this.node = ConstructNode._unwrap(constructs.Node.of(this));
 
     const disableTrace =
-      this.construct.tryGetContext(cxapi.DISABLE_METADATA_STACK_TRACE) ||
-      this.construct.tryGetContext(constructs.ConstructMetadata.DISABLE_STACK_TRACE_IN_METADATA) ||
+      this.node.tryGetContext(cxapi.DISABLE_METADATA_STACK_TRACE) ||
+      this.node.tryGetContext(constructs.ConstructMetadata.DISABLE_STACK_TRACE_IN_METADATA) ||
       process.env.CDK_DISABLE_STACK_TRACE;
 
     if (disableTrace) {
-      this.construct.setContext(cxapi.DISABLE_METADATA_STACK_TRACE, true);
-      this.construct.setContext(constructs.ConstructMetadata.DISABLE_STACK_TRACE_IN_METADATA, true);
+      this.node.setContext(cxapi.DISABLE_METADATA_STACK_TRACE, true);
+      this.node.setContext(constructs.ConstructMetadata.DISABLE_STACK_TRACE_IN_METADATA, true);
       process.env.CDK_DISABLE_STACK_TRACE = '1';
     }
   }
@@ -398,7 +383,7 @@ export class ConstructNode {
    * Context is usually initialized at the root, but can be overridden at any point in the tree.
    *
    * @param key The context key
-   * @returns The context value or `undefined` if there is no context value for thie key.
+   * @returns The context value or `undefined` if there is no context value for the key.
    */
   public tryGetContext(key: string): any {
     if (Token.isUnresolved(key)) {
@@ -462,7 +447,10 @@ export class ConstructNode {
    * @deprecated This API is going to be removed in the next major version of
    * the AWS CDK. Please use `Aspects.of(scope).add()` instead.
    */
-  public applyAspect(aspect: IAspect): void { Aspects.of(this.host).add(aspect); }
+  public applyAspect(aspect: IAspect): void {
+    Annotations.of(this.host).addDeprecation('@aws-cdk/core.ConstructNode.applyAspect', 'Use "Aspects.of(construct).add(aspect)" instead');
+    Aspects.of(this.host).add(aspect);
+  }
 
   /**
    * All parent scopes of this construct.

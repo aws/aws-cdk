@@ -1,4 +1,4 @@
-import { arrayWith, ResourcePart, SynthUtils } from '@aws-cdk/assert';
+import { ResourcePart, SynthUtils } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
@@ -24,7 +24,7 @@ test('simple use case', () => {
 
   // verify that metadata contains an "aws:cdk:asset" entry with
   // the correct information
-  const entry = stack.construct.metadata.find(m => m.type === 'aws:cdk:asset');
+  const entry = stack.node.metadata.find(m => m.type === 'aws:cdk:asset');
   expect(entry).toBeTruthy();
 
   // verify that now the template contains parameters for this asset
@@ -74,7 +74,7 @@ test('"file" assets', () => {
   const stack = new cdk.Stack();
   const filePath = path.join(__dirname, 'file-asset.txt');
   new Asset(stack, 'MyAsset', { path: filePath });
-  const entry = stack.construct.metadata.find(m => m.type === 'aws:cdk:asset');
+  const entry = stack.node.metadata.find(m => m.type === 'aws:cdk:asset');
   expect(entry).toBeTruthy();
 
   // synthesize first so "prepare" is called
@@ -102,7 +102,7 @@ test('"readers" or "grantRead" can be used to grant read permissions on the asse
 
   const asset = new Asset(stack, 'MyAsset', {
     path: path.join(__dirname, 'sample-asset-directory'),
-    readers: [ user ],
+    readers: [user],
   });
 
   asset.grantRead(group);
@@ -115,36 +115,11 @@ test('"readers" or "grantRead" can be used to grant read permissions on the asse
           Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
           Effect: 'Allow',
           Resource: [
-            { 'Fn::Join': ['', ['arn:', {Ref: 'AWS::Partition'}, ':s3:::', {Ref: 'AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2S3Bucket50B5A10B'} ] ] },
-            { 'Fn::Join': ['', [ 'arn:', {Ref: 'AWS::Partition'}, ':s3:::', {Ref: 'AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2S3Bucket50B5A10B'}, '/*' ] ] },
+            { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::', { Ref: 'AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2S3Bucket50B5A10B' }]] },
+            { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::', { Ref: 'AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2S3Bucket50B5A10B' }, '/*']] },
           ],
         },
       ],
-    },
-  });
-});
-
-test('"grantRead" also gives KMS permissions when using the new bootstrap stack', () => {
-  const stack = new cdk.Stack(undefined, undefined, {
-    synthesizer: new cdk.DefaultStackSynthesizer(),
-  });
-  const group = new iam.Group(stack, 'MyGroup');
-
-  const asset = new Asset(stack, 'MyAsset', {
-    path: path.join(__dirname, 'sample-asset-directory'),
-    readers: [ group ],
-  });
-
-  asset.grantRead(group);
-
-  expect(stack).toHaveResource('AWS::IAM::Policy', {
-    PolicyDocument: {
-      Version: '2012-10-17',
-      Statement: arrayWith({
-        Action: ['kms:Decrypt', 'kms:DescribeKey'],
-        Effect: 'Allow',
-        Resource: { 'Fn::ImportValue': 'CdkBootstrap-hnb659fds-FileAssetKeyArn' },
-      }),
     },
   });
 });
@@ -196,7 +171,7 @@ test('isZipArchive indicates if the asset represents a .zip file (either explici
 test('addResourceMetadata can be used to add CFN metadata to resources', () => {
   // GIVEN
   const stack = new cdk.Stack();
-  stack.construct.setContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT, true);
+  stack.node.setContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT, true);
 
   const location = path.join(__dirname, 'sample-asset-directory');
   const resource = new cdk.CfnResource(stack, 'MyResource', { type: 'My::Resource::Type' });

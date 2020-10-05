@@ -3,8 +3,9 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import {
   CfnDynamicReference, CfnDynamicReferenceService, CfnParameter,
-  Construct, ContextProvider, Fn, IResource, Resource, Stack, Token,
+  Construct as CompatConstruct, ContextProvider, Fn, IResource, Resource, Stack, Token,
 } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as ssm from './ssm.generated';
 import { arnForParameterName, AUTOGEN_MARKER } from './util';
 
@@ -324,7 +325,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
 
     const stringValue = attrs.version
       ? new CfnDynamicReference(CfnDynamicReferenceService.SSM, `${attrs.parameterName}:${attrs.version}`).toString()
-      : new CfnParameter(scope, `${id}.Parameter`, { type: `AWS::SSM::Parameter::Value<${type}>`, default: attrs.parameterName }).valueAsString;
+      : new CfnParameter(scope as CompatConstruct, `${id}.Parameter`, { type: `AWS::SSM::Parameter::Value<${type}>`, default: attrs.parameterName }).valueAsString;
 
     class Import extends ParameterBase {
       public readonly parameterName = attrs.parameterName;
@@ -360,7 +361,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
    * Requires that the stack this scope is defined in will have explicit
    * account/region information. Otherwise, it will fail during synthesis.
    */
-  public static valueFromLookup(scope: Construct, parameterName: string): string {
+  public static valueFromLookup(scope: CompatConstruct, parameterName: string): string {
     const value = ContextProvider.getValue(scope, {
       provider: cxschema.ContextProvider.SSM_PARAMETER_PROVIDER,
       props: { parameterName },
@@ -390,7 +391,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
   public static valueForTypedStringParameter(scope: Construct, parameterName: string, type = ParameterType.STRING, version?: number): string {
     const stack = Stack.of(scope);
     const id = makeIdentityForImportedValue(parameterName);
-    const exists = stack.construct.tryFindChild(id) as IStringParameter;
+    const exists = stack.node.tryFindChild(id) as IStringParameter;
 
     if (exists) { return exists.stringValue; }
 
@@ -406,7 +407,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
   public static valueForSecureStringParameter(scope: Construct, parameterName: string, version: number): string {
     const stack = Stack.of(scope);
     const id = makeIdentityForImportedValue(parameterName);
-    const exists = stack.construct.tryFindChild(id) as IStringParameter;
+    const exists = stack.node.tryFindChild(id) as IStringParameter;
     if (exists) { return exists.stringValue; }
 
     return this.fromSecureStringParameterAttributes(stack, id, { parameterName, version }).stringValue;
