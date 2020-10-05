@@ -106,8 +106,8 @@ function keyByNumber(context: any, n: number) {
 /**
  * Return enumerated keys in a definitive order
  */
-function contextKeys(context: any) {
-  const keys = Object.keys(context);
+function contextKeys(context: Context): [number, string][] {
+  const keys = context.keys;
   keys.sort();
   return enumerate1(keys);
 }
