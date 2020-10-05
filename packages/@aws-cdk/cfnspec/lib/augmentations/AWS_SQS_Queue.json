@@ -1,0 +1,53 @@
+{
+  "metrics": {
+    "namespace": "AWS/SQS",
+    "dimensions": { "QueueName": "this.queueName" },
+    "metrics": [
+      {
+        "name": "ApproximateAgeOfOldestMessage",
+        "documentation": "The approximate age of the oldest non-deleted message in the queue.",
+        "type": "gauge"
+      },
+      {
+        "name": "ApproximateNumberOfMessagesDelayed",
+        "documentation": "The number of messages in the queue that are delayed and not available for reading immediately.",
+        "type": "gauge"
+      },
+      {
+        "name": "ApproximateNumberOfMessagesNotVisible",
+        "documentation": "The number of messages that are in flight.",
+        "type": "gauge"
+      },
+      {
+        "name": "ApproximateNumberOfMessagesVisible",
+        "documentation": "The number of messages available for retrieval from the queue.",
+        "type": "gauge"
+      },
+      {
+        "name": "NumberOfEmptyReceives",
+        "documentation": "The number of ReceiveMessage API calls that did not return a message.",
+        "type": "count"
+      },
+      {
+        "name": "NumberOfMessagesDeleted",
+        "documentation": "The number of messages deleted from the queue.",
+        "type": "count"
+      },
+      {
+        "name": "NumberOfMessagesReceived",
+        "documentation": "The number of messages returned by calls to the ReceiveMessage action.",
+        "type": "count"
+      },
+      {
+        "name": "NumberOfMessagesSent",
+        "documentation": "The number of messages added to a queue.",
+        "type": "count"
+      },
+      {
+        "name": "SentMessageSize",
+        "documentation": "The size of messages added to a queue."
+      }
+    ]
+  }
+}
+

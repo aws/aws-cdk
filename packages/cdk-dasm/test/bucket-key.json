@@ -1,0 +1,87 @@
+{
+  "Resources": {
+    "MyBucketKeyC17130CF": {
+      "Type": "AWS::KMS::Key",
+      "Properties": {
+        "KeyPolicy": {
+          "Statement": [
+            {
+              "Action": [
+                "kms:Create*",
+                "kms:Describe*",
+                "kms:Enable*",
+                "kms:List*",
+                "kms:Put*",
+                "kms:Update*",
+                "kms:Revoke*",
+                "kms:Disable*",
+                "kms:Get*",
+                "kms:Delete*",
+                "kms:ScheduleKeyDeletion",
+                "kms:CancelKeyDeletion"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              },
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Description": "Created by Pg12321Stack/MyBucket"
+      },
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain",
+      "Metadata": {
+        "aws:cdk:path": "Pg12321Stack/MyBucket/Key/Resource"
+      }
+    },
+    "MyBucketF68F3FF0": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "ServerSideEncryptionByDefault": {
+                "KMSMasterKeyID": {
+                  "Fn::GetAtt": [
+                    "MyBucketKeyC17130CF",
+                    "Arn"
+                  ]
+                },
+                "SSEAlgorithm": "aws:kms"
+              }
+            }
+          ]
+        }
+      },
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain",
+      "Metadata": {
+        "aws:cdk:path": "Pg12321Stack/MyBucket/Resource"
+      }
+    },
+    "CDKMetadata": {
+      "Type": "AWS::CDK::Metadata",
+      "Properties": {
+        "Modules": "aws-cdk=0.28.0,@aws-cdk/aws-events=0.28.0,@aws-cdk/aws-iam=0.28.0,@aws-cdk/aws-kms=0.28.0,@aws-cdk/aws-s3=0.28.0,@aws-cdk/aws-s3-notifications=0.28.0,@aws-cdk/core=0.28.0,@aws-cdk/cx-api=0.28.0,@aws-cdk/region-info=0.28.0,jsii-runtime=node.js/v10.13.0"
+      }
+    }
+  }
+}

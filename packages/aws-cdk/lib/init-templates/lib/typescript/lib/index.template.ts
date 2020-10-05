@@ -1,31 +1,14 @@
-import sns = require('@aws-cdk/aws-sns');
-import sqs = require('@aws-cdk/aws-sqs');
-import cdk = require('@aws-cdk/cdk');
+import * as cdk from '@aws-cdk/core';
 
 export interface %name.PascalCased%Props {
-    /**
-     * The visibility timeout to be configured on the SQS Queue, in seconds.
-     *
-     * @default 300
-     */
-    visibilityTimeout?: number;
+  // Define construct properties here
 }
 
 export class %name.PascalCased% extends cdk.Construct {
-    /** @returns the ARN of the SQS queue */
-    public readonly queueArn: sqs.QueueArn;
 
-    constructor(parent: cdk.Construct, name: string, props: %name.PascalCased%Props = {}) {
-        super(parent, name);
+  constructor(scope: cdk.Construct, id: string, props: %name.PascalCased%Props = {}) {
+    super(scope, id);
 
-        const queue = new sqs.Queue(this, '%name.PascalCased%Queue', {
-            visibilityTimeoutSec: props.visibilityTimeout || 300
-        });
-
-        const topic = new sns.Topic(this, '%name.PascalCased%Topic');
-
-        topic.subscribeQueue(queue);
-
-        this.queueArn = queue.queueArn;
-    }
+    // Define construct contents here
+  }
 }

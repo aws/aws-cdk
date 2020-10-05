@@ -3,17 +3,13 @@
     "Repo02AC86CF": {
       "Type": "AWS::CodeCommit::Repository",
       "Properties": {
-        "RepositoryName": "aws-cdk-codecommit-events",
-        "Triggers": []
+        "RepositoryName": "aws-cdk-codecommit-events"
       }
     },
     "RepoOnReferenceCreatedF1C66FF1": {
       "Type": "AWS::Events::Rule",
       "Properties": {
         "EventPattern": {
-          "detail-type": [
-            "CodeCommit Repository State Change"
-          ],
           "source": [
             "aws.codecommit"
           ],
@@ -24,6 +20,9 @@
                 "Arn"
               ]
             }
+          ],
+          "detail-type": [
+            "CodeCommit Repository State Change"
           ],
           "detail": {
             "event": [
@@ -37,39 +36,13 @@
             "Arn": {
               "Ref": "MyTopic86869434"
             },
-            "Id": "MyTopic"
+            "Id": "Target0"
           }
         ]
       }
     },
     "MyTopic86869434": {
       "Type": "AWS::SNS::Topic"
-    },
-    "MyTopicPolicy12A5EC17": {
-      "Type": "AWS::SNS::TopicPolicy",
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Sid": "0",
-              "Action": "sns:Publish",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "events.amazonaws.com"
-              },
-              "Resource": {
-                "Ref": "MyTopic86869434"
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        },
-        "Topics": [
-          {
-            "Ref": "MyTopic86869434"
-          }
-        ]
-      }
     }
   }
 }

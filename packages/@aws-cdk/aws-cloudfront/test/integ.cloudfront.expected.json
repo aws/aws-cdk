@@ -1,13 +1,14 @@
 {
   "Resources": {
     "Bucket83908E77": {
-      "Type": "AWS::S3::Bucket"
+      "Type": "AWS::S3::Bucket",
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "MyDistributionCFDistributionDE147309": {
       "Type": "AWS::CloudFront::Distribution",
       "Properties": {
         "DistributionConfig": {
-          "CacheBehaviors": [],
           "DefaultCacheBehavior": {
             "AllowedMethods": [
               "GET",
@@ -17,6 +18,7 @@
               "GET",
               "HEAD"
             ],
+            "Compress": true,
             "ForwardedValues": {
               "Cookies": {
                 "Forward": "none"
@@ -32,10 +34,12 @@
           "IPV6Enabled": true,
           "Origins": [
             {
+              "ConnectionAttempts": 3,
+              "ConnectionTimeout": 10,
               "DomainName": {
                 "Fn::GetAtt": [
                   "Bucket83908E77",
-                  "DomainName"
+                  "RegionalDomainName"
                 ]
               },
               "Id": "origin1",

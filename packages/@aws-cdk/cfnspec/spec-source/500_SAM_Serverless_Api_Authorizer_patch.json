@@ -1,0 +1,20 @@
+{
+    "PropertyTypes": {
+        "AWS::Serverless::Api.Auth": {
+            "patch": {
+                "description": "Sets AWS::Serverless::Api.Auth#Authorizers to Json",
+                "operations": [
+                    {
+                        "op": "add",
+                        "path": "/Properties/Authorizers/PrimitiveType",
+                        "value": "Json"
+                    },
+                    {
+                        "op": "remove",
+                        "path": "/Properties/Authorizers/Type"
+                    }
+                ]
+            }
+        }
+    }
+}

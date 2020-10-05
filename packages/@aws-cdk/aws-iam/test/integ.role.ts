@@ -1,18 +1,29 @@
-import { App, PolicyStatement, ServicePrincipal, Stack } from "@aws-cdk/cdk";
-import { Policy, Role } from "../lib";
+import { App, Stack } from '@aws-cdk/core';
+import { AccountRootPrincipal, OrganizationPrincipal, Policy, PolicyStatement, Role, ServicePrincipal } from '../lib';
 
-const app = new App(process.argv);
+const app = new App();
 
 const stack = new Stack(app, 'integ-iam-role-1');
 
 const role = new Role(stack, 'TestRole', {
-    assumedBy: new ServicePrincipal('sqs.amazonaws.com')
+  assumedBy: new ServicePrincipal('sqs.amazonaws.com'),
 });
 
-role.addToPolicy(new PolicyStatement().addResource('*').addAction('sqs:SendMessage'));
+role.addToPolicy(new PolicyStatement({ resources: ['*'], actions: ['sqs:SendMessage'] }));
 
 const policy = new Policy(stack, 'HelloPolicy', { policyName: 'Default' });
-policy.addStatement(new PolicyStatement().addAction('ec2:*').addResource('*'));
+policy.addStatements(new PolicyStatement({ actions: ['ec2:*'], resources: ['*'] }));
 policy.attachToRole(role);
 
-process.stdout.write(app.run());
+// Role with an external ID
+new Role(stack, 'TestRole2', {
+  assumedBy: new AccountRootPrincipal(),
+  externalIds: ['supply-me'],
+});
+
+// Role with an org
+new Role(stack, 'TestRole3', {
+  assumedBy: new OrganizationPrincipal('o-1234'),
+});
+
+app.synth();

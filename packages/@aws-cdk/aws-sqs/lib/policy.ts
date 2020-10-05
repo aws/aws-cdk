@@ -1,36 +1,34 @@
-import { Construct, IDependable, PolicyDocument } from '@aws-cdk/cdk';
-import { QueueRef } from './queue-ref';
-import { cloudformation } from './sqs.generated';
+import { PolicyDocument } from '@aws-cdk/aws-iam';
+import { Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
+import { IQueue } from './queue-base';
+import { CfnQueuePolicy } from './sqs.generated';
 
+/**
+ * Properties to associate SQS queues with a policy
+ */
 export interface QueuePolicyProps {
-    /**
-     * The set of queues this policy applies to.
-     */
-    queues: QueueRef[];
+  /**
+   * The set of queues this policy applies to.
+   */
+  readonly queues: IQueue[];
 }
 
 /**
  * Applies a policy to SQS queues.
  */
-export class QueuePolicy extends Construct implements IDependable {
-    /**
-     * The IAM policy document for this policy.
-     */
-    public readonly document = new PolicyDocument();
+export class QueuePolicy extends Resource {
+  /**
+   * The IAM policy document for this policy.
+   */
+  public readonly document = new PolicyDocument();
 
-    /**
-     * Allows adding QueuePolicy as a dependency.
-     */
-    public readonly dependencyElements = new Array<IDependable>();
+  constructor(scope: Construct, id: string, props: QueuePolicyProps) {
+    super(scope, id);
 
-    constructor(parent: Construct, name: string, props: QueuePolicyProps) {
-        super(parent, name);
-
-        const resource = new cloudformation.QueuePolicyResource(this, 'Resource', {
-            policyDocument: this.document,
-            queues: props.queues.map(q => q.queueUrl)
-        });
-
-        this.dependencyElements.push(resource);
-    }
+    new CfnQueuePolicy(this, 'Resource', {
+      policyDocument: this.document,
+      queues: props.queues.map(q => q.queueUrl),
+    });
+  }
 }

@@ -1,36 +1,40 @@
-import { Construct, IDependable, PolicyDocument } from '@aws-cdk/cdk';
-import { cloudformation } from './sns.generated';
-import { TopicRef } from './topic-ref';
+import { PolicyDocument } from '@aws-cdk/aws-iam';
+import { Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
+import { CfnTopicPolicy } from './sns.generated';
+import { ITopic } from './topic-base';
 
+/**
+ * Properties to associate SNS topics with a policy
+ */
 export interface TopicPolicyProps {
-    /**
-     * The set of topics this policy applies to.
-     */
-    topics: TopicRef[];
+  /**
+   * The set of topics this policy applies to.
+   */
+  readonly topics: ITopic[];
 }
 
 /**
  * Applies a policy to SNS topics.
  */
-export class TopicPolicy extends Construct implements IDependable {
-    /**
-     * The IAM policy document for this policy.
-     */
-    public readonly document = new PolicyDocument();
+export class TopicPolicy extends Resource {
+  /**
+   * The IAM policy document for this policy.
+   */
+  public readonly document = new PolicyDocument({
+    // statements must be unique, so we use the statement index.
+    // potantially SIDs can change as a result of order change, but this should
+    // not have an impact on the policy evaluation.
+    // https://docs.aws.amazon.com/sns/latest/dg/AccessPolicyLanguage_SpecialInfo.html
+    assignSids: true,
+  });
 
-    /**
-     * Allows topic policy to be added as a dependency.
-     */
-    public readonly dependencyElements = new Array<IDependable>();
+  constructor(scope: Construct, id: string, props: TopicPolicyProps) {
+    super(scope, id);
 
-    constructor(parent: Construct, name: string, props: TopicPolicyProps) {
-        super(parent, name);
-
-        const resource = new cloudformation.TopicPolicyResource(this, 'Resource', {
-            policyDocument: this.document,
-            topics: props.topics.map(t => t.topicArn)
-        });
-
-        this.dependencyElements.push(resource);
-    }
+    new CfnTopicPolicy(this, 'Resource', {
+      policyDocument: this.document,
+      topics: props.topics.map(t => t.topicArn),
+    });
+  }
 }

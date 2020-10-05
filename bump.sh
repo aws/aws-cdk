@@ -1,14 +1,33 @@
 #!/bin/bash
+# --------------------------------------------------------------------------------------------------
+#
+# This script is intended to be used to bump the version of the CDK modules, update package.json,
+# package-lock.json, and create a commit.
+#
+# to start a version bump, run:
+#     bump.sh <version | version Type>
+#
+# If a version is not provided, the 'minor' version will be bumped.
+# The version can be an explicit version _or_ one of:
+# 'major', 'minor', 'patch', 'premajor', 'preminor', 'prepatch', or 'prerelease'.
+#
+# --------------------------------------------------------------------------------------------------
 set -euo pipefail
-ver=${1:-}
-if [ -z "${ver}" ]; then
-  echo "usage: ./bump.sh <version>"
-  exit 1
-fi
+version=${1:-minor}
 
-lerna publish --force-publish=* --skip-npm --skip-git --repo-version ${ver}
-lerna run build
+echo "Starting ${version} version bump"
 
-# update test expectations
-UPDATE_DIFF=1 lerna run test
+# /bin/bash ./install.sh
 
+# Generate CHANGELOG and create a commit (see .versionrc.json)
+npx standard-version --release-as ${version}
+
+# I am sorry.
+#
+# I've gone diving through the code of `conventional-changelog` to see if there
+# was a way to configure the string and ultimately I decided that a 'sed' was the simpler
+# way to go.
+sed -i.tmp -e 's/BREAKING CHANGES$/BREAKING CHANGES TO EXPERIMENTAL FEATURES/' CHANGELOG.md
+rm CHANGELOG.md.tmp
+git add CHANGELOG.md
+git commit --amend --no-edit

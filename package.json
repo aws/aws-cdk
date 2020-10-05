@@ -1,27 +1,99 @@
 {
   "name": "aws-cdk",
+  "version": "0.0.0",
+  "private": true,
   "pkglint": {
-    "ignore": true
+    "include": "dependencies/node-version"
   },
   "scripts": {
-    "pkglint": "tools/pkglint/bin/pkglint -f ."
+    "pkglint": "lerna --scope pkglint run build && lerna run pkglint",
+    "build": "./build.sh",
+    "pack": "./pack.sh",
+    "compat": "./scripts/check-api-compatibility.sh",
+    "bump": "./bump.sh",
+    "build-all": "tsc -b"
   },
   "devDependencies": {
-    "@types/node": "^8.9.4",
-    "@types/nodeunit": "^0.0.30",
-    "lerna": "^2.11.0",
-    "nodeunit": "^0.11.2",
-    "nyc": "^11.8.0",
-    "tslint": "^5.10.0",
-    "typescript": "^3.0.1"
+    "conventional-changelog-cli": "^2.1.0",
+    "fs-extra": "^9.0.1",
+    "graceful-fs": "^4.2.4",
+    "jest-junit": "^11.1.0",
+    "jsii-diff": "^1.13.0",
+    "jsii-pacmak": "^1.13.0",
+    "jsii-rosetta": "^1.13.0",
+    "lerna": "^3.22.1",
+    "standard-version": "^9.0.0",
+    "typescript": "~3.9.7"
+  },
+  "resolutions-comment": "should be removed or reviewed when nodeunit dependency is dropped or adjusted",
+  "resolutions": {
+    "tap-mocha-reporter": "^5.0.1"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/awslabs/aws-cdk"
+    "url": "git://github.com/aws/aws-cdk"
   },
   "license": "Apache-2.0",
   "author": {
     "name": "Amazon Web Services",
     "url": "https://aws.amazon.com"
+  },
+  "workspaces": {
+    "packages": [
+      "packages/*",
+      "packages/@aws-cdk/*",
+      "packages/@aws-cdk-containers/*",
+      "packages/@monocdk-experiment/*",
+      "packages/@aws-cdk/*/lambda-packages/*",
+      "tools/*"
+    ],
+    "nohoist": [
+      "**/jszip",
+      "**/jszip/**",
+      "@aws-cdk/aws-codepipeline-actions/case",
+      "@aws-cdk/aws-codepipeline-actions/case/**",
+      "@aws-cdk/aws-ecr-assets/minimatch",
+      "@aws-cdk/aws-ecr-assets/minimatch/**",
+      "@aws-cdk/aws-eks/yaml",
+      "@aws-cdk/aws-eks/yaml/**",
+      "@aws-cdk/aws-lambda-nodejs/parcel-bundler",
+      "@aws-cdk/aws-lambda-nodejs/parcel-bundler/**",
+      "@aws-cdk/cloud-assembly-schema/jsonschema",
+      "@aws-cdk/cloud-assembly-schema/jsonschema/**",
+      "@aws-cdk/cloud-assembly-schema/semver",
+      "@aws-cdk/cloud-assembly-schema/semver/**",
+      "@aws-cdk/core/fs-extra",
+      "@aws-cdk/core/fs-extra/**",
+      "@aws-cdk/core/minimatch",
+      "@aws-cdk/core/minimatch/**",
+      "@aws-cdk/cx-api/semver",
+      "@aws-cdk/cx-api/semver/**",
+      "@aws-cdk/yaml-cfn/yaml",
+      "@aws-cdk/yaml-cfn/yaml/**",
+      "aws-cdk-lib/case",
+      "aws-cdk-lib/case/**",
+      "aws-cdk-lib/fs-extra",
+      "aws-cdk-lib/fs-extra/**",
+      "aws-cdk-lib/jsonschema",
+      "aws-cdk-lib/jsonschema/**",
+      "aws-cdk-lib/minimatch",
+      "aws-cdk-lib/minimatch/**",
+      "aws-cdk-lib/semver",
+      "aws-cdk-lib/semver/**",
+      "aws-cdk-lib/yaml",
+      "aws-cdk-lib/yaml/**",
+      "monocdk-experiment/case",
+      "monocdk-experiment/case/**",
+      "monocdk-experiment/fs-extra",
+      "monocdk-experiment/fs-extra/**",
+      "monocdk-experiment/jsonschema",
+      "monocdk-experiment/jsonschema/**",
+      "monocdk-experiment/minimatch",
+      "monocdk-experiment/minimatch/**",
+      "monocdk-experiment/semver",
+      "monocdk-experiment/semver/**",
+      "monocdk-experiment/yaml",
+      "monocdk-experiment/yaml/**"
+    ]
   }
 }

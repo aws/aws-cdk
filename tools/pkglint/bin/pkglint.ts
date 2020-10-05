@@ -1,46 +1,41 @@
 #!/usr/bin/env node
-import yargs = require('yargs');
-import { findPackageJsons, PackageJson, ValidationRule } from '../lib';
+import * as path from 'path';
+import * as yargs from 'yargs';
+import { findPackageJsons, ValidationRule } from '../lib';
 
-// tslint:disable:no-shadowed-variable
+/* eslint-disable @typescript-eslint/no-shadow */
 const argv = yargs
-    .usage('$0 [directory]')
-    .option('fix', { type: 'boolean', alias: 'f', desc: 'Fix package.json in addition to reporting mistakes'})
-    .argv;
+  .usage('$0 [directory]')
+  .option('fix', { type: 'boolean', alias: 'f', desc: 'Fix package.json in addition to reporting mistakes' })
+  .argv;
 
 // Our version of yargs doesn't support positional arguments yet
-argv.directory = argv._[0];
+const directory = argv._[0] || '.';
 
-if (argv.directory == null) {
-    argv.directory = ".";
-}
+argv.directory = path.resolve(directory, process.cwd());
 
 async function main(): Promise<void> {
-    const ruleClasses = require('../lib/rules');
-    const rules: ValidationRule[] = Object.keys(ruleClasses).map(key => new ruleClasses[key]()).filter(obj => obj instanceof ValidationRule);
+  const ruleClasses = require('../lib/rules'); // eslint-disable-line @typescript-eslint/no-require-imports
+  const rules: ValidationRule[] = Object.keys(ruleClasses).map(key => new ruleClasses[key]()).filter(obj => obj instanceof ValidationRule);
 
-    const pkgs = findPackageJsons(argv.directory).filter(shouldIncludePackage);
+  const pkgs = findPackageJsons(directory);
 
-    rules.forEach(rule => pkgs.forEach(pkg => rule.prepare(pkg)));
-    rules.forEach(rule => pkgs.forEach(pkg => rule.validate(pkg)));
+  rules.forEach(rule => pkgs.filter(pkg => pkg.shouldApply(rule)).forEach(pkg => rule.prepare(pkg)));
+  rules.forEach(rule => pkgs.filter(pkg => pkg.shouldApply(rule)).forEach(pkg => rule.validate(pkg)));
 
-    if (argv.fix) {
-        pkgs.forEach(pkg => pkg.applyFixes());
-    }
+  if (argv.fix) {
+    pkgs.forEach(pkg => pkg.applyFixes());
+  }
 
-    pkgs.forEach(pkg => pkg.displayReports());
+  pkgs.forEach(pkg => pkg.displayReports(directory));
 
-    if (pkgs.some(p => p.hasReports)) {
-        throw new Error('Some package.json files had errors');
-    }
+  if (pkgs.some(p => p.hasReports)) {
+    throw new Error('Some package.json files had errors');
+  }
 }
 
 main().catch((e) => {
-    // tslint:disable-next-line:no-console
-    console.error(e);
-    process.exit(1);
+  // eslint-disable-next-line no-console
+  console.error(e);
+  process.exit(1);
 });
-
-function shouldIncludePackage(pkg: PackageJson) {
-    return !(pkg.json.pkglint && pkg.json.pkglint.ignore);
-}

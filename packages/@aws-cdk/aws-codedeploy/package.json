@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-codedeploy",
-  "version": "0.8.2",
+  "version": "0.0.0",
   "description": "The CDK Construct Library for AWS::CodeDeploy",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -14,12 +14,28 @@
           "artifactId": "codedeploy"
         }
       },
-      "sphinx": {}
-    }
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.CodeDeploy",
+        "packageId": "Amazon.CDK.AWS.CodeDeploy",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+      },
+      "python": {
+        "distName": "aws-cdk.aws-codedeploy",
+        "module": "aws_cdk.aws_codedeploy",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
+      }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/awslabs/aws-cdk.git"
+    "url": "https://github.com/aws/aws-cdk.git",
+    "directory": "packages/@aws-cdk/aws-codedeploy"
   },
   "scripts": {
     "build": "cdk-build",
@@ -28,10 +44,21 @@
     "test": "cdk-test",
     "integ": "cdk-integ",
     "pkglint": "pkglint -f",
-    "package": "cdk-package"
+    "package": "cdk-package",
+    "awslint": "cdk-awslint",
+    "cfn2ts": "cfn2ts",
+    "build+test+package": "npm run build+test && npm run package",
+    "build+test": "npm run build && npm test",
+    "compat": "cdk-compat"
   },
   "cdk-build": {
-    "cloudformation": "AWS::CodeDeploy"
+    "cloudformation": "AWS::CodeDeploy",
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
+  },
+  "nyc": {
+    "statements": 79
   },
   "keywords": [
     "aws",
@@ -46,14 +73,102 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.8.2",
-    "cdk-build-tools": "^0.8.2",
-    "cfn2ts": "^0.8.2",
-    "pkglint": "^0.8.2"
+    "@aws-cdk/assert": "0.0.0",
+    "@types/nodeunit": "^0.0.31",
+    "cdk-build-tools": "0.0.0",
+    "cdk-integ-tools": "0.0.0",
+    "cfn2ts": "0.0.0",
+    "nodeunit": "^0.11.3",
+    "pkglint": "0.0.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-codepipeline-api": "^0.8.2",
-    "@aws-cdk/cdk": "^0.8.2"
+    "@aws-cdk/aws-autoscaling": "0.0.0",
+    "@aws-cdk/aws-cloudwatch": "0.0.0",
+    "@aws-cdk/aws-ec2": "0.0.0",
+    "@aws-cdk/aws-elasticloadbalancing": "0.0.0",
+    "@aws-cdk/aws-elasticloadbalancingv2": "0.0.0",
+    "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-lambda": "0.0.0",
+    "@aws-cdk/aws-s3": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^3.0.4"
   },
-  "homepage": "https://github.com/awslabs/aws-cdk"
+  "homepage": "https://github.com/aws/aws-cdk",
+  "peerDependencies": {
+    "@aws-cdk/aws-autoscaling": "0.0.0",
+    "@aws-cdk/aws-cloudwatch": "0.0.0",
+    "@aws-cdk/aws-ec2": "0.0.0",
+    "@aws-cdk/aws-elasticloadbalancing": "0.0.0",
+    "@aws-cdk/aws-elasticloadbalancingv2": "0.0.0",
+    "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-lambda": "0.0.0",
+    "@aws-cdk/aws-s3": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^3.0.4"
+  },
+  "engines": {
+    "node": ">= 10.13.0 <13 || >=13.7.0"
+  },
+  "awslint": {
+    "exclude": [
+      "construct-interface-extends-iconstruct:@aws-cdk/aws-codedeploy.IServerDeploymentConfig",
+      "resource-interface-extends-resource:@aws-cdk/aws-codedeploy.IServerDeploymentConfig",
+      "docs-public-apis:@aws-cdk/aws-codedeploy.ServerDeploymentConfig.deploymentConfigArn",
+      "docs-public-apis:@aws-cdk/aws-codedeploy.IServerDeploymentGroup.role",
+      "docs-public-apis:@aws-cdk/aws-codedeploy.InstanceTagSet.instanceTagGroups",
+      "docs-public-apis:@aws-cdk/aws-codedeploy.LambdaApplication.applicationArn",
+      "docs-public-apis:@aws-cdk/aws-codedeploy.LambdaApplication.applicationName",
+      "docs-public-apis:@aws-cdk/aws-codedeploy.LambdaDeploymentConfig.ALL_AT_ONCE",
+      "docs-public-apis:@aws-cdk/aws-codedeploy.LambdaDeploymentConfig.CANARY_10PERCENT_10MINUTES",
+      "docs-public-apis:@aws-cdk/aws-codedeploy.LambdaDeploymentConfig.CANARY_10PERCENT_15MINUTES",
+      "docs-public-apis:@aws-cdk/aws-codedeploy.LambdaDeploymentConfig.CANARY_10PERCENT_30MINUTES",
+      "docs-public-apis:@aws-cdk/aws-codedeploy.LambdaDeploymentConfig.CANARY_10PERCENT_5MINUTES",
+      "docs-public-apis:@aws-cdk/aws-codedeploy.LambdaDeploymentConfig.LINEAR_10PERCENT_EVERY_10MINUTES",
+      "docs-public-apis:@aws-cdk/aws-codedeploy.LambdaDeploymentConfig.LINEAR_10PERCENT_EVERY_1MINUTE",
+      "docs-public-apis:@aws-cdk/aws-codedeploy.LambdaDeploymentConfig.LINEAR_10PERCENT_EVERY_2MINUTES",
+      "docs-public-apis:@aws-cdk/aws-codedeploy.LambdaDeploymentConfig.LINEAR_10PERCENT_EVERY_3MINUTES",
+      "docs-public-apis:@aws-cdk/aws-codedeploy.LambdaDeploymentGroup",
+      "docs-public-apis:@aws-cdk/aws-codedeploy.LambdaDeploymentGroup.role",
+      "docs-public-apis:@aws-cdk/aws-codedeploy.LoadBalancer.generation",
+      "docs-public-apis:@aws-cdk/aws-codedeploy.LoadBalancer.name",
+      "docs-public-apis:@aws-cdk/aws-codedeploy.ServerApplication.applicationArn",
+      "docs-public-apis:@aws-cdk/aws-codedeploy.ServerApplication.applicationName",
+      "docs-public-apis:@aws-cdk/aws-codedeploy.ServerDeploymentConfig.ALL_AT_ONCE",
+      "docs-public-apis:@aws-cdk/aws-codedeploy.ServerDeploymentConfig.HALF_AT_A_TIME",
+      "docs-public-apis:@aws-cdk/aws-codedeploy.ServerDeploymentConfig.ONE_AT_A_TIME",
+      "docs-public-apis:@aws-cdk/aws-codedeploy.IServerDeploymentGroup.autoScalingGroups",
+      "docs-public-apis:@aws-cdk/aws-codedeploy.ServerDeploymentConfig.deploymentConfigName",
+      "docs-public-apis:@aws-cdk/aws-codedeploy.ServerDeploymentGroup.application",
+      "docs-public-apis:@aws-cdk/aws-codedeploy.ServerDeploymentGroup.deploymentConfig",
+      "docs-public-apis:@aws-cdk/aws-codedeploy.ServerDeploymentGroup.deploymentGroupArn",
+      "docs-public-apis:@aws-cdk/aws-codedeploy.ServerDeploymentGroup.deploymentGroupName",
+      "docs-public-apis:@aws-cdk/aws-codedeploy.ServerDeploymentGroup.autoScalingGroups",
+      "docs-public-apis:@aws-cdk/aws-codedeploy.ServerDeploymentGroup.role",
+      "docs-public-apis:@aws-cdk/aws-codedeploy.ILambdaApplication.applicationArn",
+      "docs-public-apis:@aws-cdk/aws-codedeploy.ILambdaApplication.applicationName",
+      "docs-public-apis:@aws-cdk/aws-codedeploy.ILambdaDeploymentConfig.deploymentConfigArn",
+      "docs-public-apis:@aws-cdk/aws-codedeploy.ILambdaDeploymentConfig.deploymentConfigName",
+      "docs-public-apis:@aws-cdk/aws-codedeploy.IServerApplication.applicationArn",
+      "docs-public-apis:@aws-cdk/aws-codedeploy.IServerApplication.applicationName",
+      "docs-public-apis:@aws-cdk/aws-codedeploy.IServerDeploymentConfig.deploymentConfigArn",
+      "docs-public-apis:@aws-cdk/aws-codedeploy.IServerDeploymentConfig.deploymentConfigName",
+      "docs-public-apis:@aws-cdk/aws-codedeploy.IServerDeploymentGroup",
+      "docs-public-apis:@aws-cdk/aws-codedeploy.IServerDeploymentGroup.application",
+      "docs-public-apis:@aws-cdk/aws-codedeploy.IServerDeploymentGroup.deploymentConfig",
+      "docs-public-apis:@aws-cdk/aws-codedeploy.IServerDeploymentGroup.deploymentGroupArn",
+      "docs-public-apis:@aws-cdk/aws-codedeploy.IServerDeploymentGroup.deploymentGroupName",
+      "docs-public-apis:@aws-cdk/aws-codedeploy.EcsApplication.applicationArn",
+      "docs-public-apis:@aws-cdk/aws-codedeploy.EcsApplication.applicationName",
+      "docs-public-apis:@aws-cdk/aws-codedeploy.EcsDeploymentConfig.ALL_AT_ONCE",
+      "docs-public-apis:@aws-cdk/aws-codedeploy.IEcsApplication.applicationArn",
+      "docs-public-apis:@aws-cdk/aws-codedeploy.IEcsApplication.applicationName",
+      "docs-public-apis:@aws-cdk/aws-codedeploy.IEcsDeploymentConfig.deploymentConfigArn",
+      "docs-public-apis:@aws-cdk/aws-codedeploy.IEcsDeploymentConfig.deploymentConfigName"
+    ]
+  },
+  "stability": "stable",
+  "awscdkio": {
+    "announce": false
+  },
+  "maturity": "stable"
 }

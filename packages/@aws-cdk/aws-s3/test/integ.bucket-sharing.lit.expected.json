@@ -1,0 +1,74 @@
+[
+  {
+    "Resources": {
+      "MyBucketF68F3FF0": {
+        "Type": "AWS::S3::Bucket",
+        "UpdateReplacePolicy": "Delete",
+        "DeletionPolicy": "Delete"
+      }
+    },
+    "Outputs": {
+      "ExportsOutputFnGetAttMyBucketF68F3FF0Arn0F7E8E58": {
+        "Value": {
+          "Fn::GetAtt": [
+            "MyBucketF68F3FF0",
+            "Arn"
+          ]
+        },
+        "Export": {
+          "Name": "ProducerStack:ExportsOutputFnGetAttMyBucketF68F3FF0Arn0F7E8E58"
+        }
+      }
+    }
+  },
+  {
+    "Resources": {
+      "MyUserDC45028B": {
+        "Type": "AWS::IAM::User"
+      },
+      "MyUserDefaultPolicy7B897426": {
+        "Type": "AWS::IAM::Policy",
+        "Properties": {
+          "PolicyDocument": {
+            "Statement": [
+              {
+                "Action": [
+                  "s3:GetObject*",
+                  "s3:GetBucket*",
+                  "s3:List*",
+                  "s3:DeleteObject*",
+                  "s3:PutObject*",
+                  "s3:Abort*"
+                ],
+                "Effect": "Allow",
+                "Resource": [
+                  {
+                    "Fn::ImportValue": "ProducerStack:ExportsOutputFnGetAttMyBucketF68F3FF0Arn0F7E8E58"
+                  },
+                  {
+                    "Fn::Join": [
+                      "",
+                      [
+                        {
+                          "Fn::ImportValue": "ProducerStack:ExportsOutputFnGetAttMyBucketF68F3FF0Arn0F7E8E58"
+                        },
+                        "/*"
+                      ]
+                    ]
+                  }
+                ]
+              }
+            ],
+            "Version": "2012-10-17"
+          },
+          "PolicyName": "MyUserDefaultPolicy7B897426",
+          "Users": [
+            {
+              "Ref": "MyUserDC45028B"
+            }
+          ]
+        }
+      }
+    }
+  }
+]

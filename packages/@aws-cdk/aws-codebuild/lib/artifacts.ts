@@ -1,97 +1,162 @@
-import s3 = require('@aws-cdk/aws-s3');
-import { cloudformation } from './codebuild.generated';
-import { Project } from './project';
+import * as s3 from '@aws-cdk/aws-s3';
+import { CfnProject } from './codebuild.generated';
+import { IProject } from './project';
 
-export abstract class BuildArtifacts {
-    public abstract toArtifactsJSON(): cloudformation.ProjectResource.ArtifactsProperty;
-    public bind(_project: Project) {
-        return;
-    }
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
+
+/**
+ * The type returned from {@link IArtifacts#bind}.
+ */
+export interface ArtifactsConfig {
+  /**
+   * The low-level CloudFormation artifacts property.
+   */
+  readonly artifactsProperty: CfnProject.ArtifactsProperty;
 }
 
-export class NoBuildArtifacts  extends BuildArtifacts {
-    public toArtifactsJSON(): cloudformation.ProjectResource.ArtifactsProperty {
-        return { type: 'NO_ARTIFACTS' };
-    }
+/**
+ * The abstract interface of a CodeBuild build output.
+ * Implemented by {@link Artifacts}.
+ */
+export interface IArtifacts {
+  /**
+   * The artifact identifier.
+   * This property is required on secondary artifacts.
+   */
+  readonly identifier?: string;
+
+  /**
+   * The CodeBuild type of this artifact.
+   */
+  readonly type: string;
+
+  /**
+   * Callback when an Artifacts class is used in a CodeBuild Project.
+   *
+   * @param scope a root Construct that allows creating new Constructs
+   * @param project the Project this Artifacts is used in
+   */
+  bind(scope: CoreConstruct, project: IProject): ArtifactsConfig;
 }
 
-export class CodePipelineBuildArtifacts extends BuildArtifacts {
-    public toArtifactsJSON(): cloudformation.ProjectResource.ArtifactsProperty {
-        return { type: 'CODEPIPELINE' };
-    }
+/**
+ * Properties common to all Artifacts classes.
+ */
+export interface ArtifactsProps {
+  /**
+   * The artifact identifier.
+   * This property is required on secondary artifacts.
+   */
+  readonly identifier?: string;
 }
 
-export interface S3BucketBuildArtifactsProps {
-    /**
-     * The name of the output bucket.
-     */
-    bucket: s3.BucketRef;
+/**
+ * Artifacts definition for a CodeBuild Project.
+ */
+export abstract class Artifacts implements IArtifacts {
+  public static s3(props: S3ArtifactsProps): IArtifacts {
+    return new S3Artifacts(props);
+  }
 
-    /**
-     * The path inside of the bucket for the build output .zip file or folder.
-     * If a value is not specified, then build output will be stored at the root of the
-     * bucket (or under the <build-id> directory if `includeBuildId` is set to true).
-     */
-    path?: string;
+  public readonly identifier?: string;
+  public abstract readonly type: string;
 
-    /**
-     * The name of the build output ZIP file or folder inside the bucket.
-     *
-     * The full S3 object key will be "<path>/build-ID/<name>" or
-     * "<path>/<artifactsName>" depending on whether `includeBuildId` is set to true.
-     */
-    name: string;
+  protected constructor(props: ArtifactsProps) {
+    this.identifier = props.identifier;
+  }
 
-    /**
-     * Indicates if the build ID should be included in the path. If this is set to true,
-     * then the build artifact will be stored in "<path>/<build-id>/<name>".
-     *
-     * @default true
-     */
-    includeBuildID?: boolean;
-
-    /**
-     * If this is true, all build output will be packaged into a single .zip file.
-     * Otherwise, all files will be uploaded to <path>/<name>
-     *
-     * @default true - files will be archived
-     */
-    packageZip?: boolean;
+  public bind(_scope: CoreConstruct, _project: IProject): ArtifactsConfig {
+    return {
+      artifactsProperty: {
+        artifactIdentifier: this.identifier,
+        type: this.type,
+      },
+    };
+  }
 }
 
-export class S3BucketBuildArtifacts extends BuildArtifacts {
-    constructor(private readonly props: S3BucketBuildArtifactsProps) {
-        super();
-    }
+/**
+ * Construction properties for {@link S3Artifacts}.
+ */
+export interface S3ArtifactsProps extends ArtifactsProps {
+  /**
+   * The name of the output bucket.
+   */
+  readonly bucket: s3.IBucket;
 
-    public bind(project: Project) {
-        this.props.bucket.grantReadWrite(project.role);
-    }
+  /**
+   * The path inside of the bucket for the build output .zip file or folder.
+   * If a value is not specified, then build output will be stored at the root of the
+   * bucket (or under the <build-id> directory if `includeBuildId` is set to true).
+   *
+   * @default the root of the bucket
+   */
+  readonly path?: string;
 
-    public toArtifactsJSON(): cloudformation.ProjectResource.ArtifactsProperty {
-        return {
-            type: 'S3',
-            location: this.props.bucket.bucketName,
-            path: this.props.bucket.path,
-            namespaceType: this.parseNamespaceType(this.props.includeBuildID),
-            name: this.props.name,
-            packaging: this.parsePackaging(this.props.packageZip),
-        };
-    }
+  /**
+   * The name of the build output ZIP file or folder inside the bucket.
+   *
+   * The full S3 object key will be "<path>/<build-id>/<name>" or
+   * "<path>/<name>" depending on whether `includeBuildId` is set to true.
+   *
+   * If not set, `overrideArtifactName` will be set and the name from the
+   * buildspec will be used instead.
+   *
+   * @default undefined, and use the name from the buildspec
+   */
+  readonly name?: string;
 
-    private parseNamespaceType(includeBuildID?: boolean) {
-        if (includeBuildID != null) {
-            return includeBuildID ? 'BUILD_ID' : 'NONE';
-        } else {
-            return 'BUILD_ID';
-        }
-    }
+  /**
+   * Indicates if the build ID should be included in the path. If this is set to true,
+   * then the build artifact will be stored in "<path>/<build-id>/<name>".
+   *
+   * @default true
+   */
+  readonly includeBuildId?: boolean;
 
-    private parsePackaging(packageZip?: boolean) {
-        if (packageZip != null) {
-            return packageZip ? 'ZIP' : 'NONE';
-        } else {
-            return 'ZIP';
-        }
-    }
+  /**
+   * If this is true, all build output will be packaged into a single .zip file.
+   * Otherwise, all files will be uploaded to <path>/<name>
+   *
+   * @default true - files will be archived
+   */
+  readonly packageZip?: boolean;
+
+  /**
+   * If this is false, build output will not be encrypted.
+   * This is useful if the artifact to publish a static website or sharing content with others
+   *
+   * @default true - output will be encrypted
+   */
+  readonly encryption?: boolean;
+}
+
+/**
+ * S3 Artifact definition for a CodeBuild Project.
+ */
+class S3Artifacts extends Artifacts {
+  public readonly type = 'S3';
+
+  constructor(private readonly props: S3ArtifactsProps) {
+    super(props);
+  }
+
+  public bind(_scope: CoreConstruct, project: IProject): ArtifactsConfig {
+    this.props.bucket.grantReadWrite(project);
+    const superConfig = super.bind(_scope, project);
+    return {
+      artifactsProperty: {
+        ...superConfig.artifactsProperty,
+        location: this.props.bucket.bucketName,
+        path: this.props.path,
+        namespaceType: this.props.includeBuildId === false ? 'NONE' : 'BUILD_ID',
+        name: this.props.name == null ? undefined : this.props.name,
+        packaging: this.props.packageZip === false ? 'NONE' : 'ZIP',
+        encryptionDisabled: this.props.encryption === false ? true : undefined,
+        overrideArtifactName: this.props.name == null ? true : undefined,
+      },
+    };
+  }
 }

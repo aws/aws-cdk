@@ -1,0 +1,487 @@
+{
+  "Resources": {
+    "Stack8A423254": {
+      "Type": "AWS::EC2::VPC",
+      "Properties": {
+        "CidrBlock": "10.0.0.0/16",
+        "EnableDnsHostnames": true,
+        "EnableDnsSupport": true,
+        "InstanceTenancy": "default",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "TestStack/Stack"
+          }
+        ]
+      }
+    },
+    "StackPublicSubnet1Subnet0AD81D22": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.0.0.0/18",
+        "VpcId": {
+          "Ref": "Stack8A423254"
+        },
+        "AvailabilityZone": "test-region-1a",
+        "MapPublicIpOnLaunch": true,
+        "Tags": [
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Public"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Public"
+          },
+          {
+            "Key": "Name",
+            "Value": "TestStack/Stack/PublicSubnet1"
+          }
+        ]
+      }
+    },
+    "StackPublicSubnet1RouteTable5057189D": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "Stack8A423254"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "TestStack/Stack/PublicSubnet1"
+          }
+        ]
+      }
+    },
+    "StackPublicSubnet1RouteTableAssociation74F1C1B6": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "StackPublicSubnet1RouteTable5057189D"
+        },
+        "SubnetId": {
+          "Ref": "StackPublicSubnet1Subnet0AD81D22"
+        }
+      }
+    },
+    "StackPublicSubnet1DefaultRoute16154E3D": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "StackPublicSubnet1RouteTable5057189D"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "StackIGW2F0A1126"
+        }
+      },
+      "DependsOn": [
+        "StackVPCGWFFCB6290"
+      ]
+    },
+    "StackPublicSubnet1EIPBDAAB2A5": {
+      "Type": "AWS::EC2::EIP",
+      "Properties": {
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "TestStack/Stack/PublicSubnet1"
+          }
+        ]
+      }
+    },
+    "StackPublicSubnet1NATGatewayD2E1ABF7": {
+      "Type": "AWS::EC2::NatGateway",
+      "Properties": {
+        "AllocationId": {
+          "Fn::GetAtt": [
+            "StackPublicSubnet1EIPBDAAB2A5",
+            "AllocationId"
+          ]
+        },
+        "SubnetId": {
+          "Ref": "StackPublicSubnet1Subnet0AD81D22"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "TestStack/Stack/PublicSubnet1"
+          }
+        ]
+      }
+    },
+    "StackPublicSubnet2Subnet3C7D2288": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.0.64.0/18",
+        "VpcId": {
+          "Ref": "Stack8A423254"
+        },
+        "AvailabilityZone": "test-region-1b",
+        "MapPublicIpOnLaunch": true,
+        "Tags": [
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Public"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Public"
+          },
+          {
+            "Key": "Name",
+            "Value": "TestStack/Stack/PublicSubnet2"
+          }
+        ]
+      }
+    },
+    "StackPublicSubnet2RouteTableCD306445": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "Stack8A423254"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "TestStack/Stack/PublicSubnet2"
+          }
+        ]
+      }
+    },
+    "StackPublicSubnet2RouteTableAssociation5E8F73F1": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "StackPublicSubnet2RouteTableCD306445"
+        },
+        "SubnetId": {
+          "Ref": "StackPublicSubnet2Subnet3C7D2288"
+        }
+      }
+    },
+    "StackPublicSubnet2DefaultRoute0319539B": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "StackPublicSubnet2RouteTableCD306445"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "StackIGW2F0A1126"
+        }
+      },
+      "DependsOn": [
+        "StackVPCGWFFCB6290"
+      ]
+    },
+    "StackPrivateSubnet1Subnet47AC2BC7": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.0.128.0/18",
+        "VpcId": {
+          "Ref": "Stack8A423254"
+        },
+        "AvailabilityZone": "test-region-1a",
+        "MapPublicIpOnLaunch": false,
+        "Tags": [
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Private"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Private"
+          },
+          {
+            "Key": "Name",
+            "Value": "TestStack/Stack/PrivateSubnet1"
+          }
+        ]
+      }
+    },
+    "StackPrivateSubnet1RouteTable8ADA6A0C": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "Stack8A423254"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "TestStack/Stack/PrivateSubnet1"
+          }
+        ]
+      }
+    },
+    "StackPrivateSubnet1RouteTableAssociationFFE38495": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "StackPrivateSubnet1RouteTable8ADA6A0C"
+        },
+        "SubnetId": {
+          "Ref": "StackPrivateSubnet1Subnet47AC2BC7"
+        }
+      }
+    },
+    "StackPrivateSubnet1DefaultRouteFBF81BA5": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "StackPrivateSubnet1RouteTable8ADA6A0C"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "NatGatewayId": {
+          "Ref": "StackPublicSubnet1NATGatewayD2E1ABF7"
+        }
+      }
+    },
+    "StackPrivateSubnet2SubnetA2F8EDD8": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.0.192.0/18",
+        "VpcId": {
+          "Ref": "Stack8A423254"
+        },
+        "AvailabilityZone": "test-region-1b",
+        "MapPublicIpOnLaunch": false,
+        "Tags": [
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Private"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Private"
+          },
+          {
+            "Key": "Name",
+            "Value": "TestStack/Stack/PrivateSubnet2"
+          }
+        ]
+      }
+    },
+    "StackPrivateSubnet2RouteTableA5546697": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "Stack8A423254"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "TestStack/Stack/PrivateSubnet2"
+          }
+        ]
+      }
+    },
+    "StackPrivateSubnet2RouteTableAssociation68ACB8C1": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "StackPrivateSubnet2RouteTableA5546697"
+        },
+        "SubnetId": {
+          "Ref": "StackPrivateSubnet2SubnetA2F8EDD8"
+        }
+      }
+    },
+    "StackPrivateSubnet2DefaultRoute22004492": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "StackPrivateSubnet2RouteTableA5546697"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "NatGatewayId": {
+          "Ref": "StackPublicSubnet1NATGatewayD2E1ABF7"
+        }
+      }
+    },
+    "StackIGW2F0A1126": {
+      "Type": "AWS::EC2::InternetGateway",
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "TestStack/Stack"
+          }
+        ]
+      }
+    },
+    "StackVPCGWFFCB6290": {
+      "Type": "AWS::EC2::VPCGatewayAttachment",
+      "Properties": {
+        "VpcId": {
+          "Ref": "Stack8A423254"
+        },
+        "InternetGatewayId": {
+          "Ref": "StackIGW2F0A1126"
+        }
+      }
+    },
+    "LB8A12904C": {
+      "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+      "Properties": {
+        "LoadBalancerAttributes": [
+          {
+            "Key": "deletion_protection.enabled",
+            "Value": "false"
+          }
+        ],
+        "Scheme": "internet-facing",
+        "SecurityGroups": [
+          {
+            "Fn::GetAtt": [
+              "LBSecurityGroup8A41EA2B",
+              "GroupId"
+            ]
+          }
+        ],
+        "Subnets": [
+          {
+            "Ref": "StackPublicSubnet1Subnet0AD81D22"
+          },
+          {
+            "Ref": "StackPublicSubnet2Subnet3C7D2288"
+          }
+        ],
+        "Type": "application"
+      },
+      "DependsOn": [
+        "StackPublicSubnet1DefaultRoute16154E3D",
+        "StackPublicSubnet2DefaultRoute0319539B"
+      ]
+    },
+    "LBSecurityGroup8A41EA2B": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Automatically created Security Group for ELB TestStackLBC7C3DDBD",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "255.255.255.255/32",
+            "Description": "Disallow all traffic",
+            "FromPort": 252,
+            "IpProtocol": "icmp",
+            "ToPort": 86
+          }
+        ],
+        "SecurityGroupIngress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow from anyone on port 80",
+            "FromPort": 80,
+            "IpProtocol": "tcp",
+            "ToPort": 80
+          }
+        ],
+        "VpcId": {
+          "Ref": "Stack8A423254"
+        }
+      }
+    },
+    "LBListener49E825B4": {
+      "Type": "AWS::ElasticLoadBalancingV2::Listener",
+      "Properties": {
+        "DefaultActions": [
+          {
+            "TargetGroupArn": {
+              "Ref": "LBListenerTargetsGroup76EF81E8"
+            },
+            "Type": "forward"
+          }
+        ],
+        "LoadBalancerArn": {
+          "Ref": "LB8A12904C"
+        },
+        "Port": 80,
+        "Protocol": "HTTP"
+      }
+    },
+    "LBListenerTargetsGroup76EF81E8": {
+      "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+      "Properties": {
+        "Targets": [
+          {
+            "Id": {
+              "Fn::GetAtt": [
+                "FunA2CCED21",
+                "Arn"
+              ]
+            }
+          }
+        ],
+        "TargetType": "lambda"
+      },
+      "DependsOn": [
+        "FunInvokeServicePrincipalelasticloadbalancingamazonawscomD2CAC0C4"
+      ]
+    },
+    "FunServiceRole3CC876D7": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "FunA2CCED21": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "ZipFile": "\ndef handler(event, context):\n  return {\n    \"isBase64Encoded\": False,\n    \"statusCode\": 200,\n    \"statusDescription\": \"200 OK\",\n    \"headers\": {\n        \"Set-cookie\": \"cookies\",\n        \"Content-Type\": \"application/json\"\n    },\n    \"body\": \"Hello from Lambda\"\n  }\n      "
+        },
+        "Handler": "index.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "FunServiceRole3CC876D7",
+            "Arn"
+          ]
+        },
+        "Runtime": "python3.6"
+      },
+      "DependsOn": [
+        "FunServiceRole3CC876D7"
+      ]
+    },
+    "FunInvokeServicePrincipalelasticloadbalancingamazonawscomD2CAC0C4": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "FunA2CCED21",
+            "Arn"
+          ]
+        },
+        "Principal": "elasticloadbalancing.amazonaws.com"
+      }
+    }
+  }
+}

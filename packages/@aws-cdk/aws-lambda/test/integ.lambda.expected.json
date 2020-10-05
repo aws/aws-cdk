@@ -20,21 +20,11 @@
             "Fn::Join": [
               "",
               [
-                "arn",
-                ":",
+                "arn:",
                 {
                   "Ref": "AWS::Partition"
                 },
-                ":",
-                "iam",
-                ":",
-                "",
-                ":",
-                "aws",
-                ":",
-                "policy",
-                "/",
-                "service-role/AWSLambdaBasicExecutionRole"
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
               ]
             ]
           }
@@ -75,11 +65,11 @@
             "Arn"
           ]
         },
-        "Runtime": "nodejs6.10"
+        "Runtime": "nodejs10.x"
       },
       "DependsOn": [
-        "MyLambdaServiceRole4539ECB6",
-        "MyLambdaServiceRoleDefaultPolicy5BBC6F68"
+        "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
+        "MyLambdaServiceRole4539ECB6"
       ]
     },
     "MyLambdaVersion16CDE3C40": {
@@ -103,6 +93,16 @@
           ]
         },
         "Name": "prod"
+      }
+    },
+    "AliasAliasPermissionAF30F9E8": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Ref": "Alias325C5727"
+        },
+        "Principal": "cloudformation.amazonaws.com"
       }
     }
   }

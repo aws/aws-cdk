@@ -1,0 +1,17 @@
+{
+  "$schema": "../cdk.schema.json",
+  "Resources": {
+    "Hello": {
+      "Type": "@aws-cdk/aws-sqs.Queue",
+      "Properties": {
+        "encryption": "Unencrypted"
+      }
+    },
+    "MyLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": { "Ref": "AWS::AccountId" }
+      }
+    }
+  }
+}

@@ -1,19 +1,25 @@
 #!/usr/bin/env node
-import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/cdk');
-import codebuild = require('../lib');
+import * as s3 from '@aws-cdk/aws-s3';
+import * as cdk from '@aws-cdk/core';
+import * as codebuild from '../lib';
 
-const app = new cdk.App(process.argv);
+const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-cdk-codebuild');
 
-const bucket = new s3.Bucket(stack, 'MyBucket');
-
-new codebuild.Project(stack, 'MyProject', {
-    source: new codebuild.S3BucketSource(bucket, 'path/to/my/source.zip'),
-    environment: {
-        computeType: codebuild.ComputeType.Large
-    }
+const bucket = new s3.Bucket(stack, 'MyBucket', {
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
-process.stdout.write(app.run());
+new codebuild.Project(stack, 'MyProject', {
+  source: codebuild.Source.s3({
+    bucket,
+    path: 'path/to/my/source.zip',
+  }),
+  environment: {
+    computeType: codebuild.ComputeType.LARGE,
+  },
+  grantReportGroupPermissions: false,
+});
+
+app.synth();

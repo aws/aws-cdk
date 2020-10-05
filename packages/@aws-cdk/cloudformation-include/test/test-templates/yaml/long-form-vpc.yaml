@@ -1,0 +1,52 @@
+Mappings:
+  RegionMap:
+    region-1:
+      HVM64: name1
+      HVMG2: name2
+Conditions:
+  AlwaysTrueCond:
+    Fn::And:
+      - Fn::Not: 
+        - Fn::Equals: [ Ref: "AWS::Region", completely-made-up-region]
+      - Fn::Or: 
+        - Fn::Equals: [ Ref: "AWS::Region", completely-made-up-region]
+        - Fn::Equals: [ Ref: "AWS::Region", completely-made-up-region]
+Resources:
+  Vpc:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock:
+        Fn::If:
+        - AlwaysTrueCond
+        - Fn::Cidr:
+          - 192.168.1.1/24
+          - 2
+          - 5
+        - Fn::Cidr:
+          - 10.0.0.0/24
+          - '6'
+          - '5'
+  Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        Fn::If:
+        - AlwaysTrueCond
+        - Fn::FindInMap:
+          - RegionMap
+          - region-1
+          - HVM64
+        - Fn::Transform:
+            Name: AWS::Include
+            Parameters:
+              Location: location,
+              AnotherParameter:
+                Fn::Base64: AnotherValue
+      AccessControl:
+        Fn::ImportValue: 
+          Fn::Sub:
+            - "${Region}-foo-${!Immediate}-foo-${Vpc}-${Vpc.Id}-${Name}"
+            - Name:
+                Ref: Vpc
+              Region:
+                Fn::Base64: AWS::Region

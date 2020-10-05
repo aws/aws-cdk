@@ -1,26 +1,26 @@
-import { Stack } from '@aws-cdk/cdk';
-import { LogGroup } from '../lib';
+import { Stack } from '@aws-cdk/core';
+import { LogGroup, RetentionDays } from '../lib';
 
 const stack = new Stack();
 
 function shortLogGroup() {
-    /// !show
-    // Configure log group for short retention
-    const logGroup = new LogGroup(stack, 'LogGroup', {
-        retentionDays: 7
-    });
-    /// !hide
-    return logGroup;
+  /// !show
+  // Configure log group for short retention
+  const logGroup = new LogGroup(stack, 'LogGroup', {
+    retention: RetentionDays.ONE_WEEK,
+  });
+  /// !hide
+  return logGroup;
 }
 
 function infiniteLogGroup() {
-    /// !show
-    // Configure log group for infinite retention
-    const logGroup = new LogGroup(stack, 'LogGroup', {
-        retentionDays: Infinity
-    });
-    /// !hide
-    return logGroup;
+  /// !show
+  // Configure log group for infinite retention
+  const logGroup = new LogGroup(stack, 'LogGroup', {
+    retention: Infinity,
+  });
+  /// !hide
+  return logGroup;
 }
 
 //

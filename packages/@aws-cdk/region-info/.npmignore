@@ -1,0 +1,24 @@
+
+dist
+.LAST_PACKAGE
+.LAST_BUILD
+*.snk
+*.ts
+!*.d.ts
+!*.js
+coverage
+.nyc_output
+*.tgz
+
+# Include .jsii
+!.jsii
+
+*.tsbuildinfo
+
+tsconfig.json
+.eslintrc.js
+jest.config.js
+
+# exclude cdk artifacts
+**/cdk.out
+junit.xml

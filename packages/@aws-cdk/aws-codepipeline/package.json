@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-codepipeline",
-  "version": "0.8.2",
+  "version": "0.0.0",
   "description": "Better interface to AWS Code Pipeline",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -14,12 +14,28 @@
           "artifactId": "codepipeline"
         }
       },
-      "sphinx": {}
-    }
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.CodePipeline",
+        "packageId": "Amazon.CDK.AWS.CodePipeline",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+      },
+      "python": {
+        "distName": "aws-cdk.aws-codepipeline",
+        "module": "aws_cdk.aws_codepipeline",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
+      }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/awslabs/aws-cdk.git"
+    "url": "https://github.com/aws/aws-cdk.git",
+    "directory": "packages/@aws-cdk/aws-codepipeline"
   },
   "scripts": {
     "build": "cdk-build",
@@ -28,20 +44,28 @@
     "test": "cdk-test",
     "integ": "cdk-integ",
     "pkglint": "pkglint -f",
-    "package": "cdk-package"
+    "package": "cdk-package",
+    "awslint": "cdk-awslint",
+    "cfn2ts": "cfn2ts",
+    "build+test+package": "npm run build+test && npm run package",
+    "build+test": "npm run build && npm test",
+    "compat": "cdk-compat"
   },
   "cdk-build": {
-    "cloudformation": "AWS::CodePipeline"
+    "cloudformation": "AWS::CodePipeline",
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "nyc": {
-    "lines": 66
+    "statements": 50,
+    "lines": 50
   },
   "keywords": [
     "aws",
-    "aws-clib",
-    "aws-cloudlib",
     "cdk",
-    "cloudlib",
+    "constructs",
     "codepipeline",
     "pipeline"
   ],
@@ -52,28 +76,104 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.8.2",
-    "@aws-cdk/aws-cloudformation": "^0.8.2",
-    "@aws-cdk/aws-codebuild": "^0.8.2",
-    "@aws-cdk/aws-codecommit": "^0.8.2",
-    "@aws-cdk/aws-codedeploy": "^0.8.2",
-    "@aws-cdk/aws-lambda": "^0.8.2",
-    "@aws-cdk/aws-sns": "^0.8.2",
-    "cdk-build-tools": "^0.8.2",
-    "cdk-integ-tools": "^0.8.2",
-    "cfn2ts": "^0.8.2",
-    "pkglint": "^0.8.2"
+    "@aws-cdk/assert": "0.0.0",
+    "@aws-cdk/cx-api": "0.0.0",
+    "@types/nodeunit": "^0.0.31",
+    "cdk-build-tools": "0.0.0",
+    "cdk-integ-tools": "0.0.0",
+    "nodeunit-shim": "0.0.0",
+    "cfn2ts": "0.0.0",
+    "nodeunit": "^0.11.3",
+    "pkglint": "0.0.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-codepipeline-api": "^0.8.2",
-    "@aws-cdk/aws-events": "^0.8.2",
-    "@aws-cdk/aws-iam": "^0.8.2",
-    "@aws-cdk/aws-s3": "^0.8.2",
-    "@aws-cdk/cdk": "^0.8.2",
-    "@aws-cdk/util": "^0.8.2"
+    "@aws-cdk/aws-events": "0.0.0",
+    "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-kms": "0.0.0",
+    "@aws-cdk/aws-s3": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^3.0.4"
   },
-  "bundledDependencies": [
-    "@aws-cdk/util"
-  ],
-  "homepage": "https://github.com/awslabs/aws-cdk"
+  "homepage": "https://github.com/aws/aws-cdk",
+  "peerDependencies": {
+    "@aws-cdk/aws-events": "0.0.0",
+    "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-kms": "0.0.0",
+    "@aws-cdk/aws-s3": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^3.0.4"
+  },
+  "engines": {
+    "node": ">= 10.13.0 <13 || >=13.7.0"
+  },
+  "awslint": {
+    "exclude": [
+      "construct-ctor:@aws-cdk/aws-codepipeline.CrossRegionScaffoldStack.<initializer>.params[0]",
+      "construct-ctor:@aws-cdk/aws-codepipeline.CrossRegionScaffoldStack.<initializer>.params[1]",
+      "export:@aws-cdk/aws-codepipeline.IPipeline",
+      "import-props-interface:@aws-cdk/aws-codepipeline.PipelineImportProps",
+      "no-unused-type:@aws-cdk/aws-codepipeline.CommonActionProps",
+      "no-unused-type:@aws-cdk/aws-codepipeline.CommonAwsActionProps",
+      "resource-attribute:@aws-cdk/aws-codepipeline.IPipeline.pipelineVersion",
+      "from-method:@aws-cdk/aws-codepipeline.Pipeline",
+      "docs-public-apis:@aws-cdk/aws-codepipeline.ActionProperties.owner",
+      "docs-public-apis:@aws-cdk/aws-codepipeline.ActionCategory.INVOKE",
+      "docs-public-apis:@aws-cdk/aws-codepipeline.ActionCategory.DEPLOY",
+      "docs-public-apis:@aws-cdk/aws-codepipeline.ActionCategory.APPROVAL",
+      "docs-public-apis:@aws-cdk/aws-codepipeline.ActionCategory.TEST",
+      "docs-public-apis:@aws-cdk/aws-codepipeline.Artifact.artifactName",
+      "docs-public-apis:@aws-cdk/aws-codepipeline.Artifact.toString",
+      "docs-public-apis:@aws-cdk/aws-codepipeline.ArtifactPath.artifact",
+      "docs-public-apis:@aws-cdk/aws-codepipeline.ArtifactPath.fileName",
+      "docs-public-apis:@aws-cdk/aws-codepipeline.ArtifactPath.location",
+      "docs-public-apis:@aws-cdk/aws-codepipeline.ArtifactPath.artifactPath",
+      "docs-public-apis:@aws-cdk/aws-codepipeline.ActionArtifactBounds.maxInputs",
+      "docs-public-apis:@aws-cdk/aws-codepipeline.ActionArtifactBounds.maxOutputs",
+      "docs-public-apis:@aws-cdk/aws-codepipeline.ActionArtifactBounds.minInputs",
+      "docs-public-apis:@aws-cdk/aws-codepipeline.ActionArtifactBounds.minOutputs",
+      "public-static-props-all-caps:@aws-cdk/aws-codepipeline.GlobalVariables.executionId",
+      "docs-public-apis:@aws-cdk/aws-codepipeline.ActionBindOptions",
+      "docs-public-apis:@aws-cdk/aws-codepipeline.ActionBindOptions.bucket",
+      "docs-public-apis:@aws-cdk/aws-codepipeline.ActionBindOptions.role",
+      "docs-public-apis:@aws-cdk/aws-codepipeline.ActionConfig",
+      "docs-public-apis:@aws-cdk/aws-codepipeline.ActionConfig.configuration",
+      "props-default-doc:@aws-cdk/aws-codepipeline.ActionConfig.configuration",
+      "docs-public-apis:@aws-cdk/aws-codepipeline.ActionProperties",
+      "docs-public-apis:@aws-cdk/aws-codepipeline.ActionProperties.actionName",
+      "docs-public-apis:@aws-cdk/aws-codepipeline.ActionProperties.artifactBounds",
+      "props-default-doc:@aws-cdk/aws-codepipeline.ActionProperties.account",
+      "docs-public-apis:@aws-cdk/aws-codepipeline.ActionProperties.inputs",
+      "props-default-doc:@aws-cdk/aws-codepipeline.ActionProperties.inputs",
+      "docs-public-apis:@aws-cdk/aws-codepipeline.ActionProperties.outputs",
+      "props-default-doc:@aws-cdk/aws-codepipeline.ActionProperties.outputs",
+      "docs-public-apis:@aws-cdk/aws-codepipeline.ActionCategory.BUILD",
+      "props-default-doc:@aws-cdk/aws-codepipeline.ActionProperties.owner",
+      "props-default-doc:@aws-cdk/aws-codepipeline.ActionProperties.resource",
+      "docs-public-apis:@aws-cdk/aws-codepipeline.ActionProperties.role",
+      "props-default-doc:@aws-cdk/aws-codepipeline.ActionProperties.role",
+      "props-default-doc:@aws-cdk/aws-codepipeline.ActionProperties.runOrder",
+      "docs-public-apis:@aws-cdk/aws-codepipeline.ActionProperties.version",
+      "props-default-doc:@aws-cdk/aws-codepipeline.ActionProperties.version",
+      "docs-public-apis:@aws-cdk/aws-codepipeline.IAction.actionProperties",
+      "docs-public-apis:@aws-cdk/aws-codepipeline.IAction.bind",
+      "docs-public-apis:@aws-cdk/aws-codepipeline.IAction.onStateChange",
+      "docs-public-apis:@aws-cdk/aws-codepipeline.IStage.pipeline",
+      "docs-public-apis:@aws-cdk/aws-codepipeline.IStage.addAction",
+      "docs-public-apis:@aws-cdk/aws-codepipeline.IStage.onStateChange",
+      "docs-public-apis:@aws-cdk/aws-codepipeline.PipelineProps",
+      "docs-public-apis:@aws-cdk/aws-codepipeline.StageOptions",
+      "docs-public-apis:@aws-cdk/aws-codepipeline.StageOptions.placement",
+      "props-default-doc:@aws-cdk/aws-codepipeline.StageOptions.placement",
+      "props-default-doc:@aws-cdk/aws-codepipeline.StagePlacement.justAfter",
+      "props-default-doc:@aws-cdk/aws-codepipeline.StagePlacement.rightBefore",
+      "props-default-doc:@aws-cdk/aws-codepipeline.StageProps.actions",
+      "docs-public-apis:@aws-cdk/aws-codepipeline.ActionCategory",
+      "docs-public-apis:@aws-cdk/aws-codepipeline.ActionCategory.SOURCE"
+    ]
+  },
+  "stability": "stable",
+  "awscdkio": {
+    "announce": false
+  },
+  "maturity": "stable"
 }

@@ -1,0 +1,18 @@
+{
+  "version": "0.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "foo.tree.json"
+      }
+    },
+    "MyStackName": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://37736633/us-region-1",
+      "properties": {
+        "templateFile": "template.json"
+      }
+    }
+  }
+}

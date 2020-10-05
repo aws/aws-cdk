@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-glue",
-  "version": "0.8.2",
+  "version": "0.0.0",
   "description": "The CDK Construct Library for AWS::Glue",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -14,12 +14,28 @@
           "artifactId": "glue"
         }
       },
-      "sphinx": {}
-    }
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.Glue",
+        "packageId": "Amazon.CDK.AWS.Glue",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+      },
+      "python": {
+        "distName": "aws-cdk.aws-glue",
+        "module": "aws_cdk.aws_glue",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
+      }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/awslabs/aws-cdk.git"
+    "url": "https://github.com/aws/aws-cdk.git",
+    "directory": "packages/@aws-cdk/aws-glue"
   },
   "scripts": {
     "build": "cdk-build",
@@ -28,10 +44,19 @@
     "test": "cdk-test",
     "integ": "cdk-integ",
     "pkglint": "pkglint -f",
-    "package": "cdk-package"
+    "package": "cdk-package",
+    "awslint": "cdk-awslint",
+    "cfn2ts": "cfn2ts",
+    "build+test+package": "npm run build+test && npm run package",
+    "build+test": "npm run build && npm test",
+    "compat": "cdk-compat"
   },
   "cdk-build": {
-    "cloudformation": "AWS::Glue"
+    "cloudformation": "AWS::Glue",
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": "true"
+    }
   },
   "keywords": [
     "aws",
@@ -46,13 +71,76 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.8.2",
-    "cdk-build-tools": "^0.8.2",
-    "cfn2ts": "^0.8.2",
-    "pkglint": "^0.8.2"
+    "@aws-cdk/assert": "0.0.0",
+    "@types/nodeunit": "^0.0.31",
+    "cdk-build-tools": "0.0.0",
+    "cdk-integ-tools": "0.0.0",
+    "cfn2ts": "0.0.0",
+    "jest": "^26.4.2",
+    "pkglint": "0.0.0"
   },
   "dependencies": {
-    "@aws-cdk/cdk": "^0.8.2"
+    "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-kms": "0.0.0",
+    "@aws-cdk/aws-s3": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^3.0.4"
   },
-  "homepage": "https://github.com/awslabs/aws-cdk"
+  "homepage": "https://github.com/aws/aws-cdk",
+  "peerDependencies": {
+    "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-kms": "0.0.0",
+    "@aws-cdk/aws-s3": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^3.0.4"
+  },
+  "engines": {
+    "node": ">= 10.13.0 <13 || >=13.7.0"
+  },
+  "stability": "experimental",
+  "maturity": "experimental",
+  "awslint": {
+    "exclude": [
+      "docs-public-apis:@aws-cdk/aws-glue.Schema.BOOLEAN",
+      "docs-public-apis:@aws-cdk/aws-glue.TableEncryption.UNENCRYPTED",
+      "docs-public-apis:@aws-cdk/aws-glue.TableProps",
+      "docs-public-apis:@aws-cdk/aws-glue.TableAttributes.tableName",
+      "docs-public-apis:@aws-cdk/aws-glue.TableAttributes.tableArn",
+      "docs-public-apis:@aws-cdk/aws-glue.TableAttributes",
+      "docs-public-apis:@aws-cdk/aws-glue.ITable.tableName",
+      "docs-public-apis:@aws-cdk/aws-glue.ITable.tableArn",
+      "docs-public-apis:@aws-cdk/aws-glue.ITable",
+      "docs-public-apis:@aws-cdk/aws-glue.IDatabase",
+      "docs-public-apis:@aws-cdk/aws-glue.DatabaseProps",
+      "docs-public-apis:@aws-cdk/aws-glue.Database.fromDatabaseArn",
+      "docs-public-apis:@aws-cdk/aws-glue.InputFormat.className",
+      "docs-public-apis:@aws-cdk/aws-glue.OutputFormat.className",
+      "docs-public-apis:@aws-cdk/aws-glue.Schema",
+      "docs-public-apis:@aws-cdk/aws-glue.Schema.BINARY",
+      "docs-public-apis:@aws-cdk/aws-glue.Table.fromTableArn",
+      "docs-public-apis:@aws-cdk/aws-glue.Schema.DOUBLE",
+      "docs-public-apis:@aws-cdk/aws-glue.Schema.FLOAT",
+      "docs-public-apis:@aws-cdk/aws-glue.SerializationLibrary.AVRO",
+      "docs-public-apis:@aws-cdk/aws-glue.SerializationLibrary.CLOUDTRAIL",
+      "docs-public-apis:@aws-cdk/aws-glue.SerializationLibrary.GROK",
+      "docs-public-apis:@aws-cdk/aws-glue.SerializationLibrary.HIVE_JSON",
+      "docs-public-apis:@aws-cdk/aws-glue.SerializationLibrary.LAZY_SIMPLE",
+      "docs-public-apis:@aws-cdk/aws-glue.SerializationLibrary.OPEN_CSV",
+      "docs-public-apis:@aws-cdk/aws-glue.SerializationLibrary.OPENX_JSON",
+      "docs-public-apis:@aws-cdk/aws-glue.SerializationLibrary.ORC",
+      "docs-public-apis:@aws-cdk/aws-glue.SerializationLibrary.PARQUET",
+      "docs-public-apis:@aws-cdk/aws-glue.SerializationLibrary.REGEXP",
+      "docs-public-apis:@aws-cdk/aws-glue.SerializationLibrary.className",
+      "docs-public-apis:@aws-cdk/aws-glue.ClassificationString.AVRO",
+      "docs-public-apis:@aws-cdk/aws-glue.ClassificationString.CSV",
+      "docs-public-apis:@aws-cdk/aws-glue.ClassificationString.JSON",
+      "docs-public-apis:@aws-cdk/aws-glue.ClassificationString.XML",
+      "docs-public-apis:@aws-cdk/aws-glue.ClassificationString.PARQUET",
+      "docs-public-apis:@aws-cdk/aws-glue.ClassificationString.ORC",
+      "docs-public-apis:@aws-cdk/aws-glue.ClassificationString.value"
+    ]
+  },
+  "awscdkio": {
+    "announce": false
+  }
 }

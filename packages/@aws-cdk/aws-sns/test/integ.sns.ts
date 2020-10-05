@@ -1,19 +1,23 @@
-import { App, Stack, StackProps } from '@aws-cdk/cdk';
+import { Key } from '@aws-cdk/aws-kms';
+import { App, Stack, StackProps } from '@aws-cdk/core';
 import { Topic } from '../lib';
 
 class SNSInteg extends Stack {
-    constructor(parent: App, name: string, props?: StackProps) {
-        super(parent, name, props);
+  constructor(scope: App, id: string, props?: StackProps) {
+    super(scope, id, props);
 
-        new Topic(this, 'MyTopic', {
-            topicName: 'fooTopic',
-            displayName: 'fooDisplayName'
-        });
-    }
+    const key = new Key(this, 'CustomKey');
+
+    new Topic(this, 'MyTopic', {
+      topicName: 'fooTopic',
+      displayName: 'fooDisplayName',
+      masterKey: key,
+    });
+  }
 }
 
-const app = new App(process.argv);
+const app = new App();
 
 new SNSInteg(app, 'SNSInteg');
 
-process.stdout.write(app.run());
+app.synth();

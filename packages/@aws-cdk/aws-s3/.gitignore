@@ -1,6 +1,5 @@
 *.js
 tsconfig.json
-tslint.json
 *.js.map
 *.d.ts
 *.generated.ts
@@ -11,5 +10,9 @@ lib/generated/resources.ts
 .LAST_BUILD
 .nyc_output
 coverage
-.nycrc
+nyc.config.js
 .LAST_PACKAGE
+*.snk
+!.eslintrc.js
+
+junit.xml

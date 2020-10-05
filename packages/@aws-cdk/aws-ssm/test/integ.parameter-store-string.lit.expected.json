@@ -1,0 +1,34 @@
+[
+  {
+    "Resources": {
+      "String0BA8456E": {
+        "Type": "AWS::SSM::Parameter",
+        "Properties": {
+          "Type": "String",
+          "Value": "abcdef",
+          "Name": "/My/Public/Parameter"
+        }
+      }
+    }
+  },
+  {
+    "Parameters": {
+      "MyValueParameter": {
+        "Type": "AWS::SSM::Parameter::Value<String>",
+        "Default": "/My/Public/Parameter"
+      }
+    },
+    "Resources": {
+      "Dummy": {
+        "Type": "AWS::SNS::Topic"
+      }
+    },
+    "Outputs": {
+      "TheValue": {
+        "Value": {
+          "Ref": "MyValueParameter"
+        }
+      }
+    }
+  }
+]

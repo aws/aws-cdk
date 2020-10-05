@@ -1,65 +1,52 @@
 ## AWS CodeCommit Construct Library
+<!--BEGIN STABILITY BANNER-->
+---
+
+![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
+
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
+
+---
+<!--END STABILITY BANNER-->
+
+AWS CodeCommit is a version control service that enables you to privately store and manage Git repositories in the AWS cloud.
+
+For further information on CodeCommit,
+see the [AWS CodeCommit documentation](https://docs.aws.amazon.com/codecommit).
 
 To add a CodeCommit Repository to your stack:
 
 ```ts
-import codecommit = require('@aws-cdk/aws-codecommit');
+import * as codecommit from '@aws-cdk/aws-codecommit';
 
-const repository = new codecommit.Repository(this, 'Repository' ,{
-    repositoryName: 'MyRepositoryName'
+const repo = new codecommit.Repository(this, 'Repository' ,{
+    repositoryName: 'MyRepositoryName',
+    description: 'Some description.', // optional property
 });
 ```
 
-To add an SNS trigger to your repository:
+To add an Amazon SNS trigger to your repository:
 
 ```ts
-import codecommit = require('@aws-cdk/aws-codecommit');
-
-const repository = new codecommit.Repository(this, 'Repository', {
-    repositoryName: 'MyRepositoryName'
-});
-
 // trigger is established for all repository actions on all branches by default.
-repository.notify('arn:aws:sns:*:123456789012:my_topic');
+repo.notify('arn:aws:sns:*:123456789012:my_topic');
 ```
 
-### CodePipeline
+## Events
 
-To use a CodeCommit Repository in a CodePipeline:
-
-```ts
-import codecommit = require('@aws-cdk/aws-codecommit');
-import codepipeline = require('@aws-cdk/aws-codepipeline');
-
-// see above for the details...
-const repository = new codecommit.Repository( // ...
-);
-
-const pipeline = new codepipeline.Pipeline(this, 'MyPipeline', {
-    pipelineName: 'MyPipeline',
-});
-const sourceStage = new codepipeline.Stage(this, 'Source', {
-    pipeline,
-}));
-const sourceAction = new codecommit.PipelineSource(this, 'CodeCommit', {
-    stage: sourceStage,
-    artifactName: 'SourceOutput', // name can be arbitrary
-    repository,
-});
-// use sourceAction.artifact as the inputArtifact to later Actions...
-```
-
-### Events
-
-CodeCommit repositories emit CloudWatch events for certain activity.
+CodeCommit repositories emit Amazon CloudWatch events for certain activities.
 Use the `repo.onXxx` methods to define rules that trigger on these events
 and invoke targets as a result:
 
 ```ts
 // starts a CodeBuild project when a commit is pushed to the "master" branch of the repo
-repo.onCommit('CommitToMaster', project, 'master');
+repo.onCommit('CommitToMaster', {
+    target: new targets.CodeBuildProject(project),
+    branches: ['master'],
+});
 
-// publishes a message to an SNS topic when a comment is made on a pull request
-const rule = repo.onCommentOnPullRequest('CommentOnPullRequest');
-rule.addTarget(myTopic);
+// publishes a message to an Amazon SNS topic when a comment is made on a pull request
+const rule = repo.onCommentOnPullRequest('CommentOnPullRequest', {
+    target: new targets.SnsTopic(myTopic),
+});
 ```

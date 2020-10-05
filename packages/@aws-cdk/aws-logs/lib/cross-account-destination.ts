@@ -1,106 +1,117 @@
-import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
-import { LogGroup } from './log-group';
-import { cloudformation, DestinationArn } from './logs.generated';
-import { ILogSubscriptionDestination, LogSubscriptionDestination } from './subscription-filter';
+import * as iam from '@aws-cdk/aws-iam';
+import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
+import { ILogGroup } from './log-group';
+import { CfnDestination } from './logs.generated';
+import { ILogSubscriptionDestination, LogSubscriptionDestinationConfig } from './subscription-filter';
 
+/**
+ * Properties for a CrossAccountDestination
+ */
 export interface CrossAccountDestinationProps {
-    /**
-     * The name of the log destination.
-     *
-     * @default Automatically generated
-     */
-    destinationName?: string;
+  /**
+   * The name of the log destination.
+   *
+   * @default Automatically generated
+   */
+  readonly destinationName?: string;
 
-    /**
-     * The role to assume that grants permissions to write to 'target'.
-     *
-     * The role must be assumable by 'logs.{REGION}.amazonaws.com'.
-     */
-    role: iam.Role;
+  /**
+   * The role to assume that grants permissions to write to 'target'.
+   *
+   * The role must be assumable by 'logs.{REGION}.amazonaws.com'.
+   */
+  readonly role: iam.IRole;
 
-    /**
-     * The log destination target's ARN
-     */
-    targetArn: cdk.Arn;
+  /**
+   * The log destination target's ARN
+   */
+  readonly targetArn: string;
 }
 
 /**
  * A new CloudWatch Logs Destination for use in cross-account scenarios
  *
- * Log destinations can be used to subscribe a Kinesis stream in a different
- * account to a CloudWatch Subscription. A Kinesis stream in the same account
- * can be subscribed directly.
+ * CrossAccountDestinations are used to subscribe a Kinesis stream in a
+ * different account to a CloudWatch Subscription.
  *
- * The @aws-cdk/aws-kinesis library takes care of this automatically; you shouldn't
- * need to bother with this class.
+ * Consumers will hardly ever need to use this class. Instead, directly
+ * subscribe a Kinesis stream using the integration class in the
+ * `@aws-cdk/aws-logs-destinations` package; if necessary, a
+ * `CrossAccountDestination` will be created automatically.
+ *
+ * @resource AWS::Logs::Destination
  */
-export class CrossAccountDestination extends cdk.Construct implements ILogSubscriptionDestination {
-    /**
-     * Policy object of this CrossAccountDestination object
-     */
-    public readonly policyDocument: cdk.PolicyDocument = new cdk.PolicyDocument();
+export class CrossAccountDestination extends cdk.Resource implements ILogSubscriptionDestination {
+  /**
+   * Policy object of this CrossAccountDestination object
+   */
+  public readonly policyDocument: iam.PolicyDocument = new iam.PolicyDocument();
 
-    /**
-     * The name of this CrossAccountDestination object
-     */
-    public readonly destinationName: DestinationName;
+  /**
+   * The name of this CrossAccountDestination object
+   * @attribute
+   */
+  public readonly destinationName: string;
 
-    /**
-     * The ARN of this CrossAccountDestination object
-     */
-    public readonly destinationArn: DestinationArn;
+  /**
+   * The ARN of this CrossAccountDestination object
+   * @attribute
+   */
+  public readonly destinationArn: string;
 
-    /**
-     * The inner resource
-     */
-    private readonly resource: cloudformation.DestinationResource;
+  /**
+   * The inner resource
+   */
+  private readonly resource: CfnDestination;
 
-    constructor(parent: cdk.Construct, id: string, props: CrossAccountDestinationProps) {
-        super(parent, id);
-
+  constructor(scope: Construct, id: string, props: CrossAccountDestinationProps) {
+    super(scope, id, {
+      physicalName: props.destinationName ||
         // In the underlying model, the name is not optional, but we make it so anyway.
-        const destinationName = props.destinationName || new cdk.Token(() => this.generateUniqueName());
+        cdk.Lazy.stringValue({ produce: () => this.generateUniqueName() }),
+    });
 
-        this.resource = new cloudformation.DestinationResource(this, 'Resource', {
-            destinationName,
-            // Must be stringified policy
-            destinationPolicy: new cdk.Token(() => this.stringifiedPolicyDocument()),
-            roleArn: props.role.roleArn,
-            targetArn: props.targetArn
-        });
+    this.resource = new CfnDestination(this, 'Resource', {
+      destinationName: this.physicalName!,
+      // Must be stringified policy
+      destinationPolicy: this.lazyStringifiedPolicyDocument(),
+      roleArn: props.role.roleArn,
+      targetArn: props.targetArn,
+    });
 
-        this.destinationArn = this.resource.destinationArn;
-        this.destinationName = this.resource.ref;
-    }
+    this.destinationArn = this.getResourceArnAttribute(this.resource.attrArn, {
+      service: 'logs',
+      resource: 'destination',
+      resourceName: this.physicalName,
+      sep: ':',
+    });
+    this.destinationName = this.getResourceNameAttribute(this.resource.ref);
+  }
 
-    public addToPolicy(statement: cdk.PolicyStatement) {
-        this.policyDocument.addStatement(statement);
-    }
+  public addToPolicy(statement: iam.PolicyStatement) {
+    this.policyDocument.addStatements(statement);
+  }
 
-    public logSubscriptionDestination(_sourceLogGroup: LogGroup): LogSubscriptionDestination {
-        return { arn: this.destinationArn };
-    }
+  public bind(_scope: cdk.Construct, _sourceLogGroup: ILogGroup): LogSubscriptionDestinationConfig {
+    return { arn: this.destinationArn };
+  }
 
-    /**
-     * Generate a unique Destination name in case the user didn't supply one
-     */
-    private generateUniqueName(): string {
-        // Combination of stack name and LogicalID, which are guaranteed to be unique.
-        const stack = cdk.Stack.find(this);
-        return stack.name + '-' + this.resource.logicalId;
-    }
+  /**
+   * Generate a unique Destination name in case the user didn't supply one
+   */
+  private generateUniqueName(): string {
+    // Combination of stack name and LogicalID, which are guaranteed to be unique.
+    return cdk.Stack.of(this).stackName + '-' + this.resource.logicalId;
+  }
 
-    /**
-     * Return a stringified JSON version of the PolicyDocument
-     */
-    private stringifiedPolicyDocument() {
-        return this.policyDocument.isEmpty ? '' : cdk.CloudFormationJSON.stringify(cdk.resolve(this.policyDocument));
-    }
-}
-
-/**
- * Name of a CloudWatch Destination
- */
-export class DestinationName extends cdk.Token {
+  /**
+   * Return a stringified JSON version of the PolicyDocument
+   */
+  private lazyStringifiedPolicyDocument(): string {
+    return cdk.Lazy.stringValue({
+      produce: () =>
+        this.policyDocument.isEmpty ? '' : cdk.Stack.of(this).toJsonString(this.policyDocument),
+    });
+  }
 }

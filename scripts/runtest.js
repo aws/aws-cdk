@@ -1,5 +1,21 @@
 #!/usr/bin/env node
 // Helper script to invoke 'nodeunit' on a .ts file. This should involve compilation, it doesn't right now.
+//
+// Example launch config to use with this script:
+//
+//     {
+//          "configurations": [
+//              {
+//                  "type": "node",
+//                  "request": "launch",
+//                  "name": "Debug Current Unit Test File",
+//                  "program": "${workspaceFolder}/scripts/runtest.js",
+//                  "args": [
+//                      "${file}"
+//                  ]
+//              }
+//          ]
+//      }⏎
 const path = require('path');
 
 // Unfortunately, nodeunit has no programmatic interface. Therefore, the

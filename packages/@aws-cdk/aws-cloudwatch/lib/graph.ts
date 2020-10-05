@@ -1,321 +1,392 @@
-import { AwsRegion, Token } from "@aws-cdk/cdk";
-import { Alarm } from "./alarm";
-import { Metric } from "./metric";
-import { parseStatistic } from './util.statistic';
-import { ConcreteWidget } from "./widget";
-
-/**
- * An AWS region
- */
-export class Region extends Token {
-}
+import * as cdk from '@aws-cdk/core';
+import { IAlarm } from './alarm-base';
+import { IMetric } from './metric-types';
+import { allMetricsGraphJson } from './private/rendering';
+import { ConcreteWidget } from './widget';
 
 /**
  * Basic properties for widgets that display metrics
  */
 export interface MetricWidgetProps {
-    /**
-     * Title for the graph
-     */
-    title?: string;
+  /**
+   * Title for the graph
+   *
+   * @default - None
+   */
+  readonly title?: string;
 
-    /**
-     * The region the metrics of this graph should be taken from
-     *
-     * @default Current region
-     */
-    region?: Region;
+  /**
+   * The region the metrics of this graph should be taken from
+   *
+   * @default - Current region
+   */
+  readonly region?: string;
 
-    /**
-     * Width of the widget, in a grid of 24 units wide
-     *
-     * @default 6
-     */
-    width?: number;
+  /**
+   * Width of the widget, in a grid of 24 units wide
+   *
+   * @default 6
+   */
+  readonly width?: number;
 
-    /**
-     * Height of the widget
-     *
-     * @default Depends on the type of widget
-     */
-    height?: number;
+  /**
+   * Height of the widget
+   *
+   * @default - 6 for Alarm and Graph widgets.
+   *   3 for single value widgets where most recent value of a metric is displayed.
+   */
+  readonly height?: number;
+}
+
+/**
+ * Properties for a Y-Axis
+ */
+export interface YAxisProps {
+  /**
+   * The min value
+   *
+   * @default 0
+   */
+  readonly min?: number;
+
+  /**
+   * The max value
+   *
+   * @default - No maximum value
+   */
+  readonly max?: number;
+
+  /**
+   * The label
+   *
+   * @default - No label
+   */
+  readonly label?: string;
+
+  /**
+   * Whether to show units
+   *
+   * @default true
+   */
+  readonly showUnits?: boolean;
 }
 
 /**
  * Properties for an AlarmWidget
  */
 export interface AlarmWidgetProps extends MetricWidgetProps {
-    /**
-     * The alarm to show
-     */
-    alarm: Alarm;
+  /**
+   * The alarm to show
+   */
+  readonly alarm: IAlarm;
 
-    /**
-     * Range of left Y axis
-     *
-     * @default 0..automatic
-     */
-    leftAxisRange?: YAxisRange;
+  /**
+   * Left Y axis
+   *
+   * @default - No minimum or maximum values for the left Y-axis
+   */
+  readonly leftYAxis?: YAxisProps;
 }
 
 /**
  * Display the metric associated with an alarm, including the alarm line
  */
 export class AlarmWidget extends ConcreteWidget {
-    private readonly props: AlarmWidgetProps;
+  private readonly props: AlarmWidgetProps;
 
-    constructor(props: AlarmWidgetProps) {
-        super(props.width || 6, props.height || 6);
-        this.props = props;
-    }
+  constructor(props: AlarmWidgetProps) {
+    super(props.width || 6, props.height || 6);
+    this.props = props;
+  }
 
-    public toJson(): any[] {
-        return [{
-            type: 'metric',
-            width: this.width,
-            height: this.height,
-            x: this.x,
-            y: this.y,
-            properties: {
-                view: 'timeSeries',
-                title: this.props.title,
-                region: this.props.region || new AwsRegion(),
-                annotations: {
-                    alarms: [this.props.alarm.alarmArn]
-                },
-                yAxis: {
-                    left: this.props.leftAxisRange !== undefined ? this.props.leftAxisRange : { min: 0 }
-                }
-            }
-        }];
-    }
+  public toJson(): any[] {
+    return [{
+      type: 'metric',
+      width: this.width,
+      height: this.height,
+      x: this.x,
+      y: this.y,
+      properties: {
+        view: 'timeSeries',
+        title: this.props.title,
+        region: this.props.region || cdk.Aws.REGION,
+        annotations: {
+          alarms: [this.props.alarm.alarmArn],
+        },
+        yAxis: {
+          left: this.props.leftYAxis !== undefined ? this.props.leftYAxis : undefined,
+        },
+      },
+    }];
+  }
 }
 
 /**
  * Properties for a GraphWidget
  */
 export interface GraphWidgetProps extends MetricWidgetProps {
-    /**
-     * Metrics to display on left Y axis
-     */
-    left?: Metric[];
+  /**
+   * Metrics to display on left Y axis
+   *
+   * @default - No metrics
+   */
+  readonly left?: IMetric[];
 
-    /**
-     * Metrics to display on right Y axis
-     */
-    right?: Metric[];
+  /**
+   * Metrics to display on right Y axis
+   *
+   * @default - No metrics
+   */
+  readonly right?: IMetric[];
 
-    /**
-     * Annotations for the left Y axis
-     */
-    leftAnnotations?: HorizontalAnnotation[];
+  /**
+   * Annotations for the left Y axis
+   *
+   * @default - No annotations
+   */
+  readonly leftAnnotations?: HorizontalAnnotation[];
 
-    /**
-     * Annotations for the right Y axis
-     */
-    rightAnnotations?: HorizontalAnnotation[];
+  /**
+   * Annotations for the right Y axis
+   *
+   * @default - No annotations
+   */
+  readonly rightAnnotations?: HorizontalAnnotation[];
 
-    /**
-     * Whether the graph should be shown as stacked lines
-     */
-    stacked?: boolean;
+  /**
+   * Whether the graph should be shown as stacked lines
+   *
+   * @default false
+   */
+  readonly stacked?: boolean;
 
-    /**
-     * Range of left Y axis
-     *
-     * @default 0..automatic
-     */
-    leftAxisRange?: YAxisRange;
+  /**
+   * Left Y axis
+   *
+   * @default - None
+   */
+  readonly leftYAxis?: YAxisProps;
 
-    /**
-     * Range of right Y axis
-     *
-     * @default 0..automatic
-     */
-    rightAxisRange?: YAxisRange;
+  /**
+   * Right Y axis
+   *
+   * @default - None
+   */
+  readonly rightYAxis?: YAxisProps;
+
+  /**
+   * Position of the legend
+   *
+   * @default - bottom
+   */
+  readonly legendPosition?: LegendPosition;
+
+  /**
+   * Whether the graph should show live data
+   *
+   * @default false
+   */
+  readonly liveData?: boolean;
 }
 
 /**
- * A dashboard widget that displays MarkDown
+ * A dashboard widget that displays metrics
  */
 export class GraphWidget extends ConcreteWidget {
-    private readonly props: GraphWidgetProps;
+  private readonly props: GraphWidgetProps;
 
-    constructor(props: GraphWidgetProps) {
-        super(props.width || 6, props.height || 6);
-        this.props = props;
-    }
+  constructor(props: GraphWidgetProps) {
+    super(props.width || 6, props.height || 6);
+    this.props = props;
+  }
 
-    public toJson(): any[] {
-        return [{
-            type: 'metric',
-            width: this.width,
-            height: this.height,
-            x: this.x,
-            y: this.y,
-            properties: {
-                view: 'timeSeries',
-                title: this.props.title,
-                region: this.props.region || new AwsRegion(),
-                metrics: (this.props.left || []).map(m => metricJson(m, 'left')).concat(
-                         (this.props.right || []).map(m => metricJson(m, 'right'))),
-                annotations: {
-                    horizontal: (this.props.leftAnnotations || []).map(mapAnnotation('left')).concat(
-                                (this.props.rightAnnotations || []).map(mapAnnotation('right')))
-                },
-                yAxis: {
-                    left: this.props.leftAxisRange !== undefined ? this.props.leftAxisRange : { min: 0 },
-                    right: this.props.rightAxisRange !== undefined ? this.props.rightAxisRange : { min: 0 },
-                }
-            }
-        }];
-    }
+  public toJson(): any[] {
+    const horizontalAnnotations = [
+      ...(this.props.leftAnnotations || []).map(mapAnnotation('left')),
+      ...(this.props.rightAnnotations || []).map(mapAnnotation('right')),
+    ];
+
+    const metrics = allMetricsGraphJson(this.props.left || [], this.props.right || []);
+    return [{
+      type: 'metric',
+      width: this.width,
+      height: this.height,
+      x: this.x,
+      y: this.y,
+      properties: {
+        view: 'timeSeries',
+        title: this.props.title,
+        region: this.props.region || cdk.Aws.REGION,
+        stacked: this.props.stacked,
+        metrics: metrics.length > 0 ? metrics : undefined,
+        annotations: horizontalAnnotations.length > 0 ? { horizontal: horizontalAnnotations } : undefined,
+        yAxis: {
+          left: this.props.leftYAxis !== undefined ? this.props.leftYAxis : undefined,
+          right: this.props.rightYAxis !== undefined ? this.props.rightYAxis : undefined,
+        },
+        legend: this.props.legendPosition !== undefined ? { position: this.props.legendPosition } : undefined,
+        liveData: this.props.liveData,
+      },
+    }];
+  }
 }
 
 /**
  * Properties for a SingleValueWidget
  */
 export interface SingleValueWidgetProps extends MetricWidgetProps {
-    /**
-     * Metrics to display
-     */
-    metrics: Metric[];
+  /**
+   * Metrics to display
+   */
+  readonly metrics: IMetric[];
+
+  /**
+   * Whether to show the value from the entire time range.
+   *
+   * @default false
+   */
+  readonly setPeriodToTimeRange?: boolean;
 }
 
 /**
  * A dashboard widget that displays the most recent value for every metric
  */
 export class SingleValueWidget extends ConcreteWidget {
-    private readonly props: SingleValueWidgetProps;
+  private readonly props: SingleValueWidgetProps;
 
-    constructor(props: SingleValueWidgetProps) {
-        super(props.width || 6, props.height || 3);
-        this.props = props;
-    }
+  constructor(props: SingleValueWidgetProps) {
+    super(props.width || 6, props.height || 3);
+    this.props = props;
+  }
 
-    public toJson(): any[] {
-        return [{
-            type: 'metric',
-            width: this.width,
-            height: this.height,
-            x: this.x,
-            y: this.y,
-            properties: {
-                view: 'singleValue',
-                title: this.props.title,
-                region: this.props.region || new AwsRegion(),
-                metrics: this.props.metrics.map(m => metricJson(m, 'left'))
-            }
-        }];
-    }
-}
-
-/**
- * A minimum and maximum value for either the left or right Y axis
- */
-export interface YAxisRange {
-    /**
-     * The minimum value
-     *
-     * @default Automatic
-     */
-    min?: number;
-
-    /**
-     * The maximum value
-     *
-     * @default Automatic
-     */
-    max?: number;
+  public toJson(): any[] {
+    return [{
+      type: 'metric',
+      width: this.width,
+      height: this.height,
+      x: this.x,
+      y: this.y,
+      properties: {
+        view: 'singleValue',
+        title: this.props.title,
+        region: this.props.region || cdk.Aws.REGION,
+        metrics: allMetricsGraphJson(this.props.metrics, []),
+        setPeriodToTimeRange: this.props.setPeriodToTimeRange,
+      },
+    }];
+  }
 }
 
 /**
  * Horizontal annotation to be added to a graph
  */
 export interface HorizontalAnnotation {
-    /**
-     * The value of the annotation
-     */
-    value: number;
+  /**
+   * The value of the annotation
+   */
+  readonly value: number;
 
-    /**
-     * Label for the annotation
-     *
-     * @default No label
-     */
-    label?: string;
+  /**
+   * Label for the annotation
+   *
+   * @default - No label
+   */
+  readonly label?: string;
 
-    /**
-     * Hex color code to be used for the annotation
-     *
-     * @default Automatic color
-     */
-    color?: string;
+  /**
+   * The hex color code, prefixed with '#' (e.g. '#00ff00'), to be used for the annotation.
+   * The `Color` class has a set of standard colors that can be used here.
+   *
+   * @default - Automatic color
+   */
+  readonly color?: string;
 
-    /**
-     * Add shading above or below the annotation
-     *
-     * @default No shading
-     */
-    fill?: Shading;
+  /**
+   * Add shading above or below the annotation
+   *
+   * @default No shading
+   */
+  readonly fill?: Shading;
 
-    /**
-     * Whether the annotation is visible
-     *
-     * @default true
-     */
-    visible?: boolean;
-}
-
-export enum Shading {
-    /**
-     * Don't add shading
-     */
-    None = 'none',
-
-    /**
-     * Add shading above the annotation
-     */
-    Above = 'above',
-
-    /**
-     * Add shading below the annotation
-     */
-    Below = 'below'
-}
-
-function mapAnnotation(yAxis: string): ((x: HorizontalAnnotation) => any) {
-    return (a: HorizontalAnnotation) => {
-        return { ...a, yAxis };
-    };
+  /**
+   * Whether the annotation is visible
+   *
+   * @default true
+   */
+  readonly visible?: boolean;
 }
 
 /**
- * Return the JSON structure which represents this metric in a graph
- *
- * This will be called by GraphWidget, no need for clients to call this.
+ * Fill shading options that will be used with an annotation
  */
-function metricJson(metric: Metric, yAxis: string): any[] {
-    // Namespace and metric Name
-    const ret: any[] = [
-        metric.namespace,
-        metric.metricName,
-    ];
+export enum Shading {
+  /**
+   * Don't add shading
+   */
+  NONE = 'none',
 
-    // Dimensions
-    for (const dim of metric.dimensionsAsList()) {
-        ret.push(dim.name, dim.value);
-    }
+  /**
+   * Add shading above the annotation
+   */
+  ABOVE = 'above',
 
-    // Options
-    const stat = parseStatistic(metric.statistic);
-    ret.push({
-        yAxis,
-        label: metric.label,
-        color: metric.color,
-        period: metric.periodSec,
-        stat: stat.type === 'simple' ? stat.statistic : 'p' + stat.percentile.toString(),
-    });
+  /**
+   * Add shading below the annotation
+   */
+  BELOW = 'below'
+}
 
-    return ret;
+/**
+ * A set of standard colours that can be used in annotations in a GraphWidget.
+ */
+export class Color {
+  /** blue - hex #1f77b4 */
+  public static readonly BLUE = '#1f77b4';
+
+  /** brown - hex #8c564b */
+  public static readonly BROWN = '#8c564b';
+
+  /** green - hex #2ca02c */
+  public static readonly GREEN = '#2ca02c';
+
+  /** grey - hex #7f7f7f */
+  public static readonly GREY = '#7f7f7f';
+
+  /** orange - hex #ff7f0e */
+  public static readonly ORANGE = '#ff7f0e';
+
+  /** pink - hex #e377c2 */
+  public static readonly PINK = '#e377c2';
+
+  /** purple - hex #9467bd */
+  public static readonly PURPLE = '#9467bd';
+
+  /** red - hex #d62728 */
+  public static readonly RED = '#d62728';
+}
+
+/**
+ * The position of the legend on a GraphWidget.
+ */
+export enum LegendPosition {
+  /**
+   * Legend appears below the graph (default).
+   */
+  BOTTOM = 'bottom',
+
+  /**
+   * Add shading above the annotation
+   */
+  RIGHT = 'right',
+
+  /**
+   * Add shading below the annotation
+   */
+  HIDDEN = 'hidden'
+}
+
+function mapAnnotation(yAxis: string): ((x: HorizontalAnnotation) => any) {
+  return (a: HorizontalAnnotation) => {
+    return { ...a, yAxis };
+  };
 }

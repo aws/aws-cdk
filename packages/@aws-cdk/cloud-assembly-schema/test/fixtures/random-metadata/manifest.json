@@ -1,0 +1,35 @@
+{
+    "version": "0.0.0",
+    "artifacts": {
+      "Tree": {
+        "type": "cdk:tree",
+        "properties": {
+          "file": "tree.json"
+        }
+      },
+      "stack": {
+        "type": "aws:cloudformation:stack",
+        "metadata": {
+          "AwsCdkPlaygroundBatch": [
+            {
+              "type": "random-array",
+              "data": ["42"],
+              "trace": ["trace"]
+            },
+            {
+              "type": "random-number",
+              "data": 42,
+              "trace": ["trace"]
+            },
+            {
+              "type": "random-map",
+              "data": {
+                "key": "value"
+              },
+              "trace": ["trace"]
+            }
+          ]
+        }
+      }
+    }
+  }

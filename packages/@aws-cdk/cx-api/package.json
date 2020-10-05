@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/cx-api",
-  "version": "0.8.2",
+  "version": "0.0.0",
   "description": "Cloud executable protocol",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -14,8 +14,23 @@
           "artifactId": "cdk-cx-api"
         }
       },
-      "sphinx": {}
-    }
+      "dotnet": {
+        "namespace": "Amazon.CDK.CXAPI",
+        "packageId": "Amazon.CDK.CXAPI",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+      },
+      "python": {
+        "distName": "aws-cdk.cx-api",
+        "module": "aws_cdk.cx_api",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
+      }
+    },
+    "projectReferences": true
   },
   "scripts": {
     "build": "cdk-build",
@@ -23,25 +38,117 @@
     "lint": "cdk-lint",
     "test": "cdk-test",
     "pkglint": "pkglint -f",
-    "package": "cdk-package"
+    "package": "cdk-package",
+    "awslint": "cdk-awslint",
+    "build+test+package": "npm run build+test && npm run package",
+    "build+test": "npm run build && npm test",
+    "compat": "cdk-compat"
   },
   "author": {
     "name": "Amazon Web Services",
     "url": "https://aws.amazon.com",
     "organization": true
   },
+  "dependencies": {
+    "@aws-cdk/cloud-assembly-schema": "0.0.0",
+    "semver": "^7.3.2"
+  },
+  "peerDependencies": {
+    "@aws-cdk/cloud-assembly-schema": "0.0.0"
+  },
   "license": "Apache-2.0",
   "devDependencies": {
-    "cdk-build-tools": "^0.8.2",
-    "pkglint": "^0.8.2"
+    "@types/jest": "^26.0.14",
+    "@types/mock-fs": "^4.10.0",
+    "@types/semver": "^7.3.4",
+    "cdk-build-tools": "0.0.0",
+    "jest": "^26.4.2",
+    "mock-fs": "^4.13.0",
+    "pkglint": "0.0.0"
   },
   "repository": {
-    "url": "https://github.com/awslabs/aws-cdk.git",
-    "type": "git"
+    "url": "https://github.com/aws/aws-cdk.git",
+    "type": "git",
+    "directory": "packages/@aws-cdk/cx-api"
   },
   "keywords": [
     "aws",
     "cdk"
   ],
-  "homepage": "https://github.com/awslabs/aws-cdk"
+  "homepage": "https://github.com/aws/aws-cdk",
+  "bundledDependencies": [
+    "semver"
+  ],
+  "engines": {
+    "node": ">= 10.13.0 <13 || >=13.7.0"
+  },
+  "stability": "experimental",
+  "maturity": "experimental",
+  "awslint": {
+    "exclude": [
+      "props-default-doc:@aws-cdk/cx-api.MetadataEntry.data",
+      "docs-public-apis:@aws-cdk/cx-api.CloudArtifact.assembly",
+      "docs-public-apis:@aws-cdk/cx-api.CloudArtifact.findMetadataByType",
+      "docs-public-apis:@aws-cdk/cx-api.CloudAssembly.stacks",
+      "docs-public-apis:@aws-cdk/cx-api.CloudFormationStackArtifact",
+      "docs-public-apis:@aws-cdk/cx-api.EnvironmentUtils",
+      "docs-public-apis:@aws-cdk/cx-api.EnvironmentUtils.format",
+      "docs-public-apis:@aws-cdk/cx-api.EnvironmentUtils.parse",
+      "docs-public-apis:@aws-cdk/cx-api.TreeCloudArtifact",
+      "docs-public-apis:@aws-cdk/cx-api.TreeCloudArtifact.file",
+      "props-default-doc:@aws-cdk/cx-api.ArtifactManifest.dependencies",
+      "props-default-doc:@aws-cdk/cx-api.ArtifactManifest.environment",
+      "props-default-doc:@aws-cdk/cx-api.ArtifactManifest.metadata",
+      "props-default-doc:@aws-cdk/cx-api.ArtifactManifest.properties",
+      "docs-public-apis:@aws-cdk/cx-api.AssemblyBuildOptions",
+      "props-default-doc:@aws-cdk/cx-api.AssemblyManifest.artifacts",
+      "props-default-doc:@aws-cdk/cx-api.AssemblyManifest.missing",
+      "props-default-doc:@aws-cdk/cx-api.AssemblyManifest.runtime",
+      "props-default-doc:@aws-cdk/cx-api.AvailabilityZonesContextQuery.account",
+      "props-default-doc:@aws-cdk/cx-api.AvailabilityZonesContextQuery.region",
+      "props-default-doc:@aws-cdk/cx-api.EndpointServiceAvailabilityZonesContextQuery.account",
+      "props-default-doc:@aws-cdk/cx-api.EndpointServiceAvailabilityZonesContextQuery.region",
+      "props-default-doc:@aws-cdk/cx-api.EndpointServiceAvailabilityZonesContextQuery.serviceName",
+      "props-default-doc:@aws-cdk/cx-api.AwsCloudFormationStackProperties.parameters",
+      "docs-public-apis:@aws-cdk/cx-api.ContainerImageAssetMetadataEntry",
+      "docs-public-apis:@aws-cdk/cx-api.FileAssetMetadataEntry",
+      "props-default-doc:@aws-cdk/cx-api.HostedZoneContextQuery.account",
+      "props-default-doc:@aws-cdk/cx-api.HostedZoneContextQuery.privateZone",
+      "props-default-doc:@aws-cdk/cx-api.HostedZoneContextQuery.region",
+      "props-default-doc:@aws-cdk/cx-api.HostedZoneContextQuery.vpcId",
+      "docs-public-apis:@aws-cdk/cx-api.CloudArtifact.id",
+      "props-default-doc:@aws-cdk/cx-api.MetadataEntry.trace",
+      "docs-public-apis:@aws-cdk/cx-api.MetadataEntryResult",
+      "props-default-doc:@aws-cdk/cx-api.SSMParameterContextQuery.account",
+      "props-default-doc:@aws-cdk/cx-api.SSMParameterContextQuery.parameterName",
+      "props-default-doc:@aws-cdk/cx-api.SSMParameterContextQuery.region",
+      "docs-public-apis:@aws-cdk/cx-api.SynthesisMessage",
+      "docs-public-apis:@aws-cdk/cx-api.SynthesisMessage.entry",
+      "docs-public-apis:@aws-cdk/cx-api.SynthesisMessage.id",
+      "docs-public-apis:@aws-cdk/cx-api.SynthesisMessage.level",
+      "props-default-doc:@aws-cdk/cx-api.VpcContextQuery.account",
+      "props-default-doc:@aws-cdk/cx-api.VpcContextQuery.region",
+      "props-default-doc:@aws-cdk/cx-api.VpcContextResponse.isolatedSubnetIds",
+      "props-default-doc:@aws-cdk/cx-api.VpcContextResponse.isolatedSubnetNames",
+      "props-default-doc:@aws-cdk/cx-api.VpcContextResponse.isolatedSubnetRouteTableIds",
+      "props-default-doc:@aws-cdk/cx-api.VpcContextResponse.privateSubnetIds",
+      "props-default-doc:@aws-cdk/cx-api.VpcContextResponse.privateSubnetNames",
+      "props-default-doc:@aws-cdk/cx-api.VpcContextResponse.privateSubnetRouteTableIds",
+      "props-default-doc:@aws-cdk/cx-api.VpcContextResponse.publicSubnetIds",
+      "props-default-doc:@aws-cdk/cx-api.VpcContextResponse.publicSubnetNames",
+      "props-default-doc:@aws-cdk/cx-api.VpcContextResponse.publicSubnetRouteTableIds",
+      "props-default-doc:@aws-cdk/cx-api.VpcContextResponse.vpnGatewayId",
+      "docs-public-apis:@aws-cdk/cx-api.ArtifactType.NONE",
+      "docs-public-apis:@aws-cdk/cx-api.SynthesisMessageLevel",
+      "docs-public-apis:@aws-cdk/cx-api.SynthesisMessageLevel.INFO",
+      "docs-public-apis:@aws-cdk/cx-api.SynthesisMessageLevel.WARNING",
+      "docs-public-apis:@aws-cdk/cx-api.SynthesisMessageLevel.ERROR"
+    ]
+  },
+  "awscdkio": {
+    "announce": false
+  },
+  "cdk-build": {
+    "jest": true
+  }
 }

@@ -2,3 +2,7 @@
 *.js.map
 *.d.ts
 dist
+
+*.snk
+!.eslintrc.js
+junit.xml

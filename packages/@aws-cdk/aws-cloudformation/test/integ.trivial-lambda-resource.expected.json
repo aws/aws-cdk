@@ -10,7 +10,9 @@
           ]
         },
         "Message": "CustomResource says hello"
-      }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "SingletonLambdaf7d4f7304ee111e89c2dfa7ae01bbebcServiceRoleFE9ABB04": {
       "Type": "AWS::IAM::Role",
@@ -32,21 +34,11 @@
             "Fn::Join": [
               "",
               [
-                "arn",
-                ":",
+                "arn:",
                 {
                   "Ref": "AWS::Partition"
                 },
-                ":",
-                "iam",
-                ":",
-                "",
-                ":",
-                "aws",
-                ":",
-                "policy",
-                "/",
-                "service-role/AWSLambdaBasicExecutionRole"
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
               ]
             ]
           }
@@ -82,9 +74,6 @@
           "DemoResource5B5C546C",
           "Response"
         ]
-      },
-      "Export": {
-        "Name": "SucceedingStack:ResponseMessage"
       }
     }
   }

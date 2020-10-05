@@ -1,4 +1,13 @@
-## AWS CloudWatch Logs Construct Library
+## Amazon CloudWatch Logs Construct Library
+<!--BEGIN STABILITY BANNER-->
+---
+
+![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
+
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
+
+---
+<!--END STABILITY BANNER-->
 
 This library supplies constructs for working with CloudWatch Logs.
 
@@ -18,10 +27,25 @@ configures after how much time the events in the log stream expire and are
 deleted.
 
 The default retention period if not supplied is 2 years, but it can be set to
-any amount of days, or `Infinity` to keep the data in the log group forever.
+one of the values in the `RetentionDays` enum to configure a different
+retention period (including infinite retention).
 
 [retention example](test/example.retention.lit.ts)
 
+### LogRetention
+
+The `LogRetention` construct is a way to control the retention period of log groups that are created outside of the CDK. The construct is usually
+used on log groups that are auto created by AWS services, such as [AWS
+lambda](https://docs.aws.amazon.com/lambda/latest/dg/monitoring-cloudwatchlogs.html).
+
+This is implemented using a [CloudFormation custom
+resource](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cfn-customresource.html)
+which pre-creates the log group if it doesn't exist, and sets the specified log retention period (never expire, by default).
+ 
+By default, the log group will be created in the same region as the stack. The `logGroupRegion` property can be used to configure
+log groups in other regions. This is typically useful when controlling retention for log groups auto-created by global services that
+publish their log group to a specific region, such as AWS Chatbot creating a log group in `us-east-1`.
+ 
 ### Subscriptions and Destinations
 
 Log events matching a particular filter can be sent to either a Lambda function
@@ -41,7 +65,7 @@ const logGroup = new LogGroup(this, 'LogGroup', { ... });
 
 new SubscriptionFilter(this, 'Subscription', {
     logGroup,
-    destination: fn,
+    destination: new LogsDestinations.LambdaDestination(fn),
     filterPattern: FilterPattern.allTerms("ERROR", "MainThread")
 });
 ```
@@ -62,6 +86,42 @@ Example:
 
 Remember that if you want to use a value from the log event as the metric value,
 you must mention it in your pattern somewhere.
+
+A very simple MetricFilter can be created by using the `logGroup.extractMetric()`
+helper function:
+
+```ts
+logGroup.extractMetric('$.jsonField', 'Namespace', 'MetricName');
+```
+
+Will extract the value of `jsonField` wherever it occurs in JSON-structed
+log records in the LogGroup, and emit them to CloudWatch Metrics under
+the name `Namespace/MetricName`.
+
+#### Exposing Metric on a Metric Filter
+
+You can expose a metric on a metric filter by calling the `MetricFilter.metric()` API. 
+This has a default of `statistic = 'avg'` if the statistic is not set in the `props`.
+
+```ts
+const mf = new MetricFilter(this, 'MetricFilter', {
+  logGroup,
+  metricNamespace: 'MyApp',
+  metricName: 'Latency',
+  filterPattern: FilterPattern.exists('$.latency'),
+  metricValue: '$.latency',
+});
+
+//expose a metric from the metric filter
+const metric = mf.metric();
+
+//you can use the metric to create a new alarm
+new Alarm(this, 'alarm from metric filter', {
+  metric,
+  threshold: 100,
+  evaluationPeriods: 2,
+});
+```
 
 ### Patterns
 
@@ -195,3 +255,9 @@ const pattern = FilterPattern.spaceDelimited('time', 'component', '...', 'result
     .whereString('component', '=', 'HttpServer')
     .whereNumber('result_code', '!=', 200);
 ```
+
+### Notes
+
+Be aware that Log Group ARNs will always have the string `:*` appended to
+them, to match the behavior of [the CloudFormation `AWS::Logs::LogGroup`
+resource](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-loggroup.html#aws-resource-logs-loggroup-return-values).

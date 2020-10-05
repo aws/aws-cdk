@@ -1,13 +1,13 @@
 {
   "name": "pkglint",
-  "version": "0.8.2",
+  "version": "0.0.0",
   "private": true,
   "description": "Validate and fix package.json files",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "git://github.com/awslabs/aws-cdk"
+    "url": "git://github.com/aws/aws-cdk"
   },
   "pkglint": {
     "ignore": true
@@ -16,9 +16,12 @@
     "pkglint": "bin/pkglint"
   },
   "scripts": {
-    "build": "tsc && tslint -p . && chmod +x bin/pkglint",
-    "watch": "tsc -w",
-    "lint": "tsc && tslint -p . --force"
+    "build": "tsc -b && eslint . --ext=.ts && chmod +x bin/pkglint",
+    "test": "jest",
+    "build+test": "npm run build && npm test",
+    "build+test+package": "npm run build && npm test",
+    "watch": "tsc -b -w",
+    "lint": "tsc -b && eslint . --ext=.ts"
   },
   "keywords": [
     "aws",
@@ -32,12 +35,18 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/fs-extra": "^4.0.8",
-    "@types/yargs": "^8.0.3"
+    "@types/fs-extra": "^8.1.1",
+    "@types/semver": "^7.3.4",
+    "@types/yargs": "^15.0.7",
+    "jest": "^26.4.2",
+    "typescript": "~3.9.7"
   },
   "dependencies": {
-    "case": "^1.5.5",
-    "fs-extra": "^4.0.2",
-    "yargs": "^9.0.1"
+    "case": "^1.6.3",
+    "colors": "^1.4.0",
+    "fs-extra": "^9.0.1",
+    "glob": "^7.1.6",
+    "semver": "^7.3.2",
+    "yargs": "^16.0.3"
   }
 }

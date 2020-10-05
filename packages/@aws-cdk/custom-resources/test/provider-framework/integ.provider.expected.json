@@ -1,0 +1,1092 @@
+{
+  "Resources": {
+    "MyBucketF68F3FF0": {
+      "Type": "AWS::S3::Bucket",
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
+    },
+    "file1F37B880C": {
+      "Type": "Custom::S3File",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "comamazonawscdkcustomresourcess3fileproviderframeworkonEvent34F66A68",
+            "Arn"
+          ]
+        },
+        "BucketName": {
+          "Ref": "MyBucketF68F3FF0"
+        },
+        "Contents": "Hello, world, 1980!",
+        "ObjectKey": "second.txt",
+        "PublicRead": true
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "comamazonawscdkcustomresourcess3fileproviders3fileoneventServiceRole999CEEB6": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "comamazonawscdkcustomresourcess3fileproviders3fileoneventServiceRoleDefaultPolicy10D24725": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*",
+                "s3:DeleteObject*",
+                "s3:PutObject*",
+                "s3:Abort*"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "comamazonawscdkcustomresourcess3fileproviders3fileoneventServiceRoleDefaultPolicy10D24725",
+        "Roles": [
+          {
+            "Ref": "comamazonawscdkcustomresourcess3fileproviders3fileoneventServiceRole999CEEB6"
+          }
+        ]
+      }
+    },
+    "comamazonawscdkcustomresourcess3fileproviders3fileonevent48293DE8": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AssetParametersfd43c0b4c0b961743009872f92ea51e922be342a344c19b9a8dd693f494d8da2S3BucketD831F708"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParametersfd43c0b4c0b961743009872f92ea51e922be342a344c19b9a8dd693f494d8da2S3VersionKeyEAC17D61"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParametersfd43c0b4c0b961743009872f92ea51e922be342a344c19b9a8dd693f494d8da2S3VersionKeyEAC17D61"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Handler": "index.onEvent",
+        "Role": {
+          "Fn::GetAtt": [
+            "comamazonawscdkcustomresourcess3fileproviders3fileoneventServiceRole999CEEB6",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs10.x"
+      },
+      "DependsOn": [
+        "comamazonawscdkcustomresourcess3fileproviders3fileoneventServiceRoleDefaultPolicy10D24725",
+        "comamazonawscdkcustomresourcess3fileproviders3fileoneventServiceRole999CEEB6"
+      ]
+    },
+    "comamazonawscdkcustomresourcess3fileproviderframeworkonEventServiceRoleABFCDA11": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "comamazonawscdkcustomresourcess3fileproviderframeworkonEventServiceRoleDefaultPolicyA61D075B": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "comamazonawscdkcustomresourcess3fileproviders3fileonevent48293DE8",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "comamazonawscdkcustomresourcess3fileproviderframeworkonEventServiceRoleDefaultPolicyA61D075B",
+        "Roles": [
+          {
+            "Ref": "comamazonawscdkcustomresourcess3fileproviderframeworkonEventServiceRoleABFCDA11"
+          }
+        ]
+      }
+    },
+    "comamazonawscdkcustomresourcess3fileproviderframeworkonEvent34F66A68": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AssetParameters956c2f92ddbde06f551fdf914445c679dcadb21c6e8d1ee9c9632144ef5a2ad3S3Bucket0EEA1C2E"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters956c2f92ddbde06f551fdf914445c679dcadb21c6e8d1ee9c9632144ef5a2ad3S3VersionKey7BCE18C9"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters956c2f92ddbde06f551fdf914445c679dcadb21c6e8d1ee9c9632144ef5a2ad3S3VersionKey7BCE18C9"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Handler": "framework.onEvent",
+        "Role": {
+          "Fn::GetAtt": [
+            "comamazonawscdkcustomresourcess3fileproviderframeworkonEventServiceRoleABFCDA11",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs10.x",
+        "Description": "AWS CDK resource provider framework - onEvent (integ-provider-framework/com.amazonaws.cdk.custom-resources.s3file-provider/s3file-provider)",
+        "Environment": {
+          "Variables": {
+            "USER_ON_EVENT_FUNCTION_ARN": {
+              "Fn::GetAtt": [
+                "comamazonawscdkcustomresourcess3fileproviders3fileonevent48293DE8",
+                "Arn"
+              ]
+            }
+          }
+        },
+        "Timeout": 900
+      },
+      "DependsOn": [
+        "comamazonawscdkcustomresourcess3fileproviderframeworkonEventServiceRoleDefaultPolicyA61D075B",
+        "comamazonawscdkcustomresourcess3fileproviderframeworkonEventServiceRoleABFCDA11"
+      ]
+    },
+    "file23283EA00": {
+      "Type": "Custom::S3File",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "comamazonawscdkcustomresourcess3fileproviderframeworkonEvent34F66A68",
+            "Arn"
+          ]
+        },
+        "BucketName": {
+          "Ref": "MyBucketF68F3FF0"
+        },
+        "Contents": "this file has a generated physical id"
+      },
+      "DependsOn": [
+        "file1F37B880C"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "assertfileD2D1F53A": {
+      "Type": "Custom::S3Assert",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "comamazonawscdkcustomresourcess3assertproviderframeworkonEvent0FE4BD4B",
+            "Arn"
+          ]
+        },
+        "BucketName": {
+          "Ref": "MyBucketF68F3FF0"
+        },
+        "ObjectKey": {
+          "Fn::GetAtt": [
+            "file23283EA00",
+            "ObjectKey"
+          ]
+        },
+        "ExpectedContent": "this file has a generated physical id"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "comamazonawscdkcustomresourcess3assertproviders3assertoneventServiceRole012C0033": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "comamazonawscdkcustomresourcess3assertproviders3assertoneventF1EEF783": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AssetParameters4bafad8d010ba693e235b77d2c6decfc2ac79a8208d4477cbb36d31caf7189e8S3Bucket0DB889DF"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters4bafad8d010ba693e235b77d2c6decfc2ac79a8208d4477cbb36d31caf7189e8S3VersionKey67FE4034"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters4bafad8d010ba693e235b77d2c6decfc2ac79a8208d4477cbb36d31caf7189e8S3VersionKey67FE4034"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Handler": "index.on_event",
+        "Role": {
+          "Fn::GetAtt": [
+            "comamazonawscdkcustomresourcess3assertproviders3assertoneventServiceRole012C0033",
+            "Arn"
+          ]
+        },
+        "Runtime": "python3.7"
+      },
+      "DependsOn": [
+        "comamazonawscdkcustomresourcess3assertproviders3assertoneventServiceRole012C0033"
+      ]
+    },
+    "comamazonawscdkcustomresourcess3assertproviders3assertiscompleteServiceRoleACAA755A": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "comamazonawscdkcustomresourcess3assertproviders3assertiscompleteServiceRoleDefaultPolicyE8D09091": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "comamazonawscdkcustomresourcess3assertproviders3assertiscompleteServiceRoleDefaultPolicyE8D09091",
+        "Roles": [
+          {
+            "Ref": "comamazonawscdkcustomresourcess3assertproviders3assertiscompleteServiceRoleACAA755A"
+          }
+        ]
+      }
+    },
+    "comamazonawscdkcustomresourcess3assertproviders3assertiscomplete6AC08EF9": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AssetParameters4bafad8d010ba693e235b77d2c6decfc2ac79a8208d4477cbb36d31caf7189e8S3Bucket0DB889DF"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters4bafad8d010ba693e235b77d2c6decfc2ac79a8208d4477cbb36d31caf7189e8S3VersionKey67FE4034"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters4bafad8d010ba693e235b77d2c6decfc2ac79a8208d4477cbb36d31caf7189e8S3VersionKey67FE4034"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Handler": "index.is_complete",
+        "Role": {
+          "Fn::GetAtt": [
+            "comamazonawscdkcustomresourcess3assertproviders3assertiscompleteServiceRoleACAA755A",
+            "Arn"
+          ]
+        },
+        "Runtime": "python3.7"
+      },
+      "DependsOn": [
+        "comamazonawscdkcustomresourcess3assertproviders3assertiscompleteServiceRoleDefaultPolicyE8D09091",
+        "comamazonawscdkcustomresourcess3assertproviders3assertiscompleteServiceRoleACAA755A"
+      ]
+    },
+    "comamazonawscdkcustomresourcess3assertproviderframeworkonEventServiceRole34070F2C": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "comamazonawscdkcustomresourcess3assertproviderframeworkonEventServiceRoleDefaultPolicyDD1903FC": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "comamazonawscdkcustomresourcess3assertproviders3assertoneventF1EEF783",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "comamazonawscdkcustomresourcess3assertproviders3assertiscomplete6AC08EF9",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": "states:StartExecution",
+              "Effect": "Allow",
+              "Resource": {
+                "Ref": "comamazonawscdkcustomresourcess3assertproviderwaiterstatemachineAC25148E"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "comamazonawscdkcustomresourcess3assertproviderframeworkonEventServiceRoleDefaultPolicyDD1903FC",
+        "Roles": [
+          {
+            "Ref": "comamazonawscdkcustomresourcess3assertproviderframeworkonEventServiceRole34070F2C"
+          }
+        ]
+      }
+    },
+    "comamazonawscdkcustomresourcess3assertproviderframeworkonEvent0FE4BD4B": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AssetParameters956c2f92ddbde06f551fdf914445c679dcadb21c6e8d1ee9c9632144ef5a2ad3S3Bucket0EEA1C2E"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters956c2f92ddbde06f551fdf914445c679dcadb21c6e8d1ee9c9632144ef5a2ad3S3VersionKey7BCE18C9"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters956c2f92ddbde06f551fdf914445c679dcadb21c6e8d1ee9c9632144ef5a2ad3S3VersionKey7BCE18C9"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Handler": "framework.onEvent",
+        "Role": {
+          "Fn::GetAtt": [
+            "comamazonawscdkcustomresourcess3assertproviderframeworkonEventServiceRole34070F2C",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs10.x",
+        "Description": "AWS CDK resource provider framework - onEvent (integ-provider-framework/com.amazonaws.cdk.custom-resources.s3assert-provider/s3assert-provider)",
+        "Environment": {
+          "Variables": {
+            "USER_ON_EVENT_FUNCTION_ARN": {
+              "Fn::GetAtt": [
+                "comamazonawscdkcustomresourcess3assertproviders3assertoneventF1EEF783",
+                "Arn"
+              ]
+            },
+            "USER_IS_COMPLETE_FUNCTION_ARN": {
+              "Fn::GetAtt": [
+                "comamazonawscdkcustomresourcess3assertproviders3assertiscomplete6AC08EF9",
+                "Arn"
+              ]
+            },
+            "WAITER_STATE_MACHINE_ARN": {
+              "Ref": "comamazonawscdkcustomresourcess3assertproviderwaiterstatemachineAC25148E"
+            }
+          }
+        },
+        "Timeout": 900
+      },
+      "DependsOn": [
+        "comamazonawscdkcustomresourcess3assertproviderframeworkonEventServiceRoleDefaultPolicyDD1903FC",
+        "comamazonawscdkcustomresourcess3assertproviderframeworkonEventServiceRole34070F2C"
+      ]
+    },
+    "comamazonawscdkcustomresourcess3assertproviderframeworkisCompleteServiceRole2C8C7983": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "comamazonawscdkcustomresourcess3assertproviderframeworkisCompleteServiceRoleDefaultPolicy38CF2774": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "comamazonawscdkcustomresourcess3assertproviders3assertoneventF1EEF783",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "comamazonawscdkcustomresourcess3assertproviders3assertiscomplete6AC08EF9",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "comamazonawscdkcustomresourcess3assertproviderframeworkisCompleteServiceRoleDefaultPolicy38CF2774",
+        "Roles": [
+          {
+            "Ref": "comamazonawscdkcustomresourcess3assertproviderframeworkisCompleteServiceRole2C8C7983"
+          }
+        ]
+      }
+    },
+    "comamazonawscdkcustomresourcess3assertproviderframeworkisComplete63829575": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AssetParameters956c2f92ddbde06f551fdf914445c679dcadb21c6e8d1ee9c9632144ef5a2ad3S3Bucket0EEA1C2E"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters956c2f92ddbde06f551fdf914445c679dcadb21c6e8d1ee9c9632144ef5a2ad3S3VersionKey7BCE18C9"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters956c2f92ddbde06f551fdf914445c679dcadb21c6e8d1ee9c9632144ef5a2ad3S3VersionKey7BCE18C9"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Handler": "framework.isComplete",
+        "Role": {
+          "Fn::GetAtt": [
+            "comamazonawscdkcustomresourcess3assertproviderframeworkisCompleteServiceRole2C8C7983",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs10.x",
+        "Description": "AWS CDK resource provider framework - isComplete (integ-provider-framework/com.amazonaws.cdk.custom-resources.s3assert-provider/s3assert-provider)",
+        "Environment": {
+          "Variables": {
+            "USER_ON_EVENT_FUNCTION_ARN": {
+              "Fn::GetAtt": [
+                "comamazonawscdkcustomresourcess3assertproviders3assertoneventF1EEF783",
+                "Arn"
+              ]
+            },
+            "USER_IS_COMPLETE_FUNCTION_ARN": {
+              "Fn::GetAtt": [
+                "comamazonawscdkcustomresourcess3assertproviders3assertiscomplete6AC08EF9",
+                "Arn"
+              ]
+            }
+          }
+        },
+        "Timeout": 900
+      },
+      "DependsOn": [
+        "comamazonawscdkcustomresourcess3assertproviderframeworkisCompleteServiceRoleDefaultPolicy38CF2774",
+        "comamazonawscdkcustomresourcess3assertproviderframeworkisCompleteServiceRole2C8C7983"
+      ]
+    },
+    "comamazonawscdkcustomresourcess3assertproviderframeworkonTimeoutServiceRole15F6DFA2": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "comamazonawscdkcustomresourcess3assertproviderframeworkonTimeoutServiceRoleDefaultPolicyC7408011": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "comamazonawscdkcustomresourcess3assertproviders3assertoneventF1EEF783",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "comamazonawscdkcustomresourcess3assertproviders3assertiscomplete6AC08EF9",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "comamazonawscdkcustomresourcess3assertproviderframeworkonTimeoutServiceRoleDefaultPolicyC7408011",
+        "Roles": [
+          {
+            "Ref": "comamazonawscdkcustomresourcess3assertproviderframeworkonTimeoutServiceRole15F6DFA2"
+          }
+        ]
+      }
+    },
+    "comamazonawscdkcustomresourcess3assertproviderframeworkonTimeoutA1E1E5DC": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AssetParameters956c2f92ddbde06f551fdf914445c679dcadb21c6e8d1ee9c9632144ef5a2ad3S3Bucket0EEA1C2E"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters956c2f92ddbde06f551fdf914445c679dcadb21c6e8d1ee9c9632144ef5a2ad3S3VersionKey7BCE18C9"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters956c2f92ddbde06f551fdf914445c679dcadb21c6e8d1ee9c9632144ef5a2ad3S3VersionKey7BCE18C9"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Handler": "framework.onTimeout",
+        "Role": {
+          "Fn::GetAtt": [
+            "comamazonawscdkcustomresourcess3assertproviderframeworkonTimeoutServiceRole15F6DFA2",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs10.x",
+        "Description": "AWS CDK resource provider framework - onTimeout (integ-provider-framework/com.amazonaws.cdk.custom-resources.s3assert-provider/s3assert-provider)",
+        "Environment": {
+          "Variables": {
+            "USER_ON_EVENT_FUNCTION_ARN": {
+              "Fn::GetAtt": [
+                "comamazonawscdkcustomresourcess3assertproviders3assertoneventF1EEF783",
+                "Arn"
+              ]
+            },
+            "USER_IS_COMPLETE_FUNCTION_ARN": {
+              "Fn::GetAtt": [
+                "comamazonawscdkcustomresourcess3assertproviders3assertiscomplete6AC08EF9",
+                "Arn"
+              ]
+            }
+          }
+        },
+        "Timeout": 900
+      },
+      "DependsOn": [
+        "comamazonawscdkcustomresourcess3assertproviderframeworkonTimeoutServiceRoleDefaultPolicyC7408011",
+        "comamazonawscdkcustomresourcess3assertproviderframeworkonTimeoutServiceRole15F6DFA2"
+      ]
+    },
+    "comamazonawscdkcustomresourcess3assertproviderwaiterstatemachineRole39E8529F": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "states.",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ".amazonaws.com"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "comamazonawscdkcustomresourcess3assertproviderwaiterstatemachineRoleDefaultPolicy9882AB39": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "comamazonawscdkcustomresourcess3assertproviderframeworkisComplete63829575",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "comamazonawscdkcustomresourcess3assertproviderframeworkonTimeoutA1E1E5DC",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "comamazonawscdkcustomresourcess3assertproviderwaiterstatemachineRoleDefaultPolicy9882AB39",
+        "Roles": [
+          {
+            "Ref": "comamazonawscdkcustomresourcess3assertproviderwaiterstatemachineRole39E8529F"
+          }
+        ]
+      }
+    },
+    "comamazonawscdkcustomresourcess3assertproviderwaiterstatemachineAC25148E": {
+      "Type": "AWS::StepFunctions::StateMachine",
+      "Properties": {
+        "DefinitionString": {
+          "Fn::Join": [
+            "",
+            [
+              "{\"StartAt\":\"framework-isComplete-task\",\"States\":{\"framework-isComplete-task\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":5,\"MaxAttempts\":60,\"BackoffRate\":1}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"framework-onTimeout-task\"}],\"Type\":\"Task\",\"Resource\":\"",
+              {
+                "Fn::GetAtt": [
+                  "comamazonawscdkcustomresourcess3assertproviderframeworkisComplete63829575",
+                  "Arn"
+                ]
+              },
+              "\"},\"framework-onTimeout-task\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"",
+              {
+                "Fn::GetAtt": [
+                  "comamazonawscdkcustomresourcess3assertproviderframeworkonTimeoutA1E1E5DC",
+                  "Arn"
+                ]
+              },
+              "\"}}}"
+            ]
+          ]
+        },
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "comamazonawscdkcustomresourcess3assertproviderwaiterstatemachineRole39E8529F",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "comamazonawscdkcustomresourcess3assertproviderwaiterstatemachineRoleDefaultPolicy9882AB39",
+        "comamazonawscdkcustomresourcess3assertproviderwaiterstatemachineRole39E8529F"
+      ]
+    }
+  },
+  "Parameters": {
+    "AssetParametersfd43c0b4c0b961743009872f92ea51e922be342a344c19b9a8dd693f494d8da2S3BucketD831F708": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"fd43c0b4c0b961743009872f92ea51e922be342a344c19b9a8dd693f494d8da2\""
+    },
+    "AssetParametersfd43c0b4c0b961743009872f92ea51e922be342a344c19b9a8dd693f494d8da2S3VersionKeyEAC17D61": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"fd43c0b4c0b961743009872f92ea51e922be342a344c19b9a8dd693f494d8da2\""
+    },
+    "AssetParametersfd43c0b4c0b961743009872f92ea51e922be342a344c19b9a8dd693f494d8da2ArtifactHashDD841113": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"fd43c0b4c0b961743009872f92ea51e922be342a344c19b9a8dd693f494d8da2\""
+    },
+    "AssetParameters956c2f92ddbde06f551fdf914445c679dcadb21c6e8d1ee9c9632144ef5a2ad3S3Bucket0EEA1C2E": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"956c2f92ddbde06f551fdf914445c679dcadb21c6e8d1ee9c9632144ef5a2ad3\""
+    },
+    "AssetParameters956c2f92ddbde06f551fdf914445c679dcadb21c6e8d1ee9c9632144ef5a2ad3S3VersionKey7BCE18C9": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"956c2f92ddbde06f551fdf914445c679dcadb21c6e8d1ee9c9632144ef5a2ad3\""
+    },
+    "AssetParameters956c2f92ddbde06f551fdf914445c679dcadb21c6e8d1ee9c9632144ef5a2ad3ArtifactHash2CBB11D2": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"956c2f92ddbde06f551fdf914445c679dcadb21c6e8d1ee9c9632144ef5a2ad3\""
+    },
+    "AssetParameters4bafad8d010ba693e235b77d2c6decfc2ac79a8208d4477cbb36d31caf7189e8S3Bucket0DB889DF": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"4bafad8d010ba693e235b77d2c6decfc2ac79a8208d4477cbb36d31caf7189e8\""
+    },
+    "AssetParameters4bafad8d010ba693e235b77d2c6decfc2ac79a8208d4477cbb36d31caf7189e8S3VersionKey67FE4034": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"4bafad8d010ba693e235b77d2c6decfc2ac79a8208d4477cbb36d31caf7189e8\""
+    },
+    "AssetParameters4bafad8d010ba693e235b77d2c6decfc2ac79a8208d4477cbb36d31caf7189e8ArtifactHash6C17CFC2": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"4bafad8d010ba693e235b77d2c6decfc2ac79a8208d4477cbb36d31caf7189e8\""
+    }
+  },
+  "Outputs": {
+    "file1url": {
+      "Value": {
+        "Fn::GetAtt": [
+          "file1F37B880C",
+          "URL"
+        ]
+      }
+    },
+    "file2url": {
+      "Value": {
+        "Fn::GetAtt": [
+          "file23283EA00",
+          "URL"
+        ]
+      }
+    }
+  }
+}

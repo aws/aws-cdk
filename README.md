@@ -1,37 +1,50 @@
 # AWS Cloud Development Kit (AWS CDK)
 
-![Build Status](https://codebuild.us-east-1.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiRUlEQk1UWVhQRDduSy9iWWtpa012bmJSU0t2aXpCeEtTT2VpWDhlVmxldVU0ZXBoSzRpdTk1cGNNTThUaUtYVU5BMVZnd1ZhT2FTMWZjNkZ0RE5hSlpNPSIsIml2UGFyYW1ldGVyU3BlYyI6IllIUjJNUEZKY3NqYnR6S3EiLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=master)
-[![Build Status](https://travis-ci.org/awslabs/aws-cdk.svg?branch=master)](https://travis-ci.org/awslabs/aws-cdk)
-[![Version](https://badge.fury.io/js/aws-cdk.svg)](https://badge.fury.io/js/aws-cdk)
+![Build Status](https://codebuild.us-east-1.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiSy9rWmVENzRDbXBoVlhYaHBsNks4OGJDRXFtV1IySmhCVjJoaytDU2dtVWhhVys3NS9Odk5DbC9lR2JUTkRvSWlHSXZrNVhYQ3ZsaUJFY3o4OERQY1pnPSIsIml2UGFyYW1ldGVyU3BlYyI6IlB3ODEyRW9KdU0yaEp6NDkiLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=master)
 [![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.svg)](https://gitter.im/awslabs/aws-cdk)
+[![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/aws/aws-cdk)
+[![NPM version](https://badge.fury.io/js/aws-cdk.svg)](https://badge.fury.io/js/aws-cdk)
+[![PyPI version](https://badge.fury.io/py/aws-cdk.core.svg)](https://badge.fury.io/py/aws-cdk.core)
+[![NuGet version](https://badge.fury.io/nu/Amazon.CDK.svg)](https://badge.fury.io/nu/Amazon.CDK)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/software.amazon.awscdk/core/badge.svg)](https://maven-badges.herokuapp.com/maven-central/software.amazon.awscdk/core)
+[![Mergify](https://img.shields.io/endpoint.svg?url=https://gh.mergify.io/badges/aws/aws-cdk&style=flat)](https://mergify.io)
 
-The **AWS Cloud Development Kit (AWS CDK)** is an open-source software development 
-framework to define cloud infrastructure and provision it through AWS CloudFormation.
-The CDK integrates fully with AWS services and offers a higher level object-oriented
-abstraction to define AWS resources imperatively. Using the CDK’s library of
-infrastructure [constructs], you can easily encapsulate AWS best practices in your
-infrastructure definition and share it without worrying about boilerplate logic. The
-CDK improves the end-to-end development experience because you get to use the power
-of modern programming languages to define your AWS infrastructure in a predictable
-and efficient manner. The CDK is currently available for Java, JavaScript, and
-TypeScript. 
+The **AWS Cloud Development Kit (AWS CDK)** is an open-source software development
+framework to define cloud infrastructure in code and provision it through AWS CloudFormation.
 
-The CDK is currently in developer preview and we look forward to community feedback and collaboration!
+It offers a high-level object-oriented abstraction to define AWS resources imperatively using
+the power of modern programming languages. Using the CDK’s library of
+infrastructure constructs, you can easily encapsulate AWS best practices in your
+infrastructure definition and share it without worrying about boilerplate logic.
 
-[User Guide] |
-[Getting Started] |
-[API Reference](https://awslabs.github.io/aws-cdk/reference.html) |
-[Getting Help](#getting-help)
+The CDK is available in the following languages:
 
-![Example usage of CDK](screencast.gif)
+* JavaScript, TypeScript ([Node.js ≥ 10.13.0](https://nodejs.org/download/release/latest-v10.x/))
+  - We recommend using a version in [Active LTS](https://nodejs.org/en/about/releases/)
+  - ⚠️ versions `13.0.0` to `13.6.0` are not supported due to compatibility issues with our dependencies.
+* Python ([Python ≥ 3.6](https://www.python.org/downloads/))
+* Java ([Java ≥ 8](https://www.oracle.com/technetwork/java/javase/downloads/index.html) and [Maven ≥ 3.5.4](https://maven.apache.org/download.cgi))
+* .NET ([.NET Core ≥ 3.1](https://dotnet.microsoft.com/download))
 
-Developers can use one of the supported programming languages to define reusable
-cloud components called [constructs], which are composed together into
-[stacks] and [apps].
+\
+Jump To:
+[Developer Guide](https://docs.aws.amazon.com/cdk/latest/guide) |
+[API Reference](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-construct-library.html) |
+[Getting Started](#getting-started) |
+[Getting Help](#getting-help) |
+[Contributing](#contributing) |
+[RFCs](https://github.com/aws/aws-cdk-rfcs) |
+[Roadmap](https://github.com/aws/aws-cdk/blob/master/ROADMAP.md) |
+[More Resources](#more-resources)
 
-The [AWS CDK Toolkit] is a command-line tool for interacting with
-CDK apps. It allows developers to synthesize artifacts such as AWS
-CloudFormation Templates, deploy stacks to development AWS accounts and "diff"
+-------
+
+Developers use the [CDK framework] in one of the
+supported programming languages to define reusable cloud components called [constructs], which
+are composed together into [stacks], forming a "CDK app".
+
+They then use the [AWS CDK CLI] to interact with their CDK app. The CLI allows developers to
+synthesize artifacts such as AWS CloudFormation Templates, deploy stacks to development AWS accounts and "diff"
 against a deployed stack to understand the impact of a code change.
 
 The [AWS Construct Library] includes a module for each
@@ -40,34 +53,67 @@ how to use AWS. The AWS Construct Library aims to reduce the complexity and
 glue-logic required when integrating various AWS services to achieve your goals
 on AWS.
 
-[constructs]: https://awslabs.github.io/aws-cdk/constructs.html
-[stacks]: https://awslabs.github.io/aws-cdk/stacks.html
-[apps]: https://awslabs.github.io/aws-cdk/apps.html
-[User Guide]: https://awslabs.github.io/aws-cdk
-[Getting Started]: https://awslabs.github.io/aws-cdk/getting-started.html
-[AWS CDK Toolkit]: https://awslabs.github.io/aws-cdk/tools.html#command-line-toolkit-cdk
-[AWS Construct Library]: https://awslabs.github.io/aws-cdk/aws-construct-lib.html
+Modules in the AWS Construct Library are designated Experimental while we build
+them; experimental modules may have breaking API changes in any release.  After
+a module is designated Stable, it adheres to [semantic versioning](https://semver.org/),
+and only major releases can have breaking changes. Each module's stability designation
+is available on its Overview page in the [AWS CDK API Reference](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-construct-library.html). 
+For more information, see [Versioning](https://docs.aws.amazon.com/cdk/latest/guide/reference.html#versioning)
+in the CDK Developer Guide.
+
+[CDK framework]: https://docs.aws.amazon.com/cdk/latest/guide/home.html
+[constructs]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html
+[stacks]: https://docs.aws.amazon.com/cdk/latest/guide/stacks.html
+[apps]: https://docs.aws.amazon.com/cdk/latest/guide/apps.html
+[Developer Guide]: https://docs.aws.amazon.com/cdk/latest/guide
+[AWS CDK CLI]: https://docs.aws.amazon.com/cdk/latest/guide/tools.html
+[AWS Construct Library]: https://docs.aws.amazon.com/cdk/api/latest/docs/aws-construct-library.html
+
 
 ## Getting Started
 
-* For a detailed walkthrough, see [Getting Started] in the AWS CDK [User Guide]
-* See [Manual Installation](./MANUAL_INSTALLATION.md) for installing the CDK from a signed .zip file
+For a detailed walkthrough, see the [tutorial](https://docs.aws.amazon.com/cdk/latest/guide/getting_started.html#hello_world_tutorial) in the AWS CDK [Developer Guide](https://docs.aws.amazon.com/cdk/latest/guide/home.html).
 
-Install or update the [AWS CDK Toolkit] from npm (requires [Node.js ≥ 8.11.x](https://nodejs.org/en/download)):
+### At a glance
+Install or update the [AWS CDK CLI] from npm (requires [Node.js ≥ 10.13.0](https://nodejs.org/download/release/latest-v10.x/)). We recommend using a version in [Active LTS](https://nodejs.org/en/about/releases/)
+⚠️ versions `13.0.0` to `13.6.0` are not supported due to compatibility issues with our dependencies.
 
 ```bash
 $ npm i -g aws-cdk
 ```
+
+(See [Manual Installation](./MANUAL_INSTALLATION.md) for installing the CDK from a signed .zip file).
 
 Initialize a project:
 
 ```bash
 $ mkdir hello-cdk
 $ cd hello-cdk
-$ cdk init app --language=typescript
-# or
-$ cdk init app --language=java
-# more languages (coming soon)...
+$ cdk init sample-app --language=typescript
+```
+
+This creates a sample project looking like this:
+
+```ts
+export class HelloCdkStack extends cdk.Stack {
+  constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
+    super(scope, id, props);
+
+    const queue = new sqs.Queue(this, 'HelloCdkQueue', {
+      visibilityTimeout: cdk.Duration.seconds(300)
+    });
+
+    const topic = new sns.Topic(this, 'HelloCdkTopic');
+
+    topic.addSubscription(new subs.SqsSubscription(queue));
+  }
+}
+```
+
+Deploy this to your account:
+
+```bash
+$ cdk deploy
 ```
 
 Use the `cdk` command-line toolkit to interact with your project:
@@ -76,32 +122,33 @@ Use the `cdk` command-line toolkit to interact with your project:
  * `cdk synth`: synthesizes an AWS CloudFormation template for your app
  * `cdk diff`: compares your app with the deployed stack
 
-Read the [docs](https://awslabs.github.io/aws-cdk/):
-
-```bash
-$ cdk docs
-```
-
 ## Getting Help
 
-Please use these community resources for getting help. We use the GitHub issues
-for tracking bugs and feature requests.
+The best way to interact with our team is through GitHub. You can open an [issue](https://github.com/aws/aws-cdk/issues/new/choose) and choose from one of our templates for bug reports, feature requests, documentation issues, or guidance.
 
+If you have a support plan with AWS Support, you can also create a new [support case](https://console.aws.amazon.com/support/home#/).
+
+You may also find help on these community resources:
+* Look through the [API Reference](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-construct-library.html) or [Developer Guide](https://docs.aws.amazon.com/cdk/latest/guide)
 * Ask a question on [Stack Overflow](https://stackoverflow.com/questions/tagged/aws-cdk)
   and tag it with `aws-cdk`
 * Come join the AWS CDK community on [Gitter](https://gitter.im/awslabs/aws-cdk)
-* Open a support ticket with [AWS Support](https://console.aws.amazon.com/support/home#/)
-* If it turns out that you may have found a bug,
-  please open an [issue](https://github.com/awslabs/aws-cdk/issues/new)
+* Talk in the CDK channel of the [AWS Developers Slack workspace](https://awsdevelopers.slack.com) (invite required)
+* A community-driven Slack channel is also available, invite at [cdk.dev](https://cdk.dev)
+
+### Roadmap
+
+The [AWS CDK Roadmap project board](https://github.com/orgs/aws/projects/7) lets developers know about our upcoming features and priorities to help them plan how to best leverage the CDK and identify opportunities to contribute to the project. See [ROADMAP.md](https://github.com/aws/aws-cdk/blob/master/ROADMAP.md) for more information and FAQs.
 
 ## Contributing
 
 We welcome community contributions and pull requests. See
-[CONTRIBUTING](./CONTRIBUTING.md) for information on how to set up a development
+[CONTRIBUTING.md](./CONTRIBUTING.md) for information on how to set up a development
 environment and submit code.
 
-## License
-
-The AWS CDK is distributed under the [Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0).
-
-See [LICENSE](./LICENSE) and [NOTICE](./NOTICE) for more information.
+## More Resources
+* [CDK Workshop](https://cdkworkshop.com/)
+* [Examples](https://github.com/aws-samples/aws-cdk-examples)
+* [Changelog](./CHANGELOG.md)
+* [NOTICE](./NOTICE)
+* [License](./LICENSE) 

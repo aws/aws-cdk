@@ -1,5 +1,74 @@
 {
     "PropertyTypes": {
+        "AWS::Serverless::Api.AccessLogSetting": {
+            "Documentation": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-stage-accesslogsetting.html",
+            "Properties": {
+                "DestinationArn": {
+                    "Documentation": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-stage-accesslogsetting.html#cfn-apigateway-stage-accesslogsetting-destinationarn",
+                    "PrimitiveType": "String",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "Format": {
+                    "Documentation": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-stage-accesslogsetting.html#cfn-apigateway-stage-accesslogsetting-format",
+                    "PrimitiveType": "String",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
+        "AWS::Serverless::Api.Auth": {
+            "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api-auth-object",
+            "Properties": {
+                "Authorizers": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api-auth-object",
+                    "PrimitiveType": "Json",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "DefaultAuthorizer": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api-auth-object",
+                    "PrimitiveType": "String",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
+        "AWS::Serverless::Api.CorsConfiguration": {
+            "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#cors-configuration",
+            "Properties": {
+                "AllowCredentials": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#cors-configuration",
+                    "PrimitiveType": "Boolean",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "AllowHeaders": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#cors-configuration",
+                    "PrimitiveType": "String",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "AllowMethods": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#cors-configuration",
+                    "PrimitiveType": "String",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "AllowOrigin": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#cors-configuration",
+                    "PrimitiveType": "String",
+                    "Required": true,
+                    "UpdateType": "Immutable"
+                },
+                "MaxAge": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#cors-configuration",
+                    "PrimitiveType": "String",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
         "AWS::Serverless::Api.S3Location": {
             "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#s3-location-object",
             "Properties": {
@@ -18,6 +87,23 @@
                 "Version": {
                     "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction",
                     "PrimitiveType": "Integer",
+                    "Required": true,
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
+        "AWS::Serverless::Application.ApplicationLocation": {
+            "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapplication",
+            "Properties": {
+                "ApplicationId": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapplication",
+                    "PrimitiveType": "String",
+                    "Required": true,
+                    "UpdateType": "Immutable"
+                },
+                "SemanticVersion": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapplication",
+                    "PrimitiveType": "String",
                     "Required": true,
                     "UpdateType": "Immutable"
                 }
@@ -58,6 +144,17 @@
                 }
             }
         },
+        "AWS::Serverless::Function.BucketSAMPT": {
+            "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+            "Properties": {
+                "BucketName": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+                    "PrimitiveType": "String",
+                    "Required": true,
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
         "AWS::Serverless::Function.CloudWatchEventEvent": {
             "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#cloudwatchevent",
             "Properties": {
@@ -81,6 +178,34 @@
                 }
             }
         },
+        "AWS::Serverless::Function.CloudWatchLogsEvent": {
+            "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#cloudwatchevent",
+            "Properties": {
+                "FilterPattern": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#cloudwatchlogs",
+                    "PrimitiveType": "String",
+                    "Required": true,
+                    "UpdateType": "Immutable"
+                },
+                "LogGroupName": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#cloudwatchlogs",
+                    "PrimitiveType": "String",
+                    "Required": true,
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
+        "AWS::Serverless::Function.CollectionSAMPT": {
+            "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+            "Properties": {
+                "CollectionId": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+                    "PrimitiveType": "String",
+                    "Required": true,
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
         "AWS::Serverless::Function.DeadLetterQueue": {
             "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#deadletterqueue-object",
             "Properties": {
@@ -98,13 +223,114 @@
                 }
             }
         },
+        "AWS::Serverless::Function.DeploymentPreference": {
+            "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#deploymentpreference-object",
+            "Properties": {
+                "Alarms": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#deploymentpreference-object",
+                    "PrimitiveItemType": "String",
+                    "Required": false,
+                    "Type": "List",
+                    "UpdateType": "Immutable"
+                },
+                "Enabled": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#deploymentpreference-object",
+                    "PrimitiveType": "Boolean",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "Hooks": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#deploymentpreference-object",
+                    "PrimitiveItemType": "String",
+                    "Required": false,
+                    "Type": "Map",
+                    "UpdateType": "Immutable"
+                },
+                "Role": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#deploymentpreference-object",
+                    "PrimitiveType": "String",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "Type": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#deploymentpreference-object",
+                    "PrimitiveType": "String",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
+        "AWS::Serverless::Function.DestinationConfig": {
+            "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#destination-config-object",
+            "Properties": {
+                "OnFailure": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#destination-config-object",
+                    "Required": true,
+                    "Type": "OnFailure",
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
+        "AWS::Serverless::Function.DomainSAMPT": {
+            "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+            "Properties": {
+                "DomainName": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+                    "PrimitiveType": "String",
+                    "Required": true,
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
         "AWS::Serverless::Function.DynamoDBEvent": {
             "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#dynamodb",
             "Properties": {
                 "BatchSize": {
                     "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#dynamodb",
                     "PrimitiveType": "Integer",
-                    "Required": true,
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "BisectBatchOnFunctionError": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#dynamodb",
+                    "PrimitiveType": "Boolean",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "DestinationConfig": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#dynamodb",
+                    "Required": false,
+                    "Type": "DestinationConfig",
+                    "UpdateType": "Immutable"
+                },
+                "Enabled": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#dynamodb",
+                    "PrimitiveType": "Boolean",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "MaximumBatchingWindowInSeconds": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#dynamodb",
+                    "PrimitiveType": "Integer",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "MaximumRecordAgeInSeconds": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#dynamodb",
+                    "PrimitiveType": "Integer",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "MaximumRetryAttempts": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#dynamodb",
+                    "PrimitiveType": "Integer",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "ParallelizationFactor": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#dynamodb",
+                    "PrimitiveType": "Integer",
+                    "Required": false,
                     "UpdateType": "Immutable"
                 },
                 "StartingPosition": {
@@ -116,6 +342,39 @@
                 "Stream": {
                     "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#dynamodb",
                     "PrimitiveType": "String",
+                    "Required": true,
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
+        "AWS::Serverless::Function.EmptySAMPT": {
+            "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+            "Properties": {}
+        },
+        "AWS::Serverless::Function.EventBridgeRuleEvent": {
+            "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#eventbridgerule",
+            "Properties": {
+                "EventBusName": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#eventbridgerule",
+                    "PrimitiveType": "String",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "Input": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#eventbridgerule",
+                    "PrimitiveType": "String",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "InputPath": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#eventbridgerule",
+                    "PrimitiveType": "String",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "Pattern": {
+                    "Documentation": "https://docs.aws.amazon.com/eventbridge/latest/userguide/filtering-examples-structure.html",
+                    "PrimitiveType": "Json",
                     "Required": true,
                     "UpdateType": "Immutable"
                 }
@@ -136,8 +395,10 @@
                         "ApiEvent",
                         "ScheduleEvent",
                         "CloudWatchEventEvent",
+                        "CloudWatchLogsEvent",
                         "IoTRuleEvent",
-                        "AlexaSkillEvent"
+                        "AlexaSkillEvent",
+                        "EventBridgeRuleEvent"
                     ],
                     "UpdateType": "Immutable"
                 },
@@ -145,6 +406,23 @@
                     "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#event-source-object",
                     "PrimitiveType": "String",
                     "Required": true,
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
+        "AWS::Serverless::Function.FileSystemConfig": {
+            "Documentation": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-function-filesystemconfig.html#cfn-lambda-function-filesystemconfig-localmountpath",
+            "Properties": {
+                "Arn": {
+                    "Documentation": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-function-filesystemconfig.html#cfn-lambda-function-filesystemconfig-localmountpath",
+                    "PrimitiveType": "String",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "LocalMountPath": {
+                    "Documentation": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-function-filesystemconfig.html#cfn-lambda-function-filesystemconfig-localmountpath",
+                    "PrimitiveType": "String",
+                    "Required": false,
                     "UpdateType": "Immutable"
                 }
             }
@@ -161,12 +439,34 @@
                 }
             }
         },
+        "AWS::Serverless::Function.FunctionSAMPT": {
+            "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+            "Properties": {
+                "FunctionName": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+                    "PrimitiveType": "String",
+                    "Required": true,
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
         "AWS::Serverless::Function.IAMPolicyDocument": {
             "Documentation": "http://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies.html",
             "Properties": {
                 "Statement": {
                     "Documentation": "http://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies.html",
                     "PrimitiveType": "Json",
+                    "Required": true,
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
+        "AWS::Serverless::Function.IdentitySAMPT": {
+            "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+            "Properties": {
+                "IdentityName": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+                    "PrimitiveType": "String",
                     "Required": true,
                     "UpdateType": "Immutable"
                 }
@@ -189,12 +489,29 @@
                 }
             }
         },
+        "AWS::Serverless::Function.KeySAMPT": {
+            "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+            "Properties": {
+                "KeyId": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+                    "PrimitiveType": "String",
+                    "Required": true,
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
         "AWS::Serverless::Function.KinesisEvent": {
             "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#kinesis",
             "Properties": {
                 "BatchSize": {
                     "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#kinesis",
                     "PrimitiveType": "Integer",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "Enabled": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#kinesis",
+                    "PrimitiveType": "Boolean",
                     "Required": false,
                     "UpdateType": "Immutable"
                 },
@@ -206,6 +523,45 @@
                 },
                 "Stream": {
                     "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#kinesis",
+                    "PrimitiveType": "String",
+                    "Required": true,
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
+        "AWS::Serverless::Function.LogGroupSAMPT": {
+            "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+            "Properties": {
+                "LogGroupName": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+                    "PrimitiveType": "String",
+                    "Required": true,
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
+        "AWS::Serverless::Function.OnFailure": {
+            "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#destination-config-object",
+            "Properties": {
+                "Destination": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#destination-config-object",
+                    "PrimitiveType": "String",
+                    "Required": true,
+                    "UpdateType": "Immutable"
+                },
+                "Type": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#destination-config-object",
+                    "PrimitiveType": "String",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
+        "AWS::Serverless::Function.QueueSAMPT": {
+            "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+            "Properties": {
+                "QueueName": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
                     "PrimitiveType": "String",
                     "Required": true,
                     "UpdateType": "Immutable"
@@ -239,6 +595,35 @@
                 }
             }
         },
+        "AWS::Serverless::Function.S3KeyFilter": {
+            "Documentation": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-notificationconfiguration-config-filter.html",
+            "Properties": {
+                "Rules": {
+                    "Documentation": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-notificationconfiguration-config-filter.html",
+                    "ItemType": "S3KeyFilterRule",
+                    "Required": true,
+                    "Type": "List",
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
+        "AWS::Serverless::Function.S3KeyFilterRule": {
+            "Documentation": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-notificationconfiguration-config-filter-s3key-rules.html",
+            "Properties": {
+                "Name": {
+                    "Documentation": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-notificationconfiguration-config-filter-s3key-rules.html",
+                    "PrimitiveType": "String",
+                    "Required": true,
+                    "UpdateType": "Immutable"
+                },
+                "Value": {
+                    "Documentation": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-notificationconfiguration-config-filter-s3key-rules.html",
+                    "PrimitiveType": "String",
+                    "Required": true,
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
         "AWS::Serverless::Function.S3Location": {
             "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#s3-location-object",
             "Properties": {
@@ -257,7 +642,7 @@
                 "Version": {
                     "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction",
                     "PrimitiveType": "Integer",
-                    "Required": true,
+                    "Required": false,
                     "UpdateType": "Immutable"
                 }
             }
@@ -267,8 +652,163 @@
             "Properties": {
                 "S3Key": {
                     "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-notificationconfiguration-config-filter.html",
-                    "PrimitiveType": "String",
                     "Required": true,
+                    "Type": "S3KeyFilter",
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
+        "AWS::Serverless::Function.SAMPolicyTemplate": {
+            "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+            "Properties": {
+                "AMIDescribePolicy": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+                    "Type": "EmptySAMPT",
+                    "UpdateType": "Immutable"
+                },
+                "CloudFormationDescribeStacksPolicy": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+                    "Type": "EmptySAMPT",
+                    "UpdateType": "Immutable"
+                },
+                "CloudWatchPutMetricPolicy": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+                    "Type": "EmptySAMPT",
+                    "UpdateType": "Immutable"
+                },
+                "DynamoDBCrudPolicy": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+                    "Type": "TableSAMPT",
+                    "UpdateType": "Immutable"
+                },
+                "DynamoDBReadPolicy": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+                    "Type": "TableSAMPT",
+                    "UpdateType": "Immutable"
+                },
+                "DynamoDBStreamReadPolicy": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+                    "Type": "TableStreamSAMPT",
+                    "UpdateType": "Immutable"
+                },
+                "EC2DescribePolicy": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+                    "Type": "EmptySAMPT",
+                    "UpdateType": "Immutable"
+                },
+                "ElasticsearchHttpPostPolicy": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+                    "Type": "DomainSAMPT",
+                    "UpdateType": "Immutable"
+                },
+                "FilterLogEventsPolicy": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+                    "Type": "LogGroupSAMPT",
+                    "UpdateType": "Immutable"
+                },
+                "KMSDecryptPolicy": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+                    "Type": "KeySAMPT",
+                    "UpdateType": "Immutable"
+                },
+                "KinesisCrudPolicy": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+                    "Type": "StreamSAMPT",
+                    "UpdateType": "Immutable"
+                },
+                "KinesisStreamReadPolicy": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+                    "Type": "StreamSAMPT",
+                    "UpdateType": "Immutable"
+                },
+                "LambdaInvokePolicy": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+                    "Type": "FunctionSAMPT",
+                    "UpdateType": "Immutable"
+                },
+                "RekognitionDetectOnlyPolicy": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+                    "Type": "EmptySAMPT",
+                    "UpdateType": "Immutable"
+                },
+                "RekognitionLabelsPolicy": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+                    "Type": "EmptySAMPT",
+                    "UpdateType": "Immutable"
+                },
+                "RekognitionNoDataAccessPolicy": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+                    "Type": "CollectionSAMPT",
+                    "UpdateType": "Immutable"
+                },
+                "RekognitionReadPolicy": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+                    "Type": "CollectionSAMPT",
+                    "UpdateType": "Immutable"
+                },
+                "RekognitionWriteOnlyAccessPolicy": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+                    "Type": "CollectionSAMPT",
+                    "UpdateType": "Immutable"
+                },
+                "S3CrudPolicy": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+                    "Type": "BucketSAMPT",
+                    "UpdateType": "Immutable"
+                },
+                "S3ReadPolicy": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+                    "Type": "BucketSAMPT",
+                    "UpdateType": "Immutable"
+                },
+                "SESBulkTemplatedCrudPolicy": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+                    "Type": "IdentitySAMPT",
+                    "UpdateType": "Immutable"
+                },
+                "SESCrudPolicy": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+                    "Type": "IdentitySAMPT",
+                    "UpdateType": "Immutable"
+                },
+                "SESEmailTemplateCrudPolicy": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+                    "Type": "EmptySAMPT",
+                    "UpdateType": "Immutable"
+                },
+                "SESSendBouncePolicy": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+                    "Type": "IdentitySAMPT",
+                    "UpdateType": "Immutable"
+                },
+                "SNSCrudPolicy": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+                    "Type": "TopicSAMPT",
+                    "UpdateType": "Immutable"
+                },
+                "SNSPublishMessagePolicy": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+                    "Type": "TopicSAMPT",
+                    "UpdateType": "Immutable"
+                },
+                "SQSPollerPolicy": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+                    "Type": "QueueSAMPT",
+                    "UpdateType": "Immutable"
+                },
+                "SQSSendMessagePolicy": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+                    "Type": "QueueSAMPT",
+                    "UpdateType": "Immutable"
+                },
+                "StepFunctionsExecutionPolicy": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+                    "Type": "StateMachineSAMPT",
+                    "UpdateType": "Immutable"
+                },
+                "VPCAccessPolicy": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+                    "Type": "EmptySAMPT",
                     "UpdateType": "Immutable"
                 }
             }
@@ -293,6 +833,12 @@
                     "Required": false,
                     "UpdateType": "Immutable"
                 },
+                "Enabled": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#sqs",
+                    "PrimitiveType": "Boolean",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
                 "Queue": {
                     "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#sqs",
                     "PrimitiveType": "String",
@@ -312,6 +858,67 @@
                 },
                 "Schedule": {
                     "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#schedule",
+                    "PrimitiveType": "String",
+                    "Required": true,
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
+        "AWS::Serverless::Function.StateMachineSAMPT": {
+            "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+            "Properties": {
+                "StateMachineName": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+                    "PrimitiveType": "String",
+                    "Required": true,
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
+        "AWS::Serverless::Function.StreamSAMPT": {
+            "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+            "Properties": {
+                "StreamName": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+                    "PrimitiveType": "String",
+                    "Required": true,
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
+        "AWS::Serverless::Function.TableSAMPT": {
+            "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+            "Properties": {
+                "TableName": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+                    "PrimitiveType": "String",
+                    "Required": true,
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
+        "AWS::Serverless::Function.TableStreamSAMPT": {
+            "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+            "Properties": {
+                "StreamName": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+                    "PrimitiveType": "String",
+                    "Required": true,
+                    "UpdateType": "Immutable"
+                },
+                "TableName": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+                    "PrimitiveType": "String",
+                    "Required": true,
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
+        "AWS::Serverless::Function.TopicSAMPT": {
+            "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+            "Properties": {
+                "TopicName": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
                     "PrimitiveType": "String",
                     "Required": true,
                     "UpdateType": "Immutable"
@@ -370,6 +977,254 @@
                     "UpdateType": "Immutable"
                 }
             }
+        },
+        "AWS::Serverless::SimpleTable.SSESpecification": {
+            "Documentation": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-table-ssespecification.html",
+            "Properties": {
+                "SSEEnabled": {
+                    "Documentation": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-table-ssespecification.html",
+                    "PrimitiveType": "Boolean",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
+        "AWS::Serverless::StateMachine.ApiEvent": {
+            "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api",
+            "Properties": {
+                "Method": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api",
+                    "PrimitiveType": "String",
+                    "Required": true,
+                    "UpdateType": "Immutable"
+                },
+                "Path": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api",
+                    "PrimitiveType": "String",
+                    "Required": true,
+                    "UpdateType": "Immutable"
+                },
+                "RestApiId": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api",
+                    "PrimitiveType": "String",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
+        "AWS::Serverless::StateMachine.CloudWatchEventEvent": {
+            "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-statemachine-cloudwatchevent.html",
+            "Properties": {
+                "EventBusName": {
+                    "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-statemachine-cloudwatchevent.html",
+                    "PrimitiveType": "String",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "Input": {
+                    "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-statemachine-cloudwatchevent.html",
+                    "PrimitiveType": "String",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "InputPath": {
+                    "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-statemachine-cloudwatchevent.html",
+                    "PrimitiveType": "String",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "Pattern": {
+                    "Documentation": "http://docs.aws.amazon.com/AmazonCloudWatch/latest/events/CloudWatchEventsandEventPatterns.html",
+                    "PrimitiveType": "Json",
+                    "Required": true,
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
+        "AWS::Serverless::StateMachine.CloudWatchLogsLogGroup": {
+            "Documentation": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-stepfunctions-statemachine-logdestination-cloudwatchlogsloggroup.html",
+            "Properties": {
+                "LogGroupArn": {
+                    "Documentation": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-stepfunctions-statemachine-logdestination-cloudwatchlogsloggroup.html",
+                    "PrimitiveType": "String",
+                    "Required": true,
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
+        "AWS::Serverless::StateMachine.EventBridgeRuleEvent": {
+            "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-statemachine-cloudwatchevent.html",
+            "Properties": {
+                "EventBusName": {
+                    "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-statemachine-cloudwatchevent.html",
+                    "PrimitiveType": "String",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "Input": {
+                    "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-statemachine-cloudwatchevent.html",
+                    "PrimitiveType": "String",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "InputPath": {
+                    "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-statemachine-cloudwatchevent.html",
+                    "PrimitiveType": "String",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "Pattern": {
+                    "Documentation": "http://docs.aws.amazon.com/AmazonCloudWatch/latest/events/CloudWatchEventsandEventPatterns.html",
+                    "PrimitiveType": "Json",
+                    "Required": true,
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
+        "AWS::Serverless::StateMachine.EventSource": {
+            "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#event-source-object",
+            "Properties": {
+                "Properties": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#event-source-types",
+                    "Required": true,
+                    "Types": [
+                        "CloudWatchEventEvent",
+                        "EventBridgeRuleEvent",
+                        "ScheduleEvent",
+                        "ApiEvent"
+                    ],
+                    "UpdateType": "Immutable"
+                },
+                "Type": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#event-source-object",
+                    "PrimitiveType": "String",
+                    "Required": true,
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
+        "AWS::Serverless::StateMachine.FunctionSAMPT": {
+            "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+            "Properties": {
+                "FunctionName": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+                    "PrimitiveType": "String",
+                    "Required": true,
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
+        "AWS::Serverless::StateMachine.IAMPolicyDocument": {
+            "Documentation": "http://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies.html",
+            "Properties": {
+                "Statement": {
+                    "Documentation": "http://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies.html",
+                    "PrimitiveType": "Json",
+                    "Required": true,
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
+        "AWS::Serverless::StateMachine.LogDestination": {
+            "Documentation": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-stepfunctions-statemachine-logdestination.html#cfn-stepfunctions-statemachine-logdestination-cloudwatchlogsloggroup",
+            "Properties": {
+                "CloudWatchLogsLogGroup": {
+                    "Documentation": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-stepfunctions-statemachine-logdestination.html#cfn-stepfunctions-statemachine-logdestination-cloudwatchlogsloggroup",
+                    "Required": true,
+                    "Type": "CloudWatchLogsLogGroup",
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
+        "AWS::Serverless::StateMachine.LoggingConfiguration": {
+            "Documentation": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-stepfunctions-statemachine-loggingconfiguration.html",
+            "Properties": {
+                "Destinations": {
+                    "Documentation": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-stepfunctions-statemachine-loggingconfiguration.html",
+                    "ItemType": "LogDestination",
+                    "Required": true,
+                    "Type": "List",
+                    "UpdateType": "Immutable"
+                },
+                "IncludeExecutionData": {
+                    "Documentation": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-stepfunctions-statemachine-loggingconfiguration.html",
+                    "PrimitiveType": "Boolean",
+                    "Required": true,
+                    "UpdateType": "Immutable"
+                },
+                "Level": {
+                    "Documentation": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-stepfunctions-statemachine-loggingconfiguration.html",
+                    "PrimitiveType": "String",
+                    "Required": true,
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
+        "AWS::Serverless::StateMachine.S3Location": {
+            "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#s3-location-object",
+            "Properties": {
+                "Bucket": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction",
+                    "PrimitiveType": "String",
+                    "Required": true,
+                    "UpdateType": "Immutable"
+                },
+                "Key": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction",
+                    "PrimitiveType": "String",
+                    "Required": true,
+                    "UpdateType": "Immutable"
+                },
+                "Version": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction",
+                    "PrimitiveType": "Integer",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
+        "AWS::Serverless::StateMachine.SAMPolicyTemplate": {
+            "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+            "Properties": {
+                "LambdaInvokePolicy": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+                    "Type": "FunctionSAMPT",
+                    "UpdateType": "Immutable"
+                },
+                "StepFunctionsExecutionPolicy": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+                    "Type": "StateMachineSAMPT",
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
+        "AWS::Serverless::StateMachine.ScheduleEvent": {
+            "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#schedule",
+            "Properties": {
+                "Input": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#schedule",
+                    "PrimitiveType": "String",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "Schedule": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#schedule",
+                    "PrimitiveType": "String",
+                    "Required": true,
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
+        "AWS::Serverless::StateMachine.StateMachineSAMPT": {
+            "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+            "Properties": {
+                "StateMachineName": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
+                    "PrimitiveType": "String",
+                    "Required": true,
+                    "UpdateType": "Immutable"
+                }
+            }
         }
     },
     "ResourceSpecificationTransform": "AWS::Serverless-2016-10-31",
@@ -378,6 +1233,25 @@
         "AWS::Serverless::Api": {
             "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapi",
             "Properties": {
+                "AccessLogSetting": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapi",
+                    "Required": false,
+                    "Type": "AccessLogSetting",
+                    "UpdateType": "Immutable"
+                },
+                "Auth": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapi",
+                    "Required": false,
+                    "Type": "Auth",
+                    "UpdateType": "Immutable"
+                },
+                "BinaryMediaTypes": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapi",
+                    "PrimitiveItemType": "String",
+                    "Required": false,
+                    "Type": "List",
+                    "UpdateType": "Immutable"
+                },
                 "CacheClusterEnabled": {
                     "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapi",
                     "PrimitiveType": "Boolean",
@@ -388,6 +1262,17 @@
                     "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapi",
                     "PrimitiveType": "String",
                     "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "Cors": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapi",
+                    "PrimitiveTypes": [
+                        "String"
+                    ],
+                    "Required": false,
+                    "Types": [
+                        "CorsConfiguration"
+                    ],
                     "UpdateType": "Immutable"
                 },
                 "DefinitionBody": {
@@ -407,13 +1292,26 @@
                     ],
                     "UpdateType": "Immutable"
                 },
-                "MethodSettings": {
+                "EndpointConfiguration": {
                     "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapi",
-                    "PrimitiveType": "Json",
+                    "PrimitiveType": "String",
                     "Required": false,
                     "UpdateType": "Immutable"
                 },
+                "MethodSettings": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapi",
+                    "PrimitiveItemType": "Json",
+                    "Required": false,
+                    "Type": "List",
+                    "UpdateType": "Immutable"
+                },
                 "Name": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapi",
+                    "PrimitiveType": "String",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "OpenApiVersion": {
                     "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapi",
                     "PrimitiveType": "String",
                     "Required": false,
@@ -425,6 +1323,12 @@
                     "Required": true,
                     "UpdateType": "Immutable"
                 },
+                "TracingEnabled": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapi",
+                    "PrimitiveType": "Boolean",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
                 "Variables": {
                     "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapi",
                     "PrimitiveItemType": "String",
@@ -434,9 +1338,58 @@
                 }
             }
         },
+        "AWS::Serverless::Application": {
+            "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapplication",
+            "Properties": {
+                "Location": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapplication",
+                    "PrimitiveTypes": [
+                        "String"
+                    ],
+                    "Required": true,
+                    "Types": [
+                        "ApplicationLocation"
+                    ],
+                    "UpdateType": "Immutable"
+                },
+                "NotificationArns": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapplication",
+                    "PrimitiveItemType": "String",
+                    "Required": false,
+                    "Type": "List",
+                    "UpdateType": "Immutable"
+                },
+                "Parameters": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapplication",
+                    "PrimitiveItemType": "String",
+                    "Required": false,
+                    "Type": "Map",
+                    "UpdateType": "Immutable"
+                },
+                "Tags": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapplication",
+                    "PrimitiveItemType": "String",
+                    "Required": false,
+                    "Type": "Map",
+                    "UpdateType": "Immutable"
+                },
+                "TimeoutInMinutes": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapplication",
+                    "PrimitiveType": "Integer",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
         "AWS::Serverless::Function": {
             "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction",
             "Properties": {
+                "AutoPublishAlias": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction",
+                    "PrimitiveType": "String",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
                 "CodeUri": {
                     "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction",
                     "PrimitiveTypes": [
@@ -452,6 +1405,12 @@
                     "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction",
                     "Required": false,
                     "Type": "DeadLetterQueue",
+                    "UpdateType": "Immutable"
+                },
+                "DeploymentPreference": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction",
+                    "Required": false,
+                    "Type": "DeploymentPreference",
                     "UpdateType": "Immutable"
                 },
                 "Description": {
@@ -473,6 +1432,13 @@
                     "Type": "Map",
                     "UpdateType": "Immutable"
                 },
+                "FileSystemConfigs": {
+                    "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html",
+                    "ItemType": "FileSystemConfig",
+                    "Required": false,
+                    "Type": "List",
+                    "UpdateType": "Immutable"
+                },
                 "FunctionName": {
                     "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction",
                     "PrimitiveType": "String",
@@ -491,16 +1457,30 @@
                     "Required": false,
                     "UpdateType": "Immutable"
                 },
+                "Layers": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction",
+                    "PrimitiveItemType": "String",
+                    "Required": false,
+                    "Type": "List",
+                    "UpdateType": "Immutable"
+                },
                 "MemorySize": {
                     "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction",
                     "PrimitiveType": "Integer",
                     "Required": false,
                     "UpdateType": "Immutable"
                 },
+                "PermissionsBoundary": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction",
+                    "PrimitiveType": "String",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
                 "Policies": {
                     "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction",
                     "ItemTypes": [
-                        "IAMPolicyDocument"
+                        "IAMPolicyDocument",
+                        "SAMPolicyTemplate"
                     ],
                     "PrimitiveItemTypes": [
                         "String"
@@ -512,6 +1492,12 @@
                     "Types": [
                         "IAMPolicyDocument"
                     ],
+                    "UpdateType": "Immutable"
+                },
+                "ReservedConcurrentExecutions": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction",
+                    "PrimitiveType": "Integer",
+                    "Required": false,
                     "UpdateType": "Immutable"
                 },
                 "Role": {
@@ -553,6 +1539,48 @@
                 }
             }
         },
+        "AWS::Serverless::LayerVersion": {
+            "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlesslayerversion",
+            "Properties": {
+                "CompatibleRuntimes": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlesslayerversion",
+                    "PrimitiveItemType": "String",
+                    "Required": false,
+                    "Type": "List",
+                    "UpdateType": "Immutable"
+                },
+                "ContentUri": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlesslayerversion",
+                    "PrimitiveType": "String",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "Description": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlesslayerversion",
+                    "PrimitiveType": "String",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "LayerName": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlesslayerversion",
+                    "PrimitiveType": "String",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "LicenseInfo": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlesslayerversion",
+                    "PrimitiveType": "String",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "RetentionPolicy": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlesslayerversion",
+                    "PrimitiveType": "String",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
         "AWS::Serverless::SimpleTable": {
             "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlesssimpletable",
             "Properties": {
@@ -566,6 +1594,110 @@
                     "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-provisionedthroughput.html",
                     "Required": false,
                     "Type": "ProvisionedThroughput",
+                    "UpdateType": "Immutable"
+                },
+                "SSESpecification": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlesssimpletable",
+                    "Required": false,
+                    "Type": "SSESpecification",
+                    "UpdateType": "Immutable"
+                },
+                "TableName": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlesssimpletable",
+                    "PrimitiveType": "String",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "Tags": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlesssimpletable",
+                    "PrimitiveItemType": "String",
+                    "Required": false,
+                    "Type": "Map",
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
+        "AWS::Serverless::StateMachine": {
+            "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-statemachine.html",
+            "Properties": {
+                "Definition": {
+                    "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-statemachine.html",
+                    "PrimitiveType": "Json",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "DefinitionSubstitutions": {
+                    "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-statemachine.html",
+                    "PrimitiveItemType": "String",
+                    "Required": false,
+                    "Type": "Map",
+                    "UpdateType": "Immutable"
+                },
+                "DefinitionUri": {
+                    "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-statemachine.html",
+                    "PrimitiveTypes": [
+                        "String"
+                    ],
+                    "Required": false,
+                    "Types": [
+                        "S3Location"
+                    ],
+                    "UpdateType": "Immutable"
+                },
+                "Events": {
+                    "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-statemachine.html",
+                    "ItemType": "EventSource",
+                    "Required": false,
+                    "Type": "Map",
+                    "UpdateType": "Immutable"
+                },
+                "Logging": {
+                    "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-statemachine.html",
+                    "Required": false,
+                    "Type": "LoggingConfiguration",
+                    "UpdateType": "Immutable"
+                },
+                "Name": {
+                    "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-statemachine.html",
+                    "PrimitiveType": "String",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "Policies": {
+                    "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-statemachine.html",
+                    "ItemTypes": [
+                        "IAMPolicyDocument",
+                        "SAMPolicyTemplate"
+                    ],
+                    "PrimitiveItemTypes": [
+                        "String"
+                    ],
+                    "PrimitiveTypes": [
+                        "String"
+                    ],
+                    "Required": false,
+                    "Types": [
+                        "IAMPolicyDocument"
+                    ],
+                    "UpdateType": "Immutable"
+                },
+                "Role": {
+                    "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-statemachine.html",
+                    "PrimitiveType": "String",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "Tags": {
+                    "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-statemachine.html",
+                    "PrimitiveItemType": "String",
+                    "Required": false,
+                    "Type": "Map",
+                    "UpdateType": "Immutable"
+                },
+                "Type": {
+                    "Documentation": "https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-statemachine.html",
+                    "PrimitiveType": "String",
+                    "Required": false,
                     "UpdateType": "Immutable"
                 }
             }

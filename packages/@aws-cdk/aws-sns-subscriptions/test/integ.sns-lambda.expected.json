@@ -1,0 +1,244 @@
+{
+  "Resources": {
+    "MyTopic86869434": {
+      "Type": "AWS::SNS::Topic"
+    },
+    "EchoServiceRoleBE28060B": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "Echo11F3FB29": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "ZipFile": "exports.handler = function handler(event, _context, callback) {\n    /* eslint-disable no-console */\n    console.log('====================================================');\n    console.log(JSON.stringify(event, undefined, 2));\n    console.log('====================================================');\n    return callback(undefined, event);\n}"
+        },
+        "Handler": "index.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "EchoServiceRoleBE28060B",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs10.x"
+      },
+      "DependsOn": [
+        "EchoServiceRoleBE28060B"
+      ]
+    },
+    "EchoAllowInvokeawscdksnslambdaMyTopic6C62AB907F727CDA": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "Echo11F3FB29",
+            "Arn"
+          ]
+        },
+        "Principal": "sns.amazonaws.com",
+        "SourceArn": {
+          "Ref": "MyTopic86869434"
+        }
+      }
+    },
+    "EchoMyTopic4CB8819E": {
+      "Type": "AWS::SNS::Subscription",
+      "Properties": {
+        "Protocol": "lambda",
+        "TopicArn": {
+          "Ref": "MyTopic86869434"
+        },
+        "Endpoint": {
+          "Fn::GetAtt": [
+            "Echo11F3FB29",
+            "Arn"
+          ]
+        },
+        "RedrivePolicy": {
+          "deadLetterTargetArn": {
+            "Fn::GetAtt": [
+              "DeadLetterQueue9F481546",
+              "Arn"
+            ]
+          }
+        }
+      }
+    },
+    "DeadLetterQueue9F481546": {
+      "Type": "AWS::SQS::Queue"
+    },
+    "DeadLetterQueuePolicyB1FB890C": {
+      "Type": "AWS::SQS::QueuePolicy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sqs:SendMessage",
+              "Condition": {
+                "ArnEquals": {
+                  "aws:SourceArn": {
+                    "Ref": "MyTopic86869434"
+                  }
+                }
+              },
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "sns.amazonaws.com"
+              },
+              "Resource": {
+                "Fn::GetAtt": [
+                  "DeadLetterQueue9F481546",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Queues": [
+          {
+            "Ref": "DeadLetterQueue9F481546"
+          }
+        ]
+      }
+    },
+    "FilteredServiceRole16D9DDC1": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "Filtered186C0D0A": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "ZipFile": "exports.handler = function handler(event, _context, callback) {\n    /* eslint-disable no-console */\n    console.log('====================================================');\n    console.log(JSON.stringify(event, undefined, 2));\n    console.log('====================================================');\n    return callback(undefined, event);\n}"
+        },
+        "Handler": "index.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "FilteredServiceRole16D9DDC1",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs10.x"
+      },
+      "DependsOn": [
+        "FilteredServiceRole16D9DDC1"
+      ]
+    },
+    "FilteredAllowInvokeawscdksnslambdaMyTopic6C62AB90A2EA1666": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "Filtered186C0D0A",
+            "Arn"
+          ]
+        },
+        "Principal": "sns.amazonaws.com",
+        "SourceArn": {
+          "Ref": "MyTopic86869434"
+        }
+      }
+    },
+    "FilteredMyTopicC8395C27": {
+      "Type": "AWS::SNS::Subscription",
+      "Properties": {
+        "Protocol": "lambda",
+        "TopicArn": {
+          "Ref": "MyTopic86869434"
+        },
+        "Endpoint": {
+          "Fn::GetAtt": [
+            "Filtered186C0D0A",
+            "Arn"
+          ]
+        },
+        "FilterPolicy": {
+          "color": [
+            "red",
+            {
+              "prefix": "bl"
+            },
+            {
+              "prefix": "ye"
+            }
+          ],
+          "size": [
+            {
+              "anything-but": [
+                "small",
+                "medium"
+              ]
+            }
+          ],
+          "price": [
+            {
+              "numeric": [
+                ">=",
+                100,
+                "<=",
+                200
+              ]
+            }
+          ]
+        }
+      }
+    }
+  }
+}

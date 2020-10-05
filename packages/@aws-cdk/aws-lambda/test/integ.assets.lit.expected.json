@@ -20,122 +20,13 @@
             "Fn::Join": [
               "",
               [
-                "arn",
-                ":",
+                "arn:",
                 {
                   "Ref": "AWS::Partition"
                 },
-                ":",
-                "iam",
-                ":",
-                "",
-                ":",
-                "aws",
-                ":",
-                "policy",
-                "/",
-                "service-role/AWSLambdaBasicExecutionRole"
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
               ]
             ]
-          }
-        ]
-      }
-    },
-    "MyLambdaServiceRoleDefaultPolicy5BBC6F68": {
-      "Type": "AWS::IAM::Policy",
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": [
-                "s3:GetObject*",
-                "s3:GetBucket*",
-                "s3:List*"
-              ],
-              "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn",
-                      ":",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":",
-                      "s3",
-                      ":",
-                      "",
-                      ":",
-                      "",
-                      ":",
-                      {
-                        "Ref": "MyLambdaCodeS3BucketC82A5870"
-                      }
-                    ]
-                  ]
-                },
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn",
-                            ":",
-                            {
-                              "Ref": "AWS::Partition"
-                            },
-                            ":",
-                            "s3",
-                            ":",
-                            "",
-                            ":",
-                            "",
-                            ":",
-                            {
-                              "Ref": "MyLambdaCodeS3BucketC82A5870"
-                            }
-                          ]
-                        ]
-                      },
-                      "/",
-                      {
-                        "Fn::Join": [
-                          "",
-                          [
-                            {
-                              "Fn::Select": [
-                                0,
-                                {
-                                  "Fn::Split": [
-                                    "||",
-                                    {
-                                      "Ref": "MyLambdaCodeS3VersionKey47762537"
-                                    }
-                                  ]
-                                }
-                              ]
-                            },
-                            "*"
-                          ]
-                        ]
-                      }
-                    ]
-                  ]
-                }
-              ]
-            }
-          ],
-          "Version": "2012-10-17"
-        },
-        "PolicyName": "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
-        "Roles": [
-          {
-            "Ref": "MyLambdaServiceRole4539ECB6"
           }
         ]
       }
@@ -145,7 +36,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "MyLambdaCodeS3BucketC82A5870"
+            "Ref": "AssetParameters9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232S3Bucket1354C645"
           },
           "S3Key": {
             "Fn::Join": [
@@ -158,7 +49,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "MyLambdaCodeS3VersionKey47762537"
+                          "Ref": "AssetParameters9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232S3VersionKey5D873FAC"
                         }
                       ]
                     }
@@ -171,7 +62,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "MyLambdaCodeS3VersionKey47762537"
+                          "Ref": "AssetParameters9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232S3VersionKey5D873FAC"
                         }
                       ]
                     }
@@ -191,19 +82,22 @@
         "Runtime": "python3.6"
       },
       "DependsOn": [
-        "MyLambdaServiceRole4539ECB6",
-        "MyLambdaServiceRoleDefaultPolicy5BBC6F68"
+        "MyLambdaServiceRole4539ECB6"
       ]
     }
   },
   "Parameters": {
-    "MyLambdaCodeS3BucketC82A5870": {
+    "AssetParameters9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232S3Bucket1354C645": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"lambda-test-assets/MyLambda/Code\""
+      "Description": "S3 bucket for asset \"9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232\""
     },
-    "MyLambdaCodeS3VersionKey47762537": {
+    "AssetParameters9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232S3VersionKey5D873FAC": {
       "Type": "String",
-      "Description": "S3 key for asset version \"lambda-test-assets/MyLambda/Code\""
+      "Description": "S3 key for asset version \"9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232\""
+    },
+    "AssetParameters9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232ArtifactHashFA16AACF": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232\""
     }
   }
 }

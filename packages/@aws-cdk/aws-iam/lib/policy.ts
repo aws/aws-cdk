@@ -1,79 +1,88 @@
-import { Construct, IDependable, PolicyDocument, PolicyPrincipal, PolicyStatement, Token } from '@aws-cdk/cdk';
-import { Group } from './group';
-import { cloudformation } from './iam.generated';
-import { Role } from './role';
-import { User } from './user';
+import { IResource, Lazy, Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
+import { IGroup } from './group';
+import { CfnPolicy } from './iam.generated';
+import { PolicyDocument } from './policy-document';
+import { PolicyStatement } from './policy-statement';
+import { IRole } from './role';
+import { IUser } from './user';
 import { generatePolicyName, undefinedIfEmpty } from './util';
 
 /**
- * A construct that represents an IAM principal, such as a user, group or role.
+ * Represents an IAM Policy
+ *
+ * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_manage.html
  */
-export interface IPrincipal {
-    /**
-     * The IAM principal of this identity (i.e. AWS principal, service principal, etc).
-     */
-    readonly principal: PolicyPrincipal;
-
-    /**
-     * Adds an IAM statement to the default inline policy associated with this
-     * principal. If a policy doesn't exist, it is created.
-     */
-    addToPolicy(statement: PolicyStatement): void;
-
-    /**
-     * Attaches an inline policy to this principal.
-     * This is the same as calling `policy.addToXxx(principal)`.
-     * @param policy The policy resource to attach to this principal.
-     */
-    attachInlinePolicy(policy: Policy): void;
-
-    /**
-     * Attaches a managed policy to this principal.
-     * @param arn The ARN of the managed policy
-     */
-    attachManagedPolicy(arn: any): void;
+export interface IPolicy extends IResource {
+  /**
+   * The name of this policy.
+   *
+   * @attribute
+   */
+  readonly policyName: string;
 }
 
 /**
- * @deprecated Use IPrincipal
+ * Properties for defining an IAM inline policy document
  */
-// tslint:disable-next-line:no-empty-interface
-export interface IIdentityResource extends IPrincipal { }
-
 export interface PolicyProps {
-    /**
-     * The name of the policy. If you specify multiple policies for an entity,
-     * specify unique names. For example, if you specify a list of policies for
-     * an IAM role, each policy must have a unique name.
-     *
-     * @default Uses the logical ID of the policy resource, which is ensured to
-     *          be unique within the stack.
-     */
-    policyName?: string;
+  /**
+   * The name of the policy. If you specify multiple policies for an entity,
+   * specify unique names. For example, if you specify a list of policies for
+   * an IAM role, each policy must have a unique name.
+   *
+   * @default - Uses the logical ID of the policy resource, which is ensured
+   * to be unique within the stack.
+   */
+  readonly policyName?: string;
 
-    /**
-     * Users to attach this policy to.
-     * You can also use `attachToUser(user)` to attach this policy to a user.
-     */
-    users?: User[];
+  /**
+   * Users to attach this policy to.
+   * You can also use `attachToUser(user)` to attach this policy to a user.
+   *
+   * @default - No users.
+   */
+  readonly users?: IUser[];
 
-    /**
-     * Roles to attach this policy to.
-     * You can also use `attachToRole(role)` to attach this policy to a role.
-     */
-    roles?: Role[];
+  /**
+   * Roles to attach this policy to.
+   * You can also use `attachToRole(role)` to attach this policy to a role.
+   *
+   * @default - No roles.
+   */
+  readonly roles?: IRole[];
 
-    /**
-     * Groups to attach this policy to.
-     * You can also use `attachToGroup(group)` to attach this policy to a group.
-     */
-    groups?: Group[];
+  /**
+   * Groups to attach this policy to.
+   * You can also use `attachToGroup(group)` to attach this policy to a group.
+   *
+   * @default - No groups.
+   */
+  readonly groups?: IGroup[];
 
-    /**
-     * Initial set of permissions to add to this policy document.
-     * You can also use `addPermission(statement)` to add permissions later.
-     */
-    statements?: PolicyStatement[];
+  /**
+   * Initial set of permissions to add to this policy document.
+   * You can also use `addStatements(...statement)` to add permissions later.
+   *
+   * @default - No statements.
+   */
+  readonly statements?: PolicyStatement[];
+
+  /**
+   * Force creation of an `AWS::IAM::Policy`
+   *
+   * Unless set to `true`, this `Policy` construct will not materialize to an
+   * `AWS::IAM::Policy` CloudFormation resource in case it would have no effect
+   * (for example, if it remains unattached to an IAM identity or if it has no
+   * statements). This is generally desired behavior, since it prevents
+   * creating invalid--and hence undeployable--CloudFormation templates.
+   *
+   * In cases where you know the policy must be created and it is actually
+   * an error if no statements have been added to it, you can se this to `true`.
+   *
+   * @default false
+   */
+  readonly force?: boolean;
 }
 
 /**
@@ -82,107 +91,157 @@ export interface PolicyProps {
  * Policies](http://docs.aws.amazon.com/IAM/latest/UserGuide/policies_overview.html)
  * in the IAM User Guide guide.
  */
-export class Policy extends Construct implements IDependable {
-    /**
-     * The policy document.
-     */
-    public readonly document = new PolicyDocument();
+export class Policy extends Resource implements IPolicy {
 
-    /**
-     * The name of this policy.
-     */
-    public readonly policyName: string;
+  /**
+   * Import a policy in this app based on its name
+   */
+  public static fromPolicyName(scope: Construct, id: string, policyName: string): IPolicy {
+    class Import extends Resource implements IPolicy {
+      public readonly policyName = policyName;
+    }
 
-    /**
-     * Lists all the elements consumers should "depend-on".
-     */
-    public readonly dependencyElements: IDependable[];
+    return new Import(scope, id);
+  }
 
-    private readonly roles = new Array<Role>();
-    private readonly users = new Array<User>();
-    private readonly groups = new Array<Group>();
+  /**
+   * The policy document.
+   */
+  public readonly document = new PolicyDocument();
 
-    constructor(parent: Construct, name: string, props: PolicyProps = {}) {
-        super(parent, name);
+  private readonly _policyName: string;
+  private readonly roles = new Array<IRole>();
+  private readonly users = new Array<IUser>();
+  private readonly groups = new Array<IGroup>();
+  private readonly force: boolean;
+  private referenceTaken = false;
 
-        const resource = new cloudformation.PolicyResource(this, 'Resource', {
-            policyDocument: this.document,
-            policyName: new Token(() => this.policyName),
-            roles: undefinedIfEmpty(() => this.roles.map(r => r.roleName)),
-            users: undefinedIfEmpty(() => this.users.map(u => u.userName)),
-            groups: undefinedIfEmpty(() => this.groups.map(g => g.groupName)),
-        });
-
+  constructor(scope: Construct, id: string, props: PolicyProps = {}) {
+    super(scope, id, {
+      physicalName: props.policyName ||
         // generatePolicyName will take the last 128 characters of the logical id since
         // policy names are limited to 128. the last 8 chars are a stack-unique hash, so
         // that shouod be sufficient to ensure uniqueness within a principal.
-        this.policyName = props.policyName || generatePolicyName(resource.logicalId);
-        this.dependencyElements = [ resource ];
+        Lazy.stringValue({ produce: () => generatePolicyName(scope, resource.logicalId) }),
+    });
 
-        if (props.users) {
-            props.users.forEach(u => this.attachToUser(u));
-        }
+    const self = this;
 
-        if (props.groups) {
-            props.groups.forEach(g => this.attachToGroup(g));
-        }
-
-        if (props.roles) {
-            props.roles.forEach(r => this.attachToRole(r));
-        }
-
-        if (props.statements) {
-            props.statements.forEach(p => this.addStatement(p));
-        }
+    class CfnPolicyConditional extends CfnPolicy {
+      /**
+       * This function returns `true` if the CFN resource should be included in
+       * the cloudformation template unless `force` is `true`, if the policy
+       * document is empty, the resource will not be included.
+       */
+      protected shouldSynthesize() {
+        return self.force || self.referenceTaken || (!self.document.isEmpty && self.isAttached);
+      }
     }
 
-    /**
-     * Adds a statement to the policy document.
-     */
-    public addStatement(statement: PolicyStatement) {
-        this.document.addStatement(statement);
+    const resource = new CfnPolicyConditional(this, 'Resource', {
+      policyDocument: this.document,
+      policyName: this.physicalName,
+      roles: undefinedIfEmpty(() => this.roles.map(r => r.roleName)),
+      users: undefinedIfEmpty(() => this.users.map(u => u.userName)),
+      groups: undefinedIfEmpty(() => this.groups.map(g => g.groupName)),
+    });
+
+    this._policyName = this.physicalName!;
+    this.force = props.force !== undefined ? props.force : false;
+
+    if (props.users) {
+      props.users.forEach(u => this.attachToUser(u));
     }
 
-    /**
-     * Attaches this policy to a user.
-     */
-    public attachToUser(user: User) {
-        if (this.users.find(u => u === user)) { return; }
-        this.users.push(user);
-        user.attachInlinePolicy(this);
+    if (props.groups) {
+      props.groups.forEach(g => this.attachToGroup(g));
     }
 
-    /**
-     * Attaches this policy to a role.
-     */
-    public attachToRole(role: Role) {
-        if (this.roles.find(r => r === role)) { return; }
-        this.roles.push(role);
-        role.attachInlinePolicy(this);
+    if (props.roles) {
+      props.roles.forEach(r => this.attachToRole(r));
     }
 
-    /**
-     * Attaches this policy to a group.
-     */
-    public attachToGroup(group: Group) {
-        if (this.groups.find(g => g === group)) { return; }
-        this.groups.push(group);
-        group.attachInlinePolicy(this);
+    if (props.statements) {
+      props.statements.forEach(p => this.addStatements(p));
+    }
+  }
+
+  /**
+   * Adds a statement to the policy document.
+   */
+  public addStatements(...statement: PolicyStatement[]) {
+    this.document.addStatements(...statement);
+  }
+
+  /**
+   * Attaches this policy to a user.
+   */
+  public attachToUser(user: IUser) {
+    if (this.users.find(u => u === user)) { return; }
+    this.users.push(user);
+    user.attachInlinePolicy(this);
+  }
+
+  /**
+   * Attaches this policy to a role.
+   */
+  public attachToRole(role: IRole) {
+    if (this.roles.find(r => r === role)) { return; }
+    this.roles.push(role);
+    role.attachInlinePolicy(this);
+  }
+
+  /**
+   * Attaches this policy to a group.
+   */
+  public attachToGroup(group: IGroup) {
+    if (this.groups.find(g => g === group)) { return; }
+    this.groups.push(group);
+    group.attachInlinePolicy(this);
+  }
+
+  /**
+   * The name of this policy.
+   *
+   * @attribute
+   */
+  public get policyName(): string {
+    this.referenceTaken = true;
+    return this._policyName;
+  }
+
+  protected validate(): string[] {
+    const result = new Array<string>();
+
+    // validate that the policy document is not empty
+    if (this.document.isEmpty) {
+      if (this.force) {
+        result.push('Policy created with force=true is empty. You must add statements to the policy');
+      }
+      if (!this.force && this.referenceTaken) {
+        result.push('This Policy has been referenced by a resource, so it must contain at least one statement.');
+      }
     }
 
-    public validate(): string[] {
-        const result = new Array<string>();
-
-        // validate that the policy document is not empty
-        if (this.document.isEmpty) {
-            result.push('Policy is empty. You must add statements to the policy');
-        }
-
-        // validate that the policy is attached to at least one principal (role, user or group).
-        if (this.groups.length + this.users.length + this.roles.length === 0) {
-            result.push(`Policy must be attached to at least one principal: user, group or role`);
-        }
-
-        return result;
+    // validate that the policy is attached to at least one principal (role, user or group).
+    if (!this.isAttached) {
+      if (this.force) {
+        result.push('Policy created with force=true must be attached to at least one principal: user, group or role');
+      }
+      if (!this.force && this.referenceTaken) {
+        result.push('This Policy has been referenced by a resource, so it must be attached to at least one user, group or role.');
+      }
     }
+
+    result.push(...this.document.validateForIdentityPolicy());
+
+    return result;
+  }
+
+  /**
+   * Whether the policy resource has been attached to any identity
+   */
+  private get isAttached() {
+    return this.groups.length + this.users.length + this.roles.length > 0;
+  }
 }

@@ -1,0 +1,9 @@
+{
+  "version": "0.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {}
+    }
+  }
+}

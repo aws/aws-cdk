@@ -1,7 +1,7 @@
 {
   "name": "aws-cdk",
   "description": "CDK Toolkit, the command line tool for CDK apps",
-  "version": "0.8.2",
+  "version": "0.0.0",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "bin": {
@@ -13,16 +13,25 @@
     "lint": "cdk-lint",
     "pkglint": "pkglint -f",
     "test": "cdk-test",
-    "package": "cdk-package"
+    "integ": "jest --testMatch '**/?(*.)+(integ-test).js'",
+    "package": "cdk-package",
+    "build+test+package": "npm run build+test && npm run package",
+    "build+test": "npm run build && npm test",
+    "integ-cli": "npm run integ-cli-regression && npm run integ-cli-no-regression",
+    "integ-cli-regression": "npm run integ-cli-regression-latest-release && npm run integ-cli-regression-latest-code",
+    "integ-cli-regression-latest-release": "test/integ/run-against-repo test/integ/test-cli-regression-against-latest-release.sh",
+    "integ-cli-regression-latest-code": "test/integ/run-against-repo test/integ/test-cli-regression-against-current-code.sh",
+    "integ-cli-no-regression": "test/integ/run-against-repo test/integ/cli/test.sh",
+    "integ-init": "test/integ/run-against-dist test/integ/init/test-all.sh"
   },
   "cdk-build": {
+    "jest": true,
     "pre": [
       "./generate.sh"
     ]
   },
-  "nyc": {
-    "lines": 8,
-    "branches": 3
+  "cdk-package": {
+    "shrinkWrap": true
   },
   "author": {
     "name": "Amazon Web Services",
@@ -31,43 +40,68 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/archiver": "^2.1.2",
-    "@types/fs-extra": "^4.0.8",
+    "@aws-cdk/core": "0.0.0",
+    "@types/archiver": "^3.1.1",
+    "@types/fs-extra": "^8.1.1",
+    "@types/glob": "^7.1.3",
+    "@types/jest": "^26.0.14",
     "@types/minimatch": "^3.0.3",
     "@types/mockery": "^1.4.29",
-    "@types/request": "^2.47.1",
-    "@types/uuid": "^3.4.3",
-    "@types/yamljs": "^0.2.0",
-    "@types/yargs": "^8.0.3",
-    "cdk-build-tools": "^0.8.2",
+    "@types/node": "^10.17.35",
+    "@types/promptly": "^3.0.0",
+    "@types/semver": "^7.3.4",
+    "@types/sinon": "^9.0.7",
+    "@types/table": "^5.0.0",
+    "@types/uuid": "^8.3.0",
+    "@types/wrap-ansi": "^3.0.0",
+    "@types/yargs": "^15.0.7",
+    "aws-sdk-mock": "^5.1.0",
+    "cdk-build-tools": "0.0.0",
+    "jest": "^26.4.2",
     "mockery": "^2.1.0",
-    "pkglint": "^0.8.2"
+    "pkglint": "0.0.0",
+    "sinon": "^9.1.0",
+    "ts-jest": "^26.4.1",
+    "ts-mock-imports": "^1.3.0"
   },
   "dependencies": {
-    "@aws-cdk/cloudformation-diff": "^0.8.2",
-    "@aws-cdk/cx-api": "^0.8.2",
-    "@aws-cdk/util": "^0.8.2",
-    "archiver": "^2.1.1",
-    "aws-sdk": "^2.259.1",
-    "camelcase": "^5.0.0",
-    "colors": "^1.2.1",
-    "decamelize": "^2.0.0",
-    "fs-extra": "^4.0.2",
-    "json-diff": "^0.3.1",
+    "@aws-cdk/cloud-assembly-schema": "0.0.0",
+    "@aws-cdk/cloudformation-diff": "0.0.0",
+    "@aws-cdk/cx-api": "0.0.0",
+    "@aws-cdk/region-info": "0.0.0",
+    "@aws-cdk/yaml-cfn": "0.0.0",
+    "archiver": "^5.0.2",
+    "aws-sdk": "^2.739.0",
+    "camelcase": "^6.0.0",
+    "cdk-assets": "0.0.0",
+    "colors": "^1.4.0",
+    "decamelize": "^4.0.0",
+    "fs-extra": "^9.0.1",
+    "glob": "^7.1.6",
+    "json-diff": "^0.5.4",
     "minimatch": ">=3.0",
-    "promptly": "^0.2.0",
-    "request": "^2.83.0",
-    "source-map-support": "^0.5.6",
-    "yamljs": "^0.2.0",
-    "yargs": "^9.0.1"
+    "promptly": "^3.0.3",
+    "proxy-agent": "^3.1.1",
+    "semver": "^7.3.2",
+    "source-map-support": "^0.5.19",
+    "table": "^6.0.3",
+    "uuid": "^8.3.0",
+    "wrap-ansi": "^7.0.0",
+    "yargs": "^16.0.3"
   },
   "repository": {
-    "url": "https://github.com/awslabs/aws-cdk.git",
-    "type": "git"
+    "url": "https://github.com/aws/aws-cdk.git",
+    "type": "git",
+    "directory": "packages/aws-cdk"
   },
   "keywords": [
     "aws",
     "cdk"
   ],
-  "homepage": "https://github.com/awslabs/aws-cdk"
+  "homepage": "https://github.com/aws/aws-cdk",
+  "engines": {
+    "node": ">= 10.13.0 <13 || >=13.7.0"
+  },
+  "stability": "stable",
+  "maturity": "stable"
 }

@@ -1,0 +1,40 @@
+#!/bin/bash
+# Run a given test against the packages found in the CDK distribution.
+#
+# - Set up verdaccio and publish all NPM tarballs found in the given directory to it.
+# - Install the CLI from that Verdaccio fixture somewhere and put it
+#   on the PATH.
+# - Prepare the various package managers to take their packages from dist/ as well.
+#
+# Parameter: DIST_ROOT, if different than the current directory.
+set -eu
+scriptdir=$(cd $(dirname $0) && pwd)
+source $scriptdir/run-against-dist.bash
+
+# If DIST_ROOT is not given, guess at a sane location.
+if [[ "${DIST_ROOT:-}" == "" && -f $scriptdir/../../../dist/build.json ]]; then
+  DIST_ROOT=$scriptdir/../../../dist
+fi
+
+dist_root=$(cd ${DIST_ROOT:-.} && pwd)
+
+if [[ ! -f $dist_root/build.json ]]; then
+  echo "$dist_root does not seem to be a built CDK distribution (change directory or use DIST_ROOT)" >&2
+  exit 1
+fi
+
+
+serve_npm_packages
+
+prepare_java_packages
+prepare_nuget_packages
+prepare_python_packages
+
+# Install additional tool wrappers before running the target script
+export PATH="$scriptdir/run-wrappers/dist:$PATH"
+hash -r
+
+# Run target script
+# NOTE: no 'exec' because we need to shutdown verdaccio only AFTER we've
+# run the subscript.
+"$@"

@@ -18,7 +18,10 @@
                 "kms:Get*",
                 "kms:Delete*",
                 "kms:ScheduleKeyDeletion",
-                "kms:CancelKeyDeletion"
+                "kms:CancelKeyDeletion",
+                "kms:GenerateDataKey",
+                "kms:TagResource",
+                "kms:UntagResource"
               ],
               "Effect": "Allow",
               "Principal": {
@@ -65,6 +68,7 @@
         },
         "Description": "Created by aws-cdk-s3/MyBucket"
       },
+      "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain"
     },
     "MyBucketF68F3FF0": {
@@ -85,7 +89,9 @@
             }
           ]
         }
-      }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "MyOtherBucket543F3540": {
       "Type": "AWS::S3::Bucket",
@@ -99,7 +105,9 @@
             }
           ]
         }
-      }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "MyUserDC45028B": {
       "Type": "AWS::IAM::User"
@@ -136,8 +144,7 @@
                           "Arn"
                         ]
                       },
-                      "/",
-                      "*"
+                      "/*"
                     ]
                   ]
                 }
@@ -183,8 +190,7 @@
                           "Arn"
                         ]
                       },
-                      "/",
-                      "*"
+                      "/*"
                     ]
                   ]
                 }

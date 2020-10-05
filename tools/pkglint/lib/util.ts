@@ -1,72 +1,89 @@
-import fs = require('fs');
-import path = require('path');
-import { PackageJson } from "./packagejson";
+import * as fs from 'fs';
+import * as path from 'path';
+import { PackageJson, PKGLINT_IGNORES } from './packagejson';
 
 /**
  * Expect a particular JSON key to be a given value
  */
-export function expectJSON(pkg: PackageJson, jsonPath: string, expected: any, ignore?: RegExp, caseInsensitive: boolean = false) {
-    const parts = jsonPath.split('.');
-    const actual = deepGet(pkg.json, parts);
-    if (applyCaseInsensitive(applyIgnore(actual)) !== applyCaseInsensitive(applyIgnore(expected))) {
-        pkg.report({
-            message: `${jsonPath} should be ${JSON.stringify(expected)}${ignore ? ` (ignoring ${ignore})` : ''}, is ${JSON.stringify(actual)}`,
-            fix: () => { deepSet(pkg.json, parts, expected); }
-        });
-    }
+export function expectJSON(ruleName: string, pkg: PackageJson, jsonPath: string, expected: any, ignore?: RegExp, caseInsensitive: boolean = false) {
+  const parts = jsonPath.split('.');
+  const actual = deepGet(pkg.json, parts);
+  if (applyCaseInsensitive(applyIgnore(actual)) !== applyCaseInsensitive(applyIgnore(expected))) {
+    pkg.report({
+      ruleName,
+      message: `${jsonPath} should be ${JSON.stringify(expected)}${ignore ? ` (ignoring ${ignore})` : ''}, is ${JSON.stringify(actual)}`,
+      fix: () => { deepSet(pkg.json, parts, expected); },
+    });
+  }
 
-    function applyIgnore(val: any): string {
-        if (!ignore || val == null) { return JSON.stringify(val); }
-        const str = JSON.stringify(val);
-        return str.replace(ignore, '');
-    }
+  function applyIgnore(val: any): string {
+    if (!ignore || val == null) { return JSON.stringify(val); }
+    const str = JSON.stringify(val);
+    return str.replace(ignore, '');
+  }
 
-    function applyCaseInsensitive(val: any): string {
-        if (!caseInsensitive || val == null) { return JSON.stringify(val); }
-        const str = JSON.stringify(val);
-        return str.toLowerCase();
-    }
+  function applyCaseInsensitive(val: any): string {
+    if (!caseInsensitive || val == null) { return JSON.stringify(val); }
+    const str = JSON.stringify(val);
+    return str.toLowerCase();
+  }
 }
 
 /**
  * Export a package-level file to contain a given line
  */
-export function fileShouldContain(pkg: PackageJson, fileName: string, ...lines: string[]) {
-    for (const line of lines) {
-        const doesContain = pkg.fileContainsSync(fileName, line);
-        if (!doesContain) {
-            pkg.report({
-                message: `${fileName} should contain '${line}'`,
-                fix: () => pkg.addToFileSync(fileName, line)
-            });
-        }
+export function fileShouldContain(ruleName: string, pkg: PackageJson, fileName: string, ...lines: string[]) {
+  for (const line of lines) {
+    const doesContain = pkg.fileContainsSync(fileName, line);
+    if (!doesContain) {
+      pkg.report({
+        ruleName,
+        message: `${fileName} should contain '${line}'`,
+        fix: () => pkg.addToFileSync(fileName, line),
+      });
     }
+  }
+}
+
+export function fileShouldNotContain(ruleName: string, pkg: PackageJson, fileName: string, ...lines: string[]) {
+  for (const line of lines) {
+    const doesContain = pkg.fileContainsSync(fileName, line);
+    if (doesContain) {
+      pkg.report({
+        ruleName,
+        message: `${fileName} should NOT contain '${line}'`,
+        fix: () => pkg.removeFromFileSync(fileName, line),
+      });
+    }
+  }
 }
 
 /**
  * Export a package-level file to contain specific content
  */
-export function fileShouldBe(pkg: PackageJson, fileName: string, content: string) {
-    const isContent = pkg.fileIsSync(fileName, content);
-    if (!isContent) {
-        pkg.report({
-            message: `${fileName} should contain exactly '${content}'`,
-            fix: () => pkg.writeFileSync(fileName, content)
-        });
-    }
+export function fileShouldBe(ruleName: string, pkg: PackageJson, fileName: string, content: string) {
+  const isContent = pkg.fileIsSync(fileName, content);
+  if (!isContent) {
+    pkg.report({
+      ruleName,
+      message: `${fileName} should contain exactly '${content}'`,
+      fix: () => pkg.writeFileSync(fileName, content),
+    });
+  }
 }
 
 /**
  * Enforce a dev dependency
  */
-export function expectDevDependency(pkg: PackageJson, packageName: string, version: string) {
-    const actualVersion = pkg.getDevDependency(packageName);
-    if (version !== actualVersion) {
-        pkg.report({
-            message: `Missing devDependency: ${packageName} @ ${version}`,
-            fix: () => pkg.addDevDependency(packageName, version)
-        });
-    }
+export function expectDevDependency(ruleName: string, pkg: PackageJson, packageName: string, version: string) {
+  const actualVersion = pkg.getDevDependency(packageName);
+  if (version !== actualVersion) {
+    pkg.report({
+      ruleName,
+      message: `Missing devDependency: ${packageName} @ ${version}`,
+      fix: () => pkg.addDevDependency(packageName, version),
+    });
+  }
 }
 
 /**
@@ -76,7 +93,7 @@ export function expectDevDependency(pkg: PackageJson, packageName: string, versi
  * so we return false in those cases.
  */
 export function isObject(x: any) {
-    return x !== null && typeof x === 'object' && !Array.isArray(x);
+  return x !== null && typeof x === 'object' && !Array.isArray(x);
 }
 
 /**
@@ -86,13 +103,13 @@ export function isObject(x: any) {
  * not an object.
  */
 export function deepGet(x: any, jsonPath: string[]): any {
-    jsonPath = jsonPath.slice();
+  jsonPath = jsonPath.slice();
 
-    while (jsonPath.length > 0 && isObject(x)) {
-        const key = jsonPath.shift()!;
-        x = x[key];
-    }
-    return jsonPath.length === 0 ? x : undefined;
+  while (jsonPath.length > 0 && isObject(x)) {
+    const key = jsonPath.shift()!;
+    x = x[key];
+  }
+  return jsonPath.length === 0 ? x : undefined;
 }
 
 /**
@@ -101,47 +118,62 @@ export function deepGet(x: any, jsonPath: string[]): any {
  * Throws an error if any part of the path is not an object.
  */
 export function deepSet(x: any, jsonPath: string[], value: any) {
-    jsonPath = jsonPath.slice();
+  jsonPath = jsonPath.slice();
 
-    if (jsonPath.length === 0) {
-        throw new Error('Path may not be empty');
-    }
+  if (jsonPath.length === 0) {
+    throw new Error('Path may not be empty');
+  }
 
-    while (jsonPath.length > 1 && isObject(x)) {
-        const key = jsonPath.shift()!;
-        if (!(key in x)) { x[key] = {}; }
-        x = x[key];
-    }
+  while (jsonPath.length > 1 && isObject(x)) {
+    const key = jsonPath.shift()!;
+    if (!(key in x)) { x[key] = {}; }
+    x = x[key];
+  }
 
-    if (!isObject(x)) {
-        throw new Error(`Expected an object, got '${x}'`);
-    }
+  if (!isObject(x)) {
+    throw new Error(`Expected an object, got '${x}'`);
+  }
 
-    x[jsonPath[0]] = value;
+  x[jsonPath[0]] = value;
 }
 
-/**
- * Find 'lerna.json' and read the global package version from there
- */
-export function monoRepoVersion() {
-    const found = findLernaJSON();
-    const lernaJson = require(found);
-    return lernaJson.version;
+export function findUpward(dir: string, pred: (x: string) => boolean): string | undefined {
+  while (true) {
+    if (pred(dir)) { return dir; }
+
+    const parent = path.dirname(dir);
+    if (parent === dir) {
+      return undefined;
+    }
+
+    dir = parent;
+  }
 }
 
-function findLernaJSON() {
-    let dir = process.cwd();
-    while (true) {
-        const fullPath = path.join(dir, 'lerna.json');
-        if (fs.existsSync(fullPath)) {
-            return fullPath;
-        }
+export function monoRepoRoot() {
+  const ret = findUpward(process.cwd(), d => fs.existsSync(path.join(d, 'lerna.json')));
+  if (!ret) {
+    throw new Error('Could not find lerna.json');
+  }
+  return ret;
+}
 
-        const parent = path.dirname(dir);
-        if (parent === dir) {
-            throw new Error('Could not find lerna.json');
-        }
-
-        dir = parent;
+export function* findInnerPackages(dir: string): IterableIterator<string> {
+  for (const fname of fs.readdirSync(dir, { encoding: 'utf8' })) {
+    try {
+      const stat = fs.statSync(path.join(dir, fname));
+      if (!stat.isDirectory()) { continue; }
+    } catch (e) {
+      // Survive invalid symlinks
+      if (e.code !== 'ENOENT') { throw e; }
+      continue;
     }
+    if (PKGLINT_IGNORES.includes(fname)) { continue; }
+
+    if (fs.existsSync(path.join(dir, fname, 'package.json'))) {
+      yield path.join(dir, fname);
+    }
+
+    yield* findInnerPackages(path.join(dir, fname));
+  }
 }

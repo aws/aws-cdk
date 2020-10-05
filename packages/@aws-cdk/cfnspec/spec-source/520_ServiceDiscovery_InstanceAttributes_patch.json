@@ -1,0 +1,16 @@
+{
+  "ResourceTypes": {
+      "AWS::ServiceDiscovery::Instance": {
+          "patch": {
+              "description": "Treat Map primitive type as Json",
+              "operations": [
+                  {
+                      "op": "replace",
+                      "path": "/Properties/InstanceAttributes/PrimitiveType",
+                      "value": "Json"
+                  }
+              ]
+          }
+      }
+  }
+}

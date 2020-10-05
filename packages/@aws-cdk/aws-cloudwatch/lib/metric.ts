@@ -1,70 +1,156 @@
-import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
+import * as iam from '@aws-cdk/aws-iam';
+import * as cdk from '@aws-cdk/core';
 import { Alarm, ComparisonOperator, TreatMissingData } from './alarm';
-import { parseStatistic } from './util.statistic';
+import { Dimension, IMetric, MetricAlarmConfig, MetricConfig, MetricGraphConfig, Unit } from './metric-types';
+import { dispatchMetric, metricKey } from './private/metric-util';
+import { normalizeStatistic, parseStatistic } from './private/statistic';
 
 export type DimensionHash = {[dim: string]: any};
 
 /**
+ * Options shared by most methods accepting metric options
+ */
+export interface CommonMetricOptions {
+  /**
+   * The period over which the specified statistic is applied.
+   *
+   * @default Duration.minutes(5)
+   */
+  readonly period?: cdk.Duration;
+
+  /**
+   * What function to use for aggregating.
+   *
+   * Can be one of the following:
+   *
+   * - "Minimum" | "min"
+   * - "Maximum" | "max"
+   * - "Average" | "avg"
+   * - "Sum" | "sum"
+   * - "SampleCount | "n"
+   * - "pNN.NN"
+   *
+   * @default Average
+   */
+  readonly statistic?: string;
+
+  /**
+   * Dimensions of the metric
+   *
+   * @default - No dimensions.
+   */
+  readonly dimensions?: DimensionHash;
+
+  /**
+   * Unit used to filter the metric stream
+   *
+   * Only refer to datums emitted to the metric stream with the given unit and
+   * ignore all others. Only useful when datums are being emitted to the same
+   * metric stream under different units.
+   *
+   * The default is to use all matric datums in the stream, regardless of unit,
+   * which is recommended in nearly all cases.
+   *
+   * CloudWatch does not honor this property for graphs.
+   *
+   * @default - All metric datums in the given metric stream
+   */
+  readonly unit?: Unit;
+
+  /**
+   * Label for this metric when added to a Graph in a Dashboard
+   * @default - No label
+   */
+  readonly label?: string;
+
+  /**
+   * The hex color code, prefixed with '#' (e.g. '#00ff00'), to use when this metric is rendered on a graph.
+   * The `Color` class has a set of standard colors that can be used here.
+   * @default - Automatic color
+   */
+  readonly color?: string;
+
+  /**
+   * Account which this metric comes from.
+   *
+   * @default - Deployment account.
+   */
+  readonly account?: string;
+
+  /**
+   * Region which this metric comes from.
+   *
+   * @default - Deployment region.
+   */
+  readonly region?: string;
+}
+
+/**
  * Properties for a metric
  */
-export interface MetricProps {
-    /**
-     * Dimensions of the metric
-     *
-     * @default No dimensions
-     */
-    dimensions?: DimensionHash;
+export interface MetricProps extends CommonMetricOptions {
+  /**
+   * Namespace of the metric.
+   */
+  readonly namespace: string;
 
-    /**
-     * Namespace of the metric.
-     */
-    namespace: string;
+  /**
+   * Name of the metric.
+   */
+  readonly metricName: string;
+}
 
-    /**
-     * Name of the metric.
-     */
-    metricName: string;
+/**
+ * Properties of a metric that can be changed
+ */
+export interface MetricOptions extends CommonMetricOptions {
+}
 
-    /**
-     * The period over which the specified statistic is applied.
-     *
-     * Specify time in seconds, in multiples of 60.
-     *
-     * @default 300
-     */
-    periodSec?: number;
+/**
+ * Configurable options for MathExpressions
+ */
+export interface MathExpressionOptions {
+  /**
+   * Label for this metric when added to a Graph in a Dashboard
+   *
+   * @default - Expression value is used as label
+   */
+  readonly label?: string;
 
-    /**
-     * What function to use for aggregating.
-     *
-     * Can be one of the following (case insensitive)
-     *
-     * - "minimum" | "min"
-     * - "maximum" | "max"
-     * - "average" | "avg"
-     * - "sum"
-     * - "samplecount | "n"
-     * - "pNN.NN"
-     *
-     * @default Average
-     */
-    statistic?: string;
+  /**
+   * Color for this metric when added to a Graph in a Dashboard
+   *
+   * @default - Automatic color
+   */
+  readonly color?: string;
 
-    /**
-     * Unit for the metric that is associated with the alarm
-     */
-    unit?: Unit;
+  /**
+   * The period over which the expression's statistics are applied.
+   *
+   * This period overrides all periods in the metrics used in this
+   * math expression.
+   *
+   * @default Duration.minutes(5)
+   */
+  readonly period?: cdk.Duration;
+}
 
-    /**
-     * Label for this metric when added to a Graph in a Dashboard
-     */
-    label?: string;
+/**
+ * Properties for a MathExpression
+ */
+export interface MathExpressionProps extends MathExpressionOptions {
+  /**
+   * The expression defining the metric.
+   */
+  readonly expression: string;
 
-    /**
-     * Color for this metric when added to a Graph in a Dashboard
-     */
-    color?: string;
+  /**
+   * The metrics used in the expression, in a map.
+   *
+   * The key is the identifier that represents the given metric in the
+   * expression, and the value is the actual Metric object.
+   */
+  readonly usingMetrics: Record<string, IMetric>;
 }
 
 /**
@@ -81,304 +167,546 @@ export interface MetricProps {
  * Metric is an abstraction that makes it easy to specify metrics for use in both
  * alarms and graphs.
  */
-export class Metric {
-    /**
-     * Grant permissions to the given identity to write metrics.
-     *
-     * @param identity The IAM identity to give permissions to.
-     */
-    public static grantPutMetricData(identity?: iam.IIdentityResource) {
-        if (!identity) { return; }
+export class Metric implements IMetric {
+  /**
+   * Grant permissions to the given identity to write metrics.
+   *
+   * @param grantee The IAM identity to give permissions to.
+   */
+  public static grantPutMetricData(grantee: iam.IGrantable): iam.Grant {
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions: ['cloudwatch:PutMetricData'],
+      resourceArns: ['*'],
+    });
+  }
 
-        identity.addToPolicy(new cdk.PolicyStatement()
-            .addAllResources()
-            .addAction("cloudwatch:PutMetricData"));
+  /** Dimensions of this metric */
+  public readonly dimensions?: DimensionHash;
+  /** Namespace of this metric */
+  public readonly namespace: string;
+  /** Name of this metric */
+  public readonly metricName: string;
+  /** Period of this metric */
+  public readonly period: cdk.Duration;
+  /** Statistic of this metric */
+  public readonly statistic: string;
+  /** Label for this metric when added to a Graph in a Dashboard */
+  public readonly label?: string;
+  /** The hex color code used when this metric is rendered on a graph. */
+  public readonly color?: string;
+
+  /** Unit of the metric. */
+  public readonly unit?: Unit;
+
+  /** Account which this metric comes from */
+  public readonly account?: string;
+
+  /** Region which this metric comes from. */
+  public readonly region?: string;
+
+  constructor(props: MetricProps) {
+    this.period = props.period || cdk.Duration.minutes(5);
+    const periodSec = this.period.toSeconds();
+    if (periodSec !== 1 && periodSec !== 5 && periodSec !== 10 && periodSec !== 30 && periodSec % 60 !== 0) {
+      throw new Error(`'period' must be 1, 5, 10, 30, or a multiple of 60 seconds, received ${periodSec}`);
     }
 
-    public readonly dimensions?: DimensionHash;
-    public readonly namespace: string;
-    public readonly metricName: string;
-    public readonly periodSec: number;
-    public readonly statistic: string;
-    public readonly unit?: Unit;
-    public readonly label?: string;
-    public readonly color?: string;
+    this.dimensions = props.dimensions;
+    this.namespace = props.namespace;
+    this.metricName = props.metricName;
+    // Try parsing, this will throw if it's not a valid stat
+    this.statistic = normalizeStatistic(props.statistic || 'Average');
+    this.label = props.label;
+    this.color = props.color;
+    this.unit = props.unit;
+    this.account = props.account;
+    this.region = props.region;
+  }
 
-    constructor(props: MetricProps) {
-        if (props.periodSec !== undefined
-            && props.periodSec !== 1 && props.periodSec !== 5 && props.periodSec !== 10 && props.periodSec !== 30
-            && props.periodSec % 60 !== 0) {
-            throw new Error("'periodSec' must be 1, 5, 10, 30, or a multiple of 60");
-        }
-
-        this.dimensions = props.dimensions;
-        this.namespace = props.namespace;
-        this.metricName = props.metricName;
-        this.periodSec = props.periodSec !== undefined ? props.periodSec : 300;
-        this.statistic = props.statistic || "Average";
-        this.label = props.label;
-        this.color = props.color;
-        this.unit = props.unit;
-
-        // Try parsing, this will throw if it's not a valid stat
-        parseStatistic(this.statistic);
+  /**
+   * Return a copy of Metric `with` properties changed.
+   *
+   * All properties except namespace and metricName can be changed.
+   *
+   * @param props The set of properties to change.
+   */
+  public with(props: MetricOptions): Metric {
+    // Short-circuit creating a new object if there would be no effective change
+    if ((props.label === undefined || props.label === this.label)
+      && (props.color === undefined || props.color === this.color)
+      && (props.statistic === undefined || props.statistic === this.statistic)
+      && (props.unit === undefined || props.unit === this.unit)
+      && (props.account === undefined || props.account === this.account)
+      && (props.region === undefined || props.region === this.region)
+      // For these we're not going to do deep equality, misses some opportunity for optimization
+      // but that's okay.
+      && (props.dimensions === undefined)
+      && (props.period === undefined || props.period.toSeconds() === this.period.toSeconds())) {
+      return this;
     }
 
-    /**
-     * Return a copy of Metric with properties changed.
-     *
-     * All properties except namespace and metricName can be changed.
-     *
-     * @param props The set of properties to change.
-     */
-    public with(props: MetricCustomization): Metric {
-        return new Metric({
-            dimensions: ifUndefined(props.dimensions, this.dimensions),
-            namespace: this.namespace,
-            metricName: this.metricName,
-            periodSec: ifUndefined(props.periodSec, this.periodSec),
-            statistic: ifUndefined(props.statistic, this.statistic),
-            unit: ifUndefined(props.unit, this.unit),
-            label: ifUndefined(props.label, this.label),
-            color: ifUndefined(props.color, this.color)
-        });
+    return new Metric({
+      dimensions: ifUndefined(props.dimensions, this.dimensions),
+      namespace: this.namespace,
+      metricName: this.metricName,
+      period: ifUndefined(props.period, this.period),
+      statistic: ifUndefined(props.statistic, this.statistic),
+      unit: ifUndefined(props.unit, this.unit),
+      label: ifUndefined(props.label, this.label),
+      color: ifUndefined(props.color, this.color),
+      account: ifUndefined(props.account, this.account),
+      region: ifUndefined(props.region, this.region),
+    });
+  }
+
+  /**
+   * Attach the metric object to the given construct scope
+   *
+   * Returns a Metric object that uses the account and region from the Stack
+   * the given construct is defined in. If the metric is subsequently used
+   * in a Dashboard or Alarm in a different Stack defined in a different
+   * account or region, the appropriate 'region' and 'account' fields
+   * will be added to it.
+   *
+   * If the scope we attach to is in an environment-agnostic stack,
+   * nothing is done and the same Metric object is returned.
+   */
+  public attachTo(scope: cdk.Construct): Metric {
+    const stack = cdk.Stack.of(scope);
+
+    return this.with({
+      region: cdk.Token.isUnresolved(stack.region) ? undefined : stack.region,
+      account: cdk.Token.isUnresolved(stack.account) ? undefined : stack.account,
+    });
+  }
+
+  public toMetricConfig(): MetricConfig {
+    const dims = this.dimensionsAsList();
+    return {
+      metricStat: {
+        dimensions: dims.length > 0 ? dims : undefined,
+        namespace: this.namespace,
+        metricName: this.metricName,
+        period: this.period,
+        statistic: this.statistic,
+        unitFilter: this.unit,
+        account: this.account,
+        region: this.region,
+      },
+      renderingProperties: {
+        color: this.color,
+        label: this.label,
+      },
+    };
+  }
+
+  public toAlarmConfig(): MetricAlarmConfig {
+    const metricConfig = this.toMetricConfig();
+    if (metricConfig.metricStat === undefined) {
+      throw new Error('Using a math expression is not supported here. Pass a \'Metric\' object instead');
     }
 
-    /**
-     * Make a new Alarm for this metric
-     *
-     * Combines both properties that may adjust the metric (aggregation) as well
-     * as alarm properties.
-     */
-    public newAlarm(parent: cdk.Construct, name: string, props: NewAlarmProps): Alarm {
-        return new Alarm(parent, name, {
-            metric: this.with({
-                statistic: props.statistic,
-                periodSec: props.periodSec,
-            }),
-            alarmName: props.alarmName,
-            alarmDescription: props.alarmDescription,
-            comparisonOperator: props.comparisonOperator,
-            threshold: props.threshold,
-            evaluationPeriods: props.evaluationPeriods,
-            evaluateLowSampleCountPercentile: props.evaluateLowSampleCountPercentile,
-            treatMissingData: props.treatMissingData,
-            actionsEnabled: props.actionsEnabled,
-        });
+    const stat = parseStatistic(metricConfig.metricStat.statistic);
+    return {
+      dimensions: metricConfig.metricStat.dimensions,
+      namespace: metricConfig.metricStat.namespace,
+      metricName: metricConfig.metricStat.metricName,
+      period: metricConfig.metricStat.period.toSeconds(),
+      statistic: stat.type === 'simple' ? stat.statistic : undefined,
+      extendedStatistic: stat.type === 'percentile' ? 'p' + stat.percentile : undefined,
+      unit: this.unit,
+    };
+  }
+
+  public toGraphConfig(): MetricGraphConfig {
+    const metricConfig = this.toMetricConfig();
+    if (metricConfig.metricStat === undefined) {
+      throw new Error('Using a math expression is not supported here. Pass a \'Metric\' object instead');
     }
 
-    /**
-     * Return the dimensions of this Metric as a list of Dimension.
-     */
-    public dimensionsAsList(): Dimension[] {
-        const dims = this.dimensions;
+    return {
+      dimensions: metricConfig.metricStat.dimensions,
+      namespace: metricConfig.metricStat.namespace,
+      metricName: metricConfig.metricStat.metricName,
+      renderingProperties: {
+        period: metricConfig.metricStat.period.toSeconds(),
+        stat: metricConfig.metricStat.statistic,
+        color: asString(metricConfig.renderingProperties?.color),
+        label: asString(metricConfig.renderingProperties?.label),
+      },
+      // deprecated properties for backwards compatibility
+      period: metricConfig.metricStat.period.toSeconds(),
+      statistic: metricConfig.metricStat.statistic,
+      color: asString(metricConfig.renderingProperties?.color),
+      label: asString(metricConfig.renderingProperties?.label),
+      unit: this.unit,
+    };
+  }
 
-        if (dims === undefined) {
-            return [];
-        }
+  /**
+   * Make a new Alarm for this metric
+   *
+   * Combines both properties that may adjust the metric (aggregation) as well
+   * as alarm properties.
+   */
+  public createAlarm(scope: cdk.Construct, id: string, props: CreateAlarmOptions): Alarm {
+    return new Alarm(scope, id, {
+      metric: this.with({
+        statistic: props.statistic,
+        period: props.period,
+      }),
+      alarmName: props.alarmName,
+      alarmDescription: props.alarmDescription,
+      comparisonOperator: props.comparisonOperator,
+      datapointsToAlarm: props.datapointsToAlarm,
+      threshold: props.threshold,
+      evaluationPeriods: props.evaluationPeriods,
+      evaluateLowSampleCountPercentile: props.evaluateLowSampleCountPercentile,
+      treatMissingData: props.treatMissingData,
+      actionsEnabled: props.actionsEnabled,
+    });
+  }
 
-        const list = Object.keys(dims).map(key => ({ name: key, value: dims[key] }));
+  public toString() {
+    return this.label || this.metricName;
+  }
 
-        return list;
+  /**
+   * Return the dimensions of this Metric as a list of Dimension.
+   */
+  private dimensionsAsList(): Dimension[] {
+    const dims = this.dimensions;
+
+    if (dims === undefined) {
+      return [];
     }
+
+    const list = Object.keys(dims).sort().map(key => ({ name: key, value: dims[key] }));
+
+    return list;
+  }
+}
+
+function asString(x?: unknown): string | undefined {
+  if (x === undefined) { return undefined; }
+  if (typeof x !== 'string') {
+    throw new Error(`Expected string, got ${x}`);
+  }
+  return x;
 }
 
 /**
- * Metric dimension
+ * A math expression built with metric(s) emitted by a service
+ *
+ * The math expression is a combination of an expression (x+y) and metrics to apply expression on.
+ * It also contains metadata which is used only in graphs, such as color and label.
+ * It makes sense to embed this in here, so that compound constructs can attach
+ * that metadata to metrics they expose.
+ *
+ * This class does not represent a resource, so hence is not a construct. Instead,
+ * MathExpression is an abstraction that makes it easy to specify metrics for use in both
+ * alarms and graphs.
  */
-export interface Dimension {
-    /**
-     * Name of the dimension
-     */
-    name: string;
+export class MathExpression implements IMetric {
+  /**
+   * The expression defining the metric.
+   */
+  public readonly expression: string;
 
-    /**
-     * Value of the dimension
-     */
-    value: any;
+  /**
+   * The metrics used in the expression as KeyValuePair <id, metric>.
+   */
+  public readonly usingMetrics: Record<string, IMetric>;
+
+  /**
+   * Label for this metric when added to a Graph.
+   */
+  public readonly label?: string;
+
+  /**
+   * The hex color code, prefixed with '#' (e.g. '#00ff00'), to use when this metric is rendered on a graph.
+   * The `Color` class has a set of standard colors that can be used here.
+   */
+  public readonly color?: string;
+
+  /**
+   * Aggregation period of this metric
+   */
+  public readonly period: cdk.Duration;
+
+  constructor(props: MathExpressionProps) {
+    this.period = props.period || cdk.Duration.minutes(5);
+    this.expression = props.expression;
+    this.usingMetrics = changeAllPeriods(props.usingMetrics, this.period);
+    this.label = props.label;
+    this.color = props.color;
+
+    const invalidVariableNames = Object.keys(props.usingMetrics).filter(x => !validVariableName(x));
+    if (invalidVariableNames.length > 0) {
+      throw new Error(`Invalid variable names in expression: ${invalidVariableNames}. Must start with lowercase letter and only contain alphanumerics.`);
+    }
+
+    this.validateNoIdConflicts();
+  }
+
+  /**
+   * Return a copy of Metric with properties changed.
+   *
+   * All properties except namespace and metricName can be changed.
+   *
+   * @param props The set of properties to change.
+   */
+  public with(props: MathExpressionOptions): MathExpression {
+    // Short-circuit creating a new object if there would be no effective change
+    if ((props.label === undefined || props.label === this.label)
+      && (props.color === undefined || props.color === this.color)
+      && (props.period === undefined || props.period.toSeconds() === this.period.toSeconds())) {
+      return this;
+    }
+
+    return new MathExpression({
+      expression: this.expression,
+      usingMetrics: this.usingMetrics,
+      label: ifUndefined(props.label, this.label),
+      color: ifUndefined(props.color, this.color),
+      period: ifUndefined(props.period, this.period),
+    });
+  }
+
+  public toAlarmConfig(): MetricAlarmConfig {
+    throw new Error('Using a math expression is not supported here. Pass a \'Metric\' object instead');
+  }
+
+  public toGraphConfig(): MetricGraphConfig {
+    throw new Error('Using a math expression is not supported here. Pass a \'Metric\' object instead');
+  }
+
+  public toMetricConfig(): MetricConfig {
+    return {
+      mathExpression: {
+        period: this.period.toSeconds(),
+        expression: this.expression,
+        usingMetrics: this.usingMetrics,
+      },
+      renderingProperties: {
+        label: this.label,
+        color: this.color,
+      },
+    };
+  }
+
+  /**
+   * Make a new Alarm for this metric
+   *
+   * Combines both properties that may adjust the metric (aggregation) as well
+   * as alarm properties.
+   */
+  public createAlarm(scope: cdk.Construct, id: string, props: CreateAlarmOptions): Alarm {
+    return new Alarm(scope, id, {
+      metric: this.with({
+        period: props.period,
+      }),
+      alarmName: props.alarmName,
+      alarmDescription: props.alarmDescription,
+      comparisonOperator: props.comparisonOperator,
+      datapointsToAlarm: props.datapointsToAlarm,
+      threshold: props.threshold,
+      evaluationPeriods: props.evaluationPeriods,
+      evaluateLowSampleCountPercentile: props.evaluateLowSampleCountPercentile,
+      treatMissingData: props.treatMissingData,
+      actionsEnabled: props.actionsEnabled,
+    });
+  }
+
+  public toString() {
+    return this.label || this.expression;
+  }
+
+  private validateNoIdConflicts() {
+    const seen = new Map<string, IMetric>();
+    visit(this);
+
+    function visit(metric: IMetric) {
+      dispatchMetric(metric, {
+        withStat() {
+          // Nothing
+        },
+        withExpression(expr) {
+          for (const [id, subMetric] of Object.entries(expr.usingMetrics)) {
+            const existing = seen.get(id);
+            if (existing && metricKey(existing) !== metricKey(subMetric)) {
+              throw new Error(`The ID '${id}' used for two metrics in the expression: '${subMetric}' and '${existing}'. Rename one.`);
+            }
+            seen.set(id, subMetric);
+            visit(subMetric);
+          }
+        },
+      });
+    }
+  }
+
+}
+
+const VALID_VARIABLE = new RegExp('^[a-z][a-zA-Z0-9_]*$');
+
+function validVariableName(x: string) {
+  return VALID_VARIABLE.test(x);
 }
 
 /**
- * Statistic to use over the aggregation period
+ * Properties needed to make an alarm from a metric
  */
-export enum Statistic {
-    SampleCount = 'SampleCount',
-    Average = 'Average',
-    Sum = 'Sum',
-    Minimum = 'Minimum',
-    Maximum = 'Maximum',
-}
+export interface CreateAlarmOptions {
+  /**
+   * The period over which the specified statistic is applied.
+   *
+   * Cannot be used with `MathExpression` objects.
+   *
+   * @default - The period from the metric
+   * @deprecated Use `metric.with({ period: ... })` to encode the period into the Metric object
+   */
+  readonly period?: cdk.Duration;
 
-/**
- * Unit for metric
- */
-export enum Unit {
-    Seconds = 'Seconds',
-    Microseconds = 'Microseconds',
-    Milliseconds = 'Milliseconds',
-    Bytes_ = 'Bytes',
-    Kilobytes = 'Kilobytes',
-    Megabytes = 'Megabytes',
-    Gigabytes = 'Gigabytes',
-    Terabytes = 'Terabytes',
-    Bits = 'Bits',
-    Kilobits = 'Kilobits',
-    Megabits = 'Megabits',
-    Gigabits = 'Gigabits',
-    Terabits = 'Terabits',
-    Percent = 'Percent',
-    Count = 'Count',
-    BytesPerSecond = 'Bytes/Second',
-    KilobytesPerSecond = 'Kilobytes/Second',
-    MegabytesPerSecond = 'Megabytes/Second',
-    GigabytesPerSecond = 'Gigabytes/Second',
-    TerabytesPerSecond = 'Terabytes/Second',
-    BitsPerSecond = 'Bits/Second',
-    KilobitsPerSecond = 'Kilobits/Second',
-    MegabitsPerSecond = 'Megabits/Second',
-    GigabitsPerSecond = 'Gigabits/Second',
-    TerabitsPerSecond = 'Terabits/Second',
-    CountPerSecond = 'Count/Second',
-    None = 'None'
-}
+  /**
+   * What function to use for aggregating.
+   *
+   * Can be one of the following:
+   *
+   * - "Minimum" | "min"
+   * - "Maximum" | "max"
+   * - "Average" | "avg"
+   * - "Sum" | "sum"
+   * - "SampleCount | "n"
+   * - "pNN.NN"
+   *
+   * Cannot be used with `MathExpression` objects.
+   *
+   * @default - The statistic from the metric
+   * @deprecated Use `metric.with({ statistic: ... })` to encode the period into the Metric object
+   */
+  readonly statistic?: string;
 
-/**
- * Properties of a metric that can be changed
- */
-export interface MetricCustomization {
-    /**
-     * Dimensions of the metric
-     *
-     * @default No dimensions
-     */
-    dimensions?: DimensionHash;
+  /**
+   * Name of the alarm
+   *
+   * @default Automatically generated name
+   */
+  readonly alarmName?: string;
 
-    /**
-     * The period over which the specified statistic is applied.
-     *
-     * Specify time in seconds, in multiples of 60.
-     *
-     * @default 300
-     */
-    periodSec?: number;
+  /**
+   * Description for the alarm
+   *
+   * @default No description
+   */
+  readonly alarmDescription?: string;
 
-    /**
-     * What function to use for aggregating.
-     *
-     * Can be one of the following:
-     *
-     * - "Minimum" | "min"
-     * - "Maximum" | "max"
-     * - "Average" | "avg"
-     * - "Sum" | "sum"
-     * - "SampleCount | "n"
-     * - "pNN.NN"
-     *
-     * @default Average
-     */
-    statistic?: string;
+  /**
+   * Comparison to use to check if metric is breaching
+   *
+   * @default GreaterThanOrEqualToThreshold
+   */
+  readonly comparisonOperator?: ComparisonOperator;
 
-    /**
-     * Unit for the metric that is associated with the alarm
-     */
-    unit?: Unit;
+  /**
+   * The value against which the specified statistic is compared.
+   */
+  readonly threshold: number;
 
-    /**
-     * Label for this metric when added to a Graph in a Dashboard
-     */
-    label?: string;
+  /**
+   * The number of periods over which data is compared to the specified threshold.
+   */
+  readonly evaluationPeriods: number;
 
-    /**
-     * Color for this metric when added to a Graph in a Dashboard
-     */
-    color?: string;
-}
+  /**
+   * Specifies whether to evaluate the data and potentially change the alarm state if there are too few data points to be statistically significant.
+   *
+   * Used only for alarms that are based on percentiles.
+   *
+   * @default - Not configured.
+   */
+  readonly evaluateLowSampleCountPercentile?: string;
 
-/**
- * Properties to make an alarm from a metric
- */
-export interface NewAlarmProps {
-    /**
-     * The period over which the specified statistic is applied.
-     *
-     * Specify time in seconds, in multiples of 60.
-     *
-     * @default 300
-     */
-    periodSec?: number;
+  /**
+   * Sets how this alarm is to handle missing data points.
+   *
+   * @default TreatMissingData.Missing
+   */
+  readonly treatMissingData?: TreatMissingData;
 
-    /**
-     * What function to use for aggregating.
-     *
-     * Can be one of the following:
-     *
-     * - "Minimum" | "min"
-     * - "Maximum" | "max"
-     * - "Average" | "avg"
-     * - "Sum" | "sum"
-     * - "SampleCount | "n"
-     * - "pNN.NN"
-     *
-     * @default Average
-     */
-    statistic?: string;
+  /**
+   * Whether the actions for this alarm are enabled
+   *
+   * @default true
+   */
+  readonly actionsEnabled?: boolean;
 
-    /**
-     * Name of the alarm
-     *
-     * @default Automatically generated name
-     */
-    alarmName?: string;
-
-    /**
-     * Description for the alarm
-     *
-     * @default No description
-     */
-    alarmDescription?: string;
-
-    /**
-     * Comparison to use to check if metric is breaching
-     *
-     * @default GreaterThanOrEqualToThreshold
-     */
-    comparisonOperator?: ComparisonOperator;
-
-    /**
-     * The value against which the specified statistic is compared.
-     */
-    threshold: number;
-
-    /**
-     * The number of periods over which data is compared to the specified threshold.
-     */
-    evaluationPeriods: number;
-
-    /**
-     * Specifies whether to evaluate the data and potentially change the alarm state if there are too few data points to be statistically significant.
-     *
-     * Used only for alarms that are based on percentiles.
-     */
-    evaluateLowSampleCountPercentile?: string;
-
-    /**
-     * Sets how this alarm is to handle missing data points.
-     *
-     * @default TreatMissingData.Missing
-     */
-    treatMissingData?: TreatMissingData;
-
-    /**
-     * Whether the actions for this alarm are enabled
-     *
-     * @default true
-     */
-    actionsEnabled?: boolean;
+  /**
+   * The number of datapoints that must be breaching to trigger the alarm. This is used only if you are setting an "M
+   * out of N" alarm. In that case, this value is the M. For more information, see Evaluating an Alarm in the Amazon
+   * CloudWatch User Guide.
+   *
+   * @default ``evaluationPeriods``
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/AlarmThatSendsEmail.html#alarm-evaluation
+   */
+  readonly datapointsToAlarm?: number;
 }
 
 function ifUndefined<T>(x: T | undefined, def: T | undefined): T | undefined {
-    if (x !== undefined) {
-        return x;
-    }
-    return def;
+  if (x !== undefined) {
+    return x;
+  }
+  return def;
+}
+
+/**
+ * Change periods of all metrics in the map
+ */
+function changeAllPeriods(metrics: Record<string, IMetric>, period: cdk.Duration): Record<string, IMetric> {
+  const ret: Record<string, IMetric> = {};
+  for (const [id, metric] of Object.entries(metrics)) {
+    ret[id] = changePeriod(metric, period);
+  }
+  return ret;
+}
+
+/**
+ * Return a new metric object which is the same type as the input object, but with the period changed
+ *
+ * Relies on the fact that implementations of `IMetric` are also supposed to have
+ * an implementation of `with` that accepts an argument called `period`. See `IModifiableMetric`.
+ */
+function changePeriod(metric: IMetric, period: cdk.Duration): IMetric {
+  if (isModifiableMetric(metric)) {
+    return metric.with({ period });
+  }
+
+  throw new Error(`Metric object should also implement 'with': ${metric}`);
+}
+
+/**
+ * Private protocol for metrics
+ *
+ * Metric types used in a MathExpression need to implement at least this:
+ * a `with` method that takes at least a `period` and returns a modified copy
+ * of the metric object.
+ *
+ * We put it here instead of on `IMetric` because there is no way to type
+ * it in jsii in a way that concrete implementations `Metric` and `MathExpression`
+ * can be statically typable about the fields that are changeable: all
+ * `with` methods would need to take the same argument type, but not all
+ * classes have the same `with`-able properties.
+ *
+ * This class exists to prevent having to use `instanceof` in the `changePeriod`
+ * function, so that we have a system where in principle new implementations
+ * of `IMetric` can be added. Because it will be rare, the mechanism doesn't have
+ * to be exposed very well, just has to be possible.
+ */
+interface IModifiableMetric {
+  with(options: { period?: cdk.Duration }): IMetric;
+}
+
+function isModifiableMetric(m: any): m is IModifiableMetric {
+  return typeof m === 'object' && m !== null && !!m.with;
 }

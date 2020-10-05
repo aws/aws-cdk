@@ -8,3 +8,14 @@ coverage
 dist
 .LAST_PACKAGE
 .LAST_BUILD
+*.snk
+
+*.tsbuildinfo
+
+tsconfig.json
+.eslintrc.js
+jest.config.js
+
+# exclude cdk artifacts
+**/cdk.out
+junit.xml

@@ -3,7 +3,6 @@
 *.d.ts
 *.generated.ts
 tsconfig.json
-tslint.json
 node_modules
 dist
 .jsii
@@ -11,5 +10,10 @@ dist
 .LAST_BUILD
 .nyc_output
 coverage
-.nycrc
+nyc.config.js
 .LAST_PACKAGE
+*.snk
+!.eslintrc.js
+
+!jest.config.js
+junit.xml

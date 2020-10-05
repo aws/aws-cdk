@@ -1,9 +1,36 @@
-## AWS SQS Construct Library
+## Amazon Simple Queue Service Construct Library
+<!--BEGIN STABILITY BANNER-->
+---
+
+![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
+
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
+
+---
+<!--END STABILITY BANNER-->
+
+Amazon Simple Queue Service (SQS) is a fully managed message queuing service that 
+enables you to decouple and scale microservices, distributed systems, and serverless 
+applications. SQS eliminates the complexity and overhead associated with managing and 
+operating message oriented middleware, and empowers developers to focus on differentiating work. 
+Using SQS, you can send, store, and receive messages between software components at any volume, 
+without losing messages or requiring other services to be available. 
+
+### Installation
+
+Import to your project:
+
+```ts
+import * as sqs from '@aws-cdk/aws-sqs';
+```
+
+### Basic usage
+
 
 Here's how to add a basic queue to your application:
 
 ```ts
-new Queue(this, 'Queue');
+new sqs.Queue(this, 'Queue');
 ```
 
 ### Encryption
@@ -14,15 +41,15 @@ can manage yourself.
 
 ```ts
 // Use managed key
-new Queue(this, 'Queue', {
-    encryption: QueueEncryption.Managed,
+new sqs.Queue(this, 'Queue', {
+    encryption: QueueEncryption.KMS_MANAGED,
 });
 
 // Use custom key
-const myKey = new EncryptionKey(this, 'Key');
+const myKey = new kms.Key(this, 'Key');
 
-new Queue(this, 'Queue', {
-    encryption: QueueEncryption.Kms,
+new sqs.Queue(this, 'Queue', {
+    encryption: QueueEncryption.KMS,
     encryptionMasterKey: myKey
 });
 ```

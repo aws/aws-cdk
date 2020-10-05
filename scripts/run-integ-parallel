@@ -1,0 +1,70 @@
+#!/bin/bash
+# Run unit tests in parallel in different regions
+set -euo pipefail
+
+export NODE_OPTIONS="--max-old-space-size=4096 ${NODE_OPTIONS:-}"
+
+lerna=${LERNA:-node_modules/.bin/lerna}
+
+# Only regions that support most services
+tokyo=ap-northeast-1
+sydney=ap-southeast-2
+regions=(eu-west-1 eu-west-2 us-east-1 us-east-2 us-west-1 us-west-2 eu-central-1 ca-central-1 $tokyo $sydney)
+
+if ! which parallel > /dev/null; then
+    echo "Please install GNU Parallel." >&2
+    exit 1
+fi
+
+parallel --help > /dev/null || if [[ $? -ne 255 ]]; then
+    echo "You do have a program called 'parallel' on your machine, but it's not GNU Parallel." >&2
+    echo "It might come from 'moreutils'. Please install the proper GNU Parallel tool." >&2
+    exit 1
+fi
+
+if [[ "${1:-}" == "" ]]; then
+    echo "Usage: run-integ-parallel PACKAGE [PACKAGE [..]]" >&2
+    exit 1
+fi
+
+echo "Discovering tests..." >&2
+# Zipped arrays
+packages=()
+tests=()
+while [[ "${1:-}" != "" ]]; do
+    # Yes, -- (end lerna args) -- (end npm args) --list (argument to cdk-integ)
+    for tst in $(lerna --loglevel=silent --scope $1 run integ -- --silent -- --list); do
+        packages+=("$1")
+        tests+=("$tst")
+    done
+
+    shift
+done
+
+
+# CRAZY CRAZY CRAZY gnu parallel command line
+#
+# Here's the main shape:
+#
+#   parallel --xapply <command> ::: <packages> ::: <tests> ::: <regions>
+#
+# Runs the command with pairs of "<package> <test> <region"> as arguments,
+# cycling through regions as necessary (packages and tests will have the same length)
+# (--xapply is also sometimes called --link but --xapply is supported on more GNUP versions)
+#
+# The command that is run for each pair of arguments is:
+#
+#   parallel --semaphore --fg -j1 --id <semaphore_name> <actual_command>
+#
+# To make sure that there is only -j1 job for every --id semaphore at
+# a time, --fg to see the command to completion. We use the <region> ({3}) as a semaphore,
+# to make sure only one test is ever running on a single region.
+#
+# Mix in some -u to avoid buffering output, --delay to avoid tests trashing each other's cdk.json.
+parallel --xapply -j0 -u --delay 3 \
+    parallel \
+        --fg --semaphore -j1 --id {3} -u \
+        "echo Running {1}:{2} in {3}; env AWS_REGION={3} ${lerna} --loglevel=silent --scope {1} run integ -- --silent -- {2} || { echo Running {1}:{2} in {3} failed; exit 1; }" \
+    ::: "${packages[@]}" \
+    ::: "${tests[@]}" \
+    ::: "${regions[@]}"

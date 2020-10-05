@@ -1,234 +1,309 @@
-import { Arn, Construct, Token } from '@aws-cdk/cdk';
-import { AlarmArn, cloudformation } from './cloudwatch.generated';
+import { Lazy, Stack, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
+import { AlarmBase, IAlarm } from './alarm-base';
+import { CfnAlarm, CfnAlarmProps } from './cloudwatch.generated';
 import { HorizontalAnnotation } from './graph';
-import { Dimension, Metric, Statistic, Unit } from './metric';
-import { parseStatistic } from './util.statistic';
+import { CreateAlarmOptions } from './metric';
+import { IMetric, MetricExpressionConfig, MetricStatConfig } from './metric-types';
+import { dispatchMetric, metricPeriod } from './private/metric-util';
+import { dropUndefined } from './private/object';
+import { MetricSet } from './private/rendering';
+import { parseStatistic } from './private/statistic';
 
 /**
  * Properties for Alarms
  */
-export interface AlarmProps {
-    /**
-     * The metric to add the alarm on
-     *
-     * Metric objects can be obtained from most resources, or you can construct
-     * custom Metric objects by instantiating one.
-     */
-    metric: Metric;
-
-    /**
-     * Name of the alarm
-     *
-     * @default Automatically generated name
-     */
-    alarmName?: string;
-
-    /**
-     * Description for the alarm
-     *
-     * @default No description
-     */
-    alarmDescription?: string;
-
-    /**
-     * Comparison to use to check if metric is breaching
-     *
-     * @default GreaterThanOrEqualToThreshold
-     */
-    comparisonOperator?: ComparisonOperator;
-
-    /**
-     * The value against which the specified statistic is compared.
-     */
-    threshold: number;
-
-    /**
-     * The number of periods over which data is compared to the specified threshold.
-     */
-    evaluationPeriods: number;
-
-    /**
-     * Specifies whether to evaluate the data and potentially change the alarm
-     * state if there are too few data points to be statistically significant.
-     *
-     * Used only for alarms that are based on percentiles.
-     */
-    evaluateLowSampleCountPercentile?: string;
-
-    /**
-     * Sets how this alarm is to handle missing data points.
-     *
-     * @default TreatMissingData.Missing
-     */
-    treatMissingData?: TreatMissingData;
-
-    /**
-     * Whether the actions for this alarm are enabled
-     *
-     * @default true
-     */
-    actionsEnabled?: boolean;
+export interface AlarmProps extends CreateAlarmOptions {
+  /**
+   * The metric to add the alarm on
+   *
+   * Metric objects can be obtained from most resources, or you can construct
+   * custom Metric objects by instantiating one.
+   */
+  readonly metric: IMetric;
 }
 
 /**
  * Comparison operator for evaluating alarms
  */
 export enum ComparisonOperator {
-    GreaterThanOrEqualToThreshold = 'GreaterThanOrEqualToThreshold',
-    GreaterThanThreshold = 'GreaterThanThreshold',
-    LessThanThreshold = 'LessThanThreshold',
-    LessThanOrEqualToThreshold = 'LessThanOrEqualToThreshold',
+  /**
+   * Specified statistic is greater than or equal to the threshold
+   */
+  GREATER_THAN_OR_EQUAL_TO_THRESHOLD = 'GreaterThanOrEqualToThreshold',
+
+  /**
+   * Specified statistic is strictly greater than the threshold
+   */
+  GREATER_THAN_THRESHOLD = 'GreaterThanThreshold',
+
+  /**
+   * Specified statistic is strictly less than the threshold
+   */
+  LESS_THAN_THRESHOLD = 'LessThanThreshold',
+
+  /**
+   * Specified statistic is less than or equal to the threshold.
+   */
+  LESS_THAN_OR_EQUAL_TO_THRESHOLD = 'LessThanOrEqualToThreshold',
+
+  /**
+   * Specified statistic is lower than or greater than the anomaly model band.
+   * Used only for alarms based on anomaly detection models
+   */
+  LESS_THAN_LOWER_OR_GREATER_THAN_UPPER_THRESHOLD = 'LessThanLowerOrGreaterThanUpperThreshold',
+
+  /**
+   * Specified statistic is greater than the anomaly model band.
+   * Used only for alarms based on anomaly detection models
+   */
+  GREATER_THAN_UPPER_THRESHOLD = 'GreaterThanUpperThreshold',
+
+  /**
+   * Specified statistic is lower than the anomaly model band.
+   * Used only for alarms based on anomaly detection models
+   */
+  LESS_THAN_LOWER_THRESHOLD = 'LessThanLowerThreshold',
 }
 
 const OPERATOR_SYMBOLS: {[key: string]: string} = {
-    GreaterThanOrEqualToThreshold: '>=',
-    GreaterThanThreshold: '>',
-    LessThanThreshold: '<',
-    LessThanOrEqualToThreshold: '>=',
+  GreaterThanOrEqualToThreshold: '>=',
+  GreaterThanThreshold: '>',
+  LessThanThreshold: '<',
+  LessThanOrEqualToThreshold: '<=',
 };
 
 /**
  * Specify how missing data points are treated during alarm evaluation
  */
 export enum TreatMissingData {
-    /**
-     * Missing data points are treated as breaching the threshold
-     */
-    Breaching = 'breaching',
+  /**
+   * Missing data points are treated as breaching the threshold
+   */
+  BREACHING = 'breaching',
 
-    /**
-     * Missing data points are treated as being within the threshold
-     */
-    NotBreaching = 'notBreaching',
+  /**
+   * Missing data points are treated as being within the threshold
+   */
+  NOT_BREACHING = 'notBreaching',
 
-    /**
-     * The current alarm state is maintained
-     */
-    Ignore = 'ignore',
+  /**
+   * The current alarm state is maintained
+   */
+  IGNORE = 'ignore',
 
-    /**
-     * The alarm does not consider missing data points when evaluating whether to change state
-     */
-    Missing = 'missing'
+  /**
+   * The alarm does not consider missing data points when evaluating whether to change state
+   */
+  MISSING = 'missing'
 }
 
 /**
  * An alarm on a CloudWatch metric
  */
-export class Alarm extends Construct {
-    /**
-     * ARN of this alarm
-     */
-    public readonly alarmArn: AlarmArn;
+export class Alarm extends AlarmBase {
 
-    /**
-     * The metric object this alarm was based on
-     */
-    public readonly metric: Metric;
+  /**
+   * Import an existing CloudWatch alarm provided an ARN
+   *
+   * @param scope The parent creating construct (usually `this`).
+   * @param id The construct's name
+   * @param alarmArn Alarm ARN (i.e. arn:aws:cloudwatch:<region>:<account-id>:alarm:Foo)
+   */
+  public static fromAlarmArn(scope: Construct, id: string, alarmArn: string): IAlarm {
+    class Import extends AlarmBase implements IAlarm {
+      public readonly alarmArn = alarmArn;
+      public readonly alarmName = Stack.of(scope).parseArn(alarmArn, ':').resourceName!;
+    }
+    return new Import(scope, id);
+  }
 
-    private alarmActions?: Arn[];
-    private insufficientDataActions?: Arn[];
-    private okActions?: Arn[];
+  /**
+   * ARN of this alarm
+   *
+   * @attribute
+   */
+  public readonly alarmArn: string;
 
-    /**
-     * This metric as an annotation
-     */
-    private readonly annotation: HorizontalAnnotation;
+  /**
+   * Name of this alarm.
+   *
+   * @attribute
+   */
+  public readonly alarmName: string;
 
-    constructor(parent: Construct, name: string, props: AlarmProps) {
-        super(parent, name);
+  /**
+   * The metric object this alarm was based on
+   */
+  public readonly metric: IMetric;
 
-        const comparisonOperator = props.comparisonOperator || ComparisonOperator.GreaterThanOrEqualToThreshold;
+  /**
+   * This metric as an annotation
+   */
+  private readonly annotation: HorizontalAnnotation;
 
-        const alarm = new cloudformation.AlarmResource(this, 'Resource', {
-            // Meta
-            alarmDescription: props.alarmDescription,
-            alarmName: props.alarmName,
+  constructor(scope: Construct, id: string, props: AlarmProps) {
+    super(scope, id, {
+      physicalName: props.alarmName,
+    });
 
-            // Evaluation
-            comparisonOperator,
-            threshold: props.threshold,
-            evaluateLowSampleCountPercentile: props.evaluateLowSampleCountPercentile,
-            evaluationPeriods: props.evaluationPeriods,
-            treatMissingData: props.treatMissingData,
+    const comparisonOperator = props.comparisonOperator || ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD;
 
-            // Actions
-            actionsEnabled: props.actionsEnabled,
-            alarmActions: new Token(() => this.alarmActions),
-            insufficientDataActions: new Token(() => this.insufficientDataActions),
-            okActions: new Token(() => this.okActions),
+    // Render metric, process potential overrides from the alarm
+    // (It would be preferable if the statistic etc. was worked into the metric,
+    // but hey we're allowing overrides...)
+    const metricProps: Writeable<Partial<CfnAlarmProps>> = this.renderMetric(props.metric);
+    if (props.period) {
+      metricProps.period = props.period.toSeconds();
+    }
+    if (props.statistic) {
+      // Will overwrite both fields if present
+      Object.assign(metricProps, {
+        statistic: renderIfSimpleStatistic(props.statistic),
+        extendedStatistic: renderIfExtendedStatistic(props.statistic),
+      });
+    }
 
-            // Metric
-            ...metricJson(props.metric)
+    const alarm = new CfnAlarm(this, 'Resource', {
+      // Meta
+      alarmDescription: props.alarmDescription,
+      alarmName: this.physicalName,
+
+      // Evaluation
+      comparisonOperator,
+      threshold: props.threshold,
+      datapointsToAlarm: props.datapointsToAlarm,
+      evaluateLowSampleCountPercentile: props.evaluateLowSampleCountPercentile,
+      evaluationPeriods: props.evaluationPeriods,
+      treatMissingData: props.treatMissingData,
+
+      // Actions
+      actionsEnabled: props.actionsEnabled,
+      alarmActions: Lazy.listValue({ produce: () => this.alarmActionArns }),
+      insufficientDataActions: Lazy.listValue({ produce: (() => this.insufficientDataActionArns) }),
+      okActions: Lazy.listValue({ produce: () => this.okActionArns }),
+
+      // Metric
+      ...metricProps,
+    });
+
+    this.alarmArn = this.getResourceArnAttribute(alarm.attrArn, {
+      service: 'cloudwatch',
+      resource: 'alarm',
+      resourceName: this.physicalName,
+      sep: ':',
+    });
+    this.alarmName = this.getResourceNameAttribute(alarm.ref);
+
+    this.metric = props.metric;
+    const datapoints = props.datapointsToAlarm || props.evaluationPeriods;
+    this.annotation = {
+      // eslint-disable-next-line max-len
+      label: `${this.metric} ${OPERATOR_SYMBOLS[comparisonOperator]} ${props.threshold} for ${datapoints} datapoints within ${describePeriod(props.evaluationPeriods * metricPeriod(props.metric).toSeconds())}`,
+      value: props.threshold,
+    };
+  }
+
+  /**
+   * Turn this alarm into a horizontal annotation
+   *
+   * This is useful if you want to represent an Alarm in a non-AlarmWidget.
+   * An `AlarmWidget` can directly show an alarm, but it can only show a
+   * single alarm and no other metrics. Instead, you can convert the alarm to
+   * a HorizontalAnnotation and add it as an annotation to another graph.
+   *
+   * This might be useful if:
+   *
+   * - You want to show multiple alarms inside a single graph, for example if
+   *   you have both a "small margin/long period" alarm as well as a
+   *   "large margin/short period" alarm.
+   *
+   * - You want to show an Alarm line in a graph with multiple metrics in it.
+   */
+  public toAnnotation(): HorizontalAnnotation {
+    return this.annotation;
+  }
+
+  private renderMetric(metric: IMetric) {
+    const self = this;
+    return dispatchMetric(metric, {
+      withStat(st) {
+        self.validateMetricStat(st, metric);
+
+        return dropUndefined({
+          dimensions: st.dimensions,
+          namespace: st.namespace,
+          metricName: st.metricName,
+          period: st.period?.toSeconds(),
+          statistic: renderIfSimpleStatistic(st.statistic),
+          extendedStatistic: renderIfExtendedStatistic(st.statistic),
+          unit: st.unitFilter,
         });
+      },
 
-        this.alarmArn = alarm.alarmArn;
-        this.metric = props.metric;
-        this.annotation = {
-            // tslint:disable-next-line:max-line-length
-            label: `${this.metric.label || this.metric.metricName} ${OPERATOR_SYMBOLS[comparisonOperator]} ${props.threshold} for ${props.evaluationPeriods} datapoints within ${describePeriod(props.evaluationPeriods * props.metric.periodSec)}`,
-            value: props.threshold,
+      withExpression() {
+        // Expand the math expression metric into a set
+        const mset = new MetricSet<boolean>();
+        mset.addTopLevel(true, metric);
+
+        let eid = 0;
+        function uniqueMetricId() {
+          return `expr_${++eid}`;
+        }
+
+        return {
+          metrics: mset.entries.map(entry => dispatchMetric(entry.metric, {
+            withStat(stat, conf) {
+              self.validateMetricStat(stat, entry.metric);
+
+              return {
+                metricStat: {
+                  metric: {
+                    metricName: stat.metricName,
+                    namespace: stat.namespace,
+                    dimensions: stat.dimensions,
+                  },
+                  period: stat.period.toSeconds(),
+                  stat: stat.statistic,
+                  unit: stat.unitFilter,
+                },
+                id: entry.id || uniqueMetricId(),
+                label: conf.renderingProperties?.label,
+                returnData: entry.tag ? undefined : false, // Tag stores "primary" attribute, default is "true"
+              };
+            },
+            withExpression(expr, conf) {
+              return {
+                expression: expr.expression,
+                id: entry.id || uniqueMetricId(),
+                label: conf.renderingProperties?.label,
+                period: mathExprHasSubmetrics(expr) ? undefined : expr.period,
+                returnData: entry.tag ? undefined : false, // Tag stores "primary" attribute, default is "true"
+              };
+            },
+          }) as CfnAlarm.MetricDataQueryProperty),
         };
+      },
+    });
+  }
+
+  /**
+   * Validate that if a region and account are in the given stat config, they match the Alarm
+   */
+  private validateMetricStat(stat: MetricStatConfig, metric: IMetric) {
+    const stack = Stack.of(this);
+
+    if (definitelyDifferent(stat.region, stack.region)) {
+      throw new Error(`Cannot create an Alarm in region '${stack.region}' based on metric '${metric}' in '${stat.region}'`);
     }
-
-    /**
-     * Trigger this action if the alarm fires
-     *
-     * Typically the ARN of an SNS topic or ARN of an AutoScaling policy.
-     */
-    public onAlarm(...actions: IAlarmAction[]) {
-        if (this.alarmActions === undefined) {
-            this.alarmActions = [];
-        }
-
-        this.alarmActions.push(...actions.map(a => a.alarmActionArn));
+    if (definitelyDifferent(stat.account, stack.account)) {
+      throw new Error(`Cannot create an Alarm in account '${stack.account}' based on metric '${metric}' in '${stat.account}'`);
     }
+  }
+}
 
-    /**
-     * Trigger this action if there is insufficient data to evaluate the alarm
-     *
-     * Typically the ARN of an SNS topic or ARN of an AutoScaling policy.
-     */
-    public onInsufficientData(...actions: IAlarmAction[]) {
-        if (this.insufficientDataActions === undefined) {
-            this.insufficientDataActions = [];
-        }
-
-        this.insufficientDataActions.push(...actions.map(a => a.alarmActionArn));
-    }
-
-    /**
-     * Trigger this action if the alarm returns from breaching state into ok state
-     *
-     * Typically the ARN of an SNS topic or ARN of an AutoScaling policy.
-     */
-    public onOk(...actions: IAlarmAction[]) {
-        if (this.okActions === undefined) {
-            this.okActions = [];
-        }
-
-        this.okActions.push(...actions.map(a => a.alarmActionArn));
-    }
-
-    /**
-     * Turn this alarm into a horizontal annotation
-     *
-     * This is useful if you want to represent an Alarm in a non-AlarmWidget.
-     * An `AlarmWidget` can directly show an alarm, but it can only show a
-     * single alarm and no other metrics. Instead, you can convert the alarm to
-     * a HorizontalAnnotation and add it as an annotation to another graph.
-     *
-     * This might be useful if:
-     *
-     * - You want to show multiple alarms inside a single graph, for example if
-     *   you have both a "small margin/long period" alarm as well as a
-     *   "large margin/short period" alarm.
-     *
-     * - You want to show an Alarm line in a graph with multiple metrics in it.
-     */
-    public toAnnotation(): HorizontalAnnotation {
-        return this.annotation;
-    }
+function definitelyDifferent(x: string | undefined, y: string) {
+  return x && !Token.isUnresolved(y) && x !== y;
 }
 
 /**
@@ -237,77 +312,36 @@ export class Alarm extends Construct {
  * We know the seconds are always one of a handful of allowed values.
  */
 function describePeriod(seconds: number) {
-    if (seconds === 60) { return '1 minute'; }
-    if (seconds === 1) { return '1 second'; }
-    if (seconds > 60) { return (seconds / 60) + ' minutes'; }
-    return seconds + ' seconds';
+  if (seconds === 60) { return '1 minute'; }
+  if (seconds === 1) { return '1 second'; }
+  if (seconds > 60) { return (seconds / 60) + ' minutes'; }
+  return seconds + ' seconds';
 }
 
-/**
- * Interface for objects that can be the targets of CloudWatch alarm actions
- */
-export interface IAlarmAction {
-    /**
-     * Return the ARN that should be used for a CloudWatch Alarm action
-     */
-    readonly alarmActionArn: Arn;
+function renderIfSimpleStatistic(statistic?: string): string | undefined {
+  if (statistic === undefined) { return undefined; }
+
+  const parsed = parseStatistic(statistic);
+  if (parsed.type === 'simple') {
+    return parsed.statistic;
+  }
+  return undefined;
 }
 
-/**
- * Return the JSON structure which represents the given metric in an alarm.
- */
-function metricJson(metric: Metric): AlarmMetricJson {
-    const stat = parseStatistic(metric.statistic);
+function renderIfExtendedStatistic(statistic?: string): string | undefined {
+  if (statistic === undefined) { return undefined; }
 
-    const dims = metric.dimensionsAsList();
-
-    return {
-        dimensions: dims.length > 0 ? dims : undefined,
-        namespace: metric.namespace,
-        metricName: metric.metricName,
-        period: metric.periodSec,
-        statistic: stat.type === 'simple' ? stat.statistic : undefined,
-        extendedStatistic: stat.type === 'percentile' ? 'p' + stat.percentile : undefined,
-        unit: metric.unit
-    };
+  const parsed = parseStatistic(statistic);
+  if (parsed.type === 'percentile') {
+    // Already percentile. Avoid parsing because we might get into
+    // floating point rounding issues, return as-is but lowercase the p.
+    return statistic.toLowerCase();
+  }
+  return undefined;
 }
 
-/**
- * Properties used to construct the Metric identifying part of an Alarm
- */
-export interface AlarmMetricJson {
-    /**
-     * The dimensions to apply to the alarm
-     */
-    dimensions?: Dimension[];
-
-    /**
-     * Namespace of the metric
-     */
-    namespace: string;
-
-    /**
-     * Name of the metric
-     */
-    metricName: string;
-
-    /**
-     * How many seconds to aggregate over
-     */
-    period: number;
-
-    /**
-     * Simple aggregation function to use
-     */
-    statistic?: Statistic;
-
-    /**
-     * Percentile aggregation function to use
-     */
-    extendedStatistic?: string;
-
-    /**
-     * The unit of the alarm
-     */
-    unit?: Unit;
+function mathExprHasSubmetrics(expr: MetricExpressionConfig) {
+  return Object.keys(expr.usingMetrics).length > 0;
 }
+
+type Writeable<T> = { -readonly [P in keyof T]: T[P] };

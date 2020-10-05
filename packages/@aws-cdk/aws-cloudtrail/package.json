@@ -1,7 +1,7 @@
 {
   "name": "@aws-cdk/aws-cloudtrail",
-  "version": "0.8.2",
-  "description": "CDK Constructs for AWS CloudTrail",
+  "version": "0.0.0",
+  "description": "The CDK Construct Library for AWS::CloudTrail",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
@@ -14,12 +14,28 @@
           "artifactId": "cloudtrail"
         }
       },
-      "sphinx": {}
-    }
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.CloudTrail",
+        "packageId": "Amazon.CDK.AWS.CloudTrail",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+      },
+      "python": {
+        "distName": "aws-cdk.aws-cloudtrail",
+        "module": "aws_cdk.aws_cloudtrail",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
+      }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/awslabs/aws-cdk.git"
+    "url": "https://github.com/aws/aws-cdk.git",
+    "directory": "packages/@aws-cdk/aws-cloudtrail"
   },
   "scripts": {
     "build": "cdk-build",
@@ -27,10 +43,20 @@
     "lint": "cdk-lint",
     "test": "cdk-test",
     "pkglint": "pkglint -f",
-    "package": "cdk-package"
+    "package": "cdk-package",
+    "awslint": "cdk-awslint",
+    "cfn2ts": "cfn2ts",
+    "integ": "cdk-integ",
+    "build+test+package": "npm run build+test && npm run package",
+    "build+test": "npm run build && npm test",
+    "compat": "cdk-compat"
   },
   "cdk-build": {
-    "cloudformation": "AWS::CloudTrail"
+    "cloudformation": "AWS::CloudTrail",
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "keywords": [
     "aws",
@@ -45,19 +71,49 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.8.2",
-    "aws-sdk": "^2.259.1",
-    "cdk-build-tools": "^0.8.2",
-    "cfn2ts": "^0.8.2",
-    "colors": "^1.2.1",
-    "pkglint": "^0.8.2"
+    "@aws-cdk/assert": "0.0.0",
+    "aws-sdk": "^2.739.0",
+    "cdk-build-tools": "0.0.0",
+    "cdk-integ-tools": "0.0.0",
+    "cfn2ts": "0.0.0",
+    "colors": "^1.4.0",
+    "jest": "^26.4.2",
+    "pkglint": "0.0.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-iam": "^0.8.2",
-    "@aws-cdk/aws-kms": "^0.8.2",
-    "@aws-cdk/aws-logs": "^0.8.2",
-    "@aws-cdk/aws-s3": "^0.8.2",
-    "@aws-cdk/cdk": "^0.8.2"
+    "@aws-cdk/aws-events": "0.0.0",
+    "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-kms": "0.0.0",
+    "@aws-cdk/aws-lambda": "0.0.0",
+    "@aws-cdk/aws-logs": "0.0.0",
+    "@aws-cdk/aws-s3": "0.0.0",
+    "@aws-cdk/aws-sns": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^3.0.4"
   },
-  "homepage": "https://github.com/awslabs/aws-cdk"
+  "homepage": "https://github.com/aws/aws-cdk",
+  "peerDependencies": {
+    "@aws-cdk/aws-events": "0.0.0",
+    "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-kms": "0.0.0",
+    "@aws-cdk/aws-lambda": "0.0.0",
+    "@aws-cdk/aws-logs": "0.0.0",
+    "@aws-cdk/aws-s3": "0.0.0",
+    "@aws-cdk/aws-sns": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^3.0.4"
+  },
+  "awslint": {
+    "exclude": [
+      "events-method-signature:@aws-cdk/aws-cloudtrail.Trail.onEvent"
+    ]
+  },
+  "engines": {
+    "node": ">= 10.13.0 <13 || >=13.7.0"
+  },
+  "stability": "stable",
+  "maturity": "stable",
+  "awscdkio": {
+    "announce": false
+  }
 }

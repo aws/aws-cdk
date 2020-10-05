@@ -1,18 +1,34 @@
 version: 0.2
 
+# This buildspec is intended to be run by CodePipeline builds.
+
 phases:
   install:
     commands:
-      - /bin/bash ./install.sh
+      # Start docker daemon inside the container
+      - nohup /usr/bin/dockerd --host=unix:///var/run/docker.sock --host=tcp://127.0.0.1:2375 --storage-driver=overlay2&
+      - timeout 15 sh -c "until docker info; do echo .; sleep 1; done"
+      # login to DockerHub to avoid throttling
+      - docker login -u ${DOCKERHUB_USERNAME} -p ${DOCKERHUB_PASSWORD}
+
+      # Install yarn if it wasn't already present in the image
+      - yarn --version || npm -g install yarn
+  pre_build:
+    commands:
+      - /bin/bash ./fetch-dotnet-snk.sh
   build:
     commands:
+      - /bin/bash ./scripts/align-version.sh
       - /bin/bash ./build.sh
   post_build:
     commands:
       - "[ -f .BUILD_COMPLETED ] && /bin/bash ./pack.sh"
-      - "[ -f .BUILD_COMPLETED ] && /bin/bash ./build-docs.sh"
-      - "[ -f .BUILD_COMPLETED ] && /bin/bash ./bundle.sh"
 artifacts:
   files:
     - "**/*"
   base-directory: dist
+reports:
+  jest-tests:
+    files:
+      - "**/junit.xml"
+    file-format: JunitXml

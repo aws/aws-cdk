@@ -1,6 +1,0 @@
-*.js
-*.js.map
-dist
-
-.LAST_BUILD
-.LAST_PACKAGE

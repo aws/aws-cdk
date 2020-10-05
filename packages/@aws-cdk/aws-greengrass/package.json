@@ -1,0 +1,97 @@
+{
+  "name": "@aws-cdk/aws-greengrass",
+  "version": "0.0.0",
+  "description": "The CDK Construct Library for AWS::Greengrass",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "jsii": {
+    "outdir": "dist",
+    "targets": {
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.Greengrass",
+        "packageId": "Amazon.CDK.AWS.Greengrass",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+      },
+      "java": {
+        "package": "software.amazon.awscdk.services.greengrass",
+        "maven": {
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "greengrass"
+        }
+      },
+      "python": {
+        "distName": "aws-cdk.aws-greengrass",
+        "module": "aws_cdk.aws_greengrass",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
+      }
+    },
+    "projectReferences": true
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git",
+    "directory": "packages/@aws-cdk/aws-greengrass"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "scripts": {
+    "build": "cdk-build",
+    "integ": "cdk-integ",
+    "lint": "cdk-lint",
+    "package": "cdk-package",
+    "awslint": "cdk-awslint",
+    "pkglint": "pkglint -f",
+    "test": "cdk-test",
+    "watch": "cdk-watch",
+    "cfn2ts": "cfn2ts",
+    "build+test+package": "npm run build+test && npm run package",
+    "build+test": "npm run build && npm test",
+    "compat": "cdk-compat"
+  },
+  "cdk-build": {
+    "cloudformation": "AWS::Greengrass",
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::Greengrass",
+    "aws-greengrass"
+  ],
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@aws-cdk/assert": "0.0.0",
+    "cdk-build-tools": "0.0.0",
+    "cfn2ts": "0.0.0",
+    "pkglint": "0.0.0"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^3.0.4"
+  },
+  "peerDependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^3.0.4"
+  },
+  "engines": {
+    "node": ">= 10.13.0 <13 || >=13.7.0"
+  },
+  "stability": "experimental",
+  "maturity": "cfn-only",
+  "awscdkio": {
+    "announce": false
+  }
+}

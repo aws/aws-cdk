@@ -1,27 +1,27 @@
 
-import cdk = require('@aws-cdk/cdk');
-import cloudfront = require('../lib');
+import * as cdk from '@aws-cdk/core';
+import * as cloudfront from '../lib';
 
-const app = new cdk.App(process.argv);
+const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-cdk-cloudfront-custom');
 
 new cloudfront.CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
-    originConfigs: [
+  originConfigs: [
+    {
+      originHeaders: {
+        'X-Custom-Header': 'somevalue',
+      },
+      customOriginSource: {
+        domainName: 'brelandm.a2z.com',
+      },
+      behaviors: [
         {
-            originHeaders: {
-              "X-Custom-Header": "somevalue",
-            },
-            customOriginSource: {
-              domainName: "brelandm.a2z.com",
-            },
-            behaviors: [
-              {
-                isDefaultBehavior: true,
-              }
-            ]
-        }
-    ]
+          isDefaultBehavior: true,
+        },
+      ],
+    },
+  ],
 });
 
-process.stdout.write(app.run());
+app.synth();

@@ -1,0 +1,19 @@
+#!/bin/bash
+# Run a given test against the publicly released packages
+#
+# - Install the latest CLI somewhere and put it on the PATH.
+# - Run the script
+set -eu
+scriptdir=$(cd $(dirname $0) && pwd)
+
+# NPM Workspace. Will have CDK CLI installed into it.
+npmws=/tmp/cdk-runrelease
+rm -rf $npmws
+mkdir -p $npmws
+
+# Install the CLI and put it on the PATH
+(cd $npmws && npm install aws-cdk)
+export PATH=$npmws/node_modules/.bin:$PATH
+
+# Run the inner script
+exec "$@"

@@ -8,7 +8,7 @@ import json
 
 trie = {}
 
-with file('public_suffix_list.dat') as f:
+with open('public_suffix_list.dat', 'r') as f:
   for line in f:
     line = line.strip()
 
@@ -29,7 +29,7 @@ with file('public_suffix_list.dat') as f:
       curr = curr.setdefault(part, {})
 
 
-with file('../lib/public-suffixes.ts', 'w') as o:
+with open('../lib/public-suffixes.ts', 'w') as o:
   o.write('// This file has been generated using ../suffixes/build-map.py\n')
-  o.write('// tslint:disable:no-trailing-whitespace object-literal-key-quotes\n')
-  o.write('export = %s;' % json.dumps(trie, indent=2))
+  o.write('/* eslint-disable no-trailing-spaces, quote-props */\n')
+  o.write('export const publicSuffixes = %s;' % json.dumps(trie, indent=2))

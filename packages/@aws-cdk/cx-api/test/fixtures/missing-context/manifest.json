@@ -1,0 +1,31 @@
+{
+  "version": "0.0.0",
+  "missing": [{
+    "key": "missing:context:key",
+    "provider": "vpc-provider",
+    "props": {
+      "account": "1234",
+      "region": "us-east-1",
+      "filter": {
+        "foo": 123
+      }
+    }
+  }],
+  "artifacts": {
+    "MyStackName": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://37736633/us-region-1",
+      "properties": {
+        "templateFile": "template.json"
+      }
+    },
+    "MyStackName1234": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://37736633/us-region-1",
+      "properties": {
+        "templateFile": "template.json"
+      }
+    }
+
+  }
+}

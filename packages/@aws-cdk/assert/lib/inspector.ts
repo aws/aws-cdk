@@ -1,61 +1,74 @@
-import api = require('@aws-cdk/cx-api');
-import { Assertion } from './assertion';
-import { not } from './assertion';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import * as api from '@aws-cdk/cx-api';
+import { Assertion, not } from './assertion';
 import { MatchStyle, matchTemplate } from './assertions/match-template';
 
 export abstract class Inspector {
-    public aroundAssert?: (cb: () => void) => any;
+  public aroundAssert?: (cb: () => void) => any;
 
-    constructor() {
-        this.aroundAssert = undefined;
-    }
+  constructor() {
+    this.aroundAssert = undefined;
+  }
 
-    public to(assertion: Assertion<this>): any {
-        return this.aroundAssert ? this.aroundAssert(() => this._to(assertion))
-                                 : this._to(assertion);
-    }
+  public to(assertion: Assertion<this>): any {
+    return this.aroundAssert ? this.aroundAssert(() => this._to(assertion))
+      : this._to(assertion);
+  }
 
-    public notTo(assertion: Assertion<this>): any {
-        return this.to(not(assertion));
-    }
+  public notTo(assertion: Assertion<this>): any {
+    return this.to(not(assertion));
+  }
 
-    abstract get value(): any;
+  abstract get value(): any;
 
-    private _to(assertion: Assertion<this>): any {
-        assertion.assertOrThrow(this);
-    }
+  private _to(assertion: Assertion<this>): any {
+    assertion.assertOrThrow(this);
+  }
 }
 
 export class StackInspector extends Inspector {
-    constructor(public readonly stack: api.SynthesizedStack) {
-        super();
+
+  private readonly template: { [key: string]: any };
+
+  constructor(public readonly stack: api.CloudFormationStackArtifact | object) {
+    super();
+
+    this.template = stack instanceof api.CloudFormationStackArtifact ? stack.template : stack;
+  }
+
+  public at(path: string | string[]): StackPathInspector {
+    if (!(this.stack instanceof api.CloudFormationStackArtifact)) {
+      throw new Error('Cannot use "expect(stack).at(path)" for a raw template, only CloudFormationStackArtifact');
     }
 
-    public at(path: string | string[]): StackPathInspector {
-        const strPath = typeof path === 'string' ? path : path.join('/');
-        return new StackPathInspector(this.stack, strPath);
-    }
+    const strPath = typeof path === 'string' ? path : path.join('/');
+    return new StackPathInspector(this.stack, strPath);
+  }
 
-    public toMatch(template: { [key: string]: any }, matchStyle = MatchStyle.EXACT) {
-        return this.to(matchTemplate(template, matchStyle));
-    }
+  public toMatch(template: { [key: string]: any }, matchStyle = MatchStyle.EXACT) {
+    return this.to(matchTemplate(template, matchStyle));
+  }
 
-    public get value(): { [key: string]: any } {
-        return this.stack.template;
-    }
+  public get value(): { [key: string]: any } {
+    return this.template;
+  }
 }
 
 export class StackPathInspector extends Inspector {
-    constructor(public readonly stack: api.SynthesizedStack, public readonly path: string) {
-        super();
-    }
+  constructor(public readonly stack: api.CloudFormationStackArtifact, public readonly path: string) {
+    super();
+  }
 
-    public get value(): { [key: string]: any } | undefined {
-        const md = this.stack.metadata[`/${this.stack.name}${this.path}`];
-        if (md === undefined) { return undefined; }
-        const resourceMd = md.find(entry => entry.type === 'aws:cdk:logicalId');
-        if (resourceMd === undefined) { return undefined; }
-        const logicalId = resourceMd.data;
-        return this.stack.template.Resources[logicalId];
-    }
+  public get value(): { [key: string]: any } | undefined {
+    // The names of paths in metadata in tests are very ill-defined. Try with the full path first,
+    // then try with the stack name preprended for backwards compat with most tests that happen to give
+    // their stack an ID that's the same as the stack name.
+    const metadata = this.stack.manifest.metadata || {};
+    const md = metadata[this.path] || metadata[`/${this.stack.id}${this.path}`];
+    if (md === undefined) { return undefined; }
+    const resourceMd = md.find(entry => entry.type === cxschema.ArtifactMetadataEntryType.LOGICAL_ID);
+    if (resourceMd === undefined) { return undefined; }
+    const logicalId = resourceMd.data as cxschema.LogMessageMetadataEntry;
+    return this.stack.template.Resources[logicalId];
+  }
 }

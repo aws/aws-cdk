@@ -1,0 +1,25 @@
+{
+  "Resources": {
+    "MyAccessLogsBucketF7FE6635": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "AccessControl": "LogDeliveryWrite"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "MyBucketF68F3FF0": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "LoggingConfiguration": {
+          "DestinationBucketName": {
+            "Ref": "MyAccessLogsBucketF7FE6635"
+          },
+          "LogFilePrefix": "example"
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    }
+  }
+}

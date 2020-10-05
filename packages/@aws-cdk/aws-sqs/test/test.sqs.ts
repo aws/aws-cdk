@@ -1,401 +1,475 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import kms = require('@aws-cdk/aws-kms');
-import s3 = require('@aws-cdk/aws-s3');
-import { ArnPrincipal, PolicyStatement, resolve, Stack } from '@aws-cdk/cdk';
+import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
+import { CfnParameter, Duration, Stack, App } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import sqs = require('../lib');
+import * as sqs from '../lib';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
-    'default properties'(test: Test) {
-        const stack = new Stack();
-        new sqs.Queue(stack, 'Queue');
+  'default properties'(test: Test) {
+    const stack = new Stack();
+    const q = new sqs.Queue(stack, 'Queue');
 
-        expect(stack).toMatch({
-            "Resources": {
-              "Queue4A7E3555": {
-                "Type": "AWS::SQS::Queue"
-              }
-            }
-        });
+    test.deepEqual(q.fifo, false);
 
-        test.done();
-    },
-    'with a dead letter queue'(test: Test) {
-        const stack = new Stack();
-        const dlq = new sqs.Queue(stack, 'DLQ');
-        new sqs.Queue(stack, 'Queue', { deadLetterQueue: { queue: dlq, maxReceiveCount: 3 } });
+    expect(stack).toMatch({
+      'Resources': {
+        'Queue4A7E3555': {
+          'Type': 'AWS::SQS::Queue',
+        },
+      },
+    });
 
-        expect(stack).toMatch({
-            "Resources": {
-              "DLQ581697C4": {
-                "Type": "AWS::SQS::Queue"
+    test.done();
+  },
+  'with a dead letter queue'(test: Test) {
+    const stack = new Stack();
+    const dlq = new sqs.Queue(stack, 'DLQ');
+    new sqs.Queue(stack, 'Queue', { deadLetterQueue: { queue: dlq, maxReceiveCount: 3 } });
+
+    expect(stack).toMatch({
+      'Resources': {
+        'DLQ581697C4': {
+          'Type': 'AWS::SQS::Queue',
+        },
+        'Queue4A7E3555': {
+          'Type': 'AWS::SQS::Queue',
+          'Properties': {
+            'RedrivePolicy': {
+              'deadLetterTargetArn': {
+                'Fn::GetAtt': [
+                  'DLQ581697C4',
+                  'Arn',
+                ],
               },
-              "Queue4A7E3555": {
-                "Type": "AWS::SQS::Queue",
-                "Properties": {
-                  "RedrivePolicy": {
-                    "deadLetterTargetArn": {
-                      "Fn::GetAtt": [
-                        "DLQ581697C4",
-                        "Arn"
-                      ]
-                    },
-                    "maxReceiveCount": 3
-                  }
-                }
-              }
-            }
-        });
-
-        test.done();
-    },
-
-    'addToPolicy will automatically create a policy for this queue'(test: Test) {
-        const stack = new Stack();
-        const queue = new sqs.Queue(stack, 'MyQueue');
-        queue.addToResourcePolicy(new PolicyStatement().addResource('*').addActions('sqs:*').addPrincipal(new ArnPrincipal('arn')));
-        expect(stack).toMatch({
-            "Resources": {
-              "MyQueueE6CA6235": {
-                "Type": "AWS::SQS::Queue"
-              },
-              "MyQueuePolicy6BBEDDAC": {
-                "Type": "AWS::SQS::QueuePolicy",
-                "Properties": {
-                  "PolicyDocument": {
-                    "Statement": [
-                      {
-                        "Action": "sqs:*",
-                        "Effect": "Allow",
-                        "Principal": {
-                          "AWS": "arn"
-                        },
-                        "Resource": "*"
-                      }
-                    ],
-                    "Version": "2012-10-17"
-                  },
-                  "Queues": [
-                    {
-                      "Ref": "MyQueueE6CA6235"
-                    }
-                  ]
-                }
-              }
-            }
-        });
-        test.done();
-    },
-
-    'exporting and importing works'(test: Test) {
-        const stack = new Stack();
-        const queue = new sqs.Queue(stack, 'Queue');
-
-        const ref = queue.export();
-
-        sqs.QueueRef.import(stack, 'Imported', ref);
-
-        test.done();
-    },
-
-    'queue encryption': {
-        'encryptionMasterKey can be set to a custom KMS key'(test: Test) {
-            const stack = new Stack();
-
-            const key = new kms.EncryptionKey(stack, 'CustomKey');
-            const queue = new sqs.Queue(stack, 'Queue', { encryptionMasterKey: key });
-
-            test.same(queue.encryptionMasterKey, key);
-            expect(stack).to(haveResource('AWS::SQS::Queue', {
-                "KmsMasterKeyId": { "Fn::GetAtt": [ "CustomKey1E6D0D07", "Arn" ] }
-            }));
-
-            test.done();
-        },
-
-        'a kms key will be allocated if encryption = kms but a master key is not specified'(test: Test) {
-            const stack = new Stack();
-
-            new sqs.Queue(stack, 'Queue', { encryption: sqs.QueueEncryption.Kms });
-
-            expect(stack).to(haveResource('AWS::KMS::Key'));
-            expect(stack).to(haveResource('AWS::SQS::Queue', {
-              "KmsMasterKeyId": {
-                "Fn::GetAtt": [
-                  "QueueKey39FCBAE6",
-                  "Arn"
-                ]
-              }
-            }));
-
-            test.done();
-        },
-
-        'it is possible to use a managed kms key'(test: Test) {
-            const stack = new Stack();
-
-            new sqs.Queue(stack, 'Queue', { encryption: sqs.QueueEncryption.KmsManaged });
-            expect(stack).toMatch({
-              "Resources": {
-                "Queue4A7E3555": {
-                  "Type": "AWS::SQS::Queue",
-                  "Properties": {
-                    "KmsMasterKeyId": "alias/aws/sqs"
-                  }
-                }
-              }
-            });
-            test.done();
-        },
-
-        'export should produce outputs the key arn and return import-values for these outputs': {
-
-            'with custom key'(test: Test) {
-                const stack = new Stack();
-
-                const customKey = new sqs.Queue(stack, 'QueueWithCustomKey', { encryption: sqs.QueueEncryption.Kms });
-
-                const exportCustom = customKey.export();
-
-                test.deepEqual(resolve(exportCustom), {
-                    queueArn: { 'Fn::ImportValue': 'QueueWithCustomKeyQueueArnD326BB9B' },
-                    queueUrl: { 'Fn::ImportValue': 'QueueWithCustomKeyQueueUrlF07DDC70' },
-                    keyArn: { 'Fn::ImportValue': 'QueueWithCustomKeyKeyArn537F6E42' }
-                });
-
-                test.deepEqual(stack.toCloudFormation().Outputs, {
-                  "QueueWithCustomKeyQueueArnD326BB9B": {
-                    "Value": {
-                      "Fn::GetAtt": [
-                        "QueueWithCustomKeyB3E22087",
-                        "Arn"
-                      ]
-                    },
-                    "Export": {
-                      "Name": "QueueWithCustomKeyQueueArnD326BB9B"
-                    }
-                  },
-                  "QueueWithCustomKeyQueueUrlF07DDC70": {
-                    "Value": {
-                      "Ref": "QueueWithCustomKeyB3E22087"
-                    },
-                    "Export": {
-                      "Name": "QueueWithCustomKeyQueueUrlF07DDC70"
-                    }
-                  },
-                  "QueueWithCustomKeyKeyArn537F6E42": {
-                    "Value": {
-                      "Fn::GetAtt": [
-                        "QueueWithCustomKeyD80425F1",
-                        "Arn"
-                      ]
-                    },
-                    "Export": {
-                      "Name": "QueueWithCustomKeyKeyArn537F6E42"
-                    }
-                  }
-                });
-                test.done();
+              'maxReceiveCount': 3,
             },
+          },
+        },
+      },
+    });
 
-            'with managed key'(test: Test) {
-                const stack = new Stack();
+    test.done();
+  },
 
-                const managedKey = new sqs.Queue(stack, 'QueueWithManagedKey', { encryption: sqs.QueueEncryption.KmsManaged });
+  'message retention period must be between 1 minute to 14 days'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
 
-                const exportManaged = managedKey.export();
+    // THEN
+    test.throws(() => new sqs.Queue(stack, 'MyQueue', {
+      retentionPeriod: Duration.seconds(30),
+    }), /message retention period must be 60 seconds or more/);
 
-                test.deepEqual(resolve(exportManaged), {
-                    queueArn: { 'Fn::ImportValue': 'QueueWithManagedKeyQueueArn8798A14E' },
-                    queueUrl: { 'Fn::ImportValue': 'QueueWithManagedKeyQueueUrlD735C981' },
-                    keyArn: { 'Fn::ImportValue': 'QueueWithManagedKeyKeyArn9C42A85D' }
-                });
+    test.throws(() => new sqs.Queue(stack, 'AnotherQueue', {
+      retentionPeriod: Duration.days(15),
+    }), /message retention period must be 1209600 seconds of less/);
 
-                test.deepEqual(stack.toCloudFormation().Outputs, {
-                  "QueueWithManagedKeyQueueArn8798A14E": {
-                    "Value": {
-                      "Fn::GetAtt": [
-                        "QueueWithManagedKeyE1B747A1",
-                        "Arn"
-                      ]
-                    },
-                    "Export": {
-                      "Name": "QueueWithManagedKeyQueueArn8798A14E"
-                    }
+    test.done();
+  },
+
+  'message retention period can be provided as a parameter'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const parameter = new CfnParameter(stack, 'my-retention-period', {
+      type: 'Number',
+      default: 30,
+    });
+
+    // WHEN
+    new sqs.Queue(stack, 'MyQueue', {
+      retentionPeriod: Duration.seconds(parameter.valueAsNumber),
+    });
+
+    // THEN
+    expect(stack).toMatch({
+      'Parameters': {
+        'myretentionperiod': {
+          'Type': 'Number',
+          'Default': 30,
+        },
+      },
+      'Resources': {
+        'MyQueueE6CA6235': {
+          'Type': 'AWS::SQS::Queue',
+          'Properties': {
+            'MessageRetentionPeriod': {
+              'Ref': 'myretentionperiod',
+            },
+          },
+        },
+      },
+    });
+
+    test.done();
+  },
+
+  'addToPolicy will automatically create a policy for this queue'(test: Test) {
+    const stack = new Stack();
+    const queue = new sqs.Queue(stack, 'MyQueue');
+    queue.addToResourcePolicy(new iam.PolicyStatement({
+      resources: ['*'],
+      actions: ['sqs:*'],
+      principals: [new iam.ArnPrincipal('arn')],
+    }));
+
+    expect(stack).toMatch({
+      'Resources': {
+        'MyQueueE6CA6235': {
+          'Type': 'AWS::SQS::Queue',
+        },
+        'MyQueuePolicy6BBEDDAC': {
+          'Type': 'AWS::SQS::QueuePolicy',
+          'Properties': {
+            'PolicyDocument': {
+              'Statement': [
+                {
+                  'Action': 'sqs:*',
+                  'Effect': 'Allow',
+                  'Principal': {
+                    'AWS': 'arn',
                   },
-                  "QueueWithManagedKeyQueueUrlD735C981": {
-                    "Value": {
-                      "Ref": "QueueWithManagedKeyE1B747A1"
-                    },
-                    "Export": {
-                      "Name": "QueueWithManagedKeyQueueUrlD735C981"
-                    }
-                  },
-                  "QueueWithManagedKeyKeyArn9C42A85D": {
-                    "Value": "alias/aws/sqs",
-                    "Export": {
-                      "Name": "QueueWithManagedKeyKeyArn9C42A85D"
-                    }
-                  }
-                });
+                  'Resource': '*',
+                },
+              ],
+              'Version': '2012-10-17',
+            },
+            'Queues': [
+              {
+                'Ref': 'MyQueueE6CA6235',
+              },
+            ],
+          },
+        },
+      },
+    });
+    test.done();
+  },
 
-                test.done();
-            }
+  'export and import': {
+    'importing works correctly'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
 
-        }
+      // WHEN
+      const imports = sqs.Queue.fromQueueArn(stack, 'Imported', 'arn:aws:sqs:us-east-1:123456789012:queue1');
 
+      // THEN
+
+      // "import" returns an IQueue bound to `Fn::ImportValue`s.
+      test.deepEqual(stack.resolve(imports.queueArn), 'arn:aws:sqs:us-east-1:123456789012:queue1');
+      test.deepEqual(stack.resolve(imports.queueUrl), {
+        'Fn::Join':
+        ['', ['https://sqs.', { Ref: 'AWS::Region' }, '.', { Ref: 'AWS::URLSuffix' }, '/', { Ref: 'AWS::AccountId' }, '/queue1']],
+      });
+      test.deepEqual(stack.resolve(imports.queueName), 'queue1');
+      test.done();
     },
 
-    'bucket notifications': {
+    'importing fifo and standard queues are detected correctly'(test: Test) {
+      const stack = new Stack();
+      const stdQueue = sqs.Queue.fromQueueArn(stack, 'StdQueue', 'arn:aws:sqs:us-east-1:123456789012:queue1');
+      const fifoQueue = sqs.Queue.fromQueueArn(stack, 'FifoQueue', 'arn:aws:sqs:us-east-1:123456789012:queue2.fifo');
+      test.deepEqual(stdQueue.fifo, false);
+      test.deepEqual(fifoQueue.fifo, true);
+      test.done();
+    },
+  },
 
-        'queues can be used as destinations'(test: Test) {
-            const stack = new Stack();
+  'grants': {
+    'grantConsumeMessages'(test: Test) {
+      testGrant((q, p) => q.grantConsumeMessages(p),
+        'sqs:ReceiveMessage',
+        'sqs:ChangeMessageVisibility',
+        'sqs:GetQueueUrl',
+        'sqs:DeleteMessage',
+        'sqs:GetQueueAttributes',
+      );
+      test.done();
+    },
 
-            const queue = new sqs.Queue(stack, 'Queue');
-            const bucket = new s3.Bucket(stack, 'Bucket');
+    'grantSendMessages'(test: Test) {
+      testGrant((q, p) => q.grantSendMessages(p),
+        'sqs:SendMessage',
+        'sqs:GetQueueAttributes',
+        'sqs:GetQueueUrl',
+      );
+      test.done();
+    },
 
-            bucket.onObjectRemoved(queue);
+    'grantPurge'(test: Test) {
+      testGrant((q, p) => q.grantPurge(p),
+        'sqs:PurgeQueue',
+        'sqs:GetQueueAttributes',
+        'sqs:GetQueueUrl',
+      );
+      test.done();
+    },
 
-            expect(stack).to(haveResource('AWS::SQS::QueuePolicy', {
-              "PolicyDocument": {
-                "Statement": [
-                  {
-                    "Action": "sqs:SendMessage",
-                    "Condition": {
-                      "ArnLike": {
-                        "aws:SourceArn": {
-                          "Fn::GetAtt": [
-                            "Bucket83908E77",
-                            "Arn"
-                          ]
-                        }
-                      }
-                    },
-                    "Effect": "Allow",
-                    "Principal": {
-                      "Service": "s3.amazonaws.com"
-                    },
-                    "Resource": {
-                      "Fn::GetAtt": [
-                        "Queue4A7E3555",
-                        "Arn"
-                      ]
-                    }
-                  }
-                ],
-                "Version": "2012-10-17"
-              },
-              "Queues": [
-                {
-                  "Ref": "Queue4A7E3555"
-                }
-              ]
-            }));
+    'grant() is general purpose'(test: Test) {
+      testGrant((q, p) => q.grant(p, 'service:hello', 'service:world'),
+        'service:hello',
+        'service:world',
+      );
+      test.done();
+    },
 
-            expect(stack).to(haveResource('Custom::S3BucketNotifications', {
-              "BucketName": {
-                "Ref": "Bucket83908E77"
-              },
-              "NotificationConfiguration": {
-                "QueueConfigurations": [
-                  {
-                    "Events": [
-                      "s3:ObjectRemoved:*"
-                    ],
-                    "QueueArn": {
-                      "Fn::GetAtt": [
-                        "Queue4A7E3555",
-                        "Arn"
-                      ]
-                    }
-                  }
-                ]
-              }
-            }));
+    'grants also work on imported queues'(test: Test) {
+      const stack = new Stack();
+      const queue = sqs.Queue.fromQueueAttributes(stack, 'Import', {
+        queueArn: 'arn:aws:sqs:us-east-1:123456789012:queue1',
+        queueUrl: 'https://queue-url',
+      });
 
-            // make sure the queue policy is added as a dependency to the bucket
-            // notifications resource so it will be created first.
-            test.deepEqual(stack.toCloudFormation().Resources.BucketNotifications8F2E257D.DependsOn, [ 'QueuePolicy25439813' ]);
+      const user = new iam.User(stack, 'User');
 
-            test.done();
+      queue.grantPurge(user);
+
+      expect(stack).to(haveResource('AWS::IAM::Policy', {
+        'PolicyDocument': {
+          'Statement': [
+            {
+              'Action': [
+                'sqs:PurgeQueue',
+                'sqs:GetQueueAttributes',
+                'sqs:GetQueueUrl',
+              ],
+              'Effect': 'Allow',
+              'Resource': 'arn:aws:sqs:us-east-1:123456789012:queue1',
+            },
+          ],
+          'Version': '2012-10-17',
         },
+      }));
 
-        'if the queue is encrypted with a custom kms key, the key resource policy is updated to allow s3 to read messages'(test: Test) {
+      test.done();
+    },
+  },
 
-            const stack = new Stack();
-            const bucket = new s3.Bucket(stack, 'Bucket');
-            const queue = new sqs.Queue(stack, 'Queue', { encryption: sqs.QueueEncryption.Kms });
+  'queue encryption': {
+    'encryptionMasterKey can be set to a custom KMS key'(test: Test) {
+      const stack = new Stack();
 
-            bucket.onObjectCreated(queue);
+      const key = new kms.Key(stack, 'CustomKey');
+      const queue = new sqs.Queue(stack, 'Queue', { encryptionMasterKey: key });
 
-            expect(stack).to(haveResource('AWS::KMS::Key', {
-              "KeyPolicy": {
-                "Statement": [
-                  {
-                    "Action": [
-                      "kms:Create*",
-                      "kms:Describe*",
-                      "kms:Enable*",
-                      "kms:List*",
-                      "kms:Put*",
-                      "kms:Update*",
-                      "kms:Revoke*",
-                      "kms:Disable*",
-                      "kms:Get*",
-                      "kms:Delete*",
-                      "kms:ScheduleKeyDeletion",
-                      "kms:CancelKeyDeletion"
-                    ],
-                    "Effect": "Allow",
-                    "Principal": {
-                      "AWS": {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn:",
-                            {
-                              "Ref": "AWS::Partition"
-                            },
-                            ":iam::",
-                            {
-                              "Ref": "AWS::AccountId"
-                            },
-                            ":root"
-                          ]
-                        ]
-                      }
-                    },
-                    "Resource": "*"
-                  },
-                  {
-                    "Action": [
-                      "kms:GenerateDataKey",
-                      "kms:Decrypt"
-                    ],
-                    "Effect": "Allow",
-                    "Principal": {
-                      "Service": "s3.amazonaws.com"
-                    },
-                    "Resource": "*"
-                  }
-                ],
-                "Version": "2012-10-17"
-              },
-              "Description": "Created by Queue"
-            }));
+      test.same(queue.encryptionMasterKey, key);
+      expect(stack).to(haveResource('AWS::SQS::Queue', {
+        'KmsMasterKeyId': { 'Fn::GetAtt': ['CustomKey1E6D0D07', 'Arn'] },
+      }));
 
-            test.done();
+      test.done();
+    },
+
+    'a kms key will be allocated if encryption = kms but a master key is not specified'(test: Test) {
+      const stack = new Stack();
+
+      new sqs.Queue(stack, 'Queue', { encryption: sqs.QueueEncryption.KMS });
+
+      expect(stack).to(haveResource('AWS::KMS::Key'));
+      expect(stack).to(haveResource('AWS::SQS::Queue', {
+        'KmsMasterKeyId': {
+          'Fn::GetAtt': [
+            'QueueKey39FCBAE6',
+            'Arn',
+          ],
         },
+      }));
 
-        'fails if trying to subscribe to a queue with managed kms encryption'(test: Test) {
-            const stack = new Stack();
-            const queue = new sqs.Queue(stack, 'Queue', { encryption: sqs.QueueEncryption.KmsManaged });
-            const bucket = new s3.Bucket(stack, 'Bucket');
-            test.throws(() => bucket.onObjectRemoved(queue), 'Unable to add statement to IAM resource policy for KMS key: "alias/aws/sqs"');
-            test.done();
-        }
+      test.done();
+    },
 
-    }
+    'it is possible to use a managed kms key'(test: Test) {
+      const stack = new Stack();
+
+      new sqs.Queue(stack, 'Queue', { encryption: sqs.QueueEncryption.KMS_MANAGED });
+      expect(stack).toMatch({
+        'Resources': {
+          'Queue4A7E3555': {
+            'Type': 'AWS::SQS::Queue',
+            'Properties': {
+              'KmsMasterKeyId': 'alias/aws/sqs',
+            },
+          },
+        },
+      });
+      test.done();
+    },
+
+    'grant also affects key on encrypted queue'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const queue = new sqs.Queue(stack, 'Queue', {
+        encryption: sqs.QueueEncryption.KMS,
+      });
+      const role = new iam.Role(stack, 'Role', {
+        assumedBy: new iam.ServicePrincipal('someone'),
+      });
+
+      // WHEN
+      queue.grantSendMessages(role);
+
+      // THEN
+      expect(stack).to(haveResource('AWS::IAM::Policy', {
+        'PolicyDocument': {
+          'Statement': [
+            {
+              'Action': [
+                'sqs:SendMessage',
+                'sqs:GetQueueAttributes',
+                'sqs:GetQueueUrl',
+              ],
+              'Effect': 'Allow',
+              'Resource': { 'Fn::GetAtt': ['Queue4A7E3555', 'Arn'] },
+            },
+            {
+              'Action': [
+                'kms:Decrypt',
+                'kms:Encrypt',
+                'kms:ReEncrypt*',
+                'kms:GenerateDataKey*',
+              ],
+              'Effect': 'Allow',
+              'Resource': { 'Fn::GetAtt': ['QueueKey39FCBAE6', 'Arn'] },
+            },
+          ],
+          'Version': '2012-10-17',
+        },
+      }));
+
+      test.done();
+    },
+  },
+
+  'test ".fifo" suffixed queues register as fifo'(test: Test) {
+    const stack = new Stack();
+    const queue = new sqs.Queue(stack, 'Queue', {
+      queueName: 'MyQueue.fifo',
+    });
+
+    test.deepEqual(queue.fifo, true);
+
+    expect(stack).toMatch({
+      'Resources': {
+        'Queue4A7E3555': {
+          'Type': 'AWS::SQS::Queue',
+          'Properties': {
+            'QueueName': 'MyQueue.fifo',
+            'FifoQueue': true,
+          },
+        },
+      },
+    });
+
+    test.done();
+  },
+
+  'test a fifo queue is observed when the "fifo" property is specified'(test: Test) {
+    const stack = new Stack();
+    const queue = new sqs.Queue(stack, 'Queue', {
+      fifo: true,
+    });
+
+    test.deepEqual(queue.fifo, true);
+
+    expect(stack).toMatch({
+      'Resources': {
+        'Queue4A7E3555': {
+          'Type': 'AWS::SQS::Queue',
+          'Properties': {
+            'FifoQueue': true,
+          },
+        },
+      },
+    });
+
+    test.done();
+  },
+
+  'test metrics'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const queue = new sqs.Queue(stack, 'Queue');
+
+    // THEN
+    test.deepEqual(stack.resolve(queue.metricNumberOfMessagesSent()), {
+      dimensions: { QueueName: { 'Fn::GetAtt': ['Queue4A7E3555', 'QueueName'] } },
+      namespace: 'AWS/SQS',
+      metricName: 'NumberOfMessagesSent',
+      period: Duration.minutes(5),
+      statistic: 'Sum',
+    });
+
+    test.deepEqual(stack.resolve(queue.metricSentMessageSize()), {
+      dimensions: { QueueName: { 'Fn::GetAtt': ['Queue4A7E3555', 'QueueName'] } },
+      namespace: 'AWS/SQS',
+      metricName: 'SentMessageSize',
+      period: Duration.minutes(5),
+      statistic: 'Average',
+    });
+
+    test.done();
+  },
+
+  'fails if queue policy has no actions'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'my-stack');
+    const queue = new sqs.Queue(stack, 'Queue');
+
+    // WHEN
+    queue.addToResourcePolicy(new iam.PolicyStatement({
+      resources: ['*'],
+      principals: [new iam.ArnPrincipal('arn')],
+    }));
+
+    // THEN
+    test.throws(() => app.synth(), /A PolicyStatement must specify at least one \'action\' or \'notAction\'/);
+    test.done();
+  },
+
+  'fails if queue policy has no IAM principals'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'my-stack');
+    const queue = new sqs.Queue(stack, 'Queue');
+
+    // WHEN
+    queue.addToResourcePolicy(new iam.PolicyStatement({
+      resources: ['*'],
+      actions: ['sqs:*'],
+    }));
+
+    // THEN
+    test.throws(() => app.synth(), /A PolicyStatement used in a resource-based policy must specify at least one IAM principal/);
+    test.done();
+  },
 };
+
+function testGrant(action: (q: sqs.Queue, principal: iam.IPrincipal) => void, ...expectedActions: string[]) {
+  const stack = new Stack();
+  const queue = new sqs.Queue(stack, 'MyQueue');
+  const principal = new iam.User(stack, 'User');
+
+  action(queue, principal);
+
+  expect(stack).to(haveResource('AWS::IAM::Policy', {
+    'PolicyDocument': {
+      'Statement': [
+        {
+          'Action': expectedActions,
+          'Effect': 'Allow',
+          'Resource': {
+            'Fn::GetAtt': [
+              'MyQueueE6CA6235',
+              'Arn',
+            ],
+          },
+        },
+      ],
+      'Version': '2012-10-17',
+    },
+  }));
+}

@@ -4,7 +4,6 @@
       "Type": "AWS::CloudFront::Distribution",
       "Properties": {
         "DistributionConfig": {
-          "CacheBehaviors": [],
           "DefaultCacheBehavior": {
             "AllowedMethods": [
               "GET",
@@ -14,6 +13,7 @@
               "GET",
               "HEAD"
             ],
+            "Compress": true,
             "ForwardedValues": {
               "Cookies": {
                 "Forward": "none"
@@ -29,6 +29,8 @@
           "IPV6Enabled": true,
           "Origins": [
             {
+              "ConnectionAttempts": 3,
+              "ConnectionTimeout": 10,
               "CustomOriginConfig": {
                 "HTTPPort": 80,
                 "HTTPSPort": 443,
