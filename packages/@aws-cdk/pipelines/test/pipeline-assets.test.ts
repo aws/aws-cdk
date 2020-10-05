@@ -3,7 +3,8 @@ import { arrayWith, deepObjectLike, encodedJson, notMatching, objectLike, string
 import '@aws-cdk/assert/jest';
 import * as ecr_assets from '@aws-cdk/aws-ecr-assets';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
-import { Construct, Stack, Stage, StageProps } from '@aws-cdk/core';
+import { Stack, Stage, StageProps } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as cdkp from '../lib';
 import { BucketStack, PIPELINE_ENV, TestApp, TestGitHubNpmPipeline } from './testutil';
 

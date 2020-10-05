@@ -9,9 +9,7 @@ let stack: Stack;
 
 beforeEach(() => {
   app = new App();
-  stack = new Stack(app, 'Stack', {
-    env: { account: '1234', region: 'testregion' },
-  });
+  stack = new Stack(app, 'Stack');
 });
 
 describe('With bucket', () => {
@@ -74,6 +72,33 @@ describe('With bucket', () => {
         Statement: [{
           Principal: {
             CanonicalUser: { 'Fn::GetAtt': ['DistOrigin1S3Origin87D64058', 'S3CanonicalUserId'] },
+          },
+        }],
+      },
+    });
+  });
+
+  test('as a cross-stack reference', () => {
+    // Bucket stack and bucket
+    const bucketStack = new Stack(app, 'BucketStack');
+    const bucket = new s3.Bucket(bucketStack, 'Bucket');
+
+    // Distribution stack and distribution
+    const origin = new S3Origin(bucket);
+    new cloudfront.Distribution(stack, 'Dist', { defaultBehavior: { origin } });
+
+    expect(stack).toHaveResource('AWS::CloudFront::Distribution');
+    expect(bucketStack).toHaveResource('AWS::S3::Bucket');
+    expect(bucketStack).toHaveResourceLike('AWS::CloudFront::CloudFrontOriginAccessIdentity', {
+      CloudFrontOriginAccessIdentityConfig: {
+        Comment: 'Identity for StackDistOrigin15754CE84',
+      },
+    });
+    expect(bucketStack).toHaveResourceLike('AWS::S3::BucketPolicy', {
+      PolicyDocument: {
+        Statement: [{
+          Principal: {
+            CanonicalUser: { 'Fn::GetAtt': ['StackDistOrigin15754CE84S3Origin25582A25', 'S3CanonicalUserId'] },
           },
         }],
       },
