@@ -103,8 +103,8 @@
   "maturity": "developer-preview",
   "features": [
     {
-      "name": "Higher level constructs for AWS managed and custom Config Rules",
-      "stability": "Experimental"
+      "name": "Higher level constructs for Config Rules",
+      "stability": "Developer Preview"
     },
     {
       "name": "Higher level constructs for initial set-up (delivery channel & configuration recorder)",
