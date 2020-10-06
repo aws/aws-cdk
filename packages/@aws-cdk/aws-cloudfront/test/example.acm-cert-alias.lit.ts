@@ -1,6 +1,7 @@
 import * as certificatemanager from '@aws-cdk/aws-certificatemanager';
 import * as s3 from '@aws-cdk/aws-s3';
-import { App, Construct, Stack } from '@aws-cdk/core';
+import { App, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as cloudfront from '../lib';
 
 class AcmCertificateAliasStack extends Stack {

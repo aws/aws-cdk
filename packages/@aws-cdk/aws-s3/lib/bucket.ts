@@ -500,9 +500,9 @@ abstract class BucketBase extends Resource implements IBucket {
    * Returns an ARN that represents all objects within the bucket that match
    * the key pattern specified. To represent all keys, specify ``"*"``.
    *
-   * If you specify multiple components for keyPattern, they will be concatenated::
+   * If you need to specify a keyPattern with multiple components, concatenate them into a single string, e.g.:
    *
-   *   arnForObjects('home/', team, '/', user, '/*')
+   *   arnForObjects(`home/${team}/${user}/*`)
    *
    */
   public arnForObjects(keyPattern: string): string {
