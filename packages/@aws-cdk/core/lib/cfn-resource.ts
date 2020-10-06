@@ -146,6 +146,10 @@ export class CfnResource extends CfnRefElement {
    * If the override is nested, separate each nested level using a dot (.) in the path parameter.
    * If there is an array as part of the nesting, specify the index in the path.
    *
+   * To include a literal `.` in the property name, prefix with a `\`. In most
+   * programming languages you will need to write this as `"\\."` because the
+   * `\` itself will need to be escaped.
+   *
    * For example,
    * ```typescript
    * addOverride('Properties.GlobalSecondaryIndexes.0.Projection.NonKeyAttributes', ['myattribute'])
@@ -177,7 +181,7 @@ export class CfnResource extends CfnRefElement {
    * @param value - The value. Could be primitive or complex.
    */
   public addOverride(path: string, value: any) {
-    const parts = path.split('.');
+    const parts = splitOnPeriods(path);
     let curr: any = this.rawOverrides;
 
     while (parts.length > 1) {
@@ -494,4 +498,26 @@ function deepMerge(target: any, ...sources: any[]) {
   }
 
   return target;
+}
+
+/**
+ * Split on periods while processing escape characters \
+ */
+function splitOnPeriods(x: string): string[] {
+  // Build this list in reverse because it's more convenient to get the "current"
+  // item by doing ret[0] than by ret[ret.length - 1].
+  const ret = [''];
+  for (let i = 0; i < x.length; i++) {
+    if (x[i] === '\\' && i + 1 < x.length) {
+      ret[0] += x[i + 1];
+      i++;
+    } else if (x[i] === '.') {
+      ret.unshift('');
+    } else {
+      ret[0] += x[i];
+    }
+  }
+
+  ret.reverse();
+  return ret;
 }

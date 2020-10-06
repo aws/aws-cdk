@@ -586,6 +586,39 @@ nodeunitShim({
       test.done();
     },
 
+    'addOverride(p, v) will not split on escaped dots'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const r = new CfnResource(stack, 'MyResource', { type: 'AWS::Resource::Type' });
+
+      // WHEN
+      r.addOverride(String.raw`Properties.Hello\.World.Foo\.Bar\.Baz`, 42);
+      r.addOverride(String.raw`Properties.Single\Back\Slashes`, 42);
+      r.addOverride(String.raw`Properties.Escaped\\.Back\\.Slashes`, 42);
+      r.addOverride(String.raw`Properties.DoublyEscaped\\\\Back\\\\Slashes`, 42);
+      r.addOverride('Properties.EndWith\\', 42); // Raw string cannot end with a backslash
+
+      // THEN
+      test.deepEqual(toCloudFormation(stack), {
+        Resources:
+        {
+          MyResource:
+          {
+            Type: 'AWS::Resource::Type',
+            Properties:
+            {
+              'Hello.World': { 'Foo.Bar.Baz': 42 },
+              'SingleBackSlashes': 42,
+              'Escaped\\': { 'Back\\': { Slashes: 42 } },
+              'DoublyEscaped\\\\Back\\\\Slashes': 42,
+              'EndWith\\': 42,
+            },
+          },
+        },
+      });
+      test.done();
+    },
+
     'addPropertyOverride(pp, v) is a sugar for overriding properties'(test: Test) {
       // GIVEN
       const stack = new Stack();
