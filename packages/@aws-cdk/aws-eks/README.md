@@ -889,9 +889,6 @@ const myChart = new MyChart(new cdk8s.App(), 'MyChart', { bucket });
 cluster.addCdk8sChart('my-chart', myChart);
 ```
 
-Note that at this moment, you cannot use AWS CDK constructs as scopes for CDK8s constructs, or vise versa.
-This is why we use `new cdk8s.App()` as the scope of the chart itself.
-
 ##### Custom CDK8s Constructs
 
 You can also compose a few stock `cdk8s+` constructs into your own custom construct. However, since mixing scopes between `aws-cdk` and `cdk8s` is currently not supported, the `Construct` class
