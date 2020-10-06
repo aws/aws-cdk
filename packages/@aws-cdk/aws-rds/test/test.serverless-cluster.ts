@@ -1,4 +1,4 @@
-import { ABSENT, expect, haveOutput, haveResource, haveResourceLike, ResourcePart, SynthUtils } from '@aws-cdk/assert';
+import { ABSENT, expect, haveResource, haveResourceLike, ResourcePart, SynthUtils } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
@@ -635,21 +635,17 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveOutput({
-      exportName,
-      outputValue: {
-        'Fn::Join': [
-          '',
-          [
-            'arn:',
-            { Ref: 'AWS::Partition' },
-            ':rds:us-test-1:12345:cluster:',
-            { Ref: 'DatabaseB269D8BB' },
-          ],
+    test.deepEqual(stack.resolve(cluster.clusterArn), {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':rds:us-test-1:12345:cluster:',
+          { Ref: 'DatabaseB269D8BB' },
         ],
-      },
-    }));
-
+      ],
+    });
     test.done();
   },
 };
