@@ -93,6 +93,10 @@ export class UpdatePipelineAction extends CoreConstruct implements codepipeline.
       actionName: 'SelfMutate',
       input: props.cloudAssemblyInput,
       project: selfMutationProject,
+      // Add this purely so that the pipeline will selfupdate if the CLI version changes
+      environmentVariables: props.cdkCliVersion ? {
+        CDK_CLI_VERSION: { value: props.cdkCliVersion },
+      } : undefined,
     });
   }
 

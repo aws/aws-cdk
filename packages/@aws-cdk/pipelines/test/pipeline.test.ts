@@ -385,6 +385,33 @@ test('can control fix/CLI version used in pipeline selfupdate', () => {
   });
 });
 
+test('changing CLI version leads to a different pipeline structure (restarting it)', () => {
+  // GIVEN
+  const stack2 = new Stack(app, 'Stack2', { env: PIPELINE_ENV });
+  const stack3 = new Stack(app, 'Stack3', { env: PIPELINE_ENV });
+  const structure2 = Capture.anyType();
+  const structure3 = Capture.anyType();
+
+  // WHEN
+  new TestGitHubNpmPipeline(stack2, 'Cdk', {
+    cdkCliVersion: '1.2.3',
+  });
+  new TestGitHubNpmPipeline(stack3, 'Cdk', {
+    cdkCliVersion: '4.5.6',
+  });
+
+  // THEN
+  expect(stack2).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+    Stages: structure2.capture(),
+  });
+  expect(stack3).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+    Stages: structure3.capture(),
+  });
+
+  expect(JSON.stringify(structure2.capturedValue)).not.toEqual(JSON.stringify(structure3.capturedValue));
+
+});
+
 test('add another action to an existing stage', () => {
   // WHEN
   pipeline.stage('Source').addAction(new cpa.GitHubSourceAction({
