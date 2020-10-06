@@ -925,13 +925,6 @@ export class LoadBalancedWebService extends constructs.Construct {
 }
 ```
 
-##### Caveat
-
-`cdk8s+` is vended with a static version of the kubernetes API spec. See ...
-
-At the moment, there is no way to control which spec version `cdk8s+` uses, so if you need other versions, please refer to [Manual importing](#manually-importing-k8s-specs-and-crds) below.
-This would unfortunately mean you won't be able to utilize `cdk8s+` capabilities.
-
 ##### Manually importing k8s specs and CRD's
 
 If you find yourself unable to use `cdk8s+`, or just like to directly use the `k8s` native objects or CRD's, you can do so by manually importing them using the `cdk8s-cli`.
