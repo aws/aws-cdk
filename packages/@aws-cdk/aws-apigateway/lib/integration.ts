@@ -1,6 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
+import { Lazy } from '@aws-cdk/core';
 import { Method } from './method';
-import { IVpcLink } from './vpc-link';
+import { IVpcLink, VpcLink } from './vpc-link';
 
 export interface IntegrationOptions {
   /**
@@ -199,10 +200,28 @@ export class Integration {
    * being integrated, access the REST API object, method ARNs, etc.
    */
   public bind(_method: Method): IntegrationConfig {
+    let uri = this.props.uri;
+    if (this.props.options?.connectionType === ConnectionType.VPC_LINK && uri === undefined) {
+      uri = Lazy.stringValue({
+        produce: () => {
+          const vpcLink = this.props.options?.vpcLink;
+          if (vpcLink instanceof VpcLink) {
+            const targets = vpcLink._targetDnsNames;
+            if (targets.length > 1) {
+              throw new Error("'uri' is required when there are more than one NLBs in the VPC Link");
+            } else {
+              return `http://${targets[0]}`;
+            }
+          } else {
+            throw new Error("'uri' is required when the 'connectionType' is VPC_LINK");
+          }
+        },
+      });
+    }
     return {
       options: this.props.options,
       type: this.props.type,
-      uri: this.props.uri,
+      uri,
       integrationHttpMethod: this.props.integrationHttpMethod,
     };
   }
