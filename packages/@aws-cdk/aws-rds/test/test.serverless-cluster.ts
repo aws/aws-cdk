@@ -1,5 +1,6 @@
 import { ABSENT, expect, haveOutput, haveResource, haveResourceLike, ResourcePart, SynthUtils } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
+import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
@@ -648,6 +649,66 @@ export = {
           ],
         ],
       },
+    }));
+
+    test.done();
+  },
+
+  'grants: data api access'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const user = new iam.User(stack, 'User');
+    const vpc = ec2.Vpc.fromLookup(stack, 'VPC', { isDefault: true });
+    const cluster = new ServerlessCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      vpc,
+    });
+
+    // WHEN
+    cluster.grantDataApi(user);
+
+    // THEN
+    expect(stack).to(haveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'secretsmanager:CreateSecret',
+              'secretsmanager:ListSecrets',
+              'secretsmanager:GetRandomPassword',
+              'tag:GetResources',
+              'rds-data:BatchExecuteStatement',
+              'rds-data:BeginTransaction',
+              'rds-data:CommitTransaction',
+              'rds-data:ExecuteStatement',
+              'rds-data:RollbackTransaction',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':rds:us-test-1:12345:cluster:',
+                  {
+                    Ref: 'DatabaseB269D8BB',
+                  },
+                ],
+              ],
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      PolicyName: 'UserDefaultPolicy1F97781E',
+      Users: [
+        {
+          Ref: 'User00B015A1',
+        },
+      ],
     }));
 
     test.done();

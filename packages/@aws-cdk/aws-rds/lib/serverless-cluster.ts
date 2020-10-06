@@ -1,4 +1,5 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
+import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { Resource, Duration, Token, Annotations, RemovalPolicy, IResource, Stack } from '@aws-cdk/core';
@@ -7,6 +8,7 @@ import { IClusterEngine } from './cluster-engine';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { IParameterGroup } from './parameter-group';
+import { DATA_API_ACTIONS } from './perms';
 import { applyRemovalPolicy, defaultDeletionProtection, DEFAULT_PASSWORD_EXCLUDE_CHARS } from './private/util';
 import { Credentials, RotationMultiUserOptions, RotationSingleUserOptions } from './props';
 import { CfnDBCluster } from './rds.generated';
@@ -39,6 +41,13 @@ export interface IServerlessCluster extends IResource, ec2.IConnectable, secrets
    * @attribute ReadEndpointAddress
    */
   readonly clusterReadEndpoint: Endpoint;
+
+  /**
+   * Grant the given identity to access to the Data API
+   *
+   * @param grantee The principal to grant access to
+   */
+  grantDataApi(grantee: iam.IGrantable): iam.Grant
 }
 /**
  *  Properties to configure an Aurora Serverless Cluster
@@ -297,6 +306,21 @@ abstract class ServerlessClusterBase extends Resource implements IServerlessClus
       sep: ':',
       resourceName: this.clusterIdentifier,
     });
+  }
+
+  /**
+   * Grant the given identity to access to the Data API
+   *
+   * @param grantee The principal to grant access to
+   */
+  public grantDataApi(grantee: iam.IGrantable): iam.Grant {
+    const ret = iam.Grant.addToPrincipal({
+      grantee,
+      actions: DATA_API_ACTIONS,
+      resourceArns: [this.clusterArn],
+      scope: this,
+    });
+    return ret;
   }
 
   /**
