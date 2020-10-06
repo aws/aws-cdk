@@ -73,6 +73,7 @@ function findWorkspacePath(): string {
     if (fs.existsSync(path.resolve(part, 'lerna.json'))) {
       return part;
     }
+
     return _findRootPath(path.resolve(part, '..'));
   }
 }
