@@ -835,7 +835,7 @@ To get started, add the following dependencies to your `package.json` file:
 
 > Note that the version of `cdk8s` must be `>=0.30.0`.
 
-Similarly to how you would create a stack by extending `core.Stack`, we recommend you create a chart of your own that extends `cdk8s.Chart`,
+Similarly to how you would create a stack by extending `@aws-cdk/core.Stack`, we recommend you create a chart of your own that extends `cdk8s.Chart`,
 and add your kubernetes resources to it. You can use `aws-cdk` construct attributes and properties inside your `cdk8s` construct freely.
 
 In this example we create a chart that accepts an `s3.Bucket` and passes its name to a kubernetes pod as an environment variable.
