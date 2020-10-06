@@ -181,8 +181,7 @@ export class CfnResource extends CfnRefElement {
    * @param value - The value. Could be primitive or complex.
    */
   public addOverride(path: string, value: any) {
-    const parts = path.split(/(?<!\\)\./g);
-    parts.forEach((part, index) => parts[index] = part.replace(/\\(.)/g, '$1'));
+    const parts = splitOnPeriods(path);
     let curr: any = this.rawOverrides;
 
     while (parts.length > 1) {
@@ -499,4 +498,26 @@ function deepMerge(target: any, ...sources: any[]) {
   }
 
   return target;
+}
+
+/**
+ * Split on periods while processing escape characters \
+ */
+function splitOnPeriods(x: string): string[] {
+  // Build this list in reverse because it's more convenient to get the "current"
+  // item by doing ret[0] than by ret[ret.length - 1].
+  const ret = [''];
+  for (let i = 0; i < x.length; i++) {
+    if (x[i] === '\\' && i + 1 < x.length) {
+      ret[0] += x[i + 1];
+      i++;
+    } else if (x[i] === '.') {
+      ret.unshift('');
+    } else {
+      ret[0] += x[i];
+    }
+  }
+
+  ret.reverse();
+  return ret;
 }

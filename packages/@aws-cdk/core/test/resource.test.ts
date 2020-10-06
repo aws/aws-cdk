@@ -592,12 +592,11 @@ nodeunitShim({
       const r = new CfnResource(stack, 'MyResource', { type: 'AWS::Resource::Type' });
 
       // WHEN
-      r.addOverride('Properties.Hello\\.World.Foo\\.Bar\\.Baz', 42);
-      r.addOverride('Properties.Single\\Back\\Slashes', 42);
-      r.addOverride('Properties.Double\\\\Back\\\\Slashes', 42);
-      r.addOverride('Properties.Escaped\\\\.Back\\\\.Slashes', 42);
-      r.addOverride('Properties.DoublyEscaped\\\\\\\\.Back\\\\\\\\.Slashes', 42);
-      r.addOverride('Properties.EndWith\\', 42);
+      r.addOverride(String.raw`Properties.Hello\.World.Foo\.Bar\.Baz`, 42);
+      r.addOverride(String.raw`Properties.Single\Back\Slashes`, 42);
+      r.addOverride(String.raw`Properties.Escaped\\.Back\\.Slashes`, 42);
+      r.addOverride(String.raw`Properties.DoublyEscaped\\\\Back\\\\Slashes`, 42);
+      r.addOverride('Properties.EndWith\\', 42); // Raw string cannot end with a backslash
 
       // THEN
       test.deepEqual(toCloudFormation(stack), {
@@ -610,9 +609,8 @@ nodeunitShim({
             {
               'Hello.World': { 'Foo.Bar.Baz': 42 },
               'SingleBackSlashes': 42,
-              'Double\\Back\\Slashes': 42,
-              'Escaped\\.Back\\.Slashes': 42,
-              'DoublyEscaped\\\\.Back\\\\.Slashes': 42,
+              'Escaped\\': { 'Back\\': { Slashes: 42 } },
+              'DoublyEscaped\\\\Back\\\\Slashes': 42,
               'EndWith\\': 42,
             },
           },
