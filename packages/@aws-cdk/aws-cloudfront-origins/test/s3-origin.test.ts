@@ -30,7 +30,7 @@ describe('With bucket', () => {
     });
   });
 
-  test('can customize properties', () => {
+  test('can customize originPath property', () => {
     const bucket = new s3.Bucket(stack, 'Bucket');
 
     const origin = new S3Origin(bucket, { originPath: '/assets' });
@@ -42,6 +42,23 @@ describe('With bucket', () => {
       originPath: '/assets',
       s3OriginConfig: {
         originAccessIdentity: 'origin-access-identity/cloudfront/${Token[TOKEN.89]}',
+      },
+    });
+  });
+
+  test('can customize OriginAccessIdentity property', () => {
+    const bucket = new s3.Bucket(stack, 'Bucket');
+
+    const originAccessIdentity = new cloudfront.OriginAccessIdentity(stack, 'OriginAccessIdentity', {
+      comment: 'Identity for bucket provided by test',
+    });
+
+    const origin = new S3Origin(bucket, { originAccessIdentity });
+    new cloudfront.Distribution(stack, 'Dist', { defaultBehavior: { origin } });
+
+    expect(stack).toHaveResourceLike('AWS::CloudFront::CloudFrontOriginAccessIdentity', {
+      CloudFrontOriginAccessIdentityConfig: {
+        Comment: 'Identity for bucket provided by test',
       },
     });
   });
