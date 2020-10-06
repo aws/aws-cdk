@@ -574,6 +574,21 @@ export class NoTsBuildInfo extends ValidationRule {
   }
 }
 
+export class NoTestsInNpmPackage extends ValidationRule {
+  public readonly name = 'npmignore/test';
+
+  public validate(pkg: PackageJson): void {
+    // skip private packages
+    if (pkg.json.private) { return; }
+
+    // Skip the CLI package, as its 'test' subdirectory is used at runtime.
+    if (pkg.packageName === 'aws-cdk') { return; }
+
+    // Exclude 'test/' directories from being packaged
+    fileShouldContain(this.name, pkg, '.npmignore', 'test/');
+  }
+}
+
 export class NoTsConfig extends ValidationRule {
   public readonly name = 'npmignore/tsconfig';
 
