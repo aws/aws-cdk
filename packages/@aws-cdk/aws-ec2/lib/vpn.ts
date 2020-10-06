@@ -252,12 +252,6 @@ export class VpnConnection extends cdk.Resource implements IVpnConnection {
       }
 
       props.tunnelOptions.forEach((options, index) => {
-        if (options.preSharedKey && !/^[a-zA-Z1-9._][a-zA-Z\d._]{7,63}$/.test(options.preSharedKey)) {
-          /* eslint-disable max-len */
-          throw new Error(`The \`preSharedKey\` ${options.preSharedKey} for tunnel ${index + 1} is invalid. Allowed characters are alphanumeric characters and ._. Must be between 8 and 64 characters in length and cannot start with zero (0).`);
-          /* eslint-enable max-len */
-        }
-
         if (options.tunnelInsideCidr) {
           if (RESERVED_TUNNEL_INSIDE_CIDR.includes(options.tunnelInsideCidr)) {
             throw new Error(`The \`tunnelInsideCidr\` ${options.tunnelInsideCidr} for tunnel ${index + 1} is a reserved inside CIDR.`);
