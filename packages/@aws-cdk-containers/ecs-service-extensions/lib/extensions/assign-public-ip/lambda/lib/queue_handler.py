@@ -18,6 +18,8 @@ class QueueHandler:
         record_name = environ['RECORD_NAME']
         records_table = environ['RECORDS_TABLE']
 
+        self.service_name = environ['SERVICE_NAME']
+
         self.records_table_key = DdbRecordKey(hosted_zone_id=hosted_zone_id, record_name=record_name)
         self.records_table_accessor = RecordsTableAccessor(table_client=dynamodb_resource.Table(records_table))
 
@@ -44,6 +46,11 @@ class QueueHandler:
         running_task_collector = RunningTaskCollector(ec2_client=self.ec2_client, reference_record=reference_record)
         stopped_tasks = []
         for task_description in decode_state_change_events(event):
+            group = task_description['group']
+            if group != f'service:{self.service_name}':
+                logging.info(f'Skipping irrelevant task description from group {group}')
+                continue
+
             task_info = extract_event_task_info(task_description)
             logging.info(f'extracted task_info = {task_info}')
 

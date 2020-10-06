@@ -24,12 +24,16 @@ class Route53RecordSetAccessor:
         ipv4s = set() if ipv4s is None else ipv4s
 
         record_set, is_new = retry_with_backoff(lambda: self.get_record_set(locator))
+        if is_new:
+            logging.info(f'Found a pre-existing record set: {record_set}')
+        else:
+            logging.info('Creating a new record set')
 
         if len(ipv4s) > 0:
             record_set['ResourceRecords'] = map_ips_to_resource_records(ipv4s)
-            retry_with_backoff(lambda: self.upsert(locator, record_set))
+            retry_with_backoff(lambda: self.request_upsert(locator, record_set))
         elif not is_new:
-            retry_with_backoff(lambda: self.delete(locator, record_set))
+            retry_with_backoff(lambda: self.request_delete(locator, record_set))
         else:
             logging.info('Refusing to do anything with an new but empty recordset')
 
@@ -41,13 +45,11 @@ class Route53RecordSetAccessor:
 
         record_sets = result['ResourceRecordSets']
         if len(record_sets) > 0:
-            logging.info(f'Found a pre-existing record set: {record_sets[0]}')
             return record_sets[0], False
 
-        logging.info('Creating a new record set')
         return {'Name': locator.record_name, 'Type': record_type, 'ResourceRecords': [], 'TTL': self.ttl}, True
 
-    def upsert(self, locator: Route53RecordSetLocator, record_set):
+    def request_upsert(self, locator: Route53RecordSetLocator, record_set):
         logging.info(f'Upserting record set {record_set}')
         self.route53_client.change_resource_record_sets(
             HostedZoneId=locator.hosted_zone_id, ChangeBatch={
@@ -58,7 +60,32 @@ class Route53RecordSetAccessor:
                 }]
             })
 
-    def delete(self, locator: Route53RecordSetLocator, record_set):
+    def delete(self, locator: Route53RecordSetLocator):
+        """
+        Delete the record. Returns true if it found and deleted the record.
+        Returns false if it didn't need to delete anything.
+        """
+
+        record_set, is_new = retry_with_backoff(lambda: self.get_record_set(locator))
+
+        if not is_new:
+            retry_with_backoff(lambda: self.request_delete(locator, record_set))
+            logging.info(f'Deleted record set {record_set}')
+            return True
+
+        else:
+            return False
+
+    def exists(self, locator: Route53RecordSetLocator):
+        """
+        Returns true if the record exists. False otherwise.
+        """
+
+        _, is_new = retry_with_backoff(lambda: self.get_record_set(locator))
+
+        return not is_new
+
+    def request_delete(self, locator: Route53RecordSetLocator, record_set):
         logging.info(f'Deleting record set: {record_set}')
         self.route53_client.change_resource_record_sets(
             HostedZoneId=locator.hosted_zone_id, ChangeBatch={

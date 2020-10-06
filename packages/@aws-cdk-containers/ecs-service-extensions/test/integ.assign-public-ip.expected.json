@@ -258,7 +258,9 @@
         }
       },
       "DependsOn": [
-        "nameserviceTaskRecordManagerRule497F9ED5"
+        "nameserviceTaskRecordManagerCleanupE19F1043",
+        "nameserviceTaskRecordManagerRuleRunningCD85F46F",
+        "nameserviceTaskRecordManagerRuleStopped66D08B70"
       ]
     },
     "nametaskdefinition690762BB": {
@@ -308,7 +310,9 @@
         }
       },
       "DependsOn": [
-        "nameserviceTaskRecordManagerRule497F9ED5"
+        "nameserviceTaskRecordManagerCleanupE19F1043",
+        "nameserviceTaskRecordManagerRuleRunningCD85F46F",
+        "nameserviceTaskRecordManagerRuleStopped66D08B70"
       ]
     },
     "nameserviceService8015C8D6": {
@@ -387,7 +391,7 @@
           },
           "maxReceiveCount": 500
         },
-        "VisibilityTimeout": 60
+        "VisibilityTimeout": 30
       }
     },
     "nameserviceTaskRecordManagerEventsQueuePolicy65CC6F9E": {
@@ -405,7 +409,34 @@
                 "ArnEquals": {
                   "aws:SourceArn": {
                     "Fn::GetAtt": [
-                      "nameserviceTaskRecordManagerRule497F9ED5",
+                      "nameserviceTaskRecordManagerRuleRunningCD85F46F",
+                      "Arn"
+                    ]
+                  }
+                }
+              },
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "events.amazonaws.com"
+              },
+              "Resource": {
+                "Fn::GetAtt": [
+                  "nameserviceTaskRecordManagerEventsQueueF805A6C1",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": [
+                "sqs:SendMessage",
+                "sqs:GetQueueAttributes",
+                "sqs:GetQueueUrl"
+              ],
+              "Condition": {
+                "ArnEquals": {
+                  "aws:SourceArn": {
+                    "Fn::GetAtt": [
+                      "nameserviceTaskRecordManagerRuleStopped66D08B70",
                       "Arn"
                     ]
                   }
@@ -449,10 +480,10 @@
         ],
         "BillingMode": "PAY_PER_REQUEST"
       },
-      "UpdateReplacePolicy": "Retain",
-      "DeletionPolicy": "Retain"
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
-    "nameserviceTaskRecordManagerRule497F9ED5": {
+    "nameserviceTaskRecordManagerRuleRunningCD85F46F": {
       "Type": "AWS::Events::Rule",
       "Properties": {
         "EventPattern": {
@@ -472,7 +503,50 @@
               }
             ],
             "lastStatus": [
-              "RUNNING",
+              "RUNNING"
+            ],
+            "desiredStatus": [
+              "RUNNING"
+            ]
+          }
+        },
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Fn::GetAtt": [
+                "nameserviceTaskRecordManagerEventsQueueF805A6C1",
+                "Arn"
+              ]
+            },
+            "Id": "Target0"
+          }
+        ]
+      }
+    },
+    "nameserviceTaskRecordManagerRuleStopped66D08B70": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "EventPattern": {
+          "source": [
+            "aws.ecs"
+          ],
+          "detail-type": [
+            "ECS Task State Change"
+          ],
+          "detail": {
+            "clusterArn": [
+              {
+                "Fn::GetAtt": [
+                  "productionenvironmentclusterC6599D2D",
+                  "Arn"
+                ]
+              }
+            ],
+            "lastStatus": [
+              "STOPPED"
+            ],
+            "desiredStatus": [
               "STOPPED"
             ]
           }
@@ -564,7 +638,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParametersf272b602e5f12e88902ea85281e471747dbb9edfd7b3339aee13afe1a4063240S3Bucket2A689836"
+            "Ref": "AssetParametersd9afbaf8d7cb758fd997e6e42c848f1defb4486e0df5c8996c2b0501eefb9057S3BucketC3A6C5FE"
           },
           "S3Key": {
             "Fn::Join": [
@@ -577,7 +651,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersf272b602e5f12e88902ea85281e471747dbb9edfd7b3339aee13afe1a4063240S3VersionKey16F40BB1"
+                          "Ref": "AssetParametersd9afbaf8d7cb758fd997e6e42c848f1defb4486e0df5c8996c2b0501eefb9057S3VersionKey32299963"
                         }
                       ]
                     }
@@ -590,7 +664,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersf272b602e5f12e88902ea85281e471747dbb9edfd7b3339aee13afe1a4063240S3VersionKey16F40BB1"
+                          "Ref": "AssetParametersd9afbaf8d7cb758fd997e6e42c848f1defb4486e0df5c8996c2b0501eefb9057S3VersionKey32299963"
                         }
                       ]
                     }
@@ -614,21 +688,19 @@
               "Ref": "zoneEB40FF1E"
             },
             "RECORD_NAME": "test-record.myexample.com",
-            "CLUSTER_ARN": {
-              "Fn::GetAtt": [
-                "productionenvironmentclusterC6599D2D",
-                "Arn"
-              ]
-            },
-            "SERVICE_ARN": {
-              "Ref": "nameserviceService8015C8D6"
-            },
             "RECORDS_TABLE": {
               "Ref": "nameserviceTaskRecordManagerRecordsA4648C6E"
+            },
+            "SERVICE_NAME": {
+              "Fn::GetAtt": [
+                "nameserviceService8015C8D6",
+                "Name"
+              ]
             }
           }
         },
-        "Timeout": 60
+        "ReservedConcurrentExecutions": 1,
+        "Timeout": 30
       },
       "DependsOn": [
         "nameserviceTaskRecordManagerEventHandlerServiceRoleDefaultPolicy96DD8140",
@@ -648,20 +720,281 @@
           "Ref": "nameserviceTaskRecordManagerEventHandler4B8C6905"
         }
       }
+    },
+    "nameserviceTaskRecordManagerCleanupResourceProviderHandlerServiceRoleCCA462F0": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "nameserviceTaskRecordManagerCleanupResourceProviderHandlerServiceRoleDefaultPolicy7D095576": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "*",
+              "Effect": "Allow",
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "nameserviceTaskRecordManagerCleanupResourceProviderHandlerServiceRoleDefaultPolicy7D095576",
+        "Roles": [
+          {
+            "Ref": "nameserviceTaskRecordManagerCleanupResourceProviderHandlerServiceRoleCCA462F0"
+          }
+        ]
+      }
+    },
+    "nameserviceTaskRecordManagerCleanupResourceProviderHandler08068F99": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AssetParametersd9afbaf8d7cb758fd997e6e42c848f1defb4486e0df5c8996c2b0501eefb9057S3BucketC3A6C5FE"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParametersd9afbaf8d7cb758fd997e6e42c848f1defb4486e0df5c8996c2b0501eefb9057S3VersionKey32299963"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParametersd9afbaf8d7cb758fd997e6e42c848f1defb4486e0df5c8996c2b0501eefb9057S3VersionKey32299963"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Handler": "index.cleanup_resource_handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "nameserviceTaskRecordManagerCleanupResourceProviderHandlerServiceRoleCCA462F0",
+            "Arn"
+          ]
+        },
+        "Runtime": "python3.8",
+        "Timeout": 300
+      },
+      "DependsOn": [
+        "nameserviceTaskRecordManagerCleanupResourceProviderHandlerServiceRoleDefaultPolicy7D095576",
+        "nameserviceTaskRecordManagerCleanupResourceProviderHandlerServiceRoleCCA462F0"
+      ]
+    },
+    "nameserviceTaskRecordManagerCleanupResourceProviderframeworkonEventServiceRoleF0570BD0": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "nameserviceTaskRecordManagerCleanupResourceProviderframeworkonEventServiceRoleDefaultPolicy350D6FAC": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "nameserviceTaskRecordManagerCleanupResourceProviderHandler08068F99",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "nameserviceTaskRecordManagerCleanupResourceProviderframeworkonEventServiceRoleDefaultPolicy350D6FAC",
+        "Roles": [
+          {
+            "Ref": "nameserviceTaskRecordManagerCleanupResourceProviderframeworkonEventServiceRoleF0570BD0"
+          }
+        ]
+      }
+    },
+    "nameserviceTaskRecordManagerCleanupResourceProviderframeworkonEvent9B27C899": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3BucketDC4B98B1"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3VersionKeyA495226F"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3VersionKeyA495226F"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Handler": "framework.onEvent",
+        "Role": {
+          "Fn::GetAtt": [
+            "nameserviceTaskRecordManagerCleanupResourceProviderframeworkonEventServiceRoleF0570BD0",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs10.x",
+        "Description": "AWS CDK resource provider framework - onEvent (aws-ecs-integ/name-service/TaskRecordManager/CleanupResourceProvider)",
+        "Environment": {
+          "Variables": {
+            "USER_ON_EVENT_FUNCTION_ARN": {
+              "Fn::GetAtt": [
+                "nameserviceTaskRecordManagerCleanupResourceProviderHandler08068F99",
+                "Arn"
+              ]
+            }
+          }
+        },
+        "Timeout": 900
+      },
+      "DependsOn": [
+        "nameserviceTaskRecordManagerCleanupResourceProviderframeworkonEventServiceRoleDefaultPolicy350D6FAC",
+        "nameserviceTaskRecordManagerCleanupResourceProviderframeworkonEventServiceRoleF0570BD0"
+      ]
+    },
+    "nameserviceTaskRecordManagerCleanupE19F1043": {
+      "Type": "AWS::CloudFormation::CustomResource",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "nameserviceTaskRecordManagerCleanupResourceProviderframeworkonEvent9B27C899",
+            "Arn"
+          ]
+        },
+        "HostedZoneId": {
+          "Ref": "zoneEB40FF1E"
+        },
+        "RecordName": "test-record.myexample.com"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     }
   },
   "Parameters": {
-    "AssetParametersf272b602e5f12e88902ea85281e471747dbb9edfd7b3339aee13afe1a4063240S3Bucket2A689836": {
+    "AssetParametersd9afbaf8d7cb758fd997e6e42c848f1defb4486e0df5c8996c2b0501eefb9057S3BucketC3A6C5FE": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"f272b602e5f12e88902ea85281e471747dbb9edfd7b3339aee13afe1a4063240\""
+      "Description": "S3 bucket for asset \"d9afbaf8d7cb758fd997e6e42c848f1defb4486e0df5c8996c2b0501eefb9057\""
     },
-    "AssetParametersf272b602e5f12e88902ea85281e471747dbb9edfd7b3339aee13afe1a4063240S3VersionKey16F40BB1": {
+    "AssetParametersd9afbaf8d7cb758fd997e6e42c848f1defb4486e0df5c8996c2b0501eefb9057S3VersionKey32299963": {
       "Type": "String",
-      "Description": "S3 key for asset version \"f272b602e5f12e88902ea85281e471747dbb9edfd7b3339aee13afe1a4063240\""
+      "Description": "S3 key for asset version \"d9afbaf8d7cb758fd997e6e42c848f1defb4486e0df5c8996c2b0501eefb9057\""
     },
-    "AssetParametersf272b602e5f12e88902ea85281e471747dbb9edfd7b3339aee13afe1a4063240ArtifactHashEBB6DB2B": {
+    "AssetParametersd9afbaf8d7cb758fd997e6e42c848f1defb4486e0df5c8996c2b0501eefb9057ArtifactHashEB106CAE": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"f272b602e5f12e88902ea85281e471747dbb9edfd7b3339aee13afe1a4063240\""
+      "Description": "Artifact hash for asset \"d9afbaf8d7cb758fd997e6e42c848f1defb4486e0df5c8996c2b0501eefb9057\""
+    },
+    "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3BucketDC4B98B1": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"daeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1\""
+    },
+    "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3VersionKeyA495226F": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"daeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1\""
+    },
+    "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1ArtifactHashA521A16F": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"daeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1\""
     }
   }
 }

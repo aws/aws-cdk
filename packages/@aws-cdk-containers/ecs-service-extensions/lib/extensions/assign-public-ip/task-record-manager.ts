@@ -9,6 +9,7 @@ import * as lambda_es from '@aws-cdk/aws-lambda-event-sources';
 import * as route53 from '@aws-cdk/aws-route53';
 import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
+import * as customresources from '@aws-cdk/custom-resources';
 
 export interface TaskRecordManagerProps {
   cluster: ecs.ICluster;
@@ -50,13 +51,12 @@ export class TaskRecordManager extends cdk.Construct {
     });
 
     // Put the cluster's task state changes events into the queue.
-    new events.Rule(this, 'RuleRunning', {
+    const runningEventRule = new events.Rule(this, 'RuleRunning', {
       eventPattern: {
         source: ['aws.ecs'],
         detailType: ['ECS Task State Change'],
         detail: {
           clusterArn: [props.cluster.clusterArn],
-          group: [cdk.Fn.join(':', ['service', props.service.serviceName])],
           lastStatus: ['RUNNING'],
           desiredStatus: ['RUNNING'],
         },
@@ -66,13 +66,12 @@ export class TaskRecordManager extends cdk.Construct {
       ],
     });
 
-    new events.Rule(this, 'RuleStopped', {
+    const stoppedEventRule = new events.Rule(this, 'RuleStopped', {
       eventPattern: {
         source: ['aws.ecs'],
         detailType: ['ECS Task State Change'],
         detail: {
           clusterArn: [props.cluster.clusterArn],
-          group: [cdk.Fn.join(':', ['service', props.service.serviceName])],
           lastStatus: ['STOPPED'],
           desiredStatus: ['STOPPED'],
         },
@@ -89,6 +88,8 @@ export class TaskRecordManager extends cdk.Construct {
       ],
     });
 
+    const recordName = cdk.Fn.join('.', [props.dnsRecordName, props.dnsZone.zoneName]);
+
     // This function consumes `queue`
     const taskStateHandler = new lambda.Function(this, 'EventHandler', {
       code: code,
@@ -99,8 +100,9 @@ export class TaskRecordManager extends cdk.Construct {
       reservedConcurrentExecutions: 1,
       environment: {
         HOSTED_ZONE_ID: props.dnsZone.hostedZoneId,
-        RECORD_NAME: cdk.Fn.join('.', [props.dnsRecordName, props.dnsZone.zoneName]),
+        RECORD_NAME: recordName,
         RECORDS_TABLE: table.tableName,
+        SERVICE_NAME: props.service.serviceName,
       },
       events: [
         new lambda_es.SqsEventSource(queue),
@@ -115,5 +117,40 @@ export class TaskRecordManager extends cdk.Construct {
         resources: ['*'],
       }),
     );
+
+    const cleanupResourceProviderHandler = new lambda.Function(this, 'CleanupResourceProviderHandler', {
+      code: code,
+      handler: 'index.cleanup_resource_handler',
+      runtime: lambda.Runtime.PYTHON_3_8,
+      timeout: cdk.Duration.minutes(5),
+    });
+
+    // TODO: Lock this down once I know what APIs I need.
+    cleanupResourceProviderHandler.addToRolePolicy(
+      new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        actions: ['*'],
+        resources: ['*'],
+      }),
+    );
+
+    const cleanupResourceProvider = new customresources.Provider(this, 'CleanupResourceProvider', {
+      onEventHandler: cleanupResourceProviderHandler,
+    });
+
+    const cleanupResource = new cdk.CustomResource(this, 'Cleanup', {
+      serviceToken: cleanupResourceProvider.serviceToken,
+      properties: {
+        HostedZoneId: props.dnsZone.hostedZoneId,
+        RecordName: recordName,
+      },
+    });
+
+    // Ensure that the cleanup resource is deleted last (so it can clean up)
+    props.service.taskDefinition.node.addDependency(cleanupResource);
+    // Ensure that the event rules are created first so we can catch the first
+    // state transitions.
+    props.service.taskDefinition.node.addDependency(runningEventRule);
+    props.service.taskDefinition.node.addDependency(stoppedEventRule);
   }
 }
