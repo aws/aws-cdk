@@ -26,7 +26,7 @@ export interface IServerlessCluster extends IResource, ec2.IConnectable, secrets
   readonly clusterIdentifier: string;
 
   /**
-   * ARN of the cluster
+   * The ARN of the cluster
    */
   readonly clusterArn: string;
 
@@ -297,7 +297,7 @@ abstract class ServerlessClusterBase extends Resource implements IServerlessClus
   public abstract readonly connections: ec2.Connections;
 
   /**
-   * The cluster arn.
+   * The ARN of the cluster
    */
   public get clusterArn(): string {
     return Stack.of(this).formatArn({
