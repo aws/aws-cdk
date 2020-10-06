@@ -10,6 +10,12 @@ const REGIONS = process.env.AWS_REGIONS
   ? process.env.AWS_REGIONS.split(',')
   : [process.env.AWS_REGION ?? process.env.AWS_DEFAULT_REGION ?? 'us-east-1'];
 
+const FRAMEWORK_VERSION = process.env.FRAMEWORK_VERSION
+
+if (!FRAMEWORK_VERSION) {
+  throw new Error('FRAMEWORK_VERSION env variable is required for running integration tests');
+}
+
 process.stdout.write(`Using regions: ${REGIONS}\n`);
 
 const REGION_POOL = new ResourcePool(REGIONS);
@@ -66,7 +72,7 @@ export function withCdkApp<A extends TestContext & AwsContext>(block: (context: 
         '@aws-cdk/aws-ssm',
         '@aws-cdk/aws-ecr-assets',
         '@aws-cdk/aws-cloudformation',
-        '@aws-cdk/aws-ec2']);
+        '@aws-cdk/aws-ec2'].map(module => `${module}@${FRAMEWORK_VERSION}`));
 
       await ensureBootstrapped(fixture);
 

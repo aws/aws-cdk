@@ -58,7 +58,9 @@ function run() {
 
   popd
 
-  NPM_INSTALL_PACKAGE_SUFFIX=@${framework_version} ${integ_under_test}/test.sh "$@"
+  # this is appended to the modules upon installation in the tests.
+  # see cdk-helpers.ts#withCdkApp
+  FRAMEWORK_VERSION=${framework_version} ${integ_under_test}/test.sh "$@"
 }
 
 function run_new_framework() {

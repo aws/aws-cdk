@@ -34,7 +34,6 @@ prepare_nuget_packages
 prepare_python_packages
 
 # Install additional tool wrappers before running the target script
-export ORIGINAL_NPM="$(type -p npm)"
 export PATH="$scriptdir/run-wrappers/dist:$PATH"
 hash -r
 
