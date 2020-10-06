@@ -169,4 +169,31 @@ nodeunitShim({
     test.deepEqual(lambda.Properties.Timeout, 300);
     test.done();
   },
+
+  'environment variables'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    CustomResourceProvider.getOrCreate(stack, 'Custom:MyResourceType', {
+      codeDirectory: TEST_HANDLER,
+      runtime: CustomResourceProviderRuntime.NODEJS_12,
+      environment: {
+        B: 'b',
+        A: 'a',
+      },
+    });
+
+    // THEN
+    const template = toCloudFormation(stack);
+    const lambda = template.Resources.CustomMyResourceTypeCustomResourceProviderHandler29FBDD2A;
+    test.deepEqual(lambda.Properties.Environment, {
+      Variables: {
+        A: 'a',
+        B: 'b',
+      },
+    });
+    test.done();
+  },
 });
+

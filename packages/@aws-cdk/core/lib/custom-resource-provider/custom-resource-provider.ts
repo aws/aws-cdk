@@ -60,6 +60,13 @@ export interface CustomResourceProviderProps {
    * @default Size.mebibytes(128)
    */
   readonly memorySize?: Size;
+
+  /**
+   * Key-value pairs that are passed to Lambda as Environment
+   *
+   * @default - No environment variables.
+   */
+  readonly environment?: { [key: string]: string };
 }
 
 /**
@@ -177,11 +184,30 @@ export class CustomResourceProvider extends CoreConstruct {
         Handler: `${ENTRYPOINT_FILENAME}.handler`,
         Role: role.getAtt('Arn'),
         Runtime: 'nodejs12.x',
+        Environment: this.renderEnvironmentVariables(props.environment),
       },
     });
 
     handler.addDependsOn(role);
 
     this.serviceToken = Token.asString(handler.getAtt('Arn'));
+  }
+
+  private renderEnvironmentVariables(env?: { [key: string]: string }) {
+    if (!env || Object.keys(env).length === 0) {
+      return undefined;
+    }
+
+    // Sort environment so the hash of the function used to create
+    // `currentVersion` is not affected by key order (this is how lambda does
+    // it)
+    const variables: { [key: string]: string } = {};
+    const keys = Object.keys(env).sort();
+
+    for (const key of keys) {
+      variables[key] = env[key];
+    }
+
+    return { Variables: variables };
   }
 }
