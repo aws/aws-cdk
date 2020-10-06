@@ -1,6 +1,6 @@
 import * as net from 'net';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-import * as cdk from '@aws-cdk/core';
+import { IResource, Resource, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import {
   CfnCustomerGateway,
@@ -10,7 +10,7 @@ import {
 } from './ec2.generated';
 import { IVpc, SubnetSelection } from './vpc';
 
-export interface IVpnConnection extends cdk.IResource {
+export interface IVpnConnection extends IResource {
   /**
    * The id of the VPN connection.
    */
@@ -35,7 +35,7 @@ export interface IVpnConnection extends cdk.IResource {
 /**
  * The virtual private gateway interface
  */
-export interface IVpnGateway extends cdk.IResource {
+export interface IVpnGateway extends IResource {
 
   /**
    * The virtual private gateway Id
@@ -148,7 +148,7 @@ export enum VpnConnectionType {
  *
  * @resource AWS::EC2::VPNGateway
  */
-export class VpnGateway extends cdk.Resource implements IVpnGateway {
+export class VpnGateway extends Resource implements IVpnGateway {
 
   /**
    * The virtual private gateway Id
@@ -170,7 +170,7 @@ export class VpnGateway extends cdk.Resource implements IVpnGateway {
  *
  * @resource AWS::EC2::VPNConnection
  */
-export class VpnConnection extends cdk.Resource implements IVpnConnection {
+export class VpnConnection extends Resource implements IVpnConnection {
   /**
    * Return the given named metric for all VPN connections in the account/region.
    */
@@ -252,6 +252,12 @@ export class VpnConnection extends cdk.Resource implements IVpnConnection {
       }
 
       props.tunnelOptions.forEach((options, index) => {
+        if (options.preSharedKey && !Token.isUnresolved(options.preSharedKey) && !/^[a-zA-Z1-9._][a-zA-Z\d._]{7,63}$/.test(options.preSharedKey)) {
+          /* eslint-disable max-len */
+          throw new Error(`The \`preSharedKey\` ${options.preSharedKey} for tunnel ${index + 1} is invalid. Allowed characters are alphanumeric characters and ._. Must be between 8 and 64 characters in length and cannot start with zero (0).`);
+          /* eslint-enable max-len */
+        }
+
         if (options.tunnelInsideCidr) {
           if (RESERVED_TUNNEL_INSIDE_CIDR.includes(options.tunnelInsideCidr)) {
             throw new Error(`The \`tunnelInsideCidr\` ${options.tunnelInsideCidr} for tunnel ${index + 1} is a reserved inside CIDR.`);
