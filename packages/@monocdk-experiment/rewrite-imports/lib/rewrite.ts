@@ -1,9 +1,17 @@
 import * as ts from 'typescript';
 
+export interface RewriteImportsOptions {
+  fileName?: string;
+  monoPackageName?: string;
+  monoAssertPackageName?: string;
+}
+export const DEFAULT_NAME = 'monocdk-experiment';
+export const DEFAULT_ASSERT_NAME = '@monocdk-experiment/assert';
+
 /**
  * Re-writes "hyper-modular" CDK imports (most packages in `@aws-cdk/*`) to the
  * relevant "mono" CDK import path. The re-writing will only modify the imported
- * library path, presrving the existing quote style, etc...
+ * library path, preserving the existing quote style, etc...
  *
  * Syntax errors in the source file being processed may cause some import
  * statements to not be re-written.
@@ -17,18 +25,19 @@ import * as ts from 'typescript';
  * - `require('@aws-cdk/lib');
  *
  * @param sourceText the source code where imports should be re-written.
- * @param fileName   a customized file name to provide the TypeScript processor.
- *
+ * @param options the options to configure this attribute
+ * - fileName: a customized file name to provide the TypeScript processor. default: 'index.ts'
+ * - monoPackageName: the name of the monolithic package. default: 'monocdk-experiment'
+ * - monoAssertPackageName: The name of the assert library corresponding to the monolithic package used. default: '@monocdk-experiment/assert'
  * @returns the updated source code.
  */
-export function rewriteImports(sourceText: string, fileName: string = 'index.ts'): string {
-  const sourceFile = ts.createSourceFile(fileName, sourceText, ts.ScriptTarget.ES2018);
-
+export function rewriteImports(sourceText: string, options?: RewriteImportsOptions): string {
+  const sourceFile = ts.createSourceFile(options?.fileName ?? 'index.ts', sourceText, ts.ScriptTarget.ES2018);
   const replacements = new Array<{ original: ts.Node, updatedLocation: string }>();
-
   const visitor = <T extends ts.Node>(node: T): ts.VisitResult<T> => {
     const moduleSpecifier = getModuleSpecifier(node);
-    const newTarget = moduleSpecifier && updatedLocationOf(moduleSpecifier.text);
+    const newTarget = moduleSpecifier && updatedLocationOf(moduleSpecifier.text,
+      options?.monoPackageName ?? DEFAULT_NAME, options?.monoAssertPackageName ?? DEFAULT_ASSERT_NAME);
 
     if (moduleSpecifier != null && newTarget != null) {
       replacements.push({ original: moduleSpecifier, updatedLocation: newTarget });
@@ -92,22 +101,22 @@ const EXEMPTIONS = new Set([
   '@aws-cdk/cloudformation-diff',
 ]);
 
-function updatedLocationOf(modulePath: string): string | undefined {
+function updatedLocationOf(modulePath: string, monoPackageName: string, monoAssertPackageName: string): string | undefined {
   if (!modulePath.startsWith('@aws-cdk/') || EXEMPTIONS.has(modulePath)) {
     return undefined;
   }
 
   if (modulePath === '@aws-cdk/core') {
-    return 'monocdk-experiment';
+    return monoPackageName;
   }
 
   if (modulePath === '@aws-cdk/assert') {
-    return '@monocdk-experiment/assert';
+    return monoAssertPackageName;
   }
 
   if (modulePath === '@aws-cdk/assert/jest') {
-    return '@monocdk-experiment/assert/jest';
+    return `${monoAssertPackageName}/jest`;
   }
 
-  return `monocdk-experiment/${modulePath.substring(9)}`;
+  return `${monoPackageName}/${modulePath.substring(9)}`;
 }

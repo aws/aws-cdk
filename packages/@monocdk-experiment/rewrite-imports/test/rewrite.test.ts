@@ -7,7 +7,7 @@ describe(rewriteImports, () => {
     import '@aws-cdk/assert/jest';
     // something after
 
-    console.log('Look! I did something!');`, 'subhect.ts');
+    console.log('Look! I did something!');`, { fileName: 'subject.ts' });
 
     expect(output).toBe(`
     // something before
@@ -23,7 +23,7 @@ describe(rewriteImports, () => {
     require('@aws-cdk/assert/jest');
     // something after
 
-    console.log('Look! I did something!');`, 'subhect.ts');
+    console.log('Look! I did something!');`, { fileName: 'subject.ts' });
 
     expect(output).toBe(`
     // something before
@@ -41,7 +41,7 @@ describe(rewriteImports, () => {
   import { Construct } from "@aws-cdk/core";
   // something after
 
-  console.log('Look! I did something!');`, 'subject.ts');
+  console.log('Look! I did something!');`, { fileName: 'subject.ts' });
 
     expect(output).toBe(`
   // something before
@@ -61,13 +61,37 @@ describe(rewriteImports, () => {
   import { Construct } = require("@aws-cdk/core");
   // something after
 
-  console.log('Look! I did something!');`, 'subject.ts');
+  console.log('Look! I did something!');`, { fileName: 'subject.ts' });
 
     expect(output).toBe(`
   // something before
   import s3 = require('monocdk-experiment/aws-s3');
   import cfndiff = require('@aws-cdk/cloudformation-diff');
   import { Construct } = require("monocdk-experiment");
+  // something after
+
+  console.log('Look! I did something!');`);
+  });
+
+  test('can pass packages names', () => {
+    const output = rewriteImports(`
+  // something before
+  import s3 = require('@aws-cdk/aws-s3');
+  import cfndiff = require('@aws-cdk/cloudformation-diff');
+  import { Construct } = require("@aws-cdk/core");
+  import '@aws-cdk/assert/jest';
+  require('@aws-cdk/assert/jest');
+  // something after
+
+  console.log('Look! I did something!');`, { fileName: 'subject.ts', monoPackageName: '@org/monocdk', monoAssertPackageName: '@org/monocdk-assert' });
+
+    expect(output).toBe(`
+  // something before
+  import s3 = require('@org/monocdk/aws-s3');
+  import cfndiff = require('@aws-cdk/cloudformation-diff');
+  import { Construct } = require("@org/monocdk");
+  import '@org/monocdk-assert/jest';
+  require('@org/monocdk-assert/jest');
   // something after
 
   console.log('Look! I did something!');`);
