@@ -1,4 +1,4 @@
-import { ABSENT, expect, haveResource, haveResourceLike, ResourcePart, SynthUtils } from '@aws-cdk/assert';
+import { ABSENT, expect, haveOutput, haveResource, haveResourceLike, ResourcePart, SynthUtils } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
@@ -614,6 +614,41 @@ export = {
           maxCapacity: AuroraCapacityUnit.ACU_1,
         },
       }), /maximum capacity must be greater than or equal to minimum capacity./);
+
+    test.done();
+  },
+
+  'check that clusterArn property works'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = ec2.Vpc.fromLookup(stack, 'VPC', { isDefault: true });
+    const cluster = new ServerlessCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      vpc,
+    });
+    const exportName = 'DbCluterArn';
+
+    // WHEN
+    new cdk.CfnOutput(stack, exportName, {
+      exportName,
+      value: cluster.clusterArn,
+    });
+
+    // THEN
+    expect(stack).to(haveOutput({
+      exportName,
+      outputValue: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':rds:us-test-1:12345:cluster:',
+            { Ref: 'DatabaseB269D8BB' },
+          ],
+        ],
+      },
+    }));
 
     test.done();
   },
