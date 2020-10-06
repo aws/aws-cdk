@@ -1,5 +1,6 @@
 import * as route53 from '@aws-cdk/aws-route53';
-import { App, Construct, Stack } from '@aws-cdk/core';
+import { App, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as certmgr from '../lib';
 
 class CertStack extends Stack {
