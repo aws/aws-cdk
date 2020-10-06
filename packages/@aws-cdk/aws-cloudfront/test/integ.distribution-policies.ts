@@ -6,7 +6,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'integ-distribution-policies');
 
 const cachePolicy = new cloudfront.CachePolicy(stack, 'CachePolicy', {
-  cachePolicyName: 'A custom cache policy',
+  cachePolicyName: 'ACustomCachePolicy',
 });
 
 new cloudfront.Distribution(stack, 'Dist', {

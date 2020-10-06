@@ -1,6 +1,6 @@
 import '@aws-cdk/assert/jest';
 import { App, Duration, Stack } from '@aws-cdk/core';
-import { CachePolicy, CookieBehavior, HeaderBehavior, QueryStringBehavior } from '../lib';
+import { CachePolicy, CacheCookieBehavior, CacheHeaderBehavior, CacheQueryStringBehavior } from '../lib';
 
 describe('CachePolicy', () => {
   let app: App;
@@ -57,9 +57,9 @@ describe('CachePolicy', () => {
       defaultTtl: Duration.days(2),
       minTtl: Duration.minutes(1),
       maxTtl: Duration.days(10),
-      cookieBehavior: CookieBehavior.all(),
-      headerBehavior: HeaderBehavior.allowList('X-CustomHeader'),
-      queryStringBehavior: QueryStringBehavior.denyList('username'),
+      cookieBehavior: CacheCookieBehavior.all(),
+      headerBehavior: CacheHeaderBehavior.allowList('X-CustomHeader'),
+      queryStringBehavior: CacheQueryStringBehavior.denyList('username'),
       enableAcceptEncodingGzip: true,
     });
 
@@ -86,6 +86,13 @@ describe('CachePolicy', () => {
         },
       },
     });
+  });
+
+  test('throws if given a cachePolicyName with invalid characters', () => {
+    const errorMessage = '`cachePolicyName` must be alphanumeric';
+    expect(() => new CachePolicy(stack, 'CachePolicy1', { cachePolicyName: 'My Policy' })).toThrow(errorMessage);
+    expect(() => new CachePolicy(stack, 'CachePolicy2', { cachePolicyName: 'MyPolicy!' })).toThrow(errorMessage);
+    expect(() => new CachePolicy(stack, 'CachePolicy3', { cachePolicyName: 'xX_MyPolicy_Xx' })).toThrow(errorMessage);
   });
 
   describe('TTLs', () => {
@@ -142,8 +149,8 @@ test('managed policies are provided', () => {
 
 // CookieBehavior and QueryStringBehavior have identical behavior
 describe.each([
-  ['CookieBehavior', CookieBehavior, 'cookie', (c: CookieBehavior) => c.cookies],
-  ['QueryStringBehavior', QueryStringBehavior, 'query string', (qs: QueryStringBehavior) => qs.queryStrings],
+  ['CookieBehavior', CacheCookieBehavior, 'cookie', (c: CacheCookieBehavior) => c.cookies],
+  ['QueryStringBehavior', CacheQueryStringBehavior, 'query string', (qs: CacheQueryStringBehavior) => qs.queryStrings],
 ])('%s', (_className, clazz, type, items) => {
   test('none()', () => {
     const behavior = clazz.none();
@@ -185,20 +192,20 @@ describe.each([
 
 describe('HeaderBehavior', () => {
   test('none()', () => {
-    const headers = HeaderBehavior.none();
+    const headers = CacheHeaderBehavior.none();
 
     expect(headers.behavior).toEqual('none');
     expect(headers.headers).toBeUndefined();
   });
 
   test('allowList()', () => {
-    const headers = HeaderBehavior.allowList('X-CustomHeader', 'X-AnotherHeader');
+    const headers = CacheHeaderBehavior.allowList('X-CustomHeader', 'X-AnotherHeader');
 
     expect(headers.behavior).toEqual('whitelist');
     expect(headers.headers).toEqual(['X-CustomHeader', 'X-AnotherHeader']);
   });
 
   test('allowList() throws if list is empty', () => {
-    expect(() => HeaderBehavior.allowList()).toThrow(/At least one header to allow must be provided/);
+    expect(() => CacheHeaderBehavior.allowList()).toThrow(/At least one header to allow must be provided/);
   });
 });

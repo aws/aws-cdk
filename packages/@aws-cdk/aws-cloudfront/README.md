@@ -187,9 +187,9 @@ const myCachePolicy = new cloudfront.CachePolicy(this, 'myCachePolicy', {
   defaultTtl: Duration.days(2),
   minTtl: Duration.minutes(1),
   maxTtl: Duration.days(10),
-  cookieBehavior: CookieBehavior.all(),
-  headerBehavior: HeaderBehavior.allowList('X-CustomHeader'),
-  queryStringBehavior: QueryStringBehavior.denyList('username'),
+  cookieBehavior: cloudfront.CacheCookieBehavior.all(),
+  headerBehavior: cloudfront.CacheHeaderBehavior.allowList('X-CustomHeader'),
+  queryStringBehavior: cloudfront.CacheQueryStringBehavior.denyList('username'),
   enableAcceptEncodingGzip: true,
 });
 new cloudfront.Distribution(this, 'myDistCustomPolicy', {

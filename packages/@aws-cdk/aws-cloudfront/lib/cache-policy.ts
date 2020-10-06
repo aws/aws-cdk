@@ -28,7 +28,10 @@ export interface CachePolicyAttributes {
  * @experimental
  */
 export interface CachePolicyProps {
-  /** A unique name to identify the cache policy. */
+  /**
+   * A unique name to identify the cache policy.
+   * The name must be alphanumeric (no spaces or special characters).
+   */
   readonly cachePolicyName: string;
 
   /**
@@ -61,19 +64,19 @@ export interface CachePolicyProps {
    * Determines whether any cookies in viewer requests are included in the cache key and automatically included in requests that CloudFront sends to the origin.
    * @default CookieBehavior.none()
    */
-  readonly cookieBehavior?: CookieBehavior;
+  readonly cookieBehavior?: CacheCookieBehavior;
 
   /**
    * Determines whether any HTTP headers are included in the cache key and automatically included in requests that CloudFront sends to the origin.
    * @default HeaderBehavior.none()
    */
-  readonly headerBehavior?: HeaderBehavior;
+  readonly headerBehavior?: CacheHeaderBehavior;
 
   /**
    * Determines whether any query strings are included in the cache key and automatically included in requests that CloudFront sends to the origin.
    * @default QueryStringBehavior.none()
    */
-  readonly queryStringBehavior?: QueryStringBehavior;
+  readonly queryStringBehavior?: CacheQueryStringBehavior;
 
   /**
    * Whether to normalize and include the `Accept-Encoding` header in the cache key whem the `Accept-Encoding` header is 'gzip'.
@@ -132,6 +135,10 @@ export class CachePolicy extends Resource implements ICachePolicy {
       physicalName: props.cachePolicyName,
     });
 
+    if (!props.cachePolicyName.match(/^[a-z0-9]+$/i)) {
+      throw new Error('`cachePolicyName` must be alphanumeric');
+    }
+
     const minTtl = (props.minTtl ?? Duration.seconds(0)).toSeconds();
     const defaultTtl = Math.max((props.defaultTtl ?? Duration.days(1)).toSeconds(), minTtl);
     const maxTtl = Math.max((props.maxTtl ?? Duration.days(365)).toSeconds(), defaultTtl);
@@ -151,9 +158,9 @@ export class CachePolicy extends Resource implements ICachePolicy {
   }
 
   private renderCacheKey(props: CachePolicyProps): CfnCachePolicy.ParametersInCacheKeyAndForwardedToOriginProperty {
-    const cookies = props.cookieBehavior ?? CookieBehavior.none();
-    const headers = props.headerBehavior ?? HeaderBehavior.none();
-    const queryStrings = props.queryStringBehavior ?? QueryStringBehavior.none();
+    const cookies = props.cookieBehavior ?? CacheCookieBehavior.none();
+    const headers = props.headerBehavior ?? CacheHeaderBehavior.none();
+    const queryStrings = props.queryStringBehavior ?? CacheQueryStringBehavior.none();
 
     return {
       cookiesConfig: {
@@ -178,17 +185,17 @@ export class CachePolicy extends Resource implements ICachePolicy {
  * automatically included in requests that CloudFront sends to the origin.
  * @experimental
  */
-export class CookieBehavior {
+export class CacheCookieBehavior {
   /**
    * Cookies in viewer requests are not included in the cache key and
    * are not automatically included in requests that CloudFront sends to the origin.
    */
-  public static none() { return new CookieBehavior('none'); }
+  public static none() { return new CacheCookieBehavior('none'); }
 
   /**
    * All cookies in viewer requests are included in the cache key and are automatically included in requests that CloudFront sends to the origin.
    */
-  public static all() { return new CookieBehavior('all'); }
+  public static all() { return new CacheCookieBehavior('all'); }
 
   /**
    * Only the provided `cookies` are included in the cache key and automatically included in requests that CloudFront sends to the origin.
@@ -197,7 +204,7 @@ export class CookieBehavior {
     if (cookies.length === 0) {
       throw new Error('At least one cookie to allow must be provided');
     }
-    return new CookieBehavior('whitelist', cookies);
+    return new CacheCookieBehavior('whitelist', cookies);
   }
 
   /**
@@ -208,7 +215,7 @@ export class CookieBehavior {
     if (cookies.length === 0) {
       throw new Error('At least one cookie to deny must be provided');
     }
-    return new CookieBehavior('allExcept', cookies);
+    return new CacheCookieBehavior('allExcept', cookies);
   }
 
   /** The behavior of cookies: allow all, none, an allow list, or a deny list. */
@@ -226,15 +233,15 @@ export class CookieBehavior {
  * Determines whether any HTTP headers are included in the cache key and automatically included in requests that CloudFront sends to the origin.
  * @experimental
  */
-export class HeaderBehavior {
+export class CacheHeaderBehavior {
   /** HTTP headers are not included in the cache key and are not automatically included in requests that CloudFront sends to the origin. */
-  public static none() { return new HeaderBehavior('none'); }
+  public static none() { return new CacheHeaderBehavior('none'); }
   /** Listed headers are included in the cache key and are automatically included in requests that CloudFront sends to the origin. */
   public static allowList(...headers: string[]) {
     if (headers.length === 0) {
       throw new Error('At least one header to allow must be provided');
     }
-    return new HeaderBehavior('whitelist', headers);
+    return new CacheHeaderBehavior('whitelist', headers);
   }
 
   /** If the no headers will be passed, or an allow list of headers. */
@@ -253,17 +260,17 @@ export class HeaderBehavior {
  * and automatically included in requests that CloudFront sends to the origin.
  * @experimental
  */
-export class QueryStringBehavior {
+export class CacheQueryStringBehavior {
   /**
    * Query strings in viewer requests are not included in the cache key and
    * are not automatically included in requests that CloudFront sends to the origin.
    */
-  public static none() { return new QueryStringBehavior('none'); }
+  public static none() { return new CacheQueryStringBehavior('none'); }
 
   /**
    * All query strings in viewer requests are included in the cache key and are automatically included in requests that CloudFront sends to the origin.
    */
-  public static all() { return new QueryStringBehavior('all'); }
+  public static all() { return new CacheQueryStringBehavior('all'); }
 
   /**
    * Only the provided `queryStrings` are included in the cache key and automatically included in requests that CloudFront sends to the origin.
@@ -272,7 +279,7 @@ export class QueryStringBehavior {
     if (queryStrings.length === 0) {
       throw new Error('At least one query string to allow must be provided');
     }
-    return new QueryStringBehavior('whitelist', queryStrings);
+    return new CacheQueryStringBehavior('whitelist', queryStrings);
   }
 
   /**
@@ -283,7 +290,7 @@ export class QueryStringBehavior {
     if (queryStrings.length === 0) {
       throw new Error('At least one query string to deny must be provided');
     }
-    return new QueryStringBehavior('allExcept', queryStrings);
+    return new CacheQueryStringBehavior('allExcept', queryStrings);
   }
 
   /** The behavior of query strings -- allow all, none, only an allow list, or a deny list. */
