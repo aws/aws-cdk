@@ -1,9 +1,11 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import { IConstruct, Node } from 'constructs';
-import { Construct } from './construct-compat';
+import { IConstruct, Construct, Node } from 'constructs';
 import { Environment } from './environment';
-import { collectRuntimeInformation } from './private/runtime-info';
 import { synthesize } from './private/synthesis';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from './construct-compat';
 
 /**
  * Initialization props for a stage.
@@ -66,7 +68,7 @@ export interface StageProps {
  * copies of your application which should be be deployed to different
  * environments.
  */
-export class Stage extends Construct {
+export class Stage extends CoreConstruct {
   /**
    * Return the stage this construct is contained with, if available. If called
    * on a nested stage, returns its parent.
@@ -172,10 +174,8 @@ export class Stage extends Construct {
    */
   public synth(options: StageSynthesisOptions = { }): cxapi.CloudAssembly {
     if (!this.assembly || options.force) {
-      const runtimeInfo = this.node.tryGetContext(cxapi.DISABLE_VERSION_REPORTING) ? undefined : collectRuntimeInformation();
       this.assembly = synthesize(this, {
         skipValidation: options.skipValidation,
-        runtimeInfo,
       });
     }
 

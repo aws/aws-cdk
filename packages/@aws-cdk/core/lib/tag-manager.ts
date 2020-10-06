@@ -185,12 +185,22 @@ class NoFormat implements ITagFormatter {
   }
 }
 
-const TAG_FORMATTERS: {[key: string]: ITagFormatter} = {
-  [TagType.AUTOSCALING_GROUP]: new AsgFormatter(),
-  [TagType.STANDARD]: new StandardFormatter(),
-  [TagType.MAP]: new MapFormatter(),
-  [TagType.KEY_VALUE]: new KeyValueFormatter(),
-  [TagType.NOT_TAGGABLE]: new NoFormat(),
+
+let _tagFormattersCache: {[key: string]: ITagFormatter} | undefined;
+
+/**
+ * Access tag formatters table
+ *
+ * In a function because we're in a load cycle with cfn-resource that defines `TagType`.
+ */
+function TAG_FORMATTERS(): {[key: string]: ITagFormatter} {
+  return _tagFormattersCache ?? (_tagFormattersCache = {
+    [TagType.AUTOSCALING_GROUP]: new AsgFormatter(),
+    [TagType.STANDARD]: new StandardFormatter(),
+    [TagType.MAP]: new MapFormatter(),
+    [TagType.KEY_VALUE]: new KeyValueFormatter(),
+    [TagType.NOT_TAGGABLE]: new NoFormat(),
+  });
 };
 
 /**
@@ -245,7 +255,7 @@ export class TagManager {
 
   constructor(tagType: TagType, resourceTypeName: string, tagStructure?: any, options: TagManagerOptions = { }) {
     this.resourceTypeName = resourceTypeName;
-    this.tagFormatter = TAG_FORMATTERS[tagType];
+    this.tagFormatter = TAG_FORMATTERS()[tagType];
     if (tagStructure !== undefined) {
       this._setTag(...this.tagFormatter.parseTags(tagStructure, this.initialTagPriority));
     }
@@ -279,8 +289,18 @@ export class TagManager {
    * Renders tags into the proper format based on TagType
    */
   public renderTags(): any {
-    const sortedTags = Array.from(this.tags.values()).sort((a, b) => a.key.localeCompare(b.key));
-    return this.tagFormatter.formatTags(sortedTags);
+    return this.tagFormatter.formatTags(this.sortedTags);
+  }
+
+  /**
+   * Render the tags in a readable format
+   */
+  public tagValues(): Record<string, string> {
+    const ret: Record<string, string> = {};
+    for (const tag of this.sortedTags) {
+      ret[tag.key] = tag.value;
+    }
+    return ret;
   }
 
   /**
@@ -314,5 +334,9 @@ export class TagManager {
         this.priorities.set(tag.key, tag.priority);
       }
     }
+  }
+
+  private get sortedTags() {
+    return Array.from(this.tags.values()).sort((a, b) => a.key.localeCompare(b.key));
   }
 }

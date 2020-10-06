@@ -200,4 +200,14 @@ describe('Batch Job Definition', () => {
     expect(importedJob.jobDefinitionName).toEqual('job-def-name:1');
     expect(importedJob.jobDefinitionArn).toEqual('arn:aws:batch:us-east-1:123456789012:job-definition/job-def-name:1');
   });
+
+  test('can be imported from a name', () => {
+    // WHEN
+    const importedJob = batch.JobDefinition.fromJobDefinitionName(stack, 'job-def-clone', 'job-def-name');
+
+    // THEN
+    expect(importedJob.jobDefinitionName).toEqual('job-def-name');
+    expect(importedJob.jobDefinitionArn)
+      .toEqual('arn:${Token[AWS.Partition.3]}:batch:${Token[AWS.Region.4]}:${Token[AWS.AccountId.0]}:job-definition/job-def-name');
+  });
 });

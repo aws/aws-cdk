@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-stepfunctions-tasks",
-        "module": "aws_cdk.aws_stepfunctions_tasks"
+        "module": "aws_cdk.aws_stepfunctions_tasks",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
@@ -120,6 +124,9 @@
     "announce": false
   },
   "cdk-build": {
-    "jest": true
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   }
 }

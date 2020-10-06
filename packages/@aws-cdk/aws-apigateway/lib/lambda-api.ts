@@ -1,5 +1,5 @@
 import * as lambda from '@aws-cdk/aws-lambda';
-import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { LambdaIntegration } from './integrations';
 import { Method } from './method';
 import { ProxyResource, Resource } from './resource';
@@ -42,7 +42,7 @@ export interface LambdaRestApiProps extends RestApiProps {
  * add resources and methods to the API.
  */
 export class LambdaRestApi extends RestApi {
-  constructor(scope: cdk.Construct, id: string, props: LambdaRestApiProps) {
+  constructor(scope: Construct, id: string, props: LambdaRestApiProps) {
     if ((props.options && props.options.defaultIntegration) || props.defaultIntegration) {
       throw new Error('Cannot specify "defaultIntegration" since Lambda integration is automatically defined');
     }
