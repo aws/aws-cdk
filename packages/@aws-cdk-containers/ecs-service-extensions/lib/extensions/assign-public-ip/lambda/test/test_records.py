@@ -1,9 +1,9 @@
 import json
 import os
 import unittest
+from datetime import datetime
 
-from lib.records_table import *
-from lib.tasks import *
+from lib.records import DdbRecordEncoding, TaskInfo, EniInfo
 
 THIS_DIR = os.path.abspath(os.path.dirname(__file__))
 with open(os.path.join(THIS_DIR, 'fixtures', 'ddb-record.json')) as f:
@@ -11,6 +11,11 @@ with open(os.path.join(THIS_DIR, 'fixtures', 'ddb-record.json')) as f:
 
 
 class TestRecords(unittest.TestCase):
+    def test_task_info_stopped_marker(self):
+        task_info = TaskInfo(task_arn='a', enis=[])
+        task_info.set_stopped_marker()
+        self.assertTrue(task_info.is_stopped())
+
     def test_ddb_record_encoding(self):
         # GIVEN
         ddb_record_encoding = DdbRecordEncoding()

@@ -1,33 +1,7 @@
-from dataclasses import dataclass
-from datetime import datetime
+import logging
 from typing import *
 
-
-@dataclass
-class EniInfo:
-    eni_id: str
-    public_ipv4: Optional[str] = None
-
-
-@dataclass
-class TaskInfo:
-    task_arn: str
-    enis: List[EniInfo]
-    stopped_datetime: Optional[datetime] = None
-
-    # Tombstone information for the dynamodb record.
-
-    def set_stopped_marker(self):
-        """
-        Mark this task as stopped.
-        """
-        self.stopped_datetime = datetime.utcnow()
-
-    def is_stopped(self):
-        """
-        Check if this task is stopped.
-        """
-        return True if self.stopped_datetime is not None else False
+from lib.records import DdbRecord, EniInfo, TaskInfo
 
 
 class RunningTaskCollector:
@@ -42,12 +16,20 @@ class RunningTaskCollector:
     tasks: List[TaskInfo]
     enis_by_id: Dict[str, EniInfo]
 
-    def __init__(self, ec2_client):
+    def __init__(self, ec2_client, reference_record: DdbRecord):
         self.ec2_client = ec2_client
         self.tasks = list()
         self.enis_by_id = dict()
+        self.reference_record = reference_record
 
     def collect(self, task_info):
+        # Check to see if the task we've received is already stopped. If so,
+        # we refuse to collect it on the basis that we'll just get an eni
+        # doesn't exist error anyway.
+        if self.reference_record.task_is_stopped(task_info):
+            logging.info(f'Refusing to collect {task_info.task_arn} as it has already been deleted')
+            return
+
         # Append the task info to the master list
         self.tasks.append(task_info)
 
@@ -74,17 +56,3 @@ class RunningTaskCollector:
 
     def get_ips(self):
         return [eni.public_ipv4 for eni in self.enis_by_id.values()]
-
-
-def extract_task_info(task_description) -> TaskInfo:
-    arn = task_description['taskArn']
-
-    # Parse the eni info out of the the attachments
-    enis = [
-        EniInfo(eni_id=detail['value']) for network_interface in task_description['attachments']
-        if network_interface['type'] == 'eni' for detail in network_interface['details']
-        if detail['name'] == 'networkInterfaceId'
-    ]
-
-    # Create an object out of the extracted information
-    return TaskInfo(task_arn=arn, enis=enis)

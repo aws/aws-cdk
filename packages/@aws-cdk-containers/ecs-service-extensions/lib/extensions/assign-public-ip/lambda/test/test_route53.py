@@ -1,29 +1,14 @@
 import unittest
 import unittest.mock as mock
 
-import boto3
+from botocore.exceptions import ClientError
 
-from lib.route53 import *
+from lib.route53 import Route53RecordSetLocator, Route53RecordSetAccessor, exponential_backoff, retry_with_backoff, \
+    map_ips_to_resource_records
 
 
 class TestRoute53(unittest.TestCase):
-    def xtest_live(self):
-        """
-        Test with route53 live. Remove the x before xtest_live to run this test with
-        the other tests and enter your zone id in hosted_zone_id below.
-        """
-        merger = Route53RecordSetMerger(boto3.client('route53'))
-
-        locator = Route53RecordSetLocator(hosted_zone_id='enter your myexample.com zone id here',
-                                          record_name='testing.myexample.com')
-
-        merger.merge(locator=locator, adds=['1.2.3.4'])
-        merger.merge(locator=locator, adds=['1.2.3.4'])  # Should not cause an error
-        merger.merge(locator=locator, adds=['4.5.6.7'])
-        merger.merge(locator=locator, removes=['1.2.3.4'])
-        merger.merge(locator=locator, removes=['4.5.6.7'])
-
-    def getRoute53ClientMock(self):
+    def get_route53_client_mock(self):
         route53_client = mock.Mock()
         record_set_value = None
 
@@ -45,14 +30,14 @@ class TestRoute53(unittest.TestCase):
 
         return route53_client
 
-    def test_merger_creates_records(self):
+    def test_creating_records(self):
         # GIVEN
-        route53_client = self.getRoute53ClientMock()
-        merger = Route53RecordSetMerger(route53_client)
+        route53_client = self.get_route53_client_mock()
         locator = Route53RecordSetLocator(hosted_zone_id='foo', record_name='foo.myexample.com')
+        merger = Route53RecordSetAccessor(route53_client)
 
         # WHEN
-        merger.merge(locator=locator, adds=['1.1.1.1'])
+        merger.update(locator, ipv4s={'1.1.1.1'})
 
         # THEN
         route53_client.change_resource_record_sets.assert_called_with(
@@ -74,49 +59,29 @@ class TestRoute53(unittest.TestCase):
                 }]
             })
 
-    def test_merger_merges_records(self):
+    def test_creating_empty_records(self):
         # GIVEN
-        route53_client = self.getRoute53ClientMock()
-        merger = Route53RecordSetMerger(route53_client)
+        route53_client = self.get_route53_client_mock()
         locator = Route53RecordSetLocator(hosted_zone_id='foo', record_name='foo.myexample.com')
+        merger = Route53RecordSetAccessor(route53_client)
 
         # WHEN
-        merger.merge(locator=locator, adds=['1.1.1.1'])
-        merger.merge(locator=locator, adds=['1.1.1.2'])
-        merger.merge(locator=locator, adds=['1.1.1.3'], removes=['1.1.1.1'])
+        merger.update(locator, ipv4s=set())
 
         # THEN
-        route53_client.change_resource_record_sets.assert_called_with(
-            HostedZoneId='foo', ChangeBatch={
-                'Comment':
-                'Automatic',
-                'Changes': [{
-                    'Action': 'UPSERT',
-                    'ResourceRecordSet': {
-                        'Name': 'foo.myexample.com',
-                        'Type': 'A',
-                        'ResourceRecords': [
-                            {
-                                'Value': '1.1.1.2'
-                            },
-                            {
-                                'Value': '1.1.1.3'
-                            },
-                        ],
-                        'TTL': 60
-                    }
-                }]
-            })
+        route53_client.change_resource_record_sets.assert_not_called()
 
-    def test_merger_deletes_records(self):
+    def test_deleting_records(self):
         # GIVEN
-        route53_client = self.getRoute53ClientMock()
-        merger = Route53RecordSetMerger(route53_client)
+        route53_client = self.get_route53_client_mock()
         locator = Route53RecordSetLocator(hosted_zone_id='foo', record_name='foo.myexample.com')
+        record_set = Route53RecordSetAccessor(route53_client)
+
+        # Set up the mock with a record.
+        record_set.update(locator, ipv4s={'1.1.1.1'})
 
         # WHEN
-        merger.merge(locator=locator, adds=['1.1.1.1'])
-        merger.merge(locator=locator, removes=['1.1.1.1'])
+        record_set.update(locator, ipv4s=set())
 
         # THEN
         route53_client.change_resource_record_sets.assert_called_with(
@@ -138,22 +103,37 @@ class TestRoute53(unittest.TestCase):
                 }]
             })
 
-    def test_merging_record_changes(self):
-        # GIVEN
-        records = [{'Value': '1.2.3.4'}, {'Value': '8.8.8.8'}]
-        adds = ['4.3.2.1', '1.2.3.4']
-        removes = ['8.8.8.8']
+    def test_exponential_backoff(self):
+        self.assertEqual(exponential_backoff(0), 1)
+        self.assertEqual(exponential_backoff(1), 2)
+        self.assertEqual(exponential_backoff(2), 4)
 
-        # WHEN
-        merged_records = merge_record_changes(records=records, adds=adds, removes=removes)
+    def test_retry_with_backoff_throttling(self):
+        call = mock.Mock(side_effect=ClientError(error_response={'Error': {
+            'Code': 'Throttling'
+        }}, operation_name='any'))
+        retry_with_backoff(call, attempts=5, backoff=lambda x: 0)
+        self.assertEqual(call.call_count, 5)
 
-        # THEN
-        self.assertTrue(any([record['Value'] == '1.2.3.4' for record in merged_records]))
-        self.assertTrue(any([record['Value'] == '4.3.2.1' for record in merged_records]))
-        self.assertFalse(any([record['Value'] == '8.8.8.8' for record in merged_records]))
-        self.assertEqual(len(merged_records), 2)
+    def test_retry_with_backoff_other_client_errors(self):
+        call = mock.Mock(side_effect=ClientError(error_response={'Error': {
+            'Code': 'SomethingElse'
+        }}, operation_name='any'))
+        with self.assertRaisesRegex(ClientError, r'SomethingElse'):
+            retry_with_backoff(call, attempts=5, backoff=lambda x: 0)
+        self.assertEqual(call.call_count, 1)
 
+    def test_retry_with_backoff_other_errors(self):
+        call = mock.Mock(side_effect=Exception('very good reason'))
+        with self.assertRaisesRegex(Exception, r'very good reason'):
+            retry_with_backoff(call, attempts=5, backoff=lambda x: 0)
+        self.assertEqual(call.call_count, 1)
 
-if __name__ == "__main__":
-    logging.getLogger().setLevel(logging.INFO)
-    unittest.main()
+    def test_map_ips_to_resource_records(self):
+        output = map_ips_to_resource_records({'1.1.1.1', '1.1.1.2'})
+        self.assertEqual(output, [{'Value': '1.1.1.1'}, {'Value': '1.1.1.2'}])
+
+    def test_map_ips_to_resource_records_truncates_to_400(self):
+        ips = {f'1.1.{a}.{b}' for a in range(1, 255) for b in range(1, 255)}
+        output = map_ips_to_resource_records(ips)
+        self.assertEqual(len(output), 400)

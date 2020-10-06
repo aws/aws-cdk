@@ -1,10 +1,35 @@
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import *
+from typing import Optional, List, Dict, Set
 
 from boto3.dynamodb.conditions import Key
 
-from lib.tasks import TaskInfo, EniInfo
+
+@dataclass
+class EniInfo:
+    eni_id: str
+    public_ipv4: Optional[str] = None
+
+
+@dataclass
+class TaskInfo:
+    task_arn: str
+    enis: List[EniInfo]
+    stopped_datetime: Optional[datetime] = None
+
+    # Tombstone information for the dynamodb record.
+
+    def set_stopped_marker(self):
+        """
+        Mark this task as stopped.
+        """
+        self.stopped_datetime = datetime.utcnow()
+
+    def is_stopped(self):
+        """
+        Check if this task is stopped.
+        """
+        return True if self.stopped_datetime is not None else False
 
 
 @dataclass
@@ -27,6 +52,13 @@ class DdbRecord:
     ipv4s: Set[str] = field(default_factory=set)
     task_info: Dict[str, TaskInfo] = field(default_factory=dict)
     version: int = 0
+
+    def task_is_stopped(self, task_info: TaskInfo):
+        """
+        Check if a task has already stopped.
+        """
+
+        return task_info.task_arn in self.task_info and self.task_info[task_info.task_arn].is_stopped()
 
 
 class DdbRecordEncoding:

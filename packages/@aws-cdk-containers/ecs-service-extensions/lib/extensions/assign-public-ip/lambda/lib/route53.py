@@ -1,6 +1,9 @@
 from dataclasses import dataclass
+import time
 from typing import *
 import logging
+
+from botocore.exceptions import ClientError
 
 
 @dataclass
@@ -9,29 +12,28 @@ class Route53RecordSetLocator:
     record_name: str
 
 
-# TODO: NEEDS OVERHAUL
-class Route53RecordSetMerger:
+class Route53RecordSetAccessor:
     route53_client: Any
-    dynamo_table_client: Any
+    locator: Route53RecordSetLocator
+    ttl = 60
 
-    def __init__(self, route53_client):
+    def __init__(self, route53_client: Any):
         self.route53_client = route53_client
 
-    def merge(self, locator: Route53RecordSetLocator, adds: List[str] = None, removes: List[str] = None):
-        adds = [] if adds is None else adds
-        removes = [] if removes is None else removes
+    def update(self, locator: Route53RecordSetLocator, ipv4s: Set[str] = None):
+        ipv4s = set() if ipv4s is None else ipv4s
 
-        record_set, is_new = self.get_record_set(locator)
-        new_record_set = merge_record_set_changes(record_set=record_set, adds=adds, removes=removes)
+        record_set, is_new = retry_with_backoff(lambda: self.get_record_set(locator))
 
-        if len(new_record_set['ResourceRecords']) > 0:
-            self.upsert(locator, new_record_set)
+        if len(ipv4s) > 0:
+            record_set['ResourceRecords'] = map_ips_to_resource_records(ipv4s)
+            retry_with_backoff(lambda: self.upsert(locator, record_set))
         elif not is_new:
-            self.delete(locator, record_set)
+            retry_with_backoff(lambda: self.delete(locator, record_set))
         else:
-            logging.warning('Refusing to do anything with an new but empty recordset')
+            logging.info('Refusing to do anything with an new but empty recordset')
 
-    def get_record_set(self, locator: Route53RecordSetLocator):
+    def get_record_set(self, locator: Route53RecordSetLocator) -> Tuple[dict, bool]:
         record_type = 'A'
         result = self.route53_client.list_resource_record_sets(HostedZoneId=locator.hosted_zone_id,
                                                                StartRecordName=locator.record_name,
@@ -43,7 +45,7 @@ class Route53RecordSetMerger:
             return record_sets[0], False
 
         logging.info('Creating a new record set')
-        return {'Name': locator.record_name, 'Type': record_type, 'ResourceRecords': [], 'TTL': 60}, True
+        return {'Name': locator.record_name, 'Type': record_type, 'ResourceRecords': [], 'TTL': self.ttl}, True
 
     def upsert(self, locator: Route53RecordSetLocator, record_set):
         logging.info(f'Upserting record set {record_set}')
@@ -68,24 +70,24 @@ class Route53RecordSetMerger:
             })
 
 
-def merge_record_set_changes(record_set, adds: List[str], removes: List[str]):
-    merged_record_set = record_set.copy()
-    merged_record_set['ResourceRecords'] = merge_record_changes(records=merged_record_set['ResourceRecords'], adds=adds,
-                                                                removes=removes)
-
-    return merged_record_set
+def exponential_backoff(attempt: int):
+    return 2**attempt
 
 
-def merge_record_changes(records, adds: List[str], removes: List[str]):
-    ips = {record['Value'] for record in records}
+def retry_with_backoff(call: Callable, attempts=5, backoff=exponential_backoff):
+    for attempt in range(0, attempts):
+        try:
+            return call()
+        except ClientError as e:
+            if e.response['Error']['Code'] == 'Throttling':
+                backoff_seconds = backoff(attempt)
+                logging.info(f'Attempt {attempt+1} throttled. Backing off for {backoff_seconds}.')
+                time.sleep(backoff_seconds)
+                continue
+            raise
 
-    # Add new ips to the set
-    for add_ip in adds:
-        ips.add(add_ip)
 
-    # Remove ips from the set
-    for remove_ip in removes:
-        if remove_ip in ips:
-            ips.remove(remove_ip)
-
-    return [{'Value': ip} for ip in sorted(ips)]
+def map_ips_to_resource_records(ips: Set[str]):
+    # Take up to the first 400 ips after sorting as the max recordset record quota is 400
+    ips_sorted_limited = sorted(ips)[0:400]
+    return [{'Value': ip} for ip in ips_sorted_limited]

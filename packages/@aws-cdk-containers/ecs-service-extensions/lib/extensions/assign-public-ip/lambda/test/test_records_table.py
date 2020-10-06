@@ -4,9 +4,10 @@ import unittest
 import unittest.mock as mock
 
 from boto3.dynamodb.conditions import ConditionExpressionBuilder
+from botocore.exceptions import ClientError
 
-from lib.records_table import *
-from lib.tasks import *
+from lib.records import DdbRecordKey, TaskInfo, EniInfo, DdbRecord
+from lib.records_table import RecordsTableAccessor, update_ddb_record
 
 THIS_DIR = os.path.abspath(os.path.dirname(__file__))
 with open(os.path.join(THIS_DIR, 'fixtures', 'ddb-record.json')) as f:
@@ -20,7 +21,7 @@ class TestRecordsTable(unittest.TestCase):
         table_client.query = mock.Mock(return_value={'Items': []})
 
         key = DdbRecordKey(hosted_zone_id='a', record_name='b')
-        records_table = RecordsTable(table_client=table_client)
+        records_table = RecordsTableAccessor(table_client=table_client)
 
         running = [TaskInfo(task_arn='TASK1_ARN', enis=[
             EniInfo(eni_id='TASK1_ENI1_ID', public_ipv4='1.1.1.1'),
@@ -46,7 +47,7 @@ class TestRecordsTable(unittest.TestCase):
         table_client.query = mock.Mock(return_value={'Items': [dict(DDB_RECORD_ENCODED)]})
 
         key = DdbRecordKey(hosted_zone_id='FOO', record_name='test.myexample.com')
-        records_table = RecordsTable(table_client=table_client)
+        records_table = RecordsTableAccessor(table_client=table_client)
 
         running = [TaskInfo(task_arn='TASK1_ARN', enis=[
             EniInfo(eni_id='TASK1_ENI1_ID', public_ipv4='1.1.1.1'),
@@ -69,7 +70,7 @@ class TestRecordsTable(unittest.TestCase):
                 'Code': 'ConditionalCheckFailedException'
             }}, 'PutItem'))
 
-        records_table = RecordsTable(table_client=table_client)
+        records_table = RecordsTableAccessor(table_client=table_client)
         key = DdbRecordKey(hosted_zone_id='a', record_name='b')
 
         # WHEN
@@ -86,7 +87,7 @@ class TestRecordsTable(unittest.TestCase):
         table_client.query = mock.Mock(return_value={'Items': []})
         table_client.put_item = mock.Mock(side_effect=ClientError({'Error': {'Code': 'SomethingElse'}}, 'PutItem'))
 
-        records_table = RecordsTable(table_client=table_client)
+        records_table = RecordsTableAccessor(table_client=table_client)
         key = DdbRecordKey(hosted_zone_id='a', record_name='b')
 
         # WHEN
@@ -101,7 +102,7 @@ class TestRecordsTable(unittest.TestCase):
         # GIVEN
         table_client = mock.Mock()
         key = DdbRecordKey(hosted_zone_id='a', record_name='b')
-        records_table = RecordsTable(table_client=table_client)
+        records_table = RecordsTableAccessor(table_client=table_client)
 
         # WHEN
         records_table.delete(key)

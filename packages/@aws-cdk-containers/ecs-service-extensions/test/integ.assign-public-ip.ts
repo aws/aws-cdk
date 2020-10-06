@@ -36,8 +36,10 @@ nameDescription.add(new Container({
 }));
 
 nameDescription.add(new AssignPublicIpExtension({
-  dnsZone: dnsZone,
-  dnsRecordName: 'test-record',
+  dns: {
+    zone: dnsZone,
+    recordName: 'test-record',
+  },
 }));
 
 new Service(stack, 'name', {

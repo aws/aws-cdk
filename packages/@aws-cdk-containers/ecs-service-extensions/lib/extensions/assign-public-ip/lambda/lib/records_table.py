@@ -6,11 +6,10 @@ from typing import *
 from boto3.dynamodb.conditions import Attr
 from botocore.exceptions import ClientError
 
-from lib.records import DdbRecord, DdbRecordKey, DdbRecordEncoding
-from lib.tasks import TaskInfo
+from lib.records import DdbRecord, DdbRecordKey, DdbRecordEncoding, TaskInfo
 
 
-class RecordsTable:
+class RecordsTableAccessor:
     """
     Abstracts management of the task records to putting running and stopped tasks.
     """
