@@ -258,7 +258,7 @@
     "@types/node": "^10.17.35",
     "cdk-build-tools": "0.0.0",
     "constructs": "^3.0.4",
-    "cdk8s": "^0.29.0",
+    "cdk8s": "^0.30.0",
     "fs-extra": "^9.0.1",
     "pkglint": "0.0.0",
     "ts-node": "^9.0.0",
@@ -267,7 +267,7 @@
   },
   "peerDependencies": {
     "constructs": "^3.0.4",
-    "cdk8s": "^0.29.0"
+    "cdk8s": "^0.30.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
