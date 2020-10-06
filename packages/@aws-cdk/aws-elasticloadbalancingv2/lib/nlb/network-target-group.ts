@@ -1,3 +1,4 @@
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import {
@@ -105,6 +106,30 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
   }
 
   /**
+   * The number of targets that are considered healthy.
+   *
+   * @default Average over 5 minutes
+   */
+  public metricHealthyHostCount(props?: cloudwatch.MetricOptions) {
+    return this.metric('HealthyHostCount', {
+      statistic: 'Average',
+      ...props,
+    });
+  }
+
+  /**
+   * The number of targets that are considered unhealthy.
+   *
+   * @default Average over 5 minutes
+   */
+  public metricUnHealthyHostCount(props?: cloudwatch.MetricOptions) {
+    return this.metric('UnHealthyHostCount', {
+      statistic: 'Average',
+      ...props,
+    });
+  }
+
+  /**
    * Full name of first load balancer
    */
   public get firstLoadBalancerFullName(): string {
@@ -142,7 +167,7 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
     }
 
     if (healthCheck.healthyThresholdCount && healthCheck.unhealthyThresholdCount &&
-        healthCheck.healthyThresholdCount !== healthCheck.unhealthyThresholdCount) {
+      healthCheck.healthyThresholdCount !== healthCheck.unhealthyThresholdCount) {
       ret.push([
         `Healthy and Unhealthy Threshold Counts must be the same: ${healthCheck.healthyThresholdCount}`,
         `is not equal to ${healthCheck.unhealthyThresholdCount}.`,
@@ -170,6 +195,15 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
     }
 
     return ret;
+  }
+
+  private metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return new cloudwatch.Metric({
+      namespace: 'AWS/NetworkELB',
+      metricName,
+      dimensions: { LoadBalancer: this.firstLoadBalancerFullName, TargetGroup: this.targetGroupFullName },
+      ...props,
+    }).attachTo(this);
   }
 }
 
@@ -223,7 +257,7 @@ export interface INetworkLoadBalancerTarget {
 
 const NLB_HEALTH_CHECK_PROTOCOLS = [Protocol.HTTP, Protocol.HTTPS, Protocol.TCP];
 const NLB_PATH_HEALTH_CHECK_PROTOCOLS = [Protocol.HTTP, Protocol.HTTPS];
-const NLB_HEALTH_CHECK_TIMEOUTS: {[protocol in Protocol]?: number} = {
+const NLB_HEALTH_CHECK_TIMEOUTS: { [protocol in Protocol]?: number } = {
   [Protocol.HTTP]: 6,
   [Protocol.HTTPS]: 10,
   [Protocol.TCP]: 10,

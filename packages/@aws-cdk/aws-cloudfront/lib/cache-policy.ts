@@ -143,7 +143,7 @@ export class CachePolicy extends Resource implements ICachePolicy {
     const defaultTtl = Math.max((props.defaultTtl ?? Duration.days(1)).toSeconds(), minTtl);
     const maxTtl = Math.max((props.maxTtl ?? Duration.days(365)).toSeconds(), defaultTtl);
 
-    const resource = new CfnCachePolicy(this, 'Default', {
+    const resource = new CfnCachePolicy(this, 'Resource', {
       cachePolicyConfig: {
         name: props.cachePolicyName,
         comment: props.comment,
