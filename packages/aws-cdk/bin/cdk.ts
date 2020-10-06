@@ -75,21 +75,33 @@ async function parseCommandLineArguments() {
       .option('public-access-block-configuration', { type: 'boolean', desc: 'Block public access configuration on CDK toolkit bucket (enabled by default) ', default: undefined })
       .option('tags', { type: 'array', alias: 't', desc: 'Tags to add for the stack (KEY=VALUE)', nargs: 1, requiresArg: true, default: [] })
       .option('execute', { type: 'boolean', desc: 'Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet)', default: true })
+<<<<<<< Updated upstream
       .option('trust', { type: 'array', desc: 'The AWS account IDs that should be trusted to perform deployments into this environment (may be repeated, modern bootstrapping only)', default: [], nargs: 1, requiresArg: true })
       .option('cloudformation-execution-policies', { type: 'array', desc: 'The Managed Policy ARNs that should be attached to the role performing deployments into this environment (may be repeated, modern bootstrapping only)', default: [], nargs: 1, requiresArg: true })
+=======
+      .option('trust', { type: 'array', desc: 'The AWS account IDs that should be trusted to perform deployments into this environment (may be repeated)', default: [], nargs: 1, requiresArg: true, hidden: true })
+      .option('cloudformation-execution-policies', { type: 'array', desc: 'The Managed Policy ARNs that should be attached to the role performing deployments into this environment. Required if --trust was passed (may be repeated)', default: [], nargs: 1, requiresArg: true, hidden: true })
+>>>>>>> Stashed changes
       .option('force', { alias: 'f', type: 'boolean', desc: 'Always bootstrap even if it would downgrade template version', default: false })
       .option('termination-protection', { type: 'boolean', default: undefined, desc: 'Toggle CloudFormation termination protection on the bootstrap stacks' })
       .option('show-template', { type: 'boolean', desc: 'Instead of actual bootstrapping, print the current CLI\'s bootstrapping template to stdout for customization.', default: false })
       .option('template', { type: 'string', requiresArg: true, desc: 'Use the template from the given file instead of the built-in one (use --show-template to obtain an example).' }),
     )
     .command('deploy [STACKS..]', 'Deploys the stack(s) named STACKS into your AWS account', yargs => yargs
+      .option('all', { type: 'boolean', default: false, desc: 'Deploy all stacks. Takes precedence over a provided list of stacks' })
       .option('build-exclude', { type: 'array', alias: 'E', nargs: 1, desc: 'Do not rebuild asset with the given ID. Can be specified multiple times.', default: [] })
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only deploy requested stacks, don\'t include dependencies' })
       .option('require-approval', { type: 'string', choices: [RequireApproval.Never, RequireApproval.AnyChange, RequireApproval.Broadening], desc: 'What security-sensitive changes need manual approval' })
+<<<<<<< Updated upstream
       .option('ci', { type: 'boolean', desc: 'Force CI detection', default: process.env.CI !== undefined })
       .option('notification-arns', { type: 'array', desc: 'ARNs of SNS topics that CloudFormation will notify with stack related events', nargs: 1, requiresArg: true })
       // @deprecated(v2) -- tags are part of the Cloud Assembly and tags specified here will be overwritten on the next deployment
       .option('tags', { type: 'array', alias: 't', desc: 'Tags to add to the stack (KEY=VALUE), overrides tags from Cloud Assembly (deprecated)', nargs: 1, requiresArg: true })
+=======
+      .option('ci', { type: 'boolean', desc: 'Force CI detection (deprecated)', default: process.env.CI !== undefined })
+      .option('notification-arns', { type: 'array', desc: 'ARNs of SNS topics that CloudFormation will notify with stack related events', nargs: 1, requiresArg: true })
+      .option('tags', { type: 'array', alias: 't', desc: 'Tags to add to the stack (KEY=VALUE)', nargs: 1, requiresArg: true })
+>>>>>>> Stashed changes
       .option('execute', { type: 'boolean', desc: 'Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet)', default: true })
       .option('force', { alias: 'f', type: 'boolean', desc: 'Always deploy stack even if templates are identical', default: false })
       .option('parameters', { type: 'array', desc: 'Additional parameters passed to CloudFormation at deploy time (STACK:KEY=VALUE)', nargs: 1, requiresArg: true, default: {} })
@@ -291,8 +303,13 @@ async function initCommandLine() {
             parameterMap[keyValue[0]] = keyValue.slice(1).join('=');
           }
         }
+<<<<<<< Updated upstream
         return cli.deploy({
           stackNames: args.STACKS,
+=======
+        return await cli.deploy({
+          stackNames: (args.all) ? '*' : args.STACKS,
+>>>>>>> Stashed changes
           exclusively: args.exclusively,
           toolkitStackName,
           roleArn: args.roleArn,
