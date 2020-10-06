@@ -482,7 +482,7 @@ export class JSIIProjectReferences extends ValidationRule {
       this.name,
       pkg,
       'jsii.projectReferences',
-      pkg.json.name !== 'monocdk-experiment' && pkg.json.name !== 'aws-cdk-lib',
+      pkg.json.name !== 'monocdk' && pkg.json.name !== 'aws-cdk-lib',
     );
   }
 }

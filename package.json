@@ -82,18 +82,18 @@
       "aws-cdk-lib/semver/**",
       "aws-cdk-lib/yaml",
       "aws-cdk-lib/yaml/**",
-      "monocdk-experiment/case",
-      "monocdk-experiment/case/**",
-      "monocdk-experiment/fs-extra",
-      "monocdk-experiment/fs-extra/**",
-      "monocdk-experiment/jsonschema",
-      "monocdk-experiment/jsonschema/**",
-      "monocdk-experiment/minimatch",
-      "monocdk-experiment/minimatch/**",
-      "monocdk-experiment/semver",
-      "monocdk-experiment/semver/**",
-      "monocdk-experiment/yaml",
-      "monocdk-experiment/yaml/**"
+      "monocdk/case",
+      "monocdk/case/**",
+      "monocdk/fs-extra",
+      "monocdk/fs-extra/**",
+      "monocdk/jsonschema",
+      "monocdk/jsonschema/**",
+      "monocdk/minimatch",
+      "monocdk/minimatch/**",
+      "monocdk/semver",
+      "monocdk/semver/**",
+      "monocdk/yaml",
+      "monocdk/yaml/**"
     ]
   }
 }
