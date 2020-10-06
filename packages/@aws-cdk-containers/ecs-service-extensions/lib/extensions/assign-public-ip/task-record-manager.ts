@@ -46,6 +46,7 @@ export class TaskRecordManager extends cdk.Construct {
         type: dynamodb.AttributeType.STRING,
       },
       billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
 
     // Put the cluster's task state changes events into the queue.
