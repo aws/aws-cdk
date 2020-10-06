@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.cloud-assembly-schema",
-        "module": "aws_cdk.cloud_assembly_schema"
+        "module": "aws_cdk.cloud_assembly_schema",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
@@ -78,7 +82,7 @@
     "exclude": []
   },
   "dependencies": {
-    "jsonschema": "^1.2.6",
+    "jsonschema": "^1.2.7",
     "semver": "^7.3.2"
   },
   "awscdkio": {

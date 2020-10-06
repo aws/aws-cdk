@@ -44,7 +44,20 @@ describe('InitCommand', () => {
 
     // THEN
     expect(rendered).toEqual({
-      '000': { command: ['/bin/sh'] },
+      '000': { command: '/bin/sh' },
+    });
+  });
+
+  test('shell command is rendered as string', () => {
+    // GIVEN
+    const command = ec2.InitCommand.shellCommand('/bin/sh -c "echo hello"');
+
+    // WHEN
+    const rendered = getElementConfig(command, InitPlatform.LINUX);
+
+    // THEN
+    expect(rendered).toEqual({
+      '000': { command: '/bin/sh -c "echo hello"' },
     });
   });
 
@@ -65,7 +78,7 @@ describe('InitCommand', () => {
     // THEN
     expect(rendered).toEqual({
       command_0: {
-        command: ['/bin/sh'],
+        command: '/bin/sh',
         env: { SECRETS_FILE: '/tmp/secrets' },
         cwd: '/home/myUser',
         test: 'test -d /home/myUser',

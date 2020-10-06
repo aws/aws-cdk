@@ -1,6 +1,7 @@
 import * as path from 'path';
 import '@aws-cdk/assert/jest';
 import * as core from '@aws-cdk/core';
+import * as constructs from 'constructs';
 import * as inc from '../lib';
 import * as futils from '../lib/file-utils';
 
@@ -140,7 +141,7 @@ describe('CDK Include', () => {
         "Bucket1": {
           "Type": "AWS::S3::Bucket",
           "Properties": {
-            "BucketName": { "Fn::GetAtt": ["Bucket0", "Arn"] },
+            "BucketName": { "Fn::GetAtt": "Bucket0.Arn" },
             "AccessControl": { "Fn::GetAtt": ["ELB", "SourceSecurityGroup.GroupName"] },
           },
         },
@@ -148,7 +149,7 @@ describe('CDK Include', () => {
           "Type": "AWS::S3::Bucket",
           "Properties": {
             "BucketName": { "Fn::GetAtt": ["Bucket1", "Arn"] },
-            "AccessControl": { "Fn::GetAtt": ["ELB", "SourceSecurityGroup.GroupName"] },
+            "AccessControl": { "Fn::GetAtt": "ELB.SourceSecurityGroup.GroupName" },
           },
         },
       },
@@ -392,7 +393,7 @@ describe('CDK Include', () => {
   });
 });
 
-function includeTestTemplate(scope: core.Construct, testTemplate: string): inc.CfnInclude {
+function includeTestTemplate(scope: constructs.Construct, testTemplate: string): inc.CfnInclude {
   return new inc.CfnInclude(scope, 'MyScope', {
     templateFile: _testTemplateFilePath(testTemplate),
   });
