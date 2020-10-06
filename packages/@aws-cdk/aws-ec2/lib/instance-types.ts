@@ -149,6 +149,16 @@ export enum InstanceClass {
   R5AD = 'r5a',
 
   /**
+   * Memory optimized instances, 6th generation with Graviton2 processors
+   */
+  MEMORY6_GRAVITON = 'r6g',
+
+  /**
+   * Memory optimized instances, 6th generation with Graviton2 processors
+   */
+  R6G = 'r6g',
+
+  /**
    * Compute optimized instances, 3rd generation
    */
   COMPUTE3 = 'c3',
