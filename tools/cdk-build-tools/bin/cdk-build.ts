@@ -2,7 +2,7 @@ import * as yargs from 'yargs';
 import { compileCurrentPackage } from '../lib/compile';
 import { lintCurrentPackage } from '../lib/lint';
 import { shell } from '../lib/os';
-import { cdkBuildOptions, CompilerOverrides } from '../lib/package-info';
+import { cdkBuildOptions, currentPackageJson, CompilerOverrides } from '../lib/package-info';
 import { Timers } from '../lib/timer';
 
 async function main() {
@@ -54,12 +54,12 @@ async function main() {
 const timers = new Timers();
 const buildTimer = timers.start('Total time');
 
-main().then(() => {
-  buildTimer.end();
-}).catch(e => {
-  buildTimer.end();
+main().catch(e => {
   process.stderr.write(`${e.toString()}\n`);
-  process.stderr.write(`Build failed. ${timers.display()}\n`);
+  process.stderr.write('Build failed.');
   process.stderr.write('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n');
   process.exit(1);
+}).finally(() => {
+  buildTimer.end();
+  process.stdout.write(`Build times for ${currentPackageJson().name}: ${timers.display()}\n`);
 });
