@@ -91,7 +91,7 @@
     "@aws-cdk/aws-ssm": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/custom-resources": "0.0.0",
-    "cdk8s": "^0.29.0",
+    "cdk8s": "^0.30.0",
     "constructs": "^3.0.4",
     "yaml": "1.10.0"
   },
@@ -108,7 +108,7 @@
     "@aws-cdk/aws-ssm": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/custom-resources": "0.0.0",
-    "cdk8s": "^0.29.0",
+    "cdk8s": "^0.30.0",
     "constructs": "^3.0.4"
   },
   "engines": {
