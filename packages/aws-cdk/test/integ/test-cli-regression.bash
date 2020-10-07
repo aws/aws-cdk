@@ -22,7 +22,7 @@ function run() {
   CANDIDATE_VERSION=${CANDIDATE_VERSION:?"Need to set CANDIDATE_VERSION"}
 
   echo "Fetching supplant version for candidate: ${CANDIDATE_VERSION}"
-  SUPPLANT_VERSION=$(node ${integdir}/helpers.js fetchSupplantVersion ${CANDIDATE_VERSION})
+  SUPPLANT_VERSION=$(node -p "require('${integdir}/helpers.js').fetchSupplantVersion('${CANDIDATE_VERSION}')")
 
   echo "Supplant version is: ${SUPPLANT_VERSION}"
 

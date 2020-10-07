@@ -34,9 +34,6 @@ test/integ/cli/*.js
 test/integ/cli/*.d.ts
 !test/integ/cli-regression-patches/**/*
 
-# dont ignore our javascript helper functions
-!test/integ/helpers.js
-
 .DS_Store
 
 junit.xml
