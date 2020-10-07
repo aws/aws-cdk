@@ -4,7 +4,7 @@ import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import * as fs from 'fs-extra';
-import * as minmatch from 'minimatch';
+import * as minimatch from 'minimatch';
 import { AssetHashType, AssetOptions } from './assets';
 import { BundlingOptions } from './bundling';
 import { FileSystem, FingerprintOptions } from './fs';
@@ -393,4 +393,3 @@ function sortObject(object: { [key: string]: any }): { [key: string]: any } {
   }
   return ret;
 }
-
