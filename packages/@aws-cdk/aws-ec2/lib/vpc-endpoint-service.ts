@@ -27,6 +27,14 @@ export interface IVpcEndpointService extends IResource {
    * @attribute
    */
   readonly vpcEndpointServiceName: string;
+
+  /**
+   * The id of the VPC Endpoint Service that clients use to connect to,
+   * like vpce-svc-xxxxxxxxxxxxxxxx
+   *
+   * @attribute
+   */
+  readonly vpcEndpointServiceId: string;
 }
 
 /**
