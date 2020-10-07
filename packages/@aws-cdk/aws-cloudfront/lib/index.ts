@@ -1,3 +1,4 @@
+export * from './cache-policy';
 export * from './distribution';
 export * from './geo-restriction';
 export * from './origin';
