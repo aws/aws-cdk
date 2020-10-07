@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## [1.67.0](https://github.com/aws/aws-cdk/compare/v1.66.0...v1.67.0) (2020-10-07)
 
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **monodk-experiment:** This package is now deprected in favor of `monocdk`. Note that `monocdk` is still experimental.
 
 ### Features
 
