@@ -175,7 +175,7 @@ export interface FileSystemProps {
   /**
    * Whether to enable automatic backups for the file system.
    *
-   * @default - false
+   * @default false
    */
   readonly enableAutomaticBackups?: boolean;
 }
