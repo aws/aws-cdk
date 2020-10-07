@@ -98,7 +98,7 @@ export = {
     });
 
     // THEN
-    test.strictEqual(service.ecsService.node.tryFindChild('TaskRecordManager'), undefined, 'task record manager should be present');
+    test.strictEqual(service.ecsService.node.tryFindChild('TaskRecordManager'), undefined, 'task record manager should not be present');
 
     test.done();
   },
