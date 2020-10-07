@@ -1,6 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
+import { IResource, Lazy, Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { ContainerDefinition, ContainerDefinitionOptions, PortMapping, Protocol } from '../container-definition';
 import { CfnTaskDefinition } from '../ecs.generated';
 import { FirelensLogRouter, FirelensLogRouterDefinitionOptions, FirelensLogRouterType, obtainDefaultFluentBitECRImage } from '../firelens-log-router';
@@ -343,7 +344,7 @@ export class TaskDefinition extends TaskDefinitionBase {
           scope: spec.dockerVolumeConfiguration.scope,
         },
         efsVolumeConfiguration: spec.efsVolumeConfiguration && {
-          filesystemId: spec.efsVolumeConfiguration.fileSystemId,
+          fileSystemId: spec.efsVolumeConfiguration.fileSystemId,
           authorizationConfig: spec.efsVolumeConfiguration.authorizationConfig,
           rootDirectory: spec.efsVolumeConfiguration.rootDirectory,
           transitEncryption: spec.efsVolumeConfiguration.transitEncryption,

@@ -1,7 +1,11 @@
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { Annotations, Construct, Token } from '@aws-cdk/core';
+import { Annotations, Token } from '@aws-cdk/core';
 import { ContainerDefinition } from '../container-definition';
 import { ContainerImage, ContainerImageConfig } from '../container-image';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Regex pattern to check if it is an ECR image URL.
@@ -34,7 +38,7 @@ export class RepositoryImage extends ContainerImage {
     super();
   }
 
-  public bind(scope: Construct, containerDefinition: ContainerDefinition): ContainerImageConfig {
+  public bind(scope: CoreConstruct, containerDefinition: ContainerDefinition): ContainerImageConfig {
     // name could be a Token - in that case, skip validation altogether
     if (!Token.isUnresolved(this.imageName) && ECR_IMAGE_REGEX.test(this.imageName)) {
       Annotations.of(scope).addWarning("Proper policies need to be attached before pulling from ECR repository, or use 'fromEcrRepository'.");
