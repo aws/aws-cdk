@@ -1,7 +1,7 @@
 import '@aws-cdk/assert/jest';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { App, Stack } from '@aws-cdk/core';
-import { AllowedMethods, CachedMethods, CachePolicy, LambdaEdgeEventType, ViewerProtocolPolicy } from '../../lib';
+import { AllowedMethods, CachedMethods, CachePolicy, LambdaEdgeEventType, OriginRequestPolicy, ViewerProtocolPolicy } from '../../lib';
 import { CacheBehavior } from '../../lib/private/cache-behavior';
 
 let app: App;
@@ -35,6 +35,7 @@ test('renders with all properties specified', () => {
     cachedMethods: CachedMethods.CACHE_GET_HEAD_OPTIONS,
     cachePolicy: CachePolicy.CACHING_OPTIMIZED,
     compress: true,
+    originRequestPolicy: OriginRequestPolicy.ALL_VIEWER,
     smoothStreaming: true,
     viewerProtocolPolicy: ViewerProtocolPolicy.HTTPS_ONLY,
     edgeLambdas: [{
@@ -51,6 +52,7 @@ test('renders with all properties specified', () => {
     cachedMethods: ['GET', 'HEAD', 'OPTIONS'],
     cachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
     compress: true,
+    originRequestPolicyId: '216adef6-5c7f-47e4-b989-5492eafa07d3',
     smoothStreaming: true,
     viewerProtocolPolicy: 'https-only',
     lambdaFunctionAssociations: [{
