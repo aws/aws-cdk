@@ -19,12 +19,6 @@ describe('CachePolicy', () => {
     expect(cachePolicy.cachePolicyId).toEqual(cachePolicyId);
   });
 
-  test('import existing policy by attributes', () => {
-    const cachePolicyId = '344f6fe5-7ce5-4df0-a470-3f14177c549c';
-    const cachePolicy = CachePolicy.fromCachePolicyAttributes(stack, 'MyPolicy', { cachePolicyId });
-    expect(cachePolicy.cachePolicyId).toEqual(cachePolicyId);
-  });
-
   test('minimal example', () => {
     new CachePolicy(stack, 'CachePolicy', { cachePolicyName: 'MyPolicy' });
 
@@ -89,10 +83,14 @@ describe('CachePolicy', () => {
   });
 
   test('throws if given a cachePolicyName with invalid characters', () => {
-    const errorMessage = '`cachePolicyName` must be alphanumeric';
+    const errorMessage = /'cachePolicyName' can only include '-', '_', and alphanumeric characters/;
     expect(() => new CachePolicy(stack, 'CachePolicy1', { cachePolicyName: 'My Policy' })).toThrow(errorMessage);
     expect(() => new CachePolicy(stack, 'CachePolicy2', { cachePolicyName: 'MyPolicy!' })).toThrow(errorMessage);
-    expect(() => new CachePolicy(stack, 'CachePolicy3', { cachePolicyName: 'xX_MyPolicy_Xx' })).toThrow(errorMessage);
+    expect(() => new CachePolicy(stack, 'CachePolicy3', { cachePolicyName: 'MyPolicy,New' })).toThrow(errorMessage);
+
+    expect(() => new CachePolicy(stack, 'CachePolicy4', { cachePolicyName: 'MyPolicy' })).not.toThrow();
+    expect(() => new CachePolicy(stack, 'CachePolicy5', { cachePolicyName: 'My-Policy' })).not.toThrow();
+    expect(() => new CachePolicy(stack, 'CachePolicy6', { cachePolicyName: 'My_Policy' })).not.toThrow();
   });
 
   describe('TTLs', () => {

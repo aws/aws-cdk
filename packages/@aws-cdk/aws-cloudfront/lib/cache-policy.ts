@@ -15,22 +15,13 @@ export interface ICachePolicy {
 }
 
 /**
- * Attributes for a Cache Policy
- * @experimental
- */
-export interface CachePolicyAttributes {
-  /** The ID of the cache policy */
-  readonly cachePolicyId: string;
-}
-
-/**
  * Properties for creating a Cache Policy
  * @experimental
  */
 export interface CachePolicyProps {
   /**
    * A unique name to identify the cache policy.
-   * The name must be alphanumeric (no spaces or special characters).
+   * The name must only include '-', '_', or alphanumeric characters.
    */
   readonly cachePolicyName: string;
 
@@ -79,7 +70,7 @@ export interface CachePolicyProps {
   readonly queryStringBehavior?: CacheQueryStringBehavior;
 
   /**
-   * Whether to normalize and include the `Accept-Encoding` header in the cache key whem the `Accept-Encoding` header is 'gzip'.
+   * Whether to normalize and include the `Accept-Encoding` header in the cache key when the `Accept-Encoding` header is 'gzip'.
    * @default false
    */
   readonly enableAcceptEncodingGzip?: boolean;
@@ -111,13 +102,8 @@ export class CachePolicy extends Resource implements ICachePolicy {
 
   /** Imports a Cache Policy from its id. */
   public static fromCachePolicyId(scope: Construct, id: string, cachePolicyId: string): ICachePolicy {
-    return this.fromCachePolicyAttributes(scope, id, { cachePolicyId });
-  }
-
-  /** Imports a Cache Policy from its attributes. */
-  public static fromCachePolicyAttributes(scope: Construct, id: string, attrs: CachePolicyAttributes): ICachePolicy {
     return new class extends Resource implements ICachePolicy {
-      public readonly cachePolicyId = attrs.cachePolicyId;
+      public readonly cachePolicyId = cachePolicyId;
     }(scope, id);
   }
 
@@ -135,8 +121,8 @@ export class CachePolicy extends Resource implements ICachePolicy {
       physicalName: props.cachePolicyName,
     });
 
-    if (!props.cachePolicyName.match(/^[a-z0-9]+$/i)) {
-      throw new Error('`cachePolicyName` must be alphanumeric');
+    if (!props.cachePolicyName.match(/^[\w-]+$/i)) {
+      throw new Error(`'cachePolicyName' can only include '-', '_', and alphanumeric characters, got: '${props.cachePolicyName}'`);
     }
 
     const minTtl = (props.minTtl ?? Duration.seconds(0)).toSeconds();
