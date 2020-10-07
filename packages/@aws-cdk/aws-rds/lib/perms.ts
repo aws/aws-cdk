@@ -1,3 +1,4 @@
+// https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/data-api.html#data-api.access
 export const DATA_API_ACTIONS = [
   'secretsmanager:CreateSecret',
   'secretsmanager:ListSecrets',

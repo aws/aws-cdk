@@ -472,12 +472,12 @@ const fn = new lambda.Function(this, 'MyFunction', {
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
   environment: {
-    CLUTSER_ARN: cluster.clusterArn,
+    CLUSTER_ARN: cluster.clusterArn,
     SECRET_ARN: cluster.secret.secretArn,
   },
 });
-db.grantDataApi(fn)
-db.secret.grantRead(fn)
+cluster.grantDataApi(fn)
+cluster.secret.grantRead(fn)
 ```
 
 **Note**: To invoke the Data API, the resource will need to read the secret associated with the cluster.
