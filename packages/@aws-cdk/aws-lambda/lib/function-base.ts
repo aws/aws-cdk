@@ -1,7 +1,7 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { Annotations, ConstructNode, IResource, Resource, Token } from '@aws-cdk/core';
+import { ConstructNode, IResource, Resource, Token } from '@aws-cdk/core';
 import { AliasOptions } from './alias';
 import { EventInvokeConfig, EventInvokeConfigOptions } from './event-invoke-config';
 import { IEventSource } from './event-source';
@@ -210,7 +210,7 @@ export abstract class FunctionBase extends Resource implements IFunction {
    */
   public addPermission(id: string, permission: Permission) {
     if (!this.canCreatePermissions) {
-      Annotations.of(this).addWarning('attempted to call `addPermission` on unsupported function (either imported or $LATEST version).');
+      // FIXME: @deprecate this behavior in V2; throw an error if calling `addPermission` on a resource that doesn't support it.
       return;
     }
 
@@ -300,7 +300,10 @@ export abstract class FunctionBase extends Resource implements IFunction {
             });
 
             const permissionNode = this._functionNode().tryFindChild(identifier);
-            return { statementAdded: (permissionNode !== undefined), policyDependable: permissionNode };
+            if (!permissionNode) {
+              throw new Error('attempted to call `grantInvoke` on unsupported function (either imported or $LATEST version).');
+            }
+            return { statementAdded: true, policyDependable: permissionNode };
           },
           node: this.node,
           stack: this.stack,
@@ -358,13 +361,13 @@ export abstract class FunctionBase extends Resource implements IFunction {
    * ..which means that in order to extract the `account-id` component from the ARN, we can
    * split the ARN using ":" and select the component in index 4.
    *
-   * @returns true if account id of function matches this account
+   * @returns true if account id of function matches this account, or the accounts are unresolved.
    *
    * @internal
    */
   protected _isStackAccount(): boolean {
     if (Token.isUnresolved(this.stack.account) || Token.isUnresolved(this.functionArn)) {
-      return false;
+      return true;
     }
     return this.stack.parseArn(this.functionArn).account === this.stack.account;
   }
