@@ -602,6 +602,33 @@
         "PolicyDocument": {
           "Statement": [
             {
+              "Action": "ec2:DescribeNetworkInterfaces",
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": [
+                "route53:ChangeResourceRecordSets",
+                "route53:ListResourceRecordSets"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":route53:::hostedzone/",
+                    {
+                      "Ref": "zoneEB40FF1E"
+                    }
+                  ]
+                ]
+              }
+            },
+            {
               "Action": [
                 "sqs:ReceiveMessage",
                 "sqs:ChangeMessageVisibility",
@@ -618,9 +645,30 @@
               }
             },
             {
-              "Action": "*",
+              "Action": [
+                "dynamodb:BatchGetItem",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+                "dynamodb:Query",
+                "dynamodb:GetItem",
+                "dynamodb:Scan",
+                "dynamodb:BatchWriteItem",
+                "dynamodb:PutItem",
+                "dynamodb:UpdateItem",
+                "dynamodb:DeleteItem"
+              ],
               "Effect": "Allow",
-              "Resource": "*"
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "nameserviceTaskRecordManagerRecordsA4648C6E",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Ref": "AWS::NoValue"
+                }
+              ]
             }
           ],
           "Version": "2012-10-17"
@@ -638,7 +686,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParametersd9afbaf8d7cb758fd997e6e42c848f1defb4486e0df5c8996c2b0501eefb9057S3BucketC3A6C5FE"
+            "Ref": "AssetParameters1bb1e4f723cfbe72f45f9eac5cc38c907f3f3d5555359dc9693d1d77eb9b905fS3BucketA65ED427"
           },
           "S3Key": {
             "Fn::Join": [
@@ -651,7 +699,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersd9afbaf8d7cb758fd997e6e42c848f1defb4486e0df5c8996c2b0501eefb9057S3VersionKey32299963"
+                          "Ref": "AssetParameters1bb1e4f723cfbe72f45f9eac5cc38c907f3f3d5555359dc9693d1d77eb9b905fS3VersionKey897FE757"
                         }
                       ]
                     }
@@ -664,7 +712,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersd9afbaf8d7cb758fd997e6e42c848f1defb4486e0df5c8996c2b0501eefb9057S3VersionKey32299963"
+                          "Ref": "AssetParameters1bb1e4f723cfbe72f45f9eac5cc38c907f3f3d5555359dc9693d1d77eb9b905fS3VersionKey897FE757"
                         }
                       ]
                     }
@@ -758,9 +806,26 @@
         "PolicyDocument": {
           "Statement": [
             {
-              "Action": "*",
+              "Action": [
+                "route53:ChangeResourceRecordSets",
+                "route53:ListResourceRecordSets"
+              ],
               "Effect": "Allow",
-              "Resource": "*"
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":route53:::hostedzone/",
+                    {
+                      "Ref": "zoneEB40FF1E"
+                    }
+                  ]
+                ]
+              }
             }
           ],
           "Version": "2012-10-17"
@@ -778,7 +843,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParametersd9afbaf8d7cb758fd997e6e42c848f1defb4486e0df5c8996c2b0501eefb9057S3BucketC3A6C5FE"
+            "Ref": "AssetParameters1bb1e4f723cfbe72f45f9eac5cc38c907f3f3d5555359dc9693d1d77eb9b905fS3BucketA65ED427"
           },
           "S3Key": {
             "Fn::Join": [
@@ -791,7 +856,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersd9afbaf8d7cb758fd997e6e42c848f1defb4486e0df5c8996c2b0501eefb9057S3VersionKey32299963"
+                          "Ref": "AssetParameters1bb1e4f723cfbe72f45f9eac5cc38c907f3f3d5555359dc9693d1d77eb9b905fS3VersionKey897FE757"
                         }
                       ]
                     }
@@ -804,7 +869,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersd9afbaf8d7cb758fd997e6e42c848f1defb4486e0df5c8996c2b0501eefb9057S3VersionKey32299963"
+                          "Ref": "AssetParameters1bb1e4f723cfbe72f45f9eac5cc38c907f3f3d5555359dc9693d1d77eb9b905fS3VersionKey897FE757"
                         }
                       ]
                     }
@@ -972,17 +1037,17 @@
     }
   },
   "Parameters": {
-    "AssetParametersd9afbaf8d7cb758fd997e6e42c848f1defb4486e0df5c8996c2b0501eefb9057S3BucketC3A6C5FE": {
+    "AssetParameters1bb1e4f723cfbe72f45f9eac5cc38c907f3f3d5555359dc9693d1d77eb9b905fS3BucketA65ED427": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"d9afbaf8d7cb758fd997e6e42c848f1defb4486e0df5c8996c2b0501eefb9057\""
+      "Description": "S3 bucket for asset \"1bb1e4f723cfbe72f45f9eac5cc38c907f3f3d5555359dc9693d1d77eb9b905f\""
     },
-    "AssetParametersd9afbaf8d7cb758fd997e6e42c848f1defb4486e0df5c8996c2b0501eefb9057S3VersionKey32299963": {
+    "AssetParameters1bb1e4f723cfbe72f45f9eac5cc38c907f3f3d5555359dc9693d1d77eb9b905fS3VersionKey897FE757": {
       "Type": "String",
-      "Description": "S3 key for asset version \"d9afbaf8d7cb758fd997e6e42c848f1defb4486e0df5c8996c2b0501eefb9057\""
+      "Description": "S3 key for asset version \"1bb1e4f723cfbe72f45f9eac5cc38c907f3f3d5555359dc9693d1d77eb9b905f\""
     },
-    "AssetParametersd9afbaf8d7cb758fd997e6e42c848f1defb4486e0df5c8996c2b0501eefb9057ArtifactHashEB106CAE": {
+    "AssetParameters1bb1e4f723cfbe72f45f9eac5cc38c907f3f3d5555359dc9693d1d77eb9b905fArtifactHashAD56190C": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"d9afbaf8d7cb758fd997e6e42c848f1defb4486e0df5c8996c2b0501eefb9057\""
+      "Description": "Artifact hash for asset \"1bb1e4f723cfbe72f45f9eac5cc38c907f3f3d5555359dc9693d1d77eb9b905f\""
     },
     "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3BucketDC4B98B1": {
       "Type": "String",
@@ -995,6 +1060,24 @@
     "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1ArtifactHashA521A16F": {
       "Type": "String",
       "Description": "Artifact hash for asset \"daeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1\""
+    }
+  },
+  "Outputs": {
+    "DnsName": {
+      "Value": "test-record.myexample.com"
+    },
+    "DnsServer": {
+      "Value": {
+        "Fn::Select": [
+          0,
+          {
+            "Fn::GetAtt": [
+              "zoneEB40FF1E",
+              "NameServers"
+            ]
+          }
+        ]
+      }
     }
   }
 }
