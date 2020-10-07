@@ -12,6 +12,13 @@ integdir=$(cd $(dirname $0) && pwd)
 
 function run() {
 
+  TEST_RUNNER=${TEST_RUNNER:-""}
+
+  if [ "${TEST_RUNNER}" != "dist" ]; then
+    echo "Unsupported runner: ${TEST_RUNNER}. Regression tests can only run with the 'dist' runner"
+    exit 1
+  fi
+
   CANDIDATE_VERSION=${CANDIDATE_VERSION:?"Need to set CANDIDATE_VERSION"}
 
   echo "Fetching supplant version for candidate: ${CANDIDATE_VERSION}"
