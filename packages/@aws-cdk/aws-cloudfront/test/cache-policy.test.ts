@@ -9,7 +9,7 @@ describe('CachePolicy', () => {
   beforeEach(() => {
     app = new App();
     stack = new Stack(app, 'Stack', {
-      env: { account: '1234', region: 'testregion' },
+      env: { account: '123456789012', region: 'testregion' },
     });
   });
 
@@ -20,11 +20,11 @@ describe('CachePolicy', () => {
   });
 
   test('minimal example', () => {
-    new CachePolicy(stack, 'CachePolicy', { cachePolicyName: 'MyPolicy' });
+    new CachePolicy(stack, 'CachePolicy');
 
     expect(stack).toHaveResource('AWS::CloudFront::CachePolicy', {
       CachePolicyConfig: {
-        Name: 'MyPolicy',
+        Name: 'StackCachePolicy0D6FCBC0',
         MinTTL: 0,
         DefaultTTL: 86400,
         MaxTTL: 31536000,

@@ -661,8 +661,8 @@ export interface AddBehaviorOptions {
   /**
    * The cache policy for this behavior. The cache policy determines what values are included in the cache key,
    * and the time-to-live (TTL) values for the cache.
-   * See https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/controlling-the-cache-key.html.
    *
+   * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/controlling-the-cache-key.html.
    * @default CachePolicy.CACHING_OPTIMIZED
    */
   readonly cachePolicy?: ICachePolicy;

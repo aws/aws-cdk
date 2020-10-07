@@ -22,8 +22,9 @@ export interface CachePolicyProps {
   /**
    * A unique name to identify the cache policy.
    * The name must only include '-', '_', or alphanumeric characters.
+   * @default - generated from the `id`
    */
-  readonly cachePolicyName: string;
+  readonly cachePolicyName?: string;
 
   /**
    * A comment to describe the cache policy.
@@ -53,19 +54,19 @@ export interface CachePolicyProps {
 
   /**
    * Determines whether any cookies in viewer requests are included in the cache key and automatically included in requests that CloudFront sends to the origin.
-   * @default CookieBehavior.none()
+   * @default CacheCookieBehavior.none()
    */
   readonly cookieBehavior?: CacheCookieBehavior;
 
   /**
    * Determines whether any HTTP headers are included in the cache key and automatically included in requests that CloudFront sends to the origin.
-   * @default HeaderBehavior.none()
+   * @default CacheHeaderBehavior.none()
    */
   readonly headerBehavior?: CacheHeaderBehavior;
 
   /**
    * Determines whether any query strings are included in the cache key and automatically included in requests that CloudFront sends to the origin.
-   * @default QueryStringBehavior.none()
+   * @default CacheQueryStringBehavior.none()
    */
   readonly queryStringBehavior?: CacheQueryStringBehavior;
 
@@ -116,12 +117,13 @@ export class CachePolicy extends Resource implements ICachePolicy {
 
   public readonly cachePolicyId: string;
 
-  constructor(scope: Construct, id: string, props: CachePolicyProps) {
+  constructor(scope: Construct, id: string, props: CachePolicyProps = {}) {
     super(scope, id, {
       physicalName: props.cachePolicyName,
     });
 
-    if (!props.cachePolicyName.match(/^[\w-]+$/i)) {
+    const cachePolicyName = props.cachePolicyName ?? this.node.uniqueId;
+    if (!cachePolicyName.match(/^[\w-]+$/i)) {
       throw new Error(`'cachePolicyName' can only include '-', '_', and alphanumeric characters, got: '${props.cachePolicyName}'`);
     }
 
@@ -131,7 +133,7 @@ export class CachePolicy extends Resource implements ICachePolicy {
 
     const resource = new CfnCachePolicy(this, 'Resource', {
       cachePolicyConfig: {
-        name: props.cachePolicyName,
+        name: cachePolicyName,
         comment: props.comment,
         minTtl,
         maxTtl,
