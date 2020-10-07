@@ -41,9 +41,9 @@ export class ProviderAttribute {
   /** The gender attribute provided by Google */
   public static readonly GOOGLE_GENDER = new ProviderAttribute('gender');
   /** The birthday attribute provided by Google */
-  public static readonly GOOGLE_BIRTHDAY = new ProviderAttribute('birthdays');
+  public static readonly GOOGLE_BIRTHDAYS = new ProviderAttribute('birthdays');
   /** The birthday attribute provided by Google */
-  public static readonly GOOGLE_PHONE_NUMBER = new ProviderAttribute('phoneNumbers');
+  public static readonly GOOGLE_PHONE_NUMBERS = new ProviderAttribute('phoneNumbers');
   /** The email attribute provided by Google */
   public static readonly GOOGLE_EMAIL = new ProviderAttribute('email');
   /** The name attribute provided by Google */
