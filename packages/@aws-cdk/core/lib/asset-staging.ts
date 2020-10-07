@@ -4,6 +4,7 @@ import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import * as fs from 'fs-extra';
+import * as minmatch from 'minimatch';
 import { AssetHashType, AssetOptions } from './assets';
 import { BundlingOptions } from './bundling';
 import { FileSystem, FingerprintOptions } from './fs';
@@ -137,7 +138,7 @@ export class AssetStaging extends CoreConstruct {
     if (props.bundling) {
       // Check if we actually have to bundle for this stack
       const bundlingStacks: string[] = this.node.tryGetContext(cxapi.BUNDLING_STACKS) ?? ['*'];
-      const runBundling = bundlingStacks.includes(Stack.of(this).stackName) || bundlingStacks.includes('*');
+      const runBundling = !!bundlingStacks.find(pattern => minmatch(Stack.of(this).stackName, pattern));
       if (runBundling) {
         const bundling = props.bundling;
         this.assetHash = AssetStaging.getOrCalcAssetHash(cacheKey, () => {
