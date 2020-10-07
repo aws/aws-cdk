@@ -23,6 +23,26 @@
         }
       }
     },
+    "OriginRequestPolicy3EFDB4FA": {
+      "Type": "AWS::CloudFront::OriginRequestPolicy",
+      "Properties": {
+        "OriginRequestPolicyConfig": {
+          "CookiesConfig": {
+            "CookieBehavior": "none"
+          },
+          "HeadersConfig": {
+            "HeaderBehavior": "allViewerAndWhitelistCloudFront",
+            "Headers": [
+              "CloudFront-Forwarded-Proto"
+            ]
+          },
+          "Name": "ACustomOriginRequestPolicy",
+          "QueryStringsConfig": {
+            "QueryStringBehavior": "none"
+          }
+        }
+      }
+    },
     "DistB3B78991": {
       "Type": "AWS::CloudFront::Distribution",
       "Properties": {
@@ -30,6 +50,9 @@
           "DefaultCacheBehavior": {
             "CachePolicyId": {
               "Ref": "CachePolicy26D8A535"
+            },
+            "OriginRequestPolicyId": {
+              "Ref": "OriginRequestPolicy3EFDB4FA"
             },
             "TargetOriginId": "integdistributionpoliciesDistOrigin17849EF2C",
             "ViewerProtocolPolicy": "allow-all"
