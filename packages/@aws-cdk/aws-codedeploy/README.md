@@ -245,6 +245,16 @@ const deploymentGroup = new codedeploy.LambdaDeploymentGroup(stack, 'BlueGreenDe
   deploymentConfig: config,
 });
 ```
+
+You can specify a custom name for your deployment config, but if you do you will not be able to update the interval/percentage through CDK.
+```ts
+const config = new codedeploy.CustomLambdaDeploymentConfig(stack, 'CustomConfig', {
+  type: codedeploy.CustomLambdaDeploymentConfigType.CANARY,
+  interval: Duration.minutes(1),
+  percentage: 5,
+  deploymentConfigName: 'MyDeploymentConfig',
+});
+```
 #### Rollbacks and Alarms
 
 CodeDeploy will roll back if the deployment fails. You can optionally trigger a rollback when one or more alarms are in a failed state:

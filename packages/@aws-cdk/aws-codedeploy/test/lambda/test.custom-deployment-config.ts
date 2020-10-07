@@ -38,6 +38,92 @@ export = {
       type: codedeploy.CustomLambdaDeploymentConfigType.CANARY,
       interval: cdk.Duration.minutes(1),
       percentage: 5,
+    });
+    new codedeploy.LambdaDeploymentGroup(stack, 'MyDG', {
+      application,
+      alias,
+      deploymentConfig: config,
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('Custom::AWS', {
+      ServiceToken: {
+        'Fn::GetAtt': [
+          'AWS679f53fac002430cb0da5b7982bd22872D164C4C',
+          'Arn',
+        ],
+      },
+      Create: {
+        action: 'createDeploymentConfig',
+        service: 'CodeDeploy',
+        parameters: {
+          computePlatform: 'Lambda',
+          deploymentConfigName: 'CustomConfig.LambdaCanary5Percent1Minutes',
+          trafficRoutingConfig: {
+            timeBasedCanary: {
+              canaryPercentage: '5',
+              canaryInterval: '1',
+            },
+            type: 'TimeBasedCanary',
+          },
+        },
+        physicalResourceId: {
+          id: 'CustomConfig.LambdaCanary5Percent1Minutes',
+        },
+      },
+      Update: {
+        action: 'createDeploymentConfig',
+        service: 'CodeDeploy',
+        parameters: {
+          computePlatform: 'Lambda',
+          deploymentConfigName: 'CustomConfig.LambdaCanary5Percent1Minutes',
+          trafficRoutingConfig: {
+            timeBasedCanary: {
+              canaryPercentage: '5',
+              canaryInterval: '1',
+            },
+            type: 'TimeBasedCanary',
+          },
+        },
+        physicalResourceId: {
+          id: 'CustomConfig.LambdaCanary5Percent1Minutes',
+        },
+      },
+      Delete: {
+        action: 'deleteDeploymentConfig',
+        service: 'CodeDeploy',
+        parameters: {
+          deploymentConfigName: 'CustomConfig.LambdaCanary5Percent1Minutes',
+        },
+      },
+    }));
+
+    expect(stack).to(haveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'codedeploy:CreateDeploymentConfig',
+            Effect: 'Allow',
+            Resource: '*',
+          },
+          {
+            Action: 'codedeploy:DeleteDeploymentConfig',
+            Effect: 'Allow',
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    }));
+    test.done();
+  },
+  'custom resource created with specific name'(test: Test) {
+
+    // WHEN
+    const config = new codedeploy.CustomLambdaDeploymentConfig(stack, 'CustomConfig', {
+      type: codedeploy.CustomLambdaDeploymentConfigType.CANARY,
+      interval: cdk.Duration.minutes(1),
+      percentage: 5,
       deploymentConfigName: 'MyDeploymentConfig',
     });
     new codedeploy.LambdaDeploymentGroup(stack, 'MyDG', {
@@ -69,7 +155,7 @@ export = {
           },
         },
         physicalResourceId: {
-          id: 'MyDeploymentConfigCustomConfig.LambdaCanary5Percent1Minutes',
+          id: 'MyDeploymentConfig',
         },
       },
       Update: {
@@ -87,7 +173,7 @@ export = {
           },
         },
         physicalResourceId: {
-          id: 'MyDeploymentConfigCustomConfig.LambdaCanary5Percent1Minutes',
+          id: 'MyDeploymentConfig',
         },
       },
       Delete: {
