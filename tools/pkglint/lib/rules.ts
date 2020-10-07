@@ -482,7 +482,7 @@ export class JSIIProjectReferences extends ValidationRule {
       this.name,
       pkg,
       'jsii.projectReferences',
-      pkg.json.name !== 'monocdk-experiment' && pkg.json.name !== 'aws-cdk-lib',
+      pkg.json.name !== 'monocdk' && pkg.json.name !== 'aws-cdk-lib',
     );
   }
 }
@@ -571,6 +571,21 @@ export class NoTsBuildInfo extends ValidationRule {
     // We might at some point also want to strip tsconfig.json but for now,
     // the TypeScript DOCS BUILD needs to it to load the typescript source.
     fileShouldContain(this.name, pkg, '.npmignore', '*.tsbuildinfo');
+  }
+}
+
+export class NoTestsInNpmPackage extends ValidationRule {
+  public readonly name = 'npmignore/test';
+
+  public validate(pkg: PackageJson): void {
+    // skip private packages
+    if (pkg.json.private) { return; }
+
+    // Skip the CLI package, as its 'test' subdirectory is used at runtime.
+    if (pkg.packageName === 'aws-cdk') { return; }
+
+    // Exclude 'test/' directories from being packaged
+    fileShouldContain(this.name, pkg, '.npmignore', 'test/');
   }
 }
 

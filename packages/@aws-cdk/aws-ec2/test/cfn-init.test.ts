@@ -6,7 +6,7 @@ import '@aws-cdk/assert/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import { Asset } from '@aws-cdk/aws-s3-assets';
-import { App, Aws, CfnResource, Stack, DefaultStackSynthesizer, IStackSynthesizer, FileAssetSource, FileAssetLocation } from '@aws-cdk/core';
+import { AssetStaging, App, Aws, CfnResource, Stack, DefaultStackSynthesizer, IStackSynthesizer, FileAssetSource, FileAssetLocation } from '@aws-cdk/core';
 import * as ec2 from '../lib';
 
 let app: App;
@@ -485,6 +485,7 @@ describe('assets n buckets', () => {
   test('fingerprint data changes on asset hash update', () => {
     function calculateFingerprint(assetFilePath: string): string | undefined {
       resetState(); // Needed so the same resources/assets/filenames can be used.
+      AssetStaging.clearAssetHashCache(); // Needed so changing the content of the file will update the hash
       const init = ec2.CloudFormationInit.fromElements(
         ec2.InitFile.fromAsset('/etc/myFile', assetFilePath),
       );
@@ -514,6 +515,7 @@ describe('assets n buckets', () => {
   test('fingerprint data changes on existing asset update, even for assets with unchanging URLs', () => {
     function calculateFingerprint(assetFilePath: string): string | undefined {
       resetStateWithSynthesizer(new SingletonLocationSythesizer());
+      AssetStaging.clearAssetHashCache(); // Needed so changing the content of the file will update the hash
       const init = ec2.CloudFormationInit.fromElements(
         ec2.InitFile.fromExistingAsset('/etc/myFile', new Asset(stack, 'FileAsset', { path: assetFilePath })),
       );
