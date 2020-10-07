@@ -738,14 +738,14 @@ EBS volume for the bastion host can be encrypted like:
 
 ### Block Devices
 
-To add EBS block device mappings, specify the `blockDeviceMappings` property. The follow example sets the EBS-backed
+To add EBS block device mappings, specify the `blockDevices` property. The following example sets the EBS-backed
 root device (`/dev/sda1`) size to 50 GiB, and adds another EBS-backed device mapped to `/dev/sdm` that is 100 GiB in
 size:
 
 ```ts
 new ec2.Instance(this, 'Instance', {
   // ...
-  blockDeviceMappings: [
+  blockDevices: [
     {
       deviceName: '/dev/sda1',
       volume: ec2.BlockDeviceVolume.ebs(50),
