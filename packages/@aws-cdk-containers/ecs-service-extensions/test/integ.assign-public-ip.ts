@@ -1,7 +1,7 @@
 import { SubnetType, Vpc } from '@aws-cdk/aws-ec2';
 import { ContainerImage } from '@aws-cdk/aws-ecs';
 import { PublicHostedZone } from '@aws-cdk/aws-route53';
-import { App, Stack } from '@aws-cdk/core';
+import { App, CfnOutput, Fn, Stack } from '@aws-cdk/core';
 import { AssignPublicIpExtension, Container, Environment, Service, ServiceDescription } from '../lib';
 
 const app = new App();
@@ -47,8 +47,36 @@ new Service(stack, 'name', {
   serviceDescription: nameDescription,
 });
 
+new CfnOutput(stack, 'DnsName', {
+  value: Fn.join('.', ['test-record', dnsZone.zoneName]),
+});
+
+new CfnOutput(stack, 'DnsServer', {
+  value: Fn.select(0, dnsZone.hostedZoneNameServers!),
+});
+
 /**
- * Expect this stack to deploy, plain and simple. If the service doesn't enable
- * public IP addresses, ECS won't detect that the service has stabilized - it
- * will fail to pull the container image as there's no NAT gateway in the VPC.
+ * Expect this stack to deploy. The stack outputs include a DNS name and a
+ * nameserver. A short time after the services have settled, you may query the
+ * nameserver for the record. If an IP address is shown, then this test has
+ * succeeded.
+ *
+ * Example:
+ *
+ * ```
+ * $ cdk --app 'node ./integ.assign-public-ip.js' deploy
+ * ...
+ * Outputs:
+ * aws-ecs-integ.DnsName = test-record.myexample.com
+ * aws-ecs-integ.DnsServer = ns-1836.awsdns-37.co.uk
+ * ...
+ *
+ * $ host test-record.myexample.com ns-1836.awsdns-37.co.uk
+ * Using domain server:
+ * Name: ns-1836.awsdns-37.co.uk
+ * Address: 2600:9000:5307:2c00::1#53
+ * Aliases:
+ *
+ * test-record.myexample.com has address 52.60.53.62
+ * ```
  */
