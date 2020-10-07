@@ -138,7 +138,7 @@ export class AssetStaging extends CoreConstruct {
     if (props.bundling) {
       // Check if we actually have to bundle for this stack
       const bundlingStacks: string[] = this.node.tryGetContext(cxapi.BUNDLING_STACKS) ?? ['*'];
-      const runBundling = !!bundlingStacks.find(pattern => minmatch(Stack.of(this).stackName, pattern));
+      const runBundling = !!bundlingStacks.find(pattern => minimatch(Stack.of(this).stackName, pattern));
       if (runBundling) {
         const bundling = props.bundling;
         this.assetHash = AssetStaging.getOrCalcAssetHash(cacheKey, () => {
