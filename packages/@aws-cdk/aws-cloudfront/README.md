@@ -163,6 +163,43 @@ new cloudfront.Distribution(this, 'myDist', {
 });
 ```
 
+### Customizing Cache Keys and TTLs with Cache Policies
+
+You can use a cache policy to improve your cache hit ratio by controlling the values (URL query strings, HTTP headers, and cookies)
+that are included in the cache key, and/or adjusting how long items remain in the cache via the time-to-live (TTL) settings.
+CloudFront provides some predefined cache policies, known as managed policies, for common use cases. You can use these managed policies,
+or you can create your own cache policy that’s specific to your needs.
+See https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/controlling-the-cache-key.html for more details.
+
+```ts
+// Using an existing cache policy
+new cloudfront.Distribution(this, 'myDistManagedPolicy', {
+  defaultBehavior: {
+    origin: bucketOrigin,
+    cachePolicy: cloudfront.CachePolicy.CACHING_OPTIMIZED,
+  },
+});
+
+// Creating a custom cache policy  -- all parameters optional
+const myCachePolicy = new cloudfront.CachePolicy(this, 'myCachePolicy', {
+  cachePolicyName: 'MyPolicy',
+  comment: 'A default policy',
+  defaultTtl: Duration.days(2),
+  minTtl: Duration.minutes(1),
+  maxTtl: Duration.days(10),
+  cookieBehavior: cloudfront.CacheCookieBehavior.all(),
+  headerBehavior: cloudfront.CacheHeaderBehavior.allowList('X-CustomHeader'),
+  queryStringBehavior: cloudfront.CacheQueryStringBehavior.denyList('username'),
+  enableAcceptEncodingGzip: true,
+});
+new cloudfront.Distribution(this, 'myDistCustomPolicy', {
+  defaultBehavior: {
+    origin: bucketOrigin,
+    cachePolicy: myCachePolicy,
+  },
+});
+```
+
 ### Lambda@Edge
 
 Lambda@Edge is an extension of AWS Lambda, a compute service that lets you execute functions that customize the content that CloudFront delivers.
