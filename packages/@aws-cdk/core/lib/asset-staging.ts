@@ -107,6 +107,8 @@ export class AssetStaging extends CoreConstruct {
 
   private bundleDir?: string;
 
+  private readonly cacheKey: string;
+
   constructor(scope: Construct, id: string, props: AssetStagingProps) {
     super(scope, id);
 
@@ -126,7 +128,7 @@ export class AssetStaging extends CoreConstruct {
     // staged this asset (e.g. the same asset with the same configuration is used
     // in multiple stacks). In this case we can completely skip file system and
     // bundling operations.
-    const cacheKey = calculateCacheKey({
+    this.cacheKey = calculateCacheKey({
       sourcePath: path.resolve(props.sourcePath),
       bundling: props.bundling,
       assetHashType: hashType,
@@ -140,7 +142,7 @@ export class AssetStaging extends CoreConstruct {
       const runBundling = bundlingStacks.includes(Stack.of(this).stackName) || bundlingStacks.includes('*');
       if (runBundling) {
         const bundling = props.bundling;
-        this.assetHash = AssetStaging.getOrCalcAssetHash(cacheKey, () => {
+        this.assetHash = AssetStaging.getOrCalcAssetHash(this.cacheKey, () => {
           // Determine the source hash in advance of bundling if the asset hash type
           // is SOURCE so that the bundler can opt to re-use its previous output.
           const sourceHash = hashType === AssetHashType.SOURCE
@@ -152,7 +154,7 @@ export class AssetStaging extends CoreConstruct {
         this.relativePath = renderAssetFilename(this.assetHash);
         this.stagedPath = this.relativePath;
       } else { // Bundling is skipped
-        this.assetHash = AssetStaging.getOrCalcAssetHash(cacheKey, () => {
+        this.assetHash = AssetStaging.getOrCalcAssetHash(this.cacheKey, () => {
           return props.assetHashType === AssetHashType.BUNDLE || props.assetHashType === AssetHashType.OUTPUT
             ? this.calculateHash(AssetHashType.CUSTOM, this.node.path) // Use node path as dummy hash because we're not bundling
             : this.calculateHash(hashType, props.assetHash);
@@ -160,7 +162,7 @@ export class AssetStaging extends CoreConstruct {
         this.stagedPath = this.sourcePath;
       }
     } else {
-      this.assetHash = AssetStaging.getOrCalcAssetHash(cacheKey, () => this.calculateHash(hashType, props.assetHash));
+      this.assetHash = AssetStaging.getOrCalcAssetHash(this.cacheKey, () => this.calculateHash(hashType, props.assetHash));
       this.relativePath = renderAssetFilename(this.assetHash, path.extname(this.sourcePath));
       this.stagedPath = this.relativePath;
     }
@@ -239,17 +241,15 @@ export class AssetStaging extends CoreConstruct {
         // once before, so we'll give the caller nothing.
         return bundleDir;
       }
-
-      fs.ensureDirSync(bundleDir);
     } else {
       // When the asset hash isn't known in advance, bundler outputs to an
-      // intermediate directory.
-
-      // Create temp directory for bundling inside the temp staging directory
-      bundleDir = path.resolve(fs.mkdtempSync(path.join(outdir, 'bundling-temp-')));
-      // Chmod the bundleDir to full access.
-      fs.chmodSync(bundleDir, 0o777);
+      // intermediate directory named after the asset's cache key
+      bundleDir = path.resolve(path.join(outdir, `bundling-temp-${this.cacheKey}`));
     }
+
+    fs.ensureDirSync(bundleDir);
+    // Chmod the bundleDir to full access.
+    fs.chmodSync(bundleDir, 0o777);
 
     let user: string;
     if (options.user) {
