@@ -12,14 +12,14 @@ import * as cdk from '@aws-cdk/core';
 import * as customresources from '@aws-cdk/custom-resources';
 
 export interface TaskRecordManagerProps {
-  cluster: ecs.ICluster;
   service: ecs.Ec2Service | ecs.FargateService;
   dnsZone: route53.IHostedZone;
   dnsRecordName: string;
 }
 
 /**
- * Manages posting task DNS records.
+ * An event-driven serverless app to maintain a list of public ips in a Route 53
+ * hosted zone.
  */
 export class TaskRecordManager extends cdk.Construct {
   constructor(scope: cdk.Construct, id: string, props: TaskRecordManagerProps) {
@@ -60,7 +60,7 @@ export class TaskRecordManager extends cdk.Construct {
         source: ['aws.ecs'],
         detailType: ['ECS Task State Change'],
         detail: {
-          clusterArn: [props.cluster.clusterArn],
+          clusterArn: [props.service.cluster.clusterArn],
           lastStatus: ['RUNNING'],
           desiredStatus: ['RUNNING'],
         },
@@ -75,7 +75,7 @@ export class TaskRecordManager extends cdk.Construct {
         source: ['aws.ecs'],
         detailType: ['ECS Task State Change'],
         detail: {
-          clusterArn: [props.cluster.clusterArn],
+          clusterArn: [props.service.cluster.clusterArn],
           lastStatus: ['STOPPED'],
           desiredStatus: ['STOPPED'],
         },

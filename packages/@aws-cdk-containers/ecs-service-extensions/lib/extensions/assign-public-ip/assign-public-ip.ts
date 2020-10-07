@@ -6,7 +6,9 @@ import { ServiceExtension, ServiceBuild, EnvironmentCapacityType } from '../exte
 import { TaskRecordManager } from './task-record-manager';
 
 export interface AssignPublicIpExtensionOptions {
-
+  /**
+   * Enable publishing task public IPs to a recordset in Route 53 hosted zone.
+   */
   dns?: AssignPublicIpDnsOptions;
 }
 
@@ -26,7 +28,8 @@ export interface AssignPublicIpDnsOptions {
 }
 
 /**
- * Modifies the service to assign a public to each task.
+ * Modifies the service to assign a public to each task and optionally
+ * exposes public IPs in a Route 53 record set.
  */
 export class AssignPublicIpExtension extends ServiceExtension {
   dns?: AssignPublicIpDnsOptions;
@@ -57,7 +60,6 @@ export class AssignPublicIpExtension extends ServiceExtension {
   public useService(service: ecs.Ec2Service | ecs.FargateService) {
     if (this.hasDns()) {
       new TaskRecordManager(service, 'TaskRecordManager', {
-        cluster: service.cluster,
         service: service,
         dnsZone: this.dns!.zone,
         dnsRecordName: this.dns!.recordName,
