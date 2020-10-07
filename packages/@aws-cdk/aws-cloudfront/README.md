@@ -180,9 +180,9 @@ new cloudfront.Distribution(this, 'myDistManagedPolicy', {
   },
 });
 
-// Creating a custom cache policy
+// Creating a custom cache policy  -- all parameters optional
 const myCachePolicy = new cloudfront.CachePolicy(this, 'myCachePolicy', {
-  cachePolicyName: 'MyPolicy', // Required, all other parameters optional
+  cachePolicyName: 'MyPolicy',
   comment: 'A default policy',
   defaultTtl: Duration.days(2),
   minTtl: Duration.minutes(1),
