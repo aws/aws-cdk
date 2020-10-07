@@ -52,7 +52,10 @@
     "compat": "cdk-compat"
   },
   "cdk-build": {
-    "cloudformation": "AWS::ApplicationAutoScaling"
+    "cloudformation": "AWS::ApplicationAutoScaling",
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "keywords": [
     "aws",
@@ -71,7 +74,7 @@
     "@types/nodeunit": "^0.0.31",
     "cdk-build-tools": "0.0.0",
     "cfn2ts": "0.0.0",
-    "fast-check": "^2.3.0",
+    "fast-check": "^2.4.0",
     "nodeunit": "^0.11.3",
     "pkglint": "0.0.0"
   },
