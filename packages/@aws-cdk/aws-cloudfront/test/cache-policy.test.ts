@@ -1,5 +1,5 @@
 import '@aws-cdk/assert/jest';
-import { App, Duration, Stack } from '@aws-cdk/core';
+import { App, Aws, Duration, Stack } from '@aws-cdk/core';
 import { CachePolicy, CacheCookieBehavior, CacheHeaderBehavior, CacheQueryStringBehavior } from '../lib';
 
 describe('CachePolicy', () => {
@@ -91,6 +91,12 @@ describe('CachePolicy', () => {
     expect(() => new CachePolicy(stack, 'CachePolicy4', { cachePolicyName: 'MyPolicy' })).not.toThrow();
     expect(() => new CachePolicy(stack, 'CachePolicy5', { cachePolicyName: 'My-Policy' })).not.toThrow();
     expect(() => new CachePolicy(stack, 'CachePolicy6', { cachePolicyName: 'My_Policy' })).not.toThrow();
+  });
+
+  test('does not throw if cachePolicyName is a token', () => {
+    expect(() => new CachePolicy(stack, 'CachePolicy', {
+      cachePolicyName: Aws.STACK_NAME,
+    })).not.toThrow();
   });
 
   describe('TTLs', () => {
