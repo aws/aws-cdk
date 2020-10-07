@@ -67,7 +67,7 @@ export interface ServerlessClusterProps {
 
   /**
    * The number of days during which automatic DB snapshots are retained.
-   * Backup retention period must be between 1-35 days.
+   * Backup retention period cannot be disabled.
    *
    * @default Duration.days(1)
    */
