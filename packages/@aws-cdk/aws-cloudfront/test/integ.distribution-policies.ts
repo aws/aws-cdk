@@ -9,10 +9,16 @@ const cachePolicy = new cloudfront.CachePolicy(stack, 'CachePolicy', {
   cachePolicyName: 'ACustomCachePolicy',
 });
 
+const originRequestPolicy = new cloudfront.OriginRequestPolicy(stack, 'OriginRequestPolicy', {
+  originRequestPolicyName: 'ACustomOriginRequestPolicy',
+  headerBehavior: cloudfront.OriginRequestHeaderBehavior.all('CloudFront-Forwarded-Proto'),
+});
+
 new cloudfront.Distribution(stack, 'Dist', {
   defaultBehavior: {
     origin: new TestOrigin('www.example.com'),
     cachePolicy,
+    originRequestPolicy,
   },
 });
 

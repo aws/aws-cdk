@@ -200,6 +200,40 @@ new cloudfront.Distribution(this, 'myDistCustomPolicy', {
 });
 ```
 
+### Customizing Origin Requests with Origin Request Policies
+
+When CloudFront makes a request to an origin, the URL path, request body (if present), and a few standard headers are included.
+Other information from the viewer request, such as URL query strings, HTTP headers, and cookies, is not included in the origin request by default.
+You can use an origin request policy to control the information that’s included in an origin request.
+CloudFront provides some predefined origin request policies, known as managed policies, for common use cases. You can use these managed policies,
+or you can create your own origin request policy that’s specific to your needs.
+See https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/controlling-origin-requests.html for more details.
+
+```ts
+// Using an existing origin request policy
+new cloudfront.Distribution(this, 'myDistManagedPolicy', {
+  defaultBehavior: {
+    origin: bucketOrigin,
+    originRequestPolicy: cloudfront.OriginRequestPolicy.CORS_S3_ORIGIN,
+  },
+});
+// Creating a custom origin request policy -- all parameters optional
+const myOriginRequestPolicy = new cloudfront.OriginRequestPolicy(stack, 'OriginRequestPolicy', {
+  originRequestPolicyName: 'MyPolicy',
+  comment: 'A default policy',
+  cookieBehavior: cloudfront.OriginRequestCookieBehavior.none(),
+  headerBehavior: cloudfront.OriginRequestHeaderBehavior.all('CloudFront-Is-Android-Viewer'),
+  queryStringBehavior: cloudfront.OriginRequestQueryStringBehavior.allowList('username'),
+});
+new cloudfront.Distribution(this, 'myDistCustomPolicy', {
+  defaultBehavior: {
+    origin: bucketOrigin,
+    cachePolicy: myCachePolicy,
+    originRequestPolicy: myOriginRequestPolicy,
+  },
+});
+```
+
 ### Lambda@Edge
 
 Lambda@Edge is an extension of AWS Lambda, a compute service that lets you execute functions that customize the content that CloudFront delivers.
