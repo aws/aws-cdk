@@ -292,8 +292,8 @@ async function initCommandLine() {
             parameterMap[keyValue[0]] = keyValue.slice(1).join('=');
           }
         }
-        return await cli.deploy({
-          stackNames: (args.all) ? '*' : args.STACKS,
+        return cli.deploy({
+          stackNames: (args.all) ? ['*'] : args.STACKS,
           exclusively: args.exclusively,
           toolkitStackName,
           roleArn: args.roleArn,
