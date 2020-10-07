@@ -220,7 +220,7 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::CodeDeploy::DeploymentGroup', {
-      DeploymentConfigName: 'CustomConfig.LambdaLinear5Percent1Minutes',
+      DeploymentConfigName: 'CustomConfig.LambdaLinear5PercentEvery1Minutes',
       DeploymentStyle: {
         DeploymentOption: 'WITH_TRAFFIC_CONTROL',
         DeploymentType: 'BLUE_GREEN',

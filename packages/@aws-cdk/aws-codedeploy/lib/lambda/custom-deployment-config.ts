@@ -157,7 +157,11 @@ export class CustomLambdaDeploymentConfig extends Resource implements ILambdaDep
       const intervalMinutes = props.interval.toMinutes().toString();
       const percentage = props.percentage.toString();
       const deploymentType = props.type.toString();
-      configName = `${id}.Lambda${deploymentType}${percentage}Percent${intervalMinutes}Minutes`;
+      if (props.type !== CustomLambdaDeploymentConfigType.LINEAR) {
+        configName = `${id}.Lambda${deploymentType}${percentage}Percent${intervalMinutes}Minutes`;
+      } else {
+        configName = `${id}.Lambda${deploymentType}${percentage}PercentEvery${intervalMinutes}Minutes`;
+      }
     }
     return configName;
   }
