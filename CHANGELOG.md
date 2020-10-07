@@ -23,7 +23,6 @@ All notable changes to this project will be documented in this file. See [standa
 ### Bug Fixes
 
 * **cli:** 'stack already contains Metadata resource' warning ([#10695](https://github.com/aws/aws-cdk/issues/10695)) ([e0b5508](https://github.com/aws/aws-cdk/commit/e0b55086cf9061e579c3c804b4d2e169ec9d7ae2)), closes [#10625](https://github.com/aws/aws-cdk/issues/10625)
-* **cli:** `cdk context --reset <number>` does not work ([#10619](https://github.com/aws/aws-cdk/issues/10619)) ([3f62752](https://github.com/aws/aws-cdk/commit/3f6275265f84cbc04e12660496e9d9eb7cd65354)), closes [#3033](https://github.com/aws/aws-cdk/issues/3033)
 * **cli:** deploying a transformed template without changes fails ([#10689](https://github.com/aws/aws-cdk/issues/10689)) ([d345919](https://github.com/aws/aws-cdk/commit/d345919800d02b80f40802da60e567d4a30b3521)), closes [#10650](https://github.com/aws/aws-cdk/issues/10650)
 * **cloudfront-origins:** S3Origins with cross-stack buckets cause cyclic references ([#10696](https://github.com/aws/aws-cdk/issues/10696)) ([0ec4588](https://github.com/aws/aws-cdk/commit/0ec45881e66f598ec37bb772cd01c30be4da96f8)), closes [#10399](https://github.com/aws/aws-cdk/issues/10399)
 * **codepipeline-actions:** correctly name the triggering Event in CodeCommitSourceAction ([#10706](https://github.com/aws/aws-cdk/issues/10706)) ([ff3a692](https://github.com/aws/aws-cdk/commit/ff3a69285f1f3ae1ff6c6b1495192ce54e46d2fc)), closes [#10665](https://github.com/aws/aws-cdk/issues/10665)
