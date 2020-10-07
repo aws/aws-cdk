@@ -7,7 +7,7 @@ import { FileSystem, LifecyclePolicy, PerformanceMode, ThroughputMode } from '..
 let stack = new Stack();
 let vpc = new ec2.Vpc(stack, 'VPC');
 
-beforeEach( () => {
+beforeEach(() => {
   stack = new Stack();
   vpc = new ec2.Vpc(stack, 'VPC');
 });
@@ -216,11 +216,24 @@ test('auto-named if none provided', () => {
 });
 
 test('removalPolicy is DESTROY', () => {
+  // WHEN
   new FileSystem(stack, 'EfsFileSystem', { vpc, removalPolicy: RemovalPolicy.DESTROY });
 
+  // THEN
   expectCDK(stack).to(haveResource('AWS::EFS::FileSystem', {
     DeletionPolicy: 'Delete',
     UpdateReplacePolicy: 'Delete',
   }, ResourcePart.CompleteDefinition));
+});
 
+test('can specify backup policy', () => {
+  // WHEN
+  new FileSystem(stack, 'EfsFileSystem', { vpc, enableAutomaticBackups: true });
+
+  // THEN
+  expectCDK(stack).to(haveResource('AWS::EFS::FileSystem', {
+    BackupPolicy: {
+      Status: 'ENABLED',
+    },
+  }));
 });

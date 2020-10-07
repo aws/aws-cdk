@@ -171,6 +171,13 @@ export interface FileSystemProps {
    * @default RemovalPolicy.RETAIN
    */
   readonly removalPolicy?: RemovalPolicy;
+
+  /**
+   * Whether to enable automatic backups for the file system.
+   *
+   * @default false
+   */
+  readonly enableAutomaticBackups?: boolean;
 }
 
 /**
@@ -252,6 +259,7 @@ export class FileSystem extends Resource implements IFileSystem {
       performanceMode: props.performanceMode,
       throughputMode: props.throughputMode,
       provisionedThroughputInMibps: props.provisionedThroughputPerSecond?.toMebibytes(),
+      backupPolicy: props.enableAutomaticBackups ? { status: 'ENABLED' } : undefined,
     });
     filesystem.applyRemovalPolicy(props.removalPolicy);
 
