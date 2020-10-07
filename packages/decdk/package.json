@@ -188,7 +188,7 @@
     "constructs": "^3.0.4",
     "fs-extra": "^9.0.1",
     "jsii-reflect": "^1.13.0",
-    "jsonschema": "^1.2.7",
+    "jsonschema": "^1.2.10",
     "yaml": "1.10.0",
     "yargs": "^16.0.3"
   },
