@@ -5,15 +5,13 @@ command=$1
 
 lerna=$REPO_ROOT/node_modules/.bin/lerna
 
-if [ ! -z "${USE_PUBLISHED_FRAMEWORK_VERSION:-}" ]; then
-  # simply pass through to npm and install the published package.
-  echo "Running original NPM command since we are testing against published framework version"
-  exec $ORIGINAL_NPM "$@"
-elif [[ "$command" == "install" || "$command" == "i" ]]; then
+if [[ "$command" == "install" || "$command" == "i" ]]; then
   npmargs="install"
   shift
 
   while [[ "${1:-}" != "" ]]; do
+    echo "scope is ${1}"
+    exit 1
     packageloc=$(cd $REPO_ROOT && npx lerna ls --loglevel silent -p --scope $1) && {
       # Symlink that location into node_modules
       dir=$(dirname node_modules/$1)

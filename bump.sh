@@ -40,7 +40,7 @@ fi
 # Generate CHANGELOG and create a commit (see .versionrc.json)
 npx standard-version ${args}
 
-if [ ${SKIP_COMMIT} = "false" ]; then
+if [ ${SKIP_COMMIT} = "false" && ${SKIP_CHANGELOG} = "false" ]; then
   # I am sorry.
   #
   # I've gone diving through the code of `conventional-changelog` to see if there

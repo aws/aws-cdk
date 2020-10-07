@@ -10,13 +10,15 @@ const REGIONS = process.env.AWS_REGIONS
   ? process.env.AWS_REGIONS.split(',')
   : [process.env.AWS_REGION ?? process.env.AWS_DEFAULT_REGION ?? 'us-east-1'];
 
-const FRAMEWORK_VERSION = process.env.FRAMEWORK_VERSION
+// allow overriding framework version for regression tests that against
+// an older version of the framework.
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const FRAMEWORK_VERSION = process.env.FRAMEWORK_VERSION ?? require('../../../package.json').version;
 
-if (!FRAMEWORK_VERSION) {
-  throw new Error('FRAMEWORK_VERSION env variable is required for running integration tests');
-}
+const TEST_RUNNER = process.env.TEST_RUNNER ?? 'repo';
 
 process.stdout.write(`Using regions: ${REGIONS}\n`);
+process.stdout.write(`Using framework version: ${FRAMEWORK_VERSION}\n`);
 
 const REGION_POOL = new ResourcePool(REGIONS);
 
@@ -62,17 +64,33 @@ export function withCdkApp<A extends TestContext & AwsContext>(block: (context: 
       context.output,
       context.aws);
 
+    const modules = [
+      'aws-cdk',
+      '@aws-cdk/core',
+      '@aws-cdk/aws-sns',
+      '@aws-cdk/aws-iam',
+      '@aws-cdk/aws-lambda',
+      '@aws-cdk/aws-ssm',
+      '@aws-cdk/aws-ecr-assets',
+      '@aws-cdk/aws-cloudformation',
+      '@aws-cdk/aws-ec2',
+    ];
+
     let success = true;
     try {
-      await fixture.shell(['npm', 'install',
-        '@aws-cdk/core',
-        '@aws-cdk/aws-sns',
-        '@aws-cdk/aws-iam',
-        '@aws-cdk/aws-lambda',
-        '@aws-cdk/aws-ssm',
-        '@aws-cdk/aws-ecr-assets',
-        '@aws-cdk/aws-cloudformation',
-        '@aws-cdk/aws-ec2'].map(module => `${module}@${FRAMEWORK_VERSION}`));
+
+      switch (TEST_RUNNER) {
+        case 'repo':
+          await fixture.npmLink(modules);
+          break;
+        case 'dist':
+        case 'release':
+          await fixture.npmInstall(modules);
+          break;
+        default:
+          throw new Error(`Unsupported test runner: ${TEST_RUNNER}. Should be one of [repo, dist, release]`);
+
+      }
 
       await ensureBootstrapped(fixture);
 
@@ -156,12 +174,38 @@ export class TestFixture {
     this.output.write(`${s}\n`);
   }
 
-  public async shell(command: string[], options: Omit<ShellOptions, 'cwd'|'output'> = {}): Promise<string> {
+  public async shell(command: string[], options: ShellOptions = {}): Promise<string> {
     return shell(command, {
       output: this.output,
       cwd: this.integTestDir,
       ...options,
     });
+  }
+
+  public async npmInstall(modules: string[]) {
+    await shell(['npm', 'install', ...modules.map(module => `${module}@${FRAMEWORK_VERSION}`)]);
+  }
+
+  public async npmLink(modules: string[]) {
+    for (const module of modules) {
+      const moduleSrcLocation = await shell(['npx', 'lerna', 'ls', '--loglevel', 'silent', '-p', '--scope', module], {
+        // we need to run lerna from within an directory inside the monorepo.
+        cwd: __dirname,
+      });
+      const moduleLinkLocation = path.join(this.integTestDir, 'node_modules', module);
+      fs.mkdirSync(path.dirname(moduleLinkLocation), { recursive: true });
+      fs.symlinkSync(moduleSrcLocation, moduleLinkLocation);
+
+      const moduleBinDirectory = path.join(moduleSrcLocation, 'bin');
+      if (fs.existsSync(moduleBinDirectory)) {
+        for (const binary of fs.readdirSync(moduleBinDirectory)) {
+          const nodeModulesBin = path.join(this.integTestDir, 'node_modules', '.bin');
+          fs.mkdirSync(nodeModulesBin, { recursive: true });
+          fs.symlinkSync(path.join(moduleBinDirectory, binary), path.join(nodeModulesBin, path.basename(binary)));
+        }
+      }
+    }
+
   }
 
   public async cdkDeploy(stackNames: string | string[], options: CdkCliOptions = {}) {
@@ -187,7 +231,10 @@ export class TestFixture {
   public async cdk(args: string[], options: CdkCliOptions = {}) {
     const verbose = options.verbose ?? true;
 
-    return this.shell(['cdk', ...(verbose ? ['-v'] : []), ...args], {
+    // cdk is installed the same way all other modules are, so it should exist here.
+    const cdkBin = path.join(this.integTestDir, 'node_modules', '.bin', 'cdk');
+
+    return this.shell([cdkBin, ...(verbose ? ['-v'] : []), ...args], {
       ...options,
       modEnv: {
         AWS_REGION: this.aws.region,

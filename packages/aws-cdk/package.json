@@ -19,10 +19,10 @@
     "build+test": "npm run build && npm test",
     "integ-cli": "npm run integ-cli-regression && npm run integ-cli-no-regression",
     "integ-cli-regression": "npm run integ-cli-regression-latest-release && npm run integ-cli-regression-latest-code",
-    "integ-cli-regression-old-framework": "test/integ/run-against-dist test/integ/test-cli-regression-against-latest-release.sh",
-    "integ-cli-regression-new-framework": "test/integ/run-against-dist test/integ/test-cli-regression-against-current-code.sh",
-    "integ-cli-no-regression": "test/integ/run-against-repo test/integ/cli/test.sh",
-    "integ-init": "test/integ/run-against-dist test/integ/init/test-all.sh"
+    "integ-cli-regression-old-framework": "test/integ/run-against-repo test/integ/test-cli-regression-against-latest-release.sh",
+    "integ-cli-regression-new-framework": "test/integ/run-against-repo test/integ/test-cli-regression-against-current-code.sh",
+    "integ:cli": "./test/integ/cli/test.sh",
+    "integ:init": "test/integ/run-against-dist test/integ/init/test-all.sh"
   },
   "cdk-build": {
     "jest": true,
@@ -62,7 +62,6 @@
     "pkglint": "0.0.0",
     "sinon": "^9.1.0",
     "ts-jest": "^26.4.1",
-    "serve-npm-tarballs": "^0.1.12",
     "ts-mock-imports": "^1.3.0"
   },
   "dependencies": {
