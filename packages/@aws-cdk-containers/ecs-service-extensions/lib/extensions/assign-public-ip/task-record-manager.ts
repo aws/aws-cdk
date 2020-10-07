@@ -85,6 +85,7 @@ export class TaskRecordManager extends cdk.Construct {
       exclude: [
         '.coverage',
         '*.pyc',
+        '.idea',
       ],
     });
 
