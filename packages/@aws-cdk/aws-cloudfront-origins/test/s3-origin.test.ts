@@ -19,27 +19,56 @@ describe('With bucket', () => {
     const origin = new S3Origin(bucket);
     const originBindConfig = origin.bind(stack, { originId: 'StackOrigin029E19582' });
 
-    expect(originBindConfig.originProperty).toEqual({
+    expect(stack.resolve(originBindConfig.originProperty)).toEqual({
       id: 'StackOrigin029E19582',
-      domainName: bucket.bucketRegionalDomainName,
+      domainName: { 'Fn::GetAtt': ['Bucket83908E77', 'RegionalDomainName'] },
       s3OriginConfig: {
-        originAccessIdentity: 'origin-access-identity/cloudfront/${Token[TOKEN.69]}',
+        originAccessIdentity: {
+          'Fn::Join': ['',
+            [
+              'origin-access-identity/cloudfront/',
+              { Ref: 'S3Origin83A0717C' },
+            ]],
+        },
       },
     });
   });
 
-  test('can customize properties', () => {
+  test('can customize originPath property', () => {
     const bucket = new s3.Bucket(stack, 'Bucket');
 
     const origin = new S3Origin(bucket, { originPath: '/assets' });
     const originBindConfig = origin.bind(stack, { originId: 'StackOrigin029E19582' });
 
-    expect(originBindConfig.originProperty).toEqual({
+    expect(stack.resolve(originBindConfig.originProperty)).toEqual({
       id: 'StackOrigin029E19582',
-      domainName: bucket.bucketRegionalDomainName,
+      domainName: { 'Fn::GetAtt': ['Bucket83908E77', 'RegionalDomainName'] },
       originPath: '/assets',
       s3OriginConfig: {
-        originAccessIdentity: 'origin-access-identity/cloudfront/${Token[TOKEN.89]}',
+        originAccessIdentity: {
+          'Fn::Join': ['',
+            [
+              'origin-access-identity/cloudfront/',
+              { Ref: 'S3Origin83A0717C' },
+            ]],
+        },
+      },
+    });
+  });
+
+  test('can customize OriginAccessIdentity property', () => {
+    const bucket = new s3.Bucket(stack, 'Bucket');
+
+    const originAccessIdentity = new cloudfront.OriginAccessIdentity(stack, 'OriginAccessIdentity', {
+      comment: 'Identity for bucket provided by test',
+    });
+
+    const origin = new S3Origin(bucket, { originAccessIdentity });
+    new cloudfront.Distribution(stack, 'Dist', { defaultBehavior: { origin } });
+
+    expect(stack).toHaveResourceLike('AWS::CloudFront::CloudFrontOriginAccessIdentity', {
+      CloudFrontOriginAccessIdentityConfig: {
+        Comment: 'Identity for bucket provided by test',
       },
     });
   });
