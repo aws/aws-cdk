@@ -191,6 +191,18 @@ class TestRoute53(unittest.TestCase):
         # THEN
         self.assertEqual(call.call_count, 5)
 
+    def test_retry_with_backoff_prior_request_not_complete(self):
+        # GIVEN
+        call = mock.Mock(side_effect=ClientError(error_response={'Error': {
+            'Code': 'PriorRequestNotComplete'
+        }}, operation_name='any'))
+
+        # WHEN
+        retry_with_backoff(call, attempts=5, backoff=lambda x: 0)
+
+        # THEN
+        self.assertEqual(call.call_count, 5)
+
     def test_retry_with_backoff_other_client_errors(self):
         # GIVEN
         call = mock.Mock(side_effect=ClientError(error_response={'Error': {

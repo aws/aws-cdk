@@ -105,12 +105,22 @@ def retry_with_backoff(call: Callable, attempts=5, backoff=exponential_backoff):
     for attempt in range(0, attempts):
         try:
             return call()
+
         except ClientError as e:
             if e.response['Error']['Code'] == 'Throttling':
                 backoff_seconds = backoff(attempt)
                 logging.info(f'Attempt {attempt+1} throttled. Backing off for {backoff_seconds}.')
                 time.sleep(backoff_seconds)
                 continue
+
+            if e.response['Error']['Code'] == 'PriorRequestNotComplete':
+                backoff_seconds = backoff(attempt)
+                logging.info(
+                    f'Attempt {attempt+1} discovered the prior request is not yet complete. Backing off for {backoff_seconds}.'
+                )
+                time.sleep(backoff_seconds)
+                continue
+
             raise
 
 
