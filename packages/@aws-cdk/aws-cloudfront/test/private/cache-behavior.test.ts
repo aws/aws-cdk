@@ -1,7 +1,7 @@
 import '@aws-cdk/assert/jest';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { App, Stack } from '@aws-cdk/core';
-import { AllowedMethods, CachedMethods, LambdaEdgeEventType, ViewerProtocolPolicy } from '../../lib';
+import { AllowedMethods, CachedMethods, CachePolicy, LambdaEdgeEventType, ViewerProtocolPolicy } from '../../lib';
 import { CacheBehavior } from '../../lib/private/cache-behavior';
 
 let app: App;
@@ -21,8 +21,8 @@ test('renders the minimum template with an origin and path specified', () => {
 
   expect(behavior._renderBehavior()).toEqual({
     targetOriginId: 'origin_id',
+    cachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
     pathPattern: '*',
-    forwardedValues: { queryString: false },
     viewerProtocolPolicy: 'allow-all',
   });
 });
@@ -33,9 +33,8 @@ test('renders with all properties specified', () => {
     pathPattern: '*',
     allowedMethods: AllowedMethods.ALLOW_ALL,
     cachedMethods: CachedMethods.CACHE_GET_HEAD_OPTIONS,
+    cachePolicy: CachePolicy.CACHING_OPTIMIZED,
     compress: true,
-    forwardQueryString: true,
-    forwardQueryStringCacheKeys: ['user_id', 'auth'],
     smoothStreaming: true,
     viewerProtocolPolicy: ViewerProtocolPolicy.HTTPS_ONLY,
     edgeLambdas: [{
@@ -50,11 +49,8 @@ test('renders with all properties specified', () => {
     pathPattern: '*',
     allowedMethods: ['GET', 'HEAD', 'OPTIONS', 'PUT', 'PATCH', 'POST', 'DELETE'],
     cachedMethods: ['GET', 'HEAD', 'OPTIONS'],
+    cachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
     compress: true,
-    forwardedValues: {
-      queryString: true,
-      queryStringCacheKeys: ['user_id', 'auth'],
-    },
     smoothStreaming: true,
     viewerProtocolPolicy: 'https-only',
     lambdaFunctionAssociations: [{
