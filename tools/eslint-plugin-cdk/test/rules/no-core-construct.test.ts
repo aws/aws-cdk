@@ -1,7 +1,6 @@
 import { ESLint } from 'eslint';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import * as os from 'os';
 
 const linter = new ESLint({
   overrideConfigFile: path.join(__dirname, 'eslintrc.js'),
@@ -11,7 +10,8 @@ const linter = new ESLint({
   fix: true,
 });
 
-const outputDir = fs.mkdtempSync(os.tmpdir())
+const testOutputPath = path.join(__dirname, '../../../../test-output')
+const outputDir = fs.mkdtempSync(testOutputPath + path.sep)
 const fixturesDir = path.join(__dirname, 'fixtures', 'no-core-construct');
 
 describe('no-core-construct', () => {
