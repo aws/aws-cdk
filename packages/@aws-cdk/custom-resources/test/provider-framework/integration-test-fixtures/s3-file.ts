@@ -2,9 +2,14 @@ import * as path from 'path';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
-import { Construct, CustomResource, Stack } from '@aws-cdk/core';
+import { CustomResource, Stack } from '@aws-cdk/core';
+import { Construct, Node } from 'constructs';
 import * as cr from '../../../lib';
 import * as api from './s3-file-handler/api';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 interface S3FileProps {
   /**
@@ -32,7 +37,7 @@ interface S3FileProps {
   readonly public?: boolean;
 }
 
-export class S3File extends Construct {
+export class S3File extends CoreConstruct {
   public readonly objectKey: string;
   public readonly url: string;
   public readonly etag: string;
@@ -57,7 +62,7 @@ export class S3File extends Construct {
   }
 }
 
-class S3FileProvider extends Construct {
+class S3FileProvider extends CoreConstruct {
 
   /**
    * Returns the singleton provider.
@@ -65,7 +70,7 @@ class S3FileProvider extends Construct {
   public static getOrCreate(scope: Construct) {
     const stack = Stack.of(scope);
     const id = 'com.amazonaws.cdk.custom-resources.s3file-provider';
-    const x = stack.node.tryFindChild(id) as S3FileProvider || new S3FileProvider(stack, id);
+    const x = Node.of(stack).tryFindChild(id) as S3FileProvider || new S3FileProvider(stack, id);
     return x.provider.serviceToken;
   }
 

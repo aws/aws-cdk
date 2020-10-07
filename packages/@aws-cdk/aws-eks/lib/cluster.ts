@@ -7,6 +7,7 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as ssm from '@aws-cdk/aws-ssm';
 import { Annotations, CfnOutput, CfnResource, IResource, Resource, Stack, Tags, Token, Duration } from '@aws-cdk/core';
+import * as cdk8s from 'cdk8s';
 import { Construct, Node } from 'constructs';
 import * as YAML from 'yaml';
 import { AwsAuth } from './aws-auth';
@@ -132,6 +133,16 @@ export interface ICluster extends IResource, ec2.IConnectable {
    * @returns a `HelmChart` construct
    */
   addHelmChart(id: string, options: HelmChartOptions): HelmChart;
+
+  /**
+   * Defines a CDK8s chart in this cluster.
+   *
+   * @param id logical id of this chart.
+   * @param chart the cdk8s chart.
+   * @returns a `KubernetesManifest` construct representing the chart.
+   */
+  addCdk8sChart(id: string, chart: cdk8s.Chart): KubernetesManifest;
+
 }
 
 /**
@@ -616,6 +627,17 @@ abstract class ClusterBase extends Resource implements ICluster {
    */
   public addHelmChart(id: string, options: HelmChartOptions): HelmChart {
     return new HelmChart(this, `chart-${id}`, { cluster: this, ...options });
+  }
+
+  /**
+   * Defines a CDK8s chart in this cluster.
+   *
+   * @param id logical id of this chart.
+   * @param chart the cdk8s chart.
+   * @returns a `KubernetesManifest` construct representing the chart.
+   */
+  public addCdk8sChart(id: string, chart: cdk8s.Chart): KubernetesManifest {
+    return this.addManifest(id, ...chart.toJson());
   }
 }
 

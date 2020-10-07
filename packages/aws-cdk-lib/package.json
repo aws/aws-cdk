@@ -91,7 +91,7 @@
   "dependencies": {
     "case": "1.6.3",
     "fs-extra": "^9.0.1",
-    "jsonschema": "^1.2.7",
+    "jsonschema": "^1.2.10",
     "minimatch": "^3.0.4",
     "semver": "^7.3.2",
     "yaml": "1.10.0"
@@ -259,6 +259,7 @@
     "@types/node": "^10.17.35",
     "cdk-build-tools": "0.0.0",
     "constructs": "^3.0.4",
+    "cdk8s": "^0.30.0",
     "fs-extra": "^9.0.1",
     "pkglint": "0.0.0",
     "ts-node": "^9.0.0",
@@ -266,7 +267,8 @@
     "ubergen": "0.0.0"
   },
   "peerDependencies": {
-    "constructs": "^3.0.4"
+    "constructs": "^3.0.4",
+    "cdk8s": "^0.30.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {

@@ -1,7 +1,7 @@
+import { Construct } from 'constructs';
 import { CfnHook } from './cfn-hook';
 import { FromCloudFormationOptions } from './cfn-parse';
 import { CfnResource } from './cfn-resource';
-import { Construct } from './construct-compat';
 
 /**
  * The possible types of traffic shifting for the blue-green deployment configuration.

@@ -101,6 +101,16 @@
   },
   "stability": "experimental",
   "maturity": "developer-preview",
+  "features": [
+    {
+      "name": "Higher level constructs for Config Rules",
+      "stability": "Developer Preview"
+    },
+    {
+      "name": "Higher level constructs for initial set-up (delivery channel & configuration recorder)",
+      "stability": "Not Implemented"
+    }
+  ],
   "awscdkio": {
     "announce": false
   }

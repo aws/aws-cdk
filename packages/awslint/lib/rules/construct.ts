@@ -97,7 +97,7 @@ constructLinter.add({
     const expectedParams = new Array<MethodSignatureParameterExpectation>();
 
     let baseType;
-    if (process.env.AWSLINT_BASE_CONSTRUCT && !initializer.parentType.name.startsWith('Cfn')) {
+    if (process.env.AWSLINT_BASE_CONSTRUCT && !CoreTypes.isCfnResource(e.ctx.classType)) {
       baseType = e.ctx.core.baseConstructClass;
     } else {
       baseType = e.ctx.core.constructClass;

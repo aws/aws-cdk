@@ -16,6 +16,12 @@ export interface S3OriginProps {
    * @default '/'
    */
   readonly originPath?: string;
+  /**
+   * An optional Origin Access Identity of the origin identity cloudfront will use when calling your s3 bucket.
+   *
+   * @default - An Origin Access Identity will be created.
+   */
+  readonly originAccessIdentity?: cloudfront.IOriginAccessIdentity;
 }
 
 /**
@@ -50,15 +56,27 @@ export class S3Origin implements cloudfront.IOrigin {
  * Contains additional logic around bucket permissions and origin access identities.
  */
 class S3BucketOrigin extends cloudfront.OriginBase {
-  private originAccessIdentity!: cloudfront.OriginAccessIdentity;
+  private originAccessIdentity!: cloudfront.IOriginAccessIdentity;
 
-  constructor(private readonly bucket: s3.IBucket, props: S3OriginProps) {
+  constructor(private readonly bucket: s3.IBucket, { originAccessIdentity, ...props }: S3OriginProps) {
     super(bucket.bucketRegionalDomainName, props);
+    if (originAccessIdentity) {
+      this.originAccessIdentity = originAccessIdentity;
+    }
   }
 
   public bind(scope: cdk.Construct, options: cloudfront.OriginBindOptions): cloudfront.OriginBindConfig {
     if (!this.originAccessIdentity) {
-      this.originAccessIdentity = new cloudfront.OriginAccessIdentity(scope, 'S3Origin', {
+      // Using a bucket from another stack creates a cyclic reference with
+      // the bucket taking a dependency on the generated S3CanonicalUserId when `grantRead` is called,
+      // and the distribution having a dependency on the bucket's domain name.
+      // Fix this by parenting the OAI in the bucket's stack when cross-stack usage is detected.
+      const bucketStack = cdk.Stack.of(this.bucket);
+      const bucketInDifferentStack = bucketStack !== cdk.Stack.of(scope);
+      const oaiScope = bucketInDifferentStack ? bucketStack : scope;
+      const oaiId = bucketInDifferentStack ? `${scope.node.uniqueId}S3Origin` : 'S3Origin';
+
+      this.originAccessIdentity = new cloudfront.OriginAccessIdentity(oaiScope, oaiId, {
         comment: `Identity for ${options.originId}`,
       });
       this.bucket.grantRead(this.originAccessIdentity);

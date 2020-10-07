@@ -737,6 +737,7 @@ export = {
 };
 
 class SomeTarget implements IRuleTarget {
+  // eslint-disable-next-line cdk/no-core-construct
   public constructor(private readonly id?: string, private readonly resource?: cdk.IConstruct) {
   }
 

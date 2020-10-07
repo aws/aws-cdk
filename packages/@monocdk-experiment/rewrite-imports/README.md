@@ -9,7 +9,7 @@
 ---
 <!--END STABILITY BANNER-->
 
-Migrate TypeScript `import` statements from modular CDK (i.e. `@aws-cdk/aws-s3`) to mono-cdk (i.e. `monocdk-experiment/aws-s3`);
+Migrate TypeScript `import` statements from modular CDK (i.e. `@aws-cdk/aws-s3`) to mono-cdk (i.e. `monocdk/aws-s3`);
 
 Usage:
 

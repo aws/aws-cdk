@@ -81,7 +81,7 @@ function listContext(context: any) {
 function invalidateContext(context: Context, key: string) {
   const i = parseInt(key, 10);
   if (`${i}` === key) {
-    // Twas a number and we fully parsed it.
+    // was a number and we fully parsed it.
     key = keyByNumber(context, i);
   }
 
@@ -106,7 +106,7 @@ function keyByNumber(context: any, n: number) {
 /**
  * Return enumerated keys in a definitive order
  */
-function contextKeys(context: any) {
+function contextKeys(context: Context): [number, string][] {
   const keys = Object.keys(context);
   keys.sort();
   return enumerate1(keys);

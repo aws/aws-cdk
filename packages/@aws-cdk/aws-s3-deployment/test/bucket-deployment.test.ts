@@ -1,9 +1,9 @@
 import '@aws-cdk/assert/jest';
+import * as path from 'path';
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
-import * as path from 'path';
 import * as s3deploy from '../lib';
 
 /* eslint-disable max-len */

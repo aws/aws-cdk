@@ -45,9 +45,9 @@ describe(rewriteImports, () => {
 
     expect(output).toBe(`
   // something before
-  import * as s3 from 'monocdk-experiment/aws-s3';
+  import * as s3 from 'monocdk/aws-s3';
   import * as cfndiff from '@aws-cdk/cloudformation-diff';
-  import { Construct } from "monocdk-experiment";
+  import { Construct } from "monocdk";
   // something after
 
   console.log('Look! I did something!');`);
@@ -65,9 +65,9 @@ describe(rewriteImports, () => {
 
     expect(output).toBe(`
   // something before
-  import s3 = require('monocdk-experiment/aws-s3');
+  import s3 = require('monocdk/aws-s3');
   import cfndiff = require('@aws-cdk/cloudformation-diff');
-  import { Construct } = require("monocdk-experiment");
+  import { Construct } = require("monocdk");
   // something after
 
   console.log('Look! I did something!');`);
