@@ -54,6 +54,7 @@
   },
   "cdk-build": {
     "cloudformation": "AWS::SecretsManager",
+    "jest": true,
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
     }
