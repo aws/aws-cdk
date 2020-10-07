@@ -25,23 +25,27 @@ export class TaskRecordManager extends cdk.Construct {
   constructor(scope: cdk.Construct, id: string, props: TaskRecordManagerProps) {
     super(scope, id);
 
+    // Poison pills go here.
     const deadLetterQueue = new sqs.Queue(this, 'EventsDL', {
       retentionPeriod: cdk.Duration.days(14),
     });
 
-    const visibilityTimeout = cdk.Duration.seconds(30);
+    // Time limit for processing queue items - we set the lambda time limit to
+    // this value as well.
+    const eventsQueueVisibilityTimeout = cdk.Duration.seconds(30);
 
     // This queue lets us batch together ecs task state events. This is useful
     // for when when we would be otherwise bombarded by them.
-    const queue = new sqs.Queue(this, 'EventsQueue', {
+    const eventsQueue = new sqs.Queue(this, 'EventsQueue', {
       deadLetterQueue: {
         maxReceiveCount: 500,
         queue: deadLetterQueue,
       },
-      visibilityTimeout,
+      visibilityTimeout: eventsQueueVisibilityTimeout,
     });
 
-    const table = new dynamodb.Table(this, 'Records', {
+    // Storage for task and record set information.
+    const recordsTable = new dynamodb.Table(this, 'Records', {
       partitionKey: {
         name: 'hosted_zone_id_record_name',
         type: dynamodb.AttributeType.STRING,
@@ -62,7 +66,7 @@ export class TaskRecordManager extends cdk.Construct {
         },
       },
       targets: [
-        new events_targets.SqsQueue(queue),
+        new events_targets.SqsQueue(eventsQueue),
       ],
     });
 
@@ -77,10 +81,11 @@ export class TaskRecordManager extends cdk.Construct {
         },
       },
       targets: [
-        new events_targets.SqsQueue(queue),
+        new events_targets.SqsQueue(eventsQueue),
       ],
     });
 
+    // Shared codebase for the lambdas.
     const code = lambda.Code.fromAsset(path.join(__dirname, 'lambda'), {
       exclude: [
         '.coverage',
@@ -89,51 +94,61 @@ export class TaskRecordManager extends cdk.Construct {
       ],
     });
 
-    const recordName = cdk.Fn.join('.', [props.dnsRecordName, props.dnsZone.zoneName]);
+    // Fully qualified domain name of the record
+    const recordFqdn = cdk.Fn.join('.', [props.dnsRecordName, props.dnsZone.zoneName]);
 
-    // This function consumes `queue`
-    const taskStateHandler = new lambda.Function(this, 'EventHandler', {
+    // Allow access to manage a zone's records.
+    const dnsPolicyStatement = new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      actions: [
+        'route53:ChangeResourceRecordSets',
+        'route53:ListResourceRecordSets',
+      ],
+      resources: [props.dnsZone.hostedZoneArn],
+    });
+
+    // This function consumes events from the event queue and does the work of
+    // querying task IP addresses and creating, updating record sets. When there
+    // are zero tasks, it deletes the record set.
+    const eventHandler = new lambda.Function(this, 'EventHandler', {
       code: code,
       handler: 'index.queue_handler',
       runtime: lambda.Runtime.PYTHON_3_8,
-      timeout: visibilityTimeout,
+      timeout: eventsQueueVisibilityTimeout,
       // Single-concurrency to prevent a race to set the RecordSet
       reservedConcurrentExecutions: 1,
       environment: {
         HOSTED_ZONE_ID: props.dnsZone.hostedZoneId,
-        RECORD_NAME: recordName,
-        RECORDS_TABLE: table.tableName,
+        RECORD_NAME: recordFqdn,
+        RECORDS_TABLE: recordsTable.tableName,
         SERVICE_NAME: props.service.serviceName,
       },
       events: [
-        new lambda_es.SqsEventSource(queue),
+        new lambda_es.SqsEventSource(eventsQueue),
+      ],
+      initialPolicy: [
+        // Look up task IPs
+        new iam.PolicyStatement({
+          effect: iam.Effect.ALLOW,
+          actions: ['ec2:DescribeNetworkInterfaces'],
+          resources: ['*'],
+        }),
+        dnsPolicyStatement,
       ],
     });
+    recordsTable.grantReadWriteData(eventHandler);
 
-    // TODO: Lock this down once I know what APIs I need.
-    taskStateHandler.addToRolePolicy(
-      new iam.PolicyStatement({
-        effect: iam.Effect.ALLOW,
-        actions: ['*'],
-        resources: ['*'],
-      }),
-    );
-
+    // The lambda for a custom resource provider that deletes dangling record
+    // sets when the stack is deleted.
     const cleanupResourceProviderHandler = new lambda.Function(this, 'CleanupResourceProviderHandler', {
       code: code,
       handler: 'index.cleanup_resource_handler',
       runtime: lambda.Runtime.PYTHON_3_8,
       timeout: cdk.Duration.minutes(5),
+      initialPolicy: [
+        dnsPolicyStatement,
+      ],
     });
-
-    // TODO: Lock this down once I know what APIs I need.
-    cleanupResourceProviderHandler.addToRolePolicy(
-      new iam.PolicyStatement({
-        effect: iam.Effect.ALLOW,
-        actions: ['*'],
-        resources: ['*'],
-      }),
-    );
 
     const cleanupResourceProvider = new customresources.Provider(this, 'CleanupResourceProvider', {
       onEventHandler: cleanupResourceProviderHandler,
@@ -143,7 +158,7 @@ export class TaskRecordManager extends cdk.Construct {
       serviceToken: cleanupResourceProvider.serviceToken,
       properties: {
         HostedZoneId: props.dnsZone.hostedZoneId,
-        RecordName: recordName,
+        RecordName: recordFqdn,
       },
     });
 
