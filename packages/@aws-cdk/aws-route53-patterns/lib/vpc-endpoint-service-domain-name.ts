@@ -37,11 +37,28 @@ export interface VpcEndpointServiceDomainNameProps {
  * A Private DNS configuration for a VPC endpoint service.
  */
 export class VpcEndpointServiceDomainName extends CoreConstruct {
+
+  // Track all domain names created, so someone doesn't accidentally associate two domains with a single service
+  private static readonly endpointServices: IVpcEndpointService[] = [];
+
+  // The way this class works is by using three custom resources and a TxtRecord in conjunction
+  // The first custom resource tells the VPC endpoint service to use the given DNS name
+  // The VPC endpoint service will then say:
+  // "ok, create a TXT record using these two values to prove you own the domain"
+  // The second custom resource retrieves these two values from the service
+  // The TxtRecord is created from these two values
+  // The third custom resource tells the VPC Endpoint Service to verify the domain ownership
   constructor(scope: Construct, id: string, props: VpcEndpointServiceDomainNameProps) {
     super(scope, id);
+
+    // Make sure a user doesn't accidentally add multiple domains
+    this.validateParams(props);
+    VpcEndpointServiceDomainName.endpointServices.push(props.endpointService);
+
     const serviceId = props.endpointService.vpcEndpointServiceId;
     const privateDnsName = props.domainName;
 
+    // Turns creates the Private DNS configuration on the endpoint service
     const enable = new AwsCustomResource(this, 'EnableDns', {
       onCreate: {
         service: 'EC2',
@@ -74,7 +91,8 @@ export class VpcEndpointServiceDomainName extends CoreConstruct {
       }),
     });
 
-    // We're always going to check the DNS details of the endpoint service
+    // Get the name/value pair for the TxtRecord
+    // We're always going to check the name/value because it's harmless
     const guaranteeAlwaysLookup = randomString();
     const getNames = new AwsCustomResource(this, 'GetNames', {
       onCreate: {
@@ -97,19 +115,23 @@ export class VpcEndpointServiceDomainName extends CoreConstruct {
         resources: AwsCustomResourcePolicy.ANY_RESOURCE,
       }),
     });
-
     // We only want to call and get the TXT DNS details after we've enabled private DNS
     getNames.node.addDependency(enable);
+
+    // Here are the name/value we get from the endpoint service
     const name = getNames.getResponseField('ServiceConfigurations.0.PrivateDnsNameConfiguration.Name');
     const value = getNames.getResponseField('ServiceConfigurations.0.PrivateDnsNameConfiguration.Value');
 
+    // Create the TXT record in the provided hosted zone
     const verificationRecord = new TxtRecord(this, 'DnsVerificationRecord', {
       recordName: name,
       values: [value],
       zone: props.publicZone,
     });
+    // Only try making it once we have the values
     verificationRecord.node.addDependency(getNames);
 
+    // Tell the endpoint service to verify the domain ownership
     const startVerification = new AwsCustomResource(this, 'StartVerification', {
       onCreate: {
         service: 'EC2',
@@ -131,9 +153,20 @@ export class VpcEndpointServiceDomainName extends CoreConstruct {
         resources: AwsCustomResourcePolicy.ANY_RESOURCE,
       }),
     });
+    // Only verify after the record has been created
     startVerification.node.addDependency(verificationRecord);
 
+    // Finally, don't do any of the above before the endpoint service is created
     this.node.addDependency(props.endpointService);
+  }
+
+  private validateParams(props: VpcEndpointServiceDomainNameProps): void {
+    if (VpcEndpointServiceDomainName.endpointServices.includes(props.endpointService)) {
+      throw new Error(
+        'Cannot create a VpcEndpointServiceDomainName for service ' +
+        props.endpointService.node.uniqueId +
+        ', another VpcEndpointServiceDomainName is already associated with it');
+    }
   }
 }
 

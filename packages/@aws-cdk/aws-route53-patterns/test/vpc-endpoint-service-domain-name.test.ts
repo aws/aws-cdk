@@ -1,3 +1,4 @@
+import { expect as cdkExpect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import { Vpc, VpcEndpointService } from '@aws-cdk/aws-ec2';
 import { NetworkLoadBalancer } from '@aws-cdk/aws-elasticloadbalancingv2';
@@ -36,128 +37,196 @@ test('create domain name resource', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('Custom::AWS', {
-    Create: {
-      action: 'modifyVpcEndpointServiceConfiguration',
-      service: 'EC2',
-      parameters: {
-        PrivateDnsName: 'my-stuff.aws-cdk.dev',
-        ServiceId: {
-          Ref: 'VPCES3AE7D565',
+  cdkExpect(stack).to(haveResourceLike('Custom::AWS', {
+    Properties: {
+      Create: {
+        action: 'modifyVpcEndpointServiceConfiguration',
+        service: 'EC2',
+        parameters: {
+          PrivateDnsName: 'my-stuff.aws-cdk.dev',
+          ServiceId: {
+            Ref: 'VPCES3AE7D565',
+          },
+        },
+        physicalResourceId: {
+          id: 'EndpointDomain',
         },
       },
-      physicalResourceId: {
-        id: 'EndpointDomain',
-      },
-    },
-    Update: {
-      action: 'modifyVpcEndpointServiceConfiguration',
-      service: 'EC2',
-      parameters: {
-        PrivateDnsName: 'my-stuff.aws-cdk.dev',
-        ServiceId: {
-          Ref: 'VPCES3AE7D565',
+      Update: {
+        action: 'modifyVpcEndpointServiceConfiguration',
+        service: 'EC2',
+        parameters: {
+          PrivateDnsName: 'my-stuff.aws-cdk.dev',
+          ServiceId: {
+            Ref: 'VPCES3AE7D565',
+          },
+        },
+        physicalResourceId: {
+          id: 'EndpointDomain',
         },
       },
-      physicalResourceId: {
-        id: 'EndpointDomain',
-      },
-    },
-    Delete: {
-      action: 'modifyVpcEndpointServiceConfiguration',
-      service: 'EC2',
-      parameters: {
-        RemovePrivateDnsName: 'TRUE:BOOLEAN',
-        ServiceId: {
-          Ref: 'VPCES3AE7D565',
+      Delete: {
+        action: 'modifyVpcEndpointServiceConfiguration',
+        service: 'EC2',
+        parameters: {
+          RemovePrivateDnsName: 'TRUE:BOOLEAN',
+          ServiceId: {
+            Ref: 'VPCES3AE7D565',
+          },
         },
       },
     },
-  });
+    DependsOn: [
+      'EndpointDomainEnableDnsCustomResourcePolicy5E6DE7EB',
+      'VPCES3AE7D565',
+    ],
+  }, ResourcePart.CompleteDefinition));
 
-  expect(stack).toHaveResourceLike('Custom::AWS', {
-    Create: {
-      action: 'describeVpcEndpointServiceConfigurations',
-      service: 'EC2',
-      parameters: {
-        ServiceIds: [{
-          Ref: 'VPCES3AE7D565',
-        }],
-      },
-    },
-    Update: {
-      action: 'describeVpcEndpointServiceConfigurations',
-      service: 'EC2',
-      parameters: {
-        ServiceIds: [{
-          Ref: 'VPCES3AE7D565',
-        }],
-      },
-    },
-  });
-
-  expect(stack).toHaveResource('Custom::AWS', {
-    Create: {
-      action: 'startVpcEndpointServicePrivateDnsVerification',
-      service: 'EC2',
-      parameters: {
-        ServiceId: {
-          Ref: 'VPCES3AE7D565',
+  // Have to use `haveResourceLike` because there is a property that, by design, changes on every build
+  cdkExpect(stack).to(haveResourceLike('Custom::AWS', {
+    Properties: {
+      Create: {
+        action: 'describeVpcEndpointServiceConfigurations',
+        service: 'EC2',
+        parameters: {
+          ServiceIds: [{
+            Ref: 'VPCES3AE7D565',
+          }],
         },
       },
-      physicalResourceId: {
-        id: {
+      Update: {
+        action: 'describeVpcEndpointServiceConfigurations',
+        service: 'EC2',
+        parameters: {
+          ServiceIds: [{
+            Ref: 'VPCES3AE7D565',
+          }],
+        },
+      },
+    },
+    DependsOn: [
+      'EndpointDomainEnableDnsCustomResourcePolicy5E6DE7EB',
+      'EndpointDomainEnableDnsDACBF5A6',
+      'EndpointDomainGetNamesCustomResourcePolicy141775B1',
+      'VPCES3AE7D565',
+    ],
+  }, ResourcePart.CompleteDefinition));
+
+  cdkExpect(stack).to(haveResource('AWS::Route53::RecordSet', {
+    Properties: {
+      Name: {
+        'Fn::Join': [
+          '',
+          [
+            {
+              'Fn::GetAtt': [
+                'EndpointDomainGetNames9E697ED2',
+                'ServiceConfigurations.0.PrivateDnsNameConfiguration.Name',
+              ],
+            },
+            '.aws-cdk.dev.',
+          ],
+        ],
+      },
+      Type: 'TXT',
+      HostedZoneId: {
+        Ref: 'PHZ45BE903D',
+      },
+      ResourceRecords: [
+        {
           'Fn::Join': [
-            ':',
+            '',
             [
-              {
-                'Fn::GetAtt': [
-                  'EndpointDomainGetNames9E697ED2',
-                  'ServiceConfigurations.0.PrivateDnsNameConfiguration.Name',
-                ],
-              },
+              '\"',
               {
                 'Fn::GetAtt': [
                   'EndpointDomainGetNames9E697ED2',
                   'ServiceConfigurations.0.PrivateDnsNameConfiguration.Value',
                 ],
               },
+              '\"',
             ],
           ],
         },
-      },
+      ],
+      TTL: '1800',
     },
-    Update: {
-      action: 'startVpcEndpointServicePrivateDnsVerification',
-      service: 'EC2',
-      parameters: {
-        ServiceId: {
-          Ref: 'VPCES3AE7D565',
+    DependsOn: [
+      'EndpointDomainGetNamesCustomResourcePolicy141775B1',
+      'EndpointDomainGetNames9E697ED2',
+      'VPCES3AE7D565',
+    ],
+  }, ResourcePart.CompleteDefinition));
+
+  cdkExpect(stack).to(haveResourceLike('Custom::AWS', {
+    Properties: {
+      Create: {
+        action: 'startVpcEndpointServicePrivateDnsVerification',
+        service: 'EC2',
+        parameters: {
+          ServiceId: {
+            Ref: 'VPCES3AE7D565',
+          },
         },
-      },
-      physicalResourceId: {
-        id: {
-          'Fn::Join': [
-            ':',
-            [
-              {
-                'Fn::GetAtt': [
-                  'EndpointDomainGetNames9E697ED2',
-                  'ServiceConfigurations.0.PrivateDnsNameConfiguration.Name',
-                ],
-              },
-              {
-                'Fn::GetAtt': [
-                  'EndpointDomainGetNames9E697ED2',
-                  'ServiceConfigurations.0.PrivateDnsNameConfiguration.Value',
-                ],
-              },
+        physicalResourceId: {
+          id: {
+            'Fn::Join': [
+              ':',
+              [
+                {
+                  'Fn::GetAtt': [
+                    'EndpointDomainGetNames9E697ED2',
+                    'ServiceConfigurations.0.PrivateDnsNameConfiguration.Name',
+                  ],
+                },
+                {
+                  'Fn::GetAtt': [
+                    'EndpointDomainGetNames9E697ED2',
+                    'ServiceConfigurations.0.PrivateDnsNameConfiguration.Value',
+                  ],
+                },
+              ],
             ],
-          ],
+          },
+        },
+      },
+      Update: {
+        action: 'startVpcEndpointServicePrivateDnsVerification',
+        service: 'EC2',
+        parameters: {
+          ServiceId: {
+            Ref: 'VPCES3AE7D565',
+          },
+        },
+        physicalResourceId: {
+          id: {
+            'Fn::Join': [
+              ':',
+              [
+                { 
+                  'Fn::GetAtt': [
+                    'EndpointDomainGetNames9E697ED2',
+                    'ServiceConfigurations.0.PrivateDnsNameConfiguration.Name',
+                  ],
+                },
+                {
+                  'Fn::GetAtt': [
+                    'EndpointDomainGetNames9E697ED2',
+                    'ServiceConfigurations.0.PrivateDnsNameConfiguration.Value',
+                  ],
+                },
+              ],
+            ],
+          },
         },
       },
     },
-  });
+    DependsOn: [
+      'EndpointDomainDnsVerificationRecord66623BDA',
+      'EndpointDomainStartVerificationCustomResourcePolicyD2BAC9A6',
+      'VPCES3AE7D565',
+    ],
+  }, ResourcePart.CompleteDefinition));
 });
 
 test('throws if creating multiple domains for a single service', () => {
