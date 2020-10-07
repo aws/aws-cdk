@@ -158,6 +158,9 @@ class MyPipelineStack extends Stack {
         // Optionally specify a VPC in which the action runs
         vpc: new ec2.Vpc(this, 'NpmSynthVpc'),
 
+        // Optionally specify SecurityGroups
+        vpc: [new ec2.SecurityGroup(this, 'NpmSynthSecurityGroup')],
+
         // Use this if you need a build step (if you're not using ts-node
         // or if you have TypeScript Lambdas that need to be compiled).
         buildCommand: 'npm run build',
@@ -353,6 +356,8 @@ stage.addActions(new ShellScriptAction({
   commands: ['curl -Ssf https://my.webservice.com/'],
   // Optionally specify a VPC if, for example, the service is deployed with a private load balancer
   vpc,
+  // Optionally specify SecurityGroups
+  securityGroups,
   // ... more configuration ...
 }));
 ```
