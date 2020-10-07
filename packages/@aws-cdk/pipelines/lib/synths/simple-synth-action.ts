@@ -20,6 +20,20 @@ export interface SimpleSynthOptions {
   readonly sourceArtifact: codepipeline.Artifact;
 
   /**
+   * The list of additional input Artifacts for this action.
+   *
+   * The directories the additional inputs will be available at are available
+   * during the project's build in the CODEBUILD_SRC_DIR_<artifact-name> environment variables.
+   * The project's build always starts in the directory with the primary input artifact checked out,
+   * the one pointed to by the {@link input} property.
+   * For more information,
+   * see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-multi-in-out.html .
+   *
+   * @default - No additional inputs
+   */
+  readonly extraInputs?: codepipeline.Artifact[];
+
+  /**
    * The artifact where the CloudAssembly should be emitted
    */
   readonly cloudAssemblyArtifact: codepipeline.Artifact;
@@ -244,7 +258,7 @@ export class SimpleSynthAction implements codepipeline.IAction, iam.IGrantable {
       category: codepipeline.ActionCategory.BUILD,
       provider: 'CodeBuild',
       artifactBounds: { minInputs: 0, maxInputs: 5, minOutputs: 0, maxOutputs: 5 },
-      inputs: [props.sourceArtifact],
+      inputs: [props.sourceArtifact, ...props.extraInputs || []],
       outputs: [props.cloudAssemblyArtifact, ...(props.additionalArtifacts ?? []).map(a => a.artifact)],
     };
 
@@ -352,6 +366,7 @@ export class SimpleSynthAction implements codepipeline.IAction, iam.IGrantable {
     this._action = new codepipeline_actions.CodeBuildAction({
       actionName: this.actionProperties.actionName,
       input: this.props.sourceArtifact,
+      extraInputs: this.props.extraInputs,
       outputs: [this.props.cloudAssemblyArtifact, ...(this.props.additionalArtifacts ?? []).map(a => a.artifact)],
 
       // Inclusion of the hash here will lead to the pipeline structure for any changes

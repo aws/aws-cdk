@@ -33,6 +33,7 @@ test('SimpleSynthAction takes arrays of commands', () => {
     synthAction: new cdkp.SimpleSynthAction({
       sourceArtifact,
       cloudAssemblyArtifact,
+      extraInputs: [new codepipeline.Artifact('Extra')],
       installCommands: ['install1', 'install2'],
       buildCommands: ['build1', 'build2'],
       testCommands: ['test1', 'test2'],

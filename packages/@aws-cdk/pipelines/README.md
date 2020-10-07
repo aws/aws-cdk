@@ -245,6 +245,7 @@ const pipeline = new CdkPipeline(this, 'Pipeline', {
   synthAction: new SimpleSynthAction({
     sourceArtifact,
     cloudAssemblyArtifact,
+    extraInputs: [],
     installCommands: ['npm install -g aws-cdk'],
     buildCommands: ['mvn package'],
     synthCommand: 'cdk synth',
