@@ -78,6 +78,18 @@ export interface ICluster extends IResource, ec2.IConnectable {
   readonly clusterEncryptionConfigKeyArn: string;
 
   /**
+   * An Open ID Connect Issuer Url
+   * @attribute
+   */
+  readonly openIdConnectIssuerUrl: string;
+
+  /**
+   * An Open ID Connect Provider
+   * @attribute
+   */
+  readonly openIdConnectProvider: iam.IOpenIdConnectProvider;
+
+  /**
    * An IAM role that can perform kubectl operations against this cluster.
    *
    * The role should be mapped to the `system:masters` Kubernetes RBAC role.
@@ -112,6 +124,13 @@ export interface ICluster extends IResource, ec2.IConnectable {
    * If not defined, a default layer will be used.
    */
   readonly kubectlLayer?: lambda.ILayerVersion;
+
+  /**
+   * Create new service account with corresponding IAM Role (IRSA)
+   * @param id logical id of service account
+   * @param options service account options
+   */
+  addServiceAccount(id: string, options?: ServiceAccountOptions): ServiceAccount;
 
   /**
    * Defines a Kubernetes resource in this cluster.
@@ -209,6 +228,18 @@ export interface ClusterAttributes {
    * @default - k8s endpoint is expected to be accessible publicly
    */
   readonly kubectlPrivateSubnetIds?: string[];
+
+  /**
+   * An Open ID Connect issuer url that was configured for the cluster
+   * @default - if no value specified you won't be able to add an IRSA in your cluster
+   */
+  readonly openIdConnectIssuerUrl?: string;
+
+  /**
+   * An Imported Open ID Connect provider for this cluster
+   * @default - if no value specified - cdk will create new provider when you add IRSA
+   */
+  readonly openIdConnectProvider?: iam.IOpenIdConnectProvider;
 
   /**
    * An AWS Lambda Layer which includes `kubectl`, Helm and the AWS CLI.
@@ -593,6 +624,8 @@ abstract class ClusterBase extends Resource implements ICluster {
   public abstract readonly kubectlEnvironment?: { [key: string]: string };
   public abstract readonly kubectlSecurityGroup?: ec2.ISecurityGroup;
   public abstract readonly kubectlPrivateSubnets?: ec2.ISubnet[];
+  public abstract readonly openIdConnectIssuerUrl: string;
+  public abstract readonly openIdConnectProvider: iam.IOpenIdConnectProvider;
 
   /**
    * Defines a Kubernetes resource in this cluster.
@@ -616,6 +649,13 @@ abstract class ClusterBase extends Resource implements ICluster {
    */
   public addHelmChart(id: string, options: HelmChartOptions): HelmChart {
     return new HelmChart(this, `chart-${id}`, { cluster: this, ...options });
+  }
+
+  public addServiceAccount(id: string, options: ServiceAccountOptions = {}): ServiceAccount {
+    return new ServiceAccount(this, id, {
+      ...options,
+      cluster: this,
+    });
   }
 }
 
@@ -785,7 +825,7 @@ export class Cluster extends ClusterBase {
    */
   private _awsAuth?: AwsAuth;
 
-  private _openIdConnectProvider?: iam.OpenIdConnectProvider;
+  private _openIdConnectProvider?: iam.IOpenIdConnectProvider;
 
   private _spotInterruptHandler?: HelmChart;
 
@@ -1192,19 +1232,8 @@ export class Cluster extends ClusterBase {
    * stock `CfnCluster`), this is `undefined`.
    * @attribute
    */
-  public get clusterOpenIdConnectIssuerUrl(): string {
+  public get openIdConnectIssuerUrl(): string {
     return this._clusterResource.attrOpenIdConnectIssuerUrl;
-  }
-
-  /**
-   * If this cluster is kubectl-enabled, returns the OpenID Connect issuer.
-   * This is because the values is only be retrieved by the API and not exposed
-   * by CloudFormation. If this cluster is not kubectl-enabled (i.e. uses the
-   * stock `CfnCluster`), this is `undefined`.
-   * @attribute
-   */
-  public get clusterOpenIdConnectIssuer(): string {
-    return this._clusterResource.attrOpenIdConnectIssuer;
   }
 
   /**
@@ -1216,7 +1245,7 @@ export class Cluster extends ClusterBase {
   public get openIdConnectProvider() {
     if (!this._openIdConnectProvider) {
       this._openIdConnectProvider = new iam.OpenIdConnectProvider(this, 'OpenIdConnectProvider', {
-        url: this.clusterOpenIdConnectIssuerUrl,
+        url: this.openIdConnectIssuerUrl,
         clientIds: ['sts.amazonaws.com'],
         /**
          * For some reason EKS isn't validating the root certificate but a intermediat certificate
@@ -1239,19 +1268,6 @@ export class Cluster extends ClusterBase {
    */
   public addFargateProfile(id: string, options: FargateProfileOptions) {
     return new FargateProfile(this, `fargate-profile-${id}`, {
-      ...options,
-      cluster: this,
-    });
-  }
-
-  /**
-   * Adds a service account to this cluster.
-   *
-   * @param id the id of this service account
-   * @param options service account options
-   */
-  public addServiceAccount(id: string, options: ServiceAccountOptions = { }) {
-    return new ServiceAccount(this, id, {
       ...options,
       cluster: this,
     });
@@ -1572,7 +1588,7 @@ export interface AutoScalingGroupOptions {
 /**
  * Import a cluster to use in another stack
  */
-class ImportedCluster extends ClusterBase implements ICluster {
+class ImportedCluster extends ClusterBase {
   public readonly clusterName: string;
   public readonly clusterArn: string;
   public readonly connections = new ec2.Connections();
@@ -1581,6 +1597,8 @@ class ImportedCluster extends ClusterBase implements ICluster {
   public readonly kubectlSecurityGroup?: ec2.ISecurityGroup | undefined;
   public readonly kubectlPrivateSubnets?: ec2.ISubnet[] | undefined;
   public readonly kubectlLayer?: lambda.ILayerVersion;
+
+  private _openIdConnectProvider?: iam.IOpenIdConnectProvider;
 
   constructor(scope: Construct, id: string, private readonly props: ClusterAttributes) {
     super(scope, id);
@@ -1592,6 +1610,10 @@ class ImportedCluster extends ClusterBase implements ICluster {
     this.kubectlEnvironment = props.kubectlEnvironment;
     this.kubectlPrivateSubnets = props.kubectlPrivateSubnetIds ? props.kubectlPrivateSubnetIds.map((subnetid, index) => ec2.Subnet.fromSubnetId(this, `KubectlSubnet${index}`, subnetid)) : undefined;
     this.kubectlLayer = props.kubectlLayer;
+
+    if (props.openIdConnectProvider) {
+      this._openIdConnectProvider = props.openIdConnectProvider;
+    }
 
     let i = 1;
     for (const sgid of props.securityGroupIds ?? []) {
@@ -1637,6 +1659,41 @@ class ImportedCluster extends ClusterBase implements ICluster {
       throw new Error('"clusterEncryptionConfigKeyArn" is not defined for this imported cluster');
     }
     return this.props.clusterEncryptionConfigKeyArn;
+  }
+
+  /**
+   * If OpenID Connect issuer url was configured by clusterAttributes while import,
+   * this will return a value. Otherwise this will be `undefined`
+   * @attribute
+   */
+  public get openIdConnectIssuerUrl(): string {
+    if (!this.props.openIdConnectIssuerUrl) {
+      throw new Error('"clusterOpenIdConnectIssuerUrl" is not defined for this imported cluster');
+    }
+    return this.props.openIdConnectIssuerUrl;
+  }
+
+  /**
+   * An `OpenIdConnectProvider` resource associated with this cluster, and which can be used
+   * to link this cluster to AWS IAM.
+   *
+   * A provider will only be defined if this property is accessed (lazy initialization).
+   */
+  public get openIdConnectProvider() {
+    if (!this._openIdConnectProvider) {
+      this._openIdConnectProvider = new iam.OpenIdConnectProvider(this, 'OpenIdConnectProvider', {
+        url: this.openIdConnectIssuerUrl,
+        clientIds: ['sts.amazonaws.com'],
+        /**
+         * For some reason EKS isn't validating the root certificate but a intermediat certificate
+         * which is one level up in the tree. Because of the a constant thumbprint value has to be
+         * stated with this OpenID Connect provider. The certificate thumbprint is the same for all the regions.
+         */
+        thumbprints: ['9e99a48a9960b14926bb7f3b02e22da2b0ab7280'],
+      });
+    }
+
+    return this._openIdConnectProvider;
   }
 }
 

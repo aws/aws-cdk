@@ -1,7 +1,7 @@
 import { AddToPrincipalPolicyResult, IPrincipal, IRole, OpenIdConnectPrincipal, PolicyStatement, PrincipalPolicyFragment, Role } from '@aws-cdk/aws-iam';
 import { CfnJson } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { Cluster } from './cluster';
+import { ICluster } from './cluster';
 import { KubernetesManifest } from './k8s-manifest';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
@@ -31,9 +31,8 @@ export interface ServiceAccountOptions {
 export interface ServiceAccountProps extends ServiceAccountOptions {
   /**
    * The cluster to apply the patch to.
-   * [disable-awslint:ref-via-interface]
    */
-  readonly cluster: Cluster;
+  readonly cluster: ICluster;
 }
 
 /**
@@ -63,6 +62,11 @@ export class ServiceAccount extends CoreConstruct implements IPrincipal {
     super(scope, id);
 
     const { cluster } = props;
+
+    if (!cluster.openIdConnectProvider) {
+      throw new Error('Open ID Connect Provider not found for this cluster');
+    }
+
     this.serviceAccountName = props.name ?? this.node.uniqueId.toLowerCase();
     this.serviceAccountNamespace = props.namespace ?? 'default';
 
@@ -71,8 +75,8 @@ export class ServiceAccount extends CoreConstruct implements IPrincipal {
     */
     const conditions = new CfnJson(this, 'ConditionJson', {
       value: {
-        [`${cluster.clusterOpenIdConnectIssuer}:aud`]: 'sts.amazonaws.com',
-        [`${cluster.clusterOpenIdConnectIssuer}:sub`]: `system:serviceaccount:${this.serviceAccountNamespace}:${this.serviceAccountName}`,
+        [`${cluster.openIdConnectProvider.openIdConnectProviderIssuer}:aud`]: 'sts.amazonaws.com',
+        [`${cluster.openIdConnectProvider.openIdConnectProviderIssuer}:sub`]: `system:serviceaccount:${this.serviceAccountNamespace}:${this.serviceAccountName}`,
       },
     });
     const principal = new OpenIdConnectPrincipal(cluster.openIdConnectProvider).withConditions({

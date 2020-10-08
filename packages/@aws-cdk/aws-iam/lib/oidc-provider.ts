@@ -14,6 +14,11 @@ export interface IOpenIdConnectProvider extends IResource {
    * The Amazon Resource Name (ARN) of the IAM OpenID Connect provider.
    */
   readonly openIdConnectProviderArn: string;
+
+  /**
+   * The issuer for OIDC Provider
+   */
+  readonly openIdConnectProviderIssuer: string;
 }
 
 /**
@@ -99,9 +104,13 @@ export class OpenIdConnectProvider extends Resource implements IOpenIdConnectPro
    * @param openIdConnectProviderArn the ARN to import
    */
   public static fromOpenIdConnectProviderArn(scope: Construct, id: string, openIdConnectProviderArn: string): IOpenIdConnectProvider {
+    const issuer = openIdConnectProviderArn.split(':').slice(-1)[0].split('/').slice(1).join('/');
+
     class Import extends Resource implements IOpenIdConnectProvider {
       public readonly openIdConnectProviderArn = openIdConnectProviderArn;
+      public readonly openIdConnectProviderIssuer = issuer;
     }
+
     return new Import(scope, id);
   }
 
@@ -109,6 +118,8 @@ export class OpenIdConnectProvider extends Resource implements IOpenIdConnectPro
    * The Amazon Resource Name (ARN) of the IAM OpenID Connect provider.
    */
   public readonly openIdConnectProviderArn: string;
+
+  private readonly _openIdConnectProviderIssuer: string;
 
   /**
    * Defines an OpenID Connect provider.
@@ -129,7 +140,17 @@ export class OpenIdConnectProvider extends Resource implements IOpenIdConnectPro
       },
     });
 
+    this._openIdConnectProviderIssuer = props.url.replace('https://', '');
+
     this.openIdConnectProviderArn = Token.asString(resource.ref);
+  }
+
+  /**
+   * The issuer for this OIDC Provider
+   * @attribute
+   */
+  get openIdConnectProviderIssuer(): string {
+    return this._openIdConnectProviderIssuer;
   }
 
   private getOrCreateProvider() {

@@ -388,6 +388,33 @@ describe('arrayDiff', () => {
   });
 });
 
+describe('OIDC issuer', () => {
+  test('extract issuer properly in the new provider', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const provider = new iam.OpenIdConnectProvider(stack, 'MyProvider', {
+      url: 'https://my-issuer',
+    });
+
+    // THEN
+    expect(stack.resolve(provider.openIdConnectProviderIssuer)).toStrictEqual('my-issuer');
+  });
+
+  test('extract issuer properly in the imported provider', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const arn = 'arn:aws:iam::11:oidc-provider/oidc.eks.us-east-1.amazonaws.com/id/someid';
+    const provider = iam.OpenIdConnectProvider.fromOpenIdConnectProviderArn(stack, 'MyProvider', arn);
+
+    // THEN
+    expect(stack.resolve(provider.openIdConnectProviderIssuer)).toStrictEqual('oidc.eks.us-east-1.amazonaws.com/id/someid');
+  });
+});
+
 async function invokeHandler(event: Partial<AWSLambda.CloudFormationCustomResourceEvent>) {
   return handler.handler(event as any);
 }
