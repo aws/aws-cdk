@@ -1230,6 +1230,48 @@ export = {
       test.done();
     },
 
+    'addNodegroupCapacity with T4g instance type comes with nodegroup with correct AmiType'(test: Test) {
+      // GIVEN
+      const { stack } = testFixtureNoVpc();
+
+      // WHEN
+      new eks.Cluster(stack, 'cluster', {
+        defaultCapacity: 0,
+        version: CLUSTER_VERSION,
+        defaultCapacityInstance: new ec2.InstanceType('t4g.medium'),
+      }).addNodegroupCapacity('ng', {
+        instanceType: new ec2.InstanceType('t4g.medium'),
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::EKS::Nodegroup', {
+        AmiType: 'AL2_ARM_64',
+      }));
+      test.done();
+    },
+
+    'addAutoScalingGroupCapacity with T4g instance type comes with nodegroup with correct AmiType'(test: Test) {
+      // GIVEN
+      const { app, stack } = testFixtureNoVpc();
+
+      // WHEN
+      new eks.Cluster(stack, 'cluster', {
+        defaultCapacity: 0,
+        version: CLUSTER_VERSION,
+      }).addAutoScalingGroupCapacity('ng', {
+        instanceType: new ec2.InstanceType('t4g.medium'),
+      });
+
+      // THEN
+      const assembly = app.synth();
+      const parameters = assembly.getStackByName(stack.stackName).template.Parameters;
+      test.ok(Object.entries(parameters).some(
+        ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') &&
+          (v as any).Default.includes('amazon-linux-2-arm64/'),
+      ), 'Amazon Linux 2 AMI for ARM64 should be in ssm parameters');
+      test.done();
+    },
+
     'EKS-Optimized AMI with GPU support when addAutoScalingGroupCapacity'(test: Test) {
       // GIVEN
       const { app, stack } = testFixtureNoVpc();
