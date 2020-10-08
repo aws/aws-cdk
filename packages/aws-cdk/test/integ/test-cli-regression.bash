@@ -78,5 +78,5 @@ function run_regression_against_framework_version() {
 
   # the framework version to use is determined by the caller as the first argument.
   # its a variable name indirection.
-  FRAMEWORK_VERSION=${!FRAMEWORK_VERSION_IDENTIFIER} ${integ_under_test}/test.sh "$@"
+  FRAMEWORK_VERSION=${!FRAMEWORK_VERSION_IDENTIFIER} ${integ_under_test}/test.sh
 }
