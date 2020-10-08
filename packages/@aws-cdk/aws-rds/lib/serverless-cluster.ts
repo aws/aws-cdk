@@ -308,6 +308,8 @@ abstract class ServerlessClusterBase extends Resource implements IServerlessClus
    */
   public abstract readonly secret?: secretsmanager.ISecret
 
+  protected abstract enableHttpEndpoint?: boolean;
+
   /**
    * The ARN of the cluster
    */
@@ -326,6 +328,10 @@ abstract class ServerlessClusterBase extends Resource implements IServerlessClus
    * @param grantee The principal to grant access to
    */
   public grantDataApi(grantee: iam.IGrantable): iam.Grant {
+    if (!this.enableHttpEndpoint) {
+      throw new Error('Cannot grant Data API access when HTTP endpoint is disabled');
+    }
+
     const ret = iam.Grant.addToPrincipal({
       grantee,
       actions: DATA_API_ACTIONS,
@@ -372,6 +378,8 @@ export class ServerlessCluster extends ServerlessClusterBase {
 
   public readonly secret?: secretsmanager.ISecret;
 
+  protected readonly enableHttpEndpoint?: boolean
+
   private readonly subnetGroup: ISubnetGroup;
   private readonly vpc: ec2.IVpc;
   private readonly vpcSubnets?: ec2.SubnetSelection;
@@ -387,6 +395,8 @@ export class ServerlessCluster extends ServerlessClusterBase {
 
     this.singleUserRotationApplication = props.engine.singleUserRotationApplication;
     this.multiUserRotationApplication = props.engine.multiUserRotationApplication;
+
+    this.enableHttpEndpoint = props.enableHttpEndpoint;
 
     const { subnetIds } = this.vpc.selectSubnets(this.vpcSubnets);
 
@@ -536,6 +546,8 @@ class ImportedServerlessCluster extends ServerlessClusterBase implements IServer
   public readonly connections: ec2.Connections;
 
   public readonly secret?: secretsmanager.ISecret;
+
+  protected readonly enableHttpEndpoint = true
 
   private readonly _clusterEndpoint?: Endpoint;
   private readonly _clusterReadEndpoint?: Endpoint;

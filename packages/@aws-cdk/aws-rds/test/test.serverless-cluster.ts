@@ -650,15 +650,16 @@ export = {
     test.done();
   },
 
-  'grants: data api access'(test: Test) {
+  'can grant data api access'(test: Test) {
     // GIVEN
     const stack = testStack();
-    const user = new iam.User(stack, 'User');
     const vpc = ec2.Vpc.fromLookup(stack, 'VPC', { isDefault: true });
     const cluster = new ServerlessCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
       vpc,
+      enableHttpEndpoint: true,
     });
+    const user = new iam.User(stack, 'User');
 
     // WHEN
     cluster.grantDataApi(user);
@@ -716,10 +717,9 @@ export = {
     test.done();
   },
 
-  'grants: data api access on imported cluster with secret'(test: Test) {
+  'can grant data api access on imported cluster specified with secret'(test: Test) {
     // GIVEN
     const stack = testStack();
-    const user = new iam.User(stack, 'User');
     const secret = new DatabaseSecret(stack, 'Secret', {
       username: 'admin',
     });
@@ -727,6 +727,7 @@ export = {
       clusterIdentifier: 'ImportedDatabase',
       secret,
     });
+    const user = new iam.User(stack, 'User');
 
 
     // WHEN
@@ -778,6 +779,22 @@ export = {
         },
       ],
     }));
+
+    test.done();
+  },
+
+  'grant Data API access throws if HTTP endpoint is disabled'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = ec2.Vpc.fromLookup(stack, 'VPC', { isDefault: true });
+    const cluster = new ServerlessCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      vpc,
+    });
+    const user = new iam.User(stack, 'User');
+
+    // WHEN
+    test.throws(() => { cluster.grantDataApi(user); }, /Cannot grant Data API access when HTTP endpoint is disabled/);
 
     test.done();
   },
