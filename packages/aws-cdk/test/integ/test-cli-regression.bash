@@ -24,9 +24,10 @@ function run() {
   echo "Fetching supplant version for candidate: ${CANDIDATE_VERSION}"
 
   # we need to explicitly install these deps because this script is executed
-  # after the build phase, which means the cwd is the packaged dist directory,
-  # without any node_modules in it :(
-  npm install @octokit/rest semver make-runnable
+  # int the test phase, which means the cwd is the packaged dist directory,
+  # so it doesn't have the dependencies installed from the installation of the package.json
+  # in the build phase. maybe we should just run npm install on the package.json again? 
+  npm install @octokit/rest@^18.0.6 semver@^7.3.2 make-runnable@^1.3.8
   SUPPLANT_VERSION=$(node ${integdir}/helpers.js fetchSupplantVersion ${CANDIDATE_VERSION})
 
   echo "Supplant version is: ${SUPPLANT_VERSION}"
