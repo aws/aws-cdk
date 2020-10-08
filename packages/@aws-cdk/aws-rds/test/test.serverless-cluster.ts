@@ -662,7 +662,7 @@ export = {
     const user = new iam.User(stack, 'User');
 
     // WHEN
-    cluster.grantDataApi(user);
+    cluster.grantDataApiAccess(user);
 
     // THEN
     expect(stack).to(haveResource('AWS::IAM::Policy', {
@@ -731,7 +731,7 @@ export = {
 
 
     // WHEN
-    cluster.grantDataApi(user);
+    cluster.grantDataApiAccess(user);
 
     // THEN
     expect(stack).to(haveResource('AWS::IAM::Policy', {
@@ -794,7 +794,7 @@ export = {
     const user = new iam.User(stack, 'User');
 
     // WHEN
-    test.throws(() => { cluster.grantDataApi(user); }, /Cannot grant Data API access when HTTP endpoint is disabled/);
+    test.throws(() => { cluster.grantDataApiAccess(user); }, /Cannot grant Data API access when HTTP endpoint is disabled/);
 
     test.done();
   },
