@@ -202,6 +202,13 @@ export interface ServerlessClusterAttributes {
    * @default - no reader address
    */
   readonly readerEndpointAddress?: string;
+
+  /**
+   * The secret attached to the database cluster
+   *
+   * @default - no secret
+   */
+  readonly secret?: secretsmanager.ISecret;
 }
 
 /**
@@ -297,6 +304,11 @@ abstract class ServerlessClusterBase extends Resource implements IServerlessClus
   public abstract readonly connections: ec2.Connections;
 
   /**
+   * The secret attached to this cluster
+   */
+  public abstract readonly secret?: secretsmanager.ISecret
+
+  /**
    * The ARN of the cluster
    */
   public get clusterArn(): string {
@@ -309,7 +321,7 @@ abstract class ServerlessClusterBase extends Resource implements IServerlessClus
   }
 
   /**
-   * Grant the given identity to access to the Data API
+   * Grant the given identity to access to the Data API, including read access to the secret attached to the cluster if present
    *
    * @param grantee The principal to grant access to
    */
@@ -320,6 +332,7 @@ abstract class ServerlessClusterBase extends Resource implements IServerlessClus
       resourceArns: [this.clusterArn],
       scope: this,
     });
+    this.secret?.grantRead(grantee);
     return ret;
   }
 
@@ -357,9 +370,6 @@ export class ServerlessCluster extends ServerlessClusterBase {
   public readonly clusterReadEndpoint: Endpoint;
   public readonly connections: ec2.Connections;
 
-  /**
-   * The secret attached to this cluster
-   */
   public readonly secret?: secretsmanager.ISecret;
 
   private readonly subnetGroup: ISubnetGroup;
@@ -525,6 +535,8 @@ class ImportedServerlessCluster extends ServerlessClusterBase implements IServer
   public readonly clusterIdentifier: string;
   public readonly connections: ec2.Connections;
 
+  public readonly secret?: secretsmanager.ISecret;
+
   private readonly _clusterEndpoint?: Endpoint;
   private readonly _clusterReadEndpoint?: Endpoint;
 
@@ -538,6 +550,8 @@ class ImportedServerlessCluster extends ServerlessClusterBase implements IServer
       securityGroups: attrs.securityGroups,
       defaultPort,
     });
+
+    this.secret = attrs.secret;
 
     this._clusterEndpoint = (attrs.clusterEndpointAddress && attrs.port) ? new Endpoint(attrs.clusterEndpointAddress, attrs.port) : undefined;
     this._clusterReadEndpoint = (attrs.readerEndpointAddress && attrs.port) ? new Endpoint(attrs.readerEndpointAddress, attrs.port) : undefined;
