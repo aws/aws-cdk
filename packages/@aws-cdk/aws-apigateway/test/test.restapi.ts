@@ -1,6 +1,6 @@
 import { ABSENT, expect, haveResource, haveResourceLike, ResourcePart, SynthUtils } from '@aws-cdk/assert';
 import { GatewayVpcEndpoint } from '@aws-cdk/aws-ec2';
-import { App, CfnElement, CfnResource, Stack, Duration } from '@aws-cdk/core';
+import { App, CfnElement, CfnResource, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as apigw from '../lib';
 
@@ -960,26 +960,6 @@ export = {
     // THEN
     test.throws(() => method.restApi, /not available on Resource not connected to an instance of RestApi/);
     test.ok(method.api);
-
-    test.done();
-  },
-
-  'restApi supports metrics'(test: Test) {
-    // GIVEN
-    const stack = new Stack();
-
-    // WHEN
-    const api = new apigw.RestApi(stack, 'test-api');
-    api.root.addResource('pets').addMethod('GET');
-
-    // THEN
-    test.deepEqual(stack.resolve(api.metricCount()), {
-      dimensions: { ApiName: 'test-api', Stage: { Ref: 'testapiDeploymentStageprod5C9E92A4' } },
-      namespace: 'AWS/ApiGateway',
-      metricName: 'Count',
-      period: Duration.minutes(5),
-      statistic: 'Sum',
-    });
 
     test.done();
   },
