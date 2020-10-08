@@ -7,6 +7,7 @@ import { ICachePolicy } from './cache-policy';
 import { CfnDistribution } from './cloudfront.generated';
 import { GeoRestriction } from './geo-restriction';
 import { IOrigin, OriginBindConfig, OriginBindOptions } from './origin';
+import { IOriginRequestPolicy } from './origin-request-policy';
 import { CacheBehavior } from './private/cache-behavior';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
@@ -675,6 +676,14 @@ export interface AddBehaviorOptions {
    * @default false
    */
   readonly compress?: boolean;
+
+  /**
+   * The origin request policy for this behavior. The origin request policy determines which values (e.g., headers, cookies)
+   * are included in requests that CloudFront sends to the origin.
+   *
+   * @default - none
+   */
+  readonly originRequestPolicy?: IOriginRequestPolicy;
 
   /**
    * Set this to true to indicate you want to distribute media files in the Microsoft Smooth Streaming format using this behavior.
