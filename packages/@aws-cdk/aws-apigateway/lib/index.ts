@@ -27,5 +27,3 @@ export * from './gateway-response';
 export * from './apigateway.generated';
 // AWS::ApiGatewayV2 CloudFormation resources:
 export * from './apigatewayv2';
-
-import './apigateway-augmentations.generated';
