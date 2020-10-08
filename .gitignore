@@ -42,6 +42,3 @@ yarn-error.log
 
 # Cloud9
 .c9
-
-/test-output
-!/test-output/.gitkeep

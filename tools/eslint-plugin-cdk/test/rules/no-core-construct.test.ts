@@ -10,8 +10,8 @@ const linter = new ESLint({
   fix: true,
 });
 
-const testOutputPath = path.join(__dirname, '../../../../test-output')
-const outputDir = fs.mkdtempSync(testOutputPath + path.sep)
+const outputDir = path.join(process.cwd(), '.test-output');
+fs.mkdirpSync(outputDir);
 const fixturesDir = path.join(__dirname, 'fixtures', 'no-core-construct');
 
 describe('no-core-construct', () => {
