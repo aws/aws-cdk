@@ -857,7 +857,7 @@ export interface MyChartProps {
 }
 
 export class MyChart extends cdk8s.Chart {
-  constructor(scope: constructs.Construct, id: string, props: MyChartProps} ) {
+  constructor(scope: constructs.Construct, id: string, props: MyChartProps) {
     super(scope, id);
 
     new kplus.Pod(this, 'Pod', {
@@ -866,11 +866,11 @@ export class MyChart extends cdk8s.Chart {
           new kplus.Container({
             image: 'my-image',
             env: {
-              BUCKET_NAME: bucket.bucketName,
-            }
-          })
-        ]
-      }
+              BUCKET_NAME: kplus.EnvValue.fromValue(props.bucket.bucketName),
+            },
+          }),
+        ],
+      },
     });
   }
 }
