@@ -29,3 +29,5 @@ if [[ "$command" == "install" || "$command" == "i" ]]; then
 
   exec $ORIGINAL_NPM $npmargs
 fi
+
+exec $ORIGINAL_NPM "$@"
