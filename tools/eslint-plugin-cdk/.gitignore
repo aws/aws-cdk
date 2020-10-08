@@ -12,3 +12,5 @@ coverage
 nyc.config.js
 !.eslintrc.js
 !eslintrc.js
+
+.test-output/
