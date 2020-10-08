@@ -203,7 +203,7 @@ test('create domain name resource', () => {
             'Fn::Join': [
               ':',
               [
-                { 
+                {
                   'Fn::GetAtt': [
                     'EndpointDomainGetNames9E697ED2',
                     'ServiceConfigurations.0.PrivateDnsNameConfiguration.Name',
