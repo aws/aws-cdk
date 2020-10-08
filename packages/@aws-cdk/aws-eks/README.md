@@ -231,6 +231,8 @@ cluster.addNodegroupCapacity('extra-ng', {
 
 > For more details visit [Launch Template Support](https://docs.aws.amazon.com/en_ca/eks/latest/userguide/launch-templates.html).
 
+Graviton 2 instance types are supported including `c6g`, `m6g`, `r6g` and `t4g`.
+
 ### Fargate profiles
 
 AWS Fargate is a technology that provides on-demand, right-sized compute
