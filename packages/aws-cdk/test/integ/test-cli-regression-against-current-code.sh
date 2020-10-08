@@ -8,4 +8,4 @@ integdir=$(cd $(dirname $0) && pwd)
 
 source ${integdir}/test-cli-regression.bash
 
-run_new_framework
+run_regression_against_framework_version CANDIDATE_VERSION
