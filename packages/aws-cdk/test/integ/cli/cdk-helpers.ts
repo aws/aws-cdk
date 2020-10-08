@@ -13,6 +13,7 @@ const REGIONS = process.env.AWS_REGIONS
 const FRAMEWORK_VERSION = process.env.FRAMEWORK_VERSION;
 
 process.stdout.write(`Using regions: ${REGIONS}\n`);
+process.stdout.write(`Using framework version: ${FRAMEWORK_VERSION}\n`);
 
 const REGION_POOL = new ResourcePool(REGIONS);
 
