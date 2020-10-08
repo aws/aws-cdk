@@ -129,10 +129,11 @@ export abstract class FlowLogDestination {
   /**
    * Use S3 as the destination
    */
-  public static toS3(bucket?: s3.IBucket): FlowLogDestination {
+  public static toS3(bucket?: s3.IBucket, subfolder?: string): FlowLogDestination {
     return new S3Destination({
       logDestinationType: FlowLogDestinationType.S3,
       s3Bucket: bucket,
+      subfolder,
     });
   }
 
@@ -175,6 +176,13 @@ export interface FlowLogDestinationConfig {
    * @default - undefined
    */
   readonly s3Bucket?: s3.IBucket;
+
+  /**
+   * S3 bucket subfolder to publish the flow logs to
+   *
+   * @default - undefined
+   */
+  readonly subfolder?: string;
 }
 
 /**
@@ -198,6 +206,7 @@ class S3Destination extends FlowLogDestination {
     return {
       logDestinationType: FlowLogDestinationType.S3,
       s3Bucket,
+      subfolder: this.props.subfolder,
     };
   }
 }
@@ -345,6 +354,11 @@ export class FlowLog extends FlowLogBase {
   public readonly bucket?: s3.IBucket;
 
   /**
+   * S3 bucket subfolder to publish the flow logs to
+   */
+  readonly subfolder?: string;
+
+  /**
    * The iam role used to publish logs to CloudWatch
    */
   public readonly iamRole?: iam.IRole;
@@ -365,6 +379,13 @@ export class FlowLog extends FlowLogBase {
     this.logGroup = destinationConfig.logGroup;
     this.bucket = destinationConfig.s3Bucket;
     this.iamRole = destinationConfig.iamRole;
+    this.subfolder = destinationConfig.subfolder;
+
+    let logDestination: string | undefined = undefined;
+    if (this.bucket) {
+      const { bucketArn } = this.bucket;
+      logDestination = this.subfolder ? `${bucketArn}/${this.subfolder}` : bucketArn;
+    }
 
     const flowLog = new CfnFlowLog(this, 'FlowLog', {
       deliverLogsPermissionArn: this.iamRole ? this.iamRole.roleArn : undefined,
@@ -375,7 +396,7 @@ export class FlowLog extends FlowLogBase {
       trafficType: props.trafficType
         ? props.trafficType
         : FlowLogTrafficType.ALL,
-      logDestination: this.bucket ? this.bucket.bucketArn : undefined,
+      logDestination,
     });
 
     this.flowLogId = flowLog.ref;
