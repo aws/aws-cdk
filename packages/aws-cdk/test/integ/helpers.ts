@@ -25,3 +25,8 @@ module.exports.fetchSupplantVersion = async function(base: string) {
   throw new Error(`Unable to find supplant version of ${base}`);
 
 };
+
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+require('make-runnable/custom')({
+  printOutputFrame: false,
+});

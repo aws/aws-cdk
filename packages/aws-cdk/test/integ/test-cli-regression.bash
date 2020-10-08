@@ -22,7 +22,12 @@ function run() {
   CANDIDATE_VERSION=${CANDIDATE_VERSION:?"Need to set CANDIDATE_VERSION"}
 
   echo "Fetching supplant version for candidate: ${CANDIDATE_VERSION}"
-  SUPPLANT_VERSION=$(node -p "require('${integdir}/helpers.js').fetchSupplantVersion('${CANDIDATE_VERSION}')")
+
+  # we need to explicitly install these deps because this script is executed
+  # after the build phase, which means the cwd is the packaged dist directory,
+  # without any node_modules in it :(
+  npm install @octokit/rest semver make-runnable
+  SUPPLANT_VERSION=$(node ${integdir}/helpers.js fetchSupplantVersion ${CANDIDATE_VERSION})
 
   echo "Supplant version is: ${SUPPLANT_VERSION}"
 
