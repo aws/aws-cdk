@@ -8,6 +8,7 @@ import { IClusterEngine } from './cluster-engine';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { IParameterGroup } from './parameter-group';
+import { DATA_API_ACTIONS } from './perms';
 import { applyRemovalPolicy, defaultDeletionProtection, DEFAULT_PASSWORD_EXCLUDE_CHARS } from './private/util';
 import { Credentials, RotationMultiUserOptions, RotationSingleUserOptions } from './props';
 import { CfnDBCluster } from './rds.generated';
@@ -315,7 +316,7 @@ abstract class ServerlessClusterBase extends Resource implements IServerlessClus
   public grantDataApi(grantee: iam.IGrantable): iam.Grant {
     const ret = iam.Grant.addToPrincipal({
       grantee,
-      actions: ['rds-data:*'],
+      actions: DATA_API_ACTIONS,
       resourceArns: [this.clusterArn],
       scope: this,
     });
