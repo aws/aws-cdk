@@ -274,13 +274,6 @@ export abstract class RestApiBase extends Resource implements IRestApi {
   }
 
   /**
-   * The name of the API or the ID in case it was not defined in the declaration
-   */
-  public get apiName() {
-    return this.physicalName;
-  }
-
-  /**
    * The ID of this API Gateway RestApi.
    */
   public abstract readonly restApiId: string;

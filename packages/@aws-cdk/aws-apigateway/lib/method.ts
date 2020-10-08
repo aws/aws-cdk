@@ -8,7 +8,7 @@ import { MethodResponse } from './methodresponse';
 import { IModel } from './model';
 import { IRequestValidator, RequestValidatorOptions } from './requestvalidator';
 import { IResource } from './resource';
-import { IRestApi, RestApi, RestApiBase } from './rest-api-base';
+import { IRestApi, RestApi, RestApiBase } from './restapi';
 import { validateHttpMethod } from './util';
 
 export interface MethodOptions {

@@ -4,7 +4,7 @@ import { Duration, Lazy, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnAuthorizer } from '../apigateway.generated';
 import { Authorizer, IAuthorizer } from '../authorizer';
-import { IRestApi } from '../rest-api-base';
+import { IRestApi } from '../restapi';
 
 /**
  * Base properties for all lambda authorizers

@@ -3,7 +3,7 @@ import { Construct } from 'constructs';
 import { LambdaIntegration } from './integrations';
 import { Method } from './method';
 import { ProxyResource, Resource } from './resource';
-import { RestApi, RestApiProps } from './rest-api-base';
+import { RestApi, RestApiProps } from './restapi';
 
 export interface LambdaRestApiProps extends RestApiProps {
   /**

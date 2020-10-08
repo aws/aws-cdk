@@ -2,7 +2,7 @@ import { IResource as IResourceBase, Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnApiKey } from './apigateway.generated';
 import { ResourceOptions } from './resource';
-import { RestApi } from './rest-api-base';
+import { RestApi } from './restapi';
 
 /**
  * API keys are alphanumeric string values that you distribute to
