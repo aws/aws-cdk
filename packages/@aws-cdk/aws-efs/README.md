@@ -76,7 +76,8 @@ const fileSystem = new efs.FileSystem(this, 'MyEfsFileSystem', {
   encrypted: true,
   lifecyclePolicy: efs.LifecyclePolicy.AFTER_14_DAYS,
   performanceMode: efs.PerformanceMode.GENERAL_PURPOSE,
-  throughputMode: efs.ThroughputMode.BURSTING
+  throughputMode: efs.ThroughputMode.BURSTING,
+  enableAutomaticBackups: true
 });
 
 const inst = new Instance(this, 'inst', {
