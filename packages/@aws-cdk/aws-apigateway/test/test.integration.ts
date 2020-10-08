@@ -1,4 +1,4 @@
-import { expect, haveResourceLike } from '@aws-cdk/assert';
+import { ABSENT, expect, haveResourceLike } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as iam from '@aws-cdk/aws-iam';
@@ -137,6 +137,62 @@ export = {
         vpcLink: link,
       },
     }), /cannot set 'vpcLink' where 'connectionType' is INTERNET/);
+    test.done();
+  },
+
+  'connectionType is ABSENT when vpcLink is not specified'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigw.RestApi(stack, 'restapi');
+
+    // WHEN
+    const integration = new apigw.Integration({
+      type: apigw.IntegrationType.HTTP_PROXY,
+      integrationHttpMethod: 'ANY',
+    });
+    api.root.addMethod('ANY', integration);
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ApiGateway::Method', {
+      HttpMethod: 'ANY',
+      Integration: {
+        ConnectionType: ABSENT,
+      },
+    }));
+
+    test.done();
+  },
+
+  'connectionType defaults to VPC_LINK if vpcLink is configured'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const nlb = new elbv2.NetworkLoadBalancer(stack, 'NLB', {
+      vpc,
+    });
+    const link = new apigw.VpcLink(stack, 'link', {
+      targets: [nlb],
+    });
+    const api = new apigw.RestApi(stack, 'restapi');
+
+    // WHEN
+    const integration = new apigw.Integration({
+      type: apigw.IntegrationType.HTTP_PROXY,
+      integrationHttpMethod: 'ANY',
+      options: {
+        vpcLink: link,
+      },
+    });
+    api.root.addMethod('ANY', integration);
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ApiGateway::Method', {
+      HttpMethod: 'ANY',
+      Integration: {
+        ConnectionType: 'VPC_LINK',
+      },
+    }));
+
     test.done();
   },
 };

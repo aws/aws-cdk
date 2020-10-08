@@ -86,7 +86,10 @@ export class VpcLink extends Resource implements IVpcLink {
     this._targets.push(...targets);
   }
 
-  /** @internal */
+  /**
+   * Return the list of DNS names from the target NLBs.
+   * @internal
+   * */
   public get _targetDnsNames(): string[] {
     return this._targets.map(t => t.loadBalancerDnsName);
   }

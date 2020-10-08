@@ -91,7 +91,7 @@ export interface IntegrationOptions {
 
   /**
    * The type of network connection to the integration endpoint.
-   * @default ConnectionType.Internet
+   * @default - ConnectionType.VPC_LINK if `vpcLink` property is configured; ConnectionType.Internet otherwise.
    */
   readonly connectionType?: ConnectionType;
 
@@ -201,10 +201,13 @@ export class Integration {
    */
   public bind(_method: Method): IntegrationConfig {
     let uri = this.props.uri;
-    if (this.props.options?.connectionType === ConnectionType.VPC_LINK && uri === undefined) {
+    const options = this.props.options;
+
+    if (options?.connectionType === ConnectionType.VPC_LINK && uri === undefined) {
       uri = Lazy.stringValue({
+        // needs to be a lazy since the targets can be added to the VpcLink construct after initialization.
         produce: () => {
-          const vpcLink = this.props.options?.vpcLink;
+          const vpcLink = options.vpcLink;
           if (vpcLink instanceof VpcLink) {
             const targets = vpcLink._targetDnsNames;
             if (targets.length > 1) {
@@ -219,7 +222,10 @@ export class Integration {
       });
     }
     return {
-      options: this.props.options,
+      options: {
+        ...options,
+        connectionType: options?.vpcLink ? ConnectionType.VPC_LINK : options?.connectionType,
+      },
       type: this.props.type,
       uri,
       integrationHttpMethod: this.props.integrationHttpMethod,
