@@ -290,6 +290,46 @@ test('run ShellScriptAction in a VPC', () => {
   });
 });
 
+test('run ShellScriptAction with Security Group', () => {
+  // WHEN
+  const vpc = new ec2.Vpc(pipelineStack, 'VPC');
+  const sg = new ec2.SecurityGroup(pipelineStack, 'SG', { vpc });
+  pipeline.addStage('Test').addActions(new cdkp.ShellScriptAction({
+    vpc,
+    securityGroups: [sg],
+    actionName: 'sgAction',
+    additionalArtifacts: [integTestArtifact],
+    commands: ['true'],
+  }));
+
+  // THEN
+  expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+    Stages: arrayWith({
+      Name: 'Test',
+      Actions: [
+        deepObjectLike({
+          Name: 'sgAction',
+        }),
+      ],
+    }),
+  });
+  expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    VpcConfig: {
+      SecurityGroupIds: [
+        {
+          'Fn::GetAtt': [
+            'SGADB53937',
+            'GroupId',
+          ],
+        },
+      ],
+      VpcId: {
+        Ref: 'VPCB9E5F0B4',
+      },
+    },
+  });
+});
+
 class AppWithStackOutput extends Stage {
   public readonly output: CfnOutput;
 
