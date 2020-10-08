@@ -74,13 +74,9 @@ export class CustomLambdaDeploymentConfig extends Resource implements ILambdaDep
     this.validateParameters(props);
 
     // In this section we make the argument for the AWS API call
-    // The name of the config is <construct unique id>.Lambda<deployment type><percentage>Percent<interval>Minutes
-    // Unless the user provides an explicit name
-
     const deploymentType = 'TimeBased' + props.type.toString();
     const intervalMinutes = props.interval.toMinutes().toString();
     const percentage = props.percentage.toString();
-
     let routingConfig; // The argument to the AWS API call
     if (props.type == CustomLambdaDeploymentConfigType.CANARY) {
       routingConfig = {
@@ -100,12 +96,14 @@ export class CustomLambdaDeploymentConfig extends Resource implements ILambdaDep
       };
     }
 
-    // What the physical resource ID is for Cloudformation
-    // Designed so that, if the construct name, percentage, or interval changes,
-    // the deployment config will be deleted and a new one created in its place
-    const resourceName = this.generatePhysicalResourceId(props);
-
-    this.deploymentConfigName = this.generateDeploymentConfigName(props);
+    // Generates the name of the deployment config. It's also what you'll see in the AWS console
+    // The name of the config is <construct unique id>.Lambda<deployment type><percentage>Percent<interval>Minutes
+    // Unless the user provides an explicit name
+    this.deploymentConfigName = props.deploymentConfigName !== undefined
+      ? props.deploymentConfigName
+      : `${this.node.uniqueId}.Lambda${props.type}${props.percentage}Percent${props.type === CustomLambdaDeploymentConfigType.LINEAR
+        ? 'Every'
+        : ''}${props.interval.toMinutes()}Minutes`;
     this.deploymentConfigArn = arnForDeploymentConfig(this.deploymentConfigName);
 
     // The AWS Custom Resource that calls CodeDeploy to create and delete the resource
@@ -119,7 +117,7 @@ export class CustomLambdaDeploymentConfig extends Resource implements ILambdaDep
           trafficRoutingConfig: routingConfig,
         },
         // This `resourceName` is the initial physical ID of the config
-        physicalResourceId: PhysicalResourceId.of(resourceName),
+        physicalResourceId: PhysicalResourceId.of(this.deploymentConfigName),
       },
       onUpdate: { // Run on stack update
         service: 'CodeDeploy',
@@ -131,7 +129,7 @@ export class CustomLambdaDeploymentConfig extends Resource implements ILambdaDep
         },
         // If `resourceName` is different from the last stack update (or creation),
         // the old config gets deleted and the new one is created
-        physicalResourceId: PhysicalResourceId.of(resourceName),
+        physicalResourceId: PhysicalResourceId.of(this.deploymentConfigName),
       },
       onDelete: { // Run on deletion, or on resource replacement
         service: 'CodeDeploy',
@@ -140,46 +138,23 @@ export class CustomLambdaDeploymentConfig extends Resource implements ILambdaDep
           deploymentConfigName: this.deploymentConfigName,
         },
       },
-      // Least permissions, only have permission to create or delete this exact config
       policy: AwsCustomResourcePolicy.fromSdkCalls({
         resources: AwsCustomResourcePolicy.ANY_RESOURCE,
       }),
     });
   }
 
-  // Generates the name of the deployment config. It's also what you'll see in the AWS console
-  private generateDeploymentConfigName(props: CustomLambdaDeploymentConfigProps): string {
-    let configName;
-    if (props.deploymentConfigName !== undefined) {
-      configName = props.deploymentConfigName;
-    } else {
-      const id = this.node.uniqueId;
-      const intervalMinutes = props.interval.toMinutes().toString();
-      const percentage = props.percentage.toString();
-      const deploymentType = props.type.toString();
-      if (props.type !== CustomLambdaDeploymentConfigType.LINEAR) {
-        configName = `${id}.Lambda${deploymentType}${percentage}Percent${intervalMinutes}Minutes`;
-      } else {
-        configName = `${id}.Lambda${deploymentType}${percentage}PercentEvery${intervalMinutes}Minutes`;
-      }
-    }
-    return configName;
-  }
-
-  // Generates the physical resource ID of the deployment config
-  // CloudFormation uses this to decide if the resource needs to be replaced
-  private generatePhysicalResourceId(props: CustomLambdaDeploymentConfigProps): string {
-    return this.generateDeploymentConfigName(props); // Just use the name of the config
-  }
-
+  // Validate the inputs. The percentage/interval limits come from CodeDeploy
   private validateParameters(props: CustomLambdaDeploymentConfigProps): void {
     if ( !(1 <= props.percentage && props.percentage <= 99) ) {
-      throw new Error('Invalid deployment config percentage "' + props.percentage.toString()
-        + '". Step percentage must be an integer between 1 and 99.');
+      throw new Error(
+        `Invalid deployment config percentage "${props.percentage.toString()}". \
+        Step percentage must be an integer between 1 and 99.`);
     }
     if (props.interval.toMinutes() > 2880) {
-      throw new Error('Invalid deployment config interval "' + props.interval.toString()
-        + '". Traffic shifting intervals must be positive integers up to 2880 (2 days).');
+      throw new Error(
+        `Invalid deployment config interval "${props.interval.toString()}". \
+        Traffic shifting intervals must be positive integers up to 2880 (2 days).`);
     }
   }
 }

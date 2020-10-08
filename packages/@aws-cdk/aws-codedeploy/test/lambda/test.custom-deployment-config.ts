@@ -134,72 +134,26 @@ export = {
 
     // THEN
     expect(stack).to(haveResourceLike('Custom::AWS', {
-      ServiceToken: {
-        'Fn::GetAtt': [
-          'AWS679f53fac002430cb0da5b7982bd22872D164C4C',
-          'Arn',
-        ],
-      },
       Create: {
-        action: 'createDeploymentConfig',
-        service: 'CodeDeploy',
         parameters: {
-          computePlatform: 'Lambda',
           deploymentConfigName: 'MyDeploymentConfig',
-          trafficRoutingConfig: {
-            timeBasedCanary: {
-              canaryPercentage: '5',
-              canaryInterval: '1',
-            },
-            type: 'TimeBasedCanary',
-          },
         },
         physicalResourceId: {
           id: 'MyDeploymentConfig',
         },
       },
       Update: {
-        action: 'createDeploymentConfig',
-        service: 'CodeDeploy',
         parameters: {
-          computePlatform: 'Lambda',
           deploymentConfigName: 'MyDeploymentConfig',
-          trafficRoutingConfig: {
-            timeBasedCanary: {
-              canaryPercentage: '5',
-              canaryInterval: '1',
-            },
-            type: 'TimeBasedCanary',
-          },
         },
         physicalResourceId: {
           id: 'MyDeploymentConfig',
         },
       },
       Delete: {
-        action: 'deleteDeploymentConfig',
-        service: 'CodeDeploy',
         parameters: {
           deploymentConfigName: 'MyDeploymentConfig',
         },
-      },
-    }));
-
-    expect(stack).to(haveResource('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: 'codedeploy:CreateDeploymentConfig',
-            Effect: 'Allow',
-            Resource: '*',
-          },
-          {
-            Action: 'codedeploy:DeleteDeploymentConfig',
-            Effect: 'Allow',
-            Resource: '*',
-          },
-        ],
-        Version: '2012-10-17',
       },
     }));
     test.done();
@@ -219,12 +173,8 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::CodeDeploy::DeploymentGroup', {
+    expect(stack).to(haveResourceLike('AWS::CodeDeploy::DeploymentGroup', {
       DeploymentConfigName: 'CustomConfig.LambdaLinear5PercentEvery1Minutes',
-      DeploymentStyle: {
-        DeploymentOption: 'WITH_TRAFFIC_CONTROL',
-        DeploymentType: 'BLUE_GREEN',
-      },
     }));
 
     test.done();
@@ -244,12 +194,8 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::CodeDeploy::DeploymentGroup', {
+    expect(stack).to(haveResourceLike('AWS::CodeDeploy::DeploymentGroup', {
       DeploymentConfigName: 'CustomConfig.LambdaCanary5Percent1Minutes',
-      DeploymentStyle: {
-        DeploymentOption: 'WITH_TRAFFIC_CONTROL',
-        DeploymentType: 'BLUE_GREEN',
-      },
     }));
     test.done();
   },
@@ -268,28 +214,9 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::CodeDeploy::DeploymentGroup', {
+    expect(stack).to(haveResourceLike('AWS::CodeDeploy::DeploymentGroup', {
       Properties: {
-        ApplicationName: {
-          Ref: 'MyApp3CE31C26',
-        },
-        ServiceRoleArn: {
-          'Fn::GetAtt': [
-            'MyDGServiceRole5E94FD88',
-            'Arn',
-          ],
-        },
-        AutoRollbackConfiguration: {
-          Enabled: true,
-          Events: [
-            'DEPLOYMENT_FAILURE',
-          ],
-        },
         DeploymentConfigName: 'CustomConfig.LambdaCanary5Percent1Minutes',
-        DeploymentStyle: {
-          DeploymentOption: 'WITH_TRAFFIC_CONTROL',
-          DeploymentType: 'BLUE_GREEN',
-        },
       },
       DependsOn: [
         'CustomConfigDeploymentConfigCustomResourcePolicy0426B684',
