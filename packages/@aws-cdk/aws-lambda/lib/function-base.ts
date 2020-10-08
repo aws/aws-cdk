@@ -210,7 +210,7 @@ export abstract class FunctionBase extends Resource implements IFunction {
    */
   public addPermission(id: string, permission: Permission) {
     if (!this.canCreatePermissions) {
-      // FIXME: @deprecate this behavior in V2; throw an error if calling `addPermission` on a resource that doesn't support it.
+      // FIXME: @deprecated(v2) - throw an error if calling `addPermission` on a resource that doesn't support it.
       return;
     }
 
@@ -301,7 +301,7 @@ export abstract class FunctionBase extends Resource implements IFunction {
 
             const permissionNode = this._functionNode().tryFindChild(identifier);
             if (!permissionNode) {
-              throw new Error('attempted to call `grantInvoke` on unsupported function (either imported or $LATEST version).');
+              throw new Error('Cannot modify permission to lambda function. Function is either imported or $LATEST version.');
             }
             return { statementAdded: true, policyDependable: permissionNode };
           },

@@ -1331,7 +1331,7 @@ export = {
 
       // THEN
       test.throws(() => { fn.grantInvoke(new iam.ServicePrincipal('elasticloadbalancing.amazonaws.com')); },
-        'attempted to call `grantInvoke` on unsupported function (either imported or $LATEST version).');
+        /Cannot modify permission to lambda function/);
 
       test.done();
     },
