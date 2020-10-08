@@ -4,7 +4,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { AuroraPostgresEngineVersion, ServerlessCluster, DatabaseClusterEngine, ParameterGroup, AuroraCapacityUnit } from '../lib';
+import { AuroraPostgresEngineVersion, ServerlessCluster, DatabaseClusterEngine, ParameterGroup, AuroraCapacityUnit, DatabaseSecret } from '../lib';
 
 export = {
   'can create a Serverless Cluster with Aurora Postgres database engine'(test: Test) {
@@ -669,10 +669,6 @@ export = {
         Statement: [
           {
             Action: [
-              'secretsmanager:CreateSecret',
-              'secretsmanager:ListSecrets',
-              'secretsmanager:GetRandomPassword',
-              'tag:GetResources',
               'rds-data:BatchExecuteStatement',
               'rds-data:BeginTransaction',
               'rds-data:CommitTransaction',
@@ -696,6 +692,82 @@ export = {
               ],
             },
           },
+          {
+            Action: [
+              'secretsmanager:GetSecretValue',
+              'secretsmanager:DescribeSecret',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              Ref: 'DatabaseSecretAttachmentE5D1B020',
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      PolicyName: 'UserDefaultPolicy1F97781E',
+      Users: [
+        {
+          Ref: 'User00B015A1',
+        },
+      ],
+    }));
+
+    test.done();
+  },
+
+  'grants: data api access on imported cluster with secret'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const user = new iam.User(stack, 'User');
+    const secret = new DatabaseSecret(stack, 'Secret', {
+      username: 'admin',
+    });
+    const cluster = ServerlessCluster.fromServerlessClusterAttributes(stack, 'Cluster', {
+      clusterIdentifier: 'ImportedDatabase',
+      secret,
+    });
+
+
+    // WHEN
+    cluster.grantDataApi(user);
+
+    // THEN
+    expect(stack).to(haveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'rds-data:BatchExecuteStatement',
+              'rds-data:BeginTransaction',
+              'rds-data:CommitTransaction',
+              'rds-data:ExecuteStatement',
+              'rds-data:RollbackTransaction',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':rds:us-test-1:12345:cluster:ImportedDatabase',
+                ],
+              ],
+            },
+          },
+          {
+            Action: [
+              'secretsmanager:GetSecretValue',
+              'secretsmanager:DescribeSecret',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              Ref: 'SecretA720EF05',
+            },
+          },
         ],
         Version: '2012-10-17',
       },
@@ -710,6 +782,7 @@ export = {
     test.done();
   },
 };
+
 
 function testStack() {
   const stack = new cdk.Stack(undefined, undefined, { env: { account: '12345', region: 'us-test-1' } });
