@@ -300,13 +300,17 @@ export abstract class RestApiBase extends Resource implements IRestApi {
    */
   public deploymentStage!: Stage;
 
+  /**
+   * A human friendly name for this Rest API. Note that this is different from `restApiId`.
+   */
+  public readonly restApiName: string;
+
   private _latestDeployment?: Deployment;
   private _domainName?: DomainName;
 
   constructor(scope: Construct, id: string, props: RestApiBaseProps = { }) {
-    super(scope, id, {
-      physicalName: props.restApiName || id,
-    });
+    super(scope, id);
+    this.restApiName = props.restApiName ?? id;
 
     Object.defineProperty(this, RESTAPI_SYMBOL, { value: true });
   }
@@ -381,7 +385,7 @@ export abstract class RestApiBase extends Resource implements IRestApi {
     return new cloudwatch.Metric({
       namespace: 'AWS/ApiGateway',
       metricName,
-      dimensions: { ApiName: this.physicalName },
+      dimensions: { ApiName: this.restApiName },
       ...props,
     });
   }
@@ -565,7 +569,7 @@ export class SpecRestApi extends RestApiBase {
     super(scope, id, props);
     const apiDefConfig = props.apiDefinition.bind(this);
     const resource = new CfnRestApi(this, 'Resource', {
-      name: this.physicalName,
+      name: this.restApiName,
       policy: props.policy,
       failOnWarnings: props.failOnWarnings,
       body: apiDefConfig.inlineDefinition ? apiDefConfig.inlineDefinition : undefined,
@@ -667,7 +671,7 @@ export class RestApi extends RestApiBase {
     super(scope, id, props);
 
     const resource = new CfnRestApi(this, 'Resource', {
-      name: this.physicalName,
+      name: this.restApiName,
       description: props.description,
       policy: props.policy,
       failOnWarnings: props.failOnWarnings,

@@ -100,6 +100,22 @@ export = {
     test.done();
   },
 
+  'restApiName is set correctly'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const myapi = new apigw.RestApi(stack, 'myapi');
+    const yourapi = new apigw.RestApi(stack, 'yourapi', {
+      restApiName: 'namedapi',
+    });
+
+    // THEN
+    test.deepEqual(myapi.restApiName, 'myapi');
+    test.deepEqual(yourapi.restApiName, 'namedapi');
+    test.done();
+  },
+
   'defaultChild is set correctly'(test: Test) {
     const stack = new Stack();
     const api = new apigw.RestApi(stack, 'my-api');
