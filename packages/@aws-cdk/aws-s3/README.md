@@ -339,4 +339,5 @@ You can generate both of them.
 ```ts
 bucket.urlForObject('objectname'); // Path-Style URL
 bucket.virtualHostedUrlForObject('objectname'); // Virtual Hosted-Style URL
+bucket.virtualHostedUrlForObject('objectname', { regional: false }); // Virtual Hosted-Style URL but non-regional
 ```

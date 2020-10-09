@@ -44,15 +44,21 @@
           [
             "https://",
             {
-              "Ref": "MyBucketF68F3FF0"
+              "Fn::GetAtt": ["MyBucketF68F3FF0", "RegionalDomainName"]
             },
-            ".s3-",
+            "/myfolder/myfile.txt"
+          ]
+        ]
+      }
+    },
+    "VirtualHostedObjectURLNonRegional": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "https://",
             {
-              "Ref": "AWS::Region"
-            },
-            ".",
-            {
-              "Ref": "AWS::URLSuffix"
+              "Fn::GetAtt": ["MyBucketF68F3FF0", "DomainName"]
             },
             "/myfolder/myfile.txt"
           ]
