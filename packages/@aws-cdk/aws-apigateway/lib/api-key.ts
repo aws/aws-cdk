@@ -4,6 +4,7 @@ import { Construct } from 'constructs';
 import { CfnApiKey } from './apigateway.generated';
 import { ResourceOptions } from './resource';
 import { RestApi } from './restapi';
+import { QuotaSettings, ThrottleSettings, UsagePlan, UsagePlanPerApiStage } from './usage-plan';
 
 /**
  * API keys are alphanumeric string values that you distribute to
@@ -18,28 +19,21 @@ export interface IApiKey extends IResourceBase {
 
   /**
    * The API key ARN.
-   * @attribute
    */
   readonly keyArn: string;
 }
 
 /**
- * Represents props that all Api Keys share
+ * The options for creating an API Key.
  */
-export interface ApiKeyBaseProps {
+export interface ApiKeyOptions extends ResourceOptions {
   /**
    * A name for the API key. If you don't specify a name, AWS CloudFormation generates a unique physical ID and uses that ID for the API key name.
    * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-apikey.html#cfn-apigateway-apikey-name
    * @default automically generated name
    */
   readonly apiKeyName?: string;
-}
 
-
-/**
- * The options for creating an API Key.
- */
-export interface ApiKeyOptions extends ApiKeyBaseProps, ResourceOptions {
   /**
    * The value of the API key. Must be at least 20 characters long.
    * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-apikey.html#cfn-apigateway-apikey-value
@@ -91,15 +85,9 @@ export interface ApiKeyProps extends ApiKeyOptions {
 /**
  * Base implementation that is common to the various implementations of IApiKey
  */
-export abstract class ApiKeyBase extends Resource implements IApiKey {
+abstract class ApiKeyBase extends Resource implements IApiKey {
   public abstract readonly keyId: string;
   public abstract readonly keyArn: string;
-
-  constructor(scope: Construct, id: string, props: ApiKeyBaseProps = {}) {
-    super(scope, id, {
-      physicalName: props.apiKeyName,
-    });
-  }
 
   /**
    * Permits the IAM principal all read operations through this key
@@ -172,7 +160,7 @@ export class ApiKey extends ApiKeyBase {
 
   constructor(scope: Construct, id: string, props: ApiKeyProps = { }) {
     super(scope, id, {
-      apiKeyName: props.apiKeyName,
+      physicalName: props.apiKeyName,
     });
 
     const resource = new CfnApiKey(this, 'Resource', {
@@ -206,6 +194,59 @@ export class ApiKey extends ApiKeyBase {
       const stageName = restApi.deploymentStage!.stageName.toString();
       return { restApiId, stageName };
     });
+  }
+}
+
+/**
+ * RateLimitedApiKey properties.
+ */
+export interface RateLimitedApiKeyProps extends ApiKeyProps {
+  /**
+   * API Stages to be associated with the RateLimitedApiKey.
+   * @default none
+   */
+  readonly apiStages?: UsagePlanPerApiStage[];
+
+  /**
+   * Number of requests clients can make in a given time period.
+   * @default none
+   */
+  readonly quota?: QuotaSettings;
+
+  /**
+   * Overall throttle settings for the API.
+   * @default none
+   */
+  readonly throttle?: ThrottleSettings;
+}
+
+/**
+ * An API Gateway ApiKey, for which a rate limiting configuration can be specified.
+ *
+ * @resource AWS::ApiGateway::ApiKey
+ */
+export class RateLimitedApiKey extends ApiKeyBase {
+  public readonly keyId: string;
+  public readonly keyArn: string;
+
+  constructor(scope: Construct, id: string, props: RateLimitedApiKeyProps = { }) {
+    super(scope, id, {
+      physicalName: props.apiKeyName,
+    });
+
+    const resource = new ApiKey(this, 'Resource', props);
+
+    if (props.apiStages || props.quota || props.throttle) {
+      new UsagePlan(this, 'UsagePlanResource', {
+        apiKey: resource,
+        apiStages: props.apiStages,
+        quota: props.quota,
+        throttle: props.throttle,
+      });
+    }
+
+    this.keyId = resource.keyId;
+    this.keyArn = resource.keyArn;
   }
 }
 
