@@ -3,9 +3,11 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import { IResource, Lazy, Resource, Stack, Token, Duration } from '@aws-cdk/core';
 import { Construct, Node } from 'constructs';
+import { ICachePolicy } from './cache-policy';
 import { CfnDistribution } from './cloudfront.generated';
 import { GeoRestriction } from './geo-restriction';
 import { IOrigin, OriginBindConfig, OriginBindOptions } from './origin';
+import { IOriginRequestPolicy } from './origin-request-policy';
 import { CacheBehavior } from './private/cache-behavior';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
@@ -658,6 +660,15 @@ export interface AddBehaviorOptions {
   readonly cachedMethods?: CachedMethods;
 
   /**
+   * The cache policy for this behavior. The cache policy determines what values are included in the cache key,
+   * and the time-to-live (TTL) values for the cache.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/controlling-the-cache-key.html.
+   * @default CachePolicy.CACHING_OPTIMIZED
+   */
+  readonly cachePolicy?: ICachePolicy;
+
+  /**
    * Whether you want CloudFront to automatically compress certain files for this cache behavior.
    * See https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/ServingCompressedFiles.html#compressed-content-cloudfront-file-types
    * for file types CloudFront will compress.
@@ -667,21 +678,12 @@ export interface AddBehaviorOptions {
   readonly compress?: boolean;
 
   /**
-   * Whether CloudFront will forward query strings to the origin.
-   * If this is set to true, CloudFront will forward all query parameters to the origin, and cache
-   * based on all parameters. See `forwardQueryStringCacheKeys` for a way to limit the query parameters
-   * CloudFront caches on.
+   * The origin request policy for this behavior. The origin request policy determines which values (e.g., headers, cookies)
+   * are included in requests that CloudFront sends to the origin.
    *
-   * @default false
+   * @default - none
    */
-  readonly forwardQueryString?: boolean;
-
-  /**
-   * A set of query string parameter names to use for caching if `forwardQueryString` is set to true.
-   *
-   * @default []
-   */
-  readonly forwardQueryStringCacheKeys?: string[];
+  readonly originRequestPolicy?: IOriginRequestPolicy;
 
   /**
    * Set this to true to indicate you want to distribute media files in the Microsoft Smooth Streaming format using this behavior.

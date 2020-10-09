@@ -1051,4 +1051,142 @@ export = {
       test.done();
     },
   },
+
+  Metrics: {
+    'metric'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const api = new apigw.RestApi(stack, 'my-api');
+      const metricName = '4XXError';
+      const statistic = 'Sum';
+
+      // WHEN
+      const countMetric = api.metric(metricName, { statistic });
+
+      // THEN
+      test.equal(countMetric.namespace, 'AWS/ApiGateway');
+      test.equal(countMetric.metricName, metricName);
+      test.deepEqual(countMetric.dimensions, { ApiName: 'my-api' });
+      test.equal(countMetric.statistic, statistic);
+
+      test.done();
+    },
+
+    'metricClientError'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const api = new apigw.RestApi(stack, 'my-api');
+      const color = '#00ff00';
+
+      // WHEN
+      const countMetric = api.metricClientError({ color });
+
+      // THEN
+      test.equal(countMetric.metricName, '4XXError');
+      test.equal(countMetric.statistic, 'Sum');
+      test.equal(countMetric.color, color);
+
+      test.done();
+    },
+
+    'metricServerError'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const api = new apigw.RestApi(stack, 'my-api');
+      const color = '#00ff00';
+
+      // WHEN
+      const countMetric = api.metricServerError({ color });
+
+      // THEN
+      test.equal(countMetric.metricName, '5XXError');
+      test.equal(countMetric.statistic, 'Sum');
+      test.equal(countMetric.color, color);
+
+      test.done();
+    },
+
+    'metricCacheHitCount'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const api = new apigw.RestApi(stack, 'my-api');
+      const color = '#00ff00';
+
+      // WHEN
+      const countMetric = api.metricCacheHitCount({ color });
+
+      // THEN
+      test.equal(countMetric.metricName, 'CacheHitCount');
+      test.equal(countMetric.statistic, 'Sum');
+      test.equal(countMetric.color, color);
+
+      test.done();
+    },
+
+    'metricCacheMissCount'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const api = new apigw.RestApi(stack, 'my-api');
+      const color = '#00ff00';
+
+      // WHEN
+      const countMetric = api.metricCacheMissCount({ color });
+
+      // THEN
+      test.equal(countMetric.metricName, 'CacheMissCount');
+      test.equal(countMetric.statistic, 'Sum');
+      test.equal(countMetric.color, color);
+
+      test.done();
+    },
+
+    'metricCount'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const api = new apigw.RestApi(stack, 'my-api');
+      const color = '#00ff00';
+
+      // WHEN
+      const countMetric = api.metricCount({ color });
+
+      // THEN
+      test.equal(countMetric.metricName, 'Count');
+      test.equal(countMetric.statistic, 'SampleCount');
+      test.equal(countMetric.color, color);
+
+      test.done();
+    },
+
+    'metricIntegrationLatency'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const api = new apigw.RestApi(stack, 'my-api');
+      const color = '#00ff00';
+
+      // WHEN
+      const countMetric = api.metricIntegrationLatency({ color });
+
+      // THEN
+      test.equal(countMetric.metricName, 'IntegrationLatency');
+      test.equal(countMetric.color, color);
+
+      test.done();
+    },
+
+    'metricLatency'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const api = new apigw.RestApi(stack, 'my-api');
+      const color = '#00ff00';
+
+      // WHEN
+      const countMetric = api.metricLatency({ color });
+
+      // THEN
+      test.equal(countMetric.metricName, 'Latency');
+      test.equal(countMetric.color, color);
+
+      test.done();
+    },
+  },
 };
