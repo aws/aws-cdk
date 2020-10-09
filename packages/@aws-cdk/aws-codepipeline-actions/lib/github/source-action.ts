@@ -54,7 +54,7 @@ export interface GitHubSourceActionProps extends codepipeline.CommonActionProps 
   /**
    * The branch to use.
    *
-   * @default "master"
+   * @default "main"
    */
   readonly branch?: string;
 
@@ -147,7 +147,7 @@ export class GitHubSourceAction extends Action {
       configuration: {
         Owner: this.props.owner,
         Repo: this.props.repo,
-        Branch: this.props.branch || 'master',
+        Branch: this.props.branch || 'main',
         OAuthToken: this.props.oauthToken.toString(),
         PollForSourceChanges: this.props.trigger === GitHubTrigger.POLL,
       },
