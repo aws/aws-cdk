@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import '@aws-cdk/assert/jest';
 import * as events from '@aws-cdk/aws-events';
 import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
@@ -19,7 +19,7 @@ test('use log group as an event rule target', () => {
   rule1.addTarget(new targets.LogGroup(logGroup));
 
   // THEN
-  expect(stack).to(haveResource('AWS::Events::Rule', {
+  expect(stack).toHaveResource('AWS::Events::Rule', {
     ScheduleExpression: 'rate(1 minute)',
     State: 'ENABLED',
     Targets: [
@@ -46,7 +46,26 @@ test('use log group as an event rule target', () => {
         Id: 'Target0',
       },
     ],
-  }));
+  });
+});
+
+
+test.only('log group used as an event rule target must have a name starting with "/aws/events/"', () => {
+  // GIVEN
+  const logGroupName = '/awdss/events/MyLogGroup';
+  const stack = new cdk.Stack();
+
+  const rule1 = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+  });
+
+  // WHEN
+  let addTargetWrapper = () => {
+    rule1.addTarget(new targets.LogGroup(logs.LogGroup.fromLogGroupName(stack, 'MyLogGroupImported', logGroupName)));
+  };
+
+  // THEN
+  expect(addTargetWrapper).toThrowError('Target LogGroup name must start with "/aws/events/"');
 });
 
 test('use log group as an event rule target with rule target input', () => {
@@ -67,7 +86,7 @@ test('use log group as an event rule target with rule target input', () => {
   }));
 
   // THEN
-  expect(stack).to(haveResource('AWS::Events::Rule', {
+  expect(stack).toHaveResource('AWS::Events::Rule', {
     ScheduleExpression: 'rate(1 minute)',
     State: 'ENABLED',
     Targets: [
@@ -100,5 +119,5 @@ test('use log group as an event rule target with rule target input', () => {
         },
       },
     ],
-  }));
+  });
 });
