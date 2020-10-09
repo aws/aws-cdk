@@ -147,7 +147,7 @@ Following are the steps invovled in running these tests:
 
     - Calculate the actual value of the previous version based on the candidate version. (fetches from github)
     - Download the previous version tarball from npm and extract the integration tests.
-    - Export a FRAMWORK_VERSION env variable based on the caller, and execute the integration tests of the previous version.
+    - Export a `FRAMWORK_VERSION` env variable based on the caller, and execute the integration tests of the previous version.
 
 7. Our integration tests now run and have knowledge of which framework version they should [install](./test/integ/cli/cdk-helpers.ts#L74).
 
