@@ -93,6 +93,20 @@ export interface IBucket extends IResource {
   urlForObject(key?: string): string;
 
   /**
+   * The virtual hosted-style URL of an S3 object. Specify `regional: false` at
+   * the options for non-regional URL. For example:
+   * @example https://only-bucket.s3.us-west-1.amazonaws.com
+   * @example https://bucket.s3.us-west-1.amazonaws.com/key
+   * @example https://bucket.s3.amazonaws.com/key
+   * @example https://china-bucket.s3.cn-north-1.amazonaws.com.cn/mykey
+   * @param key The S3 key of the object. If not specified, the URL of the
+   *      bucket is returned.
+   * @param options Options for generating URL.
+   * @returns an ObjectS3Url token
+   */
+  virtualHostedUrlForObject(key?: string, options?: VirtualHostedStyleUrlOptions): string;
+
+  /**
    * The S3 URL of an S3 object. For example:
    * @example s3://onlybucket
    * @example s3://bucket/key
@@ -470,7 +484,8 @@ abstract class BucketBase extends Resource implements IBucket {
   }
 
   /**
-   * The https URL of an S3 object. For example:
+   * The https URL of an S3 object. Specify `regional: false` at the options
+   * for non-regional URLs. For example:
    * @example https://s3.us-west-1.amazonaws.com/onlybucket
    * @example https://s3.us-west-1.amazonaws.com/bucket/key
    * @example https://s3.cn-north-1.amazonaws.com.cn/china-bucket/mykey
@@ -481,7 +496,31 @@ abstract class BucketBase extends Resource implements IBucket {
   public urlForObject(key?: string): string {
     const stack = Stack.of(this);
     const prefix = `https://s3.${stack.region}.${stack.urlSuffix}/`;
-    return this.buildUrl(prefix, key);
+    if (typeof key !== 'string') {
+      return this.urlJoin(prefix, this.bucketName);
+    }
+    return this.urlJoin(prefix, this.bucketName, key);
+  }
+
+  /**
+   * The virtual hosted-style URL of an S3 object. Specify `regional: false` at
+   * the options for non-regional URL. For example:
+   * @example https://only-bucket.s3.us-west-1.amazonaws.com
+   * @example https://bucket.s3.us-west-1.amazonaws.com/key
+   * @example https://bucket.s3.amazonaws.com/key
+   * @example https://china-bucket.s3.cn-north-1.amazonaws.com.cn/mykey
+   * @param key The S3 key of the object. If not specified, the URL of the
+   *      bucket is returned.
+   * @param options Options for generating URL.
+   * @returns an ObjectS3Url token
+   */
+  public virtualHostedUrlForObject(key?: string, options?: VirtualHostedStyleUrlOptions): string {
+    const domainName = options?.regional ?? true ? this.bucketRegionalDomainName : this.bucketDomainName;
+    const prefix = `https://${domainName}`;
+    if (typeof key !== 'string') {
+      return prefix;
+    }
+    return this.urlJoin(prefix, key);
   }
 
   /**
@@ -493,7 +532,11 @@ abstract class BucketBase extends Resource implements IBucket {
    * @returns an ObjectS3Url token
    */
   public s3UrlForObject(key?: string): string {
-    return this.buildUrl('s3://', key);
+    const prefix = 's3://';
+    if (typeof key !== 'string') {
+      return this.urlJoin(prefix, this.bucketName);
+    }
+    return this.urlJoin(prefix, this.bucketName, key);
   }
 
   /**
@@ -624,22 +667,16 @@ abstract class BucketBase extends Resource implements IBucket {
     });
   }
 
-  private buildUrl(prefix: string, key?: string): string {
-    const components = [
-      prefix,
-      this.bucketName,
-    ];
-
-    if (key) {
-      // trim prepending '/'
-      if (typeof key === 'string' && key.startsWith('/')) {
-        key = key.substr(1);
+  private urlJoin(...components: string[]): string {
+    return components.reduce((result, component) => {
+      if (result.endsWith('/')) {
+        result = result.slice(0, -1);
       }
-      components.push('/');
-      components.push(key);
-    }
-
-    return components.join('');
+      if (component.startsWith('/')) {
+        component = component.slice(1);
+      }
+      return `${result}/${component}`;
+    });
   }
 
   private grant(
@@ -1994,6 +2031,18 @@ export interface RoutingRule {
    * @default - No condition
    */
   readonly condition?: RoutingRuleCondition;
+}
+
+/**
+ * Options for creating Virtual-Hosted style URL.
+ */
+export interface VirtualHostedStyleUrlOptions {
+  /**
+   * Specifies the URL includes the region.
+   *
+   * @default - true
+   */
+  readonly regional?: boolean;
 }
 
 function mapOrUndefined<T, U>(list: T[] | undefined, callback: (element: T) => U): U[] | undefined {
