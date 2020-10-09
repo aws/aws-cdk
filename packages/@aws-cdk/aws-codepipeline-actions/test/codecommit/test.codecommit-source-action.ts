@@ -2,6 +2,7 @@ import { countResources, expect, haveResourceLike, not } from '@aws-cdk/assert';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codecommit from '@aws-cdk/aws-codecommit';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import * as iam from '@aws-cdk/aws-iam';
 import { Stack, Lazy } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as cpactions from '../../lib';
@@ -263,6 +264,59 @@ export = {
             referenceName: ['my-branch'],
           },
         },
+      }));
+
+      test.done();
+    },
+
+    'uses the role when passed'(test: Test) {
+      const stack = new Stack();
+
+      const triggerTestRole = new iam.Role(stack, 'Trigger-test-role', {
+        assumedBy: new iam.ServicePrincipal('events.amazonaws.com'),
+      });
+      triggerTestRole.addToPolicy(new iam.PolicyStatement({
+        actions: ['codepipeline:StartPipelineExecution'],
+      }));
+
+      const sourceOutput = new codepipeline.Artifact();
+      const pipeline = new codepipeline.Pipeline(stack, 'P', {
+        stages: [
+          {
+            stageName: 'Source',
+            actions: [
+              new cpactions.CodeCommitSourceAction({
+                actionName: 'CodeCommit',
+                repository: new codecommit.Repository(stack, 'R', {
+                  repositoryName: 'repository',
+                }),
+                branch: Lazy.stringValue({ produce: () => 'my-branch' }),
+                output: sourceOutput,
+                triggerRole: triggerTestRole
+              }),
+            ],
+          },
+          {
+            stageName: 'Build',
+            actions: [
+              new cpactions.CodeBuildAction({
+                actionName: 'Build',
+                project: new codebuild.PipelineProject(stack, 'CodeBuild'),
+                input: sourceOutput,
+              }),
+            ],
+          },
+        ],
+      });
+
+      expect(stack).to(haveResourceLike('AWS::Events::Rule', {
+        Targets: [
+          {
+            Arn: stack.resolve(pipeline.pipelineArn),
+            Id: 'Target0',
+            RoleArn: stack.resolve(triggerTestRole.roleArn)
+          }
+        ],
       }));
 
       test.done();
