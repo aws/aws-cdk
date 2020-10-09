@@ -9,7 +9,10 @@ import { TaskRecordManager } from './task-record-manager';
 
 export interface AssignPublicIpExtensionOptions {
   /**
-   * Enable publishing task public IPs to a recordset in Route 53 hosted zone.
+   * Enable publishing task public IPs to a recordset in a Route 53 hosted zone.
+   *
+   * Note: If you want to change the DNS zone or record name, you will need to
+   * remove this extension completely and then re-add it.
    */
   dns?: AssignPublicIpDnsOptions;
 }
@@ -30,8 +33,11 @@ export interface AssignPublicIpDnsOptions {
 }
 
 /**
- * Modifies the service to assign a public to each task and optionally
+ * Modifies the service to assign a public ip to each task and optionally
  * exposes public IPs in a Route 53 record set.
+ *
+ * Note: If you want to change the DNS zone or record name, you will need to
+ * remove this extension completely and then re-add it.
  */
 export class AssignPublicIpExtension extends ServiceExtension {
   dns?: AssignPublicIpDnsOptions;
