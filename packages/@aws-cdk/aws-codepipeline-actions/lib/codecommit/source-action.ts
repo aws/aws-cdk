@@ -132,7 +132,9 @@ export class CodeCommitSourceAction extends Action {
     if (createEvent) {
       const eventId = this.generateEventId(stage);
       this.props.repository.onCommit(eventId, {
-        target: new targets.CodePipeline(stage.pipeline, this.props.triggerRole),
+        target: new targets.CodePipeline(stage.pipeline, {
+          eventRole: this.props.triggerRole
+        }),
         branches: [this.branch],
       });
     }
