@@ -577,7 +577,8 @@ abstract class BucketBase extends Resource implements IBucket {
    */
   public grantReadWrite(identity: iam.IGrantable, objectsKeyPattern: any = '*') {
     const bucketActions = perms.BUCKET_READ_ACTIONS.concat(perms.BUCKET_WRITE_ACTIONS);
-    const keyActions = perms.KEY_READ_ACTIONS.concat(perms.KEY_WRITE_ACTIONS);
+    // we need unique permissions because some permissions are common between read and write key actions
+    const keyActions = [...new Set([...perms.KEY_READ_ACTIONS, ...perms.KEY_WRITE_ACTIONS])];
 
     return this.grant(identity,
       bucketActions,
