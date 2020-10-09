@@ -210,12 +210,10 @@ Existing API keys can also be imported into a CDK app using its id.
 const importedKey = ApiKey.fromApiKeyId(this, 'imported-key', '<api-key-id>');
 ```
 
-The "grant" methods can be used to give prepackaged sets of permissions to other resources.
+The "grant" methods can be used to give prepackaged sets of permissions to other resources. The
+following code provides read permission to an API key.
 
 ```ts
-const lambda = new lambda.Function(this, 'Lambda', { /* ... */ });
-
-const importedKey = ApiKey.fromApiKeyId(this, 'imported-key', '<api-key-id>');
 importedKey.grantRead(lambda);
 ```
 
