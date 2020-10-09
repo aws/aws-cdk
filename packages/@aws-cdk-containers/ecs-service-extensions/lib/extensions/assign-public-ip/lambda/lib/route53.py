@@ -11,6 +11,12 @@ class Route53RecordSetLocator:
     hosted_zone_id: str
     record_name: str
 
+    def get_dot_suffixed_name(self):
+        return self.record_name + '.'
+
+    def matches_record_set(self, record_set):
+        return record_set['Name'] == self.get_dot_suffixed_name()
+
 
 class Route53RecordSetAccessor:
     route53_client: Any
@@ -34,7 +40,7 @@ class Route53RecordSetAccessor:
         elif not is_new:
             retry_with_backoff(lambda: self.request_delete(locator, record_set))
         else:
-            logging.info('Refusing to do anything with an new but empty recordset')
+            logging.info('Refusing to do anything with a new but empty recordset')
 
     def get_record_set(self, locator: Route53RecordSetLocator) -> Tuple[dict, bool]:
         record_type = 'A'
@@ -42,11 +48,12 @@ class Route53RecordSetAccessor:
                                                                StartRecordName=locator.record_name,
                                                                StartRecordType=record_type, MaxItems="1")
 
+        logging.info(f'Query result: {result}')
         existing_record_set = find_locator_record_set(locator, record_type, result['ResourceRecordSets'])
         if existing_record_set:
             return existing_record_set, False
         else:
-            return {'Name': locator.record_name, 'Type': record_type, 'ResourceRecords': [], 'TTL': self.ttl}, True
+            return {'Name': locator.get_dot_suffixed_name(), 'Type': record_type, 'ResourceRecords': [], 'TTL': self.ttl}, True
 
     def request_upsert(self, locator: Route53RecordSetLocator, record_set):
         logging.info(f'Upserting record set {record_set}')
@@ -65,14 +72,17 @@ class Route53RecordSetAccessor:
         Returns false if it didn't need to delete anything.
         """
 
+        logging.info(f'Querying for {locator}')
         record_set, is_new = retry_with_backoff(lambda: self.get_record_set(locator))
 
         if not is_new:
+            logging.info(f'Found a record set')
             retry_with_backoff(lambda: self.request_delete(locator, record_set))
             logging.info(f'Deleted record set {record_set}')
             return True
 
         else:
+            logging.info(f'Did not find a record set, so no deletion needed')
             return False
 
     def exists(self, locator: Route53RecordSetLocator):
@@ -131,7 +141,7 @@ def map_ips_to_resource_records(ips: Set[str]):
 
 def find_locator_record_set(locator: Route53RecordSetLocator, record_type: str, record_sets: list):
     for record_set in record_sets:
-        if record_set['Name'] == locator.record_name and record_set['Type'] == record_type:
+        if locator.matches_record_set(record_set) and record_set['Type'] == record_type:
             return record_set
 
     return None
