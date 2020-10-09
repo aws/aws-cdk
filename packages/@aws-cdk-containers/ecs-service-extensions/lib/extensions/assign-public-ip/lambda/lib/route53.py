@@ -14,7 +14,6 @@ class Route53RecordSetLocator:
 
 class Route53RecordSetAccessor:
     route53_client: Any
-    locator: Route53RecordSetLocator
     ttl = 60
 
     def __init__(self, route53_client: Any):
@@ -43,11 +42,11 @@ class Route53RecordSetAccessor:
                                                                StartRecordName=locator.record_name,
                                                                StartRecordType=record_type, MaxItems="1")
 
-        record_sets = result['ResourceRecordSets']
-        if len(record_sets) > 0:
-            return record_sets[0], False
-
-        return {'Name': locator.record_name, 'Type': record_type, 'ResourceRecords': [], 'TTL': self.ttl}, True
+        existing_record_set = find_locator_record_set(locator, record_type, result['ResourceRecordSets'])
+        if existing_record_set:
+            return existing_record_set, False
+        else:
+            return {'Name': locator.record_name, 'Type': record_type, 'ResourceRecords': [], 'TTL': self.ttl}, True
 
     def request_upsert(self, locator: Route53RecordSetLocator, record_set):
         logging.info(f'Upserting record set {record_set}')
@@ -128,3 +127,11 @@ def map_ips_to_resource_records(ips: Set[str]):
     # Take up to the first 400 ips after sorting as the max recordset record quota is 400
     ips_sorted_limited = sorted(ips)[0:400]
     return [{'Value': ip} for ip in ips_sorted_limited]
+
+
+def find_locator_record_set(locator: Route53RecordSetLocator, record_type: str, record_sets: list):
+    for record_set in record_sets:
+        if record_set['Name'] == locator.record_name and record_set['Type'] == record_type:
+            return record_set
+
+    return None

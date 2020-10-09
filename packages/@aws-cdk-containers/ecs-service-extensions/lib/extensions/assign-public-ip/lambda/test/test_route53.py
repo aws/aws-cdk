@@ -4,7 +4,7 @@ import unittest.mock as mock
 from botocore.exceptions import ClientError
 
 from lib.route53 import Route53RecordSetLocator, Route53RecordSetAccessor, exponential_backoff, retry_with_backoff, \
-    map_ips_to_resource_records
+    map_ips_to_resource_records, find_locator_record_set
 
 
 class TestRoute53(unittest.TestCase):
@@ -242,3 +242,19 @@ class TestRoute53(unittest.TestCase):
 
         # THEN
         self.assertEqual(len(output), 400)
+
+    def test_find_locator_record_set_ignores_irrelevant_records(self):
+        # GIVEN
+        locator = Route53RecordSetLocator(hosted_zone_id='foo', record_name='foo.myexample.com')
+        record_sets = [
+            {
+                'Name': 'stats',
+                'Type': 'CNAME'
+            },
+        ]
+
+        # WHEN
+        result = find_locator_record_set(locator, 'A', record_sets)
+
+        # THEN
+        self.assertIsNone(result)

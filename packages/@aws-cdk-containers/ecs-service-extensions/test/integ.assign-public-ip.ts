@@ -1,6 +1,6 @@
 import { SubnetType, Vpc } from '@aws-cdk/aws-ec2';
 import { ContainerImage } from '@aws-cdk/aws-ecs';
-import { PublicHostedZone } from '@aws-cdk/aws-route53';
+import { CnameRecord, PublicHostedZone } from '@aws-cdk/aws-route53';
 import { App, CfnOutput, Fn, Stack } from '@aws-cdk/core';
 import { AssignPublicIpExtension, Container, Environment, Service, ServiceDescription } from '../lib';
 
@@ -19,6 +19,14 @@ const vpc = new Vpc(stack, 'vpc', {
 
 const dnsZone = new PublicHostedZone(stack, 'zone', {
   zoneName: 'myexample.com',
+});
+
+// A record in the zone that is lexicographically later than 'test-record'
+// to try to trip up the record set locator.
+new CnameRecord(stack, 'laterRecord', {
+  recordName: 'u-record',
+  zone: dnsZone,
+  domainName: 'console.aws.amazon.com',
 });
 
 const environment = new Environment(stack, 'production', { vpc });
