@@ -1,6 +1,6 @@
 import '@aws-cdk/assert/jest';
 import * as route53 from '@aws-cdk/aws-route53';
-import { Lazy, Stack } from '@aws-cdk/core';
+import { App, Lazy, Stack } from '@aws-cdk/core';
 import { Certificate, CertificateValidation, ValidationMethod } from '../lib';
 
 test('apex domain selection by default', () => {
@@ -37,7 +37,7 @@ test('validation domain can be overridden', () => {
   });
 });
 
-test('export and import', () => {
+test('import from certificate arn', () => {
   // GIVEN
   const stack = new Stack();
 
@@ -46,6 +46,51 @@ test('export and import', () => {
 
   // THEN
   expect(c.certificateArn).toBe('cert-arn');
+});
+
+test('import from certificate id', () => {
+  // GIVEN
+  const certId = 'cert-id';
+  const stack = new Stack();
+
+  // WHEN
+  const c = Certificate.fromCertificateId(stack, 'Imported', certId);
+
+  // THEN
+  expect(c.certificateArn).toBe(
+    `arn:${Stack.of(c).partition}:acm:${Stack.of(c).region}:${Stack.of(c).account}:certificate/${certId}`,
+  );
+});
+
+test('arn for certificate with default account and region', () => {
+  // GIVEN
+  const account = '123456789012';
+  const region = 'eu-west-1';
+
+  const certId = 'cert-id';
+  const app = new App();
+  const stack = new Stack(app, 'TestStack', { env: { account, region } });
+
+  // WHEN
+  const arn = Certificate.arnForCertificate(certId, stack);
+
+  // THEN
+  expect(arn).toBe(`arn:${stack.partition}:acm:${region}:${account}:certificate/${certId}`);
+});
+
+test('arn for certificate with given account and region', () => {
+  // GIVEN
+  const account = '123456789012';
+  const region = 'region';
+
+  const certId = 'cert-id';
+  const stack = new Stack();
+
+  // WHEN
+  const arn = Certificate.arnForCertificate(certId, stack, account, region);
+
+  // THEN
+  expect(arn).toBe(`arn:${stack.partition}:acm:${region}:${account}:certificate/${certId}`);
 });
 
 test('can configure validation method', () => {

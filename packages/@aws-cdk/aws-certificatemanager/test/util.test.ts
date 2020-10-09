@@ -91,6 +91,18 @@ describe('getCertificateRegion', () => {
     expect(getCertificateRegion(certificate)).toEqual('us-east-2');
   });
 
+  test('fromCertificateId', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'RegionStack', { env: { region: 'eu-west-1' } });
+
+    const certificate = Certificate.fromCertificateId(
+      stack, 'TestCertificate', '11-3336f1-44483d-adc7-9cd375c5169d',
+    );
+
+    expect(getCertificateRegion(certificate)).toEqual('eu-west-1');
+  });
+
   test('region agnostic stack', () => {
     // GIVEN
     const stack = new Stack();

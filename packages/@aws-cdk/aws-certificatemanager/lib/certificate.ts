@@ -1,5 +1,5 @@
 import * as route53 from '@aws-cdk/aws-route53';
-import { IResource, Resource, Token } from '@aws-cdk/core';
+import { IResource, Resource, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnCertificate } from './certificatemanager.generated';
 import { apexDomain } from './util';
@@ -172,7 +172,7 @@ export class CertificateValidation {
 export class Certificate extends Resource implements ICertificate {
 
   /**
-   * Import a certificate
+   * Import a certificate from certificate ARN
    */
   public static fromCertificateArn(scope: Construct, id: string, certificateArn: string): ICertificate {
     class Import extends Resource implements ICertificate {
@@ -180,6 +180,30 @@ export class Certificate extends Resource implements ICertificate {
     }
 
     return new Import(scope, id);
+  }
+
+  /**
+   * Import a certificate from certificate ID
+   */
+  public static fromCertificateId(scope: Construct, id: string, certificateId: string): ICertificate {
+    class Import extends Resource implements ICertificate {
+      public certificateArn = Certificate.arnForCertificate(certificateId, scope);
+    }
+
+    return new Import(scope, id);
+  }
+
+  /**
+   * Returns an ACM ARN for a certificate given a certificate ID
+   */
+  public static arnForCertificate(certificateId: string, scope: Construct, account?: string, region?: string): string {
+    return Stack.of(scope).formatArn({
+      account,
+      region,
+      service: 'acm',
+      resource: 'certificate',
+      resourceName: certificateId,
+    });
   }
 
   /**

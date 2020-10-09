@@ -120,6 +120,14 @@ const arn = 'arn:aws:...';
 const certificate = Certificate.fromCertificateArn(this, 'Certificate', arn);
 ```
 
+You can also import an existing certificate using the certificate ID. For example, if an existing certificate
+has ARN `arn:aws:acm:region:123456789012:certificate/12345678-1234-1234-1234-123456789012`, where
+`12345678-1234-1234-1234-123456789012` is the certificate ID, you can apply:
+
+```ts
+const certificate = Certificate.fromCertificateId(this, 'Certificate', '12345678-1234-1234-1234-123456789012');
+```
+
 ### Sharing between Stacks
 
 To share the certificate between stacks in the same CDK application, simply
