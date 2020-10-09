@@ -116,11 +116,11 @@ Note that these tests can only be executed using the `run-against-dist` wrapper.
 
 ##### Implementation
 
-The flow that implements the regression suites is not trivial to reason about. Even though the code includes inline comments, we break down the details to better serve us in maintaining it and regaining context.
+The implemention of the regression suites is not trivial to reason about and follow. Even though the code includes inline comments, we break down the exact details to better serve us in maintaining it and regaining context.
 
 Following are the steps invovled in running these tests:
 
-1. Run `./bump-candidate.sh` to differentiate between the local version and the published version. For example, if the version in `lerna.json` is `1.67.0`, this script will result in a version string in the form of `1.67.0-rc.0`. This will help us avoid version quirks that might happen during the *post-release-pre-mergeback* time window.
+1. Run [`./bump-candidate.sh`](../bump.sh) to differentiate between the local version and the published version. For example, if the version in `lerna.json` is `1.67.0`, this script will result in a version string in the form of `1.67.0-rc.0`. This will help us avoid version quirks that might happen during the *post-release-pre-mergeback* time window.
 
 2. Run `./align-version.sh` to configure the above version in all our packages.
 
