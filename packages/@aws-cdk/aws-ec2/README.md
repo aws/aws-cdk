@@ -621,6 +621,20 @@ new VpcEndpointService(this, 'EndpointService', {
 });
 ```
 
+Endpoint services support private DNS, which makes it easier for clients to connect to your service by automatically setting up DNS in their VPC.
+You can enable private DNS on an endpoint service like so:
+
+```ts
+new VpcEndpointServiceDomainName(stack, 'EndpointDomain', {
+  endpointService: vpces,
+  domainName: 'my-stuff.aws-cdk.dev',
+  publicZone: zone,
+});
+```
+
+Note: You must have verifiable ownership of the domain before customers can use private DNS. The VpcEndpointServiceDomainName
+will verify ownership for you, assuming you own the domain.
+
 ## Instances
 
 You can use the `Instance` class to start up a single EC2 instance. For production setups, we recommend
