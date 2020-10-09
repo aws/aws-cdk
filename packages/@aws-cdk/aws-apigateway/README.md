@@ -22,6 +22,7 @@ running on AWS Lambda, or any web application.
   - [Breaking up Methods and Resources across Stacks](#breaking-up-methods-and-resources-across-stacks)
 - [AWS Lambda-backed APIs](#aws-lambda-backed-apis)
 - [Integration Targets](#integration-targets)
+- [API Keys](#api-keys)
 - [Working with models](#working-with-models)
 - [Default Integration and Method Options](#default-integration-and-method-options)
 - [Proxy Routes](#proxy-routes)
@@ -152,6 +153,8 @@ book.addMethod('GET', getBookIntegration, {
 });
 ```
 
+## API Keys
+
 The following example shows how to use an API Key with a usage plan:
 
 ```ts
@@ -206,6 +209,13 @@ Existing API keys can also be imported into a CDK app using its id.
 
 ```ts
 const importedKey = ApiKey.fromApiKeyId(this, 'imported-key', '<api-key-id>');
+```
+
+The "grant" methods can be used to give prepackaged sets of permissions to other resources. The
+following code provides read permission to an API key.
+
+```ts
+importedKey.grantRead(lambda);
 ```
 
 In scenarios where you need to create a single api key and configure rate limiting for it, you can use `RateLimitedApiKey`.
