@@ -1021,7 +1021,8 @@ in your openApi file.
 
 The API Gateway service sends metrics around the performance of Rest APIs to Amazon CloudWatch.
 These metrics can be referred to using the metric APIs available on the `RestApi` construct.
-The APIs with the `metric` prefix can be used to get reference to specific metrics for this API. For example, the method below refers to the CloudWatch metric for all client side errors that have occurred for this API.
+The APIs with the `metric` prefix can be used to get reference to specific metrics for this API. For example,
+the method below refers to the client side errors metric for this API.
 
 ```ts
 const api = new apigw.RestApi(stack, 'my-api');
