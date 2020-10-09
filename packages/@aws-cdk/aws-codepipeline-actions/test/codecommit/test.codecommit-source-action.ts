@@ -292,7 +292,7 @@ export = {
                 }),
                 branch: Lazy.stringValue({ produce: () => 'my-branch' }),
                 output: sourceOutput,
-                triggerRole: triggerTestRole
+                triggerRole: triggerTestRole,
               }),
             ],
           },
@@ -314,8 +314,8 @@ export = {
           {
             Arn: stack.resolve(pipeline.pipelineArn),
             Id: 'Target0',
-            RoleArn: stack.resolve(triggerTestRole.roleArn)
-          }
+            RoleArn: stack.resolve(triggerTestRole.roleArn),
+          },
         ],
       }));
 
