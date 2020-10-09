@@ -88,7 +88,7 @@ yarn integ-cli-no-regression
 
 #### Regression
 
-Validate that previously tested functionality still works in light of recent changes to the CLI. This is done by fetching the functional tests of the latest published release, and running them against the new CLI code.
+Validate that previously tested functionality still works in light of recent changes to the CLI. This is done by fetching the functional tests of the previous published release, and running them against the new CLI code.
 
 These tests run in two variations:
 
@@ -97,16 +97,53 @@ These tests run in two variations:
   Use your local framework code. This is important to make sure the new CLI version
   will work properly with the new framework version.
 
-- **against latest release code**
+  > See a concrete failure [example](https://github.com/aws/aws-cdk-rfcs/blob/master/text/00110-cli-framework-compatibility-strategy.md#remove---target-from-docker-build-command)
 
-  Fetches the framework code from the latest release. This is important to make sure
+- **against previously release code**
+
+  Fetches the framework code from the previous release. This is important to make sure
   the new CLI version does not rely on new framework features to provide the same functionality.
+
+  > See a concrete failure [example](https://github.com/aws/aws-cdk-rfcs/blob/master/text/00110-cli-framework-compatibility-strategy.md#change-artifact-metadata-type-value)
 
 You can also run just these tests by executing:
 
 ```console
 yarn integ-cli-regression
 ```
+
+Note that these tests can only be executed using the `run-against-dist` wrapper. Why? well, it doesn't really make sense to `run-against-repo` when testing the **previously released code**, since we obviously cannot use the repo. Granted, running **against local framework code** can somehow work, but it required a few too many hacks in the current codebase to make it seem worthwhile.
+
+##### Implementation
+
+The flow that implements the regression suites is not trivial to reason about. Even though the code includes inline comments, we break down the details to better serve us in maintaining it and regaining context.
+
+Following are the steps invovled in running these tests:
+
+1. Run `./bump-candidate.sh` to differentiate between the local version and the published version. For example, if the version in `lerna.json` is `1.67.0`, this script will result in a version string in the form of `1.67.0-rc.0`. This will help us avoid version quirks that might happen during the *post-release-pre-mergeback* time window.
+
+2. Run `./align-version.sh` to configure the above version in all our packages.
+
+3. Build and Pack the repository.
+
+4. Run `test/integ/run-against-dist test/integ/test-cli-regression-against-latest-release.sh` or `test/integ/run-against-dist test/integ/test-cli-regression-against-latest-code.sh`
+
+5. The `run-against-dist` wrapper will:
+
+    - Launch verdaccio to serve all local tarballs (serves the `1.67.0-rc.0` version)
+    - Install the CLI using the `1.67.0-rc.0` version.
+    - Read the version from `build.json` and export it to the underlying script as `CANDIDATE_VERSION` env variable.
+    - Execute the given script.
+
+6. Both cli regression test script run the same `run_regression_against_framework_version` function. This function accepts which framework version should the regression run against, it can be either `CANDIDATE_VERSION` (for running against latest code) or `PREVIOUS_VERSION` (for running against previous release). This function will:
+
+    - Calculate what is the previous version based on the candidate version. (fetches from github)
+    - Download the previous version tarball from npm and extract the integration tests.
+    - Export a FRAMWORK_VERSION env variable based on the caller, and execute the integration tests of the previous version.
+
+7. Our integration tests now run and have knowledge of which framework version they should install. This happens [here](../../).
+
+That "basically" it, hope it makes sense...
 
 ### Init template integration tests
 
