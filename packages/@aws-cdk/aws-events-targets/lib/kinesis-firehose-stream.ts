@@ -6,13 +6,13 @@ import { singletonEventRole } from './util';
 /**
  * Customize the Firehose Stream Event Target
  */
-export interface FirehoseStreamProps {
+export interface KinesisFirehoseStreamProps {
   /**
    * The message to send to the stream.
    *
    * Must be a valid JSON text passed to the target stream.
    *
-   * @default - the entire CloudWatch event
+   * @default - the entire Event Bridge event
    */
   readonly message?: events.RuleTargetInput;
 }
@@ -21,14 +21,14 @@ export interface FirehoseStreamProps {
 /**
  * Customize the Firehose Stream Event Target
  */
-export class FirehoseStream implements events.IRuleTarget {
+export class KinesisFirehoseStream implements events.IRuleTarget {
 
-  constructor(private readonly stream: firehose.CfnDeliveryStream, private readonly props: FirehoseStreamProps = {}) {
+  constructor(private readonly stream: firehose.CfnDeliveryStream, private readonly props: KinesisFirehoseStreamProps = {}) {
   }
 
   /**
    * Returns a RuleTarget that can be used to trigger this Firehose Stream as a
-   * result from a CloudWatch event.
+   * result from a Event Bridge event.
    */
   public bind(_rule: events.IRule, _id?: string): events.RuleTargetConfig {
     const policyStatements = [new iam.PolicyStatement({

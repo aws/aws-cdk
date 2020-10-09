@@ -4,7 +4,7 @@ import * as firehose from '@aws-cdk/aws-kinesisfirehose';
 import { Stack } from '@aws-cdk/core';
 import * as targets from '../../lib';
 
-describe('FirehoseStream event target', () => {
+describe('KinesisFirehoseStream event target', () => {
   let stack: Stack;
   let stream: firehose.CfnDeliveryStream;
   let streamArn: any;
@@ -26,7 +26,7 @@ describe('FirehoseStream event target', () => {
 
     describe('with default settings', () => {
       beforeEach(() => {
-        rule.addTarget(new targets.FirehoseStream(stream));
+        rule.addTarget(new targets.KinesisFirehoseStream(stream));
       });
 
       test("adds the stream's ARN and role to the targets of the rule", () => {
@@ -59,7 +59,7 @@ describe('FirehoseStream event target', () => {
 
     describe('with an explicit message', () => {
       beforeEach(() => {
-        rule.addTarget(new targets.FirehoseStream(stream, {
+        rule.addTarget(new targets.KinesisFirehoseStream(stream, {
           message: events.RuleTargetInput.fromText('fooBar'),
         }));
       });

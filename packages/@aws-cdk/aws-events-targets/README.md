@@ -23,7 +23,7 @@ Currently supported are:
 * Queue a Batch job
 * Make an AWS API call
 * Put a record to a Kinesis stream
-* Put a record to a Kinesis Firehose stream
+* Put a record to a Kinesis Data Firehose stream
 
 See the README of the `@aws-cdk/aws-events` library for more information on
 EventBridge.
