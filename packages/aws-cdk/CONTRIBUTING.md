@@ -118,30 +118,38 @@ Note that these tests can only be executed using the `run-against-dist` wrapper.
 
 The implemention of the regression suites is not trivial to reason about and follow. Even though the code includes inline comments, we break down the exact details to better serve us in maintaining it and regaining context.
 
+Before diving into it, we establish a few key concepts:
+
+- `CANDIDATE_VERSION` - This is the version of the code that is being built in the pipeline, and its value is stored in the `build.json` file of the packaged artifact of the repo.
+- `PREVIOUS_VERSION` - This is the version previous to the `CANDIDATE_VERSION`.
+- `CLI_VERSION` - This is the version of the CLI we are testing. It is **always** the same as the `CANDIDATE_VERSION` since we want to test the latest CLI code.
+- `FRAMEWORK_VERSION` - This is the version of the framework we are testing. It varries between the two variation of the regression suites.
+Its value can either be that of `CANDIDATE_VERSION` (for testing against the latest framework code), or `PREVIOUS_VERSION` (for testing against the previously published version of the framework code).
+
 Following are the steps invovled in running these tests:
 
-1. Run [`./bump-candidate.sh`](../bump.sh) to differentiate between the local version and the published version. For example, if the version in `lerna.json` is `1.67.0`, this script will result in a version string in the form of `1.67.0-rc.0`. This will help us avoid version quirks that might happen during the *post-release-pre-mergeback* time window.
+1. Run [`./bump-candidate.sh`](../../bump-candidate.sh) to differentiate between the local version and the published version. For example, if the version in `lerna.json` is `1.67.0`, this script will result in a version `1.67.0-rc.0`. This is needed so that we can launch a verdaccio instance serving local tarballs without worrying about conflicts with the public npm uplink. This will help us avoid version quirks that might happen during the *post-release-pre-merge-back* time window.
 
-2. Run `./align-version.sh` to configure the above version in all our packages.
+2. Run [`./align-version.sh`](../../scripts/align-version.sh) to configure the above version in all our packages.
 
-3. Build and Pack the repository.
+3. Build and Pack the repository. The produced tarballs will be versioned with the above version.
 
-4. Run `test/integ/run-against-dist test/integ/test-cli-regression-against-latest-release.sh` or `test/integ/run-against-dist test/integ/test-cli-regression-against-latest-code.sh`
+4. Run `test/integ/run-against-dist test/integ/test-cli-regression-against-latest-release.sh` (or `test/integ/test-cli-regression-against-latest-code.sh`)
 
-5. The `run-against-dist` wrapper will:
+5. First, the `run-against-dist` wrapper will run and:
 
-    - Launch verdaccio to serve all local tarballs (serves the `1.67.0-rc.0` version)
-    - Install the CLI using the `1.67.0-rc.0` version.
-    - Read the version from `build.json` and export it to the underlying script as `CANDIDATE_VERSION` env variable.
+    - Read the `CANDIDATE_VERSION` from `build.json` and export it.
+    - [Launch verdaccio](./test/integ/run-against-dist#L29) to serve all local tarballs (serves the `CANDIDATE_VERSION` now)
+    - [Install the CLI](./test/integ/run-against-dist#L30) using the `CANDIDATE_VERSION` version `CANDIDATE_VERSION` env variable.
     - Execute the given script.
 
-6. Both cli regression test script run the same `run_regression_against_framework_version` function. This function accepts which framework version should the regression run against, it can be either `CANDIDATE_VERSION` (for running against latest code) or `PREVIOUS_VERSION` (for running against previous release). This function will:
+6. Both cli regression test scripts run the same [`run_regression_against_framework_version`](./test/integ/test-cli-regression.bash#L22) function. This function accepts which framework version should the regression run against, it can be either `CANDIDATE_VERSION` or `PREVIOUS_VERSION`. Note that the argument is not the actual value of the versio, but instead is just an [indirection indentifier](./test/integ/test-cli-regression.bash#L81). The function will:
 
-    - Calculate what is the previous version based on the candidate version. (fetches from github)
+    - Calculate the actual value of the previous version based on the candidate version. (fetches from github)
     - Download the previous version tarball from npm and extract the integration tests.
     - Export a FRAMWORK_VERSION env variable based on the caller, and execute the integration tests of the previous version.
 
-7. Our integration tests now run and have knowledge of which framework version they should install. This happens [here](../../).
+7. Our integration tests now run and have knowledge of which framework version they should [install](./test/integ/cli/cdk-helpers.ts#L74).
 
 That "basically" it, hope it makes sense...
 
