@@ -35,7 +35,11 @@ Use the `LogGroup` target to log your events in a CloudWatch LogGroup.
 The LogGroup name must start with `/aws/events/`.
 
 ```ts
-const rule = new Rule(this, 'rule');
+const rule = new Rule(this, 'rule', {
+  eventPattern: {
+    source: [stack.account],
+  },
+});
 
 const logGroup = new LogGroup(this, 'MyLogGroup', {
   logGroupName: '/aws/events/MyLogGroup',
@@ -47,13 +51,17 @@ rule.addTarget(targets.LogGroup(logGroup));
 You can also use an [InputTransformer](https://docs.aws.amazon.com/eventbridge/latest/APIReference/API_InputTransformer.html).
 
 ```ts
-const rule = new Rule(this, 'rule');
+const rule = new Rule(this, 'rule', {
+  eventPattern: {
+    source: [stack.account],
+  },
+});
 
 const logGroup = new LogGroup(this, 'MyLogGroup', {
   logGroupName: '/aws/events/MyLogGroup',
 });
 
-rule.addTarget(targets.LogGroup(logGroup, {
+rule.addTarget(new targets.LogGroup(logGroup, {
   event: events.RuleTargetInput.fromObject({
     status: events.EventField.fromPath('$.detail.status'),
     instanceId: events.EventField.fromPath('$.detail.instance-id'),
