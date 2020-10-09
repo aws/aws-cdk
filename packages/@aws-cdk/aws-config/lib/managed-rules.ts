@@ -1,6 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as sns from '@aws-cdk/aws-sns';
-import { Construct, Duration, Lazy, Stack } from '@aws-cdk/core';
+import { Duration, Lazy, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { ManagedRule, RuleProps } from './rule';
 
 /**
@@ -56,7 +57,7 @@ export interface CloudFormationStackDriftDetectionCheckProps extends RuleProps {
    * permissions and `ReadOnlyAccess` policy permissions. For specific policy permissions,
    * refer to https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-stack-drift.html.
    *
-   * @default a role will be created
+   * @default - A role will be created
    */
   readonly role?: iam.IRole;
 }

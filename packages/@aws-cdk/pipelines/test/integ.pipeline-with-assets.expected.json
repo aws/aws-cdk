@@ -489,7 +489,7 @@
                   "ProjectName": {
                     "Ref": "PipelineBuildSynthCdkBuildProject6BEFA8E6"
                   },
-                  "EnvironmentVariables": "[{\"name\":\"_PROJECT_CONFIG_HASH\",\"type\":\"PLAINTEXT\",\"value\":\"7f09efece2ae66563f27569c480f9602225200051089f57486c5fa0b52095956\"}]"
+                  "EnvironmentVariables": "[{\"name\":\"_PROJECT_CONFIG_HASH\",\"type\":\"PLAINTEXT\",\"value\":\"ea30b07764cb215963f4b0c292b5a06993fc3dd94621fbdc1c618e0f1e0dae10\"}]"
                 },
                 "InputArtifacts": [
                   {

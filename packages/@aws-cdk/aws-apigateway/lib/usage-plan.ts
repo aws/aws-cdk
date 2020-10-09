@@ -1,4 +1,5 @@
-import { Construct, Lazy, Resource, Token } from '@aws-cdk/core';
+import { Lazy, Resource, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { IApiKey } from './api-key';
 import { CfnUsagePlan, CfnUsagePlanKey } from './apigateway.generated';
 import { Method } from './method';

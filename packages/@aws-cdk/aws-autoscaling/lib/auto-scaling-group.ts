@@ -6,9 +6,10 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as sns from '@aws-cdk/aws-sns';
 
 import {
-  Annotations, CfnAutoScalingRollingUpdate, Construct, Duration, Fn, IResource, Lazy, PhysicalName, Resource, Stack,
+  Annotations, CfnAutoScalingRollingUpdate, Duration, Fn, IResource, Lazy, PhysicalName, Resource, Stack,
   Tokenization, withResolved, Tags,
 } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnAutoScalingGroup, CfnAutoScalingGroupProps, CfnLaunchConfiguration } from './autoscaling.generated';
 import { BasicLifecycleHookProps, LifecycleHook } from './lifecycle-hook';
 import { BasicScheduledActionProps, ScheduledAction } from './scheduled-action';

@@ -242,9 +242,15 @@ export async function waitForChangeSet(cfn: CloudFormation, stackName: string, c
  * there are changes to Outputs, the change set can still be executed.
  */
 export function changeSetHasNoChanges(description: CloudFormation.DescribeChangeSetOutput) {
+  const noChangeErrorPrefixes = [
+    // Error message for a regular template
+    'The submitted information didn\'t contain changes.',
+    // Error message when a Transform is involved (see #10650)
+    'No updates are to be performed.',
+  ];
+
   return description.Status === 'FAILED'
-      && description.StatusReason
-      && description.StatusReason.startsWith('The submitted information didn\'t contain changes.');
+    && noChangeErrorPrefixes.some(p => (description.StatusReason ?? '').startsWith(p));
 }
 
 /**
@@ -377,7 +383,7 @@ export class StackParameters {
         this._changes = true;
       }
 
-      if (key in updates && updates[key]) {
+      if (key in updates && updates[key] !== undefined) {
         this.apiParameters.push({ ParameterKey: key, ParameterValue: updates[key] });
 
         // If the updated value is different than the current value, this will lead to a change

@@ -1,7 +1,12 @@
 import * as core from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as cfn_parse from '@aws-cdk/core/lib/cfn-parse';
 import * as cfn_type_to_l1_mapping from './cfn-type-to-l1-mapping';
 import * as futils from './file-utils';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Construction properties of {@link CfnInclude}.
@@ -32,7 +37,8 @@ export interface CfnIncludeProps {
    * Specifies the template files that define nested stacks that should be included.
    *
    * If your template specifies a stack that isn't included here, it won't be created as a NestedStack
-   * resource, and it won't be accessible from {@link CfnInclude.getNestedStack}.
+   * resource, and it won't be accessible from the {@link CfnInclude.getNestedStack} method
+   * (but will still be accessible from the {@link CfnInclude.getResource} method).
    *
    * If you include a stack here with an ID that isn't in the template,
    * or is in the template but is not a nested stack,
@@ -40,7 +46,7 @@ export interface CfnIncludeProps {
    *
    * @default - no nested stacks will be included
    */
-  readonly nestedStacks?: { [stackName: string]: CfnIncludeProps };
+  readonly loadNestedStacks?: { [stackName: string]: CfnIncludeProps };
 
   /**
    * Specifies parameters to be replaced by the values in this mapping.
@@ -78,23 +84,23 @@ export interface IncludedNestedStack {
  */
 export class CfnInclude extends core.CfnElement {
   private readonly conditions: { [conditionName: string]: core.CfnCondition } = {};
-  private readonly conditionsScope: core.Construct;
+  private readonly conditionsScope: Construct;
   private readonly resources: { [logicalId: string]: core.CfnResource } = {};
   private readonly parameters: { [logicalId: string]: core.CfnParameter } = {};
   private readonly parametersToReplace: { [parameterName: string]: any };
-  private readonly mappingsScope: core.Construct;
+  private readonly mappingsScope: Construct;
   private readonly mappings: { [mappingName: string]: core.CfnMapping } = {};
   private readonly rules: { [ruleName: string]: core.CfnRule } = {};
-  private readonly rulesScope: core.Construct;
+  private readonly rulesScope: Construct;
   private readonly hooks: { [hookName: string]: core.CfnHook } = {};
-  private readonly hooksScope: core.Construct;
+  private readonly hooksScope: Construct;
   private readonly outputs: { [logicalId: string]: core.CfnOutput } = {};
   private readonly nestedStacks: { [logicalId: string]: IncludedNestedStack } = {};
   private readonly nestedStacksToInclude: { [name: string]: CfnIncludeProps };
   private readonly template: any;
   private readonly preserveLogicalIds: boolean;
 
-  constructor(scope: core.Construct, id: string, props: CfnIncludeProps) {
+  constructor(scope: Construct, id: string, props: CfnIncludeProps) {
     super(scope, id);
 
     this.parametersToReplace = props.parameters || {};
@@ -112,7 +118,7 @@ export class CfnInclude extends core.CfnElement {
     }
 
     // instantiate the Mappings
-    this.mappingsScope = new core.Construct(this, '$Mappings');
+    this.mappingsScope = new CoreConstruct(this, '$Mappings');
     for (const mappingName of Object.keys(this.template.Mappings || {})) {
       this.createMapping(mappingName);
     }
@@ -123,36 +129,36 @@ export class CfnInclude extends core.CfnElement {
     }
 
     // instantiate the conditions
-    this.conditionsScope = new core.Construct(this, '$Conditions');
+    this.conditionsScope = new CoreConstruct(this, '$Conditions');
     for (const conditionName of Object.keys(this.template.Conditions || {})) {
       this.getOrCreateCondition(conditionName);
     }
 
     // instantiate the rules
-    this.rulesScope = new core.Construct(this, '$Rules');
+    this.rulesScope = new CoreConstruct(this, '$Rules');
     for (const ruleName of Object.keys(this.template.Rules || {})) {
       this.createRule(ruleName);
     }
 
-    this.nestedStacksToInclude = props.nestedStacks || {};
+    this.nestedStacksToInclude = props.loadNestedStacks || {};
     // instantiate all resources as CDK L1 objects
     for (const logicalId of Object.keys(this.template.Resources || {})) {
       this.getOrCreateResource(logicalId);
     }
     // verify that all nestedStacks have been instantiated
-    for (const nestedStackId of Object.keys(props.nestedStacks || {})) {
+    for (const nestedStackId of Object.keys(props.loadNestedStacks || {})) {
       if (!(nestedStackId in this.resources)) {
         throw new Error(`Nested Stack with logical ID '${nestedStackId}' was not found in the template`);
       }
     }
 
     // instantiate the Hooks
-    this.hooksScope = new core.Construct(this, '$Hooks');
+    this.hooksScope = new CoreConstruct(this, '$Hooks');
     for (const hookName of Object.keys(this.template.Hooks || {})) {
       this.createHook(hookName);
     }
 
-    const outputScope = new core.Construct(this, '$Ouputs');
+    const outputScope = new CoreConstruct(this, '$Ouputs');
     for (const logicalId of Object.keys(this.template.Outputs || {})) {
       this.createOutput(logicalId, outputScope);
     }
@@ -290,9 +296,10 @@ export class CfnInclude extends core.CfnElement {
   }
 
   /**
-   * Returns the NestedStack with name logicalId.
-   * For a nested stack to be returned by this method, it must be specified in the {@link CfnIncludeProps.nestedStacks}
-   * property.
+   * Returns a loaded NestedStack with name logicalId.
+   * For a nested stack to be returned by this method,
+   * it must be specified either in the {@link CfnIncludeProps.loadNestedStacks} property,
+   * or through the {@link loadNestedStack} method.
    *
    * @param logicalId the ID of the stack to retrieve, as it appears in the template
    */
@@ -303,10 +310,45 @@ export class CfnInclude extends core.CfnElement {
       } else if (this.template.Resources[logicalId].Type !== 'AWS::CloudFormation::Stack') {
         throw new Error(`Resource with logical ID '${logicalId}' is not a CloudFormation Stack`);
       } else {
-        throw new Error(`Nested Stack '${logicalId}' was not included in the nestedStacks property when including the parent template`);
+        throw new Error(`Nested Stack '${logicalId}' was not included in the parent template. ` +
+          'To retrieve an included nested stack, it must be specified either in the `loadNestedStacks` property, or through the `loadNestedStack` method');
       }
     }
     return this.nestedStacks[logicalId];
+  }
+
+  /**
+   * Includes a template for a child stack inside of this parent template.
+   * A child with this logical ID must exist in the template,
+   * and be of type AWS::CloudFormation::Stack.
+   * This is equivalent to specifying the value in the {@link CfnIncludeProps.loadNestedStacks}
+   * property on object construction.
+   *
+   * @param logicalId the ID of the stack to retrieve, as it appears in the template
+   * @param nestedStackProps the properties of the included child Stack
+   * @returns the same {@link IncludedNestedStack} object that {@link getNestedStack} returns for this logical ID
+   */
+  public loadNestedStack(logicalId: string, nestedStackProps: CfnIncludeProps): IncludedNestedStack {
+    if (logicalId in this.nestedStacks) {
+      throw new Error(`Nested Stack '${logicalId}' was already included in its parent template`);
+    }
+    const cfnStack = this.resources[logicalId];
+    if (!cfnStack) {
+      throw new Error(`Nested Stack with logical ID '${logicalId}' was not found in the template`);
+    }
+    if (cfnStack instanceof core.CfnStack) {
+      // delete the old CfnStack child - one will be created by the NestedStack object
+      this.node.tryRemoveChild(logicalId);
+      // remove the previously created CfnStack resource from the resources map
+      delete this.resources[logicalId];
+      // createNestedStack() (called by getOrCreateResource()) expects this to be filled
+      this.nestedStacksToInclude[logicalId] = nestedStackProps;
+
+      this.getOrCreateResource(logicalId);
+      return this.nestedStacks[logicalId];
+    } else {
+      throw new Error(`Nested Stack with logical ID '${logicalId}' is not an AWS::CloudFormation::Stack resource`);
+    }
   }
 
   /** @internal */
@@ -410,7 +452,9 @@ export class CfnInclude extends core.CfnElement {
           return self.parameters[refTarget];
         },
         findResource() { throw new Error('Using GetAtt expressions in Rule definitions is not allowed'); },
-        findCondition() { throw new Error('Referring to Conditions in Rule definitions is not allowed'); },
+        findCondition(conditionName: string): core.CfnCondition | undefined {
+          return self.conditions[conditionName];
+        },
         findMapping(mappingName: string): core.CfnMapping | undefined {
           return self.mappings[mappingName];
         },
@@ -467,7 +511,7 @@ export class CfnInclude extends core.CfnElement {
     this.overrideLogicalIdIfNeeded(hook, hookName);
   }
 
-  private createOutput(logicalId: string, scope: core.Construct): void {
+  private createOutput(logicalId: string, scope: Construct): void {
     const self = this;
     const outputAttributes = new cfn_parse.CfnParser({
       finder: {
@@ -477,8 +521,8 @@ export class CfnInclude extends core.CfnElement {
         findRefTarget(elementName: string): core.CfnElement | undefined {
           return self.resources[elementName] ?? self.parameters[elementName];
         },
-        findCondition(): undefined {
-          return undefined;
+        findCondition(conditionName: string): core.CfnCondition | undefined {
+          return self.conditions[conditionName];
         },
         findMapping(mappingName): core.CfnMapping | undefined {
           return self.mappings[mappingName];
@@ -550,12 +594,12 @@ export class CfnInclude extends core.CfnElement {
 
     // fail early for resource attributes we don't support yet
     const knownAttributes = [
-      'Type', 'Properties', 'Condition', 'DependsOn', 'Metadata',
-      'CreationPolicy', 'UpdatePolicy', 'DeletionPolicy', 'UpdateReplacePolicy',
+      'Condition', 'DependsOn', 'Description', 'Metadata', 'Properties', 'Type', 'Version',
+      'CreationPolicy', 'DeletionPolicy', 'UpdatePolicy', 'UpdateReplacePolicy',
     ];
     for (const attribute of Object.keys(resourceAttributes)) {
       if (!knownAttributes.includes(attribute)) {
-        throw new Error(`The ${attribute} resource attribute is not supported by cloudformation-include yet. ` +
+        throw new Error(`The '${attribute}' resource attribute is not supported by cloudformation-include yet. ` +
           'Either remove it from the template, or use the CdkInclude class from the core package instead.');
       }
     }
@@ -595,7 +639,11 @@ export class CfnInclude extends core.CfnElement {
       l1Instance = this.createNestedStack(logicalId, cfnParser);
     } else {
       const l1ClassFqn = cfn_type_to_l1_mapping.lookup(resourceAttributes.Type);
-      if (l1ClassFqn) {
+      // The AWS::CloudFormation::CustomResource type corresponds to the CfnCustomResource class.
+      // Unfortunately, it's quite useless; it only has a single property, ServiceToken.
+      // For that reason, even the CustomResource class from @core doesn't use it!
+      // So, special-case the handling of this one resource type
+      if (l1ClassFqn && resourceAttributes.Type !== 'AWS::CloudFormation::CustomResource') {
         const options: cfn_parse.FromCloudFormationOptions = {
           parser: cfnParser,
         };

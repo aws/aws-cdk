@@ -5,6 +5,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
+import * as constructs from 'constructs';
 import { Test } from 'nodeunit';
 import * as lambda from '../lib';
 
@@ -283,6 +284,59 @@ export = {
     // THEN
     test.deepEqual(imported.functionArn, 'arn:aws:lambda:us-east-1:123456789012:function:ProcessKinesisRecords');
     test.deepEqual(imported.functionName, 'ProcessKinesisRecords');
+    expect(stack2).notTo(haveResource('AWS::Lambda::Permission'));
+    test.done();
+  },
+
+  'imported Function w/ resolved account and function arn can addPermissions'(test: Test) {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Imports', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+    const stack2 = new cdk.Stack(app, 'imported', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+    new lambda.Function(stack, 'BaseFunction', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_10_X,
+    });
+
+    // WHEN
+    const iFunc = lambda.Function.fromFunctionAttributes(stack2, 'iFunc', {
+      functionArn: 'arn:aws:lambda:us-east-1:123456789012:function:BaseFunction',
+    });
+    iFunc.addPermission('iFunc', {
+      principal: new iam.ServicePrincipal('cloudformation.amazonaws.com'),
+    });
+
+    // THEN
+    expect(stack2).to(haveResource('AWS::Lambda::Permission'));
+    test.done();
+  },
+
+  'imported Function w/o account cannot addPermissions'(test: Test) {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Base');
+    const importedStack = new cdk.Stack(app, 'Imported');
+    new lambda.Function(stack, 'BaseFunction', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_10_X,
+    });
+
+    // WHEN
+    const iFunc = lambda.Function.fromFunctionAttributes(importedStack, 'iFunc', {
+      functionArn: 'arn:aws:lambda:us-east-1:123456789012:function:BaseFunction',
+    });
+    iFunc.addPermission('iFunc', {
+      principal: new iam.ServicePrincipal('cloudformation.amazonaws.com'),
+    });
+
+    // THEN
+    expect(importedStack).notTo(haveResource('AWS::Lambda::Permission'));
     test.done();
   },
 
@@ -1659,7 +1713,7 @@ export = {
   },
 };
 
-function newTestLambda(scope: cdk.Construct) {
+function newTestLambda(scope: constructs.Construct) {
   return new lambda.Function(scope, 'MyLambda', {
     code: new lambda.InlineCode('foo'),
     handler: 'bar',

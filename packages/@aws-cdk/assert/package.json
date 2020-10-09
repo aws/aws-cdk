@@ -21,11 +21,11 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/jest": "^26.0.10",
+    "@types/jest": "^26.0.14",
     "cdk-build-tools": "0.0.0",
     "jest": "^26.4.2",
     "pkglint": "0.0.0",
-    "ts-jest": "^26.2.0"
+    "ts-jest": "^26.4.1"
   },
   "dependencies": {
     "@aws-cdk/cloud-assembly-schema": "0.0.0",

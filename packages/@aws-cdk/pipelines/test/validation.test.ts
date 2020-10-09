@@ -1,9 +1,11 @@
 import { anything, arrayWith, deepObjectLike, encodedJson } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
-import { CfnOutput, Construct, Stack, Stage, StageProps } from '@aws-cdk/core';
+import { CfnOutput, Stack, Stage, StageProps } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as cdkp from '../lib';
 import { } from './testmatchers';
 import { BucketStack, PIPELINE_ENV, TestApp, TestGitHubNpmPipeline } from './testutil';
@@ -219,6 +221,111 @@ test('ShellScriptAction is IGrantable', () => {
       Statement: arrayWith(deepObjectLike({
         Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
       })),
+    },
+  });
+});
+
+test('run ShellScriptAction in a VPC', () => {
+  // WHEN
+  const vpc = new ec2.Vpc(pipelineStack, 'VPC');
+  pipeline.addStage('Test').addActions(new cdkp.ShellScriptAction({
+    vpc,
+    actionName: 'VpcAction',
+    additionalArtifacts: [integTestArtifact],
+    commands: ['true'],
+  }));
+
+  // THEN
+  expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+    Stages: arrayWith({
+      Name: 'Test',
+      Actions: [
+        deepObjectLike({
+          Name: 'VpcAction',
+          InputArtifacts: [{ Name: 'IntegTests' }],
+        }),
+      ],
+    }),
+  });
+  expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Environment: {
+      Image: 'aws/codebuild/standard:4.0',
+    },
+    VpcConfig: {
+      SecurityGroupIds: [
+        {
+          'Fn::GetAtt': [
+            'CdkPipelineTestVpcActionProjectSecurityGroupBA94D315',
+            'GroupId',
+          ],
+        },
+      ],
+      Subnets: [
+        {
+          Ref: 'VPCPrivateSubnet1Subnet8BCA10E0',
+        },
+        {
+          Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A',
+        },
+        {
+          Ref: 'VPCPrivateSubnet3Subnet3EDCD457',
+        },
+      ],
+      VpcId: {
+        Ref: 'VPCB9E5F0B4',
+      },
+    },
+    Source: {
+      BuildSpec: encodedJson(deepObjectLike({
+        phases: {
+          build: {
+            commands: [
+              'set -eu',
+              'true',
+            ],
+          },
+        },
+      })),
+    },
+  });
+});
+
+test('run ShellScriptAction with Security Group', () => {
+  // WHEN
+  const vpc = new ec2.Vpc(pipelineStack, 'VPC');
+  const sg = new ec2.SecurityGroup(pipelineStack, 'SG', { vpc });
+  pipeline.addStage('Test').addActions(new cdkp.ShellScriptAction({
+    vpc,
+    securityGroups: [sg],
+    actionName: 'sgAction',
+    additionalArtifacts: [integTestArtifact],
+    commands: ['true'],
+  }));
+
+  // THEN
+  expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+    Stages: arrayWith({
+      Name: 'Test',
+      Actions: [
+        deepObjectLike({
+          Name: 'sgAction',
+        }),
+      ],
+    }),
+  });
+  expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    VpcConfig: {
+      SecurityGroupIds: [
+        {
+          'Fn::GetAtt': [
+            'SGADB53937',
+            'GroupId',
+          ],
+        },
+      ],
+      VpcId: {
+        Ref: 'VPCB9E5F0B4',
+      },
     },
   });
 });
