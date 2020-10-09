@@ -272,41 +272,44 @@ export = {
     'uses the role when passed'(test: Test) {
       const stack = new Stack();
 
+      const pipeline = new codepipeline.Pipeline(stack, 'P', {
+        pipelineName: 'MyPipeline',
+      });
+
       const triggerTestRole = new iam.Role(stack, 'Trigger-test-role', {
         assumedBy: new iam.ServicePrincipal('events.amazonaws.com'),
       });
       triggerTestRole.addToPolicy(new iam.PolicyStatement({
         actions: ['codepipeline:StartPipelineExecution'],
+        resources: [this.pipeline.pipelineArn],
       }));
 
       const sourceOutput = new codepipeline.Artifact();
-      const pipeline = new codepipeline.Pipeline(stack, 'P', {
-        stages: [
-          {
-            stageName: 'Source',
-            actions: [
-              new cpactions.CodeCommitSourceAction({
-                actionName: 'CodeCommit',
-                repository: new codecommit.Repository(stack, 'R', {
-                  repositoryName: 'repository',
-                }),
-                branch: Lazy.stringValue({ produce: () => 'my-branch' }),
-                output: sourceOutput,
-                triggerRole: triggerTestRole,
-              }),
-            ],
-          },
-          {
-            stageName: 'Build',
-            actions: [
-              new cpactions.CodeBuildAction({
-                actionName: 'Build',
-                project: new codebuild.PipelineProject(stack, 'CodeBuild'),
-                input: sourceOutput,
-              }),
-            ],
-          },
-        ],
+
+      const sourceAction = new cpactions.CodeCommitSourceAction({
+        actionName: 'CodeCommit',
+        repository: new codecommit.Repository(stack, 'R', {
+          repositoryName: 'repository',
+        }),
+        branch: Lazy.stringValue({ produce: () => 'my-branch' }),
+        output: sourceOutput,
+        triggerRole: triggerTestRole,
+      });
+
+      pipeline.addStage({
+        stageName: 'Source',
+        actions: [sourceAction],
+      });
+
+      const buildAction = new cpactions.CodeBuildAction({
+        actionName: 'Build',
+        project: new codebuild.PipelineProject(stack, 'CodeBuild'),
+        input: sourceOutput,
+      });
+
+      pipeline.addStage({
+        stageName: 'build',
+        actions: [buildAction],
       });
 
       expect(stack).to(haveResourceLike('AWS::Events::Rule', {
