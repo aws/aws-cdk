@@ -1,7 +1,12 @@
 import * as core from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as cfn_parse from '@aws-cdk/core/lib/cfn-parse';
 import * as cfn_type_to_l1_mapping from './cfn-type-to-l1-mapping';
 import * as futils from './file-utils';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Construction properties of {@link CfnInclude}.
@@ -79,23 +84,23 @@ export interface IncludedNestedStack {
  */
 export class CfnInclude extends core.CfnElement {
   private readonly conditions: { [conditionName: string]: core.CfnCondition } = {};
-  private readonly conditionsScope: core.Construct;
+  private readonly conditionsScope: Construct;
   private readonly resources: { [logicalId: string]: core.CfnResource } = {};
   private readonly parameters: { [logicalId: string]: core.CfnParameter } = {};
   private readonly parametersToReplace: { [parameterName: string]: any };
-  private readonly mappingsScope: core.Construct;
+  private readonly mappingsScope: Construct;
   private readonly mappings: { [mappingName: string]: core.CfnMapping } = {};
   private readonly rules: { [ruleName: string]: core.CfnRule } = {};
-  private readonly rulesScope: core.Construct;
+  private readonly rulesScope: Construct;
   private readonly hooks: { [hookName: string]: core.CfnHook } = {};
-  private readonly hooksScope: core.Construct;
+  private readonly hooksScope: Construct;
   private readonly outputs: { [logicalId: string]: core.CfnOutput } = {};
   private readonly nestedStacks: { [logicalId: string]: IncludedNestedStack } = {};
   private readonly nestedStacksToInclude: { [name: string]: CfnIncludeProps };
   private readonly template: any;
   private readonly preserveLogicalIds: boolean;
 
-  constructor(scope: core.Construct, id: string, props: CfnIncludeProps) {
+  constructor(scope: Construct, id: string, props: CfnIncludeProps) {
     super(scope, id);
 
     this.parametersToReplace = props.parameters || {};
@@ -113,7 +118,7 @@ export class CfnInclude extends core.CfnElement {
     }
 
     // instantiate the Mappings
-    this.mappingsScope = new core.Construct(this, '$Mappings');
+    this.mappingsScope = new CoreConstruct(this, '$Mappings');
     for (const mappingName of Object.keys(this.template.Mappings || {})) {
       this.createMapping(mappingName);
     }
@@ -124,13 +129,13 @@ export class CfnInclude extends core.CfnElement {
     }
 
     // instantiate the conditions
-    this.conditionsScope = new core.Construct(this, '$Conditions');
+    this.conditionsScope = new CoreConstruct(this, '$Conditions');
     for (const conditionName of Object.keys(this.template.Conditions || {})) {
       this.getOrCreateCondition(conditionName);
     }
 
     // instantiate the rules
-    this.rulesScope = new core.Construct(this, '$Rules');
+    this.rulesScope = new CoreConstruct(this, '$Rules');
     for (const ruleName of Object.keys(this.template.Rules || {})) {
       this.createRule(ruleName);
     }
@@ -148,12 +153,12 @@ export class CfnInclude extends core.CfnElement {
     }
 
     // instantiate the Hooks
-    this.hooksScope = new core.Construct(this, '$Hooks');
+    this.hooksScope = new CoreConstruct(this, '$Hooks');
     for (const hookName of Object.keys(this.template.Hooks || {})) {
       this.createHook(hookName);
     }
 
-    const outputScope = new core.Construct(this, '$Ouputs');
+    const outputScope = new CoreConstruct(this, '$Ouputs');
     for (const logicalId of Object.keys(this.template.Outputs || {})) {
       this.createOutput(logicalId, outputScope);
     }
@@ -506,7 +511,7 @@ export class CfnInclude extends core.CfnElement {
     this.overrideLogicalIdIfNeeded(hook, hookName);
   }
 
-  private createOutput(logicalId: string, scope: core.Construct): void {
+  private createOutput(logicalId: string, scope: Construct): void {
     const self = this;
     const outputAttributes = new cfn_parse.CfnParser({
       finder: {

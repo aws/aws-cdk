@@ -1,4 +1,4 @@
-import { Construct } from './construct-compat';
+import { Construct } from 'constructs';
 import { CustomResource } from './custom-resource';
 import { CfnUtilsProvider } from './private/cfn-utils-provider';
 import { CfnUtilsResourceType } from './private/cfn-utils-provider/consts';
@@ -6,6 +6,10 @@ import { Reference } from './reference';
 import { IResolvable, IResolveContext } from './resolvable';
 import { Stack } from './stack';
 import { captureStackTrace } from './stack-trace';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from './construct-compat';
 
 export interface CfnJsonProps {
   /**
@@ -29,7 +33,7 @@ export interface CfnJsonProps {
  *
  * This construct is backed by a custom resource.
  */
-export class CfnJson extends Construct implements IResolvable {
+export class CfnJson extends CoreConstruct implements IResolvable {
   public readonly creationStack: string[] = [];
 
   /**
