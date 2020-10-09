@@ -1,7 +1,9 @@
+import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as route53 from '@aws-cdk/aws-route53';
 import * as cdk from '@aws-cdk/core';
 import { Service } from '../../service';
+import { Container } from '../container';
 import { ServiceExtension, ServiceBuild, EnvironmentCapacityType } from '../extension-interfaces';
 import { TaskRecordManager } from './task-record-manager';
 
@@ -45,6 +47,8 @@ export class AssignPublicIpExtension extends ServiceExtension {
   }
 
   public prehook(service: Service, _scope: cdk.Construct) {
+    super.prehook(service, _scope);
+
     if (service.capacityType != EnvironmentCapacityType.FARGATE) {
       throw new Error('AssignPublicIp only supports Fargate tasks');
     }
@@ -64,6 +68,12 @@ export class AssignPublicIpExtension extends ServiceExtension {
         dnsZone: this.dns!.zone,
         dnsRecordName: this.dns!.recordName,
       });
+
+      const container = this.parentService.serviceDescription.get('service-container') as Container;
+      service.connections.allowFromAnyIpv4(
+        ec2.Port.tcp(container.trafficPort),
+        'Accept inbound traffic on traffic port from anywhere',
+      );
     }
   }
 }
