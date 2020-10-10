@@ -37,6 +37,12 @@ export abstract class IgnorePattern {
   }
 
   /**
+   * Adds another pattern.
+   * @params pattern the pattern to add
+   */
+  public abstract add(pattern: string): void;
+
+  /**
    * Determines whether a given file path should be ignored or not.
    *
    * @param filePath file path to be assessed against the pattern
@@ -55,6 +61,14 @@ export class GlobIgnorePattern extends IgnorePattern {
     super();
 
     this.patterns = patterns;
+  }
+
+  /**
+   * Adds another pattern.
+   * @params pattern the pattern to add
+   */
+  public add(pattern: string): void {
+    this.patterns.push(pattern);
   }
 
   /**
@@ -96,6 +110,14 @@ export class GitIgnorePattern extends IgnorePattern {
   }
 
   /**
+   * Adds another pattern.
+   * @params pattern the pattern to add
+   */
+  public add(pattern: string): void {
+    this.ignore.add(pattern);
+  }
+
+  /**
    * Determines whether a given file path should be ignored or not.
    *
    * @param filePath file path to be assessed against the pattern
@@ -116,6 +138,14 @@ export class DockerIgnorePattern extends IgnorePattern {
     super();
 
     this.ignore = dockerIgnore().add(patterns);
+  }
+
+  /**
+   * Adds another pattern.
+   * @params pattern the pattern to add
+   */
+  public add(pattern: string): void {
+    this.ignore.add(pattern);
   }
 
   /**
