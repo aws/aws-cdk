@@ -5,6 +5,7 @@ import { copyDirectory } from './copy';
 import { fingerprint } from './fingerprint';
 import { CopyOptions, FingerprintOptions } from './options';
 
+export * from './ignore-pattern';
 export * from './options';
 
 /**
