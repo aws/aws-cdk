@@ -6,7 +6,7 @@ import {
   IApplicationLoadBalancer, ListenerCertificate, ListenerAction,
 } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { IRole } from '@aws-cdk/aws-iam';
-import { ARecord, IHostedZone, RecordTarget } from '@aws-cdk/aws-route53';
+import { ARecord, IHostedZone, RecordTarget, CnameRecord } from '@aws-cdk/aws-route53';
 import { LoadBalancerTarget } from '@aws-cdk/aws-route53-targets';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
@@ -177,6 +177,14 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    * @default false
    */
   readonly redirectHTTP?: boolean;
+
+  /**
+   * Specifies whether the Route53 record should be a CNAME or an A record using the Alias feature.
+   * This is useful if you need to work with DNS systems that do not support alias records.
+   *
+   * @default false
+   */
+  readonly cname?: boolean;
 }
 
 export interface ApplicationLoadBalancedTaskImageOptions {
@@ -390,11 +398,21 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
         throw new Error('A Route53 hosted domain zone name is required to configure the specified domain name');
       }
 
-      const record = new ARecord(this, 'DNS', {
-        zone: props.domainZone,
-        recordName: props.domainName,
-        target: RecordTarget.fromAlias(new LoadBalancerTarget(loadBalancer)),
-      });
+      let record;
+
+      if (props.cname) {
+        record = new CnameRecord(this, 'DNS', {
+          zone: props.domainZone,
+          recordName: props.domainName,
+          domainName: loadBalancer.loadBalancerDnsName,
+        });
+      } else {
+        record = new ARecord(this, 'DNS', {
+          zone: props.domainZone,
+          recordName: props.domainName,
+          target: RecordTarget.fromAlias(new LoadBalancerTarget(loadBalancer)),
+        });
+      }
 
       domainName = record.domainName;
     }
