@@ -31,6 +31,26 @@ export enum SymlinkFollowMode {
 }
 
 /**
+ * Determines the ignore behavior to use.
+ */
+export enum IgnoreMode {
+  /**
+   * Ignores file paths based on simple glob patterns.
+   */
+  GLOB = 'glob',
+
+  /**
+   * Ignores file paths based on the [`.gitignore specification`](https://git-scm.com/docs/gitignore).
+   */
+  GIT = 'git',
+
+  /**
+   * Ignores file paths based on the [`.dockerignore specification`](https://docs.docker.com/engine/reference/builder/#dockerignore-file).
+   */
+  DOCKER = 'docker'
+};
+
+/**
  * Obtains applied when copying directories into the staging location.
  */
 export interface CopyOptions {
@@ -47,6 +67,13 @@ export interface CopyOptions {
    * @default - nothing is excluded
    */
   readonly exclude?: string[];
+
+  /**
+   * The ignore behavior to use for exclude patterns.
+   *
+   * @default IgnoreMode.GLOB
+   */
+  readonly ignoreMode?: IgnoreMode;
 }
 
 /**

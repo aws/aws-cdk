@@ -1,11 +1,12 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { IgnoreStrategy } from './ignore';
 import { CopyOptions, SymlinkFollowMode } from './options';
-import { shouldExclude, shouldFollow } from './utils';
+import { shouldFollow } from './utils';
 
 export function copyDirectory(srcDir: string, destDir: string, options: CopyOptions = { }, rootDir?: string) {
   const follow = options.follow !== undefined ? options.follow : SymlinkFollowMode.EXTERNAL;
-  const exclude = options.exclude || [];
+  const ignoreStrategy = IgnoreStrategy.fromCopyOptions(options);
 
   rootDir = rootDir || srcDir;
 
@@ -16,8 +17,9 @@ export function copyDirectory(srcDir: string, destDir: string, options: CopyOpti
   const files = fs.readdirSync(srcDir);
   for (const file of files) {
     const sourceFilePath = path.join(srcDir, file);
+    const relativePath = path.relative(rootDir, sourceFilePath);
 
-    if (shouldExclude(exclude, path.relative(rootDir, sourceFilePath))) {
+    if (ignoreStrategy.ignores(relativePath)) {
       continue;
     }
 

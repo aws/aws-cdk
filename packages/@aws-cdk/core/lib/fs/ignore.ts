@@ -1,19 +1,20 @@
 import dockerIgnore, * as DockerIgnore from '@balena/dockerignore';
 import gitIgnore, * as GitIgnore from 'ignore';
 import * as minimatch from 'minimatch';
+import { CopyOptions, IgnoreMode } from './options';
 
 /**
  * Represents file path ignoring behavior.
  */
-export abstract class IgnorePattern {
+export abstract class IgnoreStrategy {
   /**
    * Ignores file paths based on simple glob patterns.
    *
    * @returns `GlobIgnorePattern` associated with the given patterns.
    * @param patterns
    */
-  public static glob(patterns: string[]): GlobIgnorePattern {
-    return new GlobIgnorePattern(patterns);
+  public static glob(patterns: string[]): GlobIgnoreStrategy {
+    return new GlobIgnoreStrategy(patterns);
   }
 
   /**
@@ -22,8 +23,8 @@ export abstract class IgnorePattern {
    * @returns `GitIgnorePattern` associated with the given patterns.
    * @param patterns
    */
-  public static git(patterns: string[]): GitIgnorePattern {
-    return new GitIgnorePattern(patterns);
+  public static git(patterns: string[]): GitIgnoreStrategy {
+    return new GitIgnoreStrategy(patterns);
   }
 
   /**
@@ -32,8 +33,30 @@ export abstract class IgnorePattern {
    * @returns `DockerIgnorePattern` associated with the given patterns.
    * @param patterns
    */
-  public static docker(patterns: string[]): DockerIgnorePattern {
-    return new DockerIgnorePattern(patterns);
+  public static docker(patterns: string[]): DockerIgnoreStrategy {
+    return new DockerIgnoreStrategy(patterns);
+  }
+
+  /**
+   * Creates an IgnoreStrategy based on the `ignoreMode` and `exclude` in a `CopyOptions`.
+   *
+   * @returns `IgnoreStrategy` based on the `CopyOptions`
+   * @param options the `CopyOptions` to create the `IgnoreStrategy` from
+   */
+  public static fromCopyOptions(options: CopyOptions): IgnoreStrategy {
+    const ignoreMode = options.ignoreMode || IgnoreMode.GLOB;
+    const exclude = options.exclude || [];
+
+    switch (ignoreMode) {
+      case IgnoreMode.GLOB:
+        return this.glob(exclude);
+
+      case IgnoreMode.GIT:
+        return this.git(exclude);
+
+      case IgnoreMode.DOCKER:
+        return this.docker(exclude);
+    }
   }
 
   /**
@@ -54,7 +77,7 @@ export abstract class IgnorePattern {
 /**
  * Ignores file paths based on simple glob patterns.
  */
-export class GlobIgnorePattern extends IgnorePattern {
+export class GlobIgnoreStrategy extends IgnoreStrategy {
   private readonly patterns: string[];
 
   constructor(patterns: string[]) {
@@ -100,7 +123,7 @@ export class GlobIgnorePattern extends IgnorePattern {
 /**
  * Ignores file paths based on the [`.gitignore specification`](https://git-scm.com/docs/gitignore).
  */
-export class GitIgnorePattern extends IgnorePattern {
+export class GitIgnoreStrategy extends IgnoreStrategy {
   private readonly ignore: GitIgnore.Ignore;
 
   constructor(patterns: string[]) {
@@ -131,7 +154,7 @@ export class GitIgnorePattern extends IgnorePattern {
 /**
  * Ignores file paths based on the [`.dockerignore specification`](https://docs.docker.com/engine/reference/builder/#dockerignore-file).
  */
-export class DockerIgnorePattern extends IgnorePattern {
+export class DockerIgnoreStrategy extends IgnoreStrategy {
   private readonly ignore: DockerIgnore.Ignore;
 
   constructor(patterns: string[]) {

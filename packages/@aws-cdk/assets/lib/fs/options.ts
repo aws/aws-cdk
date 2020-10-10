@@ -1,3 +1,4 @@
+import { IgnoreMode } from '@aws-cdk/core';
 import { FollowMode } from './follow-mode';
 
 /**
@@ -18,6 +19,13 @@ export interface CopyOptions {
    * @default nothing is excluded
    */
   readonly exclude?: string[];
+
+  /**
+   * The ignore behavior to use for exclude patterns.
+   *
+   * @default IgnoreMode.GLOB
+   */
+  readonly ignoreMode?: IgnoreMode;
 }
 
 /**

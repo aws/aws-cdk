@@ -2,9 +2,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as assets from '@aws-cdk/assets';
 import * as ecr from '@aws-cdk/aws-ecr';
-import { Annotations, Construct as CoreConstruct, Stack, Token } from '@aws-cdk/core';
+import { Annotations, Construct as CoreConstruct, IgnoreMode, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import * as minimatch from 'minimatch';
 
 /**
  * Options for DockerImageAsset
@@ -97,20 +96,30 @@ export class DockerImageAsset extends CoreConstruct implements assets.IAsset {
       throw new Error(`Cannot find file at ${file}`);
     }
 
+    let ignoreMode = props.ignoreMode || IgnoreMode.DOCKER;
+
+    if (ignoreMode != IgnoreMode.DOCKER) {
+      throw new Error(`DockerImageAsset can only use IgnoreMode.DOCKER but got ${ignoreMode}`);
+    }
+
     let exclude: string[] = props.exclude || [];
 
     const ignore = path.join(dir, '.dockerignore');
 
     if (fs.existsSync(ignore)) {
-      exclude = [...exclude, ...fs.readFileSync(ignore).toString().split('\n').filter(e => !!e)];
+      const dockerIgnorePatterns = fs.readFileSync(ignore).toString().split('\n').filter(e => !!e);
+
+      exclude = [
+        ...dockerIgnorePatterns,
+        ...exclude,
+
+        // Ensure .dockerignore is whitelisted no matter what.
+        '!.dockerignore',
+      ];
     }
 
-    // make sure the docker file and the dockerignore file end up in the staging area
-    // see https://github.com/aws/aws-cdk/issues/6004
-    exclude = exclude.filter(ignoreExpression => {
-      return !(minimatch(file, ignoreExpression, { matchBase: true }) ||
-             minimatch(ignore, ignoreExpression, { matchBase: true }));
-    });
+    // Ensure the Dockerfile is whitelisted no matter what.
+    exclude.push('!' + path.basename(file));
 
     if (props.repositoryName) {
       Annotations.of(this).addWarning('DockerImageAsset.repositoryName is deprecated. Override "core.Stack.addDockerImageAsset" to control asset locations');
@@ -129,9 +138,12 @@ export class DockerImageAsset extends CoreConstruct implements assets.IAsset {
     // deletion of the ECR repository the app used).
     extraHash.version = '1.21.0';
 
+    // TODO: Right here modify `exclude` to add an exemption for props.file (the dockerfile, whatever the name)
+    // as well as .dockerignore
     const staging = new assets.Staging(this, 'Staging', {
       ...props,
       exclude,
+      ignoreMode,
       sourcePath: dir,
       extraHash: Object.keys(extraHash).length === 0
         ? undefined

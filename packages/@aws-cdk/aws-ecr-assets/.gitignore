@@ -17,3 +17,5 @@ nyc.config.js
 !.eslintrc.js
 
 junit.xml
+
+!test/whitelisted-image/node_modules

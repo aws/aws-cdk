@@ -135,6 +135,7 @@ export class AssetStaging extends CoreConstruct {
       assetHashType: hashType,
       extraHash: props.extraHash,
       exclude: props.exclude,
+      ignoreMode: props.ignoreMode,
     });
 
     if (props.bundling) {

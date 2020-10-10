@@ -1,0 +1,6 @@
+*
+!Dockerfile
+!.dockerignore
+!foobar.txt
+!index.py
+!subdirectory/
