@@ -23,7 +23,7 @@ class TestRunningTasksCollector(unittest.TestCase):
         paginator.paginate = mock.Mock(return_value=[{'NetworkInterfaces': [ENI_DESCRIPTION]}])
         ec2_client.get_paginator = mock.Mock(return_value=paginator)
 
-        reference_record = DdbRecord(key=DdbRecordKey(hosted_zone_id="A", record_name="B"))
+        reference_record = DdbRecord(key=DdbRecordKey(cluster_arn="A", service_name="B"))
         collector = RunningTaskCollector(ec2_client=ec2_client, reference_record=reference_record)
 
         # WHEN
@@ -44,7 +44,7 @@ class TestRunningTasksCollector(unittest.TestCase):
 
         task_arn = TASK_DESCRIPTION['taskArn']
         task_info = {task_arn: TaskInfo(task_arn=task_arn, enis=[], stopped_datetime=datetime.utcnow())}
-        reference_record = DdbRecord(key=DdbRecordKey(hosted_zone_id="A", record_name="B"), task_info=task_info)
+        reference_record = DdbRecord(key=DdbRecordKey(cluster_arn="A", service_name="B"), task_info=task_info)
         collector = RunningTaskCollector(ec2_client=ec2_client, reference_record=reference_record)
 
         # WHEN

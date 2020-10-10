@@ -1,5 +1,5 @@
 {
-  "hosted_zone_id_record_name": "FOO#test.myexample.com",
+  "cluster_service": "CLUSTER_ARN#SERVICE",
   "ipv4s": [
     "1.1.2.1",
     "1.1.2.2"

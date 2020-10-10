@@ -20,7 +20,7 @@ class TestRecordsTable(unittest.TestCase):
         table_client = mock.Mock()
         table_client.query = mock.Mock(return_value={'Items': []})
 
-        key = DdbRecordKey(hosted_zone_id='a', record_name='b')
+        key = DdbRecordKey(cluster_arn='a', service_name='b')
         records_table = RecordsTableAccessor(table_client=table_client)
 
         running = [TaskInfo(task_arn='TASK1_ARN', enis=[
@@ -46,7 +46,7 @@ class TestRecordsTable(unittest.TestCase):
         table_client = mock.Mock()
         table_client.query = mock.Mock(return_value={'Items': [dict(DDB_RECORD_ENCODED)]})
 
-        key = DdbRecordKey(hosted_zone_id='FOO', record_name='test.myexample.com')
+        key = DdbRecordKey(cluster_arn='FOO', service_name='test.myexample.com')
         records_table = RecordsTableAccessor(table_client=table_client)
 
         running = [TaskInfo(task_arn='TASK1_ARN', enis=[
@@ -71,7 +71,7 @@ class TestRecordsTable(unittest.TestCase):
             }}, 'PutItem'))
 
         records_table = RecordsTableAccessor(table_client=table_client)
-        key = DdbRecordKey(hosted_zone_id='a', record_name='b')
+        key = DdbRecordKey(cluster_arn='a', service_name='b')
 
         # WHEN
         with self.assertRaisesRegex(Exception, r'Exceeded maximum retries'):
@@ -88,7 +88,7 @@ class TestRecordsTable(unittest.TestCase):
         table_client.put_item = mock.Mock(side_effect=ClientError({'Error': {'Code': 'SomethingElse'}}, 'PutItem'))
 
         records_table = RecordsTableAccessor(table_client=table_client)
-        key = DdbRecordKey(hosted_zone_id='a', record_name='b')
+        key = DdbRecordKey(cluster_arn='a', service_name='b')
 
         # WHEN
         with self.assertRaisesRegex(Exception, r'SomethingElse'):
@@ -101,7 +101,7 @@ class TestRecordsTable(unittest.TestCase):
     def test_delete(self):
         # GIVEN
         table_client = mock.Mock()
-        key = DdbRecordKey(hosted_zone_id='a', record_name='b')
+        key = DdbRecordKey(cluster_arn='a', service_name='b')
         records_table = RecordsTableAccessor(table_client=table_client)
 
         # WHEN
@@ -112,7 +112,7 @@ class TestRecordsTable(unittest.TestCase):
 
     def test_update_ddb_record(self):
         # GIVEN
-        ddb_record = DdbRecord(key=DdbRecordKey(hosted_zone_id='a', record_name='b'))
+        ddb_record = DdbRecord(key=DdbRecordKey(cluster_arn='a', service_name='b'))
 
         # TASK1->RUNNING, TASK2->RUNNING
         ord1_running = [

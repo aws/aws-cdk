@@ -10,6 +10,7 @@ class TestQueueHandler(unittest.TestCase):
             'HOSTED_ZONE_ID': 'HOSTED_ZONE_ID',
             'RECORD_NAME': 'RECORD_NAME',
             'RECORDS_TABLE': 'RECORDS_TABLE',
+            'CLUSTER_ARN': 'CLUSTER_ARN',
             'SERVICE_NAME': 'SERVICE_NAME',
         }
 

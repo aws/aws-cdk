@@ -47,7 +47,7 @@ export class TaskRecordManager extends cdk.Construct {
     // Storage for task and record set information.
     const recordsTable = new dynamodb.Table(this, 'Records', {
       partitionKey: {
-        name: 'hosted_zone_id_record_name',
+        name: 'cluster_service',
         type: dynamodb.AttributeType.STRING,
       },
       billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
@@ -121,6 +121,7 @@ export class TaskRecordManager extends cdk.Construct {
         HOSTED_ZONE_ID: props.dnsZone.hostedZoneId,
         RECORD_NAME: recordFqdn,
         RECORDS_TABLE: recordsTable.tableName,
+        CLUSTER_ARN: props.service.cluster.clusterArn,
         SERVICE_NAME: props.service.serviceName,
       },
       events: [

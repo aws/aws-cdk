@@ -6,9 +6,8 @@ from lib.records import DdbRecord, EniInfo, TaskInfo
 
 class RunningTaskCollector:
     """
-    Collects descriptions of running tasks, extracting basic information out of
-    the task description-esque structure and stores them. After collecting several
-    tasks, when `fill_eni_info_from_eni_query()` is called, the collector queries
+    Collects information about running tasks. After collecting all task info,
+    when `fill_eni_info_from_eni_query()` is called, the collector queries
     for the ip addresses of the tasks and fills in the appropriate records.
     """
 

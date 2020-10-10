@@ -25,8 +25,8 @@ class TestRecords(unittest.TestCase):
         ddb_record_reencoded = ddb_record_encoding.encode(ddb_record)
 
         # THEN
-        self.assertEqual(ddb_record.key.hosted_zone_id, 'FOO')
-        self.assertEqual(ddb_record.key.record_name, 'test.myexample.com')
+        self.assertEqual(ddb_record.key.cluster_arn, 'CLUSTER_ARN')
+        self.assertEqual(ddb_record.key.service_name, 'SERVICE')
         self.assertEqual(sorted(ddb_record.ipv4s), ['1.1.2.1', '1.1.2.2'])
         self.assertEqual(
             ddb_record.task_info['TASK1_ARN'],

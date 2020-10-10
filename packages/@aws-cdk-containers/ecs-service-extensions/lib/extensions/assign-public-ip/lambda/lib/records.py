@@ -34,16 +34,16 @@ class TaskInfo:
 
 @dataclass
 class DdbRecordKey:
-    hosted_zone_id: str
-    record_name: str
+    cluster_arn: str
+    service_name: str
 
     def to_composite(self):
-        return f'{self.hosted_zone_id}#{self.record_name}'
+        return f'{self.cluster_arn}#{self.service_name}'
 
     @staticmethod
     def from_composite(composite: str):
-        hosted_zone_id, record_name = composite.split('#')
-        return DdbRecordKey(hosted_zone_id=hosted_zone_id, record_name=record_name)
+        cluster_arn, service_name = composite.split('#')
+        return DdbRecordKey(cluster_arn=cluster_arn, service_name=service_name)
 
 
 @dataclass
@@ -62,7 +62,7 @@ class DdbRecord:
 
 
 class DdbRecordEncoding:
-    PK_NAME = 'hosted_zone_id_record_name'
+    PK_NAME = 'cluster_service'
     ATTR_VERSION = 'version'
     ATTR_IPV4S = 'ipv4s'
     ATTR_TASK_INFO = 'task_info'

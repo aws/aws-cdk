@@ -18,9 +18,10 @@ class QueueHandler:
         record_name = environ['RECORD_NAME']
         records_table = environ['RECORDS_TABLE']
 
+        cluster_arn = environ['CLUSTER_ARN']
         self.service_name = environ['SERVICE_NAME']
 
-        self.records_table_key = DdbRecordKey(hosted_zone_id=hosted_zone_id, record_name=record_name)
+        self.records_table_key = DdbRecordKey(cluster_arn=cluster_arn, service_name=self.service_name)
         self.records_table_accessor = RecordsTableAccessor(table_client=dynamodb_resource.Table(records_table))
 
         self.record_set_locator = Route53RecordSetLocator(hosted_zone_id=hosted_zone_id, record_name=record_name)
