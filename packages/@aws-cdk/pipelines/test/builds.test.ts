@@ -2,6 +2,8 @@ import { arrayWith, deepObjectLike, encodedJson, objectLike, Capture } from '@aw
 import '@aws-cdk/assert/jest';
 import * as cbuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as ecr from '@aws-cdk/aws-ecr';
 import * as s3 from '@aws-cdk/aws-s3';
 import { Stack } from '@aws-cdk/core';
 import * as cdkp from '../lib';
@@ -218,6 +220,88 @@ test('Standard (NPM) synth can output additional artifacts', () => {
   });
 });
 
+test('Standard (NPM) synth can run in a VPC', () => {
+  // WHEN
+  new TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    sourceArtifact,
+    cloudAssemblyArtifact,
+    synthAction: cdkp.SimpleSynthAction.standardNpmSynth({
+      vpc: new ec2.Vpc(pipelineStack, 'NpmSynthTestVpc'),
+      sourceArtifact,
+      cloudAssemblyArtifact,
+    }),
+  });
+
+  // THEN
+  expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    VpcConfig: {
+      SecurityGroupIds: [
+        {
+          'Fn::GetAtt': [
+            'CdkPipelineBuildSynthCdkBuildProjectSecurityGroupEA44D7C2',
+            'GroupId',
+          ],
+        },
+      ],
+      Subnets: [
+        {
+          Ref: 'NpmSynthTestVpcPrivateSubnet1Subnet81E3AA56',
+        },
+        {
+          Ref: 'NpmSynthTestVpcPrivateSubnet2SubnetC1CA3EF0',
+        },
+        {
+          Ref: 'NpmSynthTestVpcPrivateSubnet3SubnetA04163EE',
+        },
+      ],
+      VpcId: {
+        Ref: 'NpmSynthTestVpc5E703F25',
+      },
+    },
+  });
+});
+
+test('Standard (Yarn) synth can run in a VPC', () => {
+  // WHEN
+  new TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    sourceArtifact,
+    cloudAssemblyArtifact,
+    synthAction: cdkp.SimpleSynthAction.standardYarnSynth({
+      vpc: new ec2.Vpc(pipelineStack, 'YarnSynthTestVpc'),
+      sourceArtifact,
+      cloudAssemblyArtifact,
+    }),
+  });
+
+  // THEN
+  expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    VpcConfig: {
+      SecurityGroupIds: [
+        {
+          'Fn::GetAtt': [
+            'CdkPipelineBuildSynthCdkBuildProjectSecurityGroupEA44D7C2',
+            'GroupId',
+          ],
+        },
+      ],
+      Subnets: [
+        {
+          Ref: 'YarnSynthTestVpcPrivateSubnet1Subnet2805334B',
+        },
+        {
+          Ref: 'YarnSynthTestVpcPrivateSubnet2SubnetDCFBF596',
+        },
+        {
+          Ref: 'YarnSynthTestVpcPrivateSubnet3SubnetE11E0C86',
+        },
+      ],
+      VpcId: {
+        Ref: 'YarnSynthTestVpc5F654735',
+      },
+    },
+  });
+});
+
 test('Pipeline action contains a hash that changes as the buildspec changes', () => {
   const hash1 = synthWithAction((sa, cxa) => cdkp.SimpleSynthAction.standardNpmSynth({
     sourceArtifact: sa,
@@ -319,6 +403,25 @@ test('SimpleSynthAction is IGrantable', () => {
         Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
       })),
     },
+  });
+});
+
+test('SimpleSynthAction can reference an imported ECR repo', () => {
+  // Repro from https://github.com/aws/aws-cdk/issues/10535
+
+  // WHEN
+  new TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    sourceArtifact,
+    cloudAssemblyArtifact,
+    synthAction: cdkp.SimpleSynthAction.standardNpmSynth({
+      sourceArtifact,
+      cloudAssemblyArtifact,
+      environment: {
+        buildImage: cbuild.LinuxBuildImage.fromEcrRepository(
+          ecr.Repository.fromRepositoryName(pipelineStack, 'ECRImage', 'my-repo-name'),
+        ),
+      },
+    }),
   });
 });
 

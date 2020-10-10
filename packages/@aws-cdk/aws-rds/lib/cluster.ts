@@ -4,14 +4,15 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { Annotations, Construct, Duration, RemovalPolicy, Resource, Token } from '@aws-cdk/core';
+import { Annotations, Duration, RemovalPolicy, Resource, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { IClusterEngine } from './cluster-engine';
 import { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { IParameterGroup } from './parameter-group';
-import { applyRemovalPolicy, defaultDeletionProtection, setupS3ImportExport } from './private/util';
-import { BackupProps, InstanceProps, Login, PerformanceInsightRetention, RotationMultiUserOptions } from './props';
+import { applyRemovalPolicy, DEFAULT_PASSWORD_EXCLUDE_CHARS, defaultDeletionProtection, setupS3ImportExport } from './private/util';
+import { BackupProps, Credentials, InstanceProps, PerformanceInsightRetention, RotationSingleUserOptions, RotationMultiUserOptions } from './props';
 import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
 import { CfnDBCluster, CfnDBClusterProps, CfnDBInstance } from './rds.generated';
 import { ISubnetGroup, SubnetGroup } from './subnet-group';
@@ -227,6 +228,9 @@ interface DatabaseClusterBaseProps {
  * A new or imported clustered database.
  */
 export abstract class DatabaseClusterBase extends Resource implements IDatabaseCluster {
+  // only required because of JSII bug: https://github.com/aws/jsii/issues/2040
+  public abstract readonly engine?: IClusterEngine;
+
   /**
    * Identifier of the cluster
    */
@@ -281,7 +285,11 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
  * Abstract base for ``DatabaseCluster`` and ``DatabaseClusterFromSnapshot``
  */
 abstract class DatabaseClusterNew extends DatabaseClusterBase {
-
+  /**
+   * The engine for this Cluster.
+   * Never undefined.
+   */
+  public readonly engine?: IClusterEngine;
   public readonly instanceIdentifiers: string[] = [];
   public readonly instanceEndpoints: Endpoint[] = [];
 
@@ -331,6 +339,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
 
     const clusterParameterGroup = props.parameterGroup ?? clusterEngineBindConfig.parameterGroup;
     const clusterParameterGroupConfig = clusterParameterGroup?.bindToCluster({});
+    this.engine = props.engine;
 
     this.newCfnProps = {
       // Basic
@@ -359,6 +368,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
 class ImportedDatabaseCluster extends DatabaseClusterBase implements IDatabaseCluster {
   public readonly clusterIdentifier: string;
   public readonly connections: ec2.Connections;
+  public readonly engine?: IClusterEngine;
 
   private readonly _clusterEndpoint?: Endpoint;
   private readonly _clusterReadEndpoint?: Endpoint;
@@ -375,6 +385,7 @@ class ImportedDatabaseCluster extends DatabaseClusterBase implements IDatabaseCl
       securityGroups: attrs.securityGroups,
       defaultPort,
     });
+    this.engine = attrs.engine;
 
     this._clusterEndpoint = (attrs.clusterEndpointAddress && attrs.port) ? new Endpoint(attrs.clusterEndpointAddress, attrs.port) : undefined;
     this._clusterReadEndpoint = (attrs.readerEndpointAddress && attrs.port) ? new Endpoint(attrs.readerEndpointAddress, attrs.port) : undefined;
@@ -418,9 +429,11 @@ class ImportedDatabaseCluster extends DatabaseClusterBase implements IDatabaseCl
  */
 export interface DatabaseClusterProps extends DatabaseClusterBaseProps {
   /**
-   * Username and password for the administrative user
+   * Credentials for the administrative user
+   *
+   * @default - A username of 'admin' (or 'postgres' for PostgreSQL) and SecretsManager-generated password
    */
-  readonly masterUser: Login;
+  readonly credentials?: Credentials;
 
   /**
    * Whether to enable storage encryption.
@@ -476,23 +489,21 @@ export class DatabaseCluster extends DatabaseClusterNew {
     this.singleUserRotationApplication = props.engine.singleUserRotationApplication;
     this.multiUserRotationApplication = props.engine.multiUserRotationApplication;
 
-    let secret: DatabaseSecret | undefined;
-    if (!props.masterUser.password) {
-      secret = new DatabaseSecret(this, 'Secret', {
-        username: props.masterUser.username,
-        encryptionKey: props.masterUser.encryptionKey,
-      });
+    let credentials = props.credentials ?? Credentials.fromUsername(props.engine.defaultUsername ?? 'admin');
+    if (!credentials.secret && !credentials.password) {
+      credentials = Credentials.fromSecret(new DatabaseSecret(this, 'Secret', {
+        username: credentials.username,
+        encryptionKey: credentials.encryptionKey,
+        excludeCharacters: credentials.excludeCharacters,
+      }));
     }
+    const secret = credentials.secret;
 
     const cluster = new CfnDBCluster(this, 'Resource', {
       ...this.newCfnProps,
       // Admin
-      masterUsername: secret ? secret.secretValueFromJson('username').toString() : props.masterUser.username,
-      masterUserPassword: secret
-        ? secret.secretValueFromJson('password').toString()
-        : (props.masterUser.password
-          ? props.masterUser.password.toString()
-          : undefined),
+      masterUsername: credentials.username,
+      masterUserPassword: credentials.password?.toString(),
       // Encryption
       kmsKeyId: props.storageEncryptionKey?.keyArn,
       storageEncrypted: props.storageEncryptionKey ? true : props.storageEncrypted,
@@ -521,11 +532,8 @@ export class DatabaseCluster extends DatabaseClusterNew {
 
   /**
    * Adds the single user rotation of the master password to this cluster.
-   *
-   * @param [automaticallyAfter=Duration.days(30)] Specifies the number of days after the previous rotation
-   * before Secrets Manager triggers the next automatic rotation.
    */
-  public addRotationSingleUser(automaticallyAfter?: Duration): secretsmanager.SecretRotation {
+  public addRotationSingleUser(options: RotationSingleUserOptions = {}): secretsmanager.SecretRotation {
     if (!this.secret) {
       throw new Error('Cannot add single user rotation for a cluster without secret.');
     }
@@ -538,11 +546,12 @@ export class DatabaseCluster extends DatabaseClusterNew {
 
     return new secretsmanager.SecretRotation(this, id, {
       secret: this.secret,
-      automaticallyAfter,
       application: this.singleUserRotationApplication,
       vpc: this.vpc,
       vpcSubnets: this.vpcSubnets,
       target: this,
+      ...options,
+      excludeCharacters: options.excludeCharacters ?? DEFAULT_PASSWORD_EXCLUDE_CHARS,
     });
   }
 
@@ -554,9 +563,9 @@ export class DatabaseCluster extends DatabaseClusterNew {
       throw new Error('Cannot add multi user rotation for a cluster without secret.');
     }
     return new secretsmanager.SecretRotation(this, id, {
-      secret: options.secret,
+      ...options,
+      excludeCharacters: options.excludeCharacters ?? DEFAULT_PASSWORD_EXCLUDE_CHARS,
       masterSecret: this.secret,
-      automaticallyAfter: options.automaticallyAfter,
       application: this.multiUserRotationApplication,
       vpc: this.vpc,
       vpcSubnets: this.vpcSubnets,
@@ -707,6 +716,9 @@ function createInstances(cluster: DatabaseClusterNew, props: DatabaseClusterBase
       dbParameterGroupName: instanceParameterGroupConfig?.parameterGroupName,
       monitoringInterval: props.monitoringInterval && props.monitoringInterval.toSeconds(),
       monitoringRoleArn: monitoringRole && monitoringRole.roleArn,
+      autoMinorVersionUpgrade: props.instanceProps.autoMinorVersionUpgrade,
+      allowMajorVersionUpgrade: props.instanceProps.allowMajorVersionUpgrade,
+      deleteAutomatedBackups: props.instanceProps.deleteAutomatedBackups,
     });
 
     // If removalPolicy isn't explicitly set,

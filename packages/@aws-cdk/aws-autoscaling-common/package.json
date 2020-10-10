@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-autoscaling-common",
-        "module": "aws_cdk.aws_autoscaling_common"
+        "module": "aws_cdk.aws_autoscaling_common",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
@@ -63,7 +67,7 @@
     "@types/nodeunit": "^0.0.31",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
-    "fast-check": "^2.3.0",
+    "fast-check": "^2.4.0",
     "nodeunit": "^0.11.3",
     "pkglint": "0.0.0"
   },
@@ -106,5 +110,10 @@
   "maturity": "experimental",
   "awscdkio": {
     "announce": false
+  },
+  "cdk-build": {
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   }
 }

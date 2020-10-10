@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-dax",
-        "module": "aws_cdk.aws_dax"
+        "module": "aws_cdk.aws_dax",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
@@ -49,7 +53,10 @@
   },
   "cdk-build": {
     "cloudformation": "AWS::DAX",
-    "jest": true
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "keywords": [
     "aws",

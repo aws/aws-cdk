@@ -24,7 +24,7 @@ test('minimal example renders correctly', () => {
   expect(stack).toHaveResource('AWS::CloudFront::Distribution', {
     DistributionConfig: {
       DefaultCacheBehavior: {
-        ForwardedValues: { QueryString: false },
+        CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
         TargetOriginId: 'StackMyDistOrigin1D6D5E535',
         ViewerProtocolPolicy: 'allow-all',
       },
@@ -67,7 +67,7 @@ test('exhaustive example of props renders correctly', () => {
     DistributionConfig: {
       Aliases: ['example.com'],
       DefaultCacheBehavior: {
-        ForwardedValues: { QueryString: false },
+        CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
         TargetOriginId: 'StackMyDistOrigin1D6D5E535',
         ViewerProtocolPolicy: 'allow-all',
       },
@@ -77,7 +77,7 @@ test('exhaustive example of props renders correctly', () => {
       HttpVersion: 'http1.1',
       IPV6Enabled: false,
       Logging: {
-        Bucket: { 'Fn::GetAtt': ['MyDistLoggingBucket9B8976BC', 'RegionalDomainName'] },
+        Bucket: { 'Fn::GetAtt': ['MyDistLoggingBucket9B8976BC', 'DomainName'] },
         IncludeCookies: true,
         Prefix: 'logs/',
       },
@@ -132,13 +132,13 @@ describe('multiple behaviors', () => {
     expect(stack).toHaveResource('AWS::CloudFront::Distribution', {
       DistributionConfig: {
         DefaultCacheBehavior: {
-          ForwardedValues: { QueryString: false },
+          CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
           TargetOriginId: 'StackMyDistOrigin1D6D5E535',
           ViewerProtocolPolicy: 'allow-all',
         },
         CacheBehaviors: [{
+          CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
           PathPattern: 'api/*',
-          ForwardedValues: { QueryString: false },
           TargetOriginId: 'StackMyDistOrigin1D6D5E535',
           ViewerProtocolPolicy: 'allow-all',
         }],
@@ -169,13 +169,13 @@ describe('multiple behaviors', () => {
     expect(stack).toHaveResource('AWS::CloudFront::Distribution', {
       DistributionConfig: {
         DefaultCacheBehavior: {
-          ForwardedValues: { QueryString: false },
+          CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
           TargetOriginId: 'StackMyDistOrigin1D6D5E535',
           ViewerProtocolPolicy: 'allow-all',
         },
         CacheBehaviors: [{
+          CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
           PathPattern: 'api/*',
-          ForwardedValues: { QueryString: false },
           TargetOriginId: 'StackMyDistOrigin20B96F3AD',
           ViewerProtocolPolicy: 'allow-all',
         }],
@@ -214,19 +214,19 @@ describe('multiple behaviors', () => {
     expect(stack).toHaveResource('AWS::CloudFront::Distribution', {
       DistributionConfig: {
         DefaultCacheBehavior: {
-          ForwardedValues: { QueryString: false },
+          CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
           TargetOriginId: 'StackMyDistOrigin1D6D5E535',
           ViewerProtocolPolicy: 'allow-all',
         },
         CacheBehaviors: [{
+          CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
           PathPattern: 'api/1*',
-          ForwardedValues: { QueryString: false },
           TargetOriginId: 'StackMyDistOrigin20B96F3AD',
           ViewerProtocolPolicy: 'allow-all',
         },
         {
+          CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
           PathPattern: 'api/2*',
-          ForwardedValues: { QueryString: false },
           TargetOriginId: 'StackMyDistOrigin1D6D5E535',
           ViewerProtocolPolicy: 'allow-all',
         }],
@@ -402,7 +402,7 @@ describe('logging', () => {
     expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
       DistributionConfig: {
         Logging: {
-          Bucket: { 'Fn::GetAtt': ['MyDistLoggingBucket9B8976BC', 'RegionalDomainName'] },
+          Bucket: { 'Fn::GetAtt': ['MyDistLoggingBucket9B8976BC', 'DomainName'] },
         },
       },
     });
@@ -419,7 +419,7 @@ describe('logging', () => {
     expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
       DistributionConfig: {
         Logging: {
-          Bucket: { 'Fn::GetAtt': ['MyLoggingBucket4382CD04', 'RegionalDomainName'] },
+          Bucket: { 'Fn::GetAtt': ['MyLoggingBucket4382CD04', 'DomainName'] },
         },
       },
     });
@@ -437,7 +437,7 @@ describe('logging', () => {
     expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
       DistributionConfig: {
         Logging: {
-          Bucket: { 'Fn::GetAtt': ['MyDistLoggingBucket9B8976BC', 'RegionalDomainName'] },
+          Bucket: { 'Fn::GetAtt': ['MyDistLoggingBucket9B8976BC', 'DomainName'] },
           IncludeCookies: true,
           Prefix: 'logs/',
         },

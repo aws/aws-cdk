@@ -109,6 +109,7 @@ interface InstanceEngineBaseProps {
   readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
   readonly version?: EngineVersion;
   readonly parameterGroupFamily?: string;
+  readonly engineFamily?: string;
   readonly features?: InstanceEngineFeatures;
 }
 
@@ -118,6 +119,7 @@ abstract class InstanceEngineBase implements IInstanceEngine {
   public readonly parameterGroupFamily?: string;
   public readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
   public readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
+  public readonly engineFamily?: string;
 
   private readonly features?: InstanceEngineFeatures;
 
@@ -129,6 +131,7 @@ abstract class InstanceEngineBase implements IInstanceEngine {
     this.engineVersion = props.version;
     this.parameterGroupFamily = props.parameterGroupFamily ??
       (this.engineVersion ? `${this.engineType}${this.engineVersion.majorVersion}` : undefined);
+    this.engineFamily = props.engineFamily;
   }
 
   public bindToInstance(_scope: core.Construct, options: InstanceEngineBindOptions): InstanceEngineConfig {
@@ -346,6 +349,8 @@ export class MysqlEngineVersion {
   public static readonly VER_8_0_17 = MysqlEngineVersion.of('8.0.17', '8.0');
   /** Version "8.0.19". */
   public static readonly VER_8_0_19 = MysqlEngineVersion.of('8.0.19', '8.0');
+  /** Version "8.0.20 ". */
+  public static readonly VER_8_0_20 = MysqlEngineVersion.of('8.0.20', '8.0');
 
   /**
    * Create a new MysqlEngineVersion with an arbitrary version.
@@ -391,6 +396,7 @@ class MySqlInstanceEngine extends InstanceEngineBase {
           majorVersion: version.mysqlMajorVersion,
         }
         : undefined,
+      engineFamily: 'MYSQL',
     });
   }
 }
@@ -574,6 +580,8 @@ export interface PostgresInstanceEngineProps {
  * The instance engine for PostgreSQL.
  */
 class PostgresInstanceEngine extends InstanceEngineBase {
+  public readonly defaultUsername = 'postgres';
+
   constructor(version?: PostgresEngineVersion) {
     super({
       engineType: 'postgres',
@@ -586,6 +594,7 @@ class PostgresInstanceEngine extends InstanceEngineBase {
         }
         : undefined,
       features: version ? version?._features : { s3Import: 's3Import' },
+      engineFamily: 'POSTGRESQL',
     });
   }
 }

@@ -2,13 +2,18 @@ import * as crypto from 'crypto';
 import * as os from 'os';
 import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
+import { Construct } from 'constructs';
 import * as fs from 'fs-extra';
+import * as minimatch from 'minimatch';
 import { AssetHashType, AssetOptions } from './assets';
 import { BundlingOptions } from './bundling';
-import { Construct } from './construct-compat';
 import { FileSystem, FingerprintOptions } from './fs';
 import { Stack } from './stack';
 import { Stage } from './stage';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from './construct-compat';
 
 /**
  * Initialization properties for `AssetStaging`.
@@ -38,7 +43,7 @@ export interface AssetStagingProps extends FingerprintOptions, AssetOptions {
  * The file/directory are staged based on their content hash (fingerprint). This
  * means that only if content was changed, copy will happen.
  */
-export class AssetStaging extends Construct {
+export class AssetStaging extends CoreConstruct {
   /**
    * The directory inside the bundling container into which the asset sources will be mounted.
    * @experimental
@@ -50,6 +55,27 @@ export class AssetStaging extends Construct {
    * @experimental
    */
   public static readonly BUNDLING_OUTPUT_DIR = '/asset-output';
+
+  /**
+   * Clears the asset hash cache
+   */
+  public static clearAssetHashCache() {
+    this.assetHashCache = {};
+  }
+
+  /**
+   * Cache of asset hashes based on asset configuration to avoid repeated file
+   * system and bundling operations.
+   */
+  private static assetHashCache: { [key: string]: string } = {};
+
+  /**
+   * Get asset hash from cache or calculate it in case of cache miss.
+   */
+  private static getOrCalcAssetHash(cacheKey: string, calcFn: () => string) {
+    this.assetHashCache[cacheKey] = this.assetHashCache[cacheKey] ?? calcFn();
+    return this.assetHashCache[cacheKey];
+  }
 
   /**
    * The path to the asset (stringinfied token).
@@ -80,7 +106,7 @@ export class AssetStaging extends Construct {
 
   private readonly relativePath?: string;
 
-  private readonly bundleDir?: string;
+  private bundleDir?: string;
 
   constructor(scope: Construct, id: string, props: AssetStagingProps) {
     super(scope, id);
@@ -97,37 +123,53 @@ export class AssetStaging extends Construct {
     // optional from a caller perspective.
     const hashType = determineHashType(props.assetHashType, props.assetHash);
 
+    // Calculate a cache key from the props. This way we can check if we already
+    // staged this asset (e.g. the same asset with the same configuration is used
+    // in multiple stacks). In this case we can completely skip file system and
+    // bundling operations.
+    const cacheKey = calculateCacheKey({
+      sourcePath: path.resolve(props.sourcePath),
+      bundling: props.bundling,
+      assetHashType: hashType,
+      extraHash: props.extraHash,
+      exclude: props.exclude,
+    });
+
     if (props.bundling) {
       // Check if we actually have to bundle for this stack
       const bundlingStacks: string[] = this.node.tryGetContext(cxapi.BUNDLING_STACKS) ?? ['*'];
-      const runBundling = bundlingStacks.includes(Stack.of(this).stackName) || bundlingStacks.includes('*');
+      const runBundling = !!bundlingStacks.find(pattern => minimatch(Stack.of(this).stackName, pattern));
       if (runBundling) {
-        // Determine the source hash in advance of bundling if the asset hash type
-        // is SOURCE so that the bundler can opt to re-use its previous output.
-        const sourceHash = hashType === AssetHashType.SOURCE
-          ? this.calculateHash(hashType, props.assetHash, props.bundling)
-          : undefined;
-
-        this.bundleDir = this.bundle(props.bundling, outdir, sourceHash);
-        this.assetHash = sourceHash ?? this.calculateHash(hashType, props.assetHash, props.bundling);
+        const bundling = props.bundling;
+        this.assetHash = AssetStaging.getOrCalcAssetHash(cacheKey, () => {
+          // Determine the source hash in advance of bundling if the asset hash type
+          // is SOURCE so that the bundler can opt to re-use its previous output.
+          const sourceHash = hashType === AssetHashType.SOURCE
+            ? this.calculateHash(hashType, props.assetHash, props.bundling)
+            : undefined;
+          this.bundleDir = this.bundle(bundling, outdir, sourceHash);
+          return sourceHash ?? this.calculateHash(hashType, props.assetHash, props.bundling);
+        });
         this.relativePath = renderAssetFilename(this.assetHash);
         this.stagedPath = this.relativePath;
       } else { // Bundling is skipped
-        this.assetHash = props.assetHashType === AssetHashType.BUNDLE
-          ? this.calculateHash(AssetHashType.CUSTOM, this.node.path) // Use node path as dummy hash because we're not bundling
-          : this.calculateHash(hashType, props.assetHash);
+        this.assetHash = AssetStaging.getOrCalcAssetHash(cacheKey, () => {
+          return props.assetHashType === AssetHashType.BUNDLE || props.assetHashType === AssetHashType.OUTPUT
+            ? this.calculateHash(AssetHashType.CUSTOM, this.node.path) // Use node path as dummy hash because we're not bundling
+            : this.calculateHash(hashType, props.assetHash);
+        });
         this.stagedPath = this.sourcePath;
       }
     } else {
-      this.assetHash = this.calculateHash(hashType, props.assetHash);
+      this.assetHash = AssetStaging.getOrCalcAssetHash(cacheKey, () => this.calculateHash(hashType, props.assetHash));
+      this.relativePath = renderAssetFilename(this.assetHash, path.extname(this.sourcePath));
+      this.stagedPath = this.relativePath;
+    }
 
-      const stagingDisabled = this.node.tryGetContext(cxapi.DISABLE_ASSET_STAGING_CONTEXT);
-      if (stagingDisabled) {
-        this.stagedPath = this.sourcePath;
-      } else {
-        this.relativePath = renderAssetFilename(this.assetHash, path.extname(this.sourcePath));
-        this.stagedPath = this.relativePath;
-      }
+    const stagingDisabled = this.node.tryGetContext(cxapi.DISABLE_ASSET_STAGING_CONTEXT);
+    if (stagingDisabled) {
+      this.relativePath = undefined;
+      this.stagedPath = this.bundleDir ?? this.sourcePath;
     }
 
     this.sourceHash = this.assetHash;
@@ -295,8 +337,9 @@ export class AssetStaging extends Construct {
       case AssetHashType.SOURCE:
         return FileSystem.fingerprint(this.sourcePath, this.fingerprintOptions);
       case AssetHashType.BUNDLE:
+      case AssetHashType.OUTPUT:
         if (!this.bundleDir) {
-          throw new Error('Cannot use `AssetHashType.BUNDLE` when `bundling` is not specified.');
+          throw new Error(`Cannot use \`${hashType}\` hash type when \`bundling\` is not specified.`);
         }
         return FileSystem.fingerprint(this.bundleDir, this.fingerprintOptions);
       default:
@@ -326,4 +369,27 @@ function determineHashType(assetHashType?: AssetHashType, assetHash?: string) {
   } else {
     return AssetHashType.SOURCE;
   }
+}
+
+/**
+ * Calculates a cache key from the props. Normalize by sorting keys.
+ */
+function calculateCacheKey(props: AssetStagingProps): string {
+  return crypto.createHash('sha256')
+    .update(JSON.stringify(sortObject(props)))
+    .digest('hex');
+}
+
+/**
+ * Recursively sort object keys
+ */
+function sortObject(object: { [key: string]: any }): { [key: string]: any } {
+  if (typeof object !== 'object' || object instanceof Array) {
+    return object;
+  }
+  const ret: { [key: string]: any } = {};
+  for (const key of Object.keys(object).sort()) {
+    ret[key] = sortObject(object[key]);
+  }
+  return ret;
 }
