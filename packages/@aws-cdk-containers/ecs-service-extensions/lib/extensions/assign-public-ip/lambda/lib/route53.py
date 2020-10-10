@@ -11,11 +11,26 @@ class Route53RecordSetLocator:
     hosted_zone_id: str
     record_name: str
 
+    def __str__(self):
+        """String serialization for hashing and comparison"""
+        return f'{self.hosted_zone_id}#{self.record_name}'
+
+    def __hash__(self):
+        """Unique hash for this object is based on its string serialization"""
+        return int.from_bytes(self.__str__().encode(), 'little')
+
+    def __lt__(self, other):
+        """set() uses this"""
+        return self.__str__() < other.__str__()
+
     def get_dot_suffixed_name(self):
         return self.record_name + '.'
 
     def matches_record_set(self, record_set):
         return record_set['Name'] == self.get_dot_suffixed_name()
+
+    def matches(self, record_set_locator):
+        return self.record_name == record_set_locator.record_name and self.hosted_zone_id == record_set_locator.hosted_zone_id
 
 
 class Route53RecordSetAccessor:
@@ -53,7 +68,12 @@ class Route53RecordSetAccessor:
         if existing_record_set:
             return existing_record_set, False
         else:
-            return {'Name': locator.get_dot_suffixed_name(), 'Type': record_type, 'ResourceRecords': [], 'TTL': self.ttl}, True
+            return {
+                'Name': locator.get_dot_suffixed_name(),
+                'Type': record_type,
+                'ResourceRecords': [],
+                'TTL': self.ttl
+            }, True
 
     def request_upsert(self, locator: Route53RecordSetLocator, record_set):
         logging.info(f'Upserting record set {record_set}')

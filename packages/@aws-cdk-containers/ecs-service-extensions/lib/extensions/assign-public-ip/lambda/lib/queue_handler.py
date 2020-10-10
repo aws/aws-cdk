@@ -3,8 +3,8 @@ import logging
 from typing import Any
 
 from lib.events import extract_event_task_info
-from lib.records import DdbRecordKey
-from lib.records_table import RecordsTableAccessor
+from lib.records import DdbRecordKey, DdbRecord
+from lib.records_table import RecordsTableAccessor, RecordUpdate
 from lib.route53 import Route53RecordSetLocator, Route53RecordSetAccessor
 from lib.running_task_collector import RunningTaskCollector
 
@@ -30,23 +30,44 @@ class QueueHandler:
     def handle(self, event, context):
         logging.info(f'event = {json.dumps(event)}')
 
-        # Collect running and stopped tasks from the status change events
-        running_tasks, stopped_tasks = self.collect_event_task_info(event)
-
-        # records_table.optimistic_simulation_delay = 5
-        ddb_record = self.records_table_accessor.put_tasks(key=self.records_table_key, running=running_tasks,
-                                                           stopped=stopped_tasks)
-
-        self.record_set_accessor.update(locator=self.record_set_locator, ipv4s=ddb_record.ipv4s)
-
-    def collect_event_task_info(self, event):
         # Get a reference record from the records table to check for incoming
         # event inconsistencies.
         reference_record = self.records_table_accessor.get_record(self.records_table_key)
 
+        # Collect running and stopped tasks from the status change events
+        running_tasks, stopped_tasks = self.collect_event_task_info(event, reference_record)
+
+        # Build up a set of updates for the record
+        update = RecordUpdate(running_tasks=running_tasks, stopped_tasks=stopped_tasks)
+
+        # Record the current record set locator
+        update.current_record_set(self.record_set_locator)
+
+        # Clean any extra record sets in case the recordset has moved.
+        for record_set_locator in reference_record.record_sets:
+            if not record_set_locator.matches(self.record_set_locator):
+                update.extra_record_set(record_set_locator)
+                self.try_to_delete_record(record_set_locator)
+
+        # Introduce some delay
+        # records_table.optimistic_simulation_delay = 5
+
+        # Update the record
+        ddb_record = self.records_table_accessor.put_update(key=self.records_table_key, update=update)
+
+        # Update DNS
+        self.record_set_accessor.update(locator=self.record_set_locator, ipv4s=ddb_record.ipv4s)
+
+    def collect_event_task_info(self, event, reference_record: DdbRecord):
         running_task_collector = RunningTaskCollector(ec2_client=self.ec2_client, reference_record=reference_record)
         stopped_tasks = []
-        for task_description in decode_state_change_events(event):
+        for message in decode_records(event):
+            if 'details' not in message:
+                logging.info(f'Received a non-task state message {message}')
+                continue
+
+            task_description = message['details']
+
             group = task_description['group']
             if group != f'service:{self.service_name}':
                 logging.info(f'Skipping irrelevant task description from group {group}')
@@ -74,7 +95,23 @@ class QueueHandler:
 
         return running_tasks, stopped_tasks
 
+    def try_to_delete_record(self, record_set_locator: Route53RecordSetLocator):
+        """
+        Try to delete the given record set. This may not be possible if the
+        record is in a hosted zone we don't have access to. This may happen
+        when the user changes dns zones at the service extension level.
+        """
 
-def decode_state_change_events(sqs_event):
+        try:
+            self.record_set_accessor.delete(record_set_locator)
+
+        except:
+            # We give up pretty easily if the record set accessor can't delete
+            # the extraneous record for any reason that the accessor can't
+            # handle.
+            logging.warning(f'Could not delete the extraneous record set {record_set_locator}')
+
+
+def decode_records(sqs_event):
     logging.info(f'sqs_event = {json.dumps(sqs_event)}')
-    return [json.loads(sqs_record['body'])['detail'] for sqs_record in sqs_event['Records']]
+    return [json.loads(sqs_record['body']) for sqs_record in sqs_event['Records']]

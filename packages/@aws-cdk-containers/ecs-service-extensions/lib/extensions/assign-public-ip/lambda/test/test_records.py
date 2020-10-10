@@ -40,5 +40,7 @@ class TestRecords(unittest.TestCase):
                     EniInfo(eni_id='TASK2_ENI1_ID', public_ipv4='1.1.2.1'),
                     EniInfo(eni_id='TASK2_ENI2_ID', public_ipv4='1.1.2.2'),
                 ]))
+        self.assertEqual(len(ddb_record.record_sets), 2)
 
+        self.maxDiff = 9999999
         self.assertEqual(ddb_record_reencoded, DDB_RECORD_ENCODED)

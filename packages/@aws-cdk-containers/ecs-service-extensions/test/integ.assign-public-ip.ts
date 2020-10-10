@@ -4,6 +4,10 @@ import { CnameRecord, PublicHostedZone } from '@aws-cdk/aws-route53';
 import { App, CfnOutput, Fn, Stack } from '@aws-cdk/core';
 import { AssignPublicIpExtension, Container, Environment, Service, ServiceDescription } from '../lib';
 
+// Record name. You can change this and redeploy this integration test to see
+// what happens when the record name changes.
+const RECORD_NAME = 'test-record';
+
 const app = new App();
 const stack = new Stack(app, 'aws-ecs-integ');
 
@@ -46,7 +50,7 @@ nameDescription.add(new Container({
 nameDescription.add(new AssignPublicIpExtension({
   dns: {
     zone: dnsZone,
-    recordName: 'test-record',
+    recordName: RECORD_NAME,
   },
 }));
 
@@ -56,7 +60,7 @@ new Service(stack, 'name', {
 });
 
 new CfnOutput(stack, 'DnsName', {
-  value: Fn.join('.', ['test-record', dnsZone.zoneName]),
+  value: Fn.join('.', [RECORD_NAME, dnsZone.zoneName]),
 });
 
 new CfnOutput(stack, 'DnsServer', {

@@ -7,7 +7,8 @@ from boto3.dynamodb.conditions import ConditionExpressionBuilder
 from botocore.exceptions import ClientError
 
 from lib.records import DdbRecordKey, TaskInfo, EniInfo, DdbRecord
-from lib.records_table import RecordsTableAccessor, update_ddb_record
+from lib.records_table import RecordsTableAccessor, update_ddb_record, RecordUpdate
+from lib.route53 import Route53RecordSetLocator
 
 THIS_DIR = os.path.abspath(os.path.dirname(__file__))
 with open(os.path.join(THIS_DIR, 'fixtures', 'ddb-record.json')) as f:
@@ -28,7 +29,7 @@ class TestRecordsTable(unittest.TestCase):
         ])]
 
         # WHEN
-        records_table.put_tasks_optimistically(key=key, running=running)
+        records_table.put_update_optimistically(key=key, update=RecordUpdate(running_tasks=running))
 
         # THEN
         table_client.put_item.assert_called()
@@ -54,7 +55,7 @@ class TestRecordsTable(unittest.TestCase):
         ])]
 
         # WHEN
-        records_table.put_tasks_optimistically(key=key, running=running)
+        records_table.put_update_optimistically(key=key, update=RecordUpdate(running_tasks=running))
 
         # THEN
         condition_expression = table_client.put_item.call_args.kwargs['ConditionExpression']
@@ -75,7 +76,7 @@ class TestRecordsTable(unittest.TestCase):
 
         # WHEN
         with self.assertRaisesRegex(Exception, r'Exceeded maximum retries'):
-            records_table.put_tasks(key=key)
+            records_table.put_update(key=key, update=RecordUpdate())
 
         # THEN
         self.assertEqual(table_client.query.call_count, records_table.max_attempts)
@@ -92,7 +93,7 @@ class TestRecordsTable(unittest.TestCase):
 
         # WHEN
         with self.assertRaisesRegex(Exception, r'SomethingElse'):
-            records_table.put_tasks(key=key)
+            records_table.put_update(key=key, update=RecordUpdate())
 
         # THEN
         self.assertEqual(table_client.query.call_count, 1)
@@ -153,9 +154,9 @@ class TestRecordsTable(unittest.TestCase):
         ]
 
         # WHEN
-        update_ddb_record(ddb_record, running=ord1_running, stopped=ord1_stopped)
-        update_ddb_record(ddb_record, stopped=ord2_stopped)
-        update_ddb_record(ddb_record, running=ord3_running)
+        update_ddb_record(ddb_record, RecordUpdate(running_tasks=ord1_running, stopped_tasks=ord1_stopped))
+        update_ddb_record(ddb_record, RecordUpdate(stopped_tasks=ord2_stopped))
+        update_ddb_record(ddb_record, RecordUpdate(running_tasks=ord3_running))
 
         # THEN
         self.assertEqual(len(ddb_record.task_info), 3, msg='expected 3 task infos')
@@ -166,3 +167,22 @@ class TestRecordsTable(unittest.TestCase):
         self.assertFalse('1.1.1.1' in ddb_record.ipv4s,
                          msg='ord3_running should have been ignored because the task previously stopped')
         self.assertEqual(sorted(ddb_record.ipv4s), ['1.1.2.1'])
+
+    def test_update_record_sets(self):
+        # GIVEN
+        ddb_record = DdbRecord(key=DdbRecordKey(cluster_arn='a', service_name='b'))
+        ord1 = [
+            Route53RecordSetLocator('a', 'b'),
+            Route53RecordSetLocator('a', 'c'),
+        ]
+        ord2 = [
+            Route53RecordSetLocator('a', 'b'),
+        ]
+
+        # WHEN
+        update_ddb_record(ddb_record, RecordUpdate(record_sets_added=ord1))
+        update_ddb_record(ddb_record, RecordUpdate(record_sets_removed=ord2))
+
+        # THEN
+        self.assertEqual(len(ddb_record.record_sets), 1)
+        self.assertTrue(Route53RecordSetLocator('a', 'c') in ddb_record.record_sets)

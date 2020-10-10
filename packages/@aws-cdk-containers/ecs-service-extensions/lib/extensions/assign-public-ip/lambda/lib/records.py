@@ -4,6 +4,8 @@ from typing import Optional, List, Dict, Set
 
 from boto3.dynamodb.conditions import Key
 
+from lib.route53 import Route53RecordSetLocator
+
 
 @dataclass
 class EniInfo:
@@ -51,6 +53,7 @@ class DdbRecord:
     key: DdbRecordKey
     ipv4s: Set[str] = field(default_factory=set)
     task_info: Dict[str, TaskInfo] = field(default_factory=dict)
+    record_sets: Set[Route53RecordSetLocator] = field(default_factory=set)
     version: int = 0
 
     def task_is_stopped(self, task_info: TaskInfo):
@@ -71,6 +74,9 @@ class DdbRecordEncoding:
     ATTR_TASK_STOPPED_DATETIME = 'stopped_datetime'
     ATTR_ENI_ID = 'eni_id'
     ATTR_ENI_PUBLIC_IPV4 = 'public_ipv4'
+    ATTR_RECORD_SETS = 'record_sets'
+    ATTR_RECORD_SET_ZONE = 'hosted_zone_id'
+    ATTR_RECORD_SET_NAME = 'record_name'
 
     def get_identity(self, key: DdbRecordKey):
         return {self.PK_NAME: key.to_composite()}
@@ -88,6 +94,9 @@ class DdbRecordEncoding:
             # isn't easily predictable.
             data[self.ATTR_IPV4S] = [v for v in sorted(record.ipv4s)]
 
+        if len(record.record_sets) > 0:
+            data[self.ATTR_RECORD_SETS] = [self.encode_record_set(v) for v in sorted(record.record_sets)]
+
         if len(record.task_info) > 0:
             data[self.ATTR_TASK_INFO] = {
                 task_info.task_arn: self.encode_task_info(task_info)
@@ -95,6 +104,12 @@ class DdbRecordEncoding:
             }
 
         return data
+
+    def encode_record_set(self, record_set: Route53RecordSetLocator):
+        return {
+            self.ATTR_RECORD_SET_ZONE: record_set.hosted_zone_id,
+            self.ATTR_RECORD_SET_NAME: record_set.record_name,
+        }
 
     def encode_task_info(self, task_info: TaskInfo) -> dict:
         data = dict()
@@ -124,6 +139,12 @@ class DdbRecordEncoding:
         if self.ATTR_IPV4S in data:
             ipv4s = {ip for ip in data[self.ATTR_IPV4S]}
 
+        record_sets = set()
+        if self.ATTR_RECORD_SETS in data:
+            for record_set_data in data[self.ATTR_RECORD_SETS]:
+                record_set = self.decode_record_set(record_set_data)
+                record_sets.add(record_set)
+
         task_info = dict()
         if self.ATTR_TASK_INFO in data:
             task_info = {
@@ -131,9 +152,15 @@ class DdbRecordEncoding:
                 for (k, task_info_data) in data[self.ATTR_TASK_INFO].items()
             }
 
-        record = DdbRecord(key=key, version=version, ipv4s=ipv4s, task_info=task_info)
+        record = DdbRecord(key=key, version=version, ipv4s=ipv4s, task_info=task_info, record_sets=record_sets)
 
         return record
+
+    def decode_record_set(self, data) -> Route53RecordSetLocator:
+        hosted_zone_id = data[self.ATTR_RECORD_SET_ZONE]
+        record_name = data[self.ATTR_RECORD_SET_NAME]
+
+        return Route53RecordSetLocator(hosted_zone_id=hosted_zone_id, record_name=record_name)
 
     def decode_task_info(self, data) -> TaskInfo:
         task_arn = data[self.ATTR_TASK_ARN]

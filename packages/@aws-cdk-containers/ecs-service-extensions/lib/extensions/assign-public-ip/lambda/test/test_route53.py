@@ -43,7 +43,7 @@ class TestRoute53(unittest.TestCase):
         route53_client.change_resource_record_sets.assert_called_with(
             HostedZoneId='foo', ChangeBatch={
                 'Comment':
-                    'Automatic',
+                'Automatic',
                 'Changes': [{
                     'Action': 'UPSERT',
                     'ResourceRecordSet': {
@@ -87,7 +87,7 @@ class TestRoute53(unittest.TestCase):
         route53_client.change_resource_record_sets.assert_called_with(
             HostedZoneId='foo', ChangeBatch={
                 'Comment':
-                    'Automatic',
+                'Automatic',
                 'Changes': [{
                     'Action': 'DELETE',
                     'ResourceRecordSet': {
@@ -120,7 +120,7 @@ class TestRoute53(unittest.TestCase):
         route53_client.change_resource_record_sets.assert_called_with(
             HostedZoneId='foo', ChangeBatch={
                 'Comment':
-                    'Automatic',
+                'Automatic',
                 'Changes': [{
                     'Action': 'DELETE',
                     'ResourceRecordSet': {
@@ -246,8 +246,14 @@ class TestRoute53(unittest.TestCase):
     def test_find_locator_record_set_ignores_irrelevant_records(self):
         # GIVEN
         locator = Route53RecordSetLocator(hosted_zone_id='foo', record_name='test-record.myexample.com')
-        record_sets = [
-            {'Name': 'u-record.myexample.com.', 'Type': 'A', 'TTL': 60, 'ResourceRecords': [{'Value': '1.1.1.1'}]}]
+        record_sets = [{
+            'Name': 'u-record.myexample.com.',
+            'Type': 'A',
+            'TTL': 60,
+            'ResourceRecords': [{
+                'Value': '1.1.1.1'
+            }]
+        }]
 
         # WHEN
         result = find_locator_record_set(locator, 'A', record_sets)
@@ -258,8 +264,14 @@ class TestRoute53(unittest.TestCase):
     def test_find_locator_record_set_finds_it(self):
         # GIVEN
         locator = Route53RecordSetLocator(hosted_zone_id='foo', record_name='test-record.myexample.com')
-        matching_record = {'Name': 'test-record.myexample.com.', 'Type': 'A', 'TTL': 60,
-                           'ResourceRecords': [{'Value': '1.1.1.1'}]}
+        matching_record = {
+            'Name': 'test-record.myexample.com.',
+            'Type': 'A',
+            'TTL': 60,
+            'ResourceRecords': [{
+                'Value': '1.1.1.1'
+            }]
+        }
         record_sets = [matching_record]
 
         # WHEN

@@ -29,5 +29,15 @@
       "task_arn": "TASK2_ARN"
     }
   },
+  "record_sets": [
+    {
+      "hosted_zone_id": "ABCD",
+      "record_name": "test-record.myexample.com"
+    },
+    {
+      "hosted_zone_id": "ABCD",
+      "record_name": "test-record2.myexample.com"
+    }
+  ],
   "version": 12
 }

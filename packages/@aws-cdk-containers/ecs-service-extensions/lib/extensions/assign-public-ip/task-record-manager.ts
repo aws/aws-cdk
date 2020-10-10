@@ -163,6 +163,40 @@ export class TaskRecordManager extends cdk.Construct {
       },
     });
 
+    // Prime the event queue with a message so that changes to dns config are
+    // quickly applied.
+    const primingSdkCall: customresources.AwsSdkCall = {
+      service: 'SQS',
+      action: 'sendMessage',
+      parameters: {
+        QueueUrl: eventsQueue.queueUrl,
+        DelaySeconds: 10,
+        MessageBody: '{ "prime": true }',
+        // Add the hosted zone id and record name so that priming occurs with
+        // dns config updates.
+        MessageAttributes: {
+          HostedZoneId: { DataType: 'String', StringValue: props.dnsZone.hostedZoneId },
+          RecordName: { DataType: 'String', StringValue: props.dnsRecordName },
+        },
+      },
+      physicalResourceId: customresources.PhysicalResourceId.fromResponse('MessageId'),
+    };
+
+    const primingCall = new customresources.AwsCustomResource(this, 'PrimingCall', {
+      onCreate: primingSdkCall,
+      onUpdate: primingSdkCall,
+      policy: customresources.AwsCustomResourcePolicy.fromStatements([
+        new iam.PolicyStatement({
+          effect: iam.Effect.ALLOW,
+          actions: ['sqs:SendMessage'],
+          resources: [eventsQueue.queueArn],
+        }),
+      ]),
+    });
+
+    // Send the priming call after the handler is created/updated.
+    primingCall.node.addDependency(eventHandler);
+
     // Ensure that the cleanup resource is deleted last (so it can clean up)
     props.service.taskDefinition.node.addDependency(cleanupResource);
     // Ensure that the event rules are created first so we can catch the first

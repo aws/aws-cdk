@@ -1,5 +1,6 @@
 import logging
 import time
+from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from typing import *
 
@@ -7,6 +8,21 @@ from boto3.dynamodb.conditions import Attr
 from botocore.exceptions import ClientError
 
 from lib.records import DdbRecord, DdbRecordKey, DdbRecordEncoding, TaskInfo
+from lib.route53 import Route53RecordSetLocator
+
+
+@dataclass
+class RecordUpdate:
+    running_tasks: List[TaskInfo] = field(default_factory=list)
+    stopped_tasks: List[TaskInfo] = field(default_factory=list)
+    record_sets_added: List[Route53RecordSetLocator] = field(default_factory=list)
+    record_sets_removed: List[Route53RecordSetLocator] = field(default_factory=list)
+
+    def current_record_set(self, record_set: Route53RecordSetLocator):
+        self.record_sets_added.append(record_set)
+
+    def extra_record_set(self, record_set: Route53RecordSetLocator):
+        self.record_sets_removed.append(record_set)
 
 
 class RecordsTableAccessor:
@@ -39,7 +55,7 @@ class RecordsTableAccessor:
         logging.info(f'Deleting {key}')
         self.table_client.delete_item(Key=self.ddb_record_encoding.get_identity(key))
 
-    def put_tasks(self, **kwargs) -> DdbRecord:
+    def put_update(self, key: DdbRecordKey, update: RecordUpdate) -> DdbRecord:
         """
         Retries putting tasks into the table record with optimistic locking.
         """
@@ -47,7 +63,7 @@ class RecordsTableAccessor:
         for attempt in range(0, self.max_attempts):
             try:
                 logging.info(f'Attempting to put the task optimistically (attempt {attempt+1})')
-                return self.put_tasks_optimistically(**kwargs)
+                return self.put_update_optimistically(key=key, update=update)
             except ClientError as e:
                 if e.response['Error']['Code'] == 'ConditionalCheckFailedException':
                     logging.info(f'Check condition was rejected')
@@ -75,15 +91,10 @@ class RecordsTableAccessor:
             # Create a new record
             return DdbRecord(key=key)
 
-    def put_tasks_optimistically(self, key: DdbRecordKey, running: List[TaskInfo] = None,
-                                 stopped: List[TaskInfo] = None) -> DdbRecord:
+    def put_update_optimistically(self, key: DdbRecordKey, update: RecordUpdate) -> DdbRecord:
         """
         Optimistically record running and stopped tasks for this record.
         """
-
-        # Default arguments are empty lists
-        running = [] if running is None else running
-        stopped = [] if stopped is None else stopped
 
         ddb_record = self.get_record(key=key)
 
@@ -92,7 +103,7 @@ class RecordsTableAccessor:
             time.sleep(self.optimistic_simulation_delay)
 
         # Update the record with the running and stopped task info
-        update_ddb_record(ddb_record=ddb_record, running=running, stopped=stopped)
+        update_ddb_record(ddb_record=ddb_record, update=update)
 
         # Optimistic locking condition
         optimistic_lock_condition = Attr(self.ddb_record_encoding.ATTR_VERSION).not_exists() \
@@ -108,17 +119,22 @@ class RecordsTableAccessor:
         return ddb_record
 
 
-def update_ddb_record(ddb_record: DdbRecord, running: List[TaskInfo] = None,
-                      stopped: List[TaskInfo] = None) -> DdbRecord:
+def update_ddb_record(ddb_record: DdbRecord, update: RecordUpdate) -> DdbRecord:
     """
     Updates a DynamoDB record with the list of running and stopped tasks.
     """
 
-    running = [] if running is None else running
-    stopped = [] if stopped is None else stopped
+    # Add the record sets we want to add
+    for record_set in update.record_sets_added:
+        ddb_record.record_sets.add(record_set)
+
+    # Remove the ones we want to remove
+    for record_set in update.record_sets_removed:
+        if record_set in ddb_record.record_sets:
+            ddb_record.record_sets.remove(record_set)
 
     # Add running task info to the record
-    for running_task in running:
+    for running_task in update.running_tasks:
         # Don't add a task as running when it previously stopped (out-of-order receive)
         if running_task.task_arn in ddb_record.task_info and ddb_record.task_info[running_task.task_arn].is_stopped():
             logging.info(
@@ -137,7 +153,7 @@ def update_ddb_record(ddb_record: DdbRecord, running: List[TaskInfo] = None,
 
     # Remove stopped task ips from the record and set "stopped" markers on the
     # stored task info.
-    for stopped_task in stopped:
+    for stopped_task in update.stopped_tasks:
         # When the stopped task was previously represented in the task info list,
         # then we fetch the old representation for its potential ip address info.
         if stopped_task.task_arn in ddb_record.task_info:
