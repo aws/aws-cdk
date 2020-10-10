@@ -84,7 +84,7 @@ export interface CodeCommitSourceActionProps extends codepipeline.CommonAwsActio
    *
    * @default a new role will be created.
    */
-  readonly triggerRole?: iam.IRole;
+  readonly eventRole?: iam.IRole;
 }
 
 /**
@@ -133,7 +133,7 @@ export class CodeCommitSourceAction extends Action {
       const eventId = this.generateEventId(stage);
       this.props.repository.onCommit(eventId, {
         target: new targets.CodePipeline(stage.pipeline, {
-          eventRole: this.props.triggerRole,
+          eventRole: this.props.eventRole,
         }),
         branches: [this.branch],
       });

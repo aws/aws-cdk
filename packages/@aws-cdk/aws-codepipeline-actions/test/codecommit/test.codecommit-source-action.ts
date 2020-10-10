@@ -276,12 +276,12 @@ export = {
         pipelineName: 'MyPipeline',
       });
 
-      const triggerTestRole = new iam.Role(stack, 'Trigger-test-role', {
+      const triggerEventTestRole = new iam.Role(stack, 'Trigger-test-role', {
         assumedBy: new iam.ServicePrincipal('events.amazonaws.com'),
       });
-      triggerTestRole.addToPolicy(new iam.PolicyStatement({
+      triggerEventTestRole.addToPolicy(new iam.PolicyStatement({
         actions: ['codepipeline:StartPipelineExecution'],
-        resources: [this.pipeline.pipelineArn],
+        resources: [pipeline.pipelineArn],
       }));
 
       const sourceOutput = new codepipeline.Artifact();
@@ -293,7 +293,7 @@ export = {
         }),
         branch: Lazy.stringValue({ produce: () => 'my-branch' }),
         output: sourceOutput,
-        triggerRole: triggerTestRole,
+        eventRole: triggerEventTestRole,
       });
 
       pipeline.addStage({
@@ -317,7 +317,7 @@ export = {
           {
             Arn: stack.resolve(pipeline.pipelineArn),
             Id: 'Target0',
-            RoleArn: stack.resolve(triggerTestRole.roleArn),
+            RoleArn: stack.resolve(triggerEventTestRole.roleArn),
           },
         ],
       }));
