@@ -39,12 +39,13 @@ export function fingerprint(fileOrDirectory: string, options: FingerprintOptions
   return hash.digest('hex');
 
   function _processFileOrDirectory(symbolicPath: string, isRootDir: boolean = false, realPath = symbolicPath) {
-    if (!isRootDir && shouldExclude(exclude, symbolicPath)) {
+    const relativePath = path.relative(fileOrDirectory, symbolicPath);
+
+    if (!isRootDir && shouldExclude(exclude, relativePath)) {
       return;
     }
 
     const stat = fs.lstatSync(realPath);
-    const relativePath = path.relative(fileOrDirectory, symbolicPath);
 
     if (stat.isSymbolicLink()) {
       const linkTarget = fs.readlinkSync(realPath);
