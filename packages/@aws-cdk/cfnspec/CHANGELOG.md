@@ -1,3 +1,50 @@
+# CloudFormation Resource Specification v18.6.0
+
+## New Resource Types
+
+* AWS::WorkSpaces::ConnectionAlias
+
+## Attribute Changes
+
+* AWS::ImageBuilder::Component Name (__added__)
+* AWS::ImageBuilder::DistributionConfiguration Name (__added__)
+* AWS::ImageBuilder::Image Name (__added__)
+* AWS::ImageBuilder::ImagePipeline Name (__added__)
+* AWS::ImageBuilder::ImageRecipe Name (__added__)
+* AWS::ImageBuilder::InfrastructureConfiguration Name (__added__)
+
+## Property Changes
+
+* AWS::ApiGateway::DomainName DomainName.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Config::ConformancePack DeliveryS3Bucket.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Config::OrganizationConformancePack DeliveryS3Bucket.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::ImageBuilder::Component Name (__deleted__)
+* AWS::ImageBuilder::DistributionConfiguration Name (__deleted__)
+* AWS::ImageBuilder::ImagePipeline Name (__deleted__)
+* AWS::ImageBuilder::ImageRecipe Name (__deleted__)
+* AWS::ImageBuilder::InfrastructureConfiguration Name (__deleted__)
+* AWS::Kendra::Faq FileFormat (__added__)
+* AWS::StepFunctions::Activity Arn (__deleted__)
+* AWS::StepFunctions::Activity Name (__added__)
+* AWS::StepFunctions::Activity Tags.DuplicatesAllowed (__deleted__)
+
+## Property Type Changes
+
+* AWS::Backup::BackupPlan.AdvancedBackupSettingResourceType (__added__)
+* AWS::Backup::BackupPlan.BackupPlanResourceType AdvancedBackupSettings (__added__)
+* AWS::CloudFront::CachePolicy.ParametersInCacheKeyAndForwardedToOrigin EnableAcceptEncodingBrotli (__added__)
+* AWS::CodeBuild::Project.ProjectTriggers BuildType (__added__)
+* AWS::ECS::Service.NetworkConfiguration AwsVpcConfiguration (__deleted__)
+* AWS::ECS::Service.NetworkConfiguration AwsvpcConfiguration (__added__)
+* AWS::Synthetics::Canary.RunConfig ActiveTracing (__added__)
+
+
 # CloudFormation Resource Specification v18.5.0
 
 ## New Resource Types
