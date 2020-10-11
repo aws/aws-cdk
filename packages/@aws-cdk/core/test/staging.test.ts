@@ -326,7 +326,7 @@ nodeunitShim({
     const app = new App();
     const stack = new Stack(app, 'stack');
     const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
-    const mkdtempSyncSpy = sinon.spy(fs, 'mkdtempSync');
+    const ensureDirSync = sinon.spy(fs, 'ensureDirSync');
     const chmodSyncSpy = sinon.spy(fs, 'chmodSync');
     const renameSyncSpy = sinon.spy(fs, 'renameSync');
 
@@ -343,7 +343,7 @@ nodeunitShim({
     // THEN
     const assembly = app.synth();
 
-    test.ok(mkdtempSyncSpy.calledWith(sinon.match(path.join(assembly.directory, 'bundling-temp-'))));
+    test.ok(ensureDirSync.calledWith(sinon.match(path.join(assembly.directory, 'bundling-temp-'))));
     test.ok(chmodSyncSpy.calledWith(sinon.match(path.join(assembly.directory, 'bundling-temp-')), 0o777));
     test.ok(renameSyncSpy.calledWith(sinon.match(path.join(assembly.directory, 'bundling-temp-')), sinon.match(path.join(assembly.directory, 'asset.'))));
 
