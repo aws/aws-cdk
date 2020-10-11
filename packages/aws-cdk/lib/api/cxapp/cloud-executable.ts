@@ -131,7 +131,7 @@ export class CloudExecutable {
         stack.template.Resources = {};
       }
       if (stack.template.Resources.CDKMetadata) {
-        warning(`The stack ${stack.id} already includes a CDKMetadata resource`);
+        // Already added by framework, this is expected.
         return;
       }
 
