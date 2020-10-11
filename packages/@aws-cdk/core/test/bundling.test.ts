@@ -1,7 +1,6 @@
 import * as child_process from 'child_process';
 import * as path from 'path';
 import { nodeunitShim, Test } from 'nodeunit-shim';
-import * as path from 'path';
 import * as sinon from 'sinon';
 import { BundlingDockerImage, FileSystem } from '../lib';
 
