@@ -229,6 +229,7 @@
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.ELASTIC_INFERENCE_RUNTIME",
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.ELASTIC_LOAD_BALANCING",
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.KINESIS_STREAMS",
+      "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.KINESIS_FIREHOSE",
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.KMS",
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.SAGEMAKER_API",
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.SAGEMAKER_NOTEBOOK",
