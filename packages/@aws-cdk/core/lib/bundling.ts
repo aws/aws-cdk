@@ -146,10 +146,8 @@ export class BundlingDockerImage {
 
   /**
    * Runs a Docker image
-   *
-   * @internal
    */
-  public _run(options: DockerRunOptions = {}) {
+  public run(options: DockerRunOptions = {}) {
     const volumes = options.volumes || [];
     const environment = options.environment || {};
     const command = options.command || [];
@@ -175,6 +173,27 @@ export class BundlingDockerImage {
         'inherit', // inherit stderr
       ],
     });
+  }
+
+  /**
+   * Copies a file or directory out of the Docker image to the local filesystem
+   */
+  public cp(imagePath: string, outputPath: string) {
+    const { stdout } = dockerExec(['create', this.image]);
+    const match = stdout.toString().match(/([0-9a-f]{16,})/);
+    if (!match) {
+      throw new Error('Failed to extract container ID from Docker create output');
+    }
+
+    const containerId = match[1];
+    const containerPath = `${containerId}:${imagePath}`;
+    try {
+      dockerExec(['cp', containerPath, outputPath]);
+    } catch (err) {
+      throw new Error(`Failed to copy files from ${containerPath} to ${outputPath}: ${err}`);
+    } finally {
+      dockerExec(['rm', '-v', containerId]);
+    }
   }
 }
 
@@ -222,7 +241,7 @@ export enum DockerVolumeConsistency {
 /**
  * Docker run options
  */
-interface DockerRunOptions {
+export interface DockerRunOptions {
   /**
    * The command to run in the container.
    *
@@ -273,7 +292,7 @@ export interface DockerBuildOptions {
   /**
    * Name of the Dockerfile
    *
-   * @default 'Dockerfile' The Dockerfile immediately within the build context path
+   * @default - The Dockerfile immediately within the build context path
    */
   readonly file?: string;
 }

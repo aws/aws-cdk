@@ -11,9 +11,9 @@ An __experiment__ to bundle all of the CDK into a single module.
 ## Usage
 
 ### Installation
-To try out `monocdk-experiment` replace all references to CDK Construct
+To try out `monocdk` replace all references to CDK Construct
 Libraries (most `@aws-cdk/*` packages) in your `package.json` file with a single
-entrey referring to `monocdk-experiment`.
+entrey referring to `monocdk`.
 
 You also need to add a reference to the `constructs` library, according to the
 kind of project you are developing:
@@ -27,7 +27,7 @@ kind of project you are developing:
 You can use a classic import to get access to each service namespaces:
 
 ```ts
-import { core, aws_s3 as s3 } from 'monocdk-experiment';
+import { core, aws_s3 as s3 } from 'monocdk';
 
 const app = new core.App();
 const stack = new core.Stack(app, 'MonoCDK-Stack');
@@ -40,8 +40,8 @@ new s3.Bucket(stack, 'TestBucket');
 Alternatively, you can use "barrel" imports:
 
 ```ts
-import { App, Stack } from 'monocdk-experiment';
-import { Bucket } from 'monocdk-experiment/aws-s3';
+import { App, Stack } from 'monocdk';
+import { Bucket } from 'monocdk/aws-s3';
 
 const app = new App();
 const stack = new Stack(app, 'MonoCDK-Stack');

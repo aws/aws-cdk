@@ -1,4 +1,5 @@
 import * as child_process from 'child_process';
+import * as path from 'path';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as path from 'path';
 import * as sinon from 'sinon';
@@ -21,7 +22,7 @@ nodeunitShim({
     });
 
     const image = BundlingDockerImage.fromRegistry('alpine');
-    image._run({
+    image.run({
       command: ['cool', 'command'],
       environment: {
         VAR1: 'value1',
@@ -65,7 +66,7 @@ nodeunitShim({
         TEST_ARG: 'cdk-test',
       },
     });
-    image._run();
+    image.run();
 
     test.ok(spawnSyncStub.firstCall.calledWith('docker', [
       'build', '-q',
@@ -106,7 +107,7 @@ nodeunitShim({
     });
 
     const image = BundlingDockerImage.fromRegistry('alpine');
-    test.throws(() => image._run(), /UnknownError/);
+    test.throws(() => image.run(), /UnknownError/);
     test.done();
   },
 
@@ -121,7 +122,7 @@ nodeunitShim({
     });
 
     const image = BundlingDockerImage.fromRegistry('alpine');
-    test.throws(() => image._run(), /\[Status -1\]/);
+    test.throws(() => image.run(), /\[Status -1\]/);
     test.done();
   },
 
@@ -164,14 +165,68 @@ nodeunitShim({
       signal: null,
     });
 
-    const sourcePath = path.join(__dirname, 'fs', 'fixtures', 'test1');
-    BundlingDockerImage.fromAsset(sourcePath, {
+    BundlingDockerImage.fromAsset(path.join(__dirname, 'fs/fixtures/test1'), {
       file: 'my-dockerfile',
     });
 
     test.ok(spawnSyncStub.calledOnce);
     test.ok(/-f my-dockerfile/.test(spawnSyncStub.firstCall.args[1]?.join(' ') ?? ''));
 
+    test.done();
+  },
+
+  'cp utility copies from an image'(test: Test) {
+    // GIVEN
+    const containerId = '1234567890abcdef1234567890abcdef';
+    const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
+      status: 0,
+      stderr: Buffer.from('stderr'),
+      stdout: Buffer.from(`${containerId}\n`),
+      pid: 123,
+      output: ['stdout', 'stderr'],
+      signal: null,
+    });
+
+    // WHEN
+    BundlingDockerImage.fromRegistry('alpine').cp('/foo/bar', '/baz');
+
+    // THEN
+    test.ok(spawnSyncStub.calledWith(sinon.match.any, ['create', 'alpine'], sinon.match.any));
+    test.ok(spawnSyncStub.calledWith(sinon.match.any, ['cp', `${containerId}:/foo/bar`, '/baz'], sinon.match.any));
+    test.ok(spawnSyncStub.calledWith(sinon.match.any, ['rm', '-v', containerId]));
+
+    test.done();
+  },
+
+  'cp utility cleans up after itself'(test: Test) {
+    // GIVEN
+    const containerId = '1234567890abcdef1234567890abcdef';
+    const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
+      status: 0,
+      stderr: Buffer.from('stderr'),
+      stdout: Buffer.from(`${containerId}\n`),
+      pid: 123,
+      output: ['stdout', 'stderr'],
+      signal: null,
+    });
+
+    spawnSyncStub.withArgs(sinon.match.any, sinon.match.array.startsWith(['cp']), sinon.match.any)
+      .returns({
+        status: 1,
+        stderr: Buffer.from('it failed for a very good reason'),
+        stdout: Buffer.from('stdout'),
+        pid: 123,
+        output: ['stdout', 'stderr'],
+        signal: null,
+      });
+
+    // WHEN
+    test.throws(() => {
+      BundlingDockerImage.fromRegistry('alpine').cp('/foo/bar', '/baz');
+    }, /Failed.*copy/i);
+
+    // THEN
+    test.ok(spawnSyncStub.calledWith(sinon.match.any, ['rm', '-v', containerId]));
     test.done();
   },
 });
