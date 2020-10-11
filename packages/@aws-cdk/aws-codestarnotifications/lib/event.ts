@@ -212,3 +212,5 @@ export enum PipelineEvent {
    */
   MANUAL_APPROVAL_SUCCEEDED = 'codepipeline-pipeline-manual-approval-succeeded',
 }
+
+// export type Events = RepositoryEvent | ProjectEvent | PipelineEvent | ApplicationEvent;

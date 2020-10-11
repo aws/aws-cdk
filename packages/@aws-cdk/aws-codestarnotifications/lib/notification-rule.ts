@@ -1,7 +1,7 @@
 import * as cdk from '@aws-cdk/core';
 import { CfnNotificationRule } from './codestarnotifications.generated';
 import * as events from './event';
-import { INotificationSource, NotificationSourceConfig } from './source';
+import { INotificationSource, NotificationSourceConfig, SourceType } from './source';
 import { INotificationTarget, NotificationTargetConfig } from './target';
 
 /**
@@ -76,7 +76,7 @@ export interface RuleOptions {
    *
    * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#concepts-api
    */
-  readonly events: events.RepositoryEvent[] | events.ProjectEvent[] | events.PipelineEvent[] | events.ApplicationEvent[];
+  readonly events: events.RepositoryEvent[] | events.ProjectEvent[] | events.PipelineEvent[] | events.ApplicationEvent[] | string[];
 }
 
 /**
@@ -150,17 +150,19 @@ export class NotificationRule extends NotificationRuleBase {
 
     this.source = props.source.bind(this);
 
+    this.sourceEventValidate(props);
+
     props.targets.forEach((target) => {
       this.addTarget(target);
     });
 
     this.notificationRuleArn = new CfnNotificationRule(this, 'Resource', {
       name: props.notificationRuleName,
-      status: props.status || Status.ENABLED,
+      status: props?.status,
       detailType: props.detailType || DetailType.FULL,
       targets: this.targets,
       eventTypeIds: props.events,
-      resource: this.source.arn,
+      resource: this.source.sourceAddress,
     }).ref;
   }
 
@@ -170,5 +172,22 @@ export class NotificationRule extends NotificationRuleBase {
    */
   public addTarget(target: INotificationTarget) {
     this.targets.push(target.bind(this));
+  }
+
+  private sourceEventValidate(props: NotificationRuleProps): void {
+    const validationMapping = {
+      [SourceType.CODE_COMMIT]: Object.values(events.RepositoryEvent),
+      [SourceType.CODE_BUILD]: Object.values(events.ProjectEvent),
+      [SourceType.CODE_PIPELINE]: Object.values(events.PipelineEvent),
+      [SourceType.CODE_DEPLOY]: Object.values(events.ApplicationEvent),
+    };
+
+    const validEvents: string[] = validationMapping[this.source.sourceType];
+
+    Object.values(props.events).forEach(event => {
+      if (!validEvents.includes(event)) {
+        throw new Error(`${event} is not valid in ${this.source.sourceType}`);
+      }
+    });
   }
 }
