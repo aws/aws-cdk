@@ -1,5 +1,6 @@
 import '@aws-cdk/assert/jest';
 import { ABSENT } from '@aws-cdk/assert';
+import { Metric } from '@aws-cdk/aws-cloudwatch';
 import { Code, Function, Runtime } from '@aws-cdk/aws-lambda';
 import { Duration, Stack } from '@aws-cdk/core';
 import { HttpApi, HttpMethod, LambdaProxyIntegration } from '../../lib';
@@ -154,6 +155,51 @@ describe('HttpApi', () => {
           allowOrigins: ['*'],
         },
       })).toThrowError(/allowCredentials is not supported/);
+    });
+
+    test('get metric', () => {
+      // GIVEN
+      const stack = new Stack();
+      const api = new HttpApi(stack, 'test-api', {
+        createDefaultStage: false,
+      });
+      const metricName = '4xxError';
+      const statistic = 'Sum';
+
+      // WHEN
+      const countMetric = api.metric(metricName, { statistic });
+
+      // THEN
+      expect(countMetric.namespace).toEqual('AWS/ApiGateway');
+      expect(countMetric.metricName).toEqual(metricName);
+      expect(countMetric.dimensions).toEqual({ apiName: 'test-api' });
+      expect(countMetric.statistic).toEqual(statistic);
+    });
+
+    test('Exercise metrics', () => {
+      // GIVEN
+      const stack = new Stack();
+      const api = new HttpApi(stack, 'test-api', {
+        createDefaultStage: false,
+      });
+      const color = '#00ff00';
+
+      // WHEN
+      const metrics = new Array<Metric>();
+      metrics.push(api.metricClientError({ color }));
+      metrics.push(api.metricServerError({ color }));
+      metrics.push(api.metricDataProcessed({ color }));
+      metrics.push(api.metricLatency({ color }));
+      metrics.push(api.metricIntegrationLatency({ color }));
+      metrics.push(api.metricCount({ color }));
+      // THEN
+      for (const metric of metrics) {
+        expect(metric.namespace).toEqual('AWS/ApiGateway');
+        expect(stack.resolve(metric.dimensions)).toEqual({
+          apiName: 'test-api',
+        });
+        expect(metric.color).toEqual(color);
+      }
     });
   });
 });
