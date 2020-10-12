@@ -13,7 +13,7 @@ export = {
     // WHEN
     new config.ManagedRule(stack, 'Rule', {
       description: 'really cool rule',
-      identifier: 'AWS_SUPER_COOL',
+      identifier: config.ManagedRuleIdentifier.of('AWS_SUPER_COOL'),
       inputParameters: {
         key: 'value',
       },
@@ -141,7 +141,7 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     const rule = new config.ManagedRule(stack, 'Rule', {
-      identifier: 'AWS_SUPER_COOL',
+      identifier: config.ManagedRuleIdentifier.of('AWS_SUPER_COOL'),
     });
 
     // WHEN
@@ -164,7 +164,7 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     const rule = new config.ManagedRule(stack, 'Rule', {
-      identifier: 'AWS_SUPER_COOL',
+      identifier: config.ManagedRuleIdentifier.of('AWS_SUPER_COOL'),
     });
 
     // WHEN
@@ -187,7 +187,7 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     const rule = new config.ManagedRule(stack, 'Rule', {
-      identifier: 'RULE',
+      identifier: config.ManagedRuleIdentifier.of('RULE'),
     });
 
     // WHEN
@@ -246,7 +246,7 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     const rule = new config.ManagedRule(stack, 'Rule', {
-      identifier: 'RULE',
+      identifier: config.ManagedRuleIdentifier.of('RULE'),
     });
 
     const fn = new lambda.Function(stack, 'Function', {

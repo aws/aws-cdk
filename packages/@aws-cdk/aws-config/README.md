@@ -39,14 +39,12 @@ To set up a managed rule, define a `ManagedRule` and specify its identifier:
 
 ```ts
 new ManagedRule(this, 'AccessKeysRotated', {
-  identifier: 'ACCESS_KEYS_ROTATED'
+  identifier: config.ManagedRuleIdentifier.ACCESS_KEYS_ROTATED',
 });
 ```
 
-Available identifiers and parameters are listed in the [List of AWS Config Managed Rules](https://docs.aws.amazon.com/config/latest/developerguide/managed-rules-by-aws-config.html).
-
-
-Higher level constructs for managed rules are available, see [Managed Rules](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-config/lib/managed-rules.ts). Prefer to use those constructs when available (PRs welcome to add more of those).
+Higher level constructs for managed rules are available, see [Managed Rules](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-config/lib/managed-rules.ts).
+Prefer to use those constructs when available (PRs welcome to add more of those).
 
 #### Custom rules
 
@@ -69,7 +67,7 @@ the scope of both managed and custom rules:
 
 ```ts
 const sshRule = new ManagedRule(this, 'SSH', {
-  identifier: 'INCOMING_SSH_DISABLED'
+  identifier: config.ManagedRuleIdentifier.EC2_SECURITY_GROUPS_INCOMING_SSH_DISABLED,
 });
 
 // Restrict to a specific security group
