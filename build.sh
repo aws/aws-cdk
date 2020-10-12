@@ -5,7 +5,6 @@ bail="--bail"
 runtarget="build+test"
 check_prereqs="true"
 check_compat="true"
-build_monolith="false"
 while [[ "${1:-}" != "" ]]; do
     case $1 in
         -h|--help)
@@ -26,9 +25,6 @@ while [[ "${1:-}" != "" ]]; do
             ;;
         --skip-compat)
             check_compat="false"
-            ;;
-        --skip-mono)
-            build_monolith="true"
             ;;
         *)
             echo "Unrecognized parameter: $1"
@@ -76,13 +72,7 @@ trap "rm -rf $MERKLE_BUILD_CACHE" EXIT
 
 echo "============================================================================================="
 echo "building..."
-
-# build the monolothic packges only if requested 
-if [ "$build_monolith" == "true" ]; then
-  time lerna run $bail --stream $runtarget || fail
-else
-  time lerna run $bail --stream $runtarget --ignore 'monocdk' --ignore '@monocdk-experiment/*' --ignore 'aws-cdk-lib' || fail
-fi
+time lerna run $bail --stream $runtarget || fail
 
 if [ "$check_compat" == "true" ]; then
   /bin/bash scripts/check-api-compatibility.sh
