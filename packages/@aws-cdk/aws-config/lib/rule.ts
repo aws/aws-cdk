@@ -482,32 +482,6 @@ export class ResourceType {
   public static readonly RDS_DB_CLUSTER = new ResourceType('AWS::RDS::DBCluster');
   /** Amazon RDS database cluster snapshot */
   public static readonly RDS_DB_CLUSTER_SNAPSHOT = new ResourceType('AWS::RDS::DBClusterSnapshot');
-
-  /** Transfer acceleration for data over long distances between your client and a bucket.  */
-  public static readonly S3_ATTR_ACCELERATE_CONFIGURATION = new ResourceType('AccelerateConfiguration');
-  /** Access control list used to manage access to buckets and objects. */
-  public static readonly S3_ATTR_BUCKET_ACL = new ResourceType('BucketAcl');
-  /** Policy that defines the permissions to the bucket. */
-  public static readonly S3_ATTR_BUCKET_POLICY = new ResourceType('BucketPolicy');
-  /** Allow cross-origin requests to the bucket. */
-  public static readonly S3_ATTR_CROSS_ORIGIN_CONFIGURATION = new ResourceType('CrossOriginConfiguration');
-  /** Rules that define the lifecycle for objects in your bucket. */
-  public static readonly S3_ATTR_LIFECYCLE_CONFIGURATION = new ResourceType('LifecycleConfiguration');
-  /** Logging used to track requests for access to the bucket. */
-  public static readonly S3_ATTR_LOGGING_CONFIGURATION = new ResourceType('LoggingConfiguration');
-  /** Event notifications used to send alerts or trigger workflows for specified bucket events. */
-  public static readonly S3_ATTR_NOTIFICATION_CONFIGURATION = new ResourceType('NotificationConfiguration');
-  /** Automatic, asynchronous copying of objects across buckets in different AWS Regions. */
-  public static readonly S3_ATTR_REPLICATION_CONFIGURATION = new ResourceType('ReplicationConfiguration');
-  /** Requester pays is enabled.  */
-  public static readonly S3_ATTR_BUCKET_REQUEST_PAYMENT_CONFIGURATION = new ResourceType('RequestPaymentConfiguration');
-  /** Tags added to the bucket to categorize. You can also use tagging to track billing. */
-  public static readonly S3_ATTR_TAGGING_CONFIGURATION = new ResourceType('TaggingConfiguration');
-  /** Static website hosting is enabled for the bucket. */
-  public static readonly S3_ATTR_WEBSITE_CONFIGURATION = new ResourceType('WebsiteConfiguration');
-  /** Versioning is enabled for objects in the bucket. */
-  public static readonly S3_ATTR_VERSIONING_CONFIGURATION = new ResourceType('VersioningConfiguration');
-
   /** Amazon SQS queue */
   public static readonly SQS_QUEUE = new ResourceType('AWS::SQS::Queue');
   /** Amazon SNS topic */
