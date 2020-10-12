@@ -56,6 +56,41 @@ describe('NotificationRule', () => {
     });
   });
 
+  test('created new notification rule with status DISABLED', () => {
+    const codeBuildSource = new FakeCodeBuildSource();
+    const snsTopicTarget = new FakeSnsTopicTarget();
+
+    new notifications.NotificationRule(stack, 'MyNotificationRule', {
+      notificationRuleName: 'MyNotificationRule',
+      events: [
+        notifications.ProjectEvent.BUILD_STATE_SUCCEEDED,
+        notifications.ProjectEvent.BUILD_STATE_FAILED,
+      ],
+      source: codeBuildSource,
+      targets: [
+        snsTopicTarget,
+      ],
+      status: notifications.Status.DISABLED,
+    });
+
+    expect(stack).toHaveResourceLike('AWS::CodeStarNotifications::NotificationRule', {
+      DetailType: 'FULL',
+      EventTypeIds: [
+        'codebuild-project-build-state-succeeded',
+        'codebuild-project-build-state-failed',
+      ],
+      Name: 'MyNotificationRule',
+      Resource: 'arn:aws:codebuild::1234567890:project/MyCodebuildProject',
+      Targets: [
+        {
+          TargetAddress: 'arn:aws:sns::1234567890:MyTopic',
+          TargetType: 'SNS',
+        },
+      ],
+      Status: 'DISABLED',
+    });
+  });
+
   test('should throw error if source events are invalid with CodeCommit RepositoryEvent', () => {
     const codeCommitSource = new FakeCodeCommitSource();
     const snsTopicTarget = new FakeSnsTopicTarget();
