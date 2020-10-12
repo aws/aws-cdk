@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-apigateway",
-        "module": "aws_cdk.aws_apigateway"
+        "module": "aws_cdk.aws_apigateway",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
@@ -48,7 +52,10 @@
     "compat": "cdk-compat"
   },
   "cdk-build": {
-    "cloudformation": "AWS::ApiGateway"
+    "cloudformation": "AWS::ApiGateway",
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "keywords": [
     "aws",
@@ -74,6 +81,7 @@
   "dependencies": {
     "@aws-cdk/assets": "0.0.0",
     "@aws-cdk/aws-certificatemanager": "0.0.0",
+    "@aws-cdk/aws-cloudwatch": "0.0.0",
     "@aws-cdk/aws-ec2": "0.0.0",
     "@aws-cdk/aws-elasticloadbalancingv2": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
@@ -89,6 +97,7 @@
   "peerDependencies": {
     "@aws-cdk/assets": "0.0.0",
     "@aws-cdk/aws-certificatemanager": "0.0.0",
+    "@aws-cdk/aws-cloudwatch": "0.0.0",
     "@aws-cdk/aws-ec2": "0.0.0",
     "@aws-cdk/aws-elasticloadbalancingv2": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",

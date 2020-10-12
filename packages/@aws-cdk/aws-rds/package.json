@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-rds",
-        "module": "aws_cdk.aws_rds"
+        "module": "aws_cdk.aws_rds",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
@@ -48,7 +52,10 @@
     "compat": "cdk-compat"
   },
   "cdk-build": {
-    "cloudformation": "AWS::RDS"
+    "cloudformation": "AWS::RDS",
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "keywords": [
     "aws",
@@ -111,6 +118,7 @@
       "props-physical-name:@aws-cdk/aws-rds.DatabaseInstanceFromSnapshotProps",
       "props-physical-name:@aws-cdk/aws-rds.DatabaseInstanceReadReplicaProps",
       "props-physical-name:@aws-cdk/aws-rds.DatabaseSecretProps",
+      "props-physical-name:@aws-cdk/aws-rds.ServerlessClusterProps",
       "props-physical-name:@aws-cdk/aws-rds.OptionGroupProps",
       "props-physical-name:@aws-cdk/aws-rds.SubnetGroupProps",
       "docs-public-apis:@aws-cdk/aws-rds.SecretRotationApplication.semanticVersion",
@@ -127,8 +135,8 @@
       "docs-public-apis:@aws-cdk/aws-rds.SecretRotationApplication.MARIADB_ROTATION_MULTI_USER"
     ]
   },
-  "stability": "experimental",
-  "maturity": "developer-preview",
+  "stability": "stable",
+  "maturity": "stable",
   "awscdkio": {
     "announce": false
   }

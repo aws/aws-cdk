@@ -1,8 +1,9 @@
 import * as cdk from '@aws-cdk/core';
+import * as constructs from 'constructs';
 import * as iam from '../lib';
 
 export class ExampleConstruct extends cdk.Construct {
-  constructor(scope: cdk.Construct, id: string) {
+  constructor(scope: constructs.Construct, id: string) {
     super(scope, id);
 
     /// !show

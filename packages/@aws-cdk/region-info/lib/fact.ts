@@ -147,15 +147,23 @@ export class FactName {
   public static readonly DLC_REPOSITORY_ACCOUNT = 'dlcRepositoryAccount';
 
   /**
-   * The ID of the AWS account that owns the public ECR repository containing the
-   * AWS App Mesh Envoy images in this region.
+   * The ID of the AWS account that owns the public ECR repository that contains the
+   * AWS App Mesh Envoy Proxy images in a given region.
    */
-  public static readonly APPMESH_REPOSITORY_ACCOUNT = 'appmeshRepositoryAccounts';
+  public static readonly APPMESH_REPOSITORY_ACCOUNT = 'appMeshRepositoryAccount';
+
+  /**
+   * The ID of the AWS account that owns the public ECR repository that contains the
+   * AWS App Mesh Envoy Proxy images in a given region.
+   *
+   * @deprecated use `APPMESH_REPOSITORY_ACCOUNT` instead
+   */
+  public static readonly APPMESH_ECR_ACCOUNT = FactName.APPMESH_REPOSITORY_ACCOUNT;
 
   /**
    * The image name and tag of the latest Envoy release from AWS App Mesh.
    */
-  public static readonly APPMESH_LATEST_ENVOY_IMAGE = 'appmeshLatestEnvoyImage';
+  public static readonly APPMESH_LATEST_ENVOY_IMAGE = 'appMeshLatestEnvoyImage';
 
   /**
    * The name of the regional service principal for a given service.

@@ -1,6 +1,7 @@
 import * as path from 'path';
 import { Runtime } from '@aws-cdk/aws-lambda';
-import { App, Construct, Stack, StackProps } from '@aws-cdk/core';
+import { App, Stack, StackProps } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as lambda from '../lib';
 
 class TestStack extends Stack {

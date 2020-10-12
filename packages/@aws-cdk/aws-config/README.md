@@ -2,31 +2,26 @@
 <!--BEGIN STABILITY BANNER-->
 ---
 
-![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
+| Features | Stability |
+| --- | --- |
+| CFN Resources | ![Stable](https://img.shields.io/badge/stable-success.svg?style=for-the-badge) |
+| Higher level constructs for Config Rules | ![Developer Preview](https://img.shields.io/badge/developer--preview-informational.svg?style=for-the-badge) |
+| Higher level constructs for initial set-up (delivery channel & configuration recorder) | ![Not Implemented](https://img.shields.io/badge/not--implemented-black.svg?style=for-the-badge) |
 
-> All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) are always stable and safe to use.
+> **CFN Resources:** All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) are always stable and safe to use.
 
-![cdk-constructs: Developer Preview](https://img.shields.io/badge/cdk--constructs-developer--preview-informational.svg?style=for-the-badge)
-
-> The APIs of higher level constructs in this module are in **developer preview** before they become stable. We will only make breaking changes to address unforeseen API issues. Therefore, these APIs are not subject to [Semantic Versioning](https://semver.org/), and breaking changes will be announced in release notes. This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
+> **Developer Preview:** Higher level constructs in this module that are marked as developer preview have completed their phase of active development and are looking for adoption and feedback. While the same caveats around non-backward compatible as Experimental constructs apply, they will undergo fewer breaking changes. Just as with Experimental constructs, these are not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be announced in the release notes.
 
 ---
 <!--END STABILITY BANNER-->
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
-Supported:
-* Config rules
-
-Not supported
-* Configuration recorder
-* Delivery channel
-* Aggregation
-
 ### Initial Setup
 
-Before using the constructs provided in this module, you need to setup 
-AWS Config in the region you plan on using it in. This setup includes:
+Before using the constructs provided in this module, you need to set up AWS Config
+in the region in which it will be used. This setup includes the one-time creation of the
+following resources per region:
 
 - `ConfigurationRecorder`: Configure which resources will be recorded for config changes.
 - `DeliveryChannel`: Configure where to store the recorded data.
@@ -39,6 +34,7 @@ Following are the guides to setup AWS Config:
 ### Rules
 
 #### AWS managed rules
+
 To set up a managed rule, define a `ManagedRule` and specify its identifier:
 
 ```ts
@@ -53,6 +49,7 @@ Available identifiers and parameters are listed in the [List of AWS Config Manag
 Higher level constructs for managed rules are available, see [Managed Rules](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-config/lib/managed-rules.ts). Prefer to use those constructs when available (PRs welcome to add more of those).
 
 #### Custom rules
+
 To set up a custom rule, define a `CustomRule` and specify the Lambda Function to run and the trigger types:
 
 ```ts
@@ -64,7 +61,11 @@ new CustomRule(this, 'CustomRule', {
 ```
 
 #### Restricting the scope
-By default rules are triggered by changes to all [resources](https://docs.aws.amazon.com/config/latest/developerguide/resource-config-reference.html#supported-resources). Use the `scopeToResource()`, `scopeToResources()` or `scopeToTag()` methods to restrict the scope of both managed and custom rules:
+
+By default rules are triggered by changes to all [resources](https://docs.aws.amazon.com/config/latest/developerguide/resource-config-reference.html#supported-resources).
+
+Use the `scopeToResource()`, `scopeToResources()` or `scopeToTag()` APIs to restrict
+the scope of both managed and custom rules:
 
 ```ts
 const sshRule = new ManagedRule(this, 'SSH', {
@@ -86,6 +87,7 @@ customRule.scopeToTag('Cost Center', 'MyApp');
 Only one type of scope restriction can be added to a rule (the last call to `scopeToXxx()` sets the scope).
 
 #### Events
+
 To define Amazon CloudWatch event rules, use the `onComplianceChange()` or `onReEvaluationStatus()` methods:
 
 ```ts
@@ -96,6 +98,36 @@ rule.onComplianceChange('TopicEvent', {
 ```
 
 #### Example
-Creating custom and managed rules with scope restriction and events:
 
-[example of setting up rules](test/integ.rule.lit.ts)
+The following example creates a custom rule that runs on configuration changes to EC2 instances and publishes
+compliance events to an SNS topic.
+
+```ts
+import * as config from '@aws-cdk/aws-config';
+import * as lambda from '@aws-cdk/aws-lambda';
+
+// A custom rule that runs on configuration changes of EC2 instances
+const fn = new lambda.Function(this, 'CustomFunction', {
+  code: lambda.AssetCode.fromInline('exports.handler = (event) => console.log(event);'),
+  handler: 'index.handler',
+  runtime: lambda.Runtime.NODEJS_10_X,
+});
+
+const customRule = new config.CustomRule(this, 'Custom', {
+  configurationChanges: true,
+  lambdaFunction: fn,
+});
+
+customRule.scopeToResource('AWS::EC2::Instance');
+
+// A rule to detect stack drifts
+const driftRule = new config.CloudFormationStackDriftDetectionCheck(this, 'Drift');
+
+// Topic to which compliance notification events will be published
+const complianceTopic = new sns.Topic(this, 'ComplianceTopic');
+
+// Send notification on compliance change
+driftRule.onComplianceChange('ComplianceChange', {
+  target: new targets.SnsTopic(complianceTopic),
+});
+```

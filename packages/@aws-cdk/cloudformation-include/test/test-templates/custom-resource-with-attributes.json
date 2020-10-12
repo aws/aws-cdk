@@ -28,6 +28,7 @@
     },
     "CustomResource": {
       "Type": "AWS::CloudFormation::CustomResource",
+      "Description": "some random custom resource",
       "Properties": {
         "ServiceToken": "CustomValue",
         "CustomFuncProp": {
