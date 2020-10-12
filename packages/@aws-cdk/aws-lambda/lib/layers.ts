@@ -4,21 +4,10 @@ import { Code } from './code';
 import { CfnLayerVersion, CfnLayerVersionPermission } from './lambda.generated';
 import { Runtime } from './runtime';
 
-export interface LayerVersionProps {
-  /**
-   * The runtimes compatible with this Layer.
-   *
-   * @default - All runtimes are supported.
-   */
-  readonly compatibleRuntimes?: Runtime[];
-
-  /**
-   * The content of this Layer.
-   *
-   * Using `Code.fromInline` is not supported.
-   */
-  readonly code: Code;
-
+/**
+ * Non runtime options
+ */
+export interface LayerVersionOptions {
   /**
    * The description the this Lambda Layer.
    *
@@ -39,6 +28,22 @@ export interface LayerVersionProps {
    * @default - A name will be generated.
    */
   readonly layerVersionName?: string;
+}
+
+export interface LayerVersionProps extends LayerVersionOptions {
+  /**
+   * The runtimes compatible with this Layer.
+   *
+   * @default - All runtimes are supported.
+   */
+  readonly compatibleRuntimes?: Runtime[];
+
+  /**
+   * The content of this Layer.
+   *
+   * Using `Code.fromInline` is not supported.
+   */
+  readonly code: Code;
 }
 
 export interface ILayerVersion extends IResource {
