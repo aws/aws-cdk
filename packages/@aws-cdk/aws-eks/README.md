@@ -231,6 +231,8 @@ cluster.addNodegroupCapacity('extra-ng', {
 
 > For more details visit [Launch Template Support](https://docs.aws.amazon.com/en_ca/eks/latest/userguide/launch-templates.html).
 
+Graviton 2 instance types are supported including `c6g`, `m6g`, `r6g` and `t4g`.
+
 ### Fargate profiles
 
 AWS Fargate is a technology that provides on-demand, right-sized compute
@@ -891,7 +893,7 @@ export interface MyChartProps {
 }
 
 export class MyChart extends cdk8s.Chart {
-  constructor(scope: constructs.Construct, id: string, props: MyChartProps} ) {
+  constructor(scope: constructs.Construct, id: string, props: MyChartProps) {
     super(scope, id);
 
     new kplus.Pod(this, 'Pod', {
@@ -900,11 +902,11 @@ export class MyChart extends cdk8s.Chart {
           new kplus.Container({
             image: 'my-image',
             env: {
-              BUCKET_NAME: bucket.bucketName,
-            }
-          })
-        ]
-      }
+              BUCKET_NAME: kplus.EnvValue.fromValue(props.bucket.bucketName),
+            },
+          }),
+        ],
+      },
     });
   }
 }
