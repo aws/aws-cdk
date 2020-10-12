@@ -1,5 +1,7 @@
-import { Type } from './schema-base';
-import { InterfaceType } from './schema-intermediate';
+import { BaseDataSource } from './data-source';
+import { AuthorizationType } from './graphqlapi';
+import { MappingTemplate } from './mapping-template';
+import { Type, IField, IIntermediateType, Directive } from './schema-base';
 
 /**
  * Base options for GraphQL Types
@@ -10,7 +12,7 @@ import { InterfaceType } from './schema-intermediate';
  *
  * @experimental
  */
-export interface BaseGraphqlTypeOptions {
+export interface BaseTypeOptions {
   /**
    * property determining if this attribute is a list
    * i.e. if true, attribute would be [Type]
@@ -47,12 +49,12 @@ export interface BaseGraphqlTypeOptions {
  *
  * @experimental
  */
-export interface GraphqlTypeOptions extends BaseGraphqlTypeOptions {
+export interface GraphqlTypeOptions extends BaseTypeOptions {
   /**
    * the intermediate type linked to this attribute
    * @default - no intermediate type
    */
-  readonly intermediateType?: InterfaceType;
+  readonly intermediateType?: IIntermediateType;
 }
 
 /**
@@ -64,7 +66,7 @@ export interface GraphqlTypeOptions extends BaseGraphqlTypeOptions {
  *
  * GraphQL Types are used to define the entirety of schema.
  */
-export class GraphqlType {
+export class GraphqlType implements IField {
   /**
    * `ID` scalar type is a unique identifier. `ID` type is serialized similar to `String`.
    *
@@ -75,7 +77,7 @@ export class GraphqlType {
    * - isRequired
    * - isRequiredList
    */
-  public static id(options?: BaseGraphqlTypeOptions): GraphqlType {
+  public static id(options?: BaseTypeOptions): GraphqlType {
     return new GraphqlType(Type.ID, options);
   }
   /**
@@ -86,7 +88,7 @@ export class GraphqlType {
    * - isRequired
    * - isRequiredList
    */
-  public static string(options?: BaseGraphqlTypeOptions): GraphqlType {
+  public static string(options?: BaseTypeOptions): GraphqlType {
     return new GraphqlType(Type.STRING, options);
   }
   /**
@@ -97,7 +99,7 @@ export class GraphqlType {
    * - isRequired
    * - isRequiredList
    */
-  public static int(options?: BaseGraphqlTypeOptions): GraphqlType {
+  public static int(options?: BaseTypeOptions): GraphqlType {
     return new GraphqlType(Type.INT, options);
   }
   /**
@@ -108,7 +110,7 @@ export class GraphqlType {
    * - isRequired
    * - isRequiredList
    */
-  public static float(options?: BaseGraphqlTypeOptions): GraphqlType {
+  public static float(options?: BaseTypeOptions): GraphqlType {
     return new GraphqlType(Type.FLOAT, options);
   }
   /**
@@ -119,7 +121,7 @@ export class GraphqlType {
    * - isRequired
    * - isRequiredList
    */
-  public static boolean(options?: BaseGraphqlTypeOptions): GraphqlType {
+  public static boolean(options?: BaseTypeOptions): GraphqlType {
     return new GraphqlType(Type.BOOLEAN, options);
   }
 
@@ -133,7 +135,7 @@ export class GraphqlType {
    * - isRequired
    * - isRequiredList
    */
-  public static awsDate(options?: BaseGraphqlTypeOptions): GraphqlType {
+  public static awsDate(options?: BaseTypeOptions): GraphqlType {
     return new GraphqlType(Type.AWS_DATE, options);
   }
   /**
@@ -146,7 +148,7 @@ export class GraphqlType {
    * - isRequired
    * - isRequiredList
    */
-  public static awsTime(options?: BaseGraphqlTypeOptions): GraphqlType {
+  public static awsTime(options?: BaseTypeOptions): GraphqlType {
     return new GraphqlType(Type.AWS_TIME, options);
   }
   /**
@@ -159,7 +161,7 @@ export class GraphqlType {
    * - isRequired
    * - isRequiredList
    */
-  public static awsDateTime(options?: BaseGraphqlTypeOptions): GraphqlType {
+  public static awsDateTime(options?: BaseTypeOptions): GraphqlType {
     return new GraphqlType(Type.AWS_DATE_TIME, options);
   }
   /**
@@ -172,7 +174,7 @@ export class GraphqlType {
    * - isRequired
    * - isRequiredList
    */
-  public static awsTimestamp(options?: BaseGraphqlTypeOptions): GraphqlType {
+  public static awsTimestamp(options?: BaseTypeOptions): GraphqlType {
     return new GraphqlType(Type.AWS_TIMESTAMP, options);
   }
   /**
@@ -183,7 +185,7 @@ export class GraphqlType {
    * - isRequired
    * - isRequiredList
    */
-  public static awsEmail(options?: BaseGraphqlTypeOptions): GraphqlType {
+  public static awsEmail(options?: BaseTypeOptions): GraphqlType {
     return new GraphqlType(Type.AWS_EMAIL, options);
   }
   /**
@@ -194,7 +196,7 @@ export class GraphqlType {
    * - isRequired
    * - isRequiredList
    */
-  public static awsJson(options?: BaseGraphqlTypeOptions): GraphqlType {
+  public static awsJson(options?: BaseTypeOptions): GraphqlType {
     return new GraphqlType(Type.AWS_JSON, options);
   }
   /**
@@ -207,7 +209,7 @@ export class GraphqlType {
    * - isRequired
    * - isRequiredList
    */
-  public static awsUrl(options?: BaseGraphqlTypeOptions): GraphqlType {
+  public static awsUrl(options?: BaseTypeOptions): GraphqlType {
     return new GraphqlType(Type.AWS_URL, options);
   }
   /**
@@ -220,7 +222,7 @@ export class GraphqlType {
    * - isRequired
    * - isRequiredList
    */
-  public static awsPhone(options?: BaseGraphqlTypeOptions): GraphqlType {
+  public static awsPhone(options?: BaseTypeOptions): GraphqlType {
     return new GraphqlType(Type.AWS_PHONE, options);
   }
   /**
@@ -231,7 +233,7 @@ export class GraphqlType {
    * - isRequired
    * - isRequiredList
    */
-  public static awsIpAddress(options?: BaseGraphqlTypeOptions): GraphqlType {
+  public static awsIpAddress(options?: BaseTypeOptions): GraphqlType {
     return new GraphqlType(Type.AWS_IP_ADDRESS, options);
   }
 
@@ -289,9 +291,9 @@ export class GraphqlType {
    *
    * @default - no intermediate type
    */
-  public readonly intermediateType?: InterfaceType;
+  public readonly intermediateType?: IIntermediateType;
 
-  private constructor(type: Type, options?: GraphqlTypeOptions) {
+  protected constructor(type: Type, options?: GraphqlTypeOptions) {
     this.type = type;
     this.isList = options?.isList ?? false;
     this.isRequired = options?.isRequired ?? false;
@@ -312,5 +314,148 @@ export class GraphqlType {
     // If configured with isRequiredList, the list becomes required
     type = this.isRequiredList ? `${type}!` : type;
     return type;
+  }
+
+  /**
+   * Generate the arguments for this field
+   */
+  public argsToString(): string {
+    return '';
+  }
+
+  /**
+   * Generate the directives for this field
+   */
+  public directivesToString(_modes?: AuthorizationType[]): string {
+    return '';
+  }
+}
+
+/**
+ * Properties for configuring a field
+ *
+ * @options args - the variables and types that define the arguments
+ *
+ * i.e. { string: GraphqlType, string: GraphqlType }
+ */
+export interface FieldOptions {
+  /**
+   * The return type for this field
+   */
+  readonly returnType: GraphqlType;
+  /**
+   * The arguments for this field.
+   *
+   * i.e. type Example (first: String second: String) {}
+   * - where 'first' and 'second' are key values for args
+   * and 'String' is the GraphqlType
+   *
+   * @default - no arguments
+   */
+  readonly args?: { [key: string]: GraphqlType };
+  /**
+   * the directives for this field
+   *
+   * @default - no directives
+   */
+  readonly directives?: Directive[];
+}
+
+/**
+ * Fields build upon Graphql Types and provide typing
+ * and arguments.
+ */
+export class Field extends GraphqlType implements IField {
+  /**
+   * The options for this field
+   *
+   * @default - no arguments
+   */
+  public readonly fieldOptions?: ResolvableFieldOptions;
+
+  public constructor(options: FieldOptions) {
+    const props = {
+      isList: options.returnType.isList,
+      isRequired: options.returnType.isRequired,
+      isRequiredList: options.returnType.isRequiredList,
+      intermediateType: options.returnType.intermediateType,
+    };
+    super(options.returnType.type, props);
+    this.fieldOptions = options;
+  }
+
+  /**
+   * Generate the args string of this resolvable field
+   */
+  public argsToString(): string {
+    if (!this.fieldOptions || !this.fieldOptions.args) { return ''; }
+    return Object.keys(this.fieldOptions.args).reduce((acc, key) =>
+      `${acc}${key}: ${this.fieldOptions?.args?.[key].toString()} `, '(').slice(0, -1) + ')';
+  }
+
+  /**
+   * Generate the directives for this field
+   */
+  public directivesToString(modes?: AuthorizationType[]): string {
+    if (!this.fieldOptions || !this.fieldOptions.directives) { return ''; }
+    return this.fieldOptions.directives.reduce((acc, directive) =>
+      `${acc}${directive._bindToAuthModes(modes).toString()} `, '\n  ').slice(0, -1);
+  }
+}
+
+/**
+ * Properties for configuring a resolvable field
+ *
+ * @options dataSource - the data source linked to this resolvable field
+ * @options requestMappingTemplate - the mapping template for requests to this resolver
+ * @options responseMappingTemplate - the mapping template for responses from this resolver
+ */
+export interface ResolvableFieldOptions extends FieldOptions {
+  /**
+   * The data source creating linked to this resolvable field
+   *
+   * @default - no data source
+   */
+  readonly dataSource?: BaseDataSource;
+  /**
+   * configuration of the pipeline resolver
+   *
+   * @default - no pipeline resolver configuration
+   * An empty array or undefined prop will set resolver to be of type unit
+   */
+  readonly pipelineConfig?: string[];
+  /**
+   * The request mapping template for this resolver
+   *
+   * @default - No mapping template
+   */
+  readonly requestMappingTemplate?: MappingTemplate;
+  /**
+   * The response mapping template for this resolver
+   *
+   * @default - No mapping template
+   */
+  readonly responseMappingTemplate?: MappingTemplate;
+}
+
+/**
+ * Resolvable Fields build upon Graphql Types and provide fields
+ * that can resolve into operations on a data source.
+ */
+export class ResolvableField extends Field implements IField {
+  /**
+   * The options to make this field resolvable
+   *
+   * @default - not a resolvable field
+   */
+  public readonly fieldOptions?: ResolvableFieldOptions;
+
+  public constructor(options: ResolvableFieldOptions) {
+    const props = {
+      returnType: options.returnType,
+      args: options.args,
+    };
+    super(props);
+    this.fieldOptions = options;
   }
 }

@@ -23,9 +23,14 @@
       },
       "python": {
         "distName": "aws-cdk.aws-globalaccelerator",
-        "module": "aws_cdk.aws_globalaccelerator"
+        "module": "aws_cdk.aws_globalaccelerator",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",
@@ -49,7 +54,10 @@
   },
   "cdk-build": {
     "cloudformation": "AWS::GlobalAccelerator",
-    "jest": true
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "keywords": [
     "aws",
@@ -76,12 +84,12 @@
     "@aws-cdk/aws-ec2": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/custom-resources": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.0.4"
   },
   "peerDependencies": {
     "@aws-cdk/aws-ec2": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.2",
+    "constructs": "^3.0.4",
     "@aws-cdk/custom-resources": "0.0.0"
   },
   "engines": {

@@ -23,9 +23,8 @@ export const dup_id = GraphqlType.id({
 
 // STRING
 export const string = GraphqlType.string();
-export const list_string = GraphqlType.string({
-  isList: true,
-});
+export const required_string = GraphqlType.string({ isRequired: true });
+export const list_string = GraphqlType.string({ isList: true });
 
 // INT
 export const int = GraphqlType.int();

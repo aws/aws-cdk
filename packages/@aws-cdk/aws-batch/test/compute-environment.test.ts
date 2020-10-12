@@ -161,7 +161,10 @@ describe('Batch Compute Evironment', () => {
         computeResources: {
           allocationStrategy: batch.AllocationStrategy.BEST_FIT,
           vpc,
-          computeResourcesTags: new cdk.Tag('foo', 'bar'),
+          computeResourcesTags: {
+            'Name': 'AWS Batch Instance - C4OnDemand',
+            'Tag Other': 'Has other value',
+          },
           desiredvCpus: 1,
           ec2KeyPair: 'my-key-pair',
           image: new ecs.EcsOptimizedAmi({
@@ -244,10 +247,8 @@ describe('Batch Compute Evironment', () => {
             },
           ],
           Tags: {
-            key: 'foo',
-            props: {},
-            defaultPriority: 100,
-            value: 'bar',
+            'Name': 'AWS Batch Instance - C4OnDemand',
+            'Tag Other': 'Has other value',
           },
           Type: 'EC2',
         },

@@ -56,7 +56,10 @@
       "Properties": {
         "DisplayName": "fooDisplayName",
         "KmsMasterKeyId": {
-          "Ref": "CustomKey1E6D0D07"
+          "Fn::GetAtt": [
+            "CustomKey1E6D0D07",
+            "Arn"
+          ]
         },
         "TopicName": "fooTopic"
       }

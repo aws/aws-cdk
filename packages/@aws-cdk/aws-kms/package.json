@@ -1,7 +1,7 @@
 {
   "name": "@aws-cdk/aws-kms",
   "version": "0.0.0",
-  "description": "CDK Constructs for AWS KMS",
+  "description": "The CDK Construct Library for AWS::KMS",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
@@ -23,9 +23,14 @@
       },
       "python": {
         "distName": "aws-cdk.aws-kms",
-        "module": "aws_cdk.aws_kms"
+        "module": "aws_cdk.aws_kms",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",
@@ -47,7 +52,10 @@
     "compat": "cdk-compat"
   },
   "cdk-build": {
-    "cloudformation": "AWS::KMS"
+    "cloudformation": "AWS::KMS",
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": "true"
+    }
   },
   "keywords": [
     "aws",
@@ -73,13 +81,13 @@
   "dependencies": {
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.0.4"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.0.4"
   },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"

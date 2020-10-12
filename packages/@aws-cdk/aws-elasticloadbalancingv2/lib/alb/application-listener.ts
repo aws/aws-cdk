@@ -1,5 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
-import { Construct, Duration, IResource, Lazy, Resource, Token } from '@aws-cdk/core';
+import { Duration, IResource, Lazy, Resource, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { BaseListener } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
 import { ApplicationProtocol, IpAddressType, SslPolicy } from '../shared/enums';
@@ -571,6 +572,7 @@ class ImportedApplicationListener extends Resource implements IApplicationListen
       // New rule
       new ApplicationListenerRule(this, id, {
         listener: this,
+        conditions: props.conditions,
         hostHeader: props.hostHeader,
         pathPattern: props.pathPattern,
         pathPatterns: props.pathPatterns,

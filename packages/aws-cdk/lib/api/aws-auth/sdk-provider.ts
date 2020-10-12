@@ -3,7 +3,7 @@ import * as os from 'os';
 import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
-import { ConfigurationOptions } from 'aws-sdk/lib/config';
+import type { ConfigurationOptions } from 'aws-sdk/lib/config-base';
 import * as fs from 'fs-extra';
 import { debug } from '../../logging';
 import { cached } from '../../util/functions';
@@ -96,8 +96,16 @@ export class SdkProvider {
   public static async withAwsCliCompatibleDefaults(options: SdkProviderOptions = {}) {
     const sdkOptions = parseHttpOptions(options.httpOptions ?? {});
 
-    const chain = await AwsCliCompatible.credentialChain(options.profile, options.ec2creds, options.containerCreds, sdkOptions.httpOptions);
-    const region = await AwsCliCompatible.region(options.profile);
+    const chain = await AwsCliCompatible.credentialChain({
+      profile: options.profile,
+      ec2instance: options.ec2creds,
+      containerCreds: options.containerCreds,
+      httpOptions: sdkOptions.httpOptions,
+    });
+    const region = await AwsCliCompatible.region({
+      profile: options.profile,
+      ec2instance: options.ec2creds,
+    });
 
     return new SdkProvider(chain, region, sdkOptions);
   }
@@ -140,7 +148,7 @@ export class SdkProvider {
       params: {
         RoleArn: roleArn,
         ...externalId ? { ExternalId: externalId } : {},
-        RoleSessionName: `aws-cdk-${os.userInfo().username}`,
+        RoleSessionName: `aws-cdk-${safeUsername()}`,
       },
       stsConfig: {
         region,
@@ -200,7 +208,7 @@ export class SdkProvider {
           throw new Error('Unable to resolve AWS credentials (setup with "aws configure")');
         }
 
-        return new SDK(creds, this.defaultRegion, this.sdkOptions).currentAccount();
+        return await new SDK(creds, this.defaultRegion, this.sdkOptions).currentAccount();
       } catch (e) {
         debug('Unable to determine the default AWS account:', e);
         return undefined;
@@ -354,4 +362,13 @@ function readIfPossible(filename: string): string | undefined {
     debug(e);
     return undefined;
   }
+}
+
+/**
+ * Return the username with characters invalid for a RoleSessionName removed
+ *
+ * @see https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html#API_AssumeRole_RequestParameters
+ */
+function safeUsername() {
+  return os.userInfo().username.replace(/[^\w+=,.@-]/g, '@');
 }

@@ -1,8 +1,9 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
-import { Construct, IResource, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
+import { IResource, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
 import { RegionInfo } from '@aws-cdk/region-info';
+import { Construct } from 'constructs';
 import { CfnLoadBalancer } from '../elasticloadbalancingv2.generated';
 import { Attributes, ifUndefined, renderAttributes } from './util';
 
@@ -145,7 +146,7 @@ export abstract class BaseLoadBalancer extends Resource {
       resource.node.addDependency(internetConnectivityEstablished);
     }
 
-    if (baseProps.deletionProtection) { this.setAttribute('deletion_protection.enabled', 'true'); }
+    this.setAttribute('deletion_protection.enabled', baseProps.deletionProtection ? 'true' : 'false');
 
     this.loadBalancerCanonicalHostedZoneId = resource.attrCanonicalHostedZoneId;
     this.loadBalancerDnsName = resource.attrDnsName;

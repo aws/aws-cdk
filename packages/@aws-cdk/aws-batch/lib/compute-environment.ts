@@ -1,6 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct, IResource, Resource, Stack, Tag } from '@aws-cdk/core';
+import { IResource, Resource, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnComputeEnvironment } from './batch.generated';
 
 /**
@@ -210,7 +211,9 @@ export interface ComputeResources {
    *
    * @default - no tags will be assigned on compute resources.
    */
-  readonly computeResourcesTags?: Tag;
+  readonly computeResourcesTags?: {
+    [key: string]: string
+  };
 }
 
 /**

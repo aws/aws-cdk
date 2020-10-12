@@ -1,10 +1,11 @@
 import * as path from 'path';
-import { ABSENT, expect, haveResource, MatchStyle, ResourcePart } from '@aws-cdk/assert';
+import { ABSENT, expect, haveResource, MatchStyle, ResourcePart, arrayWith, objectLike } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
+import * as constructs from 'constructs';
 import { Test } from 'nodeunit';
 import * as lambda from '../lib';
 
@@ -283,6 +284,59 @@ export = {
     // THEN
     test.deepEqual(imported.functionArn, 'arn:aws:lambda:us-east-1:123456789012:function:ProcessKinesisRecords');
     test.deepEqual(imported.functionName, 'ProcessKinesisRecords');
+    expect(stack2).notTo(haveResource('AWS::Lambda::Permission'));
+    test.done();
+  },
+
+  'imported Function w/ resolved account and function arn can addPermissions'(test: Test) {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Imports', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+    const stack2 = new cdk.Stack(app, 'imported', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+    new lambda.Function(stack, 'BaseFunction', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_10_X,
+    });
+
+    // WHEN
+    const iFunc = lambda.Function.fromFunctionAttributes(stack2, 'iFunc', {
+      functionArn: 'arn:aws:lambda:us-east-1:123456789012:function:BaseFunction',
+    });
+    iFunc.addPermission('iFunc', {
+      principal: new iam.ServicePrincipal('cloudformation.amazonaws.com'),
+    });
+
+    // THEN
+    expect(stack2).to(haveResource('AWS::Lambda::Permission'));
+    test.done();
+  },
+
+  'imported Function w/o account cannot addPermissions'(test: Test) {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Base');
+    const importedStack = new cdk.Stack(app, 'Imported');
+    new lambda.Function(stack, 'BaseFunction', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_10_X,
+    });
+
+    // WHEN
+    const iFunc = lambda.Function.fromFunctionAttributes(importedStack, 'iFunc', {
+      functionArn: 'arn:aws:lambda:us-east-1:123456789012:function:BaseFunction',
+    });
+    iFunc.addPermission('iFunc', {
+      principal: new iam.ServicePrincipal('cloudformation.amazonaws.com'),
+    });
+
+    // THEN
+    expect(importedStack).notTo(haveResource('AWS::Lambda::Permission'));
     test.done();
   },
 
@@ -1020,11 +1074,158 @@ export = {
     test.done();
   },
 
-  'grantInvoke adds iam:InvokeFunction'(test: Test) {
+  'grantInvoke': {
+
+    'adds iam:InvokeFunction'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const role = new iam.Role(stack, 'Role', {
+        assumedBy: new iam.AccountPrincipal('1234'),
+      });
+      const fn = new lambda.Function(stack, 'Function', {
+        code: lambda.Code.fromInline('xxx'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_10_X,
+      });
+
+      // WHEN
+      fn.grantInvoke(role);
+
+      // THEN
+      expect(stack).to(haveResource('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Version: '2012-10-17',
+          Statement: [
+            {
+              Action: 'lambda:InvokeFunction',
+              Effect: 'Allow',
+              Resource: { 'Fn::GetAtt': ['Function76856677', 'Arn'] },
+            },
+          ],
+        },
+      }));
+
+      test.done();
+    },
+
+    'with a service principal'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new lambda.Function(stack, 'Function', {
+        code: lambda.Code.fromInline('xxx'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_10_X,
+      });
+      const service = new iam.ServicePrincipal('apigateway.amazonaws.com');
+
+      // WHEN
+      fn.grantInvoke(service);
+
+      // THEN
+      expect(stack).to(haveResource('AWS::Lambda::Permission', {
+        Action: 'lambda:InvokeFunction',
+        FunctionName: {
+          'Fn::GetAtt': [
+            'Function76856677',
+            'Arn',
+          ],
+        },
+        Principal: 'apigateway.amazonaws.com',
+      }));
+
+      test.done();
+    },
+
+    'with an account principal'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new lambda.Function(stack, 'Function', {
+        code: lambda.Code.fromInline('xxx'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_10_X,
+      });
+      const account = new iam.AccountPrincipal('123456789012');
+
+      // WHEN
+      fn.grantInvoke(account);
+
+      // THEN
+      expect(stack).to(haveResource('AWS::Lambda::Permission', {
+        Action: 'lambda:InvokeFunction',
+        FunctionName: {
+          'Fn::GetAtt': [
+            'Function76856677',
+            'Arn',
+          ],
+        },
+        Principal: '123456789012',
+      }));
+
+      test.done();
+    },
+
+    'with an arn principal'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new lambda.Function(stack, 'Function', {
+        code: lambda.Code.fromInline('xxx'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_10_X,
+      });
+      const account = new iam.ArnPrincipal('arn:aws:iam::123456789012:role/someRole');
+
+      // WHEN
+      fn.grantInvoke(account);
+
+      // THEN
+      expect(stack).to(haveResource('AWS::Lambda::Permission', {
+        Action: 'lambda:InvokeFunction',
+        FunctionName: {
+          'Fn::GetAtt': [
+            'Function76856677',
+            'Arn',
+          ],
+        },
+        Principal: 'arn:aws:iam::123456789012:role/someRole',
+      }));
+
+      test.done();
+    },
+
+    'can be called twice for the same service principal'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new lambda.Function(stack, 'Function', {
+        code: lambda.Code.fromInline('xxx'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_10_X,
+      });
+      const service = new iam.ServicePrincipal('elasticloadbalancing.amazonaws.com');
+
+      // WHEN
+      fn.grantInvoke(service);
+      fn.grantInvoke(service);
+
+      // THEN
+      expect(stack).to(haveResource('AWS::Lambda::Permission', {
+        Action: 'lambda:InvokeFunction',
+        FunctionName: {
+          'Fn::GetAtt': [
+            'Function76856677',
+            'Arn',
+          ],
+        },
+        Principal: 'elasticloadbalancing.amazonaws.com',
+      }));
+
+      test.done();
+    },
+  },
+
+  'grantInvoke with an imported role (in the same account)'(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack();
-    const role = new iam.Role(stack, 'Role', {
-      assumedBy: new iam.AccountPrincipal('1234'),
+    const stack = new cdk.Stack(undefined, undefined, {
+      env: { account: '123456789012' },
     });
     const fn = new lambda.Function(stack, 'Function', {
       code: lambda.Code.fromInline('xxx'),
@@ -1033,93 +1234,38 @@ export = {
     });
 
     // WHEN
-    fn.grantInvoke(role);
+    fn.grantInvoke(iam.Role.fromRoleArn(stack, 'ForeignRole', 'arn:aws:iam::123456789012:role/someRole'));
 
     // THEN
     expect(stack).to(haveResource('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Version: '2012-10-17',
-        Statement: [
+      PolicyDocument: objectLike({
+        Statement: arrayWith(
           {
             Action: 'lambda:InvokeFunction',
             Effect: 'Allow',
             Resource: { 'Fn::GetAtt': ['Function76856677', 'Arn'] },
           },
-        ],
-      },
+        ),
+      }),
+      Roles: ['someRole'],
     }));
 
     test.done();
   },
 
-  'grantInvoke with a service principal'(test: Test) {
+  'grantInvoke with an imported role (from a different account)'(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack();
+    const stack = new cdk.Stack(undefined, undefined, {
+      env: { account: '3333' },
+    });
     const fn = new lambda.Function(stack, 'Function', {
       code: lambda.Code.fromInline('xxx'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_10_X,
     });
-    const service = new iam.ServicePrincipal('apigateway.amazonaws.com');
 
     // WHEN
-    fn.grantInvoke(service);
-
-    // THEN
-    expect(stack).to(haveResource('AWS::Lambda::Permission', {
-      Action: 'lambda:InvokeFunction',
-      FunctionName: {
-        'Fn::GetAtt': [
-          'Function76856677',
-          'Arn',
-        ],
-      },
-      Principal: 'apigateway.amazonaws.com',
-    }));
-
-    test.done();
-  },
-
-  'grantInvoke with an account principal'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const fn = new lambda.Function(stack, 'Function', {
-      code: lambda.Code.fromInline('xxx'),
-      handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
-    });
-    const account = new iam.AccountPrincipal('123456789012');
-
-    // WHEN
-    fn.grantInvoke(account);
-
-    // THEN
-    expect(stack).to(haveResource('AWS::Lambda::Permission', {
-      Action: 'lambda:InvokeFunction',
-      FunctionName: {
-        'Fn::GetAtt': [
-          'Function76856677',
-          'Arn',
-        ],
-      },
-      Principal: '123456789012',
-    }));
-
-    test.done();
-  },
-
-  'grantInvoke with an arn principal'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const fn = new lambda.Function(stack, 'Function', {
-      code: lambda.Code.fromInline('xxx'),
-      handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
-    });
-    const account = new iam.ArnPrincipal('arn:aws:iam::123456789012:role/someRole');
-
-    // WHEN
-    fn.grantInvoke(account);
+    fn.grantInvoke(iam.Role.fromRoleArn(stack, 'ForeignRole', 'arn:aws:iam::123456789012:role/someRole'));
 
     // THEN
     expect(stack).to(haveResource('AWS::Lambda::Permission', {
@@ -1567,7 +1713,7 @@ export = {
   },
 };
 
-function newTestLambda(scope: cdk.Construct) {
+function newTestLambda(scope: constructs.Construct) {
   return new lambda.Function(scope, 'MyLambda', {
     code: new lambda.InlineCode('foo'),
     handler: 'bar',

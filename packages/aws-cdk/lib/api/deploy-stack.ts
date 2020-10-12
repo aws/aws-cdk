@@ -11,7 +11,7 @@ import { contentHash } from '../util/content-hash';
 import { ISDK, SdkProvider } from './aws-auth';
 import { ToolkitInfo } from './toolkit-info';
 import { changeSetHasNoChanges, CloudFormationStack, StackParameters, TemplateParameters, waitForChangeSet, waitForStackDeploy, waitForStackDelete } from './util/cloudformation';
-import { StackActivityMonitor } from './util/cloudformation/stack-activity-monitor';
+import { StackActivityMonitor, StackActivityProgress } from './util/cloudformation/stack-activity-monitor';
 
 // We need to map regions to domain suffixes, and the SDK already has a function to do this.
 // It's not part of the public API, but it's also unlikely to go away.
@@ -149,9 +149,17 @@ export interface DeployStackOptions {
    *
    * If not set, all parameters must be specified for every deployment.
    *
-   * @default true
+   * @default false
    */
   usePreviousParameters?: boolean;
+
+  /**
+   * Display mode for stack deployment progress.
+   *
+   * @default StackActivityProgress.Bar stack events will be displayed for
+   *   the resource currently being deployed.
+   */
+  progress?: StackActivityProgress;
 
   /**
    * Deploy even if the deployed template is identical to the one we are about to deploy.
@@ -267,6 +275,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     // eslint-disable-next-line max-len
     const monitor = options.quiet ? undefined : StackActivityMonitor.withDefaultPrinter(cfn, deployName, stackArtifact, {
       resourcesTotal: (changeSetDescription.Changes ?? []).length,
+      progress: options.progress,
       changeSetCreationTime: changeSetDescription.CreationTime,
     }).start();
     debug('Execution of changeset %s on stack %s has started; waiting for the update to complete...', changeSetName, deployName);

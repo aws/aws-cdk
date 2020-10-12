@@ -16,8 +16,8 @@ Parameters:
     Default: ''
     Type: String
   FileAssetsBucketKmsKeyId:
-    Description: Custom KMS key ID to use for encrypting file assets (by default a
-      KMS key will be automatically defined)
+    Description: Empty to create a new key (default), 'AWS_MANAGED_KEY' to use a managed
+      S3 key, or the ID/ARN of an existing key.
     Default: ''
     Type: String
   ContainerAssetsRepositoryName:
@@ -28,6 +28,10 @@ Parameters:
     Description: An identifier to distinguish multiple bootstrap stacks in the same environment
     Default: hnb659fds
     Type: String
+    # "cdk-(qualifier)-image-publishing-role-(account)-(region)" needs to be <= 64 chars
+    # account = 12, region <= 14, 10 chars for qualifier and 28 for rest of role name
+    AllowedPattern: "[A-Za-z0-9_-]{1,10}"
+    ConstraintDescription: Qualifier must be an alphanumeric identifier of at most 10 characters
   PublicAccessBlockConfiguration:
     Description: Whether or not to enable S3 Staging Bucket Public Access Block Configuration
     Default: 'true'
@@ -56,6 +60,10 @@ Conditions:
   CreateNewKey:
     Fn::Equals:
       - ''
+      - Ref: FileAssetsBucketKmsKeyId
+  UseAwsManagedKey:
+    Fn::Equals:
+      - 'AWS_MANAGED_KEY'
       - Ref: FileAssetsBucketKmsKeyId
   HasCustomContainerAssetsRepositoryName:
     Fn::Not:
@@ -146,7 +154,10 @@ Resources:
                 Fn::If:
                   - CreateNewKey
                   - Fn::Sub: "${FileAssetsBucketEncryptionKey.Arn}"
-                  - Fn::Sub: "${FileAssetsBucketKmsKeyId}"
+                  - Fn::If:
+                    - UseAwsManagedKey
+                    - Ref: AWS::NoValue
+                    - Fn::Sub: "${FileAssetsBucketKmsKeyId}"
       PublicAccessBlockConfiguration:
         Fn::If:
           - UsePublicAccessBlockConfiguration
@@ -337,6 +348,7 @@ Resources:
                   - cloudformation:DescribeStackEvents
                   - cloudformation:GetTemplate
                   - cloudformation:DeleteStack
+                  - cloudformation:UpdateTerminationProtection
                   - sts:GetCallerIdentity
                 Resource: "*"
                 Effect: Allow
@@ -368,7 +380,7 @@ Resources:
     Properties:
       Type: String
       Name:
-        Fn::Sub: '/aws-cdk-bootstrap/${Qualifier}/version'
+        Fn::Sub: '/cdk-bootstrap/${Qualifier}/version'
       Value: 4
 Outputs:
   BucketName:

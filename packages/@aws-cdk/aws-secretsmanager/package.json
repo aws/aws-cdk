@@ -23,9 +23,14 @@
       },
       "python": {
         "distName": "aws-cdk.aws-secretsmanager",
-        "module": "aws_cdk.aws_secretsmanager"
+        "module": "aws_cdk.aws_secretsmanager",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",
@@ -48,7 +53,11 @@
     "compat": "cdk-compat"
   },
   "cdk-build": {
-    "cloudformation": "AWS::SecretsManager"
+    "cloudformation": "AWS::SecretsManager",
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "keywords": [
     "aws",
@@ -64,11 +73,9 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
-    "@types/nodeunit": "^0.0.31",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
-    "nodeunit": "^0.11.3",
     "pkglint": "0.0.0"
   },
   "dependencies": {
@@ -78,7 +85,7 @@
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-sam": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.0.4"
   },
   "peerDependencies": {
     "@aws-cdk/aws-ec2": "0.0.0",
@@ -87,13 +94,14 @@
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-sam": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.0.4"
   },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "awslint": {
     "exclude": [
+      "attribute-tag:@aws-cdk/aws-secretsmanager.Secret.secretName",
       "from-signature:@aws-cdk/aws-secretsmanager.SecretTargetAttachment.fromSecretTargetAttachmentSecretArn",
       "from-attributes:fromSecretTargetAttachmentAttributes",
       "props-physical-name:@aws-cdk/aws-secretsmanager.RotationScheduleProps",

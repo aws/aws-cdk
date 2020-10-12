@@ -1,5 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnTargetGroup } from '../elasticloadbalancingv2.generated';
 import { Protocol, TargetType } from './enums';
 import { Attributes, renderAttributes } from './util';
@@ -222,7 +223,7 @@ export abstract class TargetGroupBase extends cdk.Construct implements ITargetGr
    */
   private readonly resource: CfnTargetGroup;
 
-  constructor(scope: cdk.Construct, id: string, baseProps: BaseTargetGroupProps, additionalProps: any) {
+  constructor(scope: Construct, id: string, baseProps: BaseTargetGroupProps, additionalProps: any) {
     super(scope, id);
 
     if (baseProps.deregistrationDelay !== undefined) {
@@ -315,7 +316,7 @@ export abstract class TargetGroupBase extends cdk.Construct implements ITargetGr
     const ret = super.validate();
 
     if (this.targetType === undefined && this.targetsJson.length === 0) {
-      this.node.addWarning("When creating an empty TargetGroup, you should specify a 'targetType' (this warning may become an error in the future).");
+      cdk.Annotations.of(this).addWarning("When creating an empty TargetGroup, you should specify a 'targetType' (this warning may become an error in the future).");
     }
 
     if (this.targetType !== TargetType.LAMBDA && this.vpc === undefined) {

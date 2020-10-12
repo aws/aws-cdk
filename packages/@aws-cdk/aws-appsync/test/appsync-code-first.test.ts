@@ -4,20 +4,65 @@ import * as appsync from '../lib';
 import * as t from './scalar-type-defintions';
 
 let stack: cdk.Stack;
-let api: appsync.GraphQLApi;
 beforeEach(() => {
   // GIVEN
   stack = new cdk.Stack();
-  api = new appsync.GraphQLApi(stack, 'api', {
-    name: 'api',
-    schemaDefinition: appsync.SchemaDefinition.CODE,
-  });
 });
 
-describe('testing addType for schema definition mode `code`', () => {
-  test('check scalar type id with all options', () => {
+describe('code-first implementation through GraphQL Api functions`', () => {
+  let api: appsync.GraphqlApi;
+  beforeEach(() => {
+    // GIVEN
+    api = new appsync.GraphqlApi(stack, 'api', {
+      name: 'api',
+    });
+  });
+
+  test('testing addType w/ Interface Type for schema definition mode `code`', () => {
     // WHEN
-    api.addType('Test', {
+    const test = new appsync.InterfaceType('Test', {
+      definition: {
+        id: t.id,
+        lid: t.list_id,
+        rid: t.required_id,
+        rlid: t.required_list_id,
+        rlrid: t.required_list_required_id,
+      },
+    });
+    api.addType(test);
+    test.addField({ fieldName: 'dupid', field: t.dup_id });
+    const out = 'interface Test {\n  id: ID\n  lid: [ID]\n  rid: ID!\n  rlid: [ID]!\n  rlrid: [ID!]!\n  dupid: [ID!]!\n}\n';
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+      Definition: `${out}`,
+    });
+  });
+
+  test('testing addType w/ Object Type for schema definition mode `code`', () => {
+    // WHEN
+    const test = new appsync.ObjectType('Test', {
+      definition: {
+        id: t.id,
+        lid: t.list_id,
+        rid: t.required_id,
+        rlid: t.required_list_id,
+        rlrid: t.required_list_required_id,
+      },
+    });
+    api.addType(test);
+    test.addField({ fieldName: 'dupid', field: t.dup_id });
+    const out = 'type Test {\n  id: ID\n  lid: [ID]\n  rid: ID!\n  rlid: [ID]!\n  rlrid: [ID!]!\n  dupid: [ID!]!\n}\n';
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+      Definition: `${out}`,
+    });
+  });
+
+  test('testing addObjectType for schema definition mode `code`', () => {
+    // WHEN
+    api.addType(new appsync.ObjectType('Test', {
       definition: {
         id: t.id,
         lid: t.list_id,
@@ -26,6 +71,128 @@ describe('testing addType for schema definition mode `code`', () => {
         rlrid: t.required_list_required_id,
         dupid: t.dup_id,
       },
+    }));
+    const out = 'type Test {\n  id: ID\n  lid: [ID]\n  rid: ID!\n  rlid: [ID]!\n  rlrid: [ID!]!\n  dupid: [ID!]!\n}\n';
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+      Definition: `${out}`,
+    });
+  });
+
+  test('addField dynamically adds field to schema', () => {
+    // WHEN
+    const test = api.addType(new appsync.ObjectType('Test', {
+      definition: {
+        id: t.id,
+        lid: t.list_id,
+        rid: t.required_id,
+        rlid: t.required_list_id,
+        rlrid: t.required_list_required_id,
+      },
+    }));
+
+    test.addField({ fieldName: 'dupid', field: t.dup_id });
+    const out = 'type Test {\n  id: ID\n  lid: [ID]\n  rid: ID!\n  rlid: [ID]!\n  rlrid: [ID!]!\n  dupid: [ID!]!\n}\n';
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+      Definition: `${out}`,
+    });
+  });
+
+  test('testing addInterfaceType for schema definition mode `code`', () => {
+    // WHEN
+    api.addType(new appsync.InterfaceType('Test', {
+      definition: {
+        id: t.id,
+        lid: t.list_id,
+        rid: t.required_id,
+        rlid: t.required_list_id,
+        rlrid: t.required_list_required_id,
+        dupid: t.dup_id,
+      },
+    }));
+    const out = 'interface Test {\n  id: ID\n  lid: [ID]\n  rid: ID!\n  rlid: [ID]!\n  rlrid: [ID!]!\n  dupid: [ID!]!\n}\n';
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+      Definition: `${out}`,
+    });
+  });
+
+  test('addField dynamically adds field to schema', () => {
+    // WHEN
+    const test = api.addType(new appsync.InterfaceType('Test', {
+      definition: {
+        id: t.id,
+        lid: t.list_id,
+        rid: t.required_id,
+        rlid: t.required_list_id,
+        rlrid: t.required_list_required_id,
+      },
+    }));
+
+    test.addField({ fieldName: 'dupid', field: t.dup_id });
+    const out = 'interface Test {\n  id: ID\n  lid: [ID]\n  rid: ID!\n  rlid: [ID]!\n  rlrid: [ID!]!\n  dupid: [ID!]!\n}\n';
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+      Definition: `${out}`,
+    });
+  });
+});
+
+describe('code-first implementation through Schema functions`', () => {
+  let schema: appsync.Schema;
+  beforeEach(() => {
+    // GIVEN
+    schema = new appsync.Schema();
+  });
+
+  test('testing addType w/ Interface Type for schema definition mode `code`', () => {
+    // WHEN
+    const test = new appsync.InterfaceType('Test', {
+      definition: {
+        id: t.id,
+        lid: t.list_id,
+        rid: t.required_id,
+        rlid: t.required_list_id,
+        rlrid: t.required_list_required_id,
+      },
+    });
+    schema.addType(test);
+    test.addField({ fieldName: 'dupid', field: t.dup_id });
+
+    new appsync.GraphqlApi(stack, 'api', {
+      name: 'api',
+      schema,
+    });
+    const out = 'interface Test {\n  id: ID\n  lid: [ID]\n  rid: ID!\n  rlid: [ID]!\n  rlrid: [ID!]!\n  dupid: [ID!]!\n}\n';
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+      Definition: `${out}`,
+    });
+  });
+
+  test('testing addType w/ Object Type for schema definition mode `code`', () => {
+    // WHEN
+    const test = new appsync.ObjectType('Test', {
+      definition: {
+        id: t.id,
+        lid: t.list_id,
+        rid: t.required_id,
+        rlid: t.required_list_id,
+        rlrid: t.required_list_required_id,
+      },
+    });
+    schema.addType(test);
+    test.addField({ fieldName: 'dupid', field: t.dup_id });
+
+    new appsync.GraphqlApi(stack, 'api', {
+      name: 'api',
+      schema,
     });
     const out = 'type Test {\n  id: ID\n  lid: [ID]\n  rid: ID!\n  rlid: [ID]!\n  rlrid: [ID!]!\n  dupid: [ID!]!\n}\n';
 
@@ -35,17 +202,25 @@ describe('testing addType for schema definition mode `code`', () => {
     });
   });
 
-});
-
-describe('testing all GraphQL Types', () => {
-  test('scalar type id', () => {
+  test('testing addObjectType for schema definition mode `code`', () => {
     // WHEN
-    api.addType('Test', {
+    schema.addType(new appsync.ObjectType('Test', {
       definition: {
         id: t.id,
+        lid: t.list_id,
+        rid: t.required_id,
+        rlid: t.required_list_id,
+        rlrid: t.required_list_required_id,
+        dupid: t.dup_id,
       },
+    }));
+
+    new appsync.GraphqlApi(stack, 'api', {
+      name: 'api',
+      schema,
     });
-    const out = 'type Test {\n  id: ID\n}\n';
+
+    const out = 'type Test {\n  id: ID\n  lid: [ID]\n  rid: ID!\n  rlid: [ID]!\n  rlrid: [ID!]!\n  dupid: [ID!]!\n}\n';
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
@@ -53,216 +228,24 @@ describe('testing all GraphQL Types', () => {
     });
   });
 
-  test('scalar type string', () => {
+  test('addField dynamically adds field to schema', () => {
     // WHEN
-    api.addType('Test', {
-      definition: {
-        id: t.string,
-      },
-    });
-    const out = 'type Test {\n  id: String\n}\n';
-
-    // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${out}`,
-    });
-  });
-
-  test('scalar type int', () => {
-    // WHEN
-    api.addType('Test', {
-      definition: {
-        id: t.int,
-      },
-    });
-    const out = 'type Test {\n  id: Int\n}\n';
-
-    // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${out}`,
-    });
-  });
-
-  test('scalar type float', () => {
-    // WHEN
-    api.addType('Test', {
-      definition: {
-        id: t.float,
-      },
-    });
-    const out = 'type Test {\n  id: Float\n}\n';
-
-    // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${out}`,
-    });
-  });
-
-  test('scalar type boolean', () => {
-    // WHEN
-    api.addType('Test', {
-      definition: {
-        id: t.boolean,
-      },
-    });
-    const out = 'type Test {\n  id: Boolean\n}\n';
-
-    // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${out}`,
-    });
-  });
-
-  test('scalar type AWSDate', () => {
-    // WHEN
-    api.addType('Test', {
-      definition: {
-        id: t.awsDate,
-      },
-    });
-    const out = 'type Test {\n  id: AWSDate\n}\n';
-
-    // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${out}`,
-    });
-  });
-
-  test('scalar type AWSTime', () => {
-    // WHEN
-    api.addType('Test', {
-      definition: {
-        id: t.awsTime,
-      },
-    });
-    const out = 'type Test {\n  id: AWSTime\n}\n';
-
-    // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${out}`,
-    });
-  });
-
-  test('scalar type AWSDateTime', () => {
-    // WHEN
-    api.addType('Test', {
-      definition: {
-        id: t.awsDateTime,
-      },
-    });
-    const out = 'type Test {\n  id: AWSDateTime\n}\n';
-
-    // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${out}`,
-    });
-  });
-
-  test('scalar type AWSTimestamp', () => {
-    // WHEN
-    api.addType('Test', {
-      definition: {
-        id: t.awsTimestamp,
-      },
-    });
-    const out = 'type Test {\n  id: AWSTimestamp\n}\n';
-
-    // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${out}`,
-    });
-  });
-
-  test('scalar type AWSEmail', () => {
-    // WHEN
-    api.addType('Test', {
-      definition: {
-        id: t.awsEmail,
-      },
-    });
-    const out = 'type Test {\n  id: AWSEmail\n}\n';
-
-    // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${out}`,
-    });
-  });
-
-  test('scalar type AWSJSON', () => {
-    // WHEN
-    api.addType('Test', {
-      definition: {
-        id: t.awsJson,
-      },
-    });
-    const out = 'type Test {\n  id: AWSJSON\n}\n';
-
-    // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${out}`,
-    });
-  });
-
-
-  test('scalar type AWSUrl', () => {
-    // WHEN
-    api.addType('Test', {
-      definition: {
-        id: t.awsUrl,
-      },
-    });
-    const out = 'type Test {\n  id: AWSURL\n}\n';
-
-    // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${out}`,
-    });
-  });
-
-  test('scalar type AWSPhone', () => {
-    // WHEN
-    api.addType('Test', {
-      definition: {
-        id: t.awsPhone,
-      },
-    });
-    const out = 'type Test {\n  id: AWSPhone\n}\n';
-
-    // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${out}`,
-    });
-  });
-
-  test('scalar type AWSIPAddress', () => {
-    // WHEN
-    api.addType('Test', {
-      definition: {
-        id: t.awsIpAddress,
-      },
-    });
-    const out = 'type Test {\n  id: AWSIPAddress\n}\n';
-
-    // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${out}`,
-    });
-  });
-});
-
-describe('testing InterfaceType properties', () => {
-  let baseTest: appsync.InterfaceType;
-  beforeEach(()=>{
-    baseTest = new appsync.InterfaceType('baseTest', {
+    const test = schema.addType(new appsync.ObjectType('Test', {
       definition: {
         id: t.id,
+        lid: t.list_id,
+        rid: t.required_id,
+        rlid: t.required_list_id,
+        rlrid: t.required_list_required_id,
       },
+    }));
+
+    test.addField({ fieldName: 'dupid', field: t.dup_id });
+    new appsync.GraphqlApi(stack, 'api', {
+      name: 'api',
+      schema,
     });
-  });
-  test('basic InterfaceType produces correct schema', () => {
-    // WHEN
-    api.appendToSchema(baseTest.toString());
-    const out = 'interface baseTest {\n  id: ID\n}\n';
+    const out = 'type Test {\n  id: ID\n  lid: [ID]\n  rid: ID!\n  rlid: [ID]!\n  rlrid: [ID!]!\n  dupid: [ID!]!\n}\n';
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
@@ -270,70 +253,23 @@ describe('testing InterfaceType properties', () => {
     });
   });
 
-  test('Interface Type can be a Graphql Type', () => {
+  test('testing addInterfaceType for schema definition mode `code`', () => {
     // WHEN
-    const graphqlType = baseTest.attribute();
-
-    const test = new appsync.ObjectType('Test', {
-      definition: {
-        test: graphqlType,
-      },
-    });
-    api.appendToSchema(test.toString());
-    const out = 'type Test {\n  test: baseTest\n}\n';
-
-    // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${out}`,
-    });
-  });
-});
-
-describe('testing Object Type properties', () => {
-
-  test('errors when no InterfaceTypes are specified', () => {
-    // THEN
-    expect(() => {
-      appsync.ObjectType.implementInterface('objectTest', {
-        definition: {
-          id2: t.id,
-        },
-      });
-    }).toThrowError('Static function `implementInterface` requires an interfaceType to implement');
-  });
-
-  test('errors when implementing empty InterfaceTypes properties', () => {
-    // THEN
-    expect(() => {
-      appsync.ObjectType.implementInterface('objectTest', {
-        interfaceTypes: [],
-        definition: {
-          id2: t.id,
-        },
-      });
-    }).toThrowError('Static function `implementInterface` requires an interfaceType to implement');
-  });
-
-  test('ObjectType can implement from interface types', () => {
-    // WHEN
-    const baseTest = new appsync.InterfaceType('baseTest', {
+    schema.addType(new appsync.InterfaceType('Test', {
       definition: {
         id: t.id,
+        lid: t.list_id,
+        rid: t.required_id,
+        rlid: t.required_list_id,
+        rlrid: t.required_list_required_id,
+        dupid: t.dup_id,
       },
+    }));
+    new appsync.GraphqlApi(stack, 'api', {
+      name: 'api',
+      schema,
     });
-    const objectTest = appsync.ObjectType.implementInterface('objectTest', {
-      interfaceTypes: [baseTest],
-      definition: {
-        id2: t.id,
-      },
-      directives: [appsync.Directive.custom('@test')],
-    });
-
-    api.appendToSchema(baseTest.toString());
-    api.appendToSchema(objectTest.toString());
-    const gql_interface = 'interface baseTest {\n  id: ID\n}\n';
-    const gql_object = 'type objectTest implements baseTest @test {\n  id2: ID\n  id: ID\n}\n';
-    const out = `${gql_interface}${gql_object}`;
+    const out = 'interface Test {\n  id: ID\n  lid: [ID]\n  rid: ID!\n  rlid: [ID]!\n  rlrid: [ID!]!\n  dupid: [ID!]!\n}\n';
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
@@ -341,50 +277,24 @@ describe('testing Object Type properties', () => {
     });
   });
 
-  test('ObjectType can implement from multiple interface types', () => {
+  test('addField dynamically adds field to schema', () => {
     // WHEN
-    const baseTest = new appsync.InterfaceType('baseTest', {
-      definition: { id: t.id },
-    });
-    const anotherTest = new appsync.InterfaceType('anotherTest', {
-      definition: { id2: t.id },
-    });
-    const objectTest = appsync.ObjectType.implementInterface('objectTest', {
-      interfaceTypes: [anotherTest, baseTest],
-      definition: {
-        id3: t.id,
-      },
-    });
-
-    api.appendToSchema(baseTest.toString());
-    api.appendToSchema(anotherTest.toString());
-    api.appendToSchema(objectTest.toString());
-
-    const gql_interface = 'interface baseTest {\n  id: ID\n}\ninterface anotherTest {\n  id2: ID\n}\n';
-    const gql_object = 'type objectTest implements anotherTest, baseTest {\n  id3: ID\n  id2: ID\n  id: ID\n}\n';
-    const out = `${gql_interface}${gql_object}`;
-
-    // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${out}`,
-    });
-  });
-
-  test('Object Type can be a Graphql Type', () => {
-    // WHEN
-    const baseTest = new appsync.ObjectType('baseTest', {
+    const test = schema.addType(new appsync.InterfaceType('Test', {
       definition: {
         id: t.id,
+        lid: t.list_id,
+        rid: t.required_id,
+        rlid: t.required_list_id,
+        rlrid: t.required_list_required_id,
       },
+    }));
+
+    test.addField({ fieldName: 'dupid', field: t.dup_id });
+    new appsync.GraphqlApi(stack, 'api', {
+      name: 'api',
+      schema,
     });
-    const graphqlType = baseTest.attribute();
-    const test = new appsync.ObjectType('Test', {
-      definition: {
-        test: graphqlType,
-      },
-    });
-    api.appendToSchema(test.toString());
-    const out = 'type Test {\n  test: baseTest\n}\n';
+    const out = 'interface Test {\n  id: ID\n  lid: [ID]\n  rid: ID!\n  rlid: [ID]!\n  rlrid: [ID!]!\n  dupid: [ID!]!\n}\n';
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {

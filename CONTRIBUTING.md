@@ -77,13 +77,12 @@ you need to have the following SDKs and tools locally:
 - [Node.js >= 10.13.0](https://nodejs.org/download/release/latest-v10.x/)
   - We recommend using a version in [Active LTS](https://nodejs.org/en/about/releases/)
   - ⚠️ versions `13.0.0` to `13.6.0` are not supported due to compatibility issues with our dependencies.
-- [Yarn >= 1.19.1, < 1.3](https://yarnpkg.com/lang/en/docs/install)
+- [Yarn >= 1.19.1, < 2](https://yarnpkg.com/lang/en/docs/install)
 - [Java >= OpenJDK 8, 11, 14](https://docs.aws.amazon.com/corretto/latest/corretto-8-ug/downloads-list.html)
 - [Apache Maven >= 3.6.0, < 4.0](http://maven.apache.org/install.html)
 - [.NET Core SDK 3.1.x](https://www.microsoft.com/net/download)
 - [Python >= 3.6.5, < 4.0](https://www.python.org/downloads/release/python-365/)
-- [Ruby >= 2.5.1, < 3.0](https://www.ruby-lang.org/en/news/2018/03/28/ruby-2-5-1-released/)
-- [Docker 19.03](https://docs.docker.com/get-docker/)
+- [Docker >= 19.03](https://docs.docker.com/get-docker/)
 
 The basic commands to get the repository cloned and built locally follow:
 
@@ -181,7 +180,7 @@ Integration tests perform a few functions in the CDK code base -
 1. Acts as a regression detector. It does this by running `cdk synth` on the integration test and comparing it against
    the `*.expected.json` file. This highlights how a change affects the synthesized stacks.
 2. Allows for a way to verify if the stacks are still valid CloudFormation templates, as part of an intrusive change.
-   This is done by running `yarn integ` which will run `cdk deploy` across all of the integration tests in that package.
+   This is done by running `yarn integ` which will run `cdk deploy` across all of the integration tests in that package. If you are developing a new integration test or for some other reason want to work on a single integration test over and over again without running through all the integration tests you can do so using `yarn integ integ.test-name.js`
    Remember to set up AWS credentials before doing this.
 3. (Optionally) Acts as a way to validate that constructs set up the CloudFormation resources as expected. A successful
    CloudFormation deployment does not mean that the resources are set up correctly.
