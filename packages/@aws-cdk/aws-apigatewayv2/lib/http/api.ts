@@ -251,7 +251,7 @@ export class HttpApi extends Resource implements IHttpApi {
     return new Metric({
       namespace: 'AWS/ApiGateway',
       metricName,
-      dimensions: { apiName: this.httpApiName },
+      dimensions: { httpApiId: this.httpApiId },
       ...props,
     }).attachTo(this);
   }

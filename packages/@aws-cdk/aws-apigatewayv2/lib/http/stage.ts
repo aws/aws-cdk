@@ -128,7 +128,7 @@ export class HttpStage extends Resource implements IStage {
   public metric(metricName: string, props?: MetricOptions): Metric {
     var api = this.httpApi as HttpApi;
     return api.metric(metricName, props).with({
-      dimensions: { apiName: this.httpApi.httpApiName, stage: this.stageName },
+      dimensions: { apiId: this.httpApi.httpApiId, stage: this.stageName },
     }).attachTo(this);
   }
 
