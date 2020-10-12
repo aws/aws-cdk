@@ -27,11 +27,11 @@ export = {
     test.deepEqual(artifact.assets, [
       {
         repositoryName: 'aws-cdk/assets',
-        imageTag: 'baa2d6eb2a17c75424df631c8c70ff39f2d5f3bee8b9e1a109ee24ca17300540',
-        id: 'baa2d6eb2a17c75424df631c8c70ff39f2d5f3bee8b9e1a109ee24ca17300540',
+        imageTag: 'b2c69bfbfe983b634456574587443159b3b7258849856a118ad3d2772238f1a5',
+        id: 'b2c69bfbfe983b634456574587443159b3b7258849856a118ad3d2772238f1a5',
         packaging: 'container-image',
-        path: 'asset.baa2d6eb2a17c75424df631c8c70ff39f2d5f3bee8b9e1a109ee24ca17300540',
-        sourceHash: 'baa2d6eb2a17c75424df631c8c70ff39f2d5f3bee8b9e1a109ee24ca17300540',
+        path: 'asset.b2c69bfbfe983b634456574587443159b3b7258849856a118ad3d2772238f1a5',
+        sourceHash: 'b2c69bfbfe983b634456574587443159b3b7258849856a118ad3d2772238f1a5',
       },
     ]);
     test.done();
@@ -322,13 +322,13 @@ export = {
     const asset6 = new DockerImageAsset(stack, 'Asset6', { directory, extraHash: 'random-extra' });
     const asset7 = new DockerImageAsset(stack, 'Asset7', { directory, repositoryName: 'foo' });
 
-    test.deepEqual(asset1.sourceHash, 'c555ab9f74e32ce24cd04ddeaa4d7b1b11c5740b9873a3f250e03bf73b28ce39');
-    test.deepEqual(asset2.sourceHash, '273bd9a95dbe346ad5b116736d44a350e90f57e2b9ba7fd3d334b61d0420f9fd');
-    test.deepEqual(asset3.sourceHash, '81a4b3fd058876c7705597500e7259ff436e521580f0bcb503a303dcac7e2a41');
-    test.deepEqual(asset4.sourceHash, '10259531feb68a3967d5d25b70ec9a37a6a8e1f5b04083fada3d0a084291a698');
-    test.deepEqual(asset5.sourceHash, '30e083bf51483a031759bc7fb35f69345de69fdbc511eec88bd3d1724b5ac0a9');
-    test.deepEqual(asset6.sourceHash, '594ae5a5d23367d18468fefca5a4e56ca83b077d1274a1f812f55c8c9ead9eaa');
-    test.deepEqual(asset7.sourceHash, 'bc007f81fe1dd0f0bbb24af898eba3f4f15edbff19b7abb3fac928439486d667');
+    test.deepEqual(asset1.sourceHash, 'ab01ecd4419f59e1ec0ac9e57a60dbb653be68a29af0223fa8cb24b4b747bc73');
+    test.deepEqual(asset2.sourceHash, '7fb12f6148098e3f5c56c788a865d2af689125ead403b795fe6a262ec34384b3');
+    test.deepEqual(asset3.sourceHash, 'fc3b6d802ba198ba2ee55079dbef27682bcd1288d5849eb5bbd5cd69038359b3');
+    test.deepEqual(asset4.sourceHash, '30439ea6dfeb4ddfd9175097286895c78393ef52a78c68f92db08abc4513cad6');
+    test.deepEqual(asset5.sourceHash, '5775170880e26ba31799745241b90d4340c674bb3b1c01d758e416ee3f1c386f');
+    test.deepEqual(asset6.sourceHash, 'ba82fd351a4d3e3f5c5d948b9948e7e829badc3da90f97e00bb7724afbeacfd4');
+    test.deepEqual(asset7.sourceHash, '26ec194928431cab6ec5af24ea9f01af2cf7b20e361128b07b2a7405d2951f95');
     test.done();
   },
 };
