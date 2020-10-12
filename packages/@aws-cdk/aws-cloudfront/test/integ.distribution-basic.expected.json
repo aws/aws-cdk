@@ -6,6 +6,7 @@
         "DistributionConfig": {
           "DefaultCacheBehavior": {
             "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+            "Compress": true,
             "TargetOriginId": "integdistributionbasicDistOrigin151B53FF1",
             "ViewerProtocolPolicy": "allow-all"
           },
