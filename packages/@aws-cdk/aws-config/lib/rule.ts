@@ -3,7 +3,6 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { IResource, Lazy, Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { renderScope } from '../private/util';
 import { CfnConfigRule } from './config.generated';
 
 /**
@@ -118,7 +117,6 @@ abstract class RuleNew extends RuleBase {
 
 /**
  * Determines which resources trigger an evaluation of an AWS Config rule.
- * @experimental
  */
 export class Scope {
   /** restricts scope of changes to a specific resource type or resource identifier */
@@ -267,7 +265,7 @@ export class ManagedRule extends RuleNew {
       description: props.description,
       inputParameters: props.inputParameters,
       maximumExecutionFrequency: props.maximumExecutionFrequency,
-      scope: Lazy.anyValue({ produce: () => renderScope(this.scope) }),
+      scope: Lazy.anyValue({ produce: () => this.renderScope() }),
       source: {
         owner: 'AWS',
         sourceIdentifier: props.identifier,
@@ -280,6 +278,15 @@ export class ManagedRule extends RuleNew {
     this.configRuleComplianceType = rule.attrComplianceType;
 
     this.isManaged = true;
+  }
+
+  private renderScope(): CfnConfigRule.ScopeProperty | undefined {
+    return this.scope ? {
+      complianceResourceId: this.scope.resourceId,
+      complianceResourceTypes: this.scope.resourceTypes?.map(resource => resource.resourceType),
+      tagKey: this.scope.key,
+      tagValue: this.scope.value,
+    } : undefined;
   }
 }
 
@@ -373,7 +380,7 @@ export class CustomRule extends RuleNew {
       description: props.description,
       inputParameters: props.inputParameters,
       maximumExecutionFrequency: props.maximumExecutionFrequency,
-      scope: Lazy.anyValue({ produce: () => renderScope(this.scope) }),
+      scope: Lazy.anyValue({ produce: () => this.renderScope() }),
       source: {
         owner: 'CUSTOM_LAMBDA',
         sourceDetails,
@@ -389,6 +396,15 @@ export class CustomRule extends RuleNew {
     if (props.configurationChanges) {
       this.isCustomWithChanges = true;
     }
+  }
+
+  private renderScope(): CfnConfigRule.ScopeProperty | undefined {
+    return this.scope ? {
+      complianceResourceId: this.scope.resourceId,
+      complianceResourceTypes: this.scope.resourceTypes?.map(resource => resource.resourceType),
+      tagKey: this.scope.key,
+      tagValue: this.scope.value,
+    } : undefined;
   }
 }
 
