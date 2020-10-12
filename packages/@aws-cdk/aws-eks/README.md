@@ -637,6 +637,42 @@ mypod.node.addDependency(sa);
 new cdk.CfnOutput(this, 'ServiceAccountIamRole', { value: sa.role.roleArn })
 ```
 
+Note that adding new service account is supportable for both: new and imported clusters
+
+For imported clusters you must provide one of: 
+- `openIdConnectIssuerUrl` for the clusters where no Open ID Connect providers created. This operation will create a provider for the cluster.
+```ts
+const openIdConnectProvider = iam.OpenIdConnectProvider.fromOpenIdConnectProviderArn('OIDCProviderARN');
+const cluster = eks.Cluster.fromClusterAttributes({
+  clusterName: 'Cluster',
+  openIdConnectIssuerUrl: "oidc.eks.us-east-1.amazonaws.com/id/f4e82dee0c8511ebadc10242ac120002",
+  kubectlRoleArn: 'arn:aws:iam::123456:role/service-role/k8sservicerole',
+});
+
+const sa = cluster.addServiceAccount('MyServiceAccount');
+
+const bucket = new Bucket(this, 'Bucket');
+bucket.grantReadWrite(serviceAccount);
+
+// ...
+``` 
+- Imported `openIdConnectProvider` if you already have an Open ID Connect provider configured for your cluster.
+```ts
+const openIdConnectProvider = iam.OpenIdConnectProvider.fromOpenIdConnectProviderArn('OIDCProviderARN');
+const cluster = eks.Cluster.fromClusterAttributes({
+  clusterName: 'Cluster',
+  openIdConnectProvider: openIdConnectProvider,
+  kubectlRoleArn: 'arn:aws:iam::123456:role/service-role/k8sservicerole',
+});
+
+const sa = cluster.addServiceAccount('MyServiceAccount');
+
+const bucket = new Bucket(this, 'Bucket');
+bucket.grantReadWrite(serviceAccount);
+
+// ...
+``` 
+
 Note that using `sa.serviceAccountName` above **does not** translate into a resource dependency.
 This is why an explicit dependency is needed. See https://github.com/aws/aws-cdk/issues/9910 for more details.
 
