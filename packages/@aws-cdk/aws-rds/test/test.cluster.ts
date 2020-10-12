@@ -184,6 +184,7 @@ export = {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
       credentials: {
         username: 'admin',
+        excludeCharacters: '"@/\\',
       },
       instanceProps: {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
@@ -371,6 +372,69 @@ export = {
 
       test.done();
     },
+  },
+
+  'cluster with disable automatic upgrade of minor version'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA,
+      instanceProps: {
+        autoMinorVersionUpgrade: false,
+        vpc,
+      },
+    });
+
+    expect(stack).to(haveResource('AWS::RDS::DBInstance', {
+      AutoMinorVersionUpgrade: false,
+    }));
+
+    test.done();
+  },
+
+  'cluster with allow upgrade of major version'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA,
+      instanceProps: {
+        allowMajorVersionUpgrade: true,
+        vpc,
+      },
+    });
+
+    expect(stack).to(haveResourceLike('AWS::RDS::DBInstance', {
+      AllowMajorVersionUpgrade: true,
+    }));
+
+    test.done();
+  },
+
+  'cluster with disallow remove backups'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA,
+      instanceProps: {
+        deleteAutomatedBackups: false,
+        vpc,
+      },
+    });
+
+    expect(stack).to(haveResourceLike('AWS::RDS::DBInstance', {
+      DeleteAutomatedBackups: false,
+    }));
+
+    test.done();
   },
 
   'create a cluster using a specific version of MySQL'(test: Test) {
@@ -1325,6 +1389,29 @@ export = {
           },
         },
       ],
+    }));
+
+    test.done();
+  },
+
+  "Aurora PostgreSQL cluster uses a different default master username than 'admin', which is a reserved word"(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.auroraPostgres({
+        version: AuroraPostgresEngineVersion.VER_9_6_12,
+      }),
+      instanceProps: { vpc },
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::SecretsManager::Secret', {
+      GenerateSecretString: {
+        SecretStringTemplate: '{"username":"postgres"}',
+      },
     }));
 
     test.done();

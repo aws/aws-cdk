@@ -149,6 +149,16 @@ export enum InstanceClass {
   R5AD = 'r5a',
 
   /**
+   * Memory optimized instances, 6th generation with Graviton2 processors
+   */
+  MEMORY6_GRAVITON = 'r6g',
+
+  /**
+   * Memory optimized instances, 6th generation with Graviton2 processors
+   */
+  R6G = 'r6g',
+
+  /**
    * Compute optimized instances, 3rd generation
    */
   COMPUTE3 = 'c3',
@@ -197,6 +207,28 @@ export enum InstanceClass {
    * Compute optimized instances for high performance computing, 5th generation
    */
   C5N = 'c5n',
+
+  /**
+   * Compute optimized instances for high performance computing, 6th generation with Graviton2 processors
+   */
+  COMPUTE6_GRAVITON2 = 'c6g',
+
+  /**
+   * Compute optimized instances for high performance computing, 6th generation with Graviton2 processors
+   */
+  C6G = 'c6g',
+
+  /**
+   * Compute optimized instances for high performance computing, 6th generation with Graviton2 processors
+   * and local NVME drive
+   */
+  COMPUTE6_GRAVITON2_NVME_DRIVE = 'c6gd',
+
+  /**
+   * Compute optimized instances for high performance computing, 6th generation with Graviton2 processors
+   * and local NVME drive
+   */
+  C6GD = 'c6gd',
 
   /**
    * Storage-optimized instances, 2nd generation
