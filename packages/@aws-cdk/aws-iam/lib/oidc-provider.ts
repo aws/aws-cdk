@@ -1,5 +1,13 @@
 import * as path from 'path';
-import { CustomResource, CustomResourceProvider, CustomResourceProviderRuntime, IResource, Resource, Token } from '@aws-cdk/core';
+import {
+  CustomResource,
+  CustomResourceProvider,
+  CustomResourceProviderRuntime,
+  IResource,
+  Resource,
+  Stack,
+  Token,
+} from '@aws-cdk/core';
 import { Construct } from 'constructs';
 
 const RESOURCE_TYPE = 'Custom::AWSCDKOpenIdConnectProvider';
@@ -104,11 +112,19 @@ export class OpenIdConnectProvider extends Resource implements IOpenIdConnectPro
    * @param openIdConnectProviderArn the ARN to import
    */
   public static fromOpenIdConnectProviderArn(scope: Construct, id: string, openIdConnectProviderArn: string): IOpenIdConnectProvider {
-    const issuer = openIdConnectProviderArn.split(':').slice(-1)[0].split('/').slice(1).join('/');
+    const parsedResourceName = Stack.of(scope).parseArn(openIdConnectProviderArn).resourceName;
+    if (!parsedResourceName) {
+      throw new Error('Cannot figure OIDC issuer url for this OIDC Provider');
+    }
+
+    // this needed because TS don't understand that prev. condition
+    // actually does mutate the type from "string | undefined" to "string"
+    // inside class definition,
+    const resourceName = parsedResourceName;
 
     class Import extends Resource implements IOpenIdConnectProvider {
       public readonly openIdConnectProviderArn = openIdConnectProviderArn;
-      public readonly openIdConnectProviderIssuer = issuer;
+      public readonly openIdConnectProviderIssuer = resourceName;
     }
 
     return new Import(scope, id);

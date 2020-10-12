@@ -6,6 +6,8 @@ import { arrayDiff } from '../lib/oidc-provider/diff';
 import { external } from '../lib/oidc-provider/external';
 import * as handler from '../lib/oidc-provider/index';
 
+const arnOfProvider = 'arn:aws:iam::1234567:oidc-provider/oidc.eks.us-east-1.amazonaws.com/id/someid';
+
 describe('OpenIdConnectProvider resource', () => {
 
   test('minimal configuration (no clients and no thumbprint)', () => {
@@ -41,10 +43,10 @@ describe('OpenIdConnectProvider resource', () => {
     const stack = new Stack();
 
     // WHEN
-    const provider = iam.OpenIdConnectProvider.fromOpenIdConnectProviderArn(stack, 'MyProvider', 'arn:of:provider');
+    const provider = iam.OpenIdConnectProvider.fromOpenIdConnectProviderArn(stack, 'MyProvider', arnOfProvider);
 
     // THEN
-    expect(stack.resolve(provider.openIdConnectProviderArn)).toStrictEqual('arn:of:provider');
+    expect(stack.resolve(provider.openIdConnectProviderArn)).toStrictEqual(arnOfProvider);
   });
 
   test('thumbprint list and client ids can be specified', () => {
@@ -407,8 +409,7 @@ describe('OIDC issuer', () => {
     const stack = new Stack();
 
     // WHEN
-    const arn = 'arn:aws:iam::11:oidc-provider/oidc.eks.us-east-1.amazonaws.com/id/someid';
-    const provider = iam.OpenIdConnectProvider.fromOpenIdConnectProviderArn(stack, 'MyProvider', arn);
+    const provider = iam.OpenIdConnectProvider.fromOpenIdConnectProviderArn(stack, 'MyProvider', arnOfProvider);
 
     // THEN
     expect(stack.resolve(provider.openIdConnectProviderIssuer)).toStrictEqual('oidc.eks.us-east-1.amazonaws.com/id/someid');
