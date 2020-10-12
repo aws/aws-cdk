@@ -265,7 +265,7 @@ export class ManagedRule extends RuleNew {
       description: props.description,
       inputParameters: props.inputParameters,
       maximumExecutionFrequency: props.maximumExecutionFrequency,
-      scope: Lazy.anyValue({ produce: () => this.renderScope() }),
+      scope: Lazy.anyValue({ produce: () => this.renderScope() }), // scope can use values such as stack id (see CloudFormationStackDriftDetectionCheck)
       source: {
         owner: 'AWS',
         sourceIdentifier: props.identifier,
@@ -380,7 +380,7 @@ export class CustomRule extends RuleNew {
       description: props.description,
       inputParameters: props.inputParameters,
       maximumExecutionFrequency: props.maximumExecutionFrequency,
-      scope: Lazy.anyValue({ produce: () => this.renderScope() }),
+      scope: Lazy.anyValue({ produce: () => this.renderScope() }), // scope can use values such as stack id (see CloudFormationStackDriftDetectionCheck)
       source: {
         owner: 'CUSTOM_LAMBDA',
         sourceDetails,
