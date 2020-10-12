@@ -78,7 +78,7 @@ const sshRule = new config.ManagedRule(this, 'SSH', {
 const customRule = new config.CustomRule(this, 'CustomRule', {
   lambdaFunction: myFn,
   configurationChanges: true
-  scope: config.Scope.fromResources([config.ResourceType.CLOUDFORMATION_STACK], config.Resource.S3_BUCKET), // restrict to all CloudFormation stacks and S3 buckets
+  scope: config.Scope.fromResources([config.ResourceType.CLOUDFORMATION_STACK, config.Resource.S3_BUCKET]), // restrict to all CloudFormation stacks and S3 buckets
 });
 
 const customRule = new config.CustomRule(this, 'CustomRule', {

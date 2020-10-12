@@ -265,7 +265,7 @@ export class ManagedRule extends RuleNew {
       description: props.description,
       inputParameters: props.inputParameters,
       maximumExecutionFrequency: props.maximumExecutionFrequency,
-      scope: Lazy.anyValue({ produce: () => this.renderScope() }), // scope can use values such as stack id (see CloudFormationStackDriftDetectionCheck)
+      scope: Lazy.anyValue({ produce: () => renderScope(this.scope) }), // scope can use values such as stack id (see CloudFormationStackDriftDetectionCheck)
       source: {
         owner: 'AWS',
         sourceIdentifier: props.identifier,
@@ -278,15 +278,6 @@ export class ManagedRule extends RuleNew {
     this.configRuleComplianceType = rule.attrComplianceType;
 
     this.isManaged = true;
-  }
-
-  private renderScope(): CfnConfigRule.ScopeProperty | undefined {
-    return this.scope ? {
-      complianceResourceId: this.scope.resourceId,
-      complianceResourceTypes: this.scope.resourceTypes?.map(resource => resource.complianceResoureceType),
-      tagKey: this.scope.key,
-      tagValue: this.scope.value,
-    } : undefined;
   }
 }
 
@@ -380,7 +371,7 @@ export class CustomRule extends RuleNew {
       description: props.description,
       inputParameters: props.inputParameters,
       maximumExecutionFrequency: props.maximumExecutionFrequency,
-      scope: Lazy.anyValue({ produce: () => this.renderScope() }), // scope can use values such as stack id (see CloudFormationStackDriftDetectionCheck)
+      scope: Lazy.anyValue({ produce: () => this.renderScope(this.scope) }), // scope can use values such as stack id (see CloudFormationStackDriftDetectionCheck)
       source: {
         owner: 'CUSTOM_LAMBDA',
         sourceDetails,
@@ -397,17 +388,7 @@ export class CustomRule extends RuleNew {
       this.isCustomWithChanges = true;
     }
   }
-
-  private renderScope(): CfnConfigRule.ScopeProperty | undefined {
-    return this.scope ? {
-      complianceResourceId: this.scope.resourceId,
-      complianceResourceTypes: this.scope.resourceTypes?.map(resource => resource.complianceResoureceType),
-      tagKey: this.scope.key,
-      tagValue: this.scope.value,
-    } : undefined;
-  }
 }
-
 
 /**
  * Resources types that are supported by AWS Config
@@ -488,7 +469,7 @@ export class ResourceType {
   public static readonly SNS_TOPIC = new ResourceType('AWS::SNS::Topic');
   /** Amazon S3 bucket */
   public static readonly S3_BUCKET = new ResourceType('AWS::S3::Bucket');
-  /** Amazon S3 bucket where public access is blocked */
+  /** Amazon S3 account public access block */
   public static readonly S3_ACCOUNT_PUBLIC_ACCESS_BLOCK = new ResourceType('AWS::S3::AccountPublicAccessBlock');
   /** Amazon EC2 customer gateway */
   public static readonly EC2_CUSTOMER_GATEWAY = new ResourceType('AWS::EC2::CustomerGateway');
@@ -600,10 +581,19 @@ export class ResourceType {
   /**
    * Valid value of resource type.
    */
-  public readonly complianceResoureceType: string;
+  public readonly complianceResourceType: string;
 
   private constructor(type: string) {
-    this.complianceResoureceType = type;
+    this.complianceResourceType = type;
   }
 
+}
+
+function renderScope(scope?: Scope): CfnConfigRule.ScopeProperty | undefined {
+  return scope ? {
+    complianceResourceId: scope.resourceId,
+    complianceResourceTypes: scope.resourceTypes?.map(resource => resource.complianceResourceType),
+    tagKey: scope.key,
+    tagValue: scope.value,
+  } : undefined;
 }
