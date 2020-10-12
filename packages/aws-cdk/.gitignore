@@ -32,5 +32,8 @@ cdk.context.json
 # as the subdirs contain .js files that should be committed)
 test/integ/cli/*.js
 test/integ/cli/*.d.ts
-!test/integ/cli/jest.setup.js
-!test/integ/cli/jest.config.js
+!test/integ/cli-regression-patches/**/*
+
+.DS_Store
+
+junit.xml

@@ -1,4 +1,5 @@
-import { Construct, Resource } from '@aws-cdk/core';
+import { Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnRoute, CfnRouteProps } from '../apigatewayv2.generated';
 import { IRoute } from '../common';
 import { IHttpApi } from './api';
@@ -120,7 +121,10 @@ export class HttpRoute extends Resource implements IHttpRoute {
     this.path = props.routeKey.path;
 
     let integration: HttpIntegration | undefined;
-    const config = props.integration.bind(this);
+    const config = props.integration.bind({
+      route: this,
+      scope: this,
+    });
     integration = new HttpIntegration(this, `${this.node.id}-Integration`, {
       httpApi: props.httpApi,
       integrationType: config.type,

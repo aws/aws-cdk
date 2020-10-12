@@ -1,15 +1,15 @@
-import * as lambda from '@aws-cdk/aws-lambda';
-import * as cdk from '@aws-cdk/core';
-import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
-import { Builder } from './builder';
-import { findGitPath, nodeMajorVersion, parseStackTrace } from './util';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as cdk from '@aws-cdk/core';
+import { Bundling, ParcelBaseOptions } from './bundling';
+import { PackageJsonManager } from './package-json-manager';
+import { nodeMajorVersion, parseStackTrace } from './util';
 
 /**
  * Properties for a NodejsFunction
  */
-export interface NodejsFunctionProps extends lambda.FunctionOptions {
+export interface NodejsFunctionProps extends lambda.FunctionOptions, ParcelBaseOptions {
   /**
    * Path to the entry file (JavaScript or TypeScript).
    *
@@ -37,53 +37,17 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
   readonly runtime?: lambda.Runtime;
 
   /**
-   * Whether to minify files when bundling.
+   * Whether to automatically reuse TCP connections when working with the AWS
+   * SDK for JavaScript.
    *
-   * @default false
+   * This sets the `AWS_NODEJS_CONNECTION_REUSE_ENABLED` environment variable
+   * to `1`.
+   *
+   * @see https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/node-reusing-connections.html
+   *
+   * @default true
    */
-  readonly minify?: boolean;
-
-  /**
-   * Whether to include source maps when bundling.
-   *
-   * @default false
-   */
-  readonly sourceMaps?: boolean;
-
-  /**
-   * The build directory
-   *
-   * @default - `.build` in the entry file directory
-   */
-  readonly buildDir?: string;
-
-  /**
-   * The cache directory
-   *
-   * Parcel uses a filesystem cache for fast rebuilds.
-   *
-   * @default - `.cache` in the root directory
-   */
-  readonly cacheDir?: string;
-
-  /**
-   * The docker tag of the node base image to use in the parcel-bundler docker image
-   *
-   * @see https://hub.docker.com/_/node/?tab=tags
-   *
-   * @default - the `process.versions.node` alpine image
-   */
-  readonly nodeDockerTag?: string;
-
-  /**
-   * The root of the project. This will be used as the source for the volume
-   * mounted in the Docker container. If you specify this prop, ensure that
-   * this path includes `entry` and any module/dependencies used by your
-   * function otherwise bundling will not be possible.
-   *
-   * @default - the closest path containing a .git folder
-   */
-  readonly projectRoot?: string;
+  readonly awsSdkConnectionReuse?: boolean;
 }
 
 /**
@@ -95,39 +59,38 @@ export class NodejsFunction extends lambda.Function {
       throw new Error('Only `NODEJS` runtimes are supported.');
     }
 
-    const entry = findEntry(id, props.entry);
-    const handler = props.handler || 'handler';
-    const buildDir = props.buildDir || path.join(path.dirname(entry), '.build');
-    const handlerDir = path.join(buildDir, crypto.createHash('sha256').update(entry).digest('hex'));
+    // Entry and defaults
+    const entry = path.resolve(findEntry(id, props.entry));
+    const handler = props.handler ?? 'handler';
     const defaultRunTime = nodeMajorVersion() >= 12
       ? lambda.Runtime.NODEJS_12_X
       : lambda.Runtime.NODEJS_10_X;
-    const runtime = props.runtime || defaultRunTime;
-    const projectRoot = props.projectRoot ?? findGitPath();
-    if (!projectRoot) {
-      throw new Error('Cannot find project root. Please specify it with `projectRoot`.');
+    const runtime = props.runtime ?? defaultRunTime;
+
+    // Look for the closest package.json starting in the directory of the entry
+    // file. We need to restore it after bundling.
+    const packageJsonManager = new PackageJsonManager(path.dirname(entry));
+
+    try {
+      super(scope, id, {
+        ...props,
+        runtime,
+        code: Bundling.parcel({
+          ...props,
+          entry,
+          runtime,
+        }),
+        handler: `index.${handler}`,
+      });
+
+      // Enable connection reuse for aws-sdk
+      if (props.awsSdkConnectionReuse ?? true) {
+        this.addEnvironment('AWS_NODEJS_CONNECTION_REUSE_ENABLED', '1', { removeInEdge: true });
+      }
+    } finally {
+      // We can only restore after the code has been bound to the function
+      packageJsonManager.restore();
     }
-
-    // Build with Parcel
-    const builder = new Builder({
-      entry,
-      outDir: handlerDir,
-      global: handler,
-      minify: props.minify,
-      sourceMaps: props.sourceMaps,
-      cacheDir: props.cacheDir,
-      nodeVersion: extractVersion(runtime),
-      nodeDockerTag: props.nodeDockerTag || `${process.versions.node}-alpine`,
-      projectRoot: path.resolve(projectRoot),
-    });
-    builder.build();
-
-    super(scope, id, {
-      ...props,
-      runtime,
-      code: lambda.Code.fromAsset(handlerDir),
-      handler: `index.${handler}`,
-    });
   }
 }
 
@@ -139,7 +102,7 @@ export class NodejsFunction extends lambda.Function {
  */
 function findEntry(id: string, entry?: string): string {
   if (entry) {
-    if (!/\.(js|ts)$/.test(entry)) {
+    if (!/\.(jsx?|tsx?)$/.test(entry)) {
       throw new Error('Only JavaScript or TypeScript entry files are supported.');
     }
     if (!fs.existsSync(entry)) {
@@ -176,17 +139,4 @@ function findDefiningFile(): string {
   }
 
   return stackTrace[functionIndex + 1].file;
-}
-
-/**
- * Extracts the version from the runtime
- */
-function extractVersion(runtime: lambda.Runtime): string {
-  const match = runtime.name.match(/nodejs(\d+)/);
-
-  if (!match) {
-    throw new Error('Cannot extract version from runtime.');
-  }
-
-  return match[1];
 }

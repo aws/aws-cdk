@@ -1,9 +1,9 @@
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
-
+import { Construct } from 'constructs';
 import { CfnVirtualNode } from './appmesh.generated';
 import { IMesh } from './mesh';
-import { HealthCheck, PortMapping, Protocol, VirtualNodeListener } from './shared-interfaces';
+import { AccessLog, HealthCheck, PortMapping, Protocol, VirtualNodeListener } from './shared-interfaces';
 import { IVirtualService } from './virtual-service';
 
 /**
@@ -90,6 +90,13 @@ export interface VirtualNodeBaseProps {
    * @default - No listeners
    */
   readonly listener?: VirtualNodeListener;
+
+  /**
+   * Access Logging Configuration for the virtual node
+   *
+   * @default - No access logging
+   */
+  readonly accessLog?: AccessLog;
 }
 
 /**
@@ -167,6 +174,10 @@ function renderHealthCheck(hc: HealthCheck | undefined, pm: PortMapping): CfnVir
     throw new Error('The path property cannot be set with Protocol.TCP');
   }
 
+  if (hc.protocol === Protocol.GRPC && hc.path) {
+    throw new Error('The path property cannot be set with Protocol.GRPC');
+  }
+
   const healthCheck: CfnVirtualNode.HealthCheckProperty = {
     healthyThreshold: hc.healthyThreshold || 2,
     intervalMillis: (hc.interval || cdk.Duration.seconds(5)).toMilliseconds(), // min
@@ -210,14 +221,14 @@ export class VirtualNode extends VirtualNodeBase {
   /**
    * Import an existing VirtualNode given an ARN
    */
-  public static fromVirtualNodeArn(scope: cdk.Construct, id: string, virtualNodeArn: string): IVirtualNode {
+  public static fromVirtualNodeArn(scope: Construct, id: string, virtualNodeArn: string): IVirtualNode {
     return new ImportedVirtualNode(scope, id, { virtualNodeArn });
   }
 
   /**
    * Import an existing VirtualNode given its name
    */
-  public static fromVirtualNodeName(scope: cdk.Construct, id: string, meshName: string, virtualNodeName: string): IVirtualNode {
+  public static fromVirtualNodeName(scope: Construct, id: string, meshName: string, virtualNodeName: string): IVirtualNode {
     return new ImportedVirtualNode(scope, id, {
       meshName,
       virtualNodeName,
@@ -239,7 +250,7 @@ export class VirtualNode extends VirtualNodeBase {
    */
   public readonly mesh: IMesh;
 
-  constructor(scope: cdk.Construct, id: string, props: VirtualNodeProps) {
+  constructor(scope: Construct, id: string, props: VirtualNodeProps) {
     super(scope, id, {
       physicalName: props.virtualNodeName || cdk.Lazy.stringValue({ produce: () => this.node.uniqueId }),
     });
@@ -248,6 +259,7 @@ export class VirtualNode extends VirtualNodeBase {
 
     this.addBackends(...props.backends || []);
     this.addListeners(...props.listener ? [props.listener] : []);
+    const accessLogging = props.accessLog?.bind(this);
 
     const node = new CfnVirtualNode(this, 'Resource', {
       virtualNodeName: this.physicalName,
@@ -263,13 +275,9 @@ export class VirtualNode extends VirtualNodeBase {
             attributes: renderAttributes(props.cloudMapServiceInstanceAttributes),
           } : undefined,
         },
-        logging: {
-          accessLog: {
-            file: {
-              path: '/dev/stdout',
-            },
-          },
-        },
+        logging: accessLogging !== undefined ? {
+          accessLog: accessLogging.virtualNodeAccessLog,
+        } : undefined,
       },
     });
 
@@ -321,7 +329,7 @@ class ImportedVirtualNode extends VirtualNodeBase {
    */
   public readonly virtualNodeArn: string;
 
-  constructor(scope: cdk.Construct, id: string, props: VirtualNodeAttributes) {
+  constructor(scope: Construct, id: string, props: VirtualNodeAttributes) {
     super(scope, id);
 
     if (props.virtualNodeArn) {

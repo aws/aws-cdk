@@ -9,6 +9,7 @@ export type Template = {
 };
 
 interface TemplateParameter {
+  Type: string;
   Default?: any;
   [key: string]: any;
 }
@@ -39,6 +40,13 @@ export class CloudFormationStack {
    */
   public static doesNotExist(cfn: CloudFormation, stackName: string) {
     return new CloudFormationStack(cfn, stackName);
+  }
+
+  /**
+   * From static information (for testing)
+   */
+  public static fromStaticInformation(cfn: CloudFormation, stackName: string, stack: CloudFormation.Stack) {
+    return new CloudFormationStack(cfn, stackName, stack);
   }
 
   private _template: any;
@@ -122,7 +130,21 @@ export class CloudFormationStack {
    * Empty list if the stack does not exist.
    */
   public get parameterNames(): string[] {
-    return this.exists ? (this.stack!.Parameters || []).map(p => p.ParameterKey!) : [];
+    return Object.keys(this.parameters);
+  }
+
+  /**
+   * Return the names and values of all current parameters to the stack
+   *
+   * Empty object if the stack does not exist.
+   */
+  public get parameters(): Record<string, string> {
+    if (!this.exists) { return {}; }
+    const ret: Record<string, string> = {};
+    for (const param of this.stack!.Parameters ?? []) {
+      ret[param.ParameterKey!] = param.ParameterValue!;
+    }
+    return ret;
   }
 
   /**
@@ -185,7 +207,7 @@ async function waitFor<T>(valueProvider: () => Promise<T | null | undefined>, ti
  *
  * @returns       the CloudFormation description of the ChangeSet
  */
-// tslint:disable-next-line:max-line-length
+// eslint-disable-next-line max-len
 export async function waitForChangeSet(cfn: CloudFormation, stackName: string, changeSetName: string): Promise<CloudFormation.DescribeChangeSetOutput> {
   debug('Waiting for changeset %s on stack %s to finish creating...', changeSetName, stackName);
   const ret = await waitFor(async () => {
@@ -201,7 +223,7 @@ export async function waitForChangeSet(cfn: CloudFormation, stackName: string, c
       return description;
     }
 
-    // tslint:disable-next-line:max-line-length
+    // eslint-disable-next-line max-len
     throw new Error(`Failed to create ChangeSet ${changeSetName} on ${stackName}: ${description.Status || 'NO_STATUS'}, ${description.StatusReason || 'no reason provided'}`);
   });
 
@@ -220,24 +242,78 @@ export async function waitForChangeSet(cfn: CloudFormation, stackName: string, c
  * there are changes to Outputs, the change set can still be executed.
  */
 export function changeSetHasNoChanges(description: CloudFormation.DescribeChangeSetOutput) {
+  const noChangeErrorPrefixes = [
+    // Error message for a regular template
+    'The submitted information didn\'t contain changes.',
+    // Error message when a Transform is involved (see #10650)
+    'No updates are to be performed.',
+  ];
+
   return description.Status === 'FAILED'
-      && description.StatusReason
-      && description.StatusReason.startsWith('The submitted information didn\'t contain changes.');
+    && noChangeErrorPrefixes.some(p => (description.StatusReason ?? '').startsWith(p));
 }
 
 /**
- * Waits for a CloudFormation stack to stabilize in a complete/available state.
+ * Waits for a CloudFormation stack to stabilize in a complete/available state
+ * after a delete operation is issued.
+ *
+ * Fails if the stack is in a FAILED state. Will not fail if the stack was
+ * already deleted.
  *
  * @param cfn        a CloudFormation client
- * @param stackName      the name of the stack to wait for
- * @param failOnDeletedStack whether to fail if the awaited stack is deleted.
+ * @param stackName      the name of the stack to wait for after a delete
  *
- * @returns     the CloudFormation description of the stabilized stack
+ * @returns     the CloudFormation description of the stabilized stack after the delete attempt
  */
-export async function waitForStack(
+export async function waitForStackDelete(
   cfn: CloudFormation,
-  stackName: string,
-  failOnDeletedStack: boolean = true): Promise<CloudFormationStack | undefined> {
+  stackName: string): Promise<CloudFormationStack | undefined> {
+
+  const stack = await stabilizeStack(cfn, stackName);
+  if (!stack) { return undefined; }
+
+  const status = stack.stackStatus;
+  if (status.isFailure) {
+    throw new Error(`The stack named ${stackName} is in a failed state. You may need to delete it from the AWS console : ${status}`);
+  } else if (status.isDeleted) {
+    return undefined;
+  }
+  return stack;
+}
+
+/**
+ * Waits for a CloudFormation stack to stabilize in a complete/available state
+ * after an update/create operation is issued.
+ *
+ * Fails if the stack is in a FAILED state, ROLLBACK state, or DELETED state.
+ *
+ * @param cfn        a CloudFormation client
+ * @param stackName      the name of the stack to wait for after an update
+ *
+ * @returns     the CloudFormation description of the stabilized stack after the update attempt
+ */
+export async function waitForStackDeploy(
+  cfn: CloudFormation,
+  stackName: string): Promise<CloudFormationStack | undefined> {
+
+  const stack = await stabilizeStack(cfn, stackName);
+  if (!stack) { return undefined; }
+
+  const status = stack.stackStatus;
+
+  if (status.isCreationFailure) {
+    throw new Error(`The stack named ${stackName} failed creation, it may need to be manually deleted from the AWS console: ${status}`);
+  } else if (!status.isDeploySuccess) {
+    throw new Error(`The stack named ${stackName} failed to deploy: ${status}`);
+  }
+
+  return stack;
+}
+
+/**
+ * Wait for a stack to become stable (no longer _IN_PROGRESS), returning it
+ */
+export async function stabilizeStack(cfn: CloudFormation, stackName: string) {
   debug('Waiting for stack %s to finish creating or updating...', stackName);
   return waitFor(async () => {
     const stack = await CloudFormationStack.lookup(cfn, stackName);
@@ -246,18 +322,11 @@ export async function waitForStack(
       return null;
     }
     const status = stack.stackStatus;
-    if (!status.isStable) {
-      debug('Stack %s is still not stable (%s)', stackName, status);
+    if (status.isInProgress) {
+      debug('Stack %s has an ongoing operation in progress and is not stable (%s)', stackName, status);
       return undefined;
     }
-    if (status.isCreationFailure) {
-      throw new Error(`The stack named ${stackName} failed creation, it may need to be manually deleted from the AWS console: ${status}`);
-    } else if (!status.isSuccess) {
-      throw new Error(`The stack named ${stackName} is in a failed state: ${status}`);
-    } else if (status.isDeleted) {
-      if (failOnDeletedStack) { throw new Error(`The stack named ${stackName} was deleted`); }
-      return null;
-    }
+
     return stack;
   });
 }
@@ -271,23 +340,58 @@ export class TemplateParameters {
   }
 
   /**
-   * Return the set of CloudFormation parameters to pass to the CreateStack or UpdateStack API
+   * Calculate stack parameters to pass from the given desired parameter values
+   *
+   * Will throw if parameters without a Default value or a Previous value are not
+   * supplied.
+   */
+  public toStackParameters(updates: Record<string, string | undefined>): StackParameters {
+    return new StackParameters(this.params, updates);
+  }
+
+  /**
+   * From the template, the given desired values and the current values, calculate the changes to the stack parameters
    *
    * Will take into account parameters already set on the template (will emit
    * 'UsePreviousValue: true' for those unless the value is changed), and will
    * throw if parameters without a Default value or a Previous value are not
    * supplied.
    */
-  public makeApiParameters(updates: Record<string, string | undefined>, prevParams: string[]): CloudFormation.Parameter[] {
+  public diff(updates: Record<string, string | undefined>, previousValues: Record<string, string>): StackParameters {
+    return new StackParameters(this.params, updates, previousValues);
+  }
+}
+
+export class StackParameters {
+  /**
+   * The CloudFormation parameters to pass to the CreateStack or UpdateStack API
+   */
+  public readonly apiParameters: CloudFormation.Parameter[] = [];
+
+  private _changes = false;
+
+  constructor(
+    private readonly params: Record<string, TemplateParameter>,
+    updates: Record<string, string | undefined>,
+    previousValues: Record<string, string> = {}) {
+
     const missingRequired = new Array<string>();
 
-    const ret: CloudFormation.Parameter[] = [];
     for (const [key, param] of Object.entries(this.params)) {
+      // If any of the parameters are SSM parameters, they will always lead to a change
+      if (param.Type.startsWith('AWS::SSM::Parameter::')) {
+        this._changes = true;
+      }
 
-      if (key in updates && updates[key]) {
-        ret.push({ ParameterKey: key, ParameterValue: updates[key] });
-      } else if (prevParams.includes(key)) {
-        ret.push({ ParameterKey: key, UsePreviousValue: true });
+      if (key in updates && updates[key] !== undefined) {
+        this.apiParameters.push({ ParameterKey: key, ParameterValue: updates[key] });
+
+        // If the updated value is different than the current value, this will lead to a change
+        if (!(key in previousValues) || updates[key] !== previousValues[key]) {
+          this._changes = true;
+        }
+      } else if (key in previousValues) {
+        this.apiParameters.push({ ParameterKey: key, UsePreviousValue: true });
       } else if (param.Default === undefined) {
         missingRequired.push(key);
       }
@@ -303,10 +407,14 @@ export class TemplateParameters {
     const unknownParam = ([key, _]: [string, any]) => this.params[key] === undefined;
     const hasValue = ([_, value]: [string, any]) => !!value;
     for (const [key, value] of Object.entries(updates).filter(unknownParam).filter(hasValue)) {
-      ret.push({ ParameterKey: key, ParameterValue: value });
+      this.apiParameters.push({ ParameterKey: key, ParameterValue: value });
     }
+  }
 
-    return ret;
-
+  /**
+   * Whether this set of parameter updates will change the actual stack values
+   */
+  public get changed() {
+    return this._changes;
   }
 }

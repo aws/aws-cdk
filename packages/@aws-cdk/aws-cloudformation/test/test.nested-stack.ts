@@ -1,13 +1,14 @@
+import * as fs from 'fs';
+import * as path from 'path';
 import { expect, haveResource, matchTemplate, SynthUtils } from '@aws-cdk/assert';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import * as sns from '@aws-cdk/aws-sns';
 import { App, CfnParameter, CfnResource, Construct, ContextProvider, Stack } from '@aws-cdk/core';
-import * as fs from 'fs';
 import { Test } from 'nodeunit';
-import * as path from 'path';
 import { NestedStack } from '../lib/nested-stack';
 
-// tslint:disable:max-line-length
+/* eslint-disable cdk/no-core-construct */
+/* eslint-disable max-len */
 
 export = {
   'fails if defined as a root'(test: Test) {
@@ -446,7 +447,7 @@ export = {
     // THEN
     const manifest = app.synth();
     const consumerDeps = manifest.getStackArtifact(consumerTopLevel.artifactId).dependencies.map(d => d.id);
-    test.deepEqual(consumerDeps, [ 'ProducerTopLevel' ]);
+    test.deepEqual(consumerDeps, ['ProducerTopLevel']);
     test.done();
   },
 

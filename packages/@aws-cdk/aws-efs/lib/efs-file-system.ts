@@ -1,40 +1,40 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
-import { Construct, IResource, Resource, Size, Tag } from '@aws-cdk/core';
+import { ConcreteDependable, IDependable, IResource, RemovalPolicy, Resource, Size, Tags } from '@aws-cdk/core';
+import { Construct } from 'constructs';
+import { AccessPoint, AccessPointOptions } from './access-point';
 import { CfnFileSystem, CfnMountTarget } from './efs.generated';
 
-// tslint:disable:max-line-length
 /**
  * EFS Lifecycle Policy, if a file is not accessed for given days, it will move to EFS Infrequent Access.
  *
  * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-efs-filesystem.html#cfn-elasticfilesystem-filesystem-lifecyclepolicies
  */
-// tslint:enable
 export enum LifecyclePolicy {
   /**
    * After 7 days of not being accessed.
    */
-  AFTER_7_DAYS,
+  AFTER_7_DAYS = 'AFTER_7_DAYS',
 
   /**
    * After 14 days of not being accessed.
    */
-  AFTER_14_DAYS,
+  AFTER_14_DAYS = 'AFTER_14_DAYS',
 
   /**
    * After 30 days of not being accessed.
    */
-  AFTER_30_DAYS,
+  AFTER_30_DAYS = 'AFTER_30_DAYS',
 
   /**
    * After 60 days of not being accessed.
    */
-  AFTER_60_DAYS,
+  AFTER_60_DAYS = 'AFTER_60_DAYS',
 
   /**
    * After 90 days of not being accessed.
    */
-  AFTER_90_DAYS
+  AFTER_90_DAYS = 'AFTER_90_DAYS'
 }
 
 /**
@@ -82,6 +82,12 @@ export interface IFileSystem extends ec2.IConnectable, IResource {
    * @attribute
    */
   readonly fileSystemId: string;
+
+  /**
+   * Dependable that can be depended upon to ensure the mount targets of the filesystem are ready
+   */
+  readonly mountTargetsAvailable: IDependable;
+
 }
 
 /**
@@ -158,6 +164,20 @@ export interface FileSystemProps {
    * @default - none, errors out
    */
   readonly provisionedThroughputPerSecond?: Size;
+
+  /**
+   * The removal policy to apply to the file system.
+   *
+   * @default RemovalPolicy.RETAIN
+   */
+  readonly removalPolicy?: RemovalPolicy;
+
+  /**
+   * Whether to enable automatic backups for the file system.
+   *
+   * @default false
+   */
+  readonly enableAutomaticBackups?: boolean;
 }
 
 /**
@@ -197,6 +217,7 @@ export class FileSystem extends Resource implements IFileSystem {
         securityGroups: [attrs.securityGroup],
         defaultPort: ec2.Port.tcp(FileSystem.DEFAULT_PORT),
       });
+      public readonly mountTargetsAvailable = new ConcreteDependable();
     }
 
     return new Import(scope, id);
@@ -217,6 +238,10 @@ export class FileSystem extends Resource implements IFileSystem {
    */
   public readonly fileSystemId: string;
 
+  public readonly mountTargetsAvailable: IDependable;
+
+  private readonly _mountTargetsAvailable = new ConcreteDependable();
+
   /**
    * Constructor for creating a new EFS FileSystem.
    */
@@ -230,16 +255,16 @@ export class FileSystem extends Resource implements IFileSystem {
     const filesystem = new CfnFileSystem(this, 'Resource', {
       encrypted: props.encrypted,
       kmsKeyId: (props.kmsKey ? props.kmsKey.keyId : undefined),
-      lifecyclePolicies: (props.lifecyclePolicy ? Array.of({
-        transitionToIa: LifecyclePolicy[props.lifecyclePolicy],
-      } as CfnFileSystem.LifecyclePolicyProperty) : undefined),
+      lifecyclePolicies: (props.lifecyclePolicy ? [{ transitionToIa: props.lifecyclePolicy }] : undefined),
       performanceMode: props.performanceMode,
       throughputMode: props.throughputMode,
       provisionedThroughputInMibps: props.provisionedThroughputPerSecond?.toMebibytes(),
+      backupPolicy: props.enableAutomaticBackups ? { status: 'ENABLED' } : undefined,
     });
+    filesystem.applyRemovalPolicy(props.removalPolicy);
 
     this.fileSystemId = filesystem.ref;
-    Tag.add(this, 'Name', props.fileSystemName || this.node.path);
+    Tags.of(this).add('Name', props.fileSystemName || this.node.path);
 
     const securityGroup = (props.securityGroup || new ec2.SecurityGroup(this, 'EfsSecurityGroup', {
       vpc: props.vpc,
@@ -254,14 +279,27 @@ export class FileSystem extends Resource implements IFileSystem {
 
     // We now have to create the mount target for each of the mentioned subnet
     let mountTargetCount = 0;
+    this.mountTargetsAvailable = [];
     subnets.subnetIds.forEach((subnetId: string) => {
-      new CfnMountTarget(this,
+      const mountTarget = new CfnMountTarget(this,
         'EfsMountTarget' + (++mountTargetCount),
         {
           fileSystemId: this.fileSystemId,
           securityGroups: Array.of(securityGroup.securityGroupId),
           subnetId,
         });
+      this._mountTargetsAvailable.add(mountTarget);
+    });
+    this.mountTargetsAvailable = this._mountTargetsAvailable;
+  }
+
+  /**
+   * create access point from this filesystem
+   */
+  public addAccessPoint(id: string, accessPointOptions: AccessPointOptions = {}): AccessPoint {
+    return new AccessPoint(this, id, {
+      fileSystem: this,
+      ...accessPointOptions,
     });
   }
 }

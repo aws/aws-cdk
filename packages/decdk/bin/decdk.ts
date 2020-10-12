@@ -20,7 +20,7 @@ async function main() {
 }
 
 main().catch(e => {
-  // tslint:disable-next-line:no-console
+  // eslint-disable-next-line no-console
   console.error(colors.red(e));
   process.exit(1);
 });

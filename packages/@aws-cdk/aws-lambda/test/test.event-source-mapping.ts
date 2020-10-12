@@ -1,3 +1,4 @@
+import { expect, haveResourceLike } from '@aws-cdk/assert';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { Code, EventSourceMapping, Function, Runtime } from '../lib';
@@ -103,6 +104,22 @@ export = {
 
     test.done();
   },
+  'accepts if retryAttempts is a token'(test: Test) {
+    const stack = new cdk.Stack();
+    const fn = new Function(stack, 'fn', {
+      handler: 'index.handler',
+      code: Code.fromInline('exports.handler = ${handler.toString()}'),
+      runtime: Runtime.NODEJS_10_X,
+    });
+
+    new EventSourceMapping(stack, 'test', {
+      target: fn,
+      eventSourceArn: '',
+      retryAttempts: cdk.Lazy.numberValue({ produce: () => 100 }),
+    });
+
+    test.done();
+  },
   'throws if parallelizationFactor is below 1'(test: Test) {
     const stack = new cdk.Stack();
     const fn = new Function(stack, 'fn', {
@@ -144,12 +161,56 @@ export = {
     test.done();
   },
 
+  'accepts if parallelizationFactor is a token'(test: Test) {
+    const stack = new cdk.Stack();
+    const fn = new Function(stack, 'fn', {
+      handler: 'index.handler',
+      code: Code.fromInline('exports.handler = ${handler.toString()}'),
+      runtime: Runtime.NODEJS_10_X,
+    });
+
+    new EventSourceMapping(stack, 'test', {
+      target: fn,
+      eventSourceArn: '',
+      parallelizationFactor: cdk.Lazy.numberValue({ produce: () => 20 }),
+    });
+
+    test.done();
+  },
+
   'import event source mapping'(test: Test) {
     const stack = new cdk.Stack(undefined, undefined, { stackName: 'test-stack' });
     const imported = EventSourceMapping.fromEventSourceMappingId(stack, 'imported', '14e0db71-5d35-4eb5-b481-8945cf9d10c2');
 
     test.equals(imported.eventSourceMappingId, '14e0db71-5d35-4eb5-b481-8945cf9d10c2');
     test.equals(imported.stack.stackName, 'test-stack');
+    test.done();
+  },
+
+  'accepts if kafkaTopic is a parameter'(test: Test) {
+    const stack = new cdk.Stack();
+    const topicNameParam = new cdk.CfnParameter(stack, 'TopicNameParam', {
+      type: 'String',
+    });
+
+    const fn = new Function(stack, 'fn', {
+      handler: 'index.handler',
+      code: Code.fromInline('exports.handler = ${handler.toString()}'),
+      runtime: Runtime.NODEJS_10_X,
+    });
+
+    new EventSourceMapping(stack, 'test', {
+      target: fn,
+      eventSourceArn: '',
+      kafkaTopic: topicNameParam.valueAsString,
+    });
+
+    expect(stack).to(haveResourceLike('AWS::Lambda::EventSourceMapping', {
+      Topics: [{
+        Ref: 'TopicNameParam',
+      }],
+    }));
+
     test.done();
   },
 };

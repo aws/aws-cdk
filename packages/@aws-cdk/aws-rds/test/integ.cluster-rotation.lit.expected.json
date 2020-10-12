@@ -594,7 +594,7 @@
           ]
         },
         "GenerateSecretString": {
-          "ExcludeCharacters": "\"@/\\",
+          "ExcludeCharacters": " %+~`#$&*()|[]{}:;<>?!'/@\"\\",
           "GenerateStringKey": "password",
           "PasswordLength": 30,
           "SecretStringTemplate": "{\"username\":\"admin\"}"
@@ -706,8 +706,7 @@
           }
         ]
       },
-      "UpdateReplacePolicy": "Retain",
-      "DeletionPolicy": "Retain"
+      "UpdateReplacePolicy": "Snapshot"
     },
     "DatabaseInstance1844F58FD": {
       "Type": "AWS::RDS::DBInstance",
@@ -725,9 +724,7 @@
         "VPCPrivateSubnet1DefaultRouteAE1D6490",
         "VPCPrivateSubnet2DefaultRouteF4F5CFD2",
         "VPCPrivateSubnet3DefaultRoute27F311AE"
-      ],
-      "UpdateReplacePolicy": "Retain",
-      "DeletionPolicy": "Retain"
+      ]
     },
     "DatabaseInstance2AA380DEE": {
       "Type": "AWS::RDS::DBInstance",
@@ -745,9 +742,7 @@
         "VPCPrivateSubnet1DefaultRouteAE1D6490",
         "VPCPrivateSubnet2DefaultRouteF4F5CFD2",
         "VPCPrivateSubnet3DefaultRoute27F311AE"
-      ],
-      "UpdateReplacePolicy": "Retain",
-      "DeletionPolicy": "Retain"
+      ]
     },
     "DatabaseRotationSingleUserSecurityGroupAC6E0E73": {
       "Type": "AWS::EC2::SecurityGroup",
@@ -770,7 +765,7 @@
       "Properties": {
         "Location": {
           "ApplicationId": "arn:aws:serverlessrepo:us-east-1:297356227824:applications/SecretsManagerRDSMySQLRotationSingleUser",
-          "SemanticVersion": "1.1.3"
+          "SemanticVersion": "1.1.60"
         },
         "Parameters": {
           "endpoint": {
@@ -812,7 +807,8 @@
               "DatabaseRotationSingleUserSecurityGroupAC6E0E73",
               "GroupId"
             ]
-          }
+          },
+          "excludeCharacters": " %+~`#$&*()|[]{}:;<>?!'/@\"\\"
         }
       }
     }

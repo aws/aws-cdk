@@ -1,4 +1,4 @@
-import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Chain } from '../chain';
 import { StateGraph } from '../state-graph';
 import { CatchProps, IChainable, INextable, RetryProps } from '../types';
@@ -19,7 +19,7 @@ export interface ParallelProps {
   /**
    * JSONPath expression to select part of the state to be the input to this state.
    *
-   * May also be the special value DISCARD, which will cause the effective
+   * May also be the special value JsonPath.DISCARD, which will cause the effective
    * input to be the empty object {}.
    *
    * @default $
@@ -29,7 +29,7 @@ export interface ParallelProps {
   /**
    * JSONPath expression to select part of the state to be the output to this state.
    *
-   * May also be the special value DISCARD, which will cause the effective
+   * May also be the special value JsonPath.DISCARD, which will cause the effective
    * output to be the empty object {}.
    *
    * @default $
@@ -39,7 +39,7 @@ export interface ParallelProps {
   /**
    * JSONPath expression to indicate where to inject the state's output
    *
-   * May also be the special value DISCARD, which will cause the state's
+   * May also be the special value JsonPath.DISCARD, which will cause the state's
    * input to become its output.
    *
    * @default $
@@ -58,7 +58,7 @@ export interface ParallelProps {
 export class Parallel extends State implements INextable {
   public readonly endStates: INextable[];
 
-  constructor(scope: cdk.Construct, id: string, props: ParallelProps = {}) {
+  constructor(scope: Construct, id: string, props: ParallelProps = {}) {
     super(scope, id, props);
 
     this.endStates = [this];

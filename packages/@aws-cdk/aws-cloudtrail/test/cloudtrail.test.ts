@@ -1,9 +1,11 @@
-import { SynthUtils } from '@aws-cdk/assert';
+import { ABSENT, SynthUtils } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { LogGroup, RetentionDays } from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
+import * as sns from '@aws-cdk/aws-sns';
 import { Stack } from '@aws-cdk/core';
 import { ReadWriteType, Trail } from '../lib';
 
@@ -101,6 +103,31 @@ describe('cloudtrail', () => {
       expect(stack).not.toHaveResource('AWS::Logs::LogGroup');
     });
 
+    test('with sns topic', () => {
+      const stack = getTestStack();
+      const topic = new sns.Topic(stack, 'Topic');
+
+
+      new Trail(stack, 'Trail', { snsTopic: topic });
+
+      expect(stack).toHaveResource('AWS::CloudTrail::Trail');
+      expect(stack).not.toHaveResource('AWS::Logs::LogGroup');
+      expect(stack).toHaveResource('AWS::SNS::TopicPolicy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: 'sns:Publish',
+              Effect: 'Allow',
+              Principal: { Service: 'cloudtrail.amazonaws.com' },
+              Resource: { Ref: 'TopicBFC7AF6E' },
+              Sid: '0',
+            },
+          ],
+          Version: '2012-10-17',
+        },
+      });
+    });
+
     test('with imported s3 bucket', () => {
       // GIVEN
       const stack = getTestStack();
@@ -153,6 +180,44 @@ describe('cloudtrail', () => {
           ],
           Version: '2012-10-17',
         },
+      });
+    });
+
+    test('encryption keys', () => {
+      const stack = new Stack();
+      const key = new kms.Key(stack, 'key');
+      new Trail(stack, 'EncryptionKeyTrail', {
+        trailName: 'EncryptionKeyTrail',
+        encryptionKey: key,
+      });
+      new Trail(stack, 'KmsKeyTrail', {
+        trailName: 'KmsKeyTrail',
+        kmsKey: key,
+      });
+      new Trail(stack, 'UnencryptedTrail', {
+        trailName: 'UnencryptedTrail',
+      });
+      expect(() => new Trail(stack, 'ErrorTrail', {
+        trailName: 'ErrorTrail',
+        encryptionKey: key,
+        kmsKey: key,
+      })).toThrow(/Both kmsKey and encryptionKey must not be specified/);
+
+      expect(stack).toHaveResource('AWS::CloudTrail::Trail', {
+        TrailName: 'EncryptionKeyTrail',
+        KMSKeyId: {
+          'Fn::GetAtt': ['keyFEDD6EC0', 'Arn'],
+        },
+      });
+      expect(stack).toHaveResource('AWS::CloudTrail::Trail', {
+        TrailName: 'KmsKeyTrail',
+        KMSKeyId: {
+          'Fn::GetAtt': ['keyFEDD6EC0', 'Arn'],
+        },
+      });
+      expect(stack).toHaveResource('AWS::CloudTrail::Trail', {
+        TrailName: 'UnencryptedTrail',
+        KMSKeyId: ABSENT,
       });
     });
 
@@ -246,54 +311,124 @@ describe('cloudtrail', () => {
     });
 
     describe('with event selectors', () => {
-      test('with default props', () => {
+      test('all s3 events', () => {
         const stack = getTestStack();
 
         const cloudTrail = new Trail(stack, 'MyAmazingCloudTrail');
-        cloudTrail.addS3EventSelector(['arn:aws:s3:::']);
+        cloudTrail.logAllS3DataEvents();
 
-        expect(stack).toHaveResource('AWS::CloudTrail::Trail');
-        expect(stack).toHaveResource('AWS::S3::Bucket');
-        expect(stack).toHaveResource('AWS::S3::BucketPolicy', ExpectedBucketPolicyProperties);
-        expect(stack).not.toHaveResource('AWS::Logs::LogGroup');
-        expect(stack).not.toHaveResource('AWS::IAM::Role');
+        expect(stack).toHaveResourceLike('AWS::CloudTrail::Trail', {
+          EventSelectors: [
+            {
+              DataResources: [{
+                Type: 'AWS::S3::Object',
+                Values: [
+                  {
+                    'Fn::Join': [
+                      '',
+                      [
+                        'arn:',
+                        {
+                          Ref: 'AWS::Partition',
+                        },
+                        ':s3:::',
+                      ],
+                    ],
+                  },
+                ],
+              }],
+              IncludeManagementEvents: ABSENT,
+              ReadWriteType: ABSENT,
+            },
+          ],
+        });
+      });
 
-        const trail: any = SynthUtils.synthesize(stack).template.Resources.MyAmazingCloudTrail54516E8D;
-        expect(trail.Properties.EventSelectors.length).toEqual(1);
-        const selector = trail.Properties.EventSelectors[0];
-        expect(selector.ReadWriteType).toBeUndefined();
-        expect(selector.IncludeManagementEvents).toBeUndefined();
-        expect(selector.DataResources.length).toEqual(1);
-        const dataResource = selector.DataResources[0];
-        expect(dataResource.Type).toEqual('AWS::S3::Object');
-        expect(dataResource.Values.length).toEqual(1);
-        expect(dataResource.Values[0]).toEqual('arn:aws:s3:::');
-        expect(trail.DependsOn).toEqual(['MyAmazingCloudTrailS3Policy39C120B0']);
+      test('specific s3 buckets and objects', () => {
+        const stack = getTestStack();
+        const bucket = new s3.Bucket(stack, 'testBucket', { bucketName: 'test-bucket' });
+
+        const cloudTrail = new Trail(stack, 'MyAmazingCloudTrail');
+        cloudTrail.addS3EventSelector([{ bucket }]);
+        cloudTrail.addS3EventSelector([{
+          bucket,
+          objectPrefix: 'prefix-1/prefix-2',
+        }]);
+
+        expect(stack).toHaveResourceLike('AWS::CloudTrail::Trail', {
+          EventSelectors: [
+            {
+              DataResources: [{
+                Type: 'AWS::S3::Object',
+                Values: [{
+                  'Fn::Join': [
+                    '',
+                    [
+                      { 'Fn::GetAtt': ['testBucketDF4D7D1A', 'Arn'] },
+                      '/',
+                    ],
+                  ],
+                }],
+              }],
+            },
+            {
+              DataResources: [{
+                Type: 'AWS::S3::Object',
+                Values: [{
+                  'Fn::Join': [
+                    '',
+                    [
+                      { 'Fn::GetAtt': ['testBucketDF4D7D1A', 'Arn'] },
+                      '/prefix-1/prefix-2',
+                    ],
+                  ],
+                }],
+              }],
+            },
+          ],
+        });
+      });
+
+      test('no s3 event selector when list is empty', () => {
+        const stack = getTestStack();
+        const cloudTrail = new Trail(stack, 'MyAmazingCloudTrail');
+        cloudTrail.addS3EventSelector([]);
+        expect(stack).toHaveResourceLike('AWS::CloudTrail::Trail', {
+          EventSelectors: [],
+        });
       });
 
       test('with hand-specified props', () => {
         const stack = getTestStack();
 
         const cloudTrail = new Trail(stack, 'MyAmazingCloudTrail');
-        cloudTrail.addS3EventSelector(['arn:aws:s3:::'], { includeManagementEvents: false, readWriteType: ReadWriteType.READ_ONLY });
+        cloudTrail.logAllS3DataEvents({ includeManagementEvents: false, readWriteType: ReadWriteType.READ_ONLY });
 
-        expect(stack).toHaveResource('AWS::CloudTrail::Trail');
-        expect(stack).toHaveResource('AWS::S3::Bucket');
-        expect(stack).toHaveResource('AWS::S3::BucketPolicy', ExpectedBucketPolicyProperties);
-        expect(stack).not.toHaveResource('AWS::Logs::LogGroup');
-        expect(stack).not.toHaveResource('AWS::IAM::Role');
-
-        const trail: any = SynthUtils.synthesize(stack).template.Resources.MyAmazingCloudTrail54516E8D;
-        expect(trail.Properties.EventSelectors.length).toEqual(1);
-        const selector = trail.Properties.EventSelectors[0];
-        expect(selector.ReadWriteType).toEqual('ReadOnly');
-        expect(selector.IncludeManagementEvents).toEqual(false);
-        expect(selector.DataResources.length).toEqual(1);
-        const dataResource = selector.DataResources[0];
-        expect(dataResource.Type).toEqual('AWS::S3::Object');
-        expect(dataResource.Values.length).toEqual(1);
-        expect(dataResource.Values[0]).toEqual('arn:aws:s3:::');
-        expect(trail.DependsOn).toEqual(['MyAmazingCloudTrailS3Policy39C120B0']);
+        expect(stack).toHaveResourceLike('AWS::CloudTrail::Trail', {
+          EventSelectors: [
+            {
+              DataResources: [{
+                Type: 'AWS::S3::Object',
+                Values: [
+                  {
+                    'Fn::Join': [
+                      '',
+                      [
+                        'arn:',
+                        {
+                          Ref: 'AWS::Partition',
+                        },
+                        ':s3:::',
+                      ],
+                    ],
+                  },
+                ],
+              }],
+              IncludeManagementEvents: false,
+              ReadWriteType: 'ReadOnly',
+            },
+          ],
+        });
       });
 
       test('with management event', () => {
@@ -301,12 +436,14 @@ describe('cloudtrail', () => {
 
         new Trail(stack, 'MyAmazingCloudTrail', { managementEvents: ReadWriteType.WRITE_ONLY });
 
-        const trail: any = SynthUtils.synthesize(stack).template.Resources.MyAmazingCloudTrail54516E8D;
-        expect(trail.Properties.EventSelectors.length).toEqual(1);
-        const selector = trail.Properties.EventSelectors[0];
-        expect(selector.ReadWriteType).toEqual('WriteOnly');
-        expect(selector.IncludeManagementEvents).toEqual(true);
-        expect(selector.DataResources).toEqual(undefined);
+        expect(stack).toHaveResourceLike('AWS::CloudTrail::Trail', {
+          EventSelectors: [
+            {
+              IncludeManagementEvents: true,
+              ReadWriteType: 'WriteOnly',
+            },
+          ],
+        });
       });
 
       test('for Lambda function data event', () => {
@@ -318,46 +455,67 @@ describe('cloudtrail', () => {
         });
 
         const cloudTrail = new Trail(stack, 'MyAmazingCloudTrail');
-        cloudTrail.addLambdaEventSelector([lambdaFunction.functionArn]);
+        cloudTrail.addLambdaEventSelector([lambdaFunction]);
 
-        expect(stack).toHaveResource('AWS::CloudTrail::Trail');
-        expect(stack).toHaveResource('AWS::Lambda::Function');
-        expect(stack).not.toHaveResource('AWS::Logs::LogGroup');
-
-        const trail: any = SynthUtils.synthesize(stack).template.Resources.MyAmazingCloudTrail54516E8D;
-        expect(trail.Properties.EventSelectors.length).toEqual(1);
-        const selector = trail.Properties.EventSelectors[0];
-        expect(selector.ReadWriteType).toBeUndefined();
-        expect(selector.IncludeManagementEvents).toBeUndefined();
-        expect(selector.DataResources.length).toEqual(1);
-        const dataResource = selector.DataResources[0];
-        expect(dataResource.Type).toEqual('AWS::Lambda::Function');
-        expect(dataResource.Values.length).toEqual(1);
-        expect(dataResource.Values[0]).toEqual({ 'Fn::GetAtt': [ 'LambdaFunctionBF21E41F', 'Arn' ] });
-        expect(trail.DependsOn).toEqual(['MyAmazingCloudTrailS3Policy39C120B0']);
+        expect(stack).toHaveResourceLike('AWS::CloudTrail::Trail', {
+          EventSelectors: [
+            {
+              DataResources: [{
+                Type: 'AWS::Lambda::Function',
+                Values: [{
+                  'Fn::GetAtt': ['LambdaFunctionBF21E41F', 'Arn'],
+                }],
+              }],
+            },
+          ],
+        });
       });
 
       test('for all Lambda function data events', () => {
         const stack = getTestStack();
 
         const cloudTrail = new Trail(stack, 'MyAmazingCloudTrail');
-        cloudTrail.addLambdaEventSelector(['arn:aws:lambda']);
+        cloudTrail.logAllLambdaDataEvents();
 
-        expect(stack).toHaveResource('AWS::CloudTrail::Trail');
-        expect(stack).not.toHaveResource('AWS::Logs::LogGroup');
-        expect(stack).not.toHaveResource('AWS::IAM::Role');
+        expect(stack).toHaveResourceLike('AWS::CloudTrail::Trail', {
+          EventSelectors: [
+            {
+              DataResources: [{
+                Type: 'AWS::Lambda::Function',
+                Values: [
+                  {
+                    'Fn::Join': [
+                      '',
+                      [
+                        'arn:',
+                        {
+                          Ref: 'AWS::Partition',
+                        },
+                        ':lambda',
+                      ],
+                    ],
+                  },
+                ],
+              }],
+            },
+          ],
+        });
+      });
 
-        const trail: any = SynthUtils.synthesize(stack).template.Resources.MyAmazingCloudTrail54516E8D;
-        expect(trail.Properties.EventSelectors.length).toEqual(1);
-        const selector = trail.Properties.EventSelectors[0];
-        expect(selector.ReadWriteType).toBeUndefined();
-        expect(selector.IncludeManagementEvents).toBeUndefined();
-        expect(selector.DataResources.length).toEqual(1);
-        const dataResource = selector.DataResources[0];
-        expect(dataResource.Type).toEqual('AWS::Lambda::Function');
-        expect(dataResource.Values.length).toEqual(1);
-        expect(dataResource.Values[0]).toEqual('arn:aws:lambda');
-        expect(trail.DependsOn).toEqual(['MyAmazingCloudTrailS3Policy39C120B0']);
+      test('managementEvents set to None correctly turns off management events', () => {
+        const stack = getTestStack();
+
+        new Trail(stack, 'MyAmazingCloudTrail', {
+          managementEvents: ReadWriteType.NONE,
+        });
+
+        expect(stack).toHaveResourceLike('AWS::CloudTrail::Trail', {
+          EventSelectors: [
+            {
+              IncludeManagementEvents: false,
+            },
+          ],
+        });
       });
     });
   });

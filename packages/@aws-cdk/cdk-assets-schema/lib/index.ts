@@ -1,5 +1,4 @@
-export * from './manifest-schema';
-export * from './docker-image-asset';
-export * from './file-asset';
-export * from './aws-destination';
-export * from './validate';
+/* eslint-disable no-console */
+console.error('error: @aws-cdk/cdk-assets-schema has been merged into @aws-cdk/cloud-assembly-schema');
+
+export { };

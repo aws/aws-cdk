@@ -1,5 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct, IResource, RemovalPolicy, Resource, Stack } from '@aws-cdk/core';
+import { IResource, RemovalPolicy, Resource, Stack } from '@aws-cdk/core';
+import { IConstruct, Construct } from 'constructs';
 import { Alias } from './alias';
 import { CfnKey } from './kms.generated';
 
@@ -119,6 +120,12 @@ abstract class KeyBase extends Resource implements IKey {
     return { statementAdded: true, policyDependable: this.policy };
   }
 
+  protected validate(): string[] {
+    const errors = super.validate();
+    errors.push(...this.policy?.validateForResourcePolicy() || []);
+    return errors;
+  }
+
   /**
    * Grant the indicated permissions on this key to the given principal
    *
@@ -201,11 +208,18 @@ abstract class KeyBase extends Resource implements IKey {
    *   undefined otherwise
    */
   private granteeStackDependsOnKeyStack(grantee: iam.IGrantable): string | undefined {
-    if (!(Construct.isConstruct(grantee))) {
+    const grantPrincipal = grantee.grantPrincipal;
+    if (!(grantPrincipal instanceof Construct)) {
       return undefined;
     }
+    // this logic should only apply to newly created
+    // (= not imported) resources
+    if (!this.principalIsANewlyCreatedResource(grantPrincipal)) {
+      return undefined;
+    }
+    // return undefined;
     const keyStack = Stack.of(this);
-    const granteeStack = Stack.of(grantee);
+    const granteeStack = Stack.of(grantPrincipal);
     if (keyStack === granteeStack) {
       return undefined;
     }
@@ -214,8 +228,16 @@ abstract class KeyBase extends Resource implements IKey {
       : undefined;
   }
 
+  private principalIsANewlyCreatedResource(principal: IConstruct): boolean {
+    // yes, this sucks
+    // this is just a temporary stopgap to stem the bleeding while we work on a proper fix
+    return principal instanceof iam.Role ||
+      principal instanceof iam.User ||
+      principal instanceof iam.Group;
+  }
+
   private isGranteeFromAnotherRegion(grantee: iam.IGrantable): boolean {
-    if (!(Construct.isConstruct(grantee))) {
+    if (!(grantee instanceof Construct)) {
       return false;
     }
     const bucketStack = Stack.of(this);
@@ -224,7 +246,7 @@ abstract class KeyBase extends Resource implements IKey {
   }
 
   private isGranteeFromAnotherAccount(grantee: iam.IGrantable): boolean {
-    if (!(Construct.isConstruct(grantee))) {
+    if (!(grantee instanceof Construct)) {
       return false;
     }
     const bucketStack = Stack.of(this);

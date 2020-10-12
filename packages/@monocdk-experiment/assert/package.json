@@ -22,9 +22,6 @@
     "eslint": {
       "disable": true
     },
-    "tslint": {
-      "disable": true
-    },
     "pkglint": {
       "disable": true
     }
@@ -36,22 +33,23 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/jest": "^25.2.3",
-    "cdk-build-tools": "0.0.0",
-    "jest": "^25.5.4",
-    "pkglint": "0.0.0",
-    "ts-jest": "^26.0.0",
     "@monocdk-experiment/rewrite-imports": "0.0.0",
-    "monocdk-experiment": "0.0.0",
-    "constructs": "^3.0.2"
+    "@types/jest": "^26.0.14",
+    "@types/node": "^10.17.35",
+    "cdk-build-tools": "0.0.0",
+    "constructs": "^3.0.4",
+    "jest": "^26.4.2",
+    "monocdk": "0.0.0",
+    "pkglint": "0.0.0",
+    "ts-jest": "^26.4.1"
   },
   "dependencies": {
     "@aws-cdk/cloudformation-diff": "0.0.0"
   },
   "peerDependencies": {
-    "jest": "^25.5.4",
-    "monocdk-experiment": "^0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.0.4",
+    "jest": "^26.4.2",
+    "monocdk": "^0.0.0"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",

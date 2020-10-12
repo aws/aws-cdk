@@ -1,6 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { Construct, ContextProvider, Duration, Lazy, Resource, Stack } from '@aws-cdk/core';
+import { ContextProvider, Duration, Lazy, Resource, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { HostedZoneProviderProps } from './hosted-zone-provider';
 import { HostedZoneAttributes, IHostedZone } from './hosted-zone-ref';
 import { CaaAmazonRecord, ZoneDelegationRecord } from './record-set';
@@ -59,6 +60,8 @@ export class HostedZone extends Resource implements IHostedZone {
   /**
    * Import a Route 53 hosted zone defined either outside the CDK, or in a different CDK stack
    *
+   * Use when hosted zone ID is known. Hosted zone name becomes unavailable through this query.
+   *
    * @param scope the parent Construct for this Construct
    * @param id  the logical name of this Construct
    * @param hostedZoneId the ID of the hosted zone to import
@@ -79,6 +82,12 @@ export class HostedZone extends Resource implements IHostedZone {
 
   /**
    * Imports a hosted zone from another stack.
+   *
+   * Use when both hosted zone ID and hosted zone name are known.
+   *
+   * @param scope the parent Construct for this Construct
+   * @param id  the logical name of this Construct
+   * @param attrs the HostedZoneAttributes (hosted zone ID and hosted zone name)
    */
   public static fromHostedZoneAttributes(scope: Construct, id: string, attrs: HostedZoneAttributes): IHostedZone {
     class Import extends Resource implements IHostedZone {
@@ -94,6 +103,11 @@ export class HostedZone extends Resource implements IHostedZone {
 
   /**
    * Lookup a hosted zone in the current account/region based on query parameters.
+   * Requires environment, you must specify env for the stack.
+   *
+   * Use to easily query hosted zones.
+   *
+   * @see https://docs.aws.amazon.com/cdk/latest/guide/environments.html
    */
   public static fromLookup(scope: Construct, id: string, query: HostedZoneProviderProps): IHostedZone {
     const DEFAULT_HOSTED_ZONE: HostedZoneContextResponse = {

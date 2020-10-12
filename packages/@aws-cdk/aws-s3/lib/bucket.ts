@@ -1,8 +1,9 @@
+import { EOL } from 'os';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { Construct, Fn, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
-import { EOL } from 'os';
+import { Fn, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { BucketPolicy } from './bucket-policy';
 import { IBucketNotificationDestination } from './destination';
 import { BucketNotifications } from './notifications-resource';
@@ -55,6 +56,11 @@ export interface IBucket extends IResource {
   readonly bucketRegionalDomainName: string;
 
   /**
+   * If this bucket has been configured for static website hosting.
+   */
+  readonly isWebsite?: boolean;
+
+  /**
    * Optional KMS encryption key associated with this bucket.
    */
   readonly encryptionKey?: kms.IKey;
@@ -85,6 +91,20 @@ export interface IBucket extends IResource {
    * @returns an ObjectS3Url token
    */
   urlForObject(key?: string): string;
+
+  /**
+   * The virtual hosted-style URL of an S3 object. Specify `regional: false` at
+   * the options for non-regional URL. For example:
+   * @example https://only-bucket.s3.us-west-1.amazonaws.com
+   * @example https://bucket.s3.us-west-1.amazonaws.com/key
+   * @example https://bucket.s3.amazonaws.com/key
+   * @example https://china-bucket.s3.cn-north-1.amazonaws.com.cn/mykey
+   * @param key The S3 key of the object. If not specified, the URL of the
+   *      bucket is returned.
+   * @param options Options for generating URL.
+   * @returns an ObjectS3Url token
+   */
+  virtualHostedUrlForObject(key?: string, options?: VirtualHostedStyleUrlOptions): string;
 
   /**
    * The S3 URL of an S3 object. For example:
@@ -279,6 +299,27 @@ export interface BucketAttributes {
   readonly bucketWebsiteNewUrlFormat?: boolean;
 
   readonly encryptionKey?: kms.IKey;
+
+  /**
+   * If this bucket has been configured for static website hosting.
+   *
+   * @default false
+   */
+  readonly isWebsite?: boolean;
+
+  /**
+   * The account this existing bucket belongs to.
+   *
+   * @default - it's assumed the bucket belongs to the same account as the scope it's being imported into
+   */
+  readonly account?: string;
+
+  /**
+   * The region this existing bucket is in.
+   *
+   * @default - it's assumed the bucket is in the same region as the scope it's being imported into
+   */
+  readonly region?: string;
 }
 
 /**
@@ -311,6 +352,11 @@ abstract class BucketBase extends Resource implements IBucket {
    * Optional KMS encryption key associated with this bucket.
    */
   public abstract readonly encryptionKey?: kms.IKey;
+
+  /**
+   * If this bucket has been configured for static website hosting.
+   */
+  public abstract readonly isWebsite?: boolean;
 
   /**
    * The resource policy associated with this bucket.
@@ -404,7 +450,7 @@ abstract class BucketBase extends Resource implements IBucket {
           'PutObject',
         ],
         requestParameters: {
-          bucketName: [ this.bucketName ],
+          bucketName: [this.bucketName],
           key: options.paths,
         },
       },
@@ -431,8 +477,15 @@ abstract class BucketBase extends Resource implements IBucket {
     return { statementAdded: false };
   }
 
+  protected validate(): string[] {
+    const errors = super.validate();
+    errors.push(...this.policy?.document.validateForResourcePolicy() || []);
+    return errors;
+  }
+
   /**
-   * The https URL of an S3 object. For example:
+   * The https URL of an S3 object. Specify `regional: false` at the options
+   * for non-regional URLs. For example:
    * @example https://s3.us-west-1.amazonaws.com/onlybucket
    * @example https://s3.us-west-1.amazonaws.com/bucket/key
    * @example https://s3.cn-north-1.amazonaws.com.cn/china-bucket/mykey
@@ -443,7 +496,31 @@ abstract class BucketBase extends Resource implements IBucket {
   public urlForObject(key?: string): string {
     const stack = Stack.of(this);
     const prefix = `https://s3.${stack.region}.${stack.urlSuffix}/`;
-    return this.buildUrl(prefix, key);
+    if (typeof key !== 'string') {
+      return this.urlJoin(prefix, this.bucketName);
+    }
+    return this.urlJoin(prefix, this.bucketName, key);
+  }
+
+  /**
+   * The virtual hosted-style URL of an S3 object. Specify `regional: false` at
+   * the options for non-regional URL. For example:
+   * @example https://only-bucket.s3.us-west-1.amazonaws.com
+   * @example https://bucket.s3.us-west-1.amazonaws.com/key
+   * @example https://bucket.s3.amazonaws.com/key
+   * @example https://china-bucket.s3.cn-north-1.amazonaws.com.cn/mykey
+   * @param key The S3 key of the object. If not specified, the URL of the
+   *      bucket is returned.
+   * @param options Options for generating URL.
+   * @returns an ObjectS3Url token
+   */
+  public virtualHostedUrlForObject(key?: string, options?: VirtualHostedStyleUrlOptions): string {
+    const domainName = options?.regional ?? true ? this.bucketRegionalDomainName : this.bucketDomainName;
+    const prefix = `https://${domainName}`;
+    if (typeof key !== 'string') {
+      return prefix;
+    }
+    return this.urlJoin(prefix, key);
   }
 
   /**
@@ -455,16 +532,20 @@ abstract class BucketBase extends Resource implements IBucket {
    * @returns an ObjectS3Url token
    */
   public s3UrlForObject(key?: string): string {
-    return this.buildUrl('s3://', key);
+    const prefix = 's3://';
+    if (typeof key !== 'string') {
+      return this.urlJoin(prefix, this.bucketName);
+    }
+    return this.urlJoin(prefix, this.bucketName, key);
   }
 
   /**
    * Returns an ARN that represents all objects within the bucket that match
    * the key pattern specified. To represent all keys, specify ``"*"``.
    *
-   * If you specify multiple components for keyPattern, they will be concatenated::
+   * If you need to specify a keyPattern with multiple components, concatenate them into a single string, e.g.:
    *
-   *   arnForObjects('home/', team, '/', user, '/*')
+   *   arnForObjects(`home/${team}/${user}/*`)
    *
    */
   public arnForObjects(keyPattern: string): string {
@@ -539,7 +620,8 @@ abstract class BucketBase extends Resource implements IBucket {
    */
   public grantReadWrite(identity: iam.IGrantable, objectsKeyPattern: any = '*') {
     const bucketActions = perms.BUCKET_READ_ACTIONS.concat(perms.BUCKET_WRITE_ACTIONS);
-    const keyActions = perms.KEY_READ_ACTIONS.concat(perms.KEY_WRITE_ACTIONS);
+    // we need unique permissions because some permissions are common between read and write key actions
+    const keyActions = [...new Set([...perms.KEY_READ_ACTIONS, ...perms.KEY_WRITE_ACTIONS])];
 
     return this.grant(identity,
       bucketActions,
@@ -575,7 +657,7 @@ abstract class BucketBase extends Resource implements IBucket {
       throw new Error("Cannot grant public access when 'blockPublicPolicy' is enabled");
     }
 
-    allowedActions = allowedActions.length > 0 ? allowedActions : [ 's3:GetObject' ];
+    allowedActions = allowedActions.length > 0 ? allowedActions : ['s3:GetObject'];
 
     return iam.Grant.addToPrincipalOrResource({
       actions: allowedActions,
@@ -585,22 +667,16 @@ abstract class BucketBase extends Resource implements IBucket {
     });
   }
 
-  private buildUrl(prefix: string, key?: string): string {
-    const components = [
-      prefix,
-      this.bucketName,
-    ];
-
-    if (key) {
-      // trim prepending '/'
-      if (typeof key === 'string' && key.startsWith('/')) {
-        key = key.substr(1);
+  private urlJoin(...components: string[]): string {
+    return components.reduce((result, component) => {
+      if (result.endsWith('/')) {
+        result = result.slice(0, -1);
       }
-      components.push('/');
-      components.push(key);
-    }
-
-    return components.join('');
+      if (component.startsWith('/')) {
+        component = component.slice(1);
+      }
+      return `${result}/${component}`;
+    });
   }
 
   private grant(
@@ -608,42 +684,20 @@ abstract class BucketBase extends Resource implements IBucket {
     bucketActions: string[],
     keyActions: string[],
     resourceArn: string, ...otherResourceArns: string[]) {
-    const resources = [ resourceArn, ...otherResourceArns ];
+    const resources = [resourceArn, ...otherResourceArns];
 
-    const crossAccountAccess = this.isGranteeFromAnotherAccount(grantee);
-    let ret: iam.Grant;
-    if (crossAccountAccess) {
-      // if the access is cross-account, we need to trust the accessing principal in the bucket's policy
-      ret = iam.Grant.addToPrincipalAndResource({
-        grantee,
-        actions: bucketActions,
-        resourceArns: resources,
-        resource: this,
-      });
-    } else {
-      // if not, we don't need to modify the resource policy if the grantee is an identity principal
-      ret = iam.Grant.addToPrincipalOrResource({
-        grantee,
-        actions: bucketActions,
-        resourceArns: resources,
-        resource: this,
-      });
-    }
+    const ret = iam.Grant.addToPrincipalOrResource({
+      grantee,
+      actions: bucketActions,
+      resourceArns: resources,
+      resource: this,
+    });
 
     if (this.encryptionKey && keyActions && keyActions.length !== 0) {
       this.encryptionKey.grant(grantee, ...keyActions);
     }
 
     return ret;
-  }
-
-  private isGranteeFromAnotherAccount(grantee: iam.IGrantable): boolean {
-    if (!(Construct.isConstruct(grantee))) {
-      return false;
-    }
-    const bucketStack = Stack.of(this);
-    const identityStack = Stack.of(grantee);
-    return bucketStack.account !== identityStack.account;
   }
 }
 
@@ -811,6 +865,130 @@ export interface RedirectTarget {
   readonly protocol?: RedirectProtocol;
 }
 
+/**
+ * All supported inventory list formats.
+ */
+export enum InventoryFormat {
+  /**
+   * Generate the inventory list as CSV.
+   */
+  CSV = 'CSV',
+  /**
+   * Generate the inventory list as Parquet.
+   */
+  PARQUET = 'Parquet',
+  /**
+   * Generate the inventory list as Parquet.
+   */
+  ORC = 'ORC',
+}
+
+/**
+ * All supported inventory frequencies.
+ */
+export enum InventoryFrequency {
+  /**
+   * A report is generated every day.
+   */
+  DAILY = 'Daily',
+  /**
+   * A report is generated every Sunday (UTC timezone) after the initial report.
+   */
+  WEEKLY = 'Weekly'
+}
+
+/**
+ * Inventory version support.
+ */
+export enum InventoryObjectVersion {
+  /**
+   * Includes all versions of each object in the report.
+   */
+  ALL = 'All',
+  /**
+   * Includes only the current version of each object in the report.
+   */
+  CURRENT = 'Current',
+}
+
+/**
+ * The destination of the inventory.
+ */
+export interface InventoryDestination {
+  /**
+   * Bucket where all inventories will be saved in.
+   */
+  readonly bucket: IBucket;
+  /**
+   * The prefix to be used when saving the inventory.
+   *
+   * @default - No prefix.
+   */
+  readonly prefix?: string;
+  /**
+   * The account ID that owns the destination S3 bucket.
+   * If no account ID is provided, the owner is not validated before exporting data.
+   * It's recommended to set an account ID to prevent problems if the destination bucket ownership changes.
+   *
+   * @default - No account ID.
+   */
+  readonly bucketOwner?: string;
+}
+
+/**
+ * Specifies the inventory configuration of an S3 Bucket.
+ *
+ * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/storage-inventory.html
+ */
+export interface Inventory {
+  /**
+   * The destination of the inventory.
+   */
+  readonly destination: InventoryDestination;
+  /**
+   * The inventory will only include objects that meet the prefix filter criteria.
+   *
+   * @default - No objects prefix
+   */
+  readonly objectsPrefix?: string;
+  /**
+   * The format of the inventory.
+   *
+   * @default InventoryFormat.CSV
+   */
+  readonly format?: InventoryFormat;
+  /**
+   * Whether the inventory is enabled or disabled.
+   *
+   * @default true
+   */
+  readonly enabled?: boolean;
+  /**
+   * The inventory configuration ID.
+   *
+   * @default - generated ID.
+   */
+  readonly inventoryId?: string;
+  /**
+   * Frequency at which the inventory should be generated.
+   *
+   * @default InventoryFrequency.WEEKLY
+   */
+  readonly frequency?: InventoryFrequency;
+  /**
+   * If the inventory should contain all the object versions or only the current one.
+   *
+   * @default InventoryObjectVersion.ALL
+   */
+  readonly includeObjectVersions?: InventoryObjectVersion;
+  /**
+   * A list of optional fields to be included in the inventory result.
+   *
+   * @default - No optional fields.
+   */
+  readonly optionalFields?: string[];
+}
+
 export interface BucketProps {
   /**
    * The kind of server-side encryption to apply to this bucket.
@@ -949,6 +1127,15 @@ export interface BucketProps {
    * @default - No log file prefix
    */
   readonly serverAccessLogsPrefix?: string;
+
+  /**
+   * The inventory configuration of the bucket.
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/storage-inventory.html
+   *
+   * @default - No inventory configuration
+   */
+  readonly inventories?: Inventory[];
 }
 
 /**
@@ -977,7 +1164,7 @@ export class Bucket extends BucketBase {
    */
   public static fromBucketAttributes(scope: Construct, id: string, attrs: BucketAttributes): IBucket {
     const stack = Stack.of(scope);
-    const region = stack.region;
+    const region = attrs.region ?? stack.region;
     const urlSuffix = stack.urlSuffix;
 
     const bucketName = parseBucketName(scope, attrs);
@@ -1003,6 +1190,7 @@ export class Bucket extends BucketBase {
       public readonly bucketDualStackDomainName = attrs.bucketDualStackDomainName || `${bucketName}.s3.dualstack.${region}.${urlSuffix}`;
       public readonly bucketWebsiteNewUrlFormat = newUrlFormat;
       public readonly encryptionKey = attrs.encryptionKey;
+      public readonly isWebsite = attrs.isWebsite ?? false;
       public policy?: BucketPolicy = undefined;
       protected autoCreatePolicy = false;
       protected disallowPublicAccess = false;
@@ -1015,7 +1203,10 @@ export class Bucket extends BucketBase {
       }
     }
 
-    return new Import(scope, id);
+    return new Import(scope, id, {
+      account: attrs.account,
+      region: attrs.region,
+    });
   }
 
   public readonly bucketArn: string;
@@ -1027,6 +1218,7 @@ export class Bucket extends BucketBase {
   public readonly bucketRegionalDomainName: string;
 
   public readonly encryptionKey?: kms.IKey;
+  public readonly isWebsite?: boolean;
   public policy?: BucketPolicy;
   protected autoCreatePolicy = true;
   protected disallowPublicAccess?: boolean;
@@ -1036,6 +1228,7 @@ export class Bucket extends BucketBase {
   private readonly notifications: BucketNotifications;
   private readonly metrics: BucketMetrics[] = [];
   private readonly cors: CorsRule[] = [];
+  private readonly inventories: Inventory[] = [];
 
   constructor(scope: Construct, id: string, props: BucketProps = {}) {
     super(scope, id, {
@@ -1046,17 +1239,21 @@ export class Bucket extends BucketBase {
 
     this.validateBucketName(this.physicalName);
 
+    const websiteConfiguration = this.renderWebsiteConfiguration(props);
+    this.isWebsite = (websiteConfiguration !== undefined);
+
     const resource = new CfnBucket(this, 'Resource', {
       bucketName: this.physicalName,
       bucketEncryption,
       versioningConfiguration: props.versioned ? { status: 'Enabled' } : undefined,
       lifecycleConfiguration: Lazy.anyValue({ produce: () => this.parseLifecycleConfiguration() }),
-      websiteConfiguration: this.renderWebsiteConfiguration(props),
+      websiteConfiguration,
       publicAccessBlockConfiguration: props.blockPublicAccess,
       metricsConfigurations: Lazy.anyValue({ produce: () => this.parseMetricConfiguration() }),
       corsConfiguration: Lazy.anyValue({ produce: () => this.parseCorsConfiguration() }),
       accessControl: Lazy.stringValue({ produce: () => this.accessControl }),
       loggingConfiguration: this.parseServerAccessLogs(props),
+      inventoryConfigurations: Lazy.anyValue({ produce: () => this.parseInventoryConfiguration() }),
     });
 
     resource.applyRemovalPolicy(props.removalPolicy);
@@ -1083,6 +1280,10 @@ export class Bucket extends BucketBase {
 
     if (props.serverAccessLogsBucket instanceof Bucket) {
       props.serverAccessLogsBucket.allowLogDelivery();
+    }
+
+    for (const inventory of props.inventories ?? []) {
+      this.addInventory(inventory);
     }
 
     // Add all bucket metric configurations rules
@@ -1159,7 +1360,7 @@ export class Bucket extends BucketBase {
   }
 
   /**
-   * Subscribes a destination to receive notificatins when an object is
+   * Subscribes a destination to receive notifications when an object is
    * created in the bucket. This is identical to calling
    * `onEvent(EventType.ObjectCreated)`.
    *
@@ -1171,7 +1372,7 @@ export class Bucket extends BucketBase {
   }
 
   /**
-   * Subscribes a destination to receive notificatins when an object is
+   * Subscribes a destination to receive notifications when an object is
    * removed from the bucket. This is identical to calling
    * `onEvent(EventType.ObjectRemoved)`.
    *
@@ -1180,6 +1381,15 @@ export class Bucket extends BucketBase {
    */
   public addObjectRemovedNotification(dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]) {
     return this.addEventNotification(EventType.OBJECT_REMOVED, dest, ...filters);
+  }
+
+  /**
+   * Add an inventory configuration.
+   *
+   * @param inventory configuration to add
+   */
+  public addInventory(inventory: Inventory): void {
+    this.inventories.push(inventory);
   }
 
   private validateBucketName(physicalName: string): void {
@@ -1304,7 +1514,7 @@ export class Bucket extends BucketBase {
       const enabled = rule.enabled !== undefined ? rule.enabled : true;
 
       const x: CfnBucket.RuleProperty = {
-        // tslint:disable-next-line:max-line-length
+        // eslint-disable-next-line max-len
         abortIncompleteMultipartUpload: rule.abortIncompleteMultipartUploadAfter !== undefined ? { daysAfterInitiation: rule.abortIncompleteMultipartUploadAfter.toDays() } : undefined,
         expirationDate: rule.expirationDate,
         expirationInDays: rule.expiration && rule.expiration.toDays(),
@@ -1400,7 +1610,7 @@ export class Bucket extends BucketBase {
       throw new Error('"websiteIndexDocument", "websiteErrorDocument" and, "websiteRoutingRules" cannot be set if "websiteRedirect" is used');
     }
 
-    const routingRules =  props.websiteRoutingRules ? props.websiteRoutingRules.map<CfnBucket.RoutingRuleProperty>((rule) => {
+    const routingRules = props.websiteRoutingRules ? props.websiteRoutingRules.map<CfnBucket.RoutingRuleProperty>((rule) => {
       if (rule.condition && !rule.condition.httpErrorCodeReturnedEquals && !rule.condition.keyPrefixEquals) {
         throw new Error('The condition property cannot be an empty object');
       }
@@ -1437,6 +1647,50 @@ export class Bucket extends BucketBase {
     }
 
     this.accessControl = BucketAccessControl.LOG_DELIVERY_WRITE;
+  }
+
+  private parseInventoryConfiguration(): CfnBucket.InventoryConfigurationProperty[] | undefined {
+    if (!this.inventories || this.inventories.length === 0) {
+      return undefined;
+    }
+
+    return this.inventories.map((inventory, index) => {
+      const format = inventory.format ?? InventoryFormat.CSV;
+      const frequency = inventory.frequency ?? InventoryFrequency.WEEKLY;
+      const id = inventory.inventoryId ?? `${this.node.id}Inventory${index}`;
+
+      if (inventory.destination.bucket instanceof Bucket) {
+        inventory.destination.bucket.addToResourcePolicy(new iam.PolicyStatement({
+          effect: iam.Effect.ALLOW,
+          actions: ['s3:PutObject'],
+          resources: [
+            inventory.destination.bucket.bucketArn,
+            inventory.destination.bucket.arnForObjects(`${inventory.destination.prefix ?? ''}*`),
+          ],
+          principals: [new iam.ServicePrincipal('s3.amazonaws.com')],
+          conditions: {
+            ArnLike: {
+              'aws:SourceArn': this.bucketArn,
+            },
+          },
+        }));
+      }
+
+      return {
+        id,
+        destination: {
+          bucketArn: inventory.destination.bucket.bucketArn,
+          bucketAccountId: inventory.destination.bucketOwner,
+          prefix: inventory.destination.prefix,
+          format,
+        },
+        enabled: inventory.enabled ?? true,
+        includedObjectVersions: inventory.includeObjectVersions ?? InventoryObjectVersion.ALL,
+        scheduleFrequency: frequency,
+        optionalFields: inventory.optionalFields,
+        prefix: inventory.objectsPrefix,
+      };
+    });
   }
 }
 
@@ -1567,11 +1821,58 @@ export enum EventType {
   OBJECT_REMOVED_DELETE_MARKER_CREATED = 's3:ObjectRemoved:DeleteMarkerCreated',
 
   /**
+   * Using restore object event types you can receive notifications for
+   * initiation and completion when restoring objects from the S3 Glacier
+   * storage class.
+   *
+   * You use s3:ObjectRestore:Post to request notification of object restoration
+   * initiation.
+   */
+  OBJECT_RESTORE_POST = 's3:ObjectRestore:Post',
+
+  /**
+   * Using restore object event types you can receive notifications for
+   * initiation and completion when restoring objects from the S3 Glacier
+   * storage class.
+   *
+   * You use s3:ObjectRestore:Completed to request notification of
+   * restoration completion.
+   */
+  OBJECT_RESTORE_COMPLETED = 's3:ObjectRestore:Completed',
+
+  /**
    * You can use this event type to request Amazon S3 to send a notification
    * message when Amazon S3 detects that an object of the RRS storage class is
    * lost.
    */
   REDUCED_REDUNDANCY_LOST_OBJECT = 's3:ReducedRedundancyLostObject',
+
+  /**
+   * You receive this notification event when an object that was eligible for
+   * replication using Amazon S3 Replication Time Control failed to replicate.
+   */
+  REPLICATION_OPERATION_FAILED_REPLICATION = 's3:Replication:OperationFailedReplication',
+
+  /**
+   * You receive this notification event when an object that was eligible for
+   * replication using Amazon S3 Replication Time Control exceeded the 15-minute
+   * threshold for replication.
+   */
+  REPLICATION_OPERATION_MISSED_THRESHOLD = 's3:Replication:OperationMissedThreshold',
+
+  /**
+   * You receive this notification event for an object that was eligible for
+   * replication using the Amazon S3 Replication Time Control feature replicated
+   * after the 15-minute threshold.
+   */
+  REPLICATION_OPERATION_REPLICATED_AFTER_THRESHOLD = 's3:Replication:OperationReplicatedAfterThreshold',
+
+  /**
+   * You receive this notification event for an object that was eligible for
+   * replication using Amazon S3 Replication Time Control but is no longer tracked
+   * by replication metrics.
+   */
+  REPLICATION_OPERATION_NOT_TRACKED = 's3:Replication:OperationNotTracked',
 }
 
 export interface NotificationKeyFilter {
@@ -1730,6 +2031,18 @@ export interface RoutingRule {
    * @default - No condition
    */
   readonly condition?: RoutingRuleCondition;
+}
+
+/**
+ * Options for creating Virtual-Hosted style URL.
+ */
+export interface VirtualHostedStyleUrlOptions {
+  /**
+   * Specifies the URL includes the region.
+   *
+   * @default - true
+   */
+  readonly regional?: boolean;
 }
 
 function mapOrUndefined<T, U>(list: T[] | undefined, callback: (element: T) => U): U[] | undefined {

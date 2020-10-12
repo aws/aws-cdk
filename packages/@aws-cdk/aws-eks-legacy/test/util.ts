@@ -1,5 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
-import { App, Construct, Stack } from '@aws-cdk/core';
+import { App, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Cluster } from '../lib';
 
 export function testFixture() {
@@ -11,7 +12,7 @@ export function testFixture() {
 
 export function testFixtureNoVpc() {
   const app = new App();
-  const stack = new Stack(app, 'Stack', { env: { region: 'us-east-1' }});
+  const stack = new Stack(app, 'Stack', { env: { region: 'us-east-1' } });
   return { stack, app };
 }
 

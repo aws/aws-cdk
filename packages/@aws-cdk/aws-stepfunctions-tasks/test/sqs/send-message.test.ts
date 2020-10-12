@@ -48,7 +48,7 @@ describe('SqsSendMessage', () => {
     const task = new SqsSendMessage(stack, 'Send', {
       queue,
       messageBody: sfn.TaskInput.fromText('Send this message'),
-      messageDeduplicationId: sfn.Data.stringAt('$.deduping'),
+      messageDeduplicationId: sfn.JsonPath.stringAt('$.deduping'),
       comment: 'sending a message to my SQS queue',
       delay: cdk.Duration.seconds(30),
     });
@@ -86,7 +86,7 @@ describe('SqsSendMessage', () => {
       integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
       messageBody: sfn.TaskInput.fromObject({
         Input: 'Send this message',
-        Token: sfn.Context.taskToken,
+        Token: sfn.JsonPath.taskToken,
       }),
     });
 
@@ -152,7 +152,7 @@ describe('SqsSendMessage', () => {
       queue,
       messageBody: sfn.TaskInput.fromObject({
         literal: 'literal',
-        SomeInput: sfn.Data.stringAt('$.theMessage'),
+        SomeInput: sfn.JsonPath.stringAt('$.theMessage'),
       }),
     });
 
@@ -223,7 +223,7 @@ describe('SqsSendMessage', () => {
         integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
         messageBody: sfn.TaskInput.fromText('Send this message'),
       });
-    }).toThrow(/Task Token is required in `messageBody` Use Context.taskToken to set the token./);
+    }).toThrow(/Task Token is required in `messageBody` Use JsonPath.taskToken to set the token./);
   });
 
   test('fails when RUN_JOB integration pattern is used', () => {

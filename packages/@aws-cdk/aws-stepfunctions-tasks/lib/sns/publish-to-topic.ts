@@ -71,7 +71,7 @@ export class PublishToTopic implements sfn.IStepFunctionsTask {
 
     if (this.integrationPattern === sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN) {
       if (!sfn.FieldUtils.containsTaskToken(props.message)) {
-        throw new Error('Task Token is missing in message (pass Context.taskToken somewhere in message)');
+        throw new Error('Task Token is missing in message (pass JsonPath.taskToken somewhere in message)');
       }
     }
   }

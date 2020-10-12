@@ -14,11 +14,9 @@ nyc.config.js
 .LAST_PACKAGE
 *.snk
 
-# Parcel
-.build
-.cache
-
 !test/integ-handlers/js-handler.js
 !test/function.test.handler2.js
 !.eslintrc.js
 !jest.config.js
+
+junit.xml

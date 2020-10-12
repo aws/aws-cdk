@@ -1,6 +1,9 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
-import { Construct, Resource } from '@aws-cdk/core';
+import { PolicyStatement, ServicePrincipal } from '@aws-cdk/aws-iam';
+import { IBucket } from '@aws-cdk/aws-s3';
+import { Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { BaseLoadBalancer, BaseLoadBalancerProps, ILoadBalancerV2 } from '../shared/base-load-balancer';
 import { BaseNetworkListenerProps, NetworkListener } from './network-listener';
 
@@ -67,13 +70,13 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
 
       public get loadBalancerCanonicalHostedZoneId(): string {
         if (attrs.loadBalancerCanonicalHostedZoneId) { return attrs.loadBalancerCanonicalHostedZoneId; }
-        // tslint:disable-next-line:max-line-length
+        // eslint-disable-next-line max-len
         throw new Error(`'loadBalancerCanonicalHostedZoneId' was not provided when constructing Network Load Balancer ${this.node.path} from attributes`);
       }
 
       public get loadBalancerDnsName(): string {
         if (attrs.loadBalancerDnsName) { return attrs.loadBalancerDnsName; }
-        // tslint:disable-next-line:max-line-length
+        // eslint-disable-next-line max-len
         throw new Error(`'loadBalancerDnsName' was not provided when constructing Network Load Balancer ${this.node.path} from attributes`);
       }
     }
@@ -99,6 +102,41 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
       loadBalancer: this,
       ...props,
     });
+  }
+
+  /**
+   * Enable access logging for this load balancer.
+   *
+   * A region must be specified on the stack containing the load balancer; you cannot enable logging on
+   * environment-agnostic stacks. See https://docs.aws.amazon.com/cdk/latest/guide/environments.html
+   *
+   * This is extending the BaseLoadBalancer.logAccessLogs method to match the bucket permissions described
+   * at https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-access-logs.html#access-logging-bucket-requirements
+   */
+  public logAccessLogs(bucket: IBucket, prefix?: string) {
+    super.logAccessLogs(bucket, prefix);
+
+    const logsDeliveryServicePrincipal = new ServicePrincipal('delivery.logs.amazonaws.com');
+
+    bucket.addToResourcePolicy(
+      new PolicyStatement({
+        actions: ['s3:PutObject'],
+        principals: [logsDeliveryServicePrincipal],
+        resources: [
+          bucket.arnForObjects(`${prefix ? prefix + '/' : ''}AWSLogs/${this.stack.account}/*`),
+        ],
+        conditions: {
+          StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' },
+        },
+      }),
+    );
+    bucket.addToResourcePolicy(
+      new PolicyStatement({
+        actions: ['s3:GetBucketAcl'],
+        principals: [logsDeliveryServicePrincipal],
+        resources: [bucket.bucketArn],
+      }),
+    );
   }
 
   /**
@@ -147,6 +185,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
    * The number of targets that are considered healthy.
    *
    * @default Average over 5 minutes
+   * @deprecated use ``NetworkTargetGroup.metricHealthyHostCount`` instead
    */
   public metricHealthyHostCount(props?: cloudwatch.MetricOptions) {
     return this.metric('HealthyHostCount', {
@@ -159,6 +198,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
    * The number of targets that are considered unhealthy.
    *
    * @default Average over 5 minutes
+   * @deprecated use ``NetworkTargetGroup.metricUnHealthyHostCount`` instead
    */
   public metricUnHealthyHostCount(props?: cloudwatch.MetricOptions) {
     return this.metric('UnHealthyHostCount', {

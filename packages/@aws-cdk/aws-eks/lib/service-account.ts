@@ -1,6 +1,12 @@
-import { AddToPrincipalPolicyResult, IPrincipal, IRole, OpenIdConnectPrincipal, PolicyStatement, PrincipalPolicyFragment, Role  } from '@aws-cdk/aws-iam';
-import { CfnJson, Construct  } from '@aws-cdk/core';
+import { AddToPrincipalPolicyResult, IPrincipal, IRole, OpenIdConnectPrincipal, PolicyStatement, PrincipalPolicyFragment, Role } from '@aws-cdk/aws-iam';
+import { CfnJson } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Cluster } from './cluster';
+import { KubernetesManifest } from './k8s-manifest';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Options for `ServiceAccount`
@@ -33,7 +39,7 @@ export interface ServiceAccountProps extends ServiceAccountOptions {
 /**
  * Service Account
  */
-export class ServiceAccount extends Construct implements IPrincipal {
+export class ServiceAccount extends CoreConstruct implements IPrincipal {
   /**
    * The role which is linked to the service account.
    */
@@ -78,20 +84,28 @@ export class ServiceAccount extends Construct implements IPrincipal {
     this.grantPrincipal = this.role.grantPrincipal;
     this.policyFragment = this.role.policyFragment;
 
-    cluster.addResource('ServiceAccount', {
-      apiVersion: 'v1',
-      kind: 'ServiceAccount',
-      metadata: {
-        name: this.serviceAccountName,
-        namespace: this.serviceAccountNamespace,
-        labels: {
-          'app.kubernetes.io/name': this.serviceAccountName,
+    // Note that we cannot use `cluster.addManifest` here because that would create the manifest
+    // constrct in the scope of the cluster stack, which might be a different stack than this one.
+    // This means that the cluster stack would depend on this stack because of the role,
+    // and since this stack inherintely depends on the cluster stack, we will have a circular dependency.
+    new KubernetesManifest(this, `manifest-${id}ServiceAccountResource`, {
+      cluster,
+      manifest: [{
+        apiVersion: 'v1',
+        kind: 'ServiceAccount',
+        metadata: {
+          name: this.serviceAccountName,
+          namespace: this.serviceAccountNamespace,
+          labels: {
+            'app.kubernetes.io/name': this.serviceAccountName,
+          },
+          annotations: {
+            'eks.amazonaws.com/role-arn': this.role.roleArn,
+          },
         },
-        annotations: {
-          'eks.amazonaws.com/role-arn': this.role.roleArn,
-        },
-      },
+      }],
     });
+
   }
 
   public addToPolicy(statement: PolicyStatement): boolean {

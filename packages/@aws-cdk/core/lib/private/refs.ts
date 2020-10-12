@@ -1,10 +1,13 @@
 // ----------------------------------------------------
 // CROSS REFERENCES
 // ----------------------------------------------------
+import * as cxapi from '@aws-cdk/cx-api';
+
 import { CfnElement } from '../cfn-element';
 import { CfnOutput } from '../cfn-output';
 import { CfnParameter } from '../cfn-parameter';
-import { Construct } from '../construct-compat';
+import { Construct, IConstruct } from '../construct-compat';
+import { FeatureFlags } from '../feature-flags';
 import { Reference } from '../reference';
 import { IResolvable } from '../resolvable';
 import { Stack } from '../stack';
@@ -18,7 +21,7 @@ import { makeUniqueId } from './uniqueid';
  * This is called from the App level to resolve all references defined. Each
  * reference is resolved based on it's consumption context.
  */
-export function resolveReferences(scope: Construct): void {
+export function resolveReferences(scope: IConstruct): void {
   const edges = findAllReferences(scope);
 
   for (const { source, value } of edges) {
@@ -105,7 +108,7 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
 /**
  * Finds all the CloudFormation references in a construct tree.
  */
-function findAllReferences(root: Construct) {
+function findAllReferences(root: IConstruct) {
   const result = new Array<{ source: CfnElement, value: CfnReference }>();
   for (const consumer of root.node.findAll()) {
 
@@ -131,7 +134,7 @@ function findAllReferences(root: Construct) {
           value: token,
         });
       }
-    }  catch (e) {
+    } catch (e) {
       // Note: it might be that the properties of the CFN object aren't valid.
       // This will usually be preventatively caught in a construct's validate()
       // and turned into a nicely descriptive error, but we're running prepare()
@@ -199,8 +202,15 @@ function getCreateExportsScope(stack: Stack) {
 }
 
 function generateExportName(stackExports: Construct, id: string) {
+  const stackRelativeExports = FeatureFlags.of(stackExports).isEnabled(cxapi.STACK_RELATIVE_EXPORTS_CONTEXT);
   const stack = Stack.of(stackExports);
-  const components = [...stackExports.node.scopes.slice(2).map(c => c.node.id), id];
+
+  const components = [
+    ...stackExports.node.scopes
+      .slice(stackRelativeExports ? stack.node.scopes.length : 2)
+      .map(c => c.node.id),
+    id,
+  ];
   const prefix = stack.stackName ? stack.stackName + ':' : '';
   const exportName = prefix + makeUniqueId(components);
   return exportName;

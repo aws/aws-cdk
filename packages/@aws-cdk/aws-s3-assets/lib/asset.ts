@@ -1,15 +1,17 @@
+import * as fs from 'fs';
+import * as path from 'path';
 import * as assets from '@aws-cdk/assets';
 import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import * as fs from 'fs';
-import * as path from 'path';
+import { Construct } from 'constructs';
+import { toSymlinkFollow } from './compat';
 
-const ARCHIVE_EXTENSIONS = [ '.zip', '.jar' ];
+const ARCHIVE_EXTENSIONS = ['.zip', '.jar'];
 
-export interface AssetOptions extends assets.CopyOptions {
-
+export interface AssetOptions extends assets.CopyOptions, cdk.AssetOptions {
   /**
    * A list of principals that should be able to read this asset from S3.
    * You can use `asset.grantRead(principal)` to grant read permissions later.
@@ -19,7 +21,9 @@ export interface AssetOptions extends assets.CopyOptions {
   readonly readers?: iam.IGrantable[];
 
   /**
-   * Custom source hash to use when identifying the specific version of the asset.
+   * Custom hash to use when identifying the specific version of the asset. For consistency,
+   * this custom hash will be SHA256 hashed and encoded as hex. The resulting hash will be
+   * the asset hash.
    *
    * NOTE: the source hash is used in order to identify a specific revision of the asset,
    * and used for optimizing and caching deployment activities related to this asset such as
@@ -30,7 +34,7 @@ export interface AssetOptions extends assets.CopyOptions {
    * @default - automatically calculate source hash based on the contents
    * of the source file or directory.
    *
-   * @experimental
+   * @deprecated see `assetHash` and `assetHashType`
    */
   readonly sourceHash?: string;
 }
@@ -50,7 +54,7 @@ export interface AssetProps extends AssetOptions {
  * An asset represents a local file or directory, which is automatically uploaded to S3
  * and then can be referenced within a CDK application.
  */
-export class Asset extends cdk.Construct implements assets.IAsset {
+export class Asset extends cdk.Construct implements cdk.IAsset {
   /**
    * Attribute that represents the name of the bucket this asset exists in.
    */
@@ -98,18 +102,28 @@ export class Asset extends cdk.Construct implements assets.IAsset {
    */
   public readonly isZipArchive: boolean;
 
+  /**
+   * A cryptographic hash of the asset.
+   *
+   * @deprecated see `assetHash`
+   */
   public readonly sourceHash: string;
 
-  constructor(scope: cdk.Construct, id: string, props: AssetProps) {
+  public readonly assetHash: string;
+
+  constructor(scope: Construct, id: string, props: AssetProps) {
     super(scope, id);
 
     // stage the asset source (conditionally).
-    const staging = new assets.Staging(this, 'Stage', {
+    const staging = new cdk.AssetStaging(this, 'Stage', {
       ...props,
       sourcePath: path.resolve(props.path),
+      follow: toSymlinkFollow(props.follow),
+      assetHash: props.assetHash ?? props.sourceHash,
     });
 
-    this.sourceHash = props.sourceHash || staging.sourceHash;
+    this.assetHash = staging.assetHash;
+    this.sourceHash = this.assetHash;
 
     this.assetPath = staging.stagedPath;
 
@@ -134,9 +148,14 @@ export class Asset extends cdk.Construct implements assets.IAsset {
     this.httpUrl = location.httpUrl;
     this.s3Url = location.httpUrl; // for backwards compatibility
 
-    this.bucket = s3.Bucket.fromBucketName(this, 'AssetBucket', this.s3BucketName);
+    const kmsKey = location.kmsKeyArn ? kms.Key.fromKeyArn(this, 'Key', location.kmsKeyArn) : undefined;
 
-    for (const reader of (props.readers || [])) {
+    this.bucket = s3.Bucket.fromBucketAttributes(this, 'AssetBucket', {
+      bucketName: this.s3BucketName,
+      encryptionKey: kmsKey,
+    });
+
+    for (const reader of (props.readers ?? [])) {
       this.grantRead(reader);
     }
   }

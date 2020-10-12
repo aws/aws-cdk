@@ -1,7 +1,8 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
-import { Construct, Duration, IResource, Resource, Stack } from '@aws-cdk/core';
+import { Arn, Duration, IResource, Resource, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { StateGraph } from './state-graph';
 import { CfnStateMachine } from './stepfunctions.generated';
 import { IChainable } from './types';
@@ -118,12 +119,20 @@ export interface StateMachineProps {
    * @default No logging
    */
   readonly logs?: LogOptions;
+
+  /**
+   * Specifies whether Amazon X-Ray tracing is enabled for this state machine.
+   *
+   * @default false
+   */
+  readonly tracingEnabled?: boolean;
 }
 
 /**
  * A new or imported state machine.
  */
 abstract class StateMachineBase extends Resource implements IStateMachine {
+
   /**
    * Import a state machine
    */
@@ -131,7 +140,6 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
     class Import extends StateMachineBase {
       public readonly stateMachineArn = stateMachineArn;
     }
-
     return new Import(scope, id);
   }
 
@@ -146,6 +154,88 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
       grantee: identity,
       actions: ['states:StartExecution'],
       resourceArns: [this.stateMachineArn],
+    });
+  }
+
+  /**
+   * Grant the given identity permissions to read results from state
+   * machine.
+   */
+  public grantRead(identity: iam.IGrantable): iam.Grant {
+    iam.Grant.addToPrincipal({
+      grantee: identity,
+      actions: [
+        'states:ListExecutions',
+        'states:ListStateMachines',
+      ],
+      resourceArns: [this.stateMachineArn],
+    });
+    iam.Grant.addToPrincipal({
+      grantee: identity,
+      actions: [
+        'states:DescribeExecution',
+        'states:DescribeStateMachineForExecution',
+        'states:GetExecutionHistory',
+      ],
+      resourceArns: [`${this.executionArn()}:*`],
+    });
+    return iam.Grant.addToPrincipal({
+      grantee: identity,
+      actions: [
+        'states:ListActivities',
+        'states:DescribeStateMachine',
+        'states:DescribeActivity',
+      ],
+      resourceArns: ['*'],
+    });
+  }
+
+  /**
+   * Grant the given identity task response permissions on a state machine
+   */
+  public grantTaskResponse(identity: iam.IGrantable): iam.Grant {
+    return iam.Grant.addToPrincipal({
+      grantee: identity,
+      actions: [
+        'states:SendTaskSuccess',
+        'states:SendTaskFailure',
+        'states:SendTaskHeartbeat',
+      ],
+      resourceArns: [this.stateMachineArn],
+    });
+  }
+
+  /**
+   * Grant the given identity permissions on all executions of the state machine
+   */
+  public grantExecution(identity: iam.IGrantable, ...actions: string[]) {
+    return iam.Grant.addToPrincipal({
+      grantee: identity,
+      actions,
+      resourceArns: [`${this.executionArn()}:*`],
+    });
+  }
+
+  /**
+   * Grant the given identity custom permissions
+   */
+  public grant(identity: iam.IGrantable, ...actions: string[]): iam.Grant {
+    return iam.Grant.addToPrincipal({
+      grantee: identity,
+      actions,
+      resourceArns: [this.stateMachineArn],
+    });
+  }
+
+  /**
+   * Returns the pattern for the execution ARN's of the state machine
+   */
+  private executionArn(): string {
+    return Stack.of(this).formatArn({
+      resource: 'execution',
+      service: 'states',
+      resourceName: Arn.parse(this.stateMachineArn, ':').resourceName,
+      sep: ':',
     });
   }
 }
@@ -190,37 +280,13 @@ export class StateMachine extends StateMachineBase {
 
     this.stateMachineType = props.stateMachineType ? props.stateMachineType : StateMachineType.STANDARD;
 
-    let loggingConfiguration: CfnStateMachine.LoggingConfigurationProperty | undefined;
-    if (props.logs) {
-      const conf = props.logs;
-      loggingConfiguration = {
-        destinations: [{ cloudWatchLogsLogGroup: { logGroupArn: conf.destination.logGroupArn } }],
-        includeExecutionData: conf.includeExecutionData,
-        level: conf.level || 'ERROR',
-      };
-      // https://docs.aws.amazon.com/step-functions/latest/dg/cw-logs.html#cloudwatch-iam-policy
-      this.addToRolePolicy(new iam.PolicyStatement({
-        effect: iam.Effect.ALLOW,
-        actions: [
-          'logs:CreateLogDelivery',
-          'logs:GetLogDelivery',
-          'logs:UpdateLogDelivery',
-          'logs:DeleteLogDelivery',
-          'logs:ListLogDeliveries',
-          'logs:PutResourcePolicy',
-          'logs:DescribeResourcePolicies',
-          'logs:DescribeLogGroups',
-        ],
-        resources: ['*'],
-      }));
-    }
-
     const resource = new CfnStateMachine(this, 'Resource', {
       stateMachineName: this.physicalName,
       stateMachineType: props.stateMachineType ? props.stateMachineType : undefined,
       roleArn: this.role.roleArn,
       definitionString: Stack.of(this).toJsonString(graph.toGraphJson()),
-      loggingConfiguration,
+      loggingConfiguration: props.logs ? this.buildLoggingConfiguration(props.logs) : undefined,
+      tracingConfiguration: props.tracingEnabled ? this.buildTracingConfiguration() : undefined,
     });
 
     resource.node.addDependency(this.role);
@@ -242,7 +308,7 @@ export class StateMachine extends StateMachineBase {
    * Add the given statement to the role's policy
    */
   public addToRolePolicy(statement: iam.PolicyStatement) {
-    this.role.addToPolicy(statement);
+    this.role.addToPrincipalPolicy(statement);
   }
 
   /**
@@ -322,6 +388,50 @@ export class StateMachine extends StateMachineBase {
   public metricTime(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric('ExecutionTime', props);
   }
+
+  private buildLoggingConfiguration(logOptions: LogOptions): CfnStateMachine.LoggingConfigurationProperty {
+    // https://docs.aws.amazon.com/step-functions/latest/dg/cw-logs.html#cloudwatch-iam-policy
+    this.addToRolePolicy(new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      actions: [
+        'logs:CreateLogDelivery',
+        'logs:GetLogDelivery',
+        'logs:UpdateLogDelivery',
+        'logs:DeleteLogDelivery',
+        'logs:ListLogDeliveries',
+        'logs:PutResourcePolicy',
+        'logs:DescribeResourcePolicies',
+        'logs:DescribeLogGroups',
+      ],
+      resources: ['*'],
+    }));
+
+    return {
+      destinations: [{
+        cloudWatchLogsLogGroup: { logGroupArn: logOptions.destination.logGroupArn },
+      }],
+      includeExecutionData: logOptions.includeExecutionData,
+      level: logOptions.level || 'ERROR',
+    };
+  }
+
+  private buildTracingConfiguration(): CfnStateMachine.TracingConfigurationProperty {
+    this.addToRolePolicy(new iam.PolicyStatement({
+      // https://docs.aws.amazon.com/xray/latest/devguide/security_iam_id-based-policy-examples.html#xray-permissions-resources
+      // https://docs.aws.amazon.com/step-functions/latest/dg/xray-iam.html
+      actions: [
+        'xray:PutTraceSegments',
+        'xray:PutTelemetryRecords',
+        'xray:GetSamplingRules',
+        'xray:GetSamplingTargets',
+      ],
+      resources: ['*'],
+    }));
+
+    return {
+      enabled: true,
+    };
+  }
 }
 
 /**
@@ -341,4 +451,34 @@ export interface IStateMachine extends IResource {
    * @param identity The principal
    */
   grantStartExecution(identity: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grant the given identity read permissions for this state machine
+   *
+   * @param identity The principal
+   */
+  grantRead(identity: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grant the given identity read permissions for this state machine
+   *
+   * @param identity The principal
+   */
+  grantTaskResponse(identity: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grant the given identity permissions for all executions of a state machine
+   *
+   * @param identity The principal
+   * @param actions The list of desired actions
+   */
+  grantExecution(identity: iam.IGrantable, ...actions: string[]): iam.Grant;
+
+  /**
+   * Grant the given identity custom permissions
+   *
+   * @param identity The principal
+   * @param actions The list of desired actions
+   */
+  grant(identity: iam.IGrantable, ...actions: string[]): iam.Grant;
 }

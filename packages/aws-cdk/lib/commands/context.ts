@@ -74,14 +74,14 @@ function listContext(context: any) {
 
   print(renderTable(data, process.stdout.columns));
 
-  // tslint:disable-next-line:max-line-length
+  // eslint-disable-next-line max-len
   print(`Run ${colors.blue('cdk context --reset KEY_OR_NUMBER')} to remove a context key. It will be refreshed on the next CDK synthesis run.`);
 }
 
 function invalidateContext(context: Context, key: string) {
   const i = parseInt(key, 10);
   if (`${i}` === key) {
-    // Twas a number and we fully parsed it.
+    // was a number and we fully parsed it.
     key = keyByNumber(context, i);
   }
 
@@ -106,7 +106,7 @@ function keyByNumber(context: any, n: number) {
 /**
  * Return enumerated keys in a definitive order
  */
-function contextKeys(context: any) {
+function contextKeys(context: Context): [number, string][] {
   const keys = Object.keys(context);
   keys.sort();
   return enumerate1(keys);

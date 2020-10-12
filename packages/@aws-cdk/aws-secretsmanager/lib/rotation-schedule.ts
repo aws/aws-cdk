@@ -1,5 +1,6 @@
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Construct, Duration, Resource } from '@aws-cdk/core';
+import { Duration, Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { ISecret } from './secret';
 import { CfnRotationSchedule } from './secretsmanager.generated';
 
@@ -8,7 +9,7 @@ import { CfnRotationSchedule } from './secretsmanager.generated';
  */
 export interface RotationScheduleOptions {
   /**
-   * THe Lambda function that can rotate the secret.
+   * The Lambda function that can rotate the secret.
    */
   readonly rotationLambda: lambda.IFunction;
 

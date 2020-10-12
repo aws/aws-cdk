@@ -31,18 +31,22 @@ beforeEach(() => {
   sdk = new MockSdk();
 
   cfnMocks = {
+    describeStackEvents: jest.fn().mockReturnValue({}),
     describeStacks: jest.fn()
       // First call, no stacks exist
       .mockImplementationOnce(() => ({ Stacks: [] }))
       // Second call, stack has been created
-      .mockImplementationOnce(() => ({ Stacks: [
-        {
-          StackStatus: 'CREATE_COMPLETE',
-          StackStatusReason: 'It is magic',
-          EnableTerminationProtection: false,
-        },
-      ] })),
+      .mockImplementationOnce(() => ({
+        Stacks: [
+          {
+            StackStatus: 'CREATE_COMPLETE',
+            StackStatusReason: 'It is magic',
+            EnableTerminationProtection: false,
+          },
+        ],
+      })),
     createChangeSet: jest.fn((_o) => ({})),
+    deleteChangeSet: jest.fn((_o) => ({})),
     describeChangeSet: jest.fn((_o) => ({
       Status: 'CREATE_COMPLETE',
       Changes: [],
@@ -191,12 +195,70 @@ test('deploy is skipped if template did not change', async () => {
   expect(cfnMocks.executeChangeSet).not.toBeCalled();
 });
 
+test('deploy is skipped if parameters are the same', async () => {
+  // GIVEN
+  givenTemplateIs(FAKE_STACK_WITH_PARAMETERS.template);
+  givenStackExists({
+    Parameters: [
+      { ParameterKey: 'HasValue', ParameterValue: 'HasValue' },
+      { ParameterKey: 'HasDefault', ParameterValue: 'HasDefault' },
+      { ParameterKey: 'OtherParameter', ParameterValue: 'OtherParameter' },
+    ],
+  });
+
+  // WHEN
+  await deployStack({
+    stack: FAKE_STACK_WITH_PARAMETERS,
+    sdk,
+    sdkProvider,
+    resolvedEnvironment: mockResolvedEnvironment(),
+    parameters: {},
+    usePreviousParameters: true,
+  });
+
+  // THEN
+  expect(cfnMocks.createChangeSet).not.toHaveBeenCalled();
+});
+
+test('deploy is not skipped if parameters are different', async () => {
+  // GIVEN
+  givenTemplateIs(FAKE_STACK_WITH_PARAMETERS.template);
+  givenStackExists({
+    Parameters: [
+      { ParameterKey: 'HasValue', ParameterValue: 'HasValue' },
+      { ParameterKey: 'HasDefault', ParameterValue: 'HasDefault' },
+      { ParameterKey: 'OtherParameter', ParameterValue: 'OtherParameter' },
+    ],
+  });
+
+  // WHEN
+  await deployStack({
+    stack: FAKE_STACK_WITH_PARAMETERS,
+    sdk,
+    sdkProvider,
+    resolvedEnvironment: mockResolvedEnvironment(),
+    parameters: {
+      HasValue: 'NewValue',
+    },
+    usePreviousParameters: true,
+  });
+
+  // THEN
+  expect(cfnMocks.createChangeSet).toHaveBeenCalledWith(expect.objectContaining({
+    Parameters: [
+      { ParameterKey: 'HasValue', ParameterValue: 'NewValue' },
+      { ParameterKey: 'HasDefault', UsePreviousValue: true },
+      { ParameterKey: 'OtherParameter', UsePreviousValue: true },
+    ],
+  }));
+});
+
 test('if existing stack failed to create, it is deleted and recreated', async () => {
   // GIVEN
   givenStackExists(
-    { StackStatus: 'ROLLBACK_COMPLETE' },    // This is for the initial check
-    { StackStatus: 'DELETE_COMPLETE' },      // Poll the successful deletion
-    { StackStatus: 'CREATE_COMPLETE' },      // Poll the recreation
+    { StackStatus: 'ROLLBACK_COMPLETE' }, // This is for the initial check
+    { StackStatus: 'DELETE_COMPLETE' }, // Poll the successful deletion
+    { StackStatus: 'CREATE_COMPLETE' }, // Poll the recreation
   );
   givenTemplateIs({
     DifferentThan: 'TheDefault',
@@ -220,9 +282,9 @@ test('if existing stack failed to create, it is deleted and recreated', async ()
 test('if existing stack failed to create, it is deleted and recreated even if the template did not change', async () => {
   // GIVEN
   givenStackExists(
-    { StackStatus: 'ROLLBACK_COMPLETE' },    // This is for the initial check
-    { StackStatus: 'DELETE_COMPLETE' },      // Poll the successful deletion
-    { StackStatus: 'CREATE_COMPLETE' },      // Poll the recreation
+    { StackStatus: 'ROLLBACK_COMPLETE' }, // This is for the initial check
+    { StackStatus: 'DELETE_COMPLETE' }, // Poll the successful deletion
+    { StackStatus: 'CREATE_COMPLETE' }, // Poll the recreation
   );
 
   // WHEN
@@ -315,6 +377,24 @@ test('deploy not skipped if template did not change but tags changed', async () 
   expect(cfnMocks.getTemplate).toHaveBeenCalledWith({ StackName: 'withouterrors', TemplateStage: 'Original' });
 });
 
+test('deployStack reports no change if describeChangeSet returns specific error', async () => {
+  cfnMocks.describeChangeSet?.mockImplementation(() => ({
+    Status: 'FAILED',
+    StatusReason: 'No updates are to be performed.',
+  }));
+
+  // WHEN
+  const deployResult = await deployStack({
+    stack: FAKE_STACK,
+    sdk,
+    sdkProvider,
+    resolvedEnvironment: mockResolvedEnvironment(),
+  });
+
+  // THEN
+  expect(deployResult.noOp).toEqual(true);
+});
+
 test('deploy not skipped if template did not change but one tag removed', async () => {
   // GIVEN
   givenStackExists({
@@ -341,6 +421,29 @@ test('deploy not skipped if template did not change but one tag removed', async 
   expect(cfnMocks.describeChangeSet).toHaveBeenCalled();
   expect(cfnMocks.describeStacks).toHaveBeenCalledWith({ StackName: 'withouterrors' });
   expect(cfnMocks.getTemplate).toHaveBeenCalledWith({ StackName: 'withouterrors', TemplateStage: 'Original' });
+});
+
+test('existing stack in UPDATE_ROLLBACK_COMPLETE state can be updated', async () => {
+  // GIVEN
+  givenStackExists(
+    { StackStatus: 'UPDATE_ROLLBACK_COMPLETE' }, // This is for the initial check
+    { StackStatus: 'UPDATE_COMPLETE' }, // Poll the update
+  );
+  givenTemplateIs({ changed: 123 });
+
+  // WHEN
+  await deployStack({
+    stack: FAKE_STACK,
+    sdk,
+    sdkProvider,
+    resolvedEnvironment: mockResolvedEnvironment(),
+  });
+
+  // THEN
+  expect(cfnMocks.deleteStack).not.toHaveBeenCalled();
+  expect(cfnMocks.createChangeSet).toHaveBeenCalledWith(expect.objectContaining({
+    ChangeSetType: 'UPDATE',
+  }));
 });
 
 test('deploy not skipped if template changed', async () => {
@@ -543,11 +646,11 @@ function givenStackExists(...overrides: Array<Partial<AWS.CloudFormation.Stack>>
 
   for (const override of overrides.slice(0, overrides.length - 1)) {
     cfnMocks.describeStacks!.mockImplementationOnce(() => ({
-      Stacks: [ {...baseResponse, ...override }],
+      Stacks: [{ ...baseResponse, ...override }],
     }));
   }
   cfnMocks.describeStacks!.mockImplementation(() => ({
-    Stacks: [ {...baseResponse, ...overrides[overrides.length - 1] }],
+    Stacks: [{ ...baseResponse, ...overrides[overrides.length - 1] }],
   }));
 }
 

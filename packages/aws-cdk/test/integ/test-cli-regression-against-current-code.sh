@@ -13,6 +13,8 @@ integdir=$(cd $(dirname $0) && pwd)
 temp_dir=$(mktemp -d)
 
 function cleanup {
+    # keep junit file to allow report creation
+    cp ${integ_under_test}/coverage/junit.xml .
     rm -rf ${temp_dir}
     rm -rf ${integ_under_test}
 }
@@ -70,15 +72,22 @@ download_repo ${VERSION_UNDER_TEST}
 # bad behvaior when using it as directory names.
 sanitized_version=$(sed 's/\//-/g' <<< "${VERSION_UNDER_TEST}")
 
+# Test must be created in the same directory here because the script files liberally
+# include files from '..' and they have to exist.
 integ_under_test=${integdir}/cli-backwards-tests-${sanitized_version}
 rm -rf ${integ_under_test}
 echo "Copying integration tests of version ${VERSION_UNDER_TEST} to ${integ_under_test} (dont worry, its gitignored)"
 cp -r ${temp_dir}/package/test/integ/cli ${integ_under_test}
 
-echo "Hotpatching the test runner (can be removed after release 1.40.0)" >&2
-cp -r ${integdir}/cli/test-jest.sh ${integ_under_test}
-cp -r ${integdir}/cli/jest.config.js ${integ_under_test}
-cp -r ${integdir}/cli/jest.setup.js ${integ_under_test}
+patch_dir="${integdir}/cli-regression-patches/${VERSION_UNDER_TEST}"
+# delete possibly stale junit.xml file
+rm -f ${integ_under_test}/junit.xml
+if [[ -d "$patch_dir" ]]; then
+    echo "Hotpatching the tests with files from $patch_dir" >&2
+    cp -r "$patch_dir"/* ${integ_under_test}
+fi
 
 echo "Running integration tests of version ${VERSION_UNDER_TEST} from ${integ_under_test}"
-VERSION_UNDER_TEST=${VERSION_UNDER_TEST} ${integ_under_test}/test.sh
+set -x
+
+VERSION_UNDER_TEST=${VERSION_UNDER_TEST} ${integ_under_test}/test.sh "$@"

@@ -43,7 +43,7 @@ export = {
       MessageRetentionPeriod: 1209600,
     }));
 
-    expect(stack).to(haveResource('AWS::IAM::Policy',  {
+    expect(stack).to(haveResource('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -140,7 +140,7 @@ export = {
       MessageRetentionPeriod: 604800,
     }));
 
-    expect(stack).to(haveResource('AWS::IAM::Policy',  {
+    expect(stack).to(haveResource('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -223,6 +223,8 @@ export = {
       },
       queue,
       maxScalingCapacity: 5,
+      minHealthyPercent: 60,
+      maxHealthyPercent: 150,
       serviceName: 'fargate-test-service',
       family: 'fargate-task-family',
       platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
@@ -231,6 +233,10 @@ export = {
     // THEN - QueueWorker is of FARGATE launch type, an SQS queue is created and all optional properties are set.
     expect(stack).to(haveResource('AWS::ECS::Service', {
       DesiredCount: 2,
+      DeploymentConfiguration: {
+        MinimumHealthyPercent: 60,
+        MaximumPercent: 150,
+      },
       LaunchType: 'FARGATE',
       ServiceName: 'fargate-test-service',
       PlatformVersion: ecs.FargatePlatformVersion.VERSION1_4,

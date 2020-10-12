@@ -1,9 +1,9 @@
 /* istanbul ignore file */
 
-// eslint-disable-next-line import/no-extraneous-dependencies
-import * as aws from 'aws-sdk';
 import * as tls from 'tls';
 import * as url from 'url';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import * as aws from 'aws-sdk';
 
 let client: aws.IAM;
 
@@ -13,7 +13,7 @@ function iam() {
 }
 
 function defaultLogger(fmt: string, ...args: any[]) {
-  // tslint:disable-next-line: no-console
+  // eslint-disable-next-line no-console
   console.log(fmt, ...args);
 }
 
@@ -41,7 +41,7 @@ async function downloadThumbprint(issuerUrl: string) {
 }
 
 // allows unit test to replace with mocks
-// tslint:disable:max-line-length
+/* eslint-disable max-len */
 export const external = {
   downloadThumbprint,
   log: defaultLogger,

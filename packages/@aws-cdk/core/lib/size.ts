@@ -26,7 +26,7 @@ export class Size {
   }
 
   /**
-   * Create a Storage representing an amount mebibytes.
+   * Create a Storage representing an amount gibibytes.
    * 1 GiB = 1024 MiB
    */
   public static gibibytes(amount: number): Size {
@@ -97,7 +97,7 @@ export class Size {
 }
 
 /**
- * Rouding behaviour when converting between units of `Size`.
+ * Rounding behaviour when converting between units of `Size`.
  */
 export enum SizeRoundingBehavior {
   /** Fail the conversion if the result is not an integer. */

@@ -1,12 +1,11 @@
-lib/*.js
-test/*.js
+lib/**/*.js
+test/**/*.js
 scripts/*.js
 *.js.map
 *.d.ts
 node_modules
 dist
 tsconfig.json
-tslint.json
 .jsii
 
 .LAST_BUILD
@@ -17,3 +16,5 @@ coverage
 nyc.config.js
 !.eslintrc.js
 !jest.config.js
+
+junit.xml

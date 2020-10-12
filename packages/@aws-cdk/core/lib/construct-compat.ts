@@ -10,10 +10,10 @@
  * This file, in its entirety, is expected to be removed in v2.0.
  */
 
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as constructs from 'constructs';
-import { IAspect } from './aspect';
+import { Annotations } from './annotations';
+import { IAspect, Aspects } from './aspect';
 import { IDependable } from './dependency';
 import { Token } from './token';
 
@@ -64,7 +64,7 @@ export class Construct extends constructs.Construct implements IConstruct {
    */
   public readonly node: ConstructNode;
 
-  constructor(scope: Construct, id: string) {
+  constructor(scope: constructs.Construct, id: string) {
     super(scope, id, {
       nodeFactory: {
         createNode: (h: constructs.Construct, s: constructs.IConstruct, i: string) =>
@@ -79,9 +79,15 @@ export class Construct extends constructs.Construct implements IConstruct {
     Object.defineProperty(this, CONSTRUCT_SYMBOL, { value: true });
     this.node = ConstructNode._unwrap(constructs.Node.of(this));
 
-    const disableTrace = this.node.tryGetContext(cxapi.DISABLE_METADATA_STACK_TRACE);
+    const disableTrace =
+      this.node.tryGetContext(cxapi.DISABLE_METADATA_STACK_TRACE) ||
+      this.node.tryGetContext(constructs.ConstructMetadata.DISABLE_STACK_TRACE_IN_METADATA) ||
+      process.env.CDK_DISABLE_STACK_TRACE;
+
     if (disableTrace) {
+      this.node.setContext(cxapi.DISABLE_METADATA_STACK_TRACE, true);
       this.node.setContext(constructs.ConstructMetadata.DISABLE_STACK_TRACE_IN_METADATA, true);
+      process.env.CDK_DISABLE_STACK_TRACE = '1';
     }
   }
 
@@ -182,6 +188,8 @@ export enum ConstructOrder {
 
 /**
  * Options for synthesis.
+ *
+ * @deprecated use `app.synth()` or `stage.synth()` instead
  */
 export interface SynthesisOptions extends cxapi.AssemblyBuildOptions {
   /**
@@ -222,28 +230,25 @@ export class ConstructNode {
 
   /**
    * Synthesizes a CloudAssembly from a construct tree.
-   * @param root The root of the construct tree.
+   * @param node The root of the construct tree.
    * @param options Synthesis options.
+   * @deprecated Use `app.synth()` or `stage.synth()` instead
    */
-  public static synth(root: ConstructNode, options: SynthesisOptions = { }): cxapi.CloudAssembly {
-    const builder = new cxapi.CloudAssemblyBuilder(options.outdir);
-
-    root._actualNode.synthesize({
-      outdir: builder.outdir,
-      skipValidation: options.skipValidation,
-      sessionContext: {
-        assembly: builder,
-      },
-    });
-
-    return builder.buildAssembly(options);
+  public static synth(node: ConstructNode, options: SynthesisOptions = { }): cxapi.CloudAssembly {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const a: typeof import('././private/synthesis') = require('./private/synthesis');
+    return a.synthesize(node.root, options);
   }
 
   /**
    * Invokes "prepare" on all constructs (depth-first, post-order) in the tree under `node`.
    * @param node The root node
+   * @deprecated Use `app.synth()` instead
    */
   public static prepare(node: ConstructNode) {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const p: typeof import('./private/prepare-app') = require('./private/prepare-app');
+    p.prepareApp(node.root); // resolve cross refs and nested stack assets.
     return node._actualNode.prepare();
   }
 
@@ -262,7 +267,13 @@ export class ConstructNode {
    */
   public readonly _actualNode: constructs.Node;
 
+  /**
+   * The Construct class that hosts this API.
+   */
+  private readonly host: Construct;
+
   constructor(host: Construct, scope: IConstruct, id: string) {
+    this.host = host;
     this._actualNode = new constructs.Node(host, scope, id);
 
     // store a back reference on _actualNode so we can our ConstructNode from it
@@ -372,7 +383,7 @@ export class ConstructNode {
    * Context is usually initialized at the root, but can be overridden at any point in the tree.
    *
    * @param key The context key
-   * @returns The context value or `undefined` if there is no context value for thie key.
+   * @returns The context value or `undefined` if there is no context value for the key.
    */
   public tryGetContext(key: string): any {
     if (Token.isUnresolved(key)) {
@@ -400,37 +411,46 @@ export class ConstructNode {
   public addMetadata(type: string, data: any, fromFunction?: any): void { this._actualNode.addMetadata(type, data, fromFunction); }
 
   /**
-   * Adds a { "info": <message> } metadata entry to this construct.
+   * DEPRECATED: Adds a { "info": <message> } metadata entry to this construct.
    * The toolkit will display the info message when apps are synthesized.
    * @param message The info message.
+   * @deprecated use `Annotations.of(construct).addInfo()`
    */
   public addInfo(message: string): void {
-    this._actualNode.addMetadata(cxschema.ArtifactMetadataEntryType.INFO, message);
+    Annotations.of(this.host).addInfo(message);
   }
 
   /**
-   * Adds a { "warning": <message> } metadata entry to this construct.
+   * DEPRECATED: Adds a { "warning": <message> } metadata entry to this construct.
    * The toolkit will display the warning when an app is synthesized, or fail
    * if run in --strict mode.
    * @param message The warning message.
+   * @deprecated use `Annotations.of(construct).addWarning()`
    */
   public addWarning(message: string): void {
-    this._actualNode.addMetadata(cxschema.ArtifactMetadataEntryType.WARN, message);
+    Annotations.of(this.host).addWarning(message);
   }
 
   /**
-   * Adds an { "error": <message> } metadata entry to this construct.
+   * DEPRECATED: Adds an { "error": <message> } metadata entry to this construct.
    * The toolkit will fail synthesis when errors are reported.
    * @param message The error message.
+   * @deprecated use `Annotations.of(construct).addError()`
    */
   public addError(message: string) {
-    this._actualNode.addMetadata(cxschema.ArtifactMetadataEntryType.ERROR, message);
+    Annotations.of(this.host).addError(message);
   }
 
   /**
-   * Applies the aspect to this Constructs node
+   * DEPRECATED: Applies the aspect to this Constructs node
+   *
+   * @deprecated This API is going to be removed in the next major version of
+   * the AWS CDK. Please use `Aspects.of(scope).add()` instead.
    */
-  public applyAspect(aspect: IAspect): void { this._actualNode.applyAspect(aspect); }
+  public applyAspect(aspect: IAspect): void {
+    Annotations.of(this.host).addDeprecation('@aws-cdk/core.ConstructNode.applyAspect', 'Use "Aspects.of(construct).add(aspect)" instead');
+    Aspects.of(this.host).add(aspect);
+  }
 
   /**
    * All parent scopes of this construct.

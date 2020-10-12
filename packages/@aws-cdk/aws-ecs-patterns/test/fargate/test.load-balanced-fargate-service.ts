@@ -3,6 +3,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import { ApplicationLoadBalancer, ApplicationProtocol, NetworkLoadBalancer } from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as iam from '@aws-cdk/aws-iam';
+import * as route53 from '@aws-cdk/aws-route53';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as ecsPatterns from '../../lib';
@@ -370,13 +371,10 @@ export = {
       cluster,
       protocol: ApplicationProtocol.HTTPS,
       domainName: 'domain.com',
-      domainZone: {
+      domainZone: route53.HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
         hostedZoneId: 'fakeId',
         zoneName: 'domain.com',
-        hostedZoneArn: 'arn:aws:route53:::hostedzone/fakeId',
-        stack,
-        node: stack.node,
-      },
+      }),
       taskImageOptions: {
         containerPort: 2015,
         image: ecs.ContainerImage.fromRegistry('abiosoft/caddy'),
@@ -408,13 +406,10 @@ export = {
       cluster,
       protocol: ApplicationProtocol.HTTPS,
       domainName: 'test.domain.com',
-      domainZone: {
+      domainZone: route53.HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
         hostedZoneId: 'fakeId',
         zoneName: 'domain.com.',
-        hostedZoneArn: 'arn:aws:route53:::hostedzone/fakeId',
-        stack,
-        node: stack.node,
-      },
+      }),
       taskImageOptions: {
         containerPort: 2015,
         image: ecs.ContainerImage.fromRegistry('abiosoft/caddy'),
@@ -515,7 +510,8 @@ export = {
 
   'passing in imported network load balancer and resources to NLB Fargate service'(test: Test) {
     // GIVEN
-    const stack1 = new cdk.Stack();
+    const app = new cdk.App();
+    const stack1 = new cdk.Stack(app, 'MyStack');
     const vpc1 = new ec2.Vpc(stack1, 'VPC');
     const cluster1 = new ecs.Cluster(stack1, 'Cluster', { vpc: vpc1 });
     const nlbArn = 'arn:aws:elasticloadbalancing::000000000000::dummyloadbalancer';
@@ -553,7 +549,7 @@ export = {
     // THEN
     expect(stack2).to(haveResourceLike('AWS::ECS::Service', {
       LaunchType: 'FARGATE',
-      LoadBalancers: [{ContainerName: 'myContainer', ContainerPort: 80}],
+      LoadBalancers: [{ ContainerName: 'myContainer', ContainerPort: 80 }],
     }));
     expect(stack2).to(haveResourceLike('AWS::ElasticLoadBalancingV2::TargetGroup'));
     expect(stack2).to(haveResourceLike('AWS::ElasticLoadBalancingV2::Listener', {
@@ -612,7 +608,7 @@ export = {
       cpu: 1024,
       memoryLimitMiB: 1024,
     });
-    const container = taskDef.addContainer('Container',  {
+    const container = taskDef.addContainer('Container', {
       image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
       memoryLimitMiB: 1024,
     });
@@ -630,7 +626,7 @@ export = {
     // THEN
     expect(stack1).to(haveResourceLike('AWS::ECS::Service', {
       LaunchType: 'FARGATE',
-      LoadBalancers: [{ContainerName: 'Container', ContainerPort: 80}],
+      LoadBalancers: [{ ContainerName: 'Container', ContainerPort: 80 }],
     }));
     expect(stack1).to(haveResourceLike('AWS::ElasticLoadBalancingV2::TargetGroup'));
     expect(stack1).to(haveResourceLike('AWS::ElasticLoadBalancingV2::Listener', {
@@ -638,6 +634,50 @@ export = {
       Port: 80,
     }));
 
+    test.done();
+  },
+
+  'passing in previously created security groups to ALB Fargate Service'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc, clusterName: 'MyCluster' });
+    const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
+      allowAllOutbound: false,
+      description: 'Example',
+      securityGroupName: 'Rolly',
+      vpc,
+    });
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+      cluster,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      },
+      securityGroups: [securityGroup],
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::Service', {
+      LaunchType: 'FARGATE',
+    }));
+    expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
+      GroupDescription: 'Example',
+      GroupName: 'Rolly',
+      SecurityGroupEgress: [
+        {
+          CidrIp: '255.255.255.255/32',
+          Description: 'Disallow all traffic',
+          FromPort: 252,
+          IpProtocol: 'icmp',
+          ToPort: 86,
+        },
+      ],
+      VpcId: {
+        Ref: 'Vpc8378EB38',
+      },
+    }));
     test.done();
   },
 

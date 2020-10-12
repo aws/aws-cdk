@@ -1,5 +1,11 @@
-import { Construct, CustomResource, Stack } from '@aws-cdk/core';
-import { Cluster } from './cluster';
+import { CustomResource, Duration, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
+import { ICluster } from './cluster';
+import { KubectlProvider } from './kubectl-provider';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Helm Chart options.
@@ -47,6 +53,18 @@ export interface HelmChartOptions {
    * @default - Helm will not wait before marking release as successful
    */
   readonly wait?: boolean;
+
+  /**
+   * Amount of time to wait for any individual Kubernetes operation. Maximum 15 minutes.
+   * @default Duration.minutes(5)
+   */
+  readonly timeout?: Duration;
+
+  /**
+   * create namespace if not exist
+   * @default true
+   */
+  readonly createNamespace?: boolean;
 }
 
 /**
@@ -58,7 +76,7 @@ export interface HelmChartProps extends HelmChartOptions {
    *
    * [disable-awslint:ref-via-interface]
    */
-  readonly cluster: Cluster;
+  readonly cluster: ICluster;
 }
 
 /**
@@ -66,9 +84,9 @@ export interface HelmChartProps extends HelmChartOptions {
  *
  * Applies/deletes the resources using `kubectl` in sync with the resource.
  */
-export class HelmChart extends Construct {
+export class HelmChart extends CoreConstruct {
   /**
-   * The CloudFormation reosurce type.
+   * The CloudFormation resource type.
    */
   public static readonly RESOURCE_TYPE = 'Custom::AWSCDK-EKS-HelmChart';
 
@@ -77,21 +95,33 @@ export class HelmChart extends Construct {
 
     const stack = Stack.of(this);
 
-    const provider = props.cluster._kubectlProvider;
+    const provider = KubectlProvider.getOrCreate(this, props.cluster);
+
+    const timeout = props.timeout?.toSeconds();
+    if (timeout && timeout > 900) {
+      throw new Error('Helm chart timeout cannot be higher than 15 minutes.');
+    }
+
+    // default not to wait
+    const wait = props.wait ?? false;
+    // default to create new namespace
+    const createNamespace = props.createNamespace ?? true;
 
     new CustomResource(this, 'Resource', {
       serviceToken: provider.serviceToken,
       resourceType: HelmChart.RESOURCE_TYPE,
       properties: {
         ClusterName: props.cluster.clusterName,
-        RoleArn: props.cluster._getKubectlCreationRoleArn(provider.role),
-        Release: props.release || this.node.uniqueId.slice(-53).toLowerCase(), // Helm has a 53 character limit for the name
+        RoleArn: provider.roleArn, // TODO: bake into the provider's environment
+        Release: props.release ?? this.node.uniqueId.slice(-53).toLowerCase(), // Helm has a 53 character limit for the name
         Chart: props.chart,
         Version: props.version,
-        Wait: props.wait || false,
+        Wait: wait || undefined, // props are stringified so we encode “false” as undefined
+        Timeout: timeout ? `${timeout.toString()}s` : undefined, // Helm v3 expects duration instead of integer
         Values: (props.values ? stack.toJsonString(props.values) : undefined),
-        Namespace: props.namespace || 'default',
+        Namespace: props.namespace ?? 'default',
         Repository: props.repository,
+        CreateNamespace: createNamespace || undefined,
       },
     });
   }

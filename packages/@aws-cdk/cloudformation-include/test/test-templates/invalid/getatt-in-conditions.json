@@ -1,0 +1,15 @@
+{
+  "Conditions": {
+    "MyCond": {
+      "Fn::Equals": [
+        { "Fn::GetAtt": ["Bucket", "Arn"] },
+        "my-arn"
+      ]
+    }
+  },
+  "Resources": {
+    "Bucket": {
+      "Type": "AWS::S3::Bucket"
+    }
+  }
+}

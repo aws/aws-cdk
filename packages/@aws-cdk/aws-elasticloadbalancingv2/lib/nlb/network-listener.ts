@@ -1,8 +1,10 @@
-import { Construct, Duration, IResource, Resource } from '@aws-cdk/core';
+import { Duration, IResource, Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { BaseListener } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
 import { Protocol, SslPolicy } from '../shared/enums';
 import { IListenerCertificate } from '../shared/listener-certificate';
+import { validateNetworkProtocol } from '../shared/util';
 import { NetworkListenerAction } from './network-listener-action';
 import { INetworkLoadBalancer } from './network-load-balancer';
 import { INetworkLoadBalancerTarget, INetworkTargetGroup, NetworkTargetGroup } from './network-target-group';
@@ -43,7 +45,7 @@ export interface BaseNetworkListenerProps {
   readonly defaultAction?: NetworkListenerAction;
 
   /**
-   * Protocol for listener, expects TCP or TLS
+   * Protocol for listener, expects TCP, TLS, UDP, or TCP_UDP.
    *
    * @default - TLS if certificates are provided. TCP otherwise.
    */
@@ -106,13 +108,16 @@ export class NetworkListener extends BaseListener implements INetworkListener {
    */
   private readonly loadBalancer: INetworkLoadBalancer;
 
+  /**
+   * the protocol of the listener
+   */
+  private readonly protocol: Protocol;
+
   constructor(scope: Construct, id: string, props: NetworkListenerProps) {
     const certs = props.certificates || [];
     const proto = props.protocol || (certs.length > 0 ? Protocol.TLS : Protocol.TCP);
 
-    if (NLB_PROTOCOLS.indexOf(proto) === -1) {
-      throw new Error(`The protocol must be one of ${NLB_PROTOCOLS.join(', ')}. Found ${props.protocol}`);
-    }
+    validateNetworkProtocol(proto);
 
     if (proto === Protocol.TLS && certs.filter(v => v != null).length === 0) {
       throw new Error('When the protocol is set to TLS, you must specify certificates');
@@ -131,6 +136,7 @@ export class NetworkListener extends BaseListener implements INetworkListener {
     });
 
     this.loadBalancer = props.loadBalancer;
+    this.protocol = proto;
 
     if (props.defaultAction && props.defaultTargetGroups) {
       throw new Error('Specify at most one of \'defaultAction\' and \'defaultTargetGroups\'');
@@ -182,7 +188,7 @@ export class NetworkListener extends BaseListener implements INetworkListener {
    */
   public addTargets(id: string, props: AddNetworkTargetsProps): NetworkTargetGroup {
     if (!this.loadBalancer.vpc) {
-      // tslint:disable-next-line:max-line-length
+      // eslint-disable-next-line max-len
       throw new Error('Can only call addTargets() when using a constructed Load Balancer or imported Load Balancer with specified VPC; construct a new TargetGroup and use addTargetGroup');
     }
 
@@ -190,6 +196,7 @@ export class NetworkListener extends BaseListener implements INetworkListener {
       deregistrationDelay: props.deregistrationDelay,
       healthCheck: props.healthCheck,
       port: props.port,
+      protocol: props.protocol ?? this.protocol,
       proxyProtocolV2: props.proxyProtocolV2,
       targetGroupName: props.targetGroupName,
       targets: props.targets,
@@ -243,6 +250,13 @@ export interface AddNetworkTargetsProps {
   readonly port: number;
 
   /**
+   * Protocol for target group, expects TCP, TLS, UDP, or TCP_UDP.
+   *
+   * @default - inherits the protocol of the listener
+   */
+  readonly protocol?: Protocol;
+
+  /**
    * The targets to add to this target group.
    *
    * Can be `Instance`, `IPAddress`, or any self-registering load balancing
@@ -285,5 +299,3 @@ export interface AddNetworkTargetsProps {
    */
   readonly healthCheck?: HealthCheck;
 }
-
-const NLB_PROTOCOLS = [Protocol.TCP, Protocol.TLS, Protocol.UDP, Protocol.TCP_UDP];

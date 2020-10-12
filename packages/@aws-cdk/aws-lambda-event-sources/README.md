@@ -25,7 +25,7 @@ The following code sets up a lambda function with an SQS queue event source -
 const fn = new lambda.Function(this, 'MyFunction', { /* ... */ });
 
 const queue = new sqs.Queue(this, 'MyQueue');
-const eventSource = lambda.addEventSource(new SqsEventSource(queue);
+const eventSource = fn.addEventSource(new SqsEventSource(queue));
 
 const eventSourceId = eventSource.eventSourceId;
 ```
@@ -113,8 +113,12 @@ import * as sns from '@aws-cdk/aws-sns';
 import { SnsEventSource } from '@aws-cdk/aws-lambda-event-sources';
 
 const topic = new sns.Topic(...);
+const deadLetterQueue = new sqs.Queue(this, 'deadLetterQueue');
 
-lambda.addEventSource(new SnsEventSource(topic));
+lambda.addEventSource(new SnsEventSource(topic, {
+  filterPolicy: { ... },
+  deadLetterQueue: deadLetterQueue
+}));
 ```
 
 When a user calls the SNS Publish API on a topic that your Lambda function is

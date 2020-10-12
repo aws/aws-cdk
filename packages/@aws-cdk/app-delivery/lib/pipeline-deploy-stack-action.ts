@@ -33,11 +33,25 @@ export interface PipelineDeployStackActionProps {
   readonly createChangeSetRunOrder?: number;
 
   /**
+   * The name of the CodePipeline action creating the ChangeSet.
+   *
+   * @default 'ChangeSet'
+   */
+  readonly createChangeSetActionName?: string;
+
+  /**
    * The runOrder for the CodePipeline action executing the ChangeSet.
    *
    * @default ``createChangeSetRunOrder + 1``
    */
   readonly executeChangeSetRunOrder?: number;
+
+  /**
+   * The name of the CodePipeline action creating the ChangeSet.
+   *
+   * @default 'Execute'
+   */
+  readonly executeChangeSetActionName?: string;
 
   /**
    * IAM role to assume when deploying changes.
@@ -116,7 +130,7 @@ export class PipelineDeployStackAction implements codepipeline.IAction {
     const changeSetName = props.changeSetName || 'CDK-CodePipeline-ChangeSet';
     const capabilities = cfnCapabilities(props.adminPermissions, props.capabilities);
     this.prepareChangeSetAction = new cpactions.CloudFormationCreateReplaceChangeSetAction({
-      actionName: 'ChangeSet',
+      actionName: props.createChangeSetActionName ?? 'ChangeSet',
       changeSetName,
       runOrder: createChangeSetRunOrder,
       stackName: props.stack.stackName,
@@ -126,7 +140,7 @@ export class PipelineDeployStackAction implements codepipeline.IAction {
       capabilities,
     });
     this.executeChangeSetAction = new cpactions.CloudFormationExecuteChangeSetAction({
-      actionName: 'Execute',
+      actionName: props.executeChangeSetActionName ?? 'Execute',
       changeSetName,
       runOrder: executeChangeSetRunOrder,
       stackName: this.stack.stackName,

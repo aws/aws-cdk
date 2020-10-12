@@ -2,6 +2,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as sqs from '@aws-cdk/aws-sqs';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 /**
@@ -65,7 +66,7 @@ export class SqsSendMessage extends sfn.TaskStateBase {
 
   private readonly integrationPattern: sfn.IntegrationPattern;
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: SqsSendMessageProps) {
+  constructor(scope: Construct, id: string, private readonly props: SqsSendMessageProps) {
     super(scope, id, props);
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
 
@@ -73,7 +74,7 @@ export class SqsSendMessage extends sfn.TaskStateBase {
 
     if (props.integrationPattern === sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN) {
       if (!sfn.FieldUtils.containsTaskToken(props.messageBody)) {
-        throw new Error('Task Token is required in `messageBody` Use Context.taskToken to set the token.');
+        throw new Error('Task Token is required in `messageBody` Use JsonPath.taskToken to set the token.');
       }
     }
 
@@ -88,7 +89,10 @@ export class SqsSendMessage extends sfn.TaskStateBase {
   /**
    * Provides the SQS SendMessage service integration task configuration
    */
-  protected renderTask(): any {
+  /**
+   * @internal
+   */
+  protected _renderTask(): any {
     return {
       Resource: integrationResourceArn('sqs', 'sendMessage', this.integrationPattern),
       Parameters: sfn.FieldUtils.renderObject({

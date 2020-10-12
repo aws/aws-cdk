@@ -154,7 +154,7 @@ export = {
 
     'fluent-bit log router container with options'(test: Test) {
       // GIVEN
-      const stack2 = new cdk.Stack(undefined, 'Stack2', { env: { region: 'us-east-1' }});
+      const stack2 = new cdk.Stack(undefined, 'Stack2', { env: { region: 'us-east-1' } });
       const td2 = new ecs.Ec2TaskDefinition(stack2, 'TaskDefinition');
       td2.addFirelensLogRouter('log_router', {
         image: ecs.obtainDefaultFluentBitECRImage(td2, undefined, '2.1.0'),
@@ -203,7 +203,7 @@ export = {
             configFileValue: '/my/working/dir/firelens/config',
           },
         },
-        logging: new ecs.AwsLogDriver({streamPrefix: 'firelens'}),
+        logging: new ecs.AwsLogDriver({ streamPrefix: 'firelens' }),
         memoryReservationMiB: 50,
       });
 

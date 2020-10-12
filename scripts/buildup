@@ -11,16 +11,14 @@ echo " for advanced usage, see ${scriptdir}/foreach.sh"
 echo "************************************************************"
 
 if [ "$#" -eq 0 ]; then
-  ${scriptdir}/foreach.sh --reset
+  ${scriptdir}/foreach.sh --reset --up yarn build
 else
   if [ "$1" != "--resume" ]; then
     echo "Unknown option: $1"
     exit 1
   fi
+  ${scriptdir}/foreach.sh --up yarn build
 fi
-
-${scriptdir}/foreach.sh --up yarn build+test
-${scriptdir}/foreach.sh --reset
 
 echo "************************************************************"
 echo "buildup done"

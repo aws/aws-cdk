@@ -47,7 +47,6 @@ export interface BitBucketSourceActionProps extends codepipeline.CommonAwsAction
   readonly branch?: string;
 
   // long URL in @see
-  // tslint:disable:max-line-length
   /**
    * Whether the output should be the contents of the repository
    * (which is the default),
@@ -60,7 +59,6 @@ export interface BitBucketSourceActionProps extends codepipeline.CommonAwsAction
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-CodestarConnectionSource.html#action-reference-CodestarConnectionSource-config
    */
   readonly codeBuildCloneOutput?: boolean;
-  // tslint:enable:max-line-length
 }
 
 /**
@@ -69,6 +67,14 @@ export interface BitBucketSourceActionProps extends codepipeline.CommonAwsAction
  * @experimental
  */
 export class BitBucketSourceAction extends Action {
+  /**
+   * The name of the property that holds the ARN of the CodeStar Connection
+   * inside of the CodePipeline Artifact's metadata.
+   *
+   * @internal
+   */
+  public static readonly _CONNECTION_ARN_PROPERTY = 'CodeStarConnectionArnProperty';
+
   private readonly props: BitBucketSourceActionProps;
 
   constructor(props: BitBucketSourceActionProps) {
@@ -97,6 +103,14 @@ export class BitBucketSourceAction extends Action {
 
     // the action needs to write the output to the pipeline bucket
     options.bucket.grantReadWrite(options.role);
+
+    // if codeBuildCloneOutput is true,
+    // save the connectionArn in the Artifact instance
+    // to be read by the CodeBuildAction later
+    if (this.props.codeBuildCloneOutput === true) {
+      this.props.output.setMetadata(BitBucketSourceAction._CONNECTION_ARN_PROPERTY,
+        this.props.connectionArn);
+    }
 
     return {
       configuration: {

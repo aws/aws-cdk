@@ -23,7 +23,7 @@ export class FileAssetParameters extends Construct {
       description: `S3 key for asset version "${id}"`,
     });
 
-    this.artifactHashParameter   = new CfnParameter(this, 'ArtifactHash', {
+    this.artifactHashParameter = new CfnParameter(this, 'ArtifactHash', {
       description: `Artifact hash for asset "${id}"`,
       type: 'String',
     });

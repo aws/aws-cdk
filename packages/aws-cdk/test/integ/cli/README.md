@@ -20,9 +20,6 @@ Running against a failing dist build:
 
 ## Adding tests
 
-Older tests were written in bash; new tests should be written in
-TypeScript/Jest, that is much more comfortable to write in.
-
 Even though tests are now written in TypeScript, this does not
 conceptually change their SUT! They are still testing the CLI via
 running it as a subprocess, they are NOT reaching directly into the CLI
@@ -34,8 +31,8 @@ Compilation of the tests is done as part of the normal package build, at
 which point it is using the dependencies brought in by the containing
 `aws-cdk` package's `package.json`.
 
-When run in a non-develompent repo (as done during integ tests or canary runs),
-the required dependencies are brought in just-in-time via `test-jest.sh`. Any
+When run in a non-development repo (as done during integ tests or canary runs),
+the required dependencies are brought in just-in-time via `test.sh`. Any
 new dependencies added for the tests should be added there as well. But, better
 yet, don't add any dependencies at all. You shouldn't need to, these tests
 are simple.
@@ -47,10 +44,5 @@ AWS credentials must be configured.
 Optional configuration:
 
 * `AWS_DEFAULT_REGION`, what region to deploy the stacks in.
-* `STACK_NAME_PREFIX`, used to run multiple instances of these tests in the
-  same account side-by-side without them stepping on each other. Using
-  a unique name on every run is risky since the account may overflow with
-  stacks if cleanup happens to fail. Defaults based on the value of `IS_CANARY`
-  if not supplied.
 * `IS_CANARY`, true or false. Affects the default stack name prefix to make
   integration test and canary runs unique.

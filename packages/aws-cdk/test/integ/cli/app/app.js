@@ -9,7 +9,10 @@ const docker = require('@aws-cdk/aws-ecr-assets');
 const core = require('@aws-cdk/core')
 const { StackWithNestedStack, StackWithNestedStackUsingParameters } = require('./nested-stack');
 
-const stackPrefix = process.env.STACK_NAME_PREFIX || 'cdk-toolkit-integration';
+const stackPrefix = process.env.STACK_NAME_PREFIX;
+if (!stackPrefix) {
+  throw new Error(`the STACK_NAME_PREFIX environment variable is required`);
+}
 
 class MyStack extends cdk.Stack {
   constructor(parent, id, props) {
@@ -107,7 +110,7 @@ class IamStack extends cdk.Stack {
     super(parent, id, props);
 
     new iam.Role(this, 'SomeRole', {
-      assumedBy: new iam.ServicePrincipal('ec2.amazon.aws.com')
+      assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')
     });
   }
 }
@@ -236,6 +239,14 @@ class ConditionalResourceStack extends cdk.Stack {
   }
 }
 
+class SomeStage extends cdk.Stage {
+  constructor(parent, id, props) {
+    super(parent, id, props);
+
+    new YourStack(this, 'StackInStage');
+  }
+}
+
 const app = new cdk.App();
 
 const defaultEnv = {
@@ -255,7 +266,7 @@ new MultiParameterStack(app, `${stackPrefix}-param-test-3`);
 new OutputsStack(app, `${stackPrefix}-outputs-test-1`);
 new AnotherOutputsStack(app, `${stackPrefix}-outputs-test-2`);
 // Not included in wildcard
-new IamStack(app, `${stackPrefix}-iam-test`);
+new IamStack(app, `${stackPrefix}-iam-test`, { env: defaultEnv });
 const providing = new ProvidingStack(app, `${stackPrefix}-order-providing`);
 new ConsumingStack(app, `${stackPrefix}-order-consuming`, { providingStack: providing });
 
@@ -280,7 +291,9 @@ new StackWithNestedStack(app, `${stackPrefix}-with-nested-stack`);
 new StackWithNestedStackUsingParameters(app, `${stackPrefix}-with-nested-stack-using-parameters`);
 
 new YourStack(app, `${stackPrefix}-termination-protection`, {
-  terminationProtection: true,
+  terminationProtection: process.env.TERMINATION_PROTECTION !== 'FALSE' ? true : false,
 });
+
+new SomeStage(app, `${stackPrefix}-stage`);
 
 app.synth();

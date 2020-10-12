@@ -1,11 +1,12 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
+import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Chain } from '../chain';
 import { StateGraph } from '../state-graph';
 import { CatchProps, IChainable, INextable, RetryProps } from '../types';
 import { renderJsonPath, State } from './state';
 
-import * as cdk from '@aws-cdk/core';
 
 /**
  * Props that are common to all tasks
@@ -21,7 +22,7 @@ export interface TaskStateBaseProps {
   /**
    * JSONPath expression to select part of the state to be the input to this state.
    *
-   * May also be the special value DISCARD, which will cause the effective
+   * May also be the special value JsonPath.DISCARD, which will cause the effective
    * input to be the empty object {}.
    *
    * @default - The entire task input (JSON path '$')
@@ -32,7 +33,7 @@ export interface TaskStateBaseProps {
    * JSONPath expression to select select a portion of the state output to pass
    * to the next state.
    *
-   * May also be the special value DISCARD, which will cause the effective
+   * May also be the special value JsonPath.DISCARD, which will cause the effective
    * output to be the empty object {}.
    *
    * @default - The entire JSON node determined by the state input, the task result,
@@ -43,7 +44,7 @@ export interface TaskStateBaseProps {
   /**
    * JSONPath expression to indicate where to inject the state's output
    *
-   * May also be the special value DISCARD, which will cause the state's
+   * May also be the special value JsonPath.DISCARD, which will cause the state's
    * input to become its output.
    *
    * @default - Replaces the entire input with the result (JSON path '$')
@@ -95,7 +96,7 @@ export abstract class TaskStateBase extends State implements INextable {
   private readonly timeout?: cdk.Duration;
   private readonly heartbeat?: cdk.Duration;
 
-  constructor(scope: cdk.Construct, id: string, props: TaskStateBaseProps) {
+  constructor(scope: Construct, id: string, props: TaskStateBaseProps) {
     super(scope, id, props);
     this.endStates = [this];
     this.timeout = props.timeout;
@@ -140,7 +141,7 @@ export abstract class TaskStateBase extends State implements INextable {
       ...this.renderNextEnd(),
       ...this.renderRetryCatch(),
       ...this.renderTaskBase(),
-      ...this.renderTask(),
+      ...this._renderTask(),
     };
   }
 
@@ -247,7 +248,10 @@ export abstract class TaskStateBase extends State implements INextable {
     }
   }
 
-  protected abstract renderTask(): any;
+  /**
+   * @internal
+   */
+  protected abstract _renderTask(): any;
 
   private taskMetric(prefix: string | undefined, suffix: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     if (prefix === undefined) {

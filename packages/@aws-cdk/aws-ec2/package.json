@@ -1,7 +1,7 @@
 {
   "name": "@aws-cdk/aws-ec2",
   "version": "0.0.0",
-  "description": "CDK Constructs for AWS EC2",
+  "description": "The CDK Construct Library for AWS::EC2",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
@@ -23,9 +23,14 @@
       },
       "python": {
         "distName": "aws-cdk.aws-ec2",
-        "module": "aws_cdk.aws_ec2"
+        "module": "aws_cdk.aws_ec2",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",
@@ -47,7 +52,11 @@
     "compat": "cdk-compat"
   },
   "cdk-build": {
-    "cloudformation": "AWS::EC2"
+    "cloudformation": "AWS::EC2",
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": "true"
+    }
   },
   "keywords": [
     "aws",
@@ -63,38 +72,42 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
-    "@types/nodeunit": "^0.0.31",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
-    "nodeunit": "^0.11.3",
+    "nodeunit-shim": "0.0.0",
     "pkglint": "0.0.0",
     "@aws-cdk/cloud-assembly-schema": "0.0.0"
   },
   "dependencies": {
     "@aws-cdk/aws-cloudwatch": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-kms": "0.0.0",
     "@aws-cdk/aws-logs": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
+    "@aws-cdk/aws-s3-assets": "0.0.0",
     "@aws-cdk/aws-ssm": "0.0.0",
+    "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
-    "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.0.4"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
+    "@aws-cdk/assets": "0.0.0",
     "@aws-cdk/aws-cloudwatch": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-kms": "0.0.0",
     "@aws-cdk/aws-logs": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
+    "@aws-cdk/aws-s3-assets": "0.0.0",
     "@aws-cdk/aws-ssm": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.0.4"
   },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
@@ -115,6 +128,7 @@
       "props-physical-name:@aws-cdk/aws-ec2.InterfaceVpcEndpointProps",
       "from-method:@aws-cdk/aws-ec2.Instance",
       "from-method:@aws-cdk/aws-ec2.VpcEndpointService",
+      "attribute-tag:@aws-cdk/aws-ec2.BastionHostLinux.instance",
       "attribute-tag:@aws-cdk/aws-ec2.Instance.instance",
       "from-signature:@aws-cdk/aws-ec2.SecurityGroup.fromSecurityGroupId",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2016_ENGLISH_DEEP_LEARNING",
@@ -215,6 +229,7 @@
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.ELASTIC_INFERENCE_RUNTIME",
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.ELASTIC_LOAD_BALANCING",
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.KINESIS_STREAMS",
+      "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.KINESIS_FIREHOSE",
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.KMS",
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.SAGEMAKER_API",
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.SAGEMAKER_NOTEBOOK",
@@ -231,6 +246,7 @@
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.STORAGE_GATEWAY",
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.REKOGNITION",
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.REKOGNITION_FIPS",
+      "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.STEP_FUNCTIONS",
       "docs-public-apis:@aws-cdk/aws-ec2.Port.toString",
       "docs-public-apis:@aws-cdk/aws-ec2.PrivateSubnet.fromPrivateSubnetAttributes",
       "docs-public-apis:@aws-cdk/aws-ec2.PublicSubnet.fromPublicSubnetAttributes",
@@ -288,23 +304,6 @@
       "docs-public-apis:@aws-cdk/aws-ec2.VpnConnectionProps",
       "docs-public-apis:@aws-cdk/aws-ec2.VpnTunnelOption",
       "docs-public-apis:@aws-cdk/aws-ec2.AmazonLinuxStorage",
-      "docs-public-apis:@aws-cdk/aws-ec2.InstanceSize.NANO",
-      "docs-public-apis:@aws-cdk/aws-ec2.InstanceSize.MICRO",
-      "docs-public-apis:@aws-cdk/aws-ec2.InstanceSize.SMALL",
-      "docs-public-apis:@aws-cdk/aws-ec2.InstanceSize.MEDIUM",
-      "docs-public-apis:@aws-cdk/aws-ec2.InstanceSize.LARGE",
-      "docs-public-apis:@aws-cdk/aws-ec2.InstanceSize.XLARGE",
-      "docs-public-apis:@aws-cdk/aws-ec2.InstanceSize.XLARGE2",
-      "docs-public-apis:@aws-cdk/aws-ec2.InstanceSize.XLARGE4",
-      "docs-public-apis:@aws-cdk/aws-ec2.InstanceSize.XLARGE8",
-      "docs-public-apis:@aws-cdk/aws-ec2.InstanceSize.XLARGE9",
-      "docs-public-apis:@aws-cdk/aws-ec2.InstanceSize.XLARGE10",
-      "docs-public-apis:@aws-cdk/aws-ec2.InstanceSize.XLARGE12",
-      "docs-public-apis:@aws-cdk/aws-ec2.InstanceSize.XLARGE16",
-      "docs-public-apis:@aws-cdk/aws-ec2.InstanceSize.XLARGE18",
-      "docs-public-apis:@aws-cdk/aws-ec2.InstanceSize.XLARGE24",
-      "docs-public-apis:@aws-cdk/aws-ec2.InstanceSize.XLARGE32",
-      "docs-public-apis:@aws-cdk/aws-ec2.InstanceSize.METAL",
       "docs-public-apis:@aws-cdk/aws-ec2.OperatingSystemType.LINUX",
       "docs-public-apis:@aws-cdk/aws-ec2.OperatingSystemType.WINDOWS",
       "docs-public-apis:@aws-cdk/aws-ec2.Protocol.ALL",

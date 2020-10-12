@@ -1,10 +1,10 @@
+import * as path from 'path';
 import { expect, haveResource, haveResourceLike, InspectionFailure } from '@aws-cdk/assert';
 import * as ecr_assets from '@aws-cdk/aws-ecr-assets';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as ssm from '@aws-cdk/aws-ssm';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import * as path from 'path';
 import * as ecs from '../lib';
 
 export = {
@@ -755,7 +755,10 @@ export = {
       PolicyDocument: {
         Statement: [
           {
-            Action: 'secretsmanager:GetSecretValue',
+            Action: [
+              'secretsmanager:GetSecretValue',
+              'secretsmanager:DescribeSecret',
+            ],
             Effect: 'Allow',
             Resource: {
               Ref: 'SecretA720EF05',
@@ -1111,7 +1114,10 @@ export = {
       PolicyDocument: {
         Statement: [
           {
-            Action: 'secretsmanager:GetSecretValue',
+            Action: [
+              'secretsmanager:GetSecretValue',
+              'secretsmanager:DescribeSecret',
+            ],
             Effect: 'Allow',
             Resource: mySecretArn,
           },
@@ -1409,7 +1415,7 @@ export = {
             Resource: {
               'Fn::Join': [
                 '',
-                [ 'arn:', { Ref: 'AWS::Partition' }, ':ecr:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':repository/aws-cdk/assets' ],
+                ['arn:', { Ref: 'AWS::Partition' }, ':ecr:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':repository/aws-cdk/assets'],
               ],
             },
           },

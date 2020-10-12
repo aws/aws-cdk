@@ -16,8 +16,8 @@ Parameters:
     Default: ''
     Type: String
   FileAssetsBucketKmsKeyId:
-    Description: Custom KMS key ID to use for encrypting file assets (by default a
-      KMS key will be automatically defined)
+    Description: Empty to create a new key (default), 'AWS_MANAGED_KEY' to use a managed
+      S3 key, or the ID/ARN of an existing key.
     Default: ''
     Type: String
   ContainerAssetsRepositoryName:
@@ -28,6 +28,15 @@ Parameters:
     Description: An identifier to distinguish multiple bootstrap stacks in the same environment
     Default: hnb659fds
     Type: String
+    # "cdk-(qualifier)-image-publishing-role-(account)-(region)" needs to be <= 64 chars
+    # account = 12, region <= 14, 10 chars for qualifier and 28 for rest of role name
+    AllowedPattern: "[A-Za-z0-9_-]{1,10}"
+    ConstraintDescription: Qualifier must be an alphanumeric identifier of at most 10 characters
+  PublicAccessBlockConfiguration:
+    Description: Whether or not to enable S3 Staging Bucket Public Access Block Configuration
+    Default: 'true'
+    Type: 'String'
+    AllowedValues: ['true', 'false']
 Conditions:
   HasTrustedAccounts:
     Fn::Not:
@@ -52,11 +61,19 @@ Conditions:
     Fn::Equals:
       - ''
       - Ref: FileAssetsBucketKmsKeyId
+  UseAwsManagedKey:
+    Fn::Equals:
+      - 'AWS_MANAGED_KEY'
+      - Ref: FileAssetsBucketKmsKeyId
   HasCustomContainerAssetsRepositoryName:
     Fn::Not:
       - Fn::Equals:
           - ''
           - Ref: ContainerAssetsRepositoryName
+  UsePublicAccessBlockConfiguration:
+    Fn::Equals:
+      - 'true'
+      - Ref: PublicAccessBlockConfiguration
 Resources:
   FileAssetsBucketEncryptionKey:
     Type: AWS::KMS::Key
@@ -90,11 +107,14 @@ Resources:
               - kms:GenerateDataKey*
             Effect: Allow
             Principal:
-              AWS:
-                Ref: AWS::AccountId
+              # Not actually everyone -- see below for Conditions
+              AWS: "*"
             Resource: "*"
             Condition:
               StringEquals:
+                # See https://docs.aws.amazon.com/kms/latest/developerguide/policy-conditions.html#conditions-kms-caller-account
+                kms:CallerAccount:
+                  Ref: AWS::AccountId
                 kms:ViaService:
                   - Fn::Sub: s3.${AWS::Region}.amazonaws.com
           - Action:
@@ -106,9 +126,17 @@ Resources:
             Effect: Allow
             Principal:
               AWS:
-                Fn::Sub: "${PublishingRole.Arn}"
+                Fn::Sub: "${FilePublishingRole.Arn}"
             Resource: "*"
     Condition: CreateNewKey
+  FileAssetsBucketEncryptionKeyAlias:
+    Condition: CreateNewKey
+    Type: AWS::KMS::Alias
+    Properties:
+      AliasName:
+        Fn::Sub: "alias/cdk-${Qualifier}-assets-key"
+      TargetKeyId:
+        Ref: FileAssetsBucketEncryptionKey
   StagingBucket:
     Type: AWS::S3::Bucket
     Properties:
@@ -126,12 +154,18 @@ Resources:
                 Fn::If:
                   - CreateNewKey
                   - Fn::Sub: "${FileAssetsBucketEncryptionKey.Arn}"
-                  - Fn::Sub: "${FileAssetsBucketKmsKeyId}"
+                  - Fn::If:
+                    - UseAwsManagedKey
+                    - Ref: AWS::NoValue
+                    - Fn::Sub: "${FileAssetsBucketKmsKeyId}"
       PublicAccessBlockConfiguration:
-        BlockPublicAcls: true
-        BlockPublicPolicy: true
-        IgnorePublicAcls: true
-        RestrictPublicBuckets: true
+        Fn::If:
+          - UsePublicAccessBlockConfiguration
+          - BlockPublicAcls: true
+            BlockPublicPolicy: true
+            IgnorePublicAcls: true
+            RestrictPublicBuckets: true
+          - Ref: AWS::NoValue
     UpdateReplacePolicy: Retain
   StagingBucketPolicy:
     Type: 'AWS::S3::BucketPolicy'
@@ -158,7 +192,7 @@ Resources:
           - HasCustomContainerAssetsRepositoryName
           - Fn::Sub: "${ContainerAssetsRepositoryName}"
           - Fn::Sub: cdk-${Qualifier}-container-assets-${AWS::AccountId}-${AWS::Region}
-  PublishingRole:
+  FilePublishingRole:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
@@ -177,8 +211,28 @@ Resources:
                     Ref: TrustedAccounts
               - Ref: AWS::NoValue
       RoleName:
-        Fn::Sub: cdk-${Qualifier}-publishing-role-${AWS::AccountId}-${AWS::Region}
-  PublishingRoleDefaultPolicy:
+        Fn::Sub: cdk-${Qualifier}-file-publishing-role-${AWS::AccountId}-${AWS::Region}
+  ImagePublishingRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              AWS:
+                Ref: AWS::AccountId
+          - Fn::If:
+              - HasTrustedAccounts
+              - Action: sts:AssumeRole
+                Effect: Allow
+                Principal:
+                  AWS:
+                    Ref: TrustedAccounts
+              - Ref: AWS::NoValue
+      RoleName:
+        Fn::Sub: cdk-${Qualifier}-image-publishing-role-${AWS::AccountId}-${AWS::Region}
+  FilePublishingRoleDefaultPolicy:
     Type: AWS::IAM::Policy
     Properties:
       PolicyDocument:
@@ -206,6 +260,16 @@ Resources:
                 - CreateNewKey
                 - Fn::Sub: "${FileAssetsBucketEncryptionKey.Arn}"
                 - Fn::Sub: arn:${AWS::Partition}:kms:${AWS::Region}:${AWS::AccountId}:key/${FileAssetsBucketKmsKeyId}
+        Version: '2012-10-17'
+      Roles:
+        - Ref: FilePublishingRole
+      PolicyName:
+        Fn::Sub: cdk-${Qualifier}-file-publishing-role-default-policy-${AWS::AccountId}-${AWS::Region}
+  ImagePublishingRoleDefaultPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
           - Action:
               - ecr:PutImage
               - ecr:InitiateLayerUpload
@@ -223,9 +287,9 @@ Resources:
             Effect: Allow
         Version: '2012-10-17'
       Roles:
-        - Ref: PublishingRole
+        - Ref: ImagePublishingRole
       PolicyName:
-        Fn::Sub: cdk-${Qualifier}-publishing-role-default-policy-${AWS::AccountId}-${AWS::Region}
+        Fn::Sub: cdk-${Qualifier}-image-publishing-role-default-policy-${AWS::AccountId}-${AWS::Region}
   DeploymentActionRole:
     Type: AWS::IAM::Role
     Properties:
@@ -284,6 +348,7 @@ Resources:
                   - cloudformation:DescribeStackEvents
                   - cloudformation:GetTemplate
                   - cloudformation:DeleteStack
+                  - cloudformation:UpdateTerminationProtection
                   - sts:GetCallerIdentity
                 Resource: "*"
                 Effect: Allow
@@ -308,6 +373,15 @@ Resources:
           - Ref: AWS::NoValue
       RoleName:
         Fn::Sub: cdk-${Qualifier}-cfn-exec-role-${AWS::AccountId}-${AWS::Region}
+  # The SSM parameter is used in pipeline-deployed templates to verify the version
+  # of the bootstrap resources.
+  CdkBootstrapVersion:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Type: String
+      Name:
+        Fn::Sub: '/cdk-bootstrap/${Qualifier}/version'
+      Value: 4
 Outputs:
   BucketName:
     Description: The name of the S3 bucket owned by the CDK toolkit stack
@@ -317,10 +391,26 @@ Outputs:
     Description: The domain name of the S3 bucket owned by the CDK toolkit stack
     Value:
       Fn::Sub: "${StagingBucket.RegionalDomainName}"
+  # @deprecated - This Export can be removed at some future point in time.
+  # We can't do it today because if there are stacks that use it, the bootstrap
+  # stack cannot be updated. Not used anymore by apps >= 1.60.0
+  FileAssetKeyArn:
+    Description: The ARN of the KMS key used to encrypt the asset bucket (deprecated)
+    Value:
+      Fn::If:
+        - CreateNewKey
+        - Fn::Sub: "${FileAssetsBucketEncryptionKey.Arn}"
+        - Fn::Sub: "${FileAssetsBucketKmsKeyId}"
+    Export:
+      Name:
+        Fn::Sub: CdkBootstrap-${Qualifier}-FileAssetKeyArn
+  ImageRepositoryName:
+    Description: The name of the ECR repository which hosts docker image assets
+    Value:
+      Fn::Sub: "${ContainerAssetsRepository}"
+  # The Output is used by the CLI to verify the version of the bootstrap resources.
   BootstrapVersion:
     Description: The version of the bootstrap resources that are currently mastered
       in this stack
-    Value: '1'
-    Export:
-      Name:
-        Fn::Sub: CdkBootstrap-${Qualifier}-Version
+    Value:
+      Fn::GetAtt: [CdkBootstrapVersion, Value]

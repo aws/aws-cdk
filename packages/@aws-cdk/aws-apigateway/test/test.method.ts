@@ -1,6 +1,4 @@
 import { ABSENT, expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
@@ -207,15 +205,77 @@ export = {
     test.done();
   },
 
-  '"methodArn" fails if the API does not have a deployment stage'(test: Test) {
+  '"methodArn" returns an arn with "*" as its stage when deploymentStage is not set'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigw.RestApi(stack, 'test-api', { deploy: false });
+
+    // WHEN
     const method = new apigw.Method(stack, 'my-method', { httpMethod: 'POST', resource: api.root });
 
-    // WHEN + THEN
-    test.throws(() => method.methodArn,
-      /Unable to determine ARN for method "my-method" since there is no stage associated with this API./);
+    // THEN
+    test.deepEqual(stack.resolve(method.methodArn), {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':execute-api:',
+          { Ref: 'AWS::Region' },
+          ':',
+          { Ref: 'AWS::AccountId' },
+          ':',
+          { Ref: 'testapiD6451F70' },
+          '/*/POST/',
+        ],
+      ],
+    });
+
+    test.done();
+  },
+
+  '"methodArn" and "testMethodArn" replace path parameters with asterisks'(test: Test) {
+    const stack = new cdk.Stack();
+    const api = new apigw.RestApi(stack, 'test-api');
+    const petId = api.root.addResource('pets').addResource('{petId}');
+    const commentId = petId.addResource('comments').addResource('{commentId}');
+    const method = commentId.addMethod('GET');
+
+    test.deepEqual(stack.resolve(method.methodArn), {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':execute-api:',
+          { Ref: 'AWS::Region' },
+          ':',
+          { Ref: 'AWS::AccountId' },
+          ':',
+          { Ref: 'testapiD6451F70' },
+          '/',
+          { Ref: 'testapiDeploymentStageprod5C9E92A4' },
+          '/GET/pets/*/comments/*',
+        ],
+      ],
+    });
+
+    test.deepEqual(stack.resolve(method.testMethodArn), {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':execute-api:',
+          { Ref: 'AWS::Region' },
+          ':',
+          { Ref: 'AWS::AccountId' },
+          ':',
+          { Ref: 'testapiD6451F70' },
+          '/test-invoke-stage/GET/pets/*/comments/*',
+        ],
+      ],
+    });
 
     test.done();
   },
@@ -237,7 +297,7 @@ export = {
     // THEN
     expect(stack).to(haveResourceLike('AWS::ApiGateway::Method', {
       Integration: {
-        Credentials: { 'Fn::GetAtt': [ 'MyRoleF48FFE04', 'Arn' ] },
+        Credentials: { 'Fn::GetAtt': ['MyRoleF48FFE04', 'Arn'] },
       },
     }));
     test.done();
@@ -259,75 +319,9 @@ export = {
     // THEN
     expect(stack).to(haveResourceLike('AWS::ApiGateway::Method', {
       Integration: {
-        Credentials: { 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':iam::*:user/*' ] ] },
+        Credentials: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::*:user/*']] },
       },
     }));
-    test.done();
-  },
-
-  'integration "credentialsRole" and "credentialsPassthrough" are mutually exclusive'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const api = new apigw.RestApi(stack, 'test-api', { deploy: false });
-    const role = new iam.Role(stack, 'MyRole', { assumedBy: new iam.ServicePrincipal('foo') });
-
-    // WHEN
-    const integration = new apigw.Integration({
-      type: apigw.IntegrationType.AWS_PROXY,
-      options: {
-        credentialsPassthrough: true,
-        credentialsRole: role,
-      },
-    });
-
-    // THEN
-    test.throws(() => api.root.addMethod('GET', integration), /'credentialsPassthrough' and 'credentialsRole' are mutually exclusive/);
-    test.done();
-  },
-
-  'integration connectionType VpcLink requires vpcLink to be set'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const api = new apigw.RestApi(stack, 'test-api', { deploy: false });
-
-    // WHEN
-    const integration = new apigw.Integration({
-      type: apigw.IntegrationType.HTTP_PROXY,
-      integrationHttpMethod: 'ANY',
-      options: {
-        connectionType: apigw.ConnectionType.VPC_LINK,
-      },
-    });
-
-    // THEN
-    test.throws(() => api.root.addMethod('GET', integration), /'connectionType' of VPC_LINK requires 'vpcLink' prop to be set/);
-    test.done();
-  },
-
-  'connectionType of INTERNET and vpcLink are mutually exclusive'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const api = new apigw.RestApi(stack, 'test-api', { deploy: false });
-    const vpc = new ec2.Vpc(stack, 'VPC');
-    const nlb = new elbv2.NetworkLoadBalancer(stack, 'NLB', {
-      vpc,
-    });
-    const link = new apigw.VpcLink(stack, 'link', {
-      targets: [nlb],
-    });
-
-    // WHEN
-    const integration = new apigw.Integration({
-      type: apigw.IntegrationType.HTTP_PROXY,
-      integrationHttpMethod: 'ANY',
-      options: {
-        connectionType: apigw.ConnectionType.INTERNET,
-        vpcLink: link,
-      },
-    });
-
-    // THEN
-    test.throws(() => api.root.addMethod('GET', integration), /cannot set 'vpcLink' where 'connectionType' is INTERNET/);
     test.done();
   },
 
@@ -357,8 +351,7 @@ export = {
             'application/json': apigw.Model.EMPTY_MODEL,
             'text/plain': apigw.Model.ERROR_MODEL,
           },
-        },
-        ],
+        }],
       },
     });
 
@@ -381,8 +374,7 @@ export = {
           'application/json': 'Empty',
           'text/plain': 'Error',
         },
-      },
-      ],
+      }],
     }));
 
     test.done();
@@ -428,7 +420,7 @@ export = {
           },
         ],
         Type: 'AWS',
-        Uri: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':apigateway:', { Ref: 'AWS::Region' }, ':foo-service:action/BarAction']]},
+        Uri: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':apigateway:', { Ref: 'AWS::Region' }, ':foo-service:action/BarAction']] },
       },
     }));
     test.done();
@@ -522,8 +514,7 @@ export = {
             'text/plain': apigw.Model.ERROR_MODEL,
             'text/html': htmlModel,
           },
-        },
-        ],
+        }],
       },
     });
 
@@ -547,8 +538,7 @@ export = {
           'text/plain': 'Error',
           'text/html': { Ref: stack.getLogicalId(htmlModel.node.findChild('Resource') as cdk.CfnElement) },
         },
-      },
-      ],
+      }],
     }));
 
     test.done();
@@ -592,7 +582,7 @@ export = {
       cloudWatchRole: false,
       deploy: false,
       defaultMethodOptions: {
-        requestParameters: {'method.request.path.proxy': true},
+        requestParameters: { 'method.request.path.proxy': true },
       },
     });
 
@@ -879,6 +869,40 @@ export = {
     // THEN
     test.throws(() => new apigw.Method(stack, 'method', methodProps),
       /Only one of 'requestValidator' or 'requestValidatorOptions' must be specified./);
+
+    test.done();
+  },
+
+  '"restApi" and "api" properties return the RestApi correctly'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const api = new apigw.RestApi(stack, 'test-api');
+    const method = api.root.addResource('pets').addMethod('GET');
+
+    // THEN
+    test.ok(method.restApi);
+    test.ok(method.api);
+    test.deepEqual(stack.resolve(method.api.restApiId), stack.resolve(method.restApi.restApiId));
+
+    test.done();
+  },
+
+  '"restApi" throws an error on imported while "api" returns correctly'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const api = apigw.RestApi.fromRestApiAttributes(stack, 'test-api', {
+      restApiId: 'test-rest-api-id',
+      rootResourceId: 'test-root-resource-id',
+    });
+    const method = api.root.addResource('pets').addMethod('GET');
+
+    // THEN
+    test.throws(() => method.restApi, /not available on Resource not connected to an instance of RestApi/);
+    test.ok(method.api);
 
     test.done();
   },
