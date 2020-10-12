@@ -420,8 +420,6 @@ export class LegacyCluster extends Resource implements ICluster {
 
 /**
  * Import a cluster to use in another stack
- *
- * @resource AWS::EKS::Cluster
  */
 class ImportedCluster extends Resource implements ICluster {
   public readonly clusterName: string;

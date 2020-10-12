@@ -86,7 +86,6 @@ export interface ICluster extends IResource, ec2.IConnectable {
 
   /**
    * An Open ID Connect Provider
-   * @attribute
    */
   readonly openIdConnectProvider: iam.IOpenIdConnectProvider;
 

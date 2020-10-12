@@ -119,7 +119,7 @@ export class OpenIdConnectProvider extends Resource implements IOpenIdConnectPro
    */
   public readonly openIdConnectProviderArn: string;
 
-  private readonly _openIdConnectProviderIssuer: string;
+  public readonly openIdConnectProviderIssuer: string;
 
   /**
    * Defines an OpenID Connect provider.
@@ -140,17 +140,9 @@ export class OpenIdConnectProvider extends Resource implements IOpenIdConnectPro
       },
     });
 
-    this._openIdConnectProviderIssuer = props.url.replace('https://', '');
+    this.openIdConnectProviderIssuer = props.url.replace('https://', '');
 
     this.openIdConnectProviderArn = Token.asString(resource.ref);
-  }
-
-  /**
-   * The issuer for this OIDC Provider
-   * @attribute
-   */
-  get openIdConnectProviderIssuer(): string {
-    return this._openIdConnectProviderIssuer;
   }
 
   private getOrCreateProvider() {
