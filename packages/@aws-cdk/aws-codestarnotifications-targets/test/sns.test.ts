@@ -1,4 +1,3 @@
-import * as chatbot from '@aws-cdk/aws-chatbot';
 import * as notifications from '@aws-cdk/aws-codestarnotifications';
 import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
@@ -6,36 +5,28 @@ import * as targets from '../lib';
 import { FakeCodeBuildSource } from './helpers';
 import '@aws-cdk/assert/jest';
 
-describe('NotificationRule', () => {
+describe('SnsTopicNotificationTarget', () => {
   let stack: cdk.Stack;
 
   beforeEach(() => {
     stack = new cdk.Stack();
   });
 
-  test('notification added targets', () => {
+  test('notification target to sns', () => {
     const dummySource = new FakeCodeBuildSource();
-    const target1 = new sns.Topic(stack, 'MyTopic1', {});
-    const target2 = new sns.Topic(stack, 'MyTopic2', {});
-    const target3 = new chatbot.SlackChannelConfiguration(stack, 'MySlackChannel', {
-      slackChannelConfigurationName: 'MySlackChannel',
-      slackWorkspaceId: 'ABC123',
-      slackChannelId: 'DEF456',
-    });
+    const topic = new sns.Topic(stack, 'MyTopic', {});
 
-    const notifier = new notifications.NotificationRule(stack, 'MyNotificationRule', {
+    new notifications.NotificationRule(stack, 'MyNotificationRule', {
       notificationRuleName: 'MyNotificationRule',
       events: [
         notifications.ProjectEvent.BUILD_STATE_SUCCEEDED,
         notifications.ProjectEvent.BUILD_STATE_FAILED,
       ],
-      targets: [],
+      targets: [
+        new targets.SnsTopicNotificationTarget(topic),
+      ],
       source: dummySource,
     });
-
-    notifier.addTarget(new targets.SnsTopicNotificationTarget(target1));
-    notifier.addTarget(new targets.SnsTopicNotificationTarget(target2));
-    notifier.addTarget(new targets.SlackNotificationTarget(target3));
 
     expect(stack).toHaveResourceLike('AWS::CodeStarNotifications::NotificationRule', {
       DetailType: 'FULL',
@@ -48,24 +39,11 @@ describe('NotificationRule', () => {
       Targets: [
         {
           TargetAddress: {
-            Ref: 'MyTopic13BD94FE8',
+            Ref: 'MyTopic86869434',
           },
           TargetType: 'SNS',
-        },
-        {
-          TargetAddress: {
-            Ref: 'MyTopic288CE2107',
-          },
-          TargetType: 'SNS',
-        },
-        {
-          TargetAddress: {
-            Ref: 'MySlackChannelA8E0B56C',
-          },
-          TargetType: 'AWSChatbotSlack',
         },
       ],
     });
   });
 });
-
