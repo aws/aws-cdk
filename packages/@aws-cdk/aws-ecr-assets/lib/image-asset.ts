@@ -138,8 +138,6 @@ export class DockerImageAsset extends CoreConstruct implements assets.IAsset {
     // deletion of the ECR repository the app used).
     extraHash.version = '1.21.0';
 
-    // TODO: Right here modify `exclude` to add an exemption for props.file (the dockerfile, whatever the name)
-    // as well as .dockerignore
     const staging = new assets.Staging(this, 'Staging', {
       ...props,
       exclude,
