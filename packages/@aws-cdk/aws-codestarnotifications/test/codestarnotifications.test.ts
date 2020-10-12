@@ -1,7 +1,14 @@
 import '@aws-cdk/assert/jest';
 import * as cdk from '@aws-cdk/core';
 import * as notifications from '../lib';
-import { FakeCodebuildSource, FakeSnsTopicTarget, FakeSlackTarget } from './helpers';
+import {
+  FakeCodeCommitSource,
+  FakeCodeBuildSource,
+  FakeCodePipelineSource,
+  FakeCodeDeploySource,
+  FakeSnsTopicTarget,
+  FakeSlackTarget,
+} from './helpers';
 
 describe('NotificationRule', () => {
   let stack: cdk.Stack;
@@ -11,7 +18,7 @@ describe('NotificationRule', () => {
   });
 
   test('created new notification rule', () => {
-    const codebuildSource = new FakeCodebuildSource();
+    const codeBuildSource = new FakeCodeBuildSource();
     const snsTopicTarget = new FakeSnsTopicTarget();
     const slackTarget = new FakeSlackTarget();
 
@@ -21,7 +28,7 @@ describe('NotificationRule', () => {
         notifications.ProjectEvent.BUILD_STATE_SUCCEEDED,
         notifications.ProjectEvent.BUILD_STATE_FAILED,
       ],
-      source: codebuildSource,
+      source: codeBuildSource,
       targets: [
         snsTopicTarget,
         slackTarget,
@@ -47,5 +54,97 @@ describe('NotificationRule', () => {
         },
       ],
     });
+  });
+
+  test('should throw error if source events are invalid with CodeCommit RepositoryEvent', () => {
+    const codeCommitSource = new FakeCodeCommitSource();
+    const snsTopicTarget = new FakeSnsTopicTarget();
+
+    expect(() => new notifications.NotificationRule(stack, 'MyNotificationRule', {
+      notificationRuleName: 'MyNotificationRule',
+      events: [
+        notifications.ProjectEvent.BUILD_STATE_SUCCEEDED,
+      ],
+      source: codeCommitSource,
+      targets: [
+        snsTopicTarget,
+      ],
+    })).toThrow(
+      /codebuild-project-build-state-succeeded event id is not valid in CodeCommit/,
+    );
+  });
+
+  test('should throw error if source events are invalid with CodeBuild ProjectEvent', () => {
+    const codeBuildSource = new FakeCodeBuildSource();
+    const snsTopicTarget = new FakeSnsTopicTarget();
+
+    expect(() => new notifications.NotificationRule(stack, 'MyNotificationRule', {
+      notificationRuleName: 'MyNotificationRule',
+      events: [
+        notifications.ProjectEvent.BUILD_STATE_SUCCEEDED,
+        notifications.PipelineEvent.PIPELINE_EXECUTION_SUCCEEDED,
+      ],
+      source: codeBuildSource,
+      targets: [
+        snsTopicTarget,
+      ],
+    })).toThrow(
+      /codepipeline-pipeline-pipeline-execution-succeeded event id is not valid in CodeBuild/,
+    );
+  });
+
+  test('should throw error if source events are invalid with CodePipeline PipelineEvent', () => {
+    const codepiPelineSource = new FakeCodePipelineSource();
+    const snsTopicTarget = new FakeSnsTopicTarget();
+
+    expect(() => new notifications.NotificationRule(stack, 'MyNotificationRule', {
+      notificationRuleName: 'MyNotificationRule',
+      events: [
+        notifications.ApplicationEvent.DEPLOYMENT_SUCCEEDED,
+      ],
+      source: codepiPelineSource,
+      targets: [
+        snsTopicTarget,
+      ],
+    })).toThrow(
+      /codedeploy-application-deployment-succeeded event id is not valid in CodePipeline/,
+    );
+  });
+
+  test('should throw error if source events are invalid with CodeDeploy ProjectEvent', () => {
+    const codeDeploySource = new FakeCodeDeploySource();
+    const snsTopicTarget = new FakeSnsTopicTarget();
+
+    expect(() => new notifications.NotificationRule(stack, 'MyNotificationRule', {
+      notificationRuleName: 'MyNotificationRule',
+      events: [
+        notifications.PipelineEvent.PIPELINE_EXECUTION_SUCCEEDED,
+      ],
+      source: codeDeploySource,
+      targets: [
+        snsTopicTarget,
+      ],
+    })).toThrow(
+      /codepipeline-pipeline-pipeline-execution-succeeded event id is not valid in CodeDeploy/,
+    );
+  });
+
+  test('should throws error if source events are not provided', () => {
+    const codeBuildSource = new FakeCodeBuildSource();
+    const snsTopicTarget = new FakeSnsTopicTarget();
+
+    expect(() => new notifications.NotificationRule(stack, 'MyNotificationRule', {
+      notificationRuleName: 'MyNotificationRule',
+      events: [],
+      source: codeBuildSource,
+      targets: [
+        snsTopicTarget,
+      ],
+    })).toThrowError('"events" property must set at least 1 event');
+  });
+
+  test('from notification rule ARN', () => {
+    const imported = notifications.NotificationRule.fromNotificationRuleArn(stack, 'MyNotificationRule', 'arn:aws:codestar-notifications::1234567890:notificationrule/1234567890abcdef');
+    expect(imported.notificationRuleArn).toEqual('arn:aws:codestar-notifications::1234567890:notificationrule/1234567890abcdef');
   });
 });

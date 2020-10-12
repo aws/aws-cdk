@@ -1,10 +1,37 @@
 import * as notifications from '../lib';
 
-export class FakeCodebuildSource implements notifications.INotificationSource {
+export class FakeCodeBuildSource implements notifications.INotificationSource {
   bind() {
     return {
       sourceType: notifications.SourceType.CODE_BUILD,
       sourceAddress: 'arn:aws:codebuild::1234567890:project/MyCodebuildProject',
+    };
+  }
+}
+
+export class FakeCodePipelineSource implements notifications.INotificationSource {
+  bind() {
+    return {
+      sourceType: notifications.SourceType.CODE_PIPELINE,
+      sourceAddress: 'arn:aws:codepipeline::1234567890:MyCodepipelineProject',
+    };
+  }
+}
+
+export class FakeCodeCommitSource implements notifications.INotificationSource {
+  bind() {
+    return {
+      sourceType: notifications.SourceType.CODE_COMMIT,
+      sourceAddress: 'arn:aws:codecommit::1234567890:MyCodecommitRepository',
+    };
+  }
+}
+
+export class FakeCodeDeploySource implements notifications.INotificationSource {
+  bind() {
+    return {
+      sourceType: notifications.SourceType.CODE_DEPLOY,
+      sourceAddress: 'arn:aws:codedeploy::1234567890:application:MyApplication',
     };
   }
 }

@@ -1,6 +1,7 @@
 
 /**
  * The list of event types for AWS Codecommit
+ * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#events-ref-repositories
  */
 export enum RepositoryEvent {
 
@@ -62,6 +63,7 @@ export enum RepositoryEvent {
 
 /**
  * The list of event types for AWS Codebuild
+ * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#events-ref-buildproject
  */
 export enum ProjectEvent {
 
@@ -98,6 +100,7 @@ export enum ProjectEvent {
 
 /**
  * The list of event types for AWS Codedeploy
+ * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#events-ref-deployapplication
  */
 export enum ApplicationEvent {
 
@@ -119,6 +122,7 @@ export enum ApplicationEvent {
 
 /**
  * The list of event types for AWS Codepipeline
+ * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#events-ref-pipeline
  */
 export enum PipelineEvent {
 

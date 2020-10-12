@@ -175,6 +175,10 @@ export class NotificationRule extends NotificationRuleBase {
   }
 
   private sourceEventValidate(props: NotificationRuleProps): void {
+    if (props.events.length === 0) {
+      throw new Error('"events" property must set at least 1 event');
+    }
+
     const validationMapping = {
       [SourceType.CODE_COMMIT]: Object.values(events.RepositoryEvent),
       [SourceType.CODE_BUILD]: Object.values(events.ProjectEvent),
@@ -186,7 +190,7 @@ export class NotificationRule extends NotificationRuleBase {
 
     Object.values(props.events).forEach(event => {
       if (!validEvents.includes(event)) {
-        throw new Error(`${event} is not valid in ${this.source.sourceType}`);
+        throw new Error(`${event} event id is not valid in ${this.source.sourceType}`);
       }
     });
   }
