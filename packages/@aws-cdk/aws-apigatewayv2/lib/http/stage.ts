@@ -3,7 +3,7 @@ import { Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnStage } from '../apigatewayv2.generated';
 import { CommonStageOptions, IDomainName, IStage } from '../common';
-import { IHttpApi, HttpApi } from './api';
+import { IHttpApi } from './api';
 import { HttpApiMapping } from './api-mapping';
 
 
@@ -126,7 +126,7 @@ export class HttpStage extends Resource implements IStage {
    * @default Average over 5 minutes
    */
   public metric(metricName: string, props?: MetricOptions): Metric {
-    var api = this.httpApi as HttpApi;
+    var api = this.httpApi;
     return api.metric(metricName, props).with({
       dimensions: { apiId: this.httpApi.httpApiId, stage: this.stageName },
     }).attachTo(this);

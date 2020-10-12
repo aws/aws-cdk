@@ -27,6 +27,58 @@ export interface IHttpApi extends IResource {
    * The default stage
    */
   readonly defaultStage?: HttpStage;
+
+  /**
+   * Return the given named metric for this HTTP Api Gateway
+   *
+   * @default Average over 5 minutes
+   */
+  metric(metricName: string, props?: MetricOptions): Metric;
+
+  /**
+   * Metric for the number of client-side errors captured in a given period.
+   *
+   * @default - sum over 5 minutes
+   */
+  metricClientError(props?: MetricOptions): Metric;
+
+  /**
+   * Metric for the number of server-side errors captured in a given period.
+   *
+   * @default - sum over 5 minutes
+   */
+  metricServerError(props?: MetricOptions): Metric;
+
+  /**
+   * Metric for the amount of data processed in bytes.
+   *
+   * @default - sum over 5 minutes
+   */
+  metricDataProcessed(props?: MetricOptions): Metric;
+
+  /**
+   * Metric for the total number API requests in a given period.
+   *
+   * @default - SampleCount over 5 minutes
+   */
+  metricCount(props?: MetricOptions): Metric;
+
+  /**
+   * Metric for the time between when API Gateway relays a request to the backend
+   * and when it receives a response from the backend.
+   *
+   * @default - no statistic
+   */
+  metricIntegrationLatency(props?: MetricOptions): Metric;
+
+  /**
+   * The time between when API Gateway receives a request from a client
+   * and when it returns a response to the client.
+   * The latency includes the integration latency and other API Gateway overhead.
+   *
+   * @default - no statistic
+   */
+  metricLatency(props?: MetricOptions): Metric;
 }
 
 /**
@@ -123,23 +175,11 @@ export interface AddRoutesOptions extends BatchHttpRouteOptions {
   readonly methods?: HttpMethod[];
 }
 
-/**
- * Create a new API Gateway HTTP API endpoint.
- * @resource AWS::ApiGatewayV2::Api
- */
-export class HttpApi extends Resource implements IHttpApi {
-  /**
-   * Import an existing HTTP API into this CDK app.
-   */
-  public static fromApiId(scope: Construct, id: string, httpApiId: string): IHttpApi {
-    class Import extends Resource implements IHttpApi {
-      public readonly httpApiId = httpApiId;
-    }
-    return new Import(scope, id);
-  }
+class HttpApiBase extends Resource implements IHttpApi { // note that this is not exported
 
   public readonly httpApiId: string;
   public readonly httpApiName?: string;
+
   /**
    * default stage of the api resource
    */
@@ -210,6 +250,55 @@ export class HttpApi extends Resource implements IHttpApi {
     }
   }
 
+  public metric(metricName: string, props?: MetricOptions): Metric {
+    return new Metric({
+      namespace: 'AWS/ApiGateway',
+      metricName,
+      dimensions: { httpApiId: this.httpApiId },
+      ...props,
+    }).attachTo(this);
+  }
+
+  public metricClientError(props?: MetricOptions): Metric {
+    return this.metric('4XXError', { statistic: 'Sum', ...props });
+  }
+
+  public metricServerError(props?: MetricOptions): Metric {
+    return this.metric('5XXError', { statistic: 'Sum', ...props });
+  }
+
+  public metricDataProcessed(props?: MetricOptions): Metric {
+    return this.metric('DataProcessed', { statistic: 'Sum', ...props });
+  }
+
+  public metricCount(props?: MetricOptions): Metric {
+    return this.metric('Count', { statistic: 'SampleCount', ...props });
+  }
+
+  public metricIntegrationLatency(props?: MetricOptions): Metric {
+    return this.metric('IntegrationLatency', props);
+  }
+
+  public metricLatency(props?: MetricOptions): Metric {
+    return this.metric('Latency', props);
+  }
+}
+
+/**
+ * Create a new API Gateway HTTP API endpoint.
+ * @resource AWS::ApiGatewayV2::Api
+ */
+export class HttpApi extends HttpApiBase {
+  /**
+   * Import an existing HTTP API into this CDK app.
+   */
+  public static fromApiId(scope: Construct, id: string, httpApiId: string): IHttpApi {
+    class Import extends HttpApiBase {
+      public readonly httpApiId = httpApiId;
+    }
+    return new Import(scope, id);
+  }
+
   /**
    * Get the URL to the default stage of this API.
    * Returns `undefined` if `createDefaultStage` is unset.
@@ -240,76 +329,5 @@ export class HttpApi extends Resource implements IHttpApi {
       routeKey: HttpRouteKey.with(options.path, method),
       integration: options.integration,
     }));
-  }
-
-  /**
-   * Return the given named metric for this HTTP Api Gateway
-   *
-   * @default Average over 5 minutes
-   */
-  public metric(metricName: string, props?: MetricOptions): Metric {
-    return new Metric({
-      namespace: 'AWS/ApiGateway',
-      metricName,
-      dimensions: { httpApiId: this.httpApiId },
-      ...props,
-    }).attachTo(this);
-  }
-
-  /**
-    * Metric for the number of client-side errors captured in a given period.
-    *
-    * @default - sum over 5 minutes
-    */
-  public metricClientError(props?: MetricOptions): Metric {
-    return this.metric('4XXError', { statistic: 'Sum', ...props });
-  }
-
-  /**
-    * Metric for the number of server-side errors captured in a given period.
-    *
-    * @default - sum over 5 minutes
-    */
-  public metricServerError(props?: MetricOptions): Metric {
-    return this.metric('5XXError', { statistic: 'Sum', ...props });
-  }
-
-  /**
-   * Metric for the amount of data processed in bytes.
-   *
-   * @default - sum over 5 minutes
-   */
-  public metricDataProcessed(props?: MetricOptions): Metric {
-    return this.metric('DataProcessed', { statistic: 'Sum', ...props });
-  }
-
-  /**
-   * Metric for the total number API requests in a given period.
-   *
-   * @default - SampleCount over 5 minutes
-   */
-  public metricCount(props?: MetricOptions): Metric {
-    return this.metric('Count', { statistic: 'SampleCount', ...props });
-  }
-
-  /**
-   * Metric for the time between when API Gateway relays a request to the backend
-   * and when it receives a response from the backend.
-   *
-   * @default - no statistic
-   */
-  public metricIntegrationLatency(props?: MetricOptions): Metric {
-    return this.metric('IntegrationLatency', props);
-  }
-
-  /**
-   * The time between when API Gateway receives a request from a client
-   * and when it returns a response to the client.
-   * The latency includes the integration latency and other API Gateway overhead.
-   *
-   * @default - no statistic
-   */
-  public metricLatency(props?: MetricOptions): Metric {
-    return this.metric('Latency', props);
   }
 }
