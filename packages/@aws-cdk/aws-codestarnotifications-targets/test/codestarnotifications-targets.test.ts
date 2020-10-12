@@ -1,4 +1,5 @@
 import * as chatbot from '@aws-cdk/aws-chatbot';
+import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as notifications from '@aws-cdk/aws-codestarnotifications';
 import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
@@ -14,9 +15,13 @@ describe('NotificationRule', () => {
   });
 
   test('notification added targets', () => {
-    const dummySource = new FakeCodeBuildSource();
+    const project = codebuild.Project.fromProjectArn(stack, 'MyCodebuildProject', 'arn:aws:codebuild::1234567890:project/MyCodebuildProject');
+
+    const dummySource = new FakeCodeBuildSource(project);
+
     const target1 = new sns.Topic(stack, 'MyTopic1', {});
     const target2 = new sns.Topic(stack, 'MyTopic2', {});
+
     const target3 = new chatbot.SlackChannelConfiguration(stack, 'MySlackChannel', {
       slackChannelConfigurationName: 'MySlackChannel',
       slackWorkspaceId: 'ABC123',

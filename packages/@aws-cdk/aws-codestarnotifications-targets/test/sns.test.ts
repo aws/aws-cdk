@@ -1,3 +1,4 @@
+import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as notifications from '@aws-cdk/aws-codestarnotifications';
 import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
@@ -13,7 +14,10 @@ describe('SnsTopicNotificationTarget', () => {
   });
 
   test('notification target to sns', () => {
-    const dummySource = new FakeCodeBuildSource();
+    const project = codebuild.Project.fromProjectArn(stack, 'MyCodebuildProject', 'arn:aws:codebuild::1234567890:project/MyCodebuildProject');
+
+    const dummySource = new FakeCodeBuildSource(project);
+
     const topic = new sns.Topic(stack, 'MyTopic', {});
 
     new notifications.NotificationRule(stack, 'MyNotificationRule', {

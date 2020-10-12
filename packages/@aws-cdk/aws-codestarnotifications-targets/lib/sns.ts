@@ -1,6 +1,6 @@
+import * as notifications from '@aws-cdk/aws-codestarnotifications';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sns from '@aws-cdk/aws-sns';
-import * as notifications from '@aws-cdk/aws-codestarnotifications';
 
 /**
  * A SNS topic notification target
