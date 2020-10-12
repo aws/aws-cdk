@@ -371,7 +371,7 @@ export class CustomRule extends RuleNew {
       description: props.description,
       inputParameters: props.inputParameters,
       maximumExecutionFrequency: props.maximumExecutionFrequency,
-      scope: Lazy.anyValue({ produce: () => this.renderScope(this.scope) }), // scope can use values such as stack id (see CloudFormationStackDriftDetectionCheck)
+      scope: Lazy.anyValue({ produce: () => renderScope(this.scope) }), // scope can use values such as stack id (see CloudFormationStackDriftDetectionCheck)
       source: {
         owner: 'CUSTOM_LAMBDA',
         sourceDetails,
