@@ -22,6 +22,7 @@ test('renders the minimum template with an origin and path specified', () => {
   expect(behavior._renderBehavior()).toEqual({
     targetOriginId: 'origin_id',
     cachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
+    compress: true,
     pathPattern: '*',
     viewerProtocolPolicy: 'allow-all',
   });

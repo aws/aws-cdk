@@ -25,6 +25,7 @@ test('minimal example renders correctly', () => {
     DistributionConfig: {
       DefaultCacheBehavior: {
         CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
+        Compress: true,
         TargetOriginId: 'StackMyDistOrigin1D6D5E535',
         ViewerProtocolPolicy: 'allow-all',
       },
@@ -68,6 +69,7 @@ test('exhaustive example of props renders correctly', () => {
       Aliases: ['example.com'],
       DefaultCacheBehavior: {
         CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
+        Compress: true,
         TargetOriginId: 'StackMyDistOrigin1D6D5E535',
         ViewerProtocolPolicy: 'allow-all',
       },
@@ -133,11 +135,13 @@ describe('multiple behaviors', () => {
       DistributionConfig: {
         DefaultCacheBehavior: {
           CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
+          Compress: true,
           TargetOriginId: 'StackMyDistOrigin1D6D5E535',
           ViewerProtocolPolicy: 'allow-all',
         },
         CacheBehaviors: [{
           CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
+          Compress: true,
           PathPattern: 'api/*',
           TargetOriginId: 'StackMyDistOrigin1D6D5E535',
           ViewerProtocolPolicy: 'allow-all',
@@ -170,11 +174,13 @@ describe('multiple behaviors', () => {
       DistributionConfig: {
         DefaultCacheBehavior: {
           CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
+          Compress: true,
           TargetOriginId: 'StackMyDistOrigin1D6D5E535',
           ViewerProtocolPolicy: 'allow-all',
         },
         CacheBehaviors: [{
           CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
+          Compress: true,
           PathPattern: 'api/*',
           TargetOriginId: 'StackMyDistOrigin20B96F3AD',
           ViewerProtocolPolicy: 'allow-all',
@@ -215,17 +221,20 @@ describe('multiple behaviors', () => {
       DistributionConfig: {
         DefaultCacheBehavior: {
           CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
+          Compress: true,
           TargetOriginId: 'StackMyDistOrigin1D6D5E535',
           ViewerProtocolPolicy: 'allow-all',
         },
         CacheBehaviors: [{
           CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
+          Compress: true,
           PathPattern: 'api/1*',
           TargetOriginId: 'StackMyDistOrigin20B96F3AD',
           ViewerProtocolPolicy: 'allow-all',
         },
         {
           CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
+          Compress: true,
           PathPattern: 'api/2*',
           TargetOriginId: 'StackMyDistOrigin1D6D5E535',
           ViewerProtocolPolicy: 'allow-all',
