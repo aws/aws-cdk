@@ -56,9 +56,6 @@
   "cdk-build": {
     "cloudformation": "Alexa::ASK",
     "jest": true,
-    "pre": [
-      "npm run gen"
-    ],
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
     }

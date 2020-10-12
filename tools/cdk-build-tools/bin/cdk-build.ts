@@ -2,7 +2,7 @@ import * as yargs from 'yargs';
 import { compileCurrentPackage } from '../lib/compile';
 import { lintCurrentPackage } from '../lib/lint';
 import { shell } from '../lib/os';
-import { cdkBuildOptions, CompilerOverrides,currentPackageJson, genScript } from '../lib/package-info';
+import { cdkBuildOptions, CompilerOverrides, currentPackageJson, genScript } from '../lib/package-info';
 import { Timers } from '../lib/timer';
 
 async function main() {
@@ -24,7 +24,7 @@ async function main() {
       desc: 'Specify a different eslint executable',
       defaultDescription: 'eslint provided by node dependencies',
     })
-    .option('no-gen', {
+    .option('skip-gen', {
       type: 'boolean',
       desc: 'skip executing gen',
     })
@@ -33,8 +33,9 @@ async function main() {
   const options = cdkBuildOptions();
   const env = options.env;
 
-  if (!args.noGen && genScript()) {
-    await shell(['npm run gen'], { timers, env });
+  const gen = genScript();
+  if (!args['skip-gen'] && gen) {
+    await shell([gen], { timers, env });
   }
 
   if (options.pre) {

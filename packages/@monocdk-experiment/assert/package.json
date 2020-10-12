@@ -12,13 +12,11 @@
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "build+test+package": "npm run build+test && npm run package",
-    "build+test": "npm run build && npm test"
+    "build+test": "npm run build && npm test",
+    "gen": "./clone.sh"
   },
   "cdk-build": {
     "jest": true,
-    "pre": [
-      "./clone.sh"
-    ],
     "eslint": {
       "disable": true
     },

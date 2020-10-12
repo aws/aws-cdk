@@ -52,9 +52,6 @@
     "gen": "node ./build-tools/gen.js"
   },
   "cdk-build": {
-    "pre": [
-      "npm run gen"
-    ],
     "jest": true,
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true

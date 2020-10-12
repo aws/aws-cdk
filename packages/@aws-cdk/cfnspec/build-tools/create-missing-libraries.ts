@@ -156,7 +156,6 @@ async function main() {
       },
       'cdk-build': {
         cloudformation: namespace,
-        pre: 'npm run gen',
         jest: true,
         env: {
           AWSLINT_BASE_CONSTRUCT: 'true',

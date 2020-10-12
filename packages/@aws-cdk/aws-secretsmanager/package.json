@@ -57,10 +57,7 @@
     "cloudformation": "AWS::SecretsManager",
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
-    },
-    "pre": [
-      "npm run gen"
-    ]
+    }
   },
   "keywords": [
     "aws",

@@ -57,10 +57,7 @@
     "env": {
       "AWSLINT_BASE_CONSTRUCT": "true"
     },
-    "jest": true,
-    "pre": [
-      "npm run gen"
-    ]
+    "jest": true
   },
   "keywords": [
     "aws",

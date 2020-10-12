@@ -56,10 +56,7 @@
     "cloudformation": "AWS::CodeDeploy",
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
-    },
-    "pre": [
-      "npm run gen"
-    ]
+    }
   },
   "nyc": {
     "statements": 79

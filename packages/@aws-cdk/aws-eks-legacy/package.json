@@ -53,10 +53,7 @@
     "gen": "cfn2ts"
   },
   "cdk-build": {
-    "cloudformation": "AWS::EKS",
-    "pre": [
-      "npm run gen"
-    ]
+    "cloudformation": "AWS::EKS"
   },
   "keywords": [
     "aws",

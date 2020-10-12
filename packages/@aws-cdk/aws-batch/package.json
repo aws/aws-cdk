@@ -55,9 +55,6 @@
   "cdk-build": {
     "cloudformation": "AWS::Batch",
     "jest": true,
-    "pre": [
-      "npm run gen"
-    ],
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
     }

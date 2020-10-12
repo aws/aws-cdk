@@ -59,10 +59,7 @@
     "cloudformation": "AWS::SNS",
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
-    },
-    "pre": [
-      "npm run gen"
-    ]
+    }
   },
   "keywords": [
     "aws",

@@ -22,13 +22,11 @@
     "integ-cli-regression-latest-release": "test/integ/run-against-repo test/integ/test-cli-regression-against-latest-release.sh",
     "integ-cli-regression-latest-code": "test/integ/run-against-repo test/integ/test-cli-regression-against-current-code.sh",
     "integ-cli-no-regression": "test/integ/run-against-repo test/integ/cli/test.sh",
-    "integ-init": "test/integ/run-against-dist test/integ/init/test-all.sh"
+    "integ-init": "test/integ/run-against-dist test/integ/init/test-all.sh",
+    "gen": "./generate.sh"
   },
   "cdk-build": {
-    "jest": true,
-    "pre": [
-      "./generate.sh"
-    ]
+    "jest": true
   },
   "cdk-package": {
     "shrinkWrap": true

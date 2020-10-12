@@ -2,7 +2,7 @@
 set -euo pipefail
 
 bail="--bail"
-runtarget="build+test"
+runtarget="build --no-gen"
 check_prereqs="true"
 check_compat="true"
 build_monolith="false"
@@ -56,37 +56,14 @@ fail() {
   exit 1
 }
 
-# Check for secrets that should not be committed
-/bin/bash ./git-secrets-scan.sh
-
-# Verify all required tools are present before starting the build
-if [ "$check_prereqs" == "true" ]; then
-  /bin/bash ./scripts/check-prerequisites.sh
-fi
-
-# Prepare for build with references
-/bin/bash scripts/generate-aggregate-tsconfig.sh > tsconfig.json
-
-BUILD_INDICATOR=".BUILD_COMPLETED"
-rm -rf $BUILD_INDICATOR
-
-# Speed up build by reusing calculated tree hashes
-# On dev machine, this speeds up the TypeScript part of the build by ~30%.
-export MERKLE_BUILD_CACHE=$(mktemp -d)
-trap "rm -rf $MERKLE_BUILD_CACHE" EXIT
+echo "============================================================================================="
+echo "building required build tools..."
+time lerna run $bail --stream build --scope cfn2ts --scope ubergen --include-dependencies || fail
 
 echo "============================================================================================="
-echo "building..."
+echo "executing gen..."
+time lerna run $bail --stream gen || fail
 
-# build the monolothic packges only if requested 
-if [ "$build_monolith" == "true" ]; then
-  time lerna run $bail --stream $runtarget || fail
-else
-  time lerna run $bail --stream $runtarget --ignore 'monocdk' --ignore '@monocdk-experiment/*' --ignore 'aws-cdk-lib' || fail
-fi
-
-if [ "$check_compat" == "true" ]; then
-  /bin/bash scripts/check-api-compatibility.sh
-fi
-
-touch $BUILD_INDICATOR
+echo "============================================================================================="
+echo "building monolithic packages..."
+time lerna --scope 'monocdk' --scope 'aws-cdk-lib' --scope '@monocdk-experiment/*' run $bail build --stream -- --skip-gen || fail

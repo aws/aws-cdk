@@ -55,9 +55,6 @@
   },
   "cdk-build": {
     "cloudformation": "AWS::AppFlow",
-    "pre": [
-      "npm run gen"
-    ],
     "jest": true
   },
   "keywords": [

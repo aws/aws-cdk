@@ -37,10 +37,7 @@
     "jest": true,
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
-    },
-    "pre": [
-      "npm run gen"
-    ]
+    }
   },
   "repository": {
     "type": "git",
