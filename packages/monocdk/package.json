@@ -1,5 +1,5 @@
 {
-  "name": "monocdk-experiment",
+  "name": "monocdk",
   "version": "0.0.0",
   "description": "An experiment to bundle the entire CDK into a single module",
   "main": "lib/index.js",
@@ -7,7 +7,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/aws/aws-cdk.git",
-    "directory": "packages/monocdk-experiment"
+    "directory": "packages/monocdk"
   },
   "stability": "experimental",
   "maturity": "developer-preview",
@@ -52,7 +52,7 @@
     "targets": {
       "dotnet": {
         "namespace": "Amazon.CDK",
-        "packageId": "Amazon.CDK.MonoCDK.Experiment",
+        "packageId": "Amazon.CDK.MonoCDK",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png",
         "versionSuffix": "-devpreview",
         "signAssembly": true,
@@ -62,13 +62,13 @@
         "package": "software.amazon.awscdk.core",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "monocdk-experiment",
+          "artifactId": "monocdk",
           "versionSuffix": ".DEVPREVIEW"
         }
       },
       "python": {
-        "distName": "monocdk.experiment",
-        "module": "monocdk_experiment"
+        "distName": "monocdk",
+        "module": "monocdk"
       }
     },
     "projectReferences": false
@@ -90,7 +90,7 @@
   "dependencies": {
     "case": "1.6.3",
     "fs-extra": "^9.0.1",
-    "jsonschema": "^1.2.7",
+    "jsonschema": "^1.2.10",
     "minimatch": "^3.0.4",
     "semver": "^7.3.2",
     "yaml": "1.10.0"
@@ -258,6 +258,7 @@
     "@types/node": "^10.17.35",
     "cdk-build-tools": "0.0.0",
     "constructs": "^3.0.4",
+    "cdk8s": "^0.30.0",
     "fs-extra": "^9.0.1",
     "pkglint": "0.0.0",
     "ts-node": "^9.0.0",
@@ -265,7 +266,8 @@
     "ubergen": "0.0.0"
   },
   "peerDependencies": {
-    "constructs": "^3.0.4"
+    "constructs": "^3.0.4",
+    "cdk8s": "^0.30.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {

@@ -416,7 +416,6 @@ export class Cluster extends ClusterBase {
       props.securityGroups : [new ec2.SecurityGroup(this, 'SecurityGroup', {
         description: 'Redshift security group',
         vpc: this.vpc,
-        securityGroupName: 'redshift SG',
       })];
 
     const securityGroupIds = securityGroups.map(sg => sg.securityGroupId);
