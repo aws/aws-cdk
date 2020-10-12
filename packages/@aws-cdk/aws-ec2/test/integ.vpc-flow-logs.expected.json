@@ -550,7 +550,7 @@
         ]
       }
     },
-    "VPCFlowLogsS3SubfolderFlowLog9F8510A2": {
+    "VPCFlowLogsS3KeyPrefixFlowLogB57F1746": {
       "Type": "AWS::EC2::FlowLog",
       "Properties": {
         "ResourceId": {

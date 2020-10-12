@@ -129,11 +129,11 @@ export abstract class FlowLogDestination {
   /**
    * Use S3 as the destination
    */
-  public static toS3(bucket?: s3.IBucket, subfolder?: string): FlowLogDestination {
+  public static toS3(bucket?: s3.IBucket, keyPrefix?: string): FlowLogDestination {
     return new S3Destination({
       logDestinationType: FlowLogDestinationType.S3,
       s3Bucket: bucket,
-      subfolder,
+      keyPrefix,
     });
   }
 
@@ -178,11 +178,11 @@ export interface FlowLogDestinationConfig {
   readonly s3Bucket?: s3.IBucket;
 
   /**
-   * S3 bucket subfolder to publish the flow logs to
+   * S3 bucket key prefix to publish the flow logs to
    *
    * @default - undefined
    */
-  readonly subfolder?: string;
+  readonly keyPrefix?: string;
 }
 
 /**
@@ -206,7 +206,7 @@ class S3Destination extends FlowLogDestination {
     return {
       logDestinationType: FlowLogDestinationType.S3,
       s3Bucket,
-      subfolder: this.props.subfolder,
+      keyPrefix: this.props.keyPrefix,
     };
   }
 }
@@ -354,9 +354,9 @@ export class FlowLog extends FlowLogBase {
   public readonly bucket?: s3.IBucket;
 
   /**
-   * S3 bucket subfolder to publish the flow logs to
+   * S3 bucket key prefix to publish the flow logs to
    */
-  readonly subfolder?: string;
+  readonly keyPrefix?: string;
 
   /**
    * The iam role used to publish logs to CloudWatch
@@ -379,12 +379,11 @@ export class FlowLog extends FlowLogBase {
     this.logGroup = destinationConfig.logGroup;
     this.bucket = destinationConfig.s3Bucket;
     this.iamRole = destinationConfig.iamRole;
-    this.subfolder = destinationConfig.subfolder;
+    this.keyPrefix = destinationConfig.keyPrefix;
 
     let logDestination: string | undefined = undefined;
     if (this.bucket) {
-      const { bucketArn } = this.bucket;
-      logDestination = this.subfolder ? `${bucketArn}/${this.subfolder}` : bucketArn;
+      logDestination = this.keyPrefix ? this.bucket.arnForObjects(this.keyPrefix) : this.bucket.bucketArn;
     }
 
     const flowLog = new CfnFlowLog(this, 'FlowLog', {

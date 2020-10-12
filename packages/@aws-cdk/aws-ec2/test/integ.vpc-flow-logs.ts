@@ -23,7 +23,7 @@ class TestStack extends Stack {
       removalPolicy: RemovalPolicy.DESTROY,
     });
 
-    vpc.addFlowLog('FlowLogsS3Subfolder', {
+    vpc.addFlowLog('FlowLogsS3KeyPrefix', {
       destination: FlowLogDestination.toS3(bucket, 'prefix/'),
     });
   }

@@ -895,9 +895,9 @@ new ec2.FlowLog(this, 'FlowLog', {
   destination: ec2.FlowLogDestination.toS3(bucket)
 });
 
-new ec2.FlowLog(this, 'FlowLogWithSubfolder', {
+new ec2.FlowLog(this, 'FlowLogWithKeyPrefix', {
   resourceType: ec2.FlowLogResourceType.fromVpc(vpc),
-  destination: ec2.FlowLogDestination.toS3(bucket, 'prefix/)
+  destination: ec2.FlowLogDestination.toS3(bucket, 'prefix/')
 });
 ```
 

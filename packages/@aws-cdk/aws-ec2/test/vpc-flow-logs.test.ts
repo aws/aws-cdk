@@ -79,7 +79,7 @@ nodeunitShim({
     }));
     test.done();
   },
-  'with s3 as the destination, allows use of subfolder'(test: Test) {
+  'with s3 as the destination, allows use of key prefix'(test: Test) {
     const stack = getTestStack();
 
     new FlowLog(stack, 'FlowLogs', {
