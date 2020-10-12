@@ -1,9 +1,10 @@
+import * as path from 'path';
 import { arrayWith, deepObjectLike, encodedJson, notMatching, objectLike, stringLike } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as ecr_assets from '@aws-cdk/aws-ecr-assets';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
-import { Construct, Stack, Stage, StageProps } from '@aws-cdk/core';
-import * as path from 'path';
+import { Stack, Stage, StageProps } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as cdkp from '../lib';
 import { BucketStack, PIPELINE_ENV, TestApp, TestGitHubNpmPipeline } from './testutil';
 
@@ -153,6 +154,39 @@ test('docker image asset publishers use privilegedmode, have right AssumeRole', 
         Resource: 'arn:*:iam::*:role/*-image-publishing-role-*',
       }),
     },
+  });
+});
+
+test('docker image asset can use a VPC', () => {
+  // WHEN
+  pipeline.addApplicationStage(new DockerAssetApp(app, 'DockerAssetApp'));
+
+  // THEN
+  expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    VpcConfig: objectLike({
+      SecurityGroupIds: [
+        {
+          'Fn::GetAtt': [
+            'CdkAssetsDockerAsset1SecurityGroup078F5C66',
+            'GroupId',
+          ],
+        },
+      ],
+      Subnets: [
+        {
+          Ref: 'TestVpcPrivateSubnet1SubnetCC65D771',
+        },
+        {
+          Ref: 'TestVpcPrivateSubnet2SubnetDE0C64A2',
+        },
+        {
+          Ref: 'TestVpcPrivateSubnet3Subnet2311D32F',
+        },
+      ],
+      VpcId: {
+        Ref: 'TestVpcE77CE678',
+      },
+    }),
   });
 });
 

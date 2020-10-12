@@ -1,7 +1,7 @@
 {
   "name": "@monocdk-experiment/rewrite-imports",
   "version": "0.0.0",
-  "description": "Rewrites typescript 'import' statements from @aws-cdk/xxx to monocdk-experiment",
+  "description": "Rewrites typescript 'import' statements from @aws-cdk/xxx to monocdk",
   "bin": {
     "rewrite-imports": "bin/rewrite-imports"
   },
@@ -36,8 +36,8 @@
   },
   "devDependencies": {
     "@types/glob": "^7.1.3",
-    "@types/jest": "^26.0.10",
-    "@types/node": "^10.17.28",
+    "@types/jest": "^26.0.14",
+    "@types/node": "^10.17.35",
     "cdk-build-tools": "0.0.0",
     "pkglint": "0.0.0"
   },

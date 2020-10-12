@@ -17,11 +17,11 @@ import { availableInitLanguages, cliInit, printAvailableTemplates } from '../lib
 import { data, debug, error, print, setLogLevel } from '../lib/logging';
 import { PluginHost } from '../lib/plugin';
 import { serializeStructure } from '../lib/serialize';
-import { Configuration, Settings } from '../lib/settings';
+import { Command, Configuration, Settings } from '../lib/settings';
 import * as version from '../lib/version';
 
 /* eslint-disable max-len */
-/* eslint-disable no-shadow */ // yargs
+/* eslint-disable @typescript-eslint/no-shadow */ // yargs
 
 async function parseCommandLineArguments() {
   // Use the following configuration for array arguments:
@@ -107,7 +107,7 @@ async function parseCommandLineArguments() {
       .option('strict', { type: 'boolean', desc: 'Do not filter out AWS::CDK::Metadata resources', default: false }))
     .option('fail', { type: 'boolean', desc: 'Fail with exit code 1 in case of diff', default: false })
     .command('metadata [STACK]', 'Returns all metadata associated with this stack')
-    .command('init [TEMPLATE]', 'Create a new, empty CDK project from a template. Invoked without TEMPLATE, the app template will be used.', yargs => yargs
+    .command('init [TEMPLATE]', 'Create a new, empty CDK project from a template.', yargs => yargs
       .option('language', { type: 'string', alias: 'l', desc: 'The language to be used for the new project (default can be configured in ~/.cdk.json)', choices: initTemplateLanuages })
       .option('list', { type: 'boolean', desc: 'List the available templates' })
       .option('generate-only', { type: 'boolean', default: false, desc: 'If true, only generates project files, without executing additional operations such as setting up a git repo, installing dependencies or compiling the project' }),
@@ -137,7 +137,10 @@ async function initCommandLine() {
   debug('CDK toolkit version:', version.DISPLAY_VERSION);
   debug('Command line arguments:', argv);
 
-  const configuration = new Configuration(argv);
+  const configuration = new Configuration({
+    ...argv,
+    _: argv._ as [Command, ...string[]], // TypeScript at its best
+  });
   await configuration.load();
 
   const sdkProvider = await SdkProvider.withAwsCliCompatibleDefaults({
