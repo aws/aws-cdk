@@ -2,6 +2,7 @@ import { countResources, expect, haveResource } from '@aws-cdk/assert';
 import * as events from '@aws-cdk/aws-events';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
+import * as constructs from 'constructs';
 import * as targets from '../../lib';
 
 test('use lambda as an event rule target', () => {
@@ -102,7 +103,7 @@ test('adding same singleton lambda function as target mutiple times creates perm
   expect(stack).to(countResources('AWS::Lambda::Permission', 1));
 });
 
-function newTestLambda(scope: cdk.Construct) {
+function newTestLambda(scope: constructs.Construct) {
   return new lambda.Function(scope, 'MyLambda', {
     code: new lambda.InlineCode('foo'),
     handler: 'bar',

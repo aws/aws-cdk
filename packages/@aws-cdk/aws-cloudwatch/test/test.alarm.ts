@@ -1,5 +1,6 @@
 import { ABSENT, expect, haveResource } from '@aws-cdk/assert';
-import { Construct, Duration, Stack } from '@aws-cdk/core';
+import { Duration, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Test } from 'nodeunit';
 import { Alarm, IAlarm, IAlarmAction, Metric } from '../lib';
 
