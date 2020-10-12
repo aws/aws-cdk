@@ -6,7 +6,6 @@ runtarget="build+test"
 check_prereqs="true"
 check_compat="true"
 build_monolith="false"
-
 while [[ "${1:-}" != "" ]]; do
     case $1 in
         -h|--help)

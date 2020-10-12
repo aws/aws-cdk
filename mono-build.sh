@@ -2,15 +2,12 @@
 set -euo pipefail
 
 bail="--bail"
-runtarget="build --no-gen"
-check_prereqs="true"
-check_compat="true"
 build_monolith="false"
 
 while [[ "${1:-}" != "" ]]; do
     case $1 in
         -h|--help)
-            echo "Usage: build.sh [--no-bail] [--force|-f] [--skip-test]"
+            echo "Usage: mono-build.sh [--no-bail] [--force|-f]"
             exit 1
             ;;
         --no-bail)
@@ -18,18 +15,6 @@ while [[ "${1:-}" != "" ]]; do
             ;;
         -f|--force)
             export CDK_BUILD="--force"
-            ;;
-        --skip-test|--skip-tests)
-            runtarget="build"
-            ;;
-        --skip-prereqs)
-            check_prereqs="false"
-            ;;
-        --skip-compat)
-            check_compat="false"
-            ;;
-        --skip-mono)
-            build_monolith="true"
             ;;
         *)
             echo "Unrecognized parameter: $1"
@@ -47,22 +32,14 @@ if ! [ -x "$(command -v yarn)" ]; then
   exit 1
 fi
 
-echo "============================================================================================="
-echo "installing..."
-yarn install --frozen-lockfile --network-timeout 1000000
-
 fail() {
   echo "❌  Last command failed. Scroll up to see errors in log (search for '!!!!!!!!')."
   exit 1
 }
 
 echo "============================================================================================="
-echo "building required build tools..."
-time lerna run $bail --stream build --scope cfn2ts --scope ubergen --include-dependencies || fail
-
-echo "============================================================================================="
 echo "executing gen..."
-time lerna run $bail --stream gen || fail
+time ./scripts/gen.sh || fail
 
 echo "============================================================================================="
 echo "building monolithic packages..."

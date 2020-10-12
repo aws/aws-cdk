@@ -14,14 +14,9 @@ fail() {
 }
 
 echo "============================================================================================="
-echo "building cfn2ts and its required dependencies..."
-lerna  run build  --scope cfn2ts --include-dependencies || fail
-
-echo "============================================================================================="
-echo "build ubergen..."
-time lerna run build --scope ubergen  || fail # dont include dependencies as they were built by buidling cfn2ts
+echo "building required build tools..."
+time lerna run --stream build --scope cfn2ts --scope ubergen --include-dependencies || fail
 
 echo "============================================================================================="
 echo "executing gen..."
 time lerna run --stream gen || fail
-
