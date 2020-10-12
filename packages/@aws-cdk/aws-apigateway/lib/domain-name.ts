@@ -115,7 +115,7 @@ export class DomainName extends Resource implements IDomainName {
       throw new Error('domainName does not support uppercase letters. ' +
         `got: '${props.domainName}'`);
     }
-    const mtlsConfig = this.getMTLSConfiguration(props.mtls);
+    const mtlsConfig = this.configureMTLS(props.mtls);
     const resource = new CfnDomainName(this, 'Resource', {
       domainName: props.domainName,
       certificateArn: edge ? props.certificate.certificateArn : undefined,
@@ -155,13 +155,13 @@ export class DomainName extends Resource implements IDomainName {
     });
   }
 
-  private getMTLSConfiguration(mtlsConfig?: MTLSConfig): CfnDomainName.MutualTlsAuthenticationProperty | undefined {
+  private configureMTLS(mtlsConfig?: MTLSConfig): CfnDomainName.MutualTlsAuthenticationProperty | undefined {
     if (!mtlsConfig) return undefined;
     return {
       truststoreUri: mtlsConfig.bucket.s3UrlForObject(mtlsConfig.key),
       truststoreVersion: mtlsConfig.version,
     };
-  };
+  }
 }
 
 export interface DomainNameAttributes {
