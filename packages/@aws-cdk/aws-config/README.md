@@ -64,7 +64,7 @@ new CustomRule(this, 'CustomRule', {
 
 By default rules are triggered by changes to all [resources](https://docs.aws.amazon.com/config/latest/developerguide/resource-config-reference.html#supported-resources).
 
-Use the `fromResource()`, `fromResources()` or `fromTag()` APIs to restrict
+Use the `Scope` APIs (`fromResource()`, `fromResources()` or `fromTag()`) to restrict APIs to restrict
 the scope of both managed and custom rules:
 
 ```ts
@@ -78,7 +78,7 @@ const sshRule = new config.ManagedRule(this, 'SSH', {
 const customRule = new config.CustomRule(this, 'CustomRule', {
   lambdaFunction: myFn,
   configurationChanges: true
-  scope: config.Scope.fromResources([config.ResourceType.CLOUDFORMATION_STACK]), // restrict to all CloudFormation stacks
+  scope: config.Scope.fromResources([config.ResourceType.CLOUDFORMATION_STACK], config.Resource.S3_BUCKET), // restrict to all CloudFormation stacks and S3 buckets
 });
 
 const customRule = new config.CustomRule(this, 'CustomRule', {
@@ -118,9 +118,8 @@ const fn = new lambda.Function(this, 'CustomFunction', {
 const customRule = new config.CustomRule(this, 'Custom', {
   configurationChanges: true,
   lambdaFunction: fn,
+  scope: config.Scope.fromResource([config.Scope.EC2_INSTANCE]),
 });
-
-customRule.scopeToResource('AWS::EC2::Instance');
 
 // A rule to detect stack drifts
 const driftRule = new config.CloudFormationStackDriftDetectionCheck(this, 'Drift');

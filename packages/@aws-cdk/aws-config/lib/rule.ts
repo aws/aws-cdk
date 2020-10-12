@@ -121,11 +121,11 @@ abstract class RuleNew extends RuleBase {
  * @experimental
  */
 export class Scope {
-  /** restricts scope of changes to specific resource types */
+  /** restricts scope of changes to a specific resource type or resource identifier */
   public static fromResource(resourceType: ResourceType, resourceId?: string) {
     return new Scope(resourceId, [resourceType]);
   }
-  /** restricts scope of changes to specific resource */
+  /** restricts scope of changes to specific resource types */
   public static fromResources(resourceTypes: ResourceType[]) {
     return new Scope(undefined, resourceTypes);
   }
@@ -398,19 +398,19 @@ export class CustomRule extends RuleNew {
  * @see https://docs.aws.amazon.com/config/latest/developerguide/resource-config-reference.html
  */
 export class ResourceType {
-  /** APIGGateway Stage which is contained in ApiGateway Rest Api or associated with WAFRegional WebACL */
+  /** API Gateway Stage which is contained in ApiGateway Rest Api or associated with WAFRegional WebACL */
   public static readonly APIGATEWAY_STAGE = new ResourceType('AWS::ApiGateway::Stage');
 
-  /** APIGatewayv2 stage contained in ApiGatewayV2 Api */
+  /** API Gatewayv2 stage contained in ApiGatewayV2 Api */
   public static readonly APIGATEWAYV2_STAGE = new ResourceType('AWS::ApiGatewayV2::Stage');
 
-  /** APIGateway REST Api that contains an ApiGateway Stage */
+  /** API Gateway REST Api that contains an ApiGateway Stage */
   public static readonly APIGATEWAY_REST_API = new ResourceType('AWS::ApiGateway::RestApi');
 
   /** API Gatewayv2 API that contains an ApiGatewayV2 Stage */
   public static readonly APIGATEWAYV2_API = new ResourceType('AWS::ApiGatewayV2::Api');
 
-  /** CloudFront distribution which is associated with an Amazon CloudFront distribution */
+  /** Amazon CloudFront distribution */
   public static readonly CLOUDFRONT_DISTRIBUTION = new ResourceType('AWS::CloudFront::Distribution');
 
   /** CloudFront streaming distribution which is associated with an Amazon CloudFront streaming distribution */
@@ -501,7 +501,7 @@ export class ResourceType {
   /** Amazon RDS database security group which is associated with an EC2 security group or VPC */
   public static readonly RDS_DB_SECURITY_GROUP = new ResourceType('AWS::RDS::DBSecurityGroup');
 
-  /** Amazon RDS database snapshot which is associated a VPC */
+  /** Amazon RDS database snapshot which is associated with a VPC */
   public static readonly RDS_DB_SNAPSHOT = new ResourceType('AWS::RDS::DBSnapshot');
 
   /** Amazon RDS database subnet group which is associated with an EC2 security group or VPC */
@@ -516,7 +516,7 @@ export class ResourceType {
    */
   public static readonly RDS_DB_CLUSTER = new ResourceType('AWS::RDS::DBCluster');
   /** Amazon RDS database cluster snapshot which is associated with an RDS database cluster or a VPC */
-  public static readonly RDS_DB_CLUSTER_SNAPSHOT = new ResourceType('AWS::RDS::EventSubscription');
+  public static readonly RDS_DB_CLUSTER_SNAPSHOT = new ResourceType('AWS::RDS::DBClusterSnapshot');
 
   /** Transfer acceleration for data over long distances between your client and a bucket.  */
   public static readonly S3_ATTR_ACCELERATE_CONFIGURATION = new ResourceType('AccelerateConfiguration');
@@ -580,7 +580,7 @@ export class ResourceType {
    */
   public static readonly EC2_VPC = new ResourceType('AWS::EC2::VPC');
   /** Amazon EC2 VPN connection which is attached to a customer gateway or VPN gateway */
-  public static readonly EC2_VPN_CONNECTION = new ResourceType('AWS::EC2::VPC');
+  public static readonly EC2_VPN_CONNECTION = new ResourceType('AWS::EC2::VPNConnection');
   /**
    * Amazon EC2 VPN gateway which:
    *  is attached to a VPC or VPN connection
@@ -731,7 +731,7 @@ export class ResourceType {
 
   /** A custom resource type to support future cases. */
   public static of(type: string): ResourceType {
-    return new ResourceType(type.toUpperCase());
+    return new ResourceType(type);
   }
 
   /**
