@@ -7,7 +7,6 @@ export class FakeCodeBuildSource implements notifications.INotificationSource {
   bind(): notifications.NotificationSourceConfig {
     return {
       sourceType: notifications.SourceType.CODE_BUILD,
-      // 'arn:aws:codebuild::1234567890:project/MyCodebuildProject'
       sourceAddress: this.project.projectArn,
     };
   }
