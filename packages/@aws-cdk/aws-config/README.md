@@ -64,7 +64,7 @@ new CustomRule(this, 'CustomRule', {
 
 By default rules are triggered by changes to all [resources](https://docs.aws.amazon.com/config/latest/developerguide/resource-config-reference.html#supported-resources).
 
-Use the `Scope` APIs (`fromResource()`, `fromResources()` or `fromTag()`) to restrict APIs to restrict
+Use the `Scope` APIs (`fromResource()`, `fromResources()` or `fromTag()`) to restrict
 the scope of both managed and custom rules:
 
 ```ts
