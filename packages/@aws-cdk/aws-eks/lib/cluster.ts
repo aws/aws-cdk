@@ -82,7 +82,7 @@ export interface ICluster extends IResource, ec2.IConnectable {
    * An Open ID Connect Issuer Url
    * @attribute
    */
-  readonly openIdConnectIssuerUrl: string;
+  readonly clusterOpenIdConnectIssuerUrl: string;
 
   /**
    * An Open ID Connect Provider
@@ -634,8 +634,8 @@ abstract class ClusterBase extends Resource implements ICluster {
   public abstract readonly kubectlEnvironment?: { [key: string]: string };
   public abstract readonly kubectlSecurityGroup?: ec2.ISecurityGroup;
   public abstract readonly kubectlPrivateSubnets?: ec2.ISubnet[];
-  public abstract readonly openIdConnectIssuerUrl: string;
-  public abstract readonly openIdConnectProvider: iam.IOpenIdConnectProvider;
+  public abstract readonly clusterOpenIdConnectIssuerUrl: string;
+  protected openIdConnectProviderInstance?: iam.IOpenIdConnectProvider;
 
   /**
    * Defines a Kubernetes resource in this cluster.
@@ -677,6 +677,29 @@ abstract class ClusterBase extends Resource implements ICluster {
       ...options,
       cluster: this,
     });
+  }
+
+  /**
+   * An `OpenIdConnectProvider` resource associated with this cluster, and which can be used
+   * to link this cluster to AWS IAM.
+   *
+   * A provider will only be defined if this property is accessed (lazy initialization).
+   */
+  public get openIdConnectProvider() {
+    if (!this.openIdConnectProviderInstance) {
+      this.openIdConnectProviderInstance = new iam.OpenIdConnectProvider(this, 'OpenIdConnectProvider', {
+        url: this.clusterOpenIdConnectIssuerUrl,
+        clientIds: ['sts.amazonaws.com'],
+        /**
+         * For some reason EKS isn't validating the root certificate but a intermediat certificate
+         * which is one level up in the tree. Because of the a constant thumbprint value has to be
+         * stated with this OpenID Connect provider. The certificate thumbprint is the same for all the regions.
+         */
+        thumbprints: ['9e99a48a9960b14926bb7f3b02e22da2b0ab7280'],
+      });
+    }
+
+    return this.openIdConnectProviderInstance;
   }
 }
 
@@ -845,8 +868,6 @@ export class Cluster extends ClusterBase {
    * Manages the aws-auth config map.
    */
   private _awsAuth?: AwsAuth;
-
-  private _openIdConnectProvider?: iam.IOpenIdConnectProvider;
 
   private _spotInterruptHandler?: HelmChart;
 
@@ -1253,31 +1274,20 @@ export class Cluster extends ClusterBase {
    * stock `CfnCluster`), this is `undefined`.
    * @attribute
    */
-  public get openIdConnectIssuerUrl(): string {
+  public get clusterOpenIdConnectIssuerUrl(): string {
     return this._clusterResource.attrOpenIdConnectIssuerUrl;
   }
 
   /**
-   * An `OpenIdConnectProvider` resource associated with this cluster, and which can be used
-   * to link this cluster to AWS IAM.
-   *
-   * A provider will only be defined if this property is accessed (lazy initialization).
+   * If this cluster is kubectl-enabled, returns the OpenID Connect issuer.
+   * This is because the values is only be retrieved by the API and not exposed
+   * by CloudFormation. If this cluster is not kubectl-enabled (i.e. uses the
+   * stock `CfnCluster`), this is `undefined`.
+   * The same as IssuerUrl
+   * @attribute
    */
-  public get openIdConnectProvider() {
-    if (!this._openIdConnectProvider) {
-      this._openIdConnectProvider = new iam.OpenIdConnectProvider(this, 'OpenIdConnectProvider', {
-        url: this.openIdConnectIssuerUrl,
-        clientIds: ['sts.amazonaws.com'],
-        /**
-         * For some reason EKS isn't validating the root certificate but a intermediat certificate
-         * which is one level up in the tree. Because of the a constant thumbprint value has to be
-         * stated with this OpenID Connect provider. The certificate thumbprint is the same for all the regions.
-         */
-        thumbprints: ['9e99a48a9960b14926bb7f3b02e22da2b0ab7280'],
-      });
-    }
-
-    return this._openIdConnectProvider;
+  public get clusterOpenIdConnectIssuer(): string {
+    return this.clusterOpenIdConnectIssuerUrl;
   }
 
   /**
@@ -1619,8 +1629,6 @@ class ImportedCluster extends ClusterBase {
   public readonly kubectlPrivateSubnets?: ec2.ISubnet[] | undefined;
   public readonly kubectlLayer?: lambda.ILayerVersion;
 
-  private _openIdConnectProvider?: iam.IOpenIdConnectProvider;
-
   constructor(scope: Construct, id: string, private readonly props: ClusterAttributes) {
     super(scope, id);
 
@@ -1633,7 +1641,7 @@ class ImportedCluster extends ClusterBase {
     this.kubectlLayer = props.kubectlLayer;
 
     if (props.openIdConnectProvider) {
-      this._openIdConnectProvider = props.openIdConnectProvider;
+      this.openIdConnectProviderInstance = props.openIdConnectProvider;
     }
 
     let i = 1;
@@ -1687,34 +1695,11 @@ class ImportedCluster extends ClusterBase {
    * this will return a value. Otherwise this will be `undefined`
    * @attribute
    */
-  public get openIdConnectIssuerUrl(): string {
+  public get clusterOpenIdConnectIssuerUrl(): string {
     if (!this.props.openIdConnectIssuerUrl) {
       throw new Error('"clusterOpenIdConnectIssuerUrl" is not defined for this imported cluster');
     }
     return this.props.openIdConnectIssuerUrl;
-  }
-
-  /**
-   * An `OpenIdConnectProvider` resource associated with this cluster, and which can be used
-   * to link this cluster to AWS IAM.
-   *
-   * A provider will only be defined if this property is accessed (lazy initialization).
-   */
-  public get openIdConnectProvider() {
-    if (!this._openIdConnectProvider) {
-      this._openIdConnectProvider = new iam.OpenIdConnectProvider(this, 'OpenIdConnectProvider', {
-        url: this.openIdConnectIssuerUrl,
-        clientIds: ['sts.amazonaws.com'],
-        /**
-         * For some reason EKS isn't validating the root certificate but a intermediat certificate
-         * which is one level up in the tree. Because of the a constant thumbprint value has to be
-         * stated with this OpenID Connect provider. The certificate thumbprint is the same for all the regions.
-         */
-        thumbprints: ['9e99a48a9960b14926bb7f3b02e22da2b0ab7280'],
-      });
-    }
-
-    return this._openIdConnectProvider;
   }
 }
 

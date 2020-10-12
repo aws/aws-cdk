@@ -250,7 +250,7 @@ export class LegacyCluster extends Resource implements ICluster {
     throw new Error('legacy cluster does not support adding service accounts');
   }
 
-  public get openIdConnectIssuerUrl(): string {
+  public get clusterOpenIdConnectIssuerUrl(): string {
     throw new Error('legacy cluster does not support open id connect providers');
   }
 
@@ -455,7 +455,7 @@ class ImportedCluster extends Resource implements ICluster {
     throw new Error('legacy cluster does not support adding service accounts');
   }
 
-  public get openIdConnectIssuerUrl(): string {
+  public get clusterOpenIdConnectIssuerUrl(): string {
     throw new Error('legacy cluster does not support open id connect providers');
   }
 
