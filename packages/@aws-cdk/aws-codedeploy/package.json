@@ -92,6 +92,7 @@
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/custom-resources": "0.0.0",
     "constructs": "^3.0.4"
   },
   "homepage": "https://github.com/aws/aws-cdk",
@@ -105,6 +106,7 @@
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/custom-resources": "0.0.0",
     "constructs": "^3.0.4"
   },
   "engines": {
@@ -164,7 +166,8 @@
       "docs-public-apis:@aws-cdk/aws-codedeploy.IEcsApplication.applicationArn",
       "docs-public-apis:@aws-cdk/aws-codedeploy.IEcsApplication.applicationName",
       "docs-public-apis:@aws-cdk/aws-codedeploy.IEcsDeploymentConfig.deploymentConfigArn",
-      "docs-public-apis:@aws-cdk/aws-codedeploy.IEcsDeploymentConfig.deploymentConfigName"
+      "docs-public-apis:@aws-cdk/aws-codedeploy.IEcsDeploymentConfig.deploymentConfigName",
+      "props-physical-name:@aws-cdk/aws-codedeploy.CustomLambdaDeploymentConfigProps"
     ]
   },
   "stability": "stable",

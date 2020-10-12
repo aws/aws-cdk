@@ -152,7 +152,13 @@
       "docs-public-apis:@aws-cdk/aws-cloudfront.ViewerCertificate.aliases",
       "docs-public-apis:@aws-cdk/aws-cloudfront.ViewerCertificate.props",
       "docs-public-apis:@aws-cdk/aws-cloudfront.ViewerCertificateOptions",
-      "props-default-doc:@aws-cdk/aws-cloudfront.ViewerCertificateOptions.aliases"
+      "props-default-doc:@aws-cdk/aws-cloudfront.ViewerCertificateOptions.aliases",
+      "construct-interface-extends-iconstruct:@aws-cdk/aws-cloudfront.ICachePolicy",
+      "resource-interface-extends-resource:@aws-cdk/aws-cloudfront.ICachePolicy",
+      "resource-attribute:@aws-cdk/aws-cloudfront.CachePolicy.cachePolicyLastModifiedTime",
+      "construct-interface-extends-iconstruct:@aws-cdk/aws-cloudfront.IOriginRequestPolicy",
+      "resource-interface-extends-resource:@aws-cdk/aws-cloudfront.IOriginRequestPolicy",
+      "resource-attribute:@aws-cdk/aws-cloudfront.OriginRequestPolicy.originRequestPolicyLastModifiedTime"
     ]
   },
   "awscdkio": {
