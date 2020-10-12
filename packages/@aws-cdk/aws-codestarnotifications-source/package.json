@@ -64,6 +64,9 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
+    "@aws-cdk/aws-sns": "0.0.0",
+    "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-events": "0.0.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "pkglint": "0.0.0"
@@ -71,15 +74,21 @@
   "dependencies": {
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/aws-codestarnotifications": "0.0.0",
+    "@aws-cdk/aws-codecommit": "0.0.0",
     "@aws-cdk/aws-codebuild": "0.0.0",
     "@aws-cdk/aws-codepipeline": "0.0.0",
+    "@aws-cdk/aws-codedeploy": "0.0.0",
     "constructs": "^3.0.4"
   },
   "peerDependencies": {
     "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/aws-sns": "0.0.0",
+    "@aws-cdk/aws-chatbot": "0.0.0",
     "@aws-cdk/aws-codestarnotifications": "0.0.0",
+    "@aws-cdk/aws-codecommit": "0.0.0",
     "@aws-cdk/aws-codebuild": "0.0.0",
     "@aws-cdk/aws-codepipeline": "0.0.0",
+    "@aws-cdk/aws-codedeploy": "0.0.0",
     "constructs": "^3.0.4"
   },
   "engines": {

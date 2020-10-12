@@ -13,7 +13,8 @@ export class CodePipelineProject implements notifications.INotificationSource {
    */
   bind(_notificationRule: notifications.INotificationRule): notifications.NotificationSourceConfig {
     return {
-      arn: this.pipeline.pipelineArn,
+      sourceType: notifications.SourceType.CODE_PIPELINE,
+      sourceAddress: this.pipeline.pipelineArn,
     };
   }
 }

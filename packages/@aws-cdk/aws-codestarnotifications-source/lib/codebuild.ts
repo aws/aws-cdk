@@ -13,7 +13,8 @@ export class CodeBuildProject implements notifications.INotificationSource {
    */
   bind(_notificationRule: notifications.INotificationRule): notifications.NotificationSourceConfig {
     return {
-      arn: this.project.projectArn,
+      sourceType: notifications.SourceType.CODE_BUILD,
+      sourceAddress: this.project.projectArn,
     };
   }
 }
