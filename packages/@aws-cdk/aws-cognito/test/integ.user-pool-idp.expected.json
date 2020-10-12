@@ -52,7 +52,7 @@
         ],
         "SupportedIdentityProviders": [
           {
-            "Ref": "googleDB2C5242"
+            "Ref": "amazon2D32744A"
           },
           "COGNITO"
         ]
@@ -67,24 +67,22 @@
         }
       }
     },
-    "googleDB2C5242": {
+    "amazon2D32744A": {
       "Type": "AWS::Cognito::UserPoolIdentityProvider",
       "Properties": {
-        "ProviderName": "Google",
-        "ProviderType": "Google",
+        "ProviderName": "LoginWithAmazon",
+        "ProviderType": "LoginWithAmazon",
         "UserPoolId": {
           "Ref": "pool056F3F7E"
         },
         "AttributeMapping": {
-          "given_name": "given_name",
-          "family_name": "family_name",
+          "given_name": "name",
           "email": "email",
-          "gender": "gender",
-          "names": "names"
+          "userId": "user_id"
         },
         "ProviderDetails": {
-          "client_id": "google-client-id",
-          "client_secret": "google-client-secret",
+          "client_id": "amzn-client-id",
+          "client_secret": "amzn-client-secret",
           "authorize_scopes": "profile"
         }
       }
