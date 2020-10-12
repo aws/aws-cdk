@@ -280,7 +280,7 @@ export class HttpApi extends Resource implements IHttpApi {
    * @default - sum over 5 minutes
    */
   public metricDataProcessed(props?: MetricOptions): Metric {
-    return this.metric('CacheHitCount', { statistic: 'Sum', ...props });
+    return this.metric('DataProcessed', { statistic: 'Sum', ...props });
   }
 
   /**
