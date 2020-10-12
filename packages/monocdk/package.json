@@ -80,16 +80,20 @@
   },
   "license": "Apache-2.0",
   "bundledDependencies": [
+    "@balena/dockerignore",
     "case",
     "fs-extra",
+    "ignore",
     "jsonschema",
     "minimatch",
     "semver",
     "yaml"
   ],
   "dependencies": {
+    "@balena/dockerignore": "^1.0.2",
     "case": "1.6.3",
     "fs-extra": "^9.0.1",
+    "ignore": "^5.1.8",
     "jsonschema": "^1.2.10",
     "minimatch": "^3.0.4",
     "semver": "^7.3.2",
