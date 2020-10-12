@@ -19,7 +19,6 @@ export interface IHttpApi extends IResource {
 
   /**
    * A human friendly name for this HTTP API. Note that this is different from `httpApiId`.
-   * @attribute
    */
   readonly httpApiName?: string;
 
