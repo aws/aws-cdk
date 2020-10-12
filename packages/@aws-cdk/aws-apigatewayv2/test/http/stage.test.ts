@@ -66,6 +66,7 @@ describe('HttpStage', () => {
     });
     const metricName = '4xxError';
     const statistic = 'Sum';
+    const httpApiId = api.httpApiId;
 
     // WHEN
     const countMetric = stage.metric(metricName, { statistic });
@@ -74,7 +75,7 @@ describe('HttpStage', () => {
     expect(countMetric.namespace).toEqual('AWS/ApiGateway');
     expect(countMetric.metricName).toEqual(metricName);
     expect(countMetric.dimensions).toEqual({
-      apiName: 'test-api',
+      httpApiId,
       stage: '$default',
     });
     expect(countMetric.statistic).toEqual(statistic);
@@ -90,6 +91,7 @@ describe('HttpStage', () => {
       httpApi: api,
     });
     const color = '#00ff00';
+    const httpApiId = api.httpApiId;
 
     // WHEN
     const metrics = new Array<Metric>();
@@ -102,8 +104,8 @@ describe('HttpStage', () => {
     // THEN
     for (const metric of metrics) {
       expect(metric.namespace).toEqual('AWS/ApiGateway');
-      expect(stack.resolve(metric.dimensions)).toEqual({
-        apiName: 'test-api',
+      expect(metric.dimensions).toEqual({
+        httpApiId,
         stage: '$default',
       });
       expect(metric.color).toEqual(color);
