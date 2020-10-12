@@ -33,13 +33,13 @@ async function main() {
   const options = cdkBuildOptions();
   const env = options.env;
 
+  if (options.pre) {
+    await shell(options.pre, { timers, env });
+  }
+
   const gen = genScript();
   if (!args['skip-gen'] && gen) {
     await shell([gen], { timers, env });
-  }
-
-  if (options.pre) {
-    await shell(options.pre, { timers, env });
   }
 
   const overrides: CompilerOverrides = { eslint: args.eslint, jsii: args.jsii, tsc: args.tsc };
