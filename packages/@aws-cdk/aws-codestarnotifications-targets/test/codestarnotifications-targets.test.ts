@@ -7,7 +7,7 @@ import * as targets from '../lib';
 import { FakeCodeBuildSource } from './helpers';
 import '@aws-cdk/assert/jest';
 
-describe('NotificationRule', () => {
+describe('Notification Target', () => {
   let stack: cdk.Stack;
 
   beforeEach(() => {
