@@ -2,7 +2,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { Resource, Duration, Token, Annotations, RemovalPolicy, IResource, Stack } from '@aws-cdk/core';
+import { Resource, Duration, Token, Annotations, RemovalPolicy, IResource, Stack, Lazy } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IClusterEngine } from './cluster-engine';
 import { DatabaseSecret } from './database-secret';
@@ -329,9 +329,11 @@ abstract class ServerlessClusterBase extends Resource implements IServerlessClus
    * @param grantee The principal to grant access to
    */
   public grantDataApiAccess(grantee: iam.IGrantable): iam.Grant {
-    if (!this.enableHttpEndpoint) {
+    if (this.enableHttpEndpoint === false) {
       throw new Error('Cannot grant Data API access when HTTP endpoint is disabled');
     }
+
+    this.enableHttpEndpoint = true;
     const ret = iam.Grant.addToPrincipal({
       grantee,
       actions: DATA_API_ACTIONS,
@@ -453,7 +455,7 @@ export class ServerlessCluster extends ServerlessClusterBase {
       engine: props.engine.engineType,
       engineVersion: props.engine.engineVersion?.fullVersion,
       engineMode: 'serverless',
-      enableHttpEndpoint: props.enableHttpEndpoint,
+      enableHttpEndpoint: Lazy.anyValue({ produce: () => this.enableHttpEndpoint }),
       kmsKeyId: props.storageEncryptionKey?.keyArn,
       masterUsername: credentials.username,
       masterUserPassword: credentials.password?.toString(),

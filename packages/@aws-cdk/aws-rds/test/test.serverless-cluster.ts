@@ -806,6 +806,27 @@ export = {
     test.done();
   },
 
+  'grant Data API access enables HTTP endpoint'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = ec2.Vpc.fromLookup(stack, 'VPC', { isDefault: true });
+    const cluster = new ServerlessCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      vpc,
+    });
+    const user = new iam.User(stack, 'User');
+
+    // WHEN
+    cluster.grantDataApiAccess(user);
+
+    //THEN
+    expect(stack).to(haveResource('AWS::RDS::DBCluster', {
+      EnableHttpEndpoint: true,
+    }));
+
+    test.done();
+  },
+
   'grant Data API access throws if HTTP endpoint is disabled'(test: Test) {
     // GIVEN
     const stack = testStack();
@@ -813,6 +834,7 @@ export = {
     const cluster = new ServerlessCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
       vpc,
+      enableHttpEndpoint: false,
     });
     const user = new iam.User(stack, 'User');
 
