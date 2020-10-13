@@ -21,7 +21,7 @@ class ConfigStack extends cdk.Stack {
     new config.CustomRule(this, 'Custom', {
       configurationChanges: true,
       lambdaFunction: fn,
-      scope: config.Scope.fromResources([config.ResourceType.EC2_INSTANCE]),
+      ruleScope: config.RuleScope.fromResources([config.ResourceType.EC2_INSTANCE]),
     });
 
     // A rule to detect stacks drifts

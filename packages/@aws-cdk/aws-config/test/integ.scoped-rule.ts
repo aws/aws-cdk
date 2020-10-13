@@ -15,7 +15,7 @@ const fn = new lambda.Function(stack, 'CustomFunction', {
 new config.CustomRule(stack, 'Custom', {
   lambdaFunction: fn,
   periodic: true,
-  scope: config.Scope.fromResources([config.ResourceType.EC2_INSTANCE]),
+  ruleScope: config.RuleScope.fromResources([config.ResourceType.EC2_INSTANCE]),
 });
 
 app.synth();

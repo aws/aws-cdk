@@ -144,7 +144,7 @@ export = {
     // WHEN
     new config.ManagedRule(stack, 'Rule', {
       identifier: 'AWS_SUPER_COOL',
-      scope: config.Scope.fromResource(config.ResourceType.EC2_INSTANCE, 'i-1234'),
+      ruleScope: config.RuleScope.fromResource(config.ResourceType.EC2_INSTANCE, 'i-1234'),
     });
 
     // THEN
@@ -167,7 +167,7 @@ export = {
     // WHEN
     new config.ManagedRule(stack, 'Rule', {
       identifier: 'AWS_SUPER_COOL',
-      scope: config.Scope.fromResources([config.ResourceType.S3_BUCKET, config.ResourceType.CLOUDFORMATION_STACK]),
+      ruleScope: config.RuleScope.fromResources([config.ResourceType.S3_BUCKET, config.ResourceType.CLOUDFORMATION_STACK]),
     });
 
     // THEN
@@ -190,7 +190,7 @@ export = {
     // WHEN
     new config.ManagedRule(stack, 'Rule', {
       identifier: 'RULE',
-      scope: config.Scope.fromTag('key', 'value'),
+      ruleScope: config.RuleScope.fromTag('key', 'value'),
     });
 
     // THEN
@@ -217,7 +217,7 @@ export = {
     test.doesNotThrow(() => new config.CustomRule(stack, 'Rule', {
       lambdaFunction: fn,
       periodic: true,
-      scope: config.Scope.fromResources([config.ResourceType.of('resource')]),
+      ruleScope: config.RuleScope.fromResources([config.ResourceType.of('resource')]),
     }));
 
     test.done();

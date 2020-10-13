@@ -64,7 +64,7 @@ new CustomRule(this, 'CustomRule', {
 
 By default rules are triggered by changes to all [resources](https://docs.aws.amazon.com/config/latest/developerguide/resource-config-reference.html#supported-resources).
 
-Use the `Scope` APIs (`fromResource()`, `fromResources()` or `fromTag()`) to restrict
+Use the `RuleScope` APIs (`fromResource()`, `fromResources()` or `fromTag()`) to restrict
 the scope of both managed and custom rules:
 
 ```ts
@@ -72,19 +72,19 @@ import * as config from '@aws-cdk/aws-config';
 
 const sshRule = new config.ManagedRule(this, 'SSH', {
   identifier: 'INCOMING_SSH_DISABLED',
-  scope: config.Scope.fromResource(config.ResourceType.EC2_SECURITY_GROUP, 'sg-1234567890abcdefgh'), // restrict to specific security group
+  ruleScope: config.RuleScope.fromResource(config.ResourceType.EC2_SECURITY_GROUP, 'sg-1234567890abcdefgh'), // restrict to specific security group
 });
 
 const customRule = new config.CustomRule(this, 'CustomRule', {
   lambdaFunction: myFn,
   configurationChanges: true
-  scope: config.Scope.fromResources([config.ResourceType.CLOUDFORMATION_STACK, config.Resource.S3_BUCKET]), // restrict to all CloudFormation stacks and S3 buckets
+  ruleScope: config.RuleScope.fromResources([config.ResourceType.CLOUDFORMATION_STACK, config.Resource.S3_BUCKET]), // restrict to all CloudFormation stacks and S3 buckets
 });
 
 const customRule = new config.CustomRule(this, 'CustomRule', {
   lambdaFunction: myFn,
   configurationChanges: true
-  scope: config.Scope.fromTag('Cost Center', 'MyApp'), // restrict to a specific tag
+  ruleScope: config.RuleScope.fromTag('Cost Center', 'MyApp'), // restrict to a specific tag
 });
 ```
 
@@ -118,7 +118,7 @@ const fn = new lambda.Function(this, 'CustomFunction', {
 const customRule = new config.CustomRule(this, 'Custom', {
   configurationChanges: true,
   lambdaFunction: fn,
-  scope: config.Scope.fromResource([config.Scope.EC2_INSTANCE]),
+  ruleScope: config.RuleScope.fromResource([config.Scope.EC2_INSTANCE]),
 });
 
 // A rule to detect stack drifts
