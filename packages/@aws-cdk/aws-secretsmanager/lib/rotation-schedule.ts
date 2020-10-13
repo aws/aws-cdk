@@ -49,7 +49,7 @@ export class RotationSchedule extends Resource {
   constructor(scope: Construct, id: string, props: RotationScheduleProps) {
     super(scope, id);
 
-    if (!props.rotationLambda && !props.hostedRotation) {
+    if ((!props.rotationLambda && !props.hostedRotation) || (props.rotationLambda && props.hostedRotation)) {
       throw new Error('Either `rotationLambda` or `hostedRotation` must be specified.');
     }
 
@@ -111,174 +111,89 @@ export interface MultiUserHostedRotationOptions extends SingleUserHostedRotation
 }
 
 /**
- * Properties for a hosted rotation
- */
-export interface HostedRotationProps extends SingleUserHostedRotationOptions {
-  /**
-   * The type of hosted rotation
-   */
-  readonly type: HostedRotationType;
-
-  /**
-   * The master secret for a multi user rotation scheme
-   *
-   * @default - single user rotation scheme
-   */
-  readonly masterSecret?: ISecret;
-}
-
-/**
  * A hosted rotation
  */
 export class HostedRotation implements ec2.IConnectable {
-  /**
-   * MySQL Single User
-   */
+  /** MySQL Single User */
   public static mysqlSingleUser(options: SingleUserHostedRotationOptions = {}) {
-    return new HostedRotation({
-      ...options,
-      type: HostedRotationType.MYSQL_SINGLE_USER,
-    });
+    return new HostedRotation(HostedRotationType.MYSQL_SINGLE_USER, options);
   }
 
-  /**
-   * MySQL Multi User
-   */
+  /** MySQL Multi User */
   public static mysqlMultiUser(options: MultiUserHostedRotationOptions) {
-    return new HostedRotation({
-      ...options,
-      type: HostedRotationType.MYSQL_MULTI_USER,
-    });
+    return new HostedRotation(HostedRotationType.MYSQL_MULTI_USER, options, options.masterSecret);
   }
 
-  /**
-   * PostgreSQL Single User
-   */
+  /** PostgreSQL Single User */
   public static postgreSqlSingleUser(options: SingleUserHostedRotationOptions = {}) {
-    return new HostedRotation({
-      ...options,
-      type: HostedRotationType.POSTGRESQL_SINGLE_USER,
-    });
+    return new HostedRotation(HostedRotationType.POSTGRESQL_SINGLE_USER, options);
   }
 
-  /**
-   * PostgreSQL Multi User
-   */
+  /** PostgreSQL Multi User */
   public static postgreSqlMultiUser(options: MultiUserHostedRotationOptions) {
-    return new HostedRotation({
-      ...options,
-      type: HostedRotationType.POSTGRESQL_MULTI_USER,
-    });
+    return new HostedRotation(HostedRotationType.POSTGRESQL_MULTI_USER, options, options.masterSecret);
   }
 
-  /**
-   * Oracle Single User
-   */
+  /** Oracle Single User */
   public static oracleSingleUser(options: SingleUserHostedRotationOptions = {}) {
-    return new HostedRotation({
-      ...options,
-      type: HostedRotationType.ORACLE_SINGLE_USER,
-    });
+    return new HostedRotation(HostedRotationType.ORACLE_SINGLE_USER, options);
   }
 
-  /**
-   * Oracle Multi User
-   */
+  /** Oracle Multi User */
   public static oracleMultiUser(options: MultiUserHostedRotationOptions) {
-    return new HostedRotation({
-      ...options,
-      type: HostedRotationType.ORACLE_MULTI_USER,
-    });
+    return new HostedRotation(HostedRotationType.ORACLE_MULTI_USER, options, options.masterSecret);
   }
 
-  /**
-   * MariaDB Single User
-   */
+  /** MariaDB Single User */
   public static mariaDbSingleUser(options: SingleUserHostedRotationOptions = {}) {
-    return new HostedRotation({
-      ...options,
-      type: HostedRotationType.MARIADB_SINGLE_USER,
-    });
+    return new HostedRotation(HostedRotationType.MARIADB_SINGLE_USER, options);
   }
 
-  /**
-   * MariaDB Multi User
-   */
+  /** MariaDB Multi User */
   public static mariaDbMultiUser(options: MultiUserHostedRotationOptions) {
-    return new HostedRotation({
-      ...options,
-      type: HostedRotationType.MARIADB_MULTI_USER,
-    });
+    return new HostedRotation(HostedRotationType.MARIADB_MULTI_USER, options, options.masterSecret);
   }
 
-  /**
-   * SQL Server Single User
-   */
+  /** SQL Server Single User */
   public static sqlServerSingleUser(options: SingleUserHostedRotationOptions = {}) {
-    return new HostedRotation({
-      ...options,
-      type: HostedRotationType.SQLSERVER_SINGLE_USER,
-    });
+    return new HostedRotation(HostedRotationType.SQLSERVER_SINGLE_USER, options);
   }
 
-  /**
-   * SQL Server Multi User
-   */
+  /** SQL Server Multi User */
   public static sqlServerMultiUser(options: MultiUserHostedRotationOptions) {
-    return new HostedRotation({
-      ...options,
-      type: HostedRotationType.SQLSERVER_MULTI_USER,
-    });
+    return new HostedRotation(HostedRotationType.SQLSERVER_MULTI_USER, options, options.masterSecret);
   }
 
-  /**
-   * Redshift Single User
-   */
+  /** Redshift Single User */
   public static redshiftSingleUser(options: SingleUserHostedRotationOptions = {}) {
-    return new HostedRotation({
-      ...options,
-      type: HostedRotationType.REDSHIFT_SINGLE_USER,
-    });
+    return new HostedRotation(HostedRotationType.REDSHIFT_SINGLE_USER, options);
   }
 
-  /**
-   * Redshift Multi User
-   */
+  /** Redshift Multi User */
   public static redshiftMultiUser(options: MultiUserHostedRotationOptions) {
-    return new HostedRotation({
-      ...options,
-      type: HostedRotationType.REDSHIFT_MULTI_USER,
-    });
+    return new HostedRotation(HostedRotationType.REDSHIFT_MULTI_USER, options, options.masterSecret);
   }
 
-  /**
-   * MongoDB Single User
-   */
+  /** MongoDB Single User */
   public static mongoDbSingleUser(options: SingleUserHostedRotationOptions = {}) {
-    return new HostedRotation({
-      ...options,
-      type: HostedRotationType.MONGODB_SINGLE_USER,
-    });
+    return new HostedRotation(HostedRotationType.MONGODB_SINGLE_USER, options);
   }
 
-  /**
-   * MongoDB Multi User
-   */
+  /** MongoDB Multi User */
   public static mongoDbMultiUser(options: MultiUserHostedRotationOptions) {
-    return new HostedRotation({
-      ...options,
-      type: HostedRotationType.MONGODB_MULTI_USER,
-    });
+    return new HostedRotation(HostedRotationType.MONGODB_MULTI_USER, options, options.masterSecret);
   }
 
-  private securityGroups?: ec2.ISecurityGroup[];
+  private _connections?: ec2.Connections;
 
-  constructor(private readonly props: HostedRotationProps) {
-    if (props.type.isMultiUser && !props.masterSecret) {
+  private constructor(
+    private readonly type: HostedRotationType,
+    private readonly props: SingleUserHostedRotationOptions | MultiUserHostedRotationOptions,
+    private readonly masterSecret?: ISecret,
+  ) {
+    if (type.isMultiUser && !masterSecret) {
       throw new Error('The `masterSecret` must be specified when using the multi user scheme.');
     }
-
-    this.securityGroups = this.props.securityGroups;
   }
 
   /**
@@ -293,23 +208,23 @@ export class HostedRotation implements ec2.IConnectable {
     }
 
     if (this.props.vpc && !this.props.securityGroups) {
-      this.securityGroups = [new ec2.SecurityGroup(scope, 'SecurityGroup', {
-        vpc: this.props.vpc,
-      })];
+      this._connections = new ec2.Connections({
+        securityGroups: [new ec2.SecurityGroup(scope, 'SecurityGroup', { vpc: this.props.vpc })],
+      });
     }
 
     // Prevent master secret deletion when rotation is in place
-    if (this.props.masterSecret) {
-      this.props.masterSecret.denyAccountRootDelete();
+    if (this.masterSecret) {
+      this.masterSecret.denyAccountRootDelete();
     }
 
     return {
-      rotationType: this.props.type.name,
+      rotationType: this.type.name,
       kmsKeyArn: secret.encryptionKey?.keyArn,
-      masterSecretArn: this.props.masterSecret?.secretArn,
-      masterSecretKmsKeyArn: this.props.masterSecret?.encryptionKey?.keyArn,
+      masterSecretArn: this.masterSecret?.secretArn,
+      masterSecretKmsKeyArn: this.masterSecret?.encryptionKey?.keyArn,
       rotationLambdaName: this.props.functionName,
-      vpcSecurityGroupIds: this.securityGroups?.map(s => s.securityGroupId).join(','),
+      vpcSecurityGroupIds: this._connections?.securityGroups?.map(s => s.securityGroupId).join(','),
       vpcSubnetIds: this.props.vpc?.selectSubnets(this.props.vpcSubnets).subnetIds.join(','),
     };
   }
@@ -322,11 +237,12 @@ export class HostedRotation implements ec2.IConnectable {
       throw new Error('Cannot use connections for a hosted rotation that is not deployed in a VPC');
     }
 
-    if (!this.securityGroups) {
+    // If we are in a vpc and bind() has been called _connections should be defined
+    if (!this._connections) {
       throw new Error('Cannot use connections for a hosted rotation that has not been bound to a secret');
     }
 
-    return new ec2.Connections({ securityGroups: this.securityGroups });
+    return this._connections;
   }
 }
 
@@ -334,79 +250,51 @@ export class HostedRotation implements ec2.IConnectable {
  * Hosted rotation type
  */
 export class HostedRotationType {
-  /**
-   * MySQL Single User
-   */
+  /** MySQL Single User */
   public static readonly MYSQL_SINGLE_USER = new HostedRotationType('MySQLSingleUser');
 
-  /**
-   * MySQL Multi User
-   */
+  /** MySQL Multi User */
   public static readonly MYSQL_MULTI_USER = new HostedRotationType('MySQLMultiUser', true);
 
-  /**
-   * PostgreSQL Single User
-   */
+  /** PostgreSQL Single User */
   public static readonly POSTGRESQL_SINGLE_USER = new HostedRotationType('PostgreSQLSingleUser');
 
-  /**
-   * PostgreSQL Multi User
-   */
+  /** PostgreSQL Multi User */
   public static readonly POSTGRESQL_MULTI_USER = new HostedRotationType('PostgreSQLMultiUser', true);
 
-  /**
-   * Oracle Single User
-   */
+  /** Oracle Single User */
   public static readonly ORACLE_SINGLE_USER = new HostedRotationType('OracleSingleUser');
 
-  /**
-   * Oracle Multi User
-   */
+  /** Oracle Multi User */
   public static readonly ORACLE_MULTI_USER = new HostedRotationType('OracleMultiUser', true);
 
-  /**
-   * MariaDB Single User
-   */
+  /** MariaDB Single User */
   public static readonly MARIADB_SINGLE_USER = new HostedRotationType('MariaDBSingleUser');
 
-  /**
-   * MariaDB Multi User
-   */
+  /** MariaDB Multi User */
   public static readonly MARIADB_MULTI_USER = new HostedRotationType('MariaDBMultiUser', true);
 
-  /**
-   * SQL Server Single User
-   */
+  /** SQL Server Single User */
   public static readonly SQLSERVER_SINGLE_USER = new HostedRotationType('SQLServerSingleUser')
 
-  /**
-   * SQL Server Multi User
-   */
+  /** SQL Server Multi User */
   public static readonly SQLSERVER_MULTI_USER = new HostedRotationType('SQLServerMultiUser', true);
 
-  /**
-   * Redshift Single User
-   */
+  /** Redshift Single User */
   public static readonly REDSHIFT_SINGLE_USER = new HostedRotationType('RedshiftSingleUser')
 
-  /**
-   * Redshift Multi User
-   */
+  /** Redshift Multi User */
   public static readonly REDSHIFT_MULTI_USER = new HostedRotationType('RedshiftMultiUser', true);
 
-  /**
-   * MongoDB Single User
-   */
+  /** MongoDB Single User */
   public static readonly MONGODB_SINGLE_USER = new HostedRotationType('MongoDBSingleUser');
 
-  /**
-   * MongoDB Multi User
-   */
+  /** MongoDB Multi User */
   public static readonly MONGODB_MULTI_USER = new HostedRotationType('MongoDBMultiUser', true);
 
   /**
    * @param name The type of rotation
    * @param isMultiUser Whether the rotation uses the mutli user scheme
    */
-  constructor(public readonly name: string, public readonly isMultiUser?: boolean) {}
+  private constructor(public readonly name: string, public readonly isMultiUser?: boolean) {}
 }

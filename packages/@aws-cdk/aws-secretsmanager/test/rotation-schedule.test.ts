@@ -234,18 +234,6 @@ describe('hosted rotation', () => {
     });
   });
 
-  test('throws without a master secret for a multi user rotation type', () => {
-    // GIVEN
-    const secret = new secretsmanager.Secret(stack, 'Secret');
-
-    // THEN
-    expect(() => secret.addRotationSchedule('RotationSchedule', {
-      hostedRotation: new secretsmanager.HostedRotation({
-        type: new secretsmanager.HostedRotationType('AMultiUserType', true),
-      }),
-    })).toThrow(/The `masterSecret` must be specified when using the multi user scheme/);
-  });
-
   test('throws with security groups and no vpc', () => {
     // GIVEN
     const secret = new secretsmanager.Secret(stack, 'Secret');
