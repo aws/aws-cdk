@@ -4,6 +4,7 @@ import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 export class FakeSnsTopicTarget implements notifications.INotificationTarget {
   constructor(private readonly topic: sns.ITopic) {}
@@ -50,7 +51,7 @@ export class FakeBuildAction implements codepipeline.IAction {
     this.customConfigKey = props.customConfigKey;
   }
 
-  public bind(_scope: cdk.Construct, _stage: codepipeline.IStage, _options: codepipeline.ActionBindOptions):
+  public bind(_scope: Construct, _stage: codepipeline.IStage, _options: codepipeline.ActionBindOptions):
   codepipeline.ActionConfig {
     return {
       configuration: {
@@ -96,7 +97,7 @@ export class FakeSourceAction implements codepipeline.IAction {
     };
   }
 
-  public bind(_scope: cdk.Construct, _stage: codepipeline.IStage, _options: codepipeline.ActionBindOptions):
+  public bind(_scope: Construct, _stage: codepipeline.IStage, _options: codepipeline.ActionBindOptions):
   codepipeline.ActionConfig {
     return {};
   }
