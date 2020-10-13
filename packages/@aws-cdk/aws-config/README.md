@@ -39,7 +39,7 @@ To set up a managed rule, define a `ManagedRule` and specify its identifier:
 
 ```ts
 new ManagedRule(this, 'AccessKeysRotated', {
-  identifier: config.ManagedRuleIdentifier.ACCESS_KEYS_ROTATED',
+  identifier: config.ManagedRuleIdentifier.ACCESS_KEYS_ROTATED,
 });
 ```
 

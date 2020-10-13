@@ -2,7 +2,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as sns from '@aws-cdk/aws-sns';
 import { Duration, Lazy, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { ManagedRule, ManagedRuleIdentifier, ResourceType, RuleProps } from './rule';
+import { ManagedRule, ManagedRuleIdentifier, ResourceType, RuleProps, Scope } from './rule';
 
 /**
  * Construction properties for a AccessKeysRotated
