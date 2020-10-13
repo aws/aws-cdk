@@ -149,7 +149,7 @@ abstract class VirtualNodeBase extends cdk.Resource implements IVirtualNode {
       this.listeners.push({
         portMapping,
         healthCheck: renderHealthCheck(listener.healthCheck, portMapping),
-        timeout: renderListenerTimeout(listener.timeout),
+        timeout: renderListenerTimeout(listener.timeout, portMapping),
       });
     }
   }
@@ -176,77 +176,39 @@ function getTimeUnitAndValue(time: cdk.Duration) {
  *
  * @param timeout
  */
-function renderListenerTimeout(timeout: ListenerTimeout | undefined): CfnVirtualNode.ListenerTimeoutProperty | undefined {
+function renderListenerTimeout(timeout: ListenerTimeout | undefined, pm: PortMapping): CfnVirtualNode.ListenerTimeoutProperty | undefined {
 
   if (timeout===undefined) {
     return undefined;
   }
 
   let listenerTimeout:CfnVirtualNode.ListenerTimeoutProperty = {};
+  let obj:any = {};
 
   (Object.keys(timeout) as Array<keyof CfnVirtualNode.ListenerTimeoutProperty>)
-    .filter((key) => timeout[key]!==undefined).map((key) => {
+    .filter((key) => timeout[key]!==undefined && key===pm.protocol).map((key) => {
+      let idle: any = timeout[key]?.idle;
+      let perRequest: any = {};
       if (key!=='tcp') {
-        let idle: unknown = timeout[key]?.idle;
-        let perRequest: unknown = timeout[key]?.perRequest;
-        if (idle===undefined && perRequest===undefined) {
-          listenerTimeout = {
-            [key]: {},
-          };
-        }
-        if (idle===undefined && perRequest!==undefined) {
-          listenerTimeout = {
-            [key]: {
-              perRequest: {
-                unit: getTimeUnitAndValue(perRequest as cdk.Duration).unit,
-                value: getTimeUnitAndValue(perRequest as cdk.Duration).value,
-              },
-            },
-          };
-        }
-        if (perRequest==undefined && idle!==undefined) {
-          listenerTimeout = {
-            [key]: {
-              idle: {
-                unit: getTimeUnitAndValue(idle as cdk.Duration).unit,
-                value: getTimeUnitAndValue(idle as cdk.Duration).value,
-              },
-            },
-          };
-        }
-        if (perRequest!==undefined && idle!==undefined) {
-          listenerTimeout = {
-            [key]: {
-              idle: {
-                unit: getTimeUnitAndValue(idle as cdk.Duration).unit,
-                value: getTimeUnitAndValue(idle as cdk.Duration).value,
-              },
-              perRequest: {
-                unit: getTimeUnitAndValue(perRequest as cdk.Duration).unit,
-                value: getTimeUnitAndValue(perRequest as cdk.Duration).value,
-              },
-            },
-          };
-        }
-      } else {
-        let idle: unknown = timeout[key]?.idle;
-        if (idle===undefined) {
-          listenerTimeout = {
-            [key]: {},
-          };
-        } else {
-          listenerTimeout = {
-            [key]: {
-              idle: {
-                unit: getTimeUnitAndValue(idle as cdk.Duration).unit,
-                value: getTimeUnitAndValue(idle as cdk.Duration).value,
-              },
-            },
-          };
-        }
+        perRequest = timeout[key]?.perRequest;
+      }
+      obj = {
+        [key]: {},
+      };
+      if (typeof idle === 'object' && idle !== null && Object.keys(idle).length) {
+        obj[key].idle = {
+          unit: getTimeUnitAndValue(idle as cdk.Duration).unit,
+          value: getTimeUnitAndValue(idle as cdk.Duration).value,
+        };
+      }
+      if (typeof perRequest === 'object' && perRequest !== null && Object.keys(perRequest).length) {
+        obj[key].perRequest = {
+          unit: getTimeUnitAndValue(perRequest as cdk.Duration).unit,
+          value: getTimeUnitAndValue(perRequest as cdk.Duration).value,
+        };
       }
     });
-
+  listenerTimeout = obj;
   return listenerTimeout;
 }
 

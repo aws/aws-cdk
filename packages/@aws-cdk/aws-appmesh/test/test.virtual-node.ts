@@ -102,7 +102,7 @@ export = {
       },
     },
     'when a listerner timeout is added': {
-      'should add the listener timeout to the resource'(test: Test) {
+      'should add the listener timeout for default portmapping (i.e. no given portmapping is present) to the resource'(test: Test) {
         //GIVEN
         const stack = new cdk.Stack();
 
@@ -140,7 +140,58 @@ export = {
                 },
               ],
             },
-          }));
+          }),
+        );
+        test.done();
+      },
+      'should add the listener timeout for given portmapping to the resource'(test: Test) {
+        //GIVEN
+        const stack = new cdk.Stack();
+
+        // WHEN
+        const mesh = new appmesh.Mesh(stack, 'mesh', {
+          meshName: 'test-mesh',
+        });
+
+        const node = mesh.addVirtualNode('test-node', {
+          dnsHostName: 'test',
+        });
+
+        node.addListeners({
+          portMapping: {
+            port: 9090,
+            protocol: appmesh.Protocol.GRPC,
+          },
+          timeout: {
+            grpc: {
+              idle: cdk.Duration.seconds(10),
+            },
+          },
+        });
+
+        // THEN
+        expect(stack).to(
+          haveResourceLike('AWS::AppMesh::VirtualNode', {
+            Spec: {
+              Listeners: [
+                {
+                  PortMapping: {
+                    Port: 9090,
+                    Protocol: 'grpc',
+                  },
+                  Timeout: {
+                    GRPC: {
+                      Idle: {
+                        Unit: 's',
+                        Value: 10,
+                      },
+                    },
+                  },
+                },
+              ],
+            },
+          }),
+        );
         test.done();
       },
     },
