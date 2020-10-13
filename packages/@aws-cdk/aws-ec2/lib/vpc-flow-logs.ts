@@ -354,7 +354,7 @@ export class FlowLog extends FlowLogBase {
   public readonly bucket?: s3.IBucket;
 
   /**
-   * S3 bucket key prefix to publish the flow logs to
+   * S3 bucket key prefix to publish the flow logs under
    */
   readonly keyPrefix?: string;
 
