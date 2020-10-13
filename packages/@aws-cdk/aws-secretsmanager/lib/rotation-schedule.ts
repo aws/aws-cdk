@@ -79,7 +79,7 @@ export interface SingleUserHostedRotationOptions {
   readonly functionName?: string;
 
   /**
-   * A list of security to groups for the Lambda created to rotate the secret
+   * A list of security groups for the Lambda created to rotate the secret
    *
    * @default - a new security group is created
    */
