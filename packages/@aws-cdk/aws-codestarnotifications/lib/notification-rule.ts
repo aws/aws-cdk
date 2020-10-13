@@ -1,4 +1,5 @@
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnNotificationRule } from './codestarnotifications.generated';
 import * as events from './event';
 import { INotificationSource, NotificationSourceConfig, SourceType } from './source';
@@ -120,7 +121,7 @@ export class NotificationRule extends NotificationRuleBase {
    * @param id The construct's name
    * @param notificationRuleArn Notification rule ARN (i.e. arn:aws:codestar-notifications:::notificationrule/01234abcde)
    */
-  public static fromNotificationRuleArn(scope: cdk.Construct, id: string, notificationRuleArn: string): INotificationRule {
+  public static fromNotificationRuleArn(scope: Construct, id: string, notificationRuleArn: string): INotificationRule {
     class Import extends NotificationRuleBase {
       readonly notificationRuleArn = notificationRuleArn;
     }
@@ -143,7 +144,7 @@ export class NotificationRule extends NotificationRuleBase {
    */
   readonly targets: NotificationTargetConfig[] = [];
 
-  constructor(scope: cdk.Construct, id: string, props: NotificationRuleProps) {
+  constructor(scope: Construct, id: string, props: NotificationRuleProps) {
     super(scope, id, {
       physicalName: props.notificationRuleName,
     });
