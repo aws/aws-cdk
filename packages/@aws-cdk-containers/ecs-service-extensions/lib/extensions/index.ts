@@ -6,3 +6,4 @@ export * from './cloudwatch-agent';
 export * from './scale-on-cpu-utilization';
 export * from './xray';
 export * from './datadog-agent';
+export * from './assign-public-ip';

@@ -56,6 +56,8 @@
     "@aws-cdk/aws-events": "0.0.0",
     "@aws-cdk/aws-events-targets": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-lambda": "0.0.0",
+    "@aws-cdk/aws-lambda-event-sources": "0.0.0",
     "@aws-cdk/aws-logs": "0.0.0",
     "@aws-cdk/aws-route53": "0.0.0",
     "@aws-cdk/aws-route53-targets": "0.0.0",
@@ -63,6 +65,7 @@
     "@aws-cdk/aws-servicediscovery": "0.0.0",
     "@aws-cdk/aws-sqs": "0.0.0",
     "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/custom-resources": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
     "constructs": "^3.0.4"
   },
@@ -79,6 +82,8 @@
     "@aws-cdk/aws-events": "0.0.0",
     "@aws-cdk/aws-events-targets": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-lambda": "0.0.0",
+    "@aws-cdk/aws-lambda-event-sources": "0.0.0",
     "@aws-cdk/aws-logs": "0.0.0",
     "@aws-cdk/aws-route53": "0.0.0",
     "@aws-cdk/aws-route53-targets": "0.0.0",
@@ -86,6 +91,7 @@
     "@aws-cdk/aws-servicediscovery": "0.0.0",
     "@aws-cdk/aws-sqs": "0.0.0",
     "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/custom-resources": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
     "constructs": "^3.0.4"
   },

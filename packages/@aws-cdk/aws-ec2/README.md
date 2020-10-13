@@ -894,6 +894,11 @@ new ec2.FlowLog(this, 'FlowLog', {
   resourceType: ec2.FlowLogResourceType.fromVpc(vpc),
   destination: ec2.FlowLogDestination.toS3(bucket)
 });
+
+new ec2.FlowLog(this, 'FlowLogWithKeyPrefix', {
+  resourceType: ec2.FlowLogResourceType.fromVpc(vpc),
+  destination: ec2.FlowLogDestination.toS3(bucket, 'prefix/')
+});
 ```
 
 ## User Data
