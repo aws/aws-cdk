@@ -136,6 +136,7 @@ export class SecretRotationApplication {
 export interface SecretRotationProps {
   /**
    * The secret to rotate. It must be a JSON string with the following format:
+   *
    * ```
    * {
    *   "engine": <required: database engine>,
@@ -148,8 +149,8 @@ export interface SecretRotationProps {
    * }
    * ```
    *
-   * This is typically the case for a secret referenced from an
-   * AWS::SecretsManager::SecretTargetAttachment or an `ISecret` returned by the `attach()` method of `Secret`.
+   * This is typically the case for a secret referenced from an `AWS::SecretsManager::SecretTargetAttachment`
+   * or an `ISecret` returned by the `attach()` method of `Secret`.
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-secretsmanager-secrettargetattachment.html
    */
