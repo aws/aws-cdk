@@ -2,7 +2,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as sns from '@aws-cdk/aws-sns';
 import { Duration, Lazy, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { ManagedRule, ManagedRuleIdentifier, ResourceType, RuleProps, Scope } from './rule';
+import { ManagedRule, ManagedRuleIdentifiers, ResourceType, RuleProps, Scope } from './rule';
 
 /**
  * Construction properties for a AccessKeysRotated
@@ -28,7 +28,7 @@ export class AccessKeysRotated extends ManagedRule {
   constructor(scope: Construct, id: string, props: AccessKeysRotatedProps = {}) {
     super(scope, id, {
       ...props,
-      identifier: ManagedRuleIdentifier.ACCESS_KEYS_ROTATED,
+      identifier: ManagedRuleIdentifiers.ACCESS_KEYS_ROTATED,
       inputParameters: {
         ...props.maxAge
           ? {
@@ -76,7 +76,7 @@ export class CloudFormationStackDriftDetectionCheck extends ManagedRule {
   constructor(scope: Construct, id: string, props: CloudFormationStackDriftDetectionCheckProps = {}) {
     super(scope, id, {
       ...props,
-      identifier: ManagedRuleIdentifier.CLOUDFORMATION_STACK_DRIFT_DETECTION_CHECK,
+      identifier: ManagedRuleIdentifiers.CLOUDFORMATION_STACK_DRIFT_DETECTION_CHECK,
       inputParameters: {
         cloudformationRoleArn: Lazy.stringValue({ produce: () => this.role.roleArn }),
       },
@@ -121,7 +121,7 @@ export class CloudFormationStackNotificationCheck extends ManagedRule {
 
     super(scope, id, {
       ...props,
-      identifier: ManagedRuleIdentifier.CLOUDFORMATION_STACK_NOTIFICATION_CHECK,
+      identifier: ManagedRuleIdentifiers.CLOUDFORMATION_STACK_NOTIFICATION_CHECK,
       inputParameters: props.topics && props.topics.reduce(
         (params, topic, idx) => ({ ...params, [`snsTopic${idx + 1}`]: topic.topicArn }),
         {},

@@ -394,7 +394,7 @@ export class CustomRule extends RuleNew {
  * Managed rules that are supported by AWS Config.
  * @see https://docs.aws.amazon.com/config/latest/developerguide/managed-rules-by-aws-config.html
  */
-export class ManagedRuleIdentifier {
+export class ManagedRuleIdentifiers {
   /**
    * Checks that the inline policies attached to your AWS Identity and Access Management users,
    * roles, and groups do not allow blocked actions on all AWS Key Management Service keys.

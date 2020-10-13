@@ -39,7 +39,7 @@ To set up a managed rule, define a `ManagedRule` and specify its identifier:
 
 ```ts
 new ManagedRule(this, 'AccessKeysRotated', {
-  identifier: config.ManagedRuleIdentifier.ACCESS_KEYS_ROTATED,
+  identifier: config.ManagedRuleIdentifiers.ACCESS_KEYS_ROTATED,
 });
 ```
 
@@ -69,7 +69,7 @@ the scope of both managed and custom rules:
 import * as config from '@aws-cdk/aws-config';
 
 const sshRule = new config.ManagedRule(this, 'SSH', {
-  identifier: config.ManagedRuleIdentifier.EC2_SECURITY_GROUPS_INCOMING_SSH_DISABLED,
+  identifier: config.ManagedRuleIdentifiers.EC2_SECURITY_GROUPS_INCOMING_SSH_DISABLED,
   scope: config.Scope.fromResource(config.ResourceType.EC2_SECURITY_GROUP, 'sg-1234567890abcdefgh'), // restrict to specific security group
 });
 
