@@ -165,7 +165,7 @@ describe('HttpApi', () => {
       });
       const metricName = '4xxError';
       const statistic = 'Sum';
-      const httpApiId = api.httpApiId;
+      const apiId = api.httpApiId;
 
       // WHEN
       const countMetric = api.metric(metricName, { statistic });
@@ -173,7 +173,7 @@ describe('HttpApi', () => {
       // THEN
       expect(countMetric.namespace).toEqual('AWS/ApiGateway');
       expect(countMetric.metricName).toEqual(metricName);
-      expect(countMetric.dimensions).toEqual({ httpApiId });
+      expect(countMetric.dimensions).toEqual({ apiId });
       expect(countMetric.statistic).toEqual(statistic);
     });
 
@@ -184,7 +184,7 @@ describe('HttpApi', () => {
         createDefaultStage: false,
       });
       const color = '#00ff00';
-      const httpApiId = api.httpApiId;
+      const apiId = api.httpApiId;
 
       // WHEN
       const metrics = new Array<Metric>();
@@ -197,7 +197,7 @@ describe('HttpApi', () => {
       // THEN
       for (const metric of metrics) {
         expect(metric.namespace).toEqual('AWS/ApiGateway');
-        expect(metric.dimensions).toEqual({ httpApiId });
+        expect(metric.dimensions).toEqual({ apiId });
         expect(metric.color).toEqual(color);
       }
     });
