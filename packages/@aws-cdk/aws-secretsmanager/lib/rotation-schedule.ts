@@ -207,9 +207,11 @@ export class HostedRotation implements ec2.IConnectable {
       throw new Error('`vpc` must be specified when specifying `securityGroups`.');
     }
 
-    if (this.props.vpc && !this.props.securityGroups) {
+    if (this.props.vpc) {
       this._connections = new ec2.Connections({
-        securityGroups: [new ec2.SecurityGroup(scope, 'SecurityGroup', { vpc: this.props.vpc })],
+        securityGroups: this.props.securityGroups || [new ec2.SecurityGroup(scope, 'SecurityGroup', {
+          vpc: this.props.vpc,
+        })],
       });
     }
 

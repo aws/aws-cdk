@@ -234,6 +234,92 @@ describe('hosted rotation', () => {
     });
   });
 
+  test('single user in a vpc with security groups', () => {
+    // GIVEN
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const secret = new secretsmanager.Secret(stack, 'Secret');
+    const dbSecurityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc });
+    const dbConnections = new ec2.Connections({
+      defaultPort: ec2.Port.tcp(3306),
+      securityGroups: [dbSecurityGroup],
+    });
+
+    // WHEN
+    const hostedRotation = secretsmanager.HostedRotation.mysqlSingleUser({
+      vpc,
+      securityGroups: [
+        new ec2.SecurityGroup(stack, 'SG1', { vpc }),
+        new ec2.SecurityGroup(stack, 'SG2', { vpc }),
+      ],
+    });
+    secret.addRotationSchedule('RotationSchedule', { hostedRotation });
+    dbConnections.allowDefaultPortFrom(hostedRotation);
+
+    // THEN
+    expect(stack).toHaveResource('AWS::SecretsManager::RotationSchedule', {
+      SecretId: {
+        Ref: 'SecretA720EF05',
+      },
+      HostedRotationLambda: {
+        RotationType: 'MySQLSingleUser',
+        VpcSecurityGroupIds: {
+          'Fn::Join': [
+            '',
+            [
+              {
+                'Fn::GetAtt': [
+                  'SG1BA065B6E',
+                  'GroupId',
+                ],
+              },
+              ',',
+              {
+                'Fn::GetAtt': [
+                  'SG20CE3219C',
+                  'GroupId',
+                ],
+              },
+            ],
+          ],
+        },
+        VpcSubnetIds: {
+          'Fn::Join': [
+            '',
+            [
+              {
+                Ref: 'VpcPrivateSubnet1Subnet536B997A',
+              },
+              ',',
+              {
+                Ref: 'VpcPrivateSubnet2Subnet3788AAA1',
+              },
+            ],
+          ],
+        },
+      },
+      RotationRules: {
+        AutomaticallyAfterDays: 30,
+      },
+    });
+
+    expect(stack).toHaveResource('AWS::EC2::SecurityGroupIngress', {
+      FromPort: 3306,
+      GroupId: {
+        'Fn::GetAtt': [
+          'SecurityGroupDD263621',
+          'GroupId',
+        ],
+      },
+      SourceSecurityGroupId: {
+        'Fn::GetAtt': [
+          'SG20CE3219C',
+          'GroupId',
+        ],
+      },
+      ToPort: 3306,
+    });
+  });
+
   test('throws with security groups and no vpc', () => {
     // GIVEN
     const secret = new secretsmanager.Secret(stack, 'Secret');
