@@ -550,6 +550,37 @@
         ]
       }
     },
+    "VPCFlowLogsS3KeyPrefixFlowLogB57F1746": {
+      "Type": "AWS::EC2::FlowLog",
+      "Properties": {
+        "ResourceId": {
+          "Ref": "VPCB9E5F0B4"
+        },
+        "ResourceType": "VPC",
+        "TrafficType": "ALL",
+        "LogDestination": {
+          "Fn::Join": [
+            "",
+            [
+              {
+                "Fn::GetAtt": [
+                  "Bucket83908E77",
+                  "Arn"
+                ]
+              },
+              "/prefix/"
+            ]
+          ]
+        },
+        "LogDestinationType": "s3",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "TestStack/VPC"
+          }
+        ]
+      }
+    },
     "FlowLogsCWIAMRole017AD736": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -634,6 +665,11 @@
           "Ref": "FlowLogsCWLogGroup0398E8F8"
         }
       }
+    },
+    "Bucket83908E77": {
+      "Type": "AWS::S3::Bucket",
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     }
   }
 }
