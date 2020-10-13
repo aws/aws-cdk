@@ -46,6 +46,7 @@ abstract class ReportGroupBase extends cdk.Resource implements IReportGroup {
         'codebuild:CreateReport',
         'codebuild:UpdateReport',
         'codebuild:BatchPutTestCases',
+        'codebuild:BatchPutCodeCoverages',
       ],
       resourceArns: [this.reportGroupArn],
     });

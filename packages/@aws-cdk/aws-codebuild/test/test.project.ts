@@ -525,6 +525,7 @@ export = {
                 'codebuild:CreateReport',
                 'codebuild:UpdateReport',
                 'codebuild:BatchPutTestCases',
+                'codebuild:BatchPutCodeCoverages',
               ],
               'Resource': {
                 'Fn::GetAtt': [
