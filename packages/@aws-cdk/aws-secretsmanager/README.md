@@ -69,7 +69,9 @@ then `Secret.grantRead` and `Secret.grantWrite` will also grant the role the
 relevant encrypt and decrypt permissions to the KMS key through the
 SecretsManager service principal.
 
-### Rotating a Secret with a custom Lambda function
+### Rotating a Secret
+
+#### Using a Custom Lambda Function
 
 A rotation schedule can be added to a Secret using a custom Lambda function:
 
@@ -84,6 +86,31 @@ secret.addRotationSchedule('RotationSchedule', {
 ```
 
 See [Overview of the Lambda Rotation Function](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets-lambda-function-overview.html) on how to implement a Lambda Rotation Function.
+
+#### Using a Hosted Lambda Function
+
+Use the `hostedRotation` prop to rotate a secret with a hosted Lambda function:
+
+```ts
+const secret = new secretsmanager.Secret(this, 'Secret');
+
+secret.addRotationSchedule('RotationSchedule', {
+  hostedRotation: secretsmanager.HostedRotation.mysqlSingleUser(),
+});
+```
+
+Hosted rotation is available for secrets representing credentials for MySQL, PostgreSQL, Oracle,
+MariaDB, SQLServer, Redshift and MongoDB (both for the single and multi user schemes).
+
+When deployed in a VPC, the hosted rotation implements `ec2.IConnectable`:
+
+```ts
+const myHostedRotation = secretsmanager.HostedRotation.mysqlSingleUser({ vpc: myVpc });
+secret.addRotationSchedule('RotationSchedule', { hostedRotation: myHostedRotation });
+dbConnections.allowDefaultPortFrom(hostedRotation);
+```
+
+See also [Automating secret creation in AWS CloudFormation](https://docs.aws.amazon.com/secretsmanager/latest/userguide/integrating_cloudformation.html).
 
 ### Rotating database credentials
 
