@@ -1,6 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { Aws, CfnCondition, Construct, Duration, Fn, IResolvable, IResource, Resource, Stack, Token } from '@aws-cdk/core';
+import { Aws, CfnCondition, Duration, Fn, IResolvable, IResource, Resource, Stack, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnStream } from './kinesis.generated';
 
 const READ_OPERATIONS = [
@@ -314,7 +315,7 @@ export class Stream extends StreamBase {
       return {
         streamEncryption: Fn.conditionIf(conditionName,
           Aws.NO_VALUE,
-          { EncryptionType: 'KMS', KeyId: 'alias/aws/kinesis'}),
+          { EncryptionType: 'KMS', KeyId: 'alias/aws/kinesis' }),
       };
     }
 
@@ -332,7 +333,7 @@ export class Stream extends StreamBase {
     }
 
     if (encryptionType === StreamEncryption.MANAGED) {
-      const encryption = { encryptionType: 'KMS', keyId: 'alias/aws/kinesis'};
+      const encryption = { encryptionType: 'KMS', keyId: 'alias/aws/kinesis' };
       return { streamEncryption: encryption };
     }
 

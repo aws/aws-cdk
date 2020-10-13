@@ -1,4 +1,5 @@
-import { Construct, Duration, IResource, Resource } from '@aws-cdk/core';
+import { Duration, IResource, Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnApi, CfnApiProps } from '../apigatewayv2.generated';
 import { DefaultDomainMappingOptions } from '../http/stage';
 import { IHttpRouteIntegration } from './integration';
@@ -190,7 +191,7 @@ export class HttpApi extends Resource implements IHttpApi {
       });
 
       // to ensure the domain is ready before creating the default stage
-      if(props?.defaultDomainMapping) {
+      if (props?.defaultDomainMapping) {
         this.defaultStage.node.addDependency(props.defaultDomainMapping.domainName);
       }
     }
@@ -225,7 +226,7 @@ export class HttpApi extends Resource implements IHttpApi {
    * methods.
    */
   public addRoutes(options: AddRoutesOptions): HttpRoute[] {
-    const methods = options.methods ?? [ HttpMethod.ANY ];
+    const methods = options.methods ?? [HttpMethod.ANY];
     return methods.map((method) => new HttpRoute(this, `${method}${options.path}`, {
       httpApi: this,
       routeKey: HttpRouteKey.with(options.path, method),

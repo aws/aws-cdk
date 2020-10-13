@@ -1,4 +1,4 @@
-import { Construct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnUserPoolIdentityProvider } from '../cognito.generated';
 import { UserPoolIdentityProviderBase, UserPoolIdentityProviderProps } from './base';
 
@@ -34,7 +34,7 @@ export class UserPoolIdentityProviderAmazon extends UserPoolIdentityProviderBase
   constructor(scope: Construct, id: string, props: UserPoolIdentityProviderAmazonProps) {
     super(scope, id, props);
 
-    const scopes = props.scopes ?? [ 'profile' ];
+    const scopes = props.scopes ?? ['profile'];
 
     const resource = new CfnUserPoolIdentityProvider(this, 'Resource', {
       userPoolId: props.userPool.userPoolId,

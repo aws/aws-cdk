@@ -14,6 +14,7 @@
         "AvailabilityZones": [
           "us-east-1a"
         ],
+        "CrossZone": "true",
         "Listeners": [{
           "LoadBalancerPort": "80",
           "InstancePort": "80",

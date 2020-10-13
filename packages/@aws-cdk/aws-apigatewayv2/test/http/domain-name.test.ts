@@ -1,6 +1,6 @@
 import '@aws-cdk/assert/jest';
 // import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
-import {  Certificate } from '@aws-cdk/aws-certificatemanager';
+import { Certificate } from '@aws-cdk/aws-certificatemanager';
 import { Stack } from '@aws-cdk/core';
 import { DomainName, HttpApi } from '../../lib';
 

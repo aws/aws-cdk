@@ -16,7 +16,7 @@ new cloudfront.CloudFrontWebDistribution(stack, 'MyDistribution', {
       s3OriginSource: {
         s3BucketSource: sourceBucket,
       },
-      behaviors: [ {isDefaultBehavior: true}],
+      behaviors: [{ isDefaultBehavior: true }],
     },
   ],
   geoRestriction: cloudfront.GeoRestriction.whitelist('US', 'UK'),

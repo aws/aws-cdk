@@ -31,7 +31,7 @@ export = {
   'CFN properties are type-validated during resolution'(test: Test) {
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket', {
-      bucketName: cdk.Token.asString(5),  // Oh no
+      bucketName: cdk.Token.asString(5), // Oh no
     });
 
     test.throws(() => {
@@ -663,7 +663,8 @@ export = {
       const user = new iam.User(stack, 'MyUser');
       user.addToPolicy(new iam.PolicyStatement({
         resources: [bucket.arnForObjects(`my/folder/${bucket.bucketName}`)],
-        actions: ['s3:*'] }));
+        actions: ['s3:*'],
+      }));
 
       expect(stack).toMatch({
         'Resources': {
@@ -693,6 +694,22 @@ export = {
           },
         },
       });
+
+      test.done();
+    },
+
+    'import can explicitly set bucket region'(test: Test) {
+      const stack = new cdk.Stack(undefined, undefined, {
+        env: { region: 'us-east-1' },
+      });
+
+      const bucket = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', {
+        bucketName: 'myBucket',
+        region: 'eu-west-1',
+      });
+
+      test.equals(bucket.bucketRegionalDomainName, `myBucket.s3.eu-west-1.${stack.urlSuffix}`);
+      test.equals(bucket.bucketWebsiteDomainName, `myBucket.s3-website-eu-west-1.${stack.urlSuffix}`);
 
       test.done();
     },
@@ -1072,6 +1089,176 @@ export = {
     },
   },
 
+  'grantWrite with KMS key has appropriate permissions for multipart uploads'(test: Test) {
+    const stack = new cdk.Stack();
+    const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.KMS });
+    const user = new iam.User(stack, 'MyUser');
+    bucket.grantWrite(user);
+
+    expect(stack).toMatch({
+      'Resources': {
+        'MyBucketKeyC17130CF': {
+          'Type': 'AWS::KMS::Key',
+          'Properties': {
+            'KeyPolicy': {
+              'Statement': [
+                {
+                  'Action': [
+                    'kms:Create*',
+                    'kms:Describe*',
+                    'kms:Enable*',
+                    'kms:List*',
+                    'kms:Put*',
+                    'kms:Update*',
+                    'kms:Revoke*',
+                    'kms:Disable*',
+                    'kms:Get*',
+                    'kms:Delete*',
+                    'kms:ScheduleKeyDeletion',
+                    'kms:CancelKeyDeletion',
+                    'kms:GenerateDataKey',
+                    'kms:TagResource',
+                    'kms:UntagResource',
+                  ],
+                  'Effect': 'Allow',
+                  'Principal': {
+                    'AWS': {
+                      'Fn::Join': [
+                        '',
+                        [
+                          'arn:',
+                          {
+                            'Ref': 'AWS::Partition',
+                          },
+                          ':iam::',
+                          {
+                            'Ref': 'AWS::AccountId',
+                          },
+                          ':root',
+                        ],
+                      ],
+                    },
+                  },
+                  'Resource': '*',
+                },
+                {
+                  'Action': [
+                    'kms:Encrypt',
+                    'kms:ReEncrypt*',
+                    'kms:GenerateDataKey*',
+                    'kms:Decrypt',
+                  ],
+                  'Effect': 'Allow',
+                  'Principal': {
+                    'AWS': {
+                      'Fn::GetAtt': [
+                        'MyUserDC45028B',
+                        'Arn',
+                      ],
+                    },
+                  },
+                  'Resource': '*',
+                },
+              ],
+              'Version': '2012-10-17',
+            },
+            'Description': 'Created by Default/MyBucket',
+          },
+          'UpdateReplacePolicy': 'Retain',
+          'DeletionPolicy': 'Retain',
+        },
+        'MyBucketF68F3FF0': {
+          'Type': 'AWS::S3::Bucket',
+          'Properties': {
+            'BucketEncryption': {
+              'ServerSideEncryptionConfiguration': [
+                {
+                  'ServerSideEncryptionByDefault': {
+                    'KMSMasterKeyID': {
+                      'Fn::GetAtt': [
+                        'MyBucketKeyC17130CF',
+                        'Arn',
+                      ],
+                    },
+                    'SSEAlgorithm': 'aws:kms',
+                  },
+                },
+              ],
+            },
+          },
+          'UpdateReplacePolicy': 'Retain',
+          'DeletionPolicy': 'Retain',
+        },
+        'MyUserDC45028B': {
+          'Type': 'AWS::IAM::User',
+        },
+        'MyUserDefaultPolicy7B897426': {
+          'Type': 'AWS::IAM::Policy',
+          'Properties': {
+            'PolicyDocument': {
+              'Statement': [
+                {
+                  'Action': [
+                    's3:DeleteObject*',
+                    's3:PutObject*',
+                    's3:Abort*',
+                  ],
+                  'Effect': 'Allow',
+                  'Resource': [
+                    {
+                      'Fn::GetAtt': [
+                        'MyBucketF68F3FF0',
+                        'Arn',
+                      ],
+                    },
+                    {
+                      'Fn::Join': [
+                        '',
+                        [
+                          {
+                            'Fn::GetAtt': [
+                              'MyBucketF68F3FF0',
+                              'Arn',
+                            ],
+                          },
+                          '/*',
+                        ],
+                      ],
+                    },
+                  ],
+                },
+                {
+                  'Action': [
+                    'kms:Encrypt',
+                    'kms:ReEncrypt*',
+                    'kms:GenerateDataKey*',
+                    'kms:Decrypt',
+                  ],
+                  'Effect': 'Allow',
+                  'Resource': {
+                    'Fn::GetAtt': [
+                      'MyBucketKeyC17130CF',
+                      'Arn',
+                    ],
+                  },
+                },
+              ],
+              'Version': '2012-10-17',
+            },
+            'PolicyName': 'MyUserDefaultPolicy7B897426',
+            'Users': [
+              {
+                'Ref': 'MyUserDC45028B',
+              },
+            ],
+          },
+        },
+      },
+    });
+
+    test.done();
+  },
+
   'more grants'(test: Test) {
     const stack = new cdk.Stack();
     const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.KMS });
@@ -1222,12 +1409,12 @@ export = {
 
     'in different accounts'(test: Test) {
       // given
-      const stackA = new cdk.Stack(undefined, 'StackA', { env: { account: '123456789012' }});
+      const stackA = new cdk.Stack(undefined, 'StackA', { env: { account: '123456789012' } });
       const bucketFromStackA = new s3.Bucket(stackA, 'MyBucket', {
         bucketName: 'my-bucket-physical-name',
       });
 
-      const stackB = new cdk.Stack(undefined, 'StackB', { env: { account: '234567890123' }});
+      const stackB = new cdk.Stack(undefined, 'StackB', { env: { account: '234567890123' } });
       const roleFromStackB = new iam.Role(stackB, 'MyRole', {
         assumedBy: new iam.AccountPrincipal('234567890123'),
         roleName: 'MyRolePhysicalName',
@@ -1312,7 +1499,7 @@ export = {
 
     'in different accounts, with a KMS Key'(test: Test) {
       // given
-      const stackA = new cdk.Stack(undefined, 'StackA', { env: { account: '123456789012' }});
+      const stackA = new cdk.Stack(undefined, 'StackA', { env: { account: '123456789012' } });
       const key = new kms.Key(stackA, 'MyKey');
       const bucketFromStackA = new s3.Bucket(stackA, 'MyBucket', {
         bucketName: 'my-bucket-physical-name',
@@ -1320,7 +1507,7 @@ export = {
         encryption: s3.BucketEncryption.KMS,
       });
 
-      const stackB = new cdk.Stack(undefined, 'StackB', { env: { account: '234567890123' }});
+      const stackB = new cdk.Stack(undefined, 'StackB', { env: { account: '234567890123' } });
       const roleFromStackB = new iam.Role(stackB, 'MyRole', {
         assumedBy: new iam.AccountPrincipal('234567890123'),
         roleName: 'MyRolePhysicalName',
@@ -1707,7 +1894,7 @@ export = {
         'Fn::Select': [
           2,
           {
-            'Fn::Split': [ '/', { 'Fn::GetAtt': [ 'Website32962D0B', 'WebsiteURL' ] } ],
+            'Fn::Split': ['/', { 'Fn::GetAtt': ['Website32962D0B', 'WebsiteURL'] }],
           },
         ],
       });
@@ -2043,7 +2230,7 @@ export = {
     }));
 
     expect(stack).to(haveResourceLike('AWS::S3::BucketPolicy', {
-      Bucket: { Ref: 'InventoryBucketA869B8CB'},
+      Bucket: { Ref: 'InventoryBucketA869B8CB' },
       PolicyDocument: {
         Statement: arrayWith(objectLike({
           Action: 's3:PutObject',
@@ -2053,7 +2240,7 @@ export = {
               'Fn::GetAtt': ['InventoryBucketA869B8CB', 'Arn'],
             },
             {
-              'Fn::Join': ['', [{'Fn::GetAtt': ['InventoryBucketA869B8CB', 'Arn']}, '/*']],
+              'Fn::Join': ['', [{ 'Fn::GetAtt': ['InventoryBucketA869B8CB', 'Arn'] }, '/*']],
             },
           ],
         })),

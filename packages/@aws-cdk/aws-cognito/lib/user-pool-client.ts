@@ -1,4 +1,5 @@
-import { Construct, IResource, Resource } from '@aws-cdk/core';
+import { IResource, Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnUserPoolClient } from './cognito.generated';
 import { IUserPool } from './user-pool';
 
@@ -30,12 +31,6 @@ export interface AuthFlow {
    * @default false
    */
   readonly userSrp?: boolean;
-
-  /**
-   * Enable authflow to refresh tokens
-   * @default false
-   */
-  readonly refreshToken?: boolean;
 }
 
 /**
@@ -55,6 +50,12 @@ export interface OAuthSettings {
    * @default - ['https://example.com'] if either authorizationCodeGrant or implicitCodeGrant flows are enabled, no callback URLs otherwise.
    */
   readonly callbackUrls?: string[];
+
+  /**
+   * List of allowed logout URLs for the identity providers.
+   * @default - no logout URLs
+   */
+  readonly logoutUrls?: string[];
 
   /**
    * OAuth scopes that are allowed with this client.
@@ -301,7 +302,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
     let callbackUrls: string[] | undefined = props.oAuth?.callbackUrls;
     if (this.oAuthFlows.authorizationCodeGrant || this.oAuthFlows.implicitCodeGrant) {
       if (callbackUrls === undefined) {
-        callbackUrls = [ 'https://example.com' ];
+        callbackUrls = ['https://example.com'];
       } else if (callbackUrls.length === 0) {
         throw new Error('callbackUrl must not be empty when codeGrant or implicitGrant OAuth flows are enabled.');
       }
@@ -314,7 +315,8 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       explicitAuthFlows: this.configureAuthFlows(props),
       allowedOAuthFlows: props.disableOAuth ? undefined : this.configureOAuthFlows(),
       allowedOAuthScopes: props.disableOAuth ? undefined : this.configureOAuthScopes(props.oAuth),
-      callbackUrLs: callbackUrls && callbackUrls.length > 0 ? callbackUrls : undefined,
+      callbackUrLs: callbackUrls && callbackUrls.length > 0 && !props.disableOAuth ? callbackUrls : undefined,
+      logoutUrLs: props.oAuth?.logoutUrls,
       allowedOAuthFlowsUserPoolClient: !props.disableOAuth,
       preventUserExistenceErrors: this.configurePreventUserExistenceErrors(props.preventUserExistenceErrors),
       supportedIdentityProviders: this.configureIdentityProviders(props),
@@ -336,12 +338,18 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
   }
 
   private configureAuthFlows(props: UserPoolClientProps): string[] | undefined {
+    if (!props.authFlows) return undefined;
+
     const authFlows: string[] = [];
-    if (props.authFlows?.userPassword) { authFlows.push('ALLOW_USER_PASSWORD_AUTH'); }
-    if (props.authFlows?.adminUserPassword) { authFlows.push('ALLOW_ADMIN_USER_PASSWORD_AUTH'); }
-    if (props.authFlows?.custom) { authFlows.push('ALLOW_CUSTOM_AUTH'); }
-    if (props.authFlows?.userSrp) { authFlows.push('ALLOW_USER_SRP_AUTH'); }
-    if (props.authFlows?.refreshToken) { authFlows.push('ALLOW_REFRESH_TOKEN_AUTH'); }
+    if (props.authFlows.userPassword) { authFlows.push('ALLOW_USER_PASSWORD_AUTH'); }
+    if (props.authFlows.adminUserPassword) { authFlows.push('ALLOW_ADMIN_USER_PASSWORD_AUTH'); }
+    if (props.authFlows.custom) { authFlows.push('ALLOW_CUSTOM_AUTH'); }
+    if (props.authFlows.userSrp) { authFlows.push('ALLOW_USER_SRP_AUTH'); }
+
+    // refreshToken should always be allowed if authFlows are present
+    if (authFlows.length > 0) {
+      authFlows.push('ALLOW_REFRESH_TOKEN_AUTH');
+    }
 
     if (authFlows.length === 0) {
       return undefined;
@@ -365,10 +373,10 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
   }
 
   private configureOAuthScopes(oAuth?: OAuthSettings): string[] {
-    const scopes = oAuth?.scopes ?? [ OAuthScope.PROFILE, OAuthScope.PHONE, OAuthScope.EMAIL, OAuthScope.OPENID,
-      OAuthScope.COGNITO_ADMIN ];
+    const scopes = oAuth?.scopes ?? [OAuthScope.PROFILE, OAuthScope.PHONE, OAuthScope.EMAIL, OAuthScope.OPENID,
+      OAuthScope.COGNITO_ADMIN];
     const scopeNames = new Set(scopes.map((x) => x.scopeName));
-    const autoOpenIdScopes = [ OAuthScope.PHONE, OAuthScope.EMAIL, OAuthScope.PROFILE ];
+    const autoOpenIdScopes = [OAuthScope.PHONE, OAuthScope.EMAIL, OAuthScope.PROFILE];
     if (autoOpenIdScopes.reduce((agg, s) => agg || scopeNames.has(s.scopeName), false)) {
       scopeNames.add(OAuthScope.OPENID.scopeName);
     }

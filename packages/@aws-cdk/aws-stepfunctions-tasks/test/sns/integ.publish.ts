@@ -22,7 +22,7 @@ import { SnsPublish } from '../../lib/sns/publish';
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-stepfunctions-tasks-sns-publish-integ');
 
-const topic  = new sns.Topic(stack, 'cool-topic');
+const topic = new sns.Topic(stack, 'cool-topic');
 const queue = new sqs.Queue(stack, 'show-me-the-messages');
 
 topic.addSubscription(new subs.SqsSubscription(queue));

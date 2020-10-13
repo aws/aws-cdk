@@ -193,7 +193,8 @@ function defineFunction(code: lambda.Code, runtime: lambda.Runtime = lambda.Runt
   const stack = new cdk.Stack();
   return new lambda.Function(stack, 'Func', {
     handler: 'foom',
-    code, runtime,
+    code,
+    runtime,
   });
 }
 

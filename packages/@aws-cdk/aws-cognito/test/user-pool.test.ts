@@ -2,7 +2,8 @@ import '@aws-cdk/assert/jest';
 import { ABSENT } from '@aws-cdk/assert/lib/assertions/have-resource';
 import { Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { CfnParameter, Construct, Duration, Stack, Tag } from '@aws-cdk/core';
+import { CfnParameter, Duration, Stack, Tags } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { AccountRecovery, Mfa, NumberAttribute, StringAttribute, UserPool, UserPoolIdentityProvider, UserPoolOperation, VerificationEmailStyle } from '../lib';
 
 describe('User Pool', () => {
@@ -207,7 +208,7 @@ describe('User Pool', () => {
     const pool = UserPool.fromUserPoolArn(stack, 'userpool', userPoolArn);
     expect(pool.userPoolId).toEqual('test-user-pool');
     expect(stack.resolve(pool.userPoolArn)).toEqual({
-      'Fn::Join': [ '', [
+      'Fn::Join': ['', [
         'arn:',
         { Ref: 'AWS::Partition' },
         ':cognito-idp:',
@@ -215,7 +216,7 @@ describe('User Pool', () => {
         ':',
         { Ref: 'AWS::AccountId' },
         ':userpool/test-user-pool',
-      ] ],
+      ]],
     });
   });
 
@@ -227,7 +228,7 @@ describe('User Pool', () => {
     const pool = new UserPool(stack, 'Pool', {
       userPoolName: 'myPool',
     });
-    Tag.add(pool, 'PoolTag', 'PoolParty');
+    Tags.of(pool).add('PoolTag', 'PoolParty');
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
@@ -307,9 +308,9 @@ describe('User Pool', () => {
       },
     });
 
-    [ createAuthChallenge, customMessage, defineAuthChallenge, postAuthentication,
+    [createAuthChallenge, customMessage, defineAuthChallenge, postAuthentication,
       postConfirmation, preAuthentication, preSignUp, preTokenGeneration, userMigration,
-      verifyAuthChallengeResponse ].forEach((fn) => {
+      verifyAuthChallengeResponse].forEach((fn) => {
       expect(stack).toHaveResourceLike('AWS::Lambda::Permission', {
         Action: 'lambda:InvokeFunction',
         FunctionName: stack.resolve(fn.functionArn),
@@ -372,7 +373,7 @@ describe('User Pool', () => {
     // THEN
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
       UsernameAttributes: ABSENT,
-      AliasAttributes: [ 'email' ],
+      AliasAttributes: ['email'],
     });
   });
 
@@ -387,7 +388,7 @@ describe('User Pool', () => {
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
-      UsernameAttributes: [ 'email', 'phone_number' ],
+      UsernameAttributes: ['email', 'phone_number'],
       AliasAttributes: ABSENT,
     });
   });
@@ -409,11 +410,11 @@ describe('User Pool', () => {
     // THEN
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
       UserPoolName: 'Pool1',
-      AutoVerifiedAttributes: [ 'email' ],
+      AutoVerifiedAttributes: ['email'],
     });
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
       UserPoolName: 'Pool2',
-      AutoVerifiedAttributes: [ 'email', 'phone_number' ],
+      AutoVerifiedAttributes: ['email', 'phone_number'],
     });
   });
 
@@ -429,7 +430,7 @@ describe('User Pool', () => {
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
-      AutoVerifiedAttributes: [ 'email', 'phone_number' ],
+      AutoVerifiedAttributes: ['email', 'phone_number'],
     });
   });
 
@@ -720,12 +721,12 @@ describe('User Pool', () => {
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
       UserPoolName: 'Pool1',
       MfaConfiguration: 'OPTIONAL',
-      EnabledMfas: [ 'SMS_MFA' ],
+      EnabledMfas: ['SMS_MFA'],
     });
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
       UserPoolName: 'Pool2',
       MfaConfiguration: 'ON',
-      EnabledMfas: [ 'SMS_MFA' ],
+      EnabledMfas: ['SMS_MFA'],
     });
   });
 
@@ -744,7 +745,7 @@ describe('User Pool', () => {
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
-      EnabledMfas: [ 'SMS_MFA', 'SOFTWARE_TOKEN_MFA' ],
+      EnabledMfas: ['SMS_MFA', 'SOFTWARE_TOKEN_MFA'],
     });
   });
 
@@ -1077,7 +1078,7 @@ describe('User Pool', () => {
       expect(stack).toHaveResource('AWS::Cognito::UserPool', {
         SmsConfiguration: {
           ExternalId: 'role-external-id',
-          SnsCallerArn: { 'Fn::GetAtt': [ 'smsRoleA4587CE8', 'Arn' ] },
+          SnsCallerArn: { 'Fn::GetAtt': ['smsRoleA4587CE8', 'Arn'] },
         },
       });
     });
@@ -1095,7 +1096,7 @@ describe('User Pool', () => {
       expect(stack).toHaveResource('AWS::Cognito::UserPool', {
         SmsConfiguration: {
           ExternalId: 'pool',
-          SnsCallerArn: { 'Fn::GetAtt': [ 'poolsmsRole04048F13', 'Arn' ] },
+          SnsCallerArn: { 'Fn::GetAtt': ['poolsmsRole04048F13', 'Arn'] },
         },
       });
       expect(stack).toHaveResource('AWS::IAM::Role', {
@@ -1188,7 +1189,7 @@ describe('User Pool', () => {
       expect(stack).toHaveResource('AWS::Cognito::UserPool', {
         SmsConfiguration: {
           ExternalId: 'pool',
-          SnsCallerArn: { 'Fn::GetAtt': [ 'poolsmsRole04048F13', 'Arn' ] },
+          SnsCallerArn: { 'Fn::GetAtt': ['poolsmsRole04048F13', 'Arn'] },
         },
       });
     });
@@ -1208,7 +1209,7 @@ describe('User Pool', () => {
       expect(stack).toHaveResource('AWS::Cognito::UserPool', {
         SmsConfiguration: {
           ExternalId: 'pool',
-          SnsCallerArn: { 'Fn::GetAtt': [ 'poolsmsRole04048F13', 'Arn' ] },
+          SnsCallerArn: { 'Fn::GetAtt': ['poolsmsRole04048F13', 'Arn'] },
         },
       });
     });
@@ -1233,7 +1234,7 @@ describe('User Pool', () => {
       expect(stack).toHaveResource('AWS::Cognito::UserPool', {
         SmsConfiguration: {
           ExternalId: 'pool',
-          SnsCallerArn: { 'Fn::GetAtt': [ 'poolsmsRole04048F13', 'Arn' ] },
+          SnsCallerArn: { 'Fn::GetAtt': ['poolsmsRole04048F13', 'Arn'] },
         },
       });
     });

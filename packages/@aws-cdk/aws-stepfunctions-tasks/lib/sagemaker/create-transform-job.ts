@@ -1,9 +1,11 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
-import { Construct, Size, Stack } from '@aws-cdk/core';
+import { Size, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 import { BatchStrategy, S3DataType, TransformInput, TransformOutput, TransformResources } from './base-types';
+import { renderTags } from './private/utils';
 
 /**
  * Properties for creating an Amazon SageMaker training job task
@@ -163,7 +165,7 @@ export class SageMakerCreateTransformJob extends sfn.TaskStateBase {
       ...(this.props.maxConcurrentTransforms ? { MaxConcurrentTransforms: this.props.maxConcurrentTransforms } : {}),
       ...(this.props.maxPayload ? { MaxPayloadInMB: this.props.maxPayload.toMebibytes() } : {}),
       ModelName: this.props.modelName,
-      ...this.renderTags(this.props.tags),
+      ...renderTags(this.props.tags),
       ...this.renderTransformInput(this.transformInput),
       TransformJobName: this.props.transformJobName,
       ...this.renderTransformOutput(this.props.transformOutput),
@@ -210,10 +212,6 @@ export class SageMakerCreateTransformJob extends sfn.TaskStateBase {
 
   private renderEnvironment(environment: { [key: string]: any } | undefined): { [key: string]: any } {
     return environment ? { Environment: environment } : {};
-  }
-
-  private renderTags(tags: { [key: string]: any } | undefined): { [key: string]: any } {
-    return tags ? { Tags: Object.keys(tags).map((key) => ({ Key: key, Value: tags[key] })) } : {};
   }
 
   private makePolicyStatements(): iam.PolicyStatement[] {

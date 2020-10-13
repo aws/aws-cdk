@@ -1,13 +1,13 @@
 import * as crypto from 'crypto';
 import * as iam from '@aws-cdk/aws-iam';
 
-import { Construct, Duration, Fn, IResource, Lazy, Resource, Stack, Tag } from '@aws-cdk/core';
+import { Annotations, Duration, Fn, IResource, Lazy, Resource, Stack, Tags } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CloudFormationInit } from './cfn-init';
 import { Connections, IConnectable } from './connections';
 import { CfnInstance } from './ec2.generated';
 import { InstanceType } from './instance-types';
 import { IMachineImage, OperatingSystemType } from './machine-image';
-import { InitPlatform } from './private/cfn-init-internal';
 import { ISecurityGroup, SecurityGroup } from './security-group';
 import { UserData } from './user-data';
 import { BlockDevice, synthesizeBlockDeviceMappings } from './volume';
@@ -310,7 +310,7 @@ export class Instance extends Resource implements IInstance {
     }
     this.connections = new Connections({ securityGroups: [this.securityGroup] });
     this.securityGroups.push(this.securityGroup);
-    Tag.add(this, NAME_TAG, props.instanceName || this.node.path);
+    Tags.of(this).add(NAME_TAG, props.instanceName || this.node.path);
 
     this.role = props.role || new iam.Role(this, 'InstanceRole', {
       assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
@@ -334,13 +334,13 @@ export class Instance extends Resource implements IInstance {
       if (selected.length === 1) {
         subnet = selected[0];
       } else {
-        this.node.addError(`Need exactly 1 subnet to match AZ '${props.availabilityZone}', found ${selected.length}. Use a different availabilityZone.`);
+        Annotations.of(this).addError(`Need exactly 1 subnet to match AZ '${props.availabilityZone}', found ${selected.length}. Use a different availabilityZone.`);
       }
     } else {
       if (subnets.length > 0) {
         subnet = subnets[0];
       } else {
-        this.node.addError(`Did not find any subnets matching '${JSON.stringify(props.vpcSubnets)}', please use a different selection.`);
+        Annotations.of(this).addError(`Did not find any subnets matching '${JSON.stringify(props.vpcSubnets)}', please use a different selection.`);
       }
     }
     if (!subnet) {
@@ -385,15 +385,17 @@ export class Instance extends Resource implements IInstance {
 
     // Trigger replacement (via new logical ID) on user data change, if specified or cfn-init is being used.
     const originalLogicalId = Stack.of(this).getLogicalId(this.instance);
-    this.instance.overrideLogicalId(Lazy.stringValue({ produce: () => {
-      let logicalId = originalLogicalId;
-      if (props.userDataCausesReplacement ?? props.initOptions) {
-        const md5 = crypto.createHash('md5');
-        md5.update(this.userData.render());
-        logicalId += md5.digest('hex').substr(0, 16);
-      }
-      return logicalId;
-    }}));
+    this.instance.overrideLogicalId(Lazy.stringValue({
+      produce: () => {
+        let logicalId = originalLogicalId;
+        if (props.userDataCausesReplacement ?? props.initOptions) {
+          const md5 = crypto.createHash('md5');
+          md5.update(this.userData.render());
+          logicalId += md5.digest('hex').substr(0, 16);
+        }
+        return logicalId;
+      },
+    }));
   }
 
   /**
@@ -430,9 +432,8 @@ export class Instance extends Resource implements IInstance {
    * - Update the instance's CreationPolicy to wait for the `cfn-signal` commands.
    */
   private applyCloudFormationInit(init: CloudFormationInit, options: ApplyCloudFormationInitOptions = {}) {
-    const platform = this.osType === OperatingSystemType.WINDOWS ? InitPlatform.WINDOWS : InitPlatform.LINUX;
     init._attach(this.instance, {
-      platform,
+      platform: this.osType,
       instanceRole: this.role,
       userData: this.userData,
       configSets: options.configSets,

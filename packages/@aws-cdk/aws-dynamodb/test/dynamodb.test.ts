@@ -3,7 +3,7 @@ import '@aws-cdk/assert/jest';
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { App, CfnDeletionPolicy, ConstructNode, Duration, PhysicalName, RemovalPolicy, Stack, Tag } from '@aws-cdk/core';
+import { App, CfnDeletionPolicy, ConstructNode, Duration, PhysicalName, RemovalPolicy, Stack, Tags } from '@aws-cdk/core';
 import {
   Attribute,
   AttributeType,
@@ -324,7 +324,7 @@ test('when specifying every property', () => {
     partitionKey: TABLE_PARTITION_KEY,
     sortKey: TABLE_SORT_KEY,
   });
-  table.node.applyAspect(new Tag('Environment', 'Production'));
+  Tags.of(table).add('Environment', 'Production');
 
   expect(stack).toHaveResource('AWS::DynamoDB::Table',
     {
@@ -357,7 +357,7 @@ test('when specifying sse with customer managed CMK', () => {
     encryption: TableEncryption.CUSTOMER_MANAGED,
     partitionKey: TABLE_PARTITION_KEY,
   });
-  table.node.applyAspect(new Tag('Environment', 'Production'));
+  Tags.of(table).add('Environment', 'Production');
 
   expect(stack).toHaveResource('AWS::DynamoDB::Table', {
     'SSESpecification': {
@@ -383,7 +383,7 @@ test('when specifying only encryptionKey', () => {
     encryptionKey,
     partitionKey: TABLE_PARTITION_KEY,
   });
-  table.node.applyAspect(new Tag('Environment', 'Production'));
+  Tags.of(table).add('Environment', 'Production');
 
   expect(stack).toHaveResource('AWS::DynamoDB::Table', {
     'SSESpecification': {
@@ -410,7 +410,7 @@ test('when specifying sse with customer managed CMK with encryptionKey provided 
     encryptionKey,
     partitionKey: TABLE_PARTITION_KEY,
   });
-  table.node.applyAspect(new Tag('Environment', 'Production'));
+  Tags.of(table).add('Environment', 'Production');
 
   expect(stack).toHaveResource('AWS::DynamoDB::Table', {
     'SSESpecification': {
@@ -1112,7 +1112,7 @@ test('error when adding a global secondary index with projection type KEYS_ONLY,
   })).toThrow(/non-key attributes should not be specified when not using INCLUDE projection type/);
 });
 
-test('error when adding a global secondary index with projection type INCLUDE, but with more than 20 non-key attributes', () => {
+test('error when adding a global secondary index with projection type INCLUDE, but with more than 100 non-key attributes', () => {
   const stack = new Stack();
   const table = new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY, sortKey: TABLE_SORT_KEY });
   const gsiNonKeyAttributeGenerator = NON_KEY_ATTRIBUTE_GENERATOR(GSI_NON_KEY);
@@ -1715,7 +1715,8 @@ describe('grants', () => {
   test('"grantReadWriteData" allows the principal to read/write data', () => {
     testGrant([
       'BatchGetItem', 'GetRecords', 'GetShardIterator', 'Query', 'GetItem', 'Scan',
-      'BatchWriteItem', 'PutItem', 'UpdateItem', 'DeleteItem'], (p, t) => t.grantReadWriteData(p));
+      'BatchWriteItem', 'PutItem', 'UpdateItem', 'DeleteItem',
+    ], (p, t) => t.grantReadWriteData(p));
   });
 
   test('"grantFullAccess" allows the principal to perform any action on the table ("*")', () => {
@@ -2106,7 +2107,7 @@ describe('import', () => {
       'Roles': [{ 'Ref': 'NewRole99763075' }],
     });
 
-    expect(table.tableArn).toBe('arn:${Token[AWS::Partition.3]}:dynamodb:${Token[AWS::Region.4]}:${Token[AWS::AccountId.0]}:table/MyTable');
+    expect(table.tableArn).toBe('arn:${Token[AWS.Partition.3]}:dynamodb:${Token[AWS.Region.4]}:${Token[AWS.AccountId.0]}:table/MyTable');
     expect(stack.resolve(table.tableName)).toBe(tableName);
   });
 

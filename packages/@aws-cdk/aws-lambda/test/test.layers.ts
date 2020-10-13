@@ -43,7 +43,7 @@ export = testCase({
 
     // WHEN
     layer.addPermission('GrantUsage-123456789012', { accountId: '123456789012' });
-    layer.addPermission('GrantUsage-o-123456',     { accountId: '*', organizationId: 'o-123456' });
+    layer.addPermission('GrantUsage-o-123456', { accountId: '*', organizationId: 'o-123456' });
 
     // THEN
     expect(stack).to(haveResource('AWS::Lambda::LayerVersionPermission', {

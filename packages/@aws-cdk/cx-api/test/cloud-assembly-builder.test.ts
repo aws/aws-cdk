@@ -16,7 +16,7 @@ test('cloud assembly builder', () => {
     environment: 'aws://1222344/us-east-1',
     dependencies: ['minimal-artifact'],
     metadata: {
-      foo: [ { data: '123', type: 'foo', trace: [] } ],
+      foo: [{ data: '123', type: 'foo', trace: [] }],
     },
     properties: {
       templateFile,
@@ -93,7 +93,7 @@ test('cloud assembly builder', () => {
         type: 'aws:cloudformation:stack',
         environment: 'aws://1222344/us-east-1',
         dependencies: ['minimal-artifact'],
-        metadata: { foo: [ { data: '123', type: 'foo', trace: [] } ] },
+        metadata: { foo: [{ data: '123', type: 'foo', trace: [] }] },
         properties: {
           templateFile: 'foo.template.json',
           parameters: {
@@ -122,6 +122,12 @@ test('cloud assembly builder', () => {
 
 test('outdir must be a directory', () => {
   expect(() => new cxapi.CloudAssemblyBuilder(__filename)).toThrow('must be a directory');
+});
+
+test('outdir defaults to a temporary directory', () => {
+  const assembly = new cxapi.CloudAssemblyBuilder();
+  const realTmpDir = fs.realpathSync(os.tmpdir());
+  expect(assembly.outdir).toMatch(new RegExp(`^${path.join(realTmpDir, 'cdk.out')}`));
 });
 
 test('duplicate missing values with the same key are only reported once', () => {

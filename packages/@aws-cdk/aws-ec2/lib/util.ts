@@ -1,4 +1,4 @@
-import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { ISubnet, Subnet, SubnetType } from './vpc';
 
 /**
@@ -17,7 +17,7 @@ export function defaultSubnetName(type: SubnetType) {
   switch (type) {
     case SubnetType.PUBLIC: return 'Public';
     case SubnetType.PRIVATE: return 'Private';
-    case SubnetType.ISOLATED: return  'Isolated';
+    case SubnetType.ISOLATED: return 'Isolated';
   }
 }
 
@@ -70,7 +70,7 @@ export class ImportSubnetGroup {
     this.names = this.normalizeNames(names, defaultSubnetName(type), nameField);
   }
 
-  public import(scope: cdk.Construct): ISubnet[] {
+  public import(scope: Construct): ISubnet[] {
     return range(this.subnetIds.length).map(i => {
       const k = Math.floor(i / this.availabilityZones.length);
       return Subnet.fromSubnetAttributes(scope, subnetId(this.names[k], i), {

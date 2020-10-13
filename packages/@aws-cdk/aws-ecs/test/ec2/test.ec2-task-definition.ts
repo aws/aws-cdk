@@ -1,3 +1,4 @@
+import * as path from 'path';
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import { Protocol } from '@aws-cdk/aws-ec2';
 import { Repository } from '@aws-cdk/aws-ecr';
@@ -6,7 +7,6 @@ import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as ssm from '@aws-cdk/aws-ssm';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import * as path from 'path';
 import * as ecs from '../../lib';
 
 export = {
@@ -975,6 +975,39 @@ export = {
             DriverOpts: {
               key1: 'value',
             },
+          },
+        }],
+      }));
+
+      test.done();
+    },
+
+    'correctly sets efsVolumeConfiguration'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const volume = {
+        name: 'scratch',
+        efsVolumeConfiguration: {
+          fileSystemId: 'local',
+        },
+      };
+
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
+        volumes: [volume],
+      });
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+        Family: 'Ec2TaskDef',
+        Volumes: [{
+          Name: 'scratch',
+          EfsVolumeConfiguration: {
+            FileSystemId: 'local',
           },
         }],
       }));

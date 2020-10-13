@@ -45,7 +45,7 @@ test('throws and logs in case of error', async () => {
 
   await expect(handler(event)).rejects.toEqual({ code: 'Error' });
 
-  expect(console.log).toHaveBeenLastCalledWith({ code: 'Error'});
+  expect(console.log).toHaveBeenLastCalledWith({ code: 'Error' });
 });
 
 test('catches and logs error', async () => {
@@ -60,5 +60,5 @@ test('catches and logs error', async () => {
 
   await handler(catchEvent);
 
-  expect(console.log).toHaveBeenLastCalledWith({ code: 'Invalid'});
+  expect(console.log).toHaveBeenLastCalledWith({ code: 'Invalid' });
 });

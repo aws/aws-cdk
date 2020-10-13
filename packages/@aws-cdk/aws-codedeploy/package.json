@@ -23,9 +23,14 @@
       },
       "python": {
         "distName": "aws-cdk.aws-codedeploy",
-        "module": "aws_cdk.aws_codedeploy"
+        "module": "aws_cdk.aws_codedeploy",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",
@@ -47,7 +52,10 @@
     "compat": "cdk-compat"
   },
   "cdk-build": {
-    "cloudformation": "AWS::CodeDeploy"
+    "cloudformation": "AWS::CodeDeploy",
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "nyc": {
     "statements": 79
@@ -83,7 +91,8 @@
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.2"
+    "@aws-cdk/custom-resources": "0.0.0",
+    "constructs": "^3.0.4"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -96,7 +105,8 @@
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.2"
+    "@aws-cdk/custom-resources": "0.0.0",
+    "constructs": "^3.0.4"
   },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
@@ -155,7 +165,8 @@
       "docs-public-apis:@aws-cdk/aws-codedeploy.IEcsApplication.applicationArn",
       "docs-public-apis:@aws-cdk/aws-codedeploy.IEcsApplication.applicationName",
       "docs-public-apis:@aws-cdk/aws-codedeploy.IEcsDeploymentConfig.deploymentConfigArn",
-      "docs-public-apis:@aws-cdk/aws-codedeploy.IEcsDeploymentConfig.deploymentConfigName"
+      "docs-public-apis:@aws-cdk/aws-codedeploy.IEcsDeploymentConfig.deploymentConfigName",
+      "props-physical-name:@aws-cdk/aws-codedeploy.CustomLambdaDeploymentConfigProps"
     ]
   },
   "stability": "stable",

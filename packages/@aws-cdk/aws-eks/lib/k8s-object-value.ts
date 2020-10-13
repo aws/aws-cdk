@@ -1,5 +1,11 @@
-import { Construct, CustomResource, Token, Duration } from '@aws-cdk/core';
-import { Cluster } from './cluster';
+import { CustomResource, Token, Duration } from '@aws-cdk/core';
+import { Construct } from 'constructs';
+import { ICluster } from './cluster';
+import { KubectlProvider } from './kubectl-provider';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Properties for KubernetesObjectValue.
@@ -10,7 +16,7 @@ export interface KubernetesObjectValueProps {
    *
    * [disable-awslint:ref-via-interface]
    */
-  readonly cluster: Cluster;
+  readonly cluster: ICluster;
 
   /**
    * The object type to query. (e.g 'service', 'pod'...)
@@ -49,7 +55,7 @@ export interface KubernetesObjectValueProps {
  * Represents a value of a specific object deployed in the cluster.
  * Use this to fetch any information available by the `kubectl get` command.
  */
-export class KubernetesObjectValue extends Construct {
+export class KubernetesObjectValue extends CoreConstruct {
   /**
    * The CloudFormation reosurce type.
    */
@@ -60,14 +66,14 @@ export class KubernetesObjectValue extends Construct {
   constructor(scope: Construct, id: string, props: KubernetesObjectValueProps) {
     super(scope, id);
 
-    const provider = props.cluster._attachKubectlResourceScope(this);
+    const provider = KubectlProvider.getOrCreate(this, props.cluster);
 
     this._resource = new CustomResource(this, 'Resource', {
       resourceType: KubernetesObjectValue.RESOURCE_TYPE,
       serviceToken: provider.serviceToken,
       properties: {
         ClusterName: props.cluster.clusterName,
-        RoleArn: props.cluster._kubectlCreationRole.roleArn,
+        RoleArn: provider.roleArn,
         ObjectType: props.objectType,
         ObjectName: props.objectName,
         ObjectNamespace: props.objectNamespace ?? 'default',

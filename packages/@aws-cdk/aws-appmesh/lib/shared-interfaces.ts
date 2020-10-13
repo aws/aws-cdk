@@ -1,4 +1,5 @@
-import { Duration } from '@aws-cdk/core';
+import * as cdk from '@aws-cdk/core';
+import { CfnVirtualNode } from './appmesh.generated';
 
 /**
  * Enum of supported AppMesh protocols
@@ -27,7 +28,7 @@ export interface HealthCheck {
    *
    * @default 5 seconds
    */
-  readonly interval?: Duration;
+  readonly interval?: cdk.Duration;
   /**
    * The path where the application expects any health-checks, this can also be the application path.
    *
@@ -52,7 +53,7 @@ export interface HealthCheck {
    *
    * @default 2 seconds
    */
-  readonly timeout?: Duration;
+  readonly timeout?: cdk.Duration;
   /**
    * Number of failed attempts before considering the node DOWN.
    *
@@ -73,7 +74,7 @@ export interface PortMapping {
   readonly port: number;
 
   /**
-   * Protocol for the VirtualNode / Route, only TCP or HTTP supported
+   * Protocol for the VirtualNode / Route, only GRPC, HTTP, HTTP2, or TCP is supported
    *
    * @default HTTP
    */
@@ -92,9 +93,69 @@ export interface VirtualNodeListener {
   readonly portMapping?: PortMapping;
 
   /**
-   * Array fo HealthCheckProps for the node(s)
+   * Health checking strategy upstream nodes should use when communicating with the listener
    *
    * @default - no healthcheck
    */
   readonly healthCheck?: HealthCheck;
+}
+
+/**
+ * All Properties for Envoy Access logs for mesh endpoints
+ */
+export interface AccessLogConfig {
+
+  /**
+   * VirtualNode CFN configuration for Access Logging
+   *
+   * @default - no access logging
+   */
+  readonly virtualNodeAccessLog?: CfnVirtualNode.AccessLogProperty;
+}
+
+/**
+ * Configuration for Envoy Access logs for mesh endpoints
+ */
+export abstract class AccessLog {
+  /**
+   * Path to a file to write access logs to
+   *
+   * @default - no file based access logging
+   */
+  public static fromFilePath(filePath: string): AccessLog {
+    return new FileAccessLog(filePath);
+  }
+
+  /**
+   * Called when the AccessLog type is initialized. Can be used to enforce
+   * mutual exclusivity with future properties
+   */
+  public abstract bind(scope: cdk.Construct): AccessLogConfig;
+}
+
+/**
+ * Configuration for Envoy Access logs for mesh endpoints
+ */
+class FileAccessLog extends AccessLog {
+  /**
+   * Path to a file to write access logs to
+   *
+   * @default - no file based access logging
+   */
+  public readonly filePath: string;
+
+  constructor(filePath: string) {
+    super();
+    this.filePath = filePath;
+  }
+
+  public bind(_scope: cdk.Construct): AccessLogConfig {
+    return {
+      virtualNodeAccessLog: {
+        file: {
+          path: this.filePath,
+        },
+      },
+    };
+  }
 }

@@ -4,8 +4,10 @@ import { StringParameter } from '@aws-cdk/aws-ssm';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { Stack } from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';
-import { AmazonLinuxImage, BlockDeviceVolume, CloudFormationInit,
-  EbsDeviceVolumeType, InitCommand, Instance, InstanceClass, InstanceSize, InstanceType, Vpc } from '../lib';
+import {
+  AmazonLinuxImage, BlockDeviceVolume, CloudFormationInit,
+  EbsDeviceVolumeType, InitCommand, Instance, InstanceClass, InstanceSize, InstanceType, Vpc,
+} from '../lib';
 
 nodeunitShim({
   'instance is created correctly'(test: Test) {
@@ -17,12 +19,12 @@ nodeunitShim({
     new Instance(stack, 'Instance', {
       vpc,
       machineImage: new AmazonLinuxImage(),
-      instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
+      instanceType: InstanceType.of(InstanceClass.MEMORY6_GRAVITON, InstanceSize.LARGE),
     });
 
     // THEN
     cdkExpect(stack).to(haveResource('AWS::EC2::Instance', {
-      InstanceType: 't3.large',
+      InstanceType: 'r6g.large',
     }));
 
     test.done();
@@ -313,7 +315,7 @@ test('add CloudFormation Init to instance', () => {
   expect(stack).toHaveResource('AWS::EC2::Instance', {
     UserData: {
       'Fn::Base64': {
-        'Fn::Join': [ '', [
+        'Fn::Join': ['', [
           stringLike('#!/bin/bash\n# fingerprint: *\n(\n  set +e\n  /opt/aws/bin/cfn-init -v --region '),
           { Ref: 'AWS::Region' },
           ' --stack ',
@@ -330,7 +332,7 @@ test('add CloudFormation Init to instance', () => {
   expect(stack).toHaveResource('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: arrayWith({
-        Action: [ 'cloudformation:DescribeStackResource', 'cloudformation:SignalResource' ],
+        Action: ['cloudformation:DescribeStackResource', 'cloudformation:SignalResource'],
         Effect: 'Allow',
         Resource: { Ref: 'AWS::StackId' },
       }),

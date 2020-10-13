@@ -1,11 +1,12 @@
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
+import { IResource, Lazy, Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnConfigRule } from './config.generated';
 
 /**
- * A config rule.
+ * Interface representing an AWS Config rule
  */
 export interface IRule extends IResource {
   /**
@@ -16,18 +17,18 @@ export interface IRule extends IResource {
   readonly configRuleName: string;
 
   /**
-   * Defines a CloudWatch event rule which triggers for rule events. Use
+   * Defines an EventBridge event rule which triggers for rule events. Use
    * `rule.addEventPattern(pattern)` to specify a filter.
    */
   onEvent(id: string, options?: events.OnEventOptions): events.Rule;
 
   /**
-   * Defines a CloudWatch event rule which triggers for rule compliance events.
+   * Defines a EventBridge event rule which triggers for rule compliance events.
    */
   onComplianceChange(id: string, options?: events.OnEventOptions): events.Rule;
 
   /**
-   * Defines a CloudWatch event rule which triggers for rule re-evaluation status events.
+   * Defines a EventBridge event rule which triggers for rule re-evaluation status events.
    */
   onReEvaluationStatus(id: string, options?: events.OnEventOptions): events.Rule;
 }
@@ -39,7 +40,7 @@ abstract class RuleBase extends Resource implements IRule {
   public abstract readonly configRuleName: string;
 
   /**
-   * Defines a CloudWatch event rule which triggers for rule events. Use
+   * Defines an EventBridge event rule which triggers for rule events. Use
    * `rule.addEventPattern(pattern)` to specify a filter.
    */
   public onEvent(id: string, options: events.OnEventOptions = {}) {
@@ -55,23 +56,23 @@ abstract class RuleBase extends Resource implements IRule {
   }
 
   /**
-   * Defines a CloudWatch event rule which triggers for rule compliance events.
+   * Defines an EventBridge event rule which triggers for rule compliance events.
    */
   public onComplianceChange(id: string, options: events.OnEventOptions = {}): events.Rule {
     const rule = this.onEvent(id, options);
     rule.addEventPattern({
-      detailType: [ 'Config Rules Compliance Change' ],
+      detailType: ['Config Rules Compliance Change'],
     });
     return rule;
   }
 
   /**
-   * Defines a CloudWatch event rule which triggers for rule re-evaluation status events.
+   * Defines an EventBridge event rule which triggers for rule re-evaluation status events.
    */
   public onReEvaluationStatus(id: string, options: events.OnEventOptions = {}): events.Rule {
     const rule = this.onEvent(id, options);
     rule.addEventPattern({
-      detailType: [ 'Config Rules Re-evaluation Status' ],
+      detailType: ['Config Rules Re-evaluation Status'],
     });
     return rule;
   }
@@ -193,28 +194,28 @@ export interface RuleProps {
   /**
    * A name for the AWS Config rule.
    *
-   * @default a CloudFormation generated name
+   * @default - CloudFormation generated name
    */
   readonly configRuleName?: string;
 
   /**
    * A description about this AWS Config rule.
    *
-   * @default no description
+   * @default - No description
    */
   readonly description?: string;
 
   /**
    * Input parameter values that are passed to the AWS Config rule.
    *
-   * @default no input parameters
+   * @default - No input parameters
    */
   readonly inputParameters?: { [key: string]: any };
 
   /**
    * The maximum frequency at which the AWS Config rule runs evaluations.
    *
-   * @default 24 hours
+   * @default MaximumExecutionFrequency.TWENTY_FOUR_HOURS
    */
   readonly maximumExecutionFrequency?: MaximumExecutionFrequency
 }
@@ -276,7 +277,7 @@ export class ManagedRule extends RuleNew {
 }
 
 /**
- * Consruction properties for a CustomRule.
+ * Construction properties for a CustomRule.
  */
 export interface CustomRuleProps extends RuleProps {
   /**

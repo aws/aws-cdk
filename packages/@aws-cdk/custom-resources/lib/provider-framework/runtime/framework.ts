@@ -39,7 +39,7 @@ async function onEvent(cfnRequest: AWSLambda.CloudFormationCustomResourceEvent) 
   // determine if this is an async provider based on whether we have an isComplete handler defined.
   // if it is not defined, then we are basically ready to return a positive response.
   if (!process.env[consts.USER_IS_COMPLETE_FUNCTION_ARN_ENV]) {
-    return await cfnResponse.submitResponse('SUCCESS', resourceEvent);
+    return cfnResponse.submitResponse('SUCCESS', resourceEvent);
   }
 
   // ok, we are not complete, so kick off the waiter workflow
@@ -121,7 +121,7 @@ async function invokeUserFunction(functionArnEnv: string, payload: any) {
     const message = [
       errorMessage,
       '',
-      `Logs: /aws/lambda/${functionName}`,  // cloudwatch log group
+      `Logs: /aws/lambda/${functionName}`, // cloudwatch log group
       '',
     ].join('\n');
 
@@ -131,7 +131,7 @@ async function invokeUserFunction(functionArnEnv: string, payload: any) {
     // if we have a remote trace, construct a nice message with log group information
     if (jsonPayload.trace) {
       // skip first trace line because it's the message
-      e.stack = [ message, ...jsonPayload.trace.slice(1) ].join('\n');
+      e.stack = [message, ...jsonPayload.trace.slice(1)].join('\n');
     }
 
     throw e;

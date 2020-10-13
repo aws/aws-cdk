@@ -22,7 +22,7 @@ const snsPublish = new AwsCustomResource(stack, 'Publish', {
     },
     physicalResourceId: PhysicalResourceId.of(topic.topicArn),
   },
-  policy: AwsCustomResourcePolicy.fromSdkCalls({resources: AwsCustomResourcePolicy.ANY_RESOURCE}),
+  policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
 });
 
 const listTopics = new AwsCustomResource(stack, 'ListTopics', {
@@ -31,7 +31,7 @@ const listTopics = new AwsCustomResource(stack, 'ListTopics', {
     action: 'listTopics',
     physicalResourceId: PhysicalResourceId.fromResponse('Topics.0.TopicArn'),
   },
-  policy: AwsCustomResourcePolicy.fromSdkCalls({resources: AwsCustomResourcePolicy.ANY_RESOURCE}),
+  policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
 });
 listTopics.node.addDependency(topic);
 
@@ -49,7 +49,7 @@ const getParameter = new AwsCustomResource(stack, 'GetParameter', {
     },
     physicalResourceId: PhysicalResourceId.fromResponse('Parameter.ARN'),
   },
-  policy: AwsCustomResourcePolicy.fromSdkCalls({resources: AwsCustomResourcePolicy.ANY_RESOURCE}),
+  policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
 });
 
 new cdk.CfnOutput(stack, 'MessageId', { value: snsPublish.getResponseField('MessageId') });

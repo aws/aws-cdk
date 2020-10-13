@@ -131,16 +131,18 @@ export abstract class OriginBase implements IOrigin {
       throw new Error('Subclass must override and provide either s3OriginConfig or customOriginConfig');
     }
 
-    return { originProperty: {
-      domainName: this.domainName,
-      id: options.originId,
-      originPath: this.originPath,
-      connectionAttempts: this.connectionAttempts,
-      connectionTimeout: this.connectionTimeout?.toSeconds(),
-      originCustomHeaders: this.renderCustomHeaders(),
-      s3OriginConfig,
-      customOriginConfig,
-    }};
+    return {
+      originProperty: {
+        domainName: this.domainName,
+        id: options.originId,
+        originPath: this.originPath,
+        connectionAttempts: this.connectionAttempts,
+        connectionTimeout: this.connectionTimeout?.toSeconds(),
+        originCustomHeaders: this.renderCustomHeaders(),
+        s3OriginConfig,
+        customOriginConfig,
+      },
+    };
   }
 
   // Overridden by sub-classes to provide S3 origin config.

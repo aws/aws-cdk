@@ -17,7 +17,7 @@ export = {
 
     expect(stack).to(haveResource('AWS::KMS::Alias', {
       AliasName: 'alias/foo',
-      TargetKeyId: { 'Fn::GetAtt': [ 'Key961B73FD', 'Arn' ] },
+      TargetKeyId: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
     }));
 
     test.done();
@@ -39,7 +39,7 @@ export = {
 
     expect(stack).to(haveResource('AWS::KMS::Alias', {
       AliasName: 'alias/foo',
-      TargetKeyId: { 'Fn::GetAtt': [ 'Key961B73FD', 'Arn' ] },
+      TargetKeyId: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
     }));
 
     test.done();
@@ -57,7 +57,7 @@ export = {
 
     expect(stack).to(haveResource('AWS::KMS::Alias', {
       AliasName: 'alias/foo',
-      TargetKeyId: { 'Fn::GetAtt': [ 'Key961B73FD', 'Arn' ] },
+      TargetKeyId: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
     }));
 
     test.done();
@@ -136,6 +136,7 @@ export = {
       aliasName: 'alias/myAlias',
     });
 
+    /* eslint-disable cdk/no-core-construct */
     class MyConstruct extends Construct {
       constructor(scope: Construct, id: string, key: IKey) {
         super(scope, id);
@@ -148,6 +149,7 @@ export = {
         });
       }
     }
+    /* eslint-enable cdk/no-core-construct */
 
     new MyConstruct(stack, 'MyConstruct', myAlias);
 
@@ -180,6 +182,7 @@ export = {
 
     const myAlias = Alias.fromAliasName(stack, 'MyAlias', 'alias/myAlias');
 
+    /* eslint-disable cdk/no-core-construct */
     class MyConstruct extends Construct {
       constructor(scope: Construct, id: string, key: IKey) {
         super(scope, id);
@@ -192,6 +195,7 @@ export = {
         });
       }
     }
+    /* eslint-enable cdk/no-core-construct */
 
     new MyConstruct(stack, 'MyConstruct', myAlias);
 

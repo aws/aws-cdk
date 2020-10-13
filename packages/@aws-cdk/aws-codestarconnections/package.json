@@ -23,9 +23,14 @@
       },
       "python": {
         "distName": "aws-cdk.aws-codestarconnections",
-        "module": "aws_cdk.aws_codestarconnections"
+        "module": "aws_cdk.aws_codestarconnections",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",
@@ -49,7 +54,10 @@
   },
   "cdk-build": {
     "cloudformation": "AWS::CodeStarConnections",
-    "jest": true
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "keywords": [
     "aws",

@@ -76,7 +76,7 @@ test('check that placeholders are replaced', async () => {
   }));
 
   expect(aws.mockEcr.describeImages).toHaveBeenCalledWith(expect.objectContaining({
-    imageIds: [{imageTag: 'abcdef'}],
+    imageIds: [{ imageTag: 'abcdef' }],
     repositoryName: 'repo-current_account-explicit_region',
   }));
 });

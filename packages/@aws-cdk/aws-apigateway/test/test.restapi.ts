@@ -28,7 +28,7 @@ export = {
           Type: 'AWS::ApiGateway::Method',
           Properties: {
             HttpMethod: 'GET',
-            ResourceId: { 'Fn::GetAtt': [ 'myapi4C7BF186', 'RootResourceId' ] },
+            ResourceId: { 'Fn::GetAtt': ['myapi4C7BF186', 'RootResourceId'] },
             RestApiId: { Ref: 'myapi4C7BF186' },
             AuthorizationType: 'NONE',
             Integration: {
@@ -66,22 +66,22 @@ export = {
               Version: '2012-10-17',
             },
             ManagedPolicyArns: [
-              { 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs' ] ] },
+              { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs']] },
             ],
           },
         },
         myapiAccountEC421A0A: {
           Type: 'AWS::ApiGateway::Account',
           Properties: {
-            CloudWatchRoleArn: { 'Fn::GetAtt': [ 'myapiCloudWatchRole095452E5', 'Arn' ] },
+            CloudWatchRoleArn: { 'Fn::GetAtt': ['myapiCloudWatchRole095452E5', 'Arn'] },
           },
-          DependsOn: [ 'myapi4C7BF186' ],
+          DependsOn: ['myapi4C7BF186'],
         },
       },
       Outputs: {
         myapiEndpoint3628AFE3: {
           Value: {
-            'Fn::Join': [ '', [
+            'Fn::Join': ['', [
               'https://',
               { Ref: 'myapi4C7BF186' },
               '.execute-api.',
@@ -97,6 +97,22 @@ export = {
       },
     });
 
+    test.done();
+  },
+
+  'restApiName is set correctly'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const myapi = new apigw.RestApi(stack, 'myapi');
+    const yourapi = new apigw.RestApi(stack, 'yourapi', {
+      restApiName: 'namedapi',
+    });
+
+    // THEN
+    test.deepEqual(myapi.restApiName, 'myapi');
+    test.deepEqual(yourapi.restApiName, 'namedapi');
     test.done();
   },
 
@@ -161,12 +177,12 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::Resource', {
       PathPart: 'foo',
-      ParentId: { 'Fn::GetAtt': [ 'restapiC5611D27', 'RootResourceId'] },
+      ParentId: { 'Fn::GetAtt': ['restapiC5611D27', 'RootResourceId'] },
     }));
 
     expect(stack).to(haveResource('AWS::ApiGateway::Resource', {
       PathPart: 'bar',
-      ParentId: { 'Fn::GetAtt': [ 'restapiC5611D27', 'RootResourceId'] },
+      ParentId: { 'Fn::GetAtt': ['restapiC5611D27', 'RootResourceId'] },
     }));
 
     expect(stack).to(haveResource('AWS::ApiGateway::Resource', {
@@ -342,9 +358,10 @@ export = {
     api.root.addMethod('GET');
 
     // THEN
-    test.deepEqual(stack.resolve(api.url), { 'Fn::Join':
-    [ '',
-      [ 'https://',
+    test.deepEqual(stack.resolve(api.url), {
+      'Fn::Join':
+    ['',
+      ['https://',
         { Ref: 'apiC8550315' },
         '.execute-api.',
         { Ref: 'AWS::Region' },
@@ -352,10 +369,12 @@ export = {
         { Ref: 'AWS::URLSuffix' },
         '/',
         { Ref: 'apiDeploymentStageprod896C8101' },
-        '/' ] ] });
-    test.deepEqual(stack.resolve(api.urlForPath('/foo/bar')), { 'Fn::Join':
-    [ '',
-      [ 'https://',
+        '/']],
+    });
+    test.deepEqual(stack.resolve(api.urlForPath('/foo/bar')), {
+      'Fn::Join':
+    ['',
+      ['https://',
         { Ref: 'apiC8550315' },
         '.execute-api.',
         { Ref: 'AWS::Region' },
@@ -363,7 +382,8 @@ export = {
         { Ref: 'AWS::URLSuffix' },
         '/',
         { Ref: 'apiDeploymentStageprod896C8101' },
-        '/foo/bar' ] ] });
+        '/foo/bar']],
+    });
     test.done();
   },
 
@@ -400,9 +420,10 @@ export = {
     const arn = api.arnForExecuteApi('method', '/path', 'stage');
 
     // THEN
-    test.deepEqual(stack.resolve(arn), { 'Fn::Join':
-    [ '',
-      [ 'arn:',
+    test.deepEqual(stack.resolve(arn), {
+      'Fn::Join':
+    ['',
+      ['arn:',
         { Ref: 'AWS::Partition' },
         ':execute-api:',
         { Ref: 'AWS::Region' },
@@ -410,7 +431,8 @@ export = {
         { Ref: 'AWS::AccountId' },
         ':',
         { Ref: 'apiC8550315' },
-        '/stage/method/path' ] ] });
+        '/stage/method/path']],
+    });
     test.done();
   },
 
@@ -433,9 +455,10 @@ export = {
     const method = api.root.addMethod('ANY');
 
     // THEN
-    test.deepEqual(stack.resolve(method.methodArn), { 'Fn::Join':
-    [ '',
-      [ 'arn:',
+    test.deepEqual(stack.resolve(method.methodArn), {
+      'Fn::Join':
+    ['',
+      ['arn:',
         { Ref: 'AWS::Partition' },
         ':execute-api:',
         { Ref: 'AWS::Region' },
@@ -445,7 +468,8 @@ export = {
         { Ref: 'apiC8550315' },
         '/',
         { Ref: 'apiDeploymentStageprod896C8101' },
-        '/*/'] ] });
+        '/*/']],
+    });
     test.done();
   },
 
@@ -455,7 +479,7 @@ export = {
 
     // WHEN
     const api = new apigw.RestApi(stack, 'api', {
-      endpointTypes: [ apigw.EndpointType.EDGE, apigw.EndpointType.PRIVATE ],
+      endpointTypes: [apigw.EndpointType.EDGE, apigw.EndpointType.PRIVATE],
     });
 
     api.root.addMethod('GET');
@@ -479,7 +503,7 @@ export = {
     // WHEN
     const api = new apigw.RestApi(stack, 'api', {
       endpointConfiguration: {
-        types: [ apigw.EndpointType.EDGE, apigw.EndpointType.PRIVATE ],
+        types: [apigw.EndpointType.EDGE, apigw.EndpointType.PRIVATE],
       },
     });
 
@@ -488,7 +512,7 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::RestApi', {
       EndpointConfiguration: {
-        Types: [ 'EDGE', 'PRIVATE' ],
+        Types: ['EDGE', 'PRIVATE'],
       },
     }));
     test.done();
@@ -501,7 +525,7 @@ export = {
     // WHEN
     const api = new apigw.RestApi(stack, 'api', {
       endpointConfiguration: {
-        types: [ apigw.EndpointType.EDGE, apigw.EndpointType.PRIVATE ],
+        types: [apigw.EndpointType.EDGE, apigw.EndpointType.PRIVATE],
         vpcEndpoints: [
           GatewayVpcEndpoint.fromGatewayVpcEndpointId(stack, 'ImportedEndpoint', 'vpcEndpoint'),
           GatewayVpcEndpoint.fromGatewayVpcEndpointId(stack, 'ImportedEndpoint2', 'vpcEndpoint2'),
@@ -534,10 +558,10 @@ export = {
     // THEN
     test.throws(() => new apigw.RestApi(stack, 'api', {
       endpointConfiguration: {
-        types: [ apigw.EndpointType.PRIVATE ],
-        vpcEndpoints: [ GatewayVpcEndpoint.fromGatewayVpcEndpointId(stack, 'ImportedEndpoint', 'vpcEndpoint')],
+        types: [apigw.EndpointType.PRIVATE],
+        vpcEndpoints: [GatewayVpcEndpoint.fromGatewayVpcEndpointId(stack, 'ImportedEndpoint', 'vpcEndpoint')],
       },
-      endpointTypes: [ apigw.EndpointType.PRIVATE ],
+      endpointTypes: [apigw.EndpointType.PRIVATE],
     }), /Only one of the RestApi props, endpointTypes or endpointConfiguration, is allowed/);
     test.done();
   },
@@ -633,7 +657,7 @@ export = {
     // CASE #1
     expect(stack).to(haveResourceLike('AWS::ApiGateway::Method', {
       HttpMethod: 'GET',
-      ResourceId: { 'Fn::GetAtt': [ 'myapi162F20B8', 'RootResourceId' ] },
+      ResourceId: { 'Fn::GetAtt': ['myapi162F20B8', 'RootResourceId'] },
       Integration: { Type: 'AWS' },
       AuthorizerId: 'AUTHID',
       AuthorizationType: 'AWS_IAM',
@@ -776,18 +800,18 @@ export = {
             '',
             [
               'https://',
-              {Ref: 'myapi162F20B8'},
+              { Ref: 'myapi162F20B8' },
               '.execute-api.',
-              {Ref: 'AWS::Region'},
+              { Ref: 'AWS::Region' },
               '.',
-              {Ref: 'AWS::URLSuffix'},
+              { Ref: 'AWS::URLSuffix' },
               '/',
-              {Ref: 'myapiDeploymentStageprod329F21FF'},
+              { Ref: 'myapiDeploymentStageprod329F21FF' },
               '/',
             ],
           ],
         },
-        Export: {Name: 'my-given-export-name'},
+        Export: { Name: 'my-given-export-name' },
       },
     });
 
@@ -810,13 +834,13 @@ export = {
             '',
             [
               'https://',
-              {Ref: 'myapi162F20B8'},
+              { Ref: 'myapi162F20B8' },
               '.execute-api.',
-              {Ref: 'AWS::Region'},
+              { Ref: 'AWS::Region' },
               '.',
-              {Ref: 'AWS::URLSuffix'},
+              { Ref: 'AWS::URLSuffix' },
               '/',
-              {Ref: 'myapiDeploymentStageprod329F21FF'},
+              { Ref: 'myapiDeploymentStageprod329F21FF' },
               '/',
             ],
           ],
@@ -1026,7 +1050,7 @@ export = {
       // WHEN
       const api = new apigw.SpecRestApi(stack, 'api', {
         apiDefinition: apigw.ApiDefinition.fromInline({ foo: 'bar' }),
-        endpointTypes: [ apigw.EndpointType.EDGE, apigw.EndpointType.PRIVATE ],
+        endpointTypes: [apigw.EndpointType.EDGE, apigw.EndpointType.PRIVATE],
       });
 
       api.root.addMethod('GET');
@@ -1040,6 +1064,144 @@ export = {
           ],
         },
       }));
+      test.done();
+    },
+  },
+
+  Metrics: {
+    'metric'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const api = new apigw.RestApi(stack, 'my-api');
+      const metricName = '4XXError';
+      const statistic = 'Sum';
+
+      // WHEN
+      const countMetric = api.metric(metricName, { statistic });
+
+      // THEN
+      test.equal(countMetric.namespace, 'AWS/ApiGateway');
+      test.equal(countMetric.metricName, metricName);
+      test.deepEqual(countMetric.dimensions, { ApiName: 'my-api' });
+      test.equal(countMetric.statistic, statistic);
+
+      test.done();
+    },
+
+    'metricClientError'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const api = new apigw.RestApi(stack, 'my-api');
+      const color = '#00ff00';
+
+      // WHEN
+      const countMetric = api.metricClientError({ color });
+
+      // THEN
+      test.equal(countMetric.metricName, '4XXError');
+      test.equal(countMetric.statistic, 'Sum');
+      test.equal(countMetric.color, color);
+
+      test.done();
+    },
+
+    'metricServerError'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const api = new apigw.RestApi(stack, 'my-api');
+      const color = '#00ff00';
+
+      // WHEN
+      const countMetric = api.metricServerError({ color });
+
+      // THEN
+      test.equal(countMetric.metricName, '5XXError');
+      test.equal(countMetric.statistic, 'Sum');
+      test.equal(countMetric.color, color);
+
+      test.done();
+    },
+
+    'metricCacheHitCount'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const api = new apigw.RestApi(stack, 'my-api');
+      const color = '#00ff00';
+
+      // WHEN
+      const countMetric = api.metricCacheHitCount({ color });
+
+      // THEN
+      test.equal(countMetric.metricName, 'CacheHitCount');
+      test.equal(countMetric.statistic, 'Sum');
+      test.equal(countMetric.color, color);
+
+      test.done();
+    },
+
+    'metricCacheMissCount'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const api = new apigw.RestApi(stack, 'my-api');
+      const color = '#00ff00';
+
+      // WHEN
+      const countMetric = api.metricCacheMissCount({ color });
+
+      // THEN
+      test.equal(countMetric.metricName, 'CacheMissCount');
+      test.equal(countMetric.statistic, 'Sum');
+      test.equal(countMetric.color, color);
+
+      test.done();
+    },
+
+    'metricCount'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const api = new apigw.RestApi(stack, 'my-api');
+      const color = '#00ff00';
+
+      // WHEN
+      const countMetric = api.metricCount({ color });
+
+      // THEN
+      test.equal(countMetric.metricName, 'Count');
+      test.equal(countMetric.statistic, 'SampleCount');
+      test.equal(countMetric.color, color);
+
+      test.done();
+    },
+
+    'metricIntegrationLatency'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const api = new apigw.RestApi(stack, 'my-api');
+      const color = '#00ff00';
+
+      // WHEN
+      const countMetric = api.metricIntegrationLatency({ color });
+
+      // THEN
+      test.equal(countMetric.metricName, 'IntegrationLatency');
+      test.equal(countMetric.color, color);
+
+      test.done();
+    },
+
+    'metricLatency'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const api = new apigw.RestApi(stack, 'my-api');
+      const color = '#00ff00';
+
+      // WHEN
+      const countMetric = api.metricLatency({ color });
+
+      // THEN
+      test.equal(countMetric.metricName, 'Latency');
+      test.equal(countMetric.color, color);
+
       test.done();
     },
   },

@@ -1,4 +1,5 @@
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnTaskDefinition } from './ecs.generated';
 
 /**
@@ -57,7 +58,7 @@ export class LinuxParameters extends cdk.Construct {
   /**
    * Constructs a new instance of the LinuxParameters class.
    */
-  constructor(scope: cdk.Construct, id: string, props: LinuxParametersProps = {}) {
+  constructor(scope: Construct, id: string, props: LinuxParametersProps = {}) {
     super(scope, id);
 
     this.sharedMemorySize = props.sharedMemorySize;
@@ -106,8 +107,8 @@ export class LinuxParameters extends cdk.Construct {
       initProcessEnabled: this.initProcessEnabled,
       sharedMemorySize: this.sharedMemorySize,
       capabilities: {
-        add: cdk.Lazy.listValue({ produce: () => this.capAdd }, { omitEmpty: true}),
-        drop: cdk.Lazy.listValue({  produce: () => this.capDrop }, { omitEmpty: true}),
+        add: cdk.Lazy.listValue({ produce: () => this.capAdd }, { omitEmpty: true }),
+        drop: cdk.Lazy.listValue({ produce: () => this.capDrop }, { omitEmpty: true }),
       },
       devices: cdk.Lazy.anyValue({ produce: () => this.devices.map(renderDevice) }, { omitEmptyArray: true }),
       tmpfs: cdk.Lazy.anyValue({ produce: () => this.tmpfs.map(renderTmpfs) }, { omitEmptyArray: true }),

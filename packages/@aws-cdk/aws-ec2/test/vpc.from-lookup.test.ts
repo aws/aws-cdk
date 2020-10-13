@@ -1,6 +1,7 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { Construct, ContextProvider, GetContextValueOptions, GetContextValueResult, Lazy, Stack } from '@aws-cdk/core';
+import { ContextProvider, GetContextValueOptions, GetContextValueResult, Lazy, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
+import { Construct } from 'constructs';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import { GenericLinuxImage, Instance, InstanceType, SubnetType, Vpc } from '../lib';
 
@@ -22,7 +23,7 @@ nodeunitShim({
 
     'selecting subnets by name from a looked-up VPC does not throw'(test: Test) {
       // GIVEN
-      const stack = new Stack(undefined, undefined, { env: { region: 'us-east-1', account: '123456789012' }});
+      const stack = new Stack(undefined, undefined, { env: { region: 'us-east-1', account: '123456789012' } });
       const vpc = Vpc.fromLookup(stack, 'VPC', {
         vpcId: 'vpc-1234',
       });

@@ -163,6 +163,8 @@ Which subnets are selected is evaluated as follows:
     in the given availability zones will be returned.
   * `onePerAz`: per availability zone, a maximum of one subnet will be returned (Useful for resource
     types that do not allow creating two ENIs in the same availability zone).
+* `subnetFilters`: additional filtering on subnets using any number of user-provided filters which
+  extend the SubnetFilter class.
 
 ### Using NAT instances
 
@@ -279,8 +281,8 @@ const igwId = vpc.internetGatewayId;
 
 For a VPC with only `ISOLATED` subnets, this value will be undefined.
 
-This is only supported for VPC's created in the stack - currently you're
-unable to get the ID for imported VPC's. To do that you'd have to specifically
+This is only supported for VPCs created in the stack - currently you're
+unable to get the ID for imported VPCs. To do that you'd have to specifically
 look up the Internet Gateway by name, which would require knowing the name
 beforehand.
 
@@ -638,9 +640,35 @@ Here is an example of applying some configuration to an instance:
 
 ```ts
 new ec2.Instance(this, 'Instance', {
-  init: ec2.CloudFormationInit.fromElements(
-    ec2.InitCommand.shellCommand('/bin/true'),
-  ),
+  // Showing the most complex setup, if you have simpler requirements
+  // you can use `CloudFormationInit.fromElements()`.
+  init: ec2.CloudFormationInit.fromConfigSets({
+    configSets: {
+      // Applies the configs below in this order
+      default: ['yumPreinstall', 'config'],
+    },
+    configs: {
+      yumPreinstall: new ec2.InitConfig([
+        // Install an Amazon Linux package using yum
+        ec2.InitPackage.yum('git'),
+      ]),
+      config: new ec2.InitConfig([
+        // Create a JSON file from tokens (can also create other files)
+        ec2.InitFile.fromObject('/etc/stack.json', {
+          stackId: stack.stackId,
+          stackName: stack.stackName,
+          region: stack.region,
+        }),
+
+        // Create a group and user
+        ec2.InitGroup.fromName('my-group'),
+        ec2.InitUser.fromName('my-user'),
+
+        // Install an RPM from the internet
+        ec2.InitPackage.rpm('http://mirrors.ukfast.co.uk/sites/dl.fedoraproject.org/pub/epel/8/Everything/x86_64/Packages/r/rubygem-git-1.5.0-2.el8.noarch.rpm'),
+      ]),
+    },
+  }),
   initOptions: {
     // Optional, which configsets to activate (['default'] by default)
     configSets: ['default'],
@@ -654,14 +682,15 @@ new ec2.Instance(this, 'Instance', {
 You can have services restarted after the init process has made changes to the system.
 To do that, instantiate an `InitServiceRestartHandle` and pass it to the config elements
 that need to trigger the restart and the service itself. For example, the following
-config installs nginx through a custom script, and then
+config writes a config file for nginx, extracts an archive to the root directory, and then
 restarts nginx so that it picks up the new config and files:
 
 ```ts
 const handle = new ec2.InitServiceRestartHandle();
 
 ec2.CloudFormationInit.fromElements(
-  ec2.InitCommand.shellCommand('/usr/bin/custom-nginx-install.sh', { serviceRestartHandles: [handle] }),
+  ec2.InitFile.fromString('/etc/nginx/nginx.conf', '...', { serviceRestartHandles: [handle] }),
+  ec2.InitSource.fromBucket('/var/www/html', myBucket, 'html.zip', { serviceRestartHandles: [handle] }),
   ec2.InitService.enable('nginx', {
     serviceRestartHandle: handle,
   })
@@ -671,7 +700,7 @@ ec2.CloudFormationInit.fromElements(
 ### Bastion Hosts
 
 A bastion host functions as an instance used to access servers and resources in a VPC without open up the complete VPC on a network level.
-You can use bastion hosts using a standard SSH connection targetting port 22 on the host. As an alternative, you can connect the SSH connection
+You can use bastion hosts using a standard SSH connection targeting port 22 on the host. As an alternative, you can connect the SSH connection
 feature of AWS Systems Manager Session Manager, which does not need an opened security group. (https://aws.amazon.com/about-aws/whats-new/2019/07/session-manager-launches-tunneling-support-for-ssh-and-scp/)
 
 A default bastion host for use via SSM can be configured like:
@@ -709,14 +738,14 @@ EBS volume for the bastion host can be encrypted like:
 
 ### Block Devices
 
-To add EBS block device mappings, specify the `blockDeviceMappings` property. The follow example sets the EBS-backed
+To add EBS block device mappings, specify the `blockDevices` property. The following example sets the EBS-backed
 root device (`/dev/sda1`) size to 50 GiB, and adds another EBS-backed device mapped to `/dev/sdm` that is 100 GiB in
 size:
 
 ```ts
 new ec2.Instance(this, 'Instance', {
   // ...
-  blockDeviceMappings: [
+  blockDevices: [
     {
       deviceName: '/dev/sda1',
       volume: ec2.BlockDeviceVolume.ebs(50),

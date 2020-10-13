@@ -1,4 +1,10 @@
+github:
+  prebuilds:
+    pullRequestsFromForks: true
+    addComment: true
+
 image: jsii/superchain
+
 tasks:
   - init: yarn build --skip-test --no-bail --skip-prereqs --skip-compat
 

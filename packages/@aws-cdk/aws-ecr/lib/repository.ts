@@ -1,7 +1,8 @@
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct, IConstruct, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
+import { IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
+import { IConstruct, Construct } from 'constructs';
 import { CfnRepository } from './ecr.generated';
 import { LifecycleRule, TagStatus } from './lifecycle';
 
@@ -381,7 +382,7 @@ export class Repository extends RepositoryBase {
       public repositoryName = repositoryName;
       public repositoryArn = Repository.arnForLocalRepository(repositoryName, scope);
 
-      public addToResourcePolicy(_statement: iam.PolicyStatement): iam.AddToResourcePolicyResult  {
+      public addToResourcePolicy(_statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
         // dropped
         return { statementAdded: false };
       }
@@ -461,7 +462,7 @@ export class Repository extends RepositoryBase {
           },
           physicalResourceId: cr.PhysicalResourceId.of(this.repositoryArn),
         },
-        policy: cr.AwsCustomResourcePolicy.fromSdkCalls({ resources: [ this.repositoryArn ] }),
+        policy: cr.AwsCustomResourcePolicy.fromSdkCalls({ resources: [this.repositoryArn] }),
       });
     }
   }

@@ -58,7 +58,7 @@ export interface IResolvable {
 /**
  * A Token that can post-process the complete resolved value, after resolve() has recursed over it
  */
-export interface IPostProcessor  {
+export interface IPostProcessor {
   /**
    * Process the completely resolved value, after full recursion/resolution has happened
    */

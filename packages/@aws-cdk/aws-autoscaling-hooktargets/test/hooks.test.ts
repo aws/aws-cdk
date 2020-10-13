@@ -36,8 +36,7 @@ describe('given an AutoScalingGroup', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::AutoScaling::LifecycleHook', {
-      NotificationTargetARN: { 'Fn::GetAtt': [ 'Queue4A7E3555', 'Arn' ] } });
+    expect(stack).toHaveResource('AWS::AutoScaling::LifecycleHook', { NotificationTargetARN: { 'Fn::GetAtt': ['Queue4A7E3555', 'Arn'] } });
   });
 
   test('can use topic as hook target', () => {
@@ -77,7 +76,7 @@ describe('given an AutoScalingGroup', () => {
     expect(stack).toHaveResource('AWS::SNS::Subscription', {
       Protocol: 'lambda',
       TopicArn: { Ref: 'ASGLifecycleHookTransTopic9B0D4842' },
-      Endpoint: { 'Fn::GetAtt': [ 'Fn9270CBC0', 'Arn' ] },
+      Endpoint: { 'Fn::GetAtt': ['Fn9270CBC0', 'Arn'] },
     });
   });
 
@@ -99,7 +98,10 @@ describe('given an AutoScalingGroup', () => {
     // THEN
     expect(stack).toHaveResourceLike('AWS::SNS::Topic', {
       KmsMasterKeyId: {
-        Ref: 'keyFEDD6EC0',
+        'Fn::GetAtt': [
+          'keyFEDD6EC0',
+          'Arn',
+        ],
       },
     });
     expect(stack).toHaveResourceLike('AWS::IAM::Policy', {

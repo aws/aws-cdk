@@ -31,6 +31,8 @@ new Bucket(this, 'MyFirstBucket');
    `arn:aws:s3:::bucket_name/Development/*`)
  * `urlForObject(key)` - the HTTP URL of an object within the bucket (i.e.
    `https://s3.cn-north-1.amazonaws.com.cn/china-bucket/mykey`)
+ * `virtualHostedUrlForObject(key)` - the virtual-hosted style HTTP URL of an object
+   within the bucket (i.e. `https://china-bucket-s3.cn-north-1.amazonaws.com.cn/mykey`)
  * `s3UrlForObject(key)` - the S3 URL of an object within the bucket (i.e.
    `s3://bucket/mykey`)
 
@@ -133,6 +135,17 @@ name or ARN respectively:
 ```ts
 const byName = Bucket.fromBucketName(this, 'BucketByName', 'my-bucket');
 const byArn  = Bucket.fromBucketArn(this, 'BucketByArn', 'arn:aws:s3:::my-bucket');
+```
+
+The bucket's region defaults to the current stack's region, but can also be explicitly set in cases where one of the bucket's
+regional properties needs to contain the correct values.
+
+```ts
+const myCrossRegionBucket = Bucket.fromBucketAttributes(this, 'CrossRegionImport', {
+  bucketArn: 'arn:aws:s3:::my-bucket',
+  region: 'us-east-1',
+});
+// myCrossRegionBucket.bucketRegionalDomainName === 'my-bucket.s3.us-east-1.amazonaws.com'
 ```
 
 ### Bucket Notifications
@@ -313,6 +326,22 @@ To put files into a bucket as part of a deployment (for example, to host a
 website), see the `@aws-cdk/aws-s3-deployment` package, which provides a
 resource that can do just that.
 
+### The URL for objects
+
+S3 provides two types of URLs for accessing objects via HTTP(S). Path-Style and
+[Virtual Hosted-Style](https://docs.aws.amazon.com/AmazonS3/latest/dev/VirtualHosting.html)
+URL. Path-Style is a classic way and will be
+[deprecated](https://aws.amazon.com/jp/blogs/aws/amazon-s3-path-deprecation-plan-the-rest-of-the-story).
+We recommend to use Virtual Hosted-Style URL for newly made bucket.
+
+You can generate both of them.
+
+```ts
+bucket.urlForObject('objectname'); // Path-Style URL
+bucket.virtualHostedUrlForObject('objectname'); // Virtual Hosted-Style URL
+bucket.virtualHostedUrlForObject('objectname', { regional: false }); // Virtual Hosted-Style URL but non-regional
+```
+
 ### Bucket deletion
 
 By default, when a bucket is removed from a stack (or the stack is deleted),
@@ -328,4 +357,3 @@ const bucket = new Bucket(this, 'MyTempFileBucket', {
   removalPolicy: RemovalPolicy.DESTROY,
   autoDeleteObjects: true,
 });
-```

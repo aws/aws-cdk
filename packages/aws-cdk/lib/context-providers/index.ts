@@ -11,7 +11,7 @@ import { ContextProviderPlugin } from './provider';
 import { SSMContextProviderPlugin } from './ssm-parameters';
 import { VpcNetworkContextProviderPlugin } from './vpcs';
 
-type ProviderConstructor =  (new (sdk: SdkProvider) => ContextProviderPlugin);
+type ProviderConstructor = (new (sdk: SdkProvider) => ContextProviderPlugin);
 export type ProviderMap = {[name: string]: ProviderConstructor};
 
 /**
