@@ -10,7 +10,10 @@ const REGIONS = process.env.AWS_REGIONS
   ? process.env.AWS_REGIONS.split(',')
   : [process.env.AWS_REGION ?? process.env.AWS_DEFAULT_REGION ?? 'us-east-1'];
 
+const FRAMEWORK_VERSION = process.env.FRAMEWORK_VERSION;
+
 process.stdout.write(`Using regions: ${REGIONS}\n`);
+process.stdout.write(`Using framework version: ${FRAMEWORK_VERSION}\n`);
 
 const REGION_POOL = new ResourcePool(REGIONS);
 
@@ -58,7 +61,7 @@ export function withCdkApp<A extends TestContext & AwsContext>(block: (context: 
 
     let success = true;
     try {
-      await fixture.shell(['npm', 'install',
+      let modules = [
         '@aws-cdk/core',
         '@aws-cdk/aws-sns',
         '@aws-cdk/aws-iam',
@@ -66,7 +69,12 @@ export function withCdkApp<A extends TestContext & AwsContext>(block: (context: 
         '@aws-cdk/aws-ssm',
         '@aws-cdk/aws-ecr-assets',
         '@aws-cdk/aws-cloudformation',
-        '@aws-cdk/aws-ec2']);
+        '@aws-cdk/aws-ec2',
+      ];
+      if (FRAMEWORK_VERSION) {
+        modules = modules.map(module => `${module}@${FRAMEWORK_VERSION}`);
+      }
+      await fixture.shell(['npm', 'install', ...modules]);
 
       await ensureBootstrapped(fixture);
 
