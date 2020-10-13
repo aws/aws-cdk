@@ -46,7 +46,7 @@ export class CacheBehavior {
       allowedMethods: this.props.allowedMethods?.methods,
       cachedMethods: this.props.cachedMethods?.methods,
       cachePolicyId: (this.props.cachePolicy ?? CachePolicy.CACHING_OPTIMIZED).cachePolicyId,
-      compress: this.props.compress,
+      compress: this.props.compress ?? true,
       originRequestPolicyId: this.props.originRequestPolicy?.originRequestPolicyId,
       smoothStreaming: this.props.smoothStreaming,
       viewerProtocolPolicy: this.props.viewerProtocolPolicy ?? ViewerProtocolPolicy.ALLOW_ALL,

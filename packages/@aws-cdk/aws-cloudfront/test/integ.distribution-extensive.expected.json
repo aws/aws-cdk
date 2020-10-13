@@ -12,6 +12,7 @@
           "Comment": "a test",
           "DefaultCacheBehavior": {
             "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+            "Compress": true,
             "TargetOriginId": "integdistributionextensiveMyDistOrigin185F089B3",
             "ViewerProtocolPolicy": "allow-all"
           },
