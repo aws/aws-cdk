@@ -79,6 +79,26 @@ nodeunitShim({
     }));
     test.done();
   },
+  'with s3 as the destination, allows use of key prefix'(test: Test) {
+    const stack = getTestStack();
+
+    new FlowLog(stack, 'FlowLogs', {
+      resourceType: FlowLogResourceType.fromNetworkInterfaceId('eni-123456'),
+      destination: FlowLogDestination.toS3(
+        new s3.Bucket(stack, 'TestBucket', {
+          bucketName: 'testbucket',
+        }),
+        'FlowLogs/',
+      ),
+    });
+
+    expect(stack).notTo(haveResource('AWS::Logs::LogGroup'));
+    expect(stack).notTo(haveResource('AWS::IAM::Role'));
+    expect(stack).to(haveResource('AWS::S3::Bucket', {
+      BucketName: 'testbucket',
+    }));
+    test.done();
+  },
   'with s3 as the destination and all the defaults set, it successfully creates all the resources'(
     test: Test,
   ) {
