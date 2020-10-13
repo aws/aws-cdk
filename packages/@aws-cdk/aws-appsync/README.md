@@ -760,7 +760,7 @@ To learn more about top level operations, check out the docs [here](https://docs
 #### Mutation
 
 Every schema **can** have a top level Mutation type. By default, the schema will look
-for the `Object Type` named `Mutation`. The top level `Mutation` Type is the only exposed
+for the `ObjectType` named `Mutation`. The top level `Mutation` Type is the only exposed
 type that users can access to perform `mutable` operations on your Api.
 
 To add fields for these mutations, we can simply run the `addMutation` function to add

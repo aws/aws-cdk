@@ -110,7 +110,7 @@ abstract class RuleNew extends RuleBase {
    */
   public abstract readonly configRuleComplianceType: string;
 
-  protected scope?: Scope;
+  protected ruleScope?: RuleScope;
   protected isManaged?: boolean;
   protected isCustomWithChanges?: boolean;
 }
@@ -118,18 +118,18 @@ abstract class RuleNew extends RuleBase {
 /**
  * Determines which resources trigger an evaluation of an AWS Config rule.
  */
-export class Scope {
+export class RuleScope {
   /** restricts scope of changes to a specific resource type or resource identifier */
   public static fromResource(resourceType: ResourceType, resourceId?: string) {
-    return new Scope(resourceId, [resourceType]);
+    return new RuleScope(resourceId, [resourceType]);
   }
   /** restricts scope of changes to specific resource types */
   public static fromResources(resourceTypes: ResourceType[]) {
-    return new Scope(undefined, resourceTypes);
+    return new RuleScope(undefined, resourceTypes);
   }
   /** restricts scope of changes to a specific tag */
   public static fromTag(key: string, value?: string) {
-    return new Scope(undefined, undefined, key, value);
+    return new RuleScope(undefined, undefined, key, value);
   }
 
   /** Resource types that will trigger evaluation of a rule */
@@ -220,7 +220,7 @@ export interface RuleProps {
    *
    * @default - evaluations for the rule are triggered when any resource in the recording group changes.
    */
-  readonly scope?: Scope;
+  readonly ruleScope?: RuleScope;
 }
 
 /**
@@ -258,14 +258,14 @@ export class ManagedRule extends RuleNew {
       physicalName: props.configRuleName,
     });
 
-    this.scope = props.scope;
+    this.ruleScope = props.ruleScope;
 
     const rule = new CfnConfigRule(this, 'Resource', {
       configRuleName: this.physicalName,
       description: props.description,
       inputParameters: props.inputParameters,
       maximumExecutionFrequency: props.maximumExecutionFrequency,
-      scope: Lazy.anyValue({ produce: () => renderScope(this.scope) }), // scope can use values such as stack id (see CloudFormationStackDriftDetectionCheck)
+      scope: Lazy.anyValue({ produce: () => renderScope(this.ruleScope) }), // scope can use values such as stack id (see CloudFormationStackDriftDetectionCheck)
       source: {
         owner: 'AWS',
         sourceIdentifier: props.identifier,
@@ -332,7 +332,7 @@ export class CustomRule extends RuleNew {
     }
 
     const sourceDetails: any[] = [];
-    this.scope = props.scope;
+    this.ruleScope = props.ruleScope;
 
     if (props.configurationChanges) {
       sourceDetails.push({
@@ -371,7 +371,7 @@ export class CustomRule extends RuleNew {
       description: props.description,
       inputParameters: props.inputParameters,
       maximumExecutionFrequency: props.maximumExecutionFrequency,
-      scope: Lazy.anyValue({ produce: () => renderScope(this.scope) }), // scope can use values such as stack id (see CloudFormationStackDriftDetectionCheck)
+      scope: Lazy.anyValue({ produce: () => renderScope(this.ruleScope) }), // scope can use values such as stack id (see CloudFormationStackDriftDetectionCheck)
       source: {
         owner: 'CUSTOM_LAMBDA',
         sourceDetails,
@@ -1460,11 +1460,11 @@ export class ResourceType {
 
 }
 
-function renderScope(scope?: Scope): CfnConfigRule.ScopeProperty | undefined {
-  return scope ? {
-    complianceResourceId: scope.resourceId,
-    complianceResourceTypes: scope.resourceTypes?.map(resource => resource.complianceResourceType),
-    tagKey: scope.key,
-    tagValue: scope.value,
+function renderScope(ruleScope?: RuleScope): CfnConfigRule.ScopeProperty | undefined {
+  return ruleScope ? {
+    complianceResourceId: ruleScope.resourceId,
+    complianceResourceTypes: ruleScope.resourceTypes?.map(resource => resource.complianceResourceType),
+    tagKey: ruleScope.key,
+    tagValue: ruleScope.value,
   } : undefined;
 }

@@ -2,7 +2,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as sns from '@aws-cdk/aws-sns';
 import { Duration, Lazy, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { ManagedRule, ManagedRuleIdentifiers, ResourceType, RuleProps, Scope } from './rule';
+import { ManagedRule, ManagedRuleIdentifiers, ResourceType, RuleProps, RuleScope } from './rule';
 
 /**
  * Construction properties for a AccessKeysRotated
@@ -82,7 +82,7 @@ export class CloudFormationStackDriftDetectionCheck extends ManagedRule {
       },
     });
 
-    this.scope = Scope.fromResource( ResourceType.CLOUDFORMATION_STACK, props.ownStackOnly ? Stack.of(this).stackId : undefined );
+    this.ruleScope = RuleScope.fromResource( ResourceType.CLOUDFORMATION_STACK, props.ownStackOnly ? Stack.of(this).stackId : undefined );
 
     this.role = props.role || new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('config.amazonaws.com'),
@@ -126,7 +126,7 @@ export class CloudFormationStackNotificationCheck extends ManagedRule {
         (params, topic, idx) => ({ ...params, [`snsTopic${idx + 1}`]: topic.topicArn }),
         {},
       ),
-      scope: Scope.fromResources([ResourceType.CLOUDFORMATION_STACK]),
+      ruleScope: RuleScope.fromResources([ResourceType.CLOUDFORMATION_STACK]),
     });
   }
 }
