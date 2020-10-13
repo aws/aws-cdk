@@ -112,9 +112,12 @@ export = {
     },
     'addServiceAccount for imported cluster'(test: Test) {
       const { stack } = testFixture();
+      const oidcProvider = new iam.OpenIdConnectProvider(stack, 'ClusterOpenIdConnectProvider', {
+        url: 'oidc_issuer',
+      });
       const cluster = eks.Cluster.fromClusterAttributes(stack, 'Cluster', {
         clusterName: 'Cluster',
-        openIdConnectIssuerUrl: 'oidc_issuer',
+        openIdConnectProvider: oidcProvider,
         kubectlRoleArn: 'arn:aws:iam::123456:role/service-role/k8sservicerole',
       });
 
@@ -160,7 +163,7 @@ export = {
               Effect: 'Allow',
               Principal: {
                 Federated: {
-                  Ref: 'ClusterOpenIdConnectProviderE7EB0530',
+                  Ref: 'ClusterOpenIdConnectProviderA8B8E987',
                 },
               },
             },

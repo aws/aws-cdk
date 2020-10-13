@@ -146,12 +146,21 @@ export class OpenIdConnectProvider extends Resource implements IOpenIdConnectPro
   public constructor(scope: Construct, id: string, props: OpenIdConnectProviderProps) {
     super(scope, id);
 
+    /**
+     * For some reason EKS isn't validating the root certificate but a intermediat certificate
+     * which is one level up in the tree. Because of the a constant thumbprint value has to be
+     * stated with this OpenID Connect provider. The certificate thumbprint is the same for all the regions.
+     */
+    const thumbprints = props.thumbprints ? props.thumbprints : ['9e99a48a9960b14926bb7f3b02e22da2b0ab7280'];
+
+    const clientIds = props.clientIds ? props.clientIds : ['sts.amazonaws.com'];
+
     const resource = new CustomResource(this, 'Resource', {
       resourceType: RESOURCE_TYPE,
       serviceToken: this.getOrCreateProvider(),
       properties: {
-        ClientIDList: props.clientIds,
-        ThumbprintList: props.thumbprints,
+        ClientIDList: clientIds,
+        ThumbprintList: thumbprints,
         Url: props.url,
       },
     });

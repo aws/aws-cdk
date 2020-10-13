@@ -9,6 +9,12 @@
             "Arn"
           ]
         },
+        "ThumbprintList": [
+          "9e99a48a9960b14926bb7f3b02e22da2b0ab7280"
+        ],
+        "ClientIDList": [
+          "sts.amazonaws.com"
+        ],
         "Url": "https://oidc.eks.us-east-1.amazonaws.com/id/test2"
       },
       "UpdateReplacePolicy": "Delete",
@@ -126,6 +132,9 @@
           "foo",
           "bar"
         ],
+        "ThumbprintList": [
+          "9e99a48a9960b14926bb7f3b02e22da2b0ab7280"
+        ],
         "Url": "https://oidc.eks.us-east-1.amazonaws.com/id/test3"
       },
       "UpdateReplacePolicy": "Delete",
@@ -143,6 +152,9 @@
         "ThumbprintList": [
           "aa00aa1122aa00aa1122aa00aa1122aa00aa1122",
           "aa00aa1122aa00aa1122aa00aa1122aa00aa1111"
+        ],
+        "ClientIDList": [
+          "sts.amazonaws.com"
         ],
         "Url": "https://oidc.eks.us-east-1.amazonaws.com/id/test4"
       },

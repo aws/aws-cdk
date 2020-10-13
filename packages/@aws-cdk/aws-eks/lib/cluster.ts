@@ -240,12 +240,6 @@ export interface ClusterAttributes {
   readonly kubectlPrivateSubnetIds?: string[];
 
   /**
-   * An Open ID Connect issuer url that was configured for the cluster
-   * @default - if no value specified you won't be able to add an IRSA in your cluster
-   */
-  readonly openIdConnectIssuerUrl?: string;
-
-  /**
    * An Imported Open ID Connect provider for this cluster
    * @default - if no value specified - cdk will create new provider when you add IRSA
    */
@@ -1696,10 +1690,10 @@ class ImportedCluster extends ClusterBase {
    * @attribute
    */
   public get clusterOpenIdConnectIssuerUrl(): string {
-    if (!this.props.openIdConnectIssuerUrl) {
-      throw new Error('"clusterOpenIdConnectIssuerUrl" is not defined for this imported cluster');
+    if (!this.props.openIdConnectProvider) {
+      throw new Error('"openIdConnectProvider" is not provided for this imported cluster');
     }
-    return this.props.openIdConnectIssuerUrl;
+    return this.props.openIdConnectProvider.openIdConnectProviderIssuer;
   }
 }
 
