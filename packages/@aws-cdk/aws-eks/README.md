@@ -270,7 +270,7 @@ The following code defines an Amazon EKS cluster with a default Fargate Profile 
 
 ```ts
 const cluster = new eks.FargateCluster(this, 'MyCluster', {
-  version: eks.KubernetesVersion.V1_16,
+  version: eks.KubernetesVersion.V1_18,
 });
 ```
 
@@ -316,7 +316,7 @@ You can also configure the cluster to use an auto-scaling group as the default c
 
 ```ts
 cluster = new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_17,
+  version: eks.KubernetesVersion.V1_18,
   defaultCapacityType: eks.DefaultCapacityType.EC2,
 });
 ```
