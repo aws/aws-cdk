@@ -1,10 +1,10 @@
 import { EOL } from 'os';
+import * as path from 'path';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { Fn, IResource, Lazy, RemovalPolicy, Resource, Stack, Token, CfnResource } from '@aws-cdk/core';
+import { Fn, IResource, Lazy, RemovalPolicy, Resource, Stack, Token, CustomResource, CustomResourceProvider, CustomResourceProviderRuntime } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { AutoDeleteObjectsResourceHandler } from './auto-delete-objects-handler/auto-delete-objects-handler';
 import { BucketPolicy } from './bucket-policy';
 import { IBucketNotificationDestination } from './destination';
 import { BucketNotifications } from './notifications-resource';
@@ -12,6 +12,8 @@ import * as perms from './perms';
 import { LifecycleRule } from './rule';
 import { CfnBucket } from './s3.generated';
 import { parseBucketArn, parseBucketName } from './util';
+
+const AUTO_DELETE_OBJECTS_RESOURCE_TYPE = 'Custom::AutoDeleteObjects';
 
 export interface IBucket extends IResource {
   /**
@@ -1029,8 +1031,7 @@ export interface BucketProps {
 
   /**
    * Whether all objects should be automatically deleted when the bucket is
-   * removed from the stack. Prevents the bucket deletion from getting skipped
-   * because there are still objects inside.
+   * removed from the stack.
    *
    * Requires the removal policy to be set to destroy.
    *
@@ -1319,17 +1320,13 @@ export class Bucket extends BucketBase {
         throw new Error("Cannot use 'autoDeleteObjects' property on a bucket without setting removal policy to 'destroy'.");
       }
 
-      const handler = AutoDeleteObjectsResourceHandler.singleton(this);
-
-      new CfnResource(this, 'AutoDeleteBucketResource', {
-        type: 'Custom::AutoDeleteBucketObjects',
+      new CustomResource(this, 'AutoDeleteObjectsResource', {
+        resourceType: AUTO_DELETE_OBJECTS_RESOURCE_TYPE,
+        serviceToken: this.getOrCreateAutoDeleteObjectsResource(),
         properties: {
-          ServiceToken: handler.functionArn,
           BucketName: this.bucketName,
         },
       });
-
-      this.grantReadWrite(handler.role);
     }
   }
 
@@ -1720,6 +1717,23 @@ export class Bucket extends BucketBase {
         optionalFields: inventory.optionalFields,
         prefix: inventory.objectsPrefix,
       };
+    });
+  }
+
+  private getOrCreateAutoDeleteObjectsResource() {
+    return CustomResourceProvider.getOrCreate(this, AUTO_DELETE_OBJECTS_RESOURCE_TYPE, {
+      codeDirectory: path.join(__dirname, 'auto-delete-objects-handler'),
+      runtime: CustomResourceProviderRuntime.NODEJS_12,
+      policyStatements: [
+        {
+          Effect: 'Allow',
+          Resource: '*',
+          Action: [
+            // TODO: add key perms?
+            ...perms.BUCKET_READ_ACTIONS.concat(perms.BUCKET_WRITE_ACTIONS),
+          ],
+        },
+      ],
     });
   }
 }

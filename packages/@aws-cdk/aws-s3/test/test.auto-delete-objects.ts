@@ -13,7 +13,7 @@ export = {
     });
 
     expect(stack).to(haveResource('AWS::S3::Bucket'));
-    expect(stack).to(haveResource('Custom::AutoDeleteBucketObjects'));
+    expect(stack).to(haveResource('Custom::AutoDeleteObjects'));
 
     test.done();
   },

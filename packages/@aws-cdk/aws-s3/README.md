@@ -344,13 +344,14 @@ bucket.virtualHostedUrlForObject('objectname', { regional: false }); // Virtual 
 
 ### Bucket deletion
 
-By default, when a bucket is removed from a stack (or the stack is deleted),
-the S3 bucket will be removed according to its removal policy (which by
-default, will simply orphan the bucket and leave it in your AWS account).
-However, even if the removal policy is set to DESTROY, the bucket will get
-skipped by default if it still has objects inside.
+When a bucket is removed from a stack (or the stack is deleted), the S3
+bucket will be removed according to its removal policy (which by default will
+simply orphan the bucket and leave it in your AWS account). If the removal
+policy is set to `RemovalPolicy.DESTROY`, the bucket will be deleted as long
+as it does not contain any objects.
 
-To override this, enable the `autoDeleteObjects` property.
+To override this and force all objects to get deleted during bucket deletion,
+enable the`autoDeleteObjects` option.
 
 ```ts
 const bucket = new Bucket(this, 'MyTempFileBucket', {
