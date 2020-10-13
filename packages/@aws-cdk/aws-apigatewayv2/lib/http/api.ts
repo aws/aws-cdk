@@ -253,7 +253,7 @@ class HttpApiBase extends Resource implements IHttpApi { // note that this is no
     return new Metric({
       namespace: 'AWS/ApiGateway',
       metricName,
-      dimensions: { httpApiId: this.httpApiId },
+      dimensions: { apiId: this.httpApiId },
       ...props,
     }).attachTo(this);
   }
