@@ -119,3 +119,19 @@ pull_request_rules:
       - "#changes-requested-reviews-by=0"
       - status-success~=AWS CodeBuild us-east-1
       - status-success=validate-pr
+  - name: automatic merge of v2 forward merges
+    actions:
+      comment:
+        message: Forward merge successful!
+      merge:
+        method: merge
+        strict: smart+fasttrack
+        strict_method: merge
+        commit_message: title+body
+    conditions:
+      - label~=forward-merge
+      - -label~=(blocked|do-not-merge)
+      - -merged
+      - -closed
+      - author~=aws-cdk-automation
+      - status-success~=AWS CodeBuild us-east-1

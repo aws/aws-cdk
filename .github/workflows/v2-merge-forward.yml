@@ -1,0 +1,23 @@
+name: 'v2-main merge forward'
+on:
+  schedule:
+    - cron: '0 9 * * 1,3,5' # 9AM UTC every M/W/F
+
+jobs:
+  merge:
+    name: Merge
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pull Request
+        uses: peter-evans/create-pull-request@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: master
+          base: v2-main
+          commit-message: Merge branch 'master' into v2-main
+          title: Merge branch 'master' into v2-main
+          body: |
+            Automated changes by Github action -
+            https://github.com/aws/aws-cdk-rfcs/blob/master/.github/workflows/v2-merge-forward.yml
+          labels: |
+            v2/forward-merge
