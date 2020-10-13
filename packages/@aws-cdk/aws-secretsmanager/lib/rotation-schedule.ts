@@ -67,7 +67,7 @@ export class RotationSchedule extends Resource {
     super(scope, id);
 
     if ((!props.rotationLambda && !props.hostedRotation) || (props.rotationLambda && props.hostedRotation)) {
-      throw new Error('Either `rotationLambda` or `hostedRotation` must be specified.');
+      throw new Error('One of `rotationLambda` or `hostedRotation` must be specified.');
     }
 
     new CfnRotationSchedule(this, 'Resource', {
