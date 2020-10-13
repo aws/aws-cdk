@@ -114,7 +114,7 @@ export class OpenIdConnectProvider extends Resource implements IOpenIdConnectPro
   public static fromOpenIdConnectProviderArn(scope: Construct, id: string, openIdConnectProviderArn: string): IOpenIdConnectProvider {
     const parsedResourceName = Stack.of(scope).parseArn(openIdConnectProviderArn).resourceName;
     if (!parsedResourceName) {
-      throw new Error('Cannot figure OIDC issuer url for this OIDC Provider');
+      throw new Error(`Invalid arn: ${openIdConnectProviderArn}. Unable to extract issuer url`);
     }
 
     // this needed because TS don't understand that prev. condition
