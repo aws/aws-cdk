@@ -62,27 +62,29 @@ new CustomRule(this, 'CustomRule', {
 
 By default rules are triggered by changes to all [resources](https://docs.aws.amazon.com/config/latest/developerguide/resource-config-reference.html#supported-resources).
 
-Use the `scopeToResource()`, `scopeToResources()` or `scopeToTag()` APIs to restrict
+Use the `Scope` APIs (`fromResource()`, `fromResources()` or `fromTag()`) to restrict
 the scope of both managed and custom rules:
 
 ```ts
-const sshRule = new ManagedRule(this, 'SSH', {
+import * as config from '@aws-cdk/aws-config';
+
+const sshRule = new config.ManagedRule(this, 'SSH', {
   identifier: config.ManagedRuleIdentifier.EC2_SECURITY_GROUPS_INCOMING_SSH_DISABLED,
+  scope: config.Scope.fromResource(config.ResourceType.EC2_SECURITY_GROUP, 'sg-1234567890abcdefgh'), // restrict to specific security group
 });
 
-// Restrict to a specific security group
-rule.scopeToResource('AWS::EC2::SecurityGroup', 'sg-1234567890abcdefgh');
-
-const customRule = new CustomRule(this, 'CustomRule', {
+const customRule = new config.CustomRule(this, 'CustomRule', {
   lambdaFunction: myFn,
   configurationChanges: true
+  scope: config.Scope.fromResources([config.ResourceType.CLOUDFORMATION_STACK, config.Resource.S3_BUCKET]), // restrict to all CloudFormation stacks and S3 buckets
 });
 
-// Restrict to a specific tag
-customRule.scopeToTag('Cost Center', 'MyApp');
+const customRule = new config.CustomRule(this, 'CustomRule', {
+  lambdaFunction: myFn,
+  configurationChanges: true
+  scope: config.Scope.fromTag('Cost Center', 'MyApp'), // restrict to a specific tag
+});
 ```
-
-Only one type of scope restriction can be added to a rule (the last call to `scopeToXxx()` sets the scope).
 
 #### Events
 
@@ -114,9 +116,8 @@ const fn = new lambda.Function(this, 'CustomFunction', {
 const customRule = new config.CustomRule(this, 'Custom', {
   configurationChanges: true,
   lambdaFunction: fn,
+  scope: config.Scope.fromResource([config.Scope.EC2_INSTANCE]),
 });
-
-customRule.scopeToResource('AWS::EC2::Instance');
 
 // A rule to detect stack drifts
 const driftRule = new config.CloudFormationStackDriftDetectionCheck(this, 'Drift');
