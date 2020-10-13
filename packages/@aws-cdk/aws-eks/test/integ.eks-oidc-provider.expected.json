@@ -9,6 +9,12 @@
             "Arn"
           ]
         },
+        "ThumbprintList": [
+          "9e99a48a9960b14926bb7f3b02e22da2b0ab7280"
+        ],
+        "ClientIDList": [
+          "sts.amazonaws.com"
+        ],
         "Url": "https://oidc.eks.us-east-1.amazonaws.com/id/test2"
       },
       "UpdateReplacePolicy": "Delete",
@@ -112,42 +118,6 @@
       "DependsOn": [
         "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderRole517FED65"
       ]
-    },
-    "Clients67031123": {
-      "Type": "Custom::AWSCDKOpenIdConnectProvider",
-      "Properties": {
-        "ServiceToken": {
-          "Fn::GetAtt": [
-            "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderHandlerF2C543E0",
-            "Arn"
-          ]
-        },
-        "ClientIDList": [
-          "foo",
-          "bar"
-        ],
-        "Url": "https://oidc.eks.us-east-1.amazonaws.com/id/test3"
-      },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete"
-    },
-    "Thumbprints9CD6AB02": {
-      "Type": "Custom::AWSCDKOpenIdConnectProvider",
-      "Properties": {
-        "ServiceToken": {
-          "Fn::GetAtt": [
-            "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderHandlerF2C543E0",
-            "Arn"
-          ]
-        },
-        "ThumbprintList": [
-          "aa00aa1122aa00aa1122aa00aa1122aa00aa1122",
-          "aa00aa1122aa00aa1122aa00aa1122aa00aa1111"
-        ],
-        "Url": "https://oidc.eks.us-east-1.amazonaws.com/id/test4"
-      },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete"
     }
   },
   "Parameters": {

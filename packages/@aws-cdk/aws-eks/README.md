@@ -643,9 +643,9 @@ Note that adding new service account is supportable for both: new and imported c
 
 For imported clusters you must provide `openIdConnectProvider` to work with IRSA
 ```ts
-const provider = iam.OpenIdConnectProvider.fromOpenIdConnectProviderArn(this, 'Provider', 'OIDCProviderARN');
+const provider = eks.OpenIdConnectProvider.fromOpenIdConnectProviderArn(this, 'Provider', 'OIDCProviderARN');
 // or
-const provider = new iam.OpenIdConnectProvider(this, 'Provider', issuerUrl);
+const provider = new eks.OpenIdConnectProvider(this, 'Provider', issuerUrl);
 
 const cluster = eks.Cluster.fromClusterAttributes({
   clusterName: 'Cluster',
