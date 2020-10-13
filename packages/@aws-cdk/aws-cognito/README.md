@@ -14,6 +14,7 @@
 
 ---
 <!--END STABILITY BANNER-->
+
 [Amazon Cognito](https://docs.aws.amazon.com/cognito/latest/developerguide/what-is-amazon-cognito.html) provides
 authentication, authorization, and user management for your web and mobile apps. Your users can sign in directly with a
 user name and password, or through a third party such as Facebook, Amazon, Google or Apple.
@@ -319,6 +320,8 @@ Lambda triggers can either be specified as part of the `UserPool` initialization
 on the construct, as so -
 
 ```ts
+import * as lambda from '@aws-cdk/aws-lambda';
+
 const authChallengeFn = new lambda.Function(this, 'authChallengeFn', {
   // ...
 });
@@ -566,7 +569,7 @@ const signInUrl = domain.signInUrl(client, {
 })
 ```
 
-Exisiting domains can be imported into CDK apps using `UserPoolDomain.fromDomainName()` API
+Existing domains can be imported into CDK apps using `UserPoolDomain.fromDomainName()` API
 
 ```ts
 const stack = new Stack(app, 'my-stack');
