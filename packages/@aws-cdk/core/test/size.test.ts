@@ -81,8 +81,8 @@ nodeunitShim({
     test.done();
   },
 
-  'Size in pebibyte'(test: Test) {
-    const size = Size.pebibyte(5);
+  'Size in pebibytes'(test: Test) {
+    const size = Size.pebibytes(5);
 
     test.equal(size.toKibibytes(), 5_497_558_138_880);
     test.equal(size.toMebibytes(), 5_368_709_120);
