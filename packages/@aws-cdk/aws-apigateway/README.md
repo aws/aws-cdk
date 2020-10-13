@@ -484,7 +484,7 @@ iamUser.attachInlinePolicy(new iam.Policy(this, 'AllowBooks', {
     new iam.PolicyStatement({
       actions: [ 'execute-api:Invoke' ],
       effect: iam.Effect.Allow,
-      resources: [ getBooks.methodArn() ]
+      resources: [ getBooks.methodArn ]
     })
   ]
 }))
@@ -940,6 +940,11 @@ const integration = new apigw.Integration({
   },
 });
 ```
+
+The uri for the private integration, in the case of a VpcLink, will be set to the DNS name of
+the VPC Link's NLB. If the VPC Link has multiple NLBs or the VPC Link is imported or the DNS
+name cannot be determined for any other reason, the user is expected to specify the `uri`
+property.
 
 Any existing `VpcLink` resource can be imported into the CDK app via the `VpcLink.fromVpcLinkId()`.
 
