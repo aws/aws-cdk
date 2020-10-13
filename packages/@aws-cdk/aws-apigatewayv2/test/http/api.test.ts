@@ -173,7 +173,7 @@ describe('HttpApi', () => {
       // THEN
       expect(countMetric.namespace).toEqual('AWS/ApiGateway');
       expect(countMetric.metricName).toEqual(metricName);
-      expect(countMetric.dimensions).toEqual({ apiId });
+      expect(countMetric.dimensions).toEqual({ ApiId: apiId });
       expect(countMetric.statistic).toEqual(statistic);
     });
 
@@ -197,7 +197,7 @@ describe('HttpApi', () => {
       // THEN
       for (const metric of metrics) {
         expect(metric.namespace).toEqual('AWS/ApiGateway');
-        expect(metric.dimensions).toEqual({ apiId });
+        expect(metric.dimensions).toEqual({ ApiId: apiId });
         expect(metric.color).toEqual(color);
       }
     });

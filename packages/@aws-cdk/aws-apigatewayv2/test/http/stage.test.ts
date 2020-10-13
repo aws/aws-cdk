@@ -75,8 +75,8 @@ describe('HttpStage', () => {
     expect(countMetric.namespace).toEqual('AWS/ApiGateway');
     expect(countMetric.metricName).toEqual(metricName);
     expect(countMetric.dimensions).toEqual({
-      apiId,
-      stage: '$default',
+      ApiId: apiId,
+      Stage: '$default',
     });
     expect(countMetric.statistic).toEqual(statistic);
   });
@@ -105,8 +105,8 @@ describe('HttpStage', () => {
     for (const metric of metrics) {
       expect(metric.namespace).toEqual('AWS/ApiGateway');
       expect(metric.dimensions).toEqual({
-        apiId,
-        stage: '$default',
+        ApiId: apiId,
+        Stage: '$default',
       });
       expect(metric.color).toEqual(color);
     }
