@@ -44,8 +44,18 @@ export class Size {
   /**
    * Create a Storage representing an amount pebibytes.
    * 1 PiB = 1024 TiB
+   *
+   * @deprecated use `pebibytes` instead
    */
   public static pebibyte(amount: number): Size {
+    return Size.pebibytes(amount);
+  }
+
+  /**
+   * Create a Storage representing an amount pebibytes.
+   * 1 PiB = 1024 TiB
+   */
+  public static pebibytes(amount: number): Size {
     return new Size(amount, StorageUnit.Pebibytes);
   }
 
