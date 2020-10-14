@@ -20,8 +20,15 @@ export = {
         mesh: mesh,
       });
 
+      const virtualService = new appmesh.VirtualService(stack, 'vs-1', {
+        mesh: mesh,
+      });
+
+      // Add an HTTP Route
       virtualGateway.addGatewayRoute('gateway-route', {
         gatewayRouteName: 'gateway-route',
+        routeType: appmesh.Protocol.HTTP,
+        routeTarget: virtualService,
       });
 
       // THEN

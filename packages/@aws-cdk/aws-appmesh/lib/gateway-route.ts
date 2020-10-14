@@ -1,7 +1,9 @@
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnGatewayRoute } from './appmesh.generated';
+import { Protocol } from './shared-interfaces';
 import { IVirtualGateway } from './virtual-gateway';
+import { IVirtualService } from './virtual-service';
 
 /**
  * Interface for which all Gateway Route based classes MUST implement
@@ -22,16 +24,122 @@ export interface IGatewayRoute extends cdk.IResource {
   readonly gatewayRouteArn: string;
 }
 
-/**
- * Base interface properties for all Gateway Routes
- */
-export interface GatewayRouteBaseProps {
+interface GatewayRouteBaseProps {
   /**
    * The name of the Gateway Route
    *
    * @default - an automatically generated name
    */
   readonly gatewayRouteName?: string;
+
+  /**
+   * The VirtualService this Gateway Route directs traffic to
+   */
+  readonly routeTarget: IVirtualService;
+}
+
+/**
+ * Properties to define new Gateway Routes
+ */
+export interface GatewayRouteProps extends GatewayRouteBaseProps {
+  /**
+   * The Virtual Gateway this Gateway Route is associated with
+   */
+  readonly virtualGateway: IVirtualGateway;
+}
+
+/**
+ * Base interface for HTTP Based Gateway Routes
+ */
+export interface GatewayHttpRouteBaseProps extends GatewayRouteBaseProps {
+  /**
+   * The criterion for determining a request match for this Gateway Route.
+   *
+   * @default - prefix match on "/"
+   */
+  readonly match?: GatewayHttpRouteMatch;
+  /**
+   * HTTP Procol
+   */
+  readonly routeType: Protocol.HTTP;
+}
+
+/**
+ * Interface for HTTP Based Gateway Routes
+ */
+export interface GatewayHttpRouteProps extends GatewayHttpRouteBaseProps, GatewayRouteProps {}
+
+/**
+ * Base interface for HTTP2 Based Gateway Routes
+ */
+export interface GatewayHttp2RouteBaseProps extends GatewayRouteBaseProps {
+  /**
+   * The criterion for determining a request match for this Gateway Route.
+   *
+   * @default - prefix match on "/"
+   */
+  readonly match?: GatewayHttp2RouteMatch;
+  /**
+   * HTTP2 Procol
+   */
+  readonly routeType: Protocol.HTTP2;
+}
+
+/**
+ * Interface for HTTP2 Based Gateway Routes
+ */
+export interface GatewayHttp2RouteProps extends GatewayHttp2RouteBaseProps, GatewayRouteProps {}
+
+/**
+ * Base interface for GRPC Based Gateway Routes
+ */
+export interface GatewayGrpcRouteBaseProps extends GatewayRouteBaseProps {
+  /**
+   * The criterion for determining a request match for this Gateway Route.
+   *
+   * @default - no default
+   */
+  readonly match: GatewayGrpcRouteMatch;
+  /**
+   * GRPC Protocol
+   */
+  readonly routeType: Protocol.GRPC;
+}
+
+/**
+ * Interface for GRPC Based Gateway Routes
+ */
+export interface GatewayGrpcRouteProps extends GatewayGrpcRouteBaseProps, GatewayRouteProps {}
+
+interface GatewayHttpSharedRouteMatch {
+  /**
+   * Specifies the path to match requests with.
+   * This parameter must always start with /, which by itself matches all requests to the virtual service name.
+   * You can also match for path-based routing of requests. For example, if your virtual service name is my-service.local
+   * and you want the route to match requests to my-service.local/metrics, your prefix should be /metrics.
+   *
+   */
+  readonly prefixPath: string;
+}
+
+/**
+ * The criterion for determining a request match for this Gateway Route
+ */
+export interface GatewayHttpRouteMatch extends GatewayHttpSharedRouteMatch {}
+
+/**
+ * The criterion for determining a request match for this Gateway Route
+ */
+export interface GatewayHttp2RouteMatch extends GatewayHttpSharedRouteMatch {}
+
+/**
+ * The criterion for determining a request match for this Gateway Route
+ */
+export interface GatewayGrpcRouteMatch {
+  /**
+   * The fully qualified domain name for the service to match from the request
+   */
+  readonly serviceName: string;
 }
 
 /**
@@ -80,17 +188,35 @@ export class GatewayRoute extends cdk.Resource implements IGatewayRoute {
    */
   public readonly virtualGateway: IVirtualGateway;
 
-  constructor(scope: Construct, id: string, props: GatewayRouteProps) {
+  private readonly httpRoute?: CfnGatewayRoute.HttpGatewayRouteProperty;
+  private readonly http2Route?: CfnGatewayRoute.HttpGatewayRouteProperty;
+  private readonly grpcRoute?: CfnGatewayRoute.GrpcGatewayRouteProperty;
+
+  constructor(scope: Construct, id: string, props: GatewayHttpRouteProps | GatewayHttp2RouteProps | GatewayGrpcRouteProps) {
     super(scope, id, {
       physicalName: props.gatewayRouteName || cdk.Lazy.stringValue({ produce: () => this.node.uniqueId }),
     });
 
     this.virtualGateway = props.virtualGateway;
 
+    if (props.routeType === Protocol.HTTP) {
+      this.httpRoute = this.renderHttpRoute(props);
+    }
+    if (props.routeType === Protocol.HTTP2) {
+      this.http2Route = this.renderHttpRoute(props);
+    }
+    if (props.routeType === Protocol.GRPC) {
+      this.grpcRoute = this.renderGrpcRoute(props);
+    }
+
     const gatewayRoute = new CfnGatewayRoute(this, 'Resource', {
       gatewayRouteName: this.physicalName,
       meshName: props.virtualGateway.mesh.meshName,
-      spec: {},
+      spec: {
+        httpRoute: this.httpRoute,
+        http2Route: this.http2Route,
+        grpcRoute: this.grpcRoute,
+      },
       virtualGatewayName: this.virtualGateway.virtualGatewayName,
     });
 
@@ -100,6 +226,73 @@ export class GatewayRoute extends cdk.Resource implements IGatewayRoute {
       resource: `mesh/${props.virtualGateway.mesh.meshName}/virtualRouter/${this.virtualGateway.virtualGatewayName}/gatewayRoute`,
       resourceName: this.physicalName,
     });
+  }
+
+  private renderHttpRoute(props: GatewayHttpRouteProps | GatewayHttp2RouteProps): CfnGatewayRoute.HttpGatewayRouteProperty {
+    const prefixPath = props.match ? props.match.prefixPath : '/';
+    if (prefixPath[0] != '/') {
+      throw new Error('Prefix Path must start with \'/\'');
+    }
+    return {
+      action: {
+        target: {
+          virtualService: {
+            virtualServiceName: props.routeTarget.virtualServiceName,
+          },
+        },
+      },
+      match: {
+        prefix: prefixPath,
+      },
+    };
+  }
+
+  private renderGrpcRoute(props: GatewayGrpcRouteProps): CfnGatewayRoute.GrpcGatewayRouteProperty {
+    return {
+      action: {
+        target: {
+          virtualService: {
+            virtualServiceName: props.routeTarget.virtualServiceName,
+          },
+        },
+      },
+      match: {
+        serviceName: props.match.serviceName,
+      },
+    };
+  }
+}
+
+/**
+ * HTTP Gateway Route attached to a VirtualGateway and Mesh
+ *
+ * @see https://docs.aws.amazon.com/app-mesh/latest/userguide/gateway-routes.html
+ */
+export class GatewayHttpRoute extends GatewayRoute {
+  constructor(scope: Construct, id: string, props: GatewayHttpRouteProps) {
+    super(scope, id, props);
+  }
+}
+
+/**
+ * HTTP2 Gateway Route attached to a VirtualGateway and Mesh
+ *
+ * @see https://docs.aws.amazon.com/app-mesh/latest/userguide/gateway-routes.html
+ */
+export class GatewayHttp2Route extends GatewayRoute {
+  constructor(scope: Construct, id: string, props: GatewayHttp2RouteProps) {
+    super(scope, id, props);
+  }
+}
+
+/**
+ * GRPC Gateway Route attached to a VirtualGateway and Mesh
+ *
+ * @see https://docs.aws.amazon.com/app-mesh/latest/userguide/gateway-routes.html
+ */
+export class GatewayGrpcRoute extends GatewayRoute {
+  constructor(scope: Construct, id: string, props: GatewayGrpcRouteProps) {
+    super(scope, id, props);
   }
 }
 

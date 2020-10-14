@@ -147,8 +147,15 @@ export = {
         mesh: mesh,
       });
 
+      const virtualService = mesh.addVirtualService('virtualService', {});
+
       virtualGateway.addGatewayRoute('testGatewayRoute', {
         gatewayRouteName: 'test-gateway-route',
+        routeTarget: virtualService,
+        routeType: appmesh.Protocol.GRPC,
+        match: {
+          serviceName: 'serviceName',
+        },
       });
 
       // THEN
@@ -170,12 +177,24 @@ export = {
         meshName: 'test-mesh',
       });
 
+      const virtualService = mesh.addVirtualService('virtualService', {});
+
       const virtualGateway = mesh.addVirtualGateway('gateway');
       virtualGateway.addGatewayRoute('testGatewayRoute', {
         gatewayRouteName: 'test-gateway-route',
+        match: {
+          prefixPath: '/',
+        },
+        routeTarget: virtualService,
+        routeType: appmesh.Protocol.HTTP,
       });
       virtualGateway.addGatewayRoute('testGatewayRoute2', {
         gatewayRouteName: 'test-gateway-route-2',
+        match: {
+          serviceName: 'serviceName',
+        },
+        routeTarget: virtualService,
+        routeType: appmesh.Protocol.GRPC,
       });
       // THEN
       expect(stack).to(

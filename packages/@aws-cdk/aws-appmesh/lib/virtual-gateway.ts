@@ -1,7 +1,8 @@
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnGatewayRoute, CfnVirtualGateway } from './appmesh.generated';
-import { GatewayRoute, GatewayRouteBaseProps } from './gateway-route';
+import { GatewayRoute, GatewayGrpcRouteBaseProps, GatewayHttp2RouteBaseProps, GatewayHttpRouteBaseProps } from './gateway-route';
+
 import { IMesh, Mesh } from './mesh';
 import { AccessLog, HealthCheck, PortMapping, Protocol, VirtualGatewayListener } from './shared-interfaces';
 import { validateHealthChecks } from './utils';
@@ -37,7 +38,7 @@ export interface IVirtualGateway extends cdk.IResource {
   /**
    * Utility method to add a new GatewayRoute to the VirtualGateway
    */
-  addGatewayRoute(id: string, route: GatewayRouteBaseProps): GatewayRoute;
+  addGatewayRoute(id: string, route: GatewayHttpRouteBaseProps | GatewayHttp2RouteBaseProps | GatewayGrpcRouteBaseProps): GatewayRoute;
 }
 
 /**
@@ -114,7 +115,7 @@ abstract class VirtualGatewayBase extends cdk.Resource implements IVirtualGatewa
   /**
    * Utility method to add a new GatewayRoute to the VirtualGateway
    */
-  public addGatewayRoute(id: string, props: GatewayRouteBaseProps): GatewayRoute {
+  public addGatewayRoute(id: string, props: GatewayHttpRouteBaseProps | GatewayHttp2RouteBaseProps | GatewayGrpcRouteBaseProps): GatewayRoute {
     return new GatewayRoute(this, id, {
       ...props,
       virtualGateway: this,
