@@ -7,11 +7,14 @@ import { HttpApi, HttpMethod, LambdaProxyIntegration } from '../../lib';
 describe('HttpApi', () => {
   test('default', () => {
     const stack = new Stack();
-    const api = new HttpApi(stack, 'api');
+    const api = new HttpApi(stack, 'api', {
+      description: 'My Api',
+    });
 
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Api', {
       Name: 'api',
       ProtocolType: 'HTTP',
+      Description: 'My Api',
     });
 
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Stage', {
