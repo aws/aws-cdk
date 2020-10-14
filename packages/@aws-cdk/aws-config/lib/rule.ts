@@ -1259,6 +1259,9 @@ export class ManagedRuleIdentifiers {
    * @see https://docs.aws.amazon.com/config/latest/developerguide/wafv2-logging-enabled.html
    */
   public static readonly WAFV2_LOGGING_ENABLED = 'WAFV2_LOGGING_ENABLED';
+
+  // utility class
+  private constructor() { }
 }
 
 /**
