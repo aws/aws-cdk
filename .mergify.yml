@@ -134,4 +134,5 @@ pull_request_rules:
       - -merged
       - -closed
       - author~=aws-cdk-automation
+      - "#approved-reviews-by>=1"
       - status-success~=AWS CodeBuild us-east-1

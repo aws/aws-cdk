@@ -20,4 +20,4 @@ jobs:
             Automated changes by Github action -
             https://github.com/aws/aws-cdk-rfcs/blob/master/.github/workflows/v2-merge-forward.yml
           labels: |
-            v2/forward-merge
+            pr/forward-merge
