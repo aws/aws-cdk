@@ -137,7 +137,7 @@ Example function for [evaluations triggered by configuration changes](https://do
 import * as config from '@aws-cdk/aws-config';
 
 new config.CustomRule(this, 'CustomRule', {
-  lambdaFunction: evalComplianceLambda,
+  lambdaFunction: evalComplianceFn,
   configurationChanges: true,
 });
 ```
@@ -151,7 +151,7 @@ Example function for [periodic evaluations](https://docs.aws.amazon.com/config/l
 import * as config from '@aws-cdk/aws-config';
 
 new config.CustomRule(this, 'CustomRule', {
-  lambdaFunction: evalComplianceLambda,
+  lambdaFunction: evalComplianceFn,
   periodic: true,
   maximumExecutionFrequency: config.MaximumExecutionFrequency.SIX_HOURS, // default is 24 hours
 });
@@ -165,7 +165,7 @@ to run and the trigger types.
 import * as config from '@aws-cdk/aws-config';
 
 new config.CustomRule(this, 'CustomRule', {
-  lambdaFunction: evalComplianceLambda,
+  lambdaFunction: evalComplianceFn,
   configurationChanges: true, // runs when configuration change detected for a resource
   periodic: true // runs at fixed frequency
 });
@@ -177,7 +177,7 @@ See [example events for AWS Config Rules](https://docs.aws.amazon.com/config/lat
 
 By default rules are triggered by changes to all [resources](https://docs.aws.amazon.com/config/latest/developerguide/resource-config-reference.html#supported-resources).
 
-Use the `Scope` APIs (`fromResource()`, `fromResources()` or `fromTag()`) to restrict
+Use the `RuleScope` APIs (`fromResource()`, `fromResources()` or `fromTag()`) to restrict
 the scope of both managed and custom rules:
 
 ```ts
@@ -185,19 +185,19 @@ import * as config from '@aws-cdk/aws-config';
 
 const sshRule = new config.ManagedRule(this, 'SSH', {
   identifier: 'INCOMING_SSH_DISABLED',
-  scope: config.Scope.fromResource(config.ResourceType.EC2_SECURITY_GROUP, 'sg-1234567890abcdefgh'), // restrict to specific security group
+  ruleScope: config.RuleScope.fromResource(config.ResourceType.EC2_SECURITY_GROUP, 'sg-1234567890abcdefgh'), // restrict to specific security group
 });
 
 const customRule = new config.CustomRule(this, 'Lambda', {
-  lambdaFunction: evalComplianceLambda,
+  lambdaFunction: evalComplianceFn,
   configurationChanges: true
-  scope: config.Scope.fromResources([config.ResourceType.CLOUDFORMATION_STACK, config.Resource.S3_BUCKET]), // restrict to all CloudFormation stacks and S3 buckets
+  ruleScope: config.RuleScope.fromResources([config.ResourceType.CLOUDFORMATION_STACK, config.ResourceType.S3_BUCKET]), // restrict to all CloudFormation stacks and S3 buckets
 });
 
 const tagRule = new config.CustomRule(this, 'CostCenterTagRule', {
-  lambdaFunction: evalComplianceLambda,
+  lambdaFunction: evalComplianceFn,
   configurationChanges: true
-  scope: config.Scope.fromTag('Cost Center', 'MyApp'), // restrict to a specific tag
+  ruleScope: config.RuleScope.fromTag('Cost Center', 'MyApp'), // restrict to a specific tag
 });
 ```
 
@@ -249,7 +249,7 @@ import * as sns from '@aws-cdk/aws-sns';
 import * as targets from '@aws-cdk/aws-events-targets';
 
 // Lambda function containing logic that evaluates compliance with the rule.
-const evalComplianceFunction = new lambda.Function(this, 'CustomFunction', {
+const evalComplianceFn = new lambda.Function(this, 'CustomFunction', {
   code: lambda.AssetCode.fromInline('exports.handler = (event) => console.log(event);'),
   handler: 'index.handler',
   runtime: lambda.Runtime.NODEJS_10_X,
@@ -258,8 +258,8 @@ const evalComplianceFunction = new lambda.Function(this, 'CustomFunction', {
 // A custom rule that runs on configuration changes of EC2 instances
 const customRule = new config.CustomRule(this, 'Custom', {
   configurationChanges: true,
-  lambdaFunction: evalComplianceFunction,
-  scope: config.Scope.fromResource([config.Scope.EC2_INSTANCE]),
+  lambdaFunction: evalComplianceFn,
+  ruleScope: config.RuleScope.fromResource([config.ResourceType.EC2_INSTANCE]),
 });
 
 // A rule to detect stack drifts
