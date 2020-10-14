@@ -66,7 +66,9 @@ const booksDefaultIntegration = new LambdaProxyIntegration({
   handler: booksDefaultFn,
 });
 
-const httpApi = new HttpApi(stack, 'HttpApi');
+const httpApi = new HttpApi(stack, 'HttpApi', {
+    decscription: 'My books API',
+});
 
 httpApi.addRoutes({
   path: '/books',
