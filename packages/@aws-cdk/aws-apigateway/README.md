@@ -22,6 +22,7 @@ running on AWS Lambda, or any web application.
   - [Breaking up Methods and Resources across Stacks](#breaking-up-methods-and-resources-across-stacks)
 - [AWS Lambda-backed APIs](#aws-lambda-backed-apis)
 - [Integration Targets](#integration-targets)
+- [API Keys](#api-keys)
 - [Working with models](#working-with-models)
 - [Default Integration and Method Options](#default-integration-and-method-options)
 - [Proxy Routes](#proxy-routes)
@@ -39,6 +40,7 @@ running on AWS Lambda, or any web application.
 - [Gateway Response](#gateway-response)
 - [OpenAPI Definition](#openapi-definition)
   - [Endpoint configuration](#endpoint-configuration)
+- [Metrics](#metrics)
 - [APIGateway v2](#apigateway-v2)
 
 ## Defining APIs
@@ -151,6 +153,8 @@ book.addMethod('GET', getBookIntegration, {
 });
 ```
 
+## API Keys
+
 The following example shows how to use an API Key with a usage plan:
 
 ```ts
@@ -205,6 +209,13 @@ Existing API keys can also be imported into a CDK app using its id.
 
 ```ts
 const importedKey = ApiKey.fromApiKeyId(this, 'imported-key', '<api-key-id>');
+```
+
+The "grant" methods can be used to give prepackaged sets of permissions to other resources. The
+following code provides read permission to an API key.
+
+```ts
+importedKey.grantRead(lambda);
 ```
 
 In scenarios where you need to create a single api key and configure rate limiting for it, you can use `RateLimitedApiKey`.
@@ -1015,6 +1026,18 @@ const api = new apigateway.SpecRestApi(this, 'ExampleRestApi', {
 [`x-amazon-apigateway-policy`](https://docs.aws.amazon.com/apigateway/latest/developerguide/openapi-extensions-policy.html) and 
 [`x-amazon-apigateway-endpoint-configuration`](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-swagger-extensions-endpoint-configuration.html) 
 in your openApi file. 
+
+## Metrics
+
+The API Gateway service sends metrics around the performance of Rest APIs to Amazon CloudWatch.
+These metrics can be referred to using the metric APIs available on the `RestApi` construct.
+The APIs with the `metric` prefix can be used to get reference to specific metrics for this API. For example,
+the method below refers to the client side errors metric for this API.
+
+```ts
+const api = new apigw.RestApi(stack, 'my-api');
+const clientErrorMetric = api.metricClientError();
+```
 
 ## APIGateway v2
 
