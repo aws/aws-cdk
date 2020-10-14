@@ -98,14 +98,13 @@ export interface ServerlessClusterProps {
   readonly deletionProtection?: boolean;
 
   /**
-   * Whether to enable the HTTP endpoint for an Aurora Serverless database cluster.
-   * The HTTP endpoint must be explicitly enabled to enable the Data API.
+   * Whether to enable the Data API.
    *
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/data-api.html
     *
    * @default false
    */
-  readonly enableHttpEndpoint?: boolean;
+  readonly enableDataApi?: boolean;
 
   /**
    * The VPC that this Aurora Serverless cluster has been created in.
@@ -309,7 +308,7 @@ abstract class ServerlessClusterBase extends Resource implements IServerlessClus
    */
   public abstract readonly secret?: secretsmanager.ISecret
 
-  protected abstract enableHttpEndpoint?: boolean;
+  protected abstract enableDataApi?: boolean;
 
   /**
    * The ARN of the cluster
@@ -329,11 +328,11 @@ abstract class ServerlessClusterBase extends Resource implements IServerlessClus
    * @param grantee The principal to grant access to
    */
   public grantDataApiAccess(grantee: iam.IGrantable): iam.Grant {
-    if (this.enableHttpEndpoint === false) {
+    if (this.enableDataApi === false) {
       throw new Error('Cannot grant Data API access when HTTP endpoint is disabled');
     }
 
-    this.enableHttpEndpoint = true;
+    this.enableDataApi = true;
     const ret = iam.Grant.addToPrincipal({
       grantee,
       actions: DATA_API_ACTIONS,
@@ -380,7 +379,7 @@ export class ServerlessCluster extends ServerlessClusterBase {
 
   public readonly secret?: secretsmanager.ISecret;
 
-  protected readonly enableHttpEndpoint?: boolean
+  protected readonly enableDataApi?: boolean
 
   private readonly subnetGroup: ISubnetGroup;
   private readonly vpc: ec2.IVpc;
@@ -398,7 +397,7 @@ export class ServerlessCluster extends ServerlessClusterBase {
     this.singleUserRotationApplication = props.engine.singleUserRotationApplication;
     this.multiUserRotationApplication = props.engine.multiUserRotationApplication;
 
-    this.enableHttpEndpoint = props.enableHttpEndpoint;
+    this.enableDataApi = props.enableDataApi;
 
     const { subnetIds } = this.vpc.selectSubnets(this.vpcSubnets);
 
@@ -455,7 +454,7 @@ export class ServerlessCluster extends ServerlessClusterBase {
       engine: props.engine.engineType,
       engineVersion: props.engine.engineVersion?.fullVersion,
       engineMode: 'serverless',
-      enableHttpEndpoint: Lazy.anyValue({ produce: () => this.enableHttpEndpoint }),
+      enableHttpEndpoint: Lazy.anyValue({ produce: () => this.enableDataApi }),
       kmsKeyId: props.storageEncryptionKey?.keyArn,
       masterUsername: credentials.username,
       masterUserPassword: credentials.password?.toString(),
@@ -556,7 +555,7 @@ class ImportedServerlessCluster extends ServerlessClusterBase implements IServer
 
   public readonly secret?: secretsmanager.ISecret;
 
-  protected readonly enableHttpEndpoint = true
+  protected readonly enableDataApi = true
 
   private readonly _clusterEndpoint?: Endpoint;
   private readonly _clusterReadEndpoint?: Endpoint;

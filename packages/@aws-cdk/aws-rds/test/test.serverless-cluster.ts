@@ -516,12 +516,12 @@ export = {
     new ServerlessCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
       vpc,
-      enableHttpEndpoint: true,
+      enableDataApi: true,
     });
 
     //THEN
     expect(stack).to(haveResource('AWS::RDS::DBCluster', {
-      EnableHttpEndpoint: true,
+      enableDataApi: true,
     }));
 
     test.done();
@@ -673,14 +673,14 @@ export = {
     test.done();
   },
 
-  'can grant data api access'(test: Test) {
+  'can grant Data API access'(test: Test) {
     // GIVEN
     const stack = testStack();
     const vpc = ec2.Vpc.fromLookup(stack, 'VPC', { isDefault: true });
     const cluster = new ServerlessCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
       vpc,
-      enableHttpEndpoint: true,
+      enableDataApi: true,
     });
     const user = new iam.User(stack, 'User');
 
@@ -740,7 +740,7 @@ export = {
     test.done();
   },
 
-  'can grant data api access on imported cluster specified with secret'(test: Test) {
+  'can grant Data API access on imported cluster with given secret'(test: Test) {
     // GIVEN
     const stack = testStack();
     const secret = new DatabaseSecret(stack, 'Secret', {
@@ -806,7 +806,7 @@ export = {
     test.done();
   },
 
-  'grant Data API access enables HTTP endpoint'(test: Test) {
+  'grant Data API access enables the Data API'(test: Test) {
     // GIVEN
     const stack = testStack();
     const vpc = ec2.Vpc.fromLookup(stack, 'VPC', { isDefault: true });
@@ -821,20 +821,20 @@ export = {
 
     //THEN
     expect(stack).to(haveResource('AWS::RDS::DBCluster', {
-      EnableHttpEndpoint: true,
+      enableDataApi: true,
     }));
 
     test.done();
   },
 
-  'grant Data API access throws if HTTP endpoint is disabled'(test: Test) {
+  'grant Data API access throws if the Data API is disabled'(test: Test) {
     // GIVEN
     const stack = testStack();
     const vpc = ec2.Vpc.fromLookup(stack, 'VPC', { isDefault: true });
     const cluster = new ServerlessCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
       vpc,
-      enableHttpEndpoint: false,
+      enableDataApi: false,
     });
     const user = new iam.User(stack, 'User');
 
