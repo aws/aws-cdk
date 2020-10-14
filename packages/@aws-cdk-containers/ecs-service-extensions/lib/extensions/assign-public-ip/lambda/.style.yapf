@@ -1,0 +1,6 @@
+# Format using: yapf -ri .
+# Since you're here, unit test using: python -m unittest discover
+[style]
+based_on_style = pep8
+column_limit = 120
+SPLIT_BEFORE_NAMED_ASSIGNS = False
