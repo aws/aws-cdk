@@ -36,16 +36,11 @@ interface GatewayRouteBaseProps {
    * The VirtualService this Gateway Route directs traffic to
    */
   readonly routeTarget: IVirtualService;
-}
 
-/**
- * Properties to define new Gateway Routes
- */
-export interface GatewayRouteProps extends GatewayRouteBaseProps {
   /**
-   * The Virtual Gateway this Gateway Route is associated with
+   * What protocol the route uses
    */
-  readonly virtualGateway: IVirtualGateway;
+  readonly routeType: Protocol.GRPC | Protocol.HTTP | Protocol.HTTP2;
 }
 
 /**
@@ -67,7 +62,12 @@ export interface GatewayHttpRouteBaseProps extends GatewayRouteBaseProps {
 /**
  * Interface for HTTP Based Gateway Routes
  */
-export interface GatewayHttpRouteProps extends GatewayHttpRouteBaseProps, GatewayRouteProps {}
+export interface GatewayHttpRouteProps extends GatewayHttpRouteBaseProps {
+  /**
+   * The Virtual Gateway this Gateway Route is associated with
+   */
+  readonly virtualGateway: IVirtualGateway;
+}
 
 /**
  * Base interface for HTTP2 Based Gateway Routes
@@ -88,7 +88,12 @@ export interface GatewayHttp2RouteBaseProps extends GatewayRouteBaseProps {
 /**
  * Interface for HTTP2 Based Gateway Routes
  */
-export interface GatewayHttp2RouteProps extends GatewayHttp2RouteBaseProps, GatewayRouteProps {}
+export interface GatewayHttp2RouteProps extends GatewayHttp2RouteBaseProps {
+  /**
+   * The Virtual Gateway this Gateway Route is associated with
+   */
+  readonly virtualGateway: IVirtualGateway;
+}
 
 /**
  * Base interface for GRPC Based Gateway Routes
@@ -109,7 +114,12 @@ export interface GatewayGrpcRouteBaseProps extends GatewayRouteBaseProps {
 /**
  * Interface for GRPC Based Gateway Routes
  */
-export interface GatewayGrpcRouteProps extends GatewayGrpcRouteBaseProps, GatewayRouteProps {}
+export interface GatewayGrpcRouteProps extends GatewayGrpcRouteBaseProps {
+  /**
+   * The Virtual Gateway this Gateway Route is associated with
+   */
+  readonly virtualGateway: IVirtualGateway;
+}
 
 interface GatewayHttpSharedRouteMatch {
   /**

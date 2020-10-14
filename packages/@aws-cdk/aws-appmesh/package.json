@@ -174,7 +174,8 @@
       "props-default-doc:@aws-cdk/aws-appmesh.VirtualRouterAttributes.virtualRouterName",
       "docs-public-apis:@aws-cdk/aws-appmesh.Protocol.HTTP",
       "docs-public-apis:@aws-cdk/aws-appmesh.Protocol.HTTP2",
-      "docs-public-apis:@aws-cdk/aws-appmesh.Protocol.GRPC"
+      "docs-public-apis:@aws-cdk/aws-appmesh.Protocol.GRPC",
+      "no-unused-type:@aws-cdk/aws-appmesh.GatewayRouteProps"
     ]
   },
   "stability": "experimental",
