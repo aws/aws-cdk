@@ -242,7 +242,7 @@ async function main() {
       '.eslintrc.js',
       'jest.config.js',
       '',
-      '#exclude cdk artifacts',
+      '# exclude cdk artifacts',
       '**/cdk.out',
       'junit.xml',
       'test/',
