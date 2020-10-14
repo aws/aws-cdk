@@ -67,7 +67,7 @@ new config.ManagedRule(this, 'AccessKeysRotated', {
 Identifiers for AWS managed rules are available through static constants in the `ManagedRuleIdentifiers` class.
 You can find supported input parameters in the [List of AWS Config Managed Rules](https://docs.aws.amazon.com/config/latest/developerguide/managed-rules-by-aws-config.html).
 
-Higher level constructs for AWS managed rules are available.
+The following higher level constructs for AWS managed rules are available.
 
 ##### Access Key rotation
 
@@ -125,37 +125,7 @@ with the rule.
 
 AWS Lambda executes functions in response to events that are published by AWS Services.
 The function for a custom Config rule receives an event that is published by AWS Config,
-and the function then uses data that it receives from the event and that it retrieves from
-the AWS Config API to evaluate the compliance of the rule.
-
-##### Configuration Changes
-
-AWS Config will invoke your Lambda function when it detects a configuration change for a resource.
-Example function for [evaluations triggered by configuration changes](https://docs.aws.amazon.com/config/latest/developerguide/evaluate-config_develop-rules_nodejs-sample.html#event-based-example-rule)
-
-```ts
-import * as config from '@aws-cdk/aws-config';
-
-new config.CustomRule(this, 'CustomRule', {
-  lambdaFunction: evalComplianceFn,
-  configurationChanges: true,
-});
-```
-
-##### Periodic
-
-AWS Config will invoke a function periodically at the frequency you specify.
-Example function for [periodic evaluations](https://docs.aws.amazon.com/config/latest/developerguide/evaluate-config_develop-rules_nodejs-sample.html#periodic-example-rule)
-
-```ts
-import * as config from '@aws-cdk/aws-config';
-
-new config.CustomRule(this, 'CustomRule', {
-  lambdaFunction: evalComplianceFn,
-  periodic: true,
-  maximumExecutionFrequency: config.MaximumExecutionFrequency.SIX_HOURS, // default is 24 hours
-});
-```
+and is responsible for evaluating the compliance of the rule.
 
 Evaluations can be triggered by configuration changes, periodically, or both.
 To create a custom rule, define a `CustomRule` and specify the Lambda Function
@@ -166,12 +136,18 @@ import * as config from '@aws-cdk/aws-config';
 
 new config.CustomRule(this, 'CustomRule', {
   lambdaFunction: evalComplianceFn,
-  configurationChanges: true, // runs when configuration change detected for a resource
-  periodic: true // runs at fixed frequency
+  configurationChanges: true,
+  periodic: true,
+  maximumExecutionFrequency: config.MaximumExecutionFrequency.SIX_HOURS, // default is 24 hours
 });
 ```
+
 When the trigger for a rule occurs, the Lambda function is invoked by publishing an event.
 See [example events for AWS Config Rules](https://docs.aws.amazon.com/config/latest/developerguide/evaluate-config_develop-rules_example-events.html)  
+
+The AWS documentation has examples of Lambda functions for evaluations that are
+[triggered by configuration changes](https://docs.aws.amazon.com/config/latest/developerguide/evaluate-config_develop-rules_nodejs-sample.html#event-based-example-rule) and [triggered periodically](https://docs.aws.amazon.com/config/latest/developerguide/evaluate-config_develop-rules_nodejs-sample.html#periodic-example-rule)
+
 
 #### Scope
 
@@ -184,7 +160,7 @@ the scope of both managed and custom rules:
 import * as config from '@aws-cdk/aws-config';
 
 const sshRule = new config.ManagedRule(this, 'SSH', {
-  identifier: 'INCOMING_SSH_DISABLED',
+  identifier: config.ManagedRuleIdentifiers.EC2_SECURITY_GROUPS_INCOMING_SSH_DISABLED,
   ruleScope: config.RuleScope.fromResource(config.ResourceType.EC2_SECURITY_GROUP, 'sg-1234567890abcdefgh'), // restrict to specific security group
 });
 
@@ -203,7 +179,8 @@ const tagRule = new config.CustomRule(this, 'CostCenterTagRule', {
 
 #### Events
 
-You can define Amazon EventBridge event rule which triggers on AWS Config rule events.
+You can define Amazon EventBridge event rules which trigger when a compliance check fails
+or when a rule is re-evaluated.
 
 Use the `onComplianceChange()` APIs to trigger an EventBridge event when a compliance check
 of your AWS Config Rule fails:
