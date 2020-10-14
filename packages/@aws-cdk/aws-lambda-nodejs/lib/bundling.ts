@@ -203,7 +203,7 @@ export class Bundling {
       cacheDir: options.cacheDir,
       environment: options.parcelEnvironment,
       bundlingDockerImage: options.bundlingDockerImage,
-      buildImage: !LocalBundler.runsLocally || options.forceDockerBundling,
+      buildImage: !LocalBundler.runsLocally(projectRoot) || options.forceDockerBundling, // build image only if we can't run locally
       buildArgs: options.buildArgs,
       parcelVersion: options.parcelVersion,
       dependencies,
@@ -212,7 +212,7 @@ export class Bundling {
     });
 
     return lambda.Code.fromAsset(projectRoot, {
-      assetHashType: cdk.AssetHashType.BUNDLE,
+      assetHashType: cdk.AssetHashType.OUTPUT,
       bundling: {
         local: localBundler,
         ...dockerBundler.bundlingOptions,

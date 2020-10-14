@@ -2,6 +2,7 @@ import * as path from 'path';
 import { SynthUtils } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as core from '@aws-cdk/core';
+import * as constructs from 'constructs';
 import * as inc from '../lib';
 
 describe('CDK Include', () => {
@@ -80,7 +81,7 @@ describe('CDK Include', () => {
   test('throws a validation exception when encountering an unrecognized resource attribute', () => {
     expect(() => {
       includeTestTemplate(stack, 'non-existent-resource-attribute.json');
-    }).toThrow(/The NonExistentResourceAttribute resource attribute is not supported by cloudformation-include yet/);
+    }).toThrow(/The 'NonExistentResourceAttribute' resource attribute is not supported by cloudformation-include yet/);
   });
 
   test("throws a validation exception when encountering a Ref-erence to a template element that doesn't exist", () => {
@@ -140,7 +141,7 @@ describe('CDK Include', () => {
   });
 });
 
-function includeTestTemplate(scope: core.Construct, testTemplate: string): inc.CfnInclude {
+function includeTestTemplate(scope: constructs.Construct, testTemplate: string): inc.CfnInclude {
   return new inc.CfnInclude(scope, 'MyScope', {
     templateFile: _testTemplateFilePath(testTemplate),
   });

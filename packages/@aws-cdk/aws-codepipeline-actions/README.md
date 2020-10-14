@@ -42,6 +42,19 @@ pipeline.addStage({
 });
 ```
 
+If you want to use existing role which can be used by on commit event rule.
+You can specify the role object in eventRole property.
+
+```ts
+const eventRole = iam.Role.fromRoleArn(this, 'Event-role', 'roleArn');
+const sourceAction = new codepipeline_actions.CodeCommitSourceAction({
+  actionName: 'CodeCommit',
+  repository: repo,
+  output: new codepipeline.Artifact(),
+  eventRole,
+});
+```
+
 The CodeCommit source action emits variables:
 
 ```typescript
@@ -68,9 +81,13 @@ If you want to use a GitHub repository as the source, you must create:
 
 * A [GitHub Access Token](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line),
   with scopes **repo** and **admin:repo_hook**.
-* A [Secrets Manager PlainText Secret](https://docs.aws.amazon.com/secretsmanager/latest/userguide/manage_create-basic-secret.html)
-  with the value of the **GitHub Access Token**. Pick whatever name you want
-  (for example `my-github-token`) and pass it as the argument of `oauthToken`.
+* A [Secrets Manager Secret](https://docs.aws.amazon.com/secretsmanager/latest/userguide/manage_create-basic-secret.html)
+  with the value of the **GitHub Access Token**. Pick whatever name you want (for example `my-github-token`).
+  This token can be stored either as Plaintext or as a Secret key/value. 
+  If you stored the token as Plaintext, 
+  set `cdk.SecretValue.secretsManager('my-github-token')` as the value of `oauthToken`. 
+  If you stored it as a Secret key/value, 
+  you must set `cdk.SecretValue.secretsManager('my-github-token', { jsonField : 'my-github-token' })` as the value of `oauthToken`.
 
 To use GitHub as the source of a CodePipeline:
 

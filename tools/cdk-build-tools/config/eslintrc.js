@@ -15,6 +15,7 @@ module.exports = {
   plugins: [
     '@typescript-eslint',
     'import',
+    'cdk',
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -38,6 +39,7 @@ module.exports = {
   },
   ignorePatterns: ['*.js', '*.d.ts', 'node_modules/', '*.generated.ts'],
   rules: {
+    'cdk/no-core-construct': [ 'error' ],
     // Require use of the `import { foo } from 'bar';` form instead of `import foo = require('bar');`
     '@typescript-eslint/no-require-imports': ['error'],
     '@typescript-eslint/indent': ['error', 2],
@@ -55,6 +57,7 @@ module.exports = {
     'keyword-spacing': ['error'], // require a space before & after keywords
     'brace-style': ['error', '1tbs', { allowSingleLine: true }], // enforce one true brace style
     'space-before-blocks': 'error', // require space before blocks
+    'curly': ['error', 'multi-line', 'consistent'], // require curly braces for multiline control statements
 
     // Require all imported dependencies are actually declared in package.json
     'import/no-extraneous-dependencies': [
@@ -85,7 +88,8 @@ module.exports = {
     'no-duplicate-imports': ['error'],
 
     // Cannot shadow names
-    'no-shadow': ['error'],
+    'no-shadow': ['off'],
+    '@typescript-eslint/no-shadow': ['error'],
 
     // Required spacing in property declarations (copied from TSLint, defaults are good)
     'key-spacing': ['error'],

@@ -10,7 +10,10 @@ const REGIONS = process.env.AWS_REGIONS
   ? process.env.AWS_REGIONS.split(',')
   : [process.env.AWS_REGION ?? process.env.AWS_DEFAULT_REGION ?? 'us-east-1'];
 
+const FRAMEWORK_VERSION = process.env.FRAMEWORK_VERSION;
+
 process.stdout.write(`Using regions: ${REGIONS}\n`);
+process.stdout.write(`Using framework version: ${FRAMEWORK_VERSION}\n`);
 
 const REGION_POOL = new ResourcePool(REGIONS);
 
@@ -37,7 +40,7 @@ export function withAws<A extends TestContext>(block: (context: A & AwsContext) 
  * Requires an AWS client to be passed in.
  *
  * For backwards compatibility with existing tests (so we don't have to change
- * too much) the inner block is expecte to take a `TestFixture` object.
+ * too much) the inner block is expected to take a `TestFixture` object.
  */
 export function withCdkApp<A extends TestContext & AwsContext>(block: (context: TestFixture) => Promise<void>) {
   return async (context: A) => {
@@ -58,7 +61,7 @@ export function withCdkApp<A extends TestContext & AwsContext>(block: (context: 
 
     let success = true;
     try {
-      await fixture.shell(['npm', 'install',
+      let modules = [
         '@aws-cdk/core',
         '@aws-cdk/aws-sns',
         '@aws-cdk/aws-iam',
@@ -66,7 +69,12 @@ export function withCdkApp<A extends TestContext & AwsContext>(block: (context: 
         '@aws-cdk/aws-ssm',
         '@aws-cdk/aws-ecr-assets',
         '@aws-cdk/aws-cloudformation',
-        '@aws-cdk/aws-ec2']);
+        '@aws-cdk/aws-ec2',
+      ];
+      if (FRAMEWORK_VERSION) {
+        modules = modules.map(module => `${module}@${FRAMEWORK_VERSION}`);
+      }
+      await fixture.shell(['npm', 'install', ...modules]);
 
       await ensureBootstrapped(fixture);
 
@@ -123,6 +131,7 @@ export interface ShellOptions extends child_process.SpawnOptions {
 export interface CdkCliOptions extends ShellOptions {
   options?: string[];
   neverRequireApproval?: boolean;
+  verbose?: boolean;
 }
 
 /**
@@ -178,7 +187,9 @@ export class TestFixture {
   }
 
   public async cdk(args: string[], options: CdkCliOptions = {}) {
-    return this.shell(['cdk', ...args], {
+    const verbose = options.verbose ?? true;
+
+    return this.shell(['cdk', ...(verbose ? ['-v'] : []), ...args], {
       ...options,
       modEnv: {
         AWS_REGION: this.aws.region,
