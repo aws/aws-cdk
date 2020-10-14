@@ -299,6 +299,12 @@ pipeline.addApplicationStage(new MyApplication(this, 'Production', {
 }));
 ```
 
+> Be aware that adding new stages via `addApplicationStage()` will
+> automatically add them to the pipeline and deploy the new stacks, but
+> *removing* them from the pipeline or deleting the pipeline stack will not
+> automatically delete deployed application stacks. You must delete those
+> stacks by hand using the AWS CloudFormation console or the AWS CLI.
+
 ### More Control
 
 Every *Application Stage* added by `addApplicationStage()` will lead to the addition of
@@ -353,6 +359,8 @@ stage.addActions(new ShellScriptAction({
   commands: ['curl -Ssf https://my.webservice.com/'],
   // Optionally specify a VPC if, for example, the service is deployed with a private load balancer
   vpc,
+  // Optionally specify SecurityGroups
+  securityGroups,
   // ... more configuration ...
 }));
 ```

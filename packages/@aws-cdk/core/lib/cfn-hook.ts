@@ -1,5 +1,5 @@
+import { Construct } from 'constructs';
 import { CfnElement } from './cfn-element';
-import { Construct } from './construct-compat';
 import { ignoreEmpty } from './util';
 
 /**

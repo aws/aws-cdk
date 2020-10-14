@@ -1,8 +1,8 @@
 // import * as cxapi from '@aws-cdk/cx-api';
+import { Annotations } from './annotations';
 import { IAspect, Aspects } from './aspect';
 import { Construct, IConstruct } from './construct-compat';
 import { ITaggable, TagManager } from './tag-manager';
-import { Annotations } from './annotations';
 
 /**
  * Properties for a tag
