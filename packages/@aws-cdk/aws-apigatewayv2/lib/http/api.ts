@@ -33,6 +33,12 @@ export interface HttpApiProps {
   readonly apiName?: string;
 
   /**
+   * The description of the API.
+   * @default - none
+   */
+  readonly description?: string;
+
+  /**
    * An integration that will be configured on the catch-all route ($default).
    * @default - none
    */
@@ -170,6 +176,7 @@ export class HttpApi extends Resource implements IHttpApi {
       name: apiName,
       protocolType: 'HTTP',
       corsConfiguration,
+      description: props?.description,
     };
 
     const resource = new CfnApi(this, 'Resource', apiProps);
