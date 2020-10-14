@@ -327,7 +327,7 @@ export class SimpleSynthAction implements codepipeline.IAction, iam.IGrantable {
     // here because the pipeline will definitely restart if projectName changes.
     // (Resolve tokens)
     const projectConfigHash = hash(Stack.of(scope).resolve({
-      environment,
+      environment: serializeBuildEnvironment(environment),
       buildSpecString: buildSpec.toBuildSpec(),
       environmentVariables,
     }));
@@ -485,4 +485,19 @@ function hash<A>(obj: A) {
   const d = crypto.createHash('sha256');
   d.update(JSON.stringify(obj));
   return d.digest('hex');
+}
+
+/**
+ * Serialize a build environment to data (get rid of constructs & objects), so we can JSON.stringify it
+ */
+function serializeBuildEnvironment(env: codebuild.BuildEnvironment) {
+  return {
+    privileged: env.privileged,
+    environmentVariables: env.environmentVariables,
+    type: env.buildImage?.type,
+    imageId: env.buildImage?.imageId,
+    computeType: env.computeType,
+    imagePullPrincipalType: env.buildImage?.imagePullPrincipalType,
+    secretsManagerArn: env.buildImage?.secretsManagerCredentials?.secretArn,
+  };
 }

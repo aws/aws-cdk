@@ -19,12 +19,12 @@ nodeunitShim({
     new Instance(stack, 'Instance', {
       vpc,
       machineImage: new AmazonLinuxImage(),
-      instanceType: InstanceType.of(InstanceClass.COMPUTE6_GRAVITON2, InstanceSize.LARGE),
+      instanceType: InstanceType.of(InstanceClass.MEMORY6_GRAVITON, InstanceSize.LARGE),
     });
 
     // THEN
     cdkExpect(stack).to(haveResource('AWS::EC2::Instance', {
-      InstanceType: 'c6g.large',
+      InstanceType: 'r6g.large',
     }));
 
     test.done();

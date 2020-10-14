@@ -242,6 +242,7 @@ async function main() {
       '.eslintrc.js',
       'jest.config.js',
       'junit.xml',
+      'test/',
     ]);
 
     await write('lib/index.ts', [

@@ -1,0 +1,36 @@
+{
+  "name": "eslint-plugin-cdk",
+  "private": true,
+  "version": "0.0.0",
+  "description": "ESLint plugin for private use within the AWS CDK repo",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "tsc --build",
+    "watch": "tsc -w",
+    "test": "jest",
+    "build+test+package": "npm run build+test",
+    "build+test": "npm run build && npm test"
+  },
+  "devDependencies": {
+    "@types/eslint": "^7.2.3",
+    "@types/fs-extra": "^8.1.1",
+    "@types/jest": "^26.0.14",
+    "@types/node": "^10.17.35",
+    "eslint-plugin-rulesdir": "^0.1.0",
+    "jest": "^26.4.2",
+    "typescript": "~3.9.7"
+  },
+  "dependencies": {
+    "@typescript-eslint/parser": "^4.3.0",
+    "eslint": "^7.10.0",
+    "fs-extra": "^9.0.1"
+  },
+  "jest": {
+    "testMatch": [
+      "**/*.test.js"
+    ]
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

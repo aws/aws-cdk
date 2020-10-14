@@ -3,6 +3,9 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import { App, CfnOutput, Duration, Token, Fn } from '@aws-cdk/core';
+import * as cdk8s from 'cdk8s';
+import * as kplus from 'cdk8s-plus';
+import * as constructs from 'constructs';
 import * as eks from '../lib';
 import * as hello from './hello-k8s';
 import { Pinger } from './pinger/pinger';
@@ -58,6 +61,8 @@ class EksClusterStack extends TestStack {
 
     this.assertSimpleHelmChart();
 
+    this.assertSimpleCdk8sChart();
+
     this.assertCreateNamespace();
 
     this.assertServiceAccount();
@@ -100,6 +105,26 @@ class EksClusterStack extends TestStack {
     nginxIngress.node.addDependency(nginxNamespace);
 
 
+  }
+
+  private assertSimpleCdk8sChart() {
+
+    class Chart extends cdk8s.Chart {
+      constructor(scope: constructs.Construct, ns: string, cluster: eks.ICluster) {
+        super(scope, ns);
+
+        new kplus.ConfigMap(this, 'config-map', {
+          data: {
+            clusterName: cluster.clusterName,
+          },
+        });
+
+      }
+    }
+    const app = new cdk8s.App();
+    const chart = new Chart(app, 'Chart', this.cluster);
+
+    this.cluster.addCdk8sChart('cdk8s-chart', chart);
   }
   private assertSimpleHelmChart() {
     // deploy the Kubernetes dashboard through a helm chart

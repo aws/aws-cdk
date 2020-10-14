@@ -114,6 +114,7 @@ nameDescription.add(new FireLensExtension());
 nameDescription.add(new XRayExtension());
 nameDescription.add(new CloudwatchAgentExtension());
 nameDescription.add(new HttpLoadBalancerExtension());
+nameDescription.add(new AssignPublicIpExtension());
 ```
 
 ## Launching the `ServiceDescription` as a `Service`

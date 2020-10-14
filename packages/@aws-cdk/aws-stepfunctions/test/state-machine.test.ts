@@ -144,6 +144,8 @@ describe('State Machine', () => {
           Action: [
             'xray:PutTraceSegments',
             'xray:PutTelemetryRecords',
+            'xray:GetSamplingRules',
+            'xray:GetSamplingTargets',
           ],
           Effect: 'Allow',
           Resource: '*',

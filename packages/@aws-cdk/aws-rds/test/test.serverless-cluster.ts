@@ -599,6 +599,29 @@ export = {
     test.done();
   },
 
+  'throws when invalid backup retention period is specified'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = ec2.Vpc.fromLookup(stack, 'VPC', { isDefault: true });
+
+    // WHEN
+    test.throws(() =>
+      new ServerlessCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
+        vpc,
+        backupRetention: cdk.Duration.days(0),
+      }), /backup retention period must be between 1 and 35 days. received: 0/);
+
+    test.throws(() =>
+      new ServerlessCluster(stack, 'Another Database', {
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
+        vpc,
+        backupRetention: cdk.Duration.days(36),
+      }), /backup retention period must be between 1 and 35 days. received: 36/);
+
+    test.done();
+  },
+
   'throws error when min capacity is greater than max capacity'(test: Test) {
     // GIVEN
     const stack = testStack();
@@ -615,6 +638,37 @@ export = {
         },
       }), /maximum capacity must be greater than or equal to minimum capacity./);
 
+    test.done();
+  },
+
+  'check that clusterArn property works'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = ec2.Vpc.fromLookup(stack, 'VPC', { isDefault: true });
+    const cluster = new ServerlessCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      vpc,
+    });
+    const exportName = 'DbCluterArn';
+
+    // WHEN
+    new cdk.CfnOutput(stack, exportName, {
+      exportName,
+      value: cluster.clusterArn,
+    });
+
+    // THEN
+    test.deepEqual(stack.resolve(cluster.clusterArn), {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':rds:us-test-1:12345:cluster:',
+          { Ref: 'DatabaseB269D8BB' },
+        ],
+      ],
+    });
     test.done();
   },
 };

@@ -2,8 +2,13 @@ import * as path from 'path';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
-import { Construct, CustomResource, Duration, Stack } from '@aws-cdk/core';
+import { CustomResource, Duration, Stack } from '@aws-cdk/core';
+import { Construct, Node } from 'constructs';
 import * as cr from '../../../lib';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 export interface S3AssertProps {
   /**
@@ -29,7 +34,7 @@ export interface S3AssertProps {
  *
  * Code is written in Python because why not.
  */
-export class S3Assert extends Construct {
+export class S3Assert extends CoreConstruct {
 
   constructor(scope: Construct, id: string, props: S3AssertProps) {
     super(scope, id);
@@ -46,7 +51,7 @@ export class S3Assert extends Construct {
   }
 }
 
-class S3AssertProvider extends Construct {
+class S3AssertProvider extends CoreConstruct {
 
   /**
    * Returns the singleton provider.
@@ -54,7 +59,7 @@ class S3AssertProvider extends Construct {
   public static getOrCreate(scope: Construct) {
     const providerId = 'com.amazonaws.cdk.custom-resources.s3assert-provider';
     const stack = Stack.of(scope);
-    const group = stack.node.tryFindChild(providerId) as S3AssertProvider || new S3AssertProvider(stack, providerId);
+    const group = Node.of(stack).tryFindChild(providerId) as S3AssertProvider || new S3AssertProvider(stack, providerId);
     return group.provider.serviceToken;
   }
 

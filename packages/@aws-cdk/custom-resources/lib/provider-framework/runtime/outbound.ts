@@ -3,7 +3,7 @@ import * as https from 'https';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as AWS from 'aws-sdk';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { ConfigurationOptions } from 'aws-sdk/lib/config';
+import type { ConfigurationOptions } from 'aws-sdk/lib/config-base';
 
 const FRAMEWORK_HANDLER_TIMEOUT = 900000; // 15 minutes
 

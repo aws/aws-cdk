@@ -3,6 +3,7 @@ import '@aws-cdk/assert/jest';
 import * as cbuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as ec2 from '@aws-cdk/aws-ec2';
+import * as ecr from '@aws-cdk/aws-ecr';
 import * as s3 from '@aws-cdk/aws-s3';
 import { Stack } from '@aws-cdk/core';
 import * as cdkp from '../lib';
@@ -402,6 +403,25 @@ test('SimpleSynthAction is IGrantable', () => {
         Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
       })),
     },
+  });
+});
+
+test('SimpleSynthAction can reference an imported ECR repo', () => {
+  // Repro from https://github.com/aws/aws-cdk/issues/10535
+
+  // WHEN
+  new TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    sourceArtifact,
+    cloudAssemblyArtifact,
+    synthAction: cdkp.SimpleSynthAction.standardNpmSynth({
+      sourceArtifact,
+      cloudAssemblyArtifact,
+      environment: {
+        buildImage: cbuild.LinuxBuildImage.fromEcrRepository(
+          ecr.Repository.fromRepositoryName(pipelineStack, 'ECRImage', 'my-repo-name'),
+        ),
+      },
+    }),
   });
 });
 

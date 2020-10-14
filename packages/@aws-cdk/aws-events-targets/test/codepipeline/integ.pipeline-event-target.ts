@@ -2,6 +2,7 @@ import * as codecommit from '@aws-cdk/aws-codecommit';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as events from '@aws-cdk/aws-events';
 import * as cdk from '@aws-cdk/core';
+import * as constructs from 'constructs';
 import * as targets from '../../lib';
 
 interface MockActionProps extends codepipeline.ActionProperties {
@@ -17,7 +18,7 @@ class MockAction implements codepipeline.IAction {
     this.configuration = props.configuration;
   }
 
-  public bind(_scope: cdk.Construct, _stage: codepipeline.IStage, _options: codepipeline.ActionBindOptions):
+  public bind(_scope: constructs.Construct, _stage: codepipeline.IStage, _options: codepipeline.ActionBindOptions):
   codepipeline.ActionConfig {
     return {
       configuration: this.configuration,

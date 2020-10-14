@@ -7,6 +7,7 @@ import { App, CfnParameter, CfnResource, Construct, ContextProvider, Stack } fro
 import { Test } from 'nodeunit';
 import { NestedStack } from '../lib/nested-stack';
 
+/* eslint-disable cdk/no-core-construct */
 /* eslint-disable max-len */
 
 export = {

@@ -14,6 +14,7 @@ import { CfnReference, ReferenceRendering } from './private/cfn-reference';
 import { IResolvable } from './resolvable';
 import { Mapper, Validator } from './runtime';
 import { isResolvableObject, Token } from './token';
+import { undefinedIfAllValuesAreEmpty } from './util';
 
 /**
  * This class contains static methods called when going from
@@ -706,8 +707,4 @@ export class CfnParser {
   private get parameters(): { [parameterName: string]: any } {
     return this.options.parameters || {};
   }
-}
-
-function undefinedIfAllValuesAreEmpty(object: object): object | undefined {
-  return Object.values(object).some(v => v !== undefined) ? object : undefined;
 }

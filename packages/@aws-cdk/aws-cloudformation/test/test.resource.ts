@@ -5,6 +5,7 @@ import * as cdk from '@aws-cdk/core';
 import { Test, testCase } from 'nodeunit';
 import { CustomResource, CustomResourceProvider } from '../lib';
 
+/* eslint-disable cdk/no-core-construct */
 /* eslint-disable quote-props */
 
 export = testCase({

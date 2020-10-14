@@ -46,6 +46,7 @@ beforeEach(() => {
         ],
       })),
     createChangeSet: jest.fn((_o) => ({})),
+    deleteChangeSet: jest.fn((_o) => ({})),
     describeChangeSet: jest.fn((_o) => ({
       Status: 'CREATE_COMPLETE',
       Changes: [],
@@ -374,6 +375,24 @@ test('deploy not skipped if template did not change but tags changed', async () 
   expect(cfnMocks.describeChangeSet).toHaveBeenCalled();
   expect(cfnMocks.describeStacks).toHaveBeenCalledWith({ StackName: 'withouterrors' });
   expect(cfnMocks.getTemplate).toHaveBeenCalledWith({ StackName: 'withouterrors', TemplateStage: 'Original' });
+});
+
+test('deployStack reports no change if describeChangeSet returns specific error', async () => {
+  cfnMocks.describeChangeSet?.mockImplementation(() => ({
+    Status: 'FAILED',
+    StatusReason: 'No updates are to be performed.',
+  }));
+
+  // WHEN
+  const deployResult = await deployStack({
+    stack: FAKE_STACK,
+    sdk,
+    sdkProvider,
+    resolvedEnvironment: mockResolvedEnvironment(),
+  });
+
+  // THEN
+  expect(deployResult.noOp).toEqual(true);
 });
 
 test('deploy not skipped if template did not change but one tag removed', async () => {

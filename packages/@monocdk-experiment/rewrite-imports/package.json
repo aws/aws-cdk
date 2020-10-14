@@ -1,7 +1,7 @@
 {
   "name": "@monocdk-experiment/rewrite-imports",
   "version": "0.0.0",
-  "description": "Rewrites typescript 'import' statements from @aws-cdk/xxx to monocdk-experiment",
+  "description": "Rewrites typescript 'import' statements from @aws-cdk/xxx to monocdk",
   "bin": {
     "rewrite-imports": "bin/rewrite-imports"
   },

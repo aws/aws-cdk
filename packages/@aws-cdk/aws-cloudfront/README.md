@@ -6,12 +6,12 @@
 | Features | Stability |
 | --- | --- |
 | CFN Resources | ![Stable](https://img.shields.io/badge/stable-success.svg?style=for-the-badge) |
-| Higher level constructs for Distribution | ![Experimental](https://img.shields.io/badge/experimental-important.svg?style=for-the-badge) |
+| Higher level constructs for Distribution | ![Developer Preview](https://img.shields.io/badge/developer--preview-informational.svg?style=for-the-badge) |
 | Higher level constructs for CloudFrontWebDistribution | ![Stable](https://img.shields.io/badge/stable-success.svg?style=for-the-badge) |
 
 > **CFN Resources:** All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) are always stable and safe to use.
 
-> **Experimental:** Higher level constructs in this module that are marked as experimental are under active development. They are subject to non-backward compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be announced in the release notes. This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
+> **Developer Preview:** Higher level constructs in this module that are marked as developer preview have completed their phase of active development and are looking for adoption and feedback. While the same caveats around non-backward compatible as Experimental constructs apply, they will undergo fewer breaking changes. Just as with Experimental constructs, these are not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be announced in the release notes.
 
 > **Stable:** Higher level constructs in this module that are marked stable will not undergo any breaking changes. They will strictly follow the [Semantic Versioning](https://semver.org/) model.
 
@@ -35,9 +35,12 @@ for more complex use cases.
 ### Creating a distribution
 
 CloudFront distributions deliver your content from one or more origins; an origin is the location where you store the original version of your
-content. Origins can be created from S3 buckets or a custom origin (HTTP server). Each distribution has a default behavior which applies to all
-requests to that distribution, and routes requests to a primary origin. Constructs to define origins are in the `@aws-cdk/aws-cloudfront-origins`
-module.
+content. Origins can be created from S3 buckets or a custom origin (HTTP server). Constructs to define origins are in the `@aws-cdk/aws-cloudfront-origins` module.
+
+Each distribution has a default behavior which applies to all requests to that distribution, and routes requests to a primary origin.
+Additional behaviors may be specified for an origin with a given URL path pattern. Behaviors allow routing with multiple origins,
+controlling which HTTP methods to support, whether to require users to use HTTPS, and what query strings or cookies to forward to your origin,
+among other settings.
 
 #### From an S3 Bucket
 
@@ -159,6 +162,77 @@ new cloudfront.Distribution(this, 'myDist', {
       origin: bucketOrigin,
       viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
     },
+  },
+});
+```
+
+### Customizing Cache Keys and TTLs with Cache Policies
+
+You can use a cache policy to improve your cache hit ratio by controlling the values (URL query strings, HTTP headers, and cookies)
+that are included in the cache key, and/or adjusting how long items remain in the cache via the time-to-live (TTL) settings.
+CloudFront provides some predefined cache policies, known as managed policies, for common use cases. You can use these managed policies,
+or you can create your own cache policy that’s specific to your needs.
+See https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/controlling-the-cache-key.html for more details.
+
+```ts
+// Using an existing cache policy
+new cloudfront.Distribution(this, 'myDistManagedPolicy', {
+  defaultBehavior: {
+    origin: bucketOrigin,
+    cachePolicy: cloudfront.CachePolicy.CACHING_OPTIMIZED,
+  },
+});
+
+// Creating a custom cache policy  -- all parameters optional
+const myCachePolicy = new cloudfront.CachePolicy(this, 'myCachePolicy', {
+  cachePolicyName: 'MyPolicy',
+  comment: 'A default policy',
+  defaultTtl: Duration.days(2),
+  minTtl: Duration.minutes(1),
+  maxTtl: Duration.days(10),
+  cookieBehavior: cloudfront.CacheCookieBehavior.all(),
+  headerBehavior: cloudfront.CacheHeaderBehavior.allowList('X-CustomHeader'),
+  queryStringBehavior: cloudfront.CacheQueryStringBehavior.denyList('username'),
+  enableAcceptEncodingGzip: true,
+});
+new cloudfront.Distribution(this, 'myDistCustomPolicy', {
+  defaultBehavior: {
+    origin: bucketOrigin,
+    cachePolicy: myCachePolicy,
+  },
+});
+```
+
+### Customizing Origin Requests with Origin Request Policies
+
+When CloudFront makes a request to an origin, the URL path, request body (if present), and a few standard headers are included.
+Other information from the viewer request, such as URL query strings, HTTP headers, and cookies, is not included in the origin request by default.
+You can use an origin request policy to control the information that’s included in an origin request.
+CloudFront provides some predefined origin request policies, known as managed policies, for common use cases. You can use these managed policies,
+or you can create your own origin request policy that’s specific to your needs.
+See https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/controlling-origin-requests.html for more details.
+
+```ts
+// Using an existing origin request policy
+new cloudfront.Distribution(this, 'myDistManagedPolicy', {
+  defaultBehavior: {
+    origin: bucketOrigin,
+    originRequestPolicy: cloudfront.OriginRequestPolicy.CORS_S3_ORIGIN,
+  },
+});
+// Creating a custom origin request policy -- all parameters optional
+const myOriginRequestPolicy = new cloudfront.OriginRequestPolicy(stack, 'OriginRequestPolicy', {
+  originRequestPolicyName: 'MyPolicy',
+  comment: 'A default policy',
+  cookieBehavior: cloudfront.OriginRequestCookieBehavior.none(),
+  headerBehavior: cloudfront.OriginRequestHeaderBehavior.all('CloudFront-Is-Android-Viewer'),
+  queryStringBehavior: cloudfront.OriginRequestQueryStringBehavior.allowList('username'),
+});
+new cloudfront.Distribution(this, 'myDistCustomPolicy', {
+  defaultBehavior: {
+    origin: bucketOrigin,
+    cachePolicy: myCachePolicy,
+    originRequestPolicy: myOriginRequestPolicy,
   },
 });
 ```
