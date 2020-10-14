@@ -30,7 +30,7 @@ following resources per region:
 - `ConfigurationRecorder`: Configure which resources will be recorded for config changes.
 - `DeliveryChannel`: Configure where to store the recorded data.
 
-The following guides the set up for getting started with AWS Config:
+The following guides provide the steps for getting started with AWS Config:
 
 - [Using the AWS Console](https://docs.aws.amazon.com/config/latest/developerguide/gs-console.html)
 - [Using the AWS CLI](https://docs.aws.amazon.com/config/latest/developerguide/gs-cli.html)
@@ -56,7 +56,7 @@ import * as cdk from '@aws-cdk/core';
 
 // https://docs.aws.amazon.com/config/latest/developerguide/access-keys-rotated.html
 new config.ManagedRule(this, 'AccessKeysRotated', {
-  identifier: config.ManagedRuleIdentifier.ACCESS_KEYS_ROTATED,
+  identifier: config.ManagedRuleIdentifiers.ACCESS_KEYS_ROTATED,
   inputParameters: {
      maxAccessKeyAge: 60 // default is 90 days
   },
@@ -64,7 +64,7 @@ new config.ManagedRule(this, 'AccessKeysRotated', {
 });
 ```
 
-Identifiers for AWS managed rules are available through static methods in the `ManagedRuleIdentifier` class.
+Identifiers for AWS managed rules are available through static constants in the `ManagedRuleIdentifiers` class.
 You can find supported input parameters in the [List of AWS Config Managed Rules](https://docs.aws.amazon.com/config/latest/developerguide/managed-rules-by-aws-config.html).
 
 Higher level constructs for AWS managed rules are available.
