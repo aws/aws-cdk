@@ -17,7 +17,10 @@ To use this module, you will need to have Docker installed.
 Define a `PythonFunction`:
 
 ```ts
-new lambda.PythonFunction(this, 'MyFunction', {
+import * as lambda from "@aws-cdk/aws-lambda";
+import { PythonFunction } from "@aws-cdk/aws-lambda-python"
+
+new PythonFunction(this, 'MyFunction', {
   entry: '/path/to/my/function', // required
   index: 'my_index.py', // optional, defaults to 'index.py'
   handler: 'my_exported_func', // optional, defaults to 'handler'
@@ -29,11 +32,38 @@ All other properties of `lambda.Function` are supported, see also the [AWS Lambd
 
 ### Module Dependencies
 
-If `requirements.txt` exists at the entry path, the construct will handle installing
+If `requirements.txt` or `Pipfile` exists at the entry path, the construct will handle installing
 all required modules in a [Lambda compatible Docker container](https://hub.docker.com/r/amazon/aws-sam-cli-build-image-python3.7)
 according to the `runtime`.
+
+**Lambda with a requirements.txt**
 ```
 .
 ├── lambda_function.py # exports a function named 'handler'
 ├── requirements.txt # has to be present at the entry path
+```
+
+**Lambda with a Pipfile**
+```
+.
+├── lambda_function.py # exports a function named 'handler'
+├── Pipfile # has to be present at the entry path
+├── Pipfile.lock # your lock file
+```
+
+**Lambda Layer Support**
+
+You may create a python-based lambda layer with `PythonLayerVersion`. If `PythonLayerVersion` detects a `requirements.txt`
+or `Pipfile` at the entry path, then `PythonLayerVersion` will include the dependencies inline with your code in the
+layer.
+
+```ts
+new lambda.PythonFunction(this, 'MyFunction', {
+  entry: '/path/to/my/function',
+  layers: [
+    new lambda.PythonLayerVersion(this, 'MyLayer', {
+      entry: '/path/to/my/layer', // point this to your library's directory
+    }),
+  ],
+});
 ```

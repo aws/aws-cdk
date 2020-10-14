@@ -5,6 +5,8 @@ import * as sqs from '@aws-cdk/aws-sqs';
 import { App, CfnParameter, Construct, Stack } from '@aws-cdk/core';
 import * as cfn from '../lib';
 
+/* eslint-disable cdk/no-core-construct */
+
 interface MyNestedStackProps {
   readonly subscriber?: sqs.Queue;
   readonly siblingTopic?: sns.Topic; // a topic defined in a sibling nested stack
