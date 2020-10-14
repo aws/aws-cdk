@@ -328,7 +328,7 @@ function expectedAssetRolePolicy(assumeRolePattern: string, attachedRole: string
         },
       },
       {
-        Action: ['codebuild:CreateReportGroup', 'codebuild:CreateReport', 'codebuild:UpdateReport', 'codebuild:BatchPutTestCases'],
+        Action: ['codebuild:CreateReportGroup', 'codebuild:CreateReport', 'codebuild:UpdateReport', 'codebuild:BatchPutTestCases', 'codebuild:BatchPutCodeCoverages'],
         Effect: 'Allow',
         Resource: {
           'Fn::Join': ['', [
