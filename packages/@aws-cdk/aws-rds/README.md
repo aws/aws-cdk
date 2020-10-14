@@ -464,7 +464,7 @@ import * as rds from '@aws-cdk/aws-rds';
 const cluster = new rds.ServerlessCluster(this, 'AnotherCluster', {
   engine: rds.DatabaseClusterEngine.AURORA_MYSQL,
   vpc,
-  enableHttpEndpoint: true,
+  enableDataApi: true,
 });
 
 const fn = new lambda.Function(this, 'MyFunction', {
@@ -476,8 +476,7 @@ const fn = new lambda.Function(this, 'MyFunction', {
     SECRET_ARN: cluster.secret.secretArn,
   },
 });
-cluster.grantDataApi(fn)
-cluster.secret.grantRead(fn)
+cluster.grantDataApiAccess(fn)
 ```
 
 **Note**: To invoke the Data API, the resource will need to read the secret associated with the cluster.
