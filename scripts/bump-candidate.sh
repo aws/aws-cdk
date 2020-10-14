@@ -18,6 +18,7 @@
 set -euo pipefail
 version=${1:-minor}
 
-echo "Starting candidate ${version} version bump"
-
-npx standard-version --release-as ${version} --prerelease=rc --skip.commit --skip.changelog
+if [ -z $SKIP_BUMP_CANDIDATE ]; then
+  echo "Starting candidate ${version} version bump"
+  npx standard-version --release-as ${version} --prerelease=rc --skip.commit --skip.changelog
+fi
