@@ -7,6 +7,15 @@ import { singletonEventRole } from './util';
  * Customize the CodeBuild Event Target
  */
 export interface CodeBuildProjectProps {
+
+  /**
+   * The role to assume before invoking the target
+   * (i.e., the codebuild) when the given rule is triggered.
+   *
+   * @default - a new role will be created
+   */
+  readonly eventRole?: iam.IRole;
+
   /**
    * The event to send to CodeBuild
    *
@@ -33,7 +42,7 @@ export class CodeBuildProject implements events.IRuleTarget {
     return {
       id: '',
       arn: this.project.projectArn,
-      role: singletonEventRole(this.project, [
+      role: this.props.eventRole || singletonEventRole(this.project, [
         new iam.PolicyStatement({
           actions: ['codebuild:StartBuild'],
           resources: [this.project.projectArn],
