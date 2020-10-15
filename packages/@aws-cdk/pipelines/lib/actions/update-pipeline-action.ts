@@ -3,8 +3,12 @@ import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as cpactions from '@aws-cdk/aws-codepipeline-actions';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { embeddedAsmPath } from '../private/construct-internals';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Props for the UpdatePipelineAction
@@ -44,7 +48,7 @@ export interface UpdatePipelineActionProps {
  * You do not need to instantiate this action -- it will automatically
  * be added by the pipeline.
  */
-export class UpdatePipelineAction extends Construct implements codepipeline.IAction {
+export class UpdatePipelineAction extends CoreConstruct implements codepipeline.IAction {
   private readonly action: codepipeline.IAction;
 
   constructor(scope: Construct, id: string, props: UpdatePipelineActionProps) {
@@ -89,13 +93,17 @@ export class UpdatePipelineAction extends Construct implements codepipeline.IAct
       actionName: 'SelfMutate',
       input: props.cloudAssemblyInput,
       project: selfMutationProject,
+      // Add this purely so that the pipeline will selfupdate if the CLI version changes
+      environmentVariables: props.cdkCliVersion ? {
+        CDK_CLI_VERSION: { value: props.cdkCliVersion },
+      } : undefined,
     });
   }
 
   /**
    * Exists to implement IAction
    */
-  public bind(scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
+  public bind(scope: CoreConstruct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
   codepipeline.ActionConfig {
     return this.action.bind(scope, stage, options);
   }

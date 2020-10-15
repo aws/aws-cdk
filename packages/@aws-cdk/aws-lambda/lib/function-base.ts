@@ -210,7 +210,7 @@ export abstract class FunctionBase extends Resource implements IFunction {
    */
   public addPermission(id: string, permission: Permission) {
     if (!this.canCreatePermissions) {
-      // FIXME: Report metadata
+      // FIXME: @deprecated(v2) - throw an error if calling `addPermission` on a resource that doesn't support it.
       return;
     }
 
@@ -299,7 +299,11 @@ export abstract class FunctionBase extends Resource implements IFunction {
               action: 'lambda:InvokeFunction',
             });
 
-            return { statementAdded: true, policyDependable: this._functionNode().findChild(identifier) } as iam.AddToResourcePolicyResult;
+            const permissionNode = this._functionNode().tryFindChild(identifier);
+            if (!permissionNode) {
+              throw new Error('Cannot modify permission to lambda function. Function is either imported or $LATEST version.');
+            }
+            return { statementAdded: true, policyDependable: permissionNode };
           },
           node: this.node,
           stack: this.stack,
@@ -357,13 +361,13 @@ export abstract class FunctionBase extends Resource implements IFunction {
    * ..which means that in order to extract the `account-id` component from the ARN, we can
    * split the ARN using ":" and select the component in index 4.
    *
-   * @returns true if account id of function matches this account
+   * @returns true if account id of function matches this account, or the accounts are unresolved.
    *
    * @internal
    */
   protected _isStackAccount(): boolean {
     if (Token.isUnresolved(this.stack.account) || Token.isUnresolved(this.functionArn)) {
-      return false;
+      return true;
     }
     return this.stack.parseArn(this.functionArn).account === this.stack.account;
   }

@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-sam",
-        "module": "aws_cdk.aws_sam"
+        "module": "aws_cdk.aws_sam",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
@@ -50,7 +54,10 @@
   },
   "cdk-build": {
     "cloudformation": "AWS::Serverless",
-    "jest": true
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "keywords": [
     "aws",
@@ -71,7 +78,7 @@
     "cfn2ts": "0.0.0",
     "jest": "^26.4.2",
     "pkglint": "0.0.0",
-    "ts-jest": "^26.3.0"
+    "ts-jest": "^26.4.1"
   },
   "dependencies": {
     "@aws-cdk/core": "0.0.0",

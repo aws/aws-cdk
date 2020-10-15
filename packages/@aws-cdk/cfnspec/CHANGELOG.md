@@ -1,3 +1,321 @@
+# CloudFormation Resource Specification v18.7.0
+
+## New Resource Types
+
+* AWS::CodeArtifact::Domain
+* AWS::CodeArtifact::Repository
+* AWS::Timestream::Database
+* AWS::Timestream::Table
+
+## Attribute Changes
+
+* AWS::ImageBuilder::Component Name (__deleted__)
+* AWS::ImageBuilder::DistributionConfiguration Name (__deleted__)
+* AWS::ImageBuilder::ImagePipeline Name (__deleted__)
+* AWS::ImageBuilder::ImageRecipe Name (__deleted__)
+* AWS::ImageBuilder::InfrastructureConfiguration Name (__deleted__)
+
+## Property Changes
+
+* AWS::ImageBuilder::Component Name (__added__)
+* AWS::ImageBuilder::DistributionConfiguration Name (__added__)
+* AWS::ImageBuilder::ImagePipeline Name (__added__)
+* AWS::ImageBuilder::ImageRecipe Name (__added__)
+* AWS::ImageBuilder::InfrastructureConfiguration Name (__added__)
+* AWS::KMS::Key KeyUsage.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+
+## Property Type Changes
+
+
+
+# CloudFormation Resource Specification v18.6.0
+
+## New Resource Types
+
+* AWS::WorkSpaces::ConnectionAlias
+
+## Attribute Changes
+
+* AWS::ImageBuilder::Component Name (__added__)
+* AWS::ImageBuilder::DistributionConfiguration Name (__added__)
+* AWS::ImageBuilder::Image Name (__added__)
+* AWS::ImageBuilder::ImagePipeline Name (__added__)
+* AWS::ImageBuilder::ImageRecipe Name (__added__)
+* AWS::ImageBuilder::InfrastructureConfiguration Name (__added__)
+
+## Property Changes
+
+* AWS::ApiGateway::DomainName DomainName.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Config::ConformancePack DeliveryS3Bucket.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Config::OrganizationConformancePack DeliveryS3Bucket.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::ImageBuilder::Component Name (__deleted__)
+* AWS::ImageBuilder::DistributionConfiguration Name (__deleted__)
+* AWS::ImageBuilder::ImagePipeline Name (__deleted__)
+* AWS::ImageBuilder::ImageRecipe Name (__deleted__)
+* AWS::ImageBuilder::InfrastructureConfiguration Name (__deleted__)
+* AWS::Kendra::Faq FileFormat (__added__)
+* AWS::StepFunctions::Activity Arn (__deleted__)
+* AWS::StepFunctions::Activity Name (__added__)
+* AWS::StepFunctions::Activity Tags.DuplicatesAllowed (__deleted__)
+
+## Property Type Changes
+
+* AWS::Backup::BackupPlan.AdvancedBackupSettingResourceType (__added__)
+* AWS::Backup::BackupPlan.BackupPlanResourceType AdvancedBackupSettings (__added__)
+* AWS::CloudFront::CachePolicy.ParametersInCacheKeyAndForwardedToOrigin EnableAcceptEncodingBrotli (__added__)
+* AWS::CodeBuild::Project.ProjectTriggers BuildType (__added__)
+* AWS::ECS::Service.NetworkConfiguration AwsVpcConfiguration (__deleted__)
+* AWS::ECS::Service.NetworkConfiguration AwsvpcConfiguration (__added__)
+* AWS::Synthetics::Canary.RunConfig ActiveTracing (__added__)
+
+
+# CloudFormation Resource Specification v18.5.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Amplify::Branch EnablePerformanceMode (__added__)
+* AWS::AppStream::Fleet IamRoleArn (__added__)
+* AWS::AppStream::Fleet StreamView (__added__)
+* AWS::AppStream::ImageBuilder IamRoleArn (__added__)
+* AWS::EKS::Cluster KubernetesNetworkConfig (__added__)
+* AWS::StepFunctions::Activity Name (__deleted__)
+* AWS::StepFunctions::Activity Arn (__added__)
+* AWS::StepFunctions::Activity Tags.DuplicatesAllowed (__added__)
+
+## Property Type Changes
+
+* AWS::Batch::JobDefinition.LogConfiguration (__added__)
+* AWS::Batch::JobDefinition.Secret (__added__)
+* AWS::Batch::JobDefinition.Tmpfs (__added__)
+* AWS::EKS::Cluster.KubernetesNetworkConfig (__added__)
+* AWS::Amplify::App.AutoBranchCreationConfig EnablePerformanceMode (__added__)
+* AWS::Batch::JobDefinition.ContainerProperties ExecutionRoleArn (__added__)
+* AWS::Batch::JobDefinition.ContainerProperties LogConfiguration (__added__)
+* AWS::Batch::JobDefinition.ContainerProperties Secrets (__added__)
+* AWS::Batch::JobDefinition.LinuxParameters InitProcessEnabled (__added__)
+* AWS::Batch::JobDefinition.LinuxParameters MaxSwap (__added__)
+* AWS::Batch::JobDefinition.LinuxParameters SharedMemorySize (__added__)
+* AWS::Batch::JobDefinition.LinuxParameters Swappiness (__added__)
+* AWS::Batch::JobDefinition.LinuxParameters Tmpfs (__added__)
+* AWS::CloudFront::CachePolicy.CachePolicyConfig DefaultTTL.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::CloudFront::CachePolicy.CachePolicyConfig MaxTTL.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::CloudFront::CachePolicy.CachePolicyConfig ParametersInCacheKeyAndForwardedToOrigin.Required (__changed__)
+  * Old: false
+  * New: true
+
+
+# CloudFormation Resource Specification v18.4.0
+
+## New Resource Types
+
+* AWS::AppFlow::ConnectorProfile
+* AWS::AppFlow::Flow
+* AWS::CloudFormation::StackSet
+
+## Attribute Changes
+
+* AWS::ApiGatewayV2::Api ApiEndpoint (__added__)
+* AWS::Route53::HostedZone Id (__added__)
+* AWS::Route53::HostedZone NameServers.DuplicatesAllowed (__added__)
+
+## Property Changes
+
+* AWS::ApiGateway::DomainName MutualTlsAuthentication (__added__)
+* AWS::ApiGatewayV2::Api DisableExecuteApiEndpoint (__added__)
+* AWS::ApiGatewayV2::DomainName MutualTlsAuthentication (__added__)
+* AWS::CodeBuild::ReportGroup DeleteReports (__added__)
+* AWS::EC2::VPCEndpointService ApplianceLoadBalancerArns (__added__)
+* AWS::EC2::VPCEndpointService NetworkLoadBalancerArns.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::ECS::Service CapacityProviderStrategy (__added__)
+* AWS::ECS::Service ServiceArn (__added__)
+* AWS::ECS::Service LoadBalancers.DuplicatesAllowed (__deleted__)
+* AWS::ECS::Service PlacementConstraints.DuplicatesAllowed (__deleted__)
+* AWS::ECS::Service PlacementStrategies.DuplicatesAllowed (__deleted__)
+* AWS::ECS::Service ServiceRegistries.DuplicatesAllowed (__deleted__)
+* AWS::ECS::Service Tags.DuplicatesAllowed (__deleted__)
+* AWS::MediaLive::Channel EncoderSettings.PrimitiveType (__deleted__)
+* AWS::MediaLive::Channel EncoderSettings.Type (__added__)
+* AWS::MediaLive::Input InputDevices (__added__)
+* AWS::Route53::HostedZone HostedZoneTags.DuplicatesAllowed (__changed__)
+  * Old: true
+  * New: false
+* AWS::Route53::HostedZone VPCs.DuplicatesAllowed (__changed__)
+  * Old: true
+  * New: false
+* AWS::Route53::HostedZone VPCs.UpdateType (__changed__)
+  * Old: Conditional
+  * New: Mutable
+
+## Property Type Changes
+
+* AWS::ApiGateway::DomainName.MutualTlsAuthentication (__added__)
+* AWS::ApiGatewayV2::DomainName.MutualTlsAuthentication (__added__)
+* AWS::ECS::Service.CapacityProviderStrategyItem (__added__)
+* AWS::LakeFormation::Permissions.TableWildcard (__added__)
+* AWS::MediaLive::Channel.AacSettings (__added__)
+* AWS::MediaLive::Channel.Ac3Settings (__added__)
+* AWS::MediaLive::Channel.ArchiveContainerSettings (__added__)
+* AWS::MediaLive::Channel.ArchiveGroupSettings (__added__)
+* AWS::MediaLive::Channel.ArchiveOutputSettings (__added__)
+* AWS::MediaLive::Channel.AribDestinationSettings (__added__)
+* AWS::MediaLive::Channel.AudioChannelMapping (__added__)
+* AWS::MediaLive::Channel.AudioCodecSettings (__added__)
+* AWS::MediaLive::Channel.AudioDescription (__added__)
+* AWS::MediaLive::Channel.AudioNormalizationSettings (__added__)
+* AWS::MediaLive::Channel.AudioOnlyHlsSettings (__added__)
+* AWS::MediaLive::Channel.AudioTrack (__added__)
+* AWS::MediaLive::Channel.AudioTrackSelection (__added__)
+* AWS::MediaLive::Channel.AutomaticInputFailoverSettings (__added__)
+* AWS::MediaLive::Channel.AvailBlanking (__added__)
+* AWS::MediaLive::Channel.AvailConfiguration (__added__)
+* AWS::MediaLive::Channel.AvailSettings (__added__)
+* AWS::MediaLive::Channel.BlackoutSlate (__added__)
+* AWS::MediaLive::Channel.BurnInDestinationSettings (__added__)
+* AWS::MediaLive::Channel.CaptionDescription (__added__)
+* AWS::MediaLive::Channel.CaptionDestinationSettings (__added__)
+* AWS::MediaLive::Channel.CaptionLanguageMapping (__added__)
+* AWS::MediaLive::Channel.ColorSpacePassthroughSettings (__added__)
+* AWS::MediaLive::Channel.DvbNitSettings (__added__)
+* AWS::MediaLive::Channel.DvbSdtSettings (__added__)
+* AWS::MediaLive::Channel.DvbSubDestinationSettings (__added__)
+* AWS::MediaLive::Channel.DvbTdtSettings (__added__)
+* AWS::MediaLive::Channel.Eac3Settings (__added__)
+* AWS::MediaLive::Channel.EbuTtDDestinationSettings (__added__)
+* AWS::MediaLive::Channel.EmbeddedDestinationSettings (__added__)
+* AWS::MediaLive::Channel.EmbeddedPlusScte20DestinationSettings (__added__)
+* AWS::MediaLive::Channel.EncoderSettings (__added__)
+* AWS::MediaLive::Channel.FeatureActivations (__added__)
+* AWS::MediaLive::Channel.FecOutputSettings (__added__)
+* AWS::MediaLive::Channel.Fmp4HlsSettings (__added__)
+* AWS::MediaLive::Channel.FrameCaptureGroupSettings (__added__)
+* AWS::MediaLive::Channel.FrameCaptureOutputSettings (__added__)
+* AWS::MediaLive::Channel.FrameCaptureSettings (__added__)
+* AWS::MediaLive::Channel.GlobalConfiguration (__added__)
+* AWS::MediaLive::Channel.H264ColorSpaceSettings (__added__)
+* AWS::MediaLive::Channel.H264FilterSettings (__added__)
+* AWS::MediaLive::Channel.H264Settings (__added__)
+* AWS::MediaLive::Channel.H265ColorSpaceSettings (__added__)
+* AWS::MediaLive::Channel.H265FilterSettings (__added__)
+* AWS::MediaLive::Channel.H265Settings (__added__)
+* AWS::MediaLive::Channel.Hdr10Settings (__added__)
+* AWS::MediaLive::Channel.HlsAkamaiSettings (__added__)
+* AWS::MediaLive::Channel.HlsBasicPutSettings (__added__)
+* AWS::MediaLive::Channel.HlsCdnSettings (__added__)
+* AWS::MediaLive::Channel.HlsGroupSettings (__added__)
+* AWS::MediaLive::Channel.HlsMediaStoreSettings (__added__)
+* AWS::MediaLive::Channel.HlsOutputSettings (__added__)
+* AWS::MediaLive::Channel.HlsSettings (__added__)
+* AWS::MediaLive::Channel.HlsWebdavSettings (__added__)
+* AWS::MediaLive::Channel.InputChannelLevel (__added__)
+* AWS::MediaLive::Channel.InputLocation (__added__)
+* AWS::MediaLive::Channel.InputLossBehavior (__added__)
+* AWS::MediaLive::Channel.KeyProviderSettings (__added__)
+* AWS::MediaLive::Channel.M2tsSettings (__added__)
+* AWS::MediaLive::Channel.M3u8Settings (__added__)
+* AWS::MediaLive::Channel.MediaPackageGroupSettings (__added__)
+* AWS::MediaLive::Channel.MediaPackageOutputSettings (__added__)
+* AWS::MediaLive::Channel.Mp2Settings (__added__)
+* AWS::MediaLive::Channel.MsSmoothGroupSettings (__added__)
+* AWS::MediaLive::Channel.MsSmoothOutputSettings (__added__)
+* AWS::MediaLive::Channel.MultiplexGroupSettings (__added__)
+* AWS::MediaLive::Channel.MultiplexOutputSettings (__added__)
+* AWS::MediaLive::Channel.NielsenConfiguration (__added__)
+* AWS::MediaLive::Channel.Output (__added__)
+* AWS::MediaLive::Channel.OutputGroup (__added__)
+* AWS::MediaLive::Channel.OutputGroupSettings (__added__)
+* AWS::MediaLive::Channel.OutputLocationRef (__added__)
+* AWS::MediaLive::Channel.OutputSettings (__added__)
+* AWS::MediaLive::Channel.PassThroughSettings (__added__)
+* AWS::MediaLive::Channel.Rec601Settings (__added__)
+* AWS::MediaLive::Channel.Rec709Settings (__added__)
+* AWS::MediaLive::Channel.RemixSettings (__added__)
+* AWS::MediaLive::Channel.RtmpCaptionInfoDestinationSettings (__added__)
+* AWS::MediaLive::Channel.RtmpGroupSettings (__added__)
+* AWS::MediaLive::Channel.RtmpOutputSettings (__added__)
+* AWS::MediaLive::Channel.Scte20PlusEmbeddedDestinationSettings (__added__)
+* AWS::MediaLive::Channel.Scte27DestinationSettings (__added__)
+* AWS::MediaLive::Channel.Scte35SpliceInsert (__added__)
+* AWS::MediaLive::Channel.Scte35TimeSignalApos (__added__)
+* AWS::MediaLive::Channel.SmpteTtDestinationSettings (__added__)
+* AWS::MediaLive::Channel.StandardHlsSettings (__added__)
+* AWS::MediaLive::Channel.StaticKeySettings (__added__)
+* AWS::MediaLive::Channel.TeletextDestinationSettings (__added__)
+* AWS::MediaLive::Channel.TemporalFilterSettings (__added__)
+* AWS::MediaLive::Channel.TimecodeConfig (__added__)
+* AWS::MediaLive::Channel.TtmlDestinationSettings (__added__)
+* AWS::MediaLive::Channel.UdpContainerSettings (__added__)
+* AWS::MediaLive::Channel.UdpGroupSettings (__added__)
+* AWS::MediaLive::Channel.UdpOutputSettings (__added__)
+* AWS::MediaLive::Channel.VideoCodecSettings (__added__)
+* AWS::MediaLive::Channel.VideoDescription (__added__)
+* AWS::MediaLive::Channel.WebvttDestinationSettings (__added__)
+* AWS::MediaLive::Input.InputDeviceRequest (__added__)
+* AWS::MediaLive::Input.InputDeviceSettings (__added__)
+* AWS::ApiGatewayV2::DomainName.DomainNameConfiguration SecurityPolicy (__added__)
+* AWS::ECS::Service.AwsVpcConfiguration SecurityGroups.DuplicatesAllowed (__deleted__)
+* AWS::ECS::Service.AwsVpcConfiguration Subnets.DuplicatesAllowed (__deleted__)
+* AWS::ECS::Service.AwsVpcConfiguration Subnets.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::ECS::Service.LoadBalancer ContainerName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-service-loadbalancers.html#cfn-ecs-service-loadbalancers-containername
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-service-loadbalancer.html#cfn-ecs-service-loadbalancer-containername
+* AWS::ECS::Service.LoadBalancer ContainerPort.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-service-loadbalancers.html#cfn-ecs-service-loadbalancers-containerport
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-service-loadbalancer.html#cfn-ecs-service-loadbalancer-containerport
+* AWS::ECS::Service.LoadBalancer ContainerPort.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::ECS::Service.LoadBalancer LoadBalancerName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-service-loadbalancers.html#cfn-ecs-service-loadbalancers-loadbalancername
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-service-loadbalancer.html#cfn-ecs-service-loadbalancer-loadbalancername
+* AWS::ECS::Service.LoadBalancer TargetGroupArn.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-service-loadbalancers.html#cfn-ecs-service-loadbalancers-targetgrouparn
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-service-loadbalancer.html#cfn-ecs-service-loadbalancer-targetgrouparn
+* AWS::ECS::Service.NetworkConfiguration AwsvpcConfiguration (__deleted__)
+* AWS::ECS::Service.NetworkConfiguration AwsVpcConfiguration (__added__)
+* AWS::LakeFormation::Permissions.DataLocationResource CatalogId (__added__)
+* AWS::LakeFormation::Permissions.DatabaseResource CatalogId (__added__)
+* AWS::LakeFormation::Permissions.TableResource CatalogId (__added__)
+* AWS::LakeFormation::Permissions.TableResource TableWildcard (__added__)
+* AWS::LakeFormation::Permissions.TableWithColumnsResource CatalogId (__added__)
+* AWS::MediaLive::Channel.AudioSelectorSettings AudioTrackSelection (__added__)
+* AWS::MediaLive::Channel.InputAttachment AutomaticInputFailoverSettings (__added__)
+* AWS::MediaLive::Channel.InputSettings Smpte2038DataPreference (__added__)
+* AWS::Route53::HostedZone.HostedZoneTag Key.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53-hostedzone-hostedzonetags.html#cfn-route53-hostedzonetags-key
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53-hostedzone-hostedzonetag.html#cfn-route53-hostedzone-hostedzonetag-key
+* AWS::Route53::HostedZone.HostedZoneTag Value.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53-hostedzone-hostedzonetags.html#cfn-route53-hostedzonetags-value
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53-hostedzone-hostedzonetag.html#cfn-route53-hostedzone-hostedzonetag-value
+* AWS::Route53::HostedZone.VPC VPCId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53-hostedzone-hostedzonevpcs.html#cfn-route53-hostedzone-hostedzonevpcs-vpcid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53-hostedzone-vpc.html#cfn-route53-hostedzone-vpc-vpcid
+* AWS::Route53::HostedZone.VPC VPCRegion.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53-hostedzone-hostedzonevpcs.html#cfn-route53-hostedzone-hostedzonevpcs-vpcregion
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53-hostedzone-vpc.html#cfn-route53-hostedzone-vpc-vpcregion
+
+
 # CloudFormation Resource Specification v18.3.0
 
 ## New Resource Types

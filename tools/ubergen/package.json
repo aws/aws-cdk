@@ -12,8 +12,8 @@
     "ubergen": "bin/ubergen"
   },
   "scripts": {
-    "build": "tsc -b && chmod +x bin/ubergen && eslint . --ext=.ts",
-    "watch": "tsc -b -w",
+    "build": "cdk-build",
+    "watch": "cdk-watch",
     "pkglint": "pkglint -f",
     "test": "echo success",
     "build+test+package": "npm run build+test",

@@ -77,6 +77,14 @@ export interface CodeCommitSourceActionProps extends codepipeline.CommonAwsActio
    * The CodeCommit repository.
    */
   readonly repository: codecommit.IRepository;
+
+  /**
+   * Role to be used by on commit event rule.
+   * Used only when trigger value is CodeCommitTrigger.EVENTS.
+   *
+   * @default a new role will be created.
+   */
+  readonly eventRole?: iam.IRole;
 }
 
 /**
@@ -124,7 +132,9 @@ export class CodeCommitSourceAction extends Action {
     if (createEvent) {
       const eventId = this.generateEventId(stage);
       this.props.repository.onCommit(eventId, {
-        target: new targets.CodePipeline(stage.pipeline),
+        target: new targets.CodePipeline(stage.pipeline, {
+          eventRole: this.props.eventRole,
+        }),
         branches: [this.branch],
       });
     }
@@ -165,7 +175,7 @@ export class CodeCommitSourceAction extends Action {
       } while (this.props.repository.node.tryFindChild(candidate) !== undefined);
       return candidate;
     } else {
-      const branchIdDisambiguator = this.branch === 'master' ? '' : '-${this.branch}-';
+      const branchIdDisambiguator = this.branch === 'master' ? '' : `-${this.branch}-`;
       return this.eventIdFromPrefix(`${baseId}${branchIdDisambiguator}`);
     }
   }
