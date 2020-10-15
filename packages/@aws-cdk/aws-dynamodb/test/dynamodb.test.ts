@@ -1099,7 +1099,7 @@ test('error when adding a global secondary index with projection type KEYS_ONLY,
   })).toThrow(/non-key attributes should not be specified when not using INCLUDE projection type/);
 });
 
-test('error when adding a global secondary index with projection type INCLUDE, but with more than 20 non-key attributes', () => {
+test('error when adding a global secondary index with projection type INCLUDE, but with more than 100 non-key attributes', () => {
   const stack = new Stack();
   const table = new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY, sortKey: TABLE_SORT_KEY });
   const gsiNonKeyAttributeGenerator = NON_KEY_ATTRIBUTE_GENERATOR(GSI_NON_KEY);

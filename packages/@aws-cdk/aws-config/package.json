@@ -52,7 +52,10 @@
     "compat": "cdk-compat"
   },
   "cdk-build": {
-    "cloudformation": "AWS::Config"
+    "cloudformation": "AWS::Config",
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "keywords": [
     "aws",
@@ -96,8 +99,18 @@
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
   },
-  "stability": "experimental",
-  "maturity": "developer-preview",
+  "stability": "stable",
+  "maturity": "stable",
+  "features": [
+    {
+      "name": "Higher level constructs for Config Rules",
+      "stability": "Stable"
+    },
+    {
+      "name": "Higher level constructs for initial set-up (delivery channel & configuration recorder)",
+      "stability": "Not Implemented"
+    }
+  ],
   "awscdkio": {
     "announce": false
   }

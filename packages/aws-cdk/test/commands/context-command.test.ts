@@ -1,6 +1,22 @@
 import { realHandler } from '../../lib/commands/context';
 import { Configuration } from '../../lib/settings';
 
+test('context list', async() => {
+  // GIVEN
+  const configuration = new Configuration();
+  configuration.context.set('foo', 'bar');
+
+  expect(configuration.context.all).toEqual({
+    foo: 'bar',
+  });
+
+  // WHEN
+  await realHandler({
+    configuration,
+    args: {},
+  } as any);
+});
+
 test('context reset can remove a context key', async () => {
   // GIVEN
   const configuration = new Configuration();

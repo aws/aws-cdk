@@ -1,7 +1,8 @@
+import { Construct } from 'constructs';
 import { CfnHook } from './cfn-hook';
 import { FromCloudFormationOptions } from './cfn-parse';
 import { CfnResource } from './cfn-resource';
-import { Construct } from './construct-compat';
+import { undefinedIfAllValuesAreEmpty } from './util';
 
 /**
  * The possible types of traffic shifting for the blue-green deployment configuration.
@@ -487,27 +488,27 @@ export class CfnCodeDeployBlueGreenHook extends CfnHook {
           },
         },
       })),
-      TrafficRoutingConfig: {
+      TrafficRoutingConfig: undefinedIfAllValuesAreEmpty({
         Type: this.trafficRoutingConfig?.type,
-        TimeBasedCanary: {
+        TimeBasedCanary: undefinedIfAllValuesAreEmpty({
           StepPercentage: this.trafficRoutingConfig?.timeBasedCanary?.stepPercentage,
           BakeTimeMins: this.trafficRoutingConfig?.timeBasedCanary?.bakeTimeMins,
-        },
-        TimeBasedLinear: {
+        }),
+        TimeBasedLinear: undefinedIfAllValuesAreEmpty({
           StepPercentage: this.trafficRoutingConfig?.timeBasedLinear?.stepPercentage,
           BakeTimeMins: this.trafficRoutingConfig?.timeBasedLinear?.bakeTimeMins,
-        },
-      },
-      AdditionalOptions: {
+        }),
+      }),
+      AdditionalOptions: undefinedIfAllValuesAreEmpty({
         TerminationWaitTimeInMinutes: this.additionalOptions?.terminationWaitTimeInMinutes,
-      },
-      LifecycleEventHooks: {
+      }),
+      LifecycleEventHooks: undefinedIfAllValuesAreEmpty({
         BeforeInstall: this.lifecycleEventHooks?.beforeInstall,
         AfterInstall: this.lifecycleEventHooks?.afterInstall,
         AfterAllowTestTraffic: this.lifecycleEventHooks?.afterAllowTestTraffic,
         BeforeAllowTraffic: this.lifecycleEventHooks?.beforeAllowTraffic,
         AfterAllowTraffic: this.lifecycleEventHooks?.afterAllowTraffic,
-      },
+      }),
     };
   }
 }
