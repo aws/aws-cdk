@@ -848,7 +848,7 @@
     "myuserpoolmyuserpooldomainEE1E11AF": {
       "Type": "AWS::Cognito::UserPoolDomain",
       "Properties": {
-        "Domain": "myawesomeapp2",
+        "Domain": "myawesomeapp",
         "UserPoolId": {
           "Ref": "myuserpool01998219"
         }

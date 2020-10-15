@@ -72,7 +72,7 @@ const userpool = new UserPool(stack, 'myuserpool', {
 
 const cognitoDomain = userpool.addDomain('myuserpooldomain', {
   cognitoDomain: {
-    domainPrefix: 'myawesomeapp2',
+    domainPrefix: 'myawesomeapp',
   },
 });
 
