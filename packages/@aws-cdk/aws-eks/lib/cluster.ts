@@ -1269,7 +1269,7 @@ export class Cluster extends ClusterBase {
    * @attribute
    */
   public get clusterOpenIdConnectIssuerUrl(): string {
-    return this._clusterResource.attrOpenIdConnectIssuerUrl;
+    return `https://${this.openIdConnectProvider.openIdConnectProviderIssuer}`;
   }
 
   /**
@@ -1281,7 +1281,7 @@ export class Cluster extends ClusterBase {
    * @attribute
    */
   public get clusterOpenIdConnectIssuer(): string {
-    return this.clusterOpenIdConnectIssuerUrl;
+    return this.openIdConnectProvider.openIdConnectProviderIssuer;
   }
 
   /**

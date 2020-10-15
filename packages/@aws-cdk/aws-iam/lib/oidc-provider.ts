@@ -156,7 +156,9 @@ export class OpenIdConnectProvider extends Resource implements IOpenIdConnectPro
       },
     });
 
-    this.openIdConnectProviderIssuer = props.url.replace('https://', '');
+    this.openIdConnectProviderIssuer = props.url
+      .replace('https://', '')
+      .replace('http://', '');
 
     this.openIdConnectProviderArn = Token.asString(resource.ref);
   }
