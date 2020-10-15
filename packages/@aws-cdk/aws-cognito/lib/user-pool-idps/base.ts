@@ -36,6 +36,25 @@ export class ProviderAttribute {
   /** The locale attribute provided by Facebook */
   public static readonly FACEBOOK_LOCALE = new ProviderAttribute('locale');
 
+  /** The name attribute provided by Google */
+  public static readonly GOOGLE_NAMES = new ProviderAttribute('names');
+  /** The gender attribute provided by Google */
+  public static readonly GOOGLE_GENDER = new ProviderAttribute('gender');
+  /** The birthday attribute provided by Google */
+  public static readonly GOOGLE_BIRTHDAYS = new ProviderAttribute('birthdays');
+  /** The birthday attribute provided by Google */
+  public static readonly GOOGLE_PHONE_NUMBERS = new ProviderAttribute('phoneNumbers');
+  /** The email attribute provided by Google */
+  public static readonly GOOGLE_EMAIL = new ProviderAttribute('email');
+  /** The name attribute provided by Google */
+  public static readonly GOOGLE_NAME = new ProviderAttribute('name');
+  /** The email attribute provided by Google */
+  public static readonly GOOGLE_PICTURE = new ProviderAttribute('picture');
+  /** The email attribute provided by Google */
+  public static readonly GOOGLE_GIVEN_NAME = new ProviderAttribute('given_name');
+  /** The email attribute provided by Google */
+  public static readonly GOOGLE_FAMILY_NAME = new ProviderAttribute('family_name');
+
   /**
    * Use this to specify an attribute from the identity provider that is not pre-defined in the CDK.
    * @param attributeName the attribute value string as recognized by the provider
