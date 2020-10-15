@@ -201,5 +201,23 @@ describe('HttpApi', () => {
         expect(metric.color).toEqual(color);
       }
     });
+
+    test('Metrics from imported resource', () => {
+      // GIVEN
+      const stack = new Stack();
+      const apiId = 'importedId';
+      const api = HttpApi.fromApiId(stack, 'test-api', apiId);
+      const metricName = '4xxError';
+      const statistic = 'Sum';
+
+      // WHEN
+      const countMetric = api.metric(metricName, { statistic });
+
+      // THEN
+      expect(countMetric.namespace).toEqual('AWS/ApiGateway');
+      expect(countMetric.metricName).toEqual(metricName);
+      expect(countMetric.dimensions).toEqual({ ApiId: apiId });
+      expect(countMetric.statistic).toEqual(statistic);
+    });
   });
 });
