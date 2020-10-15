@@ -7,7 +7,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
 
-* **config:** `scopeToResource()`, `scopeToResources()` and `scopeToTag()` APIs have been removed. Use the `scope` property to restrict the scope of a Config rule.
+* **config:** `scopeToResource()`, `scopeToResources()` and `scopeToTag()` APIs have been removed. Use the `ruleScope` property to restrict the scope of a Config rule. `fromResource()`, `fromResources()` and `fromTag()` can be used from the `RuleScope` class.
 * **cloudfront:** `Distribution` behaviors now enable compression by default
 * **cloudfront:** Distribution `forwardQueryString` and `forwardQueryStringCacheKeys` have been removed in favor of `cachePolicy` and the new CachePolicy construct.
 * **cloudfront:** Distributions now default to the "CachingOptimized" managed cache policy
