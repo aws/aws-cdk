@@ -19,4 +19,7 @@ RUN mkdir /tmp/npm-cache && \
 # Disable npm update notifications
 RUN npm config --global set update-notifier false
 
+# create non root user and change allow execute command for non root user
+RUN /sbin/useradd -u 1000 user && chmod 711 /
+
 CMD [ "parcel" ]
