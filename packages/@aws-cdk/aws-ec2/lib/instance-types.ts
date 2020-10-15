@@ -311,6 +311,16 @@ export enum InstanceClass {
   T3A = 't3a',
 
   /**
+   * Burstable instances, 4th generation with Graviton2 processors
+   */
+  BURSTABLE4_GRAVITON = 't4g',
+
+  /**
+   * Burstable instances, 4th generation with Graviton2 processors
+   */
+  T4G = 't4g',
+
+  /**
    * Memory-intensive instances, 1st generation
    */
   MEMORY_INTENSIVE_1 = 'x1',
