@@ -1,10 +1,15 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as cpactions from '@aws-cdk/aws-codepipeline-actions';
-import { Construct, Stage, Aspects } from '@aws-cdk/core';
+import { Stage, Aspects } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
+import { Construct } from 'constructs';
 import { AssetType, DeployCdkStackAction } from './actions';
 import { AssetManifestReader, DockerImageManifestEntry, FileManifestEntry } from './private/asset-manifest';
 import { topologicalSort } from './private/toposort';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Construction properties for a CdkStage
@@ -37,7 +42,7 @@ export interface CdkStageProps {
  * You don't need to instantiate this class directly. Use
  * `cdkPipeline.addStage()` instead.
  */
-export class CdkStage extends Construct {
+export class CdkStage extends CoreConstruct {
   private _nextSequentialRunOrder = 1; // Must start at 1 eh
   private _manualApprovalCounter = 1;
   private readonly pipelineStage: codepipeline.IStage;
@@ -71,6 +76,12 @@ export class CdkStage extends Construct {
    */
   public addApplication(appStage: Stage, options: AddStageOptions = {}) {
     const asm = appStage.synth();
+
+    if (asm.stacks.length === 0) {
+      // If we don't check here, a more puzzling "stage contains no actions"
+      // error will be thrown come deployment time.
+      throw new Error(`The given Stage construct ('${appStage.node.path}') should contain at least one Stack`);
+    }
 
     const sortedTranches = topologicalSort(asm.stacks,
       stack => stack.id,

@@ -22,6 +22,7 @@ running on AWS Lambda, or any web application.
   - [Breaking up Methods and Resources across Stacks](#breaking-up-methods-and-resources-across-stacks)
 - [AWS Lambda-backed APIs](#aws-lambda-backed-apis)
 - [Integration Targets](#integration-targets)
+- [API Keys](#api-keys)
 - [Working with models](#working-with-models)
 - [Default Integration and Method Options](#default-integration-and-method-options)
 - [Proxy Routes](#proxy-routes)
@@ -29,6 +30,7 @@ running on AWS Lambda, or any web application.
   - [IAM-based authorizer](#iam-based-authorizer)
   - [Lambda-based token authorizer](#lambda-based-token-authorizer)
   - [Lambda-based request authorizer](#lambda-based-request-authorizer)
+- [Mutual TLS](#mutal-tls-mtls)
 - [Deployments](#deployments)
   - [Deep dive: Invalidation of deployments](#deep-dive-invalidation-of-deployments)
 - [Custom Domains](#custom-domains)
@@ -39,6 +41,7 @@ running on AWS Lambda, or any web application.
 - [Gateway Response](#gateway-response)
 - [OpenAPI Definition](#openapi-definition)
   - [Endpoint configuration](#endpoint-configuration)
+- [Metrics](#metrics)
 - [APIGateway v2](#apigateway-v2)
 
 ## Defining APIs
@@ -151,6 +154,8 @@ book.addMethod('GET', getBookIntegration, {
 });
 ```
 
+## API Keys
+
 The following example shows how to use an API Key with a usage plan:
 
 ```ts
@@ -205,6 +210,13 @@ Existing API keys can also be imported into a CDK app using its id.
 
 ```ts
 const importedKey = ApiKey.fromApiKeyId(this, 'imported-key', '<api-key-id>');
+```
+
+The "grant" methods can be used to give prepackaged sets of permissions to other resources. The
+following code provides read permission to an API key.
+
+```ts
+importedKey.grantRead(lambda);
 ```
 
 In scenarios where you need to create a single api key and configure rate limiting for it, you can use `RateLimitedApiKey`.
@@ -473,7 +485,7 @@ iamUser.attachInlinePolicy(new iam.Policy(this, 'AllowBooks', {
     new iam.PolicyStatement({
       actions: [ 'execute-api:Invoke' ],
       effect: iam.Effect.Allow,
-      resources: [ getBooks.methodArn() ]
+      resources: [ getBooks.methodArn ]
     })
   ]
 }))
@@ -561,6 +573,24 @@ however, be modified by changing the `identitySource` property, and is required 
 Authorizers can also be passed via the `defaultMethodOptions` property within the `RestApi` construct or the `Method` construct. Unless
 explicitly overridden, the specified defaults will be applied across all `Method`s across the `RestApi` or across all `Resource`s,
 depending on where the defaults were specified.
+
+## Mutual TLS (mTLS)
+
+Mutual TLS can be configured to limit access to your API based by using client certificates instead of (or as an extension of) using authorization headers.
+
+```ts
+new apigw.DomainName(this, 'domain-name', {
+  domainName: 'example.com',
+  certificate: acm.Certificate.fromCertificateArn(this, 'cert' 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
+  mtls: {
+    bucket: new Bucket(this, 'bucket')),
+    key: 'truststore.pem',
+    version: 'version',
+  },
+});
+```
+
+Instructions for configuring your trust store can be found [here](https://aws.amazon.com/blogs/compute/introducing-mutual-tls-authentication-for-amazon-api-gateway/).
 
 ## Deployments
 
@@ -930,6 +960,11 @@ const integration = new apigw.Integration({
 });
 ```
 
+The uri for the private integration, in the case of a VpcLink, will be set to the DNS name of
+the VPC Link's NLB. If the VPC Link has multiple NLBs or the VPC Link is imported or the DNS
+name cannot be determined for any other reason, the user is expected to specify the `uri`
+property.
+
 Any existing `VpcLink` resource can be imported into the CDK app via the `VpcLink.fromVpcLinkId()`.
 
 ```ts
@@ -1015,6 +1050,18 @@ const api = new apigateway.SpecRestApi(this, 'ExampleRestApi', {
 [`x-amazon-apigateway-policy`](https://docs.aws.amazon.com/apigateway/latest/developerguide/openapi-extensions-policy.html) and 
 [`x-amazon-apigateway-endpoint-configuration`](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-swagger-extensions-endpoint-configuration.html) 
 in your openApi file. 
+
+## Metrics
+
+The API Gateway service sends metrics around the performance of Rest APIs to Amazon CloudWatch.
+These metrics can be referred to using the metric APIs available on the `RestApi` construct.
+The APIs with the `metric` prefix can be used to get reference to specific metrics for this API. For example,
+the method below refers to the client side errors metric for this API.
+
+```ts
+const api = new apigw.RestApi(stack, 'my-api');
+const clientErrorMetric = api.metricClientError();
+```
 
 ## APIGateway v2
 

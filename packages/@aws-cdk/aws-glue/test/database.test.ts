@@ -1,7 +1,7 @@
+import { deepEqual, throws } from 'assert';
 import { expect } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import { Stack } from '@aws-cdk/core';
-import { deepEqual, throws } from 'assert';
 import * as glue from '../lib';
 
 test('default database does not create a bucket', () => {

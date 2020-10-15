@@ -14,6 +14,7 @@
 
 ---
 <!--END STABILITY BANNER-->
+
 [Amazon Cognito](https://docs.aws.amazon.com/cognito/latest/developerguide/what-is-amazon-cognito.html) provides
 authentication, authorization, and user management for your web and mobile apps. Your users can sign in directly with a
 user name and password, or through a third party such as Facebook, Amazon, Google or Apple.
@@ -319,6 +320,8 @@ Lambda triggers can either be specified as part of the `UserPool` initialization
 on the construct, as so -
 
 ```ts
+import * as lambda from '@aws-cdk/aws-lambda';
+
 const authChallengeFn = new lambda.Function(this, 'authChallengeFn', {
   // ...
 });
@@ -344,7 +347,7 @@ Triggers](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user
 
 Any user pool that has been created outside of this stack, can be imported into the CDK app. Importing a user pool
 allows for it to be used in other parts of the CDK app that reference an `IUserPool`. However, imported user pools have
-limited configurability. As a rule of thumb, none of the properties that is are part of the
+limited configurability. As a rule of thumb, none of the properties that are part of the
 [`AWS::Cognito::UserPool`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cognito-userpool.html)
 CloudFormation resource can be configured.
 
@@ -371,6 +374,7 @@ The following third-party identity providers are currentlhy supported in the CDK
 
 * [Login With Amazon](https://developer.amazon.com/apps-and-games/login-with-amazon)
 * [Facebook Login](https://developers.facebook.com/docs/facebook-login/)
+* [Google Login](https://developers.google.com/identity/sign-in/web/sign-in)
 
 The following code configures a user pool to federate with the third party provider, 'Login with Amazon'. The identity
 provider needs to be configured with a set of credentials that the Cognito backend can use to federate with the
@@ -472,6 +476,7 @@ pool.addClient('app-client', {
     },
     scopes: [ OAuthScope.OPENID ],
     callbackUrls: [ 'https://my-app-domain.com/welcome' ],
+    logoutUrls: [ 'https://my-app-domain.com/signin' ],
   }
 });
 ```
@@ -565,3 +570,10 @@ const signInUrl = domain.signInUrl(client, {
 })
 ```
 
+Existing domains can be imported into CDK apps using `UserPoolDomain.fromDomainName()` API
+
+```ts
+const stack = new Stack(app, 'my-stack');
+
+const myUserPoolDomain = UserPoolDomain.fromDomainName(stack, 'my-user-pool-domain', 'domain-name');
+```

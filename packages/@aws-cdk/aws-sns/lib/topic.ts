@@ -1,5 +1,6 @@
 import { IKey } from '@aws-cdk/aws-kms';
-import { Construct, Stack } from '@aws-cdk/core';
+import { Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnTopic } from './sns.generated';
 import { ITopic, TopicBase } from './topic-base';
 
@@ -68,7 +69,7 @@ export class Topic extends TopicBase {
     const resource = new CfnTopic(this, 'Resource', {
       displayName: props.displayName,
       topicName: this.physicalName,
-      kmsMasterKeyId: props.masterKey && props.masterKey.keyId,
+      kmsMasterKeyId: props.masterKey && props.masterKey.keyArn,
     });
 
     this.topicArn = this.getResourceArnAttribute(resource.ref, {

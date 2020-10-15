@@ -1,5 +1,11 @@
-import { Construct, CustomResource, Stack } from '@aws-cdk/core';
-import { Cluster } from './cluster';
+import { CustomResource, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
+import { ICluster } from './cluster';
+import { KubectlProvider } from './kubectl-provider';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Properties for KubernetesManifest
@@ -10,7 +16,7 @@ export interface KubernetesManifestProps {
    *
    * [disable-awslint:ref-via-interface]
    */
-  readonly cluster: Cluster;
+  readonly cluster: ICluster;
 
   /**
    * The manifest to apply.
@@ -44,7 +50,7 @@ export interface KubernetesManifestProps {
  *
  * Applies/deletes the manifest using `kubectl`.
  */
-export class KubernetesManifest extends Construct {
+export class KubernetesManifest extends CoreConstruct {
   /**
    * The CloudFormation reosurce type.
    */
@@ -54,7 +60,7 @@ export class KubernetesManifest extends Construct {
     super(scope, id);
 
     const stack = Stack.of(this);
-    const provider = props.cluster._attachKubectlResourceScope(this);
+    const provider = KubectlProvider.getOrCreate(this, props.cluster);
 
     new CustomResource(this, 'Resource', {
       serviceToken: provider.serviceToken,
@@ -65,7 +71,7 @@ export class KubernetesManifest extends Construct {
         // StepFunctions, CloudWatch Dashboards etc).
         Manifest: stack.toJsonString(props.manifest),
         ClusterName: props.cluster.clusterName,
-        RoleArn: props.cluster._kubectlCreationRole.roleArn,
+        RoleArn: provider.roleArn, // TODO: bake into provider's environment
       },
     });
   }

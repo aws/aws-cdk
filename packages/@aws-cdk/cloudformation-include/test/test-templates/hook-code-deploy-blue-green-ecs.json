@@ -1,0 +1,95 @@
+{
+  "Hooks": {
+    "RandomHook": {
+      "Type": "UnknownToday"
+    },
+    "EcsBlueGreenCodeDeployHook": {
+      "Type": "AWS::CodeDeploy::BlueGreen",
+      "Properties": {
+        "ServiceRole": "CodeDeployServiceRoleName",
+        "Applications": [
+          {
+            "Target": {
+              "Type": "AWS::ECS::Service",
+              "LogicalID": "MyService"
+            },
+            "ECSAttributes": {
+              "TaskDefinitions": [
+                "MyTaskDefinition", "MyTaskDefinition"
+              ],
+              "TaskSets": [
+                "MyTaskSet", "MyTaskSet"
+              ],
+              "TrafficRouting": {
+                "ProdTrafficRoute": {
+                  "Type": "AWS::ElasticLoadBalancingV2::Listener",
+                  "LogicalID": "AlbListener"
+                },
+                "TestTrafficRoute": {
+                  "Type": "AWS::ElasticLoadBalancingV2::Listener",
+                  "LogicalID": "AlbListener"
+                },
+                "TargetGroups": [
+                  "AlbTargetGroup", "AlbTargetGroup"
+                ]
+              }
+            }
+          }
+        ],
+        "TrafficRoutingConfig": {
+          "Type": "AllAtOnce",
+          "TimeBasedCanary": {
+            "StepPercentage": 1,
+            "BakeTimeMins": "2"
+          },
+          "TimeBasedLinear": {
+            "StepPercentage": "3",
+            "BakeTimeMins": 4
+          }
+        },
+        "AdditionalOptions": {
+          "TerminationWaitTimeInMinutes": 5
+        },
+        "LifecycleEventHooks": {
+          "BeforeInstall": "f1",
+          "AfterInstall": "f2",
+          "AfterAllowTestTraffic": "f3",
+          "BeforeAllowTraffic": "f4",
+          "AfterAllowTraffic": "f5"
+        }
+      }
+    }
+  },
+  "Resources": {
+    "MyService": {
+      "Type": "AWS::ECS::Service"
+    },
+    "MyTaskDefinition": {
+      "Type": "AWS::ECS::TaskDefinition"
+    },
+    "MyTaskSet": {
+      "Type": "AWS::ECS::TaskSet",
+      "Properties": {
+        "Cluster": "my-cluster",
+        "Service": { "Ref":  "MyService" },
+        "TaskDefinition": { "Fn::Sub": "${MyTaskDefinition}" }
+      }
+    },
+    "AlbTargetGroup": {
+      "Type": "AWS::ElasticLoadBalancingV2::TargetGroup"
+    },
+    "AlbListener": {
+      "Type": "AWS::ElasticLoadBalancingV2::Listener",
+      "Properties": {
+        "Port": 80,
+        "Protocol": "HTTP",
+        "DefaultActions": [
+          {
+            "Type": "forward"
+          }
+        ],
+        "LoadBalancerArn": "my-lb"
+      }
+    }
+  }
+}

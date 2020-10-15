@@ -95,6 +95,7 @@ const node3 = mesh.addVirtualNode('node3', {
       unhealthyThreshold: 2,
     },
   },
+  accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
 });
 
 router.addRoute('route-2', {

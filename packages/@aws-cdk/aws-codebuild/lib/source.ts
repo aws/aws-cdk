@@ -1,7 +1,6 @@
 import * as codecommit from '@aws-cdk/aws-codecommit';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
-import { Construct } from '@aws-cdk/core';
 import { CfnProject } from './codebuild.generated';
 import { IProject } from './project';
 import {
@@ -11,6 +10,10 @@ import {
   GITHUB_SOURCE_TYPE,
   S3_SOURCE_TYPE,
 } from './source-types';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * The type returned from {@link ISource#bind}.
@@ -39,7 +42,7 @@ export interface ISource {
 
   readonly badgeSupported: boolean;
 
-  bind(scope: Construct, project: IProject): SourceConfig;
+  bind(scope: CoreConstruct, project: IProject): SourceConfig;
 }
 
 /**
@@ -90,7 +93,7 @@ export abstract class Source implements ISource {
    * binding operations on the source. For example, it can grant permissions to the
    * code build project to read from the S3 bucket.
    */
-  public bind(_scope: Construct, _project: IProject): SourceConfig {
+  public bind(_scope: CoreConstruct, _project: IProject): SourceConfig {
     return {
       sourceProperty: {
         sourceIdentifier: this.identifier,
@@ -119,6 +122,13 @@ interface GitSourceProps extends SourceProps {
    * @default the default branch's HEAD commit ID is used
    */
   readonly branchOrRef?: string;
+
+  /**
+   * Whether to fetch submodules while cloning git repo.
+   *
+   * @default false
+   */
+  readonly fetchSubmodules?: boolean;
 }
 
 /**
@@ -127,21 +137,26 @@ interface GitSourceProps extends SourceProps {
 abstract class GitSource extends Source {
   private readonly cloneDepth?: number;
   private readonly branchOrRef?: string;
+  private readonly fetchSubmodules?: boolean;
 
   protected constructor(props: GitSourceProps) {
     super(props);
 
     this.cloneDepth = props.cloneDepth;
     this.branchOrRef = props.branchOrRef;
+    this.fetchSubmodules = props.fetchSubmodules;
   }
 
-  public bind(_scope: Construct, _project: IProject): SourceConfig {
+  public bind(_scope: CoreConstruct, _project: IProject): SourceConfig {
     const superConfig = super.bind(_scope, _project);
     return {
       sourceVersion: this.branchOrRef,
       sourceProperty: {
         ...superConfig.sourceProperty,
         gitCloneDepth: this.cloneDepth,
+        gitSubmodulesConfig: this.fetchSubmodules ? {
+          fetchSubmodules: this.fetchSubmodules,
+        } : undefined,
       },
     };
   }
@@ -464,7 +479,7 @@ abstract class ThirdPartyGitSource extends GitSource {
     this.webhookFilters = props.webhookFilters || [];
   }
 
-  public bind(_scope: Construct, _project: IProject): SourceConfig {
+  public bind(_scope: CoreConstruct, _project: IProject): SourceConfig {
     const anyFilterGroupsProvided = this.webhookFilters.length > 0;
     const webhook = this.webhook === undefined ? (anyFilterGroupsProvided ? true : undefined) : this.webhook;
 
@@ -503,7 +518,7 @@ class CodeCommitSource extends GitSource {
     this.repo = props.repository;
   }
 
-  public bind(_scope: Construct, project: IProject): SourceConfig {
+  public bind(_scope: CoreConstruct, project: IProject): SourceConfig {
     // https://docs.aws.amazon.com/codebuild/latest/userguide/setting-up.html
     project.addToRolePolicy(new iam.PolicyStatement({
       actions: ['codecommit:GitPull'],
@@ -552,7 +567,7 @@ class S3Source extends Source {
     this.version = props.version;
   }
 
-  public bind(_scope: Construct, project: IProject): SourceConfig {
+  public bind(_scope: CoreConstruct, project: IProject): SourceConfig {
     this.bucket.grantRead(project);
 
     const superConfig = super.bind(_scope, project);
@@ -597,7 +612,7 @@ class GitHubSource extends ThirdPartyGitSource {
     this.httpsCloneUrl = `https://github.com/${props.owner}/${props.repo}.git`;
   }
 
-  public bind(_scope: Construct, project: IProject): SourceConfig {
+  public bind(_scope: CoreConstruct, project: IProject): SourceConfig {
     const superConfig = super.bind(_scope, project);
     return {
       sourceProperty: {
@@ -641,7 +656,7 @@ class GitHubEnterpriseSource extends ThirdPartyGitSource {
     this.ignoreSslErrors = props.ignoreSslErrors;
   }
 
-  public bind(_scope: Construct, _project: IProject): SourceConfig {
+  public bind(_scope: CoreConstruct, _project: IProject): SourceConfig {
     const superConfig = super.bind(_scope, _project);
     return {
       sourceProperty: {
@@ -686,7 +701,7 @@ class BitBucketSource extends ThirdPartyGitSource {
     this.httpsCloneUrl = `https://bitbucket.org/${props.owner}/${props.repo}.git`;
   }
 
-  public bind(_scope: Construct, _project: IProject): SourceConfig {
+  public bind(_scope: CoreConstruct, _project: IProject): SourceConfig {
     // BitBucket sources don't support the PULL_REQUEST_REOPENED event action
     if (this.anyWebhookFilterContainsPrReopenedEventAction()) {
       throw new Error('BitBucket sources do not support the PULL_REQUEST_REOPENED webhook event action');

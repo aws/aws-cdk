@@ -3,9 +3,10 @@ import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import {
-  Aws, CfnCondition, CfnCustomResource, Construct, CustomResource, Fn,
+  Aws, CfnCondition, CfnCustomResource, Construct as CoreConstruct, CustomResource, Fn,
   IResource, Lazy, RemovalPolicy, Resource, Stack, Token,
 } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnTable, CfnTableProps } from './dynamodb.generated';
 import * as perms from './perms';
 import { ReplicaProvider } from './replica-provider';
@@ -564,10 +565,7 @@ abstract class TableBase extends Resource implements ITable {
     return iam.Grant.addToPrincipal({
       grantee,
       actions: ['dynamodb:ListStreams'],
-      resourceArns: [
-        Lazy.stringValue({ produce: () => `${this.tableArn}/stream/*` }),
-        ...this.regionalArns.map(arn => Lazy.stringValue({ produce: () => `${arn}/stream/*` })),
-      ],
+      resourceArns: ['*'],
     });
   }
 
@@ -1333,8 +1331,8 @@ export class Table extends TableBase {
       encryptionType = props.encryptionKey != null
         // If there is a configured encyptionKey, the encryption is implicitly CUSTOMER_MANAGED
         ? TableEncryption.CUSTOMER_MANAGED
-        // Otherwise, if severSideEncryption is enabled, it's AWS_MANAGED; else DEFAULT
-        : props.serverSideEncryption ? TableEncryption.AWS_MANAGED : TableEncryption.DEFAULT;
+        // Otherwise, if severSideEncryption is enabled, it's AWS_MANAGED; else undefined (do not set anything)
+        : props.serverSideEncryption ? TableEncryption.AWS_MANAGED : undefined;
     }
 
     if (encryptionType !== TableEncryption.CUSTOMER_MANAGED && props.encryptionKey) {
@@ -1362,6 +1360,9 @@ export class Table extends TableBase {
         return { sseSpecification: { sseEnabled: true } };
 
       case TableEncryption.DEFAULT:
+        return { sseSpecification: { sseEnabled: false } };
+
+      case undefined:
         // Not specifying "sseEnabled: false" here because it would cause phony changes to existing stacks.
         return { sseSpecification: undefined };
 
@@ -1448,7 +1449,7 @@ interface ScalableAttributePair {
  * policy resource), new permissions are in effect before clean up happens, and so replicas that
  * need to be dropped can no longer be due to lack of permissions.
  */
-class SourceTableAttachedPolicy extends Construct implements iam.IGrantable {
+class SourceTableAttachedPolicy extends CoreConstruct implements iam.IGrantable {
   public readonly grantPrincipal: iam.IPrincipal;
   public readonly policy: iam.IPolicy;
 

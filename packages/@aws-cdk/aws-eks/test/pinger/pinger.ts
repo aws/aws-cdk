@@ -1,14 +1,19 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Construct, CustomResource, Token, Duration } from '@aws-cdk/core';
+import { CustomResource, Token, Duration } from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
+import { Construct } from 'constructs';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 export interface PingerProps {
   readonly url: string;
   readonly securityGroup?: ec2.SecurityGroup;
-  readonly vpc?: ec2.Vpc;
+  readonly vpc?: ec2.IVpc;
 }
-export class Pinger extends Construct {
+export class Pinger extends CoreConstruct {
 
   private _resource: CustomResource;
 

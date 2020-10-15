@@ -6,7 +6,7 @@ pull_request_rules:
       label:
         add: [ contribution/core ]
     conditions:
-      - author~=^(eladb|RomainMuller|garnaat|nija-at|shivlaks|skinny85|rix0rrr|NGL321|Jerry-AWS|SomayaB|MrArnoldPalmer|NetaNir|iliapolo|njlynch|ericzbeard|ccfife|fulghum|pkandasamy91|SoManyHs|uttarasridhar|BryanPan342|comcalvi|kaizen3031593|)$
+      - author~=^(eladb|RomainMuller|garnaat|nija-at|shivlaks|skinny85|rix0rrr|NGL321|Jerry-AWS|SomayaB|MrArnoldPalmer|NetaNir|iliapolo|njlynch|ericzbeard|ccfife|fulghum|pkandasamy91|SoManyHs|uttarasridhar)$
       - -label~="contribution/core"
   - name: automatic merge
     actions:
@@ -17,7 +17,6 @@ pull_request_rules:
         method: squash
         strict_method: merge
         commit_message: title+body
-      delete_head_branch: {}
     conditions:
       - base!=release
       - -title~=(WIP|wip)
@@ -30,8 +29,7 @@ pull_request_rules:
       - -approved-reviews-by~=author
       - "#changes-requested-reviews-by=0"
       - status-success~=AWS CodeBuild us-east-1
-      #- status-success=Semantic Pull Request
-      - status-success=mandatory-changes
+      - status-success=validate-pr
   - name: automatic merge (2+ approvers)
     actions:
       comment:
@@ -41,7 +39,6 @@ pull_request_rules:
         method: squash
         strict_method: merge
         commit_message: title+body
-      delete_head_branch: {}
     conditions:
       - base!=release
       - -title~=(WIP|wip)
@@ -55,8 +52,7 @@ pull_request_rules:
       - -approved-reviews-by~=author
       - "#changes-requested-reviews-by=0"
       - status-success~=AWS CodeBuild us-east-1
-      #- status-success=Semantic Pull Request
-      - status-success=mandatory-changes
+      - status-success=validate-pr
   - name: automatic merge (no-squash)
     actions:
       comment:
@@ -67,7 +63,6 @@ pull_request_rules:
         method: merge
         strict_method: merge
         commit_message: title+body
-      delete_head_branch: {}
     conditions:
       - -title~=(WIP|wip)
       - -label~=(blocked|do-not-merge)
@@ -81,8 +76,7 @@ pull_request_rules:
       - -approved-reviews-by~=author
       - "#changes-requested-reviews-by=0"
       - status-success~=AWS CodeBuild us-east-1
-      #- status-success=Semantic Pull Request
-      - status-success=mandatory-changes
+      - status-success=validate-pr
   - name: remove stale reviews
     actions:
       dismiss_reviews:
@@ -115,7 +109,6 @@ pull_request_rules:
         # It's not dangerous: GitHub branch protection settings prevent merging stale branches.
         strict: false
         method: squash
-      delete_head_branch: {}
     conditions:
       - -title~=(WIP|wip)
       - -label~=(blocked|do-not-merge)
@@ -125,5 +118,21 @@ pull_request_rules:
       - "#approved-reviews-by>=1"
       - "#changes-requested-reviews-by=0"
       - status-success~=AWS CodeBuild us-east-1
-      #- status-success=Semantic Pull Request
-      - status-success=mandatory-changes
+      - status-success=validate-pr
+  - name: automatic merge of v2 forward merges
+    actions:
+      comment:
+        message: Forward merge successful!
+      merge:
+        method: merge
+        strict: smart+fasttrack
+        strict_method: merge
+        commit_message: title+body
+    conditions:
+      - label~=forward-merge
+      - -label~=(blocked|do-not-merge)
+      - -merged
+      - -closed
+      - author~=aws-cdk-automation
+      - "#approved-reviews-by>=1"
+      - status-success~=AWS CodeBuild us-east-1

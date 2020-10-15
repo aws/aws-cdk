@@ -61,7 +61,7 @@ async function prepareAsset(asset: cxschema.AssetMetadataEntry, assetManifest: A
         toolkitInfo,
         asset.packaging === 'zip' ? cxschema.FileAssetPackaging.ZIP_DIRECTORY : cxschema.FileAssetPackaging.FILE);
     case 'container-image':
-      return await prepareDockerImageAsset(asset, assetManifest, toolkitInfo);
+      return prepareDockerImageAsset(asset, assetManifest, toolkitInfo);
     default:
       // eslint-disable-next-line max-len
       throw new Error(`Unsupported packaging type: ${(asset as any).packaging}. You might need to upgrade your aws-cdk toolkit to support this asset type.`);

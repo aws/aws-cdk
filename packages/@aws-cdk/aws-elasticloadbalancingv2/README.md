@@ -1,4 +1,5 @@
 ## Amazon Elastic Load Balancing V2 Construct Library
+
 <!--BEGIN STABILITY BANNER-->
 ---
 
@@ -60,6 +61,21 @@ listener.addTargets('ApplicationFleet', {
 
 The security groups of the load balancer and the target are automatically
 updated to allow the network traffic.
+
+One (or more) security groups can be associated with the load balancer;
+if a security group isn't provided, one will be automatically created.
+
+```ts
+const securityGroup1 = new ec2.SecurityGroup(stack, 'SecurityGroup1', { vpc });
+const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
+  vpc,
+  internetFacing: true,
+  securityGroup: securityGroup1, // Optional - will be automatically created otherwise
+});
+
+const securityGroup2 = new ec2.SecurityGroup(stack, 'SecurityGroup2', { vpc });
+lb.addSecurityGroup(securityGroup2);
+```
 
 #### Conditions
 
@@ -150,6 +166,19 @@ listener.addAction('DefaultAction', {
   }),
 });
 ```
+
+If you just want to redirect all incoming traffic on one port to another port, you can use the following code:
+
+```ts
+lb.addRedirect({
+  sourceProtocol: elbv2.ApplicationProtocol.HTTPS,
+  sourcePort: 8443,
+  targetProtocol: elbv2.ApplicationProtocol.HTTP,
+  targetPort: 8080,
+});
+```
+
+If you do not provide any options for this method, it redirects HTTP port 80 to HTTPS port 443.
 
 ### Defining a Network Load Balancer
 
@@ -307,6 +336,7 @@ public attachToApplicationTargetGroup(targetGroup: ApplicationTargetGroup): Load
   };
 }
 ```
+
 `targetType` should be one of `Instance` or `Ip`. If the target can be
 directly added to the target group, `targetJson` should contain the `id` of
 the target (either instance ID or IP address depending on the type) and

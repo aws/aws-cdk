@@ -359,8 +359,8 @@
     "ParameterGroup5E32DECB": {
       "Type": "AWS::RDS::DBParameterGroup",
       "Properties": {
-        "Description": "Parameter group for oracle-se1-11.2",
-        "Family": "oracle-se1-11.2",
+        "Description": "Parameter group for oracle-se2-19",
+        "Family": "oracle-se2-19",
         "Parameters": {
           "open_cursors": "2500"
         }
@@ -394,11 +394,11 @@
     "OptionGroupACA43DC1": {
       "Type": "AWS::RDS::OptionGroup",
       "Properties": {
-        "EngineName": "oracle-se1",
-        "MajorEngineVersion": "11.2",
+        "EngineName": "oracle-se2",
+        "MajorEngineVersion": "19",
         "OptionConfigurations": [
           {
-            "OptionName": "XMLDB"
+            "OptionName": "LOCATOR"
           },
           {
             "OptionName": "OEM",
@@ -413,7 +413,7 @@
             ]
           }
         ],
-        "OptionGroupDescription": "Option group for oracle-se1 11.2"
+        "OptionGroupDescription": "Option group for oracle-se2 19"
       }
     },
     "InstanceSubnetGroupF2CBA54F": {
@@ -549,7 +549,7 @@
           ]
         },
         "GenerateSecretString": {
-          "ExcludeCharacters": "\"@/\\",
+          "ExcludeCharacters": " %+~`#$&*()|[]{}:;<>?!'/@\"\\",
           "GenerateStringKey": "password",
           "PasswordLength": 30,
           "SecretStringTemplate": "{\"username\":\"syscdk\"}"
@@ -636,7 +636,6 @@
         "DBSubnetGroupName": {
           "Ref": "InstanceSubnetGroupF2CBA54F"
         },
-        "DeletionProtection": true,
         "EnableCloudwatchLogsExports": [
           "trace",
           "audit",
@@ -644,7 +643,8 @@
           "listener"
         ],
         "EnablePerformanceInsights": true,
-        "Engine": "oracle-se1",
+        "Engine": "oracle-se2",
+        "EngineVersion": "19.0.0.0.ru-2020-04.rur-2020-04.r1",
         "Iops": 1000,
         "LicenseModel": "bring-your-own-license",
         "MasterUsername": {
@@ -813,7 +813,7 @@
       "Properties": {
         "Location": {
           "ApplicationId": "arn:aws:serverlessrepo:us-east-1:297356227824:applications/SecretsManagerRDSOracleRotationSingleUser",
-          "SemanticVersion": "1.1.3"
+          "SemanticVersion": "1.1.60"
         },
         "Parameters": {
           "endpoint": {
@@ -832,6 +832,7 @@
             ]
           },
           "functionName": "awscdkrdsinstanceInstanceRotationSingleUserAFE3C214",
+          "excludeCharacters": " %+~`#$&*()|[]{}:;<>?!'/@\"\\",
           "vpcSubnetIds": {
             "Fn::Join": [
               "",
@@ -965,9 +966,11 @@
     "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
+        "Handler": "index.handler",
+        "Runtime": "nodejs10.x",
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParameters11aa2ce8971716ca7c8d28d472ab5e937131e78e136d0de8f4997fb11c4de847S3Bucket46EF559D"
+            "Ref": "AssetParameters74a1cab76f5603c5e27101cb3809d8745c50f708b0f4b497ed0910eb533d437bS3Bucket48EF98C9"
           },
           "S3Key": {
             "Fn::Join": [
@@ -980,7 +983,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters11aa2ce8971716ca7c8d28d472ab5e937131e78e136d0de8f4997fb11c4de847S3VersionKey68B7BF84"
+                          "Ref": "AssetParameters74a1cab76f5603c5e27101cb3809d8745c50f708b0f4b497ed0910eb533d437bS3VersionKeyF33C73AF"
                         }
                       ]
                     }
@@ -993,7 +996,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters11aa2ce8971716ca7c8d28d472ab5e937131e78e136d0de8f4997fb11c4de847S3VersionKey68B7BF84"
+                          "Ref": "AssetParameters74a1cab76f5603c5e27101cb3809d8745c50f708b0f4b497ed0910eb533d437bS3VersionKeyF33C73AF"
                         }
                       ]
                     }
@@ -1003,14 +1006,12 @@
             ]
           }
         },
-        "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
             "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB",
             "Arn"
           ]
-        },
-        "Runtime": "nodejs10.x"
+        }
       },
       "DependsOn": [
         "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB",
@@ -1108,17 +1109,17 @@
     }
   },
   "Parameters": {
-    "AssetParameters11aa2ce8971716ca7c8d28d472ab5e937131e78e136d0de8f4997fb11c4de847S3Bucket46EF559D": {
+    "AssetParameters74a1cab76f5603c5e27101cb3809d8745c50f708b0f4b497ed0910eb533d437bS3Bucket48EF98C9": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"11aa2ce8971716ca7c8d28d472ab5e937131e78e136d0de8f4997fb11c4de847\""
+      "Description": "S3 bucket for asset \"74a1cab76f5603c5e27101cb3809d8745c50f708b0f4b497ed0910eb533d437b\""
     },
-    "AssetParameters11aa2ce8971716ca7c8d28d472ab5e937131e78e136d0de8f4997fb11c4de847S3VersionKey68B7BF84": {
+    "AssetParameters74a1cab76f5603c5e27101cb3809d8745c50f708b0f4b497ed0910eb533d437bS3VersionKeyF33C73AF": {
       "Type": "String",
-      "Description": "S3 key for asset version \"11aa2ce8971716ca7c8d28d472ab5e937131e78e136d0de8f4997fb11c4de847\""
+      "Description": "S3 key for asset version \"74a1cab76f5603c5e27101cb3809d8745c50f708b0f4b497ed0910eb533d437b\""
     },
-    "AssetParameters11aa2ce8971716ca7c8d28d472ab5e937131e78e136d0de8f4997fb11c4de847ArtifactHash27BA7171": {
+    "AssetParameters74a1cab76f5603c5e27101cb3809d8745c50f708b0f4b497ed0910eb533d437bArtifactHash976CF1BD": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"11aa2ce8971716ca7c8d28d472ab5e937131e78e136d0de8f4997fb11c4de847\""
+      "Description": "Artifact hash for asset \"74a1cab76f5603c5e27101cb3809d8745c50f708b0f4b497ed0910eb533d437b\""
     }
   }
 }
