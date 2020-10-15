@@ -565,10 +565,7 @@ abstract class TableBase extends Resource implements ITable {
     return iam.Grant.addToPrincipal({
       grantee,
       actions: ['dynamodb:ListStreams'],
-      resourceArns: [
-        Lazy.stringValue({ produce: () => `${this.tableArn}/stream/*` }),
-        ...this.regionalArns.map(arn => Lazy.stringValue({ produce: () => `${arn}/stream/*` })),
-      ],
+      resourceArns: ['*'],
     });
   }
 
