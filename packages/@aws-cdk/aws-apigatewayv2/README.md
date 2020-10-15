@@ -212,7 +212,9 @@ const api = new apigw.HttpApi(stack, 'my-api');
 const clientErrorMetric = api.metricClientError();
 
 ```
-Please note that this will return a metric for all the stages defined in the api. It is also possible to collect metrics only from a specic `stage` using the metric methods from the `stage`.
+
+Please note that this will return a metric for all the stages defined in the api. It is also possible to refer to metrics for a specific Stage using
+the `metric` methods from the `Stage` construct.
 
 ```
 const api = new apigw.HttpApi(stack, 'my-api');
