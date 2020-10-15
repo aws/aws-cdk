@@ -202,7 +202,10 @@ with 3 API mapping resources across different APIs and Stages.
 
 ## Metrics
 
-The API Gateway v2 service sends metrics around the performance of HTTP APIs to Amazon CloudWatch. These metrics can be referred to using the metric APIs available on the HttpApi construct. The APIs with the metric prefix can be used to get reference to specific metrics for this API. For example, the method below refers to the client side errors metric for this API.
+The API Gateway v2 service sends metrics around the performance of HTTP APIs to Amazon CloudWatch.
+These metrics can be referred to using the metric APIs available on the `HttpApi` construct.
+The APIs with the `metric` prefix can be used to get reference to specific metrics for this API. For example,
+the method below refers to the client side errors metric for this API.
 
 ```
 const api = new apigw.HttpApi(stack, 'my-api');
