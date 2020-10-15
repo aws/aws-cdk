@@ -18,11 +18,6 @@ export interface IHttpApi extends IResource {
   readonly httpApiId: string;
 
   /**
-   * A human friendly name for this HTTP API. Note that this is different from `httpApiId`.
-   */
-  readonly httpApiName?: string;
-
-  /**
    * The default stage
    */
   readonly defaultStage?: HttpStage;
@@ -174,10 +169,65 @@ export interface AddRoutesOptions extends BatchHttpRouteOptions {
   readonly methods?: HttpMethod[];
 }
 
-class HttpApiBase extends Resource implements IHttpApi { // note that this is not exported
+abstract class HttpApiBase extends Resource implements IHttpApi { // note that this is not exported
+
+  public abstract readonly httpApiId: string;
+
+  public metric(metricName: string, props?: MetricOptions): Metric {
+    return new Metric({
+      namespace: 'AWS/ApiGateway',
+      metricName,
+      dimensions: { ApiId: this.httpApiId },
+      ...props,
+    }).attachTo(this);
+  }
+
+  public metricClientError(props?: MetricOptions): Metric {
+    return this.metric('4XXError', { statistic: 'Sum', ...props });
+  }
+
+  public metricServerError(props?: MetricOptions): Metric {
+    return this.metric('5XXError', { statistic: 'Sum', ...props });
+  }
+
+  public metricDataProcessed(props?: MetricOptions): Metric {
+    return this.metric('DataProcessed', { statistic: 'Sum', ...props });
+  }
+
+  public metricCount(props?: MetricOptions): Metric {
+    return this.metric('Count', { statistic: 'SampleCount', ...props });
+  }
+
+  public metricIntegrationLatency(props?: MetricOptions): Metric {
+    return this.metric('IntegrationLatency', props);
+  }
+
+  public metricLatency(props?: MetricOptions): Metric {
+    return this.metric('Latency', props);
+  }
+}
+
+/**
+ * Create a new API Gateway HTTP API endpoint.
+ * @resource AWS::ApiGatewayV2::Api
+ */
+export class HttpApi extends HttpApiBase {
+  /**
+   * Import an existing HTTP API into this CDK app.
+   */
+  public static fromApiId(scope: Construct, id: string, httpApiId: string): IHttpApi {
+    class Import extends HttpApiBase {
+      public readonly httpApiId = httpApiId;
+    }
+    return new Import(scope, id);
+  }
+
+  /**
+   * A human friendly name for this HTTP API. Note that this is different from `httpApiId`.
+   */
+  public readonly httpApiName?: string;
 
   public readonly httpApiId: string;
-  public readonly httpApiName?: string;
 
   /**
    * default stage of the api resource
@@ -247,55 +297,6 @@ class HttpApiBase extends Resource implements IHttpApi { // note that this is no
       throw new Error('defaultDomainMapping not supported with createDefaultStage disabled',
       );
     }
-  }
-
-  public metric(metricName: string, props?: MetricOptions): Metric {
-    return new Metric({
-      namespace: 'AWS/ApiGateway',
-      metricName,
-      dimensions: { ApiId: this.httpApiId },
-      ...props,
-    }).attachTo(this);
-  }
-
-  public metricClientError(props?: MetricOptions): Metric {
-    return this.metric('4XXError', { statistic: 'Sum', ...props });
-  }
-
-  public metricServerError(props?: MetricOptions): Metric {
-    return this.metric('5XXError', { statistic: 'Sum', ...props });
-  }
-
-  public metricDataProcessed(props?: MetricOptions): Metric {
-    return this.metric('DataProcessed', { statistic: 'Sum', ...props });
-  }
-
-  public metricCount(props?: MetricOptions): Metric {
-    return this.metric('Count', { statistic: 'SampleCount', ...props });
-  }
-
-  public metricIntegrationLatency(props?: MetricOptions): Metric {
-    return this.metric('IntegrationLatency', props);
-  }
-
-  public metricLatency(props?: MetricOptions): Metric {
-    return this.metric('Latency', props);
-  }
-}
-
-/**
- * Create a new API Gateway HTTP API endpoint.
- * @resource AWS::ApiGatewayV2::Api
- */
-export class HttpApi extends HttpApiBase {
-  /**
-   * Import an existing HTTP API into this CDK app.
-   */
-  public static fromApiId(scope: Construct, id: string, httpApiId: string): IHttpApi {
-    class Import extends HttpApiBase {
-      public readonly httpApiId = httpApiId;
-    }
-    return new Import(scope, id);
   }
 
   /**
