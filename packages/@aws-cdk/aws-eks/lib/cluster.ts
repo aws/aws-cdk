@@ -27,6 +27,7 @@ import { LifecycleLabel, renderAmazonLinuxUserData, renderBottlerocketUserData }
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
 // eslint-disable-next-line
 import { Construct as CoreConstruct } from '@aws-cdk/core';
+import { OpenIdConnectProvider } from "./oidc-provider";
 
 // defaults are based on https://eksctl.io
 const DEFAULT_CAPACITY_COUNT = 2;
@@ -79,15 +80,9 @@ export interface ICluster extends IResource, ec2.IConnectable {
   readonly clusterEncryptionConfigKeyArn: string;
 
   /**
-   * An Open ID Connect Issuer Url
-   * @attribute
-   */
-  readonly clusterOpenIdConnectIssuerUrl: string;
-
-  /**
    * An Open ID Connect Provider
    */
-  readonly openIdConnectProvider: iam.IOpenIdConnectProvider;
+  readonly openIdConnectProvider?: iam.IOpenIdConnectProvider;
 
   /**
    * An IAM role that can perform kubectl operations against this cluster.
@@ -633,8 +628,7 @@ abstract class ClusterBase extends Resource implements ICluster {
   public abstract readonly kubectlEnvironment?: { [key: string]: string };
   public abstract readonly kubectlSecurityGroup?: ec2.ISecurityGroup;
   public abstract readonly kubectlPrivateSubnets?: ec2.ISubnet[];
-  public abstract readonly clusterOpenIdConnectIssuerUrl: string;
-  protected openIdConnectProviderInstance?: iam.IOpenIdConnectProvider;
+  public abstract readonly openIdConnectProvider?: iam.IOpenIdConnectProvider;
 
   /**
    * Defines a Kubernetes resource in this cluster.
@@ -676,29 +670,6 @@ abstract class ClusterBase extends Resource implements ICluster {
       ...options,
       cluster: this,
     });
-  }
-
-  /**
-   * An `OpenIdConnectProvider` resource associated with this cluster, and which can be used
-   * to link this cluster to AWS IAM.
-   *
-   * A provider will only be defined if this property is accessed (lazy initialization).
-   */
-  public get openIdConnectProvider() {
-    if (!this.openIdConnectProviderInstance) {
-      this.openIdConnectProviderInstance = new iam.OpenIdConnectProvider(this, 'OpenIdConnectProvider', {
-        url: this.clusterOpenIdConnectIssuerUrl,
-        clientIds: ['sts.amazonaws.com'],
-        /**
-         * For some reason EKS isn't validating the root certificate but a intermediat certificate
-         * which is one level up in the tree. Because of the a constant thumbprint value has to be
-         * stated with this OpenID Connect provider. The certificate thumbprint is the same for all the regions.
-         */
-        thumbprints: ['9e99a48a9960b14926bb7f3b02e22da2b0ab7280'],
-      });
-    }
-
-    return this.openIdConnectProviderInstance;
   }
 }
 
@@ -849,6 +820,11 @@ export class Cluster extends ClusterBase {
    * will hold a reference to each.
    */
   private readonly _fargateProfiles: FargateProfile[] = [];
+
+  /**
+   * an Open ID Connect Provider instance
+   */
+  private _openIdConnectProvider?: iam.IOpenIdConnectProvider;
 
   /**
    * The AWS Lambda layer that contains `kubectl`, `helm` and the AWS CLI. If
@@ -1290,6 +1266,22 @@ export class Cluster extends ClusterBase {
   }
 
   /**
+   * An `OpenIdConnectProvider` resource associated with this cluster, and which can be used
+   * to link this cluster to AWS IAM.
+   *
+   * A provider will only be defined if this property is accessed (lazy initialization).
+   */
+  public get openIdConnectProvider() {
+    if (!this._openIdConnectProvider) {
+      this._openIdConnectProvider = new OpenIdConnectProvider(this, 'OpenIdConnectProvider', {
+        url: this.clusterOpenIdConnectIssuerUrl,
+      });
+    }
+
+    return this._openIdConnectProvider;
+  }
+
+  /**
    * Adds a Fargate profile to this cluster.
    * @see https://docs.aws.amazon.com/eks/latest/userguide/fargate-profile.html
    *
@@ -1627,6 +1619,7 @@ class ImportedCluster extends ClusterBase {
   public readonly kubectlSecurityGroup?: ec2.ISecurityGroup | undefined;
   public readonly kubectlPrivateSubnets?: ec2.ISubnet[] | undefined;
   public readonly kubectlLayer?: lambda.ILayerVersion;
+  public readonly openIdConnectProvider?: iam.IOpenIdConnectProvider;
 
   constructor(scope: Construct, id: string, private readonly props: ClusterAttributes) {
     super(scope, id);
@@ -1638,10 +1631,7 @@ class ImportedCluster extends ClusterBase {
     this.kubectlEnvironment = props.kubectlEnvironment;
     this.kubectlPrivateSubnets = props.kubectlPrivateSubnetIds ? props.kubectlPrivateSubnetIds.map((subnetid, index) => ec2.Subnet.fromSubnetId(this, `KubectlSubnet${index}`, subnetid)) : undefined;
     this.kubectlLayer = props.kubectlLayer;
-
-    if (props.openIdConnectProvider) {
-      this.openIdConnectProviderInstance = props.openIdConnectProvider;
-    }
+    this.openIdConnectProvider = props.openIdConnectProvider;
 
     let i = 1;
     for (const sgid of props.securityGroupIds ?? []) {
@@ -1687,18 +1677,6 @@ class ImportedCluster extends ClusterBase {
       throw new Error('"clusterEncryptionConfigKeyArn" is not defined for this imported cluster');
     }
     return this.props.clusterEncryptionConfigKeyArn;
-  }
-
-  /**
-   * If OpenID Connect issuer url was configured by clusterAttributes while import,
-   * this will return a value. Otherwise this will be `undefined`
-   * @attribute
-   */
-  public get clusterOpenIdConnectIssuerUrl(): string {
-    if (!this.props.openIdConnectProvider) {
-      throw new Error('"openIdConnectProvider" is not provided for this imported cluster');
-    }
-    return `https://${this.props.openIdConnectProvider.openIdConnectProviderIssuer}`;
   }
 }
 
