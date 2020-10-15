@@ -8,11 +8,17 @@ jobs:
     name: Merge
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout & Merge
+        uses: actions/checkout@v2
+        with:
+          ref: 'v2-main'
+        run: |
+          git merge master
       - name: Pull Request
         uses: peter-evans/create-pull-request@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          branch: master
+          branch: v2/forward-merge
           base: v2-main
           commit-message: Merge branch 'master' into v2-main
           title: Merge branch 'master' into v2-main
