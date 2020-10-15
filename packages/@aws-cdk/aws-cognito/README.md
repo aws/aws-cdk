@@ -374,6 +374,7 @@ The following third-party identity providers are currentlhy supported in the CDK
 
 * [Login With Amazon](https://developer.amazon.com/apps-and-games/login-with-amazon)
 * [Facebook Login](https://developers.facebook.com/docs/facebook-login/)
+* [Google Login](https://developers.google.com/identity/sign-in/web/sign-in)
 
 The following code configures a user pool to federate with the third party provider, 'Login with Amazon'. The identity
 provider needs to be configured with a set of credentials that the Cognito backend can use to federate with the
