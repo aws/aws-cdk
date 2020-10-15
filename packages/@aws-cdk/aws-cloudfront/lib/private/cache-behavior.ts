@@ -1,4 +1,5 @@
 import * as iam from '@aws-cdk/aws-iam';
+import { CachePolicy } from '../cache-policy';
 import { CfnDistribution } from '../cloudfront.generated';
 import { AddBehaviorOptions, EdgeLambda, LambdaEdgeEventType, ViewerProtocolPolicy } from '../distribution';
 
@@ -44,11 +45,9 @@ export class CacheBehavior {
       targetOriginId: this.originId,
       allowedMethods: this.props.allowedMethods?.methods,
       cachedMethods: this.props.cachedMethods?.methods,
-      compress: this.props.compress,
-      forwardedValues: {
-        queryString: this.props.forwardQueryString ?? false,
-        queryStringCacheKeys: this.props.forwardQueryStringCacheKeys,
-      },
+      cachePolicyId: (this.props.cachePolicy ?? CachePolicy.CACHING_OPTIMIZED).cachePolicyId,
+      compress: this.props.compress ?? true,
+      originRequestPolicyId: this.props.originRequestPolicy?.originRequestPolicyId,
       smoothStreaming: this.props.smoothStreaming,
       viewerProtocolPolicy: this.props.viewerProtocolPolicy ?? ViewerProtocolPolicy.ALLOW_ALL,
       lambdaFunctionAssociations: this.props.edgeLambdas
