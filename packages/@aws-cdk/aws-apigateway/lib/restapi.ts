@@ -1,3 +1,4 @@
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import { IVpcEndpoint } from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import { CfnOutput, IResource as IResourceBase, Resource, Stack } from '@aws-cdk/core';
@@ -299,13 +300,17 @@ export abstract class RestApiBase extends Resource implements IRestApi {
    */
   public deploymentStage!: Stage;
 
+  /**
+   * A human friendly name for this Rest API. Note that this is different from `restApiId`.
+   */
+  public readonly restApiName: string;
+
   private _latestDeployment?: Deployment;
   private _domainName?: DomainName;
 
   constructor(scope: Construct, id: string, props: RestApiBaseProps = { }) {
-    super(scope, id, {
-      physicalName: props.restApiName || id,
-    });
+    super(scope, id);
+    this.restApiName = props.restApiName ?? id;
 
     Object.defineProperty(this, RESTAPI_SYMBOL, { value: true });
   }
@@ -371,6 +376,85 @@ export abstract class RestApiBase extends Resource implements IRestApi {
       restApi: this,
       ...options,
     });
+  }
+
+  /**
+   * Returns the given named metric for this API
+   */
+  public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return new cloudwatch.Metric({
+      namespace: 'AWS/ApiGateway',
+      metricName,
+      dimensions: { ApiName: this.restApiName },
+      ...props,
+    });
+  }
+
+  /**
+   * Metric for the number of client-side errors captured in a given period.
+   *
+   * @default - sum over 5 minutes
+   */
+  public metricClientError(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.metric('4XXError', { statistic: 'Sum', ...props });
+  }
+
+  /**
+   * Metric for the number of server-side errors captured in a given period.
+   *
+   * @default - sum over 5 minutes
+   */
+  public metricServerError(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.metric('5XXError', { statistic: 'Sum', ...props });
+  }
+
+  /**
+   * Metric for the number of requests served from the API cache in a given period.
+   *
+   * @default - sum over 5 minutes
+   */
+  public metricCacheHitCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.metric('CacheHitCount', { statistic: 'Sum', ...props });
+  }
+
+  /**
+   * Metric for the number of requests served from the backend in a given period,
+   * when API caching is enabled.
+   *
+   * @default - sum over 5 minutes
+   */
+  public metricCacheMissCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.metric('CacheMissCount', { statistic: 'Sum', ...props });
+  }
+
+  /**
+   * Metric for the total number API requests in a given period.
+   *
+   * @default - SampleCount over 5 minutes
+   */
+  public metricCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.metric('Count', { statistic: 'SampleCount', ...props });
+  }
+
+  /**
+   * Metric for the time between when API Gateway relays a request to the backend
+   * and when it receives a response from the backend.
+   *
+   * @default - no statistic
+   */
+  public metricIntegrationLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.metric('IntegrationLatency', props);
+  }
+
+  /**
+   * The time between when API Gateway receives a request from a client
+   * and when it returns a response to the client.
+   * The latency includes the integration latency and other API Gateway overhead.
+   *
+   * @default - no statistic
+   */
+  public metricLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.metric('Latency', props);
   }
 
   /**
@@ -485,7 +569,7 @@ export class SpecRestApi extends RestApiBase {
     super(scope, id, props);
     const apiDefConfig = props.apiDefinition.bind(this);
     const resource = new CfnRestApi(this, 'Resource', {
-      name: this.physicalName,
+      name: this.restApiName,
       policy: props.policy,
       failOnWarnings: props.failOnWarnings,
       body: apiDefConfig.inlineDefinition ? apiDefConfig.inlineDefinition : undefined,
@@ -587,7 +671,7 @@ export class RestApi extends RestApiBase {
     super(scope, id, props);
 
     const resource = new CfnRestApi(this, 'Resource', {
-      name: this.physicalName,
+      name: this.restApiName,
       description: props.description,
       policy: props.policy,
       failOnWarnings: props.failOnWarnings,

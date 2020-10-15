@@ -365,8 +365,10 @@ export interface DatabaseInstanceNewProps {
   readonly iamAuthentication?: boolean;
 
   /**
-   * The number of days during which automatic DB snapshots are retained. Set
-   * to zero to disable backups.
+   * The number of days during which automatic DB snapshots are retained.
+   * Set to zero to disable backups.
+   * When creating a read replica, you must enable automatic backups on the source
+   * database instance by setting the backup retention to a value other than zero.
    *
    * @default Duration.days(1)
    */

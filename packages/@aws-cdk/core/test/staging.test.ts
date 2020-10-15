@@ -326,7 +326,7 @@ nodeunitShim({
     const app = new App();
     const stack = new Stack(app, 'stack');
     const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
-    const mkdtempSyncSpy = sinon.spy(fs, 'mkdtempSync');
+    const ensureDirSync = sinon.spy(fs, 'ensureDirSync');
     const chmodSyncSpy = sinon.spy(fs, 'chmodSync');
     const renameSyncSpy = sinon.spy(fs, 'renameSync');
 
@@ -343,7 +343,7 @@ nodeunitShim({
     // THEN
     const assembly = app.synth();
 
-    test.ok(mkdtempSyncSpy.calledWith(sinon.match(path.join(assembly.directory, 'bundling-temp-'))));
+    test.ok(ensureDirSync.calledWith(sinon.match(path.join(assembly.directory, 'bundling-temp-'))));
     test.ok(chmodSyncSpy.calledWith(sinon.match(path.join(assembly.directory, 'bundling-temp-')), 0o777));
     test.ok(renameSyncSpy.calledWith(sinon.match(path.join(assembly.directory, 'bundling-temp-')), sinon.match(path.join(assembly.directory, 'asset.'))));
 
@@ -703,6 +703,58 @@ nodeunitShim({
     test.equal(asset.assetHash, '3d96e735e26b857743a7c44523c9160c285c2d3ccf273d80fa38a1e674c32cb3'); // hash of MyStack/Asset
     test.equal(asset.sourcePath, directory);
     test.equal(stack.resolve(asset.stagedPath), directory);
+
+    test.done();
+  },
+
+  'bundling still occurs with partial wildcard'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'MyStack');
+    stack.node.setContext(cxapi.BUNDLING_STACKS, ['*Stack']);
+    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+
+    // WHEN
+    const asset = new AssetStaging(stack, 'Asset', {
+      sourcePath: directory,
+      assetHashType: AssetHashType.BUNDLE,
+      bundling: {
+        image: BundlingDockerImage.fromRegistry('alpine'),
+        command: [DockerStubCommand.SUCCESS],
+      },
+    });
+
+    test.equal(
+      readDockerStubInput(),
+      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS`,
+    );
+    test.equal(asset.assetHash, '33cbf2cae5432438e0f046bc45ba8c3cef7b6afcf47b59d1c183775c1918fb1f'); // hash of MyStack/Asset
+
+    test.done();
+  },
+
+  'bundling still occurs with full wildcard'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'MyStack');
+    stack.node.setContext(cxapi.BUNDLING_STACKS, ['*']);
+    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+
+    // WHEN
+    const asset = new AssetStaging(stack, 'Asset', {
+      sourcePath: directory,
+      assetHashType: AssetHashType.BUNDLE,
+      bundling: {
+        image: BundlingDockerImage.fromRegistry('alpine'),
+        command: [DockerStubCommand.SUCCESS],
+      },
+    });
+
+    test.equal(
+      readDockerStubInput(),
+      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS`,
+    );
+    test.equal(asset.assetHash, '33cbf2cae5432438e0f046bc45ba8c3cef7b6afcf47b59d1c183775c1918fb1f'); // hash of MyStack/Asset
 
     test.done();
   },

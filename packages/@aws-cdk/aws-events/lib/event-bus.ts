@@ -1,5 +1,5 @@
 import * as iam from '@aws-cdk/aws-iam';
-import { IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
+import { IResource, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnEventBus } from './events.generated';
 
@@ -163,7 +163,7 @@ export class EventBus extends Resource implements IEventBus {
         throw new Error(
           '\'eventBusName\' and \'eventSourceName\' cannot both be provided',
         );
-      } else if (eventBusName !== undefined) {
+      } else if (eventBusName !== undefined && !Token.isUnresolved(eventBusName)) {
         if (eventBusName === 'default') {
           throw new Error(
             '\'eventBusName\' must not be \'default\'',

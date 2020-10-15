@@ -144,19 +144,6 @@ else
     wrong_version
 fi
 
-# [Ruby >= 2.5.1, < 3.0]
-app="ruby"
-app_min="2.5.1"
-check_which $app $app_min
-app_v=$(${app} --version)
-echo -e "Checking $app version... \c"
-if [ $(echo $app_v | grep -c -E "2\.[56789]\.[0-9].*") -eq 1 ]
-then   
-    echo "Ok"
-else
-    wrong_version
-fi
-
 # [Docker >= 19.03]
 app="docker"
 app_min="19.03.0"

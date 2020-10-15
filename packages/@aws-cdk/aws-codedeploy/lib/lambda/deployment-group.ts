@@ -197,6 +197,12 @@ export class LambdaDeploymentGroup extends cdk.Resource implements ILambdaDeploy
         afterAllowTrafficHook: cdk.Lazy.stringValue({ produce: () => this.postHook && this.postHook.functionName }),
       },
     };
+
+    // If the deployment config is a construct, add a dependency to ensure the deployment config
+    // is created before the deployment group is.
+    if (this.deploymentConfig instanceof Construct) {
+      this.node.addDependency(this.deploymentConfig);
+    }
   }
 
   /**

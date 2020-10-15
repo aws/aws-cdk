@@ -225,6 +225,36 @@ In order to deploy a new version of this function:
 2. Re-deploy the stack (this will trigger a deployment).
 3. Monitor the CodeDeploy deployment as traffic shifts between the versions.
 
+
+#### Create a custom Deployment Config
+
+CodeDeploy for Lambda comes with built-in configurations for traffic shifting.
+If you want to specify your own strategy,
+you can do so with the CustomLambdaDeploymentConfig construct,
+letting you specify precisely how fast a new function version is deployed.
+
+```ts
+const config = new codedeploy.CustomLambdaDeploymentConfig(stack, 'CustomConfig', {
+  type: codedeploy.CustomLambdaDeploymentConfigType.CANARY,
+  interval: Duration.minutes(1),
+  percentage: 5,
+});
+const deploymentGroup = new codedeploy.LambdaDeploymentGroup(stack, 'BlueGreenDeployment', {
+  application,
+  alias,
+  deploymentConfig: config,
+});
+```
+
+You can specify a custom name for your deployment config, but if you do you will not be able to update the interval/percentage through CDK.
+```ts
+const config = new codedeploy.CustomLambdaDeploymentConfig(stack, 'CustomConfig', {
+  type: codedeploy.CustomLambdaDeploymentConfigType.CANARY,
+  interval: Duration.minutes(1),
+  percentage: 5,
+  deploymentConfigName: 'MyDeploymentConfig',
+});
+```
 #### Rollbacks and Alarms
 
 CodeDeploy will roll back if the deployment fails. You can optionally trigger a rollback when one or more alarms are in a failed state:

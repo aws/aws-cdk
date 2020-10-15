@@ -38,6 +38,15 @@ export interface ServiceBuild {
   readonly taskDefinition: ecs.TaskDefinition,
 
   /**
+   * Specifies whether the task's elastic network interface receives a public IP address.
+   *
+   * If true, each task will receive a public IP address.
+   *
+   * @default false
+   */
+  readonly assignPublicIp?: boolean;
+
+  /**
    * Configuration for how to register the service in service discovery
    * @default - No Cloud Map configured
    */
