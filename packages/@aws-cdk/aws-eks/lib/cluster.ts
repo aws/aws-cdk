@@ -20,6 +20,7 @@ import { KubernetesObjectValue } from './k8s-object-value';
 import { KubernetesPatch } from './k8s-patch';
 import { KubectlProvider } from './kubectl-provider';
 import { Nodegroup, NodegroupOptions } from './managed-nodegroup';
+import { OpenIdConnectProvider } from './oidc-provider';
 import { BottleRocketImage } from './private/bottlerocket';
 import { ServiceAccount, ServiceAccountOptions } from './service-account';
 import { LifecycleLabel, renderAmazonLinuxUserData, renderBottlerocketUserData } from './user-data';
@@ -27,7 +28,6 @@ import { LifecycleLabel, renderAmazonLinuxUserData, renderBottlerocketUserData }
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
 // eslint-disable-next-line
 import { Construct as CoreConstruct } from '@aws-cdk/core';
-import { OpenIdConnectProvider } from "./oidc-provider";
 
 // defaults are based on https://eksctl.io
 const DEFAULT_CAPACITY_COUNT = 2;
@@ -874,7 +874,7 @@ export class Cluster extends ClusterBase {
    * Initiates an EKS Cluster with the supplied arguments
    *
    * @param scope a Construct, most likely a cdk.Stack created
-   * @param name the name of the Construct to create
+   * @param id the id of the Construct to create
    * @param props properties in the IClusterProps interface
    */
   constructor(scope: Construct, id: string, props: ClusterProps) {
@@ -1270,8 +1270,11 @@ export class Cluster extends ClusterBase {
    * to link this cluster to AWS IAM.
    *
    * A provider will only be defined if this property is accessed (lazy initialization).
+   *
+   * Since we dont really want to make it required on the top-level ICluster
+   * we do this trick here in return type to match interface type
    */
-  public get openIdConnectProvider() {
+  public get openIdConnectProvider(): iam.IOpenIdConnectProvider | undefined {
     if (!this._openIdConnectProvider) {
       this._openIdConnectProvider = new OpenIdConnectProvider(this, 'OpenIdConnectProvider', {
         url: this.clusterOpenIdConnectIssuerUrl,

@@ -3,8 +3,8 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as ssm from '@aws-cdk/aws-ssm';
-import * as cdk8s from 'cdk8s';
 import { Annotations, CfnOutput, Resource, Stack, Token, Tags } from '@aws-cdk/core';
+import * as cdk8s from 'cdk8s';
 import { Construct } from 'constructs';
 import { ICluster, ClusterAttributes, KubernetesVersion, NodeType, DefaultCapacityType, EksOptimizedImage, AutoScalingGroupCapacityOptions, MachineImageType, AutoScalingGroupOptions, CommonClusterOptions } from './cluster';
 import { clusterArnComponents } from './cluster-resource';
@@ -250,11 +250,11 @@ export class LegacyCluster extends Resource implements ICluster {
     throw new Error('legacy cluster does not support adding service accounts');
   }
 
-  public get clusterOpenIdConnectIssuerUrl(): string {
-    throw new Error('legacy cluster does not support open id connect providers');
-  }
-
-  public get openIdConnectProvider(): iam.IOpenIdConnectProvider {
+  /**
+   * Since we dont really want to make it required on the top-level ICluster
+   * we do this trick here in return type to match interface type
+   */
+  public get openIdConnectProvider(): iam.IOpenIdConnectProvider | undefined {
     throw new Error('legacy cluster does not support open id connect providers');
   }
 
@@ -453,10 +453,6 @@ class ImportedCluster extends Resource implements ICluster {
 
   public addServiceAccount(_id: string, _options?: ServiceAccountOptions): ServiceAccount {
     throw new Error('legacy cluster does not support adding service accounts');
-  }
-
-  public get clusterOpenIdConnectIssuerUrl(): string {
-    throw new Error('legacy cluster does not support open id connect providers');
   }
 
   public get openIdConnectProvider(): iam.IOpenIdConnectProvider {
