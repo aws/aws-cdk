@@ -2,6 +2,55 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.68.0](https://github.com/aws/aws-cdk/compare/v1.67.0...v1.68.0) (2020-10-15)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **config:** `scopeToResource()`, `scopeToResources()` and `scopeToTag()` APIs have been removed. Use the `scope` property to restrict the scope of a Config rule.
+* **cloudfront:** `Distribution` behaviors now enable compression by default
+* **cloudfront:** Distribution `forwardQueryString` and `forwardQueryStringCacheKeys` have been removed in favor of `cachePolicy` and the new CachePolicy construct.
+* **cloudfront:** Distributions now default to the "CachingOptimized" managed cache policy
+
+### Features
+
+* **apigateway:** autodetermine the private integration uri ([#10730](https://github.com/aws/aws-cdk/issues/10730)) ([46df4a7](https://github.com/aws/aws-cdk/commit/46df4a7c51843542bc79d2c1b3f211548ac39ab5)), closes [#10435](https://github.com/aws/aws-cdk/issues/10435)
+* **apigateway:** grant methods to ApiKey ([#10633](https://github.com/aws/aws-cdk/issues/10633)) ([23f77fd](https://github.com/aws/aws-cdk/commit/23f77fd504891d8c0a3e21613ee426adfb128313)), closes [#8060](https://github.com/aws/aws-cdk/issues/8060)
+* **apigateway:** metric methods for RestApi ([#10667](https://github.com/aws/aws-cdk/issues/10667)) ([45b1e36](https://github.com/aws/aws-cdk/commit/45b1e360cd5913806744880d5c4f427932da065e)), closes [#8321](https://github.com/aws/aws-cdk/issues/8321)
+* **appsync:** MappingTemplate.dynamoDbQuery - add ability to specify secondary index ([#10647](https://github.com/aws/aws-cdk/issues/10647)) ([346dbf4](https://github.com/aws/aws-cdk/commit/346dbf4fe859e29f2301b9ed17e50376035f44b1))
+* **aws-ec2:** vpc flow log s3 bucket prefix support ([#10779](https://github.com/aws/aws-cdk/issues/10779)) ([11ce726](https://github.com/aws/aws-cdk/commit/11ce726b760b8d72953f4ae2239d62aa89eaa894)), closes [#10778](https://github.com/aws/aws-cdk/issues/10778)
+* **aws-ecs-builder:** add public ip support ([#10646](https://github.com/aws/aws-cdk/issues/10646)) ([cf26821](https://github.com/aws/aws-cdk/commit/cf268218163a6d25cc6bbe7375b9332f87062631)), closes [#10644](https://github.com/aws/aws-cdk/issues/10644)
+* **cfnspec:** cloudformation spec v18.7.0 ([#10864](https://github.com/aws/aws-cdk/issues/10864)) ([0bb133e](https://github.com/aws/aws-cdk/commit/0bb133e8b500be3802bdfeb9c35ef61ad4687223))
+* **cloudfront:** Distribution is now in Developer Preview ([#10831](https://github.com/aws/aws-cdk/issues/10831)) ([fe8d5e6](https://github.com/aws/aws-cdk/commit/fe8d5e67f9e53c8f74a304e27cb668354699cc48))
+* **cloudfront:** support for cache policies ([#10656](https://github.com/aws/aws-cdk/issues/10656)) ([5a97d27](https://github.com/aws/aws-cdk/commit/5a97d2757d8f609b8f185b09f14e0eebf9c0dfa0)), closes [#9644](https://github.com/aws/aws-cdk/issues/9644)
+* **cloudfront:** support for origin request policies ([#10765](https://github.com/aws/aws-cdk/issues/10765)) ([08efc96](https://github.com/aws/aws-cdk/commit/08efc9629337c9e3daf33306af563da95e29a910)), closes [#10656](https://github.com/aws/aws-cdk/issues/10656) [#10656](https://github.com/aws/aws-cdk/issues/10656) [#9647](https://github.com/aws/aws-cdk/issues/9647)
+* **codedeploy:** Custom lambda deployment config ([#10462](https://github.com/aws/aws-cdk/issues/10462)) ([60ab50f](https://github.com/aws/aws-cdk/commit/60ab50f98c66154b8129e8309314d8d1aee2682c))
+* **config:** convenience class with static constants for referencing AWS managed rules ([#10834](https://github.com/aws/aws-cdk/issues/10834)) ([85738de](https://github.com/aws/aws-cdk/commit/85738de5be9b9e7ce2e5c2ce9db95f253a2d101f))
+* **config:** Scope class for scoping config rules to a specific resource, resource types, tags ([#10821](https://github.com/aws/aws-cdk/issues/10821)) ([25eb1c2](https://github.com/aws/aws-cdk/commit/25eb1c2af6c963f1a3c0a4f63dab210f14723b14))
+* **config:** the AWS Config Construct Library is now Generally Available (stable) ([#10875](https://github.com/aws/aws-cdk/issues/10875)) ([88e1cd9](https://github.com/aws/aws-cdk/commit/88e1cd96e92fe9d1b0b230eca1b7c3c7ae3d9501))
+* **core:** `BundlingDockerImage` now supports `run()` and `cp()` utilities ([#9728](https://github.com/aws/aws-cdk/issues/9728)) ([37fdc94](https://github.com/aws/aws-cdk/commit/37fdc94a9fdcaf37e02e66d6f1bf3c5501aee1a0)), closes [#9329](https://github.com/aws/aws-cdk/issues/9329)
+* **ec2:** add c5a instance class ([240d4b5](https://github.com/aws/aws-cdk/commit/240d4b54bee4a0ac3bff0b92d5340493e5c55ed8))
+* **eks:** Auto select AMI type for T4g instance type  ([#10360](https://github.com/aws/aws-cdk/issues/10360)) ([a4bac34](https://github.com/aws/aws-cdk/commit/a4bac34d5b9c76dd7de3f7b4f3745121bef5927e)), closes [#10361](https://github.com/aws/aws-cdk/issues/10361)
+* **events-targets:** allow passing a role to the CodeBuild target ([#10865](https://github.com/aws/aws-cdk/issues/10865)) ([f085a09](https://github.com/aws/aws-cdk/commit/f085a09790b1564c7e44a9a964866ce454c1d865))
+* **lambda-python:** bundle dependencies in a lambda layer ([#9582](https://github.com/aws/aws-cdk/issues/9582)) ([aebac92](https://github.com/aws/aws-cdk/commit/aebac9261dfaa37795a91ddced164bb6a0841f13)), closes [#9406](https://github.com/aws/aws-cdk/issues/9406) [#9944](https://github.com/aws/aws-cdk/issues/9944)
+* **pipelines:** support SecurityGroups for ShellScriptAction ([#10770](https://github.com/aws/aws-cdk/issues/10770)) ([f9afbc5](https://github.com/aws/aws-cdk/commit/f9afbc561d59ebbef0bec3fb018e40626244a28f)), closes [#10621](https://github.com/aws/aws-cdk/issues/10621)
+* **s3:** Support virtual-hosted style bucket URLs ([#10326](https://github.com/aws/aws-cdk/issues/10326)) ([227fb81](https://github.com/aws/aws-cdk/commit/227fb81b00ae60c2f784610a398c63a0a0d6f71a)), closes [#10319](https://github.com/aws/aws-cdk/issues/10319)
+* **secretsmanager:** hosted rotation ([#10790](https://github.com/aws/aws-cdk/issues/10790)) ([2cb8e22](https://github.com/aws/aws-cdk/commit/2cb8e22221b266b90b3a0b6c198a0da6ff4e3b8a))
+
+
+### Bug Fixes
+
+* **cloudfront:** compression disabled by default for Distribution ([#10794](https://github.com/aws/aws-cdk/issues/10794)) ([3327b7f](https://github.com/aws/aws-cdk/commit/3327b7faafbed98b2a8da2caf769206f5c004d56))
+* **codebuild:** add BatchPutCodeCoverages permission to Project by default ([#10835](https://github.com/aws/aws-cdk/issues/10835)) ([dec8e07](https://github.com/aws/aws-cdk/commit/dec8e07e41564abf20b554809df210b3777bbfeb))
+* **core:** CfnCodeDeployBlueGreenHook outputs empty optional objects to the template ([#10809](https://github.com/aws/aws-cdk/issues/10809)) ([d88f034](https://github.com/aws/aws-cdk/commit/d88f0347a2a41845f4b27dacaee8e212822dfa85)), closes [#10803](https://github.com/aws/aws-cdk/issues/10803)
+* **core:** partial wildcards don't work with selective bundling ([#10767](https://github.com/aws/aws-cdk/issues/10767)) ([f7ce079](https://github.com/aws/aws-cdk/commit/f7ce0796eae621e6974658959cdbf11822d39eb2)), closes [#10732](https://github.com/aws/aws-cdk/issues/10732)
+* **ec2:** VPN preSharedKey cannot be a Token ([#10725](https://github.com/aws/aws-cdk/issues/10725)) ([55fa055](https://github.com/aws/aws-cdk/commit/55fa0555b78e69d99432018975adb5e03ab12bff)), closes [#10723](https://github.com/aws/aws-cdk/issues/10723)
+* **events:** cannot use tokens as event bus name ([#10772](https://github.com/aws/aws-cdk/issues/10772)) ([8bee193](https://github.com/aws/aws-cdk/commit/8bee193fe66ed0dc3d7751181471a9eb9abae3cc)), closes [#10467](https://github.com/aws/aws-cdk/issues/10467)
+* **lambda:** grantInvoke on imported function fails ([#10622](https://github.com/aws/aws-cdk/issues/10622)) ([99111f7](https://github.com/aws/aws-cdk/commit/99111f72adc210f48e269db50f2b8e8b78d21252)), closes [#8828](https://github.com/aws/aws-cdk/issues/8828) [#10607](https://github.com/aws/aws-cdk/issues/10607)
+* **lambda-nodejs:** cache performance ([#10763](https://github.com/aws/aws-cdk/issues/10763)) ([d34773f](https://github.com/aws/aws-cdk/commit/d34773f19f803d4d5dbc20607b319762ace0a45a))
+* **s3:** correct write permission with key decrypt ([#10679](https://github.com/aws/aws-cdk/issues/10679)) ([c39cf95](https://github.com/aws/aws-cdk/commit/c39cf95b87d013a4ccc567e9900518b9638bf208)), closes [#8947](https://github.com/aws/aws-cdk/issues/8947)
+* **s3-deployment:** User metadata was added with wrong prefix (x-amzn-meta-) ([#10678](https://github.com/aws/aws-cdk/issues/10678)) ([6b3687c](https://github.com/aws/aws-cdk/commit/6b3687c30ceb500d83da8f8a7b8fd8ea7f4ae7b6)), closes [#8459](https://github.com/aws/aws-cdk/issues/8459)
+
 ## [1.67.0](https://github.com/aws/aws-cdk/compare/v1.66.0...v1.67.0) (2020-10-07)
 
 ### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
