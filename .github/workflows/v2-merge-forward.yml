@@ -13,7 +13,7 @@ jobs:
         with:
           ref: 'v2-main'
         run: |
-          git merge master
+          git merge master --no-edit
       - name: Pull Request
         uses: peter-evans/create-pull-request@v3
         with:
