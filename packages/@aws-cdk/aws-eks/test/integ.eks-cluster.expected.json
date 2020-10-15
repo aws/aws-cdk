@@ -4591,21 +4591,21 @@
       "Type": "String",
       "Description": "Artifact hash for asset \"8a716921b900641df041bd35d4d1817780375a004ec952e2cab0cd621c5a4d64\""
     },
-    "SsmParameterValueawsserviceeksoptimizedami117amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+    "SsmParameterValueawsserviceeksoptimizedami118amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
       "Type": "AWS::SSM::Parameter::Value<String>",
-      "Default": "/aws/service/eks/optimized-ami/1.17/amazon-linux-2/recommended/image_id"
+      "Default": "/aws/service/eks/optimized-ami/1.18/amazon-linux-2/recommended/image_id"
     },
-    "SsmParameterValueawsserviceeksoptimizedami117amazonlinux2arm64recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+    "SsmParameterValueawsserviceeksoptimizedami118amazonlinux2arm64recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
       "Type": "AWS::SSM::Parameter::Value<String>",
-      "Default": "/aws/service/eks/optimized-ami/1.17/amazon-linux-2-arm64/recommended/image_id"
+      "Default": "/aws/service/eks/optimized-ami/1.18/amazon-linux-2-arm64/recommended/image_id"
     },
-    "SsmParameterValueawsservicebottlerocketawsk8s117x8664latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+    "SsmParameterValueawsservicebottlerocketawsk8s118x8664latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
       "Type": "AWS::SSM::Parameter::Value<String>",
-      "Default": "/aws/service/bottlerocket/aws-k8s-1.17/x86_64/latest/image_id"
+      "Default": "/aws/service/bottlerocket/aws-k8s-1.18/x86_64/latest/image_id"
     },
-    "SsmParameterValueawsserviceeksoptimizedami117amazonlinux2gpurecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+    "SsmParameterValueawsserviceeksoptimizedami118amazonlinux2gpurecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
       "Type": "AWS::SSM::Parameter::Value<String>",
-      "Default": "/aws/service/eks/optimized-ami/1.17/amazon-linux-2-gpu/recommended/image_id"
+      "Default": "/aws/service/eks/optimized-ami/1.18/amazon-linux-2-gpu/recommended/image_id"
     },
     "SsmParameterValueawsserviceeksoptimizedami114amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
       "Type": "AWS::SSM::Parameter::Value<String>",
