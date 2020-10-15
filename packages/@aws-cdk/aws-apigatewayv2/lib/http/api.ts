@@ -30,7 +30,7 @@ export interface IHttpApi extends IResource {
   /**
    * Return the given named metric for this HTTP Api Gateway
    *
-   * @default Average over 5 minutes
+   * @default - average over 5 minutes
    */
   metric(metricName: string, props?: MetricOptions): Metric;
 
