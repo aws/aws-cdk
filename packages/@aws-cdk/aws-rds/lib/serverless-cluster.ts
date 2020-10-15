@@ -329,14 +329,14 @@ abstract class ServerlessClusterBase extends Resource implements IServerlessClus
    */
   public grantDataApiAccess(grantee: iam.IGrantable): iam.Grant {
     if (this.enableDataApi === false) {
-      throw new Error('Cannot grant Data API access when HTTP endpoint is disabled');
+      throw new Error('Cannot grant Data API access when the Data API is disabled');
     }
 
     this.enableDataApi = true;
     const ret = iam.Grant.addToPrincipal({
       grantee,
       actions: DATA_API_ACTIONS,
-      resourceArns: [this.clusterArn],
+      resourceArns: ['*'],
       scope: this,
     });
     this.secret?.grantRead(grantee);
