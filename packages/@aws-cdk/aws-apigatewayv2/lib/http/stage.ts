@@ -123,7 +123,7 @@ export class HttpStage extends Resource implements IStage {
   /**
    * Return the given named metric for this HTTP Api Gateway Stage
    *
-   * @default Average over 5 minutes
+   * @default - average over 5 minutes
    */
   public metric(metricName: string, props?: MetricOptions): Metric {
     var api = this.httpApi;
