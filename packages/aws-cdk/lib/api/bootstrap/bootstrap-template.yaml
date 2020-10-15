@@ -38,6 +38,10 @@ Parameters:
     Type: 'String'
     AllowedValues: ['true', 'false']
 Conditions:
+  DefaultQualifier:
+    Fn::Equals:
+      - 'hnb659fds'
+      - Ref: Qualifier
   HasTrustedAccounts:
     Fn::Not:
       - Fn::Equals:
@@ -382,6 +386,25 @@ Resources:
       Name:
         Fn::Sub: '/cdk-bootstrap/${Qualifier}/version'
       Value: 4
+  CdkKmsKey:
+        Type: AWS::SSM::Parameter
+        Properties:
+          Type: String
+          Name:
+            Fn::Sub: '/cdk-bootstrap/${Qualifier}/kms-key'
+          Value:
+            Fn::If:
+              - CreateNewKey
+              - Fn::Sub: "${FileAssetsBucketEncryptionKey.Arn}"
+              - Fn::Sub: "${FileAssetsBucketKmsKeyId}"
+  CdkQualifier:
+      Type: AWS::SSM::Parameter
+      Properties:
+        Type: String
+        Name:
+          Fn::Sub: '/cdk-bootstrap/default-qualifier'
+        Value: hnb659fds
+      Condition: DefaultQualifier
 Outputs:
   BucketName:
     Description: The name of the S3 bucket owned by the CDK toolkit stack
