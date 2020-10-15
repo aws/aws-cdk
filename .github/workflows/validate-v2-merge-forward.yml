@@ -1,0 +1,19 @@
+# For every pull request against master, run a no-op merge onto v2-main
+# to see if there are any merge conflicts and report back to the user.
+# The intent is to be preventive and aware of merge conflicts that may come in.
+
+name: PR Linter
+on: pull_request
+
+jobs:
+  validate:
+    if: >
+      !contains(github.event.pull_request.labels.*.name, 'pr/exempt-merge-conflict')
+      && github.event.pull_request.base.ref == 'master'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Validate Merge
+        run: ./scripts/v2-validate-merge.sh
+        shell: bash --noprofile --norc -o pipefail {0} # Turn off the default `set -e` flag
