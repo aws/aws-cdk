@@ -1269,7 +1269,7 @@ export class Cluster extends ClusterBase {
    * @attribute
    */
   public get clusterOpenIdConnectIssuerUrl(): string {
-    return `https://${this.openIdConnectProvider.openIdConnectProviderIssuer}`;
+    return this._clusterResource.attrOpenIdConnectIssuerUrl;
   }
 
   /**
@@ -1281,7 +1281,7 @@ export class Cluster extends ClusterBase {
    * @attribute
    */
   public get clusterOpenIdConnectIssuer(): string {
-    return this.openIdConnectProvider.openIdConnectProviderIssuer;
+    return this._clusterResource.attrOpenIdConnectIssuer;
   }
 
   /**
@@ -1693,7 +1693,7 @@ class ImportedCluster extends ClusterBase {
     if (!this.props.openIdConnectProvider) {
       throw new Error('"openIdConnectProvider" is not provided for this imported cluster');
     }
-    return this.props.openIdConnectProvider.openIdConnectProviderIssuer;
+    return `https://${this.props.openIdConnectProvider.openIdConnectProviderIssuer}`;
   }
 }
 
