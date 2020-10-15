@@ -166,7 +166,7 @@ function renderHealthCheck(hc: HealthCheck | undefined, pm: PortMapping): CfnVir
     throw new Error('The path property cannot be set with Protocol.GRPC');
   }
 
-  const protocol = hc.protocol? hc.protocol : pm.protocol;
+  const protocol = hc.protocol ?? pm.protocol;
 
   const healthCheck: CfnVirtualNode.HealthCheckProperty = {
     healthyThreshold: hc.healthyThreshold || 2,
