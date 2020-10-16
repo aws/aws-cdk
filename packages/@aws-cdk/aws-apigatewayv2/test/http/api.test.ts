@@ -8,14 +8,11 @@ import { HttpApi, HttpMethod, LambdaProxyIntegration } from '../../lib';
 describe('HttpApi', () => {
   test('default', () => {
     const stack = new Stack();
-    const api = new HttpApi(stack, 'api', {
-      description: 'My Api',
-    });
+    const api = new HttpApi(stack, 'api');
 
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Api', {
       Name: 'api',
       ProtocolType: 'HTTP',
-      Description: 'My Api',
     });
 
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Stage', {
@@ -222,5 +219,29 @@ describe('HttpApi', () => {
       expect(countMetric.dimensions).toEqual({ ApiId: apiId });
       expect(countMetric.statistic).toEqual(statistic);
     });
+  });
+
+  test('description is set', () => {
+    const stack = new Stack();
+    const api = new HttpApi(stack, 'api', {
+      description: 'My Api',
+    });
+
+    expect(stack).toHaveResource('AWS::ApiGatewayV2::Api', {
+      Name: 'api',
+      ProtocolType: 'HTTP',
+      Description: 'My Api',
+    });
+
+    expect(stack).toHaveResource('AWS::ApiGatewayV2::Stage', {
+      ApiId: stack.resolve(api.httpApiId),
+      StageName: '$default',
+      AutoDeploy: true,
+    });
+
+    expect(stack).not.toHaveResource('AWS::ApiGatewayV2::Route');
+    expect(stack).not.toHaveResource('AWS::ApiGatewayV2::Integration');
+
+    expect(api.url).toBeDefined();
   });
 });
