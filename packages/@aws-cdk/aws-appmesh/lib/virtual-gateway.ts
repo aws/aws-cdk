@@ -36,6 +36,11 @@ export interface IVirtualGateway extends cdk.IResource {
   addListeners(listeners: VirtualGatewayListener[]): void;
 
   /**
+   * Utility method to add a single listener to this VirtualGateway
+   */
+  addListener(listener: VirtualGatewayListener): void;
+
+  /**
    * Utility method to add a new GatewayRoute to the VirtualGateway
    */
   addGatewayRoute(id: string, route: GatewayRouteBaseProps): GatewayRoute;
