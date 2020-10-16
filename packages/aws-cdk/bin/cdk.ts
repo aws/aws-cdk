@@ -229,9 +229,6 @@ async function initCommandLine() {
         return cli.list(args.STACKS, { long: args.long });
 
       case 'diff':
-        console.log(configuration.context);
-        console.log(configuration.context.all);
-        console.log(configuration.context.get(cxapi.ENABLE_DIFF_NO_FAIL));
         const enableDiffNoFail = isFeatureEnabled(configuration, cxapi.ENABLE_DIFF_NO_FAIL);
         return cli.diff({
           stackNames: args.STACKS,
