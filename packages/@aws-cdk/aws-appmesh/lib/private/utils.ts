@@ -1,5 +1,5 @@
 import * as cdk from '@aws-cdk/core';
-import { CfnVirtualGateway, CfnVirtualNode } from './appmesh.generated';
+import { CfnVirtualGateway, CfnVirtualNode } from '../appmesh.generated';
 
 type AppMeshHealthCheck = CfnVirtualNode.HealthCheckProperty | CfnVirtualGateway.VirtualGatewayHealthCheckPolicyProperty
 

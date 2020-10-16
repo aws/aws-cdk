@@ -26,9 +26,10 @@ export = {
 
       // Add an HTTP Route
       virtualGateway.addGatewayRoute('gateway-route', {
+        routeSpec: appmesh.GatewayRouteSpec.httpRouteSpec({
+          routeTarget: virtualService,
+        }),
         gatewayRouteName: 'gateway-route',
-        routeType: appmesh.Protocol.HTTP,
-        routeTarget: virtualService,
       });
 
       // THEN
