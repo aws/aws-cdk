@@ -100,16 +100,26 @@ abstract class VirtualGatewayBase extends cdk.Resource implements IVirtualGatewa
    * Utility method to add a list of listeners to this VirtualGateway
    */
   public addListeners(listeners: VirtualGatewayListener[]) {
-    if (this.listeners.length + this.listeners.length > 1) {
+    if (listeners.length + this.listeners.length > 1) {
       throw new Error('VirtualGateway may have at most one listener');
     }
     for (const listener of listeners) {
-      const portMapping = listener.portMapping || { port: 8080, protocol: Protocol.HTTP };
-      this.listeners.push({
-        portMapping,
-        healthCheck: renderHealthCheck(listener.healthCheck, portMapping),
-      });
+      this.addListener(listener);
     }
+  }
+
+  /**
+   * Utility method to add a single listener to this VirtualGateway
+   */
+  public addListener(listener: VirtualGatewayListener) {
+    if (this.listeners.length > 0) {
+      throw new Error('VirtualGateway may have at most one listener');
+    }
+    const portMapping = listener.portMapping || { port: 8080, protocol: Protocol.HTTP };
+    this.listeners.push({
+      portMapping,
+      healthCheck: renderHealthCheck(listener.healthCheck, portMapping),
+    });
   }
 
   /**

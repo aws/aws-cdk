@@ -76,61 +76,93 @@ export = {
       );
       test.done();
     },
-  },
-  'should have expected features'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
+    'should have expected features'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
 
-    // WHEN
-    const mesh = new appmesh.Mesh(stack, 'mesh', {
-      meshName: 'test-mesh',
-    });
+      // WHEN
+      const mesh = new appmesh.Mesh(stack, 'mesh', {
+        meshName: 'test-mesh',
+      });
 
-    new appmesh.VirtualGateway(stack, 'testGateway', {
-      virtualGatewayName: 'test-gateway',
-      listeners: [{
-        healthCheck: {},
-        portMapping: {
-          port: 80,
-          protocol: appmesh.Protocol.GRPC,
-        },
-      }],
-      mesh: mesh,
-      accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
-    });
+      new appmesh.VirtualGateway(stack, 'testGateway', {
+        virtualGatewayName: 'test-gateway',
+        listeners: [{
+          healthCheck: {},
+          portMapping: {
+            port: 80,
+            protocol: appmesh.Protocol.GRPC,
+          },
+        }],
+        mesh: mesh,
+        accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
+      });
 
-    // THEN
-    expect(stack).to(
-      haveResourceLike('AWS::AppMesh::VirtualGateway', {
-        Spec: {
-          Listeners: [
-            {
-              HealthCheck: {
-                HealthyThreshold: 2,
-                IntervalMillis: 5000,
-                Port: 80,
-                Protocol: appmesh.Protocol.GRPC,
-                TimeoutMillis: 2000,
-                UnhealthyThreshold: 2,
+      // THEN
+      expect(stack).to(
+        haveResourceLike('AWS::AppMesh::VirtualGateway', {
+          Spec: {
+            Listeners: [
+              {
+                HealthCheck: {
+                  HealthyThreshold: 2,
+                  IntervalMillis: 5000,
+                  Port: 80,
+                  Protocol: appmesh.Protocol.GRPC,
+                  TimeoutMillis: 2000,
+                  UnhealthyThreshold: 2,
+                },
+                PortMapping: {
+                  Port: 80,
+                  Protocol: appmesh.Protocol.GRPC,
+                },
               },
-              PortMapping: {
-                Port: 80,
-                Protocol: appmesh.Protocol.GRPC,
-              },
-            },
-          ],
-          Logging: {
-            AccessLog: {
-              File: {
-                Path: '/dev/stdout',
+            ],
+            Logging: {
+              AccessLog: {
+                File: {
+                  Path: '/dev/stdout',
+                },
               },
             },
           },
-        },
-        VirtualGatewayName: 'test-gateway',
-      }),
-    );
-    test.done();
+          VirtualGatewayName: 'test-gateway',
+        }),
+      );
+      test.done();
+    },
+  },
+  'When adding listeners to a VirtualGateway ': {
+    'should throw an exception if you attempt to add more than 1 listener'(test: Test) {
+
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      const mesh = new appmesh.Mesh(stack, 'mesh', {
+        meshName: 'test-mesh',
+      });
+      const virtualGateway = new appmesh.VirtualGateway(stack, 'testGateway', {
+        virtualGatewayName: 'test-gateway',
+        mesh: mesh,
+      });
+      test.throws(() => {
+        virtualGateway.addListener({
+          portMapping: {
+            port: 8080,
+            protocol: appmesh.Protocol.HTTP,
+          },
+        });
+      }, /VirtualGateway may have at most one listener/);
+      test.throws(() => {
+        virtualGateway.addListeners([{
+          portMapping: {
+            port: 8080,
+            protocol: appmesh.Protocol.HTTP,
+          },
+        }]);
+      }, /VirtualGateway may have at most one listener/);
+      test.done();
+    },
   },
   'When adding a gateway route to existing VirtualGateway ': {
     'should create gateway route resource'(test: Test) {
