@@ -220,4 +220,17 @@ describe('HttpApi', () => {
       expect(countMetric.statistic).toEqual(statistic);
     });
   });
+
+  test('description is set', () => {
+    const stack = new Stack();
+    new HttpApi(stack, 'api', {
+      description: 'My Api',
+    });
+
+    expect(stack).toHaveResource('AWS::ApiGatewayV2::Api', {
+      Name: 'api',
+      ProtocolType: 'HTTP',
+      Description: 'My Api',
+    });
+  });
 });
