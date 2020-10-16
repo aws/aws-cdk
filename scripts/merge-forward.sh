@@ -3,5 +3,6 @@
 
 set -exo pipefail
 
+git fetch --all
 git checkout -b v2-main origin/v2-main
-git merge master --no-edit
+git merge origin/master --no-edit
