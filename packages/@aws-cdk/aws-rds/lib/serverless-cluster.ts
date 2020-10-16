@@ -1,7 +1,8 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { Resource, Construct, Duration, Token, Annotations, RemovalPolicy, IResource } from '@aws-cdk/core';
+import { Resource, Duration, Token, Annotations, RemovalPolicy, IResource, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { IClusterEngine } from './cluster-engine';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
@@ -21,6 +22,11 @@ export interface IServerlessCluster extends IResource, ec2.IConnectable, secrets
    * Identifier of the cluster
    */
   readonly clusterIdentifier: string;
+
+  /**
+   * The ARN of the cluster
+   */
+  readonly clusterArn: string;
 
   /**
    * The endpoint to use for read/write operations
@@ -60,8 +66,9 @@ export interface ServerlessClusterProps {
   readonly clusterIdentifier?: string;
 
   /**
-   * The number of days during which automatic DB snapshots are retained. Set
-   * to zero to disable backups.
+   * The number of days during which automatic DB snapshots are retained.
+   * Automatic backup retention cannot be disabled on serverless clusters.
+   * Must be a value from 1 day to 35 days.
    *
    * @default Duration.days(1)
    */
@@ -282,6 +289,18 @@ abstract class ServerlessClusterBase extends Resource implements IServerlessClus
   public abstract readonly connections: ec2.Connections;
 
   /**
+   * The ARN of the cluster
+   */
+  public get clusterArn(): string {
+    return Stack.of(this).formatArn({
+      service: 'rds',
+      resource: 'cluster',
+      sep: ':',
+      resourceName: this.clusterIdentifier,
+    });
+  }
+
+  /**
    * Renders the secret attachment target specifications.
    */
   public asSecretAttachmentTarget(): secretsmanager.SecretAttachmentTargetProps {
@@ -318,7 +337,8 @@ export class ServerlessCluster extends ServerlessClusterBase {
   /**
    * The secret attached to this cluster
    */
-  private readonly secret?: secretsmanager.ISecret;
+  public readonly secret?: secretsmanager.ISecret;
+
   private readonly subnetGroup: ISubnetGroup;
   private readonly vpc: ec2.IVpc;
   private readonly vpcSubnets?: ec2.SubnetSelection;
@@ -326,7 +346,7 @@ export class ServerlessCluster extends ServerlessClusterBase {
   private readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
   private readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
 
-  constructor(scope:Construct, id: string, props: ServerlessClusterProps) {
+  constructor(scope: Construct, id: string, props: ServerlessClusterProps) {
     super(scope, id);
 
     this.vpc = props.vpc;
@@ -348,6 +368,13 @@ export class ServerlessCluster extends ServerlessClusterBase {
       vpcSubnets: props.vpcSubnets,
       removalPolicy: props.removalPolicy === RemovalPolicy.RETAIN ? props.removalPolicy : undefined,
     });
+
+    if (props.backupRetention) {
+      const backupRetentionDays = props.backupRetention.toDays();
+      if (backupRetentionDays < 1 || backupRetentionDays > 35) {
+        throw new Error(`backup retention period must be between 1 and 35 days. received: ${backupRetentionDays}`);
+      }
+    }
 
     let credentials = props.credentials ?? Credentials.fromUsername(props.engine.defaultUsername ?? 'admin');
     if (!credentials.secret && !credentials.password) {

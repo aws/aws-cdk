@@ -1,4 +1,5 @@
-import { Construct, IResource, Resource } from '@aws-cdk/core';
+import { IResource, Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnUserPoolClient } from './cognito.generated';
 import { IUserPool } from './user-pool';
 
@@ -152,6 +153,12 @@ export class UserPoolClientIdentityProvider {
    * A `UserPoolIdentityProviderFacebook` must be attached to the user pool.
    */
   public static readonly FACEBOOK = new UserPoolClientIdentityProvider('Facebook');
+
+  /**
+   * Allow users to sign in using 'Google Login'.
+   * A `UserPoolIdentityProviderGoogle` must be attached to the user pool.
+   */
+  public static readonly GOOGLE = new UserPoolClientIdentityProvider('Google');
 
   /**
    * Allow users to sign in using 'Login With Amazon'.

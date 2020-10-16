@@ -53,7 +53,10 @@
   },
   "cdk-build": {
     "cloudformation": "AWS::Cognito",
-    "jest": true
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "keywords": [
     "aws",
@@ -103,7 +106,8 @@
       "resource-attribute:@aws-cdk/aws-cognito.UserPoolClient.userPoolClientClientSecret",
       "props-physical-name:@aws-cdk/aws-cognito.UserPoolDomainProps",
       "props-physical-name:@aws-cdk/aws-cognito.UserPoolIdentityProviderFacebookProps",
-      "props-physical-name:@aws-cdk/aws-cognito.UserPoolIdentityProviderAmazonProps"
+      "props-physical-name:@aws-cdk/aws-cognito.UserPoolIdentityProviderAmazonProps",
+      "props-physical-name:@aws-cdk/aws-cognito.UserPoolIdentityProviderGoogleProps"
     ]
   },
   "stability": "experimental",
