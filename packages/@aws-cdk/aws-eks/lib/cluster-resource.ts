@@ -141,6 +141,7 @@ export class ClusterResource extends CoreConstruct {
       actions: [
         'ec2:DescribeSubnets',
         'ec2:DescribeRouteTables',
+        'ec2:DescribeVpcs'
       ],
       resources: ['*'],
     }));

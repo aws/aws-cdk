@@ -368,6 +368,7 @@ export = {
             Action: [
               'ec2:DescribeSubnets',
               'ec2:DescribeRouteTables',
+              'ec2:DescribeVpcs',
             ],
             Effect: 'Allow',
             Resource: '*',
