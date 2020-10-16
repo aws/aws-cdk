@@ -7,7 +7,7 @@ import { ProviderAttribute, UserPool, UserPoolIdentityProviderAmazon } from '../
  * * If you plug in valid 'Login with Amazon' credentials, the federated log in should work.
  */
 const app = new App();
-const stack = new Stack(app, 'integ-user-pool-idp');
+const stack = new Stack(app, 'integ-user-pool-idp-amazon');
 
 const userpool = new UserPool(stack, 'pool');
 
