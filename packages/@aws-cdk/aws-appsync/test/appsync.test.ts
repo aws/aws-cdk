@@ -1,5 +1,6 @@
 import * as path from 'path';
 import '@aws-cdk/assert/jest';
+import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as appsync from '../lib';
 
@@ -75,21 +76,35 @@ test('when xray is enabled should not throw an Error', () => {
   });
 });
 
-test('appsync GraphqlApi should be configured with custom CW Logs Role ARN when specified', () => {
+test('appsync GraphqlApi should be configured with custom CloudWatch Logs role when specified', () => {
+  // GIVEN
+  const cloudWatchLogRole: iam.Role = new iam.Role(stack, 'CloudWatchLogRole', {
+    assumedBy: new iam.ServicePrincipal('appsync.amazonaws.com'),
+    managedPolicies: [
+      iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSAppSyncPushToCloudWatchLogs'),
+    ],
+  });
+
   // WHEN
   new appsync.GraphqlApi(stack, 'api-custom-cw-logs-role', {
     authorizationConfig: {},
-    name: 'api',
+    name: 'apiWithCustomRole',
     schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
     logConfig: {
-      roleArn: 'testCustomRoleArn',
+      role: cloudWatchLogRole,
     },
   });
 
   // THEN
   expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLApi', {
+    Name: 'apiWithCustomRole',
     LogConfig: {
-      CloudWatchLogsRoleArn: 'testCustomRoleArn',
+      CloudWatchLogsRoleArn: {
+        'Fn::GetAtt': [
+          'CloudWatchLogRoleE3242F1C',
+          'Arn',
+        ],
+      },
     },
   });
 });
@@ -97,9 +112,13 @@ test('appsync GraphqlApi should be configured with custom CW Logs Role ARN when 
 test('appsync GraphqlApi should not use custom role for CW Logs when not specified', () => {
   // EXPECT
   expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLApi', {
+    Name: 'api',
     LogConfig: {
       CloudWatchLogsRoleArn: {
-        'Fn::GetAtt': [],
+        'Fn::GetAtt': [
+          'apiApiLogsRole56BEE3F1',
+          'Arn',
+        ],
       },
     },
   });

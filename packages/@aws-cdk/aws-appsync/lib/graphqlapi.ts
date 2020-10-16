@@ -1,5 +1,5 @@
 import { IUserPool } from '@aws-cdk/aws-cognito';
-import { ManagedPolicy, Role, ServicePrincipal, Grant, IGrantable } from '@aws-cdk/aws-iam';
+import { ManagedPolicy, Role, IRole, ServicePrincipal, Grant, IGrantable } from '@aws-cdk/aws-iam';
 import { CfnResource, Duration, Expiration, IResolvable, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnApiKey, CfnGraphQLApi, CfnGraphQLSchema } from './appsync.generated';
@@ -205,11 +205,11 @@ export interface LogConfig {
   readonly fieldLogLevel?: FieldLogLevel;
 
   /**
-   * The role arn for CloudWatch Logs
+   * The role for CloudWatch Logs
    *
    * @default - None
    */
-  readonly roleArn?: string;
+  readonly role?: IRole;
 }
 
 /**
@@ -519,7 +519,7 @@ export class GraphqlApi extends GraphqlApiBase {
 
   private setupLogConfig(config?: LogConfig) {
     if (!config) return undefined;
-    const logsRoleArn: string = config.roleArn ?? new Role(this, 'ApiLogsRole', {
+    const logsRoleArn: string = config.role?.roleArn ?? new Role(this, 'ApiLogsRole', {
       assumedBy: new ServicePrincipal('appsync.amazonaws.com'),
       managedPolicies: [
         ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSAppSyncPushToCloudWatchLogs'),
