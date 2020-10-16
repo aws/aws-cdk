@@ -12,6 +12,10 @@ export class Size {
   /**
    * Create a Storage representing an amount kibibytes.
    * 1 KiB = 1024 bytes
+   *
+   * @param amount the amount of kibibytes to be represented
+   *
+   * @returns a new `Size` instance
    */
   public static kibibytes(amount: number): Size {
     return new Size(amount, StorageUnit.Kibibytes);
@@ -20,6 +24,10 @@ export class Size {
   /**
    * Create a Storage representing an amount mebibytes.
    * 1 MiB = 1024 KiB
+   *
+   * @param amount the amount of mebibytes to be represented
+   *
+   * @returns a new `Size` instance
    */
   public static mebibytes(amount: number): Size {
     return new Size(amount, StorageUnit.Mebibytes);
@@ -28,6 +36,10 @@ export class Size {
   /**
    * Create a Storage representing an amount gibibytes.
    * 1 GiB = 1024 MiB
+   *
+   * @param amount the amount of gibibytes to be represented
+   *
+   * @returns a new `Size` instance
    */
   public static gibibytes(amount: number): Size {
     return new Size(amount, StorageUnit.Gibibytes);
@@ -36,6 +48,10 @@ export class Size {
   /**
    * Create a Storage representing an amount tebibytes.
    * 1 TiB = 1024 GiB
+   *
+   * @param amount the amount of tebibytes to be represented
+   *
+   * @returns a new `Size` instance
    */
   public static tebibytes(amount: number): Size {
     return new Size(amount, StorageUnit.Tebibytes);
@@ -44,8 +60,22 @@ export class Size {
   /**
    * Create a Storage representing an amount pebibytes.
    * 1 PiB = 1024 TiB
+   *
+   * @deprecated use `pebibytes` instead
    */
   public static pebibyte(amount: number): Size {
+    return Size.pebibytes(amount);
+  }
+
+  /**
+   * Create a Storage representing an amount pebibytes.
+   * 1 PiB = 1024 TiB
+   *
+   * @param amount the amount of pebibytes to be represented
+   *
+   * @returns a new `Size` instance
+   */
+  public static pebibytes(amount: number): Size {
     return new Size(amount, StorageUnit.Pebibytes);
   }
 
@@ -62,6 +92,10 @@ export class Size {
 
   /**
    * Return this storage as a total number of kibibytes.
+   *
+   * @param opts the conversion options
+   *
+   * @returns the quantity of bytes expressed in kibibytes
    */
   public toKibibytes(opts: SizeConversionOptions = {}): number {
     return convert(this.amount, this.unit, StorageUnit.Kibibytes, opts);
@@ -69,6 +103,10 @@ export class Size {
 
   /**
    * Return this storage as a total number of mebibytes.
+   *
+   * @param opts the conversion options
+   *
+   * @returns the quantity of bytes expressed in mebibytes
    */
   public toMebibytes(opts: SizeConversionOptions = {}): number {
     return convert(this.amount, this.unit, StorageUnit.Mebibytes, opts);
@@ -76,6 +114,10 @@ export class Size {
 
   /**
    * Return this storage as a total number of gibibytes.
+   *
+   * @param opts the conversion options
+   *
+   * @returns the quantity of bytes expressed in gibibytes
    */
   public toGibibytes(opts: SizeConversionOptions = {}): number {
     return convert(this.amount, this.unit, StorageUnit.Gibibytes, opts);
@@ -83,6 +125,10 @@ export class Size {
 
   /**
    * Return this storage as a total number of tebibytes.
+   *
+   * @param opts the conversion options
+   *
+   * @returns the quantity of bytes expressed in tebibytes
    */
   public toTebibytes(opts: SizeConversionOptions = {}): number {
     return convert(this.amount, this.unit, StorageUnit.Tebibytes, opts);
@@ -90,6 +136,10 @@ export class Size {
 
   /**
    * Return this storage as a total number of pebibytes.
+   *
+   * @param opts the conversion options
+   *
+   * @returns the quantity of bytes expressed in pebibytes
    */
   public toPebibytes(opts: SizeConversionOptions = {}): number {
     return convert(this.amount, this.unit, StorageUnit.Pebibytes, opts);
@@ -106,7 +156,6 @@ export enum SizeRoundingBehavior {
   FLOOR,
   /** Don't round. Return even if the result is a fraction. */
   NONE,
-
 }
 
 /**
