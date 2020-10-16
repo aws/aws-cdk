@@ -232,16 +232,5 @@ describe('HttpApi', () => {
       ProtocolType: 'HTTP',
       Description: 'My Api',
     });
-
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Stage', {
-      ApiId: stack.resolve(api.httpApiId),
-      StageName: '$default',
-      AutoDeploy: true,
-    });
-
-    expect(stack).not.toHaveResource('AWS::ApiGatewayV2::Route');
-    expect(stack).not.toHaveResource('AWS::ApiGatewayV2::Integration');
-
-    expect(api.url).toBeDefined();
   });
 });
