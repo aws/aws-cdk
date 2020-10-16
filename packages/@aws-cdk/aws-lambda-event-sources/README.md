@@ -196,7 +196,7 @@ import { KinesisEventSource } from '@aws-cdk/aws-lambda-event-sources';
 
 const stream = new kinesis.Stream(this, 'MyStream');
 
-myFunction.addEventSource(new KinesisEventSource(queue, {
+myFunction.addEventSource(new KinesisEventSource(stream, {
   batchSize: 100, // default
   startingPosition: lambda.StartingPosition.TRIM_HORIZON
 });
