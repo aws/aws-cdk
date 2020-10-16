@@ -124,13 +124,10 @@ mesh.addVirtualGateway('gateway1', {
 
 new appmesh.VirtualGateway(stack, 'gateway2', {
   mesh: mesh,
-  listeners: [{
+  listeners: [appmesh.VirtualGatewayListener.httpGatewayListener({
+    port: 443,
     healthCheck: {
       interval: cdk.Duration.seconds(10),
     },
-    portMapping: {
-      port: 443,
-      protocol: appmesh.Protocol.HTTP,
-    },
-  }],
+  })],
 });

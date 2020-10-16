@@ -21,15 +21,12 @@ export = {
 
       new appmesh.VirtualGateway(stack, 'gateway2', {
         mesh: mesh,
-        listeners: [{
+        listeners: [appmesh.VirtualGatewayListener.httpGatewayListener({
+          port: 443,
           healthCheck: {
             interval: cdk.Duration.seconds(10),
           },
-          portMapping: {
-            port: 443,
-            protocol: appmesh.Protocol.HTTP,
-          },
-        }],
+        })],
       });
 
       // THEN
@@ -87,13 +84,9 @@ export = {
 
       new appmesh.VirtualGateway(stack, 'testGateway', {
         virtualGatewayName: 'test-gateway',
-        listeners: [{
-          healthCheck: {},
-          portMapping: {
-            port: 80,
-            protocol: appmesh.Protocol.GRPC,
-          },
-        }],
+        listeners: [appmesh.VirtualGatewayListener.grpcGatewayListener({
+          port: 80,
+        })],
         mesh: mesh,
         accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
       });
@@ -146,20 +139,10 @@ export = {
         mesh: mesh,
       });
       test.throws(() => {
-        virtualGateway.addListener({
-          portMapping: {
-            port: 8080,
-            protocol: appmesh.Protocol.HTTP,
-          },
-        });
+        virtualGateway.addListener(appmesh.VirtualGatewayListener.httpGatewayListener());
       }, /VirtualGateway may have at most one listener/);
       test.throws(() => {
-        virtualGateway.addListeners([{
-          portMapping: {
-            port: 8080,
-            protocol: appmesh.Protocol.HTTP,
-          },
-        }]);
+        virtualGateway.addListeners([appmesh.VirtualGatewayListener.httpGatewayListener()]);
       }, /VirtualGateway may have at most one listener/);
       test.done();
     },

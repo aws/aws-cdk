@@ -2,7 +2,7 @@ import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnGatewayRoute } from './appmesh.generated';
 import { Protocol } from './shared-interfaces';
-import { IVirtualGateway } from './virtual-gateway';
+import { IVirtualGateway, VirtualGateway } from './virtual-gateway';
 import { IVirtualService } from './virtual-service';
 
 /**
@@ -268,7 +268,8 @@ export class GatewayRoute extends cdk.Resource implements IGatewayRoute {
    */
   public static fromGatewayRouteName(
     scope: Construct, id: string, meshName: string, virtualGatewayName: string, gatewayRouteName: string): IGatewayRoute {
-    return new ImportedGatewayRoute(scope, id, { meshName, virtualGatewayName, gatewayRouteName });
+    const virtualGateway = VirtualGateway.fromVirtualGatewayName(scope, 'VirtualGateway', meshName, virtualGatewayName);
+    return new ImportedGatewayRoute(scope, id, { meshName, virtualGateway, gatewayRouteName });
   }
 
   /**
@@ -336,7 +337,7 @@ interface GatewayRouteAttributes {
   /**
    * The name of the Virtual Gateway this GatewayRoute is associated with
    */
-  readonly virtualGatewayName?: string;
+  readonly virtualGateway?: IVirtualGateway;
 }
 
 /**
@@ -358,11 +359,11 @@ class ImportedGatewayRoute extends cdk.Resource implements IGatewayRoute {
     if (props.gatewayRouteArn) {
       this.gatewayRouteArn = props.gatewayRouteArn;
       this.gatewayRouteName = cdk.Fn.select(4, cdk.Fn.split('/', cdk.Stack.of(scope).parseArn(props.gatewayRouteArn).resourceName!));
-    } else if (props.gatewayRouteName && props.meshName && props.virtualGatewayName) {
+    } else if (props.gatewayRouteName && props.meshName && props.virtualGateway) {
       this.gatewayRouteName = props.gatewayRouteName;
       this.gatewayRouteArn = cdk.Stack.of(this).formatArn({
         service: 'appmesh',
-        resource: `mesh/${props.meshName}/virtualGateway/${props.virtualGatewayName}/gatewayRoute`,
+        resource: `mesh/${props.meshName}/virtualGateway/${props.virtualGateway.virtualGatewayName}/gatewayRoute`,
         resourceName: this.gatewayRouteName,
       });
     } else {

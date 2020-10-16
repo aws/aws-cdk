@@ -16,7 +16,7 @@ export = {
       });
 
       const virtualGateway = new appmesh.VirtualGateway(stack, 'gateway-1', {
-        listeners: [{}],
+        listeners: [appmesh.VirtualGatewayListener.httpGatewayListener()],
         mesh: mesh,
       });
 

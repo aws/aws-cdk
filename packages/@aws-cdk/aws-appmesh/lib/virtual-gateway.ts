@@ -4,7 +4,7 @@ import { CfnGatewayRoute, CfnVirtualGateway } from './appmesh.generated';
 import { GatewayRoute, GatewayRouteBaseProps } from './gateway-route';
 
 import { IMesh, Mesh } from './mesh';
-import { AccessLog, HealthCheck, PortMapping, Protocol, VirtualGatewayListener } from './shared-interfaces';
+import { AccessLog, HealthCheck, PortMapping, Protocol } from './shared-interfaces';
 import { validateHealthChecks } from './utils';
 
 /**
@@ -39,6 +39,168 @@ export interface IVirtualGateway extends cdk.IResource {
    * Utility method to add a new GatewayRoute to the VirtualGateway
    */
   addGatewayRoute(id: string, route: GatewayRouteBaseProps): GatewayRoute;
+}
+
+/**
+ * Represents the properties needed to define HTTP Listeners for a VirtualGateway
+ */
+export interface HttpGatewayListenerProps {
+  /**
+   * Port to listen for connections on
+   *
+   * @default - 8080
+   */
+  readonly port?: number
+
+  /**
+   * The health check information for the listener
+   *
+   * @default - no healthcheck
+   */
+  readonly healthCheck?: HealthCheck;
+}
+
+/**
+ * Represents the properties needed to define GRPC Listeners for a VirtualGateway
+ */
+export interface GrpcGatewayListenerProps {
+  /**
+   * Port to listen for connections on
+   *
+   * @default - 8080
+   */
+  readonly port?: number
+
+  /**
+   * The health check information for the listener
+   *
+   * @default - no healthcheck
+   */
+  readonly healthCheck?: HealthCheck;
+}
+
+/**
+ * Represents the properties needed to define listeners for Virtual Gateways
+ */
+export abstract class VirtualGatewayListener {
+  public static httpGatewayListener(props?: HttpGatewayListenerProps): VirtualGatewayListener {
+    return new HttpGatewayListener(props);
+  }
+
+  public static http2GatewayListener(props?: HttpGatewayListenerProps): VirtualGatewayListener {
+    return new Http2GatewayListener(props);
+  }
+
+  public static grpcGatewayListener(props?: GrpcGatewayListenerProps) {
+    return new GrpcGatewayListener(props);
+  }
+
+  public abstract bind(scope: cdk.Construct): CfnVirtualGateway.VirtualGatewayListenerProperty;
+}
+
+export class HttpGatewayListener extends VirtualGatewayListener {
+  /**
+   * Port to listen for connections on
+   *
+   * @default - 8080
+   */
+  readonly port: number;
+
+  /**
+   * Health checking strategy upstream nodes should use when communicating with the listener
+   *
+   * @default - no healthcheck
+   */
+  readonly healthCheck?: HealthCheck;
+  constructor(props?: HttpGatewayListenerProps) {
+    super();
+    const checkedProps = props ?? {};
+    this.port = checkedProps.port ? checkedProps.port : 8080;
+    this.healthCheck = checkedProps.healthCheck;
+  }
+
+  public bind(_scope: cdk.Construct): CfnVirtualGateway.VirtualGatewayListenerProperty {
+    return {
+      portMapping: {
+        port: this.port,
+        protocol: Protocol.HTTP,
+      },
+      healthCheck: renderHealthCheck(this.healthCheck, {
+        port: this.port,
+        protocol: Protocol.HTTP,
+      }),
+    };
+  }
+}
+
+export class Http2GatewayListener extends VirtualGatewayListener {
+  /**
+   * Port to listen for connections on
+   *
+   * @default - 8080
+   */
+  readonly port: number;
+
+  /**
+   * Health checking strategy upstream nodes should use when communicating with the listener
+   *
+   * @default - no healthcheck
+   */
+  readonly healthCheck?: HealthCheck;
+  constructor(props?: HttpGatewayListenerProps) {
+    super();
+    const checkedProps = props ?? {};
+    this.port = checkedProps.port ? checkedProps.port : 8080;
+    this.healthCheck = checkedProps.healthCheck;
+  }
+
+  public bind(_scope: cdk.Construct): CfnVirtualGateway.VirtualGatewayListenerProperty {
+    return {
+      portMapping: {
+        port: this.port,
+        protocol: Protocol.HTTP2,
+      },
+      healthCheck: renderHealthCheck(this.healthCheck, {
+        port: this.port,
+        protocol: Protocol.HTTP2,
+      }),
+    };
+  }
+}
+
+export class GrpcGatewayListener extends VirtualGatewayListener {
+  /**
+   * Port to listen for connections on
+   *
+   * @default - 8080
+   */
+  readonly port: number;
+
+  /**
+   * Health checking strategy upstream nodes should use when communicating with the listener
+   *
+   * @default - no healthcheck
+   */
+  readonly healthCheck?: HealthCheck;
+  constructor(props?: HttpGatewayListenerProps) {
+    super();
+    const checkedProps = props ?? {};
+    this.port = checkedProps.port ? checkedProps.port : 8080;
+    this.healthCheck = checkedProps.healthCheck;
+  }
+
+  public bind(_scope: cdk.Construct): CfnVirtualGateway.VirtualGatewayListenerProperty {
+    return {
+      portMapping: {
+        port: this.port,
+        protocol: Protocol.GRPC,
+      },
+      healthCheck: renderHealthCheck(this.healthCheck, {
+        port: this.port,
+        protocol: Protocol.GRPC,
+      }),
+    };
+  }
 }
 
 /**
@@ -115,11 +277,7 @@ abstract class VirtualGatewayBase extends cdk.Resource implements IVirtualGatewa
     if (this.listeners.length > 0) {
       throw new Error('VirtualGateway may have at most one listener');
     }
-    const portMapping = listener.portMapping || { port: 8080, protocol: Protocol.HTTP };
-    this.listeners.push({
-      portMapping,
-      healthCheck: renderHealthCheck(listener.healthCheck, portMapping),
-    });
+    this.listeners.push(listener.bind(this));
   }
 
   /**
@@ -182,7 +340,7 @@ export class VirtualGateway extends VirtualGatewayBase {
     this.mesh = props.mesh;
 
     // Use listener default of http listener port 8080 if no listener is defined
-    this.addListeners(props.listeners ? props.listeners : [{}]);
+    this.addListeners(props.listeners ? props.listeners : [VirtualGatewayListener.httpGatewayListener()]);
     const accessLogging = props.accessLog?.bind(this);
 
     const node = new CfnVirtualGateway(this, 'Resource', {

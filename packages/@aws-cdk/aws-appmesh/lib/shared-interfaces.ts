@@ -106,11 +106,6 @@ export interface ListenerBase {
 export interface VirtualNodeListener extends ListenerBase {}
 
 /**
- * Represents the properties needed to define listeners for Virtual Gateways
- */
-export interface VirtualGatewayListener extends ListenerBase {}
-
-/**
  * All Properties for Envoy Access logs for mesh endpoints
  */
 export interface AccessLogConfig {
