@@ -223,7 +223,7 @@ describe('HttpApi', () => {
 
   test('description is set', () => {
     const stack = new Stack();
-    const api = new HttpApi(stack, 'api', {
+    new HttpApi(stack, 'api', {
       description: 'My Api',
     });
 
