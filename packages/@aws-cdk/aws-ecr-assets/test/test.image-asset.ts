@@ -3,7 +3,7 @@ import * as path from 'path';
 import { expect, haveResource } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { App, Lazy, Stack } from '@aws-cdk/core';
+import { App, IgnoreMode, Lazy, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { DockerImageAsset } from '../lib';
 
@@ -329,6 +329,20 @@ export = {
     test.deepEqual(asset5.sourceHash, '5775170880e26ba31799745241b90d4340c674bb3b1c01d758e416ee3f1c386f');
     test.deepEqual(asset6.sourceHash, 'ba82fd351a4d3e3f5c5d948b9948e7e829badc3da90f97e00bb7724afbeacfd4');
     test.deepEqual(asset7.sourceHash, '26ec194928431cab6ec5af24ea9f01af2cf7b20e361128b07b2a7405d2951f95');
+    test.done();
+  },
+
+  'fails if the ignoreMode is not docker'(test: Test) {
+    const app = new App();
+    const stack = new Stack(app, 'stack');
+
+    test.throws(() => {
+      new DockerImageAsset(stack, 'MyAsset', {
+        directory: path.join(__dirname, 'whitelisted-image'),
+        ignoreMode: IgnoreMode.GLOB,
+      });
+    }, /DockerImageAsset can only use IgnoreMode.DOCKER but got glob/);
+
     test.done();
   },
 };
