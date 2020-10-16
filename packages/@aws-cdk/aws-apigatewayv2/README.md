@@ -23,6 +23,7 @@
   - [Cross Origin Resource Sharing (CORS)](#cross-origin-resource-sharing-cors)
   - [Publishing HTTP APIs](#publishing-http-apis)
   - [Custom Domain](#custom-domain)
+  - [Metrics](#metrics)
 
 ## Introduction
 
@@ -200,3 +201,27 @@ with 3 API mapping resources across different APIs and Stages.
 | api | $default  |   `https://${domainName}/foo`  |
 | api | beta  |   `https://${domainName}/bar`  |
 | apiDemo | $default  |   `https://${domainName}/demo`  |
+
+## Metrics
+
+The API Gateway v2 service sends metrics around the performance of HTTP APIs to Amazon CloudWatch.
+These metrics can be referred to using the metric APIs available on the `HttpApi` construct.
+The APIs with the `metric` prefix can be used to get reference to specific metrics for this API. For example,
+the method below refers to the client side errors metric for this API.
+
+```
+const api = new apigw.HttpApi(stack, 'my-api');
+const clientErrorMetric = api.metricClientError();
+
+```
+
+Please note that this will return a metric for all the stages defined in the api. It is also possible to refer to metrics for a specific Stage using
+the `metric` methods from the `Stage` construct.
+
+```
+const api = new apigw.HttpApi(stack, 'my-api');
+const stage = new HttpStage(stack, 'Stage', {
+   httpApi: api,
+});
+const clientErrorMetric = stage.metricClientError();
+```
