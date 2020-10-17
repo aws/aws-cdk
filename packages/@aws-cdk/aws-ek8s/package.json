@@ -1,0 +1,100 @@
+{
+  "name": "@aws-cdk/aws-ek8s",
+  "version": "0.0.0",
+  "description": "Integration package for combining CDK8s chart with EKS clusters",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "jsii": {
+    "outdir": "dist",
+    "targets": {
+      "java": {
+        "package": "software.amazon.awscdk.services.ek8s",
+        "maven": {
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "ek8s"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.EK8S",
+        "packageId": "Amazon.CDK.AWS.EK8S",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+      },
+      "python": {
+        "distName": "aws-cdk.aws-ek8s",
+        "module": "aws_cdk.aws_ek8s",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
+      }
+    },
+    "projectReferences": true
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git",
+    "directory": "packages/@aws-cdk/aws-ek8s"
+  },
+  "scripts": {
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "cdk-test",
+    "integ": "cdk-integ",
+    "pkglint": "pkglint -f",
+    "package": "cdk-package",
+    "awslint": "cdk-awslint",
+    "build+test+package": "npm run build+test && npm run package",
+    "build+test": "npm run build && npm test",
+    "compat": "cdk-compat"
+  },
+  "cdk-build": {
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "eks",
+    "cdk8s"
+  ],
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@aws-cdk/assert": "0.0.0",
+    "cdk-build-tools": "0.0.0",
+    "cdk-integ-tools": "0.0.0",
+    "pkglint": "0.0.0",
+    "cdk8s-plus": "0.30.0"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-eks": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^3.0.4",
+    "cdk8s": "^0.30.0"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "peerDependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^3.0.4",
+    "@aws-cdk/aws-eks": "0.0.0",
+    "cdk8s": "^0.30.0"
+  },
+  "engines": {
+    "node": ">= 10.13.0 <13 || >=13.7.0"
+  },
+  "stability": "experimental",
+  "maturity": "experimental",
+  "awscdkio": {
+    "announce": false
+  }
+}
