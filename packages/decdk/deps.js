@@ -26,6 +26,11 @@ for (const dir of modules) {
     continue;
   }
 
+  // skip the `@aws-cdk/aws-ek8s` module
+  if (dir === 'aws-ek8s') {
+    continue;
+  }
+
   const exists = deps[meta.name];
 
   if (meta.deprecated) {
