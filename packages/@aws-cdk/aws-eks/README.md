@@ -820,7 +820,7 @@ chart2.node.addDependency(chart1);
 
 > To learn more about cdk8s, visit the [Getting Started](https://github.com/awslabs/cdk8s/tree/master/docs/getting-started) tutorials.
 
-The EKS module natively integrates with cdk8s and allows you to apply cdk8s charts on AWS EKS clusters via the `cluster.addCdk8sChart` method.
+The EKS module integrates with cdk8s via the `@aws-cdk/aws-ek8s` module, and allows you to apply cdk8s charts on AWS EKS clusters.
 
 In addition to `cdk8s`, you can also use [`cdk8s+`](https://github.com/awslabs/cdk8s/tree/master/packages/cdk8s-plus), which provides higher level abstraction for the core kubernetes api objects.
 You can think of it like the `L2` constructs for Kubernetes. Any other `cdk8s` based libraries are also supported, for example [`cdk8s-debore`](https://github.com/toricls/cdk8s-debore).
@@ -829,6 +829,7 @@ To get started, add the following dependencies to your `package.json` file:
 
 ```json
 "dependencies": {
+  "@aws-cdk/aws-ek8s": "^1.69.0",
   "cdk8s": "0.30.0",
   "cdk8s-plus": "0.30.0",
   "constructs": "3.0.4"
@@ -880,6 +881,7 @@ Then, in your AWS CDK app:
 
 ```ts
 import * as s3 from '@aws-cdk/aws-s3';
+import * as ek8s from '@aws-cdk/aws-ek8s';
 import * as cdk8s from 'cdk8s';
 import { MyChart } from './my-chart';
 
@@ -889,8 +891,8 @@ const bucket = new s3.Bucket(this, 'Bucket');
 // create a cdk8s chart and use `cdk8s.App` as the scope.
 const myChart = new MyChart(new cdk8s.App(), 'MyChart', { bucket });
 
-// add the cdk8s chart to the cluster
-cluster.addCdk8sChart('my-chart', myChart);
+// add the cdk8s chart as a custom chart to the cluster
+cluster.addCustomChart('my-chart', new ek8s.Cdk8sChart(myChart));
 ```
 
 ##### Custom CDK8s Constructs
