@@ -13,5 +13,4 @@ for file in ${files}; do
   cp $src/$file .
 done
 
-NAME=${1:-}
-npx rewrite-imports "**/*.ts" ${NAME}
+npx rewrite-imports "**/*.ts"

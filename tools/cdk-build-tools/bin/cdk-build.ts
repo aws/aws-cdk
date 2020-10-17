@@ -24,9 +24,10 @@ async function main() {
       desc: 'Specify a different eslint executable',
       defaultDescription: 'eslint provided by node dependencies',
     })
-    .option('skip-gen', {
+    .option('gen', {
       type: 'boolean',
-      desc: 'skip executing gen',
+      desc: 'execute gen script',
+      default: true,
     })
     .argv;
 
@@ -34,11 +35,12 @@ async function main() {
   const env = options.env;
 
   if (options.pre) {
-    await shell(options.pre, { timers, env });
+    const commands = options.pre.join(' && ');
+    await shell([commands], { timers, env });
   }
 
   const gen = genScript();
-  if (!args['skip-gen'] && gen) {
+  if (args.gen && gen) {
     await shell([gen], { timers, env });
   }
 
