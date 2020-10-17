@@ -820,7 +820,8 @@ chart2.node.addDependency(chart1);
 
 > To learn more about cdk8s, visit the [Getting Started](https://github.com/awslabs/cdk8s/tree/master/docs/getting-started) tutorials.
 
-The EKS module integrates with cdk8s via the `@aws-cdk/aws-ek8s` module, and allows you to apply cdk8s charts on AWS EKS clusters.
+The EKS module integrates with cdk8s via the [`@aws-cdk/aws-ek8s`](../aws-ek8s/README.md) module,
+and allows you to apply cdk8s charts on AWS EKS clusters.
 
 In addition to `cdk8s`, you can also use [`cdk8s+`](https://github.com/awslabs/cdk8s/tree/master/packages/cdk8s-plus), which provides higher level abstraction for the core kubernetes api objects.
 You can think of it like the `L2` constructs for Kubernetes. Any other `cdk8s` based libraries are also supported, for example [`cdk8s-debore`](https://github.com/toricls/cdk8s-debore).
