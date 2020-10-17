@@ -85,7 +85,11 @@ async function findLibrariesToPackage(): Promise<readonly LibraryReference[]> {
   const librariesRoot = path.resolve(ROOT_PATH, 'packages', '@aws-cdk');
 
   // list of packages to exclude from monocdk packaging
-  const exclude = ['@aws-cdk/aws-ek8s'];
+  const exclude = [
+    // this is excluded because it contains a dependency on cdk8s which we don't
+    // want to force on monocdk users.
+    '@aws-cdk/aws-ek8s',
+  ];
 
   for (const dir of await fs.readdir(librariesRoot)) {
     const packageJson = await fs.readJson(path.resolve(librariesRoot, dir, 'package.json'));
