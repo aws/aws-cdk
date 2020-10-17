@@ -242,7 +242,11 @@ async function main() {
       '',
       '.eslintrc.js',
       'jest.config.js',
+      '',
+      '# exclude cdk artifacts',
+      '**/cdk.out',
       'junit.xml',
+      'test/',
     ]);
 
     await write('lib/index.ts', [

@@ -107,7 +107,7 @@
   "features": [
     {
       "name": "Higher level constructs for Distribution",
-      "stability": "Experimental"
+      "stability": "Developer Preview"
     },
     {
       "name": "Higher level constructs for CloudFrontWebDistribution",

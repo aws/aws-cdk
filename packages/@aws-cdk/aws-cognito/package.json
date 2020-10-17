@@ -107,7 +107,8 @@
       "resource-attribute:@aws-cdk/aws-cognito.UserPoolClient.userPoolClientClientSecret",
       "props-physical-name:@aws-cdk/aws-cognito.UserPoolDomainProps",
       "props-physical-name:@aws-cdk/aws-cognito.UserPoolIdentityProviderFacebookProps",
-      "props-physical-name:@aws-cdk/aws-cognito.UserPoolIdentityProviderAmazonProps"
+      "props-physical-name:@aws-cdk/aws-cognito.UserPoolIdentityProviderAmazonProps",
+      "props-physical-name:@aws-cdk/aws-cognito.UserPoolIdentityProviderGoogleProps"
     ]
   },
   "stability": "experimental",
