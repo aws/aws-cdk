@@ -1,16 +1,20 @@
 import * as console from 'console';
+import * as os from 'os';
 import * as path from 'path';
 import * as process from 'process';
 import * as fs from 'fs-extra';
 import * as ts from 'typescript';
 
 const LIB_ROOT = path.resolve(process.cwd(), 'lib');
+const ROOT_PATH = findWorkspacePath();
 
 async function main() {
+  console.log(`🌴  workspace root path is: ${ROOT_PATH}`);
   const libraries = await findLibrariesToPackage();
   const packageJson = await verifyDependencies(libraries);
   await prepareSourceFiles(libraries, packageJson);
 }
+
 
 main().then(
   () => process.exit(0),
@@ -54,15 +58,35 @@ interface PackageJson {
   readonly [key: string]: unknown;
 }
 
+/**
+ * Find the workspace root path. Walk up the directory tree until you find lerna.json
+ */
+function findWorkspacePath(): string {
+
+  return _findRootPath(process.cwd());
+
+  function _findRootPath(part: string): string {
+    if (process.cwd() === os.homedir()) {
+      throw new Error('couldn\'t find a \'lerna.json\' file when walking up the directory tree, are you in a aws-cdk project?');
+    }
+
+    if (fs.existsSync(path.resolve(part, 'lerna.json'))) {
+      return part;
+    }
+
+    return _findRootPath(path.resolve(part, '..'));
+  }
+}
+
 async function findLibrariesToPackage(): Promise<readonly LibraryReference[]> {
   console.log('🔍 Discovering libraries that need packaging...');
 
   const result = new Array<LibraryReference>();
+  const librariesRoot = path.resolve(ROOT_PATH, 'packages', '@aws-cdk');
 
   // list of packages to exclude from monocdk packaging
   const exclude = ['@aws-cdk/aws-ek8s'];
 
-  const librariesRoot = path.resolve(process.cwd(), '..', '..', 'packages', '@aws-cdk');
   for (const dir of await fs.readdir(librariesRoot)) {
     const packageJson = await fs.readJson(path.resolve(librariesRoot, dir, 'package.json'));
 
@@ -79,7 +103,6 @@ async function findLibrariesToPackage(): Promise<readonly LibraryReference[]> {
       console.log(`\t⚠️ Skipping (not jsii-enabled): ${packageJson.name}`);
       continue;
     }
-
     result.push({
       packageJson,
       root: path.join(librariesRoot, dir),
@@ -127,8 +150,7 @@ async function verifyDependencies(libraries: readonly LibraryReference[]): Promi
       [library.packageJson.name]: library.packageJson.version,
     });
   }
-
-  const workspacePath = path.resolve(process.cwd(), '..', '..', 'package.json');
+  const workspacePath = path.resolve(ROOT_PATH, 'package.json');
   const workspace = await fs.readJson(workspacePath);
   let workspaceChanged = false;
 
