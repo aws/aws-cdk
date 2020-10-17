@@ -7,7 +7,7 @@ import { testFixture } from './util';
 
 /* eslint-disable max-len */
 
-const CLUSTER_VERSION = eks.KubernetesVersion.V1_16;
+const CLUSTER_VERSION = eks.KubernetesVersion.V1_18;
 
 export = {
   'create nodegroup correctly'(test: Test) {
