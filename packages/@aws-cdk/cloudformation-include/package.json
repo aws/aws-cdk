@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.cloudformation-include",
-        "module": "aws_cdk.cloudformation_include"
+        "module": "aws_cdk.cloudformation_include",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
@@ -50,7 +54,10 @@
     "pre": [
       "node ./build.js"
     ],
-    "jest": true
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": "true"
+    }
   },
   "author": {
     "name": "Amazon Web Services",
@@ -67,6 +74,7 @@
     "@aws-cdk/aws-apigateway": "0.0.0",
     "@aws-cdk/aws-apigatewayv2": "0.0.0",
     "@aws-cdk/aws-appconfig": "0.0.0",
+    "@aws-cdk/aws-appflow": "0.0.0",
     "@aws-cdk/aws-applicationautoscaling": "0.0.0",
     "@aws-cdk/aws-applicationinsights": "0.0.0",
     "@aws-cdk/aws-appmesh": "0.0.0",
@@ -86,6 +94,7 @@
     "@aws-cdk/aws-cloudfront": "0.0.0",
     "@aws-cdk/aws-cloudtrail": "0.0.0",
     "@aws-cdk/aws-cloudwatch": "0.0.0",
+    "@aws-cdk/aws-codeartifact": "0.0.0",
     "@aws-cdk/aws-codebuild": "0.0.0",
     "@aws-cdk/aws-codecommit": "0.0.0",
     "@aws-cdk/aws-codedeploy": "0.0.0",
@@ -176,13 +185,15 @@
     "@aws-cdk/aws-sso": "0.0.0",
     "@aws-cdk/aws-stepfunctions": "0.0.0",
     "@aws-cdk/aws-synthetics": "0.0.0",
+    "@aws-cdk/aws-timestream": "0.0.0",
     "@aws-cdk/aws-transfer": "0.0.0",
     "@aws-cdk/aws-waf": "0.0.0",
     "@aws-cdk/aws-wafregional": "0.0.0",
     "@aws-cdk/aws-wafv2": "0.0.0",
     "@aws-cdk/aws-workspaces": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "@aws-cdk/yaml-cfn": "0.0.0"
+    "@aws-cdk/yaml-cfn": "0.0.0",
+    "constructs": "^3.0.4"
   },
   "peerDependencies": {
     "@aws-cdk/alexa-ask": "0.0.0",
@@ -193,6 +204,7 @@
     "@aws-cdk/aws-apigateway": "0.0.0",
     "@aws-cdk/aws-apigatewayv2": "0.0.0",
     "@aws-cdk/aws-appconfig": "0.0.0",
+    "@aws-cdk/aws-appflow": "0.0.0",
     "@aws-cdk/aws-applicationautoscaling": "0.0.0",
     "@aws-cdk/aws-applicationinsights": "0.0.0",
     "@aws-cdk/aws-appmesh": "0.0.0",
@@ -212,6 +224,7 @@
     "@aws-cdk/aws-cloudfront": "0.0.0",
     "@aws-cdk/aws-cloudtrail": "0.0.0",
     "@aws-cdk/aws-cloudwatch": "0.0.0",
+    "@aws-cdk/aws-codeartifact": "0.0.0",
     "@aws-cdk/aws-codebuild": "0.0.0",
     "@aws-cdk/aws-codecommit": "0.0.0",
     "@aws-cdk/aws-codedeploy": "0.0.0",
@@ -302,6 +315,7 @@
     "@aws-cdk/aws-sso": "0.0.0",
     "@aws-cdk/aws-stepfunctions": "0.0.0",
     "@aws-cdk/aws-synthetics": "0.0.0",
+    "@aws-cdk/aws-timestream": "0.0.0",
     "@aws-cdk/aws-transfer": "0.0.0",
     "@aws-cdk/aws-waf": "0.0.0",
     "@aws-cdk/aws-wafregional": "0.0.0",
@@ -318,7 +332,7 @@
     "cdk-integ-tools": "0.0.0",
     "jest": "^26.4.2",
     "pkglint": "0.0.0",
-    "ts-jest": "^26.3.0"
+    "ts-jest": "^26.4.1"
   },
   "keywords": [
     "aws",

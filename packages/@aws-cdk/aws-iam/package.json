@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-iam",
-        "module": "aws_cdk.aws_iam"
+        "module": "aws_cdk.aws_iam",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
@@ -49,6 +53,9 @@
   },
   "cdk-build": {
     "cloudformation": "AWS::IAM",
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": "true"
+    },
     "jest": true
   },
   "keywords": [
@@ -70,7 +77,7 @@
     "cfn2ts": "0.0.0",
     "jest": "^26.4.2",
     "pkglint": "0.0.0",
-    "sinon": "^9.0.3"
+    "sinon": "^9.1.0"
   },
   "dependencies": {
     "@aws-cdk/core": "0.0.0",

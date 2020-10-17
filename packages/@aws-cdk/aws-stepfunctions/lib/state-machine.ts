@@ -1,7 +1,8 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
-import { Arn, Construct, Duration, IResource, Resource, Stack } from '@aws-cdk/core';
+import { Arn, Duration, IResource, Resource, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { StateGraph } from './state-graph';
 import { CfnStateMachine } from './stepfunctions.generated';
 import { IChainable } from './types';
@@ -417,7 +418,13 @@ export class StateMachine extends StateMachineBase {
   private buildTracingConfiguration(): CfnStateMachine.TracingConfigurationProperty {
     this.addToRolePolicy(new iam.PolicyStatement({
       // https://docs.aws.amazon.com/xray/latest/devguide/security_iam_id-based-policy-examples.html#xray-permissions-resources
-      actions: ['xray:PutTraceSegments', 'xray:PutTelemetryRecords'],
+      // https://docs.aws.amazon.com/step-functions/latest/dg/xray-iam.html
+      actions: [
+        'xray:PutTraceSegments',
+        'xray:PutTelemetryRecords',
+        'xray:GetSamplingRules',
+        'xray:GetSamplingTargets',
+      ],
       resources: ['*'],
     }));
 

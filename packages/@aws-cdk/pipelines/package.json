@@ -37,6 +37,7 @@
     "nodeunit": "^0.11.3",
     "pkglint": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
+    "@aws-cdk/aws-ecr": "0.0.0",
     "@aws-cdk/aws-ecr-assets": "0.0.0"
   },
   "peerDependencies": {
@@ -84,7 +85,10 @@
   "stability": "experimental",
   "maturity": "developer-preview",
   "cdk-build": {
-    "jest": true
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "jsii": {
     "outdir": "dist",
@@ -105,7 +109,11 @@
       },
       "python": {
         "distName": "aws-cdk.pipelines",
-        "module": "aws_cdk.pipelines"
+        "module": "aws_cdk.pipelines",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true

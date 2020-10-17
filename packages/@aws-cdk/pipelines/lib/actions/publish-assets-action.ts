@@ -4,7 +4,12 @@ import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct, Lazy } from '@aws-cdk/core';
+import { Lazy } from '@aws-cdk/core';
+import { Construct } from 'constructs';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Type of the asset that is being published
@@ -87,7 +92,7 @@ export interface PublishAssetsActionProps {
  * You do not need to instantiate this action -- it will automatically
  * be added by the pipeline when you add stacks that use assets.
  */
-export class PublishAssetsAction extends Construct implements codepipeline.IAction {
+export class PublishAssetsAction extends CoreConstruct implements codepipeline.IAction {
   private readonly action: codepipeline.IAction;
   private readonly commands = new Array<string>();
 
@@ -132,6 +137,10 @@ export class PublishAssetsAction extends Construct implements codepipeline.IActi
       project,
       input: this.props.cloudAssemblyInput,
       role: props.role,
+      // Add this purely so that the pipeline will selfupdate if the CLI version changes
+      environmentVariables: props.cdkCliVersion ? {
+        CDK_CLI_VERSION: { value: props.cdkCliVersion },
+      } : undefined,
     });
   }
 
@@ -150,7 +159,7 @@ export class PublishAssetsAction extends Construct implements codepipeline.IActi
   /**
    * Exists to implement IAction
    */
-  public bind(scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
+  public bind(scope: CoreConstruct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
   codepipeline.ActionConfig {
     return this.action.bind(scope, stage, options);
   }
