@@ -72,6 +72,13 @@ export interface InitElementConfig {
    * @default - No authentication associated with the config
    */
   readonly authentication?: Record<string, any>;
+
+  /**
+   * Optional string representing a hash of the asset associated with this element (if any).
+   *
+   * @default - No hash is provided
+   */
+  readonly assetHash?: string;
 }
 
 /**

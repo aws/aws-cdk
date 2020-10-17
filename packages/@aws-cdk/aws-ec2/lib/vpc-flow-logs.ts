@@ -1,9 +1,14 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
-import { Construct, IResource, PhysicalName, RemovalPolicy, Resource } from '@aws-cdk/core';
+import { IResource, PhysicalName, RemovalPolicy, Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnFlowLog } from './ec2.generated';
 import { ISubnet, IVpc } from './vpc';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * A FlowLog
@@ -124,17 +129,18 @@ export abstract class FlowLogDestination {
   /**
    * Use S3 as the destination
    */
-  public static toS3(bucket?: s3.IBucket): FlowLogDestination {
+  public static toS3(bucket?: s3.IBucket, keyPrefix?: string): FlowLogDestination {
     return new S3Destination({
       logDestinationType: FlowLogDestinationType.S3,
       s3Bucket: bucket,
+      keyPrefix,
     });
   }
 
   /**
    * Generates a flow log destination configuration
    */
-  public abstract bind(scope: Construct, flowLog: FlowLog): FlowLogDestinationConfig;
+  public abstract bind(scope: CoreConstruct, flowLog: FlowLog): FlowLogDestinationConfig;
 }
 
 /**
@@ -170,6 +176,13 @@ export interface FlowLogDestinationConfig {
    * @default - undefined
    */
   readonly s3Bucket?: s3.IBucket;
+
+  /**
+   * S3 bucket key prefix to publish the flow logs to
+   *
+   * @default - undefined
+   */
+  readonly keyPrefix?: string;
 }
 
 /**
@@ -180,7 +193,7 @@ class S3Destination extends FlowLogDestination {
     super();
   }
 
-  public bind(scope: Construct, _flowLog: FlowLog): FlowLogDestinationConfig {
+  public bind(scope: CoreConstruct, _flowLog: FlowLog): FlowLogDestinationConfig {
     let s3Bucket: s3.IBucket;
     if (this.props.s3Bucket === undefined) {
       s3Bucket = new s3.Bucket(scope, 'Bucket', {
@@ -193,6 +206,7 @@ class S3Destination extends FlowLogDestination {
     return {
       logDestinationType: FlowLogDestinationType.S3,
       s3Bucket,
+      keyPrefix: this.props.keyPrefix,
     };
   }
 }
@@ -205,7 +219,7 @@ class CloudWatchLogsDestination extends FlowLogDestination {
     super();
   }
 
-  public bind(scope: Construct, _flowLog: FlowLog): FlowLogDestinationConfig {
+  public bind(scope: CoreConstruct, _flowLog: FlowLog): FlowLogDestinationConfig {
     let iamRole: iam.IRole;
     let logGroup: logs.ILogGroup;
     if (this.props.iamRole === undefined) {
@@ -340,6 +354,11 @@ export class FlowLog extends FlowLogBase {
   public readonly bucket?: s3.IBucket;
 
   /**
+   * S3 bucket key prefix to publish the flow logs under
+   */
+  readonly keyPrefix?: string;
+
+  /**
    * The iam role used to publish logs to CloudWatch
    */
   public readonly iamRole?: iam.IRole;
@@ -360,6 +379,12 @@ export class FlowLog extends FlowLogBase {
     this.logGroup = destinationConfig.logGroup;
     this.bucket = destinationConfig.s3Bucket;
     this.iamRole = destinationConfig.iamRole;
+    this.keyPrefix = destinationConfig.keyPrefix;
+
+    let logDestination: string | undefined = undefined;
+    if (this.bucket) {
+      logDestination = this.keyPrefix ? this.bucket.arnForObjects(this.keyPrefix) : this.bucket.bucketArn;
+    }
 
     const flowLog = new CfnFlowLog(this, 'FlowLog', {
       deliverLogsPermissionArn: this.iamRole ? this.iamRole.roleArn : undefined,
@@ -370,7 +395,7 @@ export class FlowLog extends FlowLogBase {
       trafficType: props.trafficType
         ? props.trafficType
         : FlowLogTrafficType.ALL,
-      logDestination: this.bucket ? this.bucket.bucketArn : undefined,
+      logDestination,
     });
 
     this.flowLogId = flowLog.ref;

@@ -1,4 +1,5 @@
-import { Construct, Lazy, Resource } from '@aws-cdk/core';
+import { Annotations, Lazy, Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnListener } from '../elasticloadbalancingv2.generated';
 import { IListenerAction } from './listener-action';
 
@@ -50,7 +51,7 @@ export abstract class BaseListener extends Resource {
     // Instead, signal this through a warning.
     // @deprecate: upon the next major version bump, replace this with a `throw`
     if (this.defaultAction) {
-      this.node.addWarning('A default Action already existed on this Listener and was replaced. Configure exactly one default Action.');
+      Annotations.of(this).addWarning('A default Action already existed on this Listener and was replaced. Configure exactly one default Action.');
     }
 
     this.defaultAction = action;

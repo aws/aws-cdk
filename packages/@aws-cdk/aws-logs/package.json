@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-logs",
-        "module": "aws_cdk.aws_logs"
+        "module": "aws_cdk.aws_logs",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
@@ -48,7 +52,10 @@
     "compat": "cdk-compat"
   },
   "cdk-build": {
-    "cloudformation": "AWS::Logs"
+    "cloudformation": "AWS::Logs",
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "keywords": [
     "aws",
@@ -65,15 +72,20 @@
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
     "@types/nodeunit": "^0.0.31",
+    "aws-sdk": "^2.739.0",
+    "aws-sdk-mock": "^5.1.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
+    "nock": "^13.0.4",
     "nodeunit": "^0.11.3",
-    "pkglint": "0.0.0"
+    "pkglint": "0.0.0",
+    "sinon": "^9.1.0"
   },
   "dependencies": {
     "@aws-cdk/aws-cloudwatch": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-s3-assets": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "constructs": "^3.0.4"
   },
@@ -81,6 +93,7 @@
   "peerDependencies": {
     "@aws-cdk/aws-cloudwatch": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-s3-assets": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "constructs": "^3.0.4"
   },

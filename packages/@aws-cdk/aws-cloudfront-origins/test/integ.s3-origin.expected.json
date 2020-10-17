@@ -60,7 +60,7 @@
       "Type": "AWS::CloudFront::CloudFrontOriginAccessIdentity",
       "Properties": {
         "CloudFrontOriginAccessIdentityConfig": {
-          "Comment": "Access identity for cloudfronts3originDistributionOrigin1741C4E95"
+          "Comment": "Identity for cloudfronts3originDistributionOrigin1741C4E95"
         }
       }
     },
@@ -69,9 +69,8 @@
       "Properties": {
         "DistributionConfig": {
           "DefaultCacheBehavior": {
-            "ForwardedValues": {
-              "QueryString": false
-            },
+            "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+            "Compress": true,
             "TargetOriginId": "cloudfronts3originDistributionOrigin1741C4E95",
             "ViewerProtocolPolicy": "allow-all"
           },

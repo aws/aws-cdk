@@ -22,7 +22,11 @@
       },
       "python": {
         "distName": "aws-cdk.app-delivery",
-        "module": "aws_cdk.app_delivery"
+        "module": "aws_cdk.app_delivery",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "outdir": "dist",
@@ -34,6 +38,7 @@
     "pkglint": "pkglint -f",
     "test": "cdk-test",
     "watch": "cdk-watch",
+    "lint": "cdk-lint",
     "integ": "cdk-integ",
     "awslint": "cdk-awslint",
     "build+test+package": "npm run build+test && npm run package",
@@ -58,7 +63,7 @@
     "@types/nodeunit": "^0.0.31",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
-    "fast-check": "^1.26.0",
+    "fast-check": "^2.4.0",
     "nodeunit": "^0.11.3",
     "pkglint": "0.0.0"
   },

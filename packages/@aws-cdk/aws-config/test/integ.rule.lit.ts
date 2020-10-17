@@ -18,12 +18,11 @@ class ConfigStack extends cdk.Stack {
       runtime: lambda.Runtime.NODEJS_10_X,
     });
 
-    const customRule = new config.CustomRule(this, 'Custom', {
+    new config.CustomRule(this, 'Custom', {
       configurationChanges: true,
       lambdaFunction: fn,
+      ruleScope: config.RuleScope.fromResources([config.ResourceType.EC2_INSTANCE]),
     });
-
-    customRule.scopeToResource('AWS::EC2::Instance');
 
     // A rule to detect stacks drifts
     const driftRule = new config.CloudFormationStackDriftDetectionCheck(this, 'Drift');

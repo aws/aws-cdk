@@ -4,9 +4,14 @@ import { IFunction } from '@aws-cdk/aws-lambda';
 import { IDatabaseCluster } from '@aws-cdk/aws-rds';
 import { ISecret } from '@aws-cdk/aws-secretsmanager';
 import { Construct, IResolvable, Stack } from '@aws-cdk/core';
+import { IResolvable } from '@aws-cdk/core';
 import { CfnDataSource } from './appsync.generated';
 import { IGraphqlApi } from './graphqlapi-base';
 import { BaseResolverProps, Resolver } from './resolver';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Base properties for an AppSync datasource
@@ -85,7 +90,7 @@ export interface ExtendedDataSourceProps {
 /**
  * Abstract AppSync datasource implementation. Do not use directly but use subclasses for concrete datasources
  */
-export abstract class BaseDataSource extends Construct {
+export abstract class BaseDataSource extends CoreConstruct {
   /**
    * the name of the data source
    */
@@ -206,6 +211,21 @@ export class DynamoDbDataSource extends BackedDataSource {
 }
 
 /**
+ * The authorization config in case the HTTP endpoint requires authorization
+ */
+export interface AwsIamConfig {
+  /**
+   * The signing region for AWS IAM authorization
+   */
+  readonly signingRegion: string;
+
+  /**
+   * The signing service name for AWS IAM authorization
+   */
+  readonly signingServiceName: string;
+}
+
+/**
  * Properties for an AppSync http datasource
  */
 export interface HttpDataSourceProps extends BaseDataSourceProps {
@@ -213,6 +233,14 @@ export interface HttpDataSourceProps extends BaseDataSourceProps {
    * The http endpoint
    */
   readonly endpoint: string;
+
+  /**
+   * The authorization config in case the HTTP endpoint requires authorization
+   *
+   * @default - none
+   *
+   */
+  readonly authorizationConfig?: AwsIamConfig;
 }
 
 /**
@@ -220,11 +248,16 @@ export interface HttpDataSourceProps extends BaseDataSourceProps {
  */
 export class HttpDataSource extends BaseDataSource {
   constructor(scope: Construct, id: string, props: HttpDataSourceProps) {
+    const authorizationConfig = props.authorizationConfig ? {
+      authorizationType: 'AWS_IAM',
+      awsIamConfig: props.authorizationConfig,
+    } : undefined;
     super(scope, id, props, {
+      type: 'HTTP',
       httpConfig: {
         endpoint: props.endpoint,
+        authorizationConfig,
       },
-      type: 'HTTP',
     });
   }
 }

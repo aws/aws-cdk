@@ -7,12 +7,26 @@
       "Type": "List<AWS::EC2::Subnet::Id>"
     }
   },
+  "Conditions": {
+    "IsProduction": {
+      "Fn::Equals": [
+        { "Ref":  "Env" },
+        "prod"
+      ]
+    }
+  },
   "Rules": {
     "TestVpcRule": {
       "RuleCondition": {
-        "Fn::Contains": [
-          ["test", "pre-prod", "preprod"],
-          { "Ref":  "Env" }
+        "Fn::If": [
+          "IsProduction",
+          true,
+          {
+            "Fn::Contains": [
+              ["test", "pre-prod", "preprod"],
+              { "Ref": "Env" }
+            ]
+          }
         ]
       },
       "Assertions": [

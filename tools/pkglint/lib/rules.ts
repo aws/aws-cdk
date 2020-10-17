@@ -482,7 +482,7 @@ export class JSIIProjectReferences extends ValidationRule {
       this.name,
       pkg,
       'jsii.projectReferences',
-      pkg.json.name !== 'monocdk-experiment',
+      pkg.json.name !== 'monocdk' && pkg.json.name !== 'aws-cdk-lib',
     );
   }
 }
@@ -525,8 +525,11 @@ export class JSIIPythonTarget extends ValidationRule {
 
     const moduleName = cdkModuleName(pkg.json.name);
 
+    // See: https://github.com/aws/jsii/blob/master/docs/configuration.md#configuring-python
+
     expectJSON(this.name, pkg, 'jsii.targets.python.distName', moduleName.python.distName);
     expectJSON(this.name, pkg, 'jsii.targets.python.module', moduleName.python.module);
+    expectJSON(this.name, pkg, 'jsii.targets.python.classifiers', ['Framework :: AWS CDK', 'Framework :: AWS CDK :: 1']);
   }
 }
 
@@ -568,6 +571,21 @@ export class NoTsBuildInfo extends ValidationRule {
     // We might at some point also want to strip tsconfig.json but for now,
     // the TypeScript DOCS BUILD needs to it to load the typescript source.
     fileShouldContain(this.name, pkg, '.npmignore', '*.tsbuildinfo');
+  }
+}
+
+export class NoTestsInNpmPackage extends ValidationRule {
+  public readonly name = 'npmignore/test';
+
+  public validate(pkg: PackageJson): void {
+    // skip private packages
+    if (pkg.json.private) { return; }
+
+    // Skip the CLI package, as its 'test' subdirectory is used at runtime.
+    if (pkg.packageName === 'aws-cdk') { return; }
+
+    // Exclude 'test/' directories from being packaged
+    fileShouldContain(this.name, pkg, '.npmignore', 'test/');
   }
 }
 
@@ -862,6 +880,7 @@ export class MustDependonCdkByPointVersions extends ValidationRule {
       '@aws-cdk/cx-api',
       '@aws-cdk/cloud-assembly-schema',
       '@aws-cdk/region-info',
+      '@aws-cdk/yaml-cfn',
     ];
 
     for (const [depName, depVersion] of Object.entries(pkg.dependencies)) {

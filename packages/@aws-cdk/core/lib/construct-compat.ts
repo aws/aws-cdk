@@ -64,7 +64,7 @@ export class Construct extends constructs.Construct implements IConstruct {
    */
   public readonly node: ConstructNode;
 
-  constructor(scope: Construct, id: string) {
+  constructor(scope: constructs.Construct, id: string) {
     super(scope, id, {
       nodeFactory: {
         createNode: (h: constructs.Construct, s: constructs.IConstruct, i: string) =>
@@ -383,7 +383,7 @@ export class ConstructNode {
    * Context is usually initialized at the root, but can be overridden at any point in the tree.
    *
    * @param key The context key
-   * @returns The context value or `undefined` if there is no context value for thie key.
+   * @returns The context value or `undefined` if there is no context value for the key.
    */
   public tryGetContext(key: string): any {
     if (Token.isUnresolved(key)) {

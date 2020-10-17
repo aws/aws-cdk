@@ -389,5 +389,5 @@ describe('arrayDiff', () => {
 });
 
 async function invokeHandler(event: Partial<AWSLambda.CloudFormationCustomResourceEvent>) {
-  return await handler.handler(event as any);
+  return handler.handler(event as any);
 }

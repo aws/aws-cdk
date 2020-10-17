@@ -1,6 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
+import { IResource, Lazy, Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { ContainerDefinition, ContainerDefinitionOptions, PortMapping, Protocol } from '../container-definition';
 import { CfnTaskDefinition } from '../ecs.generated';
 import { FirelensLogRouter, FirelensLogRouterDefinitionOptions, FirelensLogRouterType, obtainDefaultFluentBitECRImage } from '../firelens-log-router';
@@ -297,7 +298,7 @@ export class TaskDefinition extends TaskDefinitionBase {
 
     const taskDef = new CfnTaskDefinition(this, 'Resource', {
       containerDefinitions: Lazy.anyValue({ produce: () => this.renderContainers() }, { omitEmptyArray: true }),
-      volumes: Lazy.anyValue({ produce: () => this.volumes }, { omitEmptyArray: true }),
+      volumes: Lazy.anyValue({ produce: () => this.renderVolumes() }, { omitEmptyArray: true }),
       executionRoleArn: Lazy.stringValue({ produce: () => this.executionRole && this.executionRole.roleArn }),
       family: this.family,
       taskRoleArn: this.taskRole.roleArn,
@@ -326,6 +327,32 @@ export class TaskDefinition extends TaskDefinitionBase {
 
   public get executionRole(): iam.IRole | undefined {
     return this._executionRole;
+  }
+
+  private renderVolumes(): CfnTaskDefinition.VolumeProperty[] {
+    return this.volumes.map(renderVolume);
+
+    function renderVolume(spec: Volume): CfnTaskDefinition.VolumeProperty {
+      return {
+        host: spec.host,
+        name: spec.name,
+        dockerVolumeConfiguration: spec.dockerVolumeConfiguration && {
+          autoprovision: spec.dockerVolumeConfiguration.autoprovision,
+          driver: spec.dockerVolumeConfiguration.driver,
+          driverOpts: spec.dockerVolumeConfiguration.driverOpts,
+          labels: spec.dockerVolumeConfiguration.labels,
+          scope: spec.dockerVolumeConfiguration.scope,
+        },
+        efsVolumeConfiguration: spec.efsVolumeConfiguration && {
+          fileSystemId: spec.efsVolumeConfiguration.fileSystemId,
+          authorizationConfig: spec.efsVolumeConfiguration.authorizationConfig,
+          rootDirectory: spec.efsVolumeConfiguration.rootDirectory,
+          transitEncryption: spec.efsVolumeConfiguration.transitEncryption,
+          transitEncryptionPort: spec.efsVolumeConfiguration.transitEncryptionPort,
+
+        },
+      };
+    }
   }
 
   /**
@@ -713,7 +740,7 @@ export interface DockerVolumeConfiguration {
    *
    * @default No labels
    */
-  readonly labels?: string[];
+  readonly labels?: { [key: string]: string; }
   /**
    * The scope for the Docker volume that determines its lifecycle.
    */

@@ -16,6 +16,21 @@ export interface ResourceMetadata {
   constructPath: string;
 }
 
+/**
+ * Supported display modes for stack deployment activity
+ */
+export enum StackActivityProgress {
+  /**
+   * Displays a progress bar with only the events for the resource currently being deployed
+   */
+  BAR = 'bar',
+
+  /**
+   * Displays complete history with all CloudFormation stack events
+   */
+  EVENTS = 'events',
+}
+
 export interface WithDefaultPrinterProps {
   /**
    * Total number of resources to update
@@ -34,6 +49,16 @@ export interface WithDefaultPrinterProps {
    * @default - Use value from logging.logLevel
    */
   readonly logLevel?: LogLevel;
+
+  /**
+   * Whether to display all stack events or to display only the events for the
+   * resource currently being deployed
+   *
+   * If not set, the stack history with all stack events will be displayed
+   *
+   * @default false
+   */
+  progress?: StackActivityProgress;
 
   /**
    * Whether we are on a CI system
@@ -81,8 +106,9 @@ export class StackActivityMonitor {
     // need an individual check for whether we're running on CI.
     // see: https://discuss.circleci.com/t/circleci-terminal-is-a-tty-but-term-is-not-set/9965
     const fancyOutputAvailable = !isWindows && stream.isTTY && !options.ci;
+    const progress = options.progress ?? StackActivityProgress.BAR;
 
-    const printer = fancyOutputAvailable && !verbose
+    const printer = fancyOutputAvailable && !verbose && (progress === StackActivityProgress.BAR)
       ? new CurrentActivityPrinter(props)
       : new HistoryActivityPrinter(props);
 

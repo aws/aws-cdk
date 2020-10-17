@@ -89,6 +89,19 @@ export interface ParcelBaseOptions {
    * @default false
    */
   readonly forceDockerBundling?: boolean;
+
+  /**
+   * A custom bundling Docker image.
+   *
+   * This image should have Parcel installed at `/`. If you plan to use `nodeModules`
+   * it should also have `npm` or `yarn` depending on the lock file you're using.
+   *
+   * See https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-lambda-nodejs/parcel/Dockerfile
+   * for the default image provided by @aws-cdk/aws-lambda-nodejs.
+   *
+   * @default - use the Docker image provided by @aws-cdk/aws-lambda-nodejs
+   */
+  readonly bundlingDockerImage?: cdk.BundlingDockerImage;
 }
 
 /**
@@ -115,7 +128,11 @@ export class Bundling {
    */
   public static parcel(options: ParcelOptions): lambda.AssetCode {
     // Find project root
-    const projectRoot = options.projectRoot ?? findUp(`.git${path.sep}`);
+    const projectRoot = options.projectRoot
+      ?? findUp(`.git${path.sep}`)
+      ?? findUp(LockFile.YARN)
+      ?? findUp(LockFile.NPM)
+      ?? findUp('package.json');
     if (!projectRoot) {
       throw new Error('Cannot find project root. Please specify it with `projectRoot`.');
     }
@@ -185,7 +202,8 @@ export class Bundling {
       relativeEntryPath,
       cacheDir: options.cacheDir,
       environment: options.parcelEnvironment,
-      buildImage: !LocalBundler.runsLocally || options.forceDockerBundling,
+      bundlingDockerImage: options.bundlingDockerImage,
+      buildImage: !LocalBundler.runsLocally(projectRoot) || options.forceDockerBundling, // build image only if we can't run locally
       buildArgs: options.buildArgs,
       parcelVersion: options.parcelVersion,
       dependencies,
@@ -194,7 +212,7 @@ export class Bundling {
     });
 
     return lambda.Code.fromAsset(projectRoot, {
-      assetHashType: cdk.AssetHashType.BUNDLE,
+      assetHashType: cdk.AssetHashType.OUTPUT,
       bundling: {
         local: localBundler,
         ...dockerBundler.bundlingOptions,

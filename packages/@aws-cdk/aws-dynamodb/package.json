@@ -1,7 +1,7 @@
 {
   "name": "@aws-cdk/aws-dynamodb",
   "version": "0.0.0",
-  "description": "CDK Constructs for AWS DynamoDB",
+  "description": "The CDK Construct Library for AWS::DynamoDB",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-dynamodb",
-        "module": "aws_cdk.aws_dynamodb"
+        "module": "aws_cdk.aws_dynamodb",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
@@ -49,7 +53,10 @@
   },
   "cdk-build": {
     "cloudformation": "AWS::DynamoDB",
-    "jest": true
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "keywords": [
     "aws",
@@ -65,16 +72,16 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
-    "@types/jest": "^26.0.10",
+    "@types/jest": "^26.0.14",
     "aws-sdk": "^2.739.0",
     "aws-sdk-mock": "^5.1.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
-    "jest": "^25.5.4",
+    "jest": "^26.4.2",
     "pkglint": "0.0.0",
-    "sinon": "^9.0.3",
-    "ts-jest": "^26.2.0"
+    "sinon": "^9.1.0",
+    "ts-jest": "^26.4.1"
   },
   "dependencies": {
     "@aws-cdk/aws-applicationautoscaling": "0.0.0",
