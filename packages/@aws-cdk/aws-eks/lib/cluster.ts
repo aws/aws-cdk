@@ -31,8 +31,16 @@ import { Construct as CoreConstruct } from '@aws-cdk/core';
 const DEFAULT_CAPACITY_COUNT = 2;
 const DEFAULT_CAPACITY_TYPE = ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE);
 
+/**
+ * Custom charts that can be added the cluster.
+ *
+ * For example, cdk8s charts can be added as custom charts via the `@aws-cdk/aws-ek8s` module.
+ */
 export interface ICustomChart {
 
+  /**
+   * Convert the chart to a raw json manifest that can be added to the cluster.
+   */
   toManifest(): any[];
 }
 
@@ -139,13 +147,13 @@ export interface ICluster extends IResource, ec2.IConnectable {
   addHelmChart(id: string, options: HelmChartOptions): HelmChart;
 
   /**
-   * Defines a CDK8s chart in this cluster.
+   * Defines a custom chart in this cluster.
    *
    * @param id logical id of this chart.
-   * @param chart the cdk8s chart.
+   * @param chart the custom chart.
    * @returns a `KubernetesManifest` construct representing the chart.
    */
-  addCdk8sChart(id: string, chart: ICustomChart): KubernetesManifest;
+  addCustomChart(id: string, chart: ICustomChart): KubernetesManifest;
 
 }
 
@@ -639,13 +647,13 @@ abstract class ClusterBase extends Resource implements ICluster {
   }
 
   /**
-   * Defines a CDK8s chart in this cluster.
+   * Defines a custom chart in this cluster.
    *
    * @param id logical id of this chart.
-   * @param chart the cdk8s chart.
+   * @param chart the custom chart.
    * @returns a `KubernetesManifest` construct representing the chart.
    */
-  public addCdk8sChart(id: string, chart: ICustomChart): KubernetesManifest {
+  public addCustomChart(id: string, chart: ICustomChart): KubernetesManifest {
     return this.addManifest(id, ...chart.toManifest());
   }
 }

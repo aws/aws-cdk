@@ -371,8 +371,8 @@ export class LegacyCluster extends Resource implements ICluster {
     throw new Error('legacy cluster does not support adding helm charts');
   }
 
-  public addCdk8sChart(_id: string, _chart: ICustomChart): KubernetesManifest {
-    throw new Error('legacy cluster does not support adding cdk8s charts');
+  public addCustomChart(_id: string, _chart: ICustomChart): KubernetesManifest {
+    throw new Error('legacy cluster does not support adding custom charts');
   }
 
   /**
@@ -433,8 +433,8 @@ class ImportedCluster extends Resource implements ICluster {
     throw new Error('legacy cluster does not support adding helm charts');
   }
 
-  public addCdk8sChart(_id: string, _chart: ICustomChart): KubernetesManifest {
-    throw new Error('legacy cluster does not support adding cdk8s charts');
+  public addCustomChart(_id: string, _chart: ICustomChart): KubernetesManifest {
+    throw new Error('legacy cluster does not support adding custom charts');
   }
 
   public get vpc() {

@@ -37,7 +37,7 @@ export class CDK8sChartStack extends cdk.Stack {
     const app = new cdk8s.App();
     const chart = new Chart(app, 'Chart', this.cluster);
 
-    this.cluster.addCdk8sChart('cdk8s-chart', new ek8s.Cdk8sChart(chart));
+    this.cluster.addCustomChart('cdk8s-chart', new ek8s.Cdk8sChart(chart));
   }
 
 }

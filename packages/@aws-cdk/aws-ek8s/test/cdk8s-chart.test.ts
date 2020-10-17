@@ -27,7 +27,7 @@ test('cdk8s chart can be added to an EKS cluster', () => {
     },
   });
 
-  cluster.addCdk8sChart('cdk8s-chart', new Cdk8sChart(chart));
+  cluster.addCustomChart('cdk8s-chart', new Cdk8sChart(chart));
 
   expect(stack).toHaveResourceLike('Custom::AWSCDK-EKS-KubernetesResource', {
     Manifest: {
