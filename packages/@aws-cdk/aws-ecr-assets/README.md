@@ -29,6 +29,9 @@ This will instruct the toolkit to build a Docker image from `my-image`, push it
 to an AWS ECR repository and wire the name of the repository as CloudFormation
 parameters to your stack.
 
+If the directory contains a `.dockerignore` file then its patterns will be
+inserted at the beginning of the `exclude` property.
+
 Use `asset.imageUri` to reference the image (it includes both the ECR image URL
 and tag.
 
