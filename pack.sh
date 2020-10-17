@@ -15,7 +15,8 @@ distdir="$PWD/dist"
 rm -fr ${distdir}
 mkdir -p ${distdir}
 
-# Split out jsii and non-jsii packages. Jsii packages will be built all at once.
+# Split out jsii, non-jsii and monolothic packages. Jsii packages will be built all at once.
+# The jsii monolithic packages will be run in parallel to the jsii packages 
 # Non-jsii packages will be run individually.
 echo "Collecting package list..." >&2
 scripts/list-packages $TMPDIR/jsii.txt $TMPDIR/nonjsii.txt $TMPDIR/jsii-monolithic.txt

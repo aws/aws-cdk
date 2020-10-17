@@ -23,12 +23,12 @@ child_process.exec('lerna ls --toposort --json', { shell: true }, (error, stdout
 
   const jsiiDirectories = [];
   const nonJsiiNames = [];
-  const monolithicPackagesDir = [];
+  const monolithicPackagesDirs = [];
 
   for (const module of modules) {
     const pkgJson = require(path.join(module.location, 'package.json'));
     if (monolithicPackages.includes(pkgJson.name)) {
-      monolithicPackagesDir.push(module.location);
+      monolithicPackagesDirs.push(module.location);
       continue;
     }
     if (pkgJson.jsii) {
@@ -39,5 +39,5 @@ child_process.exec('lerna ls --toposort --json', { shell: true }, (error, stdout
   }
   fs.writeFileSync(process.argv[2], jsiiDirectories.join('\n'));
   fs.writeFileSync(process.argv[3], nonJsiiNames.join('\n'));
-  fs.writeFileSync(process.argv[4], monolithicPackagesDir.join('\n'));
+  fs.writeFileSync(process.argv[4], monolithicPackagesDirs.join('\n'));
 });
