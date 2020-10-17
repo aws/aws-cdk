@@ -32,10 +32,7 @@
   "cdk-build": {
     "eslint": {
       "disable": true
-    },
-    "pre": [
-      "npm run gen"
-    ]
+    }
   },
   "pkglint": {
     "exclude": [
