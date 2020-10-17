@@ -3416,43 +3416,6 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
-    "Clustermanifestcdk8schart6B444884": {
-      "Type": "Custom::AWSCDK-EKS-KubernetesResource",
-      "Properties": {
-        "ServiceToken": {
-          "Fn::GetAtt": [
-            "awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B",
-            "Outputs.awscdkeksclustertestawscdkawseksKubectlProviderframeworkonEventC681B49AArn"
-          ]
-        },
-        "Manifest": {
-          "Fn::Join": [
-            "",
-            [
-              "[{\"apiVersion\":\"v1\",\"data\":{\"clusterName\":\"",
-              {
-                "Ref": "Cluster9EE0221C"
-              },
-              "\"},\"kind\":\"ConfigMap\",\"metadata\":{\"name\":\"chart-config-map-configmap-cccf3117\"}}]"
-            ]
-          ]
-        },
-        "ClusterName": {
-          "Ref": "Cluster9EE0221C"
-        },
-        "RoleArn": {
-          "Fn::GetAtt": [
-            "ClusterCreationRole360249B6",
-            "Arn"
-          ]
-        }
-      },
-      "DependsOn": [
-        "ClusterKubectlReadyBarrier200052AF"
-      ],
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete"
-    },
     "ClustermanifestnginxnamespaceA68B4CE0": {
       "Type": "Custom::AWSCDK-EKS-KubernetesResource",
       "Properties": {
