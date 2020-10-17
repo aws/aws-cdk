@@ -7,7 +7,6 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
-import * as cdk8s from 'cdk8s';
 import * as constructs from 'constructs';
 import { Test } from 'nodeunit';
 import * as YAML from 'yaml';
@@ -21,49 +20,6 @@ import { testFixture, testFixtureNoVpc } from './util';
 const CLUSTER_VERSION = eks.KubernetesVersion.V1_18;
 
 export = {
-
-  'cdk8s chart can be added to cluster'(test: Test) {
-
-    const { stack } = testFixture();
-
-    const cluster = new eks.Cluster(stack, 'Cluster', {
-      version: CLUSTER_VERSION,
-    });
-
-    const app = new cdk8s.App();
-    const chart = new cdk8s.Chart(app, 'Chart');
-
-    new cdk8s.ApiObject(chart, 'FakePod', {
-      apiVersion: 'v1',
-      kind: 'Pod',
-      metadata: {
-        name: 'fake-pod',
-        labels: {
-          // adding aws-cdk token to cdk8s chart
-          clusterName: cluster.clusterName,
-        },
-      },
-    });
-
-    cluster.addCdk8sChart('cdk8s-chart', chart);
-
-    expect(stack).to(haveResourceLike('Custom::AWSCDK-EKS-KubernetesResource', {
-      Manifest: {
-        'Fn::Join': [
-          '',
-          [
-            '[{"apiVersion":"v1","kind":"Pod","metadata":{"labels":{"clusterName":"',
-            {
-              Ref: 'Cluster9EE0221C',
-            },
-            '"},"name":"fake-pod"}}]',
-          ],
-        ],
-      },
-    }));
-
-    test.done();
-  },
 
   'cluster connections include both control plane and cluster security group'(test: Test) {
 
