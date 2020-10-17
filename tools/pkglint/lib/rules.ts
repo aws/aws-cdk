@@ -487,6 +487,26 @@ export class JSIIProjectReferences extends ValidationRule {
   }
 }
 
+export class NoPeerDependenciesMonocdk extends ValidationRule {
+  public readonly name = 'monocdk/no-peer';
+  public allowedPeer = ['constructs'];
+
+  public validate(pkg: PackageJson): void {
+    if (pkg.packageName !== 'monocdk') {
+      return;
+    }
+
+    const peers = Object.keys(pkg.peerDependencies).filter(peer => !this.allowedPeer.includes(peer));
+    if (peers.length > 0) {
+      pkg.report({
+        ruleName: this.name,
+        message: `Adding a peer dependency to monocdk is a breaking change, and thus not allowed.
+         Added ${peers.join(' ')}`,
+      });
+    }
+  }
+}
+
 /**
  * JSII Java package is required and must look sane
  */
