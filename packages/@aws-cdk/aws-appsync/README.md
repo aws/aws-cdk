@@ -84,7 +84,6 @@ demoDS.createResolver({
 });
 ```
 
-<<<<<<< HEAD
 ## Aurora Serverless
 
 AppSync provides a data source for executing SQL commands against Amazon Aurora
@@ -149,7 +148,6 @@ rdsDS.createResolver({
 ```
 
 ## Imports
-=======
 #### HTTP Endpoints
 GraphQL schema file `schema.graphql`:
 
@@ -272,7 +270,6 @@ const api = appsync.GraphqlApi(stack, 'api', {
   schema: appsync.Schema.fromAsset(join(__dirname, 'schema.graphl')),
 });
 ```
->>>>>>> 0bb133e8b500be3802bdfeb9c35ef61ad4687223
 
 ### Imports
 Any GraphQL Api that has been created outside the stack can be imported from 
@@ -714,7 +711,6 @@ You can create Object Types in three ways:
     ```
     > This method allows for reusability and modularity, ideal for reducing code duplication.
 
-<<<<<<< HEAD
 3. Object Types can be created ***internally*** within the GraphQL API.
     ```ts
     const api = new appsync.GraphQLApi(stack, 'Api', {
@@ -729,7 +725,6 @@ You can create Object Types in three ways:
     });
     ```
     > This method provides easy use and is ideal for smaller projects.
-=======
 To learn more about **Object Types**, read the docs [here](https://graphql.org/learn/schema/#object-types-and-fields).
 
 ### Enum Types
@@ -884,4 +879,3 @@ api.addSubscription('addedFilm', new appsync.ResolvableField({
 ```
 
 To learn more about top level operations, check out the docs [here](https://docs.aws.amazon.com/appsync/latest/devguide/real-time-data.html). 
->>>>>>> 0bb133e8b500be3802bdfeb9c35ef61ad4687223
