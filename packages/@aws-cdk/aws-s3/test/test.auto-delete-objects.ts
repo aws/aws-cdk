@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource, not } from '@aws-cdk/assert';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as sinon from 'sinon';
@@ -34,11 +34,11 @@ export = {
     const app = new cdk.App();
     const stack = new cdk.Stack(app);
 
-    new s3.Bucket(stack, 'MyBucket1', {
+    new s3.Bucket(stack, 'MyBucketOne', {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       autoDeleteObjects: true,
     });
-    new s3.Bucket(stack, 'MyBucket2', {
+    new s3.Bucket(stack, 'MyBucketTwo', {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       autoDeleteObjects: true,
     });
@@ -59,6 +59,46 @@ export = {
       'Custom::AutoDeleteObjects',
       'Custom::AutoDeleteObjects',
     ]);
+
+    test.done();
+  },
+
+  'when only one bucket has autoDeleteObjects enabled, only that bucket gets assigned a custom resource'(test: Test) {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+
+    new s3.Bucket(stack, 'MyBucketOne', {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
+    });
+    new s3.Bucket(stack, 'MyBucketTwo', {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      autoDeleteObjects: false,
+    });
+
+    const template = app.synth().getStackArtifact(stack.artifactId).template;
+    const resourceTypes = Object.values(template.Resources).map((r: any) => r.Type).sort();
+
+    test.deepEqual(resourceTypes, [
+      // custom resource provider resources
+      'AWS::IAM::Role',
+      'AWS::Lambda::Function',
+
+      // buckets
+      'AWS::S3::Bucket',
+      'AWS::S3::Bucket',
+
+      // auto delete object resource
+      'Custom::AutoDeleteObjects',
+    ]);
+
+    // custom resource for MyBucket1 is present
+    expect(stack).to(haveResource('Custom::AutoDeleteObjects',
+      { BucketName: { Ref: 'MyBucketOneA6BE54C9' } }));
+
+    // custom resource for MyBucket2 is not present
+    expect(stack).to(not(haveResource('Custom::AutoDeleteObjects',
+      { BucketName: { Ref: 'MyBucketTwoC7437026' } })));
 
     test.done();
   },
