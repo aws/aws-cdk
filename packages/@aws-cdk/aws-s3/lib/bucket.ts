@@ -1727,10 +1727,11 @@ export class Bucket extends BucketBase {
       policyStatements: [
         {
           Effect: 'Allow',
-          Resource: '*',
+          Resource: this.bucketArn,
           Action: [
             // TODO: add key perms?
-            ...perms.BUCKET_READ_ACTIONS.concat(perms.BUCKET_WRITE_ACTIONS),
+            ...perms.BUCKET_READ_ACTIONS,
+            ...perms.BUCKET_WRITE_ACTIONS,
           ],
         },
       ],
