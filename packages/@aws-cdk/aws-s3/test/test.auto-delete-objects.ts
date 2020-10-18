@@ -1,7 +1,9 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
+import * as sinon from 'sinon';
 import * as s3 from '../lib';
+import { handler } from '../lib/auto-delete-objects-handler/index';
 
 export = {
   'when autoDeleteObjects is enabled, a custom resource is provisioned + a lambda handler for it'(test: Test) {
@@ -15,7 +17,15 @@ export = {
     expect(stack).to(haveResource('AWS::S3::Bucket'));
     expect(stack).to(haveResource('AWS::Lambda::Function'));
     expect(stack).to(haveResource('Custom::AutoDeleteObjects',
-      { BucketName: { Ref: 'MyBucketF68F3FF0' } }));
+      {
+        BucketName: { Ref: 'MyBucketF68F3FF0' },
+        ServiceToken: {
+          'Fn::GetAtt': [
+            'CustomAutoDeleteObjectsCustomResourceProviderHandlerE060A45A',
+            'Arn',
+          ],
+        },
+      }));
 
     test.done();
   },
@@ -101,4 +111,108 @@ export = {
 
     test.done();
   },
+
+  'custom resource handler': {
+
+    async 'does nothing on create event'(test: Test) {
+      sinon.reset();
+      const s3Mock = newS3ClientMock();
+
+      const event: Partial<AWSLambda.CloudFormationCustomResourceCreateEvent> = {
+        RequestType: 'Create',
+        ResourceProperties: {
+          ServiceToken: 'Foo',
+          BucketName: 'MyBucket',
+        },
+      };
+      await invokeHandler(event, s3Mock);
+
+      sinon.assert.notCalled(s3Mock.listObjectVersions);
+      sinon.assert.notCalled(s3Mock.deleteObjects);
+
+      test.done();
+    },
+
+    async 'does nothing on update event'(test: Test) {
+      sinon.reset();
+
+      const s3Mock = newS3ClientMock();
+
+      const event: Partial<AWSLambda.CloudFormationCustomResourceUpdateEvent> = {
+        RequestType: 'Update',
+        ResourceProperties: {
+          ServiceToken: 'Foo',
+          BucketName: 'MyBucket',
+        },
+      };
+      await invokeHandler(event, s3Mock);
+
+      sinon.assert.notCalled(s3Mock.listObjectVersions);
+      sinon.assert.notCalled(s3Mock.deleteObjects);
+
+      test.done();
+    },
+
+    async 'deletes no objects on delete event when bucket has no objects'(test: Test) {
+      sinon.reset();
+
+      const listObjectVersionsMock = sinon.fake.returns({ Versions: [] });
+      const s3Mock = newS3ClientMock(listObjectVersionsMock);
+
+      const event: Partial<AWSLambda.CloudFormationCustomResourceDeleteEvent> = {
+        RequestType: 'Delete',
+        ResourceProperties: {
+          ServiceToken: 'Foo',
+          BucketName: 'MyBucket',
+        },
+      };
+      await invokeHandler(event, s3Mock);
+
+      sinon.assert.calledOnce(s3Mock.listObjectVersions);
+      sinon.assert.notCalled(s3Mock.deleteObjects);
+
+      test.done();
+    },
+
+    async 'deletes all objects on delete event'(test: Test) {
+      sinon.reset();
+
+      const listObjectVersionsMock = sinon.fake.returns({
+        Versions: [
+          { Key: 'Key1', VersionId: 'VersionId1' },
+          { Key: 'Key2', VersionId: 'VersionId2' },
+        ],
+      });
+      const s3Mock = newS3ClientMock(listObjectVersionsMock);
+
+      const event: Partial<AWSLambda.CloudFormationCustomResourceDeleteEvent> = {
+        RequestType: 'Delete',
+        ResourceProperties: {
+          ServiceToken: 'Foo',
+          BucketName: 'MyBucket',
+        },
+      };
+      await invokeHandler(event, s3Mock);
+
+      sinon.assert.calledOnce(s3Mock.listObjectVersions);
+      sinon.assert.calledOnce(s3Mock.deleteObjects);
+
+      test.done();
+    },
+  },
 };
+
+async function invokeHandler(event: Partial<AWSLambda.CloudFormationCustomResourceEvent>, s3client: any) {
+  return handler(event as any, s3client);
+}
+
+function newS3ClientMock(listObjectVersionsMock?: any, deleteObjectsMock?: any) {
+  return {
+    listObjectVersions: sinon.stub().returns({
+      promise: listObjectVersionsMock ?? sinon.fake.returns({}),
+    }),
+    deleteObjects: sinon.stub().returns({
+      promise: deleteObjectsMock ?? sinon.fake.returns({}),
+    }),
+  };
+}

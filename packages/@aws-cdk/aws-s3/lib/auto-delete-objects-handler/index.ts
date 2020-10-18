@@ -1,7 +1,9 @@
-export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent) {
-  if (event.RequestType === 'Create') { return onCreate(event); }
-  if (event.RequestType === 'Update') { return onUpdate(event); }
-  if (event.RequestType === 'Delete') { return onDelete(event); }
+export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent, s3?: any) {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports, import/no-extraneous-dependencies
+  if (!s3) { s3 = new (require('aws-sdk').S3)(); }
+  if (event.RequestType === 'Create') { return onCreate(s3, event); }
+  if (event.RequestType === 'Update') { return onUpdate(s3, event); }
+  if (event.RequestType === 'Delete') { return onDelete(s3, event); }
   throw new Error('Invalid request type.');
 }
 
@@ -24,21 +26,18 @@ async function emptyBucket(s3: any, bucketName: string) {
   if (listedObjects?.IsTruncated === 'true' ) await emptyBucket(s3, bucketName);
 }
 
-async function onCreate(_event: AWSLambda.CloudFormationCustomResourceCreateEvent) {
+async function onCreate(_s3: any, _event: AWSLambda.CloudFormationCustomResourceCreateEvent) {
   return;
 }
 
-async function onUpdate(_event: AWSLambda.CloudFormationCustomResourceUpdateEvent) {
+async function onUpdate(_s3: any, _event: AWSLambda.CloudFormationCustomResourceUpdateEvent) {
   return;
 }
 
-async function onDelete(deleteEvent: AWSLambda.CloudFormationCustomResourceDeleteEvent) {
+async function onDelete(s3: any, deleteEvent: AWSLambda.CloudFormationCustomResourceDeleteEvent) {
   const bucketName = deleteEvent.ResourceProperties?.BucketName;
   if (!bucketName) {
     throw new Error('No BucketName was provided.');
   }
-
-  // eslint-disable-next-line @typescript-eslint/no-require-imports, import/no-extraneous-dependencies
-  const s3 = new (require('aws-sdk').S3)();
   await emptyBucket(s3, bucketName);
 }
