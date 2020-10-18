@@ -415,7 +415,6 @@ export class Repository extends RepositoryBase {
   public readonly repositoryArn: string;
   private readonly lifecycleRules = new Array<LifecycleRule>();
   private readonly registryId?: string;
-  public readonly imageTagMutability?: string
   private policyDocument?: iam.PolicyDocument;
 
   constructor(scope: Construct, id: string, props: RepositoryProps = {}) {
@@ -428,6 +427,7 @@ export class Repository extends RepositoryBase {
       // It says "Text", but they actually mean "Object".
       repositoryPolicyText: Lazy.anyValue({ produce: () => this.policyDocument }),
       lifecyclePolicy: Lazy.anyValue({ produce: () => this.renderLifecyclePolicy() }),
+      imageTagMutability: props.imageTagMutability || undefined,
     });
 
     resource.applyRemovalPolicy(props.removalPolicy);
@@ -444,11 +444,6 @@ export class Repository extends RepositoryBase {
       resourceName: this.physicalName,
     });
 
-    // repository image tag mutability
-    if (props.imageTagMutability !== undefined) {
-      this.imageTagMutability = props.imageTagMutability;
-      resource.imageTagMutability = props.imageTagMutability;
-    }
 
     // image scanOnPush
     if (props.imageScanOnPush) {
