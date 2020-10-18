@@ -644,6 +644,7 @@ abstract class ClusterBase extends Resource implements ICluster {
 
     const cdk8sChart = chart as any;
 
+    // see https://github.com/awslabs/cdk8s/blob/master/packages/cdk8s/src/chart.ts#L84
     if (typeof cdk8sChart.toJson !== 'function') {
       throw new Error(`Invalid cdk8s chart. Must contain a 'toJson' method, but found ${typeof cdk8sChart.toJson}`);
     }
