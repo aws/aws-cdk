@@ -157,6 +157,11 @@ export class HttpLoadBalancerListenerRules extends ServiceExtension {
   useService(service: ecs.Ec2Service | ecs.FargateService) {
     super.useService(service);
 
+    if (this.rules.length === 0) {
+      // When there are no rules, we don't create the target group.
+      return;
+    }
+
     const targetGroup = new alb.ApplicationTargetGroup(this.scope, `load-balancer-listener-rules-${this.name}`, {
       vpc: this.parentService.ecsService.cluster.vpc,
       protocol: alb.ApplicationProtocol.HTTP,

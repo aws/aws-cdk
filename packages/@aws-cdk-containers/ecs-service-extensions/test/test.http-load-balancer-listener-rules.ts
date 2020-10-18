@@ -130,4 +130,46 @@ export = {
 
     test.done();
   },
+
+  'it does not produce a target group without rules'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const environment = new Environment(stack, 'production');
+    const serviceDescription = new ServiceDescription();
+    serviceDescription.add(new Container({
+      cpu: 256,
+      memoryMiB: 512,
+      trafficPort: 80,
+      image: ecs.ContainerImage.fromRegistry('nathanpeck/name'),
+    }));
+
+    const loadBalancer = new alb.ApplicationLoadBalancer(stack, 'Alb', {
+      internetFacing: true,
+      vpc: environment.vpc,
+    });
+
+    const listener = loadBalancer.addListener('http', {
+      protocol: alb.ApplicationProtocol.HTTP,
+      defaultAction: alb.ListenerAction.fixedResponse(404, {
+        contentType: 'text/plain',
+        messageBody: '404 Not Found',
+      }),
+    });
+
+    serviceDescription.add(new HttpLoadBalancerListenerRules({
+      listener,
+    }));
+
+    new Service(stack, 'my-service', {
+      environment,
+      serviceDescription,
+    });
+
+    // THEN
+    expectCDK(stack).notTo(haveResourceLike('AWS::ElasticLoadBalancingV2::TargetGroup'));
+
+    test.done();
+  },
 }
