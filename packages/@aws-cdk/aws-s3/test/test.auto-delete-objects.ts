@@ -80,12 +80,7 @@ export = {
             Statement: [
               {
                 Effect: 'Allow',
-                Resource: {
-                  'Fn::GetAtt': [
-                    'MyBucketF68F3FF0',
-                    'Arn',
-                  ],
-                },
+                Resource: '*',
                 Action: [
                   's3:GetObject*',
                   's3:GetBucket*',
