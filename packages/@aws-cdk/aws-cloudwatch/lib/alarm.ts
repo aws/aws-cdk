@@ -140,7 +140,7 @@ export class Alarm extends AlarmBase {
   /**
    * This metric as an annotation
    */
-  private readonly annotation: HorizontalAnnotation;
+  private readonly annotation?: HorizontalAnnotation;
 
   constructor(scope: Construct, id: string, props: AlarmProps) {
     super(scope, id, {
@@ -197,11 +197,14 @@ export class Alarm extends AlarmBase {
 
     this.metric = props.metric;
     const datapoints = props.datapointsToAlarm || props.evaluationPeriods;
-    this.annotation = {
-      // eslint-disable-next-line max-len
-      label: `${this.metric} ${OPERATOR_SYMBOLS[comparisonOperator]} ${props.threshold} for ${datapoints} datapoints within ${describePeriod(props.evaluationPeriods * metricPeriod(props.metric).toSeconds())}`,
-      value: props.threshold,
-    };
+
+    if (props.threshold) {
+      this.annotation = {
+        // eslint-disable-next-line max-len
+        label: `${this.metric} ${OPERATOR_SYMBOLS[comparisonOperator]} ${props.threshold} for ${datapoints} datapoints within ${describePeriod(props.evaluationPeriods * metricPeriod(props.metric).toSeconds())}`,
+        value: props.threshold,
+      };
+    }
   }
 
   /**
@@ -221,6 +224,9 @@ export class Alarm extends AlarmBase {
    * - You want to show an Alarm line in a graph with multiple metrics in it.
    */
   public toAnnotation(): HorizontalAnnotation {
+    if (!this.annotation) {
+      throw Error(`No annotation assigned to alarm: ${this.physicalName}.`);
+    }
     return this.annotation;
   }
 
@@ -251,7 +257,22 @@ export class Alarm extends AlarmBase {
           return `expr_${++eid}`;
         }
 
+        mset.entries.map(entry => { if (!entry.id) entry.id = uniqueMetricId(); });
+
+        const anomalyDetectionEntries = self.identifyAnomalyDetectionExpressions(mset);
+        let anomalyDetectionMetricProps;
+
+        if (anomalyDetectionEntries.length > 1) {
+          throw Error('ANOMALY_DETECTION_BAND can be applied at most once in MathExpression.');
+        } else if (anomalyDetectionEntries.length === 1) {
+          mset.entries.map(entry => mset.addTopLevel(true, entry.metric));
+          anomalyDetectionMetricProps = { thresholdMetricId: anomalyDetectionEntries[0].id };
+        } else {
+          anomalyDetectionMetricProps = {};
+        };
+
         return {
+          ...anomalyDetectionMetricProps,
           metrics: mset.entries.map(entry => dispatchMetric(entry.metric, {
             withStat(stat, conf) {
               self.validateMetricStat(stat, entry.metric);
@@ -267,7 +288,7 @@ export class Alarm extends AlarmBase {
                   stat: stat.statistic,
                   unit: stat.unitFilter,
                 },
-                id: entry.id || uniqueMetricId(),
+                id: entry.id,
                 label: conf.renderingProperties?.label,
                 returnData: entry.tag ? undefined : false, // Tag stores "primary" attribute, default is "true"
               };
@@ -275,7 +296,7 @@ export class Alarm extends AlarmBase {
             withExpression(expr, conf) {
               return {
                 expression: expr.expression,
-                id: entry.id || uniqueMetricId(),
+                id: entry.id,
                 label: conf.renderingProperties?.label,
                 period: mathExprHasSubmetrics(expr) ? undefined : expr.period,
                 returnData: entry.tag ? undefined : false, // Tag stores "primary" attribute, default is "true"
@@ -285,6 +306,20 @@ export class Alarm extends AlarmBase {
         };
       },
     });
+  }
+
+  /**
+   * Identify anomaly detection entries in MathExpression metric
+   */
+  private identifyAnomalyDetectionExpressions(mset: MetricSet<boolean>) {
+    return mset.entries.filter(entry => dispatchMetric(entry.metric, {
+      withStat(_stat, _conf) {
+        return false;
+      },
+      withExpression(expr, _conf) {
+        return expr.isAnomalyDetectionExpression;
+      },
+    }));
   }
 
   /**

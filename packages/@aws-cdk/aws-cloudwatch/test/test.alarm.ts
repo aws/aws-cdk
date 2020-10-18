@@ -2,7 +2,7 @@ import { ABSENT, expect, haveResource } from '@aws-cdk/assert';
 import { Duration, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Test } from 'nodeunit';
-import { Alarm, IAlarm, IAlarmAction, Metric } from '../lib';
+import { Alarm, ComparisonOperator, IAlarm, IAlarmAction, MathExpression, Metric } from '../lib';
 
 const testMetric = new Metric({
   namespace: 'CDK/Test',
@@ -208,6 +208,74 @@ export = {
     expect(stack).to(haveResource('AWS::CloudWatch::Alarm', {
       ExtendedStatistic: 'p99.9',
     }));
+
+    test.done();
+  },
+
+  'alarm for math expression with anomaly detection function creates threshold metric id'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new Alarm(stack, 'Alarm', {
+      comparisonOperator: ComparisonOperator.LESS_THAN_LOWER_OR_GREATER_THAN_UPPER_THRESHOLD,
+      evaluationPeriods: 1,
+      metric: new MathExpression({
+        expression: 'ANOMALY_DETECTION_BAND(testMetric,2)',
+        usingMetrics: { testMetric },
+      }),
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::CloudWatch::Alarm', {
+      ComparisonOperator: 'LessThanLowerOrGreaterThanUpperThreshold',
+      Metrics: [
+        {
+          Expression: 'ANOMALY_DETECTION_BAND(testMetric,2)',
+          Id: 'expr_1',
+        },
+        {
+          Id: 'testMetric',
+          MetricStat: {
+            Metric: {
+              MetricName: 'Metric',
+              Namespace: 'CDK/Test',
+            },
+            Period: 300,
+            Stat: 'Average',
+          },
+        },
+      ],
+      ThresholdMetricId: 'expr_1',
+    }));
+
+    test.done();
+  },
+
+  'alarm for math expression cannot apply anomaly detection function more than once'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // THEN
+    test.throws(() => {
+      new Alarm(stack, 'Alarm', {
+        comparisonOperator: ComparisonOperator.LESS_THAN_LOWER_OR_GREATER_THAN_UPPER_THRESHOLD,
+        evaluationPeriods: 1,
+        metric: new MathExpression({
+          expression: 'a + b',
+          usingMetrics: {
+            a: new MathExpression({
+              expression: 'ANOMALY_DETECTION_BAND(testMetric)',
+              usingMetrics: { testMetric },
+            }),
+            b: new MathExpression({
+              expression: 'ANOMALY_DETECTION_BAND(testMetric)',
+              usingMetrics: { testMetric },
+            }),
+          },
+        }),
+      });
+    }, /ANOMALY_DETECTION_BAND can be applied at most once in MathExpression./);
 
     test.done();
   },

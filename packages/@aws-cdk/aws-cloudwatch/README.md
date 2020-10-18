@@ -85,6 +85,18 @@ const problemPercentage = new MathExpression({
 })
 ```
 
+Math expressions also support pre-defined CloudWatch functions like
+[anomaly detection](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Anomaly_Detection.html):
+
+```ts
+const invocationAnomalies = new MathExpression({
+  expression: "ANOMALY_DETECTION_BAND(invocations, 2)",
+  usingMetrics: {
+    invocations: myConstruct.metricInvocations(),
+  }
+})
+```
+
 ### Aggregation
 
 To graph or alarm on metrics you must aggregate them first, using a function

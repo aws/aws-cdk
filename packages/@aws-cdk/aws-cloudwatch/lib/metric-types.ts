@@ -320,6 +320,11 @@ export interface MetricExpressionConfig {
    * How many seconds to aggregate over
    */
   readonly period: number;
+
+  /**
+   * Whether or not this expression includes 'ANOMALY_DETECTION_BAND' function
+   */
+  readonly isAnomalyDetectionExpression: boolean;
 }
 
 /**

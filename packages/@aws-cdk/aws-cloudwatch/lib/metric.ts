@@ -431,6 +431,11 @@ export class MathExpression implements IMetric {
   public readonly color?: string;
 
   /**
+   * Whether or not this expression includes CloudWatch's 'ANOMALY_DETECTION_BAND' function
+   */
+  public readonly isAnomalyDetectionExpression: boolean;
+
+  /**
    * Aggregation period of this metric
    */
   public readonly period: cdk.Duration;
@@ -448,6 +453,11 @@ export class MathExpression implements IMetric {
     }
 
     this.validateNoIdConflicts();
+    this.isAnomalyDetectionExpression = props.expression.match(/ANOMALY_DETECTION_BAND\(.+\)/g) ? true : false;
+
+    if (this.isAnomalyDetectionExpression && Object.keys(props.usingMetrics).length !== 1) {
+      throw Error('Exactly one metric required for ANOMALY_DETECTION_BAND MathExpression');
+    }
   }
 
   /**
@@ -488,6 +498,7 @@ export class MathExpression implements IMetric {
         period: this.period.toSeconds(),
         expression: this.expression,
         usingMetrics: this.usingMetrics,
+        isAnomalyDetectionExpression: this.isAnomalyDetectionExpression,
       },
       renderingProperties: {
         label: this.label,
@@ -610,8 +621,10 @@ export interface CreateAlarmOptions {
 
   /**
    * The value against which the specified statistic is compared.
+   *
+   * @default No threshold
    */
-  readonly threshold: number;
+  readonly threshold?: number;
 
   /**
    * The number of periods over which data is compared to the specified threshold.

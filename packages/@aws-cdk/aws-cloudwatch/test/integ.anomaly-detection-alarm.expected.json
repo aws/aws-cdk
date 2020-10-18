@@ -1,0 +1,29 @@
+{
+  "Resources": {
+    "Alarm7103F465": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "ComparisonOperator": "LessThanLowerOrGreaterThanUpperThreshold",
+        "EvaluationPeriods": 1,
+        "Metrics": [
+          {
+            "Expression": "ANOMALY_DETECTION_BAND(testMetric, 2)",
+            "Id": "expr_1"
+          },
+          {
+            "Id": "testMetric",
+            "MetricStat": {
+              "Metric": {
+                "MetricName": "Metric",
+                "Namespace": "CDK/Test"
+              },
+              "Period": 300,
+              "Stat": "Average"
+            }
+          }
+        ],
+        "ThresholdMetricId": "expr_1"
+      }
+    }
+  }
+}

@@ -71,6 +71,17 @@ export = {
     test.done();
   },
 
+  'cannot apply anomaly detection band using multiple metrics in MathExpression'(test: Test) {
+    test.throws(() => {
+      new MathExpression({
+        expression: 'ANOMALY_DETECTION_BAND(a + b, 2)',
+        usingMetrics: { a, b },
+      });
+    }, /Exactly one metric required for ANOMALY_DETECTION_BAND MathExpression/);
+
+    test.done();
+  },
+
   'in graphs': {
     'MathExpressions can be added to a graph'(test: Test) {
       // GIVEN
