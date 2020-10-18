@@ -231,14 +231,13 @@ export = {
     const environment = Environment.fromEnvironmentAttributes(stack, 'Environment', {
       capacityType: EnvironmentCapacityType.EC2,
       cluster: cluster,
-      id: 'SomeCluster',
     });
 
     // THEN
     test.equal(environment.capacityType, EnvironmentCapacityType.EC2);
     test.equal(environment.cluster, cluster);
     test.equal(environment.vpc, vpc);
-    test.equal(environment.id, 'SomeCluster');
+    test.equal(environment.id, 'Environment');
 
     test.done();
   },

@@ -129,11 +129,6 @@ export class Environment extends cdk.Construct implements IEnvironment {
 
 export interface EnvironmentAttributes {
   /**
-   * The name of this environment.
-   */
-  id: string;
-
-  /**
    * The capacity type used by the service's cluster.
    */
   capacityType: EnvironmentCapacityType;
@@ -153,9 +148,9 @@ export class ImportedEnvironment extends cdk.Construct implements IEnvironment {
   constructor(scope: cdk.Construct, id: string, props: EnvironmentAttributes) {
     super(scope, id);
 
+    this.id = id;
     this.capacityType = props.capacityType;
     this.cluster = props.cluster;
-    this.id = props.id;
     this.vpc = props.cluster.vpc;
   }
 
