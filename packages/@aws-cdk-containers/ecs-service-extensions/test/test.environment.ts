@@ -217,4 +217,24 @@ export = {
     test.done();
   },
 
+  'should be able to create an environment from attributes'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', {
+      instanceType: new ec2.InstanceType('t2.micro'),
+    });
+
+    // WHEN
+    Environment.fromEnvironmentAttributes(stack, 'Environment', {
+      capacityType: EnvironmentCapacityType.EC2,
+      cluster: cluster,
+      id: 'SomeCluster',
+      vpc: vpc,
+    });
+
+    test.done();
+  },
 };

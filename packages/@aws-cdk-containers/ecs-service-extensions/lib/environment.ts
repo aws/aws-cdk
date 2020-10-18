@@ -29,12 +29,43 @@ export interface EnvironmentProps {
 }
 
 /**
+ * An environment into which to deploy a service.
+ */
+export interface IEnvironment {
+  /**
+   * The name of this environment.
+   */
+  readonly id: string;
+
+  /**
+   * The VPC into which environment services should be placed.
+   */
+  readonly vpc: ec2.IVpc;
+
+  /**
+   * The cluster that is providing capacity for this service.
+   */
+  readonly cluster: ecs.ICluster;
+
+  /**
+   * The capacity type used by the service's cluster.
+   */
+  readonly capacityType: EnvironmentCapacityType;
+
+  addDefaultCloudMapNamespace(options: ecs.CloudMapNamespaceOptions): void;
+}
+
+/**
  * An environment into which to deploy a service. This environment
  * can either be instantiated with a preexisting AWS VPC and ECS cluster,
  * or it can create it's own VPC and cluster. By default it will create
  * a cluster with Fargate capacity.
  */
-export class Environment extends cdk.Construct {
+export class Environment extends cdk.Construct implements IEnvironment {
+  public static fromEnvironmentAttributes(scope: cdk.Construct, id: string, attrs: EnvironmentAttributes): IEnvironment {
+    return new ImportedEnvironment(scope, id, attrs);
+  }
+
   /**
    * The name of this environment.
    */
@@ -80,5 +111,36 @@ export class Environment extends cdk.Construct {
     } else {
       this.capacityType = EnvironmentCapacityType.FARGATE;
     }
+  }
+
+  addDefaultCloudMapNamespace(options: ecs.CloudMapNamespaceOptions) {
+    this.cluster.addDefaultCloudMapNamespace(options);
+  }
+}
+
+export interface EnvironmentAttributes {
+  id: string;
+  capacityType: EnvironmentCapacityType;
+  cluster: ecs.ICluster;
+  vpc: ec2.IVpc;
+}
+
+export class ImportedEnvironment extends cdk.Construct implements IEnvironment {
+  public readonly capacityType: EnvironmentCapacityType;
+  public readonly cluster: ecs.ICluster;
+  public readonly id: string;
+  public readonly vpc: ec2.IVpc;
+
+  constructor(scope: cdk.Construct, id: string, props: EnvironmentAttributes) {
+    super(scope, id);
+
+    this.capacityType = props.capacityType;
+    this.cluster = props.cluster;
+    this.id = props.id;
+    this.vpc = props.vpc;
+  }
+
+  addDefaultCloudMapNamespace(_options: ecs.CloudMapNamespaceOptions) {
+    throw new Error('the cluster environment is not mutable');
   }
 }
