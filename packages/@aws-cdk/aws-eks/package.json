@@ -81,7 +81,8 @@
     "nodeunit": "^0.11.3",
     "pkglint": "0.0.0",
     "sinon": "^9.1.0",
-    "cdk8s-plus": "^0.29.0"
+    "cdk8s-plus": "^0.29.0",
+    "cdk8s": "^0.30.0"
   },
   "dependencies": {
     "@aws-cdk/aws-autoscaling": "0.0.0",
@@ -92,7 +93,6 @@
     "@aws-cdk/aws-ssm": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/custom-resources": "0.0.0",
-    "cdk8s": "^0.30.0",
     "constructs": "^3.0.4",
     "yaml": "1.10.0"
   },
@@ -109,7 +109,6 @@
     "@aws-cdk/aws-ssm": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/custom-resources": "0.0.0",
-    "cdk8s": "^0.30.0",
     "constructs": "^3.0.4"
   },
   "engines": {
