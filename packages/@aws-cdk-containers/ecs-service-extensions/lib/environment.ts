@@ -142,11 +142,6 @@ export interface EnvironmentAttributes {
    * The cluster that is providing capacity for this service.
    */
   cluster: ecs.ICluster;
-
-  /**
-   * The VPC into which environment services should be placed.
-   */
-  vpc: ec2.IVpc;
 }
 
 export class ImportedEnvironment extends cdk.Construct implements IEnvironment {
@@ -161,7 +156,7 @@ export class ImportedEnvironment extends cdk.Construct implements IEnvironment {
     this.capacityType = props.capacityType;
     this.cluster = props.cluster;
     this.id = props.id;
-    this.vpc = props.vpc;
+    this.vpc = props.cluster.vpc;
   }
 
   /**

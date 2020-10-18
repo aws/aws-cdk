@@ -232,7 +232,6 @@ export = {
       capacityType: EnvironmentCapacityType.EC2,
       cluster: cluster,
       id: 'SomeCluster',
-      vpc: vpc,
     });
 
     // THEN
