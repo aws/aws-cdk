@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-cloudwatch",
-        "module": "aws_cdk.aws_cloudwatch"
+        "module": "aws_cdk.aws_cloudwatch",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
@@ -45,10 +49,14 @@
     "cfn2ts": "cfn2ts",
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test",
-    "compat": "cdk-compat"
+    "compat": "cdk-compat",
+    "gen": "cfn2ts"
   },
   "cdk-build": {
-    "cloudformation": "AWS::CloudWatch"
+    "cloudformation": "AWS::CloudWatch",
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": "true"
+    }
   },
   "keywords": [
     "aws",

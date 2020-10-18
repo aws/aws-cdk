@@ -681,4 +681,48 @@ export = {
     test.done();
   },
 
+  'passing in previously created security groups to ALB Fargate Service'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc, clusterName: 'MyCluster' });
+    const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
+      allowAllOutbound: false,
+      description: 'Example',
+      securityGroupName: 'Rolly',
+      vpc,
+    });
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+      cluster,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      },
+      securityGroups: [securityGroup],
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::Service', {
+      LaunchType: 'FARGATE',
+    }));
+    expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
+      GroupDescription: 'Example',
+      GroupName: 'Rolly',
+      SecurityGroupEgress: [
+        {
+          CidrIp: '255.255.255.255/32',
+          Description: 'Disallow all traffic',
+          FromPort: 252,
+          IpProtocol: 'icmp',
+          ToPort: 86,
+        },
+      ],
+      VpcId: {
+        Ref: 'Vpc8378EB38',
+      },
+    }));
+    test.done();
+  },
+
 };

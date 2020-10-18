@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.custom-resources",
-        "module": "aws_cdk.custom_resources"
+        "module": "aws_cdk.custom_resources",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
@@ -44,13 +48,14 @@
     "awslint": "cdk-awslint",
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test",
-    "compat": "cdk-compat"
+    "compat": "cdk-compat",
+    "gen": "cp -f $(node -p 'require.resolve(\"aws-sdk/apis/metadata.json\")') lib/aws-custom-resource/sdk-api-metadata.json && rm -rf test/aws-custom-resource/cdk.out"
   },
   "cdk-build": {
-    "pre": [
-      "cp -f $(node -p 'require.resolve(\"aws-sdk/apis/metadata.json\")') lib/aws-custom-resource/sdk-api-metadata.json && rm -rf test/aws-custom-resource/cdk.out"
-    ],
-    "jest": true
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "keywords": [
     "aws",
@@ -71,9 +76,9 @@
     "@aws-cdk/aws-events": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/aws-ssm": "0.0.0",
-    "@types/aws-lambda": "^8.10.62",
+    "@types/aws-lambda": "^8.10.63",
     "@types/fs-extra": "^8.1.1",
-    "@types/sinon": "^9.0.5",
+    "@types/sinon": "^9.0.7",
     "aws-sdk": "^2.739.0",
     "aws-sdk-mock": "^5.1.0",
     "cdk-build-tools": "0.0.0",
@@ -82,7 +87,7 @@
     "fs-extra": "^9.0.1",
     "nock": "^13.0.4",
     "pkglint": "0.0.0",
-    "sinon": "^9.0.3"
+    "sinon": "^9.1.0"
   },
   "dependencies": {
     "@aws-cdk/aws-cloudformation": "0.0.0",

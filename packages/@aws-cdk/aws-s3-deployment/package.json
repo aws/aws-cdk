@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-s3-deployment",
-        "module": "aws_cdk.aws_s3_deployment"
+        "module": "aws_cdk.aws_s3_deployment",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
@@ -44,16 +48,17 @@
     "awslint": "cdk-awslint",
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test",
-    "compat": "cdk-compat"
+    "compat": "cdk-compat",
+    "gen": "/bin/bash lambda/build.sh"
   },
   "cdk-build": {
-    "pre": [
-      "/bin/bash lambda/build.sh"
-    ],
     "test": [
       "/bin/bash lambda/test.sh"
     ],
-    "jest": true
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "keywords": [
     "aws",

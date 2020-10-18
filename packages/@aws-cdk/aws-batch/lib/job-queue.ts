@@ -1,4 +1,5 @@
-import { Construct, IResource, Resource, Stack } from '@aws-cdk/core';
+import { IResource, Resource, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnJobQueue } from './batch.generated';
 import { IComputeEnvironment } from './compute-environment';
 

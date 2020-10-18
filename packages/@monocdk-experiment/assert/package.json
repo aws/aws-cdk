@@ -17,7 +17,7 @@
   "cdk-build": {
     "jest": true,
     "pre": [
-      "./clone.sh"
+     "./clone.sh"
     ],
     "eslint": {
       "disable": true
@@ -39,9 +39,9 @@
     "cdk-build-tools": "0.0.0",
     "constructs": "^3.0.4",
     "jest": "^26.4.2",
-    "monocdk-experiment": "0.0.0",
+    "monocdk": "0.0.0",
     "pkglint": "0.0.0",
-    "ts-jest": "^26.3.0"
+    "ts-jest": "^26.4.1"
   },
   "dependencies": {
     "@aws-cdk/cloudformation-diff": "0.0.0"
@@ -49,7 +49,7 @@
   "peerDependencies": {
     "constructs": "^3.0.4",
     "jest": "^26.4.2",
-    "monocdk-experiment": "^0.0.0"
+    "monocdk": "^0.0.0"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",

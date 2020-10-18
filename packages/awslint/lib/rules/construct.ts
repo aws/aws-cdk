@@ -24,6 +24,9 @@ export class ConstructReflection {
     return typeRef.fqn;
   }
 
+  /**
+   * @deprecated - use `CoreTypes.constructClass()` or `CoreTypes.baseConstructClass()` as appropriate
+   */
   public readonly ROOT_CLASS: reflect.ClassType; // cdk.Construct
 
   public readonly fqn: string;
@@ -79,7 +82,7 @@ export class ConstructReflection {
 
 constructLinter.add({
   code: 'construct-ctor',
-  message: 'signature of all construct constructors should be "scope, id, props"',
+  message: 'signature of all construct constructors should be "scope, id, props". ' + baseConstructAddendum(),
   eval: e => {
     // only applies to non abstract classes
     if (e.ctx.classType.abstract) {
@@ -93,9 +96,15 @@ constructLinter.add({
 
     const expectedParams = new Array<MethodSignatureParameterExpectation>();
 
+    let baseType;
+    if (process.env.AWSLINT_BASE_CONSTRUCT && !CoreTypes.isCfnResource(e.ctx.classType)) {
+      baseType = e.ctx.core.baseConstructClass;
+    } else {
+      baseType = e.ctx.core.constructClass;
+    }
     expectedParams.push({
       name: 'scope',
-      type: e.ctx.core.constructClass.fqn,
+      type: baseType.fqn,
     });
 
     expectedParams.push({
@@ -276,3 +285,10 @@ constructLinter.add({
     }
   },
 });
+
+function baseConstructAddendum(): string {
+  if (!process.env.AWSLINT_BASE_CONSTRUCT) {
+    return 'If the construct is using the "constructs" module, set the environment variable "AWSLINT_BASE_CONSTRUCT" and re-run';
+  }
+  return '';
+}

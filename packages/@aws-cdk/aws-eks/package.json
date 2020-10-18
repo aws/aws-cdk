@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-eks",
-        "module": "aws_cdk.aws_eks"
+        "module": "aws_cdk.aws_eks",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
@@ -45,10 +49,14 @@
     "cfn2ts": "cfn2ts",
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test",
-    "compat": "cdk-compat"
+    "compat": "cdk-compat",
+    "gen": "cfn2ts"
   },
   "cdk-build": {
-    "cloudformation": "AWS::EKS"
+    "cloudformation": "AWS::EKS",
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "keywords": [
     "aws",
@@ -72,7 +80,8 @@
     "cfn2ts": "0.0.0",
     "nodeunit": "^0.11.3",
     "pkglint": "0.0.0",
-    "sinon": "^9.0.3"
+    "sinon": "^9.1.0",
+    "cdk8s-plus": "^0.29.0"
   },
   "dependencies": {
     "@aws-cdk/aws-autoscaling": "0.0.0",
@@ -83,6 +92,7 @@
     "@aws-cdk/aws-ssm": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/custom-resources": "0.0.0",
+    "cdk8s": "^0.30.0",
     "constructs": "^3.0.4",
     "yaml": "1.10.0"
   },
@@ -99,6 +109,7 @@
     "@aws-cdk/aws-ssm": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/custom-resources": "0.0.0",
+    "cdk8s": "^0.30.0",
     "constructs": "^3.0.4"
   },
   "engines": {
@@ -110,7 +121,7 @@
     ]
   },
   "stability": "experimental",
-  "maturity": "experimental",
+  "maturity": "developer-preview",
   "awscdkio": {
     "announce": false
   }

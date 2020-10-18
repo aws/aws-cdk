@@ -23,15 +23,16 @@
       },
       "python": {
         "distName": "aws-cdk.region-info",
-        "module": "aws_cdk.region_info"
+        "module": "aws_cdk.region_info",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
   },
   "cdk-build": {
-    "pre": [
-      "npm run gen"
-    ],
     "jest": true
   },
   "scripts": {

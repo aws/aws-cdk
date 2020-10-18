@@ -1,5 +1,5 @@
 import { DeploymentController, FargatePlatformVersion, FargateService, FargateTaskDefinition } from '@aws-cdk/aws-ecs';
-import { Construct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { QueueProcessingServiceBase, QueueProcessingServiceBaseProps } from '../base/queue-processing-service-base';
 
 /**

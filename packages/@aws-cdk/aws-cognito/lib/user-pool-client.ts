@@ -1,4 +1,5 @@
-import { Construct, IResource, Resource } from '@aws-cdk/core';
+import { IResource, Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnUserPoolClient } from './cognito.generated';
 import { IUserPool } from './user-pool';
 
@@ -30,12 +31,6 @@ export interface AuthFlow {
    * @default false
    */
   readonly userSrp?: boolean;
-
-  /**
-   * Enable authflow to refresh tokens
-   * @default false
-   */
-  readonly refreshToken?: boolean;
 }
 
 /**
@@ -158,6 +153,12 @@ export class UserPoolClientIdentityProvider {
    * A `UserPoolIdentityProviderFacebook` must be attached to the user pool.
    */
   public static readonly FACEBOOK = new UserPoolClientIdentityProvider('Facebook');
+
+  /**
+   * Allow users to sign in using 'Google Login'.
+   * A `UserPoolIdentityProviderGoogle` must be attached to the user pool.
+   */
+  public static readonly GOOGLE = new UserPoolClientIdentityProvider('Google');
 
   /**
    * Allow users to sign in using 'Login With Amazon'.
@@ -320,7 +321,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       explicitAuthFlows: this.configureAuthFlows(props),
       allowedOAuthFlows: props.disableOAuth ? undefined : this.configureOAuthFlows(),
       allowedOAuthScopes: props.disableOAuth ? undefined : this.configureOAuthScopes(props.oAuth),
-      callbackUrLs: callbackUrls && callbackUrls.length > 0 ? callbackUrls : undefined,
+      callbackUrLs: callbackUrls && callbackUrls.length > 0 && !props.disableOAuth ? callbackUrls : undefined,
       logoutUrLs: props.oAuth?.logoutUrls,
       allowedOAuthFlowsUserPoolClient: !props.disableOAuth,
       preventUserExistenceErrors: this.configurePreventUserExistenceErrors(props.preventUserExistenceErrors),
@@ -343,12 +344,18 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
   }
 
   private configureAuthFlows(props: UserPoolClientProps): string[] | undefined {
+    if (!props.authFlows) return undefined;
+
     const authFlows: string[] = [];
-    if (props.authFlows?.userPassword) { authFlows.push('ALLOW_USER_PASSWORD_AUTH'); }
-    if (props.authFlows?.adminUserPassword) { authFlows.push('ALLOW_ADMIN_USER_PASSWORD_AUTH'); }
-    if (props.authFlows?.custom) { authFlows.push('ALLOW_CUSTOM_AUTH'); }
-    if (props.authFlows?.userSrp) { authFlows.push('ALLOW_USER_SRP_AUTH'); }
-    if (props.authFlows?.refreshToken) { authFlows.push('ALLOW_REFRESH_TOKEN_AUTH'); }
+    if (props.authFlows.userPassword) { authFlows.push('ALLOW_USER_PASSWORD_AUTH'); }
+    if (props.authFlows.adminUserPassword) { authFlows.push('ALLOW_ADMIN_USER_PASSWORD_AUTH'); }
+    if (props.authFlows.custom) { authFlows.push('ALLOW_CUSTOM_AUTH'); }
+    if (props.authFlows.userSrp) { authFlows.push('ALLOW_USER_SRP_AUTH'); }
+
+    // refreshToken should always be allowed if authFlows are present
+    if (authFlows.length > 0) {
+      authFlows.push('ALLOW_REFRESH_TOKEN_AUTH');
+    }
 
     if (authFlows.length === 0) {
       return undefined;

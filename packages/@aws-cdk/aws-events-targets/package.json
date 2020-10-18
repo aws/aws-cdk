@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-events-targets",
-        "module": "aws_cdk.aws_events_targets"
+        "module": "aws_cdk.aws_events_targets",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
@@ -44,13 +48,14 @@
     "awslint": "cdk-awslint",
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test",
-    "compat": "cdk-compat"
+    "compat": "cdk-compat",
+    "gen": "node ./build-tools/gen.js"
   },
   "cdk-build": {
-    "pre": [
-      "node ./build-tools/gen.js"
-    ],
-    "jest": true
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "keywords": [
     "aws",
