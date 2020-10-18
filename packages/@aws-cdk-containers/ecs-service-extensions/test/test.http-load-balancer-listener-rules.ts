@@ -16,7 +16,6 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
 
-    // WHEN
     const environment = new Environment(stack, 'production');
     const serviceDescription = new ServiceDescription();
     serviceDescription.add(new Container({
@@ -39,6 +38,7 @@ export = {
       }),
     });
 
+    // WHEN
     serviceDescription.add(new HttpLoadBalancerListenerRules({
       listener,
       rules: [
@@ -58,6 +58,7 @@ export = {
       serviceDescription,
     });
 
+    // THEN
     expectCDK(stack).to(haveResourceLike('AWS::ElasticLoadBalancingV2::TargetGroup'));
 
     // hostHeader()
@@ -108,7 +109,7 @@ export = {
       Priority: 11,
     }));
 
-    // pathPatternRedirect
+    // pathPatternRedirect()
     expectCDK(stack).to(haveResourceLike('AWS::ElasticLoadBalancingV2::ListenerRule', {
       Conditions: [
         {
