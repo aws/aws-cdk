@@ -1729,7 +1729,6 @@ export class Bucket extends BucketBase {
           Effect: 'Allow',
           Resource: '*',
           Action: [
-            // TODO: add key perms?
             ...perms.BUCKET_READ_ACTIONS,
             ...perms.BUCKET_WRITE_ACTIONS,
           ],
