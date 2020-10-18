@@ -52,7 +52,7 @@ This example defines an Amazon EKS cluster with the following configuration:
 ```ts
 // provisiong a cluster
 const cluster = new eks.Cluster(this, 'hello-eks', {
-  version: eks.KubernetesVersion.V1_16,
+  version: eks.KubernetesVersion.V1_18,
 });
 
 // apply a kubernetes manifest to the cluster
@@ -145,7 +145,7 @@ Creating a new cluster is done using the `Cluster` or `FargateCluster` construct
 
 ```typescript
 new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_17,
+  version: eks.KubernetesVersion.V1_18,
 });
 ```
 
@@ -153,7 +153,7 @@ You can also use `FargateCluster` to provision a cluster that uses only fargate 
 
 ```typescript
 new eks.FargateCluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_17,
+  version: eks.KubernetesVersion.V1_18,
 });
 ```
 
@@ -177,7 +177,7 @@ At cluster instantiation time, you can customize the number of instances and the
 
 ```typescript
 new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_17,
+  version: eks.KubernetesVersion.V1_18,
   defaultCapacity: 5,
   defaultCapacityInstance: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.SMALL),
 });
@@ -189,7 +189,7 @@ Additional customizations are available post instantiation. To apply them, set t
 
 ```typescript
 const cluster = new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_17,
+  version: eks.KubernetesVersion.V1_18,
   defaultCapacity: 0,
 });
 
@@ -270,7 +270,7 @@ The following code defines an Amazon EKS cluster with a default Fargate Profile 
 
 ```ts
 const cluster = new eks.FargateCluster(this, 'MyCluster', {
-  version: eks.KubernetesVersion.V1_16,
+  version: eks.KubernetesVersion.V1_18,
 });
 ```
 
@@ -316,7 +316,7 @@ You can also configure the cluster to use an auto-scaling group as the default c
 
 ```ts
 cluster = new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_17,
+  version: eks.KubernetesVersion.V1_18,
   defaultCapacityType: eks.DefaultCapacityType.EC2,
 });
 ```
@@ -394,7 +394,7 @@ You can configure the [cluster endpoint access](https://docs.aws.amazon.com/eks/
 
 ```typescript
 const cluster = new eks.Cluster(this, 'hello-eks', {
-  version: eks.KubernetesVersion.V1_16,
+  version: eks.KubernetesVersion.V1_18,
   endpointAccess: eks.EndpointAccess.PRIVATE // No access outside of your VPC.
 });
 ```
@@ -407,7 +407,7 @@ You can specify the VPC of the cluster using the `vpc` and `vpcSubnets` properti
 const vpc = new ec2.Vpc(this, 'Vpc');
 
 new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_17,
+  version: eks.KubernetesVersion.V1_18,
   vpc,
   vpcSubnets: [{ subnetType: ec2.SubnetType.PRIVATE }]
 });
@@ -447,7 +447,7 @@ The resources are created in the cluster by running `kubectl apply` from a pytho
 
 ```typescript
 const cluster = new eks.Cluster(this, 'hello-eks', {
-  version: eks.KubernetesVersion.V1_16,
+  version: eks.KubernetesVersion.V1_18,
   kubectlEnvironment: {
     'http_proxy': 'http://proxy.myproxy.com'
   }
@@ -515,7 +515,7 @@ When you create a cluster, you can specify a `mastersRole`. The `Cluster` constr
 ```ts
 const role = new iam.Role(...);
 new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_17,
+  version: eks.KubernetesVersion.V1_18,
   mastersRole: role,
 });
 ```

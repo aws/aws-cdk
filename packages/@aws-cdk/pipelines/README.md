@@ -149,6 +149,7 @@ class MyPipelineStack extends Stack {
         // Replace these with your actual GitHub project name
         owner: 'OWNER',
         repo: 'REPO',
+        branch: 'main', // default: 'master'
       }),
 
       synthAction: SimpleSynthAction.standardNpmSynth({
@@ -298,6 +299,12 @@ pipeline.addApplicationStage(new MyApplication(this, 'Production', {
   env: { account: '333333333333', region: 'eu-west-1' }
 }));
 ```
+
+> Be aware that adding new stages via `addApplicationStage()` will
+> automatically add them to the pipeline and deploy the new stacks, but
+> *removing* them from the pipeline or deleting the pipeline stack will not
+> automatically delete deployed application stacks. You must delete those
+> stacks by hand using the AWS CloudFormation console or the AWS CLI.
 
 ### More Control
 
