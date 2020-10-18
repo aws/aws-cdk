@@ -177,7 +177,7 @@ export class HttpLoadBalancerListenerRules extends ServiceExtension {
       const priority = rule.priority ?? this.nextPriority();
       const action = rule.action ?? alb.ListenerAction.forward([targetGroup]);
 
-      new alb.ApplicationListenerRule(this.scope, `listener-rule-${priority}`, {
+      new alb.ApplicationListenerRule(this.scope, `load-balancer-listener-rules-${this.name}-rule-${priority}`, {
         ...rule,
         listener: this.props.listener,
         action: action,
