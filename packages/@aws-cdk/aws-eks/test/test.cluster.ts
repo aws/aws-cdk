@@ -9,6 +9,7 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import * as cdk8s from 'cdk8s';
 import * as constructs from 'constructs';
+import { Construct } from 'constructs';
 import { Test } from 'nodeunit';
 import * as YAML from 'yaml';
 import * as eks from '../lib';
@@ -21,6 +22,22 @@ import { testFixture, testFixtureNoVpc } from './util';
 const CLUSTER_VERSION = eks.KubernetesVersion.V1_18;
 
 export = {
+
+  'throws when a non cdk8s chart is added as cdk8s chart'(test: Test) {
+
+    const { stack } = testFixture();
+
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      version: CLUSTER_VERSION,
+    });
+
+    // create a plain construct, not a cdk8s chart
+    const someConstruct = new constructs.Construct(stack, 'SomeConstruct');
+
+    test.throws(() => cluster.addCdk8sChart('chart', someConstruct), /Invalid cdk8s chart. Must contain a \'toJson\' method, but found undefined/);
+    test.done();
+
+  },
 
   'cdk8s chart can be added to cluster'(test: Test) {
 
