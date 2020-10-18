@@ -52,6 +52,9 @@ export interface IEnvironment {
    */
   readonly capacityType: EnvironmentCapacityType;
 
+  /**
+   * Add a default cloudmap namespace to the environment's cluster.
+   */
   addDefaultCloudMapNamespace(options: ecs.CloudMapNamespaceOptions): void;
 }
 
@@ -62,6 +65,9 @@ export interface IEnvironment {
  * a cluster with Fargate capacity.
  */
 export class Environment extends cdk.Construct implements IEnvironment {
+  /**
+   * Import an existing environment from its attributes.
+   */
   public static fromEnvironmentAttributes(scope: cdk.Construct, id: string, attrs: EnvironmentAttributes): IEnvironment {
     return new ImportedEnvironment(scope, id, attrs);
   }
@@ -113,15 +119,33 @@ export class Environment extends cdk.Construct implements IEnvironment {
     }
   }
 
+  /**
+   * Add a default cloudmap namespace to the environment's cluster.
+   */
   addDefaultCloudMapNamespace(options: ecs.CloudMapNamespaceOptions) {
     this.cluster.addDefaultCloudMapNamespace(options);
   }
 }
 
 export interface EnvironmentAttributes {
+  /**
+   * The name of this environment.
+   */
   id: string;
+
+  /**
+   * The capacity type used by the service's cluster.
+   */
   capacityType: EnvironmentCapacityType;
+
+  /**
+   * The cluster that is providing capacity for this service.
+   */
   cluster: ecs.ICluster;
+
+  /**
+   * The VPC into which environment services should be placed.
+   */
   vpc: ec2.IVpc;
 }
 
@@ -140,7 +164,11 @@ export class ImportedEnvironment extends cdk.Construct implements IEnvironment {
     this.vpc = props.vpc;
   }
 
+  /**
+   * Refuses to add a default cloudmap namespace to the cluster as we don't
+   * own it.
+   */
   addDefaultCloudMapNamespace(_options: ecs.CloudMapNamespaceOptions) {
-    throw new Error('the cluster environment is not mutable');
+    throw new Error('the cluster environment is immutable when imported');
   }
 }
