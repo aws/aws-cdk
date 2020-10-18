@@ -1,9 +1,9 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import { Stack } from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import { Bucket, HttpMethods } from '../lib';
 
-export = {
+nodeunitShim({
   'Can use addCors() to add a CORS configuration'(test: Test) {
     // GIVEN
     const stack = new Stack();
@@ -118,4 +118,4 @@ export = {
 
     test.done();
   },
-};
+});
