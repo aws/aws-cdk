@@ -111,3 +111,14 @@ test(`cache is nuked if it exceeds ${AccountAccessKeyCache.MAX_ENTRIES} entries`
     await nukeCache(cacheDir);
   }
 });
+
+test('cache pretends to be empty if cache file does not contain JSON', async() => {
+  const { cacheDir, cacheFile, cache } = await makeCache();
+  try {
+    await fs.writeFile(cacheFile, '');
+
+    await expect(cache.get('abc')).resolves.toEqual(undefined);
+  } finally {
+    await nukeCache(cacheDir);
+  }
+});
