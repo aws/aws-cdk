@@ -3,7 +3,6 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as ssm from '@aws-cdk/aws-ssm';
-import * as cdk8s from 'cdk8s';
 import { Annotations, CfnOutput, Resource, Stack, Token, Tags } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { ICluster, ClusterAttributes, KubernetesVersion, NodeType, DefaultCapacityType, EksOptimizedImage, AutoScalingGroupCapacityOptions, MachineImageType, AutoScalingGroupOptions, CommonClusterOptions } from './cluster';
@@ -372,7 +371,7 @@ export class LegacyCluster extends Resource implements ICluster {
     throw new Error('legacy cluster does not support adding helm charts');
   }
 
-  public addCdk8sChart(_id: string, _chart: cdk8s.Chart): KubernetesManifest {
+  public addCdk8sChart(_id: string, _chart: Construct): KubernetesManifest {
     throw new Error('legacy cluster does not support adding cdk8s charts');
   }
 
@@ -434,7 +433,7 @@ class ImportedCluster extends Resource implements ICluster {
     throw new Error('legacy cluster does not support adding helm charts');
   }
 
-  public addCdk8sChart(_id: string, _chart: cdk8s.Chart): KubernetesManifest {
+  public addCdk8sChart(_id: string, _chart: Construct): KubernetesManifest {
     throw new Error('legacy cluster does not support adding cdk8s charts');
   }
 

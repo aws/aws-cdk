@@ -50,7 +50,8 @@
     "cfn2ts": "cfn2ts",
     "compat": "cdk-compat",
     "build+test": "npm run build && npm test",
-    "build+test+package": "npm run build+test && npm run package"
+    "build+test+package": "npm run build+test && npm run package",
+    "gen": "cfn2ts"
   },
   "cdk-build": {
     "cloudformation": "AWS::ApiGatewayV2",
