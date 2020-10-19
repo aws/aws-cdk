@@ -144,7 +144,7 @@ describe('Rds Data Source configuration', () => {
     };
 
     // THEN
-    expect(when).toThrow('There is already a Construct with name \'ds\' in GraphQLApi [baseApi]');
+    expect(when).toThrow('There is already a Construct with name \'ds\' in GraphqlApi [baseApi]');
   });
 });
 
