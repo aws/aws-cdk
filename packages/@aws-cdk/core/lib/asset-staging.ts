@@ -2,7 +2,7 @@ import * as crypto from 'crypto';
 import * as os from 'os';
 import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
-import { Construct } from 'constructs';
+import { Construct, Node } from 'constructs';
 import * as fs from 'fs-extra';
 import * as minimatch from 'minimatch';
 import { AssetHashType, AssetOptions } from './assets';
@@ -116,7 +116,8 @@ export class AssetStaging extends CoreConstruct {
     this.sourcePath = props.sourcePath;
     this.fingerprintOptions = props;
 
-    const outdir = Stage.of(this)?.outdir;
+    // Stage assets to top level outdir
+    const outdir = Node.of(this).scopes.find(Stage.isStage)?.outdir;
     if (!outdir) {
       throw new Error('unable to determine cloud assembly output directory. Assets must be defined indirectly within a "Stage" or an "App" scope');
     }
