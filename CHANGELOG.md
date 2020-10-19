@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.69.0](https://github.com/aws/aws-cdk/compare/v1.68.0...v1.69.0) (2020-10-19)
+
+
+### Features
+
+* **apigatewayv2:** configure description for HttpApi ([#10863](https://github.com/aws/aws-cdk/issues/10863)) ([895372f](https://github.com/aws/aws-cdk/commit/895372fc8b027bd12d64450c429c04d8efdd27f4))
+* **pipelines:** temporarily disable self-mutation ([#10466](https://github.com/aws/aws-cdk/issues/10466)) ([8ffabb4](https://github.com/aws/aws-cdk/commit/8ffabb4325d2853f8650f991706eccfe233b2c74))
+
+
+### Bug Fixes
+
+* **apigateway:** cannot configure stage for SpecRestApi ([#10749](https://github.com/aws/aws-cdk/issues/10749)) ([62a2286](https://github.com/aws/aws-cdk/commit/62a2286f6dc46059160daa3c7466e712dad9f136)), closes [#10300](https://github.com/aws/aws-cdk/issues/10300)
+* **apigateway:** lambda integration does not recognize allowTestInvoke ([#10828](https://github.com/aws/aws-cdk/issues/10828)) ([650c23f](https://github.com/aws/aws-cdk/commit/650c23f1fe9e87a7b1eb521faf57c7ed341d0eb6)), closes [#7605](https://github.com/aws/aws-cdk/issues/7605) [#7604](https://github.com/aws/aws-cdk/issues/7604)
+* **cli:** `cdk context --reset <number>` does not work ([#10753](https://github.com/aws/aws-cdk/issues/10753)) ([2f3a167](https://github.com/aws/aws-cdk/commit/2f3a167797e60fd2df6c83bc2f3906ddc8eb8966)), closes [#3033](https://github.com/aws/aws-cdk/issues/3033) [#10619](https://github.com/aws/aws-cdk/issues/10619)
+* **cli:** failure if account cache is malformed ([#10887](https://github.com/aws/aws-cdk/issues/10887)) ([9b2438a](https://github.com/aws/aws-cdk/commit/9b2438a6e78fc7a9622e79b1435ea6f8b76d98f7))
+
 ## [1.68.0](https://github.com/aws/aws-cdk/compare/v1.67.0...v1.68.0) (2020-10-15)
 
 
