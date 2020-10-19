@@ -497,6 +497,300 @@ export enum CompressionType {
 }
 
 //
+// Create Processing Job types
+//
+
+/**
+ * Configures the processing job to run a specified Docker container image.
+ *
+ * @experimental
+ */
+export interface AppSpecification {
+  /**
+   * The arguments for a container used to run a processing job.
+   *
+   * @default None
+   */
+  readonly containerArguments?: string[];
+
+  /**
+   * The entrypoint for a container used to run a processing job.
+   *
+   * @default None
+   */
+  readonly containerEntrypoint?: string[];
+
+  /**
+   * The fully qualified URI of the Docker image.
+   * If you specify a value for this parameter, you can't specify a value for ImageUri.
+   *
+   * @default None
+   */
+  readonly containerImage?: DockerImage;
+
+  /**
+   * The fully qualified URI of the Docker image.
+   * If you specify a value for this parameter, you can't specify a value for ContainerImage.
+   *
+   * @default None
+   */
+  readonly imageUri?: string;
+}
+
+/**
+ * Associates a SageMaker job as a trial component with an experiment and trial. Specified when you call the
+ * following APIs: CreateProcessingJob, CreateTrainingJob, CreateTransformJob
+ *
+ * @experimental
+ */
+export interface ExperimentConfig {
+  /**
+   * The name of an existing experiment to associate the trial component with.
+   *
+   * @default NONE
+   */
+  readonly experimentName?: string;
+
+  /**
+   * The display name for the trial component. If this key isn't specified, the display name is the trial component name.
+   *
+   * @default NONE
+   */
+  readonly trialComponentDisplayName?: string;
+
+  /**
+   * The name of an existing trial to associate the trial component with. If not specified, a new trial is created.
+   *
+   * @default NONE
+   */
+  readonly trialName?: string;
+}
+
+/**
+ * Networking options for a job, such as network traffic encryption between containers, whether to allow inbound and
+ * outbound network calls to and from containers, and the VPC subnets and security groups to use for VPC-enabled jobs.
+ *
+ * @experimental
+ */
+export interface NetworkConfig {
+  /**
+   * Whether to encrypt all communications between distributed processing jobs. Choose True to encrypt communications.
+   * Encryption provides greater security for distributed processing jobs, but the processing might take longer.
+   *
+   * @default False
+   */
+  readonly enableInterContainerTrafficEncryption?: boolean;
+
+  /**
+   * Whether to allow inbound and outbound network calls to and from the containers used for the processing job.
+   *
+   * @default False
+   */
+  readonly enableNetworkIsolation?: boolean;
+
+  /**
+   * Specifies a VPC that your training jobs and hosted models have access to. Control access to and from your
+   * training and model containers by configuring the VPC.
+   *
+   * @default - No VPC
+   */
+  readonly vpcConfig?: VpcConfig;
+}
+
+/**
+ * Information about where and how you want to obtain the inputs for an processing job.
+ *
+ * @experimental
+ */
+export interface ProcessingS3Input {
+  /**
+   * The local path to the Amazon S3 bucket where you want Amazon SageMaker to download the inputs to run a processing job.
+   * LocalPath is an absolute path to the input data.
+   */
+  readonly localPath: string;
+
+  /**
+   * Whether to use Gzip compression for Amazon S3 storage.
+   *
+   * @default NONE
+   */
+  readonly s3CompressionType?: CompressionType;
+
+  /**
+   * Whether the data stored in Amazon S3 is FullyReplicated or ShardedByS3Key.
+   *
+   * @default NONE
+   */
+  readonly s3DataDistributionType?: S3DataDistributionType;
+
+  /**
+   * Whether you use an S3Prefix or a ManifestFile for the data type. If you choose S3Prefix, S3Uri identifies a key
+   * name prefix. Amazon SageMaker uses all objects with the specified key name prefix for the processing job. If you
+   * choose ManifestFile, S3Uri identifies an object that is a manifest file containing a list of object keys that you
+   * want Amazon SageMaker to use for the processing job.
+   */
+  readonly s3DataType: S3DataType;
+
+  /**
+   * Whether to use File or Pipe input mode. In File mode, Amazon SageMaker copies the data from the input source onto
+   * the local Amazon Elastic Block Store (Amazon EBS) volumes before starting your training algorithm. This is the
+   * most commonly used input mode. In Pipe mode, Amazon SageMaker streams input data from the source directly to your
+   * algorithm without using the EBS volume.
+   */
+  readonly s3InputMode: InputMode;
+
+  /**
+   * The URI for the Amazon S3 storage where you want Amazon SageMaker to download the artifacts needed to run a processing job.
+   */
+  readonly s3Uri: string;
+}
+
+/**
+ * Configuration for processing job outputs in Amazon S3.
+ *
+ * @experimental
+ */
+export interface ProcessingS3Output {
+  /**
+   * The local path to the Amazon S3 bucket where you want Amazon SageMaker to save the results of an processing job.
+   * LocalPath is an absolute path to the input data.
+   */
+  readonly localPath: string;
+
+  /**
+   * Whether to upload the results of the processing job continuously or after the job completes.
+   */
+  readonly s3UploadMode: S3UploadMode;
+
+  /**
+   * A URI that identifies the Amazon S3 bucket where you want Amazon SageMaker to save the results of a processing job.
+   */
+  readonly s3Uri: string;
+}
+
+/**
+ * The inputs for a processing job.
+ *
+ * @experimental
+ */
+export interface ProcessingInput {
+  /**
+   * The name of the inputs for the processing job.
+   */
+  readonly inputName: string;
+
+  /**
+   * The S3 inputs for the processing job.
+   */
+  readonly s3Input: ProcessingS3Input;
+}
+
+/**
+ * Information about where and how you want to store the results of an processing job.
+ *
+ * @experimental
+ */
+export interface ProcessingOutput {
+  /**
+   * The name for the processing job output.
+   */
+  readonly outputName: string;
+
+  /**
+   * Configuration for processing job outputs in Amazon S3.
+   */
+  readonly s3Output: ProcessingS3Output;
+}
+
+/**
+ * Output configuration for the processing job.
+ *
+ * @experimental
+ */
+export interface ProcessingOutputConfig {
+  /**
+   * The AWS Key Management Service (AWS KMS) key that Amazon SageMaker uses to encrypt the processing job output.
+   * KmsKeyId can be an ID of a KMS key, ARN of a KMS key, alias of a KMS key, or alias of a KMS key.
+   * The KmsKeyId is applied to all outputs.
+   *
+   * @default None
+   */
+  readonly encryptionKey?: kms.IKey;
+
+  /**
+   * Output configuration information for a processing job.
+   */
+  readonly outputs: ProcessingOutput[];
+}
+
+/**
+ * Identifies the resources, ML compute instances, and ML storage volumes to deploy for a processing job. In distributed
+ * training, you specify more than one instance.
+ *
+ * @experimental
+ */
+export interface ProcessingResources {
+  /**
+   * Configuration for the cluster used to run a processing job.
+   */
+  readonly clusterConfig: ClusterConfig;
+}
+
+/**
+ * The configuration for the resources in a cluster used to run the processing job.
+ *
+ * @experimental
+ */
+export interface ClusterConfig {
+  /**
+   * The number of ML compute instances to use.
+   *
+   * @default 1 instance.
+   */
+  readonly instanceCount: number;
+
+  /**
+   * ML compute instance type.
+   *
+   * @default is the 'm4.xlarge' instance type.
+   */
+  readonly instanceType: ec2.InstanceType;
+
+  /**
+   * KMS key that Amazon SageMaker uses to encrypt data on the storage volume attached to the ML compute instance(s) that
+   * run the processing job.
+   *
+   * @default None
+   */
+  readonly volumeEncryptionKey?: kms.IKey;
+
+  /**
+   * Size of the ML storage volume that you want to provision.
+   *
+   * @default 10 GB EBS volume.
+   */
+  readonly volumeSize: Size;
+}
+
+/**
+ * Whether to upload the results of the processing job continuously or after the job completes.
+ *
+ * @default 10 GB EBS volume.
+ */
+export enum S3UploadMode {
+
+  /**
+   * Upload the results of the processing job continuously.
+   */
+  CONTINUOUS = 'Continuous',
+
+  /**
+   * Upload the results of the processing job after the job completes.
+   */
+  END_OF_JOB = 'EndOfJob'
+}
+
+//
 // Create Transform Job types
 //
 
@@ -802,7 +1096,7 @@ export class AcceleratorClass {
   /**
    * Custom AcceleratorType
    * @param version - Elastic Inference accelerator generation
-  */
+   */
   public static of(version: string) { return new AcceleratorClass(version); }
   /**
    * @param version - Elastic Inference accelerator generation
