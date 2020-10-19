@@ -2,7 +2,7 @@ import * as yargs from 'yargs';
 import { compileCurrentPackage } from '../lib/compile';
 import { lintCurrentPackage } from '../lib/lint';
 import { shell } from '../lib/os';
-import { cdkBuildOptions, currentPackageJson, CompilerOverrides } from '../lib/package-info';
+import { cdkBuildOptions, CompilerOverrides, currentPackageJson, genScript } from '../lib/package-info';
 import { Timers } from '../lib/timer';
 
 async function main() {
@@ -24,22 +24,24 @@ async function main() {
       desc: 'Specify a different eslint executable',
       defaultDescription: 'eslint provided by node dependencies',
     })
+    .option('gen', {
+      type: 'boolean',
+      desc: 'execute gen script',
+      default: true,
+    })
     .argv;
 
   const options = cdkBuildOptions();
   const env = options.env;
 
   if (options.pre) {
-    await shell(options.pre, { timers, env });
+    const commands = options.pre.join(' && ');
+    await shell([commands], { timers, env });
   }
 
-  // See if we need to call cfn2ts
-  if (options.cloudformation) {
-    if (typeof options.cloudformation === 'string') {
-      // There can be multiple scopes, ensuring it's always an array.
-      options.cloudformation = [options.cloudformation];
-    }
-    await shell(['cfn2ts', ...options.cloudformation.map(scope => `--scope=${scope}`)], { timers, env });
+  const gen = genScript();
+  if (args.gen && gen) {
+    await shell([gen], { timers, env });
   }
 
   const overrides: CompilerOverrides = { eslint: args.eslint, jsii: args.jsii, tsc: args.tsc };
