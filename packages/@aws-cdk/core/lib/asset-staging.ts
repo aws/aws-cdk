@@ -110,6 +110,8 @@ export class AssetStaging extends CoreConstruct {
 
   private readonly cacheKey: string;
 
+  private readonly bundling?: BundlingOptions;
+
   constructor(scope: Construct, id: string, props: AssetStagingProps) {
     super(scope, id);
 
@@ -139,6 +141,8 @@ export class AssetStaging extends CoreConstruct {
     });
 
     if (props.bundling) {
+      this.bundling = props.bundling;
+
       // Check if we actually have to bundle for this stack
       const bundlingStacks: string[] = this.node.tryGetContext(cxapi.BUNDLING_STACKS) ?? ['*'];
       const runBundling = !!bundlingStacks.find(pattern => minimatch(Stack.of(this).stackName, pattern));
@@ -188,7 +192,12 @@ export class AssetStaging extends CoreConstruct {
 
     const targetPath = path.join(outdir, this.relativePath);
 
-    // Staging the bundling asset.
+    // Already staged
+    if (fs.existsSync(targetPath)) {
+      return;
+    }
+
+    // Asset has been bundled
     if (this.bundleDir) {
       const isAlreadyStaged = fs.existsSync(targetPath);
 
@@ -203,9 +212,9 @@ export class AssetStaging extends CoreConstruct {
       return;
     }
 
-    // Already staged
-    if (fs.existsSync(targetPath)) {
-      return;
+    // Bundling is used but bundling was skipped (cache) and the asset is not already staged
+    if (this.bundling && !fs.existsSync(targetPath)) {
+      throw new Error(`Cannot find staged asset at ${targetPath}`);
     }
 
     // Copy file/directory to staging directory
