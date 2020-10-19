@@ -77,6 +77,8 @@ export interface ProductAttributes {
    * The names of the of the provisioning artifacts.
    */
   readonly provisioningArtifactNames: string;
+
+
 }
 
 /**
@@ -118,6 +120,59 @@ export interface ProductProps {
    * @default none
    */
   readonly artifactName?: string;
+
+  /**
+   * The contact URL for product support.
+   *
+   * @default none
+   */
+  readonly supportUrl?: string;
+
+  /**
+   * The contact email for product support.
+   *
+   * @default none
+   */
+  readonly supportEmail?: string;
+
+  /**
+   * The support information about the product.
+   *
+   * @default none
+   */
+  readonly supportDescription?: string;
+
+  /**
+   * The distributor of the product.
+   *
+   * @default none
+   */
+  readonly distributor?: string;
+
+  /**
+   * The language code.
+   *
+   * @default en
+   */
+  readonly acceptLanguage?: Language;
+}
+
+/**
+ * AWS Service Catalog Languages
+ */
+export enum Language {
+  /**
+   * English
+   */
+  ENGLISH = 'en',
+  /**
+   * Japanese
+   */
+  JAPANESE = 'jp',
+  /**
+   * Chinese
+   */
+  CHINESE = 'zh',
 }
 
 
@@ -135,7 +190,7 @@ abstract class ProductBase extends core.Resource implements IProduct {
 }
 
 /**
- * Creates an AWS Service Catalog Product from an Asset.
+ * Creates an AWS Service Catalog Product from a file path to a CloudFormation template.
  *
  * @resource AWS::ServiceCatalog::CloudFormationProduct
  */
@@ -177,7 +232,17 @@ export class Product extends ProductBase {
       name: props.artifactName,
       info: { LoadTemplateFromURL: asset.httpUrl },
     };
-    const product = new CfnCloudFormationProduct(this, 'Resource', { name: props.productName, owner: props.owner, provisioningArtifactParameters: [provisioningArtifact] });
+    const product = new CfnCloudFormationProduct(this, 'Resource', {
+      name: props.productName,
+      owner: props.owner,
+      provisioningArtifactParameters: [provisioningArtifact],
+      acceptLanguage: props.acceptLanguage,
+      description: props.description,
+      distributor: props.distributor,
+      supportDescription: props.supportDescription,
+      supportUrl: props.supportUrl,
+      supportEmail: props.supportEmail,
+    });
 
     this.provisioningArtifactId = product.attrProvisioningArtifactIds;
     this.provisioningArtifactName = product.attrProvisioningArtifactNames;
