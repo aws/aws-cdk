@@ -510,6 +510,8 @@ export class PostgresEngineVersion {
   public static readonly VER_10_12 = PostgresEngineVersion.of('10.12', '10', { s3Import: true });
   /** Version "10.13". */
   public static readonly VER_10_13 = PostgresEngineVersion.of('10.13', '10', { s3Import: true });
+  /** Version "10.14". */
+  public static readonly VER_10_14 = PostgresEngineVersion.of('10.14', '10', { s3Import: true });
 
   /** Version "11" (only a major version, without a specific minor version). */
   public static readonly VER_11 = PostgresEngineVersion.of('11', '11', { s3Import: true });
@@ -527,6 +529,8 @@ export class PostgresEngineVersion {
   public static readonly VER_11_7 = PostgresEngineVersion.of('11.7', '11', { s3Import: true });
   /** Version "11.8". */
   public static readonly VER_11_8 = PostgresEngineVersion.of('11.8', '11', { s3Import: true });
+  /** Version "11.9". */
+  public static readonly VER_11_9 = PostgresEngineVersion.of('11.9', '11', { s3Import: true });
 
   /** Version "12" (only a major version, without a specific minor version). */
   public static readonly VER_12 = PostgresEngineVersion.of('12', '12', { s3Import: true });
@@ -534,6 +538,8 @@ export class PostgresEngineVersion {
   public static readonly VER_12_2 = PostgresEngineVersion.of('12.2', '12', { s3Import: true });
   /** Version "12.3". */
   public static readonly VER_12_3 = PostgresEngineVersion.of('12.3', '12', { s3Import: true });
+  /** Version "12.4". */
+  public static readonly VER_12_4 = PostgresEngineVersion.of('12.4', '12', { s3Import: true });
 
   /**
    * Create a new PostgresEngineVersion with an arbitrary version.

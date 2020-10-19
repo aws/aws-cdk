@@ -49,7 +49,7 @@
     "archiver": "^5.0.2",
     "aws-sdk": "^2.739.0",
     "glob": "^7.1.6",
-    "yargs": "^16.0.3"
+    "yargs": "^16.1.0"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",
