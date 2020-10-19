@@ -1,13 +1,13 @@
+import '@aws-cdk/assert/jest';
 import * as path from 'path';
-import { canonicalizeTemplate, expect, haveResource, ResourcePart, SynthUtils } from '@aws-cdk/assert';
+import { canonicalizeTemplate, ResourcePart, SynthUtils } from '@aws-cdk/assert';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { Test, testCase } from 'nodeunit';
 import * as lambda from '../lib';
 
-export = testCase({
-  'creating a layer'(test: Test) {
+describe('layers', () => {
+  test('creating a layer', () => {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'TestStack');
     const bucket = new s3.Bucket(stack, 'Bucket');
@@ -20,18 +20,16 @@ export = testCase({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::Lambda::LayerVersion', {
+    expect(stack).toHaveResource('AWS::Lambda::LayerVersion', {
       Content: {
         S3Bucket: stack.resolve(bucket.bucketName),
         S3Key: 'ObjectKey',
       },
       CompatibleRuntimes: ['nodejs10.x'],
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'granting access to a layer'(test: Test) {
+  test('granting access to a layer', () => {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'TestStack');
     const bucket = new s3.Bucket(stack, 'Bucket');
@@ -46,35 +44,31 @@ export = testCase({
     layer.addPermission('GrantUsage-o-123456', { accountId: '*', organizationId: 'o-123456' });
 
     // THEN
-    expect(stack).to(haveResource('AWS::Lambda::LayerVersionPermission', {
+    expect(stack).toHaveResource('AWS::Lambda::LayerVersionPermission', {
       Action: 'lambda:GetLayerVersion',
       LayerVersionArn: stack.resolve(layer.layerVersionArn),
       Principal: '123456789012',
-    }));
-    expect(stack).to(haveResource('AWS::Lambda::LayerVersionPermission', {
+    });
+    expect(stack).toHaveResource('AWS::Lambda::LayerVersionPermission', {
       Action: 'lambda:GetLayerVersion',
       LayerVersionArn: stack.resolve(layer.layerVersionArn),
       Principal: '*',
       OrganizationId: 'o-123456',
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'creating a layer with no runtimes compatible'(test: Test) {
+  test('creating a layer with no runtimes compatible', () => {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'TestStack');
     const bucket = new s3.Bucket(stack, 'Bucket');
     const code = new lambda.S3Code(bucket, 'ObjectKey');
 
     // THEN
-    test.throws(() => new lambda.LayerVersion(stack, 'LayerVersion', { code, compatibleRuntimes: [] }),
-      /supports no runtime/);
+    expect(() => new lambda.LayerVersion(stack, 'LayerVersion', { code, compatibleRuntimes: [] }))
+      .toThrow(/supports no runtime/);
+  });
 
-    test.done();
-  },
-
-  'asset metadata is added to the cloudformation resource'(test: Test) {
+  test('asset metadata is added to the cloudformation resource', () => {
     // GIVEN
     const stack = new cdk.Stack();
     stack.node.setContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT, true);
@@ -85,12 +79,11 @@ export = testCase({
     });
 
     // THEN
-    expect(canonicalizeTemplate(SynthUtils.toCloudFormation(stack))).to(haveResource('AWS::Lambda::LayerVersion', {
+    expect(canonicalizeTemplate(SynthUtils.toCloudFormation(stack))).toHaveResource('AWS::Lambda::LayerVersion', {
       Metadata: {
         'aws:asset:path': 'asset.Asset1Hash',
         'aws:asset:property': 'Content',
       },
-    }, ResourcePart.CompleteDefinition));
-    test.done();
-  },
+    }, ResourcePart.CompleteDefinition);
+  });
 });

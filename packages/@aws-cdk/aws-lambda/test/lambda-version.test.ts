@@ -1,12 +1,9 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import '@aws-cdk/assert/jest';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import * as lambda from '../lib';
 
-/* eslint-disable quote-props */
-
-export = {
-  'can import a Lambda version by ARN'(test: Test) {
+describe('lambda version', () => {
+  test('can import a Lambda version by ARN', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -17,7 +14,7 @@ export = {
     new cdk.CfnOutput(stack, 'Name', { value: version.functionName });
 
     // THEN
-    expect(stack).toMatch({
+    expect(stack).toMatchTemplate({
       Outputs: {
         ARN: {
           Value: 'arn:aws:lambda:region:account-id:function:function-name:version',
@@ -27,11 +24,9 @@ export = {
         },
       },
     });
+  });
 
-    test.done();
-  },
-
-  'create a version with event invoke config'(test: Test) {
+  test('create a version with event invoke config', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Fn', {
@@ -48,7 +43,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::Lambda::EventInvokeConfig', {
+    expect(stack).toHaveResource('AWS::Lambda::EventInvokeConfig', {
       FunctionName: {
         Ref: 'Fn9270CBC0',
       },
@@ -60,12 +55,10 @@ export = {
       },
       MaximumEventAgeInSeconds: 3600,
       MaximumRetryAttempts: 0,
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'throws when calling configureAsyncInvoke on already configured version'(test: Test) {
+  test('throws when calling configureAsyncInvoke on already configured version', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Fn', {
@@ -80,12 +73,10 @@ export = {
     });
 
     // THEN
-    test.throws(() => version.configureAsyncInvoke({ retryAttempts: 1 }), /An EventInvokeConfig has already been configured/);
+    expect(() => version.configureAsyncInvoke({ retryAttempts: 1 })).toThrow(/An EventInvokeConfig has already been configured/);
+  });
 
-    test.done();
-  },
-
-  'event invoke config on imported versions'(test: Test) {
+  test('event invoke config on imported versions', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const version1 = lambda.Version.fromVersionArn(stack, 'Version1', 'arn:aws:lambda:region:account-id:function:function-name:version1');
@@ -100,21 +91,19 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::Lambda::EventInvokeConfig', {
+    expect(stack).toHaveResource('AWS::Lambda::EventInvokeConfig', {
       FunctionName: 'function-name',
       Qualifier: 'version1',
       MaximumRetryAttempts: 1,
-    }));
-    expect(stack).to(haveResource('AWS::Lambda::EventInvokeConfig', {
+    });
+    expect(stack).toHaveResource('AWS::Lambda::EventInvokeConfig', {
       FunctionName: 'function-name',
       Qualifier: 'version2',
       MaximumRetryAttempts: 0,
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'addAlias can be used to add an alias that points to a version'(test: Test) {
+  test('addAlias can be used to add an alias that points to a version', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Fn', {
@@ -128,22 +117,21 @@ export = {
     version.addAlias('foo');
 
     // THEN
-    expect(stack).to(haveResource('AWS::Lambda::Alias', {
-      'FunctionName': {
-        'Ref': 'Fn9270CBC0',
+    expect(stack).toHaveResource('AWS::Lambda::Alias', {
+      FunctionName: {
+        Ref: 'Fn9270CBC0',
       },
-      'FunctionVersion': {
+      FunctionVersion: {
         'Fn::GetAtt': [
           'FnCurrentVersion17A89ABBab5c765f3c55e4e61583b51b00a95742',
           'Version',
         ],
       },
-      'Name': 'foo',
-    }));
-    test.done();
-  },
+      Name: 'foo',
+    });
+  });
 
-  'edgeArn'(test: Test) {
+  test('edgeArn', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Fn', {
@@ -154,23 +142,19 @@ export = {
     const version = fn.currentVersion;
 
     // THEN
-    test.deepEqual(stack.resolve(version.edgeArn), { Ref: 'FnCurrentVersion17A89ABB19ed45993ff69fd011ae9fd4ab6e2005' });
+    expect(stack.resolve(version.edgeArn)).toEqual({ Ref: 'FnCurrentVersion17A89ABB19ed45993ff69fd011ae9fd4ab6e2005' });
+  });
 
-    test.done();
-  },
-
-  'edgeArn throws with $LATEST'(test: Test) {
+  test('edgeArn throws with $LATEST', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const version = lambda.Version.fromVersionArn(stack, 'Version', 'arn:aws:lambda:region:account-id:function:function-name:$LATEST');
 
     // THEN
-    test.throws(() => version.edgeArn, /\$LATEST function version cannot be used for Lambda@Edge/);
+    expect(() => version.edgeArn).toThrow(/\$LATEST function version cannot be used for Lambda@Edge/);
+  });
 
-    test.done();
-  },
-
-  'edgeArn throws at synthesis if underlying function is not edge compatible'(test: Test) {
+  test('edgeArn throws at synthesis if underlying function is not edge compatible', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack');
@@ -195,8 +179,6 @@ export = {
     fn.addEnvironment('KEY2', 'value2');
 
     // THEN
-    test.throws(() => app.synth(), /KEY1,KEY2/);
-
-    test.done();
-  },
-};
+    expect(() => app.synth()).toThrow(/KEY1,KEY2/);
+  });
+});
