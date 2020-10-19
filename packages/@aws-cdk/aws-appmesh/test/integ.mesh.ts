@@ -34,12 +34,12 @@ const virtualService = mesh.addVirtualService('service', {
 
 const node = mesh.addVirtualNode('node', {
   dnsHostName: `node1.${namespace.namespaceName}`,
-  listener: {
+  listeners: [appmesh.VirtualNodeListener.httpNodeListener({
     healthCheck: {
       healthyThreshold: 3,
       path: '/check-path',
     },
-  },
+  })],
   backends: [
     virtualService,
   ],
@@ -63,7 +63,7 @@ router.addRoute('route-1', {
 
 const node2 = mesh.addVirtualNode('node2', {
   dnsHostName: `node2.${namespace.namespaceName}`,
-  listener: {
+  listeners: [appmesh.VirtualNodeListener.httpNodeListener({
     healthCheck: {
       healthyThreshold: 3,
       interval: cdk.Duration.seconds(5),
@@ -73,7 +73,7 @@ const node2 = mesh.addVirtualNode('node2', {
       timeout: cdk.Duration.seconds(2),
       unhealthyThreshold: 2,
     },
-  },
+  })],
   backends: [
     new appmesh.VirtualService(stack, 'service-3', {
       virtualServiceName: 'service3.domain.local',
@@ -84,7 +84,7 @@ const node2 = mesh.addVirtualNode('node2', {
 
 const node3 = mesh.addVirtualNode('node3', {
   dnsHostName: `node3.${namespace.namespaceName}`,
-  listener: {
+  listeners: [appmesh.VirtualNodeListener.httpNodeListener({
     healthCheck: {
       healthyThreshold: 3,
       interval: cdk.Duration.seconds(5),
@@ -94,7 +94,7 @@ const node3 = mesh.addVirtualNode('node3', {
       timeout: cdk.Duration.seconds(2),
       unhealthyThreshold: 2,
     },
-  },
+  })],
   accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
 });
 

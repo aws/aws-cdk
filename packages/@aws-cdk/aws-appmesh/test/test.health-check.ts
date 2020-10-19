@@ -4,12 +4,9 @@ import { Test } from 'nodeunit';
 import * as appmesh from '../lib';
 
 let idCounter = 0;
-const getNode = (stack: cdk.Stack) => {
-  const mesh = new appmesh.Mesh(stack, `mesh-${++idCounter}`, {
+const getMesh = (stack: cdk.Stack) => {
+  return new appmesh.Mesh(stack, `mesh-${++idCounter}`, {
     meshName: 'test-mesh',
-  });
-  return mesh.addVirtualNode(`virtual-node-${idCounter}`, {
-    dnsHostName: 'test-node',
   });
 };
 
@@ -21,8 +18,11 @@ export = {
     const [min, max] = [5000, 300000];
 
     // WHEN
-    const toThrow = (millis: number) => getNode(stack).addListeners({
-      healthCheck: { interval: cdk.Duration.millis(millis) },
+    const toThrow = (millis: number) => getMesh(stack).addVirtualNode(`virtual-node-${idCounter}`, {
+      dnsHostName: 'test-node',
+      listeners: [appmesh.VirtualNodeListener.httpNodeListener({
+        healthCheck: { interval: cdk.Duration.millis(millis) },
+      })],
     });
 
     // THEN
@@ -40,8 +40,11 @@ export = {
     const [min, max] = [2000, 60000];
 
     // WHEN
-    const toThrow = (millis: number) => getNode(stack).addListeners({
-      healthCheck: { timeout: cdk.Duration.millis(millis) },
+    const toThrow = (millis: number) => getMesh(stack).addVirtualNode(`virtual-node-${idCounter}`, {
+      dnsHostName: 'test-node',
+      listeners: [appmesh.VirtualNodeListener.httpNodeListener({
+        healthCheck: { timeout: cdk.Duration.millis(millis) },
+      })],
     });
 
     // THEN
@@ -59,8 +62,11 @@ export = {
     const [min, max] = [1, 65535];
 
     // WHEN
-    const toThrow = (port: number) => getNode(stack).addListeners({
-      healthCheck: { port },
+    const toThrow = (port: number) => getMesh(stack).addVirtualNode(`virtual-node-${idCounter}`, {
+      dnsHostName: 'test-node',
+      listeners: [appmesh.VirtualNodeListener.httpNodeListener({
+        healthCheck: { port },
+      })],
     });
 
     // THEN
@@ -79,8 +85,11 @@ export = {
     const [min, max] = [2, 10];
 
     // WHEN
-    const toThrow = (healthyThreshold: number) => getNode(stack).addListeners({
-      healthCheck: { healthyThreshold },
+    const toThrow = (healthyThreshold: number) => getMesh(stack).addVirtualNode(`virtual-node-${idCounter}`, {
+      dnsHostName: 'test-node',
+      listeners: [appmesh.VirtualNodeListener.httpNodeListener({
+        healthCheck: { healthyThreshold },
+      })],
     });
 
     // THEN
@@ -98,8 +107,11 @@ export = {
     const [min, max] = [2, 10];
 
     // WHEN
-    const toThrow = (unhealthyThreshold: number) => getNode(stack).addListeners({
-      healthCheck: { unhealthyThreshold },
+    const toThrow = (unhealthyThreshold: number) => getMesh(stack).addVirtualNode(`virtual-node-${idCounter}`, {
+      dnsHostName: 'test-node',
+      listeners: [appmesh.VirtualNodeListener.httpNodeListener({
+        healthCheck: { unhealthyThreshold },
+      })],
     });
 
     // THEN
@@ -115,11 +127,14 @@ export = {
     const stack = new cdk.Stack();
 
     // WHEN
-    const toThrow = (protocol: appmesh.Protocol) => getNode(stack).addListeners({
-      healthCheck: {
-        protocol,
-        path: '/',
-      },
+    const toThrow = (protocol: appmesh.Protocol) => getMesh(stack).addVirtualNode(`virtual-node-${idCounter}`, {
+      dnsHostName: 'test-node',
+      listeners: [appmesh.VirtualNodeListener.httpNodeListener({
+        healthCheck: {
+          protocol,
+          path: '/',
+        },
+      })],
     });
 
     // THEN
@@ -134,11 +149,14 @@ export = {
     const stack = new cdk.Stack();
 
     // WHEN
-    const toThrow = (protocol: appmesh.Protocol) => getNode(stack).addListeners({
-      healthCheck: {
-        protocol,
-        path: '/',
-      },
+    const toThrow = (protocol: appmesh.Protocol) => getMesh(stack).addVirtualNode(`virtual-node-${idCounter}`, {
+      dnsHostName: 'test-node',
+      listeners: [appmesh.VirtualNodeListener.httpNodeListener({
+        healthCheck: {
+          protocol,
+          path: '/',
+        },
+      })],
     });
 
     // THEN

@@ -145,7 +145,15 @@
       "props-default-doc:@aws-cdk/aws-appmesh.VirtualRouterAttributes.virtualRouterName",
       "docs-public-apis:@aws-cdk/aws-appmesh.Protocol.HTTP",
       "docs-public-apis:@aws-cdk/aws-appmesh.Protocol.HTTP2",
-      "docs-public-apis:@aws-cdk/aws-appmesh.Protocol.GRPC"
+      "docs-public-apis:@aws-cdk/aws-appmesh.Protocol.GRPC",
+      "duration-prop-type:@aws-cdk/aws-appmesh.GrpcNodeListener.timeout",
+      "duration-prop-type:@aws-cdk/aws-appmesh.GrpcNodeListenerProps.timeout",
+      "duration-prop-type:@aws-cdk/aws-appmesh.HttpNodeListener.timeout",
+      "duration-prop-type:@aws-cdk/aws-appmesh.HttpNodeListenerProps.timeout",
+      "duration-prop-type:@aws-cdk/aws-appmesh.Http2NodeListener.timeout",
+      "duration-prop-type:@aws-cdk/aws-appmesh.Http2NodeListenerProps.timeout",
+      "duration-prop-type:@aws-cdk/aws-appmesh.TcpNodeListener.timeout",
+      "duration-prop-type:@aws-cdk/aws-appmesh.TcpNodeListenerProps.timeout"
     ]
   },
   "stability": "experimental",

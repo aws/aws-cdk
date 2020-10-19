@@ -82,7 +82,7 @@ export interface PortMapping {
 }
 
 /**
- * Represents timeouts for different protocols.
+ * Represents timeouts for HTTP protocols.
  */
 export interface HttpTimeout {
   /**
@@ -101,7 +101,26 @@ export interface HttpTimeout {
 }
 
 /**
- * Represents timeouts for different protocols.
+ * Represents timeouts for HTTP2 protocols.
+ */
+export interface Http2Timeout {
+  /**
+   * Represents an idle timeout. The amount of time that a connection may be idle.
+   *
+   * @default - none
+   */
+  readonly idle?: cdk.Duration;
+
+  /**
+   * Represents per request timeout.
+   *
+   * @default - 15 s
+   */
+  readonly perRequest?: cdk.Duration;
+}
+
+/**
+ * Represents timeouts for GRPC protocols.
  */
 export interface GrpcTimeout {
   /**
@@ -116,12 +135,11 @@ export interface GrpcTimeout {
    *
    * @default - 15 s
    */
-
   readonly perRequest?: cdk.Duration;
 }
 
 /**
- * Represents timeouts for different protocols.
+ * Represents timeouts for TCP protocols.
  */
 export interface TcpTimeout {
   /**
@@ -130,63 +148,6 @@ export interface TcpTimeout {
    * @default - none
    */
   readonly idle?: cdk.Duration;
-}
-
-/**
- * Represents timeouts for different protocols.
- */
-export interface ListenerTimeout {
-  /**
-   * Represents GrpcTimeout type.
-   *
-   * @default - none
-   */
-  readonly grpc?: GrpcTimeout;
-  /**
-   * Represents HttpTimeout type.
-   *
-   * @default - none
-   */
-  readonly http?: HttpTimeout;
-  /**
-   * Represents HttpTimeout type.
-   *
-   * @default - none
-   */
-  readonly http2?: HttpTimeout;
-  /**
-   * Represents TCPTimeout type.
-   *
-   * @default - none
-   */
-  readonly tcp?: TcpTimeout;
-
-}
-
-/**
- * Represents the properties needed to define healthy and active listeners for nodes.
- */
-export interface VirtualNodeListener {
-  /**
-   * Array of PortMappingProps for the listener
-   *
-   * @default - HTTP port 8080
-   */
-  readonly portMapping?: PortMapping;
-
-  /**
-   * Health checking strategy upstream nodes should use when communicating with the listener
-   *
-   * @default - no healthcheck
-   */
-  readonly healthCheck?: HealthCheck;
-
-  /**
-   * Represents timeouts for different protocols.
-   *
-   * @default - none
-   */
-  readonly timeout?: ListenerTimeout;
 }
 
 /**
