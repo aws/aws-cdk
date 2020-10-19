@@ -491,6 +491,7 @@ class AssetPublishing extends CoreConstruct {
         'codebuild:CreateReport',
         'codebuild:UpdateReport',
         'codebuild:BatchPutTestCases',
+        'codebuild:BatchPutCodeCoverages',
       ],
       resources: [codeBuildArn],
     }));

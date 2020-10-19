@@ -149,6 +149,7 @@ class MyPipelineStack extends Stack {
         // Replace these with your actual GitHub project name
         owner: 'OWNER',
         repo: 'REPO',
+        branch: 'main', // default: 'master'
       }),
 
       synthAction: SimpleSynthAction.standardNpmSynth({
