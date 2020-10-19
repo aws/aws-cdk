@@ -1092,20 +1092,7 @@ Object {
             Object {
               "Action": "dynamodb:ListStreams",
               "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
-                  "",
-                  Array [
-                    Object {
-                      "Fn::GetAtt": Array [
-                        "TableCD117FA1",
-                        "Arn",
-                      ],
-                    },
-                    "/stream/*",
-                  ],
-                ],
-              },
+              "Resource": "*",
             },
             Object {
               "Action": Array [
@@ -1750,6 +1737,7 @@ Object {
                 "codebuild:CreateReport",
                 "codebuild:UpdateReport",
                 "codebuild:BatchPutTestCases",
+                "codebuild:BatchPutCodeCoverages",
               ],
               "Effect": "Allow",
               "Resource": Object {

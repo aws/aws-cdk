@@ -49,7 +49,8 @@
     "cfn2ts": "cfn2ts",
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test",
-    "compat": "cdk-compat"
+    "compat": "cdk-compat",
+    "gen": "cfn2ts"
   },
   "cdk-build": {
     "cloudformation": "AWS::CloudFront",
@@ -106,7 +107,7 @@
   "features": [
     {
       "name": "Higher level constructs for Distribution",
-      "stability": "Experimental"
+      "stability": "Developer Preview"
     },
     {
       "name": "Higher level constructs for CloudFrontWebDistribution",
@@ -151,7 +152,13 @@
       "docs-public-apis:@aws-cdk/aws-cloudfront.ViewerCertificate.aliases",
       "docs-public-apis:@aws-cdk/aws-cloudfront.ViewerCertificate.props",
       "docs-public-apis:@aws-cdk/aws-cloudfront.ViewerCertificateOptions",
-      "props-default-doc:@aws-cdk/aws-cloudfront.ViewerCertificateOptions.aliases"
+      "props-default-doc:@aws-cdk/aws-cloudfront.ViewerCertificateOptions.aliases",
+      "construct-interface-extends-iconstruct:@aws-cdk/aws-cloudfront.ICachePolicy",
+      "resource-interface-extends-resource:@aws-cdk/aws-cloudfront.ICachePolicy",
+      "resource-attribute:@aws-cdk/aws-cloudfront.CachePolicy.cachePolicyLastModifiedTime",
+      "construct-interface-extends-iconstruct:@aws-cdk/aws-cloudfront.IOriginRequestPolicy",
+      "resource-interface-extends-resource:@aws-cdk/aws-cloudfront.IOriginRequestPolicy",
+      "resource-attribute:@aws-cdk/aws-cloudfront.OriginRequestPolicy.originRequestPolicyLastModifiedTime"
     ]
   },
   "awscdkio": {

@@ -19,16 +19,14 @@
     "build+test": "npm run build && npm test",
     "integ-cli": "npm run integ-cli-regression && npm run integ-cli-no-regression",
     "integ-cli-regression": "npm run integ-cli-regression-latest-release && npm run integ-cli-regression-latest-code",
-    "integ-cli-regression-latest-release": "test/integ/run-against-repo test/integ/test-cli-regression-against-latest-release.sh",
-    "integ-cli-regression-latest-code": "test/integ/run-against-repo test/integ/test-cli-regression-against-current-code.sh",
+    "integ-cli-regression-latest-release": "test/integ/run-against-dist test/integ/test-cli-regression-against-latest-release.sh",
+    "integ-cli-regression-latest-code": "test/integ/run-against-dist test/integ/test-cli-regression-against-current-code.sh",
     "integ-cli-no-regression": "test/integ/run-against-repo test/integ/cli/test.sh",
-    "integ-init": "test/integ/run-against-dist test/integ/init/test-all.sh"
+    "integ-init": "test/integ/run-against-dist test/integ/init/test-all.sh",
+    "gen": "./generate.sh"
   },
   "cdk-build": {
-    "jest": true,
-    "pre": [
-      "./generate.sh"
-    ]
+    "jest": true
   },
   "cdk-package": {
     "shrinkWrap": true
@@ -62,7 +60,9 @@
     "pkglint": "0.0.0",
     "sinon": "^9.1.0",
     "ts-jest": "^26.4.1",
-    "ts-mock-imports": "^1.3.0"
+    "ts-mock-imports": "^1.3.0",
+    "@octokit/rest": "^18.0.6",
+    "make-runnable": "^1.3.8"
   },
   "dependencies": {
     "@aws-cdk/cloud-assembly-schema": "0.0.0",

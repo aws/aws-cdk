@@ -66,8 +66,9 @@ export interface ServerlessClusterProps {
   readonly clusterIdentifier?: string;
 
   /**
-   * The number of days during which automatic DB snapshots are retained. Set
-   * to zero to disable backups.
+   * The number of days during which automatic DB snapshots are retained.
+   * Automatic backup retention cannot be disabled on serverless clusters.
+   * Must be a value from 1 day to 35 days.
    *
    * @default Duration.days(1)
    */
@@ -367,6 +368,13 @@ export class ServerlessCluster extends ServerlessClusterBase {
       vpcSubnets: props.vpcSubnets,
       removalPolicy: props.removalPolicy === RemovalPolicy.RETAIN ? props.removalPolicy : undefined,
     });
+
+    if (props.backupRetention) {
+      const backupRetentionDays = props.backupRetention.toDays();
+      if (backupRetentionDays < 1 || backupRetentionDays > 35) {
+        throw new Error(`backup retention period must be between 1 and 35 days. received: ${backupRetentionDays}`);
+      }
+    }
 
     let credentials = props.credentials ?? Credentials.fromUsername(props.engine.defaultUsername ?? 'admin');
     if (!credentials.secret && !credentials.password) {
