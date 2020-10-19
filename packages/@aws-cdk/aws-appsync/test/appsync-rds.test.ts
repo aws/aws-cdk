@@ -7,13 +7,14 @@ import * as appsync from '../lib';
 
 // GLOBAL GIVEN
 let stack: cdk.Stack;
-let api: appsync.GraphQLApi;
+let api: appsync.GraphqlApi;
 beforeEach(() => {
   stack = new cdk.Stack();
-  api = new appsync.GraphQLApi(stack, 'baseApi', {
+  api = new appsync.GraphqlApi(stack, 'baseApi', {
     name: 'api',
-    schemaDefinition: appsync.SchemaDefinition.FILE,
-    schemaDefinitionFile: path.join(__dirname, 'appsync.test.graphql'),
+    schema: new appsync.Schema({
+      filePath: path.join(__dirname, 'appsync.test.graphql'),
+    }),
   });
 });
 
@@ -32,7 +33,7 @@ describe('Rds Data Source configuration', () => {
     });
     cluster = new DatabaseCluster(stack, 'AuroraCluster', {
       engine: DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_2_07_1 }),
-      masterUser: { username: 'clusteradmin' },
+      credentials: { username: 'clusteradmin' },
       clusterIdentifier: 'db-endpoint-test',
       instanceProps: {
         instanceType: InstanceType.of(InstanceClass.BURSTABLE2, InstanceSize.SMALL),
@@ -162,7 +163,7 @@ describe('adding rds data source from imported api', () => {
     });
     cluster = new DatabaseCluster(stack, 'AuroraCluster', {
       engine: DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_2_07_1 }),
-      masterUser: { username: 'clusteradmin' },
+      credentials: { username: 'clusteradmin' },
       clusterIdentifier: 'db-endpoint-test',
       instanceProps: {
         instanceType: InstanceType.of(InstanceClass.BURSTABLE2, InstanceSize.SMALL),
@@ -176,7 +177,7 @@ describe('adding rds data source from imported api', () => {
 
   test('imported api can add RdsDbDataSource from id', () => {
     // WHEN
-    const importedApi = appsync.GraphQLApi.fromGraphqlApiAttributes(stack, 'importedApi', {
+    const importedApi = appsync.GraphqlApi.fromGraphqlApiAttributes(stack, 'importedApi', {
       graphqlApiId: api.apiId,
     });
     importedApi.addRdsDataSource('ds', cluster, secret);
@@ -190,7 +191,7 @@ describe('adding rds data source from imported api', () => {
 
   test('imported api can add RdsDataSource from attributes', () => {
     // WHEN
-    const importedApi = appsync.GraphQLApi.fromGraphqlApiAttributes(stack, 'importedApi', {
+    const importedApi = appsync.GraphqlApi.fromGraphqlApiAttributes(stack, 'importedApi', {
       graphqlApiId: api.apiId,
       graphqlApiArn: api.arn,
     });

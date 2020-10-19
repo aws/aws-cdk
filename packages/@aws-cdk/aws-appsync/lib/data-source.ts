@@ -3,8 +3,8 @@ import { Grant, IGrantable, IPrincipal, IRole, Role, ServicePrincipal } from '@a
 import { IFunction } from '@aws-cdk/aws-lambda';
 import { IDatabaseCluster } from '@aws-cdk/aws-rds';
 import { ISecret } from '@aws-cdk/aws-secretsmanager';
-import { Construct, IResolvable, Stack } from '@aws-cdk/core';
-import { IResolvable } from '@aws-cdk/core';
+import { IResolvable, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnDataSource } from './appsync.generated';
 import { IGraphqlApi } from './graphqlapi-base';
 import { BaseResolverProps, Resolver } from './resolver';
