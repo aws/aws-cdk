@@ -62,7 +62,7 @@ export function bundle(options: BundlingOptions): lambda.AssetCode {
   });
 
   return lambda.Code.fromAsset(entry, {
-    assetHashType: cdk.AssetHashType.SOURCE,
+    assetHashType: cdk.AssetHashType.BUNDLE,
     exclude: DEPENDENCY_EXCLUDES,
     bundling: {
       image,
