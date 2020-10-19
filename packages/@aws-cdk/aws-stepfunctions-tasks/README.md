@@ -52,6 +52,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
 - [SageMaker](#sagemaker)
   - [Create Training Job](#create-training-job)
   - [Create Transform Job](#create-transform-job)
+  - [Create Processing Job](#create-processing-job)
   - [Create Endpoint](#create-endpoint)
   - [Create Endpoint Config](#create-endpoint-config)
   - [Create Model](#create-model)
@@ -776,6 +777,39 @@ new sfn.SagemakerTransformTask(this, 'Batch Inference', {
   }
 });
 
+```
+
+### Create Processing Job
+
+You can call the [`CreateProcessingJob`](https://docs.aws.amazon.com/sagemaker/latest/dg/API_CreateProcessingJob.html) API from a `Task` state.
+
+```ts
+new SageMakerCreateProcessingJob(stack, 'ProcessSagemaker', {
+  processingJobName: sfn.JsonPath.stringAt('$.JobName'),
+  role,
+  appSpecification: {
+    containerImage: DockerImage.fromJsonExpression(sfn.JsonPath.stringAt('$.ImageName')),
+  },
+  processingInputs: [{
+    inputName: 'input',
+    s3Input: {
+      localPath: '/opt/ml/processing/in',
+      s3DataType: S3DataType.S3_PREFIX,
+      s3InputMode: InputMode.FILE,
+      s3Uri: 's3://inputbucket',
+    },
+  }],
+  processingOutputConfig: {
+    outputs: [{
+      outputName: 'output',
+      s3Output: {
+        localPath: '/opt/ml/processing/out',
+        s3UploadMode: S3UploadMode.END_OF_JOB,
+        s3Uri: 's3://outputbucket',
+      },
+    }],
+  },
+});
 ```
 
 ### Create Endpoint
