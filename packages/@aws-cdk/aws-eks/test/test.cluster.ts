@@ -22,6 +22,38 @@ const CLUSTER_VERSION = eks.KubernetesVersion.V1_18;
 
 export = {
 
+  'throws when a non cdk8s chart construct is added as cdk8s chart'(test: Test) {
+
+    const { stack } = testFixture();
+
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      version: CLUSTER_VERSION,
+    });
+
+    // create a plain construct, not a cdk8s chart
+    const someConstruct = new constructs.Construct(stack, 'SomeConstruct');
+
+    test.throws(() => cluster.addCdk8sChart('chart', someConstruct), /Invalid cdk8s chart. Must contain a \'toJson\' method, but found undefined/);
+    test.done();
+
+  },
+
+  'throws when a core construct is added as cdk8s chart'(test: Test) {
+
+    const { stack } = testFixture();
+
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      version: CLUSTER_VERSION,
+    });
+
+    // create a plain construct, not a cdk8s chart
+    const someConstruct = new cdk.Construct(stack, 'SomeConstruct');
+
+    test.throws(() => cluster.addCdk8sChart('chart', someConstruct), /Invalid cdk8s chart. Must contain a \'toJson\' method, but found undefined/);
+    test.done();
+
+  },
+
   'cdk8s chart can be added to cluster'(test: Test) {
 
     const { stack } = testFixture();

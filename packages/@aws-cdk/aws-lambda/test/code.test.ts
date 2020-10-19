@@ -1,37 +1,33 @@
+import '@aws-cdk/assert/jest';
 import * as path from 'path';
-import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
+import { ResourcePart } from '@aws-cdk/assert';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { Test } from 'nodeunit';
 import * as lambda from '../lib';
 
 /* eslint-disable dot-notation */
 
-export = {
-  'lambda.Code.fromInline': {
-    'fails if used with unsupported runtimes'(test: Test) {
-      test.throws(() => defineFunction(lambda.Code.fromInline('boom'), lambda.Runtime.GO_1_X), /Inline source not allowed for go1\.x/);
-      test.throws(() => defineFunction(lambda.Code.fromInline('boom'), lambda.Runtime.JAVA_8), /Inline source not allowed for java8/);
-      test.done();
-    },
-    'fails if larger than 4096 bytes'(test: Test) {
-      test.throws(
-        () => defineFunction(lambda.Code.fromInline(generateRandomString(4097)), lambda.Runtime.NODEJS_10_X),
-        /Lambda source is too large, must be <= 4096 but is 4097/);
-      test.done();
-    },
-  },
-  'lambda.Code.fromAsset': {
-    'fails if a non-zip asset is used'(test: Test) {
+describe('code', () => {
+  describe('lambda.Code.fromInline', () => {
+    test('fails if used with unsupported runtimes', () => {
+      expect(() => defineFunction(lambda.Code.fromInline('boom'), lambda.Runtime.GO_1_X)).toThrow(/Inline source not allowed for go1\.x/);
+      expect(() => defineFunction(lambda.Code.fromInline('boom'), lambda.Runtime.JAVA_8)).toThrow(/Inline source not allowed for java8/);
+    });
+    test('fails if larger than 4096 bytes', () => {
+      expect(() => defineFunction(lambda.Code.fromInline(generateRandomString(4097)), lambda.Runtime.NODEJS_10_X))
+        .toThrow(/Lambda source is too large, must be <= 4096 but is 4097/);
+    });
+  });
+  describe('lambda.Code.fromAsset', () => {
+    test('fails if a non-zip asset is used', () => {
       // GIVEN
       const fileAsset = lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler', 'index.py'));
 
       // THEN
-      test.throws(() => defineFunction(fileAsset), /Asset must be a \.zip file or a directory/);
-      test.done();
-    },
+      expect(() => defineFunction(fileAsset)).toThrow(/Asset must be a \.zip file or a directory/);
+    });
 
-    'only one Asset object gets created even if multiple functions use the same AssetCode'(test: Test) {
+    test('only one Asset object gets created even if multiple functions use the same AssetCode', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'MyStack');
@@ -55,11 +51,10 @@ export = {
       const synthesized = assembly.stacks[0];
 
       // Func1 has an asset, Func2 does not
-      test.deepEqual(synthesized.assets.length, 1);
-      test.done();
-    },
+      expect(synthesized.assets.length).toEqual(1);
+    });
 
-    'adds code asset metadata'(test: Test) {
+    test('adds code asset metadata', () => {
       // GIVEN
       const stack = new cdk.Stack();
       stack.node.setContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT, true);
@@ -74,18 +69,17 @@ export = {
       });
 
       // THEN
-      expect(stack).to(haveResource('AWS::Lambda::Function', {
+      expect(stack).toHaveResource('AWS::Lambda::Function', {
         Metadata: {
           [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: 'asset.9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232',
           [cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY]: 'Code',
         },
-      }, ResourcePart.CompleteDefinition));
-      test.done();
-    },
-  },
+      }, ResourcePart.CompleteDefinition);
+    });
+  });
 
-  'lambda.Code.fromCfnParameters': {
-    "automatically creates the Bucket and Key parameters when it's used in a Function"(test: Test) {
+  describe('lambda.Code.fromCfnParameters', () => {
+    test("automatically creates the Bucket and Key parameters when it's used in a Function", () => {
       const stack = new cdk.Stack();
       const code = new lambda.CfnParametersCode();
       new lambda.Function(stack, 'Function', {
@@ -94,7 +88,7 @@ export = {
         handler: 'index.handler',
       });
 
-      expect(stack).to(haveResourceLike('AWS::Lambda::Function', {
+      expect(stack).toHaveResourceLike('AWS::Lambda::Function', {
         Code: {
           S3Bucket: {
             Ref: 'FunctionLambdaSourceBucketNameParameter9E9E108F',
@@ -103,29 +97,21 @@ export = {
             Ref: 'FunctionLambdaSourceObjectKeyParameter1C7AED11',
           },
         },
-      }));
+      });
 
-      test.equal(stack.resolve(code.bucketNameParam), 'FunctionLambdaSourceBucketNameParameter9E9E108F');
-      test.equal(stack.resolve(code.objectKeyParam), 'FunctionLambdaSourceObjectKeyParameter1C7AED11');
+      expect(stack.resolve(code.bucketNameParam)).toEqual('FunctionLambdaSourceBucketNameParameter9E9E108F');
+      expect(stack.resolve(code.objectKeyParam)).toEqual('FunctionLambdaSourceObjectKeyParameter1C7AED11');
+    });
 
-      test.done();
-    },
-
-    'does not allow accessing the Parameter properties before being used in a Function'(test: Test) {
+    test('does not allow accessing the Parameter properties before being used in a Function', () => {
       const code = new lambda.CfnParametersCode();
 
-      test.throws(() => {
-        test.notEqual(code.bucketNameParam, undefined);
-      }, /bucketNameParam/);
+      expect(() => code.bucketNameParam).toThrow(/bucketNameParam/);
 
-      test.throws(() => {
-        test.notEqual(code.objectKeyParam, undefined);
-      }, /objectKeyParam/);
+      expect(() => code.objectKeyParam).toThrow(/objectKeyParam/);
+    });
 
-      test.done();
-    },
-
-    'allows passing custom Parameters when creating it'(test: Test) {
+    test('allows passing custom Parameters when creating it', () => {
       const stack = new cdk.Stack();
       const bucketNameParam = new cdk.CfnParameter(stack, 'BucketNameParam', {
         type: 'String',
@@ -139,8 +125,8 @@ export = {
         objectKeyParam: bucketKeyParam,
       });
 
-      test.equal(stack.resolve(code.bucketNameParam), 'BucketNameParam');
-      test.equal(stack.resolve(code.objectKeyParam), 'ObjectKeyParam');
+      expect(stack.resolve(code.bucketNameParam)).toEqual('BucketNameParam');
+      expect(stack.resolve(code.objectKeyParam)).toEqual('ObjectKeyParam');
 
       new lambda.Function(stack, 'Function', {
         code,
@@ -148,7 +134,7 @@ export = {
         handler: 'index.handler',
       });
 
-      expect(stack).to(haveResourceLike('AWS::Lambda::Function', {
+      expect(stack).toHaveResourceLike('AWS::Lambda::Function', {
         Code: {
           S3Bucket: {
             Ref: 'BucketNameParam',
@@ -157,12 +143,10 @@ export = {
             Ref: 'ObjectKeyParam',
           },
         },
-      }));
+      });
+    });
 
-      test.done();
-    },
-
-    'can assign parameters'(test: Test) {
+    test('can assign parameters', () => {
       // given
       const stack = new cdk.Stack();
       const code = new lambda.CfnParametersCode({
@@ -181,13 +165,11 @@ export = {
       }));
 
       // then
-      test.equal(overrides['BucketNameParam'], 'SomeBucketName');
-      test.equal(overrides['ObjectKeyParam'], 'SomeObjectKey');
-
-      test.done();
-    },
-  },
-};
+      expect(overrides['BucketNameParam']).toEqual('SomeBucketName');
+      expect(overrides['ObjectKeyParam']).toEqual('SomeObjectKey');
+    });
+  });
+});
 
 function defineFunction(code: lambda.Code, runtime: lambda.Runtime = lambda.Runtime.NODEJS_10_X) {
   const stack = new cdk.Stack();
