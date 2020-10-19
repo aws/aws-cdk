@@ -147,7 +147,6 @@ rdsDS.createResolver({
 });
 ```
 
-## Imports
 #### HTTP Endpoints
 GraphQL schema file `schema.graphql`:
 
@@ -711,20 +710,6 @@ You can create Object Types in three ways:
     ```
     > This method allows for reusability and modularity, ideal for reducing code duplication.
 
-3. Object Types can be created ***internally*** within the GraphQL API.
-    ```ts
-    const api = new appsync.GraphQLApi(stack, 'Api', {
-      name: 'demo',
-      schemaDefinition: appsync.SchemaDefinition.CODE,
-    });
-    api.addType('Demo', {
-      defintion: {
-        id: appsync.GraphqlType.string({ isRequired: true }),
-        version: appsync.GraphqlType.string({ isRequired: true }),
-      },
-    });
-    ```
-    > This method provides easy use and is ideal for smaller projects.
 To learn more about **Object Types**, read the docs [here](https://graphql.org/learn/schema/#object-types-and-fields).
 
 ### Enum Types
