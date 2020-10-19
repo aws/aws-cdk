@@ -7,7 +7,6 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as ssm from '@aws-cdk/aws-ssm';
 import { Annotations, CfnOutput, CfnResource, IResource, Resource, Stack, Tags, Token, Duration } from '@aws-cdk/core';
-import * as cdk8s from 'cdk8s';
 import { Construct, Node } from 'constructs';
 import * as YAML from 'yaml';
 import { AwsAuth } from './aws-auth';
@@ -141,7 +140,7 @@ export interface ICluster extends IResource, ec2.IConnectable {
    * @param chart the cdk8s chart.
    * @returns a `KubernetesManifest` construct representing the chart.
    */
-  addCdk8sChart(id: string, chart: cdk8s.Chart): KubernetesManifest;
+  addCdk8sChart(id: string, chart: Construct): KubernetesManifest;
 
 }
 
@@ -580,6 +579,11 @@ export class KubernetesVersion {
   public static readonly V1_17 = KubernetesVersion.of('1.17');
 
   /**
+   * Kubernetes version 1.18
+   */
+  public static readonly V1_18 = KubernetesVersion.of('1.18');
+
+  /**
    * Custom cluster version
    * @param version custom version number
    */
@@ -636,8 +640,16 @@ abstract class ClusterBase extends Resource implements ICluster {
    * @param chart the cdk8s chart.
    * @returns a `KubernetesManifest` construct representing the chart.
    */
-  public addCdk8sChart(id: string, chart: cdk8s.Chart): KubernetesManifest {
-    return this.addManifest(id, ...chart.toJson());
+  public addCdk8sChart(id: string, chart: Construct): KubernetesManifest {
+
+    const cdk8sChart = chart as any;
+
+    // see https://github.com/awslabs/cdk8s/blob/master/packages/cdk8s/src/chart.ts#L84
+    if (typeof cdk8sChart.toJson !== 'function') {
+      throw new Error(`Invalid cdk8s chart. Must contain a 'toJson' method, but found ${typeof cdk8sChart.toJson}`);
+    }
+
+    return this.addManifest(id, ...cdk8sChart.toJson());
   }
 }
 
