@@ -4,5 +4,9 @@
 set -exo pipefail
 
 git fetch --all
-git checkout -b v2-main origin/v2-main
+
+# create 'v2-main' if it does not already exist
+(git branch --list | grep 'v2-main') || git checkout -b v2-main origin/v2-main
+
+git checkout v2-main
 git merge origin/master --no-edit
