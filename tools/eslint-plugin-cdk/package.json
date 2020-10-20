@@ -17,7 +17,7 @@
     "@types/jest": "^26.0.14",
     "@types/node": "^10.17.35",
     "eslint-plugin-rulesdir": "^0.1.0",
-    "jest": "^26.4.2",
+    "jest": "^26.6.0",
     "typescript": "~3.9.7"
   },
   "dependencies": {
