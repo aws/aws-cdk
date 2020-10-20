@@ -1730,7 +1730,7 @@ export class Bucket extends BucketBase {
           Resource: '*',
           Action: [
             ...perms.BUCKET_READ_ACTIONS,
-            ...perms.BUCKET_WRITE_ACTIONS,
+            ...perms.BUCKET_DELETE_ACTIONS,
           ],
         },
       ],

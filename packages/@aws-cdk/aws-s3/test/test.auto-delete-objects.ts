@@ -126,8 +126,6 @@ export = {
                   's3:GetBucket*',
                   's3:List*',
                   's3:DeleteObject*',
-                  's3:PutObject*',
-                  's3:Abort*',
                 ],
               },
             ],
