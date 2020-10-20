@@ -33,6 +33,7 @@ describe('CachePolicy', () => {
             CookieBehavior: 'none',
           },
           EnableAcceptEncodingGzip: false,
+          EnableAcceptEncodingBrotli: false,
           HeadersConfig: {
             HeaderBehavior: 'none',
           },
@@ -55,6 +56,7 @@ describe('CachePolicy', () => {
       headerBehavior: CacheHeaderBehavior.allowList('X-CustomHeader'),
       queryStringBehavior: CacheQueryStringBehavior.denyList('username'),
       enableAcceptEncodingGzip: true,
+      enableAcceptEncodingBrotli: true,
     });
 
     expect(stack).toHaveResource('AWS::CloudFront::CachePolicy', {
@@ -77,6 +79,7 @@ describe('CachePolicy', () => {
             QueryStrings: ['username'],
           },
           EnableAcceptEncodingGzip: true,
+          EnableAcceptEncodingBrotli: true,
         },
       },
     });

@@ -62,6 +62,7 @@
     "@aws-cdk/aws-cloudtrail": "0.0.0",
     "@aws-cdk/aws-cloudwatch": "0.0.0",
     "@aws-cdk/aws-cloudwatch-actions": "0.0.0",
+    "@aws-cdk/aws-codeartifact": "0.0.0",
     "@aws-cdk/aws-codebuild": "0.0.0",
     "@aws-cdk/aws-codecommit": "0.0.0",
     "@aws-cdk/aws-codedeploy": "0.0.0",
@@ -172,6 +173,7 @@
     "@aws-cdk/aws-stepfunctions": "0.0.0",
     "@aws-cdk/aws-stepfunctions-tasks": "0.0.0",
     "@aws-cdk/aws-synthetics": "0.0.0",
+    "@aws-cdk/aws-timestream": "0.0.0",
     "@aws-cdk/aws-transfer": "0.0.0",
     "@aws-cdk/aws-waf": "0.0.0",
     "@aws-cdk/aws-wafregional": "0.0.0",
@@ -190,14 +192,14 @@
     "jsii-reflect": "^1.13.0",
     "jsonschema": "^1.2.10",
     "yaml": "1.10.0",
-    "yargs": "^16.0.3"
+    "yargs": "^16.1.0"
   },
   "devDependencies": {
     "@types/fs-extra": "^8.1.1",
     "@types/jest": "^26.0.14",
     "@types/yaml": "1.9.7",
     "@types/yargs": "^15.0.7",
-    "jest": "^26.4.2",
+    "jest": "^26.6.0",
     "jsii": "^1.13.0"
   },
   "keywords": [
