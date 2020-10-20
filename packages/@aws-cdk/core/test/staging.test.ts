@@ -4,7 +4,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as sinon from 'sinon';
-import { App, AssetHashType, AssetStaging, BundlingDockerImage, BundlingOptions, FileSystem, Stack } from '../lib';
+import { App, AssetHashType, AssetStaging, BundlingDockerImage, BundlingOptions, FileSystem, Stack, Stage } from '../lib';
 
 const STUB_INPUT_FILE = '/tmp/docker-stub.input';
 const STUB_INPUT_CONCAT_FILE = '/tmp/docker-stub.input.concat';
@@ -14,6 +14,9 @@ enum DockerStubCommand {
   FAIL = 'DOCKER_STUB_FAIL',
   SUCCESS_NO_OUTPUT = 'DOCKER_STUB_SUCCESS_NO_OUTPUT'
 }
+
+const FIXTURE_TEST1_DIR = path.join(__dirname, 'fs', 'fixtures', 'test1');
+const FIXTURE_TARBALL = path.join(__dirname, 'fs', 'fixtures.tar.gz');
 
 const userInfo = os.userInfo();
 const USER_ARG = `-u ${userInfo.uid}:${userInfo.gid}`;
@@ -45,7 +48,7 @@ nodeunitShim({
 
     test.deepEqual(staging.sourceHash, '2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00');
     test.deepEqual(staging.sourcePath, sourcePath);
-    test.deepEqual(stack.resolve(staging.stagedPath), 'asset.2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00');
+    test.deepEqual(path.basename(staging.stagedPath), 'asset.2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00');
     test.done();
   },
 
@@ -68,12 +71,10 @@ nodeunitShim({
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'stack');
-    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
-    const file = path.join(__dirname, 'fs', 'fixtures.tar.gz');
 
     // WHEN
-    new AssetStaging(stack, 's1', { sourcePath: directory });
-    new AssetStaging(stack, 'file', { sourcePath: file });
+    new AssetStaging(stack, 's1', { sourcePath: FIXTURE_TEST1_DIR });
+    new AssetStaging(stack, 'file', { sourcePath: FIXTURE_TARBALL });
 
     // THEN
     const assembly = app.synth();
@@ -83,6 +84,31 @@ nodeunitShim({
       'cdk.out',
       'manifest.json',
       'stack.template.json',
+      'tree.json',
+    ]);
+    test.done();
+  },
+
+  'assets in nested assemblies get staged into assembly root directory'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const stack1 = new Stack(new Stage(app, 'Stage1'), 'Stack');
+    const stack2 = new Stack(new Stage(app, 'Stage2'), 'Stack');
+
+    // WHEN
+    new AssetStaging(stack1, 's1', { sourcePath: FIXTURE_TEST1_DIR });
+    new AssetStaging(stack2, 's1', { sourcePath: FIXTURE_TEST1_DIR });
+
+    // THEN
+    const assembly = app.synth();
+
+    // One asset directory at the top
+    test.deepEqual(fs.readdirSync(assembly.directory), [
+      'assembly-Stage1',
+      'assembly-Stage2',
+      'asset.2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00',
+      'cdk.out',
+      'manifest.json',
       'tree.json',
     ]);
     test.done();
@@ -682,7 +708,7 @@ nodeunitShim({
     test.done();
   },
 
-  'bundling looks at bundling stacks in context'(test: Test) {
+  'bundling can be skipped by setting context'(test: Test) {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'MyStack');
@@ -700,9 +726,8 @@ nodeunitShim({
     });
 
     test.throws(() => readDockerStubInput()); // Bundling did not run
-    test.equal(asset.assetHash, '3d96e735e26b857743a7c44523c9160c285c2d3ccf273d80fa38a1e674c32cb3'); // hash of MyStack/Asset
     test.equal(asset.sourcePath, directory);
-    test.equal(stack.resolve(asset.stagedPath), directory);
+    test.equal(asset.stagedPath, directory);
 
     test.done();
   },
