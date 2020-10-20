@@ -17,7 +17,7 @@
     "typescript": "~3.9.7"
   },
   "dependencies": {
-    "jest": "^26.4.2"
+    "jest": "^26.6.0"
   },
   "keywords": [],
   "author": "",

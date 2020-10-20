@@ -1,35 +1,34 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import '@aws-cdk/assert/jest';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
-import { ICallbackFunction, Test } from 'nodeunit';
 import * as lambda from '../lib';
 
-export = {
-  'lambda in a VPC': classFixture(class Henk {
-    private readonly app: cdk.App;
-    private readonly stack: cdk.Stack;
-    private readonly vpc: ec2.Vpc;
-    private readonly lambda: lambda.Function;
+describe('lambda + vpc', () => {
+  describe('lambda in vpc', () => {
+    let app: cdk.App;
+    let stack: cdk.Stack;
+    let vpc: ec2.Vpc;
+    let fn: lambda.Function;
 
-    constructor() {
+    beforeEach(() => {
       // GIVEN
-      this.app = new cdk.App();
-      this.stack = new cdk.Stack(this.app, 'stack');
-      this.vpc = new ec2.Vpc(this.stack, 'VPC');
+      app = new cdk.App();
+      stack = new cdk.Stack(app, 'stack');
+      vpc = new ec2.Vpc(stack, 'VPC');
 
       // WHEN
-      this.lambda = new lambda.Function(this.stack, 'Lambda', {
+      fn = new lambda.Function(stack, 'Lambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
         runtime: lambda.Runtime.NODEJS_10_X,
-        vpc: this.vpc,
+        vpc: vpc,
         allowAllOutbound: false,
       });
-    }
+    });
 
-    public 'has subnet and securitygroup'(test: Test) {
+    test('has subnet and securitygroup', () => {
       // THEN
-      expect(this.stack).to(haveResource('AWS::Lambda::Function', {
+      expect(stack).toHaveResource('AWS::Lambda::Function', {
         VpcConfig: {
           SecurityGroupIds: [
             { 'Fn::GetAtt': ['LambdaSecurityGroupE74659A1', 'GroupId'] },
@@ -39,22 +38,20 @@ export = {
             { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' },
           ],
         },
-      }));
+      });
+    });
 
-      test.done();
-    }
-
-    public 'has securitygroup that is passed in props'(test: Test) {
+    test('has securitygroup that is passed in props', () => {
       // WHEN
-      new lambda.Function(this.stack, 'LambdaWithCustomSG', {
+      new lambda.Function(stack, 'LambdaWithCustomSG', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
         runtime: lambda.Runtime.NODEJS_10_X,
-        vpc: this.vpc,
-        securityGroup: new ec2.SecurityGroup(this.stack, 'CustomSecurityGroupX', { vpc: this.vpc }),
+        vpc,
+        securityGroup: new ec2.SecurityGroup(stack, 'CustomSecurityGroupX', { vpc }),
       });
       // THEN
-      expect(this.stack).to(haveResource('AWS::Lambda::Function', {
+      expect(stack).toHaveResource('AWS::Lambda::Function', {
         VpcConfig: {
           SecurityGroupIds: [
             { 'Fn::GetAtt': ['CustomSecurityGroupX6C7F3A78', 'GroupId'] },
@@ -64,25 +61,23 @@ export = {
             { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' },
           ],
         },
-      }));
+      });
+    });
 
-      test.done();
-    }
-
-    public 'has all the securitygroups that are passed as a list of SG in props'(test: Test) {
+    test('has all the securitygroups that are passed as a list of SG in props', () => {
       // WHEN
-      new lambda.Function(this.stack, 'LambdaWithCustomSGList', {
+      new lambda.Function(stack, 'LambdaWithCustomSGList', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
         runtime: lambda.Runtime.NODEJS_10_X,
-        vpc: this.vpc,
+        vpc,
         securityGroups: [
-          new ec2.SecurityGroup(this.stack, 'CustomSecurityGroupA', { vpc: this.vpc }),
-          new ec2.SecurityGroup(this.stack, 'CustomSecurityGroupB', { vpc: this.vpc }),
+          new ec2.SecurityGroup(stack, 'CustomSecurityGroupA', { vpc }),
+          new ec2.SecurityGroup(stack, 'CustomSecurityGroupB', { vpc }),
         ],
       });
       // THEN
-      expect(this.stack).to(haveResource('AWS::Lambda::Function', {
+      expect(stack).toHaveResource('AWS::Lambda::Function', {
         VpcConfig: {
           SecurityGroupIds: [
             { 'Fn::GetAtt': ['CustomSecurityGroupA267F62DE', 'GroupId'] },
@@ -93,72 +88,66 @@ export = {
             { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' },
           ],
         },
-      }));
+      });
+    });
 
-      test.done();
-    }
-
-    public 'fails if both of securityGroup and securityGroups are passed in props at once'(test: Test) {
+    test('fails if both of securityGroup and securityGroups are passed in props at once', () => {
       // THEN
-      test.throws(() => {
-        new lambda.Function(this.stack, 'LambdaWithWrongProps', {
+      expect(() => {
+        new lambda.Function(stack, 'LambdaWithWrongProps', {
           code: new lambda.InlineCode('foo'),
           handler: 'index.handler',
           runtime: lambda.Runtime.NODEJS_10_X,
-          vpc: this.vpc,
-          securityGroup: new ec2.SecurityGroup(this.stack, 'CustomSecurityGroupB', { vpc: this.vpc }),
+          vpc,
+          securityGroup: new ec2.SecurityGroup(stack, 'CustomSecurityGroupB', { vpc }),
           securityGroups: [
-            new ec2.SecurityGroup(this.stack, 'CustomSecurityGroupC', { vpc: this.vpc }),
-            new ec2.SecurityGroup(this.stack, 'CustomSecurityGroupD', { vpc: this.vpc }),
+            new ec2.SecurityGroup(stack, 'CustomSecurityGroupC', { vpc }),
+            new ec2.SecurityGroup(stack, 'CustomSecurityGroupD', { vpc }),
           ],
         });
-      }, /Only one of the function props, securityGroup or securityGroups, is allowed/);
+      }).toThrow(/Only one of the function props, securityGroup or securityGroups, is allowed/);
+    });
 
-      test.done();
-    }
-
-    public 'participates in Connections objects'(test: Test) {
+    test('participates in Connections objects', () => {
       // GIVEN
-      const securityGroup = new ec2.SecurityGroup(this.stack, 'SomeSecurityGroup', { vpc: this.vpc });
+      const securityGroup = new ec2.SecurityGroup(stack, 'SomeSecurityGroup', { vpc });
       const somethingConnectable = new SomethingConnectable(new ec2.Connections({ securityGroups: [securityGroup] }));
 
       // WHEN
-      this.lambda.connections.allowTo(somethingConnectable, ec2.Port.allTcp(), 'Lambda can call connectable');
+      fn.connections.allowTo(somethingConnectable, ec2.Port.allTcp(), 'Lambda can call connectable');
 
       // THEN: Lambda can connect to SomeSecurityGroup
-      expect(this.stack).to(haveResource('AWS::EC2::SecurityGroupEgress', {
+      expect(stack).toHaveResource('AWS::EC2::SecurityGroupEgress', {
         GroupId: { 'Fn::GetAtt': ['LambdaSecurityGroupE74659A1', 'GroupId'] },
         IpProtocol: 'tcp',
         Description: 'Lambda can call connectable',
         DestinationSecurityGroupId: { 'Fn::GetAtt': ['SomeSecurityGroupEF219AD6', 'GroupId'] },
         FromPort: 0,
         ToPort: 65535,
-      }));
+      });
 
       // THEN: SomeSecurityGroup accepts connections from Lambda
-      expect(this.stack).to(haveResource('AWS::EC2::SecurityGroupIngress', {
+      expect(stack).toHaveResource('AWS::EC2::SecurityGroupIngress', {
         IpProtocol: 'tcp',
         Description: 'Lambda can call connectable',
         FromPort: 0,
         GroupId: { 'Fn::GetAtt': ['SomeSecurityGroupEF219AD6', 'GroupId'] },
         SourceSecurityGroupId: { 'Fn::GetAtt': ['LambdaSecurityGroupE74659A1', 'GroupId'] },
         ToPort: 65535,
-      }));
+      });
+    });
 
-      test.done();
-    }
-
-    public 'can still make Connections after export/import'(test: Test) {
+    test('can still make Connections after export/import', () => {
       // GIVEN
-      const stack2 = new cdk.Stack(this.app, 'stack2');
-      const securityGroup = new ec2.SecurityGroup(stack2, 'SomeSecurityGroup', { vpc: this.vpc });
+      const stack2 = new cdk.Stack(app, 'stack2');
+      const securityGroup = new ec2.SecurityGroup(stack2, 'SomeSecurityGroup', { vpc });
       const somethingConnectable = new SomethingConnectable(new ec2.Connections({ securityGroups: [securityGroup] }));
 
       // WHEN
-      somethingConnectable.connections.allowFrom(this.lambda.connections, ec2.Port.allTcp(), 'Lambda can call connectable');
+      somethingConnectable.connections.allowFrom(fn.connections, ec2.Port.allTcp(), 'Lambda can call connectable');
 
       // THEN: SomeSecurityGroup accepts connections from Lambda
-      expect(stack2).to(haveResource('AWS::EC2::SecurityGroupEgress', {
+      expect(stack2).toHaveResource('AWS::EC2::SecurityGroupEgress', {
         GroupId: {
           'Fn::ImportValue': 'stack:ExportsOutputFnGetAttLambdaSecurityGroupE74659A1GroupId8F3EC6F1',
         },
@@ -172,10 +161,10 @@ export = {
         },
         FromPort: 0,
         ToPort: 65535,
-      }));
+      });
 
       // THEN: Lambda can connect to SomeSecurityGroup
-      expect(stack2).to(haveResource('AWS::EC2::SecurityGroupIngress', {
+      expect(stack2).toHaveResource('AWS::EC2::SecurityGroupIngress', {
         IpProtocol: 'tcp',
         Description: 'Lambda can call connectable',
         FromPort: 0,
@@ -189,13 +178,11 @@ export = {
           'Fn::ImportValue': 'stack:ExportsOutputFnGetAttLambdaSecurityGroupE74659A1GroupId8F3EC6F1',
         },
         ToPort: 65535,
-      }));
+      });
+    });
+  });
 
-      test.done();
-    }
-  }),
-
-  'lambda without VPC throws Error upon accessing connections'(test: Test) {
+  test('lambda without VPC throws Error upon accessing connections', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const lambdaFn = new lambda.Function(stack, 'Lambda', {
@@ -205,14 +192,12 @@ export = {
     });
 
     // WHEN
-    test.throws(() => {
+    expect(() => {
       lambdaFn.connections.allowToAnyIpv4(ec2.Port.allTcp(), 'Reach for the world Lambda!');
-    });
+    }).toThrow();
+  });
 
-    test.done();
-  },
-
-  'can pick public subnet for Lambda'(test: Test) {
+  test('can pick public subnet for Lambda', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -228,7 +213,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::Lambda::Function', {
+    expect(stack).toHaveResource('AWS::Lambda::Function', {
       VpcConfig: {
         SecurityGroupIds: [
           { 'Fn::GetAtt': ['PublicLambdaSecurityGroup61D896FD', 'GroupId'] },
@@ -238,11 +223,10 @@ export = {
           { Ref: 'VPCPublicSubnet2Subnet74179F39' },
         ],
       },
-    }));
-    test.done();
-  },
+    });
+  });
 
-  'can pick private subnet for Lambda'(test: Test) {
+  test('can pick private subnet for Lambda', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -258,7 +242,7 @@ export = {
 
     // THEN
 
-    expect(stack).to(haveResource('AWS::Lambda::Function', {
+    expect(stack).toHaveResource('AWS::Lambda::Function', {
       VpcConfig: {
         SecurityGroupIds: [
           { 'Fn::GetAtt': ['PrivateLambdaSecurityGroupF53C8342', 'GroupId'] },
@@ -268,11 +252,10 @@ export = {
           { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' },
         ],
       },
-    }));
-    test.done();
-  },
+    });
+  });
 
-  'can pick isolated subnet for Lambda'(test: Test) {
+  test('can pick isolated subnet for Lambda', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC', {
@@ -295,7 +278,7 @@ export = {
 
     // THEN
 
-    expect(stack).to(haveResource('AWS::Lambda::Function', {
+    expect(stack).toHaveResource('AWS::Lambda::Function', {
       VpcConfig: {
         SecurityGroupIds: [
           { 'Fn::GetAtt': ['IsolatedLambdaSecurityGroupCE25B6A9', 'GroupId'] },
@@ -305,11 +288,10 @@ export = {
           { Ref: 'VPCIsolatedSubnet2Subnet4B1C8CAA' },
         ],
       },
-    }));
-    test.done();
-  },
+    });
+  });
 
-  'picking public subnet type is not allowed if not overriding allowPublicSubnet'(test: Test) {
+  test('picking public subnet type is not allowed if not overriding allowPublicSubnet', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC', {
@@ -330,7 +312,7 @@ export = {
     });
 
     // WHEN
-    test.throws(() => {
+    expect(() => {
       new lambda.Function(stack, 'PublicLambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
@@ -338,41 +320,9 @@ export = {
         vpc,
         vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
       });
-    }, /Lambda Functions in a public subnet/);
-    test.done();
-  },
-};
-
-/**
- * Use a class as test fixture
- *
- * setUp() will be mapped to the (synchronous) constructor. tearDown(cb) will be called if available.
- */
-function classFixture(klass: any) {
-  let fixture: any;
-
-  const ret: any = {
-    setUp(cb: ICallbackFunction) {
-      fixture = new klass();
-      cb();
-    },
-
-    tearDown(cb: ICallbackFunction) {
-      if (fixture.tearDown) {
-        fixture.tearDown(cb);
-      } else {
-        cb();
-      }
-    },
-  };
-
-  const testNames = Reflect.ownKeys(klass.prototype).filter(m => m !== 'tearDown' && m !== 'constructor');
-  for (const testName of testNames) {
-    ret[testName] = (test: Test) => fixture[testName](test);
-  }
-
-  return ret;
-}
+    }).toThrow(/Lambda Functions in a public subnet/);
+  });
+});
 
 class SomethingConnectable implements ec2.IConnectable {
   constructor(public readonly connections: ec2.Connections) {
