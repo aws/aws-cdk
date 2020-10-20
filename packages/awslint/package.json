@@ -21,7 +21,7 @@
     "colors": "^1.4.0",
     "fs-extra": "^9.0.1",
     "jsii-reflect": "^1.13.0",
-    "yargs": "^16.0.3"
+    "yargs": "^16.1.0"
   },
   "devDependencies": {
     "@types/fs-extra": "^8.1.1",
