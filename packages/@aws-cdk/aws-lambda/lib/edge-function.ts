@@ -15,6 +15,7 @@ import { IEventSource } from './event-source';
 import { EventSourceMapping, EventSourceMappingOptions } from './event-source-mapping';
 import { Function, FunctionProps } from './function';
 import { IFunction } from './function-base';
+import { calculateFunctionHash } from './function-hash';
 import { extractQualifierFromArn, IVersion } from './lambda-version';
 import { Permission } from './permission';
 
@@ -149,6 +150,8 @@ export class EdgeFunction extends Resource implements IVersion {
     this.stack.addDependency(functionStack);
 
     const edgeFunction = functionStack.addEdgeFunction(id, parameterName, props);
+    // This is used to determine when the function has changed, to refresh the ARN from the custom resource.
+    const edgeFunctionHash = calculateFunctionHash(edgeFunction);
 
     const parameterArn = this.stack.formatArn({
       service: 'ssm',
@@ -173,7 +176,7 @@ export class EdgeFunction extends Resource implements IVersion {
       properties: {
         Region: EdgeFunction.EDGE_REGION,
         ParameterName: parameterName,
-        RefreshEachDeploy: Date.now().toString(), // Ensure this value is refreshed on each deploy, to get the latest function ARN.
+        RefreshToken: edgeFunctionHash,
       },
     });
     const edgeArn = resource.getAttString('FunctionArn');
@@ -195,7 +198,7 @@ export class EdgeFunction extends Resource implements IVersion {
     let edgeStack = stage.node.tryFindChild(edgeStackId) as CrossRegionLambdaStack;
     if (!edgeStack) {
       edgeStack = new CrossRegionLambdaStack(stage, edgeStackId, {
-        synthesizer: this.getCrossRegionSupportSynthesizer(),
+        synthesizer: this.crossRegionSupportSynthesizer(),
         env: { region: EdgeFunction.EDGE_REGION },
       });
     }
@@ -203,11 +206,11 @@ export class EdgeFunction extends Resource implements IVersion {
   }
 
   // Stolen from `@aws-cdk/aws-codepipeline`'s `Pipeline`.
-  private getCrossRegionSupportSynthesizer(): IStackSynthesizer | undefined {
+  private crossRegionSupportSynthesizer(): IStackSynthesizer | undefined {
     // If we have the new synthesizer we need a bootstrapless copy of it,
     // because we don't want to require bootstrapping the environment
     // of the account in this replication region.
-    // Otheriwse, return undefined to use the default.
+    // Otherwise, return undefined to use the default.
     return (this.stack.synthesizer instanceof DefaultStackSynthesizer)
       ? new BootstraplessSynthesizer({
         deployRoleArn: this.stack.synthesizer.deployRoleArn,
