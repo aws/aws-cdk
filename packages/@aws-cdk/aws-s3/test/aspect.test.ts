@@ -2,10 +2,10 @@
 import { SynthUtils } from '@aws-cdk/assert';
 import * as cdk from '@aws-cdk/core';
 import { IConstruct } from 'constructs';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as s3 from '../lib';
 
-export = {
+nodeunitShim({
   'bucket must have versioning: failure'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -38,7 +38,7 @@ export = {
 
     test.done();
   },
-};
+});
 
 class BucketVersioningChecker implements cdk.IAspect {
   public visit(node: IConstruct): void {
