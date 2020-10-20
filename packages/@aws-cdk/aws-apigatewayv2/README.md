@@ -200,6 +200,23 @@ with 3 API mapping resources across different APIs and Stages.
 | api | beta  |   `https://${domainName}/bar`  |
 | apiDemo | $default  |   `https://${domainName}/demo`  |
 
+### Managing access to HTTP APIs
+
+API Gateway supports multiple mechanisms for [controlling and managing access to your HTTP API](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-access-control.html) through authorizers. Here's an example with using a Cognito User Pool as the identity source.
+
+```ts
+const userPool = new UserPool(stack, 'my-pool');
+const httpApi = new HttpApi(stack, 'HttpApi');
+
+const authorizer = new Authorizer(stack, {
+  httpApi,
+  jwtConfiguration: {
+    audience: [userPool.userPoolId],
+    issuer: `https://cognito-idp.${scope.region}.amazonaws.com/${userPool.userPoolId}`,
+  },
+});
+```
+
 ## Metrics
 
 The API Gateway v2 service sends metrics around the performance of HTTP APIs to Amazon CloudWatch.
