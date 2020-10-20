@@ -199,7 +199,7 @@
     "@types/jest": "^26.0.14",
     "@types/yaml": "1.9.7",
     "@types/yargs": "^15.0.7",
-    "jest": "^26.4.2",
+    "jest": "^26.6.0",
     "jsii": "^1.13.0"
   },
   "keywords": [
