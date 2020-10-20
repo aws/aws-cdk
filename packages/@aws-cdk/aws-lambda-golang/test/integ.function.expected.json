@@ -1,0 +1,200 @@
+{
+  "Resources": {
+    "gohandlervendorServiceRole626A58A2": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "gohandlervendorEA34DB42": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AssetParametersf0fda99e6881bbb99b236902a10062a59c1fd2c7480157bb04827cf53bcb52a3S3BucketE143DECC"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParametersf0fda99e6881bbb99b236902a10062a59c1fd2c7480157bb04827cf53bcb52a3S3VersionKeyD29A57AF"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParametersf0fda99e6881bbb99b236902a10062a59c1fd2c7480157bb04827cf53bcb52a3S3VersionKeyD29A57AF"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Handler": "bootstrap",
+        "Role": {
+          "Fn::GetAtt": [
+            "gohandlervendorServiceRole626A58A2",
+            "Arn"
+          ]
+        },
+        "Runtime": "provided.al2"
+      },
+      "DependsOn": [
+        "gohandlervendorServiceRole626A58A2"
+      ]
+    },
+    "gohandlerdockerServiceRole70394790": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "gohandlerdockerAE04F1B8": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AssetParameters7c6672bf50d9fcbb4be0ee7b0ab92d1e4dcb1a44fec876903d4c178d9f93e560S3Bucket1F1AEE87"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters7c6672bf50d9fcbb4be0ee7b0ab92d1e4dcb1a44fec876903d4c178d9f93e560S3VersionKey894D769B"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters7c6672bf50d9fcbb4be0ee7b0ab92d1e4dcb1a44fec876903d4c178d9f93e560S3VersionKey894D769B"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Handler": "bootstrap",
+        "Role": {
+          "Fn::GetAtt": [
+            "gohandlerdockerServiceRole70394790",
+            "Arn"
+          ]
+        },
+        "Runtime": "provided.al2"
+      },
+      "DependsOn": [
+        "gohandlerdockerServiceRole70394790"
+      ]
+    }
+  },
+  "Parameters": {
+    "AssetParametersf0fda99e6881bbb99b236902a10062a59c1fd2c7480157bb04827cf53bcb52a3S3BucketE143DECC": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"f0fda99e6881bbb99b236902a10062a59c1fd2c7480157bb04827cf53bcb52a3\""
+    },
+    "AssetParametersf0fda99e6881bbb99b236902a10062a59c1fd2c7480157bb04827cf53bcb52a3S3VersionKeyD29A57AF": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"f0fda99e6881bbb99b236902a10062a59c1fd2c7480157bb04827cf53bcb52a3\""
+    },
+    "AssetParametersf0fda99e6881bbb99b236902a10062a59c1fd2c7480157bb04827cf53bcb52a3ArtifactHash5B470430": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"f0fda99e6881bbb99b236902a10062a59c1fd2c7480157bb04827cf53bcb52a3\""
+    },
+    "AssetParameters7c6672bf50d9fcbb4be0ee7b0ab92d1e4dcb1a44fec876903d4c178d9f93e560S3Bucket1F1AEE87": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"7c6672bf50d9fcbb4be0ee7b0ab92d1e4dcb1a44fec876903d4c178d9f93e560\""
+    },
+    "AssetParameters7c6672bf50d9fcbb4be0ee7b0ab92d1e4dcb1a44fec876903d4c178d9f93e560S3VersionKey894D769B": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"7c6672bf50d9fcbb4be0ee7b0ab92d1e4dcb1a44fec876903d4c178d9f93e560\""
+    },
+    "AssetParameters7c6672bf50d9fcbb4be0ee7b0ab92d1e4dcb1a44fec876903d4c178d9f93e560ArtifactHash7144D3B9": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"7c6672bf50d9fcbb4be0ee7b0ab92d1e4dcb1a44fec876903d4c178d9f93e560\""
+    }
+  }
+}
