@@ -58,6 +58,10 @@ new UserPool(this, 'myuserpool', {
 });
 ```
 
+The default set up for the user pool is configured such that only administrators will be allowed
+to create users. Features such as Multi-factor authentication (MFAs) and Lambda Triggers are not
+configured by default.
+
 ### Sign Up
 
 Users can either be signed up by the app's administrators or can sign themselves up. Once a user has signed up, their
@@ -130,6 +134,8 @@ User pools can either be configured so that user name is primary sign in form, b
 used additionally; or it can be configured so that email and/or phone numbers are the only ways a user can register and
 sign in. Read more about this
 [here](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html#user-pool-settings-aliases-settings).
+
+⚠️ Username and Alias attributes `phone`, `email`, or `preferredUserName` are user pool properties that cannot be updated.
 
 To match with 'Option 1' in the above link, with a verified email, `signInAliases` should be set to
 `{ username: true, email: true }`. To match with 'Option 2' in the above link with both a verified
@@ -288,6 +294,9 @@ new UserPool(this, 'UserPool', {
 })
 ```
 
+The default for account recovery is by phone if available and by email otherwise.
+A user will not be allowed to reset their password via phone if they are also using it for MFA.
+
 ### Emails
 
 Cognito sends emails to users in the user pool, when particular actions take place, such as welcome emails, invitation
@@ -343,6 +352,36 @@ The following table lists the set of triggers available, and their corresponding
 For more information on the function of these triggers and how to configure them, read [User Pool Workflows with
 Triggers](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-identity-pools-working-with-aws-lambda-triggers.html).
 
+You may need to provide your Lambda trigger with permissions to perform operations against your user pool.
+Permission can be provided by through the `attachInlinePolicy` API on the Lambda function.
+
+```ts
+import * as lambda from '@aws-cdk/aws-lambda';
+
+const postAuthFn = new lambda.Function(this, 'postAuthFn', {
+  code: lambda.Code.fromInline('foo'),
+  runtime: lambda.Runtime.NODEJS_12_X,
+  handler: 'index.handler',
+});
+
+const userpool = new UserPol(this, 'myuserpool', {
+  lambdaTriggers: {
+    postAuthentication: postAuthFn,
+  },
+});
+
+// provide permissions to describe the user pool
+fn.role?.attachInlinePolicy(new Policy(stack, 'userpool-policy', {
+  statements: [new PolicyStatement({
+    actions: ['cognito-idp:DescribeUserPool'],
+    resources: [userpool.userPoolArn],
+  })],
+}));
+```
+
+⚠️ Using the `attachToRolePolicy` API to provide permissions to a Lambda trigger will result in a circular dependency error:
+> Circular dependency between resources: [pool056F3F7E, fnPostAuthFnCognitoA630A2B1, ...]
+
 ### Importing User Pools
 
 Any user pool that has been created outside of this stack, can be imported into the CDK app. Importing a user pool
@@ -370,7 +409,7 @@ identity provider. Once configured, the Cognito backend will take care of integr
 Read more about [Adding User Pool Sign-in Through a Third
 Party](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-identity-federation.html).
 
-The following third-party identity providers are currentlhy supported in the CDK -
+The following third-party identity providers are currently supported in the CDK -
 
 * [Login With Amazon](https://developer.amazon.com/apps-and-games/login-with-amazon)
 * [Facebook Login](https://developers.facebook.com/docs/facebook-login/)
