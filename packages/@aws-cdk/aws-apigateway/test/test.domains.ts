@@ -443,4 +443,63 @@ export = {
     test.done();
   },
 
+  'base path mapping configures stage for RestApi creation'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    new apigw.RestApi(stack, 'restApiWithStage', {
+      domainName: {
+        domainName: 'example.com',
+        certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
+        endpointType: apigw.EndpointType.REGIONAL,
+      },
+    }).root.addMethod('GET');
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::BasePathMapping', {
+      'DomainName': {
+        'Ref': 'restApiWithStageCustomDomainC4749625',
+      },
+      'RestApiId': {
+        'Ref': 'restApiWithStageD4F931D0',
+      },
+      'Stage': {
+        'Ref': 'restApiWithStageDeploymentStageprodC82A6648',
+      },
+    }));
+
+    test.done();
+  },
+
+  'base path mapping configures stage for SpecRestApi creation'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    const definition = {
+      key1: 'val1',
+    };
+
+    new apigw.SpecRestApi(stack, 'specRestApiWithStage', {
+      apiDefinition: apigw.ApiDefinition.fromInline(definition),
+      domainName: {
+        domainName: 'example.com',
+        certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
+        endpointType: apigw.EndpointType.REGIONAL,
+      },
+    }).root.addMethod('GET');
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::BasePathMapping', {
+      'DomainName': {
+        'Ref': 'specRestApiWithStageCustomDomain8A36A5C9',
+      },
+      'RestApiId': {
+        'Ref': 'specRestApiWithStageC1492575',
+      },
+      'Stage': {
+        'Ref': 'specRestApiWithStageDeploymentStageprod2D3037ED',
+      },
+    }));
+
+    test.done();
+  },
 };
