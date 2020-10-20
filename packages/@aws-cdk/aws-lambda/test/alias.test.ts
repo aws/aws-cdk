@@ -1,12 +1,12 @@
-import { arrayWith, beASupersetOfTemplate, expect, haveResource, haveResourceLike, objectLike } from '@aws-cdk/assert';
+import '@aws-cdk/assert/jest';
+import { arrayWith, objectLike } from '@aws-cdk/assert';
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import { Lazy, Stack } from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import * as lambda from '../lib';
 
-export = {
-  'version and aliases'(test: Test): void {
+describe('alias', () => {
+  test('version and aliases', () => {
     const stack = new Stack();
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
@@ -21,27 +21,18 @@ export = {
       version,
     });
 
-    expect(stack).to(beASupersetOfTemplate({
-      MyLambdaVersion16CDE3C40: {
-        Type: 'AWS::Lambda::Version',
-        Properties: {
-          FunctionName: { Ref: 'MyLambdaCCE802FB' },
-        },
-      },
-      Alias325C5727: {
-        Type: 'AWS::Lambda::Alias',
-        Properties: {
-          FunctionName: { Ref: 'MyLambdaCCE802FB' },
-          FunctionVersion: stack.resolve(version.version),
-          Name: 'prod',
-        },
-      },
-    }));
+    expect(stack).toHaveResource('AWS::Lambda::Version', {
+      FunctionName: { Ref: 'MyLambdaCCE802FB' },
+    });
 
-    test.done();
-  },
+    expect(stack).toHaveResource('AWS::Lambda::Alias', {
+      FunctionName: { Ref: 'MyLambdaCCE802FB' },
+      FunctionVersion: stack.resolve(version.version),
+      Name: 'prod',
+    });
+  });
 
-  'can create an alias to $LATEST'(test: Test): void {
+  test('can create an alias to $LATEST', () => {
     const stack = new Stack();
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
@@ -54,17 +45,15 @@ export = {
       version: fn.latestVersion,
     });
 
-    expect(stack).to(haveResource('AWS::Lambda::Alias', {
+    expect(stack).toHaveResource('AWS::Lambda::Alias', {
       FunctionName: { Ref: 'MyLambdaCCE802FB' },
       FunctionVersion: '$LATEST',
       Name: 'latest',
-    }));
-    expect(stack).notTo(haveResource('AWS::Lambda::Version'));
+    });
+    expect(stack).not.toHaveResource('AWS::Lambda::Version');
+  });
 
-    test.done();
-  },
-
-  'can use newVersion to create a new Version'(test: Test) {
+  test('can use newVersion to create a new Version', () => {
     const stack = new Stack();
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
@@ -79,19 +68,17 @@ export = {
       version,
     });
 
-    expect(stack).to(haveResourceLike('AWS::Lambda::Version', {
+    expect(stack).toHaveResourceLike('AWS::Lambda::Version', {
       FunctionName: { Ref: 'MyLambdaCCE802FB' },
-    }));
+    });
 
-    expect(stack).to(haveResourceLike('AWS::Lambda::Alias', {
+    expect(stack).toHaveResourceLike('AWS::Lambda::Alias', {
       FunctionName: { Ref: 'MyLambdaCCE802FB' },
       Name: 'prod',
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'can add additional versions to alias'(test: Test) {
+  test('can add additional versions to alias', () => {
     const stack = new Stack();
 
     const fn = new lambda.Function(stack, 'MyLambda', {
@@ -109,7 +96,7 @@ export = {
       additionalVersions: [{ version: version2, weight: 0.1 }],
     });
 
-    expect(stack).to(haveResource('AWS::Lambda::Alias', {
+    expect(stack).toHaveResource('AWS::Lambda::Alias', {
       FunctionVersion: stack.resolve(version1.version),
       RoutingConfig: {
         AdditionalVersionWeights: [
@@ -119,11 +106,10 @@ export = {
           },
         ],
       },
-    }));
+    });
+  });
 
-    test.done();
-  },
-  'version and aliases with provisioned execution'(test: Test): void {
+  test('version and aliases with provisioned execution', () => {
     const stack = new Stack();
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
@@ -140,34 +126,22 @@ export = {
       provisionedConcurrentExecutions: pce,
     });
 
-    expect(stack).to(beASupersetOfTemplate({
-      MyLambdaVersion16CDE3C40: {
-        Type: 'AWS::Lambda::Version',
-        Properties: {
-          FunctionName: {
-            Ref: 'MyLambdaCCE802FB',
-          },
-          ProvisionedConcurrencyConfig: {
-            ProvisionedConcurrentExecutions: 5,
-          },
-        },
+    expect(stack).toHaveResource('AWS::Lambda::Version', {
+      ProvisionedConcurrencyConfig: {
+        ProvisionedConcurrentExecutions: 5,
       },
-      Alias325C5727: {
-        Type: 'AWS::Lambda::Alias',
-        Properties: {
-          FunctionName: { Ref: 'MyLambdaCCE802FB' },
-          FunctionVersion: stack.resolve(version.version),
-          Name: 'prod',
-          ProvisionedConcurrencyConfig: {
-            ProvisionedConcurrentExecutions: 5,
-          },
-        },
-      },
-    }));
+    });
 
-    test.done();
-  },
-  'sanity checks on version weights'(test: Test) {
+    expect(stack).toHaveResource('AWS::Lambda::Alias', {
+      FunctionVersion: stack.resolve(version.version),
+      Name: 'prod',
+      ProvisionedConcurrencyConfig: {
+        ProvisionedConcurrentExecutions: 5,
+      },
+    });
+  });
+
+  test('sanity checks on version weights', () => {
     const stack = new Stack();
 
     const fn = new lambda.Function(stack, 'MyLambda', {
@@ -179,27 +153,25 @@ export = {
     const version = fn.addVersion('1');
 
     // WHEN: Individual weight too high
-    test.throws(() => {
+    expect(() => {
       new lambda.Alias(stack, 'Alias1', {
         aliasName: 'prod',
         version,
         additionalVersions: [{ version, weight: 5 }],
       });
-    });
+    }).toThrow();
 
     // WHEN: Sum too high
-    test.throws(() => {
+    expect(() => {
       new lambda.Alias(stack, 'Alias2', {
         aliasName: 'prod',
         version,
         additionalVersions: [{ version, weight: 0.5 }, { version, weight: 0.6 }],
       });
-    });
+    }).toThrow();
+  });
 
-    test.done();
-  },
-
-  'metric adds Resource: aliasArn to dimensions'(test: Test) {
+  test('metric adds Resource: aliasArn to dimensions', () => {
     const stack = new Stack();
 
     // GIVEN
@@ -221,7 +193,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::CloudWatch::Alarm', {
+    expect(stack).toHaveResource('AWS::CloudWatch::Alarm', {
       Dimensions: [{
         Name: 'FunctionName',
         Value: {
@@ -239,12 +211,10 @@ export = {
           ],
         },
       }],
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'sanity checks provisionedConcurrentExecutions'(test: Test) {
+  test('sanity checks provisionedConcurrentExecutions', () => {
     const stack = new Stack();
     const pce = -1;
 
@@ -255,33 +225,31 @@ export = {
     });
 
     // WHEN: Alias provisionedConcurrencyConfig less than 0
-    test.throws(() => {
+    expect(() => {
       new lambda.Alias(stack, 'Alias1', {
         aliasName: 'prod',
         version: fn.addVersion('1'),
         provisionedConcurrentExecutions: pce,
       });
-    });
+    }).toThrow();
 
     // WHEN: Version provisionedConcurrencyConfig less than 0
-    test.throws(() => {
+    expect(() => {
       new lambda.Version(stack, 'Version 1', {
         lambda: fn,
         codeSha256: undefined,
         description: undefined,
         provisionedConcurrentExecutions: pce,
       });
-    });
+    }).toThrow();
 
     // WHEN: Adding a version provisionedConcurrencyConfig less than 0
-    test.throws(() => {
+    expect(() => {
       fn.addVersion('1', undefined, undefined, pce);
-    });
+    }).toThrow();
+  });
 
-    test.done();
-  },
-
-  'alias exposes real Lambdas role'(test: Test) {
+  test('alias exposes real Lambdas role', () => {
     const stack = new Stack();
 
     // GIVEN
@@ -295,12 +263,10 @@ export = {
     const alias = new lambda.Alias(stack, 'Alias', { aliasName: 'prod', version });
 
     // THEN
-    test.equals(alias.role, fn.role);
+    expect(alias.role).toEqual(fn.role);
+  });
 
-    test.done();
-  },
-
-  'functionName is derived from the aliasArn so that dependencies are sound'(test: Test) {
+  test('functionName is derived from the aliasArn so that dependencies are sound', () => {
     const stack = new Stack();
 
     // GIVEN
@@ -314,7 +280,7 @@ export = {
     const alias = new lambda.Alias(stack, 'Alias', { aliasName: 'prod', version });
 
     // WHEN
-    test.deepEqual(stack.resolve(alias.functionName), {
+    expect(stack.resolve(alias.functionName)).toEqual({
       'Fn::Join': [
         '',
         [
@@ -335,11 +301,9 @@ export = {
         ],
       ],
     });
+  });
 
-    test.done();
-  },
-
-  'with event invoke config'(test: Test) {
+  test('with event invoke config', () => {
     // GIVEN
     const stack = new Stack();
     const fn = new lambda.Function(stack, 'fn', {
@@ -361,7 +325,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::Lambda::EventInvokeConfig', {
+    expect(stack).toHaveResource('AWS::Lambda::EventInvokeConfig', {
       FunctionName: {
         Ref: 'fn5FF616E3',
       },
@@ -383,12 +347,10 @@ export = {
           Destination: 'on-success-arn',
         },
       },
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'throws when calling configureAsyncInvoke on already configured alias'(test: Test) {
+  test('throws when calling configureAsyncInvoke on already configured alias', () => {
     // GIVEN
     const stack = new Stack();
     const fn = new lambda.Function(stack, 'fn', {
@@ -408,12 +370,10 @@ export = {
     });
 
     // THEN
-    test.throws(() => alias.configureAsyncInvoke({ retryAttempts: 0 }), /An EventInvokeConfig has already been configured/);
+    expect(() => alias.configureAsyncInvoke({ retryAttempts: 0 })).toThrow(/An EventInvokeConfig has already been configured/);
+  });
 
-    test.done();
-  },
-
-  'event invoke config on imported alias'(test: Test) {
+  test('event invoke config on imported alias', () => {
     // GIVEN
     const stack = new Stack();
     const fn = lambda.Version.fromVersionArn(stack, 'Fn', 'arn:aws:lambda:region:account-id:function:function-name:version');
@@ -425,16 +385,14 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::Lambda::EventInvokeConfig', {
+    expect(stack).toHaveResource('AWS::Lambda::EventInvokeConfig', {
       FunctionName: 'function-name',
       Qualifier: 'alias-name',
       MaximumRetryAttempts: 1,
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'can enable AutoScaling on aliases'(test: Test): void {
+  test('can enable AutoScaling on aliases', () => {
     // GIVEN
     const stack = new Stack();
     const fn = new lambda.Function(stack, 'MyLambda', {
@@ -454,7 +412,7 @@ export = {
     alias.addAutoScaling({ maxCapacity: 5 });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApplicationAutoScaling::ScalableTarget', {
+    expect(stack).toHaveResource('AWS::ApplicationAutoScaling::ScalableTarget', {
       MinCapacity: 1,
       MaxCapacity: 5,
       ResourceId: objectLike({
@@ -471,12 +429,10 @@ export = {
           ':prod',
         )),
       }),
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'can enable AutoScaling on aliases with Provisioned Concurrency set'(test: Test): void {
+  test('can enable AutoScaling on aliases with Provisioned Concurrency set', () => {
     // GIVEN
     const stack = new Stack();
     const fn = new lambda.Function(stack, 'MyLambda', {
@@ -497,7 +453,7 @@ export = {
     alias.addAutoScaling({ maxCapacity: 5 });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApplicationAutoScaling::ScalableTarget', {
+    expect(stack).toHaveResource('AWS::ApplicationAutoScaling::ScalableTarget', {
       MinCapacity: 1,
       MaxCapacity: 5,
       ResourceId: objectLike({
@@ -514,17 +470,16 @@ export = {
           ':prod',
         )),
       }),
-    }));
+    });
 
-    expect(stack).to(haveResourceLike('AWS::Lambda::Alias', {
+    expect(stack).toHaveResourceLike('AWS::Lambda::Alias', {
       ProvisionedConcurrencyConfig: {
         ProvisionedConcurrentExecutions: 10,
       },
-    }));
-    test.done();
-  },
+    });
+  });
 
-  'validation for utilizationTarget does not fail when using Tokens'(test: Test) {
+  test('validation for utilizationTarget does not fail when using Tokens', () => {
     // GIVEN
     const stack = new Stack();
     const fn = new lambda.Function(stack, 'MyLambda', {
@@ -547,19 +502,16 @@ export = {
     target.scaleOnUtilization({ utilizationTarget: Lazy.numberValue({ produce: () => 0.95 }) });
 
     // THEN: no exception
-    expect(stack).to(haveResource('AWS::ApplicationAutoScaling::ScalingPolicy', {
+    expect(stack).toHaveResource('AWS::ApplicationAutoScaling::ScalingPolicy', {
       PolicyType: 'TargetTrackingScaling',
       TargetTrackingScalingPolicyConfiguration: {
         PredefinedMetricSpecification: { PredefinedMetricType: 'LambdaProvisionedConcurrencyUtilization' },
         TargetValue: 0.95,
       },
+    });
+  });
 
-    }));
-
-    test.done();
-  },
-
-  'cannot enable AutoScaling twice on same property'(test: Test): void {
+  test('cannot enable AutoScaling twice on same property', () => {
     // GIVEN
     const stack = new Stack();
     const fn = new lambda.Function(stack, 'MyLambda', {
@@ -579,12 +531,10 @@ export = {
     alias.addAutoScaling({ maxCapacity: 5 });
 
     // THEN
-    test.throws(() => alias.addAutoScaling({ maxCapacity: 8 }), /AutoScaling already enabled for this alias/);
+    expect(() => alias.addAutoScaling({ maxCapacity: 8 })).toThrow(/AutoScaling already enabled for this alias/);
+  });
 
-    test.done();
-  },
-
-  'error when specifying invalid utilization value when AutoScaling on utilization'(test: Test): void {
+  test('error when specifying invalid utilization value when AutoScaling on utilization', () => {
     // GIVEN
     const stack = new Stack();
     const fn = new lambda.Function(stack, 'MyLambda', {
@@ -604,11 +554,10 @@ export = {
     const target = alias.addAutoScaling({ maxCapacity: 5 });
 
     // THEN
-    test.throws(() => target.scaleOnUtilization({ utilizationTarget: 0.95 }), /Utilization Target should be between 0.1 and 0.9. Found 0.95/);
-    test.done();
-  },
+    expect(() => target.scaleOnUtilization({ utilizationTarget: 0.95 })).toThrow(/Utilization Target should be between 0.1 and 0.9. Found 0.95/);
+  });
 
-  'can autoscale on a schedule'(test: Test): void {
+  test('can autoscale on a schedule', () => {
     // GIVEN
     const stack = new Stack();
     const fn = new lambda.Function(stack, 'MyLambda', {
@@ -632,7 +581,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::ApplicationAutoScaling::ScalableTarget', {
+    expect(stack).toHaveResourceLike('AWS::ApplicationAutoScaling::ScalableTarget', {
       ScheduledActions: [
         {
           ScalableTargetAction: { MaxCapacity: 10 },
@@ -640,8 +589,6 @@ export = {
           ScheduledActionName: 'Scheduling',
         },
       ],
-    }));
-
-    test.done();
-  },
-};
+    });
+  });
+});
