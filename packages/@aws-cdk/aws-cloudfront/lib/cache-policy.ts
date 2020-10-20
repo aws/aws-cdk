@@ -75,6 +75,12 @@ export interface CachePolicyProps {
    * @default false
    */
   readonly enableAcceptEncodingGzip?: boolean;
+
+  /**
+   * Whether to normalize and include the `Accept-Encoding` header in the cache key when the `Accept-Encoding` header is 'br'.
+   * @default false
+   */
+  readonly enableAcceptEncodingBrotli?: boolean;
 }
 
 /**
@@ -160,6 +166,7 @@ export class CachePolicy extends Resource implements ICachePolicy {
         headers: headers.headers,
       },
       enableAcceptEncodingGzip: props.enableAcceptEncodingGzip ?? false,
+      enableAcceptEncodingBrotli: props.enableAcceptEncodingBrotli ?? false,
       queryStringsConfig: {
         queryStringBehavior: queryStrings.behavior,
         queryStrings: queryStrings.queryStrings,
