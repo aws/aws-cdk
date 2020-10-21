@@ -1,8 +1,8 @@
 import { IVpcEndpointService } from '@aws-cdk/aws-ec2';
-import { IPublicHostedZone, TxtRecord } from '@aws-cdk/aws-route53';
 import { Fn } from '@aws-cdk/core';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '@aws-cdk/custom-resources';
 import { Construct } from 'constructs';
+import { IPublicHostedZone, TxtRecord } from '../lib';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
 // eslint-disable-next-line

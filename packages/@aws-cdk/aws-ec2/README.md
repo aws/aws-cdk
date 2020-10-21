@@ -625,6 +625,8 @@ Endpoint services support private DNS, which makes it easier for clients to conn
 You can enable private DNS on an endpoint service like so:
 
 ```ts
+import { VpcEndpointServiceDomainName } from '@aws-cdk/aws-route53';
+
 new VpcEndpointServiceDomainName(stack, 'EndpointDomain', {
   endpointService: vpces,
   domainName: 'my-stuff.aws-cdk.dev',

@@ -1,9 +1,8 @@
 import { expect as cdkExpect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import { IVpcEndpointServiceLoadBalancer, VpcEndpointService } from '@aws-cdk/aws-ec2';
-import { PublicHostedZone } from '@aws-cdk/aws-route53';
 import { Stack } from '@aws-cdk/core';
-import { VpcEndpointServiceDomainName } from '../lib';
+import { PublicHostedZone, VpcEndpointServiceDomainName } from '../lib';
 
 let stack: Stack;
 let nlb: IVpcEndpointServiceLoadBalancer;
