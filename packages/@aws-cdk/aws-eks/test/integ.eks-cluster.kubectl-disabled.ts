@@ -4,6 +4,8 @@ import * as cdk from '@aws-cdk/core';
 import * as eks from '../lib';
 import { TestStack } from './util';
 
+const CLUSTER_VERSION = eks.KubernetesVersion.V1_18;
+
 class EksClusterStack extends TestStack {
   constructor(scope: cdk.App, id: string) {
     super(scope, id);
@@ -15,7 +17,7 @@ class EksClusterStack extends TestStack {
     const cluster = new eks.LegacyCluster(this, 'EKSCluster', {
       vpc,
       defaultCapacity: 0,
-      version: eks.KubernetesVersion.V1_16,
+      version: CLUSTER_VERSION,
       secretsEncryptionKey,
     });
 
