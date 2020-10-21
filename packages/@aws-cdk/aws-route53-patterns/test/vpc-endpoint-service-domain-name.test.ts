@@ -41,7 +41,7 @@ test('create domain name resource', () => {
   new VpcEndpointServiceDomainName(stack, 'EndpointDomain', {
     endpointService: vpces,
     domainName: 'my-stuff.aws-cdk.dev',
-    publicZone: zone,
+    publicHostedZone: zone,
   });
 
   // THEN
@@ -243,7 +243,7 @@ test('throws if creating multiple domains for a single service', () => {
   new VpcEndpointServiceDomainName(stack, 'EndpointDomain', {
     endpointService: vpces,
     domainName: 'my-stuff-1.aws-cdk.dev',
-    publicZone: zone,
+    publicHostedZone: zone,
   });
 
   // WHEN / THEN
@@ -251,7 +251,7 @@ test('throws if creating multiple domains for a single service', () => {
     new VpcEndpointServiceDomainName(stack, 'EndpointDomain2', {
       endpointService: vpces,
       domainName: 'my-stuff-2.aws-cdk.dev',
-      publicZone: zone,
+      publicHostedZone: zone,
     });
   }).toThrow();
 });
