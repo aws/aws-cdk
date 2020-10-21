@@ -16,4 +16,3 @@ jobs:
         uses: actions/checkout@v2
       - name: Validate Merge
         run: ./scripts/v2-validate-merge.sh
-        shell: bash --noprofile --norc -o pipefail {0} # Turn off the default `set -e` flag
