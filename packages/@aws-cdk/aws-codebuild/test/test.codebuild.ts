@@ -1708,5 +1708,70 @@ export = {
 
       test.done();
     },
+
+    'COMMIT_MESSAGE Filter': {
+      'GitHub Enterprise Server sources do not support COMMIT_MESSAGE filters on PR events'(test: Test) {
+        const stack = new cdk.Stack();
+        const pullFilterGroup = codebuild.FilterGroup.inEventOf(
+          codebuild.EventAction.PULL_REQUEST_CREATED,
+          codebuild.EventAction.PULL_REQUEST_MERGED,
+          codebuild.EventAction.PULL_REQUEST_REOPENED,
+          codebuild.EventAction.PULL_REQUEST_UPDATED,
+        );
+
+        test.throws(() => {
+          new codebuild.Project(stack, 'MyProject', {
+            source: codebuild.Source.gitHubEnterprise({
+              httpsCloneUrl: 'https://github.testcompany.com/testowner/testrepo',
+              webhookFilters: [
+                pullFilterGroup.andCommitMessageIs('the commit message'),
+              ],
+            }),
+          });
+        }, /COMMIT_MESSAGE filters cannot be used with GitHub Enterprise Server pull request events/);
+        test.done();
+      },
+      'GitHub Enterprise Server sources support COMMIT_MESSAGE filters on PUSH events'(test: Test) {
+        const stack = new cdk.Stack();
+        const pushFilterGroup = codebuild.FilterGroup.inEventOf(codebuild.EventAction.PUSH);
+
+        test.doesNotThrow(() => {
+          new codebuild.Project(stack, 'MyProject', {
+            source: codebuild.Source.gitHubEnterprise({
+              httpsCloneUrl: 'https://github.testcompany.com/testowner/testrepo',
+              webhookFilters: [
+                pushFilterGroup.andCommitMessageIs('the commit message'),
+              ],
+            }),
+          });
+        });
+        test.done();
+      },
+      'BitBucket and GitHub sources support a COMMIT_MESSAGE filter'(test: Test) {
+        const stack = new cdk.Stack();
+        const filterGroup = codebuild
+          .FilterGroup
+          .inEventOf(codebuild.EventAction.PUSH)
+          .andCommitMessageIs('the commit message');
+
+        test.doesNotThrow(() => {
+          new codebuild.Project(stack, 'BitBucket Project', {
+            source: codebuild.Source.bitBucket({
+              owner: 'owner',
+              repo: 'repo',
+              webhookFilters: [filterGroup],
+            }),
+          });
+          new codebuild.Project(stack, 'GitHub Project', {
+            source: codebuild.Source.gitHub({
+              owner: 'owner',
+              repo: 'repo',
+              webhookFilters: [filterGroup],
+            }),
+          });
+        });
+        test.done();
+      },
+    },
   },
 };
