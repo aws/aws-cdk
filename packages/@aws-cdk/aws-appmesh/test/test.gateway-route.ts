@@ -36,10 +36,63 @@ export = {
       expect(stack).to(
         haveResourceLike('AWS::AppMesh::GatewayRoute', {
           GatewayRouteName: 'gateway-route',
+          Spec: {
+            HttpRoute: {
+              Action: {
+                Target: {
+                  VirtualService: {
+                    VirtualServiceName: {
+                      'Fn::GetAtt': ['vs1732C2645', 'VirtualServiceName'],
+                    },
+                  },
+                },
+              },
+              Match: {
+                Prefix: '/',
+              },
+            },
+          },
         }),
       );
-
       test.done();
     },
+    'should throw an exception if you start an http prefix match not with a /'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      const mesh = new appmesh.Mesh(stack, 'mesh', {
+        meshName: 'test-mesh',
+      });
+
+      const virtualService = mesh.addVirtualService('testVirtualService');
+      test.throws(() => appmesh.GatewayRouteSpec.httpRouteSpec({
+        routeTarget: virtualService,
+        match: {
+          prefixPath: 'wrong',
+        },
+      }).bind(stack),
+      /Prefix Path must start with \'\/\'/);
+      test.done();
+    },
+  },
+  'Can export and import GatewayRoutes and perform actions'(test: Test) {
+    const app = new cdk.App();
+    // GIVEN
+    const stack = new cdk.Stack(app, 'Imports', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+
+    // WHEN
+    const gatewayRoute = appmesh.GatewayRoute.fromGatewayRouteName(stack, 'importedGatewayRoute', 'test-mesh', 'test-gateway', 'test-gateway-route');
+    // THEN
+    test.equal(gatewayRoute.gatewayRouteName, 'test-gateway-route');
+    test.equal(gatewayRoute.virtualGateway.virtualGatewayName, 'test-gateway');
+    test.equal(gatewayRoute.virtualGateway.mesh.meshName, 'test-mesh');
+    const gatewayRoute2 = appmesh.GatewayRoute.fromGatewayRouteArn(
+      stack, 'importedGatewayRoute2', 'arn:aws:appmesh:us-east-1:123456789012:mesh/test-mesh/virtualGateway/test-gateway/gatewayRoute/test-gateway-route');
+    test.equal(gatewayRoute2.gatewayRouteName, 'test-gateway-route');
+    test.equal(gatewayRoute2.virtualGateway.virtualGatewayName, 'test-gateway');
+    test.equal(gatewayRoute2.virtualGateway.mesh.meshName, 'test-mesh');
+    test.done();
   },
 };
