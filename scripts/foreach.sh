@@ -26,7 +26,6 @@
 #
 # --------------------------------------------------------------------------------------------------
 set -euo pipefail
-set -x
 scriptdir=$(cd $(dirname $0) && pwd)
 statedir="${scriptdir}"
 statefile="${statedir}/.foreach.state"
