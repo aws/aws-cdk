@@ -493,7 +493,7 @@ export class NoPeerDependenciesMonocdk extends ValidationRule {
   private readonly modules = ['monocdk', 'aws-cdk-lib'];
 
   public validate(pkg: PackageJson): void {
-    if (!modules.includes(pkg.packageName)) {
+    if (!this.modules.includes(pkg.packageName)) {
       return;
     }
 
