@@ -1,7 +1,7 @@
 import '@aws-cdk/assert/jest';
 import { Stack } from '@aws-cdk/core';
 import {
-  HttpApi, HttpIntegrationType, HttpMethod, HttpRoute, HttpRouteIntegrationConfig, HttpRouteKey, IHttpRouteIntegration,
+  HttpApi, HttpAuthorizer, HttpIntegrationType, HttpMethod, HttpRoute, HttpRouteIntegrationConfig, HttpRouteKey, IHttpRouteIntegration,
   PayloadFormatVersion,
 } from '../../lib';
 
@@ -77,6 +77,34 @@ describe('HttpRoute', () => {
     })).toThrowError(/path must always start with a "\/" and not end with a "\/"/);
   });
 
+  test('can create route with an authorizer attached', () => {
+    const stack = new Stack();
+    const httpApi = new HttpApi(stack, 'HttpApi');
+
+    const authorizer = new HttpAuthorizer(stack, 'HttpAuthorizer', {
+      httpApi,
+      jwtConfiguration: {
+        audience: ['cognito-pool'],
+        issuer: 'http://congnito.aws',
+      },
+    });
+
+    new HttpRoute(stack, 'HttpRoute', {
+      httpApi,
+      integration: new DummyIntegration(),
+      routeKey: HttpRouteKey.with('/books', HttpMethod.GET),
+      authorizer,
+    });
+
+    expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
+      ApiId: stack.resolve(httpApi.httpApiId),
+      IntegrationType: 'HTTP_PROXY',
+      PayloadFormatVersion: '2.0',
+      IntegrationUri: 'some-uri',
+    });
+
+    expect(stack).toHaveResource('AWS::ApiGatewayV2::Authorizer');
+  });
 });
 
 class DummyIntegration implements IHttpRouteIntegration {
