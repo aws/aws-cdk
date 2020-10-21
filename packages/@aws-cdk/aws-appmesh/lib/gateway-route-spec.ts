@@ -11,6 +11,7 @@ export interface GrpcRouteSpecProps {
    * The criterion for determining a request match for this GatewayRoute
    */
   readonly match: GrpcGatewayRouteMatch;
+
   /**
    * The VirtualService this GatewayRoute directs traffic to
    */
@@ -27,12 +28,14 @@ export interface GatewayRouteSpecConfig {
    * @default - no http spec
    */
   readonly httpSpecConfig?: CfnGatewayRoute.HttpGatewayRouteProperty;
+
   /**
    * The spec for an http2 gateway route
    *
    * @default - no http2 spec
    */
   readonly http2SpecConfig?: CfnGatewayRoute.HttpGatewayRouteProperty;
+
   /**
    * The spec for a grpc gateway route
    *
@@ -90,6 +93,7 @@ class HttpGatewayRouteSpec extends GatewayRouteSpec {
    * The VirtualService this GatewayRoute directs traffic to
    */
   readonly routeTarget: IVirtualService;
+
   /**
    * Type of route you are creating
    */
@@ -131,6 +135,7 @@ class GrpcGatewayRouteSpec extends GatewayRouteSpec {
    *
    * @default - no default
    */
+
   readonly match: GrpcGatewayRouteMatch;
   /**
    * The VirtualService this GatewayRoute directs traffic to
@@ -195,6 +200,7 @@ export interface HttpRouteSpecProps {
    * @default - matches on '/'
    */
   readonly match?: HttpGatewayRouteMatch;
+
   /**
    * The VirtualService this GatewayRoute directs traffic to
    */

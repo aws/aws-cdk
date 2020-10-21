@@ -286,6 +286,7 @@ export interface AddGatewayRouteProps {
    * CloudFormation Logical ID
    */
   readonly id: string;
+
   /**
    * Properties to create a GatewayRoute
    */
