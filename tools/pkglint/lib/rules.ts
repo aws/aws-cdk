@@ -487,6 +487,27 @@ export class JSIIProjectReferences extends ValidationRule {
   }
 }
 
+export class NoPeerDependenciesMonocdk extends ValidationRule {
+  public readonly name = 'monocdk/no-peer';
+  private readonly allowedPeer = ['constructs'];
+  private readonly modules = ['monocdk', 'aws-cdk-lib'];
+
+  public validate(pkg: PackageJson): void {
+    if (!this.modules.includes(pkg.packageName)) {
+      return;
+    }
+
+    const peers = Object.keys(pkg.peerDependencies).filter(peer => !this.allowedPeer.includes(peer));
+    if (peers.length > 0) {
+      pkg.report({
+        ruleName: this.name,
+        message: `Adding a peer dependency to the monolithic package ${pkg.packageName} is a breaking change, and thus not allowed.
+         Added ${peers.join(' ')}`,
+      });
+    }
+  }
+}
+
 /**
  * JSII Java package is required and must look sane
  */
