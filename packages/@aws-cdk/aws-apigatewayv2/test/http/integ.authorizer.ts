@@ -5,6 +5,13 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import { App, Stack } from '@aws-cdk/core';
 import { HttpApi, HttpAuthorizer, HttpMethod, LambdaProxyIntegration } from '../../lib';
 
+/*
+ * Stack verification steps:
+ * * `curl -s -o /dev/null -w "%{http_code}" <url>` should return 401
+ * * `curl -s -o /dev/null -w "%{http_code}" -H 'Authorization: deny' <url>` should return 403
+ * * `curl -s -o /dev/null -w "%{http_code}" -H 'Authorization: allow' <url>` should return 200
+ */
+
 const app = new App();
 const stack = new Stack(app, 'AuthorizerInteg');
 
