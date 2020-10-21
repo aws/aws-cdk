@@ -67,7 +67,7 @@ export const ROUTE_53_BUCKET_WEBSITE_ZONE_IDS: { [region: string]: string } = {
   'eu-west-3': 'Z3R1K369G5AVDG',
   'eu-north-1': 'Z3BAZG2TWCNX0D',
   'sa-east-1': 'Z7KQH4QJS55SO',
-  'me-south-1': 'Z1MPMWCPA7YB62',
+  'me-south-1': 'Z1MPMWCPA7YB62', 
 };
 
 interface Region { partition: string, domainSuffix: string }
