@@ -500,7 +500,7 @@ export class NoPeerDependenciesMonocdk extends ValidationRule {
     if (peers.length > 0) {
       pkg.report({
         ruleName: this.name,
-        message: `Adding a peer dependency to monocdk is a breaking change, and thus not allowed.
+        message: `Adding a peer dependency to the monolithic package ${pkg.packageName} is a breaking change, and thus not allowed.
          Added ${peers.join(' ')}`,
       });
     }
