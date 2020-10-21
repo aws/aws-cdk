@@ -4,8 +4,8 @@ import { CfnGatewayRoute, CfnVirtualGateway } from './appmesh.generated';
 import { GatewayRoute, GatewayRouteBaseProps } from './gateway-route';
 
 import { IMesh, Mesh } from './mesh';
+import { validateHealthChecks } from './private/utils';
 import { AccessLog, HealthCheck, PortMapping, Protocol } from './shared-interfaces';
-import { validateHealthChecks } from './utils';
 
 /**
  * Interface which all Virtual Gateway based classes must implement
@@ -85,24 +85,40 @@ export interface GrpcGatewayListenerProps {
 }
 
 /**
- * Represents the properties needed to define listeners for Virtual Gateways
+ * Represents the properties needed to define listeners for a VirtualGateway
  */
 export abstract class VirtualGatewayListener {
+  /**
+   * Returns an HTTP Listener for a VirtualGateway
+   */
   public static httpGatewayListener(props?: HttpGatewayListenerProps): VirtualGatewayListener {
     return new HttpGatewayListener(props);
   }
 
+  /**
+   * Returns an HTTP2 Listener for a VirtualGateway
+   */
   public static http2GatewayListener(props?: HttpGatewayListenerProps): VirtualGatewayListener {
     return new Http2GatewayListener(props);
   }
 
+  /**
+   * Returns a GRPC Listener for a VirtualGateway
+   */
   public static grpcGatewayListener(props?: GrpcGatewayListenerProps) {
     return new GrpcGatewayListener(props);
   }
 
+  /**
+   * Called when the GatewayListener type is initialized. Can be used to enforce
+   * mutual exclusivity
+   */
   public abstract bind(scope: cdk.Construct): CfnVirtualGateway.VirtualGatewayListenerProperty;
 }
 
+/**
+ * Represents the properties needed to define an HTTP Listener for a VirtualGateway
+ */
 export class HttpGatewayListener extends VirtualGatewayListener {
   /**
    * Port to listen for connections on
@@ -124,6 +140,10 @@ export class HttpGatewayListener extends VirtualGatewayListener {
     this.healthCheck = checkedProps.healthCheck;
   }
 
+  /**
+   * Called when the GatewayListener type is initialized. Can be used to enforce
+   * mutual exclusivity
+   */
   public bind(_scope: cdk.Construct): CfnVirtualGateway.VirtualGatewayListenerProperty {
     return {
       portMapping: {
@@ -138,6 +158,9 @@ export class HttpGatewayListener extends VirtualGatewayListener {
   }
 }
 
+/**
+* Represents the properties needed to define an HTTP2 Listener for a VirtualGateway
+*/
 export class Http2GatewayListener extends VirtualGatewayListener {
   /**
    * Port to listen for connections on
@@ -159,6 +182,10 @@ export class Http2GatewayListener extends VirtualGatewayListener {
     this.healthCheck = checkedProps.healthCheck;
   }
 
+  /**
+   * Called when the GatewayListener type is initialized. Can be used to enforce
+   * mutual exclusivity
+   */
   public bind(_scope: cdk.Construct): CfnVirtualGateway.VirtualGatewayListenerProperty {
     return {
       portMapping: {
@@ -173,6 +200,9 @@ export class Http2GatewayListener extends VirtualGatewayListener {
   }
 }
 
+/**
+* Represents the properties needed to define a GRPC Listener for Virtual Gateway
+*/
 export class GrpcGatewayListener extends VirtualGatewayListener {
   /**
    * Port to listen for connections on
@@ -194,6 +224,10 @@ export class GrpcGatewayListener extends VirtualGatewayListener {
     this.healthCheck = checkedProps.healthCheck;
   }
 
+  /**
+   * Called when the GatewayListener type is initialized. Can be used to enforce
+   * mutual exclusivity
+   */
   public bind(_scope: cdk.Construct): CfnVirtualGateway.VirtualGatewayListenerProperty {
     return {
       portMapping: {

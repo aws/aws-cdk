@@ -86,6 +86,8 @@ export = {
         virtualGatewayName: 'test-gateway',
         listeners: [appmesh.VirtualGatewayListener.grpcGatewayListener({
           port: 80,
+          healthCheck: {
+          },
         })],
         mesh: mesh,
         accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),

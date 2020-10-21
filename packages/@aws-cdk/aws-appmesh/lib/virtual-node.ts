@@ -3,8 +3,8 @@ import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnVirtualNode } from './appmesh.generated';
 import { IMesh } from './mesh';
+import { validateHealthChecks } from './private/utils';
 import { AccessLog, HealthCheck, PortMapping, Protocol, VirtualNodeListener } from './shared-interfaces';
-import { validateHealthChecks } from './utils';
 import { IVirtualService } from './virtual-service';
 
 /**
