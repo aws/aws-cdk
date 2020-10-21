@@ -3,7 +3,7 @@ import { ABSENT } from '@aws-cdk/assert';
 import { Metric } from '@aws-cdk/aws-cloudwatch';
 import { Code, Function, Runtime } from '@aws-cdk/aws-lambda';
 import { Duration, Stack } from '@aws-cdk/core';
-import { HttpApi, HttpMethod, LambdaProxyIntegration } from '../../lib';
+import { HttpApi, HttpMethod, LambdaProxyIntegration, HttpAuthorizer } from '../../lib';
 
 describe('HttpApi', () => {
   test('default', () => {
@@ -231,6 +231,41 @@ describe('HttpApi', () => {
       Name: 'api',
       ProtocolType: 'HTTP',
       Description: 'My Api',
+    });
+  });
+
+  test('can attach authorizer to route', () => {
+    const stack = new Stack();
+    const httpApi = new HttpApi(stack, 'api');
+
+    const authorizer = new HttpAuthorizer(stack, 'HttpAuthorizer', {
+      httpApi,
+      jwtConfiguration: {
+        audience: ['cognito-pool'],
+        issuer: 'http://congnito.aws',
+      },
+    });
+
+    httpApi.addRoutes({
+      path: '/pets',
+      integration: new LambdaProxyIntegration({
+        handler: new Function(stack, 'fn', {
+          code: Code.fromInline('foo'),
+          runtime: Runtime.NODEJS_12_X,
+          handler: 'index.handler',
+        }),
+      }),
+      authorizer,
+    });
+
+    expect(stack).toHaveResource('AWS::ApiGatewayV2::Api', {
+      Name: 'api',
+      ProtocolType: 'HTTP',
+    });
+
+    expect(stack).toHaveResource('AWS::ApiGatewayV2::Route', {
+      AuthorizerId: stack.resolve(authorizer.authorizerId),
+      AuthorizationType: 'JWT',
     });
   });
 });

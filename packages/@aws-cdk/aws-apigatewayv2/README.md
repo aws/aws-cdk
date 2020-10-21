@@ -216,6 +216,13 @@ const authorizer = new Authorizer(stack, {
     issuer: `https://cognito-idp.${scope.region}.amazonaws.com/${userPool.userPoolId}`,
   },
 });
+
+httpApi.addRoutes({
+  path: '/books',
+  methods: [ HttpMethod.GET ],
+  integration: getBooksIntegration,
+  authorizer, // Protecting this route via our authorizer
+});
 ```
 
 ## Metrics

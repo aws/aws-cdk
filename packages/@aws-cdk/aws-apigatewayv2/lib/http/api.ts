@@ -2,6 +2,7 @@ import { Metric, MetricOptions } from '@aws-cdk/aws-cloudwatch';
 import { Duration, IResource, Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnApi, CfnApiProps } from '../apigatewayv2.generated';
+import { IAuthorizer } from '../common';
 import { DefaultDomainMappingOptions } from '../http/stage';
 import { IHttpRouteIntegration } from './integration';
 import { BatchHttpRouteOptions, HttpMethod, HttpRoute, HttpRouteKey } from './route';
@@ -173,6 +174,12 @@ export interface AddRoutesOptions extends BatchHttpRouteOptions {
    * @default HttpMethod.ANY
    */
   readonly methods?: HttpMethod[];
+
+  /**
+   * Authorizer for a WebSocket API or an HTTP API.
+   * @default - No authorizer
+   */
+  readonly authorizer?: IAuthorizer;
 }
 
 abstract class HttpApiBase extends Resource implements IHttpApi { // note that this is not exported
@@ -335,6 +342,7 @@ export class HttpApi extends HttpApiBase {
       httpApi: this,
       routeKey: HttpRouteKey.with(options.path, method),
       integration: options.integration,
+      authorizer: options.authorizer,
     }));
   }
 }
