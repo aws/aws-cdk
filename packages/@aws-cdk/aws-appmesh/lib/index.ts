@@ -8,3 +8,4 @@ export * from './virtual-router';
 export * from './virtual-service';
 export * from './virtual-gateway';
 export * from './gateway-route';
+export * from './gateway-route-spec';
