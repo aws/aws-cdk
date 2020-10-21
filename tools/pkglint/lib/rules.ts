@@ -492,7 +492,7 @@ export class NoPeerDependenciesMonocdk extends ValidationRule {
   public allowedPeer = ['constructs'];
 
   public validate(pkg: PackageJson): void {
-    if (pkg.packageName !== 'monocdk') {
+    if (pkg.packageName !== 'monocdk' && pkg.packageName !== 'aws-cdk-lib') {
       return;
     }
 
