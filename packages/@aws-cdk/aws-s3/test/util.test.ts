@@ -1,8 +1,8 @@
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import { parseBucketArn, parseBucketName } from '../lib/util';
 
-export = {
+nodeunitShim({
   parseBucketArn: {
     'explicit arn'(test: Test) {
       const stack = new cdk.Stack();
@@ -65,4 +65,4 @@ export = {
       test.done();
     },
   },
-};
+});

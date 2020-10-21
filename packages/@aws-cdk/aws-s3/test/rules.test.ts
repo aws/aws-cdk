@@ -1,9 +1,9 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import { Duration, Stack } from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import { Bucket, StorageClass } from '../lib';
 
-export = {
+nodeunitShim({
   'Bucket with expiration days'(test: Test) {
     // GIVEN
     const stack = new Stack();
@@ -128,4 +128,4 @@ export = {
 
     test.done();
   },
-};
+});
