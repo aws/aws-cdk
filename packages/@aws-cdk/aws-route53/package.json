@@ -85,6 +85,7 @@
     "@aws-cdk/aws-logs": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
+    "@aws-cdk/custom-resources": "0.0.0",
     "constructs": "^3.0.4"
   },
   "homepage": "https://github.com/aws/aws-cdk",
@@ -93,6 +94,7 @@
     "@aws-cdk/aws-logs": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
+    "@aws-cdk/custom-resources": "0.0.0",
     "constructs": "^3.0.4"
   },
   "engines": {

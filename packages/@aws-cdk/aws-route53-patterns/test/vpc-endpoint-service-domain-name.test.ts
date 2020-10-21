@@ -1,23 +1,31 @@
 import { expect as cdkExpect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
-import { Vpc, VpcEndpointService } from '@aws-cdk/aws-ec2';
-import { NetworkLoadBalancer } from '@aws-cdk/aws-elasticloadbalancingv2';
+import { IVpcEndpointServiceLoadBalancer, VpcEndpointService } from '@aws-cdk/aws-ec2';
 import { PublicHostedZone } from '@aws-cdk/aws-route53';
 import { Stack } from '@aws-cdk/core';
 import { VpcEndpointServiceDomainName } from '../lib';
 
 let stack: Stack;
-let vpc: Vpc;
-let nlb: NetworkLoadBalancer;
+let nlb: IVpcEndpointServiceLoadBalancer;
 let vpces: VpcEndpointService;
 let zone: PublicHostedZone;
 
+/**
+ * A load balancer that can host a VPC Endpoint Service
+ */
+class DummyEndpointLoadBalacer implements IVpcEndpointServiceLoadBalancer {
+  /**
+   * The ARN of the load balancer that hosts the VPC Endpoint Service
+   */
+  public readonly loadBalancerArn: string;
+  constructor(arn: string) {
+    this.loadBalancerArn = arn;
+  }
+}
+
 beforeEach(() => {
   stack = new Stack();
-  vpc = new Vpc(stack, 'VPC');
-  nlb = new NetworkLoadBalancer(stack, 'NLB', {
-    vpc,
-  });
+  nlb = new DummyEndpointLoadBalacer('arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/9bn6qkf4e9jrw77a');
   vpces = new VpcEndpointService(stack, 'VPCES', {
     vpcEndpointServiceLoadBalancers: [nlb],
   });
