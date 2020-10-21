@@ -687,6 +687,10 @@ class GitHubEnterpriseSource extends ThirdPartyGitSource {
   }
 
   public bind(_scope: CoreConstruct, _project: IProject): SourceConfig {
+    if (this.hasCommitMessageFilterAndPREvent()) {
+      throw new Error('COMMIT_MESSAGE filters cannot be used with GitHub Enterprise Server pull request events');
+    }
+
     const superConfig = super.bind(_scope, _project);
     return {
       sourceProperty: {
@@ -697,6 +701,17 @@ class GitHubEnterpriseSource extends ThirdPartyGitSource {
       sourceVersion: superConfig.sourceVersion,
       buildTriggers: superConfig.buildTriggers,
     };
+  }
+
+  private hasCommitMessageFilterAndPREvent() {
+    return this.webhookFilters.some(fg => (
+      fg._filters.some(fp => fp.type === WebhookFilterTypes.COMMIT_MESSAGE) &&
+      fg._actions.includes(
+        EventAction.PULL_REQUEST_CREATED ||
+        EventAction.PULL_REQUEST_MERGED ||
+        EventAction.PULL_REQUEST_REOPENED ||
+        EventAction.PULL_REQUEST_UPDATED)
+    ));
   }
 }
 
