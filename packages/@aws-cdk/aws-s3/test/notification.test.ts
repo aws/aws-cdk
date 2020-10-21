@@ -1,9 +1,9 @@
 import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as s3 from '../lib';
 
-export = {
+nodeunitShim({
   'when notification is added a custom s3 bucket notification resource is provisioned'(test: Test) {
     const stack = new cdk.Stack();
 
@@ -133,4 +133,4 @@ export = {
 
     test.done();
   },
-};
+});
