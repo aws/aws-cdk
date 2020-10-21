@@ -105,7 +105,7 @@ export abstract class VirtualGatewayListener {
   /**
    * Returns a GRPC Listener for a VirtualGateway
    */
-  public static grpcGatewayListener(props?: GrpcGatewayListenerProps) {
+  public static grpcGatewayListener(props?: GrpcGatewayListenerProps): VirtualGatewayListener {
     return new GrpcGatewayListener(props);
   }
 
