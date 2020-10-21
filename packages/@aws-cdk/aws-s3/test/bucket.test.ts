@@ -3,13 +3,13 @@ import { expect, haveResource, haveResourceLike, SynthUtils, arrayWith, objectLi
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as s3 from '../lib';
 
 // to make it easy to copy & paste from output:
 /* eslint-disable quote-props */
 
-export = {
+nodeunitShim({
   'default bucket'(test: Test) {
     const stack = new cdk.Stack();
 
@@ -127,9 +127,7 @@ export = {
 
     test.throws(() => new s3.Bucket(stack, 'MyBucket', {
       bucketName: bucket,
-    }), function(err: Error) {
-      return expectedErrors === err.message;
-    });
+    }), expectedErrors);
 
     test.done();
   },
@@ -2250,4 +2248,4 @@ export = {
     test.done();
   },
 
-};
+});

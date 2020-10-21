@@ -194,6 +194,7 @@ const myCachePolicy = new cloudfront.CachePolicy(this, 'myCachePolicy', {
   headerBehavior: cloudfront.CacheHeaderBehavior.allowList('X-CustomHeader'),
   queryStringBehavior: cloudfront.CacheQueryStringBehavior.denyList('username'),
   enableAcceptEncodingGzip: true,
+  enableAcceptEncodingBrotli: true,
 });
 new cloudfront.Distribution(this, 'myDistCustomPolicy', {
   defaultBehavior: {
