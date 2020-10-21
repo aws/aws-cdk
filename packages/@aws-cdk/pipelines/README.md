@@ -149,6 +149,7 @@ class MyPipelineStack extends Stack {
         // Replace these with your actual GitHub project name
         owner: 'OWNER',
         repo: 'REPO',
+        branch: 'main', // default: 'master'
       }),
 
       synthAction: SimpleSynthAction.standardNpmSynth({
@@ -299,6 +300,12 @@ pipeline.addApplicationStage(new MyApplication(this, 'Production', {
 }));
 ```
 
+> Be aware that adding new stages via `addApplicationStage()` will
+> automatically add them to the pipeline and deploy the new stacks, but
+> *removing* them from the pipeline or deleting the pipeline stack will not
+> automatically delete deployed application stacks. You must delete those
+> stacks by hand using the AWS CloudFormation console or the AWS CLI.
+
 ### More Control
 
 Every *Application Stage* added by `addApplicationStage()` will lead to the addition of
@@ -353,6 +360,8 @@ stage.addActions(new ShellScriptAction({
   commands: ['curl -Ssf https://my.webservice.com/'],
   // Optionally specify a VPC if, for example, the service is deployed with a private load balancer
   vpc,
+  // Optionally specify SecurityGroups
+  securityGroups,
   // ... more configuration ...
 }));
 ```
@@ -534,6 +543,24 @@ class MyPipelineStack extends Stack {
   }
 }
 ```
+
+### Developing the pipeline
+
+The self-mutation feature of the `CdkPipeline` might at times get in the way
+of the pipeline development workflow. Each change to the pipeline must be pushed
+to git, otherwise, after the pipeline was updated using `cdk deploy`, it will
+automatically revert to the state found in git.
+
+To make the development more convenient, the self-mutation feature can be turned
+off temporarily, by passing `selfMutating: false` property, example:
+
+```ts
+const pipeline = new CdkPipeline(this, 'Pipeline', {
+  selfMutating: false,
+  ...  
+});
+```
+
 
 ## CDK Environment Bootstrapping
 

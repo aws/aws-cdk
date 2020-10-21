@@ -371,6 +371,10 @@ export class LegacyCluster extends Resource implements ICluster {
     throw new Error('legacy cluster does not support adding helm charts');
   }
 
+  public addCdk8sChart(_id: string, _chart: Construct): KubernetesManifest {
+    throw new Error('legacy cluster does not support adding cdk8s charts');
+  }
+
   /**
    * Opportunistically tag subnets with the required tags.
    *
@@ -427,6 +431,10 @@ class ImportedCluster extends Resource implements ICluster {
 
   public addHelmChart(_id: string, _options: HelmChartOptions): HelmChart {
     throw new Error('legacy cluster does not support adding helm charts');
+  }
+
+  public addCdk8sChart(_id: string, _chart: Construct): KubernetesManifest {
+    throw new Error('legacy cluster does not support adding cdk8s charts');
   }
 
   public get vpc() {
