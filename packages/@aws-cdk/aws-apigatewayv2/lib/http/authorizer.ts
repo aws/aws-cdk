@@ -30,6 +30,21 @@ export interface HttpJwtConfiguration {
   readonly issuer: string;
 }
 
+/**
+ * Reference to an http authorizer
+ */
+export interface HttpAuthorizerAttributes {
+  /**
+   * Id of the Authorizer
+   */
+  readonly authorizerId: string
+
+  /**
+   * Type of authorizer
+   */
+  readonly authorizerType: HttpAuthorizerType
+}
+
 
 /**
  * Properties to initialize an instance of `HttpAuthorizer`.
@@ -80,31 +95,35 @@ export class HttpAuthorizer extends Resource implements IAuthorizer {
   /**
    * Import an existing HTTP Authorizer into this CDK app.
    */
-  public static fromAuthorizerId(scope: Construct, id: string, authorizerId: string): IAuthorizer {
+  public static fromAuthorizerAttributes(scope: Construct, id: string, attrs: HttpAuthorizerAttributes): IAuthorizer {
     class Import extends Resource implements IAuthorizer {
-      public readonly authorizerId = authorizerId;
+      public readonly authorizerId = attrs.authorizerId;
+      public readonly authorizerType = attrs.authorizerType;
     }
     return new Import(scope, id);
   }
 
-  public readonly authorizerId: string
+  public readonly authorizerId: string;
+
+  public readonly authorizerType: HttpAuthorizerType;
 
   constructor(scope: Construct, id: string, props: HttpAuthorizerProps) {
     super(scope, id);
 
+    this.authorizerType = props.type ?? HttpAuthorizerType.JWT;
+
     const authorizerName = props.authorizerName ?? id;
-    const authorizerType = props.type ?? HttpAuthorizerType.JWT;
     const identitySource = props.identitySource ?? ['$request.header.Authorization'];
     const jwtConfiguration = props.jwtConfiguration;
 
-    if (authorizerType === HttpAuthorizerType.JWT && !jwtConfiguration) {
+    if (this.authorizerType === HttpAuthorizerType.JWT && !jwtConfiguration) {
       throw new Error('jwtConfiguration is required for authorizer type of JWT');
     }
 
     const resource = new CfnAuthorizer(this, 'Resource', {
       name: authorizerName,
       apiId: props.httpApi.httpApiId,
-      authorizerType,
+      authorizerType: this.authorizerType,
       identitySource,
       jwtConfiguration,
     });
