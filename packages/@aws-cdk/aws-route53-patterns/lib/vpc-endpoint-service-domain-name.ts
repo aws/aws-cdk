@@ -52,13 +52,13 @@ export class VpcEndpointServiceDomainName extends CoreConstruct {
     super(scope, id);
 
     // Make sure a user doesn't accidentally add multiple domains
-    this.validateParams(props);
+    this.validateProps(props);
     VpcEndpointServiceDomainName.endpointServices.push(props.endpointService);
 
     const serviceId = props.endpointService.vpcEndpointServiceId;
     const privateDnsName = props.domainName;
 
-    // Turns creates the Private DNS configuration on the endpoint service
+    // Creates the Private DNS configuration on the endpoint service
     const enable = new AwsCustomResource(this, 'EnableDns', {
       onCreate: {
         service: 'EC2',
@@ -160,7 +160,7 @@ export class VpcEndpointServiceDomainName extends CoreConstruct {
     this.node.addDependency(props.endpointService);
   }
 
-  private validateParams(props: VpcEndpointServiceDomainNameProps): void {
+  private validateProps(props: VpcEndpointServiceDomainNameProps): void {
     if (VpcEndpointServiceDomainName.endpointServices.includes(props.endpointService)) {
       throw new Error(
         'Cannot create a VpcEndpointServiceDomainName for service ' +

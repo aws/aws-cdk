@@ -13,7 +13,7 @@ let zone: PublicHostedZone;
 /**
  * A load balancer that can host a VPC Endpoint Service
  */
-class DummyEndpointLoadBalacer implements IVpcEndpointServiceLoadBalancer {
+class DummyEndpointLoadBalancer implements IVpcEndpointServiceLoadBalancer {
   /**
    * The ARN of the load balancer that hosts the VPC Endpoint Service
    */
@@ -25,7 +25,7 @@ class DummyEndpointLoadBalacer implements IVpcEndpointServiceLoadBalancer {
 
 beforeEach(() => {
   stack = new Stack();
-  nlb = new DummyEndpointLoadBalacer('arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/9bn6qkf4e9jrw77a');
+  nlb = new DummyEndpointLoadBalancer('arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/9bn6qkf4e9jrw77a');
   vpces = new VpcEndpointService(stack, 'VPCES', {
     vpcEndpointServiceLoadBalancers: [nlb],
   });
