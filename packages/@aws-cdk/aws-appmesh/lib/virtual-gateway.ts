@@ -119,7 +119,7 @@ export abstract class VirtualGatewayListener {
 /**
  * Represents the properties needed to define an HTTP Listener for a VirtualGateway
  */
-export class HttpGatewayListener extends VirtualGatewayListener {
+class HttpGatewayListener extends VirtualGatewayListener {
   /**
    * Port to listen for connections on
    *
@@ -161,7 +161,7 @@ export class HttpGatewayListener extends VirtualGatewayListener {
 /**
 * Represents the properties needed to define an HTTP2 Listener for a VirtualGateway
 */
-export class Http2GatewayListener extends VirtualGatewayListener {
+class Http2GatewayListener extends VirtualGatewayListener {
   /**
    * Port to listen for connections on
    *
@@ -203,7 +203,7 @@ export class Http2GatewayListener extends VirtualGatewayListener {
 /**
 * Represents the properties needed to define a GRPC Listener for Virtual Gateway
 */
-export class GrpcGatewayListener extends VirtualGatewayListener {
+class GrpcGatewayListener extends VirtualGatewayListener {
   /**
    * Port to listen for connections on
    *
