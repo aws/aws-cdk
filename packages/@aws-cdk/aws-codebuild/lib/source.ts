@@ -193,7 +193,13 @@ export enum EventAction {
   PULL_REQUEST_REOPENED = 'PULL_REQUEST_REOPENED',
 }
 
-const FILE_PATH_WEBHOOK_COND = 'FILE_PATH';
+enum WebhookFilterTypes {
+  FILE_PATH = 'FILE_PATH',
+  COMMIT_MESSAGE = 'COMMIT_MESSAGE',
+  HEAD_REF = 'HEAD_REF',
+  ACTOR_ACCOUNT_ID = 'ACTOR_ACCOUNT_ID',
+  BASE_REF = 'BASE_REF',
+}
 
 /**
  * An object that represents a group of filter conditions for a webhook.
@@ -403,11 +409,11 @@ export class FilterGroup {
   }
 
   private addHeadRefFilter(refName: string, include: boolean) {
-    return this.addFilter('HEAD_REF', refName, include);
+    return this.addFilter(WebhookFilterTypes.HEAD_REF, refName, include);
   }
 
   private addActorAccountId(accountId: string, include: boolean) {
-    return this.addFilter('ACTOR_ACCOUNT_ID', accountId, include);
+    return this.addFilter(WebhookFilterTypes.ACTOR_ACCOUNT_ID, accountId, include);
   }
 
   private addBaseBranchFilter(branchName: string, include: boolean): FilterGroup {
@@ -418,11 +424,11 @@ export class FilterGroup {
     if (this.actions.has(EventAction.PUSH)) {
       throw new Error('A base reference condition cannot be added if a Group contains a PUSH event action');
     }
-    return this.addFilter('BASE_REF', refName, include);
+    return this.addFilter(WebhookFilterTypes.BASE_REF, refName, include);
   }
 
   private addFilePathFilter(pattern: string, include: boolean): FilterGroup {
-    return this.addFilter(FILE_PATH_WEBHOOK_COND, pattern, include);
+    return this.addFilter(WebhookFilterTypes.FILE_PATH, pattern, include);
   }
 
   private addFilter(type: string, pattern: string, include: boolean) {
@@ -731,7 +737,7 @@ class BitBucketSource extends ThirdPartyGitSource {
 
   private anyWebhookFilterContainsFilePathConditions() {
     return this.webhookFilters.findIndex(fg => {
-      return fg._filters.findIndex(f => f.type === FILE_PATH_WEBHOOK_COND) !== -1;
+      return fg._filters.findIndex(f => f.type === WebhookFilterTypes.FILE_PATH) !== -1;
     }) !== -1;
   }
 }
