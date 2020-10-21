@@ -14,7 +14,6 @@ import { Stage } from './stage';
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
 // eslint-disable-next-line
 import { Construct as CoreConstruct } from './construct-compat';
-import { App } from './app';
 
 /**
  * A simple cache class.
