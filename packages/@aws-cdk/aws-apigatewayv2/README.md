@@ -213,7 +213,7 @@ const authorizer = new Authorizer(stack, {
   httpApi,
   jwtConfiguration: {
     audience: [userPool.userPoolId],
-    issuer: `https://cognito-idp.${scope.region}.amazonaws.com/${userPool.userPoolId}`,
+    issuer: `https://cognito-idp.${stack.region}.amazonaws.com/${userPool.userPoolId}`,
   },
 });
 
