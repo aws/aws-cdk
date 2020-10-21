@@ -263,7 +263,7 @@ export interface VirtualGatewayBaseProps {
   /**
    * Access Logging Configuration for the VirtualGateway
    *
-   * @default no access logging
+   * @default - no access logging
    */
   readonly accessLog?: AccessLog;
 }

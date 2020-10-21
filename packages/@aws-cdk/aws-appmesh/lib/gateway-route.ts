@@ -185,7 +185,6 @@ class HttpGatewayRouteSpec extends GatewayRouteSpec {
    * The VirtualService this GatewayRoute directs traffic to
    */
   readonly routeTarget: IVirtualService;
-
   /**
    * Type of route you are creating
    */
