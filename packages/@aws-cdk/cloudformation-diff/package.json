@@ -29,7 +29,7 @@
     "table": "^6.0.3"
   },
   "devDependencies": {
-    "@types/jest": "^26.0.14",
+    "@types/jest": "^26.0.15",
     "@types/string-width": "^4.0.1",
     "@types/table": "^5.0.0",
     "cdk-build-tools": "0.0.0",

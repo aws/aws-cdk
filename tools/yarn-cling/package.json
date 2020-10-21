@@ -38,7 +38,7 @@
     ]
   },
   "devDependencies": {
-    "@types/jest": "^26.0.14",
+    "@types/jest": "^26.0.15",
     "@types/node": "^10.17.40",
     "@types/yarnpkg__lockfile": "^1.1.4",
     "jest": "^26.6.0",
