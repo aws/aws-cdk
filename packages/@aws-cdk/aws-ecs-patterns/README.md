@@ -294,7 +294,8 @@ const ecsScheduledTask = new ScheduledEc2Task(stack, 'ScheduledTask', {
     memoryLimitMiB: 256,
     environment: { name: 'TRIGGER', value: 'CloudWatch Events' },
   },
-  schedule: events.Schedule.expression('rate(1 minute)')
+  schedule: events.Schedule.expression('rate(1 minute)'),
+  ruleName: 'sample-scheduled-task-rule'
 });
 ```
 
