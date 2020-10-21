@@ -177,6 +177,107 @@ export = {
       expect(stack).to(
         haveResourceLike('AWS::AppMesh::GatewayRoute', {
           GatewayRouteName: 'test-gateway-route',
+          Spec: {
+            HttpRoute: {
+              Action: {
+                Target: {
+                  VirtualService: {
+                    VirtualServiceName: {
+                      'Fn::GetAtt': ['meshvirtualService93460D43', 'VirtualServiceName'],
+                    },
+                  },
+                },
+              },
+              Match: {
+                Prefix: '/',
+              },
+            },
+          },
+        }),
+      );
+      test.done();
+    },
+    'should create multiple gateway route resources'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const mesh = new appmesh.Mesh(stack, 'mesh', {
+        meshName: 'test-mesh',
+      });
+
+      const virtualGateway = new appmesh.VirtualGateway(stack, 'testGateway', {
+        virtualGatewayName: 'test-gateway',
+        mesh: mesh,
+      });
+
+      const virtualService = mesh.addVirtualService('virtualService', {});
+
+      virtualGateway.addGatewayRoutes([
+        {
+          id: 'testGatewayRoute',
+          props: {
+            gatewayRouteName: 'test-gateway-route',
+            routeSpec: appmesh.GatewayRouteSpec.httpRouteSpec({
+              routeTarget: virtualService,
+            }),
+          },
+        },
+        {
+          id: 'testGatewayRoute2',
+          props: {
+            gatewayRouteName: 'test-gateway-route-2',
+            routeSpec: appmesh.GatewayRouteSpec.httpRouteSpec({
+              routeTarget: virtualService,
+              match: {
+                prefixPath: '/2',
+              },
+            }),
+          },
+        },
+      ]);
+
+      // THEN
+      expect(stack).to(
+        haveResourceLike('AWS::AppMesh::GatewayRoute', {
+          GatewayRouteName: 'test-gateway-route',
+          Spec: {
+            HttpRoute: {
+              Action: {
+                Target: {
+                  VirtualService: {
+                    VirtualServiceName: {
+                      'Fn::GetAtt': ['meshvirtualService93460D43', 'VirtualServiceName'],
+                    },
+                  },
+                },
+              },
+              Match: {
+                Prefix: '/',
+              },
+            },
+          },
+        }),
+      );
+      expect(stack).to(
+        haveResourceLike('AWS::AppMesh::GatewayRoute', {
+          GatewayRouteName: 'test-gateway-route-2',
+          Spec: {
+            HttpRoute: {
+              Action: {
+                Target: {
+                  VirtualService: {
+                    VirtualServiceName: {
+                      'Fn::GetAtt': ['meshvirtualService93460D43', 'VirtualServiceName'],
+                    },
+                  },
+                },
+              },
+              Match: {
+                Prefix: '/2',
+              },
+            },
+          },
         }),
       );
       test.done();

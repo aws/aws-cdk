@@ -278,6 +278,20 @@ export interface VirtualGatewayProps extends VirtualGatewayBaseProps {
   readonly mesh: IMesh;
 }
 
+/**
+ * Properties required to add multiple GatewayRoutes to a VirtualGateway
+ */
+export interface AddGatewayRouteProps {
+  /**
+   * CloudFormation Logical ID
+   */
+  readonly id: string;
+  /**
+   * Properties to create a GatewayRoute
+   */
+  readonly props: GatewayRouteBaseProps;
+}
+
 abstract class VirtualGatewayBase extends cdk.Resource implements IVirtualGateway {
   /**
    * Name of the VirtualGateway
@@ -317,6 +331,13 @@ abstract class VirtualGatewayBase extends cdk.Resource implements IVirtualGatewa
       throw new Error('VirtualGateway may have at most one listener');
     }
     this.listeners.push(listener.bind(this));
+  }
+
+  /**
+   * Utility method to add a list of GatewayRoutes to the VirtualGateway
+   */
+  public addGatewayRoutes(props: AddGatewayRouteProps[]): GatewayRoute[] {
+    return props.map(idx => this.addGatewayRoute(idx.id, idx.props));
   }
 
   /**
