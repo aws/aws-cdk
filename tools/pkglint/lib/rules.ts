@@ -489,10 +489,11 @@ export class JSIIProjectReferences extends ValidationRule {
 
 export class NoPeerDependenciesMonocdk extends ValidationRule {
   public readonly name = 'monocdk/no-peer';
-  public allowedPeer = ['constructs'];
+  private readonly allowedPeer = ['constructs'];
+  private readonly modules = ['monocdk', 'aws-cdk-lib'];
 
   public validate(pkg: PackageJson): void {
-    if (pkg.packageName !== 'monocdk' && pkg.packageName !== 'aws-cdk-lib') {
+    if (!modules.includes(pkg.packageName)) {
       return;
     }
 
