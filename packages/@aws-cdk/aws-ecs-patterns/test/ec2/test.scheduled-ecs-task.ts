@@ -86,6 +86,7 @@ export = {
       },
       desiredTaskCount: 2,
       schedule: events.Schedule.expression('rate(1 minute)'),
+      ruleName: 'sample-scheduled-task-rule',
     });
 
     // THEN
@@ -98,6 +99,7 @@ export = {
             TaskDefinitionArn: { Ref: 'ScheduledEc2TaskScheduledTaskDef56328BA4' },
           },
           Id: 'Target0',
+          Name: 'sample-scheduled-task-rule',
           Input: '{}',
           RoleArn: { 'Fn::GetAtt': ['ScheduledEc2TaskScheduledTaskDefEventsRole64113C5F', 'Arn'] },
         },
