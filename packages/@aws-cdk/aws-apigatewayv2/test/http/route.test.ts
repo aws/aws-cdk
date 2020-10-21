@@ -104,6 +104,11 @@ describe('HttpRoute', () => {
     });
 
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Authorizer');
+
+    expect(stack).toHaveResource('AWS::ApiGatewayV2::Route', {
+      AuthorizerId: stack.resolve(authorizer.authorizerId),
+      AuthorizationType: 'JWT',
+    });
   });
 });
 
