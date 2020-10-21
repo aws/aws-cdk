@@ -253,6 +253,26 @@ export class FilterGroup {
 
   /**
    * Create a new FilterGroup with an added condition:
+   * the event must affect a head commit with the given message.
+   *
+   * @param commitMessage the commit message (can be a regular expression)
+   */
+  public andCommitMessageIs(commitMessage: string): FilterGroup {
+    return this.addCommitMessageFilter(commitMessage, true);
+  }
+
+  /**
+   * Create a new FilterGroup with an added condition:
+   * the event must not affect a head commit with the given message.
+   *
+   * @param commitMessage the commit message (can be a regular expression)
+   */
+  public andCommitMessageIsNot(commitMessage: string): FilterGroup {
+    return this.addCommitMessageFilter(commitMessage, true);
+  }
+
+  /**
+   * Create a new FilterGroup with an added condition:
    * the event must affect the given tag.
    *
    * @param tagName the name of the tag (can be a regular expression)
@@ -398,6 +418,10 @@ export class FilterGroup {
       pattern: set2Array(this.actions).join(', '),
     };
     return [eventFilter].concat(this.filters);
+  }
+
+  private addCommitMessageFilter(commitMessage: string, include: boolean): FilterGroup {
+    return this.addFilter(WebhookFilterTypes.COMMIT_MESSAGE, commitMessage, include);
   }
 
   private addHeadBranchFilter(branchName: string, include: boolean): FilterGroup {
