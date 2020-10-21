@@ -1,8 +1,8 @@
-import { Resource, Lazy } from '@aws-cdk/core';
+import { Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnAuthorizer } from '../apigatewayv2.generated';
 
-import { HttpAuthorizerAttributes, IHttpAuthorizer } from '../common';
+import { IAuthorizer } from '../common';
 import { IHttpApi } from './api';
 
 /**
@@ -12,7 +12,7 @@ export enum HttpAuthorizerType {
   /** JSON Web Tokens */
   JWT = 'JWT',
   /** Lambda Authorizer */
-  REQUEST = 'DELETE',
+  REQUEST = 'LAMBDA',
 }
 
 /**
@@ -75,33 +75,24 @@ export interface HttpAuthorizerProps {
  * Create a new Authorizer for Http APIs
  * @resource AWS::ApiGatewayV2::Authorizer
  */
-export class HttpAuthorizer extends Resource implements IHttpAuthorizer {
+export class HttpAuthorizer extends Resource implements IAuthorizer {
 
   /**
    * Import an existing HTTP Authorizer into this CDK app.
    */
-  public static fromHttpAuthorizerAttributes(scope: Construct, id: string, attrs: HttpAuthorizerAttributes): IHttpAuthorizer {
-    class Import extends Resource implements IHttpAuthorizer {
-      public readonly authorizerId = attrs.authorizerId;
-      public readonly authorizerName = attrs.authorizerName;
+  public static fromAuthorizerId(scope: Construct, id: string, authorizerId: string): IAuthorizer {
+    class Import extends Resource implements IAuthorizer {
+      public readonly authorizerId = authorizerId;
     }
     return new Import(scope, id);
   }
 
-  /**
-   * A human friendly name for this Authorizer
-   */
-  public readonly authorizerName: string
-
   public readonly authorizerId: string
 
   constructor(scope: Construct, id: string, props: HttpAuthorizerProps) {
-    super(scope, id, {
-      physicalName: props.authorizerName || Lazy.stringValue({ produce: () => this.node.uniqueId }),
-    });
+    super(scope, id);
 
-    this.authorizerName = props.authorizerName ?? id;
-
+    const authorizerName = props.authorizerName ?? id;
     const authorizerType = props.type ?? HttpAuthorizerType.JWT;
     const identitySource = props.identitySource ?? ['$request.header.Authorization'];
     const jwtConfiguration = props.jwtConfiguration;
@@ -111,7 +102,7 @@ export class HttpAuthorizer extends Resource implements IHttpAuthorizer {
     }
 
     const resource = new CfnAuthorizer(this, 'Resource', {
-      name: this.authorizerName,
+      name: authorizerName,
       apiId: props.httpApi.httpApiId,
       authorizerType,
       identitySource,
