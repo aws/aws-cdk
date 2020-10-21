@@ -30,7 +30,7 @@ export interface VpcEndpointServiceDomainNameProps {
   /**
    * The public hosted zone to use for the domain.
    */
-  readonly publicZone: IPublicHostedZone;
+  readonly publicHostedZone: IPublicHostedZone;
 }
 
 /**
@@ -126,7 +126,7 @@ export class VpcEndpointServiceDomainName extends CoreConstruct {
     const verificationRecord = new TxtRecord(this, 'DnsVerificationRecord', {
       recordName: name,
       values: [value],
-      zone: props.publicZone,
+      zone: props.publicHostedZone,
     });
     // Only try making it once we have the values
     verificationRecord.node.addDependency(getNames);
