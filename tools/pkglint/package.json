@@ -37,8 +37,9 @@
   "devDependencies": {
     "@types/fs-extra": "^8.1.1",
     "@types/semver": "^7.3.4",
-    "@types/yargs": "^15.0.5",
-    "jest": "^26.4.2",
+    "@types/yargs": "^15.0.7",
+    "eslint-plugin-cdk": "0.0.0",
+    "jest": "^26.6.0",
     "typescript": "~3.9.7"
   },
   "dependencies": {
@@ -47,6 +48,6 @@
     "fs-extra": "^9.0.1",
     "glob": "^7.1.6",
     "semver": "^7.3.2",
-    "yargs": "^16.0.3"
+    "yargs": "^16.1.0"
   }
 }

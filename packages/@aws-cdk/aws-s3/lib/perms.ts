@@ -27,4 +27,5 @@ export const KEY_WRITE_ACTIONS = [
   'kms:Encrypt',
   'kms:ReEncrypt*',
   'kms:GenerateDataKey*',
+  'kms:Decrypt', // required for multipart uploads. Refer https://aws.amazon.com/premiumsupport/knowledge-center/s3-multipart-kms-decrypt/
 ];

@@ -24,6 +24,7 @@ Currently supported are:
 * Make an AWS API call
 * Put a record to a Kinesis stream
 * Log an event into a LogGroup
+* Put a record to a Kinesis Data Firehose stream
 
 See the README of the `@aws-cdk/aws-events` library for more information on
 EventBridge.

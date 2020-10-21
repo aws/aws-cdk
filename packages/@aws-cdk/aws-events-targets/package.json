@@ -48,13 +48,14 @@
     "awslint": "cdk-awslint",
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test",
-    "compat": "cdk-compat"
+    "compat": "cdk-compat",
+    "gen": "node ./build-tools/gen.js"
   },
   "cdk-build": {
-    "pre": [
-      "node ./build-tools/gen.js"
-    ],
-    "jest": true
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "keywords": [
     "aws",
@@ -73,11 +74,12 @@
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
     "@aws-cdk/aws-codecommit": "0.0.0",
+    "@aws-cdk/aws-s3": "0.0.0",
     "aws-sdk": "^2.739.0",
     "aws-sdk-mock": "^5.1.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
-    "jest": "^26.4.2",
+    "jest": "^26.6.0",
     "pkglint": "0.0.0"
   },
   "dependencies": {
@@ -89,11 +91,12 @@
     "@aws-cdk/aws-events": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-kinesis": "0.0.0",
+    "@aws-cdk/aws-kinesisfirehose": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-logs": "0.0.0",
     "@aws-cdk/aws-sns": "0.0.0",
-    "@aws-cdk/aws-sns-subscriptions": "0.0.0",
     "@aws-cdk/aws-sqs": "0.0.0",
+    "@aws-cdk/aws-sns-subscriptions": "0.0.0",
     "@aws-cdk/aws-stepfunctions": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "constructs": "^3.0.4"
@@ -108,11 +111,12 @@
     "@aws-cdk/aws-events": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-kinesis": "0.0.0",
+    "@aws-cdk/aws-kinesisfirehose": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-logs": "0.0.0",
     "@aws-cdk/aws-sns": "0.0.0",
-    "@aws-cdk/aws-sns-subscriptions": "0.0.0",
     "@aws-cdk/aws-sqs": "0.0.0",
+    "@aws-cdk/aws-sns-subscriptions": "0.0.0",
     "@aws-cdk/aws-stepfunctions": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "constructs": "^3.0.4"

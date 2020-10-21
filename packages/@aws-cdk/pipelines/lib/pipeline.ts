@@ -2,10 +2,15 @@ import * as path from 'path';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { Annotations, App, CfnOutput, Construct, PhysicalName, Stack, Stage, Aspects } from '@aws-cdk/core';
+import { Annotations, App, CfnOutput, PhysicalName, Stack, Stage, Aspects } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { AssetType, DeployCdkStackAction, PublishAssetsAction, UpdatePipelineAction } from './actions';
 import { appOf, assemblyBuilderOf } from './private/construct-internals';
 import { AddStageOptions, AssetPublishingCommand, CdkStage, StackOutput } from './stage';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Properties for a CdkPipeline
@@ -100,6 +105,20 @@ export interface CdkPipelineProps {
    * @default - All private subnets.
    */
   readonly subnetSelection?: ec2.SubnetSelection;
+
+  /**
+   * Whether the pipeline will update itself
+   *
+   * This needs to be set to `true` to allow the pipeline to reconfigure
+   * itself when assets or stages are being added to it, and `true` is the
+   * recommended setting.
+   *
+   * You can temporarily set this to `false` while you are iterating
+   * on the pipeline itself and prefer to deploy changes using `cdk deploy`.
+   *
+   * @default true
+   */
+  readonly selfMutating?: boolean;
 }
 
 /**
@@ -114,7 +133,7 @@ export interface CdkPipelineProps {
  * - Keeping the pipeline up-to-date as the CDK apps change.
  * - Using stack outputs later on in the pipeline.
  */
-export class CdkPipeline extends Construct {
+export class CdkPipeline extends CoreConstruct {
   private readonly _pipeline: codepipeline.Pipeline;
   private readonly _assets: AssetPublishing;
   private readonly _stages: CdkStage[] = [];
@@ -173,15 +192,17 @@ export class CdkPipeline extends Construct {
       });
     }
 
-    this._pipeline.addStage({
-      stageName: 'UpdatePipeline',
-      actions: [new UpdatePipelineAction(this, 'UpdatePipeline', {
-        cloudAssemblyInput: this._cloudAssemblyArtifact,
-        pipelineStackName: pipelineStack.stackName,
-        cdkCliVersion: props.cdkCliVersion,
-        projectName: maybeSuffix(props.pipelineName, '-selfupdate'),
-      })],
-    });
+    if (props.selfMutating ?? true) {
+      this._pipeline.addStage({
+        stageName: 'UpdatePipeline',
+        actions: [new UpdatePipelineAction(this, 'UpdatePipeline', {
+          cloudAssemblyInput: this._cloudAssemblyArtifact,
+          pipelineStackName: pipelineStack.stackName,
+          cdkCliVersion: props.cdkCliVersion,
+          projectName: maybeSuffix(props.pipelineName, '-selfupdate'),
+        })],
+      });
+    }
 
     this._assets = new AssetPublishing(this, 'Assets', {
       cloudAssemblyInput: this._cloudAssemblyArtifact,
@@ -344,7 +365,7 @@ interface AssetPublishingProps {
 /**
  * Add appropriate publishing actions to the asset publishing stage
  */
-class AssetPublishing extends Construct {
+class AssetPublishing extends CoreConstruct {
   private readonly publishers: Record<string, PublishAssetsAction> = {};
   private readonly assetRoles: Record<string, iam.IRole> = {};
   private readonly myCxAsmRoot: string;
@@ -470,6 +491,7 @@ class AssetPublishing extends Construct {
         'codebuild:CreateReport',
         'codebuild:UpdateReport',
         'codebuild:BatchPutTestCases',
+        'codebuild:BatchPutCodeCoverages',
       ],
       resources: [codeBuildArn],
     }));

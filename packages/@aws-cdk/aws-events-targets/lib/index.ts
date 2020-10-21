@@ -10,3 +10,4 @@ export * from './ecs-task';
 export * from './state-machine';
 export * from './kinesis-stream';
 export * from './log-group';
+export * from './kinesis-firehose-stream';
