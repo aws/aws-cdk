@@ -55,11 +55,14 @@ As an existing certificate is not provided, one will be created in `us-east-1` b
 When you create a VPC endpoint service, AWS generates endpoint-specific DNS hostnames that consumers use to communicate with the service.
 For example, vpce-1234-abcdev-us-east-1.vpce-svc-123345.us-east-1.vpce.amazonaws.com.
 By default, your consumers access the service with that DNS name.
-This can cause problems with HTTPS traffic because the DNS will not match the backend certificate.
-To mitigate this, clients have to create an alias in Route53 which requires changes to their application.
+This can cause problems with HTTPS traffic because the DNS will not match the backend certificate:
+```
+curl: (60) SSL: no alternative certificate subject name matches target host name 'vpce-abcdefghijklmnopq-rstuvwx.vpce-svc-abcdefghijklmnopq.us-east-1.vpce.amazonaws.com'
+```
+Effectively, the endpoint appears untrustworthy. To mitigate this, clients have to create an alias for this DNS name in Route53.
 
 Private DNS for an endpoint service lets you configure a private DNS name so consumers can
-access the service using an existing DNS name without making changes to their applications.
+access the service using an existing DNS name without creating this Route53 DNS alias
 This DNS name can also be guaranteed to match up with the backend certificate.
 
 Before consumers can use the private DNS name, you must verify that you have control of the domain/subdomain.
@@ -68,7 +71,12 @@ Assuming your account has verifiable ownership of the particlar domain/subdomain
 this construct sets up the private DNS configuration on the endpoint service,
 creates all the necessary Route53 entries, and verifies domain ownership.
 
-```
+```ts
+import { Stack } from '@aws-cdk/core';
+import { Vpc, VpcEndpointService } from '@aws-cdk/aws-ec2';
+import { NetworkLoadBalancer } from '@aws-cdk/aws-elasticloadbalancingv2';
+import { PublicHostedZone } from '@aws-cdk/aws-route53';
+
 stack = new Stack();
 vpc = new Vpc(stack, 'VPC');
 nlb = new NetworkLoadBalancer(stack, 'NLB', {

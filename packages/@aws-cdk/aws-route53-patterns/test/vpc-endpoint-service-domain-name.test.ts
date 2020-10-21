@@ -160,8 +160,6 @@ test('create domain name resource', () => {
       TTL: '1800',
     },
     DependsOn: [
-      'EndpointDomainGetNamesCustomResourcePolicy141775B1',
-      'EndpointDomainGetNames9E697ED2',
       'VPCES3AE7D565',
     ],
   }, ResourcePart.CompleteDefinition));

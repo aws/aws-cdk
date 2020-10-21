@@ -23,7 +23,7 @@ export interface VpcEndpointServiceDomainNameProps {
    *
    * This domain name must be verifiably owned by this account, or otherwise
    * delegated to this account.
-   * https://docs.aws.amazon.com/vpc/latest/userguide/endpoint-services-dns-validation.html
+   * @see https://docs.aws.amazon.com/vpc/latest/userguide/endpoint-services-dns-validation.html
    */
   readonly domainName: string;
 
@@ -58,103 +58,11 @@ export class VpcEndpointServiceDomainName extends CoreConstruct {
     const serviceId = props.endpointService.vpcEndpointServiceId;
     const privateDnsName = props.domainName;
 
-    // Creates the Private DNS configuration on the endpoint service
-    const enable = new AwsCustomResource(this, 'EnableDns', {
-      onCreate: {
-        service: 'EC2',
-        action: 'modifyVpcEndpointServiceConfiguration',
-        parameters: {
-          ServiceId: serviceId,
-          PrivateDnsName: privateDnsName,
-        },
-        physicalResourceId: PhysicalResourceId.of(id),
-      },
-      onUpdate: {
-        service: 'EC2',
-        action: 'modifyVpcEndpointServiceConfiguration',
-        parameters: {
-          ServiceId: serviceId,
-          PrivateDnsName: privateDnsName,
-        },
-        physicalResourceId: PhysicalResourceId.of(id),
-      },
-      onDelete: {
-        service: 'EC2',
-        action: 'modifyVpcEndpointServiceConfiguration',
-        parameters: {
-          ServiceId: serviceId,
-          RemovePrivateDnsName: true,
-        },
-      },
-      policy: AwsCustomResourcePolicy.fromSdkCalls({
-        resources: AwsCustomResourcePolicy.ANY_RESOURCE,
-      }),
-    });
+    // Enable Private DNS on the endpoint service and retrieve the AWS-generated configuration
+    const privateDnsConfiguration = this.getPrivateDnsConfiguration(id, serviceId, privateDnsName);
 
-    // Get the name/value pair for the TxtRecord
-    // We're always going to check the name/value because it's harmless
-    const guaranteeAlwaysLookup = randomString();
-    const getNames = new AwsCustomResource(this, 'GetNames', {
-      onCreate: {
-        service: 'EC2',
-        action: 'describeVpcEndpointServiceConfigurations',
-        parameters: {
-          ServiceIds: [serviceId],
-        },
-        physicalResourceId: PhysicalResourceId.of(guaranteeAlwaysLookup),
-      },
-      onUpdate: {
-        service: 'EC2',
-        action: 'describeVpcEndpointServiceConfigurations',
-        parameters: {
-          ServiceIds: [serviceId],
-        },
-        physicalResourceId: PhysicalResourceId.of(guaranteeAlwaysLookup),
-      },
-      policy: AwsCustomResourcePolicy.fromSdkCalls({
-        resources: AwsCustomResourcePolicy.ANY_RESOURCE,
-      }),
-    });
-    // We only want to call and get the TXT DNS details after we've enabled private DNS
-    getNames.node.addDependency(enable);
-
-    // Here are the name/value we get from the endpoint service
-    const name = getNames.getResponseField('ServiceConfigurations.0.PrivateDnsNameConfiguration.Name');
-    const value = getNames.getResponseField('ServiceConfigurations.0.PrivateDnsNameConfiguration.Value');
-
-    // Create the TXT record in the provided hosted zone
-    const verificationRecord = new TxtRecord(this, 'DnsVerificationRecord', {
-      recordName: name,
-      values: [value],
-      zone: props.publicHostedZone,
-    });
-    // Only try making it once we have the values
-    verificationRecord.node.addDependency(getNames);
-
-    // Tell the endpoint service to verify the domain ownership
-    const startVerification = new AwsCustomResource(this, 'StartVerification', {
-      onCreate: {
-        service: 'EC2',
-        action: 'startVpcEndpointServicePrivateDnsVerification',
-        parameters: {
-          ServiceId: serviceId,
-        },
-        physicalResourceId: PhysicalResourceId.of(Fn.join(':', [name, value])),
-      },
-      onUpdate: {
-        service: 'EC2',
-        action: 'startVpcEndpointServicePrivateDnsVerification',
-        parameters: {
-          ServiceId: serviceId,
-        },
-        physicalResourceId: PhysicalResourceId.of(Fn.join(':', [name, value])),
-      },
-      policy: AwsCustomResourcePolicy.fromSdkCalls({
-        resources: AwsCustomResourcePolicy.ANY_RESOURCE,
-      }),
-    });
-    // Only verify after the record has been created
-    startVerification.node.addDependency(verificationRecord);
+    // Tell AWS to verify that this account owns the domain attached to the service
+    this.verifyPrivateDnsConfiguration(privateDnsConfiguration, props.publicHostedZone);
 
     // Finally, don't do any of the above before the endpoint service is created
     this.node.addDependency(props.endpointService);
@@ -168,6 +76,113 @@ export class VpcEndpointServiceDomainName extends CoreConstruct {
         ', another VpcEndpointServiceDomainName is already associated with it');
     }
   }
+
+  /**
+   * Sets up Custom Resources to make AWS calls to set up Private DNS on an endpoint service,
+   * returning the values to use in a TxtRecord, which AWS uses to verify domain ownership.
+   */
+  private getPrivateDnsConfiguration(id: string, serviceId: string, privateDnsName: string): PrivateDnsConfiguration {
+
+    // The custom resource which tells AWS to enable Private DNS on the given service, using the given domain name
+    // AWS will generate a name/value pair for use in a TxtRecord, which is used to verify domain ownership.
+    const enablePrivateDnsAction = {
+      service: 'EC2',
+      action: 'modifyVpcEndpointServiceConfiguration',
+      parameters: {
+        ServiceId: serviceId,
+        PrivateDnsName: privateDnsName,
+      },
+      physicalResourceId: PhysicalResourceId.of(id),
+    };
+    const removePrivateDnsAction = {
+      service: 'EC2',
+      action: 'modifyVpcEndpointServiceConfiguration',
+      parameters: {
+        ServiceId: serviceId,
+        RemovePrivateDnsName: true,
+      },
+    };
+    const enable = new AwsCustomResource(this, 'EnableDns', {
+      onCreate: enablePrivateDnsAction,
+      onUpdate: enablePrivateDnsAction,
+      onDelete: removePrivateDnsAction,
+      policy: AwsCustomResourcePolicy.fromSdkCalls({
+        resources: AwsCustomResourcePolicy.ANY_RESOURCE,
+      }),
+    });
+
+    // Create the custom resource to look up the name/value pair generated by AWS
+    // after the previous API call
+    // We always look up the values so that, if the domain changes and AWS generates new values,
+    // the new values will be retrieved
+    const guaranteeAlwaysLookup = randomString();
+    const retriveNameValuePairAction = {
+      service: 'EC2',
+      action: 'describeVpcEndpointServiceConfigurations',
+      parameters: {
+        ServiceIds: [serviceId],
+      },
+      physicalResourceId: PhysicalResourceId.of(guaranteeAlwaysLookup),
+    };
+    const getNames = new AwsCustomResource(this, 'GetNames', {
+      onCreate: retriveNameValuePairAction,
+      onUpdate: retriveNameValuePairAction,
+      policy: AwsCustomResourcePolicy.fromSdkCalls({
+        resources: AwsCustomResourcePolicy.ANY_RESOURCE,
+      }),
+    });
+
+    // We only want to call and get the name/value pair after we've told AWS to enable Private DNS
+    // If we call before then, we'll get an empty pair of values.
+    getNames.node.addDependency(enable);
+
+    // Get the references to the name/value pair associated with the endpoint service
+    const name = getNames.getResponseField('ServiceConfigurations.0.PrivateDnsNameConfiguration.Name');
+    const value = getNames.getResponseField('ServiceConfigurations.0.PrivateDnsNameConfiguration.Value');
+
+    return { name, value, serviceId };
+  }
+
+  /**
+   * Creates a Route53 entry and a Custom Resource which explicitly tells AWS to verify ownership
+   * of the domain name attached to an endpoint service.
+   */
+  private verifyPrivateDnsConfiguration(config: PrivateDnsConfiguration, publicHostedZone: IPublicHostedZone) {
+    // Create the TXT record in the provided hosted zone
+    const verificationRecord = new TxtRecord(this, 'DnsVerificationRecord', {
+      recordName: config.name,
+      values: [config.value],
+      zone: publicHostedZone,
+    });
+
+    // Tell the endpoint service to verify the domain ownership
+    const startVerificationAction = {
+      service: 'EC2',
+      action: 'startVpcEndpointServicePrivateDnsVerification',
+      parameters: {
+        ServiceId: config.serviceId,
+      },
+      physicalResourceId: PhysicalResourceId.of(Fn.join(':', [config.name, config.value])),
+    };
+    const startVerification = new AwsCustomResource(this, 'StartVerification', {
+      onCreate: startVerificationAction,
+      onUpdate: startVerificationAction,
+      policy: AwsCustomResourcePolicy.fromSdkCalls({
+        resources: AwsCustomResourcePolicy.ANY_RESOURCE,
+      }),
+    });
+    // Only verify after the record has been created
+    startVerification.node.addDependency(verificationRecord);
+  }
+}
+
+/**
+ * Represent the name/value pair associated with a Private DNS enabled endpoint service
+ */
+interface PrivateDnsConfiguration {
+  readonly name: string;
+  readonly value: string;
+  readonly serviceId: string;
 }
 
 /**
