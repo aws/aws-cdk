@@ -33,9 +33,6 @@
     "projectReferences": true
   },
   "cdk-build": {
-    "pre": [
-      "npm run gen"
-    ],
     "jest": true
   },
   "scripts": {

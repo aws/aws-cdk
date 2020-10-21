@@ -19,6 +19,7 @@ pull_request_rules:
         commit_message: title+body
     conditions:
       - base!=release
+      - -base~=^v2
       - -title~=(WIP|wip)
       - -label~=(blocked|do-not-merge|no-squash|two-approvers)
       - -merged
@@ -41,6 +42,7 @@ pull_request_rules:
         commit_message: title+body
     conditions:
       - base!=release
+      - -base~=^v2
       - -title~=(WIP|wip)
       - label~=two-approvers
       - -label~=(blocked|do-not-merge|no-squash)
@@ -64,6 +66,7 @@ pull_request_rules:
         strict_method: merge
         commit_message: title+body
     conditions:
+      - -base~=^v2
       - -title~=(WIP|wip)
       - -label~=(blocked|do-not-merge)
       # Only if no-squash is set
@@ -129,6 +132,7 @@ pull_request_rules:
         strict_method: merge
         commit_message: title+body
     conditions:
+      - base=v2-main
       - label~=forward-merge
       - -label~=(blocked|do-not-merge)
       - -merged
