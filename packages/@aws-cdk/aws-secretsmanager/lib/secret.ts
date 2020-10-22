@@ -17,10 +17,17 @@ export interface ISecret extends IResource {
   readonly encryptionKey?: kms.IKey;
 
   /**
-   * The ARN of the secret in AWS Secrets Manager.
+   * The ARN of the secret in AWS Secrets Manager. Will return the full ARN if available, otherwise a partial arn.
+   * For secrets imported by the deprecated `fromSecretName`, it will return the `secretName`.
    * @attribute
    */
   readonly secretArn: string;
+
+  /**
+   * The full ARN of the secret in AWS Secrets Manager, which is the ARN including the Secrets Manager-supplied 6-character suffix.
+   * This is equal to `secretArn` in most cases, but is undefined when a full ARN is not available (e.g., secrets imported by name).
+   */
+  readonly secretFullArn?: string;
 
   /**
    * The name of the secret
@@ -152,6 +159,8 @@ abstract class SecretBase extends Resource implements ISecret {
 
   private policy?: ResourcePolicy;
 
+  public get secretFullArn(): string | undefined { return this.secretArn; }
+
   public grantRead(grantee: iam.IGrantable, versionStages?: string[]): iam.Grant {
     // @see https://docs.aws.amazon.com/secretsmanager/latest/userguide/auth-and-access_identity-based-policies.html
 
@@ -277,6 +286,7 @@ export class Secret extends SecretBase {
   /**
    * Imports a secret by secret name; the ARN of the Secret will be set to the secret name.
    * A secret with this name must exist in the same account & region.
+   * @deprecated use `fromSecretNameV2`
    */
   public static fromSecretName(scope: Construct, id: string, secretName: string): ISecret {
     return new class extends SecretBase {
@@ -284,6 +294,7 @@ export class Secret extends SecretBase {
       public readonly secretArn = secretName;
       public readonly secretName = secretName;
       protected readonly autoCreatePolicy = false;
+      public get secretFullArn() { return undefined; }
       // Overrides the secretArn for grant* methods, where the secretArn must be in ARN format.
       // Also adds a wildcard to the resource name to support the SecretsManager-provided suffix.
       protected get arnForPolicies() {
@@ -291,6 +302,35 @@ export class Secret extends SecretBase {
           service: 'secretsmanager',
           resource: 'secret',
           resourceName: this.secretName + '*',
+          sep: ':',
+        });
+      }
+    }(scope, id);
+  }
+
+  /**
+   * Imports a secret by secret name.
+   * A secret with this name must exist in the same account & region.
+   * Replaces the deprecated `fromSecretName`.
+   */
+  public static fromSecretNameV2(scope: Construct, id: string, secretName: string): ISecret {
+    return new class extends SecretBase {
+      public readonly encryptionKey = undefined;
+      public readonly secretName = secretName;
+      public readonly secretArn = this.partialArn;
+      protected readonly autoCreatePolicy = false;
+      public get secretFullArn() { return undefined; }
+      // Overrides the secretArn for grant* methods, where the secretArn must be in ARN format.
+      // Also adds a wildcard to the resource name to support the SecretsManager-provided suffix.
+      protected get arnForPolicies(): string {
+        return this.partialArn + '-??????';
+      }
+      // Creates a "partial" ARN from the secret name. The "full" ARN would include the SecretsManager-provided suffix.
+      private get partialArn(): string {
+        return Stack.of(this).formatArn({
+          service: 'secretsmanager',
+          resource: 'secret',
+          resourceName: secretName,
           sep: ':',
         });
       }
@@ -612,9 +652,11 @@ function parseSecretName(construct: IConstruct, secretArn: string) {
       return resourceName;
     }
 
-    // Secret resource names are in the format `${secretName}-${SecretsManager suffix}`
-    // If there is no hyphen, assume no suffix was provided, and return the whole name.
-    return resourceName.substr(0, resourceName.lastIndexOf('-')) || resourceName;
+    // Secret resource names are in the format `${secretName}-${6-character SecretsManager suffix}`
+    // If there is no hyphen (or 6-character suffix) assume no suffix was provided, and return the whole name.
+    const lastHyphenIndex = resourceName.lastIndexOf('-');
+    const hasSecretsSuffix = lastHyphenIndex !== -1 && resourceName.substr(lastHyphenIndex + 1).length === 6;
+    return hasSecretsSuffix ? resourceName.substr(0, lastHyphenIndex) : resourceName;
   }
   throw new Error('invalid ARN format; no secret name provided');
 }

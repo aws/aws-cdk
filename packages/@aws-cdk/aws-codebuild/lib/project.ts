@@ -956,14 +956,15 @@ export class Project extends ProjectBase {
       this.buildImage.secretsManagerCredentials?.grantRead(this);
     }
 
+    const secret = this.buildImage.secretsManagerCredentials;
     return {
       type: this.buildImage.type,
       image: this.buildImage.imageId,
       imagePullCredentialsType: imagePullPrincipalType,
-      registryCredential: this.buildImage.secretsManagerCredentials
+      registryCredential: secret
         ? {
           credentialProvider: 'SECRETS_MANAGER',
-          credential: this.buildImage.secretsManagerCredentials.secretArn,
+          credential: secret.secretFullArn ?? secret.secretName,
         }
         : undefined,
       privilegedMode: env.privileged || false,
