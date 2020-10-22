@@ -82,7 +82,7 @@ export interface ICluster extends IResource, ec2.IConnectable {
   /**
    * An Open ID Connect Provider
    */
-  readonly openIdConnectProvider?: iam.IOpenIdConnectProvider;
+  readonly openIdConnectProvider: iam.IOpenIdConnectProvider;
 
   /**
    * An IAM role that can perform kubectl operations against this cluster.
@@ -628,7 +628,7 @@ abstract class ClusterBase extends Resource implements ICluster {
   public abstract readonly kubectlEnvironment?: { [key: string]: string };
   public abstract readonly kubectlSecurityGroup?: ec2.ISecurityGroup;
   public abstract readonly kubectlPrivateSubnets?: ec2.ISubnet[];
-  public abstract readonly openIdConnectProvider?: iam.IOpenIdConnectProvider;
+  public abstract readonly openIdConnectProvider: iam.IOpenIdConnectProvider;
 
   /**
    * Defines a Kubernetes resource in this cluster.
@@ -1270,11 +1270,8 @@ export class Cluster extends ClusterBase {
    * to link this cluster to AWS IAM.
    *
    * A provider will only be defined if this property is accessed (lazy initialization).
-   *
-   * Since we dont really want to make it required on the top-level ICluster
-   * we do this trick here in return type to match interface type
    */
-  public get openIdConnectProvider(): iam.IOpenIdConnectProvider | undefined {
+  public get openIdConnectProvider() {
     if (!this._openIdConnectProvider) {
       this._openIdConnectProvider = new OpenIdConnectProvider(this, 'OpenIdConnectProvider', {
         url: this.clusterOpenIdConnectIssuerUrl,
@@ -1622,7 +1619,6 @@ class ImportedCluster extends ClusterBase {
   public readonly kubectlSecurityGroup?: ec2.ISecurityGroup | undefined;
   public readonly kubectlPrivateSubnets?: ec2.ISubnet[] | undefined;
   public readonly kubectlLayer?: lambda.ILayerVersion;
-  public readonly openIdConnectProvider?: iam.IOpenIdConnectProvider;
 
   constructor(scope: Construct, id: string, private readonly props: ClusterAttributes) {
     super(scope, id);
@@ -1634,7 +1630,6 @@ class ImportedCluster extends ClusterBase {
     this.kubectlEnvironment = props.kubectlEnvironment;
     this.kubectlPrivateSubnets = props.kubectlPrivateSubnetIds ? props.kubectlPrivateSubnetIds.map((subnetid, index) => ec2.Subnet.fromSubnetId(this, `KubectlSubnet${index}`, subnetid)) : undefined;
     this.kubectlLayer = props.kubectlLayer;
-    this.openIdConnectProvider = props.openIdConnectProvider;
 
     let i = 1;
     for (const sgid of props.securityGroupIds ?? []) {
@@ -1680,6 +1675,13 @@ class ImportedCluster extends ClusterBase {
       throw new Error('"clusterEncryptionConfigKeyArn" is not defined for this imported cluster');
     }
     return this.props.clusterEncryptionConfigKeyArn;
+  }
+
+  public get openIdConnectProvider(): iam.IOpenIdConnectProvider {
+    if (!this.props.openIdConnectProvider) {
+      throw new Error('"openIdConnectProvider" is not defined for this imported cluster');
+    }
+    return this.props.openIdConnectProvider;
   }
 }
 

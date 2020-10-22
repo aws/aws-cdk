@@ -62,11 +62,6 @@ export class ServiceAccount extends CoreConstruct implements IPrincipal {
     super(scope, id);
 
     const { cluster } = props;
-
-    if (!cluster.openIdConnectProvider) {
-      throw new Error('Open ID Connect Provider not found for this cluster');
-    }
-
     this.serviceAccountName = props.name ?? this.node.uniqueId.toLowerCase();
     this.serviceAccountNamespace = props.namespace ?? 'default';
 

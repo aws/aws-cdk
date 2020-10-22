@@ -639,12 +639,13 @@ mypod.node.addDependency(sa);
 new cdk.CfnOutput(this, 'ServiceAccountIamRole', { value: sa.role.roleArn })
 ```
 
-Note that adding new service account is supportable for both: new and imported clusters
+You can also add service accounts to existing clusters. 
 
-For imported clusters you must provide `openIdConnectProvider` to work with IRSA
+To do so, pass the `openIdConnectProvider` property when you import the cluster into the application.
 ```ts
+// you can import an existing provider
 const provider = eks.OpenIdConnectProvider.fromOpenIdConnectProviderArn(this, 'Provider', 'OIDCProviderARN');
-// or
+// or create a new one
 const provider = new eks.OpenIdConnectProvider(this, 'Provider', issuerUrl);
 
 const cluster = eks.Cluster.fromClusterAttributes({
