@@ -139,7 +139,7 @@ export class AssetStaging extends CoreConstruct {
   private readonly outdir: string;
 
   /**
-   * A source source fingerprint given by the user
+   * A custom source fingerprint given by the user
    *
    * Will not be used literally, always hashed later on.
    */
