@@ -15,10 +15,8 @@ export interface ClusterProps {
   readonly brokerNodeGroupProps: BrokerNodeGroupProps;
   /**
    * The physical name of the cluster.
-   *
-   * @default - CloudFormation-generated name
    */
-  readonly clusterName?: string;
+  readonly clusterName: string;
   /**
    * The version of Apache Kafka.
    *

@@ -100,7 +100,6 @@ export class Cluster extends ClusterBase {
     }
 
     if (
-      props.clusterName !== undefined &&
       !core.Token.isUnresolved(props.clusterName) &&
       !/^[a-zA-Z0-9]+$/.test(props.clusterName) &&
       props.clusterName.length > 64
@@ -257,7 +256,7 @@ export class Cluster extends ClusterBase {
     };
 
     const resource = new CfnCluster(this, 'Resource', {
-      clusterName: this.physicalName,
+      clusterName: props.clusterName,
       kafkaVersion:
         props.kafkaVersion?.version ?? KafkaVersion.of('2.2.1').version,
       numberOfBrokerNodes:
