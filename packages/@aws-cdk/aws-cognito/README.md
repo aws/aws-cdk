@@ -368,23 +368,21 @@ To work around the circular dependency issue, your Lambda trigger can be granted
 on your user pool using the `attachInlinePolicy` API.
 
 ```ts
-import * as lambda from '@aws-cdk/aws-lambda';
-
 const postAuthFn = new lambda.Function(this, 'postAuthFn', {
-  code: lambda.Code.fromInline('foo'),
+  code: lambda.Code.fromInline('post authentication'),
   runtime: lambda.Runtime.NODEJS_12_X,
   handler: 'index.handler',
 });
 
-const userpool = new UserPol(this, 'myuserpool', {
+const userpool = new cognito.UserPool(this, 'myuserpool', {
   lambdaTriggers: {
     postAuthentication: postAuthFn,
   },
 });
 
 // provide permissions to describe the user pool scoped to the ARN of 'myuserpool'
-postAuthFn.role?.attachInlinePolicy(new Policy(stack, 'userpool-policy', {
-  statements: [new PolicyStatement({
+postAuthFn.role?.attachInlinePolicy(new iam.Policy(this, 'userpool-policy', {
+  statements: [new iam.PolicyStatement({
     actions: ['cognito-idp:DescribeUserPool'],
     resources: [userpool.userPoolArn],
   })],
