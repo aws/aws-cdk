@@ -148,16 +148,11 @@ export class User extends Resource implements IIdentity, IUser {
       private defaultPolicy?: Policy;
 
       public addToPolicy(statement: PolicyStatement): boolean {
-        return this.addToPrincipalPolicy(statement).statementAdded;
+        throw new Error('Cannot add policy to imported User');
       }
 
       public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
-        if (!this.defaultPolicy) {
-          this.defaultPolicy = new Policy(this, 'Policy');
-          this.defaultPolicy.attachToUser(this);
-        }
-        this.defaultPolicy.addStatements(statement);
-        return { statementAdded: true, policyDependable: this.defaultPolicy };
+        throw new Error('Cannot add policy to imported User');
       }
 
       public addToGroup(_group: IGroup): void {
