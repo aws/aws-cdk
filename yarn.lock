@@ -3117,10 +3117,10 @@
   resolved "https://registry.yarnpkg.com/@types/minimist/-/minimist-1.2.0.tgz#69a23a3ad29caf0097f06eda59b361ee2f0639f6"
   integrity sha1-aaI6OtKcrwCX8G7aWbNh7i8GOfY=
 
-"@types/mock-fs@^4.10.0":
-  version "4.10.0"
-  resolved "https://registry.yarnpkg.com/@types/mock-fs/-/mock-fs-4.10.0.tgz#460061b186993d76856f669d5317cda8a007c24b"
-  integrity sha512-FQ5alSzmHMmliqcL36JqIA4Yyn9jyJKvRSGV3mvPh108VFatX7naJDzSG4fnFQNZFq9dIx0Dzoe6ddflMB2Xkg==
+"@types/mock-fs@^4.13.0":
+  version "4.13.0"
+  resolved "https://registry.yarnpkg.com/@types/mock-fs/-/mock-fs-4.13.0.tgz#b8b01cd2db588668b2532ecd21b1babd3fffb2c0"
+  integrity sha512-FUqxhURwqFtFBCuUj3uQMp7rPSQs//b3O9XecAVxhqS9y4/W8SIJEZFq2mmpnFVZBXwR/2OyPLE97CpyYiB8Mw==
   dependencies:
     "@types/node" "*"
 
@@ -3798,10 +3798,10 @@ aws-sdk-mock@^5.1.0:
     sinon "^9.0.1"
     traverse "^0.6.6"
 
-aws-sdk@^2.637.0, aws-sdk@^2.739.0:
-  version "2.764.0"
-  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.764.0.tgz#587bf954645bbcb706c0ce985e7befeb94b15427"
-  integrity sha512-0asgRwAI3WxUyOjlx2fL7pPHEZajFbAVRerE2h0xX649123PwdhIiJ2HM7lWwn/f+mX7IagYjOCn9dIyvCHBVQ==
+aws-sdk@^2.637.0, aws-sdk@^2.776.0:
+  version "2.776.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.776.0.tgz#a809a78b01128614eb6a656a406ff325c70bed8c"
+  integrity sha512-fIwiHSQ7o8r2WqNg3l6Qrn5XdjRW7zGyn0OVuXmTAKYo9mZn89AVg0MfrcD4ZFcJc56VCKbz5PR04X5oHdk/Bw==
   dependencies:
     buffer "4.9.2"
     events "1.1.1"
@@ -4341,10 +4341,10 @@ cdk8s-plus@^0.33.0:
   dependencies:
     minimatch "^3.0.4"
 
-cdk8s@^0.32.0:
-  version "0.32.0"
-  resolved "https://registry.yarnpkg.com/cdk8s/-/cdk8s-0.32.0.tgz#d977e977c1eee589d74a302675aa0f296cbc19d8"
-  integrity sha512-FUIULXEKPjXA+9DLzCUpIcOpBrF2B3Dl0jxxjPbwScrTnVqAY2+WetUbcnpogsVCbGl5gWTdO3nI2eBEaST6Bg==
+cdk8s@^0.33.0:
+  version "0.33.0"
+  resolved "https://registry.yarnpkg.com/cdk8s/-/cdk8s-0.33.0.tgz#503b60b98de5fe82b22ac5dee2c351a4ba102deb"
+  integrity sha512-Yoo6RZWZPk6K2JZLiJA22faNVWqTE6Nv+VNgmTFTq4AC8c+eCvq6/xHKcpn78HhTLEPBmczaja7q2MiRc9LTBQ==
   dependencies:
     follow-redirects "^1.11.0"
     json-stable-stringify "^1.0.1"
