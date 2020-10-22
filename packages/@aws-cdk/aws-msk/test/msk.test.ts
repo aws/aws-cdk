@@ -38,9 +38,14 @@ test('Snapshot test with all values set', () => {
     },
     encryptionInTransitConfig: {
       clientBroker: ClientBrokerEncryption.TLS,
-      certificateAuthorityArns: [
-        'arn:aws:acm-pca:us-west-2:1234567890:certificate-authority/11111111-1111-1111-1111-111111111111',
-      ],
+    },
+    clientAuthenticationConfiguration: {
+      tls: {
+        certificateAuthorityArns: [
+          'arn:aws:acm-pca:us-west-2:1234567890:certificate-authority/11111111-1111-1111-1111-111111111111',
+        ],
+
+      },
     },
     monitoringConfiguration: {
       enableJmxExporter: true,

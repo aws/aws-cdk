@@ -1,7 +1,9 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
+import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import * as core from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
-import * as constructs from 'constructs'
+import * as constructs from 'constructs';
 import {
   CfnCluster,
   KafkaVersion,
@@ -110,14 +112,33 @@ export class Cluster extends ClusterBase {
     }
 
     if (
-      props.encryptionInTransitConfig?.clientBroker ===
-        ClientBrokerEncryption.TLS &&
-      !props.encryptionInTransitConfig.certificateAuthorityArns
+      props.clientAuthenticationConfiguration?.tls?.certificateAuthorityArns &&
+      props.clientAuthenticationConfiguration?.sasl?.scram
     ) {
       core.Annotations.of(this).addError(
-        'When allowing only TLS encrypted traffic between clients and brokers you must supply a ACM Private CA ARN, otherwise you will not be able to authenticate with the cluster. See - https://docs.aws.amazon.com/msk/latest/developerguide/msk-authentication.html',
+        'Only one of SASL/SCRAM or TLS client authentication can be set.',
       );
     }
+
+    if (
+      props.encryptionInTransitConfig?.clientBroker ===
+        ClientBrokerEncryption.PLAINTEXT &&
+      (props.clientAuthenticationConfiguration?.tls?.certificateAuthorityArns ||
+        props.clientAuthenticationConfiguration?.sasl?.scram)
+    ) {
+      core.Annotations.of(this).addError(
+        'To enable client authentication, you must enabled TLS-encrypted traffic between clients and brokers.',
+      );
+    } else if (
+      props.encryptionInTransitConfig?.clientBroker ===
+        ClientBrokerEncryption.TLS_PLAINTEXT &&
+      props.clientAuthenticationConfiguration?.sasl?.scram
+    ) {
+      core.Annotations.of(this).addError(
+        'To enable SASL/SCRAM authentication, you must only allow TLS-encrypted traffic between clients and brokers.',
+      );
+    }
+
     const volumeSize =
       brokerNodeGroupProps.storageInfo?.ebsStorageInfo?.volumeSize;
     // Minimum: 1 GiB, maximum: 16384 GiB
@@ -144,7 +165,7 @@ export class Cluster extends ClusterBase {
     const encryptionInTransit = {
       clientBroker:
         props.encryptionInTransitConfig?.clientBroker ??
-        ClientBrokerEncryption.TLS_PLAINTEXT,
+        ClientBrokerEncryption.TLS,
       inCluster: props.encryptionInTransitConfig?.enableInCluster ?? true,
     };
 
@@ -157,7 +178,7 @@ export class Cluster extends ClusterBase {
               ? { enabledInBroker: true }
               : undefined,
             nodeExporter: props.monitoringConfiguration
-                ?.enablePrometheusNodeExporter
+              ?.enablePrometheusNodeExporter
               ? { enabledInBroker: true }
               : undefined,
           },
@@ -184,6 +205,54 @@ export class Cluster extends ClusterBase {
           bucket: props.brokerLoggingConfiguration?.s3?.bucket.bucketName,
           prefix: props.brokerLoggingConfiguration?.s3?.prefix,
         },
+      },
+    };
+
+    if (
+      props.clientAuthenticationConfiguration?.sasl?.scram &&
+      props.clientAuthenticationConfiguration?.sasl?.key === undefined
+    ) {
+      const key = new kms.Key(this, 'SASLKey', {
+        description:
+          'Used for encrypting MSK secrets for SASL/SCRAM authentication.',
+        alias: 'msk/sasl/scram',
+      });
+
+      key.addToResourcePolicy(
+        new iam.PolicyStatement({
+          sid:
+            'Allow access through AWS Secrets Manager for all principals in the account that are authorized to use AWS Secrets Manager',
+          principals: [new iam.Anyone()],
+          actions: [
+            'kms:Encrypt',
+            'kms:Decrypt',
+            'kms:ReEncrypt*',
+            'kms:GenerateDataKey*',
+            'kms:CreateGrant',
+            'kms:DescribeKey',
+          ],
+          resources: ['*'],
+          conditions: {
+            StringEquals: {
+              'kms:ViaService': `secretsmanager.${core.Aws.REGION}.amazonaws.com`,
+              'kms:CallerAccount': core.Aws.ACCOUNT_ID,
+            },
+          },
+        }),
+      );
+    }
+    const clientAuthentication = {
+      sasl: props.clientAuthenticationConfiguration?.sasl?.scram
+        ? {
+          scram: {
+            enabled: props.clientAuthenticationConfiguration?.sasl.scram,
+          },
+        }
+        : undefined,
+      tls: {
+        certificateAuthorityArnList:
+          props.clientAuthenticationConfiguration?.tls
+            ?.certificateAuthorityArns,
       },
     };
 
@@ -215,12 +284,7 @@ export class Cluster extends ClusterBase {
       enhancedMonitoring: props.monitoringConfiguration?.clusterMonitoringLevel,
       openMonitoring: openMonitoring,
       loggingInfo: loggingInfo,
-      clientAuthentication: {
-        tls: {
-          certificateAuthorityArnList:
-            props.encryptionInTransitConfig?.certificateAuthorityArns,
-        },
-      },
+      clientAuthentication: clientAuthentication,
     });
 
     this.clusterName = this.getResourceNameAttribute(

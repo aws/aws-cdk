@@ -56,6 +56,13 @@ export interface ClusterProps {
    */
   readonly encryptionInTransitConfig?: EncryptionInTransitConfig;
   /**
+   * Configuration properties for client authentication.
+   * MSK supports using private TLS certificates or SASL/SCRAM to authenticate the identity of clients.
+   *
+   * @default - disabled
+   */
+  readonly clientAuthenticationConfiguration?: ClientAuthenticationConfig;
+  /**
    * What to do when this resource is deleted from a stack.
    *
    * @default RemovalPolicy.RETAIN
@@ -265,12 +272,14 @@ export enum ClientBrokerEncryption {
 
 /**
  * The settings for encrypting data in transit.
+ *
+ * @see https://docs.aws.amazon.com/msk/latest/developerguide/msk-encryption.html#msk-encryption-in-transit
  */
 export interface EncryptionInTransitConfig {
   /**
    * Indicates the encryption setting for data in transit between clients and brokers.
    *
-   * @default - TLS_PLAINTEXT
+   * @default - TLS
    */
   readonly clientBroker?: ClientBrokerEncryption;
   /**
@@ -279,10 +288,55 @@ export interface EncryptionInTransitConfig {
    * @default true
    */
   readonly enableInCluster?: boolean;
+}
+
+/**
+ * Configuration properties for client authentication.
+ */
+export interface ClientAuthenticationConfig {
   /**
-   * List of ACM Certificate Authority ARNs
+   * SASL authentication configuration
    *
    * @default - disabled
+   */
+  readonly sasl?: SaslAuthConfig;
+  /**
+   * TLS authentication configuration
+   *
+   * @default - disabled
+   */
+  readonly tls?: TlsAuthConfig;
+}
+
+/**
+ * SASL authentication configuration
+ */
+export interface SaslAuthConfig {
+  /**
+   * Enable SASL/SCRAM authentication.
+   *
+   * @default false
+   */
+  readonly scram?: boolean;
+  /**
+   * KMS Key to encrypt SASL/SCRAM secrets.
+   *
+   * You must use a customer master key (CMK) when creating users in secrets manager.
+   * You cannot use a Secret with Amazon MSK that uses the default Secrets Manager encryption key.
+   *
+   * @default - CMK will be created with alias msk/sasl/scram
+   */
+  readonly key?: kms.IKey;
+}
+
+/**
+ * TLS authentication configuration
+ */
+export interface TlsAuthConfig {
+  /**
+   * List of ACM Certificate Authorities to enable TLS authentication.
+   *
+   * @default - none
    */
   readonly certificateAuthorityArns?: string[];
 }
