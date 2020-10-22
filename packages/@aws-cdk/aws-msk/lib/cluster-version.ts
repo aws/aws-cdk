@@ -20,8 +20,17 @@ export class KafkaVersion {
   /**
    * Kafka version 2.4.1
    */
-  public static readonly V2_4_1 = KafkaVersion.of('2.4.1');
+  public static readonly V2_4_1_1 = KafkaVersion.of('2.4.1.1');
 
+  /**
+   * Kafka version 2.5.1
+   */
+  public static readonly V2_5_1 = KafkaVersion.of('2.5.1');
+
+  /**
+   * Kafka version 2.6.0
+   */
+  public static readonly V2_6_0 = KafkaVersion.of('2.6.0');
   /**
    * Custom cluster version
    * @param version custom version number
