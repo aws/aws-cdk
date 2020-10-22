@@ -31,10 +31,7 @@
   "cdk-build": {
     "eslint": {
       "disable": true
-    },
-    "pre": [
-      "npm run gen"
-    ]
+    }
   },
   "pkglint": {
     "exclude": [
@@ -131,6 +128,7 @@
     "@aws-cdk/aws-cloudtrail": "0.0.0",
     "@aws-cdk/aws-cloudwatch": "0.0.0",
     "@aws-cdk/aws-cloudwatch-actions": "0.0.0",
+    "@aws-cdk/aws-codeartifact": "0.0.0",
     "@aws-cdk/aws-codebuild": "0.0.0",
     "@aws-cdk/aws-codecommit": "0.0.0",
     "@aws-cdk/aws-codedeploy": "0.0.0",
@@ -241,6 +239,7 @@
     "@aws-cdk/aws-stepfunctions": "0.0.0",
     "@aws-cdk/aws-stepfunctions-tasks": "0.0.0",
     "@aws-cdk/aws-synthetics": "0.0.0",
+    "@aws-cdk/aws-timestream": "0.0.0",
     "@aws-cdk/aws-transfer": "0.0.0",
     "@aws-cdk/aws-waf": "0.0.0",
     "@aws-cdk/aws-wafregional": "0.0.0",
@@ -255,10 +254,9 @@
     "@aws-cdk/region-info": "0.0.0",
     "@aws-cdk/yaml-cfn": "0.0.0",
     "@types/fs-extra": "^8.1.1",
-    "@types/node": "^10.17.35",
+    "@types/node": "^10.17.40",
     "cdk-build-tools": "0.0.0",
     "constructs": "^3.0.4",
-    "cdk8s": "^0.30.0",
     "fs-extra": "^9.0.1",
     "pkglint": "0.0.0",
     "ts-node": "^9.0.0",
@@ -266,8 +264,7 @@
     "ubergen": "0.0.0"
   },
   "peerDependencies": {
-    "constructs": "^3.0.4",
-    "cdk8s": "^0.30.0"
+    "constructs": "^3.0.4"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
