@@ -310,9 +310,10 @@ export class Cluster extends ClusterBase {
    *
    * Uses a Custom Resource to make an API call to `describeCluster` using the Javascript SDK
    *
+   * @param responseField Field to return from API call. eg. ZookeeperConnectString, ZookeeperConnectStringTls
    * @returns - The connection string to use to connect to the Apache ZooKeeper cluster.
    */
-  public get zookeeperConnectionString(): string {
+  private _zookeeperConnectionString(responseField: string): string {
     const zookeeperConnect = new cr.AwsCustomResource(
       this,
       'ZookeeperConnect',
@@ -333,11 +334,60 @@ export class Cluster extends ClusterBase {
       },
     );
 
-    return zookeeperConnect.getResponseField(
-      'ClusterInfo.ZookeeperConnectString',
-    );
+    return zookeeperConnect.getResponseField(`ClusterInfo.${responseField}`);
   }
 
+  /**
+   * Get the ZooKeeper Connection string
+   *
+   * Uses a Custom Resource to make an API call to `describeCluster` using the Javascript SDK
+   *
+   * @returns - The connection string to use to connect to the Apache ZooKeeper cluster.
+   */
+  public get zookeeperConnectionString(): string {
+    return this._zookeeperConnectionString('ZookeeperConnectString');
+  }
+
+  /**
+   * Get the ZooKeeper Connection string for a TLS enabled cluster
+   *
+   * Uses a Custom Resource to make an API call to `describeCluster` using the Javascript SDK
+   *
+   * @returns - The connection string to use to connect to zookeeper cluster on TLS port.
+   */
+  public get zookeeperConnectionStringTls(): string {
+    return this._zookeeperConnectionString('ZookeeperConnectStringTls');
+  }
+
+  /**
+   * Get the list of brokers that a client application can use to bootstrap
+   *
+   * Uses a Custom Resource to make an API call to `getBootstrapBrokers` using the Javascript SDK
+   *
+   * @param responseField Field to return from API call. eg. BootstrapBrokerStringSaslScram, BootstrapBrokerString
+   * @returns - A string containing one or more hostname:port pairs.
+   */
+  private _bootstrapBrokers(responseField: string): string {
+    const bootstrapBrokers = new cr.AwsCustomResource(
+      this,
+      'BootstrapBrokers',
+      {
+        onUpdate: {
+          service: 'Kafka',
+          action: 'getBootstrapBrokers',
+          parameters: {
+            ClusterArn: this.clusterArn,
+          },
+          physicalResourceId: cr.PhysicalResourceId.of('BootstrapBrokers'),
+        },
+        policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
+          resources: [this.clusterArn],
+        }),
+      },
+    );
+
+    return bootstrapBrokers.getResponseField(responseField);
+  }
   /**
    * Get the list of brokers that a client application can use to bootstrap
    *
@@ -346,53 +396,28 @@ export class Cluster extends ClusterBase {
    * @returns - A string containing one or more hostname:port pairs.
    */
   public get bootstrapBrokers(): string {
-    const bootstrapBrokers = new cr.AwsCustomResource(
-      this,
-      'BootstrapBrokers',
-      {
-        onUpdate: {
-          service: 'Kafka',
-          action: 'getBootstrapBrokers',
-          parameters: {
-            ClusterArn: this.clusterArn,
-          },
-          physicalResourceId: cr.PhysicalResourceId.of('BootstrapBrokers'),
-        },
-        policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
-          resources: [this.clusterArn],
-        }),
-      },
-    );
-
-    return bootstrapBrokers.getResponseField('BootstrapBrokerString');
+    return this._bootstrapBrokers('BootstrapBrokerString');
   }
 
   /**
-   * Get the list of brokers that a client application can use to bootstrap
+   * Get the list of brokers that a TLS authenticated client application can use to bootstrap
    *
    * Uses a Custom Resource to make an API call to `getBootstrapBrokers` using the Javascript SDK
    *
    * @returns - A string containing one or more DNS names (or IP) and TLS port pairs.
    */
   public get bootstrapBrokersTls(): string {
-    const bootstrapBrokers = new cr.AwsCustomResource(
-      this,
-      'BootstrapBrokers',
-      {
-        onUpdate: {
-          service: 'Kafka',
-          action: 'getBootstrapBrokers',
-          parameters: {
-            ClusterArn: this.clusterArn,
-          },
-          physicalResourceId: cr.PhysicalResourceId.of('BootstrapBrokers'),
-        },
-        policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
-          resources: [this.clusterArn],
-        }),
-      },
-    );
+    return this._bootstrapBrokers('BootstrapBrokerStringTls');
+  }
 
-    return bootstrapBrokers.getResponseField('BootstrapBrokerStringTls');
+  /**
+   * Get the list of brokers that a SASL/SCRAM authenticated client application can use to bootstrap
+   *
+   * Uses a Custom Resource to make an API call to `getBootstrapBrokers` using the Javascript SDK
+   *
+   * @returns - A string containing one or more dns name (or IP) and SASL SCRAM port pairs.
+   */
+  public get bootstrapBrokersSaslScram(): string {
+    return this._bootstrapBrokers('BootstrapBrokerStringSaslScram');
   }
 }
