@@ -35,12 +35,12 @@ class Cache<A> {
    * Get a value from the cache or calculate it
    */
   public obtain(cacheKey: string, calcFn: () => A): A {
-    const old = this.cache.get(cacheKey);
-    if (old) { return old; }
+    let value = this.cache.get(cacheKey);
+    if (value) { return value; }
 
-    const noo = calcFn();
-    this.cache.set(cacheKey, noo);
-    return noo;
+    value = calcFn();
+    this.cache.set(cacheKey, value);
+    return value;
   }
 }
 
@@ -136,7 +136,7 @@ export class AssetStaging extends CoreConstruct {
   private readonly fingerprintOptions: FingerprintOptions;
 
   private readonly hashType: AssetHashType;
-  private readonly outdir: string;
+  private readonly assetOutdir: string;
 
   /**
    * A custom source fingerprint given by the user
@@ -157,7 +157,7 @@ export class AssetStaging extends CoreConstruct {
     if (!outdir) {
       throw new Error('unable to determine cloud assembly asset output directory. Assets must be defined indirectly within a "Stage" or an "App" scope');
     }
-    this.outdir = outdir;
+    this.assetOutdir = outdir;
 
     // Determine the hash type based on the props as props.assetHashType is
     // optional from a caller perspective.
@@ -189,7 +189,7 @@ export class AssetStaging extends CoreConstruct {
     // part of the cache key to make sure we don't accidentally return the wrong
     // staged asset from the cache.
     this.cacheKey = calculateCacheKey({
-      outdir: this.outdir,
+      outdir: this.assetOutdir,
       sourcePath: path.resolve(props.sourcePath),
       bundling: props.bundling,
       assetHashType: this.hashType,
@@ -214,21 +214,31 @@ export class AssetStaging extends CoreConstruct {
   }
 
   /**
-   * Return the path to the staged asset, relative to the Cloud Assembly directory of the given stack
+   * Return the path to the staged asset, relative to the Cloud Assembly (manifest) directory of the given stack
    *
    * Only returns a relative path if the asset ended up staged inside the outDir,
    * returns an absolute path if it was not.
+   *
+   * A non-obvious directory layout may look like this:
+   *
+   * ```
+   *   CLOUD ASSEMBLY ROOT
+   *     +-- asset.12345abcdef/
+   *     +-- assembly-Stage
+   *           +-- MyStack.template.json
+   *           +-- MyStack.assets.json <- will contain { "path": "../asset.12345abcdef" }
+   * ```
    */
   public relativeStagedPath(stack: Stack) {
-    const thisAsmDir = Stage.of(stack)?.outdir;
-    if (!thisAsmDir) { return this.stagedPath; }
+    const asmManifestDir = Stage.of(stack)?.outdir;
+    if (!asmManifestDir) { return this.stagedPath; }
 
-    const isOutsideStageDir = path.relative(this.outdir, this.stagedPath).startsWith('..');
-    if (isOutsideStageDir) {
+    const isOutsideAssetDir = path.relative(this.assetOutdir, this.stagedPath).startsWith('..');
+    if (isOutsideAssetDir) {
       return this.stagedPath;
     }
 
-    return path.relative(thisAsmDir, this.stagedPath);
+    return path.relative(asmManifestDir, this.stagedPath);
   }
 
   /**
@@ -240,7 +250,7 @@ export class AssetStaging extends CoreConstruct {
     const assetHash = this.calculateHash(this.hashType);
     const stagedPath = skip
       ? this.sourcePath
-      : path.resolve(this.outdir, renderAssetFilename(assetHash, path.extname(this.sourcePath)));
+      : path.resolve(this.assetOutdir, renderAssetFilename(assetHash, path.extname(this.sourcePath)));
 
     this.stageAsset(this.sourcePath, stagedPath, 'copy');
     return { assetHash, stagedPath };
@@ -266,12 +276,12 @@ export class AssetStaging extends CoreConstruct {
       ? this.calculateHash(this.hashType, bundling)
       : undefined;
 
-    const bundleDir = this.determineBundleDir(this.outdir, assetHash);
+    const bundleDir = this.determineBundleDir(this.assetOutdir, assetHash);
     this.bundle(bundling, bundleDir);
 
     // Calculate assetHash afterwards if we still must
     assetHash = assetHash ?? this.calculateHash(this.hashType, bundling, bundleDir);
-    const stagedPath = path.resolve(this.outdir, renderAssetFilename(assetHash));
+    const stagedPath = path.resolve(this.assetOutdir, renderAssetFilename(assetHash));
 
     this.stageAsset(bundleDir, stagedPath, 'move');
     return { assetHash, stagedPath };
