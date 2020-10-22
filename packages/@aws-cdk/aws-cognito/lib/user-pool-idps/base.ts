@@ -186,6 +186,8 @@ export interface AttributeMapping {
 
 /**
  * Properties to create a new instance of UserPoolIdentityProvider
+ *
+ * @internal
  */
 export interface UserPoolIdentityProviderProps {
   /**
@@ -202,6 +204,8 @@ export interface UserPoolIdentityProviderProps {
 
 /**
  * Options to integrate with the various social identity providers.
+ *
+ * @internal
  */
 export abstract class UserPoolIdentityProviderBase extends Resource implements IUserPoolIdentityProvider {
   public abstract readonly providerName: string;
