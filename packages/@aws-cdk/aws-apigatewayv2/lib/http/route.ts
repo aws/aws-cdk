@@ -109,6 +109,14 @@ export interface HttpRouteProps extends BatchHttpRouteOptions {
    * @default - No authorizer
    */
   readonly authorizer?: IAuthorizer;
+
+  /**
+   * Scopes required to access this route
+   *
+   * Useless if no authorizer is passed in
+   * @default - No scopes
+   */
+  readonly authorizationScopes?: string[];
 }
 
 /**
@@ -146,6 +154,7 @@ export class HttpRoute extends Resource implements IHttpRoute {
       ...props.authorizer ? {
         authorizerId: props.authorizer.authorizerId,
         authorizationType: props.authorizer.authorizerType,
+        authorizationScopes: props.authorizationScopes,
       }: {},
     };
 

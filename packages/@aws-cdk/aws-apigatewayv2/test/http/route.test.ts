@@ -94,6 +94,7 @@ describe('HttpRoute', () => {
       integration: new DummyIntegration(),
       routeKey: HttpRouteKey.with('/books', HttpMethod.GET),
       authorizer,
+      authorizationScopes: ['books:read'],
     });
 
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
@@ -108,6 +109,7 @@ describe('HttpRoute', () => {
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Route', {
       AuthorizerId: stack.resolve(authorizer.authorizerId),
       AuthorizationType: 'JWT',
+      AuthorizationScopes: ['books:read'],
     });
   });
 });

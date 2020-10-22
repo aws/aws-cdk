@@ -180,6 +180,14 @@ export interface AddRoutesOptions extends BatchHttpRouteOptions {
    * @default - No authorizer
    */
   readonly authorizer?: IAuthorizer;
+
+  /**
+   * Scopes required to access this route
+   *
+   * Useless if no authorizer is passed in
+   * @default - No scopes
+   */
+  readonly authorizationScopes?: string[];
 }
 
 abstract class HttpApiBase extends Resource implements IHttpApi { // note that this is not exported
@@ -343,6 +351,7 @@ export class HttpApi extends HttpApiBase {
       routeKey: HttpRouteKey.with(options.path, method),
       integration: options.integration,
       authorizer: options.authorizer,
+      authorizationScopes: options.authorizationScopes,
     }));
   }
 }

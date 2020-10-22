@@ -256,6 +256,7 @@ describe('HttpApi', () => {
         }),
       }),
       authorizer,
+      authorizationScopes: ['pets:read'],
     });
 
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Api', {
@@ -266,6 +267,7 @@ describe('HttpApi', () => {
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Route', {
       AuthorizerId: stack.resolve(authorizer.authorizerId),
       AuthorizationType: 'JWT',
+      AuthorizationScopes: ['pets:read'],
     });
   });
 });
