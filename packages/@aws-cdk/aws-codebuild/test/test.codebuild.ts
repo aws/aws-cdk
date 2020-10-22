@@ -1751,7 +1751,7 @@ export = {
         const stack = new cdk.Stack();
         const filterGroup = codebuild
           .FilterGroup
-          .inEventOf(codebuild.EventAction.PUSH)
+          .inEventOf(codebuild.EventAction.PUSH, codebuild.EventAction.PULL_REQUEST_CREATED)
           .andCommitMessageIs('the commit message');
 
         test.doesNotThrow(() => {

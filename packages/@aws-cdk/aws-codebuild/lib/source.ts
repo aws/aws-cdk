@@ -268,7 +268,7 @@ export class FilterGroup {
    * @param commitMessage the commit message (can be a regular expression)
    */
   public andCommitMessageIsNot(commitMessage: string): FilterGroup {
-    return this.addCommitMessageFilter(commitMessage, true);
+    return this.addCommitMessageFilter(commitMessage, false);
   }
 
   /**
@@ -455,7 +455,7 @@ export class FilterGroup {
     return this.addFilter(WebhookFilterTypes.FILE_PATH, pattern, include);
   }
 
-  private addFilter(type: string, pattern: string, include: boolean) {
+  private addFilter(type: WebhookFilterTypes, pattern: string, include: boolean) {
     return new FilterGroup(this.actions, this.filters.concat([{
       type,
       pattern,
@@ -687,7 +687,7 @@ class GitHubEnterpriseSource extends ThirdPartyGitSource {
   }
 
   public bind(_scope: CoreConstruct, _project: IProject): SourceConfig {
-    if (this.hasCommitMessageFilterAndPREvent()) {
+    if (this.hasCommitMessageFilterAndPrEvent()) {
       throw new Error('COMMIT_MESSAGE filters cannot be used with GitHub Enterprise Server pull request events');
     }
 
@@ -703,7 +703,7 @@ class GitHubEnterpriseSource extends ThirdPartyGitSource {
     };
   }
 
-  private hasCommitMessageFilterAndPREvent() {
+  private hasCommitMessageFilterAndPrEvent() {
     return this.webhookFilters.some(fg => (
       fg._filters.some(fp => fp.type === WebhookFilterTypes.COMMIT_MESSAGE) &&
       fg._actions.includes(
