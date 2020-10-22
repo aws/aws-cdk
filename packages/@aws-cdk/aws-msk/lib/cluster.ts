@@ -1,6 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as core from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
+import * as constructs from 'constructs'
 import {
   CfnCluster,
   KafkaVersion,
@@ -55,7 +56,7 @@ export class Cluster extends ClusterBase {
    * Reference an existing cluster, defined outside of the CDK code, by name.
    */
   public static fromClusterArn(
-    scope: core.Construct,
+    scope: constructs.Construct,
     id: string,
     clusterArn: string,
   ): ICluster {
@@ -70,7 +71,7 @@ export class Cluster extends ClusterBase {
   public readonly clusterArn: string;
   public readonly clusterName: string;
 
-  constructor(scope: core.Construct, id: string, props: ClusterProps) {
+  constructor(scope: constructs.Construct, id: string, props: ClusterProps) {
     super(scope, id, {
       physicalName: props.clusterName,
     });
