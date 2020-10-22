@@ -4,7 +4,11 @@ import { Construct } from 'constructs';
 import { PublicHostedZone, VpcEndpointServiceDomainName } from '../lib';
 
 /**
- * A load balancer that can host a VPC Endpoint Service
+ * A load balancer that can host a VPC Endpoint Service.
+ *
+ * Why do this instead of using the NetworkLoadBalancer construct? aws-route53
+ * cannot depend on aws-elasticloadbalancingv2 because aws-elasticloadbalancingv2
+ * already takes a dependency on aws-route53. 
  */
 class DummyEndpointLoadBalancer implements ec2.IVpcEndpointServiceLoadBalancer {
   /**
