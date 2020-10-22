@@ -163,7 +163,7 @@ export = {
           prefixPath: 'wrong',
         },
       }).bind(stack),
-      /Prefix Path must start with \'\/\'/);
+      /Prefix Path must start with \'\/\', got: wrong/);
       test.done();
     },
   },

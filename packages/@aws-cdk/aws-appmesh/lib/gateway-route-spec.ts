@@ -109,7 +109,7 @@ class HttpGatewayRouteSpec extends GatewayRouteSpec {
   public bind(_scope: cdk.Construct): GatewayRouteSpecConfig {
     const prefixPath = this.match ? this.match.prefixPath : '/';
     if (prefixPath[0] != '/') {
-      throw new Error('Prefix Path must start with \'/\'');
+      throw new Error(`Prefix Path must start with \'/\', got: ${prefixPath}`);
     }
     const httpConfig: CfnGatewayRoute.HttpGatewayRouteProperty = {
       match: {
