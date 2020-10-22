@@ -178,7 +178,7 @@
     "lodash": "^4.17.20",
     "nodeunit-shim": "0.0.0",
     "pkglint": "0.0.0",
-    "sinon": "^9.1.0",
+    "sinon": "^9.2.0",
     "ts-mock-imports": "^1.3.0"
   },
   "dependencies": {
