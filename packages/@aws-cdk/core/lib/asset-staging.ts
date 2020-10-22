@@ -155,7 +155,7 @@ export class AssetStaging extends CoreConstruct {
 
     const outdir = Stage.of(this)?.assetOutdir;
     if (!outdir) {
-      throw new Error('unable to determine cloud assembly output directory. Assets must be defined indirectly within a "Stage" or an "App" scope');
+      throw new Error('unable to determine cloud assembly asset output directory. Assets must be defined indirectly within a "Stage" or an "App" scope');
     }
     this.outdir = outdir;
 
