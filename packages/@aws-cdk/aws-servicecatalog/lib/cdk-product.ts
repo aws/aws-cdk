@@ -1,5 +1,8 @@
 import * as core from '@aws-cdk/core';
-import { IProduct, Language, Product } from './product';
+import * as cxapi from '@aws-cdk/cx-api';
+import * as constructs from 'constructs';
+import { Language } from './language';
+import { IProduct, Product } from './product';
 
 /**
  * Properties for CDKProduct.
@@ -11,9 +14,9 @@ export interface CDKProductProps {
   readonly productName: string;
 
   /**
-   * Name of the stack containing the Service Catalog stack.
+   * Stack containing the Service Catalog stack.
    */
-  readonly stackName: string;
+  readonly stack: core.Stack;
 
   /**
    * The owner of the product.
@@ -33,11 +36,6 @@ export interface CDKProductProps {
    * @default none
    */
   readonly artifactName?: string;
-
-  /**
-   * The CDK app that this template is part of.
-   */
-  readonly app: core.App;
 
   /**
    * The contact URL for product support.
@@ -82,15 +80,19 @@ export interface CDKProductProps {
  */
 export class CDKProduct extends Product implements IProduct {
   public readonly productName: string;
-  constructor(scope: core.Construct, id: string, props: CDKProductProps) {
-    const stackArtifact = props.app.synth().getStackByName(props.stackName);
-    if (stackArtifact.assets.length !== 0) {
+  constructor(scope: constructs.Construct, id: string, props: CDKProductProps) {
+    const builder = new cxapi.CloudAssemblyBuilder();
+    props.stack.synthesizer.synthesize({ outdir: builder.outdir, assembly: builder });
+    const asm = builder.buildAssembly();
+    // Assets are not currently supported.
+    // TODO: Add asset support. This can probably be done via the StackArtifact
+    if (asm.getStackArtifact(props.stack.artifactId).assets.length !== 0) {
       throw new Error('CDKProduct - Stack cannot have assets');
     }
 
     super(scope, id, {
       productName: props.productName,
-      templatePath: stackArtifact.templateFullPath,
+      templatePath: builder.outdir + '/' + props.stack.templateFile,
       owner: props.owner,
       description: props.description,
       artifactName: props.artifactName,

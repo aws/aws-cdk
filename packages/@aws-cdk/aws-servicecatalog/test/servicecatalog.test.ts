@@ -65,13 +65,13 @@ describe('Service Catalog resources', () => {
       productStack = new core.Stack(productApp, 'ProductStack');
     });
     test('default cdkproduct', () => {
-      new catalog.CDKProduct(stack, 'CDKProduct', { productName: 'testCDKProduct', owner: 'testOwner', stackName: productStack.stackName, app: productApp });
+      new catalog.CDKProduct(stack, 'CDKProduct', { productName: 'testCDKProduct', owner: 'testOwner', stack: productStack });
       expect(stack).toHaveResourceLike('AWS::ServiceCatalog::CloudFormationProduct', { Name: 'testCDKProduct' });
     });
     test('error when stack has asset', () => {
       new assets.Asset(productStack, 'testAsset', { path: './' });
       expect(() => {
-        new catalog.CDKProduct(stack, 'CDKProduct', { productName: 'testCDKProduct', owner: 'testOwner', stackName: productStack.stackName, app: productApp });
+        new catalog.CDKProduct(stack, 'CDKProduct', { productName: 'testCDKProduct', owner: 'testOwner', stack: productStack });
       }).toThrowError(/cannot have assets/);
     });
   });

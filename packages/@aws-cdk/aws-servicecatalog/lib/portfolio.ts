@@ -1,4 +1,6 @@
 import * as core from '@aws-cdk/core';
+import * as constructs from 'constructs';
+import { Language } from './language';
 import { IProduct } from './product';
 import { CfnPortfolio, CfnPortfolioProductAssociation } from './servicecatalog.generated';
 
@@ -44,10 +46,25 @@ export interface PortfolioProps {
    * Name of the portfolio.
    */
   readonly portfolioName: string;
+
+  /**
+   * The language code.
+   *
+   * @default en
+   */
+  readonly acceptLanguage?: Language
+
   /**
    * The name of the portfolio provider.
    */
   readonly provider: string;
+
+  /**
+   * The description of the portfolio.
+   *
+   * @default none
+   */
+  readonly description?: string;
 }
 
 /**
@@ -85,19 +102,18 @@ export class Portfolio extends PortfolioBase {
    * @param id The name of the portfolio construct
    * @param attrs attrs of the portfolio to import
    */
-  public static fromPortfolioAttributes(scope: core.Construct, id: string, attrs: PortfolioAttributes): IPortfolio {
+  public static fromPortfolioAttributes(scope: constructs.Construct, id: string, attrs: PortfolioAttributes): IPortfolio {
     class Import extends PortfolioBase {
       public readonly portfolioArn = attrs.porfolioArn;
       public readonly portfolioId = core.Stack.of(scope).parseArn(this.portfolioArn).resourceName!;
       public readonly portfolioName = attrs.portfolioName;
-
     }
     return new Import(scope, id);
   }
   public readonly portfolioArn: string;
   public readonly portfolioId: string;
   public readonly portfolioName: string;
-  constructor(scope: core.Construct, id: string, props: PortfolioProps) {
+  constructor(scope: constructs.Construct, id: string, props: PortfolioProps) {
     super(scope, id, { physicalName: props.portfolioName });
     const portfolio = new CfnPortfolio(this, 'Resource', { providerName: props.provider, displayName: props.portfolioName });
     this.portfolioArn = core.Stack.of(this).formatArn({ resource: 'portfolio', service: 'catalog', resourceName: portfolio.ref });

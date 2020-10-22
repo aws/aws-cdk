@@ -1,5 +1,7 @@
 import * as assets from '@aws-cdk/aws-s3-assets';
 import * as core from '@aws-cdk/core';
+import * as constructs from 'constructs';
+import { Language } from './language';
 import { IPortfolio } from './portfolio';
 import { CfnCloudFormationProduct, CfnPortfolioProductAssociation } from './servicecatalog.generated';
 
@@ -49,7 +51,6 @@ export interface IProduct extends core.IResource {
    * @returns boolean
    */
   associateToPortfolio(portfolio: IPortfolio): boolean
-
 }
 
 /**
@@ -157,24 +158,6 @@ export interface ProductProps {
   readonly acceptLanguage?: Language;
 }
 
-/**
- * AWS Service Catalog Languages
- */
-export enum Language {
-  /**
-   * English
-   */
-  ENGLISH = 'en',
-  /**
-   * Japanese
-   */
-  JAPANESE = 'jp',
-  /**
-   * Chinese
-   */
-  CHINESE = 'zh',
-}
-
 
 abstract class ProductBase extends core.Resource implements IProduct {
   public abstract readonly productArn: string;
@@ -203,7 +186,7 @@ export class Product extends ProductBase {
    * @param attrs attrs of the product to import
    */
   public static fromProductAttributes(
-    scope: core.Construct, id: string, attrs: ProductAttributes,
+    scope: constructs.Construct, id: string, attrs: ProductAttributes,
   ): IProduct {
 
     class Import extends ProductBase {
@@ -223,7 +206,7 @@ export class Product extends ProductBase {
   public readonly productId: string;
   public readonly productName: string;
 
-  constructor(scope: core.Construct, id: string, props: ProductProps) {
+  constructor(scope: constructs.Construct, id: string, props: ProductProps) {
     super(scope, id, { physicalName: props.productName });
     const asset = new assets.Asset(this, 'Asset', { path: props.templatePath });
     const provisioningArtifact = {
