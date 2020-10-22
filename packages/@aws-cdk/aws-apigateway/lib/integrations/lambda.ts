@@ -49,7 +49,7 @@ export class LambdaIntegration extends AwsIntegration {
     });
 
     this.handler = handler;
-    this.enableTest = options.allowTestInvoke === undefined ? true : false;
+    this.enableTest = options.allowTestInvoke === undefined ? true : options.allowTestInvoke;
   }
 
   public bind(method: Method): IntegrationConfig {
