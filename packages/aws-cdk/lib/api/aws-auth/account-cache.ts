@@ -83,6 +83,9 @@ export class AccountAccessKeyCache {
       // File doesn't exist or is not readable. This is a cache,
       // pretend we successfully loaded an empty map.
       if (e.code === 'ENOENT' || e.code === 'EACCES') { return {}; }
+      // File is not JSON, could be corrupted because of concurrent writes.
+      // Again, an empty cache is fine.
+      if (e instanceof SyntaxError) { return {}; }
       throw e;
     }
   }

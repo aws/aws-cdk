@@ -134,14 +134,17 @@
     "awslint": "cdk-awslint",
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test",
-    "compat": "cdk-compat"
+    "compat": "cdk-compat",
+    "gen": "cfn2ts"
   },
   "cdk-build": {
     "cloudformation": "AWS::CloudFormation",
     "cfn2ts-core-import": ".",
     "jest": true,
     "pre": [
-      "rm -rf test/fs/fixtures && cd test/fs && tar -xzf fixtures.tar.gz"
+      "rm -rf test/fs/fixtures",
+      "cd test/fs",
+      "tar -xzf fixtures.tar.gz"
     ],
     "env": {
       "AWSLINT_BASE_CONSTRUCT": "true"
@@ -167,7 +170,7 @@
   "devDependencies": {
     "@types/lodash": "^4.14.161",
     "@types/minimatch": "^3.0.3",
-    "@types/node": "^10.17.35",
+    "@types/node": "^10.17.40",
     "@types/sinon": "^9.0.7",
     "cdk-build-tools": "0.0.0",
     "cfn2ts": "0.0.0",

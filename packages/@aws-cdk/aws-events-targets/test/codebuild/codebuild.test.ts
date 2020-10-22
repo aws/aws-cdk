@@ -1,105 +1,123 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as events from '@aws-cdk/aws-events';
-import { Stack } from '@aws-cdk/core';
+import * as iam from '@aws-cdk/aws-iam';
+import { CfnElement, Stack } from '@aws-cdk/core';
 import * as targets from '../../lib';
 
-test('use codebuild project as an eventrule target', () => {
-  // GIVEN
-  const stack = new Stack();
-  const project = new codebuild.PipelineProject(stack, 'MyProject');
-  const rule = new events.Rule(stack, 'Rule', {
-    schedule: events.Schedule.expression('rate(1 min)'),
+describe('CodeBuild event target', () => {
+  let stack: Stack;
+  let project: codebuild.PipelineProject;
+  let projectArn: any;
+
+  beforeEach(() => {
+    stack = new Stack();
+    project = new codebuild.PipelineProject(stack, 'MyProject');
+    projectArn = { 'Fn::GetAtt': ['MyProject39F7B0AE', 'Arn'] };
   });
 
-  // WHEN
-  rule.addTarget(new targets.CodeBuildProject(project));
+  test('use codebuild project as an eventrule target', () => {
+    // GIVEN
+    const rule = new events.Rule(stack, 'Rule', {
+      schedule: events.Schedule.expression('rate(1 min)'),
+    });
 
-  // THEN
-  expect(stack).to(haveResource('AWS::Events::Rule', {
-    Targets: [
-      {
-        Arn: {
-          'Fn::GetAtt': [
-            'MyProject39F7B0AE',
-            'Arn',
-          ],
-        },
-        Id: 'Target0',
-        RoleArn: {
-          'Fn::GetAtt': [
-            'MyProjectEventsRole5B7D93F5',
-            'Arn',
-          ],
-        },
-      },
-    ],
-  }));
+    // WHEN
+    rule.addTarget(new targets.CodeBuildProject(project));
 
-  expect(stack).to(haveResource('AWS::IAM::Role', {
-    AssumeRolePolicyDocument: {
-      Statement: [
+    // THEN
+    expect(stack).to(haveResource('AWS::Events::Rule', {
+      Targets: [
         {
-          Action: 'sts:AssumeRole',
-          Effect: 'Allow',
-          Principal: { Service: 'events.amazonaws.com' },
+          Arn: projectArn,
+          Id: 'Target0',
+          RoleArn: { 'Fn::GetAtt': ['MyProjectEventsRole5B7D93F5', 'Arn'] },
         },
       ],
-      Version: '2012-10-17',
-    },
-  }));
+    }));
 
-  expect(stack).to(haveResource('AWS::IAM::Policy', {
-    PolicyDocument: {
-      Statement: [
+    expect(stack).to(haveResource('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: { Service: 'events.amazonaws.com' },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    }));
+
+    expect(stack).to(haveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'codebuild:StartBuild',
+            Effect: 'Allow',
+            Resource: projectArn,
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    }));
+  });
+
+  test('specifying event for codebuild project target', () => {
+    // GIVEN
+    const rule = new events.Rule(stack, 'Rule', {
+      schedule: events.Schedule.expression('rate(1 hour)'),
+    });
+
+    // WHEN
+    const eventInput = {
+      buildspecOverride: 'buildspecs/hourly.yml',
+    };
+
+    rule.addTarget(
+      new targets.CodeBuildProject(project, {
+        event: events.RuleTargetInput.fromObject(eventInput),
+      }),
+    );
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Events::Rule', {
+      Targets: [
         {
-          Action: 'codebuild:StartBuild',
-          Effect: 'Allow',
-          Resource: {
-            'Fn::GetAtt': [
-              'MyProject39F7B0AE',
-              'Arn',
-            ],
+          Arn: projectArn,
+          Id: 'Target0',
+          Input: JSON.stringify(eventInput),
+          RoleArn: {
+            'Fn::GetAtt': ['MyProjectEventsRole5B7D93F5', 'Arn'],
           },
         },
       ],
-      Version: '2012-10-17',
-    },
-  }));
-});
-
-test('specifying event for codebuild project target', () => {
-  // GIVEN
-  const stack = new Stack();
-  const project = new codebuild.PipelineProject(stack, 'MyProject');
-  const rule = new events.Rule(stack, 'Rule', {
-    schedule: events.Schedule.expression('rate(1 hour)'),
+    }));
   });
 
-  // WHEN
-  const eventInput = {
-    buildspecOverride: 'buildspecs/hourly.yml',
-  };
+  test('specifying custom role for codebuild project target', () => {
+    // GIVEN
+    const rule = new events.Rule(stack, 'Rule', {
+      schedule: events.Schedule.expression('rate(1 hour)'),
+    });
+    const role = new iam.Role(stack, 'MyExampleRole', {
+      assumedBy: new iam.AnyPrincipal(),
+    });
+    const roleResource = role.node.defaultChild as CfnElement;
+    roleResource.overrideLogicalId('MyRole'); // to make it deterministic in the assertion below
 
-  rule.addTarget(
-    new targets.CodeBuildProject(project, {
-      event: events.RuleTargetInput.fromObject(eventInput),
-    }),
-  );
+    // WHEN
+    rule.addTarget(new targets.CodeBuildProject(project, { eventRole: role }));
 
-  // THEN
-  expect(stack).to(haveResource('AWS::Events::Rule', {
-    Targets: [
-      {
-        Arn: {
-          'Fn::GetAtt': ['MyProject39F7B0AE', 'Arn'],
+    // THEN
+    expect(stack).to(haveResource('AWS::Events::Rule', {
+      Targets: [
+        {
+          Arn: projectArn,
+          Id: 'Target0',
+          RoleArn: { 'Fn::GetAtt': ['MyRole', 'Arn'] },
         },
-        Id: 'Target0',
-        Input: JSON.stringify(eventInput),
-        RoleArn: {
-          'Fn::GetAtt': ['MyProjectEventsRole5B7D93F5', 'Arn'],
-        },
-      },
-    ],
-  }));
+      ],
+    }));
+  });
 });
