@@ -8,7 +8,7 @@ import { PublicHostedZone, VpcEndpointServiceDomainName } from '../lib';
  *
  * Why do this instead of using the NetworkLoadBalancer construct? aws-route53
  * cannot depend on aws-elasticloadbalancingv2 because aws-elasticloadbalancingv2
- * already takes a dependency on aws-route53. 
+ * already takes a dependency on aws-route53.
  */
 class DummyEndpointLoadBalancer implements ec2.IVpcEndpointServiceLoadBalancer {
   /**
