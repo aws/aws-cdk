@@ -141,7 +141,7 @@ export class Cluster extends ClusterBase {
     const volumeSize =
       brokerNodeGroupProps.storageInfo?.ebsStorageInfo?.volumeSize;
     // Minimum: 1 GiB, maximum: 16384 GiB
-    if (volumeSize && volumeSize < 1 && volumeSize > 16384) {
+    if (volumeSize !== undefined && (volumeSize < 1 || volumeSize > 16384)) {
       core.Annotations.of(this).addError(
         'EBS volume size should be in the range 1-16384',
       );
