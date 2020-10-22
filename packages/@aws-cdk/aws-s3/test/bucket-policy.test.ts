@@ -1,13 +1,13 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import { AnyPrincipal, PolicyStatement } from '@aws-cdk/aws-iam';
 import { RemovalPolicy, Stack, App } from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as s3 from '../lib';
 
 // to make it easy to copy & paste from output:
 /* eslint-disable quote-props */
 
-export = {
+nodeunitShim({
   'default properties'(test: Test) {
     const stack = new Stack();
 
@@ -161,4 +161,4 @@ export = {
 
     test.done();
   },
-};
+});

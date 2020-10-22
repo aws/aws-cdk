@@ -170,7 +170,7 @@
   "devDependencies": {
     "@types/lodash": "^4.14.161",
     "@types/minimatch": "^3.0.3",
-    "@types/node": "^10.17.35",
+    "@types/node": "^10.17.40",
     "@types/sinon": "^9.0.7",
     "cdk-build-tools": "0.0.0",
     "cfn2ts": "0.0.0",
