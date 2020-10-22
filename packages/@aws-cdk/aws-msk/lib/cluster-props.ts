@@ -54,7 +54,7 @@ export interface ClusterProps {
    *
    * @default - enabled
    */
-  readonly encryptionInTransitConfig?: EncryptionInTransiteConfig;
+  readonly encryptionInTransitConfig?: EncryptionInTransitConfig;
   /**
    * What to do when this resource is deleted from a stack.
    *
@@ -266,7 +266,7 @@ export enum ClientBrokerEncryption {
 /**
  * The settings for encrypting data in transit.
  */
-export interface EncryptionInTransiteConfig {
+export interface EncryptionInTransitConfig {
   /**
    * Indicates the encryption setting for data in transit between clients and brokers.
    *
