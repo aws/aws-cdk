@@ -138,7 +138,7 @@ export class AssetStaging extends CoreConstruct {
 
     // Decide what we're going to do, without actually doing it yet
     let stageThisAsset: () => StagedAsset;
-    let skip: boolean;
+    let skip = false;
     if (props.bundling) {
       // Check if we actually have to bundle for this stack
       const bundlingStacks: string[] = this.node.tryGetContext(cxapi.BUNDLING_STACKS) ?? ['*'];
@@ -146,10 +146,7 @@ export class AssetStaging extends CoreConstruct {
       const bundling = props.bundling;
       stageThisAsset = () => this.stageByBundling(bundling, skip);
     } else {
-      // "Staging disabled" only applies to copying. If we've already done the work for bundling,
-      // it's hardly any work to rename a directory afterwards.
-      skip = this.node.tryGetContext(cxapi.DISABLE_ASSET_STAGING_CONTEXT);
-      stageThisAsset = () => this.stageByCopying(skip);
+      stageThisAsset = () => this.stageByCopying();
     }
 
     // Calculate a cache key from the props. This way we can check if we already
@@ -188,8 +185,14 @@ export class AssetStaging extends CoreConstruct {
   /**
    * Return the path to the staged asset, relative to the Cloud Assembly (manifest) directory of the given stack
    *
-   * Only returns a relative path if the asset ended up staged inside the outDir,
-   * returns an absolute path if it was not.
+   * Only returns a relative path if the asset was staged, returns an absolute path if
+   * it was not staged.
+   *
+   * A bundled asset might end up in the outDir and still not count as
+   * "staged"; if asset staging is disabled we're technically expected to
+   * reference source directories, but we don't have a source directory for the
+   * bundled outputs (as the bundle output is written to a temporary
+   * directory). Nevertheless, we will still return an absolute path.
    *
    * A non-obvious directory layout may look like this:
    *
@@ -206,7 +209,7 @@ export class AssetStaging extends CoreConstruct {
     if (!asmManifestDir) { return this.stagedPath; }
 
     const isOutsideAssetDir = path.relative(this.assetOutdir, this.stagedPath).startsWith('..');
-    if (isOutsideAssetDir) {
+    if (isOutsideAssetDir || this.stagingDisabled) {
       return this.stagedPath;
     }
 
@@ -216,11 +219,11 @@ export class AssetStaging extends CoreConstruct {
   /**
    * Stage the source to the target by copying
    *
-   * Optionally skip, in which case we pretend we did something but we don't really.
+   * Optionally skip if staging is disabled, in which case we pretend we did something but we don't really.
    */
-  private stageByCopying(skip: boolean): StagedAsset {
+  private stageByCopying(): StagedAsset {
     const assetHash = this.calculateHash(this.hashType);
-    const stagedPath = skip
+    const stagedPath = this.stagingDisabled
       ? this.sourcePath
       : path.resolve(this.assetOutdir, renderAssetFilename(assetHash, path.extname(this.sourcePath)));
 
@@ -257,6 +260,13 @@ export class AssetStaging extends CoreConstruct {
 
     this.stageAsset(bundleDir, stagedPath, 'move');
     return { assetHash, stagedPath };
+  }
+
+  /**
+   * Whether staging has been disabled
+   */
+  private get stagingDisabled() {
+    return !!this.node.tryGetContext(cxapi.DISABLE_ASSET_STAGING_CONTEXT);
   }
 
   /**

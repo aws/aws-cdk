@@ -49,6 +49,7 @@ nodeunitShim({
     test.deepEqual(staging.sourceHash, '2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00');
     test.deepEqual(staging.sourcePath, sourcePath);
     test.deepEqual(path.basename(staging.stagedPath), 'asset.2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00');
+    test.deepEqual(path.basename(staging.relativeStagedPath(stack)), 'asset.2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00');
     test.done();
   },
 
@@ -63,7 +64,8 @@ nodeunitShim({
 
     test.deepEqual(staging.sourceHash, '2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00');
     test.deepEqual(staging.sourcePath, sourcePath);
-    test.deepEqual(stack.resolve(staging.stagedPath), sourcePath);
+    test.deepEqual(staging.stagedPath, sourcePath);
+    test.deepEqual(staging.relativeStagedPath(stack), sourcePath);
     test.done();
   },
 
@@ -167,7 +169,7 @@ nodeunitShim({
     test.done();
   },
 
-  'bundler succeeds when staging is disabled'(test: Test) {
+  'bundled resources have absolute path when staging is disabled'(test: Test) {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'stack');
@@ -197,7 +199,7 @@ nodeunitShim({
     test.equal(asset.sourceHash, 'b1e32e86b3523f2fa512eb99180ee2975a50a4439e63e8badd153f2a68d61aa4');
     test.equal(asset.sourcePath, directory);
 
-    const resolvedStagePath = stack.resolve(asset.stagedPath);
+    const resolvedStagePath = asset.relativeStagedPath(stack);
     // absolute path ending with bundling dir
     test.ok(path.isAbsolute(resolvedStagePath));
     test.ok(new RegExp('asset.b1e32e86b3523f2fa512eb99180ee2975a50a4439e63e8badd153f2a68d61aa4$').test(resolvedStagePath));
@@ -728,6 +730,7 @@ nodeunitShim({
     test.throws(() => readDockerStubInput()); // Bundling did not run
     test.equal(asset.sourcePath, directory);
     test.equal(asset.stagedPath, directory);
+    test.equal(asset.relativeStagedPath(stack), directory);
 
     test.done();
   },
