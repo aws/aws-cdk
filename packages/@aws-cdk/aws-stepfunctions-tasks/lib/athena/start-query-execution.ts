@@ -171,7 +171,7 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
       Resource: integrationResourceArn('athena', 'startQueryExecution', this.integrationPattern),
       Parameters: sfn.FieldUtils.renderObject({
         QueryString: this.props.queryString,
-        ClientContext: this.props.clientRequestToken,
+        ClientRequestToken: this.props.clientRequestToken,
         QueryExecutionContext: {
           Catalog: this.props.queryExecutionContext?.catalog,
           Database: this.props.queryExecutionContext?.database,
