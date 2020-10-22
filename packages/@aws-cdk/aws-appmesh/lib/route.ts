@@ -120,8 +120,8 @@ export class Route extends cdk.Resource implements IRoute {
   /**
    * Import an existing route given its name
    */
-  public static fromRouteName(scope: Construct, id: string, meshName: string, virtualRouterName: string, routeName: string): IRoute {
-    return new ImportedRoute(scope, id, { meshName, virtualRouterName, routeName });
+  public static fromRouteAttributes(scope: Construct, id: string, attrs: RouteAttributes): IRoute {
+    return new ImportedRoute(scope, id, attrs);
   }
 
   /**
@@ -215,26 +215,27 @@ export class Route extends cdk.Resource implements IRoute {
 /**
  * Interface with properties ncecessary to import a reusable Route
  */
-interface RouteAttributes {
+export interface RouteAttributes {
   /**
-   * The name of the route
+   * The name of the Route
+   *
+   * @default - required if routeArn is not specified
    */
   readonly routeName?: string;
 
   /**
    * The Amazon Resource Name (ARN) for the route
+   *
+   * @default - required if routeName and virtualRouter are not specified
    */
   readonly routeArn?: string;
 
   /**
-   * The name of the mesh this route is associated with
+   * The VirtualRouter this Route is associated with
+   *
+   * @default - required if routeArn is not specified
    */
-  readonly meshName?: string;
-
-  /**
-   * The name of the virtual router this route is associated with
-   */
-  readonly virtualRouterName?: string;
+  readonly virtualRouter?: IVirtualRouter;
 }
 
 /**
@@ -257,11 +258,11 @@ class ImportedRoute extends cdk.Resource implements IRoute {
     if (props.routeArn) {
       this.routeArn = props.routeArn;
       this.routeName = cdk.Fn.select(4, cdk.Fn.split('/', cdk.Stack.of(scope).parseArn(props.routeArn).resourceName!));
-    } else if (props.routeName && props.meshName && props.virtualRouterName) {
+    } else if (props.routeName && props.virtualRouter) {
       this.routeName = props.routeName;
       this.routeArn = cdk.Stack.of(this).formatArn({
         service: 'appmesh',
-        resource: `mesh/${props.meshName}/virtualRouter/${props.virtualRouterName}/route`,
+        resource: `mesh/${props.virtualRouter.mesh}/virtualRouter/${props.virtualRouter.virtualRouterName}/route`,
         resourceName: this.routeName,
       });
     } else {

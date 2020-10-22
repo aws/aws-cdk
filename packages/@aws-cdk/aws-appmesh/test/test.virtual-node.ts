@@ -118,7 +118,7 @@ export = {
 
     const stack2 = new cdk.Stack();
 
-    const node2 = appmesh.VirtualNode.fromVirtualNodeName(stack2, 'imported-node', mesh.meshName, node.virtualNodeName);
+    const node2 = appmesh.VirtualNode.fromVirtualNodeAttributes(stack2, 'imported-node', { mesh, virtualNodeName: node.virtualNodeName });
 
     node2.addListeners({
       portMapping: {

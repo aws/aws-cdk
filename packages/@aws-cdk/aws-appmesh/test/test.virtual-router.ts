@@ -307,12 +307,14 @@ export = {
   'can import a virtual router'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
+    const mesh = new appmesh.Mesh(stack, 'Mesh');
 
     // WHEN
-    const vr = appmesh.VirtualRouter.fromVirtualRouterName(stack, 'Router', 'MyMesh', 'MyRouter');
+    const virtualRouterName = 'virtual-router';
+    const importedVr = appmesh.VirtualRouter.fromVirtualRouterAttributes(stack, 'ImportedVr', { mesh, virtualRouterName });
 
     // THEN
-    test.ok(vr.mesh !== undefined);
+    test.equal(importedVr.virtualRouterName, virtualRouterName);
 
     test.done();
   },

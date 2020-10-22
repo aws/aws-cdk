@@ -174,17 +174,22 @@ export = {
       env: { account: '123456789012', region: 'us-east-1' },
     });
 
+    const meshName = 'test-mesh';
+    const mesh = appmesh.Mesh.fromMeshName(stack, 'mesh', meshName);
+    const virtualGatewayName = 'test-gateway';
+    const virtualGateway = appmesh.VirtualGateway.fromVirtualGatewayAttributes(stack, 'virtualGateway', { mesh, virtualGatewayName });
     // WHEN
-    const gatewayRoute = appmesh.GatewayRoute.fromGatewayRouteName(stack, 'importedGatewayRoute', 'test-mesh', 'test-gateway', 'test-gateway-route');
+    const gatewayRouteName = 'test-gateway-route';
+    const gatewayRoute = appmesh.GatewayRoute.fromGatewayRouteAttributes(stack, 'importedGatewayRoute', { virtualGateway, gatewayRouteName });
     // THEN
-    test.equal(gatewayRoute.gatewayRouteName, 'test-gateway-route');
-    test.equal(gatewayRoute.virtualGateway.virtualGatewayName, 'test-gateway');
-    test.equal(gatewayRoute.virtualGateway.mesh.meshName, 'test-mesh');
+    test.equal(gatewayRoute.gatewayRouteName, gatewayRouteName);
+    test.equal(gatewayRoute.virtualGateway.virtualGatewayName, virtualGatewayName);
+    test.equal(gatewayRoute.virtualGateway.mesh.meshName, meshName);
     const gatewayRoute2 = appmesh.GatewayRoute.fromGatewayRouteArn(
-      stack, 'importedGatewayRoute2', 'arn:aws:appmesh:us-east-1:123456789012:mesh/test-mesh/virtualGateway/test-gateway/gatewayRoute/test-gateway-route');
-    test.equal(gatewayRoute2.gatewayRouteName, 'test-gateway-route');
-    test.equal(gatewayRoute2.virtualGateway.virtualGatewayName, 'test-gateway');
-    test.equal(gatewayRoute2.virtualGateway.mesh.meshName, 'test-mesh');
+      stack, 'importedGatewayRoute2', `arn:aws:appmesh:us-east-1:123456789012:mesh/${meshName}/virtualGateway/${virtualGatewayName}/gatewayRoute/${gatewayRouteName}`);
+    test.equal(gatewayRoute2.gatewayRouteName, gatewayRouteName);
+    test.equal(gatewayRoute2.virtualGateway.virtualGatewayName, virtualGatewayName);
+    test.equal(gatewayRoute2.virtualGateway.mesh.meshName, meshName);
     test.done();
   },
 };

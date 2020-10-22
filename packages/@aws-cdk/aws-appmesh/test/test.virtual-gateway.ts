@@ -330,8 +330,10 @@ export = {
       env: { account: '123456789012', region: 'us-east-1' },
     });
 
+    const mesh = appmesh.Mesh.fromMeshName(stack, 'Mesh', 'testMesh');
+    const virtualGatewayName = 'test-gateway';
     // WHEN
-    const virtualGateway = appmesh.VirtualGateway.fromVirtualGatewayName(stack, 'importedGateway', 'testMesh', 'test-gateway');
+    const virtualGateway = appmesh.VirtualGateway.fromVirtualGatewayAttributes(stack, 'importedGateway', { mesh, virtualGatewayName });
     // THEN
     test.equal(virtualGateway.mesh.meshName, 'testMesh');
     test.equal(virtualGateway.virtualGatewayName, 'test-gateway');

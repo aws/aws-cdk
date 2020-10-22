@@ -30,9 +30,12 @@ export = {
     });
 
     const stack2 = new cdk.Stack();
-    appmesh.VirtualService.fromVirtualServiceName(stack2, 'imported-virtual-service', mesh.meshName, service.virtualServiceName);
+    const virtualServiceName = service.virtualServiceName;
+    const importedVirtualService = appmesh.VirtualService.fromVirtualServiceAttributes(stack2, 'imported-virtual-service', { mesh, virtualServiceName });
 
     // Nothing to do with imported virtual service yet
+    test.equal(importedVirtualService.virtualServiceName, virtualServiceName);
+
 
     test.done();
   },

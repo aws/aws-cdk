@@ -26,7 +26,7 @@ export interface IVirtualGateway extends cdk.IResource {
   readonly virtualGatewayArn: string;
 
   /**
-   * The mesh which the VirtualGateway belongs to
+   * The Mesh which the VirtualGateway belongs to
    */
   readonly mesh: IMesh;
 
@@ -273,7 +273,7 @@ export interface VirtualGatewayBaseProps {
  */
 export interface VirtualGatewayProps extends VirtualGatewayBaseProps {
   /**
-   * The mesh which the VirtualGateway belongs to
+   * The Mesh which the VirtualGateway belongs to
    */
   readonly mesh: IMesh;
 }
@@ -371,11 +371,8 @@ export class VirtualGateway extends VirtualGatewayBase {
   /**
    * Import an existing VirtualGateway given its name
    */
-  public static fromVirtualGatewayName(scope: Construct, id: string, meshName: string, virtualGatewayName: string): IVirtualGateway {
-    return new ImportedVirtualGateway(scope, id, {
-      meshName,
-      virtualGatewayName,
-    });
+  public static fromVirtualGatewayAttributes(scope: Construct, id: string, attrs: VirtualGatewayAttributes): IVirtualGateway {
+    return new ImportedVirtualGateway(scope, id, attrs);
   }
 
   /**
@@ -455,26 +452,27 @@ function renderHealthCheck(hc: HealthCheck | undefined, pm: PortMapping): CfnVir
 /**
  * Unterface with properties necessary to import a reusable VirtualGateway
  */
-interface VirtualGatewayAttributes {
+export interface VirtualGatewayAttributes {
   /**
    * The name of the VirtualGateway
+   *
+   * @default - required if virtualGatewayArn is not specified
    */
   readonly virtualGatewayName?: string;
 
   /**
    * The Amazon Resource Name (ARN) belonging to the VirtualGateway
+   *
+   * @default - required if virtualGatewayName and mesh are not specified
    */
   readonly virtualGatewayArn?: string;
 
   /**
    * The Mesh that the VirtualGateway belongs to
+   *
+   * @default - required if virtualGatewayArn is not specified
    */
   readonly mesh?: IMesh;
-
-  /**
-   * The name of the mesh that the VirtualGateway belongs to
-   */
-  readonly meshName?: string;
 }
 
 /**
@@ -498,32 +496,21 @@ class ImportedVirtualGateway extends VirtualGatewayBase {
 
   constructor(scope: Construct, id: string, props: VirtualGatewayAttributes) {
     super(scope, id);
-
-    if (props.mesh) {
-      this.mesh = props.mesh;
-    } else if (props.meshName) {
-      if (props.mesh) {
-        throw new Error('Supply either \'mesh\' or \'meshName\', but not both');
-      }
-      this.mesh = Mesh.fromMeshName(this, 'Mesh', props.meshName);
-    } else if (props.virtualGatewayArn) {
-      const meshName = cdk.Fn.select(0, cdk.Fn.split('/', cdk.Stack.of(scope).parseArn(props.virtualGatewayArn).resourceName!));
-      this.mesh = Mesh.fromMeshName(this, 'Mesh', meshName);
-    } else {
-      throw new Error('Supply either \'mesh\' or \'meshName\' or \'virtualGatewayArn\'');
-    }
     if (props.virtualGatewayArn) {
       this.virtualGatewayArn = props.virtualGatewayArn;
+      const meshName = cdk.Fn.select(0, cdk.Fn.split('/', cdk.Stack.of(scope).parseArn(props.virtualGatewayArn).resourceName!));
+      this.mesh = Mesh.fromMeshName(this, 'Mesh', meshName);
       this.virtualGatewayName = cdk.Fn.select(2, cdk.Fn.split('/', cdk.Stack.of(scope).parseArn(props.virtualGatewayArn).resourceName!));
-    } else if (props.virtualGatewayName && props.meshName) {
+    } else if (props.mesh && props.virtualGatewayName) {
+      this.mesh = props.mesh;
       this.virtualGatewayName = props.virtualGatewayName;
       this.virtualGatewayArn = cdk.Stack.of(this).formatArn({
         service: 'appmesh',
-        resource: `mesh/${props.meshName}/virtualGateway`,
+        resource: `mesh/${this.mesh.meshName}/virtualGateway`,
         resourceName: this.virtualGatewayName,
       });
     } else {
-      throw new Error('Need either arn or both names');
+      throw new Error('Need either virtualGatewayArn or mesh and virtualGatewayName');
     }
   }
 }

@@ -13,7 +13,7 @@ export = {
       meshName: 'test-mesh',
     });
 
-    const router = new appmesh.VirtualRouter(stack, 'router', {
+    const virtualRouter = new appmesh.VirtualRouter(stack, 'router', {
       mesh,
     });
 
@@ -36,9 +36,9 @@ export = {
       ],
     });
 
-    const route = new appmesh.Route(stack, 'route-1', {
+    new appmesh.Route(stack, 'route-1', {
       mesh,
-      virtualRouter: router,
+      virtualRouter: virtualRouter,
       routeTargets: [
         {
           virtualNode: node,
@@ -49,9 +49,11 @@ export = {
     });
 
     const stack2 = new cdk.Stack();
-    appmesh.Route.fromRouteName(stack2, 'imported-route', mesh.meshName, router.virtualRouterName, route.routeName);
+    const routeName = 'imported-route';
+    const importedRoute = appmesh.Route.fromRouteAttributes(stack2, 'imported-route', { virtualRouter, routeName });
 
     // Nothing to do with imported route yet
+    test.equal(importedRoute.routeName, routeName);
 
     test.done();
   },
