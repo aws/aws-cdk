@@ -240,20 +240,25 @@ export class Cluster extends ClusterBase {
         }),
       );
     }
-    const clientAuthentication = {
-      sasl: props.clientAuthenticationConfiguration?.sasl?.scram
-        ? {
-          scram: {
-            enabled: props.clientAuthenticationConfiguration?.sasl.scram,
-          },
-        }
-        : undefined,
-      tls: {
-        certificateAuthorityArnList:
-          props.clientAuthenticationConfiguration?.tls
-            ?.certificateAuthorityArns,
-      },
-    };
+    const clientAuthentication = props.clientAuthenticationConfiguration
+      ? {
+        sasl: props.clientAuthenticationConfiguration?.sasl?.scram
+          ? {
+            scram: {
+              enabled: props.clientAuthenticationConfiguration?.sasl.scram,
+            },
+          }
+          : undefined,
+        tls: props.clientAuthenticationConfiguration?.tls
+          ?.certificateAuthorityArns
+          ? {
+            certificateAuthorityArnList:
+                  props.clientAuthenticationConfiguration?.tls
+                    ?.certificateAuthorityArns,
+          }
+          : undefined,
+      }
+      : undefined;
 
     const resource = new CfnCluster(this, 'Resource', {
       clusterName: props.clusterName,
