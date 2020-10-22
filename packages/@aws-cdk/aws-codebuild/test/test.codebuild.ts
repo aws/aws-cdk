@@ -1709,6 +1709,28 @@ export = {
       test.done();
     },
 
+    'GitHub Enterprise Server sources do not support FILE_PATH filters on PR events'(test: Test) {
+      const stack = new cdk.Stack();
+      const pullFilterGroup = codebuild.FilterGroup.inEventOf(
+        codebuild.EventAction.PULL_REQUEST_CREATED,
+        codebuild.EventAction.PULL_REQUEST_MERGED,
+        codebuild.EventAction.PULL_REQUEST_REOPENED,
+        codebuild.EventAction.PULL_REQUEST_UPDATED,
+      );
+
+      test.throws(() => {
+        new codebuild.Project(stack, 'MyFilePathProject', {
+          source: codebuild.Source.gitHubEnterprise({
+            httpsCloneUrl: 'https://github.testcompany.com/testowner/testrepo',
+            webhookFilters: [
+              pullFilterGroup.andFilePathIs('ReadMe.md'),
+            ],
+          }),
+        });
+      }, /FILE_PATH filters cannot be used with GitHub Enterprise Server pull request events/);
+      test.done();
+    },
+
     'COMMIT_MESSAGE Filter': {
       'GitHub Enterprise Server sources do not support COMMIT_MESSAGE filters on PR events'(test: Test) {
         const stack = new cdk.Stack();

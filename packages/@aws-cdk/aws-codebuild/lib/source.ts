@@ -691,6 +691,10 @@ class GitHubEnterpriseSource extends ThirdPartyGitSource {
       throw new Error('COMMIT_MESSAGE filters cannot be used with GitHub Enterprise Server pull request events');
     }
 
+    if (this.hasFilePathFilterAndPrEvent()) {
+      throw new Error('FILE_PATH filters cannot be used with GitHub Enterprise Server pull request events');
+    }
+
     const superConfig = super.bind(_scope, _project);
     return {
       sourceProperty: {
@@ -706,12 +710,19 @@ class GitHubEnterpriseSource extends ThirdPartyGitSource {
   private hasCommitMessageFilterAndPrEvent() {
     return this.webhookFilters.some(fg => (
       fg._filters.some(fp => fp.type === WebhookFilterTypes.COMMIT_MESSAGE) &&
-      fg._actions.includes(
-        EventAction.PULL_REQUEST_CREATED ||
-        EventAction.PULL_REQUEST_MERGED ||
-        EventAction.PULL_REQUEST_REOPENED ||
-        EventAction.PULL_REQUEST_UPDATED)
-    ));
+      this.hasPrEvent(fg._actions)));
+  }
+  private hasFilePathFilterAndPrEvent() {
+    return this.webhookFilters.some(fg => (
+      fg._filters.some(fp => fp.type === WebhookFilterTypes.FILE_PATH) &&
+      this.hasPrEvent(fg._actions)));
+  }
+  private hasPrEvent(actions: EventAction[]) {
+    return actions.includes(
+      EventAction.PULL_REQUEST_CREATED ||
+      EventAction.PULL_REQUEST_MERGED ||
+      EventAction.PULL_REQUEST_REOPENED ||
+      EventAction.PULL_REQUEST_UPDATED);
   }
 }
 
