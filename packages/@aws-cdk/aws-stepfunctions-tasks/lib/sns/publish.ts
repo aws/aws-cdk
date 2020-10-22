@@ -1,7 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as sns from '@aws-cdk/aws-sns';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
-import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 /**
@@ -65,7 +65,7 @@ export class SnsPublish extends sfn.TaskStateBase {
 
   private readonly integrationPattern: sfn.IntegrationPattern;
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: SnsPublishProps) {
+  constructor(scope: Construct, id: string, private readonly props: SnsPublishProps) {
     super(scope, id, props);
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
 
@@ -73,7 +73,7 @@ export class SnsPublish extends sfn.TaskStateBase {
 
     if (this.integrationPattern === sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN) {
       if (!sfn.FieldUtils.containsTaskToken(props.message)) {
-        throw new Error('Task Token is required in `message` Use Context.taskToken to set the token.');
+        throw new Error('Task Token is required in `message` Use JsonPath.taskToken to set the token.');
       }
     }
 
@@ -88,7 +88,10 @@ export class SnsPublish extends sfn.TaskStateBase {
   /**
    * Provides the SNS Publish service integration task configuration
    */
-  protected renderTask(): any {
+  /**
+   * @internal
+   */
+  protected _renderTask(): any {
     return {
       Resource: integrationResourceArn('sns', 'publish', this.integrationPattern),
       Parameters: sfn.FieldUtils.renderObject({

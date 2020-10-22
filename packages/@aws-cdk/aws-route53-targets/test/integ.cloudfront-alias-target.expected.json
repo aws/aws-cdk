@@ -18,7 +18,15 @@
               "DomainName"
             ]
           },
-          "HostedZoneId": "Z2FDTNDATAQYW2"
+          "HostedZoneId": {
+            "Fn::FindInMap": [
+              "AWSCloudFrontPartitionHostedZoneIdMap",
+              {
+                "Ref": "AWS::Partition"
+              },
+              "zoneId"
+            ]
+          }
         },
         "HostedZoneId": {
           "Ref": "HostedZoneDB99F866"
@@ -59,6 +67,8 @@
           "IPV6Enabled": true,
           "Origins": [
             {
+              "ConnectionAttempts": 3,
+              "ConnectionTimeout": 10,
               "DomainName": {
                 "Fn::GetAtt": [
                   "Bucket83908E77",
@@ -74,6 +84,16 @@
             "CloudFrontDefaultCertificate": true
           }
         }
+      }
+    }
+  },
+  "Mappings": {
+    "AWSCloudFrontPartitionHostedZoneIdMap": {
+      "aws": {
+        "zoneId": "Z2FDTNDATAQYW2"
+      },
+      "aws-cn": {
+        "zoneId": "Z3RFFRIM2A3IF5"
       }
     }
   }

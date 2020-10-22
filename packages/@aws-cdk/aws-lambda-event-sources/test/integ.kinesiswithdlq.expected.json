@@ -91,7 +91,7 @@
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
-          "ZipFile": "exports.handler = async function handler(event) {\n    // tslint:disable-next-line:no-console\n    console.log('event:', JSON.stringify(event, undefined, 2));\n    throw new Error();\n}"
+          "ZipFile": "exports.handler = async function handler(event) {\n    // eslint-disable-next-line no-console\n    console.log('event:', JSON.stringify(event, undefined, 2));\n    throw new Error();\n}"
         },
         "Handler": "index.handler",
         "Role": {

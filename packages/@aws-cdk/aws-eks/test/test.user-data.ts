@@ -4,7 +4,7 @@ import { App, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { renderAmazonLinuxUserData } from '../lib/user-data';
 
-// tslint:disable:max-line-length
+/* eslint-disable max-len */
 
 export = {
   'default user data'(test: Test) {
@@ -90,7 +90,7 @@ export = {
     }));
 
     // THEN
-    test.deepEqual(userData[1], '/etc/eks/bootstrap.sh my-cluster-name --kubelet-extra-args "--node-labels lifecycle=OnDemand" --use-max-pods true --enable-docker-bridge');
+    test.deepEqual(userData[1], '/etc/eks/bootstrap.sh my-cluster-name --kubelet-extra-args "--node-labels lifecycle=OnDemand" --use-max-pods true --enable-docker-bridge true');
     test.done();
   },
 
@@ -153,7 +153,7 @@ export = {
 
 function newFixtures(spot = false) {
   const app = new App();
-  const stack = new Stack(app, 'my-stack', { env: { region: 'us-west-33' }});
+  const stack = new Stack(app, 'my-stack', { env: { region: 'us-west-33' } });
   const vpc = new ec2.Vpc(stack, 'vpc');
   const asg = new autoscaling.AutoScalingGroup(stack, 'ASG', {
     instanceType: new ec2.InstanceType('m4.xlarge'),

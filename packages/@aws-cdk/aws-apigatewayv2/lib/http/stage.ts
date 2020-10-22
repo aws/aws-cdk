@@ -1,14 +1,30 @@
-import { Construct, Resource, Stack } from '@aws-cdk/core';
+import { Metric, MetricOptions } from '@aws-cdk/aws-cloudwatch';
+import { Resource, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnStage } from '../apigatewayv2.generated';
-import { CommonStageOptions, IStage } from '../common';
+import { CommonStageOptions, IDomainName, IStage } from '../common';
 import { IHttpApi } from './api';
+import { HttpApiMapping } from './api-mapping';
+
 
 const DEFAULT_STAGE_NAME = '$default';
+
+/**
+ * Represents the HttpStage
+ */
+export interface IHttpStage extends IStage {
+}
 
 /**
  * Options to create a new stage for an HTTP API.
  */
 export interface HttpStageOptions extends CommonStageOptions {
+  /**
+   * The options for custom domain and api mapping
+   *
+   * @default - no custom domain and api mapping configuration
+   */
+  readonly domainMapping?: DomainMappingOptions;
 }
 
 /**
@@ -19,6 +35,35 @@ export interface HttpStageProps extends HttpStageOptions {
    * The HTTP API to which this stage is associated.
    */
   readonly httpApi: IHttpApi;
+}
+
+/**
+ * Options for defaultDomainMapping
+ */
+export interface DefaultDomainMappingOptions {
+  /**
+   * The domain name for the mapping
+   *
+   */
+  readonly domainName: IDomainName;
+
+  /**
+   * The API mapping key. Leave it undefined for the root path mapping.
+   * @default - empty key for the root path mapping
+   */
+  readonly mappingKey?: string;
+}
+
+/**
+ * Options for DomainMapping
+ */
+export interface DomainMappingOptions extends DefaultDomainMappingOptions {
+  /**
+   * The API Stage
+   *
+   * @default - the $default stage
+   */
+  readonly stage?: IStage;
 }
 
 /**
@@ -52,6 +97,18 @@ export class HttpStage extends Resource implements IStage {
 
     this.stageName = this.physicalName;
     this.httpApi = props.httpApi;
+
+    if (props.domainMapping) {
+      new HttpApiMapping(this, `${props.domainMapping.domainName}${props.domainMapping.mappingKey}`, {
+        api: props.httpApi,
+        domainName: props.domainMapping.domainName,
+        stage: this,
+        apiMappingKey: props.domainMapping.mappingKey,
+      });
+      // ensure the dependency
+      this.node.addDependency(props.domainMapping.domainName);
+    }
+
   }
 
   /**
@@ -61,5 +118,74 @@ export class HttpStage extends Resource implements IStage {
     const s = Stack.of(this);
     const urlPath = this.stageName === DEFAULT_STAGE_NAME ? '' : this.stageName;
     return `https://${this.httpApi.httpApiId}.execute-api.${s.region}.${s.urlSuffix}/${urlPath}`;
+  }
+
+  /**
+   * Return the given named metric for this HTTP Api Gateway Stage
+   *
+   * @default - average over 5 minutes
+   */
+  public metric(metricName: string, props?: MetricOptions): Metric {
+    var api = this.httpApi;
+    return api.metric(metricName, props).with({
+      dimensions: { ApiId: this.httpApi.httpApiId, Stage: this.stageName },
+    }).attachTo(this);
+  }
+
+  /**
+   * Metric for the number of client-side errors captured in a given period.
+   *
+   * @default - sum over 5 minutes
+   */
+  public metricClientError(props?: MetricOptions): Metric {
+    return this.metric('4XXError', { statistic: 'Sum', ...props });
+  }
+
+  /**
+   * Metric for the number of server-side errors captured in a given period.
+   *
+   * @default - sum over 5 minutes
+   */
+  public metricServerError(props?: MetricOptions): Metric {
+    return this.metric('5XXError', { statistic: 'Sum', ...props });
+  }
+
+  /**
+   * Metric for the amount of data processed in bytes.
+   *
+   * @default - sum over 5 minutes
+   */
+  public metricDataProcessed(props?: MetricOptions): Metric {
+    return this.metric('DataProcessed', { statistic: 'Sum', ...props });
+  }
+
+  /**
+   * Metric for the total number API requests in a given period.
+   *
+   * @default - SampleCount over 5 minutes
+   */
+  public metricCount(props?: MetricOptions): Metric {
+    return this.metric('Count', { statistic: 'SampleCount', ...props });
+  }
+
+  /**
+   * Metric for the time between when API Gateway relays a request to the backend
+   * and when it receives a response from the backend.
+   *
+   * @default - no statistic
+   */
+  public metricIntegrationLatency(props?: MetricOptions): Metric {
+    return this.metric('IntegrationLatency', props);
+  }
+
+  /**
+   * The time between when API Gateway receives a request from a client
+   * and when it returns a response to the client.
+   * The latency includes the integration latency and other API Gateway overhead.
+   *
+   * @default - no statistic
+   */
+  public metricLatency(props?: MetricOptions): Metric {
+    return this.metric('Latency', props);
   }
 }

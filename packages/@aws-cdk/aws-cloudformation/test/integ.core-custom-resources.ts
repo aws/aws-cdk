@@ -1,3 +1,4 @@
+/// !cdk-integ pragma:ignore-assets
 /*
  * Stack verification steps:
  * - Deploy with `--no-clean`
@@ -7,6 +8,8 @@
  *   - GetAtt.Attribute2: 1234
  */
 import { App, CfnOutput, Construct, CustomResource, CustomResourceProvider, CustomResourceProviderRuntime, Stack, Token } from '@aws-cdk/core';
+
+/* eslint-disable cdk/no-core-construct */
 
 class TestStack extends Stack {
   constructor(scope: Construct, id: string) {

@@ -1,7 +1,9 @@
 import { IRole, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Construct, Duration, IResource, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
+import { Duration, IResource, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnUserPool } from './cognito.generated';
+import { StandardAttributeNames } from './private/attr-names';
 import { ICustomAttribute, StandardAttribute, StandardAttributes } from './user-pool-attr';
 import { UserPoolClient, UserPoolClientOptions } from './user-pool-client';
 import { UserPoolDomain, UserPoolDomainOptions } from './user-pool-domain';
@@ -385,6 +387,47 @@ export interface EmailSettings {
 }
 
 /**
+ * How will a user be able to recover their account?
+ *
+ * When a user forgets their password, they can have a code sent to their verified email or verified phone to recover their account.
+ * You can choose the preferred way to send codes below.
+ * We recommend not allowing phone to be used for both password resets and multi-factor authentication (MFA).
+ *
+ * @see https://docs.aws.amazon.com/cognito/latest/developerguide/how-to-recover-a-user-account.html
+ */
+export enum AccountRecovery {
+  /**
+   * Email if available, otherwise phone, but don’t allow a user to reset their password via phone if they are also using it for MFA
+   */
+  EMAIL_AND_PHONE_WITHOUT_MFA,
+
+  /**
+   * Phone if available, otherwise email, but don’t allow a user to reset their password via phone if they are also using it for MFA
+   */
+  PHONE_WITHOUT_MFA_AND_EMAIL,
+
+  /**
+   * Email only
+   */
+  EMAIL_ONLY,
+
+  /**
+   * Phone only, but don’t allow a user to reset their password via phone if they are also using it for MFA
+   */
+  PHONE_ONLY_WITHOUT_MFA,
+
+  /**
+   * (Not Recommended) Phone if available, otherwise email, and do allow a user to reset their password via phone if they are also using it for MFA.
+   */
+  PHONE_AND_EMAIL,
+
+  /**
+   * None – users will have to contact an administrator to reset their passwords
+   */
+  NONE,
+}
+
+/**
  * Props for the UserPool construct
  */
 export interface UserPoolProps {
@@ -428,6 +471,13 @@ export interface UserPoolProps {
    * @default - No external id will be configured
    */
   readonly smsRoleExternalId?: string;
+
+  /**
+   * Setting this would explicitly enable or disable SMS role creation.
+   * When left unspecified, CDK will determine based on other properties if a role is needed or not.
+   * @default - CDK will determine based on other properties of the user pool if an SMS role should be created or not.
+   */
+  readonly enableSmsRole?: boolean;
 
   /**
    * Methods in which a user registers or signs in to a user pool.
@@ -508,6 +558,13 @@ export interface UserPoolProps {
    * @default true
    */
   readonly signInCaseSensitive?: boolean;
+
+  /**
+   * How will a user be able to recover their account?
+   *
+   * @default AccountRecovery.PHONE_WITHOUT_MFA_AND_EMAIL
+   */
+  readonly accountRecovery?: AccountRecovery;
 }
 
 /**
@@ -621,7 +678,7 @@ export class UserPool extends UserPoolBase {
    */
   public readonly userPoolProviderUrl: string;
 
-  private triggers: CfnUserPool.LambdaConfigProperty = { };
+  private triggers: CfnUserPool.LambdaConfigProperty = {};
 
   constructor(scope: Construct, id: string, props: UserPoolProps = {}) {
     super(scope, id);
@@ -682,6 +739,7 @@ export class UserPool extends UserPoolBase {
       usernameConfiguration: undefinedIfNoKeys({
         caseSensitive: props.signInCaseSensitive,
       }),
+      accountRecoverySetting: this.accountRecovery(props),
     });
 
     this.userPoolId = userPool.ref;
@@ -785,41 +843,56 @@ export class UserPool extends UserPoolBase {
     return { usernameAttrs, aliasAttrs, autoVerifyAttrs };
   }
 
-  private smsConfiguration(props: UserPoolProps): CfnUserPool.SmsConfigurationProperty {
+  private smsConfiguration(props: UserPoolProps): CfnUserPool.SmsConfigurationProperty | undefined {
+    if (props.enableSmsRole === false && props.smsRole) {
+      throw new Error('enableSmsRole cannot be disabled when smsRole is specified');
+    }
+
     if (props.smsRole) {
       return {
         snsCallerArn: props.smsRole.roleArn,
         externalId: props.smsRoleExternalId,
       };
-    } else {
-      const smsRoleExternalId = this.node.uniqueId.substr(0, 1223); // sts:ExternalId max length of 1224
-      const smsRole = props.smsRole ?? new Role(this, 'smsRole', {
-        assumedBy: new ServicePrincipal('cognito-idp.amazonaws.com', {
-          conditions: {
-            StringEquals: { 'sts:ExternalId': smsRoleExternalId },
-          },
-        }),
-        inlinePolicies: {
-          /*
-           * The UserPool is very particular that it must contain an 'sns:Publish' action as an inline policy.
-           * Ideally, a conditional that restricts this action to 'sms' protocol needs to be attached, but the UserPool deployment fails validation.
-           * Seems like a case of being excessively strict.
-           */
-          'sns-publish': new PolicyDocument({
-            statements: [
-              new PolicyStatement({
-                actions: [ 'sns:Publish' ],
-                resources: [ '*' ],
-              }),
-            ],
-          }),
-        },
-      });
-      return {
-        externalId: smsRoleExternalId,
-        snsCallerArn: smsRole.roleArn,
-      };
     }
+
+    if (props.enableSmsRole === false) {
+      return undefined;
+    }
+
+    const mfaConfiguration = this.mfaConfiguration(props);
+    const phoneVerification = props.signInAliases?.phone === true || props.autoVerify?.phone === true;
+    const roleRequired = mfaConfiguration?.includes('SMS_MFA') || phoneVerification;
+    if (!roleRequired && props.enableSmsRole === undefined) {
+      return undefined;
+    }
+
+    const smsRoleExternalId = this.node.uniqueId.substr(0, 1223); // sts:ExternalId max length of 1224
+    const smsRole = props.smsRole ?? new Role(this, 'smsRole', {
+      assumedBy: new ServicePrincipal('cognito-idp.amazonaws.com', {
+        conditions: {
+          StringEquals: { 'sts:ExternalId': smsRoleExternalId },
+        },
+      }),
+      inlinePolicies: {
+        /*
+          * The UserPool is very particular that it must contain an 'sns:Publish' action as an inline policy.
+          * Ideally, a conditional that restricts this action to 'sms' protocol needs to be attached, but the UserPool deployment fails validation.
+          * Seems like a case of being excessively strict.
+          */
+        'sns-publish': new PolicyDocument({
+          statements: [
+            new PolicyStatement({
+              actions: ['sns:Publish'],
+              resources: ['*'],
+            }),
+          ],
+        }),
+      },
+    });
+    return {
+      externalId: smsRoleExternalId,
+      snsCallerArn: smsRole.roleArn,
+    };
   }
 
   private mfaConfiguration(props: UserPoolProps): string[] | undefined {
@@ -828,7 +901,7 @@ export class UserPool extends UserPoolBase {
       return undefined;
     } else if (props.mfaSecondFactor === undefined &&
       (props.mfa === Mfa.OPTIONAL || props.mfa === Mfa.REQUIRED)) {
-      return [ 'SMS_MFA' ];
+      return ['SMS_MFA'];
     } else {
       const enabledMfas = [];
       if (props.mfaSecondFactor!.sms) {
@@ -907,27 +980,43 @@ export class UserPool extends UserPoolBase {
     }
     return schema;
   }
-}
 
-const StandardAttributeNames: Record<keyof StandardAttributes, string> = {
-  address: 'address',
-  birthdate: 'birthdate',
-  email: 'email',
-  familyName: 'family_name',
-  gender: 'gender',
-  givenName: 'given_name',
-  locale: 'locale',
-  middleName: 'middle_name',
-  fullname: 'name',
-  nickname: 'nickname',
-  phoneNumber: 'phone_number',
-  profilePicture: 'picture',
-  preferredUsername: 'preferred_username',
-  profilePage: 'profile',
-  timezone: 'zoneinfo',
-  lastUpdateTime: 'updated_at',
-  website: 'website',
-};
+  private accountRecovery(props: UserPoolProps): undefined | CfnUserPool.AccountRecoverySettingProperty {
+    const accountRecovery = props.accountRecovery ?? AccountRecovery.PHONE_WITHOUT_MFA_AND_EMAIL;
+    switch (accountRecovery) {
+      case AccountRecovery.EMAIL_AND_PHONE_WITHOUT_MFA:
+        return {
+          recoveryMechanisms: [
+            { name: 'verified_email', priority: 1 },
+            { name: 'verified_phone_number', priority: 2 },
+          ],
+        };
+      case AccountRecovery.PHONE_WITHOUT_MFA_AND_EMAIL:
+        return {
+          recoveryMechanisms: [
+            { name: 'verified_phone_number', priority: 1 },
+            { name: 'verified_email', priority: 2 },
+          ],
+        };
+      case AccountRecovery.EMAIL_ONLY:
+        return {
+          recoveryMechanisms: [{ name: 'verified_email', priority: 1 }],
+        };
+      case AccountRecovery.PHONE_ONLY_WITHOUT_MFA:
+        return {
+          recoveryMechanisms: [{ name: 'verified_phone_number', priority: 1 }],
+        };
+      case AccountRecovery.NONE:
+        return {
+          recoveryMechanisms: [{ name: 'admin_only', priority: 1 }],
+        };
+      case AccountRecovery.PHONE_AND_EMAIL:
+        return undefined;
+      default:
+        throw new Error(`Unsupported AccountRecovery type - ${accountRecovery}`);
+    }
+  }
+}
 
 function undefinedIfNoKeys(struct: object): object | undefined {
   const allUndefined = Object.values(struct).reduce((acc, v) => acc && (v === undefined), true);

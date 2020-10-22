@@ -32,7 +32,8 @@ runtime code.
  * `lambda.Code.fromInline(code)` - inline the handle code as a string. This is
    limited to supported runtimes and the code cannot exceed 4KiB.
  * `lambda.Code.fromAsset(path)` - specify a directory or a .zip file in the local
-   filesystem which will be zipped and uploaded to S3 before deployment.
+   filesystem which will be zipped and uploaded to S3 before deployment. See also
+   [bundling asset code](#Bundling-Asset-Code).
 
 The following example shows how to define a Python function and deploy the code
 from the local directory `my-lambda-handler` to it:
@@ -62,7 +63,7 @@ const fn = new lambda.Function(this, 'MyFunction', {
   runtime: lambda.Runtime.NODEJS_10_X,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
-  
+
 fn.role // the Role
 ```
 
@@ -239,6 +240,22 @@ const fn = new lambda.Function(this, 'MyFunction', {
 See [the AWS documentation](https://docs.aws.amazon.com/lambda/latest/dg/lambda-x-ray.html)
 to learn more about AWS Lambda's X-Ray support.
 
+### Lambda with Profiling
+
+```ts
+import * as lambda from '@aws-cdk/aws-lambda';
+
+const fn = new lambda.Function(this, 'MyFunction', {
+    runtime: lambda.Runtime.NODEJS_10_X,
+    handler: 'index.handler',
+    code: lambda.Code.fromInline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
+    profiling: true
+});
+```
+
+See [the AWS documentation](https://docs.aws.amazon.com/codeguru/latest/profiler-ug/setting-up-lambda.html)
+to learn more about AWS Lambda's Profiling support.
+
 ### Lambda with Reserved Concurrent Executions
 
 ```ts
@@ -255,6 +272,35 @@ const fn = new lambda.Function(this, 'MyFunction', {
 See [the AWS documentation](https://docs.aws.amazon.com/lambda/latest/dg/concurrent-executions.html)
 managing concurrency.
 
+### AutoScaling
+
+You can use Application AutoScaling to automatically configure the provisioned concurrency for your functions. AutoScaling can be set to track utilization or be based on a schedule. To configure AutoScaling on a function alias:
+
+```ts
+const alias = new lambda.Alias(stack, 'Alias', {
+  aliasName: 'prod',
+  version,
+});
+
+// Create AutoScaling target
+const as = alias.addAutoScaling({ maxCapacity: 50 })
+
+// Configure Target Tracking
+as.scaleOnUtilization({
+  utilizationTarget: 0.5,
+});
+
+// Configure Scheduled Scaling
+as.scaleOnSchedule('ScaleUpInTheMorning', {
+  schedule: appscaling.Schedule.cron({ hour: '8', minute: '0'}),
+  minCapacity: 20,
+});
+```
+
+[Example of Lambda AutoScaling usage](test/integ.autoscaling.lit.ts)
+
+See [the AWS documentation](https://docs.aws.amazon.com/lambda/latest/dg/invocation-scaling.html) on autoscaling lambda functions.
+
 ### Log Group
 
 Lambda functions automatically create a log group with the name `/aws/lambda/<function-name>` upon first execution with
@@ -265,6 +311,9 @@ The `logRetention` property can be used to set a different expiration period.
 It is possible to obtain the function's log group as a `logs.ILogGroup` by calling the `logGroup` property of the
 `Function` construct.
 
+By default, CDK uses the AWS SDK retry options when creating a log group. The `logRetentionRetryOptions` property
+allows you to customize the maximum number of retries and base backoff duration.
+
 *Note* that, if either `logRetention` is set or `logGroup` property is called, a [CloudFormation custom
 resource](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cfn-customresource.html) is added
 to the stack that pre-creates the log group as part of the stack deployment, if it already doesn't exist, and sets the
@@ -272,6 +321,46 @@ correct log retention period (never expire, by default).
 
 *Further note* that, if the log group already exists and the `logRetention` is not set, the custom resource will reset
 the log retention to never expire even if it was configured with a different value.
+
+### FileSystem Access
+
+You can configure a function to mount an Amazon Elastic File System (Amazon EFS) to a
+directory in your runtime environment with the `filesystem` property. To access Amazon EFS
+from lambda function, the Amazon EFS access point will be required.
+
+The following sample allows the lambda function to mount the Amazon EFS access point to `/mnt/msg` in the runtime environment and access the filesystem with the POSIX identity defined in `posixUser`.
+
+```ts
+// create a new Amazon EFS filesystem
+const fileSystem = new efs.FileSystem(stack, 'Efs', { vpc });
+
+// create a new access point from the filesystem
+const accessPoint = fileSystem.addAccessPoint('AccessPoint', {
+  // set /export/lambda as the root of the access point
+  path: '/export/lambda',
+  // as /export/lambda does not exist in a new efs filesystem, the efs will create the directory with the following createAcl
+  createAcl: {
+    ownerUid: '1001',
+    ownerGid: '1001',
+    permissions: '750',
+  },
+  // enforce the POSIX identity so lambda function will access with this identity
+  posixUser: {
+    uid: '1001',
+    gid: '1001',
+  },
+});
+
+const fn = new lambda.Function(stack, 'MyLambda', {
+  code,
+  handler,
+  runtime,
+  vpc,
+  // mount the access point to /mnt/msg in the lambda runtime enironment
+  filesystem: lambda.FileSystem.fromEfsAccessPoint(accessPoint, '/mnt/msg'),
+});
+```
+
 
 ### Singleton Function
 
@@ -287,7 +376,55 @@ number of times and with different properties. Using `SingletonFunction` here wi
 For example, the `LogRetention` construct requires only one single lambda function for all different log groups whose
 retention it seeks to manage.
 
+### Bundling Asset Code
+When using `lambda.Code.fromAsset(path)` it is possible to bundle the code by running a
+command in a Docker container. The asset path will be mounted at `/asset-input`. The
+Docker container is responsible for putting content at `/asset-output`. The content at
+`/asset-output` will be zipped and used as Lambda code.
+
+Example with Python:
+```ts
+new lambda.Function(this, 'Function', {
+  code: lambda.Code.fromAsset(path.join(__dirname, 'my-python-handler'), {
+    bundling: {
+      image: lambda.Runtime.PYTHON_3_6.bundlingDockerImage,
+      command: [
+        'bash', '-c', `
+        pip install -r requirements.txt -t /asset-output &&
+        cp -au . /asset-output
+        `,
+      ],
+    },
+  }),
+  runtime: lambda.Runtime.PYTHON_3_6,
+  handler: 'index.handler',
+});
+```
+Runtimes expose a `bundlingDockerImage` property that points to the [AWS SAM](https://github.com/awslabs/aws-sam-cli) build image.
+
+Use `cdk.BundlingDockerImage.fromRegistry(image)` to use an existing image or
+`cdk.BundlingDockerImage.fromAsset(path)` to build a specific image:
+
+```ts
+import * as cdk from '@aws-cdk/core';
+
+new lambda.Function(this, 'Function', {
+  code: lambda.Code.fromAsset('/path/to/handler', {
+    bundling: {
+      image: cdk.BundlingDockerImage.fromAsset('/path/to/dir/with/DockerFile', {
+        buildArgs: {
+          ARG1: 'value1',
+        },
+      }),
+      command: ['my', 'cool', 'command'],
+    },
+  }),
+  // ...
+});
+```
+
 ### Language-specific APIs
 Language-specific higher level constructs are provided in separate modules:
 
 * Node.js: [`@aws-cdk/aws-lambda-nodejs`](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-lambda-nodejs)
+* Python: [`@aws-cdk/aws-lambda-python`](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-lambda-python)

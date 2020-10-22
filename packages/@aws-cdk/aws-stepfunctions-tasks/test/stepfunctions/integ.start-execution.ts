@@ -1,5 +1,6 @@
 import * as sfn from '@aws-cdk/aws-stepfunctions';
-import { App, CfnOutput, Construct, Stack } from '@aws-cdk/core';
+import { App, CfnOutput, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { StepFunctionsStartExecution } from '../../lib/stepfunctions/start-execution';
 
 /*
@@ -21,7 +22,7 @@ class TestStack extends Stack {
       definition: new StepFunctionsStartExecution(this, 'Task', {
         stateMachine: child,
         input: sfn.TaskInput.fromObject({
-          hello: sfn.Data.stringAt('$.hello'),
+          hello: sfn.JsonPath.stringAt('$.hello'),
         }),
         integrationPattern: sfn.IntegrationPattern.RUN_JOB,
       }),

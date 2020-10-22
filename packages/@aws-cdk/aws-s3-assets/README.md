@@ -70,6 +70,53 @@ the asset store, it is uploaded during deployment.
 Now, when the toolkit deploys the stack, it will set the relevant CloudFormation
 Parameters to point to the actual bucket and key for each asset.
 
+## Asset Bundling
+
+When defining an asset, you can use the `bundling` option to specify a command
+to run inside a docker container. The command can read the contents of the asset
+source from `/asset-input` and is expected to write files under `/asset-output`
+(directories mapped inside the container). The files under `/asset-output` will
+be zipped and uploaded to S3 as the asset.
+
+The following example uses custom asset bundling to convert a markdown file to html:
+
+[Example of using asset bundling](./test/integ.assets.bundling.lit.ts).
+
+The bundling docker image (`image`) can either come from a registry (`BundlingDockerImage.fromRegistry`)
+or it can be built from a `Dockerfile` located inside your project (`BundlingDockerImage.fromAsset`).
+
+You can set the `CDK_DOCKER` environment variable in order to provide a custom
+docker program to execute. This may sometime be needed when building in
+environments where the standard docker cannot be executed (see
+https://github.com/aws/aws-cdk/issues/8460 for details).
+
+Use `local` to specify a local bundling provider. The provider implements a
+method `tryBundle()` which should return `true` if local bundling was performed.
+If `false` is returned, docker bundling will be done:
+
+```ts
+new assets.Asset(this, 'BundledAsset', {
+  path: '/path/to/asset',
+  bundling: {
+    local: {
+      tryBundle(outputDir: string, options: BundlingOptions) {
+        if (canRunLocally) {
+          // perform local bundling here
+          return true;
+        }
+        return false;
+      },
+    },
+    // Docker bundling fallback
+    image: BundlingDockerImage.fromRegistry('alpine'),
+    command: ['bundle'],
+  },
+});
+```
+
+Although optional, it's recommended to provide a local bundling method which can
+greatly improve performance.
+
 ## CloudFormation Resource Metadata
 
 > NOTE: This section is relevant for authors of AWS Resource Constructs.

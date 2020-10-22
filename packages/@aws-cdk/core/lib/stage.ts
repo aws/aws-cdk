@@ -1,8 +1,11 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import { Construct, IConstruct } from './construct-compat';
+import { IConstruct, Construct, Node } from 'constructs';
 import { Environment } from './environment';
-import { collectRuntimeInformation } from './private/runtime-info';
 import { synthesize } from './private/synthesis';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from './construct-compat';
 
 /**
  * Initialization props for a stage.
@@ -65,7 +68,7 @@ export interface StageProps {
  * copies of your application which should be be deployed to different
  * environments.
  */
-export class Stage extends Construct {
+export class Stage extends CoreConstruct {
   /**
    * Return the stage this construct is contained with, if available. If called
    * on a nested stage, returns its parent.
@@ -73,7 +76,7 @@ export class Stage extends Construct {
    * @experimental
    */
   public static of(construct: IConstruct): Stage | undefined {
-    return construct.node.scopes.reverse().slice(1).find(Stage.isStage);
+    return Node.of(construct).scopes.reverse().slice(1).find(Stage.isStage);
   }
 
   /**
@@ -140,7 +143,14 @@ export class Stage extends Construct {
     this.account = props.env?.account ?? this.parentStage?.account;
 
     this._assemblyBuilder = this.createBuilder(props.outdir);
-    this.stageName = [ this.parentStage?.stageName, id ].filter(x => x).join('-');
+    this.stageName = [this.parentStage?.stageName, id].filter(x => x).join('-');
+  }
+
+  /**
+   * The cloud assembly output directory.
+   */
+  public get outdir() {
+    return this._assemblyBuilder.outdir;
   }
 
   /**
@@ -163,11 +173,9 @@ export class Stage extends Construct {
    * calls will return the same assembly.
    */
   public synth(options: StageSynthesisOptions = { }): cxapi.CloudAssembly {
-    if (!this.assembly) {
-      const runtimeInfo = this.node.tryGetContext(cxapi.DISABLE_VERSION_REPORTING) ? undefined : collectRuntimeInformation();
+    if (!this.assembly || options.force) {
       this.assembly = synthesize(this, {
         skipValidation: options.skipValidation,
-        runtimeInfo,
       });
     }
 
@@ -198,4 +206,12 @@ export interface StageSynthesisOptions {
    * @default - false
    */
   readonly skipValidation?: boolean;
+
+  /**
+   * Force a re-synth, even if the stage has already been synthesized.
+   * This is used by tests to allow for incremental verification of the output.
+   * Do not use in production.
+   * @default false
+   */
+  readonly force?: boolean;
 }

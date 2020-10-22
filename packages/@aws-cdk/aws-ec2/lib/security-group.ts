@@ -1,4 +1,5 @@
-import { Construct, IResource, Lazy, Resource, ResourceProps, Stack, Token } from '@aws-cdk/core';
+import { Annotations, IResource, Lazy, Resource, ResourceProps, Stack, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Connections } from './connections';
 import { CfnSecurityGroup, CfnSecurityGroupEgress, CfnSecurityGroupIngress } from './ec2.generated';
 import { IPeer } from './peer';
@@ -318,7 +319,7 @@ export class SecurityGroup extends SecurityGroupBase {
         // do nothing
       }
 
-      public addIngressRule(_peer: IPeer, _connection: Port, _description?: string, _remoteRule?: boolean)  {
+      public addIngressRule(_peer: IPeer, _connection: Port, _description?: string, _remoteRule?: boolean) {
         // do nothing
       }
     }
@@ -370,8 +371,8 @@ export class SecurityGroup extends SecurityGroupBase {
     this.securityGroup = new CfnSecurityGroup(this, 'Resource', {
       groupName: this.physicalName,
       groupDescription,
-      securityGroupIngress: Lazy.anyValue({ produce: () => this.directIngressRules}, { omitEmptyArray: true} ),
-      securityGroupEgress: Lazy.anyValue({ produce: () => this.directEgressRules }, { omitEmptyArray: true} ),
+      securityGroupIngress: Lazy.anyValue({ produce: () => this.directIngressRules }, { omitEmptyArray: true } ),
+      securityGroupEgress: Lazy.anyValue({ produce: () => this.directEgressRules }, { omitEmptyArray: true } ),
       vpcId: props.vpc.vpcId,
     });
 
@@ -404,6 +405,7 @@ export class SecurityGroup extends SecurityGroupBase {
       // In the case of "allowAllOutbound", we don't add any more rules. There
       // is only one rule which allows all traffic and that subsumes any other
       // rule.
+      Annotations.of(this).addWarning('Ignoring Egress rule since \'allowAllOutbound\' is set to true; To add customize rules, set allowAllOutbound=false on the SecurityGroup');
       return;
     } else {
       // Otherwise, if the bogus rule exists we can now remove it because the

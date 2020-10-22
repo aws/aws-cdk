@@ -1,9 +1,10 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Construct, Duration, Lazy, Stack } from '@aws-cdk/core';
+import { Duration, Lazy, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnAuthorizer } from '../apigateway.generated';
 import { Authorizer, IAuthorizer } from '../authorizer';
-import { RestApi } from '../restapi';
+import { IRestApi } from '../restapi';
 
 /**
  * Base properties for all lambda authorizers
@@ -83,7 +84,7 @@ abstract class LambdaAuthorizer extends Authorizer implements IAuthorizer {
    * Attaches this authorizer to a specific REST API.
    * @internal
    */
-  public _attachToApi(restApi: RestApi) {
+  public _attachToApi(restApi: IRestApi) {
     if (this.restApiId && this.restApiId !== restApi.restApiId) {
       throw new Error('Cannot attach authorizer to two different rest APIs');
     }
@@ -104,8 +105,8 @@ abstract class LambdaAuthorizer extends Authorizer implements IAuthorizer {
       this.role.attachInlinePolicy(new iam.Policy(this, 'authorizerInvokePolicy', {
         statements: [
           new iam.PolicyStatement({
-            resources: [ this.handler.functionArn ],
-            actions: [ 'lambda:InvokeFunction' ],
+            resources: [this.handler.functionArn],
+            actions: ['lambda:InvokeFunction'],
           }),
         ],
       }));

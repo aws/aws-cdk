@@ -129,6 +129,28 @@ cluster.addAutoScalingGroup(autoScalingGroup);
 
 If you omit the property `vpc`, the construct will create a new VPC with two AZs.
 
+
+### Bottlerocket
+
+[Bottlerocket](https://aws.amazon.com/bottlerocket/) is a Linux-based open source operating system that is
+purpose-built by AWS for running containers. You can launch Amazon ECS container instances with the Bottlerocket AMI.
+
+> **NOTICE**: The Bottlerocket AMI is in developer preview release for Amazon ECS and is subject to change.
+
+The following example will create a capacity with self-managed Amazon EC2 capacity of 2 `c5.large` Linux instances running with `Bottlerocket` AMI.
+
+Note that you must specify either a `machineImage` or `machineImageType`, at least one, not both.
+
+The following example adds Bottlerocket capacity to the cluster:
+
+```ts
+cluster.addCapacity('bottlerocket-asg', {
+  minCapacity: 2,
+  instanceType: new ec2.InstanceType('c5.large'),
+  machineImageType: ecs.MachineImageType.BOTTLEROCKET,
+});
+```
+
 ### Spot Instances
 
 To add spot instances into the cluster, you must specify the `spotPrice` in the `ecs.AddCapacityOptions` and optionally enable the `spotInstanceDraining` property.
@@ -143,6 +165,24 @@ cluster.addCapacity('AsgSpot', {
   spotPrice: '0.0735',
   // Enable the Automated Spot Draining support for Amazon ECS
   spotInstanceDraining: true,
+});
+```
+
+### SNS Topic Encryption
+
+When the `ecs.AddCapacityOptions` that you provide has a non-zero `taskDrainTime` (the default) then an SNS topic and Lambda are created to ensure that the
+cluster's instances have been properly drained of tasks before terminating. The SNS Topic is sent the instance-terminating lifecycle event from the AutoScalingGroup,
+and the Lambda acts on that event. If you wish to engage [server-side encryption](https://docs.aws.amazon.com/sns/latest/dg/sns-data-encryption.html) for this SNS Topic
+then you may do so by providing a KMS key for the `topicEncryptionKey` propery of `ecs.AddCapacityOptions`.
+
+```ts
+// Given
+const key = kms.Key(...);
+// Then, use that key to encrypt the lifecycle-event SNS Topic.
+cluster.addCapacity('ASGEncryptedSNS', {
+  instanceType: new ec2.InstanceType("t2.xlarge"),
+  desiredCapacity: 3,
+  topicEncryptionKey: key,
 });
 ```
 
@@ -198,6 +238,21 @@ You can specify container properties when you add them to the task definition, o
 container.addPortMappings({
   containerPort: 3000
 })
+```
+
+To add data volumes to a task definition, call `addVolume()`:
+
+```ts
+const volume = ecs.Volume("Volume", {
+  // Use an Elastic FileSystem
+  name: "mydatavolume",
+  efsVolumeConfiguration: ecs.EfsVolumeConfiguration({
+    fileSystemId: "EFS"
+    // ... other options here ...
+  })
+});
+
+const container = fargateTaskDefinition.addVolume("mydatavolume");
 ```
 
 To use a TaskDefinition that can be used with either Amazon EC2 or
@@ -474,7 +529,7 @@ const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
 taskDefinition.addContainer('TheContainer', {
   image: ecs.ContainerImage.fromRegistry('example-image'),
   memoryLimitMiB: 256,
-  logging: ecs.LogDrivers.awslogs({ streamPrefix: 'EventDemo' })
+  logging: ecs.LogDrivers.awsLogs({ streamPrefix: 'EventDemo' })
 });
 ```
 

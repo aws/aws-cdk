@@ -414,7 +414,7 @@ export = {
     });
     const auth = new RequestAuthorizer(stack, 'myauthorizer', {
       handler: func,
-      identitySources: [ IdentitySource.header('myheader') ],
+      identitySources: [IdentitySource.header('myheader')],
     });
 
     test.throws(() => stack.resolve(auth.authorizerArn), /must be attached to a RestApi/);

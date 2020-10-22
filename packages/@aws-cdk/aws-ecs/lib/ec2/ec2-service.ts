@@ -1,5 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
-import { Construct, Lazy, Resource, Stack } from '@aws-cdk/core';
+import { Lazy, Resource, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { BaseService, BaseServiceOptions, DeploymentControllerType, IBaseService, IService, LaunchType, PropagatedTagSource } from '../base/base-service';
 import { fromServiceAtrributes } from '../base/from-service-attributes';
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
@@ -24,7 +25,7 @@ export interface Ec2ServiceProps extends BaseServiceOptions {
    *
    * This property is only used for tasks that use the awsvpc network mode.
    *
-   * @default - Use subnet default.
+   * @default false
    */
   readonly assignPublicIp?: boolean;
 
@@ -207,7 +208,7 @@ export class Ec2Service extends BaseService implements IEc2Service {
 
     let securityGroups;
     if (props.securityGroup !== undefined) {
-      securityGroups = [ props.securityGroup ];
+      securityGroups = [props.securityGroup];
     } else if (props.securityGroups !== undefined) {
       securityGroups = props.securityGroups;
     }

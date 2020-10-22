@@ -1,9 +1,11 @@
-// tslint:disable:object-literal-key-quotes
 import { ABSENT, expect, haveResource } from '@aws-cdk/assert';
 import * as acm from '@aws-cdk/aws-certificatemanager';
+import { Bucket } from '@aws-cdk/aws-s3';
 import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as apigw from '../lib';
+
+/* eslint-disable quote-props */
 
 export = {
   'can define either an EDGE or REGIONAL domain name'(test: Test) {
@@ -27,20 +29,20 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::DomainName', {
       'DomainName': 'example.com',
-      'EndpointConfiguration': { 'Types': [ 'REGIONAL' ] },
+      'EndpointConfiguration': { 'Types': ['REGIONAL'] },
       'RegionalCertificateArn': { 'Ref': 'Cert5C9FAEC1' },
     }));
 
     expect(stack).to(haveResource('AWS::ApiGateway::DomainName', {
       'DomainName': 'example.com',
-      'EndpointConfiguration': { 'Types': [ 'EDGE' ] },
+      'EndpointConfiguration': { 'Types': ['EDGE'] },
       'CertificateArn': { 'Ref': 'Cert5C9FAEC1' },
     }));
 
-    test.deepEqual(stack.resolve(regionalDomain.domainNameAliasDomainName), { 'Fn::GetAtt': [ 'mydomain592C948B', 'RegionalDomainName' ] });
-    test.deepEqual(stack.resolve(regionalDomain.domainNameAliasHostedZoneId), { 'Fn::GetAtt': [ 'mydomain592C948B', 'RegionalHostedZoneId' ] });
-    test.deepEqual(stack.resolve(edgeDomain.domainNameAliasDomainName), { 'Fn::GetAtt': [ 'yourdomain5FE30C81', 'DistributionDomainName' ] });
-    test.deepEqual(stack.resolve(edgeDomain.domainNameAliasHostedZoneId), { 'Fn::GetAtt': [ 'yourdomain5FE30C81', 'DistributionHostedZoneId' ] });
+    test.deepEqual(stack.resolve(regionalDomain.domainNameAliasDomainName), { 'Fn::GetAtt': ['mydomain592C948B', 'RegionalDomainName'] });
+    test.deepEqual(stack.resolve(regionalDomain.domainNameAliasHostedZoneId), { 'Fn::GetAtt': ['mydomain592C948B', 'RegionalHostedZoneId'] });
+    test.deepEqual(stack.resolve(edgeDomain.domainNameAliasDomainName), { 'Fn::GetAtt': ['yourdomain5FE30C81', 'DistributionDomainName'] });
+    test.deepEqual(stack.resolve(edgeDomain.domainNameAliasHostedZoneId), { 'Fn::GetAtt': ['yourdomain5FE30C81', 'DistributionHostedZoneId'] });
 
     test.done();
   },
@@ -59,7 +61,7 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::DomainName', {
       'DomainName': 'example.com',
-      'EndpointConfiguration': { 'Types': [ 'REGIONAL' ] },
+      'EndpointConfiguration': { 'Types': ['REGIONAL'] },
       'RegionalCertificateArn': { 'Ref': 'Cert5C9FAEC1' },
     }));
     test.done();
@@ -91,21 +93,21 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::DomainName', {
       'DomainName': 'old.example.com',
-      'EndpointConfiguration': { 'Types': [ 'REGIONAL' ] },
+      'EndpointConfiguration': { 'Types': ['REGIONAL'] },
       'RegionalCertificateArn': { 'Ref': 'Cert5C9FAEC1' },
       'SecurityPolicy': 'TLS_1_0',
     }));
 
     expect(stack).to(haveResource('AWS::ApiGateway::DomainName', {
       'DomainName': 'new.example.com',
-      'EndpointConfiguration': { 'Types': [ 'REGIONAL' ] },
+      'EndpointConfiguration': { 'Types': ['REGIONAL'] },
       'RegionalCertificateArn': { 'Ref': 'Cert5C9FAEC1' },
       'SecurityPolicy': 'TLS_1_2',
     }));
 
     expect(stack).to(haveResource('AWS::ApiGateway::DomainName', {
       'DomainName': 'default.example.com',
-      'EndpointConfiguration': { 'Types': [ 'REGIONAL' ] },
+      'EndpointConfiguration': { 'Types': ['REGIONAL'] },
       'RegionalCertificateArn': { 'Ref': 'Cert5C9FAEC1' },
       'SecurityPolicy': ABSENT,
     }));
@@ -267,6 +269,20 @@ export = {
     test.done();
   },
 
+  'domain name cannot contain uppercase letters'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const certificate = new acm.Certificate(stack, 'cert', { domainName: 'someDomainWithUpercase.domain.com' });
+
+    // WHEN
+    test.throws(() => {
+      new apigw.DomainName(stack, 'someDomain', { domainName: 'someDomainWithUpercase.domain.com', certificate });
+    }, /uppercase/);
+
+    // THEN
+    test.done();
+  },
+
   'multiple domain names can be added'(test: Test) {
     // GIVEN
     const domainName = 'my.domain.com';
@@ -351,7 +367,7 @@ export = {
     });
 
     const testStage = new apigw.Stage(stack, 'test-stage', {
-      deployment : testDeploy,
+      deployment: testDeploy,
     });
 
     // WHEN
@@ -382,6 +398,108 @@ export = {
         'Ref': 'api2DeploymentStageprod4120D74E',
       },
     }));
+    test.done();
+  },
+
+  'accepts a mutual TLS configuration'(test: Test) {
+    const stack = new Stack();
+    const bucket = Bucket.fromBucketName(stack, 'testBucket', 'exampleBucket');
+    new apigw.DomainName(stack, 'another-domain', {
+      domainName: 'example.com',
+      mtls: {
+        bucket,
+        key: 'someca.pem',
+      },
+      certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
+    });
+
+    expect(stack).to(haveResource('AWS::ApiGateway::DomainName', {
+      'DomainName': 'example.com',
+      'EndpointConfiguration': { 'Types': ['REGIONAL'] },
+      'RegionalCertificateArn': 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d',
+      'MutualTlsAuthentication': { 'TruststoreUri': 's3://exampleBucket/someca.pem' },
+    }));
+    test.done();
+  },
+
+  'mTLS should allow versions to be set on the s3 bucket'(test: Test) {
+    const stack = new Stack();
+    const bucket = Bucket.fromBucketName(stack, 'testBucket', 'exampleBucket');
+    new apigw.DomainName(stack, 'another-domain', {
+      domainName: 'example.com',
+      certificate: acm.Certificate.fromCertificateArn(stack, 'cert2', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
+      mtls: {
+        bucket,
+        key: 'someca.pem',
+        version: 'version',
+      },
+    });
+    expect(stack).to(haveResource('AWS::ApiGateway::DomainName', {
+      'DomainName': 'example.com',
+      'EndpointConfiguration': { 'Types': ['REGIONAL'] },
+      'RegionalCertificateArn': 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d',
+      'MutualTlsAuthentication': { 'TruststoreUri': 's3://exampleBucket/someca.pem', 'TruststoreVersion': 'version' },
+    }));
+    test.done();
+  },
+
+  'base path mapping configures stage for RestApi creation'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    new apigw.RestApi(stack, 'restApiWithStage', {
+      domainName: {
+        domainName: 'example.com',
+        certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
+        endpointType: apigw.EndpointType.REGIONAL,
+      },
+    }).root.addMethod('GET');
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::BasePathMapping', {
+      'DomainName': {
+        'Ref': 'restApiWithStageCustomDomainC4749625',
+      },
+      'RestApiId': {
+        'Ref': 'restApiWithStageD4F931D0',
+      },
+      'Stage': {
+        'Ref': 'restApiWithStageDeploymentStageprodC82A6648',
+      },
+    }));
+
+    test.done();
+  },
+
+  'base path mapping configures stage for SpecRestApi creation'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    const definition = {
+      key1: 'val1',
+    };
+
+    new apigw.SpecRestApi(stack, 'specRestApiWithStage', {
+      apiDefinition: apigw.ApiDefinition.fromInline(definition),
+      domainName: {
+        domainName: 'example.com',
+        certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
+        endpointType: apigw.EndpointType.REGIONAL,
+      },
+    }).root.addMethod('GET');
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::BasePathMapping', {
+      'DomainName': {
+        'Ref': 'specRestApiWithStageCustomDomain8A36A5C9',
+      },
+      'RestApiId': {
+        'Ref': 'specRestApiWithStageC1492575',
+      },
+      'Stage': {
+        'Ref': 'specRestApiWithStageDeploymentStageprod2D3037ED',
+      },
+    }));
+
     test.done();
   },
 };

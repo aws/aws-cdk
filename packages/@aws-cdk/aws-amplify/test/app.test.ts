@@ -61,6 +61,58 @@ test('create an app connected to a GitHub repository', () => {
   });
 });
 
+test('create an app connected to a GitLab repository', () => {
+  // WHEN
+  new amplify.App(stack, 'App', {
+    sourceCodeProvider: new amplify.GitLabSourceCodeProvider({
+      owner: 'aws',
+      repository: 'aws-cdk',
+      oauthToken: SecretValue.plainText('secret'),
+    }),
+    buildSpec: codebuild.BuildSpec.fromObject({
+      version: '1.0',
+      frontend: {
+        phases: {
+          build: {
+            commands: [
+              'npm run build',
+            ],
+          },
+        },
+      },
+    }),
+  });
+
+  // THEN
+  expect(stack).toHaveResource('AWS::Amplify::App', {
+    Name: 'App',
+    BuildSpec: '{\n  \"version\": \"1.0\",\n  \"frontend\": {\n    \"phases\": {\n      \"build\": {\n        \"commands\": [\n          \"npm run build\"\n        ]\n      }\n    }\n  }\n}',
+    IAMServiceRole: {
+      'Fn::GetAtt': [
+        'AppRole1AF9B530',
+        'Arn',
+      ],
+    },
+    OauthToken: 'secret',
+    Repository: 'https://gitlab.com/aws/aws-cdk',
+  });
+
+  expect(stack).toHaveResource('AWS::IAM::Role', {
+    AssumeRolePolicyDocument: {
+      Statement: [
+        {
+          Action: 'sts:AssumeRole',
+          Effect: 'Allow',
+          Principal: {
+            Service: 'amplify.amazonaws.com',
+          },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+  });
+});
+
 test('create an app connected to a CodeCommit repository', () => {
   // WHEN
   new amplify.App(stack, 'App', {
@@ -317,5 +369,22 @@ test('with auto branch creation', () => {
         },
       ],
     },
+  });
+});
+
+test('with auto branch deletion', () => {
+  // WHEN
+  new amplify.App(stack, 'App', {
+    sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
+      owner: 'aws',
+      repository: 'aws-cdk',
+      oauthToken: SecretValue.plainText('secret'),
+    }),
+    autoBranchDeletion: true,
+  });
+
+  // THEN
+  expect(stack).toHaveResource('AWS::Amplify::App', {
+    EnableBranchAutoDeletion: true,
   });
 });

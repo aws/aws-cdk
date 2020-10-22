@@ -1,7 +1,7 @@
 {
   "name": "@aws-cdk/aws-lambda-nodejs",
   "version": "0.0.0",
-  "description": "CDK Constructs for AWS Lambda in Node.js",
+  "description": "The CDK Construct Library for AWS Lambda in Node.js",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
@@ -23,9 +23,14 @@
       },
       "python": {
         "distName": "aws-cdk.aws-lambda-nodejs",
-        "module": "aws_cdk.aws_lambda_nodejs"
+        "module": "aws_cdk.aws_lambda_nodejs",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",
@@ -41,7 +46,6 @@
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
-    "cfn2ts": "cfn2ts",
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test",
     "compat": "cdk-compat"
@@ -62,19 +66,20 @@
     "@aws-cdk/assert": "0.0.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
-    "fs-extra": "^9.0.1",
+    "delay": "4.4.0",
+    "parcel": "2.0.0-nightly.429",
     "pkglint": "0.0.0"
   },
   "dependencies": {
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.0.4"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.0.4"
   },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"

@@ -1,4 +1,5 @@
-import { Construct, Lazy, Resource, SecretValue, Stack } from '@aws-cdk/core';
+import { Aws, Lazy, Resource, SecretValue, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { IGroup } from './group';
 import { CfnUser } from './iam.generated';
 import { IIdentity } from './identity-base';
@@ -139,6 +140,7 @@ export class User extends Resource implements IIdentity, IUser {
 
     class Import extends Resource implements IUser {
       public readonly grantPrincipal: IPrincipal = this;
+      public readonly principalAccount = Aws.ACCOUNT_ID;
       public readonly userName: string = userName;
       public readonly userArn: string = arn;
       public readonly assumeRoleAction: string = 'sts:AssumeRole';
@@ -175,6 +177,7 @@ export class User extends Resource implements IIdentity, IUser {
   }
 
   public readonly grantPrincipal: IPrincipal = this;
+  public readonly principalAccount: string | undefined = this.env.account;
   public readonly assumeRoleAction: string = 'sts:AssumeRole';
 
   /**

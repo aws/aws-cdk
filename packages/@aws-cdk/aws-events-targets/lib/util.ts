@@ -4,7 +4,7 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import { Construct, IConstruct } from '@aws-cdk/core';
 
 /**
- * Obtain the Role for the CloudWatch event
+ * Obtain the Role for the EventBridge event
  *
  * If a role already exists, it will be returned. This ensures that if multiple
  * events have the same target, they will share a role.

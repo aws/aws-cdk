@@ -19,8 +19,10 @@ running on AWS Lambda, or any web application.
 ## Table of Contents
 
 - [Defining APIs](#defining-apis)
+  - [Breaking up Methods and Resources across Stacks](#breaking-up-methods-and-resources-across-stacks)
 - [AWS Lambda-backed APIs](#aws-lambda-backed-apis)
 - [Integration Targets](#integration-targets)
+- [API Keys](#api-keys)
 - [Working with models](#working-with-models)
 - [Default Integration and Method Options](#default-integration-and-method-options)
 - [Proxy Routes](#proxy-routes)
@@ -28,6 +30,7 @@ running on AWS Lambda, or any web application.
   - [IAM-based authorizer](#iam-based-authorizer)
   - [Lambda-based token authorizer](#lambda-based-token-authorizer)
   - [Lambda-based request authorizer](#lambda-based-request-authorizer)
+- [Mutual TLS](#mutal-tls-mtls)
 - [Deployments](#deployments)
   - [Deep dive: Invalidation of deployments](#deep-dive-invalidation-of-deployments)
 - [Custom Domains](#custom-domains)
@@ -37,6 +40,8 @@ running on AWS Lambda, or any web application.
 - [Private Integrations](#private-integrations)
 - [Gateway Response](#gateway-response)
 - [OpenAPI Definition](#openapi-definition)
+  - [Endpoint configuration](#endpoint-configuration)
+- [Metrics](#metrics)
 - [APIGateway v2](#apigateway-v2)
 
 ## Defining APIs
@@ -99,6 +104,18 @@ item.addMethod('GET');   // GET /items/{item}
 item.addMethod('DELETE', new apigateway.HttpIntegration('http://amazon.com'));
 ```
 
+### Breaking up Methods and Resources across Stacks
+
+It is fairly common for REST APIs with a large number of Resources and Methods to hit the [CloudFormation
+limit](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cloudformation-limits.html) of 200 resources per
+stack.
+
+To help with this, Resources and Methods for the same REST API can be re-organized across multiple stacks. A common
+way to do this is to have a stack per Resource or groups of Resources, but this is not the only possible way.
+The following example uses sets up two Resources '/pets' and '/books' in separate stacks using nested stacks:
+
+[Resources grouped into nested stacks](test/integ.restapi-import.lit.ts)
+
 ## Integration Targets
 
 Methods are associated with backend integrations, which are invoked when this
@@ -136,6 +153,8 @@ book.addMethod('GET', getBookIntegration, {
   apiKeyRequired: true
 });
 ```
+
+## API Keys
 
 The following example shows how to use an API Key with a usage plan:
 
@@ -185,6 +204,19 @@ const key = api.addApiKey('ApiKey', {
   apiKeyName: 'myApiKey1',
   value: 'MyApiKeyThatIsAtLeast20Characters',
 });
+```
+
+Existing API keys can also be imported into a CDK app using its id.
+
+```ts
+const importedKey = ApiKey.fromApiKeyId(this, 'imported-key', '<api-key-id>');
+```
+
+The "grant" methods can be used to give prepackaged sets of permissions to other resources. The
+following code provides read permission to an API key.
+
+```ts
+importedKey.grantRead(lambda);
 ```
 
 In scenarios where you need to create a single api key and configure rate limiting for it, you can use `RateLimitedApiKey`.
@@ -262,7 +294,7 @@ const integration = new LambdaIntegration(hello, {
       // We will set the response status code to 200
       statusCode: "200",
       responseTemplates: {
-        // This template takes the "message" result from the Lambda function, adn embeds it in a JSON response
+        // This template takes the "message" result from the Lambda function, and embeds it in a JSON response
         // Check https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html
         'application/json': JSON.stringify({ state: 'ok', greeting: '$util.escapeJavaScript($input.body)' })
       },
@@ -453,7 +485,7 @@ iamUser.attachInlinePolicy(new iam.Policy(this, 'AllowBooks', {
     new iam.PolicyStatement({
       actions: [ 'execute-api:Invoke' ],
       effect: iam.Effect.Allow,
-      resources: [ getBooks.methodArn() ]
+      resources: [ getBooks.methodArn ]
     })
   ]
 }))
@@ -541,6 +573,24 @@ however, be modified by changing the `identitySource` property, and is required 
 Authorizers can also be passed via the `defaultMethodOptions` property within the `RestApi` construct or the `Method` construct. Unless
 explicitly overridden, the specified defaults will be applied across all `Method`s across the `RestApi` or across all `Resource`s,
 depending on where the defaults were specified.
+
+## Mutual TLS (mTLS)
+
+Mutual TLS can be configured to limit access to your API based by using client certificates instead of (or as an extension of) using authorization headers.
+
+```ts
+new apigw.DomainName(this, 'domain-name', {
+  domainName: 'example.com',
+  certificate: acm.Certificate.fromCertificateArn(this, 'cert' 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
+  mtls: {
+    bucket: new Bucket(this, 'bucket')),
+    key: 'truststore.pem',
+    version: 'version',
+  },
+});
+```
+
+Instructions for configuring your trust store can be found [here](https://aws.amazon.com/blogs/compute/introducing-mutual-tls-authentication-for-amazon-api-gateway/).
 
 ## Deployments
 
@@ -910,6 +960,11 @@ const integration = new apigw.Integration({
 });
 ```
 
+The uri for the private integration, in the case of a VpcLink, will be set to the DNS name of
+the VPC Link's NLB. If the VPC Link has multiple NLBs or the VPC Link is imported or the DNS
+name cannot be determined for any other reason, the user is expected to specify the `uri`
+property.
+
 Any existing `VpcLink` resource can be imported into the CDK app via the `VpcLink.fromVpcLinkId()`.
 
 ```ts
@@ -956,17 +1011,57 @@ The following code creates a REST API using an external OpenAPI definition JSON 
 const api = new apigateway.SpecRestApi(this, 'books-api', {
   apiDefinition: apigateway.ApiDefinition.fromAsset('path-to-file.json')
 });
+
+const booksResource = api.root.addResource('books')
+booksResource.addMethod('GET', ...);
 ```
+
+It is possible to use the `addResource()` API to define additional API Gateway Resources.
+
+**Note:** Deployment will fail if a Resource of the same name is already defined in the Open API specification.
+
+**Note:** Any default properties configured, such as `defaultIntegration`, `defaultMethodOptions`, etc. will only be
+applied to Resources and Methods defined in the CDK, and not the ones defined in the spec. Use the [API Gateway
+extensions to OpenAPI](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-swagger-extensions.html)
+to configure these.
 
 There are a number of limitations in using OpenAPI definitions in API Gateway. Read the [Amazon API Gateway important
 notes for REST APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-known-issues.html#api-gateway-known-issues-rest-apis)
 for more details.
-
+ 
 **Note:** When starting off with an OpenAPI definition using `SpecRestApi`, it is not possible to configure some
 properties that can be configured directly in the OpenAPI specification file. This is to prevent people duplication
 of these properties and potential confusion.
-Further, it is currently also not possible to configure Methods and Resources in addition to the ones in the
-specification file.
+
+### Endpoint configuration
+
+By default, `SpecRestApi` will create an edge optimized endpoint.
+
+This can be modified as shown below:
+
+```ts
+const api = new apigateway.SpecRestApi(this, 'ExampleRestApi', {
+  // ...
+  endpointTypes: [apigateway.EndpointType.PRIVATE]
+});
+```
+
+**Note:** For private endpoints you will still need to provide the 
+[`x-amazon-apigateway-policy`](https://docs.aws.amazon.com/apigateway/latest/developerguide/openapi-extensions-policy.html) and 
+[`x-amazon-apigateway-endpoint-configuration`](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-swagger-extensions-endpoint-configuration.html) 
+in your openApi file. 
+
+## Metrics
+
+The API Gateway service sends metrics around the performance of Rest APIs to Amazon CloudWatch.
+These metrics can be referred to using the metric APIs available on the `RestApi` construct.
+The APIs with the `metric` prefix can be used to get reference to specific metrics for this API. For example,
+the method below refers to the client side errors metric for this API.
+
+```ts
+const api = new apigw.RestApi(stack, 'my-api');
+const clientErrorMetric = api.metricClientError();
+```
 
 ## APIGateway v2
 

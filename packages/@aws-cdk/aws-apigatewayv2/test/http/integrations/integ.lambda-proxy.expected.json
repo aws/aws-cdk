@@ -50,7 +50,14 @@
         "AlwaysSuccessServiceRole6DB8C2F6"
       ]
     },
-    "AlwaysSuccessinteglambdaproxyLambdaProxyApiDefaultRoute59CA2390Permission90573BC0": {
+    "LambdaProxyApi67594471": {
+      "Type": "AWS::ApiGatewayV2::Api",
+      "Properties": {
+        "Name": "LambdaProxyApi",
+        "ProtocolType": "HTTP"
+      }
+    },
+    "LambdaProxyApiDefaultRouteinteglambdaproxyLambdaProxyApiDefaultRoute59CA2390Permission07F93503": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -85,13 +92,6 @@
             ]
           ]
         }
-      }
-    },
-    "LambdaProxyApi67594471": {
-      "Type": "AWS::ApiGatewayV2::Api",
-      "Properties": {
-        "Name": "LambdaProxyApi",
-        "ProtocolType": "HTTP"
       }
     },
     "LambdaProxyApiDefaultRouteDefaultRouteIntegration97D5250B": {

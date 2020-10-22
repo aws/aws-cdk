@@ -1,5 +1,5 @@
-import * as fs from 'fs-extra';
 import * as path from 'path';
+import * as fs from 'fs-extra';
 import { debug } from '../../logging';
 import { cdkCacheDir } from '../../util/directories';
 import { Account } from './sdk-provider';
@@ -83,6 +83,9 @@ export class AccountAccessKeyCache {
       // File doesn't exist or is not readable. This is a cache,
       // pretend we successfully loaded an empty map.
       if (e.code === 'ENOENT' || e.code === 'EACCES') { return {}; }
+      // File is not JSON, could be corrupted because of concurrent writes.
+      // Again, an empty cache is fine.
+      if (e instanceof SyntaxError) { return {}; }
       throw e;
     }
   }

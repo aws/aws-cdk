@@ -5,13 +5,13 @@
  * have an AWS construct library.
  */
 
-import * as fs from 'fs-extra';
 import * as path from 'path';
+import * as fs from 'fs-extra';
 import * as cfnspec from '../lib';
 
 // don't be a prude:
-// tslint:disable:no-console
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable no-console */
+/* eslint-disable quote-props */
 
 async function main() {
   const root = path.join(__dirname, '..', '..');
@@ -107,6 +107,7 @@ async function main() {
       types: 'lib/index.d.ts',
       jsii: {
         outdir: 'dist',
+        projectReferences: true,
         targets: {
           dotnet: {
             namespace: dotnetPackage,
@@ -123,6 +124,10 @@ async function main() {
             },
           },
           python: {
+            classifiers: [
+              'Framework :: AWS CDK',
+              'Framework :: AWS CDK :: 1',
+            ],
             distName: pythonDistName,
             module: pythonModuleName,
           },
@@ -147,10 +152,14 @@ async function main() {
         'build+test+package': 'npm run build+test && npm run package',
         'build+test': 'npm run build && npm test',
         compat: 'cdk-compat',
+        gen: 'cfn2ts',
       },
       'cdk-build': {
         cloudformation: namespace,
         jest: true,
+        env: {
+          AWSLINT_BASE_CONSTRUCT: 'true',
+        },
       },
       keywords: [
         'aws',
@@ -192,7 +201,6 @@ async function main() {
       '*.js.map',
       '*.d.ts',
       'tsconfig.json',
-      'tslint.json',
       'node_modules',
       '*.generated.ts',
       'dist',
@@ -207,6 +215,7 @@ async function main() {
       'nyc.config.js',
       '!.eslintrc.js',
       '!jest.config.js',
+      'junit.xml',
     ]);
 
     await write('.npmignore', [
@@ -233,6 +242,11 @@ async function main() {
       '',
       '.eslintrc.js',
       'jest.config.js',
+      '',
+      '# exclude cdk artifacts',
+      '**/cdk.out',
+      'junit.xml',
+      'test/',
     ]);
 
     await write('lib/index.ts', [
@@ -269,13 +283,13 @@ async function main() {
     ]);
 
     await write('.eslintrc.js', [
-      "const baseConfig = require('../../../tools/cdk-build-tools/config/eslintrc');",
+      "const baseConfig = require('cdk-build-tools/config/eslintrc');",
       "baseConfig.parserOptions.project = __dirname + '/tsconfig.json';",
       'module.exports = baseConfig;',
     ]);
 
     await write('jest.config.js', [
-      "const baseConfig = require('../../../tools/cdk-build-tools/config/jest.config');",
+      "const baseConfig = require('cdk-build-tools/config/jest.config');",
       'module.exports = baseConfig;',
     ]);
 

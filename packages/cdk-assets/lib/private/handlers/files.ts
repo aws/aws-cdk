@@ -1,6 +1,6 @@
-import { FileAssetPackaging } from '@aws-cdk/cdk-assets-schema';
 import { createReadStream, promises as fs } from 'fs';
 import * as path from 'path';
+import { FileAssetPackaging } from '@aws-cdk/cloud-assembly-schema';
 import { FileManifestEntry } from '../../asset-manifest';
 import { EventType } from '../../progress';
 import { zipDirectory } from '../archive';

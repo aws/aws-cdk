@@ -23,9 +23,14 @@
       },
       "python": {
         "distName": "aws-cdk.aws-apigateway",
-        "module": "aws_cdk.aws_apigateway"
+        "module": "aws_cdk.aws_apigateway",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",
@@ -44,10 +49,14 @@
     "cfn2ts": "cfn2ts",
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test",
-    "compat": "cdk-compat"
+    "compat": "cdk-compat",
+    "gen": "cfn2ts"
   },
   "cdk-build": {
-    "cloudformation": "AWS::ApiGateway"
+    "cloudformation": "AWS::ApiGateway",
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "keywords": [
     "aws",
@@ -73,6 +82,7 @@
   "dependencies": {
     "@aws-cdk/assets": "0.0.0",
     "@aws-cdk/aws-certificatemanager": "0.0.0",
+    "@aws-cdk/aws-cloudwatch": "0.0.0",
     "@aws-cdk/aws-ec2": "0.0.0",
     "@aws-cdk/aws-elasticloadbalancingv2": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
@@ -82,12 +92,13 @@
     "@aws-cdk/aws-s3-assets": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.0.4"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/assets": "0.0.0",
     "@aws-cdk/aws-certificatemanager": "0.0.0",
+    "@aws-cdk/aws-cloudwatch": "0.0.0",
     "@aws-cdk/aws-ec2": "0.0.0",
     "@aws-cdk/aws-elasticloadbalancingv2": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
@@ -97,7 +108,7 @@
     "@aws-cdk/aws-s3-assets": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.0.4"
   },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
@@ -115,7 +126,6 @@
       "from-method:@aws-cdk/aws-apigateway.Resource",
       "duration-prop-type:@aws-cdk/aws-apigateway.QuotaSettings.period",
       "duration-prop-type:@aws-cdk/aws-apigateway.ResponseType.INTEGRATION_TIMEOUT",
-      "from-method:@aws-cdk/aws-apigateway.ApiKey",
       "ref-via-interface:@aws-cdk/aws-apigateway.ApiKeyProps.resources",
       "props-physical-name:@aws-cdk/aws-apigateway.DeploymentProps",
       "props-physical-name:@aws-cdk/aws-apigateway.MethodProps",
@@ -176,14 +186,12 @@
       "docs-public-apis:@aws-cdk/aws-apigateway.Method.httpMethod",
       "docs-public-apis:@aws-cdk/aws-apigateway.Method.methodId",
       "docs-public-apis:@aws-cdk/aws-apigateway.Method.resource",
-      "docs-public-apis:@aws-cdk/aws-apigateway.Method.restApi",
       "docs-public-apis:@aws-cdk/aws-apigateway.Model",
       "docs-public-apis:@aws-cdk/aws-apigateway.Model.fromModelName",
       "docs-public-apis:@aws-cdk/aws-apigateway.RequestValidator",
       "docs-public-apis:@aws-cdk/aws-apigateway.RequestValidator.fromRequestValidatorId",
       "docs-public-apis:@aws-cdk/aws-apigateway.Resource",
       "docs-public-apis:@aws-cdk/aws-apigateway.ResourceBase",
-      "docs-public-apis:@aws-cdk/aws-apigateway.RestApi.fromRestApiId",
       "docs-public-apis:@aws-cdk/aws-apigateway.RestApi.arnForExecuteApi",
       "docs-public-apis:@aws-cdk/aws-apigateway.Stage",
       "docs-public-apis:@aws-cdk/aws-apigateway.Stage.restApi",
@@ -309,6 +317,9 @@
       "attribute-tag:@aws-cdk/aws-apigateway.LambdaAuthorizer.authorizerArn",
       "attribute-tag:@aws-cdk/aws-apigateway.RequestAuthorizer.authorizerArn",
       "attribute-tag:@aws-cdk/aws-apigateway.TokenAuthorizer.authorizerArn",
+      "attribute-tag:@aws-cdk/aws-apigateway.RestApi.restApiName",
+      "attribute-tag:@aws-cdk/aws-apigateway.SpecRestApi.restApiName",
+      "attribute-tag:@aws-cdk/aws-apigateway.LambdaRestApi.restApiName",
       "from-method:@aws-cdk/aws-apigateway.Stage"
     ]
   },

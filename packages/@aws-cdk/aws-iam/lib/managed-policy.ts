@@ -1,4 +1,5 @@
-import { Construct, IResolveContext, Lazy, Resource, Stack} from '@aws-cdk/core';
+import { IResolveContext, Lazy, Resource, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { IGroup } from './group';
 import { CfnManagedPolicy } from './iam.generated';
 import { PolicyDocument } from './policy-document';
@@ -293,6 +294,8 @@ export class ManagedPolicy extends Resource implements IManagedPolicy {
     if (this.document.isEmpty) {
       result.push('Managed Policy is empty. You must add statements to the policy');
     }
+
+    result.push(...this.document.validateForIdentityPolicy());
 
     return result;
   }

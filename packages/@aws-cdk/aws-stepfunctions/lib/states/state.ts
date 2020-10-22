@@ -1,7 +1,9 @@
 import * as cdk from '@aws-cdk/core';
+import { IConstruct, Construct, Node } from 'constructs';
 import { Condition } from '../condition';
+import { JsonPath } from '../fields';
 import { StateGraph } from '../state-graph';
-import { CatchProps, DISCARD, Errors, IChainable, INextable, RetryProps } from '../types';
+import { CatchProps, Errors, IChainable, INextable, RetryProps } from '../types';
 
 /**
  * Properties shared by all states
@@ -17,7 +19,7 @@ export interface StateProps {
   /**
    * JSONPath expression to select part of the state to be the input to this state.
    *
-   * May also be the special value DISCARD, which will cause the effective
+   * May also be the special value JsonPath.DISCARD, which will cause the effective
    * input to be the empty object {}.
    *
    * @default $
@@ -37,7 +39,7 @@ export interface StateProps {
   /**
    * JSONPath expression to select part of the state to be the output to this state.
    *
-   * May also be the special value DISCARD, which will cause the effective
+   * May also be the special value JsonPath.DISCARD, which will cause the effective
    * output to be the empty object {}.
    *
    * @default $
@@ -47,7 +49,7 @@ export interface StateProps {
   /**
    * JSONPath expression to indicate where to inject the state's output
    *
-   * May also be the special value DISCARD, which will cause the state's
+   * May also be the special value JsonPath.DISCARD, which will cause the state's
    * input to become its output.
    *
    * @default $
@@ -62,14 +64,14 @@ export abstract class State extends cdk.Construct implements IChainable {
   /**
    * Add a prefix to the stateId of all States found in a construct tree
    */
-  public static prefixStates(root: cdk.IConstruct, prefix: string) {
+  public static prefixStates(root: IConstruct, prefix: string) {
     const queue = [root];
     while (queue.length > 0) {
       const el = queue.splice(0, 1)[0]!;
       if (isPrefixable(el)) {
         el.addPrefix(prefix);
       }
-      queue.push(...el.node.children);
+      queue.push(...Node.of(el).children);
     }
   }
 
@@ -172,7 +174,7 @@ export abstract class State extends cdk.Construct implements IChainable {
    */
   private readonly incomingStates: State[] = [];
 
-  constructor(scope: cdk.Construct, id: string, props: StateProps) {
+  constructor(scope: Construct, id: string, props: StateProps) {
     super(scope, id);
 
     this.startState = this;
@@ -214,7 +216,7 @@ export abstract class State extends cdk.Construct implements IChainable {
     if (this.containingGraph === graph) { return; }
 
     if (this.containingGraph) {
-      // tslint:disable-next-line:max-line-length
+      // eslint-disable-next-line max-len
       throw new Error(`Trying to use state '${this.stateId}' in ${graph}, but is already in ${this.containingGraph}. Every state can only be used in one graph.`);
     }
 
@@ -245,6 +247,8 @@ export abstract class State extends cdk.Construct implements IChainable {
    * @internal
    */
   protected _addRetry(props: RetryProps = {}) {
+    validateErrors(props.errors);
+
     this.retries.push({
       ...props,
       errors: props.errors ? props.errors : [Errors.ALL],
@@ -256,6 +260,8 @@ export abstract class State extends cdk.Construct implements IChainable {
    * @internal
    */
   protected _addCatch(handler: State, props: CatchProps = {}) {
+    validateErrors(props.errors);
+
     this.catches.push({
       next: handler,
       props: {
@@ -384,8 +390,8 @@ export abstract class State extends cdk.Construct implements IChainable {
    */
   protected renderRetryCatch(): any {
     return {
-      Retry: renderList(this.retries, renderRetry),
-      Catch: renderList(this.catches, renderCatch),
+      Retry: renderList(this.retries, renderRetry, (a, b) => compareErrors(a.errors, b.errors)),
+      Catch: renderList(this.catches, renderCatch, (a, b) => compareErrors(a.props.errors, b.props.errors)),
     };
   }
 
@@ -500,11 +506,37 @@ function renderCatch(c: CatchTransition) {
 }
 
 /**
+ * Compares a list of Errors to move Errors.ALL last in a sort function
+ */
+function compareErrors(a?: string[], b?: string[]) {
+  if (a?.includes(Errors.ALL)) {
+    return 1;
+  }
+  if (b?.includes(Errors.ALL)) {
+    return -1;
+  }
+  return 0;
+}
+
+/**
+ * Validates an errors list
+ */
+function validateErrors(errors?: string[]) {
+  if (errors?.includes(Errors.ALL) && errors.length > 1) {
+    throw new Error(`${Errors.ALL} must appear alone in an error list`);
+  }
+}
+
+/**
  * Render a list or return undefined for an empty list
  */
-export function renderList<T>(xs: T[], fn: (x: T) => any): any {
+export function renderList<T>(xs: T[], mapFn: (x: T) => any, sortFn?: (a: T, b: T) => number): any {
   if (xs.length === 0) { return undefined; }
-  return xs.map(fn);
+  let list = xs;
+  if (sortFn) {
+    list = xs.sort(sortFn);
+  }
+  return list.map(mapFn);
 }
 
 /**
@@ -512,7 +544,7 @@ export function renderList<T>(xs: T[], fn: (x: T) => any): any {
  */
 export function renderJsonPath(jsonPath?: string): undefined | null | string {
   if (jsonPath === undefined) { return undefined; }
-  if (jsonPath === DISCARD) { return null; }
+  if (jsonPath === JsonPath.DISCARD) { return null; }
 
   if (!jsonPath.startsWith('$')) {
     throw new Error(`Expected JSON path to start with '$', got: ${jsonPath}`);

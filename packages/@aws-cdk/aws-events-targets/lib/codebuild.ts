@@ -7,18 +7,27 @@ import { singletonEventRole } from './util';
  * Customize the CodeBuild Event Target
  */
 export interface CodeBuildProjectProps {
+
+  /**
+   * The role to assume before invoking the target
+   * (i.e., the codebuild) when the given rule is triggered.
+   *
+   * @default - a new role will be created
+   */
+  readonly eventRole?: iam.IRole;
+
   /**
    * The event to send to CodeBuild
    *
    * This will be the payload for the StartBuild API.
    *
-   * @default - the entire CloudWatch event
+   * @default - the entire EventBridge event
    */
   readonly event?: events.RuleTargetInput;
 }
 
 /**
- * Start a CodeBuild build when an AWS CloudWatch events rule is triggered.
+ * Start a CodeBuild build when an Amazon EventBridge rule is triggered.
  */
 export class CodeBuildProject implements events.IRuleTarget {
   constructor(
@@ -33,7 +42,7 @@ export class CodeBuildProject implements events.IRuleTarget {
     return {
       id: '',
       arn: this.project.projectArn,
-      role: singletonEventRole(this.project, [
+      role: this.props.eventRole || singletonEventRole(this.project, [
         new iam.PolicyStatement({
           actions: ['codebuild:StartBuild'],
           resources: [this.project.projectArn],

@@ -223,9 +223,36 @@ Example `outputs.json` after deployment of multiple stacks
   },
   "AnotherStack": {
     "VPCId": "vpc-z0mg270fee16693f"
-  }  
+  }
 }
 ```
+
+##### Deployment Progress
+
+By default, stack deployment events are displayed as a progress bar with the events for the resource
+currently being deployed.
+
+Set the `--progress` flag to request the complete history which includes all CloudFormation events
+```console
+$ cdk deploy --progress events
+```
+
+Alternatively, the `progress` key can be specified in the project config (`cdk.json`).
+
+The following shows a sample `cdk.json` where the `progress` key is set to *events*.
+When `cdk deploy` is executed, deployment events will include the complete history.
+```
+{
+  "app": "npx ts-node bin/myproject.ts",
+  "context": {
+    "@aws-cdk/core:enableStackNameDuplicates": "true",
+    "aws-cdk:enableDiffNoFail": "true",
+    "@aws-cdk/core:stackRelativeExports": "true"
+  },
+  "progress": "events"
+}
+```
+The `progress` key can also be specified as a user setting (`~/.cdk.json`)
 
 #### `cdk destroy`
 Deletes a stack from it's environment. This will cause the resources in the stack to be destroyed (unless they were
@@ -239,7 +266,8 @@ $ cdk destroy --app='node bin/main.js' MyStackName
 #### `cdk bootstrap`
 Deploys a `CDKToolkit` CloudFormation stack into the specified environment(s), that provides an S3 bucket that
 `cdk deploy` will use to store synthesized templates and the related assets, before triggering a CloudFormation stack
-update. The name of the deployed stack can be configured using the `--toolkit-stack-name` argument.
+update. The name of the deployed stack can be configured using the `--toolkit-stack-name` argument. The S3 Bucket
+Public Access Block Configuration can be configured using the `--public-access-block-configuration` argument.
 
 ```console
 $ # Deploys to all environments
@@ -247,6 +275,23 @@ $ cdk bootstrap --app='node bin/main.js'
 
 $ # Deploys only to environments foo and bar
 $ cdk bootstrap --app='node bin/main.js' foo bar
+```
+
+By default, bootstrap stack will be protected from stack termination. This can be disabled using
+`--termination-protection` argument.
+
+If you have specific needs, policies, or requirements not met by the default template, you can customize it
+to fit your own situation, by exporting the default one to a file and either deploying it yourself
+using CloudFormation directly, or by telling the CLI to use a custom template. That looks as follows:
+
+```console
+# Dump the built-in template to a file
+$ cdk bootstrap --show-template > bootstrap-template.yaml
+
+# Edit 'bootstrap-template.yaml' to your liking
+
+# Tell CDK to use the customized template
+$ cdk bootstrap --template bootstrap-template.yaml
 ```
 
 #### `cdk doctor`
@@ -260,6 +305,24 @@ $ cdk doctor
 ℹ️ AWS environment variables:
   - AWS_EC2_METADATA_DISABLED = 1
   - AWS_SDK_LOAD_CONFIG = 1
+```
+
+#### Bundling
+By default asset bundling is skipped for `cdk list` and `cdk destroy`. For `cdk deploy`, `cdk diff`
+and `cdk synthesize` the default is to bundle assets for all stacks unless `exclusively` is specified.
+In this case, only the listed stacks will have their assets bundled.
+
+### MFA support
+
+If `mfa_serial` is found in the active profile of the shared ini file AWS CDK
+will ask for token defined in the `mfa_serial`. This token will be provided to STS assume role call.
+
+Example profile in `~/.aws/config` where `mfa_serial` is used to assume role:
+```ini
+[profile my_assume_role_profile]
+source_profile=my_source_role
+role_arn=arn:aws:iam::123456789123:role/role_to_be_assumed
+mfa_serial=arn:aws:iam::123456789123:mfa/my_user
 ```
 
 ### Configuration
@@ -279,6 +342,6 @@ Some of the interesting keys that can be used in the JSON configuration files:
     },
     "toolkitStackName": "foo",        // Customize 'bootstrap' stack name  (--toolkit-stack-name=foo)
     "toolkitBucketName": "fooBucket", // Customize 'bootstrap' bucket name (--toolkit-bucket-name=fooBucket)
-    "versionReporting": false         // Opt-out of version reporting      (--no-version-reporting)
+    "versionReporting": false,         // Opt-out of version reporting      (--no-version-reporting)
 }
 ```

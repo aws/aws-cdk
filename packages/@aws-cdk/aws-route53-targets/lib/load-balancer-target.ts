@@ -11,7 +11,7 @@ export class LoadBalancerTarget implements route53.IAliasRecordTarget {
   public bind(_record: route53.IRecordSet): route53.AliasRecordTargetConfig {
     return {
       hostedZoneId: this.loadBalancer.loadBalancerCanonicalHostedZoneId,
-      dnsName: this.loadBalancer.loadBalancerDnsName,
+      dnsName: `dualstack.${this.loadBalancer.loadBalancerDnsName}`,
     };
   }
 }

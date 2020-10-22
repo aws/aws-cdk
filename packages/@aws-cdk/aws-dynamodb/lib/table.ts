@@ -3,9 +3,10 @@ import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import {
-  Aws, CfnCondition, CfnCustomResource, Construct, CustomResource, Fn,
+  Aws, CfnCondition, CfnCustomResource, Construct as CoreConstruct, CustomResource, Fn,
   IResource, Lazy, RemovalPolicy, Resource, Stack, Token,
 } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnTable, CfnTableProps } from './dynamodb.generated';
 import * as perms from './perms';
 import { ReplicaProvider } from './replica-provider';
@@ -564,10 +565,7 @@ abstract class TableBase extends Resource implements ITable {
     return iam.Grant.addToPrincipal({
       grantee,
       actions: ['dynamodb:ListStreams'],
-      resourceArns: [
-        Lazy.stringValue({ produce: () => `${this.tableArn}/stream/*` }),
-        ...this.regionalArns.map(arn => Lazy.stringValue({ produce: () => `${arn}/stream/*` })),
-      ],
+      resourceArns: ['*'],
     });
   }
 
@@ -648,7 +646,7 @@ abstract class TableBase extends Resource implements ITable {
    * @default sum over a minute
    */
   public metricConsumedReadCapacityUnits(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('ConsumedReadCapacityUnits', { statistic: 'sum', ...props});
+    return this.metric('ConsumedReadCapacityUnits', { statistic: 'sum', ...props });
   }
 
   /**
@@ -657,7 +655,7 @@ abstract class TableBase extends Resource implements ITable {
    * @default sum over a minute
    */
   public metricConsumedWriteCapacityUnits(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('ConsumedWriteCapacityUnits', { statistic: 'sum', ...props});
+    return this.metric('ConsumedWriteCapacityUnits', { statistic: 'sum', ...props });
   }
 
   /**
@@ -666,7 +664,7 @@ abstract class TableBase extends Resource implements ITable {
    * @default sum over a minute
    */
   public metricSystemErrors(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('SystemErrors', { statistic: 'sum', ...props});
+    return this.metric('SystemErrors', { statistic: 'sum', ...props });
   }
 
   /**
@@ -675,7 +673,7 @@ abstract class TableBase extends Resource implements ITable {
    * @default sum over a minute
    */
   public metricUserErrors(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('UserErrors', { statistic: 'sum', ...props});
+    return this.metric('UserErrors', { statistic: 'sum', ...props });
   }
 
   /**
@@ -684,7 +682,7 @@ abstract class TableBase extends Resource implements ITable {
    * @default sum over a minute
    */
   public metricConditionalCheckFailedRequests(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('ConditionalCheckFailedRequests', { statistic: 'sum', ...props});
+    return this.metric('ConditionalCheckFailedRequests', { statistic: 'sum', ...props });
   }
 
   /**
@@ -693,7 +691,7 @@ abstract class TableBase extends Resource implements ITable {
    * @default avg over a minute
    */
   public metricSuccessfulRequestLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('SuccessfulRequestLatency', { statistic: 'avg', ...props});
+    return this.metric('SuccessfulRequestLatency', { statistic: 'avg', ...props });
   }
 
   protected abstract get hasIndex(): boolean;
@@ -714,8 +712,7 @@ abstract class TableBase extends Resource implements ITable {
         ...this.regionalArns,
         ...this.regionalArns.map(arn => Lazy.stringValue({
           produce: () => this.hasIndex ? `${arn}/index/*` : Aws.NO_VALUE,
-        })),
-      ];
+        }))];
       const ret = iam.Grant.addToPrincipal({
         grantee,
         actions: opts.tableActions,
@@ -731,7 +728,7 @@ abstract class TableBase extends Resource implements ITable {
       if (!this.tableStreamArn) {
         throw new Error(`DynamoDB Streams must be enabled on the table ${this.node.path}`);
       }
-      const resources = [ this.tableStreamArn];
+      const resources = [this.tableStreamArn];
       const ret = iam.Grant.addToPrincipal({
         grantee,
         actions: opts.streamActions,
@@ -890,7 +887,7 @@ export class Table extends TableBase {
       }
       this.billingMode = BillingMode.PAY_PER_REQUEST;
     } else if (props.stream) {
-      streamSpecification = { streamViewType : props.stream };
+      streamSpecification = { streamViewType: props.stream };
     }
 
     this.table = new CfnTable(this, 'Resource', {
@@ -913,14 +910,14 @@ export class Table extends TableBase {
 
     this.encryptionKey = encryptionKey;
 
-    if (props.tableName) { this.node.addMetadata('aws:cdk:hasPhysicalName', props.tableName); }
-
     this.tableArn = this.getResourceArnAttribute(this.table.attrArn, {
       service: 'dynamodb',
       resource: 'table',
       resourceName: this.physicalName,
     });
     this.tableName = this.getResourceNameAttribute(this.table.ref);
+
+    if (props.tableName) { this.node.addMetadata('aws:cdk:hasPhysicalName', this.tableName); }
 
     this.tableStreamArn = streamSpecification ? this.table.attrStreamArn : undefined;
 
@@ -1334,8 +1331,8 @@ export class Table extends TableBase {
       encryptionType = props.encryptionKey != null
         // If there is a configured encyptionKey, the encryption is implicitly CUSTOMER_MANAGED
         ? TableEncryption.CUSTOMER_MANAGED
-        // Otherwise, if severSideEncryption is enabled, it's AWS_MANAGED; else DEFAULT
-        : props.serverSideEncryption ? TableEncryption.AWS_MANAGED : TableEncryption.DEFAULT;
+        // Otherwise, if severSideEncryption is enabled, it's AWS_MANAGED; else undefined (do not set anything)
+        : props.serverSideEncryption ? TableEncryption.AWS_MANAGED : undefined;
     }
 
     if (encryptionType !== TableEncryption.CUSTOMER_MANAGED && props.encryptionKey) {
@@ -1363,6 +1360,9 @@ export class Table extends TableBase {
         return { sseSpecification: { sseEnabled: true } };
 
       case TableEncryption.DEFAULT:
+        return { sseSpecification: { sseEnabled: false } };
+
+      case undefined:
         // Not specifying "sseEnabled: false" here because it would cause phony changes to existing stacks.
         return { sseSpecification: undefined };
 
@@ -1449,7 +1449,7 @@ interface ScalableAttributePair {
  * policy resource), new permissions are in effect before clean up happens, and so replicas that
  * need to be dropped can no longer be due to lack of permissions.
  */
-class SourceTableAttachedPolicy extends Construct implements iam.IGrantable {
+class SourceTableAttachedPolicy extends CoreConstruct implements iam.IGrantable {
   public readonly grantPrincipal: iam.IPrincipal;
   public readonly policy: iam.IPolicy;
 

@@ -40,7 +40,7 @@ test('simple use case', () => {
     artifactHashParameter: 'AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2ArtifactHash220DE9BD',
   });
 
-  const template = JSON.parse(fs.readFileSync(path.join(session.directory, 'MyStack.template.json'), 'utf-8'));
+  const template = JSON.parse(fs.readFileSync(path.join(session.directory, 'MyStack.template.json'), { encoding: 'utf-8' }));
 
   expect(template.Parameters.AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2S3Bucket50B5A10B.Type).toBe('String');
   expect(template.Parameters.AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2S3VersionKey1F7D75F9.Type).toBe('String');
@@ -102,7 +102,7 @@ test('"readers" or "grantRead" can be used to grant read permissions on the asse
 
   const asset = new Asset(stack, 'MyAsset', {
     path: path.join(__dirname, 'sample-asset-directory'),
-    readers: [ user ],
+    readers: [user],
   });
 
   asset.grantRead(group);
@@ -115,8 +115,8 @@ test('"readers" or "grantRead" can be used to grant read permissions on the asse
           Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
           Effect: 'Allow',
           Resource: [
-            { 'Fn::Join': ['', ['arn:', {Ref: 'AWS::Partition'}, ':s3:::', {Ref: 'AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2S3Bucket50B5A10B'} ] ] },
-            { 'Fn::Join': ['', [ 'arn:', {Ref: 'AWS::Partition'}, ':s3:::', {Ref: 'AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2S3Bucket50B5A10B'}, '/*' ] ] },
+            { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::', { Ref: 'AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2S3Bucket50B5A10B' }]] },
+            { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::', { Ref: 'AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2S3Bucket50B5A10B' }, '/*']] },
           ],
         },
       ],

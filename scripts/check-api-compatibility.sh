@@ -13,7 +13,9 @@ package_name() {
 #
 # Doesn't use 'npm view' as that is slow. Direct curl'ing npmjs is better
 package_exists_on_npm() {
-    curl -I 2>/dev/null https://registry.npmjs.org/$1 | head -n 1 | grep 200 >/dev/null
+    pkg=$1
+    ver=$2 # optional
+    curl -I 2>/dev/null https://registry.npmjs.org/$pkg/$ver | head -n 1 | grep 200 >/dev/null
 }
 
 
@@ -53,10 +55,13 @@ if ! ${SKIP_DOWNLOAD:-false}; then
     existing_names=$(echo "$jsii_package_dirs" | xargs -n1 -P4 -I {} bash -c 'dirs_to_existing_names "$@"' _ {})
     echo " Done." >&2
 
-    if ! ${DOWNLOAD_LATEST:-false}; then
-        current_version=$(node -p 'require("./lerna.json").version')
+    current_version=$(node -p 'require("./lerna.json").version')
+    echo "Current version in lerna.json is $current_version"
+    if ! ${DOWNLOAD_LATEST:-false} && package_exists_on_npm aws-cdk $current_version; then
         echo "Using package version ${current_version} as baseline"
         existing_names=$(echo "$existing_names" | sed -e "s/$/@$current_version/")
+    else
+        echo "However, using the latest version from NPM as the baseline"
     fi
 
     rm -rf $tmpdir

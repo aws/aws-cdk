@@ -1,0 +1,17 @@
+Resources:
+  Subnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId:
+        !Select [ 0, !GetAZs "" ]
+      CidrBlock: 10.0.0.0/24
+      AvailabilityZone:
+        !Select [ '0', !GetAZs eu-west-2 ]
+  Subnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId:
+        !Ref Subnet1
+      CidrBlock: 10.0.0.0/24
+      AvailabilityZone:
+        !Select [ 0, !GetAZs eu-west-2 ]
