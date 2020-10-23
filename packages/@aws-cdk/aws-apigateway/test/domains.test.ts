@@ -1,14 +1,14 @@
-import { ABSENT, expect, haveResource } from '@aws-cdk/assert';
+import '@aws-cdk/assert/jest';
+import { ABSENT } from '@aws-cdk/assert';
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import { Bucket } from '@aws-cdk/aws-s3';
 import { Stack } from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import * as apigw from '../lib';
 
 /* eslint-disable quote-props */
 
-export = {
-  'can define either an EDGE or REGIONAL domain name'(test: Test) {
+describe('domains', () => {
+  test('can define either an EDGE or REGIONAL domain name', () => {
     // GIVEN
     const stack = new Stack();
     const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
@@ -27,27 +27,27 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::DomainName', {
+    expect(stack).toHaveResource('AWS::ApiGateway::DomainName', {
       'DomainName': 'example.com',
       'EndpointConfiguration': { 'Types': ['REGIONAL'] },
       'RegionalCertificateArn': { 'Ref': 'Cert5C9FAEC1' },
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::ApiGateway::DomainName', {
+    expect(stack).toHaveResource('AWS::ApiGateway::DomainName', {
       'DomainName': 'example.com',
       'EndpointConfiguration': { 'Types': ['EDGE'] },
       'CertificateArn': { 'Ref': 'Cert5C9FAEC1' },
-    }));
+    });
 
-    test.deepEqual(stack.resolve(regionalDomain.domainNameAliasDomainName), { 'Fn::GetAtt': ['mydomain592C948B', 'RegionalDomainName'] });
-    test.deepEqual(stack.resolve(regionalDomain.domainNameAliasHostedZoneId), { 'Fn::GetAtt': ['mydomain592C948B', 'RegionalHostedZoneId'] });
-    test.deepEqual(stack.resolve(edgeDomain.domainNameAliasDomainName), { 'Fn::GetAtt': ['yourdomain5FE30C81', 'DistributionDomainName'] });
-    test.deepEqual(stack.resolve(edgeDomain.domainNameAliasHostedZoneId), { 'Fn::GetAtt': ['yourdomain5FE30C81', 'DistributionHostedZoneId'] });
+    expect(stack.resolve(regionalDomain.domainNameAliasDomainName)).toEqual({ 'Fn::GetAtt': ['mydomain592C948B', 'RegionalDomainName'] });
+    expect(stack.resolve(regionalDomain.domainNameAliasHostedZoneId)).toEqual({ 'Fn::GetAtt': ['mydomain592C948B', 'RegionalHostedZoneId'] });
+    expect(stack.resolve(edgeDomain.domainNameAliasDomainName)).toEqual({ 'Fn::GetAtt': ['yourdomain5FE30C81', 'DistributionDomainName'] });
+    expect(stack.resolve(edgeDomain.domainNameAliasHostedZoneId)).toEqual({ 'Fn::GetAtt': ['yourdomain5FE30C81', 'DistributionHostedZoneId'] });
 
-    test.done();
-  },
 
-  'default endpoint type is REGIONAL'(test: Test) {
+  });
+
+  test('default endpoint type is REGIONAL', () => {
     // GIVEN
     const stack = new Stack();
     const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
@@ -59,15 +59,15 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::DomainName', {
+    expect(stack).toHaveResource('AWS::ApiGateway::DomainName', {
       'DomainName': 'example.com',
       'EndpointConfiguration': { 'Types': ['REGIONAL'] },
       'RegionalCertificateArn': { 'Ref': 'Cert5C9FAEC1' },
-    }));
-    test.done();
-  },
+    });
 
-  'accepts different security policies'(test: Test) {
+  });
+
+  test('accepts different security policies', () => {
     // GIVEN
     const stack = new Stack();
     const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
@@ -91,30 +91,30 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::DomainName', {
+    expect(stack).toHaveResource('AWS::ApiGateway::DomainName', {
       'DomainName': 'old.example.com',
       'EndpointConfiguration': { 'Types': ['REGIONAL'] },
       'RegionalCertificateArn': { 'Ref': 'Cert5C9FAEC1' },
       'SecurityPolicy': 'TLS_1_0',
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::ApiGateway::DomainName', {
+    expect(stack).toHaveResource('AWS::ApiGateway::DomainName', {
       'DomainName': 'new.example.com',
       'EndpointConfiguration': { 'Types': ['REGIONAL'] },
       'RegionalCertificateArn': { 'Ref': 'Cert5C9FAEC1' },
       'SecurityPolicy': 'TLS_1_2',
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::ApiGateway::DomainName', {
+    expect(stack).toHaveResource('AWS::ApiGateway::DomainName', {
       'DomainName': 'default.example.com',
       'EndpointConfiguration': { 'Types': ['REGIONAL'] },
       'RegionalCertificateArn': { 'Ref': 'Cert5C9FAEC1' },
       'SecurityPolicy': ABSENT,
-    }));
-    test.done();
-  },
+    });
 
-  '"mapping" can be used to automatically map this domain to the deployment stage of an API'(test: Test) {
+  });
+
+  test('"mapping" can be used to automatically map this domain to the deployment stage of an API', () => {
     // GIVEN
     const stack = new Stack();
     const api = new apigw.RestApi(stack, 'api');
@@ -129,7 +129,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::BasePathMapping', {
+    expect(stack).toHaveResource('AWS::ApiGateway::BasePathMapping', {
       'DomainName': {
         'Ref': 'Domain66AC69E0',
       },
@@ -139,11 +139,11 @@ export = {
       'Stage': {
         'Ref': 'apiDeploymentStageprod896C8101',
       },
-    }));
-    test.done();
-  },
+    });
 
-  '"addBasePathMapping" can be used to add base path mapping to the domain'(test: Test) {
+  });
+
+  test('"addBasePathMapping" can be used to add base path mapping to the domain', () => {
     // GIVEN
     const stack = new Stack();
     const api1 = new apigw.RestApi(stack, 'api1');
@@ -161,7 +161,7 @@ export = {
     domain.addBasePathMapping(api2, { basePath: 'api2' });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::BasePathMapping', {
+    expect(stack).toHaveResource('AWS::ApiGateway::BasePathMapping', {
       'DomainName': {
         'Ref': 'mydomain592C948B',
       },
@@ -172,9 +172,9 @@ export = {
       'Stage': {
         'Ref': 'api1DeploymentStageprod362746F6',
       },
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::ApiGateway::BasePathMapping', {
+    expect(stack).toHaveResource('AWS::ApiGateway::BasePathMapping', {
       'DomainName': {
         'Ref': 'mydomain592C948B',
       },
@@ -185,11 +185,11 @@ export = {
       'Stage': {
         'Ref': 'api2DeploymentStageprod4120D74E',
       },
-    }));
-    test.done();
-  },
+    });
 
-  'a domain name can be defined with the API'(test: Test) {
+  });
+
+  test('a domain name can be defined with the API', () => {
     // GIVEN
     const domainName = 'my.domain.com';
     const stack = new Stack();
@@ -203,7 +203,7 @@ export = {
     api.root.addMethod('GET');
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::DomainName', {
+    expect(stack).toHaveResource('AWS::ApiGateway::DomainName', {
       'DomainName': 'my.domain.com',
       'EndpointConfiguration': {
         'Types': [
@@ -213,8 +213,8 @@ export = {
       'RegionalCertificateArn': {
         'Ref': 'cert56CA94EB',
       },
-    }));
-    expect(stack).to(haveResource('AWS::ApiGateway::BasePathMapping', {
+    });
+    expect(stack).toHaveResource('AWS::ApiGateway::BasePathMapping', {
       'DomainName': {
         'Ref': 'apiCustomDomain64773C4F',
       },
@@ -224,12 +224,12 @@ export = {
       'Stage': {
         'Ref': 'apiDeploymentStageprod896C8101',
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  'a domain name can be added later'(test: Test) {
+  });
+
+  test('a domain name can be added later', () => {
     // GIVEN
     const domainName = 'my.domain.com';
     const stack = new Stack();
@@ -243,7 +243,7 @@ export = {
     api.addDomainName('domainId', { domainName, certificate });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::DomainName', {
+    expect(stack).toHaveResource('AWS::ApiGateway::DomainName', {
       'DomainName': domainName,
       'EndpointConfiguration': {
         'Types': [
@@ -253,8 +253,8 @@ export = {
       'RegionalCertificateArn': {
         'Ref': 'cert56CA94EB',
       },
-    }));
-    expect(stack).to(haveResource('AWS::ApiGateway::BasePathMapping', {
+    });
+    expect(stack).toHaveResource('AWS::ApiGateway::BasePathMapping', {
       'DomainName': {
         'Ref': 'apidomainId102F8DAA',
       },
@@ -264,26 +264,26 @@ export = {
       'Stage': {
         'Ref': 'apiDeploymentStageprod896C8101',
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  'domain name cannot contain uppercase letters'(test: Test) {
+  });
+
+  test('domain name cannot contain uppercase letters', () => {
     // GIVEN
     const stack = new Stack();
     const certificate = new acm.Certificate(stack, 'cert', { domainName: 'someDomainWithUpercase.domain.com' });
 
     // WHEN
-    test.throws(() => {
+    expect(() => {
       new apigw.DomainName(stack, 'someDomain', { domainName: 'someDomainWithUpercase.domain.com', certificate });
-    }, /uppercase/);
+    }).toThrow(/uppercase/);
 
     // THEN
-    test.done();
-  },
 
-  'multiple domain names can be added'(test: Test) {
+  });
+
+  test('multiple domain names can be added', () => {
     // GIVEN
     const domainName = 'my.domain.com';
     const stack = new Stack();
@@ -298,10 +298,10 @@ export = {
     api.addDomainName('domainId1', { domainName: 'your.domain.com', certificate });
     api.addDomainName('domainId2', { domainName: 'our.domain.com', certificate });
 
-    test.deepEqual(api.domainName, domainName1);
+    expect(api.domainName).toEqual(domainName1);
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::DomainName', {
+    expect(stack).toHaveResource('AWS::ApiGateway::DomainName', {
       'DomainName': 'my.domain.com',
       'EndpointConfiguration': {
         'Types': [
@@ -311,8 +311,8 @@ export = {
       'RegionalCertificateArn': {
         'Ref': 'cert56CA94EB',
       },
-    }));
-    expect(stack).to(haveResource('AWS::ApiGateway::DomainName', {
+    });
+    expect(stack).toHaveResource('AWS::ApiGateway::DomainName', {
       'DomainName': 'your.domain.com',
       'EndpointConfiguration': {
         'Types': [
@@ -322,8 +322,8 @@ export = {
       'RegionalCertificateArn': {
         'Ref': 'cert56CA94EB',
       },
-    }));
-    expect(stack).to(haveResource('AWS::ApiGateway::DomainName', {
+    });
+    expect(stack).toHaveResource('AWS::ApiGateway::DomainName', {
       'DomainName': 'our.domain.com',
       'EndpointConfiguration': {
         'Types': [
@@ -333,8 +333,8 @@ export = {
       'RegionalCertificateArn': {
         'Ref': 'cert56CA94EB',
       },
-    }));
-    expect(stack).to(haveResource('AWS::ApiGateway::BasePathMapping', {
+    });
+    expect(stack).toHaveResource('AWS::ApiGateway::BasePathMapping', {
       'DomainName': {
         'Ref': 'apidomainId102F8DAA',
       },
@@ -344,12 +344,12 @@ export = {
       'Stage': {
         'Ref': 'apiDeploymentStageprod896C8101',
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  '"addBasePathMapping" can be used to add base path mapping to the domain with specific stage'(test: Test) {
+  });
+
+  test('"addBasePathMapping" can be used to add base path mapping to the domain with specific stage', () => {
     // GIVEN
     const stack = new Stack();
     const api1 = new apigw.RestApi(stack, 'api1');
@@ -375,7 +375,7 @@ export = {
     domain.addBasePathMapping(api2, { basePath: 'api2' });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::BasePathMapping', {
+    expect(stack).toHaveResource('AWS::ApiGateway::BasePathMapping', {
       'DomainName': {
         'Ref': 'mydomain592C948B',
       },
@@ -384,9 +384,9 @@ export = {
         'Ref': 'api1A91238E2',
       },
       'Stage': stack.resolve(testStage.stageName),
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::ApiGateway::BasePathMapping', {
+    expect(stack).toHaveResource('AWS::ApiGateway::BasePathMapping', {
       'DomainName': {
         'Ref': 'mydomain592C948B',
       },
@@ -397,11 +397,11 @@ export = {
       'Stage': {
         'Ref': 'api2DeploymentStageprod4120D74E',
       },
-    }));
-    test.done();
-  },
+    });
 
-  'accepts a mutual TLS configuration'(test: Test) {
+  });
+
+  test('accepts a mutual TLS configuration', () => {
     const stack = new Stack();
     const bucket = Bucket.fromBucketName(stack, 'testBucket', 'exampleBucket');
     new apigw.DomainName(stack, 'another-domain', {
@@ -413,16 +413,16 @@ export = {
       certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
     });
 
-    expect(stack).to(haveResource('AWS::ApiGateway::DomainName', {
+    expect(stack).toHaveResource('AWS::ApiGateway::DomainName', {
       'DomainName': 'example.com',
       'EndpointConfiguration': { 'Types': ['REGIONAL'] },
       'RegionalCertificateArn': 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d',
       'MutualTlsAuthentication': { 'TruststoreUri': 's3://exampleBucket/someca.pem' },
-    }));
-    test.done();
-  },
+    });
 
-  'mTLS should allow versions to be set on the s3 bucket'(test: Test) {
+  });
+
+  test('mTLS should allow versions to be set on the s3 bucket', () => {
     const stack = new Stack();
     const bucket = Bucket.fromBucketName(stack, 'testBucket', 'exampleBucket');
     new apigw.DomainName(stack, 'another-domain', {
@@ -434,16 +434,16 @@ export = {
         version: 'version',
       },
     });
-    expect(stack).to(haveResource('AWS::ApiGateway::DomainName', {
+    expect(stack).toHaveResource('AWS::ApiGateway::DomainName', {
       'DomainName': 'example.com',
       'EndpointConfiguration': { 'Types': ['REGIONAL'] },
       'RegionalCertificateArn': 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d',
       'MutualTlsAuthentication': { 'TruststoreUri': 's3://exampleBucket/someca.pem', 'TruststoreVersion': 'version' },
-    }));
-    test.done();
-  },
+    });
 
-  'base path mapping configures stage for RestApi creation'(test: Test) {
+  });
+
+  test('base path mapping configures stage for RestApi creation', () => {
     // GIVEN
     const stack = new Stack();
     new apigw.RestApi(stack, 'restApiWithStage', {
@@ -455,7 +455,7 @@ export = {
     }).root.addMethod('GET');
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::BasePathMapping', {
+    expect(stack).toHaveResource('AWS::ApiGateway::BasePathMapping', {
       'DomainName': {
         'Ref': 'restApiWithStageCustomDomainC4749625',
       },
@@ -465,12 +465,12 @@ export = {
       'Stage': {
         'Ref': 'restApiWithStageDeploymentStageprodC82A6648',
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  'base path mapping configures stage for SpecRestApi creation'(test: Test) {
+  });
+
+  test('base path mapping configures stage for SpecRestApi creation', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -488,7 +488,7 @@ export = {
     }).root.addMethod('GET');
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::BasePathMapping', {
+    expect(stack).toHaveResource('AWS::ApiGateway::BasePathMapping', {
       'DomainName': {
         'Ref': 'specRestApiWithStageCustomDomain8A36A5C9',
       },
@@ -498,8 +498,6 @@ export = {
       'Stage': {
         'Ref': 'specRestApiWithStageDeploymentStageprod2D3037ED',
       },
-    }));
-
-    test.done();
-  },
-};
+    });
+  });
+});
