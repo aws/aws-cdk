@@ -94,7 +94,7 @@ describe('IAM user', () => {
     });
   });
 
-  test("ploicy cannot be added to an imported user ", () => {
+  test("imported user cannot be added to policy", () => {
     // GIVEN
     const stack = new Stack();
 
@@ -107,7 +107,7 @@ describe('IAM user', () => {
     );
   })
 
-  test("ploicy cannot be added to an imported user ", () => {
+  test("imported user cannot be added to principal policy ", () => {
     // GIVEN
     const stack = new Stack();
 
