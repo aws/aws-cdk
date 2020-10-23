@@ -1,7 +1,9 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { Duration, IResource, Lazy, Resource, Token } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
-import { BaseListener } from '../shared/base-listener';
+import { BaseListener, BaseListenerLookupUserOptions as BaseListenerLookupOptions } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
 import { ApplicationProtocol, IpAddressType, SslPolicy } from '../shared/enums';
 import { IListenerCertificate, ListenerCertificate } from '../shared/listener-certificate';
@@ -107,11 +109,37 @@ export interface ApplicationListenerProps extends BaseApplicationListenerProps {
 }
 
 /**
+ * Options for ApplicationListener lookup
+ */
+export interface ApplicationListenerLookupOptions extends BaseListenerLookupOptions {
+  /**
+   * Filter listeners by listener protocol
+   * @default - does not filter by listener protocol
+   */
+  readonly listenerProtocol?: ApplicationProtocol;
+}
+
+/**
  * Define an ApplicationListener
  *
  * @resource AWS::ElasticLoadBalancingV2::Listener
  */
 export class ApplicationListener extends BaseListener implements IApplicationListener {
+  /**
+   * Look up an ApplicationListener.
+   */
+  static fromLookup(scope: Construct, id: string, options: ApplicationListenerLookupOptions): IApplicationListener {
+    const props = BaseListener._queryContextProvider(scope, {
+      userOptions: options,
+      loadBalancerType: cxschema.LoadBalancerType.APPLICATION,
+      listenerProtocol: options.listenerProtocol == ApplicationProtocol.HTTP
+        ? cxschema.LoadBalancerListenerProtocol.HTTP
+        : cxschema.LoadBalancerListenerProtocol.HTTPS,
+    });
+
+    return new LookedUpApplicationListener(scope, id, props);
+  }
+
   /**
    * Import an existing listener
    */
@@ -517,7 +545,25 @@ export interface ApplicationListenerAttributes {
   readonly securityGroupAllowsAllOutbound?: boolean;
 }
 
-class ImportedApplicationListener extends Resource implements IApplicationListener {
+/**
+ * Props for `ImportedApplicationListenerBase`
+ */
+interface ImportedApplicationListenerBaseProps {
+  /**
+   * Arn of the listener.
+   */
+  readonly listenerArn: string;
+
+  /**
+   * Connections object.
+   */
+  readonly connections: ec2.Connections;
+}
+
+abstract class ImportedApplicationListenerBase extends Resource implements IApplicationListener {
+  /**
+   * Connections object.
+   */
   public readonly connections: ec2.Connections;
 
   /**
@@ -525,28 +571,20 @@ class ImportedApplicationListener extends Resource implements IApplicationListen
    */
   public readonly listenerArn: string;
 
-  constructor(scope: Construct, id: string, props: ApplicationListenerAttributes) {
+  constructor(scope: Construct, id: string, props: ImportedApplicationListenerBaseProps) {
     super(scope, id);
 
+    this.connections = props.connections;
     this.listenerArn = props.listenerArn;
+  }
 
-    const defaultPort = props.defaultPort !== undefined ? ec2.Port.tcp(props.defaultPort) : undefined;
-
-    let securityGroup: ec2.ISecurityGroup;
-    if (props.securityGroup) {
-      securityGroup = props.securityGroup;
-    } else if (props.securityGroupId) {
-      securityGroup = ec2.SecurityGroup.fromSecurityGroupId(scope, 'SecurityGroup', props.securityGroupId, {
-        allowAllOutbound: props.securityGroupAllowsAllOutbound,
-      });
-    } else {
-      throw new Error('Either `securityGroup` or `securityGroupId` must be specified to import an application listener.');
-    }
-
-    this.connections = new ec2.Connections({
-      securityGroups: [securityGroup],
-      defaultPort,
-    });
+  /**
+   * Register that a connectable that has been added to this load balancer.
+   *
+   * Don't call this directly. It is called by ApplicationTargetGroup.
+   */
+  public registerConnectable(connectable: ec2.IConnectable, portRange: ec2.Port): void {
+    this.connections.allowTo(connectable, portRange, 'Load balancer to target');
   }
 
   /**
@@ -599,14 +637,47 @@ class ImportedApplicationListener extends Resource implements IApplicationListen
     // eslint-disable-next-line max-len
     throw new Error('Can only call addTargets() when using a constructed ApplicationListener; construct a new TargetGroup and use addTargetGroup.');
   }
+}
 
-  /**
-   * Register that a connectable that has been added to this load balancer.
-   *
-   * Don't call this directly. It is called by ApplicationTargetGroup.
-   */
-  public registerConnectable(connectable: ec2.IConnectable, portRange: ec2.Port): void {
-    this.connections.allowTo(connectable, portRange, 'Load balancer to target');
+/**
+ * An imported application listener.
+ */
+class ImportedApplicationListener extends ImportedApplicationListenerBase {
+  constructor(scope: Construct, id: string, props: ApplicationListenerAttributes) {
+    const defaultPort = props.defaultPort !== undefined ? ec2.Port.tcp(props.defaultPort) : undefined;
+    const connections = new ec2.Connections({ defaultPort });
+
+    super(scope, id, {
+      listenerArn: props.listenerArn,
+      connections,
+    });
+
+    let securityGroup: ec2.ISecurityGroup;
+    if (props.securityGroup) {
+      securityGroup = props.securityGroup;
+    } else if (props.securityGroupId) {
+      securityGroup = ec2.SecurityGroup.fromSecurityGroupId(scope, 'SecurityGroup', props.securityGroupId, {
+        allowAllOutbound: props.securityGroupAllowsAllOutbound,
+      });
+    } else {
+      throw new Error('Either `securityGroup` or `securityGroupId` must be specified to import an application listener.');
+    }
+
+    this.connections.addSecurityGroup(securityGroup);
+  }
+}
+
+class LookedUpApplicationListener extends ImportedApplicationListenerBase {
+  constructor(scope: Construct, id: string, props: cxapi.LoadBalancerListenerContextResponse) {
+    super(scope, id, {
+      listenerArn: props.listenerArn,
+      connections: new ec2.Connections({ defaultPort: ec2.Port.tcp(props.listenerPort) }),
+    });
+
+    for (const securityGroupId of props.securityGroupIds) {
+      const securityGroup = ec2.SecurityGroup.fromLookup(this, `SecurityGroup-${securityGroupId}`, securityGroupId);
+      this.connections.addSecurityGroup(securityGroup);
+    }
   }
 }
 

@@ -1,7 +1,9 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
-import { IResource, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import { ContextProvider, IResource, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { RegionInfo } from '@aws-cdk/region-info';
 import { Construct } from 'constructs';
 import { CfnLoadBalancer } from '../elasticloadbalancingv2.generated';
@@ -65,9 +67,73 @@ export interface ILoadBalancerV2 extends IResource {
 }
 
 /**
+ * Options for looking up load balancers
+ */
+export interface BaseLoadBalancerLookupUserOptions {
+  /**
+   * Find by load balancer's ARN
+   * @default - does not search by load balancer arn
+   */
+  readonly loadBalancerArn?: string;
+
+  /**
+   * Match load balancer tags.
+   * @default - does not match load balancers by tags
+   */
+  readonly loadBalancerTags?: Record<string, string>;
+}
+
+/**
+ * Options for query context provider
+ * @internal
+ */
+export interface LoadBalancerQueryContextProviderOptions {
+  /**
+   * User's lookup options
+   */
+  readonly userOptions: BaseLoadBalancerLookupUserOptions;
+
+  /**
+   * Type of load balancer
+   */
+  readonly loadBalancerType: cxschema.LoadBalancerType;
+}
+
+/**
  * Base class for both Application and Network Load Balancers
  */
 export abstract class BaseLoadBalancer extends Resource {
+  /**
+   * Queries the load balancer context provider for load balancer info.
+   * @internal
+   */
+  protected static _queryContextProvider(scope: Construct, options: LoadBalancerQueryContextProviderOptions) {
+    if (Token.isUnresolved(options.userOptions.loadBalancerArn)
+      ||Token.isUnresolved(options.userOptions.loadBalancerTags)) {
+      throw new Error('All arguments to look up a load balancer must be concrete (no Tokens)');
+    }
+
+    const props: cxapi.LoadBalancerContextResponse = ContextProvider.getValue(scope, {
+      provider: cxschema.ContextProvider.LOAD_BALANCER_PROVIDER,
+      props: {
+        ...options.userOptions,
+        loadBalancerType: options.loadBalancerType,
+      } as cxschema.LoadBalancerContextQuery,
+      dummyValue: undefined,
+    }).value;
+
+    const dummyProps: cxapi.LoadBalancerContextResponse = {
+      ipAddressType: cxapi.LoadBalancerIpAddressType.DUAL_STACK,
+      loadBalancerArn: `arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/${options.loadBalancerType}/my-load-balancer/50dc6c495c0c9188`,
+      loadBalancerCanonicalHostedZoneId: 'Z3DZXE0EXAMPLE',
+      loadBalancerDnsName: 'my-load-balancer-1234567890.us-west-2.elb.amazonaws.com',
+      securityGroupIds: ['sg-1234'],
+      vpcId: 'vpc-12345',
+    };
+
+    return props ?? dummyProps;
+  }
+
   /**
    * The canonical hosted zone ID of this load balancer
    *

@@ -1,4 +1,6 @@
-import { Annotations, IResource, Lazy, Resource, ResourceProps, Stack, Token } from '@aws-cdk/core';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import { Annotations, ContextProvider, IResource, Lazy, Resource, ResourceProps, Stack, Token } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { Connections } from './connections';
 import { CfnSecurityGroup, CfnSecurityGroupEgress, CfnSecurityGroupIngress } from './ec2.generated';
@@ -294,6 +296,31 @@ export interface SecurityGroupImportOptions {
  * ```
  */
 export class SecurityGroup extends SecurityGroupBase {
+  /**
+   * Look up a security group by id.
+   */
+  static fromLookup(scope: Construct, id: string, securityGroupId: string) {
+    const attributes: cxapi.SecurityGroupContextResponse = ContextProvider.getValue(scope, {
+      provider: cxschema.ContextProvider.SECURITY_GROUP_PROVIDER,
+      props: {
+        securityGroupId: securityGroupId,
+      } as cxschema.SecurityGroupContextQuery,
+      dummyValue: undefined,
+    }).value;
+
+    // Default attributes for tests and the first pass.
+    const defaultAttributes: cxapi.SecurityGroupContextResponse = {
+      securityGroupId: securityGroupId,
+      allowAllOutbound: true,
+    };
+
+    const attributesToUse = attributes ?? defaultAttributes;
+
+    return SecurityGroup.fromSecurityGroupId(scope, id, attributesToUse.securityGroupId, {
+      allowAllOutbound: attributesToUse.allowAllOutbound,
+      mutable: true,
+    });
+  }
 
   /**
    * Import an existing security group into this app.

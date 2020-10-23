@@ -409,7 +409,10 @@
                 "endpoint-service-availability-zones",
                 "hosted-zone",
                 "ssm",
-                "vpc-provider"
+                "vpc-provider",
+                "security-group",
+                "load-balancer",
+                "load-balancer-listener"
             ],
             "type": "string"
         },
