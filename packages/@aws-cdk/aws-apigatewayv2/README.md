@@ -209,10 +209,12 @@ API Gateway supports multiple mechanisms for [controlling and managing access to
 const userPool = new UserPool(stack, 'my-pool');
 const httpApi = new HttpApi(stack, 'HttpApi');
 
+const appClient = userPool.addClient('my-app-client');
+
 const authorizer = new Authorizer(stack, {
   httpApi,
   jwtConfiguration: {
-    audience: [userPool.userPoolId],
+    audience: [appClient.userPoolClientId],
     issuer: `https://cognito-idp.${stack.region}.amazonaws.com/${userPool.userPoolId}`,
   },
 });
