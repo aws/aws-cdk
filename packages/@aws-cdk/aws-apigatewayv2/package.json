@@ -81,6 +81,7 @@
   },
   "dependencies": {
     "@aws-cdk/aws-certificatemanager": "0.0.0",
+    "@aws-cdk/aws-ec2": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-cloudwatch": "0.0.0",
@@ -88,6 +89,7 @@
     "constructs": "^3.0.4"
   },
   "peerDependencies": {
+    "@aws-cdk/aws-ec2": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-certificatemanager": "0.0.0",
