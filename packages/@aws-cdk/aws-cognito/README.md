@@ -53,7 +53,7 @@ Using the CDK, a new user pool can be created as part of the stack using the con
 the `userPoolName` to give your own identifier to the user pool. If not, CloudFormation will generate a name.
 
 ```ts
-new UserPool(this, 'myuserpool', {
+new cognito.UserPool(this, 'myuserpool', {
   userPoolName: 'myawesomeapp-userpool',
 });
 ```
@@ -68,13 +68,13 @@ When a user signs up, email and SMS messages are used to verify their account an
 snippet configures a user pool with properties relevant to these verification messages -
 
 ```ts
-new UserPool(this, 'myuserpool', {
+new cognito.UserPool(this, 'myuserpool', {
   // ...
   selfSignUpEnabled: true,
   userVerification: {
     emailSubject: 'Verify your email for our awesome app!',
     emailBody: 'Hello {username}, Thanks for signing up to our awesome app! Your verification code is {####}',
-    emailStyle: VerificationEmailStyle.CODE,
+    emailStyle: cognito.VerificationEmailStyle.CODE,
     smsMessage: 'Hello {username}, Thanks for signing up to our awesome app! Your verification code is {####}',
   }
 });
@@ -88,7 +88,7 @@ invitation to join the user pool. The following code snippet configures a user p
 invitation messages -
 
 ```ts
-new UserPool(this, 'myuserpool', {
+new cognito.UserPool(this, 'myuserpool', {
   // ...
   userInvitation: {
     emailSubject: 'Invite to join our awesome app!',
@@ -116,7 +116,7 @@ available:
 The following code sets up a user pool so that the user can sign in with either their username or their email address -
 
 ```ts
-new UserPool(this, 'myuserpool', {
+new cognito.UserPool(this, 'myuserpool', {
   // ...
   // ...
   signInAliases: {
@@ -144,7 +144,7 @@ overridden by specifying the `autoVerify` property.
 The following code snippet sets up only email as a sign in alias, but both email and phone number to be auto-verified.
 
 ```ts
-new UserPool(this, 'myuserpool', {
+new cognito.UserPool(this, 'myuserpool', {
   // ...
   // ...
   signInAliases: { username: true, email: true },
@@ -169,7 +169,7 @@ The following code configures a user pool with two standard attributes (name and
 four custom attributes.
 
 ```ts
-new UserPool(this, 'myuserpool', {
+new cognito.UserPool(this, 'myuserpool', {
   // ...
   standardAttributes: {
     fullname: {
@@ -182,10 +182,10 @@ new UserPool(this, 'myuserpool', {
     },
   },
   customAttributes: {
-    'myappid': new StringAttribute({ minLen: 5, maxLen: 15, mutable: false }),
-    'callingcode': new NumberAttribute({ min: 1, max: 3, mutable: true }),
-    'isEmployee': new BooleanAttribute({ mutable: true }),
-    'joinedOn': new DateTimeAttribute(),
+    'myappid': new cognito.StringAttribute({ minLen: 5, maxLen: 15, mutable: false }),
+    'callingcode': new cognito.NumberAttribute({ min: 1, max: 3, mutable: true }),
+    'isEmployee': new cognito.BooleanAttribute({ mutable: true }),
+    'joinedOn': new cognito.DateTimeAttribute(),
   },
 });
 ```
@@ -211,11 +211,11 @@ Additionally, the property `enableSmsRole` can be used to override the CDK's def
 suppress automatic role creation.
 
 ```ts
-import { Role } from '@aws-cdk/aws-iam';
+const poolSmsRole = new iam.Role(this, 'userpoolsmsrole', {
+  assumedBy: new iam.ServicePrincipal('foo'),
+});
 
-const poolSmsRole = new Role(this, 'userpoolsmsrole', { /* ... */ });
-
-new UserPool(this, 'myuserpool', {
+new cognito.UserPool(this, 'myuserpool', {
   // ...
   smsRole: poolSmsRole,
   smsRoleExternalId: 'c87467be-4f34-11ea-b77f-2e728ce88125'
@@ -241,9 +241,9 @@ configure an MFA token and use it for sign in. It also allows for the users to u
 (TOTP)](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-mfa-totp.html).
 
 ```ts
-new UserPool(this, 'myuserpool', {
+new cognito.UserPool(this, 'myuserpool', {
   // ...
-  mfa: Mfa.REQUIRED,
+  mfa: cognito.Mfa.REQUIRED,
   mfaSecondFactor: {
     sms: true,
     otp: true,
@@ -261,7 +261,7 @@ The validity of this password dictates how long to give the user to use this pas
 The following code snippet configures these properties -
 
 ```ts
-new UserPool(this, 'myuserpool', {
+new cognito.UserPool(this, 'myuserpool', {
   // ...
   passwordPolicy: {
     minLength: 12,
@@ -282,9 +282,9 @@ User pools can be configured on which method a user should use when recovering t
 can either be email and/or SMS. Read more at [Recovering User Accounts](https://docs.aws.amazon.com/cognito/latest/developerguide/how-to-recover-a-user-account.html)
 
 ```ts
-new UserPool(this, 'UserPool', {
-  ...,
-  accountRecovery: AccountRecovery.EMAIL_ONLY,
+new cognito.UserPool(this, 'UserPool', {
+  // ...
+  accountRecovery: cognito.AccountRecovery.EMAIL_ONLY,
 })
 ```
 
@@ -295,7 +295,7 @@ emails, password resets, etc. The address from which these emails are sent can b
 Read more about [email settings here](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-email.html).
 
 ```ts
-new UserPool(this, 'myuserpool', {
+new cognito.UserPool(this, 'myuserpool', {
   // ...
   emailSettings: {
     from: 'noreply@myawesomeapp.com',
@@ -320,22 +320,24 @@ Lambda triggers can either be specified as part of the `UserPool` initialization
 on the construct, as so -
 
 ```ts
-import * as lambda from '@aws-cdk/aws-lambda';
-
 const authChallengeFn = new lambda.Function(this, 'authChallengeFn', {
-  // ...
+  runtime: lambda.Runtime.NODEJS_10_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromInline('auth challenge'),
 });
 
-const userpool = new UserPool(this, 'myuserpool', {
+const userpool = new cognito.UserPool(this, 'myuserpool', {
   // ...
-  triggers: {
+  lambdaTriggers: {
     createAuthChallenge: authChallengeFn,
     // ...
   }
 });
 
-userpool.addTrigger(UserPoolOperation.USER_MIGRATION, new lambda.Function(this, 'userMigrationFn', {
-  // ...
+userpool.addTrigger(cognito.UserPoolOperation.USER_MIGRATION, new lambda.Function(this, 'userMigrationFn', {
+    runtime: lambda.Runtime.NODEJS_10_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromInline('user migration'),
 }));
 ```
 
@@ -355,11 +357,9 @@ User pools can be imported either using their id via the `UserPool.fromUserPoolI
 `UserPool.fromUserPoolArn()` API.
 
 ```ts
-const stack = new Stack(app, 'my-stack');
+const awesomePool = cognito.UserPool.fromUserPoolId(this, 'awesome-user-pool', 'us-east-1_oiuR12Abd');
 
-const awesomePool = UserPool.fromUserPoolId(stack, 'awesome-user-pool', 'us-east-1_oiuR12Abd');
-
-const otherAwesomePool = UserPool.fromUserPoolArn(stack, 'other-awesome-user-pool',
+const otherAwesomePool = cognito.UserPool.fromUserPoolArn(this, 'other-awesome-user-pool',
   'arn:aws:cognito-idp:eu-west-1:123456789012:userpool/us-east-1_mtRyYQ14D');
 ```
 
@@ -381,9 +381,9 @@ provider needs to be configured with a set of credentials that the Cognito backe
 third-party identity provider.
 
 ```ts
-const userpool = new UserPool(stack, 'Pool');
+const userpool = new cognito.UserPool(this, 'Pool');
 
-const provider = new UserPoolIdentityProviderAmazon(stack, 'Amazon', {
+const provider = new cognito.UserPoolIdentityProviderAmazon(this, 'Amazon', {
   clientId: 'amzn-client-id',
   clientSecret: 'amzn-client-secret',
   userPool: userpool,
@@ -398,14 +398,18 @@ The following code shows how different attributes provided by 'Login With Amazon
 user pool attributes.
 
 ```ts
-new UserPoolIdentityProviderAmazon(stack, 'Amazon', {
-  // ...
+const userpool = new cognito.UserPool(this, 'Pool');
+
+new cognito.UserPoolIdentityProviderAmazon(this, 'Amazon', {
+  clientId: 'amzn-client-id',
+  clientSecret: 'amzn-client-secret',
+  userPool: userpool,
   attributeMapping: {
-    email: ProviderAttribute.AMAZON_EMAIL,
-    website: ProviderAttribute.other('url'), // use other() when an attribute is not pre-defined in the CDK
+    email: cognito.ProviderAttribute.AMAZON_EMAIL,
+    website: cognito.ProviderAttribute.other('url'), // use other() when an attribute is not pre-defined in the CDK
     custom: {
       // custom user pool attributes go here
-      uniqueId: ProviderAttribute.AMAZON_USER_ID,
+      uniqueId: cognito.ProviderAttribute.AMAZON_USER_ID,
     }
   }
 });
@@ -421,7 +425,7 @@ Client](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-sett
 The following code creates an app client and retrieves the client id -
 
 ```ts
-const pool = new UserPool(this, 'pool');
+const pool = new cognito.UserPool(this, 'pool');
 const client = pool.addClient('customer-app-client');
 const clientId = client.userPoolClientId;
 ```
@@ -430,8 +434,8 @@ Existing app clients can be imported into the CDK app using the `UserPoolClient.
 and imported user pools, clients can also be created via the `UserPoolClient` constructor, as so -
 
 ```ts
-const importedPool = UserPool.fromUserPoolId(this, 'imported-pool', 'us-east-1_oiuR12Abd');
-new UserPoolClient(this, 'customer-app-client', {
+const importedPool = cognito.UserPool.fromUserPoolId(this, 'imported-pool', 'us-east-1_oiuR12Abd');
+new cognito.UserPoolClient(this, 'customer-app-client', {
   userPool: importedPool
 });
 ```
@@ -444,7 +448,7 @@ Flow](https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-u
 The following code configures a client to use both SRP and username-and-password authentication -
 
 ```ts
-const pool = new UserPool(this, 'pool');
+const pool = new cognito.UserPool(this, 'pool');
 pool.addClient('app-client', {
   authFlows: {
     userPassword: true,
@@ -468,13 +472,13 @@ page as a callback (or redirect) URL. It also configures the access token scope 
 be found in the [OAuth 2.0 RFC](https://tools.ietf.org/html/rfc6749).
 
 ```ts
-const pool = new UserPool(this, 'Pool');
+const pool = new cognito.UserPool(this, 'Pool');
 pool.addClient('app-client', {
   oAuth: {
     flows: {
       authorizationCodeGrant: true,
     },
-    scopes: [ OAuthScope.OPENID ],
+    scopes: [ cognito.OAuthScope.OPENID ],
     callbackUrls: [ 'https://my-app-domain.com/welcome' ],
     logoutUrls: [ 'https://my-app-domain.com/signin' ],
   }
@@ -489,7 +493,7 @@ is not set, which means different things for existing and new stacks. See the
 for the full details on the behavior of this flag.
 
 ```ts
-const pool = new UserPool(this, 'Pool');
+const pool = new cognito.UserPool(this, 'Pool');
 pool.addClient('app-client', {
   preventUserExistenceErrors: true,
 });
@@ -501,12 +505,12 @@ that allows users to register and sign in directly with the Cognito user pool, i
 Alternatively, the list of supported identity providers for a client can be explicitly specified -
 
 ```ts
-const pool = new UserPool(this, 'Pool');
+const pool = new cognito.UserPool(this, 'Pool');
 pool.addClient('app-client', {
   // ...
   supportedIdentityProviders: [
-    UserPoolClientIdentityProvider.AMAZON,
-    UserPoolClientIdentityProvider.COGNITO,
+    cognito.UserPoolClientIdentityProvider.AMAZON,
+    cognito.UserPoolClientIdentityProvider.COGNITO,
   ]
 });
 ```
@@ -521,7 +525,7 @@ owned, and whose certificate is registered in AWS Certificate Manager.
 The following code sets up a user pool domain in Amazon Cognito hosted domain with the prefix 'my-awesome-app', and another domain with the custom domain 'user.myapp.com' -
 
 ```ts
-const pool = new UserPool(this, 'Pool');
+const pool = new cognito.UserPool(this, 'Pool');
 
 pool.addDomain('CognitoDomain', {
   cognitoDomain: {
@@ -529,7 +533,9 @@ pool.addDomain('CognitoDomain', {
   },
 });
 
-const domainCert = new acm.Certificate.fromCertificateArn(this, 'domainCert', certificateArn);
+const certificateArn = 'arn:aws:acm:us-east-1:123456789012:certificate/11-3336f1-44483d-adc7-9cd375c5169d';
+
+const domainCert = certificatemanager.Certificate.fromCertificateArn(this, 'domainCert', certificateArn);
 pool.addDomain('CustomDomain', {
   customDomain: {
     domainName: 'user.myapp.com',
@@ -547,7 +553,7 @@ hosted UI configured with Cognito. Learn more at [Hosted UI with the Amazon Cogn
 Console](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-app-integration.html#cognito-user-pools-create-an-app-integration).
 
 ```ts
-const userpool = new UserPool(this, 'UserPool', {
+const userpool = new cognito.UserPool(this, 'UserPool', {
   // ...
 });
 const client = userpool.addClient('Client', {
@@ -566,14 +572,12 @@ const domain = userpool.addDomain('Domain', {
   // ...
 });
 const signInUrl = domain.signInUrl(client, {
-  redirectUrl: 'https://myapp.com/home', // must be a URL configured under 'callbackUrls' with the client
+  redirectUri: 'https://myapp.com/home', // must be a URL configured under 'callbackUrls' with the client
 })
 ```
 
 Existing domains can be imported into CDK apps using `UserPoolDomain.fromDomainName()` API
 
 ```ts
-const stack = new Stack(app, 'my-stack');
-
-const myUserPoolDomain = UserPoolDomain.fromDomainName(stack, 'my-user-pool-domain', 'domain-name');
+const myUserPoolDomain = cognito.UserPoolDomain.fromDomainName(this, 'my-user-pool-domain', 'domain-name');
 ```
