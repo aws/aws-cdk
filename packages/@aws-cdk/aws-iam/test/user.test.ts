@@ -94,7 +94,7 @@ describe('IAM user', () => {
     });
   });
 
-  test("imported user cannot be added to policy", () => {
+  test('imported user cannot be added to policy', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -103,11 +103,11 @@ describe('IAM user', () => {
 
     // THEN
     expect(stack.resolve(user.addToPolicy(new PolicyStatement()))).toThrowError(
-      new Error('Cannot add imported User to policy')
+      new Error('Cannot add imported User to policy'),
     );
-  })
+  });
 
-  test("imported user cannot be added to principal policy ", () => {
+  test('imported user cannot be added to principal policy ', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -116,13 +116,13 @@ describe('IAM user', () => {
 
     // THEN
     expect(stack.resolve(user.addToPrincipalPolicy(
-      new PolicyStatement()
+      new PolicyStatement(),
     ))).toThrowError(
-      new Error('Cannot add imported User to principal policy')
+      new Error('Cannot add imported User to principal policy'),
     );
-  })
+  });
 
-  test("inline ploicy cannot be added to an imported user ", () => {
+  test('inline ploicy cannot be added to an imported user ', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -131,9 +131,9 @@ describe('IAM user', () => {
 
     // THEN
     expect(stack.resolve(user.attachInlinePolicy(
-      new Policy(stack, 'testPolicyxs')
+      new Policy(stack, 'testPolicy'),
     ))).toThrowError(
-      new Error('Cannot add inline policy to imported User')
+      new Error('Cannot add inline policy to imported User'),
     );
-  })
+  });
 });
