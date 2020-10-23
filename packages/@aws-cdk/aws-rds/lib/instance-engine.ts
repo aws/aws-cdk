@@ -456,6 +456,8 @@ export class PostgresEngineVersion {
   public static readonly VER_9_5_21 = PostgresEngineVersion.of('9.5.21', '9.5');
   /** Version "9.5.22". */
   public static readonly VER_9_5_22 = PostgresEngineVersion.of('9.5.22', '9.5');
+  /** Version "9.5.23". */
+  public static readonly VER_9_5_23 = PostgresEngineVersion.of('9.5.23', '9.5');
 
   /** Version "9.6" (only a major version, without a specific minor version). */
   public static readonly VER_9_6 = PostgresEngineVersion.of('9.6', '9.6');
@@ -489,6 +491,8 @@ export class PostgresEngineVersion {
   public static readonly VER_9_6_17 = PostgresEngineVersion.of('9.6.17', '9.6');
   /** Version "9.6.18". */
   public static readonly VER_9_6_18 = PostgresEngineVersion.of('9.6.18', '9.6');
+  /** Version "9.6.19". */
+  public static readonly VER_9_6_19 = PostgresEngineVersion.of('9.6.19', '9.6');
 
   /** Version "10" (only a major version, without a specific minor version). */
   public static readonly VER_10 = PostgresEngineVersion.of('10', '10');
