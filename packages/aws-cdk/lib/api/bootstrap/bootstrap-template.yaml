@@ -374,7 +374,7 @@ Resources:
             - HasTrustedAccounts
             # The CLI will prevent this case from occurring
             - Ref: AWS::NoValue
-            # The CLI will advertise this case
+            # The CLI will advertise that we picked this implicitly
             - - Fn::Sub: "arn:${AWS::Partition}:iam::aws:policy/AdministratorAccess"
       RoleName:
         Fn::Sub: cdk-${Qualifier}-cfn-exec-role-${AWS::AccountId}-${AWS::Region}
