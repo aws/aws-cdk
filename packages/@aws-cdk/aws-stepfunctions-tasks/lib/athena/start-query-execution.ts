@@ -78,7 +78,7 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
           cdk.Stack.of(this).formatArn({
             service: 'athena',
             resource: 'datacatalog',
-            resourceName: this.props.queryExecutionContext?.catalog ? this.props.queryExecutionContext?.catalog : 'AwsDataCatalog',
+            resourceName: this.props.queryExecutionContext?.catalogName ? this.props.queryExecutionContext?.catalogName : 'AwsDataCatalog',
           }),
           cdk.Stack.of(this).formatArn({
             service: 'athena',
@@ -101,14 +101,14 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
           's3:ListBucketMultipartUploads',
           's3:ListMultipartUploadParts',
           's3:PutObject'],
-        resources: [this.props.resultConfiguration?.outputLocation ? this.props.resultConfiguration?.outputLocation : '*'], // Need S3 location where data is stored @see https://docs.aws.amazon.com/athena/latest/ug/security-iam-athena.html
+        resources: [this.props.resultConfiguration?.outputLocation ? this.props.resultConfiguration?.outputLocation : '*'], // Need S3 location where data is stored https://docs.aws.amazon.com/athena/latest/ug/security-iam-athena.html
       }),
     );
 
     policyStatements.push(
       new iam.PolicyStatement({
         actions: ['lakeformation:GetDataAccess'],
-        resources: [this.props.resultConfiguration?.outputLocation ? this.props.resultConfiguration?.outputLocation : '*'], // Workflow role permissions @see https://docs.aws.amazon.com/lake-formation/latest/dg/permissions-reference.html
+        resources: [this.props.resultConfiguration?.outputLocation ? this.props.resultConfiguration?.outputLocation : '*'], // Workflow role permissions https://docs.aws.amazon.com/lake-formation/latest/dg/permissions-reference.html
       }),
     );
 
@@ -141,7 +141,7 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
           cdk.Stack.of(this).formatArn({
             service: 'glue',
             resource: 'database',
-            resourceName: this.props.queryExecutionContext?.database ? this.props.queryExecutionContext?.database : 'default',
+            resourceName: this.props.queryExecutionContext?.databaseName ? this.props.queryExecutionContext?.databaseName : 'default',
           }),
           cdk.Stack.of(this).formatArn({
             service: 'glue',
@@ -173,13 +173,13 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
         QueryString: this.props.queryString,
         ClientRequestToken: this.props.clientRequestToken,
         QueryExecutionContext: {
-          Catalog: this.props.queryExecutionContext?.catalog,
-          Database: this.props.queryExecutionContext?.database,
+          Catalog: this.props.queryExecutionContext?.catalogName,
+          Database: this.props.queryExecutionContext?.databaseName,
         },
         ResultConfiguration: {
           EncryptionConfiguration: {
             EncryptionOption: this.props.resultConfiguration?.encryptionConfiguration?.encryptionOption,
-            KmsKey: this.props.resultConfiguration?.encryptionConfiguration?.kmsKey,
+            KmsKey: this.props.resultConfiguration?.encryptionConfiguration?.encryptionKey,
           },
           OutputLocation: this.props.resultConfiguration?.outputLocation,
         },
@@ -197,17 +197,18 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
  */
 export interface ResultConfiguration {
 
-  /**ResultConfigurationOptions
+  /**
    * S3 path of query results
    *
-   * @default - No output location
+   * @default - Query Result Location set in Athena settings for this workgroup
+   * @example s3://query-results-bucket/folder/
   */
   readonly outputLocation?: string;
 
   /**
    * Encryption option used if enabled in S3
    *
-   * @default - No encryption configuration
+   * @default - SSE_S3 encrpytion is enabled with default encryption key
    */
   readonly encryptionConfiguration?: EncryptionConfiguration
 }
@@ -223,16 +224,45 @@ export interface EncryptionConfiguration {
   /**
    * Type of S3 server-side encryption enabled
    *
-   * @default - 'SSE_S3'
+   * @default - EncryptionOption.S3_MANAGED
    */
-  readonly encryptionOption: string;
+  readonly encryptionOption: EncryptionOption;
 
   /**
    * KMS key ARN or ID
    *
-   * @default - No KMS key
+   * @default - No KMS key for Encryption Option SSE_S3 and default master key for Encryption Option SSE_KMS and CSE_KMS
    */
-  readonly kmsKey?: kms.IKey;
+  readonly encryptionKey?: kms.IKey;
+}
+
+/**
+ * Encryption Options of the S3 bucket
+ *
+ * @see https://docs.aws.amazon.com/athena/latest/APIReference/API_EncryptionConfiguration.html#athena-Type-EncryptionConfiguration-EncryptionOption
+ * @experimental
+ */
+export enum EncryptionOption {
+  /**
+   * Server side encryption (SSE) with an Amazon S3-managed key.
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingServerSideEncryption.html
+   */
+  S3_MANAGED = 'SSE_S3',
+
+  /**
+   * Server-side encryption (SSE) with an AWS KMS key managed by the account owner.
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingKMSEncryption.html
+   */
+  KMS = 'SSE_KMS',
+
+  /**
+   * Client-side encryption (CSE) with an AWS KMS key managed by the account owner.
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingClientSideEncryption.html
+   */
+  CLIENT_SIDE_KMS = 'CSE_KMS'
 }
 
 /**
@@ -248,12 +278,12 @@ export interface QueryExecutionContext {
    *
    * @default - No catalog
    */
-  readonly catalog?: string;
+  readonly catalogName?: string;
 
   /**
    * Name of database used in query execution
    *
    * @default - No database
    */
-  readonly database?: string;
+  readonly databaseName?: string;
 }

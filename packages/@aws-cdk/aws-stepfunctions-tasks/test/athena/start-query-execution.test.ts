@@ -1,5 +1,5 @@
 import * as cdk from '@aws-cdk/core';
-import { AthenaStartQueryExecution } from '../../lib/athena/start-query-execution';
+import { AthenaStartQueryExecution, EncryptionOption } from '../../lib/athena/start-query-execution';
 
 describe('Start Query Execution', () => {
 
@@ -12,11 +12,11 @@ describe('Start Query Execution', () => {
       queryString: 'CREATE DATABASE database',
       clientRequestToken: 'unique-client-request-token',
       queryExecutionContext: {
-        database: 'mydatabase',
-        catalog: 'AwsDataCatalog',
+        databaseName: 'mydatabase',
+        catalogName: 'AwsDataCatalog',
       },
       resultConfiguration: {
-        encryptionConfiguration: { encryptionOption: 'SSE_S3' },
+        encryptionConfiguration: { encryptionOption: EncryptionOption.S3_MANAGED },
         outputLocation: 'https://s3.Region.amazonaws.com/bucket-name/key-name',
       },
       workGroup: 'primary',
@@ -46,7 +46,7 @@ describe('Start Query Execution', () => {
           Catalog: 'AwsDataCatalog',
         },
         ResultConfiguration: {
-          EncryptionConfiguration: { EncryptionOption: 'SSE_S3' },
+          EncryptionConfiguration: { EncryptionOption: EncryptionOption.S3_MANAGED },
           OutputLocation: 'https://s3.Region.amazonaws.com/bucket-name/key-name',
         },
         WorkGroup: 'primary',

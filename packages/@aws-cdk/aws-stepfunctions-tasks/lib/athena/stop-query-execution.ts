@@ -40,7 +40,7 @@ export class AthenaStopQueryExecution extends sfn.TaskStateBase {
 
     this.taskPolicies = [
       new iam.PolicyStatement({
-        resources: ['*'], // Grant access to allow user to stop queries on all workgroups as no workgroup defined in request @see https://docs.aws.amazon.com/athena/latest/ug/workgroups-iam-policy.html
+        resources: ['*'], // Grant access to allow user to stop queries on all workgroups as no workgroup defined in request https://docs.aws.amazon.com/athena/latest/ug/workgroups-iam-policy.html
         actions: ['athena:stopQueryExecution'],
       }),
     ];

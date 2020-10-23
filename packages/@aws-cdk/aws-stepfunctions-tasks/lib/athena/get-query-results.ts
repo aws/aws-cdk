@@ -10,6 +10,8 @@ import { integrationResourceArn, validatePatternSupported } from '../private/tas
 export interface AthenaGetQueryResultsProps extends sfn.TaskStateBaseProps {
   /**
    * Query that will be retrieved
+   *
+   *  @example 'adfsaf-23trf23-f23rt23'
   */
   readonly queryExecutionId: string;
 
@@ -23,7 +25,7 @@ export interface AthenaGetQueryResultsProps extends sfn.TaskStateBaseProps {
   /**
    * Max number of results
    *
-   * @default - Max possible results up to 1000
+   * @default 1000
    */
   readonly maxResults?: number;
 }
@@ -54,7 +56,7 @@ export class AthenaGetQueryResults extends sfn.TaskStateBase {
 
     const policyStatements = [
       new iam.PolicyStatement({
-        resources: ['*'], // Workgroup can not be specified in the request @see https://docs.aws.amazon.com/athena/latest/ug/workgroups-iam-policy.html
+        resources: ['*'], // Workgroup can not be specified in the request https://docs.aws.amazon.com/athena/latest/ug/workgroups-iam-policy.html
         actions: ['athena:getQueryResults'],
       }),
     ];
@@ -62,7 +64,7 @@ export class AthenaGetQueryResults extends sfn.TaskStateBase {
     policyStatements.push(
       new iam.PolicyStatement({
         actions: ['s3:GetObject'],
-        resources: ['*'], // To stream query results successfully the IAM principal must have permissions to the Amazon S3 GetObject action for the Athena query results location @see https://docs.amazonaws.cn/en_us/athena/latest/APIReference/API_GetQueryResults.html
+        resources: ['*'], // To stream query results successfully the IAM principal must have permissions to the Amazon S3 GetObject action for the Athena query results location https://docs.amazonaws.cn/en_us/athena/latest/APIReference/API_GetQueryResults.html
       }),
     );
 

@@ -1,6 +1,6 @@
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
-import { AthenaStartQueryExecution, AthenaGetQueryExecution } from '../../lib';
+import { AthenaStartQueryExecution, AthenaGetQueryExecution, EncryptionOption } from '../../lib';
 
 /*
  * Stack verification steps:
@@ -14,11 +14,11 @@ const stack = new cdk.Stack(app, 'aws-stepfunctions-tasks-athena-get-query-execu
 const startQueryExecutionJob = new AthenaStartQueryExecution(stack, 'Start Athena Query', {
   queryString: sfn.JsonPath.stringAt('$.queryString'),
   queryExecutionContext: {
-    database: 'mydatabase',
+    databaseName: 'mydatabase',
   },
   resultConfiguration: {
     encryptionConfiguration: {
-      encryptionOption: 'SSE_S3',
+      encryptionOption: EncryptionOption.S3_MANAGED,
     },
   },
 });

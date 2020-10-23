@@ -10,6 +10,8 @@ import { integrationResourceArn, validatePatternSupported } from '../private/tas
 export interface AthenaGetQueryExecutionProps extends sfn.TaskStateBaseProps {
   /**
    * Query that will be retrieved
+   *
+   * @example 'adfsaf-23trf23-f23rt23'
    */
   readonly queryExecutionId: string;
 }
@@ -40,7 +42,7 @@ export class AthenaGetQueryExecution extends sfn.TaskStateBase {
 
     this.taskPolicies = [
       new iam.PolicyStatement({
-        resources: ['*'], // Grant access to all workgroups as it can not be specified in the request @see https://docs.aws.amazon.com/athena/latest/ug/workgroups-iam-policy.html
+        resources: ['*'], // Grant access to all workgroups as it can not be specified in the request https://docs.aws.amazon.com/athena/latest/ug/workgroups-iam-policy.html
         actions: ['athena:getQueryExecution'],
       }),
     ];

@@ -19,53 +19,55 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
 
 ## Table Of Contents
 
-- [Task](#task)
-- [Paths](#paths)
-  - [InputPath](#inputpath)
-  - [OutputPath](#outputpath)
-  - [ResultPath](#resultpath)
-- [Parameters](#task-parameters-from-the-state-json)
-- [Evaluate Expression](#evaluate-expression)
-- [Athena](#athena)
-  - [StartQueryExecution](#startQueryExecution)
-  - [GetQueryExecution](#getQueryExecution)
-  - [GetQueryResults](#getQueryResults)
-  - [StopQueryExecution](#stopQueryExecution)
-- [Batch](#batch)
-  - [SubmitJob](#submitjob)
-- [CodeBuild](#codebuild)
-  - [StartBuild](#startbuild)
-- [DynamoDB](#dynamodb)
-  - [GetItem](#getitem)
-  - [PutItem](#putitem)
-  - [DeleteItem](#deleteitem)
-  - [UpdateItem](#updateitem)
-- [ECS](#ecs)
-  - [RunTask](#runtask)
-    - [EC2](#ec2)
-    - [Fargate](#fargate)
-- [EMR](#emr)
-  - [Create Cluster](#create-cluster)
-  - [Termination Protection](#termination-protection)
-  - [Terminate Cluster](#terminate-cluster)
-  - [Add Step](#add-step)
-  - [Cancel Step](#cancel-step)
-  - [Modify Instance Fleet](#modify-instance-fleet)
-  - [Modify Instance Group](#modify-instance-group)
-- [Glue](#glue)
-- [Lambda](#lambda)
-- [SageMaker](#sagemaker)
-  - [Create Training Job](#create-training-job)
-  - [Create Transform Job](#create-transform-job)
-  - [Create Endpoint](#create-endpoint)
-  - [Create Endpoint Config](#create-endpoint-config)
-  - [Create Model](#create-model)
-  - [Update Endpoint](#update-endpoint)
-- [SNS](#sns)
-- [Step Functions](#step-functions)
-  - [Start Execution](#start-execution)
-  - [Invoke Activity Worker](#invoke-activity)
-- [SQS](#sqs)
+- [Tasks for AWS Step Functions](#tasks-for-aws-step-functions)
+  - [Table Of Contents](#table-of-contents)
+  - [Task](#task)
+  - [Paths](#paths)
+    - [InputPath](#inputpath)
+    - [OutputPath](#outputpath)
+    - [ResultPath](#resultpath)
+  - [Task parameters from the state JSON](#task-parameters-from-the-state-json)
+  - [Evaluate Expression](#evaluate-expression)
+  - [Athena](#athena)
+    - [StartQueryExecution](#startqueryexecution)
+    - [GetQueryExecution](#getqueryexecution)
+    - [GetQueryResults](#getqueryresults)
+    - [StopQueryExecution](#stopqueryexecution)
+  - [Batch](#batch)
+    - [SubmitJob](#submitjob)
+  - [CodeBuild](#codebuild)
+    - [StartBuild](#startbuild)
+  - [DynamoDB](#dynamodb)
+    - [GetItem](#getitem)
+    - [PutItem](#putitem)
+    - [DeleteItem](#deleteitem)
+    - [UpdateItem](#updateitem)
+  - [ECS](#ecs)
+    - [RunTask](#runtask)
+      - [EC2](#ec2)
+      - [Fargate](#fargate)
+  - [EMR](#emr)
+    - [Create Cluster](#create-cluster)
+    - [Termination Protection](#termination-protection)
+    - [Terminate Cluster](#terminate-cluster)
+    - [Add Step](#add-step)
+    - [Cancel Step](#cancel-step)
+    - [Modify Instance Fleet](#modify-instance-fleet)
+    - [Modify Instance Group](#modify-instance-group)
+  - [Glue](#glue)
+  - [Lambda](#lambda)
+  - [SageMaker](#sagemaker)
+    - [Create Training Job](#create-training-job)
+    - [Create Transform Job](#create-transform-job)
+    - [Create Endpoint](#create-endpoint)
+    - [Create Endpoint Config](#create-endpoint-config)
+    - [Create Model](#create-model)
+    - [Update Endpoint](#update-endpoint)
+  - [SNS](#sns)
+  - [Step Functions](#step-functions)
+    - [Start Execution](#start-execution)
+    - [Invoke Activity](#invoke-activity)
+  - [SQS](#sqs)
 
 ## Task
 
@@ -213,7 +215,7 @@ supported is `lambda.Runtime.NODEJS_10_X`.
 
 ## Athena
 
-Step Functions supports [Athena](https://docs.aws.amazon.com/step-functions/latest/dg/connect-athena.html) through the service integration pattern. // BADYALS TODO UPDATE DOCS
+Step Functions supports [Athena](https://docs.aws.amazon.com/step-functions/latest/dg/connect-athena.html) through the service integration pattern.
 
 ### StartQueryExecution
 
@@ -226,12 +228,11 @@ import * as tasks from `@aws-cdk/aws-stepfunctions-tasks`;
 const startQueryExecutionJob = new tasks.AthenaStartQueryExecution(stack, 'Start Athena Query', {
   queryString: sfn.JsonPath.stringAt('$.queryString'),
   queryExecutionContext: {
-    catalog: ' ',
     database: 'mydatabase',
   },
   resultConfiguration: {
     encryptionConfiguration: {
-      encryptionOption: 'SSE_S3',
+      encryptionOption: tasks.EncryptionOption.S3_MANAGED,
     },
     outputLocation: sfn.JsonPath.stringAt('$.outputLocation'),
   },
