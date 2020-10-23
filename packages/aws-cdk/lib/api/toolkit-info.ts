@@ -3,7 +3,7 @@ import * as colors from 'colors/safe';
 import { debug } from '../logging';
 import { ISDK } from './aws-auth';
 import { BOOTSTRAP_VERSION_OUTPUT, BUCKET_DOMAIN_NAME_OUTPUT, BUCKET_NAME_OUTPUT } from './bootstrap';
-import { stabilizeStack } from './util/cloudformation';
+import { stabilizeStack, CloudFormationStack } from './util/cloudformation';
 
 export const DEFAULT_TOOLKIT_STACK_NAME = 'CDKToolkit';
 
@@ -35,26 +35,10 @@ export class ToolkitInfo {
       return undefined;
     }
 
-    return new ToolkitInfo({
-      stackName: stack.stackName,
-      sdk,
-      environment,
-      outputs: stack.outputs,
-      parameters: stack.parameters,
-    });
-
+    return new ToolkitInfo(stack, sdk);
   }
 
-  public readonly sdk: ISDK;
-
-  constructor(private readonly props: {
-    readonly stackName: string,
-    readonly sdk: ISDK,
-    readonly environment: cxapi.Environment,
-    readonly outputs: Record<string, string>,
-    readonly parameters?: Record<string, string>,
-  }) {
-    this.sdk = props.sdk;
+  constructor(public readonly stack: CloudFormationStack, private readonly sdk?: ISDK) {
   }
 
   public get bucketUrl() {
@@ -66,11 +50,11 @@ export class ToolkitInfo {
   }
 
   public get version() {
-    return parseInt(this.props.outputs[BOOTSTRAP_VERSION_OUTPUT] ?? '0', 10);
+    return parseInt(this.stack.outputs[BOOTSTRAP_VERSION_OUTPUT] ?? '0', 10);
   }
 
   public get parameters(): Record<string, string> {
-    return this.props.parameters ?? {};
+    return this.stack.parameters ?? {};
   }
 
   /**
@@ -79,7 +63,10 @@ export class ToolkitInfo {
    * @experimental
    */
   public async prepareEcrRepository(repositoryName: string): Promise<EcrRepositoryInfo> {
-    const ecr = await this.ecr();
+    if (!this.sdk) {
+      throw new Error('ToolkitInfo needs to have been initialized with an sdk to call prepareEcrRepository');
+    }
+    const ecr = this.sdk.ecr();
 
     // check if repo already exists
     try {
@@ -109,15 +96,11 @@ export class ToolkitInfo {
     return { repositoryUri };
   }
 
-  private async ecr() {
-    return this.sdk.ecr();
-  }
-
   private requireOutput(output: string): string {
-    if (!(output in this.props.outputs)) {
-      throw new Error(`The CDK toolkit stack (${this.props.stackName}) does not have an output named ${output}. Use 'cdk bootstrap' to correct this.`);
+    if (!(output in this.stack.outputs)) {
+      throw new Error(`The CDK toolkit stack (${this.stack.stackName}) does not have an output named ${output}. Use 'cdk bootstrap' to correct this.`);
     }
-    return this.props.outputs[output];
+    return this.stack.outputs[output];
   }
 }
 

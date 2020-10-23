@@ -1,5 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct, Lazy, Resource } from '@aws-cdk/core';
+import { Lazy, Resource, Aspects } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnBackupSelection } from './backup.generated';
 import { BackupableResourcesCollector } from './backupable-resources-collector';
 import { IBackupPlan } from './plan';
@@ -126,7 +127,7 @@ export class BackupSelection extends Resource implements iam.IGrantable {
     }
 
     if (resource.construct) {
-      resource.construct.node.applyAspect(this.backupableResourcesCollector);
+      Aspects.of(resource.construct).add(this.backupableResourcesCollector);
       // Cannot push `this.backupableResourcesCollector.resources` to
       // `this.resources` here because it has not been evaluated yet.
       // Will be concatenated to `this.resources` in a `Lazy.listValue`

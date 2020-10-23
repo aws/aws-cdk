@@ -64,7 +64,7 @@ export class Construct extends constructs.Construct implements IConstruct {
    */
   public readonly node: ConstructNode;
 
-  constructor(scope: Construct, id: string) {
+  constructor(scope: constructs.Construct, id: string) {
     super(scope, id, {
       nodeFactory: {
         createNode: (h: constructs.Construct, s: constructs.IConstruct, i: string) =>
@@ -383,7 +383,7 @@ export class ConstructNode {
    * Context is usually initialized at the root, but can be overridden at any point in the tree.
    *
    * @param key The context key
-   * @returns The context value or `undefined` if there is no context value for thie key.
+   * @returns The context value or `undefined` if there is no context value for the key.
    */
   public tryGetContext(key: string): any {
     if (Token.isUnresolved(key)) {
@@ -447,7 +447,10 @@ export class ConstructNode {
    * @deprecated This API is going to be removed in the next major version of
    * the AWS CDK. Please use `Aspects.of(scope).add()` instead.
    */
-  public applyAspect(aspect: IAspect): void { Aspects.of(this.host).add(aspect); }
+  public applyAspect(aspect: IAspect): void {
+    Annotations.of(this.host).addDeprecation('@aws-cdk/core.ConstructNode.applyAspect', 'Use "Aspects.of(construct).add(aspect)" instead');
+    Aspects.of(this.host).add(aspect);
+  }
 
   /**
    * All parent scopes of this construct.

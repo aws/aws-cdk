@@ -1,10 +1,10 @@
 import { countResources, expect, haveResource, haveResourceLike, isSuperObject, MatchStyle } from '@aws-cdk/assert';
-import { CfnOutput, Lazy, Stack, Tag } from '@aws-cdk/core';
+import { CfnOutput, Lazy, Stack, Tags } from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import {
-  AclCidr, AclTraffic, CfnSubnet, CfnVPC, DefaultInstanceTenancy, GenericLinuxImage, InstanceType, InterfaceVpcEndpoint,
-  InterfaceVpcEndpointService, NatProvider, NetworkAcl, NetworkAclEntry, Peer, Port, PrivateSubnet, PublicSubnet,
-  RouterType, Subnet, SubnetType, TrafficDirection, Vpc,
+  AclCidr, AclTraffic, BastionHostLinux, CfnSubnet, CfnVPC, SubnetFilter, DefaultInstanceTenancy, GenericLinuxImage,
+  InstanceType, InterfaceVpcEndpoint, InterfaceVpcEndpointService, NatProvider, NetworkAcl, NetworkAclEntry, Peer, Port, PrivateSubnet,
+  PublicSubnet, RouterType, Subnet, SubnetType, TrafficDirection, Vpc,
 } from '../lib';
 
 nodeunitShim({
@@ -1035,8 +1035,8 @@ nodeunitShim({
 
       const vpc = new Vpc(stack, 'TheVPC');
       // overwrite to set propagate
-      vpc.node.applyAspect(new Tag('BusinessUnit', 'Marketing', { includeResourceTypes: [CfnVPC.CFN_RESOURCE_TYPE_NAME] }));
-      vpc.node.applyAspect(new Tag('VpcType', 'Good'));
+      Tags.of(vpc).add('BusinessUnit', 'Marketing', { includeResourceTypes: [CfnVPC.CFN_RESOURCE_TYPE_NAME] });
+      Tags.of(vpc).add('VpcType', 'Good');
       expect(stack).to(haveResource('AWS::EC2::VPC', hasTags(toCfnTags(allTags))));
       const taggables = ['Subnet', 'InternetGateway', 'NatGateway', 'RouteTable'];
       const propTags = toCfnTags(tags);
@@ -1067,7 +1067,7 @@ nodeunitShim({
       const vpc = new Vpc(stack, 'TheVPC');
       const tag = { Key: 'Late', Value: 'Adder' };
       expect(stack).notTo(haveResource('AWS::EC2::VPC', hasTags([tag])));
-      vpc.node.applyAspect(new Tag(tag.Key, tag.Value));
+      Tags.of(vpc).add(tag.Key, tag.Value);
       expect(stack).to(haveResource('AWS::EC2::VPC', hasTags([tag])));
       test.done();
     },
@@ -1377,6 +1377,74 @@ nodeunitShim({
       test.doesNotThrow(() => vpc.selectSubnets({
         subnets: [
           Subnet.fromSubnetId(stack, 'Subnet', 'sub-1'),
+        ],
+      }));
+      test.done();
+    },
+
+    'can filter by single IP address'(test: Test) {
+      // GIVEN
+      const stack = getTestStack();
+
+      // IP space is split into 6 pieces, one public/one private per AZ
+      const vpc = new Vpc(stack, 'VPC', {
+        cidr: '10.0.0.0/16',
+        maxAzs: 3,
+      });
+
+      // WHEN
+      // We want to place this bastion host in the same subnet as this IPv4
+      // address.
+      new BastionHostLinux(stack, 'Bastion', {
+        vpc,
+        subnetSelection: {
+          subnetFilters: [SubnetFilter.containsIpAddresses(['10.0.160.0'])],
+        },
+      });
+
+      // THEN
+      // 10.0.160.0/19 is the third subnet, sequentially, if you split
+      // 10.0.0.0/16 into 6 pieces
+      expect(stack).to(haveResource('AWS::EC2::Instance', {
+        SubnetId: {
+          Ref: 'VPCPrivateSubnet3Subnet3EDCD457',
+        },
+      }));
+      test.done();
+    },
+
+    'can filter by multiple IP addresses'(test: Test) {
+      // GIVEN
+      const stack = getTestStack();
+
+      // IP space is split into 6 pieces, one public/one private per AZ
+      const vpc = new Vpc(stack, 'VPC', {
+        cidr: '10.0.0.0/16',
+        maxAzs: 3,
+      });
+
+      // WHEN
+      // We want to place this endpoint in the same subnets as these IPv4
+      // address.
+      // WHEN
+      new InterfaceVpcEndpoint(stack, 'VPC Endpoint', {
+        vpc,
+        service: new InterfaceVpcEndpointService('com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc', 443),
+        subnets: {
+          subnetFilters: [SubnetFilter.containsIpAddresses(['10.0.96.0', '10.0.160.0'])],
+        },
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::EC2::VPCEndpoint', {
+        ServiceName: 'com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc',
+        SubnetIds: [
+          {
+            Ref: 'VPCPrivateSubnet1Subnet8BCA10E0',
+          },
+          {
+            Ref: 'VPCPrivateSubnet3Subnet3EDCD457',
+          },
         ],
       }));
       test.done();

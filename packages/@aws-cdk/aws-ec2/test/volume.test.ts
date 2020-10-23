@@ -73,7 +73,7 @@ nodeunitShim({
     });
 
     // WHEN
-    cdk.Tag.add(volume, 'TagKey', 'TagValue');
+    cdk.Tags.of(volume).add('TagKey', 'TagValue');
 
     // THEN
     cdkExpect(stack).to(haveResource('AWS::EC2::Volume', {

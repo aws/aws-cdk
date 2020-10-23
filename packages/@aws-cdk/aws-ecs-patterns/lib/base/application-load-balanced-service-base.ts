@@ -9,6 +9,7 @@ import { IRole } from '@aws-cdk/aws-iam';
 import { ARecord, IHostedZone, RecordTarget } from '@aws-cdk/aws-route53';
 import { LoadBalancerTarget } from '@aws-cdk/aws-route53-targets';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 /**
  * The properties for the base ApplicationLoadBalancedEc2Service or ApplicationLoadBalancedFargateService service.
@@ -309,7 +310,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
   /**
    * Constructs a new instance of the ApplicationLoadBalancedServiceBase class.
    */
-  constructor(scope: cdk.Construct, id: string, props: ApplicationLoadBalancedServiceBaseProps = {}) {
+  constructor(scope: Construct, id: string, props: ApplicationLoadBalancedServiceBaseProps = {}) {
     super(scope, id);
 
     if (props.cluster && props.vpc) {
@@ -335,11 +336,12 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
     if (props.certificate !== undefined && props.protocol !== undefined && props.protocol !== ApplicationProtocol.HTTPS) {
       throw new Error('The HTTPS protocol must be used when a certificate is given');
     }
-    if (props.protocol !== ApplicationProtocol.HTTPS && props.redirectHTTP === true) {
-      throw new Error('The HTTPS protocol must be used when redirecting HTTP traffic');
-    }
     const protocol = props.protocol !== undefined ? props.protocol :
       (props.certificate ? ApplicationProtocol.HTTPS : ApplicationProtocol.HTTP);
+
+    if (protocol !== ApplicationProtocol.HTTPS && props.redirectHTTP === true) {
+      throw new Error('The HTTPS protocol must be used when redirecting HTTP traffic');
+    }
 
     const targetProps = {
       port: 80,

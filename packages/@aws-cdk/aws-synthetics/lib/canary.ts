@@ -3,6 +3,7 @@ import { Metric, MetricOptions } from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Code } from './code';
 import { Schedule } from './schedule';
 import { CfnCanary } from './synthetics.generated';
@@ -43,7 +44,7 @@ export class Test {
    * @param code The code that the canary should run
    * @param handler The handler of the canary
    */
-  private constructor(public readonly code: Code, public readonly handler: string){
+  private constructor(public readonly code: Code, public readonly handler: string) {
   }
 }
 
@@ -74,13 +75,25 @@ export class Runtime {
    * - Lambda runtime Node.js 10.x
    * - Puppeteer-core version 1.14.0
    * - The Chromium version that matches Puppeteer-core 1.14.0
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_Library.html#CloudWatch_Synthetics_runtimeversion-1.0
    */
   public static readonly SYNTHETICS_1_0 = new Runtime('syn-1.0');
 
   /**
+   * `syn-nodejs-2.0` includes the following:
+   * - Lambda runtime Node.js 10.x
+   * - Puppeteer-core version 3.3.0
+   * - Chromium version 81.0.4044.0
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_Library.html#CloudWatch_Synthetics_runtimeversion-2.0
+   */
+  public static readonly SYNTHETICS_NODEJS_2_0 = new Runtime('syn-nodejs-2.0');
+
+  /**
    * @param name The name of the runtime version
    */
-  public constructor(public readonly name: string){
+  public constructor(public readonly name: string) {
   }
 }
 
@@ -179,9 +192,11 @@ export interface CanaryProps {
   readonly canaryName?: string;
 
   /**
-   * Specify the runtime version to use for the canary. Currently, the only valid value is `Runtime.SYNTHETICS_1.0`.
+   * Specify the runtime version to use for the canary.
    *
-   * @default Runtime.SYNTHETICS_1_0
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_Library.html
+   *
+   * @default Runtime.SYNTHETICS_NODEJS_2_0
    */
   readonly runtime?: Runtime;
 
@@ -224,7 +239,7 @@ export class Canary extends cdk.Resource {
    */
   public readonly artifactsBucket: s3.IBucket;
 
-  public constructor(scope: cdk.Construct, id: string, props: CanaryProps) {
+  public constructor(scope: Construct, id: string, props: CanaryProps) {
     if (props.canaryName && !cdk.Token.isUnresolved(props.canaryName)) {
       validateName(props.canaryName);
     }
@@ -245,7 +260,7 @@ export class Canary extends cdk.Resource {
       artifactS3Location: this.artifactsBucket.s3UrlForObject(props.artifactsBucketLocation?.prefix),
       executionRoleArn: this.role.roleArn,
       startCanaryAfterCreation: props.startAfterCreation ?? true,
-      runtimeVersion: props.runtime?.name ?? Runtime.SYNTHETICS_1_0.name,
+      runtimeVersion: props.runtime?.name ?? Runtime.SYNTHETICS_NODEJS_2_0.name,
       name: this.physicalName,
       schedule: this.createSchedule(props),
       failureRetentionPeriod: props.failureRetentionPeriod?.toDays(),
@@ -376,7 +391,7 @@ export class Canary extends cdk.Resource {
    */
   private generateUniqueName(): string {
     const name = this.node.uniqueId.toLowerCase().replace(' ', '-');
-    if (name.length <= 21){
+    if (name.length <= 21) {
       return name;
     } else {
       return name.substring(0, 15) + nameHash(name);

@@ -594,7 +594,7 @@
           ]
         },
         "GenerateSecretString": {
-          "ExcludeCharacters": "\"@/\\",
+          "ExcludeCharacters": " %+~`#$&*()|[]{}:;<>?!'/@\"\\",
           "GenerateStringKey": "password",
           "PasswordLength": 30,
           "SecretStringTemplate": "{\"username\":\"admin\"}"
@@ -765,7 +765,7 @@
       "Properties": {
         "Location": {
           "ApplicationId": "arn:aws:serverlessrepo:us-east-1:297356227824:applications/SecretsManagerRDSMySQLRotationSingleUser",
-          "SemanticVersion": "1.1.3"
+          "SemanticVersion": "1.1.60"
         },
         "Parameters": {
           "endpoint": {
@@ -807,7 +807,8 @@
               "DatabaseRotationSingleUserSecurityGroupAC6E0E73",
               "GroupId"
             ]
-          }
+          },
+          "excludeCharacters": " %+~`#$&*()|[]{}:;<>?!'/@\"\\"
         }
       }
     }

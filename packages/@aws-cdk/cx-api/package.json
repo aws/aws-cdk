@@ -23,9 +23,14 @@
       },
       "python": {
         "distName": "aws-cdk.cx-api",
-        "module": "aws_cdk.cx_api"
+        "module": "aws_cdk.cx_api",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
-    }
+    },
+    "projectReferences": true
   },
   "scripts": {
     "build": "cdk-build",
@@ -45,20 +50,20 @@
     "organization": true
   },
   "dependencies": {
-    "semver": "^7.2.2",
-    "@aws-cdk/cloud-assembly-schema": "0.0.0"
+    "@aws-cdk/cloud-assembly-schema": "0.0.0",
+    "semver": "^7.3.2"
   },
   "peerDependencies": {
     "@aws-cdk/cloud-assembly-schema": "0.0.0"
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/jest": "^26.0.4",
-    "@types/mock-fs": "^4.10.0",
-    "@types/semver": "^7.3.3",
+    "@types/jest": "^26.0.15",
+    "@types/mock-fs": "^4.13.0",
+    "@types/semver": "^7.3.4",
     "cdk-build-tools": "0.0.0",
-    "jest": "^25.5.4",
-    "mock-fs": "^4.12.0",
+    "jest": "^26.6.0",
+    "mock-fs": "^4.13.0",
     "pkglint": "0.0.0"
   },
   "repository": {

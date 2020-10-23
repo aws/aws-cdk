@@ -18,6 +18,7 @@ export const AWS_CDK_METADATA = new Set([
   // 'us-gov-west-1',
   // 'us-iso-east-1',
   // 'us-isob-east-1',
+  // 'af-south-1',
   'ap-south-1',
   'ap-east-1',
   // 'ap-northeast-3',
@@ -33,6 +34,7 @@ export const AWS_CDK_METADATA = new Set([
   'eu-west-2',
   'eu-west-3',
   'eu-north-1',
+  // 'eu-south-1',
   'me-south-1',
   'sa-east-1',
 ]);
@@ -49,6 +51,7 @@ export const ROUTE_53_BUCKET_WEBSITE_ZONE_IDS: { [region: string]: string } = {
   'us-west-2': 'Z3BJ6K6RIION7M',
   'us-gov-east-1': 'Z2NIFVYYW2VKV1',
   'us-gov-west-1': 'Z31GFT0UA1I2HV',
+  'af-south-1': 'Z11KHD8FBVPUYU',
   'ap-east-1': 'ZNB98KWMFR0R6',
   'ap-south-1': 'Z11RGJOFQNVJUP',
   'ap-northeast-3': 'Z2YQB5RD63NC85',
@@ -62,6 +65,7 @@ export const ROUTE_53_BUCKET_WEBSITE_ZONE_IDS: { [region: string]: string } = {
   'eu-west-2': 'Z3GKZC51ZF0DB4',
   'eu-west-3': 'Z3R1K369G5AVDG',
   'eu-north-1': 'Z3BAZG2TWCNX0D',
+  'eu-south-1': 'Z3IXVV8C73GIO3',
   'sa-east-1': 'Z7KQH4QJS55SO',
   'me-south-1': 'Z1MPMWCPA7YB62',
 };
@@ -129,4 +133,29 @@ export const DLC_REPOSITORY_ACCOUNTS: { [region: string]: string } = {
 
   'cn-north-1': '727897471807',
   'cn-northwest-1': '727897471807',
+};
+
+// https://docs.aws.amazon.com/app-mesh/latest/userguide/envoy.html
+export const APPMESH_ECR_ACCOUNTS: { [region: string]: string } = {
+  'ap-northeast-1': '840364872350',
+  'ap-northeast-2': '840364872350',
+  'ap-south-1': '840364872350',
+  'ap-southeast-1': '840364872350',
+  'ap-southeast-2': '840364872350',
+  'ca-central-1': '840364872350',
+  'eu-central-1': '840364872350',
+  'eu-north-1': '840364872350',
+  'eu-south-1': '840364872350',
+  'eu-west-1': '840364872350',
+  'eu-west-2': '840364872350',
+  'eu-west-3': '840364872350',
+  'sa-east-1': '840364872350',
+  'us-east-1': '840364872350',
+  'us-east-2': '840364872350',
+  'us-west-1': '840364872350',
+  'us-west-2': '840364872350',
+
+  'me-south-1': '772975370895',
+  'ap-east-1': '856666278305',
+
 };

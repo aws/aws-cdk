@@ -1,6 +1,7 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
 import { Account, ISDK, SDK, SdkProvider, ToolkitInfo } from '../../lib';
+import { CloudFormationStack } from '../../lib/api/util/cloudformation';
 
 const FAKE_CREDENTIALS = new AWS.Credentials({ accessKeyId: 'ACCESS', secretAccessKey: 'SECRET', sessionToken: 'TOKEN ' });
 
@@ -183,17 +184,23 @@ class FakeAWSResponse<T> {
   }
 }
 
-export function mockToolkitInfo() {
-  return new ToolkitInfo({
-    sdk: new MockSdk(),
-    stackName: 'CDKToolkit',
-    environment: { name: 'env', account: '1234', region: 'abc' },
-    outputs: {
-      BucketName: 'BUCKET_NAME',
-      BucketDomainName: 'BUCKET_ENDPOINT',
-      BootstrapVersion: '1',
-    },
+export function mockBootstrapStack(sdk: ISDK | undefined, stack?: Partial<AWS.CloudFormation.Stack>) {
+  return CloudFormationStack.fromStaticInformation((sdk ?? new MockSdk()).cloudFormation(), 'CDKToolkit', {
+    CreationTime: new Date(),
+    StackName: 'CDKToolkit',
+    StackStatus: 'CREATE_COMPLETE',
+    Outputs: [
+      { OutputKey: 'BucketName', OutputValue: 'BUCKET_NAME' },
+      { OutputKey: 'BucketDomainName', OutputValue: 'BUCKET_ENDPOINT' },
+      { OutputKey: 'BootstrapVersion', OutputValue: '1' },
+    ],
+    ...stack,
   });
+}
+
+export function mockToolkitInfo(stack?: Partial<AWS.CloudFormation.Stack>) {
+  const sdk = new MockSdk();
+  return new ToolkitInfo(mockBootstrapStack(sdk, stack), sdk);
 }
 
 export function mockResolvedEnvironment(): cxapi.Environment {

@@ -91,7 +91,10 @@ const gitHubSource = codebuild.Source.gitHub({
   repo: 'aws-cdk',
   webhook: true, // optional, default: true if `webhookFilters` were provided, false otherwise
   webhookFilters: [
-    codebuild.FilterGroup.inEventOf(codebuild.EventAction.PUSH).andBranchIs('master'),
+    codebuild.FilterGroup
+      .inEventOf(codebuild.EventAction.PUSH)
+      .andBranchIs('master')
+      .andCommitMessageIs('the commit message'),
   ], // optional, by default all pushes and Pull Requests will trigger a build
 });
 ```
@@ -112,6 +115,18 @@ This source type can be used to build code from a BitBucket repository.
 const bbSource = codebuild.Source.bitBucket({
   owner: 'owner',
   repo: 'repo',
+});
+```
+
+### For all Git sources
+
+For all Git sources, you can fetch submodules while cloing git repo.
+
+```typescript
+const gitHubSource = codebuild.Source.gitHub({
+  owner: 'awslabs',
+  repo: 'aws-cdk',
+  fetchSubmodules: true,
 });
 ```
 

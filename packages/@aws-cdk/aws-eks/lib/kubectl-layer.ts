@@ -1,19 +1,33 @@
 import * as crypto from 'crypto';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { CfnResource, Construct, Stack, Token } from '@aws-cdk/core';
+import { CfnResource, Token, Stack, ResourceEnvironment } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 const KUBECTL_APP_ARN = 'arn:aws:serverlessrepo:us-east-1:903779448426:applications/lambda-layer-kubectl';
 const KUBECTL_APP_CN_ARN = 'arn:aws-cn:serverlessrepo:cn-north-1:487369736442:applications/lambda-layer-kubectl';
+const KUBECTL_APP_VERSION = '2.0.0';
 
-const KUBECTL_APP_VERSION = '1.13.7';
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
+/**
+ * Properties for KubectlLayer.
+ */
 export interface KubectlLayerProps {
   /**
    * The semantic version of the kubectl AWS Lambda Layer SAR app to use.
    *
-   * @default '1.13.7'
+   * @default '2.0.0'
    */
   readonly version?: string;
+
+  /**
+   * The Serverless Application Repository application ID which contains the kubectl layer.
+   * @default - The ARN for the `lambda-layer-kubectl` SAR app.
+   * @see https://github.com/aws-samples/aws-lambda-layer-kubectl
+   */
+  readonly applicationId?: string;
 }
 
 /**
@@ -21,26 +35,14 @@ export interface KubectlLayerProps {
  *
  * @see https://github.com/aws-samples/aws-lambda-layer-kubectl
  */
-export class KubectlLayer extends Construct implements lambda.ILayerVersion {
-
-  /**
-   * Gets or create a singleton instance of this construct.
-   */
-  public static getOrCreate(scope: Construct, props: KubectlLayerProps = {}): KubectlLayer {
-    const stack = Stack.of(scope);
-    const id = 'kubectl-layer-' + (props.version ? props.version : '8C2542BC-BF2B-4DFE-B765-E181FD30A9A0');
-    const exists = stack.node.tryFindChild(id) as KubectlLayer;
-    if (exists) {
-      return exists;
-    }
-
-    return new KubectlLayer(stack, id, props);
-  }
-
+export class KubectlLayer extends CoreConstruct implements lambda.ILayerVersion {
   /**
    * The ARN of the AWS Lambda layer version.
    */
   public readonly layerVersionArn: string;
+
+  public readonly stack: Stack;
+  public readonly env: ResourceEnvironment;
 
   /**
    * All runtimes are compatible.
@@ -50,15 +52,22 @@ export class KubectlLayer extends Construct implements lambda.ILayerVersion {
   constructor(scope: Construct, id: string, props: KubectlLayerProps = {}) {
     super(scope, id);
 
+    this.stack = Stack.of(this);
+    this.env = {
+      account: this.stack.account,
+      region: this.stack.region,
+    };
+
     const uniqueId = crypto.createHash('md5').update(this.node.path).digest('hex');
-    const version = props.version || KUBECTL_APP_VERSION;
+    const version = props.version ?? KUBECTL_APP_VERSION;
+    const applictionId = props.applicationId ?? (this.isChina() ? KUBECTL_APP_CN_ARN : KUBECTL_APP_ARN);
 
     this.stack.templateOptions.transforms = ['AWS::Serverless-2016-10-31']; // required for AWS::Serverless
     const resource = new CfnResource(this, 'Resource', {
       type: 'AWS::Serverless::Application',
       properties: {
         Location: {
-          ApplicationId: this.isChina() ? KUBECTL_APP_CN_ARN : KUBECTL_APP_ARN,
+          ApplicationId: applictionId,
           SemanticVersion: version,
         },
         Parameters: {
@@ -70,15 +79,11 @@ export class KubectlLayer extends Construct implements lambda.ILayerVersion {
     this.layerVersionArn = Token.asString(resource.getAtt('Outputs.LayerVersionArn'));
   }
 
-  public get stack() {
-    return Stack.of(this);
-  }
-
   public addPermission(_id: string, _permission: lambda.LayerVersionPermission): void {
     return;
   }
 
-  public isChina(): boolean {
+  private isChina(): boolean {
     const region = this.stack.region;
     return !Token.isUnresolved(region) && region.startsWith('cn-');
   }

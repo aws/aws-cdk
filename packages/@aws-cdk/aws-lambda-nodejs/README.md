@@ -32,6 +32,7 @@ This file is used as "entry" for [Parcel](https://parceljs.org/). This means tha
 automatically transpiled and bundled whether it's written in JavaScript or TypeScript.
 
 Alternatively, an entry file and handler can be specified:
+
 ```ts
 new lambda.NodejsFunction(this, 'MyFunction', {
   entry: '/path/to/my/file.ts', // accepts .js, .jsx, .ts and .tsx files
@@ -44,18 +45,18 @@ All other properties of `lambda.Function` are supported, see also the [AWS Lambd
 The `NodejsFunction` construct automatically [reuses existing connections](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/node-reusing-connections.html)
 when working with the AWS SDK for JavaScript. Set the `awsSdkConnectionReuse` prop to `false` to disable it.
 
-Use the `containerEnvironment` prop to pass environments variables to the Docker container
-running Parcel:
+Use the `parcelEnvironment` prop to define environments variables when Parcel runs:
 
 ```ts
 new lambda.NodejsFunction(this, 'my-handler', {
-  containerEnvironment: {
+  parcelEnvironment: {
     NODE_ENV: 'production',
   },
 });
 ```
 
 Use the `buildArgs` prop to pass build arguments when building the bundling image:
+
 ```ts
 new lambda.NodejsFunction(this, 'my-handler', {
   buildArgs: {
@@ -63,6 +64,38 @@ new lambda.NodejsFunction(this, 'my-handler', {
   },
 });
 ```
+
+Use the `bundlingDockerImage` prop to use a custom bundling image:
+
+```ts
+new lambda.NodejsFunction(this, 'my-handler', {
+  bundlingDockerImage: dk.BundlingDockerImage.fromAsset('/path/to/Dockerfile'),
+});
+```
+
+This image should have Parcel installed at `/`. If you plan to use `nodeModules` it
+should also have `npm` or `yarn` depending on the lock file you're using.
+
+Use the [default image provided by `@aws-cdk/aws-lambda-nodejs`](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-lambda-nodejs/parcel/Dockerfile)
+as a source of inspiration.
+
+### Project root
+The `NodejsFunction` tries to automatically determine your project root, that is
+the root of your node project. This is usually where the top level `node_modules`
+folder of your project is located. When bundling in a Docker container, the
+project root is used as the source (`/asset-input`) for the volume mounted in
+the container.
+
+The following folders are considered by walking up parent folders starting from
+the current working directory (order matters):
+* the folder containing your `.git` folder
+* the folder containing a `yarn.lock` file
+* the folder containing a `package-lock.json` file
+* the folder containing a `package.json` file
+
+Alternatively, you can specify the `projectRoot` prop manually. In this case you
+need to ensure that this path includes `entry` and any module/dependencies used
+by your function. Otherwise bundling will fail.
 
 ### Configuring Parcel
 The `NodejsFunction` construct exposes some [Parcel](https://parceljs.org/) options via properties: `minify`, `sourceMaps` and `cacheDir`.
@@ -104,21 +137,21 @@ same version will be used for installation. If a lock file is detected (`package
 `yarn.lock`) it will be used along with the right installer (`npm` or `yarn`).
 
 ### Local bundling
-If Parcel v2 is available it will be used to bundle your code in your environment. Otherwise,
+If Parcel v2.0.0-beta.1 is available it will be used to bundle your code in your environment. Otherwise,
 bundling will happen in a [Lambda compatible Docker container](https://hub.docker.com/r/amazon/aws-sam-cli-build-image-nodejs12.x).
 
 For macOS the recommendend approach is to install Parcel as Docker volume performance is really poor.
 
-Parcel v2 can be installed with:
+Parcel v2.0.0-beta.1 can be installed with:
 
 ```bash
-$ npm install --save-dev parcel@next
+$ npm install --save-dev --save-exact parcel@2.0.0-beta.1
 ```
 
 OR
 
 ```bash
-$ yarn add --dev @parcel@next
+$ yarn add --dev --exact parcel@2.0.0-beta.1
 ```
 
 To force bundling in a Docker container, set the `forceDockerBundling` prop to `true`. This

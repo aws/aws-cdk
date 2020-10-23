@@ -6,7 +6,7 @@ import * as fs from 'fs-extra';
 import { Mode, SdkProvider, ISDK } from '../aws-auth';
 import { deployStack, DeployStackResult } from '../deploy-stack';
 import { DEFAULT_TOOLKIT_STACK_NAME, ToolkitInfo } from '../toolkit-info';
-import { BOOTSTRAP_VERSION_OUTPUT, BootstrapEnvironmentOptions } from './bootstrap-props';
+import { BOOTSTRAP_VERSION_OUTPUT, BootstrapEnvironmentOptions, BOOTSTRAP_VERSION_RESOURCE } from './bootstrap-props';
 
 /**
  * A class to hold state around stack bootstrapping
@@ -50,6 +50,10 @@ export class BootstrapStack {
     return this.currentToolkitInfo?.parameters ?? {};
   }
 
+  public get terminationProtection() {
+    return this.currentToolkitInfo?.stack?.terminationProtection;
+  }
+
   public async partition(): Promise<string> {
     return (await this.sdk.currentAccount()).partition;
   }
@@ -60,7 +64,7 @@ export class BootstrapStack {
   public async update(
     template: any,
     parameters: Record<string, string | undefined>,
-    options: BootstrapEnvironmentOptions,
+    options: Omit<BootstrapEnvironmentOptions, 'parameters'>,
   ): Promise<DeployStackResult> {
 
     const newVersion = bootstrapVersionFromTemplate(template);
@@ -78,7 +82,7 @@ export class BootstrapStack {
       environment: cxapi.EnvironmentUtils.format(this.resolvedEnvironment.account, this.resolvedEnvironment.region),
       properties: {
         templateFile,
-        terminationProtection: options.parameters?.terminationProtection ?? false,
+        terminationProtection: options.terminationProtection ?? false,
       },
     });
 
@@ -91,13 +95,25 @@ export class BootstrapStack {
       sdkProvider: this.sdkProvider,
       force: options.force,
       roleArn: options.roleArn,
-      tags: options.parameters?.tags,
-      execute: options?.parameters?.execute,
+      tags: options.tags,
+      execute: options.execute,
       parameters,
+      usePreviousParameters: true,
     });
   }
 }
 
-function bootstrapVersionFromTemplate(template: any): number {
-  return parseInt(template.Outputs?.[BOOTSTRAP_VERSION_OUTPUT]?.Value ?? '0', 10);
+export function bootstrapVersionFromTemplate(template: any): number {
+  const versionSources = [
+    template.Outputs?.[BOOTSTRAP_VERSION_OUTPUT]?.Value,
+    template.Resources?.[BOOTSTRAP_VERSION_RESOURCE]?.Properties?.Value,
+  ];
+
+  for (const vs of versionSources) {
+    if (typeof vs === 'number') { return vs; }
+    if (typeof vs === 'string' && !isNaN(parseInt(vs, 10))) {
+      return parseInt(vs, 10);
+    }
+  }
+  return 0;
 }

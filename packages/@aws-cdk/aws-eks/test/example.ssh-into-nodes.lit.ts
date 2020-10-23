@@ -10,11 +10,11 @@ class EksClusterStack extends cdk.Stack {
 
     const cluster = new eks.Cluster(this, 'EKSCluster', {
       vpc,
-      version: eks.KubernetesVersion.V1_16,
+      version: eks.KubernetesVersion.V1_18,
     });
 
     /// !show
-    const asg = cluster.addCapacity('Nodes', {
+    const asg = cluster.addAutoScalingGroupCapacity('Nodes', {
       instanceType: new ec2.InstanceType('t2.medium'),
       vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
       keyName: 'my-key-name',

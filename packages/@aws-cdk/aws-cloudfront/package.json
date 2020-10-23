@@ -1,7 +1,7 @@
 {
   "name": "@aws-cdk/aws-cloudfront",
   "version": "0.0.0",
-  "description": "CDK Constructs for AWS CloudFront",
+  "description": "The CDK Construct Library for AWS::CloudFront",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
@@ -23,9 +23,14 @@
       },
       "python": {
         "distName": "aws-cdk.aws-cloudfront",
-        "module": "aws_cdk.aws_cloudfront"
+        "module": "aws_cdk.aws_cloudfront",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",
@@ -44,11 +49,15 @@
     "cfn2ts": "cfn2ts",
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test",
-    "compat": "cdk-compat"
+    "compat": "cdk-compat",
+    "gen": "cfn2ts"
   },
   "cdk-build": {
     "cloudformation": "AWS::CloudFront",
-    "jest": true
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "keywords": [
     "aws",
@@ -64,7 +73,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
-    "aws-sdk": "^2.736.0",
+    "aws-sdk": "^2.776.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
@@ -78,7 +87,7 @@
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.0.4"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -88,16 +97,17 @@
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.0.4"
   },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "stability": "experimental",
+  "maturity": "experimental",
   "features": [
     {
       "name": "Higher level constructs for Distribution",
-      "stability": "Experimental"
+      "stability": "Developer Preview"
     },
     {
       "name": "Higher level constructs for CloudFrontWebDistribution",
@@ -138,10 +148,17 @@
       "docs-public-apis:@aws-cdk/aws-cloudfront.SecurityPolicyProtocol.TLS_V1_2016",
       "docs-public-apis:@aws-cdk/aws-cloudfront.SecurityPolicyProtocol.TLS_V1_1_2016",
       "docs-public-apis:@aws-cdk/aws-cloudfront.SecurityPolicyProtocol.TLS_V1_2_2018",
+      "docs-public-apis:@aws-cdk/aws-cloudfront.SecurityPolicyProtocol.TLS_V1_2_2019",
       "docs-public-apis:@aws-cdk/aws-cloudfront.ViewerCertificate.aliases",
       "docs-public-apis:@aws-cdk/aws-cloudfront.ViewerCertificate.props",
       "docs-public-apis:@aws-cdk/aws-cloudfront.ViewerCertificateOptions",
-      "props-default-doc:@aws-cdk/aws-cloudfront.ViewerCertificateOptions.aliases"
+      "props-default-doc:@aws-cdk/aws-cloudfront.ViewerCertificateOptions.aliases",
+      "construct-interface-extends-iconstruct:@aws-cdk/aws-cloudfront.ICachePolicy",
+      "resource-interface-extends-resource:@aws-cdk/aws-cloudfront.ICachePolicy",
+      "resource-attribute:@aws-cdk/aws-cloudfront.CachePolicy.cachePolicyLastModifiedTime",
+      "construct-interface-extends-iconstruct:@aws-cdk/aws-cloudfront.IOriginRequestPolicy",
+      "resource-interface-extends-resource:@aws-cdk/aws-cloudfront.IOriginRequestPolicy",
+      "resource-attribute:@aws-cdk/aws-cloudfront.OriginRequestPolicy.originRequestPolicyLastModifiedTime"
     ]
   },
   "awscdkio": {

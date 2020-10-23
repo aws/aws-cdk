@@ -52,7 +52,7 @@ nodeunitShim({
 
     test.equals(rendered, '<powershell>trap {\n' +
         '$success=($PSItem.Exception.Message -eq "Success")\n' +
-        'cfn-signal --stack Default --resource RESOURCE1989552F --region ${Token[AWS::Region.4]} --success ($success.ToString().ToLower())\n' +
+        'cfn-signal --stack Default --resource RESOURCE1989552F --region ${Token[AWS.Region.4]} --success ($success.ToString().ToLower())\n' +
         'break\n' +
         '}\n' +
         'command1\n' +
@@ -102,7 +102,7 @@ nodeunitShim({
 
     // THEN
     const rendered = userData.render();
-    test.equals(rendered, '<powershell>&\'C:\\test\\filename.bat\' undefined\n' +
+    test.equals(rendered, '<powershell>&\'C:\\test\\filename.bat\'\n' +
       'if (!$?) { Write-Error \'Failed to execute the file "C:\\test\\filename.bat"\' -ErrorAction Stop }\n' +
       '&\'C:\\test\\filename2.bat\' arg1 arg2 -arg $variable\n' +
       'if (!$?) { Write-Error \'Failed to execute the file "C:\\test\\filename2.bat"\' -ErrorAction Stop }</powershell>',
@@ -157,7 +157,7 @@ nodeunitShim({
     test.equals(rendered, '#!/bin/bash\n' +
         'function exitTrap(){\n' +
         'exitCode=$?\n' +
-        '/opt/aws/bin/cfn-signal --stack Default --resource RESOURCE1989552F --region ${Token[AWS::Region.4]} -e $exitCode || echo \'Failed to send Cloudformation Signal\'\n' +
+        '/opt/aws/bin/cfn-signal --stack Default --resource RESOURCE1989552F --region ${Token[AWS.Region.4]} -e $exitCode || echo \'Failed to send Cloudformation Signal\'\n' +
         '}\n' +
         'trap exitTrap EXIT\n' +
         'command1');
@@ -209,7 +209,7 @@ nodeunitShim({
     test.equals(rendered, '#!/bin/bash\n' +
       'set -e\n' +
       'chmod +x \'/tmp/filename.sh\'\n' +
-      '\'/tmp/filename.sh\' undefined\n' +
+      '\'/tmp/filename.sh\'\n' +
       'set -e\n' +
       'chmod +x \'/test/filename2.sh\'\n' +
       '\'/test/filename2.sh\' arg1 arg2 -arg $variable',

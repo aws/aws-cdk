@@ -1,6 +1,7 @@
 import { IKey } from '@aws-cdk/aws-kms';
 import { ISecret, Secret } from '@aws-cdk/aws-secretsmanager';
-import { Aws, Construct } from '@aws-cdk/core';
+import { Aws } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 /**
  * Construction properties for a DatabaseSecret.
