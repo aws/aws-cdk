@@ -4,4 +4,3 @@ export * from './integration';
 export * from './integrations';
 export * from './stage';
 export * from './api-mapping';
-export * from './vpc-link';
