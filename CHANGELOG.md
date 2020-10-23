@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.70.0](https://github.com/aws/aws-cdk/compare/v1.69.0...v1.70.0) (2020-10-23)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **cognito:** the `UserPoolIdentityProviderBase` abstract class has been removed. Use the `UserPoolIdentityProvider*` classes directly.
+
+### Features
+
+* **apigatewayv2:** vpc link and private integrations ([#10531](https://github.com/aws/aws-cdk/issues/10531)) ([0537598](https://github.com/aws/aws-cdk/commit/0537598a065c74c713d1ec58c96f09f0d66b12ca)), closes [/docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigatewayv2-integration.html#cfn-apigatewayv2](https://github.com/aws//docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigatewayv2-integration.html/issues/cfn-apigatewayv2) [#10119](https://github.com/aws/aws-cdk/issues/10119)
+* **aws-codebuild:** add COMMIT_MESSAGE support for webhook FilterGroup ([#11011](https://github.com/aws/aws-cdk/issues/11011)) ([fd8bce3](https://github.com/aws/aws-cdk/commit/fd8bce3d1409fd66877ca7530f8e74d9d78e0b8a)), closes [#9033](https://github.com/aws/aws-cdk/issues/9033)
+* **cloudfront:** brotli compression support ([#10950](https://github.com/aws/aws-cdk/issues/10950)) ([dd81e77](https://github.com/aws/aws-cdk/commit/dd81e77e6ad606c2e76e01de1c7d38b762357d26)), closes [#10947](https://github.com/aws/aws-cdk/issues/10947)
+* **cloudfront-origins:** move cloudfront-origins to Developer Preview ([#11005](https://github.com/aws/aws-cdk/issues/11005)) ([6956aad](https://github.com/aws/aws-cdk/commit/6956aadd6043499d8d55ca2d1a8ee65a91ac1bc6)), closes [#10831](https://github.com/aws/aws-cdk/issues/10831)
+* **cognito:** Cognito User Pools is now in Generally Available (stable) ([#11003](https://github.com/aws/aws-cdk/issues/11003)) ([7435db8](https://github.com/aws/aws-cdk/commit/7435db853636628a60c8aa465481fc01136aa4a1))
+* **events-targets:** add support for Kinesis Firehose as a target ([#10400](https://github.com/aws/aws-cdk/issues/10400)) ([b93cda6](https://github.com/aws/aws-cdk/commit/b93cda6f528e0e1d98b88ad8407620b8ef472125)), closes [#10349](https://github.com/aws/aws-cdk/issues/10349)
+* **lambda-event-sources:** disable source mapping ([#10927](https://github.com/aws/aws-cdk/issues/10927)) ([f4f53a6](https://github.com/aws/aws-cdk/commit/f4f53a65e55d895338aecf8cb63637c6d265b929)), closes [#5750](https://github.com/aws/aws-cdk/issues/5750)
+
+
+### Bug Fixes
+
+* **cloudfront:** logging bucket uses global domain name ([#10945](https://github.com/aws/aws-cdk/issues/10945)) ([aa3f3fd](https://github.com/aws/aws-cdk/commit/aa3f3fdc92545157205e533e124412d0db08c575)), closes [#10570](https://github.com/aws/aws-cdk/issues/10570) [#10570](https://github.com/aws/aws-cdk/issues/10570) [#10923](https://github.com/aws/aws-cdk/issues/10923)
+* **lambda-nodejs:** docker build is not working ([#10885](https://github.com/aws/aws-cdk/issues/10885)) ([191d7b7](https://github.com/aws/aws-cdk/commit/191d7b7706282812878e1aeed79d8f4b39d1f797)), closes [#10881](https://github.com/aws/aws-cdk/issues/10881) [#6](https://github.com/aws/aws-cdk/issues/6) [#8358](https://github.com/aws/aws-cdk/issues/8358) [/github.com/yarnpkg/yarn/issues/8358#issuecomment-700011305](https://github.com/aws//github.com/yarnpkg/yarn/issues/8358/issues/issuecomment-700011305) [/github.com/yarnpkg/yarn/issues/8358#issuecomment-700018785](https://github.com/aws//github.com/yarnpkg/yarn/issues/8358/issues/issuecomment-700018785)
+* **ses-actions:** invalid action in policy statement created when using SES S3 action ([#11061](https://github.com/aws/aws-cdk/issues/11061)) ([5dc1d96](https://github.com/aws/aws-cdk/commit/5dc1d96e77ec2359a77aed7266c4e7769d04e084))
+
+
+* **cognito:** reorganize identity providers structure so that UserPoolIdentityProviderBase is not exported ([#10925](https://github.com/aws/aws-cdk/issues/10925)) ([60f493c](https://github.com/aws/aws-cdk/commit/60f493c9a606162816c14149ea578341ea458a05))
+
 ## [1.69.0](https://github.com/aws/aws-cdk/compare/v1.68.0...v1.69.0) (2020-10-19)
 
 
