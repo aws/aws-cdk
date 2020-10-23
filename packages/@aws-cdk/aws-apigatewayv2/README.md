@@ -24,8 +24,6 @@
   - [Publishing HTTP APIs](#publishing-http-apis)
   - [Custom Domain](#custom-domain)
   - [Metrics](#metrics)
-  - [VPC Link](#vpc-link)
-  - [Private Integration](#private-integration)
 
 ## Introduction
 
@@ -225,28 +223,3 @@ const stage = new HttpStage(stack, 'Stage', {
 });
 const clientErrorMetric = stage.metricClientError();
 ```
-
-### VPC Link
-
-Private integrations let HTTP APIs connect with AWS resources that are placed behind a VPC. These are usually Application
-Load Balancers, Network Load Balancers or a Cloud Map service. The `VpcLink` construct enables this integration.
-The following code creates a `VpcLink` to a private VPC.
-
-```ts
-const vpc = new ec2.Vpc(stack, 'VPC');
-const vpcLink = new VpcLink(stack, 'VpcLink', { vpc });
-```
-
-Any existing `VpcLink` resource can be imported into the CDK app via the `VpcLink.fromVpcLinkId()`.
-
-```ts
-const awesomeLink = VpcLink.fromVpcLinkId(stack, 'awesome-vpc-link', 'us-east-1_oiuR12Abd');
-```
-
-### Private Integration
-
-Private integrations enable integrating an HTTP API route with private resources in a VPC, such as Application Load Balancers or
-Amazon ECS container-based applications.  Using private integrations, resources in a VPC can be exposed for access by
-clients outside of the VPC.
-
-These integrations can be found in the [APIGatewayV2-Integrations](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-apigatewayv2-integrations-readme.html) constructs library.
