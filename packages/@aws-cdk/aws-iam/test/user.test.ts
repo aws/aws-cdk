@@ -1,6 +1,6 @@
 import '@aws-cdk/assert/jest';
 import { App, SecretValue, Stack } from '@aws-cdk/core';
-import { ManagedPolicy, User } from '../lib';
+import { ManagedPolicy, Policy, PolicyStatement, User } from '../lib';
 
 describe('IAM user', () => {
   test('default user', () => {
@@ -93,4 +93,47 @@ describe('IAM user', () => {
       'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':user/MyUserName']],
     });
   });
+
+  test("ploicy cannot be added to an imported user ", () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const user = User.fromUserName(stack, 'import', 'MyUserName');
+
+    // THEN
+    expect(stack.resolve(user.addToPolicy(new PolicyStatement()))).toThrowError(
+      new Error('Cannot add imported User to policy')
+    );
+  })
+
+  test("ploicy cannot be added to an imported user ", () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const user = User.fromUserName(stack, 'import', 'MyUserName');
+
+    // THEN
+    expect(stack.resolve(user.addToPrincipalPolicy(
+      new PolicyStatement()
+    ))).toThrowError(
+      new Error('Cannot add imported User to principal policy')
+    );
+  })
+
+  test("inline ploicy cannot be added to an imported user ", () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const user = User.fromUserName(stack, 'import', 'MyUserName');
+
+    // THEN
+    expect(stack.resolve(user.attachInlinePolicy(
+      new Policy(stack, 'testPolicyxs')
+    ))).toThrowError(
+      new Error('Cannot add inline policy to imported User')
+    );
+  })
 });

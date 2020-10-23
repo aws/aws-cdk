@@ -145,14 +145,13 @@ export class User extends Resource implements IIdentity, IUser {
       public readonly userArn: string = arn;
       public readonly assumeRoleAction: string = 'sts:AssumeRole';
       public readonly policyFragment: PrincipalPolicyFragment = new ArnPrincipal(arn).policyFragment;
-      private defaultPolicy?: Policy;
 
-      public addToPolicy(statement: PolicyStatement): boolean {
-        throw new Error('Cannot add policy to imported User');
+      public addToPolicy(_statement: PolicyStatement): boolean {
+        throw new Error('Cannot add imported User to policy');
       }
 
-      public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
-        throw new Error('Cannot add policy to imported User');
+      public addToPrincipalPolicy(_statement: PolicyStatement): AddToPrincipalPolicyResult {
+        throw new Error('Cannot add imported User to principal policy');
       }
 
       public addToGroup(_group: IGroup): void {
