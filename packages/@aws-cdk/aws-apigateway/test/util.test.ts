@@ -122,7 +122,7 @@ describe('util', () => {
       });
     });
 
-    test('"default" any is string', () => {
+    test('"default" for enum', () => {
       const schema: JsonSchema = {
         type: JsonSchemaType.STRING,
         enum: ['green', 'blue', 'red'],
@@ -135,22 +135,6 @@ describe('util', () => {
         type: 'string',
         enum: ['green', 'blue', 'red'],
         default: 'blue',
-      });
-    });
-
-    test('"default" any is number', () => {
-      const schema: JsonSchema = {
-        type: JsonSchemaType.INTEGER,
-        enum: [1, 2, 3],
-        default: 2,
-      };
-
-      const actual = JsonSchemaMapper.toCfnJsonSchema(schema);
-      expect(actual).toEqual({
-        $schema: 'http://json-schema.org/draft-04/schema#',
-        type: 'integer',
-        enum: [1, 2, 3],
-        default: 2,
       });
     });
   });
