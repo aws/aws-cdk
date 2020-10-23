@@ -56,13 +56,15 @@ the access point. You may specify custom path with the `path` property. If `path
 created with the settings defined in the `creationInfo`. See
 [Creating Access Points](https://docs.aws.amazon.com/efs/latest/ug/create-access-point.html) for more details.
 
-Use `fromAccessPointAttributes()` to import an existing `IAccessPoint`:
+Any access point that has been created outside the stack can be imported into your CDK app.
+
+Use the `fromAccessPointAttributes()` API to import an existing access point.
 
 ```ts
 efs.AccessPoint.fromAccessPointAttributes(this, 'ap', {
-  accessPointId: props.accessPointId, // or use accessPointArn instead
+  accessPointArn: 'fsap-1293c4d9832fo0912',
   fileSystem: efs.FileSystem.fromFileSystemAttributes(this, 'efs', {
-    fileSystemId: props.fileSystemId,
+    fileSystemId: 'fs-099d3e2f',
     securityGroup: SecurityGroup.fromSecurityGroupId(this, 'sg', props.securityGroupId),
   }),
 });

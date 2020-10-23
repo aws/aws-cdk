@@ -21,16 +21,13 @@ export interface IAccessPoint extends IResource {
    */
   readonly accessPointArn: string;
 
-  /**
-   * The efs filesystem
-   *
-   */
+  /** The efs filesystem */
   readonly fileSystem: IFileSystem;
 }
 
 /**
  * Permissions as POSIX ACL
- */
+*/
 export interface Acl {
   /**
    * Specifies the POSIX user ID to apply to the RootDirectory. Accepts values from 0 to 2^32 (4294967295).
@@ -131,14 +128,14 @@ export interface AccessPointAttributes {
    * The ARN of the AccessPoint
    * One of this, of {@link accessPointId} is required
    *
-   * @default - no access point arn
+   * @default - no access point ARN
    */
   readonly accessPointArn?: string;
 
   /**
-   * The efs filesystem
+   * The EFS filesystem
    *
-   * @default - no efs filesystem
+   * @default - no EFS filesystem
    */
   readonly fileSystem: IFileSystem;
 }
