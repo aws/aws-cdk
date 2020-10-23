@@ -363,7 +363,7 @@ export class StateMachine extends StateMachineBase {
   }
 
   /**
-   * Metric for the number of executions that succeeded
+   * Metric for the number of executions that timed out
    *
    * @default sum over 5 minutes
    */

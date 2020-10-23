@@ -105,6 +105,20 @@ export interface CdkPipelineProps {
    * @default - All private subnets.
    */
   readonly subnetSelection?: ec2.SubnetSelection;
+
+  /**
+   * Whether the pipeline will update itself
+   *
+   * This needs to be set to `true` to allow the pipeline to reconfigure
+   * itself when assets or stages are being added to it, and `true` is the
+   * recommended setting.
+   *
+   * You can temporarily set this to `false` while you are iterating
+   * on the pipeline itself and prefer to deploy changes using `cdk deploy`.
+   *
+   * @default true
+   */
+  readonly selfMutating?: boolean;
 }
 
 /**
@@ -178,15 +192,17 @@ export class CdkPipeline extends CoreConstruct {
       });
     }
 
-    this._pipeline.addStage({
-      stageName: 'UpdatePipeline',
-      actions: [new UpdatePipelineAction(this, 'UpdatePipeline', {
-        cloudAssemblyInput: this._cloudAssemblyArtifact,
-        pipelineStackName: pipelineStack.stackName,
-        cdkCliVersion: props.cdkCliVersion,
-        projectName: maybeSuffix(props.pipelineName, '-selfupdate'),
-      })],
-    });
+    if (props.selfMutating ?? true) {
+      this._pipeline.addStage({
+        stageName: 'UpdatePipeline',
+        actions: [new UpdatePipelineAction(this, 'UpdatePipeline', {
+          cloudAssemblyInput: this._cloudAssemblyArtifact,
+          pipelineStackName: pipelineStack.stackName,
+          cdkCliVersion: props.cdkCliVersion,
+          projectName: maybeSuffix(props.pipelineName, '-selfupdate'),
+        })],
+      });
+    }
 
     this._assets = new AssetPublishing(this, 'Assets', {
       cloudAssemblyInput: this._cloudAssemblyArtifact,
@@ -475,6 +491,7 @@ class AssetPublishing extends CoreConstruct {
         'codebuild:CreateReport',
         'codebuild:UpdateReport',
         'codebuild:BatchPutTestCases',
+        'codebuild:BatchPutCodeCoverages',
       ],
       resources: [codeBuildArn],
     }));

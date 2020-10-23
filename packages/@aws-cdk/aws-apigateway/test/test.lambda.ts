@@ -102,6 +102,44 @@ export = {
     test.done();
   },
 
+  '"allowTestInvoke" set to true allows calling the API from the test UI'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'Handler', {
+      runtime: lambda.Runtime.NODEJS_10_X,
+      code: lambda.Code.fromInline('foo'),
+      handler: 'index.handler',
+    });
+
+    const api = new apigateway.RestApi(stack, 'api');
+
+    // WHEN
+    const integ = new apigateway.LambdaIntegration(fn, { allowTestInvoke: true });
+    api.root.addMethod('GET', integ);
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::Permission', {
+      SourceArn: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':execute-api:',
+            { Ref: 'AWS::Region' },
+            ':',
+            { Ref: 'AWS::AccountId' },
+            ':',
+            { Ref: 'apiC8550315' },
+            '/test-invoke-stage/GET/',
+          ],
+        ],
+      },
+    }));
+
+    test.done();
+  },
+
   '"proxy" can be used to disable proxy mode'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();

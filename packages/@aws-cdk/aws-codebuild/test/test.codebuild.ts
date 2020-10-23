@@ -105,6 +105,7 @@ export = {
                       'codebuild:CreateReport',
                       'codebuild:UpdateReport',
                       'codebuild:BatchPutTestCases',
+                      'codebuild:BatchPutCodeCoverages',
                     ],
                     'Effect': 'Allow',
                     'Resource': {
@@ -277,6 +278,7 @@ export = {
                       'codebuild:CreateReport',
                       'codebuild:UpdateReport',
                       'codebuild:BatchPutTestCases',
+                      'codebuild:BatchPutCodeCoverages',
                     ],
                     'Effect': 'Allow',
                     'Resource': {
@@ -475,6 +477,7 @@ export = {
                       'codebuild:CreateReport',
                       'codebuild:UpdateReport',
                       'codebuild:BatchPutTestCases',
+                      'codebuild:BatchPutCodeCoverages',
                     ],
                     'Effect': 'Allow',
                     'Resource': {

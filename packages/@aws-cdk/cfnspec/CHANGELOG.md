@@ -1,3 +1,35 @@
+# CloudFormation Resource Specification v18.7.0
+
+## New Resource Types
+
+* AWS::CodeArtifact::Domain
+* AWS::CodeArtifact::Repository
+* AWS::Timestream::Database
+* AWS::Timestream::Table
+
+## Attribute Changes
+
+* AWS::ImageBuilder::Component Name (__deleted__)
+* AWS::ImageBuilder::DistributionConfiguration Name (__deleted__)
+* AWS::ImageBuilder::ImagePipeline Name (__deleted__)
+* AWS::ImageBuilder::ImageRecipe Name (__deleted__)
+* AWS::ImageBuilder::InfrastructureConfiguration Name (__deleted__)
+
+## Property Changes
+
+* AWS::ImageBuilder::Component Name (__added__)
+* AWS::ImageBuilder::DistributionConfiguration Name (__added__)
+* AWS::ImageBuilder::ImagePipeline Name (__added__)
+* AWS::ImageBuilder::ImageRecipe Name (__added__)
+* AWS::ImageBuilder::InfrastructureConfiguration Name (__added__)
+* AWS::KMS::Key KeyUsage.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+
+## Property Type Changes
+
+
+
 # CloudFormation Resource Specification v18.6.0
 
 ## New Resource Types

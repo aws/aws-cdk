@@ -1,3 +1,4 @@
+import { Metric, MetricOptions } from '@aws-cdk/aws-cloudwatch';
 import { Duration, IResource, Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnApi, CfnApiProps } from '../apigatewayv2.generated';
@@ -20,6 +21,58 @@ export interface IHttpApi extends IResource {
    * The default stage
    */
   readonly defaultStage?: HttpStage;
+
+  /**
+   * Return the given named metric for this HTTP Api Gateway
+   *
+   * @default - average over 5 minutes
+   */
+  metric(metricName: string, props?: MetricOptions): Metric;
+
+  /**
+   * Metric for the number of client-side errors captured in a given period.
+   *
+   * @default - sum over 5 minutes
+   */
+  metricClientError(props?: MetricOptions): Metric;
+
+  /**
+   * Metric for the number of server-side errors captured in a given period.
+   *
+   * @default - sum over 5 minutes
+   */
+  metricServerError(props?: MetricOptions): Metric;
+
+  /**
+   * Metric for the amount of data processed in bytes.
+   *
+   * @default - sum over 5 minutes
+   */
+  metricDataProcessed(props?: MetricOptions): Metric;
+
+  /**
+   * Metric for the total number API requests in a given period.
+   *
+   * @default - SampleCount over 5 minutes
+   */
+  metricCount(props?: MetricOptions): Metric;
+
+  /**
+   * Metric for the time between when API Gateway relays a request to the backend
+   * and when it receives a response from the backend.
+   *
+   * @default - no statistic
+   */
+  metricIntegrationLatency(props?: MetricOptions): Metric;
+
+  /**
+   * The time between when API Gateway receives a request from a client
+   * and when it returns a response to the client.
+   * The latency includes the integration latency and other API Gateway overhead.
+   *
+   * @default - no statistic
+   */
+  metricLatency(props?: MetricOptions): Metric;
 }
 
 /**
@@ -31,6 +84,12 @@ export interface HttpApiProps {
    * @default - id of the HttpApi construct.
    */
   readonly apiName?: string;
+
+  /**
+   * The description of the API.
+   * @default - none
+   */
+  readonly description?: string;
 
   /**
    * An integration that will be configured on the catch-all route ($default).
@@ -116,22 +175,66 @@ export interface AddRoutesOptions extends BatchHttpRouteOptions {
   readonly methods?: HttpMethod[];
 }
 
+abstract class HttpApiBase extends Resource implements IHttpApi { // note that this is not exported
+
+  public abstract readonly httpApiId: string;
+
+  public metric(metricName: string, props?: MetricOptions): Metric {
+    return new Metric({
+      namespace: 'AWS/ApiGateway',
+      metricName,
+      dimensions: { ApiId: this.httpApiId },
+      ...props,
+    }).attachTo(this);
+  }
+
+  public metricClientError(props?: MetricOptions): Metric {
+    return this.metric('4XXError', { statistic: 'Sum', ...props });
+  }
+
+  public metricServerError(props?: MetricOptions): Metric {
+    return this.metric('5XXError', { statistic: 'Sum', ...props });
+  }
+
+  public metricDataProcessed(props?: MetricOptions): Metric {
+    return this.metric('DataProcessed', { statistic: 'Sum', ...props });
+  }
+
+  public metricCount(props?: MetricOptions): Metric {
+    return this.metric('Count', { statistic: 'SampleCount', ...props });
+  }
+
+  public metricIntegrationLatency(props?: MetricOptions): Metric {
+    return this.metric('IntegrationLatency', props);
+  }
+
+  public metricLatency(props?: MetricOptions): Metric {
+    return this.metric('Latency', props);
+  }
+}
+
 /**
  * Create a new API Gateway HTTP API endpoint.
  * @resource AWS::ApiGatewayV2::Api
  */
-export class HttpApi extends Resource implements IHttpApi {
+export class HttpApi extends HttpApiBase {
   /**
    * Import an existing HTTP API into this CDK app.
    */
   public static fromApiId(scope: Construct, id: string, httpApiId: string): IHttpApi {
-    class Import extends Resource implements IHttpApi {
+    class Import extends HttpApiBase {
       public readonly httpApiId = httpApiId;
     }
     return new Import(scope, id);
   }
 
+  /**
+   * A human friendly name for this HTTP API. Note that this is different from `httpApiId`.
+   */
+  public readonly httpApiName?: string;
+
   public readonly httpApiId: string;
+
   /**
    * default stage of the api resource
    */
@@ -140,7 +243,7 @@ export class HttpApi extends Resource implements IHttpApi {
   constructor(scope: Construct, id: string, props?: HttpApiProps) {
     super(scope, id);
 
-    const apiName = props?.apiName ?? id;
+    this.httpApiName = props?.apiName ?? id;
 
     let corsConfiguration: CfnApi.CorsProperty | undefined;
     if (props?.corsPreflight) {
@@ -167,9 +270,10 @@ export class HttpApi extends Resource implements IHttpApi {
     }
 
     const apiProps: CfnApiProps = {
-      name: apiName,
+      name: this.httpApiName,
       protocolType: 'HTTP',
       corsConfiguration,
+      description: props?.description,
     };
 
     const resource = new CfnApi(this, 'Resource', apiProps);
