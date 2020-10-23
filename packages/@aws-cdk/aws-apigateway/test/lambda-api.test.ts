@@ -1,13 +1,10 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import '@aws-cdk/assert/jest';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import * as apigw from '../lib';
 
-/* eslint-disable quote-props */
-
-export = {
-  'LambdaRestApi defines a REST API with Lambda proxy integration'(test: Test) {
+describe('lambda api', () => {
+  test('LambdaRestApi defines a REST API with Lambda proxy integration', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -21,38 +18,38 @@ export = {
     const api = new apigw.LambdaRestApi(stack, 'lambda-rest-api', { handler });
 
     // THEN -- can't customize further
-    test.throws(() => {
+    expect(() => {
       api.root.addResource('cant-touch-this');
-    });
+    }).toThrow();
 
     // THEN -- template proxies everything
-    expect(stack).to(haveResource('AWS::ApiGateway::Resource', {
-      'PathPart': '{proxy+}',
-    }));
+    expect(stack).toHaveResource('AWS::ApiGateway::Resource', {
+      PathPart: '{proxy+}',
+    });
 
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
-      'HttpMethod': 'ANY',
-      'ResourceId': {
-        'Ref': 'lambdarestapiproxyE3AE07E3',
+    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+      HttpMethod: 'ANY',
+      ResourceId: {
+        Ref: 'lambdarestapiproxyE3AE07E3',
       },
-      'RestApiId': {
-        'Ref': 'lambdarestapiAAD10924',
+      RestApiId: {
+        Ref: 'lambdarestapiAAD10924',
       },
-      'AuthorizationType': 'NONE',
-      'Integration': {
-        'IntegrationHttpMethod': 'POST',
-        'Type': 'AWS_PROXY',
-        'Uri': {
+      AuthorizationType: 'NONE',
+      Integration: {
+        IntegrationHttpMethod: 'POST',
+        Type: 'AWS_PROXY',
+        Uri: {
           'Fn::Join': [
             '',
             [
               'arn:',
               {
-                'Ref': 'AWS::Partition',
+                Ref: 'AWS::Partition',
               },
               ':apigateway:',
               {
-                'Ref': 'AWS::Region',
+                Ref: 'AWS::Region',
               },
               ':lambda:path/2015-03-31/functions/',
               {
@@ -66,12 +63,10 @@ export = {
           ],
         },
       },
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'LambdaRestApi supports function Alias'(test: Test) {
+  test('LambdaRestApi supports function Alias', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -91,54 +86,52 @@ export = {
     const api = new apigw.LambdaRestApi(stack, 'lambda-rest-api', { handler: alias });
 
     // THEN -- can't customize further
-    test.throws(() => {
+    expect(() => {
       api.root.addResource('cant-touch-this');
-    });
+    }).toThrow();
 
     // THEN -- template proxies everything
-    expect(stack).to(haveResource('AWS::ApiGateway::Resource', {
-      'PathPart': '{proxy+}',
-    }));
+    expect(stack).toHaveResource('AWS::ApiGateway::Resource', {
+      PathPart: '{proxy+}',
+    });
 
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
-      'HttpMethod': 'ANY',
-      'ResourceId': {
-        'Ref': 'lambdarestapiproxyE3AE07E3',
+    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+      HttpMethod: 'ANY',
+      ResourceId: {
+        Ref: 'lambdarestapiproxyE3AE07E3',
       },
-      'RestApiId': {
-        'Ref': 'lambdarestapiAAD10924',
+      RestApiId: {
+        Ref: 'lambdarestapiAAD10924',
       },
-      'AuthorizationType': 'NONE',
-      'Integration': {
-        'IntegrationHttpMethod': 'POST',
-        'Type': 'AWS_PROXY',
-        'Uri': {
+      AuthorizationType: 'NONE',
+      Integration: {
+        IntegrationHttpMethod: 'POST',
+        Type: 'AWS_PROXY',
+        Uri: {
           'Fn::Join': [
             '',
             [
               'arn:',
               {
-                'Ref': 'AWS::Partition',
+                Ref: 'AWS::Partition',
               },
               ':apigateway:',
               {
-                'Ref': 'AWS::Region',
+                Ref: 'AWS::Region',
               },
               ':lambda:path/2015-03-31/functions/',
               {
-                'Ref': 'alias68BF17F5',
+                Ref: 'alias68BF17F5',
               },
               '/invocations',
             ],
           ],
         },
       },
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'when "proxy" is set to false, users need to define the model'(test: Test) {
+  test('when "proxy" is set to false, users need to define the model', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -156,28 +149,26 @@ export = {
     tasks.addMethod('POST');
 
     // THEN
-    expect(stack).notTo(haveResource('AWS::ApiGateway::Resource', {
-      'PathPart': '{proxy+}',
-    }));
+    expect(stack).not.toHaveResource('AWS::ApiGateway::Resource', {
+      PathPart: '{proxy+}',
+    });
 
-    expect(stack).to(haveResource('AWS::ApiGateway::Resource', {
+    expect(stack).toHaveResource('AWS::ApiGateway::Resource', {
       PathPart: 'tasks',
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
       HttpMethod: 'GET',
       ResourceId: { Ref: 'lambdarestapitasks224418C8' },
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
       HttpMethod: 'POST',
       ResourceId: { Ref: 'lambdarestapitasks224418C8' },
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'fails if options.defaultIntegration is also set'(test: Test) {
+  test('fails if options.defaultIntegration is also set', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -187,20 +178,18 @@ export = {
       runtime: lambda.Runtime.NODEJS_10_X,
     });
 
-    test.throws(() => new apigw.LambdaRestApi(stack, 'lambda-rest-api', {
+    expect(() => new apigw.LambdaRestApi(stack, 'lambda-rest-api', {
       handler,
       options: { defaultIntegration: new apigw.HttpIntegration('https://foo/bar') },
-    }), /Cannot specify \"defaultIntegration\" since Lambda integration is automatically defined/);
+    })).toThrow(/Cannot specify \"defaultIntegration\" since Lambda integration is automatically defined/);
 
-    test.throws(() => new apigw.LambdaRestApi(stack, 'lambda-rest-api', {
+    expect(() => new apigw.LambdaRestApi(stack, 'lambda-rest-api', {
       handler,
       defaultIntegration: new apigw.HttpIntegration('https://foo/bar'),
-    }), /Cannot specify \"defaultIntegration\" since Lambda integration is automatically defined/);
+    })).toThrow(/Cannot specify \"defaultIntegration\" since Lambda integration is automatically defined/);
+  });
 
-    test.done();
-  },
-
-  'LambdaRestApi defines a REST API with CORS enabled'(test: Test) {
+  test('LambdaRestApi defines a REST API with CORS enabled', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -220,7 +209,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
       HttpMethod: 'OPTIONS',
       ResourceId: { Ref: 'lambdarestapiproxyE3AE07E3' },
       Integration: {
@@ -251,8 +240,6 @@ export = {
           StatusCode: '204',
         },
       ],
-    }));
-
-    test.done();
-  },
-};
+    });
+  });
+});

@@ -1,12 +1,12 @@
-import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
+import '@aws-cdk/assert/jest';
+import { ResourcePart } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Duration, Stack } from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import { AuthorizationType, IdentitySource, RequestAuthorizer, RestApi, TokenAuthorizer } from '../../lib';
 
-export = {
-  'default token authorizer'(test: Test) {
+describe('lambda authorizer', () => {
+  test('default token authorizer', () => {
     const stack = new Stack();
 
     const func = new lambda.Function(stack, 'myfunction', {
@@ -25,7 +25,7 @@ export = {
       authorizationType: AuthorizationType.CUSTOM,
     });
 
-    expect(stack).to(haveResource('AWS::ApiGateway::Authorizer', {
+    expect(stack).toHaveResource('AWS::ApiGateway::Authorizer', {
       Type: 'TOKEN',
       RestApiId: stack.resolve(restApi.restApiId),
       IdentitySource: 'method.request.header.Authorization',
@@ -49,19 +49,17 @@ export = {
           ],
         ],
       },
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::Lambda::Permission', {
+    expect(stack).toHaveResource('AWS::Lambda::Permission', {
       Action: 'lambda:InvokeFunction',
       Principal: 'apigateway.amazonaws.com',
-    }));
+    });
 
-    test.ok(auth.authorizerArn.endsWith(`/authorizers/${auth.authorizerId}`), 'Malformed authorizer ARN');
+    expect(auth.authorizerArn.endsWith(`/authorizers/${auth.authorizerId}`)).toBeTruthy();
+  });
 
-    test.done();
-  },
-
-  'default request authorizer'(test: Test) {
+  test('default request authorizer', () => {
     const stack = new Stack();
 
     const func = new lambda.Function(stack, 'myfunction', {
@@ -82,7 +80,7 @@ export = {
       authorizationType: AuthorizationType.CUSTOM,
     });
 
-    expect(stack).to(haveResource('AWS::ApiGateway::Authorizer', {
+    expect(stack).toHaveResource('AWS::ApiGateway::Authorizer', {
       Type: 'REQUEST',
       RestApiId: stack.resolve(restApi.restApiId),
       AuthorizerUri: {
@@ -105,19 +103,19 @@ export = {
           ],
         ],
       },
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::Lambda::Permission', {
+    expect(stack).toHaveResource('AWS::Lambda::Permission', {
       Action: 'lambda:InvokeFunction',
       Principal: 'apigateway.amazonaws.com',
-    }));
+    });
 
-    test.ok(auth.authorizerArn.endsWith(`/authorizers/${auth.authorizerId}`), 'Malformed authorizer ARN');
+    expect(auth.authorizerArn.endsWith(`/authorizers/${auth.authorizerId}`)).toBeTruthy();
 
-    test.done();
-  },
 
-  'invalid request authorizer config'(test: Test) {
+  });
+
+  test('invalid request authorizer config', () => {
     const stack = new Stack();
 
     const func = new lambda.Function(stack, 'myfunction', {
@@ -126,16 +124,14 @@ export = {
       runtime: lambda.Runtime.NODEJS_12_X,
     });
 
-    test.throws(() => new RequestAuthorizer(stack, 'myauthorizer', {
+    expect(() => new RequestAuthorizer(stack, 'myauthorizer', {
       handler: func,
       resultsCacheTtl: Duration.seconds(1),
       identitySources: [],
-    }), Error, 'At least one Identity Source is required for a REQUEST-based Lambda authorizer if caching is enabled.');
+    })).toThrow('At least one Identity Source is required for a REQUEST-based Lambda authorizer if caching is enabled.');
+  });
 
-    test.done();
-  },
-
-  'token authorizer with all parameters specified'(test: Test) {
+  test('token authorizer with all parameters specified', () => {
     const stack = new Stack();
 
     const func = new lambda.Function(stack, 'myfunction', {
@@ -158,7 +154,7 @@ export = {
       authorizationType: AuthorizationType.CUSTOM,
     });
 
-    expect(stack).to(haveResource('AWS::ApiGateway::Authorizer', {
+    expect(stack).toHaveResource('AWS::ApiGateway::Authorizer', {
       Type: 'TOKEN',
       RestApiId: stack.resolve(restApi.restApiId),
       IdentitySource: 'method.request.header.whoami',
@@ -185,12 +181,10 @@ export = {
           ],
         ],
       },
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'request authorizer with all parameters specified'(test: Test) {
+  test('request authorizer with all parameters specified', () => {
     const stack = new Stack();
 
     const func = new lambda.Function(stack, 'myfunction', {
@@ -212,7 +206,7 @@ export = {
       authorizationType: AuthorizationType.CUSTOM,
     });
 
-    expect(stack).to(haveResource('AWS::ApiGateway::Authorizer', {
+    expect(stack).toHaveResource('AWS::ApiGateway::Authorizer', {
       Type: 'REQUEST',
       RestApiId: stack.resolve(restApi.restApiId),
       IdentitySource: 'method.request.header.whoami',
@@ -238,12 +232,10 @@ export = {
           ],
         ],
       },
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'token authorizer with assume role'(test: Test) {
+  test('token authorizer with assume role', () => {
     const stack = new Stack();
 
     const func = new lambda.Function(stack, 'myfunction', {
@@ -268,7 +260,7 @@ export = {
       authorizationType: AuthorizationType.CUSTOM,
     });
 
-    expect(stack).to(haveResource('AWS::ApiGateway::Authorizer', {
+    expect(stack).toHaveResource('AWS::ApiGateway::Authorizer', {
       Type: 'TOKEN',
       RestApiId: stack.resolve(restApi.restApiId),
       AuthorizerUri: {
@@ -291,11 +283,11 @@ export = {
           ],
         ],
       },
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::IAM::Role'));
+    expect(stack).toHaveResource('AWS::IAM::Role');
 
-    expect(stack).to(haveResource('AWS::IAM::Policy', {
+    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
       Roles: [
         stack.resolve(role.roleName),
       ],
@@ -308,14 +300,12 @@ export = {
           },
         ],
       },
-    }, ResourcePart.Properties, true));
+    }, ResourcePart.Properties);
 
-    expect(stack).notTo(haveResource('AWS::Lambda::Permission'));
+    expect(stack).not.toHaveResource('AWS::Lambda::Permission');
+  });
 
-    test.done();
-  },
-
-  'request authorizer with assume role'(test: Test) {
+  test('request authorizer with assume role', () => {
     const stack = new Stack();
 
     const func = new lambda.Function(stack, 'myfunction', {
@@ -342,7 +332,7 @@ export = {
       authorizationType: AuthorizationType.CUSTOM,
     });
 
-    expect(stack).to(haveResource('AWS::ApiGateway::Authorizer', {
+    expect(stack).toHaveResource('AWS::ApiGateway::Authorizer', {
       Type: 'REQUEST',
       RestApiId: stack.resolve(restApi.restApiId),
       AuthorizerUri: {
@@ -365,11 +355,11 @@ export = {
           ],
         ],
       },
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::IAM::Role'));
+    expect(stack).toHaveResource('AWS::IAM::Role');
 
-    expect(stack).to(haveResource('AWS::IAM::Policy', {
+    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
       Roles: [
         stack.resolve(role.roleName),
       ],
@@ -382,14 +372,12 @@ export = {
           },
         ],
       },
-    }, ResourcePart.Properties, true));
+    }, ResourcePart.Properties);
 
-    expect(stack).notTo(haveResource('AWS::Lambda::Permission'));
+    expect(stack).not.toHaveResource('AWS::Lambda::Permission');
+  });
 
-    test.done();
-  },
-
-  'token authorizer throws when not attached to a rest api'(test: Test) {
+  test('token authorizer throws when not attached to a rest api', () => {
     const stack = new Stack();
     const func = new lambda.Function(stack, 'myfunction', {
       handler: 'handler',
@@ -400,12 +388,10 @@ export = {
       handler: func,
     });
 
-    test.throws(() => stack.resolve(auth.authorizerArn), /must be attached to a RestApi/);
+    expect(() => stack.resolve(auth.authorizerArn)).toThrow(/must be attached to a RestApi/);
+  });
 
-    test.done();
-  },
-
-  'request authorizer throws when not attached to a rest api'(test: Test) {
+  test('request authorizer throws when not attached to a rest api', () => {
     const stack = new Stack();
     const func = new lambda.Function(stack, 'myfunction', {
       handler: 'handler',
@@ -417,8 +403,6 @@ export = {
       identitySources: [IdentitySource.header('myheader')],
     });
 
-    test.throws(() => stack.resolve(auth.authorizerArn), /must be attached to a RestApi/);
-
-    test.done();
-  },
-};
+    expect(() => stack.resolve(auth.authorizerArn)).toThrow(/must be attached to a RestApi/);
+  });
+});

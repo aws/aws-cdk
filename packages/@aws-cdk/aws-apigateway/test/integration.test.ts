@@ -1,40 +1,40 @@
-import { ABSENT, expect, haveResourceLike } from '@aws-cdk/assert';
+import '@aws-cdk/assert/jest';
+import { ABSENT } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import * as apigw from '../lib';
 
-export = {
-  'integration "credentialsRole" and "credentialsPassthrough" are mutually exclusive'(test: Test) {
+describe('integration', () => {
+  test('integration "credentialsRole" and "credentialsPassthrough" are mutually exclusive', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const role = new iam.Role(stack, 'MyRole', { assumedBy: new iam.ServicePrincipal('foo') });
 
     // THEN
-    test.throws(() => new apigw.Integration({
+    expect(() => new apigw.Integration({
       type: apigw.IntegrationType.AWS_PROXY,
       options: {
         credentialsPassthrough: true,
         credentialsRole: role,
       },
-    }), /'credentialsPassthrough' and 'credentialsRole' are mutually exclusive/);
-    test.done();
-  },
+    })).toThrow(/'credentialsPassthrough' and 'credentialsRole' are mutually exclusive/);
 
-  'integration connectionType VpcLink requires vpcLink to be set'(test: Test) {
-    test.throws(() => new apigw.Integration({
+  });
+
+  test('integration connectionType VpcLink requires vpcLink to be set', () => {
+    expect(() => new apigw.Integration({
       type: apigw.IntegrationType.HTTP_PROXY,
       integrationHttpMethod: 'ANY',
       options: {
         connectionType: apigw.ConnectionType.VPC_LINK,
       },
-    }), /'connectionType' of VPC_LINK requires 'vpcLink' prop to be set/);
-    test.done();
-  },
+    })).toThrow(/'connectionType' of VPC_LINK requires 'vpcLink' prop to be set/);
 
-  'uri is self determined from the NLB'(test: Test) {
+  });
+
+  test('uri is self determined from the NLB', () => {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
     const nlb = new elbv2.NetworkLoadBalancer(stack, 'NLB', { vpc });
@@ -52,7 +52,7 @@ export = {
     });
     api.root.addMethod('GET', integration);
 
-    expect(stack).to(haveResourceLike('AWS::ApiGateway::Method', {
+    expect(stack).toHaveResourceLike('AWS::ApiGateway::Method', {
       Integration: {
         Uri: {
           'Fn::Join': [
@@ -69,12 +69,10 @@ export = {
           ],
         },
       },
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'uri must be set for VpcLink with multiple NLBs'(test: Test) {
+  test('uri must be set for VpcLink with multiple NLBs', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app);
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -93,12 +91,10 @@ export = {
       },
     });
     api.root.addMethod('GET', integration);
-    test.throws(() => app.synth(), /'uri' is required when there are more than one NLBs in the VPC Link/);
+    expect(() => app.synth()).toThrow(/'uri' is required when there are more than one NLBs in the VPC Link/);
+  });
 
-    test.done();
-  },
-
-  'uri must be set when using an imported VpcLink'(test: Test) {
+  test('uri must be set when using an imported VpcLink', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app);
     const link = apigw.VpcLink.fromVpcLinkId(stack, 'link', 'vpclinkid');
@@ -112,12 +108,10 @@ export = {
       },
     });
     api.root.addMethod('GET', integration);
-    test.throws(() => app.synth(), /'uri' is required when the 'connectionType' is VPC_LINK/);
+    expect(() => app.synth()).toThrow(/'uri' is required when the 'connectionType' is VPC_LINK/);
+  });
 
-    test.done();
-  },
-
-  'connectionType of INTERNET and vpcLink are mutually exclusive'(test: Test) {
+  test('connectionType of INTERNET and vpcLink are mutually exclusive', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -129,18 +123,17 @@ export = {
     });
 
     // THEN
-    test.throws(() => new apigw.Integration({
+    expect(() => new apigw.Integration({
       type: apigw.IntegrationType.HTTP_PROXY,
       integrationHttpMethod: 'ANY',
       options: {
         connectionType: apigw.ConnectionType.INTERNET,
         vpcLink: link,
       },
-    }), /cannot set 'vpcLink' where 'connectionType' is INTERNET/);
-    test.done();
-  },
+    })).toThrow(/cannot set 'vpcLink' where 'connectionType' is INTERNET/);
+  });
 
-  'connectionType is ABSENT when vpcLink is not specified'(test: Test) {
+  test('connectionType is ABSENT when vpcLink is not specified', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigw.RestApi(stack, 'restapi');
@@ -153,17 +146,15 @@ export = {
     api.root.addMethod('ANY', integration);
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::ApiGateway::Method', {
+    expect(stack).toHaveResourceLike('AWS::ApiGateway::Method', {
       HttpMethod: 'ANY',
       Integration: {
         ConnectionType: ABSENT,
       },
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'connectionType defaults to VPC_LINK if vpcLink is configured'(test: Test) {
+  test('connectionType defaults to VPC_LINK if vpcLink is configured', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -186,13 +177,11 @@ export = {
     api.root.addMethod('ANY', integration);
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::ApiGateway::Method', {
+    expect(stack).toHaveResourceLike('AWS::ApiGateway::Method', {
       HttpMethod: 'ANY',
       Integration: {
         ConnectionType: 'VPC_LINK',
       },
-    }));
-
-    test.done();
-  },
-};
+    });
+  });
+});

@@ -1,12 +1,12 @@
 import * as path from 'path';
-import { expect, haveResource, ResourcePart, SynthUtils } from '@aws-cdk/assert';
+import '@aws-cdk/assert/jest';
+import { ResourcePart, SynthUtils } from '@aws-cdk/assert';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { CfnResource, Lazy, Stack } from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import * as apigateway from '../lib';
 
-export = {
-  'minimal setup'(test: Test) {
+describe('deployment', () => {
+  test('minimal setup', () => {
     // GIVEN
     const stack = new Stack();
     const api = new apigateway.RestApi(stack, 'api', { deploy: false, cloudWatchRole: false });
@@ -16,7 +16,7 @@ export = {
     new apigateway.Deployment(stack, 'deployment', { api });
 
     // THEN
-    expect(stack).toMatch({
+    expect(stack).toMatchTemplate({
       Resources: {
         apiGETECF0BD67: {
           Type: 'AWS::ApiGateway::Method',
@@ -56,11 +56,9 @@ export = {
         },
       },
     });
+  });
 
-    test.done();
-  },
-
-  '"retainDeployments" can be used to control the deletion policy of the resource'(test: Test) {
+  test('"retainDeployments" can be used to control the deletion policy of the resource', () => {
     // GIVEN
     const stack = new Stack();
     const api = new apigateway.RestApi(stack, 'api', { deploy: false, cloudWatchRole: false });
@@ -70,7 +68,7 @@ export = {
     new apigateway.Deployment(stack, 'deployment', { api, retainDeployments: true });
 
     // THEN
-    expect(stack).toMatch({
+    expect(stack).toMatchTemplate({
       Resources: {
         apiGETECF0BD67: {
           Type: 'AWS::ApiGateway::Method',
@@ -112,11 +110,9 @@ export = {
         },
       },
     });
+  });
 
-    test.done();
-  },
-
-  '"description" can be set on the deployment'(test: Test) {
+  test('"description" can be set on the deployment', () => {
     // GIVEN
     const stack = new Stack();
     const api = new apigateway.RestApi(stack, 'api', { deploy: false, cloudWatchRole: false });
@@ -126,14 +122,12 @@ export = {
     new apigateway.Deployment(stack, 'deployment', { api, description: 'this is my deployment' });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::Deployment', {
+    expect(stack).toHaveResource('AWS::ApiGateway::Deployment', {
       Description: 'this is my deployment',
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'logical ID of the deployment resource is salted'(test: Test) {
+  test('logical ID of the deployment resource is salted', () => {
     // GIVEN
     const stack = new Stack();
     const api = new apigateway.RestApi(stack, 'api', { deploy: false, cloudWatchRole: false });
@@ -141,34 +135,29 @@ export = {
     api.root.addMethod('GET');
 
     const resources = synthesize().Resources;
-    test.ok(resources.deployment33381975bba46c5132329b81e7befcbbba5a0e75,
-      `resource deployment33381975bba46c5132329b81e7befcbbba5a0e75 not found, instead found ${Object.keys(resources)}`);
+    expect(resources.deployment33381975bba46c5132329b81e7befcbbba5a0e75).toBeDefined();
 
     // adding some salt
     deployment.addToLogicalId({ foo: 123 }); // add some data to the logical ID
 
     // the logical ID changed
     const template = synthesize();
-    test.ok(!template.Resources.deployment33381975bba46c5132329b81e7befcbbba5a0e75, 'old resource id is not deleted');
-    test.ok(template.Resources.deployment333819758aa4cdb9d204502b959c4903f4d5d29f,
-      `new resource deployment333819758aa4cdb9d204502b959c4903f4d5d29f is not created, instead found ${Object.keys(template.Resources)}`);
+    expect(template.Resources.deployment33381975bba46c5132329b81e7befcbbba5a0e75).toBeUndefined();
+    expect(template.Resources.deployment333819758aa4cdb9d204502b959c4903f4d5d29f).toBeDefined();
 
     // tokens supported, and are resolved upon synthesis
     const value = 'hello hello';
     deployment.addToLogicalId({ foo: Lazy.stringValue({ produce: () => value }) });
 
     const template2 = synthesize();
-    test.ok(template2.Resources.deployment333819758d91bed959c6bd6268ba84f6d33e888e,
-      `resource deployment333819758d91bed959c6bd6268ba84f6d33e888e not found, instead found ${Object.keys(template2.Resources)}`);
-
-    test.done();
+    expect(template2.Resources.deployment333819758d91bed959c6bd6268ba84f6d33e888e).toBeDefined();
 
     function synthesize() {
       return SynthUtils.synthesize(stack).template;
     }
-  },
+  });
 
-  '"addDependency" can be used to add a resource as a dependency'(test: Test) {
+  test('"addDependency" can be used to add a resource as a dependency', () => {
     // GIVEN
     const stack = new Stack();
     const api = new apigateway.RestApi(stack, 'api', { deploy: false, cloudWatchRole: false });
@@ -180,17 +169,17 @@ export = {
     // WHEN
     deployment.node.addDependency(dep);
 
-    expect(stack).to(haveResource('AWS::ApiGateway::Deployment', {
+    expect(stack).toHaveResource('AWS::ApiGateway::Deployment', {
       DependsOn: [
         'apiGETECF0BD67',
         'MyResource',
       ],
-    }, ResourcePart.CompleteDefinition));
+    }, ResourcePart.CompleteDefinition);
 
-    test.done();
-  },
 
-  'integration change invalidates deployment'(test: Test) {
+  });
+
+  test('integration change invalidates deployment', () => {
     // GIVEN
     const stack1 = new Stack();
     const stack2 = new Stack();
@@ -216,16 +205,16 @@ export = {
     api2.root.addMethod('GET');
 
     // THEN
-    expect(stack1).to(haveResource('AWS::ApiGateway::Stage', {
+    expect(stack1).toHaveResource('AWS::ApiGateway::Stage', {
       DeploymentId: { Ref: 'myapiDeploymentB7EF8EB74c5295c27fa87ff13f4d04e13f67662d' },
-    }));
-    expect(stack2).to(haveResource('AWS::ApiGateway::Stage', {
+    });
+    expect(stack2).toHaveResource('AWS::ApiGateway::Stage', {
       DeploymentId: { Ref: 'myapiDeploymentB7EF8EB7b50d305057ba109c118e4aafd4509355' },
-    }));
-    test.done();
-  },
+    });
 
-  'deployment resource depends on all restapi methods defined'(test: Test) {
+  });
+
+  test('deployment resource depends on all restapi methods defined', () => {
     const stack = new Stack();
     const restapi = new apigateway.RestApi(stack, 'myapi', {
       deploy: false,
@@ -244,14 +233,12 @@ export = {
     const resource = restapi.root.addResource('myresource');
     resource.addMethod('GET');
 
-    expect(stack).to(haveResource('AWS::ApiGateway::Deployment', {
+    expect(stack).toHaveResource('AWS::ApiGateway::Deployment', {
       DependsOn: [
         'myapiGET9B7CD29E',
         'myapimyresourceGET732851A5',
         'myapiPOST23417BD2',
       ],
-    }, ResourcePart.CompleteDefinition));
-
-    test.done();
-  },
-};
+    }, ResourcePart.CompleteDefinition);
+  });
+});
