@@ -445,6 +445,7 @@ const runTask = new tasks.EcsRunTask(stack, 'RunFargate', {
   integrationPattern: sfn.IntegrationPattern.RUN_JOB,
   cluster,
   taskDefinition,
+  assignPublicIp: true,
   containerOverrides: [{
     containerDefinition,
     environment: [{ name: 'SOME_KEY', value: sfn.JsonPath.stringAt('$.SomeKey') }],

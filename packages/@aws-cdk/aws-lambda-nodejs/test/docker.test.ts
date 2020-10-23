@@ -8,7 +8,7 @@ beforeAll(() => {
 test('parcel is available', async () => {
   const proc = spawnSync('docker', [
     'run', 'parcel',
-    'sh', '-c',
+    'bash', '-c',
     '$(node -p "require.resolve(\'parcel\')") --version',
   ]);
   expect(proc.status).toEqual(0);
@@ -20,7 +20,7 @@ test('parcel is installed without a package-lock.json file', async () => {
   // See https://github.com/aws/aws-cdk/pull/10039#issuecomment-682738396
   const proc = spawnSync('docker', [
     'run', 'parcel',
-    'sh', '-c',
+    'bash', '-c',
     'test ! -f /package-lock.json',
   ]);
   expect(proc.status).toEqual(0);
@@ -30,7 +30,7 @@ test('can npm install with non root user', async () => {
   const proc = spawnSync('docker', [
     'run', '-u', '1000:1000',
     'parcel',
-    'sh', '-c', [
+    'bash', '-c', [
       'mkdir /tmp/test',
       'cd /tmp/test',
       'npm i constructs',
@@ -43,7 +43,7 @@ test('can yarn install with non root user', async () => {
   const proc = spawnSync('docker', [
     'run', '-u', '500:500',
     'parcel',
-    'sh', '-c', [
+    'bash', '-c', [
       'mkdir /tmp/test',
       'cd /tmp/test',
       'yarn add constructs',
