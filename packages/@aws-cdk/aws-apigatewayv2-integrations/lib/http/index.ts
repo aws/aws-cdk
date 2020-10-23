@@ -1,4 +1,4 @@
 export * from './base-types';
-export * from './alb-integration';
-export * from './nlb-integration';
-export * from './service-discovery-integration';
+export * from './alb';
+export * from './nlb';
+export * from './service-discovery';

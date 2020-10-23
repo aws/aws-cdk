@@ -1,23 +1,23 @@
 import { HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig } from '@aws-cdk/aws-apigatewayv2';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import { HttpPrivateIntegrationOptions } from './base-types';
-import { HttpPrivateIntegration } from './http-private';
+import { HttpPrivateIntegration } from './private/integration';
 
 /**
- * Properties to initialize `HttpNlbIntegration`.
+ * Properties to initialize `HttpAlbIntegration`.
  */
-export interface HttpNlbIntegrationProps extends HttpPrivateIntegrationOptions {
+export interface HttpAlbIntegrationProps extends HttpPrivateIntegrationOptions {
   /**
-   * The listener to the netwwork load balancer used for the integration
+   * The listener to the application load balancer used for the integration
    */
-  readonly listener: elbv2.NetworkListener;
+  readonly listener: elbv2.ApplicationListener;
 }
 
 /**
- * The Network Load Balancer integration resource for HTTP API
+ * The Application Load Balancer integration resource for HTTP API
  */
-export class HttpNlbIntegration extends HttpPrivateIntegration {
-  constructor(private readonly props: HttpNlbIntegrationProps) {
+export class HttpAlbIntegration extends HttpPrivateIntegration {
+  constructor(private readonly props: HttpAlbIntegrationProps) {
     super();
   }
 

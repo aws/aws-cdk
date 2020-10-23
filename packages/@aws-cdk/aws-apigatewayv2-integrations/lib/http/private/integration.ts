@@ -12,7 +12,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 
 
 /**
- * Options reuqired to use an existing vpcLink or configure a new one
+ * Options required to use an existing vpcLink or configure a new one
  *
  * @internal
  */

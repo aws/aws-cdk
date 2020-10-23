@@ -1,6 +1,6 @@
 import { HttpMethod, IVpcLink, HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig } from '@aws-cdk/aws-apigatewayv2';
 import * as servicediscovery from '@aws-cdk/aws-servicediscovery';
-import { HttpPrivateIntegration } from './http-private';
+import { HttpPrivateIntegration } from './private/integration';
 
 /**
  * Properties to initialize `HttpServiceDiscoveryIntegration`.

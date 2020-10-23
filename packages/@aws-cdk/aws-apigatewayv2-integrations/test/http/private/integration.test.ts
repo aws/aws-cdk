@@ -1,7 +1,7 @@
 import '@aws-cdk/assert/jest';
 import { HttpApi, HttpRoute, HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig, HttpRouteKey } from '@aws-cdk/aws-apigatewayv2';
 import { Stack } from '@aws-cdk/core';
-import { HttpPrivateIntegration } from '../../lib/http/http-private';
+import { HttpPrivateIntegration } from '../../../lib/http/private/integration';
 
 describe('HttpPrivateIntegration', () => {
   test('throws error if both vpcLink and vpc are not passed', () => {
