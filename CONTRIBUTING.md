@@ -176,7 +176,7 @@ Work your magic. Here are some guidelines:
 
 #### Integration Tests
 
-Integration tests perform a few functions in the CDK code base - 
+Integration tests perform a few functions in the CDK code base -
 1. Acts as a regression detector. It does this by running `cdk synth` on the integration test and comparing it against
    the `*.expected.json` file. This highlights how a change affects the synthesized stacks.
 2. Allows for a way to verify if the stacks are still valid CloudFormation templates, as part of an intrusive change.
