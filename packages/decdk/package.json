@@ -36,6 +36,7 @@
     "@aws-cdk/aws-amplify": "0.0.0",
     "@aws-cdk/aws-apigateway": "0.0.0",
     "@aws-cdk/aws-apigatewayv2": "0.0.0",
+    "@aws-cdk/aws-apigatewayv2-integrations": "0.0.0",
     "@aws-cdk/aws-appconfig": "0.0.0",
     "@aws-cdk/aws-appflow": "0.0.0",
     "@aws-cdk/aws-applicationautoscaling": "0.0.0",
@@ -190,7 +191,7 @@
     "constructs": "^3.0.4",
     "fs-extra": "^9.0.1",
     "jsii-reflect": "^1.13.0",
-    "jsonschema": "^1.2.10",
+    "jsonschema": "^1.4.0",
     "yaml": "1.10.0",
     "yargs": "^16.1.0"
   },
