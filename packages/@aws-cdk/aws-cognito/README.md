@@ -357,15 +357,14 @@ Triggers](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user
 
 #### Trigger Permissions
 
-You can provide permissions to your Lambda trigger using the `attachToRolePolicy` API which will update
-the execution role used by the Lambda function.
+The `function.attachToRolePolicy()` API can be used to add additional IAM permissions to the lambda trigger
+as necessary.
 
-⚠️ Using the `attachToRolePolicy` API to provide permissions scoped to your user pool will result in a circular dependency.
+⚠️ Using the `attachToRolePolicy` API to provide permissions to your user pool will result in a circular dependency. See [aws/aws-cdk#7016](https://github.com/aws/aws-cdk/issues/7016).
 Error message when running `cdk synth` or `cdk deploy`:
 > Circular dependency between resources: [pool056F3F7E, fnPostAuthFnCognitoA630A2B1, ...]
 
-To work around the circular dependency issue, your Lambda trigger can be granted permissions to perform operations
-on your user pool using the `attachInlinePolicy` API.
+To work around the circular dependency issue, use the `attachInlinePolicy()` API instead, as shown below.
 
 ```ts
 const postAuthFn = new lambda.Function(this, 'postAuthFn', {
