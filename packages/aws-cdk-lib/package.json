@@ -88,7 +88,7 @@
   "dependencies": {
     "case": "1.6.3",
     "fs-extra": "^9.0.1",
-    "jsonschema": "^1.2.10",
+    "jsonschema": "^1.4.0",
     "minimatch": "^3.0.4",
     "semver": "^7.3.2",
     "yaml": "1.10.0"

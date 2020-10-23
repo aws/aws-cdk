@@ -8728,15 +8728,10 @@ jsonparse@^1.2.0:
   resolved "https://registry.yarnpkg.com/jsonparse/-/jsonparse-1.3.1.tgz#3f4dae4a91fac315f71062f8521cc239f1366280"
   integrity sha1-P02uSpH6wxX3EGL4UhzCOfE2YoA=
 
-jsonschema@^1.2.10:
-  version "1.2.10"
-  resolved "https://registry.yarnpkg.com/jsonschema/-/jsonschema-1.2.10.tgz#38dc18b63839e8f07580df015e37d959f20d1eda"
-  integrity sha512-CoRSun5gmvgSYMHx5msttse19SnQpaHoPzIqULwE7B9KtR4Od1g70sBqeUriq5r8b9R3ptDc0o7WKpUDjUgLgg==
-
-jsonschema@^1.2.7:
-  version "1.2.7"
-  resolved "https://registry.yarnpkg.com/jsonschema/-/jsonschema-1.2.7.tgz#4e6d6dc4d83dc80707055ba22c00ec6152c0e6e9"
-  integrity sha512-3dFMg9hmI9LdHag/BRIhMefCfbq1hicvYMy8YhZQorAdzOzWz7NjniSpn39yjpzUAMIWtGyyZuH2KNBloH7ZLw==
+jsonschema@^1.2.7, jsonschema@^1.4.0:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/jsonschema/-/jsonschema-1.4.0.tgz#1afa34c4bc22190d8e42271ec17ac8b3404f87b2"
+  integrity sha512-/YgW6pRMr6M7C+4o8kS+B/2myEpHCrxO4PEWnqJNBFMjn7EWXqlQ4tGwL6xTHeRplwuZmcAncdvfOad1nT2yMw==
 
 jsprim@^1.2.2:
   version "1.4.1"
