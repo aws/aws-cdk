@@ -174,7 +174,7 @@
     "@types/sinon": "^9.0.7",
     "cdk-build-tools": "0.0.0",
     "cfn2ts": "0.0.0",
-    "fast-check": "^2.4.0",
+    "fast-check": "^2.6.0",
     "lodash": "^4.17.20",
     "nodeunit-shim": "0.0.0",
     "pkglint": "0.0.0",
