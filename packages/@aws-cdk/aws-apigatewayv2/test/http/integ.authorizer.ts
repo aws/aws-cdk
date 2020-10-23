@@ -19,10 +19,12 @@ const httpApi = new HttpApi(stack, 'MyHttpApi');
 
 const userPool = new cognito.UserPool(stack, 'userpool');
 
+const client = userPool.addClient('my-client');
+
 const authorizer = new HttpAuthorizer(stack, 'MyAuthorizer', {
   httpApi,
   jwtConfiguration: {
-    audience: [userPool.userPoolId],
+    audience: [client.userPoolClientId],
     issuer: `https://cognito-idp.${stack.region}.amazonaws.com/${userPool.userPoolId}`,
   },
 });

@@ -123,6 +123,32 @@
         }
       }
     },
+    "userpoolmyclientFAD947AB": {
+      "Type": "AWS::Cognito::UserPoolClient",
+      "Properties": {
+        "UserPoolId": {
+          "Ref": "userpool0AC4AA96"
+        },
+        "AllowedOAuthFlows": [
+          "implicit",
+          "code"
+        ],
+        "AllowedOAuthFlowsUserPoolClient": true,
+        "AllowedOAuthScopes": [
+          "profile",
+          "phone",
+          "email",
+          "openid",
+          "aws.cognito.signin.user.admin"
+        ],
+        "CallbackURLs": [
+          "https://example.com"
+        ],
+        "SupportedIdentityProviders": [
+          "COGNITO"
+        ]
+      }
+    },
     "MyAuthorizer6575980E": {
       "Type": "AWS::ApiGatewayV2::Authorizer",
       "Properties": {
@@ -137,7 +163,7 @@
         "JwtConfiguration": {
           "Audience": [
             {
-              "Ref": "userpool0AC4AA96"
+              "Ref": "userpoolmyclientFAD947AB"
             }
           ],
           "Issuer": {
