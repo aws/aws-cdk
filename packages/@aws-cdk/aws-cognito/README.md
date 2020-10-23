@@ -366,20 +366,8 @@ Error message when running `cdk synth` or `cdk deploy`:
 
 To work around the circular dependency issue, use the `attachInlinePolicy()` API instead, as shown below.
 
-```ts
-const postAuthFn = new lambda.Function(this, 'postAuthFn', {
-  code: lambda.Code.fromInline('post authentication'),
-  runtime: lambda.Runtime.NODEJS_12_X,
-  handler: 'index.handler',
-});
-
-const userpool = new cognito.UserPool(this, 'myuserpool', {
-  lambdaTriggers: {
-    postAuthentication: postAuthFn,
-  },
-});
-
-// provide permissions to describe the user pool scoped to the ARN of 'myuserpool'
+```ts fixture=with-lambda-trigger
+// provide permissions to describe the user pool scoped to the ARN the user pool
 postAuthFn.role?.attachInlinePolicy(new iam.Policy(this, 'userpool-policy', {
   statements: [new iam.PolicyStatement({
     actions: ['cognito-idp:DescribeUserPool'],
