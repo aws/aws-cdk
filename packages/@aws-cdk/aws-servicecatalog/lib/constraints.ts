@@ -1,4 +1,5 @@
 import * as iam from '@aws-cdk/aws-iam';
+import * as sns from '@aws-cdk/aws-sns';
 import * as core from '@aws-cdk/core';
 import * as constructs from 'constructs';
 import { Language } from './language';
@@ -6,38 +7,135 @@ import { IPortfolio } from './portfolio';
 import { IProduct } from './product';
 import * as servicecatalog from './servicecatalog.generated';
 
+/**
+ * Represents an AWS ServiceCatalog constraint
+ */
 export interface IConstraint extends core.IResource {
+  /**
+   * The language code.
+   *
+   * @default en
+   */
+  readonly acceptLanguage?: Language;
+
+  /**
+   * The constraint's description.
+   *
+   * @default none
+   */
+  readonly description?: string;
+
+  /**
+   * The portfolio to associate this constraint to.
+   *
+   * @default none
+   */
+  readonly portfolio?: IPortfolio;
+
+  /**
+   * The product to associate this constraint to.
+   *
+   * @default none
+   */
+  readonly product?: IProduct;
+
+  /**
+   * Applies a constraint to a product/portfolio
+   *
+   * @param product The product to apply the constraint to.
+   * @param portfolio The portfolio containing the product.
+   */
+  apply(product: IProduct, portfolio: IPortfolio): void
 }
 
 interface BaseConstraintProps {
+  /**
+   * The language code.
+   *
+   * @default en
+   */
   readonly acceptLanguage?: Language;
+  /**
+   * Constraint description
+   *
+   * @default none
+   */
   readonly description?: string;
+  /**
+   * Portfolio to associate the constraint with.
+   *
+   * @default none
+   */
   readonly portfolio?: IPortfolio;
+  /**
+   * Product within the portfolio to associate the constraint with.
+   *
+   * @default none
+   */
   readonly product?: IProduct;
 }
 
+/**
+ * Launch Notification Constraint properties
+ */
 export interface LaunchNotificationConstraintProps extends BaseConstraintProps {
-  // TODO: accept sns.ITopic or a similar Interface (INotifiable maybe?)
-  readonly notificationArns: string[];
+  /**
+   * A list of topics to notify
+   */
+  readonly topics: sns.ITopic[];
 }
+/**
+ * Launch Role Constraint properties
+ */
 export interface LaunchRoleConstraintProps extends BaseConstraintProps {
-  // TODO: Do we want to support local role here? Importing resources into CDK is possible which alleviates some of the pain
-  // this parameter attempts to solve.
-  readonly localRoleName?: string;
-  readonly role?: iam.IRole;
+  /**
+   * Role used to launch the stack.
+   */
+  readonly role: iam.IRole;
 }
+/**
+ * Launch Template Constraint properties
+ */
 export interface LaunchTemplateConstraintProps extends BaseConstraintProps {
-  // TODO: make this it's own type
+  // TODO: make this it's own type instead of a string
+  /**
+   * Launch Template Constraint Rules
+   */
   readonly rules: string;
 }
+/**
+ * Resource Update Constraint properties
+ */
 export interface ResourceUpdateConstraintProps extends BaseConstraintProps {
+  /**
+   * Whether or not to allow tag updates on provisioned product
+   */
   readonly allowTagUpdateOnProvisionedProduct: boolean;
 }
+/**
+ * StackSet Constraint properties
+ */
 export interface StackSetConstraintProps extends BaseConstraintProps {
+
+  /**
+   * One or more AWS accounts that will have access to the provisioned product.
+   */
   readonly accounts: string[];
+  /**
+   * IAM Role used to manage the target accounts
+   */
   readonly adminRole: iam.IRole;
+  /**
+   * IAM Role used to execute the StackSet.
+   */
   readonly executionRole: iam.IRole;
+  /**
+   * One or more AWS Regions where the provisioned product will be available.
+   */
   readonly regions: string[];
+  /**
+   * Whether or not to allow permission to create, update, and delete stack instances.
+   */
   readonly allowStackInstanceControl: boolean;
 }
 
@@ -54,13 +152,22 @@ abstract class ConstraintBase extends core.Resource implements IConstraint {
     this.portfolio = props.portfolio;
     this.product = props.product;
   }
+  abstract apply(product: IProduct, portfolio: IPortfolio): void
 }
 
+/**
+ * Creates a Launch Notification Constraint
+ *
+ * @resource AWS::ServiceCatalog::LaunchNotificationConstraint
+ */
 export class LaunchNotificationConstraint extends ConstraintBase implements IConstraint {
-  readonly notificationArns: string[];
+  /**
+   * A list of topics to notify
+   */
+  readonly topics: sns.ITopic[];
   constructor(scope: constructs.Construct, id: string, props: LaunchNotificationConstraintProps) {
     super(scope, id, props);
-    this.notificationArns = props.notificationArns;
+    this.topics = props.topics;
 
     if (props.product && props.portfolio) {
       this.apply(props.product, props.portfolio);
@@ -72,16 +179,22 @@ export class LaunchNotificationConstraint extends ConstraintBase implements ICon
       description: this.description,
       portfolioId: portfolio.portfolioId,
       productId: product.productId,
-      notificationArns: this.notificationArns,
+      notificationArns: Array.from(this.topics, n => n.topicArn),
     });
   }
 }
+/**
+ * Create a new Launch Role Constraint
+ *
+ * @resource AWS::ServiceCatalog::LaunchRoleConstraint
+ */
 export class LaunchRoleConstraint extends ConstraintBase implements IConstraint {
-  readonly localRoleName?: string;
+  /**
+   * Role used to launch the stack.
+   */
   readonly role?: iam.IRole;
   constructor(scope: constructs.Construct, id: string, props: LaunchRoleConstraintProps) {
     super(scope, id, props);
-    this.localRoleName = props.localRoleName;
     this.role = props.role;
 
     if (props.product && props.portfolio) {
@@ -94,12 +207,19 @@ export class LaunchRoleConstraint extends ConstraintBase implements IConstraint 
       description: this.description,
       portfolioId: portfolio.portfolioId,
       productId: product.productId,
-      localRoleName: this.localRoleName,
       roleArn: this.role?.roleArn,
     });
   }
 }
+/**
+ * Create a new Launch Template Constraint
+ *
+ * @resource AWS::ServiceCatalog::LaunchTemplateConstraint
+ */
 export class LaunchTemplateConstraint extends ConstraintBase implements IConstraint {
+  /**
+   * Launch Template Constraint Rules
+   */
   readonly rules: string;
   constructor(scope: constructs.Construct, id: string, props: LaunchTemplateConstraintProps) {
     super(scope, id, props);
@@ -119,7 +239,15 @@ export class LaunchTemplateConstraint extends ConstraintBase implements IConstra
     });
   }
 }
+/**
+ * Create a new Resource Update Constraint
+ *
+ * @resource AWS::ServiceCatalog::ResourceUpdateConstraint
+ */
 export class ResourceUpdateConstraint extends ConstraintBase implements IConstraint {
+  /**
+   * Whether or not to allow tag updates on provisioned product
+   */
   readonly allowTagUpdateOnProvisionedProduct: boolean;
   private tagUpdateOnProvisionedProduct: 'ALLOWED' | 'NOT_ALLOWED'
 
@@ -142,12 +270,31 @@ export class ResourceUpdateConstraint extends ConstraintBase implements IConstra
     });
   }
 }
-
+/**
+ * Create a new StackSetConstraint
+ *
+ * @resource AWS::ServiceCatalog::StackSetConstraint
+ */
 export class StackSetConstraint extends ConstraintBase implements IConstraint {
+  /**
+   * One or more AWS accounts that will have access to the provisioned product.
+   */
   readonly accounts: string[];
+  /**
+   * IAM Role used to manage the target accounts
+   */
   readonly adminRole: iam.IRole;
+  /**
+   * IAM Role used to execute the StackSet.
+   */
   readonly executionRole: iam.IRole;
+  /**
+   * One or more AWS Regions where the provisioned product will be available.
+   */
   readonly regions: string[];
+  /**
+   * Whether or not to allow permission to create, update, and delete stack instances.
+   */
   readonly allowStackInstanceControl: boolean;
   private stackInstanceControl: 'ALLOWED' | 'NOT_ALLOWED';
 
@@ -164,7 +311,6 @@ export class StackSetConstraint extends ConstraintBase implements IConstraint {
     }
   }
   public apply(product: IProduct, portfolio: IPortfolio) {
-
     new servicecatalog.CfnStackSetConstraint(this, 'stackSetConstraint', {
       acceptLanguage: this.acceptLanguage,
       // As of 2020-10-23 the CloudFormation Resource Specification says the "Description" parameter of this resource is required.

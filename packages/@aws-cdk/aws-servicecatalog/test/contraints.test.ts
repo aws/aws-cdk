@@ -1,5 +1,6 @@
 import '@aws-cdk/assert/jest';
 import * as iam from '@aws-cdk/aws-iam';
+import * as sns from '@aws-cdk/aws-sns';
 import * as core from '@aws-cdk/core';
 import * as catalog from '../lib';
 
@@ -7,18 +8,31 @@ import * as catalog from '../lib';
 /* eslint-disable quote-props */
 
 describe('Constraints', () => {
-  const stack = new core.Stack();
-  const portfolio = new catalog.Portfolio(stack, 'portfolio', { portfolioName: 'test', provider: 'test' });
-  const product = new catalog.Product(stack, 'product', { productName: 'test', owner: 'test', templatePath: './README.md' });
-  product.associateToPortfolio(portfolio);
-
-  test('LaunchNotificationConstraint resource', () => {
-    new catalog.LaunchNotificationConstraint(stack, 'launchNotificationConstraint', { portfolio: portfolio, product: product, notificationArns: ['1234'] });
-    expect(stack).toHaveResource('AWS::ServiceCatalog::LaunchNotificationConstraint', { NotificationArns: ['1234'] });
+  let stack: core.Stack;
+  let portfolio: catalog.IPortfolio;
+  let product: catalog.IProduct;
+  beforeEach(() => {
+    stack = new core.Stack();
+    portfolio = new catalog.Portfolio(stack, 'portfolio', { portfolioName: 'test', provider: 'test' });
+    product = new catalog.Product(stack, 'product', { productName: 'test', owner: 'test', templatePath: './README.md' });
+    product.associateToPortfolio(portfolio);
   });
-  test('LaunchRoleConstraint resource', () => {
-    new catalog.LaunchRoleConstraint(stack, 'launchRoleConstraint', { portfolio: portfolio, product: product, localRoleName: 'myrole' });
-    expect(stack).toHaveResource('AWS::ServiceCatalog::LaunchRoleConstraint', { LocalRoleName: 'myrole' });
+  test('LaunchNotificationConstraint resource', () => {
+    const topic = new sns.Topic(stack, 'topic');
+    new catalog.LaunchNotificationConstraint(stack, 'launchNotificationConstraint', { portfolio: portfolio, product: product, topics: [topic] });
+    expect(stack).toHaveResource('AWS::ServiceCatalog::LaunchNotificationConstraint', { NotificationArns: [stack.resolve(topic.topicArn)] });
+  });
+  describe('LaunchRoleConstraint resource', () => {
+    test('local role', () => {
+      const role = new iam.Role(stack, 'testadminrole', { assumedBy: new iam.ServicePrincipal('aws') });
+      new catalog.LaunchRoleConstraint(stack, 'launchRoleConstraint', { portfolio: portfolio, product: product, role: role });
+      expect(stack).toHaveResource('AWS::ServiceCatalog::LaunchRoleConstraint', { RoleArn: stack.resolve(role.roleArn) });
+    });
+    test('role arn', () => {
+      const role = new iam.Role(stack, 'testadminrole', { assumedBy: new iam.ServicePrincipal('aws') });
+      new catalog.LaunchRoleConstraint(stack, 'launchRoleConstraint', { portfolio: portfolio, product: product, role: role });
+      expect(stack).toHaveResource('AWS::ServiceCatalog::LaunchRoleConstraint', { RoleArn: stack.resolve(role.roleArn) });
+    });
   });
   test('LaunchTemplateConstraint resource', () => {
     new catalog.LaunchTemplateConstraint(stack, 'launchTemplateConstraint', { portfolio: portfolio, product: product, rules: 'test' });
@@ -34,24 +48,46 @@ describe('Constraints', () => {
       expect(stack).toHaveResource('AWS::ServiceCatalog::ResourceUpdateConstraint', { TagUpdateOnProvisionedProduct: 'ALLOWED' });
     });
   });
-  test('StackSetConstraint resource', () => {
-    const role = new iam.Role(stack, 'testadminrole', { assumedBy: new iam.ServicePrincipal('aws') });
-    new catalog.StackSetConstraint(stack, 'stackSetConstraint', {
-      portfolio: portfolio,
-      product: product,
-      accounts: ['1234'],
-      adminRole: role,
-      executionRole: role,
-      regions: ['us-west-2'],
-      allowStackInstanceControl: false,
+  describe('StackSetConstraint resource', () => {
+    test('StackInstanceControl ALLOWED', () => {
+      const role = new iam.Role(stack, 'testadminrole', { assumedBy: new iam.ServicePrincipal('aws') });
+      new catalog.StackSetConstraint(stack, 'stackSetConstraint', {
+        portfolio: portfolio,
+        product: product,
+        accounts: ['1234'],
+        adminRole: role,
+        executionRole: role,
+        regions: ['us-west-2'],
+        allowStackInstanceControl: true,
+      });
+      expect(stack).toHaveResource('AWS::ServiceCatalog::StackSetConstraint', {
+        AccountList: ['1234'],
+        AdminRole: stack.resolve(role.roleArn),
+        ExecutionRole: stack.resolve(role.roleArn),
+        RegionList: ['us-west-2'],
+        StackInstanceControl: 'ALLOWED',
+        Description: 'no description',
+      });
     });
-    expect(stack).toHaveResource('AWS::ServiceCatalog::StackSetConstraint', {
-      AccountList: ['1234'],
-      AdminRole: stack.resolve(role.roleArn),
-      ExecutionRole: stack.resolve(role.roleArn),
-      RegionList: ['us-west-2'],
-      StackInstanceControl: 'NOT_ALLOWED',
-      Description: 'no description',
+    test('StackInstanceControl NOT_ALLOWED', () => {
+      const role = new iam.Role(stack, 'testadminrole', { assumedBy: new iam.ServicePrincipal('aws') });
+      new catalog.StackSetConstraint(stack, 'stackSetConstraint', {
+        portfolio: portfolio,
+        product: product,
+        accounts: ['1234'],
+        adminRole: role,
+        executionRole: role,
+        regions: ['us-west-2'],
+        allowStackInstanceControl: false,
+      });
+      expect(stack).toHaveResource('AWS::ServiceCatalog::StackSetConstraint', {
+        AccountList: ['1234'],
+        AdminRole: stack.resolve(role.roleArn),
+        ExecutionRole: stack.resolve(role.roleArn),
+        RegionList: ['us-west-2'],
+        StackInstanceControl: 'NOT_ALLOWED',
+        Description: 'no description',
+      });
     });
   });
 });
