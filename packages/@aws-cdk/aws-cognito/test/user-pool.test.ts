@@ -1271,6 +1271,27 @@ describe('User Pool', () => {
       })).toThrow(/enableSmsRole cannot be disabled/);
     });
   });
+
+  test('email transmission with cyrillic characters are encoded', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'Pool', {
+      emailSettings: {
+        from: 'from@домен.рф',
+        replyTo: 'replyTo@домен.рф',
+      },
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+      EmailConfiguration: {
+        From: 'from@xn--d1acufc.xn--p1ai',
+        ReplyToEmailAddress: 'replyTo@xn--d1acufc.xn--p1ai',
+      },
+    });
+  });
 });
 
 

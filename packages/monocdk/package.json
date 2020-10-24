@@ -81,6 +81,7 @@
     "fs-extra",
     "jsonschema",
     "minimatch",
+    "punycode",
     "semver",
     "yaml"
   ],
@@ -89,6 +90,7 @@
     "fs-extra": "^9.0.1",
     "jsonschema": "^1.4.0",
     "minimatch": "^3.0.4",
+    "punycode": "^2.1.1",
     "semver": "^7.3.2",
     "yaml": "1.10.0"
   },
