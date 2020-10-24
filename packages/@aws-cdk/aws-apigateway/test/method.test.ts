@@ -1,8 +1,8 @@
-import { ABSENT, expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import '@aws-cdk/assert/jest';
+import { ABSENT } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import * as apigw from '../lib';
 
 const DUMMY_AUTHORIZER: apigw.IAuthorizer = {
@@ -10,8 +10,8 @@ const DUMMY_AUTHORIZER: apigw.IAuthorizer = {
   authorizationType: apigw.AuthorizationType.CUSTOM,
 };
 
-export = {
-  'default setup'(test: Test) {
+describe('method', () => {
+  test('default setup', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigw.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
@@ -23,18 +23,18 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
       HttpMethod: 'POST',
       AuthorizationType: 'NONE',
       Integration: {
         Type: 'MOCK',
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  'method options can be specified'(test: Test) {
+  });
+
+  test('method options can be specified', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigw.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
@@ -50,15 +50,15 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
       ApiKeyRequired: true,
       OperationName: 'MyOperation',
-    }));
+    });
 
-    test.done();
-  },
 
-  'integration can be set via a property'(test: Test) {
+  });
+
+  test('integration can be set via a property', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigw.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
@@ -71,7 +71,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
       Integration: {
         IntegrationHttpMethod: 'POST',
         Type: 'AWS',
@@ -85,12 +85,12 @@ export = {
           ],
         },
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  'integration with a custom http method can be set via a property'(test: Test) {
+  });
+
+  test('integration with a custom http method can be set via a property', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigw.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
@@ -103,16 +103,16 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::ApiGateway::Method', {
+    expect(stack).toHaveResourceLike('AWS::ApiGateway::Method', {
       Integration: {
         IntegrationHttpMethod: 'GET',
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  'use default integration from api'(test: Test) {
+  });
+
+  test('use default integration from api', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const defaultIntegration = new apigw.Integration({ type: apigw.IntegrationType.HTTP_PROXY, uri: 'https://amazon.com' });
@@ -129,17 +129,17 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
       Integration: {
         Type: 'HTTP_PROXY',
         Uri: 'https://amazon.com',
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  '"methodArn" returns the ARN execute-api ARN for this method in the current stage'(test: Test) {
+  });
+
+  test('"methodArn" returns the ARN execute-api ARN for this method in the current stage', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigw.RestApi(stack, 'test-api');
@@ -151,7 +151,7 @@ export = {
     });
 
     // THEN
-    test.deepEqual(stack.resolve(method.methodArn), {
+    expect(stack.resolve(method.methodArn)).toEqual({
       'Fn::Join': [
         '',
         [
@@ -170,10 +170,10 @@ export = {
       ],
     });
 
-    test.done();
-  },
 
-  '"testMethodArn" returns the ARN of the "test-invoke-stage" stage (console UI)'(test: Test) {
+  });
+
+  test('"testMethodArn" returns the ARN of the "test-invoke-stage" stage (console UI)', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigw.RestApi(stack, 'test-api');
@@ -185,7 +185,7 @@ export = {
     });
 
     // THEN
-    test.deepEqual(stack.resolve(method.testMethodArn), {
+    expect(stack.resolve(method.testMethodArn)).toEqual({
       'Fn::Join': [
         '',
         [
@@ -202,10 +202,10 @@ export = {
       ],
     });
 
-    test.done();
-  },
 
-  '"methodArn" returns an arn with "*" as its stage when deploymentStage is not set'(test: Test) {
+  });
+
+  test('"methodArn" returns an arn with "*" as its stage when deploymentStage is not set', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigw.RestApi(stack, 'test-api', { deploy: false });
@@ -214,7 +214,7 @@ export = {
     const method = new apigw.Method(stack, 'my-method', { httpMethod: 'POST', resource: api.root });
 
     // THEN
-    test.deepEqual(stack.resolve(method.methodArn), {
+    expect(stack.resolve(method.methodArn)).toEqual({
       'Fn::Join': [
         '',
         [
@@ -231,17 +231,17 @@ export = {
       ],
     });
 
-    test.done();
-  },
 
-  '"methodArn" and "testMethodArn" replace path parameters with asterisks'(test: Test) {
+  });
+
+  test('"methodArn" and "testMethodArn" replace path parameters with asterisks', () => {
     const stack = new cdk.Stack();
     const api = new apigw.RestApi(stack, 'test-api');
     const petId = api.root.addResource('pets').addResource('{petId}');
     const commentId = petId.addResource('comments').addResource('{commentId}');
     const method = commentId.addMethod('GET');
 
-    test.deepEqual(stack.resolve(method.methodArn), {
+    expect(stack.resolve(method.methodArn)).toEqual({
       'Fn::Join': [
         '',
         [
@@ -260,7 +260,7 @@ export = {
       ],
     });
 
-    test.deepEqual(stack.resolve(method.testMethodArn), {
+    expect(stack.resolve(method.testMethodArn)).toEqual({
       'Fn::Join': [
         '',
         [
@@ -277,10 +277,10 @@ export = {
       ],
     });
 
-    test.done();
-  },
 
-  'integration "credentialsRole" can be used to assume a role when calling backend'(test: Test) {
+  });
+
+  test('integration "credentialsRole" can be used to assume a role when calling backend', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigw.RestApi(stack, 'test-api', { deploy: false });
@@ -295,15 +295,15 @@ export = {
     }));
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::ApiGateway::Method', {
+    expect(stack).toHaveResourceLike('AWS::ApiGateway::Method', {
       Integration: {
         Credentials: { 'Fn::GetAtt': ['MyRoleF48FFE04', 'Arn'] },
       },
-    }));
-    test.done();
-  },
+    });
 
-  'integration "credentialsPassthrough" can be used to passthrough user credentials to backend'(test: Test) {
+  });
+
+  test('integration "credentialsPassthrough" can be used to passthrough user credentials to backend', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigw.RestApi(stack, 'test-api', { deploy: false });
@@ -317,15 +317,15 @@ export = {
     }));
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::ApiGateway::Method', {
+    expect(stack).toHaveResourceLike('AWS::ApiGateway::Method', {
       Integration: {
         Credentials: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::*:user/*']] },
       },
-    }));
-    test.done();
-  },
+    });
 
-  'methodResponse set one or more method responses via options'(test: Test) {
+  });
+
+  test('methodResponse set one or more method responses via options', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigw.RestApi(stack, 'test-api', { deploy: false });
@@ -356,7 +356,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
       HttpMethod: 'GET',
       MethodResponses: [{
         StatusCode: '200',
@@ -375,12 +375,12 @@ export = {
           'text/plain': 'Error',
         },
       }],
-    }));
+    });
 
-    test.done();
-  },
 
-  'multiple integration responses can be used'(test: Test) { // @see https://github.com/aws/aws-cdk/issues/1608
+  });
+
+  test('multiple integration responses can be used', () => { // @see https://github.com/aws/aws-cdk/issues/1608
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigw.RestApi(stack, 'test-api', { deploy: false });
@@ -405,7 +405,7 @@ export = {
     }));
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
       Integration: {
         IntegrationHttpMethod: 'POST',
         IntegrationResponses: [
@@ -422,11 +422,11 @@ export = {
         Type: 'AWS',
         Uri: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':apigateway:', { Ref: 'AWS::Region' }, ':foo-service:action/BarAction']] },
       },
-    }));
-    test.done();
-  },
+    });
 
-  'method is always set as uppercase'(test: Test) {
+  });
+
+  test('method is always set as uppercase', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigw.RestApi(stack, 'api');
@@ -437,13 +437,13 @@ export = {
     api.root.addMethod('PUT');
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', { HttpMethod: 'POST' }));
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', { HttpMethod: 'GET' }));
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', { HttpMethod: 'PUT' }));
-    test.done();
-  },
+    expect(stack).toHaveResource('AWS::ApiGateway::Method', { HttpMethod: 'POST' });
+    expect(stack).toHaveResource('AWS::ApiGateway::Method', { HttpMethod: 'GET' });
+    expect(stack).toHaveResource('AWS::ApiGateway::Method', { HttpMethod: 'PUT' });
 
-  'requestModel can be set'(test: Test) {
+  });
+
+  test('requestModel can be set', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigw.RestApi(stack, 'test-api', { deploy: false });
@@ -469,17 +469,17 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
       HttpMethod: 'GET',
       RequestModels: {
         'application/json': { Ref: stack.getLogicalId(model.node.findChild('Resource') as cdk.CfnElement) },
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  'methodResponse has a mix of response modes'(test: Test) {
+  });
+
+  test('methodResponse has a mix of response modes', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigw.RestApi(stack, 'test-api', { deploy: false });
@@ -519,7 +519,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
       HttpMethod: 'GET',
       MethodResponses: [{
         StatusCode: '200',
@@ -539,12 +539,12 @@ export = {
           'text/html': { Ref: stack.getLogicalId(htmlModel.node.findChild('Resource') as cdk.CfnElement) },
         },
       }],
-    }));
+    });
 
-    test.done();
-  },
 
-  'method has a request validator'(test: Test) {
+  });
+
+  test('method has a request validator', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigw.RestApi(stack, 'test-api', { deploy: false });
@@ -563,19 +563,19 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
       RequestValidatorId: { Ref: stack.getLogicalId(validator.node.findChild('Resource') as cdk.CfnElement) },
-    }));
-    expect(stack).to(haveResource('AWS::ApiGateway::RequestValidator', {
+    });
+    expect(stack).toHaveResource('AWS::ApiGateway::RequestValidator', {
       RestApiId: { Ref: stack.getLogicalId(api.node.findChild('Resource') as cdk.CfnElement) },
       ValidateRequestBody: true,
       ValidateRequestParameters: false,
-    }));
+    });
 
-    test.done();
-  },
 
-  'use default requestParameters'(test: Test) {
+  });
+
+  test('use default requestParameters', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigw.RestApi(stack, 'test-api', {
@@ -596,17 +596,17 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
       OperationName: 'defaultRequestParameters',
       RequestParameters: {
         'method.request.path.proxy': true,
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  'authorizer is bound correctly'(test: Test) {
+  });
+
+  test('authorizer is bound correctly', () => {
     const stack = new cdk.Stack();
 
     const restApi = new apigw.RestApi(stack, 'myrestapi');
@@ -614,16 +614,16 @@ export = {
       authorizer: DUMMY_AUTHORIZER,
     });
 
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
       HttpMethod: 'ANY',
       AuthorizationType: 'CUSTOM',
       AuthorizerId: DUMMY_AUTHORIZER.authorizerId,
-    }));
+    });
 
-    test.done();
-  },
 
-  'authorizer via default method options'(test: Test) {
+  });
+
+  test('authorizer via default method options', () => {
     const stack = new cdk.Stack();
 
     const func = new lambda.Function(stack, 'myfunction', {
@@ -644,31 +644,31 @@ export = {
     });
     restApi.root.addMethod('ANY');
 
-    expect(stack).to(haveResource('AWS::ApiGateway::Authorizer', {
+    expect(stack).toHaveResource('AWS::ApiGateway::Authorizer', {
       Name: 'myauthorizer1',
       Type: 'TOKEN',
       RestApiId: stack.resolve(restApi.restApiId),
-    }));
+    });
 
-    test.done();
-  },
 
-  'fails when authorization type does not match the authorizer'(test: Test) {
+  });
+
+  test('fails when authorization type does not match the authorizer', () => {
     const stack = new cdk.Stack();
 
     const restApi = new apigw.RestApi(stack, 'myrestapi');
 
-    test.throws(() => {
+    expect(() => {
       restApi.root.addMethod('ANY', undefined, {
         authorizationType: apigw.AuthorizationType.IAM,
         authorizer: DUMMY_AUTHORIZER,
       });
-    }, /Authorization type is set to AWS_IAM which is different from what is required by the authorizer/);
+    }).toThrow(/Authorization type is set to AWS_IAM which is different from what is required by the authorizer/);
 
-    test.done();
-  },
 
-  'fails when authorization type does not match the authorizer in default method options'(test: Test) {
+  });
+
+  test('fails when authorization type does not match the authorizer in default method options', () => {
     const stack = new cdk.Stack();
 
     const restApi = new apigw.RestApi(stack, 'myrestapi', {
@@ -677,16 +677,16 @@ export = {
       },
     });
 
-    test.throws(() => {
+    expect(() => {
       restApi.root.addMethod('ANY', undefined, {
         authorizationType: apigw.AuthorizationType.NONE,
       });
-    }, /Authorization type is set to NONE which is different from what is required by the authorizer/);
+    }).toThrow(/Authorization type is set to NONE which is different from what is required by the authorizer/);
 
-    test.done();
-  },
 
-  'method has Auth Scopes'(test: Test) {
+  });
+
+  test('method has Auth Scopes', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigw.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
@@ -702,15 +702,15 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
       ApiKeyRequired: true,
       AuthorizationScopes: ['AuthScope1', 'AuthScope2'],
-    }));
+    });
 
-    test.done();
-  },
 
-  'use default Auth Scopes'(test: Test) {
+  });
+
+  test('use default Auth Scopes', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigw.RestApi(stack, 'test-api', {
@@ -731,15 +731,15 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
       OperationName: 'defaultAuthScopes',
       AuthorizationScopes: ['DefaultAuth'],
-    }));
+    });
 
-    test.done();
-  },
 
-  'Method options Auth Scopes is picked up'(test: Test) {
+  });
+
+  test('Method options Auth Scopes is picked up', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigw.RestApi(stack, 'test-api', {
@@ -761,15 +761,15 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
       ApiKeyRequired: true,
       AuthorizationScopes: ['MethodAuthScope'],
-    }));
+    });
 
-    test.done();
-  },
 
-  'Auth Scopes absent'(test: Test) {
+  });
+
+  test('Auth Scopes absent', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigw.RestApi(stack, 'test-api', {
@@ -787,15 +787,15 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
       OperationName: 'authScopesAbsent',
       AuthorizationScopes: ABSENT,
-    }));
+    });
 
-    test.done();
-  },
 
-  'method has a request validator with provided properties'(test: Test) {
+  });
+
+  test('method has a request validator with provided properties', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigw.RestApi(stack, 'test-api', { deploy: false });
@@ -814,17 +814,17 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::RequestValidator', {
+    expect(stack).toHaveResource('AWS::ApiGateway::RequestValidator', {
       RestApiId: stack.resolve(api.restApiId),
       ValidateRequestBody: true,
       ValidateRequestParameters: false,
       Name: 'test-validator',
-    }));
+    });
 
-    test.done();
-  },
 
-  'method does not have a request validator'(test: Test) {
+  });
+
+  test('method does not have a request validator', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigw.RestApi(stack, 'test-api', { deploy: false });
@@ -836,14 +836,14 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
       RequestValidatorId: ABSENT,
-    }));
+    });
 
-    test.done();
-  },
 
-  'method does not support both request validator and request validator options'(test: Test) {
+  });
+
+  test('method does not support both request validator and request validator options', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigw.RestApi(stack, 'test-api', { deploy: false });
@@ -867,13 +867,13 @@ export = {
     };
 
     // THEN
-    test.throws(() => new apigw.Method(stack, 'method', methodProps),
-      /Only one of 'requestValidator' or 'requestValidatorOptions' must be specified./);
+    expect(() => new apigw.Method(stack, 'method', methodProps))
+      .toThrow(/Only one of 'requestValidator' or 'requestValidatorOptions' must be specified./);
 
-    test.done();
-  },
 
-  '"restApi" and "api" properties return the RestApi correctly'(test: Test) {
+  });
+
+  test('"restApi" and "api" properties return the RestApi correctly', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -882,14 +882,14 @@ export = {
     const method = api.root.addResource('pets').addMethod('GET');
 
     // THEN
-    test.ok(method.restApi);
-    test.ok(method.api);
-    test.deepEqual(stack.resolve(method.api.restApiId), stack.resolve(method.restApi.restApiId));
+    expect(method.restApi).toBeDefined();
+    expect(method.api).toBeDefined();
+    expect(stack.resolve(method.api.restApiId)).toEqual(stack.resolve(method.restApi.restApiId));
 
-    test.done();
-  },
 
-  '"restApi" throws an error on imported while "api" returns correctly'(test: Test) {
+  });
+
+  test('"restApi" throws an error on imported while "api" returns correctly', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -901,9 +901,9 @@ export = {
     const method = api.root.addResource('pets').addMethod('GET');
 
     // THEN
-    test.throws(() => method.restApi, /not available on Resource not connected to an instance of RestApi/);
-    test.ok(method.api);
+    expect(() => method.restApi).toThrow(/not available on Resource not connected to an instance of RestApi/);
+    expect(method.api).toBeDefined();
 
-    test.done();
-  },
-};
+
+  });
+});
