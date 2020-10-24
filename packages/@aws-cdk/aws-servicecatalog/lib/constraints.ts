@@ -17,9 +17,12 @@ interface BaseConstraintProps {
 }
 
 export interface LaunchNotificationConstraintProps extends BaseConstraintProps {
+  // TODO: accept sns.ITopic or a similar Interface (INotifiable maybe?)
   readonly notificationArns: string[];
 }
 export interface LaunchRoleConstraintProps extends BaseConstraintProps {
+  // TODO: Do we want to support local role here? Importing resources into CDK is possible which alleviates some of the pain
+  // this parameter attempts to solve.
   readonly localRoleName?: string;
   readonly role?: iam.IRole;
 }
@@ -50,10 +53,6 @@ abstract class ConstraintBase extends core.Resource implements IConstraint {
     this.description = props.description;
     this.portfolio = props.portfolio;
     this.product = props.product;
-  }
-  // This function could potentially made to be more generic so that callers only need to pass the diff between base props and their specific props.
-  protected absApply<R extends core.CfnResource, RP>(R: new (scope: core.Construct, id: string, props: RP) => R, baseProps: RP) {
-    new R(this, 'productContraint', baseProps);
   }
 }
 
@@ -127,11 +126,7 @@ export class ResourceUpdateConstraint extends ConstraintBase implements IConstra
   constructor(scope: constructs.Construct, id: string, props: ResourceUpdateConstraintProps) {
     super(scope, id, props);
     this.allowTagUpdateOnProvisionedProduct = props.allowTagUpdateOnProvisionedProduct;
-    if (this.allowTagUpdateOnProvisionedProduct) {
-      this.tagUpdateOnProvisionedProduct = 'ALLOWED';
-    } else {
-      this.tagUpdateOnProvisionedProduct = 'NOT_ALLOWED';
-    }
+    this.tagUpdateOnProvisionedProduct = this.allowTagUpdateOnProvisionedProduct ? 'ALLOWED' : 'NOT_ALLOWED';
 
     if (props.product && props.portfolio) {
       this.apply(props.product, props.portfolio);
@@ -163,24 +158,19 @@ export class StackSetConstraint extends ConstraintBase implements IConstraint {
     this.executionRole = props.executionRole;
     this.regions = props.regions;
     this.allowStackInstanceControl = props.allowStackInstanceControl;
-
-    // As of 2020-10-23 the CloudFormation Resource Specification says the "Description" parameter of this resource is required.
-    // This is likely a bug and this field can be removed once this issue is resolved.
-    this.description === undefined ? props.description : 'No description';
-
-    if (this.allowStackInstanceControl) {
-      this.stackInstanceControl = 'ALLOWED';
-    } else {
-      this.stackInstanceControl = 'NOT_ALLOWED';
-    }
+    this.stackInstanceControl = this.allowStackInstanceControl ? 'ALLOWED' : 'NOT_ALLOWED';
     if (props.product && props.portfolio) {
       this.apply(props.product, props.portfolio);
     }
   }
   public apply(product: IProduct, portfolio: IPortfolio) {
+
     new servicecatalog.CfnStackSetConstraint(this, 'stackSetConstraint', {
       acceptLanguage: this.acceptLanguage,
-      description: this.description!,
+      // As of 2020-10-23 the CloudFormation Resource Specification says the "Description" parameter of this resource is required.
+      // This is likely a bug and these lines can be swapped once this issue is resolved.
+      description: this.description || 'no description',
+      // description: this.description,
       portfolioId: portfolio.portfolioId,
       productId: product.productId,
       stackInstanceControl: this.stackInstanceControl,
