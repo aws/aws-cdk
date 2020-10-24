@@ -1,11 +1,10 @@
-import { countResources, expect, haveResource } from '@aws-cdk/assert';
+import '@aws-cdk/assert/jest';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Duration, Stack } from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import * as apigw from '../lib';
 
-export = {
-  'adds an OPTIONS method to a resource'(test: Test) {
+describe('cors', () => {
+  test('adds an OPTIONS method to a resource', () => {
     // GIVEN
     const stack = new Stack();
     const api = new apigw.RestApi(stack, 'api');
@@ -17,7 +16,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
       HttpMethod: 'OPTIONS',
       ResourceId: { Ref: 'apiMyResourceD5CDB490' },
       Integration: {
@@ -48,11 +47,10 @@ export = {
           StatusCode: '204',
         },
       ],
-    }));
-    test.done();
-  },
+    });
+  });
 
-  'allowCredentials'(test: Test) {
+  test('allowCredentials', () => {
     // GIVEN
     const stack = new Stack();
     const api = new apigw.RestApi(stack, 'api');
@@ -65,7 +63,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
       HttpMethod: 'OPTIONS',
       ResourceId: { Ref: 'apiMyResourceD5CDB490' },
       Integration: {
@@ -98,11 +96,10 @@ export = {
           StatusCode: '204',
         },
       ],
-    }));
-    test.done();
-  },
+    });
+  });
 
-  'allowMethods'(test: Test) {
+  test('allowMethods', () => {
     // GIVEN
     const stack = new Stack();
     const api = new apigw.RestApi(stack, 'api');
@@ -115,7 +112,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
       HttpMethod: 'OPTIONS',
       ResourceId: { Ref: 'apiMyResourceD5CDB490' },
       Integration: {
@@ -146,11 +143,10 @@ export = {
           StatusCode: '204',
         },
       ],
-    }));
-    test.done();
-  },
+    });
+  });
 
-  'allowMethods ANY will expand to all supported methods'(test: Test) {
+  test('allowMethods ANY will expand to all supported methods', () => {
     // GIVEN
     const stack = new Stack();
     const api = new apigw.RestApi(stack, 'api');
@@ -163,7 +159,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
       HttpMethod: 'OPTIONS',
       ResourceId: { Ref: 'apiMyResourceD5CDB490' },
       Integration: {
@@ -194,26 +190,23 @@ export = {
           StatusCode: '204',
         },
       ],
-    }));
-    test.done();
-  },
+    });
+  });
 
-  'allowMethods ANY cannot be used with any other method'(test: Test) {
+  test('allowMethods ANY cannot be used with any other method', () => {
     // GIVEN
     const stack = new Stack();
     const api = new apigw.RestApi(stack, 'api');
     const resource = api.root.addResource('MyResource');
 
     // THEN
-    test.throws(() => resource.addCorsPreflight({
+    expect(() => resource.addCorsPreflight({
       allowOrigins: ['https://aws.amazon.com'],
       allowMethods: ['ANY', 'PUT'],
-    }), /ANY cannot be used with any other method. Received: ANY,PUT/);
+    })).toThrow(/ANY cannot be used with any other method. Received: ANY,PUT/);
+  });
 
-    test.done();
-  },
-
-  'statusCode can be used to set the response status code'(test: Test) {
+  test('statusCode can be used to set the response status code', () => {
     // GIVEN
     const stack = new Stack();
     const api = new apigw.RestApi(stack, 'api');
@@ -226,7 +219,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
       HttpMethod: 'OPTIONS',
       ResourceId: { Ref: 'apiMyResourceD5CDB490' },
       Integration: {
@@ -257,25 +250,22 @@ export = {
           StatusCode: '200',
         },
       ],
-    }));
-    test.done();
-  },
+    });
+  });
 
-  'allowOrigins must contain at least one origin'(test: Test) {
+  test('allowOrigins must contain at least one origin', () => {
     // GIVEN
     const stack = new Stack();
     const api = new apigw.RestApi(stack, 'api');
     const resource = api.root.addResource('MyResource');
 
     // WHEN
-    test.throws(() => resource.addCorsPreflight({
+    expect(() => resource.addCorsPreflight({
       allowOrigins: [],
-    }), /allowOrigins must contain at least one origin/);
+    })).toThrow(/allowOrigins must contain at least one origin/);
+  });
 
-    test.done();
-  },
-
-  'allowOrigins can be used to specify multiple origins'(test: Test) {
+  test('allowOrigins can be used to specify multiple origins', () => {
     // GIVEN
     const stack = new Stack();
     const api = new apigw.RestApi(stack, 'api');
@@ -287,7 +277,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
       HttpMethod: 'OPTIONS',
       ResourceId: { Ref: 'apiMyResourceD5CDB490' },
       Integration: {
@@ -321,11 +311,10 @@ export = {
           StatusCode: '204',
         },
       ],
-    }));
-    test.done();
-  },
+    });
+  });
 
-  'maxAge can be used to specify Access-Control-Max-Age'(test: Test) {
+  test('maxAge can be used to specify Access-Control-Max-Age', () => {
     // GIVEN
     const stack = new Stack();
     const api = new apigw.RestApi(stack, 'api');
@@ -338,7 +327,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
       HttpMethod: 'OPTIONS',
       ResourceId: { Ref: 'apiMyResourceD5CDB490' },
       Integration: {
@@ -371,11 +360,10 @@ export = {
           StatusCode: '204',
         },
       ],
-    }));
-    test.done();
-  },
+    });
+  });
 
-  'disableCache will set Max-Age to -1'(test: Test) {
+  test('disableCache will set Max-Age to -1', () => {
     // GIVEN
     const stack = new Stack();
     const api = new apigw.RestApi(stack, 'api');
@@ -388,7 +376,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
       HttpMethod: 'OPTIONS',
       ResourceId: { Ref: 'apiMyResourceD5CDB490' },
       Integration: {
@@ -421,27 +409,24 @@ export = {
           StatusCode: '204',
         },
       ],
-    }));
-    test.done();
-  },
+    });
+  });
 
-  'maxAge and disableCache are mutually exclusive'(test: Test) {
+  test('maxAge and disableCache are mutually exclusive', () => {
     // GIVEN
     const stack = new Stack();
     const api = new apigw.RestApi(stack, 'api');
     const resource = api.root.addResource('MyResource');
 
     // THEN
-    test.throws(() => resource.addCorsPreflight({
+    expect(() => resource.addCorsPreflight({
       allowOrigins: ['https://amazon.com'],
       disableCache: true,
       maxAge: Duration.seconds(10),
-    }), /The options "maxAge" and "disableCache" are mutually exclusive/);
+    })).toThrow(/The options "maxAge" and "disableCache" are mutually exclusive/);
+  });
 
-    test.done();
-  },
-
-  'exposeHeaders can be used to specify Access-Control-Expose-Headers'(test: Test) {
+  test('exposeHeaders can be used to specify Access-Control-Expose-Headers', () => {
     // GIVEN
     const stack = new Stack();
     const api = new apigw.RestApi(stack, 'api');
@@ -454,7 +439,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
       HttpMethod: 'OPTIONS',
       ResourceId: { Ref: 'apiMyResourceD5CDB490' },
       Integration: {
@@ -487,11 +472,10 @@ export = {
           StatusCode: '204',
         },
       ],
-    }));
-    test.done();
-  },
+    });
+  });
 
-  'defaultCorsPreflightOptions can be used to specify CORS for all resource tree'(test: Test) {
+  test('defaultCorsPreflightOptions can be used to specify CORS for all resource tree', () => {
     // GIVEN
     const stack = new Stack();
     const api = new apigw.RestApi(stack, 'api');
@@ -505,19 +489,18 @@ export = {
     resource.addResource('MyChildResource');
 
     // THEN
-    expect(stack).to(countResources('AWS::ApiGateway::Method', 2)); // on both resources
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    expect(stack).toCountResources('AWS::ApiGateway::Method', 2); // on both resources
+    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
       HttpMethod: 'OPTIONS',
       ResourceId: { Ref: 'apiMyResourceD5CDB490' },
-    }));
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    });
+    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
       HttpMethod: 'OPTIONS',
       ResourceId: { Ref: 'apiMyResourceMyChildResource2DC010C5' },
-    }));
-    test.done();
-  },
+    });
+  });
 
-  'defaultCorsPreflightOptions can be specified at the API level to apply to all resources'(test: Test) {
+  test('defaultCorsPreflightOptions can be specified at the API level to apply to all resources', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -532,22 +515,21 @@ export = {
     child1.addResource('child2');
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
       HttpMethod: 'OPTIONS',
       ResourceId: { 'Fn::GetAtt': ['apiC8550315', 'RootResourceId'] },
-    }));
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    });
+    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
       HttpMethod: 'OPTIONS',
       ResourceId: { Ref: 'apichild1841A5840' },
-    }));
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    });
+    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
       HttpMethod: 'OPTIONS',
       ResourceId: { Ref: 'apichild1child26A9A7C47' },
-    }));
-    test.done();
-  },
+    });
+  });
 
-  'Vary: Origin is sent back if Allow-Origin is not "*"'(test: Test) {
+  test('Vary: Origin is sent back if Allow-Origin is not "*"', () => {
     // GIVEN
     const stack = new Stack();
     const api = new apigw.RestApi(stack, 'api');
@@ -566,7 +548,7 @@ export = {
     });
 
     // THENB
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
       ResourceId: {
         Ref: 'apiAllowAll2F5BC564',
       },
@@ -596,8 +578,8 @@ export = {
           StatusCode: '204',
         },
       ],
-    }));
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    });
+    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
       ResourceId: {
         Ref: 'apiAllowSpecific77DD8AF1',
       },
@@ -629,26 +611,23 @@ export = {
           StatusCode: '204',
         },
       ],
-    }));
-    test.done();
-  },
+    });
+  });
 
-  'If "*" is specified in allow-origin, it cannot be mixed with specific origins'(test: Test) {
+  test('If "*" is specified in allow-origin, it cannot be mixed with specific origins', () => {
     // GIVEN
     const stack = new Stack();
     const api = new apigw.RestApi(stack, 'api');
 
     // WHEN
-    test.throws(() => api.root.addResource('AllowAll', {
+    expect(() => api.root.addResource('AllowAll', {
       defaultCorsPreflightOptions: {
         allowOrigins: ['https://bla.com', '*', 'https://specific'],
       },
-    }), /Invalid "allowOrigins" - cannot mix "\*" with specific origins: https:\/\/bla\.com,\*,https:\/\/specific/);
+    })).toThrow(/Invalid "allowOrigins" - cannot mix "\*" with specific origins: https:\/\/bla\.com,\*,https:\/\/specific/);
+  });
 
-    test.done();
-  },
-
-  'defaultCorsPreflightOptions can be used to specify CORS for all resource tree [LambdaRestApi]'(test: Test) {
+  test('defaultCorsPreflightOptions can be used to specify CORS for all resource tree [LambdaRestApi]', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -667,8 +646,8 @@ export = {
     });
 
     // THEN
-    expect(stack).to(countResources('AWS::ApiGateway::Method', 4)); // two ANY and two OPTIONS resources
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    expect(stack).toCountResources('AWS::ApiGateway::Method', 4); // two ANY and two OPTIONS resources
+    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
       HttpMethod: 'OPTIONS',
       ResourceId: {
         'Fn::GetAtt': [
@@ -676,17 +655,16 @@ export = {
           'RootResourceId',
         ],
       },
-    }));
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    });
+    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
       HttpMethod: 'OPTIONS',
       ResourceId: {
         Ref: 'lambdarestapiproxyE3AE07E3',
       },
-    }));
-    test.done();
-  },
+    });
+  });
 
-  'CORS and proxy resources'(test: Test) {
+  test('CORS and proxy resources', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -698,9 +676,8 @@ export = {
     api.root.addProxy();
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
       HttpMethod: 'OPTIONS',
-    }));
-    test.done();
-  },
-};
+    });
+  });
+});
