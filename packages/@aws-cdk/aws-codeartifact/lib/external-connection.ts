@@ -1,3 +1,7 @@
+/**
+ * CodeArtifact supports an external connection to the following public repositories.
+ * @see https://docs.aws.amazon.com/codeartifact/latest/ug/external-connection.html#supported-public-repositories
+ */
 export enum ExternalConnection {
   /**
    * NPM public registry

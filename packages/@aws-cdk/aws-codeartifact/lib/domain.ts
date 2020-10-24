@@ -1,9 +1,11 @@
-import * as core from '@aws-cdk/core';
+import { IResource, Resource, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as ca from './codeartifact.generated';
 
-export interface IDomain extends
-  // all L2 interfaces need to extend IResource
-  core.IResource {
+/**
+ * Represents a CodeArtifact domain
+ */
+export interface IDomain extends IResource {
 /**
  * The ARN of domain resource.
  * Equivalent to doing `{ 'Fn::GetAtt': ['LogicalId', 'Arn' ]}`
@@ -29,33 +31,92 @@ export interface IDomain extends
    * @attribute
    */
   readonly domainName: string;
+
+  /**
+   * The domain owner
+   * Often, equivalent to the account id.
+   * @attribute
+   */
+  readonly domainOwner: string;
+
+  /**
+   * The KMS encryption key used for the domain resource.
+   * @attribute
+   */
+  readonly domainEncryptionKey: string;
 }
 
-export interface IDomainProps {
+/**
+ * Properties for a new CodeArtifact domain
+ */
+export interface DomainProps {
+  /**
+  * The name of the domain
+  */
   readonly domainName: string;
 }
 
+/**
+ * Either a new or imported Domain
+ */
+export abstract class DomainBase extends Resource implements IDomain {
 
-export abstract class DomainBase extends core.Resource implements IDomain {
-  readonly domainArn: string = '';
-  readonly domainName: string = '';
-  protected cfnDomain : ca.CfnDomain;
+  /** @attribute */
+  abstract readonly domainArn: string = '';
+  /** @attribute */
+  abstract readonly domainName: string = '';
+  /** @attribute */
+  abstract readonly domainOwner: string = '';
+  /** @attribute */
+  abstract readonly domainEncryptionKey: string = '';
 
-  constructor(scope: core.Construct, id: string, props: IDomainProps) {
+  constructor(scope: Construct, id: string) {
     super(scope, id, {});
+  }
+}
 
-    this.cfnDomain = new ca.CfnDomain(scope, id, {
+/**
+ * A new CodeArtifacft domain
+ */
+export class Domain extends DomainBase {
+  /**
+ * Import an existing domain provided an ARN
+ *
+ * @param scope The parent creating construct
+ * @param id The construct's name
+ * @param domainArn Domain ARN (i.e. arn:aws:codeartifact:us-east-2:444455556666:domain/MyDomain)
+ */
+  public static fromDomainArn(scope: Construct, id: string, domainArn: string): IDomain {
+    const parsed = Stack.of(scope).parseArn(domainArn);
+    const domainName = parsed.resourceName || '';
+
+    class Import extends Domain {
+      public readonly domainName: string = parsed.resourceName || '';
+      public readonly domainOwner: string = parsed.account || '';
+      public readonly domainEncryptionKey: string = '';
+      public readonly domainArn = domainArn;
+    }
+
+    return new Import(scope, id, { domainName: domainName });
+  }
+
+  public readonly domainArn: string = '';
+  public readonly domainName: string = '';
+  public readonly domainOwner: string = '';
+  public readonly domainEncryptionKey: string = '' ;
+  private readonly cfnDomain: ca.CfnDomain;
+
+  constructor(scope: Construct, id: string, props: DomainProps) {
+    super(scope, id);
+
+    this.cfnDomain = new ca.CfnDomain(this, id, {
       domainName: props.domainName,
     });
 
     this.domainArn = this.cfnDomain.attrArn;
-    this.domainName = this.cfnDomain.attrName;
-  }
-}
-
-export class Domain extends DomainBase {
-  constructor(scope: core.Construct, id: string, props: IDomainProps) {
-    super(scope, id, props);
+    this.domainName = props.domainName;
+    this.domainOwner = this.cfnDomain.attrOwner;
+    this.domainEncryptionKey = this.cfnDomain.attrEncryptionKey;
 
     // domain = policy.addDomainPolicy(domain, new iam.AccountRootPrincipal(), [...sample.domainActions])
   }
