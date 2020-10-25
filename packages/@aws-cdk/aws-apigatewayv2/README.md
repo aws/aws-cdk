@@ -79,6 +79,11 @@ httpApi.addRoutes({
   methods: [ HttpMethod.ANY ],
   integration: booksDefaultIntegration,
 });
+
+new CfnOutput(stack, 'my-api-url, {
+  exportName: 'ApiUrl',
+  value: httpApi.apiEndpoint,
+});
 ```
 
 The `defaultIntegration` option while defining HTTP APIs lets you create a default catch-all integration that is
