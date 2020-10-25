@@ -20,7 +20,7 @@ export class SecurityGroupContextProviderPlugin implements ContextProviderPlugin
 
     const securityGroups = response.SecurityGroups ?? [];
     if (securityGroups.length === 0) {
-      throw new Error(`Could not find any SecurityGroups matching ${JSON.stringify(args)}`);
+      throw new Error(`No security groups found matching ${JSON.stringify(args)}`);
     }
 
     const [securityGroup] = securityGroups;
