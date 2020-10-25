@@ -46,3 +46,11 @@ incompatible-argument:@aws-cdk/aws-ecs.FargateTaskDefinition.<initializer>
 incompatible-argument:@aws-cdk/aws-ecs.FargateTaskDefinition.addVolume
 incompatible-argument:@aws-cdk/aws-ecs.TaskDefinition.<initializer>
 incompatible-argument:@aws-cdk/aws-ecs.TaskDefinition.addVolume
+
+# The new ELBv2 context queries added these arms to the ContextQueryProperties
+# union:
+# | LoadBalancerContextQuery
+# | LoadBalancerListenerContextQuery
+# | SecurityGroupContextQuery
+# These additions changed the signature of loadAssemblyManifest()
+change-return-type:@aws-cdk/cloud-assembly-schema.Manifest.loadAssemblyManifest
