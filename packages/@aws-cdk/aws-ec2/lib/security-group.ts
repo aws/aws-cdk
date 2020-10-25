@@ -308,13 +308,13 @@ export class SecurityGroup extends SecurityGroupBase {
       dummyValue: undefined,
     }).value;
 
-    // Default attributes for tests and the first pass.
-    const defaultAttributes: cxapi.SecurityGroupContextResponse = {
+    // Dummy attributes for tests and the first pass.
+    const dummyAttributes: cxapi.SecurityGroupContextResponse = {
       securityGroupId: securityGroupId,
       allowAllOutbound: true,
     };
 
-    const attributesToUse = attributes ?? defaultAttributes;
+    const attributesToUse = attributes ?? dummyAttributes;
 
     return SecurityGroup.fromSecurityGroupId(scope, id, attributesToUse.securityGroupId, {
       allowAllOutbound: attributesToUse.allowAllOutbound,
