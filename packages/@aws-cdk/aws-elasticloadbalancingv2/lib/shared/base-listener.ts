@@ -8,7 +8,7 @@ import { IListenerAction } from './listener-action';
 /**
  * Options for ApplicationListener lookup
  */
-export interface BaseListenerLookupUserOptions {
+export interface BaseListenerLookupOptions {
   /**
    * ARN of the application listener to look up
    * @default - does not filter by listener arn
@@ -42,7 +42,7 @@ export interface ListenerQueryContextProviderOptions {
   /**
    * User's provided options
    */
-  readonly userOptions: BaseListenerLookupUserOptions;
+  readonly userOptions: BaseListenerLookupOptions;
 
   /**
    * Type of load balancer expected

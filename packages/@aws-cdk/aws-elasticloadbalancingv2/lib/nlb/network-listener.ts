@@ -1,7 +1,7 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { Duration, IResource, Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { BaseListener, BaseListenerLookupUserOptions as BaseListenerLookupOptions } from '../shared/base-listener';
+import { BaseListener, BaseListenerLookupOptions } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
 import { Protocol, SslPolicy } from '../shared/enums';
 import { IListenerCertificate } from '../shared/listener-certificate';

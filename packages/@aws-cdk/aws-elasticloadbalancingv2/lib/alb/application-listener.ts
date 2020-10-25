@@ -3,7 +3,7 @@ import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { Duration, IResource, Lazy, Resource, Token } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
-import { BaseListener, BaseListenerLookupUserOptions as BaseListenerLookupOptions } from '../shared/base-listener';
+import { BaseListener, BaseListenerLookupOptions } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
 import { ApplicationProtocol, IpAddressType, SslPolicy } from '../shared/enums';
 import { IListenerCertificate, ListenerCertificate } from '../shared/listener-certificate';
