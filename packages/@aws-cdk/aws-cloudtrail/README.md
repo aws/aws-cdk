@@ -72,7 +72,10 @@ const trail = new cloudtrail.Trail(this, 'CloudTrail', {
 });
 ```
 
-If you would like to use a specific log group instead, this can be configured via `cloudwatchLogGroup`.
+If you would like to use a specific log group instead, this can be configured via `cloudWatchLogGroup`.
+
+By default, a new Log Role is created with a default permission setting. If you would like to use a custom log role instead, this can be configured via `cloudWatchLogRole`.
+
 
 ### Amazon EventBridge
 

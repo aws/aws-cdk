@@ -79,6 +79,12 @@ export interface TrailProps {
    */
   readonly cloudWatchLogGroup?: logs.ILogGroup;
 
+  /**
+   * Role to use for CloudWatch logs delivery. Ignored if sendToCloudWatchLogs is set to false.
+   * @default - a new role is created and used.
+   */
+  readonly cloudWatchLogRole?: iam.IRole;
+
   /** The AWS Key Management Service (AWS KMS) key ID that you want to use to encrypt CloudTrail logs.
    * @default - No encryption.
    * @deprecated - use encryptionKey instead.
@@ -244,12 +250,16 @@ export class Trail extends Resource {
         });
       }
 
-      logsRole = new iam.Role(this, 'LogsRole', { assumedBy: cloudTrailPrincipal });
+      if (props.cloudWatchLogRole) {
+        logsRole = props.cloudWatchLogRole;
+      } else {
+        logsRole = new iam.Role(this, 'LogsRole', { assumedBy: cloudTrailPrincipal });
 
-      logsRole.addToPolicy(new iam.PolicyStatement({
-        actions: ['logs:PutLogEvents', 'logs:CreateLogStream'],
-        resources: [this.logGroup.logGroupArn],
-      }));
+        logsRole.addToPolicy(new iam.PolicyStatement({
+          actions: ['logs:PutLogEvents', 'logs:CreateLogStream'],
+          resources: [this.logGroup.logGroupArn],
+        }));
+      }
     }
 
     if (props.managementEvents) {
