@@ -34,12 +34,12 @@ export enum ContextProvider {
   ENDPOINT_SERVICE_AVAILABILITY_ZONE_PROVIDER = 'endpoint-service-availability-zones',
 
   /**
-   * Application load balancer provider
+   * Load balancer provider
    */
   LOAD_BALANCER_PROVIDER = 'load-balancer',
 
   /**
-   * Application Listener provider
+   * Load balancer listener provider
    */
   LOAD_BALANCER_LISTENER_PROVIDER = 'load-balancer-listener',
 
@@ -249,7 +249,7 @@ export interface LoadBalancerFilter {
 }
 
 /**
- * Query input for looking up an application load balancer
+ * Query input for looking up a load balancer
  */
 export interface LoadBalancerContextQuery extends LoadBalancerFilter {
   /**
@@ -283,7 +283,7 @@ export enum LoadBalancerListenerProtocol {
   TCP = 'TCP',
 
   /**
-   * TLS protocol (offload?)
+   * TLS protocol
    */
   TLS = 'TLS',
 
@@ -299,7 +299,7 @@ export enum LoadBalancerListenerProtocol {
 }
 
 /**
- * Query input for looking up an application listener
+ * Query input for looking up a load balancer listener
  */
 export interface LoadBalancerListenerContextQuery extends LoadBalancerFilter {
   /**
@@ -313,13 +313,13 @@ export interface LoadBalancerListenerContextQuery extends LoadBalancerFilter {
   readonly region: string;
 
   /**
-   * Find by listener's ARN
+   * Find by listener's arn
    * @default - does not find by listener arn
    */
   readonly listenerArn?: string;
 
   /**
-   * Filter listeners by listener protocol
+   * Filter by listener protocol
    * @default - does not filter by listener protocol
    */
   readonly listenerProtocol?: LoadBalancerListenerProtocol;

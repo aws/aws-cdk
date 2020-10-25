@@ -14,7 +14,7 @@ export enum LoadBalancerIpAddressType {
 }
 
 /**
- * Properties of a discovered LoadBalancer
+ * Properties of a discovered load balancer
  */
 export interface LoadBalancerContextResponse {
   /**
@@ -49,7 +49,7 @@ export interface LoadBalancerContextResponse {
 }
 
 /**
- * Properties of a discovered ApplicationListener.
+ * Properties of a discovered load balancer listener.
  */
 export interface LoadBalancerListenerContextResponse {
   /**

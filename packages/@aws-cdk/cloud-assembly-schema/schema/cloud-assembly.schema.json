@@ -593,7 +593,7 @@
             ]
         },
         "LoadBalancerContextQuery": {
-            "description": "Query input for looking up an application load balancer",
+            "description": "Query input for looking up a load balancer",
             "type": "object",
             "properties": {
                 "account": {
@@ -630,7 +630,7 @@
             "type": "object"
         },
         "LoadBalancerListenerContextQuery": {
-            "description": "Query input for looking up an application listener",
+            "description": "Query input for looking up a load balancer listener",
             "type": "object",
             "properties": {
                 "account": {
@@ -642,11 +642,11 @@
                     "type": "string"
                 },
                 "listenerArn": {
-                    "description": "Find by listener's ARN (Default - does not find by listener arn)",
+                    "description": "Find by listener's arn (Default - does not find by listener arn)",
                     "type": "string"
                 },
                 "listenerProtocol": {
-                    "description": "Filter listeners by listener protocol (Default - does not filter by listener protocol)",
+                    "description": "Filter by listener protocol (Default - does not filter by listener protocol)",
                     "enum": [
                         "HTTP",
                         "HTTPS",
