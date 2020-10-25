@@ -589,6 +589,7 @@ class ImportedApplicationLoadBalancer extends Resource implements IApplicationLo
 
   constructor(scope: Construct, id: string, private readonly props: ApplicationLoadBalancerAttributes) {
     super(scope, id);
+    this.vpc = props.vpc;
     this.loadBalancerArn = props.loadBalancerArn;
     this.connections = new ec2.Connections({
       securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(this, 'SecurityGroup', props.securityGroupId, {
