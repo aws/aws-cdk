@@ -6,7 +6,7 @@ import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { Resource } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
-import { BaseLoadBalancer, BaseLoadBalancerLookupUserOptions, BaseLoadBalancerProps, ILoadBalancerV2 } from '../shared/base-load-balancer';
+import { BaseLoadBalancer, BaseLoadBalancerLookupOptions, BaseLoadBalancerProps, ILoadBalancerV2 } from '../shared/base-load-balancer';
 import { BaseNetworkListenerProps, NetworkListener } from './network-listener';
 
 /**
@@ -56,7 +56,7 @@ export interface NetworkLoadBalancerAttributes {
 /**
  * Options for looking up an NetworkLoadBalancer
  */
-export interface NetworkLoadBalancerLookupOptions extends BaseLoadBalancerLookupUserOptions {
+export interface NetworkLoadBalancerLookupOptions extends BaseLoadBalancerLookupOptions {
 }
 
 /**

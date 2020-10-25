@@ -4,7 +4,7 @@ import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { Duration, Lazy, Resource } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
-import { BaseLoadBalancer, BaseLoadBalancerLookupUserOptions as BaseLoadBalancerLookupOptions, BaseLoadBalancerProps, ILoadBalancerV2 } from '../shared/base-load-balancer';
+import { BaseLoadBalancer, BaseLoadBalancerLookupOptions, BaseLoadBalancerProps, ILoadBalancerV2 } from '../shared/base-load-balancer';
 import { IpAddressType, ApplicationProtocol } from '../shared/enums';
 import { ApplicationListener, BaseApplicationListenerProps } from './application-listener';
 import { ListenerAction } from './application-listener-action';

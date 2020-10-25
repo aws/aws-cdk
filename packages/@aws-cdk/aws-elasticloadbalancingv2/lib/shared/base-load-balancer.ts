@@ -69,7 +69,7 @@ export interface ILoadBalancerV2 extends IResource {
 /**
  * Options for looking up load balancers
  */
-export interface BaseLoadBalancerLookupUserOptions {
+export interface BaseLoadBalancerLookupOptions {
   /**
    * Find by load balancer's ARN
    * @default - does not search by load balancer arn
@@ -91,7 +91,7 @@ export interface LoadBalancerQueryContextProviderOptions {
   /**
    * User's lookup options
    */
-  readonly userOptions: BaseLoadBalancerLookupUserOptions;
+  readonly userOptions: BaseLoadBalancerLookupOptions;
 
   /**
    * Type of load balancer
