@@ -105,6 +105,13 @@ test('Repository w/ Empty External Connection calling withExternalConnections', 
   expect(repo.repositoryName).toBe('example-repo');
 });
 
+test('Event rule for Repository', () => {
+  const stack = new Stack();
+  const { repo } = createDomainAndRepo(stack);
+
+  repo.onPackageVersionStateChange('subscription', {});
+});
+
 function createDomainAndRepo(stack: Stack) {
   const domain = new Domain(stack, 'domain', { domainName: 'ExampleDomain' });
   const repo = new Repository(stack, 'repository', {

@@ -1,3 +1,4 @@
+import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import { IResource, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
@@ -11,58 +12,70 @@ import * as e from './external-connection';
 export interface IRepository extends
   IResource {
   /**
-   * The ARN of repository resource.
-   * Equivalent to doing `{ 'Fn::GetAtt': ['LogicalId', 'Arn' ]}`
-   * in CloudFormation if the underlying CloudFormation resource
-   * surfaces the ARN as a return value -
-   * if not, we usually construct the ARN "by hand" in the construct,
-   * using the Fn::Join function.
-   *
-   * It needs to be annotated with '@attribute' if the underlying CloudFormation resource
-   * surfaces the ARN as a return value.
-   *
-   * @attribute
-   */
+     * The ARN of repository resource.
+     * Equivalent to doing `{ 'Fn::GetAtt': ['LogicalId', 'Arn' ]}`
+     * in CloudFormation if the underlying CloudFormation resource
+     * surfaces the ARN as a return value -
+     * if not, we usually construct the ARN "by hand" in the construct,
+     * using the Fn::Join function.
+     *
+     * It needs to be annotated with '@attribute' if the underlying CloudFormation resource
+     * surfaces the ARN as a return value.
+     *
+     * @attribute
+     */
   readonly repositoryArn: string;
 
   /**
-   * The physical name of the repository resource.
-   * Often, equivalent to doing `{ 'Ref': 'LogicalId' }`
-   * (but not always - depends on the particular resource modeled)
-   * in CloudFormation.
-   * Also needs to be annotated with '@attribute'.
-   *
-   * @attribute
-   */
+     * The physical name of the repository resource.
+     * Often, equivalent to doing `{ 'Ref': 'LogicalId' }`
+     * (but not always - depends on the particular resource modeled)
+     * in CloudFormation.
+     * Also needs to be annotated with '@attribute'.
+     *
+     * @attribute
+     */
   readonly repositoryName: string;
 
   /**
-   * The domain repository owner
-   * Often, equivalent to the account id.
-   * @attribute
-   */
+     * The domain repository owner
+     * Often, equivalent to the account id.
+     * @attribute
+     */
   readonly repositoryDomainOwner: string;
 
   /**
-   * The domain the repository belongs to
-   * @attribute
-   */
+     * The domain the repository belongs to
+     * @attribute
+     */
   readonly repositoryDomainName: string;
 
   /**
-   * Grants the given IAM identity permissions to read from the repository
-   */
+     * Grants the given IAM identity permissions to read from the repository
+     */
   grantRead(identity: iam.IGrantable): iam.Grant;
 
   /**
-   * Grants the given IAM identity permissions to write from the repository
-   */
+     * Grants the given IAM identity permissions to write from the repository
+     */
   grantWrite(identity: iam.IGrantable): iam.Grant;
 
   /**
-   * Add external connections to the repository
-   */
+     * Add external connections to the repository
+     */
   grantReadWrite(identity: iam.IGrantable): iam.Grant;
+
+  /**
+     * Defines a CloudWatch event rule which triggers for repository events. Use
+     * `rule.addEventPattern(pattern)` to specify a filter.
+     */
+  onEvent(id: string, options?: events.OnEventOptions): events.Rule;
+
+  /**
+     * Defines a CloudWatch event rule which triggers when a "CodeArtifact Package
+     *  Version State Change" event occurs.
+     */
+  onPackageVersionStateChange(id: string, options?: events.OnEventOptions): events.Rule;
 }
 
 /**
@@ -70,29 +83,29 @@ export interface IRepository extends
  */
 export interface RepositoryProps {
   /**
-   * Name the repository
-   */
+     * Name the repository
+     */
   readonly repositoryName: string,
   /**
-   * The domain associated with the respository
-   */
+     * The domain associated with the respository
+     */
   readonly domainName: string,
   /**
-   * Upstream repositories for the repository
-   * @see https://docs.aws.amazon.com/codeartifact/latest/ug/repos-upstream.html
-   * @default None
-   */
-  readonly upstreams? : IRepository[],
+     * Upstream repositories for the repository
+     * @see https://docs.aws.amazon.com/codeartifact/latest/ug/repos-upstream.html
+     * @default None
+     */
+  readonly upstreams?: IRepository[],
   /**
-   * External connections to pull from
-   * @default None
-   * @see https://docs.aws.amazon.com/codeartifact/latest/ug/external-connection.html#adding-an-external-connection
-   */
-  readonly externalConnections? : e.ExternalConnection[],
+     * External connections to pull from
+     * @default None
+     * @see https://docs.aws.amazon.com/codeartifact/latest/ug/external-connection.html#adding-an-external-connection
+     */
+  readonly externalConnections?: e.ExternalConnection[],
   /**
-   * Principal to associate allow access to the repository
-   * @default AccountRootPrincipal
-   */
+     * Principal to associate allow access to the repository
+     * @default AccountRootPrincipal
+     */
   readonly principal?: iam.IPrincipal
 }
 
@@ -140,6 +153,36 @@ export abstract class RepositoryBase extends Resource implements IRepository {
       resourceArns: [this.repositoryArn],
     });
   }
+
+  /**
+     * Defines a CloudWatch event rule which triggers for repository events. Use
+     * `rule.addEventPattern(pattern)` to specify a filter.
+     */
+  public onEvent(id: string, options: events.OnEventOptions = {}) {
+    const rule = new events.Rule(this, id, options);
+    rule.addEventPattern({
+      source: ['aws.codeartifact'],
+      detail: {
+        domainName: [this.repositoryDomainName],
+        domainOwner: [this.repositoryDomainOwner],
+        repositoryName: [this.repositoryName],
+      },
+    });
+    rule.addTarget(options.target);
+    return rule;
+  }
+
+  /**
+     * Defines a CloudWatch event rule which triggers when a "CodeArtifact Package
+     *  Version State Change" event occurs.
+     */
+  public onPackageVersionStateChange(id: string, options: events.OnEventOptions = {}): events.Rule {
+    const rule = this.onEvent(id, options);
+    rule.addEventPattern({
+      detailType: ['CodeArtifact Package Version State Change'],
+    });
+    return rule;
+  }
 }
 
 /**
@@ -147,12 +190,12 @@ export abstract class RepositoryBase extends Resource implements IRepository {
  */
 export class Repository extends RepositoryBase {
   /**
-   * Import an existing Repository provided an ARN
-   *
-   * @param scope The parent creating construct
-   * @param id The construct's name
-   * @param repositoryArn repository ARN (i.e. arn:aws:codeartifact:us-east-2:444455556666:repository/my-domain/my-repo)
-   */
+     * Import an existing Repository provided an ARN
+     *
+     * @param scope The parent creating construct
+     * @param id The construct's name
+     * @param repositoryArn repository ARN (i.e. arn:aws:codeartifact:us-east-2:444455556666:repository/my-domain/my-repo)
+     */
   public static fromRepositoryArn(scope: Construct, id: string, repositoryArn: string): IRepository {
     const parsed = Stack.of(scope).parseArn(repositoryArn);
     const spl = parsed.resourceName?.split('/') || ['', ''];
@@ -173,7 +216,7 @@ export class Repository extends RepositoryBase {
   public readonly repositoryName: string;
   public readonly repositoryDomainOwner: string;
   public readonly repositoryDomainName: string;
-  private readonly cfnRepository : ca.CfnRepository;
+  private readonly cfnRepository: ca.CfnRepository;
 
   constructor(scope: Construct, id: string, props: RepositoryProps) {
     super(scope, id);
@@ -201,10 +244,10 @@ export class Repository extends RepositoryBase {
   }
 
   /**
-   * External connections to pull from
-   * @default None
-   * @see https://docs.aws.amazon.com/codeartifact/latest/ug/external-connection.html#adding-an-external-connection
- */
+     * External connections to pull from
+     * @default None
+     * @see https://docs.aws.amazon.com/codeartifact/latest/ug/external-connection.html#adding-an-external-connection
+   */
   public withExternalConnections(...externalConnections: e.ExternalConnection[]): IRepository {
     if (externalConnections.length) {
       this.cfnRepository.externalConnections = externalConnections;
@@ -214,10 +257,10 @@ export class Repository extends RepositoryBase {
   }
 
   /**
-   * Add upstream repository to the repository
-   * @param repository The upstream repository
-   * @see https://docs.aws.amazon.com/codeartifact/latest/ug/repos-upstream.html
-   */
+     * Add upstream repository to the repository
+     * @param repository The upstream repository
+     * @see https://docs.aws.amazon.com/codeartifact/latest/ug/repos-upstream.html
+     */
   public withUpstream(...repository: IRepository[]): IRepository {
     this.cfnRepository.upstreams = repository.map(f => f.repositoryName);
 
