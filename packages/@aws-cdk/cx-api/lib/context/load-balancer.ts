@@ -9,7 +9,7 @@ export enum LoadBalancerIpAddressType {
 
   /**
    * Dual stack address
-   * */
+   */
   DUAL_STACK = 'dualstack',
 }
 
