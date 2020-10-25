@@ -49,25 +49,6 @@ test('use log group as an event rule target', () => {
   });
 });
 
-
-test.only('log group used as an event rule target must have a name starting with "/aws/events/"', () => {
-  // GIVEN
-  const logGroupName = '/awdss/events/MyLogGroup';
-  const stack = new cdk.Stack();
-
-  const rule1 = new events.Rule(stack, 'Rule', {
-    schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
-  });
-
-  // WHEN
-  let addTargetWrapper = () => {
-    rule1.addTarget(new targets.LogGroup(logs.LogGroup.fromLogGroupName(stack, 'MyLogGroupImported', logGroupName)));
-  };
-
-  // THEN
-  expect(addTargetWrapper).toThrowError('Target LogGroup name must start with "/aws/events/"');
-});
-
 test('use log group as an event rule target with rule target input', () => {
   // GIVEN
   const stack = new cdk.Stack();

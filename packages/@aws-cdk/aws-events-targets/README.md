@@ -33,8 +33,6 @@ EventBridge.
 
 Use the `LogGroup` target to log your events in a CloudWatch LogGroup.
 
-The LogGroup name must start with `/aws/events/`.
-
 ```ts
 const rule = new Rule(this, 'rule', {
   eventPattern: {
@@ -43,7 +41,7 @@ const rule = new Rule(this, 'rule', {
 });
 
 const logGroup = new LogGroup(this, 'MyLogGroup', {
-  logGroupName: '/aws/events/MyLogGroup',
+  logGroupName: 'MyLogGroup',
 });
 
 rule.addTarget(targets.LogGroup(logGroup));
@@ -59,7 +57,7 @@ const rule = new Rule(this, 'rule', {
 });
 
 const logGroup = new LogGroup(this, 'MyLogGroup', {
-  logGroupName: '/aws/events/MyLogGroup',
+  logGroupName: 'MyLogGroup',
 });
 
 rule.addTarget(new targets.LogGroup(logGroup, {
