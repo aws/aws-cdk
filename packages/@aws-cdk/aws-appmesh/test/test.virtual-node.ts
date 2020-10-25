@@ -138,12 +138,12 @@ export = {
                   Timeout: {
                     GRPC: {
                       Idle: {
-                        Unit: 's',
-                        Value: 10,
+                        Unit: 'ms',
+                        Value: 10000,
                       },
                       PerRequest: {
-                        Unit: 's',
-                        Value: 10,
+                        Unit: 'ms',
+                        Value: 10000,
                       },
                     },
                   },
@@ -197,8 +197,8 @@ export = {
                   Timeout: {
                     HTTP2: {
                       Idle: {
-                        Unit: 's',
-                        Value: 10,
+                        Unit: 'ms',
+                        Value: 10000,
                       },
                     },
                   },
@@ -252,8 +252,8 @@ export = {
                   Timeout: {
                     TCP: {
                       Idle: {
-                        Unit: 's',
-                        Value: 10,
+                        Unit: 'ms',
+                        Value: 10000,
                       },
                     },
                   },

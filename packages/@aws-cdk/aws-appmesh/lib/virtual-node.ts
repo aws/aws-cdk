@@ -34,7 +34,7 @@ export interface IVirtualNode extends cdk.IResource {
   addBackends(...props: IVirtualService[]): void;
 
   /**
-   * NodeListener
+   * Utility method to add a single node listener
    */
   addListener(listener: VirtualNodeListener): void;
 
@@ -45,9 +45,9 @@ export interface IVirtualNode extends cdk.IResource {
 }
 
 /**
- * Represents the properties needed to define HTTP Listeners for a VirtualGateway
+ * Represents the properties needed to define a Listeners for a VirtualNode
  */
-export interface NodeListenerProps {
+export interface VirtualNodeListenerProps {
   /**
    * Port to listen for connections on
    *
@@ -64,11 +64,11 @@ export interface NodeListenerProps {
 }
 
 /**
- * NodeListener
+ * Represent the HTTP Node Listener prorperty
  */
-export interface HttpNodeListenerProps extends NodeListenerProps {
+export interface HttpNodeListenerProps extends VirtualNodeListenerProps {
   /**
-   * Timeout
+   * Timeout for HTTP protocol
    *
    * @default - None
    */
@@ -76,11 +76,11 @@ export interface HttpNodeListenerProps extends NodeListenerProps {
   readonly timeout?: HttpTimeout;
 }
 /**
- * NodeListener
+ * Represent the HTTP2 Node Listener prorperty
  */
-export interface Http2NodeListenerProps extends NodeListenerProps {
+export interface Http2NodeListenerProps extends VirtualNodeListenerProps {
   /**
-   * Timeout
+   * Timeout for HTTP2 protocol
    *
    * @default - None
    */
@@ -88,11 +88,11 @@ export interface Http2NodeListenerProps extends NodeListenerProps {
   readonly timeout?: Http2Timeout;
 }
 /**
- * NodeListener
+ * Represent the GRPC Node Listener prorperty
  */
-export interface GrpcNodeListenerProps extends NodeListenerProps {
+export interface GrpcNodeListenerProps extends VirtualNodeListenerProps {
   /**
-   * Timeout
+   * Timeout for GRPC protocol
    *
    * @default - None
    */
@@ -101,11 +101,11 @@ export interface GrpcNodeListenerProps extends NodeListenerProps {
 }
 
 /**
- * NodeListener
+ * Represent the TCP Node Listener prorperty
  */
-export interface TcpNodeListenerProps extends NodeListenerProps {
+export interface TcpNodeListenerProps extends VirtualNodeListenerProps {
   /**
-   * Timeout
+   * Timeout for TCP protocol
    *
    * @default - None
    */
@@ -113,30 +113,11 @@ export interface TcpNodeListenerProps extends NodeListenerProps {
   readonly timeout?: TcpTimeout;
 }
 /**
- * NodeListener
+ *  Defines listener for a VirtualNode
  */
 export abstract class VirtualNodeListener {
-
   /**
-   * NodeListener
-   */
-  public static getTimeUnitAndValue(time: cdk.Duration) {
-    let timeObj: any = {};
-    let timeUnit = time.toHumanString().split(' ')[1];
-    if (timeUnit === 'seconds' || 'second') {
-      let timeValue: number = time.toSeconds();
-      timeObj.unit = 's';
-      timeObj.value = timeValue;
-    } else {
-      let timeValue: number = time.toMilliseconds();
-      timeObj.unit = 'ms';
-      timeObj.value = timeValue;
-    }
-    return timeObj;
-  }
-
-  /**
-   * NodeListener
+   * Returns an HealthCheck for a VirtualNode
    */
   public static renderHealthCheck(pm: PortMapping, hc: HealthCheck | undefined): CfnVirtualNode.HealthCheckProperty | undefined {
     const HEALTH_CHECK_PROPERTY_THRESHOLDS: {[key in (keyof CfnVirtualNode.HealthCheckProperty)]?: [number, number]} = {
@@ -187,70 +168,59 @@ export abstract class VirtualNodeListener {
   }
 
   /**
-   * NodeListener
+   * Returns an HTTP Listener for a VirtualNode
    */
   public static httpNodeListener(props?: HttpNodeListenerProps): VirtualNodeListener {
     return new HttpNodeListener(props);
   }
 
   /**
-   * NodeListener
+   * Returns an HTTP2 Listener for a VirtualNode
    */
   public static http2NodeListener(props?: Http2NodeListenerProps): VirtualNodeListener {
     return new Http2NodeListener(props);
   }
 
   /**
-   * NodeListener
+   * Returns an GRPC Listener for a VirtualNode
    */
   public static grpcNodeListener(props?: GrpcNodeListenerProps): VirtualNodeListener {
     return new GrpcNodeListener(props);
   }
 
   /**
-   * NodeListener
+   * Returns an TCP Listener for a VirtualNode
    */
   public static tcpNodeListener(props?: TcpNodeListenerProps): VirtualNodeListener {
     return new TcpNodeListener(props);
   }
 
   /**
- * NodeListener
- */
+  * Binds the current object when adding Listener to a VirtualNode
+  */
   public abstract bind(scope: cdk.Construct): CfnVirtualNode.ListenerProperty;
 }
 
 /**
- * NodeListener
+ * Represents the properties required to define a HTTP Listener for a VirtualNode.
  */
 export class HttpNodeListener extends VirtualNodeListener {
-  /**
- * NodeListener
+/**
+ * Returns the ListenerTimeoutProperty for HTTP protocol
  */
   public static renderTimeout(tm: HttpTimeout| undefined): CfnVirtualNode.ListenerTimeoutProperty | undefined {
-    if (tm===undefined) {
-      return tm;
-    }
-    let httpTimeout: CfnVirtualNode.ListenerTimeoutProperty = {};
-    let httpTypeObj: any = {
-      http: {},
-    };
-    let obj: any = {};
-    if (typeof tm?.idle === 'object' && tm?.idle !== null && Object.keys(tm?.idle).length) {
-      obj.idle = {
-        unit: VirtualNodeListener.getTimeUnitAndValue(tm.idle as cdk.Duration).unit,
-        value: VirtualNodeListener.getTimeUnitAndValue(tm.idle as cdk.Duration).value,
-      };
-    }
-    if (typeof tm?.perRequest === 'object' && tm?.perRequest !== null && Object.keys(tm?.perRequest).length) {
-      obj.perRequest = {
-        unit: VirtualNodeListener.getTimeUnitAndValue(tm.perRequest as cdk.Duration).unit,
-        value: VirtualNodeListener.getTimeUnitAndValue(tm.perRequest as cdk.Duration).value,
-      };
-    }
-    httpTypeObj.http = obj;
-    httpTimeout = httpTypeObj;
-    return httpTimeout;
+    return ( tm!==undefined ? {
+      http: {
+        idle: tm?.idle !== undefined ? {
+          unit: 'ms',
+          value: tm?.idle.toMilliseconds(),
+        } : undefined,
+        perRequest: tm?.perRequest !== undefined ? {
+          unit: 'ms',
+          value: tm?.perRequest.toMilliseconds(),
+        } : undefined,
+      },
+    }: undefined);
   }
   /**
    * Port to listen for connections on
@@ -280,8 +250,8 @@ export class HttpNodeListener extends VirtualNodeListener {
   }
 
   /**
- * NodeListener
- */
+   * Return Listener for HTTP protocol when Listener is added to Virtual Node.
+   */
   public bind(_scope: cdk.Construct): CfnVirtualNode.ListenerProperty {
     return {
       portMapping: {
@@ -298,36 +268,25 @@ export class HttpNodeListener extends VirtualNodeListener {
 }
 
 /**
- * NodeListener
+ * Represents the properties required to define a HTTP Listener for a VirtualNode.
  */
 export class Http2NodeListener extends VirtualNodeListener {
-  /**
- * NodeListener
+/**
+ * Returns the ListenerTimeoutProperty for HTTP2 protocol
  */
   public static renderTimeout(tm: Http2Timeout| undefined): CfnVirtualNode.ListenerTimeoutProperty | undefined {
-    if (tm===undefined) {
-      return tm;
-    }
-    let http2Timeout: CfnVirtualNode.ListenerTimeoutProperty = {};
-    let http2TypeObj: any = {
-      http2: {},
-    };
-    let obj: any = {};
-    if (typeof tm?.idle === 'object' && tm?.idle !== null && Object.keys(tm?.idle).length) {
-      obj.idle = {
-        unit: VirtualNodeListener.getTimeUnitAndValue(tm.idle as cdk.Duration).unit,
-        value: VirtualNodeListener.getTimeUnitAndValue(tm.idle as cdk.Duration).value,
-      };
-    }
-    if (typeof tm?.perRequest === 'object' && tm?.perRequest !== null && Object.keys(tm?.perRequest).length) {
-      obj.perRequest = {
-        unit: VirtualNodeListener.getTimeUnitAndValue(tm.perRequest as cdk.Duration).unit,
-        value: VirtualNodeListener.getTimeUnitAndValue(tm.perRequest as cdk.Duration).value,
-      };
-    }
-    http2TypeObj.http2 = obj;
-    http2Timeout = http2TypeObj;
-    return http2Timeout;
+    return ( tm!==undefined ? {
+      http2: {
+        idle: tm?.idle !== undefined ? {
+          unit: 'ms',
+          value: tm?.idle.toMilliseconds(),
+        } : undefined,
+        perRequest: tm?.perRequest !== undefined ? {
+          unit: 'ms',
+          value: tm?.perRequest.toMilliseconds(),
+        } : undefined,
+      },
+    } : undefined);
   }
   /**
    * Port to listen for connections on
@@ -357,8 +316,8 @@ export class Http2NodeListener extends VirtualNodeListener {
   }
 
   /**
- * NodeListener
- */
+   * Return Listener for HTTP2 protocol when Listener is added to Virtual Node.
+   */
   public bind(_scope: cdk.Construct): CfnVirtualNode.ListenerProperty {
     return {
       portMapping: {
@@ -375,36 +334,25 @@ export class Http2NodeListener extends VirtualNodeListener {
 }
 
 /**
- * NodeListener
+ * Represents the properties required to define a HTTP Listener for a VirtualNode.
  */
 export class GrpcNodeListener extends VirtualNodeListener {
-  /**
- * NodeListener
+/**
+ * Returns the ListenerTimeoutProperty for GRPC protocol
  */
   public static renderTimeout(tm: GrpcTimeout| undefined): CfnVirtualNode.ListenerTimeoutProperty | undefined {
-    if (tm===undefined) {
-      return tm;
-    }
-    let grpcTimeout: CfnVirtualNode.ListenerTimeoutProperty = {};
-    let grpcTypeObj: any = {
-      grpc: {},
-    };
-    let obj: any = {};
-    if (typeof tm?.idle === 'object' && tm?.idle !== null && Object.keys(tm?.idle).length) {
-      obj.idle = {
-        unit: VirtualNodeListener.getTimeUnitAndValue(tm.idle as cdk.Duration).unit,
-        value: VirtualNodeListener.getTimeUnitAndValue(tm.idle as cdk.Duration).value,
-      };
-    }
-    if (typeof tm?.perRequest === 'object' && tm?.perRequest !== null && Object.keys(tm?.perRequest).length) {
-      obj.perRequest = {
-        unit: VirtualNodeListener.getTimeUnitAndValue(tm.perRequest as cdk.Duration).unit,
-        value: VirtualNodeListener.getTimeUnitAndValue(tm.perRequest as cdk.Duration).value,
-      };
-    }
-    grpcTypeObj.grpc = obj;
-    grpcTimeout = grpcTypeObj;
-    return grpcTimeout;
+    return (tm!==undefined ? {
+      grpc: {
+        idle: tm?.idle !== undefined ? {
+          unit: 'ms',
+          value: tm?.idle.toMilliseconds(),
+        } : undefined,
+        perRequest: tm?.perRequest !== undefined ? {
+          unit: 'ms',
+          value: tm?.perRequest.toMilliseconds(),
+        } : undefined,
+      },
+    } : undefined);
   }
   /**
    * Port to listen for connections on
@@ -434,8 +382,8 @@ export class GrpcNodeListener extends VirtualNodeListener {
   }
 
   /**
- * NodeListener
- */
+   * Return Listener for GRPC protocol when Listener is added to Virtual Node.
+   */
   public bind(_scope: cdk.Construct): CfnVirtualNode.ListenerProperty {
     return {
       portMapping: {
@@ -451,30 +399,21 @@ export class GrpcNodeListener extends VirtualNodeListener {
   }
 }
 /**
- * NodeListener
+ * Represents the properties required to define a HTTP Listener for a VirtualNode.
  */
 export class TcpNodeListener extends VirtualNodeListener {
-  /**
- * NodeListener
+/**
+ * Returns the ListenerTimeoutProperty for TCP protocol
  */
   public static renderTimeout(tm: TcpTimeout| undefined): CfnVirtualNode.ListenerTimeoutProperty | undefined {
-    if (tm===undefined) {
-      return tm;
-    }
-    let tcpTimeout: CfnVirtualNode.ListenerTimeoutProperty = {};
-    let tcpTypeObj: any = {
-      tcp: {},
-    };
-    let obj: any = {};
-    if (typeof tm?.idle === 'object' && tm?.idle !== null && Object.keys(tm?.idle).length) {
-      obj.idle = {
-        unit: VirtualNodeListener.getTimeUnitAndValue(tm.idle as cdk.Duration).unit,
-        value: VirtualNodeListener.getTimeUnitAndValue(tm.idle as cdk.Duration).value,
-      };
-    }
-    tcpTypeObj.tcp = obj;
-    tcpTimeout = tcpTypeObj;
-    return tcpTimeout;
+    return ( tm!=undefined ? {
+      tcp: {
+        idle: tm?.idle !== undefined ? {
+          unit: 'ms',
+          value: tm?.idle.toMilliseconds(),
+        } : undefined,
+      },
+    } : undefined );
   }
   /**
    * Port to listen for connections on
@@ -504,8 +443,8 @@ export class TcpNodeListener extends VirtualNodeListener {
   }
 
   /**
- * NodeListener
- */
+   * Return Listener for TCP protocol when Listener is added to Virtual Node.
+  */
   public bind(_scope: cdk.Construct): CfnVirtualNode.ListenerProperty {
     return {
       portMapping: {
@@ -618,7 +557,7 @@ abstract class VirtualNodeBase extends cdk.Resource implements IVirtualNode {
   }
 
   /**
-   * Utility method to add an inbound listener for this virtual node
+   * Utility method to add an inbound listener for this VirtualNode
    */
   public addListeners(listeners: VirtualNodeListener[]) {
     if (listeners.length + this.listeners.length > 1) {
@@ -630,7 +569,7 @@ abstract class VirtualNodeBase extends cdk.Resource implements IVirtualNode {
   }
 
   /**
-   * Utility method to add a single listener to this VirtualGateway
+   * Utility method to add a single listener to this VirtualNode
    */
   public addListener(listener: VirtualNodeListener) {
     if (this.listeners.length > 0) {
