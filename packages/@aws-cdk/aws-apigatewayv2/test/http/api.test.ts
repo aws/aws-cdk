@@ -233,4 +233,11 @@ describe('HttpApi', () => {
       Description: 'My Api',
     });
   });
+
+  test('apiEndpoint is exported', () => {
+    const stack = new Stack();
+    const api = new HttpApi(stack, 'api');
+
+    expect(typeof api.apiEndpoint).toBe('string');
+  });
 });
