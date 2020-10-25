@@ -1,3 +1,4 @@
+import * as iam from '@aws-cdk/aws-iam';
 import { IResource, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as ca from './codeartifact.generated';
@@ -46,6 +47,12 @@ export interface IDomain extends IResource {
    * @attribute
    */
   readonly domainEncryptionKey: string;
+
+  /**
+   * The underlying CloudFormation domain
+   * @attribute
+   */
+  readonly cfnDomain: ca.CfnDomain;
 }
 
 /**
@@ -63,6 +70,17 @@ export interface DomainProps {
    * @attribute
    */
   readonly domainEncryptionKey?: string;
+  /**
+     * Principal for the resource policy for the domain
+     * @default AccountRootPrincipal
+     */
+  readonly principal?: iam.IPrincipal
+
+  /**
+   * Resource policy for the domain
+   * @default Read/Create/Authorize
+   */
+  readonly policyDocument?: iam.PolicyDocument
 }
 
 /**
@@ -78,6 +96,8 @@ export abstract class DomainBase extends Resource implements IDomain {
   abstract readonly domainOwner: string = '';
   /** @attribute */
   abstract readonly domainEncryptionKey: string = '';
+  /** @attribute */
+  abstract readonly cfnDomain: ca.CfnDomain;
 
   constructor(scope: Construct, id: string) {
     super(scope, id, {});
@@ -113,7 +133,7 @@ export class Domain extends DomainBase {
   public readonly domainName: string = '';
   public readonly domainOwner: string = '';
   public readonly domainEncryptionKey: string = '' ;
-  private readonly cfnDomain: ca.CfnDomain;
+  public readonly cfnDomain: ca.CfnDomain;
 
   constructor(scope: Construct, id: string, props: DomainProps) {
     super(scope, id);
@@ -132,13 +152,72 @@ export class Domain extends DomainBase {
     this.domainOwner = this.cfnDomain.attrOwner;
     this.domainEncryptionKey = this.cfnDomain.attrEncryptionKey;
 
-    // domain = policy.addDomainPolicy(domain, new iam.AccountRootPrincipal(), [...sample.domainActions])
-
     this.Validate();
+
+    if (!props.policyDocument) {
+      const p = props.principal || new iam.AccountRootPrincipal();
+      this.allowAuthorization(p).allowCreateRepository(p).allowReadFromDomain(p);
+    } else {
+      this.cfnDomain.permissionsPolicyDocument = props.policyDocument;
+    }
   }
 
   private Validate() {
     validate('DomainName', { required: true, minLength: 2, maxLength: 50, pattern: /[a-z][a-z0-9\-]{0,48}[a-z0-9]/gi }, this.domainName);
     validate('EncryptionKey', { minLength: 1, maxLength: 2048, pattern: /\S+/gi }, this.domainEncryptionKey);
+  }
+
+  private createPolicy(principal: iam.IPrincipal, iamActions: string[], resource: string = '*') {
+    const p = this.cfnDomain.permissionsPolicyDocument as iam.PolicyDocument || new iam.PolicyDocument();
+
+    p.addStatements(new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      principals: [
+        principal,
+      ],
+      resources: [resource],
+      actions: iamActions,
+    }));
+
+    this.cfnDomain.permissionsPolicyDocument = p;
+  }
+
+  /**
+     * Adds read actions for the principal to the domain's
+     * resource policy
+     * @param principal The principal for the policy
+     * @see https://docs.aws.amazon.com/codeartifact/latest/ug/domain-policies.html
+     */
+  public allowReadFromDomain(principal : iam.IPrincipal) : Domain {
+    this.createPolicy(principal,
+      ['codeartifact:GetDomainPermissionsPolicy',
+        'codeartifact:ListRepositoriesInDomain',
+        'codeartifact:DescribeDomain'],
+    );
+    return this;
+  }
+  /**
+     * Adds GetAuthorizationToken for the principal to the domain's
+     * resource policy
+     * @param principal The principal for the policy
+     * @see https://docs.aws.amazon.com/codeartifact/latest/ug/domain-policies.html
+     */
+  public allowAuthorization(principal : iam.IPrincipal) : Domain {
+    this.createPolicy(principal,
+      ['codeartifact:GetAuthorizationToken'],
+    );
+    return this;
+  }
+  /**
+     * Adds CreateRepository for the principal to the domain's
+     * resource policy
+     * @param principal The principal for the policy
+     * @see https://docs.aws.amazon.com/codeartifact/latest/ug/domain-policies.html
+     */
+  public allowCreateRepository(principal : iam.IPrincipal) : Domain {
+    this.createPolicy(principal,
+      ['codeartifact:CreateRepository'],
+    );
+    return this;
   }
 }

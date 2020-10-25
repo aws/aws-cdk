@@ -54,7 +54,7 @@ test('Repository w/ Upstream', () => {
 
   const upstreamRepo = new Repository(stack, 'upstream-repository', {
     repositoryName: 'upstream-example-repo',
-    domainName: domain.domainName,
+    domain: domain,
   });
 
   repo.withUpstream(upstreamRepo);
@@ -87,7 +87,7 @@ test('Repository w/ External Connection calling withExternalConnections', () => 
   const domain = new Domain(stack, 'domain', { domainName: 'example-domain' });
   const repo = new Repository(stack, 'repository', {
     repositoryName: 'example-repo',
-    domainName: domain.domainName,
+    domain: domain,
   });
 
   repo.withExternalConnections(ExternalConnection.NPM);
@@ -116,7 +116,7 @@ function createDomainAndRepo(stack: Stack) {
   const domain = new Domain(stack, 'domain', { domainName: 'example-domain' });
   const repo = new Repository(stack, 'repository', {
     repositoryName: 'example-repo',
-    domainName: domain.domainName,
+    domain: domain,
   });
 
   return { domain, repo };

@@ -1,0 +1,246 @@
+{
+  "Resources": {
+    "domainCA282C9B": {
+      "Type": "AWS::CodeArtifact::Domain",
+      "Properties": {
+        "DomainName": "example-domain-upstream",
+        "PermissionsPolicyDocument": {
+          "Statement": [
+            {
+              "Action": "codeartifact:GetAuthorizationToken",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              },
+              "Resource": "*"
+            },
+            {
+              "Action": "codeartifact:CreateRepository",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              },
+              "Resource": "*"
+            },
+            {
+              "Action": [
+                "codeartifact:GetDomainPermissionsPolicy",
+                "codeartifact:ListRepositoriesInDomain",
+                "codeartifact:DescribeDomain"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              },
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "repository5D02F86B": {
+      "Type": "AWS::CodeArtifact::Repository",
+      "Properties": {
+        "RepositoryName": "repository",
+        "ExternalConnections": [
+          "public:npmjs"
+        ],
+        "PermissionsPolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "codeartifact:DescribePackageVersion",
+                "codeartifact:DescribeRepository",
+                "codeartifact:GetPackageVersionReadme",
+                "codeartifact:GetRepositoryEndpoint",
+                "codeartifact:ListPackageVersionAssets",
+                "codeartifact:ListPackageVersionDependencies",
+                "codeartifact:ListPackageVersions",
+                "codeartifact:ListPackages",
+                "codeartifact:ReadFromRepository"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              },
+              "Resource": "*"
+            },
+            {
+              "Action": [
+                "codeartifact:PublishPackageVersion",
+                "codeartifact:PutPackageMetadata"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              },
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "DomainName": {
+          "Fn::GetAtt": [
+            "domainCA282C9B",
+            "Name"
+          ]
+        }
+      }
+    },
+    "subrepository65E28DB9": {
+      "Type": "AWS::CodeArtifact::Repository",
+      "Properties": {
+        "RepositoryName": "sub-repository",
+        "PermissionsPolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "codeartifact:DescribePackageVersion",
+                "codeartifact:DescribeRepository",
+                "codeartifact:GetPackageVersionReadme",
+                "codeartifact:GetRepositoryEndpoint",
+                "codeartifact:ListPackageVersionAssets",
+                "codeartifact:ListPackageVersionDependencies",
+                "codeartifact:ListPackageVersions",
+                "codeartifact:ListPackages",
+                "codeartifact:ReadFromRepository"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              },
+              "Resource": "*"
+            },
+            {
+              "Action": [
+                "codeartifact:PublishPackageVersion",
+                "codeartifact:PutPackageMetadata"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              },
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Upstreams": [
+          "repository"
+        ],
+        "DomainName": {
+          "Fn::GetAtt": [
+            "domainCA282C9B",
+            "Name"
+          ]
+        }
+      }
+    }
+  }
+}

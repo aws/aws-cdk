@@ -1,9 +1,10 @@
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
-import { IResource, Resource, Stack } from '@aws-cdk/core';
+import { IResource, Resource, Stack, Aws } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as actions from './actions';
 import * as ca from './codeartifact.generated';
+import { IDomain } from './domain';
 import * as e from './external-connection';
 import { validate } from './validation';
 
@@ -102,7 +103,7 @@ export interface RepositoryProps {
   /**
      * The name of the domain that contains the repository.
      */
-  readonly domainName: string,
+  readonly domain: IDomain,
   /**
      * Upstream repositories for the repository
      * @see https://docs.aws.amazon.com/codeartifact/latest/ug/repos-upstream.html
@@ -115,11 +116,36 @@ export interface RepositoryProps {
      * @see https://docs.aws.amazon.com/codeartifact/latest/ug/external-connection.html#adding-an-external-connection
      */
   readonly externalConnections?: e.ExternalConnection[],
+
   /**
      * Principal to associate allow access to the repository
      * @default AccountRootPrincipal
      */
   readonly principal?: iam.IPrincipal
+
+  /**
+   * Principal to associate allow access to the repository
+   * @default Read/Write
+   */
+  readonly policyDocument?: iam.PolicyDocument
+}
+
+/**
+ * Properties for a new CodeArtifact repository policy restricting package manipulation
+ */
+export interface PolicyRepositoryPackage {
+  /**
+     * Package format
+     */
+  readonly packageFormat: string,
+  /**
+     * Package namespace
+     */
+  readonly packageNamespace: string,
+  /**
+     * Package name
+     */
+  readonly packageName: string,
 }
 
 /**
@@ -243,7 +269,7 @@ export class Repository extends RepositoryBase {
       description: props.description,
     });
 
-    this.cfnRepository.addPropertyOverride('DomainName', props.domainName);
+    this.cfnRepository.addPropertyOverride('DomainName', props.domain.cfnDomain.attrName);
 
     this.repositoryName = props.repositoryName;
     this.repositoryDescription = props.description || '';
@@ -261,7 +287,12 @@ export class Repository extends RepositoryBase {
 
     this.Validate();
 
-    // this.cfnRepository = policy.addPolicy(this.cfnRepository, new iam.AccountRootPrincipal(), [...sample.readActions, ...sample.writeActions]);
+    if (!props.policyDocument) {
+      const p = props.principal || new iam.AccountRootPrincipal();
+      this.allowReadFromRepository(p).allowWriteToRepository(p);
+    } else {
+      this.cfnRepository.permissionsPolicyDocument = props.policyDocument;
+    }
   }
 
   private Validate() {
@@ -269,6 +300,83 @@ export class Repository extends RepositoryBase {
     validate('DomainName', { required: true, minLength: 2, maxLength: 50, pattern: /[a-z][a-z0-9\-]{0,48}[a-z0-9]/gi }, this.repositoryDomainName);
     validate('RepositoryName', { required: true, minLength: 2, maxLength: 100, pattern: /[A-Za-z0-9][A-Za-z0-9._\-]{1,99}/gi }, this.repositoryName);
   }
+
+  private createPolicy(principal: iam.IPrincipal, iamActions: string[], resource: string = '*') {
+    const p = this.cfnRepository.permissionsPolicyDocument as iam.PolicyDocument || new iam.PolicyDocument();
+
+    p.addStatements(new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      principals: [
+        principal,
+      ],
+      resources: [resource],
+      actions: iamActions,
+    }));
+
+    this.cfnRepository.permissionsPolicyDocument = p;
+  }
+
+  /**
+     * Adds read actions for the principal to the repository's
+     * resource policy
+     * @param principal The principal for the policy
+     * @see https://docs.aws.amazon.com/codeartifact/latest/ug/repo-policies.html
+     */
+  public allowReadFromRepository(principal : iam.IPrincipal) : Repository {
+    this.createPolicy(principal,
+      ['codeartifact:DescribePackageVersion',
+        'codeartifact:DescribeRepository',
+        'codeartifact:GetPackageVersionReadme',
+        'codeartifact:GetRepositoryEndpoint',
+        'codeartifact:ListPackageVersionAssets',
+        'codeartifact:ListPackageVersionDependencies',
+        'codeartifact:ListPackageVersions',
+        'codeartifact:ListPackages',
+        'codeartifact:ReadFromRepository'],
+    );
+    return this;
+  }
+
+  /**
+     * Allows PublishPackageVersion and PutPackageMetadata only for the package and namespace
+     * when acted upon by the principal.
+     * @param principal The principal for the policy
+     * @see https://docs.aws.amazon.com/codeartifact/latest/ug/repo-policies.html
+     */
+  public allowWriteToRepositoryPackage(principal : iam.IPrincipal, repositoryPackage: PolicyRepositoryPackage) : Repository {
+    this.allowWriteToRepository(principal,
+      `arn:aws:codeartifact:${Aws.REGION}:${this.repositoryDomainOwner}:package/${this.repositoryDomainName}/${this.repositoryName}/${repositoryPackage.packageFormat}/${repositoryPackage.packageNamespace}/${repositoryPackage.packageName}`,
+    );
+    return this;
+  }
+
+  /**
+     * Adds PublishPackageVersion and PutPackageMetadata for the principal to the repository's
+     * resource policy
+     * @param principal The principal for the policy
+     * @see https://docs.aws.amazon.com/codeartifact/latest/ug/repo-policies.html
+     */
+  public allowWriteToRepository(principal : iam.IPrincipal, resource : string = '*') : Repository {
+    this.createPolicy(principal,
+      ['codeartifact:PublishPackageVersion',
+        'codeartifact:PutPackageMetadata'],
+      resource,
+    );
+    return this;
+  }
+  /**
+     * Adds DeletePacakgeVersion for the principal to the repository's
+     * resource policy
+     * @param principal The principal for the policy
+     * @see https://docs.aws.amazon.com/codeartifact/latest/ug/repo-policies.html
+     */
+  public allowDeleteFromRepository(principal : iam.IPrincipal) : Repository {
+    this.createPolicy(principal,
+      ['codeartifact:DeletePackageVersion'],
+    );
+    return this;
+  }
+
   /**
      * External connections to pull from
      * @default None
