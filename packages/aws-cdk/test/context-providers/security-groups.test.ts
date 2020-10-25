@@ -1,6 +1,6 @@
 import * as aws from 'aws-sdk';
 import * as AWS from 'aws-sdk-mock';
-import { SecurityGroupContextProviderPlugin } from '../../lib/context-providers/security-groups';
+import { hasAllTrafficEgress, SecurityGroupContextProviderPlugin } from '../../lib/context-providers/security-groups';
 import { MockSdkProvider } from '../util/mock-sdk';
 
 AWS.setSDK(require.resolve('aws-sdk'));
@@ -101,5 +101,48 @@ describe('security group context provider plugin', () => {
     // THEN
     expect(res.securityGroupId).toEqual('sg-1234');
     expect(res.allowAllOutbound).toEqual(false);
+  });
+
+  test('identifies allTrafficEgress from SecurityGroup permissions', () => {
+    expect(
+      hasAllTrafficEgress({
+        IpPermissionsEgress: [
+          {
+            IpProtocol: '-1',
+            IpRanges: [
+              { CidrIp: '0.0.0.0/0' },
+            ],
+          },
+        ],
+      }),
+    ).toBe(true);
+  });
+
+  test('identifies lacking allTrafficEgress from SecurityGroup permissions', () => {
+    expect(
+      hasAllTrafficEgress({
+        IpPermissionsEgress: [
+          {
+            IpProtocol: '-1',
+            IpRanges: [
+              { CidrIp: '10.0.0.0/16' },
+            ],
+          },
+        ],
+      }),
+    ).toBe(false);
+
+    expect(
+      hasAllTrafficEgress({
+        IpPermissions: [
+          {
+            IpProtocol: 'TCP',
+            IpRanges: [
+              { CidrIp: '0.0.0.0/0' },
+            ],
+          },
+        ],
+      }),
+    ).toBe(false);
   });
 });
