@@ -5,6 +5,7 @@ import { Construct } from 'constructs';
 import * as actions from './actions';
 import * as ca from './codeartifact.generated';
 import * as e from './external-connection';
+import { validate } from './validation';
 
 /**
  * Represents a CodeArtifact repository
@@ -36,6 +37,13 @@ export interface IRepository extends
      * @attribute
      */
   readonly repositoryName: string;
+
+  /**
+     * A text description of the repository.
+     * @attribute
+     * @default ''
+     */
+  readonly repositoryDescription: string;
 
   /**
      * The domain repository owner
@@ -87,7 +95,12 @@ export interface RepositoryProps {
      */
   readonly repositoryName: string,
   /**
-     * The domain associated with the respository
+     * A text description of the repository.
+     * @default ''
+     */
+  readonly description?: string,
+  /**
+     * The name of the domain that contains the repository.
      */
   readonly domainName: string,
   /**
@@ -97,7 +110,7 @@ export interface RepositoryProps {
      */
   readonly upstreams?: IRepository[],
   /**
-     * External connections to pull from
+     * An array of external connections associated with the repository.
      * @default None
      * @see https://docs.aws.amazon.com/codeartifact/latest/ug/external-connection.html#adding-an-external-connection
      */
@@ -118,6 +131,8 @@ export abstract class RepositoryBase extends Resource implements IRepository {
   public abstract readonly repositoryArn: string = '';
   /** @attribute */
   public abstract readonly repositoryName: string = '';
+  /** @attribute */
+  public abstract readonly repositoryDescription: string = '';
   /** @attribute */
   public abstract readonly repositoryDomainOwner: string = '';
   /** @attribute */
@@ -203,6 +218,7 @@ export class Repository extends RepositoryBase {
     const domainName = spl[0];
 
     class Import extends RepositoryBase {
+      public repositoryDescription: string = '';
       public repositoryName: string = repositoryName || '';
       public repositoryDomainOwner: string = parsed.account || '';
       public repositoryDomainName: string = domainName || '';
@@ -216,6 +232,7 @@ export class Repository extends RepositoryBase {
   public readonly repositoryName: string;
   public readonly repositoryDomainOwner: string;
   public readonly repositoryDomainName: string;
+  public readonly repositoryDescription: string;
   private readonly cfnRepository: ca.CfnRepository;
 
   constructor(scope: Construct, id: string, props: RepositoryProps) {
@@ -223,11 +240,13 @@ export class Repository extends RepositoryBase {
 
     this.cfnRepository = new ca.CfnRepository(this, id, {
       repositoryName: props.repositoryName,
+      description: props.description,
     });
 
     this.cfnRepository.addPropertyOverride('DomainName', props.domainName);
 
     this.repositoryName = props.repositoryName;
+    this.repositoryDescription = props.description || '';
     this.repositoryArn = this.cfnRepository.attrArn;
     this.repositoryDomainOwner = this.cfnRepository.attrDomainOwner;
     this.repositoryDomainName = this.cfnRepository.attrDomainName;
@@ -240,9 +259,16 @@ export class Repository extends RepositoryBase {
       this.withExternalConnections(...props.externalConnections || []);
     }
 
+    this.Validate();
+
     // this.cfnRepository = policy.addPolicy(this.cfnRepository, new iam.AccountRootPrincipal(), [...sample.readActions, ...sample.writeActions]);
   }
 
+  private Validate() {
+    validate('Description', { maxLength: 1000, pattern: /\P{C}+/gi }, this.repositoryDescription);
+    validate('DomainName', { required: true, minLength: 2, maxLength: 50, pattern: /[a-z][a-z0-9\-]{0,48}[a-z0-9]/gi }, this.repositoryDomainName);
+    validate('RepositoryName', { required: true, minLength: 2, maxLength: 100, pattern: /[A-Za-z0-9][A-Za-z0-9._\-]{1,99}/gi }, this.repositoryName);
+  }
   /**
      * External connections to pull from
      * @default None
@@ -267,3 +293,4 @@ export class Repository extends RepositoryBase {
     return this;
   }
 }
+

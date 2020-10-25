@@ -1,6 +1,7 @@
 import { IResource, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as ca from './codeartifact.generated';
+import { validate } from './validation';
 
 /**
  * Represents a CodeArtifact domain
@@ -41,6 +42,7 @@ export interface IDomain extends IResource {
 
   /**
    * The KMS encryption key used for the domain resource.
+   * @default AWS Managed Key
    * @attribute
    */
   readonly domainEncryptionKey: string;
@@ -54,6 +56,13 @@ export interface DomainProps {
   * The name of the domain
   */
   readonly domainName: string;
+
+  /**
+   * The KMS encryption key used for the domain resource.
+   * @default AWS Managed Key
+   * @attribute
+   */
+  readonly domainEncryptionKey?: string;
 }
 
 /**
@@ -113,11 +122,23 @@ export class Domain extends DomainBase {
       domainName: props.domainName,
     });
 
+
+    if (props.domainEncryptionKey) {
+      this.cfnDomain.addPropertyOverride('EncryptionKey', props.domainEncryptionKey);
+    }
+
     this.domainArn = this.cfnDomain.attrArn;
     this.domainName = props.domainName;
     this.domainOwner = this.cfnDomain.attrOwner;
     this.domainEncryptionKey = this.cfnDomain.attrEncryptionKey;
 
     // domain = policy.addDomainPolicy(domain, new iam.AccountRootPrincipal(), [...sample.domainActions])
+
+    this.Validate();
+  }
+
+  private Validate() {
+    validate('DomainName', { required: true, minLength: 2, maxLength: 50, pattern: /[a-z][a-z0-9\-]{0,48}[a-z0-9]/gi }, this.domainName);
+    validate('EncryptionKey', { minLength: 1, maxLength: 2048, pattern: /\S+/gi }, this.domainEncryptionKey);
   }
 }

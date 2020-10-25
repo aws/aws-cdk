@@ -19,10 +19,11 @@ test('Domain from ARN', () => {
 
 test('Domain from ARN w/ out domain name nor account id', () => {
   const stack = new Stack();
-
-  const domain = Domain.fromDomainArn(stack, 'repo-from-arn', 'arn:aws:codeartifact:region-id::domain');
-  expect(domain.domainName).toBe('');
-  expect(domain.domainOwner).toBe('');
+  try {
+    Domain.fromDomainArn(stack, 'repo-from-arn', 'arn:aws:codeartifact:region-id::domain');
+  } catch (e) {
+    expect(e.message).toBe(`DomainName: must match pattern ${(new RegExp(/[a-z][a-z0-9\-]{0,48}[a-z0-9]/gi).source)}`);
+  }
 });
 
 function createDomain(stack: Stack) {

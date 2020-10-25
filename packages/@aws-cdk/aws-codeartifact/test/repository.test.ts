@@ -8,7 +8,7 @@ test('Domain w/ Repository', () => {
 
   const { domain, repo } = createDomainAndRepo(stack);
 
-  expect(domain.domainName).toBe('ExampleDomain');
+  expect(domain.domainName).toBe('example-domain');
   expect(repo.repositoryName).toBe('example-repo');
 });
 
@@ -59,7 +59,7 @@ test('Repository w/ Upstream', () => {
 
   repo.withUpstream(upstreamRepo);
 
-  expect(domain.domainName).toBe('ExampleDomain');
+  expect(domain.domainName).toBe('example-domain');
   expect(repo.repositoryName).toBe('example-repo');
 });
 
@@ -69,7 +69,7 @@ test('Repository w/ External Connection via constructor', () => {
 
   repo.withExternalConnections(ExternalConnection.NPM);
 
-  expect(domain.domainName).toBe('ExampleDomain');
+  expect(domain.domainName).toBe('example-domain');
   expect(repo.repositoryName).toBe('example-repo');
 });
 
@@ -77,14 +77,14 @@ test('Repository w/ Empty External Connection via constructor withExternalConnec
   const stack = new Stack();
   const { domain, repo } = createDomainAndRepo(stack);
 
-  expect(domain.domainName).toBe('ExampleDomain');
+  expect(domain.domainName).toBe('example-domain');
   expect(repo.repositoryName).toBe('example-repo');
 });
 
 test('Repository w/ External Connection calling withExternalConnections', () => {
   const stack = new Stack();
 
-  const domain = new Domain(stack, 'domain', { domainName: 'ExampleDomain' });
+  const domain = new Domain(stack, 'domain', { domainName: 'example-domain' });
   const repo = new Repository(stack, 'repository', {
     repositoryName: 'example-repo',
     domainName: domain.domainName,
@@ -92,7 +92,7 @@ test('Repository w/ External Connection calling withExternalConnections', () => 
 
   repo.withExternalConnections(ExternalConnection.NPM);
 
-  expect(domain.domainName).toBe('ExampleDomain');
+  expect(domain.domainName).toBe('example-domain');
   expect(repo.repositoryName).toBe('example-repo');
 });
 
@@ -101,7 +101,7 @@ test('Repository w/ Empty External Connection calling withExternalConnections', 
   const { domain, repo } = createDomainAndRepo(stack);
   repo.withExternalConnections();
 
-  expect(domain.domainName).toBe('ExampleDomain');
+  expect(domain.domainName).toBe('example-domain');
   expect(repo.repositoryName).toBe('example-repo');
 });
 
@@ -113,7 +113,7 @@ test('Event rule for Repository', () => {
 });
 
 function createDomainAndRepo(stack: Stack) {
-  const domain = new Domain(stack, 'domain', { domainName: 'ExampleDomain' });
+  const domain = new Domain(stack, 'domain', { domainName: 'example-domain' });
   const repo = new Repository(stack, 'repository', {
     repositoryName: 'example-repo',
     domainName: domain.domainName,
