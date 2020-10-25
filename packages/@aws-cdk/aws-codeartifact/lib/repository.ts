@@ -69,7 +69,7 @@ export interface IRepository extends
   grantWrite(identity: iam.IGrantable): iam.Grant;
 
   /**
-     * Add external connections to the repository
+     * Grants the given IAM identity permissions to read/write from the repository
      */
   grantReadWrite(identity: iam.IGrantable): iam.Grant;
 
