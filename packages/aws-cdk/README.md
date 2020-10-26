@@ -353,3 +353,10 @@ Some of the interesting keys that can be used in the JSON configuration files:
     "versionReporting": false,         // Opt-out of version reporting      (--no-version-reporting)
 }
 ```
+
+#### Environment
+
+The following environment variables affect aws-cdk:
+
+- `CDK_DISABLE_VERSION_CHECK`: If set, disable automatic check for newer versions.
+- `CDK_NEW_BOOTSTRAP`: use the modern bootstrapping stack.
