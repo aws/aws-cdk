@@ -117,7 +117,7 @@ export class BundlingDockerImage {
 
     const docker = dockerExec(dockerArgs);
 
-    const match = docker.stdout.toString().match(/sha256:([a-z0-9]+)/);
+    const match = docker.stdout.toString().match(/(sha256:[a-z0-9]+)/);
 
     if (!match) {
       throw new Error('Failed to extract image ID from Docker build output');
@@ -129,7 +129,7 @@ export class BundlingDockerImage {
     // different every time the Docker layer cache is cleared, due primarily to
     // timestamps.
     const hash = FileSystem.fingerprint(path, { extraHash: JSON.stringify(options) });
-    return new BundlingDockerImage(match[1], hash);
+    return new BundlingDockerImage(match[0], hash);
   }
 
   /** @param image The Docker image */
