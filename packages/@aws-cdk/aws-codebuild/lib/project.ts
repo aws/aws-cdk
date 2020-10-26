@@ -793,6 +793,7 @@ export class Project extends ProjectBase {
           'codebuild:CreateReport',
           'codebuild:UpdateReport',
           'codebuild:BatchPutTestCases',
+          'codebuild:BatchPutCodeCoverages',
         ],
         resources: [renderReportGroupArn(this, `${this.projectName}-*`)],
       }));

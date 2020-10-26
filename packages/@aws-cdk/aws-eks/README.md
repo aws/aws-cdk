@@ -36,6 +36,7 @@ Table Of Contents
 * [Applying Kubernetes Resources](#applying-kubernetes-resources)
     * [Kubernetes Manifests](#kubernetes-manifests)
     * [Helm Charts](#helm-charts)
+    * [CDK8s Charts](#cdk8s-charts)
 * [Patching Kuberentes Resources](#patching-kubernetes-resources)
 * [Querying Kubernetes Resources](#querying-kubernetes-resources)
 * [Using existing clusters](#using-existing-clusters)
@@ -51,7 +52,7 @@ This example defines an Amazon EKS cluster with the following configuration:
 ```ts
 // provisiong a cluster
 const cluster = new eks.Cluster(this, 'hello-eks', {
-  version: eks.KubernetesVersion.V1_16,
+  version: eks.KubernetesVersion.V1_18,
 });
 
 // apply a kubernetes manifest to the cluster
@@ -144,7 +145,7 @@ Creating a new cluster is done using the `Cluster` or `FargateCluster` construct
 
 ```typescript
 new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_17,
+  version: eks.KubernetesVersion.V1_18,
 });
 ```
 
@@ -152,7 +153,7 @@ You can also use `FargateCluster` to provision a cluster that uses only fargate 
 
 ```typescript
 new eks.FargateCluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_17,
+  version: eks.KubernetesVersion.V1_18,
 });
 ```
 
@@ -176,7 +177,7 @@ At cluster instantiation time, you can customize the number of instances and the
 
 ```typescript
 new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_17,
+  version: eks.KubernetesVersion.V1_18,
   defaultCapacity: 5,
   defaultCapacityInstance: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.SMALL),
 });
@@ -188,7 +189,7 @@ Additional customizations are available post instantiation. To apply them, set t
 
 ```typescript
 const cluster = new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_17,
+  version: eks.KubernetesVersion.V1_18,
   defaultCapacity: 0,
 });
 
@@ -230,6 +231,8 @@ cluster.addNodegroupCapacity('extra-ng', {
 
 > For more details visit [Launch Template Support](https://docs.aws.amazon.com/en_ca/eks/latest/userguide/launch-templates.html).
 
+Graviton 2 instance types are supported including `c6g`, `m6g`, `r6g` and `t4g`.
+
 ### Fargate profiles
 
 AWS Fargate is a technology that provides on-demand, right-sized compute
@@ -267,7 +270,7 @@ The following code defines an Amazon EKS cluster with a default Fargate Profile 
 
 ```ts
 const cluster = new eks.FargateCluster(this, 'MyCluster', {
-  version: eks.KubernetesVersion.V1_16,
+  version: eks.KubernetesVersion.V1_18,
 });
 ```
 
@@ -313,7 +316,7 @@ You can also configure the cluster to use an auto-scaling group as the default c
 
 ```ts
 cluster = new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_17,
+  version: eks.KubernetesVersion.V1_18,
   defaultCapacityType: eks.DefaultCapacityType.EC2,
 });
 ```
@@ -391,7 +394,7 @@ You can configure the [cluster endpoint access](https://docs.aws.amazon.com/eks/
 
 ```typescript
 const cluster = new eks.Cluster(this, 'hello-eks', {
-  version: eks.KubernetesVersion.V1_16,
+  version: eks.KubernetesVersion.V1_18,
   endpointAccess: eks.EndpointAccess.PRIVATE // No access outside of your VPC.
 });
 ```
@@ -404,7 +407,7 @@ You can specify the VPC of the cluster using the `vpc` and `vpcSubnets` properti
 const vpc = new ec2.Vpc(this, 'Vpc');
 
 new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_17,
+  version: eks.KubernetesVersion.V1_18,
   vpc,
   vpcSubnets: [{ subnetType: ec2.SubnetType.PRIVATE }]
 });
@@ -444,7 +447,7 @@ The resources are created in the cluster by running `kubectl apply` from a pytho
 
 ```typescript
 const cluster = new eks.Cluster(this, 'hello-eks', {
-  version: eks.KubernetesVersion.V1_16,
+  version: eks.KubernetesVersion.V1_18,
   kubectlEnvironment: {
     'http_proxy': 'http://proxy.myproxy.com'
   }
@@ -512,7 +515,7 @@ When you create a cluster, you can specify a `mastersRole`. The `Cluster` constr
 ```ts
 const role = new iam.Role(...);
 new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_17,
+  version: eks.KubernetesVersion.V1_18,
   mastersRole: role,
 });
 ```
@@ -810,6 +813,127 @@ const chart2 = cluster.addHelmChart(...);
 
 chart2.node.addDependency(chart1);
 ```
+
+#### CDK8s Charts
+
+[CDK8s](https://cdk8s.io/) is an open-source library that enables Kubernetes manifest authoring using familiar programming languages. It is founded on the same technologies as the AWS CDK, such as [`constructs`](https://github.com/aws/constructs) and [`jsii`](https://github.com/aws/jsii).
+
+> To learn more about cdk8s, visit the [Getting Started](https://github.com/awslabs/cdk8s/tree/master/docs/getting-started) tutorials.
+
+The EKS module natively integrates with cdk8s and allows you to apply cdk8s charts on AWS EKS clusters via the `cluster.addCdk8sChart` method.
+
+In addition to `cdk8s`, you can also use [`cdk8s+`](https://github.com/awslabs/cdk8s/tree/master/packages/cdk8s-plus), which provides higher level abstraction for the core kubernetes api objects.
+You can think of it like the `L2` constructs for Kubernetes. Any other `cdk8s` based libraries are also supported, for example [`cdk8s-debore`](https://github.com/toricls/cdk8s-debore).
+
+To get started, add the following dependencies to your `package.json` file:
+
+```json
+"dependencies": {
+  "cdk8s": "0.30.0",
+  "cdk8s-plus": "0.30.0",
+  "constructs": "3.0.4"
+}
+```
+
+> Note that the version of `cdk8s` must be `>=0.30.0`.
+
+Similarly to how you would create a stack by extending `@aws-cdk/core.Stack`, we recommend you create a chart of your own that extends `cdk8s.Chart`,
+and add your kubernetes resources to it. You can use `aws-cdk` construct attributes and properties inside your `cdk8s` construct freely.
+
+In this example we create a chart that accepts an `s3.Bucket` and passes its name to a kubernetes pod as an environment variable.
+
+Notice that the chart must accept a `constructs.Construct` type as its scope, not an `@aws-cdk/core.Construct` as you would normally use.
+For this reason, to avoid possible confusion, we will create the chart in a separate file:
+
+`+ my-chart.ts`
+```ts
+import * as s3 from '@aws-cdk/aws-s3';
+import * as constructs from 'constructs';
+import * as cdk8s from 'cdk8s';
+import * as kplus from 'cdk8s-plus';
+
+export interface MyChartProps {
+  readonly bucket: s3.Bucket;
+}
+
+export class MyChart extends cdk8s.Chart {
+  constructor(scope: constructs.Construct, id: string, props: MyChartProps) {
+    super(scope, id);
+
+    new kplus.Pod(this, 'Pod', {
+      spec: {
+        containers: [
+          new kplus.Container({
+            image: 'my-image',
+            env: {
+              BUCKET_NAME: kplus.EnvValue.fromValue(props.bucket.bucketName),
+            },
+          }),
+        ],
+      },
+    });
+  }
+}
+```
+
+Then, in your AWS CDK app:
+
+```ts
+import * as s3 from '@aws-cdk/aws-s3';
+import * as cdk8s from 'cdk8s';
+import { MyChart } from './my-chart';
+
+// some bucket..
+const bucket = new s3.Bucket(this, 'Bucket');
+
+// create a cdk8s chart and use `cdk8s.App` as the scope.
+const myChart = new MyChart(new cdk8s.App(), 'MyChart', { bucket });
+
+// add the cdk8s chart to the cluster
+cluster.addCdk8sChart('my-chart', myChart);
+```
+
+##### Custom CDK8s Constructs
+
+You can also compose a few stock `cdk8s+` constructs into your own custom construct. However, since mixing scopes between `aws-cdk` and `cdk8s` is currently not supported, the `Construct` class
+you'll need to use is the one from the [`constructs`](https://github.com/aws/constructs) module, and not from `@aws-cdk/core` like you normally would.
+This is why we used `new cdk8s.App()` as the scope of the chart above.
+
+```ts
+import * as constructs from 'constructs';
+import * as cdk8s from 'cdk8s';
+import * as kplus from 'cdk8s-plus';
+
+export interface LoadBalancedWebService {
+  readonly port: number;
+  readonly image: string;
+  readonly replicas: number;
+}
+
+export class LoadBalancedWebService extends constructs.Construct {
+  constructor(scope: constructs.Construct, id: string, props: LoadBalancedWebService) {
+    super(scope, id);
+
+    const deployment = new kplus.Deployment(chart, 'Deployment', {
+      spec: {
+        replicas: props.replicas,
+        podSpecTemplate: {
+          containers: [ new kplus.Container({ image: props.image }) ]
+        }
+      },
+    });
+
+    deployment.expose({port: props.port, serviceType: kplus.ServiceType.LOAD_BALANCER})
+
+  }
+}
+```
+
+##### Manually importing k8s specs and CRD's
+
+If you find yourself unable to use `cdk8s+`, or just like to directly use the `k8s` native objects or CRD's, you can do so by manually importing them using the `cdk8s-cli`.
+
+See [Importing kubernetes objects](https://github.com/awslabs/cdk8s/tree/master/packages/cdk8s-cli#import) for detailed instructions.
 
 ## Patching Kubernetes Resources
 

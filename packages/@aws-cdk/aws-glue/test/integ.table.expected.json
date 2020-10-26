@@ -474,6 +474,7 @@
                 "glue:GetPartitions",
                 "glue:GetTable",
                 "glue:GetTables",
+                "glue:GetTableVersion",
                 "glue:GetTableVersions",
                 "glue:BatchCreatePartition",
                 "glue:BatchDeletePartition",
@@ -537,7 +538,7 @@
                           "Arn"
                         ]
                       },
-                      "/"
+                      "/*"
                     ]
                   ]
                 }
@@ -551,6 +552,7 @@
                 "glue:GetPartitions",
                 "glue:GetTable",
                 "glue:GetTables",
+                "glue:GetTableVersion",
                 "glue:GetTableVersions",
                 "glue:BatchCreatePartition",
                 "glue:BatchDeletePartition",
@@ -614,7 +616,7 @@
                           "Arn"
                         ]
                       },
-                      "/"
+                      "/*"
                     ]
                   ]
                 }
@@ -663,6 +665,7 @@
                 "glue:GetPartitions",
                 "glue:GetTable",
                 "glue:GetTables",
+                "glue:GetTableVersion",
                 "glue:GetTableVersions",
                 "glue:BatchCreatePartition",
                 "glue:BatchDeletePartition",
@@ -726,7 +729,7 @@
                           "Arn"
                         ]
                       },
-                      "/"
+                      "/*"
                     ]
                   ]
                 }
@@ -740,6 +743,7 @@
                 "glue:GetPartitions",
                 "glue:GetTable",
                 "glue:GetTables",
+                "glue:GetTableVersion",
                 "glue:GetTableVersions",
                 "glue:BatchCreatePartition",
                 "glue:BatchDeletePartition",
@@ -784,6 +788,7 @@
                 "glue:GetPartitions",
                 "glue:GetTable",
                 "glue:GetTables",
+                "glue:GetTableVersion",
                 "glue:GetTableVersions",
                 "glue:BatchCreatePartition",
                 "glue:BatchDeletePartition",
