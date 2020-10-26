@@ -1,12 +1,11 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import '@aws-cdk/assert/jest';
 import { Stack } from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import * as apigw from '../lib';
 
 /* eslint-disable quote-props */
 
-export = {
-  'ProxyResource defines a "{proxy+}" resource with ANY method'(test: Test) {
+describe('resource', () => {
+  test('ProxyResource defines a "{proxy+}" resource with ANY method', () => {
     // GIVEN
     const stack = new Stack();
     const api = new apigw.RestApi(stack, 'api');
@@ -17,7 +16,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::Resource', {
+    expect(stack).toHaveResource('AWS::ApiGateway::Resource', {
       'ParentId': {
         'Fn::GetAtt': [
           'apiC8550315',
@@ -28,9 +27,9 @@ export = {
       'RestApiId': {
         'Ref': 'apiC8550315',
       },
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
       'HttpMethod': 'ANY',
       'ResourceId': {
         'Ref': 'proxy3A1DA9C7',
@@ -42,12 +41,12 @@ export = {
       'Integration': {
         'Type': 'MOCK',
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  'if "anyMethod" is false, then an ANY method will not be defined'(test: Test) {
+  });
+
+  test('if "anyMethod" is false, then an ANY method will not be defined', () => {
     // GIVEN
     const stack = new Stack();
     const api = new apigw.RestApi(stack, 'api');
@@ -61,14 +60,14 @@ export = {
     proxy.addMethod('GET');
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::Resource'));
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', { 'HttpMethod': 'GET' }));
-    expect(stack).notTo(haveResource('AWS::ApiGateway::Method', { 'HttpMethod': 'ANY' }));
+    expect(stack).toHaveResource('AWS::ApiGateway::Resource');
+    expect(stack).toHaveResource('AWS::ApiGateway::Method', { 'HttpMethod': 'GET' });
+    expect(stack).not.toHaveResource('AWS::ApiGateway::Method', { 'HttpMethod': 'ANY' });
 
-    test.done();
-  },
 
-  'addProxy can be used on any resource to attach a proxy from that route'(test: Test) {
+  });
+
+  test('addProxy can be used on any resource to attach a proxy from that route', () => {
     // GIVEN
     const stack = new Stack();
     const api = new apigw.RestApi(stack, 'api', {
@@ -79,7 +78,7 @@ export = {
     const v2 = api.root.addResource('v2');
     v2.addProxy();
 
-    expect(stack).toMatch({
+    expect(stack).toMatchTemplate({
       'Resources': {
         'apiC8550315': {
           'Type': 'AWS::ApiGateway::RestApi',
@@ -133,10 +132,10 @@ export = {
       },
     });
 
-    test.done();
-  },
 
-  'if proxy is added to root, proxy methods are automatically duplicated (with integration and options)'(test: Test) {
+  });
+
+  test('if proxy is added to root, proxy methods are automatically duplicated (with integration and options)', () => {
     // GIVEN
     const stack = new Stack();
     const api = new apigw.RestApi(stack, 'api');
@@ -155,7 +154,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
       HttpMethod: 'DELETE',
       ResourceId: { Ref: 'apiproxy4EA44110' },
       Integration: {
@@ -163,9 +162,9 @@ export = {
         Type: 'MOCK',
       },
       OperationName: 'DeleteMe',
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
       HttpMethod: 'DELETE',
       ResourceId: { 'Fn::GetAtt': ['apiC8550315', 'RootResourceId'] },
       Integration: {
@@ -173,12 +172,12 @@ export = {
         Type: 'MOCK',
       },
       OperationName: 'DeleteMe',
-    }));
+    });
 
-    test.done();
-  },
 
-  'if proxy is added to root, proxy methods are only added if they are not defined already on the root resource'(test: Test) {
+  });
+
+  test('if proxy is added to root, proxy methods are only added if they are not defined already on the root resource', () => {
     // GIVEN
     const stack = new Stack();
     const api = new apigw.RestApi(stack, 'api');
@@ -189,10 +188,10 @@ export = {
     proxy.addMethod('POST');
 
     // THEN
-    test.done();
-  },
 
-  'url for a resource'(test: Test) {
+  });
+
+  test('url for a resource', () => {
     // GIVEN
     const stack = new Stack();
     const api = new apigw.RestApi(stack, 'api');
@@ -202,7 +201,7 @@ export = {
     const cResource = aResource.addResource('b').addResource('c');
 
     // THEN
-    test.deepEqual(stack.resolve(aResource.url), {
+    expect(stack.resolve(aResource.url)).toEqual({
       'Fn::Join': [
         '',
         [
@@ -218,7 +217,7 @@ export = {
         ],
       ],
     });
-    test.deepEqual(stack.resolve(cResource.url), {
+    expect(stack.resolve(cResource.url)).toEqual({
       'Fn::Join': [
         '',
         [
@@ -234,23 +233,23 @@ export = {
         ],
       ],
     });
-    test.done();
-  },
 
-  'getResource': {
+  });
 
-    'root resource': {
-      'returns undefined if not found'(test: Test) {
+  describe('getResource', () => {
+
+    describe('root resource', () => {
+      test('returns undefined if not found', () => {
         // GIVEN
         const stack = new Stack();
         const api = new apigw.RestApi(stack, 'MyRestApi');
 
         // THEN
-        test.deepEqual(api.root.getResource('boom'), undefined);
-        test.done();
-      },
+        expect(api.root.getResource('boom')).toBeUndefined();
 
-      'returns the resource if found'(test: Test) {
+      });
+
+      test('returns the resource if found', () => {
         // GIVEN
         const stack = new Stack();
         const api = new apigw.RestApi(stack, 'MyRestApi');
@@ -260,12 +259,12 @@ export = {
         const r2 = api.root.addResource('world');
 
         // THEN
-        test.deepEqual(api.root.getResource('hello'), r1);
-        test.deepEqual(api.root.getResource('world'), r2);
-        test.done();
-      },
+        expect(api.root.getResource('hello')).toEqual(r1);
+        expect(api.root.getResource('world')).toEqual(r2);
 
-      'returns the resource even if it was created using "new"'(test: Test) {
+      });
+
+      test('returns the resource even if it was created using "new"', () => {
         // GIVEN
         const stack = new Stack();
         const api = new apigw.RestApi(stack, 'MyRestApi');
@@ -277,26 +276,26 @@ export = {
         });
 
         // THEN
-        test.deepEqual(api.root.getResource('yello'), r1);
-        test.done();
-      },
+        expect(api.root.getResource('yello')).toEqual(r1);
 
-    },
+      });
 
-    'non-root': {
+    });
 
-      'returns undefined if not found'(test: Test) {
+    describe('non-root', () => {
+
+      test('returns undefined if not found', () => {
         // GIVEN
         const stack = new Stack();
         const api = new apigw.RestApi(stack, 'MyRestApi');
         const res = api.root.addResource('boom');
 
         // THEN
-        test.deepEqual(res.getResource('child-of-boom'), undefined);
-        test.done();
-      },
+        expect(res.getResource('child-of-boom')).toBeUndefined();
 
-      'returns the resource if found'(test: Test) {
+      });
+
+      test('returns the resource if found', () => {
         // GIVEN
         const stack = new Stack();
         const api = new apigw.RestApi(stack, 'MyRestApi');
@@ -307,12 +306,12 @@ export = {
         const r2 = child.addResource('world');
 
         // THEN
-        test.deepEqual(child.getResource('hello'), r1);
-        test.deepEqual(child.getResource('world'), r2);
-        test.done();
-      },
+        expect(child.getResource('hello')).toEqual(r1);
+        expect(child.getResource('world')).toEqual(r2);
 
-      'returns the resource even if created with "new"'(test: Test) {
+      });
+
+      test('returns the resource even if created with "new"', () => {
         // GIVEN
         const stack = new Stack();
         const api = new apigw.RestApi(stack, 'MyRestApi');
@@ -327,28 +326,28 @@ export = {
         });
 
         // THEN
-        test.deepEqual(child.getResource('hello'), r1);
-        test.deepEqual(child.getResource('outside-world'), r2);
-        test.done();
+        expect(child.getResource('hello')).toEqual(r1);
+        expect(child.getResource('outside-world')).toEqual(r2);
 
-      },
-    },
 
-    'resourceForPath': {
+      });
+    });
 
-      'empty path or "/" (on root) returns this'(test: Test) {
+    describe('resourceForPath', () => {
+
+      test('empty path or "/" (on root) returns this', () => {
         // GIVEN
         const stack = new Stack();
         const api = new apigw.RestApi(stack, 'MyRestApi');
 
         // THEN
-        test.deepEqual(api.root.resourceForPath(''), api.root);
-        test.deepEqual(api.root.resourceForPath('/'), api.root);
-        test.deepEqual(api.root.resourceForPath('///'), api.root);
-        test.done();
-      },
+        expect(api.root.resourceForPath('')).toEqual(api.root);
+        expect(api.root.resourceForPath('/')).toEqual(api.root);
+        expect(api.root.resourceForPath('///')).toEqual(api.root);
 
-      'returns a resource for that path'(test: Test) {
+      });
+
+      test('returns a resource for that path', () => {
         // GIVEN
         const stack = new Stack();
         const api = new apigw.RestApi(stack, 'MyRestApi');
@@ -357,11 +356,11 @@ export = {
         const resource = api.root.resourceForPath('/boom/trach');
 
         // THEN
-        test.deepEqual(resource.path, '/boom/trach');
-        test.done();
-      },
+        expect(resource.path).toEqual('/boom/trach');
 
-      'resources not created if not needed'(test: Test) {
+      });
+
+      test('resources not created if not needed', () => {
         // GIVEN
         const stack = new Stack();
         const api = new apigw.RestApi(stack, 'MyRestApi');
@@ -372,19 +371,19 @@ export = {
 
         // THEN
         const parent = api.root.getResource('boom');
-        test.ok(parent);
-        test.deepEqual(parent!.path, '/boom');
+        expect(parent).toBeDefined();
+        expect(parent!.path).toEqual('/boom');
 
-        test.same(trach.parentResource, parent);
-        test.deepEqual(trach.parentResource!.path, '/boom');
+        expect(trach.parentResource).toBe(parent);
+        expect(trach.parentResource!.path).toEqual('/boom');
 
         const bam2 = api.root.resourceForPath('/boom/bam');
-        test.same(bam1, bam2);
-        test.deepEqual(bam1.parentResource!.path, '/boom');
-        test.done();
-      },
+        expect(bam1).toBe(bam2);
+        expect(bam1.parentResource!.path).toEqual('/boom');
 
-    },
-  },
+      });
 
-};
+    });
+  });
+
+});
