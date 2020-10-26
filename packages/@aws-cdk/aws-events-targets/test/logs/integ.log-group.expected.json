@@ -295,9 +295,9 @@
             "Id": "Target0",
             "InputTransformer": {
               "InputPathsMap": {
-                "f1": "$"
+                "detail-type": "$.detail-type"
               },
-              "InputTemplate": "{\"data\":<f1>}"
+              "InputTemplate": "{\"data\":<detail-type>}"
             }
           }
         ]
