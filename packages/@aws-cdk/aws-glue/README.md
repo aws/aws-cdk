@@ -55,8 +55,6 @@ new glue.Table(stack, 'MyTable', {
 });
 ```
 
-By default, an S3 bucket will be created to store the table's data and stored in the bucket root. You can also manually pass the `bucket` and `s3Prefix`:
-
 #### Partitions
 
 To improve query performance, a table can specify `partitionKeys` on which data is stored and queried separately. For example, you might partition a table by `year` and `month` to optimize queries based on a time window:
@@ -204,4 +202,51 @@ new glue.Table(stack, 'MyTable', {
 |-------------------------------------	|----------	|-------------------------------------------------------------------	|
 | array(itemType: Type)               	| Function 	| An array of some other type                                       	|
 | map(keyType: Type, valueType: Type) 	| Function 	| A map of some primitive key type to any value type                	|
-| struct(collumns: Column[])          	| Function 	| Nested structure containing individually named and typed collumns 	|
+| struct(columns: Column[])          	| Function 	| Nested structure containing individually named and typed columns 	|
+
+### Job
+
+A `Job` is the business logic that performs the extract, transform, and load (ETL) work in AWS Glue. When you start a job, AWS Glue runs a script that extracts data from sources, transforms the data, and loads it into targets.
+
+The only required parameter is `script` which defines the relative path to your Python or Scala file. A `CustomResource` pushes your script to S3 and configures the `Job` with necessary permissions and the final location of the script.
+
+```ts
+new glue.Job(stack, 'MyJob', {
+  script: './lib/scripts/etlJob.py'
+});
+```
+
+By default, an S3 bucket will be created to store the provided script but you can manually pass the `bucket` and `s3Prefix`:
+
+```ts
+new glue.Job(stack, 'MyJob', {
+  script: './lib/scripts/etlJob.py'
+  bucket: myBucket,
+  s3Prefix: 'my-scripts/'
+  ...
+});
+```
+
+Alternatively, you can define the script inline with `scriptString`:
+
+```ts
+new glue.Job(stack, 'MyJob', {
+  scriptString: `
+    import sys
+    from awsglue.utils import getResolvedOptions
+    from pyspark.context import SparkContext
+    from awsglue.context import GlueContext
+    from awsglue.job import Job
+
+    ## @params: [JOB_NAME]
+    args = getResolvedOptions(sys.argv, ["JOB_NAME"])
+
+    sc = SparkContext()
+    glueContext = GlueContext(sc)
+    spark = glueContext.spark_session
+    job = Job(glueContext)
+    job.init(args["JOB_NAME"], args)
+    ...
+  `
+});
+```
