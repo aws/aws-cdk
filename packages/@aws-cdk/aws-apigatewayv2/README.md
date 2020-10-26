@@ -80,7 +80,7 @@ httpApi.addRoutes({
   integration: booksDefaultIntegration,
 });
 
-new CfnOutput(stack, 'my-api-url, {
+new CfnOutput(stack, 'my-api-url', {
   exportName: 'ApiUrl',
   value: httpApi.apiEndpoint,
 });
