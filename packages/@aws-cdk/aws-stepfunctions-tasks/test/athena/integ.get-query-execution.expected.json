@@ -181,7 +181,7 @@
                       {
                         "Ref": "AWS::AccountId"
                       },
-                      ":table/*"
+                      ":table/mydatabase/*"
                     ]
                   ]
                 },
@@ -201,7 +201,7 @@
                       {
                         "Ref": "AWS::AccountId"
                       },
-                      ":userdefinedfunction/*"
+                      ":userdefinedfunction/mydatabase/*"
                     ]
                   ]
                 }
