@@ -108,7 +108,6 @@
       "construct-ctor-props-type:@aws-cdk/aws-appmesh.ImportedVirtualNode",
       "construct-ctor-props-type:@aws-cdk/aws-appmesh.ImportedVirtualRouter",
       "construct-ctor-props-type:@aws-cdk/aws-appmesh.ImportedVirtualService",
-      "construct-ctor-props-type:@aws-cdk/aws-appmesh.GatewayRoute",
       "from-signature:@aws-cdk/aws-appmesh.GatewayRoute.fromGatewayRouteName",
       "from-signature:@aws-cdk/aws-appmesh.Route.fromRouteName",
       "from-signature:@aws-cdk/aws-appmesh.VirtualGateway.fromVirtualGatewayName",
@@ -175,8 +174,7 @@
       "props-default-doc:@aws-cdk/aws-appmesh.VirtualRouterAttributes.virtualRouterName",
       "docs-public-apis:@aws-cdk/aws-appmesh.Protocol.HTTP",
       "docs-public-apis:@aws-cdk/aws-appmesh.Protocol.HTTP2",
-      "docs-public-apis:@aws-cdk/aws-appmesh.Protocol.GRPC",
-      "no-unused-type:@aws-cdk/aws-appmesh.GatewayRouteProps"
+      "docs-public-apis:@aws-cdk/aws-appmesh.Protocol.GRPC"
     ]
   },
   "stability": "experimental",

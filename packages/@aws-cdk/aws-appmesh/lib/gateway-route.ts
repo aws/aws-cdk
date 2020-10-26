@@ -100,15 +100,15 @@ export class GatewayRoute extends cdk.Resource implements IGatewayRoute {
     });
 
     this.virtualGateway = props.virtualGateway;
-    const routeSpec = props.routeSpec.bind(this);
+    const routeSpecConfig = props.routeSpec.bind(this);
 
     const gatewayRoute = new CfnGatewayRoute(this, 'Resource', {
       gatewayRouteName: this.physicalName,
       meshName: props.virtualGateway.mesh.meshName,
       spec: {
-        httpRoute: routeSpec.httpSpecConfig,
-        http2Route: routeSpec.http2SpecConfig,
-        grpcRoute: routeSpec.grpcSpecConfig,
+        httpRoute: routeSpecConfig.httpSpecConfig,
+        http2Route: routeSpecConfig.http2SpecConfig,
+        grpcRoute: routeSpecConfig.grpcSpecConfig,
       },
       virtualGatewayName: this.virtualGateway.virtualGatewayName,
     });

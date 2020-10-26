@@ -33,29 +33,28 @@ export = {
       });
 
       // THEN
-      expect(stack).to(
-        haveResourceLike('AWS::AppMesh::GatewayRoute', {
-          GatewayRouteName: 'gateway-route',
-          Spec: {
-            HttpRoute: {
-              Action: {
-                Target: {
-                  VirtualService: {
-                    VirtualServiceName: {
-                      'Fn::GetAtt': ['vs1732C2645', 'VirtualServiceName'],
-                    },
+      expect(stack).to(haveResourceLike('AWS::AppMesh::GatewayRoute', {
+        GatewayRouteName: 'gateway-route',
+        Spec: {
+          HttpRoute: {
+            Action: {
+              Target: {
+                VirtualService: {
+                  VirtualServiceName: {
+                    'Fn::GetAtt': ['vs1732C2645', 'VirtualServiceName'],
                   },
                 },
               },
-              Match: {
-                Prefix: '/',
-              },
+            },
+            Match: {
+              Prefix: '/',
             },
           },
-        }),
-      );
+        },
+      }));
       test.done();
     },
+
     'should be able to add multiple routes'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
@@ -102,52 +101,49 @@ export = {
       ]);
 
       // THEN
-      expect(stack).to(
-        haveResourceLike('AWS::AppMesh::GatewayRoute', {
-          GatewayRouteName: 'gateway-route',
-          Spec: {
-            HttpRoute: {
-              Action: {
-                Target: {
-                  VirtualService: {
-                    VirtualServiceName: {
-                      'Fn::GetAtt': ['vs1732C2645', 'VirtualServiceName'],
-                    },
+      expect(stack).to(haveResourceLike('AWS::AppMesh::GatewayRoute', {
+        GatewayRouteName: 'gateway-route',
+        Spec: {
+          HttpRoute: {
+            Action: {
+              Target: {
+                VirtualService: {
+                  VirtualServiceName: {
+                    'Fn::GetAtt': ['vs1732C2645', 'VirtualServiceName'],
                   },
                 },
               },
-              Match: {
-                Prefix: '/',
-              },
+            },
+            Match: {
+              Prefix: '/',
             },
           },
-        }),
-      );
+        },
+      }));
 
       // THEN
-      expect(stack).to(
-        haveResourceLike('AWS::AppMesh::GatewayRoute', {
-          GatewayRouteName: 'gateway-route2',
-          Spec: {
-            HttpRoute: {
-              Action: {
-                Target: {
-                  VirtualService: {
-                    VirtualServiceName: {
-                      'Fn::GetAtt': ['vs2BB8859F6', 'VirtualServiceName'],
-                    },
+      expect(stack).to(haveResourceLike('AWS::AppMesh::GatewayRoute', {
+        GatewayRouteName: 'gateway-route2',
+        Spec: {
+          HttpRoute: {
+            Action: {
+              Target: {
+                VirtualService: {
+                  VirtualServiceName: {
+                    'Fn::GetAtt': ['vs2BB8859F6', 'VirtualServiceName'],
                   },
                 },
               },
-              Match: {
-                Prefix: '/echo',
-              },
+            },
+            Match: {
+              Prefix: '/echo',
             },
           },
-        }),
-      );
+        },
+      }));
       test.done();
     },
+
     'should throw an exception if you start an http prefix match not with a /'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
@@ -167,6 +163,7 @@ export = {
       test.done();
     },
   },
+
   'Can export and import GatewayRoutes and perform actions'(test: Test) {
     const app = new cdk.App();
     // GIVEN
