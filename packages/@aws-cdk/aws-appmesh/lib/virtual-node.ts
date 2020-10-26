@@ -72,9 +72,9 @@ export interface HttpNodeListenerProps extends VirtualNodeListenerProps {
    *
    * @default - None
    */
-
   readonly timeout?: HttpTimeout;
 }
+
 /**
  * Represent the HTTP2 Node Listener prorperty
  */
@@ -84,9 +84,9 @@ export interface Http2NodeListenerProps extends VirtualNodeListenerProps {
    *
    * @default - None
    */
-
   readonly timeout?: Http2Timeout;
 }
+
 /**
  * Represent the GRPC Node Listener prorperty
  */
@@ -96,7 +96,6 @@ export interface GrpcNodeListenerProps extends VirtualNodeListenerProps {
    *
    * @default - None
    */
-
   readonly timeout?: GrpcTimeout;
 }
 
@@ -109,9 +108,9 @@ export interface TcpNodeListenerProps extends VirtualNodeListenerProps {
    *
    * @default - None
    */
-
   readonly timeout?: TcpTimeout;
 }
+
 /**
  *  Defines listener for a VirtualNode
  */
@@ -120,6 +119,11 @@ export abstract class VirtualNodeListener {
    * Returns an HealthCheck for a VirtualNode
    */
   public static renderHealthCheck(pm: PortMapping, hc: HealthCheck | undefined): CfnVirtualNode.HealthCheckProperty | undefined {
+    /**
+     * Minimum and maximum thresholds for HeathCheck numeric properties
+     *
+     * @see https://docs.aws.amazon.com/app-mesh/latest/APIReference/API_HealthCheckPolicy.html
+     */
     const HEALTH_CHECK_PROPERTY_THRESHOLDS: {[key in (keyof CfnVirtualNode.HealthCheckProperty)]?: [number, number]} = {
       healthyThreshold: [2, 10],
       intervalMillis: [5000, 300000],
@@ -127,6 +131,7 @@ export abstract class VirtualNodeListener {
       timeoutMillis: [2000, 60000],
       unhealthyThreshold: [2, 10],
     };
+
     if (hc === undefined) { return undefined; }
 
     if (hc.protocol === Protocol.TCP && hc.path) {
@@ -208,8 +213,8 @@ export class HttpNodeListener extends VirtualNodeListener {
 /**
  * Returns the ListenerTimeoutProperty for HTTP protocol
  */
-  public static renderTimeout(tm: HttpTimeout| undefined): CfnVirtualNode.ListenerTimeoutProperty | undefined {
-    return ( tm!==undefined ? {
+  public static renderTimeout(tm: HttpTimeout): CfnVirtualNode.ListenerTimeoutProperty {
+    return ({
       http: {
         idle: tm?.idle !== undefined ? {
           unit: 'ms',
@@ -220,8 +225,9 @@ export class HttpNodeListener extends VirtualNodeListener {
           value: tm?.perRequest.toMilliseconds(),
         } : undefined,
       },
-    }: undefined);
+    });
   }
+
   /**
    * Port to listen for connections on
    *
@@ -235,12 +241,14 @@ export class HttpNodeListener extends VirtualNodeListener {
    * @default - no healthcheck
    */
   readonly healthCheck?: HealthCheck;
+
   /**
-   * Timeout
+   * Listener timeout property for HTTP protocol
    *
    * @default - none
    */
   readonly timeout?: HttpTimeout;
+
   constructor(props?: HttpNodeListenerProps) {
     super();
     const checkedProps = props ?? {};
@@ -262,20 +270,20 @@ export class HttpNodeListener extends VirtualNodeListener {
         port: this.port,
         protocol: Protocol.HTTP,
       }, this.healthCheck),
-      timeout: HttpNodeListener.renderTimeout(this.timeout),
+      timeout: this.timeout ? HttpNodeListener.renderTimeout(this.timeout) : undefined,
     };
   }
 }
 
 /**
- * Represents the properties required to define a HTTP Listener for a VirtualNode.
+ * Represents the properties required to define a HTTP2 Listener for a VirtualNode.
  */
 export class Http2NodeListener extends VirtualNodeListener {
 /**
  * Returns the ListenerTimeoutProperty for HTTP2 protocol
  */
-  public static renderTimeout(tm: Http2Timeout| undefined): CfnVirtualNode.ListenerTimeoutProperty | undefined {
-    return ( tm!==undefined ? {
+  public static renderTimeout(tm: Http2Timeout): CfnVirtualNode.ListenerTimeoutProperty {
+    return ({
       http2: {
         idle: tm?.idle !== undefined ? {
           unit: 'ms',
@@ -286,8 +294,9 @@ export class Http2NodeListener extends VirtualNodeListener {
           value: tm?.perRequest.toMilliseconds(),
         } : undefined,
       },
-    } : undefined);
+    });
   }
+
   /**
    * Port to listen for connections on
    *
@@ -301,12 +310,14 @@ export class Http2NodeListener extends VirtualNodeListener {
    * @default - no healthcheck
    */
   readonly healthCheck?: HealthCheck;
+
   /**
-   * Timeout
+   * Listener timeout property for HTTP2 protocol
    *
    * @default - none
    */
   readonly timeout?: Http2Timeout;
+
   constructor(props?: Http2NodeListenerProps) {
     super();
     const checkedProps = props ?? {};
@@ -328,20 +339,20 @@ export class Http2NodeListener extends VirtualNodeListener {
         port: this.port,
         protocol: Protocol.HTTP2,
       }, this.healthCheck),
-      timeout: Http2NodeListener.renderTimeout(this.timeout),
+      timeout: this.timeout ? Http2NodeListener.renderTimeout(this.timeout) : undefined,
     };
   }
 }
 
 /**
- * Represents the properties required to define a HTTP Listener for a VirtualNode.
+ * Represents the properties required to define a GRPC Listener for a VirtualNode.
  */
 export class GrpcNodeListener extends VirtualNodeListener {
 /**
  * Returns the ListenerTimeoutProperty for GRPC protocol
  */
-  public static renderTimeout(tm: GrpcTimeout| undefined): CfnVirtualNode.ListenerTimeoutProperty | undefined {
-    return (tm!==undefined ? {
+  public static renderTimeout(tm: GrpcTimeout): CfnVirtualNode.ListenerTimeoutProperty {
+    return ({
       grpc: {
         idle: tm?.idle !== undefined ? {
           unit: 'ms',
@@ -352,8 +363,9 @@ export class GrpcNodeListener extends VirtualNodeListener {
           value: tm?.perRequest.toMilliseconds(),
         } : undefined,
       },
-    } : undefined);
+    });
   }
+
   /**
    * Port to listen for connections on
    *
@@ -367,12 +379,14 @@ export class GrpcNodeListener extends VirtualNodeListener {
    * @default - no healthcheck
    */
   readonly healthCheck?: HealthCheck;
+
   /**
-   * Timeout
+   * Listener timeout property for GRPC protocol
    *
    * @default - none
    */
   readonly timeout?: GrpcTimeout;
+
   constructor(props?: GrpcNodeListenerProps) {
     super();
     const checkedProps = props ?? {};
@@ -394,27 +408,29 @@ export class GrpcNodeListener extends VirtualNodeListener {
         port: this.port,
         protocol: Protocol.GRPC,
       }, this.healthCheck),
-      timeout: GrpcNodeListener.renderTimeout(this.timeout),
+      timeout: this.timeout ? GrpcNodeListener.renderTimeout(this.timeout) : undefined,
     };
   }
 }
+
 /**
- * Represents the properties required to define a HTTP Listener for a VirtualNode.
+ * Represents the properties required to define a TCP Listener for a VirtualNode.
  */
 export class TcpNodeListener extends VirtualNodeListener {
 /**
  * Returns the ListenerTimeoutProperty for TCP protocol
  */
-  public static renderTimeout(tm: TcpTimeout| undefined): CfnVirtualNode.ListenerTimeoutProperty | undefined {
-    return ( tm!=undefined ? {
+  public static renderTimeout(tm: TcpTimeout): CfnVirtualNode.ListenerTimeoutProperty | undefined {
+    return ({
       tcp: {
         idle: tm?.idle !== undefined ? {
           unit: 'ms',
           value: tm?.idle.toMilliseconds(),
         } : undefined,
       },
-    } : undefined );
+    } );
   }
+
   /**
    * Port to listen for connections on
    *
@@ -428,12 +444,14 @@ export class TcpNodeListener extends VirtualNodeListener {
    * @default - no healthcheck
    */
   readonly healthCheck?: HealthCheck;
+
   /**
-   * Timeout
+   * Listener timeout property for TCP protocol
    *
    * @default - none
    */
   readonly timeout?: TcpTimeout;
+
   constructor(props?: TcpNodeListenerProps) {
     super();
     const checkedProps = props ?? {};
@@ -455,10 +473,11 @@ export class TcpNodeListener extends VirtualNodeListener {
         port: this.port,
         protocol: Protocol.TCP,
       }, this.healthCheck),
-      timeout: TcpNodeListener.renderTimeout(this.timeout),
+      timeout: this.timeout ? TcpNodeListener.renderTimeout(this.timeout) : undefined,
     };
   }
 }
+
 /**
  * Basic configuration properties for a VirtualNode
  */
