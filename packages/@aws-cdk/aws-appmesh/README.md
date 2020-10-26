@@ -237,7 +237,7 @@ A `virtual gateway` allows resources outside your mesh to communicate to resourc
 
 A `virtual gateway` is similar to a `virtual node` in that it has a `listener` that accepts traffic for a particular port and protocol (HTTP, HTTP2, GRPC). The traffic that the `virtual gateway` receives, is directed to other services in your mesh, using rules defined in `gateway routes` which can be added to your `virtual gateway`.
 
-Create a `virtual gateway` with the constructor
+Create a `virtual gateway` with the constructor:
 
 ```typescript
 const gateway = new appmesh.VirtualGateway(stack, 'gateway', {
@@ -253,7 +253,7 @@ const gateway = new appmesh.VirtualGateway(stack, 'gateway', {
 });
 ```
 
-Add a `virtual gateway` directly to the mesh
+Add a `virtual gateway` directly to the mesh:
 
 ```typescript
 const gateway = mesh.addVirtualGateway('gateway', {
