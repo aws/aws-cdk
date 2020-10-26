@@ -76,7 +76,7 @@ test('No Version specified for storage in the TTL file', async () => {
 
 test('Skip version check if environment variable is set', async () => {
   process.stdout.isTTY = true;
-  process.env.AWS_CDK_DISABLE_VERSION_CHECK = '1';
+  process.env.CDK_DISABLE_VERSION_CHECK = '1';
   const printStub = sinon.stub(logging, 'print');
   await displayVersionMessage();
   expect(printStub.called).toEqual(false);

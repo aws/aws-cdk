@@ -350,5 +350,5 @@ Some of the interesting keys that can be used in the JSON configuration files:
 
 The following environment variables affect aws-cdk:
 
-- `AWS_CDK_DISABLE_VERSION_CHECK`: If set, disable automatic check for newer versions.
+- `CDK_DISABLE_VERSION_CHECK`: If set, disable automatic check for newer versions.
 - `CDK_NEW_BOOTSTRAP`: use the modern bootstrapping stack.
