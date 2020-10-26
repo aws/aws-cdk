@@ -2,6 +2,7 @@ import '@aws-cdk/assert/jest';
 import { ABSENT } from '@aws-cdk/assert';
 import { Metric } from '@aws-cdk/aws-cloudwatch';
 import { Code, Function, Runtime } from '@aws-cdk/aws-lambda';
+import { LogGroup } from '@aws-cdk/aws-logs';
 import { Duration, Stack } from '@aws-cdk/core';
 import { HttpApi, HttpMethod, LambdaProxyIntegration } from '../../lib';
 
@@ -231,6 +232,26 @@ describe('HttpApi', () => {
       Name: 'api',
       ProtocolType: 'HTTP',
       Description: 'My Api',
+    });
+  });
+
+  test('can create access logging for default stage', () => {
+    const stack = new Stack();
+    const logGroup = new LogGroup(stack, 'log-group');
+
+    new HttpApi(stack, 'api', {
+      accessLogSettings: {
+        destination: logGroup,
+        format: '$context.identity.sourceIp - - [$context.requestTime] "$context.httpMethod $context.routeKey $context.protocol" $context.status $context.responseLength $context.requestId',
+      },
+    });
+
+    expect(stack).toHaveResource('AWS::ApiGatewayV2::Stage', {
+      StageName: '$default',
+      AccessLogSettings: {
+        DestinationArn: stack.resolve(logGroup.logGroupArn),
+        Format: '$context.identity.sourceIp - - [$context.requestTime] "$context.httpMethod $context.routeKey $context.protocol" $context.status $context.responseLength $context.requestId',
+      },
     });
   });
 });

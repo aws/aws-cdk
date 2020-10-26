@@ -24,6 +24,7 @@
   - [Publishing HTTP APIs](#publishing-http-apis)
   - [Custom Domain](#custom-domain)
   - [Metrics](#metrics)
+  - [Access Logging](#access-logging)
 
 ## Introduction
 
@@ -222,4 +223,36 @@ const stage = new HttpStage(stack, 'Stage', {
    httpApi: api,
 });
 const clientErrorMetric = stage.metricClientError();
+```
+
+## Access Logging
+
+Access logging creates logs everytime an API method is accessed. Access logs can have information on who has accessed the API, how the caller accessed the API and what responses were generated. Access logs are configured on a Stage of the Http Api. 
+
+Access logs can be expressed in a format of your choosing using `$context` variables.. The format must include at least $context.requestId.
+
+You can enable logging on the default stage by configuring it on the Http Api.
+
+```ts
+const logGroup = new LogGroup(stack, 'LogGroup');
+
+const httpApi = new HttpApi(stack, 'HttpApi', {
+  accessLogSettings: {
+    destination: logGroup,
+    format: '$context.identity.sourceIp - - [$context.requestTime] "$context.httpMethod $context.routeKey $context.protocol" $context.status $context.responseLength $context.requestId',
+  }
+});
+```
+
+Or specifically on a stage you add:
+
+```ts
+api.addStage('beta', {
+  stageName: 'beta',
+  autoDeploy: true,
+  accessLogSettings: {
+    destination: logGroup,
+    format: '$context.identity.sourceIp - - [$context.requestTime] "$context.httpMethod $context.routeKey $context.protocol" $context.status $context.responseLength $context.requestId',
+  }
+});
 ```
