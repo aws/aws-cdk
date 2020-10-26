@@ -1,12 +1,11 @@
-import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import '@aws-cdk/assert/jest';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import * as apigateway from '../lib';
 
-export = {
-  'default setup'(test: Test) {
+describe('vpc link', () => {
+  test('default setup', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -21,15 +20,13 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::ApiGateway::VpcLink', {
+    expect(stack).toHaveResourceLike('AWS::ApiGateway::VpcLink', {
       Name: 'MyLink',
       TargetArns: [{ Ref: 'NLB55158F82' }],
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'targets can be added using addTargets'(test: Test) {
+  test('targets can be added using addTargets', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -46,7 +43,7 @@ export = {
     link.addTargets(nlb3);
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::ApiGateway::VpcLink', {
+    expect(stack).toHaveResourceLike('AWS::ApiGateway::VpcLink', {
       Name: 'VpcLink',
       TargetArns: [
         { Ref: 'NLB03D178991' },
@@ -54,12 +51,10 @@ export = {
         { Ref: 'NLB2BEBACE62' },
         { Ref: 'NLB372DB3895' },
       ],
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'import'(test: Test) {
+  test('import', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -67,12 +62,10 @@ export = {
     apigateway.VpcLink.fromVpcLinkId(stack, 'ImportedVpcLink', 'vpclink-id');
 
     // THEN
-    expect(stack).notTo(haveResource('AWS::ApiGateway::VpcLink'));
+    expect(stack).not.toHaveResource('AWS::ApiGateway::VpcLink');
+  });
 
-    test.done();
-  },
-
-  'validation error if vpc link is created and no targets are added'(test: Test) {
+  test('validation error if vpc link is created and no targets are added', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'stack');
@@ -81,7 +74,6 @@ export = {
     new apigateway.VpcLink(stack, 'vpclink');
 
     // TEST
-    test.throws(() => app.synth(), /No targets added to vpc link/);
-    test.done();
-  },
-};
+    expect(() => app.synth()).toThrow(/No targets added to vpc link/);
+  });
+});
