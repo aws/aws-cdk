@@ -105,7 +105,6 @@ class HttpGatewayRouteSpec extends GatewayRouteSpec {
     this.routeType = protocol;
     this.match = props.match;
   }
-
   public bind(_scope: cdk.Construct): GatewayRouteSpecConfig {
     const prefixPath = this.match ? this.match.prefixPath : '/';
     if (prefixPath[0] != '/') {

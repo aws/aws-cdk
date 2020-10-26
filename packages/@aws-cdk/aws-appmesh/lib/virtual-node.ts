@@ -2,7 +2,7 @@ import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnVirtualNode } from './appmesh.generated';
-import { IMesh, Mesh } from './mesh';
+import { IMesh } from './mesh';
 import { validateHealthChecks } from './private/utils';
 import { AccessLog, HealthCheck, PortMapping, Protocol, VirtualNodeListener } from './shared-interfaces';
 import { IVirtualService } from './virtual-service';
@@ -28,11 +28,6 @@ export interface IVirtualNode extends cdk.IResource {
    * @attribute
    */
   readonly virtualNodeArn: string;
-
-  /**
-   * The Mesh that the VirtualNode belongs to
-   */
-  readonly mesh: IMesh;
 
   /**
    * Utility method to add backends for existing or new VirtualNodes
@@ -110,7 +105,7 @@ export interface VirtualNodeBaseProps {
  */
 export interface VirtualNodeProps extends VirtualNodeBaseProps {
   /**
-   * The Mesh that the VirtualNode belongs to
+   * The name of the AppMesh which the virtual node belongs to
    */
   readonly mesh: IMesh;
 }
@@ -125,11 +120,6 @@ abstract class VirtualNodeBase extends cdk.Resource implements IVirtualNode {
    * The Amazon Resource Name belonging to the VirtualNdoe
    */
   public abstract readonly virtualNodeArn: string;
-
-  /**
-   * The Mesh that the VirtualNode belongs to
-   */
-  public abstract readonly mesh: IMesh;
 
   protected readonly backends = new Array<CfnVirtualNode.BackendProperty>();
   protected readonly listeners = new Array<CfnVirtualNode.ListenerProperty>();
@@ -213,8 +203,11 @@ export class VirtualNode extends VirtualNodeBase {
   /**
    * Import an existing VirtualNode given its name
    */
-  public static fromVirtualNodeAttributes(scope: Construct, id: string, attrs: VirtualNodeAttributes): IVirtualNode {
-    return new ImportedVirtualNode(scope, id, attrs);
+  public static fromVirtualNodeName(scope: Construct, id: string, meshName: string, virtualNodeName: string): IVirtualNode {
+    return new ImportedVirtualNode(scope, id, {
+      meshName,
+      virtualNodeName,
+    });
   }
 
   /**
@@ -228,7 +221,7 @@ export class VirtualNode extends VirtualNodeBase {
   public readonly virtualNodeArn: string;
 
   /**
-   * The Mesh that the VirtualNode belongs to
+   * The service mesh that the virtual node resides in
    */
   public readonly mesh: IMesh;
 
@@ -280,27 +273,21 @@ function renderAttributes(attrs?: {[key: string]: string}) {
 /**
  * Interface with properties ncecessary to import a reusable VirtualNode
  */
-export interface VirtualNodeAttributes {
+interface VirtualNodeAttributes {
   /**
    * The name of the VirtualNode
-   *
-   * @default - required when virtualNodeArn is not specified
    */
   readonly virtualNodeName?: string;
 
   /**
-   * The Amazon Resource Name belonging to the VirtualNode
-   *
-   * @default - required when virtualNodeName and mesh are not specified
+   * The Amazon Resource Name belonging to the VirtualNdoe
    */
   readonly virtualNodeArn?: string;
 
   /**
-   * The Mesh that the VirtualNode belongs to
-   *
-   * @default - required when virtualNodeArn is not specified
+   * The service mesh that the virtual node resides in
    */
-  readonly mesh?: IMesh;
+  readonly meshName?: string;
 }
 
 /**
@@ -317,25 +304,17 @@ class ImportedVirtualNode extends VirtualNodeBase {
    */
   public readonly virtualNodeArn: string;
 
-  /**
-   * The Mesh that the VirtualNode belongs to
-   */
-  public readonly mesh: IMesh;
-
   constructor(scope: Construct, id: string, props: VirtualNodeAttributes) {
     super(scope, id);
 
     if (props.virtualNodeArn) {
       this.virtualNodeArn = props.virtualNodeArn;
       this.virtualNodeName = cdk.Fn.select(2, cdk.Fn.split('/', cdk.Stack.of(scope).parseArn(props.virtualNodeArn).resourceName!));
-      const meshName = cdk.Fn.select(0, cdk.Fn.split('/', cdk.Stack.of(scope).parseArn(props.virtualNodeArn).resourceName!));
-      this.mesh = Mesh.fromMeshName(this, 'Mesh', meshName);
-    } else if (props.virtualNodeName && props.mesh) {
+    } else if (props.virtualNodeName && props.meshName) {
       this.virtualNodeName = props.virtualNodeName;
-      this.mesh = props.mesh;
       this.virtualNodeArn = cdk.Stack.of(this).formatArn({
         service: 'appmesh',
-        resource: `mesh/${props.mesh.meshName}/virtualNode`,
+        resource: `mesh/${props.meshName}/virtualNode`,
         resourceName: this.virtualNodeName,
       });
     } else {

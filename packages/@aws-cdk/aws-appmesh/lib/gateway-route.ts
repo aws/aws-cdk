@@ -2,7 +2,6 @@ import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnGatewayRoute } from './appmesh.generated';
 import { GatewayRouteSpec } from './gateway-route-spec';
-import { Mesh } from './mesh';
 import { IVirtualGateway, VirtualGateway } from './virtual-gateway';
 
 /**
@@ -25,6 +24,8 @@ export interface IGatewayRoute extends cdk.IResource {
 
   /**
    * The VirtualGateway the GatewayRoute belongs to
+   *
+   * @attribute
    */
   readonly virtualGateway: IVirtualGateway;
 }
@@ -72,8 +73,10 @@ export class GatewayRoute extends cdk.Resource implements IGatewayRoute {
   /**
    * Import an existing GatewayRoute given its name
    */
-  public static fromGatewayRouteAttributes(scope: Construct, id: string, attrs: GatewayRouteAttributes): IGatewayRoute {
-    return new ImportedGatewayRoute(scope, id, attrs);
+  public static fromGatewayRouteName(
+    scope: Construct, id: string, meshName: string, virtualGatewayName: string, gatewayRouteName: string): IGatewayRoute {
+    const virtualGateway = VirtualGateway.fromVirtualGatewayName(scope, 'VirtualGateway', meshName, virtualGatewayName);
+    return new ImportedGatewayRoute(scope, id, { meshName, virtualGateway, gatewayRouteName });
   }
 
   /**
@@ -122,25 +125,24 @@ export class GatewayRoute extends cdk.Resource implements IGatewayRoute {
 /**
  * Interface with properties necessary to import a reusable GatewayRoute
  */
-export interface GatewayRouteAttributes {
+interface GatewayRouteAttributes {
   /**
    * The name of the GatewayRoute
-   *
-   * @default - required if gatewayRouteArn is not specified
    */
   readonly gatewayRouteName?: string;
 
   /**
    * The Amazon Resource Name (ARN) for the GatewayRoute
-   *
-   * @default - required if gatewayRouteName and virtualGateway are not specified
    */
   readonly gatewayRouteArn?: string;
 
   /**
+   * The name of the mesh this GatewayRoute is associated with
+   */
+  readonly meshName?: string;
+
+  /**
    * The name of the Virtual Gateway this GatewayRoute is associated with
-   *
-   * @default - required if gatewayRouteArn is not specified
    */
   readonly virtualGateway?: IVirtualGateway;
 }
@@ -168,21 +170,21 @@ class ImportedGatewayRoute extends cdk.Resource implements IGatewayRoute {
     super(scope, id);
     if (props.gatewayRouteArn) {
       const meshName = cdk.Fn.select(0, cdk.Fn.split('/', cdk.Stack.of(scope).parseArn(props.gatewayRouteArn).resourceName!));
-      const mesh = Mesh.fromMeshName(this, 'Mesh', meshName);
       const virtualGatewayName = cdk.Fn.select(2, cdk.Fn.split('/', cdk.Stack.of(scope).parseArn(props.gatewayRouteArn).resourceName!));
+
       this.gatewayRouteArn = props.gatewayRouteArn;
       this.gatewayRouteName = cdk.Fn.select(4, cdk.Fn.split('/', cdk.Stack.of(scope).parseArn(props.gatewayRouteArn).resourceName!));
-      this.virtualGateway = VirtualGateway.fromVirtualGatewayAttributes(this, 'virtualGateway', { mesh, virtualGatewayName });
-    } else if (props.gatewayRouteName && props.virtualGateway) {
+      this.virtualGateway = VirtualGateway.fromVirtualGatewayName(this, 'virtualGateway', meshName, virtualGatewayName);
+    } else if (props.gatewayRouteName && props.meshName && props.virtualGateway) {
       this.gatewayRouteName = props.gatewayRouteName;
       this.virtualGateway = props.virtualGateway;
       this.gatewayRouteArn = cdk.Stack.of(this).formatArn({
         service: 'appmesh',
-        resource: `mesh/${props.virtualGateway.mesh.meshName}/virtualGateway/${props.virtualGateway.virtualGatewayName}/gatewayRoute`,
+        resource: `mesh/${props.meshName}/virtualGateway/${props.virtualGateway.virtualGatewayName}/gatewayRoute`,
         resourceName: this.gatewayRouteName,
       });
     } else {
-      throw new Error('Need either gatewayRouteArn or gatewayRouteName and virtualGateway');
+      throw new Error('Need either arn or three names');
     }
   }
 }
