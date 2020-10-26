@@ -79,7 +79,7 @@
     "@types/aws-lambda": "^8.10.63",
     "@types/fs-extra": "^8.1.1",
     "@types/sinon": "^9.0.7",
-    "aws-sdk": "^2.776.0",
+    "aws-sdk": "^2.778.0",
     "aws-sdk-mock": "^5.1.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
@@ -87,7 +87,7 @@
     "fs-extra": "^9.0.1",
     "nock": "^13.0.4",
     "pkglint": "0.0.0",
-    "sinon": "^9.1.0"
+    "sinon": "^9.2.0"
   },
   "dependencies": {
     "@aws-cdk/aws-cloudformation": "0.0.0",

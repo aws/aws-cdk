@@ -27,6 +27,20 @@ export = {
       test.done();
     },
 
+    'can be created with name'  (test: Test) {
+      const stack = new cdk.Stack();
+
+      new codebuild.ReportGroup(stack, 'ReportGroup', {
+        reportGroupName: 'my-report-group',
+      });
+
+      expect(stack).to(haveResourceLike('AWS::CodeBuild::ReportGroup', {
+        "Name": 'my-report-group',
+      }));
+
+      test.done();
+    },
+
     'can be imported by name'(test: Test) {
       const stack = new cdk.Stack();
 

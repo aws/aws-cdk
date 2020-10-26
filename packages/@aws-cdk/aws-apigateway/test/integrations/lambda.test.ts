@@ -1,11 +1,10 @@
-import { expect, haveResource, haveResourceLike, not } from '@aws-cdk/assert';
+import '@aws-cdk/assert/jest';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
-import * as apigateway from '../lib';
+import * as apigateway from '../../lib';
 
-export = {
-  'minimal setup'(test: Test) {
+describe('lambda', () => {
+  test('minimal setup', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigateway.RestApi(stack, 'my-api');
@@ -20,7 +19,7 @@ export = {
     api.root.addMethod('GET', integ);
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
       Integration: {
         IntegrationHttpMethod: 'POST',
         Type: 'AWS_PROXY',
@@ -48,11 +47,10 @@ export = {
           ],
         },
       },
-    }));
-    test.done();
-  },
+    });
+  });
 
-  '"allowTestInvoke" can be used to disallow calling the API from the test UI'(test: Test) {
+  test('"allowTestInvoke" can be used to disallow calling the API from the test UI', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Handler', {
@@ -68,7 +66,7 @@ export = {
     api.root.addMethod('GET', integ);
 
     // THEN
-    expect(stack).to(haveResource('AWS::Lambda::Permission', {
+    expect(stack).toHaveResource('AWS::Lambda::Permission', {
       SourceArn: {
         'Fn::Join': [
           '',
@@ -78,9 +76,9 @@ export = {
           ],
         ],
       },
-    }));
+    });
 
-    expect(stack).to(not(haveResource('AWS::Lambda::Permission', {
+    expect(stack).not.toHaveResource('AWS::Lambda::Permission', {
       SourceArn: {
         'Fn::Join': [
           '',
@@ -97,12 +95,10 @@ export = {
           ],
         ],
       },
-    })));
+    });
+  });
 
-    test.done();
-  },
-
-  '"allowTestInvoke" set to true allows calling the API from the test UI'(test: Test) {
+  test('"allowTestInvoke" set to true allows calling the API from the test UI', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Handler', {
@@ -118,7 +114,7 @@ export = {
     api.root.addMethod('GET', integ);
 
     // THEN
-    expect(stack).to(haveResource('AWS::Lambda::Permission', {
+    expect(stack).toHaveResource('AWS::Lambda::Permission', {
       SourceArn: {
         'Fn::Join': [
           '',
@@ -135,12 +131,10 @@ export = {
           ],
         ],
       },
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  '"proxy" can be used to disable proxy mode'(test: Test) {
+  test('"proxy" can be used to disable proxy mode', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Handler', {
@@ -156,16 +150,14 @@ export = {
     api.root.addMethod('GET', integ);
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::ApiGateway::Method', {
+    expect(stack).toHaveResourceLike('AWS::ApiGateway::Method', {
       Integration: {
         Type: 'AWS',
       },
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'when "ANY" is used, lambda permission will include "*" for method'(test: Test) {
+  test('when "ANY" is used, lambda permission will include "*" for method', () => {
     const stack = new cdk.Stack();
     const api = new apigateway.RestApi(stack, 'test-api');
 
@@ -179,7 +171,7 @@ export = {
 
     api.root.addMethod('ANY', target);
 
-    expect(stack).to(haveResource('AWS::Lambda::Permission', {
+    expect(stack).toHaveResource('AWS::Lambda::Permission', {
       SourceArn: {
         'Fn::Join': [
           '',
@@ -196,9 +188,9 @@ export = {
           ],
         ],
       },
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::Lambda::Permission', {
+    expect(stack).toHaveResource('AWS::Lambda::Permission', {
       SourceArn: {
         'Fn::Join': [
           '',
@@ -225,12 +217,10 @@ export = {
           ],
         ],
       },
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'works for imported RestApi'(test: Test) {
+  test('works for imported RestApi', () => {
     const stack = new cdk.Stack();
     const api = apigateway.RestApi.fromRestApiAttributes(stack, 'RestApi', {
       restApiId: 'imported-rest-api-id',
@@ -245,16 +235,14 @@ export = {
 
     api.root.addMethod('ANY', new apigateway.LambdaIntegration(handler));
 
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
       RestApiId: 'imported-rest-api-id',
       ResourceId: 'imported-root-resource-id',
       HttpMethod: 'ANY',
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'fingerprint is computed when functionName is specified'(test: Test) {
+  test('fingerprint is computed when functionName is specified', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const restapi = new apigateway.RestApi(stack, 'RestApi');
@@ -271,13 +259,11 @@ export = {
     const bindResult = integration.bind(method);
 
     // THEN
-    test.ok(bindResult?.deploymentToken);
-    test.deepEqual(bindResult!.deploymentToken, '{"functionName":"ThisFunction"}');
+    expect(bindResult?.deploymentToken).toBeDefined();
+    expect(bindResult!.deploymentToken).toEqual('{"functionName":"ThisFunction"}');
+  });
 
-    test.done();
-  },
-
-  'fingerprint is not computed when functionName is not specified'(test: Test) {
+  test('fingerprint is not computed when functionName is not specified', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const restapi = new apigateway.RestApi(stack, 'RestApi');
@@ -293,12 +279,10 @@ export = {
     const bindResult = integration.bind(method);
 
     // THEN
-    test.equals(bindResult?.deploymentToken, undefined);
+    expect(bindResult?.deploymentToken).toBeUndefined();
+  });
 
-    test.done();
-  },
-
-  'bind works for integration with imported functions'(test: Test) {
+  test('bind works for integration with imported functions', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const restapi = new apigateway.RestApi(stack, 'RestApi');
@@ -311,9 +295,6 @@ export = {
 
     // the deployment token should be defined since the function name
     // should be a literal string.
-    test.equal(bindResult?.deploymentToken, JSON.stringify({ functionName: 'myfunc' }));
-
-    test.done();
-  },
-
-};
+    expect(bindResult?.deploymentToken).toEqual(JSON.stringify({ functionName: 'myfunc' }));
+  });
+});

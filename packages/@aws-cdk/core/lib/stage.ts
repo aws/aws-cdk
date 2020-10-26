@@ -154,6 +154,13 @@ export class Stage extends CoreConstruct {
   }
 
   /**
+   * The cloud assembly asset output directory.
+   */
+  public get assetOutdir() {
+    return this._assemblyBuilder.assetOutdir;
+  }
+
+  /**
    * Artifact ID of the assembly if it is a nested stage. The root stage (app)
    * will return an empty string.
    *

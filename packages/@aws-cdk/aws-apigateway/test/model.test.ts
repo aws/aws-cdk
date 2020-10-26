@@ -1,10 +1,9 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import '@aws-cdk/assert/jest';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import * as apigw from '../lib';
 
-export = {
-  'default setup'(test: Test) {
+describe('model', () => {
+  test('default setup', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigw.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: true });
@@ -25,7 +24,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::Model', {
+    expect(stack).toHaveResource('AWS::ApiGateway::Model', {
       RestApiId: { Ref: stack.getLogicalId(api.node.findChild('Resource') as cdk.CfnElement) },
       Schema: {
         $schema: 'http://json-schema.org/draft-04/schema#',
@@ -34,12 +33,10 @@ export = {
         properties: { message: { type: 'string' } },
       },
       ContentType: 'application/json',
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'no deployment'(test: Test) {
+  test('no deployment', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigw.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: true });
@@ -60,7 +57,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::Model', {
+    expect(stack).toHaveResource('AWS::ApiGateway::Model', {
       RestApiId: { Ref: stack.getLogicalId(api.node.findChild('Resource') as cdk.CfnElement) },
       Schema: {
         $schema: 'http://json-schema.org/draft-04/schema#',
@@ -68,8 +65,6 @@ export = {
         type: 'object',
         properties: { message: { type: 'string' } },
       },
-    }));
-
-    test.done();
-  },
-};
+    });
+  });
+});
