@@ -146,12 +146,12 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
           cdk.Stack.of(this).formatArn({
             service: 'glue',
             resource: 'table',
-            resourceName: (this.props.queryExecutionContext?.databaseName ?? 'default') + '/*', // access needed to query all tables https://docs.aws.amazon.com/athena/latest/ug/security-iam-athena.html
+            resourceName: (this.props.queryExecutionContext?.databaseName ?? 'default') + '/*', // grant access to all tables in the specified or default database to prevent cross database access https://docs.aws.amazon.com/IAM/latest/UserGuide/list_awsglue.html
           }),
           cdk.Stack.of(this).formatArn({
             service: 'glue',
             resource: 'userdefinedfunction',
-            resourceName: (this.props.queryExecutionContext?.databaseName ?? 'default') + '/*', // users need access to start user defined functions from step functions https://docs.aws.amazon.com/athena/latest/ug/security-iam-athena.html
+            resourceName: (this.props.queryExecutionContext?.databaseName ?? 'default') + '/*', // grant access to get all user defined functions for the particular database in the request or the default database https://docs.aws.amazon.com/IAM/latest/UserGuide/list_awsglue.html
           }),
         ],
       }),
