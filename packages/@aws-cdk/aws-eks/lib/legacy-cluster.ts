@@ -385,7 +385,7 @@ export class LegacyCluster extends Resource implements ICluster {
     throw new Error('legacy cluster does not support adding helm charts');
   }
 
-  public addCdk8sChart(_id: string, _chart: cdk8s.Chart): KubernetesManifest {
+  public addCdk8sChart(_id: string, _chart: Construct): KubernetesManifest {
     throw new Error('legacy cluster does not support adding cdk8s charts');
   }
 
@@ -447,7 +447,7 @@ class ImportedCluster extends Resource implements ICluster {
     throw new Error('legacy cluster does not support adding helm charts');
   }
 
-  public addCdk8sChart(_id: string, _chart: cdk8s.Chart): KubernetesManifest {
+  public addCdk8sChart(_id: string, _chart: Construct): KubernetesManifest {
     throw new Error('legacy cluster does not support adding cdk8s charts');
   }
 

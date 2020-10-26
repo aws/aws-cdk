@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "fs-extra": "^9.0.1",
-    "yargs": "^16.0.3"
+    "yargs": "^16.1.0"
   },
   "keywords": [
     "aws",
