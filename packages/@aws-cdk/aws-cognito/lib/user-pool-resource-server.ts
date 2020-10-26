@@ -17,7 +17,7 @@ export interface IUserPoolResourceServer extends IResource {
 /**
  * Options to create a scope for a UserPoolResourceServer
  */
-export interface IUserPoolResourceServerScope {
+export interface ResourceServerScope {
   /**
    * The name of the scope
    */
@@ -43,13 +43,13 @@ export interface UserPoolResourceServerOptions {
    * A friendly name for the resource server.
    * @default - will use the identifier
    */
-  readonly name?: string;
+  readonly userPoolResourceServerName?: string;
 
   /**
    * Oauth scopes
    * @default - No scopes will be added
    */
-  readonly scopes?: IUserPoolResourceServerScope[];
+  readonly scopes?: ResourceServerScope[];
 }
 
 /**
@@ -66,6 +66,17 @@ export interface UserPoolResourceServerProps extends UserPoolResourceServerOptio
  * Defines a User Pool OAuth2.0 Resource Server
  */
 export class UserPoolResourceServer extends Resource implements IUserPoolResourceServer {
+  /**
+   * Import a user pool resource client given its id.
+   */
+  public static fromUserPoolResourceServerId(scope: Construct, id: string, userPoolResourceServerId: string): IUserPoolResourceServer {
+    class Import extends Resource implements IUserPoolResourceServer {
+      public readonly userPoolResourceServerId = userPoolResourceServerId;
+    }
+
+    return new Import(scope, id);
+  }
+
   public readonly userPoolResourceServerId: string;
 
   constructor(scope: Construct, id: string, props: UserPoolResourceServerProps) {
@@ -73,7 +84,7 @@ export class UserPoolResourceServer extends Resource implements IUserPoolResourc
 
     const resource = new CfnUserPoolResourceServer(this, 'Resource', {
       identifier: props.identifier,
-      name: props.name ?? props.identifier,
+      name: props.userPoolResourceServerName ?? props.identifier,
       scopes: props.scopes,
       userPoolId: props.userPool.userPoolId,
     });

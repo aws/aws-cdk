@@ -10,7 +10,7 @@ const userPool = new UserPool(stack, 'myuserpool', {
 
 userPool.addResourceServer('myserver', {
   identifier: 'users',
-  name: 'internal-users',
+  userPoolResourceServerName: 'internal-users',
   scopes: [
     {
       scopeName: 'read',

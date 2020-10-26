@@ -29,9 +29,9 @@ describe('User Pool Resource Server', () => {
 
     // WHEN
     new UserPoolResourceServer(stack, 'Server', {
+      userPoolResourceServerName: 'internal-users',
       userPool: pool,
       identifier: 'users',
-      name: 'internal-users',
     });
 
     //THEN
