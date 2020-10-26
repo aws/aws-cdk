@@ -1,10 +1,9 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import '@aws-cdk/assert/jest';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import * as apigateway from '../lib';
 
-export = {
-  'minimal setup'(test: Test) {
+describe('http integration', () => {
+  test('minimal setup', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigateway.RestApi(stack, 'my-api');
@@ -15,18 +14,16 @@ export = {
     api.root.addMethod('GET', integ);
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
       Integration: {
         IntegrationHttpMethod: 'GET',
         Type: 'HTTP_PROXY',
         Uri: 'http://foo/bar',
       },
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'options can be passed via props'(test: Test) {
+  test('options can be passed via props', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigateway.RestApi(stack, 'my-api');
@@ -43,15 +40,13 @@ export = {
     api.root.addMethod('GET', integ);
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
       Integration: {
         CacheNamespace: 'hey',
         IntegrationHttpMethod: 'POST',
         Type: 'HTTP',
         Uri: 'http://foo/bar',
       },
-    }));
-
-    test.done();
-  },
-};
+    });
+  });
+});
