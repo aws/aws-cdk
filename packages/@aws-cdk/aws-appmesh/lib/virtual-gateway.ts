@@ -85,6 +85,16 @@ export interface GrpcGatewayListenerProps {
 }
 
 /**
+ * Properties for a VirtualGateway listener
+ */
+export interface VirtualGatewayListenerConfig {
+  /**
+   * Single listener config for a VirtualGateway
+   */
+  readonly listener: CfnVirtualGateway.VirtualGatewayListenerProperty,
+}
+
+/**
  * Represents the properties needed to define listeners for a VirtualGateway
  */
 export abstract class VirtualGatewayListener {
@@ -113,7 +123,7 @@ export abstract class VirtualGatewayListener {
    * Called when the GatewayListener type is initialized. Can be used to enforce
    * mutual exclusivity
    */
-  public abstract bind(scope: cdk.Construct): CfnVirtualGateway.VirtualGatewayListenerProperty;
+  public abstract bind(scope: cdk.Construct): VirtualGatewayListenerConfig;
 }
 
 /**
@@ -144,16 +154,18 @@ class HttpGatewayListener extends VirtualGatewayListener {
    * Called when the GatewayListener type is initialized. Can be used to enforce
    * mutual exclusivity
    */
-  public bind(_scope: cdk.Construct): CfnVirtualGateway.VirtualGatewayListenerProperty {
+  public bind(_scope: cdk.Construct): VirtualGatewayListenerConfig {
     return {
-      portMapping: {
-        port: this.port,
-        protocol: Protocol.HTTP,
+      listener: {
+        portMapping: {
+          port: this.port,
+          protocol: Protocol.HTTP,
+        },
+        healthCheck: renderHealthCheck(this.healthCheck, {
+          port: this.port,
+          protocol: Protocol.HTTP,
+        }),
       },
-      healthCheck: renderHealthCheck(this.healthCheck, {
-        port: this.port,
-        protocol: Protocol.HTTP,
-      }),
     };
   }
 }
@@ -186,16 +198,18 @@ class Http2GatewayListener extends VirtualGatewayListener {
    * Called when the GatewayListener type is initialized. Can be used to enforce
    * mutual exclusivity
    */
-  public bind(_scope: cdk.Construct): CfnVirtualGateway.VirtualGatewayListenerProperty {
+  public bind(_scope: cdk.Construct): VirtualGatewayListenerConfig {
     return {
-      portMapping: {
-        port: this.port,
-        protocol: Protocol.HTTP2,
+      listener: {
+        portMapping: {
+          port: this.port,
+          protocol: Protocol.HTTP2,
+        },
+        healthCheck: renderHealthCheck(this.healthCheck, {
+          port: this.port,
+          protocol: Protocol.HTTP2,
+        }),
       },
-      healthCheck: renderHealthCheck(this.healthCheck, {
-        port: this.port,
-        protocol: Protocol.HTTP2,
-      }),
     };
   }
 }
@@ -228,16 +242,18 @@ class GrpcGatewayListener extends VirtualGatewayListener {
    * Called when the GatewayListener type is initialized. Can be used to enforce
    * mutual exclusivity
    */
-  public bind(_scope: cdk.Construct): CfnVirtualGateway.VirtualGatewayListenerProperty {
+  public bind(_scope: cdk.Construct): VirtualGatewayListenerConfig {
     return {
-      portMapping: {
-        port: this.port,
-        protocol: Protocol.GRPC,
+      listener: {
+        portMapping: {
+          port: this.port,
+          protocol: Protocol.GRPC,
+        },
+        healthCheck: renderHealthCheck(this.healthCheck, {
+          port: this.port,
+          protocol: Protocol.GRPC,
+        }),
       },
-      healthCheck: renderHealthCheck(this.healthCheck, {
-        port: this.port,
-        protocol: Protocol.GRPC,
-      }),
     };
   }
 }
@@ -309,7 +325,7 @@ abstract class VirtualGatewayBase extends cdk.Resource implements IVirtualGatewa
    */
   public abstract readonly mesh: IMesh;
 
-  protected readonly listeners = new Array<CfnVirtualGateway.VirtualGatewayListenerProperty>();
+  protected readonly listeners = new Array<VirtualGatewayListenerConfig>();
   protected readonly routes = new Array<CfnGatewayRoute>();
 
   /**
@@ -408,7 +424,7 @@ export class VirtualGateway extends VirtualGatewayBase {
       virtualGatewayName: this.physicalName,
       meshName: this.mesh.meshName,
       spec: {
-        listeners: this.listeners,
+        listeners: this.listeners.map(listener => listener.listener),
         logging: accessLogging !== undefined ? {
           accessLog: accessLogging.virtualGatewayAccessLog,
         } : undefined,
