@@ -22,19 +22,37 @@ export = {
 
       const virtualService = new appmesh.VirtualService(stack, 'vs-1', {
         mesh: mesh,
+        virtualServiceName: 'target.local',
       });
 
       // Add an HTTP Route
-      virtualGateway.addGatewayRoute('gateway-route', {
+      virtualGateway.addGatewayRoute('gateway-http-route', {
         routeSpec: appmesh.GatewayRouteSpec.httpRouteSpec({
           routeTarget: virtualService,
         }),
-        gatewayRouteName: 'gateway-route',
+        gatewayRouteName: 'gateway-http-route',
+      });
+
+      virtualGateway.addGatewayRoute('gateway-http2-route', {
+        routeSpec: appmesh.GatewayRouteSpec.http2RouteSpec({
+          routeTarget: virtualService,
+        }),
+        gatewayRouteName: 'gateway-http2-route',
+      });
+
+      virtualGateway.addGatewayRoute('gateway-grpc-route', {
+        routeSpec: appmesh.GatewayRouteSpec.grpcRouteSpec({
+          routeTarget: virtualService,
+          match: {
+            serviceName: virtualService.virtualServiceName,
+          },
+        }),
+        gatewayRouteName: 'gateway-grpc-route',
       });
 
       // THEN
       expect(stack).to(haveResourceLike('AWS::AppMesh::GatewayRoute', {
-        GatewayRouteName: 'gateway-route',
+        GatewayRouteName: 'gateway-http-route',
         Spec: {
           HttpRoute: {
             Action: {
@@ -48,6 +66,46 @@ export = {
             },
             Match: {
               Prefix: '/',
+            },
+          },
+        },
+      }));
+      expect(stack).to(haveResourceLike('AWS::AppMesh::GatewayRoute', {
+        GatewayRouteName: 'gateway-http2-route',
+        Spec: {
+          Http2Route: {
+            Action: {
+              Target: {
+                VirtualService: {
+                  VirtualServiceName: {
+                    'Fn::GetAtt': ['vs1732C2645', 'VirtualServiceName'],
+                  },
+                },
+              },
+            },
+            Match: {
+              Prefix: '/',
+            },
+          },
+        },
+      }));
+      expect(stack).to(haveResourceLike('AWS::AppMesh::GatewayRoute', {
+        GatewayRouteName: 'gateway-grpc-route',
+        Spec: {
+          GrpcRoute: {
+            Action: {
+              Target: {
+                VirtualService: {
+                  VirtualServiceName: {
+                    'Fn::GetAtt': ['vs1732C2645', 'VirtualServiceName'],
+                  },
+                },
+              },
+            },
+            Match: {
+              ServiceName: {
+                'Fn::GetAtt': ['vs1732C2645', 'VirtualServiceName'],
+              },
             },
           },
         },
