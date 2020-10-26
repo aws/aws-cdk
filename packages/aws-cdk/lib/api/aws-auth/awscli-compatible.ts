@@ -40,7 +40,10 @@ export class AwsCliCompatible {
     if (options.profile) {
       await forceSdkToReadConfigIfPresent();
       const theProfile = options.profile;
-      return new AWS.CredentialProviderChain([() => profileCredentials(theProfile)]);
+      return new AWS.CredentialProviderChain([
+          () => profileCredentials(theProfile),
+          () => new AWS.ProcessCredentials({profile: theProfile}),
+        ]);
     }
 
     const implicitProfile = process.env.AWS_PROFILE || process.env.AWS_DEFAULT_PROFILE || 'default';
@@ -55,6 +58,7 @@ export class AwsCliCompatible {
       // environment variable.
       await forceSdkToReadConfigIfPresent();
       sources.push(() => profileCredentials(implicitProfile));
+      sources.push(() => new AWS.ProcessCredentials({profile: implicitProfile}));
     }
 
     if (options.containerCreds ?? hasEcsCredentials()) {
