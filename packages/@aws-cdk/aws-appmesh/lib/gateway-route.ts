@@ -71,15 +71,6 @@ export class GatewayRoute extends cdk.Resource implements IGatewayRoute {
   }
 
   /**
-   * Import an existing GatewayRoute given its name
-   */
-  public static fromGatewayRouteName(
-    scope: Construct, id: string, meshName: string, virtualGatewayName: string, gatewayRouteName: string): IGatewayRoute {
-    const virtualGateway = VirtualGateway.fromVirtualGatewayName(scope, 'VirtualGateway', meshName, virtualGatewayName);
-    return new ImportedGatewayRoute(scope, id, { meshName, virtualGateway, gatewayRouteName });
-  }
-
-  /**
    * The name of the GatewayRoute
    */
   public readonly gatewayRouteName: string;
@@ -169,12 +160,9 @@ class ImportedGatewayRoute extends cdk.Resource implements IGatewayRoute {
   constructor(scope: Construct, id: string, props: GatewayRouteAttributes) {
     super(scope, id);
     if (props.gatewayRouteArn) {
-      const meshName = cdk.Fn.select(0, cdk.Fn.split('/', cdk.Stack.of(scope).parseArn(props.gatewayRouteArn).resourceName!));
-      const virtualGatewayName = cdk.Fn.select(2, cdk.Fn.split('/', cdk.Stack.of(scope).parseArn(props.gatewayRouteArn).resourceName!));
-
       this.gatewayRouteArn = props.gatewayRouteArn;
       this.gatewayRouteName = cdk.Fn.select(4, cdk.Fn.split('/', cdk.Stack.of(scope).parseArn(props.gatewayRouteArn).resourceName!));
-      this.virtualGateway = VirtualGateway.fromVirtualGatewayName(this, 'virtualGateway', meshName, virtualGatewayName);
+      this.virtualGateway = VirtualGateway.fromVirtualGatewayArn(this, 'virtualGateway', props.gatewayRouteArn);
     } else if (props.gatewayRouteName && props.meshName && props.virtualGateway) {
       this.gatewayRouteName = props.gatewayRouteName;
       this.virtualGateway = props.virtualGateway;

@@ -101,23 +101,28 @@ export abstract class VirtualGatewayListener {
   /**
    * Returns an HTTP Listener for a VirtualGateway
    */
-  public static httpGatewayListener(props?: HttpGatewayListenerProps): VirtualGatewayListener {
+  public static httpGatewayListener(props: HttpGatewayListenerProps = {}): VirtualGatewayListener {
     return new HttpGatewayListener(props);
   }
 
   /**
    * Returns an HTTP2 Listener for a VirtualGateway
    */
-  public static http2GatewayListener(props?: HttpGatewayListenerProps): VirtualGatewayListener {
+  public static http2GatewayListener(props: HttpGatewayListenerProps = {}): VirtualGatewayListener {
     return new Http2GatewayListener(props);
   }
 
   /**
    * Returns a GRPC Listener for a VirtualGateway
    */
-  public static grpcGatewayListener(props?: GrpcGatewayListenerProps): VirtualGatewayListener {
+  public static grpcGatewayListener(props: GrpcGatewayListenerProps = {}): VirtualGatewayListener {
     return new GrpcGatewayListener(props);
   }
+
+  /**
+   * Protocol the listener implements
+   */
+  protected abstract protocol: Protocol;
 
   /**
    * Called when the GatewayListener type is initialized. Can be used to enforce
@@ -143,11 +148,16 @@ class HttpGatewayListener extends VirtualGatewayListener {
    * @default - no healthcheck
    */
   readonly healthCheck?: HealthCheck;
-  constructor(props?: HttpGatewayListenerProps) {
+
+  /**
+   * Protocol the listener implements
+   */
+  protected protocol: Protocol = Protocol.HTTP;
+
+  constructor(props: HttpGatewayListenerProps = {}) {
     super();
-    const checkedProps = props ?? {};
-    this.port = checkedProps.port ? checkedProps.port : 8080;
-    this.healthCheck = checkedProps.healthCheck;
+    this.port = props.port ? props.port : 8080;
+    this.healthCheck = props.healthCheck;
   }
 
   /**
@@ -159,11 +169,11 @@ class HttpGatewayListener extends VirtualGatewayListener {
       listener: {
         portMapping: {
           port: this.port,
-          protocol: Protocol.HTTP,
+          protocol: this.protocol,
         },
         healthCheck: renderHealthCheck(this.healthCheck, {
           port: this.port,
-          protocol: Protocol.HTTP,
+          protocol: this.protocol,
         }),
       },
     };
@@ -173,50 +183,16 @@ class HttpGatewayListener extends VirtualGatewayListener {
 /**
 * Represents the properties needed to define an HTTP2 Listener for a VirtualGateway
 */
-class Http2GatewayListener extends VirtualGatewayListener {
-  /**
-   * Port to listen for connections on
-   *
-   * @default - 8080
-   */
-  readonly port: number;
-
-  /**
-   * Health checking strategy upstream nodes should use when communicating with the listener
-   *
-   * @default - no healthcheck
-   */
-  readonly healthCheck?: HealthCheck;
-  constructor(props?: HttpGatewayListenerProps) {
-    super();
-    const checkedProps = props ?? {};
-    this.port = checkedProps.port ? checkedProps.port : 8080;
-    this.healthCheck = checkedProps.healthCheck;
-  }
-
-  /**
-   * Called when the GatewayListener type is initialized. Can be used to enforce
-   * mutual exclusivity
-   */
-  public bind(_scope: cdk.Construct): VirtualGatewayListenerConfig {
-    return {
-      listener: {
-        portMapping: {
-          port: this.port,
-          protocol: Protocol.HTTP2,
-        },
-        healthCheck: renderHealthCheck(this.healthCheck, {
-          port: this.port,
-          protocol: Protocol.HTTP2,
-        }),
-      },
-    };
+class Http2GatewayListener extends HttpGatewayListener {
+  constructor(props: HttpGatewayListenerProps = {}) {
+    super(props);
+    this.protocol = Protocol.HTTP2;
   }
 }
 
 /**
-* Represents the properties needed to define a GRPC Listener for Virtual Gateway
-*/
+ * Represents the properties needed to define a GRPC Listener for Virtual Gateway
+ */
 class GrpcGatewayListener extends VirtualGatewayListener {
   /**
    * Port to listen for connections on
@@ -231,11 +207,16 @@ class GrpcGatewayListener extends VirtualGatewayListener {
    * @default - no healthcheck
    */
   readonly healthCheck?: HealthCheck;
-  constructor(props?: HttpGatewayListenerProps) {
+
+  /**
+   * Protocol the listener implements
+   */
+  protected protocol: Protocol = Protocol.GRPC;
+
+  constructor(props: HttpGatewayListenerProps = {}) {
     super();
-    const checkedProps = props ?? {};
-    this.port = checkedProps.port ? checkedProps.port : 8080;
-    this.healthCheck = checkedProps.healthCheck;
+    this.port = props.port ? props.port : 8080;
+    this.healthCheck = props.healthCheck;
   }
 
   /**
@@ -294,21 +275,6 @@ export interface VirtualGatewayProps extends VirtualGatewayBaseProps {
   readonly mesh: IMesh;
 }
 
-/**
- * Properties required to add multiple GatewayRoutes to a VirtualGateway
- */
-export interface AddGatewayRouteProps {
-  /**
-   * CloudFormation Logical ID
-   */
-  readonly id: string;
-
-  /**
-   * Properties to create a GatewayRoute
-   */
-  readonly props: GatewayRouteBaseProps;
-}
-
 abstract class VirtualGatewayBase extends cdk.Resource implements IVirtualGateway {
   /**
    * Name of the VirtualGateway
@@ -351,13 +317,6 @@ abstract class VirtualGatewayBase extends cdk.Resource implements IVirtualGatewa
   }
 
   /**
-   * Utility method to add a list of GatewayRoutes to the VirtualGateway
-   */
-  public addGatewayRoutes(props: AddGatewayRouteProps[]): GatewayRoute[] {
-    return props.map(idx => this.addGatewayRoute(idx.id, idx.props));
-  }
-
-  /**
    * Utility method to add a new GatewayRoute to the VirtualGateway
    */
   public addGatewayRoute(id: string, props: GatewayRouteBaseProps): GatewayRoute {
@@ -382,16 +341,6 @@ export class VirtualGateway extends VirtualGatewayBase {
    */
   public static fromVirtualGatewayArn(scope: Construct, id: string, virtualGatewayArn: string): IVirtualGateway {
     return new ImportedVirtualGateway(scope, id, { virtualGatewayArn });
-  }
-
-  /**
-   * Import an existing VirtualGateway given its name
-   */
-  public static fromVirtualGatewayName(scope: Construct, id: string, meshName: string, virtualGatewayName: string): IVirtualGateway {
-    return new ImportedVirtualGateway(scope, id, {
-      meshName,
-      virtualGatewayName,
-    });
   }
 
   /**
@@ -456,7 +405,7 @@ function renderHealthCheck(hc: HealthCheck | undefined, pm: PortMapping): CfnVir
   const healthCheck: CfnVirtualGateway.VirtualGatewayHealthCheckPolicyProperty = {
     healthyThreshold: hc.healthyThreshold || 2,
     intervalMillis: (hc.interval || cdk.Duration.seconds(5)).toMilliseconds(), // min
-    path: hc.path || (protocol === Protocol.HTTP ? '/' : undefined),
+    path: hc.path || ((protocol === Protocol.HTTP || protocol === Protocol.HTTP2) ? '/' : undefined),
     port: hc.port || pm.port,
     protocol: hc.protocol || pm.protocol,
     timeoutMillis: (hc.timeout || cdk.Duration.seconds(2)).toMilliseconds(),

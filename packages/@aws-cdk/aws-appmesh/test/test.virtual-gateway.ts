@@ -19,9 +19,19 @@ export = {
         mesh: mesh,
       });
 
-      new appmesh.VirtualGateway(stack, 'gateway2', {
+      new appmesh.VirtualGateway(stack, 'httpGateway', {
         mesh: mesh,
         listeners: [appmesh.VirtualGatewayListener.httpGatewayListener({
+          port: 443,
+          healthCheck: {
+            interval: cdk.Duration.seconds(10),
+          },
+        })],
+      });
+
+      new appmesh.VirtualGateway(stack, 'http2Gateway', {
+        mesh: mesh,
+        listeners: [appmesh.VirtualGatewayListener.http2GatewayListener({
           port: 443,
           healthCheck: {
             interval: cdk.Duration.seconds(10),
@@ -44,30 +54,51 @@ export = {
         VirtualGatewayName: 'testGateway',
       }));
 
-      // THEN
-      expect(stack).to(
-        haveResourceLike('AWS::AppMesh::VirtualGateway', {
-          Spec: {
-            Listeners: [
-              {
-                HealthCheck: {
-                  HealthyThreshold: 2,
-                  IntervalMillis: 10000,
-                  Port: 443,
-                  Protocol: appmesh.Protocol.HTTP,
-                  TimeoutMillis: 2000,
-                  UnhealthyThreshold: 2,
-                  Path: '/',
-                },
-                PortMapping: {
-                  Port: 443,
-                  Protocol: appmesh.Protocol.HTTP,
-                },
+      expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualGateway', {
+        Spec: {
+          Listeners: [
+            {
+              HealthCheck: {
+                HealthyThreshold: 2,
+                IntervalMillis: 10000,
+                Port: 443,
+                Protocol: appmesh.Protocol.HTTP,
+                TimeoutMillis: 2000,
+                UnhealthyThreshold: 2,
+                Path: '/',
               },
-            ],
-          },
-          VirtualGatewayName: 'gateway2',
-        }));
+              PortMapping: {
+                Port: 443,
+                Protocol: appmesh.Protocol.HTTP,
+              },
+            },
+          ],
+        },
+        VirtualGatewayName: 'httpGateway',
+      }));
+
+      expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualGateway', {
+        Spec: {
+          Listeners: [
+            {
+              HealthCheck: {
+                HealthyThreshold: 2,
+                IntervalMillis: 10000,
+                Port: 443,
+                Protocol: appmesh.Protocol.HTTP2,
+                TimeoutMillis: 2000,
+                UnhealthyThreshold: 2,
+                Path: '/',
+              },
+              PortMapping: {
+                Port: 443,
+                Protocol: appmesh.Protocol.HTTP2,
+              },
+            },
+          ],
+        },
+        VirtualGatewayName: 'http2Gateway',
+      }));
       test.done();
     },
 
@@ -193,88 +224,6 @@ export = {
       }));
       test.done();
     },
-
-    'should create multiple gateway route resources'(test: Test) {
-      // GIVEN
-      const stack = new cdk.Stack();
-
-      // WHEN
-      const mesh = new appmesh.Mesh(stack, 'mesh', {
-        meshName: 'test-mesh',
-      });
-
-      const virtualGateway = new appmesh.VirtualGateway(stack, 'testGateway', {
-        virtualGatewayName: 'test-gateway',
-        mesh: mesh,
-      });
-
-      const virtualService = mesh.addVirtualService('virtualService', {});
-
-      virtualGateway.addGatewayRoutes([
-        {
-          id: 'testGatewayRoute',
-          props: {
-            gatewayRouteName: 'test-gateway-route',
-            routeSpec: appmesh.GatewayRouteSpec.httpRouteSpec({
-              routeTarget: virtualService,
-            }),
-          },
-        },
-        {
-          id: 'testGatewayRoute2',
-          props: {
-            gatewayRouteName: 'test-gateway-route-2',
-            routeSpec: appmesh.GatewayRouteSpec.httpRouteSpec({
-              routeTarget: virtualService,
-              match: {
-                prefixPath: '/2',
-              },
-            }),
-          },
-        },
-      ]);
-
-      // THEN
-      expect(stack).to(haveResourceLike('AWS::AppMesh::GatewayRoute', {
-        GatewayRouteName: 'test-gateway-route',
-        Spec: {
-          HttpRoute: {
-            Action: {
-              Target: {
-                VirtualService: {
-                  VirtualServiceName: {
-                    'Fn::GetAtt': ['meshvirtualService93460D43', 'VirtualServiceName'],
-                  },
-                },
-              },
-            },
-            Match: {
-              Prefix: '/',
-            },
-          },
-        },
-      }));
-      expect(stack).to(haveResourceLike('AWS::AppMesh::GatewayRoute', {
-        GatewayRouteName: 'test-gateway-route-2',
-        Spec: {
-          HttpRoute: {
-            Action: {
-              Target: {
-                VirtualService: {
-                  VirtualServiceName: {
-                    'Fn::GetAtt': ['meshvirtualService93460D43', 'VirtualServiceName'],
-                  },
-                },
-              },
-            },
-            Match: {
-              Prefix: '/2',
-            },
-          },
-        },
-      }));
-      test.done();
-    },
   },
 
   'When adding gateway routes to a VirtualGateway with existing gateway routes': {
@@ -321,13 +270,10 @@ export = {
     });
 
     // WHEN
-    const virtualGateway = appmesh.VirtualGateway.fromVirtualGatewayName(stack, 'importedGateway', 'testMesh', 'test-gateway');
-    // THEN
-    test.equal(virtualGateway.mesh.meshName, 'testMesh');
-    test.equal(virtualGateway.virtualGatewayName, 'test-gateway');
-    // Nothing to do with imported Virtual Gateways yet
     const virtualGateway2 = appmesh.VirtualGateway.fromVirtualGatewayArn(
       stack, 'importedGateway2', 'arn:aws:appmesh:us-east-1:123456789012:mesh/testMesh/virtualGateway/test-gateway');
+
+    // THEN
     test.equal(virtualGateway2.mesh.meshName, 'testMesh');
     test.equal(virtualGateway2.virtualGatewayName, 'test-gateway');
     test.done();

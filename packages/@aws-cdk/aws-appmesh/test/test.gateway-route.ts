@@ -55,95 +55,6 @@ export = {
       test.done();
     },
 
-    'should be able to add multiple routes'(test: Test) {
-      // GIVEN
-      const stack = new cdk.Stack();
-
-      // WHEN
-      const mesh = new appmesh.Mesh(stack, 'mesh', {
-        meshName: 'test-mesh',
-      });
-
-      const virtualGateway = new appmesh.VirtualGateway(stack, 'gateway-1', {
-        listeners: [appmesh.VirtualGatewayListener.httpGatewayListener()],
-        mesh: mesh,
-      });
-
-      const virtualService = new appmesh.VirtualService(stack, 'vs-1', {
-        mesh: mesh,
-      });
-      const virtualService2 = new appmesh.VirtualService(stack, 'vs-2', {
-        mesh: mesh,
-      });
-
-      virtualGateway.addGatewayRoutes([
-        {
-          id: 'gateway-route',
-          props: {
-            routeSpec: appmesh.GatewayRouteSpec.httpRouteSpec({
-              routeTarget: virtualService,
-            }),
-            gatewayRouteName: 'gateway-route',
-          },
-        },
-        {
-          id: 'gateway-route2',
-          props: {
-            routeSpec: appmesh.GatewayRouteSpec.httpRouteSpec({
-              routeTarget: virtualService2,
-              match: {
-                prefixPath: '/echo',
-              },
-            }),
-            gatewayRouteName: 'gateway-route2',
-          },
-        },
-      ]);
-
-      // THEN
-      expect(stack).to(haveResourceLike('AWS::AppMesh::GatewayRoute', {
-        GatewayRouteName: 'gateway-route',
-        Spec: {
-          HttpRoute: {
-            Action: {
-              Target: {
-                VirtualService: {
-                  VirtualServiceName: {
-                    'Fn::GetAtt': ['vs1732C2645', 'VirtualServiceName'],
-                  },
-                },
-              },
-            },
-            Match: {
-              Prefix: '/',
-            },
-          },
-        },
-      }));
-
-      // THEN
-      expect(stack).to(haveResourceLike('AWS::AppMesh::GatewayRoute', {
-        GatewayRouteName: 'gateway-route2',
-        Spec: {
-          HttpRoute: {
-            Action: {
-              Target: {
-                VirtualService: {
-                  VirtualServiceName: {
-                    'Fn::GetAtt': ['vs2BB8859F6', 'VirtualServiceName'],
-                  },
-                },
-              },
-            },
-            Match: {
-              Prefix: '/echo',
-            },
-          },
-        },
-      }));
-      test.done();
-    },
-
     'should throw an exception if you start an http prefix match not with a /'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
@@ -172,13 +83,9 @@ export = {
     });
 
     // WHEN
-    const gatewayRoute = appmesh.GatewayRoute.fromGatewayRouteName(stack, 'importedGatewayRoute', 'test-mesh', 'test-gateway', 'test-gateway-route');
-    // THEN
-    test.equal(gatewayRoute.gatewayRouteName, 'test-gateway-route');
-    test.equal(gatewayRoute.virtualGateway.virtualGatewayName, 'test-gateway');
-    test.equal(gatewayRoute.virtualGateway.mesh.meshName, 'test-mesh');
     const gatewayRoute2 = appmesh.GatewayRoute.fromGatewayRouteArn(
       stack, 'importedGatewayRoute2', 'arn:aws:appmesh:us-east-1:123456789012:mesh/test-mesh/virtualGateway/test-gateway/gatewayRoute/test-gateway-route');
+    // THEN
     test.equal(gatewayRoute2.gatewayRouteName, 'test-gateway-route');
     test.equal(gatewayRoute2.virtualGateway.virtualGatewayName, 'test-gateway');
     test.equal(gatewayRoute2.virtualGateway.mesh.meshName, 'test-mesh');
