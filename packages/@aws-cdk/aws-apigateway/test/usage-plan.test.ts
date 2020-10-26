@@ -1,11 +1,11 @@
-import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
+import '@aws-cdk/assert/jest';
+import { ResourcePart } from '@aws-cdk/assert';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import * as apigateway from '../lib';
 
 const RESOURCE_TYPE = 'AWS::ApiGateway::UsagePlan';
-export = {
-  'default setup'(test: Test) {
+describe('usage plan', () => {
+  test('default setup', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigateway.RestApi(stack, 'my-api', { cloudWatchRole: false, deploy: false });
@@ -20,15 +20,13 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource(RESOURCE_TYPE, {
+    expect(stack).toHaveResource(RESOURCE_TYPE, {
       UsagePlanName: usagePlanName,
       Description: usagePlanDescription,
-    }, ResourcePart.Properties));
+    }, ResourcePart.Properties);
+  });
 
-    test.done();
-  },
-
-  'usage plan with throttling limits'(test: Test) {
+  test('usage plan with throttling limits', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigateway.RestApi(stack, 'my-api', { cloudWatchRole: false, deploy: true, deployOptions: { stageName: 'test' } });
@@ -57,7 +55,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource(RESOURCE_TYPE, {
+    expect(stack).toHaveResource(RESOURCE_TYPE, {
       UsagePlanName: usagePlanName,
       Description: usagePlanDescription,
       ApiStages: [
@@ -76,13 +74,10 @@ export = {
           },
         },
       ],
-    }, ResourcePart.Properties));
+    }, ResourcePart.Properties);
+  });
 
-    test.done();
-
-  },
-
-  'usage plan with blocked methods'(test: Test) {
+  test('usage plan with blocked methods', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigateway.RestApi(stack, 'my-api', { cloudWatchRole: false, deploy: true, deployOptions: { stageName: 'test' } });
@@ -111,7 +106,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource(RESOURCE_TYPE, {
+    expect(stack).toHaveResource(RESOURCE_TYPE, {
       UsagePlanName: usagePlanName,
       Description: usagePlanDescription,
       ApiStages: [
@@ -130,13 +125,10 @@ export = {
           },
         },
       ],
-    }, ResourcePart.Properties));
+    }, ResourcePart.Properties);
+  });
 
-    test.done();
-
-  },
-
-  'usage plan with quota limits'(test: Test) {
+  test('usage plan with quota limits', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -149,18 +141,15 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource(RESOURCE_TYPE, {
+    expect(stack).toHaveResource(RESOURCE_TYPE, {
       Quota: {
         Limit: 10000,
         Period: 'MONTH',
       },
-    }, ResourcePart.Properties));
+    }, ResourcePart.Properties);
+  });
 
-    test.done();
-
-  },
-
-  'UsagePlanKey'(test: Test) {
+  test('UsagePlanKey', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const usagePlan: apigateway.UsagePlan = new apigateway.UsagePlan(stack, 'my-usage-plan', {
@@ -172,7 +161,7 @@ export = {
     usagePlan.addApiKey(apiKey);
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::UsagePlanKey', {
+    expect(stack).toHaveResource('AWS::ApiGateway::UsagePlanKey', {
       KeyId: {
         Ref: 'myapikey1B052F70',
       },
@@ -180,12 +169,10 @@ export = {
       UsagePlanId: {
         Ref: 'myusageplan23AA1E32',
       },
-    }, ResourcePart.Properties));
+    }, ResourcePart.Properties);
+  });
 
-    test.done();
-  },
-
-  'UsagePlan can have multiple keys'(test: Test) {
+  test('UsagePlan can have multiple keys', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const usagePlan = new apigateway.UsagePlan(stack, 'my-usage-plan');
@@ -201,23 +188,21 @@ export = {
     usagePlan.addApiKey(apiKey2);
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::ApiKey', {
+    expect(stack).toHaveResource('AWS::ApiGateway::ApiKey', {
       Name: 'my-api-key-1',
-    }, ResourcePart.Properties));
-    expect(stack).to(haveResource('AWS::ApiGateway::ApiKey', {
+    }, ResourcePart.Properties);
+    expect(stack).toHaveResource('AWS::ApiGateway::ApiKey', {
       Name: 'my-api-key-2',
-    }, ResourcePart.Properties));
-    expect(stack).to(haveResource('AWS::ApiGateway::UsagePlanKey', {
+    }, ResourcePart.Properties);
+    expect(stack).toHaveResource('AWS::ApiGateway::UsagePlanKey', {
       KeyId: {
         Ref: 'myapikey11F723FC7',
       },
-    }, ResourcePart.Properties));
-    expect(stack).to(haveResource('AWS::ApiGateway::UsagePlanKey', {
+    }, ResourcePart.Properties);
+    expect(stack).toHaveResource('AWS::ApiGateway::UsagePlanKey', {
       KeyId: {
         Ref: 'myapikey2ABDEF012',
       },
-    }, ResourcePart.Properties));
-
-    test.done();
-  },
-};
+    }, ResourcePart.Properties);
+  });
+});
