@@ -73,6 +73,14 @@ export interface ISecret extends IResource {
    * account.
    */
   denyAccountRootDelete(): void;
+
+  /**
+   * Attach a target to this secret.
+   *
+   * @param target The target to attach.
+   * @returns An attached secret
+   */
+  attach(target: ISecretAttachmentTarget): ISecret;
 }
 
 /**
@@ -235,6 +243,26 @@ abstract class SecretBase extends Resource implements ISecret {
    * However, secrets imported by name require a different format.
    */
   protected get arnForPolicies() { return this.secretArn; }
+
+  /**
+   * Attach a target to this secret
+   *
+   * @param target The target to attach
+   * @returns An attached secret
+   */
+  public attach(target: ISecretAttachmentTarget): ISecret {
+    const id = 'Attachment';
+    const existing = this.node.tryFindChild(id);
+
+    if (existing) {
+      throw new Error('Secret is already attached to a target.');
+    }
+
+    return new SecretTargetAttachment(this, id, {
+      secret: this,
+      target,
+    });
+  }
 }
 
 /**
@@ -343,26 +371,6 @@ export class Secret extends SecretBase {
     return new SecretTargetAttachment(this, id, {
       secret: this,
       ...options,
-    });
-  }
-
-  /**
-   * Attach a target to this secret
-   *
-   * @param target The target to attach
-   * @returns An attached secret
-   */
-  public attach(target: ISecretAttachmentTarget): ISecret {
-    const id = 'Attachment';
-    const existing = this.node.tryFindChild(id);
-
-    if (existing) {
-      throw new Error('Secret is already attached to a target.');
-    }
-
-    return new SecretTargetAttachment(this, id, {
-      secret: this,
-      target,
     });
   }
 }
