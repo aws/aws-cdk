@@ -77,7 +77,7 @@
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
-    "jest": "^26.6.0",
+    "jest": "^26.6.1",
     "nodeunit": "^0.11.3",
     "pkglint": "0.0.0"
   },
@@ -111,12 +111,12 @@
       "props-physical-name:@aws-cdk/aws-cognito.UserPoolIdentityProviderGoogleProps"
     ]
   },
-  "stability": "experimental",
-  "maturity": "developer-preview",
+  "stability": "stable",
+  "maturity": "stable",
   "features": [
     {
       "name": "Higher level constructs for User Pools",
-      "stability": "Developer Preview"
+      "stability": "Stable"
     },
     {
       "name": "Higher level constructs for Identity Pools",
