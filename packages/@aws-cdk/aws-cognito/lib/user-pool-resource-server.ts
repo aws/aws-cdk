@@ -80,5 +80,4 @@ export class UserPoolResourceServer extends Resource implements IUserPoolResourc
 
     this.userPoolResourceServerId = resource.ref;
   }
-
 }
