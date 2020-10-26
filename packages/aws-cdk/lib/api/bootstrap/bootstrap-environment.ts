@@ -96,7 +96,7 @@ export class Bootstrapper {
     const trustedAccounts = params.trustedAccounts ?? splitCfnArray(current.parameters.TrustedAccounts);
     info(`Trusted accounts:   ${trustedAccounts.length > 0 ? trustedAccounts.join(', ') : '(none)'}`);
 
-    let cloudFormationExecutionPolicies = params.cloudFormationExecutionPolicies ?? splitCfnArray(current.parameters.CloudFormationExecutionPolicies);
+    const cloudFormationExecutionPolicies = params.cloudFormationExecutionPolicies ?? splitCfnArray(current.parameters.CloudFormationExecutionPolicies);
     if (trustedAccounts.length === 0 && cloudFormationExecutionPolicies.length === 0) {
       // For self-trust it's okay to default to AdministratorAccess, and it improves the usability of bootstrapping a lot.
       //
@@ -192,5 +192,5 @@ const CREATE_NEW_KEY = '';
  */
 function splitCfnArray(xs: string | undefined): string[] {
   if (xs === '' || xs === undefined) { return []; }
-  return xs.split(',') ?? [];
+  return xs.split(',');
 }
