@@ -233,11 +233,15 @@ router.addRoute('route', {
 
 ## Adding a Virtual Gateway
 
-A `virtual gateway` allows resources outside your mesh to communicate to resources that are inside your mesh. The `virtual gateway` represents an Envoy proxy running in an Amazon ECS task, in a Kubernetes service, or on an Amazon EC2 instance. Unlike a `virtual node`, which represents an Envoy running with an application, a `virtual gateway` represents Envoy deployed by itself.
+A _virtual gateway_ allows resources outside your mesh to communicate to resources that are inside your mesh.
+The virtual gateway represents an Envoy proxy running in an Amazon ECS task, in a Kubernetes service, or on an Amazon EC2 instance.
+Unlike a virtual node, which represents an Envoy running with an application, a virtual gateway represents Envoy deployed by itself.
 
-A `virtual gateway` is similar to a `virtual node` in that it has a `listener` that accepts traffic for a particular port and protocol (HTTP, HTTP2, GRPC). The traffic that the `virtual gateway` receives, is directed to other services in your mesh, using rules defined in `gateway routes` which can be added to your `virtual gateway`.
+A virtual gateway is similar to a virtual node in that it has a listener that accepts traffic for a particular port and protocol (HTTP, HTTP2, GRPC).
+The traffic that the virtual gateway receives, is directed to other services in your mesh,
+using rules defined in gateway routes which can be added to your virtual gateway.
 
-Create a `virtual gateway` with the constructor:
+Create a virtual gateway with the constructor:
 
 ```typescript
 const gateway = new appmesh.VirtualGateway(stack, 'gateway', {
@@ -253,28 +257,31 @@ const gateway = new appmesh.VirtualGateway(stack, 'gateway', {
 });
 ```
 
-Add a `virtual gateway` directly to the mesh:
+Add a virtual gateway directly to the mesh:
 
 ```typescript
 const gateway = mesh.addVirtualGateway('gateway', {
   accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
   virtualGatewayName: 'virtualGateway',
     listeners: [appmesh.VirtualGatewayListener.httpGatewayListener({
-    port: 443,
-    healthCheck: {
-      interval: cdk.Duration.seconds(10),
-    },
+      port: 443,
+      healthCheck: {
+        interval: cdk.Duration.seconds(10),
+      },
   })],
 });
 ```
 
-The `listeners` field can be omitted which will default to an HTTP Listener on port 8080. A `gateway route` can be added using the `gateway.addGatewayRoute()` method.
+The listeners field can be omitted which will default to an HTTP Listener on port 8080.
+A gateway route can be added using the `gateway.addGatewayRoute()` method.
 
 ## Adding a Gateway Route
 
-A `gateway route` is attached to a virtual gateway and routes traffic to an existing virtual service. If a route matches a request, it can distribute traffic to a target virtual service.
+A _gateway route_ is attached to a virtual gateway and routes traffic to an existing virtual service.
+If a route matches a request, it can distribute traffic to a target virtual service.
 
-For `HTTP` based routes, the `match` field can be used to match on a route prefix. By default, an `HTTP` based route will match on `/`. All matches must start with a leading `/`.
+For HTTP based routes, the match field can be used to match on a route prefix.
+By default, an HTTP based route will match on `/`. All matches must start with a leading `/`.
 
 ```typescript
 gateway.addGatewayRoute('gateway-route-http', {
@@ -287,7 +294,8 @@ gateway.addGatewayRoute('gateway-route-http', {
 });
 ```
 
-For `GRPC` based routes, the `match` field can be used to match on service names. You cannot omit the field, and must specify a match for these routes.
+For GRPC based routes, the match field can be used to match on service names.
+You cannot omit the field, and must specify a match for these routes.
 
 ```typescript
 gateway.addGatewayRoute('gateway-route-grpc', {
@@ -300,7 +308,7 @@ gateway.addGatewayRoute('gateway-route-grpc', {
 });
 ```
 
-Multiple gateway routes may also be added at route incoming traffic to different `virtual services`.
+Multiple gateway routes may also be added at route incoming traffic to different virtual services.
 
 ```typescript
 // Add an HTTP Route
@@ -329,4 +337,4 @@ gateway.addGatewayRoutes([
 ]);
 ```
 
-The `id` field is the CloudFormation Logical ID for the new resource, and props are the configuration for the new route you are creating.
+The id field is the CloudFormation Logical ID for the new resource, and props are the configuration for the new route you are creating.
