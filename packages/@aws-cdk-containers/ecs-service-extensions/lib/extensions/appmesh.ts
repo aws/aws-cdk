@@ -264,12 +264,9 @@ export class AppMeshExtension extends ServiceExtension {
       mesh: this.mesh,
       virtualNodeName: this.parentService.id,
       cloudMapService: service.cloudMapService,
-      listener: {
-        portMapping: {
-          port: containerextension.trafficPort,
-          protocol: this.protocol,
-        },
-      },
+      listeners: [appmesh.VirtualNodeListener.httpNodeListener({
+        port: containerextension.trafficPort,
+      })],
     });
 
     // Create a virtual router for this service. This allows for retries
