@@ -1,15 +1,18 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect as ourExpect, haveResource } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { App, Lazy, Stack } from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { App, DefaultStackSynthesizer, Lazy, LegacyStackSynthesizer, Stack, Stage } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import { DockerImageAsset } from '../lib';
 
 /* eslint-disable quote-props */
 
-export = {
+const DEMO_IMAGE_ASSET_HASH = 'baa2d6eb2a17c75424df631c8c70ff39f2d5f3bee8b9e1a109ee24ca17300540';
+
+nodeunitShim({
   'test instantiating Asset Image'(test: Test) {
     // GIVEN
     const app = new App();
@@ -103,7 +106,7 @@ export = {
     asset.repository.grantPull(user);
 
     // THEN
-    expect(stack).to(haveResource('AWS::IAM::Policy', {
+    ourExpect(stack).to(haveResource('AWS::IAM::Policy', {
       PolicyDocument: {
         'Statement': [
           {
@@ -306,4 +309,63 @@ export = {
     test.deepEqual(asset7.sourceHash, 'bc007f81fe1dd0f0bbb24af898eba3f4f15edbff19b7abb3fac928439486d667');
     test.done();
   },
-};
+});
+
+test('nested assemblies share assets: legacy synth edition', () => {
+  // GIVEN
+  const app = new App();
+  const stack1 = new Stack(new Stage(app, 'Stage1'), 'Stack', { synthesizer: new LegacyStackSynthesizer() });
+  const stack2 = new Stack(new Stage(app, 'Stage2'), 'Stack', { synthesizer: new LegacyStackSynthesizer() });
+
+  // WHEN
+  new DockerImageAsset(stack1, 'Image', { directory: path.join(__dirname, 'demo-image') });
+  new DockerImageAsset(stack2, 'Image', { directory: path.join(__dirname, 'demo-image') });
+
+  // THEN
+  const assembly = app.synth();
+
+  // Read the assets from the stack metadata
+  for (const stageName of ['Stage1', 'Stage2']) {
+    const stackArtifact = assembly.getNestedAssembly(`assembly-${stageName}`).artifacts.filter(isStackArtifact)[0];
+    const assetMeta = stackArtifact.findMetadataByType(cxschema.ArtifactMetadataEntryType.ASSET);
+    expect(assetMeta[0]).toEqual(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          path: `../asset.${DEMO_IMAGE_ASSET_HASH}`,
+        }),
+      }),
+    );
+  }
+});
+
+test('nested assemblies share assets: default synth edition', () => {
+  // GIVEN
+  const app = new App();
+  const stack1 = new Stack(new Stage(app, 'Stage1'), 'Stack', { synthesizer: new DefaultStackSynthesizer() });
+  const stack2 = new Stack(new Stage(app, 'Stage2'), 'Stack', { synthesizer: new DefaultStackSynthesizer() });
+
+  // WHEN
+  new DockerImageAsset(stack1, 'Image', { directory: path.join(__dirname, 'demo-image') });
+  new DockerImageAsset(stack2, 'Image', { directory: path.join(__dirname, 'demo-image') });
+
+  // THEN
+  const assembly = app.synth();
+
+  // Read the asset manifests to verify the file paths
+  for (const stageName of ['Stage1', 'Stage2']) {
+    const manifestArtifact = assembly.getNestedAssembly(`assembly-${stageName}`).artifacts.filter(isAssetManifestArtifact)[0];
+    const manifest = JSON.parse(fs.readFileSync(manifestArtifact.file, { encoding: 'utf-8' }));
+
+    expect(manifest.dockerImages[DEMO_IMAGE_ASSET_HASH].source).toEqual({
+      directory: `../asset.${DEMO_IMAGE_ASSET_HASH}`,
+    });
+  }
+});
+
+function isStackArtifact(x: any): x is cxapi.CloudFormationStackArtifact {
+  return x instanceof cxapi.CloudFormationStackArtifact;
+}
+
+function isAssetManifestArtifact(x: any): x is cxapi.AssetManifestArtifact {
+  return x instanceof cxapi.AssetManifestArtifact;
+}
