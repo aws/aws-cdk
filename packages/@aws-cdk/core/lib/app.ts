@@ -35,10 +35,19 @@ export interface AppProps {
   readonly stackTraces?: boolean;
 
   /**
-   * Include runtime versioning information in cloud assembly manifest
-   * @default true runtime info is included unless `aws:cdk:disable-runtime-info` is set in the context.
+   * Include runtime versioning information in the Stacks of this app
+   *
+   * @deprecated use `versionReporting` instead
+   * @default Value of 'aws:cdk:version-reporting' context key
    */
   readonly runtimeInfo?: boolean;
+
+  /**
+   * Include runtime versioning information in the Stacks of this app
+   *
+   * @default Value of 'aws:cdk:version-reporting' context key
+   */
+  readonly analyticsReporting?: boolean;
 
   /**
    * Additional context values for the application.
@@ -101,8 +110,10 @@ export class App extends Stage {
       this.node.setContext(cxapi.DISABLE_METADATA_STACK_TRACE, true);
     }
 
-    if (props.runtimeInfo === false) {
-      this.node.setContext(cxapi.DISABLE_VERSION_REPORTING, true);
+    const analyticsReporting = props.analyticsReporting ?? props.runtimeInfo;
+
+    if (analyticsReporting !== undefined) {
+      this.node.setContext(cxapi.ANALYTICS_REPORTING_ENABLED_CONTEXT, analyticsReporting);
     }
 
     const autoSynth = props.autoSynth !== undefined ? props.autoSynth : cxapi.OUTDIR_ENV in process.env;

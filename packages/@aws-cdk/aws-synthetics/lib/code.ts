@@ -99,7 +99,7 @@ export class AssetCode extends Code {
     this.validateCanaryAsset(handler);
 
     // If the same AssetCode is used multiple times, retain only the first instantiation.
-    if (!this.asset){
+    if (!this.asset) {
       this.asset = new s3_assets.Asset(scope, 'Code', {
         path: this.assetPath,
         ...this.options,

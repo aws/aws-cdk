@@ -3,6 +3,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import { ApplicationLoadBalancer, ApplicationProtocol, NetworkLoadBalancer } from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as iam from '@aws-cdk/aws-iam';
+import * as route53 from '@aws-cdk/aws-route53';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as ecsPatterns from '../../lib';
@@ -370,13 +371,10 @@ export = {
       cluster,
       protocol: ApplicationProtocol.HTTPS,
       domainName: 'domain.com',
-      domainZone: {
+      domainZone: route53.HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
         hostedZoneId: 'fakeId',
         zoneName: 'domain.com',
-        hostedZoneArn: 'arn:aws:route53:::hostedzone/fakeId',
-        stack,
-        node: stack.node,
-      },
+      }),
       taskImageOptions: {
         containerPort: 2015,
         image: ecs.ContainerImage.fromRegistry('abiosoft/caddy'),
@@ -408,13 +406,10 @@ export = {
       cluster,
       protocol: ApplicationProtocol.HTTPS,
       domainName: 'test.domain.com',
-      domainZone: {
+      domainZone: route53.HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
         hostedZoneId: 'fakeId',
         zoneName: 'domain.com.',
-        hostedZoneArn: 'arn:aws:route53:::hostedzone/fakeId',
-        stack,
-        node: stack.node,
-      },
+      }),
       taskImageOptions: {
         containerPort: 2015,
         image: ecs.ContainerImage.fromRegistry('abiosoft/caddy'),
@@ -639,6 +634,50 @@ export = {
       Port: 80,
     }));
 
+    test.done();
+  },
+
+  'passing in previously created security groups to ALB Fargate Service'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc, clusterName: 'MyCluster' });
+    const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
+      allowAllOutbound: false,
+      description: 'Example',
+      securityGroupName: 'Rolly',
+      vpc,
+    });
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+      cluster,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      },
+      securityGroups: [securityGroup],
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::Service', {
+      LaunchType: 'FARGATE',
+    }));
+    expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
+      GroupDescription: 'Example',
+      GroupName: 'Rolly',
+      SecurityGroupEgress: [
+        {
+          CidrIp: '255.255.255.255/32',
+          Description: 'Disallow all traffic',
+          FromPort: 252,
+          IpProtocol: 'icmp',
+          ToPort: 86,
+        },
+      ],
+      VpcId: {
+        Ref: 'Vpc8378EB38',
+      },
+    }));
     test.done();
   },
 

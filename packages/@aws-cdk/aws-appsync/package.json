@@ -23,9 +23,14 @@
       },
       "python": {
         "distName": "aws-cdk.aws-appsync",
-        "module": "aws_cdk.aws_appsync"
+        "module": "aws_cdk.aws_appsync",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",
@@ -44,11 +49,15 @@
     "cfn2ts": "cfn2ts",
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test",
-    "compat": "cdk-compat"
+    "compat": "cdk-compat",
+    "gen": "cfn2ts"
   },
   "cdk-build": {
     "cloudformation": "AWS::AppSync",
-    "jest": true
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "keywords": [
     "aws",
@@ -67,7 +76,7 @@
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
-    "jest": "^25.5.4",
+    "jest": "^26.6.1",
     "pkglint": "0.0.0"
   },
   "dependencies": {
@@ -77,7 +86,7 @@
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-s3-assets": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.0.4"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -87,7 +96,7 @@
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-s3-assets": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.0.4"
   },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
@@ -97,8 +106,8 @@
       "no-unused-type:@aws-cdk/aws-appsync.ApiKeyConfig",
       "no-unused-type:@aws-cdk/aws-appsync.UserPoolConfig",
       "no-unused-type:@aws-cdk/aws-appsync.UserPoolDefaultAction",
-      "props-physical-name:@aws-cdk/aws-appsync.GraphQLApiProps",
-      "from-method:@aws-cdk/aws-appsync.GraphQLApi"
+      "props-physical-name:@aws-cdk/aws-appsync.GraphqlApiProps",
+      "from-method:@aws-cdk/aws-appsync.GraphqlApi"
     ]
   },
   "stability": "experimental",

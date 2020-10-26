@@ -1,7 +1,7 @@
 {
   "name": "@aws-cdk/aws-lambda",
   "version": "0.0.0",
-  "description": "CDK Constructs for AWS Lambda",
+  "description": "The CDK Construct Library for AWS::Lambda",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
@@ -23,9 +23,14 @@
       },
       "python": {
         "distName": "aws-cdk.aws-lambda",
-        "module": "aws_cdk.aws_lambda"
+        "module": "aws_cdk.aws_lambda",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",
@@ -44,10 +49,15 @@
     "cfn2ts": "cfn2ts",
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test",
-    "compat": "cdk-compat"
+    "compat": "cdk-compat",
+    "gen": "cfn2ts"
   },
   "cdk-build": {
-    "cloudformation": "AWS::Lambda"
+    "cloudformation": "AWS::Lambda",
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": "true"
+    }
   },
   "nyc": {
     "statements": 75,
@@ -67,20 +77,14 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
-    "@types/aws-lambda": "^8.10.39",
-    "@types/lodash": "^4.14.157",
-    "@types/nodeunit": "^0.0.31",
-    "@types/sinon": "^9.0.4",
-    "aws-sdk": "^2.715.0",
-    "aws-sdk-mock": "^5.1.0",
+    "@types/aws-lambda": "^8.10.63",
+    "@types/lodash": "^4.14.161",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
-    "lodash": "^4.17.19",
-    "nock": "^13.0.2",
-    "nodeunit": "^0.11.3",
-    "pkglint": "0.0.0",
-    "sinon": "^9.0.2"
+    "jest": "^26.6.1",
+    "lodash": "^4.17.20",
+    "pkglint": "0.0.0"
   },
   "dependencies": {
     "@aws-cdk/aws-applicationautoscaling": "0.0.0",
@@ -96,7 +100,7 @@
     "@aws-cdk/aws-sqs": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.0.4"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -113,7 +117,7 @@
     "@aws-cdk/aws-sqs": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.0.4"
   },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"

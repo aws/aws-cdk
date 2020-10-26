@@ -1,6 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
+import { IResource, Lazy, Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { ContainerDefinition, ContainerDefinitionOptions, PortMapping, Protocol } from '../container-definition';
 import { CfnTaskDefinition } from '../ecs.generated';
 import { FirelensLogRouter, FirelensLogRouterDefinitionOptions, FirelensLogRouterType, obtainDefaultFluentBitECRImage } from '../firelens-log-router';
@@ -297,7 +298,7 @@ export class TaskDefinition extends TaskDefinitionBase {
 
     const taskDef = new CfnTaskDefinition(this, 'Resource', {
       containerDefinitions: Lazy.anyValue({ produce: () => this.renderContainers() }, { omitEmptyArray: true }),
-      volumes: Lazy.anyValue({ produce: () => this.volumes }, { omitEmptyArray: true }),
+      volumes: Lazy.anyValue({ produce: () => this.renderVolumes() }, { omitEmptyArray: true }),
       executionRoleArn: Lazy.stringValue({ produce: () => this.executionRole && this.executionRole.roleArn }),
       family: this.family,
       taskRoleArn: this.taskRole.roleArn,
@@ -326,6 +327,32 @@ export class TaskDefinition extends TaskDefinitionBase {
 
   public get executionRole(): iam.IRole | undefined {
     return this._executionRole;
+  }
+
+  private renderVolumes(): CfnTaskDefinition.VolumeProperty[] {
+    return this.volumes.map(renderVolume);
+
+    function renderVolume(spec: Volume): CfnTaskDefinition.VolumeProperty {
+      return {
+        host: spec.host,
+        name: spec.name,
+        dockerVolumeConfiguration: spec.dockerVolumeConfiguration && {
+          autoprovision: spec.dockerVolumeConfiguration.autoprovision,
+          driver: spec.dockerVolumeConfiguration.driver,
+          driverOpts: spec.dockerVolumeConfiguration.driverOpts,
+          labels: spec.dockerVolumeConfiguration.labels,
+          scope: spec.dockerVolumeConfiguration.scope,
+        },
+        efsVolumeConfiguration: spec.efsVolumeConfiguration && {
+          fileSystemId: spec.efsVolumeConfiguration.fileSystemId,
+          authorizationConfig: spec.efsVolumeConfiguration.authorizationConfig,
+          rootDirectory: spec.efsVolumeConfiguration.rootDirectory,
+          transitEncryption: spec.efsVolumeConfiguration.transitEncryption,
+          transitEncryptionPort: spec.efsVolumeConfiguration.transitEncryptionPort,
+
+        },
+      };
+    }
   }
 
   /**
@@ -617,6 +644,19 @@ export interface Volume {
    * To use bind mounts, specify a host instead.
    */
   readonly dockerVolumeConfiguration?: DockerVolumeConfiguration;
+
+  /**
+   * This property is specified when you are using Amazon EFS.
+   *
+   * When specifying Amazon EFS volumes in tasks using the Fargate launch type,
+   * Fargate creates a supervisor container that is responsible for managing the Amazon EFS volume.
+   * The supervisor container uses a small amount of the task's memory.
+   * The supervisor container is visible when querying the task metadata version 4 endpoint,
+   * but is not visible in CloudWatch Container Insights.
+   *
+   * @default No Elastic FileSystem is setup
+   */
+  readonly efsVolumeConfiguration?: EfsVolumeConfiguration;
 }
 
 /**
@@ -700,11 +740,76 @@ export interface DockerVolumeConfiguration {
    *
    * @default No labels
    */
-  readonly labels?: string[];
+  readonly labels?: { [key: string]: string; }
   /**
    * The scope for the Docker volume that determines its lifecycle.
    */
   readonly scope: Scope;
+}
+
+/**
+ * The authorization configuration details for the Amazon EFS file system.
+ */
+export interface AuthorizationConfig {
+  /**
+   * The access point ID to use.
+   * If an access point is specified, the root directory value will be
+   * relative to the directory set for the access point.
+   * If specified, transit encryption must be enabled in the EFSVolumeConfiguration.
+   *
+   * @default No id
+   */
+  readonly accessPointId?: string;
+  /**
+   * Whether or not to use the Amazon ECS task IAM role defined
+   * in a task definition when mounting the Amazon EFS file system.
+   * If enabled, transit encryption must be enabled in the EFSVolumeConfiguration.
+   *
+   * Valid values: ENABLED | DISABLED
+   *
+   * @default If this parameter is omitted, the default value of DISABLED is used.
+   */
+  readonly iam?: string;
+}
+
+/**
+ * The configuration for an Elastic FileSystem volume.
+ */
+export interface EfsVolumeConfiguration {
+  /**
+   * The Amazon EFS file system ID to use.
+   */
+  readonly fileSystemId: string;
+  /**
+   * The directory within the Amazon EFS file system to mount as the root directory inside the host.
+   * Specifying / will have the same effect as omitting this parameter.
+   *
+   * @default The root of the Amazon EFS volume
+   */
+  readonly rootDirectory?: string;
+  /**
+   * Whether or not to enable encryption for Amazon EFS data in transit between
+   * the Amazon ECS host and the Amazon EFS server.
+   * Transit encryption must be enabled if Amazon EFS IAM authorization is used.
+   *
+   * Valid values: ENABLED | DISABLED
+   *
+   * @default DISABLED
+   */
+  readonly transitEncryption?: string;
+  /**
+   * The port to use when sending encrypted data between
+   * the Amazon ECS host and the Amazon EFS server. EFS mount helper uses.
+   *
+   * @default Port selection strategy that the Amazon EFS mount helper uses.
+   */
+  readonly transitEncryptionPort?: number;
+  /**
+   * The authorization configuration details for the Amazon EFS file system.
+   *
+   * @default No configuration.
+   */
+  readonly authorizationConfig?: AuthorizationConfig;
 }
 
 /**

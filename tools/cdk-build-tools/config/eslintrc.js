@@ -15,6 +15,7 @@ module.exports = {
   plugins: [
     '@typescript-eslint',
     'import',
+    'cdk',
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -38,6 +39,7 @@ module.exports = {
   },
   ignorePatterns: ['*.js', '*.d.ts', 'node_modules/', '*.generated.ts'],
   rules: {
+    'cdk/no-core-construct': [ 'error' ],
     // Require use of the `import { foo } from 'bar';` form instead of `import foo = require('bar');`
     '@typescript-eslint/no-require-imports': ['error'],
     '@typescript-eslint/indent': ['error', 2],
@@ -52,6 +54,10 @@ module.exports = {
     'object-curly-spacing': ['error', 'always'], // { key: 'value' }
     'object-curly-newline': ['error', { multiline: true, consistent: true }], // enforce consistent line breaks between braces
     'object-property-newline': ['error', { allowAllPropertiesOnSameLine: true }], // enforce "same line" or "multiple line" on object properties
+    'keyword-spacing': ['error'], // require a space before & after keywords
+    'brace-style': ['error', '1tbs', { allowSingleLine: true }], // enforce one true brace style
+    'space-before-blocks': 'error', // require space before blocks
+    'curly': ['error', 'multi-line', 'consistent'], // require curly braces for multiline control statements
 
     // Require all imported dependencies are actually declared in package.json
     'import/no-extraneous-dependencies': [
@@ -82,7 +88,8 @@ module.exports = {
     'no-duplicate-imports': ['error'],
 
     // Cannot shadow names
-    'no-shadow': ['error'],
+    'no-shadow': ['off'],
+    '@typescript-eslint/no-shadow': ['error'],
 
     // Required spacing in property declarations (copied from TSLint, defaults are good)
     'key-spacing': ['error'],
@@ -108,6 +115,11 @@ module.exports = {
 
     // One of the easiest mistakes to make
     '@typescript-eslint/no-floating-promises': ['error'],
+
+    // Make sure that inside try/catch blocks, promises are 'return await'ed
+    // (must disable the base rule as it can report incorrect errors)
+    'no-return-await': 'off',
+    '@typescript-eslint/return-await': 'error',
 
     // Don't leave log statements littering the premises!
     'no-console': ['error'],

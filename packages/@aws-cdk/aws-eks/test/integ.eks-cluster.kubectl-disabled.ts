@@ -1,7 +1,10 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
+import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
 import * as eks from '../lib';
 import { TestStack } from './util';
+
+const CLUSTER_VERSION = eks.KubernetesVersion.V1_18;
 
 class EksClusterStack extends TestStack {
   constructor(scope: cdk.App, id: string) {
@@ -9,10 +12,13 @@ class EksClusterStack extends TestStack {
 
     const vpc = new ec2.Vpc(this, 'VPC');
 
+    const secretsEncryptionKey = new kms.Key(this, 'SecretsKey');
+
     const cluster = new eks.LegacyCluster(this, 'EKSCluster', {
       vpc,
       defaultCapacity: 0,
-      version: eks.KubernetesVersion.V1_16,
+      version: CLUSTER_VERSION,
+      secretsEncryptionKey,
     });
 
     cluster.addCapacity('Nodes', {

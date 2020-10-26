@@ -1,11 +1,18 @@
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
-import { Construct, IResource, Lazy, Resource, Stack, Token, Duration } from '@aws-cdk/core';
+import { IResource, Lazy, Resource, Stack, Token, Duration } from '@aws-cdk/core';
+import { Construct, Node } from 'constructs';
+import { ICachePolicy } from './cache-policy';
 import { CfnDistribution } from './cloudfront.generated';
 import { GeoRestriction } from './geo-restriction';
 import { IOrigin, OriginBindConfig, OriginBindOptions } from './origin';
+import { IOriginRequestPolicy } from './origin-request-policy';
 import { CacheBehavior } from './private/cache-behavior';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Interface for CloudFront distributions
@@ -132,7 +139,7 @@ export interface DistributionProps {
   /**
    * Enable access logging for the distribution.
    *
-   * @default - false, unless `loggingBucket` is specified.
+   * @default - false, unless `logBucket` is specified.
    */
   readonly enableLogging?: boolean;
 
@@ -284,6 +291,7 @@ export class Distribution extends Resource implements IDistribution {
         priceClass: props.priceClass ?? undefined,
         restrictions: this.renderRestrictions(props.geoRestriction),
         viewerCertificate: this.certificate ? this.renderViewerCertificate(this.certificate) : undefined,
+        webAclId: props.webAclId,
       },
     });
 
@@ -313,8 +321,8 @@ export class Distribution extends Resource implements IDistribution {
       return existingOrigin.originGroupId ?? existingOrigin.originId;
     } else {
       const originIndex = this.boundOrigins.length + 1;
-      const scope = new Construct(this, `Origin${originIndex}`);
-      const originId = scope.node.uniqueId;
+      const scope = new CoreConstruct(this, `Origin${originIndex}`);
+      const originId = Node.of(scope).uniqueId;
       const originBindConfig = origin.bind(scope, { originId });
       if (!originBindConfig.failoverConfig) {
         this.boundOrigins.push({ origin, originId, ...originBindConfig });
@@ -323,7 +331,7 @@ export class Distribution extends Resource implements IDistribution {
           throw new Error('An Origin cannot use an Origin with its own failover configuration as its fallback origin!');
         }
         const groupIndex = this.originGroups.length + 1;
-        const originGroupId = new Construct(this, `OriginGroup${groupIndex}`).node.uniqueId;
+        const originGroupId = Node.of(new CoreConstruct(this, `OriginGroup${groupIndex}`)).uniqueId;
         this.boundOrigins.push({ origin, originId, originGroupId, ...originBindConfig });
 
         const failoverOriginId = this.addOrigin(originBindConfig.failoverConfig.failoverOrigin, true);
@@ -430,7 +438,7 @@ export class Distribution extends Resource implements IDistribution {
     return {
       acmCertificateArn: certificate.certificateArn,
       sslSupportMethod: SSLMethod.SNI,
-      minimumProtocolVersion: SecurityPolicyProtocol.TLS_V1_2_2018,
+      minimumProtocolVersion: SecurityPolicyProtocol.TLS_V1_2_2019,
     };
   }
 }
@@ -510,7 +518,8 @@ export enum SecurityPolicyProtocol {
   TLS_V1 = 'TLSv1',
   TLS_V1_2016 = 'TLSv1_2016',
   TLS_V1_1_2016 = 'TLSv1.1_2016',
-  TLS_V1_2_2018 = 'TLSv1.2_2018'
+  TLS_V1_2_2018 = 'TLSv1.2_2018',
+  TLS_V1_2_2019 = 'TLSv1.2_2019'
 }
 
 /**
@@ -619,6 +628,15 @@ export interface EdgeLambda {
 
   /** The type of event in response to which should the function be invoked. */
   readonly eventType: LambdaEdgeEventType;
+
+  /**
+   * Allows a Lambda function to have read access to the body content.
+   * Only valid for "request" event types (`ORIGIN_REQUEST` or `VIEWER_REQUEST`).
+   * See https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-include-body-access.html
+   *
+   * @default false
+   */
+  readonly includeBody?: boolean;
 }
 
 /**
@@ -642,30 +660,30 @@ export interface AddBehaviorOptions {
   readonly cachedMethods?: CachedMethods;
 
   /**
+   * The cache policy for this behavior. The cache policy determines what values are included in the cache key,
+   * and the time-to-live (TTL) values for the cache.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/controlling-the-cache-key.html.
+   * @default CachePolicy.CACHING_OPTIMIZED
+   */
+  readonly cachePolicy?: ICachePolicy;
+
+  /**
    * Whether you want CloudFront to automatically compress certain files for this cache behavior.
    * See https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/ServingCompressedFiles.html#compressed-content-cloudfront-file-types
    * for file types CloudFront will compress.
    *
-   * @default false
+   * @default true
    */
   readonly compress?: boolean;
 
   /**
-   * Whether CloudFront will forward query strings to the origin.
-   * If this is set to true, CloudFront will forward all query parameters to the origin, and cache
-   * based on all parameters. See `forwardQueryStringCacheKeys` for a way to limit the query parameters
-   * CloudFront caches on.
+   * The origin request policy for this behavior. The origin request policy determines which values (e.g., headers, cookies)
+   * are included in requests that CloudFront sends to the origin.
    *
-   * @default false
+   * @default - none
    */
-  readonly forwardQueryString?: boolean;
-
-  /**
-   * A set of query string parameter names to use for caching if `forwardQueryString` is set to true.
-   *
-   * @default []
-   */
-  readonly forwardQueryStringCacheKeys?: string[];
+  readonly originRequestPolicy?: IOriginRequestPolicy;
 
   /**
    * Set this to true to indicate you want to distribute media files in the Microsoft Smooth Streaming format using this behavior.

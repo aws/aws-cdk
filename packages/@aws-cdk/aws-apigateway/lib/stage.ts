@@ -1,4 +1,5 @@
-import { Construct, Duration, IResource, Resource, Stack } from '@aws-cdk/core';
+import { Duration, IResource, Resource, Stack, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { AccessLogFormat, IAccessLogDestination } from './access-log';
 import { CfnStage } from './apigateway.generated';
 import { Deployment } from './deployment';
@@ -210,7 +211,10 @@ export class Stage extends Resource implements IStage {
     if (!accessLogDestination && !accessLogFormat) {
       accessLogSetting = undefined;
     } else {
-      if (accessLogFormat !== undefined && !/.*\$context.requestId.*/.test(accessLogFormat.toString())) {
+      if (accessLogFormat !== undefined &&
+        !Token.isUnresolved(accessLogFormat.toString()) &&
+        !/.*\$context.requestId.*/.test(accessLogFormat.toString())) {
+
         throw new Error('Access log must include at least `AccessLogFormat.contextRequestId()`');
       }
       if (accessLogFormat !== undefined && accessLogDestination === undefined) {

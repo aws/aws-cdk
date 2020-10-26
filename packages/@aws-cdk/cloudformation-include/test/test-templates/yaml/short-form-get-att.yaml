@@ -16,9 +16,9 @@ Resources:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: !GetAtt Bucket0.Arn
-      AccessControl: !GetAtt [ ELB, SourceSecurityGroup.GroupName ]
+      AccessControl: !GetAtt [ELB, SourceSecurityGroup.GroupName]
   Bucket2:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: !GetAtt [ Bucket1, Arn ]
-      AccessControl: !GetAtt ELB.SourceSecurityGroup.GroupName
+      AccessControl: !GetAtt 'ELB.SourceSecurityGroup.GroupName'

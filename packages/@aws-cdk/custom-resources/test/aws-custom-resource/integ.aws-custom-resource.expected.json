@@ -45,7 +45,10 @@
         "InstallLatestAwsSdk": true
       },
       "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete"
+      "DeletionPolicy": "Delete",
+      "DependsOn": [
+        "PublishCustomResourcePolicyDF696FCA"
+      ]
     },
     "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2": {
       "Type": "AWS::IAM::Role",
@@ -74,37 +77,6 @@
                 ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
               ]
             ]
-          }
-        ]
-      }
-    },
-    "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleDefaultPolicyD28E1A5E": {
-      "Type": "AWS::IAM::Policy",
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sns:Publish",
-              "Effect": "Allow",
-              "Resource": "*"
-            },
-            {
-              "Action": "sns:ListTopics",
-              "Effect": "Allow",
-              "Resource": "*"
-            },
-            {
-              "Action": "ssm:GetParameter",
-              "Effect": "Allow",
-              "Resource": "*"
-            }
-          ],
-          "Version": "2012-10-17"
-        },
-        "PolicyName": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleDefaultPolicyD28E1A5E",
-        "Roles": [
-          {
-            "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
           }
         ]
       }
@@ -161,7 +133,6 @@
         "Timeout": 120
       },
       "DependsOn": [
-        "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleDefaultPolicyD28E1A5E",
         "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
       ]
     },
@@ -191,6 +162,7 @@
         "InstallLatestAwsSdk": true
       },
       "DependsOn": [
+        "ListTopicsCustomResourcePolicy31A8396A",
         "TopicBFC7AF6E"
       ],
       "UpdateReplacePolicy": "Delete",
@@ -241,7 +213,44 @@
         "InstallLatestAwsSdk": true
       },
       "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete"
+      "DeletionPolicy": "Delete",
+      "DependsOn": [
+        "GetParameterCustomResourcePolicyD8E5D455"
+      ]
+    },
+    "PublishCustomResourcePolicyDF696FCA": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [{"Action":"sns:Publish","Effect":"Allow","Resource":"*"}],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "PublishCustomResourcePolicyDF696FCA",
+        "Roles": [{"Ref":"AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"}]
+      }
+    },
+    "ListTopicsCustomResourcePolicy31A8396A": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [{"Action":"sns:ListTopics","Effect":"Allow","Resource":"*"}],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "ListTopicsCustomResourcePolicy31A8396A",
+        "Roles": [{"Ref":"AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"}]
+      },
+      "DependsOn": ["TopicBFC7AF6E"]
+    },
+    "GetParameterCustomResourcePolicyD8E5D455": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [{"Action":"ssm:GetParameter","Effect":"Allow","Resource":"*"}],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "GetParameterCustomResourcePolicyD8E5D455",
+        "Roles": [{"Ref":"AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"}]
+      }
     }
   },
   "Parameters": {

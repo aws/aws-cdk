@@ -3,12 +3,13 @@ import { IVpc } from '@aws-cdk/aws-ec2';
 import { AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerImage, ICluster, LogDriver, PropagatedTagSource, Secret } from '@aws-cdk/aws-ecs';
 import {
   ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationTargetGroup,
-  IApplicationLoadBalancer, ListenerCertificate,
+  IApplicationLoadBalancer, ListenerCertificate, ListenerAction,
 } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { IRole } from '@aws-cdk/aws-iam';
 import { ARecord, IHostedZone, RecordTarget } from '@aws-cdk/aws-route53';
 import { LoadBalancerTarget } from '@aws-cdk/aws-route53-targets';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 /**
  * The properties for the base ApplicationLoadBalancedEc2Service or ApplicationLoadBalancedFargateService service.
@@ -168,6 +169,14 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    * @default - AWS Cloud Map service discovery is not enabled.
    */
   readonly cloudMapOptions?: CloudMapOptions;
+
+  /**
+   * Specifies whether the load balancer should redirect traffic on port 80 to port 443 to support HTTP->HTTPS redirects
+   * This is only valid if the protocol of the ALB is HTTPS
+   *
+   * @default false
+   */
+  readonly redirectHTTP?: boolean;
 }
 
 export interface ApplicationLoadBalancedTaskImageOptions {
@@ -277,6 +286,11 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
   public readonly listener: ApplicationListener;
 
   /**
+   * The redirect listener for the service if redirectHTTP is enabled.
+   */
+  public readonly redirectListener?: ApplicationListener;
+
+  /**
    * The target group for the service.
    */
   public readonly targetGroup: ApplicationTargetGroup;
@@ -296,7 +310,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
   /**
    * Constructs a new instance of the ApplicationLoadBalancedServiceBase class.
    */
-  constructor(scope: cdk.Construct, id: string, props: ApplicationLoadBalancedServiceBaseProps = {}) {
+  constructor(scope: Construct, id: string, props: ApplicationLoadBalancedServiceBaseProps = {}) {
     super(scope, id);
 
     if (props.cluster && props.vpc) {
@@ -325,6 +339,10 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
     const protocol = props.protocol !== undefined ? props.protocol :
       (props.certificate ? ApplicationProtocol.HTTPS : ApplicationProtocol.HTTP);
 
+    if (protocol !== ApplicationProtocol.HTTPS && props.redirectHTTP === true) {
+      throw new Error('The HTTPS protocol must be used when redirecting HTTP traffic');
+    }
+
     const targetProps = {
       port: 80,
     };
@@ -352,6 +370,18 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
     }
     if (this.certificate !== undefined) {
       this.listener.addCertificates('Arns', [ListenerCertificate.fromCertificateManager(this.certificate)]);
+    }
+    if (props.redirectHTTP) {
+      this.redirectListener = loadBalancer.addListener('PublicRedirectListener', {
+        protocol: ApplicationProtocol.HTTP,
+        port: 80,
+        open: true,
+        defaultAction: ListenerAction.redirect({
+          port: props.listenerPort?.toString() || '443',
+          protocol: ApplicationProtocol.HTTPS,
+          permanent: true,
+        }),
+      });
     }
 
     let domainName = loadBalancer.loadBalancerDnsName;

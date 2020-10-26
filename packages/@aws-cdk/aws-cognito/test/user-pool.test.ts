@@ -2,7 +2,8 @@ import '@aws-cdk/assert/jest';
 import { ABSENT } from '@aws-cdk/assert/lib/assertions/have-resource';
 import { Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { CfnParameter, Construct, Duration, Stack, Tag } from '@aws-cdk/core';
+import { CfnParameter, Duration, Stack, Tags } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { AccountRecovery, Mfa, NumberAttribute, StringAttribute, UserPool, UserPoolIdentityProvider, UserPoolOperation, VerificationEmailStyle } from '../lib';
 
 describe('User Pool', () => {
@@ -227,7 +228,7 @@ describe('User Pool', () => {
     const pool = new UserPool(stack, 'Pool', {
       userPoolName: 'myPool',
     });
-    Tag.add(pool, 'PoolTag', 'PoolParty');
+    Tags.of(pool).add('PoolTag', 'PoolParty');
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {

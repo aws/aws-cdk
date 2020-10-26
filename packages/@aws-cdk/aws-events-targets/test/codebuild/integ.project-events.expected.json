@@ -161,7 +161,8 @@
                 "codebuild:CreateReportGroup",
                 "codebuild:CreateReport",
                 "codebuild:UpdateReport",
-                "codebuild:BatchPutTestCases"
+                "codebuild:BatchPutTestCases",
+                "codebuild:BatchPutCodeCoverages"
               ],
               "Effect": "Allow",
               "Resource": {
@@ -226,7 +227,8 @@
             ]
           },
           "Type": "CODECOMMIT"
-        }
+        },
+        "EncryptionKey": "alias/aws/s3"
       }
     },
     "MyProjectStateChange2DAB75B7": {

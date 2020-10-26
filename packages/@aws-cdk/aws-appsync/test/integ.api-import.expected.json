@@ -8,18 +8,6 @@
           "Name": "baseApi"
         }
       },
-      "baseApiDefaultAPIKeyApiKey4804ACE5": {
-        "Type": "AWS::AppSync::ApiKey",
-        "Properties": {
-          "ApiId": {
-            "Fn::GetAtt": [
-              "baseApiCDA4D43A",
-              "ApiId"
-            ]
-          },
-          "Description": "Default API Key created by CDK"
-        }
-      },
       "baseApiSchemaB12C7BB0": {
         "Type": "AWS::AppSync::GraphQLSchema",
         "Properties": {
@@ -29,8 +17,22 @@
               "ApiId"
             ]
           },
-          "Definition": "type test {\n  version: String!\n}\n\ntype Query {\n  getTests: [ test! ]!\n}\n\ntype Mutation {\n  addTest(version: String!): test\n}\n"
+          "Definition": "type test {\n  version: String!\n}\ntype Query {\n  getTests: [test]!\n}\ntype Mutation {\n  addTest(version: String!): test\n}\n"
         }
+      },
+      "baseApiDefaultApiKeyA3A0A16A": {
+        "Type": "AWS::AppSync::ApiKey",
+        "Properties": {
+          "ApiId": {
+            "Fn::GetAtt": [
+              "baseApiCDA4D43A",
+              "ApiId"
+            ]
+          }
+        },
+        "DependsOn": [
+          "baseApiSchemaB12C7BB0"
+        ]
       }
     },
     "Outputs": {

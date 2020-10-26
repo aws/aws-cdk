@@ -67,6 +67,8 @@ class DefaultAwsClient implements IAws {
   constructor(profile?: string) {
     // Force AWS SDK to look in ~/.aws/credentials and potentially use the configured profile.
     process.env.AWS_SDK_LOAD_CONFIG = '1';
+    process.env.AWS_STS_REGIONAL_ENDPOINTS = 'regional';
+    process.env.AWS_NODEJS_CONNECTION_REUSE_ENABLED = '1';
     if (profile) {
       process.env.AWS_PROFILE = profile;
     }
@@ -138,7 +140,7 @@ class DefaultAwsClient implements IAws {
       params: {
         RoleArn: roleArn,
         ExternalId: externalId,
-        RoleSessionName: `cdk-assets-${os.userInfo().username}`,
+        RoleSessionName: `cdk-assets-${safeUsername()}`,
       },
       stsConfig: {
         region,
@@ -146,4 +148,13 @@ class DefaultAwsClient implements IAws {
       },
     });
   }
+}
+
+/**
+ * Return the username with characters invalid for a RoleSessionName removed
+ *
+ * @see https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html#API_AssumeRole_RequestParameters
+ */
+function safeUsername() {
+  return os.userInfo().username.replace(/[^\w+=,.@-]/g, '@');
 }

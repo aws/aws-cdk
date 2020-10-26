@@ -1,6 +1,8 @@
 import * as kms from '@aws-cdk/aws-kms';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { Aws, Construct } from '@aws-cdk/core';
+import { Aws } from '@aws-cdk/core';
+import { Construct } from 'constructs';
+import { DEFAULT_PASSWORD_EXCLUDE_CHARS } from './private/util';
 
 /**
  * Construction properties for a DatabaseSecret.
@@ -24,6 +26,13 @@ export interface DatabaseSecretProps {
    * @default - no master secret information will be included
    */
   readonly masterSecret?: secretsmanager.ISecret;
+
+  /**
+   * Characters to not include in the generated password.
+   *
+   * @default " %+~`#$&*()|[]{}:;<>?!'/@\"\\"
+   */
+  readonly excludeCharacters?: string;
 }
 
 /**
@@ -43,7 +52,7 @@ export class DatabaseSecret extends secretsmanager.Secret {
           masterarn: props.masterSecret?.secretArn,
         }),
         generateStringKey: 'password',
-        excludeCharacters: '"@/\\',
+        excludeCharacters: props.excludeCharacters ?? DEFAULT_PASSWORD_EXCLUDE_CHARS,
       },
     });
   }

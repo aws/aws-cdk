@@ -586,6 +586,53 @@
         }
       }
     },
+    "SecretsKey317DCF94": {
+      "Type": "AWS::KMS::Key",
+      "Properties": {
+        "KeyPolicy": {
+          "Statement": [
+            {
+              "Action": [
+                "kms:Create*",
+                "kms:Describe*",
+                "kms:Enable*",
+                "kms:List*",
+                "kms:Put*",
+                "kms:Update*",
+                "kms:Revoke*",
+                "kms:Disable*",
+                "kms:Get*",
+                "kms:Delete*",
+                "kms:ScheduleKeyDeletion",
+                "kms:CancelKeyDeletion",
+                "kms:GenerateDataKey",
+                "kms:TagResource",
+                "kms:UntagResource"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::12345678:root"
+                    ]
+                  ]
+                }
+              },
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
+    },
     "EKSClusterRoleC0AEAC3D": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -693,7 +740,22 @@
             "Arn"
           ]
         },
-        "Version": "1.16"
+        "EncryptionConfig": [
+          {
+            "Provider": {
+              "KeyArn": {
+                "Fn::GetAtt": [
+                  "SecretsKey317DCF94",
+                  "Arn"
+                ]
+              }
+            },
+            "Resources": [
+              "secrets"
+            ]
+          }
+        ],
+        "Version": "1.18"
       }
     },
     "EKSClusterNodesInstanceSecurityGroup460A275E": {
@@ -892,7 +954,7 @@
       "Type": "AWS::AutoScaling::LaunchConfiguration",
       "Properties": {
         "ImageId": {
-          "Ref": "SsmParameterValueawsserviceeksoptimizedami116amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+          "Ref": "SsmParameterValueawsserviceeksoptimizedami118amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
         },
         "InstanceType": "t2.medium",
         "IamInstanceProfile": {
@@ -1024,9 +1086,9 @@
     }
   },
   "Parameters": {
-    "SsmParameterValueawsserviceeksoptimizedami116amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+    "SsmParameterValueawsserviceeksoptimizedami118amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
       "Type": "AWS::SSM::Parameter::Value<String>",
-      "Default": "/aws/service/eks/optimized-ami/1.16/amazon-linux-2/recommended/image_id"
+      "Default": "/aws/service/eks/optimized-ami/1.18/amazon-linux-2/recommended/image_id"
     }
   }
 }
