@@ -98,7 +98,7 @@ export async function latestVersionIfHigher(currentVersion: string, cacheFile: V
 }
 
 export async function displayVersionMessage(): Promise<void> {
-  if (!process.stdout.isTTY) {
+  if (!process.stdout.isTTY || process.env.CDK_DISABLE_VERSION_CHECK) {
     return;
   }
 
