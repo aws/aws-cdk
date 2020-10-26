@@ -1,59 +1,56 @@
+import '@aws-cdk/assert/jest';
 import * as path from 'path';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import * as apigw from '../lib';
 
-export = {
-  'apigateway.ApiDefinition.fromJson': {
-    'happy case'(test: Test) {
+describe('api definition', () => {
+  describe('apigateway.ApiDefinition.fromJson', () => {
+    test('happy case', () => {
       const stack = new cdk.Stack();
       const definition = {
         key1: 'val1',
       };
       const config = apigw.ApiDefinition.fromInline(definition).bind(stack);
-      test.deepEqual(config.inlineDefinition, definition);
-      test.ok(config.s3Location === undefined);
-      test.done();
-    },
+      expect(config.inlineDefinition).toEqual(definition);
+      expect(config.s3Location).toBeUndefined();
+    });
 
-    'fails if Json definition is empty'(test: Test) {
-      test.throws(
-        () => defineRestApi(apigw.ApiDefinition.fromInline({})),
-        /cannot be empty/);
-      test.done();
-    },
+    test('fails if Json definition is empty', () => {
+      expect(
+        () => defineRestApi(apigw.ApiDefinition.fromInline({})))
+        .toThrow(/cannot be empty/);
+    });
 
-    'fails if definition is not an object'(test: Test) {
-      test.throws(
-        () => defineRestApi(apigw.ApiDefinition.fromInline('not-json')),
-        /should be of type object/);
-      test.done();
-    },
-  },
+    test('fails if definition is not an object', () => {
+      expect(
+        () => defineRestApi(apigw.ApiDefinition.fromInline('not-json')))
+        .toThrow(/should be of type object/);
+    });
+  });
 
-  'apigateway.ApiDefinition.fromAsset': {
-    'happy case'(test: Test) {
+  describe('apigateway.ApiDefinition.fromAsset', () => {
+    test('happy case', () => {
       const stack = new cdk.Stack();
       const config = apigw.ApiDefinition.fromAsset(path.join(__dirname, 'sample-definition.yaml')).bind(stack);
-      test.ok(config.inlineDefinition === undefined);
-      test.ok(config.s3Location !== undefined);
-      test.deepEqual(stack.resolve(config.s3Location!.bucket), {
+      expect(config.inlineDefinition).toBeUndefined();
+      expect(config.s3Location).toBeDefined();
+      expect(stack.resolve(config.s3Location!.bucket)).toEqual({
         Ref: 'AssetParameters68497ac876de4e963fc8f7b5f1b28844c18ecc95e3f7c6e9e0bf250e03c037fbS3Bucket42039E29',
       });
-      test.done();
-    },
 
-    'fails if a directory is given for an asset'(test: Test) {
+    });
+
+    test('fails if a directory is given for an asset', () => {
       // GIVEN
       const fileAsset = apigw.ApiDefinition.fromAsset(path.join(__dirname, 'authorizers'));
 
       // THEN
-      test.throws(() => defineRestApi(fileAsset), /Asset cannot be a \.zip file or a directory/);
-      test.done();
-    },
+      expect(() => defineRestApi(fileAsset)).toThrow(/Asset cannot be a \.zip file or a directory/);
 
-    'only one Asset object gets created even if multiple functions use the same AssetApiDefinition'(test: Test) {
+    });
+
+    test('only one Asset object gets created even if multiple functions use the same AssetApiDefinition', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'MyStack');
@@ -73,26 +70,26 @@ export = {
       const synthesized = assembly.stacks[0];
 
       // API1 has an asset, API2 does not
-      test.deepEqual(synthesized.assets.length, 1);
-      test.done();
-    },
-  },
+      expect(synthesized.assets.length).toEqual(1);
 
-  'apigateway.ApiDefinition.fromBucket': {
-    'happy case'(test: Test) {
+    });
+  });
+
+  describe('apigateway.ApiDefinition.fromBucket', () => {
+    test('happy case', () => {
       const stack = new cdk.Stack();
       const bucket = new s3.Bucket(stack, 'my-bucket');
       const config = apigw.ApiDefinition.fromBucket(bucket, 'my-key', 'my-version').bind(stack);
-      test.ok(config.inlineDefinition === undefined);
-      test.ok(config.s3Location !== undefined);
-      test.deepEqual(stack.resolve(config.s3Location!.bucket), {
+      expect(config.inlineDefinition).toBeUndefined();
+      expect(config.s3Location).toBeDefined();
+      expect(stack.resolve(config.s3Location!.bucket)).toEqual({
         Ref: 'mybucket15D133BF',
       });
-      test.equals(config.s3Location!.key, 'my-key');
-      test.done();
-    },
-  },
-};
+      expect(config.s3Location!.key).toEqual('my-key');
+
+    });
+  });
+});
 
 function defineRestApi(definition: apigw.ApiDefinition) {
   const stack = new cdk.Stack();
