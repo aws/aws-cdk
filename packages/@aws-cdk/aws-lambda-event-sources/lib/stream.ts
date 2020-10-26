@@ -77,6 +77,13 @@ export interface StreamEventSourceProps {
    * @default Duration.seconds(0)
    */
   readonly maxBatchingWindow?: Duration;
+
+  /**
+   * If the stream event source mapping should be enabled.
+   *
+   * @default true
+   */
+  readonly enabled?: boolean;
 }
 
 /**
@@ -99,6 +106,7 @@ export abstract class StreamEventSource implements lambda.IEventSource {
       retryAttempts: this.props.retryAttempts,
       parallelizationFactor: this.props.parallelizationFactor,
       onFailure: this.props.onFailure,
+      enabled: this.props.enabled,
     };
   }
 }

@@ -1,11 +1,10 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import '@aws-cdk/assert/jest';
 import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import * as apigateway from '../lib';
 
-export = {
-  'minimal setup'(test: Test) {
+describe('stage', () => {
+  test('minimal setup', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
@@ -16,7 +15,7 @@ export = {
     new apigateway.Stage(stack, 'my-stage', { deployment });
 
     // THEN
-    expect(stack).toMatch({
+    expect(stack).toMatchTemplate({
       Resources: {
         testapiD6451F70: {
           Type: 'AWS::ApiGateway::RestApi',
@@ -68,11 +67,9 @@ export = {
         },
       },
     });
+  });
 
-    test.done();
-  },
-
-  'common method settings can be set at the stage level'(test: Test) {
+  test('common method settings can be set at the stage level', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
@@ -87,7 +84,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::Stage', {
+    expect(stack).toHaveResource('AWS::ApiGateway::Stage', {
       MethodSettings: [
         {
           HttpMethod: '*',
@@ -96,12 +93,10 @@ export = {
           ThrottlingRateLimit: 12,
         },
       ],
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'custom method settings can be set by their path'(test: Test) {
+  test('custom method settings can be set by their path', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
@@ -121,7 +116,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::Stage', {
+    expect(stack).toHaveResource('AWS::ApiGateway::Stage', {
       MethodSettings: [
         {
           HttpMethod: '*',
@@ -135,12 +130,10 @@ export = {
           ResourcePath: '/~1goo~1bar',
         },
       ],
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'default "cacheClusterSize" is 0.5 (if cache cluster is enabled)'(test: Test) {
+  test('default "cacheClusterSize" is 0.5 (if cache cluster is enabled)', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
@@ -154,15 +147,13 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::Stage', {
+    expect(stack).toHaveResource('AWS::ApiGateway::Stage', {
       CacheClusterEnabled: true,
       CacheClusterSize: '0.5',
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'setting "cacheClusterSize" implies "cacheClusterEnabled"'(test: Test) {
+  test('setting "cacheClusterSize" implies "cacheClusterEnabled"', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
@@ -176,15 +167,13 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::Stage', {
+    expect(stack).toHaveResource('AWS::ApiGateway::Stage', {
       CacheClusterEnabled: true,
       CacheClusterSize: '0.5',
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'fails when "cacheClusterEnabled" is "false" and "cacheClusterSize" is set'(test: Test) {
+  test('fails when "cacheClusterEnabled" is "false" and "cacheClusterSize" is set', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
@@ -192,16 +181,14 @@ export = {
     api.root.addMethod('GET');
 
     // THEN
-    test.throws(() => new apigateway.Stage(stack, 'my-stage', {
+    expect(() => new apigateway.Stage(stack, 'my-stage', {
       deployment,
       cacheClusterSize: '0.5',
       cacheClusterEnabled: false,
-    }), /Cannot set "cacheClusterSize" to 0.5 and "cacheClusterEnabled" to "false"/);
+    })).toThrow(/Cannot set "cacheClusterSize" to 0.5 and "cacheClusterEnabled" to "false"/);
+  });
 
-    test.done();
-  },
-
-  'if "cachingEnabled" in method settings, implicitly enable cache cluster'(test: Test) {
+  test('if "cachingEnabled" in method settings, implicitly enable cache cluster', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
@@ -215,7 +202,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::Stage', {
+    expect(stack).toHaveResource('AWS::ApiGateway::Stage', {
       CacheClusterEnabled: true,
       CacheClusterSize: '0.5',
       MethodSettings: [
@@ -226,12 +213,10 @@ export = {
         },
       ],
       StageName: 'prod',
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'if caching cluster is explicitly disabled, do not auto-enable cache cluster when "cachingEnabled" is set in method options'(test: Test) {
+  test('if caching cluster is explicitly disabled, do not auto-enable cache cluster when "cachingEnabled" is set in method options', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
@@ -239,16 +224,14 @@ export = {
     api.root.addMethod('GET');
 
     // THEN
-    test.throws(() => new apigateway.Stage(stack, 'my-stage', {
+    expect(() => new apigateway.Stage(stack, 'my-stage', {
       cacheClusterEnabled: false,
       deployment,
       cachingEnabled: true,
-    }), /Cannot enable caching for method \/\*\/\* since cache cluster is disabled on stage/);
+    })).toThrow(/Cannot enable caching for method \/\*\/\* since cache cluster is disabled on stage/);
+  });
 
-    test.done();
-  },
-
-  'if only the custom log destination log group is set'(test: Test) {
+  test('if only the custom log destination log group is set', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
@@ -263,7 +246,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::Stage', {
+    expect(stack).toHaveResource('AWS::ApiGateway::Stage', {
       AccessLogSetting: {
         DestinationArn: {
           'Fn::GetAtt': [
@@ -274,12 +257,10 @@ export = {
         Format: '$context.identity.sourceIp $context.identity.caller $context.identity.user [$context.requestTime] "$context.httpMethod $context.resourcePath $context.protocol" $context.status $context.responseLength $context.requestId',
       },
       StageName: 'prod',
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'if the custom log destination log group and format is set'(test: Test) {
+  test('if the custom log destination log group and format is set', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
@@ -296,7 +277,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::Stage', {
+    expect(stack).toHaveResource('AWS::ApiGateway::Stage', {
       AccessLogSetting: {
         DestinationArn: {
           'Fn::GetAtt': [
@@ -307,12 +288,10 @@ export = {
         Format: '{"requestId":"$context.requestId","ip":"$context.identity.sourceIp","user":"$context.identity.user","caller":"$context.identity.caller","requestTime":"$context.requestTime","httpMethod":"$context.httpMethod","resourcePath":"$context.resourcePath","status":"$context.status","protocol":"$context.protocol","responseLength":"$context.responseLength"}',
       },
       StageName: 'prod',
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'fails when access log format does not contain `AccessLogFormat.contextRequestId()`'(test: Test) {
+  test('fails when access log format does not contain `AccessLogFormat.contextRequestId()`', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
@@ -324,16 +303,14 @@ export = {
     const testFormat = apigateway.AccessLogFormat.custom('');
 
     // THEN
-    test.throws(() => new apigateway.Stage(stack, 'my-stage', {
+    expect(() => new apigateway.Stage(stack, 'my-stage', {
       deployment,
       accessLogDestination: new apigateway.LogGroupLogDestination(testLogGroup),
       accessLogFormat: testFormat,
-    }), /Access log must include at least `AccessLogFormat.contextRequestId\(\)`/);
+    })).toThrow(/Access log must include at least `AccessLogFormat.contextRequestId\(\)`/);
+  });
 
-    test.done();
-  },
-
-  'does not fail when access log format is a token'(test: Test) {
+  test('does not fail when access log format is a token', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
@@ -345,16 +322,14 @@ export = {
     const testFormat = apigateway.AccessLogFormat.custom(cdk.Lazy.stringValue({ produce: () => 'test' }));
 
     // THEN
-    test.doesNotThrow(() => new apigateway.Stage(stack, 'my-stage', {
+    expect(() => new apigateway.Stage(stack, 'my-stage', {
       deployment,
       accessLogDestination: new apigateway.LogGroupLogDestination(testLogGroup),
       accessLogFormat: testFormat,
-    }));
+    })).not.toThrow();
+  });
 
-    test.done();
-  },
-
-  'fails when access log destination is empty'(test: Test) {
+  test('fails when access log destination is empty', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
@@ -365,11 +340,9 @@ export = {
     const testFormat = apigateway.AccessLogFormat.jsonWithStandardFields();
 
     // THEN
-    test.throws(() => new apigateway.Stage(stack, 'my-stage', {
+    expect(() => new apigateway.Stage(stack, 'my-stage', {
       deployment,
       accessLogFormat: testFormat,
-    }), /Access log format is specified without a destination/);
-
-    test.done();
-  },
-};
+    })).toThrow(/Access log format is specified without a destination/);
+  });
+});
