@@ -1,6 +1,15 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { anything, arrayWith, Capture, deepObjectLike, encodedJson, objectLike, stringLike } from '@aws-cdk/assert';
+import {
+  anything,
+  arrayWith,
+  Capture,
+  deepObjectLike,
+  encodedJson,
+  notMatching,
+  objectLike,
+  stringLike,
+} from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as cp from '@aws-cdk/aws-codepipeline';
 import * as cpa from '@aws-cdk/aws-codepipeline-actions';
@@ -329,6 +338,23 @@ test('selfmutation stage correctly identifies nested assembly of pipeline stack'
         },
       })),
     },
+  });
+});
+
+test('selfmutation feature can be turned off', () => {
+  const stack = new Stack();
+  const cloudAssemblyArtifact = new cp.Artifact();
+  // WHEN
+  new TestGitHubNpmPipeline(stack, 'Cdk', {
+    cloudAssemblyArtifact,
+    selfMutating: false,
+  });
+  // THEN
+  expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+    Stages: notMatching(arrayWith({
+      Name: 'UpdatePipeline',
+      Actions: anything(),
+    })),
   });
 });
 

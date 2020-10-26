@@ -67,7 +67,7 @@
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "delay": "4.4.0",
-    "parcel": "2.0.0-beta.1",
+    "parcel": "2.0.0-nightly.432",
     "pkglint": "0.0.0"
   },
   "dependencies": {
