@@ -546,6 +546,48 @@ pool.addClient('app-client', {
 });
 ```
 
+### Resource Servers
+
+In your application you may need to attach custom permissions when using oAuth. Resource Servers allow us to provide custom scopes that we can attach to an app client. For example, you might be dealing with user data, and want to give different permissions to different clients.
+
+```ts
+const pool = new cognito.UserPool(this, 'Pool');
+
+pool.addResourceServer('ResourceServer', {
+  identifier: 'users',
+  scopes: [
+    {
+      scopeName: 'read',
+      scopeDescription: 'Read-only access',
+    },
+    {
+      scopeName: '*',
+      scopeDescription: 'Full access',
+    },
+  ]
+});
+
+pool.addClient('read-only-client', {
+  // ...
+  oAuth: {
+    flows: {
+      clientCredentials: true,
+    },
+    scopes: [OAuthScope.custom('users/read')],
+  },
+});
+
+pool.addClient('full-access-client', {
+  // ...
+  oAuth: {
+    flows: {
+      clientCredentials: true,
+    },
+    scopes: [OAuthScope.custom('users/*')],
+  },
+});
+```
+
 ### Domains
 
 After setting up an [app client](#app-clients), the address for the user pool's sign-up and sign-in webpages can be
