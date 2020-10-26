@@ -489,7 +489,7 @@ describe('assets n buckets', () => {
       const init = ec2.CloudFormationInit.fromElements(
         ec2.InitFile.fromAsset('/etc/myFile', assetFilePath),
       );
-      init._attach(resource, linuxOptions());
+      init.attach(resource, linuxOptions());
 
       return linuxUserData.render().split('\n').find(line => line.match(/# fingerprint:/));
     }
@@ -519,7 +519,7 @@ describe('assets n buckets', () => {
       const init = ec2.CloudFormationInit.fromElements(
         ec2.InitFile.fromExistingAsset('/etc/myFile', new Asset(stack, 'FileAsset', { path: assetFilePath })),
       );
-      init._attach(resource, linuxOptions());
+      init.attach(resource, linuxOptions());
 
       return linuxUserData.render().split('\n').find(line => line.match(/# fingerprint:/));
     }

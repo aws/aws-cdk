@@ -237,7 +237,8 @@ When you specify a CloudFormation Init configuration for an AutoScalingGroup:
   should wait for the instances to successfully configure themselves.
 * you *should* also specify an `updatePolicy` to configure how instances
   should be updated when the AutoScalingGroup is updated (for example,
-  when the AMI is updated).
+  when the AMI is updated). If you don't specify an update policy, a *rolling
+  update* is chosen by default.
 
 Here's an example of using CloudFormation Init to write a file to the
 instance hosts on startup:
@@ -252,9 +253,70 @@ new autoscaling.AutoScalingGroup(this, 'ASG', {
   signals: autoscaling.Signals.waitForAll({
     timeout: Duration.minutes(10),
   }),
-  updatePolicy: autoscaling.UpdatePolicy.rollingUpdate(),
 });
 ```
+
+### Signals
+
+In normal operation, CloudFormation will send a Create or Update command to
+an AutoScalingGroup and proceed with the rest of the deployment without waiting
+for the *instances in the AutoScalingGroup*.
+
+Configure `signals` to tell CloudFormation to wait for a specific number of
+instances in the AutoScalingGroup to have been started (or failed to start)
+before moving on. An instance is supposed to execute the
+[`cfn-signal`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-signal.html)
+program as part of its startup to indicate whether it was started
+successfully or not.
+
+If you use CloudFormation Init support (described in the previous section),
+the appropriate call to `cfn-signal` is automatically added to the
+AutoScalingGroup's UserData. If you don't use the `signals` directly, you are
+responsible for adding such a call yourself.
+
+The following type of `Signals` are available:
+
+* `Signals.waitForAll([options])`: wait for all of `desiredCapacity` amount of instances
+  to have started (recommended).
+* `Signals.waitForMinCapacity([options])`: wait for a `minCapacity` amount of instances
+  to have started (use this if waiting for all instances takes too long and you are happy
+  with a minimum count of healthy hosts).
+* `Signals.waitForCount(count, [options])`: wait for a specific amount of instances to have
+  started.
+
+There are two `options` you can configure:
+
+* `timeout`: maximum time a host startup is allowed to take. If a host does not report
+  success within this time, it is considered a failure. Default is 5 minutes.
+* `minSuccessPercentage`: percentage of hosts that needs to be healthy in order for the
+  update to succeed. If you set this value lower than 100, some percentage of hosts may
+  report failure, while still considering the deployment a success. Default is 100%.
+
+### Update Policy
+
+The *update policy* describes what should happen to running instances when the definition
+of the AutoScalingGroup is changed. For example, if you add a command to the UserData
+of an AutoScalingGroup, do the existing instances get replaced with new instances that
+have executed the new UserData? Or do the "old" instances just keep on running?
+
+It is recommended to always us an update policy, otherwise the current state of your
+instances also depends the previous state of your instances, rather than just on your
+source code. This degrades the reproducibility of your deployments.
+
+The following update policies are available:
+
+* `UpdatePolicy.none()`: leave existing instances alone (not recommended).
+* `UpdatePolicy.rollingUpdate([options])`: progressively replace the existing
+  instances with new instances, in small batches. At any point in time,
+  roughly the same amount of total instances will be running. If the deployment
+  needs to be rolled back, the fresh instances will be replaced with the "old"
+  configuration again.
+* `UpdatePolicy.replacingUpdate([options])`: build a completely fresh copy
+  of the new AutoScalingGroup next to the old one. Once the AutoScalingGroup
+  has been successfully created (and the instances started, if `signals` is
+  configured on the AutoScalingGroup), the old AutoScalingGroup is deleted.
+  If the deployment needs to be rolled back, the new AutoScalingGroup is
+  deleted and the old one is left unchanged.
 
 ### Allowing Connections
 

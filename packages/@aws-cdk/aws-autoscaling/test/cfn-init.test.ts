@@ -1,4 +1,4 @@
-import { arrayWith, expect, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
+import { anything, arrayWith, expect, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { Duration, Stack } from '@aws-cdk/core';
 import * as autoscaling from '../lib';
@@ -97,6 +97,25 @@ test('Signals.waitForCount uses given number', () => {
   }, ResourcePart.CompleteDefinition));
 });
 
+test('When signals are given appropriate IAM policy is added', () => {
+  // WHEN
+  new autoscaling.AutoScalingGroup(stack, 'Asg', {
+    ...baseProps,
+    signals: autoscaling.Signals.waitForAll(),
+  });
+
+  // THEN
+  expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: arrayWith({
+        Action: 'cloudformation:SignalResource',
+        Effect: 'Allow',
+        Resource: { Ref: 'AWS::StackId' },
+      }),
+    },
+  }));
+});
+
 test('UpdatePolicy.rollingUpdate() still correctly inserts IgnoreUnmodifiedGroupSizeProperties', () => {
   // WHEN
   new autoscaling.AutoScalingGroup(stack, 'Asg', {
@@ -179,6 +198,24 @@ test('UpdatePolicy.replacingUpdate() renders correct UpdatePolicy', () => {
   }, ResourcePart.CompleteDefinition));
 });
 
+test('Using init config in ASG leads to default updatepolicy', () => {
+  // WHEN
+  new autoscaling.AutoScalingGroup(stack, 'Asg', {
+    ...baseProps,
+    init: ec2.CloudFormationInit.fromElements(
+      ec2.InitCommand.shellCommand('echo hihi'),
+    ),
+    signals: autoscaling.Signals.waitForAll(),
+  });
+
+  // THEN
+  expect(stack).to(haveResourceLike('AWS::AutoScaling::AutoScalingGroup', {
+    UpdatePolicy: {
+      AutoScalingRollingUpdate: anything(),
+    },
+  }, ResourcePart.CompleteDefinition));
+});
+
 test('Using init config in ASG leads to correct UserData and permissions', () => {
   // WHEN
   new autoscaling.AutoScalingGroup(stack, 'Asg', {
@@ -194,7 +231,7 @@ test('Using init config in ASG leads to correct UserData and permissions', () =>
     UserData: {
       'Fn::Base64': {
         'Fn::Join': ['', [
-          '#!/bin/bash\n# fingerprint: f8292e775c37d567\n(\n  set +e\n  /opt/aws/bin/cfn-init -v --region ',
+          '#!/bin/bash\n# fingerprint: 593c357d7f305b75\n(\n  set +e\n  /opt/aws/bin/cfn-init -v --region ',
           { Ref: 'AWS::Region' },
           ' --stack ',
           { Ref: 'AWS::StackName' },

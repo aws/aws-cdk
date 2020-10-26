@@ -7,6 +7,7 @@ import * as sns from '@aws-cdk/aws-sns';
 
 import {
   Annotations,
+  Aws,
   CfnAutoScalingRollingUpdate, CfnCreationPolicy, CfnUpdatePolicy,
   Duration, Fn, IResource, Lazy, PhysicalName, Resource, Stack, Tags,
   Tokenization, withResolved,
@@ -510,7 +511,7 @@ export abstract class UpdatePolicy {
   }
 
   /**
-   * Replace the instances in the AutoScalingGroup in batches
+   * Replace the instances in the AutoScalingGroup one by one, or in batches
    */
   public static rollingUpdate(options: RollingUpdateOptions = {}): UpdatePolicy {
     const minSuccessPercentage = validatePercentage(options.minSuccessPercentage);
@@ -1095,7 +1096,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
    * - Update the instance's CreationPolicy to wait for `cfn-init` to finish
    *   before reporting success.
    */
-  private applyCloudFormationInit(init: ec2.CloudFormationInit, options: ApplyCloudFormationInitOptions = {}) {
+  public applyCloudFormationInit(init: ec2.CloudFormationInit, options: ApplyCloudFormationInitOptions = {}) {
     if (!this.autoScalingGroup.cfnOptions.creationPolicy?.resourceSignal) {
       throw new Error('When applying CloudFormationInit, you must also configure signals by supplying \'signals\' at instantiation time.');
     }
@@ -1149,6 +1150,20 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
         ...this.autoScalingGroup.cfnOptions.updatePolicy,
         autoScalingScheduledAction: { ignoreUnmodifiedGroupSizeProperties: true },
       };
+    }
+
+    if (props.signals && !props.init) {
+      // To be able to send a signal using `cfn-init`, the execution role needs
+      // `cloudformation:SignalResource`. Normally the binding of CfnInit would
+      // grant that permissions and another one, but if the user wants to use
+      // `signals` without `init`, add the permissions here.
+      //
+      // If they call `applyCloudFormationInit()` after construction, nothing bad
+      // happens either, we'll just have a duplicate statement which doesn't hurt.
+      this.addToRolePolicy(new iam.PolicyStatement({
+        actions: ['cloudformation:SignalResource'],
+        resources: [Aws.STACK_ID],
+      }));
     }
   }
 
