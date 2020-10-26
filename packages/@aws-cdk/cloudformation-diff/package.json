@@ -33,10 +33,10 @@
     "@types/string-width": "^4.0.1",
     "@types/table": "^5.0.0",
     "cdk-build-tools": "0.0.0",
-    "fast-check": "^2.4.0",
-    "jest": "^26.6.0",
+    "fast-check": "^2.6.0",
+    "jest": "^26.6.1",
     "pkglint": "0.0.0",
-    "ts-jest": "^26.4.1"
+    "ts-jest": "^26.4.2"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",
