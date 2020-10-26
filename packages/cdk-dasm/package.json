@@ -32,7 +32,7 @@
   "devDependencies": {
     "@types/jest": "^26.0.15",
     "@types/yaml": "1.9.7",
-    "jest": "^26.6.0"
+    "jest": "^26.6.1"
   },
   "keywords": [
     "aws",
