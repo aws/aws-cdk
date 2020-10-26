@@ -282,7 +282,7 @@ export interface CommonAutoScalingGroupProps {
    * replaced with new instances matching the new config. By default, nothing
    * is done and only new instances are launched with the new config.
    *
-   * @default - Do not restart existing instances
+   * @default - `UpdatePolicy.rollingUpdate()` if using `init`, `UpdatePolicy.none()` otherwise
    */
   readonly updatePolicy?: UpdatePolicy;
 
@@ -508,7 +508,7 @@ export abstract class UpdatePolicy {
   }
 
   /**
-   * Replace the instances in the AutoScalingGroup one by one
+   * Replace the instances in the AutoScalingGroup in batches
    */
   public static rollingUpdate(options: RollingUpdateOptions = {}): UpdatePolicy {
     const minSuccessPercentage = validatePercentage(options.minSuccessPercentage);
@@ -1127,13 +1127,19 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       }
     }
 
+    // Reify updatePolicy to `rollingUpdate` default in case it is combined with `init`
+    props = {
+      ...props,
+      updatePolicy: props.updatePolicy ?? (props.init ? UpdatePolicy.rollingUpdate() : undefined),
+    };
+
     if (props.signals || props.updatePolicy) {
       this.applyNewSignalUpdatePolicies(props, signalOptions);
     } else {
       this.applyLegacySignalUpdatePolicies(props);
     }
 
-    // This the following is technically part of the "update policy" but it's also a completely
+    // The following is technically part of the "update policy" but it's also a completely
     // separate aspect of rolling/replacing update, so it's just its own top-level property.
     // Default is 'true' because that's what you're most likely to want
     if (props.ignoreUnmodifiedSizeProperties !== false) {
