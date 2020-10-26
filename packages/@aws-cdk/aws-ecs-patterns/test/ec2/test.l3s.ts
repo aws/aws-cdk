@@ -1136,6 +1136,7 @@ export = {
         image: ecs.ContainerImage.fromRegistry('test'),
       },
       openListener: false,
+      redirectHTTP: true,
     });
 
     // THEN - Stack contains no ingress security group rules
