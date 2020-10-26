@@ -1,11 +1,11 @@
-import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
+import '@aws-cdk/assert/jest';
+import { ResourcePart } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import * as apigateway from '../lib';
 
-export = {
-  'default setup'(test: Test) {
+describe('api key', () => {
+  test('default setup', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -13,13 +13,11 @@ export = {
     new apigateway.ApiKey(stack, 'my-api-key');
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::ApiKey', undefined, ResourcePart.CompleteDefinition));
+    expect(stack).toHaveResource('AWS::ApiGateway::ApiKey', undefined, ResourcePart.CompleteDefinition);
     // should have an api key with no props defined.
+  });
 
-    test.done();
-  },
-
-  'specify props for apiKey'(test: Test) {
+  test('specify props for apiKey', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: true, deployOptions: { stageName: 'test' } });
@@ -32,7 +30,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::ApiKey', {
+    expect(stack).toHaveResource('AWS::ApiGateway::ApiKey', {
       CustomerId: 'test-customer',
       StageKeys: [
         {
@@ -40,12 +38,10 @@ export = {
           StageName: { Ref: 'testapiDeploymentStagetest5869DF71' },
         },
       ],
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'use an imported api key'(test: Test) {
+  test('use an imported api key', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: true, deployOptions: { stageName: 'test' } });
@@ -58,17 +54,16 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::ApiGateway::UsagePlanKey', {
+    expect(stack).toHaveResourceLike('AWS::ApiGateway::UsagePlanKey', {
       KeyId: 'KeyIdabc',
       KeyType: 'API_KEY',
       UsagePlanId: {
         Ref: 'testapiplan1B111AFF',
       },
-    }));
-    test.done();
-  },
+    });
+  });
 
-  'grantRead'(test: Test) {
+  test('grantRead', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const user = new iam.User(stack, 'User');
@@ -83,7 +78,7 @@ export = {
     apiKey.grantRead(user);
 
     // THEN
-    expect(stack).to(haveResource('AWS::IAM::Policy', {
+    expect(stack).toHaveResource('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -112,12 +107,10 @@ export = {
         ],
         Version: '2012-10-17',
       },
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'grantWrite'(test: Test) {
+  test('grantWrite', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const user = new iam.User(stack, 'User');
@@ -132,7 +125,7 @@ export = {
     apiKey.grantWrite(user);
 
     // THEN
-    expect(stack).to(haveResource('AWS::IAM::Policy', {
+    expect(stack).toHaveResource('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -166,12 +159,10 @@ export = {
         ],
         Version: '2012-10-17',
       },
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'grantReadWrite'(test: Test) {
+  test('grantReadWrite', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const user = new iam.User(stack, 'User');
@@ -186,7 +177,7 @@ export = {
     apiKey.grantReadWrite(user);
 
     // THEN
-    expect(stack).to(haveResource('AWS::IAM::Policy', {
+    expect(stack).toHaveResource('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -221,13 +212,11 @@ export = {
         ],
         Version: '2012-10-17',
       },
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'rate limited': {
-    'default setup'(test: Test) {
+  describe('rate limited', () => {
+    test('default setup', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const api = new apigateway.RestApi(stack, 'my-api', { cloudWatchRole: false, deploy: false });
@@ -238,16 +227,14 @@ export = {
 
       // THEN
       // should have an api key with no props defined.
-      expect(stack).to(haveResource('AWS::ApiGateway::ApiKey', undefined, ResourcePart.CompleteDefinition));
+      expect(stack).toHaveResource('AWS::ApiGateway::ApiKey', undefined, ResourcePart.CompleteDefinition);
       // should not have a usage plan.
-      expect(stack).notTo(haveResource('AWS::ApiGateway::UsagePlan'));
+      expect(stack).not.toHaveResource('AWS::ApiGateway::UsagePlan');
       // should not have a usage plan key.
-      expect(stack).notTo(haveResource('AWS::ApiGateway::UsagePlanKey'));
+      expect(stack).not.toHaveResource('AWS::ApiGateway::UsagePlanKey');
+    });
 
-      test.done();
-    },
-
-    'only api key is created when rate limiting properties are not provided'(test: Test) {
+    test('only api key is created when rate limiting properties are not provided', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: true, deployOptions: { stageName: 'test' } });
@@ -260,7 +247,7 @@ export = {
       });
 
       // THEN
-      expect(stack).to(haveResource('AWS::ApiGateway::ApiKey', {
+      expect(stack).toHaveResource('AWS::ApiGateway::ApiKey', {
         CustomerId: 'test-customer',
         StageKeys: [
           {
@@ -268,16 +255,14 @@ export = {
             StageName: { Ref: 'testapiDeploymentStagetest5869DF71' },
           },
         ],
-      }));
+      });
       // should not have a usage plan.
-      expect(stack).notTo(haveResource('AWS::ApiGateway::UsagePlan'));
+      expect(stack).not.toHaveResource('AWS::ApiGateway::UsagePlan');
       // should not have a usage plan key.
-      expect(stack).notTo(haveResource('AWS::ApiGateway::UsagePlanKey'));
+      expect(stack).not.toHaveResource('AWS::ApiGateway::UsagePlanKey');
+    });
 
-      test.done();
-    },
-
-    'api key and usage plan are created and linked when rate limiting properties are provided'(test: Test) {
+    test('api key and usage plan are created and linked when rate limiting properties are provided', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: true, deployOptions: { stageName: 'test' } });
@@ -295,7 +280,7 @@ export = {
 
       // THEN
       // should have an api key
-      expect(stack).to(haveResource('AWS::ApiGateway::ApiKey', {
+      expect(stack).toHaveResource('AWS::ApiGateway::ApiKey', {
         CustomerId: 'test-customer',
         StageKeys: [
           {
@@ -303,16 +288,16 @@ export = {
             StageName: { Ref: 'testapiDeploymentStagetest5869DF71' },
           },
         ],
-      }));
+      });
       // should have a usage plan with specified quota.
-      expect(stack).to(haveResource('AWS::ApiGateway::UsagePlan', {
+      expect(stack).toHaveResource('AWS::ApiGateway::UsagePlan', {
         Quota: {
           Limit: 10000,
           Period: 'MONTH',
         },
-      }, ResourcePart.Properties));
+      }, ResourcePart.Properties);
       // should have a usage plan key linking the api key and usage plan
-      expect(stack).to(haveResource('AWS::ApiGateway::UsagePlanKey', {
+      expect(stack).toHaveResource('AWS::ApiGateway::UsagePlanKey', {
         KeyId: {
           Ref: 'testapikey998028B6',
         },
@@ -320,9 +305,7 @@ export = {
         UsagePlanId: {
           Ref: 'testapikeyUsagePlanResource66DB63D6',
         },
-      }, ResourcePart.Properties));
-
-      test.done();
-    },
-  },
-};
+      }, ResourcePart.Properties);
+    });
+  });
+});

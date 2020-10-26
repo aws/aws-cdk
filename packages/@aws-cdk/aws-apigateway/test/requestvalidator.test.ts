@@ -1,10 +1,9 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import '@aws-cdk/assert/jest';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import * as apigateway from '../lib';
 
-export = {
-  'default setup'(test: Test) {
+describe('request validator', () => {
+  test('default setup', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: true });
@@ -21,16 +20,14 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::RequestValidator', {
+    expect(stack).toHaveResource('AWS::ApiGateway::RequestValidator', {
       RestApiId: { Ref: stack.getLogicalId(api.node.findChild('Resource') as cdk.CfnElement) },
       ValidateRequestBody: true,
       ValidateRequestParameters: false,
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'no deployment'(test: Test) {
+  test('no deployment', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
@@ -48,13 +45,11 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::RequestValidator', {
+    expect(stack).toHaveResource('AWS::ApiGateway::RequestValidator', {
       RestApiId: { Ref: stack.getLogicalId(api.node.findChild('Resource') as cdk.CfnElement) },
       Name: 'my-model',
       ValidateRequestBody: false,
       ValidateRequestParameters: true,
-    }));
-
-    test.done();
-  },
-};
+    });
+  });
+});

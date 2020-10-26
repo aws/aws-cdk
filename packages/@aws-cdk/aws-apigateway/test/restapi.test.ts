@@ -1,13 +1,11 @@
-import { ABSENT, expect, haveResource, haveResourceLike, ResourcePart, SynthUtils } from '@aws-cdk/assert';
+import '@aws-cdk/assert/jest';
+import { ABSENT, ResourcePart, SynthUtils } from '@aws-cdk/assert';
 import { GatewayVpcEndpoint } from '@aws-cdk/aws-ec2';
 import { App, CfnElement, CfnResource, Stack } from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import * as apigw from '../lib';
 
-/* eslint-disable max-len */
-
-export = {
-  'minimal setup'(test: Test) {
+describe('restapi', () => {
+  test('minimal setup', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -16,7 +14,7 @@ export = {
     api.root.addMethod('GET'); // must have at least one method or an API definition
 
     // THEN
-    expect(stack).toMatch({
+    expect(stack).toMatchTemplate({
       Resources: {
         myapi4C7BF186: {
           Type: 'AWS::ApiGateway::RestApi',
@@ -96,11 +94,9 @@ export = {
         },
       },
     });
+  });
 
-    test.done();
-  },
-
-  'restApiName is set correctly'(test: Test) {
+  test('restApiName is set correctly', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -111,19 +107,17 @@ export = {
     });
 
     // THEN
-    test.deepEqual(myapi.restApiName, 'myapi');
-    test.deepEqual(yourapi.restApiName, 'namedapi');
-    test.done();
-  },
+    expect(myapi.restApiName).toEqual('myapi');
+    expect(yourapi.restApiName).toEqual('namedapi');
+  });
 
-  'defaultChild is set correctly'(test: Test) {
+  test('defaultChild is set correctly', () => {
     const stack = new Stack();
     const api = new apigw.RestApi(stack, 'my-api');
-    test.ok(api.node.defaultChild instanceof apigw.CfnRestApi);
-    test.done();
-  },
+    expect(api.node.defaultChild instanceof apigw.CfnRestApi).toBeDefined();
+  });
 
-  '"name" is defaulted to resource physical name'(test: Test) {
+  test('"name" is defaulted to resource physical name', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -136,14 +130,12 @@ export = {
     api.root.addMethod('GET');
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::RestApi', {
+    expect(stack).toHaveResource('AWS::ApiGateway::RestApi', {
       Name: 'restapi',
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'fails in synthesis if there are no methods or definition'(test: Test) {
+  test('fails in synthesis if there are no methods or definition', () => {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'my-stack');
@@ -154,11 +146,10 @@ export = {
     api.root.addResource('bar').addResource('goo');
 
     // THEN
-    test.throws(() => app.synth(), /The REST API doesn't contain any methods/);
-    test.done();
-  },
+    expect(() => app.synth()).toThrow(/The REST API doesn't contain any methods/);
+  });
 
-  '"addResource" can be used on "IRestApiResource" to form a tree'(test: Test) {
+  test('"addResource" can be used on "IRestApiResource" to form a tree', () => {
     // GIVEN
     const stack = new Stack();
     const api = new apigw.RestApi(stack, 'restapi', {
@@ -175,25 +166,23 @@ export = {
     foo.addResource('{hello}');
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::Resource', {
+    expect(stack).toHaveResource('AWS::ApiGateway::Resource', {
       PathPart: 'foo',
       ParentId: { 'Fn::GetAtt': ['restapiC5611D27', 'RootResourceId'] },
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::ApiGateway::Resource', {
+    expect(stack).toHaveResource('AWS::ApiGateway::Resource', {
       PathPart: 'bar',
       ParentId: { 'Fn::GetAtt': ['restapiC5611D27', 'RootResourceId'] },
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::ApiGateway::Resource', {
+    expect(stack).toHaveResource('AWS::ApiGateway::Resource', {
       PathPart: '{hello}',
       ParentId: { Ref: 'restapifooF697E056' },
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  '"addResource" allows configuration of proxy paths'(test: Test) {
+  test('"addResource" allows configuration of proxy paths', () => {
     // GIVEN
     const stack = new Stack();
     const api = new apigw.RestApi(stack, 'restapi', {
@@ -207,14 +196,13 @@ export = {
     proxy.addMethod('ANY');
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::Resource', {
+    expect(stack).toHaveResource('AWS::ApiGateway::Resource', {
       PathPart: '{proxy+}',
       ParentId: { 'Fn::GetAtt': ['restapiC5611D27', 'RootResourceId'] },
-    }));
-    test.done();
-  },
+    });
+  });
 
-  '"addMethod" can be used to add methods to resources'(test: Test) {
+  test('"addMethod" can be used to add methods to resources', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -226,7 +214,7 @@ export = {
     r1.addMethod('POST');
 
     // THEN
-    expect(stack).toMatch({
+    expect(stack).toMatchTemplate({
       Resources: {
         restapiC5611D27: {
           Type: 'AWS::ApiGateway::RestApi',
@@ -286,11 +274,9 @@ export = {
         },
       },
     });
+  });
 
-    test.done();
-  },
-
-  'resourcePath returns the full path of the resource within the API'(test: Test) {
+  test('resourcePath returns the full path of the resource within the API', () => {
     // GIVEN
     const stack = new Stack();
     const api = new apigw.RestApi(stack, 'restapi');
@@ -303,62 +289,57 @@ export = {
     const r2 = api.root.addResource('r2');
 
     // THEN
-    test.deepEqual(api.root.path, '/');
-    test.deepEqual(r1.path, '/r1');
-    test.deepEqual(r11.path, '/r1/r1_1');
-    test.deepEqual(r12.path, '/r1/r1_2');
-    test.deepEqual(r121.path, '/r1/r1_2/r1_2_1');
-    test.deepEqual(r2.path, '/r2');
-    test.done();
-  },
+    expect(api.root.path).toEqual('/');
+    expect(r1.path).toEqual('/r1');
+    expect(r11.path).toEqual('/r1/r1_1');
+    expect(r12.path).toEqual('/r1/r1_2');
+    expect(r121.path).toEqual('/r1/r1_2/r1_2_1');
+    expect(r2.path).toEqual('/r2');
+  });
 
-  'resource path part validation'(test: Test) {
+  test('resource path part validation', () => {
     // GIVEN
     const stack = new Stack();
     const api = new apigw.RestApi(stack, 'restapi');
 
     // THEN
-    test.throws(() => api.root.addResource('foo/'));
+    expect(() => api.root.addResource('foo/')).toThrow();
     api.root.addResource('boom-bam');
-    test.throws(() => api.root.addResource('illegal()'));
+    expect(() => api.root.addResource('illegal()')).toThrow();
     api.root.addResource('{foo}');
-    test.throws(() => api.root.addResource('foo{bar}'));
-    test.done();
-  },
+    expect(() => api.root.addResource('foo{bar}')).toThrow();
+  });
 
-  'fails if "deployOptions" is set with "deploy" disabled'(test: Test) {
+  test('fails if "deployOptions" is set with "deploy" disabled', () => {
     // GIVEN
     const stack = new Stack();
 
     // THEN
-    test.throws(() => new apigw.RestApi(stack, 'myapi', {
+    expect(() => new apigw.RestApi(stack, 'myapi', {
       deploy: false,
       deployOptions: { cachingEnabled: true },
-    }), /Cannot set 'deployOptions' if 'deploy' is disabled/);
+    })).toThrow(/Cannot set 'deployOptions' if 'deploy' is disabled/);
+  });
 
-    test.done();
-  },
-
-  'CloudWatch role is created for API Gateway'(test: Test) {
+  test('CloudWatch role is created for API Gateway', () => {
     // GIVEN
     const stack = new Stack();
     const api = new apigw.RestApi(stack, 'myapi');
     api.root.addMethod('GET');
 
     // THEN
-    expect(stack).to(haveResource('AWS::IAM::Role'));
-    expect(stack).to(haveResource('AWS::ApiGateway::Account'));
-    test.done();
-  },
+    expect(stack).toHaveResource('AWS::IAM::Role');
+    expect(stack).toHaveResource('AWS::ApiGateway::Account');
+  });
 
-  '"url" and "urlForPath" return the URL endpoints of the deployed API'(test: Test) {
+  test('"url" and "urlForPath" return the URL endpoints of the deployed API', () => {
     // GIVEN
     const stack = new Stack();
     const api = new apigw.RestApi(stack, 'api');
     api.root.addMethod('GET');
 
     // THEN
-    test.deepEqual(stack.resolve(api.url), {
+    expect(stack.resolve(api.url)).toEqual({
       'Fn::Join':
     ['',
       ['https://',
@@ -371,7 +352,7 @@ export = {
         { Ref: 'apiDeploymentStageprod896C8101' },
         '/']],
     });
-    test.deepEqual(stack.resolve(api.urlForPath('/foo/bar')), {
+    expect(stack.resolve(api.urlForPath('/foo/bar'))).toEqual({
       'Fn::Join':
     ['',
       ['https://',
@@ -384,33 +365,30 @@ export = {
         { Ref: 'apiDeploymentStageprod896C8101' },
         '/foo/bar']],
     });
-    test.done();
-  },
+  });
 
-  '"urlForPath" would not work if there is no deployment'(test: Test) {
+  test('"urlForPath" would not work if there is no deployment', () => {
     // GIVEN
     const stack = new Stack();
     const api = new apigw.RestApi(stack, 'api', { deploy: false });
     api.root.addMethod('GET');
 
     // THEN
-    test.throws(() => api.url, /Cannot determine deployment stage for API from "deploymentStage". Use "deploy" or explicitly set "deploymentStage"/);
-    test.throws(() => api.urlForPath('/foo'), /Cannot determine deployment stage for API from "deploymentStage". Use "deploy" or explicitly set "deploymentStage"/);
-    test.done();
-  },
+    expect(() => api.url).toThrow(/Cannot determine deployment stage for API from "deploymentStage". Use "deploy" or explicitly set "deploymentStage"/);
+    expect(() => api.urlForPath('/foo')).toThrow(/Cannot determine deployment stage for API from "deploymentStage". Use "deploy" or explicitly set "deploymentStage"/);
+  });
 
-  '"urlForPath" requires that path will begin with "/"'(test: Test) {
+  test('"urlForPath" requires that path will begin with "/"', () => {
     // GIVEN
     const stack = new Stack();
     const api = new apigw.RestApi(stack, 'api');
     api.root.addMethod('GET');
 
     // THEN
-    test.throws(() => api.urlForPath('foo'), /Path must begin with \"\/\": foo/);
-    test.done();
-  },
+    expect(() => api.urlForPath('foo')).toThrow(/Path must begin with \"\/\": foo/);
+  });
 
-  '"executeApiArn" returns the execute-api ARN for a resource/method'(test: Test) {
+  test('"executeApiArn" returns the execute-api ARN for a resource/method', () => {
     // GIVEN
     const stack = new Stack();
     const api = new apigw.RestApi(stack, 'api');
@@ -420,7 +398,7 @@ export = {
     const arn = api.arnForExecuteApi('method', '/path', 'stage');
 
     // THEN
-    test.deepEqual(stack.resolve(arn), {
+    expect(stack.resolve(arn)).toEqual({
       'Fn::Join':
     ['',
       ['arn:',
@@ -433,21 +411,19 @@ export = {
         { Ref: 'apiC8550315' },
         '/stage/method/path']],
     });
-    test.done();
-  },
+  });
 
-  '"executeApiArn" path must begin with "/"'(test: Test) {
+  test('"executeApiArn" path must begin with "/"', () => {
     // GIVEN
     const stack = new Stack();
     const api = new apigw.RestApi(stack, 'api');
     api.root.addMethod('GET');
 
     // THEN
-    test.throws(() => api.arnForExecuteApi('method', 'hey-path', 'stage'), /"path" must begin with a "\/": 'hey-path'/);
-    test.done();
-  },
+    expect(() => api.arnForExecuteApi('method', 'hey-path', 'stage')).toThrow(/"path" must begin with a "\/": 'hey-path'/);
+  });
 
-  '"executeApiArn" will convert ANY to "*"'(test: Test) {
+  test('"executeApiArn" will convert ANY to "*"', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -455,7 +431,7 @@ export = {
     const method = api.root.addMethod('ANY');
 
     // THEN
-    test.deepEqual(stack.resolve(method.methodArn), {
+    expect(stack.resolve(method.methodArn)).toEqual({
       'Fn::Join':
     ['',
       ['arn:',
@@ -470,10 +446,9 @@ export = {
         { Ref: 'apiDeploymentStageprod896C8101' },
         '/*/']],
     });
-    test.done();
-  },
+  });
 
-  '"endpointTypes" can be used to specify endpoint configuration for the api'(test: Test) {
+  test('"endpointTypes" can be used to specify endpoint configuration for the api', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -485,18 +460,17 @@ export = {
     api.root.addMethod('GET');
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::RestApi', {
+    expect(stack).toHaveResource('AWS::ApiGateway::RestApi', {
       EndpointConfiguration: {
         Types: [
           'EDGE',
           'PRIVATE',
         ],
       },
-    }));
-    test.done();
-  },
+    });
+  });
 
-  '"endpointConfiguration" can be used to specify endpoint types for the api'(test: Test) {
+  test('"endpointConfiguration" can be used to specify endpoint types for the api', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -510,15 +484,14 @@ export = {
     api.root.addMethod('GET');
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::RestApi', {
+    expect(stack).toHaveResource('AWS::ApiGateway::RestApi', {
       EndpointConfiguration: {
         Types: ['EDGE', 'PRIVATE'],
       },
-    }));
-    test.done();
-  },
+    });
+  });
 
-  '"endpointConfiguration" can be used to specify vpc endpoints on the API'(test: Test) {
+  test('"endpointConfiguration" can be used to specify vpc endpoints on the API', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -536,7 +509,7 @@ export = {
     api.root.addMethod('GET');
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::RestApi', {
+    expect(stack).toHaveResource('AWS::ApiGateway::RestApi', {
       EndpointConfiguration: {
         Types: [
           'EDGE',
@@ -547,26 +520,24 @@ export = {
           'vpcEndpoint2',
         ],
       },
-    }));
-    test.done();
-  },
+    });
+  });
 
-  '"endpointTypes" and "endpointConfiguration" can NOT both be used to specify endpoint configuration for the api'(test: Test) {
+  test('"endpointTypes" and "endpointConfiguration" can NOT both be used to specify endpoint configuration for the api', () => {
     // GIVEN
     const stack = new Stack();
 
     // THEN
-    test.throws(() => new apigw.RestApi(stack, 'api', {
+    expect(() => new apigw.RestApi(stack, 'api', {
       endpointConfiguration: {
         types: [apigw.EndpointType.PRIVATE],
         vpcEndpoints: [GatewayVpcEndpoint.fromGatewayVpcEndpointId(stack, 'ImportedEndpoint', 'vpcEndpoint')],
       },
       endpointTypes: [apigw.EndpointType.PRIVATE],
-    }), /Only one of the RestApi props, endpointTypes or endpointConfiguration, is allowed/);
-    test.done();
-  },
+    })).toThrow(/Only one of the RestApi props, endpointTypes or endpointConfiguration, is allowed/);
+  });
 
-  '"cloneFrom" can be used to clone an existing API'(test: Test) {
+  test('"cloneFrom" can be used to clone an existing API', () => {
     // GIVEN
     const stack = new Stack();
     const cloneFrom = apigw.RestApi.fromRestApiId(stack, 'RestApi', 'foobar');
@@ -578,15 +549,13 @@ export = {
 
     api.root.addMethod('GET');
 
-    expect(stack).to(haveResource('AWS::ApiGateway::RestApi', {
+    expect(stack).toHaveResource('AWS::ApiGateway::RestApi', {
       CloneFrom: 'foobar',
       Name: 'api',
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'allow taking a dependency on the rest api (includes deployment and stage)'(test: Test) {
+  test('allow taking a dependency on the rest api (includes deployment and stage)', () => {
     // GIVEN
     const stack = new Stack();
     const api = new apigw.RestApi(stack, 'myapi');
@@ -597,7 +566,7 @@ export = {
     resource.node.addDependency(api);
 
     // THEN
-    expect(stack).to(haveResource('My::Resource', {
+    expect(stack).toHaveResource('My::Resource', {
       DependsOn: [
         'myapiAccountC3A4750C',
         'myapiCloudWatchRoleEB425128',
@@ -606,12 +575,10 @@ export = {
         'myapiDeploymentStageprod329F21FF',
         'myapi162F20B8',
       ],
-    }, ResourcePart.CompleteDefinition));
+    }, ResourcePart.CompleteDefinition);
+  });
 
-    test.done();
-  },
-
-  'defaultIntegration and defaultMethodOptions can be used at any level'(test: Test) {
+  test('defaultIntegration and defaultMethodOptions can be used at any level', () => {
     // GIVEN
     const stack = new Stack();
     const rootInteg = new apigw.AwsIntegration({
@@ -655,43 +622,41 @@ export = {
     // THEN
 
     // CASE #1
-    expect(stack).to(haveResourceLike('AWS::ApiGateway::Method', {
+    expect(stack).toHaveResourceLike('AWS::ApiGateway::Method', {
       HttpMethod: 'GET',
       ResourceId: { 'Fn::GetAtt': ['myapi162F20B8', 'RootResourceId'] },
       Integration: { Type: 'AWS' },
       AuthorizerId: 'AUTHID',
       AuthorizationType: 'AWS_IAM',
-    }));
+    });
 
     // CASE #2
-    expect(stack).to(haveResourceLike('AWS::ApiGateway::Method', {
+    expect(stack).toHaveResourceLike('AWS::ApiGateway::Method', {
       HttpMethod: 'POST',
       ResourceId: { Ref: 'myapichildA0A65412' },
       Integration: { Type: 'AWS' },
       AuthorizerId: 'AUTHID',
       AuthorizationType: 'COGNITO_USER_POOLS',
-    }));
+    });
 
     // CASE #3
-    expect(stack).to(haveResourceLike('AWS::ApiGateway::Method', {
+    expect(stack).toHaveResourceLike('AWS::ApiGateway::Method', {
       HttpMethod: 'DELETE',
       Integration: { Type: 'MOCK' },
       AuthorizerId: 'AUTHID2',
       AuthorizationType: 'AWS_IAM',
-    }));
+    });
 
     // CASE #4
-    expect(stack).to(haveResourceLike('AWS::ApiGateway::Method', {
+    expect(stack).toHaveResourceLike('AWS::ApiGateway::Method', {
       HttpMethod: 'PUT',
       Integration: { Type: 'AWS' },
       AuthorizerId: 'AUTHID2',
       AuthorizationType: 'AWS_IAM',
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'addApiKey is supported'(test: Test) {
+  test('addApiKey is supported', () => {
     // GIVEN
     const stack = new Stack();
     const api = new apigw.RestApi(stack, 'myapi');
@@ -704,7 +669,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::ApiKey', {
+    expect(stack).toHaveResource('AWS::ApiGateway::ApiKey', {
       Enabled: true,
       Name: 'myApiKey1',
       StageKeys: [
@@ -714,12 +679,10 @@ export = {
         },
       ],
       Value: '01234567890ABCDEFabcdef',
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'addModel is supported'(test: Test) {
+  test('addModel is supported', () => {
     // GIVEN
     const stack = new Stack();
     const api = new apigw.RestApi(stack, 'myapi');
@@ -736,7 +699,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::Model', {
+    expect(stack).toHaveResource('AWS::ApiGateway::Model', {
       RestApiId: { Ref: stack.getLogicalId(api.node.findChild('Resource') as CfnElement) },
       Schema: {
         $schema: 'http://json-schema.org/draft-04/schema#',
@@ -744,12 +707,10 @@ export = {
         type: 'object',
         properties: { message: { type: 'string' } },
       },
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'addRequestValidator is supported'(test: Test) {
+  test('addRequestValidator is supported', () => {
     // GIVEN
     const stack = new Stack();
     const api = new apigw.RestApi(stack, 'myapi');
@@ -768,23 +729,22 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::RequestValidator', {
+    expect(stack).toHaveResource('AWS::ApiGateway::RequestValidator', {
       RestApiId: { Ref: stack.getLogicalId(api.node.findChild('Resource') as CfnElement) },
       Name: 'Parameters',
       ValidateRequestBody: false,
       ValidateRequestParameters: true,
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::ApiGateway::RequestValidator', {
+    expect(stack).toHaveResource('AWS::ApiGateway::RequestValidator', {
       RestApiId: { Ref: stack.getLogicalId(api.node.findChild('Resource') as CfnElement) },
       Name: 'Body',
       ValidateRequestBody: true,
       ValidateRequestParameters: false,
-    }));
+    });
+  });
 
-    test.done();
-  },
-  'creates output with given "exportName"'(test: Test) {
+  test('creates output with given "exportName"', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -793,7 +753,7 @@ export = {
     api.root.addMethod('GET');
 
     // THEN
-    test.deepEqual(SynthUtils.toCloudFormation(stack).Outputs, {
+    expect(SynthUtils.toCloudFormation(stack).Outputs).toEqual({
       myapiEndpoint8EB17201: {
         Value: {
           'Fn::Join': [
@@ -814,11 +774,9 @@ export = {
         Export: { Name: 'my-given-export-name' },
       },
     });
+  });
 
-    test.done();
-  },
-
-  'creates output when "exportName" is not specified'(test: Test) {
+  test('creates output when "exportName" is not specified', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -827,7 +785,7 @@ export = {
     api.root.addMethod('GET');
 
     // THEN
-    test.deepEqual(SynthUtils.toCloudFormation(stack).Outputs, {
+    expect(SynthUtils.toCloudFormation(stack).Outputs).toEqual({
       myapiEndpoint8EB17201: {
         Value: {
           'Fn::Join': [
@@ -847,11 +805,9 @@ export = {
         },
       },
     });
+  });
 
-    test.done();
-  },
-
-  'gateway response resource is created'(test: Test) {
+  test('gateway response resource is created', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -867,18 +823,16 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::GatewayResponse', {
+    expect(stack).toHaveResource('AWS::ApiGateway::GatewayResponse', {
       ResponseType: 'ACCESS_DENIED',
       RestApiId: stack.resolve(api.restApiId),
       StatusCode: ABSENT,
       ResponseParameters: ABSENT,
       ResponseTemplates: ABSENT,
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'gateway response resource is created with parameters'(test: Test) {
+  test('gateway response resource is created with parameters', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -899,7 +853,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::GatewayResponse', {
+    expect(stack).toHaveResource('AWS::ApiGateway::GatewayResponse', {
       ResponseType: 'AUTHORIZER_FAILURE',
       RestApiId: stack.resolve(api.restApiId),
       StatusCode: '500',
@@ -908,12 +862,10 @@ export = {
         'gatewayresponse.header.test-key': 'test-value',
       },
       ResponseTemplates: ABSENT,
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'gateway response resource is created with templates'(test: Test) {
+  test('gateway response resource is created with templates', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -933,7 +885,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::GatewayResponse', {
+    expect(stack).toHaveResource('AWS::ApiGateway::GatewayResponse', {
       ResponseType: 'AUTHORIZER_FAILURE',
       RestApiId: stack.resolve(api.restApiId),
       StatusCode: '500',
@@ -941,12 +893,10 @@ export = {
       ResponseTemplates: {
         'application/json': '{ "message": $context.error.messageString, "statusCode": "488" }',
       },
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  '"restApi" and "api" properties return the RestApi correctly'(test: Test) {
+  test('"restApi" and "api" properties return the RestApi correctly', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -955,14 +905,12 @@ export = {
     const method = api.root.addResource('pets').addMethod('GET');
 
     // THEN
-    test.ok(method.restApi);
-    test.ok(method.api);
-    test.deepEqual(stack.resolve(method.api.restApiId), stack.resolve(method.restApi.restApiId));
+    expect(method.restApi).toBeDefined();
+    expect(method.api).toBeDefined();
+    expect(stack.resolve(method.api.restApiId)).toEqual(stack.resolve(method.restApi.restApiId));
+  });
 
-    test.done();
-  },
-
-  '"restApi" throws an error on imported while "api" returns correctly'(test: Test) {
+  test('"restApi" throws an error on imported while "api" returns correctly', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -974,14 +922,12 @@ export = {
     const method = api.root.addResource('pets').addMethod('GET');
 
     // THEN
-    test.throws(() => method.restApi, /not available on Resource not connected to an instance of RestApi/);
-    test.ok(method.api);
+    expect(() => method.restApi).toThrow(/not available on Resource not connected to an instance of RestApi/);
+    expect(method.api).toBeDefined();
+  });
 
-    test.done();
-  },
-
-  Import: {
-    'fromRestApiId()'(test: Test) {
+  describe('Import', () => {
+    test('fromRestApiId()', () => {
       // GIVEN
       const stack = new Stack();
 
@@ -989,11 +935,10 @@ export = {
       const imported = apigw.RestApi.fromRestApiId(stack, 'imported-api', 'api-rxt4498f');
 
       // THEN
-      test.deepEqual(stack.resolve(imported.restApiId), 'api-rxt4498f');
-      test.done();
-    },
+      expect(stack.resolve(imported.restApiId)).toEqual('api-rxt4498f');
+    });
 
-    'fromRestApiAttributes()'(test: Test) {
+    test('fromRestApiAttributes()', () => {
       // GIVEN
       const stack = new Stack();
 
@@ -1006,21 +951,19 @@ export = {
       resource.addMethod('GET');
 
       // THEN
-      expect(stack).to(haveResource('AWS::ApiGateway::Resource', {
+      expect(stack).toHaveResource('AWS::ApiGateway::Resource', {
         PathPart: 'pets',
         ParentId: stack.resolve(imported.restApiRootResourceId),
-      }));
-      expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+      });
+      expect(stack).toHaveResource('AWS::ApiGateway::Method', {
         HttpMethod: 'GET',
         ResourceId: stack.resolve(resource.resourceId),
-      }));
+      });
+    });
+  });
 
-      test.done();
-    },
-  },
-
-  SpecRestApi: {
-    'add Methods and Resources'(test: Test) {
+  describe('SpecRestApi', () => {
+    test('add Methods and Resources', () => {
       // GIVEN
       const stack = new Stack();
       const api = new apigw.SpecRestApi(stack, 'SpecRestApi', {
@@ -1032,18 +975,17 @@ export = {
       resource.addMethod('GET');
 
       // THEN
-      expect(stack).to(haveResource('AWS::ApiGateway::Resource', {
+      expect(stack).toHaveResource('AWS::ApiGateway::Resource', {
         PathPart: 'pets',
         ParentId: stack.resolve(api.restApiRootResourceId),
-      }));
-      expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+      });
+      expect(stack).toHaveResource('AWS::ApiGateway::Method', {
         HttpMethod: 'GET',
         ResourceId: stack.resolve(resource.resourceId),
-      }));
-      test.done();
-    },
+      });
+    });
 
-    '"endpointTypes" can be used to specify endpoint configuration for SpecRestApi'(test: Test) {
+    test('"endpointTypes" can be used to specify endpoint configuration for SpecRestApi', () => {
       // GIVEN
       const stack = new Stack();
 
@@ -1056,20 +998,19 @@ export = {
       api.root.addMethod('GET');
 
       // THEN
-      expect(stack).to(haveResource('AWS::ApiGateway::RestApi', {
+      expect(stack).toHaveResource('AWS::ApiGateway::RestApi', {
         EndpointConfiguration: {
           Types: [
             'EDGE',
             'PRIVATE',
           ],
         },
-      }));
-      test.done();
-    },
-  },
+      });
+    });
+  });
 
-  Metrics: {
-    'metric'(test: Test) {
+  describe('Metrics', () => {
+    test('metric', () => {
       // GIVEN
       const stack = new Stack();
       const api = new apigw.RestApi(stack, 'my-api');
@@ -1080,15 +1021,13 @@ export = {
       const countMetric = api.metric(metricName, { statistic });
 
       // THEN
-      test.equal(countMetric.namespace, 'AWS/ApiGateway');
-      test.equal(countMetric.metricName, metricName);
-      test.deepEqual(countMetric.dimensions, { ApiName: 'my-api' });
-      test.equal(countMetric.statistic, statistic);
+      expect(countMetric.namespace).toEqual('AWS/ApiGateway');
+      expect(countMetric.metricName).toEqual(metricName);
+      expect(countMetric.dimensions).toEqual({ ApiName: 'my-api' });
+      expect(countMetric.statistic).toEqual(statistic);
+    });
 
-      test.done();
-    },
-
-    'metricClientError'(test: Test) {
+    test('metricClientError', () => {
       // GIVEN
       const stack = new Stack();
       const api = new apigw.RestApi(stack, 'my-api');
@@ -1098,14 +1037,12 @@ export = {
       const countMetric = api.metricClientError({ color });
 
       // THEN
-      test.equal(countMetric.metricName, '4XXError');
-      test.equal(countMetric.statistic, 'Sum');
-      test.equal(countMetric.color, color);
+      expect(countMetric.metricName).toEqual('4XXError');
+      expect(countMetric.statistic).toEqual('Sum');
+      expect(countMetric.color).toEqual(color);
+    });
 
-      test.done();
-    },
-
-    'metricServerError'(test: Test) {
+    test('metricServerError', () => {
       // GIVEN
       const stack = new Stack();
       const api = new apigw.RestApi(stack, 'my-api');
@@ -1115,14 +1052,12 @@ export = {
       const countMetric = api.metricServerError({ color });
 
       // THEN
-      test.equal(countMetric.metricName, '5XXError');
-      test.equal(countMetric.statistic, 'Sum');
-      test.equal(countMetric.color, color);
+      expect(countMetric.metricName).toEqual('5XXError');
+      expect(countMetric.statistic).toEqual('Sum');
+      expect(countMetric.color).toEqual(color);
+    });
 
-      test.done();
-    },
-
-    'metricCacheHitCount'(test: Test) {
+    test('metricCacheHitCount', () => {
       // GIVEN
       const stack = new Stack();
       const api = new apigw.RestApi(stack, 'my-api');
@@ -1132,14 +1067,12 @@ export = {
       const countMetric = api.metricCacheHitCount({ color });
 
       // THEN
-      test.equal(countMetric.metricName, 'CacheHitCount');
-      test.equal(countMetric.statistic, 'Sum');
-      test.equal(countMetric.color, color);
+      expect(countMetric.metricName).toEqual('CacheHitCount');
+      expect(countMetric.statistic).toEqual('Sum');
+      expect(countMetric.color).toEqual(color);
+    });
 
-      test.done();
-    },
-
-    'metricCacheMissCount'(test: Test) {
+    test('metricCacheMissCount', () => {
       // GIVEN
       const stack = new Stack();
       const api = new apigw.RestApi(stack, 'my-api');
@@ -1149,14 +1082,12 @@ export = {
       const countMetric = api.metricCacheMissCount({ color });
 
       // THEN
-      test.equal(countMetric.metricName, 'CacheMissCount');
-      test.equal(countMetric.statistic, 'Sum');
-      test.equal(countMetric.color, color);
+      expect(countMetric.metricName).toEqual('CacheMissCount');
+      expect(countMetric.statistic).toEqual('Sum');
+      expect(countMetric.color).toEqual(color);
+    });
 
-      test.done();
-    },
-
-    'metricCount'(test: Test) {
+    test('metricCount', () => {
       // GIVEN
       const stack = new Stack();
       const api = new apigw.RestApi(stack, 'my-api');
@@ -1166,14 +1097,12 @@ export = {
       const countMetric = api.metricCount({ color });
 
       // THEN
-      test.equal(countMetric.metricName, 'Count');
-      test.equal(countMetric.statistic, 'SampleCount');
-      test.equal(countMetric.color, color);
+      expect(countMetric.metricName).toEqual('Count');
+      expect(countMetric.statistic).toEqual('SampleCount');
+      expect(countMetric.color).toEqual(color);
+    });
 
-      test.done();
-    },
-
-    'metricIntegrationLatency'(test: Test) {
+    test('metricIntegrationLatency', () => {
       // GIVEN
       const stack = new Stack();
       const api = new apigw.RestApi(stack, 'my-api');
@@ -1183,13 +1112,11 @@ export = {
       const countMetric = api.metricIntegrationLatency({ color });
 
       // THEN
-      test.equal(countMetric.metricName, 'IntegrationLatency');
-      test.equal(countMetric.color, color);
+      expect(countMetric.metricName).toEqual('IntegrationLatency');
+      expect(countMetric.color).toEqual(color);
+    });
 
-      test.done();
-    },
-
-    'metricLatency'(test: Test) {
+    test('metricLatency', () => {
       // GIVEN
       const stack = new Stack();
       const api = new apigw.RestApi(stack, 'my-api');
@@ -1199,10 +1126,8 @@ export = {
       const countMetric = api.metricLatency({ color });
 
       // THEN
-      test.equal(countMetric.metricName, 'Latency');
-      test.equal(countMetric.color, color);
-
-      test.done();
-    },
-  },
-};
+      expect(countMetric.metricName).toEqual('Latency');
+      expect(countMetric.color).toEqual(color);
+    });
+  });
+});
