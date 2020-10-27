@@ -235,7 +235,8 @@ export interface ClusterAttributes {
 
   /**
    * An Imported Open ID Connect provider for this cluster
-   * @default - if no value specified - cdk will create new provider when you add IRSA
+   * @default - if not specified `cluster.openIdConnectProvider` will
+   * throw an error
    */
   readonly openIdConnectProvider?: iam.IOpenIdConnectProvider;
 
@@ -1265,7 +1266,6 @@ export class Cluster extends ClusterBase {
    * This is because the values is only be retrieved by the API and not exposed
    * by CloudFormation. If this cluster is not kubectl-enabled (i.e. uses the
    * stock `CfnCluster`), this is `undefined`.
-   * The same as IssuerUrl
    * @attribute
    */
   public get clusterOpenIdConnectIssuer(): string {

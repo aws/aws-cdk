@@ -639,13 +639,15 @@ mypod.node.addDependency(sa);
 new cdk.CfnOutput(this, 'ServiceAccountIamRole', { value: sa.role.roleArn })
 ```
 
-You can also add service accounts to existing clusters. 
+Note that using `sa.serviceAccountName` above **does not** translate into a resource dependency.
+This is why an explicit dependency is needed. See https://github.com/aws/aws-cdk/issues/9910 for more details.
 
+You can also add service accounts to existing clusters. 
 To do so, pass the `openIdConnectProvider` property when you import the cluster into the application.
 ```ts
 // you can import an existing provider
-const provider = eks.OpenIdConnectProvider.fromOpenIdConnectProviderArn(this, 'Provider', 'OIDCProviderARN');
-// or create a new one
+const provider = eks.OpenIdConnectProvider.fromOpenIdConnectProviderArn(this, 'Provider', 'arn:aws:iam::123456:oidc-provider/oidc.eks.eu-west-1.amazonaws.com/id/AB123456ABC');
+// or create a new one using an existing issuer url
 const provider = new eks.OpenIdConnectProvider(this, 'Provider', issuerUrl);
 
 const cluster = eks.Cluster.fromClusterAttributes({
@@ -661,9 +663,9 @@ bucket.grantReadWrite(serviceAccount);
 
 // ...
 ``` 
-
-Note that using `sa.serviceAccountName` above **does not** translate into a resource dependency.
-This is why an explicit dependency is needed. See https://github.com/aws/aws-cdk/issues/9910 for more details.
+Note that adding service accounts requires running `kubectl` commands against the cluster.
+This means you must also pass the `kubectlRoleArn` when importing the cluster. 
+See [Using existing Clusters](https://github.com/aws/aws-cdk/tree/master/packages/@aws-cdk/aws-eks#using-existing-clusters)
 
 ## Applying Kubernetes Resources
 
