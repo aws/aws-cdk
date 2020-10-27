@@ -133,7 +133,7 @@ describe('util', () => {
       expect(actual).toEqual({
         $schema: 'http://json-schema.org/draft-04/schema#',
         type: 'string',
-        'enum': ['green', 'blue', 'red'],
+        enum: ['green', 'blue', 'red'],
         default: 'blue',
       });
     });
