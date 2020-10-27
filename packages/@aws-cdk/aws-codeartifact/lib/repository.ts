@@ -2,7 +2,7 @@ import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import { IResource, Resource, Stack, Aws } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import * as actions from './actions';
+import * as perms from './perms'
 import * as ca from './codeartifact.generated';
 import { IDomain } from './domain';
 import * as e from './external-connection';
@@ -172,7 +172,7 @@ export abstract class RepositoryBase extends Resource implements IRepository {
   public grantRead(identity: iam.IGrantable): iam.Grant {
     return iam.Grant.addToPrincipal({
       grantee: identity,
-      actions: [...actions.readActions],
+      actions: [...perms.REPOSITORY_READ_ACTIONS],
       resourceArns: [this.repositoryArn],
     });
   }
@@ -181,7 +181,7 @@ export abstract class RepositoryBase extends Resource implements IRepository {
   public grantWrite(identity: iam.IGrantable): iam.Grant {
     return iam.Grant.addToPrincipal({
       grantee: identity,
-      actions: [...actions.writeActions],
+      actions: [...perms.REPOSITORY_WRITE_ACTIONS],
       resourceArns: [this.repositoryArn],
     });
   }
@@ -190,7 +190,7 @@ export abstract class RepositoryBase extends Resource implements IRepository {
   public grantReadWrite(identity: iam.IGrantable): iam.Grant {
     return iam.Grant.addToPrincipal({
       grantee: identity,
-      actions: [...actions.readActions, ...actions.writeActions],
+      actions: [...perms.REPOSITORY_READ_ACTIONS, ...perms.REPOSITORY_WRITE_ACTIONS],
       resourceArns: [this.repositoryArn],
     });
   }

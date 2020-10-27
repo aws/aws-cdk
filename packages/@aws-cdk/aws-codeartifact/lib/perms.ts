@@ -1,9 +1,9 @@
-export const writeActions = [
+export const REPOSITORY_WRITE_ACTIONS = [
   'codeartifact:PublishPackageVersion',
   'codeartifact:PutPackageMetadata',
 ];
 
-export const readActions = [
+export const REPOSITORY_READ_ACTIONS = [
   'codeartifact:DescribePackageVersion',
   'codeartifact:DescribeRepository',
   'codeartifact:GetPackageVersionReadme',
