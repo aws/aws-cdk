@@ -1,7 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import { IResource, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import * as ca from './codeartifact.generated';
+import { CfnDomain } from './codeartifact.generated';
 import { validate } from './validation';
 
 /**
@@ -52,7 +52,7 @@ export interface IDomain extends IResource {
    * The underlying CloudFormation domain
    * @attribute
    */
-  readonly cfnDomain: ca.CfnDomain;
+  readonly cfnDomain: CfnDomain;
 }
 
 /**
@@ -97,7 +97,7 @@ export abstract class DomainBase extends Resource implements IDomain {
   /** @attribute */
   abstract readonly domainEncryptionKey: string = '';
   /** @attribute */
-  abstract readonly cfnDomain: ca.CfnDomain;
+  abstract readonly cfnDomain: CfnDomain;
 
   constructor(scope: Construct, id: string) {
     super(scope, id, {});
@@ -133,12 +133,12 @@ export class Domain extends DomainBase {
   public readonly domainName: string = '';
   public readonly domainOwner: string = '';
   public readonly domainEncryptionKey: string = '' ;
-  public readonly cfnDomain: ca.CfnDomain;
+  public readonly cfnDomain: CfnDomain;
 
   constructor(scope: Construct, id: string, props: DomainProps) {
     super(scope, id);
 
-    this.cfnDomain = new ca.CfnDomain(this, id, {
+    this.cfnDomain = new CfnDomain(this, id, {
       domainName: props.domainName,
     });
 

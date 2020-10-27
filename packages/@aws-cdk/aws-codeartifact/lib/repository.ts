@@ -3,7 +3,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import { IResource, Resource, Stack, Aws } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as perms from './perms'
-import * as ca from './codeartifact.generated';
+import { CfnRepository } from './codeartifact.generated';
 import { IDomain } from './domain';
 import * as e from './external-connection';
 import { validate } from './validation';
@@ -259,12 +259,12 @@ export class Repository extends RepositoryBase {
   public readonly repositoryDomainOwner: string;
   public readonly repositoryDomainName: string;
   public readonly repositoryDescription: string;
-  private readonly cfnRepository: ca.CfnRepository;
+  private readonly cfnRepository: CfnRepository;
 
   constructor(scope: Construct, id: string, props: RepositoryProps) {
     super(scope, id);
 
-    this.cfnRepository = new ca.CfnRepository(this, id, {
+    this.cfnRepository = new CfnRepository(this, id, {
       repositoryName: props.repositoryName,
       description: props.description,
     });
