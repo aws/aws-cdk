@@ -1,4 +1,5 @@
 import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import { IResource, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnDomain } from './codeartifact.generated';
@@ -46,7 +47,7 @@ export interface IDomain extends IResource {
    * @default AWS Managed Key
    * @attribute
    */
-  readonly domainEncryptionKey: string;
+  readonly domainEncryptionKey: kms.IKey;
 
   /**
    * The underlying CloudFormation domain
@@ -69,7 +70,7 @@ export interface DomainProps {
    * @default AWS Managed Key
    * @attribute
    */
-  readonly domainEncryptionKey?: string;
+  readonly domainEncryptionKey?: kms.IKey;
   /**
      * Principal for the resource policy for the domain
      * @default AccountRootPrincipal
@@ -95,7 +96,7 @@ export abstract class DomainBase extends Resource implements IDomain {
   /** @attribute */
   abstract readonly domainOwner: string = '';
   /** @attribute */
-  abstract readonly domainEncryptionKey: string = '';
+  abstract readonly domainEncryptionKey: kms.IKey;
   /** @attribute */
   abstract readonly cfnDomain: CfnDomain;
 
@@ -122,7 +123,6 @@ export class Domain extends DomainBase {
     class Import extends Domain {
       public readonly domainName: string = parsed.resourceName || '';
       public readonly domainOwner: string = parsed.account || '';
-      public readonly domainEncryptionKey: string = '';
       public readonly domainArn = domainArn;
     }
 
@@ -132,7 +132,7 @@ export class Domain extends DomainBase {
   public readonly domainArn: string = '';
   public readonly domainName: string = '';
   public readonly domainOwner: string = '';
-  public readonly domainEncryptionKey: string = '' ;
+  public readonly domainEncryptionKey: kms.IKey;
   public readonly cfnDomain: CfnDomain;
 
   constructor(scope: Construct, id: string, props: DomainProps) {
@@ -150,7 +150,7 @@ export class Domain extends DomainBase {
     this.domainArn = this.cfnDomain.attrArn;
     this.domainName = props.domainName;
     this.domainOwner = this.cfnDomain.attrOwner;
-    this.domainEncryptionKey = this.cfnDomain.attrEncryptionKey;
+    this.domainEncryptionKey = kms.Key.fromKeyArn(scope, 'EncryptionKey', this.cfnDomain.attrEncryptionKey);
 
     this.Validate();
 
@@ -164,7 +164,7 @@ export class Domain extends DomainBase {
 
   private Validate() {
     validate('DomainName', { required: true, minLength: 2, maxLength: 50, pattern: /[a-z][a-z0-9\-]{0,48}[a-z0-9]/gi }, this.domainName);
-    validate('EncryptionKey', { minLength: 1, maxLength: 2048, pattern: /\S+/gi }, this.domainEncryptionKey);
+    validate('EncryptionKey', { minLength: 1, maxLength: 2048, pattern: /\S+/gi }, this.domainEncryptionKey.keyArn);
   }
 
   private createPolicy(principal: iam.IPrincipal, iamActions: string[], resource: string = '*') {
