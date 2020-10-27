@@ -4,7 +4,7 @@ ARG IMAGE=amazon/aws-sam-cli-build-image-nodejs12.x
 FROM $IMAGE
 
 # Install yarn
-RUN npm install --global yarn
+RUN npm install --global yarn@1.22.5
 
 # Install parcel 2 (fix the version since it's still in beta)
 # install at "/" so that node_modules will be in the path for /asset-input
@@ -18,5 +18,8 @@ RUN mkdir /tmp/npm-cache && \
 
 # Disable npm update notifications
 RUN npm config --global set update-notifier false
+
+# create non root user and change allow execute command for non root user
+RUN /sbin/useradd -u 1000 user && chmod 711 /
 
 CMD [ "parcel" ]
