@@ -12,7 +12,7 @@
 ---
 <!--END STABILITY BANNER-->
 
-CodeArtifact is a fully managed artifact repository service that makes it easy for organizations to securely store and share software packages used for application development. You can use CodeArtifact with popular build tools and package managers such as Maven, Gradle, npm, yarn, pip, and twine.
+CodeArtifact is a fully managed artifact repository service that makes it easy for organizations to securely store and share software packages used for application development. You can use CodeArtifact with popular build tools and package managers such as **Maven**, **Gradle**, **npm**, **yarn**, **pip**, and **twine**.
 
 For further information on CodeCommit, see the [AWS CodeArtifact documentation](https://docs.aws.amazon.com/codeartifact).
 
