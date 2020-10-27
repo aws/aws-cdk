@@ -36,6 +36,8 @@ export interface JsonSchema {
   readonly description?: string;
   readonly 'enum'?: any[];
   /**
+   * The default value if you use an enum.
+   * 
    * @default - not set
    */
   readonly default?: any;
