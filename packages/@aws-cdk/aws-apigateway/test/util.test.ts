@@ -125,7 +125,7 @@ describe('util', () => {
     test('"default" for enum', () => {
       const schema: JsonSchema = {
         type: JsonSchemaType.STRING,
-        'enum': ['green', 'blue', 'red'],
+        enum: ['green', 'blue', 'red'],
         default: 'blue',
       };
 
