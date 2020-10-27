@@ -126,7 +126,7 @@ describe('util', () => {
       const schema: JsonSchema = {
         type: JsonSchemaType.STRING,
         'enum': ['green', 'blue', 'red'],
-        default: 'blue',
+        'default': 'blue',
       };
 
       const actual = JsonSchemaMapper.toCfnJsonSchema(schema);
