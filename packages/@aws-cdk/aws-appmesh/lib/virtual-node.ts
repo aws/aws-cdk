@@ -528,7 +528,7 @@ export interface VirtualNodeBaseProps {
    *
    * @default - No listeners
    */
-  readonly listener?: VirtualNodeListener;
+  readonly listeners?: VirtualNodeListener[];
 
   /**
    * Access Logging Configuration for the virtual node
@@ -648,7 +648,7 @@ export class VirtualNode extends VirtualNodeBase {
     this.mesh = props.mesh;
 
     this.addBackends(...props.backends || []);
-    this.addListeners(props.listener ? [props.listener] : [VirtualNodeListener.httpNodeListener()]);
+    this.addListeners(props.listeners ? props.listeners : [VirtualNodeListener.httpNodeListener()]);
     const accessLogging = props.accessLog?.bind(this);
 
     const node = new CfnVirtualNode(this, 'Resource', {

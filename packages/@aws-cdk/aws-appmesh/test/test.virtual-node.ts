@@ -79,9 +79,9 @@ export = {
         new appmesh.VirtualNode(stack, 'test-node', {
           mesh,
           dnsHostName: 'test',
-          listener: appmesh.VirtualNodeListener.httpNodeListener({
+          listeners: [appmesh.VirtualNodeListener.httpNodeListener({
             port: 8081,
-          }),
+          })],
         });
 
         // THEN
@@ -116,13 +116,13 @@ export = {
         new appmesh.VirtualNode(stack, 'test-node', {
           mesh,
           dnsHostName: 'test',
-          listener: appmesh.VirtualNodeListener.grpcNodeListener({
+          listeners: [appmesh.VirtualNodeListener.grpcNodeListener({
             port: 80,
             timeout: {
               idle: cdk.Duration.seconds(10),
               perRequest: cdk.Duration.seconds(10),
             },
-          }),
+          })],
         });
 
         // THEN
@@ -169,11 +169,11 @@ export = {
         new appmesh.VirtualNode(stack, 'test-node', {
           mesh,
           dnsHostName: 'test',
-          listener: appmesh.VirtualNodeListener.http2NodeListener({
+          listeners: [appmesh.VirtualNodeListener.http2NodeListener({
             port: 80,
             healthCheck: {},
             timeout: { idle: cdk.Duration.seconds(10) },
-          }),
+          })],
         });
 
         // THEN
@@ -224,11 +224,11 @@ export = {
         new appmesh.VirtualNode(stack, 'test-node', {
           mesh,
           dnsHostName: 'test',
-          listener: appmesh.VirtualNodeListener.tcpNodeListener({
+          listeners: [appmesh.VirtualNodeListener.tcpNodeListener({
             port: 80,
             healthCheck: { timeout: cdk.Duration.seconds(3) },
             timeout: { idle: cdk.Duration.seconds(10) },
-          }),
+          })],
         });
 
         // THEN
