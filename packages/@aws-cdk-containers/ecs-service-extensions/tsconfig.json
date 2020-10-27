@@ -95,7 +95,7 @@
       "path": "../../../tools/cdk-build-tools"
     },
     {
-      "path": "../../../tools/cdk-integ-tools"
+      "path": "../../cdk-integ-tools"
     },
     {
       "path": "../../../tools/cfn2ts"

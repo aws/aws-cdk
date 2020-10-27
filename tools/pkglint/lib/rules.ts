@@ -1031,7 +1031,7 @@ export class MustHaveIntegCommand extends ValidationRule {
     expectDevDependency(this.name,
       pkg,
       'cdk-integ-tools',
-      `${require('../../cdk-integ-tools/package.json').version}`); // eslint-disable-line @typescript-eslint/no-require-imports
+      `${require('../../../packages/cdk-integ-tools/package.json').version}`); // eslint-disable-line @typescript-eslint/no-require-imports
   }
 }
 

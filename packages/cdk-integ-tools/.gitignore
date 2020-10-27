@@ -11,3 +11,6 @@ nyc.config.js
 !.eslintrc.js
 
 junit.xml
+
+dist
+.LAST_PACKAGE

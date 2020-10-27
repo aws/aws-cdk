@@ -12,3 +12,10 @@ coverage
 # exclude cdk artifacts
 **/cdk.out
 junit.xml
+
+.LAST_PACKAGE
+.LAST_BUILD
+*.tsbuildinfo
+tsconfig.json
+test/
+dist
