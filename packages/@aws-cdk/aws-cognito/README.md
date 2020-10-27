@@ -5,12 +5,12 @@
 | Features | Stability |
 | --- | --- |
 | CFN Resources | ![Stable](https://img.shields.io/badge/stable-success.svg?style=for-the-badge) |
-| Higher level constructs for User Pools | ![Developer Preview](https://img.shields.io/badge/developer--preview-informational.svg?style=for-the-badge) |
+| Higher level constructs for User Pools | ![Stable](https://img.shields.io/badge/stable-success.svg?style=for-the-badge) |
 | Higher level constructs for Identity Pools | ![Not Implemented](https://img.shields.io/badge/not--implemented-black.svg?style=for-the-badge) |
 
 > **CFN Resources:** All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) are always stable and safe to use.
 
-> **Developer Preview:** Higher level constructs in this module that are marked as developer preview have completed their phase of active development and are looking for adoption and feedback. While the same caveats around non-backward compatible as Experimental constructs apply, they will undergo fewer breaking changes. Just as with Experimental constructs, these are not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be announced in the release notes.
+> **Stable:** Higher level constructs in this module that are marked stable will not undergo any breaking changes. They will strictly follow the [Semantic Versioning](https://semver.org/) model.
 
 ---
 <!--END STABILITY BANNER-->
@@ -38,6 +38,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
     - [Account Recovery Settings](#account-recovery-settings)
   - [Emails](#emails)
   - [Lambda Triggers](#lambda-triggers)
+    - [Trigger Permissions](#trigger-permissions)
   - [Import](#importing-user-pools)
   - [Identity Providers](#identity-providers)
   - [App Clients](#app-clients)
@@ -57,6 +58,10 @@ new cognito.UserPool(this, 'myuserpool', {
   userPoolName: 'myawesomeapp-userpool',
 });
 ```
+
+The default set up for the user pool is configured such that only administrators will be allowed
+to create users. Features such as Multi-factor authentication (MFAs) and Lambda Triggers are not
+configured by default.
 
 ### Sign Up
 
@@ -130,6 +135,8 @@ User pools can either be configured so that user name is primary sign in form, b
 used additionally; or it can be configured so that email and/or phone numbers are the only ways a user can register and
 sign in. Read more about this
 [here](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html#user-pool-settings-aliases-settings).
+
+⚠️ The Cognito service prevents changing the `signInAlias` property for an existing user pool.
 
 To match with 'Option 1' in the above link, with a verified email, `signInAliases` should be set to
 `{ username: true, email: true }`. To match with 'Option 2' in the above link with both a verified
@@ -288,6 +295,9 @@ new cognito.UserPool(this, 'UserPool', {
 })
 ```
 
+The default for account recovery is by phone if available and by email otherwise.
+A user will not be allowed to reset their password via phone if they are also using it for MFA.
+
 ### Emails
 
 Cognito sends emails to users in the user pool, when particular actions take place, such as welcome emails, invitation
@@ -345,6 +355,27 @@ The following table lists the set of triggers available, and their corresponding
 For more information on the function of these triggers and how to configure them, read [User Pool Workflows with
 Triggers](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-identity-pools-working-with-aws-lambda-triggers.html).
 
+#### Trigger Permissions
+
+The `function.attachToRolePolicy()` API can be used to add additional IAM permissions to the lambda trigger
+as necessary.
+
+⚠️ Using the `attachToRolePolicy` API to provide permissions to your user pool will result in a circular dependency. See [aws/aws-cdk#7016](https://github.com/aws/aws-cdk/issues/7016).
+Error message when running `cdk synth` or `cdk deploy`:
+> Circular dependency between resources: [pool056F3F7E, fnPostAuthFnCognitoA630A2B1, ...]
+
+To work around the circular dependency issue, use the `attachInlinePolicy()` API instead, as shown below.
+
+```ts fixture=with-lambda-trigger
+// provide permissions to describe the user pool scoped to the ARN the user pool
+postAuthFn.role?.attachInlinePolicy(new iam.Policy(this, 'userpool-policy', {
+  statements: [new iam.PolicyStatement({
+    actions: ['cognito-idp:DescribeUserPool'],
+    resources: [userpool.userPoolArn],
+  })],
+}));
+```
+
 ### Importing User Pools
 
 Any user pool that has been created outside of this stack, can be imported into the CDK app. Importing a user pool
@@ -370,7 +401,7 @@ identity provider. Once configured, the Cognito backend will take care of integr
 Read more about [Adding User Pool Sign-in Through a Third
 Party](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-identity-federation.html).
 
-The following third-party identity providers are currentlhy supported in the CDK -
+The following third-party identity providers are currently supported in the CDK -
 
 * [Login With Amazon](https://developer.amazon.com/apps-and-games/login-with-amazon)
 * [Facebook Login](https://developers.facebook.com/docs/facebook-login/)

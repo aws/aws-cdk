@@ -12,6 +12,13 @@ export interface SqsEventSourceProps {
    * @default 10
    */
   readonly batchSize?: number;
+
+  /**
+   * If the SQS event source mapping should be enabled.
+   *
+   * @default true
+   */
+  readonly enabled?: boolean;
 }
 
 /**
@@ -29,6 +36,7 @@ export class SqsEventSource implements lambda.IEventSource {
   public bind(target: lambda.IFunction) {
     const eventSourceMapping = target.addEventSourceMapping(`SqsEventSource:${this.queue.node.uniqueId}`, {
       batchSize: this.props.batchSize,
+      enabled: this.props.enabled,
       eventSourceArn: this.queue.queueArn,
     });
     this._eventSourceMappingId = eventSourceMapping.eventSourceMappingId;
