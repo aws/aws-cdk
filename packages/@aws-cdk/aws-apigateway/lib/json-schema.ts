@@ -35,7 +35,7 @@ export interface JsonSchema {
   readonly title?: string;
   readonly description?: string;
   readonly 'enum'?: any[];
-  readonly 'default'?: any;
+  // readonly 'default'?: any;
   readonly format?: string;
   readonly definitions?: { [name: string]: JsonSchema };
 
