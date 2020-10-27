@@ -2,6 +2,7 @@ export const AWS_OLDER_REGIONS = new Set([
   'us-east-1',
   'us-west-1',
   'us-west-2',
+  'us-gov-west-1',
   'ap-southeast-1',
   'ap-southeast-2',
   'ap-northeast-1',
