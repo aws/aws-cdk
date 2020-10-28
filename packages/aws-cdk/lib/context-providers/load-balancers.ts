@@ -4,10 +4,6 @@ import * as AWS from 'aws-sdk';
 import { Mode, SdkProvider } from '../api';
 import { ContextProviderPlugin } from './provider';
 
-// Decreases line length
-type LoadBalancerQuery = cxschema.LoadBalancerContextQuery;
-type LoadBalancerResponse = cxapi.LoadBalancerContextResponse;
-
 /**
  * Provides load balancer context information.
  */
@@ -15,11 +11,8 @@ export class LoadBalancerContextProviderPlugin implements ContextProviderPlugin 
   constructor(private readonly aws: SdkProvider) {
   }
 
-  async getValue(query: LoadBalancerQuery): Promise<LoadBalancerResponse> {
-    const account: string = query.account!;
-    const region: string = query.region!;
-
-    const elbv2 = (await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(account, region), Mode.ForReading)).elbv2();
+  async getValue(query: cxschema.LoadBalancerContextQuery): Promise<cxapi.LoadBalancerContextResponse> {
+    const elbv2 = (await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(query.account, query.region), Mode.ForReading)).elbv2();
 
     const loadBalancers = await findLoadBalancers(elbv2, query);
 
@@ -56,10 +49,7 @@ export class LoadBalancerListenerContextProviderPlugin implements ContextProvide
   }
 
   async getValue(query: LoadBalancerListenerQuery): Promise<LoadBalancerListenerResponse> {
-    const account: string = query.account!;
-    const region: string = query.region!;
-
-    const elbv2 = (await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(account, region), Mode.ForReading)).elbv2();
+    const elbv2 = (await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(query.account, query.region), Mode.ForReading)).elbv2();
 
     if (query.listenerArn) {
       // When we know a listener arn, we can query for that listener directly.
