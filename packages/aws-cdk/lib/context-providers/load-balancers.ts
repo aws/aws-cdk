@@ -170,9 +170,12 @@ async function findLoadBalancers(elbv2: AWS.ELBv2, args: cxschema.LoadBalancerFi
  */
 async function describeLoadBalancers(elbv2: AWS.ELBv2, request: AWS.ELBv2.DescribeLoadBalancersInput) {
   const loadBalancers = Array<AWS.ELBv2.LoadBalancer>();
-  let page: AWS.ELBv2.DescribeLoadBalancersOutput;
+  let page: AWS.ELBv2.DescribeLoadBalancersOutput | undefined;
   do {
-    page = await elbv2.describeLoadBalancers(request).promise();
+    page = await elbv2.describeLoadBalancers({
+      ...request,
+      Marker: page ? page.NextMarker : undefined,
+    }).promise();
     const pageItems = page.LoadBalancers ?? [];
     for (const loadBalancer of pageItems) {
       loadBalancers.push(loadBalancer);
