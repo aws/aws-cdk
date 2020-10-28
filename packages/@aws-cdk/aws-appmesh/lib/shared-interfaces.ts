@@ -88,9 +88,9 @@ export interface PortMapping {
 }
 
 /**
- * Base properties all listeners share
+ * Represents the properties needed to define healthy and active listeners for nodes
  */
-export interface ListenerBase {
+export interface VirtualNodeListener {
   /**
    * Array of PortMappingProps for the listener
    *
@@ -105,11 +105,6 @@ export interface ListenerBase {
    */
   readonly healthCheck?: HealthCheck;
 }
-
-/**
- * Represents the properties needed to define healthy and active listeners for nodes
- */
-export interface VirtualNodeListener extends ListenerBase {}
 
 /**
  * All Properties for Envoy Access logs for mesh endpoints
