@@ -86,10 +86,8 @@ export class CloudFormationInit {
    *
    * As an app builder, use `instance.applyCloudFormationInit()` or
    * `autoScalingGroup.applyCloudFormationInit()` to trigger this method.
-   *
-   * @internal
    */
-  public _attach(attachedResource: CfnResource, attachOptions: AttachInitOptions) {
+  public attach(attachedResource: CfnResource, attachOptions: AttachInitOptions) {
     if (attachOptions.platform === OperatingSystemType.UNKNOWN) {
       throw new Error('Cannot attach CloudFormationInit to an unknown OS type');
     }
