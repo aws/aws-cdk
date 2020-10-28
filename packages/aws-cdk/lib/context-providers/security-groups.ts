@@ -36,14 +36,20 @@ export class SecurityGroupContextProviderPlugin implements ContextProviderPlugin
  * @internal
  */
 export function hasAllTrafficEgress(securityGroup: AWS.EC2.SecurityGroup) {
+  let hasAllTrafficCidrV4 = false;
+  let hasAllTrafficCidrV6 = false;
+
   for (const ipPermission of securityGroup.IpPermissionsEgress ?? []) {
-    const hasAllTrafficCidr = Boolean(ipPermission.IpRanges?.find(m => m.CidrIp === '0.0.0.0/0'));
     const isAllProtocols = ipPermission.IpProtocol === '-1';
 
-    if (hasAllTrafficCidr && isAllProtocols) {
-      return true;
+    if (isAllProtocols && ipPermission.IpRanges?.some(m => m.CidrIp === '0.0.0.0/0')) {
+      hasAllTrafficCidrV4 = true;
+    }
+
+    if (isAllProtocols && ipPermission.Ipv6Ranges?.some(m => m.CidrIpv6 === '::/0')) {
+      hasAllTrafficCidrV6 = true;
     }
   }
 
-  return false;
+  return hasAllTrafficCidrV4 && hasAllTrafficCidrV6;
 }

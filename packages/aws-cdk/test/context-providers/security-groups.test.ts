@@ -50,6 +50,12 @@ describe('security group context provider plugin', () => {
                   { CidrIp: '0.0.0.0/0' },
                 ],
               },
+              {
+                IpProtocol: '-1',
+                Ipv6Ranges: [
+                  { CidrIpv6: '::/0' },
+                ],
+              },
             ],
           },
         ],
@@ -111,6 +117,30 @@ describe('security group context provider plugin', () => {
             IpProtocol: '-1',
             IpRanges: [
               { CidrIp: '0.0.0.0/0' },
+            ],
+          },
+          {
+            IpProtocol: '-1',
+            Ipv6Ranges: [
+              { CidrIpv6: '::/0' },
+            ],
+          },
+        ],
+      }),
+    ).toBe(true);
+  });
+
+  test('identifies allTrafficEgress from SecurityGroup permissions when combined', () => {
+    expect(
+      hasAllTrafficEgress({
+        IpPermissionsEgress: [
+          {
+            IpProtocol: '-1',
+            IpRanges: [
+              { CidrIp: '0.0.0.0/0' },
+            ],
+            Ipv6Ranges: [
+              { CidrIpv6: '::/0' },
             ],
           },
         ],
