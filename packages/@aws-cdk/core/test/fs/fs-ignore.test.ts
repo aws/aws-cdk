@@ -1,67 +1,110 @@
-import * as path from 'path';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import { IgnoreStrategy } from '../../lib/fs';
 
-nodeunitShim({
-  globIgnorePattern: {
-    'excludes nothing by default'(test: Test) {
-      const ignore = IgnoreStrategy.glob('/tmp', []);
-      test.ok(!ignore.ignores(path.join('/tmp', 'some', 'file', 'path')));
-      test.done();
-    },
+function strategyIgnores(strategy: IgnoreStrategy, files: string[]) {
+  return files.filter(file => strategy.ignores(file));
+}
 
-    'excludes requested files'(test: Test) {
-      const ignore = IgnoreStrategy.glob('/tmp', ['*.ignored']);
-      test.ok(ignore.ignores(path.join('/tmp', 'some', 'file.ignored')));
-      test.ok(!ignore.ignores(path.join('/tmp', 'some', 'important', 'file')));
-      test.done();
-    },
+function strategyPermits(strategy: IgnoreStrategy, files: string[]) {
+  return files.filter(file => !strategy.ignores(file));
+}
 
-    'does not exclude whitelisted files'(test: Test) {
-      const ignore = IgnoreStrategy.glob('/tmp', ['*.ignored', '!important.*']);
-      test.ok(!ignore.ignores(path.join('/tmp', 'some', 'important.ignored')));
-      test.done();
-    },
-  },
-  gitIgnorePattern: {
-    'excludes nothing by default'(test: Test) {
-      const ignore = IgnoreStrategy.git('/tmp', []);
-      test.ok(!ignore.ignores(path.join('/tmp', 'some', 'file', 'path')));
-      test.done();
-    },
+describe('GlobIgnoreStrategy', () => {
+  test('excludes nothing by default', () => {
+    const strategy = IgnoreStrategy.glob('/tmp', []);
+    const permits = [
+      '/tmp/some/file/path',
+    ];
 
-    'excludes requested files'(test: Test) {
-      const ignore = IgnoreStrategy.git('/tmp', ['*.ignored']);
-      test.ok(ignore.ignores(path.join('/tmp', 'some', 'file.ignored')));
-      test.ok(!ignore.ignores(path.join('/tmp', 'some', 'important', 'file')));
-      test.done();
-    },
+    expect(strategyPermits(strategy, permits)).toEqual(permits);
+  });
 
-    'does not exclude whitelisted files'(test: Test) {
-      const ignore = IgnoreStrategy.git('/tmp', ['*.ignored', '!important.*']);
-      test.ok(!ignore.ignores(path.join('/tmp', 'some', 'important.ignored')));
-      test.done();
-    },
-  },
-  dockerIgnorePattern: {
-    'excludes nothing by default'(test: Test) {
-      const ignore = IgnoreStrategy.docker('/tmp', []);
-      test.ok(!ignore.ignores(path.join('/tmp', 'some', 'file', 'path')));
-      test.done();
-    },
+  test('excludes requested files', () => {
+    const strategy = IgnoreStrategy.glob('/tmp', ['*.ignored']);
+    const ignores = [
+      '/tmp/some/file.ignored',
+    ];
+    const permits = [
+      '/tmp/some/important/file',
+    ];
 
-    'excludes requested files'(test: Test) {
-      // In .dockerignore, * only matches files in the current directory
-      const ignore = IgnoreStrategy.docker('/tmp', ['*.ignored']);
-      test.ok(!ignore.ignores(path.join('/tmp', 'some', 'file.ignored')));
-      test.ok(!ignore.ignores(path.join('/tmp', 'some', 'important', 'file')));
-      test.done();
-    },
+    expect(strategyIgnores(strategy, ignores)).toEqual(ignores);
+    expect(strategyPermits(strategy, permits)).toEqual(permits);
+  });
 
-    'does not exclude whitelisted files'(test: Test) {
-      const ignore = IgnoreStrategy.docker('/tmp', ['*.ignored', '!important.*']);
-      test.ok(!ignore.ignores(path.join('/tmp', 'some', 'important.ignored')));
-      test.done();
-    },
-  },
+  test('does not exclude whitelisted files', () => {
+    const strategy = IgnoreStrategy.glob('/tmp', ['*.ignored', '!important.*']);
+    const permits = [
+      '/tmp/some/important.ignored',
+    ];
+
+    expect(strategyPermits(strategy, permits)).toEqual(permits);
+  });
+});
+
+describe('GitIgnoreStrategy', () => {
+  test('excludes nothing by default', () => {
+    const strategy = IgnoreStrategy.git('/tmp', []);
+    const permits = [
+      '/tmp/some/file/path',
+    ];
+
+    expect(strategyPermits(strategy, permits)).toEqual(permits);
+  });
+
+  test('excludes requested files', () => {
+    const strategy = IgnoreStrategy.git('/tmp', ['*.ignored']);
+    const ignores = [
+      '/tmp/some/file.ignored',
+    ];
+    const permits = [
+      '/tmp/some/important/file',
+    ];
+
+    expect(strategyIgnores(strategy, ignores)).toEqual(ignores);
+    expect(strategyPermits(strategy, permits)).toEqual(permits);
+  });
+
+  test('does not exclude whitelisted files', () => {
+    const strategy = IgnoreStrategy.git('/tmp', ['*.ignored', '!important.*']);
+    const permits = [
+      '/tmp/some/important.ignored',
+    ];
+
+    expect(strategyPermits(strategy, permits)).toEqual(permits);
+  });
+});
+
+describe('DockerIgnoreStrategy', () => {
+  test('excludes nothing by default', () => {
+    const strategy = IgnoreStrategy.docker('/tmp', []);
+    const permits = [
+      '/tmp/some/file/path',
+    ];
+
+    expect(strategyPermits(strategy, permits)).toEqual(permits);
+  });
+
+  test('excludes requested files', () => {
+    // In .dockerignore, * only matches files in the current directory
+    const strategy = IgnoreStrategy.docker('/tmp', ['*.ignored']);
+    const ignores = [
+      '/tmp/file.ignored',
+    ];
+    const permits = [
+      '/tmp/some/file.ignored',
+      '/tmp/some/important/file',
+    ];
+
+    expect(strategyIgnores(strategy, ignores)).toEqual(ignores);
+    expect(strategyPermits(strategy, permits)).toEqual(permits);
+  });
+
+  test('does not exclude whitelisted files', () => {
+    const strategy = IgnoreStrategy.docker('/tmp', ['*.ignored', '!important.*']);
+    const permits = [
+      '/tmp/some/important.ignored',
+    ];
+
+    expect(strategyPermits(strategy, permits)).toEqual(permits);
+  });
 });
