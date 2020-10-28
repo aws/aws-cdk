@@ -79,15 +79,15 @@
     "cfn2ts": "0.0.0",
     "jest": "^26.6.1",
     "pkglint": "0.0.0",
-    "ts-jest": "^26.4.2"
+    "ts-jest": "^26.4.3"
   },
   "dependencies": {
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.4"
+    "constructs": "^3.2.3"
   },
   "peerDependencies": {
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.4"
+    "constructs": "^3.2.3"
   },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"

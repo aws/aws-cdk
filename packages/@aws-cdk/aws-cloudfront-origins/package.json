@@ -82,12 +82,12 @@
     "@aws-cdk/aws-elasticloadbalancingv2": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.4"
+    "constructs": "^3.2.3"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.4",
+    "constructs": "^3.2.3",
     "@aws-cdk/aws-cloudfront": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/aws-elasticloadbalancingv2": "0.0.0"
