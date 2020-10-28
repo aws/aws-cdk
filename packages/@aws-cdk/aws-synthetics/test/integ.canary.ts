@@ -8,7 +8,7 @@ import * as synthetics from '../lib';
 /*
  * Stack verification steps:
  *
- * -- aws synthetics get-canary --name canary-one has a state of 'RUNNING'
+ * -- aws synthetics get-canary --name canary-integ has a state of 'RUNNING'
  * -- aws synthetics get-canary --name assetcanary-one has a state of 'RUNNING'
  * -- aws synthetics get-canary --name assetcanary-two has a state of 'RUNNING'
  */
