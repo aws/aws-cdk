@@ -39,6 +39,21 @@ describe('GlobIgnoreStrategy', () => {
 
     expect(strategyPermits(strategy, permits)).toEqual(permits);
   });
+
+  test('does not exclude .dockerignore and Dockerfile at the root', () => {
+    const strategy = IgnoreStrategy.glob('/tmp', ['*.ignored', '!Dockerfile', '!.dockerignore']);
+    const ignores = [
+      '/tmp/foo.ignored',
+      '/tmp/some/important.ignored',
+    ];
+    const permits = [
+      '/tmp/Dockerfile',
+      '/tmp/.dockerignore',
+    ];
+
+    expect(strategyIgnores(strategy, ignores)).toEqual(ignores);
+    expect(strategyPermits(strategy, permits)).toEqual(permits);
+  });
 });
 
 describe('GitIgnoreStrategy', () => {
