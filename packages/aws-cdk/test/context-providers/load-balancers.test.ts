@@ -113,10 +113,10 @@ describe('load balancer context provider plugin', () => {
     await provider.getValue({
       account: '1234',
       region: 'us-east-1',
-      loadBalancerTags: {
-        some: 'tag',
-        second: 'tag2',
-      },
+      loadBalancerTags: [
+        { key: 'some', value: 'tag' },
+        { key: 'second', value: 'tag2' },
+      ],
     });
   });
 
@@ -332,9 +332,9 @@ describe('load balancer listener context provider plugin', () => {
     const listener = await provider.getValue({
       account: '1234',
       region: 'us-east-1',
-      loadBalancerTags: {
-        some: 'tag',
-      },
+      loadBalancerTags: [
+        { key: 'some', value: 'tag' },
+      ],
       listenerPort: 999,
     });
 

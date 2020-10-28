@@ -189,7 +189,7 @@ async function describeLoadBalancers(elbv2: AWS.ELBv2, request: AWS.ELBv2.Descri
  * Describes the tags of each load balancer and returns the load balancers that
  * match the given tags.
  */
-async function filterLoadBalancersByTags(elbv2: AWS.ELBv2, loadBalancers: AWS.ELBv2.LoadBalancers, loadBalancerTags: Record<string, string>) {
+async function filterLoadBalancersByTags(elbv2: AWS.ELBv2, loadBalancers: AWS.ELBv2.LoadBalancers, loadBalancerTags: cxschema.Tag[]) {
   const loadBalancersByArn = indexLoadBalancersByArn(loadBalancers);
   const loadBalancerArns = Object.keys(loadBalancersByArn);
   const matchingLoadBalancers = Array<AWS.ELBv2.LoadBalancer>();
@@ -227,14 +227,14 @@ async function* describeTags(elbv2: AWS.ELBv2, resourceArns: string[]) {
 /**
  * Determines if the given TagDescription matches the required tags.
  */
-function tagsMatch(tagDescription: AWS.ELBv2.TagDescription, requiredTags: Record<string, string>) {
+function tagsMatch(tagDescription: AWS.ELBv2.TagDescription, requiredTags: cxschema.Tag[]) {
   const tagsByName: Record<string, string> = {};
   for (const tag of tagDescription.Tags ?? []) {
     tagsByName[tag.Key!] = tag.Value!;
   }
 
-  for (const [requiredTag, requiredValue] of Object.entries(requiredTags)) {
-    if (tagsByName[requiredTag] !== requiredValue) {
+  for (const tag of requiredTags) {
+    if (tagsByName[tag.key] !== tag.value) {
       return false;
     }
   }

@@ -348,9 +348,9 @@ describe('tests', () => {
 
       // WHEN
       const loadBalancer = elbv2.ApplicationLoadBalancer.fromLookup(stack, 'a', {
-        loadBalancerTags: {
-          some: 'tag',
-        },
+        loadBalancerTags: [
+          { key: 'some', value: 'tag' },
+        ],
       });
 
       // THEN
@@ -373,9 +373,9 @@ describe('tests', () => {
       });
 
       const loadBalancer = elbv2.ApplicationLoadBalancer.fromLookup(stack, 'a', {
-        loadBalancerTags: {
-          some: 'tag',
-        },
+        loadBalancerTags: [
+          { key: 'some', value: 'tag' },
+        ],
       });
 
       // WHEN

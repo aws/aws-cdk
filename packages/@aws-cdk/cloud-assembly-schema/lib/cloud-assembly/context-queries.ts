@@ -1,3 +1,4 @@
+import { Tag } from './metadata-schema';
 
 /**
  * Identifier for the context provider
@@ -245,7 +246,7 @@ export interface LoadBalancerFilter {
    * Match load balancer tags
    * @default - does not match load balancers by tags
    */
-  readonly loadBalancerTags?: Record<string, string>;
+  readonly loadBalancerTags?: Tag[];
 }
 
 /**

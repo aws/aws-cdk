@@ -25,7 +25,7 @@ export interface BaseListenerLookupOptions {
    * Filter listeners by associated load balancer tags
    * @default - does not filter by load balancer tags
    */
-  readonly loadBalancerTags?: Record<string, string>;
+  readonly loadBalancerTags?: cxschema.Tag[];
 
   /**
    * Filter listeners by listener port

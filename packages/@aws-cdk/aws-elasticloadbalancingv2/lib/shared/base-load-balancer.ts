@@ -80,7 +80,7 @@ export interface BaseLoadBalancerLookupOptions {
    * Match load balancer tags.
    * @default - does not match load balancers by tags
    */
-  readonly loadBalancerTags?: Record<string, string>;
+  readonly loadBalancerTags?: cxschema.Tag[];
 }
 
 /**

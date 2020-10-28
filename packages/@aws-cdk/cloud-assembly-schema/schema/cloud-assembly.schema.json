@@ -618,16 +618,16 @@
                 },
                 "loadBalancerTags": {
                     "description": "Match load balancer tags (Default - does not match load balancers by tags)",
-                    "$ref": "#/definitions/Record<string,string>"
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Tag"
+                    }
                 }
             },
             "required": [
                 "account",
                 "region"
             ]
-        },
-        "Record<string,string>": {
-            "type": "object"
         },
         "LoadBalancerListenerContextQuery": {
             "description": "Query input for looking up a load balancer listener",
@@ -675,7 +675,10 @@
                 },
                 "loadBalancerTags": {
                     "description": "Match load balancer tags (Default - does not match load balancers by tags)",
-                    "$ref": "#/definitions/Record<string,string>"
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Tag"
+                    }
                 }
             },
             "required": [
