@@ -9,8 +9,8 @@
  * If the `CDK_DISABLE_STACK_TRACE` environment variable is set (to any value,
  * except for an empty string), no stack traces will be captured, and instead
  * the literal value `['stack traces disabled']` will be returned instead. This
- * is only true if the `CDK_DEBUG` environment variable is not set to `'true'`,
- * in which case stack traces are *always* captured.
+ * is only true if the `CDK_DEBUG` environment variable is not set to `'true'`
+ * or '1', in which case stack traces are *always* captured.
  *
  * @param below an optional function starting from which stack frames will be
  *              ignored. Defaults to the `captureStackTrace` function itself.
@@ -24,7 +24,10 @@ export function captureStackTrace(
   below: Function = captureStackTrace,
   limit = Number.MAX_SAFE_INTEGER,
 ): string[] {
-  if (process.env.CDK_DISABLE_STACK_TRACE && process.env.CDK_DEBUG !== 'true') {
+  if (
+    process.env.CDK_DISABLE_STACK_TRACE
+    && (process.env.CDK_DEBUG !== 'true' && process.env.CDK_DEBUG !== '1')
+  ) {
     return ['stack traces disabled'];
   }
 
