@@ -12,7 +12,7 @@ export enum HttpAuthorizerType {
   /** JSON Web Tokens */
   JWT = 'JWT',
   /** Lambda Authorizer */
-  REQUEST = 'LAMBDA',
+  LAMBDA = 'REQUEST',
 }
 
 /**
@@ -131,4 +131,3 @@ export class HttpAuthorizer extends Resource implements IAuthorizer {
     this.authorizerId = resource.ref;
   }
 }
-
