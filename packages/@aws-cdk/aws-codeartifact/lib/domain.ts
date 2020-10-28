@@ -91,6 +91,7 @@ export class Domain extends Resource implements IDomain {
       this.cfnDomain.addPropertyOverride('EncryptionKey', props.domainEncryptionKey);
     }
 
+    this.domainName = this.cfnDomain.domainName;
     this.domainArn = this.cfnDomain.attrArn;
     this.domainOwner = this.cfnDomain.attrOwner;
     this.domainEncryptionKey = kms.Key.fromKeyArn(scope, 'EncryptionKey', this.cfnDomain.attrEncryptionKey);
@@ -111,6 +112,10 @@ export class Domain extends Resource implements IDomain {
     }
 
     return this;
+  }
+
+  cfn(): CfnDomain {
+    return this.cfnDomain;
   }
 
   private validateProps() {

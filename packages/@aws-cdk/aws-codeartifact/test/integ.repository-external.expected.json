@@ -1,6 +1,6 @@
 {
   "Resources": {
-    "domainCA282C9B": {
+    "domainFBFFA2F6": {
       "Type": "AWS::CodeArtifact::Domain",
       "Properties": {
         "DomainName": "example-domain-external",
@@ -8,56 +8,6 @@
           "Statement": [
             {
               "Action": "codeartifact:GetAuthorizationToken",
-              "Effect": "Allow",
-              "Principal": {
-                "AWS": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":iam::",
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
-                      ":root"
-                    ]
-                  ]
-                }
-              },
-              "Resource": "*"
-            },
-            {
-              "Action": "codeartifact:CreateRepository",
-              "Effect": "Allow",
-              "Principal": {
-                "AWS": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":iam::",
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
-                      ":root"
-                    ]
-                  ]
-                }
-              },
-              "Resource": "*"
-            },
-            {
-              "Action": [
-                "codeartifact:GetDomainPermissionsPolicy",
-                "codeartifact:ListRepositoriesInDomain",
-                "codeartifact:DescribeDomain"
-              ],
               "Effect": "Allow",
               "Principal": {
                 "AWS": {
@@ -157,7 +107,7 @@
         },
         "DomainName": {
           "Fn::GetAtt": [
-            "domainCA282C9B",
+            "domainFBFFA2F6",
             "Name"
           ]
         }

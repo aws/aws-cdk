@@ -2,6 +2,7 @@ import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import { IResource } from '@aws-cdk/core';
+import { CfnDomain } from './codeartifact.generated';
 
 /**
  * Represents a CodeArtifact repository
@@ -177,6 +178,12 @@ export interface IDomain extends IResource {
    * Add a repositories to the domain
    */
   addRepositories(...repositories: IRepository[]): IDomain
+
+  /**
+   * The underlying CloudFormation domain
+   * @attribute
+   */
+  cfn(): CfnDomain;
 }
 
 /**

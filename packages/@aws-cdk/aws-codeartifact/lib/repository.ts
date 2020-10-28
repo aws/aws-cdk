@@ -1,6 +1,6 @@
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
-import { Resource, Stack, Aws, Fn } from '@aws-cdk/core';
+import { Resource, Stack, Aws } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnRepository } from './codeartifact.generated';
 import { Domain } from './domain';
@@ -147,7 +147,7 @@ export class Repository extends Resource implements IRepository {
   }
 
   public assignDomain(domain: IDomain): void {
-    this.cfnRepository.addPropertyOverride('DomainName', Fn.getAtt(domain.node.uniqueId, 'Name'));
+    this.cfnRepository.addPropertyOverride('DomainName', domain.cfn().attrName);
   }
 
   /**
