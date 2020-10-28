@@ -34,9 +34,10 @@ import * as synthetics from '@aws-cdk/aws-synthetics';
 const canary = new synthetics.Canary(this, 'MyCanary', {
   schedule: synthetics.Schedule.rate(Duration.minutes(5)),
   test: Test.custom({
-    code: Code.fromAsset(path.join(__dirname, 'canary')),
+    code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
     handler: 'index.handler',
   }),
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_0,
 });
 ```
 
@@ -96,25 +97,28 @@ Using the `Code` class static initializers:
 // To supply the code inline:
 const canary = new Canary(this, 'MyCanary', {
   test: Test.custom({
-    code: Code.fromInline('/* Synthetics handler code */'),
+    code: synthetics.Code.fromInline('/* Synthetics handler code */'),
     handler: 'index.handler', // must be 'index.handler'
   }),
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_0,
 });
 
 // To supply the code from your local filesystem:
 const canary = new Canary(this, 'MyCanary', {
   test: Test.custom({
-    code: Code.fromAsset(path.join(__dirname, 'canary')),
+    code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
     handler: 'index.handler', // must end with '.handler'
   }),
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_0,
 });
 
 // To supply the code from a S3 bucket:
 const canary = new Canary(this, 'MyCanary', {
   test: Test.custom({
-    code: Code.fromBucket(bucket, 'canary.zip'),
+    code: synthetics.Code.fromBucket(bucket, 'canary.zip'),
     handler: 'index.handler', // must end with '.handler'
   }),
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_0,
 }); 
 ```
 
