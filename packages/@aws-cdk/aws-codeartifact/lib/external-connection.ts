@@ -26,5 +26,5 @@ export enum ExternalConnection {
   /**
    * CommonsWare Android repository
    * */
-  MAVEN_MAVEN_COMMONSWARE = 'public:maven-commonsware',
+  MAVEN_COMMONSWARE = 'public:maven-commonsware',
 }

@@ -12,6 +12,22 @@ test('Domain w/ Repository', () => {
   expect(repo.repositoryName).toBe('example-repo');
 });
 
+test('Domain w/ 2 Repositories via addRepositories, w/ upstream, and external connection', () => {
+  const stack = new Stack();
+
+  const domain = new Domain(stack, 'domain', { domainName: 'example-domain' });
+  const repo1 = new Repository(stack, 'repository-1', { repositoryName: 'example-repo-1' });
+  const repo2 = new Repository(stack, 'repository-2', { repositoryName: 'example-repo-2' });
+
+  repo1.withExternalConnections(ExternalConnection.NPM);
+  repo2.withUpstream(repo1);
+
+  domain.addRepositories(repo1, repo2);
+
+  expect(domain.domainName).toBe('example-domain');
+  expect(repo1.repositoryName).toBe('example-repo');
+});
+
 test('Repository from ARN', () => {
   const stack = new Stack();
 

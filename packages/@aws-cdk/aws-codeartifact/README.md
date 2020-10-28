@@ -32,8 +32,21 @@ import * as codeartifact from '@aws-cdk/aws-codeartifact';
 const domain = new codeartifact.Domain(stack, 'domain', { domainName: 'example-domain' });
 const repository = new codeartifact.Repository(stack, 'repository', {
     repositoryName: 'repository',
-    domainName: domain.domainName,
+    domain: domain,
 });
+```
+
+It is possible to use the `addRepository` method on `codeartifact.Domain` to add repostories implicitly.
+
+```ts
+import * as codeartifact from '@aws-cdk/aws-codeartifact';
+
+const domain = new codeartifact.Domain(stack, 'domain', { domainName: 'example-domain' });
+const repo1 = new codeartifact.Repository(stack, 'repository_1', { repositoryName: 'repository-1' });
+const repo2 = new codeartifact.Repository(stack, 'repository_2', { repositoryName: 'repository-2' });
+
+domain.addRepositories(repo1, repo2);
+
 ```
 
 ### External Connections
@@ -48,7 +61,7 @@ import * as codeartifact from '@aws-cdk/aws-codeartifact';
 const domain = new codeartifact.Domain(stack, 'domain', { domainName: 'example-domain' });
 const repository = new codeartifact.Repository(stack, 'repository', {
     repositoryName: 'repository',
-    domainName: domain.domainName,
+    domain: domain,
     externalConnections: [codeartifact.ExternalConnection.NPM]
 });
 ```
@@ -60,7 +73,7 @@ import * as codeartifact from '@aws-cdk/aws-codeartifact';
 const domain = new codeartifact.Domain(stack, 'domain', { domainName: 'example-domain' });
 const repository = new codeartifact.Repository(stack, 'repository', {
     repositoryName: 'repository',
-    domainName: domain.domainName
+    domain: domain
 });
 
 
@@ -79,12 +92,12 @@ const domain = new codeartifact.Domain(stack, 'domain', { domainName: 'example-d
 
 const upstreamRepository = new codeartifact.Repository(stack, 'upstream-repository', {
     repositoryName: 'upstream-repository',
-    domainName: domain.domainName,
+    domain: domain,
 });
 
 const repository = new codeartifact.Repository(stack, 'repository', {
     repositoryName: 'repository',
-    domainName: domain.domainName,
+    domain: domain,
     upstreams: [upstreamRepository]
 });
 ```
@@ -97,12 +110,12 @@ const domain = new codeartifact.Domain(stack, 'domain', { domainName: 'example-d
 
 const upstreamRepository = new codeartifact.Repository(stack, 'upstream-repository', {
     repositoryName: 'upstream-repository',
-    domainName: domain.domainName,
+    domain: domain,
 });
 
 const repository = new codeartifact.Repository(stack, 'repository', {
     repositoryName: 'repository',
-    domainName: domain.domainName
+    domain: domain
 });
 
 
