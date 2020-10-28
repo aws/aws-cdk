@@ -3,7 +3,7 @@ import * as path from 'path';
 import { expect as ourExpect, haveResource } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { App, IgnoreMode, DefaultStackSynthesizer, Lazy, LegacyStackSynthesizer, Stack, Stage } from '@aws-cdk/core';
+import { App, DefaultStackSynthesizer, IgnoreMode, Lazy, LegacyStackSynthesizer, Stack, Stage } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import { DockerImageAsset } from '../lib';
@@ -212,24 +212,11 @@ nodeunitShim({
   },
 
   'docker directory is staged without files specified in .dockerignore'(test: Test) {
-    const app = new App();
-    const stack = new Stack(app, 'stack');
+    testDockerDirectoryIsStagedWithoutFilesSpecifiedInDockerignore(test);
+  },
 
-    const image = new DockerImageAsset(stack, 'MyAsset', {
-      directory: path.join(__dirname, 'dockerignore-image'),
-    });
-
-    const session = app.synth();
-
-    // .dockerignore itself should be included in output to be processed during docker build
-    test.ok(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, '.dockerignore')));
-    test.ok(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'Dockerfile')));
-    test.ok(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'index.py')));
-    test.ok(!fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'foobar.txt')));
-    test.ok(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'subdirectory')));
-    test.ok(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'subdirectory', 'baz.txt')));
-
-    test.done();
+  'docker directory is staged without files specified in .dockerignore with IgnoreMode.GLOB'(test: Test) {
+    testDockerDirectoryIsStagedWithoutFilesSpecifiedInDockerignore(test, IgnoreMode.GLOB);
   },
 
   'docker directory is staged with whitelisted files specified in .dockerignore'(test: Test) {
@@ -258,24 +245,11 @@ nodeunitShim({
   },
 
   'docker directory is staged without files specified in exclude option'(test: Test) {
-    const app = new App();
-    const stack = new Stack(app, 'stack');
+    testDockerDirectoryIsStagedWithoutFilesSpecifiedInExcludeOption(test);
+  },
 
-    const image = new DockerImageAsset(stack, 'MyAsset', {
-      directory: path.join(__dirname, 'dockerignore-image'),
-      exclude: ['subdirectory'],
-    });
-
-    const session = app.synth();
-
-    test.ok(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, '.dockerignore')));
-    test.ok(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'Dockerfile')));
-    test.ok(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'index.py')));
-    test.ok(!fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'foobar.txt')));
-    test.ok(!fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'subdirectory')));
-    test.ok(!fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'subdirectory', 'baz.txt')));
-
-    test.done();
+  'docker directory is staged without files specified in exclude option with IgnoreMode.GLOB'(test: Test) {
+    testDockerDirectoryIsStagedWithoutFilesSpecifiedInExcludeOption(test, IgnoreMode.GLOB);
   },
 
   'fails if using tokens in build args keys or values'(test: Test) {
@@ -334,21 +308,51 @@ nodeunitShim({
     test.deepEqual(asset7.sourceHash, '26ec194928431cab6ec5af24ea9f01af2cf7b20e361128b07b2a7405d2951f95');
     test.done();
   },
-
-  'fails if the ignoreMode is not docker'(test: Test) {
-    const app = new App();
-    const stack = new Stack(app, 'stack');
-
-    test.throws(() => {
-      new DockerImageAsset(stack, 'MyAsset', {
-        directory: path.join(__dirname, 'whitelisted-image'),
-        ignoreMode: IgnoreMode.GLOB,
-      });
-    }, /DockerImageAsset can only use IgnoreMode.DOCKER but got glob/);
-
-    test.done();
-  },
 });
+
+function testDockerDirectoryIsStagedWithoutFilesSpecifiedInDockerignore(test: Test, ignoreMode?: IgnoreMode) {
+  const app = new App();
+  const stack = new Stack(app, 'stack');
+
+  const image = new DockerImageAsset(stack, 'MyAsset', {
+    ignoreMode,
+    directory: path.join(__dirname, 'dockerignore-image'),
+  });
+
+  const session = app.synth();
+
+  // .dockerignore itself should be included in output to be processed during docker build
+  test.ok(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, '.dockerignore')));
+  test.ok(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'Dockerfile')));
+  test.ok(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'index.py')));
+  test.ok(!fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'foobar.txt')));
+  test.ok(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'subdirectory')));
+  test.ok(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'subdirectory', 'baz.txt')));
+
+  test.done();
+}
+
+function testDockerDirectoryIsStagedWithoutFilesSpecifiedInExcludeOption(test: Test, ignoreMode?: IgnoreMode) {
+  const app = new App();
+  const stack = new Stack(app, 'stack');
+
+  const image = new DockerImageAsset(stack, 'MyAsset', {
+    directory: path.join(__dirname, 'dockerignore-image'),
+    exclude: ['subdirectory'],
+    ignoreMode,
+  });
+
+  const session = app.synth();
+
+  test.ok(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, '.dockerignore')));
+  test.ok(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'Dockerfile')));
+  test.ok(fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'index.py')));
+  test.ok(!fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'foobar.txt')));
+  test.ok(!fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'subdirectory')));
+  test.ok(!fs.existsSync(path.join(session.directory, `asset.${image.sourceHash}`, 'subdirectory', 'baz.txt')));
+
+  test.done();
+}
 
 test('nested assemblies share assets: legacy synth edition', () => {
   // GIVEN

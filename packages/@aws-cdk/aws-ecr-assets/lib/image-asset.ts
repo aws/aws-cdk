@@ -98,10 +98,6 @@ export class DockerImageAsset extends CoreConstruct implements assets.IAsset {
 
     let ignoreMode = props.ignoreMode || IgnoreMode.DOCKER;
 
-    if (ignoreMode != IgnoreMode.DOCKER) {
-      throw new Error(`DockerImageAsset can only use IgnoreMode.DOCKER but got ${ignoreMode}`);
-    }
-
     let exclude: string[] = props.exclude || [];
 
     const ignore = path.join(dir, '.dockerignore');
