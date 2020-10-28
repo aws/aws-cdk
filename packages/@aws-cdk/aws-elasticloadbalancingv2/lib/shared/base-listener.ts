@@ -79,16 +79,14 @@ export abstract class BaseListener extends Resource {
         loadBalancerType: options.loadBalancerType,
         listenerProtocol: options.listenerProtocol,
       } as cxschema.LoadBalancerListenerContextQuery,
-      dummyValue: undefined,
+      dummyValue: {
+        listenerArn: `arn:aws:elasticloadbalancing:us-west-2:123456789012:listener/${options.loadBalancerType}/my-load-balancer/50dc6c495c0c9188/f2f7dc8efc522ab2`,
+        listenerPort: 80,
+        securityGroupIds: ['sg-123456789012'],
+      } as cxapi.LoadBalancerListenerContextResponse,
     }).value;
 
-    const defaultProps: cxapi.LoadBalancerListenerContextResponse = {
-      listenerArn: `arn:aws:elasticloadbalancing:us-west-2:123456789012:listener/${options.loadBalancerType}/my-load-balancer/50dc6c495c0c9188/f2f7dc8efc522ab2`,
-      listenerPort: 80,
-      securityGroupIds: ['sg-123456789012'],
-    };
-
-    return props ?? defaultProps;
+    return props;
   }
   /**
    * @attribute

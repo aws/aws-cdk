@@ -307,19 +307,14 @@ export class SecurityGroup extends SecurityGroupBase {
     const attributes: cxapi.SecurityGroupContextResponse = ContextProvider.getValue(scope, {
       provider: cxschema.ContextProvider.SECURITY_GROUP_PROVIDER,
       props: { securityGroupId },
-      dummyValue: undefined,
+      dummyValue: {
+        securityGroupId: 'sg-12345',
+        allowAllOutbound: true,
+      } as cxapi.SecurityGroupContextResponse,
     }).value;
 
-    // Dummy attributes for tests and the first pass.
-    const dummyAttributes: cxapi.SecurityGroupContextResponse = {
-      securityGroupId: 'sg-12345',
-      allowAllOutbound: true,
-    };
-
-    const attributesToUse = attributes ?? dummyAttributes;
-
-    return SecurityGroup.fromSecurityGroupId(scope, id, attributesToUse.securityGroupId, {
-      allowAllOutbound: attributesToUse.allowAllOutbound,
+    return SecurityGroup.fromSecurityGroupId(scope, id, attributes.securityGroupId, {
+      allowAllOutbound: attributes.allowAllOutbound,
       mutable: true,
     });
   }

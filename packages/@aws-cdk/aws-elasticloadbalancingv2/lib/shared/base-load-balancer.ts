@@ -119,19 +119,17 @@ export abstract class BaseLoadBalancer extends Resource {
         ...options.userOptions,
         loadBalancerType: options.loadBalancerType,
       } as cxschema.LoadBalancerContextQuery,
-      dummyValue: undefined,
+      dummyValue: {
+        ipAddressType: cxapi.LoadBalancerIpAddressType.DUAL_STACK,
+        loadBalancerArn: `arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/${options.loadBalancerType}/my-load-balancer/50dc6c495c0c9188`,
+        loadBalancerCanonicalHostedZoneId: 'Z3DZXE0EXAMPLE',
+        loadBalancerDnsName: 'my-load-balancer-1234567890.us-west-2.elb.amazonaws.com',
+        securityGroupIds: ['sg-1234'],
+        vpcId: 'vpc-12345',
+      } as cxapi.LoadBalancerContextResponse,
     }).value;
 
-    const dummyProps: cxapi.LoadBalancerContextResponse = {
-      ipAddressType: cxapi.LoadBalancerIpAddressType.DUAL_STACK,
-      loadBalancerArn: `arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/${options.loadBalancerType}/my-load-balancer/50dc6c495c0c9188`,
-      loadBalancerCanonicalHostedZoneId: 'Z3DZXE0EXAMPLE',
-      loadBalancerDnsName: 'my-load-balancer-1234567890.us-west-2.elb.amazonaws.com',
-      securityGroupIds: ['sg-1234'],
-      vpcId: 'vpc-12345',
-    };
-
-    return props ?? dummyProps;
+    return props;
   }
 
   /**
