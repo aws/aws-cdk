@@ -257,6 +257,24 @@ test('cluster with parameter group', () => {
 
 });
 
+test('publicly accessible cluster', () => {
+  // WHEN
+  new Cluster(stack, 'Redshift', {
+    masterUser: {
+      masterUsername: 'admin',
+    },
+    vpc,
+    PubliclyAccessible: true,
+  });
+
+  // THEN
+  cdkExpect(stack).to(haveResource('AWS::Redshift::Cluster', {
+    Properties: {
+      PubliclyAccessible: true,
+    },
+  })
+});
+
 test('imported cluster with imported security group honors allowAllOutbound', () => {
   // GIVEN
   const cluster = Cluster.fromClusterAttributes(stack, 'Database', {
