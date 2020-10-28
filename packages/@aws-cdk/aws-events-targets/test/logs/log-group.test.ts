@@ -16,7 +16,7 @@ test('use log group as an event rule target', () => {
   });
 
   // WHEN
-  rule1.addTarget(new targets.LogGroup(logGroup));
+  rule1.addTarget(new targets.CloudWatchLogGroup(logGroup));
 
   // THEN
   expect(stack).toHaveResource('AWS::Events::Rule', {
@@ -28,7 +28,11 @@ test('use log group as an event rule target', () => {
           'Fn::Join': [
             '',
             [
-              'arn:aws:logs:',
+              'arn:',
+              {
+                Ref: 'AWS::Partition',
+              },
+              ':logs:',
               {
                 Ref: 'AWS::Region',
               },
@@ -60,7 +64,7 @@ test('use log group as an event rule target with rule target input', () => {
   });
 
   // WHEN
-  rule1.addTarget(new targets.LogGroup(logGroup, {
+  rule1.addTarget(new targets.CloudWatchLogGroup(logGroup, {
     event: events.RuleTargetInput.fromObject({
       data: events.EventField.fromPath('$'),
     }),
@@ -76,7 +80,11 @@ test('use log group as an event rule target with rule target input', () => {
           'Fn::Join': [
             '',
             [
-              'arn:aws:logs:',
+              'arn:',
+              {
+                Ref: 'AWS::Partition',
+              },
+              ':logs:',
               {
                 Ref: 'AWS::Region',
               },

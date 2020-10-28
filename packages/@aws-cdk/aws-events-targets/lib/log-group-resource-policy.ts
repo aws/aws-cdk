@@ -3,7 +3,7 @@ import * as cdk from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
 
 /**
- * Construction properties for LogGroupResourcePolicy
+ * Properties to configure a log group resource policy
  */
 export interface LogGroupResourcePolicyProps {
   /**
@@ -44,7 +44,11 @@ export class LogGroupResourcePolicy extends cr.AwsCustomResource {
         },
         ignoreErrorCodesMatching: '400',
       },
-      policy: cr.AwsCustomResourcePolicy.fromSdkCalls({ resources: ['*'] }),
+      policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
+        // putResourcePolicy and deleteResourcePolicy don't support resource-level permissions. We must specify all resources ("*").
+        // https://docs.aws.amazon.com/IAM/latest/UserGuide/list_amazoncloudwatchlogs.html
+        resources: ['*'],
+      }),
     });
   }
 }

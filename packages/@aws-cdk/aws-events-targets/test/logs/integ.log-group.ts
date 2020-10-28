@@ -17,19 +17,31 @@ const logGroup2 = new logs.LogGroup(stack, 'log-group2', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
+new logs.LogGroup(stack, 'log-group-imported', {
+  logGroupName: 'MyLogGroupNameToBeImported',
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
+});
+
+const importedLogGroup = logs.LogGroup.fromLogGroupName(stack, 'imported-log-group', 'MyLogGroupNameToBeImported');
+
 const timer = new events.Rule(stack, 'Timer', {
   schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
 });
-timer.addTarget(new targets.LogGroup(logGroup));
+timer.addTarget(new targets.CloudWatchLogGroup(logGroup));
 
 const timer2 = new events.Rule(stack, 'Timer2', {
   schedule: events.Schedule.rate(cdk.Duration.minutes(2)),
 });
-timer2.addTarget(new targets.LogGroup(logGroup2, {
+timer2.addTarget(new targets.CloudWatchLogGroup(logGroup2, {
   event: events.RuleTargetInput.fromObject({
     data: events.EventField.fromPath('$.detail-type'),
   }),
 }));
+
+const timer3 = new events.Rule(stack, 'Timer3', {
+  schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+});
+timer3.addTarget(new targets.CloudWatchLogGroup(importedLogGroup));
 
 app.synth();
 

@@ -20,7 +20,7 @@ export interface LogGroupProps {
 /**
  * Use an AWS CloudWatch LogGroup as an event rule target.
  */
-export class LogGroup implements events.IRuleTarget {
+export class CloudWatchLogGroup implements events.IRuleTarget {
   constructor(private readonly logGroup: logs.ILogGroup, private readonly props: LogGroupProps = {}) {}
 
   /**
@@ -30,8 +30,11 @@ export class LogGroup implements events.IRuleTarget {
     // Use a custom resource to set the log group resource policy since it is not supported by CDK and cfn.
     // https://github.com/aws/aws-cdk/issues/5343
     const resourcePolicyId = `EventsLogGroupPolicy${_rule.node.uniqueId}`;
+
+    const logGroupStack = cdk.Stack.of(this.logGroup);
+
     if (!this.logGroup.node.tryFindChild(resourcePolicyId)) {
-      new LogGroupResourcePolicy(cdk.Stack.of(this.logGroup), resourcePolicyId, {
+      new LogGroupResourcePolicy(logGroupStack, resourcePolicyId, {
         policyName: `${this.logGroup.logGroupName}EventsLogPolicy`,
         policyStatements: [new iam.PolicyStatement({
           effect: iam.Effect.ALLOW,
@@ -44,7 +47,12 @@ export class LogGroup implements events.IRuleTarget {
 
     return {
       id: '',
-      arn: `arn:aws:logs:${this.logGroup.stack.region}:${this.logGroup.stack.account}:log-group:${this.logGroup.logGroupName}`,
+      arn: logGroupStack.formatArn({
+        service: 'logs',
+        resource: 'log-group',
+        sep: ':',
+        resourceName: this.logGroup.logGroupName,
+      }),
       input: this.props.event,
       targetResource: this.logGroup,
     };
