@@ -73,7 +73,7 @@ test('CloudFormationInit can be added to after instantiation', () => {
 
   // WHEN
   config.add(ec2.InitCommand.argvCommand(['/bin/true']));
-  init._attach(resource, linuxOptions());
+  init.attach(resource, linuxOptions());
 
   // THEN
   expectMetadataLike({
@@ -99,7 +99,7 @@ test('empty configs are not rendered', () => {
     configSets: { default: ['config2', 'config1'] },
     configs: { config1, config2 },
   });
-  init._attach(resource, linuxOptions());
+  init.attach(resource, linuxOptions());
 
   // THEN
   expectMetadataLike({
@@ -126,7 +126,7 @@ describe('userdata', () => {
 
   test('linux userdata contains right commands', () => {
     // WHEN
-    simpleInit._attach(resource, linuxOptions());
+    simpleInit.attach(resource, linuxOptions());
 
     // THEN
     const lines = linuxUserData.render().split('\n');
@@ -146,7 +146,7 @@ describe('userdata', () => {
     // WHEN
     const windowsUserData = ec2.UserData.forWindows();
 
-    simpleInit._attach(resource, {
+    simpleInit.attach(resource, {
       platform: ec2.OperatingSystemType.WINDOWS,
       instanceRole,
       userData: windowsUserData,
@@ -168,7 +168,7 @@ describe('userdata', () => {
 
   test('ignoreFailures disables result code reporting', () => {
     // WHEN
-    simpleInit._attach(resource, {
+    simpleInit.attach(resource, {
       ...linuxOptions(),
       ignoreFailures: true,
     });
@@ -181,7 +181,7 @@ describe('userdata', () => {
 
   test('can disable log printing', () => {
     // WHEN
-    simpleInit._attach(resource, {
+    simpleInit.attach(resource, {
       ...linuxOptions(),
       printLog: false,
     });
@@ -193,7 +193,7 @@ describe('userdata', () => {
 
   test('can disable fingerprinting', () => {
     // WHEN
-    simpleInit._attach(resource, {
+    simpleInit.attach(resource, {
       ...linuxOptions(),
       embedFingerprint: false,
     });
@@ -205,7 +205,7 @@ describe('userdata', () => {
 
   test('can request multiple different configsets to be used', () => {
     // WHEN
-    simpleInit._attach(resource, {
+    simpleInit.attach(resource, {
       ...linuxOptions(),
       configSets: ['banana', 'peach'],
     });
@@ -255,7 +255,7 @@ describe('assets n buckets', () => {
     );
 
     // WHEN
-    init._attach(resource, linuxOptions());
+    init.attach(resource, linuxOptions());
 
     // THEN
     expect(stack).toHaveResource('AWS::IAM::Policy', {
@@ -309,7 +309,7 @@ describe('assets n buckets', () => {
     );
 
     // WHEN
-    init._attach(resource, linuxOptions());
+    init.attach(resource, linuxOptions());
 
     // THEN
     expect(stack).toHaveResource('AWS::IAM::Policy', {
@@ -355,7 +355,7 @@ describe('assets n buckets', () => {
     );
 
     // WHEN
-    init._attach(resource, linuxOptions());
+    init.attach(resource, linuxOptions());
 
     // THEN
     expect(stack).toHaveResource('AWS::IAM::Policy', {
@@ -398,7 +398,7 @@ describe('assets n buckets', () => {
     );
 
     // WHEN
-    init._attach(resource, linuxOptions());
+    init.attach(resource, linuxOptions());
 
     // THEN
     expect(stack).toHaveResource('AWS::IAM::Policy', {
@@ -440,7 +440,7 @@ describe('assets n buckets', () => {
     );
 
     // WHEN
-    init._attach(resource, linuxOptions());
+    init.attach(resource, linuxOptions());
 
     // THEN
     expectMetadataLike({
@@ -465,7 +465,7 @@ describe('assets n buckets', () => {
     );
 
     // WHEN
-    init._attach(resource, linuxOptions());
+    init.attach(resource, linuxOptions());
 
     // THEN
     expectMetadataLike({
@@ -489,7 +489,7 @@ describe('assets n buckets', () => {
       const init = ec2.CloudFormationInit.fromElements(
         ec2.InitFile.fromAsset('/etc/myFile', assetFilePath),
       );
-      init._attach(resource, linuxOptions());
+      init.attach(resource, linuxOptions());
 
       return linuxUserData.render().split('\n').find(line => line.match(/# fingerprint:/));
     }
@@ -519,7 +519,7 @@ describe('assets n buckets', () => {
       const init = ec2.CloudFormationInit.fromElements(
         ec2.InitFile.fromExistingAsset('/etc/myFile', new Asset(stack, 'FileAsset', { path: assetFilePath })),
       );
-      init._attach(resource, linuxOptions());
+      init.attach(resource, linuxOptions());
 
       return linuxUserData.render().split('\n').find(line => line.match(/# fingerprint:/));
     }
