@@ -79,7 +79,7 @@ export class MockSdkProvider extends SdkProvider {
   }
 
   /**
-   * Replace the STS client with the given object
+   * Replace the ELBv2 client with the given object
    */
   public stubELBv2(stubs: SyncHandlerSubsetOf<AWS.ELBv2>) {
     (this.sdk as any).elbv2 = jest.fn().mockReturnValue(partialAwsService<AWS.ELBv2>(stubs));
