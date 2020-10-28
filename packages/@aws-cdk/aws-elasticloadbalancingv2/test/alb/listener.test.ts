@@ -1378,9 +1378,9 @@ describe('tests', () => {
 
       // WHEN
       const listener = elbv2.ApplicationListener.fromLookup(stack, 'a', {
-        loadBalancerTags: [
-          { key: 'some', value: 'tag' },
-        ],
+        loadBalancerTags: {
+          some: 'tag',
+        },
       });
 
       // THEN
@@ -1400,9 +1400,9 @@ describe('tests', () => {
       });
 
       const listener = elbv2.ApplicationListener.fromLookup(stack, 'a', {
-        loadBalancerTags: [
-          { key: 'some', value: 'tag' },
-        ],
+        loadBalancerTags: {
+          some: 'tag',
+        },
       });
 
       // WHEN
@@ -1432,9 +1432,9 @@ describe('tests', () => {
       });
 
       const listener = elbv2.ApplicationListener.fromLookup(stack, 'a', {
-        loadBalancerTags: [
-          { key: 'some', value: 'tag' },
-        ],
+        loadBalancerTags: {
+          some: 'tag',
+        },
       });
 
       // WHEN

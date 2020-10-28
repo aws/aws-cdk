@@ -415,9 +415,9 @@ describe('tests', () => {
 
       // WHEN
       const loadBalancer = elbv2.NetworkLoadBalancer.fromLookup(stack, 'a', {
-        loadBalancerTags: [
-          { key: 'some', value: 'tag' },
-        ],
+        loadBalancerTags: {
+          some: 'tag',
+        },
       });
 
       // THEN
@@ -438,9 +438,9 @@ describe('tests', () => {
       });
 
       const loadBalancer = elbv2.NetworkLoadBalancer.fromLookup(stack, 'a', {
-        loadBalancerTags: [
-          { key: 'some', value: 'tag' },
-        ],
+        loadBalancerTags: {
+          some: 'tag',
+        },
       });
 
       const targetGroup = new elbv2.NetworkTargetGroup(stack, 'tg', {

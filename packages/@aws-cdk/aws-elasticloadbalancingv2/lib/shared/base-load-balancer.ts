@@ -7,7 +7,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { RegionInfo } from '@aws-cdk/region-info';
 import { Construct } from 'constructs';
 import { CfnLoadBalancer } from '../elasticloadbalancingv2.generated';
-import { Attributes, ifUndefined, renderAttributes } from './util';
+import { Attributes, ifUndefined, mapTagMapToCxschema, renderAttributes } from './util';
 
 /**
  * Shared properties of both Application and Network Load Balancers
@@ -80,7 +80,7 @@ export interface BaseLoadBalancerLookupOptions {
    * Match load balancer tags.
    * @default - does not match load balancers by tags
    */
-  readonly loadBalancerTags?: cxschema.Tag[];
+  readonly loadBalancerTags?: Record<string, string>;
 }
 
 /**
@@ -109,14 +109,20 @@ export abstract class BaseLoadBalancer extends Resource {
    */
   protected static _queryContextProvider(scope: Construct, options: LoadBalancerQueryContextProviderOptions) {
     if (Token.isUnresolved(options.userOptions.loadBalancerArn)
-      || Token.isUnresolved(options.userOptions.loadBalancerTags)) {
+      || Object.values(options.userOptions.loadBalancerTags ?? {}).some(Token.isUnresolved)) {
       throw new Error('All arguments to look up a load balancer must be concrete (no Tokens)');
+    }
+
+    let cxschemaTags: cxschema.Tag[] | undefined;
+    if (options.userOptions.loadBalancerTags) {
+      cxschemaTags = mapTagMapToCxschema(options.userOptions.loadBalancerTags);
     }
 
     const props: cxapi.LoadBalancerContextResponse = ContextProvider.getValue(scope, {
       provider: cxschema.ContextProvider.LOAD_BALANCER_PROVIDER,
       props: {
-        ...options.userOptions,
+        loadBalancerArn: options.userOptions.loadBalancerArn,
+        loadBalancerTags: cxschemaTags,
         loadBalancerType: options.loadBalancerType,
       } as cxschema.LoadBalancerContextQuery,
       dummyValue: {

@@ -401,9 +401,9 @@ describe('tests', () => {
 
     // WHEN
     const listener = elbv2.NetworkListener.fromLookup(stack, 'a', {
-      loadBalancerTags: [
-        { key: 'some', value: 'tag' },
-      ],
+      loadBalancerTags: {
+        some: 'tag',
+      },
     });
 
     // THEN
