@@ -163,16 +163,8 @@ class ImportedGatewayRoute extends cdk.Resource implements IGatewayRoute {
       this.gatewayRouteArn = props.gatewayRouteArn;
       this.gatewayRouteName = cdk.Fn.select(4, cdk.Fn.split('/', cdk.Stack.of(scope).parseArn(props.gatewayRouteArn).resourceName!));
       this.virtualGateway = VirtualGateway.fromVirtualGatewayArn(this, 'virtualGateway', props.gatewayRouteArn);
-    } else if (props.gatewayRouteName && props.meshName && props.virtualGateway) {
-      this.gatewayRouteName = props.gatewayRouteName;
-      this.virtualGateway = props.virtualGateway;
-      this.gatewayRouteArn = cdk.Stack.of(this).formatArn({
-        service: 'appmesh',
-        resource: `mesh/${props.meshName}/virtualGateway/${props.virtualGateway.virtualGatewayName}/gatewayRoute`,
-        resourceName: this.gatewayRouteName,
-      });
     } else {
-      throw new Error('Need either arn or three names');
+      throw new Error('Need gatewayRouteArn');
     }
   }
 }

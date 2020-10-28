@@ -307,34 +307,3 @@ gateway.addGatewayRoute('gateway-route-grpc', {
   }),
 });
 ```
-
-Multiple gateway routes may also be added at route incoming traffic to different virtual services.
-
-```typescript
-// Add an HTTP Route
-gateway.addGatewayRoutes([
-  {
-    id: 'gateway-route',
-    props: {
-      routeSpec: appmesh.GatewayRouteSpec.httpRouteSpec({
-        routeTarget: virtualService,
-      }),
-      gatewayRouteName: 'gateway-route',
-    },
-  },
-  {
-    id: 'gateway-route2',
-    props: {
-      routeSpec: appmesh.GatewayRouteSpec.httpRouteSpec({
-        routeTarget: virtualService2,
-        match: {
-          prefixPath: '/echo',
-        },
-      }),
-      gatewayRouteName: 'gateway-route2',
-    },
-  },
-]);
-```
-
-The id field is the CloudFormation Logical ID for the new resource, and props are the configuration for the new route you are creating.

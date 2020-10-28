@@ -463,32 +463,13 @@ class ImportedVirtualGateway extends VirtualGatewayBase {
 
   constructor(scope: Construct, id: string, props: VirtualGatewayAttributes) {
     super(scope, id);
-
-    if (props.mesh) {
-      this.mesh = props.mesh;
-    } else if (props.meshName) {
-      if (props.mesh) {
-        throw new Error('Supply either \'mesh\' or \'meshName\', but not both');
-      }
-      this.mesh = Mesh.fromMeshName(this, 'Mesh', props.meshName);
-    } else if (props.virtualGatewayArn) {
+    if (props.virtualGatewayArn) {
       const meshName = cdk.Fn.select(0, cdk.Fn.split('/', cdk.Stack.of(scope).parseArn(props.virtualGatewayArn).resourceName!));
       this.mesh = Mesh.fromMeshName(this, 'Mesh', meshName);
-    } else {
-      throw new Error('Supply either \'mesh\' or \'meshName\' or \'virtualGatewayArn\'');
-    }
-    if (props.virtualGatewayArn) {
       this.virtualGatewayArn = props.virtualGatewayArn;
       this.virtualGatewayName = cdk.Fn.select(2, cdk.Fn.split('/', cdk.Stack.of(scope).parseArn(props.virtualGatewayArn).resourceName!));
-    } else if (props.virtualGatewayName && props.meshName) {
-      this.virtualGatewayName = props.virtualGatewayName;
-      this.virtualGatewayArn = cdk.Stack.of(this).formatArn({
-        service: 'appmesh',
-        resource: `mesh/${props.meshName}/virtualGateway`,
-        resourceName: this.virtualGatewayName,
-      });
     } else {
-      throw new Error('Need either arn or both names');
+      throw new Error('Need virtualGatewayArn');
     }
   }
 }

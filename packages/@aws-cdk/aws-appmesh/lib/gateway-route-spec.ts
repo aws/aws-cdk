@@ -12,7 +12,6 @@ export interface HttpGatewayRouteMatch {
    * This parameter must always start with /, which by itself matches all requests to the virtual service name.
    * You can also match for path-based routing of requests. For example, if your virtual service name is my-service.local
    * and you want the route to match requests to my-service.local/metrics, your prefix should be /metrics.
-   *
    */
   readonly prefixPath: string;
 }
@@ -147,6 +146,7 @@ class HttpGatewayRouteSpec extends GatewayRouteSpec {
     this.routeType = protocol;
     this.match = props.match;
   }
+
   public bind(_scope: cdk.Construct): GatewayRouteSpecConfig {
     const prefixPath = this.match ? this.match.prefixPath : '/';
     if (prefixPath[0] != '/') {
@@ -177,8 +177,8 @@ class GrpcGatewayRouteSpec extends GatewayRouteSpec {
    *
    * @default - no default
    */
-
   readonly match: GrpcGatewayRouteMatch;
+
   /**
    * The VirtualService this GatewayRoute directs traffic to
    */
