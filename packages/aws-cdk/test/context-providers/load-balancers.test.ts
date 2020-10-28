@@ -29,6 +29,7 @@ describe('load balancer context provider plugin', () => {
       provider.getValue({
         account: '1234',
         region: 'us-east-1',
+        loadBalancerType: cxschema.LoadBalancerType.APPLICATION,
         loadBalancerArn: 'arn:load-balancer1',
       }),
     ).rejects.toThrow(/No load balancers found/i);
@@ -47,6 +48,7 @@ describe('load balancer context provider plugin', () => {
           CanonicalHostedZoneId: 'Z1234',
           SecurityGroups: ['sg-1234'],
           VpcId: 'vpc-1234',
+          Type: 'application',
         },
         {
           IpAddressType: 'ipv4',
@@ -55,6 +57,7 @@ describe('load balancer context provider plugin', () => {
           CanonicalHostedZoneId: 'Z1234',
           SecurityGroups: ['sg-1234'],
           VpcId: 'vpc-1234',
+          Type: 'application',
         },
       ],
       describeTagsExpected: { ResourceArns: ['arn:load-balancer1', 'arn:load-balancer2'] },
@@ -79,6 +82,7 @@ describe('load balancer context provider plugin', () => {
       provider.getValue({
         account: '1234',
         region: 'us-east-1',
+        loadBalancerType: cxschema.LoadBalancerType.APPLICATION,
         loadBalancerTags: [
           { key: 'some', value: 'tag' },
         ],
@@ -100,6 +104,7 @@ describe('load balancer context provider plugin', () => {
           CanonicalHostedZoneId: 'Z1234',
           SecurityGroups: ['sg-1234'],
           VpcId: 'vpc-1234',
+          Type: 'application',
         },
       ],
     });
@@ -108,6 +113,7 @@ describe('load balancer context provider plugin', () => {
     const result = await provider.getValue({
       account: '1234',
       region: 'us-east-1',
+      loadBalancerType: cxschema.LoadBalancerType.APPLICATION,
       loadBalancerArn: 'arn:load-balancer1',
     });
 
@@ -133,6 +139,7 @@ describe('load balancer context provider plugin', () => {
           CanonicalHostedZoneId: 'Z1234',
           SecurityGroups: ['sg-1234'],
           VpcId: 'vpc-1234',
+          Type: 'application',
         },
         {
           IpAddressType: 'ipv4',
@@ -141,6 +148,7 @@ describe('load balancer context provider plugin', () => {
           CanonicalHostedZoneId: 'Z1234',
           SecurityGroups: ['sg-1234'],
           VpcId: 'vpc-1234',
+          Type: 'application',
         },
       ],
       describeTagsExpected: { ResourceArns: ['arn:load-balancer1', 'arn:load-balancer2'] },
@@ -162,14 +170,17 @@ describe('load balancer context provider plugin', () => {
     });
 
     // WHEN
-    await provider.getValue({
+    const result = await provider.getValue({
       account: '1234',
       region: 'us-east-1',
+      loadBalancerType: cxschema.LoadBalancerType.APPLICATION,
       loadBalancerTags: [
         { key: 'some', value: 'tag' },
         { key: 'second', value: 'tag2' },
       ],
     });
+
+    expect(result.loadBalancerArn).toEqual('arn:load-balancer2');
   });
 
   test('filters by type', async () => {
@@ -197,12 +208,24 @@ describe('load balancer context provider plugin', () => {
           VpcId: 'vpc-1234',
         },
       ],
+
+      tagDescriptions: [
+        {
+          ResourceArn: 'arn:load-balancer1',
+          Tags: [{ Key: 'some', Value: 'tag' }],
+        },
+        {
+          ResourceArn: 'arn:load-balancer2',
+          Tags: [{ Key: 'some', Value: 'tag' }],
+        },
+      ],
     });
 
     // WHEN
     const loadBalancer = await provider.getValue({
       account: '1234',
       region: 'us-east-1',
+      loadBalancerTags: [{ key: 'some', value: 'tag' }],
       loadBalancerType: cxschema.LoadBalancerType.APPLICATION,
     });
 

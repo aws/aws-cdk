@@ -232,9 +232,8 @@ export enum LoadBalancerType {
 export interface LoadBalancerFilter {
   /**
    * Filter load balancers by their type
-   * @default - does not filter by load balancer type
    */
-  readonly loadBalancerType?: LoadBalancerType;
+  readonly loadBalancerType: LoadBalancerType;
 
   /**
    * Find by load balancer's ARN

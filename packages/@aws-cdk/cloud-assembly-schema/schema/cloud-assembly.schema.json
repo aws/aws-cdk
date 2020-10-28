@@ -605,12 +605,8 @@
                     "type": "string"
                 },
                 "loadBalancerType": {
-                    "description": "Filter load balancers by their type (Default - does not filter by load balancer type)",
-                    "enum": [
-                        "application",
-                        "network"
-                    ],
-                    "type": "string"
+                    "$ref": "#/definitions/LoadBalancerType",
+                    "description": "Filter load balancers by their type"
                 },
                 "loadBalancerArn": {
                     "description": "Find by load balancer's ARN (Default - does not search by load balancer arn)",
@@ -626,8 +622,17 @@
             },
             "required": [
                 "account",
+                "loadBalancerType",
                 "region"
             ]
+        },
+        "LoadBalancerType": {
+            "description": "Type of load balancer",
+            "enum": [
+                "application",
+                "network"
+            ],
+            "type": "string"
         },
         "LoadBalancerListenerContextQuery": {
             "description": "Query input for looking up a load balancer listener",
@@ -662,12 +667,8 @@
                     "type": "number"
                 },
                 "loadBalancerType": {
-                    "description": "Filter load balancers by their type (Default - does not filter by load balancer type)",
-                    "enum": [
-                        "application",
-                        "network"
-                    ],
-                    "type": "string"
+                    "$ref": "#/definitions/LoadBalancerType",
+                    "description": "Filter load balancers by their type"
                 },
                 "loadBalancerArn": {
                     "description": "Find by load balancer's ARN (Default - does not search by load balancer arn)",
@@ -683,6 +684,7 @@
             },
             "required": [
                 "account",
+                "loadBalancerType",
                 "region"
             ]
         },

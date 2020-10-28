@@ -14,6 +14,10 @@ export class LoadBalancerContextProviderPlugin implements ContextProviderPlugin 
   async getValue(query: cxschema.LoadBalancerContextQuery): Promise<cxapi.LoadBalancerContextResponse> {
     const elbv2 = (await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(query.account, query.region), Mode.ForReading)).elbv2();
 
+    if (!query.loadBalancerArn && !query.loadBalancerTags) {
+      throw new Error('The load balancer lookup query must specify either `loadBalancerArn` or `loadBalancerTags`');
+    }
+
     const loadBalancers = await findLoadBalancers(elbv2, query);
 
     if (loadBalancers.length === 0) {
@@ -160,9 +164,7 @@ async function findLoadBalancers(elbv2: AWS.ELBv2, args: cxschema.LoadBalancerFi
   });
 
   // Filter by load balancer type
-  if (args.loadBalancerType) {
-    loadBalancers = loadBalancers.filter(lb => lb.Type === args.loadBalancerType);
-  }
+  loadBalancers = loadBalancers.filter(lb => lb.Type === args.loadBalancerType);
 
   // Filter by load balancer tags
   if (args.loadBalancerTags) {
