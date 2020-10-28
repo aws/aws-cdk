@@ -40,7 +40,7 @@ export function fingerprint(fileOrDirectory: string, options: FingerprintOptions
     _hashField(hash, 'options.ignoreMode', ignoreMode);
   }
 
-  const ignoreStrategy = IgnoreStrategy.fromCopyOptions(options);
+  const ignoreStrategy = IgnoreStrategy.fromCopyOptions(options, fileOrDirectory);
   const isDir = fs.statSync(fileOrDirectory).isDirectory();
   _processFileOrDirectory(fileOrDirectory, isDir);
 
@@ -49,7 +49,7 @@ export function fingerprint(fileOrDirectory: string, options: FingerprintOptions
   function _processFileOrDirectory(symbolicPath: string, isRootDir: boolean = false, realPath = symbolicPath) {
     const relativePath = path.relative(fileOrDirectory, symbolicPath);
 
-    if (!isRootDir && ignoreStrategy.ignores(relativePath)) {
+    if (!isRootDir && ignoreStrategy.ignores(symbolicPath)) {
       return;
     }
 

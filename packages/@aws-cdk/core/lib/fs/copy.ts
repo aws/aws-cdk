@@ -6,9 +6,10 @@ import { shouldFollow } from './utils';
 
 export function copyDirectory(srcDir: string, destDir: string, options: CopyOptions = { }, rootDir?: string) {
   const follow = options.follow !== undefined ? options.follow : SymlinkFollowMode.EXTERNAL;
-  const ignoreStrategy = IgnoreStrategy.fromCopyOptions(options);
 
   rootDir = rootDir || srcDir;
+
+  const ignoreStrategy = IgnoreStrategy.fromCopyOptions(options, rootDir);
 
   if (!fs.statSync(srcDir).isDirectory()) {
     throw new Error(`${srcDir} is not a directory`);
@@ -17,9 +18,8 @@ export function copyDirectory(srcDir: string, destDir: string, options: CopyOpti
   const files = fs.readdirSync(srcDir);
   for (const file of files) {
     const sourceFilePath = path.join(srcDir, file);
-    const relativePath = path.relative(rootDir, sourceFilePath);
 
-    if (ignoreStrategy.ignores(relativePath)) {
+    if (ignoreStrategy.ignores(sourceFilePath)) {
       continue;
     }
 
