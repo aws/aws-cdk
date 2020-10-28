@@ -109,7 +109,7 @@ export abstract class BaseLoadBalancer extends Resource {
    */
   protected static _queryContextProvider(scope: Construct, options: LoadBalancerQueryContextProviderOptions) {
     if (Token.isUnresolved(options.userOptions.loadBalancerArn)
-      ||Token.isUnresolved(options.userOptions.loadBalancerTags)) {
+      || Token.isUnresolved(options.userOptions.loadBalancerTags)) {
       throw new Error('All arguments to look up a load balancer must be concrete (no Tokens)');
     }
 

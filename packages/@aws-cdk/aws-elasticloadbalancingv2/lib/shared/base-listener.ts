@@ -66,9 +66,9 @@ export abstract class BaseListener extends Resource {
    */
   protected static _queryContextProvider(scope: Construct, options: ListenerQueryContextProviderOptions) {
     if (Token.isUnresolved(options.userOptions.loadBalancerArn)
-      ||Token.isUnresolved(options.userOptions.loadBalancerTags)
-      ||Token.isUnresolved(options.userOptions.listenerArn)
-      ||Token.isUnresolved(options.userOptions.listenerPort)) {
+      || Token.isUnresolved(options.userOptions.loadBalancerTags)
+      || Token.isUnresolved(options.userOptions.listenerArn)
+      || Token.isUnresolved(options.userOptions.listenerPort)) {
       throw new Error('All arguments to look up a load balancer listener must be concrete (no Tokens)');
     }
 
