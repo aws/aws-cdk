@@ -164,15 +164,15 @@ export = {
       const mesh = new appmesh.Mesh(stack, 'mesh', {
         meshName: 'test-mesh',
       });
-      const virtualGateway = new appmesh.VirtualGateway(stack, 'testGateway', {
-        virtualGatewayName: 'test-gateway',
-        mesh: mesh,
-      });
       test.throws(() => {
-        virtualGateway.addListener(appmesh.VirtualGatewayListener.httpGatewayListener());
-      }, /VirtualGateway may have at most one listener/);
-      test.throws(() => {
-        virtualGateway.addListeners([appmesh.VirtualGatewayListener.httpGatewayListener()]);
+        new appmesh.VirtualGateway(stack, 'testGateway', {
+          virtualGatewayName: 'test-gateway',
+          mesh: mesh,
+          listeners: [
+            appmesh.VirtualGatewayListener.httpGatewayListener(),
+            appmesh.VirtualGatewayListener.http2GatewayListener(),
+          ],
+        });
       }, /VirtualGateway may have at most one listener/);
       test.done();
     },
