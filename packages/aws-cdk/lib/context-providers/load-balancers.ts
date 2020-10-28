@@ -164,7 +164,7 @@ export class LoadBalancerListenerContextProviderPlugin implements ContextProvide
 async function findLoadBalancers(elbv2: AWS.ELBv2, args: cxschema.LoadBalancerFilter) {
   // List load balancers
   let loadBalancers = await describeLoadBalancers(elbv2, {
-    LoadBalancerArns: args.loadBalancerArn ? [args.loadBalancerArn!] : undefined,
+    LoadBalancerArns: args.loadBalancerArn ? [args.loadBalancerArn] : undefined,
   });
 
   // Filter by load balancer type
