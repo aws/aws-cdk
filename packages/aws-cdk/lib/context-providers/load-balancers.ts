@@ -187,7 +187,7 @@ async function describeLoadBalancers(elbv2: AWS.ELBv2, request: AWS.ELBv2.Descri
   do {
     page = await elbv2.describeLoadBalancers({
       ...request,
-      Marker: page ? page.NextMarker : undefined,
+      Marker: page?.NextMarker,
     }).promise();
 
     loadBalancers.push(...Array.from(page.LoadBalancers ?? []));
@@ -265,7 +265,7 @@ async function* describeListenersByLoadBalancerArn(elbv2: AWS.ELBv2, loadBalance
     do {
       page = await elbv2.describeListeners({
         LoadBalancerArn: loadBalancerArn,
-        Marker: page ? page.NextMarker : undefined,
+        Marker: page?.NextMarker,
       }).promise();
 
       for (const listener of page.Listeners ?? []) {
