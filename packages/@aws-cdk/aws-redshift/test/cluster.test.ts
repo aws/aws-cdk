@@ -264,15 +264,13 @@ test('publicly accessible cluster', () => {
       masterUsername: 'admin',
     },
     vpc,
-    PubliclyAccessible: true,
+    publiclyAccessible: true,
   });
 
   // THEN
   cdkExpect(stack).to(haveResource('AWS::Redshift::Cluster', {
-    Properties: {
-      PubliclyAccessible: true,
-    },
-  })
+    PubliclyAccessible: true,
+  }));
 });
 
 test('imported cluster with imported security group honors allowAllOutbound', () => {
