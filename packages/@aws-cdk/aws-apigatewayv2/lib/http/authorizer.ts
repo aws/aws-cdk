@@ -98,22 +98,19 @@ export class HttpJwtAuthorizer extends Resource implements IHttpAuthorizer {
 
   public readonly authorizerId: string;
   public readonly authorizerType: HttpAuthorizerType = HttpAuthorizerType.JWT;
-  public readonly identitySource: string[] = ['$request.header.Authorization']
 
   constructor(scope: Construct, id: string, props: HttpJwtAuthorizerProps) {
     super(scope, id);
 
     const authorizerName = props.authorizerName ?? id;
 
-    if (props.identitySource) {
-      this.identitySource = props.identitySource;
-    }
+    const identitySource = props.identitySource ?? ['$request.header.Authorization'];
 
     const resource = new CfnAuthorizer(this, 'Resource', {
       name: authorizerName,
       apiId: props.httpApi.httpApiId,
       authorizerType: this.authorizerType,
-      identitySource: this.identitySource,
+      identitySource,
       jwtConfiguration: props.jwtConfiguration,
     });
 
