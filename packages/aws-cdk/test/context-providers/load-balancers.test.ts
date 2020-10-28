@@ -247,6 +247,8 @@ describe('load balancer listener context provider plugin', () => {
       provider.getValue({
         account: '1234',
         region: 'us-east-1',
+        loadBalancerType: cxschema.LoadBalancerType.APPLICATION,
+        loadBalancerTags: [{ key: 'some', value: 'tag' }],
       }),
     ).rejects.toThrow(/No associated load balancers found/i);
   });
@@ -259,6 +261,7 @@ describe('load balancer listener context provider plugin', () => {
       loadBalancers: [
         {
           LoadBalancerArn: 'arn:load-balancer',
+          Type: 'application',
         },
       ],
       listeners: [
@@ -276,6 +279,8 @@ describe('load balancer listener context provider plugin', () => {
       provider.getValue({
         account: '1234',
         region: 'us-east-1',
+        loadBalancerType: cxschema.LoadBalancerType.APPLICATION,
+        loadBalancerArn: 'arn:load-balancer',
         listenerPort: 443,
         listenerProtocol: cxschema.LoadBalancerListenerProtocol.HTTPS,
       }),
@@ -290,9 +295,21 @@ describe('load balancer listener context provider plugin', () => {
       loadBalancers: [
         {
           LoadBalancerArn: 'arn:load-balancer',
+          Type: 'application',
         },
         {
           LoadBalancerArn: 'arn:load-balancer2',
+          Type: 'application',
+        },
+      ],
+      tagDescriptions: [
+        {
+          ResourceArn: 'arn:load-balancer',
+          Tags: [{ Key: 'some', Value: 'tag' }],
+        },
+        {
+          ResourceArn: 'arn:load-balancer2',
+          Tags: [{ Key: 'some', Value: 'tag' }],
         },
       ],
       listeners: [
@@ -316,6 +333,8 @@ describe('load balancer listener context provider plugin', () => {
       provider.getValue({
         account: '1234',
         region: 'us-east-1',
+        loadBalancerType: cxschema.LoadBalancerType.APPLICATION,
+        loadBalancerTags: [{ key: 'some', value: 'tag' }],
         listenerPort: 80,
         listenerProtocol: cxschema.LoadBalancerListenerProtocol.HTTP,
       }),
@@ -340,6 +359,7 @@ describe('load balancer listener context provider plugin', () => {
         {
           LoadBalancerArn: 'arn:load-balancer-arn',
           SecurityGroups: ['sg-1234', 'sg-2345'],
+          Type: 'application',
         },
       ],
     });
@@ -348,6 +368,7 @@ describe('load balancer listener context provider plugin', () => {
     const listener = await provider.getValue({
       account: '1234',
       region: 'us-east-1',
+      loadBalancerType: cxschema.LoadBalancerType.APPLICATION,
       listenerArn: 'arn:listener-arn',
     });
 
@@ -367,6 +388,7 @@ describe('load balancer listener context provider plugin', () => {
         {
           LoadBalancerArn: 'arn:load-balancer-arn1',
           SecurityGroups: ['sg-1234'],
+          Type: 'application',
         },
       ],
 
@@ -385,6 +407,7 @@ describe('load balancer listener context provider plugin', () => {
     const listener = await provider.getValue({
       account: '1234',
       region: 'us-east-1',
+      loadBalancerType: cxschema.LoadBalancerType.APPLICATION,
       loadBalancerArn: 'arn:load-balancer-arn1',
     });
 
@@ -405,11 +428,13 @@ describe('load balancer listener context provider plugin', () => {
           // This one should have the wrong tags
           LoadBalancerArn: 'arn:load-balancer-arn1',
           SecurityGroups: ['sg-1234', 'sg-2345'],
+          Type: 'application',
         },
         {
           // Expecting this one
           LoadBalancerArn: 'arn:load-balancer-arn2',
           SecurityGroups: ['sg-3456', 'sg-4567'],
+          Type: 'application',
         },
       ],
 
@@ -448,6 +473,7 @@ describe('load balancer listener context provider plugin', () => {
     const listener = await provider.getValue({
       account: '1234',
       region: 'us-east-1',
+      loadBalancerType: cxschema.LoadBalancerType.APPLICATION,
       loadBalancerTags: [
         { key: 'some', value: 'tag' },
       ],
@@ -476,6 +502,7 @@ describe('load balancer listener context provider plugin', () => {
             CanonicalHostedZoneId: 'Z1234',
             SecurityGroups: ['sg-1234'],
             VpcId: 'vpc-1234',
+            Type: 'application',
           },
           {
             // Should have a matching listener
@@ -485,6 +512,22 @@ describe('load balancer listener context provider plugin', () => {
             CanonicalHostedZoneId: 'Z1234',
             SecurityGroups: ['sg-2345'],
             VpcId: 'vpc-1234',
+            Type: 'application',
+          },
+        ],
+      });
+    });
+
+    AWS.mock('ELBv2', 'describeTags', (_params: aws.ELBv2.DescribeTagsInput, cb: AwsCallback<aws.ELBv2.DescribeTagsOutput>) => {
+      cb(null, {
+        TagDescriptions: [
+          {
+            ResourceArn: 'arn:load-balancer1',
+            Tags: [{ Key: 'some', Value: 'tag' }],
+          },
+          {
+            ResourceArn: 'arn:load-balancer2',
+            Tags: [{ Key: 'some', Value: 'tag' }],
           },
         ],
       });
@@ -545,6 +588,8 @@ describe('load balancer listener context provider plugin', () => {
     const listener = await provider.getValue({
       account: '1234',
       region: 'us-east-1',
+      loadBalancerType: cxschema.LoadBalancerType.APPLICATION,
+      loadBalancerTags: [{ key: 'some', value: 'tag' }],
       listenerProtocol: cxschema.LoadBalancerListenerProtocol.TCP,
       listenerPort: 443,
     });
@@ -576,6 +621,17 @@ describe('load balancer listener context provider plugin', () => {
         },
       ],
 
+      tagDescriptions: [
+        {
+          ResourceArn: 'arn:load-balancer-arn1',
+          Tags: [{ Key: 'some', Value: 'tag' }],
+        },
+        {
+          ResourceArn: 'arn:load-balancer-arn2',
+          Tags: [{ Key: 'some', Value: 'tag' }],
+        },
+      ],
+
       describeListenersExpected: { LoadBalancerArn: 'arn:load-balancer-arn2' },
       listeners: [
         {
@@ -591,6 +647,7 @@ describe('load balancer listener context provider plugin', () => {
       account: '1234',
       region: 'us-east-1',
       loadBalancerType: cxschema.LoadBalancerType.NETWORK,
+      loadBalancerTags: [{ key: 'some', value: 'tag' }],
       listenerPort: 443,
     });
 

@@ -59,6 +59,10 @@ export class LoadBalancerListenerContextProviderPlugin implements ContextProvide
   async getValue(query: LoadBalancerListenerQuery): Promise<LoadBalancerListenerResponse> {
     const elbv2 = (await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(query.account, query.region), Mode.ForReading)).elbv2();
 
+    if (!query.listenerArn && !query.loadBalancerArn && !query.loadBalancerTags) {
+      throw new Error('The load balancer listener query must specify at least one of: `listenerArn`, `loadBalancerArn` or `loadBalancerTags`');
+    }
+
     if (query.listenerArn) {
       // When we know a listener arn, we can query for that listener directly.
       return this.getListenerByArn(elbv2, query);
