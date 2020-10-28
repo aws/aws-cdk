@@ -6,7 +6,7 @@ import { IAuthorizer } from '../common';
 import { IHttpApi } from './api';
 
 /**
- * Supported HTTP methods
+ * Supported Authorizer types
  */
 export enum HttpAuthorizerType {
   /** JSON Web Tokens */
