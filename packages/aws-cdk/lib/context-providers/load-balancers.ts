@@ -180,8 +180,9 @@ async function findLoadBalancers(elbv2: AWS.ELBv2, args: cxschema.LoadBalancerFi
 
 /**
  * Helper to paginate over describeLoadBalancers
+ * @internal
  */
-async function describeLoadBalancers(elbv2: AWS.ELBv2, request: AWS.ELBv2.DescribeLoadBalancersInput) {
+export async function describeLoadBalancers(elbv2: AWS.ELBv2, request: AWS.ELBv2.DescribeLoadBalancersInput) {
   const loadBalancers = Array<AWS.ELBv2.LoadBalancer>();
   let page: AWS.ELBv2.DescribeLoadBalancersOutput | undefined;
   do {
@@ -219,8 +220,9 @@ async function filterLoadBalancersByTags(elbv2: AWS.ELBv2, loadBalancers: AWS.EL
  * Generator function that yields `TagDescriptions`. The API doesn't support
  * pagination, so this generator breaks the resource list into chunks and issues
  * the appropriate requests, yielding each tag description as it receives it.
+ * @internal
  */
-async function* describeTags(elbv2: AWS.ELBv2, resourceArns: string[]) {
+export async function* describeTags(elbv2: AWS.ELBv2, resourceArns: string[]) {
   // Max of 20 resource arns per request.
   const chunkSize = 20;
   for (let i = 0; i < resourceArns.length; i += chunkSize) {
@@ -259,8 +261,9 @@ export function tagsMatch(tagDescription: AWS.ELBv2.TagDescription, requiredTags
  * pagination. Because describeListeners only lets you search by one load
  * balancer arn at a time, we request them individually and yield the listeners
  * as they come in.
+ * @internal
  */
-async function* describeListenersByLoadBalancerArn(elbv2: AWS.ELBv2, loadBalancerArns: string[]) {
+export async function* describeListenersByLoadBalancerArn(elbv2: AWS.ELBv2, loadBalancerArns: string[]) {
   for (const loadBalancerArn of loadBalancerArns) {
     let page: AWS.ELBv2.DescribeListenersOutput | undefined;
     do {

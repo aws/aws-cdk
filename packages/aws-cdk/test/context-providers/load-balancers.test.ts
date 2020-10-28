@@ -1,7 +1,7 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as aws from 'aws-sdk';
 import * as AWS from 'aws-sdk-mock';
-import { LoadBalancerListenerContextProviderPlugin, LoadBalancerContextProviderPlugin, tagsMatch } from '../../lib/context-providers/load-balancers';
+import { LoadBalancerListenerContextProviderPlugin, LoadBalancerContextProviderPlugin, tagsMatch, describeListenersByLoadBalancerArn, describeTags, describeLoadBalancers } from '../../lib/context-providers/load-balancers';
 import { MockSdkProvider } from '../util/mock-sdk';
 
 AWS.setSDK(require.resolve('aws-sdk'));
@@ -16,70 +16,157 @@ afterEach(done => {
 });
 
 describe('utilities', () => {
-  test('all tags match', () => {
-    const tagDescription = {
-      ResourceArn: 'arn:whatever',
-      Tags: [{ Key: 'some', Value: 'tag' }],
+  test('describeTags yields tags by chunk', async () => {
+    const resourceTags: Record<string, aws.ELBv2.TagDescription> = {};
+    for (const resourceArn of [...Array(100)].map((_, i) => `arn:load-balancer-${i}`)) {
+      resourceTags[resourceArn] = {
+        ResourceArn: resourceArn,
+        Tags: [
+          { Key: 'name', Value: resourceArn },
+        ],
+      };
     };
 
-    const requiredTags = [
-      { key: 'some', value: 'tag' },
-    ];
+    AWS.mock('ELBv2', 'describeTags', (_params: aws.ELBv2.DescribeTagsInput, cb: AwsCallback<aws.ELBv2.DescribeTagsOutput>) => {
+      expect(_params.ResourceArns.length).toBeLessThanOrEqual(20);
 
-    expect(tagsMatch(tagDescription, requiredTags)).toEqual(true);
+      cb(null, {
+        TagDescriptions: _params.ResourceArns.map(resourceArn => ({
+          ResourceArn: resourceArn,
+          Tags: [
+            { Key: 'name', Value: resourceArn },
+          ],
+        })),
+      });
+    });
+
+    const elbv2 = await (await mockSDK.forEnvironment()).elbv2();
+
+    const resourceTagsOut: Record<string, aws.ELBv2.TagDescription> = {};
+    for await (const tagDescription of describeTags(elbv2, Object.keys(resourceTags))) {
+      resourceTagsOut[tagDescription.ResourceArn!] = tagDescription;
+    }
+
+    expect(resourceTagsOut).toEqual(resourceTags);
   });
 
-  test('extra tags match', () => {
-    const tagDescription = {
-      ResourceArn: 'arn:whatever',
-      Tags: [
-        { Key: 'some', Value: 'tag' },
-        { Key: 'other', Value: 'tag2' },
-      ],
-    };
+  test('describeListenersByLoadBalancerArn traverses pages', async () => {
+    // arn:listener-0, arn:listener-1, ..., arn:listener-99
+    const listenerArns = [...Array(100)].map((_, i) => `arn:listener-${i}`);
+    expect(listenerArns[0]).toEqual('arn:listener-0');
 
-    const requiredTags = [
-      { key: 'some', value: 'tag' },
-    ];
+    AWS.mock('ELBv2', 'describeListeners', (_params: aws.ELBv2.DescribeListenersInput, cb: AwsCallback<aws.ELBv2.DescribeListenersOutput>) => {
+      const start = parseInt(_params.Marker ?? '0');
+      const end = start + 10;
+      const slice = listenerArns.slice(start, end);
 
-    expect(tagsMatch(tagDescription, requiredTags)).toEqual(true);
+      cb(null, {
+        Listeners: slice.map(arn => ({
+          ListenerArn: arn,
+        })),
+        NextMarker: end < listenerArns.length ? end.toString() : undefined,
+      });
+    });
+
+    const elbv2 = await (await mockSDK.forEnvironment()).elbv2();
+
+    const listenerArnsFromPages = Array<string>();
+    for await (const listener of describeListenersByLoadBalancerArn(elbv2, ['arn:load-balancer'])) {
+      listenerArnsFromPages.push(listener.ListenerArn!);
+    }
+
+    expect(listenerArnsFromPages).toEqual(listenerArns);
   });
 
-  test('no tags matches no tags', () => {
-    const tagDescription = {
-      ResourceArn: 'arn:whatever',
-      Tags: [],
-    };
+  test('describeLoadBalancers traverses pages', async () => {
+    const loadBalancerArns = [...Array(100)].map((_, i) => `arn:load-balancer-${i}`);
+    expect(loadBalancerArns[0]).toEqual('arn:load-balancer-0');
 
-    expect(tagsMatch(tagDescription, [])).toEqual(true);
+    AWS.mock('ELBv2', 'describeLoadBalancers', (_params: aws.ELBv2.DescribeLoadBalancersInput, cb: AwsCallback<aws.ELBv2.DescribeLoadBalancersOutput>) => {
+      const start = parseInt(_params.Marker ?? '0');
+      const end = start + 10;
+      const slice = loadBalancerArns.slice(start, end);
+
+      cb(null, {
+        LoadBalancers: slice.map(loadBalancerArn => ({
+          LoadBalancerArn: loadBalancerArn,
+        })),
+        NextMarker: end < loadBalancerArns.length ? end.toString() : undefined,
+      });
+    });
+
+    const elbv2 = await (await mockSDK.forEnvironment()).elbv2();
+    const loadBalancerArnsFromPages = (await describeLoadBalancers(elbv2, {})).map(l => l.LoadBalancerArn!);
+
+    expect(loadBalancerArnsFromPages).toEqual(loadBalancerArns);
   });
 
-  test('one tag matches of several', () => {
-    const tagDescription = {
-      ResourceArn: 'arn:whatever',
-      Tags: [{ Key: 'some', Value: 'tag' }],
-    };
+  describe('tagsMatch', () => {
+    test('all tags match', () => {
+      const tagDescription = {
+        ResourceArn: 'arn:whatever',
+        Tags: [{ Key: 'some', Value: 'tag' }],
+      };
 
-    const requiredTags = [
-      { key: 'some', value: 'tag' },
-      { key: 'other', value: 'value' },
-    ];
+      const requiredTags = [
+        { key: 'some', value: 'tag' },
+      ];
 
-    expect(tagsMatch(tagDescription, requiredTags)).toEqual(false);
-  });
+      expect(tagsMatch(tagDescription, requiredTags)).toEqual(true);
+    });
 
-  test('undefined tag does not error', () => {
-    const tagDescription = {
-      ResourceArn: 'arn:whatever',
-      Tags: [{ Key: 'some' }],
-    };
+    test('extra tags match', () => {
+      const tagDescription = {
+        ResourceArn: 'arn:whatever',
+        Tags: [
+          { Key: 'some', Value: 'tag' },
+          { Key: 'other', Value: 'tag2' },
+        ],
+      };
 
-    const requiredTags = [
-      { key: 'some', value: 'tag' },
-      { key: 'other', value: 'value' },
-    ];
+      const requiredTags = [
+        { key: 'some', value: 'tag' },
+      ];
 
-    expect(tagsMatch(tagDescription, requiredTags)).toEqual(false);
+      expect(tagsMatch(tagDescription, requiredTags)).toEqual(true);
+    });
+
+    test('no tags matches no tags', () => {
+      const tagDescription = {
+        ResourceArn: 'arn:whatever',
+        Tags: [],
+      };
+
+      expect(tagsMatch(tagDescription, [])).toEqual(true);
+    });
+
+    test('one tag matches of several', () => {
+      const tagDescription = {
+        ResourceArn: 'arn:whatever',
+        Tags: [{ Key: 'some', Value: 'tag' }],
+      };
+
+      const requiredTags = [
+        { key: 'some', value: 'tag' },
+        { key: 'other', value: 'value' },
+      ];
+
+      expect(tagsMatch(tagDescription, requiredTags)).toEqual(false);
+    });
+
+    test('undefined tag does not error', () => {
+      const tagDescription = {
+        ResourceArn: 'arn:whatever',
+        Tags: [{ Key: 'some' }],
+      };
+
+      const requiredTags = [
+        { key: 'some', value: 'tag' },
+        { key: 'other', value: 'value' },
+      ];
+
+      expect(tagsMatch(tagDescription, requiredTags)).toEqual(false);
+    });
   });
 });
 

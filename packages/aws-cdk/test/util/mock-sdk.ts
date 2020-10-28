@@ -77,6 +77,13 @@ export class MockSdkProvider extends SdkProvider {
   public stubSTS(stubs: SyncHandlerSubsetOf<AWS.STS>) {
     (this.sdk as any).sts = jest.fn().mockReturnValue(partialAwsService<AWS.STS>(stubs));
   }
+
+  /**
+   * Replace the STS client with the given object
+   */
+  public stubELBv2(stubs: SyncHandlerSubsetOf<AWS.ELBv2>) {
+    (this.sdk as any).elbv2 = jest.fn().mockReturnValue(partialAwsService<AWS.ELBv2>(stubs));
+  }
 }
 
 export class MockSdk implements ISDK {
