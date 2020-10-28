@@ -375,7 +375,9 @@ following lookup methods:
 You may look up a load balancer by ARN or by associated tags. When you look a
 load balancer up by ARN, that load balancer will be returned unless CDK detects
 that the load balancer is of the wrong type. When you look up a load balancer by
-tags, CDK will return the first load balancer matching all specified tags.
+tags, CDK will return the load balancer matching all specified tags. If more
+than one load balancer matches, CDK will throw an error requesting that you
+provide more specific criteria.
 
 **Look up a Application Load Balancer by ARN**
 ```ts
@@ -399,12 +401,15 @@ const loadBalancer = ApplicationLoadBalancer.fromLookup(stack, 'ALB', {
 
 You may look up a load balancer listener by the following criteria:
 
-- Associated load balancer arn
+- Associated load balancer ARN
 - Associated load balancer tags
+- Listener ARN
 - Listener port
 - Listener protocol
 
-The lookup method will return the first matching listener rule.
+The lookup method will return the matching listener. If more than one listener
+matches, CDK will throw an error requesting that you specify additional
+criteria.
 
 **Look up a Listener by associated Load Balancer, Port, and Protocol**
 
