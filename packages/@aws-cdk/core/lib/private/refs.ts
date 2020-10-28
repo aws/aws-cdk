@@ -227,7 +227,7 @@ function generateExportName(stackExports: Construct, id: string) {
  */
 function createNestedStackParameter(nested: Stack, reference: CfnReference, value: IResolvable) {
   // we call "this.resolve" to ensure that tokens do not creep in (for example, if the reference display name includes tokens)
-  const paramId = nested.resolve(`reference-to-${ Legacy.uniqueId(reference.target)}.${reference.displayName}`);
+  const paramId = nested.resolve(`reference-to-${ Legacy.nodeUniqueId(reference.target.node)}.${reference.displayName}`);
   let param = nested.node.tryFindChild(paramId) as CfnParameter;
   if (!param) {
     param = new CfnParameter(nested, paramId, { type: 'String' });
