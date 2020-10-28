@@ -299,7 +299,7 @@ of the AutoScalingGroup is changed. For example, if you add a command to the Use
 of an AutoScalingGroup, do the existing instances get replaced with new instances that
 have executed the new UserData? Or do the "old" instances just keep on running?
 
-It is recommended to always us an update policy, otherwise the current state of your
+It is recommended to always use an update policy, otherwise the current state of your
 instances also depends the previous state of your instances, rather than just on your
 source code. This degrades the reproducibility of your deployments.
 
