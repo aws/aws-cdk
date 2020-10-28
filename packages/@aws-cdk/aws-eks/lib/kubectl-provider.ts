@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Duration, Stack, NestedStack } from '@aws-cdk/core';
+import { Duration, Stack, NestedStack, Legacy } from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
 import { Construct } from 'constructs';
 import { ICluster, Cluster } from './cluster';
@@ -28,7 +28,7 @@ export class KubectlProvider extends NestedStack {
 
     // if this is an imported cluster, we need to provision a custom resource provider in this stack
     // we will define one per stack for each cluster based on the cluster uniqueid
-    const uid = `${cluster.node.uniqueId}-KubectlProvider`;
+    const uid = `${Legacy.nodeUniqueId(cluster.node)}-KubectlProvider`;
     const stack = Stack.of(scope);
     let provider = stack.node.tryFindChild(uid) as KubectlProvider;
     if (!provider) {

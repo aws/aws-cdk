@@ -2,7 +2,7 @@ import * as crypto from 'crypto';
 
 import { AccountRootPrincipal, Grant, IGrantable } from '@aws-cdk/aws-iam';
 import { IKey, ViaServicePrincipal } from '@aws-cdk/aws-kms';
-import { Annotations, IResource, Resource, Size, SizeRoundingBehavior, Stack, Token, Tags } from '@aws-cdk/core';
+import { Annotations, IResource, Resource, Size, SizeRoundingBehavior, Stack, Token, Tags, Legacy } from '@aws-cdk/core';
 import { Construct, Node } from 'constructs';
 import { CfnInstance, CfnVolume } from './ec2.generated';
 import { IInstance } from './instance';
@@ -564,7 +564,7 @@ abstract class VolumeBase extends Resource implements IVolume {
 
   private calculateResourceTagValue(constructs: Construct[]): string {
     const md5 = crypto.createHash('md5');
-    constructs.forEach(construct => md5.update(Node.of(construct).uniqueId));
+    constructs.forEach(construct => md5.update(Legacy.uniqueId(construct)));
     return md5.digest('hex');
   }
 }

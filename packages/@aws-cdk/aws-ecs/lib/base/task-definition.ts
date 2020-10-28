@@ -1,6 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { IResource, Lazy, Resource } from '@aws-cdk/core';
+import { IResource, Lazy, Legacy, Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { ContainerDefinition, ContainerDefinitionOptions, PortMapping, Protocol } from '../container-definition';
 import { CfnTaskDefinition } from '../ecs.generated';
@@ -267,7 +267,7 @@ export class TaskDefinition extends TaskDefinitionBase {
   constructor(scope: Construct, id: string, props: TaskDefinitionProps) {
     super(scope, id);
 
-    this.family = props.family || this.node.uniqueId;
+    this.family = props.family || Legacy.uniqueId(this);
     this.compatibility = props.compatibility;
 
     if (props.volumes) {

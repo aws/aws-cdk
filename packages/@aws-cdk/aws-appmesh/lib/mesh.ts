@@ -170,7 +170,7 @@ export class Mesh extends MeshBase {
 
   constructor(scope: Construct, id: string, props: MeshProps = {}) {
     super(scope, id, {
-      physicalName: props.meshName || cdk.Lazy.stringValue({ produce: () => this.node.uniqueId }),
+      physicalName: props.meshName || cdk.Lazy.stringValue({ produce: () => cdk.Legacy.uniqueId(this) }),
     });
 
     const mesh = new CfnMesh(this, 'Resource', {

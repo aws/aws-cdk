@@ -252,7 +252,7 @@ export class VirtualNode extends VirtualNodeBase {
 
   constructor(scope: Construct, id: string, props: VirtualNodeProps) {
     super(scope, id, {
-      physicalName: props.virtualNodeName || cdk.Lazy.stringValue({ produce: () => this.node.uniqueId }),
+      physicalName: props.virtualNodeName || cdk.Lazy.stringValue({ produce: () => cdk.Legacy.uniqueId(this) }),
     });
 
     this.mesh = props.mesh;

@@ -1,4 +1,4 @@
-import { Duration, Resource } from '@aws-cdk/core';
+import { Duration, Legacy, Resource } from '@aws-cdk/core';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '@aws-cdk/custom-resources';
 import { Construct } from 'constructs';
 import { arnForDeploymentConfig } from '../utils';
@@ -101,7 +101,7 @@ export class CustomLambdaDeploymentConfig extends Resource implements ILambdaDep
     // Unless the user provides an explicit name
     this.deploymentConfigName = props.deploymentConfigName !== undefined
       ? props.deploymentConfigName
-      : `${this.node.uniqueId}.Lambda${props.type}${props.percentage}Percent${props.type === CustomLambdaDeploymentConfigType.LINEAR
+      : `${Legacy.uniqueId(this)}.Lambda${props.type}${props.percentage}Percent${props.type === CustomLambdaDeploymentConfigType.LINEAR
         ? 'Every'
         : ''}${props.interval.toMinutes()}Minutes`;
     this.deploymentConfigArn = arnForDeploymentConfig(this.deploymentConfigName);

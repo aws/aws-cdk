@@ -1,4 +1,4 @@
-import { App, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
+import { App, Lazy, Legacy, Resource, Stack, Token } from '@aws-cdk/core';
 import { Construct, Node } from 'constructs';
 import { IEventBus } from './event-bus';
 import { EventPattern } from './event-pattern';
@@ -276,7 +276,7 @@ export class Rule extends Resource implements IRule {
           }
         }
 
-        new CopyRule(targetStack, `${this.node.uniqueId}-${id}`, {
+        new CopyRule(targetStack, `${Legacy.uniqueId(this)}-${id}`, {
           targets: [target],
           eventPattern: this.eventPattern,
           schedule: this.scheduleExpression ? Schedule.expression(this.scheduleExpression) : undefined,

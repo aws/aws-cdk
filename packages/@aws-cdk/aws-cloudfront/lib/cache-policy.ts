@@ -1,4 +1,4 @@
-import { Duration, Resource, Token } from '@aws-cdk/core';
+import { Duration, Legacy, Resource, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnCachePolicy } from './cloudfront.generated';
 
@@ -128,7 +128,7 @@ export class CachePolicy extends Resource implements ICachePolicy {
       physicalName: props.cachePolicyName,
     });
 
-    const cachePolicyName = props.cachePolicyName ?? this.node.uniqueId;
+    const cachePolicyName = props.cachePolicyName ?? Legacy.uniqueId(this);
     if (!Token.isUnresolved(cachePolicyName) && !cachePolicyName.match(/^[\w-]+$/i)) {
       throw new Error(`'cachePolicyName' can only include '-', '_', and alphanumeric characters, got: '${props.cachePolicyName}'`);
     }

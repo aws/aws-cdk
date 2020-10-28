@@ -1,4 +1,4 @@
-import { Lazy, Resource, Token } from '@aws-cdk/core';
+import { Lazy, Legacy, Resource, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IApiKey } from './api-key';
 import { CfnUsagePlan, CfnUsagePlanKey } from './apigateway.generated';
@@ -182,7 +182,7 @@ export class UsagePlan extends Resource {
     const prefix = 'UsagePlanKeyResource';
 
     // Postfixing apikey id only from the 2nd child, to keep physicalIds of UsagePlanKey for existing CDK apps unmodifed.
-    const id = this.node.tryFindChild(prefix) ? `${prefix}:${apiKey.node.uniqueId}` : prefix;
+    const id = this.node.tryFindChild(prefix) ? `${prefix}:${Legacy.uniqueId(apiKey)}` : prefix;
 
     new CfnUsagePlanKey(this, id, {
       keyId: apiKey.keyId,

@@ -1,6 +1,6 @@
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import { IBucket } from '@aws-cdk/aws-s3';
-import { IResource, Resource, Token } from '@aws-cdk/core';
+import { IResource, Legacy, Resource, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnDomainName } from './apigateway.generated';
 import { BasePathMapping, BasePathMappingOptions } from './base-path-mapping';
@@ -147,7 +147,7 @@ export class DomainName extends Resource implements IDomainName {
    */
   public addBasePathMapping(targetApi: IRestApi, options: BasePathMappingOptions = { }) {
     const basePath = options.basePath || '/';
-    const id = `Map:${basePath}=>${targetApi.node.uniqueId}`;
+    const id = `Map:${basePath}=>${Legacy.uniqueId(targetApi)}`;
     return new BasePathMapping(this, id, {
       domainName: this,
       restApi: targetApi,

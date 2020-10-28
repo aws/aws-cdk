@@ -270,7 +270,7 @@ abstract class CloudFormationDeployAction extends CloudFormationAction {
         // pass role is not allowed for cross-account access - so,
         // create the deployment Role in the other account!
         this._deploymentRole = new iam.Role(roleStack,
-          `${stage.pipeline.node.uniqueId}-${stage.stageName}-${this.actionProperties.actionName}-DeploymentRole`, {
+          `${cdk.Legacy.uniqueId(stage.pipeline)}-${stage.stageName}-${this.actionProperties.actionName}-DeploymentRole`, {
             assumedBy: new iam.ServicePrincipal('cloudformation.amazonaws.com'),
             roleName: cdk.PhysicalName.GENERATE_IF_NEEDED,
           });

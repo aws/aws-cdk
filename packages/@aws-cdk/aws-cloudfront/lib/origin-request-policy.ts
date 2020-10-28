@@ -1,4 +1,4 @@
-import { Resource, Token } from '@aws-cdk/core';
+import { Legacy, Resource, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnOriginRequestPolicy } from './cloudfront.generated';
 
@@ -91,7 +91,7 @@ export class OriginRequestPolicy extends Resource implements IOriginRequestPolic
       physicalName: props.originRequestPolicyName,
     });
 
-    const originRequestPolicyName = props.originRequestPolicyName ?? this.node.uniqueId;
+    const originRequestPolicyName = props.originRequestPolicyName ?? Legacy.uniqueId(this);
     if (!Token.isUnresolved(originRequestPolicyName) && !originRequestPolicyName.match(/^[\w-]+$/i)) {
       throw new Error(`'originRequestPolicyName' can only include '-', '_', and alphanumeric characters, got: '${props.originRequestPolicyName}'`);
     }
