@@ -123,10 +123,16 @@ abstract class LazyBase implements IResolvable {
   public readonly creationStack: string[];
 
   constructor() {
-    this.creationStack = captureStackTrace();
+    // Stack trace capture is condition to CDK_DEBUG=true, because lazies can be
+    // created in a fairly thrashy way, and the stack traces are large and slow
+    // to obtain; but are mostly useful only when debugging a resolution issue.
+    this.creationStack = process.env.CDK_DEBUG === 'true'
+      ? captureStackTrace(this.constructor)
+      : ['Execute again with CDK_DEBUG=true to capture stack traces'];
   }
 
   public abstract resolve(context: IResolveContext): any;
+
   public toString() {
     return Token.asString(this);
   }
