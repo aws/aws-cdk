@@ -334,7 +334,7 @@ function contentHash(content: string) {
 }
 
 /**
- * Options for attach a CloudFormationInit to a resource
+ * Options for attaching a CloudFormationInit to a resource
  */
 export interface AttachInitOptions {
   /**

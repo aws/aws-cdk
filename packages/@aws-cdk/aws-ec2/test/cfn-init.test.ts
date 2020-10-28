@@ -95,7 +95,7 @@ test('CloudFormationInit cannot be attached twice', () => {
   init.attach(resource, linuxOptions());
 
   // THEN
-  expect(() => { init.attach(resource, linuxOptions()) }).toThrow(/already has/);
+  expect(() => { init.attach(resource, linuxOptions()); }).toThrow(/already has/);
 });
 
 test('empty configs are not rendered', () => {
