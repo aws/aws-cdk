@@ -108,7 +108,7 @@ export class NetworkListener extends BaseListener implements INetworkListener {
    * Looks up a network listener
    */
   public static fromLookup(scope: Construct, id: string, options: NetworkListenerLookupOptions): INetworkListener {
-    let listenerProtocol: cxschema.LoadBalancerListenerProtocol | undefined = undefined;
+    let listenerProtocol: cxschema.LoadBalancerListenerProtocol | undefined;
     if (options.listenerProtocol) {
       validateNetworkProtocol(options.listenerProtocol);
 
