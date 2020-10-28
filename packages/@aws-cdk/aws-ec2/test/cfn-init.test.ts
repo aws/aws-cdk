@@ -87,6 +87,17 @@ test('CloudFormationInit can be added to after instantiation', () => {
   });
 });
 
+test('CloudFormationInit cannot be attached twice', () => {
+  // GIVEN
+  const init = ec2.CloudFormationInit.fromElements();
+
+  // WHEN
+  init.attach(resource, linuxOptions());
+
+  // THEN
+  expect(() => { init.attach(resource, linuxOptions()); }).toThrow(/already has/);
+});
+
 test('empty configs are not rendered', () => {
   // GIVEN
   const config1 = new ec2.InitConfig([]);

@@ -78,4 +78,3 @@ export interface InitElementConfig {
    */
   readonly assetHash?: string;
 }
-
