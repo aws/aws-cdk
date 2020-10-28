@@ -312,7 +312,7 @@ export class SecurityGroup extends SecurityGroupBase {
 
     // Dummy attributes for tests and the first pass.
     const dummyAttributes: cxapi.SecurityGroupContextResponse = {
-      securityGroupId: securityGroupId,
+      securityGroupId: 'sg-12345',
       allowAllOutbound: true,
     };
 

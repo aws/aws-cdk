@@ -305,7 +305,7 @@ nodeunitShim({
 
     const securityGroup = SecurityGroup.fromLookup(stack, 'stack', 'sg-1234');
 
-    test.equal(securityGroup.securityGroupId, 'sg-1234');
+    test.equal(securityGroup.securityGroupId, 'sg-12345');
     test.equal(securityGroup.allowAllOutbound, true);
 
     test.done();

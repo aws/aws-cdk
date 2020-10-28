@@ -1386,7 +1386,7 @@ describe('tests', () => {
       // THEN
       expect(stack).not.toHaveResource('AWS::ElasticLoadBalancingV2::Listener');
       expect(listener.listenerArn).toEqual('arn:aws:elasticloadbalancing:us-west-2:123456789012:listener/application/my-load-balancer/50dc6c495c0c9188/f2f7dc8efc522ab2');
-      expect(listener.connections.securityGroups[0].securityGroupId).toEqual('sg-123456789012');
+      expect(listener.connections.securityGroups[0].securityGroupId).toEqual('sg-12345');
     });
 
     test('Can add rules to a looked-up ApplicationListener', () => {
