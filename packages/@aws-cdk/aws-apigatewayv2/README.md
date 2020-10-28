@@ -57,6 +57,8 @@ integrations](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-
 The code snippet below configures a route `GET /books` with an HTTP proxy integration and uses the `ANY` method to
 proxy all other HTTP method calls to `/books` to a lambda proxy.
 
+The URL to the endpoint can be retrieved via the `apiEndpoint` attribute.
+
 ```ts
 const getBooksIntegration = new HttpProxyIntegration({
   url: 'https://get-books-proxy.myproxy.internal',
@@ -78,11 +80,6 @@ httpApi.addRoutes({
   path: '/books',
   methods: [ HttpMethod.ANY ],
   integration: booksDefaultIntegration,
-});
-
-new CfnOutput(stack, 'my-api-url', {
-  exportName: 'ApiUrl',
-  value: httpApi.apiEndpoint,
 });
 ```
 
