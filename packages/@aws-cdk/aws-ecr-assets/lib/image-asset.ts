@@ -152,7 +152,7 @@ export class DockerImageAsset extends CoreConstruct implements assets.IAsset {
 
     const stack = Stack.of(this);
     const location = stack.synthesizer.addDockerImageAsset({
-      directoryName: staging.stagedPath,
+      directoryName: staging.relativeStagedPath(stack),
       dockerBuildArgs: props.buildArgs,
       dockerBuildTarget: props.target,
       dockerFile: props.file,

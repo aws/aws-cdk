@@ -17,7 +17,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
 # Replacement recommended
 
 This library has been deprecated. We recommend you use the
-[@aws-cdk/pipelines](https://docs.aws.amazon.com/cdk/api/latest/docs/pipelines.html) module instead.
+[@aws-cdk/pipelines](https://docs.aws.amazon.com/cdk/api/latest/docs/pipelines-readme.html) module instead.
 
 
 ### Limitations

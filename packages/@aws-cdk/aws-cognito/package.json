@@ -73,12 +73,10 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
-    "@types/nodeunit": "^0.0.31",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
-    "jest": "^26.4.2",
-    "nodeunit": "^0.11.3",
+    "jest": "^26.6.1",
     "pkglint": "0.0.0"
   },
   "dependencies": {
@@ -111,12 +109,12 @@
       "props-physical-name:@aws-cdk/aws-cognito.UserPoolIdentityProviderGoogleProps"
     ]
   },
-  "stability": "experimental",
-  "maturity": "developer-preview",
+  "stability": "stable",
+  "maturity": "stable",
   "features": [
     {
       "name": "Higher level constructs for User Pools",
-      "stability": "Developer Preview"
+      "stability": "Stable"
     },
     {
       "name": "Higher level constructs for Identity Pools",
