@@ -189,10 +189,8 @@ async function describeLoadBalancers(elbv2: AWS.ELBv2, request: AWS.ELBv2.Descri
       ...request,
       Marker: page ? page.NextMarker : undefined,
     }).promise();
-    const pageItems = page.LoadBalancers ?? [];
-    for (const loadBalancer of pageItems) {
-      loadBalancers.push(loadBalancer);
-    }
+
+    loadBalancers.push(...Array.from(page.LoadBalancers ?? []));
   } while (page.NextMarker);
 
   return loadBalancers;
