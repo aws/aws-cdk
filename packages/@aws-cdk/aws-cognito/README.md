@@ -318,6 +318,7 @@ By default, user pools are configured to use Cognito's built-in email capability
 Amazon SES, however, support for Amazon SES is not available in the CDK yet. If you would like this to be implemented,
 give [this issue](https://github.com/aws/aws-cdk/issues/6768) a +1. Until then, you can use the [cfn
 layer](https://docs.aws.amazon.com/cdk/latest/guide/cfn_layer.html) to configure this.
+
 If an email address contains non-ASCII characters, it will be encoded using the [punycode
 encoding](https://en.wikipedia.org/wiki/Punycode) when generating the template for Cloudformation.
 

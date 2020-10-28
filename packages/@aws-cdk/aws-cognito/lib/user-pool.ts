@@ -734,8 +734,8 @@ export class UserPool extends UserPoolBase {
       enabledMfas: this.mfaConfiguration(props),
       policies: passwordPolicy !== undefined ? { passwordPolicy } : undefined,
       emailConfiguration: undefinedIfNoKeys({
-        from: encodePunycodeIfDefined(props.emailSettings?.from),
-        replyToEmailAddress: encodePunycodeIfDefined(props.emailSettings?.replyTo),
+        from: encodePuny(props.emailSettings?.from),
+        replyToEmailAddress: encodePuny(props.emailSettings?.replyTo),
       }),
       usernameConfiguration: undefinedIfNoKeys({
         caseSensitive: props.signInCaseSensitive,
@@ -1023,6 +1023,6 @@ function undefinedIfNoKeys(struct: object): object | undefined {
   const allUndefined = Object.values(struct).every(val => val === undefined);
   return allUndefined ? undefined : struct;
 }
-function encodePunycodeIfDefined(input: string | undefined): string | undefined {
+function encodePuny(input: string | undefined): string | undefined {
   return input !== undefined ? punycodeEncode(input) : input;
 }
