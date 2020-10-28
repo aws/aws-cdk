@@ -11,40 +11,10 @@ import { IHttpApi } from './api';
 export enum HttpAuthorizerType {
   /** JSON Web Tokens */
   JWT = 'JWT',
+
   /** Lambda Authorizer */
   LAMBDA = 'REQUEST',
 }
-
-/**
- * Specifies the configuration of a JWT authorizer
- */
-export interface HttpJwtConfiguration {
-  /**
-   * A list of the intended recipients of the JWT
-   */
-  readonly audience: string[]
-
-  /**
-   * The base domain of the identity provider that issues JSON Web Tokens.
-   */
-  readonly issuer: string;
-}
-
-/**
- * Reference to an http authorizer
- */
-export interface HttpAuthorizerAttributes {
-  /**
-   * Id of the Authorizer
-   */
-  readonly authorizerId: string
-
-  /**
-   * Type of authorizer
-   */
-  readonly authorizerType: HttpAuthorizerType
-}
-
 
 /**
  * Properties to initialize an instance of `HttpAuthorizer`.
@@ -61,15 +31,38 @@ export interface HttpAuthorizerProps {
    * HTTP Api to attach the authorizer to
    */
   readonly httpApi: IHttpApi
+}
+
+/**
+ * Describes an instance of `IHttpAuthorizer`
+ */
+export interface IHttpAuthorizer extends IAuthorizer {
+  /**
+   * Type of authorizer
+   * @attribute
+   */
+  readonly authorizerType: HttpAuthorizerType;
+}
+
+/**
+ * Specifies the configuration of a JWT authorizer
+ */
+export interface JwtConfiguration {
+  /**
+   * A list of the intended recipients of the JWT
+   */
+  readonly audience: string[]
 
   /**
-   * The authorizer type. Specify REQUEST for a Lambda function using incoming request parameters.
-   * Specify JWT to use JSON Web Tokens (supported only for HTTP APIs).
-   *
-   * @default JWT
+   * The base domain of the identity provider that issues JSON Web Tokens.
    */
-  readonly type?: HttpAuthorizerType;
+  readonly issuer: string;
+}
 
+/**
+ * Properties to initialize an instance of `HttpAuthorizer`.
+ */
+export interface HttpJwtAuthorizerProps extends HttpAuthorizerProps {
   /**
    * The identity source for which authorization is requested.
    *
@@ -83,49 +76,44 @@ export interface HttpAuthorizerProps {
    *
    * @default - No configuration
    */
-  readonly jwtConfiguration?: HttpJwtConfiguration
+  readonly jwtConfiguration: JwtConfiguration
 }
 
 /**
- * Create a new Authorizer for Http APIs
+ * Create a new JwtAuthorizer for Http APIs
  * @resource AWS::ApiGatewayV2::Authorizer
  */
-export class HttpAuthorizer extends Resource implements IAuthorizer {
+export class HttpJwtAuthorizer extends Resource implements IHttpAuthorizer {
 
   /**
    * Import an existing HTTP Authorizer into this CDK app.
    */
-  public static fromAuthorizerAttributes(scope: Construct, id: string, attrs: HttpAuthorizerAttributes): IAuthorizer {
+  public static fromAuthorizerId(scope: Construct, id: string, authorizerId: string): IAuthorizer {
     class Import extends Resource implements IAuthorizer {
-      public readonly authorizerId = attrs.authorizerId;
-      public readonly authorizerType = attrs.authorizerType;
+      public readonly authorizerId = authorizerId;
     }
     return new Import(scope, id);
   }
 
   public readonly authorizerId: string;
+  public readonly authorizerType: HttpAuthorizerType = HttpAuthorizerType.JWT;
+  public readonly identitySource: string[] = ['$request.header.Authorization']
 
-  public readonly authorizerType: HttpAuthorizerType;
-
-  constructor(scope: Construct, id: string, props: HttpAuthorizerProps) {
+  constructor(scope: Construct, id: string, props: HttpJwtAuthorizerProps) {
     super(scope, id);
 
-    this.authorizerType = props.type ?? HttpAuthorizerType.JWT;
-
     const authorizerName = props.authorizerName ?? id;
-    const identitySource = props.identitySource ?? ['$request.header.Authorization'];
-    const jwtConfiguration = props.jwtConfiguration;
 
-    if (this.authorizerType === HttpAuthorizerType.JWT && !jwtConfiguration) {
-      throw new Error('jwtConfiguration is required for authorizer type of JWT');
+    if (props.identitySource) {
+      this.identitySource = props.identitySource;
     }
 
     const resource = new CfnAuthorizer(this, 'Resource', {
       name: authorizerName,
       apiId: props.httpApi.httpApiId,
       authorizerType: this.authorizerType,
-      identitySource,
-      jwtConfiguration,
+      identitySource: this.identitySource,
+      jwtConfiguration: props.jwtConfiguration,
     });
 
     this.authorizerId = resource.ref;

@@ -213,7 +213,7 @@ const httpApi = new HttpApi(stack, 'HttpApi');
 
 const appClient = userPool.addClient('my-app-client');
 
-const authorizer = new HttpAuthorizer(stack, {
+const authorizer = new HttpJwtAuthorizer(stack, {
   httpApi,
   jwtConfiguration: {
     audience: [appClient.userPoolClientId],

@@ -1,15 +1,15 @@
 import '@aws-cdk/assert/jest';
 import { Stack } from '@aws-cdk/core';
 import {
-  HttpApi, HttpAuthorizer,
+  HttpApi, HttpJwtAuthorizer,
 } from '../../lib';
 
-describe('HttpAuthorizer', () => {
+describe('JwtAuthorizer', () => {
   test('default', () => {
     const stack = new Stack();
     const httpApi = new HttpApi(stack, 'HttpApi');
 
-    new HttpAuthorizer(stack, 'HttpAuthorizer', {
+    new HttpJwtAuthorizer(stack, 'HttpAuthorizer', {
       httpApi,
       jwtConfiguration: {
         audience: ['cognito-pool'],
@@ -33,7 +33,7 @@ describe('HttpAuthorizer', () => {
     const stack = new Stack();
     const httpApi = new HttpApi(stack, 'HttpApi');
 
-    new HttpAuthorizer(stack, 'HttpAuthorizer', {
+    new HttpJwtAuthorizer(stack, 'HttpAuthorizer', {
       httpApi,
       authorizerName: 'my-authorizer',
       jwtConfiguration: {
