@@ -93,9 +93,15 @@ export class CloudFormationInit {
       throw new Error('Cannot attach CloudFormationInit to an unknown OS type');
     }
 
+    const CFN_INIT_METADATA_KEY = 'AWS::CloudFormation::Init';
+
+    if (attachedResource.getMetadata(CFN_INIT_METADATA_KEY) !== undefined) {
+      throw new Error(`Cannot bind CfnInit: resource '${attachedResource.node.path}' already has '${CFN_INIT_METADATA_KEY}' attached`);
+    }
+
     // Note: This will not reflect mutations made after attaching.
     const bindResult = this.bind(attachedResource.stack, attachOptions);
-    attachedResource.addMetadata('AWS::CloudFormation::Init', bindResult.configData);
+    attachedResource.addMetadata(CFN_INIT_METADATA_KEY, bindResult.configData);
 
     // Need to resolve the various tokens from assets in the config,
     // as well as include any asset hashes provided so the fingerprint is accurate.
