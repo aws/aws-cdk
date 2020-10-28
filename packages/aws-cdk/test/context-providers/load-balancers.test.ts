@@ -375,7 +375,7 @@ describe('load balancer listener context provider plugin', () => {
     });
 
     AWS.mock('ELBv2', 'describeListeners', (params: aws.ELBv2.DescribeListenersInput, cb: AwsCallback<aws.ELBv2.DescribeListenersOutput>) => {
-      if (params.LoadBalancerArn == 'arn:load-balancer1') {
+      if (params.LoadBalancerArn === 'arn:load-balancer1') {
         cb(null, {
           Listeners: [
             {
@@ -401,7 +401,7 @@ describe('load balancer listener context provider plugin', () => {
             },
           ],
         });
-      } else if (params.LoadBalancerArn == 'arn:load-balancer2') {
+      } else if (params.LoadBalancerArn === 'arn:load-balancer2') {
         cb(null, {
           Listeners: [
             {

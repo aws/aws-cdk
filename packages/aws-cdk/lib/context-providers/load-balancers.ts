@@ -29,7 +29,7 @@ export class LoadBalancerContextProviderPlugin implements ContextProviderPlugin 
 
     const loadBalancer = loadBalancers[0];
 
-    const ipAddressType = loadBalancer.IpAddressType == 'ipv4'
+    const ipAddressType = loadBalancer.IpAddressType === 'ipv4'
       ? cxapi.LoadBalancerIpAddressType.IPV4
       : cxapi.LoadBalancerIpAddressType.DUAL_STACK;
 
@@ -154,7 +154,7 @@ async function findLoadBalancers(elbv2: AWS.ELBv2, args: cxschema.LoadBalancerFi
 
   // Filter by load balancer type
   if (args.loadBalancerType) {
-    loadBalancers = loadBalancers.filter(lb => lb.Type == args.loadBalancerType);
+    loadBalancers = loadBalancers.filter(lb => lb.Type === args.loadBalancerType);
   }
 
   // Filter by load balancer tags
@@ -268,12 +268,12 @@ async function* describeListenersByLoadBalancerArn(elbv2: AWS.ELBv2, loadBalance
  * Determines if a listener matches the query filters.
  */
 function listenerMatchesQueryFilter(listener: AWS.ELBv2.Listener, args: cxschema.LoadBalancerListenerContextQuery): boolean {
-  if (args.listenerPort && listener.Port != args.listenerPort) {
+  if (args.listenerPort && listener.Port !== args.listenerPort) {
     // No match.
     return false;
   }
 
-  if (args.listenerProtocol && listener.Protocol != args.listenerProtocol) {
+  if (args.listenerProtocol && listener.Protocol !== args.listenerProtocol) {
     // No match.
     return false;
   }

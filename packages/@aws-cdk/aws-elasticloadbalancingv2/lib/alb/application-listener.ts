@@ -132,7 +132,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
     const props = BaseListener._queryContextProvider(scope, {
       userOptions: options,
       loadBalancerType: cxschema.LoadBalancerType.APPLICATION,
-      listenerProtocol: options.listenerProtocol == ApplicationProtocol.HTTP
+      listenerProtocol: options.listenerProtocol === ApplicationProtocol.HTTP
         ? cxschema.LoadBalancerListenerProtocol.HTTP
         : cxschema.LoadBalancerListenerProtocol.HTTPS,
     });

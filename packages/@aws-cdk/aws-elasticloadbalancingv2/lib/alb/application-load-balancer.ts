@@ -633,9 +633,9 @@ class LookedUpApplicationLoadBalancer extends Resource implements IApplicationLo
     this.loadBalancerCanonicalHostedZoneId = props.loadBalancerCanonicalHostedZoneId;
     this.loadBalancerDnsName = props.loadBalancerDnsName;
 
-    if (props.ipAddressType == cxapi.LoadBalancerIpAddressType.IPV4) {
+    if (props.ipAddressType === cxapi.LoadBalancerIpAddressType.IPV4) {
       this.ipAddressType = IpAddressType.IPV4;
-    } else if (props.ipAddressType == cxapi.LoadBalancerIpAddressType.DUAL_STACK) {
+    } else if (props.ipAddressType === cxapi.LoadBalancerIpAddressType.DUAL_STACK) {
       this.ipAddressType = IpAddressType.DUAL_STACK;
     }
 
