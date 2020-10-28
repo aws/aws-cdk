@@ -1,3 +1,5 @@
+import { debugModeEnabled } from './debug';
+
 /**
  * Captures the current process' stack trace.
  *
@@ -24,10 +26,7 @@ export function captureStackTrace(
   below: Function = captureStackTrace,
   limit = Number.MAX_SAFE_INTEGER,
 ): string[] {
-  if (
-    process.env.CDK_DISABLE_STACK_TRACE
-    && (process.env.CDK_DEBUG !== 'true' && process.env.CDK_DEBUG !== '1')
-  ) {
+  if (process.env.CDK_DISABLE_STACK_TRACE && !debugModeEnabled()) {
     return ['stack traces disabled'];
   }
 
