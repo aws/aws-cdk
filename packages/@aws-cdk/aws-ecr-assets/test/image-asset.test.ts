@@ -10,7 +10,7 @@ import { DockerImageAsset } from '../lib';
 
 /* eslint-disable quote-props */
 
-const DEMO_IMAGE_ASSET_HASH = 'baa2d6eb2a17c75424df631c8c70ff39f2d5f3bee8b9e1a109ee24ca17300540';
+const DEMO_IMAGE_ASSET_HASH = 'b2c69bfbfe983b634456574587443159b3b7258849856a118ad3d2772238f1a5';
 
 nodeunitShim({
   'test instantiating Asset Image'(test: Test) {
