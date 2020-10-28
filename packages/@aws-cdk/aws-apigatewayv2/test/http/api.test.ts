@@ -238,6 +238,6 @@ describe('HttpApi', () => {
     const stack = new Stack();
     const api = new HttpApi(stack, 'api');
 
-    expect(typeof api.apiEndpoint).toBe('string');
+    expect(api.apiEndpoint).toBeDefined();
   });
 });
