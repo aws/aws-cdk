@@ -6,11 +6,11 @@ import { CfnListener } from '../elasticloadbalancingv2.generated';
 import { IListenerAction } from './listener-action';
 
 /**
- * Options for ApplicationListener lookup
+ * Options for listener lookup
  */
 export interface BaseListenerLookupOptions {
   /**
-   * ARN of the application listener to look up
+   * ARN of the listener to look up
    * @default - does not filter by listener arn
    */
   readonly listenerArn?: string;
