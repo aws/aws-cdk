@@ -203,7 +203,9 @@ with 3 API mapping resources across different APIs and Stages.
 
 ### Managing access to HTTP APIs
 
-API Gateway supports multiple mechanisms for [controlling and managing access to your HTTP API](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-access-control.html) through authorizers. Here's an example with using a Cognito User Pool as the identity source.
+API Gateway supports multiple mechanisms for [controlling and managing access to your HTTP
+API](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-access-control.html) through authorizers.
+Here's an example with using a Cognito User Pool as the identity source.
 
 ```ts
 const userPool = new UserPool(stack, 'my-pool');
