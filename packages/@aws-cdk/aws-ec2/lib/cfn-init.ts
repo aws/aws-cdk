@@ -75,6 +75,9 @@ export class CloudFormationInit {
   /**
    * Attach the CloudFormation Init config to the given resource
    *
+   * As an app builder, use `instance.applyCloudFormationInit()` or
+   * `autoScalingGroup.applyCloudFormationInit()` to trigger this method.
+   *
    * This method does the following:
    *
    * - Renders the `AWS::CloudFormation::Init` object to the given resource's
@@ -84,18 +87,21 @@ export class CloudFormationInit {
    *   `cfn-init` and `cfn-signal` to work, and potentially add permissions to download
    *   referenced asset and bucket resources.
    * - Updates the given UserData with commands to execute the `cfn-init` script.
-   *
-   * As an app builder, use `instance.applyCloudFormationInit()` or
-   * `autoScalingGroup.applyCloudFormationInit()` to trigger this method.
    */
   public attach(attachedResource: CfnResource, attachOptions: AttachInitOptions) {
     if (attachOptions.platform === OperatingSystemType.UNKNOWN) {
       throw new Error('Cannot attach CloudFormationInit to an unknown OS type');
     }
 
+    const CFN_INIT_METADATA_KEY = 'AWS::CloudFormation::Init';
+
+    if (attachedResource.getMetadata(CFN_INIT_METADATA_KEY) !== undefined) {
+      throw new Error(`Cannot bind CfnInit: resource '${attachedResource.node.path}' already has '${CFN_INIT_METADATA_KEY}' attached`);
+    }
+
     // Note: This will not reflect mutations made after attaching.
     const bindResult = this.bind(attachedResource.stack, attachOptions);
-    attachedResource.addMetadata('AWS::CloudFormation::Init', bindResult.configData);
+    attachedResource.addMetadata(CFN_INIT_METADATA_KEY, bindResult.configData);
 
     // Need to resolve the various tokens from assets in the config,
     // as well as include any asset hashes provided so the fingerprint is accurate.
