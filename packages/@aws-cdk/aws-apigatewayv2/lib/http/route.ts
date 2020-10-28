@@ -1,8 +1,9 @@
 import { Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnRoute, CfnRouteProps } from '../apigatewayv2.generated';
-import { IAuthorizer, IRoute } from '../common';
+import { IRoute } from '../common';
 import { IHttpApi } from './api';
+import { IHttpAuthorizer } from './authorizer';
 import { HttpIntegration, IHttpRouteIntegration } from './integration';
 
 /**
@@ -108,7 +109,7 @@ export interface HttpRouteProps extends BatchHttpRouteOptions {
    * Authorizer for a WebSocket API or an HTTP API.
    * @default - No authorizer
    */
-  readonly authorizer?: IAuthorizer;
+  readonly authorizer?: IHttpAuthorizer;
 
   /**
    * Scopes required to access this route

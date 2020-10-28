@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as cognito from '@aws-cdk/aws-cognito';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { App, Stack } from '@aws-cdk/core';
-import { HttpApi, HttpAuthorizer, HttpMethod, LambdaProxyIntegration } from '../../lib';
+import { HttpApi, HttpJwtAuthorizer, HttpMethod, LambdaProxyIntegration } from '../../lib';
 
 /*
  * Stack verification steps:
@@ -21,7 +21,7 @@ const userPool = new cognito.UserPool(stack, 'userpool');
 
 const client = userPool.addClient('my-client');
 
-const authorizer = new HttpAuthorizer(stack, 'MyAuthorizer', {
+const authorizer = new HttpJwtAuthorizer(stack, 'MyAuthorizer', {
   httpApi,
   jwtConfiguration: {
     audience: [client.userPoolClientId],

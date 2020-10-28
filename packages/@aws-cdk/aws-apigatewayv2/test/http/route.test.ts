@@ -1,7 +1,7 @@
 import '@aws-cdk/assert/jest';
 import { Stack } from '@aws-cdk/core';
 import {
-  HttpApi, HttpAuthorizer, HttpIntegrationType, HttpMethod, HttpRoute, HttpRouteIntegrationConfig, HttpRouteKey, IHttpRouteIntegration,
+  HttpApi, HttpJwtAuthorizer, HttpIntegrationType, HttpMethod, HttpRoute, HttpRouteIntegrationConfig, HttpRouteKey, IHttpRouteIntegration,
   PayloadFormatVersion,
 } from '../../lib';
 
@@ -81,7 +81,7 @@ describe('HttpRoute', () => {
     const stack = new Stack();
     const httpApi = new HttpApi(stack, 'HttpApi');
 
-    const authorizer = new HttpAuthorizer(stack, 'HttpAuthorizer', {
+    const authorizer = new HttpJwtAuthorizer(stack, 'HttpAuthorizer', {
       httpApi,
       jwtConfiguration: {
         audience: ['cognito-pool'],

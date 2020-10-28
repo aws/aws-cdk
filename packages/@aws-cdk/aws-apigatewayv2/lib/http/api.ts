@@ -2,8 +2,8 @@ import { Metric, MetricOptions } from '@aws-cdk/aws-cloudwatch';
 import { Duration, IResource, Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnApi, CfnApiProps } from '../apigatewayv2.generated';
-import { IAuthorizer } from '../common';
 import { DefaultDomainMappingOptions } from '../http/stage';
+import { IHttpAuthorizer } from './authorizer';
 import { IHttpRouteIntegration } from './integration';
 import { BatchHttpRouteOptions, HttpMethod, HttpRoute, HttpRouteKey } from './route';
 import { HttpStage, HttpStageOptions } from './stage';
@@ -179,7 +179,7 @@ export interface AddRoutesOptions extends BatchHttpRouteOptions {
    * Authorizer to be associated to these routes.
    * @default - No authorizer
    */
-  readonly authorizer?: IAuthorizer;
+  readonly authorizer?: IHttpAuthorizer;
 
   /**
    * Scopes required to access this route

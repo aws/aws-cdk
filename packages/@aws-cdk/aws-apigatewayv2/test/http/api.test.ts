@@ -3,7 +3,7 @@ import { ABSENT } from '@aws-cdk/assert';
 import { Metric } from '@aws-cdk/aws-cloudwatch';
 import { Code, Function, Runtime } from '@aws-cdk/aws-lambda';
 import { Duration, Stack } from '@aws-cdk/core';
-import { HttpApi, HttpMethod, LambdaProxyIntegration, HttpAuthorizer } from '../../lib';
+import { HttpApi, HttpMethod, LambdaProxyIntegration, HttpJwtAuthorizer } from '../../lib';
 
 describe('HttpApi', () => {
   test('default', () => {
@@ -238,7 +238,7 @@ describe('HttpApi', () => {
     const stack = new Stack();
     const httpApi = new HttpApi(stack, 'api');
 
-    const authorizer = new HttpAuthorizer(stack, 'HttpAuthorizer', {
+    const authorizer = new HttpJwtAuthorizer(stack, 'HttpAuthorizer', {
       httpApi,
       jwtConfiguration: {
         audience: ['cognito-pool'],
