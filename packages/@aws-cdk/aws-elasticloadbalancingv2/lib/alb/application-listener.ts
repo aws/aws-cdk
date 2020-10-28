@@ -545,37 +545,19 @@ export interface ApplicationListenerAttributes {
   readonly securityGroupAllowsAllOutbound?: boolean;
 }
 
-/**
- * Props for `ImportedApplicationListenerBase`
- */
-interface ImportedApplicationListenerBaseProps {
-  /**
-   * Arn of the listener.
-   */
-  readonly listenerArn: string;
-
-  /**
-   * Connections object.
-   */
-  readonly connections: ec2.Connections;
-}
-
 abstract class ImportedApplicationListenerBase extends Resource implements IApplicationListener {
   /**
    * Connections object.
    */
-  public readonly connections: ec2.Connections;
+  public abstract readonly connections: ec2.Connections;
 
   /**
    * ARN of the listener
    */
-  public readonly listenerArn: string;
+  public abstract readonly listenerArn: string;
 
-  constructor(scope: Construct, id: string, props: ImportedApplicationListenerBaseProps) {
+  constructor(scope: Construct, id: string) {
     super(scope, id);
-
-    this.connections = props.connections;
-    this.listenerArn = props.listenerArn;
   }
 
   /**
@@ -643,14 +625,14 @@ abstract class ImportedApplicationListenerBase extends Resource implements IAppl
  * An imported application listener.
  */
 class ImportedApplicationListener extends ImportedApplicationListenerBase {
-  constructor(scope: Construct, id: string, props: ApplicationListenerAttributes) {
-    const defaultPort = props.defaultPort !== undefined ? ec2.Port.tcp(props.defaultPort) : undefined;
-    const connections = new ec2.Connections({ defaultPort });
+  public readonly listenerArn: string;
+  public readonly connections: ec2.Connections;
 
-    super(scope, id, {
-      listenerArn: props.listenerArn,
-      connections,
-    });
+  constructor(scope: Construct, id: string, props: ApplicationListenerAttributes) {
+    super(scope, id);
+
+    this.listenerArn = props.listenerArn;
+    const defaultPort = props.defaultPort !== undefined ? ec2.Port.tcp(props.defaultPort) : undefined;
 
     let securityGroup: ec2.ISecurityGroup;
     if (props.securityGroup) {
@@ -663,15 +645,23 @@ class ImportedApplicationListener extends ImportedApplicationListenerBase {
       throw new Error('Either `securityGroup` or `securityGroupId` must be specified to import an application listener.');
     }
 
-    this.connections.addSecurityGroup(securityGroup);
+    this.connections = new ec2.Connections({
+      securityGroups: [securityGroup],
+      defaultPort,
+    });
   }
 }
 
 class LookedUpApplicationListener extends ImportedApplicationListenerBase {
+  public readonly listenerArn: string;
+  public readonly connections: ec2.Connections;
+
   constructor(scope: Construct, id: string, props: cxapi.LoadBalancerListenerContextResponse) {
-    super(scope, id, {
-      listenerArn: props.listenerArn,
-      connections: new ec2.Connections({ defaultPort: ec2.Port.tcp(props.listenerPort) }),
+    super(scope, id);
+
+    this.listenerArn = props.listenerArn;
+    this.connections = new ec2.Connections({
+      defaultPort: ec2.Port.tcp(props.listenerPort),
     });
 
     for (const securityGroupId of props.securityGroupIds) {
