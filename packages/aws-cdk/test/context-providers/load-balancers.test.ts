@@ -188,6 +188,7 @@ describe('load balancer listener context provider plugin', () => {
       ],
       listeners: [
         {
+          LoadBalancerArn: 'arn:load-balancer',
           ListenerArn: 'arn:listener',
           Port: 80,
           Protocol: 'HTTP',
@@ -204,6 +205,46 @@ describe('load balancer listener context provider plugin', () => {
         listenerProtocol: cxschema.LoadBalancerListenerProtocol.HTTPS,
       }),
     ).rejects.toThrow(/No load balancer listeners found/i);
+  });
+
+  test('errors when multiple listeners match', async () => {
+    // GIVEN
+    const provider = new LoadBalancerListenerContextProviderPlugin(mockSDK);
+
+    mockALBLookup({
+      loadBalancers: [
+        {
+          LoadBalancerArn: 'arn:load-balancer',
+        },
+        {
+          LoadBalancerArn: 'arn:load-balancer2',
+        },
+      ],
+      listeners: [
+        {
+          LoadBalancerArn: 'arn:load-balancer',
+          ListenerArn: 'arn:listener',
+          Port: 80,
+          Protocol: 'HTTP',
+        },
+        {
+          LoadBalancerArn: 'arn:load-balancer2',
+          ListenerArn: 'arn:listener2',
+          Port: 80,
+          Protocol: 'HTTP',
+        },
+      ],
+    });
+
+    // WHEN
+    await expect(
+      provider.getValue({
+        account: '1234',
+        region: 'us-east-1',
+        listenerPort: 80,
+        listenerProtocol: cxschema.LoadBalancerListenerProtocol.HTTP,
+      }),
+    ).rejects.toThrow(/Multiple load balancer listeners/i);
   });
 
   test('looks up by listener arn', async () => {

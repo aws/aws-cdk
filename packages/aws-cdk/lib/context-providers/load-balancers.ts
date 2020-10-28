@@ -108,28 +108,41 @@ export class LoadBalancerListenerContextProviderPlugin implements ContextProvide
     }
 
     // Find the first matching listener
-    return this.findFirstMatchingListener(elbv2, loadBalancers, args);
+    return this.findMatchingListener(elbv2, loadBalancers, args);
   }
 
   /**
-   * Finds the first matching listener from the list of load balancers.
+   * Finds the matching listener from the list of load balancers. This will
+   * error unless there is exactly one match so that the user is prompted to
+   * provide more specific criteria rather than us providing a nondeterministic
+   * result.
    */
-  private async findFirstMatchingListener(elbv2: AWS.ELBv2, loadBalancers: AWS.ELBv2.LoadBalancers, query: LoadBalancerListenerQuery) {
+  private async findMatchingListener(elbv2: AWS.ELBv2, loadBalancers: AWS.ELBv2.LoadBalancers, query: LoadBalancerListenerQuery) {
     const loadBalancersByArn = indexLoadBalancersByArn(loadBalancers);
     const loadBalancerArns = Object.keys(loadBalancersByArn);
+
+    const matches = Array<cxapi.LoadBalancerListenerContextResponse>();
 
     for await (const listener of describeListenersByLoadBalancerArn(elbv2, loadBalancerArns)) {
       const loadBalancer = loadBalancersByArn[listener.LoadBalancerArn!];
       if (listenerMatchesQueryFilter(listener, query) && loadBalancer) {
-        return {
+        matches.push({
           listenerArn: listener.ListenerArn!,
           listenerPort: listener.Port!,
           securityGroupIds: loadBalancer.SecurityGroups ?? [],
-        };
+        });
       }
     }
 
-    throw new Error(`No load balancer listeners found matching ${JSON.stringify(query)}`);
+    if (matches.length === 0) {
+      throw new Error(`No load balancer listeners found matching ${JSON.stringify(query)}`);
+    }
+
+    if (matches.length > 1) {
+      throw new Error(`Multiple load balancer listeners found matching ${JSON.stringify(query)} - please provide more specific criteria`);
+    }
+
+    return matches[0];
   }
 }
 
