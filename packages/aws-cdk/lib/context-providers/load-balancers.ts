@@ -237,11 +237,12 @@ async function* describeTags(elbv2: AWS.ELBv2, resourceArns: string[]) {
 
 /**
  * Determines if the given TagDescription matches the required tags.
+ * @internal
  */
-function tagsMatch(tagDescription: AWS.ELBv2.TagDescription, requiredTags: cxschema.Tag[]) {
-  const tagsByName: Record<string, string> = {};
+export function tagsMatch(tagDescription: AWS.ELBv2.TagDescription, requiredTags: cxschema.Tag[]) {
+  const tagsByName: Record<string, string | undefined> = {};
   for (const tag of tagDescription.Tags ?? []) {
-    tagsByName[tag.Key!] = tag.Value!;
+    tagsByName[tag.Key!] = tag.Value;
   }
 
   for (const tag of requiredTags) {

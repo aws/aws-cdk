@@ -1,7 +1,7 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as aws from 'aws-sdk';
 import * as AWS from 'aws-sdk-mock';
-import { LoadBalancerListenerContextProviderPlugin, LoadBalancerContextProviderPlugin } from '../../lib/context-providers/load-balancers';
+import { LoadBalancerListenerContextProviderPlugin, LoadBalancerContextProviderPlugin, tagsMatch } from '../../lib/context-providers/load-balancers';
 import { MockSdkProvider } from '../util/mock-sdk';
 
 AWS.setSDK(require.resolve('aws-sdk'));
@@ -13,6 +13,74 @@ type AwsCallback<T> = (err: Error | null, val: T) => void;
 afterEach(done => {
   AWS.restore();
   done();
+});
+
+describe('utilities', () => {
+  test('all tags match', () => {
+    const tagDescription = {
+      ResourceArn: 'arn:whatever',
+      Tags: [{ Key: 'some', Value: 'tag' }],
+    };
+
+    const requiredTags = [
+      { key: 'some', value: 'tag' },
+    ];
+
+    expect(tagsMatch(tagDescription, requiredTags)).toEqual(true);
+  });
+
+  test('extra tags match', () => {
+    const tagDescription = {
+      ResourceArn: 'arn:whatever',
+      Tags: [
+        { Key: 'some', Value: 'tag' },
+        { Key: 'other', Value: 'tag2' },
+      ],
+    };
+
+    const requiredTags = [
+      { key: 'some', value: 'tag' },
+    ];
+
+    expect(tagsMatch(tagDescription, requiredTags)).toEqual(true);
+  });
+
+  test('no tags matches no tags', () => {
+    const tagDescription = {
+      ResourceArn: 'arn:whatever',
+      Tags: [],
+    };
+
+    expect(tagsMatch(tagDescription, [])).toEqual(true);
+  });
+
+  test('one tag matches of several', () => {
+    const tagDescription = {
+      ResourceArn: 'arn:whatever',
+      Tags: [{ Key: 'some', Value: 'tag' }],
+    };
+
+    const requiredTags = [
+      { key: 'some', value: 'tag' },
+      { key: 'other', value: 'value' },
+    ];
+
+    expect(tagsMatch(tagDescription, requiredTags)).toEqual(false);
+  });
+
+  test('undefined tag does not error', () => {
+    const tagDescription = {
+      ResourceArn: 'arn:whatever',
+      Tags: [{ Key: 'some' }],
+    };
+
+    const requiredTags = [
+      { key: 'some', value: 'tag' },
+      { key: 'other', value: 'value' },
+    ];
+
+    expect(tagsMatch(tagDescription, requiredTags)).toEqual(false);
+  });
 });
 
 describe('load balancer context provider plugin', () => {
