@@ -57,17 +57,17 @@ export class Domain extends Resource implements IDomain {
     const stack = Stack.of(scope);
     const domainName = attrs.domainName || stack.parseArn(attrs.domainArn).resourceName;
 
-    class Import extends Domain {}
+    class Import extends Domain { }
 
     return new Import(scope, id, { domainName: domainName || '', domainEncryptionKey: attrs.domainEncryptionKey });
   }
 
 
   public readonly domainArn: string = '';
-  public readonly domainName: string = '';
-  public readonly domainOwner: string = '';
-  public readonly domainEncryptionKey: kms.IKey;
-  public readonly cfnDomain: CfnDomain;
+  public readonly domainName?: string = '';
+  public readonly domainOwner?: string = '';
+  public readonly domainEncryptionKey?: kms.IKey;
+  private readonly cfnDomain: CfnDomain;
 
   constructor(scope: Construct, id: string, props: DomainProps) {
     super(scope, id);
@@ -97,7 +97,9 @@ export class Domain extends Resource implements IDomain {
 
     if (!props.policyDocument) {
       const p = props.principal || new iam.AccountRootPrincipal();
-      this.grantLogin(p).grantCreate(p).grantRead(p);
+      this.grantLogin(p);
+      this.grantCreate(p);
+      this.grantRead(p);
     } else {
       this.cfnDomain.permissionsPolicyDocument = props.policyDocument;
     }
@@ -105,7 +107,7 @@ export class Domain extends Resource implements IDomain {
 
   addRepositories(...repositories: IRepository[]): IDomain {
     if (repositories.length > 0) {
-      repositories.forEach(r => r.setDomain(this));
+      repositories.forEach(r => r.assignDomain(this));
     }
 
     return this;
@@ -118,22 +120,34 @@ export class Domain extends Resource implements IDomain {
 
     validate('EncryptionKey',
       { minLength: 1, maxLength: 2048, pattern: /\S+/gi, documentationLink: 'https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codeartifact-domain.html#cfn-codeartifact-domain-encryptionkey' },
-      this.domainEncryptionKey.keyArn);
+      this.domainEncryptionKey?.keyArn || '');
   }
 
-  private grant(principal: iam.IPrincipal, iamActions: string[], resource: string = '*') {
-    const p = this.cfnDomain.permissionsPolicyDocument as iam.PolicyDocument || new iam.PolicyDocument();
+  /**
+   * Adds a statement to the IAM resource policy associated with this domain.
+   */
+  public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
 
-    p.addStatements(new iam.PolicyStatement({
-      effect: iam.Effect.ALLOW,
-      principals: [
-        principal,
-      ],
-      resources: [resource],
+    if (!this.cfnDomain.permissionsPolicyDocument) {
+      const p = this.cfnDomain.permissionsPolicyDocument as iam.PolicyDocument || new iam.PolicyDocument();
+
+      p.addStatements(statement);
+
+      this.cfnDomain.permissionsPolicyDocument = p;
+
+      return { statementAdded: true, policyDependable: p };
+    }
+
+    return { statementAdded: false };
+  }
+
+  private grant(principal: iam.IGrantable, iamActions: string[], resource: string = '*'): iam.Grant {
+    return iam.Grant.addToPrincipalOrResource({
+      grantee: principal,
       actions: iamActions,
-    }));
-
-    this.cfnDomain.permissionsPolicyDocument = p;
+      resourceArns: [resource],
+      resource: this,
+    });
   }
 
   /**
@@ -142,9 +156,8 @@ export class Domain extends Resource implements IDomain {
      * @param principal The principal for the policy
      * @see https://docs.aws.amazon.com/codeartifact/latest/ug/domain-policies.html
      */
-  public grantRead(principal: iam.IPrincipal): Domain {
-    this.grant(principal, DOMAIN_READ_ACTIONS);
-    return this;
+  public grantRead(principal: iam.IPrincipal): iam.Grant {
+    return this.grant(principal, DOMAIN_READ_ACTIONS);
   }
   /**
      * Adds GetAuthorizationToken for the principal to the domain's
@@ -152,9 +165,8 @@ export class Domain extends Resource implements IDomain {
      * @param principal The principal for the policy
      * @see https://docs.aws.amazon.com/codeartifact/latest/ug/domain-policies.html
      */
-  public grantLogin(principal: iam.IPrincipal): Domain {
-    this.grant(principal, DOMAIN_LOGIN_ACTIONS);
-    return this;
+  public grantLogin(principal: iam.IPrincipal): iam.Grant {
+    return this.grant(principal, DOMAIN_LOGIN_ACTIONS);
   }
   /**
      * Adds CreateRepository for the principal to the domain's
@@ -162,8 +174,7 @@ export class Domain extends Resource implements IDomain {
      * @param principal The principal for the policy
      * @see https://docs.aws.amazon.com/codeartifact/latest/ug/domain-policies.html
      */
-  public grantCreate(principal: iam.IPrincipal): Domain {
-    this.grant(principal, DOMAIN_CREATE_ACTIONS);
-    return this;
+  public grantCreate(principal: iam.IPrincipal): iam.Grant {
+    return this.grant(principal, DOMAIN_CREATE_ACTIONS);
   }
 }

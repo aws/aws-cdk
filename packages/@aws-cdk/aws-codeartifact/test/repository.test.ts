@@ -1,5 +1,5 @@
 import '@aws-cdk/assert/jest';
-import { AccountRootPrincipal } from '@aws-cdk/aws-iam';
+import { AccountRootPrincipal, PolicyDocument, PolicyStatement, Effect } from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
 import { Domain, Repository, ExternalConnection } from '../lib';
 
@@ -12,12 +12,29 @@ test('Domain w/ Repository', () => {
   expect(repo.repositoryName).toBe('example-repo');
 });
 
+test('Domain w/ Repository and policy document', () => {
+  const stack = new Stack();
+
+  const p = new PolicyDocument();
+
+  p.addStatements(new PolicyStatement({
+    effect: Effect.ALLOW,
+    actions: ['codeartifact:DescribePackageVersion'],
+  }));
+
+  const domain = new Domain(stack, 'domain', { domainName: 'example-domain' });
+  const repo = new Repository(stack, 'repository-1', { repositoryName: 'example-repo', domain: domain, policyDocument: p });
+
+  expect(domain.domainName).toBe('example-domain');
+  expect(repo.repositoryName).toBe('example-repo');
+});
+
 test('Domain w/ 2 Repositories via addRepositories, w/ upstream, and external connection', () => {
   const stack = new Stack();
 
   const domain = new Domain(stack, 'domain', { domainName: 'example-domain' });
-  const repo1 = new Repository(stack, 'repository-1', { repositoryName: 'example-repo-1' });
-  const repo2 = new Repository(stack, 'repository-2', { repositoryName: 'example-repo-2' });
+  const repo1 = new Repository(stack, 'repository-1', { repositoryName: 'example-repo-1', domain: domain });
+  const repo2 = new Repository(stack, 'repository-2', { repositoryName: 'example-repo-2', domain: domain });
 
   repo1.withExternalConnections(ExternalConnection.NPM);
   repo2.withUpstream(repo1);
@@ -25,7 +42,7 @@ test('Domain w/ 2 Repositories via addRepositories, w/ upstream, and external co
   domain.addRepositories(repo1, repo2);
 
   expect(domain.domainName).toBe('example-domain');
-  expect(repo1.repositoryName).toBe('example-repo');
+  expect(repo1.repositoryName).toBe('example-repo-1');
 });
 
 test('Repository from ARN', () => {
@@ -38,10 +55,7 @@ test('Repository from ARN', () => {
 test('Repository from ARN w/ out repository name nor account id', () => {
   const stack = new Stack();
 
-  const repo = Repository.fromRepositoryArn(stack, 'repo-from-arn', 'arn:aws:codeartifact:region-id::repository');
-  expect(repo.repositoryName).toBe('');
-  expect(repo.repositoryDomainName).toBe('');
-  expect(repo.repositoryDomainOwner).toBe('');
+  expect(() => Repository.fromRepositoryArn(stack, 'repo-from-arn', 'arn:aws:codeartifact:region-id::repository')).toThrow(/'RepositoryName' is required and cannot be empty/);
 });
 
 test('Grant AccountRootPrincipal read on Repository', () => {

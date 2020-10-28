@@ -1,8 +1,9 @@
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
-import { Resource, Stack, Aws } from '@aws-cdk/core';
+import { Resource, Stack, Aws, Fn } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnRepository } from './codeartifact.generated';
+import { Domain } from './domain';
 import { ExternalConnection } from './external-connection';
 import { IRepository, IDomain, RepositoryAttributes } from './interfaces';
 import { REPOSITORY_READ_ACTIONS, REPOSITORY_WRITE_ACTIONS } from './perms';
@@ -23,6 +24,7 @@ export interface RepositoryProps {
   readonly description?: string,
   /**
      * The name of the domain that contains the repository.
+     * @default None
      */
   readonly domain?: IDomain,
   /**
@@ -90,32 +92,33 @@ export class Repository extends Resource implements IRepository {
   public static fromRepositoryAttributes(scope: Construct, id: string, attrs: RepositoryAttributes): IRepository {
     const stack = Stack.of(scope);
     const parsed = stack.parseArn(attrs.repositoryArn || '');
-    const spl = parsed.resourceName?.split('/') || ['', ''];
+
+
+    const spl = parsed.resourceName?.split('/') || [undefined, undefined];
     const repositoryName = spl[1];
     const domainName = spl[0];
 
     class Import extends Repository {
-      repositoryDomainName = domainName;
       repositoryArn = attrs.repositoryArn || '';
       repositoryName = repositoryName;
       repositoryDomainOwner = parsed.account || '';
     }
 
-    return new Import(scope, id, { repositoryName: repositoryName });
+    return new Import(scope, id, { repositoryName: repositoryName || '', domain: Domain.fromDomainAttributes(scope, `${id}-domain`, { domainArn: `arn:aws:codeartifact:${parsed.region}:${parsed.account}:domain/${domainName}` }) });
   }
 
-  public readonly repositoryArn: string;
-  public readonly repositoryName: string;
-  public readonly repositoryDomainOwner: string;
-  public readonly repositoryDomainName: string;
-  public readonly repositoryDescription: string;
+  public readonly repositoryArn?: string;
+  public readonly repositoryName?: string;
+  public readonly repositoryDomainOwner?: string;
+  public readonly repositoryDomainName?: string;
+  public readonly repositoryDescription?: string;
   private readonly cfnRepository: CfnRepository;
 
   constructor(scope: Construct, id: string, props: RepositoryProps) {
     super(scope, id);
 
-    this.repositoryDomainName = props?.domain?.domainName || '';
-    this.repositoryName = props.repositoryName;
+    this.repositoryDomainName = props?.domain?.domainName;
+    this.repositoryName = props.repositoryName || this.repositoryName;
     this.repositoryDescription = props.description || '';
 
     this.validateProps();
@@ -128,7 +131,7 @@ export class Repository extends Resource implements IRepository {
     });
 
     if (props?.domain) {
-      this.setDomain(props.domain);
+      this.assignDomain(props.domain);
     }
 
     this.repositoryArn = this.cfnRepository.attrArn;
@@ -143,16 +146,12 @@ export class Repository extends Resource implements IRepository {
     }
   }
 
-  public setDomain(domain: IDomain): void {
-    this.cfnRepository.addPropertyOverride('DomainName', domain.domainName);
+  public assignDomain(domain: IDomain): void {
+    this.cfnRepository.addPropertyOverride('DomainName', Fn.getAtt(domain.node.uniqueId, 'Name'));
   }
 
   /**
-   * Adds a statement to the IAM resource policy associated with this topic.
-   *
-   * If this topic was created in this stack (`new Topic`), a topic policy
-   * will be automatically created upon the first call to `addToPolicy`. If
-   * the topic is imported (`Topic.import`), then this is a no-op.
+   * Adds a statement to the IAM resource policy associated with this repository.
    */
   public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
 
@@ -188,7 +187,7 @@ export class Repository extends Resource implements IRepository {
     return iam.Grant.addToPrincipalOrResource({
       grantee: identity,
       actions: actions,
-      resourceArns: [this.repositoryArn],
+      resourceArns: [this.repositoryArn || ''],
       resource: this,
     });
   }

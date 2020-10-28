@@ -6,7 +6,51 @@ import { IResource } from '@aws-cdk/core';
 /**
  * Represents a CodeArtifact repository
  */
-export interface IRepository extends IResource, RepositoryAttributes {
+export interface IRepository extends IResource {
+
+  /**
+     * The ARN of repository resource.
+     * Equivalent to doing `{ 'Fn::GetAtt': ['LogicalId', 'Arn' ]}`
+     * in CloudFormation if the underlying CloudFormation resource
+     * surfaces the ARN as a return value -
+     * if not, we usually construct the ARN "by hand" in the construct,
+     * using the Fn::Join function.
+     *
+     * It needs to be annotated with '@attribute' if the underlying CloudFormation resource
+     * surfaces the ARN as a return value.
+     *
+     * @default Empty string
+     * @attribute
+     */
+  readonly repositoryArn?: string;
+  /**
+       * The physical name of the repository resource.
+       * Often, equivalent to doing `{ 'Ref': 'LogicalId' }`
+       * (but not always - depends on the particular resource modeled)
+       * in CloudFormation.
+       * Also needs to be annotated with '@attribute'.
+       * @default Empty string
+       * @attribute
+       */
+  readonly repositoryName?: string;
+  /**
+      * A text description of the repository.
+      * @attribute
+      */
+  readonly repositoryDescription?: string;
+  /**
+       * The domain repository owner
+       * Often, equivalent to the account id.
+       * @default Empty string
+       * @attribute
+       */
+  readonly repositoryDomainOwner?: string;
+  /**
+       * The domain the repository belongs to
+       * @default Empty string
+       * @attribute
+       */
+  readonly repositoryDomainName?: string;
   /**
        * Grants the given IAM identity permissions to read from the repository
        */
@@ -34,7 +78,7 @@ export interface IRepository extends IResource, RepositoryAttributes {
    * Set the domain for the repository
    * @param domain The domain the repository is apart of
    */
-  setDomain(domain: IDomain): void;
+  assignDomain(domain: IDomain): void;
 }
 
 /**
@@ -52,7 +96,7 @@ export interface RepositoryAttributes {
      *
      * It needs to be annotated with '@attribute' if the underlying CloudFormation resource
      * surfaces the ARN as a return value.
-     *
+     * @default Empty string
      * @attribute
      */
   readonly repositoryArn?: string;
@@ -62,22 +106,25 @@ export interface RepositoryAttributes {
        * (but not always - depends on the particular resource modeled)
        * in CloudFormation.
        * Also needs to be annotated with '@attribute'.
-       *
+       * @default Empty string
        * @attribute
        */
   readonly repositoryName?: string;
   /**
-       * A text description of the repository.
-       */
+   * A text description of the repository.
+   * @default Empty string
+   */
   readonly repositoryDescription?: string;
   /**
        * The domain repository owner
        * Often, equivalent to the account id.
+       * @default Empty string
        * @attribute
        */
   readonly repositoryDomainOwner?: string;
   /**
        * The domain the repository belongs to
+       * @default Empty string
        * @attribute
        */
   readonly repositoryDomainName?: string;
@@ -86,7 +133,46 @@ export interface RepositoryAttributes {
 /**
  * Represents a CodeArtifact domain
  */
-export interface IDomain extends IResource, DomainAttributes {
+export interface IDomain extends IResource {
+  /**
+* The ARN of domain resource.
+* Equivalent to doing `{ 'Fn::GetAtt': ['LogicalId', 'Arn' ]}`
+* in CloudFormation if the underlying CloudFormation resource
+* surfaces the ARN as a return value -
+* if not, we usually construct the ARN "by hand" in the construct,
+* using the Fn::Join function.
+*
+* It needs to be annotated with '@attribute' if the underlying CloudFormation resource
+* surfaces the ARN as a return value.
+*
+* @attribute
+*/
+  readonly domainArn: string;
+
+  /**
+   * The physical name of the domain resource.
+   * Often, equivalent to doing `{ 'Ref': 'LogicalId' }`
+   * (but not always - depends on the particular resource modeled)
+   * in CloudFormation.
+   * Also needs to be annotated with '@attribute'.
+   *
+   * @attribute
+   */
+  readonly domainName?: string;
+
+  /**
+   * The domain owner
+   * Often, equivalent to the account id.
+   * @attribute
+   */
+  readonly domainOwner?: string;
+
+  /**
+   * The KMS encryption key used for the domain resource.
+   * @default AWS Managed Key
+   * @attribute
+   */
+  readonly domainEncryptionKey?: kms.IKey;
   /**
    * Add a repositories to the domain
    */
@@ -118,7 +204,7 @@ export interface DomainAttributes {
    * (but not always - depends on the particular resource modeled)
    * in CloudFormation.
    * Also needs to be annotated with '@attribute'.
-   *
+   * @default Empty string
    * @attribute
    */
   readonly domainName?: string;
@@ -126,6 +212,7 @@ export interface DomainAttributes {
   /**
    * The domain owner
    * Often, equivalent to the account id.
+   * @default Empty string
    * @attribute
    */
   readonly domainOwner?: string;
