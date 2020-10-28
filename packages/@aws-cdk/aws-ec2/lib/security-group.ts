@@ -306,9 +306,7 @@ export class SecurityGroup extends SecurityGroupBase {
 
     const attributes: cxapi.SecurityGroupContextResponse = ContextProvider.getValue(scope, {
       provider: cxschema.ContextProvider.SECURITY_GROUP_PROVIDER,
-      props: {
-        securityGroupId: securityGroupId,
-      } as cxschema.SecurityGroupContextQuery,
+      props: { securityGroupId },
       dummyValue: undefined,
     }).value;
 
