@@ -176,7 +176,7 @@ export interface AddRoutesOptions extends BatchHttpRouteOptions {
   readonly methods?: HttpMethod[];
 
   /**
-   * Authorizer for a WebSocket API or an HTTP API.
+   * Authorizer to be associated to these routes.
    * @default - No authorizer
    */
   readonly authorizer?: IAuthorizer;
