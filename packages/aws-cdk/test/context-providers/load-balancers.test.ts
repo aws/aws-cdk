@@ -34,6 +34,58 @@ describe('load balancer context provider plugin', () => {
     ).rejects.toThrow(/No load balancers found/i);
   });
 
+  test('errors when multiple load balancers match', async () => {
+    // GIVEN
+    const provider = new LoadBalancerContextProviderPlugin(mockSDK);
+
+    mockALBLookup({
+      loadBalancers: [
+        {
+          IpAddressType: 'ipv4',
+          LoadBalancerArn: 'arn:load-balancer1',
+          DNSName: 'dns1.example.com',
+          CanonicalHostedZoneId: 'Z1234',
+          SecurityGroups: ['sg-1234'],
+          VpcId: 'vpc-1234',
+        },
+        {
+          IpAddressType: 'ipv4',
+          LoadBalancerArn: 'arn:load-balancer2',
+          DNSName: 'dns2.example.com',
+          CanonicalHostedZoneId: 'Z1234',
+          SecurityGroups: ['sg-1234'],
+          VpcId: 'vpc-1234',
+        },
+      ],
+      describeTagsExpected: { ResourceArns: ['arn:load-balancer1', 'arn:load-balancer2'] },
+      tagDescriptions: [
+        {
+          ResourceArn: 'arn:load-balancer1',
+          Tags: [
+            { Key: 'some', Value: 'tag' },
+          ],
+        },
+        {
+          ResourceArn: 'arn:load-balancer2',
+          Tags: [
+            { Key: 'some', Value: 'tag' },
+          ],
+        },
+      ],
+    });
+
+    // WHEN
+    await expect(
+      provider.getValue({
+        account: '1234',
+        region: 'us-east-1',
+        loadBalancerTags: [
+          { key: 'some', value: 'tag' },
+        ],
+      }),
+    ).rejects.toThrow(/Multiple load balancers found/i);
+  });
+
   test('looks up by arn', async () => {
     // GIVEN
     const provider = new LoadBalancerContextProviderPlugin(mockSDK);

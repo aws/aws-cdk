@@ -20,6 +20,10 @@ export class LoadBalancerContextProviderPlugin implements ContextProviderPlugin 
       throw new Error(`No load balancers found matching ${JSON.stringify(query)}`);
     }
 
+    if (loadBalancers.length > 1) {
+      throw new Error(`Multiple load balancers found matching ${JSON.stringify(query)} - please provide more specific criteria`);
+    }
+
     const loadBalancer = loadBalancers[0];
 
     const ipAddressType = loadBalancer.IpAddressType === 'ipv4'
