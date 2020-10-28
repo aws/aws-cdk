@@ -21,8 +21,10 @@ export interface IAccessPoint extends IResource {
    */
   readonly accessPointArn: string;
 
-  /** The efs filesystem */
-  readonly fileSystem: IFileSystem;
+  /**
+   * The efs filesystem
+   */
+  readonly fileSystem?: IFileSystem;
 }
 
 /**
@@ -137,7 +139,7 @@ export interface AccessPointAttributes {
    *
    * @default - no EFS filesystem
    */
-  readonly fileSystem: IFileSystem;
+  readonly fileSystem?: IFileSystem;
 }
 
 abstract class AccessPointBase extends Resource implements IAccessPoint {
@@ -156,7 +158,7 @@ abstract class AccessPointBase extends Resource implements IAccessPoint {
   /**
    * The filesystem of the access point
    */
-  public abstract readonly fileSystem: IFileSystem;
+  public abstract readonly fileSystem?: IFileSystem;
 }
 
 /**
@@ -167,49 +169,7 @@ export class AccessPoint extends AccessPointBase {
    * Import an existing Access Point
    */
   public static fromAccessPointAttributes(scope: Construct, id: string, attrs: AccessPointAttributes): IAccessPoint {
-    class Import extends Resource implements IAccessPoint {
-      public readonly accessPointId: string;
-      public readonly accessPointArn: string;
-      public readonly fileSystem: IFileSystem;
-
-      constructor(accessPointId: string, accessPointArn: string, fileSystem: IFileSystem) {
-        super(scope, id);
-        this.accessPointArn = accessPointArn;
-        this.accessPointId = accessPointId;
-        this.fileSystem = fileSystem;
-      }
-    }
-
-    let apId: string;
-    let apArn: string;
-
-    if (!attrs.accessPointId) {
-      if (!attrs.accessPointArn) {
-        throw new Error('One of accessPointId or AccessPointArn is required!');
-      }
-
-      apArn = attrs.accessPointArn;
-      let maybeApId = Stack.of(scope).parseArn(attrs.accessPointArn).resourceName;
-
-      if (!maybeApId) {
-        throw new Error('ARN for AccessPoint must provide the resource name.');
-      }
-
-      apId = maybeApId;
-    } else {
-      if (attrs.accessPointArn) {
-        throw new Error('Only one of accessPointId or AccessPointArn can be provided!');
-      }
-
-      apId = attrs.accessPointId;
-      apArn = Stack.of(scope).formatArn({
-        service: 'elasticfilesystem',
-        resource: 'access-point',
-        resourceName: attrs.accessPointId,
-      });
-    }
-
-    return new Import(apId, apArn, attrs.fileSystem);
+    return new ImportedAccessPoint(scope, id, attrs);
   }
 
   /**
@@ -227,7 +187,7 @@ export class AccessPoint extends AccessPointBase {
   /**
    * The filesystem of the access point
    */
-  public readonly fileSystem: IFileSystem;
+  public readonly fileSystem?: IFileSystem;
 
   constructor(scope: Construct, id: string, props: AccessPointProps) {
     super(scope, id);
@@ -256,5 +216,43 @@ export class AccessPoint extends AccessPointBase {
       resourceName: this.accessPointId,
     });
     this.fileSystem = props.fileSystem;
+  }
+}
+
+class ImportedAccessPoint extends AccessPointBase {
+  public readonly accessPointId: string;
+  public readonly accessPointArn: string;
+  public readonly fileSystem?: IFileSystem;
+
+  constructor(scope: Construct, id: string, attrs: AccessPointAttributes) {
+    super(scope, id);
+
+    if (!attrs.accessPointId) {
+      if (!attrs.accessPointArn) {
+        throw new Error('One of accessPointId or AccessPointArn is required!');
+      }
+
+      this.accessPointArn = attrs.accessPointArn;
+      let maybeApId = Stack.of(scope).parseArn(attrs.accessPointArn).resourceName;
+
+      if (!maybeApId) {
+        throw new Error('ARN for AccessPoint must provide the resource name.');
+      }
+
+      this.accessPointId = maybeApId;
+    } else {
+      if (attrs.accessPointArn) {
+        throw new Error('Only one of accessPointId or AccessPointArn can be provided!');
+      }
+
+      this.accessPointId = attrs.accessPointId;
+      this.accessPointArn = Stack.of(scope).formatArn({
+        service: 'elasticfilesystem',
+        resource: 'access-point',
+        resourceName: attrs.accessPointId,
+      });
+    }
+
+    this.fileSystem = attrs.fileSystem;
   }
 }
