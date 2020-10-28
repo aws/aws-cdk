@@ -53,7 +53,7 @@ export class LoadBalancerListenerContextProviderPlugin implements ContextProvide
 
     if (query.listenerArn) {
       // When we know a listener arn, we can query for that listener directly.
-      return this.getListenerDirectly(elbv2, query);
+      return this.getListenerByArn(elbv2, query);
     } else {
       // When we don't know a listener arn, we need to find it by traversing
       // all associated load balancers.
@@ -65,7 +65,7 @@ export class LoadBalancerListenerContextProviderPlugin implements ContextProvide
    * Look up a listener by querying listeners for query's listener arn and then
    * resolve its load balancer for the security group information.
    */
-  private async getListenerDirectly(elbv2: AWS.ELBv2, query: LoadBalancerListenerQuery) {
+  private async getListenerByArn(elbv2: AWS.ELBv2, query: LoadBalancerListenerQuery) {
     const listenerArn = query.listenerArn!;
     const listenerResults = await elbv2.describeListeners({ ListenerArns: [listenerArn] }).promise();
     const listeners = (listenerResults.Listeners ?? []);
