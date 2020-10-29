@@ -54,5 +54,5 @@ incompatible-argument:@aws-cdk/aws-ecs.TaskDefinition.addVolume
 # | LoadBalancerContextQuery
 # | LoadBalancerListenerContextQuery
 # | SecurityGroupContextQuery
-# These additions changed the signature of loadAssemblyManifest()
-change-return-type:@aws-cdk/cloud-assembly-schema.Manifest.loadAssemblyManifest
+# These additions changed the signature of MissingContext
+weakened:@aws-cdk/cloud-assembly-schema.MissingContext
