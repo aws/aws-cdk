@@ -549,7 +549,7 @@ export interface ApplicationListenerAttributes {
   readonly securityGroupAllowsAllOutbound?: boolean;
 }
 
-abstract class ImportedApplicationListenerBase extends Resource implements IApplicationListener {
+abstract class ExternalApplicationListener extends Resource implements IApplicationListener {
   /**
    * Connections object.
    */
@@ -628,7 +628,7 @@ abstract class ImportedApplicationListenerBase extends Resource implements IAppl
 /**
  * An imported application listener.
  */
-class ImportedApplicationListener extends ImportedApplicationListenerBase {
+class ImportedApplicationListener extends ExternalApplicationListener {
   public readonly listenerArn: string;
   public readonly connections: ec2.Connections;
 
@@ -656,7 +656,7 @@ class ImportedApplicationListener extends ImportedApplicationListenerBase {
   }
 }
 
-class LookedUpApplicationListener extends ImportedApplicationListenerBase {
+class LookedUpApplicationListener extends ExternalApplicationListener {
   public readonly listenerArn: string;
   public readonly connections: ec2.Connections;
 
