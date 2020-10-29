@@ -332,7 +332,7 @@
     "cdk-integ-tools": "0.0.0",
     "jest": "^26.6.1",
     "pkglint": "0.0.0",
-    "ts-jest": "^26.4.2"
+    "ts-jest": "^26.4.3"
   },
   "keywords": [
     "aws",
