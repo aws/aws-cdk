@@ -589,12 +589,13 @@ nodeunitShim({
     return tests;
   })(),
 
-  'creation stack is attached to errors emitted during resolve'(test: Test) {
+  'creation stack is attached to errors emitted during resolve with CDK_DEBUG=true'(test: Test) {
     function showMeInTheStackTrace() {
       return Lazy.stringValue({ produce: () => { throw new Error('fooError'); } });
     }
 
-    const previousValue = reEnableStackTraceCollection();
+    const previousValue = process.env.CDK_DEBUG;
+    process.env.CDK_DEBUG = 'true';
     const x = showMeInTheStackTrace();
     let message;
     try {
@@ -602,10 +603,32 @@ nodeunitShim({
     } catch (e) {
       message = e.message;
     } finally {
-      restoreStackTraceColection(previousValue);
+      process.env.CDK_DEBUG = previousValue;
     }
 
     test.ok(message && message.includes('showMeInTheStackTrace'));
+    test.done();
+  },
+
+  'creation stack is omitted without CDK_DEBUG=true'(test: Test) {
+    function showMeInTheStackTrace() {
+      return Lazy.stringValue({ produce: () => { throw new Error('fooError'); } });
+    }
+
+    const previousValue = process.env.CDK_DEBUG;
+    delete process.env.CDK_DEBUG;
+
+    const x = showMeInTheStackTrace();
+    let message;
+    try {
+      resolve(x);
+    } catch (e) {
+      message = e.message;
+    } finally {
+      process.env.CDK_DEBUG = previousValue;
+    }
+
+    test.ok(message && message.includes('Execute again with CDK_DEBUG=true'));
     test.done();
   },
 
