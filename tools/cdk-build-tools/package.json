@@ -54,7 +54,7 @@
     "jsii-pacmak": "^1.13.0",
     "nodeunit": "^0.11.3",
     "nyc": "^15.1.0",
-    "ts-jest": "^26.4.2",
+    "ts-jest": "^26.4.3",
     "typescript": "~3.9.7",
     "yargs": "^16.1.0",
     "yarn-cling": "0.0.0"
