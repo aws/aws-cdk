@@ -9,7 +9,7 @@
     "directory": "tools/ubergen"
   },
   "bin": {
-    "ubergen": "bin/ubergen"
+    "ubergen": "bin/ubergen.ts"
   },
   "scripts": {
     "lint": "eslint . --ext .ts --resolve-plugins-relative-to=../cdk-build-tools",

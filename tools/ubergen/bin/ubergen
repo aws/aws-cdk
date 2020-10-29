@@ -1,2 +1,0 @@
-#!/usr/bin/env node -r ts-node
-require('./ubergen.ts');

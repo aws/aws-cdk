@@ -1,3 +1,5 @@
+#!/usr/bin/env node -r ts-node
+
 import * as console from 'console';
 import * as os from 'os';
 import * as path from 'path';
