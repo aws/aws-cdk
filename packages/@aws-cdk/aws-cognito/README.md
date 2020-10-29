@@ -561,7 +561,7 @@ app clients and configures the clients to use these scopes.
 ```ts
 const pool = new cognito.UserPool(this, 'Pool');
 
-pool.addResourceServer('ResourceServer', {
+const resourceServer = pool.addResourceServer('ResourceServer', {
   identifier: 'users',
   scopes: [
     {
@@ -575,8 +575,9 @@ pool.addResourceServer('ResourceServer', {
   ]
 });
 
-pool.addClient('read-only-client', {
+const readOnlyClient = pool.addClient('read-only-client', {
   // ...
+  generateSecret: true,
   oAuth: {
     flows: {
       clientCredentials: true,
@@ -585,8 +586,9 @@ pool.addClient('read-only-client', {
   },
 });
 
-pool.addClient('full-access-client', {
+const fullAccessClient = pool.addClient('full-access-client', {
   // ...
+  generateSecret: true,
   oAuth: {
     flows: {
       clientCredentials: true,
@@ -594,7 +596,11 @@ pool.addClient('full-access-client', {
     scopes: [OAuthScope.custom('users/*')],
   },
 });
+
+readOnlyClient.node.addDependency(resourceServer);
+fullAccessClient.node.addDependency(resourceServer);
 ```
+
 
 ### Domains
 
