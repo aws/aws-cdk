@@ -3,8 +3,23 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 
 export interface FakeModuleProps {
+  /**
+   * The contents of the package json.
+   * If an empty object, i.e. `{}`, is provided, an empty file is created.
+   * @default - no package json will be created
+   */
   readonly packagejson?: any;
+  /**
+   * The contents of the README.md file. Each item in the array represents a single line.
+   * If an empty list is provided, an empty file is created.
+   * @default - no README.md file will be created
+   */
   readonly readme?: string[];
+  /**
+   * The contents of the NOTICE file. Each item in the array represents a single line.
+   * If an empty list is provided, an empty file is created.
+   * @default - no NOTICE file will be created
+   */
   readonly notice?: string[];
 }
 
