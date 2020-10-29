@@ -356,7 +356,7 @@ const fn = new lambda.Function(stack, 'MyLambda', {
   handler,
   runtime,
   vpc,
-  // mount the access point to /mnt/msg in the lambda runtime enironment
+  // mount the access point to /mnt/msg in the lambda runtime environment
   filesystem: lambda.FileSystem.fromEfsAccessPoint(accessPoint, '/mnt/msg'),
 });
 ```
