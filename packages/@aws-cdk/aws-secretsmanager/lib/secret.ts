@@ -134,6 +134,7 @@ export interface SecretProps {
 
 /**
  * Attributes required to import an existing secret into the Stack.
+ * One ARN format (`secretArn`, `secretCompleteArn`, `secretPartialArn`) must be provided.
  */
 export interface SecretAttributes {
   /**
@@ -143,8 +144,22 @@ export interface SecretAttributes {
 
   /**
    * The ARN of the secret in SecretsManager.
+   * Cannot be used with `secretCompleteArn` or `secretPartialArn`.
+   * @deprecated use `secretCompleteArn` or `secretPartialArn` instead.
    */
-  readonly secretArn: string;
+  readonly secretArn?: string;
+
+  /**
+   * The complete ARN of the secret in SecretsManager. This is the ARN including the Secrets Manager 6-character suffix.
+   * Cannot be used with `secretArn` or `secretPartialArn`.
+   */
+  readonly secretCompleteArn?: string;
+
+  /**
+   * The partial ARN of the secret in SecretsManager. This is the ARN without the Secrets Manager 6-character suffix.
+   * Cannot be used with `secretArn` or `secretCompleteArn`.
+   */
+  readonly secretPartialArn?: string;
 }
 
 /**
@@ -279,8 +294,20 @@ abstract class SecretBase extends Resource implements ISecret {
  */
 export class Secret extends SecretBase {
 
+  /** @deprecated use `fromSecretCompleteArn` or `fromSecretPartialArn` */
   public static fromSecretArn(scope: Construct, id: string, secretArn: string): ISecret {
-    return Secret.fromSecretAttributes(scope, id, { secretArn });
+    const attrs = arnIsComplete(secretArn) ? { secretCompleteArn: secretArn } : { secretPartialArn: secretArn };
+    return Secret.fromSecretAttributes(scope, id, attrs);
+  }
+
+  /** Imports a secret by complete ARN. The complete ARN is the ARN with the Secrets Manager-supplied suffix. */
+  public static fromSecretCompleteArn(scope: Construct, id: string, secretCompleteArn: string): ISecret {
+    return Secret.fromSecretAttributes(scope, id, { secretCompleteArn });
+  }
+
+  /** Imports a secret by partial ARN. The partial ARN is the ARN without the Secrets Manager-supplied suffix. */
+  public static fromSecretPartialArn(scope: Construct, id: string, secretPartialArn: string): ISecret {
+    return Secret.fromSecretAttributes(scope, id, { secretPartialArn });
   }
 
   /**
@@ -345,14 +372,30 @@ export class Secret extends SecretBase {
    * @param attrs the attributes of the imported secret.
    */
   public static fromSecretAttributes(scope: Construct, id: string, attrs: SecretAttributes): ISecret {
-    class Import extends SecretBase {
-      public readonly encryptionKey = attrs.encryptionKey;
-      public readonly secretArn = attrs.secretArn;
-      public readonly secretName = parseSecretName(scope, attrs.secretArn);
-      protected readonly autoCreatePolicy = false;
+    let secretArn: string;
+    let secretArnIsPartial: boolean;
+
+    if (attrs.secretArn) {
+      if (attrs.secretCompleteArn || attrs.secretPartialArn) {
+        throw new Error('cannot use `secretArn` with `secretCompleteArn` or `secretPartialArn`');
+      }
+      secretArn = attrs.secretArn;
+      secretArnIsPartial = false;
+    } else {
+      if ((attrs.secretCompleteArn && attrs.secretPartialArn) ||
+          (!attrs.secretCompleteArn && !attrs.secretPartialArn)) {
+        throw new Error('must use only one of `secretCompleteArn` or `secretPartialArn`');
+      }
+      [secretArn, secretArnIsPartial] = attrs.secretCompleteArn ? [attrs.secretCompleteArn, false] : [attrs.secretPartialArn!, true];
     }
 
-    return new Import(scope, id);
+    return new class extends SecretBase {
+      public readonly encryptionKey = attrs.encryptionKey;
+      public readonly secretArn = secretArn;
+      public readonly secretName = parseSecretName(scope, secretArn);
+      protected readonly autoCreatePolicy = false;
+      public get secretFullArn() { return secretArnIsPartial ? undefined : secretArn; }
+    }(scope, id);
   }
 
   public readonly encryptionKey?: kms.IKey;
@@ -659,4 +702,9 @@ function parseSecretName(construct: IConstruct, secretArn: string) {
     return hasSecretsSuffix ? resourceName.substr(0, lastHyphenIndex) : resourceName;
   }
   throw new Error('invalid ARN format; no secret name provided');
+}
+
+/** Performs a best guess if an ARN is complete, based on if it ends with a 6-character suffix. */
+function arnIsComplete(secretArn: string): boolean {
+  return Token.isUnresolved(secretArn) || /-[a-z0-9]{6}$/i.test(secretArn);
 }

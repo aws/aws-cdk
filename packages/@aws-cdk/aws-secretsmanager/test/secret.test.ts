@@ -492,23 +492,97 @@ test('import by secretArn supports tokens for ARNs', () => {
   });
 });
 
-test('import by attributes', () => {
+test('import by secretArn guesses at complete or partial ARN', () => {
   // GIVEN
-  const encryptionKey = new kms.Key(stack, 'KMS');
+  const secretArnWithSuffix = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret-f3gDy9';
+  const secretArnWithoutSuffix = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret';
+
+  // WHEN
+  const secretWithCompleteArn = secretsmanager.Secret.fromSecretArn(stack, 'SecretWith', secretArnWithSuffix);
+  const secretWithoutCompleteArn = secretsmanager.Secret.fromSecretArn(stack, 'SecretWithout', secretArnWithoutSuffix);
+
+  // THEN
+  expect(secretWithCompleteArn.secretFullArn).toEqual(secretArnWithSuffix);
+  expect(secretWithoutCompleteArn.secretFullArn).toBeUndefined();
+});
+
+test('fromSecretCompleteArn', () => {
+  // GIVEN
   const secretArn = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret-f3gDy9';
 
   // WHEN
-  const secret = secretsmanager.Secret.fromSecretAttributes(stack, 'Secret', {
-    secretArn, encryptionKey,
-  });
+  const secret = secretsmanager.Secret.fromSecretCompleteArn(stack, 'Secret', secretArn);
 
   // THEN
   expect(secret.secretArn).toBe(secretArn);
   expect(secret.secretFullArn).toBe(secretArn);
   expect(secret.secretName).toBe('MySecret');
-  expect(secret.encryptionKey).toBe(encryptionKey);
-  expect(stack.resolve(secret.secretValue)).toBe(`{{resolve:secretsmanager:${secretArn}:SecretString:::}}`);
-  expect(stack.resolve(secret.secretValueFromJson('password'))).toBe(`{{resolve:secretsmanager:${secretArn}:SecretString:password::}}`);
+  expect(secret.encryptionKey).toBeUndefined();
+  expect(stack.resolve(secret.secretValue)).toEqual(`{{resolve:secretsmanager:${secretArn}:SecretString:::}}`);
+  expect(stack.resolve(secret.secretValueFromJson('password'))).toEqual(`{{resolve:secretsmanager:${secretArn}:SecretString:password::}}`);
+});
+
+test('fromSecretPartialArn', () => {
+  // GIVEN
+  const secretArn = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret';
+
+  // WHEN
+  const secret = secretsmanager.Secret.fromSecretPartialArn(stack, 'Secret', secretArn);
+
+  // THEN
+  expect(secret.secretArn).toBe(secretArn);
+  expect(secret.secretFullArn).toBeUndefined();
+  expect(secret.secretName).toBe('MySecret');
+  expect(secret.encryptionKey).toBeUndefined();
+  expect(stack.resolve(secret.secretValue)).toEqual(`{{resolve:secretsmanager:${secretArn}:SecretString:::}}`);
+  expect(stack.resolve(secret.secretValueFromJson('password'))).toEqual(`{{resolve:secretsmanager:${secretArn}:SecretString:password::}}`);
+});
+
+describe('fromSecretAttributes', () => {
+  test('import by attributes', () => {
+    // GIVEN
+    const encryptionKey = new kms.Key(stack, 'KMS');
+    const secretArn = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret-f3gDy9';
+
+    // WHEN
+    const secret = secretsmanager.Secret.fromSecretAttributes(stack, 'Secret', {
+      secretArn, encryptionKey,
+    });
+
+    // THEN
+    expect(secret.secretArn).toBe(secretArn);
+    expect(secret.secretFullArn).toBe(secretArn);
+    expect(secret.secretName).toBe('MySecret');
+    expect(secret.encryptionKey).toBe(encryptionKey);
+    expect(stack.resolve(secret.secretValue)).toBe(`{{resolve:secretsmanager:${secretArn}:SecretString:::}}`);
+    expect(stack.resolve(secret.secretValueFromJson('password'))).toBe(`{{resolve:secretsmanager:${secretArn}:SecretString:password::}}`);
+  });
+
+  test('throws if secretArn and either secretCompleteArn or secretPartialArn are provided', () => {
+    const secretArn = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret-f3gDy9';
+
+    const error = /cannot use `secretArn` with `secretCompleteArn` or `secretPartialArn`/;
+    expect(() => secretsmanager.Secret.fromSecretAttributes(stack, 'Secret', {
+      secretArn,
+      secretCompleteArn: secretArn,
+    })).toThrow(error);
+    expect(() => secretsmanager.Secret.fromSecretAttributes(stack, 'Secret', {
+      secretArn,
+      secretPartialArn: secretArn,
+    })).toThrow(error);
+  });
+
+  test('throws if no ARN is provided', () => {
+    expect(() => secretsmanager.Secret.fromSecretAttributes(stack, 'Secret', {})).toThrow(/must use only one of `secretCompleteArn` or `secretPartialArn`/);
+  });
+
+  test('throws if both complete and partial ARNs are provided', () => {
+    const secretArn = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret-f3gDy9';
+    expect(() => secretsmanager.Secret.fromSecretAttributes(stack, 'Secret', {
+      secretPartialArn: secretArn,
+      secretCompleteArn: secretArn,
+    })).toThrow(/must use only one of `secretCompleteArn` or `secretPartialArn`/);
+  });
 });
 
 test('import by secret name', () => {

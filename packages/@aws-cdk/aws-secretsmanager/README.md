@@ -160,20 +160,21 @@ credentials generation and rotation is integrated.
 ### Importing Secrets
 
 Existing secrets can be imported by ARN, name, and other attributes (including the KMS key used to encrypt the secret).
-Secrets imported by name can use the short-form of the name (without the SecretsManager-provided suffx);
+Secrets imported by name should use the short-form of the name (without the SecretsManager-provided suffx);
 the secret name must exist in the same account and region as the stack.
 Importing by name makes it easier to reference secrets created in different regions, each with their own suffix and ARN.
 
 ```ts
 import * as kms from '@aws-cdk/aws-kms';
 
-const secretArn = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret-f3gDy9';
+const secretCompleteArn = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret-f3gDy9';
+const secretPartialArn = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret'; // No Secrets Manager suffix
 const encryptionKey = kms.Key.fromKeyArn(stack, 'MyEncKey', 'arn:aws:kms:eu-west-1:111111111111:key/21c4b39b-fde2-4273-9ac0-d9bb5c0d0030');
-const mySecretFromArn = secretsmanager.Secret.fromSecretArn(stack, 'SecretFromArn', secretArn);
+const mySecretFromCompleteArn = secretsmanager.Secret.fromSecretCompleteArn(stack, 'SecretFromCompleteArn', secretCompleteArn);
+const mySecretFromPartialArn = secretsmanager.Secret.fromSecretPartialArn(stack, 'SecretFromPartialArn', secretPartialArn);
 const mySecretFromName = secretsmanager.Secret.fromSecretNameV2(stack, 'SecretFromName', 'MySecret')
 const mySecretFromAttrs = secretsmanager.Secret.fromSecretAttributes(stack, 'SecretFromAttributes', {
-  secretArn,
+  secretCompleteArn,
   encryptionKey,
-  secretName: 'MySecret', // Optional, will be calculated from the ARN
 });
 ```
