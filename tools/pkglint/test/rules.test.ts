@@ -202,3 +202,92 @@ describe('FeatureStabilityRule', () => {
     expect(pkgJson.hasReports).toBe(false);
   });
 });
+
+describe('ThirdPartyAttributions', () => {
+  let fakeModule: FakeModule | undefined;
+
+  beforeEach(() => {
+    fakeModule = undefined;
+  });
+
+  afterEach(async () => {
+    if (fakeModule) {
+      await fakeModule.cleanup();
+    }
+  });
+
+  test('errors when attribution missing for bundled dependencies', async() => {
+    fakeModule = new FakeModule({
+      packagejson: {
+        bundledDependencies: ['dep1', 'dep2'],
+      },
+      notice: [],
+    });
+    const dirPath = await fakeModule.tmpdir();
+
+    const rule = new rules.ThirdPartyAttributions();
+
+    const pkgJson = new PackageJson(path.join(dirPath, 'package.json'));
+    rule.validate(pkgJson);
+
+    expect(pkgJson.hasReports).toBe(true);
+    expect(pkgJson.reports.length).toEqual(2);
+    for (const report of pkgJson.reports) {
+      expect(report.ruleName).toEqual('license/3p-attributions');
+    }
+  });
+
+  test('passes when attribution is present', async() => {
+    fakeModule = new FakeModule({
+      packagejson: {
+        bundledDependencies: ['dep1', 'dep2'],
+      },
+      notice: [
+        '** dep1 - https://link-somewhere',
+        '** dep2 - https://link-elsewhere',
+      ],
+    });
+    const dirPath = await fakeModule.tmpdir();
+
+    const rule = new rules.ThirdPartyAttributions();
+
+    const pkgJson = new PackageJson(path.join(dirPath, 'package.json'));
+    rule.validate(pkgJson);
+
+    expect(pkgJson.hasReports).toBe(false);
+  });
+
+  test('skipped when no bundled dependencies', async() => {
+    fakeModule = new FakeModule({
+      packagejson: {
+      },
+      notice: [],
+    });
+    const dirPath = await fakeModule.tmpdir();
+
+    const rule = new rules.ThirdPartyAttributions();
+
+    const pkgJson = new PackageJson(path.join(dirPath, 'package.json'));
+    rule.validate(pkgJson);
+
+    expect(pkgJson.hasReports).toBe(false);
+  });
+
+  test('skipped for private packages', async () => {
+    fakeModule = new FakeModule({
+      packagejson: {
+        private: true,
+        bundledDependencies: ['dep1', 'dep2'],
+      },
+      notice: [],
+    });
+    const dirPath = await fakeModule.tmpdir();
+
+    const rule = new rules.ThirdPartyAttributions();
+
+    const pkgJson = new PackageJson(path.join(dirPath, 'package.json'));
+    rule.validate(pkgJson);
+
+    expect(pkgJson.hasReports).toBe(false);
+  });
+});

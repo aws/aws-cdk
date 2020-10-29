@@ -21,11 +21,14 @@ export class FakeModule {
     }
     if (!this._tmpdir) {
       const tmpdir = await fs.mkdtemp(path.join(os.tmpdir(), 'pkglint-rules-test-'));
-      if (this.props.packagejson !== undefined) {
-        await fs.writeFile(path.join(tmpdir, 'package.json'), JSON.stringify(this.props.packagejson), { encoding: 'utf8' });
-      }
+      await fs.writeFile(path.join(tmpdir, 'package.json'), JSON.stringify(this.props.packagejson ?? {}), { encoding: 'utf8' });
       if (this.props.readme !== undefined) {
-        await fs.writeFile(path.join(tmpdir, 'README.md'), this.props.readme, { encoding: 'utf8' });
+        const contents = this.props.readme.join('\n');
+        await fs.writeFile(path.join(tmpdir, 'README.md'), contents, { encoding: 'utf8' });
+      }
+      if (this.props.notice !== undefined) {
+        const contents = this.props.notice.join('\n');
+        await fs.writeFile(path.join(tmpdir, 'NOTICE'), contents, { encoding: 'utf8' });
       }
       this._tmpdir = tmpdir;
     }
