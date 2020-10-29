@@ -101,14 +101,14 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
           's3:ListBucketMultipartUploads',
           's3:ListMultipartUploadParts',
           's3:PutObject'],
-        resources: [this.props.resultConfiguration?.outputLocation ?? '*'], // Need S3 location where data is stored https://docs.aws.amazon.com/athena/latest/ug/security-iam-athena.html
+        resources: ['*'], // State machines scoped to output location fail without * permissions  https://docs.aws.amazon.com/athena/latest/ug/security-iam-athena.html
       }),
     );
 
     policyStatements.push(
       new iam.PolicyStatement({
         actions: ['lakeformation:GetDataAccess'],
-        resources: [this.props.resultConfiguration?.outputLocation ?? '*'], // Workflow role permissions https://docs.aws.amazon.com/lake-formation/latest/dg/permissions-reference.html
+        resources: ['*'], // State machines scoped to output location fail and * permissions are required as per documentation https://docs.aws.amazon.com/lake-formation/latest/dg/permissions-reference.html
       }),
     );
 
