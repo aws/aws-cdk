@@ -129,12 +129,16 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
    * Look up an ApplicationListener.
    */
   public static fromLookup(scope: Construct, id: string, options: ApplicationListenerLookupOptions): IApplicationListener {
+    let listenerProtocol: cxschema.LoadBalancerListenerProtocol | undefined;
+    switch (options.listenerProtocol) {
+      case ApplicationProtocol.HTTP: listenerProtocol = cxschema.LoadBalancerListenerProtocol.HTTP; break;
+      case ApplicationProtocol.HTTPS: listenerProtocol = cxschema.LoadBalancerListenerProtocol.HTTPS; break;
+    }
+
     const props = BaseListener._queryContextProvider(scope, {
       userOptions: options,
       loadBalancerType: cxschema.LoadBalancerType.APPLICATION,
-      listenerProtocol: options.listenerProtocol === ApplicationProtocol.HTTP
-        ? cxschema.LoadBalancerListenerProtocol.HTTP
-        : cxschema.LoadBalancerListenerProtocol.HTTPS,
+      listenerProtocol,
     });
 
     return new LookedUpApplicationListener(scope, id, props);
