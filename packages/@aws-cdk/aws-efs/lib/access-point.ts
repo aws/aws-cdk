@@ -122,7 +122,7 @@ export interface AccessPointAttributes {
    * The ID of the AccessPoint
    * One of this, of {@link accessPointArn} is required
    *
-   * @default - no access point id
+   * @default - determined based on accessPointArn
    */
   readonly accessPointId?: string;
 
@@ -130,7 +130,7 @@ export interface AccessPointAttributes {
    * The ARN of the AccessPoint
    * One of this, of {@link accessPointId} is required
    *
-   * @default - no access point ARN
+   * @default - determined based on accessPointId
    */
   readonly accessPointArn?: string;
 
@@ -166,10 +166,19 @@ abstract class AccessPointBase extends Resource implements IAccessPoint {
  */
 export class AccessPoint extends AccessPointBase {
   /**
-   * Import an existing Access Point
+   * Import an existing Access Point by attributes
    */
   public static fromAccessPointAttributes(scope: Construct, id: string, attrs: AccessPointAttributes): IAccessPoint {
     return new ImportedAccessPoint(scope, id, attrs);
+  }
+
+  /**
+   * Import an existing Access Point by id
+   */
+  public static fromAccessPointId(scope: Construct, id: string, accessPointId: string): IAccessPoint {
+    return new ImportedAccessPoint(scope, id, {
+      accessPointId: accessPointId,
+    });
   }
 
   /**

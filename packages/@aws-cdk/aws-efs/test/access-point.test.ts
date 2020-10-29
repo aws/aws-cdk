@@ -31,7 +31,17 @@ test('new AccessPoint correctly', () => {
   expectCDK(stack).to(haveResource('AWS::EFS::AccessPoint'));
 });
 
-test('import using accessPointId', () => {
+test('import an AccessPoint using fromAccessPointId', () => {
+  // WHEN
+  const ap = new AccessPoint(stack, 'MyAccessPoint', {
+    fileSystem,
+  });
+  const imported = AccessPoint.fromAccessPointId(stack, 'ImportedAccessPoint', ap.accessPointId);
+  // THEN
+  expect(imported.accessPointId).toEqual(ap.accessPointId);
+});
+
+test('import an AccessPoint using fromAccessPointAttributes and the accessPointId', () => {
   // WHEN
   const ap = new AccessPoint(stack, 'MyAccessPoint', {
     fileSystem,
@@ -46,7 +56,7 @@ test('import using accessPointId', () => {
   expect(imported.fileSystem).toEqual(ap.fileSystem);
 });
 
-test('import using accessPointArn', () => {
+test('import an AccessPoint using fromAccessPointAttributes and the accessPointArn', () => {
   // WHEN
   const ap = new AccessPoint(stack, 'MyAccessPoint', {
     fileSystem,
