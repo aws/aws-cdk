@@ -83,7 +83,7 @@
     "@aws-cdk/aws-elasticloadbalancingv2": "0.0.0",
     "@aws-cdk/aws-servicediscovery": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.4"
+    "constructs": "^3.2.0"
   },
   "peerDependencies": {
     "@aws-cdk/aws-apigatewayv2": "0.0.0",
