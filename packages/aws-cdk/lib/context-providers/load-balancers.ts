@@ -119,7 +119,6 @@ export class LoadBalancerListenerContextProviderPlugin implements ContextProvide
       throw new Error(`No associated load balancers found for load balancer listener query ${JSON.stringify(args)}`);
     }
 
-    // Find the first matching listener
     return this.findMatchingListener(elbv2, loadBalancers, args);
   }
 
