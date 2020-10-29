@@ -34,6 +34,9 @@ By default, the master password will be generated and stored in AWS Secrets Mana
 
 A default database named `default_db` will be created in the cluster. To change the name of this database set the `defaultDatabaseName` attribute in the constructor properties.
 
+By default, the cluster will not be publicly accessible.
+Depending on your use case, you can make the cluster publicly accessible with the `publiclyAccessible` property.
+
 ### Connecting
 
 To control who can access the cluster, use the `.connections` attribute. Redshift Clusters have
