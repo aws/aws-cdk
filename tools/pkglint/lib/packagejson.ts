@@ -205,6 +205,10 @@ export class PackageJson {
     return Object.keys(this.json.dependencies || {}).filter(predicate).map(name => ({ name, version: this.json.dependencies[name] }));
   }
 
+  public getBundledDependencies(): string[] {
+    return this.json.bundledDependencies ?? [];
+  }
+
   /**
    * Adds a devDependency to the package.
    */
@@ -273,6 +277,14 @@ export class PackageJson {
   public fileContainsSync(fileName: string, line: string): boolean {
     const lines = this.readFileLinesSync(fileName);
     return lines.indexOf(line) !== -1;
+  }
+
+  /**
+   * Whether the package-level file begins with the specified lines
+   */
+  public fileBeginsWith(fileName: string, ...lines: string[]): boolean {
+    const fileLines = this.readFileLinesSync(fileName).slice(0, lines.length);
+    return fileLines.every((fileLine, index) => fileLine === lines[index]);
   }
 
   /**
