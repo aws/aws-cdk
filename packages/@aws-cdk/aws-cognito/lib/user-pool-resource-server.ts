@@ -41,7 +41,7 @@ export interface UserPoolResourceServerOptions {
 
   /**
    * A friendly name for the resource server.
-   * @default - will use the identifier
+   * @default - same as `identifier`
    */
   readonly userPoolResourceServerName?: string;
 
