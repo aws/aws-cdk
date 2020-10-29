@@ -235,6 +235,35 @@ describe('ThirdPartyAttributions', () => {
     for (const report of pkgJson.reports) {
       expect(report.ruleName).toEqual('license/3p-attributions');
     }
+    expect(pkgJson.reports[0].message.includes('dep1')).toBe(true);
+    expect(pkgJson.reports[0].message.includes('Missing attribution')).toBe(true);
+    expect(pkgJson.reports[1].message.includes('dep2')).toBe(true);
+    expect(pkgJson.reports[1].message.includes('Missing attribution')).toBe(true);
+  });
+
+  test('errors when there are excessive attributions', async() => {
+    fakeModule = new FakeModule({
+      packagejson: {
+        bundledDependencies: ['dep1'],
+      },
+      notice: [
+        '** dep1 - https://link-somewhere',
+        '** dep2 - https://link-elsewhere',
+      ],
+    });
+    const dirPath = await fakeModule.tmpdir();
+
+    const rule = new rules.ThirdPartyAttributions();
+
+    const pkgJson = new PackageJson(path.join(dirPath, 'package.json'));
+    rule.validate(pkgJson);
+
+    expect(pkgJson.hasReports).toBe(true);
+    expect(pkgJson.reports.length).toEqual(1);
+    for (const report of pkgJson.reports) {
+      expect(report.ruleName).toEqual('license/3p-attributions');
+    }
+    expect(pkgJson.reports[0].message.includes('Excessive number of attributions')).toBe(true);
   });
 
   test('passes when attribution is present', async() => {

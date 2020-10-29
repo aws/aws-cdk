@@ -147,14 +147,22 @@ export class ThirdPartyAttributions extends ValidationRule {
     }
     const bundled = pkg.getBundledDependencies();
     const lines = fs.readFileSync(path.join(pkg.packageRoot, 'NOTICE'), { encoding: 'utf8' }).split('\n');
+    const attributionLines = lines.filter(l => new RegExp('^\\*\\* ').test(l));
+    let allDepsAttributed = true;
     for (const dep of bundled) {
-      const re = new RegExp(`^\\*\\* ${dep}`);
-      if (!lines.find(l => re.test(l))) {
+      if (!attributionLines.find(l => new RegExp(`^\\*\\* ${dep}`).test(l))) {
         pkg.report({
           message: `Missing attribution for bundled dependency '${dep}' in NOTICE file`,
           ruleName: this.name,
         });
+        allDepsAttributed = false;
       }
+    }
+    if (allDepsAttributed && attributionLines.length > bundled.length) {
+      pkg.report({
+        message: 'Excessive attributions found. Review the NOTICE file and remove attributions that are no longer needed.',
+        ruleName: this.name,
+      });
     }
   }
 }
