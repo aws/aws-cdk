@@ -107,7 +107,7 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
         actions: ['s3:AbortMultipartUpload',
           's3:ListBucketMultipartUploads',
           's3:ListMultipartUploadParts',
-          's3:PutObject'], //s3://query-results-bucket/folder/
+          's3:PutObject'],
         resources: [this.props.resultConfiguration?.outputLocation?.bucketName ? 'arn:aws:s3:::' + this.props.resultConfiguration?.outputLocation?.bucketName + '/' + this.props.resultConfiguration?.outputLocation?.objectKey + '/*' : '*'], // Need S3 location where data is stored or Athena throws an Unable to verify/create output bucket https://docs.aws.amazon.com/athena/latest/ug/security-iam-athena.html
       }),
     );
