@@ -12,12 +12,8 @@
     "ubergen": "bin/ubergen"
   },
   "scripts": {
-    "build": "cdk-build",
-    "watch": "cdk-watch",
-    "pkglint": "pkglint -f",
-    "test": "echo success",
-    "build+test+package": "npm run build+test",
-    "build+test": "npm run build && npm test"
+    "lint": "eslint . --ext .ts --resolve-plugins-relative-to=../cdk-build-tools",
+    "pkglint": "pkglint -f"
   },
   "author": {
     "name": "Amazon Web Services",
@@ -27,12 +23,21 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@types/fs-extra": "^8.1.1",
-    "cdk-build-tools": "0.0.0",
+    "eslint": "^7.12.1",
     "pkglint": "0.0.0"
   },
   "dependencies": {
     "fs-extra": "^9.0.1",
+    "ts-node": "^9.0.0",
     "typescript": "~3.9.7"
+  },
+  "pkglint": {
+    "exclude": [
+      "dependencies/build-tools",
+      "package-info/scripts/build",
+      "package-info/scripts/watch",
+      "fast-failing-build-scripts"
+    ]
   },
   "keywords": [
     "aws",

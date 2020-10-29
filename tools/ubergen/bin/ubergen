@@ -1,2 +1,2 @@
-#!/usr/bin/env node
-require('./ubergen.js');
+#!/usr/bin/env yarn --silent ts-node
+require('./ubergen.ts');
