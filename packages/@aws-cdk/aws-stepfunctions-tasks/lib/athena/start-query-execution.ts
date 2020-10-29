@@ -93,15 +93,21 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
 
     policyStatements.push(
       new iam.PolicyStatement({
+        actions: ['s3:CreateBucket'],
+        resources: ['*'], // Need * permissions to create new output location https://docs.aws.amazon.com/athena/latest/ug/security-iam-athena.html
+      }),
+    );
+
+    policyStatements.push(
+      new iam.PolicyStatement({
         actions: ['s3:AbortMultipartUpload',
-          's3:CreateBucket',
           's3:GetBucketLocation',
           's3:GetObject',
           's3:ListBucket',
           's3:ListBucketMultipartUploads',
           's3:ListMultipartUploadParts',
           's3:PutObject'],
-        resources: ['*'], // State machines scoped to output location fail without * permissions  https://docs.aws.amazon.com/athena/latest/ug/security-iam-athena.html
+        resources: [this.props.resultConfiguration?.outputLocation ? 'arn:aws:s3:::' + this.props.resultConfiguration?.outputLocation.slice(5) + '*' : '*'], // Need S3 location where data is stored or Athena throws an Unable to verify/create output bucket https://docs.aws.amazon.com/athena/latest/ug/security-iam-athena.html
       }),
     );
 

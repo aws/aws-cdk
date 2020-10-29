@@ -83,9 +83,13 @@
               ]
             },
             {
+              "Action": "s3:CreateBucket",
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
               "Action": [
                 "s3:AbortMultipartUpload",
-                "s3:CreateBucket",
                 "s3:GetBucketLocation",
                 "s3:GetObject",
                 "s3:ListBucket",
