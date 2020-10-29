@@ -254,9 +254,9 @@
     "@aws-cdk/region-info": "0.0.0",
     "@aws-cdk/yaml-cfn": "0.0.0",
     "@types/fs-extra": "^8.1.1",
-    "@types/node": "^10.17.42",
+    "@types/node": "^10.17.44",
     "cdk-build-tools": "0.0.0",
-    "constructs": "^3.2.0",
+    "constructs": "^3.2.5",
     "fs-extra": "^9.0.1",
     "pkglint": "0.0.0",
     "ts-node": "^9.0.0",
@@ -264,7 +264,7 @@
     "ubergen": "0.0.0"
   },
   "peerDependencies": {
-    "constructs": "^3.2.0"
+    "constructs": "^3.2.5"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {

@@ -86,7 +86,7 @@
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-sam": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.2.0"
+    "constructs": "^3.2.5"
   },
   "peerDependencies": {
     "@aws-cdk/aws-ec2": "0.0.0",
@@ -95,7 +95,7 @@
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-sam": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.2.0"
+    "constructs": "^3.2.5"
   },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
