@@ -117,7 +117,7 @@ export class BundlingDockerImage {
 
     const docker = dockerExec(dockerArgs);
 
-    const match = docker.stdout.toString().match(/(sha256:[a-z0-9]+)/);
+    const match = docker.stdout.toString().match(/sha256:[a-z0-9]+/);
 
     if (!match) {
       throw new Error('Failed to extract image ID from Docker build output');
