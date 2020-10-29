@@ -42,6 +42,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
   - [Import](#importing-user-pools)
   - [Identity Providers](#identity-providers)
   - [App Clients](#app-clients)
+  - [Resource Servers](#resource-servers)
   - [Domains](#domains)
 
 ## User Pools
