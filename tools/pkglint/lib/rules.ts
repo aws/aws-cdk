@@ -151,7 +151,7 @@ export class ThirdPartyAttributions extends ValidationRule {
       const re = new RegExp(`^\\*\\* ${dep}`);
       if (!lines.find(l => re.test(l))) {
         pkg.report({
-          message: `Missing attribution for bundled dependency ${dep} in NOTICE file`,
+          message: `Missing attribution for bundled dependency '${dep}' in NOTICE file`,
           ruleName: this.name,
         });
       }
