@@ -299,7 +299,7 @@ export class SecurityGroup extends SecurityGroupBase {
   /**
    * Look up a security group by id.
    */
-  static fromLookup(scope: Construct, id: string, securityGroupId: string) {
+  public static fromLookup(scope: Construct, id: string, securityGroupId: string) {
     if (Token.isUnresolved(securityGroupId)) {
       throw new Error('All arguments to look up a security group must be concrete (no Tokens)');
     }
