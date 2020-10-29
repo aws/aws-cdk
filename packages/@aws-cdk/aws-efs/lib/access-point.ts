@@ -24,7 +24,7 @@ export interface IAccessPoint extends IResource {
   /**
    * The efs filesystem
    */
-  readonly fileSystem?: IFileSystem;
+  readonly fileSystem: IFileSystem;
 }
 
 /**
@@ -158,7 +158,7 @@ abstract class AccessPointBase extends Resource implements IAccessPoint {
   /**
    * The filesystem of the access point
    */
-  public abstract readonly fileSystem?: IFileSystem;
+  public abstract readonly fileSystem: IFileSystem;
 }
 
 /**
@@ -196,7 +196,7 @@ export class AccessPoint extends AccessPointBase {
   /**
    * The filesystem of the access point
    */
-  public readonly fileSystem?: IFileSystem;
+  public readonly fileSystem: IFileSystem;
 
   constructor(scope: Construct, id: string, props: AccessPointProps) {
     super(scope, id);
@@ -231,7 +231,7 @@ export class AccessPoint extends AccessPointBase {
 class ImportedAccessPoint extends AccessPointBase {
   public readonly accessPointId: string;
   public readonly accessPointArn: string;
-  public readonly fileSystem?: IFileSystem;
+  private readonly _fileSystem?: IFileSystem;
 
   constructor(scope: Construct, id: string, attrs: AccessPointAttributes) {
     super(scope, id);
@@ -262,6 +262,14 @@ class ImportedAccessPoint extends AccessPointBase {
       });
     }
 
-    this.fileSystem = attrs.fileSystem;
+    this._fileSystem = attrs.fileSystem;
+  }
+
+  public get fileSystem() {
+    if (!this._fileSystem) {
+      throw new Error("fileSystem is not available when 'fromAccessPointId()' is used. Use 'fromAccessPointAttributes()' instead");
+    }
+
+    return this._fileSystem;
   }
 }

@@ -41,6 +41,16 @@ test('import an AccessPoint using fromAccessPointId', () => {
   expect(imported.accessPointId).toEqual(ap.accessPointId);
 });
 
+test('import an AccessPoint using fromAccessPointId', () => {
+  // WHEN
+  const ap = new AccessPoint(stack, 'MyAccessPoint', {
+    fileSystem,
+  });
+  const imported = AccessPoint.fromAccessPointId(stack, 'ImportedAccessPoint', ap.accessPointId);
+  // THEN
+  expect(() => imported.fileSystem).toThrow(/fileSystem is not available when 'fromAccessPointId\(\)' is used. Use 'fromAccessPointAttributes\(\)' instead/);
+});
+
 test('import an AccessPoint using fromAccessPointAttributes and the accessPointId', () => {
   // WHEN
   const ap = new AccessPoint(stack, 'MyAccessPoint', {

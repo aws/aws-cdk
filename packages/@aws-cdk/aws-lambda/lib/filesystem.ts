@@ -51,10 +51,6 @@ export class FileSystem {
    * @param mountPath the target path in the lambda runtime environment
    */
   public static fromEfsAccessPoint(ap: efs.IAccessPoint, mountPath: string): FileSystem {
-    if (!ap.fileSystem) {
-      throw new Error('The AccessPoint doesn\'t have a file system attached to it. If imported, make sure to pass the fileSystem attribute');
-    }
-
     return new FileSystem({
       localMountPath: mountPath,
       arn: ap.accessPointArn,
