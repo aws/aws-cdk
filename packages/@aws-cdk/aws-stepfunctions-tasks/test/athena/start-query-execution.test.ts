@@ -17,7 +17,7 @@ describe('Start Query Execution', () => {
       },
       resultConfiguration: {
         encryptionConfiguration: { encryptionOption: EncryptionOption.S3_MANAGED },
-        outputLocation: 'https://s3.Region.amazonaws.com/bucket-name/key-name',
+        outputLocation: 's3://query-results-bucket/folder/',
       },
       workGroup: 'primary',
     });
@@ -47,7 +47,7 @@ describe('Start Query Execution', () => {
         },
         ResultConfiguration: {
           EncryptionConfiguration: { EncryptionOption: EncryptionOption.S3_MANAGED },
-          OutputLocation: 'https://s3.Region.amazonaws.com/bucket-name/key-name',
+          OutputLocation: 's3://query-results-bucket/folder/',
         },
         WorkGroup: 'primary',
       },
