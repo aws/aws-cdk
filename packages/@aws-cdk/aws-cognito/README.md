@@ -549,7 +549,14 @@ pool.addClient('app-client', {
 
 ### Resource Servers
 
-In your application you may need to attach custom permissions when using oAuth. Resource Servers allow us to provide custom scopes that we can attach to an app client. For example, you might be dealing with user data, and want to give different permissions to different clients.
+A resource server is a server for access-protected resources. It handles authenticated requests from an app that has an
+access token. See [Defining Resource
+Servers](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-define-resource-servers.html)
+for more information.
+
+An application may choose to model custom permissions via OAuth. Resource Servers provide this capability via custom scopes
+that are attached to an app client. The following example sets up a resource server for the 'users' resource for two different
+app clients and configures the clients to use these scopes.
 
 ```ts
 const pool = new cognito.UserPool(this, 'Pool');
