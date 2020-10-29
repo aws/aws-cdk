@@ -227,6 +227,7 @@ export class Settings {
       app: argv.app,
       browser: argv.browser,
       context,
+      debug: argv.debug,
       tags,
       language: argv.language,
       pathMetadata: argv.pathMetadata,

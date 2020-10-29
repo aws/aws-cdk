@@ -86,7 +86,7 @@ export class CloudAssembly {
           if (stacks.length === 1) {
             return new StackCollection(this, stacks);
           } else {
-            throw new Error('Since this app includes more than a single stack, specify which stacks to use (wildcards are supported)\n' +
+            throw new Error('Since this app includes more than a single stack, specify which stacks to use (wildcards are supported) or specify `--all`\n' +
               `Stacks: ${stacks.map(x => x.id).join(' ')}`);
           }
         default:
