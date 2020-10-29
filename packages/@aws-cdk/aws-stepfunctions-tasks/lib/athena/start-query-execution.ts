@@ -87,7 +87,7 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
           }),
 
         ],
-        actions: ['athena:getDataCatalog', 'athena:startQueryExecution'],
+        actions: ['athena:getDataCatalog', 'athena:startQueryExecution', 'athena:getQueryExecution'],
       }),
     ];
 
