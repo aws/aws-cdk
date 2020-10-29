@@ -128,7 +128,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
   /**
    * Look up an ApplicationListener.
    */
-  static fromLookup(scope: Construct, id: string, options: ApplicationListenerLookupOptions): IApplicationListener {
+  public static fromLookup(scope: Construct, id: string, options: ApplicationListenerLookupOptions): IApplicationListener {
     const props = BaseListener._queryContextProvider(scope, {
       userOptions: options,
       loadBalancerType: cxschema.LoadBalancerType.APPLICATION,
