@@ -351,7 +351,7 @@ export class Secret extends SecretBase {
     });
 
     this.encryptionKey = props.encryptionKey;
-    this.secretName = this.physicalName;
+    this.secretName = props.secretName ?? parseSecretName(this, this.secretArn);
 
     // @see https://docs.aws.amazon.com/kms/latest/developerguide/services-secrets-manager.html#asm-authz
     const principal =

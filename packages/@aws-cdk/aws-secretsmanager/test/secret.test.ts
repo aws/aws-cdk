@@ -425,6 +425,29 @@ test('secretValue', () => {
   });
 });
 
+describe('secretName', () => {
+  test('when name is provided', () => {
+    const secret = new secretsmanager.Secret(stack, 'Secret', {
+      secretName: 'mySecret',
+    });
+
+    expect(secret.secretName).toEqual('mySecret');
+  });
+
+  test('when name is not provided', () => {
+    const secret = new secretsmanager.Secret(stack, 'Secret');
+    new cdk.CfnOutput(stack, 'MySecretName', {
+      value: secret.secretName,
+    });
+
+    // Creates secret name by parsing ARN.
+    expect(stack).toHaveOutput({
+      outputName: 'MySecretName',
+      outputValue: { 'Fn::Select': [6, { 'Fn::Split': [':', { Ref: 'SecretA720EF05' }] }] },
+    });
+  });
+});
+
 test('import by secretArn', () => {
   // GIVEN
   const secretArn = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret-f3gDy9';
