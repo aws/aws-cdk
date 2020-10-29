@@ -155,29 +155,6 @@ export = {
     },
   },
 
-  'When adding listeners to a VirtualGateway ': {
-    'should throw an exception if you attempt to add more than 1 listener'(test: Test) {
-
-      // GIVEN
-      const stack = new cdk.Stack();
-
-      const mesh = new appmesh.Mesh(stack, 'mesh', {
-        meshName: 'test-mesh',
-      });
-      test.throws(() => {
-        new appmesh.VirtualGateway(stack, 'testGateway', {
-          virtualGatewayName: 'test-gateway',
-          mesh: mesh,
-          listeners: [
-            appmesh.VirtualGatewayListener.httpGatewayListener(),
-            appmesh.VirtualGatewayListener.http2GatewayListener(),
-          ],
-        });
-      }, /VirtualGateway may have at most one listener/);
-      test.done();
-    },
-  },
-
   'When adding a gateway route to existing VirtualGateway ': {
     'should create gateway route resource'(test: Test) {
       // GIVEN

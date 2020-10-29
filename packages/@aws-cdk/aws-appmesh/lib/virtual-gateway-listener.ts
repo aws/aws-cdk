@@ -99,7 +99,7 @@ export abstract class VirtualGatewayListener {
 
   protected renderHealthCheck(hc: HealthCheck): CfnVirtualGateway.VirtualGatewayHealthCheckPolicyProperty | undefined {
     if (hc.protocol === Protocol.TCP) {
-      throw new Error('The path property cannot be set with Protocol.TCP');
+      throw new Error('TCP health checks are not permitted for gateway listeners');
     }
 
     if (hc.protocol === Protocol.GRPC && hc.path) {

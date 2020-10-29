@@ -24,8 +24,6 @@ export interface IGatewayRoute extends cdk.IResource {
 
   /**
    * The VirtualGateway the GatewayRoute belongs to
-   *
-   * @attribute
    */
   readonly virtualGateway: IVirtualGateway;
 }

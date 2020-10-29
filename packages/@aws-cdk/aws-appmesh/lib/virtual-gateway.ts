@@ -1,6 +1,6 @@
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { CfnGatewayRoute, CfnVirtualGateway } from './appmesh.generated';
+import { CfnVirtualGateway } from './appmesh.generated';
 import { GatewayRoute, GatewayRouteBaseProps } from './gateway-route';
 
 import { IMesh, Mesh } from './mesh';
@@ -88,9 +88,6 @@ abstract class VirtualGatewayBase extends cdk.Resource implements IVirtualGatewa
    */
   public abstract readonly mesh: IMesh;
 
-  protected readonly listeners = new Array<VirtualGatewayListenerConfig>();
-  protected readonly routes = new Array<CfnGatewayRoute>();
-
   /**
    * Utility method to add a new GatewayRoute to the VirtualGateway
    */
@@ -133,6 +130,8 @@ export class VirtualGateway extends VirtualGatewayBase {
    */
   public readonly mesh: IMesh;
 
+  protected readonly listeners = new Array<VirtualGatewayListenerConfig>();
+
   constructor(scope: Construct, id: string, props: VirtualGatewayProps) {
     super(scope, id, {
       physicalName: props.virtualGatewayName || cdk.Lazy.stringValue({ produce: () => this.node.uniqueId }),
@@ -144,9 +143,6 @@ export class VirtualGateway extends VirtualGatewayBase {
       // Use listener default of http listener port 8080 if no listener is defined
       this.listeners.push(VirtualGatewayListener.httpGatewayListener().bind(this));
     } else {
-      if (props.listeners.length != 1) {
-        throw new Error('VirtualGateway may have at most one listener');
-      }
       props.listeners.forEach(listener => this.listeners.push(listener.bind(this)));
     }
 
