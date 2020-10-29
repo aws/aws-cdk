@@ -115,6 +115,7 @@ export class CompositeAlarm extends AlarmBase {
       service: 'cloudwatch',
       resource: 'alarm',
       resourceName: this.physicalName,
+      sep: ':',
     });
 
   }
