@@ -133,7 +133,7 @@ export class TargetTrackingScalingPolicy extends cdk.Construct {
     super(scope, id);
 
     const resource = new CfnScalingPolicy(this, 'Resource', {
-      policyName: props.policyName || cdk.Legacy.uniqueId(this),
+      policyName: props.policyName || cdk.Names.uniqueId(this),
       policyType: 'TargetTrackingScaling',
       scalingTargetId: props.scalingTarget.scalableTargetId,
       targetTrackingScalingPolicyConfiguration: {

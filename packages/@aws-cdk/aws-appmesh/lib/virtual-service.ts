@@ -106,7 +106,7 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
 
   constructor(scope: Construct, id: string, props: VirtualServiceProps) {
     super(scope, id, {
-      physicalName: props.virtualServiceName || cdk.Lazy.stringValue({ produce: () => cdk.Legacy.uniqueId(this) }),
+      physicalName: props.virtualServiceName || cdk.Lazy.stringValue({ produce: () => cdk.Names.uniqueId(this) }),
     });
 
     if (props.virtualNode && props.virtualRouter) {

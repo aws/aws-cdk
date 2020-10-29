@@ -23,7 +23,7 @@ export class KinesisEventSource extends StreamEventSource {
   }
 
   public bind(target: lambda.IFunction) {
-    const eventSourceMapping = target.addEventSourceMapping(`KinesisEventSource:${cdk.Legacy.nodeUniqueId(this.stream.node)}`,
+    const eventSourceMapping = target.addEventSourceMapping(`KinesisEventSource:${cdk.Names.nodeUniqueId(this.stream.node)}`,
       this.enrichMappingOptions({ eventSourceArn: this.stream.streamArn }),
     );
     this._eventSourceMappingId = eventSourceMapping.eventSourceMappingId;

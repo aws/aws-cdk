@@ -3,15 +3,14 @@ import { ConstructNode } from './construct-compat';
 import { makeUniqueId } from './private/uniqueid';
 
 /**
- * Legacy functions required to maintain backwards compatibility.
+ * Functions for devising unique names for constructs. For example, those can be
+ * used to allocate unique physical names for resources.
  */
-export class Legacy {
+export class Names {
   /**
-   * THIS IS A DEPRECATED METHOD. USE `node.addr` INSTEAD.
-   *
-   * Implements the legacy `uniqueId`algorithm used to calculate a unique ID for
-   * constructs in the tree before `node.addr` was introduced. This cannot be
-   * fully deprecated since it will cause breaking changes.
+   * Returns a CloudFormation-compatible unique identifier for a construct based
+   * on its path. The identifier includes a human readable porition rendered
+   * from the path components and a hash suffix.
    *
    * @param construct The construct
    * @returns a unique id based on the construct path
@@ -23,15 +22,13 @@ export class Legacy {
   }
 
   /**
-   * THIS IS A DEPRECATED METHOD. USE `node.addr` INSTEAD.
-   *
-   * Implements the legacy `uniqueId`algorithm used to calculate a unique ID for
-   * constructs in the tree before `node.addr` was introduced. This cannot be
-   * fully deprecated since it will cause breaking changes.
+   * Returns a CloudFormation-compatible unique identifier for a construct based
+   * on its path. The identifier includes a human readable porition rendered
+   * from the path components and a hash suffix.
    *
    * TODO (v2): replace with API to use `constructs.Node`.
    *
-   * @param construct The construct
+   * @param node The construct node
    * @returns a unique id based on the construct path
    */
   public static nodeUniqueId(node: ConstructNode): string {

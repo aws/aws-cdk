@@ -1,7 +1,7 @@
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Construct, IConstruct, Legacy } from '@aws-cdk/core';
+import { Construct, IConstruct,  } from '@aws-cdk/core';
 
 /**
  * Obtain the Role for the EventBridge event
@@ -27,7 +27,7 @@ export function singletonEventRole(scope: IConstruct, policyStatements: iam.Poli
  * Allows a Lambda function to be called from a rule
  */
 export function addLambdaPermission(rule: events.IRule, handler: lambda.IFunction): void {
-  const permissionId = `AllowEventRule${Legacy.nodeUniqueId(rule.node)}`;
+  const permissionId = `AllowEventRule${Names.nodeUniqueId(rule.node)}`;
   if (!handler.permissionsNode.tryFindChild(permissionId)) {
     handler.addPermission(permissionId, {
       action: 'lambda:InvokeFunction',

@@ -240,10 +240,10 @@ describe('Batch Compute Evironment', () => {
           ],
           Subnets: [
             {
-              Ref: `${cdk.Legacy.uniqueId(vpc)}PrivateSubnet1Subnet865FB50A`,
+              Ref: `${cdk.Names.uniqueId(vpc)}PrivateSubnet1Subnet865FB50A`,
             },
             {
-              Ref: `${cdk.Legacy.uniqueId(vpc)}PrivateSubnet2Subnet23D3396F`,
+              Ref: `${cdk.Names.uniqueId(vpc)}PrivateSubnet2Subnet23D3396F`,
             },
           ],
           Tags: {

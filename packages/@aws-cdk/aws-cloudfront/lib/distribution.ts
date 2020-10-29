@@ -1,7 +1,7 @@
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
-import { IResource, Lazy, Resource, Stack, Token, Duration, Legacy } from '@aws-cdk/core';
+import { IResource, Lazy, Resource, Stack, Token, Duration, Names } from '@aws-cdk/core';
 import { Construct, Node } from 'constructs';
 import { ICachePolicy } from './cache-policy';
 import { CfnDistribution } from './cloudfront.generated';
@@ -322,7 +322,7 @@ export class Distribution extends Resource implements IDistribution {
     } else {
       const originIndex = this.boundOrigins.length + 1;
       const scope = new CoreConstruct(this, `Origin${originIndex}`);
-      const originId = Legacy.uniqueId(scope);
+      const originId = Names.uniqueId(scope);
       const originBindConfig = origin.bind(scope, { originId });
       if (!originBindConfig.failoverConfig) {
         this.boundOrigins.push({ origin, originId, ...originBindConfig });
@@ -331,7 +331,7 @@ export class Distribution extends Resource implements IDistribution {
           throw new Error('An Origin cannot use an Origin with its own failover configuration as its fallback origin!');
         }
         const groupIndex = this.originGroups.length + 1;
-        const originGroupId = Legacy.uniqueId(new CoreConstruct(this, `OriginGroup${groupIndex}`));
+        const originGroupId = Names.uniqueId(new CoreConstruct(this, `OriginGroup${groupIndex}`));
         this.boundOrigins.push({ origin, originId, originGroupId, ...originBindConfig });
 
         const failoverOriginId = this.addOrigin(originBindConfig.failoverConfig.failoverOrigin, true);

@@ -1,6 +1,6 @@
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { Legacy } from '@aws-cdk/core';
+import { Names } from '@aws-cdk/core';
 
 export interface SqsEventSourceProps {
   /**
@@ -35,7 +35,7 @@ export class SqsEventSource implements lambda.IEventSource {
   }
 
   public bind(target: lambda.IFunction) {
-    const eventSourceMapping = target.addEventSourceMapping(`SqsEventSource:${Legacy.nodeUniqueId(this.queue.node)}`, {
+    const eventSourceMapping = target.addEventSourceMapping(`SqsEventSource:${Names.nodeUniqueId(this.queue.node)}`, {
       batchSize: this.props.batchSize,
       enabled: this.props.enabled,
       eventSourceArn: this.queue.queueArn,

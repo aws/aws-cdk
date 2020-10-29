@@ -1,6 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Lazy, Legacy, Token } from '@aws-cdk/core';
+import { Lazy, Names, Token } from '@aws-cdk/core';
 import { IntegrationConfig, IntegrationOptions } from '../integration';
 import { Method } from '../method';
 import { AwsIntegration } from './aws';
@@ -56,7 +56,7 @@ export class LambdaIntegration extends AwsIntegration {
     const bindResult = super.bind(method);
     const principal = new iam.ServicePrincipal('apigateway.amazonaws.com');
 
-    const desc = `${Legacy.uniqueId(method.api)}.${method.httpMethod}.${method.resource.path.replace(/\//g, '.')}`;
+    const desc = `${Names.uniqueId(method.api)}.${method.httpMethod}.${method.resource.path.replace(/\//g, '.')}`;
 
     this.handler.addPermission(`ApiPermission.${desc}`, {
       principal,

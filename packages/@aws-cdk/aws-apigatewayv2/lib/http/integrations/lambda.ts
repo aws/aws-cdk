@@ -1,6 +1,6 @@
 import { ServicePrincipal } from '@aws-cdk/aws-iam';
 import { IFunction } from '@aws-cdk/aws-lambda';
-import { Legacy, Stack } from '@aws-cdk/core';
+import { Names, Stack } from '@aws-cdk/core';
 import { HttpIntegrationType, HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig, IHttpRouteIntegration, PayloadFormatVersion } from '../integration';
 
 /**
@@ -30,7 +30,7 @@ export class LambdaProxyIntegration implements IHttpRouteIntegration {
 
   public bind(options: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig {
     const route = options.route;
-    this.props.handler.addPermission(`${Legacy.uniqueId(route)}-Permission`, {
+    this.props.handler.addPermission(`${Names.uniqueId(route)}-Permission`, {
       scope: options.scope,
       principal: new ServicePrincipal('apigateway.amazonaws.com'),
       sourceArn: Stack.of(route).formatArn({

@@ -718,9 +718,9 @@ export class Stack extends CoreConstruct implements ITaggable {
       throw new Error(`'${target.node.path}' depends on '${this.node.path}' (${cycle.join(', ')}). Adding this dependency (${reason}) would create a cyclic reference.`);
     }
 
-    let dep = this._stackDependencies[Legacy.uniqueId(target)];
+    let dep = this._stackDependencies[Names.uniqueId(target)];
     if (!dep) {
-      dep = this._stackDependencies[Legacy.uniqueId(target)] = {
+      dep = this._stackDependencies[Names.uniqueId(target)] = {
         stack: target,
         reasons: [],
       };
@@ -1125,7 +1125,7 @@ import { Stage } from './stage';
 import { ITaggable, TagManager } from './tag-manager';
 import { Token } from './token';
 import { FileSystem } from './fs';
-import { Legacy } from './legacy';
+import { Names } from './names';
 
 interface StackDependency {
   stack: Stack;

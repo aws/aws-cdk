@@ -1,6 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Duration, Lazy, Legacy, Stack } from '@aws-cdk/core';
+import { Duration, Lazy, Names, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnAuthorizer } from '../apigateway.generated';
 import { Authorizer, IAuthorizer } from '../authorizer';
@@ -97,7 +97,7 @@ abstract class LambdaAuthorizer extends Authorizer implements IAuthorizer {
    */
   protected setupPermissions() {
     if (!this.role) {
-      this.handler.addPermission(`${Legacy.uniqueId(this)}:Permissions`, {
+      this.handler.addPermission(`${Names.uniqueId(this)}:Permissions`, {
         principal: new iam.ServicePrincipal('apigateway.amazonaws.com'),
         sourceArn: this.authorizerArn,
       });
@@ -168,7 +168,7 @@ export class TokenAuthorizer extends LambdaAuthorizer {
 
     const restApiId = this.lazyRestApiId();
     const resource = new CfnAuthorizer(this, 'Resource', {
-      name: props.authorizerName ?? Legacy.uniqueId(this),
+      name: props.authorizerName ?? Names.uniqueId(this),
       restApiId,
       type: 'TOKEN',
       authorizerUri: lambdaAuthorizerArn(props.handler),
@@ -230,7 +230,7 @@ export class RequestAuthorizer extends LambdaAuthorizer {
 
     const restApiId = this.lazyRestApiId();
     const resource = new CfnAuthorizer(this, 'Resource', {
-      name: props.authorizerName ?? Legacy.uniqueId(this),
+      name: props.authorizerName ?? Names.uniqueId(this),
       restApiId,
       type: 'REQUEST',
       authorizerUri: lambdaAuthorizerArn(props.handler),

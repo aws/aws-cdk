@@ -362,7 +362,7 @@ export = {
     const t1: IRuleTarget = {
       bind: (eventRule: IRule) => {
         receivedRuleArn = eventRule.ruleArn;
-        receivedRuleId = cdk.Legacy.nodeUniqueId(eventRule.node);
+        receivedRuleId = cdk.Names.nodeUniqueId(eventRule.node);
 
         return {
           id: '',
@@ -376,7 +376,7 @@ export = {
     rule.addTarget(t1);
 
     test.deepEqual(stack.resolve(receivedRuleArn), stack.resolve(rule.ruleArn));
-    test.deepEqual(receivedRuleId, cdk.Legacy.uniqueId(rule));
+    test.deepEqual(receivedRuleId, cdk.Names.uniqueId(rule));
     test.done();
   },
 

@@ -74,7 +74,7 @@ class S3BucketOrigin extends cloudfront.OriginBase {
       const bucketStack = cdk.Stack.of(this.bucket);
       const bucketInDifferentStack = bucketStack !== cdk.Stack.of(scope);
       const oaiScope = bucketInDifferentStack ? bucketStack : scope;
-      const oaiId = bucketInDifferentStack ? `${cdk.Legacy.uniqueId(scope)}S3Origin` : 'S3Origin';
+      const oaiId = bucketInDifferentStack ? `${cdk.Names.uniqueId(scope)}S3Origin` : 'S3Origin';
 
       this.originAccessIdentity = new cloudfront.OriginAccessIdentity(oaiScope, oaiId, {
         comment: `Identity for ${options.originId}`,
