@@ -54,7 +54,7 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
 
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
     sfn.IntegrationPattern.REQUEST_RESPONSE,
-    sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
+    sfn.IntegrationPattern.RUN_JOB,
   ];
 
   protected readonly taskMetrics?: sfn.TaskMetricsConfig;
