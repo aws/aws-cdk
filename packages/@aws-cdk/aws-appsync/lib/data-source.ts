@@ -244,7 +244,7 @@ export interface HttpDataSourceProps extends BaseDataSourceProps {
 /**
  * An AppSync datasource backed by a http endpoint
  */
-export class HttpDataSource extends BaseDataSource {
+export class HttpDataSource extends BackedDataSource {
   constructor(scope: Construct, id: string, props: HttpDataSourceProps) {
     const authorizationConfig = props.authorizationConfig ? {
       authorizationType: 'AWS_IAM',
