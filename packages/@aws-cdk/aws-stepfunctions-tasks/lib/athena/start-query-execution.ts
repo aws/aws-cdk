@@ -1,5 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
+import * as s3 from '@aws-cdk/aws-s3';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
@@ -93,7 +94,10 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
 
     policyStatements.push(
       new iam.PolicyStatement({
-        actions: ['s3:CreateBucket'],
+        actions: ['s3:CreateBucket',
+          's3:ListBucket',
+          's3:GetBucketLocation',
+          's3:GetObject'],
         resources: ['*'], // Need * permissions to create new output location https://docs.aws.amazon.com/athena/latest/ug/security-iam-athena.html
       }),
     );
@@ -101,13 +105,10 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
     policyStatements.push(
       new iam.PolicyStatement({
         actions: ['s3:AbortMultipartUpload',
-          's3:GetBucketLocation',
-          's3:GetObject',
-          's3:ListBucket',
           's3:ListBucketMultipartUploads',
           's3:ListMultipartUploadParts',
-          's3:PutObject'],
-        resources: [this.props.resultConfiguration?.outputLocation ? 'arn:aws:s3:::' + this.props.resultConfiguration?.outputLocation.slice(5) + '*' : '*'], // Need S3 location where data is stored or Athena throws an Unable to verify/create output bucket https://docs.aws.amazon.com/athena/latest/ug/security-iam-athena.html
+          's3:PutObject'], //s3://query-results-bucket/folder/
+        resources: [this.props.resultConfiguration?.outputLocation?.bucketName ? 'arn:aws:s3:::' + this.props.resultConfiguration?.outputLocation?.bucketName + '/' + this.props.resultConfiguration?.outputLocation?.objectKey + '/*' : '*'], // Need S3 location where data is stored or Athena throws an Unable to verify/create output bucket https://docs.aws.amazon.com/athena/latest/ug/security-iam-athena.html
       }),
     );
 
@@ -173,25 +174,46 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
    * @internal
    */
   protected _renderTask(): any {
-    return {
-      Resource: integrationResourceArn('athena', 'startQueryExecution', this.integrationPattern),
-      Parameters: sfn.FieldUtils.renderObject({
-        QueryString: this.props.queryString,
-        ClientRequestToken: this.props.clientRequestToken,
-        QueryExecutionContext: {
-          Catalog: this.props.queryExecutionContext?.catalogName,
-          Database: this.props.queryExecutionContext?.databaseName,
-        },
-        ResultConfiguration: {
-          EncryptionConfiguration: {
-            EncryptionOption: this.props.resultConfiguration?.encryptionConfiguration?.encryptionOption,
-            KmsKey: this.props.resultConfiguration?.encryptionConfiguration?.encryptionKey,
+    if (this.props.resultConfiguration?.outputLocation) {
+      return {
+        Resource: integrationResourceArn('athena', 'startQueryExecution', this.integrationPattern),
+        Parameters: sfn.FieldUtils.renderObject({
+          QueryString: this.props.queryString,
+          ClientRequestToken: this.props.clientRequestToken,
+          QueryExecutionContext: {
+            Catalog: this.props.queryExecutionContext?.catalogName,
+            Database: this.props.queryExecutionContext?.databaseName,
           },
-          OutputLocation: this.props.resultConfiguration?.outputLocation,
-        },
-        WorkGroup: this.props.workGroup,
-      }),
-    };
+          ResultConfiguration: {
+            EncryptionConfiguration: {
+              EncryptionOption: this.props.resultConfiguration?.encryptionConfiguration?.encryptionOption,
+              KmsKey: this.props.resultConfiguration?.encryptionConfiguration?.encryptionKey,
+            },
+            OutputLocation: 's3://' + this.props.resultConfiguration?.outputLocation?.bucketName + '/' + this.props.resultConfiguration?.outputLocation?.objectKey + '/',
+          },
+          WorkGroup: this.props.workGroup,
+        }),
+      };
+    } else {
+      return {
+        Resource: integrationResourceArn('athena', 'startQueryExecution', this.integrationPattern),
+        Parameters: sfn.FieldUtils.renderObject({
+          QueryString: this.props.queryString,
+          ClientRequestToken: this.props.clientRequestToken,
+          QueryExecutionContext: {
+            Catalog: this.props.queryExecutionContext?.catalogName,
+            Database: this.props.queryExecutionContext?.databaseName,
+          },
+          ResultConfiguration: {
+            EncryptionConfiguration: {
+              EncryptionOption: this.props.resultConfiguration?.encryptionConfiguration?.encryptionOption,
+              KmsKey: this.props.resultConfiguration?.encryptionConfiguration?.encryptionKey,
+            },
+          },
+          WorkGroup: this.props.workGroup,
+        }),
+      };
+    }
   }
 }
 
@@ -209,7 +231,7 @@ export interface ResultConfiguration {
    * @default - Query Result Location set in Athena settings for this workgroup
    * @example s3://query-results-bucket/folder/
   */
-  readonly outputLocation?: string;
+  readonly outputLocation?: s3.Location;
 
   /**
    * Encryption option used if enabled in S3

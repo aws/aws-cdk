@@ -17,7 +17,10 @@ describe('Start Query Execution', () => {
       },
       resultConfiguration: {
         encryptionConfiguration: { encryptionOption: EncryptionOption.S3_MANAGED },
-        outputLocation: 's3://query-results-bucket/folder/',
+        outputLocation: {
+          bucketName: 'query-results-bucket',
+          objectKey: 'folder',
+        },
       },
       workGroup: 'primary',
     });
