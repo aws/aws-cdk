@@ -113,6 +113,12 @@ export interface ApplicationListenerProps extends BaseApplicationListenerProps {
  */
 export interface ApplicationListenerLookupOptions extends BaseListenerLookupOptions {
   /**
+   * ARN of the listener to look up
+   * @default - does not filter by listener arn
+   */
+  readonly listenerArn?: string;
+
+  /**
    * Filter listeners by listener protocol
    * @default - does not filter by listener protocol
    */
@@ -129,6 +135,10 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
    * Look up an ApplicationListener.
    */
   public static fromLookup(scope: Construct, id: string, options: ApplicationListenerLookupOptions): IApplicationListener {
+    if (Token.isUnresolved(options.listenerArn)) {
+      throw new Error('All arguments to look up a load balancer listener must be concrete (no Tokens)');
+    }
+
     let listenerProtocol: cxschema.LoadBalancerListenerProtocol | undefined;
     switch (options.listenerProtocol) {
       case ApplicationProtocol.HTTP: listenerProtocol = cxschema.LoadBalancerListenerProtocol.HTTP; break;
@@ -138,6 +148,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
     const props = BaseListener._queryContextProvider(scope, {
       userOptions: options,
       loadBalancerType: cxschema.LoadBalancerType.APPLICATION,
+      listenerArn: options.listenerArn,
       listenerProtocol,
     });
 

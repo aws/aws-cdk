@@ -11,12 +11,6 @@ import { mapTagMapToCxschema } from './util';
  */
 export interface BaseListenerLookupOptions {
   /**
-   * ARN of the listener to look up
-   * @default - does not filter by listener arn
-   */
-  readonly listenerArn?: string;
-
-  /**
    * Filter listeners by associated load balancer arn
    * @default - does not filter by load balancer arn
    */
@@ -51,6 +45,12 @@ export interface ListenerQueryContextProviderOptions {
   readonly loadBalancerType: cxschema.LoadBalancerType;
 
   /**
+   * ARN of the listener to look up
+   * @default - does not filter by listener arn
+   */
+  readonly listenerArn?: string;
+
+  /**
    * Optional protocol of the listener to look up
    */
   readonly listenerProtocol?: cxschema.LoadBalancerListenerProtocol;
@@ -68,7 +68,6 @@ export abstract class BaseListener extends Resource {
   protected static _queryContextProvider(scope: Construct, options: ListenerQueryContextProviderOptions) {
     if (Token.isUnresolved(options.userOptions.loadBalancerArn)
       || Object.values(options.userOptions.loadBalancerTags ?? {}).some(Token.isUnresolved)
-      || Token.isUnresolved(options.userOptions.listenerArn)
       || Token.isUnresolved(options.userOptions.listenerPort)) {
       throw new Error('All arguments to look up a load balancer listener must be concrete (no Tokens)');
     }
@@ -81,7 +80,7 @@ export abstract class BaseListener extends Resource {
     const props: cxapi.LoadBalancerListenerContextResponse = ContextProvider.getValue(scope, {
       provider: cxschema.ContextProvider.LOAD_BALANCER_LISTENER_PROVIDER,
       props: {
-        listenerArn: options.userOptions.listenerArn,
+        listenerArn: options.listenerArn,
         listenerPort: options.userOptions.listenerPort,
         listenerProtocol: options.listenerProtocol,
         loadBalancerArn: options.userOptions.loadBalancerArn,
