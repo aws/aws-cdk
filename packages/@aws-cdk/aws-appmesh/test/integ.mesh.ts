@@ -74,6 +74,11 @@ const node2 = mesh.addVirtualNode('node2', {
       unhealthyThreshold: 2,
     },
   },
+  backendDefaults: {
+    enforce: true,
+    certificate: ['Path to Certificate'],
+    certificateType: 'file',
+  },
   backends: [
     new appmesh.VirtualService(stack, 'service-3', {
       virtualServiceName: 'service3.domain.local',
@@ -96,6 +101,12 @@ const node3 = mesh.addVirtualNode('node3', {
     },
   },
   accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
+});
+
+node3.addBackendDefaults({
+  enforce: true,
+  certificate: ['Path to Certificate'],
+  certificateType: 'file',
 });
 
 router.addRoute('route-2', {

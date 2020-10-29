@@ -691,6 +691,20 @@
           ]
         },
         "Spec": {
+          "BackendDefaults": {
+            "ClientPolicy": {
+              "TLS": {
+                "Enforce": true,
+                "Validation": {
+                  "Trust": {
+                    "File": {
+                      "CertificateChain": "Path to Certificate"
+                    }
+                  }
+                }
+              }
+            }
+          },
           "Backends": [
             {
               "VirtualService": {
@@ -739,6 +753,20 @@
           ]
         },
         "Spec": {
+          "BackendDefaults": {
+            "ClientPolicy": {
+              "TLS": {
+                "Enforce": true,
+                "Validation": {
+                  "Trust": {
+                    "File": {
+                      "CertificateChain": "Path to Certificate"
+                    }
+                  }
+                }
+              }
+            }
+          },
           "Listeners": [
             {
               "HealthCheck": {

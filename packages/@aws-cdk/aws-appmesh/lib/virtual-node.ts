@@ -37,6 +37,11 @@ export interface IVirtualNode extends cdk.IResource {
    * Utility method to add Node Listeners for new or existing VirtualNodes
    */
   addListeners(...listeners: VirtualNodeListener[]): void;
+
+  /**
+   * Utility method to add Default Backend Configuration for new or existing VirtualNodes
+   */
+  addBackendDefaults(backendDefaults: BackendDefaults): void;
 }
 
 /**
@@ -97,7 +102,49 @@ export interface VirtualNodeBaseProps {
    * @default - No access logging
    */
   readonly accessLog?: AccessLog;
+
+  /**
+   * Default Configuration Virtual Node uses to communicate with Vritual Service
+   *
+   * @default - No Config
+   */
+  readonly backendDefaults?: BackendDefaults;
 }
+
+/**
+ * Default Configuration for Virtual Nodes
+ */
+export interface BackendDefaults {
+  /**
+   * TLS enforced if True.
+   *
+   * @default - none
+   */
+  readonly enforce?: boolean
+
+  /**
+   * TLS enforced on these ports. If not specified it is enforced on all ports.
+   *
+   * @default - none
+   */
+  readonly ports?: number[]
+
+  /**
+   * Certificate discovery method, ACM-PCA or Local file hosting.
+   *
+   * @default - none
+   */
+  readonly certificateType: string;
+
+  /**
+   * Certificate File path or Certificate ARN.
+   *
+   * @default - none
+   */
+  readonly certificate: string[];
+
+}
+
 
 /**
  * The properties used when creating a new VirtualNode
@@ -122,6 +169,7 @@ abstract class VirtualNodeBase extends cdk.Resource implements IVirtualNode {
 
   protected readonly backends = new Array<CfnVirtualNode.BackendProperty>();
   protected readonly listeners = new Array<CfnVirtualNode.ListenerProperty>();
+  protected readonly backendDefaults = new Array<CfnVirtualNode.BackendDefaultsProperty>();
 
   /**
    * Add a Virtual Services that this node is expected to send outbound traffic to
@@ -131,6 +179,37 @@ abstract class VirtualNodeBase extends cdk.Resource implements IVirtualNode {
       this.backends.push({
         virtualService: {
           virtualServiceName: s.virtualServiceName,
+        },
+      });
+    }
+  }
+
+  /**
+   * Adds Default Backend Configuration for virtual node to communicate with Virtual Services.
+   */
+  public addBackendDefaults(backendDefaults: BackendDefaults) {
+    if (Object.keys(backendDefaults).length!==0) {
+      const enforce = backendDefaults.enforce || false;
+      const ports = backendDefaults.ports || undefined;
+      const certificateType = backendDefaults.certificateType || 'acm';
+      const certificate = backendDefaults.certificate || [];
+      this.backendDefaults.push({
+        clientPolicy: {
+          tls: {
+            enforce: enforce,
+            ports: ports,
+            validation: {
+              trust: certificateType === 'acm' ? {
+                acm: {
+                  certificateAuthorityArns: certificate,
+                },
+              } : {
+                file: {
+                  certificateChain: certificate[0],
+                },
+              },
+            },
+          },
         },
       });
     }
@@ -259,6 +338,9 @@ export class VirtualNode extends VirtualNodeBase {
 
     this.addBackends(...props.backends || []);
     this.addListeners(...props.listener ? [props.listener] : []);
+    if (props.backendDefaults) {
+      this.addBackendDefaults(props.backendDefaults);
+    }
     const accessLogging = props.accessLog?.bind(this);
 
     const node = new CfnVirtualNode(this, 'Resource', {
@@ -267,6 +349,7 @@ export class VirtualNode extends VirtualNodeBase {
       spec: {
         backends: cdk.Lazy.anyValue({ produce: () => this.backends }, { omitEmptyArray: true }),
         listeners: cdk.Lazy.anyValue({ produce: () => this.listeners }, { omitEmptyArray: true }),
+        backendDefaults: cdk.Lazy.anyValue({ produce: () => this.backendDefaults[0] }, { omitEmptyArray: true }),
         serviceDiscovery: {
           dns: props.dnsHostName !== undefined ? { hostname: props.dnsHostName } : undefined,
           awsCloudMap: props.cloudMapService !== undefined ? {

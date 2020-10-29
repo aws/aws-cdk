@@ -97,7 +97,64 @@ export = {
             },
           }),
         );
+        test.done();
+      },
+    },
+    'when a default backend configuration is added': {
+      'should add the backend default configuration to the resource'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
 
+        // WHEN
+        const mesh = new appmesh.Mesh(stack, 'mesh', {
+          meshName: 'test-mesh',
+        });
+
+        const node = mesh.addVirtualNode('test-node', {
+          dnsHostName: 'test',
+        });
+
+        node.addListeners({
+          portMapping: {
+            port: 8081,
+            protocol: appmesh.Protocol.TCP,
+          },
+        });
+
+        node.addBackendDefaults({
+          certificateType: 'file',
+          certificate: ['path to certificate'],
+        });
+
+        // THEN
+        expect(stack).to(
+          haveResourceLike('AWS::AppMesh::VirtualNode', {
+            Spec: {
+              Listeners: [
+                {
+                  PortMapping: {
+                    Port: 8081,
+                    Protocol: 'tcp',
+                  },
+                },
+              ],
+              BackendDefaults: {
+                ClientPolicy: {
+                  TLS: {
+                    Enforce: false,
+                    Validation: {
+                      Trust: {
+                        File: {
+                          CertificateChain: 'path to certificate',
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          }),
+        );
         test.done();
       },
     },
