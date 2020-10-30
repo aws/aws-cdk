@@ -55,7 +55,7 @@ export interface ShellScriptActionProps {
   readonly additionalArtifacts?: codepipeline.Artifact[];
 
   /**
-   * The CodeBuild image used for the build.
+   * The CodeBuild environment where scripts are executed.
    *
    * @default LinuxBuildImage.STANDARD_4_0
    */

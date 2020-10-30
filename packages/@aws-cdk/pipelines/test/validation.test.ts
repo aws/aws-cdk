@@ -337,7 +337,7 @@ test('run ShellScriptAction with specified codebuild image', () => {
     actionName: 'imageAction',
     additionalArtifacts: [integTestArtifact],
     commands: ['true'],
-    buildImage: codebuild.LinuxBuildImage.STANDARD_2_0,
+    environment: { buildImage: codebuild.LinuxBuildImage.STANDARD_2_0 },
   }));
 
   // THEN
@@ -353,7 +353,38 @@ test('run ShellScriptAction with specified codebuild image', () => {
   });
   expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
     Environment: {
-      Image: 'aws/codebuild/standard:5.0',
+      Image: 'aws/codebuild/standard:2.0',
+    },
+  });
+});
+
+test('run ShellScriptAction with specified BuildEnvironment', () => {
+  // WHEN
+  pipeline.addStage('Test').addActions(new cdkp.ShellScriptAction({
+    actionName: 'imageAction',
+    additionalArtifacts: [integTestArtifact],
+    commands: ['true'],
+    environment: {
+      buildImage: codebuild.LinuxBuildImage.STANDARD_2_0,
+      computeType: codebuild.ComputeType.LARGE,
+      environmentVariables: { FOO: { value: 'BAR', type: codebuild.BuildEnvironmentVariableType.PLAINTEXT } },
+      privileged: true,
+    },
+  }));
+
+  // THEN
+  expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Environment: {
+      Image: 'aws/codebuild/standard:2.0',
+      PrivilegedMode: true,
+      ComputeType: 'BUILD_GENERAL1_LARGE',
+      EnvironmentVariables: [
+        {
+          Type: 'PLAINTEXT',
+          Value: 'BAR',
+          Name: 'FOO',
+        },
+      ],
     },
   });
 });
