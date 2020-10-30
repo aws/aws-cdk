@@ -30,6 +30,8 @@ export function addLambdaPermission(rule: events.IRule, handler: lambda.IFunctio
   let scope: Construct | undefined;
   let node: ConstructNode = handler.permissionsNode;
   if (rule instanceof Construct) {
+    // Place the Permission resource in the same stack as Rule rather than the Function
+    // This is to reduce circular dependency when the lambda handler and the rule are across stacks.
     scope = rule;
     node = rule.node;
   }

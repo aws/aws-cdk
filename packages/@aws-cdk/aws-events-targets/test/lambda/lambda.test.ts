@@ -121,6 +121,9 @@ test('lambda handler and cloudwatch event across stacks', () => {
   });
 
   expect(() => app.synth()).not.toThrow();
+
+  // the Permission resource should be in the event stack
+  expect(eventStack).toCountResources('AWS::Lambda::Permission', 1);
 });
 
 function newTestLambda(scope: constructs.Construct) {
