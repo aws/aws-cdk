@@ -105,13 +105,11 @@
           ],
           "Version": "2012-10-17"
         },
-        "DomainName": {
-          "Fn::GetAtt": [
-            "domainFBFFA2F6",
-            "Name"
-          ]
-        }
-      }
+        "DomainName": "example-domain-external"
+      },
+      "DependsOn": [
+        "domainFBFFA2F6"
+      ]
     }
   }
 }

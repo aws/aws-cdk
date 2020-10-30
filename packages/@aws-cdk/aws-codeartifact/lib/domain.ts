@@ -31,7 +31,7 @@ export interface DomainProps {
 
   /**
    * Resource policy for the domain
-   * @default Read/Create/Authorize
+   * @default Open policy that allows principal to reader, create, and generate authorization token.
    */
   readonly policyDocument?: iam.PolicyDocument
 }
@@ -59,9 +59,23 @@ export class Domain extends Resource implements IDomain {
     const stack = Stack.of(scope);
     const domainName = attrs.domainName || stack.parseArn(attrs.domainArn).resourceName;
 
-    class Import extends Domain { }
+    if (!domainName || domainName == '') {
+      throw new Error('Domain name is required as a resource name with the ARN');
+    }
 
-    return new Import(scope, id, { domainName: domainName || '', domainEncryptionKey: attrs.domainEncryptionKey });
+    class Import extends Resource implements IDomain {
+      domainArn: string = '';
+      domainName?: string | undefined;
+      domainOwner?: string | undefined;
+      domainEncryptionKey?: kms.IKey | undefined;
+    }
+
+    const instance = new Import(scope, id);
+    instance.domainName = domainName;
+    instance.domainArn = attrs.domainArn;
+    instance.domainEncryptionKey = attrs.domainEncryptionKey;
+
+    return instance;
   }
 
 
@@ -108,6 +122,9 @@ export class Domain extends Resource implements IDomain {
     }
   }
 
+  /**
+   * Add a repositories to the domain
+   */
   addRepositories(...repositories: IRepository[]): IDomain {
     if (repositories.length > 0) {
       repositories.forEach(r => r.assignDomain(this));
@@ -116,6 +133,10 @@ export class Domain extends Resource implements IDomain {
     return this;
   }
 
+  /**
+   * The underlying CloudFormation domain
+   * @attribute
+   */
   cfn(): CfnDomain {
     return this.cfnDomain;
   }

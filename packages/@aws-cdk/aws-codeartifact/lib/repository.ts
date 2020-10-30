@@ -3,7 +3,6 @@ import * as iam from '@aws-cdk/aws-iam';
 import { Resource, Stack, Aws } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnRepository } from './codeartifact.generated';
-import { Domain } from './domain';
 import { ExternalConnection } from './external-connection';
 import { IRepository, IDomain, RepositoryAttributes } from './interfaces';
 import { REPOSITORY_READ_ACTIONS, REPOSITORY_WRITE_ACTIONS } from './perms';
@@ -96,18 +95,52 @@ export class Repository extends Resource implements IRepository {
     const stack = Stack.of(scope);
     const parsed = stack.parseArn(attrs.repositoryArn || '');
 
-
     const spl = parsed.resourceName?.split('/') || [undefined, undefined];
     const repositoryName = spl[1];
     const domainName = spl[0];
 
-    class Import extends Repository {
-      repositoryArn = attrs.repositoryArn || '';
-      repositoryName = repositoryName;
-      repositoryDomainOwner = parsed.account || '';
+    if (!repositoryName || repositoryName == '') {
+      throw new Error('\'RepositoryName\' is required and cannot be empty');
     }
 
-    return new Import(scope, id, { repositoryName: repositoryName || '', domain: Domain.fromDomainAttributes(scope, `${id}-domain`, { domainArn: `arn:aws:codeartifact:${parsed.region}:${parsed.account}:domain/${domainName}` }) });
+    if (!domainName || domainName == '') {
+      throw new Error('Domain name is required with the ARN');
+    }
+
+    class Import extends Resource implements IRepository {
+      repositoryDescription?: string | undefined;
+      repositoryDomainName?: string | undefined;
+      repositoryArn = attrs.repositoryArn;
+      repositoryName = repositoryName;
+      repositoryDomainOwner = parsed.account || '';
+
+      grantRead(_identity: iam.IGrantable): iam.Grant {
+        throw new Error('Method not implemented.');
+      }
+      grantWrite(_identity: iam.IGrantable): iam.Grant {
+        throw new Error('Method not implemented.');
+      }
+      grantReadWrite(_identity: iam.IGrantable): iam.Grant {
+        throw new Error('Method not implemented.');
+      }
+
+      onEvent(_id: string, _options?: events.OnEventOptions | undefined): events.Rule {
+        throw new Error('Method not implemented.');
+      }
+      onPackageVersionStateChange(_id: string, _options?: events.OnEventOptions | undefined): events.Rule {
+        throw new Error('Method not implemented.');
+      }
+      assignDomain(_domain: IDomain): void {
+        throw new Error('Method not implemented.');
+      }
+    }
+
+    const instance = new Import(scope, id);
+    instance.repositoryName = repositoryName || '';
+    instance.repositoryDomainName = domainName;
+    instance.repositoryDomainOwner = parsed.account || '';
+
+    return instance;
   }
 
   public readonly repositoryArn?: string;
@@ -133,6 +166,10 @@ export class Repository extends Resource implements IRepository {
       externalConnections: props.externalConnections,
     });
 
+    if (props.upstreams) {
+      props.upstreams.forEach(u => this.node.addDependency(u));
+    }
+
     if (props?.domain) {
       this.assignDomain(props.domain);
     }
@@ -150,7 +187,8 @@ export class Repository extends Resource implements IRepository {
   }
 
   public assignDomain(domain: IDomain): void {
-    this.cfnRepository.addPropertyOverride('DomainName', domain.cfn().attrName);
+    this.node.addDependency(domain);
+    this.cfnRepository.addPropertyOverride('DomainName', domain.domainName);
   }
 
   /**
@@ -171,17 +209,14 @@ export class Repository extends Resource implements IRepository {
     return { statementAdded: false };
   }
 
-  /** Implement the {@link IRepository.grantRead} method. */
   public grantRead(identity: iam.IGrantable): iam.Grant {
     return this.grant(identity, [...REPOSITORY_READ_ACTIONS]);
   }
 
-  /** Implement the {@link IRepository.grantWrite} method. */
   public grantWrite(identity: iam.IGrantable): iam.Grant {
     return this.grant(identity, [...REPOSITORY_WRITE_ACTIONS]);
   }
 
-  /** Implement the {@link IRepository.grantReadWrite} method. */
   public grantReadWrite(identity: iam.IGrantable): iam.Grant {
     return this.grant(identity, [...REPOSITORY_READ_ACTIONS, ...REPOSITORY_WRITE_ACTIONS]);
   }

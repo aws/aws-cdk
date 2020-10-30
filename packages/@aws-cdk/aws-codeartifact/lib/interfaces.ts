@@ -2,7 +2,6 @@ import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import { IResource } from '@aws-cdk/core';
-import { CfnDomain } from './codeartifact.generated';
 
 /**
  * Represents a CodeArtifact repository
@@ -140,26 +139,12 @@ export interface RepositoryAttributes {
 export interface IDomain extends IResource {
   /**
 * The ARN of domain resource.
-* Equivalent to doing `{ 'Fn::GetAtt': ['LogicalId', 'Arn' ]}`
-* in CloudFormation if the underlying CloudFormation resource
-* surfaces the ARN as a return value -
-* if not, we usually construct the ARN "by hand" in the construct,
-* using the Fn::Join function.
-*
-* It needs to be annotated with '@attribute' if the underlying CloudFormation resource
-* surfaces the ARN as a return value.
-*
 * @attribute
 */
   readonly domainArn: string;
 
   /**
    * The physical name of the domain resource.
-   * Often, equivalent to doing `{ 'Ref': 'LogicalId' }`
-   * (but not always - depends on the particular resource modeled)
-   * in CloudFormation.
-   * Also needs to be annotated with '@attribute'.
-   *
    * @attribute
    */
   readonly domainName?: string;
@@ -177,16 +162,6 @@ export interface IDomain extends IResource {
    * @attribute
    */
   readonly domainEncryptionKey?: kms.IKey;
-  /**
-   * Add a repositories to the domain
-   */
-  addRepositories(...repositories: IRepository[]): IDomain
-
-  /**
-   * The underlying CloudFormation domain
-   * @attribute
-   */
-  cfn(): CfnDomain;
 }
 
 /**

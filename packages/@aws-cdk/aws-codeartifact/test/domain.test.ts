@@ -21,7 +21,7 @@ test('Domain from ARN', () => {
 
 test('Domain from ARN w/ out domain name nor account id', () => {
   const stack = new Stack();
-  expect(() => Domain.fromDomainArn(stack, 'repo-from-arn', 'arn:aws:codeartifact:region-id::domain')).toThrow(/'DomainName' is required and cannot be empty/);
+  expect(() => Domain.fromDomainArn(stack, 'repo-from-arn', 'arn:aws:codeartifact:region-id::domain')).toThrow(/Domain name is required as a resource name with the ARN/);
 });
 
 test('Create Domain w/ encryption', () => {

@@ -1,6 +1,6 @@
 {
   "Resources": {
-    "domainCA282C9B": {
+    "domainFBFFA2F6": {
       "Type": "AWS::CodeArtifact::Domain",
       "Properties": {
         "DomainName": "example-domain-upstream",
@@ -8,56 +8,6 @@
           "Statement": [
             {
               "Action": "codeartifact:GetAuthorizationToken",
-              "Effect": "Allow",
-              "Principal": {
-                "AWS": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":iam::",
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
-                      ":root"
-                    ]
-                  ]
-                }
-              },
-              "Resource": "*"
-            },
-            {
-              "Action": "codeartifact:CreateRepository",
-              "Effect": "Allow",
-              "Principal": {
-                "AWS": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":iam::",
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
-                      ":root"
-                    ]
-                  ]
-                }
-              },
-              "Resource": "*"
-            },
-            {
-              "Action": [
-                "codeartifact:GetDomainPermissionsPolicy",
-                "codeartifact:ListRepositoriesInDomain",
-                "codeartifact:DescribeDomain"
-              ],
               "Effect": "Allow",
               "Principal": {
                 "AWS": {
@@ -155,13 +105,11 @@
           ],
           "Version": "2012-10-17"
         },
-        "DomainName": {
-          "Fn::GetAtt": [
-            "domainCA282C9B",
-            "Name"
-          ]
-        }
-      }
+        "DomainName": "example-domain-upstream"
+      },
+      "DependsOn": [
+        "domainFBFFA2F6"
+      ]
     },
     "subrepository65E28DB9": {
       "Type": "AWS::CodeArtifact::Repository",
@@ -234,13 +182,12 @@
         "Upstreams": [
           "repository"
         ],
-        "DomainName": {
-          "Fn::GetAtt": [
-            "domainCA282C9B",
-            "Name"
-          ]
-        }
-      }
+        "DomainName": "example-domain-upstream"
+      },
+      "DependsOn": [
+        "domainFBFFA2F6",
+        "repository5D02F86B"
+      ]
     }
   }
 }
