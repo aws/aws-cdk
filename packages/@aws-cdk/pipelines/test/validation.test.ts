@@ -353,7 +353,7 @@ test('run ShellScriptAction with specified codebuild image', () => {
   });
   expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
     Environment: {
-      Image: 'aws/codebuild/standard:2.0',
+      Image: 'aws/codebuild/standard:5.0',
     },
   });
 });

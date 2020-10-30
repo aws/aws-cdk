@@ -59,7 +59,7 @@ export interface ShellScriptActionProps {
    *
    * @default LinuxBuildImage.STANDARD_4_0
    */
-  readonly buildImage?: codebuild.IBuildImage
+  readonly environment?: codebuild.BuildEnvironment
 
   /**
    * RunOrder for this action
@@ -184,7 +184,7 @@ export class ShellScriptAction implements codepipeline.IAction, iam.IGrantable {
     }
 
     this._project = new codebuild.PipelineProject(scope, 'Project', {
-      environment: { buildImage: this.props.buildImage || codebuild.LinuxBuildImage.STANDARD_4_0 },
+      environment: this.props.environment || { buildImage: codebuild.LinuxBuildImage.STANDARD_4_0 },
       vpc: this.props.vpc,
       securityGroups: this.props.securityGroups,
       subnetSelection: this.props.subnetSelection,
