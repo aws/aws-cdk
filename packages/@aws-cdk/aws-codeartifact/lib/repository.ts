@@ -151,7 +151,7 @@ export class Repository extends Resource implements IRepository {
   private readonly cfnRepository: CfnRepository;
 
   constructor(scope: Construct, id: string, props: RepositoryProps) {
-    super(scope, id);
+    super(scope, id, {});
 
     this.repositoryDomainName = props?.domain?.domainName;
     this.repositoryName = props.repositoryName || this.repositoryName;
@@ -188,6 +188,8 @@ export class Repository extends Resource implements IRepository {
 
   public assignDomain(domain: IDomain): void {
     this.node.addDependency(domain);
+
+    // This should be added to the L1 props soon, but until then this is required to create a Repository
     this.cfnRepository.addPropertyOverride('DomainName', domain.domainName);
   }
 
