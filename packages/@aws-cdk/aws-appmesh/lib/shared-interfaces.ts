@@ -101,25 +101,6 @@ export interface HttpTimeout {
 }
 
 /**
- * Represents timeouts for HTTP2 protocols.
- */
-export interface Http2Timeout {
-  /**
-   * Represents an idle timeout. The amount of time that a connection may be idle.
-   *
-   * @default - none
-   */
-  readonly idle?: cdk.Duration;
-
-  /**
-   * Represents per request timeout.
-   *
-   * @default - 15 s
-   */
-  readonly perRequest?: cdk.Duration;
-}
-
-/**
  * Represents timeouts for GRPC protocols.
  */
 export interface GrpcTimeout {

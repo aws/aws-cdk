@@ -6,3 +6,4 @@ export * from './shared-interfaces';
 export * from './virtual-node';
 export * from './virtual-router';
 export * from './virtual-service';
+export * from './virtual-listener';

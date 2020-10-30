@@ -146,11 +146,8 @@ const service = namespace.createService('Svc');
 const node = mesh.addVirtualNode('virtual-node', {
   dnsHostName: 'node-a',
   cloudMapService: service,
-  listener: {
-    portMapping: {
-      port: 8081,
-      protocol: Protocol.HTTP,
-    },
+  listener: appmesh.VirtualNodeListener.httpNodeListener({
+    port: 8081,
     healthCheck: {
       healthyThreshold: 3,
       interval: Duration.seconds(5), // minimum
@@ -160,9 +157,9 @@ const node = mesh.addVirtualNode('virtual-node', {
       timeout: Duration.seconds(2), // minimum
       unhealthyThreshold: 2,
     },
-  },
-  accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
-})
+    accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
+  }),
+});
 ```
 
 Create a `VirtualNode` with the the constructor and add tags.
@@ -172,11 +169,8 @@ const node = new VirtualNode(this, 'node', {
   mesh,
   dnsHostName: 'node-1',
   cloudMapService: service,
-  listener: {
-    portMapping: {
-      port: 8080,
-      protocol: Protocol.HTTP,
-    },
+  listener: appmesh.VirtualNodeListener.httpNodeListener({
+    port: 8080,
     healthCheck: {
       healthyThreshold: 3,
       interval: Duration.seconds(5), // min
@@ -185,21 +179,18 @@ const node = new VirtualNode(this, 'node', {
       protocol: Protocol.HTTP,
       timeout: Duration.seconds(2), // min
       unhealthyThreshold: 2,
-    },
+    }, 
     timeout: {
-      http: {
-        idle: Duration.seconds(5),
-        perRequest: Duration.seconds(5),
-      }
-    }
-  },
-  accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
+      idle: cdk.Duration.seconds(5),
+    },
+    accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
+  }),
 });
 
 cdk.Tag.add(node, 'Environment', 'Dev');
 ```
 
-The listeners property can be left blank and added later with the `mesh.addListeners()` method. The `healthcheck` and `timeout` properties are optional but if specifying a listener, the `portMappings` must contain at least one property.
+A default httpListener is added when listener property is left blank. The `healthcheck` and `timeout` properties are optional but if specifying a listener, the `port` must be added.
 
 ## Adding a Route
 
