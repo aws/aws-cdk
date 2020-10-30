@@ -7,7 +7,7 @@ const stack = new Stack(app, 'integ-user-pool-resource-server');
 /*
  * Stack verification steps:
  * Cognito will only allow you to add a custom scope on a user pool client that is defined by a resource server.
- * Checking the app client scopes will verify if the resource server was made and is working correctly.
+ * Checking the app client scopes will verify if the resource server is configured correctly.
  * The exports userPoolId and userPoolClientId are exported here to test
  *
  * * `aws cognito-idp describe-user-pool-client --user-pool-id $userPoolId --client-id $userPoolClientId` should return "users/read" in "AllowedOAuthScopes"
