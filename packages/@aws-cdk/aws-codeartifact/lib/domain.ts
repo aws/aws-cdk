@@ -9,6 +9,7 @@ import { validate } from './validation';
 
 /**
  * Properties for a new CodeArtifact domain
+ * @experimental
  */
 export interface DomainProps {
   /**
@@ -37,6 +38,7 @@ export interface DomainProps {
 
 /**
  * A new CodeArtifacft domain
+ * @experimental
  */
 export class Domain extends Resource implements IDomain {
   /**

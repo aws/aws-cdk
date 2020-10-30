@@ -11,6 +11,7 @@ import { validate } from './validation';
 
 /**
  * Properties for a new CodeArtifact repository
+ * @experimental
  */
 export interface RepositoryProps {
   /**
@@ -55,6 +56,7 @@ export interface RepositoryProps {
 
 /**
  * Properties for a new CodeArtifact repository policy restricting package manipulation
+ * @experimental
  */
 export interface PolicyRepositoryPackage {
   /**
@@ -73,6 +75,7 @@ export interface PolicyRepositoryPackage {
 
 /**
  * A new CodeArtifacft repository
+ * @experimental
  */
 export class Repository extends Resource implements IRepository {
   /**

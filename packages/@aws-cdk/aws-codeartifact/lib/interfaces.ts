@@ -6,6 +6,7 @@ import { CfnDomain } from './codeartifact.generated';
 
 /**
  * Represents a CodeArtifact repository
+ * @experimental
  */
 export interface IRepository extends IResource {
 
@@ -84,6 +85,7 @@ export interface IRepository extends IResource {
 
 /**
  * Reference to a repository
+ * @experimental
  */
 export interface RepositoryAttributes {
 
@@ -133,6 +135,7 @@ export interface RepositoryAttributes {
 
 /**
  * Represents a CodeArtifact domain
+ * @experimental
  */
 export interface IDomain extends IResource {
   /**
@@ -188,6 +191,7 @@ export interface IDomain extends IResource {
 
 /**
  * Reference to a domain
+ * @experimental
  */
 export interface DomainAttributes {
   /**
