@@ -386,6 +386,9 @@ export class Secret extends SecretBase {
           (!attrs.secretCompleteArn && !attrs.secretPartialArn)) {
         throw new Error('must use only one of `secretCompleteArn` or `secretPartialArn`');
       }
+      if (attrs.secretCompleteArn && !arnIsComplete(attrs.secretCompleteArn)) {
+        throw new Error('`secretCompleteArn` does not appear to be complete; missing 6-character suffix');
+      }
       [secretArn, secretArnIsPartial] = attrs.secretCompleteArn ? [attrs.secretCompleteArn, false] : [attrs.secretPartialArn!, true];
     }
 

@@ -583,6 +583,12 @@ describe('fromSecretAttributes', () => {
       secretCompleteArn: secretArn,
     })).toThrow(/must use only one of `secretCompleteArn` or `secretPartialArn`/);
   });
+
+  test('throws if secretCompleteArn is not complete', () => {
+    expect(() => secretsmanager.Secret.fromSecretAttributes(stack, 'Secret', {
+      secretCompleteArn: 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret',
+    })).toThrow(/does not appear to be complete/);
+  });
 });
 
 test('import by secret name', () => {

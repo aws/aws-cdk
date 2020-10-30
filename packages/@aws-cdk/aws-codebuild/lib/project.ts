@@ -964,6 +964,8 @@ export class Project extends ProjectBase {
       registryCredential: secret
         ? {
           credentialProvider: 'SECRETS_MANAGER',
+          // Secrets must be referenced by either the full ARN (with SecretsManager suffix), or by name.
+          // "Partial" ARNs (without the suffix) will fail a validation regex at deploy-time.
           credential: secret.secretFullArn ?? secret.secretName,
         }
         : undefined,
