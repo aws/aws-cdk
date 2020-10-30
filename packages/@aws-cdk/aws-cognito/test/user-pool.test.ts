@@ -1279,16 +1279,16 @@ describe('User Pool', () => {
     // WHEN
     new UserPool(stack, 'Pool', {
       emailSettings: {
-        from: 'from@домен.рф',
-        replyTo: 'replyTo@домен.рф',
+        from: 'от@домен.рф',
+        replyTo: 'ответить@домен.рф',
       },
     });
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
       EmailConfiguration: {
-        From: 'from@xn--d1acufc.xn--p1ai',
-        ReplyToEmailAddress: 'replyTo@xn--d1acufc.xn--p1ai',
+        From: 'от@xn--d1acufc.xn--p1ai',
+        ReplyToEmailAddress: 'ответить@xn--d1acufc.xn--p1ai',
       },
     });
   });
