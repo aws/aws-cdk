@@ -126,8 +126,6 @@ mesh.addVirtualService('virtual-service', {
 
 A `virtual node` acts as a logical pointer to a particular task group, such as an Amazon ECS service or a Kubernetes deployment.
 
-![Virtual node logical diagram](https://docs.aws.amazon.com/app-mesh/latest/userguide/images/virtual_node.png)
-
 When you create a `virtual node`, you must specify the DNS service discovery hostname for your task group. Any inbound traffic that your `virtual node` expects should be specified as a listener. Any outbound traffic that your `virtual node` expects to reach should be specified as a backend.
 
 The response metadata for your new `virtual node` contains the Amazon Resource Name (ARN) that is associated with the `virtual node`. Set this value (either the full ARN or the truncated resource name) as the APPMESH_VIRTUAL_NODE_NAME environment variable for your task group's Envoy proxy container in your task definition or pod spec. For example, the value could be mesh/default/virtualNode/simpleapp. This is then mapped to the node.id and node.cluster Envoy parameters.
@@ -144,7 +142,6 @@ const namespace = new servicediscovery.PrivateDnsNamespace(this, 'test-namespace
 const service = namespace.createService('Svc');
 
 const node = mesh.addVirtualNode('virtual-node', {
-  dnsHostName: 'node-a',
   cloudMapService: service,
   listener: {
     portMapping: {
@@ -170,7 +167,6 @@ Create a `VirtualNode` with the the constructor and add tags.
 ```typescript
 const node = new VirtualNode(this, 'node', {
   mesh,
-  dnsHostName: 'node-1',
   cloudMapService: service,
   listener: {
     portMapping: {
@@ -193,7 +189,7 @@ const node = new VirtualNode(this, 'node', {
 cdk.Tag.add(node, 'Environment', 'Dev');
 ```
 
-The listeners property can be left blank and added later with the `mesh.addListeners()` method. The `healthcheck` property is optional but if specifying a listener, the `portMappings` must contain at least one property.
+The listeners property can be left blank and added later with the `node.addListeners()` method. The `healthcheck` property is optional but if specifying a listener, the `portMappings` must contain at least one property.
 
 ## Adding a Route
 
@@ -235,34 +231,79 @@ router.addRoute('route', {
 });
 ```
 
-Multiple routes may also be added at once to different applications or targets.
+## Adding a Virtual Gateway
+
+A _virtual gateway_ allows resources outside your mesh to communicate to resources that are inside your mesh.
+The virtual gateway represents an Envoy proxy running in an Amazon ECS task, in a Kubernetes service, or on an Amazon EC2 instance.
+Unlike a virtual node, which represents an Envoy running with an application, a virtual gateway represents Envoy deployed by itself.
+
+A virtual gateway is similar to a virtual node in that it has a listener that accepts traffic for a particular port and protocol (HTTP, HTTP2, GRPC).
+The traffic that the virtual gateway receives, is directed to other services in your mesh,
+using rules defined in gateway routes which can be added to your virtual gateway.
+
+Create a virtual gateway with the constructor:
 
 ```typescript
-ratingsRouter.addRoutes(
-  ['route1', 'route2'],
-  [
-    {
-      routeTargets: [
-        {
-          virtualNode,
-          weight: 1,
-        },
-      ],
-      prefix: `/path-to-app`,
-      routeType: RouteType.HTTP,
+const gateway = new appmesh.VirtualGateway(stack, 'gateway', {
+  mesh: mesh,
+  listeners: [appmesh.VirtualGatewayListener.httpGatewayListener({
+    port: 443,
+    healthCheck: {
+      interval: cdk.Duration.seconds(10),
     },
-    {
-      routeTargets: [
-        {
-          virtualNode: virtualNode2,
-          weight: 1,
-        },
-      ],
-      prefix: `/path-to-app2`,
-      routeType: RouteType.HTTP,
-    },
-  ]
-);
+  })],
+  accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
+  virtualGatewayName: 'virtualGateway',
+});
 ```
 
-The number of `route ids` and `route targets` must match as each route needs to have a unique name per router.
+Add a virtual gateway directly to the mesh:
+
+```typescript
+const gateway = mesh.addVirtualGateway('gateway', {
+  accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
+  virtualGatewayName: 'virtualGateway',
+    listeners: [appmesh.VirtualGatewayListener.httpGatewayListener({
+      port: 443,
+      healthCheck: {
+        interval: cdk.Duration.seconds(10),
+      },
+  })],
+});
+```
+
+The listeners field can be omitted which will default to an HTTP Listener on port 8080.
+A gateway route can be added using the `gateway.addGatewayRoute()` method.
+
+## Adding a Gateway Route
+
+A _gateway route_ is attached to a virtual gateway and routes traffic to an existing virtual service.
+If a route matches a request, it can distribute traffic to a target virtual service.
+
+For HTTP based routes, the match field can be used to match on a route prefix.
+By default, an HTTP based route will match on `/`. All matches must start with a leading `/`.
+
+```typescript
+gateway.addGatewayRoute('gateway-route-http', {
+  routeSpec: appmesh.GatewayRouteSpec.httpRouteSpec({
+    routeTarget: virtualService,
+    match: {
+      prefixMatch: '/',
+    },
+  }),
+});
+```
+
+For GRPC based routes, the match field can be used to match on service names.
+You cannot omit the field, and must specify a match for these routes.
+
+```typescript
+gateway.addGatewayRoute('gateway-route-grpc', {
+  routeSpec: appmesh.GatewayRouteSpec.grpcRouteSpec({
+    routeTarget: virtualService,
+    match: {
+      serviceName: 'my-service.default.svc.cluster.local',
+    },
+  }),
+});
+```
