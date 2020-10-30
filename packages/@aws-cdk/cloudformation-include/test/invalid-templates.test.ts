@@ -2,6 +2,7 @@ import * as path from 'path';
 import { SynthUtils } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as core from '@aws-cdk/core';
+import * as constructs from 'constructs';
 import * as inc from '../lib';
 
 describe('CDK Include', () => {
@@ -80,7 +81,7 @@ describe('CDK Include', () => {
   test('throws a validation exception when encountering an unrecognized resource attribute', () => {
     expect(() => {
       includeTestTemplate(stack, 'non-existent-resource-attribute.json');
-    }).toThrow(/The NonExistentResourceAttribute resource attribute is not supported by cloudformation-include yet/);
+    }).toThrow(/The 'NonExistentResourceAttribute' resource attribute is not supported by cloudformation-include yet/);
   });
 
   test("throws a validation exception when encountering a Ref-erence to a template element that doesn't exist", () => {
@@ -125,16 +126,22 @@ describe('CDK Include', () => {
     }).toThrow(/Element referenced in Fn::Sub expression with logical ID: '' was not found in the template/);
   });
 
-  test('throws an error when a template supplies an invalid string to a number parameter', () => {
+  test("throws an exception for a template with a non-number string passed to a property with type 'number'", () => {
     includeTestTemplate(stack, 'alphabetical-string-passed-to-number.json');
 
     expect(() => {
       SynthUtils.synthesize(stack);
     }).toThrow(/"abc" should be a number/);
   });
+
+  test('throws an exception for a template with a short-form Fn::GetAtt whose string argument does not contain a dot', () => {
+    expect(() => {
+      includeTestTemplate(stack, 'short-form-get-att-no-dot.yaml');
+    }).toThrow(/Short-form Fn::GetAtt must contain a '.' in its string argument, got: 'Bucket1Arn'/);
+  });
 });
 
-function includeTestTemplate(scope: core.Construct, testTemplate: string): inc.CfnInclude {
+function includeTestTemplate(scope: constructs.Construct, testTemplate: string): inc.CfnInclude {
   return new inc.CfnInclude(scope, 'MyScope', {
     templateFile: _testTemplateFilePath(testTemplate),
   });

@@ -1,6 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
-import { ConcreteDependable, Construct, IDependable, IResource, RemovalPolicy, Resource, Size, Tags } from '@aws-cdk/core';
+import { ConcreteDependable, IDependable, IResource, RemovalPolicy, Resource, Size, Tags } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { AccessPoint, AccessPointOptions } from './access-point';
 import { CfnFileSystem, CfnMountTarget } from './efs.generated';
 
@@ -170,6 +171,13 @@ export interface FileSystemProps {
    * @default RemovalPolicy.RETAIN
    */
   readonly removalPolicy?: RemovalPolicy;
+
+  /**
+   * Whether to enable automatic backups for the file system.
+   *
+   * @default false
+   */
+  readonly enableAutomaticBackups?: boolean;
 }
 
 /**
@@ -251,6 +259,7 @@ export class FileSystem extends Resource implements IFileSystem {
       performanceMode: props.performanceMode,
       throughputMode: props.throughputMode,
       provisionedThroughputInMibps: props.provisionedThroughputPerSecond?.toMebibytes(),
+      backupPolicy: props.enableAutomaticBackups ? { status: 'ENABLED' } : undefined,
     });
     filesystem.applyRemovalPolicy(props.removalPolicy);
 

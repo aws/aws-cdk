@@ -1,7 +1,6 @@
 import * as codecommit from '@aws-cdk/aws-codecommit';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
-import { Construct } from '@aws-cdk/core';
 import { CfnProject } from './codebuild.generated';
 import { IProject } from './project';
 import {
@@ -11,6 +10,10 @@ import {
   GITHUB_SOURCE_TYPE,
   S3_SOURCE_TYPE,
 } from './source-types';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * The type returned from {@link ISource#bind}.
@@ -39,7 +42,7 @@ export interface ISource {
 
   readonly badgeSupported: boolean;
 
-  bind(scope: Construct, project: IProject): SourceConfig;
+  bind(scope: CoreConstruct, project: IProject): SourceConfig;
 }
 
 /**
@@ -90,7 +93,7 @@ export abstract class Source implements ISource {
    * binding operations on the source. For example, it can grant permissions to the
    * code build project to read from the S3 bucket.
    */
-  public bind(_scope: Construct, _project: IProject): SourceConfig {
+  public bind(_scope: CoreConstruct, _project: IProject): SourceConfig {
     return {
       sourceProperty: {
         sourceIdentifier: this.identifier,
@@ -119,6 +122,13 @@ interface GitSourceProps extends SourceProps {
    * @default the default branch's HEAD commit ID is used
    */
   readonly branchOrRef?: string;
+
+  /**
+   * Whether to fetch submodules while cloning git repo.
+   *
+   * @default false
+   */
+  readonly fetchSubmodules?: boolean;
 }
 
 /**
@@ -127,21 +137,26 @@ interface GitSourceProps extends SourceProps {
 abstract class GitSource extends Source {
   private readonly cloneDepth?: number;
   private readonly branchOrRef?: string;
+  private readonly fetchSubmodules?: boolean;
 
   protected constructor(props: GitSourceProps) {
     super(props);
 
     this.cloneDepth = props.cloneDepth;
     this.branchOrRef = props.branchOrRef;
+    this.fetchSubmodules = props.fetchSubmodules;
   }
 
-  public bind(_scope: Construct, _project: IProject): SourceConfig {
+  public bind(_scope: CoreConstruct, _project: IProject): SourceConfig {
     const superConfig = super.bind(_scope, _project);
     return {
       sourceVersion: this.branchOrRef,
       sourceProperty: {
         ...superConfig.sourceProperty,
         gitCloneDepth: this.cloneDepth,
+        gitSubmodulesConfig: this.fetchSubmodules ? {
+          fetchSubmodules: this.fetchSubmodules,
+        } : undefined,
       },
     };
   }
@@ -178,7 +193,13 @@ export enum EventAction {
   PULL_REQUEST_REOPENED = 'PULL_REQUEST_REOPENED',
 }
 
-const FILE_PATH_WEBHOOK_COND = 'FILE_PATH';
+enum WebhookFilterTypes {
+  FILE_PATH = 'FILE_PATH',
+  COMMIT_MESSAGE = 'COMMIT_MESSAGE',
+  HEAD_REF = 'HEAD_REF',
+  ACTOR_ACCOUNT_ID = 'ACTOR_ACCOUNT_ID',
+  BASE_REF = 'BASE_REF',
+}
 
 /**
  * An object that represents a group of filter conditions for a webhook.
@@ -228,6 +249,26 @@ export class FilterGroup {
    */
   public andBranchIsNot(branchName: string): FilterGroup {
     return this.addHeadBranchFilter(branchName, false);
+  }
+
+  /**
+   * Create a new FilterGroup with an added condition:
+   * the event must affect a head commit with the given message.
+   *
+   * @param commitMessage the commit message (can be a regular expression)
+   */
+  public andCommitMessageIs(commitMessage: string): FilterGroup {
+    return this.addCommitMessageFilter(commitMessage, true);
+  }
+
+  /**
+   * Create a new FilterGroup with an added condition:
+   * the event must not affect a head commit with the given message.
+   *
+   * @param commitMessage the commit message (can be a regular expression)
+   */
+  public andCommitMessageIsNot(commitMessage: string): FilterGroup {
+    return this.addCommitMessageFilter(commitMessage, false);
   }
 
   /**
@@ -379,6 +420,10 @@ export class FilterGroup {
     return [eventFilter].concat(this.filters);
   }
 
+  private addCommitMessageFilter(commitMessage: string, include: boolean): FilterGroup {
+    return this.addFilter(WebhookFilterTypes.COMMIT_MESSAGE, commitMessage, include);
+  }
+
   private addHeadBranchFilter(branchName: string, include: boolean): FilterGroup {
     return this.addHeadRefFilter(`refs/heads/${branchName}`, include);
   }
@@ -388,11 +433,11 @@ export class FilterGroup {
   }
 
   private addHeadRefFilter(refName: string, include: boolean) {
-    return this.addFilter('HEAD_REF', refName, include);
+    return this.addFilter(WebhookFilterTypes.HEAD_REF, refName, include);
   }
 
   private addActorAccountId(accountId: string, include: boolean) {
-    return this.addFilter('ACTOR_ACCOUNT_ID', accountId, include);
+    return this.addFilter(WebhookFilterTypes.ACTOR_ACCOUNT_ID, accountId, include);
   }
 
   private addBaseBranchFilter(branchName: string, include: boolean): FilterGroup {
@@ -403,14 +448,14 @@ export class FilterGroup {
     if (this.actions.has(EventAction.PUSH)) {
       throw new Error('A base reference condition cannot be added if a Group contains a PUSH event action');
     }
-    return this.addFilter('BASE_REF', refName, include);
+    return this.addFilter(WebhookFilterTypes.BASE_REF, refName, include);
   }
 
   private addFilePathFilter(pattern: string, include: boolean): FilterGroup {
-    return this.addFilter(FILE_PATH_WEBHOOK_COND, pattern, include);
+    return this.addFilter(WebhookFilterTypes.FILE_PATH, pattern, include);
   }
 
-  private addFilter(type: string, pattern: string, include: boolean) {
+  private addFilter(type: WebhookFilterTypes, pattern: string, include: boolean) {
     return new FilterGroup(this.actions, this.filters.concat([{
       type,
       pattern,
@@ -464,7 +509,7 @@ abstract class ThirdPartyGitSource extends GitSource {
     this.webhookFilters = props.webhookFilters || [];
   }
 
-  public bind(_scope: Construct, _project: IProject): SourceConfig {
+  public bind(_scope: CoreConstruct, _project: IProject): SourceConfig {
     const anyFilterGroupsProvided = this.webhookFilters.length > 0;
     const webhook = this.webhook === undefined ? (anyFilterGroupsProvided ? true : undefined) : this.webhook;
 
@@ -503,7 +548,7 @@ class CodeCommitSource extends GitSource {
     this.repo = props.repository;
   }
 
-  public bind(_scope: Construct, project: IProject): SourceConfig {
+  public bind(_scope: CoreConstruct, project: IProject): SourceConfig {
     // https://docs.aws.amazon.com/codebuild/latest/userguide/setting-up.html
     project.addToRolePolicy(new iam.PolicyStatement({
       actions: ['codecommit:GitPull'],
@@ -552,7 +597,7 @@ class S3Source extends Source {
     this.version = props.version;
   }
 
-  public bind(_scope: Construct, project: IProject): SourceConfig {
+  public bind(_scope: CoreConstruct, project: IProject): SourceConfig {
     this.bucket.grantRead(project);
 
     const superConfig = super.bind(_scope, project);
@@ -597,7 +642,7 @@ class GitHubSource extends ThirdPartyGitSource {
     this.httpsCloneUrl = `https://github.com/${props.owner}/${props.repo}.git`;
   }
 
-  public bind(_scope: Construct, project: IProject): SourceConfig {
+  public bind(_scope: CoreConstruct, project: IProject): SourceConfig {
     const superConfig = super.bind(_scope, project);
     return {
       sourceProperty: {
@@ -641,7 +686,15 @@ class GitHubEnterpriseSource extends ThirdPartyGitSource {
     this.ignoreSslErrors = props.ignoreSslErrors;
   }
 
-  public bind(_scope: Construct, _project: IProject): SourceConfig {
+  public bind(_scope: CoreConstruct, _project: IProject): SourceConfig {
+    if (this.hasCommitMessageFilterAndPrEvent()) {
+      throw new Error('COMMIT_MESSAGE filters cannot be used with GitHub Enterprise Server pull request events');
+    }
+
+    if (this.hasFilePathFilterAndPrEvent()) {
+      throw new Error('FILE_PATH filters cannot be used with GitHub Enterprise Server pull request events');
+    }
+
     const superConfig = super.bind(_scope, _project);
     return {
       sourceProperty: {
@@ -652,6 +705,24 @@ class GitHubEnterpriseSource extends ThirdPartyGitSource {
       sourceVersion: superConfig.sourceVersion,
       buildTriggers: superConfig.buildTriggers,
     };
+  }
+
+  private hasCommitMessageFilterAndPrEvent() {
+    return this.webhookFilters.some(fg => (
+      fg._filters.some(fp => fp.type === WebhookFilterTypes.COMMIT_MESSAGE) &&
+      this.hasPrEvent(fg._actions)));
+  }
+  private hasFilePathFilterAndPrEvent() {
+    return this.webhookFilters.some(fg => (
+      fg._filters.some(fp => fp.type === WebhookFilterTypes.FILE_PATH) &&
+      this.hasPrEvent(fg._actions)));
+  }
+  private hasPrEvent(actions: EventAction[]) {
+    return actions.includes(
+      EventAction.PULL_REQUEST_CREATED ||
+      EventAction.PULL_REQUEST_MERGED ||
+      EventAction.PULL_REQUEST_REOPENED ||
+      EventAction.PULL_REQUEST_UPDATED);
   }
 }
 
@@ -686,7 +757,7 @@ class BitBucketSource extends ThirdPartyGitSource {
     this.httpsCloneUrl = `https://bitbucket.org/${props.owner}/${props.repo}.git`;
   }
 
-  public bind(_scope: Construct, _project: IProject): SourceConfig {
+  public bind(_scope: CoreConstruct, _project: IProject): SourceConfig {
     // BitBucket sources don't support the PULL_REQUEST_REOPENED event action
     if (this.anyWebhookFilterContainsPrReopenedEventAction()) {
       throw new Error('BitBucket sources do not support the PULL_REQUEST_REOPENED webhook event action');
@@ -716,7 +787,7 @@ class BitBucketSource extends ThirdPartyGitSource {
 
   private anyWebhookFilterContainsFilePathConditions() {
     return this.webhookFilters.findIndex(fg => {
-      return fg._filters.findIndex(f => f.type === FILE_PATH_WEBHOOK_COND) !== -1;
+      return fg._filters.findIndex(f => f.type === WebhookFilterTypes.FILE_PATH) !== -1;
     }) !== -1;
   }
 }

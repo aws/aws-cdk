@@ -96,8 +96,8 @@ if [ $(echo $app_v | grep -c -E "1\.8\.[0-9].*") -eq 1 ]
 then   
     echo "Ok"
 else
-    # 11 or 14
-    if [ $(echo $app_v | grep -c -E "1[14]\.[0-9]\.[0-9].*") -eq 1 ]
+    # 11 or 14 or 15
+    if [ $(echo $app_v | grep -c -E "1[145]\.[0-9]\.[0-9].*") -eq 1 ]
     then    
         echo "Ok"
     else
@@ -138,19 +138,6 @@ check_which $app $app_min
 app_v=$(${app} --version)
 echo -e "Checking $app version... \c"
 if [ $(echo $app_v | grep -c -E "3\.[6789]\.[0-9].*") -eq 1 ]
-then   
-    echo "Ok"
-else
-    wrong_version
-fi
-
-# [Ruby >= 2.5.1, < 3.0]
-app="ruby"
-app_min="2.5.1"
-check_which $app $app_min
-app_v=$(${app} --version)
-echo -e "Checking $app version... \c"
-if [ $(echo $app_v | grep -c -E "2\.[56789]\.[0-9].*") -eq 1 ]
 then   
     echo "Ok"
 else

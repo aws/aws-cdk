@@ -44,7 +44,20 @@ describe('InitCommand', () => {
 
     // THEN
     expect(rendered).toEqual({
-      '000': { command: ['/bin/sh'] },
+      '000': { command: '/bin/sh' },
+    });
+  });
+
+  test('shell command is rendered as string', () => {
+    // GIVEN
+    const command = ec2.InitCommand.shellCommand('/bin/sh -c "echo hello"');
+
+    // WHEN
+    const rendered = getElementConfig(command, InitPlatform.LINUX);
+
+    // THEN
+    expect(rendered).toEqual({
+      '000': { command: '/bin/sh -c "echo hello"' },
     });
   });
 
@@ -65,7 +78,7 @@ describe('InitCommand', () => {
     // THEN
     expect(rendered).toEqual({
       command_0: {
-        command: ['/bin/sh'],
+        command: '/bin/sh',
         env: { SECRETS_FILE: '/tmp/secrets' },
         cwd: '/home/myUser',
         test: 'test -d /home/myUser',
@@ -175,6 +188,22 @@ describe('InitFile', () => {
     expect(() => {
       file._bind(defaultOptions(InitPlatform.WINDOWS));
     }).toThrow('Owner, group, and mode options not supported for Windows.');
+  });
+
+  test('file renders properly on Windows', () => {
+    // GIVEN
+    const file = ec2.InitFile.fromString('/tmp/foo', 'My content');
+
+    // WHEN
+    const rendered = getElementConfig(file, InitPlatform.WINDOWS);
+
+    // THEN
+    expect(rendered).toEqual({
+      '/tmp/foo': {
+        content: 'My content',
+        encoding: 'plain',
+      },
+    });
   });
 
   test('symlink throws an error if mode is set incorrectly', () => {

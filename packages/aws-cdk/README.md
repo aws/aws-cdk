@@ -45,9 +45,11 @@ $ # List the available template types & languages
 $ cdk init --list
 Available templates:
 * app: Template for a CDK Application
-   └─ cdk init app --language=[java|typescript]
+   └─ cdk init app --language=[csharp|fsharp|java|javascript|python|typescript]
 * lib: Template for a CDK Construct Library
    └─ cdk init lib --language=typescript
+* sample-app: Example CDK Application with some constructs
+   └─ cdk init sample-app --language=[csharp|fsharp|java|javascript|python|typescript]
 
 $ # Create a new library application in typescript
 $ cdk init lib --language=typescript
@@ -140,6 +142,14 @@ currently deployed stack to the template and tags that are about to be deployed 
 will skip deployment if they are identical. Use `--force` to override this behavior
 and always deploy the stack.
 
+##### Deploying multiple stacks
+
+You can have multiple stacks in a cdk app. An example can be found in [how to create multiple stacks](https://docs.aws.amazon.com/cdk/latest/guide/stack_how_to_create_multiple_stacks.html).
+
+In order to deploy them, you can list the stacks you want to deploy.
+
+If you want to deploy all of them, you can use the flag `--all` or the wildcard `*` to deploy all stacks in an app. 
+
 ##### Parameters
 
 Pass parameters to your template during deployment by using `--parameters
@@ -223,7 +233,7 @@ Example `outputs.json` after deployment of multiple stacks
   },
   "AnotherStack": {
     "VPCId": "vpc-z0mg270fee16693f"
-  }  
+  }
 }
 ```
 
@@ -277,8 +287,22 @@ $ # Deploys only to environments foo and bar
 $ cdk bootstrap --app='node bin/main.js' foo bar
 ```
 
-By default, bootstrap stack will be protected from stack termination. This can be disabled using 
+By default, bootstrap stack will be protected from stack termination. This can be disabled using
 `--termination-protection` argument.
+
+If you have specific needs, policies, or requirements not met by the default template, you can customize it
+to fit your own situation, by exporting the default one to a file and either deploying it yourself
+using CloudFormation directly, or by telling the CLI to use a custom template. That looks as follows:
+
+```console
+# Dump the built-in template to a file
+$ cdk bootstrap --show-template > bootstrap-template.yaml
+
+# Edit 'bootstrap-template.yaml' to your liking
+
+# Tell CDK to use the customized template
+$ cdk bootstrap --template bootstrap-template.yaml
+```
 
 #### `cdk doctor`
 Inspect the current command-line environment and configurations, and collect information that can be useful for
@@ -292,6 +316,11 @@ $ cdk doctor
   - AWS_EC2_METADATA_DISABLED = 1
   - AWS_SDK_LOAD_CONFIG = 1
 ```
+
+#### Bundling
+By default asset bundling is skipped for `cdk list` and `cdk destroy`. For `cdk deploy`, `cdk diff`
+and `cdk synthesize` the default is to bundle assets for all stacks unless `exclusively` is specified.
+In this case, only the listed stacks will have their assets bundled.
 
 ### MFA support
 
@@ -326,3 +355,10 @@ Some of the interesting keys that can be used in the JSON configuration files:
     "versionReporting": false,         // Opt-out of version reporting      (--no-version-reporting)
 }
 ```
+
+#### Environment
+
+The following environment variables affect aws-cdk:
+
+- `CDK_DISABLE_VERSION_CHECK`: If set, disable automatic check for newer versions.
+- `CDK_NEW_BOOTSTRAP`: use the modern bootstrapping stack.

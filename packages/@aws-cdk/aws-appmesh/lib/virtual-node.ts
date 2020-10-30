@@ -1,9 +1,10 @@
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
-
+import { Construct } from 'constructs';
 import { CfnVirtualNode } from './appmesh.generated';
 import { IMesh } from './mesh';
-import { HealthCheck, PortMapping, Protocol, VirtualNodeListener } from './shared-interfaces';
+import { validateHealthChecks } from './private/utils';
+import { AccessLog, HealthCheck, PortMapping, Protocol, VirtualNodeListener } from './shared-interfaces';
 import { IVirtualService } from './virtual-service';
 
 /**
@@ -90,6 +91,13 @@ export interface VirtualNodeBaseProps {
    * @default - No listeners
    */
   readonly listener?: VirtualNodeListener;
+
+  /**
+   * Access Logging Configuration for the virtual node
+   *
+   * @default - No access logging
+   */
+  readonly accessLog?: AccessLog;
 }
 
 /**
@@ -147,19 +155,6 @@ abstract class VirtualNodeBase extends cdk.Resource implements IVirtualNode {
   }
 }
 
-/**
- * Minimum and maximum thresholds for HeathCheck numeric properties
- *
- * @see https://docs.aws.amazon.com/app-mesh/latest/APIReference/API_HealthCheckPolicy.html
- */
-const HEALTH_CHECK_PROPERTY_THRESHOLDS: {[key in (keyof CfnVirtualNode.HealthCheckProperty)]?: [number, number]} = {
-  healthyThreshold: [2, 10],
-  intervalMillis: [5000, 300000],
-  port: [1, 65535],
-  timeoutMillis: [2000, 60000],
-  unhealthyThreshold: [2, 10],
-};
-
 function renderHealthCheck(hc: HealthCheck | undefined, pm: PortMapping): CfnVirtualNode.HealthCheckProperty | undefined {
   if (hc === undefined) { return undefined; }
 
@@ -171,38 +166,25 @@ function renderHealthCheck(hc: HealthCheck | undefined, pm: PortMapping): CfnVir
     throw new Error('The path property cannot be set with Protocol.GRPC');
   }
 
+  const protocol = hc.protocol ?? pm.protocol;
+
   const healthCheck: CfnVirtualNode.HealthCheckProperty = {
     healthyThreshold: hc.healthyThreshold || 2,
     intervalMillis: (hc.interval || cdk.Duration.seconds(5)).toMilliseconds(), // min
-    path: hc.path || (hc.protocol === Protocol.HTTP ? '/' : undefined),
+    path: hc.path || (protocol === Protocol.HTTP ? '/' : undefined),
     port: hc.port || pm.port,
     protocol: hc.protocol || pm.protocol,
     timeoutMillis: (hc.timeout || cdk.Duration.seconds(2)).toMilliseconds(),
     unhealthyThreshold: hc.unhealthyThreshold || 2,
   };
 
-  (Object.keys(healthCheck) as Array<keyof CfnVirtualNode.HealthCheckProperty>)
-    .filter((key) =>
-      HEALTH_CHECK_PROPERTY_THRESHOLDS[key] &&
-          typeof healthCheck[key] === 'number' &&
-          !cdk.Token.isUnresolved(healthCheck[key]),
-    ).map((key) => {
-      const [min, max] = HEALTH_CHECK_PROPERTY_THRESHOLDS[key]!;
-      const value = healthCheck[key]!;
-
-      if (value < min) {
-        throw new Error(`The value of '${key}' is below the minimum threshold (expected >=${min}, got ${value})`);
-      }
-      if (value > max) {
-        throw new Error(`The value of '${key}' is above the maximum threshold (expected <=${max}, got ${value})`);
-      }
-    });
+  validateHealthChecks(healthCheck);
 
   return healthCheck;
 }
 
 /**
- * VirtualNode represents a newly defined AppMesh VirtualNode
+ * VirtualNode represents a newly defined App Mesh VirtualNode
  *
  * Any inbound traffic that your virtual node expects should be specified as a
  * listener. Any outbound traffic that your virtual node expects to reach
@@ -214,14 +196,14 @@ export class VirtualNode extends VirtualNodeBase {
   /**
    * Import an existing VirtualNode given an ARN
    */
-  public static fromVirtualNodeArn(scope: cdk.Construct, id: string, virtualNodeArn: string): IVirtualNode {
+  public static fromVirtualNodeArn(scope: Construct, id: string, virtualNodeArn: string): IVirtualNode {
     return new ImportedVirtualNode(scope, id, { virtualNodeArn });
   }
 
   /**
    * Import an existing VirtualNode given its name
    */
-  public static fromVirtualNodeName(scope: cdk.Construct, id: string, meshName: string, virtualNodeName: string): IVirtualNode {
+  public static fromVirtualNodeName(scope: Construct, id: string, meshName: string, virtualNodeName: string): IVirtualNode {
     return new ImportedVirtualNode(scope, id, {
       meshName,
       virtualNodeName,
@@ -234,7 +216,7 @@ export class VirtualNode extends VirtualNodeBase {
   public readonly virtualNodeName: string;
 
   /**
-   * The Amazon Resource Name belonging to the VirtualNdoe
+   * The Amazon Resource Name belonging to the VirtualNode
    */
   public readonly virtualNodeArn: string;
 
@@ -243,7 +225,7 @@ export class VirtualNode extends VirtualNodeBase {
    */
   public readonly mesh: IMesh;
 
-  constructor(scope: cdk.Construct, id: string, props: VirtualNodeProps) {
+  constructor(scope: Construct, id: string, props: VirtualNodeProps) {
     super(scope, id, {
       physicalName: props.virtualNodeName || cdk.Lazy.stringValue({ produce: () => this.node.uniqueId }),
     });
@@ -252,6 +234,7 @@ export class VirtualNode extends VirtualNodeBase {
 
     this.addBackends(...props.backends || []);
     this.addListeners(...props.listener ? [props.listener] : []);
+    const accessLogging = props.accessLog?.bind(this);
 
     const node = new CfnVirtualNode(this, 'Resource', {
       virtualNodeName: this.physicalName,
@@ -267,13 +250,9 @@ export class VirtualNode extends VirtualNodeBase {
             attributes: renderAttributes(props.cloudMapServiceInstanceAttributes),
           } : undefined,
         },
-        logging: {
-          accessLog: {
-            file: {
-              path: '/dev/stdout',
-            },
-          },
-        },
+        logging: accessLogging !== undefined ? {
+          accessLog: accessLogging.virtualNodeAccessLog,
+        } : undefined,
       },
     });
 
@@ -312,7 +291,7 @@ interface VirtualNodeAttributes {
 }
 
 /**
- * Used to import a VirtualNode and read it's properties
+ * Used to import a VirtualNode and read its properties
  */
 class ImportedVirtualNode extends VirtualNodeBase {
   /**
@@ -325,7 +304,7 @@ class ImportedVirtualNode extends VirtualNodeBase {
    */
   public readonly virtualNodeArn: string;
 
-  constructor(scope: cdk.Construct, id: string, props: VirtualNodeAttributes) {
+  constructor(scope: Construct, id: string, props: VirtualNodeAttributes) {
     super(scope, id);
 
     if (props.virtualNodeArn) {

@@ -3,7 +3,7 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as AWS from 'aws-sdk';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { RetryDelayOptions } from 'aws-sdk/lib/config';
+import type { RetryDelayOptions } from 'aws-sdk/lib/config-base';
 
 interface SdkRetryOptions {
   maxRetries?: number;
@@ -14,11 +14,12 @@ interface SdkRetryOptions {
  * Creates a log group and doesn't throw if it exists.
  *
  * @param logGroupName the name of the log group to create.
+ * @param region to create the log group in
  * @param options CloudWatch API SDK options.
  */
-async function createLogGroupSafe(logGroupName: string, options?: SdkRetryOptions) {
+async function createLogGroupSafe(logGroupName: string, region?: string, options?: SdkRetryOptions) {
   try { // Try to create the log group
-    const cloudwatchlogs = new AWS.CloudWatchLogs({ apiVersion: '2014-03-28', ...options });
+    const cloudwatchlogs = new AWS.CloudWatchLogs({ apiVersion: '2014-03-28', region, ...options });
     await cloudwatchlogs.createLogGroup({ logGroupName }).promise();
   } catch (e) {
     if (e.code !== 'ResourceAlreadyExistsException') {
@@ -31,11 +32,12 @@ async function createLogGroupSafe(logGroupName: string, options?: SdkRetryOption
  * Puts or deletes a retention policy on a log group.
  *
  * @param logGroupName the name of the log group to create
+ * @param region the region of the log group
  * @param options CloudWatch API SDK options.
  * @param retentionInDays the number of days to retain the log events in the specified log group.
  */
-async function setRetentionPolicy(logGroupName: string, options?: SdkRetryOptions, retentionInDays?: number) {
-  const cloudwatchlogs = new AWS.CloudWatchLogs({ apiVersion: '2014-03-28', ...options });
+async function setRetentionPolicy(logGroupName: string, region?: string, options?: SdkRetryOptions, retentionInDays?: number) {
+  const cloudwatchlogs = new AWS.CloudWatchLogs({ apiVersion: '2014-03-28', region, ...options });
   if (!retentionInDays) {
     await cloudwatchlogs.deleteRetentionPolicy({ logGroupName }).promise();
   } else {
@@ -50,13 +52,16 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     // The target log group
     const logGroupName = event.ResourceProperties.LogGroupName;
 
+    // The region of the target log group
+    const logGroupRegion = event.ResourceProperties.LogGroupRegion;
+
     // Parse to AWS SDK retry options
     const retryOptions = parseRetryOptions(event.ResourceProperties.SdkRetry);
 
     if (event.RequestType === 'Create' || event.RequestType === 'Update') {
       // Act on the target log group
-      await createLogGroupSafe(logGroupName, retryOptions);
-      await setRetentionPolicy(logGroupName, retryOptions, parseInt(event.ResourceProperties.RetentionInDays, 10));
+      await createLogGroupSafe(logGroupName, logGroupRegion, retryOptions);
+      await setRetentionPolicy(logGroupName, logGroupRegion, retryOptions, parseInt(event.ResourceProperties.RetentionInDays, 10));
 
       if (event.RequestType === 'Create') {
         // Set a retention policy of 1 day on the logs of this function. The log
@@ -68,8 +73,9 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
         // same time. This can sometime result in an OperationAbortedException. To
         // avoid this and because this operation is not critical we catch all errors.
         try {
-          await createLogGroupSafe(`/aws/lambda/${context.functionName}`, retryOptions);
-          await setRetentionPolicy(`/aws/lambda/${context.functionName}`, retryOptions, 1);
+          const region = process.env.AWS_REGION;
+          await createLogGroupSafe(`/aws/lambda/${context.functionName}`, region, retryOptions);
+          await setRetentionPolicy(`/aws/lambda/${context.functionName}`, region, retryOptions, 1);
         } catch (e) {
           console.log(e);
         }

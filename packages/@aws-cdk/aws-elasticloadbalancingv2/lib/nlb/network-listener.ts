@@ -1,4 +1,5 @@
-import { Construct, Duration, IResource, Resource } from '@aws-cdk/core';
+import { Duration, IResource, Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { BaseListener } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
 import { Protocol, SslPolicy } from '../shared/enums';
@@ -105,7 +106,7 @@ export class NetworkListener extends BaseListener implements INetworkListener {
   /**
    * The load balancer this listener is attached to
    */
-  private readonly loadBalancer: INetworkLoadBalancer;
+  public readonly loadBalancer: INetworkLoadBalancer;
 
   /**
    * the protocol of the listener
@@ -195,7 +196,7 @@ export class NetworkListener extends BaseListener implements INetworkListener {
       deregistrationDelay: props.deregistrationDelay,
       healthCheck: props.healthCheck,
       port: props.port,
-      protocol: this.protocol,
+      protocol: props.protocol ?? this.protocol,
       proxyProtocolV2: props.proxyProtocolV2,
       targetGroupName: props.targetGroupName,
       targets: props.targets,
@@ -247,6 +248,13 @@ export interface AddNetworkTargetsProps {
    * @default Determined from protocol if known
    */
   readonly port: number;
+
+  /**
+   * Protocol for target group, expects TCP, TLS, UDP, or TCP_UDP.
+   *
+   * @default - inherits the protocol of the listener
+   */
+  readonly protocol?: Protocol;
 
   /**
    * The targets to add to this target group.

@@ -680,10 +680,16 @@
     "myuserpool01998219": {
       "Type": "AWS::Cognito::UserPool",
       "Properties": {
-        "AccountRecoverySetting": { 
+        "AccountRecoverySetting": {
           "RecoveryMechanisms": [
-            { "Name": "verified_phone_number", "Priority": 1 },
-            { "Name": "verified_email", "Priority": 2 }
+            {
+              "Name": "verified_phone_number",
+              "Priority": 1
+            },
+            {
+              "Name": "verified_email",
+              "Priority": 2
+            }
           ]
         },
         "AdminCreateUserConfig": {
@@ -701,16 +707,8 @@
           "email",
           "phone_number"
         ],
-        "EmailConfiguration": {
-          "From": "noreply@myawesomeapp.com",
-          "ReplyToEmailAddress": "support@myawesomeapp.com"
-        },
         "EmailVerificationMessage": "verification email body from the integ test. Code is {####}.",
         "EmailVerificationSubject": "verification email subject from the integ test",
-        "EnabledMfas": [
-          "SMS_MFA",
-          "SOFTWARE_TOKEN_MFA"
-        ],
         "LambdaConfig": {
           "CreateAuthChallenge": {
             "Fn::GetAtt": [
@@ -773,7 +771,7 @@
             ]
           }
         },
-        "MfaConfiguration": "ON",
+        "MfaConfiguration": "OFF",
         "Policies": {
           "PasswordPolicy": {
             "MinimumLength": 12,
@@ -786,14 +784,14 @@
         },
         "Schema": [
           {
+            "Mutable": true,
             "Name": "name",
-            "Required": true,
-            "Mutable": true
+            "Required": true
           },
           {
+            "Mutable": true,
             "Name": "email",
-            "Required": true,
-            "Mutable": true
+            "Required": true
           },
           {
             "AttributeDataType": "String",

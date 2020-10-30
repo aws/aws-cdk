@@ -124,6 +124,10 @@ async function main() {
             },
           },
           python: {
+            classifiers: [
+              'Framework :: AWS CDK',
+              'Framework :: AWS CDK :: 1',
+            ],
             distName: pythonDistName,
             module: pythonModuleName,
           },
@@ -148,10 +152,14 @@ async function main() {
         'build+test+package': 'npm run build+test && npm run package',
         'build+test': 'npm run build && npm test',
         compat: 'cdk-compat',
+        gen: 'cfn2ts',
       },
       'cdk-build': {
         cloudformation: namespace,
         jest: true,
+        env: {
+          AWSLINT_BASE_CONSTRUCT: 'true',
+        },
       },
       keywords: [
         'aws',
@@ -207,6 +215,7 @@ async function main() {
       'nyc.config.js',
       '!.eslintrc.js',
       '!jest.config.js',
+      'junit.xml',
     ]);
 
     await write('.npmignore', [
@@ -233,6 +242,11 @@ async function main() {
       '',
       '.eslintrc.js',
       'jest.config.js',
+      '',
+      '# exclude cdk artifacts',
+      '**/cdk.out',
+      'junit.xml',
+      'test/',
     ]);
 
     await write('lib/index.ts', [

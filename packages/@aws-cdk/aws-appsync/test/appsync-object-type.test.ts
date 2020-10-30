@@ -4,11 +4,11 @@ import * as appsync from '../lib';
 import * as t from './scalar-type-defintions';
 
 let stack: cdk.Stack;
-let api: appsync.GraphQLApi;
+let api: appsync.GraphqlApi;
 beforeEach(() => {
   // GIVEN
   stack = new cdk.Stack();
-  api = new appsync.GraphQLApi(stack, 'api', {
+  api = new appsync.GraphqlApi(stack, 'api', {
     name: 'api',
   });
 });
@@ -29,8 +29,8 @@ describe('testing Object Type properties', () => {
       directives: [appsync.Directive.custom('@test')],
     });
 
-    api.addToSchema(baseTest.toString());
-    api.addToSchema(objectTest.toString());
+    api.addType(baseTest);
+    api.addType(objectTest);
     const gql_interface = 'interface baseTest {\n  id: ID\n}\n';
     const gql_object = 'type objectTest implements baseTest @test {\n  id2: ID\n  id: ID\n}\n';
     const out = `${gql_interface}${gql_object}`;
@@ -56,12 +56,12 @@ describe('testing Object Type properties', () => {
       },
     });
 
-    api.addToSchema(baseTest.toString());
-    api.addToSchema(anotherTest.toString());
-    api.addToSchema(objectTest.toString());
+    api.addType(baseTest);
+    api.addType(anotherTest);
+    api.addType(objectTest);
 
     const gql_interface = 'interface baseTest {\n  id: ID\n}\ninterface anotherTest {\n  id2: ID\n}\n';
-    const gql_object = 'type objectTest implements anotherTest, baseTest {\n  id3: ID\n  id2: ID\n  id: ID\n}\n';
+    const gql_object = 'type objectTest implements anotherTest & baseTest {\n  id3: ID\n  id2: ID\n  id: ID\n}\n';
     const out = `${gql_interface}${gql_object}`;
 
     // THEN
@@ -83,7 +83,7 @@ describe('testing Object Type properties', () => {
         test: graphqlType,
       },
     });
-    api.addToSchema(test.toString());
+    api.addType(test);
     const out = 'type Test {\n  test: baseTest\n}\n';
 
     // THEN
@@ -107,7 +107,7 @@ describe('testing Object Type properties', () => {
         resolve: field,
       },
     });
-    api.addToSchema(test.toString());
+    api.addType(test);
     const out = 'type Test {\n  test: String\n  resolve(arg: Int): String\n}\n';
 
     // THEN
@@ -131,7 +131,7 @@ describe('testing Object Type properties', () => {
         resolve: field,
       },
     });
-    api.addToSchema(test.toString());
+    api.addType(test);
     const out = 'type Test {\n  test: String\n  resolve(arg: Int): String\n}\n';
 
     // THEN
@@ -154,7 +154,7 @@ describe('testing Object Type properties', () => {
         }),
       },
     });
-    api.addToSchema(test.toString());
+    api.addType(test);
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::Resolver', {
@@ -168,20 +168,18 @@ describe('testing Object Type properties', () => {
     const field = new appsync.ResolvableField({
       returnType: t.string,
       dataSource: api.addNoneDataSource('none'),
-      args: {
-        arg: t.int,
-      },
+      args: { arg: t.int },
     });
     const test = new appsync.ObjectType('Test', {
       definition: {
         test: t.string,
       },
     });
-    test.addField('resolve', field);
+    test.addField({ fieldName: 'resolve', field });
     // test.addField('resolve', field);
-    test.addField('dynamic', t.string);
+    test.addField({ fieldName: 'dynamic', field: t.string });
 
-    api.addToSchema(test.toString());
+    api.addType(test);
     const out = 'type Test {\n  test: String\n  resolve(arg: Int): String\n  dynamic: String\n}\n';
 
     // THEN
@@ -191,36 +189,87 @@ describe('testing Object Type properties', () => {
     expect(stack).toHaveResource('AWS::AppSync::Resolver');
   });
 
-  test('Object Type can dynamically add Fields', () => {
+  test('Object Type can generate Fields with Directives', () => {
     // WHEN
-    const garbage = new appsync.InterfaceType('Garbage', {
+    const test = new appsync.ObjectType('Test', {
       definition: {
-        garbage: t.string,
+        test: t.string,
       },
     });
+    test.addField({
+      fieldName: 'resolve',
+      field: new appsync.Field({
+        returnType: t.string,
+        directives: [appsync.Directive.apiKey()],
+      }),
+    });
+
+    api.addType(test);
+    const out = 'type Test {\n  test: String\n  resolve: String\n  @aws_api_key\n}\n';
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+      Definition: `${out}`,
+    });
+  });
+
+  test('Object Type can generate ResolvableFields with Directives', () => {
+    // WHEN
     const test = new appsync.ObjectType('Test', {
       definition: {
         test: t.string,
       },
     });
     const field = new appsync.ResolvableField({
-      returnType: garbage.attribute(),
+      returnType: t.string,
+      directives: [appsync.Directive.apiKey()],
       dataSource: api.addNoneDataSource('none'),
       args: {
-        arg: garbage.attribute(),
+        arg: t.string,
       },
     });
-    test.addField('resolve', field);
-    // test.addField('resolve', field);
-    test.addField('dynamic', garbage.attribute());
+    test.addField({ fieldName: 'resolve', field });
 
-    api.addToSchema(test.toString());
-    const out = 'type Test {\n  test: String\n  resolve(arg: Garbage): Garbage\n  dynamic: Garbage\n}\n';
+    api.addType(test);
+    const out = 'type Test {\n  test: String\n  resolve(arg: String): String\n  @aws_api_key\n}\n';
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
       Definition: `${out}`,
     });
     expect(stack).toHaveResource('AWS::AppSync::Resolver');
+  });
+
+  test('appsync fails addField with ObjectType missing fieldName', () => {
+    // WHEN
+    const test = new appsync.ObjectType('Test', { definition: {} });
+    api.addType(test);
+
+    // THEN
+    expect(() => {
+      test.addField({ fieldName: 'test' });
+    }).toThrowError('Object Types must have both fieldName and field options.');
+  });
+
+  test('appsync fails addField with ObjectType missing field', () => {
+    // WHEN
+    const test = new appsync.ObjectType('Test', { definition: {} });
+    api.addType(test);
+
+    // THEN
+    expect(() => {
+      test.addField({ field: t.string });
+    }).toThrowError('Object Types must have both fieldName and field options.');
+  });
+
+  test('appsync fails addField with ObjectType missing both fieldName and field options', () => {
+    // WHEN
+    const test = new appsync.ObjectType('Test', { definition: {} });
+    api.addType(test);
+
+    // THEN
+    expect(() => {
+      test.addField({});
+    }).toThrowError('Object Types must have both fieldName and field options.');
   });
 });

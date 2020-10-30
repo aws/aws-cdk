@@ -5,10 +5,10 @@ import * as appsync from '../lib';
 
 // GLOBAL GIVEN
 let stack: cdk.Stack;
-let api: appsync.GraphQLApi;
+let api: appsync.GraphqlApi;
 beforeEach(() => {
   stack = new cdk.Stack();
-  api = new appsync.GraphQLApi(stack, 'baseApi', {
+  api = new appsync.GraphqlApi(stack, 'baseApi', {
     name: 'api',
     schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
   });
@@ -60,7 +60,7 @@ describe('None Data Source configuration', () => {
     expect(() => {
       api.addNoneDataSource('ds');
       api.addNoneDataSource('ds');
-    }).toThrow("There is already a Construct with name 'ds' in GraphQLApi [baseApi]");
+    }).toThrow("There is already a Construct with name 'ds' in GraphqlApi [baseApi]");
   });
 
   test('appsync errors when creating multiple none data sources with same name configuration', () => {
@@ -75,7 +75,7 @@ describe('None Data Source configuration', () => {
 describe('adding none data source from imported api', () => {
   test('imported api can add NoneDataSource from id', () => {
     // WHEN
-    const importedApi = appsync.GraphQLApi.fromGraphqlApiAttributes(stack, 'importedApi', {
+    const importedApi = appsync.GraphqlApi.fromGraphqlApiAttributes(stack, 'importedApi', {
       graphqlApiId: api.apiId,
     });
     importedApi.addNoneDataSource('none');
@@ -89,7 +89,7 @@ describe('adding none data source from imported api', () => {
 
   test('imported api can add NoneDataSource from attributes', () => {
     // WHEN
-    const importedApi = appsync.GraphQLApi.fromGraphqlApiAttributes(stack, 'importedApi', {
+    const importedApi = appsync.GraphqlApi.fromGraphqlApiAttributes(stack, 'importedApi', {
       graphqlApiId: api.apiId,
       graphqlApiArn: api.arn,
     });

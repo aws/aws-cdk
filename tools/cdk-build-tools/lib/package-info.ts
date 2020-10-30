@@ -89,6 +89,14 @@ export function packageCompiler(compilers: CompilerOverrides): string[] {
   }
 }
 
+/**
+ * Return the command defined in scripts.gen if exists
+ */
+export function genScript(): string | undefined {
+  return currentPackageJson().scripts?.gen;
+}
+
+
 export interface CDKBuildOptions {
   /**
    * What CloudFormation scope to generate resources for, if any
@@ -135,6 +143,11 @@ export interface CDKBuildOptions {
    * but we want to eventually move all of them to Jest.
    */
   jest?: boolean;
+
+  /**
+   * Environment variables to be passed to 'cdk-build' and all of its child processes.
+   */
+  env?: NodeJS.ProcessEnv;
 }
 
 /**

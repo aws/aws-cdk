@@ -1,5 +1,6 @@
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as codestar from './codestar.generated';
 
 /**
@@ -87,7 +88,7 @@ export class GitHubRepository extends cdk.Resource implements IGitHubRepository 
   public readonly owner: string;
   public readonly repo: string;
 
-  constructor(scope: cdk.Construct, id: string, props: GitHubRepositoryProps) {
+  constructor(scope: Construct, id: string, props: GitHubRepositoryProps) {
     super(scope, id);
 
     const resource = new codestar.CfnGitHubRepository(this, 'Resource', {

@@ -4,7 +4,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
-import { Cluster, ClusterParameterGroup, ClusterType } from '../lib';
+import { CfnCluster, Cluster, ClusterParameterGroup, ClusterSubnetGroup, ClusterType } from '../lib';
 
 let stack: cdk.Stack;
 let vpc: ec2.IVpc;
@@ -257,6 +257,22 @@ test('cluster with parameter group', () => {
 
 });
 
+test('publicly accessible cluster', () => {
+  // WHEN
+  new Cluster(stack, 'Redshift', {
+    masterUser: {
+      masterUsername: 'admin',
+    },
+    vpc,
+    publiclyAccessible: true,
+  });
+
+  // THEN
+  cdkExpect(stack).to(haveResource('AWS::Redshift::Cluster', {
+    PubliclyAccessible: true,
+  }));
+});
+
 test('imported cluster with imported security group honors allowAllOutbound', () => {
   // GIVEN
   const cluster = Cluster.fromClusterAttributes(stack, 'Database', {
@@ -356,6 +372,33 @@ test('throws when trying to add single user rotation multiple times', () => {
   expect(() => {
     cluster.addRotationSingleUser();
   }).toThrowError();
+});
+
+test('can use existing cluster subnet group', () => {
+  // GIVEN
+  new Cluster(stack, 'Redshift', {
+    masterUser: {
+      masterUsername: 'admin',
+    },
+    vpc,
+    subnetGroup: ClusterSubnetGroup.fromClusterSubnetGroupName(stack, 'Group', 'my-existing-cluster-subnet-group'),
+  });
+
+  expect(stack).not.toHaveResource('AWS::Redshift::ClusterSubnetGroup');
+  expect(stack).toHaveResourceLike('AWS::Redshift::Cluster', {
+    ClusterSubnetGroupName: 'my-existing-cluster-subnet-group',
+  });
+});
+
+test('default child returns a CfnCluster', () => {
+  const cluster = new Cluster(stack, 'Redshift', {
+    masterUser: {
+      masterUsername: 'admin',
+    },
+    vpc,
+  });
+
+  expect(cluster.node.defaultChild).toBeInstanceOf(CfnCluster);
 });
 
 function testStack() {
