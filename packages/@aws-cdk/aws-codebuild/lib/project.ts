@@ -793,6 +793,7 @@ export class Project extends ProjectBase {
           'codebuild:CreateReport',
           'codebuild:UpdateReport',
           'codebuild:BatchPutTestCases',
+          'codebuild:BatchPutCodeCoverages',
         ],
         resources: [renderReportGroupArn(this, `${this.projectName}-*`)],
       }));
@@ -955,14 +956,17 @@ export class Project extends ProjectBase {
       this.buildImage.secretsManagerCredentials?.grantRead(this);
     }
 
+    const secret = this.buildImage.secretsManagerCredentials;
     return {
       type: this.buildImage.type,
       image: this.buildImage.imageId,
       imagePullCredentialsType: imagePullPrincipalType,
-      registryCredential: this.buildImage.secretsManagerCredentials
+      registryCredential: secret
         ? {
           credentialProvider: 'SECRETS_MANAGER',
-          credential: this.buildImage.secretsManagerCredentials.secretArn,
+          // Secrets must be referenced by either the full ARN (with SecretsManager suffix), or by name.
+          // "Partial" ARNs (without the suffix) will fail a validation regex at deploy-time.
+          credential: secret.secretFullArn ?? secret.secretName,
         }
         : undefined,
       privilegedMode: env.privileged || false,

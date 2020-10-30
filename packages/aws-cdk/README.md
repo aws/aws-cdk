@@ -45,9 +45,11 @@ $ # List the available template types & languages
 $ cdk init --list
 Available templates:
 * app: Template for a CDK Application
-   └─ cdk init app --language=[java|typescript]
+   └─ cdk init app --language=[csharp|fsharp|java|javascript|python|typescript]
 * lib: Template for a CDK Construct Library
    └─ cdk init lib --language=typescript
+* sample-app: Example CDK Application with some constructs
+   └─ cdk init sample-app --language=[csharp|fsharp|java|javascript|python|typescript]
 
 $ # Create a new library application in typescript
 $ cdk init lib --language=typescript
@@ -139,6 +141,14 @@ Before creating a change set, `cdk deploy` will compare the template and tags of
 currently deployed stack to the template and tags that are about to be deployed and
 will skip deployment if they are identical. Use `--force` to override this behavior
 and always deploy the stack.
+
+##### Deploying multiple stacks
+
+You can have multiple stacks in a cdk app. An example can be found in [how to create multiple stacks](https://docs.aws.amazon.com/cdk/latest/guide/stack_how_to_create_multiple_stacks.html).
+
+In order to deploy them, you can list the stacks you want to deploy.
+
+If you want to deploy all of them, you can use the flag `--all` or the wildcard `*` to deploy all stacks in an app. 
 
 ##### Parameters
 
@@ -345,3 +355,10 @@ Some of the interesting keys that can be used in the JSON configuration files:
     "versionReporting": false,         // Opt-out of version reporting      (--no-version-reporting)
 }
 ```
+
+#### Environment
+
+The following environment variables affect aws-cdk:
+
+- `CDK_DISABLE_VERSION_CHECK`: If set, disable automatic check for newer versions.
+- `CDK_NEW_BOOTSTRAP`: use the modern bootstrapping stack.

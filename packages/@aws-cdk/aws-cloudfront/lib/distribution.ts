@@ -419,7 +419,7 @@ export class Distribution extends Resource implements IDistribution {
 
     const bucket = props.logBucket ?? new s3.Bucket(this, 'LoggingBucket');
     return {
-      bucket: bucket.bucketDomainName,
+      bucket: bucket.bucketRegionalDomainName,
       includeCookies: props.logIncludesCookies,
       prefix: props.logFilePrefix,
     };
@@ -673,7 +673,7 @@ export interface AddBehaviorOptions {
    * See https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/ServingCompressedFiles.html#compressed-content-cloudfront-file-types
    * for file types CloudFront will compress.
    *
-   * @default false
+   * @default true
    */
   readonly compress?: boolean;
 

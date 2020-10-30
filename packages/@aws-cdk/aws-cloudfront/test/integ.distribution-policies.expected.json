@@ -13,6 +13,7 @@
               "CookieBehavior": "none"
             },
             "EnableAcceptEncodingGzip": false,
+            "EnableAcceptEncodingBrotli": false,
             "HeadersConfig": {
               "HeaderBehavior": "none"
             },
@@ -51,6 +52,7 @@
             "CachePolicyId": {
               "Ref": "CachePolicy26D8A535"
             },
+            "Compress": true,
             "OriginRequestPolicyId": {
               "Ref": "OriginRequestPolicy3EFDB4FA"
             },
