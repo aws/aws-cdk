@@ -44,6 +44,22 @@ describe('deploy', () => {
       await toolkit.deploy({ stackNames: ['Test-Stack-A', 'Test-Stack-B'] });
     });
 
+    test('with one stack specified', async () => {
+      // GIVEN
+      const toolkit = defaultToolkitSetup();
+
+      // WHEN
+      await toolkit.deploy({ stackNames: ['Test-Stack-A'] });
+    });
+
+    test('with stacks all stacks specified as wildcard', async () => {
+      // GIVEN
+      const toolkit = defaultToolkitSetup();
+
+      // WHEN
+      await toolkit.deploy({ stackNames: ['*'] });
+    });
+
     test('with sns notification arns', async () => {
       // GIVEN
       const notificationArns = ['arn:aws:sns:::cfn-notifications', 'arn:aws:sns:::my-cool-topic'];
