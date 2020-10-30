@@ -5,7 +5,7 @@
  */
 import { isNameOfCloudFormationIntrinsic } from '../lib/private/cloudformation-lang';
 
-export function evaluateCFN(object: any, context: {[key: string]: string} = {}): any {
+export function evaluateCFN(object: any, context: {[key: string]: any} = {}): any {
   const intrinsics: any = {
     'Fn::Join'(separator: string, args: string[]) {
       return args.map(evaluate).join(separator);

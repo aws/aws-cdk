@@ -1,12 +1,32 @@
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import { App, CfnOutput, Fn, Lazy, Stack, Token } from '../lib';
 import { Intrinsic } from '../lib/private/intrinsic';
 import { evaluateCFN } from './evaluate-cfn';
 
-nodeunitShim({
-  'string tokens can be JSONified and JSONification can be reversed'(test: Test) {
-    const stack = new Stack();
+let app: App;
+let stack: Stack;
+beforeEach(() => {
+  app = new App();
+  stack = new Stack(app, 'Stack');
+});
 
+test('JSONification of literals looks like JSON.stringify', () => {
+  const structure = {
+    undefinedProp: undefined,
+    nestedObject: {
+      prop1: undefined,
+      prop2: 'abc',
+      prop3: 42,
+      prop4: [1, 2, 3],
+    },
+  };
+
+  expect(stack.resolve(stack.toJsonString(structure))).toEqual(JSON.stringify(structure));
+  expect(stack.resolve(stack.toJsonString(structure, 2))).toEqual(JSON.stringify(structure, undefined, 2));
+});
+
+describe('tokens that return literals', () => {
+
+  test('string tokens can be JSONified and JSONification can be reversed', () => {
     for (const token of tokensThatResolveTo('woof woof')) {
       // GIVEN
       const fido = { name: 'Fido', speaks: token };
@@ -15,15 +35,11 @@ nodeunitShim({
       const resolved = stack.resolve(stack.toJsonString(fido));
 
       // THEN
-      test.deepEqual(evaluateCFN(resolved), '{"name":"Fido","speaks":"woof woof"}');
+      expect(evaluateCFN(resolved)).toEqual('{"name":"Fido","speaks":"woof woof"}');
     }
+  });
 
-    test.done();
-  },
-
-  'string tokens can be embedded while being JSONified'(test: Test) {
-    const stack = new Stack();
-
+  test('string tokens can be embedded while being JSONified', () => {
     for (const token of tokensThatResolveTo('woof woof')) {
       // GIVEN
       const fido = { name: 'Fido', speaks: `deep ${token}` };
@@ -32,57 +48,93 @@ nodeunitShim({
       const resolved = stack.resolve(stack.toJsonString(fido));
 
       // THEN
-      test.deepEqual(evaluateCFN(resolved), '{"name":"Fido","speaks":"deep woof woof"}');
+      expect(evaluateCFN(resolved)).toEqual('{"name":"Fido","speaks":"deep woof woof"}');
     }
+  });
 
-    test.done();
-  },
-
-  'constant string has correct amount of quotes applied'(test: Test) {
-    const stack = new Stack();
-
+  test('constant string has correct amount of quotes applied', () => {
     const inputString = 'Hello, "world"';
 
     // WHEN
     const resolved = stack.resolve(stack.toJsonString(inputString));
 
     // THEN
-    test.deepEqual(evaluateCFN(resolved), JSON.stringify(inputString));
+    expect(evaluateCFN(resolved)).toEqual(JSON.stringify(inputString));
+  });
 
-    test.done();
-  },
-
-  'integer Tokens behave correctly in stringification and JSONification'(test: Test) {
+  test('integer Tokens behave correctly in stringification and JSONification', () => {
     // GIVEN
-    const stack = new Stack();
     const num = new Intrinsic(1);
     const embedded = `the number is ${num}`;
 
     // WHEN
-    test.equal(evaluateCFN(stack.resolve(embedded)), 'the number is 1');
-    test.equal(evaluateCFN(stack.resolve(stack.toJsonString({ embedded }))), '{"embedded":"the number is 1"}');
-    test.equal(evaluateCFN(stack.resolve(stack.toJsonString({ num }))), '{"num":1}');
+    expect(evaluateCFN(stack.resolve(embedded))).toEqual('the number is 1');
+    expect(evaluateCFN(stack.resolve(stack.toJsonString({ embedded })))).toEqual('{"embedded":"the number is 1"}');
+    expect(evaluateCFN(stack.resolve(stack.toJsonString({ num })))).toEqual('{"num":1}');
+  });
 
-    test.done();
-  },
+  test('String-encoded lazies do not have quotes applied if they return objects', () => {
+    // This is unfortunately crazy behavior, but we have some clients already taking a
+    // dependency on the fact that `Lazy.stringValue({ produce: () => [...some list...] })`
+    // does not apply quotes but just renders the list.
 
-  'tokens in strings survive additional TokenJSON.stringification()'(test: Test) {
     // GIVEN
-    const stack = new Stack();
+    const someList = Lazy.stringValue({ produce: () => [1, 2, 3] as any });
+
+    // WHEN
+    expect(evaluateCFN(stack.resolve(stack.toJsonString({ someList })))).toEqual('{"someList":[1,2,3]}');
+  });
+
+  test('List Tokens do not have quotes applied', () => {
+    // GIVEN
+    const someList = Token.asList([1, 2, 3]);
+
+    // WHEN
+    expect(evaluateCFN(stack.resolve(stack.toJsonString({ someList })))).toEqual('{"someList":[1,2,3]}');
+  });
+
+  test('tokens in strings survive additional TokenJSON.stringification()', () => {
+    // GIVEN
     for (const token of tokensThatResolveTo('pong!')) {
       // WHEN
       const stringified = stack.toJsonString(`ping? ${token}`);
 
       // THEN
-      test.equal(evaluateCFN(stack.resolve(stringified)), '"ping? pong!"');
+      expect(evaluateCFN(stack.resolve(stringified))).toEqual('"ping? pong!"');
     }
+  });
 
-    test.done();
-  },
+  test('Doubly nested strings evaluate correctly in JSON context', () => {
+    // WHEN
+    const fidoSays = Lazy.stringValue({ produce: () => 'woof' });
 
-  'intrinsic Tokens embed correctly in JSONification'(test: Test) {
+    // WHEN
+    const resolved = stack.resolve(stack.toJsonString({
+      information: `Did you know that Fido says: ${fidoSays}`,
+    }));
+
+    // THEN
+    expect(evaluateCFN(resolved)).toEqual('{"information":"Did you know that Fido says: woof"}');
+  });
+
+  test('Quoted strings in embedded JSON context are escaped', () => {
     // GIVEN
-    const stack = new Stack();
+    const fidoSays = Lazy.stringValue({ produce: () => '"woof"' });
+
+    // WHEN
+    const resolved = stack.resolve(stack.toJsonString({
+      information: `Did you know that Fido says: ${fidoSays}`,
+    }));
+
+    // THEN
+    expect(evaluateCFN(resolved)).toEqual('{"information":"Did you know that Fido says: \\"woof\\""}');
+  });
+
+});
+
+describe('tokens returning CloudFormation intrinsics', () => {
+  test('intrinsic Tokens embed correctly in JSONification', () => {
+    // GIVEN
     const bucketName = new Intrinsic({ Ref: 'MyBucket' });
 
     // WHEN
@@ -90,13 +142,10 @@ nodeunitShim({
 
     // THEN
     const context = { MyBucket: 'TheName' };
-    test.equal(evaluateCFN(resolved, context), '{"theBucket":"TheName"}');
+    expect(evaluateCFN(resolved, context)).toEqual('{"theBucket":"TheName"}');
+  });
 
-    test.done();
-  },
-
-  'fake intrinsics are serialized to objects'(test: Test) {
-    const stack = new Stack();
+  test('fake intrinsics are serialized to objects', () => {
     const fakeIntrinsics = new Intrinsic({
       a: {
         'Fn::GetArtifactAtt': {
@@ -112,16 +161,13 @@ nodeunitShim({
     });
 
     const stringified = stack.toJsonString(fakeIntrinsics);
-    test.equal(evaluateCFN(stack.resolve(stringified)),
+    expect(evaluateCFN(stack.resolve(stringified))).toEqual(
       '{"a":{"Fn::GetArtifactAtt":{"key":"val"}},"b":{"Fn::GetParam":["val1","val2"]}}');
+  });
 
-    test.done();
-  },
-
-  'embedded string literals in intrinsics are escaped when calling TokenJSON.stringify()'(test: Test) {
+  test('embedded string literals in intrinsics are escaped when calling TokenJSON.stringify()', () => {
     // GIVEN
-    const stack = new Stack();
-    const token = Fn.join('', ['Hello', 'This\nIs', 'Very "cool"']);
+    const token = Fn.join('', ['Hello ', Token.asString({ Ref: 'Planet' }), ', this\nIs', 'Very "cool"']);
 
     // WHEN
     const resolved = stack.resolve(stack.toJsonString({
@@ -130,15 +176,13 @@ nodeunitShim({
     }));
 
     // THEN
-    const expected = '{"literal":"I can also \\"contain\\" quotes","token":"HelloThis\\nIsVery \\"cool\\""}';
-    test.equal(evaluateCFN(resolved), expected);
+    const context = { Planet: 'World' };
+    const expected = '{"literal":"I can also \\"contain\\" quotes","token":"Hello World, this\\nIsVery \\"cool\\""}';
+    expect(evaluateCFN(resolved, context)).toEqual(expected);
+  });
 
-    test.done();
-  },
-
-  'Tokens in Tokens are handled correctly'(test: Test) {
+  test('Tokens in Tokens are handled correctly', () => {
     // GIVEN
-    const stack = new Stack();
     const bucketName = new Intrinsic({ Ref: 'MyBucket' });
     const combinedName = Fn.join('', ['The bucket name is ', bucketName.toString()]);
 
@@ -147,31 +191,12 @@ nodeunitShim({
 
     // THEN
     const context = { MyBucket: 'TheName' };
-    test.equal(evaluateCFN(resolved, context), '{"theBucket":"The bucket name is TheName"}');
+    expect(evaluateCFN(resolved, context)).toEqual('{"theBucket":"The bucket name is TheName"}');
+  });
 
-    test.done();
-  },
-
-  'Doubly nested strings evaluate correctly in JSON context'(test: Test) {
-    // WHEN
-    const stack = new Stack();
-    const fidoSays = Lazy.stringValue({ produce: () => 'woof' });
-
-    // WHEN
-    const resolved = stack.resolve(stack.toJsonString({
-      information: `Did you know that Fido says: ${fidoSays}`,
-    }));
-
-    // THEN
-    test.deepEqual(evaluateCFN(resolved), '{"information":"Did you know that Fido says: woof"}');
-
-    test.done();
-  },
-
-  'Doubly nested intrinsics evaluate correctly in JSON context'(test: Test) {
+  test('Doubly nested intrinsics evaluate correctly in JSON context', () => {
     // GIVEN
-    const stack = new Stack();
-    const fidoSays = Lazy.anyValue({ produce: () => ({ Ref: 'Something' }) });
+    const fidoSays = Lazy.anyValue({ produce: () => Token.asAny({ Ref: 'Something' }) });
 
     // WHEN
     const resolved = stack.resolve(stack.toJsonString({
@@ -180,30 +205,11 @@ nodeunitShim({
 
     // THEN
     const context = { Something: 'woof woof' };
-    test.deepEqual(evaluateCFN(resolved, context), '{"information":"Did you know that Fido says: woof woof"}');
+    expect(evaluateCFN(resolved, context)).toEqual('{"information":"Did you know that Fido says: woof woof"}');
+  });
 
-    test.done();
-  },
-
-  'Quoted strings in embedded JSON context are escaped'(test: Test) {
+  test('cross-stack references are also properly converted by toJsonString()', () => {
     // GIVEN
-    const stack = new Stack();
-    const fidoSays = Lazy.stringValue({ produce: () => '"woof"' });
-
-    // WHEN
-    const resolved = stack.resolve(stack.toJsonString({
-      information: `Did you know that Fido says: ${fidoSays}`,
-    }));
-
-    // THEN
-    test.deepEqual(evaluateCFN(resolved), '{"information":"Did you know that Fido says: \\"woof\\""}');
-
-    test.done();
-  },
-
-  'cross-stack references are also properly converted by toJsonString()'(test: Test) {
-    // GIVEN
-    const app = new App();
     const stack1 = new Stack(app, 'Stack1');
     const stack2 = new Stack(app, 'Stack2');
 
@@ -217,7 +223,7 @@ nodeunitShim({
 
     // THEN
     const asm = app.synth();
-    test.deepEqual(asm.getStackByName('Stack2').template, {
+    expect(asm.getStackByName('Stack2').template).toEqual({
       Outputs: {
         Stack1Id: {
           Value: {
@@ -232,9 +238,38 @@ nodeunitShim({
         },
       },
     });
+  });
 
-    test.done();
-  },
+  test('Intrinsics can occur in key position', () => {
+    // GIVEN
+    const bucketName = Token.asString({ Ref: 'MyBucket' });
+
+    // WHEN
+    const resolved = stack.resolve(stack.toJsonString({
+      [bucketName]: 'Is Cool',
+      [`${bucketName} Is`]: 'Cool',
+    }));
+
+    // THEN
+    const context = { MyBucket: 'Harry' };
+    expect(evaluateCFN(resolved, context)).toEqual('{"Harry":"Is Cool","Harry Is":"Cool"}');
+  });
+
+  test('toJsonString() can be used recursively', () => {
+    // GIVEN
+    const bucketName = Token.asString({ Ref: 'MyBucket' });
+
+    // WHEN
+    const embeddedJson = stack.toJsonString({ message: `the bucket name is ${bucketName}` });
+    const outerJson = stack.toJsonString({ embeddedJson });
+
+    // THEN
+    const evaluatedJson = evaluateCFN(stack.resolve(outerJson), {
+      MyBucket: 'Bucky',
+    });
+    expect(evaluatedJson).toEqual('{"embeddedJson":"{\\"message\\":\\"the bucket name is Bucky\\"}"}');
+    expect(JSON.parse(JSON.parse(evaluatedJson).embeddedJson).message).toEqual('the bucket name is Bucky');
+  });
 });
 
 /**

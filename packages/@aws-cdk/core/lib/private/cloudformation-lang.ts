@@ -1,10 +1,7 @@
 import { Lazy } from '../lazy';
-import { Reference } from '../reference';
-import { DefaultTokenResolver, IFragmentConcatenator, IPostProcessor, IResolvable, IResolveContext } from '../resolvable';
-import { TokenizedStringFragments } from '../string-fragments';
-import { Token } from '../token';
-import { Intrinsic } from './intrinsic';
-import { resolve } from './resolve';
+import { DefaultTokenResolver, IFragmentConcatenator, IResolveContext } from '../resolvable';
+import { isResolvableObject, Token } from '../token';
+import { TokenMap } from './token-map';
 
 /**
  * Routines that know how to do operations at the CloudFormation document language level
@@ -24,59 +21,12 @@ export class CloudFormationLang {
    * @param space Indentation to use (default: no pretty-printing)
    */
   public static toJSON(obj: any, space?: number): string {
-    // This works in two stages:
-    //
-    // First, resolve everything. This gets rid of the lazy evaluations, evaluation
-    // to the real types of things (for example, would a function return a string, an
-    // intrinsic, or a number? We have to resolve to know).
-    //
-    // We then to through the returned result, identify things that evaluated to
-    // CloudFormation intrinsics, and re-wrap those in Tokens that have a
-    // toJSON() method returning their string representation. If we then call
-    // JSON.stringify() on that result, that gives us essentially the same
-    // string that we started with, except with the non-token characters quoted.
-    //
-    //    {"field": "${TOKEN}"} --> {\"field\": \"${TOKEN}\"}
-    //
-    // A final resolve() on that string (done by the framework) will yield the string
-    // we're after.
-    //
-    // Resolving and wrapping are done in go using the resolver framework.
-    class IntrinsincWrapper extends DefaultTokenResolver {
-      constructor() {
-        super(CLOUDFORMATION_CONCAT);
-      }
-
-      public resolveToken(t: IResolvable, context: IResolveContext, postProcess: IPostProcessor) {
-        // Return References directly, so their type is maintained and the references will
-        // continue to work. Only while preparing, because we do need the final value of the
-        // token while resolving.
-        if (Reference.isReference(t) && context.preparing) { return wrap(t); }
-
-        // Deep-resolve and wrap. This is necessary for Lazy tokens so we can see "inside" them.
-        return wrap(super.resolveToken(t, context, postProcess));
-      }
-      public resolveString(fragments: TokenizedStringFragments, context: IResolveContext) {
-        return wrap(super.resolveString(fragments, context));
-      }
-      public resolveList(l: string[], context: IResolveContext) {
-        return wrap(super.resolveList(l, context));
-      }
-    }
-
-    // We need a ResolveContext to get started so return a Token
     return Lazy.stringValue({
-      produce: (ctx: IResolveContext) =>
-        JSON.stringify(resolve(obj, {
-          preparing: ctx.preparing,
-          scope: ctx.scope,
-          resolver: new IntrinsincWrapper(),
-        }), undefined, space),
+      // We used to do this by hooking into `JSON.stringify()` by adding in objects
+      // with custom `toJSON()` functions, but it's ultimately simpler just to
+      // reimplement the `stringify()` function from scratch.
+      produce: (ctx) => tokenAwareStringify(obj, space ?? 0, ctx),
     });
-
-    function wrap(value: any): any {
-      return isIntrinsic(value) ? new JsonToken(deepQuoteStringsForJSON(value)) : value;
-    }
   }
 
   /**
@@ -97,44 +47,213 @@ export class CloudFormationLang {
 
     // Otherwise return a Join intrinsic (already in the target document language to avoid taking
     // circular dependencies on FnJoin & friends)
-    return { 'Fn::Join': ['', minimalCloudFormationJoin('', parts)] };
+    return fnJoinConcat(parts);
   }
 }
 
 /**
- * Token that also stringifies in the toJSON() operation.
+ * Return a CFN intrinsic mass concatting any number of CloudFormation expressions
  */
-class JsonToken extends Intrinsic {
+function fnJoinConcat(parts: any[]) {
+  return { 'Fn::Join': ['', minimalCloudFormationJoin('', parts)] };
+}
+
+/**
+ * Perform a JSON.stringify()-like operation, except aware of Tokens and CloudFormation intrincics
+ *
+ * Tokens will be resolved and if they resolve to CloudFormation intrinsics, the intrinsics
+ * will be lifted to the top of a giant `{ Fn::Join}` expression.
+ *
+ * We are looking to do the following transforms:
+ *
+ * (a) Token in a string context
+ *
+ *     { "field": "a${TOKEN}b" } -> "{ \"field\": \"a" ++ resolve(TOKEN) ++ "b\" }"
+ *     { "a${TOKEN}b": "value" } -> "{ \"a" ++ resolve(TOKEN) ++ "b\": \"value\" }"
+ *
+ * (b) Standalone token
+ *
+ *     { "field": TOKEN } ->
+ *
+ *         if TOKEN resolves to a string (or is a non-encoded or string-encoded intrinsic) ->
+ *             "{ \"field\": \"" ++ resolve(TOKEN) ++ "\" }"
+ *         if TOKEN resolves to a non-string (or is a non-string-encoded intrinsic)  ->
+ *             "{ \"field\": " ++ resolve(TOKEN) ++ " }"
+ *
+ * (Where ++ is the CloudFormation string-concat operation (`{ Fn::Join }`).
+ *
+ * -------------------
+ *
+ * Here come complex type interpretation rules, which we are unable to simplify because
+ * some clients our there are already taking dependencies on the unintended side effects
+ * of the old implementation.
+ *
+ * 1. If TOKEN is embedded in a string with a prefix or postfix, we'll render the token
+ *    as a string regardless of whether it returns an intrinsic or a literal.
+ *
+ * 2. If TOKEN resolves to an intrinsic:
+ *     - We'll treat it as a string if the TOKEN itself was not encoded or string-encoded
+ *       (this covers the 99% case of what CloudFormation intrinsics resolve to).
+ *     - We'll treat it as a non-string otherwise; the intrinsic MUST resolve to a number;
+ *        * if resolves to a list { Fn::Join } will fail
+ *        * if it resolves to a string after all the JSON will be malformed at API call time.
+ *
+ * 3. Otherwise, the type of the value it resolves to (string, number, complex object, ...)
+ *    determines how the value is rendered.
+ */
+function tokenAwareStringify(root: any, space: number, ctx: IResolveContext) {
+  let indent = 0;
+
+  const ret = new Array<Segment>();
+  recurse(root);
+  switch (ret.length) {
+    case 0: return '';
+    case 1: return renderSegment(ret[0]);
+    default:
+      return fnJoinConcat(ret.map(renderSegment));
+  }
+
   /**
-   * Special handler that gets called when JSON.stringify() is used.
+   * Stringify a JSON element
    */
-  public toJSON() {
-    return this.toString();
-  }
-}
-
-/**
- * Deep escape strings for use in a JSON context
- */
-function deepQuoteStringsForJSON(x: any): any {
-  if (typeof x === 'string') {
-    // Whenever we escape a string we strip off the outermost quotes
-    // since we're already in a quoted context.
-    const stringified = JSON.stringify(x);
-    return stringified.substring(1, stringified.length - 1);
-  }
-
-  if (Array.isArray(x)) {
-    return x.map(deepQuoteStringsForJSON);
+  function recurse(obj: any): void {
+    if (Token.isUnresolved(obj)) {
+      return handleToken(obj);
+    }
+    if (Array.isArray(obj)) {
+      return renderCollection('[', ']', obj, recurse);
+    }
+    if (typeof obj === 'object' && obj != null && !(obj instanceof Date)) {
+      return renderCollection('{', '}', definedEntries(obj), ([key, value]) => {
+        recurse(key);
+        pushLiteral(prettyPunctuation(':'));
+        recurse(value);
+      });
+    }
+    // Otherwise we have a scalar, defer to JSON.stringify()s serialization
+    pushLiteral(JSON.stringify(obj));
   }
 
-  if (typeof x === 'object') {
-    for (const key of Object.keys(x)) {
-      x[key] = deepQuoteStringsForJSON(x[key]);
+  /**
+   * Render an object or list
+   */
+  function renderCollection<A>(pre: string, post: string, xs: Iterable<A>, each: (x: A) => void) {
+    pushLiteral(pre);
+    indent += space;
+    let atLeastOne = false;
+    for (const [comma, item] of sepIter(xs)) {
+      if (comma) { pushLiteral(','); }
+      pushLineBreak();
+      each(item);
+      atLeastOne = true;
+    }
+    indent -= space;
+    if (atLeastOne) { pushLineBreak(); }
+    pushLiteral(post);
+  }
+
+  /**
+   * Handle a Token.
+   *
+   * Can be any of:
+   *
+   * - Straight up IResolvable
+   * - Encoded string, number or list
+   */
+  function handleToken(token: any) {
+    if (typeof token === 'string') {
+      // Encoded string, treat like a string if it has a token and at least one other
+      // component, otherwise treat like a regular token and base the output quoting on the
+      // type of the result.
+      const fragments = TokenMap.instance().splitString(token);
+      if (fragments.length > 1) {
+        pushLiteral('"');
+        fragments.visit({
+          visitLiteral: pushLiteral,
+          visitToken: (tok) => {
+            const resolved = ctx.resolve(tok);
+            if (isIntrinsic(resolved)) {
+              pushIntrinsic(quoteInsideIntrinsic(resolved));
+            } else {
+              // We're already in a string context, so stringify and escape
+              pushLiteral(quoteString(`${resolved}`));
+            }
+          },
+          // This potential case is the result of poor modeling in the tokenized string, it should not happen
+          visitIntrinsic: () => { throw new Error('Intrinsic not expected in a freshly-split string'); },
+        });
+        pushLiteral('"');
+        return;
+      }
+    }
+
+    const resolved = ctx.resolve(token);
+    if (isIntrinsic(resolved)) {
+      if (isResolvableObject(token) || typeof token === 'string') {
+        // If the input was an unencoded IResolvable or a string-encoded value,
+        // treat it like it was a string (for the 99% case)
+        pushLiteral('"');
+        pushIntrinsic(quoteInsideIntrinsic(resolved));
+        pushLiteral('"');
+      } else {
+        pushIntrinsic(resolved);
+      }
+      return;
+    }
+
+    // Otherwise we got an arbitrary JSON structure from the token, recurse
+    recurse(resolved);
+  }
+
+  /**
+   * Push a literal onto the current segment if it's also a literal, otherwise open a new Segment
+   */
+  function pushLiteral(lit: string) {
+    let last = ret[ret.length - 1];
+    if (last?.type !== 'literal') {
+      last = { type: 'literal', parts: [] };
+      ret.push(last);
+    }
+    last.parts.push(lit);
+  }
+
+  /**
+   * Add a new intrinsic segment
+   */
+  function pushIntrinsic(intrinsic: any) {
+    ret.push({ type: 'intrinsic', intrinsic });
+  }
+
+  /**
+   * Push a line break if we are pretty-printing, otherwise don't
+   */
+  function pushLineBreak() {
+    if (space > 0) {
+      pushLiteral(`\n${' '.repeat(indent)}`);
     }
   }
 
-  return x;
+  /**
+   * Add a space after the punctuation if we are pretty-printing, no space if not
+   */
+  function prettyPunctuation(punc: string) {
+    return space > 0 ? `${punc} ` : punc;
+  }
+}
+
+/**
+ * A Segment is either a literal string or a CloudFormation intrinsic
+ */
+type Segment = { type: 'literal'; parts: string[] } | { type: 'intrinsic'; intrinsic: any };
+
+/**
+ * Render a segment
+ */
+function renderSegment(s: Segment): NonNullable<any> {
+  switch (s.type) {
+    case 'literal': return s.parts.join('');
+    case 'intrinsic': return s.intrinsic;
+  }
 }
 
 const CLOUDFORMATION_CONCAT: IFragmentConcatenator = {
@@ -203,4 +322,60 @@ export function isNameOfCloudFormationIntrinsic(name: string): boolean {
   }
   // these are 'fake' intrinsics, only usable inside the parameter overrides of a CFN CodePipeline Action
   return name !== 'Fn::GetArtifactAtt' && name !== 'Fn::GetParam';
+}
+
+/**
+ * Separated iterator
+ */
+function* sepIter<A>(xs: Iterable<A>): IterableIterator<[boolean, A]> {
+  let comma = false;
+  for (const item of xs) {
+    yield [comma, item];
+    comma = true;
+  }
+}
+
+/**
+ * Object.entries() but skipping undefined values
+ */
+function* definedEntries<A extends object>(xs: A): IterableIterator<[string, any]> {
+  for (const [key, value] of Object.entries(xs)) {
+    if (value !== undefined) {
+      yield [key, value];
+    }
+  }
+}
+
+/**
+ * Quote string literals inside an intrinsic
+ */
+function quoteInsideIntrinsic(x: any): any {
+  if (typeof x === 'object' && x != null && Object.keys(x).length === 1) {
+    const key = Object.keys(x)[0];
+    const params = x[key];
+    switch (key) {
+      case 'Fn::If':
+        return { 'Fn::If': [params[0], quoteInsideIntrinsic(params[1]), quoteInsideIntrinsic(params[2])] };
+      case 'Fn::Join':
+        return { 'Fn::Join': [quoteInsideIntrinsic(params[0]), params[1].map(quoteInsideIntrinsic)] };
+      case 'Fn::Sub':
+        if (Array.isArray(params)) {
+          return { 'Fn::Sub': [quoteInsideIntrinsic(params[0]), params[1]] };
+        } else {
+          return { 'Fn::Sub': quoteInsideIntrinsic(params[0]) };
+        }
+    }
+  }
+  if (typeof x === 'string') {
+    return quoteString(x);
+  }
+  return x;
+}
+
+/**
+ * Quote the characters inside a string, for use inside toJSON
+ */
+function quoteString(s: string) {
+  s = JSON.stringify(s);
+  return s.substring(1, s.length - 1);
 }
