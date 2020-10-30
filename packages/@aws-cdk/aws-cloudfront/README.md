@@ -252,7 +252,7 @@ or authorize requests based on headers or authorization tokens.
 The following shows a Lambda@Edge function added to the default behavior and triggered on every request:
 
 ```typescript
-const myFunc = new lambda.EdgeFunction(...);
+const myFunc = new lambda.EdgeFunctionExperimental(...);
 new cloudfront.Distribution(this, 'myDist', {
   defaultBehavior: {
     origin: new origins.S3Origin(myBucket),
@@ -266,11 +266,11 @@ new cloudfront.Distribution(this, 'myDist', {
 });
 ```
 
-> **Note:** The above uses `lambda.EdgeFunction` in place of `lambda.Function`.
+> **Note:** The above uses `lambda.EdgeFunctionExperimental` in place of `lambda.Function`.
 > Lambda@Edge functions must be created in the `us-east-1` region, regardless of the region of the CloudFront distribution and stack.
-> To make it easier to request functions for Lambda@Edge, the `EdgeFunction` construct can be used.
-> The `EdgeFunction` construct will automatically request a function in `us-east-1`, regardless of the region of the current stack.
-> `EdgeFunction` has the same interface as `Function` and can be created and used interchangably.
+> To make it easier to request functions for Lambda@Edge, the `EdgeFunctionExperimental` construct can be used.
+> The `EdgeFunctionExperimental` construct will automatically request a function in `us-east-1`, regardless of the region of the current stack.
+> `EdgeFunctionExperimental` has the same interface as `Function` and can be created and used interchangably.
 > If the stack is in `us-east-1`, `Function` can still be used as above.
 
 Lambda@Edge functions can also be associated with additional behaviors,

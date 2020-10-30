@@ -443,15 +443,15 @@ documentation for more details.
 
 Among other [requirements and restrictions](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-requirements-limits.html),
 Lambda@Edge functions must be created in the `us-east-1` region. To make it easier to request functions for Lambda@Edge,
-the `EdgeFunction` construct can be used. The `EdgeFunction` construct will automatically request a function in `us-east-1`,
+the `EdgeFunctionExperimental` construct can be used. The `EdgeFunctionExperimental` construct will automatically request a function in `us-east-1`,
 regardless of the region of the current stack; it will also validate some of the restrictions on Lambda@Edge functions,
-like use of environment variables. You can define an `EdgeFunction` exactly how you'd define a `Function`.
+like use of environment variables. You can define an `EdgeFunctionExperimental` exactly how you'd define a `Function`.
 
 ```ts
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as path from 'path';
 
-const fn = new lambda.EdgeFunction(this, 'MyFunction', {
+const fn = new lambda.EdgeFunctionExperimental(this, 'MyFunction', {
   runtime: lambda.Runtime.NODEJS_10_X,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),

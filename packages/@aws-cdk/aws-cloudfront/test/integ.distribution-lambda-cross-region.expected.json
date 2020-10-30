@@ -57,7 +57,7 @@
                           {
                             "Ref": "AWS::AccountId"
                           },
-                          ":parameter/EdgeFunctionArnLambda"
+                          ":parameter/EdgeFunctionArn*"
                         ]
                       ]
                     },
