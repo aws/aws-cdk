@@ -16,7 +16,7 @@ beforeEach(() => {
 
 describe('stacks', () => {
   test('creates a custom resource and supporting resources in main stack', () => {
-    new lambda.EdgeFunction(stack, 'MyFn', defaultEdgeFunctionProps());
+    new lambda.EdgeFunctionExperimental(stack, 'MyFn', defaultEdgeFunctionProps());
 
     expect(stack).toHaveResource('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
@@ -37,7 +37,7 @@ describe('stacks', () => {
           Statement: [{
             Effect: 'Allow',
             Resource: {
-              'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:us-east-1:111111111111:parameter/EdgeFunctionArnMyFn']],
+              'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:us-east-1:111111111111:parameter/EdgeFunctionArn*']],
             },
             Action: ['ssm:GetParameter'],
           }],
@@ -60,7 +60,7 @@ describe('stacks', () => {
   });
 
   test('creates the actual function and supporting resources in us-east-1 stack', () => {
-    new lambda.EdgeFunction(stack, 'MyFn', defaultEdgeFunctionProps());
+    new lambda.EdgeFunctionExperimental(stack, 'MyFn', defaultEdgeFunctionProps());
 
     const fnStack = getFnStack();
 
@@ -103,7 +103,7 @@ describe('stacks', () => {
     stack = new cdk.Stack(app, 'Stack', {
       env: { account: '111111111111', region: 'us-east-1' },
     });
-    new lambda.EdgeFunction(stack, 'MyFn', defaultEdgeFunctionProps());
+    new lambda.EdgeFunctionExperimental(stack, 'MyFn', defaultEdgeFunctionProps());
 
     expect(stack).toHaveResource('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
@@ -135,8 +135,8 @@ describe('stacks', () => {
   });
 
   test('only one cross-region stack is created for multiple functions', () => {
-    new lambda.EdgeFunction(stack, 'MyFn1', defaultEdgeFunctionProps());
-    new lambda.EdgeFunction(stack, 'MyFn2', defaultEdgeFunctionProps());
+    new lambda.EdgeFunctionExperimental(stack, 'MyFn1', defaultEdgeFunctionProps());
+    new lambda.EdgeFunctionExperimental(stack, 'MyFn2', defaultEdgeFunctionProps());
 
     const fnStack = getFnStack();
     expect(fnStack).toCountResources('AWS::Lambda::Function', 2);
@@ -144,7 +144,7 @@ describe('stacks', () => {
 });
 
 test('addAlias() creates alias in function stack', () => {
-  const fn = new lambda.EdgeFunction(stack, 'MyFn', defaultEdgeFunctionProps());
+  const fn = new lambda.EdgeFunctionExperimental(stack, 'MyFn', defaultEdgeFunctionProps());
 
   fn.addAlias('MyCurrentAlias');
 
@@ -155,7 +155,7 @@ test('addAlias() creates alias in function stack', () => {
 });
 
 test('addPermission() creates permissions in function stack', () => {
-  const fn = new lambda.EdgeFunction(stack, 'MyFn', defaultEdgeFunctionProps());
+  const fn = new lambda.EdgeFunctionExperimental(stack, 'MyFn', defaultEdgeFunctionProps());
 
   fn.addPermission('MyPerms', {
     action: 'lambda:InvokeFunction',
@@ -170,7 +170,7 @@ test('addPermission() creates permissions in function stack', () => {
 });
 
 test('metric methods', () => {
-  const fn = new lambda.EdgeFunction(stack, 'MyFn', defaultEdgeFunctionProps());
+  const fn = new lambda.EdgeFunctionExperimental(stack, 'MyFn', defaultEdgeFunctionProps());
 
   const metrics = new Array<cloudwatch.Metric>();
   metrics.push(fn.metricDuration());

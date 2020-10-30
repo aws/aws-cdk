@@ -23,7 +23,7 @@ import { Permission } from './permission';
  * Properties for creating a Lambda@Edge function
  * @experimental
  */
-export interface EdgeFunctionProps extends FunctionProps { }
+export interface EdgeFunctionExperimentalProps extends FunctionProps { }
 
 /**
  * A Lambda@Edge function.
@@ -34,7 +34,7 @@ export interface EdgeFunctionProps extends FunctionProps { }
  * @resource AWS::Lambda::Function
  * @experimental
  */
-export class EdgeFunction extends Resource implements IVersion {
+export class EdgeFunctionExperimental extends Resource implements IVersion {
 
   private static readonly EDGE_REGION: string = 'us-east-1';
 
@@ -52,7 +52,7 @@ export class EdgeFunction extends Resource implements IVersion {
   private readonly functionStack: Stack;
   private readonly edgeFunction: Function;
 
-  constructor(scope: Construct, id: string, props: EdgeFunctionProps) {
+  constructor(scope: Construct, id: string, props: EdgeFunctionExperimentalProps) {
     super(scope, id);
 
     // Create a simple Function if we're already in us-east-1; otherwise create a cross-region stack.
@@ -111,19 +111,19 @@ export class EdgeFunction extends Resource implements IVersion {
     return this.lambda.grantInvoke(identity);
   }
   public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.lambda.metric(metricName, { ...props, region: EdgeFunction.EDGE_REGION });
+    return this.lambda.metric(metricName, { ...props, region: EdgeFunctionExperimental.EDGE_REGION });
   }
   public metricDuration(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.lambda.metricDuration({ ...props, region: EdgeFunction.EDGE_REGION });
+    return this.lambda.metricDuration({ ...props, region: EdgeFunctionExperimental.EDGE_REGION });
   }
   public metricErrors(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.lambda.metricErrors({ ...props, region: EdgeFunction.EDGE_REGION });
+    return this.lambda.metricErrors({ ...props, region: EdgeFunctionExperimental.EDGE_REGION });
   }
   public metricInvocations(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.lambda.metricInvocations({ ...props, region: EdgeFunction.EDGE_REGION });
+    return this.lambda.metricInvocations({ ...props, region: EdgeFunctionExperimental.EDGE_REGION });
   }
   public metricThrottles(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.lambda.metricThrottles({ ...props, region: EdgeFunction.EDGE_REGION });
+    return this.lambda.metricThrottles({ ...props, region: EdgeFunctionExperimental.EDGE_REGION });
   }
   public addEventSource(source: IEventSource): void {
     return this.lambda.addEventSource(source);
@@ -145,7 +145,8 @@ export class EdgeFunction extends Resource implements IVersion {
 
   /** Create a support stack and function in us-east-1, and a SSM reader in-region */
   private createCrossRegionFunction(id: string, props: FunctionProps): FunctionConfig {
-    const parameterName = `EdgeFunctionArn${id}`;
+    const parameterNamePrefix = 'EdgeFunctionArn';
+    const parameterName = `${parameterNamePrefix}${id}`;
     const functionStack = this.edgeStack();
     this.stack.addDependency(functionStack);
 
@@ -153,11 +154,14 @@ export class EdgeFunction extends Resource implements IVersion {
     // This is used to determine when the function has changed, to refresh the ARN from the custom resource.
     const edgeFunctionHash = calculateFunctionHash(edgeFunction);
 
-    const parameterArn = this.stack.formatArn({
+    // Prefix of the parameter ARN that applies to all EdgeFunctions.
+    // This is necessary because the `CustomResourceProvider` is a singleton, and the `policyStatement`
+    // must work for multiple EdgeFunctions.
+    const parameterArnPrefix = this.stack.formatArn({
       service: 'ssm',
-      region: EdgeFunction.EDGE_REGION,
+      region: EdgeFunctionExperimental.EDGE_REGION,
       resource: 'parameter',
-      resourceName: parameterName,
+      resourceName: parameterNamePrefix + '*',
     });
 
     const resourceType = 'Custom::CrossRegionStringParameterReader';
@@ -166,7 +170,7 @@ export class EdgeFunction extends Resource implements IVersion {
       runtime: CustomResourceProviderRuntime.NODEJS_12,
       policyStatements: [{
         Effect: 'Allow',
-        Resource: parameterArn,
+        Resource: parameterArnPrefix,
         Action: ['ssm:GetParameter'],
       }],
     });
@@ -174,7 +178,7 @@ export class EdgeFunction extends Resource implements IVersion {
       resourceType: resourceType,
       serviceToken,
       properties: {
-        Region: EdgeFunction.EDGE_REGION,
+        Region: EdgeFunctionExperimental.EDGE_REGION,
         ParameterName: parameterName,
         RefreshToken: edgeFunctionHash,
       },
@@ -199,7 +203,7 @@ export class EdgeFunction extends Resource implements IVersion {
     if (!edgeStack) {
       edgeStack = new CrossRegionLambdaStack(stage, edgeStackId, {
         synthesizer: this.crossRegionSupportSynthesizer(),
-        env: { region: EdgeFunction.EDGE_REGION },
+        env: { region: EdgeFunctionExperimental.EDGE_REGION },
       });
     }
     return edgeStack;

@@ -10,7 +10,7 @@ const stack = new cdk.Stack(app, 'EdgeFunction', {
   },
 });
 
-new lambda.EdgeFunction(stack, 'MyLambda', {
+new lambda.EdgeFunctionExperimental(stack, 'MyLambda', {
   code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
   handler: 'index.main',
   runtime: lambda.Runtime.PYTHON_3_6,
