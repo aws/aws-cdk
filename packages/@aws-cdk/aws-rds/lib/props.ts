@@ -172,7 +172,7 @@ export abstract class Credentials {
    * }
    * ```
    */
-  public static fromSecret(secret: secretsmanager.Secret): Credentials {
+  public static fromSecret(secret: secretsmanager.ISecret): Credentials {
     return {
       username: secret.secretValueFromJson('username').toString(),
       password: secret.secretValueFromJson('password'),
@@ -207,7 +207,7 @@ export abstract class Credentials {
    *
    * @default - none
    */
-  public abstract readonly secret?: secretsmanager.Secret;
+  public abstract readonly secret?: secretsmanager.ISecret;
 
   /**
    * The characters to exclude from the generated password.

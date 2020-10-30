@@ -26,6 +26,11 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
   - [ResultPath](#resultpath)
 - [Parameters](#task-parameters-from-the-state-json)
 - [Evaluate Expression](#evaluate-expression)
+- [Athena](#athena)
+  - [StartQueryExecution](#startQueryExecution)
+  - [GetQueryExecution](#getQueryExecution)
+  - [GetQueryResults](#getQueryResults)
+  - [StopQueryExecution](#stopQueryExecution)
 - [Batch](#batch)
   - [SubmitJob](#submitjob)
 - [CodeBuild](#codebuild)
@@ -204,6 +209,72 @@ new sfn.StateMachine(this, 'StateMachine', {
 The `EvaluateExpression` supports a `runtime` prop to specify the Lambda
 runtime to use to evaluate the expression. Currently, the only runtime
 supported is `lambda.Runtime.NODEJS_10_X`.
+
+
+## Athena
+
+Step Functions supports [Athena](https://docs.aws.amazon.com/step-functions/latest/dg/connect-athena.html) through the service integration pattern.
+
+### StartQueryExecution
+
+The [StartQueryExecution](https://docs.aws.amazon.com/athena/latest/APIReference/API_StartQueryExecution.html) API runs the SQL query statement.
+
+```ts
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+import * as tasks from `@aws-cdk/aws-stepfunctions-tasks`;
+
+const startQueryExecutionJob = new tasks.AthenaStartQueryExecution(stack, 'Start Athena Query', {
+  queryString: sfn.JsonPath.stringAt('$.queryString'),
+  queryExecutionContext: {
+    database: 'mydatabase',
+  },
+  resultConfiguration: {
+    encryptionConfiguration: {
+      encryptionOption: tasks.EncryptionOption.S3_MANAGED,
+    },
+    outputLocation: sfn.JsonPath.stringAt('$.outputLocation'),
+  },
+});
+```
+
+### GetQueryExecution
+
+The [GetQueryExecution](https://docs.aws.amazon.com/athena/latest/APIReference/API_GetQueryExecution.html) API gets information about a single execution of a query.
+
+```ts
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+import * as tasks from `@aws-cdk/aws-stepfunctions-tasks`;
+
+const getQueryExecutionJob = new tasks.AthenaGetQueryExecution(stack, 'Get Query Execution', {
+  queryExecutionId: sfn.JsonPath.stringAt('$.QueryExecutionId'),
+});
+```
+
+### GetQueryResults
+
+The [GetQueryResults](https://docs.aws.amazon.com/athena/latest/APIReference/API_GetQueryResults.html) API that streams the results of a single query execution specified by QueryExecutionId from S3.
+
+```ts
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+import * as tasks from `@aws-cdk/aws-stepfunctions-tasks`;
+
+const getQueryResultsJob = new tasks.AthenaGetQueryResults(stack, 'Get Query Results', {
+  queryExecutionId: sfn.JsonPath.stringAt('$.QueryExecutionId'),
+});
+```
+
+### StopQueryExecution
+
+The [StopQueryExecution](https://docs.aws.amazon.com/athena/latest/APIReference/API_StopQueryExecution.html) API that stops a query execution.
+
+```ts
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+import * as tasks from `@aws-cdk/aws-stepfunctions-tasks`;
+
+const stopQueryExecutionJob = new tasks.AthenaStopQueryExecution(stack, 'Stop Query Execution', {
+  queryExecutionId: sfn.JsonPath.stringAt('$.QueryExecutionId'),
+});
+```
 
 ## Batch
 
