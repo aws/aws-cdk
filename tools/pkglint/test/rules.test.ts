@@ -263,7 +263,7 @@ describe('ThirdPartyAttributions', () => {
     for (const report of pkgJson.reports) {
       expect(report.ruleName).toEqual('license/3p-attributions');
     }
-    expect(pkgJson.reports[0].message.includes('Excessive number of attributions')).toBe(true);
+    expect(pkgJson.reports[0].message.includes('Excessive attributions')).toBe(true);
   });
 
   test('passes when attribution is present', async() => {
