@@ -80,11 +80,13 @@ export class UserPoolResourceServer extends Resource implements IUserPoolResourc
   public readonly userPoolResourceServerId: string;
 
   constructor(scope: Construct, id: string, props: UserPoolResourceServerProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.identifier,
+    });
 
     const resource = new CfnUserPoolResourceServer(this, 'Resource', {
-      identifier: props.identifier,
-      name: props.userPoolResourceServerName ?? props.identifier,
+      identifier: this.physicalName,
+      name: props.userPoolResourceServerName ?? this.physicalName,
       scopes: props.scopes,
       userPoolId: props.userPool.userPoolId,
     });
