@@ -256,6 +256,12 @@ export class HttpApi extends HttpApiBase {
   public readonly httpApiId: string;
 
   /**
+   * The default endpoint for an API
+   * @attribute
+   */
+  public readonly apiEndpoint: string;
+
+  /**
    * default stage of the api resource
    */
   public readonly defaultStage: HttpStage | undefined;
@@ -298,6 +304,7 @@ export class HttpApi extends HttpApiBase {
 
     const resource = new CfnApi(this, 'Resource', apiProps);
     this.httpApiId = resource.ref;
+    this.apiEndpoint = resource.attrApiEndpoint;
 
     if (props?.defaultIntegration) {
       new HttpRoute(this, 'DefaultRoute', {
