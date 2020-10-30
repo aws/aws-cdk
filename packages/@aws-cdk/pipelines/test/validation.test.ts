@@ -1,5 +1,6 @@
 import { anything, arrayWith, deepObjectLike, encodedJson } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
+import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
@@ -326,6 +327,33 @@ test('run ShellScriptAction with Security Group', () => {
       VpcId: {
         Ref: 'VPCB9E5F0B4',
       },
+    },
+  });
+});
+
+test('run ShellScriptAction with specified codebuild image', () => {
+  // WHEN
+  pipeline.addStage('Test').addActions(new cdkp.ShellScriptAction({
+    actionName: 'imageAction',
+    additionalArtifacts: [integTestArtifact],
+    commands: ['true'],
+    buildImage: codebuild.LinuxBuildImage.STANDARD_2_0,
+  }));
+
+  // THEN
+  expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+    Stages: arrayWith({
+      Name: 'Test',
+      Actions: [
+        deepObjectLike({
+          Name: 'imageAction',
+        }),
+      ],
+    }),
+  });
+  expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Environment: {
+      Image: 'aws/codebuild/standard:2.0',
     },
   });
 });
