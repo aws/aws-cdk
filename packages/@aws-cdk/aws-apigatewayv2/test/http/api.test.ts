@@ -273,4 +273,11 @@ describe('HttpApi', () => {
       Name: 'Link-2',
     });
   });
+
+  test('apiEndpoint is exported', () => {
+    const stack = new Stack();
+    const api = new HttpApi(stack, 'api');
+
+    expect(api.apiEndpoint).toBeDefined();
+  });
 });
