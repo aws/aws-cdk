@@ -439,7 +439,7 @@ export = {
         hostedZoneId: 'fakeId',
         zoneName: 'domain.com.',
       }),
-      cname: true,
+      recordType: ecsPatterns.ApplicationLoadBalancedServiceRecordType.CNAME,
       taskImageOptions: {
         containerPort: 2015,
         image: ecs.ContainerImage.fromRegistry('abiosoft/caddy'),
@@ -451,6 +451,34 @@ export = {
       Name: 'test.domain.com.',
       Type: 'CNAME',
     }));
+
+    test.done();
+  },
+
+  'setting ALB record type to NONE correctly omits the recordset'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'FargateAlbService', {
+      cluster,
+      protocol: ApplicationProtocol.HTTPS,
+      domainName: 'test.domain.com',
+      domainZone: route53.HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
+        hostedZoneId: 'fakeId',
+        zoneName: 'domain.com.',
+      }),
+      recordType: ecsPatterns.ApplicationLoadBalancedServiceRecordType.NONE,
+      taskImageOptions: {
+        containerPort: 2015,
+        image: ecs.ContainerImage.fromRegistry('abiosoft/caddy'),
+      },
+    });
+
+    // THEN
+    expect(stack).notTo(haveResource('AWS::Route53::RecordSet'));
 
     test.done();
   },
