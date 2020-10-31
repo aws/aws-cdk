@@ -1,4 +1,5 @@
 import '@aws-cdk/assert/jest';
+import * as cdkassert from '@aws-cdk/assert';
 import { AccountRootPrincipal, PolicyDocument, PolicyStatement, Effect } from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
 import { Domain, Repository, ExternalConnection } from '../lib';
@@ -8,8 +9,13 @@ test('Domain w/ Repository', () => {
 
   const { domain, repo } = createDomainAndRepo(stack);
 
-  expect(domain.domainName).toBe('example-domain');
-  expect(repo.repositoryName).toBe('example-repo');
+  cdkassert.expect(stack).to(cdkassert.haveResource('AWS::CodeArtifact::Domain', {
+    DomainName: domain.domainName,
+  }));
+
+  cdkassert.expect(stack).to(cdkassert.haveResource('AWS::CodeArtifact::Repository', {
+    RepositoryName: repo.repositoryName,
+  }));
 });
 
 test('Domain w/ Repository and policy document', () => {
@@ -25,8 +31,36 @@ test('Domain w/ Repository and policy document', () => {
   const domain = new Domain(stack, 'domain', { domainName: 'example-domain' });
   const repo = new Repository(stack, 'repository-1', { repositoryName: 'example-repo', domain: domain, policyDocument: p });
 
-  expect(domain.domainName).toBe('example-domain');
-  expect(repo.repositoryName).toBe('example-repo');
+  cdkassert.expect(stack).to(cdkassert.haveResource('AWS::CodeArtifact::Domain', {
+    DomainName: domain.domainName,
+  }));
+
+  cdkassert.expect(stack).to(cdkassert.haveResource('AWS::CodeArtifact::Repository', {
+    RepositoryName: repo.repositoryName,
+  }));
+});
+
+test('Domain w/ 2 Repositories via constructor, w/ upstream, and external connection', () => {
+  const stack = new Stack();
+
+  const domain = new Domain(stack, 'domain', { domainName: 'example-domain' });
+  const repo1 = new Repository(stack, 'repository-1', { repositoryName: 'example-repo-1', domain: domain, externalConnections: [ExternalConnection.NPM] });
+  new Repository(stack, 'repository-2', { repositoryName: 'example-repo-2', domain: domain, upstreams: [repo1] });
+
+  cdkassert.expect(stack).to(cdkassert.haveResource('AWS::CodeArtifact::Domain', {
+    DomainName: domain.domainName,
+  }));
+
+  cdkassert.expect(stack).to(cdkassert.haveResource('AWS::CodeArtifact::Repository', {
+    RepositoryName: repo1.repositoryName,
+    DomainName: domain.domainName,
+  }));
+
+
+  cdkassert.expect(stack).to(cdkassert.haveResource('AWS::CodeArtifact::Repository', {
+    RepositoryName: repo1.repositoryName,
+    DomainName: domain.domainName,
+  }));
 });
 
 test('Domain w/ 2 Repositories via addRepositories, w/ upstream, and external connection', () => {
@@ -41,8 +75,20 @@ test('Domain w/ 2 Repositories via addRepositories, w/ upstream, and external co
 
   domain.addRepositories(repo1, repo2);
 
-  expect(domain.domainName).toBe('example-domain');
-  expect(repo1.repositoryName).toBe('example-repo-1');
+  cdkassert.expect(stack).to(cdkassert.haveResource('AWS::CodeArtifact::Domain', {
+    DomainName: domain.domainName,
+  }));
+
+  cdkassert.expect(stack).to(cdkassert.haveResource('AWS::CodeArtifact::Repository', {
+    RepositoryName: repo1.repositoryName,
+    DomainName: domain.domainName,
+  }));
+
+
+  cdkassert.expect(stack).to(cdkassert.haveResource('AWS::CodeArtifact::Repository', {
+    RepositoryName: repo1.repositoryName,
+    DomainName: domain.domainName,
+  }));
 });
 
 test('Repository from ARN', () => {
@@ -76,63 +122,11 @@ test('Grant AccountRootPrincipal write on Repository', () => {
   repo.grantWrite(new AccountRootPrincipal());
 });
 
-test('Repository w/ Upstream', () => {
+
+test('Grant AccountRootPrincipal delete on repository', () => {
   const stack = new Stack();
-
-
-  const { domain, repo } = createDomainAndRepo(stack);
-
-  const upstreamRepo = new Repository(stack, 'upstream-repository', {
-    repositoryName: 'upstream-example-repo',
-    domain: domain,
-  });
-
-  repo.withUpstream(upstreamRepo);
-
-  expect(domain.domainName).toBe('example-domain');
-  expect(repo.repositoryName).toBe('example-repo');
-});
-
-test('Repository w/ External Connection via constructor', () => {
-  const stack = new Stack();
-  const { domain, repo } = createDomainAndRepo(stack);
-
-  repo.withExternalConnections(ExternalConnection.NPM);
-
-  expect(domain.domainName).toBe('example-domain');
-  expect(repo.repositoryName).toBe('example-repo');
-});
-
-test('Repository w/ Empty External Connection via constructor withExternalConnections', () => {
-  const stack = new Stack();
-  const { domain, repo } = createDomainAndRepo(stack);
-
-  expect(domain.domainName).toBe('example-domain');
-  expect(repo.repositoryName).toBe('example-repo');
-});
-
-test('Repository w/ External Connection calling withExternalConnections', () => {
-  const stack = new Stack();
-
-  const domain = new Domain(stack, 'domain', { domainName: 'example-domain' });
-  const repo = new Repository(stack, 'repository', {
-    repositoryName: 'example-repo',
-    domain: domain,
-  });
-
-  repo.withExternalConnections(ExternalConnection.NPM);
-
-  expect(domain.domainName).toBe('example-domain');
-  expect(repo.repositoryName).toBe('example-repo');
-});
-
-test('Repository w/ Empty External Connection calling withExternalConnections', () => {
-  const stack = new Stack();
-  const { domain, repo } = createDomainAndRepo(stack);
-  repo.withExternalConnections();
-
-  expect(domain.domainName).toBe('example-domain');
-  expect(repo.repositoryName).toBe('example-repo');
+  const { repo } = createDomainAndRepo(stack);
+  repo.allowDeleteFromRepository(new AccountRootPrincipal());
 });
 
 test('Event rule for Repository', () => {
@@ -140,6 +134,56 @@ test('Event rule for Repository', () => {
   const { repo } = createDomainAndRepo(stack);
 
   repo.onPackageVersionStateChange('subscription', {});
+});
+
+test('Repository description too long', () => {
+  const description : string[] = [];
+  for (let i = 0; i <= 2001; i++) {
+    description.push('a');
+  }
+
+  const stack = new Stack();
+  const domain = new Domain(stack, 'domain', { domainName: 'example-domain' });
+
+  expect(() => {
+    new Repository(stack, 'repository-1', { repositoryName: 'example-repo-1', domain: domain, description: description.join('') });
+  }).toThrow('Description: must match pattern \\P{C}+. Must match rules from https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codeartifact-repository.html#cfn-codeartifact-repository-description');
+});
+
+test('Repository invalid domain name length', () => {
+  const domainName : string[] = [];
+  for (let i = 0; i <= 51; i++) {
+    domainName.push('a');
+  }
+
+  const stack = new Stack();
+  expect(() => {
+    const domain = new Domain(stack, 'domain', { domainName: domainName.join('') });
+    new Repository(stack, 'repository-1', { repositoryName: 'example-repo-1', domain: domain });
+  }).toThrow(/DomainName: must be less than 50 characters long./);
+});
+
+test('Repository invalid RepositoryName length', () => {
+  const respoName : string[] = [];
+  for (let i = 0; i <= 100; i++) {
+    respoName.push('a');
+  }
+
+  const stack = new Stack();
+  const domain = new Domain(stack, 'domain', { domainName: 'example-domain' });
+
+  expect(() => {
+    new Repository(stack, 'repository-1', { repositoryName: respoName.join(''), domain: domain });
+  }).toThrow('RepositoryName: must be less than 100 characters long. Must match rules from https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codeartifact-repository.html#cfn-codeartifact-repository-repositoryname');
+});
+
+test('Repository invalid RepositoryName pattern', () => {
+  const stack = new Stack();
+  const domain = new Domain(stack, 'domain', { domainName: 'example-domain' });
+
+  expect(() => {
+    new Repository(stack, 'repository-1', { repositoryName: '@@@@@', domain: domain });
+  }).toThrow('RepositoryName: must match pattern [A-Za-z0-9][A-Za-z0-9._\\-]{1,99}. Must match rules from https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codeartifact-repository.html#cfn-codeartifact-repository-repositoryname');
 });
 
 function createDomainAndRepo(stack: Stack) {

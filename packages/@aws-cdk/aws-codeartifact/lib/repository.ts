@@ -24,6 +24,7 @@ export interface RepositoryProps {
   readonly description?: string,
   /**
      * The name of the domain that contains the repository.
+     * @attribute
      * @default None
      */
   readonly domain?: IDomain,
@@ -111,7 +112,7 @@ export class Repository extends Resource implements IRepository {
       repositoryDescription?: string | undefined;
       repositoryDomainName?: string | undefined;
       repositoryArn = attrs.repositoryArn;
-      repositoryName = repositoryName;
+      repositoryName = repositoryName as string;
       repositoryDomainOwner = parsed.account || '';
 
       grantRead(_identity: iam.IGrantable): iam.Grant {
@@ -136,7 +137,7 @@ export class Repository extends Resource implements IRepository {
     }
 
     const instance = new Import(scope, id);
-    instance.repositoryName = repositoryName || '';
+    instance.repositoryName = repositoryName;
     instance.repositoryDomainName = domainName;
     instance.repositoryDomainOwner = parsed.account || '';
 
@@ -144,7 +145,7 @@ export class Repository extends Resource implements IRepository {
   }
 
   public readonly repositoryArn?: string;
-  public readonly repositoryName?: string;
+  public readonly repositoryName: string;
   public readonly repositoryDomainOwner?: string;
   public readonly repositoryDomainName?: string;
   public readonly repositoryDescription?: string;
@@ -154,15 +155,15 @@ export class Repository extends Resource implements IRepository {
     super(scope, id, {});
 
     this.repositoryDomainName = props?.domain?.domainName;
-    this.repositoryName = props.repositoryName || this.repositoryName;
-    this.repositoryDescription = props.description || '';
+    this.repositoryName = props.repositoryName;
+    this.repositoryDescription = props.description;
 
     this.validateProps();
 
     this.cfnRepository = new CfnRepository(this, id, {
       repositoryName: props.repositoryName,
       description: props.description,
-      upstreams: props.upstreams?.map(u => u.repositoryName || ''),
+      upstreams: props.upstreams ? props.upstreams.map(u => u.repositoryName) : [] as string[],
       externalConnections: props.externalConnections,
     });
 
@@ -170,7 +171,7 @@ export class Repository extends Resource implements IRepository {
       props.upstreams.forEach(u => this.node.addDependency(u));
     }
 
-    if (props?.domain) {
+    if (props.domain) {
       this.assignDomain(props.domain);
     }
 
@@ -186,10 +187,13 @@ export class Repository extends Resource implements IRepository {
     }
   }
 
+  /**
+   * Assign the repository to a domain
+   * @param domain The domain the repository will be assigned to
+   */
   public assignDomain(domain: IDomain): void {
-    this.node.addDependency(domain);
-
     // This should be added to the L1 props soon, but until then this is required to create a Repository
+    this.cfnRepository.node.addDependency(domain);
     this.cfnRepository.addPropertyOverride('DomainName', domain.domainName);
   }
 

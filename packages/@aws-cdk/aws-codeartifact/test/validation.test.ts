@@ -7,6 +7,10 @@ test('Is undefined and value is empty', () => {
   expect(() => validate('test', { ...stub }, undefined));
 });
 
+test('Is value is empty and not required', () => {
+  expect(() => validate('test', { ...stub, required: false }, ''));
+});
+
 test('Is Required and value is empty', () => {
   expect(() => validate('test', { ...stub, required: true }, undefined)).toThrow(/is required and cannot be empty/);
   expect(() => validate('test', { ...stub, required: true }, '')).toThrow(/is required and cannot be empty/);

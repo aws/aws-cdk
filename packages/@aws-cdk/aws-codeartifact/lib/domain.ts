@@ -1,6 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { Resource, Stack } from '@aws-cdk/core';
+import { Resource, Stack, Lazy } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnDomain } from './codeartifact.generated';
 import { IDomain, IRepository, DomainAttributes } from './interfaces';
@@ -83,6 +83,7 @@ export class Domain extends Resource implements IDomain {
   public readonly domainName?: string = '';
   public readonly domainOwner?: string = '';
   public readonly domainEncryptionKey?: kms.IKey;
+  public readonly policyDocument?: iam.PolicyDocument;
   private readonly cfnDomain: CfnDomain;
 
   constructor(scope: Construct, id: string, props: DomainProps) {
@@ -95,31 +96,24 @@ export class Domain extends Resource implements IDomain {
       this.domainEncryptionKey = props.domainEncryptionKey;
     }
 
-    this.validateProps();
+    this.policyDocument = props.policyDocument;
 
+    this.validateProps();
 
     // Creae the CFN domain instance
     this.cfnDomain = new CfnDomain(this, 'Resource', {
       domainName: props.domainName,
+      permissionsPolicyDocument: Lazy.anyValue({ produce: () => this.policyDocument?.toJSON() }),
     });
 
     if (props.domainEncryptionKey) {
-      this.cfnDomain.addPropertyOverride('EncryptionKey', props.domainEncryptionKey);
+      this.cfnDomain.addPropertyOverride('EncryptionKey', this.domainEncryptionKey?.keyId);
     }
 
     this.domainName = this.cfnDomain.domainName;
     this.domainArn = this.cfnDomain.attrArn;
     this.domainOwner = this.cfnDomain.attrOwner;
-    this.domainEncryptionKey = kms.Key.fromKeyArn(scope, 'EncryptionKey', this.cfnDomain.attrEncryptionKey);
 
-    if (!props.policyDocument) {
-      const p = props.principal || new iam.AccountRootPrincipal();
-      this.grantLogin(p);
-      this.grantCreate(p);
-      this.grantRead(p);
-    } else {
-      this.cfnDomain.permissionsPolicyDocument = props.policyDocument;
-    }
   }
 
   /**
@@ -156,12 +150,10 @@ export class Domain extends Resource implements IDomain {
    */
   public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
 
-    if (!this.cfnDomain.permissionsPolicyDocument) {
-      const p = this.cfnDomain.permissionsPolicyDocument as iam.PolicyDocument || new iam.PolicyDocument();
+    if (!this.policyDocument) {
+      const p = this.policyDocument || new iam.PolicyDocument();
 
       p.addStatements(statement);
-
-      this.cfnDomain.permissionsPolicyDocument = p;
 
       return { statementAdded: true, policyDependable: p };
     }
@@ -179,10 +171,22 @@ export class Domain extends Resource implements IDomain {
   }
 
   /**
+   * Assign default login, creation, and read for the domain.
+   * @param principal The principal of for the policy
+   * @see https://docs.aws.amazon.com/codeartifact/latest/ug/domain-policies.html#domain-policy-example
+   */
+  grantDefaultPolicy(principal: iam.IPrincipal): iam.Grant {
+    const p = principal;
+    this.grantLogin(p);
+    this.grantCreate(p);
+    return this.grantRead(p);
+  }
+
+  /**
      * Adds read actions for the principal to the domain's
      * resource policy
      * @param principal The principal for the policy
-     * @see https://docs.aws.amazon.com/codeartifact/latest/ug/domain-policies.html
+     * @see https://docs.aws.amazon.com/codeartifact/latest/ug/domain-spolicies.html
      */
   public grantRead(principal: iam.IPrincipal): iam.Grant {
     return this.grant(principal, DOMAIN_READ_ACTIONS);

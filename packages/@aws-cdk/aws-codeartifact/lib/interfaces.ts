@@ -33,7 +33,7 @@ export interface IRepository extends IResource {
        * @default Empty string
        * @attribute
        */
-  readonly repositoryName?: string;
+  readonly repositoryName: string;
   /**
       * A text description of the repository.
       * @attribute
@@ -162,6 +162,11 @@ export interface IDomain extends IResource {
    * @attribute
    */
   readonly domainEncryptionKey?: kms.IKey;
+
+  /**
+   * Resource policy for the domain
+   */
+  readonly policyDocument?: iam.PolicyDocument
 }
 
 /**
@@ -191,6 +196,7 @@ export interface DomainAttributes {
    * in CloudFormation.
    * Also needs to be annotated with '@attribute'.
    * @default Empty string
+   *
    * @attribute
    */
   readonly domainName?: string;

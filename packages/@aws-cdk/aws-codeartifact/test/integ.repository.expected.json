@@ -7,27 +7,25 @@
         "PermissionsPolicyDocument": {
           "Statement": [
             {
-              "Action": "codeartifact:GetAuthorizationToken",
-              "Effect": "Allow",
-              "Principal": {
-                "AWS": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":iam::",
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
-                      ":root"
-                    ]
+              "Action": [
+                "codeartifact:GetDomainPermissionsPolicy",
+                "codeartifact:ListRepositoriesInDomain",
+                "codeartifact:GetAuthorizationToken",
+                "codeartifact:DescribeDomain",
+                "codeartifact:CreateRepository",
+                "sts:GetServiceBearerToken"
+              ],
+              "Condition": {
+                "StringEquals": {
+                  "aws:PrincipalOrgID": [
+                    "o-12345678910"
                   ]
                 }
               },
-              "Resource": "*"
+              "Effect": "Allow",
+              "Principal": "*",
+              "Resource": "*",
+              "Sid": "DomainPolicyForOrganization"
             }
           ],
           "Version": "2012-10-17"
@@ -38,6 +36,9 @@
       "Type": "AWS::CodeArtifact::Repository",
       "Properties": {
         "RepositoryName": "repository",
+        "ExternalConnections": [
+          "public:npmjs"
+        ],
         "PermissionsPolicyDocument": {
           "Statement": [
             {
@@ -102,10 +103,89 @@
           ],
           "Version": "2012-10-17"
         },
+        "Upstreams": [],
         "DomainName": "example-domain"
       },
       "DependsOn": [
         "domainFBFFA2F6"
+      ]
+    },
+    "subrepository65E28DB9": {
+      "Type": "AWS::CodeArtifact::Repository",
+      "Properties": {
+        "RepositoryName": "sub-repository",
+        "PermissionsPolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "codeartifact:DescribePackageVersion",
+                "codeartifact:DescribeRepository",
+                "codeartifact:GetPackageVersionReadme",
+                "codeartifact:GetRepositoryEndpoint",
+                "codeartifact:ListPackageVersionAssets",
+                "codeartifact:ListPackageVersionDependencies",
+                "codeartifact:ListPackageVersions",
+                "codeartifact:ListPackages",
+                "codeartifact:ReadFromRepository"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              },
+              "Resource": "*"
+            },
+            {
+              "Action": [
+                "codeartifact:PublishPackageVersion",
+                "codeartifact:PutPackageMetadata"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              },
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Upstreams": [
+          "repository"
+        ],
+        "DomainName": "example-domain"
+      },
+      "DependsOn": [
+        "domainFBFFA2F6",
+        "repository5D02F86B"
       ]
     }
   }

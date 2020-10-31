@@ -12,8 +12,6 @@ export function validate(name: string,
     return;
   }
 
-  if (!rule.required && (value === undefined || value === '')) { return; }
-
   if (rule.pattern && !rule.pattern.test(value)) {
     throw new Error(`${name}: must match pattern ${rule.pattern.source}. Must match rules from ${rule.documentationLink}`);
   }

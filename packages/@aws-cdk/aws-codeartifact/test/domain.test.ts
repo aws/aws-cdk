@@ -1,15 +1,18 @@
 import '@aws-cdk/assert/jest';
-import { AccountRootPrincipal, PolicyDocument, PolicyStatement, Effect } from '@aws-cdk/aws-iam';
-import { Key } from '@aws-cdk/aws-kms';
+import * as cdkassert from '@aws-cdk/assert';
+import { AccountRootPrincipal, PolicyDocument, PolicyStatement, Effect, AccountPrincipal } from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import { Stack } from '@aws-cdk/core';
 import { Domain } from '../lib';
 
 test('Create Domain', () => {
   const stack = new Stack();
 
-  const { domain } = createDomain(stack);
+  createDomain(stack);
 
-  expect(domain.domainName).toBe('ExampleDomain');
+  cdkassert.expect(stack).to(cdkassert.haveResource('AWS::CodeArtifact::Domain', {
+    DomainName: 'ExampleDomain',
+  }));
 });
 
 test('Domain from ARN', () => {
@@ -26,16 +29,40 @@ test('Domain from ARN w/ out domain name nor account id', () => {
 
 test('Create Domain w/ encryption', () => {
   const stack = new Stack();
+  const key = new kms.Key(stack, 'key');
 
-  const domain = new Domain(stack, 'domain', { domainName: 'ExampleDomain', domainEncryptionKey: Key.fromKeyArn(stack, 'key', 'arn:aws:kms:us-west-2:111122223333:key/1234abcd-12ab-34cd-56ef-1234567890ab') });
+  new Domain(stack, 'domain', { domainName: 'ExampleDomain', domainEncryptionKey: key });
 
-  expect(domain.domainName).toBe('ExampleDomain');
+  cdkassert.expect(stack).to(cdkassert.haveResource('AWS::CodeArtifact::Domain', {
+    DomainName: 'ExampleDomain',
+  }));
 });
 
 test('Create Domain w/ principal', () => {
   const stack = new Stack();
 
   const domain = new Domain(stack, 'domain', { domainName: 'ExampleDomain', principal: new AccountRootPrincipal() });
+
+  expect(domain.domainName).toBe('ExampleDomain');
+});
+
+
+test('Create Domain w/ principal grant', () => {
+  const stack = new Stack();
+
+  const domain = new Domain(stack, 'domain', { domainName: 'ExampleDomain', principal: new AccountRootPrincipal() });
+  const self = new AccountPrincipal('123456789012');
+  let g = domain.grantCreate(self);
+  expect(g.success).toBeTruthy();
+
+  g = domain.grantLogin(self);
+  expect(g.success).toBeTruthy();
+
+  g = domain.grantRead(self);
+  expect(g.success).toBeTruthy();
+
+  g = domain.grantDefaultPolicy(self);
+  expect(g.success).toBeTruthy();
 
   expect(domain.domainName).toBe('ExampleDomain');
 });
