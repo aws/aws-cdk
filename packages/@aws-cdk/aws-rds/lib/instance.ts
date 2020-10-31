@@ -953,6 +953,7 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
         username: credentials.username,
         encryptionKey: credentials.encryptionKey,
         excludeCharacters: credentials.excludeCharacters,
+        overrideLogicalId: !!props.credentials?.usernameAsString,
       }));
     }
     const secret = credentials.secret;
@@ -961,7 +962,9 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
       ...this.sourceCfnProps,
       characterSetName: props.characterSetName,
       kmsKeyId: props.storageEncryptionKey && props.storageEncryptionKey.keyArn,
-      masterUsername: credentials.username,
+      masterUsername: props.credentials?.usernameAsString
+        ? props.credentials.username
+        : credentials.username,
       masterUserPassword: credentials.password?.toString(),
       storageEncrypted: props.storageEncryptionKey ? true : props.storageEncrypted,
     });

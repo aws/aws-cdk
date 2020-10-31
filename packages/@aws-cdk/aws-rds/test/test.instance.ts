@@ -1138,4 +1138,56 @@ export = {
       test.done();
     },
   },
+
+  'fromFixedUsername'(test: Test) {
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Database1', {
+      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_12_3 }),
+      vpc,
+      credentials: rds.Credentials.fromFixedUsername('cdkadmin1'),
+    });
+
+    new rds.DatabaseInstance(stack, 'Database2', {
+      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_12_3 }),
+      vpc,
+      credentials: rds.Credentials.fromFixedUsername('cdkadmin2', {
+        excludeCharacters: "<>?!'/@\"\\", // different characters set
+      }),
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::RDS::DBInstance', {
+      MasterUsername: 'cdkadmin1', // username is a string
+      MasterUserPassword: {
+        'Fn::Join': [
+          '',
+          [
+            '{{resolve:secretsmanager:',
+            {
+              Ref: '99914b932bd37a50b983c5e7c90ae93b', // logic id is a hash
+            },
+            ':SecretString:password::}}',
+          ],
+        ],
+      },
+    }));
+
+    expect(stack).to(haveResource('AWS::RDS::DBInstance', {
+      MasterUsername: 'cdkadmin2', // username is a string
+      MasterUserPassword: {
+        'Fn::Join': [
+          '',
+          [
+            '{{resolve:secretsmanager:',
+            {
+              Ref: '81a0aab2d485f4f216324ac750b56c71', // different logic id
+            },
+            ':SecretString:password::}}',
+          ],
+        ],
+      },
+    }));
+
+    test.done();
+  },
 };

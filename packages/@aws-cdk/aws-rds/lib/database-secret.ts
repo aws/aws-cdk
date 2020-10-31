@@ -1,3 +1,4 @@
+import * as crypto from 'crypto';
 import * as kms from '@aws-cdk/aws-kms';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { Aws } from '@aws-cdk/core';
@@ -33,6 +34,16 @@ export interface DatabaseSecretProps {
    * @default " %+~`#$&*()|[]{}:;<>?!'/@\"\\"
    */
   readonly excludeCharacters?: string;
+
+  /**
+   * Whether to override the logical id of the AWS::SecretsManager::Secret
+   * with a hash of the options that influence the password generation. This
+   * way a new secret will be created when the password is regenerated and the
+   * cluster or instance consuming this secret will have its credentials updated.
+   *
+   * @default false
+   */
+  readonly overrideLogicalId?: boolean;
 }
 
 /**
@@ -55,5 +66,16 @@ export class DatabaseSecret extends secretsmanager.Secret {
         excludeCharacters: props.excludeCharacters ?? DEFAULT_PASSWORD_EXCLUDE_CHARS,
       },
     });
+
+    if (props.overrideLogicalId) {
+      const hash = crypto.createHash('md5');
+      hash.update(JSON.stringify({
+        // Use here the options that influence the password generation
+        excludeCharacters: props.excludeCharacters,
+      }));
+
+      const secret = this.node.defaultChild as secretsmanager.CfnSecret;
+      secret.overrideLogicalId(hash.digest('hex'));
+    }
   }
 }

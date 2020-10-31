@@ -7,7 +7,7 @@ import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import {
-  AuroraEngineVersion, AuroraMysqlEngineVersion, AuroraPostgresEngineVersion, CfnDBCluster, DatabaseCluster, DatabaseClusterEngine,
+  AuroraEngineVersion, AuroraMysqlEngineVersion, AuroraPostgresEngineVersion, CfnDBCluster, Credentials, DatabaseCluster, DatabaseClusterEngine,
   DatabaseClusterFromSnapshot, ParameterGroup, PerformanceInsightRetention, SubnetGroup,
 } from '../lib';
 
@@ -1727,6 +1727,66 @@ export = {
 
     // THEN
     test.ok(cluster.node.defaultChild instanceof CfnDBCluster);
+
+    test.done();
+  },
+
+  'fromFixedUsername'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database1', {
+      engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
+      credentials: Credentials.fromFixedUsername('cdkadmin1'),
+      instanceProps: {
+        vpc,
+      },
+    });
+
+    new DatabaseCluster(stack, 'Database2', {
+      engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
+      credentials: Credentials.fromFixedUsername('cdkadmin2', {
+        excludeCharacters: "<>?!'/@\"\\", // different characters set
+      }),
+      instanceProps: {
+        vpc,
+      },
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::RDS::DBCluster', {
+      MasterUsername: 'cdkadmin1', // username is a string
+      MasterUserPassword: {
+        'Fn::Join': [
+          '',
+          [
+            '{{resolve:secretsmanager:',
+            {
+              Ref: '99914b932bd37a50b983c5e7c90ae93b', // logic id is a hash
+            },
+            ':SecretString:password::}}',
+          ],
+        ],
+      },
+    }));
+
+    expect(stack).to(haveResource('AWS::RDS::DBCluster', {
+      MasterUsername: 'cdkadmin2', // username is a string
+      MasterUserPassword: {
+        'Fn::Join': [
+          '',
+          [
+            '{{resolve:secretsmanager:',
+            {
+              Ref: '81a0aab2d485f4f216324ac750b56c71', // different logic id
+            },
+            ':SecretString:password::}}',
+          ],
+        ],
+      },
+    }));
 
     test.done();
   },

@@ -495,6 +495,7 @@ export class DatabaseCluster extends DatabaseClusterNew {
         username: credentials.username,
         encryptionKey: credentials.encryptionKey,
         excludeCharacters: credentials.excludeCharacters,
+        overrideLogicalId: props.credentials?.usernameAsString,
       }));
     }
     const secret = credentials.secret;
@@ -502,7 +503,9 @@ export class DatabaseCluster extends DatabaseClusterNew {
     const cluster = new CfnDBCluster(this, 'Resource', {
       ...this.newCfnProps,
       // Admin
-      masterUsername: credentials.username,
+      masterUsername: props.credentials?.usernameAsString
+        ? props.credentials.username
+        : credentials.username,
       masterUserPassword: credentials.password?.toString(),
       // Encryption
       kmsKeyId: props.storageEncryptionKey?.keyArn,

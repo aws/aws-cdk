@@ -148,10 +148,24 @@ export interface CredentialsFromUsernameOptions {
  * Username and password combination
  */
 export abstract class Credentials {
+  /**
+   * Creates Credentials for the given username, and optional password and key.
+   * If no password is provided, one will be generated and stored in SecretsManager.
+   */
+  public static fromFixedUsername(username: string, options: CredentialsFromUsernameOptions = {}): Credentials {
+    return {
+      ...options,
+      username,
+      usernameAsString: true,
+    };
+  }
 
   /**
    * Creates Credentials for the given username, and optional password and key.
    * If no password is provided, one will be generated and stored in SecretsManager.
+   *
+   * @deprecated use `fromFixedUsername()` for new deployments only. Switching to
+   * `fromFixedUsername()` for existing instances/clusters will have them replaced.
    */
   public static fromUsername(username: string, options: CredentialsFromUsernameOptions = {}): Credentials {
     return {
@@ -185,6 +199,12 @@ export abstract class Credentials {
    * Username
    */
   public abstract readonly username: string;
+
+  /**
+   * Whether the username should be referenced as a string and not as a dynamic
+   * reference to the username in the secret.
+   */
+  public abstract readonly usernameAsString?: boolean;
 
   /**
    * Password
