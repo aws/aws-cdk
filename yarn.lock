@@ -2128,10 +2128,10 @@
     once "^1.4.0"
     universal-user-agent "^4.0.0"
 
-"@octokit/rest@^18.0.7":
-  version "18.0.7"
-  resolved "https://registry.yarnpkg.com/@octokit/rest/-/rest-18.0.7.tgz#236514417084334bc0ef62416a19f6030db3d907"
-  integrity sha512-ctz0cMIb3c6gO2ADto+A1r4JI+2hkUkDcD1JRunkhk1SOUrNGQcQ+9FBqZ6UekS1Z/c3xPvF0OoLtX2cQ118+A==
+"@octokit/rest@^18.0.8":
+  version "18.0.8"
+  resolved "https://registry.yarnpkg.com/@octokit/rest/-/rest-18.0.8.tgz#c49792e4f02fea6510216d1cecc98075add7db53"
+  integrity sha512-crYqQWFS/75o+FSE2Ejpt0Tk9FgkQ4aGvToptqbnvlfViE/C4hVAtmn/X0emQ8Q3wg1tYXYNIcuG1XXSOEeARg==
   dependencies:
     "@octokit/core" "^3.0.0"
     "@octokit/plugin-paginate-rest" "^2.2.0"
