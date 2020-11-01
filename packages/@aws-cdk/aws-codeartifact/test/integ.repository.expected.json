@@ -1,9 +1,69 @@
 {
   "Resources": {
+    "keyFEDD6EC0": {
+      "Type": "AWS::KMS::Key",
+      "Properties": {
+        "KeyPolicy": {
+          "Statement": [
+            {
+              "Action": [
+                "kms:Create*",
+                "kms:Describe*",
+                "kms:Enable*",
+                "kms:List*",
+                "kms:Put*",
+                "kms:Update*",
+                "kms:Revoke*",
+                "kms:Disable*",
+                "kms:Get*",
+                "kms:Delete*",
+                "kms:ScheduleKeyDeletion",
+                "kms:CancelKeyDeletion",
+                "kms:GenerateDataKey",
+                "kms:TagResource",
+                "kms:UntagResource"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              },
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Tags": [
+          {
+            "Key": "app:example",
+            "Value": "integ-test-tag"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
+    },
     "domainFBFFA2F6": {
       "Type": "AWS::CodeArtifact::Domain",
       "Properties": {
         "DomainName": "example-domain",
+        "EncryptionKey": {
+          "Ref": "keyFEDD6EC0"
+        },
         "PermissionsPolicyDocument": {
           "Statement": [
             {
@@ -35,6 +95,7 @@
     "repository5D02F86B": {
       "Type": "AWS::CodeArtifact::Repository",
       "Properties": {
+        "DomainName": "example-domain",
         "RepositoryName": "repository",
         "ExternalConnections": [
           "public:npmjs"
@@ -103,8 +164,7 @@
           ],
           "Version": "2012-10-17"
         },
-        "Upstreams": [],
-        "DomainName": "example-domain"
+        "Upstreams": []
       },
       "DependsOn": [
         "domainFBFFA2F6"
@@ -113,6 +173,7 @@
     "subrepository65E28DB9": {
       "Type": "AWS::CodeArtifact::Repository",
       "Properties": {
+        "DomainName": "example-domain",
         "RepositoryName": "sub-repository",
         "PermissionsPolicyDocument": {
           "Statement": [
@@ -180,8 +241,7 @@
         },
         "Upstreams": [
           "repository"
-        ],
-        "DomainName": "example-domain"
+        ]
       },
       "DependsOn": [
         "domainFBFFA2F6",

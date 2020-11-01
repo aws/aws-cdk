@@ -107,13 +107,12 @@ export class Domain extends Resource implements IDomain {
     });
 
     if (props.domainEncryptionKey) {
-      this.cfnDomain.addPropertyOverride('EncryptionKey', this.domainEncryptionKey?.keyId);
+      this.cfnDomain.encryptionKey = this.domainEncryptionKey?.keyId;
     }
 
     this.domainName = this.cfnDomain.domainName;
     this.domainArn = this.cfnDomain.attrArn;
     this.domainOwner = this.cfnDomain.attrOwner;
-
   }
 
   /**

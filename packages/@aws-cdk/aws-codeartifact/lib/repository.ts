@@ -161,6 +161,7 @@ export class Repository extends Resource implements IRepository {
     this.validateProps();
 
     this.cfnRepository = new CfnRepository(this, id, {
+      domainName: props.domain?.domainName || '',
       repositoryName: props.repositoryName,
       description: props.description,
       upstreams: props.upstreams ? props.upstreams.map(u => u.repositoryName) : [] as string[],
@@ -194,7 +195,7 @@ export class Repository extends Resource implements IRepository {
   public assignDomain(domain: IDomain): void {
     // This should be added to the L1 props soon, but until then this is required to create a Repository
     this.cfnRepository.node.addDependency(domain);
-    this.cfnRepository.addPropertyOverride('DomainName', domain.domainName);
+    this.cfnRepository.domainName = domain.domainName || '';
   }
 
   /**

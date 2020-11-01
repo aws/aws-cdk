@@ -29,12 +29,13 @@ test('Domain from ARN w/ out domain name nor account id', () => {
 
 test('Create Domain w/ encryption', () => {
   const stack = new Stack();
-  const key = new kms.Key(stack, 'key');
+  const key = kms.Key.fromKeyArn(stack, 'key', 'arn:aws:kms:us-west-2:111122223333:key/1234abcd-12ab-34cd-56ef-1234567890ab');
 
   new Domain(stack, 'domain', { domainName: 'ExampleDomain', domainEncryptionKey: key });
 
   cdkassert.expect(stack).to(cdkassert.haveResource('AWS::CodeArtifact::Domain', {
     DomainName: 'ExampleDomain',
+    EncryptionKey: key.keyId,
   }));
 });
 

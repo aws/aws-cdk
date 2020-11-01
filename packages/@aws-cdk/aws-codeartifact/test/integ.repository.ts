@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
 import * as codeartifact from '../lib';
 
@@ -27,7 +28,13 @@ p.addStatements(new iam.PolicyStatement({
   },
 }));
 
-const domain = new codeartifact.Domain(stack, 'domain', { domainName: 'example-domain', policyDocument: p });
+
+cdk.Tag.add(stack, 'app:example', 'integ-test-tag');
+
+// Custom KMS key
+const key = new kms.Key(stack, 'key');
+
+const domain = new codeartifact.Domain(stack, 'domain', { domainName: 'example-domain', policyDocument: p, domainEncryptionKey: key });
 const upstream = new codeartifact.Repository(stack, 'repository', {
   repositoryName: 'repository',
   domain: domain,
@@ -41,5 +48,6 @@ const subRepo = new codeartifact.Repository(stack, 'sub-repository', {
 });
 
 subRepo.allowReadFromRepository(new iam.AccountRootPrincipal());
+
 
 app.synth();
