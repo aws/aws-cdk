@@ -1035,6 +1035,7 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
         username: credentials.username,
         encryptionKey: credentials.encryptionKey,
         excludeCharacters: credentials.excludeCharacters,
+        overrideLogicalId: true,
       });
     }
 

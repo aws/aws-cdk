@@ -301,7 +301,7 @@ export = {
       expect(stack).to(haveResourceLike('AWS::RDS::DBInstance', {
         MasterUsername: ABSENT,
         MasterUserPassword: {
-          'Fn::Join': ['', ['{{resolve:secretsmanager:', { Ref: 'InstanceSecret478E0A47' }, ':SecretString:password::}}']],
+          'Fn::Join': ['', ['{{resolve:secretsmanager:', { Ref: '8ee0a797cad8a68dbeb85f8698cdb5bb' }, ':SecretString:password::}}']],
         },
       }));
       expect(stack).to(haveResource('AWS::SecretsManager::Secret', {
