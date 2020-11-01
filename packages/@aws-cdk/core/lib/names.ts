@@ -36,5 +36,5 @@ export class Names {
     return components.length > 0 ? makeUniqueId(components) : '';
   }
 
-  private constructor() {};
+  private constructor() {}
 }
