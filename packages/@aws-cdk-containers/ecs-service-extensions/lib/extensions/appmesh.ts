@@ -70,7 +70,7 @@ export class AppMeshExtension extends ServiceExtension {
     // Make sure that the parent cluster for this service has
     // a namespace attached.
     if (!this.parentService.cluster.defaultCloudMapNamespace) {
-      this.parentService.cluster.addDefaultCloudMapNamespace({
+      this.parentService.environment.addDefaultCloudMapNamespace({
         // Name the namespace after the environment name.
         // Service DNS will be like <service id>.<environment id>
         name: this.parentService.environment.id,
