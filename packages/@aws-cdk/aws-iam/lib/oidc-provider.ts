@@ -7,6 +7,7 @@ import {
   Resource,
   Stack,
   Token,
+  Fn,
 } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 
@@ -156,11 +157,8 @@ export class OpenIdConnectProvider extends Resource implements IOpenIdConnectPro
       },
     });
 
-    this.openIdConnectProviderIssuer = props.url
-      .replace('https://', '')
-      .replace('http://', '');
-
     this.openIdConnectProviderArn = Token.asString(resource.ref);
+    this.openIdConnectProviderIssuer = Fn.select(1, Fn.split('oidc-provider/', this.openIdConnectProviderArn));
   }
 
   private getOrCreateProvider() {

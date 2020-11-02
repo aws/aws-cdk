@@ -79,7 +79,7 @@ export interface ICluster extends IResource, ec2.IConnectable {
   readonly clusterEncryptionConfigKeyArn: string;
 
   /**
-   * An Open ID Connect Provider
+   * The Open ID Connect Provider of the cluster used to configure Service Accounts.
    */
   readonly openIdConnectProvider: iam.IOpenIdConnectProvider;
 
@@ -120,7 +120,8 @@ export interface ICluster extends IResource, ec2.IConnectable {
   readonly kubectlLayer?: lambda.ILayerVersion;
 
   /**
-   * Create new service account with corresponding IAM Role (IRSA)
+   * Creates a new service account with corresponding IAM Role (IRSA).
+   *
    * @param id logical id of service account
    * @param options service account options
    */
@@ -234,9 +235,10 @@ export interface ClusterAttributes {
   readonly kubectlPrivateSubnetIds?: string[];
 
   /**
-   * An Imported Open ID Connect provider for this cluster
-   * @default - if not specified `cluster.openIdConnectProvider` will
-   * throw an error
+   * An Open ID Connect provider for this cluster that can be used to configure service accounts.
+   * You can either import an existing provider using `iam.OpenIdConnectProvider.fromProviderArn`,
+   * or create a new provider using `new eks.OpenIdConnectProvider`
+   * @default - if not specified `cluster.openIdConnectProvider` and `cluster.addServiceAccount` will throw an error.
    */
   readonly openIdConnectProvider?: iam.IOpenIdConnectProvider;
 

@@ -647,6 +647,7 @@ To do so, pass the `openIdConnectProvider` property when you import the cluster 
 ```ts
 // you can import an existing provider
 const provider = eks.OpenIdConnectProvider.fromOpenIdConnectProviderArn(this, 'Provider', 'arn:aws:iam::123456:oidc-provider/oidc.eks.eu-west-1.amazonaws.com/id/AB123456ABC');
+
 // or create a new one using an existing issuer url
 const provider = new eks.OpenIdConnectProvider(this, 'Provider', issuerUrl);
 
@@ -665,7 +666,7 @@ bucket.grantReadWrite(serviceAccount);
 ``` 
 Note that adding service accounts requires running `kubectl` commands against the cluster.
 This means you must also pass the `kubectlRoleArn` when importing the cluster. 
-See [Using existing Clusters](https://github.com/aws/aws-cdk/tree/master/packages/@aws-cdk/aws-eks#using-existing-clusters)
+See [Using existing Clusters](https://github.com/aws/aws-cdk/tree/master/packages/@aws-cdk/aws-eks#using-existing-clusters).
 
 ## Applying Kubernetes Resources
 
