@@ -1,3 +1,4 @@
+import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
 import { AthenaStartQueryExecution, EncryptionOption } from '../../lib/athena/start-query-execution';
 
@@ -50,6 +51,50 @@ describe('Start Query Execution', () => {
           OutputLocation: 'https://s3.Region.amazonaws.com/bucket-name/key-name',
         },
         WorkGroup: 'primary',
+      },
+    });
+  });
+
+  test('sync integrationPattern', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const task = new AthenaStartQueryExecution(stack, 'Query', {
+      integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+      queryString: 'CREATE DATABASE database',
+      queryExecutionContext: {
+        databaseName: 'mydatabase',
+      },
+      resultConfiguration: {
+        encryptionConfiguration: { encryptionOption: EncryptionOption.S3_MANAGED },
+      },
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toEqual({
+      Type: 'Task',
+      Resource: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':states:::athena:startQueryExecution.sync',
+          ],
+        ],
+      },
+      End: true,
+      Parameters: {
+        QueryString: 'CREATE DATABASE database',
+        QueryExecutionContext: {
+          Database: 'mydatabase',
+        },
+        ResultConfiguration: {
+          EncryptionConfiguration: { EncryptionOption: EncryptionOption.S3_MANAGED },
+        },
       },
     });
   });
