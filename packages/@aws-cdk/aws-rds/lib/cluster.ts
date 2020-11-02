@@ -495,7 +495,8 @@ export class DatabaseCluster extends DatabaseClusterNew {
         username: credentials.username,
         encryptionKey: credentials.encryptionKey,
         excludeCharacters: credentials.excludeCharacters,
-        // if username is referenced as a string we can safely replace the secret
+        // if username is referenced as a string we can safely replace the
+        // secret when customization options are changed
         overrideLogicalId: props.credentials?.usernameAsString,
       }));
     }

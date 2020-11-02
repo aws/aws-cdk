@@ -953,7 +953,8 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
         username: credentials.username,
         encryptionKey: credentials.encryptionKey,
         excludeCharacters: credentials.excludeCharacters,
-        // if username is referenced as a string we can safely replace the secret
+        // if username is referenced as a string we can safely replace the
+        // secret when customization options are changed
         overrideLogicalId: props.credentials?.usernameAsString,
       }));
     }
@@ -1036,6 +1037,8 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
         username: credentials.username,
         encryptionKey: credentials.encryptionKey,
         excludeCharacters: credentials.excludeCharacters,
+        // Always replace secret when customization options are changed
+        // (MasterUsername is not specified for an instance created from a snapshot)
         overrideLogicalId: true,
       });
     }
