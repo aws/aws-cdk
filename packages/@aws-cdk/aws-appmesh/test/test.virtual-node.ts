@@ -37,12 +37,6 @@ export = {
         expect(stack).to(
           haveResourceLike('AWS::AppMesh::VirtualNode', {
             Spec: {
-              Listeners: [{
-                PortMapping: {
-                  Port: 8080,
-                  Protocol: 'http',
-                },
-              }],
               Backends: [
                 {
                   VirtualService: {
@@ -79,9 +73,9 @@ export = {
         new appmesh.VirtualNode(stack, 'test-node', {
           mesh,
           dnsHostName: 'test',
-          listener: appmesh.VirtualNodeListener.httpNodeListener({
+          listeners: [appmesh.VirtualNodeListener.httpNodeListener({
             port: 8081,
-          }),
+          })],
         });
 
         // THEN
@@ -116,13 +110,13 @@ export = {
         new appmesh.VirtualNode(stack, 'test-node', {
           mesh,
           dnsHostName: 'test',
-          listener: appmesh.VirtualNodeListener.grpcNodeListener({
+          listeners: [appmesh.VirtualNodeListener.grpcNodeListener({
             port: 80,
             timeout: {
               idle: cdk.Duration.seconds(10),
               perRequest: cdk.Duration.seconds(10),
             },
-          }),
+          })],
         });
 
         // THEN
@@ -169,11 +163,11 @@ export = {
         new appmesh.VirtualNode(stack, 'test-node', {
           mesh,
           dnsHostName: 'test',
-          listener: appmesh.VirtualNodeListener.http2NodeListener({
+          listeners: [appmesh.VirtualNodeListener.http2NodeListener({
             port: 80,
             healthCheck: {},
             timeout: { idle: cdk.Duration.seconds(10) },
-          }),
+          })],
         });
 
         // THEN
@@ -221,15 +215,16 @@ export = {
           meshName: 'test-mesh',
         });
 
-        new appmesh.VirtualNode(stack, 'test-node', {
+        const node = new appmesh.VirtualNode(stack, 'test-node', {
           mesh,
           dnsHostName: 'test',
-          listener: appmesh.VirtualNodeListener.tcpNodeListener({
-            port: 80,
-            healthCheck: { timeout: cdk.Duration.seconds(3) },
-            timeout: { idle: cdk.Duration.seconds(10) },
-          }),
         });
+
+        node.addListeners([appmesh.VirtualNodeListener.tcpNodeListener({
+          port: 80,
+          healthCheck: { timeout: cdk.Duration.seconds(3) },
+          timeout: { idle: cdk.Duration.seconds(10) },
+        })]);
 
         // THEN
         expect(stack).to(
@@ -282,11 +277,7 @@ export = {
 
     const stack2 = new cdk.Stack();
 
-    const node2 = appmesh.VirtualNode.fromVirtualNodeName(stack2, 'imported-node', mesh.meshName, node.virtualNodeName);
-
-    node2.addListeners(appmesh.VirtualNodeListener.httpNodeListener({
-      port: 8081,
-    }));
+    appmesh.VirtualNode.fromVirtualNodeName(stack2, 'imported-node', mesh.meshName, node.virtualNodeName);
 
     // THEN
     expect(stack).to(
@@ -295,14 +286,6 @@ export = {
           'Fn::GetAtt': ['meshACDFE68E', 'MeshName'],
         },
         Spec: {
-          Listeners: [
-            {
-              PortMapping: {
-                Port: 8080,
-                Protocol: 'http',
-              },
-            },
-          ],
           ServiceDiscovery: {
             DNS: {
               Hostname: 'test.domain.local',

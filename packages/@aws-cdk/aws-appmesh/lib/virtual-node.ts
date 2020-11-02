@@ -4,7 +4,7 @@ import { Construct } from 'constructs';
 import { CfnVirtualNode } from './appmesh.generated';
 import { IMesh } from './mesh';
 import { AccessLog } from './shared-interfaces';
-import { VirtualNodeListener } from './virtual-listener';
+import { VirtualNodeListener, VirtualNodeListenerConfig } from './virtual-node-listener';
 import { IVirtualService } from './virtual-service';
 
 /**
@@ -35,14 +35,9 @@ export interface IVirtualNode extends cdk.IResource {
   addBackends(...props: IVirtualService[]): void;
 
   /**
-   * Utility method to add a single node listener
-   */
-  addListener(listener: VirtualNodeListener): void;
-
-  /**
    * Utility method to add Node Listeners for new or existing VirtualNodes
    */
-  addListeners(...listeners: VirtualNodeListener[]): void;
+  addListeners(listeners: VirtualNodeListener[]): void;
 }
 
 /**
@@ -95,7 +90,7 @@ export interface VirtualNodeBaseProps {
    *
    * @default - No listeners
    */
-  readonly listener?: VirtualNodeListener;
+  readonly listeners?: VirtualNodeListener[];
 
   /**
    * Access Logging Configuration for the virtual node
@@ -127,7 +122,7 @@ abstract class VirtualNodeBase extends cdk.Resource implements IVirtualNode {
   public abstract readonly virtualNodeArn: string;
 
   protected readonly backends = new Array<CfnVirtualNode.BackendProperty>();
-  protected readonly listeners = new Array<CfnVirtualNode.ListenerProperty>();
+  protected readonly listeners = new Array<VirtualNodeListenerConfig>();
 
   /**
    * Add a Virtual Services that this node is expected to send outbound traffic to
@@ -145,23 +140,8 @@ abstract class VirtualNodeBase extends cdk.Resource implements IVirtualNode {
   /**
    * Utility method to add an inbound listener for this VirtualNode
    */
-  public addListeners(...listeners: VirtualNodeListener[]) {
-    if (listeners.length + this.listeners.length > 1) {
-      throw new Error('VirtualNode may have at most one listener');
-    }
-    for (const listener of listeners) {
-      this.addListener(listener);
-    }
-  }
-
-  /**
-   * Utility method to add a single listener to this VirtualNode
-   */
-  public addListener(listener: VirtualNodeListener) {
-    if (this.listeners.length > 0) {
-      throw new Error('VirtualNode may have at most one listener');
-    }
-    this.listeners.push(listener.bind(this));
+  public addListeners(listeners: VirtualNodeListener[]) {
+    listeners.forEach(listener => this.listeners.push(listener.bind(this)));
   }
 }
 
@@ -215,7 +195,7 @@ export class VirtualNode extends VirtualNodeBase {
     this.mesh = props.mesh;
 
     this.addBackends(...props.backends || []);
-    this.addListeners(...props.listener ? [props.listener] : [VirtualNodeListener.httpNodeListener()]);
+    this.addListeners(props.listeners ? props.listeners : []);
     const accessLogging = props.accessLog?.bind(this);
 
     const node = new CfnVirtualNode(this, 'Resource', {
@@ -223,7 +203,7 @@ export class VirtualNode extends VirtualNodeBase {
       meshName: this.mesh.meshName,
       spec: {
         backends: cdk.Lazy.anyValue({ produce: () => this.backends }, { omitEmptyArray: true }),
-        listeners: cdk.Lazy.anyValue({ produce: () => this.listeners }, { omitEmptyArray: true }),
+        listeners: cdk.Lazy.anyValue({ produce: () => this.listeners.map(listener => listener.listener) }, { omitEmptyArray: true }),
         serviceDiscovery: {
           dns: props.dnsHostName !== undefined ? { hostname: props.dnsHostName } : undefined,
           awsCloudMap: props.cloudMapService !== undefined ? {

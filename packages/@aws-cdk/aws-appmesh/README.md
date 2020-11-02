@@ -146,7 +146,7 @@ const service = namespace.createService('Svc');
 const node = mesh.addVirtualNode('virtual-node', {
   dnsHostName: 'node-a',
   cloudMapService: service,
-  listener: appmesh.VirtualNodeListener.httpNodeListener({
+  listeners: [appmesh.VirtualNodeListener.httpNodeListener({
     port: 8081,
     healthCheck: {
       healthyThreshold: 3,
@@ -157,8 +157,8 @@ const node = mesh.addVirtualNode('virtual-node', {
       timeout: Duration.seconds(2), // minimum
       unhealthyThreshold: 2,
     },
-    accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
-  }),
+  })],
+  accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
 });
 ```
 
@@ -169,7 +169,7 @@ const node = new VirtualNode(this, 'node', {
   mesh,
   dnsHostName: 'node-1',
   cloudMapService: service,
-  listener: appmesh.VirtualNodeListener.httpNodeListener({
+  listeners: [appmesh.VirtualNodeListener.httpNodeListener({
     port: 8080,
     healthCheck: {
       healthyThreshold: 3,
@@ -183,14 +183,14 @@ const node = new VirtualNode(this, 'node', {
     timeout: {
       idle: cdk.Duration.seconds(5),
     },
-    accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
-  }),
+  })],
+  accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
 });
 
 cdk.Tag.add(node, 'Environment', 'Dev');
 ```
 
-A default httpListener is added when listener property is left blank. The `healthcheck` and `timeout` properties are optional but if specifying a listener, the `port` must be added.
+The listeners property can be left blank and added later with the `node.addListeners()` method. The `healthcheck` and `timeout` properties are optional but if specifying a listener, the `port` must be added.
 
 ## Adding a Route
 

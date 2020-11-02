@@ -221,9 +221,9 @@ export = {
 
         const node = mesh.addVirtualNode('test-node', {
           dnsHostName: 'test.domain.local',
-          listener: appmesh.VirtualNodeListener.httpNodeListener({
+          listeners: [appmesh.VirtualNodeListener.httpNodeListener({
             port: 8080,
-          }),
+          })],
         });
 
         mesh.addVirtualService('service2', {
@@ -272,15 +272,6 @@ export = {
               'Fn::GetAtt': ['meshACDFE68E', 'MeshName'],
             },
             Spec: {
-              // One listener is added by default.
-              Listeners: [
-                {
-                  PortMapping: {
-                    Port: 8080,
-                    Protocol: 'http',
-                  },
-                },
-              ],
               ServiceDiscovery: {
                 DNS: {
                   Hostname: 'test.domain.local',
@@ -305,9 +296,9 @@ export = {
 
         mesh.addVirtualNode('test-node', {
           dnsHostName: 'test.domain.local',
-          listener: appmesh.VirtualNodeListener.httpNodeListener({
+          listeners: [appmesh.VirtualNodeListener.httpNodeListener({
             port: 8080,
-          }),
+          })],
         });
 
         // THEN
@@ -344,7 +335,7 @@ export = {
 
         mesh.addVirtualNode('test-node', {
           dnsHostName: 'test.domain.local',
-          listener: appmesh.VirtualNodeListener.httpNodeListener({
+          listeners: [appmesh.VirtualNodeListener.httpNodeListener({
             port: 8080,
             healthCheck: {
               healthyThreshold: 3,
@@ -353,7 +344,7 @@ export = {
               timeout: cdk.Duration.seconds(2), // min
               unhealthyThreshold: 2,
             },
-          }),
+          })],
         });
 
         // THEN
@@ -400,9 +391,9 @@ export = {
 
         mesh.addVirtualNode('test-node', {
           dnsHostName: 'test.domain.local',
-          listener: appmesh.VirtualNodeListener.httpNodeListener({
+          listeners: [appmesh.VirtualNodeListener.httpNodeListener({
             port: 8080,
-          }),
+          })],
           backends: [
             service1,
           ],
