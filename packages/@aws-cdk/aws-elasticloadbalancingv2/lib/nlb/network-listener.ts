@@ -147,7 +147,7 @@ export class NetworkListener extends BaseListener implements INetworkListener {
   /**
    * The load balancer this listener is attached to
    */
-  private readonly loadBalancer: INetworkLoadBalancer;
+  public readonly loadBalancer: INetworkLoadBalancer;
 
   /**
    * the protocol of the listener
