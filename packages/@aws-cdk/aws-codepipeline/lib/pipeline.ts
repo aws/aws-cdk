@@ -283,9 +283,9 @@ export class Pipeline extends PipelineBase {
     });
 
     const codePipeline = new CfnPipeline(this, 'Resource', {
-      artifactStore: Lazy.anyValue({ produce: () => this.renderArtifactStoreProperty() }),
-      artifactStores: Lazy.anyValue({ produce: () => this.renderArtifactStoresProperty() }),
-      stages: Lazy.anyValue({ produce: () => this.renderStages() }),
+      artifactStore: Lazy.any({ produce: () => this.renderArtifactStoreProperty() }),
+      artifactStores: Lazy.any({ produce: () => this.renderArtifactStoresProperty() }),
+      stages: Lazy.any({ produce: () => this.renderStages() }),
       roleArn: this.role.roleArn,
       restartExecutionOnUpdate: props && props.restartExecutionOnUpdate,
       name: this.physicalName,

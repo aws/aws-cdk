@@ -252,7 +252,7 @@ export class VirtualNode extends VirtualNodeBase {
 
   constructor(scope: Construct, id: string, props: VirtualNodeProps) {
     super(scope, id, {
-      physicalName: props.virtualNodeName || cdk.Lazy.stringValue({ produce: () => this.node.uniqueId }),
+      physicalName: props.virtualNodeName || cdk.Lazy.string({ produce: () => this.node.uniqueId }),
     });
 
     this.mesh = props.mesh;
@@ -265,8 +265,8 @@ export class VirtualNode extends VirtualNodeBase {
       virtualNodeName: this.physicalName,
       meshName: this.mesh.meshName,
       spec: {
-        backends: cdk.Lazy.anyValue({ produce: () => this.backends }, { omitEmptyArray: true }),
-        listeners: cdk.Lazy.anyValue({ produce: () => this.listeners }, { omitEmptyArray: true }),
+        backends: cdk.Lazy.any({ produce: () => this.backends }, { omitEmptyArray: true }),
+        listeners: cdk.Lazy.any({ produce: () => this.listeners }, { omitEmptyArray: true }),
         serviceDiscovery: {
           dns: props.dnsHostName !== undefined ? { hostname: props.dnsHostName } : undefined,
           awsCloudMap: props.cloudMapService !== undefined ? {

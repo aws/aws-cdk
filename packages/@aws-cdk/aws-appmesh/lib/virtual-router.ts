@@ -145,7 +145,7 @@ export class VirtualRouter extends VirtualRouterBase {
 
   constructor(scope: Construct, id: string, props: VirtualRouterProps) {
     super(scope, id, {
-      physicalName: props.virtualRouterName || cdk.Lazy.stringValue({ produce: () => this.node.uniqueId }),
+      physicalName: props.virtualRouterName || cdk.Lazy.string({ produce: () => this.node.uniqueId }),
     });
 
     this.mesh = props.mesh;

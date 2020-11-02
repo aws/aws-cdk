@@ -256,7 +256,7 @@ nodeunitShim({
   'fails if using tokens in build args keys or values'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const token = Lazy.stringValue({ produce: () => 'foo' });
+    const token = Lazy.string({ produce: () => 'foo' });
     const expected = /Cannot use tokens in keys or values of "buildArgs" since they are needed before deployment/;
 
     // THEN
@@ -276,7 +276,7 @@ nodeunitShim({
   'fails if using token as repositoryName'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const token = Lazy.stringValue({ produce: () => 'foo' });
+    const token = Lazy.string({ produce: () => 'foo' });
 
     // THEN
     test.throws(() => new DockerImageAsset(stack, 'MyAsset1', {

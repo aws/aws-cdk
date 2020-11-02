@@ -245,7 +245,7 @@ export class Canary extends cdk.Resource {
     }
 
     super(scope, id, {
-      physicalName: props.canaryName || cdk.Lazy.stringValue({
+      physicalName: props.canaryName || cdk.Lazy.string({
         produce: () => this.generateUniqueName(),
       }),
     });
