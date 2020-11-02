@@ -108,8 +108,7 @@
       "props-physical-name-type:@aws-cdk/aws-apigatewayv2.HttpStageProps.stageName",
       "props-physical-name:@aws-cdk/aws-apigatewayv2.HttpApiMappingProps",
       "props-physical-name:@aws-cdk/aws-apigatewayv2.HttpIntegrationProps",
-      "props-physical-name:@aws-cdk/aws-apigatewayv2.HttpRouteProps",
-      "resource-attribute:@aws-cdk/aws-apigatewayv2.HttpApi.apiEndpoint"
+      "props-physical-name:@aws-cdk/aws-apigatewayv2.HttpRouteProps"
     ]
   },
   "stability": "experimental",
