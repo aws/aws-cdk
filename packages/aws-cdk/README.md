@@ -45,9 +45,11 @@ $ # List the available template types & languages
 $ cdk init --list
 Available templates:
 * app: Template for a CDK Application
-   └─ cdk init app --language=[java|typescript]
+   └─ cdk init app --language=[csharp|fsharp|java|javascript|python|typescript]
 * lib: Template for a CDK Construct Library
    └─ cdk init lib --language=typescript
+* sample-app: Example CDK Application with some constructs
+   └─ cdk init sample-app --language=[csharp|fsharp|java|javascript|python|typescript]
 
 $ # Create a new library application in typescript
 $ cdk init lib --language=typescript
@@ -353,3 +355,10 @@ Some of the interesting keys that can be used in the JSON configuration files:
     "versionReporting": false,         // Opt-out of version reporting      (--no-version-reporting)
 }
 ```
+
+#### Environment
+
+The following environment variables affect aws-cdk:
+
+- `CDK_DISABLE_VERSION_CHECK`: If set, disable automatic check for newer versions.
+- `CDK_NEW_BOOTSTRAP`: use the modern bootstrapping stack.
