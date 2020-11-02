@@ -200,7 +200,7 @@
     "@types/jest": "^26.0.15",
     "@types/yaml": "1.9.7",
     "@types/yargs": "^15.0.9",
-    "jest": "^26.6.1",
+    "jest": "^26.6.2",
     "jsii": "^1.14.0"
   },
   "keywords": [
