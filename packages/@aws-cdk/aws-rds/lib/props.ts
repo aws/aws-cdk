@@ -165,7 +165,7 @@ export abstract class Credentials {
    * If no password is provided, one will be generated and stored in SecretsManager.
    *
    * @deprecated use `fromFixedUsername()` for new deployments only. Switching to
-   * `fromFixedUsername()` for existing instances/clusters will have them replaced.
+   *   `fromFixedUsername()` for existing instances/clusters will have them replaced.
    */
   public static fromUsername(username: string, options: CredentialsFromUsernameOptions = {}): Credentials {
     return {
