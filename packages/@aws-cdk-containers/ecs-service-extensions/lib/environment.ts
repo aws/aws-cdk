@@ -29,12 +29,49 @@ export interface EnvironmentProps {
 }
 
 /**
+ * An environment into which to deploy a service.
+ */
+export interface IEnvironment {
+  /**
+   * The name of this environment.
+   */
+  readonly id: string;
+
+  /**
+   * The VPC into which environment services should be placed.
+   */
+  readonly vpc: ec2.IVpc;
+
+  /**
+   * The cluster that is providing capacity for this service.
+   */
+  readonly cluster: ecs.ICluster;
+
+  /**
+   * The capacity type used by the service's cluster.
+   */
+  readonly capacityType: EnvironmentCapacityType;
+
+  /**
+   * Add a default cloudmap namespace to the environment's cluster.
+   */
+  addDefaultCloudMapNamespace(options: ecs.CloudMapNamespaceOptions): void;
+}
+
+/**
  * An environment into which to deploy a service. This environment
  * can either be instantiated with a preexisting AWS VPC and ECS cluster,
  * or it can create it's own VPC and cluster. By default it will create
  * a cluster with Fargate capacity.
  */
-export class Environment extends cdk.Construct {
+export class Environment extends cdk.Construct implements IEnvironment {
+  /**
+   * Import an existing environment from its attributes.
+   */
+  public static fromEnvironmentAttributes(scope: cdk.Construct, id: string, attrs: EnvironmentAttributes): IEnvironment {
+    return new ImportedEnvironment(scope, id, attrs);
+  }
+
   /**
    * The name of this environment.
    */
@@ -80,5 +117,48 @@ export class Environment extends cdk.Construct {
     } else {
       this.capacityType = EnvironmentCapacityType.FARGATE;
     }
+  }
+
+  /**
+   * Add a default cloudmap namespace to the environment's cluster.
+   */
+  addDefaultCloudMapNamespace(options: ecs.CloudMapNamespaceOptions) {
+    this.cluster.addDefaultCloudMapNamespace(options);
+  }
+}
+
+export interface EnvironmentAttributes {
+  /**
+   * The capacity type used by the service's cluster.
+   */
+  capacityType: EnvironmentCapacityType;
+
+  /**
+   * The cluster that is providing capacity for this service.
+   */
+  cluster: ecs.ICluster;
+}
+
+export class ImportedEnvironment extends cdk.Construct implements IEnvironment {
+  public readonly capacityType: EnvironmentCapacityType;
+  public readonly cluster: ecs.ICluster;
+  public readonly id: string;
+  public readonly vpc: ec2.IVpc;
+
+  constructor(scope: cdk.Construct, id: string, props: EnvironmentAttributes) {
+    super(scope, id);
+
+    this.id = id;
+    this.capacityType = props.capacityType;
+    this.cluster = props.cluster;
+    this.vpc = props.cluster.vpc;
+  }
+
+  /**
+   * Refuses to add a default cloudmap namespace to the cluster as we don't
+   * own it.
+   */
+  addDefaultCloudMapNamespace(_options: ecs.CloudMapNamespaceOptions) {
+    throw new Error('the cluster environment is immutable when imported');
   }
 }
