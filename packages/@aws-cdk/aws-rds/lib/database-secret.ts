@@ -70,6 +70,7 @@ export class DatabaseSecret extends secretsmanager.Secret {
     if (props.overrideLogicalId) {
       const hash = crypto.createHash('md5');
       hash.update(JSON.stringify({
+        path: this.node.path, // make it unique
         // Use here the options that influence the password generation
         excludeCharacters: props.excludeCharacters,
       }));

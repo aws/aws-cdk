@@ -534,7 +534,7 @@
         ]
       }
     },
-    "99914b932bd37a50b983c5e7c90ae93b": {
+    "653e16d6b669bc291aa4827a4721a98c": {
       "Type": "AWS::SecretsManager::Secret",
       "Properties": {
         "Description": {
@@ -560,7 +560,7 @@
       "Type": "AWS::SecretsManager::SecretTargetAttachment",
       "Properties": {
         "SecretId": {
-          "Ref": "99914b932bd37a50b983c5e7c90ae93b"
+          "Ref": "653e16d6b669bc291aa4827a4721a98c"
         },
         "TargetId": {
           "Ref": "InstanceC1063A87"
@@ -654,7 +654,7 @@
             [
               "{{resolve:secretsmanager:",
               {
-                "Ref": "99914b932bd37a50b983c5e7c90ae93b"
+                "Ref": "653e16d6b669bc291aa4827a4721a98c"
               },
               ":SecretString:password::}}"
             ]

@@ -301,7 +301,7 @@ export = {
       expect(stack).to(haveResourceLike('AWS::RDS::DBInstance', {
         MasterUsername: ABSENT,
         MasterUserPassword: {
-          'Fn::Join': ['', ['{{resolve:secretsmanager:', { Ref: '8ee0a797cad8a68dbeb85f8698cdb5bb' }, ':SecretString:password::}}']],
+          'Fn::Join': ['', ['{{resolve:secretsmanager:', { Ref: '29ae4bfb9ee908ebe1611900a1e2469e' }, ':SecretString:password::}}']],
         },
       }));
       expect(stack).to(haveResource('AWS::SecretsManager::Secret', {
@@ -1164,7 +1164,7 @@ export = {
           [
             '{{resolve:secretsmanager:',
             {
-              Ref: '99914b932bd37a50b983c5e7c90ae93b', // logic id is a hash
+              Ref: 'd0794ea66c2e84ff83bd09c0bced0333', // logic id is a hash
             },
             ':SecretString:password::}}',
           ],
@@ -1180,7 +1180,7 @@ export = {
           [
             '{{resolve:secretsmanager:',
             {
-              Ref: '81a0aab2d485f4f216324ac750b56c71', // different logic id
+              Ref: 'a279dc0dde77fa9a73d621570e4f9b92', // different logic id
             },
             ':SecretString:password::}}',
           ],

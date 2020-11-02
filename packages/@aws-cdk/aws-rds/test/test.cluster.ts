@@ -1764,7 +1764,7 @@ export = {
           [
             '{{resolve:secretsmanager:',
             {
-              Ref: '99914b932bd37a50b983c5e7c90ae93b', // logic id is a hash
+              Ref: 'd0794ea66c2e84ff83bd09c0bced0333', // logic id is a hash
             },
             ':SecretString:password::}}',
           ],
@@ -1780,7 +1780,7 @@ export = {
           [
             '{{resolve:secretsmanager:',
             {
-              Ref: '81a0aab2d485f4f216324ac750b56c71', // different logic id
+              Ref: 'a279dc0dde77fa9a73d621570e4f9b92', // different logic id
             },
             ':SecretString:password::}}',
           ],
