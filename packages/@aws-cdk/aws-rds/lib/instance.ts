@@ -953,7 +953,8 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
         username: credentials.username,
         encryptionKey: credentials.encryptionKey,
         excludeCharacters: credentials.excludeCharacters,
-        overrideLogicalId: !!props.credentials?.usernameAsString,
+        // if username is referenced as a string we can safely replace the secret
+        overrideLogicalId: props.credentials?.usernameAsString,
       }));
     }
     const secret = credentials.secret;
