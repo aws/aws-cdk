@@ -426,16 +426,10 @@ test('secretValue', () => {
 });
 
 describe('secretName', () => {
-  test('when name is provided', () => {
+  test.each([undefined, 'mySecret'])('when secretName is %s', (secretName) => {
     const secret = new secretsmanager.Secret(stack, 'Secret', {
-      secretName: 'mySecret',
+      secretName,
     });
-
-    expect(secret.secretName).toEqual('mySecret');
-  });
-
-  test('when name is not provided', () => {
-    const secret = new secretsmanager.Secret(stack, 'Secret');
     new cdk.CfnOutput(stack, 'MySecretName', {
       value: secret.secretName,
     });
