@@ -267,7 +267,7 @@ test('add s3 action', () => {
         },
         {
           Action: [
-            'km:Encrypt',
+            'kms:Encrypt',
             'kms:GenerateDataKey',
           ],
           Condition: {
