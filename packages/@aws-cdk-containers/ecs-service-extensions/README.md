@@ -283,3 +283,20 @@ The above code uses the well known service discovery name for each
 service, and passes it as an environment variable to the container so
 that the container knows what address to use when communicating to
 the other service.
+
+## Importing a pre-existing cluster
+
+To create an environment with a pre-existing cluster, you must import the cluster first, then use `Environment.fromEnvironmentAttributes()`. When a cluster is imported into an environment, the cluster is treated as immutable. As a result, no extension may modify the cluster to change a setting.
+
+```ts
+
+const cluster = ecs.Cluster.fromClusterAttributes(stack, 'Cluster', {
+  ...
+});
+
+const environment = Environment.fromEnvironmentAttributes(stack, 'Environment', {
+  capacityType: EnvironmentCapacityType.EC2, // or `FARGATE`
+  cluster,
+});
+
+```

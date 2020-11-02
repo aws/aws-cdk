@@ -16,7 +16,7 @@ async function main() {
     process.stdout.write(`Verifying ${test.name} against ${test.expectedFileName} ... `);
 
     if (!test.hasExpected()) {
-      throw new Error(`No such file: ${test.expectedFileName}. Run 'npm run integ'.`);
+      throw new Error(`No such file: ${test.expectedFileName}. Run 'yarn integ'.`);
     }
 
     let expected = await test.readExpected();
@@ -40,7 +40,7 @@ async function main() {
 
   if (failures.length > 0) {
     // eslint-disable-next-line max-len
-    throw new Error(`Some stacks have changed. To verify that they still deploy successfully, run: 'npm run integ ${failures.join(' ')}'`);
+    throw new Error(`Some stacks have changed. To verify that they still deploy successfully, run: 'yarn integ ${failures.join(' ')}'`);
   }
 }
 
