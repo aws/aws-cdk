@@ -31,7 +31,7 @@ type demo {
   version: String!
 }
 type Query {
-  getDemos: [ test! ]
+  getDemos: [ demo! ]
 }
 input DemoInput {
   version: String!
@@ -81,6 +81,69 @@ demoDS.createResolver({
   fieldName: 'addDemo',
   requestMappingTemplate: MappingTemplate.dynamoDbPutItem(PrimaryKey.partition('id').auto(), Values.projecting('demo')),
   responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
+});
+```
+
+## Aurora Serverless
+
+AppSync provides a data source for executing SQL commands against Amazon Aurora
+Serverless clusters. You can use AppSync resolvers to execute SQL statements
+against the Data API with GraphQL queries, mutations, and subscriptions.
+
+```ts
+// Create username and password secret for DB Cluster
+const secret = new rds.DatabaseSecret(stack, 'AuroraSecret', {
+  username: 'clusteradmin',
+});
+
+// Create the DB cluster, provide all values needed to customise the database.
+const cluster = new rds.DatabaseCluster(stack, 'AuroraCluster', {
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_2_07_1 }),
+  credentials: { username: 'clusteradmin' },
+  clusterIdentifier: 'db-endpoint-test',
+  defaultDatabaseName: 'demos',
+});
+
+// Build a data source for AppSync to access the database.
+const rdsDS = api.addRdsDataSource('rds', 'The rds data source', cluster, secret);
+
+// Set up a resolver for an RDS query.
+rdsDS.createResolver({
+  typeName: 'Query',
+  fieldName: 'getDemosRds',
+  requestMappingTemplate: MappingTemplate.fromString(`
+  {
+    "version": "2018-05-29",
+    "statements": [
+      "SELECT * FROM demos"
+    ]
+  }
+  `),
+  responseMappingTemplate: MappingTemplate.fromString(`
+    $util.rds.toJsonObject($ctx.result)
+  `),
+});
+
+// Set up a resolver for an RDS mutation.
+rdsDS.createResolver({
+  typeName: 'Mutation',
+  fieldName: 'addDemoRds',
+  requestMappingTemplate: MappingTemplate.fromString(`
+  {
+    "version": "2018-05-29",
+    "statements": [
+      "INSERT INTO demos VALUES (:id, :version)",
+      "SELECT * WHERE id = :id"
+    ],
+    "variableMap": {
+      ":id": $util.toJson($util.autoId()),
+      ":version": $util.toJson($ctx.args.version)
+    }
+  }
+  `),
+  responseMappingTemplate: MappingTemplate.fromString(`
+    $util.rds.toJsonObject($ctx.result)
+  `),
 });
 ```
 
