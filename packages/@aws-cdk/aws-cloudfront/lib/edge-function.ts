@@ -1,29 +1,23 @@
+import * as crypto from 'crypto';
 import * as path from 'path';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
+import * as lambda from '@aws-cdk/aws-lambda';
 import * as ssm from '@aws-cdk/aws-ssm';
 import {
-  BootstraplessSynthesizer, Construct as CoreConstruct, ConstructNode,
+  BootstraplessSynthesizer, CfnResource, Construct as CoreConstruct, ConstructNode,
   CustomResource, CustomResourceProvider, CustomResourceProviderRuntime,
   DefaultStackSynthesizer, IStackSynthesizer, Resource, Stack, StackProps, Stage, Token,
 } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { Alias, AliasOptions } from './alias';
-import { EventInvokeConfigOptions } from './event-invoke-config';
-import { IEventSource } from './event-source';
-import { EventSourceMapping, EventSourceMappingOptions } from './event-source-mapping';
-import { Function, FunctionProps } from './function';
-import { IFunction } from './function-base';
-import { calculateFunctionHash } from './function-hash';
-import { extractQualifierFromArn, IVersion } from './lambda-version';
-import { Permission } from './permission';
+
 
 /**
  * Properties for creating a Lambda@Edge function
  * @experimental
  */
-export interface EdgeFunctionExperimentalProps extends FunctionProps { }
+export interface EdgeFunctionExperimentalProps extends lambda.FunctionProps { }
 
 /**
  * A Lambda@Edge function.
@@ -34,7 +28,7 @@ export interface EdgeFunctionExperimentalProps extends FunctionProps { }
  * @resource AWS::Lambda::Function
  * @experimental
  */
-export class EdgeFunctionExperimental extends Resource implements IVersion {
+export class EdgeFunctionExperimental extends Resource implements lambda.IVersion {
 
   private static readonly EDGE_REGION: string = 'us-east-1';
 
@@ -43,14 +37,14 @@ export class EdgeFunctionExperimental extends Resource implements IVersion {
   public readonly functionArn: string;
   public readonly grantPrincipal: iam.IPrincipal;
   public readonly isBoundToVpc = false;
-  public readonly lambda: IFunction;
+  public readonly lambda: lambda.IFunction;
   public readonly permissionsNode: ConstructNode;
   public readonly role?: iam.IRole;
   public readonly version: string;
 
   // functionStack needed for `addAlias`.
   private readonly functionStack: Stack;
-  private readonly edgeFunction: Function;
+  private readonly edgeFunction: lambda.Function;
 
   constructor(scope: Construct, id: string, props: EdgeFunctionExperimentalProps) {
     super(scope, id);
@@ -70,18 +64,18 @@ export class EdgeFunctionExperimental extends Resource implements IVersion {
     this.functionName = this.lambda.functionName;
     this.grantPrincipal = this.lambda.role!;
     this.permissionsNode = this.lambda.permissionsNode;
-    this.version = extractQualifierFromArn(this.functionArn);
+    this.version = lambda.extractQualifierFromArn(this.functionArn);
   }
 
   /**
    * Returns 'this'. Convenience method to make `EdgeFunction` conform to the same interface as `Function`.
    */
-  public get currentVersion(): IVersion {
+  public get currentVersion(): lambda.IVersion {
     return this;
   }
 
-  public addAlias(aliasName: string, options: AliasOptions = {}): Alias {
-    return new Alias(this.functionStack, `Alias${aliasName}`, {
+  public addAlias(aliasName: string, options: lambda.AliasOptions = {}): lambda.Alias {
+    return new lambda.Alias(this.functionStack, `Alias${aliasName}`, {
       aliasName,
       version: this.edgeFunction.currentVersion,
       ...options,
@@ -94,14 +88,14 @@ export class EdgeFunctionExperimental extends Resource implements IVersion {
   public get connections(): ec2.Connections {
     throw new Error('Lambda@Edge does not support connections');
   }
-  public get latestVersion(): IVersion {
+  public get latestVersion(): lambda.IVersion {
     throw new Error('$LATEST function version cannot be used for Lambda@Edge');
   }
 
-  public addEventSourceMapping(id: string, options: EventSourceMappingOptions): EventSourceMapping {
+  public addEventSourceMapping(id: string, options: lambda.EventSourceMappingOptions): lambda.EventSourceMapping {
     return this.lambda.addEventSourceMapping(id, options);
   }
-  public addPermission(id: string, permission: Permission): void {
+  public addPermission(id: string, permission: lambda.Permission): void {
     return this.lambda.addPermission(id, permission);
   }
   public addToRolePolicy(statement: iam.PolicyStatement): void {
@@ -125,17 +119,17 @@ export class EdgeFunctionExperimental extends Resource implements IVersion {
   public metricThrottles(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.lambda.metricThrottles({ ...props, region: EdgeFunctionExperimental.EDGE_REGION });
   }
-  public addEventSource(source: IEventSource): void {
+  public addEventSource(source: lambda.IEventSource): void {
     return this.lambda.addEventSource(source);
   }
-  public configureAsyncInvoke(options: EventInvokeConfigOptions): void {
+  public configureAsyncInvoke(options: lambda.EventInvokeConfigOptions): void {
     return this.lambda.configureAsyncInvoke(options);
   }
 
   /** Create a function in-region */
-  private createInRegionFunction(id: string, props: FunctionProps): FunctionConfig {
+  private createInRegionFunction(id: string, props: lambda.FunctionProps): FunctionConfig {
     const role = props.role ?? defaultLambdaRole(this, id);
-    const edgeFunction = new Function(this, 'Fn', {
+    const edgeFunction = new lambda.Function(this, 'Fn', {
       ...props,
       role,
     });
@@ -144,7 +138,7 @@ export class EdgeFunctionExperimental extends Resource implements IVersion {
   }
 
   /** Create a support stack and function in us-east-1, and a SSM reader in-region */
-  private createCrossRegionFunction(id: string, props: FunctionProps): FunctionConfig {
+  private createCrossRegionFunction(id: string, props: lambda.FunctionProps): FunctionConfig {
     const parameterNamePrefix = 'EdgeFunctionArn';
     const parameterName = `${parameterNamePrefix}${id}`;
     const functionStack = this.edgeStack();
@@ -226,7 +220,7 @@ export class EdgeFunctionExperimental extends Resource implements IVersion {
 
 /** Result of creating an in-region or cross-region function */
 interface FunctionConfig {
-  readonly edgeFunction: Function;
+  readonly edgeFunction: lambda.Function;
   readonly edgeArn: string;
   readonly functionStack: Stack;
 }
@@ -237,10 +231,10 @@ class CrossRegionLambdaStack extends Stack {
     super(scope, id, props);
   }
 
-  public addEdgeFunction(id: string, parameterName: string, props: FunctionProps) {
+  public addEdgeFunction(id: string, parameterName: string, props: lambda.FunctionProps) {
     const role = props.role ?? defaultLambdaRole(this, id);
 
-    const edgeFunction = new Function(this, id, {
+    const edgeFunction = new lambda.Function(this, id, {
       ...props,
       role,
     });
@@ -264,3 +258,14 @@ function defaultLambdaRole(scope: Construct, id: string): iam.IRole {
   });
 }
 
+// Stolen from @aws-lambda/lib/function-hash.ts, which isn't currently exported.
+function calculateFunctionHash(fn: lambda.Function) {
+  const stack = Stack.of(fn);
+  const functionResource = fn.node.defaultChild as CfnResource;
+  // render the cloudformation resource from this function
+  const config = stack.resolve((functionResource as any)._toCloudFormation());
+
+  const hash = crypto.createHash('md5');
+  hash.update(JSON.stringify(config));
+  return hash.digest('hex');
+}

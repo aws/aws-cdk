@@ -1,5 +1,4 @@
 ## AWS Lambda Construct Library
-
 <!--BEGIN STABILITY BANNER-->
 ---
 
@@ -28,11 +27,11 @@ const fn = new lambda.Function(this, 'MyFunction', {
 The `lambda.Code` class includes static convenience methods for various types of
 runtime code.
 
-* `lambda.Code.fromBucket(bucket, key[, objectVersion])` - specify an S3 object
+ * `lambda.Code.fromBucket(bucket, key[, objectVersion])` - specify an S3 object
    that contains the archive of your runtime code.
-* `lambda.Code.fromInline(code)` - inline the handle code as a string. This is
+ * `lambda.Code.fromInline(code)` - inline the handle code as a string. This is
    limited to supported runtimes and the code cannot exceed 4KiB.
-* `lambda.Code.fromAsset(path)` - specify a directory or a .zip file in the local
+ * `lambda.Code.fromAsset(path)` - specify a directory or a .zip file in the local
    filesystem which will be zipped and uploaded to S3 before deployment. See also
    [bundling asset code](#Bundling-Asset-Code).
 
@@ -362,6 +361,7 @@ const fn = new lambda.Function(stack, 'MyLambda', {
 });
 ```
 
+
 ### Singleton Function
 
 The `SingletonFunction` construct is a way to guarantee that a lambda function will be guaranteed to be part of the stack,
@@ -377,14 +377,12 @@ For example, the `LogRetention` construct requires only one single lambda functi
 retention it seeks to manage.
 
 ### Bundling Asset Code
-
 When using `lambda.Code.fromAsset(path)` it is possible to bundle the code by running a
 command in a Docker container. The asset path will be mounted at `/asset-input`. The
 Docker container is responsible for putting content at `/asset-output`. The content at
 `/asset-output` will be zipped and used as Lambda code.
 
 Example with Python:
-
 ```ts
 new lambda.Function(this, 'Function', {
   code: lambda.Code.fromAsset(path.join(__dirname, 'my-python-handler'), {
@@ -402,7 +400,6 @@ new lambda.Function(this, 'Function', {
   handler: 'index.handler',
 });
 ```
-
 Runtimes expose a `bundlingDockerImage` property that points to the [AWS SAM](https://github.com/awslabs/aws-sam-cli) build image.
 
 Use `cdk.BundlingDockerImage.fromRegistry(image)` to use an existing image or
@@ -427,33 +424,7 @@ new lambda.Function(this, 'Function', {
 ```
 
 ### Language-specific APIs
-
 Language-specific higher level constructs are provided in separate modules:
 
 * Node.js: [`@aws-cdk/aws-lambda-nodejs`](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-lambda-nodejs)
 * Python: [`@aws-cdk/aws-lambda-python`](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-lambda-python)
-
-### Lambda@Edge
-
-Lambda@Edge is a feature of Amazon CloudFront that lets you run code closer to users of your application,
-which improves performance and reduces latency. Lambda@Edge runs your code in response to events generated
-by the Amazon CloudFront content delivery network (CDN). See the
-[`@aws-cdk/aws-cloudfront`](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-cloudfront)
-documentation for more details.
-
-Among other [requirements and restrictions](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-requirements-limits.html),
-Lambda@Edge functions must be created in the `us-east-1` region. To make it easier to request functions for Lambda@Edge,
-the `EdgeFunctionExperimental` construct can be used. The `EdgeFunctionExperimental` construct will automatically request a function in `us-east-1`,
-regardless of the region of the current stack; it will also validate some of the restrictions on Lambda@Edge functions,
-like use of environment variables. You can define an `EdgeFunctionExperimental` exactly how you'd define a `Function`.
-
-```ts
-import * as lambda from '@aws-cdk/aws-lambda';
-import * as path from 'path';
-
-const fn = new lambda.EdgeFunctionExperimental(this, 'MyFunction', {
-  runtime: lambda.Runtime.NODEJS_10_X,
-  handler: 'index.handler',
-  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
-});
-```

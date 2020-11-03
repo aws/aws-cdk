@@ -7,7 +7,7 @@ import { TestOrigin } from './test-origin';
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'integ-distribution-lambda-cross-region', { env: { region: 'eu-west-1' } });
 
-const lambdaFunction = new lambda.EdgeFunctionExperimental(stack, 'Lambda', {
+const lambdaFunction = new cloudfront.EdgeFunctionExperimental(stack, 'Lambda', {
   code: lambda.Code.fromInline('foo'),
   handler: 'index.handler',
   runtime: lambda.Runtime.NODEJS_10_X,
