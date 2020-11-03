@@ -71,7 +71,7 @@
     "@types/jest": "^26.0.15",
     "@types/yaml": "^1.9.7",
     "cdk-build-tools": "0.0.0",
-    "jest": "^26.6.1",
+    "jest": "^26.6.2",
     "pkglint": "0.0.0"
   },
   "bundledDependencies": [

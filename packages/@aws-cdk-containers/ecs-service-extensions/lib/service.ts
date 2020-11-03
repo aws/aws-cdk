@@ -1,7 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as cdk from '@aws-cdk/core';
-import { Environment } from './environment';
+import { IEnvironment } from './environment';
 import { EnvironmentCapacityType, ServiceBuild } from './extensions/extension-interfaces';
 import { ServiceDescription } from './service-description';
 
@@ -17,7 +17,7 @@ export interface ServiceProps {
   /**
    * The environment to launch the service in
    */
-  readonly environment: Environment
+  readonly environment: IEnvironment
 }
 
 /**
@@ -44,7 +44,7 @@ export class Service extends cdk.Construct {
    * The cluster that is providing capacity for this service
    * [disable-awslint:ref-via-interface]
    */
-  public readonly cluster: ecs.Cluster;
+  public readonly cluster: ecs.ICluster;
 
   /**
    * The capacity type that this service will use
@@ -59,7 +59,7 @@ export class Service extends cdk.Construct {
   /**
    * The environment this service was launched in
    */
-  public readonly environment: Environment;
+  public readonly environment: IEnvironment;
 
   /**
    * The generated task definition for this service, is only
