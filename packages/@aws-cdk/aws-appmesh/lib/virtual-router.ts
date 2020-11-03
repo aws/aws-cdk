@@ -134,8 +134,7 @@ export class VirtualRouter extends VirtualRouterBase {
     });
 
     this.mesh = props.mesh;
-    // this.addListener(listeners || VirtualRouterListener.httpVirtualRouterListener().);
-    if (props.listeners) {
+    if (props.listeners && props.listeners.length) {
       props.listeners.forEach(listener => this.addListener(listener));
     } else {
       this.addListener(VirtualRouterListener.httpVirtualRouterListener());
