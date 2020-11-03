@@ -16,7 +16,7 @@ The `Service` construct provided by this module can be extended with optional `S
 
 - [AWS X-Ray](https://aws.amazon.com/xray/) for tracing your application
 - [Amazon CloudWatch Agent](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Install-CloudWatch-Agent.html) for capturing per task stats
-- [AWS AppMesh f](https://aws.amazon.com/app-mesh/)or adding your application to a service mesh
+- [AWS AppMesh](https://aws.amazon.com/app-mesh/) for adding your application to a service mesh
 - [Application Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html), for exposing your service to the public
 - [AWS FireLens](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_firelens.html), for filtering and routing application logs
 - [Community Extensions](#community-extensions), providing support for advanced use cases
@@ -304,12 +304,10 @@ const environment = Environment.fromEnvironmentAttributes(stack, 'Environment', 
 
 ## Community Extensions
 
-We encourage the development of community Service Extensions that support
-advanced features. Here are some notable examples:
+We encourage the development of Community Service Extensions that support
+advanced features. Here are some useful extensions that we have reviewed:
 
-### [ListenerRulesExtension](https://www.npmjs.com/package/@wheatstalk/ecs-service-extension-listener-rules)
+* [ListenerRulesExtension](https://www.npmjs.com/package/@wheatstalk/ecs-service-extension-listener-rules) for more precise control over Application Load Balancer rules
 
-This module provides an ECS Service Extension that registers your service with
-an Application Load Balancer, but allowing more precise control over listener
-rules. The produced listener rules are automatically prioritized in the load
-balancer by default, but can be given explicit priorities.
+> Please submit a pull request so that we can review your service extension and
+> list it here.
