@@ -1144,13 +1144,13 @@ export = {
     const db1 = new rds.DatabaseInstance(stack, 'Database1', {
       engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_12_3 }),
       vpc,
-      credentials: rds.Credentials.fromGeneratedPassword(),
+      credentials: rds.Credentials.fromGeneratedPassword('postgres'),
     });
 
     const db2 = new rds.DatabaseInstance(stack, 'Database2', {
       engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_12_3 }),
       vpc,
-      credentials: rds.Credentials.fromGeneratedPassword({
+      credentials: rds.Credentials.fromGeneratedPassword('postgres', {
         excludeCharacters: "<>?!'/@\"\\", // different characters set
       }),
     });
@@ -1187,7 +1187,7 @@ export = {
     new rds.DatabaseInstance(stack, 'Database', {
       engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_12_3 }),
       vpc,
-      credentials: rds.Credentials.fromPassword(cdk.SecretValue.ssmSecure('/dbPassword', '1')),
+      credentials: rds.Credentials.fromPassword('postgres', cdk.SecretValue.ssmSecure('/dbPassword', '1')),
     });
 
     // THEN

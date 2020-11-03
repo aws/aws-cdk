@@ -1739,7 +1739,7 @@ export = {
     // WHEN
     const db1 = new DatabaseCluster(stack, 'Database1', {
       engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
-      credentials: Credentials.fromGeneratedPassword(),
+      credentials: Credentials.fromGeneratedPassword('admin'),
       instanceProps: {
         vpc,
       },
@@ -1747,7 +1747,7 @@ export = {
 
     const db2 = new DatabaseCluster(stack, 'Database2', {
       engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
-      credentials: Credentials.fromGeneratedPassword({
+      credentials: Credentials.fromGeneratedPassword('admin', {
         excludeCharacters: "<>?!'/@\"\\", // different characters set
       }),
       instanceProps: {

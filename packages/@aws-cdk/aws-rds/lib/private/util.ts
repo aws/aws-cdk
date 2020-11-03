@@ -96,27 +96,22 @@ export function defaultDeletionProtection(deletionProtection?: boolean, removalP
 /**
  * Renders the credentials for an instance or cluster
  */
-export function renderCredentials(scope: Construct, credentials?: Credentials, engineDefaultUsername?: string): Credentials & { username: string } {
-  const defaultUsername = engineDefaultUsername ?? 'admin';
+export function renderCredentials(scope: Construct, credentials?: Credentials, engineDefaultUsername?: string): Credentials {
+  let renderedCredentials = credentials ?? Credentials.fromUsername(engineDefaultUsername ?? 'admin'); // For backwards compatibilty
 
-  let creds = credentials ?? Credentials.fromUsername(defaultUsername); // For backwards compatibilty
-  const username = creds.username ?? defaultUsername;
-
-  if (!creds.secret && !creds.password) {
-    creds = Credentials.fromSecret(new DatabaseSecret(scope, 'Secret', {
-      username,
-      encryptionKey: creds.encryptionKey,
-      excludeCharacters: creds.excludeCharacters,
-      // if username is referenced as a string we can safely replace the
-      // secret when customization options are changed
-      overrideLogicalId: credentials?.usernameAsString,
-    }));
+  if (!renderedCredentials.secret && !renderedCredentials.password) {
+    renderedCredentials = Credentials.fromSecret(
+      new DatabaseSecret(scope, 'Secret', {
+        username: renderedCredentials.username,
+        encryptionKey: renderedCredentials.encryptionKey,
+        excludeCharacters: renderedCredentials.excludeCharacters,
+        // if username is referenced as a string we can safely replace the
+        // secret when customization options are changed
+        overrideLogicalId: credentials?.usernameAsString,
+      }),
+      credentials?.usernameAsString ? renderedCredentials.username : undefined,
+    );
   }
 
-  return {
-    ...creds,
-    username: credentials?.usernameAsString
-      ? username
-      : creds.username ?? defaultUsername,
-  };
+  return renderedCredentials;
 }

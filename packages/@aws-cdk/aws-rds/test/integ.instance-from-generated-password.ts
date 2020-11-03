@@ -14,7 +14,7 @@ class DatabaseInstanceStack extends cdk.Stack {
     new rds.DatabaseInstance(this, 'Instance', {
       engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_21 }),
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
-      credentials: rds.Credentials.fromGeneratedPassword({ excludeCharacters: '!&*^#@()' }),
+      credentials: rds.Credentials.fromGeneratedPassword('admin', { excludeCharacters: '!&*^#@()' }),
       vpc,
       databaseName: 'CDKDB',
       storageEncrypted: true,

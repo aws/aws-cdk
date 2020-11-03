@@ -150,27 +150,16 @@ export interface CredentialsFromUsernameOptions extends CredentialsBaseOptions {
 }
 
 /**
- * Options for creating Credentials from a generated password.
- */
-export interface CredentialsFromGeneratedPasswordOptions extends CredentialsBaseOptions {
-  /**
-   * Username
-   *
-   * @default - 'admin' (or 'postgres' for PostgreSQL)
-   */
-  readonly username?: string;
-}
-
-/**
  * Username and password combination
  */
 export abstract class Credentials {
   /**
    * Creates Credentials with a password generated and stored in SecretsManager.
    */
-  public static fromGeneratedPassword(options: CredentialsFromGeneratedPasswordOptions = {}): Credentials {
+  public static fromGeneratedPassword(username: string, options: CredentialsBaseOptions = {}): Credentials {
     return {
       ...options,
+      username,
       usernameAsString: true,
     };
   }
@@ -180,7 +169,7 @@ export abstract class Credentials {
    *
    * Do not put passwords in your CDK code directly.
    */
-  public static fromPassword(password: SecretValue, username?: string): Credentials {
+  public static fromPassword(username: string, password: SecretValue): Credentials {
     return {
       username,
       password,
@@ -231,7 +220,7 @@ export abstract class Credentials {
   /**
    * Username
    */
-  public abstract readonly username?: string;
+  public abstract readonly username: string;
 
   /**
    * Whether the username should be referenced as a string and not as a dynamic

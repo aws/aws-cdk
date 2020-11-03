@@ -23,7 +23,7 @@ your instances will be launched privately or publicly:
 ```ts
 const cluster = new rds.DatabaseCluster(this, 'Database', {
   engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_2_08_1 }),
-  credentials: rds.Credentials.fromGeneratedPassword({ username: 'clusteradmin' }), // Optional - will default to admin
+  credentials: rds.Credentials.fromGeneratedPassword('clusteradmin'), // Optional - will default to admin
   instanceProps: {
     // optional , defaults to t3.medium
     instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
@@ -146,13 +146,13 @@ const engine = rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngine
 new rds.DatabaseInstance(this, 'InstanceWithUsername', {
   engine,
   vpc,
-  credentials: rds.Credentials.fromGeneratedPassword({ username: 'postgres' }), // Creates an admin user of postgres with a generated password
+  credentials: rds.Credentials.fromGeneratedPassword('postgres'), // Creates an admin user of postgres with a generated password
 });
 
 new rds.DatabaseInstance(this, 'InstanceWithPassword', {
   engine,
   vpc,
-  credentials: rds.Credentials.fromPassword(SecretValue.ssmSecure('/dbPassword', '1')), // Use password from SSM
+  credentials: rds.Credentials.fromPassword('admin', SecretValue.ssmSecure('/dbPassword', '1')), // Use password from SSM
 });
 
 const mySecret = secretsmanager.Secret.fromSecretName(this, 'DBSecret', 'myDBLoginInfo');
