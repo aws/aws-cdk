@@ -1,4 +1,3 @@
-import * as process from 'process';
 import { makeExecutable, shell } from './os';
 import { CDKBuildOptions, CompilerOverrides, currentPackageJson, isJsii, packageCompiler } from './package-info';
 import { Timers } from './timer';
@@ -14,8 +13,6 @@ export async function compileCurrentPackage(options: CDKBuildOptions, timers: Ti
 
   if (isJsii() && options.rosetta === 'strict') {
     await shell([
-      process.execPath,
-      ...process.execArgv,
       compilers.rosetta ?? DEFAULT_ROSETTA,
       'extract',
       '--compile',

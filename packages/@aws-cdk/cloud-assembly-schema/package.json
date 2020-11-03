@@ -90,6 +90,7 @@
   },
   "maturity": "stable",
   "cdk-build": {
-    "jest": true
+    "jest": true,
+    "rosetta": "strict"
   }
 }
