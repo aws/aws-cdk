@@ -19,6 +19,7 @@ The `Service` construct provided by this module can be extended with optional `S
 - [AWS AppMesh f](https://aws.amazon.com/app-mesh/)or adding your application to a service mesh
 - [Application Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html), for exposing your service to the public
 - [AWS FireLens](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_firelens.html), for filtering and routing application logs
+- [Community Extensions](#community-extensions), providing support for advanced use cases
 
 The `ServiceExtension` class is an abstract class which you can also implement in
 order to build your own custom service extensions for modifying your service, or
@@ -300,3 +301,15 @@ const environment = Environment.fromEnvironmentAttributes(stack, 'Environment', 
 });
 
 ```
+
+## Community Extensions
+
+We encourage the development of community Service Extensions that support
+advanced features. Here are some notable examples:
+
+### [ListenerRulesExtension](https://www.npmjs.com/package/@wheatstalk/ecs-service-extension-listener-rules)
+
+This module provides an ECS Service Extension that registers your service with
+an Application Load Balancer, but allowing more precise control over listener
+rules. The produced listener rules are automatically prioritized in the load
+balancer by default, but can be given explicit priorities.
