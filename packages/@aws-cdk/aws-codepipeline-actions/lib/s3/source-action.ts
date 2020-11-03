@@ -134,7 +134,7 @@ export class S3SourceAction extends Action {
 
   private generateEventId(stage: codepipeline.IStage): string {
     let ret: string;
-    const baseId = Names.uniqueId(stage.pipeline) + 'SourceEventRule';
+    const baseId = Names.nodeUniqueId(stage.pipeline.node) + 'SourceEventRule';
 
     if (Token.isUnresolved(this.props.bucketKey)) {
       // If bucketKey is a Token, don't include it in the ID.
