@@ -2,6 +2,47 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.71.0](https://github.com/aws/aws-cdk/compare/v1.70.0...v1.71.0) (2020-10-29)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **synthetics:** `runtime` is now a required property.
+
+### ⚠ BREAKING CHANGES
+
+* **core:** Creation stack traces for `Lazy` values are no longer
+captured by default. The `CDK_DEBUG=true` environment variable must be
+set in order to capture stack traces (this is also achieved by using the
+`--debug` option of the `cdk` CLI). Users should not need those stack
+traces most of the time, and should only enable creation stack trace
+captures when tyring to troubleshoot a resolution error that they are
+otherwise unable to trace back.
+
+### Features
+
+* **autoscaling:** CloudFormation init for ASGs ([#9674](https://github.com/aws/aws-cdk/issues/9674)) ([bdf1d30](https://github.com/aws/aws-cdk/commit/bdf1d30a08c034703ca05eebe8e9d0cc5e070949)), closes [#9065](https://github.com/aws/aws-cdk/issues/9065) [#9664](https://github.com/aws/aws-cdk/issues/9664)
+* **cli:** `--all` flag to select all stacks ([#10745](https://github.com/aws/aws-cdk/issues/10745)) ([bcd9d0a](https://github.com/aws/aws-cdk/commit/bcd9d0aa900aceb32e50031ea1a8f8a21e07a963)), closes [#3222](https://github.com/aws/aws-cdk/issues/3222)
+* **cli:** change virtualenv directory to `.venv` to comply with python recommendation ([#10995](https://github.com/aws/aws-cdk/issues/10995)) ([a4a41b5](https://github.com/aws/aws-cdk/commit/a4a41b5e006110304b51ee55c34e91cc3f129281)), closes [#9134](https://github.com/aws/aws-cdk/issues/9134)
+* **cli:** disable version check ([#10975](https://github.com/aws/aws-cdk/issues/10975)) ([575e47e](https://github.com/aws/aws-cdk/commit/575e47e4d6e8b89b4402ddc4b7bdea985b1e6edf)), closes [#10974](https://github.com/aws/aws-cdk/issues/10974)
+* **core:** make creationStack collection for Lazy opt-in ([#11170](https://github.com/aws/aws-cdk/issues/11170)) ([a3fae02](https://github.com/aws/aws-cdk/commit/a3fae02a5256a25fca011bab2a2aa9be58121c6e))
+* **init-templates:** Java init template tests updated to JUnit 5 ([#11101](https://github.com/aws/aws-cdk/issues/11101)) ([e0c00a1](https://github.com/aws/aws-cdk/commit/e0c00a1aafe82d390fd1859090e0bbe1ac249043)), closes [#10694](https://github.com/aws/aws-cdk/issues/10694)
+* upgrade "constructs" to 3.2.0 ([#11145](https://github.com/aws/aws-cdk/issues/11145)) ([d85e3ed](https://github.com/aws/aws-cdk/commit/d85e3eda8a0d97d60d178922bf9db33a31f4abe9))
+* **redshift:** add publiclyAccessible prop ([#11162](https://github.com/aws/aws-cdk/issues/11162)) ([9f8a6de](https://github.com/aws/aws-cdk/commit/9f8a6dee36105f7bbf7f433075881d5068fb5779)), closes [#11161](https://github.com/aws/aws-cdk/issues/11161)
+* **stepfunctions-tasks:** Support for Athena APIs: StartQueryExecution, StopQueryExeuction, GetQueryResults and GetQueryExecution  ([#11045](https://github.com/aws/aws-cdk/issues/11045)) ([19180cc](https://github.com/aws/aws-cdk/commit/19180cc7dd2e3cfbbcc82ef2b45f3a8f60894f8c))
+* **synthetics:** The CloudWatch Synthetics Construct Library is now in Developer Preview ([#11180](https://github.com/aws/aws-cdk/issues/11180)) ([b3b5f48](https://github.com/aws/aws-cdk/commit/b3b5f48ba457d382b6289997f164444ac6dfed0a))
+
+
+### Bug Fixes
+
+* **aws-rds/aws-secretmanager:** `credentials.fromSecret` does not access `secretsmanager.ISecret` ([#11033](https://github.com/aws/aws-cdk/issues/11033)) ([35ad608](https://github.com/aws/aws-cdk/commit/35ad608fb0c9801756b0557b460e3587684b7110)), closes [#11015](https://github.com/aws/aws-cdk/issues/11015)
+* **bootstrap:** same-account modern bootstrapping still requires policy ARNs ([#9867](https://github.com/aws/aws-cdk/issues/9867)) ([f5ab374](https://github.com/aws/aws-cdk/commit/f5ab374eafeafff02f386be445d10863717b51ed)), closes [#8571](https://github.com/aws/aws-cdk/issues/8571)
+* **codebuild:** ReportGroup name is ignored ([#11080](https://github.com/aws/aws-cdk/issues/11080)) ([1e2250a](https://github.com/aws/aws-cdk/commit/1e2250aa8345ee9fe22ed2a7395ba28994fe8ff1)), closes [#11052](https://github.com/aws/aws-cdk/issues/11052)
+* **core:** assets are duplicated between nested Cloud Assemblies ([#11008](https://github.com/aws/aws-cdk/issues/11008)) ([c84217f](https://github.com/aws/aws-cdk/commit/c84217f94cf66cae800d434350b3b3d7676a03b3)), closes [#10877](https://github.com/aws/aws-cdk/issues/10877) [#9627](https://github.com/aws/aws-cdk/issues/9627) [#9917](https://github.com/aws/aws-cdk/issues/9917)
+* **ec2:** `CfnInit` cannot be used with custom constructs ([#11167](https://github.com/aws/aws-cdk/issues/11167)) ([01c52c8](https://github.com/aws/aws-cdk/commit/01c52c84118b101de9aaca3091673b16d6871386))
+* **region-info:** incorrect S3 static website endpoint for us-gov-west-1 ([#10920](https://github.com/aws/aws-cdk/issues/10920)) ([dde9c55](https://github.com/aws/aws-cdk/commit/dde9c5530478e9371726278ef34b82da19624a4b)), closes [40aws-cdk/region-info/build-tools/generate-static-data.ts#L47-L49](https://github.com/40aws-cdk/region-info/build-tools/generate-static-data.ts/issues/L47-L49)
+
+
 ## [1.70.0](https://github.com/aws/aws-cdk/compare/v1.69.0...v1.70.0) (2020-10-23)
 
 
