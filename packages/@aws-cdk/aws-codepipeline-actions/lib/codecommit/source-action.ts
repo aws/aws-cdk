@@ -165,7 +165,7 @@ export class CodeCommitSourceAction extends Action {
   }
 
   private generateEventId(stage: codepipeline.IStage): string {
-    const baseId = Names.uniqueId(stage.pipeline);
+    const baseId = Names.nodeUniqueId(stage.pipeline.node);
     if (Token.isUnresolved(this.branch)) {
       let candidate = '';
       let counter = 0;
