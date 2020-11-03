@@ -1,4 +1,5 @@
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnScalingPolicy } from './applicationautoscaling.generated';
 import { IScalableTarget } from './scalable-target';
 
@@ -74,14 +75,14 @@ export class StepScalingAction extends cdk.Construct {
 
   private readonly adjustments = new Array<CfnScalingPolicy.StepAdjustmentProperty>();
 
-  constructor(scope: cdk.Construct, id: string, props: StepScalingActionProps) {
+  constructor(scope: Construct, id: string, props: StepScalingActionProps) {
     super(scope, id);
 
     // Cloudformation requires either the ResourceId, ScalableDimension, and ServiceNamespace
     // properties, or the ScalingTargetId property, but not both.
     // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationautoscaling-scalingpolicy.html
     const resource = new CfnScalingPolicy(this, 'Resource', {
-      policyName: props.policyName || this.node.uniqueId,
+      policyName: props.policyName || cdk.Names.uniqueId(this),
       policyType: 'StepScaling',
       scalingTargetId: props.scalingTarget.scalableTargetId,
       stepScalingPolicyConfiguration: {

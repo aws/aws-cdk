@@ -1,13 +1,13 @@
 import { expect as expectCDK, haveResource, ResourcePart } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
-import { RemovalPolicy, Size, Stack, Tag } from '@aws-cdk/core';
+import { RemovalPolicy, Size, Stack, Tags } from '@aws-cdk/core';
 import { FileSystem, LifecyclePolicy, PerformanceMode, ThroughputMode } from '../lib';
 
 let stack = new Stack();
 let vpc = new ec2.Vpc(stack, 'VPC');
 
-beforeEach( () => {
+beforeEach(() => {
   stack = new Stack();
   vpc = new ec2.Vpc(stack, 'VPC');
 });
@@ -176,7 +176,7 @@ test('support tags', () => {
   const fileSystem = new FileSystem(stack, 'EfsFileSystem', {
     vpc,
   });
-  Tag.add(fileSystem, 'Name', 'LookAtMeAndMyFancyTags');
+  Tags.of(fileSystem).add('Name', 'LookAtMeAndMyFancyTags');
 
   // THEN
   expectCDK(stack).to(haveResource('AWS::EFS::FileSystem', {
@@ -216,11 +216,24 @@ test('auto-named if none provided', () => {
 });
 
 test('removalPolicy is DESTROY', () => {
+  // WHEN
   new FileSystem(stack, 'EfsFileSystem', { vpc, removalPolicy: RemovalPolicy.DESTROY });
 
+  // THEN
   expectCDK(stack).to(haveResource('AWS::EFS::FileSystem', {
     DeletionPolicy: 'Delete',
     UpdateReplacePolicy: 'Delete',
   }, ResourcePart.CompleteDefinition));
+});
 
+test('can specify backup policy', () => {
+  // WHEN
+  new FileSystem(stack, 'EfsFileSystem', { vpc, enableAutomaticBackups: true });
+
+  // THEN
+  expectCDK(stack).to(haveResource('AWS::EFS::FileSystem', {
+    BackupPolicy: {
+      Status: 'ENABLED',
+    },
+  }));
 });

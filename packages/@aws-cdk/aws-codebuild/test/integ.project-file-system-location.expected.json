@@ -244,7 +244,11 @@
                       "Fn::Join": [
                         "",
                         [
-                          "arn:aws:ec2:",
+                          "arn:",
+                          {
+                            "Ref": "AWS::Partition"
+                          },
+                          ":ec2:",
                           {
                             "Ref": "AWS::Region"
                           },
@@ -268,7 +272,11 @@
                 "Fn::Join": [
                   "",
                   [
-                    "arn:aws:ec2:",
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":ec2:",
                     {
                       "Ref": "AWS::Region"
                     },
@@ -358,6 +366,7 @@
         "Environment": {
           "ComputeType": "BUILD_GENERAL1_SMALL",
           "Image": "aws/codebuild/standard:1.0",
+          "ImagePullCredentialsType": "CODEBUILD",
           "PrivilegedMode": true,
           "Type": "LINUX_CONTAINER"
         },
@@ -371,10 +380,22 @@
           "BuildSpec": "{\n  \"version\": \"0.2\"\n}",
           "Type": "NO_SOURCE"
         },
+        "EncryptionKey": "alias/aws/s3",
         "FileSystemLocations": [
           {
             "Identifier": "myidentifier",
-            "Location": "fs-c8d04839.efs.eu-west-2.amazonaws.com:/mnt",
+            "Location": {
+              "Fn::Join": [
+                "",
+                [
+                  "fs-c8d04839.efs.",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ".amazonaws.com:/mnt"
+                ]
+              ]
+            },
             "MountOptions": "nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2",
             "MountPoint": "/media",
             "Type": "EFS"

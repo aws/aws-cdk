@@ -64,9 +64,9 @@ export class PythonFunction extends lambda.Function {
       ...props,
       runtime,
       code: bundle({
-        ...props,
-        entry,
         runtime,
+        entry,
+        outputPathSuffix: '.',
       }),
       handler: `${index.slice(0, -3)}.${handler}`,
     });

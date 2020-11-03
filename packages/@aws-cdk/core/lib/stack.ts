@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
+import { IConstruct, Construct, Node } from 'constructs';
 import { Annotations } from './annotations';
 import { App } from './app';
 import { Arn, ArnComponents } from './arn';
@@ -10,13 +11,18 @@ import { CfnElement } from './cfn-element';
 import { Fn } from './cfn-fn';
 import { Aws, ScopedAws } from './cfn-pseudo';
 import { CfnResource, TagType } from './cfn-resource';
-import { Construct, IConstruct, ISynthesisSession } from './construct-compat';
+import { ISynthesisSession } from './construct-compat';
 import { ContextProvider } from './context-provider';
 import { Environment } from './environment';
+import { FeatureFlags } from './feature-flags';
 import { CLOUDFORMATION_TOKEN_RESOLVER, CloudFormationLang } from './private/cloudformation-lang';
 import { LogicalIDs } from './private/logical-id';
 import { resolve } from './private/resolve';
 import { makeUniqueId } from './private/uniqueid';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from './construct-compat';
 
 const STACK_SYMBOL = Symbol.for('@aws-cdk/core.Stack');
 const MY_STACK_CACHE = Symbol.for('@aws-cdk/core.Stack.myStack');
@@ -125,12 +131,20 @@ export interface StackProps {
    * @default false
    */
   readonly terminationProtection?: boolean;
+
+  /**
+   * Include runtime versioning information in this Stack
+   *
+   * @default `analyticsReporting` setting of containing `App`, or value of
+   * 'aws:cdk:version-reporting' context key
+   */
+  readonly analyticsReporting?: boolean;
 }
 
 /**
  * A root construct which represents a single CloudFormation stack.
  */
-export class Stack extends Construct implements ITaggable {
+export class Stack extends CoreConstruct implements ITaggable {
   /**
    * Return whether the given object is a Stack.
    *
@@ -168,11 +182,12 @@ export class Stack extends Construct implements ITaggable {
         return c;
       }
 
-      if (!c.node.scope) {
-        throw new Error(`No stack could be identified for the construct at path ${construct.node.path}`);
+      const _scope = Node.of(c).scope;
+      if (Stage.isStage(c) || !_scope) {
+        throw new Error(`${construct.constructor?.name ?? 'Construct'} at '${Node.of(construct).path}' should be created in the scope of a Stack, but no Stack found`);
       }
 
-      return _lookup(c.node.scope);
+      return _lookup(_scope);
     }
   }
 
@@ -279,6 +294,15 @@ export class Stack extends Construct implements ITaggable {
   public readonly synthesizer: IStackSynthesizer;
 
   /**
+   * Whether version reporting is enabled for this stack
+   *
+   * Controls whether the CDK Metadata resource is injected
+   *
+   * @internal
+   */
+  public readonly _versionReportingEnabled: boolean;
+
+  /**
    * Logical ID generation strategy
    */
   private readonly _logicalIds: LogicalIDs;
@@ -358,14 +382,20 @@ export class Stack extends Construct implements ITaggable {
     //
     // Also use the new behavior if we are using the new CI/CD-ready synthesizer; that way
     // people only have to flip one flag.
-    // eslint-disable-next-line max-len
-    this.artifactId = this.node.tryGetContext(cxapi.ENABLE_STACK_NAME_DUPLICATES_CONTEXT) || this.node.tryGetContext(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT)
+    const featureFlags = FeatureFlags.of(this);
+    const stackNameDupeContext = featureFlags.isEnabled(cxapi.ENABLE_STACK_NAME_DUPLICATES_CONTEXT);
+    const newStyleSynthesisContext = featureFlags.isEnabled(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT);
+    this.artifactId = (stackNameDupeContext || newStyleSynthesisContext)
       ? this.generateStackArtifactId()
       : this.stackName;
 
     this.templateFile = `${this.artifactId}.template.json`;
 
-    this.synthesizer = props.synthesizer ?? (this.node.tryGetContext(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT)
+    // Not for nested stacks
+    this._versionReportingEnabled = (props.analyticsReporting ?? this.node.tryGetContext(cxapi.ANALYTICS_REPORTING_ENABLED_CONTEXT))
+      && !this.nestedStackParent;
+
+    this.synthesizer = props.synthesizer ?? (newStyleSynthesisContext
       ? new DefaultStackSynthesizer()
       : new LegacyStackSynthesizer());
     this.synthesizer.bind(this);
@@ -615,7 +645,7 @@ export class Stack extends Construct implements ITaggable {
    * Register a file asset on this Stack
    *
    * @deprecated Use `stack.synthesizer.addFileAsset()` if you are calling,
-   * and a different IDeploymentEnvironment class if you are implementing.
+   * and a different IStackSynthesizer class if you are implementing.
    */
   public addFileAsset(asset: FileAssetSource): FileAssetLocation {
     return this.synthesizer.addFileAsset(asset);
@@ -625,7 +655,7 @@ export class Stack extends Construct implements ITaggable {
    * Register a docker image asset on this Stack
    *
    * @deprecated Use `stack.synthesizer.addDockerImageAsset()` if you are calling,
-   * and a different `IDeploymentEnvironment` class if you are implementing.
+   * and a different `IStackSynthesizer` class if you are implementing.
    */
   public addDockerImageAsset(asset: DockerImageAssetSource): DockerImageAssetLocation {
     return this.synthesizer.addDockerImageAsset(asset);
@@ -688,9 +718,9 @@ export class Stack extends Construct implements ITaggable {
       throw new Error(`'${target.node.path}' depends on '${this.node.path}' (${cycle.join(', ')}). Adding this dependency (${reason}) would create a cyclic reference.`);
     }
 
-    let dep = this._stackDependencies[target.node.uniqueId];
+    let dep = this._stackDependencies[Names.uniqueId(target)];
     if (!dep) {
-      dep = this._stackDependencies[target.node.uniqueId] = {
+      dep = this._stackDependencies[Names.uniqueId(target)] = {
         stack: target,
         reasons: [],
       };
@@ -717,17 +747,15 @@ export class Stack extends Construct implements ITaggable {
     // this right now, so some parts still happen here.
     const builder = session.assembly;
 
+    const template = this._toCloudFormation();
+
     // write the CloudFormation template as a JSON file
     const outPath = path.join(builder.outdir, this.templateFile);
-    const text = JSON.stringify(this._toCloudFormation(), undefined, 2);
-    fs.writeFileSync(outPath, text);
+    fs.writeFileSync(outPath, JSON.stringify(template, undefined, 2));
 
     for (const ctx of this._missingContext) {
       builder.addMissing(ctx);
     }
-
-    // Delegate adding artifacts to the Synthesizer
-    this.synthesizer.synthesizeStackArtifacts(session);
   }
 
   /**
@@ -934,7 +962,7 @@ export class Stack extends Construct implements ITaggable {
    */
   private generateStackId(container: IConstruct | undefined) {
     const rootPath = rootPathTo(this, container);
-    const ids = rootPath.map(c => c.node.id);
+    const ids = rootPath.map(c => Node.of(c).id);
 
     // In unit tests our Stack (which is the only component) may not have an
     // id, so in that case just pretend it's "Stack".
@@ -1051,7 +1079,7 @@ function cfnElements(node: IConstruct, into: CfnElement[] = []): CfnElement[] {
     into.push(node);
   }
 
-  for (const child of node.node.children) {
+  for (const child of Node.of(node).children) {
     // Don't recurse into a substack
     if (Stack.isStack(child)) { continue; }
 
@@ -1067,7 +1095,7 @@ function cfnElements(node: IConstruct, into: CfnElement[] = []): CfnElement[] {
  * If no ancestor is given or the ancestor is not found, return the entire root path.
  */
 export function rootPathTo(construct: IConstruct, ancestor?: IConstruct): IConstruct[] {
-  const scopes = construct.node.scopes;
+  const scopes = Node.of(construct).scopes;
   for (let i = scopes.length - 2; i >= 0; i--) {
     if (scopes[i] === ancestor) {
       return scopes.slice(i + 1);
@@ -1097,6 +1125,7 @@ import { Stage } from './stage';
 import { ITaggable, TagManager } from './tag-manager';
 import { Token } from './token';
 import { FileSystem } from './fs';
+import { Names } from './names';
 
 interface StackDependency {
   stack: Stack;

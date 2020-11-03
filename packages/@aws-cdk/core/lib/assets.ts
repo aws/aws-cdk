@@ -60,17 +60,34 @@ export interface AssetOptions {
 
 /**
  * The type of asset hash
+ *
+ * NOTE: the hash is used in order to identify a specific revision of the asset, and
+ * used for optimizing and caching deployment activities related to this asset such as
+ * packaging, uploading to Amazon S3, etc.
  */
 export enum AssetHashType {
   /**
    * Based on the content of the source path
+   *
+   * When bundling, use `SOURCE` when the content of the bundling output is not
+   * stable across repeated bundling operations.
    */
   SOURCE = 'source',
 
   /**
    * Based on the content of the bundled path
+   *
+   * @deprecated use `OUTPUT` instead
    */
   BUNDLE = 'bundle',
+
+  /**
+   * Based on the content of the bundling output
+   *
+   * Use `OUTPUT` when the source of the asset is a top level folder containing
+   * code and/or dependencies that are not directly linked to the asset.
+   */
+  OUTPUT = 'output',
 
   /**
    * Use a custom hash
@@ -223,6 +240,8 @@ export interface FileAssetLocation {
    * can be used as an example for how to configure the key properly.
    *
    * @default - Asset bucket is not encrypted
+   * @deprecated Since bootstrap bucket v4, the key policy properly allows use of the
+   * key via the bucket and no additional parameters have to be granted anymore.
    */
   readonly kmsKeyArn?: string;
 }

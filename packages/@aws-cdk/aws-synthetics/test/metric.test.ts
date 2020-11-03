@@ -11,6 +11,7 @@ test('.metricXxx() methods can be used to obtain Metrics for the canary', () => 
       handler: 'index.handler',
       code: synthetics.Code.fromInline('foo'),
     }),
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_0,
   });
 
   // WHEN
@@ -19,29 +20,26 @@ test('.metricXxx() methods can be used to obtain Metrics for the canary', () => 
   const metricDuration = canary.metricDuration();
 
   // THEN
-  expect(metricSuccess).toEqual({
-    period: { amount: 5, unit: { inMillis: 60000, label: 'minutes' } },
+  expect(metricSuccess).toEqual(expect.objectContaining({
     dimensions: { CanaryName: canary.canaryName },
     namespace: 'CloudWatchSynthetics',
     metricName: 'SuccessPercent',
     statistic: 'Average',
-  });
+  }));
 
-  expect(metricFailed).toEqual({
-    period: { amount: 5, unit: { inMillis: 60000, label: 'minutes' } },
+  expect(metricFailed).toEqual(expect.objectContaining({
     dimensions: { CanaryName: canary.canaryName },
     namespace: 'CloudWatchSynthetics',
     metricName: 'Failed',
     statistic: 'Average',
-  });
+  }));
 
-  expect(metricDuration).toEqual({
-    period: { amount: 5, unit: { inMillis: 60000, label: 'minutes' } },
+  expect(metricDuration).toEqual(expect.objectContaining({
     dimensions: { CanaryName: canary.canaryName },
     namespace: 'CloudWatchSynthetics',
     metricName: 'Duration',
     statistic: 'Average',
-  });
+  }));
 });
 
 test('Metric can specify statistic', () => {
@@ -53,17 +51,17 @@ test('Metric can specify statistic', () => {
       handler: 'index.handler',
       code: synthetics.Code.fromInline('foo'),
     }),
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_0,
   });
 
   // WHEN
   const metric = canary.metricFailed({ statistic: 'Sum' });
 
   // THEN
-  expect(metric).toEqual({
-    period: { amount: 5, unit: { inMillis: 60000, label: 'minutes' } },
+  expect(metric).toEqual(expect.objectContaining({
     dimensions: { CanaryName: canary.canaryName },
     namespace: 'CloudWatchSynthetics',
     metricName: 'Failed',
     statistic: 'Sum',
-  });
+  }));
 });

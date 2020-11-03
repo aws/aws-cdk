@@ -1,4 +1,5 @@
-import { Construct, IResource, Lazy, Resource, ResourceProps, Stack, Token } from '@aws-cdk/core';
+import { Annotations, IResource, Lazy, Names, Resource, ResourceProps, Stack, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Connections } from './connections';
 import { CfnSecurityGroup, CfnSecurityGroupEgress, CfnSecurityGroupIngress } from './ec2.generated';
 import { IPeer } from './peer';
@@ -70,7 +71,7 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
   }
 
   public get uniqueId() {
-    return this.node.uniqueId;
+    return Names.nodeUniqueId(this.node);
   }
 
   public addIngressRule(peer: IPeer, connection: Port, description?: string, remoteRule?: boolean) {
@@ -404,7 +405,7 @@ export class SecurityGroup extends SecurityGroupBase {
       // In the case of "allowAllOutbound", we don't add any more rules. There
       // is only one rule which allows all traffic and that subsumes any other
       // rule.
-      this.node.addWarning('Ignoring Egress rule since \'allowAllOutbound\' is set to true; To add customize rules, set allowAllOutbound=false on the SecurityGroup');
+      Annotations.of(this).addWarning('Ignoring Egress rule since \'allowAllOutbound\' is set to true; To add customize rules, set allowAllOutbound=false on the SecurityGroup');
       return;
     } else {
       // Otherwise, if the bogus rule exists we can now remove it because the

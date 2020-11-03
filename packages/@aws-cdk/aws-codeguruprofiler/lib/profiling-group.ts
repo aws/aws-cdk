@@ -1,5 +1,6 @@
 import { Grant, IGrantable } from '@aws-cdk/aws-iam';
-import { Construct, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
+import { IResource, Lazy, Names, Resource, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnProfilingGroup } from './codeguruprofiler.generated';
 
 /**
@@ -194,7 +195,7 @@ export class ProfilingGroup extends ProfilingGroupBase {
   }
 
   private generateUniqueId(): string {
-    const name = this.node.uniqueId;
+    const name = Names.uniqueId(this);
     if (name.length > 240) {
       return name.substring(0, 120) + name.substring(name.length - 120);
     }

@@ -161,7 +161,7 @@
             },
             {
               "Action": [
-                "km:Encrypt",
+                "kms:Encrypt",
                 "kms:GenerateDataKey"
               ],
               "Condition": {

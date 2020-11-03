@@ -8,7 +8,7 @@ import { PackageJson, ValidationRule } from './packagejson';
 import {
   deepGet, deepSet,
   expectDevDependency, expectJSON,
-  fileShouldBe, fileShouldContain,
+  fileShouldBe, fileShouldBeginWith, fileShouldContain,
   fileShouldNotContain,
   findInnerPackages,
   monoRepoRoot,
@@ -131,7 +131,42 @@ export class NoticeFile extends ValidationRule {
   public readonly name = 'license/notice-file';
 
   public validate(pkg: PackageJson): void {
-    fileShouldBe(this.name, pkg, 'NOTICE', NOTICE);
+    fileShouldBeginWith(this.name, pkg, 'NOTICE', ...NOTICE.split('\n'));
+  }
+}
+
+/**
+ * NOTICE files must contain 3rd party attributions
+ */
+export class ThirdPartyAttributions extends ValidationRule {
+  public readonly name = 'license/3p-attributions';
+
+  public validate(pkg: PackageJson): void {
+    if (pkg.json.private) {
+      return;
+    }
+    const bundled = pkg.getBundledDependencies();
+    const lines = fs.readFileSync(path.join(pkg.packageRoot, 'NOTICE'), { encoding: 'utf8' }).split('\n');
+
+    const re = /^\*\* (\S+)/;
+    const attributions = lines.filter(l => re.test(l)).map(l => l.match(re)![1]);
+
+    for (const dep of bundled) {
+      if (!attributions.includes(dep)) {
+        pkg.report({
+          message: `Missing attribution for bundled dependency '${dep}' in NOTICE file.`,
+          ruleName: this.name,
+        });
+      }
+    }
+    for (const attr of attributions) {
+      if (!bundled.includes(attr)) {
+        pkg.report({
+          message: `Unnecessary attribution found for dependency '${attr}' in NOTICE file.`,
+          ruleName: this.name,
+        });
+      }
+    }
   }
 }
 
@@ -468,6 +503,47 @@ export class CDKKeywords extends ValidationRule {
 }
 
 /**
+ * Requires projectReferences to be set in the jsii configuration.
+ */
+export class JSIIProjectReferences extends ValidationRule {
+  public readonly name = 'jsii/project-references';
+
+  public validate(pkg: PackageJson): void {
+    if (!isJSII(pkg)) {
+      return;
+    }
+
+    expectJSON(
+      this.name,
+      pkg,
+      'jsii.projectReferences',
+      pkg.json.name !== 'monocdk' && pkg.json.name !== 'aws-cdk-lib',
+    );
+  }
+}
+
+export class NoPeerDependenciesMonocdk extends ValidationRule {
+  public readonly name = 'monocdk/no-peer';
+  private readonly allowedPeer = ['constructs'];
+  private readonly modules = ['monocdk', 'aws-cdk-lib'];
+
+  public validate(pkg: PackageJson): void {
+    if (!this.modules.includes(pkg.packageName)) {
+      return;
+    }
+
+    const peers = Object.keys(pkg.peerDependencies).filter(peer => !this.allowedPeer.includes(peer));
+    if (peers.length > 0) {
+      pkg.report({
+        ruleName: this.name,
+        message: `Adding a peer dependency to the monolithic package ${pkg.packageName} is a breaking change, and thus not allowed.
+         Added ${peers.join(' ')}`,
+      });
+    }
+  }
+}
+
+/**
  * JSII Java package is required and must look sane
  */
 export class JSIIJavaPackageIsRequired extends ValidationRule {
@@ -505,8 +581,11 @@ export class JSIIPythonTarget extends ValidationRule {
 
     const moduleName = cdkModuleName(pkg.json.name);
 
+    // See: https://github.com/aws/jsii/blob/master/docs/configuration.md#configuring-python
+
     expectJSON(this.name, pkg, 'jsii.targets.python.distName', moduleName.python.distName);
     expectJSON(this.name, pkg, 'jsii.targets.python.module', moduleName.python.module);
+    expectJSON(this.name, pkg, 'jsii.targets.python.classifiers', ['Framework :: AWS CDK', 'Framework :: AWS CDK :: 1']);
   }
 }
 
@@ -548,6 +627,21 @@ export class NoTsBuildInfo extends ValidationRule {
     // We might at some point also want to strip tsconfig.json but for now,
     // the TypeScript DOCS BUILD needs to it to load the typescript source.
     fileShouldContain(this.name, pkg, '.npmignore', '*.tsbuildinfo');
+  }
+}
+
+export class NoTestsInNpmPackage extends ValidationRule {
+  public readonly name = 'npmignore/test';
+
+  public validate(pkg: PackageJson): void {
+    // skip private packages
+    if (pkg.json.private) { return; }
+
+    // Skip the CLI package, as its 'test' subdirectory is used at runtime.
+    if (pkg.packageName === 'aws-cdk') { return; }
+
+    // Exclude 'test/' directories from being packaged
+    fileShouldContain(this.name, pkg, '.npmignore', 'test/');
   }
 }
 
@@ -842,6 +936,7 @@ export class MustDependonCdkByPointVersions extends ValidationRule {
       '@aws-cdk/cx-api',
       '@aws-cdk/cloud-assembly-schema',
       '@aws-cdk/region-info',
+      '@aws-cdk/yaml-cfn',
     ];
 
     for (const [depName, depVersion] of Object.entries(pkg.dependencies)) {
@@ -1228,7 +1323,7 @@ export class ConstructsDependency extends ValidationRule {
   public readonly name = 'constructs/dependency';
 
   public validate(pkg: PackageJson) {
-    const REQUIRED_VERSION = '^3.0.2';
+    const REQUIRED_VERSION = '^3.2.0';
 
     if (pkg.devDependencies?.constructs && pkg.devDependencies?.constructs !== REQUIRED_VERSION) {
       pkg.report({

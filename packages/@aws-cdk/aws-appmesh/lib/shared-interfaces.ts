@@ -1,4 +1,5 @@
-import { Duration } from '@aws-cdk/core';
+import * as cdk from '@aws-cdk/core';
+import { CfnVirtualGateway, CfnVirtualNode } from './appmesh.generated';
 
 /**
  * Enum of supported AppMesh protocols
@@ -22,24 +23,28 @@ export interface HealthCheck {
    * @default 2
    */
   readonly healthyThreshold?: number;
+
   /**
    * Interval in milliseconds to re-check
    *
    * @default 5 seconds
    */
-  readonly interval?: Duration;
+  readonly interval?: cdk.Duration;
+
   /**
    * The path where the application expects any health-checks, this can also be the application path.
    *
    * @default /
    */
   readonly path?: string;
+
   /**
    * The TCP port number for the healthcheck
    *
    * @default - same as corresponding port mapping
    */
   readonly port?: number;
+
   /**
    * The protocol to use for the healthcheck, for convinience a const enum has been defined.
    * Protocol.HTTP or Protocol.TCP
@@ -47,12 +52,14 @@ export interface HealthCheck {
    * @default - same as corresponding port mapping
    */
   readonly protocol?: Protocol;
+
   /**
    * Timeout in milli-seconds for the healthcheck to be considered a fail.
    *
    * @default 2 seconds
    */
-  readonly timeout?: Duration;
+  readonly timeout?: cdk.Duration;
+
   /**
    * Number of failed attempts before considering the node DOWN.
    *
@@ -73,7 +80,7 @@ export interface PortMapping {
   readonly port: number;
 
   /**
-   * Protocol for the VirtualNode / Route, only TCP or HTTP supported
+   * Protocol for the VirtualNode / Route, only GRPC, HTTP, HTTP2, or TCP is supported
    *
    * @default HTTP
    */
@@ -81,7 +88,7 @@ export interface PortMapping {
 }
 
 /**
- * Represents the properties needed to define healthy and active listeners for nodes.
+ * Represents the properties needed to define healthy and active listeners for nodes
  */
 export interface VirtualNodeListener {
   /**
@@ -92,9 +99,81 @@ export interface VirtualNodeListener {
   readonly portMapping?: PortMapping;
 
   /**
-   * Array fo HealthCheckProps for the node(s)
+   * Health checking strategy upstream nodes should use when communicating with the listener
    *
    * @default - no healthcheck
    */
   readonly healthCheck?: HealthCheck;
+}
+
+/**
+ * All Properties for Envoy Access logs for mesh endpoints
+ */
+export interface AccessLogConfig {
+
+  /**
+   * VirtualNode CFN configuration for Access Logging
+   *
+   * @default - no access logging
+   */
+  readonly virtualNodeAccessLog?: CfnVirtualNode.AccessLogProperty;
+
+  /**
+   * VirtualGateway CFN configuration for Access Logging
+   *
+   * @default - no access logging
+   */
+  readonly virtualGatewayAccessLog?: CfnVirtualGateway.VirtualGatewayAccessLogProperty;
+}
+
+/**
+ * Configuration for Envoy Access logs for mesh endpoints
+ */
+export abstract class AccessLog {
+  /**
+   * Path to a file to write access logs to
+   *
+   * @default - no file based access logging
+   */
+  public static fromFilePath(filePath: string): AccessLog {
+    return new FileAccessLog(filePath);
+  }
+
+  /**
+   * Called when the AccessLog type is initialized. Can be used to enforce
+   * mutual exclusivity with future properties
+   */
+  public abstract bind(scope: cdk.Construct): AccessLogConfig;
+}
+
+/**
+ * Configuration for Envoy Access logs for mesh endpoints
+ */
+class FileAccessLog extends AccessLog {
+  /**
+   * Path to a file to write access logs to
+   *
+   * @default - no file based access logging
+   */
+  public readonly filePath: string;
+
+  constructor(filePath: string) {
+    super();
+    this.filePath = filePath;
+  }
+
+  public bind(_scope: cdk.Construct): AccessLogConfig {
+    return {
+      virtualNodeAccessLog: {
+        file: {
+          path: this.filePath,
+        },
+      },
+      virtualGatewayAccessLog: {
+        file: {
+          path: this.filePath,
+        },
+      },
+    };
+  }
 }

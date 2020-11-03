@@ -1,10 +1,17 @@
 import { ITable } from '@aws-cdk/aws-dynamodb';
-import { IGrantable, IPrincipal, IRole, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
+import { Grant, IGrantable, IPrincipal, IRole, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { IFunction } from '@aws-cdk/aws-lambda';
-import { Construct, IResolvable } from '@aws-cdk/core';
+import { IDatabaseCluster } from '@aws-cdk/aws-rds';
+import { ISecret } from '@aws-cdk/aws-secretsmanager';
+import { IResolvable, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnDataSource } from './appsync.generated';
 import { IGraphqlApi } from './graphqlapi-base';
 import { BaseResolverProps, Resolver } from './resolver';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Base properties for an AppSync datasource
@@ -83,7 +90,7 @@ export interface ExtendedDataSourceProps {
 /**
  * Abstract AppSync datasource implementation. Do not use directly but use subclasses for concrete datasources
  */
-export abstract class BaseDataSource extends Construct {
+export abstract class BaseDataSource extends CoreConstruct {
   /**
    * the name of the data source
    */
@@ -204,6 +211,21 @@ export class DynamoDbDataSource extends BackedDataSource {
 }
 
 /**
+ * The authorization config in case the HTTP endpoint requires authorization
+ */
+export interface AwsIamConfig {
+  /**
+   * The signing region for AWS IAM authorization
+   */
+  readonly signingRegion: string;
+
+  /**
+   * The signing service name for AWS IAM authorization
+   */
+  readonly signingServiceName: string;
+}
+
+/**
  * Properties for an AppSync http datasource
  */
 export interface HttpDataSourceProps extends BaseDataSourceProps {
@@ -211,6 +233,14 @@ export interface HttpDataSourceProps extends BaseDataSourceProps {
    * The http endpoint
    */
   readonly endpoint: string;
+
+  /**
+   * The authorization config in case the HTTP endpoint requires authorization
+   *
+   * @default - none
+   *
+   */
+  readonly authorizationConfig?: AwsIamConfig;
 }
 
 /**
@@ -218,11 +248,16 @@ export interface HttpDataSourceProps extends BaseDataSourceProps {
  */
 export class HttpDataSource extends BaseDataSource {
   constructor(scope: Construct, id: string, props: HttpDataSourceProps) {
+    const authorizationConfig = props.authorizationConfig ? {
+      authorizationType: 'AWS_IAM',
+      awsIamConfig: props.authorizationConfig,
+    } : undefined;
     super(scope, id, props, {
+      type: 'HTTP',
       httpConfig: {
         endpoint: props.endpoint,
+        authorizationConfig,
       },
-      type: 'HTTP',
     });
   }
 }
@@ -249,5 +284,57 @@ export class LambdaDataSource extends BackedDataSource {
       },
     });
     props.lambdaFunction.grantInvoke(this);
+  }
+}
+
+/**
+ * Properties for an AppSync RDS datasource
+ */
+export interface RdsDataSourceProps extends BackedDataSourceProps {
+  /**
+   * The database cluster to call to interact with this data source
+   */
+  readonly databaseCluster: IDatabaseCluster;
+  /**
+   * The secret containing the credentials for the database
+   */
+  readonly secretStore: ISecret;
+}
+
+/**
+ * An AppSync datasource backed by RDS
+ */
+export class RdsDataSource extends BackedDataSource {
+  constructor(scope: Construct, id: string, props: RdsDataSourceProps) {
+    super(scope, id, props, {
+      type: 'RELATIONAL_DATABASE',
+      relationalDatabaseConfig: {
+        rdsHttpEndpointConfig: {
+          awsRegion: props.databaseCluster.stack.region,
+          dbClusterIdentifier: props.databaseCluster.clusterIdentifier,
+          awsSecretStoreArn: props.secretStore.secretArn,
+        },
+        relationalDatabaseSourceType: 'RDS_HTTP_ENDPOINT',
+      },
+    });
+    props.secretStore.grantRead(this);
+    const clusterArn = Stack.of(this).formatArn({
+      service: 'rds',
+      resource: `cluster:${props.databaseCluster.clusterIdentifier}`,
+    });
+    // Change to grant with RDS grant becomes implemented
+    Grant.addToPrincipal({
+      grantee: this,
+      actions: [
+        'rds-data:DeleteItems',
+        'rds-data:ExecuteSql',
+        'rds-data:ExecuteStatement',
+        'rds-data:GetItems',
+        'rds-data:InsertItems',
+        'rds-data:UpdateItems',
+      ],
+      resourceArns: [clusterArn, `${clusterArn}:*`],
+      scope: this,
+    });
   }
 }

@@ -3,10 +3,11 @@ import * as path from 'path';
 import { expect, haveResource, matchTemplate, SynthUtils } from '@aws-cdk/assert';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import * as sns from '@aws-cdk/aws-sns';
-import { App, CfnParameter, CfnResource, Construct, ContextProvider, Stack } from '@aws-cdk/core';
+import { App, CfnParameter, CfnResource, Construct, ContextProvider, LegacyStackSynthesizer, Names, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { NestedStack } from '../lib/nested-stack';
 
+/* eslint-disable cdk/no-core-construct */
 /* eslint-disable max-len */
 
 export = {
@@ -62,7 +63,7 @@ export = {
     const assembly = app.synth();
 
     // THEN
-    const template = JSON.parse(fs.readFileSync(path.join(assembly.directory, `${nested.node.uniqueId}.nested.template.json`), 'utf-8'));
+    const template = JSON.parse(fs.readFileSync(path.join(assembly.directory, `${Names.uniqueId(nested)}.nested.template.json`), 'utf-8'));
     test.deepEqual(template, {
       Resources: {
         ResourceInNestedStack: {
@@ -713,6 +714,8 @@ export = {
       },
     });
 
+    const middleStackHash = 'b2670b4c0c3fdf1d8fd9b9272bb8bf8173d18c0f67a888ba165cc569a248a84f';
+
     // nested1 wires the nested2 template through parameters, so we expect those
     expect(nested1).to(haveResource('Resource::1'));
     const nested2Template = SynthUtils.toCloudFormation(nested1);
@@ -728,9 +731,9 @@ export = {
       AssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cS3BucketDE3B88D6: { Type: 'String', Description: 'S3 bucket for asset "8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235c"' },
       AssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cS3VersionKey3A62EFEA: { Type: 'String', Description: 'S3 key for asset version "8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235c"' },
       AssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cArtifactHash7DC546E0: { Type: 'String', Description: 'Artifact hash for asset "8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235c"' },
-      AssetParameters8b50795a950cca6b01352f162c45d9d274dee6bc409f2f2b2ed029ad6828b3bfS3Bucket76ACFB38: { Type: 'String', Description: 'S3 bucket for asset "8b50795a950cca6b01352f162c45d9d274dee6bc409f2f2b2ed029ad6828b3bf"' },
-      AssetParameters8b50795a950cca6b01352f162c45d9d274dee6bc409f2f2b2ed029ad6828b3bfS3VersionKey04162EF1: { Type: 'String', Description: 'S3 key for asset version "8b50795a950cca6b01352f162c45d9d274dee6bc409f2f2b2ed029ad6828b3bf"' },
-      AssetParameters8b50795a950cca6b01352f162c45d9d274dee6bc409f2f2b2ed029ad6828b3bfArtifactHashF227ADD3: { Type: 'String', Description: 'Artifact hash for asset "8b50795a950cca6b01352f162c45d9d274dee6bc409f2f2b2ed029ad6828b3bf"' },
+      [`AssetParameters${middleStackHash}S3Bucket3DB431CB`]: { Type: 'String', Description: `S3 bucket for asset "${middleStackHash}"` },
+      [`AssetParameters${middleStackHash}S3VersionKeyBFFDABE9`]: { Type: 'String', Description: `S3 key for asset version "${middleStackHash}"` },
+      [`AssetParameters${middleStackHash}ArtifactHash8EA52875`]: { Type: 'String', Description: `Artifact hash for asset "${middleStackHash}"` },
     });
 
     // proxy asset params to nested stack
@@ -930,6 +933,37 @@ export = {
     test.ok(missing && missing.find(m => {
       return (m.key === expectedKey);
     }));
+
+    test.done();
+  },
+
+  '3-level stacks: legacy synthesizer parameters are added to the middle-level stack'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const top = new Stack(app, 'stack', {
+      synthesizer: new LegacyStackSynthesizer(),
+    });
+    const middle = new NestedStack(top, 'nested1');
+    const bottom = new NestedStack(middle, 'nested2');
+
+    // WHEN
+    new CfnResource(bottom, 'Something', {
+      type: 'BottomLevel',
+    });
+
+    // THEN
+    const asm = app.synth();
+    const middleTemplate = JSON.parse(fs.readFileSync(path.join(asm.directory, middle.templateFile), { encoding: 'utf-8' }));
+
+    const hash = 'bc3c51e4d3545ee0a0069401e5a32c37b66d044b983f12de416ba1576ecaf0a4';
+    test.deepEqual(middleTemplate.Parameters ?? {}, {
+      [`referencetostackAssetParameters${hash}S3BucketD7C30435Ref`]: {
+        Type: 'String',
+      },
+      [`referencetostackAssetParameters${hash}S3VersionKeyB667DBE1Ref`]: {
+        Type: 'String',
+      },
+    });
 
     test.done();
   },

@@ -1,5 +1,6 @@
 import { countResources, expect, haveResource } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
+import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { Cluster, KubernetesManifest, KubernetesVersion } from '../lib';
 import { AwsAuth } from '../lib/aws-auth';
@@ -10,6 +11,49 @@ import { testFixtureNoVpc } from './util';
 const CLUSTER_VERSION = KubernetesVersion.V1_16;
 
 export = {
+
+  'throws when adding a role from a different stack'(test: Test) {
+
+    const app = new cdk.App();
+    const clusterStack = new cdk.Stack(app, 'ClusterStack');
+    const roleStack = new cdk.Stack(app, 'RoleStack');
+    const awsAuth = new AwsAuth(clusterStack, 'Auth', {
+      cluster: new Cluster(clusterStack, 'Cluster', { version: KubernetesVersion.V1_17 }),
+    });
+    const role = new iam.Role(roleStack, 'Role', { assumedBy: new iam.AnyPrincipal() });
+
+    try {
+      awsAuth.addRoleMapping(role, { groups: ['group'] });
+      test.ok(false, 'expected error');
+    } catch (err) {
+      test.equal(err.message, 'RoleStack/Role should be defined in the scope of the ClusterStack stack to prevent circular dependencies');
+    }
+
+    test.done();
+
+  },
+
+  'throws when adding a user from a different stack'(test: Test) {
+
+    const app = new cdk.App();
+    const clusterStack = new cdk.Stack(app, 'ClusterStack');
+    const userStack = new cdk.Stack(app, 'UserStack');
+    const awsAuth = new AwsAuth(clusterStack, 'Auth', {
+      cluster: new Cluster(clusterStack, 'Cluster', { version: KubernetesVersion.V1_17 }),
+    });
+    const user = new iam.User(userStack, 'User');
+
+    try {
+      awsAuth.addUserMapping(user, { groups: ['group'] });
+      test.ok(false, 'expected error');
+    } catch (err) {
+      test.equal(err.message, 'UserStack/User should be defined in the scope of the ClusterStack stack to prevent circular dependencies');
+    }
+
+    test.done();
+
+  },
+
   'empty aws-auth'(test: Test) {
     // GIVEN
     const { stack } = testFixtureNoVpc();
@@ -190,7 +234,7 @@ export = {
     // GIVEN
     const { stack } = testFixtureNoVpc();
     const cluster = new Cluster(stack, 'Cluster', { version: CLUSTER_VERSION });
-    cluster.addNodegroup('NG');
+    cluster.addNodegroupCapacity('NG');
     const role = iam.Role.fromRoleArn(stack, 'imported-role', 'arn:aws:iam::123456789012:role/S3Access');
 
     // WHEN

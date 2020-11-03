@@ -167,6 +167,7 @@
         "Environment": {
           "ComputeType": "BUILD_GENERAL1_SMALL",
           "Image": "aws/codebuild/standard:1.0",
+          "ImagePullCredentialsType": "CODEBUILD",
           "PrivilegedMode": false,
           "Type": "LINUX_CONTAINER"
         },
@@ -180,6 +181,7 @@
           "BuildSpec": "{\n  \"version\": \"0.2\"\n}",
           "Type": "NO_SOURCE"
         },
+        "EncryptionKey": "alias/aws/s3",
         "SecondaryArtifacts": [
           {
             "ArtifactIdentifier": "AddArtifact1",

@@ -2,7 +2,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as assets from '@aws-cdk/assets';
 import * as ecr from '@aws-cdk/aws-ecr';
-import { Construct, Stack, Token } from '@aws-cdk/core';
+import { Annotations, Construct as CoreConstruct, Stack, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as minimatch from 'minimatch';
 
 /**
@@ -64,7 +65,7 @@ export interface DockerImageAssetProps extends DockerImageAssetOptions {
  *
  * The image will be created in build time and uploaded to an ECR repository.
  */
-export class DockerImageAsset extends Construct implements assets.IAsset {
+export class DockerImageAsset extends CoreConstruct implements assets.IAsset {
   /**
    * The full URI of the image (including a tag). Use this reference to pull
    * the asset.
@@ -112,7 +113,7 @@ export class DockerImageAsset extends Construct implements assets.IAsset {
     });
 
     if (props.repositoryName) {
-      this.node.addWarning('DockerImageAsset.repositoryName is deprecated. Override "core.Stack.addDockerImageAsset" to control asset locations');
+      Annotations.of(this).addWarning('DockerImageAsset.repositoryName is deprecated. Override "core.Stack.addDockerImageAsset" to control asset locations');
     }
 
     // include build context in "extra" so it will impact the hash
@@ -141,7 +142,7 @@ export class DockerImageAsset extends Construct implements assets.IAsset {
 
     const stack = Stack.of(this);
     const location = stack.synthesizer.addDockerImageAsset({
-      directoryName: staging.stagedPath,
+      directoryName: staging.relativeStagedPath(stack),
       dockerBuildArgs: props.buildArgs,
       dockerBuildTarget: props.target,
       dockerFile: props.file,

@@ -548,6 +548,49 @@ export = {
     test.done();
   },
 
+  'errors when setting both HTTP protocol and redirectHTTP'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // THEN
+    test.throws(() => {
+      new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+        cluster,
+        taskImageOptions: {
+          image: ecs.ContainerImage.fromRegistry('test'),
+        },
+        protocol: ApplicationProtocol.HTTP,
+        redirectHTTP: true,
+      });
+    });
+
+    test.done();
+  },
+
+  'does not throw errors when not setting HTTPS protocol but certificate for redirectHTTP'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    const zone = new PublicHostedZone(stack, 'HostedZone', { zoneName: 'example.com' });
+
+    // THEN
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+      cluster,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('test'),
+      },
+      domainName: 'api.example.com',
+      domainZone: zone,
+      redirectHTTP: true,
+      certificate: Certificate.fromCertificateArn(stack, 'Cert', 'helloworld'),
+    });
+
+    test.done();
+  },
+
   'errors when setting HTTPS protocol but not domain name'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -1084,6 +1127,7 @@ export = {
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
     cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+    const zone = new PublicHostedZone(stack, 'HostedZone', { zoneName: 'example.com' });
 
     // WHEN
     new ecsPatterns.ApplicationLoadBalancedEc2Service(stack, 'Service', {
@@ -1092,7 +1136,11 @@ export = {
       taskImageOptions: {
         image: ecs.ContainerImage.fromRegistry('test'),
       },
+      domainName: 'api.example.com',
+      domainZone: zone,
+      certificate: Certificate.fromCertificateArn(stack, 'Cert', 'helloworld'),
       openListener: false,
+      redirectHTTP: true,
     });
 
     // THEN - Stack contains no ingress security group rules

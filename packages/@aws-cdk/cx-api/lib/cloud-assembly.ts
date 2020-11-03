@@ -172,13 +172,22 @@ export class CloudAssembly {
    * @returns all the CloudFormation stack artifacts that are included in this assembly.
    */
   public get stacks(): CloudFormationStackArtifact[] {
-    const result = new Array<CloudFormationStackArtifact>();
-    for (const a of this.artifacts) {
-      if (a instanceof CloudFormationStackArtifact) {
-        result.push(a);
-      }
+    return this.artifacts.filter(isCloudFormationStackArtifact);
+
+    function isCloudFormationStackArtifact(x: any): x is CloudFormationStackArtifact {
+      return x instanceof CloudFormationStackArtifact;
     }
-    return result;
+  }
+
+  /**
+   * The nested assembly artifacts in this assembly
+   */
+  public get nestedAssemblies(): NestedCloudAssemblyArtifact[] {
+    return this.artifacts.filter(isNestedCloudAssemblyArtifact);
+
+    function isNestedCloudAssemblyArtifact(x: any): x is NestedCloudAssemblyArtifact {
+      return x instanceof NestedCloudAssemblyArtifact;
+    }
   }
 
   private validateDeps() {
@@ -201,6 +210,18 @@ export class CloudAssembly {
 }
 
 /**
+ * Construction properties for CloudAssemblyBuilder
+ */
+export interface CloudAssemblyBuilderProps {
+  /**
+   * Use the given asset output directory
+   *
+   * @default - Same as the manifest outdir
+   */
+  readonly assetOutdir?: string;
+}
+
+/**
  * Can be used to build a cloud assembly.
  */
 export class CloudAssemblyBuilder {
@@ -209,6 +230,11 @@ export class CloudAssemblyBuilder {
    */
   public readonly outdir: string;
 
+  /**
+   * The directory where assets of this Cloud Assembly should be stored
+   */
+  public readonly assetOutdir: string;
+
   private readonly artifacts: { [id: string]: cxschema.ArtifactManifest } = { };
   private readonly missing = new Array<cxschema.MissingContext>();
 
@@ -216,21 +242,15 @@ export class CloudAssemblyBuilder {
    * Initializes a cloud assembly builder.
    * @param outdir The output directory, uses temporary directory if undefined
    */
-  constructor(outdir?: string) {
+  constructor(outdir?: string, props: CloudAssemblyBuilderProps = {}) {
     this.outdir = determineOutputDirectory(outdir);
+    this.assetOutdir = props.assetOutdir ?? this.outdir;
 
     // we leverage the fact that outdir is long-lived to avoid staging assets into it
     // that were already staged (copying can be expensive). this is achieved by the fact
     // that assets use a source hash as their name. other artifacts, and the manifest itself,
     // will overwrite existing files as needed.
-
-    if (fs.existsSync(this.outdir)) {
-      if (!fs.statSync(this.outdir).isDirectory()) {
-        throw new Error(`${this.outdir} must be a directory`);
-      }
-    } else {
-      fs.mkdirSync(this.outdir, { recursive: true });
-    }
+    ensureDirSync(this.outdir);
   }
 
   /**
@@ -297,7 +317,10 @@ export class CloudAssemblyBuilder {
       } as cxschema.NestedCloudAssemblyProperties,
     });
 
-    return new CloudAssemblyBuilder(innerAsmDir);
+    return new CloudAssemblyBuilder(innerAsmDir, {
+      // Reuse the same asset output directory as the current Casm builder
+      assetOutdir: this.assetOutdir,
+    });
   }
 }
 
@@ -360,6 +383,8 @@ export interface AssemblyBuildOptions {
   /**
    * Include the specified runtime information (module versions) in manifest.
    * @default - if this option is not specified, runtime info will not be included
+   * @deprecated All template modifications that should result from this should
+   * have already been inserted into the template.
    */
   readonly runtimeInfo?: RuntimeInfo;
 }
@@ -394,5 +419,15 @@ function ignore(_x: any) {
  * Turn the given optional output directory into a fixed output directory
  */
 function determineOutputDirectory(outdir?: string) {
-  return outdir ?? fs.mkdtempSync(path.join(os.tmpdir(), 'cdk.out'));
+  return outdir ?? fs.mkdtempSync(path.join(fs.realpathSync(os.tmpdir()), 'cdk.out'));
+}
+
+function ensureDirSync(dir: string) {
+  if (fs.existsSync(dir)) {
+    if (!fs.statSync(dir).isDirectory()) {
+      throw new Error(`${dir} must be a directory`);
+    }
+  } else {
+    fs.mkdirSync(dir, { recursive: true });
+  }
 }

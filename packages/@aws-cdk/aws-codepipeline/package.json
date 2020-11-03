@@ -23,9 +23,14 @@
       },
       "python": {
         "distName": "aws-cdk.aws-codepipeline",
-        "module": "aws_cdk.aws_codepipeline"
+        "module": "aws_cdk.aws_codepipeline",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",
@@ -44,10 +49,15 @@
     "cfn2ts": "cfn2ts",
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test",
-    "compat": "cdk-compat"
+    "compat": "cdk-compat",
+    "gen": "cfn2ts"
   },
   "cdk-build": {
-    "cloudformation": "AWS::CodePipeline"
+    "cloudformation": "AWS::CodePipeline",
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "nyc": {
     "statements": 50,
@@ -72,6 +82,7 @@
     "@types/nodeunit": "^0.0.31",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
+    "nodeunit-shim": "0.0.0",
     "cfn2ts": "0.0.0",
     "nodeunit": "^0.11.3",
     "pkglint": "0.0.0"
@@ -82,7 +93,7 @@
     "@aws-cdk/aws-kms": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.2.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -91,7 +102,7 @@
     "@aws-cdk/aws-kms": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.2.0"
   },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
@@ -144,7 +155,6 @@
       "props-default-doc:@aws-cdk/aws-codepipeline.ActionProperties.runOrder",
       "docs-public-apis:@aws-cdk/aws-codepipeline.ActionProperties.version",
       "props-default-doc:@aws-cdk/aws-codepipeline.ActionProperties.version",
-      "docs-public-apis:@aws-cdk/aws-codepipeline.IAction",
       "docs-public-apis:@aws-cdk/aws-codepipeline.IAction.actionProperties",
       "docs-public-apis:@aws-cdk/aws-codepipeline.IAction.bind",
       "docs-public-apis:@aws-cdk/aws-codepipeline.IAction.onStateChange",

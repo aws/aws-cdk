@@ -7,6 +7,8 @@ import { CfnElement } from '../cfn-element';
 import { CfnOutput } from '../cfn-output';
 import { CfnParameter } from '../cfn-parameter';
 import { Construct, IConstruct } from '../construct-compat';
+import { FeatureFlags } from '../feature-flags';
+import { Names } from '../names';
 import { Reference } from '../reference';
 import { IResolvable } from '../resolvable';
 import { Stack } from '../stack';
@@ -201,7 +203,7 @@ function getCreateExportsScope(stack: Stack) {
 }
 
 function generateExportName(stackExports: Construct, id: string) {
-  const stackRelativeExports = stackExports.node.tryGetContext(cxapi.STACK_RELATIVE_EXPORTS_CONTEXT);
+  const stackRelativeExports = FeatureFlags.of(stackExports).isEnabled(cxapi.STACK_RELATIVE_EXPORTS_CONTEXT);
   const stack = Stack.of(stackExports);
 
   const components = [
@@ -225,7 +227,7 @@ function generateExportName(stackExports: Construct, id: string) {
  */
 function createNestedStackParameter(nested: Stack, reference: CfnReference, value: IResolvable) {
   // we call "this.resolve" to ensure that tokens do not creep in (for example, if the reference display name includes tokens)
-  const paramId = nested.resolve(`reference-to-${reference.target.node.uniqueId}.${reference.displayName}`);
+  const paramId = nested.resolve(`reference-to-${ Names.nodeUniqueId(reference.target.node)}.${reference.displayName}`);
   let param = nested.node.tryFindChild(paramId) as CfnParameter;
   if (!param) {
     param = new CfnParameter(nested, paramId, { type: 'String' });
@@ -246,7 +248,7 @@ function createNestedStackParameter(nested: Stack, reference: CfnReference, valu
  * intrinsic that can be used to reference this output in the parent stack.
  */
 function createNestedStackOutput(producer: Stack, reference: Reference): CfnReference {
-  const outputId = `${reference.target.node.uniqueId}${reference.displayName}`;
+  const outputId = `${Names.nodeUniqueId(reference.target.node)}${reference.displayName}`;
   let output = producer.node.tryFindChild(outputId) as CfnOutput;
   if (!output) {
     output = new CfnOutput(producer, outputId, { value: Token.asString(reference) });

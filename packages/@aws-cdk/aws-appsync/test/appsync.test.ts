@@ -1,38 +1,23 @@
 import * as path from 'path';
 import '@aws-cdk/assert/jest';
+import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as appsync from '../lib';
 
-test('should not throw an Error', () => {
-  // GIVEN
-  const stack = new cdk.Stack();
-
-  // WHEN
-  const when = () => {
-    new appsync.GraphQLApi(stack, 'api', {
-      authorizationConfig: {},
-      schemaDefinition: appsync.SchemaDefinition.FILE,
-      name: 'api',
-      schemaDefinitionFile: path.join(__dirname, 'appsync.test.graphql'),
-    });
-  };
-
-  // THEN
-  expect(when).not.toThrow();
+let stack: cdk.Stack;
+let api: appsync.GraphqlApi;
+beforeEach(() => {
+  stack = new cdk.Stack();
+  api = new appsync.GraphqlApi(stack, 'api', {
+    authorizationConfig: {},
+    name: 'api',
+    schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+    logConfig: {},
+  });
 });
 
 test('appsync should configure pipeline when pipelineConfig has contents', () => {
-  // GIVEN
-  const stack = new cdk.Stack();
-
   // WHEN
-  const api = new appsync.GraphQLApi(stack, 'api', {
-    authorizationConfig: {},
-    name: 'api',
-    schemaDefinition: appsync.SchemaDefinition.FILE,
-    schemaDefinitionFile: path.join(__dirname, 'appsync.test.graphql'),
-  });
-
   new appsync.Resolver(stack, 'resolver', {
     api: api,
     typeName: 'test',
@@ -48,17 +33,7 @@ test('appsync should configure pipeline when pipelineConfig has contents', () =>
 });
 
 test('appsync should configure resolver as unit when pipelineConfig is empty', () => {
-  // GIVEN
-  const stack = new cdk.Stack();
-
   // WHEN
-  const api = new appsync.GraphQLApi(stack, 'api', {
-    authorizationConfig: {},
-    name: 'api',
-    schemaDefinition: appsync.SchemaDefinition.FILE,
-    schemaDefinitionFile: path.join(__dirname, 'appsync.test.graphql'),
-  });
-
   new appsync.Resolver(stack, 'resolver', {
     api: api,
     typeName: 'test',
@@ -72,17 +47,7 @@ test('appsync should configure resolver as unit when pipelineConfig is empty', (
 });
 
 test('appsync should configure resolver as unit when pipelineConfig is empty array', () => {
-  // GIVEN
-  const stack = new cdk.Stack();
-
   // WHEN
-  const api = new appsync.GraphQLApi(stack, 'api', {
-    authorizationConfig: {},
-    name: 'api',
-    schemaDefinition: appsync.SchemaDefinition.FILE,
-    schemaDefinitionFile: path.join(__dirname, 'appsync.test.graphql'),
-  });
-
   new appsync.Resolver(stack, 'resolver', {
     api: api,
     typeName: 'test',
@@ -97,20 +62,64 @@ test('appsync should configure resolver as unit when pipelineConfig is empty arr
 });
 
 test('when xray is enabled should not throw an Error', () => {
-  // GIVEN
-  const stack = new cdk.Stack();
-
   // WHEN
-  new appsync.GraphQLApi(stack, 'api', {
+  new appsync.GraphqlApi(stack, 'api-x-ray', {
     authorizationConfig: {},
     name: 'api',
-    schemaDefinition: appsync.SchemaDefinition.FILE,
-    schemaDefinitionFile: path.join(__dirname, 'appsync.test.graphql'),
+    schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
     xrayEnabled: true,
   });
 
   // THEN
   expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLApi', {
     XrayEnabled: true,
+  });
+});
+
+test('appsync GraphqlApi should be configured with custom CloudWatch Logs role when specified', () => {
+  // GIVEN
+  const cloudWatchLogRole: iam.Role = new iam.Role(stack, 'CloudWatchLogRole', {
+    assumedBy: new iam.ServicePrincipal('appsync.amazonaws.com'),
+    managedPolicies: [
+      iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSAppSyncPushToCloudWatchLogs'),
+    ],
+  });
+
+  // WHEN
+  new appsync.GraphqlApi(stack, 'api-custom-cw-logs-role', {
+    authorizationConfig: {},
+    name: 'apiWithCustomRole',
+    schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+    logConfig: {
+      role: cloudWatchLogRole,
+    },
+  });
+
+  // THEN
+  expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLApi', {
+    Name: 'apiWithCustomRole',
+    LogConfig: {
+      CloudWatchLogsRoleArn: {
+        'Fn::GetAtt': [
+          'CloudWatchLogRoleE3242F1C',
+          'Arn',
+        ],
+      },
+    },
+  });
+});
+
+test('appsync GraphqlApi should not use custom role for CW Logs when not specified', () => {
+  // EXPECT
+  expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLApi', {
+    Name: 'api',
+    LogConfig: {
+      CloudWatchLogsRoleArn: {
+        'Fn::GetAtt': [
+          'apiApiLogsRole56BEE3F1',
+          'Arn',
+        ],
+      },
+    },
   });
 });

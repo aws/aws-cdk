@@ -1,15 +1,16 @@
 ## AWS::APIGatewayv2 Construct Library
-
 <!--BEGIN STABILITY BANNER-->
 ---
 
-![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
+| Features | Stability |
+| --- | --- |
+| CFN Resources | ![Stable](https://img.shields.io/badge/stable-success.svg?style=for-the-badge) |
+| Higher level constructs for HTTP APIs | ![Experimental](https://img.shields.io/badge/experimental-important.svg?style=for-the-badge) |
+| Higher level constructs for Websocket APIs | ![Not Implemented](https://img.shields.io/badge/not--implemented-black.svg?style=for-the-badge) |
 
-> All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) are always stable and safe to use.
+> **CFN Resources:** All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) are always stable and safe to use.
 
-![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
-
-> The APIs of higher level constructs in this module are experimental and under active development. They are subject to non-backward compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be announced in the release notes. This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
+> **Experimental:** Higher level constructs in this module that are marked as experimental are under active development. They are subject to non-backward compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be announced in the release notes. This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
 
 ---
 <!--END STABILITY BANNER-->
@@ -22,6 +23,9 @@
   - [Cross Origin Resource Sharing (CORS)](#cross-origin-resource-sharing-cors)
   - [Publishing HTTP APIs](#publishing-http-apis)
   - [Custom Domain](#custom-domain)
+  - [Metrics](#metrics)
+  - [VPC Link](#vpc-link)
+  - [Private Integration](#private-integration)
 
 ## Introduction
 
@@ -54,6 +58,8 @@ integrations](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-
 
 The code snippet below configures a route `GET /books` with an HTTP proxy integration and uses the `ANY` method to
 proxy all other HTTP method calls to `/books` to a lambda proxy.
+
+The URL to the endpoint can be retrieved via the `apiEndpoint` attribute.
 
 ```ts
 const getBooksIntegration = new HttpProxyIntegration({
@@ -197,3 +203,52 @@ with 3 API mapping resources across different APIs and Stages.
 | api | $default  |   `https://${domainName}/foo`  |
 | api | beta  |   `https://${domainName}/bar`  |
 | apiDemo | $default  |   `https://${domainName}/demo`  |
+
+## Metrics
+
+The API Gateway v2 service sends metrics around the performance of HTTP APIs to Amazon CloudWatch.
+These metrics can be referred to using the metric APIs available on the `HttpApi` construct.
+The APIs with the `metric` prefix can be used to get reference to specific metrics for this API. For example,
+the method below refers to the client side errors metric for this API.
+
+```
+const api = new apigw.HttpApi(stack, 'my-api');
+const clientErrorMetric = api.metricClientError();
+
+```
+
+Please note that this will return a metric for all the stages defined in the api. It is also possible to refer to metrics for a specific Stage using
+the `metric` methods from the `Stage` construct.
+
+```
+const api = new apigw.HttpApi(stack, 'my-api');
+const stage = new HttpStage(stack, 'Stage', {
+   httpApi: api,
+});
+const clientErrorMetric = stage.metricClientError();
+```
+
+### VPC Link
+
+Private integrations let HTTP APIs connect with AWS resources that are placed behind a VPC. These are usually Application
+Load Balancers, Network Load Balancers or a Cloud Map service. The `VpcLink` construct enables this integration.
+The following code creates a `VpcLink` to a private VPC.
+
+```ts
+const vpc = new ec2.Vpc(stack, 'VPC');
+const vpcLink = new VpcLink(stack, 'VpcLink', { vpc });
+```
+
+Any existing `VpcLink` resource can be imported into the CDK app via the `VpcLink.fromVpcLinkId()`.
+
+```ts
+const awesomeLink = VpcLink.fromVpcLinkId(stack, 'awesome-vpc-link', 'us-east-1_oiuR12Abd');
+```
+
+### Private Integration
+
+Private integrations enable integrating an HTTP API route with private resources in a VPC, such as Application Load Balancers or
+Amazon ECS container-based applications.  Using private integrations, resources in a VPC can be exposed for access by
+clients outside of the VPC.
+
+These integrations can be found in the [APIGatewayV2-Integrations](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-apigatewayv2-integrations-readme.html) constructs library.

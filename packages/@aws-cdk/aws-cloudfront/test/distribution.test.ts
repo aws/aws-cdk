@@ -24,7 +24,8 @@ test('minimal example renders correctly', () => {
   expect(stack).toHaveResource('AWS::CloudFront::Distribution', {
     DistributionConfig: {
       DefaultCacheBehavior: {
-        ForwardedValues: { QueryString: false },
+        CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
+        Compress: true,
         TargetOriginId: 'StackMyDistOrigin1D6D5E535',
         ViewerProtocolPolicy: 'allow-all',
       },
@@ -67,7 +68,8 @@ test('exhaustive example of props renders correctly', () => {
     DistributionConfig: {
       Aliases: ['example.com'],
       DefaultCacheBehavior: {
-        ForwardedValues: { QueryString: false },
+        CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
+        Compress: true,
         TargetOriginId: 'StackMyDistOrigin1D6D5E535',
         ViewerProtocolPolicy: 'allow-all',
       },
@@ -98,8 +100,9 @@ test('exhaustive example of props renders correctly', () => {
       ViewerCertificate: {
         AcmCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012',
         SslSupportMethod: 'sni-only',
-        MinimumProtocolVersion: 'TLSv1.2_2018',
+        MinimumProtocolVersion: 'TLSv1.2_2019',
       },
+      WebACLId: '473e64fd-f30b-4765-81a0-62ad96dd167a',
     },
   });
 });
@@ -131,13 +134,15 @@ describe('multiple behaviors', () => {
     expect(stack).toHaveResource('AWS::CloudFront::Distribution', {
       DistributionConfig: {
         DefaultCacheBehavior: {
-          ForwardedValues: { QueryString: false },
+          CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
+          Compress: true,
           TargetOriginId: 'StackMyDistOrigin1D6D5E535',
           ViewerProtocolPolicy: 'allow-all',
         },
         CacheBehaviors: [{
+          CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
+          Compress: true,
           PathPattern: 'api/*',
-          ForwardedValues: { QueryString: false },
           TargetOriginId: 'StackMyDistOrigin1D6D5E535',
           ViewerProtocolPolicy: 'allow-all',
         }],
@@ -168,13 +173,15 @@ describe('multiple behaviors', () => {
     expect(stack).toHaveResource('AWS::CloudFront::Distribution', {
       DistributionConfig: {
         DefaultCacheBehavior: {
-          ForwardedValues: { QueryString: false },
+          CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
+          Compress: true,
           TargetOriginId: 'StackMyDistOrigin1D6D5E535',
           ViewerProtocolPolicy: 'allow-all',
         },
         CacheBehaviors: [{
+          CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
+          Compress: true,
           PathPattern: 'api/*',
-          ForwardedValues: { QueryString: false },
           TargetOriginId: 'StackMyDistOrigin20B96F3AD',
           ViewerProtocolPolicy: 'allow-all',
         }],
@@ -213,19 +220,22 @@ describe('multiple behaviors', () => {
     expect(stack).toHaveResource('AWS::CloudFront::Distribution', {
       DistributionConfig: {
         DefaultCacheBehavior: {
-          ForwardedValues: { QueryString: false },
+          CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
+          Compress: true,
           TargetOriginId: 'StackMyDistOrigin1D6D5E535',
           ViewerProtocolPolicy: 'allow-all',
         },
         CacheBehaviors: [{
+          CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
+          Compress: true,
           PathPattern: 'api/1*',
-          ForwardedValues: { QueryString: false },
           TargetOriginId: 'StackMyDistOrigin20B96F3AD',
           ViewerProtocolPolicy: 'allow-all',
         },
         {
+          CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
+          Compress: true,
           PathPattern: 'api/2*',
-          ForwardedValues: { QueryString: false },
           TargetOriginId: 'StackMyDistOrigin1D6D5E535',
           ViewerProtocolPolicy: 'allow-all',
         }],
@@ -299,7 +309,7 @@ describe('certificates', () => {
         ViewerCertificate: {
           AcmCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012',
           SslSupportMethod: 'sni-only',
-          MinimumProtocolVersion: 'TLSv1.2_2018',
+          MinimumProtocolVersion: 'TLSv1.2_2019',
         },
       },
     });
@@ -467,6 +477,7 @@ describe('with Lambda@Edge functions', () => {
           {
             functionVersion: lambdaFunction.currentVersion,
             eventType: LambdaEdgeEventType.ORIGIN_REQUEST,
+            includeBody: true,
           },
         ],
       },
@@ -478,12 +489,49 @@ describe('with Lambda@Edge functions', () => {
           LambdaFunctionAssociations: [
             {
               EventType: 'origin-request',
+              IncludeBody: true,
               LambdaFunctionARN: {
                 Ref: 'FunctionCurrentVersion4E2B2261477a5ae8059bbaa7813f752292c0f65e',
               },
             },
           ],
         },
+      },
+    });
+  });
+
+  test('edgelambda.amazonaws.com is added to the trust policy of lambda', () => {
+    new Distribution(stack, 'MyDist', {
+      defaultBehavior: {
+        origin,
+        edgeLambdas: [
+          {
+            functionVersion: lambdaFunction.currentVersion,
+            eventType: LambdaEdgeEventType.ORIGIN_REQUEST,
+          },
+        ],
+      },
+    });
+
+    expect(stack).toHaveResource('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'lambda.amazonaws.com',
+            },
+          },
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'edgelambda.amazonaws.com',
+            },
+          },
+        ],
+        Version: '2012-10-17',
       },
     });
   });
@@ -537,6 +585,95 @@ describe('with Lambda@Edge functions', () => {
         },
       });
     }).toThrow(/\$LATEST function version cannot be used for Lambda@Edge/);
+  });
+
+  test('with removable env vars', () => {
+    const envLambdaFunction = new lambda.Function(stack, 'EnvFunction', {
+      runtime: lambda.Runtime.NODEJS,
+      code: lambda.Code.fromInline('whateverwithenv'),
+      handler: 'index.handler',
+    });
+    envLambdaFunction.addEnvironment('KEY', 'value', { removeInEdge: true });
+
+    new Distribution(stack, 'MyDist', {
+      defaultBehavior: {
+        origin,
+        edgeLambdas: [
+          {
+            functionVersion: envLambdaFunction.currentVersion,
+            eventType: LambdaEdgeEventType.ORIGIN_REQUEST,
+          },
+        ],
+      },
+    });
+
+    expect(stack).toHaveResource('AWS::Lambda::Function', {
+      Environment: ABSENT,
+      Code: {
+        ZipFile: 'whateverwithenv',
+      },
+    });
+  });
+
+  test('with incompatible env vars', () => {
+    const envLambdaFunction = new lambda.Function(stack, 'EnvFunction', {
+      runtime: lambda.Runtime.NODEJS,
+      code: lambda.Code.fromInline('whateverwithenv'),
+      handler: 'index.handler',
+      environment: {
+        KEY: 'value',
+      },
+    });
+
+    new Distribution(stack, 'MyDist', {
+      defaultBehavior: {
+        origin,
+        edgeLambdas: [
+          {
+            functionVersion: envLambdaFunction.currentVersion,
+            eventType: LambdaEdgeEventType.ORIGIN_REQUEST,
+          },
+        ],
+      },
+    });
+
+    expect(() => app.synth()).toThrow(/KEY/);
+  });
+
+  test('with singleton function', () => {
+    const singleton = new lambda.SingletonFunction(stack, 'Singleton', {
+      uuid: 'singleton-for-cloudfront',
+      runtime: lambda.Runtime.NODEJS_12_X,
+      code: lambda.Code.fromInline('code'),
+      handler: 'index.handler',
+    });
+
+    new Distribution(stack, 'MyDist', {
+      defaultBehavior: {
+        origin,
+        edgeLambdas: [
+          {
+            functionVersion: singleton.currentVersion,
+            eventType: LambdaEdgeEventType.ORIGIN_REQUEST,
+          },
+        ],
+      },
+    });
+
+    expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        DefaultCacheBehavior: {
+          LambdaFunctionAssociations: [
+            {
+              EventType: 'origin-request',
+              LambdaFunctionARN: {
+                Ref: 'SingletonLambdasingletonforcloudfrontCurrentVersion0078406348a0962a52448a200cd0dbc0e22edb2a',
+              },
+            },
+          ],
+        },
+      },
+    });
   });
 });
 

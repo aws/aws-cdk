@@ -3,7 +3,7 @@ import '@aws-cdk/assert/jest';
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { App, CfnDeletionPolicy, ConstructNode, Duration, PhysicalName, RemovalPolicy, Stack, Tag } from '@aws-cdk/core';
+import { App, CfnDeletionPolicy, ConstructNode, Duration, PhysicalName, RemovalPolicy, Stack, Tags } from '@aws-cdk/core';
 import {
   Attribute,
   AttributeType,
@@ -324,7 +324,7 @@ test('when specifying every property', () => {
     partitionKey: TABLE_PARTITION_KEY,
     sortKey: TABLE_SORT_KEY,
   });
-  table.node.applyAspect(new Tag('Environment', 'Production'));
+  Tags.of(table).add('Environment', 'Production');
 
   expect(stack).toHaveResource('AWS::DynamoDB::Table',
     {
@@ -357,7 +357,7 @@ test('when specifying sse with customer managed CMK', () => {
     encryption: TableEncryption.CUSTOMER_MANAGED,
     partitionKey: TABLE_PARTITION_KEY,
   });
-  table.node.applyAspect(new Tag('Environment', 'Production'));
+  Tags.of(table).add('Environment', 'Production');
 
   expect(stack).toHaveResource('AWS::DynamoDB::Table', {
     'SSESpecification': {
@@ -383,7 +383,7 @@ test('when specifying only encryptionKey', () => {
     encryptionKey,
     partitionKey: TABLE_PARTITION_KEY,
   });
-  table.node.applyAspect(new Tag('Environment', 'Production'));
+  Tags.of(table).add('Environment', 'Production');
 
   expect(stack).toHaveResource('AWS::DynamoDB::Table', {
     'SSESpecification': {
@@ -410,7 +410,7 @@ test('when specifying sse with customer managed CMK with encryptionKey provided 
     encryptionKey,
     partitionKey: TABLE_PARTITION_KEY,
   });
-  table.node.applyAspect(new Tag('Environment', 'Production'));
+  Tags.of(table).add('Environment', 'Production');
 
   expect(stack).toHaveResource('AWS::DynamoDB::Table', {
     'SSESpecification': {
@@ -600,20 +600,7 @@ test('if an encryption key is included, decrypt permissions are also added for g
               {
                 'Action': 'dynamodb:ListStreams',
                 'Effect': 'Allow',
-                'Resource': {
-                  'Fn::Join': [
-                    '',
-                    [
-                      {
-                        'Fn::GetAtt': [
-                          'TableA3D7B5AFA',
-                          'Arn',
-                        ],
-                      },
-                      '/stream/*',
-                    ],
-                  ],
-                },
+                'Resource': '*',
               },
               {
                 'Action': [
@@ -1112,7 +1099,7 @@ test('error when adding a global secondary index with projection type KEYS_ONLY,
   })).toThrow(/non-key attributes should not be specified when not using INCLUDE projection type/);
 });
 
-test('error when adding a global secondary index with projection type INCLUDE, but with more than 20 non-key attributes', () => {
+test('error when adding a global secondary index with projection type INCLUDE, but with more than 100 non-key attributes', () => {
   const stack = new Stack();
   const table = new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY, sortKey: TABLE_SORT_KEY });
   const gsiNonKeyAttributeGenerator = NON_KEY_ATTRIBUTE_GENERATOR(GSI_NON_KEY);
@@ -1784,7 +1771,7 @@ describe('grants', () => {
           {
             'Action': 'dynamodb:ListStreams',
             'Effect': 'Allow',
-            'Resource': { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['mytable0324D45C', 'Arn'] }, '/stream/*']] },
+            'Resource': '*',
           },
         ],
         'Version': '2012-10-17',
@@ -1830,7 +1817,7 @@ describe('grants', () => {
           {
             'Action': 'dynamodb:ListStreams',
             'Effect': 'Allow',
-            'Resource': { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['mytable0324D45C', 'Arn'] }, '/stream/*']] },
+            'Resource': '*',
           },
           {
             'Action': [
@@ -2107,7 +2094,7 @@ describe('import', () => {
       'Roles': [{ 'Ref': 'NewRole99763075' }],
     });
 
-    expect(table.tableArn).toBe('arn:${Token[AWS::Partition.3]}:dynamodb:${Token[AWS::Region.4]}:${Token[AWS::AccountId.0]}:table/MyTable');
+    expect(table.tableArn).toBe('arn:${Token[AWS.Partition.3]}:dynamodb:${Token[AWS.Region.4]}:${Token[AWS.AccountId.0]}:table/MyTable');
     expect(stack.resolve(table.tableName)).toBe(tableName);
   });
 
@@ -2145,7 +2132,7 @@ describe('import', () => {
             {
               Action: 'dynamodb:ListStreams',
               Effect: 'Allow',
-              Resource: stack.resolve(`${table.tableArn}/stream/*`),
+              Resource: '*',
             },
           ],
           Version: '2012-10-17',
@@ -2173,7 +2160,7 @@ describe('import', () => {
             {
               Action: 'dynamodb:ListStreams',
               Effect: 'Allow',
-              Resource: stack.resolve(`${table.tableArn}/stream/*`),
+              Resource: '*',
             },
             {
               Action: ['dynamodb:DescribeStream', 'dynamodb:GetRecords', 'dynamodb:GetShardIterator'],
@@ -2638,56 +2625,7 @@ describe('global', () => {
           {
             Action: 'dynamodb:ListStreams',
             Effect: 'Allow',
-            Resource: [
-              {
-                'Fn::Join': [
-                  '',
-                  [
-                    'arn:',
-                    {
-                      Ref: 'AWS::Partition',
-                    },
-                    ':dynamodb:us-east-1:',
-                    {
-                      Ref: 'AWS::AccountId',
-                    },
-                    ':table/my-table/stream/*',
-                  ],
-                ],
-              },
-              {
-                'Fn::Join': [
-                  '',
-                  [
-                    'arn:',
-                    {
-                      Ref: 'AWS::Partition',
-                    },
-                    ':dynamodb:eu-west-2:',
-                    {
-                      Ref: 'AWS::AccountId',
-                    },
-                    ':table/my-table/stream/*',
-                  ],
-                ],
-              },
-              {
-                'Fn::Join': [
-                  '',
-                  [
-                    'arn:',
-                    {
-                      Ref: 'AWS::Partition',
-                    },
-                    ':dynamodb:eu-central-1:',
-                    {
-                      Ref: 'AWS::AccountId',
-                    },
-                    ':table/my-table/stream/*',
-                  ],
-                ],
-              },
-            ],
+            Resource: '*',
           },
         ],
         Version: '2012-10-17',

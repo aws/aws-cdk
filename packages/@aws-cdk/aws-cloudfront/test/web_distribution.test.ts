@@ -1,4 +1,4 @@
-import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import { ABSENT, expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import * as certificatemanager from '@aws-cdk/aws-certificatemanager';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
@@ -426,8 +426,7 @@ nodeunitShim({
     const stack = new cdk.Stack();
     const sourceBucket = new s3.Bucket(stack, 'Bucket');
 
-    const lambdaFunction = new lambda.SingletonFunction(stack, 'Lambda', {
-      uuid: 'xxxx-xxxx-xxxx-xxxx',
+    const lambdaFunction = new lambda.Function(stack, 'Lambda', {
       code: lambda.Code.inline('foo'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_10_X,
@@ -444,7 +443,8 @@ nodeunitShim({
               isDefaultBehavior: true,
               lambdaFunctionAssociations: [{
                 eventType: LambdaEdgeEventType.ORIGIN_REQUEST,
-                lambdaFunction: lambdaFunction.latestVersion,
+                lambdaFunction: lambdaFunction.currentVersion,
+                includeBody: true,
               }],
             },
           ],
@@ -458,20 +458,123 @@ nodeunitShim({
           'LambdaFunctionAssociations': [
             {
               'EventType': 'origin-request',
+              'IncludeBody': true,
               'LambdaFunctionARN': {
-                'Fn::Join': [
-                  '',
-                  [
-                    { 'Fn::GetAtt': ['SingletonLambdaxxxxxxxxxxxxxxxx69D4268A', 'Arn'] },
-                    ':$LATEST',
-                  ],
-                ],
+                'Ref': 'LambdaCurrentVersionDF706F6A97fb843e9bd06fcd2bb15eeace80e13e',
               },
             },
           ],
         },
       },
     }));
+
+    test.done();
+  },
+
+  'associate a lambda with removable env vars'(test: Test) {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    const sourceBucket = new s3.Bucket(stack, 'Bucket');
+
+    const lambdaFunction = new lambda.Function(stack, 'Lambda', {
+      code: lambda.Code.inline('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_10_X,
+    });
+    lambdaFunction.addEnvironment('KEY', 'value', { removeInEdge: true });
+
+    new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
+      originConfigs: [
+        {
+          s3OriginSource: {
+            s3BucketSource: sourceBucket,
+          },
+          behaviors: [
+            {
+              isDefaultBehavior: true,
+              lambdaFunctionAssociations: [{
+                eventType: LambdaEdgeEventType.ORIGIN_REQUEST,
+                lambdaFunction: lambdaFunction.currentVersion,
+              }],
+            },
+          ],
+        },
+      ],
+    });
+
+    expect(stack).to(haveResource('AWS::Lambda::Function', {
+      Environment: ABSENT,
+    }));
+
+    test.done();
+  },
+
+  'throws when associating a lambda with incompatible env vars'(test: Test) {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    const sourceBucket = new s3.Bucket(stack, 'Bucket');
+
+    const lambdaFunction = new lambda.Function(stack, 'Lambda', {
+      code: lambda.Code.inline('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_10_X,
+      environment: {
+        KEY: 'value',
+      },
+    });
+
+    new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
+      originConfigs: [
+        {
+          s3OriginSource: {
+            s3BucketSource: sourceBucket,
+          },
+          behaviors: [
+            {
+              isDefaultBehavior: true,
+              lambdaFunctionAssociations: [{
+                eventType: LambdaEdgeEventType.ORIGIN_REQUEST,
+                lambdaFunction: lambdaFunction.currentVersion,
+              }],
+            },
+          ],
+        },
+      ],
+    });
+
+    test.throws(() => app.synth(), /KEY/);
+
+    test.done();
+  },
+
+  'throws when associating a lambda with includeBody and a response event type'(test: Test) {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    const sourceBucket = new s3.Bucket(stack, 'Bucket');
+
+    const fnVersion = lambda.Version.fromVersionArn(stack, 'Version', 'arn:aws:lambda:testregion:111111111111:function:myTestFun:v1');
+
+    test.throws(() => {
+      new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
+        originConfigs: [
+          {
+            s3OriginSource: {
+              s3BucketSource: sourceBucket,
+            },
+            behaviors: [
+              {
+                isDefaultBehavior: true,
+                lambdaFunctionAssociations: [{
+                  eventType: LambdaEdgeEventType.VIEWER_RESPONSE,
+                  includeBody: true,
+                  lambdaFunction: fnVersion,
+                }],
+              },
+            ],
+          },
+        ],
+      });
+    }, /'includeBody' can only be true for ORIGIN_REQUEST or VIEWER_REQUEST event types./);
 
     test.done();
   },
@@ -1218,5 +1321,18 @@ nodeunitShim({
         test.done();
       },
     },
+  },
+
+  'existing distributions can be imported'(test: Test) {
+    const stack = new cdk.Stack();
+    const dist = CloudFrontWebDistribution.fromDistributionAttributes(stack, 'ImportedDist', {
+      domainName: 'd111111abcdef8.cloudfront.net',
+      distributionId: '012345ABCDEF',
+    });
+
+    test.equals(dist.distributionDomainName, 'd111111abcdef8.cloudfront.net');
+    test.equals(dist.distributionId, '012345ABCDEF');
+
+    test.done();
   },
 });

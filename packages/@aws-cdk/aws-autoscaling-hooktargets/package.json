@@ -23,9 +23,14 @@
       },
       "python": {
         "distName": "aws-cdk.aws-autoscaling-hooktargets",
-        "module": "aws_cdk.aws_autoscaling_hooktargets"
+        "module": "aws_cdk.aws_autoscaling_hooktargets",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",
@@ -63,7 +68,7 @@
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
-    "jest": "^25.5.4",
+    "jest": "^26.6.2",
     "pkglint": "0.0.0"
   },
   "dependencies": {
@@ -75,7 +80,7 @@
     "@aws-cdk/aws-sns-subscriptions": "0.0.0",
     "@aws-cdk/aws-sqs": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.2.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -87,7 +92,7 @@
     "@aws-cdk/aws-sns-subscriptions": "0.0.0",
     "@aws-cdk/aws-sqs": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.2.0"
   },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
@@ -98,6 +103,9 @@
   },
   "maturity": "stable",
   "cdk-build": {
-    "jest": true
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   }
 }

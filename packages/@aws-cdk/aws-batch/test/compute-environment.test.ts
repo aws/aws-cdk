@@ -1,10 +1,10 @@
+import { throws } from 'assert';
 import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import { throws } from 'assert';
 import * as batch from '../lib';
 
 describe('Batch Compute Evironment', () => {
@@ -161,7 +161,10 @@ describe('Batch Compute Evironment', () => {
         computeResources: {
           allocationStrategy: batch.AllocationStrategy.BEST_FIT,
           vpc,
-          computeResourcesTags: new cdk.Tag('foo', 'bar'),
+          computeResourcesTags: {
+            'Name': 'AWS Batch Instance - C4OnDemand',
+            'Tag Other': 'Has other value',
+          },
           desiredvCpus: 1,
           ec2KeyPair: 'my-key-pair',
           image: new ecs.EcsOptimizedAmi({
@@ -237,17 +240,15 @@ describe('Batch Compute Evironment', () => {
           ],
           Subnets: [
             {
-              Ref: `${vpc.node.uniqueId}PrivateSubnet1Subnet865FB50A`,
+              Ref: `${cdk.Names.uniqueId(vpc)}PrivateSubnet1Subnet865FB50A`,
             },
             {
-              Ref: `${vpc.node.uniqueId}PrivateSubnet2Subnet23D3396F`,
+              Ref: `${cdk.Names.uniqueId(vpc)}PrivateSubnet2Subnet23D3396F`,
             },
           ],
           Tags: {
-            key: 'foo',
-            props: {},
-            defaultPriority: 100,
-            value: 'bar',
+            'Name': 'AWS Batch Instance - C4OnDemand',
+            'Tag Other': 'Has other value',
           },
           Type: 'EC2',
         },

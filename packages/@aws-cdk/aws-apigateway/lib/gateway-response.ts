@@ -1,5 +1,6 @@
-import { Construct, IResource, Resource } from '@aws-cdk/core';
-import { CfnGatewayResponse } from './apigateway.generated';
+import { IResource, Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
+import { CfnGatewayResponse, CfnGatewayResponseProps } from './apigateway.generated';
 import { IRestApi } from './restapi';
 
 /**
@@ -57,13 +58,25 @@ export class GatewayResponse extends Resource implements IGatewayResponse {
   constructor(scope: Construct, id: string, props: GatewayResponseProps) {
     super(scope, id);
 
-    const resource = new CfnGatewayResponse(this, 'Resource', {
+    const gatewayResponseProps: CfnGatewayResponseProps = {
       restApiId: props.restApi.restApiId,
       responseType: props.type.responseType,
       responseParameters: this.buildResponseParameters(props.responseHeaders),
       responseTemplates: props.templates,
       statusCode: props.statusCode,
-    });
+    };
+
+    const resource = new CfnGatewayResponse(this, 'Resource', gatewayResponseProps);
+
+    const deployment = props.restApi.latestDeployment;
+    if (deployment) {
+      deployment.node.addDependency(resource);
+      deployment.addToLogicalId({
+        gatewayResponse: {
+          ...gatewayResponseProps,
+        },
+      });
+    }
 
     this.node.defaultChild = resource;
   }

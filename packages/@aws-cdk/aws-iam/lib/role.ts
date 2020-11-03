@@ -1,4 +1,5 @@
-import { Construct, Duration, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
+import { Duration, Lazy, Resource, Stack, Token, TokenComparison } from '@aws-cdk/core';
+import { Construct, Node } from 'constructs';
 import { Grant } from './grant';
 import { CfnRole } from './iam.generated';
 import { IIdentity } from './identity-base';
@@ -101,7 +102,7 @@ export interface RoleProps {
    * Acknowledging IAM Resources in AWS CloudFormation Templates.
    *
    * @default - AWS CloudFormation generates a unique physical ID and uses that ID
-   * for the group name.
+   * for the role name.
    */
   readonly roleName?: string;
 
@@ -176,6 +177,7 @@ export class Role extends Resource implements IRole {
     const scopeStack = Stack.of(scope);
     const parsedArn = scopeStack.parseArn(roleArn);
     const resourceName = parsedArn.resourceName!;
+    const roleAccount = parsedArn.account;
     // service roles have an ARN like 'arn:aws:iam::<account>:role/service-role/<roleName>'
     // or 'arn:aws:iam::<account>:role/service-role/servicename.amazonaws.com/service-role/<roleName>'
     // we want to support these as well, so we just use the element after the last slash as role name
@@ -183,12 +185,19 @@ export class Role extends Resource implements IRole {
 
     class Import extends Resource implements IRole {
       public readonly grantPrincipal: IPrincipal = this;
+      public readonly principalAccount = roleAccount;
       public readonly assumeRoleAction: string = 'sts:AssumeRole';
       public readonly policyFragment = new ArnPrincipal(roleArn).policyFragment;
       public readonly roleArn = roleArn;
       public readonly roleName = roleName;
       private readonly attachedPolicies = new AttachedPolicies();
       private defaultPolicy?: Policy;
+
+      constructor(_scope: Construct, _id: string) {
+        super(_scope, _id, {
+          account: roleAccount,
+        });
+      }
 
       public addToPolicy(statement: PolicyStatement): boolean {
         return this.addToPrincipalPolicy(statement).statementAdded;
@@ -204,9 +213,11 @@ export class Role extends Resource implements IRole {
       }
 
       public attachInlinePolicy(policy: Policy): void {
-        const policyAccount = Stack.of(policy).account;
-
-        if (accountsAreEqualOrOneIsUnresolved(policyAccount, roleAccount)) {
+        const thisAndPolicyAccountComparison = Token.compareStrings(this.env.account, policy.env.account);
+        const equalOrAnyUnresolved = thisAndPolicyAccountComparison === TokenComparison.SAME ||
+          thisAndPolicyAccountComparison === TokenComparison.BOTH_UNRESOLVED ||
+          thisAndPolicyAccountComparison === TokenComparison.ONE_UNRESOLVED;
+        if (equalOrAnyUnresolved) {
           this.attachedPolicies.attach(policy);
           policy.attachToRole(this);
         }
@@ -236,23 +247,19 @@ export class Role extends Resource implements IRole {
       }
     }
 
-    const roleAccount = parsedArn.account;
-
-    const scopeAccount = scopeStack.account;
-
-    return options.mutable !== false && accountsAreEqualOrOneIsUnresolved(scopeAccount, roleAccount)
-      ? new Import(scope, id)
-      : new ImmutableRole(scope, `ImmutableRole${id}`, new Import(scope, id));
-
-    function accountsAreEqualOrOneIsUnresolved(
-      account1: string | undefined,
-      account2: string | undefined): boolean {
-      return Token.isUnresolved(account1) || Token.isUnresolved(account2) ||
-        account1 === account2;
-    }
+    const importedRole = new Import(scope, id);
+    const roleArnAndScopeStackAccountComparison = Token.compareStrings(importedRole.env.account, scopeStack.account);
+    const equalOrAnyUnresolved = roleArnAndScopeStackAccountComparison === TokenComparison.SAME ||
+      roleArnAndScopeStackAccountComparison === TokenComparison.BOTH_UNRESOLVED ||
+      roleArnAndScopeStackAccountComparison === TokenComparison.ONE_UNRESOLVED;
+    // we only return an immutable Role if both accounts were explicitly provided, and different
+    return options.mutable !== false && equalOrAnyUnresolved
+      ? importedRole
+      : new ImmutableRole(scope, `ImmutableRole${id}`, importedRole);
   }
 
   public readonly grantPrincipal: IPrincipal = this;
+  public readonly principalAccount: string | undefined = this.env.account;
 
   public readonly assumeRoleAction: string = 'sts:AssumeRole';
 
@@ -417,7 +424,7 @@ export class Role extends Resource implements IRole {
    */
   public withoutPolicyUpdates(): IRole {
     if (!this.immutableRole) {
-      this.immutableRole = new ImmutableRole(this.node.scope as Construct, `ImmutableRole${this.node.id}`, this);
+      this.immutableRole = new ImmutableRole(Node.of(this).scope as Construct, `ImmutableRole${this.node.id}`, this);
     }
 
     return this.immutableRole;

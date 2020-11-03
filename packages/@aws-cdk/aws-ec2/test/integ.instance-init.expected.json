@@ -130,7 +130,7 @@
         ]
       }
     },
-    "Instance255F3526524bcb6d7e0439c4c": {
+    "Instance255F352658ec7e53daf15a1c6": {
       "Type": "AWS::EC2::Instance",
       "Properties": {
         "AvailabilityZone": "us-east-1a",
@@ -161,7 +161,7 @@
             "Fn::Join": [
               "",
               [
-                "#!/bin/bash\n# fingerprint: ab7f06cf7eda4e4a\n(\n  set +e\n  /opt/aws/bin/cfn-init -v --region ",
+                "#!/bin/bash\n# fingerprint: 336ad3625c000098\n(\n  set +e\n  /opt/aws/bin/cfn-init -v --region ",
                 {
                   "Ref": "AWS::Region"
                 },
@@ -169,7 +169,7 @@
                 {
                   "Ref": "AWS::StackName"
                 },
-                " --resource Instance255F3526524bcb6d7e0439c4c -c default\n  /opt/aws/bin/cfn-signal -e $? --region ",
+                " --resource Instance255F352658ec7e53daf15a1c6 -c default\n  /opt/aws/bin/cfn-signal -e $? --region ",
                 {
                   "Ref": "AWS::Region"
                 },
@@ -177,7 +177,7 @@
                 {
                   "Ref": "AWS::StackName"
                 },
-                " --resource Instance255F3526524bcb6d7e0439c4c\n  cat /var/log/cfn-init.log >&2\n)"
+                " --resource Instance255F352658ec7e53daf15a1c6\n  cat /var/log/cfn-init.log >&2\n)"
               ]
             ]
           }

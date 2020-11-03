@@ -23,9 +23,14 @@
       },
       "python": {
         "distName": "aws-cdk.aws-mediaconvert",
-        "module": "aws_cdk.aws_mediaconvert"
+        "module": "aws_cdk.aws_mediaconvert",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",
@@ -45,11 +50,15 @@
     "cfn2ts": "cfn2ts",
     "compat": "cdk-compat",
     "build+test": "npm run build && npm test",
-    "build+test+package": "npm run build+test && npm run package"
+    "build+test+package": "npm run build+test && npm run package",
+    "gen": "cfn2ts"
   },
   "cdk-build": {
     "cloudformation": "AWS::MediaConvert",
-    "jest": true
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "keywords": [
     "aws",
@@ -72,11 +81,11 @@
   },
   "dependencies": {
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.2.0"
   },
   "peerDependencies": {
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.2.0"
   },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"

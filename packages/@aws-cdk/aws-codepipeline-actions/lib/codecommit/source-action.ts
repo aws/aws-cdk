@@ -2,7 +2,7 @@ import * as codecommit from '@aws-cdk/aws-codecommit';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as targets from '@aws-cdk/aws-events-targets';
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct } from '@aws-cdk/core';
+import { Construct, Names, Token } from '@aws-cdk/core';
 import { Action } from '../action';
 import { sourceArtifactBounds } from '../common';
 
@@ -77,6 +77,14 @@ export interface CodeCommitSourceActionProps extends codepipeline.CommonAwsActio
    * The CodeCommit repository.
    */
   readonly repository: codecommit.IRepository;
+
+  /**
+   * Role to be used by on commit event rule.
+   * Used only when trigger value is CodeCommitTrigger.EVENTS.
+   *
+   * @default a new role will be created.
+   */
+  readonly eventRole?: iam.IRole;
 }
 
 /**
@@ -122,9 +130,11 @@ export class CodeCommitSourceAction extends Action {
     const createEvent = this.props.trigger === undefined ||
       this.props.trigger === CodeCommitTrigger.EVENTS;
     if (createEvent) {
-      const branchIdDisambiguator = this.branch === 'master' ? '' : `-${this.branch}-`;
-      this.props.repository.onCommit(`${stage.pipeline.node.uniqueId}${branchIdDisambiguator}EventRule`, {
-        target: new targets.CodePipeline(stage.pipeline),
+      const eventId = this.generateEventId(stage);
+      this.props.repository.onCommit(eventId, {
+        target: new targets.CodePipeline(stage.pipeline, {
+          eventRole: this.props.eventRole,
+        }),
         branches: [this.branch],
       });
     }
@@ -152,5 +162,25 @@ export class CodeCommitSourceAction extends Action {
         PollForSourceChanges: this.props.trigger === CodeCommitTrigger.POLL,
       },
     };
+  }
+
+  private generateEventId(stage: codepipeline.IStage): string {
+    const baseId = Names.nodeUniqueId(stage.pipeline.node);
+    if (Token.isUnresolved(this.branch)) {
+      let candidate = '';
+      let counter = 0;
+      do {
+        candidate = this.eventIdFromPrefix(`${baseId}${counter}`);
+        counter += 1;
+      } while (this.props.repository.node.tryFindChild(candidate) !== undefined);
+      return candidate;
+    } else {
+      const branchIdDisambiguator = this.branch === 'master' ? '' : `-${this.branch}-`;
+      return this.eventIdFromPrefix(`${baseId}${branchIdDisambiguator}`);
+    }
+  }
+
+  private eventIdFromPrefix(eventIdPrefix: string) {
+    return `${eventIdPrefix}EventRule`;
   }
 }
