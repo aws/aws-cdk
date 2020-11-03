@@ -401,7 +401,9 @@ describe('OIDC issuer', () => {
     });
 
     // THEN
-    expect(stack.resolve(provider.openIdConnectProviderIssuer)).toStrictEqual('my-issuer');
+    expect(stack.resolve(provider.openIdConnectProviderIssuer)).toStrictEqual(
+      { 'Fn::Select': [1, { 'Fn::Split': ['oidc-provider/', { Ref: 'MyProvider730BA1C8' }] }] },
+    );
   });
 
   test('extract issuer properly in the imported provider', () => {
