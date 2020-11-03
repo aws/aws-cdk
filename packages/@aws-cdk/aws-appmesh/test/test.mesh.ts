@@ -67,12 +67,9 @@ export = {
         });
 
         mesh.addVirtualRouter('router', {
-          listener: {
-            portMapping: {
-              port: 8080,
-              protocol: appmesh.Protocol.HTTP,
-            },
-          },
+          listeners: [
+            appmesh.VirtualRouterListener.httpVirtualRouterListener(),
+          ],
         });
 
         // THEN
@@ -147,12 +144,9 @@ export = {
         });
 
         const testRouter = mesh.addVirtualRouter('router', {
-          listener: {
-            portMapping: {
-              port: 8080,
-              protocol: appmesh.Protocol.HTTP,
-            },
-          },
+          listeners: [
+            appmesh.VirtualRouterListener.httpVirtualRouterListener(),
+          ],
         });
 
         // THEN
@@ -178,12 +172,9 @@ export = {
         });
 
         const testRouter = mesh.addVirtualRouter('test-router', {
-          listener: {
-            portMapping: {
-              port: 8080,
-              protocol: appmesh.Protocol.HTTP,
-            },
-          },
+          listeners: [
+            appmesh.VirtualRouterListener.httpVirtualRouterListener(),
+          ],
         });
 
         mesh.addVirtualService('service', {

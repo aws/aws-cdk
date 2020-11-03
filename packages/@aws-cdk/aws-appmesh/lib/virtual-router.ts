@@ -3,7 +3,7 @@ import { Construct } from 'constructs';
 import { CfnVirtualRouter } from './appmesh.generated';
 import { IMesh, Mesh } from './mesh';
 import { Route, RouteBaseProps } from './route';
-import { PortMapping, Protocol } from './shared-interfaces';
+import { VirtualRouterListener } from './virtual-router-listener';
 
 /**
  * Interface which all VirtualRouter based classes MUST implement
@@ -27,11 +27,6 @@ export interface IVirtualRouter extends cdk.IResource {
    * The  service mesh that the virtual router resides in
    */
   readonly mesh: IMesh;
-
-  /**
-   * Add a single route to the router
-   */
-  addRoute(id: string, props: RouteBaseProps): Route;
 }
 
 /**
@@ -43,7 +38,7 @@ export interface VirtualRouterBaseProps {
    *
    * @default - A listener on HTTP port 8080
    */
-  readonly listener?: Listener;
+  readonly listeners?: VirtualRouterListener[];
 
   /**
    * The name of the VirtualRouter
@@ -51,16 +46,6 @@ export interface VirtualRouterBaseProps {
    * @default - A name is automatically determined
    */
   readonly virtualRouterName?: string;
-}
-
-/**
- * A single listener for
- */
-export interface Listener {
-  /**
-   * Listener port for the virtual router
-   */
-  readonly portMapping: PortMapping;
 }
 
 abstract class VirtualRouterBase extends cdk.Resource implements IVirtualRouter {
@@ -149,8 +134,12 @@ export class VirtualRouter extends VirtualRouterBase {
     });
 
     this.mesh = props.mesh;
-
-    this.addListener(props.listener || { portMapping: { port: 8080, protocol: Protocol.HTTP } });
+    // this.addListener(listeners || VirtualRouterListener.httpVirtualRouterListener().);
+    if (props.listeners) {
+      props.listeners.forEach(listener => this.addListener(listener));
+    } else {
+      this.addListener(VirtualRouterListener.httpVirtualRouterListener());
+    }
 
     const router = new CfnVirtualRouter(this, 'Resource', {
       virtualRouterName: this.physicalName,
@@ -171,10 +160,8 @@ export class VirtualRouter extends VirtualRouterBase {
   /**
    * Add port mappings to the router
    */
-  private addListener(listener: Listener) {
-    this.listeners.push({
-      portMapping: listener.portMapping,
-    });
+  private addListener(listener: VirtualRouterListener) {
+    this.listeners.push(listener.bind(this).listener);
   }
 }
 
