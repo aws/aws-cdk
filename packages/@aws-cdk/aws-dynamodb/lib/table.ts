@@ -3,7 +3,7 @@ import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import {
-  Aws, CfnCondition, CfnCustomResource, Construct as CoreConstruct, CustomResource, Fn,
+  Aws, CfnCondition, CfnCustomResource, Construct as CoreConstruct, CustomResource, Duration, Fn,
   IResource, Lazy, Names, RemovalPolicy, Resource, Stack, Token,
 } from '@aws-cdk/core';
 import { Construct } from 'constructs';
@@ -386,7 +386,7 @@ export interface ITable extends IResource {
    *
    * @param props properties of a metric
    */
-  metricSystemErrors(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+  metricSystemErrors(props?: cloudwatch.MetricOptions): cloudwatch.IMetric;
 
   /**
    * Metric for the user errors
@@ -407,7 +407,7 @@ export interface ITable extends IResource {
    *
    * @param props properties of a metric
    */
-  metricSuccessfulRequestLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+  metricSuccessfulRequestLatency(props?: cloudwatch.MetricOptions): cloudwatch.IMetric;
 }
 
 /**
@@ -642,8 +642,6 @@ abstract class TableBase extends Resource implements ITable {
 
   /**
    * Metric for the consumed read capacity units this table
-   *
-   * @default sum over a minute
    */
   public metricConsumedReadCapacityUnits(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric('ConsumedReadCapacityUnits', { statistic: 'sum', ...props });
@@ -651,8 +649,6 @@ abstract class TableBase extends Resource implements ITable {
 
   /**
    * Metric for the consumed write capacity units this table
-   *
-   * @default sum over a minute
    */
   public metricConsumedWriteCapacityUnits(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric('ConsumedWriteCapacityUnits', { statistic: 'sum', ...props });
@@ -660,26 +656,54 @@ abstract class TableBase extends Resource implements ITable {
 
   /**
    * Metric for the system errors this table
-   *
-   * @default sum over a minute
    */
-  public metricSystemErrors(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('SystemErrors', { statistic: 'sum', ...props });
+  public metricSystemErrors(props?: cloudwatch.MetricOptions): cloudwatch.IMetric {
+
+    if (props?.dimensions) {
+
+      if (!props?.dimensions.TableName || !props?.dimensions.Operation) {
+        // user passed custom dimensions, but didn't specify either the TableName or the Operation
+        // dimension. this would create a faulty metric so we throw.
+        // see 'SystemErrors' in https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/metrics-dimensions.html
+        throw new Error('"dimensions" must specify both the "Operation" and the "TableName" dimensions');
+      }
+
+      return this.metric('SystemErrors', { statistic: 'sum', ...props });
+    }
+
+    const period = props?.period ?? Duration.minutes(1);
+
+    // user didn't pass dimensions, we return a sum over all operations.
+
+    const sum = new cloudwatch.MathExpression({
+      expression: `SUM(SEARCH('{AWS/DynamoDB, TableName, Operation} MetricName="SystemErrors"', 'SampleCount', ${period.toSeconds()}))`,
+      // this is a mandatory property unfortunately
+      usingMetrics: {},
+      color: props?.color,
+      label: props?.label ?? 'Weighted Average Across All Operations',
+      period,
+    });
+
+    return sum;
   }
 
   /**
-   * Metric for the user errors this table
-   *
-   * @default sum over a minute
+   * Metric for the user errors. Note that this metric reports user errors across all
+   * the tables in the account and region the table resides in.
    */
   public metricUserErrors(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('UserErrors', { statistic: 'sum', ...props });
+
+    if (props?.dimensions) {
+      throw new Error('"dimensions is not supported for the "UserErrors" metric');
+    }
+
+    // overriding 'dimensions' here because this metric is an account metric.
+    // see 'UserErrors' in https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/metrics-dimensions.html
+    return this.metric('UserErrors', { statistic: 'sum', dimensions: {}, ...props });
   }
 
   /**
    * Metric for the conditional check failed requests this table
-   *
-   * @default sum over a minute
    */
   public metricConditionalCheckFailedRequests(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric('ConditionalCheckFailedRequests', { statistic: 'sum', ...props });
@@ -687,11 +711,75 @@ abstract class TableBase extends Resource implements ITable {
 
   /**
    * Metric for the successful request latency this table
-   *
-   * @default avg over a minute
    */
-  public metricSuccessfulRequestLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('SuccessfulRequestLatency', { statistic: 'avg', ...props });
+  public metricSuccessfulRequestLatency(props?: cloudwatch.MetricOptions): cloudwatch.IMetric {
+
+    if (props?.dimensions) {
+
+      if (!props?.dimensions.TableName || !props?.dimensions.Operation) {
+        // user passed custom dimensions, but didn't specify either the TableName or the Operation
+        // dimension. this would create a faulty metric so we throw.
+        // see 'SystemErrors' in https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/metrics-dimensions.html
+        throw new Error('"dimensions" must specify both the "Operation" and the "TableName" dimensions');
+      }
+
+      return this.metric('SuccessfulRequestLatency', { statistic: 'avg', ...props });
+    }
+
+    const operations = [
+      'PutItem',
+      'DeleteItem',
+      'UpdateItem',
+      'GetItem',
+      'BatchGetItem',
+      'Scan',
+      'Query',
+      'BatchWriteItem',
+      'GetRecords',
+    ];
+
+    const usingMetrics: Record<string, cloudwatch.IMetric> = {};
+
+    const denominatorElements = [];
+    const numeratorElements = [];
+
+    for (const op of operations) {
+
+      const valueMetricName = `${op.toLowerCase()}Value`;
+      usingMetrics[valueMetricName] = this.metric('SuccessfulRequestLatency', {
+        statistic: 'avg',
+        dimensions: {
+          TableName: this.tableName,
+          Operation: op,
+        },
+        ...props,
+      });
+
+      const countMetricName = `${op.toLowerCase()}Count`;
+      usingMetrics[countMetricName] = this.metric('SuccessfulRequestLatency', {
+        statistic: 'n',
+        dimensions: {
+          TableName: this.tableName,
+          Operation: op,
+        },
+        ...props,
+      });
+
+      denominatorElements.push(countMetricName);
+      numeratorElements.push(`${countMetricName} * ${valueMetricName}`);
+    }
+
+    // user didn't pass dimensions, we return a sum over all operations.
+    const numerator = numeratorElements.join(' + ');
+    const denominator = denominatorElements.join(' + ');
+
+    return new cloudwatch.MathExpression({
+      expression: `(${numerator}) / (${denominator})`,
+      usingMetrics,
+      color: props?.color,
+      label: props?.label ?? 'Weighted Average Across All Operations',
+      period: props?.period,
+    });
   }
 
   protected abstract get hasIndex(): boolean;
