@@ -1617,7 +1617,7 @@ export class Subnet extends Resource implements ISubnet {
 
     const scope = CoreConstruct.isConstruct(networkAcl) ? networkAcl : this;
     const other = CoreConstruct.isConstruct(networkAcl) ? this : networkAcl;
-    new SubnetNetworkAclAssociation(scope, id + Names.uniqueId(other), {
+    new SubnetNetworkAclAssociation(scope, id + Names.nodeUniqueId(other.node), {
       networkAcl,
       subnet: this,
     });
@@ -1955,7 +1955,7 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
   public associateNetworkAcl(id: string, networkAcl: INetworkAcl): void {
     const scope = CoreConstruct.isConstruct(networkAcl) ? networkAcl : this;
     const other = CoreConstruct.isConstruct(networkAcl) ? this : networkAcl;
-    new SubnetNetworkAclAssociation(scope, id + Names.uniqueId(other), {
+    new SubnetNetworkAclAssociation(scope, id + Names.nodeUniqueId(other.node), {
       networkAcl,
       subnet: this,
     });
