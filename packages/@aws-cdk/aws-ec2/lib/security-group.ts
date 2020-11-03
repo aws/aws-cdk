@@ -71,7 +71,7 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
   }
 
   public get uniqueId() {
-    return Names.uniqueId(this.node);
+    return Names.nodeUniqueId(this.node);
   }
 
   public addIngressRule(peer: IPeer, connection: Port, description?: string, remoteRule?: boolean) {
