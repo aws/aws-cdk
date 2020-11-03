@@ -10,7 +10,7 @@ export = {
     const stack = new Stack();
 
     // WHEN
-    new DatabaseSecret(stack, 'Secret', {
+    const dbSecret = new DatabaseSecret(stack, 'Secret', {
       username: 'admin-username',
     });
 
@@ -34,6 +34,8 @@ export = {
         SecretStringTemplate: '{"username":"admin-username"}',
       },
     }));
+
+    test.equal(getSecretLogicalId(dbSecret, stack), 'SecretA720EF05');
 
     test.done();
   },
