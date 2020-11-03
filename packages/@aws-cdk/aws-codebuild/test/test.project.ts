@@ -1,7 +1,8 @@
-import { countResources, expect, haveResource, haveResourceLike, not, ResourcePart } from '@aws-cdk/assert';
+import { countResources, expect, haveResource, haveResourceLike, objectLike, not, ResourcePart } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
+import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as codebuild from '../lib';
@@ -535,6 +536,66 @@ export = {
             },
           ],
         },
+      }));
+
+      test.done();
+    },
+  },
+
+  'Environment': {
+    'build image - can use secret to access build image'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const secret = new secretsmanager.Secret(stack, 'Secret');
+
+      // WHEN
+      new codebuild.Project(stack, 'Project', {
+        source: codebuild.Source.s3({
+          bucket: new s3.Bucket(stack, 'Bucket'),
+          path: 'path',
+        }),
+        environment: {
+          buildImage: codebuild.LinuxBuildImage.fromDockerRegistry('myimage', { secretsManagerCredentials: secret }),
+        },
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+        Environment: objectLike({
+          RegistryCredential: {
+            CredentialProvider: 'SECRETS_MANAGER',
+            Credential: { 'Ref': 'SecretA720EF05' },
+          },
+        }),
+      }));
+
+      test.done();
+    },
+
+    'build image - can use imported secret by name'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const secret = secretsmanager.Secret.fromSecretNameV2(stack, 'Secret', 'MySecretName');
+
+      // WHEN
+      new codebuild.Project(stack, 'Project', {
+        source: codebuild.Source.s3({
+          bucket: new s3.Bucket(stack, 'Bucket'),
+          path: 'path',
+        }),
+        environment: {
+          buildImage: codebuild.LinuxBuildImage.fromDockerRegistry('myimage', { secretsManagerCredentials: secret }),
+        },
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+        Environment: objectLike({
+          RegistryCredential: {
+            CredentialProvider: 'SECRETS_MANAGER',
+            Credential: 'MySecretName',
+          },
+        }),
       }));
 
       test.done();

@@ -6,6 +6,7 @@ import { AccessLogSettings, DefaultDomainMappingOptions } from '../http/stage';
 import { IHttpRouteIntegration } from './integration';
 import { BatchHttpRouteOptions, HttpMethod, HttpRoute, HttpRouteKey } from './route';
 import { HttpStage, HttpStageOptions } from './stage';
+import { VpcLink, VpcLinkProps } from './vpc-link';
 
 /**
  * Represents an HTTP API
@@ -73,6 +74,11 @@ export interface IHttpApi extends IResource {
    * @default - no statistic
    */
   metricLatency(props?: MetricOptions): Metric;
+
+  /**
+   * Add a new VpcLink
+   */
+  addVpcLink(options: VpcLinkProps): VpcLink
 }
 
 /**
@@ -186,6 +192,7 @@ export interface AddRoutesOptions extends BatchHttpRouteOptions {
 abstract class HttpApiBase extends Resource implements IHttpApi { // note that this is not exported
 
   public abstract readonly httpApiId: string;
+  private vpcLinks: Record<string, VpcLink> = {};
 
   public metric(metricName: string, props?: MetricOptions): Metric {
     return new Metric({
@@ -219,6 +226,19 @@ abstract class HttpApiBase extends Resource implements IHttpApi { // note that t
   public metricLatency(props?: MetricOptions): Metric {
     return this.metric('Latency', props);
   }
+
+  public addVpcLink(options: VpcLinkProps): VpcLink {
+    const { vpcId } = options.vpc;
+    if (vpcId in this.vpcLinks) {
+      return this.vpcLinks[vpcId];
+    }
+
+    const count = Object.keys(this.vpcLinks).length + 1;
+    const vpcLink = new VpcLink(this, `VpcLink-${count}`, options);
+    this.vpcLinks[vpcId] = vpcLink;
+
+    return vpcLink;
+  }
 }
 
 /**
@@ -242,6 +262,12 @@ export class HttpApi extends HttpApiBase {
   public readonly httpApiName?: string;
 
   public readonly httpApiId: string;
+
+  /**
+   * The default endpoint for an API
+   * @attribute
+   */
+  public readonly apiEndpoint: string;
 
   /**
    * default stage of the api resource
@@ -286,6 +312,7 @@ export class HttpApi extends HttpApiBase {
 
     const resource = new CfnApi(this, 'Resource', apiProps);
     this.httpApiId = resource.ref;
+    this.apiEndpoint = resource.attrApiEndpoint;
 
     if (props?.defaultIntegration) {
       new HttpRoute(this, 'DefaultRoute', {
