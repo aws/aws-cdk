@@ -47,7 +47,10 @@ export class SingletonFunction extends FunctionBase {
   public readonly role?: iam.IRole;
   public readonly permissionsNode: cdk.ConstructNode;
   protected readonly canCreatePermissions: boolean;
-  private lambdaFunction: LambdaFunction;
+  /**
+   * Underlying function instance
+   */
+  public readonly lambdaFunction: LambdaFunction;
 
   constructor(scope: Construct, id: string, props: SingletonFunctionProps) {
     super(scope, id);
