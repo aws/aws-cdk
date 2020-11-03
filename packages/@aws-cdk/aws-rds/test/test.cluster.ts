@@ -1731,7 +1731,7 @@ export = {
     test.done();
   },
 
-  'fromFixedUsername'(test: Test) {
+  'fromGeneratedPassword'(test: Test) {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -1739,7 +1739,7 @@ export = {
     // WHEN
     const db1 = new DatabaseCluster(stack, 'Database1', {
       engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
-      credentials: Credentials.fromFixedUsername('cdkadmin'),
+      credentials: Credentials.fromGeneratedPassword(),
       instanceProps: {
         vpc,
       },
@@ -1747,7 +1747,7 @@ export = {
 
     const db2 = new DatabaseCluster(stack, 'Database2', {
       engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
-      credentials: Credentials.fromFixedUsername('cdkadmin', {
+      credentials: Credentials.fromGeneratedPassword({
         excludeCharacters: "<>?!'/@\"\\", // different characters set
       }),
       instanceProps: {
@@ -1757,7 +1757,7 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::RDS::DBCluster', {
-      MasterUsername: 'cdkadmin', // username is a string
+      MasterUsername: 'admin', // username is a string
       MasterUserPassword: {
         'Fn::Join': [
           '',

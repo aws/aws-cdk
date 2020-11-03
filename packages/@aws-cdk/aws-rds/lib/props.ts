@@ -116,18 +116,9 @@ export interface BackupProps {
 }
 
 /**
- * Options for creating a Login from a username.
+ * Base options for creating Credentials.
  */
-export interface CredentialsFromUsernameOptions {
-  /**
-   * Password
-   *
-   * Do not put passwords in your CDK code directly.
-   *
-   * @default - a Secrets Manager generated password
-   */
-  readonly password?: SecretValue;
-
+export interface CredentialsBaseOptions {
   /**
    * KMS encryption key to encrypt the generated secret.
    *
@@ -145,17 +136,54 @@ export interface CredentialsFromUsernameOptions {
 }
 
 /**
+ * Options for creating Credentials from a username.
+ */
+export interface CredentialsFromUsernameOptions extends CredentialsBaseOptions {
+  /**
+   * Password
+   *
+   * Do not put passwords in your CDK code directly.
+   *
+   * @default - a Secrets Manager generated password
+   */
+  readonly password?: SecretValue;
+}
+
+/**
+ * Options for creating Credentials from a generated password.
+ */
+export interface CredentialsFromGeneratedPasswordOptions extends CredentialsBaseOptions {
+  /**
+   * Username
+   *
+   * @default - 'admin' (or 'postgres' for PostgreSQL)
+   */
+  readonly username?: string;
+}
+
+/**
  * Username and password combination
  */
 export abstract class Credentials {
   /**
-   * Creates Credentials for the given username, and optional password and key.
-   * If no password is provided, one will be generated and stored in SecretsManager.
+   * Creates Credentials with a password generated and stored in SecretsManager.
    */
-  public static fromFixedUsername(username: string, options: CredentialsFromUsernameOptions = {}): Credentials {
+  public static fromGeneratedPassword(options: CredentialsFromGeneratedPasswordOptions = {}): Credentials {
     return {
       ...options,
+      usernameAsString: true,
+    };
+  }
+
+  /**
+   * Creates Credentials from a password
+   *
+   * Do not put passwords in your CDK code directly.
+   */
+  public static fromPassword(password: SecretValue, username?: string): Credentials {
+    return {
       username,
+      password,
       usernameAsString: true,
     };
   }
@@ -164,8 +192,8 @@ export abstract class Credentials {
    * Creates Credentials for the given username, and optional password and key.
    * If no password is provided, one will be generated and stored in SecretsManager.
    *
-   * @deprecated use `fromFixedUsername()` for new deployments only. Switching to
-   *   `fromFixedUsername()` for existing instances/clusters will have them replaced.
+   * @deprecated use `fromGeneratedPassword()` for new deployments only. Switching to
+   *   `fromGeneratedPassword()` for existing instances/clusters will have them replaced.
    */
   public static fromUsername(username: string, options: CredentialsFromUsernameOptions = {}): Credentials {
     return {
@@ -203,11 +231,13 @@ export abstract class Credentials {
   /**
    * Username
    */
-  public abstract readonly username: string;
+  public abstract readonly username?: string;
 
   /**
    * Whether the username should be referenced as a string and not as a dynamic
    * reference to the username in the secret.
+   *
+   * @default false
    */
   public abstract readonly usernameAsString?: boolean;
 

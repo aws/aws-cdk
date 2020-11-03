@@ -4,10 +4,9 @@ import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { Resource, Duration, Token, Annotations, RemovalPolicy, IResource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IClusterEngine } from './cluster-engine';
-import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { IParameterGroup } from './parameter-group';
-import { applyRemovalPolicy, defaultDeletionProtection, DEFAULT_PASSWORD_EXCLUDE_CHARS } from './private/util';
+import { applyRemovalPolicy, defaultDeletionProtection, DEFAULT_PASSWORD_EXCLUDE_CHARS, renderCredentials } from './private/util';
 import { Credentials, RotationMultiUserOptions, RotationSingleUserOptions } from './props';
 import { CfnDBCluster } from './rds.generated';
 import { ISubnetGroup, SubnetGroup } from './subnet-group';
@@ -376,14 +375,7 @@ export class ServerlessCluster extends ServerlessClusterBase {
       }
     }
 
-    let credentials = props.credentials ?? Credentials.fromUsername(props.engine.defaultUsername ?? 'admin');
-    if (!credentials.secret && !credentials.password) {
-      credentials = Credentials.fromSecret(new DatabaseSecret(this, 'Secret', {
-        username: credentials.username,
-        encryptionKey: credentials.encryptionKey,
-        excludeCharacters: credentials.excludeCharacters,
-      }));
-    }
+    const credentials = renderCredentials(this, props.credentials, props.engine.defaultUsername);
     const secret = credentials.secret;
 
     // bind the engine to the Cluster

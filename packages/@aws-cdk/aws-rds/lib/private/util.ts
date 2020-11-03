@@ -1,7 +1,9 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import { Construct, CfnDeletionPolicy, CfnResource, RemovalPolicy } from '@aws-cdk/core';
+import { DatabaseSecret } from '../database-secret';
 import { IEngine } from '../engine';
+import { Credentials } from '../props';
 
 /**
  * The default set of characters we exclude from generated passwords for database users.
@@ -89,4 +91,32 @@ export function defaultDeletionProtection(deletionProtection?: boolean, removalP
   return deletionProtection !== undefined
     ? deletionProtection
     : (removalPolicy === RemovalPolicy.RETAIN ? true : undefined);
+}
+
+/**
+ * Renders the credentials for an instance or cluster
+ */
+export function renderCredentials(scope: Construct, credentials?: Credentials, engineDefaultUsername?: string): Credentials & { username: string } {
+  const defaultUsername = engineDefaultUsername ?? 'admin';
+
+  let creds = credentials ?? Credentials.fromUsername(defaultUsername); // For backwards compatibilty
+  const username = creds.username ?? defaultUsername;
+
+  if (!creds.secret && !creds.password) {
+    creds = Credentials.fromSecret(new DatabaseSecret(scope, 'Secret', {
+      username,
+      encryptionKey: creds.encryptionKey,
+      excludeCharacters: creds.excludeCharacters,
+      // if username is referenced as a string we can safely replace the
+      // secret when customization options are changed
+      overrideLogicalId: credentials?.usernameAsString,
+    }));
+  }
+
+  return {
+    ...creds,
+    username: credentials?.usernameAsString
+      ? username
+      : creds.username ?? defaultUsername,
+  };
 }

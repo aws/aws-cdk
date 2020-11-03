@@ -1139,25 +1139,25 @@ export = {
     },
   },
 
-  'fromFixedUsername'(test: Test) {
+  'fromGeneratedPassword'(test: Test) {
     // WHEN
     const db1 = new rds.DatabaseInstance(stack, 'Database1', {
       engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_12_3 }),
       vpc,
-      credentials: rds.Credentials.fromFixedUsername('cdkadmin'),
+      credentials: rds.Credentials.fromGeneratedPassword(),
     });
 
     const db2 = new rds.DatabaseInstance(stack, 'Database2', {
       engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_12_3 }),
       vpc,
-      credentials: rds.Credentials.fromFixedUsername('cdkadmin', {
+      credentials: rds.Credentials.fromGeneratedPassword({
         excludeCharacters: "<>?!'/@\"\\", // different characters set
       }),
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::RDS::DBInstance', {
-      MasterUsername: 'cdkadmin', // username is a string
+      MasterUsername: 'postgres', // username is a string
       MasterUserPassword: {
         'Fn::Join': [
           '',
@@ -1178,6 +1178,23 @@ export = {
     const db2Secret = db2.node.tryFindChild('Secret') as rds.DatabaseSecret;
     const cfnSecret2 = db2Secret.node.defaultChild as cdk.CfnResource;
     test.notEqual(cfnSecret1.logicalId, cfnSecret2.logicalId);
+
+    test.done();
+  },
+
+  'fromPassword'(test: Test) {
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Database', {
+      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_12_3 }),
+      vpc,
+      credentials: rds.Credentials.fromPassword(cdk.SecretValue.ssmSecure('/dbPassword', '1')),
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::RDS::DBInstance', {
+      MasterUsername: 'postgres', // username is a string
+      MasterUserPassword: '{{resolve:ssm-secure:/dbPassword:1}}', // reference to SSM
+    }));
 
     test.done();
   },
