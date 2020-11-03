@@ -3526,16 +3526,30 @@
             [
               "{\"",
               {
-                "Fn::GetAtt": [
-                  "Cluster9EE0221C",
-                  "OpenIdConnectIssuerUrl"
+                "Fn::Select": [
+                  1,
+                  {
+                    "Fn::Split": [
+                      "oidc-provider/",
+                      {
+                        "Ref": "ClusterOpenIdConnectProviderE7EB0530"
+                      }
+                    ]
+                  }
                 ]
               },
               ":aud\":\"sts.amazonaws.com\",\"",
               {
-                "Fn::GetAtt": [
-                  "Cluster9EE0221C",
-                  "OpenIdConnectIssuerUrl"
+                "Fn::Select": [
+                  1,
+                  {
+                    "Fn::Split": [
+                      "oidc-provider/",
+                      {
+                        "Ref": "ClusterOpenIdConnectProviderE7EB0530"
+                      }
+                    ]
+                  }
                 ]
               },
               ":sub\":\"system:serviceaccount:default:awscdkeksclustertestclustermyserviceaccount4080bcdd\"}"
