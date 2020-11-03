@@ -36,7 +36,8 @@
             {
               "Action": [
                 "athena:getDataCatalog",
-                "athena:startQueryExecution"
+                "athena:startQueryExecution",
+                "athena:getQueryExecution"
               ],
               "Effect": "Allow",
               "Resource": [
