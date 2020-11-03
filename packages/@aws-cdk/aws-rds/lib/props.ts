@@ -181,9 +181,9 @@ export abstract class Credentials {
    * Creates Credentials for the given username, and optional password and key.
    * If no password is provided, one will be generated and stored in SecretsManager.
    *
-   * @deprecated use `fromGeneratedPassword()` or `fromPassword()` for new deployments only.
-   *   Switching to `fromGeneratedPassword()` or `fromPassword()` for existing instances/clusters
-   *   will have them replaced.
+   * @deprecated use `fromGeneratedPassword()` or `fromPassword()` for new Clusters and Instances.
+   *   Note that switching from `fromUsername()` to `fromGeneratedPassword()` or `fromPassword()` for already deployed
+   *  Clusters or Instances will result in their replacement!
    */
   public static fromUsername(username: string, options: CredentialsFromUsernameOptions = {}): Credentials {
     return {
@@ -206,8 +206,8 @@ export abstract class Credentials {
    *
    * @param secret The secret where the credentials are stored
    * @param username The username defined in the secret. If specified the username
-   * will be referenced as a string and not as dynamic reference to the username
-   * field in the secret
+   *   will be referenced as a string and not as dynamic reference to the username
+   *   field in the secret
    */
   public static fromSecret(secret: secretsmanager.ISecret, username?: string): Credentials {
     return {
