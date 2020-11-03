@@ -2,7 +2,7 @@ import '@aws-cdk/assert/jest';
 import { Stack } from '@aws-cdk/core';
 import {
   HttpApi, HttpConnectionType, HttpIntegrationType, HttpMethod, HttpRoute, HttpRouteIntegrationConfig, HttpRouteKey, IHttpRouteIntegration,
-  PayloadFormatVersion, HttpJwtAuthorizer
+  PayloadFormatVersion, HttpJwtAuthorizer,
 } from '../../lib';
 
 describe('HttpRoute', () => {
@@ -113,7 +113,7 @@ describe('HttpRoute', () => {
     });
     expect(stack).not.toHaveResource('AWS::ApiGatewayV2::VpcLink');
   });
-  
+
   test('can create route with an authorizer attached', () => {
     const stack = new Stack();
     const httpApi = new HttpApi(stack, 'HttpApi');
@@ -148,6 +148,7 @@ describe('HttpRoute', () => {
       AuthorizationType: 'JWT',
       AuthorizationScopes: ['books:read'],
     });
+  });
 });
 
 class DummyIntegration implements IHttpRouteIntegration {

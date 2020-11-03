@@ -280,7 +280,7 @@ describe('HttpApi', () => {
 
     expect(api.apiEndpoint).toBeDefined();
   });
-  
+
   test('can attach authorizer to route', () => {
     const stack = new Stack();
     const httpApi = new HttpApi(stack, 'api');
