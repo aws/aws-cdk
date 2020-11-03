@@ -7,3 +7,7 @@ export * from './virtual-node';
 export * from './virtual-router';
 export * from './virtual-service';
 export * from './virtual-node-listener';
+export * from './virtual-gateway';
+export * from './virtual-gateway-listener';
+export * from './gateway-route';
+export * from './gateway-route-spec';

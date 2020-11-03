@@ -1,6 +1,11 @@
-import { Construct, CustomResource, Stack } from '@aws-cdk/core';
+import { CustomResource, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { ICluster } from './cluster';
 import { KubectlProvider } from './kubectl-provider';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Properties for KubernetesManifest
@@ -45,7 +50,7 @@ export interface KubernetesManifestProps {
  *
  * Applies/deletes the manifest using `kubectl`.
  */
-export class KubernetesManifest extends Construct {
+export class KubernetesManifest extends CoreConstruct {
   /**
    * The CloudFormation reosurce type.
    */

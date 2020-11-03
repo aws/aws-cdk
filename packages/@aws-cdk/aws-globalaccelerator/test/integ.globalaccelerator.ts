@@ -2,11 +2,12 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as cdk from '@aws-cdk/core';
+import * as constructs from 'constructs';
 import * as ga from '../lib';
 import * as testfixture from './util';
 
 class GaStack extends testfixture.TestStack {
-  constructor(scope: cdk.Construct, id: string) {
+  constructor(scope: constructs.Construct, id: string) {
     super(scope, id);
 
     const vpc = new ec2.Vpc(this, 'VPC', { maxAzs: 3, natGateways: 1 });

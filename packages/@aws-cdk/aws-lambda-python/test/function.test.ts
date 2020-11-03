@@ -12,6 +12,7 @@ jest.mock('../lib/bundling', () => {
       },
       bindToResource: () => { return; },
     }),
+    hasDependencies: jest.fn().mockReturnValue(false),
   };
 });
 
@@ -28,6 +29,7 @@ test('PythonFunction with defaults', () => {
 
   expect(bundle).toHaveBeenCalledWith(expect.objectContaining({
     entry: expect.stringMatching(/@aws-cdk\/aws-lambda-python\/test\/lambda-handler$/),
+    outputPathSuffix: '.',
   }));
 
   expect(stack).toHaveResource('AWS::Lambda::Function', {
@@ -44,6 +46,7 @@ test('PythonFunction with index in a subdirectory', () => {
 
   expect(bundle).toHaveBeenCalledWith(expect.objectContaining({
     entry: expect.stringMatching(/@aws-cdk\/aws-lambda-python\/test\/lambda-handler-sub$/),
+    outputPathSuffix: '.',
   }));
 
   expect(stack).toHaveResource('AWS::Lambda::Function', {

@@ -1,5 +1,6 @@
 /// !cdk-integ *
 import * as cdk from '@aws-cdk/core';
+import * as constructs from 'constructs';
 import * as ec2 from '../lib';
 
 const app = new cdk.App();
@@ -9,7 +10,7 @@ interface ConstructThatTakesAVpcProps {
 }
 
 class ConstructThatTakesAVpc extends cdk.Construct {
-  constructor(scope: cdk.Construct, id: string, _props: ConstructThatTakesAVpcProps) {
+  constructor(scope: constructs.Construct, id: string, _props: ConstructThatTakesAVpcProps) {
     super(scope, id);
 
     // new ec2.CfnInstance(this, 'Instance', {

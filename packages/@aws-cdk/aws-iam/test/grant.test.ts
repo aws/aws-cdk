@@ -1,6 +1,7 @@
 import { ResourcePart } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
-import { CfnResource, Construct, Resource, Stack } from '@aws-cdk/core';
+import { CfnResource, Resource, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as iam from '../lib';
 
 let stack: Stack;

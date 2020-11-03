@@ -42,6 +42,19 @@ pipeline.addStage({
 });
 ```
 
+If you want to use existing role which can be used by on commit event rule.
+You can specify the role object in eventRole property.
+
+```ts
+const eventRole = iam.Role.fromRoleArn(this, 'Event-role', 'roleArn');
+const sourceAction = new codepipeline_actions.CodeCommitSourceAction({
+  actionName: 'CodeCommit',
+  repository: repo,
+  output: new codepipeline.Artifact(),
+  eventRole,
+});
+```
+
 The CodeCommit source action emits variables:
 
 ```typescript

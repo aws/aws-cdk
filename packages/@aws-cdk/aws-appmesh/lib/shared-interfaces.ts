@@ -1,5 +1,5 @@
 import * as cdk from '@aws-cdk/core';
-import { CfnVirtualNode } from './appmesh.generated';
+import { CfnVirtualGateway, CfnVirtualNode } from './appmesh.generated';
 
 /**
  * Enum of supported AppMesh protocols
@@ -23,24 +23,28 @@ export interface HealthCheck {
    * @default 2
    */
   readonly healthyThreshold?: number;
+
   /**
    * Interval in milliseconds to re-check
    *
    * @default 5 seconds
    */
   readonly interval?: cdk.Duration;
+
   /**
    * The path where the application expects any health-checks, this can also be the application path.
    *
    * @default /
    */
   readonly path?: string;
+
   /**
    * The TCP port number for the healthcheck
    *
    * @default - same as corresponding port mapping
    */
   readonly port?: number;
+
   /**
    * The protocol to use for the healthcheck, for convinience a const enum has been defined.
    * Protocol.HTTP or Protocol.TCP
@@ -48,12 +52,14 @@ export interface HealthCheck {
    * @default - same as corresponding port mapping
    */
   readonly protocol?: Protocol;
+
   /**
    * Timeout in milli-seconds for the healthcheck to be considered a fail.
    *
    * @default 2 seconds
    */
   readonly timeout?: cdk.Duration;
+
   /**
    * Number of failed attempts before considering the node DOWN.
    *
@@ -142,6 +148,13 @@ export interface AccessLogConfig {
    * @default - no access logging
    */
   readonly virtualNodeAccessLog?: CfnVirtualNode.AccessLogProperty;
+
+  /**
+   * VirtualGateway CFN configuration for Access Logging
+   *
+   * @default - no access logging
+   */
+  readonly virtualGatewayAccessLog?: CfnVirtualGateway.VirtualGatewayAccessLogProperty;
 }
 
 /**
@@ -183,6 +196,11 @@ class FileAccessLog extends AccessLog {
   public bind(_scope: cdk.Construct): AccessLogConfig {
     return {
       virtualNodeAccessLog: {
+        file: {
+          path: this.filePath,
+        },
+      },
+      virtualGatewayAccessLog: {
         file: {
           path: this.filePath,
         },

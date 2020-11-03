@@ -178,7 +178,7 @@ export class VirtualNode extends VirtualNodeBase {
   public readonly virtualNodeName: string;
 
   /**
-   * The Amazon Resource Name belonging to the VirtualNdoe
+   * The Amazon Resource Name belonging to the VirtualNode
    */
   public readonly virtualNodeArn: string;
 
@@ -253,7 +253,7 @@ interface VirtualNodeAttributes {
 }
 
 /**
- * Used to import a VirtualNode and read it's properties
+ * Used to import a VirtualNode and read its properties
  */
 class ImportedVirtualNode extends VirtualNodeBase {
   /**
