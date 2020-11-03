@@ -29,6 +29,25 @@
         ]
       }
     },
+    "ScheduleRuleAllowEventRuleawscdkawsapitargetintegScheduleRule51140722763E20C1": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "AWSb4cf1abd4e4f4bc699441af7ccd9ec371511E620",
+            "Arn"
+          ]
+        },
+        "Principal": "events.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "ScheduleRuleDA5BD877",
+            "Arn"
+          ]
+        }
+      }
+    },
     "AWSb4cf1abd4e4f4bc699441af7ccd9ec37ServiceRole9FFE9C50": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -146,44 +165,6 @@
         "AWSb4cf1abd4e4f4bc699441af7ccd9ec37ServiceRole9FFE9C50"
       ]
     },
-    "AWSb4cf1abd4e4f4bc699441af7ccd9ec37AllowEventRuleawscdkawsapitargetintegScheduleRule511407226CC02048": {
-      "Type": "AWS::Lambda::Permission",
-      "Properties": {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": {
-          "Fn::GetAtt": [
-            "AWSb4cf1abd4e4f4bc699441af7ccd9ec371511E620",
-            "Arn"
-          ]
-        },
-        "Principal": "events.amazonaws.com",
-        "SourceArn": {
-          "Fn::GetAtt": [
-            "ScheduleRuleDA5BD877",
-            "Arn"
-          ]
-        }
-      }
-    },
-    "AWSb4cf1abd4e4f4bc699441af7ccd9ec37AllowEventRuleawscdkawsapitargetintegPatternRule3D38858113E3D24D": {
-      "Type": "AWS::Lambda::Permission",
-      "Properties": {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": {
-          "Fn::GetAtt": [
-            "AWSb4cf1abd4e4f4bc699441af7ccd9ec371511E620",
-            "Arn"
-          ]
-        },
-        "Principal": "events.amazonaws.com",
-        "SourceArn": {
-          "Fn::GetAtt": [
-            "PatternRule4AF6D328",
-            "Arn"
-          ]
-        }
-      }
-    },
     "PatternRule4AF6D328": {
       "Type": "AWS::Events::Rule",
       "Properties": {
@@ -215,6 +196,25 @@
             }
           }
         ]
+      }
+    },
+    "PatternRuleAllowEventRuleawscdkawsapitargetintegPatternRule3D388581AA4F776B": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "AWSb4cf1abd4e4f4bc699441af7ccd9ec371511E620",
+            "Arn"
+          ]
+        },
+        "Principal": "events.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "PatternRule4AF6D328",
+            "Arn"
+          ]
+        }
       }
     }
   },
