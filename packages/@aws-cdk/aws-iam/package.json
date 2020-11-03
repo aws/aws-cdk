@@ -57,7 +57,8 @@
     "env": {
       "AWSLINT_BASE_CONSTRUCT": "true"
     },
-    "jest": true
+    "jest": true,
+    "rosetta": "strict"
   },
   "keywords": [
     "aws",
