@@ -29,6 +29,11 @@ export interface IVirtualGateway extends cdk.IResource {
    * The Mesh which the VirtualGateway belongs to
    */
   readonly mesh: IMesh;
+
+  /**
+   * Utility method to add a new GatewayRoute to the VirtualGateway
+   */
+  addGatewayRoute(id: string, route: GatewayRouteBaseProps): GatewayRoute;
 }
 
 /**
@@ -107,7 +112,7 @@ export class VirtualGateway extends VirtualGatewayBase {
    * Import an existing VirtualGateway given an ARN
    */
   public static fromVirtualGatewayArn(scope: Construct, id: string, virtualGatewayArn: string): IVirtualGateway {
-    return new class extends cdk.Resource implements IVirtualGateway {
+    return new class extends VirtualGatewayBase {
       readonly mesh = Mesh.fromMeshName(this, 'Mesh', cdk.Fn.select(0, cdk.Fn.split('/', cdk.Stack.of(scope).parseArn(virtualGatewayArn).resourceName!)));
       readonly virtualGatewayArn = virtualGatewayArn;
       readonly virtualGatewayName = cdk.Fn.select(2, cdk.Fn.split('/', cdk.Stack.of(scope).parseArn(virtualGatewayArn).resourceName!));
@@ -118,7 +123,7 @@ export class VirtualGateway extends VirtualGatewayBase {
    * Import an existing VirtualGateway given its attributes
    */
   public static fromVirtualGatewayAttributes(scope: Construct, id: string, attrs: VirtualGatewayAttributes): IVirtualGateway {
-    return new class extends cdk.Resource implements IVirtualGateway {
+    return new class extends VirtualGatewayBase {
       readonly mesh = attrs.mesh;
       readonly virtualGatewayName = attrs.virtualGatewayName;
       readonly virtualGatewayArn = cdk.Stack.of(this).formatArn({
