@@ -1,4 +1,4 @@
-import { IResource, Resource } from '@aws-cdk/core';
+import { IResource, Names, Resource } from '@aws-cdk/core';
 import { IService } from './service';
 
 export interface IInstance extends IResource {
@@ -50,7 +50,7 @@ export abstract class InstanceBase extends Resource implements IInstance {
    */
   protected uniqueInstanceId() {
     // Max length of 64 chars, get the last 64 chars
-    const id = this.node.uniqueId;
+    const id = Names.uniqueId(this);
     return id.substring(Math.max(id.length - 64, 0), id.length);
   }
 }

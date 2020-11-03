@@ -7,6 +7,7 @@ import { CfnResource } from './cfn-resource';
 import { CfnStack } from './cloudformation.generated';
 import { Duration } from './duration';
 import { Lazy } from './lazy';
+import { Names } from './names';
 import { IResolveContext } from './resolvable';
 import { Stack } from './stack';
 import { NestedStackSynthesizer } from './stack-synthesizers';
@@ -114,7 +115,7 @@ export class NestedStack extends Stack {
     Object.defineProperty(this, NESTED_STACK_SYMBOL, { value: true });
 
     // this is the file name of the synthesized template file within the cloud assembly
-    this.templateFile = `${this.node.uniqueId}.nested.template.json`;
+    this.templateFile = `${Names.uniqueId(this)}.nested.template.json`;
 
     this.parameters = props.parameters || {};
 

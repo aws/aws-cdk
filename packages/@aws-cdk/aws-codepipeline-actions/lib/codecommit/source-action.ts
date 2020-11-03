@@ -2,7 +2,7 @@ import * as codecommit from '@aws-cdk/aws-codecommit';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as targets from '@aws-cdk/aws-events-targets';
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct, Token } from '@aws-cdk/core';
+import { Construct, Names, Token } from '@aws-cdk/core';
 import { Action } from '../action';
 import { sourceArtifactBounds } from '../common';
 
@@ -165,7 +165,7 @@ export class CodeCommitSourceAction extends Action {
   }
 
   private generateEventId(stage: codepipeline.IStage): string {
-    const baseId = stage.pipeline.node.uniqueId;
+    const baseId = Names.nodeUniqueId(stage.pipeline.node);
     if (Token.isUnresolved(this.branch)) {
       let candidate = '';
       let counter = 0;

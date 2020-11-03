@@ -1,3 +1,4 @@
+import { Names } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { BaseInstanceProps, InstanceBase } from './instance';
 import { NamespaceType } from './namespace';
@@ -65,7 +66,7 @@ export class AliasTargetInstance extends InstanceBase {
         AWS_ALIAS_DNS_NAME: props.dnsName,
         ...props.customAttributes,
       },
-      instanceId: props.instanceId || this.node.uniqueId,
+      instanceId: props.instanceId || Names.uniqueId(this),
       serviceId: props.service.serviceId,
     });
 
