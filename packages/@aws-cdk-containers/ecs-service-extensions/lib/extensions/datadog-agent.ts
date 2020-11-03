@@ -1,5 +1,4 @@
 import * as ecs from '@aws-cdk/aws-ecs';
-import * as secretsManager from '@aws-cdk/aws-secretsmanager';
 import * as cdk from '@aws-cdk/core';
 import { Service } from '../service';
 import { Container } from './container';
@@ -15,6 +14,12 @@ export interface DatadogClientProps {
    * Whether or not to enable trace analytics
    */
   readonly traceAnalyticsEnabled: boolean;
+
+
+  /**
+   * Service name, for traces
+   */
+  readonly serviceName: string;
 }
 
 /**
@@ -37,6 +42,7 @@ export class DatadogAgentMutatingHook extends ContainerMutatingHook {
 
     if (this.props.traceAnalyticsEnabled) {
       environment.DD_TRACE_ANALYTICS_ENABLED = 'true';
+      environment.DD_SERVICE = this.props.serviceName;
     }
 
     return {
@@ -66,6 +72,11 @@ export interface DatadogExtensionProps {
    * An ecs.Secret that is storing the Datadog API key.
    */
   readonly datadogApiKey: ecs.Secret
+
+  /**
+   * Whether or not to capture the application logs
+   */
+  readonly logCaptureEnabled?: boolean
 }
 
 /**
@@ -116,12 +127,19 @@ export class DatadogAgentExtension extends ServiceExtension {
 
     container.addContainerMutatingHook(new DatadogAgentMutatingHook({
       traceAnalyticsEnabled: this.traceAnalyticsEnabled,
+      serviceName: this.parentService.id,
     }));
   }
 
   // This hook adds and configures the Datadog agent in the task.
   public useTaskDefinition(taskDefinition: ecs.TaskDefinition) {
-    let envVariables: any = {};
+    let envVariables: any = {
+      // Tag any data captured by with the name of the environment
+      DD_ENV: this.parentService.environment.id,
+
+      // This is running in an ECS/Fargate env
+      ECS_FARGATE: 'true',
+    };
 
     if (this.apmEnabled) {
       envVariables.DD_APM_ENABLED = 'true';
@@ -137,6 +155,11 @@ export class DatadogAgentExtension extends ServiceExtension {
       secrets: {
         DD_API_KEY: this.datadogApiKey,
       },
+    });
+
+    this.container.addPortMappings({
+      protocol: ecs.Protocol.TCP,
+      containerPort: 8126,
     });
   }
 

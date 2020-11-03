@@ -1,0 +1,31 @@
+{
+  "name": "name",
+  "version": "1.0.0",
+  "description": "Simple microservice that returns a random greeting",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git",
+    "directory": "packages/@aws-cdk-containers/ecs-service-extensions/test/test-apps/greeting"
+  },
+  "keywords": [
+    "Docker",
+    "CDK",
+    "AWS"
+  ],
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/aws/aws-cdk",
+  "author": {
+    "organization": true,
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "express": "4.17.1",
+    "dd-trace": "0.28.1"
+  }
+}
