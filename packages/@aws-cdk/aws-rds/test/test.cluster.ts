@@ -7,8 +7,8 @@ import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import {
-  AuroraEngineVersion, AuroraMysqlEngineVersion, AuroraPostgresEngineVersion, CfnDBCluster, Credentials, DatabaseCluster, DatabaseClusterEngine,
-  DatabaseClusterFromSnapshot, ParameterGroup, PerformanceInsightRetention, SubnetGroup,
+  AuroraEngineVersion, AuroraMysqlEngineVersion, AuroraPostgresEngineVersion, CfnDBCluster, Credentials, DatabaseCluster,
+  DatabaseClusterEngine, DatabaseClusterFromSnapshot, DatabaseSecret, ParameterGroup, PerformanceInsightRetention, SubnetGroup,
 } from '../lib';
 
 export = {
@@ -1737,17 +1737,17 @@ export = {
     const vpc = new ec2.Vpc(stack, 'VPC');
 
     // WHEN
-    new DatabaseCluster(stack, 'Database1', {
+    const db1 = new DatabaseCluster(stack, 'Database1', {
       engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
-      credentials: Credentials.fromFixedUsername('cdkadmin1'),
+      credentials: Credentials.fromFixedUsername('cdkadmin'),
       instanceProps: {
         vpc,
       },
     });
 
-    new DatabaseCluster(stack, 'Database2', {
+    const db2 = new DatabaseCluster(stack, 'Database2', {
       engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
-      credentials: Credentials.fromFixedUsername('cdkadmin2', {
+      credentials: Credentials.fromFixedUsername('cdkadmin', {
         excludeCharacters: "<>?!'/@\"\\", // different characters set
       }),
       instanceProps: {
@@ -1757,14 +1757,14 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::RDS::DBCluster', {
-      MasterUsername: 'cdkadmin1', // username is a string
+      MasterUsername: 'cdkadmin', // username is a string
       MasterUserPassword: {
         'Fn::Join': [
           '',
           [
             '{{resolve:secretsmanager:',
             {
-              Ref: 'd0794ea66c2e84ff83bd09c0bced0333', // logic id is a hash
+              Ref: 'DefaultDatabase1Secretd0794ea66c2e84ff83bd09c0bced0333', // logic id is a hash
             },
             ':SecretString:password::}}',
           ],
@@ -1772,21 +1772,12 @@ export = {
       },
     }));
 
-    expect(stack).to(haveResource('AWS::RDS::DBCluster', {
-      MasterUsername: 'cdkadmin2', // username is a string
-      MasterUserPassword: {
-        'Fn::Join': [
-          '',
-          [
-            '{{resolve:secretsmanager:',
-            {
-              Ref: 'a279dc0dde77fa9a73d621570e4f9b92', // different logic id
-            },
-            ':SecretString:password::}}',
-          ],
-        ],
-      },
-    }));
+    // Check that the logical id of the second secret is different
+    const db1Secret = db1.node.tryFindChild('Secret') as DatabaseSecret;
+    const cfnSecret1 = db1Secret.node.defaultChild as cdk.CfnResource;
+    const db2Secret = db2.node.tryFindChild('Secret') as DatabaseSecret;
+    const cfnSecret2 = db2Secret.node.defaultChild as cdk.CfnResource;
+    test.notEqual(cfnSecret1.logicalId, cfnSecret2.logicalId);
 
     test.done();
   },

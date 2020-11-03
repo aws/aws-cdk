@@ -49,7 +49,7 @@ class DatabaseInstanceStack extends cdk.Stack {
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MEDIUM),
       multiAz: true,
       storageType: rds.StorageType.IO1,
-      credentials: rds.Credentials.fromFixedUsername('syscdk'),
+      credentials: rds.Credentials.fromUsername('syscdk'),
       vpc,
       databaseName: 'ORCL',
       storageEncrypted: true,

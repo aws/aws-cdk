@@ -534,7 +534,7 @@
         ]
       }
     },
-    "653e16d6b669bc291aa4827a4721a98c": {
+    "InstanceSecret478E0A47": {
       "Type": "AWS::SecretsManager::Secret",
       "Properties": {
         "Description": {
@@ -560,7 +560,7 @@
       "Type": "AWS::SecretsManager::SecretTargetAttachment",
       "Properties": {
         "SecretId": {
-          "Ref": "653e16d6b669bc291aa4827a4721a98c"
+          "Ref": "InstanceSecret478E0A47"
         },
         "TargetId": {
           "Ref": "InstanceC1063A87"
@@ -647,14 +647,25 @@
         "EngineVersion": "19.0.0.0.ru-2020-04.rur-2020-04.r1",
         "Iops": 1000,
         "LicenseModel": "bring-your-own-license",
-        "MasterUsername": "syscdk",
+        "MasterUsername": {
+          "Fn::Join": [
+            "",
+            [
+              "{{resolve:secretsmanager:",
+              {
+                "Ref": "InstanceSecret478E0A47"
+              },
+              ":SecretString:username::}}"
+            ]
+          ]
+        },
         "MasterUserPassword": {
           "Fn::Join": [
             "",
             [
               "{{resolve:secretsmanager:",
               {
-                "Ref": "653e16d6b669bc291aa4827a4721a98c"
+                "Ref": "InstanceSecret478E0A47"
               },
               ":SecretString:password::}}"
             ]
@@ -821,6 +832,7 @@
             ]
           },
           "functionName": "awscdkrdsinstanceInstanceRotationSingleUserAFE3C214",
+          "excludeCharacters": " %+~`#$&*()|[]{}:;<>?!'/@\"\\",
           "vpcSubnetIds": {
             "Fn::Join": [
               "",
@@ -840,8 +852,7 @@
               "InstanceRotationSingleUserSecurityGroupF3FB5C25",
               "GroupId"
             ]
-          },
-          "excludeCharacters": " %+~`#$&*()|[]{}:;<>?!'/@\"\\"
+          }
         }
       }
     },

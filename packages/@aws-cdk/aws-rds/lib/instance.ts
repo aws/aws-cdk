@@ -949,14 +949,17 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
 
     let credentials = props.credentials ?? Credentials.fromUsername(props.engine.defaultUsername ?? 'admin');
     if (!credentials.secret && !credentials.password) {
-      credentials = Credentials.fromSecret(new DatabaseSecret(this, 'Secret', {
-        username: credentials.username,
-        encryptionKey: credentials.encryptionKey,
-        excludeCharacters: credentials.excludeCharacters,
-        // if username is referenced as a string we can safely replace the
-        // secret when customization options are changed
-        overrideLogicalId: props.credentials?.usernameAsString,
-      }));
+      credentials = Credentials.fromSecret(
+        new DatabaseSecret(this, 'Secret', {
+          username: credentials.username,
+          encryptionKey: credentials.encryptionKey,
+          excludeCharacters: credentials.excludeCharacters,
+          // if username is referenced as a string we can safely replace the
+          // secret when customization options are changed
+          overrideLogicalId: props.credentials?.usernameAsString,
+        }),
+        props.credentials?.usernameAsString ? credentials.username : undefined,
+      );
     }
     const secret = credentials.secret;
 
@@ -964,9 +967,7 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
       ...this.sourceCfnProps,
       characterSetName: props.characterSetName,
       kmsKeyId: props.storageEncryptionKey && props.storageEncryptionKey.keyArn,
-      masterUsername: props.credentials?.usernameAsString
-        ? props.credentials.username
-        : credentials.username,
+      masterUsername: credentials.username,
       masterUserPassword: credentials.password?.toString(),
       storageEncrypted: props.storageEncryptionKey ? true : props.storageEncrypted,
     });

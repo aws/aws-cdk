@@ -71,12 +71,15 @@ export class DatabaseSecret extends secretsmanager.Secret {
       const hash = crypto.createHash('md5');
       hash.update(JSON.stringify({
         path: this.node.path, // make it unique
-        // Use here the options that influence the password generation
+        // Use here the options that influence the password generation.
+        // If at some point we add other password customization options
+        // they sould be added here below (e.g. `passwordLength`).
         excludeCharacters: props.excludeCharacters,
       }));
+      const logicalId = `${this.node.path.replace(/([^A-Za-z0-9]|\/)/g, '')}${hash.digest('hex')}`;
 
       const secret = this.node.defaultChild as secretsmanager.CfnSecret;
-      secret.overrideLogicalId(hash.digest('hex'));
+      secret.overrideLogicalId(logicalId.slice(0, 255));
     }
   }
 }

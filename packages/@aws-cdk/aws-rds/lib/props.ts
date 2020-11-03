@@ -185,10 +185,15 @@ export abstract class Credentials {
    *   "password": <required: password>,
    * }
    * ```
+   *
+   * @param secret The secret where the credentials are stored
+   * @param username The username defined in the secret. If specified the username
+   * will be referenced as a string and not as dynamic reference to the username
+   * field in the secret
    */
-  public static fromSecret(secret: secretsmanager.ISecret): Credentials {
+  public static fromSecret(secret: secretsmanager.ISecret, username?: string): Credentials {
     return {
-      username: secret.secretValueFromJson('username').toString(),
+      username: username ?? secret.secretValueFromJson('username').toString(),
       password: secret.secretValueFromJson('password'),
       encryptionKey: secret.encryptionKey,
       secret,

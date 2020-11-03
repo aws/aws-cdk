@@ -301,7 +301,7 @@ export = {
       expect(stack).to(haveResourceLike('AWS::RDS::DBInstance', {
         MasterUsername: ABSENT,
         MasterUserPassword: {
-          'Fn::Join': ['', ['{{resolve:secretsmanager:', { Ref: '29ae4bfb9ee908ebe1611900a1e2469e' }, ':SecretString:password::}}']],
+          'Fn::Join': ['', ['{{resolve:secretsmanager:', { Ref: 'DefaultInstanceSecret29ae4bfb9ee908ebe1611900a1e2469e' }, ':SecretString:password::}}']],
         },
       }));
       expect(stack).to(haveResource('AWS::SecretsManager::Secret', {
@@ -1141,30 +1141,30 @@ export = {
 
   'fromFixedUsername'(test: Test) {
     // WHEN
-    new rds.DatabaseInstance(stack, 'Database1', {
+    const db1 = new rds.DatabaseInstance(stack, 'Database1', {
       engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_12_3 }),
       vpc,
-      credentials: rds.Credentials.fromFixedUsername('cdkadmin1'),
+      credentials: rds.Credentials.fromFixedUsername('cdkadmin'),
     });
 
-    new rds.DatabaseInstance(stack, 'Database2', {
+    const db2 = new rds.DatabaseInstance(stack, 'Database2', {
       engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_12_3 }),
       vpc,
-      credentials: rds.Credentials.fromFixedUsername('cdkadmin2', {
+      credentials: rds.Credentials.fromFixedUsername('cdkadmin', {
         excludeCharacters: "<>?!'/@\"\\", // different characters set
       }),
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::RDS::DBInstance', {
-      MasterUsername: 'cdkadmin1', // username is a string
+      MasterUsername: 'cdkadmin', // username is a string
       MasterUserPassword: {
         'Fn::Join': [
           '',
           [
             '{{resolve:secretsmanager:',
             {
-              Ref: 'd0794ea66c2e84ff83bd09c0bced0333', // logic id is a hash
+              Ref: 'DefaultDatabase1Secretd0794ea66c2e84ff83bd09c0bced0333', // logic id is a hash
             },
             ':SecretString:password::}}',
           ],
@@ -1172,21 +1172,12 @@ export = {
       },
     }));
 
-    expect(stack).to(haveResource('AWS::RDS::DBInstance', {
-      MasterUsername: 'cdkadmin2', // username is a string
-      MasterUserPassword: {
-        'Fn::Join': [
-          '',
-          [
-            '{{resolve:secretsmanager:',
-            {
-              Ref: 'a279dc0dde77fa9a73d621570e4f9b92', // different logic id
-            },
-            ':SecretString:password::}}',
-          ],
-        ],
-      },
-    }));
+    // Check that the logical id of the second secret is different
+    const db1Secret = db1.node.tryFindChild('Secret') as rds.DatabaseSecret;
+    const cfnSecret1 = db1Secret.node.defaultChild as cdk.CfnResource;
+    const db2Secret = db2.node.tryFindChild('Secret') as rds.DatabaseSecret;
+    const cfnSecret2 = db2Secret.node.defaultChild as cdk.CfnResource;
+    test.notEqual(cfnSecret1.logicalId, cfnSecret2.logicalId);
 
     test.done();
   },
