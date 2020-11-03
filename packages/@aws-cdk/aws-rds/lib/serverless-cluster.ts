@@ -375,7 +375,7 @@ export class ServerlessCluster extends ServerlessClusterBase {
       }
     }
 
-    const credentials = renderCredentials(this, props.credentials, props.engine.defaultUsername);
+    const credentials = renderCredentials(this, props.engine, props.credentials);
     const secret = credentials.secret;
 
     // bind the engine to the Cluster

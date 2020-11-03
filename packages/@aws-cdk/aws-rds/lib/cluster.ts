@@ -488,7 +488,7 @@ export class DatabaseCluster extends DatabaseClusterNew {
     this.singleUserRotationApplication = props.engine.singleUserRotationApplication;
     this.multiUserRotationApplication = props.engine.multiUserRotationApplication;
 
-    const credentials = renderCredentials(this, props.credentials, props.engine.defaultUsername);
+    const credentials = renderCredentials(this, props.engine, props.credentials);
     const secret = credentials.secret;
 
     const cluster = new CfnDBCluster(this, 'Resource', {

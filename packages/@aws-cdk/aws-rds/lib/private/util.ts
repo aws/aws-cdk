@@ -96,8 +96,8 @@ export function defaultDeletionProtection(deletionProtection?: boolean, removalP
 /**
  * Renders the credentials for an instance or cluster
  */
-export function renderCredentials(scope: Construct, credentials?: Credentials, engineDefaultUsername?: string): Credentials {
-  let renderedCredentials = credentials ?? Credentials.fromUsername(engineDefaultUsername ?? 'admin'); // For backwards compatibilty
+export function renderCredentials(scope: Construct, engine: IEngine, credentials?: Credentials): Credentials {
+  let renderedCredentials = credentials ?? Credentials.fromUsername(engine.defaultUsername ?? 'admin'); // For backwards compatibilty
 
   if (!renderedCredentials.secret && !renderedCredentials.password) {
     renderedCredentials = Credentials.fromSecret(

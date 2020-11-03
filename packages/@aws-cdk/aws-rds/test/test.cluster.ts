@@ -8,7 +8,7 @@ import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import {
   AuroraEngineVersion, AuroraMysqlEngineVersion, AuroraPostgresEngineVersion, CfnDBCluster, Credentials, DatabaseCluster,
-  DatabaseClusterEngine, DatabaseClusterFromSnapshot, DatabaseSecret, ParameterGroup, PerformanceInsightRetention, SubnetGroup,
+  DatabaseClusterEngine, DatabaseClusterFromSnapshot, ParameterGroup, PerformanceInsightRetention, SubnetGroup,
 } from '../lib';
 
 export = {
@@ -1737,19 +1737,9 @@ export = {
     const vpc = new ec2.Vpc(stack, 'VPC');
 
     // WHEN
-    const db1 = new DatabaseCluster(stack, 'Database1', {
+    new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
       credentials: Credentials.fromGeneratedPassword('admin'),
-      instanceProps: {
-        vpc,
-      },
-    });
-
-    const db2 = new DatabaseCluster(stack, 'Database2', {
-      engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
-      credentials: Credentials.fromGeneratedPassword('admin', {
-        excludeCharacters: "<>?!'/@\"\\", // different characters set
-      }),
       instanceProps: {
         vpc,
       },
@@ -1764,20 +1754,13 @@ export = {
           [
             '{{resolve:secretsmanager:',
             {
-              Ref: 'DefaultDatabase1Secretd0794ea66c2e84ff83bd09c0bced0333', // logic id is a hash
+              Ref: 'Secretf1cdac7f189b03ba779c225c914963ad', // logic id is a hash
             },
             ':SecretString:password::}}',
           ],
         ],
       },
     }));
-
-    // Check that the logical id of the second secret is different
-    const db1Secret = db1.node.tryFindChild('Secret') as DatabaseSecret;
-    const cfnSecret1 = db1Secret.node.defaultChild as cdk.CfnResource;
-    const db2Secret = db2.node.tryFindChild('Secret') as DatabaseSecret;
-    const cfnSecret2 = db2Secret.node.defaultChild as cdk.CfnResource;
-    test.notEqual(cfnSecret1.logicalId, cfnSecret2.logicalId);
 
     test.done();
   },

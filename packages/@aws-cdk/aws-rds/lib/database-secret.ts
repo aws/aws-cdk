@@ -76,10 +76,10 @@ export class DatabaseSecret extends secretsmanager.Secret {
         // they sould be added here below (e.g. `passwordLength`).
         excludeCharacters: props.excludeCharacters,
       }));
-      const logicalId = `${this.node.path.replace(/([^A-Za-z0-9]|\/)/g, '')}${hash.digest('hex')}`;
+      const logicalId = `${this.node.id.replace(/[^A-Za-z0-9]/g, '')}${hash.digest('hex')}`;
 
       const secret = this.node.defaultChild as secretsmanager.CfnSecret;
-      secret.overrideLogicalId(logicalId.slice(0, 255));
+      secret.overrideLogicalId(logicalId.slice(-255)); // Take last 255 chars
     }
   }
 }

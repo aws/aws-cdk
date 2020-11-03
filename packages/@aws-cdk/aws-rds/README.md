@@ -149,7 +149,7 @@ new rds.DatabaseInstance(this, 'InstanceWithUsername', {
   credentials: rds.Credentials.fromGeneratedPassword('postgres'), // Creates an admin user of postgres with a generated password
 });
 
-new rds.DatabaseInstance(this, 'InstanceWithPassword', {
+new rds.DatabaseInstance(this, 'InstanceWithUsernameAndPassword', {
   engine,
   vpc,
   credentials: rds.Credentials.fromPassword('admin', SecretValue.ssmSecure('/dbPassword', '1')), // Use password from SSM
