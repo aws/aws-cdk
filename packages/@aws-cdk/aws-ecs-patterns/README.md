@@ -33,7 +33,6 @@ const loadBalancedEcsService = new ecsPatterns.ApplicationLoadBalancedEc2Service
     },
   },
   desiredCount: 2,
-  containerName: 'test',
 });
 ```
 
@@ -257,7 +256,8 @@ const queueProcessingEc2Service = new QueueProcessingEc2Service(stack, 'Service'
     TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
   },
   queue,
-  maxScalingCapacity: 5
+  maxScalingCapacity: 5,
+  containerName: 'test',
 });
 ```
 
@@ -276,7 +276,8 @@ const queueProcessingFargateService = new QueueProcessingFargateService(stack, '
     TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
   },
   queue,
-  maxScalingCapacity: 5
+  maxScalingCapacity: 5,
+  containerName: 'test',
 });
 ```
 
