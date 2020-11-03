@@ -1,7 +1,7 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { Duration, Lazy, Resource } from '@aws-cdk/core';
+import { Duration, Lazy, Names, Resource } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { BaseLoadBalancer, BaseLoadBalancerLookupOptions, BaseLoadBalancerProps, ILoadBalancerV2 } from '../shared/base-load-balancer';
@@ -90,7 +90,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
     this.ipAddressType = props.ipAddressType ?? IpAddressType.IPV4;
     const securityGroups = [props.securityGroup || new ec2.SecurityGroup(this, 'SecurityGroup', {
       vpc: props.vpc,
-      description: `Automatically created Security Group for ELB ${this.node.uniqueId}`,
+      description: `Automatically created Security Group for ELB ${Names.uniqueId(this)}`,
       allowAllOutbound: false,
     })];
     this.connections = new ec2.Connections({ securityGroups });

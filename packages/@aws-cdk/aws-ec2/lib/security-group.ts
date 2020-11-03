@@ -1,5 +1,5 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { Annotations, ContextProvider, IResource, Lazy, Resource, ResourceProps, Stack, Token } from '@aws-cdk/core';
+import { Annotations, ContextProvider, IResource, Lazy, Names, Resource, ResourceProps, Stack, Token } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { Connections } from './connections';
@@ -73,7 +73,7 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
   }
 
   public get uniqueId() {
-    return this.node.uniqueId;
+    return Names.nodeUniqueId(this.node);
   }
 
   public addIngressRule(peer: IPeer, connection: Port, description?: string, remoteRule?: boolean) {
