@@ -127,3 +127,39 @@ router.addRoute('route-3', {
     },
   ],
 });
+
+const gateway = mesh.addVirtualGateway('gateway1', {
+  accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
+  virtualGatewayName: 'gateway1',
+});
+
+new appmesh.VirtualGateway(stack, 'gateway2', {
+  mesh: mesh,
+  listeners: [appmesh.VirtualGatewayListener.httpGatewayListener({
+    port: 443,
+    healthCheck: {
+      interval: cdk.Duration.seconds(10),
+    },
+  })],
+});
+
+gateway.addGatewayRoute('gateway1-route-http', {
+  routeSpec: appmesh.GatewayRouteSpec.httpRouteSpec({
+    routeTarget: virtualService,
+  }),
+});
+
+gateway.addGatewayRoute('gateway1-route-http2', {
+  routeSpec: appmesh.GatewayRouteSpec.http2RouteSpec({
+    routeTarget: virtualService,
+  }),
+});
+
+gateway.addGatewayRoute('gateway1-route-grpc', {
+  routeSpec: appmesh.GatewayRouteSpec.grpcRouteSpec({
+    routeTarget: virtualService,
+    match: {
+      serviceName: virtualService.virtualServiceName,
+    },
+  }),
+});

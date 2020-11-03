@@ -1,5 +1,5 @@
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
-import { IResource, Lazy, Resource } from '@aws-cdk/core';
+import { IResource, Lazy, Names, Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnVpcLink } from './apigateway.generated';
 
@@ -61,12 +61,12 @@ export class VpcLink extends Resource implements IVpcLink {
    */
   public readonly vpcLinkId: string;
 
-  private readonly targets = new Array<elbv2.INetworkLoadBalancer>();
+  private readonly _targets = new Array<elbv2.INetworkLoadBalancer>();
 
   constructor(scope: Construct, id: string, props: VpcLinkProps = {}) {
     super(scope, id, {
       physicalName: props.vpcLinkName ||
-        Lazy.stringValue({ produce: () => this.node.uniqueId }),
+        Lazy.stringValue({ produce: () => Names.nodeUniqueId(this.node) }),
     });
 
     const cfnResource = new CfnVpcLink(this, 'Resource', {
@@ -83,17 +83,25 @@ export class VpcLink extends Resource implements IVpcLink {
   }
 
   public addTargets(...targets: elbv2.INetworkLoadBalancer[]) {
-    this.targets.push(...targets);
+    this._targets.push(...targets);
+  }
+
+  /**
+   * Return the list of DNS names from the target NLBs.
+   * @internal
+   * */
+  public get _targetDnsNames(): string[] {
+    return this._targets.map(t => t.loadBalancerDnsName);
   }
 
   protected validate(): string[] {
-    if (this.targets.length === 0) {
+    if (this._targets.length === 0) {
       return ['No targets added to vpc link'];
     }
     return [];
   }
 
   private renderTargets() {
-    return this.targets.map(nlb => nlb.loadBalancerArn);
+    return this._targets.map(nlb => nlb.loadBalancerArn);
   }
 }

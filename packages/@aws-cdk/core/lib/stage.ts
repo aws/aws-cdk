@@ -1,8 +1,13 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import { IConstruct, Node } from 'constructs';
-import { Construct } from './construct-compat';
+import { IConstruct, Construct, Node } from 'constructs';
 import { Environment } from './environment';
 import { synthesize } from './private/synthesis';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from './construct-compat';
+
+const STAGE_SYMBOL = Symbol.for('@aws-cdk/core.Stage');
 
 /**
  * Initialization props for a stage.
@@ -65,7 +70,7 @@ export interface StageProps {
  * copies of your application which should be be deployed to different
  * environments.
  */
-export class Stage extends Construct {
+export class Stage extends CoreConstruct {
   /**
    * Return the stage this construct is contained with, if available. If called
    * on a nested stage, returns its parent.
@@ -82,7 +87,7 @@ export class Stage extends Construct {
    * @experimental
    */
   public static isStage(x: any ): x is Stage {
-    return x !== null && x instanceof Stage;
+    return x !== null && typeof(x) === 'object' && STAGE_SYMBOL in x;
   }
 
   /**
@@ -134,6 +139,8 @@ export class Stage extends Construct {
       throw new Error(`invalid stage name "${id}". Stage name must start with a letter and contain only alphanumeric characters, hypens ('-'), underscores ('_') and periods ('.')`);
     }
 
+    Object.defineProperty(this, STAGE_SYMBOL, { value: true });
+
     this.parentStage = Stage.of(this);
 
     this.region = props.env?.region ?? this.parentStage?.region;
@@ -148,6 +155,13 @@ export class Stage extends Construct {
    */
   public get outdir() {
     return this._assemblyBuilder.outdir;
+  }
+
+  /**
+   * The cloud assembly asset output directory.
+   */
+  public get assetOutdir() {
+    return this._assemblyBuilder.assetOutdir;
   }
 
   /**

@@ -2,6 +2,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 import { ProductionVariant } from './base-types';
 
@@ -53,7 +54,7 @@ export class SageMakerCreateEndpointConfig extends sfn.TaskStateBase {
   protected readonly taskPolicies?: iam.PolicyStatement[];
   private readonly integrationPattern: sfn.IntegrationPattern;
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: SageMakerCreateEndpointConfigProps) {
+  constructor(scope: Construct, id: string, private readonly props: SageMakerCreateEndpointConfigProps) {
     super(scope, id, props);
     this.integrationPattern = props.integrationPattern || sfn.IntegrationPattern.REQUEST_RESPONSE;
     validatePatternSupported(this.integrationPattern, SageMakerCreateEndpointConfig.SUPPORTED_INTEGRATION_PATTERNS);

@@ -1,10 +1,15 @@
 import * as path from 'path';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Construct, Duration, Stack, NestedStack } from '@aws-cdk/core';
+import { Duration, Stack, NestedStack, Names } from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
+import { Construct } from 'constructs';
 import { ICluster, Cluster } from './cluster';
 import { KubectlLayer, KubectlLayerProps } from './kubectl-layer';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 export interface KubectlProviderProps {
   /**
@@ -23,7 +28,7 @@ export class KubectlProvider extends NestedStack {
 
     // if this is an imported cluster, we need to provision a custom resource provider in this stack
     // we will define one per stack for each cluster based on the cluster uniqueid
-    const uid = `${cluster.node.uniqueId}-KubectlProvider`;
+    const uid = `${Names.nodeUniqueId(cluster.node)}-KubectlProvider`;
     const stack = Stack.of(scope);
     let provider = stack.node.tryFindChild(uid) as KubectlProvider;
     if (!provider) {
@@ -49,7 +54,7 @@ export class KubectlProvider extends NestedStack {
   public readonly handlerRole: iam.IRole;
 
   public constructor(scope: Construct, id: string, props: KubectlProviderProps) {
-    super(scope, id);
+    super(scope as CoreConstruct, id);
 
     const cluster = props.cluster;
 

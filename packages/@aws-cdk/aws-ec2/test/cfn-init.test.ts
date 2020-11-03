@@ -6,7 +6,7 @@ import '@aws-cdk/assert/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import { Asset } from '@aws-cdk/aws-s3-assets';
-import { App, Aws, CfnResource, Stack, DefaultStackSynthesizer, IStackSynthesizer, FileAssetSource, FileAssetLocation } from '@aws-cdk/core';
+import { AssetStaging, App, Aws, CfnResource, Stack, DefaultStackSynthesizer, IStackSynthesizer, FileAssetSource, FileAssetLocation } from '@aws-cdk/core';
 import * as ec2 from '../lib';
 
 let app: App;
@@ -73,7 +73,7 @@ test('CloudFormationInit can be added to after instantiation', () => {
 
   // WHEN
   config.add(ec2.InitCommand.argvCommand(['/bin/true']));
-  init._attach(resource, linuxOptions());
+  init.attach(resource, linuxOptions());
 
   // THEN
   expectMetadataLike({
@@ -85,6 +85,17 @@ test('CloudFormationInit can be added to after instantiation', () => {
       },
     },
   });
+});
+
+test('CloudFormationInit cannot be attached twice', () => {
+  // GIVEN
+  const init = ec2.CloudFormationInit.fromElements();
+
+  // WHEN
+  init.attach(resource, linuxOptions());
+
+  // THEN
+  expect(() => { init.attach(resource, linuxOptions()); }).toThrow(/already has/);
 });
 
 test('empty configs are not rendered', () => {
@@ -99,7 +110,7 @@ test('empty configs are not rendered', () => {
     configSets: { default: ['config2', 'config1'] },
     configs: { config1, config2 },
   });
-  init._attach(resource, linuxOptions());
+  init.attach(resource, linuxOptions());
 
   // THEN
   expectMetadataLike({
@@ -126,7 +137,7 @@ describe('userdata', () => {
 
   test('linux userdata contains right commands', () => {
     // WHEN
-    simpleInit._attach(resource, linuxOptions());
+    simpleInit.attach(resource, linuxOptions());
 
     // THEN
     const lines = linuxUserData.render().split('\n');
@@ -146,7 +157,7 @@ describe('userdata', () => {
     // WHEN
     const windowsUserData = ec2.UserData.forWindows();
 
-    simpleInit._attach(resource, {
+    simpleInit.attach(resource, {
       platform: ec2.OperatingSystemType.WINDOWS,
       instanceRole,
       userData: windowsUserData,
@@ -168,7 +179,7 @@ describe('userdata', () => {
 
   test('ignoreFailures disables result code reporting', () => {
     // WHEN
-    simpleInit._attach(resource, {
+    simpleInit.attach(resource, {
       ...linuxOptions(),
       ignoreFailures: true,
     });
@@ -181,7 +192,7 @@ describe('userdata', () => {
 
   test('can disable log printing', () => {
     // WHEN
-    simpleInit._attach(resource, {
+    simpleInit.attach(resource, {
       ...linuxOptions(),
       printLog: false,
     });
@@ -193,7 +204,7 @@ describe('userdata', () => {
 
   test('can disable fingerprinting', () => {
     // WHEN
-    simpleInit._attach(resource, {
+    simpleInit.attach(resource, {
       ...linuxOptions(),
       embedFingerprint: false,
     });
@@ -205,7 +216,7 @@ describe('userdata', () => {
 
   test('can request multiple different configsets to be used', () => {
     // WHEN
-    simpleInit._attach(resource, {
+    simpleInit.attach(resource, {
       ...linuxOptions(),
       configSets: ['banana', 'peach'],
     });
@@ -255,7 +266,7 @@ describe('assets n buckets', () => {
     );
 
     // WHEN
-    init._attach(resource, linuxOptions());
+    init.attach(resource, linuxOptions());
 
     // THEN
     expect(stack).toHaveResource('AWS::IAM::Policy', {
@@ -309,7 +320,7 @@ describe('assets n buckets', () => {
     );
 
     // WHEN
-    init._attach(resource, linuxOptions());
+    init.attach(resource, linuxOptions());
 
     // THEN
     expect(stack).toHaveResource('AWS::IAM::Policy', {
@@ -355,7 +366,7 @@ describe('assets n buckets', () => {
     );
 
     // WHEN
-    init._attach(resource, linuxOptions());
+    init.attach(resource, linuxOptions());
 
     // THEN
     expect(stack).toHaveResource('AWS::IAM::Policy', {
@@ -398,7 +409,7 @@ describe('assets n buckets', () => {
     );
 
     // WHEN
-    init._attach(resource, linuxOptions());
+    init.attach(resource, linuxOptions());
 
     // THEN
     expect(stack).toHaveResource('AWS::IAM::Policy', {
@@ -440,7 +451,7 @@ describe('assets n buckets', () => {
     );
 
     // WHEN
-    init._attach(resource, linuxOptions());
+    init.attach(resource, linuxOptions());
 
     // THEN
     expectMetadataLike({
@@ -465,7 +476,7 @@ describe('assets n buckets', () => {
     );
 
     // WHEN
-    init._attach(resource, linuxOptions());
+    init.attach(resource, linuxOptions());
 
     // THEN
     expectMetadataLike({
@@ -485,10 +496,11 @@ describe('assets n buckets', () => {
   test('fingerprint data changes on asset hash update', () => {
     function calculateFingerprint(assetFilePath: string): string | undefined {
       resetState(); // Needed so the same resources/assets/filenames can be used.
+      AssetStaging.clearAssetHashCache(); // Needed so changing the content of the file will update the hash
       const init = ec2.CloudFormationInit.fromElements(
         ec2.InitFile.fromAsset('/etc/myFile', assetFilePath),
       );
-      init._attach(resource, linuxOptions());
+      init.attach(resource, linuxOptions());
 
       return linuxUserData.render().split('\n').find(line => line.match(/# fingerprint:/));
     }
@@ -514,10 +526,11 @@ describe('assets n buckets', () => {
   test('fingerprint data changes on existing asset update, even for assets with unchanging URLs', () => {
     function calculateFingerprint(assetFilePath: string): string | undefined {
       resetStateWithSynthesizer(new SingletonLocationSythesizer());
+      AssetStaging.clearAssetHashCache(); // Needed so changing the content of the file will update the hash
       const init = ec2.CloudFormationInit.fromElements(
         ec2.InitFile.fromExistingAsset('/etc/myFile', new Asset(stack, 'FileAsset', { path: assetFilePath })),
       );
-      init._attach(resource, linuxOptions());
+      init.attach(resource, linuxOptions());
 
       return linuxUserData.render().split('\n').find(line => line.match(/# fingerprint:/));
     }

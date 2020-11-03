@@ -5,9 +5,14 @@ import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as cpactions from '@aws-cdk/aws-codepipeline-actions';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
-import { Aws, Construct, Stack } from '@aws-cdk/core';
+import { Aws, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
+import { Construct, Node } from 'constructs';
 import { appOf, assemblyBuilderOf } from '../private/construct-internals';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Customization options for a DeployCdkStackAction
@@ -162,7 +167,7 @@ export class DeployCdkStackAction implements codepipeline.IAction {
 
     // We need the path of the template relative to the root Cloud Assembly
     // It should be easier to get this, but for now it is what it is.
-    const appAsmRoot = assemblyBuilderOf(appOf(scope)).outdir;
+    const appAsmRoot = assemblyBuilderOf(appOf(scope as CoreConstruct)).outdir;
     const fullTemplatePath = path.join(artifact.assembly.directory, artifact.templateFile);
 
     let fullConfigPath;
@@ -261,7 +266,7 @@ export class DeployCdkStackAction implements codepipeline.IAction {
   /**
    * Exists to implement IAction
    */
-  public bind(scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
+  public bind(scope: CoreConstruct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
   codepipeline.ActionConfig {
     stage.addAction(this.prepareChangeSetAction);
 
@@ -296,10 +301,10 @@ function roleFromPlaceholderArn(scope: Construct, region: string | undefined,
   const id = arn;
 
   // https://github.com/aws/aws-cdk/issues/7255
-  let existingRole = scope.node.tryFindChild(`ImmutableRole${id}`) as iam.IRole;
+  let existingRole = Node.of(scope).tryFindChild(`ImmutableRole${id}`) as iam.IRole;
   if (existingRole) { return existingRole; }
   // For when #7255 is fixed.
-  existingRole = scope.node.tryFindChild(id) as iam.IRole;
+  existingRole = Node.of(scope).tryFindChild(id) as iam.IRole;
   if (existingRole) { return existingRole; }
 
   const arnToImport = cxapi.EnvironmentPlaceholders.replace(arn, {

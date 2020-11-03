@@ -1,8 +1,12 @@
 import * as logs from '@aws-cdk/aws-logs';
-import { Construct, Stack } from '@aws-cdk/core';
+import { Stack } from '@aws-cdk/core';
 import { ContainerDefinition } from '../container-definition';
 import { LogDriver, LogDriverConfig } from './log-driver';
 import { removeEmpty } from './utils';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Specifies the awslogs log driver configuration options.
@@ -87,7 +91,7 @@ export class AwsLogDriver extends LogDriver {
   /**
    * Called when the log driver is configured on a container
    */
-  public bind(scope: Construct, containerDefinition: ContainerDefinition): LogDriverConfig {
+  public bind(scope: CoreConstruct, containerDefinition: ContainerDefinition): LogDriverConfig {
     this.logGroup = this.props.logGroup || new logs.LogGroup(scope, 'LogGroup', {
       retention: this.props.logRetention || Infinity,
     });

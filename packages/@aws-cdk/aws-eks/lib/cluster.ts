@@ -6,7 +6,8 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as ssm from '@aws-cdk/aws-ssm';
-import { Annotations, CfnOutput, CfnResource, Construct, IResource, Resource, Stack, Tags, Token, Duration } from '@aws-cdk/core';
+import { Annotations, CfnOutput, CfnResource, IResource, Resource, Stack, Tags, Token, Duration } from '@aws-cdk/core';
+import { Construct, Node } from 'constructs';
 import * as YAML from 'yaml';
 import { AwsAuth } from './aws-auth';
 import { ClusterResource, clusterArnComponents } from './cluster-resource';
@@ -21,6 +22,10 @@ import { Nodegroup, NodegroupOptions } from './managed-nodegroup';
 import { BottleRocketImage } from './private/bottlerocket';
 import { ServiceAccount, ServiceAccountOptions } from './service-account';
 import { LifecycleLabel, renderAmazonLinuxUserData, renderBottlerocketUserData } from './user-data';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 // defaults are based on https://eksctl.io
 const DEFAULT_CAPACITY_COUNT = 2;
@@ -127,6 +132,16 @@ export interface ICluster extends IResource, ec2.IConnectable {
    * @returns a `HelmChart` construct
    */
   addHelmChart(id: string, options: HelmChartOptions): HelmChart;
+
+  /**
+   * Defines a CDK8s chart in this cluster.
+   *
+   * @param id logical id of this chart.
+   * @param chart the cdk8s chart.
+   * @returns a `KubernetesManifest` construct representing the chart.
+   */
+  addCdk8sChart(id: string, chart: Construct): KubernetesManifest;
+
 }
 
 /**
@@ -564,6 +579,11 @@ export class KubernetesVersion {
   public static readonly V1_17 = KubernetesVersion.of('1.17');
 
   /**
+   * Kubernetes version 1.18
+   */
+  public static readonly V1_18 = KubernetesVersion.of('1.18');
+
+  /**
    * Custom cluster version
    * @param version custom version number
    */
@@ -611,6 +631,25 @@ abstract class ClusterBase extends Resource implements ICluster {
    */
   public addHelmChart(id: string, options: HelmChartOptions): HelmChart {
     return new HelmChart(this, `chart-${id}`, { cluster: this, ...options });
+  }
+
+  /**
+   * Defines a CDK8s chart in this cluster.
+   *
+   * @param id logical id of this chart.
+   * @param chart the cdk8s chart.
+   * @returns a `KubernetesManifest` construct representing the chart.
+   */
+  public addCdk8sChart(id: string, chart: Construct): KubernetesManifest {
+
+    const cdk8sChart = chart as any;
+
+    // see https://github.com/awslabs/cdk8s/blob/master/packages/cdk8s/src/chart.ts#L84
+    if (typeof cdk8sChart.toJson !== 'function') {
+      throw new Error(`Invalid cdk8s chart. Must contain a 'toJson' method, but found ${typeof cdk8sChart.toJson}`);
+    }
+
+    return this.addManifest(id, ...cdk8sChart.toJson());
   }
 }
 
@@ -1281,7 +1320,7 @@ export class Cluster extends ClusterBase {
    * @internal
    */
   public _attachKubectlResourceScope(resourceScope: Construct): KubectlProvider {
-    resourceScope.node.addDependency(this._kubectlReadyBarrier);
+    Node.of(resourceScope).addDependency(this._kubectlReadyBarrier);
     return this._kubectlResourceProvider;
   }
 
@@ -1690,7 +1729,7 @@ export class EksOptimizedImage implements ec2.IMachineImage {
   /**
    * Return the correct image
    */
-  public getImage(scope: Construct): ec2.MachineImageConfig {
+  public getImage(scope: CoreConstruct): ec2.MachineImageConfig {
     const ami = ssm.StringParameter.valueForStringParameter(scope, this.amiParameterName);
     return {
       imageId: ami,

@@ -1,5 +1,6 @@
 import * as events from '@aws-cdk/aws-events';
-import { Construct, Lazy } from '@aws-cdk/core';
+import { Lazy } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as codepipeline from '../lib';
 
 export interface IFakeSourceActionVariables {
