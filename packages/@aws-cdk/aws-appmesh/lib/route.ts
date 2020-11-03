@@ -166,7 +166,7 @@ export class Route extends cdk.Resource implements IRoute {
 
   constructor(scope: Construct, id: string, props: RouteProps) {
     super(scope, id, {
-      physicalName: props.routeName || cdk.Lazy.stringValue({ produce: () => this.node.uniqueId }),
+      physicalName: props.routeName || cdk.Lazy.stringValue({ produce: () => cdk.Names.uniqueId(this) }),
     });
 
     this.virtualRouter = props.virtualRouter;
