@@ -105,10 +105,11 @@ export function renderCredentials(scope: Construct, credentials?: Credentials, e
         username: renderedCredentials.username,
         encryptionKey: renderedCredentials.encryptionKey,
         excludeCharacters: renderedCredentials.excludeCharacters,
-        // if username is referenced as a string we can safely replace the
-        // secret when customization options are changed
+        // if username must be referenced as a string we can safely replace the
+        // secret when customization options are changed without risking a replacement
         overrideLogicalId: credentials?.usernameAsString,
       }),
+      // pass username if it must be referenced as a string
       credentials?.usernameAsString ? renderedCredentials.username : undefined,
     );
   }
