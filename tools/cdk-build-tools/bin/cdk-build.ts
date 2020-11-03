@@ -14,6 +14,11 @@ async function main() {
       desc: 'Specify a different jsii executable',
       defaultDescription: 'jsii provided by node dependencies',
     })
+    .option('jsii-rosetta', {
+      type: 'string',
+      desc: 'Specify a different jsii-rosetta executable',
+      defaultDescription: 'jsii-rosetta provided by node dependencies',
+    })
     .option('tsc', {
       type: 'string',
       desc: 'Specify a different tsc executable',
@@ -44,7 +49,7 @@ async function main() {
     await shell([gen], { timers, env });
   }
 
-  const overrides: CompilerOverrides = { eslint: args.eslint, jsii: args.jsii, tsc: args.tsc };
+  const overrides: CompilerOverrides = { eslint: args.eslint, jsii: args.jsii, rosetta: args['jsii-rosetta'], tsc: args.tsc };
   await compileCurrentPackage(options, timers, overrides);
   await lintCurrentPackage(options, overrides);
 

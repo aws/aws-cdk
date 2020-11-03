@@ -146,6 +146,7 @@
       "cd test/fs",
       "tar -xzf fixtures.tar.gz"
     ],
+    "rosetta": "strict",
     "env": {
       "AWSLINT_BASE_CONSTRUCT": "true"
     }
