@@ -30,7 +30,7 @@ export class LambdaProxyIntegration implements IHttpRouteIntegration {
 
   public bind(options: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig {
     const route = options.route;
-    this.props.handler.addPermission(`${Names.uniqueId(route)}-Permission`, {
+    this.props.handler.addPermission(`${Names.nodeUniqueId(route.node)}-Permission`, {
       scope: options.scope,
       principal: new ServicePrincipal('apigateway.amazonaws.com'),
       sourceArn: Stack.of(route).formatArn({
