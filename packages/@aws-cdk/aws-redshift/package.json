@@ -75,7 +75,7 @@
     "@aws-cdk/assert": "0.0.0",
     "cdk-build-tools": "0.0.0",
     "cfn2ts": "0.0.0",
-    "jest": "^26.6.1",
+    "jest": "^26.6.2",
     "pkglint": "0.0.0"
   },
   "dependencies": {
@@ -102,6 +102,7 @@
   },
   "awslint": {
     "exclude": [
+      "attribute-tag:@aws-cdk/aws-redshift.DatabaseSecret.secretFullArn",
       "attribute-tag:@aws-cdk/aws-redshift.DatabaseSecret.secretName",
       "docs-public-apis:@aws-cdk/aws-redshift.ParameterGroupParameters.parameterName",
       "docs-public-apis:@aws-cdk/aws-redshift.ParameterGroupParameters.parameterValue",
