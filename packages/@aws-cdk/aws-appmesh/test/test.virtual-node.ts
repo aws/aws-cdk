@@ -102,7 +102,7 @@ export = {
       },
     },
   },
-  'Can import Virtual Nodes using ARN and attributes'(test: Test) {
+  'Can import Virtual Nodes using an ARN'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -111,20 +111,27 @@ export = {
     const arn = `arn:aws:appmesh:us-east-1:123456789012:mesh/${meshName}/virtualNode/${virtualNodeName}`;
 
     // WHEN
-    const virtualNode1 = appmesh.VirtualNode.fromVirtualNodeAttributes(stack, 'importedVirtualNode1', {
+    const virtualNode = appmesh.VirtualNode.fromVirtualNodeArn(
+      stack, 'importedVirtualNode', arn);
+    // THEN
+    test.equal(virtualNode.mesh.meshName, meshName);
+    test.equal(virtualNode.virtualNodeName, virtualNodeName);
+
+    test.done();
+  },
+  'Can import Virtual Nodes using attributes'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const meshName = 'testMesh';
+    const virtualNodeName = 'test-node';
+    // WHEN
+    const virtualNode = appmesh.VirtualNode.fromVirtualNodeAttributes(stack, 'importedVirtualNode', {
       mesh: appmesh.Mesh.fromMeshName(stack, 'Mesh', meshName),
       virtualNodeName: virtualNodeName,
     });
     // THEN
-    test.equal(virtualNode1.mesh.meshName, meshName);
-    test.equal(virtualNode1.virtualNodeName, virtualNodeName);
-
-    // WHEN
-    const virtualNode2 = appmesh.VirtualNode.fromVirtualNodeArn(
-      stack, 'importedVirtualNode2', arn);
-    // THEN
-    test.equal(virtualNode2.mesh.meshName, meshName);
-    test.equal(virtualNode2.virtualNodeName, virtualNodeName);
+    test.equal(virtualNode.mesh.meshName, meshName);
+    test.equal(virtualNode.virtualNodeName, virtualNodeName);
 
     test.done();
   },

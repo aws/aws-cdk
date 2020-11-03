@@ -238,8 +238,7 @@ export = {
       test.done();
     },
   },
-
-  'Can import VirtualGateways using ARN and attributes'(test: Test) {
+  'Can import VirtualGateways using an ARN'(test: Test) {
     const app = new cdk.App();
     // GIVEN
     const stack = new cdk.Stack(app, 'Imports', {
@@ -250,20 +249,31 @@ export = {
     const arn = `arn:aws:appmesh:us-east-1:123456789012:mesh/${meshName}/virtualGateway/${virtualGatewayName}`;
 
     // WHEN
-    const virtualGateway1 = appmesh.VirtualGateway.fromVirtualGatewayAttributes(stack, 'importedGateway1', {
+    const virtualGateway = appmesh.VirtualGateway.fromVirtualGatewayArn(
+      stack, 'importedGateway', arn);
+    // THEN
+    test.equal(virtualGateway.mesh.meshName, meshName);
+    test.equal(virtualGateway.virtualGatewayName, virtualGatewayName);
+    test.done();
+  },
+  'Can import VirtualGateways using attributes'(test: Test) {
+    const app = new cdk.App();
+    // GIVEN
+    const stack = new cdk.Stack(app, 'Imports', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+    const meshName = 'testMesh';
+    const virtualGatewayName = 'test-gateway';
+
+    // WHEN
+    const virtualGateway = appmesh.VirtualGateway.fromVirtualGatewayAttributes(stack, 'importedGateway', {
       mesh: appmesh.Mesh.fromMeshName(stack, 'Mesh', meshName),
       virtualGatewayName: virtualGatewayName,
     });
     // THEN
-    test.equal(virtualGateway1.mesh.meshName, meshName);
-    test.equal(virtualGateway1.virtualGatewayName, virtualGatewayName);
+    test.equal(virtualGateway.mesh.meshName, meshName);
+    test.equal(virtualGateway.virtualGatewayName, virtualGatewayName);
 
-    // WHEN
-    const virtualGateway2 = appmesh.VirtualGateway.fromVirtualGatewayArn(
-      stack, 'importedGateway2', arn);
-    // THEN
-    test.equal(virtualGateway2.mesh.meshName, meshName);
-    test.equal(virtualGateway2.virtualGatewayName, virtualGatewayName);
     test.done();
   },
 };

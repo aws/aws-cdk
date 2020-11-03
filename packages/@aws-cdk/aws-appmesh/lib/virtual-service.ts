@@ -81,14 +81,26 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
    * Import an existing VirtualService given an ARN
    */
   public static fromVirtualServiceArn(scope: Construct, id: string, virtualServiceArn: string): IVirtualService {
-    return new ImportedVirtualService(scope, id, undefined, virtualServiceArn);
+    return new class extends cdk.Resource implements IVirtualService {
+      readonly virtualServiceArn = virtualServiceArn;
+      readonly virtualServiceName = cdk.Fn.select(2, cdk.Fn.split('/', cdk.Stack.of(scope).parseArn(virtualServiceArn).resourceName!));
+      readonly mesh = Mesh.fromMeshName(this, 'Mesh', cdk.Fn.select(0, cdk.Fn.split('/', cdk.Stack.of(scope).parseArn(virtualServiceArn).resourceName!)));
+    }(scope, id);
   }
 
   /**
    * Import an existing VirtualService given its attributes
    */
   public static fromVirtualServiceAttributes(scope: Construct, id: string, attrs: VirtualServiceAttributes): IVirtualService {
-    return new ImportedVirtualService(scope, id, attrs);
+    return new class extends cdk.Resource implements IVirtualService {
+      readonly virtualServiceName = attrs.virtualServiceName;
+      readonly mesh = attrs.mesh;
+      readonly virtualServiceArn = cdk.Stack.of(this).formatArn({
+        service: 'appmesh',
+        resource: `mesh/${attrs.mesh.meshName}/virtualService`,
+        resourceName: this.virtualServiceName,
+      });
+    }(scope, id);
   }
 
   /**
@@ -173,44 +185,4 @@ export interface VirtualServiceAttributes {
    * The Mesh which the VirtualService belongs to
    */
   readonly mesh: IMesh;
-}
-
-/**
- * Returns properties that allows a VirtualService to be imported
- */
-class ImportedVirtualService extends cdk.Resource implements IVirtualService {
-  /**
-   * The name of the VirtualService, it is recommended this follows the fully-qualified domain name format.
-   */
-  public readonly virtualServiceName: string;
-
-  /**
-   * The Amazon Resource Name (ARN) for the virtual service
-   */
-  public readonly virtualServiceArn: string;
-
-  /**
-   * The Mesh which the VirtualService belongs to
-   */
-  public readonly mesh: IMesh;
-
-  constructor(scope: Construct, id: string, attrs?: VirtualServiceAttributes, virtualServiceArn?: string) {
-    super(scope, id);
-    if (virtualServiceArn) {
-      this.virtualServiceArn = virtualServiceArn;
-      this.virtualServiceName = cdk.Fn.select(2, cdk.Fn.split('/', cdk.Stack.of(scope).parseArn(virtualServiceArn).resourceName!));
-      const meshName = cdk.Fn.select(0, cdk.Fn.split('/', cdk.Stack.of(scope).parseArn(virtualServiceArn).resourceName!));
-      this.mesh = Mesh.fromMeshName(this, 'Mesh', meshName);
-    } else if (attrs) {
-      this.virtualServiceName = attrs.virtualServiceName;
-      this.mesh = attrs.mesh;
-      this.virtualServiceArn = cdk.Stack.of(this).formatArn({
-        service: 'appmesh',
-        resource: `mesh/${attrs.mesh.meshName}/virtualService`,
-        resourceName: this.virtualServiceName,
-      });
-    } else {
-      throw new Error('Need either arn or both names');
-    }
-  }
 }

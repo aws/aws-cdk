@@ -109,14 +109,26 @@ export class VirtualRouter extends VirtualRouterBase {
    * Import an existing VirtualRouter given an ARN
    */
   public static fromVirtualRouterArn(scope: Construct, id: string, virtualRouterArn: string): IVirtualRouter {
-    return new ImportedVirtualRouter(scope, id, undefined, virtualRouterArn);
+    return new class extends VirtualRouterBase {
+      readonly virtualRouterArn = virtualRouterArn;
+      readonly virtualRouterName = cdk.Fn.select(2, cdk.Fn.split('/', cdk.Stack.of(scope).parseArn(virtualRouterArn).resourceName!));
+      readonly mesh = Mesh.fromMeshName(this, 'Mesh', cdk.Fn.select(0, cdk.Fn.split('/', cdk.Stack.of(scope).parseArn(virtualRouterArn).resourceName!)));
+    }(scope, id);
   }
 
   /**
    * Import an existing VirtualRouter given attributes
    */
   public static fromVirtualRouterAttributes(scope: Construct, id: string, attrs: VirtualRouterAttributes): IVirtualRouter {
-    return new ImportedVirtualRouter(scope, id, attrs);
+    return new class extends VirtualRouterBase {
+      readonly virtualRouterName = attrs.virtualRouterName;
+      readonly mesh = attrs.mesh;
+      readonly virtualRouterArn = cdk.Stack.of(this).formatArn({
+        service: 'appmesh',
+        resource: `mesh/${attrs.mesh.meshName}/virtualRouter`,
+        resourceName: this.virtualRouterName,
+      });
+    }(scope, id);
   }
 
   /**
@@ -184,44 +196,4 @@ export interface VirtualRouterAttributes {
    * The Mesh which the VirtualRouter belongs to
    */
   readonly mesh: IMesh;
-}
-
-/**
- * Used to import a VirtualRouter and perform actions or read properties from
- */
-class ImportedVirtualRouter extends VirtualRouterBase {
-  /**
-   * The name of the VirtualRouter
-   */
-  public readonly virtualRouterName: string;
-
-  /**
-   * The Amazon Resource Name (ARN) for the VirtualRouter
-   */
-  public readonly virtualRouterArn: string;
-
-  /**
-   * The Mesh which the VirtualRouter belongs to
-   */
-  public readonly mesh: IMesh;
-
-  constructor(scope: Construct, id: string, attrs?: VirtualRouterAttributes, virtualRouterArn?: string) {
-    super(scope, id);
-    if (virtualRouterArn) {
-      this.virtualRouterArn = virtualRouterArn;
-      this.virtualRouterName = cdk.Fn.select(2, cdk.Fn.split('/', cdk.Stack.of(scope).parseArn(virtualRouterArn).resourceName!));
-      const meshName = cdk.Fn.select(0, cdk.Fn.split('/', cdk.Stack.of(scope).parseArn(virtualRouterArn).resourceName!));
-      this.mesh = Mesh.fromMeshName(this, 'Mesh', meshName);
-    } else if (attrs) {
-      this.virtualRouterName = attrs.virtualRouterName;
-      this.mesh = attrs.mesh;
-      this.virtualRouterArn = cdk.Stack.of(this).formatArn({
-        service: 'appmesh',
-        resource: `mesh/${attrs.mesh.meshName}/virtualRouter`,
-        resourceName: this.virtualRouterName,
-      });
-    } else {
-      throw new Error('Need either arn or both names');
-    }
-  }
 }
