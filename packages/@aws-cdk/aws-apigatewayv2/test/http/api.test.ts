@@ -281,7 +281,7 @@ describe('HttpApi', () => {
 
     expect(api.apiEndpoint).toBeDefined();
   });
-  
+
   test('can create access logging for default stage', () => {
     const stack = new Stack();
     const logGroup = new LogGroup(stack, 'log-group');
