@@ -140,7 +140,7 @@ export interface GatewayRouteAttributes {
   readonly gatewayRouteName: string;
 
   /**
-   * The name of the VirtualGateway this GatewayRoute is associated with
+   * The VirtualGateway this GatewayRoute is associated with.
    */
   readonly virtualGateway: IVirtualGateway;
 }
