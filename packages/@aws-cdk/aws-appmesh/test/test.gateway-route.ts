@@ -133,20 +133,36 @@ export = {
     },
   },
 
-  'Can export and import GatewayRoutes and perform actions'(test: Test) {
+  'Can import Gateway Routes using ARN and attributes'(test: Test) {
     const app = new cdk.App();
     // GIVEN
     const stack = new cdk.Stack(app, 'Imports', {
       env: { account: '123456789012', region: 'us-east-1' },
     });
+    const meshName = 'test-mesh';
+    const virtualGatewayName = 'test-gateway';
+    const gatewayRouteName = 'test-gateway-route';
+    const arn = `arn:aws:appmesh:us-east-1:123456789012:mesh/${meshName}/virtualGateway/${virtualGatewayName}/gatewayRoute/${gatewayRouteName}`;
 
     // WHEN
-    const gatewayRoute2 = appmesh.GatewayRoute.fromGatewayRouteArn(
-      stack, 'importedGatewayRoute2', 'arn:aws:appmesh:us-east-1:123456789012:mesh/test-mesh/virtualGateway/test-gateway/gatewayRoute/test-gateway-route');
+    const mesh = appmesh.Mesh.fromMeshName(stack, 'Mesh', meshName);
+    const gateway = mesh.addVirtualGateway('VirtualGateway', {
+      virtualGatewayName: virtualGatewayName,
+    });
+    const gatewayRoute1 = appmesh.GatewayRoute.fromGatewayRouteAttributes(stack, 'importedGatewayRoute1', {
+      gatewayRouteName: gatewayRouteName,
+      virtualGateway: gateway,
+    });
     // THEN
-    test.equal(gatewayRoute2.gatewayRouteName, 'test-gateway-route');
-    test.equal(gatewayRoute2.virtualGateway.virtualGatewayName, 'test-gateway');
-    test.equal(gatewayRoute2.virtualGateway.mesh.meshName, 'test-mesh');
+    test.equal(gatewayRoute1.gatewayRouteName, gatewayRouteName);
+    // test.equal(gatewayRoute1.virtualGateway.virtualGatewayName, virtualGatewayName);
+    test.equal(gatewayRoute1.virtualGateway.mesh.meshName, meshName);
+    // WHEN
+    const gatewayRoute2 = appmesh.GatewayRoute.fromGatewayRouteArn(stack, 'importedGatewayRoute2', arn);
+    // THEN
+    test.equal(gatewayRoute2.gatewayRouteName, gatewayRouteName);
+    test.equal(gatewayRoute2.virtualGateway.virtualGatewayName, virtualGatewayName);
+    test.equal(gatewayRoute2.virtualGateway.mesh.meshName, meshName);
     test.done();
   },
 };

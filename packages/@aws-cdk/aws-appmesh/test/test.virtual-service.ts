@@ -1,38 +1,31 @@
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 
 import * as appmesh from '../lib';
 
 export = {
-  'Can export existing virtual-service and re-import'(test: Test) {
+  'Can import Virtual Services using ARN and attributes'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
 
+    const meshName = 'testMesh';
+    const virtualServiceName = 'virtual-service';
+    const arn = `arn:aws:appmesh:us-east-1:123456789012:mesh/${meshName}/virtualService/${virtualServiceName}`;
+
     // WHEN
-    const mesh = new appmesh.Mesh(stack, 'mesh', {
-      meshName: 'test-mesh',
+    const virtualService1 = appmesh.VirtualService.fromVirtualServiceAttributes(stack, 'importedVirtualService1', {
+      mesh: appmesh.Mesh.fromMeshName(stack, 'Mesh', meshName),
+      virtualServiceName: virtualServiceName,
     });
+    // THEN
+    test.equal(virtualService1.mesh.meshName, meshName);
+    test.equal(virtualService1.virtualServiceName, virtualServiceName);
 
-    const router = new appmesh.VirtualRouter(stack, 'router', { mesh });
-
-    const vpc = new ec2.Vpc(stack, 'vpc');
-    const namespace = new cloudmap.PrivateDnsNamespace(stack, 'test-namespace', {
-      vpc,
-      name: 'domain.local',
-    });
-
-    const service = new appmesh.VirtualService(stack, 'service-1', {
-      mesh,
-      virtualServiceName: `service.${namespace.namespaceName}`,
-      virtualRouter: router,
-    });
-
-    const stack2 = new cdk.Stack();
-    appmesh.VirtualService.fromVirtualServiceName(stack2, 'imported-virtual-service', mesh.meshName, service.virtualServiceName);
-
-    // Nothing to do with imported virtual service yet
+    // WHEN
+    const virtualRouter2 = appmesh.VirtualRouter.fromVirtualRouterArn(stack, 'importedVirtualRouter2', arn);
+    // THEN
+    test.equal(virtualRouter2.mesh.meshName, meshName);
+    test.equal(virtualRouter2.virtualRouterName, virtualServiceName);
 
     test.done();
   },

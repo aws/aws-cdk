@@ -1,9 +1,9 @@
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnRoute } from './appmesh.generated';
-import { IMesh } from './mesh';
+import { IMesh, Mesh } from './mesh';
 import { IVirtualNode } from './virtual-node';
-import { IVirtualRouter } from './virtual-router';
+import { IVirtualRouter, VirtualRouter } from './virtual-router';
 
 /**
  * Interface for which all Route based classes MUST implement
@@ -22,6 +22,11 @@ export interface IRoute extends cdk.IResource {
    * @attribute
    */
   readonly routeArn: string;
+
+  /**
+   * The VirtualRouter the Route belongs to
+   */
+  readonly virtualRouter: IVirtualRouter;
 }
 
 /**
@@ -99,7 +104,7 @@ export interface RouteProps extends RouteBaseProps {
   readonly mesh: IMesh;
 
   /**
-   * The virtual router in which to define the route
+   * The VirtualRouter the Route belongs to
    */
   readonly virtualRouter: IVirtualRouter;
 }
@@ -111,21 +116,21 @@ export interface RouteProps extends RouteBaseProps {
  */
 export class Route extends cdk.Resource implements IRoute {
   /**
-   * Import an existing route given an ARN
+   * Import an existing Route given an ARN
    */
   public static fromRouteArn(scope: Construct, id: string, routeArn: string): IRoute {
-    return new ImportedRoute(scope, id, { routeArn });
+    return new ImportedRoute(scope, id, undefined, routeArn);
   }
 
   /**
-   * Import an existing route given its name
+   * Import an existing Route given attributes
    */
-  public static fromRouteName(scope: Construct, id: string, meshName: string, virtualRouterName: string, routeName: string): IRoute {
-    return new ImportedRoute(scope, id, { meshName, virtualRouterName, routeName });
+  public static fromRouteAttributes(scope: Construct, id: string, attrs: RouteAttributes): IRoute {
+    return new ImportedRoute(scope, id, attrs);
   }
 
   /**
-   * The name of the route
+   * The name of the Route
    */
   public readonly routeName: string;
 
@@ -135,7 +140,7 @@ export class Route extends cdk.Resource implements IRoute {
   public readonly routeArn: string;
 
   /**
-   * The virtual router this route is a part of
+   * The VirtualRouter the Route belongs to
    */
   public readonly virtualRouter: IVirtualRouter;
 
@@ -215,26 +220,16 @@ export class Route extends cdk.Resource implements IRoute {
 /**
  * Interface with properties ncecessary to import a reusable Route
  */
-interface RouteAttributes {
+export interface RouteAttributes {
   /**
-   * The name of the route
+   * The name of the Route
    */
-  readonly routeName?: string;
+  readonly routeName: string;
 
   /**
-   * The Amazon Resource Name (ARN) for the route
+   * The VirtualRouter the Route belongs to
    */
-  readonly routeArn?: string;
-
-  /**
-   * The name of the mesh this route is associated with
-   */
-  readonly meshName?: string;
-
-  /**
-   * The name of the virtual router this route is associated with
-   */
-  readonly virtualRouterName?: string;
+  readonly virtualRouter: IVirtualRouter;
 }
 
 /**
@@ -242,26 +237,36 @@ interface RouteAttributes {
  */
 class ImportedRoute extends cdk.Resource implements IRoute {
   /**
-   * The name of the route
+   * The name of the Route
    */
   public readonly routeName: string;
 
   /**
-   * The Amazon Resource Name (ARN) for the route
+   * The Amazon Resource Name (ARN) for the Route
    */
   public readonly routeArn: string;
 
-  constructor(scope: Construct, id: string, props: RouteAttributes) {
+  /**
+   * The VirtualRouter the Route belongs to
+   */
+  public readonly virtualRouter: IVirtualRouter;
+
+  constructor(scope: Construct, id: string, attrs?: RouteAttributes, routeArn?: string) {
     super(scope, id);
 
-    if (props.routeArn) {
-      this.routeArn = props.routeArn;
-      this.routeName = cdk.Fn.select(4, cdk.Fn.split('/', cdk.Stack.of(scope).parseArn(props.routeArn).resourceName!));
-    } else if (props.routeName && props.meshName && props.virtualRouterName) {
-      this.routeName = props.routeName;
+    if (routeArn) {
+      this.routeArn = routeArn;
+      const meshName = cdk.Fn.select(0, cdk.Fn.split('/', cdk.Stack.of(scope).parseArn(routeArn).resourceName!));
+      const mesh = Mesh.fromMeshName(this, 'Mesh', meshName);
+      const virtualRouterName = cdk.Fn.select(2, cdk.Fn.split('/', cdk.Stack.of(scope).parseArn(routeArn).resourceName!));
+      this.virtualRouter = VirtualRouter.fromVirtualRouterAttributes(this, 'VirtualROuter', { mesh, virtualRouterName });
+      this.routeName = cdk.Fn.select(4, cdk.Fn.split('/', cdk.Stack.of(scope).parseArn(routeArn).resourceName!));
+    } else if (attrs) {
+      this.routeName = attrs.routeName;
+      this.virtualRouter = attrs.virtualRouter;
       this.routeArn = cdk.Stack.of(this).formatArn({
         service: 'appmesh',
-        resource: `mesh/${props.meshName}/virtualRouter/${props.virtualRouterName}/route`,
+        resource: `mesh/${attrs.virtualRouter.mesh.meshName}/virtualRouter/${attrs.virtualRouter.virtualRouterName}/route`,
         resourceName: this.routeName,
       });
     } else {

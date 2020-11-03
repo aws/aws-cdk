@@ -102,55 +102,29 @@ export = {
       },
     },
   },
-  'Can export and import VirtualNode and perform actions'(test: Test) {
+  'Can import Virtual Nodes using ARN and attributes'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
 
+    const meshName = 'testMesh';
+    const virtualNodeName = 'test-node';
+    const arn = `arn:aws:appmesh:us-east-1:123456789012:mesh/${meshName}/virtualNode/${virtualNodeName}`;
+
     // WHEN
-    const mesh = new appmesh.Mesh(stack, 'mesh', {
-      meshName: 'test-mesh',
+    const virtualNode1 = appmesh.VirtualNode.fromVirtualNodeAttributes(stack, 'importedVirtualNode1', {
+      mesh: appmesh.Mesh.fromMeshName(stack, 'Mesh', meshName),
+      virtualNodeName: virtualNodeName,
     });
-
-    const node = mesh.addVirtualNode('test-node', {
-      dnsHostName: 'test.domain.local',
-      listener: {},
-    });
-
-    const stack2 = new cdk.Stack();
-
-    const node2 = appmesh.VirtualNode.fromVirtualNodeName(stack2, 'imported-node', mesh.meshName, node.virtualNodeName);
-
-    node2.addListeners({
-      portMapping: {
-        port: 8081,
-        protocol: appmesh.Protocol.TCP,
-      },
-    });
-
     // THEN
-    expect(stack).to(
-      haveResourceLike('AWS::AppMesh::VirtualNode', {
-        MeshName: {
-          'Fn::GetAtt': ['meshACDFE68E', 'MeshName'],
-        },
-        Spec: {
-          Listeners: [
-            {
-              PortMapping: {
-                Port: 8080,
-                Protocol: 'http',
-              },
-            },
-          ],
-          ServiceDiscovery: {
-            DNS: {
-              Hostname: 'test.domain.local',
-            },
-          },
-        },
-        VirtualNodeName: 'meshtestnode428A9479',
-      }),
-    );
+    test.equal(virtualNode1.mesh.meshName, meshName);
+    test.equal(virtualNode1.virtualNodeName, virtualNodeName);
+
+    // WHEN
+    const virtualNode2 = appmesh.VirtualNode.fromVirtualNodeArn(
+      stack, 'importedVirtualNode2', arn);
+    // THEN
+    test.equal(virtualNode2.mesh.meshName, meshName);
+    test.equal(virtualNode2.virtualNodeName, virtualNodeName);
 
     test.done();
   },

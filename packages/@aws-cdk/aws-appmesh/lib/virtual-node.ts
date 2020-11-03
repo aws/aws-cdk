@@ -2,7 +2,7 @@ import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnVirtualNode } from './appmesh.generated';
-import { IMesh } from './mesh';
+import { IMesh, Mesh } from './mesh';
 import { validateHealthChecks } from './private/utils';
 import { AccessLog, HealthCheck, PortMapping, Protocol, VirtualNodeListener } from './shared-interfaces';
 import { IVirtualService } from './virtual-service';
@@ -19,7 +19,7 @@ export interface IVirtualNode extends cdk.IResource {
   readonly virtualNodeName: string;
 
   /**
-   * The Amazon Resource Name belonging to the VirtualNdoe
+   * The Amazon Resource Name belonging to the VirtualNode
    *
    * Set this value as the APPMESH_VIRTUAL_NODE_NAME environment variable for
    * your task group's Envoy proxy container in your task definition or pod
@@ -28,6 +28,11 @@ export interface IVirtualNode extends cdk.IResource {
    * @attribute
    */
   readonly virtualNodeArn: string;
+
+  /**
+   * The Mesh which the VirtualNode belongs to
+   */
+  readonly mesh: IMesh;
 
   /**
    * Utility method to add backends for existing or new VirtualNodes
@@ -105,7 +110,7 @@ export interface VirtualNodeBaseProps {
  */
 export interface VirtualNodeProps extends VirtualNodeBaseProps {
   /**
-   * The name of the AppMesh which the virtual node belongs to
+   * The Mesh which the VirtualNode belongs to
    */
   readonly mesh: IMesh;
 }
@@ -117,15 +122,20 @@ abstract class VirtualNodeBase extends cdk.Resource implements IVirtualNode {
   public abstract readonly virtualNodeName: string;
 
   /**
-   * The Amazon Resource Name belonging to the VirtualNdoe
+   * The Amazon Resource Name belonging to the VirtualNode
    */
   public abstract readonly virtualNodeArn: string;
+
+  /**
+   * The Mesh which the VirtualNode belongs to
+   */
+  public abstract readonly mesh: IMesh;
 
   protected readonly backends = new Array<CfnVirtualNode.BackendProperty>();
   protected readonly listeners = new Array<CfnVirtualNode.ListenerProperty>();
 
   /**
-   * Add a Virtual Services that this node is expected to send outbound traffic to
+   * Add a VirtualServices that this node is expected to send outbound traffic to
    */
   public addBackends(...props: IVirtualService[]) {
     for (const s of props) {
@@ -197,17 +207,14 @@ export class VirtualNode extends VirtualNodeBase {
    * Import an existing VirtualNode given an ARN
    */
   public static fromVirtualNodeArn(scope: Construct, id: string, virtualNodeArn: string): IVirtualNode {
-    return new ImportedVirtualNode(scope, id, { virtualNodeArn });
+    return new ImportedVirtualNode(scope, id, undefined, virtualNodeArn);
   }
 
   /**
    * Import an existing VirtualNode given its name
    */
-  public static fromVirtualNodeName(scope: Construct, id: string, meshName: string, virtualNodeName: string): IVirtualNode {
-    return new ImportedVirtualNode(scope, id, {
-      meshName,
-      virtualNodeName,
-    });
+  public static fromVirtualNodeAttributes(scope: Construct, id: string, attrs: VirtualNodeAttributes): IVirtualNode {
+    return new ImportedVirtualNode(scope, id, attrs);
   }
 
   /**
@@ -221,7 +228,7 @@ export class VirtualNode extends VirtualNodeBase {
   public readonly virtualNodeArn: string;
 
   /**
-   * The service mesh that the virtual node resides in
+   * The Mesh which the VirtualNode belongs to
    */
   public readonly mesh: IMesh;
 
@@ -271,23 +278,18 @@ function renderAttributes(attrs?: {[key: string]: string}) {
 }
 
 /**
- * Interface with properties ncecessary to import a reusable VirtualNode
+ * Interface with properties necessary to import a reusable VirtualNode
  */
-interface VirtualNodeAttributes {
+export interface VirtualNodeAttributes {
   /**
    * The name of the VirtualNode
    */
-  readonly virtualNodeName?: string;
+  readonly virtualNodeName: string;
 
   /**
-   * The Amazon Resource Name belonging to the VirtualNdoe
+   * The Mesh that the VirtualNode belongs to
    */
-  readonly virtualNodeArn?: string;
-
-  /**
-   * The service mesh that the virtual node resides in
-   */
-  readonly meshName?: string;
+  readonly mesh: IMesh;
 }
 
 /**
@@ -300,25 +302,33 @@ class ImportedVirtualNode extends VirtualNodeBase {
   public readonly virtualNodeName: string;
 
   /**
-   * The Amazon Resource Name belonging to the VirtualNdoe
+   * The Amazon Resource Name belonging to the VirtualNode
    */
   public readonly virtualNodeArn: string;
 
-  constructor(scope: Construct, id: string, props: VirtualNodeAttributes) {
+  /**
+   * The Mesh which the VirtualNode belongs to
+   */
+  public readonly mesh: IMesh;
+
+  constructor(scope: Construct, id: string, attrs?: VirtualNodeAttributes, virtualNodeArn?: string) {
     super(scope, id);
 
-    if (props.virtualNodeArn) {
-      this.virtualNodeArn = props.virtualNodeArn;
-      this.virtualNodeName = cdk.Fn.select(2, cdk.Fn.split('/', cdk.Stack.of(scope).parseArn(props.virtualNodeArn).resourceName!));
-    } else if (props.virtualNodeName && props.meshName) {
-      this.virtualNodeName = props.virtualNodeName;
+    if (virtualNodeArn) {
+      this.virtualNodeArn = virtualNodeArn;
+      const meshName = cdk.Fn.select(0, cdk.Fn.split('/', cdk.Stack.of(scope).parseArn(virtualNodeArn).resourceName!));
+      this.mesh = Mesh.fromMeshName(this, 'Mesh', meshName);
+      this.virtualNodeName = cdk.Fn.select(2, cdk.Fn.split('/', cdk.Stack.of(scope).parseArn(virtualNodeArn).resourceName!));
+    } else if (attrs) {
+      this.mesh = attrs.mesh;
+      this.virtualNodeName = attrs.virtualNodeName;
       this.virtualNodeArn = cdk.Stack.of(this).formatArn({
         service: 'appmesh',
-        resource: `mesh/${props.meshName}/virtualNode`,
+        resource: `mesh/${attrs.mesh.meshName}/virtualNode`,
         resourceName: this.virtualNodeName,
       });
     } else {
-      throw new Error('Need either arn or both names');
+      throw new Error('Need either virtualNodeArn or virtualNodeName and mesh');
     }
   }
 }
