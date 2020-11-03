@@ -2,7 +2,7 @@ import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import { IResource, Lazy, Resource, Stack, Token, Duration, Names } from '@aws-cdk/core';
-import { Construct, Node } from 'constructs';
+import { Construct } from 'constructs';
 import { ICachePolicy } from './cache-policy';
 import { CfnDistribution } from './cloudfront.generated';
 import { GeoRestriction } from './geo-restriction';

@@ -56,7 +56,7 @@ export class LambdaIntegration extends AwsIntegration {
     const bindResult = super.bind(method);
     const principal = new iam.ServicePrincipal('apigateway.amazonaws.com');
 
-    const desc = `${Names.uniqueId(method.api)}.${method.httpMethod}.${method.resource.path.replace(/\//g, '.')}`;
+    const desc = `${Names.nodeUniqueId(method.api.node)}.${method.httpMethod}.${method.resource.path.replace(/\//g, '.')}`;
 
     this.handler.addPermission(`ApiPermission.${desc}`, {
       principal,
