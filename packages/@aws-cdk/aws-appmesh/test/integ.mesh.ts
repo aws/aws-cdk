@@ -75,9 +75,11 @@ const node2 = mesh.addVirtualNode('node2', {
     },
   },
   backendDefaults: {
-    enforce: true,
-    certificate: ['Path to Certificate'],
-    certificateType: 'file',
+    tlsClientPolicy: {
+      validation: appmesh.TLSClientValidation.fileTrustValidation({
+        certificateChain: 'path-to-file',
+      }),
+    },
   },
   backends: [
     new appmesh.VirtualService(stack, 'service-3', {
@@ -104,9 +106,11 @@ const node3 = mesh.addVirtualNode('node3', {
 });
 
 node3.addBackendDefaults({
-  enforce: true,
-  certificate: ['Path to Certificate'],
-  certificateType: 'file',
+  tlsClientPolicy: {
+    validation: appmesh.TLSClientValidation.fileTrustValidation({
+      certificateChain: 'path-to-file',
+    }),
+  },
 });
 
 router.addRoute('route-2', {

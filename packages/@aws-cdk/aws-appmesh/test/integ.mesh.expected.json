@@ -698,7 +698,7 @@
                 "Validation": {
                   "Trust": {
                     "File": {
-                      "CertificateChain": "Path to Certificate"
+                      "CertificateChain": "path-to-file"
                     }
                   }
                 }
@@ -760,7 +760,7 @@
                 "Validation": {
                   "Trust": {
                     "File": {
-                      "CertificateChain": "Path to Certificate"
+                      "CertificateChain": "path-to-file"
                     }
                   }
                 }

@@ -113,39 +113,135 @@ export interface VirtualNodeBaseProps {
 }
 
 /**
- * Default Configuration for Virtual Nodes
+ * Default configuration that is applied to all backends for the virtual node.
+ * Any configuration defined will be overwritten by configurations specified for a particular backend.
  */
 export interface BackendDefaults {
   /**
+   * Client policy for TLS
+   */
+  readonly tlsClientPolicy: TLSClientPolicyProps;
+}
+
+/**
+ * Properties with respect to TLS backend default.
+ */
+export interface TLSClientPolicyProps {
+  /**
    * TLS enforced if True.
    *
-   * @default - none
+   * @default - True
    */
-  readonly enforce?: boolean
+  readonly enforce?: boolean;
 
   /**
    * TLS enforced on these ports. If not specified it is enforced on all ports.
    *
    * @default - none
    */
-  readonly ports?: number[]
+  readonly ports?: number[];
 
   /**
-   * Certificate discovery method, ACM-PCA or Local file hosting.
+   * To enforce the trust is one of file, acmpca, or sds.
    *
    * @default - none
    */
-  readonly certificateType: string;
-
-  /**
-   * Certificate File path or Certificate ARN.
-   *
-   * @default - none
-   */
-  readonly certificate: string[];
-
+  readonly validation: TLSClientValidation;
 }
 
+/**
+ * Defines the TLS validation context trust.
+ */
+export abstract class TLSClientValidation {
+  /**
+   * TLS validation context trust for a local file
+   */
+  public static fileTrustValidation(props: FileTrustProps): TLSClientValidation {
+    return new FileTrust(props);
+  }
+
+  /**
+   * TLS validation context trust for AWS Certicate Manager (ACM) certificate.
+   */
+  public static acmTrustValidation(props: ACMTrustProps): TLSClientValidation {
+    return new ACMTrust(props);
+  }
+
+  /**
+   * Returns Trust context based on trust type.
+   */
+  public abstract bind(scope: cdk.Construct): CfnVirtualNode.TlsValidationContextProperty;
+}
+
+/**
+ * ACM Trust Properties
+ */
+export interface ACMTrustProps {
+  /**
+   * Amazon Resource Name of the Certificates
+   */
+  readonly certificateAuthorityArns: string[];
+}
+
+/**
+ * File Trust Properties
+ */
+export interface FileTrustProps {
+  /**
+   * Path to the Certificate Chain file on the file system where the Envoy is deployed.
+   */
+  readonly certificateChain: string;
+}
+
+/**
+ * Represents a Transport Layer Security (TLS) validation context trust for a local file
+ */
+export class FileTrust extends TLSClientValidation {
+  /**
+   * Path to the Certificate Chain file on the file system where the Envoy is deployed.
+   */
+  readonly certificateChain: string;
+
+  constructor(props: FileTrustProps) {
+    super();
+    this.certificateChain = props.certificateChain;
+  }
+
+  public bind(_scope: cdk.Construct): CfnVirtualNode.TlsValidationContextProperty {
+    return {
+      trust: {
+        file: {
+          certificateChain: this.certificateChain,
+        },
+      },
+    };
+  }
+}
+
+/**
+ * Represents a TLS validation context trust for an AWS Certicate Manager (ACM) certificate.
+ */
+export class ACMTrust extends TLSClientValidation {
+  /**
+   * Amazon Resource Name of the Certificates
+   */
+  readonly certificateAuthorityArns: string[];
+
+  constructor(props: ACMTrustProps) {
+    super();
+    this.certificateAuthorityArns = props.certificateAuthorityArns;
+  }
+
+  public bind(_scope: cdk.Construct): CfnVirtualNode.TlsValidationContextProperty {
+    return {
+      trust: {
+        acm: {
+          certificateAuthorityArns: this.certificateAuthorityArns,
+        },
+      },
+    };
+  }
+}
 
 /**
  * The properties used when creating a new VirtualNode
@@ -189,31 +285,17 @@ abstract class VirtualNodeBase extends cdk.Resource implements IVirtualNode {
    * Adds Default Backend Configuration for virtual node to communicate with Virtual Services.
    */
   public addBackendDefaults(backendDefaults: BackendDefaults) {
-    if (Object.keys(backendDefaults).length!==0) {
-      const enforce = backendDefaults.enforce || false;
-      const ports = backendDefaults.ports || undefined;
-      const certificateType = backendDefaults.certificateType || 'acm';
-      const certificate = backendDefaults.certificate || [];
-      this.backendDefaults.push({
-        clientPolicy: {
-          tls: {
-            enforce: enforce,
-            ports: ports,
-            validation: {
-              trust: certificateType === 'acm' ? {
-                acm: {
-                  certificateAuthorityArns: certificate,
-                },
-              } : {
-                file: {
-                  certificateChain: certificate[0],
-                },
-              },
-            },
-          },
+    // eslint-disable-next-line no-console
+    console.log(backendDefaults.tlsClientPolicy.enforce);
+    this.backendDefaults.push({
+      clientPolicy: {
+        tls: {
+          enforce: backendDefaults.tlsClientPolicy.enforce === undefined ? true : backendDefaults.tlsClientPolicy.enforce,
+          validation: backendDefaults.tlsClientPolicy.validation.bind(this),
+          ports: backendDefaults.tlsClientPolicy.ports ? backendDefaults.tlsClientPolicy.ports : undefined,
         },
-      });
-    }
+      },
+    });
   }
 
   /**
