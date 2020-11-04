@@ -22,7 +22,7 @@ export interface EsBuildBaseOptions {
    *
    * @default false
    */
-  readonly sourceMaps?: boolean;
+  readonly sourceMap?: boolean;
 
   /**
    * The root of the project. This will be used as the source for the volume
@@ -158,6 +158,8 @@ export class Bundling {
       localBundler = new LocalBundler({
         projectRoot,
         relativeEntryPath,
+        minify: options.minify,
+        sourceMap: options.sourceMap,
         environment: options.bundlingEnvironment,
         dependencies,
         externals,
@@ -170,6 +172,8 @@ export class Bundling {
     const dockerBundler = new DockerBundler({
       runtime: options.runtime,
       relativeEntryPath,
+      minify: options.minify,
+      sourceMap: options.sourceMap,
       environment: options.bundlingEnvironment,
       bundlingDockerImage: options.bundlingDockerImage,
       buildImage: !LocalBundler.runsLocally || options.forceDockerBundling, // build image only if we can't run locally

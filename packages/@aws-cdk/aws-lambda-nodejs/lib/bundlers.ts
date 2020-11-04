@@ -1,4 +1,5 @@
 import { spawnSync } from 'child_process';
+import * as os from 'os';
 import * as path from 'path';
 import { Runtime } from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
@@ -8,6 +9,8 @@ const ESBUILD_VERSION = '0';
 
 interface BundlerProps {
   relativeEntryPath: string;
+  minify?: boolean;
+  sourceMap?: boolean;
   environment?: { [key: string]: string };
   dependencies?: { [key: string]: string };
   externals?: string[];
@@ -56,6 +59,7 @@ export class LocalBundler implements cdk.ILocalBundling {
     const localCommand = createBundlingCommand({
       ...this.props,
       outputDir,
+      forcePosixPath: os.platform() !== 'win32',
     });
 
     exec('bash', ['-c', localCommand], {
@@ -112,6 +116,7 @@ export class DockerBundler {
 }
 
 interface BundlingCommandOptions extends LocalBundlerProps {
+  forcePosixPath?: boolean;
   outputDir: string;
 }
 
@@ -119,15 +124,25 @@ interface BundlingCommandOptions extends LocalBundlerProps {
  * Generates bundling command
  */
 function createBundlingCommand(options: BundlingCommandOptions): string {
-  const entryPath = path.join(options.projectRoot, options.relativeEntryPath);
+  let entryPath = path.join(options.projectRoot, options.relativeEntryPath);
+
+  if (options.forcePosixPath ?? true) {
+    entryPath = entryPath.replace(/\\/g, '/');
+  }
 
   const esbuildCommand: string = [
     'npx',
     'esbuild',
-    '--bundle', entryPath.replace(/\\/g, '/'), // Always use POSIX paths in the container
+    '--bundle', entryPath,
     '--target=es2017',
     '--platform=node',
     `--outfile=${options.outputDir}/index.js`,
+    ...options.minify
+      ? ['--minify']
+      : [],
+    ...options.sourceMap
+      ? ['--sourcemap']
+      : '',
     ...options.externals
       ? options.externals.map(external => `--external:${external}`)
       : [],
