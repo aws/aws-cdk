@@ -467,7 +467,7 @@ const vpc = new ec2.Vpc(this, 'MyVPC');
 const cluster = new rds.ServerlessCluster(this, 'AnotherCluster', {
   engine: rds.DatabaseClusterEngine.AURORA_MYSQL,
   vpc,
-  enableDataApi: true,
+  enableDataApi: true, // Optional - will be automatically set if you call grantDataApiAccess()
 });
 
 const fn = new lambda.Function(this, 'MyFunction', {
@@ -479,7 +479,7 @@ const fn = new lambda.Function(this, 'MyFunction', {
     SECRET_ARN: cluster.secret.secretArn,
   },
 });
-cluster.grantDataApi(fn)
+cluster.grantDataApiAccess(fn)
 ```
 
 **Note**: To invoke the Data API, the resource will need to read the secret associated with the cluster.
