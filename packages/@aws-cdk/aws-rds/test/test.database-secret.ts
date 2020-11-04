@@ -78,14 +78,14 @@ export = {
     test.done();
   },
 
-  'override logical id'(test: Test) {
+  'replace on password change'(test: Test) {
     // GIVEN
     const stack = new Stack();
 
     // WHEN
     const dbSecret = new DatabaseSecret(stack, 'Secret', {
       username: 'admin',
-      overrideLogicalId: true,
+      replaceOnPasswordChanges: true,
     });
 
     // THEN
@@ -96,7 +96,7 @@ export = {
     stack.node.tryRemoveChild('Secret');
     const otherSecret1 = new DatabaseSecret(stack, 'Secret', {
       username: 'admin',
-      overrideLogicalId: true,
+      replaceOnPasswordChanges: true,
       excludeCharacters: '@!()[]',
     });
     test.notEqual(dbSecretlogicalId, getSecretLogicalId(otherSecret1, stack));
@@ -104,7 +104,7 @@ export = {
     // other node path but same excluded characters
     const otherSecret2 = new DatabaseSecret(stack, 'Secret2', {
       username: 'admin',
-      overrideLogicalId: true,
+      replaceOnPasswordChanges: true,
     });
     test.notEqual(dbSecretlogicalId, getSecretLogicalId(otherSecret2, stack));
 

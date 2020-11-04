@@ -207,7 +207,8 @@ export abstract class Credentials {
    * @param secret The secret where the credentials are stored
    * @param username The username defined in the secret. If specified the username
    *   will be referenced as a string and not a dynamic reference to the username
-   *   field in the secret
+   *   field in the secret. This allows to replace the secret without replacing the
+   *   instance or cluster.
    */
   public static fromSecret(secret: secretsmanager.ISecret, username?: string): Credentials {
     return {

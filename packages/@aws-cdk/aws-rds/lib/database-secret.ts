@@ -36,14 +36,16 @@ export interface DatabaseSecretProps {
   readonly excludeCharacters?: string;
 
   /**
-   * Whether to override the logical id of the AWS::SecretsManager::Secret
+   * Whether to replace this secret when the password changes.
+   *
+   * This is achieved by overriding the logical id of the AWS::SecretsManager::Secret
    * with a hash of the options that influence the password generation. This
    * way a new secret will be created when the password is regenerated and the
    * cluster or instance consuming this secret will have its credentials updated.
    *
    * @default false
    */
-  readonly overrideLogicalId?: boolean;
+  readonly replaceOnPasswordChanges?: boolean;
 }
 
 /**
@@ -69,7 +71,7 @@ export class DatabaseSecret extends secretsmanager.Secret {
       },
     });
 
-    if (props.overrideLogicalId) {
+    if (props.replaceOnPasswordChanges) {
       const hash = crypto.createHash('md5');
       hash.update(JSON.stringify({
         // Use here the options that influence the password generation.
