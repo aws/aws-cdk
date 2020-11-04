@@ -14,6 +14,7 @@ import {
   StreamViewType,
   Table,
   TableEncryption,
+  Operation,
 } from '../lib';
 
 /* eslint-disable quote-props */
@@ -1574,11 +1575,119 @@ describe('metrics', () => {
 
     // THEN
     expect(stack.resolve(table.metricSystemErrors())).toEqual({
+      expression: 'getitem + batchgetitem + scan + query + getrecords + putitem + deleteitem + updateitem + batchwriteitem',
+      label: 'Sum over all Operations',
       period: Duration.minutes(5),
-      dimensions: { TableName: { Ref: 'TableCD117FA1' } },
-      namespace: 'AWS/DynamoDB',
-      metricName: 'SystemErrors',
-      statistic: 'Sum',
+      usingMetrics: {
+        batchgetitem: {
+          dimensions: {
+            Operation: 'BatchGetItem',
+            TableName: {
+              Ref: 'TableCD117FA1',
+            },
+          },
+          metricName: 'SystemErrors',
+          namespace: 'AWS/DynamoDB',
+          period: Duration.minutes(5),
+          statistic: 'Sum',
+        },
+        batchwriteitem: {
+          dimensions: {
+            Operation: 'BatchWriteItem',
+            TableName: {
+              Ref: 'TableCD117FA1',
+            },
+          },
+          metricName: 'SystemErrors',
+          namespace: 'AWS/DynamoDB',
+          period: Duration.minutes(5),
+          statistic: 'Sum',
+        },
+        deleteitem: {
+          dimensions: {
+            Operation: 'DeleteItem',
+            TableName: {
+              Ref: 'TableCD117FA1',
+            },
+          },
+          metricName: 'SystemErrors',
+          namespace: 'AWS/DynamoDB',
+          period: Duration.minutes(5),
+          statistic: 'Sum',
+        },
+        getitem: {
+          dimensions: {
+            Operation: 'GetItem',
+            TableName: {
+              Ref: 'TableCD117FA1',
+            },
+          },
+          metricName: 'SystemErrors',
+          namespace: 'AWS/DynamoDB',
+          period: Duration.minutes(5),
+          statistic: 'Sum',
+        },
+        getrecords: {
+          dimensions: {
+            Operation: 'GetRecords',
+            TableName: {
+              Ref: 'TableCD117FA1',
+            },
+          },
+          metricName: 'SystemErrors',
+          namespace: 'AWS/DynamoDB',
+          period: Duration.minutes(5),
+          statistic: 'Sum',
+        },
+        putitem: {
+          dimensions: {
+            Operation: 'PutItem',
+            TableName: {
+              Ref: 'TableCD117FA1',
+            },
+          },
+          metricName: 'SystemErrors',
+          namespace: 'AWS/DynamoDB',
+          period: Duration.minutes(5),
+          statistic: 'Sum',
+        },
+        query: {
+          dimensions: {
+            Operation: 'Query',
+            TableName: {
+              Ref: 'TableCD117FA1',
+            },
+          },
+          metricName: 'SystemErrors',
+          namespace: 'AWS/DynamoDB',
+          period: Duration.minutes(5),
+          statistic: 'Sum',
+        },
+        scan: {
+          dimensions: {
+            Operation: 'Scan',
+            TableName: {
+              Ref: 'TableCD117FA1',
+            },
+          },
+          metricName: 'SystemErrors',
+          namespace: 'AWS/DynamoDB',
+          period: Duration.minutes(5),
+          statistic: 'Sum',
+        },
+        updateitem: {
+          dimensions: {
+            Operation: 'UpdateItem',
+            TableName: {
+              Ref: 'TableCD117FA1',
+            },
+          },
+          metricName: 'SystemErrors',
+          namespace: 'AWS/DynamoDB',
+          period: Duration.minutes(5),
+          statistic: 'Sum',
+        },
+      },
     });
   });
 
@@ -1592,8 +1701,8 @@ describe('metrics', () => {
     // THEN
     expect(stack.resolve(table.metricUserErrors())).toEqual({
       period: Duration.minutes(5),
-      dimensions: { TableName: { Ref: 'TableCD117FA1' } },
       namespace: 'AWS/DynamoDB',
+      dimensions: {},
       metricName: 'UserErrors',
       statistic: 'Sum',
     });
@@ -1616,22 +1725,45 @@ describe('metrics', () => {
     });
   });
 
-  // test('Can use metricSuccessfulRequestLatency on a Dynamodb Table', () => {
-  //   // GIVEN
-  //   const stack = new Stack();
-  //   const table = new Table(stack, 'Table', {
-  //     partitionKey: { name: 'id', type: AttributeType.STRING },
-  //   });
+  test('Can use metricSuccessfulRequestLatency on a Dynamodb Table', () => {
+    // GIVEN
+    const stack = new Stack();
+    const table = new Table(stack, 'Table', {
+      partitionKey: { name: 'id', type: AttributeType.STRING },
+    });
 
-  //   // THEN
-  //   expect(stack.resolve(table.metricSuccessfulRequestLatency())).toEqual({
-  //     period: Duration.minutes(5),
-  //     dimensions: { TableName: { Ref: 'TableCD117FA1' } },
-  //     namespace: 'AWS/DynamoDB',
-  //     metricName: 'SuccessfulRequestLatency',
-  //     statistic: 'Average',
-  //   });
-  // });
+    // THEN
+    expect(stack.resolve(table.metricSuccessfulRequestLatency({ operations: [Operation.GET_ITEM] }))).toEqual({
+      expression: "(getitemCount * getitemValue) / (getitemCount)",
+      label: "Weighted average over all operations",
+      period: Duration.minutes(5),
+      usingMetrics: {
+        getitemCount: {
+          dimensions: {
+          Operation: "GetItem",
+            TableName: {
+              Ref: "TableCD117FA1",
+            },
+          },
+          metricName: "SuccessfulRequestLatency",
+          namespace: "AWS/DynamoDB",
+          period: Duration.minutes(5),
+          statistic: "SampleCount",
+        },
+        getitemValue: {
+          dimensions: {
+            Operation: "GetItem",
+            TableName: {
+              Ref: "TableCD117FA1",
+            },
+          },
+          metricName: "SuccessfulRequestLatency",
+          namespace: "AWS/DynamoDB",
+          period: Duration.minutes(5),
+          statistic: "Average",
+        },
+      }
+  });
 });
 
 describe('grants', () => {

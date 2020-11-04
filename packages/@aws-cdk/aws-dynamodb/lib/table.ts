@@ -829,8 +829,8 @@ abstract class TableBase extends Resource implements ITable {
 
     const usingMetrics: Record<string, cloudwatch.IMetric> = {};
 
-    const denominatorElements = [];
-    const numeratorElements = [];
+    const denominator = [];
+    const numerator = [];
 
     if (operations.length > 5 || operations.length === 0) {
       // you must pass at least 1 operation since this is an operation dimensionality metric.
@@ -864,15 +864,12 @@ abstract class TableBase extends Resource implements ITable {
         ...props,
       });
 
-      denominatorElements.push(countMetricName);
-      numeratorElements.push(`${countMetricName} * ${valueMetricName}`);
+      denominator.push(countMetricName);
+      numerator.push(`${countMetricName} * ${valueMetricName}`);
     }
 
-    const numerator = numeratorElements.join(' + ');
-    const denominator = denominatorElements.join(' + ');
-
     return new cloudwatch.MathExpression({
-      expression: `(${numerator}) / (${denominator})`,
+      expression: `(${numerator.join(' + ')}) / (${denominator.join(' + ')})`,
       usingMetrics,
       color: props?.color,
       label: props?.label ?? 'Weighted average over all operations',
