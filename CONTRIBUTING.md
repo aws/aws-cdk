@@ -784,7 +784,7 @@ reset the `FEATURE_FLAGS` map for the next cycle.
 The `release.json` file at the root of the repo determines which release line
 this branch belongs to.
 
-```json
+```js
 {
   "majorVersion": "1" | "2",
   "releaseType": "stable" | "alpha" | "rc"
