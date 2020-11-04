@@ -132,7 +132,7 @@ When you create a VPC endpoint service, AWS generates endpoint-specific DNS host
 For example, vpce-1234-abcdev-us-east-1.vpce-svc-123345.us-east-1.vpce.amazonaws.com.
 By default, your consumers access the service with that DNS name.
 This can cause problems with HTTPS traffic because the DNS will not match the backend certificate:
-```
+```console
 curl: (60) SSL: no alternative certificate subject name matches target host name 'vpce-abcdefghijklmnopq-rstuvwx.vpce-svc-abcdefghijklmnopq.us-east-1.vpce.amazonaws.com'
 ```
 Effectively, the endpoint appears untrustworthy. To mitigate this, clients have to create an alias for this DNS name in Route53.
@@ -143,7 +143,7 @@ This DNS name can also be guaranteed to match up with the backend certificate.
 
 Before consumers can use the private DNS name, you must verify that you have control of the domain/subdomain.
 
-Assuming your account has verifiable ownership of the particlar domain/subdomain,
+Assuming your account has ownership of the particlar domain/subdomain,
 this construct sets up the private DNS configuration on the endpoint service,
 creates all the necessary Route53 entries, and verifies domain ownership.
 
@@ -168,6 +168,6 @@ zone = new PublicHostedZone(stack, 'PHZ', {
 new VpcEndpointServiceDomainName(stack, 'EndpointDomain', {
   endpointService: vpces,
   domainName: 'my-stuff.aws-cdk.dev',
-  publicZone: zone,
+  publicHostedZone: zone,
 });
 ```
