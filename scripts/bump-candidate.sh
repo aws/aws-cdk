@@ -6,8 +6,8 @@
 # a verdaccio instance that serves local tarballs, and if those tarballs have the same version as
 # already published modules, it messes things up.
 #
-# It does so by using a pre-release "build" tag, making it so that locally packed versions will always be
-# suffixed with '-build', distinguishing it from publisehd modules.
+# It does so by using a pre-release "test" tag, making it so that locally packed versions will always be
+# suffixed with '-test', distinguishing it from published modules.
 #
 # If you need to run integration tests locally against the distribution tarballs, you should run this
 # script locally as well before building and packing the repository.
