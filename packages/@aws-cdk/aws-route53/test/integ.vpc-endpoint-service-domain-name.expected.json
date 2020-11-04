@@ -668,7 +668,7 @@
             ]
           },
           "physicalResourceId": {
-            "id": "7b5811b363ea6282c8ab064fbb2410cc"
+            "id": "a9ec58f193062687221bdba740df4abc"
           }
         },
         "Update": {
@@ -682,7 +682,7 @@
             ]
           },
           "physicalResourceId": {
-            "id": "7b5811b363ea6282c8ab064fbb2410cc"
+            "id": "a9ec58f193062687221bdba740df4abc"
           }
         },
         "InstallLatestAwsSdk": true
