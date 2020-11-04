@@ -2,7 +2,7 @@ import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as ecr from '@aws-cdk/aws-ecr';
 import * as targets from '@aws-cdk/aws-events-targets';
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct } from '@aws-cdk/core';
+import { Construct, Names } from '@aws-cdk/core';
 import { Action } from '../action';
 import { sourceArtifactBounds } from '../common';
 
@@ -89,7 +89,7 @@ export class EcrSourceAction extends Action {
       resources: [this.props.repository.repositoryArn],
     }));
 
-    this.props.repository.onCloudTrailImagePushed(stage.pipeline.node.uniqueId + 'SourceEventRule', {
+    this.props.repository.onCloudTrailImagePushed(Names.nodeUniqueId(stage.pipeline.node) + 'SourceEventRule', {
       target: new targets.CodePipeline(stage.pipeline),
       imageTag: this.props.imageTag,
     });
