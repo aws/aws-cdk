@@ -7,6 +7,11 @@ export PATH=$PWD/node_modules/.bin:$PATH
 export NODE_OPTIONS="--max-old-space-size=4096 ${NODE_OPTIONS:-}"
 root=$PWD
 
+# Get version and changelog file name (these require that .versionrc.json would have been generated)
+version=$(node -p "require('./scripts/resolve-version').version")
+changelog_file=$(node -p "require('./scripts/resolve-version').changelogFile")
+marker=$(node -p "require('./scripts/resolve-version').marker")
+
 PACMAK=${PACMAK:-jsii-pacmak}
 ROSETTA=${ROSETTA:-jsii-rosetta}
 TMPDIR=${TMPDIR:-$(dirname $(mktemp -u))}
@@ -57,15 +62,6 @@ done
 # Remove a JSII aggregate POM that may have snuk past
 rm -rf dist/java/software/amazon/jsii
 
-# Get version
-version="$(node -p "require('./scripts/get-version')")"
-
-# Ensure we don't publish anything beyond 1.x for now
-if [[ ! "${version}" == "1."* ]]; then
-  echo "ERROR: accidentally releasing a major version? Expecting repo version to start with '1.' but got '${version}'"
-  exit 1
-fi
-
 # Get commit from CodePipeline (or git, if we are in CodeBuild)
 # If CODEBUILD_RESOLVED_SOURCE_VERSION is not defined (i.e. local
 # build or CodePipeline build), use the HEAD commit hash).
@@ -83,12 +79,11 @@ cat > ${distdir}/build.json <<HERE
 HERE
 
 # copy CHANGELOG.md to dist/ for github releases
-cp CHANGELOG.md ${distdir}/
+cp ${changelog_file} ${distdir}/CHANGELOG.md
 
 # defensive: make sure our artifacts don't use the version marker (this means
 # that "pack" will always fails when building in a dev environment)
 # when we get to 10.0.0, we can fix this...
-marker=$(node -p "require('./scripts/get-version-marker')")
 if find dist/ | grep "${marker}"; then
   echo "ERROR: build artifacts use the version marker '${marker}' instead of a real version."
   echo "This is expected for builds in a development environment but should not happen in CI builds!"

@@ -6,8 +6,8 @@
 # a verdaccio instance that serves local tarballs, and if those tarballs have the same version as
 # already published modules, it messes things up.
 #
-# It does so by using a pre-release rc tag, making it so that locally packed versions will always be
-# suffixed with '-rc', distinguishing it from publisehd modules.
+# It does so by using a pre-release "test" tag, making it so that locally packed versions will always be
+# suffixed with '-test', distinguishing it from published modules.
 #
 # If you need to run integration tests locally against the distribution tarballs, you should run this
 # script locally as well before building and packing the repository.
@@ -16,8 +16,5 @@
 #
 # --------------------------------------------------------------------------------------------------
 set -euo pipefail
-version=${1:-minor}
-
-echo "Starting candidate ${version} version bump"
-
-npx standard-version --release-as ${version} --prerelease=rc --skip.commit --skip.changelog
+scriptdir=$(cd $(dirname $0) && pwd)
+BUMP_CANDIDATE=true ${scriptdir}/bump.js ${1:-minor}
