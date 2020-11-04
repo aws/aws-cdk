@@ -145,7 +145,7 @@ $ npm install --save-dev esbuild@0
 OR
 
 ```bash
-$ yarn add --dev --exact esbuild@0
+$ yarn add --dev esbuild@0
 ```
 
 To force bundling in a Docker container, set the `forceDockerBundling` prop to `true`. This
