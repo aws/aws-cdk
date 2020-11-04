@@ -7,6 +7,8 @@ import { synthesize } from './private/synthesis';
 // eslint-disable-next-line
 import { Construct as CoreConstruct } from './construct-compat';
 
+const STAGE_SYMBOL = Symbol.for('@aws-cdk/core.Stage');
+
 /**
  * Initialization props for a stage.
  */
@@ -85,7 +87,7 @@ export class Stage extends CoreConstruct {
    * @experimental
    */
   public static isStage(x: any ): x is Stage {
-    return x !== null && x instanceof Stage;
+    return x !== null && typeof(x) === 'object' && STAGE_SYMBOL in x;
   }
 
   /**
@@ -136,6 +138,8 @@ export class Stage extends CoreConstruct {
     if (id !== '' && !/^[a-z][a-z0-9\-\_\.]+$/i.test(id)) {
       throw new Error(`invalid stage name "${id}". Stage name must start with a letter and contain only alphanumeric characters, hypens ('-'), underscores ('_') and periods ('.')`);
     }
+
+    Object.defineProperty(this, STAGE_SYMBOL, { value: true });
 
     this.parentStage = Stage.of(this);
 
