@@ -1,6 +1,7 @@
 import '@aws-cdk/assert/jest';
 import { ABSENT } from '@aws-cdk/assert';
 import { Metric } from '@aws-cdk/aws-cloudwatch';
+import * as ec2 from '@aws-cdk/aws-ec2';
 import { Code, Function, Runtime } from '@aws-cdk/aws-lambda';
 import { Duration, Stack } from '@aws-cdk/core';
 import { HttpApi, HttpMethod, LambdaProxyIntegration } from '../../lib';
@@ -232,5 +233,51 @@ describe('HttpApi', () => {
       ProtocolType: 'HTTP',
       Description: 'My Api',
     });
+  });
+
+  test('can add a vpc links', () => {
+    // GIVEN
+    const stack = new Stack();
+    const api = new HttpApi(stack, 'api');
+    const vpc1 = new ec2.Vpc(stack, 'VPC-1');
+    const vpc2 = new ec2.Vpc(stack, 'VPC-2');
+
+    // WHEN
+    api.addVpcLink({ vpc: vpc1, vpcLinkName: 'Link-1' });
+    api.addVpcLink({ vpc: vpc2, vpcLinkName: 'Link-2' });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::ApiGatewayV2::VpcLink', {
+      Name: 'Link-1',
+    });
+    expect(stack).toHaveResource('AWS::ApiGatewayV2::VpcLink', {
+      Name: 'Link-2',
+    });
+  });
+
+  test('should add only one vpc link per vpc', () => {
+    // GIVEN
+    const stack = new Stack();
+    const api = new HttpApi(stack, 'api');
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    api.addVpcLink({ vpc, vpcLinkName: 'Link-1' });
+    api.addVpcLink({ vpc, vpcLinkName: 'Link-2' });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::ApiGatewayV2::VpcLink', {
+      Name: 'Link-1',
+    });
+    expect(stack).not.toHaveResource('AWS::ApiGatewayV2::VpcLink', {
+      Name: 'Link-2',
+    });
+  });
+
+  test('apiEndpoint is exported', () => {
+    const stack = new Stack();
+    const api = new HttpApi(stack, 'api');
+
+    expect(api.apiEndpoint).toBeDefined();
   });
 });
