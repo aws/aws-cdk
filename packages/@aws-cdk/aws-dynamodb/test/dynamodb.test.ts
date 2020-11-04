@@ -1616,22 +1616,22 @@ describe('metrics', () => {
     });
   });
 
-  test('Can use metricSuccessfulRequestLatency on a Dynamodb Table', () => {
-    // GIVEN
-    const stack = new Stack();
-    const table = new Table(stack, 'Table', {
-      partitionKey: { name: 'id', type: AttributeType.STRING },
-    });
+  // test('Can use metricSuccessfulRequestLatency on a Dynamodb Table', () => {
+  //   // GIVEN
+  //   const stack = new Stack();
+  //   const table = new Table(stack, 'Table', {
+  //     partitionKey: { name: 'id', type: AttributeType.STRING },
+  //   });
 
-    // THEN
-    expect(stack.resolve(table.metricSuccessfulRequestLatency())).toEqual({
-      period: Duration.minutes(5),
-      dimensions: { TableName: { Ref: 'TableCD117FA1' } },
-      namespace: 'AWS/DynamoDB',
-      metricName: 'SuccessfulRequestLatency',
-      statistic: 'Average',
-    });
-  });
+  //   // THEN
+  //   expect(stack.resolve(table.metricSuccessfulRequestLatency())).toEqual({
+  //     period: Duration.minutes(5),
+  //     dimensions: { TableName: { Ref: 'TableCD117FA1' } },
+  //     namespace: 'AWS/DynamoDB',
+  //     metricName: 'SuccessfulRequestLatency',
+  //     statistic: 'Average',
+  //   });
+  // });
 });
 
 describe('grants', () => {
