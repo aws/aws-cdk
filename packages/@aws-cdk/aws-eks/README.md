@@ -1,4 +1,5 @@
 ## Amazon EKS Construct Library
+
 <!--BEGIN STABILITY BANNER-->
 ---
 
@@ -23,20 +24,20 @@ Table Of Contents
 * [API Reference](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-eks-readme.html)
 * [Architectural Overview](#architectural-overview)
 * [Provisioning clusters](#provisioning-clusters)
-    * [Managed node groups](#managed-node-groups)
-    * [Fargate Profiles](#fargate-profiles)
-    * [Self-managed nodes](#self-managed-nodes)
-    * [Endpoint Access](#endpoint-access)
-    * [VPC Support](#vpc-support)
-    * [Kubectl Support](#kubectl-support)
-    * [ARM64 Support](#arm64-support)
-    * [Masters Role](#masters-role)
-    * [Encryption](#encryption)
+  * [Managed node groups](#managed-node-groups)
+  * [Fargate Profiles](#fargate-profiles)
+  * [Self-managed nodes](#self-managed-nodes)
+  * [Endpoint Access](#endpoint-access)
+  * [VPC Support](#vpc-support)
+  * [Kubectl Support](#kubectl-support)
+  * [ARM64 Support](#arm64-support)
+  * [Masters Role](#masters-role)
+  * [Encryption](#encryption)
 * [Permissions and Security](#permissions-and-security)
 * [Applying Kubernetes Resources](#applying-kubernetes-resources)
-    * [Kubernetes Manifests](#kubernetes-manifests)
-    * [Helm Charts](#helm-charts)
-    * [CDK8s Charts](#cdk8s-charts)
+  * [Kubernetes Manifests](#kubernetes-manifests)
+  * [Helm Charts](#helm-charts)
+  * [CDK8s Charts](#cdk8s-charts)
 * [Patching Kuberentes Resources](#patching-kubernetes-resources)
 * [Querying Kubernetes Resources](#querying-kubernetes-resources)
 * [Using existing clusters](#using-existing-clusters)
@@ -80,7 +81,7 @@ Outputs:
 ClusterConfigCommand43AAE40F = aws eks update-kubeconfig --name cluster-xxxxx --role-arn arn:aws:iam::112233445566:role/yyyyy
 ```
 
-Execute the `aws eks update-kubeconfig ... ` command in your terminal to create or update a local kubeconfig context:
+Execute the `aws eks update-kubeconfig ...` command in your terminal to create or update a local kubeconfig context:
 
 ```console
 $ aws eks update-kubeconfig --name cluster-xxxxx --role-arn arn:aws:iam::112233445566:role/yyyyy
@@ -157,7 +158,7 @@ new eks.FargateCluster(this, 'HelloEKS', {
 });
 ```
 
-> **NOTE: Only 1 cluster per stack is supported.** If you have a use-case for multiple clusters per stack, or would like to understand more about this limitation, see https://github.com/aws/aws-cdk/issues/10073.
+> **NOTE: Only 1 cluster per stack is supported.** If you have a use-case for multiple clusters per stack, or would like to understand more about this limitation, see <https://github.com/aws/aws-cdk/issues/10073>.
 
 Below you'll find a few important cluster configuration options. First of which is Capacity.
 Capacity is the amount and the type of worker nodes that are available to the cluster for deploying resources. Amazon EKS offers 3 ways of configuring capacity, which you can combine as you like:
@@ -640,7 +641,7 @@ new cdk.CfnOutput(this, 'ServiceAccountIamRole', { value: sa.role.roleArn })
 ```
 
 Note that using `sa.serviceAccountName` above **does not** translate into a resource dependency.
-This is why an explicit dependency is needed. See https://github.com/aws/aws-cdk/issues/9910 for more details.
+This is why an explicit dependency is needed. See <https://github.com/aws/aws-cdk/issues/9910> for more details.
 
 You can also add service accounts to existing clusters. 
 To do so, pass the `openIdConnectProvider` property when you import the cluster into the application.
@@ -824,8 +825,8 @@ This means that if the chart is deleted from your code (or the stack is
 deleted), the next `cdk deploy` will issue a `helm uninstall` command and the
 Helm chart will be deleted.
 
-When there is no `release` defined, the chart will be installed using the `node.uniqueId`,
-which will be lower cased and truncated to the last 63 characters.
+When there is no `release` defined, a unique ID will be allocated for the release based
+on the construct path.
 
 By default, all Helm charts will be installed concurrently. In some cases, this
 could cause race conditions where two Helm charts attempt to deploy the same
@@ -872,6 +873,7 @@ Notice that the chart must accept a `constructs.Construct` type as its scope, no
 For this reason, to avoid possible confusion, we will create the chart in a separate file:
 
 `+ my-chart.ts`
+
 ```ts
 import * as s3 from '@aws-cdk/aws-s3';
 import * as constructs from 'constructs';
