@@ -19,73 +19,24 @@ const RANGE_KEY_TYPE = 'RANGE';
 // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Limits.html#limits-secondary-indexes
 const MAX_LOCAL_SECONDARY_INDEX_COUNT = 5;
 
-export interface SystemErrorsMetricOptions extends cloudwatch.MetricOptions {
+export interface OperationalMetricOptions extends cloudwatch.MetricOptions {
+
   readonly operations?: Operation[];
 }
 
-export interface LatencyMetricOptions extends cloudwatch.MetricOptions {
-  readonly operations?: Operation[];
-}
+export enum Operation {
 
-export interface ReadLatencyMetricOptions extends cloudwatch.MetricOptions {
-  readonly operations?: ReadOperation[];
-}
-
-export interface WriteLatencyMetricOptions extends cloudwatch.MetricOptions {
-  readonly operations?: WriteOperation[];
-}
-
-export class Operation {
-
-  protected constructor(public readonly operation: string) {}
+  GET_ITEM = 'GetItem',
+  BATCH_GET_ITEM = 'BatchGetItem',
+  SCAN = 'Scan',
+  QUERY = 'Query',
+  GET_RECORDS = 'GetRecords',
+  PUT_ITEM = 'PutItem',
+  DELETE_ITEM = 'DeleteItem',
+  UPDATE_ITEM = 'UpdateItem',
+  BATCH_WRITE_ITEM = 'BatchWriteItem',
 
 }
-
-export class WriteOperation extends Operation {
-
-  public static readonly PUT_ITEM = new WriteOperation('PutItem');
-
-  public static readonly DELETE_ITEM = new WriteOperation('DeleteItem');
-
-  public static readonly UPDATE_ITEM = new WriteOperation('UpdateItem');
-
-  public static readonly BATCH_WRITE_ITEM = new WriteOperation('BatchWriteItem');
-
-  public static readonly ALL = [
-    WriteOperation.BATCH_WRITE_ITEM,
-    WriteOperation.DELETE_ITEM,
-    WriteOperation.UPDATE_ITEM,
-    WriteOperation.PUT_ITEM,
-  ];
-
-  public readonly isWrite = true;
-
-}
-
-export class ReadOperation extends Operation {
-
-  public static readonly GET_ITEM = new ReadOperation('GetItem');
-
-  public static readonly BATCH_GET_ITEM = new ReadOperation('BatchGetItem');
-
-  public static readonly SCAN = new ReadOperation('Scan');
-
-  public static readonly QUERY = new ReadOperation('Query');
-
-  public static readonly GET_RECORDS = new ReadOperation('GetRecords');
-
-  public static readonly ALL = [
-    ReadOperation.GET_ITEM,
-    ReadOperation.BATCH_GET_ITEM,
-    ReadOperation.SCAN,
-    ReadOperation.QUERY,
-    ReadOperation.GET_RECORDS,
-  ];
-
-  public readonly isRead = true;
-
-}
-
 
 /**
  * Represents an attribute for describing the key schema for the table
@@ -732,7 +683,7 @@ abstract class TableBase extends Resource implements ITable {
   /**
    * Metric for the system errors this table
    */
-  public metricSystemErrors(props?: SystemErrorsMetricOptions): cloudwatch.IMetric {
+  public metricSystemErrors(props?: OperationalMetricOptions): cloudwatch.IMetric {
 
     if (props?.dimensions?.Operation && props.operations) {
       throw new Error('Operation can only be specified using the "operations" property, not the Operation dimension.');
@@ -742,22 +693,17 @@ abstract class TableBase extends Resource implements ITable {
       return this.metric('SystemErrors', { statistic: 'sum', ...props });
     }
 
-    const allOperations: Operation[] = [];
-    allOperations.push(...WriteOperation.ALL);
-    allOperations.push(...ReadOperation.ALL);
-    const operations: Operation[] = props?.operations ?? allOperations;
+    const operations = props?.operations ?? Object.values(Operation);
 
     const usingMetrics: Record<string, cloudwatch.IMetric> = {};
 
     for (const operation of operations) {
 
-      const metricName = operation.operation;
-
-      usingMetrics[metricName.toLowerCase()] = this.metric('SystemErrors', {
+      usingMetrics[operation.toLowerCase()] = this.metric('SystemErrors', {
         statistic: 'sum',
         dimensions: {
           TableName: this.tableName,
-          Operation: operation.operation,
+          Operation: operation,
         },
         ...props,
       });
@@ -798,10 +744,10 @@ abstract class TableBase extends Resource implements ITable {
     return this.metric('ConditionalCheckFailedRequests', { statistic: 'sum', ...props });
   }
 
-  public metricSuccessfulRequestLatency(props: LatencyMetricOptions): cloudwatch.IMetric {
+  public metricSuccessfulRequestLatency(props: OperationalMetricOptions): cloudwatch.IMetric {
 
     if (props?.dimensions?.Operation && props.operations) {
-      throw new Error('Operation can only be specified using the "operations" property, not the Operation dimension.');
+      throw new Error("Operation can only be specified using the 'operations' property, not the Operation dimension.");
     }
 
     if (props?.dimensions?.Operation) {
@@ -820,16 +766,14 @@ abstract class TableBase extends Resource implements ITable {
     }
 
     if (operations.length == 0) {
-      throw new Error('You must configure at least 1 operation for the "SuccessfulRequestLatency" metric');
+      throw new Error("You must configure at least 1 operation for the 'SuccessfulRequestLatency' metric");
     }
 
     if (operations.length > 5) {
-      throw new Error('Maximum number of operations allowed for the "SuccessfulRequestLatency" is 5');
+      throw new Error("Maximum number of operations allowed for the 'SuccessfulRequestLatency' is 5");
     }
 
-    for (const op of operations) {
-
-      const operation = op.operation;
+    for (const operation of operations) {
 
       const valueMetricName = `${operation.toLowerCase()}Value`;
       usingMetrics[valueMetricName] = this.metric('SuccessfulRequestLatency', {
@@ -869,9 +813,14 @@ abstract class TableBase extends Resource implements ITable {
 
   }
 
-  public metricSuccessfulReadRequestLatency(props?: ReadLatencyMetricOptions): cloudwatch.IMetric {
+  public metricSuccessfulReadRequestLatency(props?: cloudwatch.MetricOptions): cloudwatch.IMetric {
+
+    if (props?.dimensions?.Operation) {
+      throw new Error("Operation dimension cannot be passed to the 'metricSuccessfulReadRequestLatency' method. Use 'metricSuccessfulRequestLatency' instead.");
+    }
+
     return this.metricSuccessfulRequestLatency({
-      operations: ReadOperation.ALL,
+      operations: [Operation.GET_ITEM, Operation.SCAN, Operation.QUERY, Operation.GET_RECORDS, Operation.BATCH_GET_ITEM],
       ...props,
     });
   }
@@ -879,9 +828,14 @@ abstract class TableBase extends Resource implements ITable {
   /**
    * Metric for the successful request latency this table
    */
-  public metricSuccessfulWriteRequestLatency(props?: WriteLatencyMetricOptions): cloudwatch.IMetric {
+  public metricSuccessfulWriteRequestLatency(props?: cloudwatch.MetricOptions): cloudwatch.IMetric {
+
+    if (props?.dimensions?.Operation) {
+      throw new Error("Operation dimension cannot be passed to the 'metricSuccessfulWriteRequestLatency' method. Use 'metricSuccessfulRequestLatency' instead.");
+    }
+
     return this.metricSuccessfulRequestLatency({
-      operations: WriteOperation.ALL,
+      operations: [Operation.PUT_ITEM, Operation.DELETE_ITEM, Operation.UPDATE_ITEM, Operation.BATCH_WRITE_ITEM],
       ...props,
     });
   }
