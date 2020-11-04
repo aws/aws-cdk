@@ -90,7 +90,7 @@ export = {
 
     // THEN
     const dbSecretlogicalId = getSecretLogicalId(dbSecret, stack);
-    test.equal(dbSecretlogicalId, 'Secret67c4a95c1a883c928ce8fb163b412fe3');
+    test.equal(dbSecretlogicalId, 'Secret3fdaad7efa858a3daf9490cf0a702aeb');
 
     // same node path but other excluded characters
     stack.node.tryRemoveChild('Secret');
