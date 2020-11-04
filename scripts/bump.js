@@ -33,10 +33,14 @@ async function main() {
     console.error(`BUMP_CANDIDATE is set, so bumping version for testing (with the "test" prerelease tag)`);
     opts.skip.commit = true;
     opts.changelog = true;
-    opts.prerelease = 'test'
+
+    // if we are on a "stable" branch, add a pre-release tag ("rc") to the
+    // version number as a safety in case this version will accidentally be
+    // published.
+    opts.prerelease = ver.prerelease ?? 'rc'
   }
 
-  await standardVersion(opts);
+  return standardVersion(opts);
 }
 
 main().catch(err => {
