@@ -2,14 +2,13 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
-import { Bundling, ParcelBaseOptions } from './bundling';
-import { PackageJsonManager } from './package-json-manager';
+import { Bundling, EsBuildBaseOptions } from './bundling';
 import { nodeMajorVersion, parseStackTrace } from './util';
 
 /**
  * Properties for a NodejsFunction
  */
-export interface NodejsFunctionProps extends lambda.FunctionOptions, ParcelBaseOptions {
+export interface NodejsFunctionProps extends lambda.FunctionOptions, EsBuildBaseOptions {
   /**
    * Path to the entry file (JavaScript or TypeScript).
    *
@@ -67,29 +66,20 @@ export class NodejsFunction extends lambda.Function {
       : lambda.Runtime.NODEJS_10_X;
     const runtime = props.runtime ?? defaultRunTime;
 
-    // Look for the closest package.json starting in the directory of the entry
-    // file. We need to restore it after bundling.
-    const packageJsonManager = new PackageJsonManager(path.dirname(entry));
-
-    try {
-      super(scope, id, {
+    super(scope, id, {
+      ...props,
+      runtime,
+      code: Bundling.esbuild({
         ...props,
+        entry,
         runtime,
-        code: Bundling.parcel({
-          ...props,
-          entry,
-          runtime,
-        }),
-        handler: `index.${handler}`,
-      });
+      }),
+      handler: `index.${handler}`,
+    });
 
-      // Enable connection reuse for aws-sdk
-      if (props.awsSdkConnectionReuse ?? true) {
-        this.addEnvironment('AWS_NODEJS_CONNECTION_REUSE_ENABLED', '1', { removeInEdge: true });
-      }
-    } finally {
-      // We can only restore after the code has been bound to the function
-      packageJsonManager.restore();
+    // Enable connection reuse for aws-sdk
+    if (props.awsSdkConnectionReuse ?? true) {
+      this.addEnvironment('AWS_NODEJS_CONNECTION_REUSE_ENABLED', '1', { removeInEdge: true });
     }
   }
 }

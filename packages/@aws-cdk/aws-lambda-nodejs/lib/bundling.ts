@@ -7,9 +7,9 @@ import { PackageJsonManager } from './package-json-manager';
 import { findUp } from './util';
 
 /**
- * Base options for Parcel bundling
+ * Base options for esbuild bundling
  */
-export interface ParcelBaseOptions {
+export interface EsBuildBaseOptions {
   /**
    * Whether to minify files when bundling.
    *
@@ -25,15 +25,6 @@ export interface ParcelBaseOptions {
   readonly sourceMaps?: boolean;
 
   /**
-   * The cache directory (relative to the project root)
-   *
-   * Parcel uses a filesystem cache for fast rebuilds.
-   *
-   * @default - `.parcel-cache` in the working directory
-   */
-  readonly cacheDir?: string;
-
-  /**
    * The root of the project. This will be used as the source for the volume
    * mounted in the Docker container. If you specify this prop, ensure that
    * this path includes `entry` and any module/dependencies used by your
@@ -44,11 +35,11 @@ export interface ParcelBaseOptions {
   readonly projectRoot?: string;
 
   /**
-   * Environment variables defined when Parcel runs.
+   * Environment variables defined when bundling runs.
    *
    * @default - no environment variables are defined.
    */
-  readonly parcelEnvironment?: { [key: string]: string; };
+  readonly bundlingEnvironment?: { [key: string]: string; };
 
   /**
    * A list of modules that should be considered as externals (already available
@@ -60,18 +51,19 @@ export interface ParcelBaseOptions {
 
   /**
    * A list of modules that should be installed instead of bundled. Modules are
-   * installed in a Lambda compatible environnment.
+   * installed in a Lambda compatible environnment only when bundling runs in
+   * Docker.
    *
    * @default - all modules are bundled
    */
   readonly nodeModules?: string[];
 
   /**
-   * The version of Parcel to use when running in a Docker container.
+   * The version of esbuild to use when running in a Docker container.
    *
-   * @default - 2.0.0-beta.1
+   * @default - latest 0
    */
-  readonly parcelVersion?: string;
+  readonly esbuildVersion?: string;
 
   /**
    * Build arguments to pass when building the bundling image.
@@ -82,7 +74,7 @@ export interface ParcelBaseOptions {
 
   /**
    * Force bundling in a Docker container even if local bundling is
-   * possible.This  is useful if your function relies on node modules
+   * possible. This is useful if your function relies on node modules
    * that should be installed (`nodeModules`) in a Lambda compatible
    * environment.
    *
@@ -93,10 +85,10 @@ export interface ParcelBaseOptions {
   /**
    * A custom bundling Docker image.
    *
-   * This image should have Parcel installed at `/`. If you plan to use `nodeModules`
+   * This image should have esbuild installed globally. If you plan to use `nodeModules`
    * it should also have `npm` or `yarn` depending on the lock file you're using.
    *
-   * See https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-lambda-nodejs/parcel/Dockerfile
+   * See https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-lambda-nodejs/lib/Dockerfile
    * for the default image provided by @aws-cdk/aws-lambda-nodejs.
    *
    * @default - use the Docker image provided by @aws-cdk/aws-lambda-nodejs
@@ -105,9 +97,9 @@ export interface ParcelBaseOptions {
 }
 
 /**
- * Options for Parcel bundling
+ * Options for esbuild bundling
  */
-export interface ParcelOptions extends ParcelBaseOptions {
+export interface EsBuildOptions extends EsBuildBaseOptions {
   /**
    * Entry file
    */
@@ -124,9 +116,9 @@ export interface ParcelOptions extends ParcelBaseOptions {
  */
 export class Bundling {
   /**
-   * Parcel bundled Lambda asset code
+   * esbuild bundled Lambda asset code
    */
-  public static parcel(options: ParcelOptions): lambda.AssetCode {
+  public static esbuild(options: EsBuildOptions): lambda.AssetCode {
     // Find project root
     const projectRoot = options.projectRoot
       ?? findUp(`.git${path.sep}`)
@@ -141,18 +133,11 @@ export class Bundling {
     const packageJsonManager = new PackageJsonManager(path.dirname(options.entry));
 
     // Collect external and install modules
-    let includeNodeModules: { [key: string]: boolean } | undefined;
     let dependencies: { [key: string]: string } | undefined;
-    const externalModules = options.externalModules ?? ['aws-sdk'];
-    if (externalModules || options.nodeModules) {
-      const modules = [...externalModules, ...options.nodeModules ?? []];
-      includeNodeModules = {};
-      for (const mod of modules) {
-        includeNodeModules[mod] = false;
-      }
-      if (options.nodeModules) {
-        dependencies = packageJsonManager.getVersions(options.nodeModules);
-      }
+    let externals = options.externalModules ?? ['aws-sdk'];
+    if (options.nodeModules) {
+      externals = [...externals, ...options.nodeModules];
+      dependencies = packageJsonManager.getVersions(options.nodeModules);
     }
 
     let installer = Installer.NPM;
@@ -167,30 +152,15 @@ export class Bundling {
       }
     }
 
-    // Configure target in package.json for Parcel
-    packageJsonManager.update({
-      targets: {
-        'cdk-lambda': {
-          context: 'node',
-          includeNodeModules: includeNodeModules ?? true,
-          sourceMap: options.sourceMaps ?? false,
-          minify: options.minify ?? false,
-          engines: {
-            node: `>= ${runtimeVersion(options.runtime)}`,
-          },
-        },
-      },
-    });
-
     // Local
     let localBundler: cdk.ILocalBundling | undefined;
     if (!options.forceDockerBundling) {
       localBundler = new LocalBundler({
         projectRoot,
         relativeEntryPath,
-        cacheDir: options.cacheDir,
-        environment: options.parcelEnvironment,
+        environment: options.bundlingEnvironment,
         dependencies,
+        externals,
         installer,
         lockFile,
       });
@@ -200,13 +170,13 @@ export class Bundling {
     const dockerBundler = new DockerBundler({
       runtime: options.runtime,
       relativeEntryPath,
-      cacheDir: options.cacheDir,
-      environment: options.parcelEnvironment,
+      environment: options.bundlingEnvironment,
       bundlingDockerImage: options.bundlingDockerImage,
-      buildImage: !LocalBundler.runsLocally(projectRoot) || options.forceDockerBundling, // build image only if we can't run locally
+      buildImage: !LocalBundler.runsLocally || options.forceDockerBundling, // build image only if we can't run locally
       buildArgs: options.buildArgs,
-      parcelVersion: options.parcelVersion,
+      esbuildVersion: options.esbuildVersion,
       dependencies,
+      externals,
       installer,
       lockFile,
     });
@@ -219,14 +189,4 @@ export class Bundling {
       },
     });
   }
-}
-
-function runtimeVersion(runtime: lambda.Runtime): string {
-  const match = runtime.name.match(/nodejs(\d+)/);
-
-  if (!match) {
-    throw new Error('Cannot extract version from runtime.');
-  }
-
-  return match[1];
 }
