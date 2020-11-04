@@ -55,9 +55,6 @@ test('esbuild bundling', () => {
       ],
     }),
   });
-
-  // Searches for the package.json starting in the directory of the entry file
-  expect(findUpMock).toHaveBeenCalledWith('package.json', '/project/folder');
 });
 
 test('esbuild bundling with handler named index.ts', () => {
@@ -138,6 +135,9 @@ test('esbuild bundling with externals and dependencies', () => {
       ],
     }),
   });
+
+  // Searches for the package.json starting in the directory of the entry file
+  expect(findUpMock).toHaveBeenCalledWith('package.json', '/project/folder');
 });
 
 test('Detects yarn.lock', () => {

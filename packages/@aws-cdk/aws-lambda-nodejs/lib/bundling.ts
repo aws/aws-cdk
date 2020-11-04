@@ -139,13 +139,12 @@ export class Bundling {
     }
     const relativeEntryPath = path.relative(projectRoot, path.resolve(options.entry));
 
-    const packageJsonManager = new PackageJsonManager(path.dirname(options.entry));
-
     // Collect external and install modules
     let dependencies: { [key: string]: string } | undefined;
     let externals = options.externalModules ?? ['aws-sdk'];
     if (options.nodeModules) {
       externals = [...externals, ...options.nodeModules];
+      const packageJsonManager = new PackageJsonManager(path.dirname(options.entry));
       dependencies = packageJsonManager.getVersions(options.nodeModules);
     }
 
