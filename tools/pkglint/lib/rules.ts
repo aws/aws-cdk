@@ -1499,14 +1499,9 @@ function hasIntegTests(pkg: PackageJson) {
  * Return whether this package should use CDK build tools
  */
 function shouldUseCDKBuildTools(pkg: PackageJson) {
-  const exclude = [
-    'cdk-build-tools',
-    'merkle-build',
-    'awslint',
-    'script-tests',
-  ];
-
-  return !exclude.includes(pkg.packageName);
+  // The packages that DON'T use CDKBuildTools are the package itself
+  // and the packages used by it.
+  return pkg.packageName !== 'cdk-build-tools' && pkg.packageName !== 'merkle-build' && pkg.packageName !== 'awslint';
 }
 
 function repoRoot(dir: string) {
