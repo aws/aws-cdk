@@ -11,6 +11,7 @@ interface BundlerProps {
   relativeEntryPath: string;
   minify?: boolean;
   sourceMap?: boolean;
+  target?: string;
   environment?: { [key: string]: string };
   dependencies?: { [key: string]: string };
   externals?: string[];
@@ -134,7 +135,7 @@ function createBundlingCommand(options: BundlingCommandOptions): string {
     'npx',
     'esbuild',
     '--bundle', entryPath,
-    '--target=es2017',
+    `--target=${options.target ?? 'es2017'}`,
     '--platform=node',
     `--outfile=${options.outputDir}/index.js`,
     ...options.minify

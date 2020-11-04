@@ -25,6 +25,15 @@ export interface EsBuildBaseOptions {
   readonly sourceMap?: boolean;
 
   /**
+   * Target environment for the generated JavaScript code.
+   *
+   * @see https://esbuild.github.io/api/#target
+   *
+   * @default es2017
+   */
+  readonly target?: string;
+
+  /**
    * The root of the project. This will be used as the source for the volume
    * mounted in the Docker container. If you specify this prop, ensure that
    * this path includes `entry` and any module/dependencies used by your
@@ -156,11 +165,9 @@ export class Bundling {
     let localBundler: cdk.ILocalBundling | undefined;
     if (!options.forceDockerBundling) {
       localBundler = new LocalBundler({
+        ...options,
         projectRoot,
         relativeEntryPath,
-        minify: options.minify,
-        sourceMap: options.sourceMap,
-        environment: options.bundlingEnvironment,
         dependencies,
         externals,
         installer,
@@ -170,15 +177,9 @@ export class Bundling {
 
     // Docker
     const dockerBundler = new DockerBundler({
-      runtime: options.runtime,
+      ...options,
       relativeEntryPath,
-      minify: options.minify,
-      sourceMap: options.sourceMap,
-      environment: options.bundlingEnvironment,
-      bundlingDockerImage: options.bundlingDockerImage,
       buildImage: !LocalBundler.runsLocally || options.forceDockerBundling, // build image only if we can't run locally
-      buildArgs: options.buildArgs,
-      esbuildVersion: options.esbuildVersion,
       dependencies,
       externals,
       installer,

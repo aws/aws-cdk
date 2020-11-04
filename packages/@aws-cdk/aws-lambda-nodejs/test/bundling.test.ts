@@ -123,7 +123,7 @@ test('esbuild bundling with externals and dependencies', () => {
     nodeModules: ['delay'],
   });
 
-  // Correctly bundles with parcel
+  // Correctly bundles with esbuild
   expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
     assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
@@ -155,7 +155,7 @@ test('Detects yarn.lock', () => {
     nodeModules: ['delay'],
   });
 
-  // Correctly bundles with parcel
+  // Correctly bundles with esbuild
   expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
     assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
