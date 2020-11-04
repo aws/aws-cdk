@@ -445,17 +445,3 @@ export class ParameterValues {
     return false;
   }
 }
-
-/**
- * The values that change between the current and a new deployment
- */
-export class ParameterChanges {
-  private _changes = false;
-
-  constructor() {
-  }
-
-  public get hasChanges() {
-    return this._changes;
-  }
-}
