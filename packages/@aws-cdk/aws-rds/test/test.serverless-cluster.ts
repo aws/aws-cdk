@@ -700,21 +700,7 @@ export = {
               'rds-data:RollbackTransaction',
             ],
             Effect: 'Allow',
-            Resource: {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  {
-                    Ref: 'AWS::Partition',
-                  },
-                  ':rds:us-test-1:12345:cluster:',
-                  {
-                    Ref: 'DatabaseB269D8BB',
-                  },
-                ],
-              ],
-            },
+            Resource: '*',
           },
           {
             Action: [
@@ -769,18 +755,7 @@ export = {
               'rds-data:RollbackTransaction',
             ],
             Effect: 'Allow',
-            Resource: {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  {
-                    Ref: 'AWS::Partition',
-                  },
-                  ':rds:us-test-1:12345:cluster:ImportedDatabase',
-                ],
-              ],
-            },
+            Resource: '*',
           },
           {
             Action: [
