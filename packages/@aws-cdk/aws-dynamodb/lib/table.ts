@@ -19,21 +19,66 @@ const RANGE_KEY_TYPE = 'RANGE';
 // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Limits.html#limits-secondary-indexes
 const MAX_LOCAL_SECONDARY_INDEX_COUNT = 5;
 
+/**
+ * Options for configuring a metric with an operation dimensionality.
+ */
 export interface OperationalMetricOptions extends cloudwatch.MetricOptions {
 
+  /**
+   * The operations to apply the metric to.
+   */
   readonly operations?: Operation[];
+
 }
 
+/**
+ * Supported DynamoDB table operations.
+ */
 export enum Operation {
 
+  /**
+   * GetItem.
+   */
   GET_ITEM = 'GetItem',
+
+  /**
+   * BatchGetItem.
+   */
   BATCH_GET_ITEM = 'BatchGetItem',
+
+  /**
+   * Scan.
+   */
   SCAN = 'Scan',
+
+  /**
+   * Query.
+   */
   QUERY = 'Query',
+
+  /**
+   * GetRecords.
+   */
   GET_RECORDS = 'GetRecords',
+
+  /**
+   * PutItem.
+   */
   PUT_ITEM = 'PutItem',
+
+  /**
+   * DeleteItem.
+   */
   DELETE_ITEM = 'DeleteItem',
+
+  /**
+   * UpdateItem.
+   */
   UPDATE_ITEM = 'UpdateItem',
+
+  /**
+   * BatchWriteItem.
+   */
   BATCH_WRITE_ITEM = 'BatchWriteItem',
 
 }
@@ -686,19 +731,35 @@ abstract class TableBase extends Resource implements ITable {
   public metricSystemErrors(props?: OperationalMetricOptions): cloudwatch.IMetric {
 
     if (props?.dimensions?.Operation && props.operations) {
+      // these two represent the same thing, opted to require just one of them instead of dealing with merges
       throw new Error('Operation can only be specified using the "operations" property, not the Operation dimension.');
     }
 
+    const operations = [];
+
     if (props?.dimensions?.Operation) {
-      return this.metric('SystemErrors', { statistic: 'sum', ...props });
+      // user specified the operation dimension, use it.
+      // note this means that props.operations is empty because of the above validation.
+      operations.push(props.dimensions?.Operation);
     }
 
-    const operations = props?.operations ?? Object.values(Operation);
+    if (props?.operations) {
+      // user specified the operations property, use it.
+      // note this means that the Operation dimension is not passed because of the above validation.
+      operations.push(...props.operations);
+    }
+
+    if (operations.length == 0) {
+      // nor the Operation dimension nor the operations property was passed.
+      // default to using all operations.
+      operations.push(...Object.values(Operation));
+    }
 
     const usingMetrics: Record<string, cloudwatch.IMetric> = {};
 
     for (const operation of operations) {
 
+      // the name must start with a lowercase letter.
       usingMetrics[operation.toLowerCase()] = this.metric('SystemErrors', {
         statistic: 'sum',
         dimensions: {
@@ -707,8 +768,6 @@ abstract class TableBase extends Resource implements ITable {
         },
         ...props,
       });
-
-      // searchTerms.push(`'{AWS/DynamoDB, TableName, Operation} Operation=${operation.operation} MetricName=SystemErrors', 'Sum', ${period.toSeconds()}`);
     }
 
     const sum = new cloudwatch.MathExpression({
@@ -744,14 +803,28 @@ abstract class TableBase extends Resource implements ITable {
     return this.metric('ConditionalCheckFailedRequests', { statistic: 'sum', ...props });
   }
 
+  /**
+   * Metric for the successful request latency for specific operations of this table
+   */
   public metricSuccessfulRequestLatency(props: OperationalMetricOptions): cloudwatch.IMetric {
 
     if (props?.dimensions?.Operation && props.operations) {
+      // these two represent the same thing, opted to require just one of them instead of dealing with merges
       throw new Error("Operation can only be specified using the 'operations' property, not the Operation dimension.");
     }
 
-    if (props?.dimensions?.Operation) {
-      return this.metric('SuccessfulRequestLatency', { statistic: 'avg', ...props });
+    const operations = [];
+
+    if (props.dimensions?.Operation) {
+      // user specified the operation dimension, use it.
+      // note this means that props.operations is empty because of the above validation.
+      operations.push(props.dimensions?.Operation);
+    }
+
+    if (props.operations) {
+      // user specified the operations property, use it.
+      // note this means that the Operation dimension is not passed because of the above validation.
+      operations.push(...props.operations);
     }
 
     const usingMetrics: Record<string, cloudwatch.IMetric> = {};
@@ -759,23 +832,19 @@ abstract class TableBase extends Resource implements ITable {
     const denominatorElements = [];
     const numeratorElements = [];
 
-    const operations = props?.operations;
-
-    if (!operations) {
-      throw new Error('props.operations must be passed when not using the Operation dimension');
-    }
-
-    if (operations.length == 0) {
-      throw new Error("You must configure at least 1 operation for the 'SuccessfulRequestLatency' metric");
-    }
-
-    if (operations.length > 5) {
-      throw new Error("Maximum number of operations allowed for the 'SuccessfulRequestLatency' is 5");
+    if (operations.length > 5 || operations.length === 0) {
+      // you must pass at least 1 operation since this is an operation dimensionality metric.
+      // you cannot pass more than 5 because this would make this metric unusable for alarms who have a 10 individual metric limit for math expressions.
+      // https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/AlarmThatSendsEmail.html#alarms-on-metric-math-expressions
+      throw new Error("Number of operations for the 'metricSuccessfulRequestLatency' metric should be between 1 and 5");
     }
 
     for (const operation of operations) {
 
-      const valueMetricName = `${operation.toLowerCase()}Value`;
+      // the name must start with a lowercase letter.
+      const operationName = operation.toLowerCase();
+
+      const valueMetricName = `${operationName}Value`;
       usingMetrics[valueMetricName] = this.metric('SuccessfulRequestLatency', {
         statistic: 'avg',
         dimensions: {
@@ -785,7 +854,7 @@ abstract class TableBase extends Resource implements ITable {
         ...props,
       });
 
-      const countMetricName = `${operation.toLowerCase()}Count`;
+      const countMetricName = `${operationName}Count`;
       usingMetrics[countMetricName] = this.metric('SuccessfulRequestLatency', {
         statistic: 'n',
         dimensions: {
@@ -799,7 +868,6 @@ abstract class TableBase extends Resource implements ITable {
       numeratorElements.push(`${countMetricName} * ${valueMetricName}`);
     }
 
-    // user didn't pass dimensions, we return a sum over all operations.
     const numerator = numeratorElements.join(' + ');
     const denominator = denominatorElements.join(' + ');
 
@@ -813,6 +881,9 @@ abstract class TableBase extends Resource implements ITable {
 
   }
 
+  /**
+   * Metric for the successful request read latency of this table
+   */
   public metricSuccessfulReadRequestLatency(props?: cloudwatch.MetricOptions): cloudwatch.IMetric {
 
     if (props?.dimensions?.Operation) {
@@ -826,7 +897,7 @@ abstract class TableBase extends Resource implements ITable {
   }
 
   /**
-   * Metric for the successful request latency this table
+   * Metric for the successful request write latency of this table
    */
   public metricSuccessfulWriteRequestLatency(props?: cloudwatch.MetricOptions): cloudwatch.IMetric {
 
