@@ -779,24 +779,59 @@ CDK](https://github.com/aws/aws-cdk/issues/3398) we will either remove the
 legacy behavior or flip the logic for all these features and then
 reset the `FEATURE_FLAGS` map for the next cycle.
 
-### Versioning
+### Versioning and Release
 
-All `package.json` files in this repo use a stable marker version of `0.0.0`.
-This means that when you declare dependencies, you should always use `0.0.0`.
-This makes it easier for us to bump a new version (the `bump.sh` script will
-just update the central version and create a CHANGELOG entry) and also reduces
-the chance of merge conflicts after a new version is released.
+The `release.json` file at the root of the repo determines which release line
+this branch belongs to.
 
-Additional scripts that take part in the versioning mechanism:
+```json
+{
+  "majorVersion": "1" | "2",
+  "releaseType": "stable" | "alpha" | "rc"
+}
+```
 
-- `scripts/get-version.js` can be used to obtain the actual version of the repo.
-  You can use either from JavaScript code by `require('./scripts/get-version')`
-  or from a shell script `node -p "require('./scripts/get-version')"`.
-- `scripts/get-version-marker.js` returns `0.0.0` and used to DRY the version
-  marker.
-- `scripts/align-version.sh` and `scripts/align-version.js` are used to align
-  all package.json files in the repo to the official version. This script is
-  invoked in CI builds and should not be used inside a development environment.
+To reduce merge conflicts in automatic merges between version branches, the
+current version number is stored under `version.vNN.json` (where `NN` is
+`majorVersion`) and changelogs are stored under `CHANGELOG.NN.md` (for
+historical reasons, the changelog for 1.x is under `CHANGELOG.md`).  When we
+fork to a new release branch (e.g. `main-v2`), we will update `release.json` in
+this branch to reflect the new version line, and this information will be used
+to determine how releases are cut.
+
+The actual `version` field in all `package.json` files should always be `0.0.0`.
+This means that local development builds will use version `0.0.0` instead of the
+official version from the version file.
+
+#### `./bump.sh`
+
+This script uses [standard-version] to update the version in `version.vNN.json`
+to the next version. By default it will perform a **minor** bump, but `./bump.sh
+patch` can be used to perform a patch release if that's needed.
+
+This script will also update the relevant changelog file.
+
+[standard-version]: https://github.com/conventional-changelog/standard-version
+
+#### `scripts/resolve-version.js`
+
+The script evaluates evaluates the configuration in `release.json` exports an
+object like this:
+
+```js
+{
+  version: '2.0.0-alpha.1',          // the current version
+  versionFile: 'version.v2.json',    // the version file
+  changelogFile: 'CHANGELOG.v2.md',  // changelog file name
+  prerelease: 'alpha',               // prerelease tag (undefined for stable)
+  marker: '0.0.0'                    // version marker in package.json files
+}
+```
+
+#### scripts/align-version.sh
+
+In official builds, the `scripts/align-version.sh` is used to update all
+`package.json` files based on the version from `version.vNN.json`.
 
 ## Troubleshooting
 
