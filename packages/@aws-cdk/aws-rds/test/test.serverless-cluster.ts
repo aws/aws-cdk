@@ -507,7 +507,7 @@ export = {
     test.done();
   },
 
-  'can enable http endpoint'(test: Test) {
+  'can enable Data API'(test: Test) {
     // GIVEN
     const stack = testStack();
     const vpc = ec2.Vpc.fromLookup(stack, 'VPC', { isDefault: true });
@@ -521,7 +521,7 @@ export = {
 
     //THEN
     expect(stack).to(haveResource('AWS::RDS::DBCluster', {
-      enableDataApi: true,
+      EnableHttpEndpoint: true,
     }));
 
     test.done();
@@ -685,7 +685,7 @@ export = {
     const user = new iam.User(stack, 'User');
 
     // WHEN
-    cluster.grantDataApiAccess(user);
+    cluster.grantDataApi(user);
 
     // THEN
     expect(stack).to(haveResource('AWS::IAM::Policy', {
@@ -740,7 +740,7 @@ export = {
 
 
     // WHEN
-    cluster.grantDataApiAccess(user);
+    cluster.grantDataApi(user);
 
     // THEN
     expect(stack).to(haveResource('AWS::IAM::Policy', {
@@ -792,11 +792,11 @@ export = {
     const user = new iam.User(stack, 'User');
 
     // WHEN
-    cluster.grantDataApiAccess(user);
+    cluster.grantDataApi(user);
 
     //THEN
     expect(stack).to(haveResource('AWS::RDS::DBCluster', {
-      enableDataApi: true,
+      EnableHttpEndpoint: true,
     }));
 
     test.done();
@@ -814,7 +814,7 @@ export = {
     const user = new iam.User(stack, 'User');
 
     // WHEN
-    test.throws(() => { cluster.grantDataApiAccess(user); }, /Cannot grant Data API access when HTTP endpoint is disabled/);
+    test.throws(() => cluster.grantDataApi(user), /Cannot grant Data API access when the Data API is disabled/);
 
     test.done();
   },

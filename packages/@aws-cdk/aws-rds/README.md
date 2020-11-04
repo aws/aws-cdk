@@ -479,7 +479,7 @@ const fn = new lambda.Function(this, 'MyFunction', {
     SECRET_ARN: cluster.secret.secretArn,
   },
 });
-cluster.grantDataApiAccess(fn)
+cluster.grantDataApi(fn)
 ```
 
 **Note**: To invoke the Data API, the resource will need to read the secret associated with the cluster.

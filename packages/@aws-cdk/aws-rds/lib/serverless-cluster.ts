@@ -47,7 +47,7 @@ export interface IServerlessCluster extends IResource, ec2.IConnectable, secrets
    *
    * @param grantee The principal to grant access to
    */
-  grantDataApiAccess(grantee: iam.IGrantable): iam.Grant
+  grantDataApi(grantee: iam.IGrantable): iam.Grant
 }
 /**
  *  Properties to configure an Aurora Serverless Cluster
@@ -327,7 +327,7 @@ abstract class ServerlessClusterBase extends Resource implements IServerlessClus
    *
    * @param grantee The principal to grant access to
    */
-  public grantDataApiAccess(grantee: iam.IGrantable): iam.Grant {
+  public grantDataApi(grantee: iam.IGrantable): iam.Grant {
     if (this.enableDataApi === false) {
       throw new Error('Cannot grant Data API access when the Data API is disabled');
     }
@@ -379,7 +379,7 @@ export class ServerlessCluster extends ServerlessClusterBase {
 
   public readonly secret?: secretsmanager.ISecret;
 
-  protected readonly enableDataApi?: boolean
+  protected enableDataApi?: boolean
 
   private readonly subnetGroup: ISubnetGroup;
   private readonly vpc: ec2.IVpc;
