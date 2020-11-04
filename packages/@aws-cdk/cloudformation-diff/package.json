@@ -34,7 +34,7 @@
     "@types/table": "^5.0.0",
     "cdk-build-tools": "0.0.0",
     "fast-check": "^2.6.0",
-    "jest": "^26.6.1",
+    "jest": "^26.6.2",
     "pkglint": "0.0.0",
     "ts-jest": "^26.4.3"
   },

@@ -1,4 +1,5 @@
 ## Amazon EKS Construct Library
+
 <!--BEGIN STABILITY BANNER-->
 ---
 
@@ -11,7 +12,7 @@
 
 **This module is available for backwards compatibility purposes only ([details](https://github.com/aws/aws-cdk/pull/5540)). It will
 no longer be released with the CDK starting March 1st, 2020. See [issue
-#5544](https://github.com/aws/aws-cdk/issues/5544) for upgrade instructions.**
+# 5544](https://github.com/aws/aws-cdk/issues/5544) for upgrade instructions.**
 
 ---
 
@@ -119,7 +120,6 @@ When adding capacity, you can specify options for
 [/etc/eks/boostrap.sh](https://github.com/awslabs/amazon-eks-ami/blob/master/files/bootstrap.sh)
 which is responsible for associating the node to the EKS cluster. For example,
 you can use `kubeletExtraArgs` to add custom node labels or taints.
-
 
 ```ts
 // up to ten spot instances
@@ -417,8 +417,8 @@ This means that if the chart is deleted from your code (or the stack is
 deleted), the next `cdk deploy` will issue a `helm uninstall` command and the
 Helm chart will be deleted.
 
-When there is no `release` defined, the chart will be installed using the `node.uniqueId`,
-which will be lower cassed and truncated to the last 63 characters.
+When there is no `release` defined, the chart will be installed with a unique name allocated
+based on the construct path.
 
 ### Roadmap
 
