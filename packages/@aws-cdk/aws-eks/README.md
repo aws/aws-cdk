@@ -1,4 +1,5 @@
 ## Amazon EKS Construct Library
+
 <!--BEGIN STABILITY BANNER-->
 ---
 
@@ -23,20 +24,20 @@ Table Of Contents
 * [API Reference](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-eks-readme.html)
 * [Architectural Overview](#architectural-overview)
 * [Provisioning clusters](#provisioning-clusters)
-    * [Managed node groups](#managed-node-groups)
-    * [Fargate Profiles](#fargate-profiles)
-    * [Self-managed nodes](#self-managed-nodes)
-    * [Endpoint Access](#endpoint-access)
-    * [VPC Support](#vpc-support)
-    * [Kubectl Support](#kubectl-support)
-    * [ARM64 Support](#arm64-support)
-    * [Masters Role](#masters-role)
-    * [Encryption](#encryption)
+  * [Managed node groups](#managed-node-groups)
+  * [Fargate Profiles](#fargate-profiles)
+  * [Self-managed nodes](#self-managed-nodes)
+  * [Endpoint Access](#endpoint-access)
+  * [VPC Support](#vpc-support)
+  * [Kubectl Support](#kubectl-support)
+  * [ARM64 Support](#arm64-support)
+  * [Masters Role](#masters-role)
+  * [Encryption](#encryption)
 * [Permissions and Security](#permissions-and-security)
 * [Applying Kubernetes Resources](#applying-kubernetes-resources)
-    * [Kubernetes Manifests](#kubernetes-manifests)
-    * [Helm Charts](#helm-charts)
-    * [CDK8s Charts](#cdk8s-charts)
+  * [Kubernetes Manifests](#kubernetes-manifests)
+  * [Helm Charts](#helm-charts)
+  * [CDK8s Charts](#cdk8s-charts)
 * [Patching Kuberentes Resources](#patching-kubernetes-resources)
 * [Querying Kubernetes Resources](#querying-kubernetes-resources)
 * [Using existing clusters](#using-existing-clusters)
@@ -52,7 +53,7 @@ This example defines an Amazon EKS cluster with the following configuration:
 ```ts
 // provisiong a cluster
 const cluster = new eks.Cluster(this, 'hello-eks', {
-  version: eks.KubernetesVersion.V1_16,
+  version: eks.KubernetesVersion.V1_18,
 });
 
 // apply a kubernetes manifest to the cluster
@@ -80,7 +81,7 @@ Outputs:
 ClusterConfigCommand43AAE40F = aws eks update-kubeconfig --name cluster-xxxxx --role-arn arn:aws:iam::112233445566:role/yyyyy
 ```
 
-Execute the `aws eks update-kubeconfig ... ` command in your terminal to create or update a local kubeconfig context:
+Execute the `aws eks update-kubeconfig ...` command in your terminal to create or update a local kubeconfig context:
 
 ```console
 $ aws eks update-kubeconfig --name cluster-xxxxx --role-arn arn:aws:iam::112233445566:role/yyyyy
@@ -145,7 +146,7 @@ Creating a new cluster is done using the `Cluster` or `FargateCluster` construct
 
 ```typescript
 new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_17,
+  version: eks.KubernetesVersion.V1_18,
 });
 ```
 
@@ -153,11 +154,11 @@ You can also use `FargateCluster` to provision a cluster that uses only fargate 
 
 ```typescript
 new eks.FargateCluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_17,
+  version: eks.KubernetesVersion.V1_18,
 });
 ```
 
-> **NOTE: Only 1 cluster per stack is supported.** If you have a use-case for multiple clusters per stack, or would like to understand more about this limitation, see https://github.com/aws/aws-cdk/issues/10073.
+> **NOTE: Only 1 cluster per stack is supported.** If you have a use-case for multiple clusters per stack, or would like to understand more about this limitation, see <https://github.com/aws/aws-cdk/issues/10073>.
 
 Below you'll find a few important cluster configuration options. First of which is Capacity.
 Capacity is the amount and the type of worker nodes that are available to the cluster for deploying resources. Amazon EKS offers 3 ways of configuring capacity, which you can combine as you like:
@@ -177,7 +178,7 @@ At cluster instantiation time, you can customize the number of instances and the
 
 ```typescript
 new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_17,
+  version: eks.KubernetesVersion.V1_18,
   defaultCapacity: 5,
   defaultCapacityInstance: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.SMALL),
 });
@@ -189,7 +190,7 @@ Additional customizations are available post instantiation. To apply them, set t
 
 ```typescript
 const cluster = new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_17,
+  version: eks.KubernetesVersion.V1_18,
   defaultCapacity: 0,
 });
 
@@ -270,7 +271,7 @@ The following code defines an Amazon EKS cluster with a default Fargate Profile 
 
 ```ts
 const cluster = new eks.FargateCluster(this, 'MyCluster', {
-  version: eks.KubernetesVersion.V1_16,
+  version: eks.KubernetesVersion.V1_18,
 });
 ```
 
@@ -316,7 +317,7 @@ You can also configure the cluster to use an auto-scaling group as the default c
 
 ```ts
 cluster = new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_17,
+  version: eks.KubernetesVersion.V1_18,
   defaultCapacityType: eks.DefaultCapacityType.EC2,
 });
 ```
@@ -394,7 +395,7 @@ You can configure the [cluster endpoint access](https://docs.aws.amazon.com/eks/
 
 ```typescript
 const cluster = new eks.Cluster(this, 'hello-eks', {
-  version: eks.KubernetesVersion.V1_16,
+  version: eks.KubernetesVersion.V1_18,
   endpointAccess: eks.EndpointAccess.PRIVATE // No access outside of your VPC.
 });
 ```
@@ -407,7 +408,7 @@ You can specify the VPC of the cluster using the `vpc` and `vpcSubnets` properti
 const vpc = new ec2.Vpc(this, 'Vpc');
 
 new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_17,
+  version: eks.KubernetesVersion.V1_18,
   vpc,
   vpcSubnets: [{ subnetType: ec2.SubnetType.PRIVATE }]
 });
@@ -447,7 +448,7 @@ The resources are created in the cluster by running `kubectl apply` from a pytho
 
 ```typescript
 const cluster = new eks.Cluster(this, 'hello-eks', {
-  version: eks.KubernetesVersion.V1_16,
+  version: eks.KubernetesVersion.V1_18,
   kubectlEnvironment: {
     'http_proxy': 'http://proxy.myproxy.com'
   }
@@ -515,7 +516,7 @@ When you create a cluster, you can specify a `mastersRole`. The `Cluster` constr
 ```ts
 const role = new iam.Role(...);
 new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_17,
+  version: eks.KubernetesVersion.V1_18,
   mastersRole: role,
 });
 ```
@@ -640,7 +641,7 @@ new cdk.CfnOutput(this, 'ServiceAccountIamRole', { value: sa.role.roleArn })
 ```
 
 Note that using `sa.serviceAccountName` above **does not** translate into a resource dependency.
-This is why an explicit dependency is needed. See https://github.com/aws/aws-cdk/issues/9910 for more details.
+This is why an explicit dependency is needed. See <https://github.com/aws/aws-cdk/issues/9910> for more details.
 
 ## Applying Kubernetes Resources
 
@@ -798,8 +799,8 @@ This means that if the chart is deleted from your code (or the stack is
 deleted), the next `cdk deploy` will issue a `helm uninstall` command and the
 Helm chart will be deleted.
 
-When there is no `release` defined, the chart will be installed using the `node.uniqueId`,
-which will be lower cased and truncated to the last 63 characters.
+When there is no `release` defined, a unique ID will be allocated for the release based
+on the construct path.
 
 By default, all Helm charts will be installed concurrently. In some cases, this
 could cause race conditions where two Helm charts attempt to deploy the same
@@ -846,6 +847,7 @@ Notice that the chart must accept a `constructs.Construct` type as its scope, no
 For this reason, to avoid possible confusion, we will create the chart in a separate file:
 
 `+ my-chart.ts`
+
 ```ts
 import * as s3 from '@aws-cdk/aws-s3';
 import * as constructs from 'constructs';

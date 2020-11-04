@@ -4,7 +4,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import {
   Aws, CfnCondition, CfnCustomResource, Construct as CoreConstruct, CustomResource, Fn,
-  IResource, Lazy, RemovalPolicy, Resource, Stack, Token,
+  IResource, Lazy, Names, RemovalPolicy, Resource, Stack, Token,
 } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnTable, CfnTableProps } from './dynamodb.generated';
@@ -565,10 +565,7 @@ abstract class TableBase extends Resource implements ITable {
     return iam.Grant.addToPrincipal({
       grantee,
       actions: ['dynamodb:ListStreams'],
-      resourceArns: [
-        Lazy.stringValue({ produce: () => `${this.tableArn}/stream/*` }),
-        ...this.regionalArns.map(arn => Lazy.stringValue({ produce: () => `${arn}/stream/*` })),
-      ],
+      resourceArns: ['*'],
     });
   }
 
@@ -1457,7 +1454,7 @@ class SourceTableAttachedPolicy extends CoreConstruct implements iam.IGrantable 
   public readonly policy: iam.IPolicy;
 
   public constructor(sourceTable: Table, role: iam.IRole) {
-    super(sourceTable, `SourceTableAttachedPolicy-${role.node.uniqueId}`);
+    super(sourceTable, `SourceTableAttachedPolicy-${Names.nodeUniqueId(role.node)}`);
 
     const policy = new iam.Policy(this, 'Resource', { roles: [role] });
     this.policy = policy;

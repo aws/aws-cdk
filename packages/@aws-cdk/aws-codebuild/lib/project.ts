@@ -7,7 +7,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { Aws, Duration, IResource, Lazy, PhysicalName, Resource, Stack } from '@aws-cdk/core';
+import { Aws, Duration, IResource, Lazy, Names, PhysicalName, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IArtifacts } from './artifacts';
 import { BuildSpec } from './build-spec';
@@ -793,6 +793,7 @@ export class Project extends ProjectBase {
           'codebuild:CreateReport',
           'codebuild:UpdateReport',
           'codebuild:BatchPutTestCases',
+          'codebuild:BatchPutCodeCoverages',
         ],
         resources: [renderReportGroupArn(this, `${this.projectName}-*`)],
       }));
@@ -937,7 +938,7 @@ export class Project extends ProjectBase {
     }
 
     const imagePullPrincipalType = this.buildImage.imagePullPrincipalType === ImagePullPrincipalType.CODEBUILD
-      ? undefined
+      ? ImagePullPrincipalType.CODEBUILD
       : ImagePullPrincipalType.SERVICE_ROLE;
     if (this.buildImage.repository) {
       if (imagePullPrincipalType === ImagePullPrincipalType.SERVICE_ROLE) {
@@ -955,14 +956,17 @@ export class Project extends ProjectBase {
       this.buildImage.secretsManagerCredentials?.grantRead(this);
     }
 
+    const secret = this.buildImage.secretsManagerCredentials;
     return {
       type: this.buildImage.type,
       image: this.buildImage.imageId,
       imagePullCredentialsType: imagePullPrincipalType,
-      registryCredential: this.buildImage.secretsManagerCredentials
+      registryCredential: secret
         ? {
           credentialProvider: 'SECRETS_MANAGER',
-          credential: this.buildImage.secretsManagerCredentials.secretArn,
+          // Secrets must be referenced by either the full ARN (with SecretsManager suffix), or by name.
+          // "Partial" ARNs (without the suffix) will fail a validation regex at deploy-time.
+          credential: secret.secretFullArn ?? secret.secretName,
         }
         : undefined,
       privilegedMode: env.privileged || false,
@@ -1018,7 +1022,7 @@ export class Project extends ProjectBase {
     } else {
       const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', {
         vpc: props.vpc,
-        description: 'Automatic generated security group for CodeBuild ' + this.node.uniqueId,
+        description: 'Automatic generated security group for CodeBuild ' + Names.uniqueId(this),
         allowAllOutbound: props.allowAllOutbound,
       });
       securityGroups = [securityGroup];

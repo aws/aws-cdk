@@ -18,16 +18,48 @@ import { testFixture, testFixtureNoVpc } from './util';
 
 /* eslint-disable max-len */
 
-const CLUSTER_VERSION = eks.KubernetesVersion.V1_16;
+const CLUSTER_VERSION = eks.KubernetesVersion.V1_18;
 
 export = {
+
+  'throws when a non cdk8s chart construct is added as cdk8s chart'(test: Test) {
+
+    const { stack } = testFixture();
+
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      version: CLUSTER_VERSION,
+    });
+
+    // create a plain construct, not a cdk8s chart
+    const someConstruct = new constructs.Construct(stack, 'SomeConstruct');
+
+    test.throws(() => cluster.addCdk8sChart('chart', someConstruct), /Invalid cdk8s chart. Must contain a \'toJson\' method, but found undefined/);
+    test.done();
+
+  },
+
+  'throws when a core construct is added as cdk8s chart'(test: Test) {
+
+    const { stack } = testFixture();
+
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      version: CLUSTER_VERSION,
+    });
+
+    // create a plain construct, not a cdk8s chart
+    const someConstruct = new cdk.Construct(stack, 'SomeConstruct');
+
+    test.throws(() => cluster.addCdk8sChart('chart', someConstruct), /Invalid cdk8s chart. Must contain a \'toJson\' method, but found undefined/);
+    test.done();
+
+  },
 
   'cdk8s chart can be added to cluster'(test: Test) {
 
     const { stack } = testFixture();
 
     const cluster = new eks.Cluster(stack, 'Cluster', {
-      version: eks.KubernetesVersion.V1_17,
+      version: CLUSTER_VERSION,
     });
 
     const app = new cdk8s.App();
@@ -70,7 +102,7 @@ export = {
     const { stack } = testFixture();
 
     const cluster = new eks.Cluster(stack, 'Cluster', {
-      version: eks.KubernetesVersion.V1_17,
+      version: CLUSTER_VERSION,
     });
 
     test.deepEqual(cluster.connections.securityGroups.map(sg => stack.resolve(sg.securityGroupId)), [
@@ -90,7 +122,7 @@ export = {
       constructor(scope: constructs.Construct, id: string, props: { sg: ec2.ISecurityGroup, vpc: ec2.IVpc }) {
         super(scope, id);
         this.eksCluster = new eks.Cluster(this, 'Cluster', {
-          version: eks.KubernetesVersion.V1_17,
+          version: CLUSTER_VERSION,
           securityGroup: props.sg,
           vpc: props.vpc,
         });
@@ -128,7 +160,7 @@ export = {
       constructor(scope: constructs.Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props);
         this.eksCluster = new eks.Cluster(this, 'Cluster', {
-          version: eks.KubernetesVersion.V1_17,
+          version: CLUSTER_VERSION,
         });
       }
     }
@@ -179,7 +211,7 @@ export = {
       constructor(scope: constructs.Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props);
         this.eksCluster = new eks.Cluster(this, 'Cluster', {
-          version: eks.KubernetesVersion.V1_17,
+          version: CLUSTER_VERSION,
         });
       }
     }
@@ -221,7 +253,7 @@ export = {
       constructor(scope: constructs.Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props);
         this.eksCluster = new eks.Cluster(this, 'Cluster', {
-          version: eks.KubernetesVersion.V1_17,
+          version: CLUSTER_VERSION,
         });
       }
     }
@@ -254,7 +286,7 @@ export = {
       constructor(scope: constructs.Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props);
         this.eksCluster = new eks.Cluster(this, 'Cluster', {
-          version: eks.KubernetesVersion.V1_17,
+          version: CLUSTER_VERSION,
         });
       }
     }
@@ -271,7 +303,7 @@ export = {
           instanceType: new ec2.InstanceType('t3.medium'),
           vpc: props.cluster.vpc,
           machineImage: new eks.EksOptimizedImage({
-            kubernetesVersion: eks.KubernetesVersion.V1_16.version,
+            kubernetesVersion: CLUSTER_VERSION.version,
             nodeType: eks.NodeType.STANDARD,
           }),
         });
@@ -287,7 +319,7 @@ export = {
       clusterStack.eksCluster.connectAutoScalingGroupCapacity(capacityStack.group, {});
       test.ok(false, 'expected error');
     } catch (err) {
-      test.equal(err.message, 'CapacityStackautoScalingInstanceRoleF041EB53 should be defined in the scope of the ClusterStack stack to prevent circular dependencies');
+      test.equal(err.message, 'CapacityStack/autoScaling/InstanceRole should be defined in the scope of the ClusterStack stack to prevent circular dependencies');
     }
 
     test.done();
@@ -301,7 +333,7 @@ export = {
       constructor(scope: constructs.Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props);
         this.eksCluster = new eks.Cluster(this, 'EKSCluster', {
-          version: eks.KubernetesVersion.V1_17,
+          version: CLUSTER_VERSION,
         });
       }
     }
@@ -335,7 +367,7 @@ export = {
     expect(stack).to(haveResourceLike('Custom::AWSCDK-EKS-Cluster', {
       Config: {
         roleArn: { 'Fn::GetAtt': ['ClusterRoleFA261979', 'Arn'] },
-        version: '1.16',
+        version: '1.18',
         resourcesVpcConfig: {
           securityGroupIds: [{ 'Fn::GetAtt': ['ClusterControlPlaneSecurityGroupD274242C', 'GroupId'] }],
           subnetIds: [
@@ -1176,7 +1208,7 @@ export = {
       const { app, stack } = testFixtureNoVpc();
 
       // WHEN
-      new eks.EksOptimizedImage({ kubernetesVersion: '1.15' }).getImage(stack);
+      new eks.EksOptimizedImage({ kubernetesVersion: '1.18' }).getImage(stack);
 
       // THEN
       const assembly = app.synth();
@@ -1187,7 +1219,7 @@ export = {
       ), 'EKS STANDARD AMI should be in ssm parameters');
       test.ok(Object.entries(parameters).some(
         ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') &&
-          (v as any).Default.includes('/1.15/'),
+          (v as any).Default.includes('/1.18/'),
       ), 'kubernetesVersion should be in ssm parameters');
       test.done();
     },
@@ -1319,7 +1351,7 @@ export = {
       const { app, stack } = testFixtureNoVpc();
 
       // WHEN
-      new BottleRocketImage({ kubernetesVersion: '1.17' }).getImage(stack);
+      new BottleRocketImage({ kubernetesVersion: '1.18' }).getImage(stack);
 
       // THEN
       const assembly = app.synth();
@@ -1330,7 +1362,7 @@ export = {
       ), 'BottleRocket AMI should be in ssm parameters');
       test.ok(Object.entries(parameters).some(
         ([k, v]) => k.startsWith('SsmParameterValueawsservicebottlerocketaws') &&
-          (v as any).Default.includes('/aws-k8s-1.17/'),
+          (v as any).Default.includes('/aws-k8s-1.18/'),
       ), 'kubernetesVersion should be in ssm parameters');
       test.done();
     },
@@ -1350,7 +1382,7 @@ export = {
         Config: {
           name: 'my-cluster-name',
           roleArn: { 'Fn::GetAtt': ['MyClusterRoleBA20FE72', 'Arn'] },
-          version: '1.16',
+          version: '1.18',
           resourcesVpcConfig: {
             securityGroupIds: [
               { 'Fn::GetAtt': ['MyClusterControlPlaneSecurityGroup6B658F79', 'GroupId'] },

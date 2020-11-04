@@ -152,6 +152,7 @@ async function main() {
         'build+test+package': 'npm run build+test && npm run package',
         'build+test': 'npm run build && npm test',
         compat: 'cdk-compat',
+        gen: 'cfn2ts',
       },
       'cdk-build': {
         cloudformation: namespace,
@@ -241,7 +242,11 @@ async function main() {
       '',
       '.eslintrc.js',
       'jest.config.js',
+      '',
+      '# exclude cdk artifacts',
+      '**/cdk.out',
       'junit.xml',
+      'test/',
     ]);
 
     await write('lib/index.ts', [

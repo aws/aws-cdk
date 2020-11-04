@@ -772,7 +772,7 @@
           ]
         },
         "Config": {
-          "version": "1.16",
+          "version": "1.18",
           "roleArn": {
             "Fn::GetAtt": [
               "ClusterRoleFA261979",
