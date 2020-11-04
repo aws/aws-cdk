@@ -40,6 +40,7 @@ export class LocalBundler implements cdk.ILocalBundling {
       }
       return LocalBundler._runsLocally;
     } catch (err) {
+      process.stderr.write('Using Docker bundling');
       return false;
     }
   }

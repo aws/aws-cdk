@@ -172,6 +172,7 @@ export class Bundling {
         externals,
         installer,
         lockFile,
+        environment: options.bundlingEnvironment,
       });
     }
 
@@ -184,6 +185,7 @@ export class Bundling {
       externals,
       installer,
       lockFile,
+      environment: options.bundlingEnvironment,
     });
 
     return lambda.Code.fromAsset(projectRoot, {
