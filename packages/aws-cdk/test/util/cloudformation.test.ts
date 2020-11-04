@@ -55,7 +55,7 @@ test('no default, yes prev, no override => use previous', () => {
   });
 });
 
-test('default, no prev, no override => empty param set (and obviously changes)', () => {
+test('default, no prev, no override => empty param set (and obviously changes to be applied)', () => {
   expect(makeParams(true, false, false)).toEqual({
     apiParameters: [],
     changed: true,
