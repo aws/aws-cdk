@@ -36,7 +36,7 @@ export interface DatabaseSecretProps {
   readonly excludeCharacters?: string;
 
   /**
-   * Whether to replace this secret when the password changes.
+   * Whether to replace this secret when the criteria for the password change.
    *
    * This is achieved by overriding the logical id of the AWS::SecretsManager::Secret
    * with a hash of the options that influence the password generation. This
@@ -45,7 +45,7 @@ export interface DatabaseSecretProps {
    *
    * @default false
    */
-  readonly replaceOnPasswordChanges?: boolean;
+  readonly replaceOnPasswordCriteriaChanges?: boolean;
 }
 
 /**
@@ -71,7 +71,7 @@ export class DatabaseSecret extends secretsmanager.Secret {
       },
     });
 
-    if (props.replaceOnPasswordChanges) {
+    if (props.replaceOnPasswordCriteriaChanges) {
       const hash = crypto.createHash('md5');
       hash.update(JSON.stringify({
         // Use here the options that influence the password generation.

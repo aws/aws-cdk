@@ -1027,7 +1027,7 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
         excludeCharacters: credentials.excludeCharacters,
         // Always replace secret when customization options are changed
         // (MasterUsername is not specified for an instance created from a snapshot)
-        replaceOnPasswordChanges: true,
+        replaceOnPasswordCriteriaChanges: true,
       });
     }
 

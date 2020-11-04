@@ -78,14 +78,14 @@ export = {
     test.done();
   },
 
-  'replace on password change'(test: Test) {
+  'replace on password critera change'(test: Test) {
     // GIVEN
     const stack = new Stack();
 
     // WHEN
     const dbSecret = new DatabaseSecret(stack, 'Secret', {
       username: 'admin',
-      replaceOnPasswordChanges: true,
+      replaceOnPasswordCriteriaChanges: true,
     });
 
     // THEN
@@ -96,7 +96,7 @@ export = {
     stack.node.tryRemoveChild('Secret');
     const otherSecret1 = new DatabaseSecret(stack, 'Secret', {
       username: 'admin',
-      replaceOnPasswordChanges: true,
+      replaceOnPasswordCriteriaChanges: true,
       excludeCharacters: '@!()[]',
     });
     test.notEqual(dbSecretlogicalId, getSecretLogicalId(otherSecret1, stack));
@@ -104,7 +104,7 @@ export = {
     // other node path but same excluded characters
     const otherSecret2 = new DatabaseSecret(stack, 'Secret2', {
       username: 'admin',
-      replaceOnPasswordChanges: true,
+      replaceOnPasswordCriteriaChanges: true,
     });
     test.notEqual(dbSecretlogicalId, getSecretLogicalId(otherSecret2, stack));
 
