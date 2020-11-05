@@ -140,9 +140,17 @@ export class SdkProvider {
    *
    * If `region` is undefined, the default value will be used.
    */
-  public async withAssumedRole(roleArn: string, externalId: string | undefined, region: string | undefined) {
+  public async withAssumedRole(roleArn: string, externalId: string | undefined, environment: cxapi.Environment | undefined, mode: Mode | undefined) {
     debug(`Assuming role '${roleArn}'.`);
-    region = region ?? this.defaultRegion;
+
+    let region = this.defaultRegion;
+    let masterCredentials = await this.defaultCredentials()
+
+    if (environment && mode) {
+      const env = await this.resolveEnvironment(environment);
+      masterCredentials = await this.obtainCredentials(env.account, mode)
+      region = env.region
+    }
 
     const creds = new AWS.ChainableTemporaryCredentials({
       params: {
@@ -154,7 +162,7 @@ export class SdkProvider {
         region,
         ...this.sdkOptions,
       },
-      masterCredentials: await this.defaultCredentials(),
+      masterCredentials: masterCredentials,
     });
 
     return new SDK(creds, region, this.sdkOptions);

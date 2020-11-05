@@ -197,7 +197,7 @@ describe('with default config files', () => {
 
       // THEN
       try {
-        await provider.withAssumedRole('arn:aws:iam::account:role/role', undefined, undefined);
+        await provider.withAssumedRole('arn:aws:iam::account:role/role', undefined, undefined, Mode.ForReading);
       } catch (e) {
         // Mock response was set to fail with message test to make sure we don't call STS
         expect(e.message).toEqual('Error fetching MFA token: test');
@@ -265,7 +265,7 @@ describe('with default config files', () => {
       });
 
       // WHEN
-      const sdk = await provider.withAssumedRole('bla.role.arn', undefined, undefined);
+      const sdk = await provider.withAssumedRole('bla.role.arn', undefined, undefined, Mode.ForReading);
       makeAssumeRoleFail(sdk);
 
       // THEN - error message contains both a helpful hint and the underlying AssumeRole message
@@ -300,7 +300,7 @@ describe('with default config files', () => {
 
           // WHEN
           const provider = new SdkProvider(new AWS.CredentialProviderChain([() => new AWS.Credentials({ accessKeyId: 'a', secretAccessKey: 's' })]), 'eu-somewhere');
-          const sdk = await provider.withAssumedRole('bla.role.arn', undefined, undefined);
+          const sdk = await provider.withAssumedRole('bla.role.arn', undefined, undefined, Mode.ForReading);
 
           await sdk.currentCredentials();
 
