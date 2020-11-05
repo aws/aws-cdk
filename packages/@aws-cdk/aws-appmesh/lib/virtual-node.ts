@@ -209,8 +209,9 @@ export class VirtualNode extends VirtualNodeBase {
   public static fromVirtualNodeArn(scope: Construct, id: string, virtualNodeArn: string): IVirtualNode {
     return new class extends VirtualNodeBase {
       readonly virtualNodeArn = virtualNodeArn;
-      readonly mesh = Mesh.fromMeshName(this, 'Mesh', cdk.Fn.select(0, cdk.Fn.split('/', cdk.Stack.of(scope).parseArn(virtualNodeArn).resourceName!)));
-      readonly virtualNodeName = cdk.Fn.select(2, cdk.Fn.split('/', cdk.Stack.of(scope).parseArn(virtualNodeArn).resourceName!));
+      private readonly parsedArn = cdk.Fn.split('/', cdk.Stack.of(scope).parseArn(virtualNodeArn).resourceName!);
+      readonly mesh = Mesh.fromMeshName(this, 'Mesh', cdk.Fn.select(0, this.parsedArn));
+      readonly virtualNodeName = cdk.Fn.select(2, this.parsedArn);
     }(scope, id);
   }
 
