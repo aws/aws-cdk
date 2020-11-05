@@ -28,7 +28,7 @@ up the entry file:
 ├── stack.my-handler.ts # exports a function named 'handler'
 ```
 
-This file is used as "entry" for [esbbuild](https://esbuild.github.io/). This means that your code is automatically transpiled and bundled whether it's written in JavaScript or TypeScript.
+This file is used as "entry" for [esbuild](https://esbuild.github.io/). This means that your code is automatically transpiled and bundled whether it's written in JavaScript or TypeScript.
 
 Alternatively, an entry file and handler can be specified:
 
