@@ -907,6 +907,10 @@ abstract class TableBase extends Resource implements ITable {
 
     const mapper = metricNameMapper ?? (op => op.toLowerCase());
 
+    if (props?.dimensions?.Operation) {
+      throw new Error('Invalid properties. Operation dimension is not supported when calculating operational metrics');
+    }
+
     for (const operation of operations) {
 
       const metric = this.metric(metricName, {
