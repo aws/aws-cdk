@@ -910,11 +910,12 @@ abstract class TableBase extends Resource implements ITable {
     for (const operation of operations) {
 
       const metric = this.metric(metricName, {
+        ...props,
         dimensions: {
           TableName: this.tableName,
           Operation: operation,
+          ...props?.dimensions,
         },
-        ...props,
       });
 
       const operationMetricName = `${mapper(operation)}`;
