@@ -6,6 +6,30 @@ import * as appmesh from '../lib';
 
 export = {
   'When creating a VirtualRouter': {
+    'should have appropriate defaults'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const mesh = new appmesh.Mesh(stack, 'mesh', {
+        meshName: 'test-mesh',
+      });
+      // WHEN
+      mesh.addVirtualRouter('http-router-listener');
+
+      expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualRouter', {
+        VirtualRouterName: 'meshhttprouterlistenerF57BCB2F',
+        Spec: {
+          Listeners: [
+            {
+              PortMapping: {
+                Port: 8080,
+                Protocol: appmesh.Protocol.HTTP,
+              },
+            },
+          ],
+        },
+      }));
+      test.done();
+    },
     'should have protocol variant listeners'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
