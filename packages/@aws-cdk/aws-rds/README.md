@@ -23,7 +23,7 @@ your instances will be launched privately or publicly:
 ```ts
 const cluster = new rds.DatabaseCluster(this, 'Database', {
   engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_2_08_1 }),
-  credentials: rds.Credentials.fromGeneratedPassword('clusteradmin'), // Optional - will default to 'admin' username and generated password
+  credentials: rds.Credentials.fromGeneratedSecret('clusteradmin'), // Optional - will default to 'admin' username and generated password
   instanceProps: {
     // optional , defaults to t3.medium
     instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
@@ -70,7 +70,7 @@ const instance = new rds.DatabaseInstance(this, 'Instance', {
   engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19_0_0_0_2020_04_R1 }),
   // optional, defaults to m5.large
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
-  credentials: rds.Credentials.fromGeneratedPassword('syscdk'), // Optional - will default to 'admin' username and generated password
+  credentials: rds.Credentials.fromGeneratedSecret('syscdk'), // Optional - will default to 'admin' username and generated password
   vpc,
   vpcSubnets: {
     subnetType: ec2.SubnetType.PRIVATE
@@ -146,7 +146,7 @@ const engine = rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngine
 new rds.DatabaseInstance(this, 'InstanceWithUsername', {
   engine,
   vpc,
-  credentials: rds.Credentials.fromGeneratedPassword('postgres'), // Creates an admin user of postgres with a generated password
+  credentials: rds.Credentials.fromGeneratedSecret('postgres'), // Creates an admin user of postgres with a generated password
 });
 
 new rds.DatabaseInstance(this, 'InstanceWithUsernameAndPassword', {

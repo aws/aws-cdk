@@ -156,7 +156,7 @@ export abstract class Credentials {
   /**
    * Creates Credentials with a password generated and stored in SecretsManager.
    */
-  public static fromGeneratedPassword(username: string, options: CredentialsBaseOptions = {}): Credentials {
+  public static fromGeneratedSecret(username: string, options: CredentialsBaseOptions = {}): Credentials {
     return {
       ...options,
       username,
@@ -181,8 +181,8 @@ export abstract class Credentials {
    * Creates Credentials for the given username, and optional password and key.
    * If no password is provided, one will be generated and stored in SecretsManager.
    *
-   * @deprecated use `fromGeneratedPassword()` or `fromPassword()` for new Clusters and Instances.
-   *   Note that switching from `fromUsername()` to `fromGeneratedPassword()` or `fromPassword()` for already deployed
+   * @deprecated use `fromGeneratedSecret()` or `fromPassword()` for new Clusters and Instances.
+   *   Note that switching from `fromUsername()` to `fromGeneratedSecret()` or `fromPassword()` for already deployed
    *   Clusters or Instances will result in their replacement!
    */
   public static fromUsername(username: string, options: CredentialsFromUsernameOptions = {}): Credentials {
@@ -289,8 +289,27 @@ export interface SnapshotCredentialsFromGeneratedPasswordOptions {
 export abstract class SnapshotCredentials {
   /**
    * Generate a new password for the snapshot, using the existing username and an optional encryption key.
+   * The new credentials are stored in Secrets Manager.
    *
    * Note - The username must match the existing master username of the snapshot.
+   */
+  public static fromGeneratedSecret(username: string, options: SnapshotCredentialsFromGeneratedPasswordOptions = {}): SnapshotCredentials {
+    return {
+      ...options,
+      generatePassword: true,
+      replaceOnPasswordCriteriaChanges: true,
+      username,
+    };
+  }
+
+  /**
+   * Generate a new password for the snapshot, using the existing username and an optional encryption key.
+   *
+   * Note - The username must match the existing master username of the snapshot.
+   *
+   * @deprecated use `fromGeneratedSecret()` for new Clusters and Instances.
+   *   Note that switching from `fromGeneratedPassword()` to `fromGeneratedSecret()` for already deployed
+   *   Clusters or Instances will update their master password.
    */
   public static fromGeneratedPassword(username: string, options: SnapshotCredentialsFromGeneratedPasswordOptions = {}): SnapshotCredentials {
     return {
@@ -340,6 +359,13 @@ export abstract class SnapshotCredentials {
    * Whether a new password should be generated.
    */
   public abstract readonly generatePassword: boolean;
+
+  /**
+   * Whether to replace the generated secret when the criteria for the password change.
+   *
+   * @default false
+   */
+  public abstract readonly replaceOnPasswordCriteriaChanges?: boolean;
 
   /**
    * The master user password.

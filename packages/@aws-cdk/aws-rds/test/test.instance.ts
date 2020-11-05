@@ -301,7 +301,7 @@ export = {
       expect(stack).to(haveResourceLike('AWS::RDS::DBInstance', {
         MasterUsername: ABSENT,
         MasterUserPassword: {
-          'Fn::Join': ['', ['{{resolve:secretsmanager:', { Ref: 'InstanceSecretB6DFA6BE8ee0a797cad8a68dbeb85f8698cdb5bb' }, ':SecretString:password::}}']],
+          'Fn::Join': ['', ['{{resolve:secretsmanager:', { Ref: 'InstanceSecret478E0A47' }, ':SecretString:password::}}']],
         },
       }));
       expect(stack).to(haveResource('AWS::SecretsManager::Secret', {
@@ -313,6 +313,27 @@ export = {
           GenerateStringKey: 'password',
           PasswordLength: 30,
           SecretStringTemplate: '{"username":"admin"}',
+        },
+      }));
+
+      test.done();
+    },
+
+    'fromGeneratedSecret'(test: Test) {
+      new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
+        snapshotIdentifier: 'my-snapshot',
+        engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+        vpc,
+        credentials: rds.SnapshotCredentials.fromGeneratedSecret('admin', {
+          excludeCharacters: '"@/\\',
+        }),
+      });
+
+      expect(stack).to(haveResourceLike('AWS::RDS::DBInstance', {
+        MasterUsername: ABSENT,
+        MasterUserPassword: {
+          // logical id of secret has a hash
+          'Fn::Join': ['', ['{{resolve:secretsmanager:', { Ref: 'InstanceSecretB6DFA6BE8ee0a797cad8a68dbeb85f8698cdb5bb' }, ':SecretString:password::}}']],
         },
       }));
 
@@ -1139,12 +1160,12 @@ export = {
     },
   },
 
-  'fromGeneratedPassword'(test: Test) {
+  'fromGeneratedSecret'(test: Test) {
     // WHEN
     new rds.DatabaseInstance(stack, 'Database', {
       engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_12_3 }),
       vpc,
-      credentials: rds.Credentials.fromGeneratedPassword('postgres'),
+      credentials: rds.Credentials.fromGeneratedSecret('postgres'),
     });
 
     // THEN

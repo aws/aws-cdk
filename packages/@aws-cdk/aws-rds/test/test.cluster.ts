@@ -1731,7 +1731,7 @@ export = {
     test.done();
   },
 
-  'fromGeneratedPassword'(test: Test) {
+  'fromGeneratedSecret'(test: Test) {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -1739,7 +1739,7 @@ export = {
     // WHEN
     new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
-      credentials: Credentials.fromGeneratedPassword('admin'),
+      credentials: Credentials.fromGeneratedSecret('admin'),
       instanceProps: {
         vpc,
       },
