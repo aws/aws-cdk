@@ -20,18 +20,6 @@ const RANGE_KEY_TYPE = 'RANGE';
 const MAX_LOCAL_SECONDARY_INDEX_COUNT = 5;
 
 /**
- * Options for configuring a request latency metric that considers multiple operations.
- */
-export interface SuccessfulRequestLatencyForOperationsMetricOptions extends cloudwatch.MetricOptions {
-
-  /**
-   * The operations to apply the metric to.
-   */
-  readonly operations: Operation[];
-
-}
-
-/**
  * Options for configuring a system errors metric that considers multiple operations.
  */
 export interface SystemErrorsForOperationsMetricOptions extends cloudwatch.MetricOptions {
