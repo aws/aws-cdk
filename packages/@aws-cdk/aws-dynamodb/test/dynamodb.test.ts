@@ -14,6 +14,7 @@ import {
   StreamViewType,
   Table,
   TableEncryption,
+  Operation,
 } from '../lib';
 
 /* eslint-disable quote-props */
@@ -1565,6 +1566,92 @@ describe('metrics', () => {
     });
   });
 
+  test('Using metricSystemErrorsForOperations with no operations will default to all', () => {
+
+    const stack = new Stack();
+    const table = new Table(stack, 'Table', {
+      partitionKey: { name: 'id', type: AttributeType.STRING },
+    });
+
+    expect(Object.keys(table.metricSystemErrorsForOperations().toMetricConfig().mathExpression!.usingMetrics)).toEqual([
+      'getitem',
+      'batchgetitem',
+      'scan',
+      'query',
+      'getrecords',
+      'putitem',
+      'deleteitem',
+      'updateitem',
+      'batchwriteitem',
+    ]);
+
+  });
+
+  test('Using metricSystemErrors without the TableName dimension will fail', () => {
+
+    const stack = new Stack();
+    const table = new Table(stack, 'Table', {
+      partitionKey: { name: 'id', type: AttributeType.STRING },
+    });
+
+    expect(() => table.metricSystemErrors({ dimensions: { Operation: 'GetItem' } })).toThrow(/Both 'Operation' and 'TableName' dimensions must be passed for the 'SystemErrors' metric./);
+
+  });
+
+  test('Using metricSystemErrors without the Operation dimension will fail', () => {
+
+    const stack = new Stack();
+    const table = new Table(stack, 'Table', {
+      partitionKey: { name: 'id', type: AttributeType.STRING },
+    });
+
+    expect(() => table.metricSystemErrors({ dimensions: { TableName: table.tableName } })).toThrow(/Both 'Operation' and 'TableName' dimensions must be passed for the 'SystemErrors' metric./);
+
+  });
+
+  test('Can use metricSystemErrorsForOperations on a Dynamodb Table', () => {
+
+    // GIVEN
+    const stack = new Stack();
+    const table = new Table(stack, 'Table', {
+      partitionKey: { name: 'id', type: AttributeType.STRING },
+    });
+
+    // THEN
+    expect(stack.resolve(table.metricSystemErrorsForOperations({ operations: [Operation.GET_ITEM, Operation.PUT_ITEM] }))).toEqual({
+      expression: 'getitem + putitem',
+      label: 'Sum over operations',
+      period: Duration.minutes(5),
+      usingMetrics: {
+        getitem: {
+          dimensions: {
+            Operation: 'GetItem',
+            TableName: {
+              Ref: 'TableCD117FA1',
+            },
+          },
+          metricName: 'SystemErrors',
+          namespace: 'AWS/DynamoDB',
+          period: Duration.minutes(5),
+          statistic: 'Sum',
+        },
+        putitem: {
+          dimensions: {
+            Operation: 'PutItem',
+            TableName: {
+              Ref: 'TableCD117FA1',
+            },
+          },
+          metricName: 'SystemErrors',
+          namespace: 'AWS/DynamoDB',
+          period: Duration.minutes(5),
+          statistic: 'Sum',
+        },
+      },
+    });
+
+  });
+
   test('Can use metricSystemErrors on a Dynamodb Table', () => {
     // GIVEN
     const stack = new Stack();
@@ -1573,13 +1660,24 @@ describe('metrics', () => {
     });
 
     // THEN
-    expect(stack.resolve(table.metricSystemErrors())).toEqual({
+    expect(stack.resolve(table.metricSystemErrors({ dimensions: { TableName: table.tableName, Operation: 'GetItem' } }))).toEqual({
       period: Duration.minutes(5),
-      dimensions: { TableName: { Ref: 'TableCD117FA1' } },
+      dimensions: { TableName: { Ref: 'TableCD117FA1' }, Operation: 'GetItem' },
       namespace: 'AWS/DynamoDB',
       metricName: 'SystemErrors',
       statistic: 'Sum',
     });
+  });
+
+  test('Using metricUserErrors with dimensions will fail', () => {
+    // GIVEN
+    const stack = new Stack();
+    const table = new Table(stack, 'Table', {
+      partitionKey: { name: 'id', type: AttributeType.STRING },
+    });
+
+    expect(() => table.metricUserErrors({ dimensions: { TableName: table.tableName } })).toThrow(/'dimensions' is not supported for the 'UserErrors' metric/);
+
   });
 
   test('Can use metricUserErrors on a Dynamodb Table', () => {
@@ -1592,7 +1690,7 @@ describe('metrics', () => {
     // THEN
     expect(stack.resolve(table.metricUserErrors())).toEqual({
       period: Duration.minutes(5),
-      dimensions: { TableName: { Ref: 'TableCD117FA1' } },
+      dimensions: {},
       namespace: 'AWS/DynamoDB',
       metricName: 'UserErrors',
       statistic: 'Sum',
@@ -1616,6 +1714,126 @@ describe('metrics', () => {
     });
   });
 
+  test('Using metricSuccessfulRequestLatencyForOperations with no operations will fail', () => {
+
+    const stack = new Stack();
+    const table = new Table(stack, 'Table', {
+      partitionKey: { name: 'id', type: AttributeType.STRING },
+    });
+
+    expect(() => table.metricSuccessfulRequestLatencyForOperations({ operations: [] })).toThrow(/Number of operations for the 'metricSuccessfulRequestLatency' metric should be between 1 and 5/);
+
+  });
+
+  test('Using metricSuccessfulRequestLatencyForOperations with more than 5 operations will fail', () => {
+
+    const stack = new Stack();
+    const table = new Table(stack, 'Table', {
+      partitionKey: { name: 'id', type: AttributeType.STRING },
+    });
+
+    expect(() => table.metricSuccessfulRequestLatencyForOperations({
+      operations: [
+        Operation.GET_ITEM,
+        Operation.BATCH_GET_ITEM,
+        Operation.DELETE_ITEM,
+        Operation.GET_RECORDS,
+        Operation.QUERY,
+        Operation.SCAN,
+      ],
+    })).toThrow(/Number of operations for the 'metricSuccessfulRequestLatency' metric should be between 1 and 5/);
+
+  });
+
+  test('Using metricSuccessfulRequestLatency without the TableName dimension will fail', () => {
+
+    const stack = new Stack();
+    const table = new Table(stack, 'Table', {
+      partitionKey: { name: 'id', type: AttributeType.STRING },
+    });
+
+    expect(() => table.metricSuccessfulRequestLatency({ dimensions: { Operation: 'GetItem' } })).toThrow(/Both 'Operation' and 'TableName' dimensions must be passed for the 'SuccessfulRequestLatency' metric./);
+
+  });
+
+  test('Using metricSuccessfulRequestLatency without the Operation dimension will fail', () => {
+
+    const stack = new Stack();
+    const table = new Table(stack, 'Table', {
+      partitionKey: { name: 'id', type: AttributeType.STRING },
+    });
+
+    expect(() => table.metricSuccessfulRequestLatency({ dimensions: { TableName: table.tableName } })).toThrow(/Both 'Operation' and 'TableName' dimensions must be passed for the 'SuccessfulRequestLatency' metric./);
+
+  });
+
+  test('Can use metricSuccessfulRequestLatencyForOperations on a Dynamodb Table', () => {
+
+    // GIVEN
+    const stack = new Stack();
+    const table = new Table(stack, 'Table', {
+      partitionKey: { name: 'id', type: AttributeType.STRING },
+    });
+
+    // THEN
+    expect(stack.resolve(table.metricSuccessfulRequestLatencyForOperations({ operations: [Operation.GET_ITEM, Operation.PUT_ITEM] }))).toEqual({
+      expression: '(getitemvalue * getitemcount + putitemvalue * putitemcount) / (getitemcount + putitemcount)',
+      label: 'Weighted average across operations',
+      period: Duration.minutes(5),
+      usingMetrics: {
+        getitemcount: {
+          dimensions: {
+            Operation: 'GetItem',
+            TableName: {
+              Ref: 'TableCD117FA1',
+            },
+          },
+          metricName: 'SuccessfulRequestLatency',
+          namespace: 'AWS/DynamoDB',
+          period: Duration.minutes(5),
+          statistic: 'SampleCount',
+        },
+        putitemcount: {
+          dimensions: {
+            Operation: 'PutItem',
+            TableName: {
+              Ref: 'TableCD117FA1',
+            },
+          },
+          metricName: 'SuccessfulRequestLatency',
+          namespace: 'AWS/DynamoDB',
+          period: Duration.minutes(5),
+          statistic: 'SampleCount',
+        },
+        getitemvalue: {
+          dimensions: {
+            Operation: 'GetItem',
+            TableName: {
+              Ref: 'TableCD117FA1',
+            },
+          },
+          metricName: 'SuccessfulRequestLatency',
+          namespace: 'AWS/DynamoDB',
+          period: Duration.minutes(5),
+          statistic: 'Average',
+        },
+        putitemvalue: {
+          dimensions: {
+            Operation: 'PutItem',
+            TableName: {
+              Ref: 'TableCD117FA1',
+            },
+          },
+          metricName: 'SuccessfulRequestLatency',
+          namespace: 'AWS/DynamoDB',
+          period: Duration.minutes(5),
+          statistic: 'Average',
+        },
+      },
+    });
+
+  });
+
   test('Can use metricSuccessfulRequestLatency on a Dynamodb Table', () => {
     // GIVEN
     const stack = new Stack();
@@ -1624,9 +1842,14 @@ describe('metrics', () => {
     });
 
     // THEN
-    expect(stack.resolve(table.metricSuccessfulRequestLatency())).toEqual({
+    expect(stack.resolve(table.metricSuccessfulRequestLatency({
+      dimensions: {
+        TableName: table.tableName,
+        Operation: 'GetItem',
+      },
+    }))).toEqual({
       period: Duration.minutes(5),
-      dimensions: { TableName: { Ref: 'TableCD117FA1' } },
+      dimensions: { TableName: { Ref: 'TableCD117FA1' }, Operation: 'GetItem' },
       namespace: 'AWS/DynamoDB',
       metricName: 'SuccessfulRequestLatency',
       statistic: 'Average',

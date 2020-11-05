@@ -772,7 +772,7 @@ abstract class TableBase extends Resource implements ITable {
     if (!props?.dimensions?.Operation || !props?.dimensions?.TableName) {
       // 'Operation' must be passed because its an operational metric.
       // 'TableName' must be passed because the dimensions here will override the default ones which contain the table name.
-      throw new Error("Both 'Operation' and 'TableName' dimension must be passed for the 'SystemErrors' metric.");
+      throw new Error("Both 'Operation' and 'TableName' dimensions must be passed for the 'SystemErrors' metric.");
     }
 
     return this.metric('SystemErrors', { statistic: 'sum', ...props });
@@ -788,7 +788,7 @@ abstract class TableBase extends Resource implements ITable {
   public metricUserErrors(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
 
     if (props?.dimensions) {
-      throw new Error('"dimensions" is not supported for the "UserErrors" metric');
+      throw new Error("'dimensions' is not supported for the 'UserErrors' metric");
     }
 
     // overriding 'dimensions' here because this metric is an account metric.
@@ -843,7 +843,7 @@ abstract class TableBase extends Resource implements ITable {
       expression: `${Object.keys(values).join(' + ')}`,
       usingMetrics: { ...values },
       color: props?.color,
-      label: props?.label ?? 'Sum over all Operations',
+      label: props?.label ?? 'Sum over operations',
       period: props?.period,
     });
 
