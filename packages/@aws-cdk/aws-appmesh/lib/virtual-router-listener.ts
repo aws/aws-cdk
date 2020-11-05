@@ -3,18 +3,6 @@ import { CfnVirtualRouter } from './appmesh.generated';
 import { Protocol } from './shared-interfaces';
 
 /**
- * Represents the properties needed to define Listeners for a VirtualRouter
- */
-export interface RouterListenerProps {
-  /**
-   * Port to listen for connections on
-   *
-   * @default - 8080
-   */
-  readonly port?: number
-}
-
-/**
  * Properties for a VirtualRouter listener
  */
 export interface VirtualRouterListenerConfig {
@@ -31,40 +19,42 @@ export abstract class VirtualRouterListener {
   /**
    * Returns an HTTP Listener for a VirtualRouter
    */
-  public static http(props: RouterListenerProps = {}): VirtualRouterListener {
-    return new HttpVirtualRouterListener(props);
+  public static http(port?: number): VirtualRouterListener {
+    return new VirtualRouterListenerImpl(Protocol.HTTP, port);
   }
 
   /**
    * Returns an HTTP2 Listener for a VirtualRouter
    */
-  public static http2(props: RouterListenerProps = {}): VirtualRouterListener {
-    return new Http2VirtualRouterListener(props);
+  public static http2(port?: number): VirtualRouterListener {
+    return new VirtualRouterListenerImpl(Protocol.HTTP2, port);
   }
 
   /**
    * Returns a GRPC Listener for a VirtualRouter
    */
-  public static grpc(props: RouterListenerProps = {}): VirtualRouterListener {
-    return new GrpcVirtualRouterListener(props);
+  public static grpc(port?: number): VirtualRouterListener {
+    return new VirtualRouterListenerImpl(Protocol.GRPC, port);
   }
 
   /**
    * Returns a TCP Listener for a VirtualRouter
    */
-  public static tcp(props: RouterListenerProps = {}): VirtualRouterListener {
-    return new TcpVirtualRouterListener(props);
+  public static tcp(port?: number): VirtualRouterListener {
+    return new VirtualRouterListenerImpl(Protocol.TCP, port);
   }
 
   /**
    * Protocol the listener implements
    */
-  protected abstract protocol: Protocol;
+  public abstract readonly protocol: Protocol;
 
   /**
    * Port to listen for connections on
+   *
+   * @default - defaults to port 8080
    */
-  protected abstract port: number;
+  public abstract readonly port: number;
 
   /**
    * Called when the VirtualRouterListener type is initialized. Can be used to enforce
@@ -73,19 +63,21 @@ export abstract class VirtualRouterListener {
   public abstract bind(scope: cdk.Construct): VirtualRouterListenerConfig;
 }
 
-class HttpVirtualRouterListener extends VirtualRouterListener {
+class VirtualRouterListenerImpl extends VirtualRouterListener {
   /**
    * Protocol the listener implements
    */
-  protected protocol: Protocol = Protocol.HTTP;
+  public readonly protocol: Protocol;
+
   /**
    * Port to listen for connections on
    */
-  protected port: number;
+  public readonly port: number;
 
-  constructor(props: RouterListenerProps = {}) {
+  constructor(protocol: Protocol, port?: number) {
     super();
-    this.port = props.port ? props.port : 8080;
+    this.protocol = protocol;
+    this.port = port ? port : 8080;
   }
 
   bind(_scope: cdk.Construct): VirtualRouterListenerConfig {
@@ -97,26 +89,5 @@ class HttpVirtualRouterListener extends VirtualRouterListener {
         },
       },
     };
-  }
-}
-
-class Http2VirtualRouterListener extends HttpVirtualRouterListener {
-  constructor(props: RouterListenerProps = {}) {
-    super(props);
-    this.protocol = Protocol.HTTP2;
-  }
-}
-
-class GrpcVirtualRouterListener extends HttpVirtualRouterListener {
-  constructor(props: RouterListenerProps = {}) {
-    super(props);
-    this.protocol = Protocol.GRPC;
-  }
-}
-
-class TcpVirtualRouterListener extends HttpVirtualRouterListener {
-  constructor(props: RouterListenerProps = {}) {
-    super(props);
-    this.protocol = Protocol.TCP;
   }
 }
