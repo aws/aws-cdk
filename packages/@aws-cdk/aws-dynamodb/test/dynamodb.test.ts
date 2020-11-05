@@ -1721,27 +1721,7 @@ describe('metrics', () => {
       partitionKey: { name: 'id', type: AttributeType.STRING },
     });
 
-    expect(() => table.metricSuccessfulRequestLatencyForOperations({ operations: [] })).toThrow(/Number of operations for the 'metricSuccessfulRequestLatency' metric should be between 1 and 5/);
-
-  });
-
-  test('Using metricSuccessfulRequestLatencyForOperations with more than 5 operations will fail', () => {
-
-    const stack = new Stack();
-    const table = new Table(stack, 'Table', {
-      partitionKey: { name: 'id', type: AttributeType.STRING },
-    });
-
-    expect(() => table.metricSuccessfulRequestLatencyForOperations({
-      operations: [
-        Operation.GET_ITEM,
-        Operation.BATCH_GET_ITEM,
-        Operation.DELETE_ITEM,
-        Operation.GET_RECORDS,
-        Operation.QUERY,
-        Operation.SCAN,
-      ],
-    })).toThrow(/Number of operations for the 'metricSuccessfulRequestLatency' metric should be between 1 and 5/);
+    expect(() => table.metricSuccessfulRequestLatencyForOperations({ operations: [] })).toThrow(/You must pass at least one operation to the 'metricSuccessfulRequestLatencyForOperations' call./);
 
   });
 

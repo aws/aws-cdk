@@ -863,11 +863,9 @@ abstract class TableBase extends Resource implements ITable {
       throw new Error("The Operation dimension is not supported. Use the 'operations' property.");
     }
 
-    if (props.operations.length > 5 || props.operations.length === 0) {
+    if (props.operations.length === 0) {
       // you must pass at least 1 operation since this is an operation dimensionality metric.
-      // you cannot pass more than 5 because this would make this metric unusable for alarms, who have a 10 individual metric limit for math expressions.
-      // https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/AlarmThatSendsEmail.html#alarms-on-metric-math-expressions
-      throw new Error("Number of operations for the 'metricSuccessfulRequestLatency' metric should be between 1 and 5");
+      throw new Error("You must pass at least one operation to the 'metricSuccessfulRequestLatencyForOperations' call.");
     }
 
     const valueMetricNameMapper = (op: Operation) => `${op}Value`.toLowerCase();
