@@ -472,7 +472,7 @@ export interface ITable extends IResource {
    * Metric for the system errors of specific operations.
    * The return value is a math expressions metric representing the sum over all specified operations.
    *
-   * @param props properties of a metric
+   * @param props properties of an individual operation metric
    */
   metricSystemErrorsForOperations(props?: SystemErrorsForOperationsMetricOptions): cloudwatch.IMetric;
 
@@ -503,7 +503,7 @@ export interface ITable extends IResource {
    * Metric for the successful request latency of specific operations.
    * The return value is a math expressions metric representing the weighted average over all specified operations.
    *
-   * @param props properties of a metric
+   * @param props properties of an individual operation metric
    */
   metricSuccessfulRequestLatencyForOperations(props: SuccessfulRequestLatencyForOperationsMetricOptions): cloudwatch.IMetric;
 
@@ -833,7 +833,6 @@ abstract class TableBase extends Resource implements ITable {
   public metricSystemErrorsForOperations(props?: SystemErrorsForOperationsMetricOptions): cloudwatch.IMetric {
 
     if (props?.dimensions?.Operation) {
-      // for simplicity, lets not support two different properties representing the same thing.
       throw new Error("The Operation dimension is not supported. Use the 'operations' property.");
     }
 
@@ -862,8 +861,6 @@ abstract class TableBase extends Resource implements ITable {
   public metricSuccessfulRequestLatencyForOperations(props: SuccessfulRequestLatencyForOperationsMetricOptions): cloudwatch.IMetric {
 
     if (props?.dimensions?.Operation) {
-      // for simplicity, lets not support two different properties representing the same thing.
-      // note that `operations` property is required for this method.
       throw new Error("The Operation dimension is not supported. Use the 'operations' property.");
     }
 
@@ -874,23 +871,14 @@ abstract class TableBase extends Resource implements ITable {
       throw new Error("Number of operations for the 'metricSuccessfulRequestLatency' metric should be between 1 and 5");
     }
 
-    // create mappers to control the metric names in the metric map since we
-    // need to need them for correctly calculating the numerator.
     const valueMetricNameMapper = (op: Operation) => `${op}Value`.toLowerCase();
     const countMetricNameMapper = (op: Operation) => `${op}Count`.toLowerCase();
 
     const values = this.createMetricsForOperations('SuccessfulRequestLatency', props.operations, props, valueMetricNameMapper);
-
-    // we override the statistic here because we always need the count for a weighted average.
-    // the statistic passed by the user is considered in the value metric.
     const counts = this.createMetricsForOperations('SuccessfulRequestLatency', props.operations, { ...props, statistic: 'n' }, countMetricNameMapper);
 
     const denominator = props.operations.map(op => `${valueMetricNameMapper(op)}`).join(' + ');;
     const numerator = props.operations.map(op => `${valueMetricNameMapper(op)} * ${countMetricNameMapper(op)}`).join(' + ');
-
-    // relies on a consistent ordering of operations when creating the metrics...
-    // shady - but readable?
-    // const numerator = [...Array(operations.length).keys()].map(op => `${valueMetricNames[op]} * ${countMetricNames[op]}`);
 
     return new cloudwatch.MathExpression({
       expression: `(${numerator}) / (${denominator})`,
