@@ -786,7 +786,7 @@ this branch belongs to.
 
 ```js
 {
-  "majorVersion": "1" | "2",
+  "majorVersion": 1 | 2,
   "releaseType": "stable" | "alpha" | "rc"
 }
 ```
