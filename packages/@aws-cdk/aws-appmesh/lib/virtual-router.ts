@@ -137,7 +137,7 @@ export class VirtualRouter extends VirtualRouterBase {
     if (props.listeners && props.listeners.length) {
       props.listeners.forEach(listener => this.addListener(listener));
     } else {
-      this.addListener(VirtualRouterListener.httpVirtualRouterListener());
+      this.addListener(VirtualRouterListener.http());
     }
 
     const router = new CfnVirtualRouter(this, 'Resource', {

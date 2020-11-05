@@ -31,28 +31,28 @@ export abstract class VirtualRouterListener {
   /**
    * Returns an HTTP Listener for a VirtualRouter
    */
-  public static httpVirtualRouterListener(props: RouterListenerProps = {}): VirtualRouterListener {
+  public static http(props: RouterListenerProps = {}): VirtualRouterListener {
     return new HttpVirtualRouterListener(props);
   }
 
   /**
    * Returns an HTTP2 Listener for a VirtualRouter
    */
-  public static http2GatewayListener(props: RouterListenerProps = {}): VirtualRouterListener {
+  public static http2(props: RouterListenerProps = {}): VirtualRouterListener {
     return new Http2VirtualRouterListener(props);
   }
 
   /**
    * Returns a GRPC Listener for a VirtualRouter
    */
-  public static grpcGatewayListener(props: RouterListenerProps = {}): VirtualRouterListener {
+  public static grpc(props: RouterListenerProps = {}): VirtualRouterListener {
     return new GrpcVirtualRouterListener(props);
   }
 
   /**
    * Returns a TCP Listener for a VirtualRouter
    */
-  public static tcpGatewayListener(props: RouterListenerProps = {}): VirtualRouterListener {
+  public static tcp(props: RouterListenerProps = {}): VirtualRouterListener {
     return new TcpVirtualRouterListener(props);
   }
 

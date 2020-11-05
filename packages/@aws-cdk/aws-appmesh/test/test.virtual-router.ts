@@ -15,28 +15,28 @@ export = {
       // WHEN
       mesh.addVirtualRouter('http-router-listener', {
         listeners: [
-          appmesh.VirtualRouterListener.httpVirtualRouterListener(),
+          appmesh.VirtualRouterListener.http(),
         ],
         virtualRouterName: 'http-router-listener',
       });
 
       mesh.addVirtualRouter('http2-router-listener', {
         listeners: [
-          appmesh.VirtualRouterListener.http2GatewayListener(),
+          appmesh.VirtualRouterListener.http2(),
         ],
         virtualRouterName: 'http2-router-listener',
       });
 
       mesh.addVirtualRouter('grpc-router-listener', {
         listeners: [
-          appmesh.VirtualRouterListener.grpcGatewayListener(),
+          appmesh.VirtualRouterListener.grpc(),
         ],
         virtualRouterName: 'grpc-router-listener',
       });
 
       mesh.addVirtualRouter('tcp-router-listener', {
         listeners: [
-          appmesh.VirtualRouterListener.tcpGatewayListener(),
+          appmesh.VirtualRouterListener.tcp(),
         ],
         virtualRouterName: 'tcp-router-listener',
       });

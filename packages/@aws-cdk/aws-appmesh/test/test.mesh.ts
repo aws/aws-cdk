@@ -68,7 +68,7 @@ export = {
 
         mesh.addVirtualRouter('router', {
           listeners: [
-            appmesh.VirtualRouterListener.httpVirtualRouterListener(),
+            appmesh.VirtualRouterListener.http(),
           ],
         });
 
@@ -145,7 +145,7 @@ export = {
 
         const testRouter = mesh.addVirtualRouter('router', {
           listeners: [
-            appmesh.VirtualRouterListener.httpVirtualRouterListener(),
+            appmesh.VirtualRouterListener.http(),
           ],
         });
 
@@ -173,7 +173,7 @@ export = {
 
         const testRouter = mesh.addVirtualRouter('test-router', {
           listeners: [
-            appmesh.VirtualRouterListener.httpVirtualRouterListener(),
+            appmesh.VirtualRouterListener.http(),
           ],
         });
 
