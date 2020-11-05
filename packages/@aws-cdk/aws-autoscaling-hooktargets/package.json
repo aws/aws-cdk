@@ -1,6 +1,7 @@
 {
   "name": "@aws-cdk/aws-autoscaling-hooktargets",
   "version": "0.0.0",
+  "private": true,
   "description": "Lifecycle hook for AWS AutoScaling",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",

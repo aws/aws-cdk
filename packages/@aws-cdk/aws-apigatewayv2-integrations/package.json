@@ -1,6 +1,7 @@
 {
   "name": "@aws-cdk/aws-apigatewayv2-integrations",
   "version": "0.0.0",
+  "private": true,
   "description": "Integrations for AWS APIGateway V2",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",

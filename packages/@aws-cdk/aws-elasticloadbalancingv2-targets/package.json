@@ -1,6 +1,7 @@
 {
   "name": "@aws-cdk/aws-elasticloadbalancingv2-targets",
   "version": "0.0.0",
+  "private": true,
   "description": "Integration targets for AWS ElasticLoadBalancingV2",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
