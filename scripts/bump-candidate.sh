@@ -17,4 +17,4 @@
 # --------------------------------------------------------------------------------------------------
 set -euo pipefail
 scriptdir=$(cd $(dirname $0) && pwd)
-npm install standard-version && BUMP_CANDIDATE=true ${scriptdir}/bump.js ${1:-minor}
+yarn standard-version && BUMP_CANDIDATE=true ${scriptdir}/bump.js ${1:-minor}
