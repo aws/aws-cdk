@@ -11,7 +11,7 @@ const testMetric = new Metric({
 
 export = {
 
-  'alarm does not accpet a math expression with more than 10 metrics'(test: Test) {
+  'alarm does not accept a math expression with more than 10 metrics'(test: Test) {
 
     const stack = new Stack();
 

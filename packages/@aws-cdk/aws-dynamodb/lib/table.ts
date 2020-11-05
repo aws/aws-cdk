@@ -50,49 +50,31 @@ export interface SystemErrorsForOperationsMetricOptions extends cloudwatch.Metri
  */
 export enum Operation {
 
-  /**
-   * GetItem.
-   */
+  /** GetItem */
   GET_ITEM = 'GetItem',
 
-  /**
-   * BatchGetItem.
-   */
+  /** BatchGetItem */
   BATCH_GET_ITEM = 'BatchGetItem',
 
-  /**
-   * Scan.
-   */
+  /** Scan */
   SCAN = 'Scan',
 
-  /**
-   * Query.
-   */
+  /** Query */
   QUERY = 'Query',
 
-  /**
-   * GetRecords.
-   */
+  /** GetRecords */
   GET_RECORDS = 'GetRecords',
 
-  /**
-   * PutItem.
-   */
+  /** PutItem */
   PUT_ITEM = 'PutItem',
 
-  /**
-   * DeleteItem.
-   */
+  /** DeleteItem */
   DELETE_ITEM = 'DeleteItem',
 
-  /**
-   * UpdateItem.
-   */
+  /** UpdateItem */
   UPDATE_ITEM = 'UpdateItem',
 
-  /**
-   * BatchWriteItem.
-   */
+  /** BatchWriteItem */
   BATCH_WRITE_ITEM = 'BatchWriteItem',
 
 }
@@ -860,7 +842,7 @@ abstract class TableBase extends Resource implements ITable {
   public metricSuccessfulRequestLatencyForOperations(props: SuccessfulRequestLatencyForOperationsMetricOptions): cloudwatch.IMetric {
 
     if (props?.dimensions?.Operation) {
-      throw new Error("The Operation dimension is not supported. Use the 'operations' property.");
+      throw new Error("the 'Operation' dimension is not supported for 'metricSuccessfulRequestLatencyForOperations'; use the 'operations' property.");
     }
 
     if (props.operations.length === 0) {
@@ -920,7 +902,7 @@ abstract class TableBase extends Resource implements ITable {
         },
       });
 
-      const operationMetricName = `${mapper(operation)}`;
+      const operationMetricName = mapper(operation);
       const firstChar = operationMetricName.charAt(0);
 
       if (firstChar === firstChar.toUpperCase()) {
