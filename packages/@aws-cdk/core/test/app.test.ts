@@ -272,9 +272,14 @@ nodeunitShim({
     const libs = parseModules(stackTemplate.Resources?.CDKMetadata?.Properties?.Modules);
 
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const version = require('../package.json').version;
-    test.deepEqual(libs['@aws-cdk/core'], version);
-    test.deepEqual(libs['@aws-cdk/cx-api'], version);
+    const pkgjson = require('../package.json');
+    const version = pkgjson.version;
+    const isPublic = !pkgjson.private;
+    if (isPublic) {
+      // these libraries are public only for v1
+      test.deepEqual(libs['@aws-cdk/core'], version);
+      test.deepEqual(libs['@aws-cdk/cx-api'], version);
+    }
     test.deepEqual(libs['jsii-runtime'], `node.js/${process.version}`);
 
     test.done();
@@ -331,13 +336,20 @@ nodeunitShim({
     const libs = parseModules(stackTemplate.Resources?.CDKMetadata?.Properties?.Modules);
     const libNames = Object.keys(libs).sort();
 
-    test.deepEqual(libNames, [
-      '@aws-cdk/cloud-assembly-schema',
-      '@aws-cdk/core',
-      '@aws-cdk/cx-api',
-      '@aws-cdk/region-info',
-      'jsii-runtime',
-    ]);
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const pkgjson = require('../package.json');
+    const isPublic = !pkgjson.private;
+    if (isPublic) {
+      test.deepEqual(libNames, [
+        '@aws-cdk/cloud-assembly-schema',
+        '@aws-cdk/core',
+        '@aws-cdk/cx-api',
+        '@aws-cdk/region-info',
+        'jsii-runtime',
+      ]);
+    } else {
+      test.deepEqual(libNames, ['jsii-runtime']);
+    }
 
     test.done();
   },
