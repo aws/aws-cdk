@@ -155,6 +155,8 @@ The CDK will create a new Amazon ECS cluster if you specify a VPC and omit `clus
 
 If `cluster` and `vpc` are omitted, the CDK creates a new VPC with subnets in two Availability Zones and a cluster within this VPC.
 
+If you specify the option `recordType` you can decide if you want the construct to use CNAME or Route53-Aliases as record sets.
+
 Additionally, if more than one network target group is needed, instantiate one of the following:
 
 * NetworkMultipleTargetGroupsEc2Service
