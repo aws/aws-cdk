@@ -771,7 +771,6 @@ abstract class TableBase extends Resource implements ITable {
 
     if (!props?.dimensions?.Operation || !props?.dimensions?.TableName) {
       // 'Operation' must be passed because its an operational metric.
-      // Note that we cannot fallback to calculating for all operations since thiis would require returning a `cloudwatch.MathExpression`, which is not a `cloudwatch.Metric`.
       // 'TableName' must be passed because the dimensions here will override the default ones which contain the table name.
       throw new Error("Both 'Operation' and 'TableName' dimension must be passed for the 'SystemErrors' metric.");
     }
