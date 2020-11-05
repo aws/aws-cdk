@@ -467,6 +467,13 @@ export interface ITable extends IResource {
   metricSystemErrors(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
+   * Metric for the user errors
+   *
+   * @param props properties of a metric
+   */
+  metricUserErrors(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
    * Metric for the system errors of specific operations.
    * The return value is a math expressions metric representing the sum over all specified operations.
    *
@@ -475,18 +482,18 @@ export interface ITable extends IResource {
   metricSystemErrorsForOperations(props?: OperationalSystemErrorsMetricOptions): cloudwatch.IMetric;
 
   /**
-   * Metric for the user errors
-   *
-   * @param props properties of a metric
-   */
-  metricUserErrors(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
-
-  /**
    * Metric for the conditional check failed requests
    *
    * @param props properties of a metric
    */
   metricConditionalCheckFailedRequests(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * Metric for the successful request latency
+   *
+   * @param props properties of a metric
+   */
+  metricSuccessfulRequestLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
    * Metric for the successful request latency of specific operations.
