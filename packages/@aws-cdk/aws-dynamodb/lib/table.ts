@@ -918,17 +918,15 @@ abstract class TableBase extends Resource implements ITable {
         ...props,
       });
 
-      const valueMetricName = `${mapper(operation)}`;
+      const operationMetricName = `${mapper(operation)}`;
+      const firstChar = operationMetricName.charAt(0);
 
-      if (valueMetricName.charAt(0) === valueMetricName.charAt(0).toUpperCase()) {
-        // yeap, it struck me by surprise as well.
-        // the reason we don't do this on the caller's behalf is because otherwise the caller
-        // has to be aware of the internal implementation of this method when using the mapper values in a the expression.
-        // (i.e the caller would have .toLowerCase his mapper result as well)
-        throw new Error('Mapper generated an illegal operation metric name: ${}. Must start with a lowercase letter');
+      if (firstChar === firstChar.toUpperCase()) {
+        // https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/using-metric-math.html#metric-math-syntax
+        throw new Error(`Mapper generated an illegal operation metric name: ${operationMetricName}. Must start with a lowercase letter`);
       }
 
-      metrics[valueMetricName] = metric;
+      metrics[operationMetricName] = metric;
     }
 
     return metrics;
