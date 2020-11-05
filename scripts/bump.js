@@ -31,7 +31,7 @@ async function main() {
 
   if (forTesting) {
     opts.skip.commit = true;
-    opts.changelog = true;
+    opts.skip.changelog = true;
 
     // if we are on a "stable" branch, add a pre-release tag ("rc") to the
     // version number as a safety in case this version will accidentally be
