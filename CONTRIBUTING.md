@@ -795,7 +795,7 @@ To reduce merge conflicts in automatic merges between version branches, the
 current version number is stored under `version.vNN.json` (where `NN` is
 `majorVersion`) and changelogs are stored under `CHANGELOG.NN.md` (for
 historical reasons, the changelog for 1.x is under `CHANGELOG.md`).  When we
-fork to a new release branch (e.g. `main-v2`), we will update `release.json` in
+fork to a new release branch (e.g. `v2-main`), we will update `release.json` in
 this branch to reflect the new version line, and this information will be used
 to determine how releases are cut.
 
@@ -815,7 +815,7 @@ This script will also update the relevant changelog file.
 
 #### `scripts/resolve-version.js`
 
-The script evaluates evaluates the configuration in `release.json` exports an
+The script evaluates evaluates the configuration in `release.json` and exports an
 object like this:
 
 ```js

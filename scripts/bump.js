@@ -14,7 +14,7 @@ async function main() {
   }
 
   console.error(`Starting ${releaseAs} version bump`);
-  console.error('Version information:', JSON.stringify(ver, undefined, 2));
+  console.error('Current version information:', JSON.stringify(ver, undefined, 2));
 
   const changelogPath = path.join(repoRoot, ver.changelogFile);
   const opts = {
@@ -30,7 +30,6 @@ async function main() {
   };
 
   if (forTesting) {
-    console.error(`BUMP_CANDIDATE is set, so bumping version for testing (with the "test" prerelease tag)`);
     opts.skip.commit = true;
     opts.changelog = true;
 
@@ -38,6 +37,7 @@ async function main() {
     // version number as a safety in case this version will accidentally be
     // published.
     opts.prerelease = ver.prerelease || 'rc'
+    console.error(`BUMP_CANDIDATE is set, so bumping version for testing (with the "${opts.prerelease}" prerelease tag)`);
   }
 
   return standardVersion(opts);
