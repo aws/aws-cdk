@@ -307,3 +307,21 @@ gateway.addGatewayRoute('gateway-route-grpc', {
   }),
 });
 ```
+
+## Importing Resources
+
+Each resource comes with two static methods for importing a reference to an existing App Mesh resource.
+There are two static methods, `from<Resource>Arn` and `from<Resource>Attributes` where the `<Resource>` is replaced with the resource name.
+These imported resources can be used as references for other resources in your mesh.
+
+```typescript
+const arn = "arn:aws:appmesh:us-east-1:123456789012:mesh/testMesh/virtualNode/testNode";
+appmesh.VirtualNode.fromVirtualNodeArn(stack, 'importedVirtualNode', arn);
+```
+
+```typescript
+appmesh.VirtualNode.fromVirtualNodeAttributes(stack, 'importedVirtualNode', {
+  mesh: appmesh.Mesh.fromMeshName(stack, 'Mesh', 'testMesh'),
+  virtualNodeName: virtualNodeName,
+});
+```
