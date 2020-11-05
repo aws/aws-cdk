@@ -650,7 +650,7 @@ class LookedUpApplicationLoadBalancer extends Resource implements IApplicationLo
     }
   }
 
-  addListener(id: string, props: BaseApplicationListenerProps): ApplicationListener {
+  public addListener(id: string, props: BaseApplicationListenerProps): ApplicationListener {
     return new ApplicationListener(this, id, {
       ...props,
       loadBalancer: this,
