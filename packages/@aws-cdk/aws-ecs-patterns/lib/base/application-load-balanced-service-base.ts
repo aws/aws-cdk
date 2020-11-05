@@ -401,7 +401,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
       this.redirectListener = loadBalancer.addListener('PublicRedirectListener', {
         protocol: ApplicationProtocol.HTTP,
         port: 80,
-        open: true,
+        open: props.openListener ?? true,
         defaultAction: ListenerAction.redirect({
           port: props.listenerPort?.toString() || '443',
           protocol: ApplicationProtocol.HTTPS,
