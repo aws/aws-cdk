@@ -18,5 +18,5 @@
 set -euo pipefail
 scriptdir=$(cd $(dirname $0) && pwd)
 rootdir=${scriptdir}/..
-(cd ${rootdir} yarn standard-version)
+(cd ${rootdir} yarn)
 BUMP_CANDIDATE=true ${scriptdir}/bump.js ${1:-minor}
