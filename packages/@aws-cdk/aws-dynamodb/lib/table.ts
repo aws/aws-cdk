@@ -463,15 +463,10 @@ export interface ITable extends IResource {
    * Metric for the system errors
    *
    * @param props properties of a metric
+   *
+   * @deprecated use `metricSystemErrorsForOperations`
    */
   metricSystemErrors(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
-
-  /**
-   * Metric for the user errors
-   *
-   * @param props properties of a metric
-   */
-  metricUserErrors(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
    * Metric for the system errors of specific operations.
@@ -480,6 +475,13 @@ export interface ITable extends IResource {
    * @param props properties of a metric
    */
   metricSystemErrorsForOperations(props?: SystemErrorsForOperationsMetricOptions): cloudwatch.IMetric;
+
+  /**
+   * Metric for the user errors
+   *
+   * @param props properties of a metric
+   */
+  metricUserErrors(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
    * Metric for the conditional check failed requests
@@ -492,6 +494,8 @@ export interface ITable extends IResource {
    * Metric for the successful request latency
    *
    * @param props properties of a metric
+   *
+   * @deprecated use `metricSuccessfulRequestLatencyForOperations`
    */
   metricSuccessfulRequestLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
@@ -752,7 +756,7 @@ abstract class TableBase extends Resource implements ITable {
   /**
    * Metric for the system errors this table
    *
-   * @default sum over a minute
+   * @deprecated use `metricSystemErrorsForOperations`.
    */
   public metricSystemErrors(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
 
@@ -789,9 +793,9 @@ abstract class TableBase extends Resource implements ITable {
   }
 
   /**
-   * Metric for the successful request latency this table
+   * Metric for the successful request latency this table.
    *
-   * @default avg over a minute
+   * @deprecated use `metricSuccessfulRequestLatencyForOperations`
    */
   public metricSuccessfulRequestLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
 
@@ -805,7 +809,11 @@ abstract class TableBase extends Resource implements ITable {
   }
 
   /**
-   * Metric for the system errors this table
+   * Metric for the system errors this table.
+   *
+   * This will sum errors across all possible operations.
+   * Note that the default statistic used for each individual operation is 'sum'.
+   * You can pass a custom statistic using the `statistic` property.
    */
   public metricSystemErrorsForOperations(props?: SystemErrorsForOperationsMetricOptions): cloudwatch.IMetric {
 
@@ -816,7 +824,7 @@ abstract class TableBase extends Resource implements ITable {
 
     const operations = props?.operations ?? Object.values(Operation);
 
-    const values = this.createMetricsForOperations('SystemErrors', operations, props);
+    const values = this.createMetricsForOperations('SystemErrors', operations, { statistic: 'sum', ...props });
 
     const sum = new cloudwatch.MathExpression({
       expression: `${Object.keys(values).join(' + ')}`,
@@ -830,7 +838,11 @@ abstract class TableBase extends Resource implements ITable {
   }
 
   /**
-   * Metric for the successful request latency for specific operations of this table
+   * Metric for the successful request latency for specific operations of this table.
+   *
+   * This will perform a weighted average across all possible operations.
+   * Note that the default statistic used for each individual operation is a 'avg'.
+   * You can pass a custom statistic using the `statistic` property.
    */
   public metricSuccessfulRequestLatencyForOperations(props: SuccessfulRequestLatencyForOperationsMetricOptions): cloudwatch.IMetric {
 
