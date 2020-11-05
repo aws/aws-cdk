@@ -86,6 +86,7 @@ export = {
       test.done();
     },
   },
+
   'When adding route to existing VirtualRouter': {
     'should create route resource'(test: Test) {
       // GIVEN
