@@ -38,6 +38,8 @@ export interface OperationalSystemErrorsMetricOptions extends cloudwatch.MetricO
 
   /**
    * The operations to apply the metric to.
+   *
+   * @default - All operations will be considered.
    */
   readonly operations?: Operation[];
 
@@ -779,26 +781,12 @@ abstract class TableBase extends Resource implements ITable {
    */
   public metricSystemErrorsForOperations(props?: OperationalSystemErrorsMetricOptions): cloudwatch.IMetric {
 
-    if (props?.dimensions?.Operation && props.operations) {
-      // these two represent the same thing, opted to require just one of them instead of dealing with merges
-      throw new Error("only one of 'operations' and 'dimensions.Operation' can be used");
-    }
-
-    const operations = [];
-
     if (props?.dimensions?.Operation) {
-      operations.push(props.dimensions?.Operation);
+      // for simplicity, lets not support two different properties representing the same thing.
+      throw new Error("The Operation dimension is not supported. Use the 'operations' property.");
     }
 
-    if (props?.operations) {
-      operations.push(...props.operations);
-    }
-
-    if (operations.length === 0) {
-      // nor the Operation dimension nor the operations property was passed.
-      // default to using all operations.
-      operations.push(...Object.values(Operation));
-    }
+    const operations = props?.operations ?? Object.values(Operation);
 
     const values = this.createMetricsForOperations('SystemErrors', operations, props);
 
@@ -840,22 +828,13 @@ abstract class TableBase extends Resource implements ITable {
    */
   public metricSuccessfulRequestLatencyForOperations(props: OperationalSuccessfulRequestLatencyMetricOptions): cloudwatch.IMetric {
 
-    if (props?.dimensions?.Operation && props.operations) {
-      // these two represent the same thing, opted to require just one of them instead of dealing with merges
-      throw new Error("only one of 'operations' and 'dimensions.Operation' can be used");
+    if (props?.dimensions?.Operation) {
+      // for simplicity, lets not support two different properties representing the same thing.
+      // note that `operations` property is required for this method.
+      throw new Error("The Operation dimension is not supported. Use the 'operations' property.");
     }
 
-    const operations = [];
-
-    if (props.dimensions?.Operation) {
-      operations.push(props.dimensions?.Operation);
-    }
-
-    if (props.operations) {
-      operations.push(...props.operations);
-    }
-
-    if (operations.length > 5 || operations.length === 0) {
+    if (props.operations.length > 5 || props.operations.length === 0) {
       // you must pass at least 1 operation since this is an operation dimensionality metric.
       // you cannot pass more than 5 because this would make this metric unusable for alarms, who have a 10 individual metric limit for math expressions.
       // https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/AlarmThatSendsEmail.html#alarms-on-metric-math-expressions
@@ -873,8 +852,8 @@ abstract class TableBase extends Resource implements ITable {
     // the statistic passed by the user is considered in the value metric.
     const counts = this.createMetricsForOperations('SuccessfulRequestLatency', props.operations, { ...props, statistic: 'n' }, countMetricNameMapper);
 
-    const denominator = operations.map(op => `${valueMetricNameMapper(op)}`).join(' + ');;
-    const numerator = operations.map(op => `${valueMetricNameMapper(op)} * ${countMetricNameMapper(op)}`).join(' + ');
+    const denominator = props.operations.map(op => `${valueMetricNameMapper(op)}`).join(' + ');;
+    const numerator = props.operations.map(op => `${valueMetricNameMapper(op)} * ${countMetricNameMapper(op)}`).join(' + ');
 
     // relies on a consistent ordering of operations when creating the metrics...
     // shady - but readable?
