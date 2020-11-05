@@ -5,7 +5,7 @@ import { major as nodeMajorVersion } from './node-version';
 // list of NPM scopes included in version reporting e.g. @aws-cdk and @aws-solutions-konstruk
 const WHITELIST_SCOPES = ['@aws-cdk', '@aws-cdk-containers', '@aws-solutions-konstruk', '@aws-solutions-constructs', '@amzn'];
 // list of NPM packages included in version reporting
-const WHITELIST_PACKAGES = ['aws-rfdk', 'aws-cdk-lib'];
+const WHITELIST_PACKAGES = ['aws-rfdk'];
 
 /**
  * Returns a list of loaded modules and their versions.
