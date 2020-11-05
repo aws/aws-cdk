@@ -259,27 +259,22 @@ export class AppMeshExtension extends ServiceExtension {
       throw new Error('You must add a CloudMap namespace to the ECS cluster in order to use the AppMesh extension');
     }
 
-    function addListener(protocol: appmesh.Protocol, port: number) {
-      if (protocol === appmesh.Protocol.HTTP2) {
-        return appmesh.VirtualNodeListener.http2NodeListener({
-          port: port,
-        });
-      }
-      if (protocol === appmesh.Protocol.TCP) {
-        return appmesh.VirtualNodeListener.tcpNodeListener({
-          port: port,
-        });
-      }
-      if (protocol === appmesh.Protocol.GRPC) {
-        return appmesh.VirtualNodeListener.grpcNodeListener({
-          port: port,
-        });
-      } else {
-        return appmesh.VirtualNodeListener.httpNodeListener({
-          port: port,
-        });
+    function addListener(protocol: appmesh.Protocol, port: number): appmesh.VirtualNodeListener {
+      switch (protocol) {
+        case appmesh.Protocol.HTTP :
+          return appmesh.VirtualNodeListener.http({ port });
+
+        case appmesh.Protocol.HTTP2 :
+          return appmesh.VirtualNodeListener.http2({ port });
+
+        case appmesh.Protocol.GRPC :
+          return appmesh.VirtualNodeListener.grpc({ port });
+
+        case appmesh.Protocol.TCP :
+          return appmesh.VirtualNodeListener.tcp({ port });
       }
     }
+
     // Create a virtual node for the name service
     this.virtualNode = new appmesh.VirtualNode(this.scope, `${this.parentService.id}-virtual-node`, {
       mesh: this.mesh,

@@ -34,7 +34,7 @@ const virtualService = mesh.addVirtualService('service', {
 
 const node = mesh.addVirtualNode('node', {
   dnsHostName: `node1.${namespace.namespaceName}`,
-  listeners: [appmesh.VirtualNodeListener.httpNodeListener({
+  listeners: [appmesh.VirtualNodeListener.http({
     healthCheck: {
       healthyThreshold: 3,
       path: '/check-path',
@@ -63,7 +63,7 @@ router.addRoute('route-1', {
 
 const node2 = mesh.addVirtualNode('node2', {
   dnsHostName: `node2.${namespace.namespaceName}`,
-  listeners: [appmesh.VirtualNodeListener.httpNodeListener({
+  listeners: [appmesh.VirtualNodeListener.http({
     healthCheck: {
       healthyThreshold: 3,
       interval: cdk.Duration.seconds(5),
@@ -84,7 +84,7 @@ const node2 = mesh.addVirtualNode('node2', {
 
 const node3 = mesh.addVirtualNode('node3', {
   dnsHostName: `node3.${namespace.namespaceName}`,
-  listeners: [appmesh.VirtualNodeListener.httpNodeListener({
+  listeners: [appmesh.VirtualNodeListener.http({
     healthCheck: {
       healthyThreshold: 3,
       interval: cdk.Duration.seconds(5),

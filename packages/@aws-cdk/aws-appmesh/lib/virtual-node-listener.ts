@@ -1,7 +1,7 @@
 import * as cdk from '@aws-cdk/core';
 import { CfnVirtualNode } from './appmesh.generated';
 import { validateHealthChecks } from './private/utils';
-import { HealthCheck, HttpTimeout, TcpTimeout, Protocol, GrpcTimeout } from './shared-interfaces';
+import { HealthCheck, Protocol } from './shared-interfaces';
 
 /**
  * Properties for a VirtualNode listener
@@ -14,34 +14,139 @@ export interface VirtualNodeListenerConfig {
 }
 
 /**
+ * Represents the properties needed to define a Listeners for a VirtualNode
+ */
+interface VirtualNodeListenerProps {
+  /**
+   * Port to listen for connections on
+   *
+   * @default - 8080
+   */
+  readonly port?: number
+
+  /**
+   * The health check information for the listener
+   *
+   * @default - no healthcheck
+   */
+  readonly healthCheck?: HealthCheck;
+}
+
+/**
+ * Represent the HTTP Node Listener prorperty
+ */
+export interface HttpNodeListenerProps extends VirtualNodeListenerProps {
+  /**
+   * Timeout for HTTP protocol
+   *
+   * @default - None
+   */
+  readonly timeout?: HttpTimeout;
+}
+
+/**
+ * Represent the GRPC Node Listener prorperty
+ */
+export interface GrpcNodeListenerProps extends VirtualNodeListenerProps {
+  /**
+   * Timeout for GRPC protocol
+   *
+   * @default - None
+   */
+  readonly timeout?: GrpcTimeout;
+}
+
+/**
+ * Represent the TCP Node Listener prorperty
+ */
+export interface TcpNodeListenerProps extends VirtualNodeListenerProps {
+  /**
+   * Timeout for TCP protocol
+   *
+   * @default - None
+   */
+  readonly timeout?: TcpTimeout;
+}
+
+/**
+ * Represents timeouts for HTTP protocols.
+ */
+export interface HttpTimeout {
+  /**
+   * Represents an idle timeout. The amount of time that a connection may be idle.
+   *
+   * @default - none
+   */
+  readonly idle?: cdk.Duration;
+
+  /**
+   * Represents per request timeout.
+   *
+   * @default - 15 s
+   */
+  readonly perRequest?: cdk.Duration;
+}
+
+/**
+ * Represents timeouts for GRPC protocols.
+ */
+export interface GrpcTimeout {
+  /**
+   * Represents an idle timeout. The amount of time that a connection may be idle.
+   *
+   * @default - none
+   */
+  readonly idle?: cdk.Duration;
+
+  /**
+   * Represents per request timeout.
+   *
+   * @default - 15 s
+   */
+  readonly perRequest?: cdk.Duration;
+}
+
+/**
+ * Represents timeouts for TCP protocols.
+ */
+export interface TcpTimeout {
+  /**
+   * Represents an idle timeout. The amount of time that a connection may be idle.
+   *
+   * @default - none
+   */
+  readonly idle?: cdk.Duration;
+}
+
+/**
  *  Defines listener for a VirtualNode
  */
 export abstract class VirtualNodeListener {
   /**
    * Returns an HTTP Listener for a VirtualNode
    */
-  public static httpNodeListener(props: HttpNodeListenerProps = {}): VirtualNodeListener {
+  public static http(props: HttpNodeListenerProps = {}): VirtualNodeListener {
     return new HttpNodeListener(props);
   }
 
   /**
    * Returns an HTTP2 Listener for a VirtualNode
    */
-  public static http2NodeListener(props: HttpNodeListenerProps = {}): VirtualNodeListener {
+  public static http2(props: HttpNodeListenerProps = {}): VirtualNodeListener {
     return new Http2NodeListener(props);
   }
 
   /**
    * Returns an GRPC Listener for a VirtualNode
    */
-  public static grpcNodeListener(props: GrpcNodeListenerProps = {}): VirtualNodeListener {
+  public static grpc(props: GrpcNodeListenerProps = {}): VirtualNodeListener {
     return new GrpcNodeListener(props);
   }
 
   /**
    * Returns an TCP Listener for a VirtualNode
    */
-  public static tcpNodeListener(props: TcpNodeListenerProps = {}): VirtualNodeListener {
+  public static tcp(props: TcpNodeListenerProps = {}): VirtualNodeListener {
     return new TcpNodeListener(props);
   }
 
@@ -289,60 +394,5 @@ class TcpNodeListener extends VirtualNodeListener {
       },
     };
   }
-}
-
-/**
- * Represents the properties needed to define a Listeners for a VirtualNode
- */
-interface VirtualNodeListenerProps {
-  /**
-   * Port to listen for connections on
-   *
-   * @default - 8080
-   */
-  readonly port?: number
-
-  /**
-   * The health check information for the listener
-   *
-   * @default - no healthcheck
-   */
-  readonly healthCheck?: HealthCheck;
-}
-
-/**
- * Represent the HTTP Node Listener prorperty
- */
-export interface HttpNodeListenerProps extends VirtualNodeListenerProps {
-  /**
-   * Timeout for HTTP protocol
-   *
-   * @default - None
-   */
-  readonly timeout?: HttpTimeout;
-}
-
-/**
- * Represent the GRPC Node Listener prorperty
- */
-export interface GrpcNodeListenerProps extends VirtualNodeListenerProps {
-  /**
-   * Timeout for GRPC protocol
-   *
-   * @default - None
-   */
-  readonly timeout?: GrpcTimeout;
-}
-
-/**
- * Represent the TCP Node Listener prorperty
- */
-export interface TcpNodeListenerProps extends VirtualNodeListenerProps {
-  /**
-   * Timeout for TCP protocol
-   *
-   * @default - None
-   */
-  readonly timeout?: TcpTimeout;
 }
 

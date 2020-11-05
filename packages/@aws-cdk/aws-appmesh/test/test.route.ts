@@ -24,7 +24,7 @@ export = {
 
     const node = mesh.addVirtualNode('test-node', {
       dnsHostName: 'test',
-      listeners: [appmesh.VirtualNodeListener.httpNodeListener({
+      listeners: [appmesh.VirtualNodeListener.http({
         port: 8080,
       })],
       backends: [

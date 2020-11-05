@@ -70,13 +70,13 @@ export = {
           meshName: 'test-mesh',
         });
 
-        new appmesh.VirtualNode(stack, 'test-node', {
-          mesh,
+        const node = mesh.addVirtualNode('test-node', {
           dnsHostName: 'test',
-          listeners: [appmesh.VirtualNodeListener.httpNodeListener({
-            port: 8081,
-          })],
         });
+
+        node.addListeners([appmesh.VirtualNodeListener.tcp({
+          port: 8081,
+        })]);
 
         // THEN
         expect(stack).to(
@@ -86,7 +86,7 @@ export = {
                 {
                   PortMapping: {
                     Port: 8081,
-                    Protocol: 'http',
+                    Protocol: 'tcp',
                   },
                 },
               ],
@@ -110,7 +110,7 @@ export = {
         new appmesh.VirtualNode(stack, 'test-node', {
           mesh,
           dnsHostName: 'test',
-          listeners: [appmesh.VirtualNodeListener.grpcNodeListener({
+          listeners: [appmesh.VirtualNodeListener.grpc({
             port: 80,
             timeout: {
               idle: cdk.Duration.seconds(10),
@@ -163,7 +163,7 @@ export = {
         new appmesh.VirtualNode(stack, 'test-node', {
           mesh,
           dnsHostName: 'test',
-          listeners: [appmesh.VirtualNodeListener.http2NodeListener({
+          listeners: [appmesh.VirtualNodeListener.http2({
             port: 80,
             healthCheck: {},
             timeout: { idle: cdk.Duration.seconds(10) },
@@ -220,7 +220,7 @@ export = {
           dnsHostName: 'test',
         });
 
-        node.addListeners([appmesh.VirtualNodeListener.tcpNodeListener({
+        node.addListeners([appmesh.VirtualNodeListener.tcp({
           port: 80,
           healthCheck: { timeout: cdk.Duration.seconds(3) },
           timeout: { idle: cdk.Duration.seconds(10) },
@@ -277,7 +277,11 @@ export = {
 
     const stack2 = new cdk.Stack();
 
-    appmesh.VirtualNode.fromVirtualNodeName(stack2, 'imported-node', mesh.meshName, node.virtualNodeName);
+    const node2 = appmesh.VirtualNode.fromVirtualNodeName(stack2, 'imported-node', mesh.meshName, node.virtualNodeName);
+
+    node2.addListeners([appmesh.VirtualNodeListener.tcp({
+      port: 8081,
+    })]);
 
     // THEN
     expect(stack).to(

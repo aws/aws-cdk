@@ -57,7 +57,7 @@ export = {
 
   'When adding a Virtual Router to existing mesh': {
     'with at least one complete port mappings': {
-      'shoulld create proper router'(test: Test) {
+      'should create proper router'(test: Test) {
         // GIVEN
         const stack = new cdk.Stack();
 
@@ -221,7 +221,7 @@ export = {
 
         const node = mesh.addVirtualNode('test-node', {
           dnsHostName: 'test.domain.local',
-          listeners: [appmesh.VirtualNodeListener.httpNodeListener({
+          listeners: [appmesh.VirtualNodeListener.http({
             port: 8080,
           })],
         });
@@ -272,6 +272,7 @@ export = {
               'Fn::GetAtt': ['meshACDFE68E', 'MeshName'],
             },
             Spec: {
+              // Specifically: no Listeners and Backends
               ServiceDiscovery: {
                 DNS: {
                   Hostname: 'test.domain.local',
@@ -296,7 +297,7 @@ export = {
 
         mesh.addVirtualNode('test-node', {
           dnsHostName: 'test.domain.local',
-          listeners: [appmesh.VirtualNodeListener.httpNodeListener({
+          listeners: [appmesh.VirtualNodeListener.http({
             port: 8080,
           })],
         });
@@ -335,7 +336,7 @@ export = {
 
         mesh.addVirtualNode('test-node', {
           dnsHostName: 'test.domain.local',
-          listeners: [appmesh.VirtualNodeListener.httpNodeListener({
+          listeners: [appmesh.VirtualNodeListener.http({
             port: 8080,
             healthCheck: {
               healthyThreshold: 3,
@@ -391,7 +392,7 @@ export = {
 
         mesh.addVirtualNode('test-node', {
           dnsHostName: 'test.domain.local',
-          listeners: [appmesh.VirtualNodeListener.httpNodeListener({
+          listeners: [appmesh.VirtualNodeListener.http({
             port: 8080,
           })],
           backends: [

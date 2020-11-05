@@ -24,9 +24,8 @@ export = {
 
       const node = mesh.addVirtualNode('test-node', {
         dnsHostName: 'test',
-        listeners: [appmesh.VirtualNodeListener.httpNodeListener({
+        listeners: [appmesh.VirtualNodeListener.http({
           port: 8080,
-          healthCheck: {},
         })],
         backends: [service1],
       });
@@ -94,7 +93,7 @@ export = {
 
       const node = mesh.addVirtualNode('test-node', {
         dnsHostName: 'test',
-        listeners: [appmesh.VirtualNodeListener.httpNodeListener({
+        listeners: [appmesh.VirtualNodeListener.http({
           port: 8080,
         })],
         backends: [
@@ -103,7 +102,7 @@ export = {
       });
       const node2 = mesh.addVirtualNode('test-node2', {
         dnsHostName: 'test',
-        listeners: [appmesh.VirtualNodeListener.httpNodeListener({
+        listeners: [appmesh.VirtualNodeListener.http({
           port: 8080,
         })],
         backends: [
@@ -112,7 +111,7 @@ export = {
       });
       const node3 = mesh.addVirtualNode('test-node3', {
         dnsHostName: 'test',
-        listeners: [appmesh.VirtualNodeListener.httpNodeListener({
+        listeners: [appmesh.VirtualNodeListener.http({
           port: 8080,
         })],
         backends: [
@@ -240,7 +239,7 @@ export = {
 
       const node = mesh.addVirtualNode('test-node', {
         dnsHostName: 'test',
-        listeners: [appmesh.VirtualNodeListener.httpNodeListener({
+        listeners: [appmesh.VirtualNodeListener.http({
           port: 8080,
         })],
         backends: [
