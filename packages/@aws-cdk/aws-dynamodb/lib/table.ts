@@ -876,14 +876,14 @@ abstract class TableBase extends Resource implements ITable {
     const values = this.createMetricsForOperations('SuccessfulRequestLatency', props.operations, props, valueMetricNameMapper);
     const counts = this.createMetricsForOperations('SuccessfulRequestLatency', props.operations, { ...props, statistic: 'n' }, countMetricNameMapper);
 
-    const denominator = props.operations.map(op => `${valueMetricNameMapper(op)}`).join(' + ');;
+    const denominator = props.operations.map(op => `${countMetricNameMapper(op)}`).join(' + ');;
     const numerator = props.operations.map(op => `${valueMetricNameMapper(op)} * ${countMetricNameMapper(op)}`).join(' + ');
 
     return new cloudwatch.MathExpression({
       expression: `(${numerator}) / (${denominator})`,
       usingMetrics: { ...values, ...counts },
       color: props?.color,
-      label: props?.label ?? 'Weighted average over all operations',
+      label: props?.label ?? 'Weighted average across operations',
       period: props?.period,
     });
 
