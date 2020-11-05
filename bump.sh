@@ -13,4 +13,6 @@
 #
 # --------------------------------------------------------------------------------------------------
 set -euo pipefail
-yarn standard-version && ./scripts/bump.js ${1:-minor}
+scriptdir=$(cd $(dirname $0) && pwd)
+(cd ${scriptdir} yarn standard-version)
+./scripts/bump.js ${1:-minor}
