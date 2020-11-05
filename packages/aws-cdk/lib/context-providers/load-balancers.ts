@@ -63,14 +63,7 @@ export class LoadBalancerListenerContextProviderPlugin implements ContextProvide
       throw new Error('The load balancer listener query must specify at least one of: `listenerArn`, `loadBalancerArn` or `loadBalancerTags`');
     }
 
-    if (query.listenerArn) {
-      // When we know a listener arn, we can query for that listener directly.
-      return this.getListenerByArn(elbv2, query);
-    } else {
-      // When we don't know a listener arn, we need to find it by traversing
-      // all associated load balancers.
-      return this.getListenerByFilteringLoadBalancers(elbv2, query);
-    }
+    return query.listenerArn ? this.getListenerByArn(elbv2, query) : this.getListenerByFilteringLoadBalancers(elbv2, query);
   }
 
   /**
