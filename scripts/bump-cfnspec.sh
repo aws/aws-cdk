@@ -23,15 +23,11 @@ yarn lerna run build --stream     \
   --include-dependencies
 
 # Run the cfnspec update
-(
-  cd ${pwd}/packages/@aws-cdk/cfnspec
-  yarn update
-  version=$(cat cfn.version)
-)
+cd ${pwd}/packages/@aws-cdk/cfnspec
+yarn update
+version=$(cat cfn.version)
 
 # Come back to root, add all files to git and commit
-(
-  cd ${pwd}
-  git add .
-  git commit -a -m "feat: cloudformation spec v${version}" || true # don't fail if there are no updates
-)
+cd ${pwd}
+git add .
+git commit -a -m "feat: cloudformation spec v${version}" || true # don't fail if there are no updates
