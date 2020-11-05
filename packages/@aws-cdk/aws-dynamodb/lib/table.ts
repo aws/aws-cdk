@@ -727,6 +727,9 @@ abstract class TableBase extends Resource implements ITable {
 
   /**
    * Return the given named metric for this Table
+   *
+   * By default, the metric will be calculated as a sum over a period of 5 minutes.
+   * You can customize this by using the `statistic` and `period` properties.
    */
   public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return new cloudwatch.Metric({
@@ -741,6 +744,9 @@ abstract class TableBase extends Resource implements ITable {
 
   /**
    * Metric for the consumed read capacity units this table
+   *
+   * By default, the metric will be calculated as a sum over a period of 5 minutes.
+   * You can customize this by using the `statistic` and `period` properties.
    */
   public metricConsumedReadCapacityUnits(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric('ConsumedReadCapacityUnits', { statistic: 'sum', ...props });
@@ -748,6 +754,9 @@ abstract class TableBase extends Resource implements ITable {
 
   /**
    * Metric for the consumed write capacity units this table
+   *
+   * By default, the metric will be calculated as a sum over a period of 5 minutes.
+   * You can customize this by using the `statistic` and `period` properties.
    */
   public metricConsumedWriteCapacityUnits(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric('ConsumedWriteCapacityUnits', { statistic: 'sum', ...props });
@@ -773,6 +782,9 @@ abstract class TableBase extends Resource implements ITable {
   /**
    * Metric for the user errors. Note that this metric reports user errors across all
    * the tables in the account and region the table resides in.
+   *
+   * By default, the metric will be calculated as a sum over a period of 5 minutes.
+   * You can customize this by using the `statistic` and `period` properties.
    */
   public metricUserErrors(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
 
@@ -787,6 +799,9 @@ abstract class TableBase extends Resource implements ITable {
 
   /**
    * Metric for the conditional check failed requests this table
+   *
+   * By default, the metric will be calculated as a sum over a period of 5 minutes.
+   * You can customize this by using the `statistic` and `period` properties.
    */
   public metricConditionalCheckFailedRequests(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric('ConditionalCheckFailedRequests', { statistic: 'sum', ...props });
@@ -812,8 +827,8 @@ abstract class TableBase extends Resource implements ITable {
    * Metric for the system errors this table.
    *
    * This will sum errors across all possible operations.
-   * Note that the default statistic used for each individual operation is 'sum'.
-   * You can pass a custom statistic using the `statistic` property.
+   * Note that by default, each individual metric will be calculated as a sum over a period of 5 minutes.
+   * You can customize this by using the `statistic` and `period` properties.
    */
   public metricSystemErrorsForOperations(props?: SystemErrorsForOperationsMetricOptions): cloudwatch.IMetric {
 
@@ -841,8 +856,8 @@ abstract class TableBase extends Resource implements ITable {
    * Metric for the successful request latency for specific operations of this table.
    *
    * This will perform a weighted average across all possible operations.
-   * Note that the default statistic used for each individual operation is a 'avg'.
-   * You can pass a custom statistic using the `statistic` property.
+   * Note that by default, each individual metric will be calculated as an average over a period of 5 minutes.
+   * You can customize this by using the `statistic` and `period` properties.
    */
   public metricSuccessfulRequestLatencyForOperations(props: SuccessfulRequestLatencyForOperationsMetricOptions): cloudwatch.IMetric {
 
