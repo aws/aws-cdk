@@ -22,7 +22,7 @@ const MAX_LOCAL_SECONDARY_INDEX_COUNT = 5;
 /**
  * Options for configuring a metric with an operation dimensionality.
  */
-export interface OperationalSuccessfulRequestLatencyMetricOptions extends cloudwatch.MetricOptions {
+export interface SuccessfulRequestLatencyForOperationsMetricOptions extends cloudwatch.MetricOptions {
 
   /**
    * The operations to apply the metric to.
@@ -34,7 +34,7 @@ export interface OperationalSuccessfulRequestLatencyMetricOptions extends cloudw
 /**
  * Options for configuring a metric with an operation dimensionality.
  */
-export interface OperationalSystemErrorsMetricOptions extends cloudwatch.MetricOptions {
+export interface SystemErrorsForOperationsMetricOptions extends cloudwatch.MetricOptions {
 
   /**
    * The operations to apply the metric to.
@@ -479,7 +479,7 @@ export interface ITable extends IResource {
    *
    * @param props properties of a metric
    */
-  metricSystemErrorsForOperations(props?: OperationalSystemErrorsMetricOptions): cloudwatch.IMetric;
+  metricSystemErrorsForOperations(props?: SystemErrorsForOperationsMetricOptions): cloudwatch.IMetric;
 
   /**
    * Metric for the conditional check failed requests
@@ -501,7 +501,7 @@ export interface ITable extends IResource {
    *
    * @param props properties of a metric
    */
-  metricSuccessfulRequestLatencyForOperations(props: OperationalSuccessfulRequestLatencyMetricOptions): cloudwatch.IMetric;
+  metricSuccessfulRequestLatencyForOperations(props: SuccessfulRequestLatencyForOperationsMetricOptions): cloudwatch.IMetric;
 
 }
 
@@ -786,7 +786,7 @@ abstract class TableBase extends Resource implements ITable {
   /**
    * Metric for the system errors this table
    */
-  public metricSystemErrorsForOperations(props?: OperationalSystemErrorsMetricOptions): cloudwatch.IMetric {
+  public metricSystemErrorsForOperations(props?: SystemErrorsForOperationsMetricOptions): cloudwatch.IMetric {
 
     if (props?.dimensions?.Operation) {
       // for simplicity, lets not support two different properties representing the same thing.
@@ -833,7 +833,7 @@ abstract class TableBase extends Resource implements ITable {
   /**
    * Metric for the successful request latency for specific operations of this table
    */
-  public metricSuccessfulRequestLatencyForOperations(props: OperationalSuccessfulRequestLatencyMetricOptions): cloudwatch.IMetric {
+  public metricSuccessfulRequestLatencyForOperations(props: SuccessfulRequestLatencyForOperationsMetricOptions): cloudwatch.IMetric {
 
     if (props?.dimensions?.Operation) {
       // for simplicity, lets not support two different properties representing the same thing.
