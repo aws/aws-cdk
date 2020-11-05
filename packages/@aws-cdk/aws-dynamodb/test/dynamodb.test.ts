@@ -1587,14 +1587,17 @@ describe('metrics', () => {
 
   });
 
-  test('Using metricSystemErrors without the TableName dimension will fail', () => {
+  test('Can use metricSystemErrors without the TableName dimension', () => {
 
     const stack = new Stack();
     const table = new Table(stack, 'Table', {
       partitionKey: { name: 'id', type: AttributeType.STRING },
     });
 
-    expect(() => table.metricSystemErrors({ dimensions: { Operation: 'GetItem' } })).toThrow(/Both 'Operation' and 'TableName' dimensions must be passed for the 'SystemErrors' metric./);
+    expect(table.metricSystemErrors({ dimensions: { Operation: 'GetItem' } }).dimensions).toEqual({
+      TableName: table.tableName,
+      Operation: 'GetItem',
+    });
 
   });
 
@@ -1605,7 +1608,8 @@ describe('metrics', () => {
       partitionKey: { name: 'id', type: AttributeType.STRING },
     });
 
-    expect(() => table.metricSystemErrors({ dimensions: { TableName: table.tableName } })).toThrow(/Both 'Operation' and 'TableName' dimensions must be passed for the 'SystemErrors' metric./);
+    expect(() => table.metricSystemErrors({ dimensions: { TableName: table.tableName } }))
+      .toThrow(/'Operation' dimension must be passed for the 'SystemErrors' metric./);
 
   });
 
@@ -1714,14 +1718,17 @@ describe('metrics', () => {
     });
   });
 
-  test('Using metricSuccessfulRequestLatency without the TableName dimension will fail', () => {
+  test('Can use metricSuccessfulRequestLatency without the TableName dimension', () => {
 
     const stack = new Stack();
     const table = new Table(stack, 'Table', {
       partitionKey: { name: 'id', type: AttributeType.STRING },
     });
 
-    expect(() => table.metricSuccessfulRequestLatency({ dimensions: { Operation: 'GetItem' } })).toThrow(/Both 'Operation' and 'TableName' dimensions must be passed for the 'SuccessfulRequestLatency' metric./);
+    expect(table.metricSuccessfulRequestLatency({ dimensions: { Operation: 'GetItem' } }).dimensions).toEqual({
+      TableName: table.tableName,
+      Operation: 'GetItem',
+    });
 
   });
 
@@ -1732,7 +1739,8 @@ describe('metrics', () => {
       partitionKey: { name: 'id', type: AttributeType.STRING },
     });
 
-    expect(() => table.metricSuccessfulRequestLatency({ dimensions: { TableName: table.tableName } })).toThrow(/Both 'Operation' and 'TableName' dimensions must be passed for the 'SuccessfulRequestLatency' metric./);
+    expect(() => table.metricSuccessfulRequestLatency({ dimensions: { TableName: table.tableName } }))
+      .toThrow(/'Operation' dimension must be passed for the 'SuccessfulRequestLatency' metric./);
 
   });
 

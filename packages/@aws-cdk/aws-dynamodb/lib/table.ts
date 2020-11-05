@@ -722,13 +722,17 @@ abstract class TableBase extends Resource implements ITable {
    */
   public metricSystemErrors(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
 
-    if (!props?.dimensions?.Operation || !props?.dimensions?.TableName) {
+    if (!props?.dimensions?.Operation) {
       // 'Operation' must be passed because its an operational metric.
-      // 'TableName' must be passed because the dimensions here will override the default ones which contain the table name.
-      throw new Error("Both 'Operation' and 'TableName' dimensions must be passed for the 'SystemErrors' metric.");
+      throw new Error("'Operation' dimension must be passed for the 'SystemErrors' metric.");
     }
 
-    return this.metric('SystemErrors', { statistic: 'sum', ...props });
+    const dimensions = {
+      TableName: this.tableName,
+      ...props?.dimensions ?? {},
+    };
+
+    return this.metric('SystemErrors', { statistic: 'sum', ...props, dimensions });
   }
 
   /**
@@ -768,13 +772,16 @@ abstract class TableBase extends Resource implements ITable {
    */
   public metricSuccessfulRequestLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
 
-    if (!props?.dimensions?.Operation || !props?.dimensions?.TableName) {
-      // Operation must be passed because its an operational metric.
-      // TableName must be passed because the dimensions here will override the default ones which contain the table name.
-      throw new Error("Both 'Operation' and 'TableName' dimensions must be passed for the 'SuccessfulRequestLatency' metric.");
+    if (!props?.dimensions?.Operation) {
+      throw new Error("'Operation' dimension must be passed for the 'SuccessfulRequestLatency' metric.");
     }
 
-    return this.metric('SuccessfulRequestLatency', { statistic: 'avg', ...props });
+    const dimensions = {
+      TableName: this.tableName,
+      ...props?.dimensions ?? {},
+    };
+
+    return this.metric('SuccessfulRequestLatency', { statistic: 'avg', ...props, dimensions });
   }
 
   /**
