@@ -66,7 +66,7 @@ Fargate services use the default VPC Security Group unless one or more are provi
 
 By setting `redirectHTTP` to true, CDK will automatically create a listener on port 80 that redirects HTTP traffic to the HTTPS port.
 
-If you specify the option `cname` you can decide if you want the construct to use CNAME or Route53-Aliases as record sets.
+If you specify the option `recordType` you can decide if you want the construct to use CNAME or Route53-Aliases as record sets.
 
 Additionally, if more than one application target group are needed, instantiate one of the following:
 
