@@ -13,7 +13,7 @@ phases:
       - aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com
 
       # test - should fail for now if login worked
-      - docker pull nginx
+      - docker pull python
 
       # Install yarn if it wasn't already present in the image
       - yarn --version || npm -g install yarn
