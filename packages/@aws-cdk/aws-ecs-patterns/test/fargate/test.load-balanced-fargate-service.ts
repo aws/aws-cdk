@@ -483,6 +483,64 @@ export = {
     test.done();
   },
 
+
+  'setting NLB cname option correctly sets the recordset type'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // WHEN
+    new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'FargateNlbService', {
+      cluster,
+      domainName: 'test.domain.com',
+      domainZone: route53.HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
+        hostedZoneId: 'fakeId',
+        zoneName: 'domain.com.',
+      }),
+      recordType: ecsPatterns.NetworkLoadBalancedServiceRecordType.CNAME,
+      taskImageOptions: {
+        containerPort: 2015,
+        image: ecs.ContainerImage.fromRegistry('abiosoft/caddy'),
+      },
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::Route53::RecordSet', {
+      Name: 'test.domain.com.',
+      Type: 'CNAME',
+    }));
+
+    test.done();
+  },
+
+  'setting NLB record type to NONE correctly omits the recordset'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // WHEN
+    new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'FargateNlbService', {
+      cluster,
+      domainName: 'test.domain.com',
+      domainZone: route53.HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
+        hostedZoneId: 'fakeId',
+        zoneName: 'domain.com.',
+      }),
+      recordType: ecsPatterns.NetworkLoadBalancedServiceRecordType.NONE,
+      taskImageOptions: {
+        containerPort: 2015,
+        image: ecs.ContainerImage.fromRegistry('abiosoft/caddy'),
+      },
+    });
+
+    // THEN
+    expect(stack).notTo(haveResource('AWS::Route53::RecordSet'));
+
+    test.done();
+  },
+
   'setting ALB HTTP protocol to create the listener on 80'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
