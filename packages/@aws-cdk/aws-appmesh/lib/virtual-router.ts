@@ -27,6 +27,11 @@ export interface IVirtualRouter extends cdk.IResource {
    * The  service mesh that the virtual router resides in
    */
   readonly mesh: IMesh;
+
+  /**
+   * Add a single route to the router
+   */
+  addRoute(id: string, props: RouteBaseProps): Route;
 }
 
 /**
