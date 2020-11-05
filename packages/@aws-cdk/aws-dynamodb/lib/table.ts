@@ -39,7 +39,7 @@ export interface SystemErrorsForOperationsMetricOptions extends cloudwatch.Metri
   /**
    * The operations to apply the metric to.
    *
-   * @default - All operations will be considered.
+   * @default - All operations available by DynamoDB tables will be considered.
    */
   readonly operations?: Operation[];
 
