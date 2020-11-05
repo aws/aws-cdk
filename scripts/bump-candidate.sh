@@ -17,4 +17,4 @@
 # --------------------------------------------------------------------------------------------------
 set -euo pipefail
 scriptdir=$(cd $(dirname $0) && pwd)
-BUMP_CANDIDATE=true ${scriptdir}/bump.js ${1:-minor}
+npm install standard-version && BUMP_CANDIDATE=true ${scriptdir}/bump.js ${1:-minor}

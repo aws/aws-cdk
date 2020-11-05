@@ -13,4 +13,4 @@
 #
 # --------------------------------------------------------------------------------------------------
 set -euo pipefail
-./scripts/bump.js ${1:-minor}
+npm install standard-version && ./scripts/bump.js ${1:-minor}
