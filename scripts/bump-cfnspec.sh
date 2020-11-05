@@ -16,7 +16,7 @@ ${pwd}/install.sh
 # dependencies are in fact involved in the building of new construct libraries
 # created upon their introduction in the CFN Specification (they incur the
 # dependency, not `@aws-cdk/cfnspec` itself).
-lerna run build --stream          \
+yarn lerna run build --stream     \
   --scope=@aws-cdk/cfnspec        \
   --scope=cfn2ts                  \
   --scope=ubergen                 \
