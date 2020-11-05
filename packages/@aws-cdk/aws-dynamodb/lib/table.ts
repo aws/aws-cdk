@@ -767,31 +767,6 @@ abstract class TableBase extends Resource implements ITable {
   }
 
   /**
-   * Metric for the system errors this table
-   */
-  public metricSystemErrorsForOperations(props?: SystemErrorsForOperationsMetricOptions): cloudwatch.IMetric {
-
-    if (props?.dimensions?.Operation) {
-      // for simplicity, lets not support two different properties representing the same thing.
-      throw new Error("The Operation dimension is not supported. Use the 'operations' property.");
-    }
-
-    const operations = props?.operations ?? Object.values(Operation);
-
-    const values = this.createMetricsForOperations('SystemErrors', operations, props);
-
-    const sum = new cloudwatch.MathExpression({
-      expression: `${Object.keys(values).join(' + ')}`,
-      usingMetrics: { ...values },
-      color: props?.color,
-      label: props?.label ?? 'Sum over all Operations',
-      period: props?.period,
-    });
-
-    return sum;
-  }
-
-  /**
    * Metric for the user errors. Note that this metric reports user errors across all
    * the tables in the account and region the table resides in.
    */
@@ -827,6 +802,31 @@ abstract class TableBase extends Resource implements ITable {
     }
 
     return this.metric('SuccessfulRequestLatency', { statistic: 'avg', ...props });
+  }
+
+  /**
+   * Metric for the system errors this table
+   */
+  public metricSystemErrorsForOperations(props?: SystemErrorsForOperationsMetricOptions): cloudwatch.IMetric {
+
+    if (props?.dimensions?.Operation) {
+      // for simplicity, lets not support two different properties representing the same thing.
+      throw new Error("The Operation dimension is not supported. Use the 'operations' property.");
+    }
+
+    const operations = props?.operations ?? Object.values(Operation);
+
+    const values = this.createMetricsForOperations('SystemErrors', operations, props);
+
+    const sum = new cloudwatch.MathExpression({
+      expression: `${Object.keys(values).join(' + ')}`,
+      usingMetrics: { ...values },
+      color: props?.color,
+      label: props?.label ?? 'Sum over all Operations',
+      period: props?.period,
+    });
+
+    return sum;
   }
 
   /**
