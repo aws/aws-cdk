@@ -18,6 +18,8 @@ export interface VirtualRouterListenerConfig {
 export abstract class VirtualRouterListener {
   /**
    * Returns an HTTP Listener for a VirtualRouter
+   *
+   * @param port the optional port of the listener, 8080 by default
    */
   public static http(port?: number): VirtualRouterListener {
     return new VirtualRouterListenerImpl(Protocol.HTTP, port);
@@ -25,6 +27,8 @@ export abstract class VirtualRouterListener {
 
   /**
    * Returns an HTTP2 Listener for a VirtualRouter
+   *
+   * @param port the optional port of the listener, 8080 by default
    */
   public static http2(port?: number): VirtualRouterListener {
     return new VirtualRouterListenerImpl(Protocol.HTTP2, port);
@@ -32,6 +36,8 @@ export abstract class VirtualRouterListener {
 
   /**
    * Returns a GRPC Listener for a VirtualRouter
+   *
+   * @param port the optional port of the listener, 8080 by default
    */
   public static grpc(port?: number): VirtualRouterListener {
     return new VirtualRouterListenerImpl(Protocol.GRPC, port);
@@ -39,6 +45,8 @@ export abstract class VirtualRouterListener {
 
   /**
    * Returns a TCP Listener for a VirtualRouter
+   *
+   * @param port the optional port of the listener, 8080 by default
    */
   public static tcp(port?: number): VirtualRouterListener {
     return new VirtualRouterListenerImpl(Protocol.TCP, port);

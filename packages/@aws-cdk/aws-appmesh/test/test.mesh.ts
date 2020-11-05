@@ -66,11 +66,7 @@ export = {
           meshName: 'test-mesh',
         });
 
-        mesh.addVirtualRouter('router', {
-          listeners: [
-            appmesh.VirtualRouterListener.http(),
-          ],
-        });
+        mesh.addVirtualRouter('router');
 
         // THEN
         expect(stack).to(
