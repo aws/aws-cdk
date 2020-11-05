@@ -154,7 +154,7 @@ export interface CredentialsFromUsernameOptions extends CredentialsBaseOptions {
  */
 export abstract class Credentials {
   /**
-   * Creates Credentials with a password generated and stored in SecretsManager.
+   * Creates Credentials with a password generated and stored in Secrets Manager.
    */
   public static fromGeneratedSecret(username: string, options: CredentialsBaseOptions = {}): Credentials {
     return {
@@ -179,7 +179,7 @@ export abstract class Credentials {
 
   /**
    * Creates Credentials for the given username, and optional password and key.
-   * If no password is provided, one will be generated and stored in SecretsManager.
+   * If no password is provided, one will be generated and stored in Secrets Manager.
    *
    * @deprecated use `fromGeneratedSecret()` or `fromPassword()` for new Clusters and Instances.
    *   Note that switching from `fromUsername()` to `fromGeneratedSecret()` or `fromPassword()` for already deployed
@@ -193,7 +193,7 @@ export abstract class Credentials {
   }
 
   /**
-   * Creates Credentials from an existing SecretsManager ``Secret`` (or ``DatabaseSecret``)
+   * Creates Credentials from an existing Secrets Manager ``Secret`` (or ``DatabaseSecret``)
    *
    * The Secret must be a JSON string with a ``username`` and ``password`` field:
    * ```
