@@ -451,14 +451,6 @@ export interface ITable extends IResource {
   metricSystemErrors(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
-   * Metric for the system errors of specific operations.
-   * The return value is a math expressions metric representing the sum over all specified operations.
-   *
-   * @param props properties of an individual operation metric
-   */
-  metricSystemErrorsForOperations(props?: SystemErrorsForOperationsMetricOptions): cloudwatch.IMetric;
-
-  /**
    * Metric for the user errors
    *
    * @param props properties of a metric
@@ -477,17 +469,8 @@ export interface ITable extends IResource {
    *
    * @param props properties of a metric
    *
-   * @deprecated use `metricSuccessfulRequestLatencyForOperations`
    */
   metricSuccessfulRequestLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
-
-  /**
-   * Metric for the successful request latency of specific operations.
-   * The return value is a math expressions metric representing the weighted average over all specified operations.
-   *
-   * @param props properties of an individual operation metric
-   */
-  metricSuccessfulRequestLatencyForOperations(props: SuccessfulRequestLatencyForOperationsMetricOptions): cloudwatch.IMetric;
 
 }
 
@@ -791,7 +774,9 @@ abstract class TableBase extends Resource implements ITable {
   /**
    * Metric for the successful request latency this table.
    *
-   * @deprecated use `metricSuccessfulRequestLatencyForOperations`
+   * By default, the metric will be calculated as an average over a period of 5 minutes.
+   * You can customize this by using the `statistic` and `period` properties.
+   *
    */
   public metricSuccessfulRequestLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
 
@@ -830,43 +815,6 @@ abstract class TableBase extends Resource implements ITable {
     });
 
     return sum;
-  }
-
-  /**
-   * Metric for the successful request latency for specific operations of this table.
-   *
-   * This will perform a weighted average across all possible operations.
-   * Note that by default, each individual metric will be calculated as an average over a period of 5 minutes.
-   * You can customize this by using the `statistic` and `period` properties.
-   */
-  public metricSuccessfulRequestLatencyForOperations(props: SuccessfulRequestLatencyForOperationsMetricOptions): cloudwatch.IMetric {
-
-    if (props?.dimensions?.Operation) {
-      throw new Error("the 'Operation' dimension is not supported for 'metricSuccessfulRequestLatencyForOperations'; use the 'operations' property.");
-    }
-
-    if (props.operations.length === 0) {
-      // you must pass at least 1 operation since this is an operation dimensionality metric.
-      throw new Error("You must pass at least one operation to the 'metricSuccessfulRequestLatencyForOperations' call.");
-    }
-
-    const valueMetricNameMapper = (op: Operation) => `${op}Value`.toLowerCase();
-    const countMetricNameMapper = (op: Operation) => `${op}Count`.toLowerCase();
-
-    const values = this.createMetricsForOperations('SuccessfulRequestLatency', props.operations, props, valueMetricNameMapper);
-    const counts = this.createMetricsForOperations('SuccessfulRequestLatency', props.operations, { ...props, statistic: 'n' }, countMetricNameMapper);
-
-    const denominator = props.operations.map(op => `${countMetricNameMapper(op)}`).join(' + ');;
-    const numerator = props.operations.map(op => `${valueMetricNameMapper(op)} * ${countMetricNameMapper(op)}`).join(' + ');
-
-    return new cloudwatch.MathExpression({
-      expression: `(${numerator}) / (${denominator})`,
-      usingMetrics: { ...values, ...counts },
-      color: props?.color,
-      label: props?.label ?? 'Weighted average across operations',
-      period: props?.period,
-    });
-
   }
 
   /**

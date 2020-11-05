@@ -1714,17 +1714,6 @@ describe('metrics', () => {
     });
   });
 
-  test('Using metricSuccessfulRequestLatencyForOperations with no operations will fail', () => {
-
-    const stack = new Stack();
-    const table = new Table(stack, 'Table', {
-      partitionKey: { name: 'id', type: AttributeType.STRING },
-    });
-
-    expect(() => table.metricSuccessfulRequestLatencyForOperations({ operations: [] })).toThrow(/You must pass at least one operation to the 'metricSuccessfulRequestLatencyForOperations' call./);
-
-  });
-
   test('Using metricSuccessfulRequestLatency without the TableName dimension will fail', () => {
 
     const stack = new Stack();
@@ -1744,73 +1733,6 @@ describe('metrics', () => {
     });
 
     expect(() => table.metricSuccessfulRequestLatency({ dimensions: { TableName: table.tableName } })).toThrow(/Both 'Operation' and 'TableName' dimensions must be passed for the 'SuccessfulRequestLatency' metric./);
-
-  });
-
-  test('Can use metricSuccessfulRequestLatencyForOperations on a Dynamodb Table', () => {
-
-    // GIVEN
-    const stack = new Stack();
-    const table = new Table(stack, 'Table', {
-      partitionKey: { name: 'id', type: AttributeType.STRING },
-    });
-
-    // THEN
-    expect(stack.resolve(table.metricSuccessfulRequestLatencyForOperations({ operations: [Operation.GET_ITEM, Operation.PUT_ITEM] }))).toEqual({
-      expression: '(getitemvalue * getitemcount + putitemvalue * putitemcount) / (getitemcount + putitemcount)',
-      label: 'Weighted average across operations',
-      period: Duration.minutes(5),
-      usingMetrics: {
-        getitemcount: {
-          dimensions: {
-            Operation: 'GetItem',
-            TableName: {
-              Ref: 'TableCD117FA1',
-            },
-          },
-          metricName: 'SuccessfulRequestLatency',
-          namespace: 'AWS/DynamoDB',
-          period: Duration.minutes(5),
-          statistic: 'SampleCount',
-        },
-        putitemcount: {
-          dimensions: {
-            Operation: 'PutItem',
-            TableName: {
-              Ref: 'TableCD117FA1',
-            },
-          },
-          metricName: 'SuccessfulRequestLatency',
-          namespace: 'AWS/DynamoDB',
-          period: Duration.minutes(5),
-          statistic: 'SampleCount',
-        },
-        getitemvalue: {
-          dimensions: {
-            Operation: 'GetItem',
-            TableName: {
-              Ref: 'TableCD117FA1',
-            },
-          },
-          metricName: 'SuccessfulRequestLatency',
-          namespace: 'AWS/DynamoDB',
-          period: Duration.minutes(5),
-          statistic: 'Average',
-        },
-        putitemvalue: {
-          dimensions: {
-            Operation: 'PutItem',
-            TableName: {
-              Ref: 'TableCD117FA1',
-            },
-          },
-          metricName: 'SuccessfulRequestLatency',
-          namespace: 'AWS/DynamoDB',
-          period: Duration.minutes(5),
-          statistic: 'Average',
-        },
-      },
-    });
 
   });
 
