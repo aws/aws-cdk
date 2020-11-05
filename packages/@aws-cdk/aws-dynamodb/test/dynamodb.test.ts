@@ -1624,7 +1624,7 @@ describe('metrics', () => {
     // THEN
     expect(stack.resolve(table.metricSystemErrorsForOperations({ operations: [Operation.GET_ITEM, Operation.PUT_ITEM] }))).toEqual({
       expression: 'getitem + putitem',
-      label: 'Sum over operations',
+      label: 'Sum of errors across all operations',
       period: Duration.minutes(5),
       usingMetrics: {
         getitem: {

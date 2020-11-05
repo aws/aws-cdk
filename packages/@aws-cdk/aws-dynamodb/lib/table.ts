@@ -805,7 +805,7 @@ abstract class TableBase extends Resource implements ITable {
       expression: `${Object.keys(values).join(' + ')}`,
       usingMetrics: { ...values },
       color: props?.color,
-      label: props?.label ?? 'Sum over operations',
+      label: 'Sum of errors across all operations',
       period: props?.period,
     });
 
