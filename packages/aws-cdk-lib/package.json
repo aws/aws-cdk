@@ -58,7 +58,7 @@
         "package": "software.amazon.awscdk.lib",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "lib",
+          "artifactId": "lib"
         }
       },
       "python": {
