@@ -14,5 +14,6 @@
 # --------------------------------------------------------------------------------------------------
 set -euo pipefail
 scriptdir=$(cd $(dirname $0) && pwd)
-(cd ${scriptdir} yarn)
+cd ${scriptdir}
+yarn
 ${scriptdir}/scripts/bump.js ${1:-minor}
