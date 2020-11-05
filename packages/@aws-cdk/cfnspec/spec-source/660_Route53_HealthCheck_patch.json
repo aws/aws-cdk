@@ -78,10 +78,7 @@
                 "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53-healthcheck-healthcheckconfig.html#cfn-route53-healthcheck-healthcheckconfig-insufficientdatahealthstatus",
                 "PrimitiveType": "String",
                 "Required": false,
-                "UpdateType": "Mutable",
-                "Value": {
-                  "ValueType": "Route53HealthCheckConfigHealthStatus"
-                }
+                "UpdateType": "Mutable"
               },
               "Inverted": {
                 "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53-healthcheck-healthcheckconfig.html#cfn-route53-healthcheck-healthcheckconfig-inverted",
@@ -131,10 +128,7 @@
                 "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53-healthcheck-healthcheckconfig.html#cfn-route53-healthcheck-healthcheckconfig-type",
                 "PrimitiveType": "String",
                 "Required": true,
-                "UpdateType": "Immutable",
-                "Value": {
-                  "ValueType": "Route53HealthCheckConfigType"
-                }
+                "UpdateType": "Immutable"
               }
             }
           }
