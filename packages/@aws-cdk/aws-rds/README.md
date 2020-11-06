@@ -23,7 +23,7 @@ your instances will be launched privately or publicly:
 ```ts
 const cluster = new rds.DatabaseCluster(this, 'Database', {
   engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_2_08_1 }),
-  masterUser: rds.Credentials.fromUsername('clusteradmin'), // Optional - will default to admin
+  credentials: rds.Credentials.fromUsername('clusteradmin'), // Optional - will default to admin
   instanceProps: {
     // optional , defaults to t3.medium
     instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
@@ -70,7 +70,7 @@ const instance = new rds.DatabaseInstance(this, 'Instance', {
   engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19_0_0_0_2020_04_R1 }),
   // optional, defaults to m5.large
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
-  masterUsername: rds.Credentials.fromUsername('syscdk'), // Optional - will default to admin
+  credentials: rds.Credentials.fromUsername('syscdk'), // Optional - will default to admin
   vpc,
   vpcSubnets: {
     subnetType: ec2.SubnetType.PRIVATE
@@ -229,7 +229,7 @@ See also [@aws-cdk/aws-secretsmanager](https://github.com/aws/aws-cdk/blob/maste
 ### IAM Authentication
 
 You can also authenticate to a database instance using AWS Identity and Access Management (IAM) database authentication;
-See https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.html for more information
+See <https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.html> for more information
 and a list of supported versions and limitations.
 
 The following example shows enabling IAM authentication for a database instance and granting connection access to an IAM role.
@@ -245,12 +245,12 @@ instance.grantConnect(role); // Grant the role connection access to the DB.
 ```
 
 **Note**: In addition to the setup above, a database user will need to be created to support IAM auth.
-See https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.DBAccounts.html for setup instructions.
+See <https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.DBAccounts.html> for setup instructions.
 
 ### Kerberos Authentication
 
 You can also authenticate using Kerberos to a database instance using AWS Managed Microsoft AD for authentication;
-See https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/kerberos-authentication.html for more information
+See <https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/kerberos-authentication.html> for more information
 and a list of supported versions and limitations.
 
 The following example shows enabling domain support for a database instance and creating an IAM role to access
@@ -274,7 +274,7 @@ const instance = new rds.DatabaseInstance(stack, 'Instance', {
 **Note**: In addition to the setup above, you need to make sure that the database instance has network connectivity
 to the domain controllers. This includes enabling cross-VPC traffic if in a different VPC and setting up the
 appropriate security groups/network ACL to allow traffic between the database instance and domain controllers.
-Once configured, see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/kerberos-authentication.html for details
+Once configured, see <https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/kerberos-authentication.html> for details
 on configuring users for each available database engine.
 
 ### Metrics
@@ -412,7 +412,7 @@ in the cloud without managing any database instances.
 
 The following example initializes an Aurora Serverless PostgreSql cluster.
 Aurora Serverless clusters can specify scaling properties which will be used to
-automatically scale the database cluster seamlessly based on the workload. 
+automatically scale the database cluster seamlessly based on the workload.
 
 ```ts
 import * as ec2 from '@aws-cdk/aws-ec2';
@@ -431,7 +431,9 @@ const cluster = new rds.ServerlessCluster(this, 'AnotherCluster', {
   }
 });
 ```
+
 Aurora Serverless Clusters do not support the following features:
+
 * Loading data from an Amazon S3 bucket
 * Saving data to an Amazon S3 bucket
 * Invoking an AWS Lambda function with an Aurora MySQL native function
@@ -448,3 +450,38 @@ Aurora Serverless Clusters do not support the following features:
 Read more about the [limitations of Aurora Serverless](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless.html#aurora-serverless.limitations)
 
 Learn more about using Amazon Aurora Serverless by reading the [documentation](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless.html)
+
+#### Data API
+
+You can access your Aurora Serverless DB cluster using the built-in Data API. The Data API doesn't require a persistent connection to the DB cluster. Instead, it provides a secure HTTP endpoint and integration with AWS SDKs.
+
+The following example shows granting Data API access to a Lamba function.
+
+```ts
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as rds from '@aws-cdk/aws-rds';
+
+const vpc = new ec2.Vpc(this, 'MyVPC');
+
+const cluster = new rds.ServerlessCluster(this, 'AnotherCluster', {
+  engine: rds.DatabaseClusterEngine.AURORA_MYSQL,
+  vpc,
+  enableDataApi: true, // Optional - will be automatically set if you call grantDataApiAccess()
+});
+
+const fn = new lambda.Function(this, 'MyFunction', {
+  runtime: lambda.Runtime.NODEJS_10_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
+  environment: {
+    CLUSTER_ARN: cluster.clusterArn,
+    SECRET_ARN: cluster.secret.secretArn,
+  },
+});
+cluster.grantDataApiAccess(fn)
+```
+
+**Note**: To invoke the Data API, the resource will need to read the secret associated with the cluster.
+
+To learn more about using the Data API, see the [documentation](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/data-api.html).

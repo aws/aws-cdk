@@ -262,6 +262,18 @@ export class CfnResource extends CfnRefElement {
   }
 
   /**
+   * Retrieve a value value from the CloudFormation Resource Metadata
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/metadata-section-structure.html
+   *
+   * Note that this is a different set of metadata from CDK node metadata; this
+   * metadata ends up in the stack template under the resource, whereas CDK
+   * node metadata ends up in the Cloud Assembly.
+   */
+  public getMetadata(key: string): any {
+    return this.cfnOptions.metadata?.[key];
+  }
+
+  /**
    * @returns a string representation of this resource
    */
   public toString() {

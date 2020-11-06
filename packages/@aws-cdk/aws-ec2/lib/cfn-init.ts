@@ -3,7 +3,8 @@ import * as iam from '@aws-cdk/aws-iam';
 import { Aws, CfnResource, Construct } from '@aws-cdk/core';
 import { InitElement } from './cfn-init-elements';
 import { OperatingSystemType } from './machine-image';
-import { AttachInitOptions, InitBindOptions, InitElementConfig, InitElementType, InitPlatform } from './private/cfn-init-internal';
+import { InitBindOptions, InitElementConfig, InitElementType, InitPlatform } from './private/cfn-init-internal';
+import { UserData } from './user-data';
 
 /**
  * A CloudFormation-init configuration
@@ -74,6 +75,9 @@ export class CloudFormationInit {
   /**
    * Attach the CloudFormation Init config to the given resource
    *
+   * As an app builder, use `instance.applyCloudFormationInit()` or
+   * `autoScalingGroup.applyCloudFormationInit()` to trigger this method.
+   *
    * This method does the following:
    *
    * - Renders the `AWS::CloudFormation::Init` object to the given resource's
@@ -83,20 +87,21 @@ export class CloudFormationInit {
    *   `cfn-init` and `cfn-signal` to work, and potentially add permissions to download
    *   referenced asset and bucket resources.
    * - Updates the given UserData with commands to execute the `cfn-init` script.
-   *
-   * As an app builder, use `instance.applyCloudFormationInit()` or
-   * `autoScalingGroup.applyCloudFormationInit()` to trigger this method.
-   *
-   * @internal
    */
-  public _attach(attachedResource: CfnResource, attachOptions: AttachInitOptions) {
+  public attach(attachedResource: CfnResource, attachOptions: AttachInitOptions) {
     if (attachOptions.platform === OperatingSystemType.UNKNOWN) {
       throw new Error('Cannot attach CloudFormationInit to an unknown OS type');
     }
 
+    const CFN_INIT_METADATA_KEY = 'AWS::CloudFormation::Init';
+
+    if (attachedResource.getMetadata(CFN_INIT_METADATA_KEY) !== undefined) {
+      throw new Error(`Cannot bind CfnInit: resource '${attachedResource.node.path}' already has '${CFN_INIT_METADATA_KEY}' attached`);
+    }
+
     // Note: This will not reflect mutations made after attaching.
     const bindResult = this.bind(attachedResource.stack, attachOptions);
-    attachedResource.addMetadata('AWS::CloudFormation::Init', bindResult.configData);
+    attachedResource.addMetadata(CFN_INIT_METADATA_KEY, bindResult.configData);
 
     // Need to resolve the various tokens from assets in the config,
     // as well as include any asset hashes provided so the fingerprint is accurate.
@@ -326,4 +331,70 @@ function combineAssetHashesOrUndefined(hashes: (string | undefined)[]): string |
 
 function contentHash(content: string) {
   return crypto.createHash('sha256').update(content).digest('hex');
+}
+
+/**
+ * Options for attaching a CloudFormationInit to a resource
+ */
+export interface AttachInitOptions {
+  /**
+   * Instance role of the consuming instance or fleet
+   */
+  readonly instanceRole: iam.IRole;
+
+  /**
+   * OS Platform the init config will be used for
+   */
+  readonly platform: OperatingSystemType;
+
+  /**
+   * UserData to add commands to
+   */
+  readonly userData: UserData;
+
+  /**
+   * ConfigSet to activate
+   *
+   * @default ['default']
+   */
+  readonly configSets?: string[];
+
+  /**
+   * Whether to embed a hash into the userData
+   *
+   * If `true` (the default), a hash of the config will be embedded into the
+   * UserData, so that if the config changes, the UserData changes and
+   * the instance will be replaced.
+   *
+   * If `false`, no such hash will be embedded, and if the CloudFormation Init
+   * config changes nothing will happen to the running instance.
+   *
+   * @default true
+   */
+  readonly embedFingerprint?: boolean;
+
+  /**
+   * Print the results of running cfn-init to the Instance System Log
+   *
+   * By default, the output of running cfn-init is written to a log file
+   * on the instance. Set this to `true` to print it to the System Log
+   * (visible from the EC2 Console), `false` to not print it.
+   *
+   * (Be aware that the system log is refreshed at certain points in
+   * time of the instance life cycle, and successful execution may
+   * not always show up).
+   *
+   * @default true
+   */
+  readonly printLog?: boolean;
+
+  /**
+   * Don't fail the instance creation when cfn-init fails
+   *
+   * You can use this to prevent CloudFormation from rolling back when
+   * instances fail to start up, to help in debugging.
+   *
+   * @default false
+   */
+  readonly ignoreFailures?: boolean;
 }

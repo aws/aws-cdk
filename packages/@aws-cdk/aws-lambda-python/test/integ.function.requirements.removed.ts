@@ -1,3 +1,4 @@
+/// !cdk-integ pragma:ignore-assets
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
@@ -42,21 +43,21 @@ fs.copyFileSync(path.join(__dirname, 'lambda-handler', 'index.py'), path.join(wo
 const requirementsTxtPath = path.join(workDir, 'requirements.txt');
 
 // Write a requirements.txt with an extraneous dependency (colorama)
-const beforeDeps = 'requests==2.23.0\npillow==6.2.2\ncolorama==0.4.3\n';
+const beforeDeps = 'certifi==2020.6.20\nchardet==3.0.4\nidna==2.10\nurllib3==1.25.11\nrequests==2.23.0\npillow==6.2.2\ncolorama==0.4.3\n';
 fs.writeFileSync(requirementsTxtPath, beforeDeps);
 
 // Synth the first time
 const app = new App();
-const stack1 = new TestStack(app, 'cdk-integ-lambda-python-requirements-removed');
+const stack1 = new TestStack(app, 'cdk-integ-lambda-python-requirements-removed1');
 app.synth();
 
 // Then, write a requirements.txt without the extraneous dependency and synth again
-const afterDeps = 'requests==2.23.0\npillow==6.2.2\n';
+const afterDeps = 'certifi==2020.6.20\nchardet==3.0.4\nidna==2.10\nurllib3==1.25.11\nrequests==2.23.0\npillow==6.2.2\n';
 fs.writeFileSync(requirementsTxtPath, afterDeps);
 
 // Synth the same stack a second time with different requirements.txt contents
 const app2 = new App();
-const stack2 = new TestStack(app2, 'cdk-integ-lambda-python-requirements-removed');
+const stack2 = new TestStack(app2, 'cdk-integ-lambda-python-requirements-removed2');
 app2.synth();
 
 if (!stack1.dependenciesAssetHash || !stack2.dependenciesAssetHash) {
