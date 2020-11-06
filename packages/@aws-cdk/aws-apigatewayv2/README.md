@@ -23,7 +23,7 @@
   - [Cross Origin Resource Sharing (CORS)](#cross-origin-resource-sharing-cors)
   - [Publishing HTTP APIs](#publishing-http-apis)
   - [Custom Domain](#custom-domain)
-  - [Managing access to HTTP APIs](#managing-access-to-http-apis)
+  - [Managing access](#managing-access)
   - [Metrics](#metrics)
   - [VPC Link](#vpc-link)
   - [Private Integration](#private-integration)
