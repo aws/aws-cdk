@@ -10,7 +10,7 @@ import { Container } from './container';
 import { ServiceExtension, ServiceBuild } from './extension-interfaces';
 
 // The version of the App Mesh envoy sidecar to add to the task.
-const APP_MESH_ENVOY_SIDECAR_VERSION = 'v1.15.0.0-prod';
+const APP_MESH_ENVOY_SIDECAR_VERSION = 'v1.15.1.0-prod';
 
 /**
  * The settings for the App Mesh extension.
@@ -70,7 +70,7 @@ export class AppMeshExtension extends ServiceExtension {
     // Make sure that the parent cluster for this service has
     // a namespace attached.
     if (!this.parentService.cluster.defaultCloudMapNamespace) {
-      this.parentService.cluster.addDefaultCloudMapNamespace({
+      this.parentService.environment.addDefaultCloudMapNamespace({
         // Name the namespace after the environment name.
         // Service DNS will be like <service id>.<environment id>
         name: this.parentService.environment.id,
