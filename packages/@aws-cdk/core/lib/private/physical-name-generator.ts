@@ -1,5 +1,6 @@
 import * as crypto from 'crypto';
 import { Node } from 'constructs';
+import { Names } from '../names';
 import { IResolvable, IResolveContext } from '../resolvable';
 import { IResource } from '../resource';
 import { Stack } from '../stack';
@@ -9,7 +10,7 @@ import { TokenMap } from './token-map';
 export function generatePhysicalName(resource: IResource): string {
   const stack = Stack.of(resource);
   const stackPart = new PrefixNamePart(stack.stackName, 25);
-  const idPart = new SuffixNamePart(Node.of(resource).uniqueId, 24);
+  const idPart = new SuffixNamePart(Names.nodeUniqueId(resource.node), 24);
 
   const region: string = stack.region;
   if (Token.isUnresolved(region) || !region) {
