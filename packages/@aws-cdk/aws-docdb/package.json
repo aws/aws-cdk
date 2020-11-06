@@ -101,6 +101,7 @@
   },
   "awslint": {
     "exclude": [
+      "attribute-tag:@aws-cdk/aws-docdb.DatabaseSecret.secretFullArn",
       "attribute-tag:@aws-cdk/aws-docdb.DatabaseSecret.secretName"
     ]
   },
