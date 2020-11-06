@@ -209,7 +209,17 @@ with 3 API mapping resources across different APIs and Stages.
 
 API Gateway supports multiple mechanisms for [controlling and managing access to your HTTP
 API](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-access-control.html) through authorizers.
-Here's an example with using a Cognito User Pool as the identity source.
+
+#### JWT Authorizer
+
+The JWT authorizer authorizes access via JSON Web Tokens (JWT) as part of the [OpenId
+Connect](https://openid.net/specs/openid-connect-core-1_0.html) and [OAuth](https://oauth.net/2/)
+frameworks.
+
+When configured on a route, the API Gateway service validates the JWTs submitted by the client, and allows or denies
+access based on its content.
+
+The following sets up a JWT authorizer using a Cognito user pool as the identity source.
 
 ```ts
 const userPool = new UserPool(stack, 'my-pool');
