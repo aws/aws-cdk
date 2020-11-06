@@ -298,7 +298,7 @@ taskDefinition.addContainer('container', {
   },
   secrets: { // Retrieved from AWS Secrets Manager or AWS Systems Manager Parameter Store at container start-up.
     SECRET: ecs.Secret.fromSecretsManager(secret),
-    DB_PASSWORD: ecs.Secret.fromSecretsManager(dbSecret, 'password'), // Reference a specific JSON field
+    DB_PASSWORD: ecs.Secret.fromSecretsManager(dbSecret, 'password'), // Reference a specific JSON field, (requires platform version 1.4 or later for Fargate tasks)
     PARAMETER: ecs.Secret.fromSsmParameter(parameter),
   }
 });
