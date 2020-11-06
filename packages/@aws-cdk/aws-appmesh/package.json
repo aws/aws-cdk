@@ -175,13 +175,13 @@
       "docs-public-apis:@aws-cdk/aws-appmesh.Protocol.HTTP2",
       "docs-public-apis:@aws-cdk/aws-appmesh.Protocol.GRPC",
       "duration-prop-type:@aws-cdk/aws-appmesh.GrpcNodeListener.timeout",
-      "duration-prop-type:@aws-cdk/aws-appmesh.GrpcNodeListenerProps.timeout",
+      "duration-prop-type:@aws-cdk/aws-appmesh.GrpcNodeListenerOptions.timeout",
       "duration-prop-type:@aws-cdk/aws-appmesh.HttpNodeListener.timeout",
-      "duration-prop-type:@aws-cdk/aws-appmesh.HttpNodeListenerProps.timeout",
+      "duration-prop-type:@aws-cdk/aws-appmesh.HttpNodeListenerOptions.timeout",
       "duration-prop-type:@aws-cdk/aws-appmesh.Http2NodeListener.timeout",
-      "duration-prop-type:@aws-cdk/aws-appmesh.Http2NodeListenerProps.timeout",
+      "duration-prop-type:@aws-cdk/aws-appmesh.Http2NodeListenerOptions.timeout",
       "duration-prop-type:@aws-cdk/aws-appmesh.TcpNodeListener.timeout",
-      "duration-prop-type:@aws-cdk/aws-appmesh.TcpNodeListenerProps.timeout"
+      "duration-prop-type:@aws-cdk/aws-appmesh.TcpNodeListenerOptions.timeout"
     ]
   },
   "stability": "experimental",
