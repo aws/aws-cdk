@@ -30,7 +30,7 @@ const authorizer = new HttpJwtAuthorizer(stack, 'MyAuthorizer', {
 });
 
 const handler = new lambda.Function(stack, 'lambda', {
-  runtime: lambda.Runtime.NODEJS_10_X,
+  runtime: lambda.Runtime.NODEJS_12_X,
   handler: 'index.handler',
   code: lambda.AssetCode.fromAsset(path.join(__dirname, 'integ.authorizer.handler')),
 });
