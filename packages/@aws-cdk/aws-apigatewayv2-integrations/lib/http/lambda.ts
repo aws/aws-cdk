@@ -1,4 +1,10 @@
-import { HttpIntegrationType, HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig, IHttpRouteIntegration, PayloadFormatVersion } from '@aws-cdk/aws-apigatewayv2';
+import {
+  HttpIntegrationType,
+  HttpRouteIntegrationBindOptions,
+  HttpRouteIntegrationConfig,
+  IHttpRouteIntegration,
+  PayloadFormatVersion,
+} from '@aws-cdk/aws-apigatewayv2';
 import { ServicePrincipal } from '@aws-cdk/aws-iam';
 import { IFunction } from '@aws-cdk/aws-lambda';
 import { Names, Stack } from '@aws-cdk/core';

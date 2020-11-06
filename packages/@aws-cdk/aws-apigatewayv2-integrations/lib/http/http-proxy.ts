@@ -1,5 +1,11 @@
-import { HttpIntegrationType, HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig, IHttpRouteIntegration, PayloadFormatVersion } from '@aws-cdk/aws-apigatewayv2';
-import { HttpMethod } from '@aws-cdk/aws-apigatewayv2/lib/http/route';
+import {
+  HttpIntegrationType,
+  HttpRouteIntegrationBindOptions,
+  HttpRouteIntegrationConfig,
+  HttpMethod,
+  IHttpRouteIntegration,
+  PayloadFormatVersion,
+} from '@aws-cdk/aws-apigatewayv2';
 
 /**
  * Properties to initialize a new `HttpProxyIntegration`.
