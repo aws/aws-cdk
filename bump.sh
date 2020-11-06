@@ -13,4 +13,7 @@
 #
 # --------------------------------------------------------------------------------------------------
 set -euo pipefail
-./scripts/bump.js ${1:-minor}
+scriptdir=$(cd $(dirname $0) && pwd)
+cd ${scriptdir}
+yarn --frozen-lockfile
+${scriptdir}/scripts/bump.js ${1:-minor}

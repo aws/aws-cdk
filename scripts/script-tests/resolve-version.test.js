@@ -65,6 +65,21 @@ happy({
   }
 });
 
+happy({
+  name: 'to support BUMP_CANDIDATE stable branches can be bumped towards a pre-release',
+  inputs: { 
+    'release.json': { majorVersion: 2, releaseType: 'stable' },
+    'version.v2.json': { version: '2.0.0-rc.0' }
+  },
+  expected: {
+    changelogFile: 'CHANGELOG.v2.md',
+    marker: '0.0.0',
+    prerelease: undefined,
+    version: '2.0.0-rc.0',
+    versionFile: 'version.v2.json'
+  }
+});
+
 failure({
   name: 'invalid release type',
   inputs: { 'release.json': { majorVersion: 2, releaseType: 'build' } },
@@ -111,15 +126,6 @@ failure({
     'version.v2.json': { version: '2.0.0-rc.0' }
   },
   expected: 'could not find pre-release tag "alpha" in current version "2.0.0-rc.0" defined in version.v2.json'
-});
-
-failure({
-  name: 'actual version not the right pre-release (stable)',
-  inputs: { 
-    'release.json': { majorVersion: 2, releaseType: 'stable' },
-    'version.v2.json': { version: '2.0.0-alpha.0' }
-  },
-  expected: 'found pre-release tag in version specified in version.v2.json is 2.0.0-alpha.0 but "releaseType"" is set to "stable"'
 });
 
 function happy({ name, inputs, expected } = opts) {

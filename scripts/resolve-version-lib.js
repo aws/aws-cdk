@@ -42,11 +42,10 @@ function resolveVersion(rootdir) {
   if (!currentVersion.startsWith(`${majorVersion}.`)) { 
     throw new Error(`current version "${currentVersion}" does not use the expected major version ${majorVersion}`); 
   }
-  if (releaseType === 'stable') {
-    if (currentVersion.includes('-')) {
-      throw new Error(`found pre-release tag in version specified in ${versionFile} is ${currentVersion} but "releaseType"" is set to "stable"`);
-    }
-  } else {
+  // if this is a pre-release, make sure current version includes the
+  // pre-release tag (e.g. "1.0.0-alpha.0"). we allow stable branches to bump to
+  // a pre-release for testing purposes when BUMP_CANDIDATE=true (see bump.js)
+  if (releaseType !== 'stable') {
     if (!currentVersion.includes(`-${releaseType}.`)) {
       throw new Error(`could not find pre-release tag "${releaseType}" in current version "${currentVersion}" defined in ${versionFile}`);
     }
