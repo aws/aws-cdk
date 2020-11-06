@@ -141,6 +141,12 @@ export class FargateService extends BaseService implements IFargateService {
       throw new Error('Only one of SecurityGroup or SecurityGroups can be populated.');
     }
 
+    if (props.taskDefinition.referencesSecretJsonField
+        && props.platformVersion
+        && SECRET_JSON_FIELD_UNSUPPORTED_PLATFORM_VERSIONS.includes(props.platformVersion)) {
+      throw new Error(`The task definition of this service uses at least a container that references a secret JSON field. This feature is not supported for platform version ${props.platformVersion}`);
+    }
+
     const propagateTagsFromSource = props.propagateTaskTagsFrom !== undefined ? props.propagateTaskTagsFrom
       : (props.propagateTags !== undefined ? props.propagateTags : PropagatedTagSource.NONE);
 
@@ -219,3 +225,10 @@ export enum FargatePlatformVersion {
    */
   VERSION1_0 = '1.0.0',
 }
+
+const SECRET_JSON_FIELD_UNSUPPORTED_PLATFORM_VERSIONS = [
+  FargatePlatformVersion.VERSION1_0,
+  FargatePlatformVersion.VERSION1_1,
+  FargatePlatformVersion.VERSION1_2,
+  FargatePlatformVersion.VERSION1_3,
+];

@@ -3,6 +3,7 @@ import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
+import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
@@ -297,6 +298,31 @@ export = {
           taskDefinition,
         });
       }, /Supplied TaskDefinition is not configured for compatibility with Fargate/);
+
+      test.done();
+    },
+
+    'throws whith secret json field on unsupported platform version'(test: Test) {
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaksDef');
+      const secret = new secretsmanager.Secret(stack, 'Secret');
+      taskDefinition.addContainer('BaseContainer', {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        secrets: {
+          SECRET_KEY: ecs.Secret.fromSecretsManager(secret, 'specificKey'),
+        },
+      });
+
+      // THEN
+      test.throws(() => {
+        new ecs.FargateService(stack, 'FargateService', {
+          cluster,
+          taskDefinition,
+          platformVersion: ecs.FargatePlatformVersion.VERSION1_3,
+        });
+      }, /uses at least a container that references a secret JSON field.+platform version 1.3.0/);
 
       test.done();
     },
