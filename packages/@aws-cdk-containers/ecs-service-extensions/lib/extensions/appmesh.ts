@@ -10,7 +10,7 @@ import { Container } from './container';
 import { ServiceExtension, ServiceBuild } from './extension-interfaces';
 
 // The version of the App Mesh envoy sidecar to add to the task.
-const APP_MESH_ENVOY_SIDECAR_VERSION = 'v1.15.0.0-prod';
+const APP_MESH_ENVOY_SIDECAR_VERSION = 'v1.15.1.0-prod';
 
 /**
  * The settings for the App Mesh extension.
