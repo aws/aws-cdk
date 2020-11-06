@@ -74,6 +74,7 @@
   },
   "dependencies": {
     "@aws-cdk/aws-apigateway": "0.0.0",
+    "@aws-cdk/aws-apigatewayv2": "0.0.0",
     "@aws-cdk/aws-cloudfront": "0.0.0",
     "@aws-cdk/aws-cognito": "0.0.0",
     "@aws-cdk/aws-ec2": "0.0.0",
@@ -89,6 +90,7 @@
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/aws-apigateway": "0.0.0",
+    "@aws-cdk/aws-apigatewayv2": "0.0.0",
     "@aws-cdk/aws-cloudfront": "0.0.0",
     "@aws-cdk/aws-cognito": "0.0.0",
     "@aws-cdk/aws-ec2": "0.0.0",
