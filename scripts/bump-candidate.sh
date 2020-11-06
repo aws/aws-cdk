@@ -17,4 +17,5 @@
 # --------------------------------------------------------------------------------------------------
 set -euo pipefail
 scriptdir=$(cd $(dirname $0) && pwd)
-BUMP_CANDIDATE=true ${scriptdir}/bump.js ${1:-minor}
+rootdir=${scriptdir}/..
+BUMP_CANDIDATE=true ${rootdir}/bump.sh ${1:-minor}

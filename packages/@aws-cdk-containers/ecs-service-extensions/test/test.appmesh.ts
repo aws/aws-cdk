@@ -132,7 +132,7 @@ export = {
                 {
                   Ref: 'AWS::URLSuffix',
                 },
-                '/aws-appmesh-envoy:v1.15.0.0-prod',
+                '/aws-appmesh-envoy:v1.15.1.0-prod',
               ],
             ],
           },
