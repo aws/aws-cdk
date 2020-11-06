@@ -562,7 +562,7 @@ const logGroup = new logs.LogGroup(stack, 'MyLogGroup');
 new stepfunctions.StateMachine(stack, 'MyStateMachine', {
     definition: stepfunctions.Chain.start(new stepfunctions.Pass(stack, 'Pass')),
     logs: {
-      destinations: logGroup,
+      destination: logGroup,
       level: stepfunctions.LogLevel.ALL,
     }
 });

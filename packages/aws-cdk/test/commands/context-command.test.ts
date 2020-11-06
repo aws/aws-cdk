@@ -39,3 +39,26 @@ test('context reset can remove a context key', async () => {
     baz: 'quux',
   });
 });
+
+test('context reset can remove a context key using number', async () => {
+  // GIVEN
+  const configuration = new Configuration();
+  configuration.context.set('foo', 'bar');
+  configuration.context.set('baz', 'quux');
+
+  expect(configuration.context.all).toEqual({
+    foo: 'bar',
+    baz: 'quux',
+  });
+
+  // WHEN
+  await realHandler({
+    configuration,
+    args: { reset: '1' },
+  } as any);
+
+  // THEN
+  expect(configuration.context.all).toEqual({
+    foo: 'bar',
+  });
+});

@@ -122,6 +122,19 @@ nodeunitShim({
     test.done();
   },
 
+  'can read metadata'(test: Test) {
+    // GIVEN
+    const app = new core.App();
+    const stack = new core.Stack(app, 'TestStack');
+    const resource = new core.CfnResource(stack, 'DefaultResource', { type: 'Test::Resource::Fake' });
+    resource.addMetadata('Beep', 'Boop');
+
+    // THEN
+    expect(resource.getMetadata('Beep')).toEqual('Boop');
+
+    test.done();
+  },
+
   'subclasses can override "shouldSynthesize" to lazy-determine if the resource should be included'(test: Test) {
     // GIVEN
     class HiddenCfnResource extends core.CfnResource {

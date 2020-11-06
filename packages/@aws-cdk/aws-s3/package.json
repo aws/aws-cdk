@@ -49,13 +49,15 @@
     "cfn2ts": "cfn2ts",
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test",
-    "compat": "cdk-compat"
+    "compat": "cdk-compat",
+    "gen": "cfn2ts"
   },
   "cdk-build": {
     "cloudformation": "AWS::S3",
     "env": {
       "AWSLINT_BASE_CONSTRUCT": "true"
-    }
+    },
+    "jest": true
   },
   "keywords": [
     "aws",
@@ -71,19 +73,18 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
-    "@types/nodeunit": "^0.0.31",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
-    "nodeunit": "^0.11.3",
-    "pkglint": "0.0.0"
+    "pkglint": "0.0.0",
+    "nodeunit-shim": "0.0.0"
   },
   "dependencies": {
     "@aws-cdk/aws-events": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-kms": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.4"
+    "constructs": "^3.2.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -91,7 +92,7 @@
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-kms": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.4"
+    "constructs": "^3.2.0"
   },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"

@@ -1,4 +1,4 @@
-import { Annotations, IResource, Lazy, Resource, ResourceProps, Stack, Token } from '@aws-cdk/core';
+import { Annotations, IResource, Lazy, Names, Resource, ResourceProps, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Connections } from './connections';
 import { CfnSecurityGroup, CfnSecurityGroupEgress, CfnSecurityGroupIngress } from './ec2.generated';
@@ -71,7 +71,7 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
   }
 
   public get uniqueId() {
-    return this.node.uniqueId;
+    return Names.nodeUniqueId(this.node);
   }
 
   public addIngressRule(peer: IPeer, connection: Port, description?: string, remoteRule?: boolean) {

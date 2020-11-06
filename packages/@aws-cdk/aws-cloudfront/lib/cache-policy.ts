@@ -1,4 +1,4 @@
-import { Duration, Resource, Token } from '@aws-cdk/core';
+import { Duration, Names, Resource, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnCachePolicy } from './cloudfront.generated';
 
@@ -75,6 +75,12 @@ export interface CachePolicyProps {
    * @default false
    */
   readonly enableAcceptEncodingGzip?: boolean;
+
+  /**
+   * Whether to normalize and include the `Accept-Encoding` header in the cache key when the `Accept-Encoding` header is 'br'.
+   * @default false
+   */
+  readonly enableAcceptEncodingBrotli?: boolean;
 }
 
 /**
@@ -122,7 +128,7 @@ export class CachePolicy extends Resource implements ICachePolicy {
       physicalName: props.cachePolicyName,
     });
 
-    const cachePolicyName = props.cachePolicyName ?? this.node.uniqueId;
+    const cachePolicyName = props.cachePolicyName ?? Names.uniqueId(this);
     if (!Token.isUnresolved(cachePolicyName) && !cachePolicyName.match(/^[\w-]+$/i)) {
       throw new Error(`'cachePolicyName' can only include '-', '_', and alphanumeric characters, got: '${props.cachePolicyName}'`);
     }
@@ -160,6 +166,7 @@ export class CachePolicy extends Resource implements ICachePolicy {
         headers: headers.headers,
       },
       enableAcceptEncodingGzip: props.enableAcceptEncodingGzip ?? false,
+      enableAcceptEncodingBrotli: props.enableAcceptEncodingBrotli ?? false,
       queryStringsConfig: {
         queryStringBehavior: queryStrings.behavior,
         queryStrings: queryStrings.queryStrings,
