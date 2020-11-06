@@ -272,19 +272,19 @@ export class AppMeshExtension extends ServiceExtension {
       },
     });
 
-    var virtualRouterBaseListener: appmesh.VirtualRouterListener;
+    var virtualRouterListener: appmesh.VirtualRouterListener;
     switch (this.protocol) {
       case appmesh.Protocol.HTTP:
-        virtualRouterBaseListener = appmesh.VirtualRouterListener.http(containerextension.trafficPort);
+        virtualRouterListener = appmesh.VirtualRouterListener.http(containerextension.trafficPort);
         break;
       case appmesh.Protocol.HTTP2:
-        virtualRouterBaseListener = appmesh.VirtualRouterListener.http2(containerextension.trafficPort);
+        virtualRouterListener = appmesh.VirtualRouterListener.http2(containerextension.trafficPort);
         break;
       case appmesh.Protocol.GRPC:
-        virtualRouterBaseListener = appmesh.VirtualRouterListener.grpc(containerextension.trafficPort);
+        virtualRouterListener = appmesh.VirtualRouterListener.grpc(containerextension.trafficPort);
         break;
       case appmesh.Protocol.TCP:
-        virtualRouterBaseListener= appmesh.VirtualRouterListener.tcp(containerextension.trafficPort);
+        virtualRouterListener= appmesh.VirtualRouterListener.tcp(containerextension.trafficPort);
         break;
       default:
         throw new Error(`Protocol ${this.protocol} not supported by App Mesh Extension`);
@@ -294,7 +294,7 @@ export class AppMeshExtension extends ServiceExtension {
     this.virtualRouter = new appmesh.VirtualRouter(this.scope, `${this.parentService.id}-virtual-router`, {
       mesh: this.mesh,
       listeners: [
-        virtualRouterBaseListener,
+        virtualRouterListener,
       ],
       virtualRouterName: `${this.parentService.id}`,
     });
