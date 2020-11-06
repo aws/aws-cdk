@@ -13,7 +13,7 @@ phases:
       - aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REGISTRY}
 
       # debug to make sure we actually pulling from the ecr mirror
-      - docker pull cdk-testing-image:1.0
+      - docker pull ${ECR_REGISTRY}/cdk-testing-image:1.0
 
       # Install yarn if it wasn't already present in the image
       - yarn --version || npm -g install yarn
@@ -24,7 +24,7 @@ phases:
     commands:
       - 'if ${BUMP_CANDIDATE:-false}; then /bin/bash ./scripts/bump-candidate.sh; fi'
       - /bin/bash ./scripts/align-version.sh
-      - /bin/bash ./build.sh
+      # - /bin/bash ./build.sh
   post_build:
     commands:
       - "[ -f .BUILD_COMPLETED ] && /bin/bash ./pack.sh"
