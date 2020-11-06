@@ -52,13 +52,17 @@ node.addBackends(new appmesh.VirtualService(stack, 'service-2', {
 );
 
 router.addRoute('route-1', {
-  routeTargets: [
-    {
-      virtualNode: node,
-      weight: 50,
+  routeSpec: appmesh.RouteSpec.http({
+    weightedTargets: [
+      {
+        virtualNode: node,
+        weight: 50,
+      },
+    ],
+    match: {
+      prefixPath: '/',
     },
-  ],
-  prefix: '/',
+  }),
 });
 
 const node2 = mesh.addVirtualNode('node2', {
@@ -99,22 +103,28 @@ const node3 = mesh.addVirtualNode('node3', {
 });
 
 router.addRoute('route-2', {
-  routeTargets: [
-    {
-      virtualNode: node2,
-      weight: 30,
+  routeSpec: appmesh.RouteSpec.http({
+    weightedTargets: [
+      {
+        virtualNode: node2,
+        weight: 30,
+      },
+    ],
+    match: {
+      prefixPath: '/path2',
     },
-  ],
-  prefix: '/path2',
+  }),
 });
 
 router.addRoute('route-3', {
-  routeTargets: [
-    {
-      virtualNode: node3,
-      weight: 20,
-    },
-  ],
+  routeSpec: appmesh.RouteSpec.tcp({
+    weightedTargets: [
+      {
+        virtualNode: node3,
+        weight: 20,
+      },
+    ],
+  }),
 });
 
 const gateway = mesh.addVirtualGateway('gateway1', {
