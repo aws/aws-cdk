@@ -12,9 +12,6 @@ phases:
       # login to ecr
       - aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com
 
-      # test - should fail for now if login worked
-      - docker pull python
-
       # Install yarn if it wasn't already present in the image
       - yarn --version || npm -g install yarn
   pre_build:
@@ -24,7 +21,7 @@ phases:
     commands:
       - 'if ${BUMP_CANDIDATE:-false}; then /bin/bash ./scripts/bump-candidate.sh; fi'
       - /bin/bash ./scripts/align-version.sh
-      # - /bin/bash ./build.sh
+      - /bin/bash ./build.sh
   post_build:
     commands:
       - "[ -f .BUILD_COMPLETED ] && /bin/bash ./pack.sh"
