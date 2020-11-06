@@ -12,6 +12,8 @@ phases:
       # login to ecr
       - aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REGISTRY}
 
+      - cat /root/.docker/config.json
+
       # debug to make sure we actually pulling from the ecr mirror
       - docker pull ${ECR_REGISTRY}/cdk-testing-image:1.0
 
