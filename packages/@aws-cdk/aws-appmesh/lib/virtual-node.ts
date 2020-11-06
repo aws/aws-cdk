@@ -29,15 +29,6 @@ export interface IVirtualNode extends cdk.IResource {
    */
   readonly virtualNodeArn: string;
 
-  /**
-   * Utility method to add backends for existing or new VirtualNodes
-   */
-  addBackends(...props: IVirtualService[]): void;
-
-  /**
-   * Utility method to add Node Listeners for new or existing VirtualNodes
-   */
-  addListeners(listeners: VirtualNodeListener[]): void;
 }
 
 /**
@@ -123,26 +114,6 @@ abstract class VirtualNodeBase extends cdk.Resource implements IVirtualNode {
 
   protected readonly backends = new Array<CfnVirtualNode.BackendProperty>();
   protected readonly listeners = new Array<VirtualNodeListenerConfig>();
-
-  /**
-   * Add a Virtual Services that this node is expected to send outbound traffic to
-   */
-  public addBackends(...props: IVirtualService[]) {
-    for (const s of props) {
-      this.backends.push({
-        virtualService: {
-          virtualServiceName: s.virtualServiceName,
-        },
-      });
-    }
-  }
-
-  /**
-   * Utility method to add an inbound listener for this VirtualNode
-   */
-  public addListeners(listeners: VirtualNodeListener[]) {
-    listeners.forEach(listener => this.listeners.push(listener.bind(this)));
-  }
 }
 
 /**
@@ -195,7 +166,7 @@ export class VirtualNode extends VirtualNodeBase {
     this.mesh = props.mesh;
 
     this.addBackends(...props.backends || []);
-    this.addListeners(props.listeners ? props.listeners : []);
+    this.addListener(...props.listeners ? props.listeners : []);
     const accessLogging = props.accessLog?.bind(this);
 
     const node = new CfnVirtualNode(this, 'Resource', {
@@ -224,6 +195,26 @@ export class VirtualNode extends VirtualNodeBase {
       resource: `mesh/${props.mesh.meshName}/virtualNode`,
       resourceName: this.physicalName,
     });
+  }
+
+  /**
+   * Utility method to add an inbound listener for this VirtualNode
+   */
+  public addListener(...listeners: VirtualNodeListener[]) {
+    listeners.forEach(listener => this.listeners.push(listener.bind(this)));
+  }
+
+  /**
+   * Add a Virtual Services that this node is expected to send outbound traffic to
+   */
+  public addBackends(...props: IVirtualService[]) {
+    for (const s of props) {
+      this.backends.push({
+        virtualService: {
+          virtualServiceName: s.virtualServiceName,
+        },
+      });
+    }
   }
 }
 

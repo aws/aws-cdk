@@ -74,9 +74,9 @@ export = {
           dnsHostName: 'test',
         });
 
-        node.addListeners([appmesh.VirtualNodeListener.tcp({
+        node.addListener(appmesh.VirtualNodeListener.tcp({
           port: 8081,
-        })]);
+        }));
 
         // THEN
         expect(stack).to(
@@ -220,11 +220,11 @@ export = {
           dnsHostName: 'test',
         });
 
-        node.addListeners([appmesh.VirtualNodeListener.tcp({
+        node.addListener(appmesh.VirtualNodeListener.tcp({
           port: 80,
           healthCheck: { timeout: cdk.Duration.seconds(3) },
           timeout: { idle: cdk.Duration.seconds(10) },
-        })]);
+        }));
 
         // THEN
         expect(stack).to(
@@ -277,11 +277,7 @@ export = {
 
     const stack2 = new cdk.Stack();
 
-    const node2 = appmesh.VirtualNode.fromVirtualNodeName(stack2, 'imported-node', mesh.meshName, node.virtualNodeName);
-
-    node2.addListeners([appmesh.VirtualNodeListener.tcp({
-      port: 8081,
-    })]);
+    appmesh.VirtualNode.fromVirtualNodeName(stack2, 'imported-node', mesh.meshName, node.virtualNodeName);
 
     // THEN
     expect(stack).to(
