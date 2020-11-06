@@ -6,10 +6,28 @@ import {
   IApplicationLoadBalancer, ListenerCertificate, ListenerAction,
 } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { IRole } from '@aws-cdk/aws-iam';
-import { ARecord, IHostedZone, RecordTarget } from '@aws-cdk/aws-route53';
+import { ARecord, IHostedZone, RecordTarget, CnameRecord } from '@aws-cdk/aws-route53';
 import { LoadBalancerTarget } from '@aws-cdk/aws-route53-targets';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
+
+/**
+ * Describes the type of DNS record the service should create
+ */
+export enum ApplicationLoadBalancedServiceRecordType {
+  /**
+   * Create Route53 A Alias record
+   */
+  ALIAS,
+  /**
+   * Create a CNAME record
+   */
+  CNAME,
+  /**
+   * Do not create any DNS records
+   */
+  NONE
+}
 
 /**
  * The properties for the base ApplicationLoadBalancedEc2Service or ApplicationLoadBalancedFargateService service.
@@ -177,6 +195,14 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    * @default false
    */
   readonly redirectHTTP?: boolean;
+
+  /**
+   * Specifies whether the Route53 record should be a CNAME, an A record using the Alias feature or no record at all.
+   * This is useful if you need to work with DNS systems that do not support alias records.
+   *
+   * @default ApplicationLoadBalancedServiceRecordType.ALIAS
+   */
+  readonly recordType?: ApplicationLoadBalancedServiceRecordType;
 }
 
 export interface ApplicationLoadBalancedTaskImageOptions {
@@ -390,13 +416,27 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
         throw new Error('A Route53 hosted domain zone name is required to configure the specified domain name');
       }
 
-      const record = new ARecord(this, 'DNS', {
-        zone: props.domainZone,
-        recordName: props.domainName,
-        target: RecordTarget.fromAlias(new LoadBalancerTarget(loadBalancer)),
-      });
-
-      domainName = record.domainName;
+      switch (props.recordType ?? ApplicationLoadBalancedServiceRecordType.ALIAS) {
+        case ApplicationLoadBalancedServiceRecordType.ALIAS:
+          let aliasRecord = new ARecord(this, 'DNS', {
+            zone: props.domainZone,
+            recordName: props.domainName,
+            target: RecordTarget.fromAlias(new LoadBalancerTarget(loadBalancer)),
+          });
+          domainName = aliasRecord.domainName;
+          break;
+        case ApplicationLoadBalancedServiceRecordType.CNAME:
+          let cnameRecord = new CnameRecord(this, 'DNS', {
+            zone: props.domainZone,
+            recordName: props.domainName,
+            domainName: loadBalancer.loadBalancerDnsName,
+          });
+          domainName = cnameRecord.domainName;
+          break;
+        case ApplicationLoadBalancedServiceRecordType.NONE:
+          // Do not create a DNS record
+          break;
+      }
     }
 
     if (loadBalancer instanceof ApplicationLoadBalancer) {
