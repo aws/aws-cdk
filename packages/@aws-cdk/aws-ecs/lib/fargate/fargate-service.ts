@@ -144,7 +144,7 @@ export class FargateService extends BaseService implements IFargateService {
     if (props.taskDefinition.referencesSecretJsonField
         && props.platformVersion
         && SECRET_JSON_FIELD_UNSUPPORTED_PLATFORM_VERSIONS.includes(props.platformVersion)) {
-      throw new Error(`The task definition of this service uses at least a container that references a secret JSON field. This feature is not supported for platform version ${props.platformVersion}`);
+      throw new Error('The task definition of this service uses at least a container that references a secret JSON field. This feature requires platform version 1.4.0 or later.');
     }
 
     const propagateTagsFromSource = props.propagateTaskTagsFrom !== undefined ? props.propagateTaskTagsFrom
