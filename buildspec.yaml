@@ -6,11 +6,14 @@ phases:
   install:
     commands:
       # Start docker daemon inside the container
-      - nohup /usr/bin/dockerd --host=unix:///var/run/docker.sock --host=tcp://127.0.0.1:2375 --storage-driver=overlay2&
+      - nohup /usr/bin/dockerd --registry-mirror https://${ECR_REGISTRY} --host=unix:///var/run/docker.sock --host=tcp://127.0.0.1:2375 --storage-driver=overlay2&
       - timeout 15 sh -c "until docker info; do echo .; sleep 1; done"
 
       # login to ecr
-      - aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com
+      - aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REGISTRY}
+
+      # debug to make sure we actually pulling from the ecr mirror
+      - docker pull cdk-testing-image:1.0
 
       # Install yarn if it wasn't already present in the image
       - yarn --version || npm -g install yarn
