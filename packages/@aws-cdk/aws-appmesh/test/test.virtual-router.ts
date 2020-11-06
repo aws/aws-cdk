@@ -304,15 +304,38 @@ export = {
     },
   },
 
-  'can import a virtual router'(test: Test) {
+  'Can import Virtual Routers using an ARN'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
 
-    // WHEN
-    const vr = appmesh.VirtualRouter.fromVirtualRouterName(stack, 'Router', 'MyMesh', 'MyRouter');
+    const meshName = 'testMesh';
+    const virtualRouterName = 'virtual-router';
+    const arn = `arn:aws:appmesh:us-east-1:123456789012:mesh/${meshName}/virtualRouter/${virtualRouterName}`;
 
+    // WHEN
+    const virtualRouter = appmesh.VirtualRouter.fromVirtualRouterArn(
+      stack, 'importedVirtualRouter', arn);
     // THEN
-    test.ok(vr.mesh !== undefined);
+    test.equal(virtualRouter.mesh.meshName, meshName);
+    test.equal(virtualRouter.virtualRouterName, virtualRouterName);
+
+    test.done();
+  },
+  'Can import Virtual Routers using attributes'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    const meshName = 'testMesh';
+    const virtualRouterName = 'virtual-router';
+
+    // WHEN
+    const virtualRouter1 = appmesh.VirtualRouter.fromVirtualRouterAttributes(stack, 'importVirtualRouter', {
+      mesh: appmesh.Mesh.fromMeshName(stack, 'Mesh', meshName),
+      virtualRouterName: virtualRouterName,
+    });
+    // THEN
+    test.equal(virtualRouter1.mesh.meshName, meshName);
+    test.equal(virtualRouter1.virtualRouterName, virtualRouterName);
 
     test.done();
   },
