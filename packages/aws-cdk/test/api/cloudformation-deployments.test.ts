@@ -30,7 +30,7 @@ test('placeholders are substituted in CloudFormation execution role', async () =
   });
 
   expect(deployStack).toHaveBeenCalledWith(expect.objectContaining({
-    roleArn: 'bloop:here:12345',
+    roleArn: 'bloop:here:123456789012',
   }));
 });
 
@@ -47,7 +47,7 @@ test('role with placeholders is assumed if assumerole is given', async () => {
     }),
   });
 
-  expect(mockWithAssumedRole).toHaveBeenCalledWith('bloop:here:12345', undefined, expect.anything(), expect.anything());
+  expect(mockWithAssumedRole).toHaveBeenCalledWith('bloop:here:123456789012', undefined, expect.anything(), expect.anything());
 });
 
 test('deployment fails if bootstrap stack is missing', async () => {

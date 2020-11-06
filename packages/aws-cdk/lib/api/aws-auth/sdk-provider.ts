@@ -144,12 +144,12 @@ export class SdkProvider {
     debug(`Assuming role '${roleArn}'.`);
 
     let region = this.defaultRegion;
-    let masterCredentials = await this.defaultCredentials()
+    let masterCredentials = await this.defaultCredentials();
 
     if (environment && mode) {
       const env = await this.resolveEnvironment(environment);
-      masterCredentials = await this.obtainCredentials(env.account, mode)
-      region = env.region
+      masterCredentials = await this.obtainCredentials(env.account, mode);
+      region = env.region;
     }
 
     const creds = new AWS.ChainableTemporaryCredentials({
