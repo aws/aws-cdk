@@ -938,7 +938,7 @@ export class Project extends ProjectBase {
     }
 
     const imagePullPrincipalType = this.buildImage.imagePullPrincipalType === ImagePullPrincipalType.CODEBUILD
-      ? undefined
+      ? ImagePullPrincipalType.CODEBUILD
       : ImagePullPrincipalType.SERVICE_ROLE;
     if (this.buildImage.repository) {
       if (imagePullPrincipalType === ImagePullPrincipalType.SERVICE_ROLE) {

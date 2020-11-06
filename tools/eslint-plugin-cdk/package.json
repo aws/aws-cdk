@@ -17,11 +17,11 @@
     "@types/jest": "^26.0.15",
     "@types/node": "^10.17.44",
     "eslint-plugin-rulesdir": "^0.1.0",
-    "jest": "^26.6.2",
+    "jest": "^26.6.3",
     "typescript": "~3.9.7"
   },
   "dependencies": {
-    "@typescript-eslint/parser": "^4.6.0",
+    "@typescript-eslint/parser": "^4.6.1",
     "eslint": "^7.12.1",
     "fs-extra": "^9.0.1"
   },
