@@ -1,6 +1,5 @@
 import '@aws-cdk/assert/jest';
 import * as cdk from '@aws-cdk/core';
-import * as sinon from 'sinon';
 import * as s3 from '../lib';
 import { handler } from '../lib/auto-delete-objects-handler/index';
 
@@ -43,7 +42,7 @@ test('two buckets with autoDeleteObjects enabled share the same cr provider', ()
   const resourceTypes = Object.values(template.Resources).map((r: any) => r.Type).sort();
 
   expect(resourceTypes).toStrictEqual([
-    // custom resource provider resources
+    // custom resource provider resources (shared)
     'AWS::IAM::Role',
     'AWS::Lambda::Function',
 
@@ -127,7 +126,7 @@ test('iam policy is created', () => {
   });
 });
 
-test('when autoDeleteObjects is enabled, throws if removalPolicy is not specified', () => {
+test('throws if autoDeleteObjects is enabled but if removalPolicy is not specified', () => {
   const stack = new cdk.Stack();
 
   expect(() => new s3.Bucket(stack, 'MyBucket', { autoDeleteObjects: true })).toThrowError(/removal policy/);
@@ -136,7 +135,6 @@ test('when autoDeleteObjects is enabled, throws if removalPolicy is not specifie
 describe('custom resource handler', () => {
 
   test('does nothing on create event', async () => {
-    sinon.reset();
     const s3Mock = newS3ClientMock();
 
     const event: Partial<AWSLambda.CloudFormationCustomResourceCreateEvent> = {
@@ -148,13 +146,11 @@ describe('custom resource handler', () => {
     };
     await invokeHandler(event, s3Mock);
 
-    sinon.assert.notCalled(s3Mock.listObjectVersions);
-    sinon.assert.notCalled(s3Mock.deleteObjects);
+    expect(s3Mock.listObjectVersions).not.toHaveBeenCalled();
+    expect(s3Mock.deleteObjects).not.toHaveBeenCalled();
   });
 
   test('does nothing on update event', async () => {
-    sinon.reset();
-
     const s3Mock = newS3ClientMock();
 
     const event: Partial<AWSLambda.CloudFormationCustomResourceUpdateEvent> = {
@@ -166,14 +162,12 @@ describe('custom resource handler', () => {
     };
     await invokeHandler(event, s3Mock);
 
-    sinon.assert.notCalled(s3Mock.listObjectVersions);
-    sinon.assert.notCalled(s3Mock.deleteObjects);
+    expect(s3Mock.listObjectVersions).not.toHaveBeenCalled();
+    expect(s3Mock.deleteObjects).not.toHaveBeenCalled();
   });
 
   test('deletes no objects on delete event when bucket has no objects', async () => {
-    sinon.reset();
-
-    const listObjectVersionsMock = sinon.fake.returns({ Versions: [] });
+    const listObjectVersionsMock = jest.fn().mockReturnValue({ Versions: [] });
     const s3Mock = newS3ClientMock(listObjectVersionsMock);
 
     const event: Partial<AWSLambda.CloudFormationCustomResourceDeleteEvent> = {
@@ -185,14 +179,12 @@ describe('custom resource handler', () => {
     };
     await invokeHandler(event, s3Mock);
 
-    sinon.assert.calledOnce(s3Mock.listObjectVersions);
-    sinon.assert.notCalled(s3Mock.deleteObjects);
+    expect(s3Mock.listObjectVersions).toHaveBeenCalled();
+    expect(s3Mock.deleteObjects).not.toHaveBeenCalled();
   });
 
   test('deletes all objects on delete event', async () => {
-    sinon.reset();
-
-    const listObjectVersionsMock = sinon.fake.returns({
+    const listObjectVersionsMock = jest.fn().mockReturnValue({
       Versions: [
         { Key: 'Key1', VersionId: 'VersionId1' },
         { Key: 'Key2', VersionId: 'VersionId2' },
@@ -209,8 +201,8 @@ describe('custom resource handler', () => {
     };
     await invokeHandler(event, s3Mock);
 
-    sinon.assert.calledOnce(s3Mock.listObjectVersions);
-    sinon.assert.calledOnce(s3Mock.deleteObjects);
+    expect(s3Mock.listObjectVersions).toHaveBeenCalled();
+    expect(s3Mock.deleteObjects).toHaveBeenCalled();
   });
 });
 
@@ -220,11 +212,11 @@ async function invokeHandler(event: Partial<AWSLambda.CloudFormationCustomResour
 
 function newS3ClientMock(listObjectVersionsMock?: any, deleteObjectsMock?: any) {
   return {
-    listObjectVersions: sinon.stub().returns({
-      promise: listObjectVersionsMock ?? sinon.fake.returns({}),
+    listObjectVersions: jest.fn().mockReturnValue({
+      promise: listObjectVersionsMock ?? jest.fn().mockReturnValue({}),
     }),
-    deleteObjects: sinon.stub().returns({
-      promise: deleteObjectsMock ?? sinon.fake.returns({}),
+    deleteObjects: jest.fn().mockReturnValue({
+      promise: deleteObjectsMock ?? jest.fn().mockReturnValue({}),
     }),
   };
 }
