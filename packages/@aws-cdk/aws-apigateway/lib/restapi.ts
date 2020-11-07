@@ -379,6 +379,16 @@ export abstract class RestApiBase extends Resource implements IRestApi {
   }
 
   /**
+   * Add an ApiKey
+   */
+  public addApiKey(id: string, options?: ApiKeyOptions): IApiKey {
+    return new ApiKey(this, id, {
+      resources: [this],
+      ...options,
+    });
+  }
+
+  /**
    * Returns the given named metric for this API
    */
   public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
@@ -704,16 +714,6 @@ export class RestApi extends RestApiBase {
    */
   public get url() {
     return this.urlForPath();
-  }
-
-  /**
-   * Add an ApiKey
-   */
-  public addApiKey(id: string, options?: ApiKeyOptions): IApiKey {
-    return new ApiKey(this, id, {
-      resources: [this],
-      ...options,
-    });
   }
 
   /**
