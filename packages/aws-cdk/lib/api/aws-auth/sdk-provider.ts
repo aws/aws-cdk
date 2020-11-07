@@ -143,13 +143,16 @@ export class SdkProvider {
   public async withAssumedRole(roleArn: string, externalId: string | undefined, environment: cxapi.Environment | undefined, mode: Mode | undefined) {
     debug(`Assuming role '${roleArn}'.`);
 
-    let region = this.defaultRegion;
-    let masterCredentials = await this.defaultCredentials();
+    let region: string;
+    let masterCredentials: AWS.Credentials;
 
-    if (environment && mode) {
+    if (environment !== undefined && mode !== undefined) {
       const env = await this.resolveEnvironment(environment);
       masterCredentials = await this.obtainCredentials(env.account, mode);
       region = env.region;
+    } else {
+      region = this.defaultRegion;
+      masterCredentials = await this.defaultCredentials();
     }
 
     const creds = new AWS.ChainableTemporaryCredentials({
