@@ -19,12 +19,9 @@ const namespace = new cloudmap.PrivateDnsNamespace(stack, 'test-namespace', {
 
 const mesh = new appmesh.Mesh(stack, 'mesh');
 const router = mesh.addVirtualRouter('router', {
-  listener: {
-    portMapping: {
-      port: 8080,
-      protocol: appmesh.Protocol.HTTP,
-    },
-  },
+  listeners: [
+    appmesh.VirtualRouterListener.http(),
+  ],
 });
 
 const virtualService = mesh.addVirtualService('service', {
