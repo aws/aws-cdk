@@ -12,10 +12,12 @@ phases:
       # login to ecr
       - aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REGISTRY}
 
+      # https://github.com/moby/moby/issues/30880
+      - sed "s|${ECR_REGISTRY}|https://index.docker.io/v1/|g" /root/.docker/config.json
       - cat /root/.docker/config.json
 
       # debug to make sure we actually pulling from the ecr mirror
-      - docker pull ${ECR_REGISTRY}/cdk-testing-image:1.0
+      - docker pull ${ECR_REGISTRY}/library/cdk-testing-image:1.0
 
       # Install yarn if it wasn't already present in the image
       - yarn --version || npm -g install yarn
