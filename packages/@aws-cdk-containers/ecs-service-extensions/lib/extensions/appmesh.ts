@@ -272,29 +272,12 @@ export class AppMeshExtension extends ServiceExtension {
       },
     });
 
-    var virtualRouterListener: appmesh.VirtualRouterListener;
-    switch (this.protocol) {
-      case appmesh.Protocol.HTTP:
-        virtualRouterListener = appmesh.VirtualRouterListener.http(containerextension.trafficPort);
-        break;
-      case appmesh.Protocol.HTTP2:
-        virtualRouterListener = appmesh.VirtualRouterListener.http2(containerextension.trafficPort);
-        break;
-      case appmesh.Protocol.GRPC:
-        virtualRouterListener = appmesh.VirtualRouterListener.grpc(containerextension.trafficPort);
-        break;
-      case appmesh.Protocol.TCP:
-        virtualRouterListener= appmesh.VirtualRouterListener.tcp(containerextension.trafficPort);
-        break;
-      default:
-        throw new Error(`Protocol ${this.protocol} not supported by App Mesh Extension`);
-    }
     // Create a virtual router for this service. This allows for retries
     // and other similar behaviors.
     this.virtualRouter = new appmesh.VirtualRouter(this.scope, `${this.parentService.id}-virtual-router`, {
       mesh: this.mesh,
       listeners: [
-        virtualRouterListener,
+        this.virtualRouterListener(containerextension.trafficPort),
       ],
       virtualRouterName: `${this.parentService.id}`,
     });
@@ -344,5 +327,14 @@ export class AppMeshExtension extends ServiceExtension {
     // proxy on this service knows how to route traffic to
     // nodes from the other service.
     this.virtualNode.addBackends(otherAppMesh.virtualService);
+  }
+
+  private virtualRouterListener(port: number): appmesh.VirtualRouterListener {
+    switch (this.protocol) {
+      case appmesh.Protocol.HTTP: return appmesh.VirtualRouterListener.http(port);
+      case appmesh.Protocol.HTTP2: return appmesh.VirtualRouterListener.http2(port);
+      case appmesh.Protocol.GRPC: return appmesh.VirtualRouterListener.grpc(port);
+      case appmesh.Protocol.TCP: return appmesh.VirtualRouterListener.tcp(port);
+    }
   }
 }
