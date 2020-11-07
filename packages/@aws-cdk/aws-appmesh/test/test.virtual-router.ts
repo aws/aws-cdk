@@ -5,6 +5,88 @@ import { Test } from 'nodeunit';
 import * as appmesh from '../lib';
 
 export = {
+  'When creating a VirtualRouter': {
+    'should have appropriate defaults'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const mesh = new appmesh.Mesh(stack, 'mesh', {
+        meshName: 'test-mesh',
+      });
+      // WHEN
+      mesh.addVirtualRouter('http-router-listener');
+
+      expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualRouter', {
+        VirtualRouterName: 'meshhttprouterlistenerF57BCB2F',
+        Spec: {
+          Listeners: [
+            {
+              PortMapping: {
+                Port: 8080,
+                Protocol: appmesh.Protocol.HTTP,
+              },
+            },
+          ],
+        },
+      }));
+      test.done();
+    },
+    'should have protocol variant listeners'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const mesh = new appmesh.Mesh(stack, 'mesh', {
+        meshName: 'test-mesh',
+      });
+      // WHEN
+      mesh.addVirtualRouter('http-router-listener', {
+        listeners: [
+          appmesh.VirtualRouterListener.http(),
+        ],
+        virtualRouterName: 'http-router-listener',
+      });
+
+      mesh.addVirtualRouter('http2-router-listener', {
+        listeners: [
+          appmesh.VirtualRouterListener.http2(),
+        ],
+        virtualRouterName: 'http2-router-listener',
+      });
+
+      mesh.addVirtualRouter('grpc-router-listener', {
+        listeners: [
+          appmesh.VirtualRouterListener.grpc(),
+        ],
+        virtualRouterName: 'grpc-router-listener',
+      });
+
+      mesh.addVirtualRouter('tcp-router-listener', {
+        listeners: [
+          appmesh.VirtualRouterListener.tcp(),
+        ],
+        virtualRouterName: 'tcp-router-listener',
+      });
+
+      // THEN
+      const expectedPorts = [appmesh.Protocol.HTTP, appmesh.Protocol.HTTP2, appmesh.Protocol.GRPC, appmesh.Protocol.TCP];
+      expectedPorts.forEach(protocol => {
+        expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualRouter', {
+          VirtualRouterName: `${protocol}-router-listener`,
+          Spec: {
+            Listeners: [
+              {
+                PortMapping: {
+                  Port: 8080,
+                  Protocol: protocol,
+                },
+              },
+            ],
+          },
+        }));
+      });
+
+      test.done();
+    },
+  },
+
   'When adding route to existing VirtualRouter': {
     'should create route resource'(test: Test) {
       // GIVEN
