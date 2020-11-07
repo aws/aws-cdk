@@ -1,4 +1,3 @@
-
 # AWS Cloud Development Kit (AWS CDK)
 
 ![Build Status](https://codebuild.us-east-1.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiSy9rWmVENzRDbXBoVlhYaHBsNks4OGJDRXFtV1IySmhCVjJoaytDU2dtVWhhVys3NS9Odk5DbC9lR2JUTkRvSWlHSXZrNVhYQ3ZsaUJFY3o4OERQY1pnPSIsIml2UGFyYW1ldGVyU3BlYyI6IlB3ODEyRW9KdU0yaEp6NDkiLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=master)
@@ -57,7 +56,7 @@ Modules in the AWS Construct Library are designated Experimental while we build
 them; experimental modules may have breaking API changes in any release.  After
 a module is designated Stable, it adheres to [semantic versioning](https://semver.org/),
 and only major releases can have breaking changes. Each module's stability designation
-is available on its Overview page in the [AWS CDK API Reference](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-construct-library.html). 
+is available on its Overview page in the [AWS CDK API Reference](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-construct-library.html).
 For more information, see [Versioning](https://docs.aws.amazon.com/cdk/latest/guide/reference.html#versioning)
 in the CDK Developer Guide.
 
@@ -149,4 +148,4 @@ environment and submit code.
 * [Examples](https://github.com/aws-samples/aws-cdk-examples)
 * [Changelog](./CHANGELOG.md)
 * [NOTICE](./NOTICE)
-* [License](./LICENSE) 
+* [License](./LICENSE)

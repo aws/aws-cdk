@@ -7,9 +7,9 @@ phases:
     commands:
 
       # setup the ecr mirror proxy
-      - ./scripts/ecr-proxy/start.sh 5000
+      - ./scripts/ecr-proxy/start.sh ${ECR_REGISTRY} 5000
 
-      # Start docker daemon inside the container and point use the local mirror proxy
+      # Start docker daemon inside the container and use the local proxy as a registry mirror
       - nohup /usr/bin/dockerd --registry-mirror http://localhost:5000 --host=unix:///var/run/docker.sock --host=tcp://127.0.0.1:2375 --storage-driver=overlay2&
       - timeout 15 sh -c "until docker info; do echo .; sleep 1; done"
 
