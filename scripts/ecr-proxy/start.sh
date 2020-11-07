@@ -2,7 +2,7 @@
 
 scriptdir="$(cd $(dirname $0) && pwd)"
 
-port={$1:-5000}
+port=${$1:-5000}
 
 echo "Adding nginx repository to yum"
 cp ${scriptdir}/nginx.repo /etc/yum.repos.d/nginx.repo
@@ -20,8 +20,8 @@ NGINX_CONF=/etc/nginx/conf.d/default.conf
 echo "Configuring nginx"
 cp ${scriptdir}/nginx.conf ${NGINX_CONF}
 
-sed -i "s|ERC_REGISTRY|${ECR_REGISTRY}|g" ${NGINX_CONF}
-sed -i "s|ERC_TOKEN|${ECR_TOKEN}|g" ${NGINX_CONF}
+sed -i "s|ECR_REGISTRY|${ECR_REGISTRY}|g" ${NGINX_CONF}
+sed -i "s|ECR_TOKEN|${ECR_TOKEN}|g" ${NGINX_CONF}
 sed -i "s|PROXY_PORT|${port}|g" ${NGINX_CONF}
 
 echo "Using nginx config:"
