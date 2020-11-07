@@ -13,6 +13,9 @@ phases:
       - nohup /usr/bin/dockerd --registry-mirror http://localhost:5000 --host=unix:///var/run/docker.sock --host=tcp://127.0.0.1:2375 --storage-driver=overlay2&
       - timeout 15 sh -c "until docker info; do echo .; sleep 1; done"
 
+      # debug - should not work if the mirror doesn't work
+      - docker pull cdk-testing-image:1.0
+
       # # https://github.com/moby/moby/issues/30880
       # - sed -i "s|${ECR_REGISTRY}|https://index.docker.io/v1/|g" /root/.docker/config.json
 
@@ -25,7 +28,7 @@ phases:
     commands:
       - 'if ${BUMP_CANDIDATE:-false}; then /bin/bash ./scripts/bump-candidate.sh; fi'
       - /bin/bash ./scripts/align-version.sh
-      - /bin/bash ./build.sh
+      # - /bin/bash ./build.sh
   post_build:
     commands:
       - "[ -f .BUILD_COMPLETED ] && /bin/bash ./pack.sh"
