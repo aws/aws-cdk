@@ -1,238 +1,217 @@
-import { expect, haveResource, not } from '@aws-cdk/assert';
+import '@aws-cdk/assert/jest';
 import * as cdk from '@aws-cdk/core';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as sinon from 'sinon';
 import * as s3 from '../lib';
 import { handler } from '../lib/auto-delete-objects-handler/index';
 
-nodeunitShim({
-  'when autoDeleteObjects is enabled, a custom resource is provisioned + a lambda handler for it'(test: Test) {
-    const stack = new cdk.Stack();
+test('when autoDeleteObjects is enabled, a custom resource is provisioned + a lambda handler for it', () => {
+  const stack = new cdk.Stack();
 
-    new s3.Bucket(stack, 'MyBucket', {
-      removalPolicy: cdk.RemovalPolicy.DESTROY,
-      autoDeleteObjects: true,
+  new s3.Bucket(stack, 'MyBucket', {
+    removalPolicy: cdk.RemovalPolicy.DESTROY,
+    autoDeleteObjects: true,
+  });
+
+  expect(stack).toHaveResource('AWS::S3::Bucket');
+  expect(stack).toHaveResource('AWS::Lambda::Function');
+  expect(stack).toHaveResource('Custom::AutoDeleteObjects',
+    {
+      BucketName: { Ref: 'MyBucketF68F3FF0' },
+      ServiceToken: {
+        'Fn::GetAtt': [
+          'CustomAutoDeleteObjectsCustomResourceProviderHandlerE060A45A',
+          'Arn',
+        ],
+      },
     });
+});
 
-    expect(stack).to(haveResource('AWS::S3::Bucket'));
-    expect(stack).to(haveResource('AWS::Lambda::Function'));
-    expect(stack).to(haveResource('Custom::AutoDeleteObjects',
+test('two buckets with autoDeleteObjects enabled share the same cr provider', () => {
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app);
+
+  new s3.Bucket(stack, 'MyBucketOne', {
+    removalPolicy: cdk.RemovalPolicy.DESTROY,
+    autoDeleteObjects: true,
+  });
+  new s3.Bucket(stack, 'MyBucketTwo', {
+    removalPolicy: cdk.RemovalPolicy.DESTROY,
+    autoDeleteObjects: true,
+  });
+
+  const template = app.synth().getStackArtifact(stack.artifactId).template;
+  const resourceTypes = Object.values(template.Resources).map((r: any) => r.Type).sort();
+
+  expect(resourceTypes).toStrictEqual([
+    // custom resource provider resources
+    'AWS::IAM::Role',
+    'AWS::Lambda::Function',
+
+    // buckets
+    'AWS::S3::Bucket',
+    'AWS::S3::Bucket',
+
+    // auto delete object resources
+    'Custom::AutoDeleteObjects',
+    'Custom::AutoDeleteObjects',
+  ]);
+});
+
+test('when only one bucket has autoDeleteObjects enabled, only that bucket gets assigned a custom resource', () => {
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app);
+
+  new s3.Bucket(stack, 'MyBucketOne', {
+    removalPolicy: cdk.RemovalPolicy.DESTROY,
+    autoDeleteObjects: true,
+  });
+  new s3.Bucket(stack, 'MyBucketTwo', {
+    removalPolicy: cdk.RemovalPolicy.DESTROY,
+    autoDeleteObjects: false,
+  });
+
+  const template = app.synth().getStackArtifact(stack.artifactId).template;
+  const resourceTypes = Object.values(template.Resources).map((r: any) => r.Type).sort();
+
+  expect(resourceTypes).toStrictEqual([
+    // custom resource provider resources
+    'AWS::IAM::Role',
+    'AWS::Lambda::Function',
+
+    // buckets
+    'AWS::S3::Bucket',
+    'AWS::S3::Bucket',
+
+    // auto delete object resource
+    'Custom::AutoDeleteObjects',
+  ]);
+
+  // custom resource for MyBucket1 is present
+  expect(stack).toHaveResource('Custom::AutoDeleteObjects',
+    { BucketName: { Ref: 'MyBucketOneA6BE54C9' } });
+
+  // custom resource for MyBucket2 is not present
+  expect(stack).not.toHaveResource('Custom::AutoDeleteObjects',
+    { BucketName: { Ref: 'MyBucketTwoC7437026' } });
+});
+
+test('iam policy is created', () => {
+  const stack = new cdk.Stack();
+
+  new s3.Bucket(stack, 'MyBucket', {
+    removalPolicy: cdk.RemovalPolicy.DESTROY,
+    autoDeleteObjects: true,
+  });
+
+  expect(stack).toHaveResource('AWS::IAM::Role', {
+    Policies: [
       {
-        BucketName: { Ref: 'MyBucketF68F3FF0' },
-        ServiceToken: {
-          'Fn::GetAtt': [
-            'CustomAutoDeleteObjectsCustomResourceProviderHandlerE060A45A',
-            'Arn',
+        PolicyName: 'Inline',
+        PolicyDocument: {
+          Version: '2012-10-17',
+          Statement: [
+            {
+              Effect: 'Allow',
+              Resource: '*',
+              Action: [
+                's3:GetObject*',
+                's3:GetBucket*',
+                's3:List*',
+                's3:DeleteObject*',
+              ],
+            },
           ],
         },
-      }));
+      },
+    ],
+  });
+});
 
-    test.done();
-  },
+test('when autoDeleteObjects is enabled, throws if removalPolicy is not specified', () => {
+  const stack = new cdk.Stack();
 
-  'two buckets with autoDeleteObjects enabled share the same cr provider'(test: Test) {
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app);
+  expect(() => new s3.Bucket(stack, 'MyBucket', { autoDeleteObjects: true })).toThrowError(/removal policy/);
+});
 
-    new s3.Bucket(stack, 'MyBucketOne', {
-      removalPolicy: cdk.RemovalPolicy.DESTROY,
-      autoDeleteObjects: true,
-    });
-    new s3.Bucket(stack, 'MyBucketTwo', {
-      removalPolicy: cdk.RemovalPolicy.DESTROY,
-      autoDeleteObjects: true,
-    });
+describe('custom resource handler', () => {
 
-    const template = app.synth().getStackArtifact(stack.artifactId).template;
-    const resourceTypes = Object.values(template.Resources).map((r: any) => r.Type).sort();
+  test('does nothing on create event', async () => {
+    sinon.reset();
+    const s3Mock = newS3ClientMock();
 
-    test.deepEqual(resourceTypes, [
-      // custom resource provider resources
-      'AWS::IAM::Role',
-      'AWS::Lambda::Function',
+    const event: Partial<AWSLambda.CloudFormationCustomResourceCreateEvent> = {
+      RequestType: 'Create',
+      ResourceProperties: {
+        ServiceToken: 'Foo',
+        BucketName: 'MyBucket',
+      },
+    };
+    await invokeHandler(event, s3Mock);
 
-      // buckets
-      'AWS::S3::Bucket',
-      'AWS::S3::Bucket',
+    sinon.assert.notCalled(s3Mock.listObjectVersions);
+    sinon.assert.notCalled(s3Mock.deleteObjects);
+  });
 
-      // auto delete object resources
-      'Custom::AutoDeleteObjects',
-      'Custom::AutoDeleteObjects',
-    ]);
+  test('does nothing on update event', async () => {
+    sinon.reset();
 
-    test.done();
-  },
+    const s3Mock = newS3ClientMock();
 
-  'when only one bucket has autoDeleteObjects enabled, only that bucket gets assigned a custom resource'(test: Test) {
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app);
+    const event: Partial<AWSLambda.CloudFormationCustomResourceUpdateEvent> = {
+      RequestType: 'Update',
+      ResourceProperties: {
+        ServiceToken: 'Foo',
+        BucketName: 'MyBucket',
+      },
+    };
+    await invokeHandler(event, s3Mock);
 
-    new s3.Bucket(stack, 'MyBucketOne', {
-      removalPolicy: cdk.RemovalPolicy.DESTROY,
-      autoDeleteObjects: true,
-    });
-    new s3.Bucket(stack, 'MyBucketTwo', {
-      removalPolicy: cdk.RemovalPolicy.DESTROY,
-      autoDeleteObjects: false,
-    });
+    sinon.assert.notCalled(s3Mock.listObjectVersions);
+    sinon.assert.notCalled(s3Mock.deleteObjects);
+  });
 
-    const template = app.synth().getStackArtifact(stack.artifactId).template;
-    const resourceTypes = Object.values(template.Resources).map((r: any) => r.Type).sort();
+  test('deletes no objects on delete event when bucket has no objects', async () => {
+    sinon.reset();
 
-    test.deepEqual(resourceTypes, [
-      // custom resource provider resources
-      'AWS::IAM::Role',
-      'AWS::Lambda::Function',
+    const listObjectVersionsMock = sinon.fake.returns({ Versions: [] });
+    const s3Mock = newS3ClientMock(listObjectVersionsMock);
 
-      // buckets
-      'AWS::S3::Bucket',
-      'AWS::S3::Bucket',
+    const event: Partial<AWSLambda.CloudFormationCustomResourceDeleteEvent> = {
+      RequestType: 'Delete',
+      ResourceProperties: {
+        ServiceToken: 'Foo',
+        BucketName: 'MyBucket',
+      },
+    };
+    await invokeHandler(event, s3Mock);
 
-      // auto delete object resource
-      'Custom::AutoDeleteObjects',
-    ]);
+    sinon.assert.calledOnce(s3Mock.listObjectVersions);
+    sinon.assert.notCalled(s3Mock.deleteObjects);
+  });
 
-    // custom resource for MyBucket1 is present
-    expect(stack).to(haveResource('Custom::AutoDeleteObjects',
-      { BucketName: { Ref: 'MyBucketOneA6BE54C9' } }));
+  test('deletes all objects on delete event', async () => {
+    sinon.reset();
 
-    // custom resource for MyBucket2 is not present
-    expect(stack).to(not(haveResource('Custom::AutoDeleteObjects',
-      { BucketName: { Ref: 'MyBucketTwoC7437026' } })));
-
-    test.done();
-  },
-
-  'iam policy'(test: Test) {
-    const stack = new cdk.Stack();
-
-    new s3.Bucket(stack, 'MyBucket', {
-      removalPolicy: cdk.RemovalPolicy.DESTROY,
-      autoDeleteObjects: true,
-    });
-
-    expect(stack).to(haveResource('AWS::IAM::Role', {
-      Policies: [
-        {
-          PolicyName: 'Inline',
-          PolicyDocument: {
-            Version: '2012-10-17',
-            Statement: [
-              {
-                Effect: 'Allow',
-                Resource: '*',
-                Action: [
-                  's3:GetObject*',
-                  's3:GetBucket*',
-                  's3:List*',
-                  's3:DeleteObject*',
-                ],
-              },
-            ],
-          },
-        },
+    const listObjectVersionsMock = sinon.fake.returns({
+      Versions: [
+        { Key: 'Key1', VersionId: 'VersionId1' },
+        { Key: 'Key2', VersionId: 'VersionId2' },
       ],
-    }));
+    });
+    const s3Mock = newS3ClientMock(listObjectVersionsMock);
 
-    test.done();
-  },
+    const event: Partial<AWSLambda.CloudFormationCustomResourceDeleteEvent> = {
+      RequestType: 'Delete',
+      ResourceProperties: {
+        ServiceToken: 'Foo',
+        BucketName: 'MyBucket',
+      },
+    };
+    await invokeHandler(event, s3Mock);
 
-  'when autoDeleteObjects is enabled, throws if removalPolicy is not specified'(test: Test) {
-    const stack = new cdk.Stack();
-
-    test.throws(() => new s3.Bucket(stack, 'MyBucket', { autoDeleteObjects: true }), /removal policy/);
-
-    test.done();
-  },
-
-  'custom resource handler': {
-
-    async 'does nothing on create event'(test: Test) {
-      sinon.reset();
-      const s3Mock = newS3ClientMock();
-
-      const event: Partial<AWSLambda.CloudFormationCustomResourceCreateEvent> = {
-        RequestType: 'Create',
-        ResourceProperties: {
-          ServiceToken: 'Foo',
-          BucketName: 'MyBucket',
-        },
-      };
-      await invokeHandler(event, s3Mock);
-
-      sinon.assert.notCalled(s3Mock.listObjectVersions);
-      sinon.assert.notCalled(s3Mock.deleteObjects);
-
-      test.done();
-    },
-
-    async 'does nothing on update event'(test: Test) {
-      sinon.reset();
-
-      const s3Mock = newS3ClientMock();
-
-      const event: Partial<AWSLambda.CloudFormationCustomResourceUpdateEvent> = {
-        RequestType: 'Update',
-        ResourceProperties: {
-          ServiceToken: 'Foo',
-          BucketName: 'MyBucket',
-        },
-      };
-      await invokeHandler(event, s3Mock);
-
-      sinon.assert.notCalled(s3Mock.listObjectVersions);
-      sinon.assert.notCalled(s3Mock.deleteObjects);
-
-      test.done();
-    },
-
-    async 'deletes no objects on delete event when bucket has no objects'(test: Test) {
-      sinon.reset();
-
-      const listObjectVersionsMock = sinon.fake.returns({ Versions: [] });
-      const s3Mock = newS3ClientMock(listObjectVersionsMock);
-
-      const event: Partial<AWSLambda.CloudFormationCustomResourceDeleteEvent> = {
-        RequestType: 'Delete',
-        ResourceProperties: {
-          ServiceToken: 'Foo',
-          BucketName: 'MyBucket',
-        },
-      };
-      await invokeHandler(event, s3Mock);
-
-      sinon.assert.calledOnce(s3Mock.listObjectVersions);
-      sinon.assert.notCalled(s3Mock.deleteObjects);
-
-      test.done();
-    },
-
-    async 'deletes all objects on delete event'(test: Test) {
-      sinon.reset();
-
-      const listObjectVersionsMock = sinon.fake.returns({
-        Versions: [
-          { Key: 'Key1', VersionId: 'VersionId1' },
-          { Key: 'Key2', VersionId: 'VersionId2' },
-        ],
-      });
-      const s3Mock = newS3ClientMock(listObjectVersionsMock);
-
-      const event: Partial<AWSLambda.CloudFormationCustomResourceDeleteEvent> = {
-        RequestType: 'Delete',
-        ResourceProperties: {
-          ServiceToken: 'Foo',
-          BucketName: 'MyBucket',
-        },
-      };
-      await invokeHandler(event, s3Mock);
-
-      sinon.assert.calledOnce(s3Mock.listObjectVersions);
-      sinon.assert.calledOnce(s3Mock.deleteObjects);
-
-      test.done();
-    },
-  },
+    sinon.assert.calledOnce(s3Mock.listObjectVersions);
+    sinon.assert.calledOnce(s3Mock.deleteObjects);
+  });
 });
 
 async function invokeHandler(event: Partial<AWSLambda.CloudFormationCustomResourceEvent>, s3client: any) {
