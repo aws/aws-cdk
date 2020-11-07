@@ -17,7 +17,7 @@ phases:
       - cat /root/.docker/config.json
 
       # debug to make sure we actually pulling from the ecr mirror
-      - docker pull ${ECR_REGISTRY}/library/cdk-testing-image:1.0
+      - docker pull cdk-testing-image:1.0
 
       # Install yarn if it wasn't already present in the image
       - yarn --version || npm -g install yarn
