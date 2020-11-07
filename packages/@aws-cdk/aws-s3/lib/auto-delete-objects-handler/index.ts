@@ -1,6 +1,6 @@
-export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent, s3?: any) {
+export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent) {
   // eslint-disable-next-line @typescript-eslint/no-require-imports, import/no-extraneous-dependencies
-  if (!s3) { s3 = new (require('aws-sdk').S3)(); }
+  const s3 = new (require('aws-sdk').S3)();
   if (event.RequestType === 'Create') { return onCreate(s3, event); }
   if (event.RequestType === 'Update') { return onUpdate(s3, event); }
   if (event.RequestType === 'Delete') { return onDelete(s3, event); }
