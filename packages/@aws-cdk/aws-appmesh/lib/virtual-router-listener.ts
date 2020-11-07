@@ -53,18 +53,6 @@ export abstract class VirtualRouterListener {
   }
 
   /**
-   * Protocol the listener implements
-   */
-  public abstract readonly protocol: Protocol;
-
-  /**
-   * Port to listen for connections on
-   *
-   * @default - defaults to port 8080
-   */
-  public abstract readonly port: number;
-
-  /**
    * Called when the VirtualRouterListener type is initialized. Can be used to enforce
    * mutual exclusivity
    */
@@ -72,20 +60,13 @@ export abstract class VirtualRouterListener {
 }
 
 class VirtualRouterListenerImpl extends VirtualRouterListener {
-  /**
-   * Protocol the listener implements
-   */
-  public readonly protocol: Protocol;
-
-  /**
-   * Port to listen for connections on
-   */
-  public readonly port: number;
+  private readonly protocol: Protocol;
+  private readonly port: number;
 
   constructor(protocol: Protocol, port?: number) {
     super();
     this.protocol = protocol;
-    this.port = port ? port : 8080;
+    this.port = port ?? 8080;
   }
 
   bind(_scope: cdk.Construct): VirtualRouterListenerConfig {
