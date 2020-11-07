@@ -2,7 +2,7 @@
 
 scriptdir="$(cd $(dirname $0) && pwd)"
 
-port=${$1:-5000}
+port=${1:-5000}
 
 echo "Adding nginx repository to yum"
 cp ${scriptdir}/nginx.repo /etc/yum.repos.d/nginx.repo
@@ -29,6 +29,6 @@ cat ${NGINX_CONF}
 
 echo "Starting nginx"
 nginx
-sleep 5
+timeout 15 sh -c "until cat /var/run/nginx.pid; do echo .; sleep 1; done"
 
 echo "Done"
