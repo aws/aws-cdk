@@ -5,15 +5,16 @@ version: 0.2
 phases:
   install:
     commands:
-      # Start docker daemon inside the container
-      - nohup /usr/bin/dockerd --registry-mirror https://${ECR_REGISTRY} --host=unix:///var/run/docker.sock --host=tcp://127.0.0.1:2375 --storage-driver=overlay2&
+
+      # setup the ecr mirror proxy
+      - ./scripts/ecr-proxy/start.sh 5000
+
+      # Start docker daemon inside the container and point use the local mirror proxy
+      - nohup /usr/bin/dockerd --registry-mirror http://localhost:5000 --host=unix:///var/run/docker.sock --host=tcp://127.0.0.1:2375 --storage-driver=overlay2&
       - timeout 15 sh -c "until docker info; do echo .; sleep 1; done"
 
-      # login to ecr
-      - aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REGISTRY}
-
-      # https://github.com/moby/moby/issues/30880
-      - sed -i "s|${ECR_REGISTRY}|https://index.docker.io/v1/|g" /root/.docker/config.json
+      # # https://github.com/moby/moby/issues/30880
+      # - sed -i "s|${ECR_REGISTRY}|https://index.docker.io/v1/|g" /root/.docker/config.json
 
       # Install yarn if it wasn't already present in the image
       - yarn --version || npm -g install yarn
