@@ -6,6 +6,7 @@
 # to ECR, allowing it to serve as a registry mirror in a docker daemon configuration.
 #
 # This is needed because docker does not support authenticated mirrors.
+# See https://github.com/moby/moby/issues/30880
 #
 # Inspired by https://github.com/moby/moby/issues/30880#issuecomment-279294765
 #
@@ -34,6 +35,8 @@ if [ -z ${port} ]; then
   exit 1
 fi
 
+NGINX_CONF=/etc/nginx/conf.d/default.conf
+
 echo "Adding nginx repository to yum"
 cp ${scriptdir}/nginx.repo /etc/yum.repos.d/nginx.repo
 yum repolist
@@ -42,11 +45,12 @@ echo "Installing nginx..."
 yum install -y nginx
 
 echo "Configuring Nginx..."
-ECR_TOKEN=$(aws ecr get-authorization-token --output text --query 'authorizationData[].authorizationToken')
-NGINX_CONF=/etc/nginx/conf.d/default.conf
+
+# https://docs.aws.amazon.com/AmazonECR/latest/userguide/Registries.html#registry_auth
+ecr_token=$(aws ecr get-authorization-token --output text --query 'authorizationData[].authorizationToken')
 
 sed -i "s|ECR_REGISTRY|${registry}|g" ${NGINX_CONF}
-sed -i "s|ECR_TOKEN|${ECR_TOKEN}|g" ${NGINX_CONF}
+sed -i "s|ECR_TOKEN|${ecr_token}|g" ${NGINX_CONF}
 sed -i "s|PROXY_PORT|${port}|g" ${NGINX_CONF}
 
 echo "Starting nginx..."
