@@ -4,8 +4,8 @@ import * as path from 'path';
 import { Code, Runtime } from '@aws-cdk/aws-lambda';
 import { AssetHashType, BundlingDockerImage } from '@aws-cdk/core';
 import { version as delayVersion } from 'delay/package.json';
-import { Bundler, LockFile } from '../lib/bundler';
 import { Bundling } from '../lib/bundling';
+import { EsBuildBundler, LockFile } from '../lib/esbuild-bundler';
 import * as util from '../lib/util';
 
 jest.mock('@aws-cdk/aws-lambda');
@@ -17,7 +17,7 @@ const fromAssetMock = jest.spyOn(BundlingDockerImage, 'fromAsset');
 let findUpMock: jest.SpyInstance;
 beforeEach(() => {
   jest.clearAllMocks();
-  Bundler.clearRunsLocallyCache();
+  EsBuildBundler.clearRunsLocallyCache();
   Bundling.clearProjectRootCache();
   findUpMock = jest.spyOn(util, 'findUp').mockImplementation((name: string, directory) => {
     if (name === 'package.json') {
@@ -198,7 +198,7 @@ test('Local bundling', () => {
     signal: null,
   });
 
-  const bundler = new Bundler({
+  const bundler = new EsBuildBundler({
     runtime: Runtime.NODEJS_12_X,
     projectRoot: __dirname,
     entry: `${__dirname}/folder/entry.ts`,
@@ -234,8 +234,8 @@ test('LocalBundler.runsLocally checks esbuild version and caches results', () =>
     signal: null,
   });
 
-  expect(Bundler.runsLocally).toBe(true);
-  expect(Bundler.runsLocally).toBe(true);
+  expect(EsBuildBundler.runsLocally).toBe(true);
+  expect(EsBuildBundler.runsLocally).toBe(true);
   expect(spawnSyncMock).toHaveBeenCalledTimes(1);
   expect(spawnSyncMock).toHaveBeenCalledWith(expect.stringContaining('npx'), ['--no-install', 'esbuild', '--version']);
 });
@@ -250,7 +250,7 @@ test('LocalBundler.runsLocally with incorrect esbuild version', () => {
     signal: null,
   });
 
-  expect(Bundler.runsLocally).toBe(false);
+  expect(EsBuildBundler.runsLocally).toBe(false);
 });
 
 test('Project root detection', () => {
