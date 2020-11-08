@@ -1,7 +1,18 @@
+// must be at the top of the file for successful jest mocking
+const mockS3Client = {
+  listObjectVersions: jest.fn().mockReturnThis(),
+  deleteObjects: jest.fn().mockReturnThis(),
+  promise: jest.fn(),
+};
+
 import '@aws-cdk/assert/jest';
 import * as cdk from '@aws-cdk/core';
 import * as s3 from '../lib';
 import { handler } from '../lib/auto-delete-objects-handler';
+
+jest.mock('aws-sdk', () => {
+  return { S3: jest.fn(() => mockS3Client) };
+});
 
 test('when autoDeleteObjects is enabled, a custom resource is provisioned + a lambda handler for it', () => {
   // GIVEN
@@ -149,30 +160,17 @@ test('throws if autoDeleteObjects is enabled but if removalPolicy is not specifi
 
 describe('custom resource handler', () => {
 
-  const mockS3Client = {
-    listObjectVersions: jest.fn().mockReturnThis(),
-    deleteObjects: jest.fn().mockReturnThis(),
-    promise: jest.fn(),
-  };
-
-  jest.mock('aws-sdk', () => {
-    return { S3: jest.fn(() => mockS3Client) };
-  });
-
   beforeEach(() => {
-    // must reset implementations otherwise it's possible for
-    // mockResolvedValue values to leak between tests
-    mockS3Client.promise.mockReset();
-    mockS3Client.listObjectVersions.mockReset();
-    mockS3Client.deleteObjects.mockReset();
-
     mockS3Client.listObjectVersions.mockReturnThis();
     mockS3Client.deleteObjects.mockReturnThis();
   });
 
+  afterEach(() => {
+    jest.resetAllMocks();
+  });
+
   test('does nothing on create event', async () => {
     // GIVEN
-    // WHEN
     const event: Partial<AWSLambda.CloudFormationCustomResourceCreateEvent> = {
       RequestType: 'Create',
       ResourceProperties: {
@@ -180,6 +178,8 @@ describe('custom resource handler', () => {
         BucketName: 'MyBucket',
       },
     };
+
+    // WHEN
     await invokeHandler(event);
 
     // THEN
@@ -189,7 +189,6 @@ describe('custom resource handler', () => {
 
   test('does nothing on update event', async () => {
     // GIVEN
-    // WHEN
     const event: Partial<AWSLambda.CloudFormationCustomResourceUpdateEvent> = {
       RequestType: 'Update',
       ResourceProperties: {
@@ -197,6 +196,8 @@ describe('custom resource handler', () => {
         BucketName: 'MyBucket',
       },
     };
+
+    // WHEN
     await invokeHandler(event);
 
     // THEN
