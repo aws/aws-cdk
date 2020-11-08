@@ -174,6 +174,15 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
    * @internal
    */
   protected _renderTask(): any {
+    const isEncrypted = this.props.resultConfiguration?.encryptionConfiguration !== undefined;
+
+    const EncryptionConfiguration = isEncrypted
+      ? {
+        EncryptionOption: this.props.resultConfiguration?.encryptionConfiguration?.encryptionOption,
+        KmsKey: this.props.resultConfiguration?.encryptionConfiguration?.encryptionKey,
+      }
+      : undefined;
+
     if (this.props.resultConfiguration?.outputLocation) {
       return {
         Resource: integrationResourceArn('athena', 'startQueryExecution', this.integrationPattern),
@@ -185,10 +194,7 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
             Database: this.props.queryExecutionContext?.databaseName,
           },
           ResultConfiguration: {
-            EncryptionConfiguration: {
-              EncryptionOption: this.props.resultConfiguration?.encryptionConfiguration?.encryptionOption,
-              KmsKey: this.props.resultConfiguration?.encryptionConfiguration?.encryptionKey,
-            },
+            EncryptionConfiguration,
             OutputLocation: `s3://${this.props.resultConfiguration?.outputLocation?.bucketName}/${this.props.resultConfiguration?.outputLocation?.objectKey}/`,
           },
           WorkGroup: this.props.workGroup,
@@ -205,10 +211,7 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
             Database: this.props.queryExecutionContext?.databaseName,
           },
           ResultConfiguration: {
-            EncryptionConfiguration: {
-              EncryptionOption: this.props.resultConfiguration?.encryptionConfiguration?.encryptionOption,
-              KmsKey: this.props.resultConfiguration?.encryptionConfiguration?.encryptionKey,
-            },
+            EncryptionConfiguration,
           },
           WorkGroup: this.props.workGroup,
         }),
