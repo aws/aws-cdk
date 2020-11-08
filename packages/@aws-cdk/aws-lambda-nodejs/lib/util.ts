@@ -88,3 +88,28 @@ export function exec(cmd: string, args: string[], options?: SpawnSyncOptions) {
 
   return proc;
 }
+
+/**
+ * Extract dependencies from a package.json
+ */
+export function extractDependencies(pkgPath: any, modules: string[]): { [key: string]: string } {
+  const dependencies: { [key: string]: string } = {};
+
+  // Use require for cache
+  const pkgJson = require(pkgPath); // eslint-disable-line @typescript-eslint/no-require-imports
+
+  const pkgDependencies = {
+    ...pkgJson.dependencies ?? {},
+    ...pkgJson.devDependencies ?? {},
+    ...pkgJson.peerDependencies ?? {},
+  };
+
+  for (const mod of modules) {
+    if (!pkgDependencies[mod]) {
+      throw new Error(`Cannot extract version for ${mod} in package.json`);
+    }
+    dependencies[mod] = pkgDependencies[mod];
+  }
+
+  return dependencies;
+}

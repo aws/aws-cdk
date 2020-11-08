@@ -1,9 +1,7 @@
-import * as fs from 'fs';
 import * as path from 'path';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
-import { DockerBundler, Installer, LocalBundler, LockFile } from './bundlers';
-import { PackageJsonManager } from './package-json-manager';
+import { EsBuildBundler, LockFile } from './esbuild-bundler';
 import { findUp } from './util';
 
 /**
@@ -129,70 +127,48 @@ export class Bundling {
    */
   public static esbuild(options: EsBuildOptions): lambda.AssetCode {
     // Find project root
-    const projectRoot = options.projectRoot
-      ?? findUp(`.git${path.sep}`)
-      ?? findUp(LockFile.YARN)
-      ?? findUp(LockFile.NPM)
-      ?? findUp('package.json');
-    if (!projectRoot) {
-      throw new Error('Cannot find project root. Please specify it with `projectRoot`.');
-    }
-    const relativeEntryPath = path.relative(projectRoot, path.resolve(options.entry));
-
-    // Collect external and install modules
-    let dependencies: { [key: string]: string } | undefined;
-    let externals = options.externalModules ?? ['aws-sdk'];
-    if (options.nodeModules) {
-      externals = [...externals, ...options.nodeModules];
-      const packageJsonManager = new PackageJsonManager(path.dirname(options.entry));
-      dependencies = packageJsonManager.getVersions(options.nodeModules);
-    }
-
-    let installer = Installer.NPM;
-    let lockFile: LockFile | undefined;
-    if (dependencies) {
-      // Use npm unless we have a yarn.lock.
-      if (fs.existsSync(path.join(projectRoot, LockFile.YARN))) {
-        installer = Installer.YARN;
-        lockFile = LockFile.YARN;
-      } else if (fs.existsSync(path.join(projectRoot, LockFile.NPM))) {
-        lockFile = LockFile.NPM;
-      }
-    }
-
-    // Local
-    let localBundler: cdk.ILocalBundling | undefined;
-    if (!options.forceDockerBundling) {
-      localBundler = new LocalBundler({
-        ...options,
-        projectRoot,
-        relativeEntryPath,
-        dependencies,
-        externals,
-        installer,
-        lockFile,
-        environment: options.bundlingEnvironment,
-      });
-    }
-
-    // Docker
-    const dockerBundler = new DockerBundler({
-      ...options,
-      relativeEntryPath,
-      buildImage: !LocalBundler.runsLocally || options.forceDockerBundling, // build image only if we can't run locally
-      dependencies,
-      externals,
-      installer,
-      lockFile,
-      environment: options.bundlingEnvironment,
-    });
+    const projectRoot = this.findProjectRoot(options.projectRoot);
 
     return lambda.Code.fromAsset(projectRoot, {
       assetHashType: cdk.AssetHashType.OUTPUT,
-      bundling: {
-        local: localBundler,
-        ...dockerBundler.bundlingOptions,
-      },
+      bundling: new EsBuildBundler({
+        ...options,
+        externals: options.externalModules ?? ['aws-sdk'],
+        environment: options.bundlingEnvironment,
+        projectRoot,
+      }),
     });
+  }
+
+  /**
+   * Clears the project root cache
+   */
+  public static clearProjectRootCache(): void {
+    this.projectRoot = undefined;
+  }
+
+  /** Cache for project root */
+  private static projectRoot?: string;
+
+  private static findProjectRoot(userProjectRoot?: string): string {
+    if (userProjectRoot) {
+      return userProjectRoot;
+    }
+
+    if (this.projectRoot) {
+      return this.projectRoot;
+    }
+
+    const projectRoot = findUp(`.git${path.sep}`)
+      ?? findUp(LockFile.YARN)
+      ?? findUp(LockFile.NPM)
+      ?? findUp('package.json');
+
+    if (!projectRoot) {
+      throw new Error('Cannot find project root. Please specify it with `projectRoot`.');
+    }
+
+    this.projectRoot = projectRoot;
+    return projectRoot;
   }
 }
