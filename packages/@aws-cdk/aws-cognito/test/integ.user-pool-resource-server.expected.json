@@ -57,17 +57,24 @@
         ],
         "AllowedOAuthFlowsUserPoolClient": true,
         "AllowedOAuthScopes": [
-          "users/read"
+          {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Ref": "myuserpoolmyserver50C4D8E9"
+                },
+                "/read"
+              ]
+            ]
+          }
         ],
         "ClientName": "users-app",
         "GenerateSecret": true,
         "SupportedIdentityProviders": [
           "COGNITO"
         ]
-      },
-      "DependsOn": [
-        "myuserpoolmyserver50C4D8E9"
-      ]
+      }
     }
   },
   "Outputs": {

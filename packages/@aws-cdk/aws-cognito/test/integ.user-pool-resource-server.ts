@@ -16,7 +16,7 @@ const userPool = new UserPool(stack, 'myuserpool', {
   userPoolName: 'MyUserPool',
 });
 
-const resourceServer = userPool.addResourceServer('myserver', {
+const userServer = userPool.addResourceServer('myserver', {
   identifier: 'users',
   scopes: [
     {
@@ -34,12 +34,10 @@ const client = userPool.addClient('client', {
       clientCredentials: true,
     },
     scopes: [
-      OAuthScope.custom('users/read'),
+      OAuthScope.resourceServer(userServer, 'read'),
     ],
   },
 });
-
-client.node.addDependency(resourceServer);
 
 new CfnOutput(stack, 'pool-id', {
   value: userPool.userPoolId,
