@@ -1,10 +1,13 @@
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent) {
   // eslint-disable-next-line @typescript-eslint/no-require-imports, import/no-extraneous-dependencies
   const s3 = new (require('aws-sdk').S3)();
-  if (event.RequestType === 'Create') { return onCreate(s3, event); }
-  if (event.RequestType === 'Update') { return onUpdate(s3, event); }
-  if (event.RequestType === 'Delete') { return onDelete(s3, event); }
-  throw new Error('Invalid request type.');
+  switch (event.RequestType) {
+    case 'Create':
+    case 'Update':
+      return;
+    case 'Delete':
+      return onDelete(s3, event);
+  }
 }
 
 /**
@@ -20,18 +23,12 @@ async function emptyBucket(s3: any, bucketName: string) {
     return;
   };
 
-  let records = contents.map((record: any) => ({ Key: record.Key, VersionId: record.VersionId }));
+  const records = contents.map((record: any) => ({ Key: record.Key, VersionId: record.VersionId }));
   await s3.deleteObjects({ Bucket: bucketName, Delete: { Objects: records } }).promise();
 
-  if (listedObjects?.IsTruncated === 'true' ) await emptyBucket(s3, bucketName);
-}
-
-async function onCreate(_s3: any, _event: AWSLambda.CloudFormationCustomResourceCreateEvent) {
-  return;
-}
-
-async function onUpdate(_s3: any, _event: AWSLambda.CloudFormationCustomResourceUpdateEvent) {
-  return;
+  if (listedObjects?.IsTruncated) {
+    await emptyBucket(s3, bucketName);
+  }
 }
 
 async function onDelete(s3: any, deleteEvent: AWSLambda.CloudFormationCustomResourceDeleteEvent) {

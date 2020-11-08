@@ -1,16 +1,19 @@
 import '@aws-cdk/assert/jest';
 import * as cdk from '@aws-cdk/core';
 import * as s3 from '../lib';
-import { handler } from '../lib/auto-delete-objects-handler/index';
+import { handler } from '../lib/auto-delete-objects-handler';
 
 test('when autoDeleteObjects is enabled, a custom resource is provisioned + a lambda handler for it', () => {
+  // GIVEN
   const stack = new cdk.Stack();
 
+  // WHEN
   new s3.Bucket(stack, 'MyBucket', {
     removalPolicy: cdk.RemovalPolicy.DESTROY,
     autoDeleteObjects: true,
   });
 
+  // THEN
   expect(stack).toHaveResource('AWS::S3::Bucket');
   expect(stack).toHaveResource('AWS::Lambda::Function');
   expect(stack).toHaveResource('Custom::AutoDeleteObjects',
@@ -26,9 +29,11 @@ test('when autoDeleteObjects is enabled, a custom resource is provisioned + a la
 });
 
 test('two buckets with autoDeleteObjects enabled share the same cr provider', () => {
+  // GIVEN
   const app = new cdk.App();
   const stack = new cdk.Stack(app);
 
+  // WHEN
   new s3.Bucket(stack, 'MyBucketOne', {
     removalPolicy: cdk.RemovalPolicy.DESTROY,
     autoDeleteObjects: true,
@@ -38,6 +43,7 @@ test('two buckets with autoDeleteObjects enabled share the same cr provider', ()
     autoDeleteObjects: true,
   });
 
+  // THEN
   const template = app.synth().getStackArtifact(stack.artifactId).template;
   const resourceTypes = Object.values(template.Resources).map((r: any) => r.Type).sort();
 
@@ -57,9 +63,11 @@ test('two buckets with autoDeleteObjects enabled share the same cr provider', ()
 });
 
 test('when only one bucket has autoDeleteObjects enabled, only that bucket gets assigned a custom resource', () => {
+  // GIVEN
   const app = new cdk.App();
   const stack = new cdk.Stack(app);
 
+  // WHEN
   new s3.Bucket(stack, 'MyBucketOne', {
     removalPolicy: cdk.RemovalPolicy.DESTROY,
     autoDeleteObjects: true,
@@ -69,6 +77,7 @@ test('when only one bucket has autoDeleteObjects enabled, only that bucket gets 
     autoDeleteObjects: false,
   });
 
+  // THEN
   const template = app.synth().getStackArtifact(stack.artifactId).template;
   const resourceTypes = Object.values(template.Resources).map((r: any) => r.Type).sort();
 
@@ -95,13 +104,16 @@ test('when only one bucket has autoDeleteObjects enabled, only that bucket gets 
 });
 
 test('iam policy is created', () => {
+  // GIVEN
   const stack = new cdk.Stack();
 
+  // WHEN
   new s3.Bucket(stack, 'MyBucket', {
     removalPolicy: cdk.RemovalPolicy.DESTROY,
     autoDeleteObjects: true,
   });
 
+  // THEN
   expect(stack).toHaveResource('AWS::IAM::Role', {
     Policies: [
       {
@@ -127,8 +139,11 @@ test('iam policy is created', () => {
 });
 
 test('throws if autoDeleteObjects is enabled but if removalPolicy is not specified', () => {
+  // GIVEN
   const stack = new cdk.Stack();
 
+  // WHEN
+  // THEN
   expect(() => new s3.Bucket(stack, 'MyBucket', { autoDeleteObjects: true })).toThrowError(/removal policy/);
 });
 
@@ -145,12 +160,19 @@ describe('custom resource handler', () => {
   });
 
   beforeEach(() => {
-    mockS3Client.deleteObjects.mockClear();
-    mockS3Client.listObjectVersions.mockClear();
-    mockS3Client.promise.mockClear();
+    // must reset implementations otherwise it's possible for
+    // mockResolvedValue values to leak between tests
+    mockS3Client.promise.mockReset();
+    mockS3Client.listObjectVersions.mockReset();
+    mockS3Client.deleteObjects.mockReset();
+
+    mockS3Client.listObjectVersions.mockReturnThis();
+    mockS3Client.deleteObjects.mockReturnThis();
   });
 
   test('does nothing on create event', async () => {
+    // GIVEN
+    // WHEN
     const event: Partial<AWSLambda.CloudFormationCustomResourceCreateEvent> = {
       RequestType: 'Create',
       ResourceProperties: {
@@ -160,11 +182,14 @@ describe('custom resource handler', () => {
     };
     await invokeHandler(event);
 
-    expect(mockS3Client.listObjectVersions).not.toHaveBeenCalled();
-    expect(mockS3Client.deleteObjects).not.toHaveBeenCalled();
+    // THEN
+    expect(mockS3Client.listObjectVersions).toHaveBeenCalledTimes(0);
+    expect(mockS3Client.deleteObjects).toHaveBeenCalledTimes(0);
   });
 
   test('does nothing on update event', async () => {
+    // GIVEN
+    // WHEN
     const event: Partial<AWSLambda.CloudFormationCustomResourceUpdateEvent> = {
       RequestType: 'Update',
       ResourceProperties: {
@@ -174,13 +199,16 @@ describe('custom resource handler', () => {
     };
     await invokeHandler(event);
 
-    expect(mockS3Client.listObjectVersions).not.toHaveBeenCalled();
-    expect(mockS3Client.deleteObjects).not.toHaveBeenCalled();
+    // THEN
+    expect(mockS3Client.listObjectVersions).toHaveBeenCalledTimes(0);
+    expect(mockS3Client.deleteObjects).toHaveBeenCalledTimes(0);
   });
 
   test('deletes no objects on delete event when bucket has no objects', async () => {
-    mockS3Client.listObjectVersions().promise.mockResolvedValue({ Versions: [] }); // this counts as one call
+    // GIVEN
+    mockS3Client.promise.mockResolvedValue({ Versions: [] }); // listObjectVersions() call
 
+    // WHEN
     const event: Partial<AWSLambda.CloudFormationCustomResourceDeleteEvent> = {
       RequestType: 'Delete',
       ResourceProperties: {
@@ -190,18 +218,22 @@ describe('custom resource handler', () => {
     };
     await invokeHandler(event);
 
-    expect(mockS3Client.listObjectVersions.mock.calls.length).toEqual(2);
-    expect(mockS3Client.deleteObjects).not.toHaveBeenCalled();
+    // THEN
+    expect(mockS3Client.listObjectVersions).toHaveBeenCalledTimes(1);
+    expect(mockS3Client.listObjectVersions).toHaveBeenCalledWith({ Bucket: 'MyBucket' });
+    expect(mockS3Client.deleteObjects).toHaveBeenCalledTimes(0);
   });
 
   test('deletes all objects on delete event', async () => {
-    mockS3Client.listObjectVersions().promise.mockResolvedValue({ // this counts as one call
+    // GIVEN
+    mockS3Client.promise.mockResolvedValue({ // listObjectVersions() call
       Versions: [
         { Key: 'Key1', VersionId: 'VersionId1' },
         { Key: 'Key2', VersionId: 'VersionId2' },
       ],
     });
 
+    // WHEN
     const event: Partial<AWSLambda.CloudFormationCustomResourceDeleteEvent> = {
       RequestType: 'Delete',
       ResourceProperties: {
@@ -211,24 +243,40 @@ describe('custom resource handler', () => {
     };
     await invokeHandler(event);
 
-    expect(mockS3Client.listObjectVersions.mock.calls.length).toEqual(2);
-    expect(mockS3Client.deleteObjects.mock.calls.length).toEqual(1);
+    // THEN
+    expect(mockS3Client.listObjectVersions).toHaveBeenCalledTimes(1);
+    expect(mockS3Client.listObjectVersions).toHaveBeenCalledWith({ Bucket: 'MyBucket' });
+    expect(mockS3Client.deleteObjects).toHaveBeenCalledTimes(1);
+    expect(mockS3Client.deleteObjects).toHaveBeenCalledWith({
+      Bucket: 'MyBucket',
+      Delete: {
+        Objects: [
+          { Key: 'Key1', VersionId: 'VersionId1' },
+          { Key: 'Key2', VersionId: 'VersionId2' },
+        ],
+      },
+    });
   });
 
   test('delete event where bucket has many objects does recurse appropriately', async () => {
-    mockS3Client.listObjectVersions().promise.mockResolvedValueOnce({ // this counts as one call
-      Versions: [
-        { Key: 'Key1', VersionId: 'VersionId1' },
-        { Key: 'Key2', VersionId: 'VersionId2' },
-      ],
-      IsTruncated: 'true',
-    }).mockResolvedValueOnce({
-      Versions: [
-        { Key: 'Key3', VersionId: 'VersionId3' },
-        { Key: 'Key4', VersionId: 'VersionId4' },
-      ],
-    });
+    // GIVEN
+    mockS3Client.promise // listObjectVersions() call
+      .mockResolvedValueOnce({
+        Versions: [
+          { Key: 'Key1', VersionId: 'VersionId1' },
+          { Key: 'Key2', VersionId: 'VersionId2' },
+        ],
+        IsTruncated: true,
+      })
+      .mockResolvedValueOnce(undefined) // deleteObjects() call
+      .mockResolvedValueOnce({ // listObjectVersions() call
+        Versions: [
+          { Key: 'Key3', VersionId: 'VersionId3' },
+          { Key: 'Key4', VersionId: 'VersionId4' },
+        ],
+      });
 
+    // WHEN
     const event: Partial<AWSLambda.CloudFormationCustomResourceDeleteEvent> = {
       RequestType: 'Delete',
       ResourceProperties: {
@@ -238,13 +286,33 @@ describe('custom resource handler', () => {
     };
     await invokeHandler(event);
 
-    expect(mockS3Client.listObjectVersions.mock.calls.length).toEqual(3);
-    expect(mockS3Client.deleteObjects.mock.calls.length).toEqual(2);
+    // THEN
+    expect(mockS3Client.listObjectVersions).toHaveBeenCalledTimes(2);
+    expect(mockS3Client.listObjectVersions).toHaveBeenCalledWith({ Bucket: 'MyBucket' });
+    expect(mockS3Client.deleteObjects).toHaveBeenCalledTimes(2);
+    expect(mockS3Client.deleteObjects).toHaveBeenNthCalledWith(1, {
+      Bucket: 'MyBucket',
+      Delete: {
+        Objects: [
+          { Key: 'Key1', VersionId: 'VersionId1' },
+          { Key: 'Key2', VersionId: 'VersionId2' },
+        ],
+      },
+    });
+    expect(mockS3Client.deleteObjects).toHaveBeenNthCalledWith(2, {
+      Bucket: 'MyBucket',
+      Delete: {
+        Objects: [
+          { Key: 'Key3', VersionId: 'VersionId3' },
+          { Key: 'Key4', VersionId: 'VersionId4' },
+        ],
+      },
+    });
   });
 });
 
 // helper function to get around TypeScript expecting a complete event object,
-// even though our tests require some of the fields
+// even though our tests only need some of the fields
 async function invokeHandler(event: Partial<AWSLambda.CloudFormationCustomResourceEvent>) {
   return handler(event as AWSLambda.CloudFormationCustomResourceEvent);
 }
