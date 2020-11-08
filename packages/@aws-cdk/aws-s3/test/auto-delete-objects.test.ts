@@ -1,13 +1,13 @@
-// must be at the top of the file for successful jest mocking
+import '@aws-cdk/assert/jest';
+import * as cdk from '@aws-cdk/core';
+import * as s3 from '../lib';
+
 const mockS3Client = {
   listObjectVersions: jest.fn().mockReturnThis(),
   deleteObjects: jest.fn().mockReturnThis(),
   promise: jest.fn(),
 };
 
-import '@aws-cdk/assert/jest';
-import * as cdk from '@aws-cdk/core';
-import * as s3 from '../lib';
 import { handler } from '../lib/auto-delete-objects-handler';
 
 jest.mock('aws-sdk', () => {
