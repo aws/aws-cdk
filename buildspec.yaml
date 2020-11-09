@@ -6,14 +6,8 @@ phases:
   install:
     commands:
 
-      # debug
-      - ls -l
-
       # available in our custom CodeBuild image
       - /root/ecr-proxy/start.sh
-
-      # debug to see the mirror is actually being used
-      - docker pull jsii/superchain-with-ecr-proxy
 
       # Install yarn if it wasn't already present in the image
       - yarn --version || npm -g install yarn
@@ -24,7 +18,7 @@ phases:
     commands:
       - 'if ${BUMP_CANDIDATE:-false}; then /bin/bash ./scripts/bump-candidate.sh; fi'
       - /bin/bash ./scripts/align-version.sh
-      # - /bin/bash ./build.sh
+      - /bin/bash ./build.sh
   post_build:
     commands:
       - "[ -f .BUILD_COMPLETED ] && /bin/bash ./pack.sh"

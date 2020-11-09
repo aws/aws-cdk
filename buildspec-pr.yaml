@@ -6,13 +6,8 @@ phases:
   install:
     commands:
 
-      # setup the ecr mirror proxy
-      - export PROXY_PORT=5000
-      - ./scripts/ecr-proxy/start.sh ${ECR_REGISTRY} ${PROXY_PORT}
-
-      # Start docker daemon inside the container and use the local proxy as a registry mirror
-      - nohup /usr/bin/dockerd --registry-mirror http://localhost:${PROXY_PORT} --host=unix:///var/run/docker.sock --host=tcp://127.0.0.1:2375 --storage-driver=overlay2&
-      - timeout 15 sh -c "until docker info; do echo .; sleep 1; done"
+      # available in our custom CodeBuild image
+      - /root/ecr-proxy/start.sh
 
       # Install yarn if it wasn't already present in the image
       - yarn --version || npm -g install yarn
