@@ -31,7 +31,7 @@ When your application grows, you may decide that it makes more sense to split it
 out across multiple `Stack` classes. This can happen for a number of reasons:
 
 - You could be starting to reach the maximum number of resources allowed in a single
-  stack (this is currently 200).
+  stack (this is currently 500).
 - You could decide you want to separate out stateful resources and stateless resources
   into separate stacks, so that it becomes easy to tear down and recreate the stacks
   that don't have stateful resources.
