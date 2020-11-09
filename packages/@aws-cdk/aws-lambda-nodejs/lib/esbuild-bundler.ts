@@ -68,7 +68,7 @@ export class EsBuildBundler {
   constructor(private readonly props: EsBuildBundlerProps) {
     this.relativeEntryPath = path.relative(props.projectRoot, path.resolve(props.entry));
 
-    const shouldBuildImage = !EsBuildBundler.runsLocally || props.forceDockerBundling;
+    const shouldBuildImage = props.forceDockerBundling || !EsBuildBundler.runsLocally;
     this.image = shouldBuildImage
       ? props.bundlingDockerImage ?? cdk.BundlingDockerImage.fromAsset(path.join(__dirname, '../lib'), {
         buildArgs: {
