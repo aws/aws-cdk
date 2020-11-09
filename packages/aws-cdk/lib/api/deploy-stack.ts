@@ -440,6 +440,12 @@ async function canSkipDeploy(
     return false;
   }
 
+  // Existing stack is in a failed state
+  if (cloudFormationStack.stackStatus.isFailure) {
+    debug(`${deployName}: stack is in a failure state`);
+    return false;
+  }
+
   // We can skip deploy
   return true;
 }
