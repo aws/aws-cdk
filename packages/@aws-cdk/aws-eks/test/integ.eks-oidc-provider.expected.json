@@ -17,16 +17,16 @@
         ],
         "Url": {
           "Fn::Join": [
-              "",
-              [
-                  "https://oidc.eks.",
-                  {
-                      "Ref": "AWS::Region"
-                    },
-                  ".amazonaws.com/id/test2"
-                ]
+            "",
+            [
+              "https://oidc.eks.",
+              {
+                "Ref": "AWS::Region"
+              },
+              ".amazonaws.com/id/test2"
             ]
-          }
+          ]
+        }
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
