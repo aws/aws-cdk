@@ -883,6 +883,36 @@ describe('User Pool', () => {
     });
   });
 
+  test('addResourceServer', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const userpool = new UserPool(stack, 'Pool');
+    userpool.addResourceServer('ResourceServer', {
+      identifier: 'users',
+      scopes: [
+        {
+          scopeName: 'read',
+          scopeDescription: 'Read-only access',
+        },
+      ],
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolResourceServer', {
+      Identifier: 'users',
+      Name: 'users',
+      UserPoolId: stack.resolve(userpool.userPoolId),
+      Scopes: [
+        {
+          ScopeDescription: 'Read-only access',
+          ScopeName: 'read',
+        },
+      ],
+    });
+  });
+
   test('addDomain', () => {
     // GIVEN
     const stack = new Stack();
