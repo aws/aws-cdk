@@ -186,7 +186,7 @@ const node = new VirtualNode(this, 'node', {
 cdk.Tag.add(node, 'Environment', 'Dev');
 ```
 
-The listeners property can be left blank and added later with the `node.addListeners()` method. The `healthcheck` and `timeout` properties are optional but if specifying a listener, the `port` must be added.
+The `listeners` property can be left blank and added later with the `node.addListener()` method. The `healthcheck` and `timeout` properties are optional but if specifying a listener, the `port` must be added.
 
 ## Adding a Route
 

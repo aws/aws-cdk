@@ -31,35 +31,34 @@ export = {
           backends: [service1],
         });
 
-        node.addBackends(service2);
+        node.addBackend(service2);
 
         // THEN
-        expect(stack).to(
-          haveResourceLike('AWS::AppMesh::VirtualNode', {
-            Spec: {
-              Backends: [
-                {
-                  VirtualService: {
-                    VirtualServiceName: {
-                      'Fn::GetAtt': ['service1A48078CF', 'VirtualServiceName'],
-                    },
+        expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
+          Spec: {
+            Backends: [
+              {
+                VirtualService: {
+                  VirtualServiceName: {
+                    'Fn::GetAtt': ['service1A48078CF', 'VirtualServiceName'],
                   },
                 },
-                {
-                  VirtualService: {
-                    VirtualServiceName: {
-                      'Fn::GetAtt': ['service27C65CF7D', 'VirtualServiceName'],
-                    },
+              },
+              {
+                VirtualService: {
+                  VirtualServiceName: {
+                    'Fn::GetAtt': ['service27C65CF7D', 'VirtualServiceName'],
                   },
                 },
-              ],
-            },
-          }),
-        );
+              },
+            ],
+          },
+        }));
 
         test.done();
       },
     },
+
     'when a single portmapping is added': {
       'should add the portmapping to the resource'(test: Test) {
         // GIVEN
@@ -79,24 +78,23 @@ export = {
         }));
 
         // THEN
-        expect(stack).to(
-          haveResourceLike('AWS::AppMesh::VirtualNode', {
-            Spec: {
-              Listeners: [
-                {
-                  PortMapping: {
-                    Port: 8081,
-                    Protocol: 'tcp',
-                  },
+        expect(stack).to( haveResourceLike('AWS::AppMesh::VirtualNode', {
+          Spec: {
+            Listeners: [
+              {
+                PortMapping: {
+                  Port: 8081,
+                  Protocol: 'tcp',
                 },
-              ],
-            },
-          }),
-        );
+              },
+            ],
+          },
+        }));
 
         test.done();
       },
     },
+
     'when a listener is added with timeout': {
       'should add the listener timeout to the resource'(test: Test) {
         // GIVEN
@@ -120,36 +118,35 @@ export = {
         });
 
         // THEN
-        expect(stack).to(
-          haveResourceLike('AWS::AppMesh::VirtualNode', {
-            Spec: {
-              Listeners: [
-                {
-                  PortMapping: {
-                    Port: 80,
-                    Protocol: 'grpc',
-                  },
-                  Timeout: {
-                    GRPC: {
-                      Idle: {
-                        Unit: 'ms',
-                        Value: 10000,
-                      },
-                      PerRequest: {
-                        Unit: 'ms',
-                        Value: 10000,
-                      },
+        expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
+          Spec: {
+            Listeners: [
+              {
+                PortMapping: {
+                  Port: 80,
+                  Protocol: 'grpc',
+                },
+                Timeout: {
+                  GRPC: {
+                    Idle: {
+                      Unit: 'ms',
+                      Value: 10000,
+                    },
+                    PerRequest: {
+                      Unit: 'ms',
+                      Value: 10000,
                     },
                   },
                 },
-              ],
-            },
-          }),
-        );
+              },
+            ],
+          },
+        }));
 
         test.done();
       },
     },
+
     'when a listener is added with healthcheck ': {
       'should add a default listener healthcheck to the resource'(test: Test) {
         // GIVEN
@@ -171,40 +168,39 @@ export = {
         });
 
         // THEN
-        expect(stack).to(
-          haveResourceLike('AWS::AppMesh::VirtualNode', {
-            Spec: {
-              Listeners: [
-                {
-                  HealthCheck: {
-                    HealthyThreshold: 2,
-                    IntervalMillis: 5000,
-                    Port: 80,
-                    Protocol: 'http2',
-                    TimeoutMillis: 2000,
-                    UnhealthyThreshold: 2,
-                  },
-                  PortMapping: {
-                    Port: 80,
-                    Protocol: 'http2',
-                  },
-                  Timeout: {
-                    HTTP2: {
-                      Idle: {
-                        Unit: 'ms',
-                        Value: 10000,
-                      },
+        expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
+          Spec: {
+            Listeners: [
+              {
+                HealthCheck: {
+                  HealthyThreshold: 2,
+                  IntervalMillis: 5000,
+                  Port: 80,
+                  Protocol: 'http2',
+                  TimeoutMillis: 2000,
+                  UnhealthyThreshold: 2,
+                },
+                PortMapping: {
+                  Port: 80,
+                  Protocol: 'http2',
+                },
+                Timeout: {
+                  HTTP2: {
+                    Idle: {
+                      Unit: 'ms',
+                      Value: 10000,
                     },
                   },
                 },
-              ],
-            },
-          }),
-        );
+              },
+            ],
+          },
+        }));
 
         test.done();
       },
     },
+
     'when a listener is added with healthcheck with user defined props': {
       'should add a listener healthcheck to the resource'(test: Test) {
         // GIVEN
@@ -227,41 +223,40 @@ export = {
         }));
 
         // THEN
-        expect(stack).to(
-          haveResourceLike('AWS::AppMesh::VirtualNode', {
-            Spec: {
-              Listeners: [
-                {
-                  HealthCheck: {
-                    HealthyThreshold: 2,
-                    IntervalMillis: 5000,
-                    Port: 80,
-                    Protocol: 'tcp',
-                    TimeoutMillis: 3000,
-                    UnhealthyThreshold: 2,
-                  },
-                  PortMapping: {
-                    Port: 80,
-                    Protocol: 'tcp',
-                  },
-                  Timeout: {
-                    TCP: {
-                      Idle: {
-                        Unit: 'ms',
-                        Value: 10000,
-                      },
+        expect(stack).to( haveResourceLike('AWS::AppMesh::VirtualNode', {
+          Spec: {
+            Listeners: [
+              {
+                HealthCheck: {
+                  HealthyThreshold: 2,
+                  IntervalMillis: 5000,
+                  Port: 80,
+                  Protocol: 'tcp',
+                  TimeoutMillis: 3000,
+                  UnhealthyThreshold: 2,
+                },
+                PortMapping: {
+                  Port: 80,
+                  Protocol: 'tcp',
+                },
+                Timeout: {
+                  TCP: {
+                    Idle: {
+                      Unit: 'ms',
+                      Value: 10000,
                     },
                   },
                 },
-              ],
-            },
-          }),
-        );
+              },
+            ],
+          },
+        }));
 
         test.done();
       },
     },
   },
+
   'Can export and import VirtualNode and perform actions'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -280,21 +275,19 @@ export = {
     appmesh.VirtualNode.fromVirtualNodeName(stack2, 'imported-node', mesh.meshName, node.virtualNodeName);
 
     // THEN
-    expect(stack).to(
-      haveResourceLike('AWS::AppMesh::VirtualNode', {
-        MeshName: {
-          'Fn::GetAtt': ['meshACDFE68E', 'MeshName'],
-        },
-        Spec: {
-          ServiceDiscovery: {
-            DNS: {
-              Hostname: 'test.domain.local',
-            },
+    expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
+      MeshName: {
+        'Fn::GetAtt': ['meshACDFE68E', 'MeshName'],
+      },
+      Spec: {
+        ServiceDiscovery: {
+          DNS: {
+            Hostname: 'test.domain.local',
           },
         },
-        VirtualNodeName: 'meshtestnode428A9479',
-      }),
-    );
+      },
+      VirtualNodeName: 'meshtestnode428A9479',
+    }));
 
     test.done();
   },

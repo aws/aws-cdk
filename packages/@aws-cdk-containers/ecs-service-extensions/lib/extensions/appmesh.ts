@@ -340,6 +340,6 @@ export class AppMeshExtension extends ServiceExtension {
     // Next update the app mesh config so that the local Envoy
     // proxy on this service knows how to route traffic to
     // nodes from the other service.
-    this.virtualNode.addBackends(otherAppMesh.virtualService);
+    this.virtualNode.addBackend(otherAppMesh.virtualService);
   }
 }

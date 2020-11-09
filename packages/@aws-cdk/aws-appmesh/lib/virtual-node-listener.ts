@@ -16,7 +16,7 @@ export interface VirtualNodeListenerConfig {
 /**
  * Represents the properties needed to define a Listeners for a VirtualNode
  */
-interface VirtualNodeListenerOptions {
+interface VirtualNodeListenerCommonOptions {
   /**
    * Port to listen for connections on
    *
@@ -35,7 +35,7 @@ interface VirtualNodeListenerOptions {
 /**
  * Represent the HTTP Node Listener prorperty
  */
-export interface HttpNodeListenerOptions extends VirtualNodeListenerOptions {
+export interface HttpVirtualNodeListenerOptions extends VirtualNodeListenerCommonOptions {
   /**
    * Timeout for HTTP protocol
    *
@@ -47,7 +47,7 @@ export interface HttpNodeListenerOptions extends VirtualNodeListenerOptions {
 /**
  * Represent the GRPC Node Listener prorperty
  */
-export interface GrpcNodeListenerOptions extends VirtualNodeListenerOptions {
+export interface GrpcVirtualNodeListenerOptions extends VirtualNodeListenerCommonOptions {
   /**
    * Timeout for GRPC protocol
    *
@@ -59,7 +59,7 @@ export interface GrpcNodeListenerOptions extends VirtualNodeListenerOptions {
 /**
  * Represent the TCP Node Listener prorperty
  */
-export interface TcpNodeListenerOptions extends VirtualNodeListenerOptions {
+export interface TcpVirtualNodeListenerOptions extends VirtualNodeListenerCommonOptions {
   /**
    * Timeout for TCP protocol
    *
@@ -125,54 +125,44 @@ export abstract class VirtualNodeListener {
   /**
    * Returns an HTTP Listener for a VirtualNode
    */
-  public static http(props: HttpNodeListenerOptions = {}): VirtualNodeListener {
-    return new HttpNodeListener(props);
+  public static http(props: HttpVirtualNodeListenerOptions = {}): VirtualNodeListener {
+    return new VirtualNodeListenerImpl(Protocol.HTTP, props.healthCheck, props.timeout, props.port);
   }
 
   /**
    * Returns an HTTP2 Listener for a VirtualNode
    */
-  public static http2(props: HttpNodeListenerOptions = {}): VirtualNodeListener {
-    return new Http2NodeListener(props);
+  public static http2(props: HttpVirtualNodeListenerOptions = {}): VirtualNodeListener {
+    return new VirtualNodeListenerImpl(Protocol.HTTP2, props.healthCheck, props.timeout, props.port);
   }
 
   /**
    * Returns an GRPC Listener for a VirtualNode
    */
-  public static grpc(props: GrpcNodeListenerOptions = {}): VirtualNodeListener {
-    return new GrpcNodeListener(props);
+  public static grpc(props: GrpcVirtualNodeListenerOptions = {}): VirtualNodeListener {
+    return new VirtualNodeListenerImpl(Protocol.GRPC, props.healthCheck, props.timeout, props.port);
   }
 
   /**
    * Returns an TCP Listener for a VirtualNode
    */
-  public static tcp(props: TcpNodeListenerOptions = {}): VirtualNodeListener {
-    return new TcpNodeListener(props);
+  public static tcp(props: TcpVirtualNodeListenerOptions = {}): VirtualNodeListener {
+    return new VirtualNodeListenerImpl(Protocol.TCP, props.healthCheck, props.timeout, props.port);
   }
-
-  /**
-   * Protocol the listener implements
-   */
-  protected abstract protocol: Protocol;
-
-  /**
-   * Port to listen for connections on
-   */
-  protected abstract port: number;
-
-  /**
-   * Health checking strategy upstream nodes should use when communicating with the listener
-   */
-  protected abstract healthCheck?: HealthCheck;
-
-  /**
-   * Represents Listener Timeout
-   */
-  protected abstract timeout?: HttpTimeout;
 
   /**
    * Binds the current object when adding Listener to a VirtualNode
    */
+  public abstract bind(scope: cdk.Construct): VirtualNodeListenerConfig;
+
+}
+
+class VirtualNodeListenerImpl extends VirtualNodeListener {
+  constructor(private readonly protocol: Protocol,
+    private readonly healthCheck: HealthCheck | undefined,
+    private readonly timeout: HttpTimeout | undefined,
+    private readonly port: number = 8080) { super(); }
+
   public bind(_scope: cdk.Construct): VirtualNodeListenerConfig {
     return {
       listener: {
@@ -186,10 +176,7 @@ export abstract class VirtualNodeListener {
     };
   }
 
-  /**
-   * Returns an HealthCheck for a VirtualNode
-   */
-  protected renderHealthCheck(hc: HealthCheck): CfnVirtualNode.HealthCheckProperty | undefined {
+  private renderHealthCheck(hc: HealthCheck): CfnVirtualNode.HealthCheckProperty | undefined {
     if (hc === undefined) { return undefined; }
 
     if (hc.protocol === Protocol.TCP && hc.path) {
@@ -215,9 +202,6 @@ export abstract class VirtualNodeListener {
     return healthCheck;
   }
 
-  /**
-   * Returns the ListenerTimeoutProperty based on protocol
-   */
   private renderTimeout(timeout: HttpTimeout): CfnVirtualNode.ListenerTimeoutProperty {
     return ({
       [this.protocol]: {
@@ -233,134 +217,3 @@ export abstract class VirtualNodeListener {
     });
   }
 }
-
-/**
- * Represents the properties required to define a HTTP Listener for a VirtualNode.
- */
-class HttpNodeListener extends VirtualNodeListener {
-  /**
-   * Port to listen for connections on
-   *
-   * @default - 8080
-   */
-  readonly port: number;
-
-  /**
-   * Health checking strategy upstream nodes should use when communicating with the listener
-   *
-   * @default - no healthcheck
-   */
-  readonly healthCheck?: HealthCheck;
-
-  /**
-   * Listener timeout property for HTTP protocol
-   *
-   * @default - none
-   */
-  readonly timeout?: HttpTimeout;
-
-  /**
-   * Listener timeout property for HTTP protocol
-   *
-   * @default - none
-   */
-  protected protocol: Protocol = Protocol.HTTP;
-
-  constructor(props: HttpNodeListenerOptions = {}) {
-    super();
-    this.port = props.port ? props.port : 8080;
-    this.healthCheck = props.healthCheck;
-    this.timeout = props.timeout;
-  }
-}
-
-/**
-* Represents the properties needed to define an HTTP2 Listener for a VirtualGateway
-*/
-class Http2NodeListener extends HttpNodeListener {
-  constructor(props: HttpNodeListenerOptions = {}) {
-    super(props);
-    this.protocol = Protocol.HTTP2;
-  }
-}
-
-/**
- * Represents the properties required to define a GRPC Listener for a VirtualNode.
- */
-class GrpcNodeListener extends VirtualNodeListener {
-  /**
-   * Port to listen for connections on
-   *
-   * @default - 8080
-   */
-  readonly port: number;
-
-  /**
-   * Health checking strategy upstream nodes should use when communicating with the listener
-   *
-   * @default - no healthcheck
-   */
-  readonly healthCheck?: HealthCheck;
-
-  /**
-   * Listener timeout property for GRPC protocol
-   *
-   * @default - none
-   */
-  readonly timeout?: GrpcTimeout;
-
-  /**
-   * Listener timeout property for GRPC protocol
-   *
-   * @default - none
-   */
-  protected protocol: Protocol = Protocol.GRPC;
-
-  constructor(props: GrpcNodeListenerOptions = {}) {
-    super();
-    this.port = props.port ? props.port : 8080;
-    this.healthCheck = props.healthCheck;
-    this.timeout = props.timeout;
-  }
-}
-
-/**
- * Represents the properties required to define a TCP Listener for a VirtualNode.
- */
-class TcpNodeListener extends VirtualNodeListener {
-  /**
-   * Port to listen for connections on
-   *
-   * @default - 8080
-   */
-  readonly port: number;
-
-  /**
-   * Health checking strategy upstream nodes should use when communicating with the listener
-   *
-   * @default - no healthcheck
-   */
-  readonly healthCheck?: HealthCheck;
-
-  /**
-   * Listener timeout property for TCP protocol
-   *
-   * @default - none
-   */
-  readonly timeout?: TcpTimeout;
-
-  /**
-   * Listener timeout property for HTTP protocol
-   *
-   * @default - none
-   */
-  protected protocol: Protocol = Protocol.TCP;
-
-  constructor(props: TcpNodeListenerOptions = {}) {
-    super();
-    this.port = props.port ? props.port : 8080;
-    this.healthCheck = props.healthCheck;
-    this.timeout = props.timeout;
-  }
-}
-

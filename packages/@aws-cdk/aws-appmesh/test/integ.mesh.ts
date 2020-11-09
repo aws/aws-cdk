@@ -45,7 +45,7 @@ const node = mesh.addVirtualNode('node', {
   ],
 });
 
-node.addBackends(new appmesh.VirtualService(stack, 'service-2', {
+node.addBackend(new appmesh.VirtualService(stack, 'service-2', {
   virtualServiceName: 'service2.domain.local',
   mesh,
 }),

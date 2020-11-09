@@ -111,9 +111,6 @@ abstract class VirtualNodeBase extends cdk.Resource implements IVirtualNode {
    * The Amazon Resource Name belonging to the VirtualNdoe
    */
   public abstract readonly virtualNodeArn: string;
-
-  protected readonly backends = new Array<CfnVirtualNode.BackendProperty>();
-  protected readonly listeners = new Array<VirtualNodeListenerConfig>();
 }
 
 /**
@@ -158,6 +155,9 @@ export class VirtualNode extends VirtualNodeBase {
    */
   public readonly mesh: IMesh;
 
+  protected readonly backends = new Array<CfnVirtualNode.BackendProperty>();
+  protected readonly listeners = new Array<VirtualNodeListenerConfig>();
+
   constructor(scope: Construct, id: string, props: VirtualNodeProps) {
     super(scope, id, {
       physicalName: props.virtualNodeName || cdk.Lazy.stringValue({ produce: () => this.node.uniqueId }),
@@ -165,8 +165,8 @@ export class VirtualNode extends VirtualNodeBase {
 
     this.mesh = props.mesh;
 
-    this.addBackends(...props.backends || []);
-    this.addListener(...props.listeners ? props.listeners : []);
+    props.backends?.forEach(backend => this.addBackend(backend));
+    props.listeners?.forEach(listener => this.addListener(listener));
     const accessLogging = props.accessLog?.bind(this);
 
     const node = new CfnVirtualNode(this, 'Resource', {
@@ -200,21 +200,19 @@ export class VirtualNode extends VirtualNodeBase {
   /**
    * Utility method to add an inbound listener for this VirtualNode
    */
-  public addListener(...listeners: VirtualNodeListener[]) {
-    listeners.forEach(listener => this.listeners.push(listener.bind(this)));
+  public addListener(listener: VirtualNodeListener) {
+    this.listeners.push(listener.bind(this));
   }
 
   /**
    * Add a Virtual Services that this node is expected to send outbound traffic to
    */
-  public addBackends(...props: IVirtualService[]) {
-    for (const s of props) {
-      this.backends.push({
-        virtualService: {
-          virtualServiceName: s.virtualServiceName,
-        },
-      });
-    }
+  public addBackend(props: IVirtualService) {
+    this.backends.push({
+      virtualService: {
+        virtualServiceName: props.virtualServiceName,
+      },
+    });
   }
 }
 
