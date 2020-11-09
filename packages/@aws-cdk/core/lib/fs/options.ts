@@ -36,6 +36,11 @@ export enum SymlinkFollowMode {
 export enum IgnoreMode {
   /**
    * Ignores file paths based on simple glob patterns.
+   *
+   * This is the default for file assets.
+   *
+   * It is also the default for Docker image assets, unless the '@aws-cdk/aws-ecr-assets:dockerIgnoreSupport'
+   * context flag is set.
    */
   GLOB = 'glob',
 
@@ -46,6 +51,9 @@ export enum IgnoreMode {
 
   /**
    * Ignores file paths based on the [`.dockerignore specification`](https://docs.docker.com/engine/reference/builder/#dockerignore-file).
+   *
+   * This is the default for Docker image assets if the '@aws-cdk/aws-ecr-assets:dockerIgnoreSupport'
+   * context flag is set.
    */
   DOCKER = 'docker'
 };

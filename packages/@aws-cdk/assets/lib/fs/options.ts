@@ -23,7 +23,8 @@ export interface CopyOptions {
   /**
    * The ignore behavior to use for exclude patterns.
    *
-   * @default IgnoreMode.GLOB
+   * @default - GLOB for file assets, DOCKER or GLOB for docker assets depending on whether the
+   * '@aws-cdk/aws-ecr-assets:dockerIgnoreSupport' flag is set.
    */
   readonly ignoreMode?: IgnoreMode;
 }

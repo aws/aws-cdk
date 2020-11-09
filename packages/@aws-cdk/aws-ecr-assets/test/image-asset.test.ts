@@ -12,12 +12,20 @@ import { DockerImageAsset } from '../lib';
 
 const DEMO_IMAGE_ASSET_HASH = 'b2c69bfbfe983b634456574587443159b3b7258849856a118ad3d2772238f1a5';
 
+
+let app: App;
+let stack: Stack;
+beforeEach(() => {
+  app = new App({
+    context: {
+      '@aws-cdk/aws-ecr-assets:dockerIgnoreSupport': true,
+    },
+  });
+  stack = new Stack(app, 'Stack');
+});
+
 nodeunitShim({
   'test instantiating Asset Image'(test: Test) {
-    // GIVEN
-    const app = new App();
-    const stack = new Stack(app, 'test-stack');
-
     // WHEN
     new DockerImageAsset(stack, 'Image', {
       directory: path.join(__dirname, 'demo-image'),
@@ -41,9 +49,6 @@ nodeunitShim({
   },
 
   'with build args'(test: Test) {
-    // GIVEN
-    const stack = new Stack();
-
     // WHEN
     new DockerImageAsset(stack, 'Image', {
       directory: path.join(__dirname, 'demo-image'),
@@ -59,9 +64,6 @@ nodeunitShim({
   },
 
   'with target'(test: Test) {
-    // GIVEN
-    const stack = new Stack();
-
     // WHEN
     new DockerImageAsset(stack, 'Image', {
       directory: path.join(__dirname, 'demo-image'),
@@ -79,8 +81,6 @@ nodeunitShim({
 
   'with file'(test: Test) {
     // GIVEN
-    const stack = new Stack();
-
     const directoryPath = path.join(__dirname, 'demo-image-custom-docker-file');
     // WHEN
     new DockerImageAsset(stack, 'Image', {
@@ -96,7 +96,6 @@ nodeunitShim({
 
   'asset.repository.grantPull can be used to grant a principal permissions to use the image'(test: Test) {
     // GIVEN
-    const stack = new Stack();
     const user = new iam.User(stack, 'MyUser');
     const asset = new DockerImageAsset(stack, 'Image', {
       directory: path.join(__dirname, 'demo-image'),
@@ -157,9 +156,6 @@ nodeunitShim({
   },
 
   'fails if the directory does not exist'(test: Test) {
-    // GIVEN
-    const stack = new Stack();
-
     // THEN
     test.throws(() => {
       new DockerImageAsset(stack, 'MyAsset', {
@@ -170,9 +166,6 @@ nodeunitShim({
   },
 
   'fails if the directory does not contain a Dockerfile'(test: Test) {
-    // GIVEN
-    const stack = new Stack();
-
     // THEN
     test.throws(() => {
       new DockerImageAsset(stack, 'Asset', {
@@ -183,9 +176,6 @@ nodeunitShim({
   },
 
   'fails if the file does not exist'(test: Test) {
-    // GIVEN
-    const stack = new Stack();
-
     // THEN
     test.throws(() => {
       new DockerImageAsset(stack, 'Asset', {
@@ -197,9 +187,6 @@ nodeunitShim({
   },
 
   'docker directory is staged if asset staging is enabled'(test: Test) {
-    const app = new App();
-    const stack = new Stack(app, 'stack');
-
     const image = new DockerImageAsset(stack, 'MyAsset', {
       directory: path.join(__dirname, 'demo-image'),
     });
@@ -220,9 +207,6 @@ nodeunitShim({
   },
 
   'docker directory is staged with whitelisted files specified in .dockerignore'(test: Test) {
-    const app = new App();
-    const stack = new Stack(app, 'stack');
-
     const image = new DockerImageAsset(stack, 'MyAsset', {
       directory: path.join(__dirname, 'whitelisted-image'),
     });
@@ -254,7 +238,6 @@ nodeunitShim({
 
   'fails if using tokens in build args keys or values'(test: Test) {
     // GIVEN
-    const stack = new Stack();
     const token = Lazy.stringValue({ produce: () => 'foo' });
     const expected = /Cannot use tokens in keys or values of "buildArgs" since they are needed before deployment/;
 
@@ -274,7 +257,6 @@ nodeunitShim({
 
   'fails if using token as repositoryName'(test: Test) {
     // GIVEN
-    const stack = new Stack();
     const token = Lazy.stringValue({ produce: () => 'foo' });
 
     // THEN
@@ -288,7 +270,6 @@ nodeunitShim({
 
   'docker build options are included in the asset id'(test: Test) {
     // GIVEN
-    const stack = new Stack();
     const directory = path.join(__dirname, 'demo-image-custom-docker-file');
 
     const asset1 = new DockerImageAsset(stack, 'Asset1', { directory });
@@ -311,9 +292,6 @@ nodeunitShim({
 });
 
 function testDockerDirectoryIsStagedWithoutFilesSpecifiedInDockerignore(test: Test, ignoreMode?: IgnoreMode) {
-  const app = new App();
-  const stack = new Stack(app, 'stack');
-
   const image = new DockerImageAsset(stack, 'MyAsset', {
     ignoreMode,
     directory: path.join(__dirname, 'dockerignore-image'),
@@ -333,9 +311,6 @@ function testDockerDirectoryIsStagedWithoutFilesSpecifiedInDockerignore(test: Te
 }
 
 function testDockerDirectoryIsStagedWithoutFilesSpecifiedInExcludeOption(test: Test, ignoreMode?: IgnoreMode) {
-  const app = new App();
-  const stack = new Stack(app, 'stack');
-
   const image = new DockerImageAsset(stack, 'MyAsset', {
     directory: path.join(__dirname, 'dockerignore-image'),
     exclude: ['subdirectory'],
@@ -356,7 +331,6 @@ function testDockerDirectoryIsStagedWithoutFilesSpecifiedInExcludeOption(test: T
 
 test('nested assemblies share assets: legacy synth edition', () => {
   // GIVEN
-  const app = new App();
   const stack1 = new Stack(new Stage(app, 'Stage1'), 'Stack', { synthesizer: new LegacyStackSynthesizer() });
   const stack2 = new Stack(new Stage(app, 'Stage2'), 'Stack', { synthesizer: new LegacyStackSynthesizer() });
 
@@ -383,7 +357,6 @@ test('nested assemblies share assets: legacy synth edition', () => {
 
 test('nested assemblies share assets: default synth edition', () => {
   // GIVEN
-  const app = new App();
   const stack1 = new Stack(new Stage(app, 'Stage1'), 'Stack', { synthesizer: new DefaultStackSynthesizer() });
   const stack2 = new Stack(new Stage(app, 'Stage2'), 'Stack', { synthesizer: new DefaultStackSynthesizer() });
 

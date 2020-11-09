@@ -2,7 +2,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as assets from '@aws-cdk/assets';
 import * as ecr from '@aws-cdk/aws-ecr';
-import { Annotations, Construct as CoreConstruct, IgnoreMode, Stack, Token } from '@aws-cdk/core';
+import { Annotations, Construct as CoreConstruct, FeatureFlags, IgnoreMode, Stack, Token } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 
 /**
@@ -96,7 +97,9 @@ export class DockerImageAsset extends CoreConstruct implements assets.IAsset {
       throw new Error(`Cannot find file at ${file}`);
     }
 
-    let ignoreMode = props.ignoreMode || IgnoreMode.DOCKER;
+    const defaultIgnoreMode = FeatureFlags.of(this).isEnabled(cxapi.DOCKER_IGNORE_SUPPORT)
+      ? IgnoreMode.DOCKER : IgnoreMode.GLOB;
+    let ignoreMode = props.ignoreMode ?? defaultIgnoreMode;
 
     let exclude: string[] = props.exclude || [];
 
