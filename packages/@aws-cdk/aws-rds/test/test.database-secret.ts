@@ -1,5 +1,5 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import { Stack } from '@aws-cdk/core';
+import { CfnResource, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { DatabaseSecret } from '../lib';
 import { DEFAULT_PASSWORD_EXCLUDE_CHARS } from '../lib/private/util';
@@ -10,7 +10,7 @@ export = {
     const stack = new Stack();
 
     // WHEN
-    new DatabaseSecret(stack, 'Secret', {
+    const dbSecret = new DatabaseSecret(stack, 'Secret', {
       username: 'admin-username',
     });
 
@@ -34,6 +34,8 @@ export = {
         SecretStringTemplate: '{"username":"admin-username"}',
       },
     }));
+
+    test.equal(getSecretLogicalId(dbSecret, stack), 'SecretA720EF05');
 
     test.done();
   },
@@ -75,4 +77,42 @@ export = {
 
     test.done();
   },
+
+  'replace on password critera change'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const dbSecret = new DatabaseSecret(stack, 'Secret', {
+      username: 'admin',
+      replaceOnPasswordCriteriaChanges: true,
+    });
+
+    // THEN
+    const dbSecretlogicalId = getSecretLogicalId(dbSecret, stack);
+    test.equal(dbSecretlogicalId, 'Secret3fdaad7efa858a3daf9490cf0a702aeb');
+
+    // same node path but other excluded characters
+    stack.node.tryRemoveChild('Secret');
+    const otherSecret1 = new DatabaseSecret(stack, 'Secret', {
+      username: 'admin',
+      replaceOnPasswordCriteriaChanges: true,
+      excludeCharacters: '@!()[]',
+    });
+    test.notEqual(dbSecretlogicalId, getSecretLogicalId(otherSecret1, stack));
+
+    // other node path but same excluded characters
+    const otherSecret2 = new DatabaseSecret(stack, 'Secret2', {
+      username: 'admin',
+      replaceOnPasswordCriteriaChanges: true,
+    });
+    test.notEqual(dbSecretlogicalId, getSecretLogicalId(otherSecret2, stack));
+
+    test.done();
+  },
 };
+
+function getSecretLogicalId(dbSecret: DatabaseSecret, stack: Stack): string {
+  const cfnSecret = dbSecret.node.defaultChild as CfnResource;
+  return stack.resolve(cfnSecret.logicalId);
+}
