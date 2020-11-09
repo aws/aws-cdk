@@ -1,6 +1,7 @@
 import { info } from 'console';
 import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
+import { warning } from '../../logging';
 import { loadStructuredFile, toYAML } from '../../serialize';
 import { SdkProvider } from '../aws-auth';
 import { DeployStackResult } from '../deploy-stack';
@@ -92,13 +93,31 @@ export class Bootstrapper {
     // Ideally we'd do this inside the template, but the `Rules` section of CFN
     // templates doesn't seem to be able to express the conditions that we need
     // (can't use Fn::Join or reference Conditions) so we do it here instead.
-    const trustedAccounts = params.trustedAccounts ?? current.parameters.TrustedAccounts?.split(',') ?? [];
-    const cloudFormationExecutionPolicies = params.cloudFormationExecutionPolicies ?? current.parameters.CloudFormationExecutionPolicies?.split(',') ?? [];
+    const trustedAccounts = params.trustedAccounts ?? splitCfnArray(current.parameters.TrustedAccounts);
+    info(`Trusted accounts:   ${trustedAccounts.length > 0 ? trustedAccounts.join(', ') : '(none)'}`);
 
-    // To prevent user errors, require --cfn-exec-policies always
-    // (Hopefully until we get https://github.com/aws/aws-cdk/pull/9867 approved)
-    if (cloudFormationExecutionPolicies.length === 0) {
-      throw new Error('Please pass \'--cloudformation-execution-policies\' to specify deployment permissions. Try a managed policy of the form \'arn:aws:iam::aws:policy/<PolicyName>\'.');
+    const cloudFormationExecutionPolicies = params.cloudFormationExecutionPolicies ?? splitCfnArray(current.parameters.CloudFormationExecutionPolicies);
+    if (trustedAccounts.length === 0 && cloudFormationExecutionPolicies.length === 0) {
+      // For self-trust it's okay to default to AdministratorAccess, and it improves the usability of bootstrapping a lot.
+      //
+      // We don't actually make the implicity policy a physical parameter. The template will infer it instead,
+      // we simply do the UI advertising that behavior here.
+      //
+      // If we DID make it an explicit parameter, we wouldn't be able to tell the difference between whether
+      // we inferred it or whether the user told us, and the sequence:
+      //
+      // $ cdk bootstrap
+      // $ cdk bootstrap --trust 1234
+      //
+      // Would leave AdministratorAccess policies with a trust relationship, without the user explicitly
+      // approving the trust policy.
+      const implicitPolicy = `arn:${await current.partition()}:iam::aws:policy/AdministratorAccess`;
+      warning(`Using default execution policy of '${implicitPolicy}'. Pass '--cloudformation-execution-policies' to customize.`);
+    } else if (cloudFormationExecutionPolicies.length === 0) {
+      throw new Error('Please pass \'--cloudformation-execution-policies\' when using \'--trust\' to specify deployment permissions. Try a managed policy of the form \'arn:aws:iam::aws:policy/<PolicyName>\'.');
+    } else {
+      // Remind people what the current settings are
+      info(`Execution policies: ${cloudFormationExecutionPolicies.join(', ')}`);
     }
 
     // * If an ARN is given, that ARN. Otherwise:
@@ -112,10 +131,6 @@ export class Bootstrapper {
       (params.createCustomerMasterKey === true ? CREATE_NEW_KEY :
         params.createCustomerMasterKey === false || currentKmsKeyId === undefined ? USE_AWS_MANAGED_KEY :
           undefined);
-
-    // Remind people what we settled on
-    info(`Trusted accounts:   ${trustedAccounts.length > 0 ? trustedAccounts.join(', ') : '(none)'}`);
-    info(`Execution policies: ${cloudFormationExecutionPolicies.join(', ')}`);
 
     return current.update(
       bootstrapTemplate,
@@ -169,3 +184,13 @@ const USE_AWS_MANAGED_KEY = 'AWS_MANAGED_KEY';
  * Magic parameter value that will cause the bootstrap-template.yml to create a CMK
  */
 const CREATE_NEW_KEY = '';
+
+/**
+ * Split an array-like CloudFormation parameter on ,
+ *
+ * An empty string is the empty array (instead of `['']`).
+ */
+function splitCfnArray(xs: string | undefined): string[] {
+  if (xs === '' || xs === undefined) { return []; }
+  return xs.split(',');
+}

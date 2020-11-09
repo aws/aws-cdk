@@ -394,7 +394,7 @@ describe('metrics', () => {
   test('Can use metricSearchLatency on an Elasticsearch Domain', () => {
     testMetric(
       (domain) => domain.metricSearchLatency(),
-      'SearchLatencyP99',
+      'SearchLatency',
       'p99',
     );
   });
@@ -402,7 +402,7 @@ describe('metrics', () => {
   test('Can use metricIndexingLatency on an Elasticsearch Domain', () => {
     testMetric(
       (domain) => domain.metricIndexingLatency(),
-      'IndexingLatencyP99',
+      'IndexingLatency',
       'p99',
     );
   });

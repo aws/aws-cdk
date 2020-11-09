@@ -280,6 +280,35 @@ nodeunitShim({
     test.throws(() => new Stage(app, 'mystage', { outdir: '/tmp/foo/bar' }), /"outdir" cannot be specified for nested stages/);
     test.done();
   },
+
+  'Stage.isStage indicates that a construct is a stage'(test: Test) {
+    // WHEN
+    const app = new App();
+    const stack = new Stack();
+    const stage = new Stage(app, 'Stage');
+
+    // THEN
+    test.ok(Stage.isStage(stage));
+    test.ok(Stage.isStage(app));
+    test.ok(!Stage.isStage(stack));
+    test.done();
+  },
+
+  'Stage.isStage indicates that a construct is a stage based on symbol'(test: Test) {
+    // WHEN
+    const app = new App();
+    const stage = new Stage(app, 'Stage');
+
+    const externalStage = {};
+    const STAGE_SYMBOL = Symbol.for('@aws-cdk/core.Stage');
+    Object.defineProperty(externalStage, STAGE_SYMBOL, { value: true });
+
+    // THEN
+    test.ok(Stage.isStage(stage));
+    test.ok(Stage.isStage(app));
+    test.ok(Stage.isStage(externalStage));
+    test.done();
+  },
 });
 
 class TouchingAspect implements IAspect {

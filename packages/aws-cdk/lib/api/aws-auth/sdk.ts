@@ -29,6 +29,7 @@ export interface ISDK {
   s3(): AWS.S3;
   route53(): AWS.Route53;
   ecr(): AWS.ECR;
+  elbv2(): AWS.ELBv2;
 }
 
 /**
@@ -90,6 +91,10 @@ export class SDK implements ISDK {
 
   public ecr(): AWS.ECR {
     return wrapServiceErrorHandling(new AWS.ECR(this.config));
+  }
+
+  public elbv2(): AWS.ELBv2 {
+    return wrapServiceErrorHandling(new AWS.ELBv2(this.config));
   }
 
   public async currentAccount(): Promise<Account> {

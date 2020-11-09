@@ -16,6 +16,13 @@ This library contains Route53 Alias Record targets for:
     // or - route53.RecordTarget.fromAlias(new alias.ApiGatewayDomain(domainName)),
   });
   ```
+* API Gateway V2 custom domains
+  ```ts
+  new route53.ARecord(this, 'AliasRecord', {
+    zone,
+    target: route53.RecordTarget.fromAlias(new alias.ApiGatewayv2Domain(domainName)),
+  });
+  ```
 * CloudFront distributions
   ```ts
   new route53.ARecord(this, 'AliasRecord', {
@@ -55,17 +62,17 @@ For example, if the Amazon-provided DNS for the load balancer is `ALB-xxxxxxx.us
   ```
 * S3 Bucket Website:
 
-**Important:** The Bucket name must strictly match the full DNS name. 
-See [the Developer Guide](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/getting-started.html) for more info. 
+**Important:** The Bucket name must strictly match the full DNS name.
+See [the Developer Guide](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/getting-started.html) for more info.
   ```ts
   const [recordName, domainName] = ['www', 'example.com'];
-  
+
   const bucketWebsite = new Bucket(this, 'BucketWebsite', {
     bucketName: [recordName, domainName].join('.'), // www.example.com
     publicReadAccess: true,
     websiteIndexDocument: 'index.html',
   });
-  
+
   const zone = HostedZone.fromLookup(this, 'Zone', {domainName}); // example.com
 
   new route53.ARecord(this, 'AliasRecord', {

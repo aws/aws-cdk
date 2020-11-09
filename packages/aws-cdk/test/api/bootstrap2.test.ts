@@ -89,6 +89,34 @@ describe('Bootstrapping v2', () => {
       .toThrow(/--cloudformation-execution-policies/);
   });
 
+  test('passing trusted accounts without CFN managed policies on the existing stack results in an error', async () => {
+    mockTheToolkitInfo = {
+      parameters: {
+        CloudFormationExecutionPolicies: '',
+      },
+    };
+
+    await expect(bootstrapper.bootstrapEnvironment(env, sdk, {
+      parameters: {
+        trustedAccounts: ['123456789012'],
+      },
+    }))
+      .rejects
+      .toThrow(/--cloudformation-execution-policies/);
+  });
+
+  test('passing no CFN managed policies without trusted accounts is okay', async () => {
+    await bootstrapper.bootstrapEnvironment(env, sdk, {
+      parameters: {},
+    });
+
+    expect(mockDeployStack).toHaveBeenCalledWith(expect.objectContaining({
+      parameters: expect.objectContaining({
+        CloudFormationExecutionPolicies: '',
+      }),
+    }));
+  });
+
   test('allow adding trusted account if there was already a policy on the stack', async () => {
     // GIVEN
     mockTheToolkitInfo = {
