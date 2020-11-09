@@ -29,8 +29,20 @@ This will instruct the toolkit to build a Docker image from `my-image`, push it
 to an AWS ECR repository and wire the name of the repository as CloudFormation
 parameters to your stack.
 
-If the directory contains a `.dockerignore` file then its patterns will be
-inserted at the beginning of the `exclude` property.
+By default, all files in the given directory will be copied into the docker
+*build context*. If there is a large directory that you know you definitely
+don't need in the build context you can improve the performance by adding the
+names of files and directories to ignore to a file called `.dockerignore`, or
+pass them via the `exclude` property. If both are available, the patterns
+found in `exclude` are appended to the patterns found in `.dockerignore`.
+
+The `ignoreMode` property controls how the set of ignore patterns is
+interpreted. The recommended setting for Docker image assets is
+`IgnoreMode.DOCKER`. If the context flag
+`@aws-cdk/aws-ecr-assets:dockerIgnoreSupport` is set to `true` in your
+`cdk.json` (this is by default for new projects, but must be set manually for
+old projects) then `IgnoreMode.DOCKER` is the default and you don't need to
+configure it on the asset itself.
 
 Use `asset.imageUri` to reference the image (it includes both the ECR image URL
 and tag.
