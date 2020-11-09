@@ -27,7 +27,7 @@ export interface EsBuildBaseOptions {
    *
    * @see https://esbuild.github.io/api/#target
    *
-   * @default es2017
+   * @default - the node version of the runtime
    */
   readonly target?: string;
 
@@ -68,7 +68,7 @@ export interface EsBuildBaseOptions {
   /**
    * The version of esbuild to use when running in a Docker container.
    *
-   * @default - latest 0
+   * @default - latest v0
    */
   readonly esbuildVersion?: string;
 
