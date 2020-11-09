@@ -278,5 +278,8 @@
   ],
   "awscdkio": {
     "announce": false
+  },
+  "ubergen": {
+    "exclude": true
   }
 }
