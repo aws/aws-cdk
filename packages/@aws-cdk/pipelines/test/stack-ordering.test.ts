@@ -91,11 +91,11 @@ test('room for sequential intermediary actions is reserved', () => {
       Actions: sortedByRunOrder([
         objectLike({
           Name: 'Stack1.Prepare',
-          RunOrder: 1
+          RunOrder: 1,
         }),
         objectLike({
           Name: 'Stack1.Deploy',
-          RunOrder: 3
+          RunOrder: 3,
         }),
       ]),
     }),
