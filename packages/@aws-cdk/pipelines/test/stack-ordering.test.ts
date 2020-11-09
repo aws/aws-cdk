@@ -78,6 +78,29 @@ test('manual approval is inserted in correct location', () => {
   });
 });
 
+test('room for sequential intermediary actions is reserved', () => {
+  // WHEN
+  pipeline.addApplicationStage(new TwoStackApp(app, 'MyApp'), {
+    roomForIntermediaryActions: 1,
+  });
+
+  // THEN
+  expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+    Stages: arrayWith({
+      Name: 'MyApp',
+      Actions: sortedByRunOrder([
+        objectLike({
+          Name: 'Stack1.Prepare',
+          RunOrder: 1
+        }),
+        objectLike({
+          Name: 'Stack1.Deploy',
+          RunOrder: 3
+        }),
+      ]),
+    }),
+  });
+});
 
 class TwoStackApp extends Stage {
   constructor(scope: Construct, id: string, props?: StageProps) {
