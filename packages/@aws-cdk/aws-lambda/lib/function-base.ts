@@ -149,6 +149,17 @@ export interface FunctionAttributes {
    * to this Lambda.
    */
   readonly securityGroup?: ec2.ISecurityGroup;
+
+  /**
+   * Setting this property informs the CDK that permissions can be added to this function.
+   * When not configured, the CDK attempts to auto-determine this. If determined as false, adding permission
+   * to this function will fail.
+   *
+   * Set this to property *ONLY IF* the imported function is in the same account as the stack
+   * it's imported in.
+   * @default - true, if the Stack is configured with an `env` and the account is the same as this function. false, otherwise.
+   */
+  readonly allowPermissions?: boolean;
 }
 
 export abstract class FunctionBase extends Resource implements IFunction {
@@ -367,7 +378,7 @@ export abstract class FunctionBase extends Resource implements IFunction {
    */
   protected _isStackAccount(): boolean {
     if (Token.isUnresolved(this.stack.account) || Token.isUnresolved(this.functionArn)) {
-      return true;
+      return false;
     }
     return this.stack.parseArn(this.functionArn).account === this.stack.account;
   }
