@@ -133,20 +133,47 @@ export = {
     },
   },
 
-  'Can export and import GatewayRoutes and perform actions'(test: Test) {
+  'Can import Gateway Routes using an ARN'(test: Test) {
     const app = new cdk.App();
     // GIVEN
     const stack = new cdk.Stack(app, 'Imports', {
       env: { account: '123456789012', region: 'us-east-1' },
     });
+    const meshName = 'test-mesh';
+    const virtualGatewayName = 'test-gateway';
+    const gatewayRouteName = 'test-gateway-route';
+    const arn = `arn:aws:appmesh:us-east-1:123456789012:mesh/${meshName}/virtualGateway/${virtualGatewayName}/gatewayRoute/${gatewayRouteName}`;
 
     // WHEN
-    const gatewayRoute2 = appmesh.GatewayRoute.fromGatewayRouteArn(
-      stack, 'importedGatewayRoute2', 'arn:aws:appmesh:us-east-1:123456789012:mesh/test-mesh/virtualGateway/test-gateway/gatewayRoute/test-gateway-route');
+    const gatewayRoute = appmesh.GatewayRoute.fromGatewayRouteArn(stack, 'importedGatewayRoute', arn);
     // THEN
-    test.equal(gatewayRoute2.gatewayRouteName, 'test-gateway-route');
-    test.equal(gatewayRoute2.virtualGateway.virtualGatewayName, 'test-gateway');
-    test.equal(gatewayRoute2.virtualGateway.mesh.meshName, 'test-mesh');
+    test.equal(gatewayRoute.gatewayRouteName, gatewayRouteName);
+    test.equal(gatewayRoute.virtualGateway.virtualGatewayName, virtualGatewayName);
+    test.equal(gatewayRoute.virtualGateway.mesh.meshName, meshName);
+    test.done();
+  },
+  'Can import Gateway Routes using attributes'(test: Test) {
+    const app = new cdk.App();
+    // GIVEN
+    const stack = new cdk.Stack(app, 'Imports', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+    const meshName = 'test-mesh';
+    const virtualGatewayName = 'test-gateway';
+    const gatewayRouteName = 'test-gateway-route';
+
+    // WHEN
+    const mesh = appmesh.Mesh.fromMeshName(stack, 'Mesh', meshName);
+    const gateway = mesh.addVirtualGateway('VirtualGateway', {
+      virtualGatewayName: virtualGatewayName,
+    });
+    const gatewayRoute = appmesh.GatewayRoute.fromGatewayRouteAttributes(stack, 'importedGatewayRoute', {
+      gatewayRouteName: gatewayRouteName,
+      virtualGateway: gateway,
+    });
+    // THEN
+    test.equal(gatewayRoute.gatewayRouteName, gatewayRouteName);
+    test.equal(gatewayRoute.virtualGateway.mesh.meshName, meshName);
     test.done();
   },
 };

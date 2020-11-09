@@ -234,7 +234,38 @@ describe('ThirdPartyAttributions', () => {
     expect(pkgJson.reports.length).toEqual(2);
     for (const report of pkgJson.reports) {
       expect(report.ruleName).toEqual('license/3p-attributions');
+      expect(report.message).toContain('Missing attribution');
     }
+    expect(pkgJson.reports[0].message).toContain('dep1');
+    expect(pkgJson.reports[1].message).toContain('dep2');
+  });
+
+  test('errors when there are excessive attributions', async() => {
+    fakeModule = new FakeModule({
+      packagejson: {
+        bundledDependencies: ['dep1'],
+      },
+      notice: [
+        '** dep1 - https://link-somewhere',
+        '** dep2 - https://link-elsewhere',
+        '** dep3-rev - https://link-elsewhere',
+      ],
+    });
+    const dirPath = await fakeModule.tmpdir();
+
+    const rule = new rules.ThirdPartyAttributions();
+
+    const pkgJson = new PackageJson(path.join(dirPath, 'package.json'));
+    rule.validate(pkgJson);
+
+    expect(pkgJson.hasReports).toBe(true);
+    expect(pkgJson.reports.length).toEqual(2);
+    for (const report of pkgJson.reports) {
+      expect(report.ruleName).toEqual('license/3p-attributions');
+      expect(report.message).toContain('Unnecessary attribution');
+    }
+    expect(pkgJson.reports[0].message).toContain('dep2');
+    expect(pkgJson.reports[1].message).toContain('dep3-rev');
   });
 
   test('passes when attribution is present', async() => {

@@ -147,11 +147,22 @@ export class ThirdPartyAttributions extends ValidationRule {
     }
     const bundled = pkg.getBundledDependencies();
     const lines = fs.readFileSync(path.join(pkg.packageRoot, 'NOTICE'), { encoding: 'utf8' }).split('\n');
+
+    const re = /^\*\* (\S+)/;
+    const attributions = lines.filter(l => re.test(l)).map(l => l.match(re)![1]);
+
     for (const dep of bundled) {
-      const re = new RegExp(`^\\*\\* ${dep}`);
-      if (!lines.find(l => re.test(l))) {
+      if (!attributions.includes(dep)) {
         pkg.report({
-          message: `Missing attribution for bundled dependency '${dep}' in NOTICE file`,
+          message: `Missing attribution for bundled dependency '${dep}' in NOTICE file.`,
+          ruleName: this.name,
+        });
+      }
+    }
+    for (const attr of attributions) {
+      if (!bundled.includes(attr)) {
+        pkg.report({
+          message: `Unnecessary attribution found for dependency '${attr}' in NOTICE file.`,
           ruleName: this.name,
         });
       }
@@ -1488,9 +1499,14 @@ function hasIntegTests(pkg: PackageJson) {
  * Return whether this package should use CDK build tools
  */
 function shouldUseCDKBuildTools(pkg: PackageJson) {
-  // The packages that DON'T use CDKBuildTools are the package itself
-  // and the packages used by it.
-  return pkg.packageName !== 'cdk-build-tools' && pkg.packageName !== 'merkle-build' && pkg.packageName !== 'awslint';
+  const exclude = [
+    'cdk-build-tools',
+    'merkle-build',
+    'awslint',
+    'script-tests',
+  ];
+
+  return !exclude.includes(pkg.packageName);
 }
 
 function repoRoot(dir: string) {
