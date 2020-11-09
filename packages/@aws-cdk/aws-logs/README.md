@@ -41,11 +41,32 @@ lambda](https://docs.aws.amazon.com/lambda/latest/dg/monitoring-cloudwatchlogs.h
 This is implemented using a [CloudFormation custom
 resource](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cfn-customresource.html)
 which pre-creates the log group if it doesn't exist, and sets the specified log retention period (never expire, by default).
- 
+
 By default, the log group will be created in the same region as the stack. The `logGroupRegion` property can be used to configure
 log groups in other regions. This is typically useful when controlling retention for log groups auto-created by global services that
 publish their log group to a specific region, such as AWS Chatbot creating a log group in `us-east-1`.
- 
+
+### Encrypting Log Groups
+
+By default, log group data is always encrypted in CloudWatch Logs. You have the
+option to encrypt log group data using a AWS KMS customer master key (CMK) should
+you not wish to use the default AWS encryption. Keep in mind that if you decide to
+encrypt a log group, any service or IAM identity that needs to read the encrypted
+log streams in the future will require the same CMK to decrypt the data.
+
+Here's a simple example of creating an encrypted Log Group using a KMS CMK.
+
+```ts
+const kmsKey = new kms.Key(this, 'Key');
+
+new LogGroup(this, 'LogGroup', {
+  kmsKey,
+});
+```
+
+See the AWS documentation for more detailed information about [encrypting CloudWatch
+Logs](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/encrypt-log-data-kms.html).
+
 ### Subscriptions and Destinations
 
 Log events matching a particular filter can be sent to either a Lambda function
@@ -100,7 +121,7 @@ the name `Namespace/MetricName`.
 
 #### Exposing Metric on a Metric Filter
 
-You can expose a metric on a metric filter by calling the `MetricFilter.metric()` API. 
+You can expose a metric on a metric filter by calling the `MetricFilter.metric()` API.
 This has a default of `statistic = 'avg'` if the statistic is not set in the `props`.
 
 ```ts
