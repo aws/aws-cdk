@@ -4016,10 +4016,10 @@ es6-promisify@^5.0.0:
   dependencies:
     es6-promise "^4.0.3"
 
-esbuild@^0.8.3:
-  version "0.8.3"
-  resolved "https://registry.yarnpkg.com/esbuild/-/esbuild-0.8.3.tgz#feab201ea319feed12b9a23b810702b22b631760"
-  integrity sha512-PxoukdXYOyT3pxwZmcD6jDLaPH4e2oRmWx51aflBUYk5+JcGLqwjfH9eXsnkK/1kgOA3WOVP7IhQ2gLyEH+Xbg==
+esbuild@^0.8.5:
+  version "0.8.5"
+  resolved "https://registry.yarnpkg.com/esbuild/-/esbuild-0.8.5.tgz#d5fc10d34e68c6b414158b59a386df767dc8385a"
+  integrity sha512-195Lq3Hp3V8rvccV4ede8PxmGvKuh4BrGQHxVfcYmpyg1ni078QN4iO1VNYCl55v0qYsWz6n96y3ZtMpuEtDRQ==
 
 escalade@^3.1.1:
   version "3.1.1"
@@ -9822,7 +9822,7 @@ trivial-deferred@^1.0.1:
   resolved "https://registry.yarnpkg.com/trivial-deferred/-/trivial-deferred-1.0.1.tgz#376d4d29d951d6368a6f7a0ae85c2f4d5e0658f3"
   integrity sha1-N21NKdlR1jaKb3oK6FwvTV4GWPM=
 
-ts-jest@^26.4.4:
+ts-jest@^26.4.3, ts-jest@^26.4.4:
   version "26.4.4"
   resolved "https://registry.yarnpkg.com/ts-jest/-/ts-jest-26.4.4.tgz#61f13fb21ab400853c532270e52cc0ed7e502c49"
   integrity sha512-3lFWKbLxJm34QxyVNNCgXX1u4o/RV0myvA2y2Bxm46iGIjKlaY0own9gIckbjZJPn+WaJEnfPPJ20HHGpoq4yg==
