@@ -1,12 +1,13 @@
 import * as path from 'path';
 import { arrayWith, deepObjectLike, encodedJson, notMatching, objectLike, stringLike } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
+import * as cp from '@aws-cdk/aws-codepipeline';
 import * as ecr_assets from '@aws-cdk/aws-ecr-assets';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import { Stack, Stage, StageProps } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as cdkp from '../lib';
-import { BucketStack, PIPELINE_ENV, TestApp, TestGitHubNpmPipeline } from './testutil';
+import { BucketStack, PIPELINE_ENV, TestApp, TestGitHubAction, TestGitHubNpmPipeline } from './testutil';
 
 const FILE_ASSET_SOURCE_HASH = '8289faf53c7da377bb2b90615999171adef5e1d8f6b88810e5fef75e6ca09ba5';
 
@@ -33,6 +34,110 @@ test('no assets stage if the application has no assets', () => {
     Stages: notMatching(arrayWith(objectLike({
       Name: 'Assets',
     }))),
+  });
+});
+
+describe('asset stage placement', () => {
+  test('assets stage comes before any user-defined stages', () => {
+    // WHEN
+    pipeline.addApplicationStage(new FileAssetApp(app, 'App'));
+
+    // THEN
+    expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      Stages: [
+        objectLike({ Name: 'Source' }),
+        objectLike({ Name: 'Build' }),
+        objectLike({ Name: 'UpdatePipeline' }),
+        objectLike({ Name: 'Assets' }),
+        objectLike({ Name: 'App' }),
+      ],
+    });
+  });
+
+  test('assets stage inserted after existing pipeline actions', () => {
+    // WHEN
+    const sourceArtifact = new cp.Artifact();
+    const cloudAssemblyArtifact = new cp.Artifact();
+    const existingCodePipeline = new cp.Pipeline(pipelineStack, 'CodePipeline', {
+      stages: [
+        {
+          stageName: 'CustomSource',
+          actions: [new TestGitHubAction(sourceArtifact)],
+        },
+        {
+          stageName: 'CustomBuild',
+          actions: [cdkp.SimpleSynthAction.standardNpmSynth({ sourceArtifact, cloudAssemblyArtifact })],
+        },
+      ],
+    });
+    pipeline = new cdkp.CdkPipeline(pipelineStack, 'CdkEmptyPipeline', {
+      cloudAssemblyArtifact: cloudAssemblyArtifact,
+      selfMutating: false,
+      codePipeline: existingCodePipeline,
+      // No source/build actions
+    });
+    pipeline.addApplicationStage(new FileAssetApp(app, 'App'));
+
+    // THEN
+    expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      Stages: [
+        objectLike({ Name: 'CustomSource' }),
+        objectLike({ Name: 'CustomBuild' }),
+        objectLike({ Name: 'Assets' }),
+        objectLike({ Name: 'App' }),
+      ],
+    });
+  });
+
+  test('up to 50 assets fit in a single stage', () => {
+    // WHEN
+    pipeline.addApplicationStage(new MegaAssetsApp(app, 'App', { numAssets: 50 }));
+
+    // THEN
+    expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      Stages: [
+        objectLike({ Name: 'Source' }),
+        objectLike({ Name: 'Build' }),
+        objectLike({ Name: 'UpdatePipeline' }),
+        objectLike({ Name: 'Assets' }),
+        objectLike({ Name: 'App' }),
+      ],
+    });
+  });
+
+  test('51 assets triggers a second stage', () => {
+    // WHEN
+    pipeline.addApplicationStage(new MegaAssetsApp(app, 'App', { numAssets: 51 }));
+
+    // THEN
+    expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      Stages: [
+        objectLike({ Name: 'Source' }),
+        objectLike({ Name: 'Build' }),
+        objectLike({ Name: 'UpdatePipeline' }),
+        objectLike({ Name: 'Assets' }),
+        objectLike({ Name: 'Assets2' }),
+        objectLike({ Name: 'App' }),
+      ],
+    });
+  });
+
+  test('101 assets triggers a third stage', () => {
+    // WHEN
+    pipeline.addApplicationStage(new MegaAssetsApp(app, 'App', { numAssets: 101 }));
+
+    // THEN
+    expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      Stages: [
+        objectLike({ Name: 'Source' }),
+        objectLike({ Name: 'Build' }),
+        objectLike({ Name: 'UpdatePipeline' }),
+        objectLike({ Name: 'Assets' }),
+        objectLike({ Name: 'Assets2' }),
+        objectLike({ Name: 'Assets3' }),
+        objectLike({ Name: 'App' }),
+      ],
+    });
   });
 });
 
@@ -310,6 +415,32 @@ class DockerAssetApp extends Stage {
     new ecr_assets.DockerImageAsset(stack, 'Asset', {
       directory: path.join(__dirname, 'test-docker-asset'),
     });
+  }
+}
+
+interface MegaAssetsAppProps extends StageProps {
+  readonly numAssets: number;
+}
+
+// Creates a mix of file and image assets, up to a specified count
+class MegaAssetsApp extends Stage {
+  constructor(scope: Construct, id: string, props: MegaAssetsAppProps) {
+    super(scope, id, props);
+    const stack = new Stack(this, 'Stack');
+
+    let assetCount = 0;
+    for (; assetCount < props.numAssets / 2; assetCount++) {
+      new s3_assets.Asset(stack, `Asset${assetCount}`, {
+        path: path.join(__dirname, 'test-file-asset.txt'),
+        assetHash: `FileAsset${assetCount}`,
+      });
+    }
+    for (; assetCount < props.numAssets; assetCount++) {
+      new ecr_assets.DockerImageAsset(stack, `Asset${assetCount}`, {
+        directory: path.join(__dirname, 'test-docker-asset'),
+        extraHash: `FileAsset${assetCount}`,
+      });
+    }
   }
 }
 
