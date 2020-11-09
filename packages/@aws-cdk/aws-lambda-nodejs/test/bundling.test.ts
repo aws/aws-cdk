@@ -9,10 +9,16 @@ import { EsBuildBundler, LockFile } from '../lib/esbuild-bundler';
 import * as util from '../lib/util';
 
 jest.mock('@aws-cdk/aws-lambda');
-const existsSyncOriginal = fs.existsSync;
-const existsSyncMock = jest.spyOn(fs, 'existsSync');
+
 const originalFindUp = util.findUp;
-const fromAssetMock = jest.spyOn(BundlingDockerImage, 'fromAsset');
+
+// Mock BundlingDockerImage.fromAsset() to avoid building the image
+const fromAssetMock = jest.spyOn(BundlingDockerImage, 'fromAsset').mockReturnValue({
+  image: 'built-image',
+  cp: () => {},
+  run: () => {},
+  toJSON: () => 'built-image',
+});
 
 let findUpMock: jest.SpyInstance;
 beforeEach(() => {
@@ -144,6 +150,9 @@ test('esbuild bundling with externals and dependencies', () => {
 });
 
 test('Detects yarn.lock', () => {
+  const existsSyncOriginal = fs.existsSync;
+  const existsSyncMock = jest.spyOn(fs, 'existsSync');
+
   existsSyncMock.mockImplementation((p: fs.PathLike) => {
     if (/yarn.lock/.test(p.toString())) {
       return true;
