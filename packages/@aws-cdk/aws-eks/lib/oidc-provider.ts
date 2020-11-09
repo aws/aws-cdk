@@ -16,13 +16,6 @@ export interface OpenIdConnectProviderProps {
    * aws eks describe-cluster --name %cluster_name% --query "cluster.identity.oidc.issuer" --output text
    */
   readonly url: string;
-
-  /**
-   * Physical name of provider
-   *
-   * @default undefined you can leave it empty so the name will be auto-generated
-   */
-  readonly customResourceName?: string;
 }
 
 /**
