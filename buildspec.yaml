@@ -6,6 +6,9 @@ phases:
   install:
     commands:
 
+      # command available in our custom CodeBuild image
+      - start-proxy
+
       # debug to see the mirror is actually being used
       - docker pull jsii/superchain-with-ecr-proxy
 
