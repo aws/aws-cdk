@@ -7,8 +7,8 @@ import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import {
-  AuroraEngineVersion, AuroraMysqlEngineVersion, AuroraPostgresEngineVersion, CfnDBCluster, DatabaseCluster, DatabaseClusterEngine,
-  DatabaseClusterFromSnapshot, ParameterGroup, PerformanceInsightRetention, SubnetGroup,
+  AuroraEngineVersion, AuroraMysqlEngineVersion, AuroraPostgresEngineVersion, CfnDBCluster, Credentials, DatabaseCluster,
+  DatabaseClusterEngine, DatabaseClusterFromSnapshot, ParameterGroup, PerformanceInsightRetention, SubnetGroup,
 } from '../lib';
 
 export = {
@@ -1727,6 +1727,40 @@ export = {
 
     // THEN
     test.ok(cluster.node.defaultChild instanceof CfnDBCluster);
+
+    test.done();
+  },
+
+  'fromGeneratedSecret'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
+      credentials: Credentials.fromGeneratedSecret('admin'),
+      instanceProps: {
+        vpc,
+      },
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::RDS::DBCluster', {
+      MasterUsername: 'admin', // username is a string
+      MasterUserPassword: {
+        'Fn::Join': [
+          '',
+          [
+            '{{resolve:secretsmanager:',
+            {
+              Ref: 'DatabaseSecretC9203AE33fdaad7efa858a3daf9490cf0a702aeb', // logical id is a hash
+            },
+            ':SecretString:password::}}',
+          ],
+        ],
+      },
+    }));
 
     test.done();
   },
