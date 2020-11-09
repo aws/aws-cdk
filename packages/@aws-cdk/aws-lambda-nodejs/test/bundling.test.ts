@@ -57,7 +57,7 @@ test('esbuild bundling in Docker', () => {
       },
       command: [
         'bash', '-c',
-        'npx esbuild --bundle /asset-input/folder/entry.ts --target=es2017 --platform=node --outfile=/asset-output/index.js --external:aws-sdk',
+        'npx esbuild --bundle /asset-input/folder/entry.ts --target=node12 --platform=node --outfile=/asset-output/index.js --external:aws-sdk',
       ],
     }),
   });
@@ -77,7 +77,7 @@ test('esbuild bundling with handler named index.ts', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        'npx esbuild --bundle /asset-input/folder/index.ts --target=es2017 --platform=node --outfile=/asset-output/index.js --external:aws-sdk',
+        'npx esbuild --bundle /asset-input/folder/index.ts --target=node12 --platform=node --outfile=/asset-output/index.js --external:aws-sdk',
       ],
     }),
   });
@@ -97,7 +97,7 @@ test('esbuild bundling with tsx handler', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        'npx esbuild --bundle /asset-input/folder/handler.tsx --target=es2017 --platform=node --outfile=/asset-output/index.js --external:aws-sdk',
+        'npx esbuild --bundle /asset-input/folder/handler.tsx --target=node12 --platform=node --outfile=/asset-output/index.js --external:aws-sdk',
       ],
     }),
   });
@@ -143,7 +143,7 @@ test('esbuild bundling with externals and dependencies', () => {
       command: [
         'bash', '-c',
         [
-          'npx esbuild --bundle /asset-input/test/bundling.test.js --target=es2017 --platform=node --outfile=/asset-output/index.js --external:abc --external:delay',
+          'npx esbuild --bundle /asset-input/test/bundling.test.js --target=node12 --platform=node --outfile=/asset-output/index.js --external:abc --external:delay',
           `echo \'{\"dependencies\":{\"delay\":\"${delayVersion}\"}}\' > /asset-output/package.json`,
           'cd /asset-output',
           'npm install',

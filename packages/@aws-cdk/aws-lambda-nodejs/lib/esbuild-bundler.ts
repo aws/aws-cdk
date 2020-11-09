@@ -128,7 +128,7 @@ export class EsBuildBundler {
     const esbuildCommand: string = [
       'npx', 'esbuild',
       '--bundle', pathJoin(inputDir, this.relativeEntryPath),
-      `--target=${this.props.target ?? 'es2017'}`,
+      `--target=${this.props.target ?? toTarget(this.props.runtime)}`,
       '--platform=node',
       `--outfile=${pathJoin(outputDir, 'index.js')}`,
       ...this.props.minify
@@ -230,4 +230,14 @@ function osPathJoin(platform: NodeJS.Platform) {
     }
     return joined;
   };
+}
+
+function toTarget(runtime: Runtime): string {
+  const match = runtime.name.match(/nodejs(\d+)/);
+
+  if (!match) {
+    throw new Error('Cannot extract version from runtime.');
+  }
+
+  return `node${match[1]}`;
 }
