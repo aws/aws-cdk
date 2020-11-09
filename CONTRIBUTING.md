@@ -39,7 +39,7 @@ and let us know if it's not up-to-date (even better, submit a PR with your  corr
   - [API Compatibility Checks](#api-compatibility-checks)
   - [Examples](#examples)
   - [Feature Flags](#feature-flags)
-  - [Versioning](#versioning)
+  - [Versioning and Release](#versioning-and-release)
 - [Troubleshooting](#troubleshooting)
 - [Debugging](#debugging)
   - [Connecting the VS Code Debugger](#connecting-the-vs-code-debugger)
