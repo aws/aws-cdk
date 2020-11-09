@@ -9,6 +9,7 @@ import { ICustomAttribute, StandardAttribute, StandardAttributes } from './user-
 import { UserPoolClient, UserPoolClientOptions } from './user-pool-client';
 import { UserPoolDomain, UserPoolDomainOptions } from './user-pool-domain';
 import { IUserPoolIdentityProvider } from './user-pool-idp';
+import { UserPoolResourceServer, UserPoolResourceServerOptions } from './user-pool-resource-server';
 
 /**
  * The different ways in which users of this pool can sign up or sign in.
@@ -602,6 +603,12 @@ export interface IUserPool extends IResource {
   addDomain(id: string, options: UserPoolDomainOptions): UserPoolDomain;
 
   /**
+   * Add a new resource server to this user pool.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-resource-servers.html
+   */
+  addResourceServer(id: string, options: UserPoolResourceServerOptions): UserPoolResourceServer;
+
+  /**
    * Register an identity provider with this user pool.
    */
   registerIdentityProvider(provider: IUserPoolIdentityProvider): void;
@@ -621,6 +628,13 @@ abstract class UserPoolBase extends Resource implements IUserPool {
 
   public addDomain(id: string, options: UserPoolDomainOptions): UserPoolDomain {
     return new UserPoolDomain(this, id, {
+      userPool: this,
+      ...options,
+    });
+  }
+
+  public addResourceServer(id: string, options: UserPoolResourceServerOptions): UserPoolResourceServer {
+    return new UserPoolResourceServer(this, id, {
       userPool: this,
       ...options,
     });
