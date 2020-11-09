@@ -2,6 +2,7 @@ import { IRole, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from '
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Duration, IResource, Lazy, Names, Resource, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { toASCII as punycodeEncode } from 'punycode/';
 import { CfnUserPool } from './cognito.generated';
 import { StandardAttributeNames } from './private/attr-names';
 import { ICustomAttribute, StandardAttribute, StandardAttributes } from './user-pool-attr';
@@ -733,8 +734,8 @@ export class UserPool extends UserPoolBase {
       enabledMfas: this.mfaConfiguration(props),
       policies: passwordPolicy !== undefined ? { passwordPolicy } : undefined,
       emailConfiguration: undefinedIfNoKeys({
-        from: props.emailSettings?.from,
-        replyToEmailAddress: props.emailSettings?.replyTo,
+        from: encodePuny(props.emailSettings?.from),
+        replyToEmailAddress: encodePuny(props.emailSettings?.replyTo),
       }),
       usernameConfiguration: undefinedIfNoKeys({
         caseSensitive: props.signInCaseSensitive,
@@ -1019,6 +1020,9 @@ export class UserPool extends UserPoolBase {
 }
 
 function undefinedIfNoKeys(struct: object): object | undefined {
-  const allUndefined = Object.values(struct).reduce((acc, v) => acc && (v === undefined), true);
+  const allUndefined = Object.values(struct).every(val => val === undefined);
   return allUndefined ? undefined : struct;
+}
+function encodePuny(input: string | undefined): string | undefined {
+  return input !== undefined ? punycodeEncode(input) : input;
 }
