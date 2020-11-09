@@ -3,6 +3,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
 import * as SDKMock from 'aws-sdk-mock';
 import type { ConfigurationOptions } from 'aws-sdk/lib/config-base';
+import * as promptly from 'promptly';
 import * as uuid from 'uuid';
 import { PluginHost } from '../../lib';
 import { ISDK, Mode, SdkProvider } from '../../lib/api/aws-auth';
@@ -195,12 +196,16 @@ describe('with default config files', () => {
       // WHEN
       const provider = await SdkProvider.withAwsCliCompatibleDefaults({ ...defaultCredOptions, profile: 'mfa-role' });
 
+      const promptlyMockCalls = (promptly.prompt as jest.Mock).mock.calls.length;
+
       // THEN
       try {
         await provider.withAssumedRole('arn:aws:iam::account:role/role', undefined, undefined);
+        fail('Should error as no credentials could be loaded');
       } catch (e) {
-        // Mock response was set to fail with message test to make sure we don't call STS
-        expect(e.message).toEqual('Error fetching MFA token: test');
+        // Mock response was set to fail to make sure we don't call STS
+        // Make sure the MFA mock was called during this test
+        expect((promptly.prompt as jest.Mock).mock.calls.length).toBe(promptlyMockCalls + 1);
       }
     });
 
