@@ -15,7 +15,18 @@
         "ClientIDList": [
           "sts.amazonaws.com"
         ],
-        "Url": "https://oidc.eks.us-east-1.amazonaws.com/id/test2"
+        "Url": {
+          "Fn::Join": [
+              "",
+              [
+                  "https://oidc.eks.",
+                  {
+                      "Ref": "AWS::Region"
+                    },
+                  ".amazonaws.com/id/test2"
+                ]
+            ]
+          }
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
