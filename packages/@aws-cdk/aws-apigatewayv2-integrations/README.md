@@ -11,16 +11,66 @@
 
 ## Table of Contents
 
-- [Introduction](#introduction)
-- [Private Integration](#private-integration)
+- [HTTP APIs](#http-apis)
+  - [Lambda Integration](#lambda)
+  - [HTTP Proxy Integration](#http-proxy)
+  - [Private Integration](#private-integration)
 
-## Introduction
+## HTTP APIs
 
 Integrations connect a route to backend resources. HTTP APIs support Lambda proxy, AWS service, and HTTP proxy integrations. HTTP proxy integrations are also known as private integrations.
 
-Currently the following integrations are supported by this construct library.
+### Lambda
 
-## Private Integration
+Lambda integrations enable integrating an HTTP API route with a Lambda function. When a client invokes the route, the
+API Gateway service forwards the request to the Lambda function and returns the function's response to the client.
+
+The API Gateway service will invoke the lambda function with an event payload of a specific format. The service expects
+the function to respond in a specific format. The details on this format is available at [Working with AWS Lambda
+proxy integrations](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html).
+
+The following code configures a route `GET /books` with a Lambda proxy integration.
+
+```ts
+const booksFn = new lambda.Function(stack, 'BooksDefaultFn', { ... });
+const booksIntegration = new LambdaProxyIntegration({
+  handler: booksDefaultFn,
+});
+
+const httpApi = new HttpApi(stack, 'HttpApi');
+
+httpApi.addRoutes({
+  path: '/books',
+  methods: [ HttpMethod.GET ],
+  integration: booksIntegration,
+});
+```
+
+### HTTP Proxy
+
+HTTP Proxy integrations enables connecting an HTTP API route to a publicly routable HTTP endpoint. When a client
+invokes the route, the API Gateway service forwards the entire request and response between the API Gateway endpoint
+and the integrating HTTP endpoint. More information can be found at [Working with HTTP proxy
+integrations](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-http.html).
+
+The following code configures a route `GET /books` with an HTTP proxy integration to an HTTP endpoint
+`get-books-proxy.myproxy.internal`.
+
+```ts
+const booksIntegration = new HttpProxyIntegration({
+  url: 'https://get-books-proxy.myproxy.internal',
+});
+
+const httpApi = new HttpApi(stack, 'HttpApi');
+
+httpApi.addRoutes({
+  path: '/books',
+  methods: [ HttpMethod.GET ],
+  integration: booksIntegration,
+});
+```
+
+### Private Integration
 
 Private integrations enable integrating an HTTP API route with private resources in a VPC, such as Application Load Balancers or
 Amazon ECS container-based applications.  Using private integrations, resources in a VPC can be exposed for access by
@@ -28,7 +78,7 @@ clients outside of the VPC.
 
 The following integrations are supported for private resources in a VPC.
 
-### Application Load Balancer
+#### Application Load Balancer
 
 The following code is a basic application load balancer private integration of HTTP API:
 
@@ -47,7 +97,7 @@ const httpEndpoint = new HttpApi(stack, 'HttpProxyPrivateApi', {
 });
 ```
 
-### Network Load Balancer
+#### Network Load Balancer
 
 The following code is a basic network load balancer private integration of HTTP API:
 
@@ -66,7 +116,7 @@ const httpEndpoint = new HttpApi(stack, 'HttpProxyPrivateApi', {
 });
 ```
 
-### Cloud Map Service Discovery
+#### Cloud Map Service Discovery
 
 The following code is a basic discovery service private integration of HTTP API:
 
