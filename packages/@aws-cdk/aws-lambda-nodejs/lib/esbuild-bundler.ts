@@ -42,7 +42,7 @@ export class EsBuildBundler {
       }
       return this._runsLocally;
     } catch (err) {
-      process.stderr.write('Using Docker bundling');
+      process.stderr.write('Using Docker bundling.\n');
       return false;
     }
   }
@@ -61,7 +61,6 @@ export class EsBuildBundler {
   public readonly image: cdk.BundlingDockerImage;
   public readonly command: string[];
   public readonly environment?: { [key: string]: string };
-  public readonly workingDirectory: string;
   public readonly local?: cdk.ILocalBundling;
 
   private relativeEntryPath: string;
@@ -84,11 +83,11 @@ export class EsBuildBundler {
 
     this.command = ['bash', '-c', bundlingCommand];
     this.environment = props.environment;
-    this.workingDirectory = path.dirname(path.join(cdk.AssetStaging.BUNDLING_INPUT_DIR, this.relativeEntryPath)).replace(/\\/g, '/'); // Always use POSIX paths in the container
 
     // Define local bundling if Docker is not forced
     if (!props.forceDockerBundling) {
-      const createLocalCommand = (outputDir: string) => this.createBundlingCommand(props.projectRoot, outputDir, os.platform() !== 'win32');
+      const osPlatform = os.platform();
+      const createLocalCommand = (outputDir: string) => this.createBundlingCommand(props.projectRoot, outputDir, osPlatform);
 
       this.local = {
         tryBundle(outputDir: string) {
@@ -98,37 +97,40 @@ export class EsBuildBundler {
 
           const localCommand = createLocalCommand(outputDir);
 
-          exec('bash', ['-c', localCommand], {
-            env: { ...process.env, ...props.environment ?? {} },
-            stdio: [ // show output
-              'ignore', // ignore stdio
-              process.stderr, // redirect stdout to stderr
-              'inherit', // inherit stderr
+          exec(
+            osPlatform === 'win32' ? 'cmd' : 'bash',
+            [
+              osPlatform === 'win32' ? '/c' : '-c',
+              localCommand,
             ],
-            cwd: path.dirname(props.entry),
-          });
+            {
+              env: { ...process.env, ...props.environment ?? {} },
+              stdio: [ // show output
+                'ignore', // ignore stdio
+                process.stderr, // redirect stdout to stderr
+                'inherit', // inherit stderr
+              ],
+              cwd: path.dirname(props.entry),
+            });
+
           return true;
         },
       };
     }
   }
 
-  public createBundlingCommand(inputDir: string, outputDir: string, forcePosixPaths?: boolean): string {
-    let entryPath = path.join(inputDir, this.relativeEntryPath);
-
-    if (forcePosixPaths ?? true) {
-      entryPath = entryPath.replace(/\\/g, '/');
-    }
+  public createBundlingCommand(inputDir: string, outputDir: string, osPlatform: NodeJS.Platform = 'linux'): string {
+    const pathJoin = osPathJoin(osPlatform);
 
     // Mark the modules that we are going to install as externals also
     const externals = [...this.props.externals ?? [], ...this.props.nodeModules ?? []];
 
     const esbuildCommand: string = [
       'npx', 'esbuild',
-      '--bundle', entryPath,
+      '--bundle', pathJoin(inputDir, this.relativeEntryPath),
       `--target=${this.props.target ?? 'es2017'}`,
       '--platform=node',
-      `--outfile=${outputDir}/index.js`,
+      `--outfile=${pathJoin(outputDir, 'index.js')}`,
       ...this.props.minify
         ? ['--minify']
         : [],
@@ -163,11 +165,13 @@ export class EsBuildBundler {
       // Cache lock file
       EsBuildBundler.lockFile = lockFile;
 
+      const osCommandLine = new OsCommandLine(osPlatform);
+
       // Create dummy package.json, copy lock file if any and then install
       depsCommand = chain([
-        `echo '${JSON.stringify({ dependencies })}' > ${outputDir}/package.json`,
-        lockFile ? `cp ${inputDir}/${lockFile} ${outputDir}/${lockFile}` : '',
-        `cd ${outputDir}`,
+        osCommandLine.write(pathJoin(outputDir, 'package.json'), JSON.stringify({ dependencies })),
+        lockFile ? osCommandLine.copy(pathJoin(inputDir, lockFile), pathJoin(outputDir, lockFile)) : '',
+        osCommandLine.changeDirectory(outputDir),
         `${installer} install`,
       ]);
     }
@@ -186,6 +190,44 @@ export enum LockFile {
   YARN = 'yarn.lock'
 }
 
+class OsCommandLine {
+  constructor(private readonly osPlatform: NodeJS.Platform) {}
+
+  public write(filePath: string, data: string): string {
+    if (this.osPlatform === 'win32') {
+      return `echo ^${data}^ > ${filePath}`;
+    }
+
+    return `echo '${data}' > ${filePath}`;
+  }
+
+  public copy(src: string, dest: string): string {
+    if (this.osPlatform === 'win32') {
+      return `copy ${src} ${dest}`;
+    }
+
+    return `cp ${src} ${dest}`;
+  }
+
+  public changeDirectory(dir: string): string {
+    return `cd ${dir}`;
+  }
+}
+
 function chain(commands: string[]): string {
   return commands.filter(c => !!c).join(' && ');
+}
+
+/**
+ * Platform specific path join
+ */
+function osPathJoin(platform: NodeJS.Platform) {
+  return function(...paths: string[]): string {
+    const joined = path.join(...paths);
+    // If we are on win32 but need posix style paths
+    if (os.platform() === 'win32' && platform !== 'win32') {
+      return joined.replace(/\\/g, '/');
+    }
+    return joined;
+  };
 }

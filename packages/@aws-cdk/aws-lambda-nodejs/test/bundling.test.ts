@@ -1,5 +1,6 @@
 import * as child_process from 'child_process';
 import * as fs from 'fs';
+import * as os from 'os';
 import * as path from 'path';
 import { Code, Runtime } from '@aws-cdk/aws-lambda';
 import { AssetHashType, BundlingDockerImage } from '@aws-cdk/core';
@@ -10,8 +11,6 @@ import * as util from '../lib/util';
 
 jest.mock('@aws-cdk/aws-lambda');
 
-const originalFindUp = util.findUp;
-
 // Mock BundlingDockerImage.fromAsset() to avoid building the image
 const fromAssetMock = jest.spyOn(BundlingDockerImage, 'fromAsset').mockReturnValue({
   image: 'built-image',
@@ -20,17 +19,22 @@ const fromAssetMock = jest.spyOn(BundlingDockerImage, 'fromAsset').mockReturnVal
   toJSON: () => 'built-image',
 });
 
+const originalFindUp = util.findUp;
+
+let spawnSyncMock = jest.spyOn(child_process, 'spawnSync');
 let findUpMock: jest.SpyInstance;
 beforeEach(() => {
   jest.clearAllMocks();
-  EsBuildBundler.clearRunsLocallyCache();
-  Bundling.clearProjectRootCache();
+  jest.resetAllMocks();
+  spawnSyncMock.mockRestore();
   findUpMock = jest.spyOn(util, 'findUp').mockImplementation((name: string, directory) => {
     if (name === 'package.json') {
       return path.join(__dirname, '..');
     }
     return originalFindUp(name, directory);
   });
+  EsBuildBundler.clearRunsLocallyCache();
+  Bundling.clearProjectRootCache();
 });
 
 test('esbuild bundling in Docker', () => {
@@ -51,7 +55,6 @@ test('esbuild bundling in Docker', () => {
       environment: {
         KEY: 'value',
       },
-      workingDirectory: '/asset-input/folder',
       command: [
         'bash', '-c',
         'npx esbuild --bundle /asset-input/folder/entry.ts --target=es2017 --platform=node --outfile=/asset-output/index.js --external:aws-sdk',
@@ -101,6 +104,8 @@ test('esbuild bundling with tsx handler', () => {
 });
 
 test('esbuild with Windows paths', () => {
+  const osPlatformMock = jest.spyOn(os, 'platform').mockReturnValue('win32');
+
   Bundling.esbuild({
     entry: 'C:\\my-project\\lib\\entry.ts',
     runtime: Runtime.NODEJS_12_X,
@@ -115,6 +120,8 @@ test('esbuild with Windows paths', () => {
       ]),
     }),
   }));
+
+  osPlatformMock.mockRestore();
 });
 
 test('esbuild bundling with externals and dependencies', () => {
@@ -153,7 +160,7 @@ test('Detects yarn.lock', () => {
   const existsSyncOriginal = fs.existsSync;
   const existsSyncMock = jest.spyOn(fs, 'existsSync');
 
-  existsSyncMock.mockImplementation((p: fs.PathLike) => {
+  existsSyncMock.mockImplementationOnce((p: fs.PathLike) => {
     if (/yarn.lock/.test(p.toString())) {
       return true;
     }
@@ -177,6 +184,8 @@ test('Detects yarn.lock', () => {
       ]),
     }),
   });
+
+  existsSyncMock.mockRestore();
 });
 
 test('with Docker build args', () => {
@@ -198,7 +207,7 @@ test('with Docker build args', () => {
 });
 
 test('Local bundling', () => {
-  const spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValue({
+  spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValue({
     status: 0,
     stderr: Buffer.from('stderr'),
     stdout: Buffer.from('0.8.3'),
@@ -234,7 +243,7 @@ test('Local bundling', () => {
 });
 
 test('LocalBundler.runsLocally checks esbuild version and caches results', () => {
-  const spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValue({
+  spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValue({
     status: 0,
     stderr: Buffer.from('stderr'),
     stdout: Buffer.from('0.8.3'),
@@ -250,7 +259,7 @@ test('LocalBundler.runsLocally checks esbuild version and caches results', () =>
 });
 
 test('LocalBundler.runsLocally with incorrect esbuild version', () => {
-  jest.spyOn(child_process, 'spawnSync').mockReturnValue({
+  spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValue({
     status: 0,
     stderr: Buffer.from('stderr'),
     stdout: Buffer.from('3.5.1'),
