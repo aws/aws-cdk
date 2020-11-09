@@ -143,7 +143,10 @@ export class DatadogAgentExtension extends ServiceExtension {
 
     if (this.apmEnabled) {
       envVariables.DD_APM_ENABLED = 'true';
+      envVariables.DD_APM_NON_LOCAL_TRAFFIC = 'true';
     }
+
+    envVariables.DD_ECS_COLLECT_RESOURCE_TAGS_EC2 = 'true';
 
     // Add the Datadog Agent to this task
     this.container = taskDefinition.addContainer('datadog-agent', {

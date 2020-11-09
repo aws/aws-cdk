@@ -26,7 +26,6 @@
   },
   "dependencies": {
     "express": "4.17.1",
-    "faker": "5.1.0",
     "dd-trace": "0.28.1"
   }
 }
