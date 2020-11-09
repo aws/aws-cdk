@@ -15,9 +15,9 @@ export interface IUserPoolResourceServer extends IResource {
 }
 
 /**
- * Options to create a scope for a UserPoolResourceServer
+ * Props to initialize ResourceServerScope
  */
-export interface ResourceServerScope {
+export interface ResourceServerScopeProps {
   /**
    * The name of the scope
    */
@@ -27,6 +27,26 @@ export interface ResourceServerScope {
    * A description of the scope.
    */
   readonly scopeDescription: string;
+}
+
+/**
+ * A scope for ResourceServer
+ */
+export class ResourceServerScope {
+  /**
+   * The name of the scope
+   */
+  public readonly scopeName: string;
+
+  /**
+   * A description of the scope.
+   */
+  public readonly scopeDescription: string;
+
+  constructor(props: ResourceServerScopeProps) {
+    this.scopeName = props.scopeName;
+    this.scopeDescription = props.scopeDescription;
+  }
 }
 
 

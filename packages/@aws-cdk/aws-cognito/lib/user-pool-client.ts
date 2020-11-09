@@ -2,7 +2,7 @@ import { IResource, Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnUserPoolClient } from './cognito.generated';
 import { IUserPool } from './user-pool';
-import { IUserPoolResourceServer } from './user-pool-resource-server';
+import { IUserPoolResourceServer, ResourceServerScope } from './user-pool-resource-server';
 
 /**
  * Types of authentication flow
@@ -137,8 +137,8 @@ export class OAuthScope {
   /**
    * Adds a custom scope that's tied to a resource server in your stack
    */
-  public static resourceServer(server: IUserPoolResourceServer, scopeName: string) {
-    return new OAuthScope(`${server.userPoolResourceServerId}/${scopeName}`);
+  public static resourceServer(server: IUserPoolResourceServer, scope: ResourceServerScope) {
+    return new OAuthScope(`${server.userPoolResourceServerId}/${scope.scopeName}`);
   }
 
   /**

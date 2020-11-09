@@ -1,5 +1,5 @@
 import { App, CfnOutput, Stack } from '@aws-cdk/core';
-import { OAuthScope, UserPool } from '../lib';
+import { OAuthScope, ResourceServerScope, UserPool } from '../lib';
 
 const app = new App();
 const stack = new Stack(app, 'integ-user-pool-resource-server');
@@ -16,14 +16,10 @@ const userPool = new UserPool(stack, 'myuserpool', {
   userPoolName: 'MyUserPool',
 });
 
+const readScope = new ResourceServerScope({ scopeName: 'read', scopeDescription: 'read only' });
 const userServer = userPool.addResourceServer('myserver', {
   identifier: 'users',
-  scopes: [
-    {
-      scopeName: 'read',
-      scopeDescription: 'read only',
-    },
-  ],
+  scopes: [readScope],
 });
 
 const client = userPool.addClient('client', {
@@ -34,7 +30,7 @@ const client = userPool.addClient('client', {
       clientCredentials: true,
     },
     scopes: [
-      OAuthScope.resourceServer(userServer, 'read'),
+      OAuthScope.resourceServer(userServer, readScope),
     ],
   },
 });
