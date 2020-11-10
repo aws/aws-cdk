@@ -1,5 +1,6 @@
 import { spawnSync, SpawnSyncOptions } from 'child_process';
 import * as fs from 'fs';
+import * as os from 'os';
 import * as path from 'path';
 
 // From https://github.com/errwischt/stacktrace-parser/blob/master/src/stack-trace-parser.js
@@ -147,7 +148,8 @@ export function getEsBuildVersion(): string | undefined {
   try {
     // --no-install ensures that we are checking for an installed version
     // (either locally or globally)
-    const esbuild = spawnSync('npx', ['--no-install', 'esbuild', '--version']);
+    const npx = os.platform() === 'win32' ? 'npx.cmd' : 'npx';
+    const esbuild = spawnSync(npx, ['--no-install', 'esbuild', '--version']);
 
     if (esbuild.status !== 0) {
       return undefined;

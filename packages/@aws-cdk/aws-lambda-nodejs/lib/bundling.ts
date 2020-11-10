@@ -127,8 +127,9 @@ export class Bundling implements cdk.BundlingOptions {
   public createBundlingCommand(inputDir: string, outputDir: string, osPlatform: NodeJS.Platform = 'linux'): string {
     const pathJoin = osPathJoin(osPlatform);
 
+    const npx = osPlatform === 'win32' ? 'npx.cmd' : 'npx';
     const esbuildCommand: string = [
-      'npx', 'esbuild',
+      npx, 'esbuild',
       '--bundle', pathJoin(inputDir, this.relativeEntryPath),
       `--target=${this.props.target ?? toTarget(this.props.runtime)}`,
       '--platform=node',
