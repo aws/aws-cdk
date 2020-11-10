@@ -24,7 +24,7 @@
             "Bucket": {
               "Fn::GetAtt": [
                 "MyDistLoggingBucket9B8976BC",
-                "DomainName"
+                "RegionalDomainName"
               ]
             },
             "IncludeCookies": true,

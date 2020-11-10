@@ -263,6 +263,8 @@ dashboard.addWidgets(new GraphWidget({
 }));
 ```
 
+Using the methods `addLeftMetric()` and `addRightMetric()` you can add metrics to a graph widget later on.
+
 Graph widgets can also display annotations attached to the left or the right y-axis.
 
 ```ts
@@ -296,6 +298,17 @@ dashboard.addWidgets(new GraphWidget({
   // ...
 
   liveData: true,
+}));
+```
+
+The graph view can be changed from default 'timeSeries' to 'bar' or 'pie'.
+
+```ts
+dashboard.addWidgets(new GraphWidget({
+  // ...
+  // ...
+
+  view: GraphWidgetView.BAR,
 }));
 ```
 

@@ -28,19 +28,32 @@ export function prepareApp(root: IConstruct) {
     }
   }
 
+  resolveReferences(root);
+
   // depth-first (children first) queue of nested stacks. We will pop a stack
   // from the head of this queue to prepare its template asset.
+  //
+  // Depth-first since the a nested stack's template hash will be reflected in
+  // its parent's template, which then changes the parent's hash, etc.
   const queue = findAllNestedStacks(root);
 
-  while (true) {
-    resolveReferences(root);
-
-    const nested = queue.shift();
-    if (!nested) {
-      break;
+  if (queue.length > 0) {
+    while (queue.length > 0) {
+      const nested = queue.shift()!;
+      defineNestedStackAsset(nested);
     }
 
-    defineNestedStackAsset(nested);
+    // ▷[ Given the legacy synthesizer and a 3-or-deeper nesting of nested stacks ]
+    //
+    // Adding nested stack assets may haved added CfnParameters to the top-level
+    // stack which are referenced in a deeper-level stack. The values of these
+    // parameters need to be carried through to the right location via Nested
+    // Stack parameters, which `resolveReferences()` will do.
+    //
+    // Yes, this may add `Parameter` elements to a template whose hash has
+    // already been calculated, but the invariant that if the functional part
+    // of the template changes its hash will change is still upheld.
+    resolveReferences(root);
   }
 }
 

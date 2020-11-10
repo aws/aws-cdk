@@ -426,7 +426,7 @@ Object {
     "cdkMetadataResourceAvailable": false,
     "domainSuffix": "amazonaws.com",
     "partition": "aws-us-gov",
-    "s3StaticWebsiteEndpoint": "s3-website.us-gov-west-1.amazonaws.com",
+    "s3StaticWebsiteEndpoint": "s3-website-us-gov-west-1.amazonaws.com",
     "servicePrincipals": Object {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
