@@ -1,6 +1,7 @@
 import '@aws-cdk/assert/jest';
+import { HttpApi, HttpIntegration, HttpIntegrationType, HttpMethod, HttpRoute, HttpRouteKey, PayloadFormatVersion } from '@aws-cdk/aws-apigatewayv2';
 import { Stack } from '@aws-cdk/core';
-import { HttpApi, HttpIntegration, HttpIntegrationType, HttpMethod, HttpProxyIntegration, HttpRoute, HttpRouteKey, PayloadFormatVersion } from '../../../lib';
+import { HttpProxyIntegration } from '../../lib';
 
 describe('HttpProxyIntegration', () => {
   test('default', () => {

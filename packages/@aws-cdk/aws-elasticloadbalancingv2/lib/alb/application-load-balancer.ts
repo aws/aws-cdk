@@ -1,8 +1,10 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { Duration, Lazy, Names, Resource } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
-import { BaseLoadBalancer, BaseLoadBalancerProps, ILoadBalancerV2 } from '../shared/base-load-balancer';
+import { BaseLoadBalancer, BaseLoadBalancerLookupOptions, BaseLoadBalancerProps, ILoadBalancerV2 } from '../shared/base-load-balancer';
 import { IpAddressType, ApplicationProtocol } from '../shared/enums';
 import { ApplicationListener, BaseApplicationListenerProps } from './application-listener';
 import { ListenerAction } from './application-listener-action';
@@ -43,11 +45,29 @@ export interface ApplicationLoadBalancerProps extends BaseLoadBalancerProps {
 }
 
 /**
+ * Options for looking up an ApplicationLoadBalancer
+ */
+export interface ApplicationLoadBalancerLookupOptions extends BaseLoadBalancerLookupOptions {
+}
+
+/**
  * Define an Application Load Balancer
  *
  * @resource AWS::ElasticLoadBalancingV2::LoadBalancer
  */
 export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplicationLoadBalancer {
+  /**
+   * Look up an application load balancer.
+   */
+  public static fromLookup(scope: Construct, id: string, options: ApplicationLoadBalancerLookupOptions): IApplicationLoadBalancer {
+    const props = BaseLoadBalancer._queryContextProvider(scope, {
+      userOptions: options,
+      loadBalancerType: cxschema.LoadBalancerType.APPLICATION,
+    });
+
+    return new LookedUpApplicationLoadBalancer(scope, id, props);
+  }
+
   /**
    * Import an existing Application Load Balancer
    */
@@ -595,6 +615,46 @@ class ImportedApplicationLoadBalancer extends Resource implements IApplicationLo
     if (this.props.loadBalancerDnsName) { return this.props.loadBalancerDnsName; }
     // eslint-disable-next-line max-len
     throw new Error(`'loadBalancerDnsName' was not provided when constructing Application Load Balancer ${this.node.path} from attributes`);
+  }
+}
+
+class LookedUpApplicationLoadBalancer extends Resource implements IApplicationLoadBalancer {
+  public readonly loadBalancerArn: string;
+  public readonly loadBalancerCanonicalHostedZoneId: string;
+  public readonly loadBalancerDnsName: string;
+  public readonly ipAddressType?: IpAddressType;
+  public readonly connections: ec2.Connections;
+  public readonly vpc?: ec2.IVpc;
+
+  constructor(scope: Construct, id: string, props: cxapi.LoadBalancerContextResponse) {
+    super(scope, id);
+
+    this.loadBalancerArn = props.loadBalancerArn;
+    this.loadBalancerCanonicalHostedZoneId = props.loadBalancerCanonicalHostedZoneId;
+    this.loadBalancerDnsName = props.loadBalancerDnsName;
+
+    if (props.ipAddressType === cxapi.LoadBalancerIpAddressType.IPV4) {
+      this.ipAddressType = IpAddressType.IPV4;
+    } else if (props.ipAddressType === cxapi.LoadBalancerIpAddressType.DUAL_STACK) {
+      this.ipAddressType = IpAddressType.DUAL_STACK;
+    }
+
+    this.vpc = ec2.Vpc.fromLookup(this, 'Vpc', {
+      vpcId: props.vpcId,
+    });
+
+    this.connections = new ec2.Connections();
+    for (const securityGroupId of props.securityGroupIds) {
+      const securityGroup = ec2.SecurityGroup.fromLookup(this, `SecurityGroup-${securityGroupId}`, securityGroupId);
+      this.connections.addSecurityGroup(securityGroup);
+    }
+  }
+
+  public addListener(id: string, props: BaseApplicationListenerProps): ApplicationListener {
+    return new ApplicationListener(this, id, {
+      ...props,
+      loadBalancer: this,
+    });
   }
 }
 

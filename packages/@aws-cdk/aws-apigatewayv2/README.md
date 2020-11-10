@@ -52,14 +52,13 @@ path, such as, `GET /books`. Learn more at [Working with
 routes](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-routes.html). Use the `ANY` method
 to match any methods for a route that are not explicitly defined.
 
-Integrations define how the HTTP API responds when a client reaches a specific Route. HTTP APIs support two types of
-integrations - Lambda proxy integration and HTTP proxy integration. Learn more at [Configuring
-integrations](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations.html).
+Integrations define how the HTTP API responds when a client reaches a specific Route. HTTP APIs support Lambda proxy
+integration, HTTP proxy integration and, AWS service integrations, also known as private integrations. Learn more at
+[Configuring integrations](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations.html).
 
-The code snippet below configures a route `GET /books` with an HTTP proxy integration and uses the `ANY` method to
-proxy all other HTTP method calls to `/books` to a lambda proxy.
-
-The URL to the endpoint can be retrieved via the `apiEndpoint` attribute.
+Integrations are available at the `aws-apigatewayv2-integrations` module and more information is available in that module.
+As an early example, the following code snippet configures a route `GET /books` with an HTTP proxy integration all
+configures all other HTTP method calls to `/books` to a lambda proxy.
 
 ```ts
 const getBooksIntegration = new HttpProxyIntegration({
@@ -84,6 +83,8 @@ httpApi.addRoutes({
   integration: booksDefaultIntegration,
 });
 ```
+
+The URL to the endpoint can be retrieved via the `apiEndpoint` attribute.
 
 The `defaultIntegration` option while defining HTTP APIs lets you create a default catch-all integration that is
 matched when a client reaches a route that is not explicitly defined.
