@@ -16,9 +16,10 @@ The `Service` construct provided by this module can be extended with optional `S
 
 - [AWS X-Ray](https://aws.amazon.com/xray/) for tracing your application
 - [Amazon CloudWatch Agent](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Install-CloudWatch-Agent.html) for capturing per task stats
-- [AWS AppMesh f](https://aws.amazon.com/app-mesh/)or adding your application to a service mesh
+- [AWS AppMesh](https://aws.amazon.com/app-mesh/) for adding your application to a service mesh
 - [Application Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html), for exposing your service to the public
 - [AWS FireLens](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_firelens.html), for filtering and routing application logs
+- [Community Extensions](#community-extensions), providing support for advanced use cases
 
 The `ServiceExtension` class is an abstract class which you can also implement in
 order to build your own custom service extensions for modifying your service, or
@@ -283,3 +284,30 @@ The above code uses the well known service discovery name for each
 service, and passes it as an environment variable to the container so
 that the container knows what address to use when communicating to
 the other service.
+
+## Importing a pre-existing cluster
+
+To create an environment with a pre-existing cluster, you must import the cluster first, then use `Environment.fromEnvironmentAttributes()`. When a cluster is imported into an environment, the cluster is treated as immutable. As a result, no extension may modify the cluster to change a setting.
+
+```ts
+
+const cluster = ecs.Cluster.fromClusterAttributes(stack, 'Cluster', {
+  ...
+});
+
+const environment = Environment.fromEnvironmentAttributes(stack, 'Environment', {
+  capacityType: EnvironmentCapacityType.EC2, // or `FARGATE`
+  cluster,
+});
+
+```
+
+## Community Extensions
+
+We encourage the development of Community Service Extensions that support
+advanced features. Here are some useful extensions that we have reviewed:
+
+* [ListenerRulesExtension](https://www.npmjs.com/package/@wheatstalk/ecs-service-extension-listener-rules) for more precise control over Application Load Balancer rules
+
+> Please submit a pull request so that we can review your service extension and
+> list it here.

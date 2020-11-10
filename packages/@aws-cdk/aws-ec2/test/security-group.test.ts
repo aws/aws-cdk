@@ -1,5 +1,5 @@
 import { expect, haveResource, not } from '@aws-cdk/assert';
-import { Intrinsic, Lazy, Stack, Token } from '@aws-cdk/core';
+import { App, Intrinsic, Lazy, Stack, Token } from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import { Peer, Port, SecurityGroup, Vpc } from '../lib';
 
@@ -292,5 +292,22 @@ nodeunitShim({
 
       test.done();
     },
+  },
+
+  'can look up a security group'(test: Test) {
+    const app = new App();
+    const stack = new Stack(app, 'stack', {
+      env: {
+        account: '1234',
+        region: 'us-east-1',
+      },
+    });
+
+    const securityGroup = SecurityGroup.fromLookup(stack, 'stack', 'sg-1234');
+
+    test.equal(securityGroup.securityGroupId, 'sg-12345');
+    test.equal(securityGroup.allowAllOutbound, true);
+
+    test.done();
   },
 });

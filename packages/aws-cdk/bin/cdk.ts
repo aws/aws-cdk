@@ -50,6 +50,7 @@ async function parseCommandLineArguments() {
     .option('json', { type: 'boolean', alias: 'j', desc: 'Use JSON output instead of YAML when templates are printed to STDOUT', default: false })
     .option('verbose', { type: 'boolean', alias: 'v', desc: 'Show debug logs (specify multiple times to increase verbosity)', default: false })
     .count('verbose')
+    .option('debug', { type: 'boolean', desc: 'Enable emission of additional debugging information, such as creation stack traces of tokens', default: false })
     .option('profile', { type: 'string', desc: 'Use the indicated AWS profile as the default environment', requiresArg: true })
     .option('proxy', { type: 'string', desc: 'Use the indicated proxy. Will read from HTTPS_PROXY environment variable if not specified', requiresArg: true })
     .option('ca-bundle-path', { type: 'string', desc: 'Path to CA certificate to use when validating HTTPS requests. Will read from AWS_CA_BUNDLE environment variable if not specified', requiresArg: true })

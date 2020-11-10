@@ -1,7 +1,7 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as targets from '@aws-cdk/aws-events-targets';
 import * as s3 from '@aws-cdk/aws-s3';
-import { Construct, Token } from '@aws-cdk/core';
+import { Construct, Names, Token } from '@aws-cdk/core';
 import { Action } from '../action';
 import { sourceArtifactBounds } from '../common';
 
@@ -134,7 +134,7 @@ export class S3SourceAction extends Action {
 
   private generateEventId(stage: codepipeline.IStage): string {
     let ret: string;
-    const baseId = stage.pipeline.node.uniqueId + 'SourceEventRule';
+    const baseId = Names.nodeUniqueId(stage.pipeline.node) + 'SourceEventRule';
 
     if (Token.isUnresolved(this.props.bucketKey)) {
       // If bucketKey is a Token, don't include it in the ID.

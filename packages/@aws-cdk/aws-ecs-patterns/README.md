@@ -66,6 +66,8 @@ Fargate services use the default VPC Security Group unless one or more are provi
 
 By setting `redirectHTTP` to true, CDK will automatically create a listener on port 80 that redirects HTTP traffic to the HTTPS port.
 
+If you specify the option `recordType` you can decide if you want the construct to use CNAME or Route53-Aliases as record sets.
+
 Additionally, if more than one application target group are needed, instantiate one of the following:
 
 * `ApplicationMultipleTargetGroupsEc2Service`
@@ -152,6 +154,8 @@ const loadBalancedFargateService = new ecsPatterns.NetworkLoadBalancedFargateSer
 The CDK will create a new Amazon ECS cluster if you specify a VPC and omit `cluster`. If you deploy multiple services the CDK will only create one cluster per VPC.
 
 If `cluster` and `vpc` are omitted, the CDK creates a new VPC with subnets in two Availability Zones and a cluster within this VPC.
+
+If you specify the option `recordType` you can decide if you want the construct to use CNAME or Route53-Aliases as record sets.
 
 Additionally, if more than one network target group is needed, instantiate one of the following:
 

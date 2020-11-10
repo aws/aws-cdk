@@ -3,7 +3,7 @@ import { IResource as IResourceBase, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnApiKey } from './apigateway.generated';
 import { ResourceOptions } from './resource';
-import { RestApi } from './restapi';
+import { IRestApi } from './restapi';
 import { QuotaSettings, ThrottleSettings, UsagePlan, UsagePlanPerApiStage } from './usage-plan';
 
 /**
@@ -47,11 +47,10 @@ export interface ApiKeyOptions extends ResourceOptions {
  */
 export interface ApiKeyProps extends ApiKeyOptions {
   /**
-   * [disable-awslint:ref-via-interface]
    * A list of resources this api key is associated with.
    * @default none
    */
-  readonly resources?: RestApi[];
+  readonly resources?: IRestApi[];
 
   /**
    * An AWS Marketplace customer identifier to use when integrating with the AWS SaaS Marketplace.
@@ -183,12 +182,12 @@ export class ApiKey extends ApiKeyBase {
     });
   }
 
-  private renderStageKeys(resources: RestApi[] | undefined): CfnApiKey.StageKeyProperty[] | undefined {
+  private renderStageKeys(resources: IRestApi[] | undefined): CfnApiKey.StageKeyProperty[] | undefined {
     if (!resources) {
       return undefined;
     }
 
-    return resources.map((resource: RestApi) => {
+    return resources.map((resource: IRestApi) => {
       const restApi = resource;
       const restApiId = restApi.restApiId;
       const stageName = restApi.deploymentStage!.stageName.toString();

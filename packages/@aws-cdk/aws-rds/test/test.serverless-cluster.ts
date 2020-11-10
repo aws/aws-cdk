@@ -1,9 +1,10 @@
 import { ABSENT, expect, haveResource, haveResourceLike, ResourcePart, SynthUtils } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
+import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { AuroraPostgresEngineVersion, ServerlessCluster, DatabaseClusterEngine, ParameterGroup, AuroraCapacityUnit } from '../lib';
+import { AuroraPostgresEngineVersion, ServerlessCluster, DatabaseClusterEngine, ParameterGroup, AuroraCapacityUnit, DatabaseSecret } from '../lib';
 
 export = {
   'can create a Serverless Cluster with Aurora Postgres database engine'(test: Test) {
@@ -506,7 +507,7 @@ export = {
     test.done();
   },
 
-  'can enable http endpoint'(test: Test) {
+  'can enable Data API'(test: Test) {
     // GIVEN
     const stack = testStack();
     const vpc = ec2.Vpc.fromLookup(stack, 'VPC', { isDefault: true });
@@ -515,7 +516,7 @@ export = {
     new ServerlessCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
       vpc,
-      enableHttpEndpoint: true,
+      enableDataApi: true,
     });
 
     //THEN
@@ -671,7 +672,154 @@ export = {
     });
     test.done();
   },
+
+  'can grant Data API access'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = ec2.Vpc.fromLookup(stack, 'VPC', { isDefault: true });
+    const cluster = new ServerlessCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      vpc,
+      enableDataApi: true,
+    });
+    const user = new iam.User(stack, 'User');
+
+    // WHEN
+    cluster.grantDataApiAccess(user);
+
+    // THEN
+    expect(stack).to(haveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'rds-data:BatchExecuteStatement',
+              'rds-data:BeginTransaction',
+              'rds-data:CommitTransaction',
+              'rds-data:ExecuteStatement',
+              'rds-data:RollbackTransaction',
+            ],
+            Effect: 'Allow',
+            Resource: '*',
+          },
+          {
+            Action: [
+              'secretsmanager:GetSecretValue',
+              'secretsmanager:DescribeSecret',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              Ref: 'DatabaseSecretAttachmentE5D1B020',
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      PolicyName: 'UserDefaultPolicy1F97781E',
+      Users: [
+        {
+          Ref: 'User00B015A1',
+        },
+      ],
+    }));
+
+    test.done();
+  },
+
+  'can grant Data API access on imported cluster with given secret'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const secret = new DatabaseSecret(stack, 'Secret', {
+      username: 'admin',
+    });
+    const cluster = ServerlessCluster.fromServerlessClusterAttributes(stack, 'Cluster', {
+      clusterIdentifier: 'ImportedDatabase',
+      secret,
+    });
+    const user = new iam.User(stack, 'User');
+
+
+    // WHEN
+    cluster.grantDataApiAccess(user);
+
+    // THEN
+    expect(stack).to(haveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'rds-data:BatchExecuteStatement',
+              'rds-data:BeginTransaction',
+              'rds-data:CommitTransaction',
+              'rds-data:ExecuteStatement',
+              'rds-data:RollbackTransaction',
+            ],
+            Effect: 'Allow',
+            Resource: '*',
+          },
+          {
+            Action: [
+              'secretsmanager:GetSecretValue',
+              'secretsmanager:DescribeSecret',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              Ref: 'SecretA720EF05',
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      PolicyName: 'UserDefaultPolicy1F97781E',
+      Users: [
+        {
+          Ref: 'User00B015A1',
+        },
+      ],
+    }));
+
+    test.done();
+  },
+
+  'grant Data API access enables the Data API'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = ec2.Vpc.fromLookup(stack, 'VPC', { isDefault: true });
+    const cluster = new ServerlessCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      vpc,
+    });
+    const user = new iam.User(stack, 'User');
+
+    // WHEN
+    cluster.grantDataApiAccess(user);
+
+    //THEN
+    expect(stack).to(haveResource('AWS::RDS::DBCluster', {
+      EnableHttpEndpoint: true,
+    }));
+
+    test.done();
+  },
+
+  'grant Data API access throws if the Data API is disabled'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = ec2.Vpc.fromLookup(stack, 'VPC', { isDefault: true });
+    const cluster = new ServerlessCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      vpc,
+      enableDataApi: false,
+    });
+    const user = new iam.User(stack, 'User');
+
+    // WHEN
+    test.throws(() => cluster.grantDataApiAccess(user), /Cannot grant Data API access when the Data API is disabled/);
+
+    test.done();
+  },
 };
+
 
 function testStack() {
   const stack = new cdk.Stack(undefined, undefined, { env: { account: '12345', region: 'us-test-1' } });

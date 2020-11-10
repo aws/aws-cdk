@@ -3,6 +3,10 @@
 # and that won't typecheck if Manifest.load() adds a union arm and now returns A | B | C.
 change-return-type:@aws-cdk/cloud-assembly-schema.Manifest.load
 
+# Adding any new context queries will add to the ContextQueryProperties type,
+# which changes the signature of MissingContext.
+weakened:@aws-cdk/cloud-assembly-schema.MissingContext
+
 removed:@aws-cdk/core.BootstraplessSynthesizer.DEFAULT_ASSET_PUBLISHING_ROLE_ARN
 removed:@aws-cdk/core.DefaultStackSynthesizer.DEFAULT_ASSET_PUBLISHING_ROLE_ARN
 removed:@aws-cdk/core.DefaultStackSynthesizerProps.assetPublishingExternalId

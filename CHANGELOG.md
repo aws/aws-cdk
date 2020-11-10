@@ -2,6 +2,88 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.72.0](https://github.com/aws/aws-cdk/compare/v1.71.0...v1.72.0) (2020-11-06)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **rds:** Serverless cluster `enableHttpEndpoint` renamed to `enableDataApi`
+* **stepfunctions-tasks:** type of `outputLocation` in the experimental Athena `StartQueryExecution` has been changed to `s3.Location` from `string`
+
+### Features
+
+* **apigatewayv2:** http api - endpoint url ([#11092](https://github.com/aws/aws-cdk/issues/11092)) ([c200413](https://github.com/aws/aws-cdk/commit/c20041356940c5569c00e82f9e6bee794002929b)), closes [#10651](https://github.com/aws/aws-cdk/issues/10651)
+* **apigatewayv2:** vpc link and private integrations ([#11198](https://github.com/aws/aws-cdk/issues/11198)) ([e87a6a3](https://github.com/aws/aws-cdk/commit/e87a6a333c06d157f6d9074e05f251505525d0d5)), closes [#10531](https://github.com/aws/aws-cdk/issues/10531) [#10119](https://github.com/aws/aws-cdk/issues/10119) [aws/jsii#1947](https://github.com/aws/jsii/issues/1947)
+* **appmesh:** add Virtual Gateways and Gateway Routes ([#10879](https://github.com/aws/aws-cdk/issues/10879)) ([79200e7](https://github.com/aws/aws-cdk/commit/79200e75b2468ccdee46154d049f3ceb30bb51e1))
+* **appsync:** add RDS datasource ([#9258](https://github.com/aws/aws-cdk/issues/9258)) ([23d0943](https://github.com/aws/aws-cdk/commit/23d0943216df76bea395b319deb21282e4c57a7c)), closes [#9152](https://github.com/aws/aws-cdk/issues/9152)
+* **appsync:** support custom cloudWatchLogsRoleArn for GraphqlApi ([#10357](https://github.com/aws/aws-cdk/issues/10357)) ([bed89a5](https://github.com/aws/aws-cdk/commit/bed89a5d0aabe7d9a25ad7fac74a38f03b92e4c9)), closes [#9441](https://github.com/aws/aws-cdk/issues/9441)
+* **ec2:** Add Lambda interface endpoint ([#11260](https://github.com/aws/aws-cdk/issues/11260)) ([9d0c935](https://github.com/aws/aws-cdk/commit/9d0c935fc62f325105598473e39b47b247437146)), closes [#11259](https://github.com/aws/aws-cdk/issues/11259)
+* intro "Names.uniqueId()" instead of the deprecated "node.uniqueId" ([#11166](https://github.com/aws/aws-cdk/issues/11166)) ([5e433b1](https://github.com/aws/aws-cdk/commit/5e433b1d52470c3ecf5a460f79e4b8103542c35c)), closes [aws/constructs#314](https://github.com/aws/constructs/issues/314)
+* **ecs-patterns:** add option to create cname instead of alias record ([#10812](https://github.com/aws/aws-cdk/issues/10812)) ([89a5055](https://github.com/aws/aws-cdk/commit/89a505524ae3fe1c726d6988df07da6167493480))
+* **ecs-service-extensions:** create an `Environment` from attributes ([#10932](https://github.com/aws/aws-cdk/issues/10932)) ([d395b5e](https://github.com/aws/aws-cdk/commit/d395b5e618fc423c46c65b9be40d0c1423e2b578)), closes [#10931](https://github.com/aws/aws-cdk/issues/10931)
+* **rds:** add grant method for Data API ([#10748](https://github.com/aws/aws-cdk/issues/10748)) ([884539b](https://github.com/aws/aws-cdk/commit/884539b231245c893c456b2c619fe661cd39960f)), closes [#10744](https://github.com/aws/aws-cdk/issues/10744)
+
+
+### Bug Fixes
+
+* **apigateway:** changes to gateway response does not trigger auto deployment ([#11068](https://github.com/aws/aws-cdk/issues/11068)) ([0c8264a](https://github.com/aws/aws-cdk/commit/0c8264adf782d1adbfe8d538186a71093d9c8834)), closes [#10963](https://github.com/aws/aws-cdk/issues/10963)
+* **cfnspec:** incorrect Route 53 health check configuration properties in CloudFormation specification ([#11280](https://github.com/aws/aws-cdk/issues/11280)) ([f3c8b50](https://github.com/aws/aws-cdk/commit/f3c8b5034eb7ad1ccd9eecb4a929c8f11a2336d0)), closes [#issuecomment-717435271](https://github.com/aws/aws-cdk/issues/11096#issuecomment-717435271) [#11096](https://github.com/aws/aws-cdk/issues/11096)
+* **cli:** `--no-previous-parameters` incorrectly skips updates ([#11288](https://github.com/aws/aws-cdk/issues/11288)) ([1bfc649](https://github.com/aws/aws-cdk/commit/1bfc64948b6ac63f93f030c5a2064b3ac4376289))
+* **core:** many nested stacks make NodeJS run out of memory ([#11250](https://github.com/aws/aws-cdk/issues/11250)) ([c124886](https://github.com/aws/aws-cdk/commit/c124886fbcabea166f34250cad84f7526e05b1bf))
+* **core:** multiple library copies lead to 'Assets must be defined within Stage or App' error ([#11113](https://github.com/aws/aws-cdk/issues/11113)) ([fcfed39](https://github.com/aws/aws-cdk/commit/fcfed39e3524eef66d3638896bf4ca86697f1718)), closes [#10314](https://github.com/aws/aws-cdk/issues/10314)
+* **core:** support docker engine v20.10.0-beta1 ([#11124](https://github.com/aws/aws-cdk/issues/11124)) ([87887a3](https://github.com/aws/aws-cdk/commit/87887a3faf24f5fde608135429585c6521637764))
+* **dynamodb:** Misconfigured metrics causing empty graphs ([#11283](https://github.com/aws/aws-cdk/issues/11283)) ([9968669](https://github.com/aws/aws-cdk/commit/9968669e4f4602a03de67e12bc5636a4f4bb1fd7))
+* **ecs:** redirect config should honor openListener flag ([#11115](https://github.com/aws/aws-cdk/issues/11115)) ([ed6e7ed](https://github.com/aws/aws-cdk/commit/ed6e7ed9ebee7dc8932c35885698fc72e2052085))
+* **event-targets:** circular dependency when the lambda target is in a different stack ([#11217](https://github.com/aws/aws-cdk/issues/11217)) ([e21f249](https://github.com/aws/aws-cdk/commit/e21f249f7b9c78ed5948d63e7650ee7b8d5b3f8b)), closes [#10942](https://github.com/aws/aws-cdk/issues/10942)
+* **pipelines:** asset stage can't support more than 50 assets ([#11284](https://github.com/aws/aws-cdk/issues/11284)) ([5db8e80](https://github.com/aws/aws-cdk/commit/5db8e8018d2b8304025b7e61178c7a747c778a78)), closes [#9353](https://github.com/aws/aws-cdk/issues/9353)
+* **secretsmanager:** can't export secret name from Secret ([#11202](https://github.com/aws/aws-cdk/issues/11202)) ([5dcdecb](https://github.com/aws/aws-cdk/commit/5dcdecb2c5d6ce19517af66090cfacabed88025b)), closes [#10914](https://github.com/aws/aws-cdk/issues/10914)
+* **secretsmanager:** Secret.fromSecretName doesn't work with ECS ([#11042](https://github.com/aws/aws-cdk/issues/11042)) ([fe1ce73](https://github.com/aws/aws-cdk/commit/fe1ce73ec59fc3ad9d8b138ba2122303e77c0531)), closes [#10309](https://github.com/aws/aws-cdk/issues/10309) [#10519](https://github.com/aws/aws-cdk/issues/10519)
+* **stepfunctions:** stack overflow when referenced json path finding encounters a circular object graph ([#11225](https://github.com/aws/aws-cdk/issues/11225)) ([f14d823](https://github.com/aws/aws-cdk/commit/f14d823279e4dbb6ac90ab21d219257b22b81278)), closes [#9319](https://github.com/aws/aws-cdk/issues/9319)
+* **stepfunctions-tasks:** Athena* APIs have incorrect supported integration patterns ([#11188](https://github.com/aws/aws-cdk/issues/11188)) ([0f66833](https://github.com/aws/aws-cdk/commit/0f6683394fa6f96d6839b2c107f3dab8045509b4)), closes [#11045](https://github.com/aws/aws-cdk/issues/11045) [#11246](https://github.com/aws/aws-cdk/issues/11246)
+* **stepfunctions-tasks:** incorrect S3 permissions for AthenaStartQueryExecution ([#11203](https://github.com/aws/aws-cdk/issues/11203)) ([b35c423](https://github.com/aws/aws-cdk/commit/b35c423644fbd8f20705c16c0809a9fb93e6d6f3))
+* explicitly set the 'ImagePullPrincipalType' of image ([#11264](https://github.com/aws/aws-cdk/issues/11264)) ([29aa223](https://github.com/aws/aws-cdk/commit/29aa223f05b5f012b42b662e7a9fcc8fe82167a7)), closes [#10569](https://github.com/aws/aws-cdk/issues/10569)
+
+## [1.71.0](https://github.com/aws/aws-cdk/compare/v1.70.0...v1.71.0) (2020-10-29)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **synthetics:** `runtime` is now a required property.
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **core:** Creation stack traces for `Lazy` values are no longer
+captured by default. The `CDK_DEBUG=true` environment variable must be
+set in order to capture stack traces (this is also achieved by using the
+`--debug` option of the `cdk` CLI). Users should not need those stack
+traces most of the time, and should only enable creation stack trace
+captures when tyring to troubleshoot a resolution error that they are
+otherwise unable to trace back.
+
+### Features
+
+* **autoscaling:** CloudFormation init for ASGs ([#9674](https://github.com/aws/aws-cdk/issues/9674)) ([bdf1d30](https://github.com/aws/aws-cdk/commit/bdf1d30a08c034703ca05eebe8e9d0cc5e070949)), closes [#9065](https://github.com/aws/aws-cdk/issues/9065) [#9664](https://github.com/aws/aws-cdk/issues/9664)
+* **cli:** `--all` flag to select all stacks ([#10745](https://github.com/aws/aws-cdk/issues/10745)) ([bcd9d0a](https://github.com/aws/aws-cdk/commit/bcd9d0aa900aceb32e50031ea1a8f8a21e07a963)), closes [#3222](https://github.com/aws/aws-cdk/issues/3222)
+* **cli:** change virtualenv directory to `.venv` to comply with python recommendation ([#10995](https://github.com/aws/aws-cdk/issues/10995)) ([a4a41b5](https://github.com/aws/aws-cdk/commit/a4a41b5e006110304b51ee55c34e91cc3f129281)), closes [#9134](https://github.com/aws/aws-cdk/issues/9134)
+* **cli:** disable version check ([#10975](https://github.com/aws/aws-cdk/issues/10975)) ([575e47e](https://github.com/aws/aws-cdk/commit/575e47e4d6e8b89b4402ddc4b7bdea985b1e6edf)), closes [#10974](https://github.com/aws/aws-cdk/issues/10974)
+* **core:** make creationStack collection for Lazy opt-in ([#11170](https://github.com/aws/aws-cdk/issues/11170)) ([a3fae02](https://github.com/aws/aws-cdk/commit/a3fae02a5256a25fca011bab2a2aa9be58121c6e))
+* **init-templates:** Java init template tests updated to JUnit 5 ([#11101](https://github.com/aws/aws-cdk/issues/11101)) ([e0c00a1](https://github.com/aws/aws-cdk/commit/e0c00a1aafe82d390fd1859090e0bbe1ac249043)), closes [#10694](https://github.com/aws/aws-cdk/issues/10694)
+* upgrade "constructs" to 3.2.0 ([#11145](https://github.com/aws/aws-cdk/issues/11145)) ([d85e3ed](https://github.com/aws/aws-cdk/commit/d85e3eda8a0d97d60d178922bf9db33a31f4abe9))
+* **redshift:** add publiclyAccessible prop ([#11162](https://github.com/aws/aws-cdk/issues/11162)) ([9f8a6de](https://github.com/aws/aws-cdk/commit/9f8a6dee36105f7bbf7f433075881d5068fb5779)), closes [#11161](https://github.com/aws/aws-cdk/issues/11161)
+* **stepfunctions-tasks:** Support for Athena APIs: StartQueryExecution, StopQueryExeuction, GetQueryResults and GetQueryExecution  ([#11045](https://github.com/aws/aws-cdk/issues/11045)) ([19180cc](https://github.com/aws/aws-cdk/commit/19180cc7dd2e3cfbbcc82ef2b45f3a8f60894f8c))
+* **synthetics:** The CloudWatch Synthetics Construct Library is now in Developer Preview ([#11180](https://github.com/aws/aws-cdk/issues/11180)) ([b3b5f48](https://github.com/aws/aws-cdk/commit/b3b5f48ba457d382b6289997f164444ac6dfed0a))
+
+
+### Bug Fixes
+
+* **aws-rds/aws-secretmanager:** `credentials.fromSecret` does not access `secretsmanager.ISecret` ([#11033](https://github.com/aws/aws-cdk/issues/11033)) ([35ad608](https://github.com/aws/aws-cdk/commit/35ad608fb0c9801756b0557b460e3587684b7110)), closes [#11015](https://github.com/aws/aws-cdk/issues/11015)
+* **bootstrap:** same-account modern bootstrapping still requires policy ARNs ([#9867](https://github.com/aws/aws-cdk/issues/9867)) ([f5ab374](https://github.com/aws/aws-cdk/commit/f5ab374eafeafff02f386be445d10863717b51ed)), closes [#8571](https://github.com/aws/aws-cdk/issues/8571)
+* **codebuild:** ReportGroup name is ignored ([#11080](https://github.com/aws/aws-cdk/issues/11080)) ([1e2250a](https://github.com/aws/aws-cdk/commit/1e2250aa8345ee9fe22ed2a7395ba28994fe8ff1)), closes [#11052](https://github.com/aws/aws-cdk/issues/11052)
+* **core:** assets are duplicated between nested Cloud Assemblies ([#11008](https://github.com/aws/aws-cdk/issues/11008)) ([c84217f](https://github.com/aws/aws-cdk/commit/c84217f94cf66cae800d434350b3b3d7676a03b3)), closes [#10877](https://github.com/aws/aws-cdk/issues/10877) [#9627](https://github.com/aws/aws-cdk/issues/9627) [#9917](https://github.com/aws/aws-cdk/issues/9917)
+* **ec2:** `CfnInit` cannot be used with custom constructs ([#11167](https://github.com/aws/aws-cdk/issues/11167)) ([01c52c8](https://github.com/aws/aws-cdk/commit/01c52c84118b101de9aaca3091673b16d6871386))
+* **region-info:** incorrect S3 static website endpoint for us-gov-west-1 ([#10920](https://github.com/aws/aws-cdk/issues/10920)) ([dde9c55](https://github.com/aws/aws-cdk/commit/dde9c5530478e9371726278ef34b82da19624a4b)), closes [40aws-cdk/region-info/build-tools/generate-static-data.ts#L47-L49](https://github.com/40aws-cdk/region-info/build-tools/generate-static-data.ts/issues/L47-L49)
+
+
 ## [1.70.0](https://github.com/aws/aws-cdk/compare/v1.69.0...v1.70.0) (2020-10-23)
 
 

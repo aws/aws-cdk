@@ -114,6 +114,25 @@
         ]
       }
     },
+    "FirstEventInvokeConfigFailureAllowEventRuleawscdklambdachainFirstEventInvokeConfigFailure7180F42FA8F1F1F0": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ErrorD9F0B79D",
+            "Arn"
+          ]
+        },
+        "Principal": "events.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "FirstEventInvokeConfigFailureA1E005BC",
+            "Arn"
+          ]
+        }
+      }
+    },
     "FirstEventInvokeConfigSuccess865FF6FF": {
       "Type": "AWS::Events::Rule",
       "Properties": {
@@ -154,6 +173,25 @@
             "InputPath": "$.detail.responsePayload"
           }
         ]
+      }
+    },
+    "FirstEventInvokeConfigSuccessAllowEventRuleawscdklambdachainFirstEventInvokeConfigSuccess2DCAE39FC2495AB7": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "Second394350F9",
+            "Arn"
+          ]
+        },
+        "Principal": "events.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "FirstEventInvokeConfigSuccess865FF6FF",
+            "Arn"
+          ]
+        }
       }
     },
     "FirstEventInvokeConfig7DE6209E": {
@@ -284,25 +322,6 @@
         "SecondServiceRole55940A31"
       ]
     },
-    "SecondAllowEventRuleawscdklambdachainFirstEventInvokeConfigSuccess2DCAE39F08E88C92": {
-      "Type": "AWS::Lambda::Permission",
-      "Properties": {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": {
-          "Fn::GetAtt": [
-            "Second394350F9",
-            "Arn"
-          ]
-        },
-        "Principal": "events.amazonaws.com",
-        "SourceArn": {
-          "Fn::GetAtt": [
-            "FirstEventInvokeConfigSuccess865FF6FF",
-            "Arn"
-          ]
-        }
-      }
-    },
     "SecondEventInvokeConfigSuccess53614893": {
       "Type": "AWS::Events::Rule",
       "Properties": {
@@ -343,6 +362,25 @@
             "InputPath": "$.detail.responsePayload"
           }
         ]
+      }
+    },
+    "SecondEventInvokeConfigSuccessAllowEventRuleawscdklambdachainSecondEventInvokeConfigSuccess2078CDC9C7FB9F61": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "Third1125870F",
+            "Arn"
+          ]
+        },
+        "Principal": "events.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "SecondEventInvokeConfigSuccess53614893",
+            "Arn"
+          ]
+        }
       }
     },
     "SecondEventInvokeConfig3F9DE36C": {
@@ -428,25 +466,6 @@
         "ThirdServiceRole42701801"
       ]
     },
-    "ThirdAllowEventRuleawscdklambdachainSecondEventInvokeConfigSuccess2078CDC9C6C3FA25": {
-      "Type": "AWS::Lambda::Permission",
-      "Properties": {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": {
-          "Fn::GetAtt": [
-            "Third1125870F",
-            "Arn"
-          ]
-        },
-        "Principal": "events.amazonaws.com",
-        "SourceArn": {
-          "Fn::GetAtt": [
-            "SecondEventInvokeConfigSuccess53614893",
-            "Arn"
-          ]
-        }
-      }
-    },
     "ErrorServiceRoleCE484966": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -496,25 +515,6 @@
       "DependsOn": [
         "ErrorServiceRoleCE484966"
       ]
-    },
-    "ErrorAllowEventRuleawscdklambdachainFirstEventInvokeConfigFailure7180F42F0285281B": {
-      "Type": "AWS::Lambda::Permission",
-      "Properties": {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": {
-          "Fn::GetAtt": [
-            "ErrorD9F0B79D",
-            "Arn"
-          ]
-        },
-        "Principal": "events.amazonaws.com",
-        "SourceArn": {
-          "Fn::GetAtt": [
-            "FirstEventInvokeConfigFailureA1E005BC",
-            "Arn"
-          ]
-        }
-      }
     }
   },
   "Outputs": {
