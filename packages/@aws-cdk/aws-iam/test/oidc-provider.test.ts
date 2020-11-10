@@ -6,6 +6,8 @@ import { arrayDiff } from '../lib/oidc-provider/diff';
 import { external } from '../lib/oidc-provider/external';
 import * as handler from '../lib/oidc-provider/index';
 
+const arnOfProvider = 'arn:aws:iam::1234567:oidc-provider/oidc.eks.us-east-1.amazonaws.com/id/someid';
+
 describe('OpenIdConnectProvider resource', () => {
 
   test('minimal configuration (no clients and no thumbprint)', () => {
@@ -41,10 +43,10 @@ describe('OpenIdConnectProvider resource', () => {
     const stack = new Stack();
 
     // WHEN
-    const provider = iam.OpenIdConnectProvider.fromOpenIdConnectProviderArn(stack, 'MyProvider', 'arn:of:provider');
+    const provider = iam.OpenIdConnectProvider.fromOpenIdConnectProviderArn(stack, 'MyProvider', arnOfProvider);
 
     // THEN
-    expect(stack.resolve(provider.openIdConnectProviderArn)).toStrictEqual('arn:of:provider');
+    expect(stack.resolve(provider.openIdConnectProviderArn)).toStrictEqual(arnOfProvider);
   });
 
   test('thumbprint list and client ids can be specified', () => {
@@ -385,6 +387,34 @@ describe('arrayDiff', () => {
     expect(arrayDiff(['x', 'y'], ['a', 'c', 'b'])).toStrictEqual({ adds: ['a', 'c', 'b'], deletes: ['x', 'y'] });
     expect(arrayDiff([], [])).toStrictEqual({ adds: [], deletes: [] });
     expect(arrayDiff(['a', 'a'], ['a', 'b', 'a', 'b', 'b'])).toStrictEqual({ adds: ['b'], deletes: [] });
+  });
+});
+
+describe('OIDC issuer', () => {
+  test('extract issuer properly in the new provider', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const provider = new iam.OpenIdConnectProvider(stack, 'MyProvider', {
+      url: 'https://my-issuer',
+    });
+
+    // THEN
+    expect(stack.resolve(provider.openIdConnectProviderIssuer)).toStrictEqual(
+      { 'Fn::Select': [1, { 'Fn::Split': ['oidc-provider/', { Ref: 'MyProvider730BA1C8' }] }] },
+    );
+  });
+
+  test('extract issuer properly in the imported provider', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const provider = iam.OpenIdConnectProvider.fromOpenIdConnectProviderArn(stack, 'MyProvider', arnOfProvider);
+
+    // THEN
+    expect(stack.resolve(provider.openIdConnectProviderIssuer)).toStrictEqual('oidc.eks.us-east-1.amazonaws.com/id/someid');
   });
 });
 
