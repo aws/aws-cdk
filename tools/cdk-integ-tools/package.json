@@ -52,5 +52,8 @@
   },
   "peerDependencies": {
     "@aws-cdk/assert": "0.0.0"
+  },
+  "ubergen": {
+    "exclude": true
   }
 }
