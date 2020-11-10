@@ -1,112 +1,22 @@
+import * as os from 'os';
 import * as path from 'path';
-import * as lambda from '@aws-cdk/aws-lambda';
+import { AssetCode, Code, Runtime } from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
-import { EsBuildBundler, LockFile } from './esbuild-bundler';
-import { findUp } from './util';
+import { BundlingOptions } from './types';
+import { exec, extractDependencies, findLockFile, findUp, getEsBuildVersion, LockFile } from './util';
+
+const ESBUILD_VERSION = '0';
+const ESBUILD_MAJOR_VERSION_REGEXP = new RegExp(`^${ESBUILD_VERSION}`);
 
 /**
- * Base options for esbuild bundling
+ * Bundling properties
  */
-export interface EsBuildBaseOptions {
+export interface BundlingProps extends BundlingOptions {
   /**
-   * Whether to minify files when bundling.
-   *
-   * @default false
+   * Project root
    */
-  readonly minify?: boolean;
+  readonly projectRoot: string;
 
-  /**
-   * Whether to include source maps when bundling.
-   *
-   * @default false
-   */
-  readonly sourceMap?: boolean;
-
-  /**
-   * Target environment for the generated JavaScript code.
-   *
-   * @see https://esbuild.github.io/api/#target
-   *
-   * @default - the node version of the runtime
-   */
-  readonly target?: string;
-
-  /**
-   * The root of the project. This will be used as the source for the volume
-   * mounted in the Docker container. If you specify this prop, ensure that
-   * this path includes `entry` and any module/dependencies used by your
-   * function otherwise bundling will not be possible.
-   *
-   * @default - the closest path containing a .git folder
-   */
-  readonly projectRoot?: string;
-
-  /**
-   * Environment variables defined when bundling runs.
-   *
-   * @default - no environment variables are defined.
-   */
-  readonly bundlingEnvironment?: { [key: string]: string; };
-
-  /**
-   * A list of modules that should be considered as externals (already available
-   * in the runtime).
-   *
-   * @default ['aws-sdk']
-   */
-  readonly externalModules?: string[];
-
-  /**
-   * A list of modules that should be installed instead of bundled. Modules are
-   * installed in a Lambda compatible environnment only when bundling runs in
-   * Docker.
-   *
-   * @default - all modules are bundled
-   */
-  readonly nodeModules?: string[];
-
-  /**
-   * The version of esbuild to use when running in a Docker container.
-   *
-   * @default - latest v0
-   */
-  readonly esbuildVersion?: string;
-
-  /**
-   * Build arguments to pass when building the bundling image.
-   *
-   * @default - no build arguments are passed
-   */
-  readonly buildArgs?: { [key:string] : string };
-
-  /**
-   * Force bundling in a Docker container even if local bundling is
-   * possible. This is useful if your function relies on node modules
-   * that should be installed (`nodeModules`) in a Lambda compatible
-   * environment.
-   *
-   * @default false
-   */
-  readonly forceDockerBundling?: boolean;
-
-  /**
-   * A custom bundling Docker image.
-   *
-   * This image should have esbuild installed globally. If you plan to use `nodeModules`
-   * it should also have `npm` or `yarn` depending on the lock file you're using.
-   *
-   * See https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-lambda-nodejs/lib/Dockerfile
-   * for the default image provided by @aws-cdk/aws-lambda-nodejs.
-   *
-   * @default - use the Docker image provided by @aws-cdk/aws-lambda-nodejs
-   */
-  readonly bundlingDockerImage?: cdk.BundlingDockerImage;
-}
-
-/**
- * Options for esbuild bundling
- */
-export interface EsBuildOptions extends EsBuildBaseOptions {
   /**
    * Entry file
    */
@@ -115,60 +25,214 @@ export interface EsBuildOptions extends EsBuildBaseOptions {
   /**
    * The runtime of the lambda function
    */
-  readonly runtime: lambda.Runtime;
+  readonly runtime: Runtime;
 }
 
 /**
- * Bundling
+ * Bundling with esbuild
  */
-export class Bundling {
+export class Bundling implements cdk.BundlingOptions {
   /**
    * esbuild bundled Lambda asset code
    */
-  public static esbuild(options: EsBuildOptions): lambda.AssetCode {
-    // Find project root
-    const projectRoot = this.findProjectRoot(options.projectRoot);
-
-    return lambda.Code.fromAsset(projectRoot, {
+  public static bundle(options: BundlingProps): AssetCode {
+    return Code.fromAsset(options.projectRoot, {
       assetHashType: cdk.AssetHashType.OUTPUT,
-      bundling: new EsBuildBundler({
-        ...options,
-        externals: options.externalModules ?? ['aws-sdk'],
-        environment: options.bundlingEnvironment,
-        projectRoot,
-      }),
+      bundling: new Bundling(options),
     });
   }
 
-  /**
-   * Clears the project root cache
-   */
-  public static clearProjectRootCache(): void {
-    this.projectRoot = undefined;
+  public static clearRunsLocallyCache(): void {
+    this.runsLocally = undefined;
   }
 
-  /** Cache for project root */
-  private static projectRoot?: string;
-
-  private static findProjectRoot(userProjectRoot?: string): string {
-    if (userProjectRoot) {
-      return userProjectRoot;
-    }
-
-    if (this.projectRoot) {
-      return this.projectRoot;
-    }
-
-    const projectRoot = findUp(`.git${path.sep}`)
-      ?? findUp(LockFile.YARN)
-      ?? findUp(LockFile.NPM)
-      ?? findUp('package.json');
-
-    if (!projectRoot) {
-      throw new Error('Cannot find project root. Please specify it with `projectRoot`.');
-    }
-
-    this.projectRoot = projectRoot;
-    return projectRoot;
+  public static clearLockFileCache(): void {
+    this.lockFile = undefined;
   }
+
+  private static runsLocally?: boolean;
+  private static lockFile?: string;
+
+  // Core bundling options
+  public readonly image: cdk.BundlingDockerImage;
+  public readonly command: string[];
+  public readonly environment?: { [key: string]: string };
+  public readonly local?: cdk.ILocalBundling;
+
+  private readonly relativeEntryPath: string;
+  private readonly externals: string[];
+
+  constructor(private readonly props: BundlingProps) {
+    Bundling.runsLocally = Bundling.runsLocally ?? ESBUILD_MAJOR_VERSION_REGEXP.test(getEsBuildVersion() ?? '');
+
+    this.relativeEntryPath = path.relative(props.projectRoot, path.resolve(props.entry));
+
+    this.externals = [
+      ...this.props.externalModules ?? ['aws-sdk'], // Mark aws-sdk as external by default (available in the runtime)
+      ...this.props.nodeModules ?? [], // Mark the modules that we are going to install as externals also
+    ];
+
+    // Docker bundling
+    const shouldBuildImage = props.forceDockerBundling || !Bundling.runsLocally;
+    this.image = shouldBuildImage
+      ? props.bundlingDockerImage ?? cdk.BundlingDockerImage.fromAsset(path.join(__dirname, '../lib'), {
+        buildArgs: {
+          ...props.buildArgs ?? {},
+          IMAGE: props.runtime.bundlingDockerImage.image,
+          ESBUILD_VERSION: props.esbuildVersion ?? ESBUILD_VERSION,
+        },
+      })
+      : cdk.BundlingDockerImage.fromRegistry('dummy'); // Do not build if we don't need to
+
+    const bundlingCommand = this.createBundlingCommand(cdk.AssetStaging.BUNDLING_INPUT_DIR, cdk.AssetStaging.BUNDLING_OUTPUT_DIR);
+    this.command = ['bash', '-c', bundlingCommand];
+    this.environment = props.bundlingEnvironment;
+
+    // Local bundling
+    if (!props.forceDockerBundling) { // only if Docker is not forced
+      const osPlatform = os.platform();
+      const createLocalCommand = (outputDir: string) => this.createBundlingCommand(props.projectRoot, outputDir, osPlatform);
+
+      this.local = {
+        tryBundle(outputDir: string) {
+          if (Bundling.runsLocally === false) {
+            process.stderr.write('esbuild cannot run locally. Switching to Docker bundling.\n');
+            return false;
+          }
+
+          const localCommand = createLocalCommand(outputDir);
+
+          exec(
+            osPlatform === 'win32' ? 'cmd' : 'bash',
+            [
+              osPlatform === 'win32' ? '/c' : '-c',
+              localCommand,
+            ],
+            {
+              env: { ...process.env, ...props.bundlingEnvironment ?? {} },
+              stdio: [ // show output
+                'ignore', // ignore stdio
+                process.stderr, // redirect stdout to stderr
+                'inherit', // inherit stderr
+              ],
+              cwd: path.dirname(props.entry),
+            });
+
+          return true;
+        },
+      };
+    }
+  }
+
+  public createBundlingCommand(inputDir: string, outputDir: string, osPlatform: NodeJS.Platform = 'linux'): string {
+    const pathJoin = osPathJoin(osPlatform);
+
+    const esbuildCommand: string = [
+      'npx', 'esbuild',
+      '--bundle', pathJoin(inputDir, this.relativeEntryPath),
+      `--target=${this.props.target ?? toTarget(this.props.runtime)}`,
+      '--platform=node',
+      `--outfile=${pathJoin(outputDir, 'index.js')}`,
+      ...this.props.minify ? ['--minify'] : [],
+      ...this.props.sourceMap ? ['--sourcemap'] : [],
+      ...this.externals.map(external => `--external:${external}`),
+      ...(this.props.loaders ?? []).map(loader => `--loader:${loader.extension}=${loader.name}`),
+    ].join(' ');
+
+    let depsCommand = '';
+    if (this.props.nodeModules) {
+      // Find 'package.json' closest to entry folder, we are going to extract the
+      // modules versions from it.
+      const pkgPath = findUp('package.json', path.dirname(this.props.entry));
+      if (!pkgPath) {
+        throw new Error('Cannot find a `package.json` in this project. Using `nodeModules` requires a `package.json`.');
+      }
+
+      // Determine dependencies versions, lock file and installer
+      const dependencies = extractDependencies(path.join(pkgPath, 'package.json'), this.props.nodeModules);
+      Bundling.lockFile = Bundling.lockFile ?? findLockFile(this.props.projectRoot);
+      let installer = Installer.NPM;
+      if (Bundling.lockFile === LockFile.YARN) {
+        installer = Installer.YARN;
+      }
+
+      const osCommand = new OsCommand(osPlatform);
+
+      // Create dummy package.json, copy lock file if any and then install
+      depsCommand = chain([
+        osCommand.write(pathJoin(outputDir, 'package.json'), JSON.stringify({ dependencies })),
+        Bundling.lockFile ? osCommand.copy(pathJoin(inputDir, Bundling.lockFile), pathJoin(outputDir, Bundling.lockFile)) : '',
+        osCommand.changeDirectory(outputDir),
+        `${installer} install`,
+      ]);
+    }
+
+    return chain([esbuildCommand, depsCommand]);
+  }
+}
+
+enum Installer {
+  NPM = 'npm',
+  YARN = 'yarn',
+}
+
+/**
+ * OS agnostic command
+ */
+class OsCommand {
+  constructor(private readonly osPlatform: NodeJS.Platform) {}
+
+  public write(filePath: string, data: string): string {
+    if (this.osPlatform === 'win32') {
+      return `echo ^${data}^ > ${filePath}`;
+    }
+
+    return `echo '${data}' > ${filePath}`;
+  }
+
+  public copy(src: string, dest: string): string {
+    if (this.osPlatform === 'win32') {
+      return `copy ${src} ${dest}`;
+    }
+
+    return `cp ${src} ${dest}`;
+  }
+
+  public changeDirectory(dir: string): string {
+    return `cd ${dir}`;
+  }
+}
+
+/**
+ * Chain commands
+ */
+function chain(commands: string[]): string {
+  return commands.filter(c => !!c).join(' && ');
+}
+
+/**
+ * Platform specific path join
+ */
+function osPathJoin(platform: NodeJS.Platform) {
+  return function(...paths: string[]): string {
+    const joined = path.join(...paths);
+    // If we are on win32 but need posix style paths
+    if (os.platform() === 'win32' && platform !== 'win32') {
+      return joined.replace(/\\/g, '/');
+    }
+    return joined;
+  };
+}
+
+/**
+ * Converts a runtime to an esbuild node target
+ */
+function toTarget(runtime: Runtime): string {
+  const match = runtime.name.match(/nodejs(\d+)/);
+
+  if (!match) {
+    throw new Error('Cannot extract version from runtime.');
+  }
+
+  return `node${match[1]}`;
 }

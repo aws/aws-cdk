@@ -2,13 +2,14 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
-import { Bundling, EsBuildBaseOptions } from './bundling';
-import { nodeMajorVersion, parseStackTrace } from './util';
+import { Bundling } from './bundling';
+import { BundlingOptions } from './types';
+import { findProjectRoot, nodeMajorVersion, parseStackTrace } from './util';
 
 /**
  * Properties for a NodejsFunction
  */
-export interface NodejsFunctionProps extends lambda.FunctionOptions, EsBuildBaseOptions {
+export interface NodejsFunctionProps extends lambda.FunctionOptions, BundlingOptions {
   /**
    * Path to the entry file (JavaScript or TypeScript).
    *
@@ -47,15 +48,32 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions, EsBuildBase
    * @default true
    */
   readonly awsSdkConnectionReuse?: boolean;
+
+  /**
+   * The root of the project. This will be used as the source for the volume
+   * mounted in the Docker container. If you specify this prop, ensure that
+   * this path includes `entry` and any module/dependencies used by your
+   * function otherwise bundling will not be possible.
+   *
+   * @default - the closest path containing a .git folder
+   */
+  readonly projectRoot?: string;
 }
 
 /**
  * A Node.js Lambda function bundled using Parcel
  */
 export class NodejsFunction extends lambda.Function {
+  private static projectRoot?: string;
+
   constructor(scope: cdk.Construct, id: string, props: NodejsFunctionProps = {}) {
     if (props.runtime && props.runtime.family !== lambda.RuntimeFamily.NODEJS) {
       throw new Error('Only `NODEJS` runtimes are supported.');
+    }
+
+    NodejsFunction.projectRoot = NodejsFunction.projectRoot ?? findProjectRoot(props.projectRoot);
+    if (!NodejsFunction.projectRoot) {
+      throw new Error('Cannot find project root. Please specify it with `projectRoot`.');
     }
 
     // Entry and defaults
@@ -69,10 +87,11 @@ export class NodejsFunction extends lambda.Function {
     super(scope, id, {
       ...props,
       runtime,
-      code: Bundling.esbuild({
+      code: Bundling.bundle({
         ...props,
         entry,
         runtime,
+        projectRoot: NodejsFunction.projectRoot,
       }),
       handler: `index.${handler}`,
     });

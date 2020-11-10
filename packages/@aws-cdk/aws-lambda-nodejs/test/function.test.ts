@@ -10,7 +10,7 @@ import { Bundling } from '../lib/bundling';
 jest.mock('../lib/bundling', () => {
   return {
     Bundling: {
-      esbuild: jest.fn().mockReturnValue({
+      bundle: jest.fn().mockReturnValue({
         bind: () => {
           return { inlineCode: 'code' };
         },
@@ -30,7 +30,7 @@ test('NodejsFunction with .ts handler', () => {
   // WHEN
   new NodejsFunction(stack, 'handler1');
 
-  expect(Bundling.esbuild).toHaveBeenCalledWith(expect.objectContaining({
+  expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
     entry: expect.stringContaining('function.test.handler1.ts'), // Automatically finds .ts handler file
   }));
 
@@ -44,7 +44,7 @@ test('NodejsFunction with .js handler', () => {
   new NodejsFunction(stack, 'handler2');
 
   // THEN
-  expect(Bundling.esbuild).toHaveBeenCalledWith(expect.objectContaining({
+  expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
     entry: expect.stringContaining('function.test.handler2.js'), // Automatically finds .ts handler file
   }));
 });
@@ -57,7 +57,7 @@ test('NodejsFunction with container env vars', () => {
     },
   });
 
-  expect(Bundling.esbuild).toHaveBeenCalledWith(expect.objectContaining({
+  expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
     bundlingEnvironment: {
       KEY: 'VALUE',
     },
@@ -104,7 +104,7 @@ test('resolves entry to an absolute path', () => {
     entry: 'lib/index.ts',
   });
 
-  expect(Bundling.esbuild).toHaveBeenCalledWith(expect.objectContaining({
+  expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
     entry: expect.stringMatching(/@aws-cdk\/aws-lambda-nodejs\/lib\/index.ts$/),
   }));
 });

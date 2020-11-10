@@ -106,10 +106,60 @@ export function extractDependencies(pkgPath: any, modules: string[]): { [key: st
 
   for (const mod of modules) {
     if (!pkgDependencies[mod]) {
-      throw new Error(`Cannot extract version for ${mod} in package.json`);
+      throw new Error(`Cannot extract version for module '${mod}' in package.json`);
     }
     dependencies[mod] = pkgDependencies[mod];
   }
 
   return dependencies;
+}
+
+/**
+ * Finds the project root
+ */
+export function findProjectRoot(projectRoot?: string): string | undefined {
+  return projectRoot
+    ?? findUp(`.git${path.sep}`)
+    ?? findUp(LockFile.YARN)
+    ?? findUp(LockFile.NPM)
+    ?? findUp('package.json');
+}
+
+/**
+ * Finds the lock file of a project
+ */
+export function findLockFile(projectRoot: string): LockFile | undefined {
+  if (fs.existsSync(path.join(projectRoot, LockFile.YARN))) {
+    return LockFile.YARN;
+  }
+
+  if (fs.existsSync(path.join(projectRoot, LockFile.NPM))) {
+    return LockFile.NPM;
+  }
+
+  return undefined;
+}
+
+/**
+ * Returns the installed esbuild version
+ */
+export function getEsBuildVersion(): string | undefined {
+  try {
+    // --no-install ensures that we are checking for an installed version
+    // (either locally or globally)
+    const esbuild = spawnSync('npx', ['--no-install', 'esbuild', '--version']);
+
+    if (esbuild.status !== 0) {
+      return undefined;
+    }
+
+    return esbuild.stdout.toString().trim();
+  } catch (err) {
+    return undefined;
+  }
+}
+
+export enum LockFile {
+  NPM = 'package-lock.json',
+  YARN = 'yarn.lock'
 }
