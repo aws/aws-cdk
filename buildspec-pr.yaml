@@ -6,7 +6,7 @@ phases:
   install:
     commands:
 
-      # available in our custom CodeBuild image
+      # baked in our image.
       - /root/ecr-proxy/start.sh
 
       # Install yarn if it wasn't already present in the image
