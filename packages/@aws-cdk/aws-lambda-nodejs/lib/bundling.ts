@@ -116,6 +116,7 @@ export class Bundling implements cdk.BundlingOptions {
                 'inherit', // inherit stderr
               ],
               cwd: path.dirname(props.entry),
+              windowsVerbatimArguments: osPlatform === 'win32',
             });
 
           return true;
@@ -161,7 +162,7 @@ export class Bundling implements cdk.BundlingOptions {
 
       // Create dummy package.json, copy lock file if any and then install
       depsCommand = chain([
-        osCommand.write(pathJoin(outputDir, 'package.json'), JSON.stringify({ dependencies })),
+        osCommand.writeJson(pathJoin(outputDir, 'package.json'), { dependencies }),
         Bundling.lockFile ? osCommand.copy(pathJoin(inputDir, Bundling.lockFile), pathJoin(outputDir, Bundling.lockFile)) : '',
         osCommand.changeDirectory(outputDir),
         `${installer} install`,
@@ -183,12 +184,13 @@ enum Installer {
 class OsCommand {
   constructor(private readonly osPlatform: NodeJS.Platform) {}
 
-  public write(filePath: string, data: string): string {
+  public writeJson(filePath: string, data: any): string {
+    const stringifiedData = JSON.stringify(data);
     if (this.osPlatform === 'win32') {
-      return `echo ^${data}^ > ${filePath}`;
+      return `echo ^${stringifiedData}^ > ${filePath}`;
     }
 
-    return `echo '${data}' > ${filePath}`;
+    return `echo '${stringifiedData}' > ${filePath}`;
   }
 
   public copy(src: string, dest: string): string {
