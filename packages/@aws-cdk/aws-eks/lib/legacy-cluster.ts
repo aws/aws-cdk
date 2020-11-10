@@ -11,6 +11,7 @@ import { CfnCluster, CfnClusterProps } from './eks.generated';
 import { HelmChartOptions, HelmChart } from './helm-chart';
 import { KubernetesManifest } from './k8s-manifest';
 import { Nodegroup, NodegroupOptions } from './managed-nodegroup';
+import { ServiceAccount, ServiceAccountOptions } from './service-account';
 import { renderAmazonLinuxUserData, renderBottlerocketUserData } from './user-data';
 
 // defaults are based on https://eksctl.io
@@ -244,6 +245,18 @@ export class LegacyCluster extends Resource implements ICluster {
     }
   }
 
+  public addServiceAccount(_id: string, _options?: ServiceAccountOptions): ServiceAccount {
+    throw new Error('legacy cluster does not support adding service accounts');
+  }
+
+  /**
+   * Since we dont really want to make it required on the top-level ICluster
+   * we do this trick here in return type to match interface type
+   */
+  public get openIdConnectProvider(): iam.IOpenIdConnectProvider {
+    throw new Error('legacy cluster does not support open id connect providers');
+  }
+
   /**
    * Add nodes to this EKS cluster
    *
@@ -435,6 +448,14 @@ class ImportedCluster extends Resource implements ICluster {
 
   public addCdk8sChart(_id: string, _chart: Construct): KubernetesManifest {
     throw new Error('legacy cluster does not support adding cdk8s charts');
+  }
+
+  public addServiceAccount(_id: string, _options?: ServiceAccountOptions): ServiceAccount {
+    throw new Error('legacy cluster does not support adding service accounts');
+  }
+
+  public get openIdConnectProvider(): iam.IOpenIdConnectProvider {
+    throw new Error('legacy cluster does not support open id connect providers');
   }
 
   public get vpc() {

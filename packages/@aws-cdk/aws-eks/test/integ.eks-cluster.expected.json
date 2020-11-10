@@ -3526,16 +3526,30 @@
             [
               "{\"",
               {
-                "Fn::GetAtt": [
-                  "Cluster9EE0221C",
-                  "OpenIdConnectIssuer"
+                "Fn::Select": [
+                  1,
+                  {
+                    "Fn::Split": [
+                      "oidc-provider/",
+                      {
+                        "Ref": "ClusterOpenIdConnectProviderE7EB0530"
+                      }
+                    ]
+                  }
                 ]
               },
               ":aud\":\"sts.amazonaws.com\",\"",
               {
-                "Fn::GetAtt": [
-                  "Cluster9EE0221C",
-                  "OpenIdConnectIssuer"
+                "Fn::Select": [
+                  1,
+                  {
+                    "Fn::Split": [
+                      "oidc-provider/",
+                      {
+                        "Ref": "ClusterOpenIdConnectProviderE7EB0530"
+                      }
+                    ]
+                  }
                 ]
               },
               ":sub\":\"system:serviceaccount:default:awscdkeksclustertestclustermyserviceaccount4080bcdd\"}"
@@ -3940,7 +3954,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParameters952bd1c03e8201c4c1c67d6de0f3fdaaf88fda05f89a1232c3f6364343cd5344S3Bucket055DC235"
+            "Ref": "AssetParametersb075459e6bf309093fbd4b9a9e576a5f172b91c14d84eedb0f069566f6abb0deS3Bucket055DC235"
           },
           "S3Key": {
             "Fn::Join": [
@@ -3953,7 +3967,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters952bd1c03e8201c4c1c67d6de0f3fdaaf88fda05f89a1232c3f6364343cd5344S3VersionKey2FFFA299"
+                          "Ref": "AssetParametersb075459e6bf309093fbd4b9a9e576a5f172b91c14d84eedb0f069566f6abb0deS3VersionKey2FFFA299"
                         }
                       ]
                     }
@@ -3966,7 +3980,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters952bd1c03e8201c4c1c67d6de0f3fdaaf88fda05f89a1232c3f6364343cd5344S3VersionKey2FFFA299"
+                          "Ref": "AssetParametersb075459e6bf309093fbd4b9a9e576a5f172b91c14d84eedb0f069566f6abb0deS3VersionKey2FFFA299"
                         }
                       ]
                     }
@@ -4039,7 +4053,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParametersb075459e6bf309093fbd4b9a9e576a5f172b91c14d84eedb0f069566f6abb0deS3Bucket14156880"
+            "Ref": "AssetParameters952bd1c03e8201c4c1c67d6de0f3fdaaf88fda05f89a1232c3f6364343cd5344S3Bucket14156880"
           },
           "S3Key": {
             "Fn::Join": [
@@ -4052,7 +4066,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersb075459e6bf309093fbd4b9a9e576a5f172b91c14d84eedb0f069566f6abb0deS3VersionKey5225BCA4"
+                          "Ref": "AssetParameters952bd1c03e8201c4c1c67d6de0f3fdaaf88fda05f89a1232c3f6364343cd5344S3VersionKey5225BCA4"
                         }
                       ]
                     }
@@ -4065,7 +4079,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersb075459e6bf309093fbd4b9a9e576a5f172b91c14d84eedb0f069566f6abb0deS3VersionKey5225BCA4"
+                          "Ref": "AssetParameters952bd1c03e8201c4c1c67d6de0f3fdaaf88fda05f89a1232c3f6364343cd5344S3VersionKey5225BCA4"
                         }
                       ]
                     }
