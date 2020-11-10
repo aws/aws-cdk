@@ -45,6 +45,18 @@ export const NEW_STYLE_STACK_SYNTHESIS_CONTEXT = '@aws-cdk/core:newStyleStackSyn
 export const STACK_RELATIVE_EXPORTS_CONTEXT = '@aws-cdk/core:stackRelativeExports';
 
 /**
+ * DockerImageAsset properly supports `.dockerignore` files by default
+ *
+ * If this flag is not set, the default behavior for `DockerImageAsset` is to use
+ * glob semantics for `.dockerignore` files. If this flag is set, the default behavior
+ * is standard Docker ignore semantics.
+ *
+ * This is a feature flag as the old behavior was technically incorrect but
+ * users may have come to depend on it.
+ */
+export const DOCKER_IGNORE_SUPPORT = '@aws-cdk/aws-ecr-assets:dockerIgnoreSupport';
+
+/**
  * This map includes context keys and values for feature flags that enable
  * capabilities "from the future", which we could not introduce as the default
  * behavior due to backwards compatibility for existing projects.
@@ -61,6 +73,7 @@ export const FUTURE_FLAGS = {
   [ENABLE_STACK_NAME_DUPLICATES_CONTEXT]: 'true',
   [ENABLE_DIFF_NO_FAIL_CONTEXT]: 'true',
   [STACK_RELATIVE_EXPORTS_CONTEXT]: 'true',
+  [DOCKER_IGNORE_SUPPORT]: true,
 
   // We will advertise this flag when the feature is complete
   // [NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: 'true',
@@ -75,6 +88,7 @@ const FUTURE_FLAGS_DEFAULTS: { [key: string]: boolean } = {
   [ENABLE_DIFF_NO_FAIL_CONTEXT]: false,
   [STACK_RELATIVE_EXPORTS_CONTEXT]: false,
   [NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+  [DOCKER_IGNORE_SUPPORT]: false,
 };
 
 export function futureFlagDefault(flag: string): boolean {
