@@ -78,7 +78,7 @@ export = {
         }));
 
         // THEN
-        expect(stack).to( haveResourceLike('AWS::AppMesh::VirtualNode', {
+        expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
           Spec: {
             Listeners: [
               {
@@ -223,7 +223,7 @@ export = {
         }));
 
         // THEN
-        expect(stack).to( haveResourceLike('AWS::AppMesh::VirtualNode', {
+        expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
           Spec: {
             Listeners: [
               {
