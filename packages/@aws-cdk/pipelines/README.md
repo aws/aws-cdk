@@ -341,6 +341,16 @@ testingStage.addApplication(new MyApplication2(this, 'MyApp2', {
 }));
 ```
 
+Even more, adding a manual approval action or reserving space for some extra sequential actions 
+between 'Prepare' and 'Execute' ChangeSet actions is possible.
+
+```ts
+  pipeline.addApplicationStage(new MyApplication(this, 'Production'), {
+    manualApprovals: true,
+    extraRunOrderSpace: 1,
+  });
+```
+
 ## Adding validations to the pipeline
 
 You can add any type of CodePipeline Action to the pipeline in order to validate
