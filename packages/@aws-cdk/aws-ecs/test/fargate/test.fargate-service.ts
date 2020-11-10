@@ -322,7 +322,7 @@ export = {
           taskDefinition,
           platformVersion: ecs.FargatePlatformVersion.VERSION1_3,
         });
-      }, /uses at least a container that references a secret JSON field.+platform version 1.4.0 or later/);
+      }, new RegExp(`uses at least one container that references a secret JSON field.+platform version ${ecs.FargatePlatformVersion.VERSION1_4} or later`));
 
       test.done();
     },
