@@ -562,7 +562,7 @@ export = {
 
       // THEN
       expect(stack).to(haveResource('AWS::ECS::TaskDefinition', {
-        Family: 'Ec2TaskDef',
+        Family: 'StackEc2TaskDefF03698CF',
         ContainerDefinitions: [
           {
             Essential: true,
