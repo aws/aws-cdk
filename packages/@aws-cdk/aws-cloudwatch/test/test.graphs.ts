@@ -1,6 +1,6 @@
 import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { Alarm, AlarmWidget, Color, GraphWidget, LegendPosition, LogQueryWidget, Metric, Shading, SingleValueWidget, LogQueryVisualizationType } from '../lib';
+import { Alarm, AlarmWidget, Color, GraphWidget, GraphWidgetView, LegendPosition, LogQueryWidget, Metric, Shading, SingleValueWidget, LogQueryVisualizationType } from '../lib';
 
 export = {
   'add stacked property to graphs'(test: Test) {
@@ -108,6 +108,30 @@ export = {
         metrics: [
           ['CDK', 'Test', { label: 'MyMetric', color: '000000' }],
         ],
+        yAxis: {},
+      },
+    }]);
+
+    test.done();
+  },
+
+  'bar view'(test: Test) {
+    // WHEN
+    const stack = new Stack();
+    const widget = new GraphWidget({
+      title: 'Test widget',
+      view: GraphWidgetView.BAR,
+    });
+
+    // THEN
+    test.deepEqual(stack.resolve(widget.toJson()), [{
+      type: 'metric',
+      width: 6,
+      height: 6,
+      properties: {
+        view: 'bar',
+        title: 'Test widget',
+        region: { Ref: 'AWS::Region' },
         yAxis: {},
       },
     }]);
