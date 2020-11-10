@@ -1,5 +1,14 @@
 import * as path from 'path';
-import { CustomResource, CustomResourceProvider, CustomResourceProviderRuntime, IResource, Resource, Token } from '@aws-cdk/core';
+import {
+  CustomResource,
+  CustomResourceProvider,
+  CustomResourceProviderRuntime,
+  IResource,
+  Resource,
+  Stack,
+  Token,
+  Fn,
+} from '@aws-cdk/core';
 import { Construct } from 'constructs';
 
 const RESOURCE_TYPE = 'Custom::AWSCDKOpenIdConnectProvider';
@@ -14,6 +23,11 @@ export interface IOpenIdConnectProvider extends IResource {
    * The Amazon Resource Name (ARN) of the IAM OpenID Connect provider.
    */
   readonly openIdConnectProviderArn: string;
+
+  /**
+   * The issuer for OIDC Provider
+   */
+  readonly openIdConnectProviderIssuer: string;
 }
 
 /**
@@ -99,9 +113,21 @@ export class OpenIdConnectProvider extends Resource implements IOpenIdConnectPro
    * @param openIdConnectProviderArn the ARN to import
    */
   public static fromOpenIdConnectProviderArn(scope: Construct, id: string, openIdConnectProviderArn: string): IOpenIdConnectProvider {
+    const parsedResourceName = Stack.of(scope).parseArn(openIdConnectProviderArn).resourceName;
+    if (!parsedResourceName) {
+      throw new Error(`Invalid arn: ${openIdConnectProviderArn}. Unable to extract issuer url`);
+    }
+
+    // this needed because TS don't understand that prev. condition
+    // actually does mutate the type from "string | undefined" to "string"
+    // inside class definition,
+    const resourceName = parsedResourceName;
+
     class Import extends Resource implements IOpenIdConnectProvider {
       public readonly openIdConnectProviderArn = openIdConnectProviderArn;
+      public readonly openIdConnectProviderIssuer = resourceName;
     }
+
     return new Import(scope, id);
   }
 
@@ -109,6 +135,8 @@ export class OpenIdConnectProvider extends Resource implements IOpenIdConnectPro
    * The Amazon Resource Name (ARN) of the IAM OpenID Connect provider.
    */
   public readonly openIdConnectProviderArn: string;
+
+  public readonly openIdConnectProviderIssuer: string;
 
   /**
    * Defines an OpenID Connect provider.
@@ -130,6 +158,7 @@ export class OpenIdConnectProvider extends Resource implements IOpenIdConnectPro
     });
 
     this.openIdConnectProviderArn = Token.asString(resource.ref);
+    this.openIdConnectProviderIssuer = Fn.select(1, Fn.split('oidc-provider/', this.openIdConnectProviderArn));
   }
 
   private getOrCreateProvider() {
