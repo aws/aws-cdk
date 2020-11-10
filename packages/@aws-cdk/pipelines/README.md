@@ -372,7 +372,8 @@ stage.addActions(new ShellScriptAction({
   vpc,
   // Optionally specify SecurityGroups
   securityGroups,
-  // ... more configuration ...
+  // Optionally specify a BuildEnvironment
+  environment,
 }));
 ```
 

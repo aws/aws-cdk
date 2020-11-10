@@ -1,5 +1,6 @@
 import '@aws-cdk/assert/jest';
 import * as path from 'path';
+import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
 import * as appsync from '../lib';
 
@@ -86,6 +87,76 @@ describe('Http Data Source configuration', () => {
     });
   });
 
+  test('other aws resources can grant http data source', () => {
+    // WHEN
+    const machineArn = 'arn:aws:states:us-east-1::stateMachine:hello';
+    const machine = sfn.StateMachine.fromStateMachineArn(stack, 'importedMachine', machineArn);
+    const ds = api.addHttpDataSource('ds', endpoint, {
+      name: 'custom',
+      description: 'custom description',
+      authorizationConfig: {
+        signingRegion: 'us-east-1',
+        signingServiceName: 'states',
+      },
+    });
+    machine.grantRead(ds);
+
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'states:ListExecutions',
+              'states:ListStateMachines',
+            ],
+            Effect: 'Allow',
+            Resource: machineArn,
+          },
+          {
+            Action: [
+              'states:DescribeExecution',
+              'states:DescribeStateMachineForExecution',
+              'states:GetExecutionHistory',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':states:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':execution:hello:*',
+                ],
+              ],
+            },
+          },
+          {
+            Action: [
+              'states:ListActivities',
+              'states:DescribeStateMachine',
+              'states:DescribeActivity',
+            ],
+            Effect: 'Allow',
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
   test('appsync errors when creating multiple http data sources with no configuration', () => {
     // THEN
     expect(() => {
@@ -93,6 +164,7 @@ describe('Http Data Source configuration', () => {
       api.addHttpDataSource('ds', endpoint);
     }).toThrow("There is already a Construct with name 'ds' in GraphqlApi [baseApi]");
   });
+
 });
 
 describe('adding http data source from imported api', () => {
@@ -125,4 +197,3 @@ describe('adding http data source from imported api', () => {
     });
   });
 });
-
