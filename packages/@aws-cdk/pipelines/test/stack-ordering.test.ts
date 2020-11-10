@@ -78,10 +78,10 @@ test('manual approval is inserted in correct location', () => {
   });
 });
 
-test('room for sequential intermediary actions is reserved', () => {
+test('extra space for sequential intermediary actions is reserved', () => {
   // WHEN
   pipeline.addApplicationStage(new TwoStackApp(app, 'MyApp'), {
-    roomForIntermediaryActions: 1,
+    extraRunOrderSpace: 1,
   });
 
   // THEN

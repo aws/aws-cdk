@@ -76,7 +76,7 @@ export class CdkStage extends CoreConstruct {
    */
   public addApplication(appStage: Stage, options: AddStageOptions = {}) {
     const asm = appStage.synth();
-    const roomForIntermediaryActions = options.roomForIntermediaryActions ?? 0;
+    const extraRunOrderSpace = options.extraRunOrderSpace ?? 0;
 
     if (asm.stacks.length === 0) {
       // If we don't check here, a more puzzling "stage contains no actions"
@@ -89,8 +89,8 @@ export class CdkStage extends CoreConstruct {
       stack => stack.dependencies.map(d => d.id));
 
     for (const stacks of sortedTranches) {
-      const runOrder = this.nextSequentialRunOrder(roomForIntermediaryActions + 2); // 2 actions for Prepare/Execute ChangeSet
-      let executeRunOrder = runOrder + roomForIntermediaryActions + 1;
+      const runOrder = this.nextSequentialRunOrder(extraRunOrderSpace + 2); // 2 actions for Prepare/Execute ChangeSet
+      let executeRunOrder = runOrder + extraRunOrderSpace + 1;
 
       // If we need to insert a manual approval action, then what's the executeRunOrder
       // now is where we add a manual approval step, and we allocate 1 more runOrder
@@ -373,14 +373,14 @@ export interface AddStageOptions {
    */
   readonly manualApprovals?: boolean;
   /**
-   * Add room for extra sequetial intermediary actions
+   * Add room for extra actions
    *
-   * This increases the executeRunOrder of the execute change set action with
-   * the value passed.
+   * You can use this to make extra room in the runOrder sequence between the
+   * changeset 'prepare' and 'execute' actions and insert your own actions there.
    *
    * @default 0
    */
-  readonly roomForIntermediaryActions?: number;
+  readonly extraRunOrderSpace?: number;
 }
 
 /**

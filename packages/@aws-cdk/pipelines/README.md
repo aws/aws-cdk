@@ -342,12 +342,12 @@ testingStage.addApplication(new MyApplication2(this, 'MyApp2', {
 ```
 
 Even more, adding a manual approval action or reserving space for some extra sequential actions 
-before executing the Change Set is also possible.
+between 'Prepare' and 'Execute' ChangeSet actions is possible.
 
 ```ts
   pipeline.addApplicationStage(new MyApplication(this, 'Production'), {
     manualApprovals: true,
-    roomForIntermediaryActions: 1,
+    extraRunOrderSpace: 1,
   });
 ```
 
