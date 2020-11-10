@@ -251,6 +251,8 @@ dashboard.addWidgets(new GraphWidget({
 }));
 ```
 
+Using the methods `addLeftMetric()` and `addRightMetric()` you can add metrics to a graph widget later on.
+
 Graph widgets can also display annotations attached to the left or the right y-axis.
 
 ```ts
