@@ -276,12 +276,9 @@ export class AppMeshExtension extends ServiceExtension {
     // and other similar behaviors.
     this.virtualRouter = new appmesh.VirtualRouter(this.scope, `${this.parentService.id}-virtual-router`, {
       mesh: this.mesh,
-      listener: {
-        portMapping: {
-          port: containerextension.trafficPort,
-          protocol: this.protocol,
-        },
-      },
+      listeners: [
+        this.virtualRouterListener(containerextension.trafficPort),
+      ],
       virtualRouterName: `${this.parentService.id}`,
     });
 
@@ -330,5 +327,14 @@ export class AppMeshExtension extends ServiceExtension {
     // proxy on this service knows how to route traffic to
     // nodes from the other service.
     this.virtualNode.addBackends(otherAppMesh.virtualService);
+  }
+
+  private virtualRouterListener(port: number): appmesh.VirtualRouterListener {
+    switch (this.protocol) {
+      case appmesh.Protocol.HTTP: return appmesh.VirtualRouterListener.http(port);
+      case appmesh.Protocol.HTTP2: return appmesh.VirtualRouterListener.http2(port);
+      case appmesh.Protocol.GRPC: return appmesh.VirtualRouterListener.grpc(port);
+      case appmesh.Protocol.TCP: return appmesh.VirtualRouterListener.tcp(port);
+    }
   }
 }

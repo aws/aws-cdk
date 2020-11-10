@@ -55,6 +55,13 @@ export interface ShellScriptActionProps {
   readonly additionalArtifacts?: codepipeline.Artifact[];
 
   /**
+   * The CodeBuild environment where scripts are executed.
+   *
+   * @default LinuxBuildImage.STANDARD_4_0
+   */
+  readonly environment?: codebuild.BuildEnvironment
+
+  /**
    * RunOrder for this action
    *
    * Use this to sequence the shell script after the deployments.
@@ -177,7 +184,7 @@ export class ShellScriptAction implements codepipeline.IAction, iam.IGrantable {
     }
 
     this._project = new codebuild.PipelineProject(scope, 'Project', {
-      environment: { buildImage: codebuild.LinuxBuildImage.STANDARD_4_0 },
+      environment: this.props.environment || { buildImage: codebuild.LinuxBuildImage.STANDARD_4_0 },
       vpc: this.props.vpc,
       securityGroups: this.props.securityGroups,
       subnetSelection: this.props.subnetSelection,
