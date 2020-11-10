@@ -1,4 +1,6 @@
-import { Annotations, IResource, Lazy, Names, Resource, ResourceProps, Stack, Token } from '@aws-cdk/core';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import { Annotations, ContextProvider, IResource, Lazy, Names, Resource, ResourceProps, Stack, Token } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { Connections } from './connections';
 import { CfnSecurityGroup, CfnSecurityGroupEgress, CfnSecurityGroupIngress } from './ec2.generated';
@@ -294,6 +296,28 @@ export interface SecurityGroupImportOptions {
  * ```
  */
 export class SecurityGroup extends SecurityGroupBase {
+  /**
+   * Look up a security group by id.
+   */
+  public static fromLookup(scope: Construct, id: string, securityGroupId: string) {
+    if (Token.isUnresolved(securityGroupId)) {
+      throw new Error('All arguments to look up a security group must be concrete (no Tokens)');
+    }
+
+    const attributes: cxapi.SecurityGroupContextResponse = ContextProvider.getValue(scope, {
+      provider: cxschema.ContextProvider.SECURITY_GROUP_PROVIDER,
+      props: { securityGroupId },
+      dummyValue: {
+        securityGroupId: 'sg-12345',
+        allowAllOutbound: true,
+      } as cxapi.SecurityGroupContextResponse,
+    }).value;
+
+    return SecurityGroup.fromSecurityGroupId(scope, id, attributes.securityGroupId, {
+      allowAllOutbound: attributes.allowAllOutbound,
+      mutable: true,
+    });
+  }
 
   /**
    * Import an existing security group into this app.
