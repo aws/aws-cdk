@@ -11,10 +11,10 @@ phases:
       # https://github.com/aws/aws-codebuild-docker-images/issues/157#issuecomment-457424620
       - /root/ecr-proxy/start.sh
 
-      # debug - should fail because dockerhub is disabled
+      # debug - disable dockerhub
       - echo "127.0.0.1       registry-1.docker.io" >> /etc/hosts
       - cat /etc/hosts
-      - docker pull nginx
+      - docker pull alpine
 
       # Install yarn if it wasn't already present in the image
       - yarn --version || npm -g install yarn
