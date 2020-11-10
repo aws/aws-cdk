@@ -1457,8 +1457,8 @@ export class JestSetup extends ValidationRule {
   }
 }
 
-export class PrivatePackage extends ValidationRule {
-  public readonly name = 'v2/private-package';
+export class UbergenPackageVisibility extends ValidationRule {
+  public readonly name = 'ubergen/package-visibility';
 
   public validate(pkg: PackageJson): void {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
