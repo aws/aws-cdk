@@ -287,6 +287,17 @@ dashboard.addWidgets(new GraphWidget({
 }));
 ```
 
+The graph view can be changed from default 'timeSeries' to 'bar' or 'pie'.
+
+```ts
+dashboard.addWidgets(new GraphWidget({
+  // ...
+  // ...
+
+  view: GraphWidgetView.BAR,
+}));
+```
+
 ### Alarm widget
 
 An alarm widget shows the graph and the alarm line of a single alarm:

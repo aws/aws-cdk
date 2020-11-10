@@ -122,6 +122,24 @@ export class AlarmWidget extends ConcreteWidget {
 }
 
 /**
+ * Types of view
+ */
+export enum GraphWidgetView {
+  /**
+   * Display as a line graph.
+   */
+  TIME_SERIES = 'timeSeries',
+  /**
+   * Display as a bar graph.
+   */
+  BAR = 'bar',
+  /**
+   * Display as a pie graph.
+   */
+  PIE = 'pie',
+}
+
+/**
  * Properties for a GraphWidget
  */
 export interface GraphWidgetProps extends MetricWidgetProps {
@@ -187,6 +205,14 @@ export interface GraphWidgetProps extends MetricWidgetProps {
    * @default false
    */
   readonly liveData?: boolean;
+
+
+  /**
+   * Display this metric
+   *
+   * @default TimeSeries
+   */
+  readonly view?: GraphWidgetView;
 }
 
 /**
@@ -214,7 +240,7 @@ export class GraphWidget extends ConcreteWidget {
       x: this.x,
       y: this.y,
       properties: {
-        view: 'timeSeries',
+        view: this.props.view ?? GraphWidgetView.TIME_SERIES,
         title: this.props.title,
         region: this.props.region || cdk.Aws.REGION,
         stacked: this.props.stacked,
