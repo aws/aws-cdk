@@ -5,6 +5,7 @@ export * from './route';
 export * from './shared-interfaces';
 export * from './virtual-node';
 export * from './virtual-router';
+export * from './virtual-router-listener';
 export * from './virtual-service';
 export * from './virtual-node-listener';
 export * from './virtual-gateway';

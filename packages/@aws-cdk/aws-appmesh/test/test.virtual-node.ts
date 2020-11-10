@@ -256,38 +256,36 @@ export = {
       },
     },
   },
-
-  'Can export and import VirtualNode and perform actions'(test: Test) {
+  'Can import Virtual Nodes using an ARN'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
 
+    const meshName = 'testMesh';
+    const virtualNodeName = 'test-node';
+    const arn = `arn:aws:appmesh:us-east-1:123456789012:mesh/${meshName}/virtualNode/${virtualNodeName}`;
+
     // WHEN
-    const mesh = new appmesh.Mesh(stack, 'mesh', {
-      meshName: 'test-mesh',
-    });
-
-    const node = mesh.addVirtualNode('test-node', {
-      dnsHostName: 'test.domain.local',
-    });
-
-    const stack2 = new cdk.Stack();
-
-    appmesh.VirtualNode.fromVirtualNodeName(stack2, 'imported-node', mesh.meshName, node.virtualNodeName);
-
+    const virtualNode = appmesh.VirtualNode.fromVirtualNodeArn(
+      stack, 'importedVirtualNode', arn);
     // THEN
-    expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
-      MeshName: {
-        'Fn::GetAtt': ['meshACDFE68E', 'MeshName'],
-      },
-      Spec: {
-        ServiceDiscovery: {
-          DNS: {
-            Hostname: 'test.domain.local',
-          },
-        },
-      },
-      VirtualNodeName: 'meshtestnode428A9479',
-    }));
+    test.equal(virtualNode.mesh.meshName, meshName);
+    test.equal(virtualNode.virtualNodeName, virtualNodeName);
+
+    test.done();
+  },
+  'Can import Virtual Nodes using attributes'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const meshName = 'testMesh';
+    const virtualNodeName = 'test-node';
+    // WHEN
+    const virtualNode = appmesh.VirtualNode.fromVirtualNodeAttributes(stack, 'importedVirtualNode', {
+      mesh: appmesh.Mesh.fromMeshName(stack, 'Mesh', meshName),
+      virtualNodeName: virtualNodeName,
+    });
+    // THEN
+    test.equal(virtualNode.mesh.meshName, meshName);
+    test.equal(virtualNode.virtualNodeName, virtualNodeName);
 
     test.done();
   },

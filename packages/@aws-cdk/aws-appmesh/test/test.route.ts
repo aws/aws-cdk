@@ -4,50 +4,44 @@ import { Test } from 'nodeunit';
 import * as appmesh from '../lib';
 
 export = {
-  'Can export existing route and re-import'(test: Test) {
+  'Can import Routes using an ARN'(test: Test) {
+    const app = new cdk.App();
     // GIVEN
-    const stack = new cdk.Stack();
+    const stack = new cdk.Stack(app, 'Imports', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+    const meshName = 'test-mesh';
+    const virtualRouterName = 'test-virtual-router';
+    const routeName = 'test-route';
+    const arn = `arn:aws:appmesh:us-east-1:123456789012:mesh/${meshName}/virtualRouter/${virtualRouterName}/gatewayRoute/${routeName}`;
 
     // WHEN
-    const mesh = new appmesh.Mesh(stack, 'mesh', {
-      meshName: 'test-mesh',
+    const route = appmesh.Route.fromRouteArn(stack, 'importedRoute', arn);
+    // THEN
+    test.equal(route.routeName, routeName);
+    test.equal(route.virtualRouter.virtualRouterName, virtualRouterName);
+    test.equal(route.virtualRouter.mesh.meshName, meshName);
+    test.done();
+  },
+  'Can import Routes using ARN and attributes'(test: Test) {
+    const app = new cdk.App();
+    // GIVEN
+    const stack = new cdk.Stack(app, 'Imports', {
+      env: { account: '123456789012', region: 'us-east-1' },
     });
+    const meshName = 'test-mesh';
+    const virtualRouterName = 'test-virtual-router';
+    const routeName = 'test-route';
 
-    const router = new appmesh.VirtualRouter(stack, 'router', {
-      mesh,
+    // WHEN
+    const mesh = appmesh.Mesh.fromMeshName(stack, 'Mesh', meshName);
+    const virtualRouter = mesh.addVirtualRouter('VirtualGateway', {
+      virtualRouterName: virtualRouterName,
     });
-
-    const service1 = new appmesh.VirtualService(stack, 'service-1', {
-      virtualServiceName: 'service1.domain.local',
-      mesh,
-    });
-
-    const node = mesh.addVirtualNode('test-node', {
-      dnsHostName: 'test',
-      listeners: [appmesh.VirtualNodeListener.http({
-        port: 8080,
-      })],
-      backends: [
-        service1,
-      ],
-    });
-
-    const route = new appmesh.Route(stack, 'route-1', {
-      mesh,
-      virtualRouter: router,
-      routeTargets: [
-        {
-          virtualNode: node,
-          weight: 50,
-        },
-      ],
-      prefix: '/',
-    });
-
-    const stack2 = new cdk.Stack();
-    appmesh.Route.fromRouteName(stack2, 'imported-route', mesh.meshName, router.virtualRouterName, route.routeName);
-
-    // Nothing to do with imported route yet
+    const route = appmesh.Route.fromRouteAttributes(stack, 'importedRoute', { routeName, virtualRouter });
+    // THEN
+    test.equal(route.routeName, routeName);
+    test.equal(route.virtualRouter.mesh.meshName, meshName);
 
     test.done();
   },
