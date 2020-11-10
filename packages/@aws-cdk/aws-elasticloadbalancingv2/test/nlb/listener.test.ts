@@ -388,6 +388,28 @@ describe('tests', () => {
       });
     }).toThrow(/Specify at most one/);
   });
+
+  test('Can look up an NetworkListener', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'stack', {
+      env: {
+        account: '123456789012',
+        region: 'us-west-2',
+      },
+    });
+
+    // WHEN
+    const listener = elbv2.NetworkListener.fromLookup(stack, 'a', {
+      loadBalancerTags: {
+        some: 'tag',
+      },
+    });
+
+    // THEN
+    expect(stack).not.toHaveResource('AWS::ElasticLoadBalancingV2::Listener');
+    expect(listener.listenerArn).toEqual('arn:aws:elasticloadbalancing:us-west-2:123456789012:listener/network/my-load-balancer/50dc6c495c0c9188/f2f7dc8efc522ab2');
+  });
 });
 
 class ResourceWithLBDependency extends cdk.CfnResource {
