@@ -22,6 +22,7 @@ export class Staging extends AssetStaging {
     super(scope, id, {
       sourcePath: props.sourcePath,
       exclude: props.exclude,
+      ignoreMode: props.ignoreMode,
       extraHash: props.extraHash,
       follow: toSymlinkFollow(props.follow),
     });

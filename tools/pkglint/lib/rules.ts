@@ -1457,6 +1457,30 @@ export class JestSetup extends ValidationRule {
   }
 }
 
+export class UbergenPackageVisibility extends ValidationRule {
+  public readonly name = 'ubergen/package-visibility';
+
+  public validate(pkg: PackageJson): void {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const releaseJson = require(`${__dirname}/../../../release.json`);
+    if (releaseJson.majorVersion === 2) {
+      // skip in v2 for now
+      return;
+    }
+    if (pkg.json.private && !pkg.json.ubergen?.exclude) {
+      pkg.report({
+        ruleName: this.name,
+        message: 'ubergen.exclude must be configured for private packages',
+        fix: () => {
+          pkg.json.ubergen = {
+            exclude: true,
+          };
+        },
+      });
+    }
+  }
+}
+
 /**
  * Determine whether this is a JSII package
  *
