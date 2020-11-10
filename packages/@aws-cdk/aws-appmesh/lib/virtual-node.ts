@@ -174,8 +174,8 @@ export class VirtualNode extends VirtualNodeBase {
    */
   public readonly mesh: IMesh;
 
-  protected readonly backends = new Array<CfnVirtualNode.BackendProperty>();
-  protected readonly listeners = new Array<VirtualNodeListenerConfig>();
+  private readonly backends = new Array<CfnVirtualNode.BackendProperty>();
+  private readonly listeners = new Array<VirtualNodeListenerConfig>();
 
   constructor(scope: Construct, id: string, props: VirtualNodeProps) {
     super(scope, id, {
@@ -226,10 +226,10 @@ export class VirtualNode extends VirtualNodeBase {
   /**
    * Add a Virtual Services that this node is expected to send outbound traffic to
    */
-  public addBackend(props: IVirtualService) {
+  public addBackend(virtualService: IVirtualService) {
     this.backends.push({
       virtualService: {
-        virtualServiceName: props.virtualServiceName,
+        virtualServiceName: virtualService.virtualServiceName,
       },
     });
   }
