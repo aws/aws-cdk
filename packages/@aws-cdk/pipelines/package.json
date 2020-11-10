@@ -30,17 +30,16 @@
   },
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
-    "@types/nodeunit": "^0.0.31",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
-    "nodeunit": "^0.11.3",
     "pkglint": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
+    "@aws-cdk/aws-ecr": "0.0.0",
     "@aws-cdk/aws-ecr-assets": "0.0.0"
   },
   "peerDependencies": {
-    "constructs": "^3.0.4",
+    "constructs": "^3.2.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/aws-codebuild": "0.0.0",
     "@aws-cdk/aws-codepipeline": "0.0.0",
@@ -54,7 +53,7 @@
     "@aws-cdk/aws-cloudformation": "0.0.0"
   },
   "dependencies": {
-    "constructs": "^3.0.4",
+    "constructs": "^3.2.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/aws-codebuild": "0.0.0",
     "@aws-cdk/aws-codepipeline": "0.0.0",
@@ -84,7 +83,10 @@
   "stability": "experimental",
   "maturity": "developer-preview",
   "cdk-build": {
-    "jest": true
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "jsii": {
     "outdir": "dist",
@@ -105,7 +107,11 @@
       },
       "python": {
         "distName": "aws-cdk.pipelines",
-        "module": "aws_cdk.pipelines"
+        "module": "aws_cdk.pipelines",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true

@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
-import { IConstruct, Node } from 'constructs';
+import { IConstruct, Construct, Node } from 'constructs';
 import { Annotations } from './annotations';
 import { App } from './app';
 import { Arn, ArnComponents } from './arn';
@@ -11,7 +11,7 @@ import { CfnElement } from './cfn-element';
 import { Fn } from './cfn-fn';
 import { Aws, ScopedAws } from './cfn-pseudo';
 import { CfnResource, TagType } from './cfn-resource';
-import { Construct, ISynthesisSession } from './construct-compat';
+import { ISynthesisSession } from './construct-compat';
 import { ContextProvider } from './context-provider';
 import { Environment } from './environment';
 import { FeatureFlags } from './feature-flags';
@@ -19,6 +19,10 @@ import { CLOUDFORMATION_TOKEN_RESOLVER, CloudFormationLang } from './private/clo
 import { LogicalIDs } from './private/logical-id';
 import { resolve } from './private/resolve';
 import { makeUniqueId } from './private/uniqueid';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from './construct-compat';
 
 const STACK_SYMBOL = Symbol.for('@aws-cdk/core.Stack');
 const MY_STACK_CACHE = Symbol.for('@aws-cdk/core.Stack.myStack');
@@ -127,12 +131,20 @@ export interface StackProps {
    * @default false
    */
   readonly terminationProtection?: boolean;
+
+  /**
+   * Include runtime versioning information in this Stack
+   *
+   * @default `analyticsReporting` setting of containing `App`, or value of
+   * 'aws:cdk:version-reporting' context key
+   */
+  readonly analyticsReporting?: boolean;
 }
 
 /**
  * A root construct which represents a single CloudFormation stack.
  */
-export class Stack extends Construct implements ITaggable {
+export class Stack extends CoreConstruct implements ITaggable {
   /**
    * Return whether the given object is a Stack.
    *
@@ -282,6 +294,15 @@ export class Stack extends Construct implements ITaggable {
   public readonly synthesizer: IStackSynthesizer;
 
   /**
+   * Whether version reporting is enabled for this stack
+   *
+   * Controls whether the CDK Metadata resource is injected
+   *
+   * @internal
+   */
+  public readonly _versionReportingEnabled: boolean;
+
+  /**
    * Logical ID generation strategy
    */
   private readonly _logicalIds: LogicalIDs;
@@ -369,6 +390,10 @@ export class Stack extends Construct implements ITaggable {
       : this.stackName;
 
     this.templateFile = `${this.artifactId}.template.json`;
+
+    // Not for nested stacks
+    this._versionReportingEnabled = (props.analyticsReporting ?? this.node.tryGetContext(cxapi.ANALYTICS_REPORTING_ENABLED_CONTEXT))
+      && !this.nestedStackParent;
 
     this.synthesizer = props.synthesizer ?? (newStyleSynthesisContext
       ? new DefaultStackSynthesizer()
@@ -693,9 +718,9 @@ export class Stack extends Construct implements ITaggable {
       throw new Error(`'${target.node.path}' depends on '${this.node.path}' (${cycle.join(', ')}). Adding this dependency (${reason}) would create a cyclic reference.`);
     }
 
-    let dep = this._stackDependencies[target.node.uniqueId];
+    let dep = this._stackDependencies[Names.uniqueId(target)];
     if (!dep) {
-      dep = this._stackDependencies[target.node.uniqueId] = {
+      dep = this._stackDependencies[Names.uniqueId(target)] = {
         stack: target,
         reasons: [],
       };
@@ -722,10 +747,11 @@ export class Stack extends Construct implements ITaggable {
     // this right now, so some parts still happen here.
     const builder = session.assembly;
 
+    const template = this._toCloudFormation();
+
     // write the CloudFormation template as a JSON file
     const outPath = path.join(builder.outdir, this.templateFile);
-    const text = JSON.stringify(this._toCloudFormation(), undefined, 2);
-    fs.writeFileSync(outPath, text);
+    fs.writeFileSync(outPath, JSON.stringify(template, undefined, 2));
 
     for (const ctx of this._missingContext) {
       builder.addMissing(ctx);
@@ -1099,6 +1125,7 @@ import { Stage } from './stage';
 import { ITaggable, TagManager } from './tag-manager';
 import { Token } from './token';
 import { FileSystem } from './fs';
+import { Names } from './names';
 
 interface StackDependency {
   stack: Stack;

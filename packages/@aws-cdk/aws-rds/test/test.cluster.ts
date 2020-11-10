@@ -7,8 +7,8 @@ import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import {
-  AuroraEngineVersion, AuroraMysqlEngineVersion, AuroraPostgresEngineVersion, CfnDBCluster, DatabaseCluster, DatabaseClusterEngine,
-  DatabaseClusterFromSnapshot, ParameterGroup, PerformanceInsightRetention, SubnetGroup,
+  AuroraEngineVersion, AuroraMysqlEngineVersion, AuroraPostgresEngineVersion, CfnDBCluster, Credentials, DatabaseCluster,
+  DatabaseClusterEngine, DatabaseClusterFromSnapshot, ParameterGroup, PerformanceInsightRetention, SubnetGroup,
 } from '../lib';
 
 export = {
@@ -184,6 +184,7 @@ export = {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
       credentials: {
         username: 'admin',
+        excludeCharacters: '"@/\\',
       },
       instanceProps: {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
@@ -1393,6 +1394,29 @@ export = {
     test.done();
   },
 
+  "Aurora PostgreSQL cluster uses a different default master username than 'admin', which is a reserved word"(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.auroraPostgres({
+        version: AuroraPostgresEngineVersion.VER_9_6_12,
+      }),
+      instanceProps: { vpc },
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::SecretsManager::Secret', {
+      GenerateSecretString: {
+        SecretStringTemplate: '{"username":"postgres"}',
+      },
+    }));
+
+    test.done();
+  },
+
   'MySQL cluster without S3 exports or imports references the correct default ParameterGroup'(test: Test) {
     // GIVEN
     const stack = testStack();
@@ -1703,6 +1727,40 @@ export = {
 
     // THEN
     test.ok(cluster.node.defaultChild instanceof CfnDBCluster);
+
+    test.done();
+  },
+
+  'fromGeneratedSecret'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
+      credentials: Credentials.fromGeneratedSecret('admin'),
+      instanceProps: {
+        vpc,
+      },
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::RDS::DBCluster', {
+      MasterUsername: 'admin', // username is a string
+      MasterUserPassword: {
+        'Fn::Join': [
+          '',
+          [
+            '{{resolve:secretsmanager:',
+            {
+              Ref: 'DatabaseSecretC9203AE33fdaad7efa858a3daf9490cf0a702aeb', // logical id is a hash
+            },
+            ':SecretString:password::}}',
+          ],
+        ],
+      },
+    }));
 
     test.done();
   },

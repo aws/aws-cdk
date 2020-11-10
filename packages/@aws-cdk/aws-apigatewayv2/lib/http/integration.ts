@@ -1,8 +1,13 @@
-import { Construct, Resource } from '@aws-cdk/core';
+import { Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnIntegration } from '../apigatewayv2.generated';
 import { IIntegration } from '../common';
 import { IHttpApi } from './api';
 import { HttpMethod, IHttpRoute } from './route';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Represents an Integration for an HTTP API.
@@ -26,6 +31,20 @@ export enum HttpIntegrationType {
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html
    */
   HTTP_PROXY = 'HTTP_PROXY',
+}
+
+/**
+ * Supported connection types
+ */
+export enum HttpConnectionType {
+  /**
+   * For private connections between API Gateway and resources in a VPC
+   */
+  VPC_LINK = 'VPC_LINK',
+  /**
+   * For connections through public routable internet
+   */
+  INTERNET = 'INTERNET',
 }
 
 /**
@@ -82,6 +101,20 @@ export interface HttpIntegrationProps {
   readonly method?: HttpMethod;
 
   /**
+   * The ID of the VPC link for a private integration. Supported only for HTTP APIs.
+   *
+   * @default - undefined
+   */
+  readonly connectionId?: string;
+
+  /**
+   * The type of the network connection to the integration endpoint
+   *
+   * @default HttpConnectionType.INTERNET
+   */
+  readonly connectionType?: HttpConnectionType;
+
+  /**
    * The version of the payload format
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html
    * @default - defaults to latest in the case of HttpIntegrationType.LAMBDA_PROXY`, irrelevant otherwise.
@@ -105,6 +138,8 @@ export class HttpIntegration extends Resource implements IHttpIntegration {
       integrationType: props.integrationType,
       integrationUri: props.integrationUri,
       integrationMethod: props.method,
+      connectionId: props.connectionId,
+      connectionType: props.connectionType,
       payloadFormatVersion: props.payloadFormatVersion?.version,
     });
     this.integrationId = integ.ref;
@@ -126,7 +161,7 @@ export interface HttpRouteIntegrationBindOptions {
    * If the `HttpRouteIntegration` being bound creates additional constructs,
    * this will be used as their parent scope.
    */
-  readonly scope: Construct;
+  readonly scope: CoreConstruct;
 }
 
 /**
@@ -159,6 +194,20 @@ export interface HttpRouteIntegrationConfig {
    * @default - undefined
    */
   readonly method?: HttpMethod;
+
+  /**
+   * The ID of the VPC link for a private integration. Supported only for HTTP APIs.
+   *
+   * @default - undefined
+   */
+  readonly connectionId?: string;
+
+  /**
+   * The type of the network connection to the integration endpoint
+   *
+   * @default HttpConnectionType.INTERNET
+   */
+  readonly connectionType?: HttpConnectionType;
 
   /**
    * Payload format version in the case of lambda proxy integration

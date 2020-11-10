@@ -1,7 +1,7 @@
 import { ABSENT } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import { Stack } from '@aws-cdk/core';
-import { OAuthScope, UserPool, UserPoolClient, UserPoolClientIdentityProvider, UserPoolIdentityProvider } from '../lib';
+import { OAuthScope, ResourceServerScope, UserPool, UserPoolClient, UserPoolClientIdentityProvider, UserPoolIdentityProvider } from '../lib';
 
 describe('User Pool Client', () => {
   test('default setup', () => {
@@ -78,7 +78,6 @@ describe('User Pool Client', () => {
       authFlows: {
         adminUserPassword: true,
         custom: true,
-        refreshToken: true,
         userPassword: true,
         userSrp: true,
       },
@@ -89,6 +88,26 @@ describe('User Pool Client', () => {
         'ALLOW_USER_PASSWORD_AUTH',
         'ALLOW_ADMIN_USER_PASSWORD_AUTH',
         'ALLOW_CUSTOM_AUTH',
+        'ALLOW_USER_SRP_AUTH',
+        'ALLOW_REFRESH_TOKEN_AUTH',
+      ],
+    });
+  });
+
+  test('ExplicitAuthFlows makes refreshToken true by default', () => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+
+    // WHEN
+    pool.addClient('Client', {
+      authFlows: {
+        userSrp: true,
+      },
+    });
+
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolClient', {
+      ExplicitAuthFlows: [
         'ALLOW_USER_SRP_AUTH',
         'ALLOW_REFRESH_TOKEN_AUTH',
       ],
@@ -172,6 +191,23 @@ describe('User Pool Client', () => {
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolClient', {
       AllowedOAuthFlows: ['code'],
       CallbackURLs: ['https://example.com'],
+    });
+  });
+
+  test('callbackUrls are not rendered if OAuth is disabled ', () => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+
+    // WHEN
+    new UserPoolClient(stack, 'PoolClient', {
+      userPool: pool,
+      disableOAuth: true,
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolClient', {
+      CallbackURLs: ABSENT,
     });
   });
 
@@ -270,6 +306,41 @@ describe('User Pool Client', () => {
         'profile',
         'aws.cognito.signin.user.admin',
         'my-resource-server/my-own-scope',
+      ],
+    });
+  });
+
+  test('OAuth scopes - resource server', () => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+    const scope = new ResourceServerScope({ scopeName: 'scope-name', scopeDescription: 'scope-desc' });
+    const resourceServer = pool.addResourceServer('ResourceServer', {
+      identifier: 'resource-server',
+      scopes: [scope],
+    });
+
+    // WHEN
+    pool.addClient('Client', {
+      oAuth: {
+        flows: { clientCredentials: true },
+        scopes: [
+          OAuthScope.resourceServer(resourceServer, scope),
+        ],
+      },
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::Cognito::UserPoolClient', {
+      AllowedOAuthScopes: [
+        {
+          'Fn::Join': [
+            '', [
+              stack.resolve(resourceServer.userPoolResourceServerId),
+              '/scope-name',
+            ],
+          ],
+        },
       ],
     });
   });
@@ -415,13 +486,14 @@ describe('User Pool Client', () => {
         UserPoolClientIdentityProvider.COGNITO,
         UserPoolClientIdentityProvider.FACEBOOK,
         UserPoolClientIdentityProvider.AMAZON,
+        UserPoolClientIdentityProvider.GOOGLE,
       ],
     });
 
     // THEN
     expect(stack).toHaveResource('AWS::Cognito::UserPoolClient', {
       ClientName: 'AllEnabled',
-      SupportedIdentityProviders: ['COGNITO', 'Facebook', 'LoginWithAmazon'],
+      SupportedIdentityProviders: ['COGNITO', 'Facebook', 'LoginWithAmazon', 'Google'],
     });
   });
 

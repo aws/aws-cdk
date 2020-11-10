@@ -22,11 +22,6 @@ export class Fn {
     return new FnRef(logicalName).toString();
   }
 
-  /** @internal */
-  public static _ref(logicalId: string): IResolvable {
-    return new FnRef(logicalId);
-  }
-
   /**
    * The ``Fn::GetAtt`` intrinsic function returns the value of an attribute
    * from a resource in the template.
@@ -178,7 +173,17 @@ export class Fn {
    * @returns a token represented as a string
    */
   public static findInMap(mapName: string, topLevelKey: string, secondLevelKey: string): string {
-    return new FnFindInMap(mapName, topLevelKey, secondLevelKey).toString();
+    return Fn._findInMap(mapName, topLevelKey, secondLevelKey).toString();
+  }
+
+  /**
+   * An additional function used in CfnParser,
+   * as Fn::FindInMap does not always return a string.
+   *
+   * @internal
+   */
+  public static _findInMap(mapName: string, topLevelKey: string, secondLevelKey: string): IResolvable {
+    return new FnFindInMap(mapName, topLevelKey, secondLevelKey);
   }
 
   /**
@@ -196,12 +201,18 @@ export class Fn {
    * Returns true if all the specified conditions evaluate to true, or returns
    * false if any one of the conditions evaluates to false. ``Fn::And`` acts as
    * an AND operator. The minimum number of conditions that you can include is
-   * 2, and the maximum is 10.
+   * 1.
    * @param conditions conditions to AND
    * @returns an FnCondition token
    */
   public static conditionAnd(...conditions: ICfnConditionExpression[]): ICfnConditionExpression {
-    return new FnAnd(...conditions);
+    if (conditions.length === 0) {
+      throw new Error('Fn.conditionAnd() needs at least one argument');
+    }
+    if (conditions.length === 1) {
+      return conditions[0];
+    }
+    return Fn.conditionAnd(..._inGroupsOf(conditions, 10).map(group => new FnAnd(...group)));
   }
 
   /**
@@ -249,12 +260,18 @@ export class Fn {
    * Returns true if any one of the specified conditions evaluate to true, or
    * returns false if all of the conditions evaluates to false. ``Fn::Or`` acts
    * as an OR operator. The minimum number of conditions that you can include is
-   * 2, and the maximum is 10.
+   * 1.
    * @param conditions conditions that evaluates to true or false.
    * @returns an FnCondition token
    */
   public static conditionOr(...conditions: ICfnConditionExpression[]): ICfnConditionExpression {
-    return new FnOr(...conditions);
+    if (conditions.length === 0) {
+      throw new Error('Fn.conditionOr() needs at least one argument');
+    }
+    if (conditions.length === 1) {
+      return conditions[0];
+    }
+    return Fn.conditionOr(..._inGroupsOf(conditions, 10).map(group => new FnOr(...group)));
   }
 
   /**
@@ -747,4 +764,12 @@ class FnJoin implements IResolvable {
     const resolvedValues = this.listOfValues.map(x => Reference.isReference(x) ? x : context.resolve(x));
     return minimalCloudFormationJoin(this.delimiter, resolvedValues);
   }
+}
+
+function _inGroupsOf<T>(array: T[], maxGroup: number): T[][] {
+  const result = new Array<T[]>();
+  for (let i = 0; i < array.length; i += maxGroup) {
+    result.push(array.slice(i, i + maxGroup));
+  }
+  return result;
 }

@@ -7,6 +7,8 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
+import * as cdk8s from 'cdk8s';
+import * as constructs from 'constructs';
 import { Test } from 'nodeunit';
 import * as YAML from 'yaml';
 import * as eks from '../lib';
@@ -16,16 +18,91 @@ import { testFixture, testFixtureNoVpc } from './util';
 
 /* eslint-disable max-len */
 
-const CLUSTER_VERSION = eks.KubernetesVersion.V1_16;
+const CLUSTER_VERSION = eks.KubernetesVersion.V1_18;
 
 export = {
+
+  'throws when a non cdk8s chart construct is added as cdk8s chart'(test: Test) {
+
+    const { stack } = testFixture();
+
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      version: CLUSTER_VERSION,
+    });
+
+    // create a plain construct, not a cdk8s chart
+    const someConstruct = new constructs.Construct(stack, 'SomeConstruct');
+
+    test.throws(() => cluster.addCdk8sChart('chart', someConstruct), /Invalid cdk8s chart. Must contain a \'toJson\' method, but found undefined/);
+    test.done();
+
+  },
+
+  'throws when a core construct is added as cdk8s chart'(test: Test) {
+
+    const { stack } = testFixture();
+
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      version: CLUSTER_VERSION,
+    });
+
+    // create a plain construct, not a cdk8s chart
+    const someConstruct = new cdk.Construct(stack, 'SomeConstruct');
+
+    test.throws(() => cluster.addCdk8sChart('chart', someConstruct), /Invalid cdk8s chart. Must contain a \'toJson\' method, but found undefined/);
+    test.done();
+
+  },
+
+  'cdk8s chart can be added to cluster'(test: Test) {
+
+    const { stack } = testFixture();
+
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      version: CLUSTER_VERSION,
+    });
+
+    const app = new cdk8s.App();
+    const chart = new cdk8s.Chart(app, 'Chart');
+
+    new cdk8s.ApiObject(chart, 'FakePod', {
+      apiVersion: 'v1',
+      kind: 'Pod',
+      metadata: {
+        name: 'fake-pod',
+        labels: {
+          // adding aws-cdk token to cdk8s chart
+          clusterName: cluster.clusterName,
+        },
+      },
+    });
+
+    cluster.addCdk8sChart('cdk8s-chart', chart);
+
+    expect(stack).to(haveResourceLike('Custom::AWSCDK-EKS-KubernetesResource', {
+      Manifest: {
+        'Fn::Join': [
+          '',
+          [
+            '[{"apiVersion":"v1","kind":"Pod","metadata":{"labels":{"clusterName":"',
+            {
+              Ref: 'Cluster9EE0221C',
+            },
+            '"},"name":"fake-pod"}}]',
+          ],
+        ],
+      },
+    }));
+
+    test.done();
+  },
 
   'cluster connections include both control plane and cluster security group'(test: Test) {
 
     const { stack } = testFixture();
 
     const cluster = new eks.Cluster(stack, 'Cluster', {
-      version: eks.KubernetesVersion.V1_17,
+      version: CLUSTER_VERSION,
     });
 
     test.deepEqual(cluster.connections.securityGroups.map(sg => stack.resolve(sg.securityGroupId)), [
@@ -42,10 +119,10 @@ export = {
     class ClusterStack extends cdk.Stack {
       public eksCluster: eks.Cluster;
 
-      constructor(scope: cdk.Construct, id: string, props: { sg: ec2.ISecurityGroup, vpc: ec2.IVpc }) {
+      constructor(scope: constructs.Construct, id: string, props: { sg: ec2.ISecurityGroup, vpc: ec2.IVpc }) {
         super(scope, id);
         this.eksCluster = new eks.Cluster(this, 'Cluster', {
-          version: eks.KubernetesVersion.V1_17,
+          version: CLUSTER_VERSION,
           securityGroup: props.sg,
           vpc: props.vpc,
         });
@@ -57,7 +134,7 @@ export = {
       public readonly securityGroup: ec2.ISecurityGroup;
       public readonly vpc: ec2.IVpc;
 
-      constructor(scope: cdk.Construct, id: string) {
+      constructor(scope: constructs.Construct, id: string) {
         super(scope, id);
         this.vpc = new ec2.Vpc(this, 'Vpc');
         this.securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', { vpc: this.vpc });
@@ -80,16 +157,16 @@ export = {
     class ClusterStack extends cdk.Stack {
       public eksCluster: eks.Cluster;
 
-      constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
+      constructor(scope: constructs.Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props);
         this.eksCluster = new eks.Cluster(this, 'Cluster', {
-          version: eks.KubernetesVersion.V1_17,
+          version: CLUSTER_VERSION,
         });
       }
     }
 
     class ManifestStack extends cdk.Stack {
-      constructor(scope: cdk.Construct, id: string, props: cdk.StackProps & { cluster: eks.Cluster }) {
+      constructor(scope: constructs.Construct, id: string, props: cdk.StackProps & { cluster: eks.Cluster }) {
         super(scope, id, props);
 
         // this role creates a dependency between this stack and the cluster stack
@@ -131,16 +208,16 @@ export = {
     class ClusterStack extends cdk.Stack {
       public eksCluster: eks.Cluster;
 
-      constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
+      constructor(scope: constructs.Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props);
         this.eksCluster = new eks.Cluster(this, 'Cluster', {
-          version: eks.KubernetesVersion.V1_17,
+          version: CLUSTER_VERSION,
         });
       }
     }
 
     class ChartStack extends cdk.Stack {
-      constructor(scope: cdk.Construct, id: string, props: cdk.StackProps & { cluster: eks.Cluster }) {
+      constructor(scope: constructs.Construct, id: string, props: cdk.StackProps & { cluster: eks.Cluster }) {
         super(scope, id, props);
 
         // this role creates a dependency between this stack and the cluster stack
@@ -173,16 +250,16 @@ export = {
     class ClusterStack extends cdk.Stack {
       public eksCluster: eks.Cluster;
 
-      constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
+      constructor(scope: constructs.Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props);
         this.eksCluster = new eks.Cluster(this, 'Cluster', {
-          version: eks.KubernetesVersion.V1_17,
+          version: CLUSTER_VERSION,
         });
       }
     }
 
     class ChartStack extends cdk.Stack {
-      constructor(scope: cdk.Construct, id: string, props: cdk.StackProps & { cluster: eks.Cluster }) {
+      constructor(scope: constructs.Construct, id: string, props: cdk.StackProps & { cluster: eks.Cluster }) {
         super(scope, id, props);
 
         const resource = new cdk.CfnResource(this, 'resource', { type: 'MyType' });
@@ -206,10 +283,10 @@ export = {
     class ClusterStack extends cdk.Stack {
       public eksCluster: eks.Cluster;
 
-      constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
+      constructor(scope: constructs.Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props);
         this.eksCluster = new eks.Cluster(this, 'Cluster', {
-          version: eks.KubernetesVersion.V1_17,
+          version: CLUSTER_VERSION,
         });
       }
     }
@@ -218,7 +295,7 @@ export = {
 
       public group: asg.AutoScalingGroup;
 
-      constructor(scope: cdk.Construct, id: string, props: cdk.StackProps & { cluster: eks.Cluster }) {
+      constructor(scope: constructs.Construct, id: string, props: cdk.StackProps & { cluster: eks.Cluster }) {
         super(scope, id, props);
 
         // the role is create in this stack implicitly by the ASG
@@ -226,7 +303,7 @@ export = {
           instanceType: new ec2.InstanceType('t3.medium'),
           vpc: props.cluster.vpc,
           machineImage: new eks.EksOptimizedImage({
-            kubernetesVersion: eks.KubernetesVersion.V1_16.version,
+            kubernetesVersion: CLUSTER_VERSION.version,
             nodeType: eks.NodeType.STANDARD,
           }),
         });
@@ -239,10 +316,10 @@ export = {
     const capacityStack = new CapacityStack(app, 'CapacityStack', { cluster: clusterStack.eksCluster });
 
     try {
-      clusterStack.eksCluster.addAutoScalingGroup(capacityStack.group, {});
+      clusterStack.eksCluster.connectAutoScalingGroupCapacity(capacityStack.group, {});
       test.ok(false, 'expected error');
     } catch (err) {
-      test.equal(err.message, 'CapacityStackautoScalingInstanceRoleF041EB53 should be defined in the scope of the ClusterStack stack to prevent circular dependencies');
+      test.equal(err.message, 'CapacityStack/autoScaling/InstanceRole should be defined in the scope of the ClusterStack stack to prevent circular dependencies');
     }
 
     test.done();
@@ -253,16 +330,16 @@ export = {
     class ClusterStack extends cdk.Stack {
       public eksCluster: eks.Cluster;
 
-      constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
+      constructor(scope: constructs.Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props);
         this.eksCluster = new eks.Cluster(this, 'EKSCluster', {
-          version: eks.KubernetesVersion.V1_17,
+          version: CLUSTER_VERSION,
         });
       }
     }
 
     class AppStack extends cdk.Stack {
-      constructor(scope: cdk.Construct, id: string, props: cdk.StackProps & { cluster: eks.Cluster }) {
+      constructor(scope: constructs.Construct, id: string, props: cdk.StackProps & { cluster: eks.Cluster }) {
         super(scope, id, props);
 
         new eks.ServiceAccount(this, 'testAccount', { cluster: props.cluster, name: 'test-account', namespace: 'test' });
@@ -290,7 +367,7 @@ export = {
     expect(stack).to(haveResourceLike('Custom::AWSCDK-EKS-Cluster', {
       Config: {
         roleArn: { 'Fn::GetAtt': ['ClusterRoleFA261979', 'Arn'] },
-        version: '1.16',
+        version: '1.18',
         resourcesVpcConfig: {
           securityGroupIds: [{ 'Fn::GetAtt': ['ClusterControlPlaneSecurityGroupD274242C', 'GroupId'] }],
           subnetIds: [
@@ -472,7 +549,7 @@ export = {
     });
 
     // WHEN
-    cluster.addCapacity('Default', {
+    cluster.addAutoScalingGroupCapacity('Default', {
       instanceType: new ec2.InstanceType('t2.medium'),
     });
 
@@ -490,7 +567,7 @@ export = {
     });
 
     // WHEN
-    cluster.addCapacity('Default', {
+    cluster.addAutoScalingGroupCapacity('Default', {
       instanceType: new ec2.InstanceType('t2.medium'),
     });
 
@@ -555,7 +632,7 @@ export = {
     });
 
     // WHEN
-    cluster.addCapacity('Bottlerocket', {
+    cluster.addAutoScalingGroupCapacity('Bottlerocket', {
       instanceType: new ec2.InstanceType('t2.medium'),
       machineImageType: eks.MachineImageType.BOTTLEROCKET,
     });
@@ -587,7 +664,7 @@ export = {
       version: CLUSTER_VERSION,
     });
 
-    test.throws(() => cluster.addCapacity('Bottlerocket', {
+    test.throws(() => cluster.addAutoScalingGroupCapacity('Bottlerocket', {
       instanceType: new ec2.InstanceType('t2.medium'),
       machineImageType: eks.MachineImageType.BOTTLEROCKET,
       bootstrapOptions: {},
@@ -785,7 +862,7 @@ export = {
     });
 
     // WHEN
-    cluster.addCapacity('default', {
+    cluster.addAutoScalingGroupCapacity('default', {
       instanceType: new ec2.InstanceType('t2.nano'),
     });
 
@@ -825,7 +902,7 @@ export = {
     test.done();
   },
 
-  'addCapacity will *not* map the IAM role if mapRole is false'(test: Test) {
+  'addAutoScalingGroupCapacity will *not* map the IAM role if mapRole is false'(test: Test) {
     // GIVEN
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
@@ -835,7 +912,7 @@ export = {
     });
 
     // WHEN
-    cluster.addCapacity('default', {
+    cluster.addAutoScalingGroupCapacity('default', {
       instanceType: new ec2.InstanceType('t2.nano'),
       mapRole: false,
     });
@@ -975,7 +1052,7 @@ export = {
         const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION });
 
         // WHEN
-        cluster.addCapacity('MyCapcity', { instanceType: new ec2.InstanceType('m3.xlargs') });
+        cluster.addAutoScalingGroupCapacity('MyCapcity', { instanceType: new ec2.InstanceType('m3.xlargs') });
 
         // THEN
         const template = app.synth().getStackByName(stack.stackName).template;
@@ -990,7 +1067,7 @@ export = {
         const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION });
 
         // WHEN
-        cluster.addCapacity('MyCapcity', {
+        cluster.addAutoScalingGroupCapacity('MyCapcity', {
           instanceType: new ec2.InstanceType('m3.xlargs'),
           bootstrapEnabled: false,
         });
@@ -1009,7 +1086,7 @@ export = {
         const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION });
 
         // WHEN
-        cluster.addCapacity('MyCapcity', {
+        cluster.addAutoScalingGroupCapacity('MyCapcity', {
           instanceType: new ec2.InstanceType('m3.xlargs'),
           bootstrapOptions: {
             kubeletExtraArgs: '--node-labels FOO=42',
@@ -1031,7 +1108,7 @@ export = {
           const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION });
 
           // WHEN
-          cluster.addCapacity('MyCapcity', {
+          cluster.addAutoScalingGroupCapacity('MyCapcity', {
             instanceType: new ec2.InstanceType('m3.xlargs'),
             spotPrice: '0.01',
           });
@@ -1049,7 +1126,7 @@ export = {
           const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION });
 
           // WHEN
-          cluster.addCapacity('MyCapcity', {
+          cluster.addAutoScalingGroupCapacity('MyCapcity', {
             instanceType: new ec2.InstanceType('m3.xlarge'),
             spotPrice: '0.01',
           });
@@ -1071,12 +1148,12 @@ export = {
           const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION });
 
           // WHEN
-          cluster.addCapacity('Spot1', {
+          cluster.addAutoScalingGroupCapacity('Spot1', {
             instanceType: new ec2.InstanceType('m3.xlarge'),
             spotPrice: '0.01',
           });
 
-          cluster.addCapacity('Spot2', {
+          cluster.addAutoScalingGroupCapacity('Spot2', {
             instanceType: new ec2.InstanceType('m4.xlarge'),
             spotPrice: '0.01',
           });
@@ -1096,7 +1173,7 @@ export = {
       const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION });
 
       // THEN
-      test.throws(() => cluster.addCapacity('MyCapcity', {
+      test.throws(() => cluster.addAutoScalingGroupCapacity('MyCapcity', {
         instanceType: new ec2.InstanceType('m3.xlargs'),
         bootstrapEnabled: false,
         bootstrapOptions: { awsApiRetryAttempts: 10 },
@@ -1131,7 +1208,7 @@ export = {
       const { app, stack } = testFixtureNoVpc();
 
       // WHEN
-      new eks.EksOptimizedImage({ kubernetesVersion: '1.15' }).getImage(stack);
+      new eks.EksOptimizedImage({ kubernetesVersion: '1.18' }).getImage(stack);
 
       // THEN
       const assembly = app.synth();
@@ -1142,7 +1219,7 @@ export = {
       ), 'EKS STANDARD AMI should be in ssm parameters');
       test.ok(Object.entries(parameters).some(
         ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') &&
-          (v as any).Default.includes('/1.15/'),
+          (v as any).Default.includes('/1.18/'),
       ), 'kubernetesVersion should be in ssm parameters');
       test.done();
     },
@@ -1174,7 +1251,7 @@ export = {
         defaultCapacity: 0,
         version: CLUSTER_VERSION,
         defaultCapacityInstance: new ec2.InstanceType('m6g.medium'),
-      }).addNodegroup('ng', {
+      }).addNodegroupCapacity('ng', {
         instanceType: new ec2.InstanceType('m6g.medium'),
       });
 
@@ -1185,7 +1262,27 @@ export = {
       test.done();
     },
 
-    'EKS-Optimized AMI with GPU support when addCapacity'(test: Test) {
+    'addNodegroupCapacity with T4g instance type comes with nodegroup with correct AmiType'(test: Test) {
+      // GIVEN
+      const { stack } = testFixtureNoVpc();
+
+      // WHEN
+      new eks.Cluster(stack, 'cluster', {
+        defaultCapacity: 0,
+        version: CLUSTER_VERSION,
+        defaultCapacityInstance: new ec2.InstanceType('t4g.medium'),
+      }).addNodegroupCapacity('ng', {
+        instanceType: new ec2.InstanceType('t4g.medium'),
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::EKS::Nodegroup', {
+        AmiType: 'AL2_ARM_64',
+      }));
+      test.done();
+    },
+
+    'addAutoScalingGroupCapacity with T4g instance type comes with nodegroup with correct AmiType'(test: Test) {
       // GIVEN
       const { app, stack } = testFixtureNoVpc();
 
@@ -1193,7 +1290,29 @@ export = {
       new eks.Cluster(stack, 'cluster', {
         defaultCapacity: 0,
         version: CLUSTER_VERSION,
-      }).addCapacity('GPUCapacity', {
+      }).addAutoScalingGroupCapacity('ng', {
+        instanceType: new ec2.InstanceType('t4g.medium'),
+      });
+
+      // THEN
+      const assembly = app.synth();
+      const parameters = assembly.getStackByName(stack.stackName).template.Parameters;
+      test.ok(Object.entries(parameters).some(
+        ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') &&
+          (v as any).Default.includes('amazon-linux-2-arm64/'),
+      ), 'Amazon Linux 2 AMI for ARM64 should be in ssm parameters');
+      test.done();
+    },
+
+    'EKS-Optimized AMI with GPU support when addAutoScalingGroupCapacity'(test: Test) {
+      // GIVEN
+      const { app, stack } = testFixtureNoVpc();
+
+      // WHEN
+      new eks.Cluster(stack, 'cluster', {
+        defaultCapacity: 0,
+        version: CLUSTER_VERSION,
+      }).addAutoScalingGroupCapacity('GPUCapacity', {
         instanceType: new ec2.InstanceType('g4dn.xlarge'),
       });
 
@@ -1206,7 +1325,7 @@ export = {
       test.done();
     },
 
-    'EKS-Optimized AMI with ARM64 when addCapacity'(test: Test) {
+    'EKS-Optimized AMI with ARM64 when addAutoScalingGroupCapacity'(test: Test) {
       // GIVEN
       const { app, stack } = testFixtureNoVpc();
 
@@ -1214,7 +1333,7 @@ export = {
       new eks.Cluster(stack, 'cluster', {
         defaultCapacity: 0,
         version: CLUSTER_VERSION,
-      }).addCapacity('ARMCapacity', {
+      }).addAutoScalingGroupCapacity('ARMCapacity', {
         instanceType: new ec2.InstanceType('m6g.medium'),
       });
 
@@ -1232,7 +1351,7 @@ export = {
       const { app, stack } = testFixtureNoVpc();
 
       // WHEN
-      new BottleRocketImage({ kubernetesVersion: '1.17' }).getImage(stack);
+      new BottleRocketImage({ kubernetesVersion: '1.18' }).getImage(stack);
 
       // THEN
       const assembly = app.synth();
@@ -1243,7 +1362,7 @@ export = {
       ), 'BottleRocket AMI should be in ssm parameters');
       test.ok(Object.entries(parameters).some(
         ([k, v]) => k.startsWith('SsmParameterValueawsservicebottlerocketaws') &&
-          (v as any).Default.includes('/aws-k8s-1.17/'),
+          (v as any).Default.includes('/aws-k8s-1.18/'),
       ), 'kubernetesVersion should be in ssm parameters');
       test.done();
     },
@@ -1263,7 +1382,7 @@ export = {
         Config: {
           name: 'my-cluster-name',
           roleArn: { 'Fn::GetAtt': ['MyClusterRoleBA20FE72', 'Arn'] },
-          version: '1.16',
+          version: '1.18',
           resourcesVpcConfig: {
             securityGroupIds: [
               { 'Fn::GetAtt': ['MyClusterControlPlaneSecurityGroup6B658F79', 'GroupId'] },
@@ -1532,7 +1651,7 @@ export = {
       });
 
       // WHEN
-      cluster.addChart('MyChart', {
+      cluster.addHelmChart('MyChart', {
         chart: 'foo',
       });
 
@@ -1636,7 +1755,7 @@ export = {
       const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION });
 
       // WHEN
-      cluster.addCapacity('InferenceInstances', {
+      cluster.addAutoScalingGroupCapacity('InferenceInstances', {
         instanceType: new ec2.InstanceType('inf1.2xlarge'),
         minCapacity: 1,
       });

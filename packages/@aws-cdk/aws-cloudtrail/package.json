@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-cloudtrail",
-        "module": "aws_cdk.aws_cloudtrail"
+        "module": "aws_cdk.aws_cloudtrail",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
@@ -45,11 +49,15 @@
     "integ": "cdk-integ",
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test",
-    "compat": "cdk-compat"
+    "compat": "cdk-compat",
+    "gen": "cfn2ts"
   },
   "cdk-build": {
     "cloudformation": "AWS::CloudTrail",
-    "jest": true
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "keywords": [
     "aws",
@@ -65,12 +73,12 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
-    "aws-sdk": "^2.739.0",
+    "aws-sdk": "^2.788.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
     "colors": "^1.4.0",
-    "jest": "^26.4.2",
+    "jest": "^26.6.3",
     "pkglint": "0.0.0"
   },
   "dependencies": {
@@ -82,7 +90,7 @@
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/aws-sns": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.4"
+    "constructs": "^3.2.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -94,7 +102,7 @@
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/aws-sns": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.4"
+    "constructs": "^3.2.0"
   },
   "awslint": {
     "exclude": [

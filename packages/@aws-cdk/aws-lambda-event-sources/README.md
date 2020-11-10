@@ -51,6 +51,7 @@ behavior:
 * __receiveMessageWaitTime__: Will determine [long
   poll](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-long-polling.html)
   duration. The default value is 20 seconds.
+* __enabled__: If the SQS event source mapping should be enabled. The default is true.
 
 ```ts
 import * as sqs from '@aws-cdk/aws-sqs';
@@ -63,8 +64,8 @@ const queue = new sqs.Queue(this, 'MyQueue', {
 });
 
 lambda.addEventSource(new SqsEventSource(queue, {
-  batchSize: 10 // default
-});
+  batchSize: 10, // default
+}));
 ```
 
 ### S3
@@ -113,8 +114,12 @@ import * as sns from '@aws-cdk/aws-sns';
 import { SnsEventSource } from '@aws-cdk/aws-lambda-event-sources';
 
 const topic = new sns.Topic(...);
+const deadLetterQueue = new sqs.Queue(this, 'deadLetterQueue');
 
-lambda.addEventSource(new SnsEventSource(topic));
+lambda.addEventSource(new SnsEventSource(topic, {
+  filterPolicy: { ... },
+  deadLetterQueue: deadLetterQueue
+}));
 ```
 
 When a user calls the SNS Publish API on a topic that your Lambda function is
@@ -140,7 +145,8 @@ and add it to your Lambda function. The following parameters will impact Amazon 
 * __onFailure__: In the event a record fails after all retries or if the record age has exceeded the configured value, the record will be sent to SQS queue or SNS topic that is specified here
 * __parallelizationFactor__: The number of batches to concurrently process on each shard.
 * __retryAttempts__: The maximum number of times a record should be retried in the event of failure.
-* __startingPosition__: Will determine where to being consumption, either at the most recent ('LATEST') record or the oldest record ('TRIM_HORIZON'). 'TRIM_HORIZON' will ensure you process all available data, while 'LATEST' will ignore all reocrds that arrived prior to attaching the event source.
+* __startingPosition__: Will determine where to being consumption, either at the most recent ('LATEST') record or the oldest record ('TRIM_HORIZON'). 'TRIM_HORIZON' will ensure you process all available data, while 'LATEST' will ignore all records that arrived prior to attaching the event source.
+* __enabled__: If the DynamoDB Streams event source mapping should be enabled. The default is true.
 
 ```ts
 import * as dynamodb from '@aws-cdk/aws-dynamodb';
@@ -183,7 +189,8 @@ behavior:
 * __onFailure__: In the event a record fails and consumes all retries, the record will be sent to SQS queue or SNS topic that is specified here
 * __parallelizationFactor__: The number of batches to concurrently process on each shard.
 * __retryAttempts__: The maximum number of times a record should be retried in the event of failure.
-* __startingPosition__: Will determine where to being consumption, either at the most recent ('LATEST') record or the oldest record ('TRIM_HORIZON'). 'TRIM_HORIZON' will ensure you process all available data, while 'LATEST' will ignore all reocrds that arrived prior to attaching the event source.
+* __startingPosition__: Will determine where to being consumption, either at the most recent ('LATEST') record or the oldest record ('TRIM_HORIZON'). 'TRIM_HORIZON' will ensure you process all available data, while 'LATEST' will ignore all records that arrived prior to attaching the event source.
+* __enabled__: If the DynamoDB Streams event source mapping should be enabled. The default is true.
 
 ```ts
 import * as lambda from '@aws-cdk/aws-lambda';
@@ -192,7 +199,7 @@ import { KinesisEventSource } from '@aws-cdk/aws-lambda-event-sources';
 
 const stream = new kinesis.Stream(this, 'MyStream');
 
-myFunction.addEventSource(new KinesisEventSource(queue, {
+myFunction.addEventSource(new KinesisEventSource(stream, {
   batchSize: 100, // default
   startingPosition: lambda.StartingPosition.TRIM_HORIZON
 });

@@ -26,7 +26,7 @@ export = {
       awsAuth.addRoleMapping(role, { groups: ['group'] });
       test.ok(false, 'expected error');
     } catch (err) {
-      test.equal(err.message, 'RoleStackRole6729D0A7 should be defined in the scope of the ClusterStack stack to prevent circular dependencies');
+      test.equal(err.message, 'RoleStack/Role should be defined in the scope of the ClusterStack stack to prevent circular dependencies');
     }
 
     test.done();
@@ -47,7 +47,7 @@ export = {
       awsAuth.addUserMapping(user, { groups: ['group'] });
       test.ok(false, 'expected error');
     } catch (err) {
-      test.equal(err.message, 'UserStackUser0406F94E should be defined in the scope of the ClusterStack stack to prevent circular dependencies');
+      test.equal(err.message, 'UserStack/User should be defined in the scope of the ClusterStack stack to prevent circular dependencies');
     }
 
     test.done();
@@ -234,7 +234,7 @@ export = {
     // GIVEN
     const { stack } = testFixtureNoVpc();
     const cluster = new Cluster(stack, 'Cluster', { version: CLUSTER_VERSION });
-    cluster.addNodegroup('NG');
+    cluster.addNodegroupCapacity('NG');
     const role = iam.Role.fromRoleArn(stack, 'imported-role', 'arn:aws:iam::123456789012:role/S3Access');
 
     // WHEN

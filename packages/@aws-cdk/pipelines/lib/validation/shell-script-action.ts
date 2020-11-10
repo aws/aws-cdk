@@ -55,6 +55,13 @@ export interface ShellScriptActionProps {
   readonly additionalArtifacts?: codepipeline.Artifact[];
 
   /**
+   * The CodeBuild environment where scripts are executed.
+   *
+   * @default LinuxBuildImage.STANDARD_4_0
+   */
+  readonly environment?: codebuild.BuildEnvironment
+
+  /**
    * RunOrder for this action
    *
    * Use this to sequence the shell script after the deployments.
@@ -89,6 +96,17 @@ export interface ShellScriptActionProps {
    * @default - All private subnets.
    */
   readonly subnetSelection?: ec2.SubnetSelection
+
+  /**
+   * Which security group to associate with the script's project network interfaces.
+   * If no security group is identified, one will be created automatically.
+   *
+   * Only used if 'vpc' is supplied.
+   *
+   * @default - Security group will be automatically created.
+   *
+   */
+  readonly securityGroups?: ec2.ISecurityGroup[];
 }
 
 /**
@@ -166,8 +184,9 @@ export class ShellScriptAction implements codepipeline.IAction, iam.IGrantable {
     }
 
     this._project = new codebuild.PipelineProject(scope, 'Project', {
-      environment: { buildImage: codebuild.LinuxBuildImage.STANDARD_4_0 },
+      environment: this.props.environment || { buildImage: codebuild.LinuxBuildImage.STANDARD_4_0 },
       vpc: this.props.vpc,
+      securityGroups: this.props.securityGroups,
       subnetSelection: this.props.subnetSelection,
       buildSpec: codebuild.BuildSpec.fromObject({
         version: '0.2',

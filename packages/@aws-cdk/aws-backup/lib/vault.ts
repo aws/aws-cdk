@@ -1,7 +1,8 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as sns from '@aws-cdk/aws-sns';
-import { Construct, IResource, RemovalPolicy, Resource } from '@aws-cdk/core';
+import { IResource, Names, RemovalPolicy, Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnBackupVault } from './backup.generated';
 
 /**
@@ -160,7 +161,7 @@ export class BackupVault extends Resource implements IBackupVault {
 
   private uniqueVaultName() {
     // Max length of 50 chars, get the last 50 chars
-    const id = this.node.uniqueId;
+    const id = Names.uniqueId(this);
     return id.substring(Math.max(id.length - 50, 0), id.length);
   }
 }

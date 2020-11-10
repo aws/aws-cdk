@@ -2,6 +2,7 @@ export const AWS_OLDER_REGIONS = new Set([
   'us-east-1',
   'us-west-1',
   'us-west-2',
+  'us-gov-west-1',
   'ap-southeast-1',
   'ap-southeast-2',
   'ap-northeast-1',
@@ -65,6 +66,7 @@ export const ROUTE_53_BUCKET_WEBSITE_ZONE_IDS: { [region: string]: string } = {
   'eu-west-2': 'Z3GKZC51ZF0DB4',
   'eu-west-3': 'Z3R1K369G5AVDG',
   'eu-north-1': 'Z3BAZG2TWCNX0D',
+  'eu-south-1': 'Z3IXVV8C73GIO3',
   'sa-east-1': 'Z7KQH4QJS55SO',
   'me-south-1': 'Z1MPMWCPA7YB62',
 };
@@ -132,4 +134,29 @@ export const DLC_REPOSITORY_ACCOUNTS: { [region: string]: string } = {
 
   'cn-north-1': '727897471807',
   'cn-northwest-1': '727897471807',
+};
+
+// https://docs.aws.amazon.com/app-mesh/latest/userguide/envoy.html
+export const APPMESH_ECR_ACCOUNTS: { [region: string]: string } = {
+  'ap-northeast-1': '840364872350',
+  'ap-northeast-2': '840364872350',
+  'ap-south-1': '840364872350',
+  'ap-southeast-1': '840364872350',
+  'ap-southeast-2': '840364872350',
+  'ca-central-1': '840364872350',
+  'eu-central-1': '840364872350',
+  'eu-north-1': '840364872350',
+  'eu-south-1': '422531588944',
+  'eu-west-1': '840364872350',
+  'eu-west-2': '840364872350',
+  'eu-west-3': '840364872350',
+  'sa-east-1': '840364872350',
+  'us-east-1': '840364872350',
+  'us-east-2': '840364872350',
+  'us-west-1': '840364872350',
+  'us-west-2': '840364872350',
+
+  'me-south-1': '772975370895',
+  'ap-east-1': '856666278305',
+
 };

@@ -1,7 +1,8 @@
 import * as crypto from 'crypto';
 import * as iam from '@aws-cdk/aws-iam';
 
-import { Annotations, Construct, Duration, Fn, IResource, Lazy, Resource, Stack, Tags } from '@aws-cdk/core';
+import { Annotations, Duration, Fn, IResource, Lazy, Resource, Stack, Tags } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CloudFormationInit } from './cfn-init';
 import { Connections, IConnectable } from './connections';
 import { CfnInstance } from './ec2.generated';
@@ -431,7 +432,7 @@ export class Instance extends Resource implements IInstance {
    * - Update the instance's CreationPolicy to wait for the `cfn-signal` commands.
    */
   private applyCloudFormationInit(init: CloudFormationInit, options: ApplyCloudFormationInitOptions = {}) {
-    init._attach(this.instance, {
+    init.attach(this.instance, {
       platform: this.osType,
       instanceRole: this.role,
       userData: this.userData,

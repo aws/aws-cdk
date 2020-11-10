@@ -3,7 +3,8 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { Construct, Duration, IResource, RemovalPolicy, Resource, SecretValue, Token } from '@aws-cdk/core';
+import { Duration, IResource, RemovalPolicy, Resource, SecretValue, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { IClusterParameterGroup } from './parameter-group';
@@ -306,6 +307,13 @@ export interface ClusterProps {
    * @default RemovalPolicy.RETAIN
    */
   readonly removalPolicy?: RemovalPolicy
+
+  /**
+   * Whether to make cluster publicly accessible.
+   *
+   * @default false
+   */
+  readonly publiclyAccessible?: boolean
 }
 
 /**
@@ -415,7 +423,6 @@ export class Cluster extends ClusterBase {
       props.securityGroups : [new ec2.SecurityGroup(this, 'SecurityGroup', {
         description: 'Redshift security group',
         vpc: this.vpc,
-        securityGroupName: 'redshift SG',
       })];
 
     const securityGroupIds = securityGroups.map(sg => sg.securityGroupId);
@@ -469,7 +476,7 @@ export class Cluster extends ClusterBase {
       loggingProperties,
       iamRoles: props.roles ? props.roles.map(role => role.roleArn) : undefined,
       dbName: props.defaultDatabaseName || 'default_db',
-      publiclyAccessible: false,
+      publiclyAccessible: props.publiclyAccessible || false,
       // Encryption
       kmsKeyId: props.encryptionKey && props.encryptionKey.keyArn,
       encrypted: props.encrypted !== undefined ? props.encrypted : true,

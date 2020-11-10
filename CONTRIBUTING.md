@@ -39,7 +39,7 @@ and let us know if it's not up-to-date (even better, submit a PR with your  corr
   - [API Compatibility Checks](#api-compatibility-checks)
   - [Examples](#examples)
   - [Feature Flags](#feature-flags)
-  - [Versioning](#versioning)
+  - [Versioning and Release](#versioning-and-release)
 - [Troubleshooting](#troubleshooting)
 - [Debugging](#debugging)
   - [Connecting the VS Code Debugger](#connecting-the-vs-code-debugger)
@@ -77,13 +77,12 @@ you need to have the following SDKs and tools locally:
 - [Node.js >= 10.13.0](https://nodejs.org/download/release/latest-v10.x/)
   - We recommend using a version in [Active LTS](https://nodejs.org/en/about/releases/)
   - ⚠️ versions `13.0.0` to `13.6.0` are not supported due to compatibility issues with our dependencies.
-- [Yarn >= 1.19.1, < 1.3](https://yarnpkg.com/lang/en/docs/install)
+- [Yarn >= 1.19.1, < 2](https://yarnpkg.com/lang/en/docs/install)
 - [Java >= OpenJDK 8, 11, 14](https://docs.aws.amazon.com/corretto/latest/corretto-8-ug/downloads-list.html)
 - [Apache Maven >= 3.6.0, < 4.0](http://maven.apache.org/install.html)
 - [.NET Core SDK 3.1.x](https://www.microsoft.com/net/download)
 - [Python >= 3.6.5, < 4.0](https://www.python.org/downloads/release/python-365/)
-- [Ruby >= 2.5.1, < 3.0](https://www.ruby-lang.org/en/news/2018/03/28/ruby-2-5-1-released/)
-- [Docker 19.03](https://docs.docker.com/get-docker/)
+- [Docker >= 19.03](https://docs.docker.com/get-docker/)
 
 The basic commands to get the repository cloned and built locally follow:
 
@@ -181,7 +180,7 @@ Integration tests perform a few functions in the CDK code base -
 1. Acts as a regression detector. It does this by running `cdk synth` on the integration test and comparing it against
    the `*.expected.json` file. This highlights how a change affects the synthesized stacks.
 2. Allows for a way to verify if the stacks are still valid CloudFormation templates, as part of an intrusive change.
-   This is done by running `yarn integ` which will run `cdk deploy` across all of the integration tests in that package.
+   This is done by running `yarn integ` which will run `cdk deploy` across all of the integration tests in that package. If you are developing a new integration test or for some other reason want to work on a single integration test over and over again without running through all the integration tests you can do so using `yarn integ integ.test-name.js`
    Remember to set up AWS credentials before doing this.
 3. (Optionally) Acts as a way to validate that constructs set up the CloudFormation resources as expected. A successful
    CloudFormation deployment does not mean that the resources are set up correctly.
@@ -780,24 +779,59 @@ CDK](https://github.com/aws/aws-cdk/issues/3398) we will either remove the
 legacy behavior or flip the logic for all these features and then
 reset the `FEATURE_FLAGS` map for the next cycle.
 
-### Versioning
+### Versioning and Release
 
-All `package.json` files in this repo use a stable marker version of `0.0.0`.
-This means that when you declare dependencies, you should always use `0.0.0`.
-This makes it easier for us to bump a new version (the `bump.sh` script will
-just update the central version and create a CHANGELOG entry) and also reduces
-the chance of merge conflicts after a new version is released.
+The `release.json` file at the root of the repo determines which release line
+this branch belongs to.
 
-Additional scripts that take part in the versioning mechanism:
+```js
+{
+  "majorVersion": 1 | 2,
+  "releaseType": "stable" | "alpha" | "rc"
+}
+```
 
-- `scripts/get-version.js` can be used to obtain the actual version of the repo.
-  You can use either from JavaScript code by `require('./scripts/get-version')`
-  or from a shell script `node -p "require('./scripts/get-version')"`.
-- `scripts/get-version-marker.js` returns `0.0.0` and used to DRY the version
-  marker.
-- `scripts/align-version.sh` and `scripts/align-version.js` are used to align
-  all package.json files in the repo to the official version. This script is
-  invoked in CI builds and should not be used inside a development environment.
+To reduce merge conflicts in automatic merges between version branches, the
+current version number is stored under `version.vNN.json` (where `NN` is
+`majorVersion`) and changelogs are stored under `CHANGELOG.NN.md` (for
+historical reasons, the changelog for 1.x is under `CHANGELOG.md`).  When we
+fork to a new release branch (e.g. `v2-main`), we will update `release.json` in
+this branch to reflect the new version line, and this information will be used
+to determine how releases are cut.
+
+The actual `version` field in all `package.json` files should always be `0.0.0`.
+This means that local development builds will use version `0.0.0` instead of the
+official version from the version file.
+
+#### `./bump.sh`
+
+This script uses [standard-version] to update the version in `version.vNN.json`
+to the next version. By default it will perform a **minor** bump, but `./bump.sh
+patch` can be used to perform a patch release if that's needed.
+
+This script will also update the relevant changelog file.
+
+[standard-version]: https://github.com/conventional-changelog/standard-version
+
+#### `scripts/resolve-version.js`
+
+The script evaluates evaluates the configuration in `release.json` and exports an
+object like this:
+
+```js
+{
+  version: '2.0.0-alpha.1',          // the current version
+  versionFile: 'version.v2.json',    // the version file
+  changelogFile: 'CHANGELOG.v2.md',  // changelog file name
+  prerelease: 'alpha',               // prerelease tag (undefined for stable)
+  marker: '0.0.0'                    // version marker in package.json files
+}
+```
+
+#### scripts/align-version.sh
+
+In official builds, the `scripts/align-version.sh` is used to update all
+`package.json` files based on the version from `version.vNN.json`.
 
 ## Troubleshooting
 

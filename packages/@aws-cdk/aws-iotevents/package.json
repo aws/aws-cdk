@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-iotevents",
-        "module": "aws_cdk.aws_iotevents"
+        "module": "aws_cdk.aws_iotevents",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
@@ -46,11 +50,15 @@
     "cfn2ts": "cfn2ts",
     "build+test": "npm run build && npm test",
     "build+test+package": "npm run build+test && npm run package",
-    "compat": "cdk-compat"
+    "compat": "cdk-compat",
+    "gen": "cfn2ts"
   },
   "cdk-build": {
     "cloudformation": "AWS::IoTEvents",
-    "jest": true
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "keywords": [
     "aws",
@@ -73,11 +81,11 @@
   },
   "dependencies": {
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.4"
+    "constructs": "^3.2.0"
   },
   "peerDependencies": {
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.4"
+    "constructs": "^3.2.0"
   },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"

@@ -105,6 +105,7 @@ export = {
                       'codebuild:CreateReport',
                       'codebuild:UpdateReport',
                       'codebuild:BatchPutTestCases',
+                      'codebuild:BatchPutCodeCoverages',
                     ],
                     'Effect': 'Allow',
                     'Resource': {
@@ -151,8 +152,10 @@ export = {
                 'Type': 'LINUX_CONTAINER',
                 'PrivilegedMode': false,
                 'Image': 'aws/codebuild/standard:1.0',
+                'ImagePullCredentialsType': 'CODEBUILD',
                 'ComputeType': 'BUILD_GENERAL1_SMALL',
               },
+              'EncryptionKey': 'alias/aws/s3',
             },
           },
         },
@@ -276,6 +279,7 @@ export = {
                       'codebuild:CreateReport',
                       'codebuild:UpdateReport',
                       'codebuild:BatchPutTestCases',
+                      'codebuild:BatchPutCodeCoverages',
                     ],
                     'Effect': 'Allow',
                     'Resource': {
@@ -312,6 +316,7 @@ export = {
               'Environment': {
                 'ComputeType': 'BUILD_GENERAL1_SMALL',
                 'Image': 'aws/codebuild/standard:1.0',
+                'ImagePullCredentialsType': 'CODEBUILD',
                 'PrivilegedMode': false,
                 'Type': 'LINUX_CONTAINER',
               },
@@ -331,6 +336,7 @@ export = {
                 'GitCloneDepth': 2,
                 'Type': 'CODECOMMIT',
               },
+              'EncryptionKey': 'alias/aws/s3',
             },
           },
         },
@@ -473,6 +479,7 @@ export = {
                       'codebuild:CreateReport',
                       'codebuild:UpdateReport',
                       'codebuild:BatchPutTestCases',
+                      'codebuild:BatchPutCodeCoverages',
                     ],
                     'Effect': 'Allow',
                     'Resource': {
@@ -509,6 +516,7 @@ export = {
               'Environment': {
                 'ComputeType': 'BUILD_GENERAL1_MEDIUM',
                 'Image': 'aws/codebuild/windows-base:2.0',
+                'ImagePullCredentialsType': 'CODEBUILD',
                 'PrivilegedMode': false,
                 'Type': 'WINDOWS_CONTAINER',
               },
@@ -532,6 +540,7 @@ export = {
                 },
                 'Type': 'S3',
               },
+              'EncryptionKey': 'alias/aws/s3',
             },
           },
         },
@@ -796,6 +805,21 @@ export = {
 
       test.throws(() => project.connections,
         /Only VPC-associated Projects have security groups to manage. Supply the "vpc" parameter when creating the Project/);
+
+      test.done();
+    },
+
+    'no KMS Key defaults to default S3 managed key'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      new codebuild.PipelineProject(stack, 'MyProject');
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+        EncryptionKey: 'alias/aws/s3',
+      }));
 
       test.done();
     },
@@ -1184,6 +1208,7 @@ export = {
             'Type': 'LINUX_CONTAINER',
             'PrivilegedMode': false,
             'Image': 'aws/codebuild/standard:1.0',
+            'ImagePullCredentialsType': 'CODEBUILD',
             'ComputeType': 'BUILD_GENERAL1_SMALL',
           },
         }));
@@ -1428,6 +1453,7 @@ export = {
         ],
         'PrivilegedMode': false,
         'Image': 'aws/codebuild/standard:1.0',
+        'ImagePullCredentialsType': 'CODEBUILD',
         'ComputeType': 'BUILD_GENERAL1_SMALL',
       },
     }));
@@ -1686,6 +1712,93 @@ export = {
       }, /BitBucket sources do not support file path conditions for webhook filters/);
 
       test.done();
+    },
+
+    'GitHub Enterprise Server sources do not support FILE_PATH filters on PR events'(test: Test) {
+      const stack = new cdk.Stack();
+      const pullFilterGroup = codebuild.FilterGroup.inEventOf(
+        codebuild.EventAction.PULL_REQUEST_CREATED,
+        codebuild.EventAction.PULL_REQUEST_MERGED,
+        codebuild.EventAction.PULL_REQUEST_REOPENED,
+        codebuild.EventAction.PULL_REQUEST_UPDATED,
+      );
+
+      test.throws(() => {
+        new codebuild.Project(stack, 'MyFilePathProject', {
+          source: codebuild.Source.gitHubEnterprise({
+            httpsCloneUrl: 'https://github.testcompany.com/testowner/testrepo',
+            webhookFilters: [
+              pullFilterGroup.andFilePathIs('ReadMe.md'),
+            ],
+          }),
+        });
+      }, /FILE_PATH filters cannot be used with GitHub Enterprise Server pull request events/);
+      test.done();
+    },
+
+    'COMMIT_MESSAGE Filter': {
+      'GitHub Enterprise Server sources do not support COMMIT_MESSAGE filters on PR events'(test: Test) {
+        const stack = new cdk.Stack();
+        const pullFilterGroup = codebuild.FilterGroup.inEventOf(
+          codebuild.EventAction.PULL_REQUEST_CREATED,
+          codebuild.EventAction.PULL_REQUEST_MERGED,
+          codebuild.EventAction.PULL_REQUEST_REOPENED,
+          codebuild.EventAction.PULL_REQUEST_UPDATED,
+        );
+
+        test.throws(() => {
+          new codebuild.Project(stack, 'MyProject', {
+            source: codebuild.Source.gitHubEnterprise({
+              httpsCloneUrl: 'https://github.testcompany.com/testowner/testrepo',
+              webhookFilters: [
+                pullFilterGroup.andCommitMessageIs('the commit message'),
+              ],
+            }),
+          });
+        }, /COMMIT_MESSAGE filters cannot be used with GitHub Enterprise Server pull request events/);
+        test.done();
+      },
+      'GitHub Enterprise Server sources support COMMIT_MESSAGE filters on PUSH events'(test: Test) {
+        const stack = new cdk.Stack();
+        const pushFilterGroup = codebuild.FilterGroup.inEventOf(codebuild.EventAction.PUSH);
+
+        test.doesNotThrow(() => {
+          new codebuild.Project(stack, 'MyProject', {
+            source: codebuild.Source.gitHubEnterprise({
+              httpsCloneUrl: 'https://github.testcompany.com/testowner/testrepo',
+              webhookFilters: [
+                pushFilterGroup.andCommitMessageIs('the commit message'),
+              ],
+            }),
+          });
+        });
+        test.done();
+      },
+      'BitBucket and GitHub sources support a COMMIT_MESSAGE filter'(test: Test) {
+        const stack = new cdk.Stack();
+        const filterGroup = codebuild
+          .FilterGroup
+          .inEventOf(codebuild.EventAction.PUSH, codebuild.EventAction.PULL_REQUEST_CREATED)
+          .andCommitMessageIs('the commit message');
+
+        test.doesNotThrow(() => {
+          new codebuild.Project(stack, 'BitBucket Project', {
+            source: codebuild.Source.bitBucket({
+              owner: 'owner',
+              repo: 'repo',
+              webhookFilters: [filterGroup],
+            }),
+          });
+          new codebuild.Project(stack, 'GitHub Project', {
+            source: codebuild.Source.gitHub({
+              owner: 'owner',
+              repo: 'repo',
+              webhookFilters: [filterGroup],
+            }),
+          });
+        });
+        test.done();
+      },
     },
   },
 };

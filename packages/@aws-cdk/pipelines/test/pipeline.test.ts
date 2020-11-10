@@ -1,8 +1,20 @@
-import { anything, arrayWith, deepObjectLike, encodedJson, objectLike, stringLike } from '@aws-cdk/assert';
+import * as fs from 'fs';
+import * as path from 'path';
+import {
+  anything,
+  arrayWith,
+  Capture,
+  deepObjectLike,
+  encodedJson,
+  notMatching,
+  objectLike,
+  stringLike,
+} from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as cp from '@aws-cdk/aws-codepipeline';
 import * as cpa from '@aws-cdk/aws-codepipeline-actions';
-import { Construct, Stack, Stage, StageProps, SecretValue } from '@aws-cdk/core';
+import { Stack, Stage, StageProps, SecretValue, Tags } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as cdkp from '../lib';
 import { BucketStack, PIPELINE_ENV, stackTemplate, TestApp, TestGitHubNpmPipeline } from './testutil';
 
@@ -329,6 +341,23 @@ test('selfmutation stage correctly identifies nested assembly of pipeline stack'
   });
 });
 
+test('selfmutation feature can be turned off', () => {
+  const stack = new Stack();
+  const cloudAssemblyArtifact = new cp.Artifact();
+  // WHEN
+  new TestGitHubNpmPipeline(stack, 'Cdk', {
+    cloudAssemblyArtifact,
+    selfMutating: false,
+  });
+  // THEN
+  expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+    Stages: notMatching(arrayWith({
+      Name: 'UpdatePipeline',
+      Actions: anything(),
+    })),
+  });
+});
+
 test('overridden stack names are respected', () => {
   // WHEN
   pipeline.addApplicationStage(new OneStackAppWithCustomName(app, 'App1'));
@@ -382,6 +411,33 @@ test('can control fix/CLI version used in pipeline selfupdate', () => {
   });
 });
 
+test('changing CLI version leads to a different pipeline structure (restarting it)', () => {
+  // GIVEN
+  const stack2 = new Stack(app, 'Stack2', { env: PIPELINE_ENV });
+  const stack3 = new Stack(app, 'Stack3', { env: PIPELINE_ENV });
+  const structure2 = Capture.anyType();
+  const structure3 = Capture.anyType();
+
+  // WHEN
+  new TestGitHubNpmPipeline(stack2, 'Cdk', {
+    cdkCliVersion: '1.2.3',
+  });
+  new TestGitHubNpmPipeline(stack3, 'Cdk', {
+    cdkCliVersion: '4.5.6',
+  });
+
+  // THEN
+  expect(stack2).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+    Stages: structure2.capture(),
+  });
+  expect(stack3).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+    Stages: structure3.capture(),
+  });
+
+  expect(JSON.stringify(structure2.capturedValue)).not.toEqual(JSON.stringify(structure3.capturedValue));
+
+});
+
 test('add another action to an existing stage', () => {
   // WHEN
   pipeline.stage('Source').addAction(new cpa.GitHubSourceAction({
@@ -402,6 +458,40 @@ test('add another action to an existing stage', () => {
       ],
     }),
   });
+});
+
+test('tags get reflected in pipeline', () => {
+  // WHEN
+  const stage = new OneStackApp(app, 'App');
+  Tags.of(stage).add('CostCenter', 'F00B4R');
+  pipeline.addApplicationStage(stage);
+
+  // THEN
+  const templateConfig = Capture.aString();
+  expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+    Stages: arrayWith({
+      Name: 'App',
+      Actions: arrayWith(
+        objectLike({
+          Name: 'Stack.Prepare',
+          InputArtifacts: [objectLike({})],
+          Configuration: objectLike({
+            StackName: 'App-Stack',
+            TemplateConfiguration: templateConfig.capture(stringLike('*::assembly-App/*.template.*json')),
+          }),
+        }),
+      ),
+    }),
+  });
+
+  const [, relConfigFile] = templateConfig.capturedValue.split('::');
+  const absConfigFile = path.join(app.outdir, relConfigFile);
+  const configFile = JSON.parse(fs.readFileSync(absConfigFile, { encoding: 'utf-8' }));
+  expect(configFile).toEqual(expect.objectContaining({
+    Tags: {
+      CostCenter: 'F00B4R',
+    },
+  }));
 });
 
 class OneStackApp extends Stage {

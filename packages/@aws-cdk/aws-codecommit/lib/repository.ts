@@ -1,6 +1,7 @@
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct, IConstruct, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
+import { IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
+import { IConstruct, Construct } from 'constructs';
 import { CfnRepository } from './codecommit.generated';
 
 export interface IRepository extends IResource {
@@ -283,13 +284,15 @@ export class Repository extends RepositoryBase {
    */
   public static fromRepositoryArn(scope: Construct, id: string, repositoryArn: string): IRepository {
     const stack = Stack.of(scope);
-    const repositoryName = stack.parseArn(repositoryArn).resource;
+    const arn = stack.parseArn(repositoryArn);
+    const repositoryName = arn.resource;
+    const region = arn.region;
 
     class Import extends RepositoryBase {
       public readonly repositoryArn = repositoryArn;
       public readonly repositoryName = repositoryName;
-      public readonly repositoryCloneUrlHttp = Repository.makeCloneUrl(stack, repositoryName, 'https');
-      public readonly repositoryCloneUrlSsh = Repository.makeCloneUrl(stack, repositoryName, 'ssh');
+      public readonly repositoryCloneUrlHttp = Repository.makeCloneUrl(stack, repositoryName, 'https', region);
+      public readonly repositoryCloneUrlSsh = Repository.makeCloneUrl(stack, repositoryName, 'ssh', region);
     }
 
     return new Import(scope, id);
@@ -308,8 +311,8 @@ export class Repository extends RepositoryBase {
     return new Import(scope, id);
   }
 
-  private static makeCloneUrl(stack: Stack, repositoryName: string, protocol: 'https' | 'ssh') {
-    return `${protocol}://git-codecommit.${stack.region}.${stack.urlSuffix}/v1/repos/${repositoryName}`;
+  private static makeCloneUrl(stack: Stack, repositoryName: string, protocol: 'https' | 'ssh', region?: string) {
+    return `${protocol}://git-codecommit.${region || stack.region}.${stack.urlSuffix}/v1/repos/${repositoryName}`;
   }
 
   private static arnForLocalRepository(repositoryName: string, scope: IConstruct): string {

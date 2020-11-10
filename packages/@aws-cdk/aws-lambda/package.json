@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-lambda",
-        "module": "aws_cdk.aws_lambda"
+        "module": "aws_cdk.aws_lambda",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
@@ -45,10 +49,15 @@
     "cfn2ts": "cfn2ts",
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test",
-    "compat": "cdk-compat"
+    "compat": "cdk-compat",
+    "gen": "cfn2ts"
   },
   "cdk-build": {
-    "cloudformation": "AWS::Lambda"
+    "cloudformation": "AWS::Lambda",
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": "true"
+    }
   },
   "nyc": {
     "statements": 75,
@@ -68,14 +77,13 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
-    "@types/aws-lambda": "^8.10.62",
-    "@types/lodash": "^4.14.161",
-    "@types/nodeunit": "^0.0.31",
+    "@types/aws-lambda": "^8.10.64",
+    "@types/lodash": "^4.14.165",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
+    "jest": "^26.6.3",
     "lodash": "^4.17.20",
-    "nodeunit": "^0.11.3",
     "pkglint": "0.0.0"
   },
   "dependencies": {
@@ -92,7 +100,7 @@
     "@aws-cdk/aws-sqs": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
-    "constructs": "^3.0.4"
+    "constructs": "^3.2.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -109,7 +117,7 @@
     "@aws-cdk/aws-sqs": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
-    "constructs": "^3.0.4"
+    "constructs": "^3.2.0"
   },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"

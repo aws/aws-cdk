@@ -5,14 +5,15 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { Construct, Duration, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
+import { Duration, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { IInstanceEngine } from './instance-engine';
 import { IOptionGroup } from './option-group';
 import { IParameterGroup } from './parameter-group';
-import { applyRemovalPolicy, defaultDeletionProtection, engineDescription, setupS3ImportExport } from './private/util';
-import { Credentials, PerformanceInsightRetention, RotationMultiUserOptions, SnapshotCredentials } from './props';
+import { applyRemovalPolicy, DEFAULT_PASSWORD_EXCLUDE_CHARS, defaultDeletionProtection, engineDescription, renderCredentials, setupS3ImportExport } from './private/util';
+import { Credentials, PerformanceInsightRetention, RotationMultiUserOptions, RotationSingleUserOptions, SnapshotCredentials } from './props';
 import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
 import { CfnDBInstance, CfnDBInstanceProps } from './rds.generated';
 import { ISubnetGroup, SubnetGroup } from './subnet-group';
@@ -364,8 +365,10 @@ export interface DatabaseInstanceNewProps {
   readonly iamAuthentication?: boolean;
 
   /**
-   * The number of days during which automatic DB snapshots are retained. Set
-   * to zero to disable backups.
+   * The number of days during which automatic DB snapshots are retained.
+   * Set to zero to disable backups.
+   * When creating a read replica, you must enable automatic backups on the source
+   * database instance by setting the backup retention to a value other than zero.
    *
    * @default Duration.days(1)
    */
@@ -851,10 +854,10 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
   /**
    * Adds the single user rotation of the master password to this instance.
    *
-   * @param [automaticallyAfter=Duration.days(30)] Specifies the number of days after the previous rotation
-   * before Secrets Manager triggers the next automatic rotation.
+   * @param options the options for the rotation,
+   *                if you want to override the defaults
    */
-  public addRotationSingleUser(automaticallyAfter?: Duration): secretsmanager.SecretRotation {
+  public addRotationSingleUser(options: RotationSingleUserOptions = {}): secretsmanager.SecretRotation {
     if (!this.secret) {
       throw new Error('Cannot add single user rotation for an instance without secret.');
     }
@@ -867,11 +870,12 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
 
     return new secretsmanager.SecretRotation(this, id, {
       secret: this.secret,
-      automaticallyAfter,
       application: this.singleUserRotationApplication,
       vpc: this.vpc,
       vpcSubnets: this.vpcPlacement,
       target: this,
+      ...options,
+      excludeCharacters: options.excludeCharacters ?? DEFAULT_PASSWORD_EXCLUDE_CHARS,
     });
   }
 
@@ -883,9 +887,9 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
       throw new Error('Cannot add multi user rotation for an instance without secret.');
     }
     return new secretsmanager.SecretRotation(this, id, {
-      secret: options.secret,
+      ...options,
+      excludeCharacters: options.excludeCharacters ?? DEFAULT_PASSWORD_EXCLUDE_CHARS,
       masterSecret: this.secret,
-      automaticallyAfter: options.automaticallyAfter,
       application: this.multiUserRotationApplication,
       vpc: this.vpc,
       vpcSubnets: this.vpcPlacement,
@@ -901,7 +905,7 @@ export interface DatabaseInstanceProps extends DatabaseInstanceSourceProps {
   /**
    * Credentials for the administrative user
    *
-   * @default - A username of 'admin' and SecretsManager-generated password
+   * @default - A username of 'admin' (or 'postgres' for PostgreSQL) and SecretsManager-generated password
    */
   readonly credentials?: Credentials;
 
@@ -943,13 +947,7 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
   constructor(scope: Construct, id: string, props: DatabaseInstanceProps) {
     super(scope, id, props);
 
-    let credentials = props.credentials ?? Credentials.fromUsername('admin');
-    if (!credentials.secret && !credentials.password) {
-      credentials = Credentials.fromSecret(new DatabaseSecret(this, 'Secret', {
-        username: credentials.username,
-        encryptionKey: credentials.encryptionKey,
-      }));
-    }
+    const credentials = renderCredentials(this, props.engine, props.credentials);
     const secret = credentials.secret;
 
     const instance = new CfnDBInstance(this, 'Resource', {
@@ -1026,6 +1024,8 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
       secret = new DatabaseSecret(this, 'Secret', {
         username: credentials.username,
         encryptionKey: credentials.encryptionKey,
+        excludeCharacters: credentials.excludeCharacters,
+        replaceOnPasswordCriteriaChanges: credentials.replaceOnPasswordCriteriaChanges,
       });
     }
 

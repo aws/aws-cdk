@@ -69,7 +69,9 @@ then `Secret.grantRead` and `Secret.grantWrite` will also grant the role the
 relevant encrypt and decrypt permissions to the KMS key through the
 SecretsManager service principal.
 
-### Rotating a Secret with a custom Lambda function
+### Rotating a Secret
+
+#### Using a Custom Lambda Function
 
 A rotation schedule can be added to a Secret using a custom Lambda function:
 
@@ -85,6 +87,31 @@ secret.addRotationSchedule('RotationSchedule', {
 
 See [Overview of the Lambda Rotation Function](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets-lambda-function-overview.html) on how to implement a Lambda Rotation Function.
 
+#### Using a Hosted Lambda Function
+
+Use the `hostedRotation` prop to rotate a secret with a hosted Lambda function:
+
+```ts
+const secret = new secretsmanager.Secret(this, 'Secret');
+
+secret.addRotationSchedule('RotationSchedule', {
+  hostedRotation: secretsmanager.HostedRotation.mysqlSingleUser(),
+});
+```
+
+Hosted rotation is available for secrets representing credentials for MySQL, PostgreSQL, Oracle,
+MariaDB, SQLServer, Redshift and MongoDB (both for the single and multi user schemes).
+
+When deployed in a VPC, the hosted rotation implements `ec2.IConnectable`:
+
+```ts
+const myHostedRotation = secretsmanager.HostedRotation.mysqlSingleUser({ vpc: myVpc });
+secret.addRotationSchedule('RotationSchedule', { hostedRotation: myHostedRotation });
+dbConnections.allowDefaultPortFrom(hostedRotation);
+```
+
+See also [Automating secret creation in AWS CloudFormation](https://docs.aws.amazon.com/secretsmanager/latest/userguide/integrating_cloudformation.html).
+
 ### Rotating database credentials
 
 Define a `SecretRotation` to rotate database credentials:
@@ -95,7 +122,9 @@ new secretsmanager.SecretRotation(this, 'SecretRotation', {
   secret: mySecret,
   target: myDatabase, // a Connectable
   vpc: myVpc, // The VPC where the secret rotation application will be deployed
-  excludeCharacters: ` ;+%{}` + `@'"\`/\\#`, // A string of characters to never use when generating new passwords. Example is a superset of the characters which will break DMS endpoints and characters which cause problems in BASH scripts.
+  excludeCharacters: ' %+:;{}', // characters to never use when generating new passwords;
+                                // by default, no characters are excluded,
+                                // which might cause problems with some services, like DMS
 });
 ```
 
@@ -131,20 +160,21 @@ credentials generation and rotation is integrated.
 ### Importing Secrets
 
 Existing secrets can be imported by ARN, name, and other attributes (including the KMS key used to encrypt the secret).
-Secrets imported by name can used the short-form of the name (without the SecretsManager-provided suffx);
+Secrets imported by name should use the short-form of the name (without the SecretsManager-provided suffx);
 the secret name must exist in the same account and region as the stack.
 Importing by name makes it easier to reference secrets created in different regions, each with their own suffix and ARN.
 
 ```ts
 import * as kms from '@aws-cdk/aws-kms';
 
-const secretArn = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret-f3gDy9';
+const secretCompleteArn = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret-f3gDy9';
+const secretPartialArn = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret'; // No Secrets Manager suffix
 const encryptionKey = kms.Key.fromKeyArn(stack, 'MyEncKey', 'arn:aws:kms:eu-west-1:111111111111:key/21c4b39b-fde2-4273-9ac0-d9bb5c0d0030');
-const mySecretFromArn = secretsmanager.Secret.fromSecretArn(stack, 'SecretFromArn', secretArn);
-const mySecretFromName = secretsmanager.Secret.fromSecretName(stack, 'SecretFromName', 'MySecret') // Note: the -f3gDy9 suffix is optional
+const mySecretFromCompleteArn = secretsmanager.Secret.fromSecretCompleteArn(stack, 'SecretFromCompleteArn', secretCompleteArn);
+const mySecretFromPartialArn = secretsmanager.Secret.fromSecretPartialArn(stack, 'SecretFromPartialArn', secretPartialArn);
+const mySecretFromName = secretsmanager.Secret.fromSecretNameV2(stack, 'SecretFromName', 'MySecret')
 const mySecretFromAttrs = secretsmanager.Secret.fromSecretAttributes(stack, 'SecretFromAttributes', {
-  secretArn,
+  secretCompleteArn,
   encryptionKey,
-  secretName: 'MySecret', // Optional, will be calculated from the ARN
 });
 ```

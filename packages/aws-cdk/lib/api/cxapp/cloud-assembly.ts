@@ -69,6 +69,7 @@ export class CloudAssembly {
 
   public async selectStacks(selectors: string[], options: SelectStacksOptions): Promise<StackCollection> {
     selectors = selectors.filter(s => s != null); // filter null/undefined
+    selectors = [...new Set(selectors)]; // make them unique
 
     const stacks = this.assembly.stacks;
     if (stacks.length === 0) {
@@ -85,7 +86,7 @@ export class CloudAssembly {
           if (stacks.length === 1) {
             return new StackCollection(this, stacks);
           } else {
-            throw new Error('Since this app includes more than a single stack, specify which stacks to use (wildcards are supported)\n' +
+            throw new Error('Since this app includes more than a single stack, specify which stacks to use (wildcards are supported) or specify `--all`\n' +
               `Stacks: ${stacks.map(x => x.id).join(' ')}`);
           }
         default:

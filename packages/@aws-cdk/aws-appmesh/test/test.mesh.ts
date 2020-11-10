@@ -66,14 +66,7 @@ export = {
           meshName: 'test-mesh',
         });
 
-        mesh.addVirtualRouter('router', {
-          listener: {
-            portMapping: {
-              port: 8080,
-              protocol: appmesh.Protocol.HTTP,
-            },
-          },
-        });
+        mesh.addVirtualRouter('router');
 
         // THEN
         expect(stack).to(
@@ -147,12 +140,9 @@ export = {
         });
 
         const testRouter = mesh.addVirtualRouter('router', {
-          listener: {
-            portMapping: {
-              port: 8080,
-              protocol: appmesh.Protocol.HTTP,
-            },
-          },
+          listeners: [
+            appmesh.VirtualRouterListener.http(),
+          ],
         });
 
         // THEN
@@ -178,12 +168,9 @@ export = {
         });
 
         const testRouter = mesh.addVirtualRouter('test-router', {
-          listener: {
-            portMapping: {
-              port: 8080,
-              protocol: appmesh.Protocol.HTTP,
-            },
-          },
+          listeners: [
+            appmesh.VirtualRouterListener.http(),
+          ],
         });
 
         mesh.addVirtualService('service', {
@@ -276,13 +263,6 @@ export = {
             },
             Spec: {
               // Specifically: no Listeners and Backends
-              Logging: {
-                AccessLog: {
-                  File: {
-                    Path: '/dev/stdout',
-                  },
-                },
-              },
               ServiceDiscovery: {
                 DNS: {
                   Hostname: 'test.domain.local',

@@ -23,7 +23,11 @@
       },
       "python": {
         "distName": "aws-cdk.aws-rds",
-        "module": "aws_cdk.aws_rds"
+        "module": "aws_cdk.aws_rds",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
@@ -45,10 +49,14 @@
     "cfn2ts": "cfn2ts",
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test",
-    "compat": "cdk-compat"
+    "compat": "cdk-compat",
+    "gen": "cfn2ts"
   },
   "cdk-build": {
-    "cloudformation": "AWS::RDS"
+    "cloudformation": "AWS::RDS",
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "keywords": [
     "aws",
@@ -83,7 +91,7 @@
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/aws-secretsmanager": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.4"
+    "constructs": "^3.2.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -96,13 +104,14 @@
     "@aws-cdk/aws-secretsmanager": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
-    "constructs": "^3.0.4"
+    "constructs": "^3.2.0"
   },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "awslint": {
     "exclude": [
+      "attribute-tag:@aws-cdk/aws-rds.DatabaseSecret.secretFullArn",
       "attribute-tag:@aws-cdk/aws-rds.DatabaseSecret.secretName",
       "props-physical-name:@aws-cdk/aws-rds.ParameterGroupProps",
       "props-physical-name:@aws-cdk/aws-rds.DatabaseClusterProps",
@@ -111,6 +120,7 @@
       "props-physical-name:@aws-cdk/aws-rds.DatabaseInstanceFromSnapshotProps",
       "props-physical-name:@aws-cdk/aws-rds.DatabaseInstanceReadReplicaProps",
       "props-physical-name:@aws-cdk/aws-rds.DatabaseSecretProps",
+      "props-physical-name:@aws-cdk/aws-rds.ServerlessClusterProps",
       "props-physical-name:@aws-cdk/aws-rds.OptionGroupProps",
       "props-physical-name:@aws-cdk/aws-rds.SubnetGroupProps",
       "docs-public-apis:@aws-cdk/aws-rds.SecretRotationApplication.semanticVersion",
@@ -127,8 +137,8 @@
       "docs-public-apis:@aws-cdk/aws-rds.SecretRotationApplication.MARIADB_ROTATION_MULTI_USER"
     ]
   },
-  "stability": "experimental",
-  "maturity": "developer-preview",
+  "stability": "stable",
+  "maturity": "stable",
   "awscdkio": {
     "announce": false
   }

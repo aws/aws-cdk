@@ -1,4 +1,5 @@
-import { Construct, Lazy, Stack } from '@aws-cdk/core';
+import { Lazy, Names, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { AlarmBase, IAlarm, IAlarmRule } from './alarm-base';
 import { CfnCompositeAlarm } from './cloudwatch.generated';
 
@@ -114,12 +115,13 @@ export class CompositeAlarm extends AlarmBase {
       service: 'cloudwatch',
       resource: 'alarm',
       resourceName: this.physicalName,
+      sep: ':',
     });
 
   }
 
   private generateUniqueId(): string {
-    const name = this.node.uniqueId;
+    const name = Names.uniqueId(this);
     if (name.length > 240) {
       return name.substring(0, 120) + name.substring(name.length - 120);
     }

@@ -1,7 +1,12 @@
 import { AddToPrincipalPolicyResult, IPrincipal, IRole, OpenIdConnectPrincipal, PolicyStatement, PrincipalPolicyFragment, Role } from '@aws-cdk/aws-iam';
-import { CfnJson, Construct } from '@aws-cdk/core';
+import { CfnJson, Names } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Cluster } from './cluster';
 import { KubernetesManifest } from './k8s-manifest';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Options for `ServiceAccount`
@@ -34,7 +39,7 @@ export interface ServiceAccountProps extends ServiceAccountOptions {
 /**
  * Service Account
  */
-export class ServiceAccount extends Construct implements IPrincipal {
+export class ServiceAccount extends CoreConstruct implements IPrincipal {
   /**
    * The role which is linked to the service account.
    */
@@ -58,7 +63,7 @@ export class ServiceAccount extends Construct implements IPrincipal {
     super(scope, id);
 
     const { cluster } = props;
-    this.serviceAccountName = props.name ?? this.node.uniqueId.toLowerCase();
+    this.serviceAccountName = props.name ?? Names.uniqueId(this).toLowerCase();
     this.serviceAccountNamespace = props.namespace ?? 'default';
 
     /* Add conditions to the role to improve security. This prevents other pods in the same namespace to assume the role.

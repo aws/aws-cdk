@@ -1,4 +1,5 @@
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { IEventSourceDlq } from './dlq';
 import { IFunction } from './function-base';
 import { CfnEventSourceMapping } from './lambda.generated';
@@ -67,18 +68,20 @@ export interface EventSourceMappingOptions {
    * * Minimum value of 60 seconds
    * * Maximum value of 7 days
    *
-   * @default Duration.days(7)
+   * @default - infinite or until the record expires.
    */
   readonly maxRecordAge?: cdk.Duration;
 
   /**
    * The maximum number of times to retry when the function returns an error.
+   * Set to `undefined` if you want lambda to keep retrying infinitely or until
+   * the record expires.
    *
    * Valid Range:
    * * Minimum value of 0
    * * Maximum value of 10000
    *
-   * @default 10000
+   * @default - infinite or until the record expires.
    */
   readonly retryAttempts?: number;
 
@@ -139,7 +142,7 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
   /**
    * Import an event source into this stack from its event source id.
    */
-  public static fromEventSourceMappingId(scope: cdk.Construct, id: string, eventSourceMappingId: string): IEventSourceMapping {
+  public static fromEventSourceMappingId(scope: Construct, id: string, eventSourceMappingId: string): IEventSourceMapping {
     class Import extends cdk.Resource implements IEventSourceMapping {
       public readonly eventSourceMappingId = eventSourceMappingId;
     }
@@ -148,7 +151,7 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
 
   public readonly eventSourceMappingId: string;
 
-  constructor(scope: cdk.Construct, id: string, props: EventSourceMappingProps) {
+  constructor(scope: Construct, id: string, props: EventSourceMappingProps) {
     super(scope, id);
 
     if (props.maxBatchingWindow && props.maxBatchingWindow.toSeconds() > 300) {

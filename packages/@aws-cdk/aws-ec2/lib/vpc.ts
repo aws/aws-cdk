@@ -1,9 +1,10 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import {
-  Annotations, ConcreteDependable, Construct, ContextProvider, DependableTrait, IConstruct,
-  IDependable, IResource, Lazy, Resource, Stack, Token, Tags,
+  Annotations, ConcreteDependable, ContextProvider, DependableTrait, IConstruct,
+  IDependable, IResource, Lazy, Resource, Stack, Token, Tags, Names,
 } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
+import { Construct, Node } from 'constructs';
 import {
   CfnEIP, CfnInternetGateway, CfnNatGateway, CfnRoute, CfnRouteTable, CfnSubnet,
   CfnSubnetRouteTableAssociation, CfnVPC, CfnVPCGatewayAttachment, CfnVPNGatewayRoutePropagation,
@@ -17,6 +18,10 @@ import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, GatewayVpcEndpointOpt
 import { FlowLog, FlowLogOptions, FlowLogResourceType } from './vpc-flow-logs';
 import { VpcLookupOptions } from './vpc-lookup';
 import { EnableVpnGatewayOptions, VpnConnection, VpnConnectionOptions, VpnConnectionType, VpnGateway } from './vpn';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 const VPC_SUBNET_SYMBOL = Symbol.for('@aws-cdk/aws-ec2.VpcSubnet');
 
@@ -1610,9 +1615,9 @@ export class Subnet extends Resource implements ISubnet {
   public associateNetworkAcl(id: string, networkAcl: INetworkAcl) {
     this._networkAcl = networkAcl;
 
-    const scope = Construct.isConstruct(networkAcl) ? networkAcl : this;
-    const other = Construct.isConstruct(networkAcl) ? this : networkAcl;
-    new SubnetNetworkAclAssociation(scope, id + other.node.uniqueId, {
+    const scope = CoreConstruct.isConstruct(networkAcl) ? networkAcl : this;
+    const other = CoreConstruct.isConstruct(networkAcl) ? this : networkAcl;
+    new SubnetNetworkAclAssociation(scope, id + Names.nodeUniqueId(other.node), {
       networkAcl,
       subnet: this,
     });
@@ -1916,7 +1921,7 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
 
     if (!attrs.routeTableId) {
       const ref = Token.isUnresolved(attrs.subnetId)
-        ? `at '${scope.node.path}/${id}'`
+        ? `at '${Node.of(scope).path}/${id}'`
         : `'${attrs.subnetId}'`;
       // eslint-disable-next-line max-len
       Annotations.of(this).addWarning(`No routeTableId was provided to the subnet ${ref}. Attempting to read its .routeTable.routeTableId will return null/undefined. (More info: https://github.com/aws/aws-cdk/pull/3171)`);
@@ -1948,9 +1953,9 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
   }
 
   public associateNetworkAcl(id: string, networkAcl: INetworkAcl): void {
-    const scope = Construct.isConstruct(networkAcl) ? networkAcl : this;
-    const other = Construct.isConstruct(networkAcl) ? this : networkAcl;
-    new SubnetNetworkAclAssociation(scope, id + other.node.uniqueId, {
+    const scope = CoreConstruct.isConstruct(networkAcl) ? networkAcl : this;
+    const other = CoreConstruct.isConstruct(networkAcl) ? this : networkAcl;
+    new SubnetNetworkAclAssociation(scope, id + Names.nodeUniqueId(other.node), {
       networkAcl,
       subnet: this,
     });
