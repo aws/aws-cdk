@@ -11,14 +11,10 @@ import { PIPELINE_ENV, TestApp, TestGitHubNpmPipeline } from './testutil';
 
 let app: TestApp;
 let pipelineStack: Stack;
-let sourceArtifact: codepipeline.Artifact;
-let cloudAssemblyArtifact: codepipeline.Artifact;
 
 beforeEach(() => {
   app = new TestApp({ outdir: 'testcdk.out' });
   pipelineStack = new Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
-  sourceArtifact = new codepipeline.Artifact();
-  cloudAssemblyArtifact = new codepipeline.Artifact('CloudAsm');
 });
 
 afterEach(() => {
@@ -28,11 +24,7 @@ afterEach(() => {
 test('SimpleSynthAction takes arrays of commands', () => {
   // WHEN
   new TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-    sourceArtifact,
-    cloudAssemblyArtifact,
     synthAction: new cdkp.SimpleSynthAction({
-      sourceArtifact,
-      cloudAssemblyArtifact,
       installCommands: ['install1', 'install2'],
       buildCommands: ['build1', 'build2'],
       testCommands: ['test1', 'test2'],
@@ -72,9 +64,7 @@ test('SimpleSynthAction takes arrays of commands', () => {
 test.each([['npm'], ['yarn']])('%s build automatically determines artifact base-directory', (npmYarn) => {
   // WHEN
   new TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-    sourceArtifact,
-    cloudAssemblyArtifact,
-    synthAction: npmYarnBuild(npmYarn)({ sourceArtifact, cloudAssemblyArtifact }),
+    synthAction: npmYarnBuild(npmYarn)(),
   });
 
   // THEN
@@ -95,11 +85,7 @@ test.each([['npm'], ['yarn']])('%s build automatically determines artifact base-
 test.each([['npm'], ['yarn']])('%s build respects subdirectory', (npmYarn) => {
   // WHEN
   new TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-    sourceArtifact,
-    cloudAssemblyArtifact,
     synthAction: npmYarnBuild(npmYarn)({
-      sourceArtifact,
-      cloudAssemblyArtifact,
       subdirectory: 'subdir',
     }),
   });
@@ -127,9 +113,7 @@ test.each([['npm'], ['yarn']])('%s build respects subdirectory', (npmYarn) => {
 test.each([['npm'], ['yarn']])('%s assumes no build step by default', (npmYarn) => {
   // WHEN
   new TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-    sourceArtifact,
-    cloudAssemblyArtifact,
-    synthAction: npmYarnBuild(npmYarn)({ sourceArtifact, cloudAssemblyArtifact }),
+    synthAction: npmYarnBuild(npmYarn)(),
   });
 
   // THEN
@@ -152,11 +136,7 @@ test.each([['npm'], ['yarn']])('%s assumes no build step by default', (npmYarn) 
 test.each([['npm'], ['yarn']])('%s can have its install command overridden', (npmYarn) => {
   // WHEN
   new TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-    sourceArtifact,
-    cloudAssemblyArtifact,
     synthAction: npmYarnBuild(npmYarn)({
-      sourceArtifact,
-      cloudAssemblyArtifact,
       installCommand: '/bin/true',
     }),
   });
@@ -182,11 +162,7 @@ test('Standard (NPM) synth can output additional artifacts', () => {
   // WHEN
   const addlArtifact = new codepipeline.Artifact('IntegTest');
   new TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-    sourceArtifact,
-    cloudAssemblyArtifact,
     synthAction: cdkp.SimpleSynthAction.standardNpmSynth({
-      sourceArtifact,
-      cloudAssemblyArtifact,
       additionalArtifacts: [
         {
           artifact: addlArtifact,
@@ -205,7 +181,7 @@ test('Standard (NPM) synth can output additional artifacts', () => {
       BuildSpec: encodedJson(deepObjectLike({
         artifacts: {
           'secondary-artifacts': {
-            CloudAsm: {
+            CDKCloudAssembly: {
               'base-directory': 'testcdk.out',
               'files': '**/*',
             },
@@ -223,12 +199,8 @@ test('Standard (NPM) synth can output additional artifacts', () => {
 test('Standard (NPM) synth can run in a VPC', () => {
   // WHEN
   new TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-    sourceArtifact,
-    cloudAssemblyArtifact,
     synthAction: cdkp.SimpleSynthAction.standardNpmSynth({
       vpc: new ec2.Vpc(pipelineStack, 'NpmSynthTestVpc'),
-      sourceArtifact,
-      cloudAssemblyArtifact,
     }),
   });
 
@@ -264,12 +236,8 @@ test('Standard (NPM) synth can run in a VPC', () => {
 test('Standard (Yarn) synth can run in a VPC', () => {
   // WHEN
   new TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-    sourceArtifact,
-    cloudAssemblyArtifact,
     synthAction: cdkp.SimpleSynthAction.standardYarnSynth({
       vpc: new ec2.Vpc(pipelineStack, 'YarnSynthTestVpc'),
-      sourceArtifact,
-      cloudAssemblyArtifact,
     }),
   });
 
@@ -303,32 +271,20 @@ test('Standard (Yarn) synth can run in a VPC', () => {
 });
 
 test('Pipeline action contains a hash that changes as the buildspec changes', () => {
-  const hash1 = synthWithAction((sa, cxa) => cdkp.SimpleSynthAction.standardNpmSynth({
-    sourceArtifact: sa,
-    cloudAssemblyArtifact: cxa,
-  }));
+  const hash1 = synthWithAction(() => cdkp.SimpleSynthAction.standardNpmSynth());
 
   // To make sure the hash is not just random :)
-  const hash1prime = synthWithAction((sa, cxa) => cdkp.SimpleSynthAction.standardNpmSynth({
-    sourceArtifact: sa,
-    cloudAssemblyArtifact: cxa,
-  }));
+  const hash1prime = synthWithAction(() => cdkp.SimpleSynthAction.standardNpmSynth());
 
-  const hash2 = synthWithAction((sa, cxa) => cdkp.SimpleSynthAction.standardNpmSynth({
-    sourceArtifact: sa,
-    cloudAssemblyArtifact: cxa,
+  const hash2 = synthWithAction(() => cdkp.SimpleSynthAction.standardNpmSynth({
     installCommand: 'do install',
   }));
-  const hash3 = synthWithAction((sa, cxa) => cdkp.SimpleSynthAction.standardNpmSynth({
-    sourceArtifact: sa,
-    cloudAssemblyArtifact: cxa,
+  const hash3 = synthWithAction(() => cdkp.SimpleSynthAction.standardNpmSynth({
     environment: {
       computeType: cbuild.ComputeType.LARGE,
     },
   }));
-  const hash4 = synthWithAction((sa, cxa) => cdkp.SimpleSynthAction.standardNpmSynth({
-    sourceArtifact: sa,
-    cloudAssemblyArtifact: cxa,
+  const hash4 = synthWithAction(() => cdkp.SimpleSynthAction.standardNpmSynth({
     environmentVariables: {
       xyz: { value: 'SOME-VALUE' },
     },
@@ -343,16 +299,12 @@ test('Pipeline action contains a hash that changes as the buildspec changes', ()
   expect(hash2).not.toEqual(hash4);
   expect(hash3).not.toEqual(hash4);
 
-  function synthWithAction(cb: (sourceArtifact: codepipeline.Artifact, cloudAssemblyArtifact: codepipeline.Artifact) => codepipeline.IAction) {
+  function synthWithAction(cb: () => cdkp.ISynthAction) {
     const _app = new TestApp({ outdir: 'testcdk.out' });
     const _pipelineStack = new Stack(_app, 'PipelineStack', { env: PIPELINE_ENV });
-    const _sourceArtifact = new codepipeline.Artifact();
-    const _cloudAssemblyArtifact = new codepipeline.Artifact('CloudAsm');
 
     new TestGitHubNpmPipeline(_pipelineStack, 'Cdk', {
-      sourceArtifact: _sourceArtifact,
-      cloudAssemblyArtifact: _cloudAssemblyArtifact,
-      synthAction: cb(_sourceArtifact, _cloudAssemblyArtifact),
+      synthAction: cb(),
     });
 
     const theHash = Capture.aString();
@@ -382,13 +334,8 @@ test('Pipeline action contains a hash that changes as the buildspec changes', ()
 
 test('SimpleSynthAction is IGrantable', () => {
   // GIVEN
-  const synthAction = cdkp.SimpleSynthAction.standardNpmSynth({
-    sourceArtifact,
-    cloudAssemblyArtifact,
-  });
+  const synthAction = cdkp.SimpleSynthAction.standardNpmSynth();
   new TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-    sourceArtifact,
-    cloudAssemblyArtifact,
     synthAction,
   });
   const bucket = new s3.Bucket(pipelineStack, 'Bucket');
@@ -411,11 +358,7 @@ test('SimpleSynthAction can reference an imported ECR repo', () => {
 
   // WHEN
   new TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-    sourceArtifact,
-    cloudAssemblyArtifact,
     synthAction: cdkp.SimpleSynthAction.standardNpmSynth({
-      sourceArtifact,
-      cloudAssemblyArtifact,
       environment: {
         buildImage: cbuild.LinuxBuildImage.fromEcrRepository(
           ecr.Repository.fromRepositoryName(pipelineStack, 'ECRImage', 'my-repo-name'),

@@ -6,7 +6,9 @@ import { Annotations, App, CfnOutput, PhysicalName, Stack, Stage } from '@aws-cd
 import { Construct } from 'constructs';
 import { AssetType, DeployCdkStackAction, PublishAssetsAction, UpdatePipelineAction } from './actions';
 import { appOf, assemblyBuilderOf } from './private/construct-internals';
+import { ISource } from './sources';
 import { AddStageOptions, AssetPublishingCommand, CdkStage, StackOutput } from './stage';
+import { ISynthAction } from './synths';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
 // eslint-disable-next-line
@@ -21,19 +23,28 @@ export interface CdkPipelineProps {
    *
    * @default - Required unless `codePipeline` is given
    */
-  readonly sourceAction?: codepipeline.IAction;
+  readonly source?: ISource;
 
   /**
    * The CodePipeline action build and synthesis step of the CDK app
    *
    * @default - Required unless `codePipeline` or `sourceAction` is given
    */
-  readonly synthAction?: codepipeline.IAction;
+  readonly synthAction?: ISynthAction;
 
   /**
-   * The artifact you have defined to be the artifact to hold the cloudAssemblyArtifact for the synth action
+   * An artifact you have defined to be the artifact to hold the source for the CodePipeline
+   *
+   * @default - A source artifact is automatically created
    */
-  readonly cloudAssemblyArtifact: codepipeline.Artifact;
+  readonly sourceArtifact?: codepipeline.Artifact;
+
+  /**
+   * An artifact you have defined to be the artifact to hold the cloudAssemblyArtifact for the synth action
+   *
+   * @default - A new artifact, named 'CDKCloudAssembly', is automatically created
+   */
+  readonly cloudAssemblyArtifact?: codepipeline.Artifact;
 
   /**
    * Existing CodePipeline to add deployment stages to
@@ -138,16 +149,18 @@ export class CdkPipeline extends CoreConstruct {
   private readonly _assets: AssetPublishing;
   private readonly _stages: CdkStage[] = [];
   private readonly _outputArtifacts: Record<string, codepipeline.Artifact> = {};
+  private readonly _sourceArtifact: codepipeline.Artifact;
   private readonly _cloudAssemblyArtifact: codepipeline.Artifact;
 
-  constructor(scope: Construct, id: string, props: CdkPipelineProps) {
+  constructor(scope: Construct, id: string, props: CdkPipelineProps = {}) {
     super(scope, id);
 
     if (!App.isApp(this.node.root)) {
       throw new Error('CdkPipeline must be created under an App');
     }
 
-    this._cloudAssemblyArtifact = props.cloudAssemblyArtifact;
+    this._cloudAssemblyArtifact = props.cloudAssemblyArtifact ?? new codepipeline.Artifact('CDKCloudAssembly');
+    this._sourceArtifact = props.sourceArtifact ?? new codepipeline.Artifact();
     const pipelineStack = Stack.of(this);
 
     if (props.codePipeline) {
@@ -167,25 +180,32 @@ export class CdkPipeline extends CoreConstruct {
       });
     }
 
-    if (props.sourceAction && !props.synthAction) {
+    if (props.source && !props.synthAction) {
       // Because of ordering limitations, you can: bring your own Source, bring your own
       // Both, or bring your own Nothing. You cannot bring your own Build (which because of the
       // current CodePipeline API must go BEFORE what we're adding) and then having us add a
       // Source after it. That doesn't make any sense.
-      throw new Error('When passing a \'sourceAction\' you must also pass a \'synthAction\' (or a \'codePipeline\' that already has both)');
+      throw new Error('When passing a \'source\' you must also pass a \'synthAction\' (or a \'codePipeline\' that already has both)');
     }
-    if (!props.sourceAction && (!props.codePipeline || props.codePipeline.stages.length < 1)) {
-      throw new Error('You must pass a \'sourceAction\' (or a \'codePipeline\' that already has a Source stage)');
+    if (!props.source &&
+      (!props.codePipeline || // Does not bring a custom CodePipeline
+        props.codePipeline.stages.length < 1 || // Custom CodePipeline does not have stages
+        !props.sourceArtifact || // No source artifact supplied
+        !(props.synthAction || props.cloudAssemblyArtifact) // No synth action and no cloud assembly provided
+      )
+    ) {
+      throw new Error('You must pass a \'source\' (or a \'codePipeline\' that already has a Source stage and the used artifacts)');
     }
 
-    if (props.sourceAction) {
+    if (props.source) {
       this._pipeline.addStage({
         stageName: 'Source',
-        actions: [props.sourceAction],
+        actions: [props.source.provideSourceAction(this._sourceArtifact)],
       });
     }
 
     if (props.synthAction) {
+      props.synthAction.configureArtifacts(this._sourceArtifact, this._cloudAssemblyArtifact);
       this._pipeline.addStage({
         stageName: 'Build',
         actions: [props.synthAction],
@@ -222,6 +242,21 @@ export class CdkPipeline extends CoreConstruct {
    */
   public get codePipeline(): codepipeline.Pipeline {
     return this._pipeline;
+  }
+
+
+  /**
+   * The underlying source artifact object
+   */
+  public get sourceArtifact(): codepipeline.Artifact {
+    return this._sourceArtifact;
+  }
+
+  /**
+   * The underlying cloud assembly artifact
+   */
+  public get cloudAssemblyArtifact(): codepipeline.Artifact {
+    return this._cloudAssemblyArtifact;
   }
 
   /**

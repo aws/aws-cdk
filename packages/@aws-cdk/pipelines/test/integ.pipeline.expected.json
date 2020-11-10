@@ -421,10 +421,10 @@
                   "OAuthToken": "not-a-secret",
                   "PollForSourceChanges": true
                 },
-                "Name": "GitHub",
+                "Name": "OWNER-REPO",
                 "OutputArtifacts": [
                   {
-                    "Name": "Artifact_Source_GitHub"
+                    "Name": "Artifact_Source_OWNER-REPO"
                   }
                 ],
                 "RunOrder": 1
@@ -445,17 +445,17 @@
                   "ProjectName": {
                     "Ref": "PipelineBuildSynthCdkBuildProject6BEFA8E6"
                   },
-                  "EnvironmentVariables": "[{\"name\":\"_PROJECT_CONFIG_HASH\",\"type\":\"PLAINTEXT\",\"value\":\"ea30b07764cb215963f4b0c292b5a06993fc3dd94621fbdc1c618e0f1e0dae10\"}]"
+                  "EnvironmentVariables": "[{\"name\":\"_PROJECT_CONFIG_HASH\",\"type\":\"PLAINTEXT\",\"value\":\"894e96736c6a8b66fcbbc6823a777f2d064a0dfb30c265fe97e0605b01b8aebd\"}]"
                 },
                 "InputArtifacts": [
                   {
-                    "Name": "Artifact_Source_GitHub"
+                    "Name": "Artifact_Source_OWNER-REPO"
                   }
                 ],
                 "Name": "Synth",
                 "OutputArtifacts": [
                   {
-                    "Name": "CloudAsm"
+                    "Name": "CDKCloudAssembly"
                   },
                   {
                     "Name": "IntegTests"
@@ -488,7 +488,7 @@
                 },
                 "InputArtifacts": [
                   {
-                    "Name": "CloudAsm"
+                    "Name": "CDKCloudAssembly"
                   }
                 ],
                 "Name": "SelfMutate",
@@ -519,7 +519,7 @@
                 },
                 "InputArtifacts": [
                   {
-                    "Name": "Artifact_Source_GitHub"
+                    "Name": "Artifact_Source_OWNER-REPO"
                   }
                 ],
                 "Name": "UseSource",
@@ -555,11 +555,11 @@
                   },
                   "ActionMode": "CHANGE_SET_REPLACE",
                   "ChangeSetName": "PipelineChange",
-                  "TemplatePath": "CloudAsm::assembly-PipelineStack-PreProd/PipelineStackPreProdStack65A0AD1F.template.json"
+                  "TemplatePath": "CDKCloudAssembly::assembly-PipelineStack-PreProd/PipelineStackPreProdStack65A0AD1F.template.json"
                 },
                 "InputArtifacts": [
                   {
-                    "Name": "CloudAsm"
+                    "Name": "CDKCloudAssembly"
                   }
                 ],
                 "Name": "Stack.Prepare",
@@ -872,7 +872,7 @@
           ]
         },
         "Source": {
-          "BuildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"pre_build\": {\n      \"commands\": [\n        \"npm ci\"\n      ]\n    },\n    \"build\": {\n      \"commands\": [\n        \"npx cdk synth\"\n      ]\n    }\n  },\n  \"artifacts\": {\n    \"secondary-artifacts\": {\n      \"CloudAsm\": {\n        \"base-directory\": \"cdk-integ.out\",\n        \"files\": \"**/*\"\n      },\n      \"IntegTests\": {\n        \"base-directory\": \"test\",\n        \"files\": \"**/*\"\n      }\n    }\n  }\n}",
+          "BuildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"pre_build\": {\n      \"commands\": [\n        \"npm ci\"\n      ]\n    },\n    \"build\": {\n      \"commands\": [\n        \"npx cdk synth\"\n      ]\n    }\n  },\n  \"artifacts\": {\n    \"secondary-artifacts\": {\n      \"CDKCloudAssembly\": {\n        \"base-directory\": \"cdk-integ.out\",\n        \"files\": \"**/*\"\n      },\n      \"IntegTests\": {\n        \"base-directory\": \"test\",\n        \"files\": \"**/*\"\n      }\n    }\n  }\n}",
           "Type": "CODEPIPELINE"
         },
         "EncryptionKey": {

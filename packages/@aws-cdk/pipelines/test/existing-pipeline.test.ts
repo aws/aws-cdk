@@ -3,7 +3,7 @@ import '@aws-cdk/assert/jest';
 import * as cp from '@aws-cdk/aws-codepipeline';
 import { Stack } from '@aws-cdk/core';
 import * as cdkp from '../lib';
-import { PIPELINE_ENV, TestApp, TestGitHubAction } from './testutil';
+import { PIPELINE_ENV, TestApp, TestGitHubAction, TestGitHubSource } from './testutil';
 
 let app: TestApp;
 let pipelineStack: Stack;
@@ -15,7 +15,6 @@ beforeEach(() => {
   app = new TestApp();
   pipelineStack = new Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
   sourceArtifact = new cp.Artifact();
-  cloudAssemblyArtifact = new cp.Artifact();
 });
 
 afterEach(() => {
@@ -30,17 +29,16 @@ describe('with empty existing CodePipeline', () => {
   test('both actions are required', () => {
     // WHEN
     expect(() => {
-      new cdkp.CdkPipeline(pipelineStack, 'Cdk', { cloudAssemblyArtifact, codePipeline });
-    }).toThrow(/You must pass a 'sourceAction'/);
+      new cdkp.CdkPipeline(pipelineStack, 'Cdk', { codePipeline });
+    }).toThrow(/You must pass a 'source'/);
   });
 
   test('can give both actions', () => {
     // WHEN
     new cdkp.CdkPipeline(pipelineStack, 'Cdk', {
-      cloudAssemblyArtifact,
       codePipeline,
-      sourceAction: new TestGitHubAction(sourceArtifact),
-      synthAction: cdkp.SimpleSynthAction.standardNpmSynth({ sourceArtifact, cloudAssemblyArtifact }),
+      source: new TestGitHubSource(),
+      synthAction: cdkp.SimpleSynthAction.standardNpmSynth(),
     });
 
     // THEN
@@ -70,8 +68,8 @@ describe('with custom Source stage in existing Pipeline', () => {
     // WHEN
     new cdkp.CdkPipeline(pipelineStack, 'Cdk', {
       codePipeline,
-      cloudAssemblyArtifact,
-      synthAction: cdkp.SimpleSynthAction.standardNpmSynth({ sourceArtifact, cloudAssemblyArtifact }),
+      sourceArtifact,
+      synthAction: cdkp.SimpleSynthAction.standardNpmSynth(),
     });
 
     // THEN
@@ -83,10 +81,24 @@ describe('with custom Source stage in existing Pipeline', () => {
       ],
     });
   });
+
+  test('Fails without sourceArtifact', () => {
+    // WHEN
+    expect(() => {
+      new cdkp.CdkPipeline(pipelineStack, 'Cdk', {
+        codePipeline,
+        synthAction: cdkp.SimpleSynthAction.standardNpmSynth(),
+      });
+    }).toThrow(/You must pass a 'source'/);
+  });
 });
 
 describe('with Source and Build stages in existing Pipeline', () => {
   beforeEach(() => {
+    cloudAssemblyArtifact = new cp.Artifact();
+    const synthAction = cdkp.SimpleSynthAction.standardNpmSynth();
+    synthAction.configureArtifacts(sourceArtifact, cloudAssemblyArtifact);
+
     codePipeline = new cp.Pipeline(pipelineStack, 'CodePipeline', {
       stages: [
         {
@@ -95,7 +107,7 @@ describe('with Source and Build stages in existing Pipeline', () => {
         },
         {
           stageName: 'CustomBuild',
-          actions: [cdkp.SimpleSynthAction.standardNpmSynth({ sourceArtifact, cloudAssemblyArtifact })],
+          actions: [synthAction],
         },
       ],
     });
@@ -105,6 +117,7 @@ describe('with Source and Build stages in existing Pipeline', () => {
     // WHEN
     new cdkp.CdkPipeline(pipelineStack, 'Cdk', {
       codePipeline,
+      sourceArtifact,
       cloudAssemblyArtifact,
     });
 

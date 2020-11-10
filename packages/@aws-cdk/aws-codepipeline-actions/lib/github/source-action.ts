@@ -64,7 +64,7 @@ export interface GitHubSourceActionProps extends codepipeline.CommonActionProps 
    * It is recommended to use a Secrets Manager `Secret` to obtain the token:
    *
    *   const oauth = cdk.SecretValue.secretsManager('my-github-token');
-   *   new GitHubSource(this, 'GitHubAction', { oauthToken: oauth, ... });
+   *   new GitHubSourceAction(this, 'GitHubAction', { oauthToken: oauth, ... });
    *
    * The GitHub Personal Access Token should have these scopes:
    *

@@ -58,6 +58,9 @@ describe('asset stage placement', () => {
     // WHEN
     const sourceArtifact = new cp.Artifact();
     const cloudAssemblyArtifact = new cp.Artifact();
+    const synthAction = cdkp.SimpleSynthAction.standardNpmSynth();
+    synthAction.configureArtifacts(sourceArtifact, cloudAssemblyArtifact);
+
     const existingCodePipeline = new cp.Pipeline(pipelineStack, 'CodePipeline', {
       stages: [
         {
@@ -66,14 +69,15 @@ describe('asset stage placement', () => {
         },
         {
           stageName: 'CustomBuild',
-          actions: [cdkp.SimpleSynthAction.standardNpmSynth({ sourceArtifact, cloudAssemblyArtifact })],
+          actions: [synthAction],
         },
       ],
     });
     pipeline = new cdkp.CdkPipeline(pipelineStack, 'CdkEmptyPipeline', {
-      cloudAssemblyArtifact: cloudAssemblyArtifact,
+      cloudAssemblyArtifact,
       selfMutating: false,
       codePipeline: existingCodePipeline,
+      sourceArtifact,
       // No source/build actions
     });
     pipeline.addApplicationStage(new FileAssetApp(app, 'App'));

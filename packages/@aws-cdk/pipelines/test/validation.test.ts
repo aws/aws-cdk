@@ -14,22 +14,14 @@ import { BucketStack, PIPELINE_ENV, TestApp, TestGitHubNpmPipeline } from './tes
 let app: TestApp;
 let pipelineStack: Stack;
 let pipeline: cdkp.CdkPipeline;
-let sourceArtifact: codepipeline.Artifact;
-let cloudAssemblyArtifact: codepipeline.Artifact;
 let integTestArtifact: codepipeline.Artifact;
 
 beforeEach(() => {
   app = new TestApp();
   pipelineStack = new Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
-  sourceArtifact = new codepipeline.Artifact();
-  cloudAssemblyArtifact = new codepipeline.Artifact('CloudAsm');
   integTestArtifact = new codepipeline.Artifact('IntegTests');
   pipeline = new TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
-    sourceArtifact,
-    cloudAssemblyArtifact,
     synthAction: cdkp.SimpleSynthAction.standardNpmSynth({
-      sourceArtifact,
-      cloudAssemblyArtifact,
       additionalArtifacts: [{ directory: 'test', artifact: integTestArtifact }],
     }),
   });
@@ -104,7 +96,7 @@ test('can use additional files from source', () => {
   // WHEN
   pipeline.addStage('Test').addActions(new cdkp.ShellScriptAction({
     actionName: 'UseSources',
-    additionalArtifacts: [sourceArtifact],
+    additionalArtifacts: [pipeline.sourceArtifact],
     commands: ['true'],
   }));
 
@@ -115,7 +107,7 @@ test('can use additional files from source', () => {
       Actions: [
         deepObjectLike({
           Name: 'UseSources',
-          InputArtifacts: [{ Name: 'Artifact_Source_GitHub' }],
+          InputArtifacts: [{ Name: 'Artifact_Source_test-test' }],
         }),
       ],
     }),

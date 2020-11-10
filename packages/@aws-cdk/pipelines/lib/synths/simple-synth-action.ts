@@ -14,15 +14,6 @@ import { copyEnvironmentVariables, filterEmpty } from './_util';
  * Configuration options for a SimpleSynth
  */
 export interface SimpleSynthOptions {
-  /**
-   * The source artifact of the CodePipeline
-   */
-  readonly sourceArtifact: codepipeline.Artifact;
-
-  /**
-   * The artifact where the CloudAssembly should be emitted
-   */
-  readonly cloudAssemblyArtifact: codepipeline.Artifact;
 
   /**
    * Environment variables to send into build
@@ -117,29 +108,6 @@ export interface SimpleSynthActionProps extends SimpleSynthOptions {
   readonly synthCommand: string;
 
   /**
-   * The install command
-   *
-   * If not provided by the build image or another dependency
-   * management tool, at least install the CDK CLI here using
-   * `npm install -g aws-cdk`.
-   *
-   * @default - No install required
-   * @deprecated Use `installCommands` instead
-   */
-  readonly installCommand?: string;
-
-  /**
-   * The build command
-   *
-   * If your programming language requires a compilation step, put the
-   * compilation command here.
-   *
-   * @default - No build required
-   * @deprecated Use `buildCommands` instead
-   */
-  readonly buildCommand?: string;
-
-  /**
    * Install commands
    *
    * If not provided by the build image or another dependency
@@ -187,9 +155,25 @@ export interface AdditionalArtifact {
 }
 
 /**
+ * CodePipeline action to synthesize CDK applications.
+ * The source artifact and the cloud assembly artifact are lazily initialized by the CDK pipeline.
+ */
+export interface ISynthAction extends codepipeline.IAction {
+
+  /**
+   * Lazily configure the main artifacts
+   *
+   * @param sourceArtifact The source artifact of the CodePipeline
+   * @param cloudAssemblyArtifact The artifact where the CloudAssembly should be emitted
+   */
+  configureArtifacts(sourceArtifact: codepipeline.Artifact, cloudAssemblyArtifact: codepipeline.Artifact): void;
+
+}
+
+/**
  * A standard synth with a generated buildspec
  */
-export class SimpleSynthAction implements codepipeline.IAction, iam.IGrantable {
+export class SimpleSynthAction implements ISynthAction, iam.IGrantable {
 
   /**
    * Create a standard NPM synth action
@@ -198,10 +182,10 @@ export class SimpleSynthAction implements codepipeline.IAction, iam.IGrantable {
    *
    * If you need a build step, add `buildCommand: 'npm run build'`.
    */
-  public static standardNpmSynth(options: StandardNpmSynthOptions) {
+  public static standardNpmSynth(options: StandardNpmSynthOptions = {}) {
     return new SimpleSynthAction({
       ...options,
-      installCommand: options.installCommand ?? 'npm ci',
+      installCommands: [options.installCommand ?? 'npm ci'],
       synthCommand: options.synthCommand ?? 'npx cdk synth',
       vpc: options.vpc,
       subnetSelection: options.subnetSelection,
@@ -215,10 +199,10 @@ export class SimpleSynthAction implements codepipeline.IAction, iam.IGrantable {
    *
    * If you need a build step, add `buildCommand: 'yarn build'`.
    */
-  public static standardYarnSynth(options: StandardYarnSynthOptions) {
+  public static standardYarnSynth(options: StandardYarnSynthOptions = {}) {
     return new SimpleSynthAction({
       ...options,
-      installCommand: options.installCommand ?? 'yarn install --frozen-lockfile',
+      installCommands: [options.installCommand ?? 'yarn install --frozen-lockfile'],
       synthCommand: options.synthCommand ?? 'npx cdk synth',
       vpc: options.vpc,
       subnetSelection: options.subnetSelection,
@@ -228,6 +212,8 @@ export class SimpleSynthAction implements codepipeline.IAction, iam.IGrantable {
   private _action?: codepipeline_actions.CodeBuildAction;
   private _actionProperties: codepipeline.ActionProperties;
   private _project?: codebuild.IProject;
+  private _sourceArtifact?: codepipeline.Artifact;
+  private _cloudAssemblyArtifact?: codepipeline.Artifact;
 
   constructor(private readonly props: SimpleSynthActionProps) {
     // A number of actionProperties get read before bind() is even called (so before we
@@ -244,29 +230,32 @@ export class SimpleSynthAction implements codepipeline.IAction, iam.IGrantable {
       category: codepipeline.ActionCategory.BUILD,
       provider: 'CodeBuild',
       artifactBounds: { minInputs: 0, maxInputs: 5, minOutputs: 0, maxOutputs: 5 },
-      inputs: [props.sourceArtifact],
-      outputs: [props.cloudAssemblyArtifact, ...(props.additionalArtifacts ?? []).map(a => a.artifact)],
+      inputs: [],
+      outputs: [],
     };
-
-    if (this.props.installCommand && this.props.installCommands) {
-      throw new Error('Pass either \'installCommand\' or \'installCommands\', but not both');
-    }
-
-    if (this.props.buildCommand && this.props.buildCommands) {
-      throw new Error('Pass either \'buildCommand\' or \'buildCommands\', but not both');
-    }
 
     const addls = props.additionalArtifacts ?? [];
     if (Object.keys(addls).length > 0) {
-      if (!props.cloudAssemblyArtifact.artifactName) {
-        throw new Error('You must give all output artifacts, including the \'cloudAssemblyArtifact\', names when using \'additionalArtifacts\'');
-      }
       for (const addl of addls) {
         if (!addl.artifact.artifactName) {
           throw new Error('You must give all output artifacts passed to SimpleSynthAction names when using \'additionalArtifacts\'');
         }
       }
     }
+  }
+
+  /**
+   * Lazily configure the main artifacts
+   *
+   * @param sourceArtifact The source artifact of the CodePipeline
+   * @param cloudAssemblyArtifact The artifact where the CloudAssembly should be emitted
+   */
+  public configureArtifacts(sourceArtifact: codepipeline.Artifact, cloudAssemblyArtifact: codepipeline.Artifact) {
+    this._sourceArtifact = sourceArtifact;
+    if ((this.props.additionalArtifacts ?? []).length > 0 && !cloudAssemblyArtifact.artifactName) {
+      throw new Error('You must give all output artifacts, including the \'cloudAssemblyArtifact\', names when using \'additionalArtifacts\'');
+    }
+    this._cloudAssemblyArtifact = cloudAssemblyArtifact;
   }
 
   /**
@@ -290,10 +279,14 @@ export class SimpleSynthAction implements codepipeline.IAction, iam.IGrantable {
    * Exists to implement IAction
    */
   public bind(scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions): codepipeline.ActionConfig {
-    const buildCommands = this.props.buildCommands ?? [this.props.buildCommand];
-    const installCommands = this.props.installCommands ?? [this.props.installCommand];
+    const buildCommands = this.props.buildCommands ?? [];
+    const installCommands = this.props.installCommands ?? [];
     const testCommands = this.props.testCommands ?? [];
     const synthCommand = this.props.synthCommand;
+
+    if (!this._sourceArtifact || !this._cloudAssemblyArtifact) {
+      throw new Error('Lazy configuration of main artifacts has not yet happened.');
+    }
 
     const buildSpec = codebuild.BuildSpec.fromObject({
       version: '0.2',
@@ -351,8 +344,8 @@ export class SimpleSynthAction implements codepipeline.IAction, iam.IGrantable {
 
     this._action = new codepipeline_actions.CodeBuildAction({
       actionName: this.actionProperties.actionName,
-      input: this.props.sourceArtifact,
-      outputs: [this.props.cloudAssemblyArtifact, ...(this.props.additionalArtifacts ?? []).map(a => a.artifact)],
+      input: this._sourceArtifact!,
+      outputs: [this._cloudAssemblyArtifact!, ...(this.props.additionalArtifacts ?? []).map(a => a.artifact)],
 
       // Inclusion of the hash here will lead to the pipeline structure for any changes
       // made the config of the underlying CodeBuild Project.
@@ -379,10 +372,10 @@ export class SimpleSynthAction implements codepipeline.IAction, iam.IGrantable {
 
       if (self.props.additionalArtifacts) {
         const secondary: Record<string, any> = {};
-        if (!self.props.cloudAssemblyArtifact.artifactName) {
+        if (!self._cloudAssemblyArtifact!.artifactName) {
           throw new Error('When using additional output artifacts, you must also name the CloudAssembly artifact');
         }
-        secondary[self.props.cloudAssemblyArtifact.artifactName] = cloudAsmArtifactSpec;
+        secondary[self._cloudAssemblyArtifact!.artifactName] = cloudAsmArtifactSpec;
         self.props.additionalArtifacts.forEach((art) => {
           if (!art.artifact.artifactName) {
             throw new Error('You must give the output artifact a name');

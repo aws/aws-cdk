@@ -8,6 +8,7 @@ import { App, AppProps, Environment, SecretValue, Stack, StackProps, Stage } fro
 import { Construct } from 'constructs';
 import * as cdkp from '../lib';
 import { assemblyBuilderOf } from '../lib/private/construct-internals';
+import { GitHubSource } from '../lib/sources';
 
 export const PIPELINE_ENV: Environment = {
   account: '123pipeline',
@@ -33,29 +34,26 @@ export class TestApp extends App {
 }
 
 export class TestGitHubNpmPipeline extends cdkp.CdkPipeline {
-  public readonly sourceArtifact: codepipeline.Artifact;
-  public readonly cloudAssemblyArtifact: codepipeline.Artifact;
 
-  constructor(scope: Construct, id: string, props?: Partial<cdkp.CdkPipelineProps> & { readonly sourceArtifact?: codepipeline.Artifact } ) {
-    const sourceArtifact = props?.sourceArtifact ?? new codepipeline.Artifact();
-    const cloudAssemblyArtifact = props?.cloudAssemblyArtifact ?? new codepipeline.Artifact();
-
+  constructor(scope: Construct, id: string, props?: Partial<cdkp.CdkPipelineProps>) {
     super(scope, id, {
-      sourceAction: new TestGitHubAction(sourceArtifact),
-      synthAction: cdkp.SimpleSynthAction.standardNpmSynth({
-        sourceArtifact,
-        cloudAssemblyArtifact,
-      }),
+      source: new TestGitHubSource(),
+      synthAction: cdkp.SimpleSynthAction.standardNpmSynth(),
       vpc: new ec2.Vpc(scope, 'TestVpc'),
-      cloudAssemblyArtifact,
       ...props,
     });
-
-    this.sourceArtifact = sourceArtifact;
-    this.cloudAssemblyArtifact = cloudAssemblyArtifact;
   }
 }
 
+export class TestGitHubSource extends GitHubSource {
+  constructor() {
+    super({
+      oauthToken: SecretValue.plainText('$3kr1t'),
+      slug: 'test/test',
+      trigger: codepipeline_actions.GitHubTrigger.POLL,
+    });
+  }
+}
 
 export class TestGitHubAction extends codepipeline_actions.GitHubSourceAction {
   constructor(sourceArtifact: codepipeline.Artifact) {

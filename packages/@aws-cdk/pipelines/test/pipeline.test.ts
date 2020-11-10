@@ -12,8 +12,7 @@ import {
 } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as cp from '@aws-cdk/aws-codepipeline';
-import * as cpa from '@aws-cdk/aws-codepipeline-actions';
-import { Stack, Stage, StageProps, SecretValue, Tags } from '@aws-cdk/core';
+import { Stack, Stage, StageProps, Tags } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as cdkp from '../lib';
 import { BucketStack, PIPELINE_ENV, stackTemplate, TestApp, TestGitHubNpmPipeline } from './testutil';
@@ -436,28 +435,6 @@ test('changing CLI version leads to a different pipeline structure (restarting i
 
   expect(JSON.stringify(structure2.capturedValue)).not.toEqual(JSON.stringify(structure3.capturedValue));
 
-});
-
-test('add another action to an existing stage', () => {
-  // WHEN
-  pipeline.stage('Source').addAction(new cpa.GitHubSourceAction({
-    actionName: 'GitHub2',
-    oauthToken: SecretValue.plainText('oops'),
-    output: new cp.Artifact(),
-    owner: 'OWNER',
-    repo: 'REPO',
-  }));
-
-  // THEN
-  expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
-    Stages: arrayWith({
-      Name: 'Source',
-      Actions: [
-        objectLike({ Name: 'GitHub' }),
-        objectLike({ Name: 'GitHub2' }),
-      ],
-    }),
-  });
 });
 
 test('tags get reflected in pipeline', () => {

@@ -33,27 +33,18 @@ class CdkpipelinesDemoPipelineStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const sourceArtifact = new codepipeline.Artifact();
-    const cloudAssemblyArtifact = new codepipeline.Artifact('CloudAsm');
     const integTestArtifact = new codepipeline.Artifact('IntegTests');
 
     const pipeline = new cdkp.CdkPipeline(this, 'Pipeline', {
-      cloudAssemblyArtifact,
-
       // Where the source can be found
-      sourceAction: new codepipeline_actions.GitHubSourceAction({
-        actionName: 'GitHub',
-        output: sourceArtifact,
+      source: new cdkp.GitHubSource({
         oauthToken: SecretValue.plainText('not-a-secret'),
-        owner: 'OWNER',
-        repo: 'REPO',
+        slug: 'OWNER/REPO',
         trigger: codepipeline_actions.GitHubTrigger.POLL,
       }),
 
       // How it will be built
       synthAction: cdkp.SimpleSynthAction.standardNpmSynth({
-        sourceArtifact,
-        cloudAssemblyArtifact,
         projectName: 'MyServicePipeline-synth',
         additionalArtifacts: [
           {
@@ -76,7 +67,7 @@ class CdkpipelinesDemoPipelineStack extends Stack {
           // Comes from source
           'cat README.md',
         ],
-        additionalArtifacts: [sourceArtifact],
+        additionalArtifacts: [pipeline.sourceArtifact],
       }),
     );
   }
