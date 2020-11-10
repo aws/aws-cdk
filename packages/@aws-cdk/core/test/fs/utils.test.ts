@@ -6,26 +6,6 @@ import { SymlinkFollowMode } from '../../lib/fs';
 import * as util from '../../lib/fs/utils';
 
 nodeunitShim({
-  shouldExclude: {
-    'excludes nothing by default'(test: Test) {
-      test.ok(!util.shouldExclude([], path.join('some', 'file', 'path')));
-      test.done();
-    },
-
-    'excludes requested files'(test: Test) {
-      const exclusions = ['*.ignored'];
-      test.ok(util.shouldExclude(exclusions, path.join('some', 'file.ignored')));
-      test.ok(!util.shouldExclude(exclusions, path.join('some', 'important', 'file')));
-      test.done();
-    },
-
-    'does not exclude whitelisted files'(test: Test) {
-      const exclusions = ['*.ignored', '!important.*'];
-      test.ok(!util.shouldExclude(exclusions, path.join('some', 'important.ignored')));
-      test.done();
-    },
-  },
-
   shouldFollow: {
     always: {
       'follows internal'(test: Test) {
