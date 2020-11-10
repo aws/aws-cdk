@@ -42,6 +42,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
   - [Import](#importing-user-pools)
   - [Identity Providers](#identity-providers)
   - [App Clients](#app-clients)
+  - [Resource Servers](#resource-servers)
   - [Domains](#domains)
 
 ## User Pools
@@ -319,6 +320,9 @@ Amazon SES, however, support for Amazon SES is not available in the CDK yet. If 
 give [this issue](https://github.com/aws/aws-cdk/issues/6768) a +1. Until then, you can use the [cfn
 layer](https://docs.aws.amazon.com/cdk/latest/guide/cfn_layer.html) to configure this.
 
+If an email address contains non-ASCII characters, it will be encoded using the [punycode
+encoding](https://en.wikipedia.org/wiki/Punycode) when generating the template for Cloudformation.
+
 ### Lambda Triggers
 
 User pools can be configured such that AWS Lambda functions can be triggered when certain user operations or actions
@@ -545,6 +549,46 @@ pool.addClient('app-client', {
   ]
 });
 ```
+
+### Resource Servers
+
+A resource server is a server for access-protected resources. It handles authenticated requests from an app that has an
+access token. See [Defining Resource
+Servers](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-define-resource-servers.html)
+for more information.
+
+An application may choose to model custom permissions via OAuth. Resource Servers provide this capability via custom scopes
+that are attached to an app client. The following example sets up a resource server for the 'users' resource for two different
+app clients and configures the clients to use these scopes.
+
+```ts
+const pool = new cognito.UserPool(this, 'Pool');
+
+const readOnlyScope = new ResourceServerScope({ scopeName: 'read', scopeDescription: 'Read-only access' });
+const fullAccessScope = new ResourceServerScope({ scopeName: '*', scopeDescription: 'Full access' });
+
+const userServer = pool.addResourceServer('ResourceServer', {
+  identifier: 'users',
+  scopes: [ readOnlyScope, fullAccessScope ],
+});
+
+const readOnlyClient = pool.addClient('read-only-client', {
+  // ...
+  oAuth: {
+    // ...
+    scopes: [ OAuthScope.resourceServer(userServer, readOnlyScope) ],
+  },
+});
+
+const fullAccessClient = pool.addClient('full-access-client', {
+  // ...
+  oAuth: {
+    // ...
+    scopes: [ OAuthScope.resourceServer(userServer, fullAccessScope) ],
+  },
+});
+```
+
 
 ### Domains
 
