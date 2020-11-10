@@ -6,6 +6,7 @@ import { IMesh, Mesh } from './mesh';
 import { AccessLog } from './shared-interfaces';
 import { VirtualNodeListener, VirtualNodeListenerConfig } from './virtual-node-listener';
 import { IVirtualService } from './virtual-service';
+
 /**
  * Interface which all VirtualNode based classes must implement
  */
