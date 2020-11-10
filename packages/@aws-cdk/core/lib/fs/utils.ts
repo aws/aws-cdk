@@ -1,35 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import * as minimatch from 'minimatch';
 import { SymlinkFollowMode } from './options';
-
-/**
- * Determines whether a given file should be excluded or not based on given
- * exclusion glob patterns.
- *
- * @param exclude  exclusion patterns
- * @param filePath file path to be assessed against the pattern
- *
- * @returns `true` if the file should be excluded
- */
-export function shouldExclude(exclude: string[], filePath: string): boolean {
-  let excludeOutput = false;
-
-  for (const pattern of exclude) {
-    const negate = pattern.startsWith('!');
-    const match = minimatch(filePath, pattern, { matchBase: true, flipNegate: true });
-
-    if (!negate && match) {
-      excludeOutput = true;
-    }
-
-    if (negate && match) {
-      excludeOutput = false;
-    }
-  }
-
-  return excludeOutput;
-}
 
 /**
  * Determines whether a symlink should be followed or not, based on a FollowMode.
