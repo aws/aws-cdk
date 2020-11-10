@@ -565,7 +565,7 @@ books.addMethod('GET', new apigateway.HttpIntegration('http://amazon.com'), {
 });
 ```
 
-You can find a full working example [here](test/authorizers/integ.request-authorizer.ts).
+You can find a full working example [here](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-apigateway/test/authorizers/integ.token-authorizer.ts).
 
 By default, the `RequestAuthorizer` does not pass any kind of information from the request. This can,
 however, be modified by changing the `identitySource` property, and is required when specifying a value for caching.
