@@ -7,6 +7,7 @@ phases:
     commands:
 
       # baked in our image.
+      # this also takes care of launching the docker daemon.
       - /root/ecr-proxy/start.sh
 
       # Install yarn if it wasn't already present in the image
