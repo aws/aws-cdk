@@ -545,7 +545,12 @@ export = {
 
     'correctly sets containers from asset using default props'(test: Test) {
       // GIVEN
-      const stack = new cdk.Stack();
+      const app = new cdk.App({
+        context: {
+          '@aws-cdk/aws-ecr-assets:dockerIgnoreSupport': true,
+        },
+      });
+      const stack = new cdk.Stack(app, 'Stack');
 
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 

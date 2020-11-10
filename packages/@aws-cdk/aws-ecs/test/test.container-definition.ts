@@ -1367,7 +1367,12 @@ export = {
 
   'can use a DockerImageAsset directly for a container image'(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack();
+    const app = new cdk.App({
+      context: {
+        '@aws-cdk/aws-ecr-assets:dockerIgnoreSupport': true,
+      },
+    });
+    const stack = new cdk.Stack(app, 'Stack');
     const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
     const asset = new ecr_assets.DockerImageAsset(stack, 'MyDockerImage', {
       directory: path.join(__dirname, 'demo-image'),
@@ -1433,7 +1438,11 @@ export = {
 
   'docker image asset options can be used when using container image'(test: Test) {
     // GIVEN
-    const app = new cdk.App();
+    const app = new cdk.App({
+      context: {
+        '@aws-cdk/aws-ecr-assets:dockerIgnoreSupport': true,
+      },
+    });
     const stack = new cdk.Stack(app, 'MyStack');
     const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
 
