@@ -1,6 +1,7 @@
 {
   "name": "@aws-cdk/aws-wafregional",
   "version": "0.0.0",
+  "private": true,
   "description": "The CDK Construct Library for AWS::WAFRegional",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",

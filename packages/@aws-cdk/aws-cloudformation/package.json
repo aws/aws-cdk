@@ -1,6 +1,7 @@
 {
   "name": "@aws-cdk/aws-cloudformation",
   "version": "0.0.0",
+  "private": true,
   "description": "The CDK Construct Library for AWS::CloudFormation",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",

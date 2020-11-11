@@ -1,6 +1,7 @@
 {
   "name": "cdk-assets",
   "description": "CDK Asset Publishing Tool",
+  "private": true,
   "version": "0.0.0",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",

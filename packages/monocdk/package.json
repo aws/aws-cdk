@@ -1,6 +1,7 @@
 {
   "name": "monocdk",
   "version": "0.0.0",
+  "private": true,
   "description": "An experiment to bundle the entire CDK into a single module",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",

@@ -1,6 +1,7 @@
 {
   "name": "@aws-cdk-containers/ecs-service-extensions",
   "version": "0.0.0",
+  "private": true,
   "description": "The CDK Construct Library that helps you build ECS services using simple extensions",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",

@@ -1,6 +1,7 @@
 {
   "name": "@aws-cdk/assets",
   "version": "0.0.0",
+  "private": true,
   "description": "This module is deprecated. All types are now available under the core module",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",

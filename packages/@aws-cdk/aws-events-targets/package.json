@@ -1,6 +1,7 @@
 {
   "name": "@aws-cdk/aws-events-targets",
   "version": "0.0.0",
+  "private": true,
   "description": "Event targets for Amazon EventBridge",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",

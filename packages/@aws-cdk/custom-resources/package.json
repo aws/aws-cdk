@@ -1,6 +1,7 @@
 {
   "name": "@aws-cdk/custom-resources",
   "version": "0.0.0",
+  "private": true,
   "description": "Constructs for implementing CDK custom resources",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",

@@ -1,6 +1,7 @@
 {
   "name": "@aws-cdk/aws-ses-actions",
   "version": "0.0.0",
+  "private": true,
   "description": "Receipt rule actions for AWS SES",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",

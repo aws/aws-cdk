@@ -1,6 +1,7 @@
 {
   "name": "@aws-cdk/aws-sqs",
   "version": "0.0.0",
+  "private": true,
   "description": "The CDK Construct Library for AWS::SQS",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
