@@ -5,6 +5,39 @@ import { Construct, Duration } from '@aws-cdk/core';
 import { Action } from '../action';
 import { deployArtifactBounds } from '../common';
 
+export interface EcsDeployActionConfiguration {
+  /**
+   * Name of the ECS cluster to deploy.
+   */
+  readonly ClusterName: string
+
+  /**
+   * Name of the ECS service in the cluster to deploy.
+   */
+  readonly ServiceName: string
+
+  /**
+   * The name of the JSON image definitions file to use for deployments.
+   * The JSON file is a list of objects,
+   * each with 2 keys: `name` is the name of the container in the Task Definition,
+   * and `imageUri` is the Docker image URI you want to update your service with.
+   * Use this property if you want to use a different name for this file than the default 'imagedefinitions.json'.
+   * If you use this property, you don't need to specify the `input` property.
+   *
+   * @default - one of this property, or `input`, is required
+   * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/pipelines-create.html#pipelines-create-image-definitions
+   */
+  readonly FileName?: string
+
+  /**
+   * Timeout for the ECS deployment in minutes. Value must be between 1-60.
+   *
+   * @default - 60 minutes
+   * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-ECS.html
+   */
+  readonly DeploymentTimeout?: number
+}
+
 /**
  * Construction properties of {@link EcsDeployAction}.
  */
@@ -55,7 +88,8 @@ export interface EcsDeployActionProps extends codepipeline.CommonAwsActionProps 
  */
 export class EcsDeployAction extends Action {
   private readonly props: EcsDeployActionProps;
-
+  private readonly deploymentTimeout?: Duration
+  
   constructor(props: EcsDeployActionProps) {
     super({
       ...props,
@@ -66,7 +100,13 @@ export class EcsDeployAction extends Action {
       resource: props.service,
     });
 
+    const deploymentTimeout: number | undefined = props.deploymentTimeout && props.deploymentTimeout.toMinutes({ integral: true });
+    if (typeof deploymentTimeout !== 'undefined' && (deploymentTimeout < 1 || deploymentTimeout > 60)) {
+      throw new Error('Deployment timeout has to be between 1 and 60 minutes');
+    }
+
     this.props = props;
+    this.deploymentTimeout = deploymentTimeout
   }
 
   protected bound(_scope: Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
@@ -100,19 +140,20 @@ export class EcsDeployAction extends Action {
 
     options.bucket.grantRead(options.role);
 
-    const DeploymentTimeout: number | undefined = this.props.deploymentTimeout && this.props.deploymentTimeout.toMinutes({ integral: true });
-    if (typeof DeploymentTimeout !== 'undefined' && (DeploymentTimeout < 1 || DeploymentTimeout > 60)) {
-      throw new Error('Deployment timeout has to be between 1 and 60 minutes');
+    let configuration: EcsDeployActionConfiguration = {
+      ClusterName: this.props.service.cluster.clusterName,
+      ServiceName: this.props.service.serviceName,
+      FileName: this.props.imageFile && this.props.imageFile.fileName,
+    };
+
+    if (this.deploymentTimeout) {
+      configuration = {
+        ...configuration,
+        DeploymentTimeout: this.deploymentTimeout, 
+      }
     }
 
-    return {
-      configuration: {
-        ClusterName: this.props.service.cluster.clusterName,
-        ServiceName: this.props.service.serviceName,
-        FileName: this.props.imageFile && this.props.imageFile.fileName,
-        DeploymentTimeout,
-      },
-    };
+    return { configuration };
   }
 }
 
