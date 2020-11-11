@@ -107,20 +107,14 @@ export class EcsDeployAction extends Action {
 
     options.bucket.grantRead(options.role);
 
-    let configuration: any = {
-      ClusterName: this.props.service.cluster.clusterName,
-      ServiceName: this.props.service.serviceName,
-      FileName: this.props.imageFile && this.props.imageFile.fileName,
-    };
-
-    if (this.deploymentTimeout) {
-      configuration = {
-        ...configuration,
+    return {
+      configuration: {
+        ClusterName: this.props.service.cluster.clusterName,
+        ServiceName: this.props.service.serviceName,
+        FileName: this.props.imageFile && this.props.imageFile.fileName,
         DeploymentTimeout: this.deploymentTimeout,
-      };
-    }
-
-    return { configuration };
+      },
+    };
   }
 }
 
