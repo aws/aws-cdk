@@ -1460,24 +1460,43 @@ export class JestSetup extends ValidationRule {
 
 export class UbergenPackageVisibility extends ValidationRule {
   public readonly name = 'ubergen/package-visibility';
+  private readonly publicPackages = ['aws-cdk-lib', 'cdk', 'aws-cdk', 'awslint'];
 
   public validate(pkg: PackageJson): void {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const releaseJson = require(`${__dirname}/../../../release.json`);
     if (releaseJson.majorVersion === 2) {
-      // skip in v2 for now
-      return;
-    }
-    if (pkg.json.private && !pkg.json.ubergen?.exclude) {
-      pkg.report({
-        ruleName: this.name,
-        message: 'ubergen.exclude must be configured for private packages',
-        fix: () => {
-          pkg.json.ubergen = {
-            exclude: true,
-          };
-        },
-      });
+      // Only packages in the publicPackages list should be "public". Everything else should be private.
+      if (this.publicPackages.includes(pkg.json.name) && pkg.json.private === true) {
+        pkg.report({
+          ruleName: this.name,
+          message: 'Package must be public',
+          fix: () => {
+            delete pkg.json.private;
+          },
+        });
+      } else if (!this.publicPackages.includes(pkg.json.name) && pkg.json.private !== true) {
+        pkg.report({
+          ruleName: this.name,
+          message: 'Package must not be public',
+          fix: () => {
+            delete pkg.json.private;
+            pkg.json.private = true;
+          },
+        });
+      }
+    } else {
+      if (pkg.json.private && !pkg.json.ubergen?.exclude) {
+        pkg.report({
+          ruleName: this.name,
+          message: 'ubergen.exclude must be configured for private packages',
+          fix: () => {
+            pkg.json.ubergen = {
+              exclude: true,
+            };
+          },
+        });
+      }
     }
   }
 }
