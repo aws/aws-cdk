@@ -1,7 +1,7 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct } from '@aws-cdk/core';
+import { Construct, Duration } from '@aws-cdk/core';
 import { Action } from '../action';
 import { deployArtifactBounds } from '../common';
 
@@ -40,6 +40,14 @@ export interface EcsDeployActionProps extends codepipeline.CommonAwsActionProps 
    * The ECS Service to deploy.
    */
   readonly service: ecs.IBaseService;
+
+  /**
+   * Timeout for the ECS deployment in minutes. Value must be between 1-60.
+   * 
+   * @default - 60 minutes
+   * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-ECS.html
+   */
+  readonly deploymentTimeout?: Duration
 }
 
 /**
@@ -92,11 +100,17 @@ export class EcsDeployAction extends Action {
 
     options.bucket.grantRead(options.role);
 
+    const DeploymentTimeout = this.props.deploymentTimeout && this.props.deploymentTimeout.toMinutes({ integral: true });
+    if (DeploymentTimeout < 1 || DeploymentTimeout > 60) {
+      throw new Error("Deployment timeout has to be between 1 and 60 minutes");
+    }
+
     return {
       configuration: {
         ClusterName: this.props.service.cluster.clusterName,
         ServiceName: this.props.service.serviceName,
         FileName: this.props.imageFile && this.props.imageFile.fileName,
+        DeploymentTimeout,
       },
     };
   }
