@@ -28,41 +28,39 @@ export = {
         const node = new appmesh.VirtualNode(stack, 'test-node', {
           mesh,
           dnsHostName: 'test',
-          listener: {},
           backends: [service1],
         });
 
-        node.addBackends(service2);
+        node.addBackend(service2);
 
         // THEN
-        expect(stack).to(
-          haveResourceLike('AWS::AppMesh::VirtualNode', {
-            Spec: {
-              Backends: [
-                {
-                  VirtualService: {
-                    VirtualServiceName: {
-                      'Fn::GetAtt': ['service1A48078CF', 'VirtualServiceName'],
-                    },
+        expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
+          Spec: {
+            Backends: [
+              {
+                VirtualService: {
+                  VirtualServiceName: {
+                    'Fn::GetAtt': ['service1A48078CF', 'VirtualServiceName'],
                   },
                 },
-                {
-                  VirtualService: {
-                    VirtualServiceName: {
-                      'Fn::GetAtt': ['service27C65CF7D', 'VirtualServiceName'],
-                    },
+              },
+              {
+                VirtualService: {
+                  VirtualServiceName: {
+                    'Fn::GetAtt': ['service27C65CF7D', 'VirtualServiceName'],
                   },
                 },
-              ],
-            },
-          }),
-        );
+              },
+            ],
+          },
+        }));
 
         test.done();
       },
     },
+
     'when a single portmapping is added': {
-      'should add the portmapping to the resoource'(test: Test) {
+      'should add the portmapping to the resource'(test: Test) {
         // GIVEN
         const stack = new cdk.Stack();
 
@@ -75,33 +73,30 @@ export = {
           dnsHostName: 'test',
         });
 
-        node.addListeners({
-          portMapping: {
-            port: 8081,
-            protocol: appmesh.Protocol.TCP,
-          },
-        });
+        node.addListener(appmesh.VirtualNodeListener.tcp({
+          port: 8081,
+        }));
 
         // THEN
-        expect(stack).to(
-          haveResourceLike('AWS::AppMesh::VirtualNode', {
-            Spec: {
-              Listeners: [
-                {
-                  PortMapping: {
-                    Port: 8081,
-                    Protocol: 'tcp',
-                  },
+        expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
+          Spec: {
+            Listeners: [
+              {
+                PortMapping: {
+                  Port: 8081,
+                  Protocol: 'tcp',
                 },
-              ],
-            },
-          }),
-        );
+              },
+            ],
+          },
+        }));
+
         test.done();
       },
     },
-    'when a default backend configuration is added': {
-      'should add the backend default configuration to the resource'(test: Test) {
+
+    'when a listener is added with timeout': {
+      'should add the listener timeout to the resource'(test: Test) {
         // GIVEN
         const stack = new cdk.Stack();
 
@@ -110,16 +105,122 @@ export = {
           meshName: 'test-mesh',
         });
 
-        const node = mesh.addVirtualNode('test-node', {
+        new appmesh.VirtualNode(stack, 'test-node', {
+          mesh,
+          dnsHostName: 'test',
+          listeners: [appmesh.VirtualNodeListener.grpc({
+            port: 80,
+            timeout: {
+              idle: cdk.Duration.seconds(10),
+              perRequest: cdk.Duration.seconds(10),
+            },
+          })],
+        });
+
+        // THEN
+        expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
+          Spec: {
+            Listeners: [
+              {
+                PortMapping: {
+                  Port: 80,
+                  Protocol: 'grpc',
+                },
+                Timeout: {
+                  GRPC: {
+                    Idle: {
+                      Unit: 'ms',
+                      Value: 10000,
+                    },
+                    PerRequest: {
+                      Unit: 'ms',
+                      Value: 10000,
+                    },
+                  },
+                },
+              },
+            ],
+          },
+        }));
+
+        test.done();
+      },
+    },
+
+    'when a listener is added with healthcheck ': {
+      'should add a default listener healthcheck to the resource'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+
+        // WHEN
+        const mesh = new appmesh.Mesh(stack, 'mesh', {
+          meshName: 'test-mesh',
+        });
+
+        new appmesh.VirtualNode(stack, 'test-node', {
+          mesh,
+          dnsHostName: 'test',
+          listeners: [appmesh.VirtualNodeListener.http2({
+            port: 80,
+            healthCheck: {},
+            timeout: { idle: cdk.Duration.seconds(10) },
+          })],
+        });
+
+        // THEN
+        expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
+          Spec: {
+            Listeners: [
+              {
+                HealthCheck: {
+                  HealthyThreshold: 2,
+                  IntervalMillis: 5000,
+                  Port: 80,
+                  Protocol: 'http2',
+                  TimeoutMillis: 2000,
+                  UnhealthyThreshold: 2,
+                },
+                PortMapping: {
+                  Port: 80,
+                  Protocol: 'http2',
+                },
+                Timeout: {
+                  HTTP2: {
+                    Idle: {
+                      Unit: 'ms',
+                      Value: 10000,
+                    },
+                  },
+                },
+              },
+            ],
+          },
+        }));
+
+        test.done();
+      },
+    },
+
+    'when a listener is added with healthcheck with user defined props': {
+      'should add a listener healthcheck to the resource'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+
+        // WHEN
+        const mesh = new appmesh.Mesh(stack, 'mesh', {
+          meshName: 'test-mesh',
+        });
+
+        const node = new appmesh.VirtualNode(stack, 'test-node', {
+          mesh,
           dnsHostName: 'test',
         });
 
-        node.addListeners({
-          portMapping: {
-            port: 8081,
-            protocol: appmesh.Protocol.TCP,
-          },
-        });
+        node.addListener(appmesh.VirtualNodeListener.tcp({
+          port: 80,
+          healthCheck: { timeout: cdk.Duration.seconds(3) },
+          timeout: { idle: cdk.Duration.seconds(10) },
+        }));
 
         node.addBackendDefaults({
           tlsClientPolicy: {
@@ -131,35 +232,49 @@ export = {
         });
 
         // THEN
-        expect(stack).to(
-          haveResourceLike('AWS::AppMesh::VirtualNode', {
-            Spec: {
-              Listeners: [
-                {
-                  PortMapping: {
-                    Port: 8081,
-                    Protocol: 'tcp',
+        expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
+          Spec: {
+            Listeners: [
+              {
+                HealthCheck: {
+                  HealthyThreshold: 2,
+                  IntervalMillis: 5000,
+                  Port: 80,
+                  Protocol: 'tcp',
+                  TimeoutMillis: 3000,
+                  UnhealthyThreshold: 2,
+                },
+                PortMapping: {
+                  Port: 80,
+                  Protocol: 'tcp',
+                },
+                Timeout: {
+                  TCP: {
+                    Idle: {
+                      Unit: 'ms',
+                      Value: 10000,
+                    },
                   },
                 },
-              ],
-              BackendDefaults: {
-                ClientPolicy: {
-                  TLS: {
-                    Enforce: true,
-                    Ports: [8080, 8081],
-                    Validation: {
-                      Trust: {
-                        File: {
-                          CertificateChain: 'path-to-certificate',
-                        },
+              },
+            ],
+            BackendDefaults: {
+              ClientPolicy: {
+                TLS: {
+                  Enforce: true,
+                  Ports: [8080, 8081],
+                  Validation: {
+                    Trust: {
+                      File: {
+                        CertificateChain: 'path-to-certificate',
                       },
                     },
                   },
                 },
               },
             },
-          }),
-        );
+          },
+        }));
         test.done();
       },
     },
