@@ -115,7 +115,7 @@ new lambda.NodejsFunction(this, 'my-handler', {
 ```
 
 #### Install modules
-By default, all node modules referenced in your Lambda code will be bundled by Parcel.
+By default, all node modules referenced in your Lambda code will be bundled by esbuild.
 Use the `nodeModules` prop to specify a list of modules that should not be bundled
 but instead included in the `node_modules` folder of the Lambda package. This is useful
 when working with native dependencies or when esbuild fails to bundle a module.
