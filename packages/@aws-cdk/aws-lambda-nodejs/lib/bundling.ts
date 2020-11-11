@@ -129,6 +129,8 @@ export class Bundling implements cdk.BundlingOptions {
     const pathJoin = osPathJoin(osPlatform);
 
     const npx = osPlatform === 'win32' ? 'npx.cmd' : 'npx';
+    const loaders = Object.entries(this.props.loader ?? {});
+
     const esbuildCommand: string = [
       npx, 'esbuild',
       '--bundle', pathJoin(inputDir, this.relativeEntryPath),
@@ -138,7 +140,7 @@ export class Bundling implements cdk.BundlingOptions {
       ...this.props.minify ? ['--minify'] : [],
       ...this.props.sourceMap ? ['--sourcemap'] : [],
       ...this.externals.map(external => `--external:${external}`),
-      ...(this.props.loaders ?? []).map(loader => `--loader:${loader.extension}=${loader.name}`),
+      ...loaders.map(([ext, name]) => `--loader:${ext}=${name}`),
     ].join(' ');
 
     let depsCommand = '';

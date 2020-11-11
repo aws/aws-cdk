@@ -35,9 +35,11 @@ export interface BundlingOptions {
    *
    * @see https://esbuild.github.io/api/#loader
    *
+   * @example { '.png': 'dataurl' }
+   *
    * @default - use esbuild default loaders
    */
-  readonly loaders?: EsBuildLoader[];
+  readonly loader?: { [ext: string]: string };
 
   /**
    * Environment variables defined when bundling runs.
@@ -99,28 +101,4 @@ export interface BundlingOptions {
    * @default - use the Docker image provided by @aws-cdk/aws-lambda-nodejs
    */
   readonly bundlingDockerImage?: BundlingDockerImage;
-}
-
-/**
- * An esbuild loader.
- *
- * Configuring a loader for a given file type lets you load that file type with
- * an `import` statement or a `require` call.
- *
- * @see https://esbuild.github.io/api/#loader
- */
-export interface EsBuildLoader {
-  /**
-   * The file extension
-   *
-   * @example .png
-   */
-  readonly extension: string;
-
-  /**
-   * The name of the loader
-   *
-   * @example dataurl
-   */
-  readonly name: string;
 }

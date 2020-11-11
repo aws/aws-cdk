@@ -35,12 +35,9 @@ test('esbuild bundling in Docker', () => {
     bundlingEnvironment: {
       KEY: 'value',
     },
-    loaders: [
-      {
-        extension: '.png',
-        name: 'dataurl',
-      },
-    ],
+    loader: {
+      '.png': 'dataurl',
+    },
     forceDockerBundling: true,
   });
 
