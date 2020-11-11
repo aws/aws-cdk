@@ -47,7 +47,7 @@ export interface EcsDeployActionProps extends codepipeline.CommonAwsActionProps 
    * @default - 60 minutes
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-ECS.html
    */
-  readonly deploymentTimeout?: Duration
+  readonly deploymentTimeout?: Duration;
 }
 
 /**
@@ -101,8 +101,8 @@ export class EcsDeployAction extends Action {
     options.bucket.grantRead(options.role);
 
     const DeploymentTimeout: number | undefined = this.props.deploymentTimeout && this.props.deploymentTimeout.toMinutes({ integral: true });
-    if (typeof DeploymentTimeout !== "undefined" && (DeploymentTimeout < 1 || DeploymentTimeout > 60)) {
-      throw new Error("Deployment timeout has to be between 1 and 60 minutes");
+    if (typeof DeploymentTimeout !== 'undefined' && (DeploymentTimeout < 1 || DeploymentTimeout > 60)) {
+      throw new Error('Deployment timeout has to be between 1 and 60 minutes');
     }
 
     return {

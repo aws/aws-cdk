@@ -77,7 +77,7 @@ export = {
           actionName: 'ECS',
           service,
           input: artifact,
-          deploymentTimeout: cdk.Duration.minutes(61)
+          deploymentTimeout: cdk.Duration.minutes(61),
         });
       }, /timeout has to be between 1 and 60 minutes/);
 
@@ -86,7 +86,7 @@ export = {
           actionName: 'ECS',
           service,
           input: artifact,
-          deploymentTimeout: cdk.Duration.minutes(0)
+          deploymentTimeout: cdk.Duration.minutes(0),
         });
       }, /timeout has to be between 1 and 60 minutes/);
 
@@ -95,7 +95,7 @@ export = {
           actionName: 'ECS',
           service,
           input: artifact,
-          deploymentTimeout: cdk.Duration.seconds(30)
+          deploymentTimeout: cdk.Duration.seconds(30),
         });
       }, /cannot be converted into a whole number/);
 
