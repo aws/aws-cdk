@@ -646,6 +646,7 @@ const deployStage = pipeline.addStage({
       // use the `imageFile` property,
       // and leave out the `input` property
       imageFile: buildOutput.atPath('imageDef.json'),
+      deploymentTimeout: cdk.Duration.minutes(60),
     }),
   ],
 });
