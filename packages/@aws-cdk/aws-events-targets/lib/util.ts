@@ -1,7 +1,7 @@
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Construct, ConstructNode, IConstruct } from '@aws-cdk/core';
+import { Construct, ConstructNode, IConstruct, Names } from '@aws-cdk/core';
 
 /**
  * Obtain the Role for the EventBridge event
@@ -35,7 +35,7 @@ export function addLambdaPermission(rule: events.IRule, handler: lambda.IFunctio
     scope = rule;
     node = rule.node;
   }
-  const permissionId = `AllowEventRule${rule.node.uniqueId}`;
+  const permissionId = `AllowEventRule${Names.nodeUniqueId(rule.node)}`;
   if (!node.tryFindChild(permissionId)) {
     handler.addPermission(permissionId, {
       scope,

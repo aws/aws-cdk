@@ -2,9 +2,8 @@ import '@aws-cdk/assert/jest';
 import { ABSENT } from '@aws-cdk/assert';
 import { Metric } from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
-import { Code, Function, Runtime } from '@aws-cdk/aws-lambda';
 import { Duration, Stack } from '@aws-cdk/core';
-import { HttpApi, HttpMethod, LambdaProxyIntegration } from '../../lib';
+import { HttpApi, HttpIntegrationType, HttpMethod, HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig, IHttpRouteIntegration, PayloadFormatVersion } from '../../lib';
 
 describe('HttpApi', () => {
   test('default', () => {
@@ -50,13 +49,7 @@ describe('HttpApi', () => {
   test('default integration', () => {
     const stack = new Stack();
     const httpApi = new HttpApi(stack, 'api', {
-      defaultIntegration: new LambdaProxyIntegration({
-        handler: new Function(stack, 'fn', {
-          code: Code.fromInline('foo'),
-          runtime: Runtime.NODEJS_12_X,
-          handler: 'index.handler',
-        }),
-      }),
+      defaultIntegration: new DummyRouteIntegration(),
     });
 
     expect(stack).toHaveResourceLike('AWS::ApiGatewayV2::Route', {
@@ -76,13 +69,7 @@ describe('HttpApi', () => {
     httpApi.addRoutes({
       path: '/pets',
       methods: [HttpMethod.GET, HttpMethod.PATCH],
-      integration: new LambdaProxyIntegration({
-        handler: new Function(stack, 'fn', {
-          code: Code.fromInline('foo'),
-          runtime: Runtime.NODEJS_12_X,
-          handler: 'index.handler',
-        }),
-      }),
+      integration: new DummyRouteIntegration(),
     });
 
     expect(stack).toHaveResourceLike('AWS::ApiGatewayV2::Route', {
@@ -102,13 +89,7 @@ describe('HttpApi', () => {
 
     httpApi.addRoutes({
       path: '/pets',
-      integration: new LambdaProxyIntegration({
-        handler: new Function(stack, 'fn', {
-          code: Code.fromInline('foo'),
-          runtime: Runtime.NODEJS_12_X,
-          handler: 'index.handler',
-        }),
-      }),
+      integration: new DummyRouteIntegration(),
     });
 
     expect(stack).toHaveResourceLike('AWS::ApiGatewayV2::Route', {
@@ -281,3 +262,13 @@ describe('HttpApi', () => {
     expect(api.apiEndpoint).toBeDefined();
   });
 });
+
+class DummyRouteIntegration implements IHttpRouteIntegration {
+  public bind(_: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig {
+    return {
+      payloadFormatVersion: PayloadFormatVersion.VERSION_2_0,
+      type: HttpIntegrationType.HTTP_PROXY,
+      uri: 'some-uri',
+    };
+  }
+}
