@@ -1,6 +1,7 @@
 {
   "name": "@aws-cdk/pipelines",
   "version": "0.0.0",
+  "private": true,
   "description": "Continuous Delivery of CDK applications",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",

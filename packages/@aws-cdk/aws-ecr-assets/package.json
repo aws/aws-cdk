@@ -1,6 +1,7 @@
 {
   "name": "@aws-cdk/aws-ecr-assets",
   "version": "0.0.0",
+  "private": true,
   "description": "Docker image assets deployed to ECR",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",

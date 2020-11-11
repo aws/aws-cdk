@@ -1,6 +1,7 @@
 {
   "name": "@aws-cdk/cx-api",
   "version": "0.0.0",
+  "private": true,
   "description": "Cloud executable protocol",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
