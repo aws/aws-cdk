@@ -152,12 +152,12 @@ export interface DefaultStackSynthesizerProps {
   readonly generateBootstrapVersionRule?: boolean;
 
   /**
-   * Prefix to use while storing S3 Assets
+   * bucketPrefix to use while storing S3 Assets
    *
    *
    * @default - DefaultStackSynthesizer.DEFAULT_FILE_ASSET_PREFIX
    */
-  readonly prefix?: string;
+  readonly bucketPrefix?: string;
 }
 
 /**
@@ -213,7 +213,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
   /**
    * Default file asset prefix
    */
-  public static readonly DEFAULT_FILE_ASSET_PREFIX = '${AWS::AccountId}';
+  public static readonly DEFAULT_FILE_ASSET_PREFIX = '';
 
   private _stack?: Stack;
   private bucketName?: string;
@@ -223,7 +223,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
   private fileAssetPublishingRoleArn?: string;
   private imageAssetPublishingRoleArn?: string;
   private qualifier?: string;
-  private prefix?: string
+  private bucketPrefix?: string
 
   private readonly files: NonNullable<cxschema.AssetManifest['files']> = {};
   private readonly dockerImages: NonNullable<cxschema.AssetManifest['dockerImages']> = {};
@@ -260,15 +260,14 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
     this._cloudFormationExecutionRoleArn = specialize(this.props.cloudFormationExecutionRole ?? DefaultStackSynthesizer.DEFAULT_CLOUDFORMATION_ROLE_ARN);
     this.fileAssetPublishingRoleArn = specialize(this.props.fileAssetPublishingRoleArn ?? DefaultStackSynthesizer.DEFAULT_FILE_ASSET_PUBLISHING_ROLE_ARN);
     this.imageAssetPublishingRoleArn = specialize(this.props.imageAssetPublishingRoleArn ?? DefaultStackSynthesizer.DEFAULT_IMAGE_ASSET_PUBLISHING_ROLE_ARN);
-    this.prefix = specialize(this.props.prefix ?? DefaultStackSynthesizer.DEFAULT_FILE_ASSET_PREFIX);
+    this.bucketPrefix = specialize(this.props.bucketPrefix ?? DefaultStackSynthesizer.DEFAULT_FILE_ASSET_PREFIX);
     /* eslint-enable max-len */
   }
 
   public addFileAsset(asset: FileAssetSource): FileAssetLocation {
     assertBound(this.stack);
     assertBound(this.bucketName);
-    const objectPrefix = this.prefix? `${this.prefix}/`: '';
-    const objectKey = objectPrefix + asset.sourceHash + (asset.packaging === FileAssetPackaging.ZIP_DIRECTORY ? '.zip' : '');
+    const objectKey = this.bucketPrefix + asset.sourceHash + (asset.packaging === FileAssetPackaging.ZIP_DIRECTORY ? '.zip' : '');
 
     // Add to manifest
     this.files[asset.sourceHash] = {
