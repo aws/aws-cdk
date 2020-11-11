@@ -100,8 +100,8 @@ export class EcsDeployAction extends Action {
 
     options.bucket.grantRead(options.role);
 
-    const DeploymentTimeout = this.props.deploymentTimeout && this.props.deploymentTimeout.toMinutes({ integral: true });
-    if (DeploymentTimeout < 1 || DeploymentTimeout > 60) {
+    const DeploymentTimeout: number | undefined = this.props.deploymentTimeout && this.props.deploymentTimeout.toMinutes({ integral: true });
+    if (typeof DeploymentTimeout !== "undefined" && (DeploymentTimeout < 1 || DeploymentTimeout > 60)) {
       throw new Error("Deployment timeout has to be between 1 and 60 minutes");
     }
 
