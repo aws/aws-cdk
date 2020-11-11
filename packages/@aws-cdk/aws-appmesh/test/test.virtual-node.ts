@@ -123,7 +123,7 @@ export = {
 
         node.addBackendDefaults({
           tlsClientPolicy: {
-            validation: appmesh.TLSClientValidation.fileTrustValidation({
+            validation: appmesh.TLSClientValidation.fileTrust({
               certificateChain: 'path-to-certificate',
             }),
             ports: [8080, 8081],

@@ -43,11 +43,6 @@ export interface IVirtualNode extends cdk.IResource {
    * Utility method to add Node Listeners for new or existing VirtualNodes
    */
   addListeners(...listeners: VirtualNodeListener[]): void;
-
-  /**
-   * Utility method to add Default Backend Configuration for new or existing VirtualNodes
-   */
-  addBackendDefaults(backendDefaults: BackendDefaults): void;
 }
 
 /**
@@ -118,6 +113,16 @@ export interface VirtualNodeBaseProps {
 }
 
 /**
+ * Properties of TLS validation context
+ */
+export interface TLSValidationConfig {
+  /**
+   * Represents single validation context property
+   */
+  readonly tlsValidation: CfnVirtualNode.TlsValidationContextProperty;
+}
+
+/**
  * Default configuration that is applied to all backends for the virtual node.
  * Any configuration defined will be overwritten by configurations specified for a particular backend.
  */
@@ -125,13 +130,13 @@ export interface BackendDefaults {
   /**
    * Client policy for TLS
    */
-  readonly tlsClientPolicy: TLSClientPolicyProps;
+  readonly tlsClientPolicy: TLSClientPolicyOptions;
 }
 
 /**
- * Properties with respect to TLS backend default.
+ * TLS Connections with downstream server will always be enforced if True
  */
-export interface TLSClientPolicyProps {
+export interface TLSClientPolicyOptions {
   /**
    * TLS enforced if True.
    *
@@ -147,7 +152,7 @@ export interface TLSClientPolicyProps {
   readonly ports?: number[];
 
   /**
-   * To enforce the trust is one of file, acmpca, or sds.
+   * Policy used to determine if the TLS certificate the server presents is accepted
    *
    * @default - none
    */
@@ -161,29 +166,29 @@ export abstract class TLSClientValidation {
   /**
    * TLS validation context trust for a local file
    */
-  public static fileTrustValidation(props: FileTrustProps): TLSClientValidation {
+  public static fileTrust(props: FileTrustOptions): TLSClientValidation {
     return new FileTrust(props);
   }
 
   /**
    * TLS validation context trust for AWS Certicate Manager (ACM) certificate.
    */
-  public static acmTrustValidation(props: ACMTrustProps): TLSClientValidation {
+  public static acmTrust(props: ACMTrustOptions): TLSClientValidation {
     return new ACMTrust(props);
   }
 
   /**
    * Returns Trust context based on trust type.
    */
-  public abstract bind(scope: cdk.Construct): CfnVirtualNode.TlsValidationContextProperty;
+  public abstract bind(scope: cdk.Construct): TLSValidationConfig;
 }
 
 /**
  * ACM Trust Properties
  */
-export interface ACMTrustProps {
+export interface ACMTrustOptions {
   /**
-   * Amazon Resource Name of the Certificates
+   * Amazon Resource Names (ARN) of trusted ACM Private Certificate Authorities
    */
   readonly certificateAuthorityArns: string[];
 }
@@ -191,7 +196,7 @@ export interface ACMTrustProps {
 /**
  * File Trust Properties
  */
-export interface FileTrustProps {
+export interface FileTrustOptions {
   /**
    * Path to the Certificate Chain file on the file system where the Envoy is deployed.
    */
@@ -207,21 +212,24 @@ export class FileTrust extends TLSClientValidation {
    */
   readonly certificateChain: string;
 
-  constructor(props: FileTrustProps) {
+  constructor(props: FileTrustOptions) {
     super();
     this.certificateChain = props.certificateChain;
   }
 
-  public bind(_scope: cdk.Construct): CfnVirtualNode.TlsValidationContextProperty {
+  public bind(_scope: cdk.Construct): TLSValidationConfig {
     return {
-      trust: {
-        file: {
-          certificateChain: this.certificateChain,
+      tlsValidation: {
+        trust: {
+          file: {
+            certificateChain: this.certificateChain,
+          },
         },
       },
     };
   }
 }
+
 
 /**
  * Represents a TLS validation context trust for an AWS Certicate Manager (ACM) certificate.
@@ -232,16 +240,18 @@ export class ACMTrust extends TLSClientValidation {
    */
   readonly certificateAuthorityArns: string[];
 
-  constructor(props: ACMTrustProps) {
+  constructor(props: ACMTrustOptions) {
     super();
     this.certificateAuthorityArns = props.certificateAuthorityArns;
   }
 
-  public bind(_scope: cdk.Construct): CfnVirtualNode.TlsValidationContextProperty {
+  public bind(_scope: cdk.Construct): TLSValidationConfig {
     return {
-      trust: {
-        acm: {
-          certificateAuthorityArns: this.certificateAuthorityArns,
+      tlsValidation: {
+        trust: {
+          acm: {
+            certificateAuthorityArns: this.certificateAuthorityArns,
+          },
         },
       },
     };
@@ -276,7 +286,6 @@ abstract class VirtualNodeBase extends cdk.Resource implements IVirtualNode {
 
   protected readonly backends = new Array<CfnVirtualNode.BackendProperty>();
   protected readonly listeners = new Array<CfnVirtualNode.ListenerProperty>();
-  protected readonly backendDefaults = new Array<CfnVirtualNode.BackendDefaultsProperty>();
 
   /**
    * Add a VirtualServices that this node is expected to send outbound traffic to
@@ -289,23 +298,6 @@ abstract class VirtualNodeBase extends cdk.Resource implements IVirtualNode {
         },
       });
     }
-  }
-
-  /**
-   * Adds Default Backend Configuration for virtual node to communicate with Virtual Services.
-   */
-  public addBackendDefaults(backendDefaults: BackendDefaults) {
-    // eslint-disable-next-line no-console
-    console.log(backendDefaults.tlsClientPolicy.enforce);
-    this.backendDefaults.push({
-      clientPolicy: {
-        tls: {
-          enforce: backendDefaults.tlsClientPolicy.enforce === undefined ? true : backendDefaults.tlsClientPolicy.enforce,
-          validation: backendDefaults.tlsClientPolicy.validation.bind(this),
-          ports: backendDefaults.tlsClientPolicy.ports ? backendDefaults.tlsClientPolicy.ports : undefined,
-        },
-      },
-    });
   }
 
   /**
@@ -406,6 +398,8 @@ export class VirtualNode extends VirtualNodeBase {
    */
   public readonly mesh: IMesh;
 
+  private readonly backendDefaults = new Array<CfnVirtualNode.BackendDefaultsProperty>();
+
   constructor(scope: Construct, id: string, props: VirtualNodeProps) {
     super(scope, id, {
       physicalName: props.virtualNodeName || cdk.Lazy.stringValue({ produce: () => cdk.Names.uniqueId(this) }),
@@ -448,7 +442,26 @@ export class VirtualNode extends VirtualNodeBase {
       resourceName: this.physicalName,
     });
   }
+  /**
+   * Adds Default Backend Configuration for virtual node to communicate with Virtual Services.
+   */
+  public addBackendDefaults(backendDefaults: BackendDefaults) {
+    if (this.backendDefaults.length === 0) {
+      this.backendDefaults.push({
+        clientPolicy: {
+          tls: {
+            enforce: backendDefaults.tlsClientPolicy.enforce ?? true,
+            validation: backendDefaults.tlsClientPolicy.validation.bind(this).tlsValidation,
+            ports: backendDefaults.tlsClientPolicy.ports,
+          },
+        },
+      });
+    } else {
+      throw new Error('Virtual Node can have only one backend default');
+    }
+  }
 }
+
 
 function renderAttributes(attrs?: {[key: string]: string}) {
   if (attrs === undefined) { return undefined; }
