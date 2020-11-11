@@ -64,8 +64,8 @@ const queue = new sqs.Queue(this, 'MyQueue', {
 });
 
 lambda.addEventSource(new SqsEventSource(queue, {
-  batchSize: 10 // default
-});
+  batchSize: 10, // default
+}));
 ```
 
 ### S3
@@ -202,7 +202,7 @@ const stream = new kinesis.Stream(this, 'MyStream');
 myFunction.addEventSource(new KinesisEventSource(stream, {
   batchSize: 100, // default
   startingPosition: lambda.StartingPosition.TRIM_HORIZON
-});
+}));
 ```
 
 ## Roadmap

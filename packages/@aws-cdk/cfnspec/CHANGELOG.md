@@ -1,3 +1,155 @@
+# CloudFormation Resource Specification v20.0.0
+
+## New Resource Types
+
+* AWS::IVS::Channel
+* AWS::IVS::PlaybackKeyPair
+* AWS::IVS::StreamKey
+* AWS::IoTSiteWise::Asset
+* AWS::IoTSiteWise::AssetModel
+* AWS::IoTSiteWise::Gateway
+* AWS::MediaPackage::Asset
+* AWS::MediaPackage::Channel
+* AWS::MediaPackage::OriginEndpoint
+* AWS::MediaPackage::PackagingConfiguration
+* AWS::MediaPackage::PackagingGroup
+
+## Attribute Changes
+
+* AWS::AutoScaling::AutoScalingGroup LaunchConfigurationName (__added__)
+* AWS::AutoScaling::AutoScalingGroup LaunchTemplateSpecification (__added__)
+* AWS::AutoScaling::AutoScalingGroup MixedInstancesPolicy (__added__)
+* AWS::AutoScaling::AutoScalingGroup PlacementGroup (__added__)
+* AWS::AutoScaling::AutoScalingGroup VPCZoneIdentifier (__added__)
+* AWS::EC2::Subnet OutpostArn (__added__)
+
+## Property Changes
+
+* AWS::AmazonMQ::Broker LdapMetadata (__deleted__)
+* AWS::AppSync::ApiKey ApiKeyId (__added__)
+* AWS::AppSync::FunctionConfiguration SyncConfig (__added__)
+* AWS::Athena::NamedQuery WorkGroup (__added__)
+* AWS::AutoScaling::AutoScalingGroup CapacityRebalance (__added__)
+* AWS::AutoScaling::LaunchConfiguration MetadataOptions (__added__)
+* AWS::Batch::ComputeEnvironment Tags (__added__)
+* AWS::Batch::JobDefinition Tags (__added__)
+* AWS::Batch::JobQueue Tags (__added__)
+* AWS::EC2::ClientVpnEndpoint SelfServicePortal (__added__)
+* AWS::EC2::Route CarrierGatewayId (__added__)
+* AWS::EC2::Route LocalGatewayId (__added__)
+* AWS::EC2::Route VpcEndpointId (__added__)
+* AWS::EC2::Subnet OutpostArn (__added__)
+* AWS::EC2::VPCEndpointService ApplianceLoadBalancerArns (__deleted__)
+* AWS::EMR::Cluster LogEncryptionKmsKeyId (__added__)
+* AWS::EMR::Cluster ManagedScalingPolicy (__added__)
+* AWS::EMR::Cluster StepConcurrencyLevel (__added__)
+* AWS::ElastiCache::ReplicationGroup GlobalReplicationGroupId (__added__)
+* AWS::ElastiCache::ReplicationGroup MultiAZEnabled.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ElasticLoadBalancingV2::Listener Port.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::ElasticLoadBalancingV2::Listener Protocol.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::ElasticLoadBalancingV2::LoadBalancer SubnetMappings.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::GameLift::MatchmakingConfiguration FlexMatchMode (__added__)
+* AWS::GameLift::MatchmakingConfiguration GameSessionQueueArns.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::GlobalAccelerator::EndpointGroup PortOverrides (__added__)
+* AWS::KinesisFirehose::DeliveryStream DeliveryStreamEncryptionConfigurationInput (__added__)
+* AWS::KinesisFirehose::DeliveryStream Tags (__added__)
+* AWS::KinesisFirehose::DeliveryStream KinesisStreamSourceConfiguration.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::LakeFormation::DataLakeSettings TrustedResourceOwners (__added__)
+* AWS::Lambda::EventSourceMapping Queues (__added__)
+* AWS::Lambda::EventSourceMapping SourceAccessConfigurations (__added__)
+* AWS::Logs::LogGroup KmsKeyId (__added__)
+* AWS::Logs::LogGroup LogGroupName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-loggroup.html#cfn-cwl-loggroup-loggroupname
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-loggroup.html#cfn-logs-loggroup-loggroupname
+* AWS::Logs::LogGroup RetentionInDays.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-loggroup.html#cfn-cwl-loggroup-retentionindays
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-loggroup.html#cfn-logs-loggroup-retentionindays
+* AWS::RDS::DBCluster GlobalClusterIdentifier (__added__)
+* AWS::RDS::DBCluster Engine.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Conditional
+* AWS::RDS::DBCluster EngineVersion.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::RDS::DBInstance Engine.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Conditional
+* AWS::SNS::Subscription SubscriptionRoleArn (__added__)
+* AWS::SNS::Topic FifoTopic (__added__)
+
+## Property Type Changes
+
+* AWS::AmazonMQ::Broker.InterBrokerCred (__removed__)
+* AWS::AmazonMQ::Broker.LdapMetadata (__removed__)
+* AWS::AmazonMQ::Broker.ServerMetadata (__removed__)
+* AWS::AppSync::FunctionConfiguration.LambdaConflictHandlerConfig (__added__)
+* AWS::AppSync::FunctionConfiguration.SyncConfig (__added__)
+* AWS::AutoScaling::LaunchConfiguration.MetadataOption (__added__)
+* AWS::CloudFront::Distribution.OriginShield (__added__)
+* AWS::EMR::Cluster.ComputeLimits (__added__)
+* AWS::EMR::Cluster.ManagedScalingPolicy (__added__)
+* AWS::EMR::Cluster.OnDemandProvisioningSpecification (__added__)
+* AWS::EMR::InstanceFleetConfig.OnDemandProvisioningSpecification (__added__)
+* AWS::Events::Rule.DeadLetterConfig (__added__)
+* AWS::Events::Rule.RedshiftDataParameters (__added__)
+* AWS::Events::Rule.RetryPolicy (__added__)
+* AWS::GlobalAccelerator::EndpointGroup.PortOverride (__added__)
+* AWS::KinesisFirehose::DeliveryStream.DeliveryStreamEncryptionConfigurationInput (__added__)
+* AWS::Lambda::EventSourceMapping.SourceAccessConfiguration (__added__)
+* AWS::SageMaker::Model.ImageConfig (__added__)
+* AWS::Transfer::Server.SecurityGroupId (__added__)
+* AWS::AutoScaling::AutoScalingGroup.LaunchTemplateOverrides LaunchTemplateSpecification (__added__)
+* AWS::CloudFront::Distribution.Origin OriginShield (__added__)
+* AWS::DLM::LifecyclePolicy.Parameters NoReboot (__added__)
+* AWS::EC2::ClientVpnEndpoint.FederatedAuthenticationRequest SelfServiceSAMLProviderArn (__added__)
+* AWS::EMR::Cluster.InstanceFleetProvisioningSpecifications OnDemandSpecification (__added__)
+* AWS::EMR::Cluster.InstanceFleetProvisioningSpecifications SpotSpecification.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::EMR::Cluster.SpotProvisioningSpecification AllocationStrategy (__added__)
+* AWS::EMR::InstanceFleetConfig.InstanceFleetProvisioningSpecifications OnDemandSpecification (__added__)
+* AWS::EMR::InstanceFleetConfig.InstanceFleetProvisioningSpecifications SpotSpecification.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::EMR::InstanceFleetConfig.SpotProvisioningSpecification AllocationStrategy (__added__)
+* AWS::ElasticLoadBalancingV2::LoadBalancer.SubnetMapping IPv6Address (__added__)
+* AWS::ElasticLoadBalancingV2::TargetGroup.Matcher HttpCode.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Elasticsearch::Domain.ElasticsearchClusterConfig WarmCount (__added__)
+* AWS::Elasticsearch::Domain.ElasticsearchClusterConfig WarmEnabled (__added__)
+* AWS::Elasticsearch::Domain.ElasticsearchClusterConfig WarmType (__added__)
+* AWS::Events::Rule.Target DeadLetterConfig (__added__)
+* AWS::Events::Rule.Target RedshiftDataParameters (__added__)
+* AWS::Events::Rule.Target RetryPolicy (__added__)
+* AWS::KinesisFirehose::DeliveryStream.KinesisStreamSourceConfiguration KinesisStreamARN.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::KinesisFirehose::DeliveryStream.KinesisStreamSourceConfiguration RoleARN.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::S3::Bucket.Metrics EventThreshold.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::S3::Bucket.SourceSelectionCriteria SseKmsEncryptedObjects.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::SageMaker::Model.ContainerDefinition ImageConfig (__added__)
+* AWS::Transfer::Server.EndpointDetails SecurityGroupIds (__added__)
+
+
 # CloudFormation Resource Specification v18.7.0
 
 ## New Resource Types
