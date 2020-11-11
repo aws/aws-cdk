@@ -1,7 +1,7 @@
 import { ABSENT } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import { Stack } from '@aws-cdk/core';
-import { OAuthScope, UserPool, UserPoolClient, UserPoolClientIdentityProvider, UserPoolIdentityProvider } from '../lib';
+import { OAuthScope, ResourceServerScope, UserPool, UserPoolClient, UserPoolClientIdentityProvider, UserPoolIdentityProvider } from '../lib';
 
 describe('User Pool Client', () => {
   test('default setup', () => {
@@ -306,6 +306,41 @@ describe('User Pool Client', () => {
         'profile',
         'aws.cognito.signin.user.admin',
         'my-resource-server/my-own-scope',
+      ],
+    });
+  });
+
+  test('OAuth scopes - resource server', () => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+    const scope = new ResourceServerScope({ scopeName: 'scope-name', scopeDescription: 'scope-desc' });
+    const resourceServer = pool.addResourceServer('ResourceServer', {
+      identifier: 'resource-server',
+      scopes: [scope],
+    });
+
+    // WHEN
+    pool.addClient('Client', {
+      oAuth: {
+        flows: { clientCredentials: true },
+        scopes: [
+          OAuthScope.resourceServer(resourceServer, scope),
+        ],
+      },
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::Cognito::UserPoolClient', {
+      AllowedOAuthScopes: [
+        {
+          'Fn::Join': [
+            '', [
+              stack.resolve(resourceServer.userPoolResourceServerId),
+              '/scope-name',
+            ],
+          ],
+        },
       ],
     });
   });

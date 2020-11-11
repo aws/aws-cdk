@@ -4,6 +4,7 @@
 *.snk
 !*.d.ts
 !*.js
+test/
 
 # Coverage
 coverage
