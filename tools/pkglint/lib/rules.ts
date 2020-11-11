@@ -142,16 +142,28 @@ export class ThirdPartyAttributions extends ValidationRule {
   public readonly name = 'license/3p-attributions';
 
   public validate(pkg: PackageJson): void {
-    if (pkg.json.private) {
+    const alwaysCheck = ['monocdk', 'aws-cdk-lib'];
+    if (pkg.json.private && !alwaysCheck.includes(pkg.json.name)) {
       return;
     }
     const bundled = pkg.getBundledDependencies();
     const lines = fs.readFileSync(path.join(pkg.packageRoot, 'NOTICE'), { encoding: 'utf8' }).split('\n');
+
+    const re = /^\*\* (\S+)/;
+    const attributions = lines.filter(l => re.test(l)).map(l => l.match(re)![1]);
+
     for (const dep of bundled) {
-      const re = new RegExp(`^\\*\\* ${dep}`);
-      if (!lines.find(l => re.test(l))) {
+      if (!attributions.includes(dep)) {
         pkg.report({
-          message: `Missing attribution for bundled dependency '${dep}' in NOTICE file`,
+          message: `Missing attribution for bundled dependency '${dep}' in NOTICE file.`,
+          ruleName: this.name,
+        });
+      }
+    }
+    for (const attr of attributions) {
+      if (!bundled.includes(attr)) {
+        pkg.report({
+          message: `Unnecessary attribution found for dependency '${attr}' in NOTICE file.`,
           ruleName: this.name,
         });
       }
@@ -1446,6 +1458,49 @@ export class JestSetup extends ValidationRule {
   }
 }
 
+export class UbergenPackageVisibility extends ValidationRule {
+  public readonly name = 'ubergen/package-visibility';
+  private readonly publicPackages = ['aws-cdk-lib', 'cdk', 'aws-cdk', 'awslint'];
+
+  public validate(pkg: PackageJson): void {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const releaseJson = require(`${__dirname}/../../../release.json`);
+    if (releaseJson.majorVersion === 2) {
+      // Only packages in the publicPackages list should be "public". Everything else should be private.
+      if (this.publicPackages.includes(pkg.json.name) && pkg.json.private === true) {
+        pkg.report({
+          ruleName: this.name,
+          message: 'Package must be public',
+          fix: () => {
+            delete pkg.json.private;
+          },
+        });
+      } else if (!this.publicPackages.includes(pkg.json.name) && pkg.json.private !== true) {
+        pkg.report({
+          ruleName: this.name,
+          message: 'Package must not be public',
+          fix: () => {
+            delete pkg.json.private;
+            pkg.json.private = true;
+          },
+        });
+      }
+    } else {
+      if (pkg.json.private && !pkg.json.ubergen?.exclude) {
+        pkg.report({
+          ruleName: this.name,
+          message: 'ubergen.exclude must be configured for private packages',
+          fix: () => {
+            pkg.json.ubergen = {
+              exclude: true,
+            };
+          },
+        });
+      }
+    }
+  }
+}
+
 /**
  * Determine whether this is a JSII package
  *
@@ -1488,9 +1543,14 @@ function hasIntegTests(pkg: PackageJson) {
  * Return whether this package should use CDK build tools
  */
 function shouldUseCDKBuildTools(pkg: PackageJson) {
-  // The packages that DON'T use CDKBuildTools are the package itself
-  // and the packages used by it.
-  return pkg.packageName !== 'cdk-build-tools' && pkg.packageName !== 'merkle-build' && pkg.packageName !== 'awslint';
+  const exclude = [
+    'cdk-build-tools',
+    'merkle-build',
+    'awslint',
+    'script-tests',
+  ];
+
+  return !exclude.includes(pkg.packageName);
 }
 
 function repoRoot(dir: string) {

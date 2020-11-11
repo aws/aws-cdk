@@ -84,6 +84,19 @@ module.exports = {
       alphabetize: { order: 'asc', caseInsensitive: true },
     }],
 
+    // disallow import of deprecated punycode package
+    'no-restricted-imports': [
+      'error', {
+        paths: [
+          {
+            name: 'punycode',
+            message: `Package 'punycode' has to be imported with trailing slash, see warning in https://github.com/bestiejs/punycode.js#installation`,
+          },
+        ],
+        patterns: ['!punycode/'],
+      },
+    ],
+
     // Cannot import from the same module twice
     'no-duplicate-imports': ['error'],
 

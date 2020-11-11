@@ -77,18 +77,24 @@
   },
   "license": "Apache-2.0",
   "bundledDependencies": [
+    "@balena/dockerignore",
     "case",
     "fs-extra",
+    "ignore",
     "jsonschema",
     "minimatch",
+    "punycode",
     "semver",
     "yaml"
   ],
   "dependencies": {
+    "@balena/dockerignore": "^1.0.2",
     "case": "1.6.3",
     "fs-extra": "^9.0.1",
+    "ignore": "^5.1.8",
     "jsonschema": "^1.4.0",
     "minimatch": "^3.0.4",
+    "punycode": "^2.1.1",
     "semver": "^7.3.2",
     "yaml": "1.10.0"
   },
@@ -102,6 +108,7 @@
     "@aws-cdk/aws-amplify": "0.0.0",
     "@aws-cdk/aws-apigateway": "0.0.0",
     "@aws-cdk/aws-apigatewayv2": "0.0.0",
+    "@aws-cdk/aws-apigatewayv2-integrations": "0.0.0",
     "@aws-cdk/aws-appconfig": "0.0.0",
     "@aws-cdk/aws-appflow": "0.0.0",
     "@aws-cdk/aws-applicationautoscaling": "0.0.0",

@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { CustomResource, CustomResourceProvider } from '@aws-cdk/aws-cloudformation';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Construct, Duration, Stack } from '@aws-cdk/core';
+import { Construct, Duration, Names, Stack } from '@aws-cdk/core';
 import { Cluster } from './cluster';
 import { KubectlLayer } from './kubectl-layer';
 
@@ -84,7 +84,7 @@ export class HelmChart extends Construct {
       provider: CustomResourceProvider.lambda(handler),
       resourceType: HelmChart.RESOURCE_TYPE,
       properties: {
-        Release: props.release || this.node.uniqueId.slice(-63).toLowerCase(), // Helm has a 63 character limit for the name
+        Release: props.release || Names.uniqueId(this).slice(-63).toLowerCase(), // Helm has a 63 character limit for the name
         Chart: props.chart,
         Version: props.version,
         Values: (props.values ? stack.toJsonString(props.values) : undefined),
