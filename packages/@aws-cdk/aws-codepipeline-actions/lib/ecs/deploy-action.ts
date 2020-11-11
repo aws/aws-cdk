@@ -43,7 +43,7 @@ export interface EcsDeployActionProps extends codepipeline.CommonAwsActionProps 
 
   /**
    * Timeout for the ECS deployment in minutes. Value must be between 1-60.
-   * 
+   *
    * @default - 60 minutes
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-ECS.html
    */
