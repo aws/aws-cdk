@@ -61,7 +61,7 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions, BundlingOpt
 }
 
 /**
- * A Node.js Lambda function bundled using Parcel
+ * A Node.js Lambda function bundled using esbuild
  */
 export class NodejsFunction extends lambda.Function {
   private static projectRoot?: string;
