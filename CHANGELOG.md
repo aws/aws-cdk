@@ -2,6 +2,50 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.73.0](https://github.com/aws/aws-cdk/compare/v1.72.0...v1.73.0) (2020-11-11)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **apigatewayv2:** `LambdaProxyIntegration` and `HttpProxyIntegration`
+classes have moved to the `@aws-cdk/aws-apigatewayv2-integration` module.
+* **appmesh:** VirtualRouter's Listeners are no longer a struct; use the static factory methods of the `VirtualNodeListener` class to obtain instances of them
+* **appmesh:** VirtualRouter accepts a list of listeners instead of a single listener
+* **appmesh:** all `fromResourceName()` methods in the AppMesh module have been replaced with `fromResourceAttributes()`
+
+### Features
+
+* **apigateway:** default value for enum type in schema models ([#11064](https://github.com/aws/aws-cdk/issues/11064)) ([9eff751](https://github.com/aws/aws-cdk/commit/9eff751609597c35baadb559144b2069a2211215)), closes [#11065](https://github.com/aws/aws-cdk/issues/11065)
+* **appmesh:** change VirtualRouter's Listener to a union-like class ([#11277](https://github.com/aws/aws-cdk/issues/11277)) ([0a3e980](https://github.com/aws/aws-cdk/commit/0a3e980cb880ee546d0840281aa9e2a781d7412b))
+* **appmesh:** remove from*Name() methods and replace with from*Attributes() ([#11266](https://github.com/aws/aws-cdk/issues/11266)) ([13d713e](https://github.com/aws/aws-cdk/commit/13d713e6358b29e55a626c44c7b2f0dcd946fddc))
+* **cli:** process credentials ([#11114](https://github.com/aws/aws-cdk/issues/11114)) ([6efa5e1](https://github.com/aws/aws-cdk/commit/6efa5e10e01a5f46b914601a807b932b4c745dae)), closes [#3008](https://github.com/aws/aws-cdk/issues/3008)
+* **cloudwatch:** add methods for lazy addition of graph metrics ([#11380](https://github.com/aws/aws-cdk/issues/11380)) ([55e9576](https://github.com/aws/aws-cdk/commit/55e9576810d8cb3115b7bd52d704ffe793a3dd27)), closes [#11305](https://github.com/aws/aws-cdk/issues/11305)
+* **cloudwatch:** different view types in GraphWidget ([#11160](https://github.com/aws/aws-cdk/issues/11160)) ([24de577](https://github.com/aws/aws-cdk/commit/24de5774379b7258f3629448a760b86613acc397)), closes [#11063](https://github.com/aws/aws-cdk/issues/11063)
+* **cognito:** user pool resource server ([#11118](https://github.com/aws/aws-cdk/issues/11118)) ([474f6c6](https://github.com/aws/aws-cdk/commit/474f6c673e9f419bbc80c1a7797348e98767e8c9))
+* **cognito:** user pools - non-ascii email domains ([#11099](https://github.com/aws/aws-cdk/issues/11099)) ([5d907b6](https://github.com/aws/aws-cdk/commit/5d907b62abd4428c27677965353fb04d92267e2c)), closes [#8473](https://github.com/aws/aws-cdk/issues/8473) [#8473](https://github.com/aws/aws-cdk/issues/8473)
+* **core:** natively support .dockerignore ([#10922](https://github.com/aws/aws-cdk/issues/10922)) ([cdb9942](https://github.com/aws/aws-cdk/commit/cdb9942bebc60abf98a74c6f9071e3527f0f01e1))
+* **eks:** IAM Roles for service accounts in imported clusters ([#10774](https://github.com/aws/aws-cdk/issues/10774)) ([76c795a](https://github.com/aws/aws-cdk/commit/76c795ae37d4168e8a98b3bc81034b455a8ae05e)), closes [#10601](https://github.com/aws/aws-cdk/issues/10601)
+* **elasticloadbalancingv2:** add load balancer lookups ([#11089](https://github.com/aws/aws-cdk/issues/11089)) ([0153028](https://github.com/aws/aws-cdk/commit/0153028e6438eb13b07b8f2043745e5bc3faa6b7)), closes [#11088](https://github.com/aws/aws-cdk/issues/11088)
+* **pipelines:** room for extra sequential intermediary actions in CdkStage addApplication() ([#11376](https://github.com/aws/aws-cdk/issues/11376)) ([32c164c](https://github.com/aws/aws-cdk/commit/32c164c4aa498b9bce03583f76cc21c7257a48ef))
+* **pipelines:** ShellScriptAction can configure environment ([#11229](https://github.com/aws/aws-cdk/issues/11229)) ([ab9bcf2](https://github.com/aws/aws-cdk/commit/ab9bcf26ecb8c171cf4ba3bdc795cb45c7096fd8)), closes [#10919](https://github.com/aws/aws-cdk/issues/10919)
+* **region-info:** added AppMesh ECR account for eu-south-1 region ([#11207](https://github.com/aws/aws-cdk/issues/11207)) ([54c276d](https://github.com/aws/aws-cdk/commit/54c276d215fd636c2f8970795512a838377b2f21))
+* **route53-targets:** aws-apigatewayv2 target ([#10191](https://github.com/aws/aws-cdk/issues/10191)) ([030c5c5](https://github.com/aws/aws-cdk/commit/030c5c58e2cedda8e74d7988dc44b042def9e703))
+
+
+### Bug Fixes
+
+* **apigateway:** api key not supported for SpecRestApi ([#11235](https://github.com/aws/aws-cdk/issues/11235)) ([52da8cb](https://github.com/aws/aws-cdk/commit/52da8cb3c65c41bf7cbd3c8001cf586a5c89041b)), closes [#11079](https://github.com/aws/aws-cdk/issues/11079)
+* **appsync:** HttpDataSource extends BackedDataSource instead of BaseDataSource ([#11185](https://github.com/aws/aws-cdk/issues/11185)) ([4b4d011](https://github.com/aws/aws-cdk/commit/4b4d0114e849ad96fccafd4cebb0edbead83ed83)), closes [#11183](https://github.com/aws/aws-cdk/issues/11183)
+* **cfn-include:** Fn::FindInMap cannot be used for boolean properties ([#11323](https://github.com/aws/aws-cdk/issues/11323)) ([47b698e](https://github.com/aws/aws-cdk/commit/47b698ebfea300978e101234bcd80145b6f1ed17)), closes [#11300](https://github.com/aws/aws-cdk/issues/11300)
+* **cli:** deployments are skipped if stack is in a _failed state ([#10847](https://github.com/aws/aws-cdk/issues/10847)) ([4887ba6](https://github.com/aws/aws-cdk/commit/4887ba6004b20c86c0025d16e235b8333d6efa6b)), closes [#10784](https://github.com/aws/aws-cdk/issues/10784)
+* **cli:** Python `id` parameter in init template conflicts with built-in ([#10874](https://github.com/aws/aws-cdk/issues/10874)) ([37a149b](https://github.com/aws/aws-cdk/commit/37a149b03751810d9ed984e415bbfb216881e74b))
+* **cloudwatch:** composite alarm ARN uses wrong separator ([#11186](https://github.com/aws/aws-cdk/issues/11186)) ([3009490](https://github.com/aws/aws-cdk/commit/3009490c4e1e1a10a9e4ea52cefe03aac296d649))
+* **elasticsearch:** use correct latency metric names ([#11175](https://github.com/aws/aws-cdk/issues/11175)) ([7ab5ab8](https://github.com/aws/aws-cdk/commit/7ab5ab8dad9ad08ff43602d5ee78c31e6b8413ed)), closes [#11174](https://github.com/aws/aws-cdk/issues/11174)
+* **rds:** customizing secret results in unusable password and lost attachment ([#11237](https://github.com/aws/aws-cdk/issues/11237)) ([a4567f5](https://github.com/aws/aws-cdk/commit/a4567f53d6e06d50f22d56364f69f0209c48874e)), closes [#11040](https://github.com/aws/aws-cdk/issues/11040)
+
+
+* **apigatewayv2:** move lambda and http proxy integrations to the 'integrations' module ([#11339](https://github.com/aws/aws-cdk/issues/11339)) ([17611d6](https://github.com/aws/aws-cdk/commit/17611d6e0f1085505c90cf4d6d4f22b91c530ce1))
+
 ## [1.72.0](https://github.com/aws/aws-cdk/compare/v1.71.0...v1.72.0) (2020-11-06)
 
 
