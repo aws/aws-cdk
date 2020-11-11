@@ -40,11 +40,11 @@
   },
   "dependencies": {
     "@typescript-eslint/eslint-plugin": "^4.7.0",
-    "@typescript-eslint/parser": "^4.6.1",
+    "@typescript-eslint/parser": "^4.7.0",
     "eslint-plugin-cdk": "0.0.0",
     "awslint": "0.0.0",
     "colors": "^1.4.0",
-    "eslint": "^7.12.1",
+    "eslint": "^7.13.0",
     "eslint-import-resolver-node": "^0.3.4",
     "eslint-import-resolver-typescript": "^2.3.0",
     "eslint-plugin-import": "^2.22.1",
