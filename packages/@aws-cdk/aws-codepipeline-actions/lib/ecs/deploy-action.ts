@@ -14,7 +14,7 @@ export interface EcsDeployActionConfiguration {
   /**
    * Name of the ECS service in the cluster to deploy.
    */
-  readonly ServiceName: string
+  readonly ServiceName: string;
 
   /**
    * The name of the JSON image definitions file to use for deployments.
@@ -27,7 +27,7 @@ export interface EcsDeployActionConfiguration {
    * @default - one of this property, or `input`, is required
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/pipelines-create.html#pipelines-create-image-definitions
    */
-  readonly FileName?: string
+  readonly FileName?: string;
 
   /**
    * Timeout for the ECS deployment in minutes. Value must be between 1-60.
@@ -35,7 +35,7 @@ export interface EcsDeployActionConfiguration {
    * @default - 60 minutes
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-ECS.html
    */
-  readonly DeploymentTimeout?: number
+  readonly DeploymentTimeout?: number;
 }
 
 /**
@@ -149,8 +149,8 @@ export class EcsDeployAction extends Action {
     if (this.deploymentTimeout) {
       configuration = {
         ...configuration,
-        DeploymentTimeout: this.deploymentTimeout, 
-      }
+        DeploymentTimeout: this.deploymentTimeout,
+      };
     }
 
     return { configuration };
