@@ -261,22 +261,23 @@ nodeunitShim({
   },
 
   'runtime library versions'(test: Test) {
-    MetadataResource.clearModulesCache();
+    v1(() => {
+      MetadataResource.clearModulesCache();
 
-    const response = withApp({ analyticsReporting: true }, app => {
-      const stack = new Stack(app, 'stack1');
-      new CfnResource(stack, 'MyResource', { type: 'Resource::Type' });
+      const response = withApp({ analyticsReporting: true }, app => {
+        const stack = new Stack(app, 'stack1');
+        new CfnResource(stack, 'MyResource', { type: 'Resource::Type' });
+      });
+
+      const stackTemplate = response.getStackByName('stack1').template;
+      const libs = parseModules(stackTemplate.Resources?.CDKMetadata?.Properties?.Modules);
+
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const version = require('../package.json').version;
+      test.deepEqual(libs['@aws-cdk/core'], version);
+      test.deepEqual(libs['@aws-cdk/cx-api'], version);
+      test.deepEqual(libs['jsii-runtime'], `node.js/${process.version}`);
     });
-
-    const stackTemplate = response.getStackByName('stack1').template;
-    const libs = parseModules(stackTemplate.Resources?.CDKMetadata?.Properties?.Modules);
-
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const version = require('../package.json').version;
-    test.deepEqual(libs['@aws-cdk/core'], version);
-    test.deepEqual(libs['@aws-cdk/cx-api'], version);
-    test.deepEqual(libs['jsii-runtime'], `node.js/${process.version}`);
-
     test.done();
   },
 
@@ -320,25 +321,26 @@ nodeunitShim({
   },
 
   'version reporting includes only @aws-cdk, aws-cdk and jsii libraries'(test: Test) {
-    MetadataResource.clearModulesCache();
+    v1(() => {
+      MetadataResource.clearModulesCache();
 
-    const response = withApp({ analyticsReporting: true }, app => {
-      const stack = new Stack(app, 'stack1');
-      new CfnResource(stack, 'MyResource', { type: 'Resource::Type' });
+      const response = withApp({ analyticsReporting: true }, app => {
+        const stack = new Stack(app, 'stack1');
+        new CfnResource(stack, 'MyResource', { type: 'Resource::Type' });
+      });
+
+      const stackTemplate = response.getStackByName('stack1').template;
+      const libs = parseModules(stackTemplate.Resources?.CDKMetadata?.Properties?.Modules);
+      const libNames = Object.keys(libs).sort();
+
+      test.deepEqual(libNames, [
+        '@aws-cdk/cloud-assembly-schema',
+        '@aws-cdk/core',
+        '@aws-cdk/cx-api',
+        '@aws-cdk/region-info',
+        'jsii-runtime',
+      ]);
     });
-
-    const stackTemplate = response.getStackByName('stack1').template;
-    const libs = parseModules(stackTemplate.Resources?.CDKMetadata?.Properties?.Modules);
-    const libNames = Object.keys(libs).sort();
-
-    test.deepEqual(libNames, [
-      '@aws-cdk/cloud-assembly-schema',
-      '@aws-cdk/core',
-      '@aws-cdk/cx-api',
-      '@aws-cdk/region-info',
-      'jsii-runtime',
-    ]);
-
     test.done();
   },
 
@@ -443,5 +445,17 @@ function withCliVersion<A>(block: () => A): A {
     return block();
   } finally {
     delete process.env[cxapi.CLI_VERSION_ENV];
+  }
+}
+
+function v1(block: () => void) {
+  onVersion(1, block);
+}
+
+function onVersion(version: number, block: () => void) {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const mv: number = require('../../../../release.json').majorVersion;
+  if (version === mv) {
+    block();
   }
 }
