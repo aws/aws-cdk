@@ -5,39 +5,6 @@ import { Construct, Duration } from '@aws-cdk/core';
 import { Action } from '../action';
 import { deployArtifactBounds } from '../common';
 
-export interface EcsDeployActionConfiguration {
-  /**
-   * Name of the ECS cluster to deploy.
-   */
-  readonly ClusterName: string
-
-  /**
-   * Name of the ECS service in the cluster to deploy.
-   */
-  readonly ServiceName: string;
-
-  /**
-   * The name of the JSON image definitions file to use for deployments.
-   * The JSON file is a list of objects,
-   * each with 2 keys: `name` is the name of the container in the Task Definition,
-   * and `imageUri` is the Docker image URI you want to update your service with.
-   * Use this property if you want to use a different name for this file than the default 'imagedefinitions.json'.
-   * If you use this property, you don't need to specify the `input` property.
-   *
-   * @default - one of this property, or `input`, is required
-   * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/pipelines-create.html#pipelines-create-image-definitions
-   */
-  readonly FileName?: string;
-
-  /**
-   * Timeout for the ECS deployment in minutes. Value must be between 1-60.
-   *
-   * @default - 60 minutes
-   * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-ECS.html
-   */
-  readonly DeploymentTimeout?: number;
-}
-
 /**
  * Construction properties of {@link EcsDeployAction}.
  */
@@ -140,7 +107,7 @@ export class EcsDeployAction extends Action {
 
     options.bucket.grantRead(options.role);
 
-    let configuration: EcsDeployActionConfiguration = {
+    let configuration: any = {
       ClusterName: this.props.service.cluster.clusterName,
       ServiceName: this.props.service.serviceName,
       FileName: this.props.imageFile && this.props.imageFile.fileName,
