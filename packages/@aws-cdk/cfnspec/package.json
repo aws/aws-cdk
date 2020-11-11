@@ -1,6 +1,7 @@
 {
   "name": "@aws-cdk/cfnspec",
   "description": "The CloudFormation resource specification used by @aws-cdk packages",
+  "private": true,
   "version": "0.0.0",
   "scripts": {
     "update": "cdk-build && /bin/bash build-tools/update.sh",
