@@ -153,6 +153,7 @@
       "resource-attribute:@aws-cdk/aws-appmesh.VirtualGateway.virtualGatewayResourceOwner",
       "resource-attribute:@aws-cdk/aws-appmesh.VirtualGateway.virtualGatewayUid",
       "resource-attribute:@aws-cdk/aws-appmesh.VirtualNode.virtualNodeMeshName",
+      "duration-prop-type:@aws-cdk/aws-appmesh.VirtualNodeListener.timeout",
       "resource-attribute:@aws-cdk/aws-appmesh.VirtualNode.virtualNodeMeshOwner",
       "resource-attribute:@aws-cdk/aws-appmesh.VirtualNode.virtualNodeResourceOwner",
       "resource-attribute:@aws-cdk/aws-appmesh.VirtualNode.virtualNodeUid",
@@ -172,7 +173,11 @@
       "props-default-doc:@aws-cdk/aws-appmesh.VirtualRouterAttributes.virtualRouterName",
       "docs-public-apis:@aws-cdk/aws-appmesh.Protocol.HTTP",
       "docs-public-apis:@aws-cdk/aws-appmesh.Protocol.HTTP2",
-      "docs-public-apis:@aws-cdk/aws-appmesh.Protocol.GRPC"
+      "docs-public-apis:@aws-cdk/aws-appmesh.Protocol.GRPC",
+      "duration-prop-type:@aws-cdk/aws-appmesh.GrpcVirtualNodeListenerOptions.timeout",
+      "duration-prop-type:@aws-cdk/aws-appmesh.HttpVirtualNodeListenerOptions.timeout",
+      "duration-prop-type:@aws-cdk/aws-appmesh.Http2VirtualNodeListenerOptions.timeout",
+      "duration-prop-type:@aws-cdk/aws-appmesh.TcpVirtualNodeListenerOptions.timeout"
     ]
   },
   "stability": "experimental",
