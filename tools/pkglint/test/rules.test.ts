@@ -317,6 +317,61 @@ describe('ThirdPartyAttributions', () => {
     expect(pkgJson.hasReports).toBe(false);
   });
 
+  test('passes when attribution for transitive bundled deps are present', async() => {
+    fakeModule = new FakeModule({
+      files: {
+        'package.json': {
+          bundledDependencies: ['dep1'],
+        },
+        'node_modules/dep1/package.json': {
+          dependencies: { dep2: '1.2.3' },
+        },
+        'node_modules/dep2/package.json': {},
+        'NOTICE': [
+          '** dep1 - https://link-somewhere',
+          '** dep2 - https://link-elsewhere',
+        ].join('\n'),
+      },
+    });
+    const dirPath = await fakeModule.tmpdir();
+
+    const rule = new rules.ThirdPartyAttributions();
+
+    const pkgJson = new PackageJson(path.join(dirPath, 'package.json'));
+    rule.validate(pkgJson);
+
+    expect(pkgJson.hasReports).toBe(false);
+  });
+
+  test('fails when attribution for transitive bundled deps are missing', async() => {
+    fakeModule = new FakeModule({
+      files: {
+        'package.json': {
+          bundledDependencies: ['dep1'],
+        },
+        'node_modules/dep1/package.json': {
+          dependencies: { dep2: '1.2.3' },
+        },
+        'node_modules/dep2/package.json': {},
+        'NOTICE': [
+          '** dep1 - https://link-somewhere',
+        ].join('\n'),
+      },
+    });
+    const dirPath = await fakeModule.tmpdir();
+
+    const rule = new rules.ThirdPartyAttributions();
+
+    const pkgJson = new PackageJson(path.join(dirPath, 'package.json'));
+    rule.validate(pkgJson);
+
+    expect(pkgJson.hasReports).toBe(true);
+    expect(pkgJson.reports.length).toEqual(1);
+    expect(pkgJson.reports[0].ruleName).toEqual('license/3p-attributions');
+    expect(pkgJson.reports[0].message).toContain('Missing attribution');
+    expect(pkgJson.reports[0].message).toContain('dep2');
+  });
+
   test('skipped when no bundled dependencies', async() => {
     fakeModule = new FakeModule({
       files: {
