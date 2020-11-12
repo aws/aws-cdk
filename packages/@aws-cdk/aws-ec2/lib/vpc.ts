@@ -1486,6 +1486,12 @@ export class Subnet extends Resource implements ISubnet {
   public readonly subnetIpv6CidrBlocks: string[];
 
   /**
+   * The Amazon Resource Name (ARN) of the Outpost for this subnet (if one exists).
+   * @attribute
+   */
+  public readonly subnetOutpostArn: string;
+
+  /**
    * @attribute
    */
   public readonly subnetNetworkAclAssociationId: string;
@@ -1525,6 +1531,7 @@ export class Subnet extends Resource implements ISubnet {
     this.subnetVpcId = subnet.attrVpcId;
     this.subnetAvailabilityZone = subnet.attrAvailabilityZone;
     this.subnetIpv6CidrBlocks = subnet.attrIpv6CidrBlocks;
+    this.subnetOutpostArn = subnet.attrOutpostArn;
 
     // subnet.attrNetworkAclAssociationId is the default ACL after the subnet
     // was just created. However, the ACL can be replaced at a later time.
