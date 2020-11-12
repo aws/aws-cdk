@@ -8,7 +8,7 @@ All notable changes to this project will be documented in this file. See [standa
 ### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
 
 * **apigatewayv2:** `LambdaProxyIntegration` and `HttpProxyIntegration`
-classes have moved to the `@aws-cdk/aws-apigatewayv2-integration` module.
+classes have moved to the `@aws-cdk/aws-apigatewayv2-integrations` module.
 * **appmesh:** VirtualRouter's Listeners are no longer a struct; use the static factory methods of the `VirtualNodeListener` class to obtain instances of them
 * **appmesh:** VirtualRouter accepts a list of listeners instead of a single listener
 * **appmesh:** all `fromResourceName()` methods in the AppMesh module have been replaced with `fromResourceAttributes()`
