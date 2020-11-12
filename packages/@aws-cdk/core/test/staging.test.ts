@@ -731,6 +731,7 @@ nodeunitShim({
     test.equal(asset.sourcePath, directory);
     test.equal(asset.stagedPath, directory);
     test.equal(asset.relativeStagedPath(stack), directory);
+    test.equal(asset.assetHash, '729a2fdb899011ee9f3f226f4cfc03b1c2a83b97ff9c4105192430e6bc18bff3');
 
     test.done();
   },
