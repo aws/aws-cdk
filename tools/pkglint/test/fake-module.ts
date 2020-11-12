@@ -35,17 +35,17 @@ export class FakeModule {
       throw new Error('Cannot re-create cleaned up fake module');
     }
     if (!this._tmpdir) {
-      const tmpdir = await fs.mkdtemp(path.join(os.tmpdir(), 'pkglint-rules-test-'));
-      await fs.writeFile(path.join(tmpdir, 'package.json'), JSON.stringify(this.props.packagejson ?? {}), { encoding: 'utf8' });
+      this._tmpdir = await fs.mkdtemp(path.join(os.tmpdir(), 'pkglint-rules-test-'));
+      await fs.writeFile(path.join(this._tmpdir, 'package.json'), JSON.stringify(this.props.packagejson ?? {}), { encoding: 'utf8' });
+      await this.createFakeNodeTree();
       if (this.props.readme !== undefined) {
         const contents = this.props.readme.join('\n');
-        await fs.writeFile(path.join(tmpdir, 'README.md'), contents, { encoding: 'utf8' });
+        await fs.writeFile(path.join(this._tmpdir, 'README.md'), contents, { encoding: 'utf8' });
       }
       if (this.props.notice !== undefined) {
         const contents = this.props.notice.join('\n');
-        await fs.writeFile(path.join(tmpdir, 'NOTICE'), contents, { encoding: 'utf8' });
+        await fs.writeFile(path.join(this._tmpdir, 'NOTICE'), contents, { encoding: 'utf8' });
       }
-      this._tmpdir = tmpdir;
     }
     return this._tmpdir;
   }
@@ -56,5 +56,12 @@ export class FakeModule {
       await fs.rmdir(this._tmpdir);
     }
     this.cleanedUp = true;
+  }
+
+  private async createFakeNodeTree() {
+    const deps: string[] = this.props.packagejson.bundledDependencies ?? [];
+    for (const dep of deps) {
+      await fs.mkdirp(path.join(this._tmpdir!, 'node_modules', dep));
+    }
   }
 }
