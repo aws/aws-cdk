@@ -397,8 +397,18 @@ abstract class ProjectBase extends Resource implements IProject {
   }
 }
 
+/**
+ * Statuses for Log Configurations
+ */
 export enum LogStatus {
+  /**
+   * Enables the log configuration
+   */
   ENABLED='ENABLED',
+
+  /**
+   * Disables the log configuration
+   */
   DISABLED='DISABLED'
 }
 
@@ -419,6 +429,7 @@ export interface S3LogsConfig {
 
   /**
    * The path prefix for S3 logs
+   * @default - no prefix
    */
   readonly prefix?: string;
 
@@ -440,6 +451,7 @@ export interface CloudwatchLogsConfig {
 
   /**
    * The prefix of the stream name of the Amazon CloudWatch Logs
+   * @default - no prefix
    */
   readonly prefix?: string;
 
@@ -1120,10 +1132,11 @@ export class Project extends ProjectBase {
 
     if (props.logsConfig?.s3) {
       const s3Logs = props.logsConfig.s3;
+
       s3Config = {
-        status: s3Logs.status || LogStatus.DISABLED,
+        status: s3Logs.status || LogStatus.ENABLED,
         location: `${s3Logs.bucket.bucketName}${s3Logs.prefix}`,
-        encryptionDisabled: s3Logs.encrypted || true,
+        encryptionDisabled: s3Logs.encrypted ?? false,
       };
     } else {
       s3Config = undefined;
@@ -1132,7 +1145,7 @@ export class Project extends ProjectBase {
     if (props.logsConfig?.cloudwatch) {
       const cloudWatchLogs = props.logsConfig.cloudwatch;
       cloudwatchConfig = {
-        status: cloudWatchLogs.status || LogStatus.DISABLED,
+        status: cloudWatchLogs.status || LogStatus.ENABLED,
         groupName: cloudWatchLogs.logGroup.logGroupName,
         streamName: cloudWatchLogs.prefix,
       };

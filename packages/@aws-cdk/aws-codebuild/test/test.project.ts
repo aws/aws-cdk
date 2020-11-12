@@ -624,10 +624,10 @@ export = {
       // THEN
       expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
         LogsConfig: objectLike({
-          S3LogsConfig: {
-            GroupName: 'MyLogGroup',
-            StreamName: '/my-logs',
+          CloudWatchLogs: {
+            GroupName: 'MyLogGroupName',
             Status: 'ENABLED',
+            StreamName: '/my-logs',
           },
         }),
       }));
@@ -638,7 +638,7 @@ export = {
     'logs config - s3'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
-      const bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'MyBucketName');
+      const bucket = s3.Bucket.fromBucketName(stack, 'LogBucket', 'MyBucketName');
 
       // WHEN
       new codebuild.Project(stack, 'Project', {
@@ -657,10 +657,10 @@ export = {
       // THEN
       expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
         LogsConfig: objectLike({
-          S3LogsConfig: {
+          S3Logs: {
+            EncryptionDisabled: false,
             Location: 'MyBucketName/my-logs',
             Status: 'ENABLED',
-            Encrypted: true,
           },
         }),
       }));
