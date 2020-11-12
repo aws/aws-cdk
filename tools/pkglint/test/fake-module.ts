@@ -4,23 +4,12 @@ import * as fs from 'fs-extra';
 
 export interface FakeModuleProps {
   /**
-   * The contents of the package json.
-   * If an empty object, i.e. `{}`, is provided, an empty file is created.
-   * @default - no package json will be created
+   * The list of files to be created.
+   * The key specifies the path of the file relative to the package directory including the file name.
+   * If the value is a string, the string is written to the file. If object, the object is stringified
+   * using `JSON.stringify()` and written into the file.
    */
-  readonly packagejson?: any;
-  /**
-   * The contents of the README.md file. Each item in the array represents a single line.
-   * If an empty list is provided, an empty file is created.
-   * @default - no README.md file will be created
-   */
-  readonly readme?: string[];
-  /**
-   * The contents of the NOTICE file. Each item in the array represents a single line.
-   * If an empty list is provided, an empty file is created.
-   * @default - no NOTICE file will be created
-   */
-  readonly notice?: string[];
+  readonly files?: { [key: string]: string | {} };
 }
 
 export class FakeModule {
@@ -36,15 +25,10 @@ export class FakeModule {
     }
     if (!this._tmpdir) {
       this._tmpdir = await fs.mkdtemp(path.join(os.tmpdir(), 'pkglint-rules-test-'));
-      await fs.writeFile(path.join(this._tmpdir, 'package.json'), JSON.stringify(this.props.packagejson ?? {}), { encoding: 'utf8' });
-      await this.createFakeNodeTree();
-      if (this.props.readme !== undefined) {
-        const contents = this.props.readme.join('\n');
-        await fs.writeFile(path.join(this._tmpdir, 'README.md'), contents, { encoding: 'utf8' });
-      }
-      if (this.props.notice !== undefined) {
-        const contents = this.props.notice.join('\n');
-        await fs.writeFile(path.join(this._tmpdir, 'NOTICE'), contents, { encoding: 'utf8' });
+      for (const [key, value] of Object.entries(this.props.files ?? {})) {
+        await fs.mkdirp(path.join(this._tmpdir, path.dirname(key)));
+        const toWrite = typeof value === 'string' ? value : JSON.stringify(value);
+        await fs.writeFile(path.join(this._tmpdir, key), toWrite, { encoding: 'utf8' });
       }
     }
     return this._tmpdir;
@@ -56,12 +40,5 @@ export class FakeModule {
       await fs.rmdir(this._tmpdir);
     }
     this.cleanedUp = true;
-  }
-
-  private async createFakeNodeTree() {
-    const deps: string[] = this.props.packagejson.bundledDependencies ?? [];
-    for (const dep of deps) {
-      await fs.mkdirp(path.join(this._tmpdir!, 'node_modules', dep));
-    }
   }
 }
