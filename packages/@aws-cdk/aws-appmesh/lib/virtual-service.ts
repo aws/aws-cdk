@@ -2,7 +2,7 @@ import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnVirtualService } from './appmesh.generated';
 import { IMesh, Mesh } from './mesh';
-import { ClientPolicy } from './shared-interfaces';
+import { ClientPolicy } from './validation-context';
 import { IVirtualNode } from './virtual-node';
 import { IVirtualRouter } from './virtual-router';
 

@@ -3,7 +3,8 @@ import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnVirtualNode } from './appmesh.generated';
 import { IMesh, Mesh } from './mesh';
-import { AccessLog, ClientPolicy } from './shared-interfaces';
+import { AccessLog } from './shared-interfaces';
+import { ClientPolicy } from './validation-context';
 import { VirtualNodeListener, VirtualNodeListenerConfig } from './virtual-node-listener';
 import { IVirtualService } from './virtual-service';
 
