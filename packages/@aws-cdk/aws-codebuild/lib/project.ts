@@ -5,6 +5,7 @@ import { DockerImageAsset, DockerImageAssetProps } from '@aws-cdk/aws-ecr-assets
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
+import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { Aws, Duration, IResource, Lazy, Names, PhysicalName, Resource, Stack } from '@aws-cdk/core';
@@ -396,6 +397,76 @@ abstract class ProjectBase extends Resource implements IProject {
   }
 }
 
+export enum LogStatus {
+  ENABLED='ENABLED',
+  DISABLED='DISABLED'
+}
+
+/**
+ * Information about logs built to an S3 bucket for a build project.
+ */
+export interface S3LogsConfig {
+  /**
+   * Encrypt the S3 build log output
+   * @default true
+   */
+  readonly encrypted?: boolean;
+
+  /**
+   * The S3 Bucket to send logs to
+   */
+  readonly bucket: s3.IBucket;
+
+  /**
+   * The path prefix for S3 logs
+   */
+  readonly prefix?: string;
+
+  /**
+   * The current status of the logs in Amazon CloudWatch Logs for a build project
+   * @default ENABLED
+   */
+  readonly status?: LogStatus;
+}
+
+/**
+ * Information about logs built to an S3 bucket for a build project.
+ */
+export interface CloudwatchLogsConfig {
+  /**
+   * The S3 Bucket to send logs to
+   */
+  readonly logGroup: logs.ILogGroup;
+
+  /**
+   * The prefix of the stream name of the Amazon CloudWatch Logs
+   */
+  readonly prefix?: string;
+
+  /**
+   * The current status of the logs in Amazon CloudWatch Logs for a build project
+   * @default ENABLED
+   */
+  readonly status?: LogStatus;
+}
+
+/**
+ * Information about logs for the build project. A project can create logs in Amazon CloudWatch Logs, an S3 bucket, or both.
+ */
+export interface LogsConfig {
+  /**
+   * Information about logs built to an S3 bucket for a build project.
+   * @default - disabled
+   */
+  readonly s3?: S3LogsConfig;
+
+  /**
+   * Information about Amazon CloudWatch Logs for a build project.
+   * @default - enabled
+   */
+  readonly cloudwatch?: CloudwatchLogsConfig;
+}
+
 export interface CommonProjectProps {
   /**
    * A description of the project. Use the description to identify the purpose
@@ -538,6 +609,12 @@ export interface CommonProjectProps {
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/test-report-group-naming.html
    */
   readonly grantReportGroupPermissions?: boolean;
+
+  /**
+   * Information about logs for the build project. A project can create logs in Amazon CloudWatch Logs, an S3 bucket, or both.
+   * @default - no log configuration is set
+   */
+  readonly logsConfig?: LogsConfig;
 }
 
 export interface ProjectProps extends CommonProjectProps {
@@ -771,6 +848,7 @@ export class Project extends ProjectBase {
       triggers: sourceConfig.buildTriggers,
       sourceVersion: sourceConfig.sourceVersion,
       vpcConfig: this.configureVpc(props),
+      logsConfig: props.logsConfig && this.renderLogs(props),
     });
 
     this.addVpcRequiredPermissions(props, resource);
@@ -1033,6 +1111,38 @@ export class Project extends ProjectBase {
       vpcId: props.vpc.vpcId,
       subnets: props.vpc.selectSubnets(props.subnetSelection).subnetIds,
       securityGroupIds: this.connections.securityGroups.map(s => s.securityGroupId),
+    };
+  }
+
+  private renderLogs(props: ProjectProps): CfnProject.LogsConfigProperty {
+    let s3Config: CfnProject.S3LogsConfigProperty|undefined;
+    let cloudwatchConfig: CfnProject.CloudWatchLogsConfigProperty|undefined;
+
+    if (props.logsConfig?.s3) {
+      const s3Logs = props.logsConfig.s3;
+      s3Config = {
+        status: s3Logs.status || LogStatus.DISABLED,
+        location: `${s3Logs.bucket.bucketName}${s3Logs.prefix}`,
+        encryptionDisabled: s3Logs.encrypted || true,
+      };
+    } else {
+      s3Config = undefined;
+    }
+
+    if (props.logsConfig?.cloudwatch) {
+      const cloudWatchLogs = props.logsConfig.cloudwatch;
+      cloudwatchConfig = {
+        status: cloudWatchLogs.status || LogStatus.DISABLED,
+        groupName: cloudWatchLogs.logGroup.logGroupName,
+        streamName: cloudWatchLogs.prefix,
+      };
+    } else {
+      cloudwatchConfig = undefined;
+    }
+
+    return {
+      s3Logs: s3Config,
+      cloudWatchLogs: cloudwatchConfig,
     };
   }
 

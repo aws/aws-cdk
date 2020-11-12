@@ -1,6 +1,7 @@
 import { countResources, expect, haveResource, haveResourceLike, objectLike, not, ResourcePart } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
+import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as cdk from '@aws-cdk/core';
@@ -594,6 +595,72 @@ export = {
           RegistryCredential: {
             CredentialProvider: 'SECRETS_MANAGER',
             Credential: 'MySecretName',
+          },
+        }),
+      }));
+
+      test.done();
+    },
+
+    'logs config - cloudwatch'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const logGroup = logs.LogGroup.fromLogGroupName(stack, 'LogGroup', 'MyLogGroupName');
+
+      // WHEN
+      new codebuild.Project(stack, 'Project', {
+        source: codebuild.Source.s3({
+          bucket: new s3.Bucket(stack, 'Bucket'),
+          path: 'path',
+        }),
+        logsConfig: {
+          cloudwatch: {
+            logGroup,
+            prefix: '/my-logs',
+          },
+        },
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+        LogsConfig: objectLike({
+          S3LogsConfig: {
+            GroupName: 'MyLogGroup',
+            StreamName: '/my-logs',
+            Status: 'ENABLED',
+          },
+        }),
+      }));
+
+      test.done();
+    },
+
+    'logs config - s3'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'MyBucketName');
+
+      // WHEN
+      new codebuild.Project(stack, 'Project', {
+        source: codebuild.Source.s3({
+          bucket: new s3.Bucket(stack, 'Bucket'),
+          path: 'path',
+        }),
+        logsConfig: {
+          s3: {
+            bucket,
+            prefix: '/my-logs',
+          },
+        },
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+        LogsConfig: objectLike({
+          S3LogsConfig: {
+            Location: 'MyBucketName/my-logs',
+            Status: 'ENABLED',
+            Encrypted: true,
           },
         }),
       }));
