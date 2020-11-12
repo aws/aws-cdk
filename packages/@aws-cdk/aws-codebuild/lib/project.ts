@@ -396,14 +396,11 @@ abstract class ProjectBase extends Resource implements IProject {
   }
 }
 
-export interface CommonProjectProps {
-  /**
-   * A description of the project. Use the description to identify the purpose
-   * of the project.
-   *
-   * @default - No description.
-   */
-  readonly description?: string;
+/**
+ * Common override properties of the CodeBuild project
+ * TODO: add properties `queuedTimeoutInMinutes`, `logsConfig`
+ */
+interface CommonStartBuildOptions {
 
   /**
    * Filename or contents of buildspec in JSON format.
@@ -412,13 +409,6 @@ export interface CommonProjectProps {
    * @default - Empty buildspec.
    */
   readonly buildSpec?: BuildSpec;
-
-  /**
-   * Service Role to assume while running the build.
-   *
-   * @default - A role will be created.
-   */
-  readonly role?: iam.IRole;
 
   /**
    * Encryption key to use to read and write artifacts.
@@ -442,13 +432,11 @@ export interface CommonProjectProps {
   readonly environment?: BuildEnvironment;
 
   /**
-   * Indicates whether AWS CodeBuild generates a publicly accessible URL for
-   * your project's build badge. For more information, see Build Badges Sample
-   * in the AWS CodeBuild User Guide.
+   * Service Role to assume while running the build.
    *
-   * @default false
+   * @default - A role will be created.
    */
-  readonly badge?: boolean;
+  readonly role?: iam.IRole;
 
   /**
    * The number of minutes after which AWS CodeBuild stops the build if it's
@@ -465,6 +453,28 @@ export interface CommonProjectProps {
    * @default - No additional environment variables are specified.
    */
   readonly environmentVariables?: { [name: string]: BuildEnvironmentVariable };
+}
+
+/**
+ * Common properties of the CodeBuild project
+ */
+export interface CommonProjectProps extends CommonStartBuildOptions {
+  /**
+   * A description of the project. Use the description to identify the purpose
+   * of the project.
+   *
+   * @default - No description.
+   */
+  readonly description?: string;
+
+  /**
+   * Indicates whether AWS CodeBuild generates a publicly accessible URL for
+   * your project's build badge. For more information, see Build Badges Sample
+   * in the AWS CodeBuild User Guide.
+   *
+   * @default false
+   */
+  readonly badge?: boolean;
 
   /**
    * The physical, human-readable name of the CodeBuild Project.
@@ -540,7 +550,10 @@ export interface CommonProjectProps {
   readonly grantReportGroupPermissions?: boolean;
 }
 
-export interface ProjectProps extends CommonProjectProps {
+/**
+ * Override properties of the CodeBuild project
+ */
+export interface StartBuildOptions extends CommonStartBuildOptions {
   /**
    * The source of the build.
    * *Note*: if {@link NoSource} is given as the source,
@@ -575,6 +588,12 @@ export interface ProjectProps extends CommonProjectProps {
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-multi-in-out.html
    */
   readonly secondaryArtifacts?: IArtifacts[];
+}
+
+/**
+ * Properties of the CodeBuild project
+ */
+export interface ProjectProps extends StartBuildOptions, CommonProjectProps {
 }
 
 /**
