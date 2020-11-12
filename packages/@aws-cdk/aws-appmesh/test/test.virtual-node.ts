@@ -222,14 +222,6 @@ export = {
           timeout: { idle: cdk.Duration.seconds(10) },
         }));
 
-        node.addBackendDefaults({
-          tlsClientPolicy: {
-            validation: appmesh.TLSClientValidation.fileTrust({
-              certificateChain: 'path-to-certificate',
-            }),
-            ports: [8080, 8081],
-          },
-        });
 
         // THEN
         expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
@@ -258,6 +250,39 @@ export = {
                 },
               },
             ],
+          },
+        }));
+        test.done();
+      },
+    },
+
+    'when a default backend is added': {
+      'should add a backend default to the resource'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+
+        // WHEN
+        const mesh = new appmesh.Mesh(stack, 'mesh', {
+          meshName: 'test-mesh',
+        });
+
+        const node = new appmesh.VirtualNode(stack, 'test-node', {
+          mesh,
+          dnsHostName: 'test',
+        });
+
+        node.addBackendDefaults({
+          tlsClientPolicy: {
+            validation: appmesh.TLSClientValidation.fileTrust({
+              certificateChain: 'path-to-certificate',
+            }),
+            ports: [8080, 8081],
+          },
+        });
+
+        // THEN
+        expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
+          Spec: {
             BackendDefaults: {
               ClientPolicy: {
                 TLS: {
@@ -273,6 +298,97 @@ export = {
                 },
               },
             },
+          },
+        }));
+        test.done();
+      },
+    },
+
+    'when a backend is added': {
+      'should add a backend visrtual service to the resource'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+
+        // WHEN
+        const mesh = new appmesh.Mesh(stack, 'mesh', {
+          meshName: 'test-mesh',
+        });
+
+        const node = new appmesh.VirtualNode(stack, 'test-node', {
+          mesh,
+          dnsHostName: 'test',
+        });
+
+        node.addListener(appmesh.VirtualNodeListener.tcp({
+          port: 80,
+          healthCheck: { timeout: cdk.Duration.seconds(3) },
+          timeout: { idle: cdk.Duration.seconds(10) },
+        }));
+
+        const service1 = new appmesh.VirtualService(stack, 'service-1', {
+          virtualServiceName: 'service1.domain.local',
+          mesh,
+          clientPolicy: {
+            tlsClientPolicy: {
+              validation: appmesh.TLSClientValidation.fileTrust({
+                certificateChain: 'path-to-certificate',
+              }),
+              ports: [8080, 8081],
+            },
+          },
+        });
+
+        node.addBackend(service1);
+
+        // THEN
+        expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
+          Spec: {
+            Listeners: [
+              {
+                HealthCheck: {
+                  HealthyThreshold: 2,
+                  IntervalMillis: 5000,
+                  Port: 80,
+                  Protocol: 'tcp',
+                  TimeoutMillis: 3000,
+                  UnhealthyThreshold: 2,
+                },
+                PortMapping: {
+                  Port: 80,
+                  Protocol: 'tcp',
+                },
+                Timeout: {
+                  TCP: {
+                    Idle: {
+                      Unit: 'ms',
+                      Value: 10000,
+                    },
+                  },
+                },
+              },
+            ],
+            Backends: [
+              {
+                VirtualService: {
+                  VirtualServiceName: {
+                    'Fn::GetAtt': ['service1A48078CF', 'VirtualServiceName'],
+                  },
+                  ClientPolicy: {
+                    TLS: {
+                      Enforce: true,
+                      Ports: [8080, 8081],
+                      Validation: {
+                        Trust: {
+                          File: {
+                            CertificateChain: 'path-to-certificate',
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            ],
           },
         }));
         test.done();

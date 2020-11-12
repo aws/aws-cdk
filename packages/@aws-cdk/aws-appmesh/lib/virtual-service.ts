@@ -2,6 +2,7 @@ import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnVirtualService } from './appmesh.generated';
 import { IMesh, Mesh } from './mesh';
+import { ClientPolicy } from './shared-interfaces';
 import { IVirtualNode } from './virtual-node';
 import { IVirtualRouter } from './virtual-router';
 
@@ -27,6 +28,11 @@ export interface IVirtualService extends cdk.IResource {
    * The Mesh which the VirtualService belongs to
    */
   readonly mesh: IMesh;
+
+  /**
+   * Client policy for Virtual Service
+   */
+  readonly clientPolicy?: ClientPolicy;
 }
 
 /**
@@ -57,6 +63,13 @@ export interface VirtualServiceBaseProps {
    * @default - At most one of virtualRouter and virtualNode is allowed.
    */
   readonly virtualNode?: IVirtualNode;
+
+  /**
+   * Client policy for Virtual Service
+   *
+   * @default - as specified in backend defaults
+   */
+  readonly clientPolicy?: ClientPolicy;
 }
 
 /**
@@ -119,6 +132,11 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
    */
   public readonly mesh: IMesh;
 
+  /**
+   * Client policy for Virtual Service
+   */
+  public readonly clientPolicy?: ClientPolicy;
+
   private readonly virtualServiceProvider?: CfnVirtualService.VirtualServiceProviderProperty;
 
   constructor(scope: Construct, id: string, props: VirtualServiceProps) {
@@ -131,6 +149,7 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
     }
 
     this.mesh = props.mesh;
+    this.clientPolicy = props.clientPolicy;
 
     // Check which provider to use node or router (or neither)
     if (props.virtualRouter) {
