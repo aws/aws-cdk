@@ -78,6 +78,22 @@ nodeunitShim({
     test.done();
   },
 
+  'importValue used inside the same stack produces an error'(test: Test) {
+    // WHEN
+    const output = new CfnOutput(stack, 'SomeOutput', { value: 'x', exportName: 'asdf' });
+    new CfnResource(stack, 'Resource', {
+      type: 'Some::Resource',
+      properties: {
+        input: output.importValue,
+      },
+    });
+
+    // THEN
+    expect(() => toCloudFormation(stack)).toThrow(/should only be used in a different Stack/);
+
+    test.done();
+  },
+
   'error message if importValue is used and Output is not exported'(test: Test) {
     // GIVEN
     const stack2 = new Stack(app, 'Stack2');

@@ -135,7 +135,10 @@ export class CfnOutput extends CfnElement {
   public get importValue() {
     // We made _exportName mutable so this will have to be lazy.
     return Fn.importValue(Lazy.stringValue({
-      produce: () => {
+      produce: (ctx) => {
+        if (Stack.of(ctx.scope) === this.stack) {
+          throw new Error(`'importValue' property of '${this.node.path}' should only be used in a different Stack`);
+        }
         if (!this._exportName) {
           throw new Error(`Add an exportName to the CfnOutput at '${this.node.path}' in order to use 'output.importValue'`);
         }
@@ -162,6 +165,8 @@ export class CfnOutput extends CfnElement {
   }
 }
 
-import { CfnCondition } from './cfn-condition';import { Fn } from './cfn-fn';
+import { CfnCondition } from './cfn-condition';
+import { Fn } from './cfn-fn';
 import { Lazy } from './lazy';
+import { Stack } from './stack';
 
