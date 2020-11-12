@@ -95,7 +95,7 @@ export = {
           input: artifact,
           deploymentTimeout: cdk.Duration.minutes(61),
         });
-      }, /timeout has to be between 1 and 60 minutes/);
+      }, /timeout must be between 1 and 60 minutes/);
 
       test.throws(() => {
         new cpactions.EcsDeployAction({
@@ -104,7 +104,7 @@ export = {
           input: artifact,
           deploymentTimeout: cdk.Duration.minutes(0),
         });
-      }, /timeout has to be between 1 and 60 minutes/);
+      }, /timeout must be between 1 and 60 minutes/);
 
       test.throws(() => {
         new cpactions.EcsDeployAction({
