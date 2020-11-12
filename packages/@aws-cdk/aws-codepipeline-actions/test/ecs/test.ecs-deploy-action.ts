@@ -68,6 +68,22 @@ export = {
       test.done();
     },
 
+    'can be created with deploymentTimeout between 1-60 minutes'(test: Test) {
+      const service = anyEcsService();
+      const artifact = new codepipeline.Artifact('Artifact');
+
+      test.doesNotThrow(() => {
+        new cpactions.EcsDeployAction({
+          actionName: 'ECS',
+          service,
+          input: artifact,
+          deploymentTimeout: cdk.Duration.minutes(30),
+        });
+      });
+
+      test.done();
+    },
+
     'throws an exception if deploymentTimeout is out of bounds'(test: Test) {
       const service = anyEcsService();
       const artifact = new codepipeline.Artifact('Artifact');
