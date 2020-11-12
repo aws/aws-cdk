@@ -305,6 +305,38 @@ new codebuild.Project(this, 'Project', {
 })
 ```
 
+## Logs
+
+CodeBuild lets you specify an S3 Bucket, CloudWatch Log Group or both to receive logs from your projects.
+
+By default, logs will go to cloudwatch.
+
+### CloudWatch Logs Example
+
+```typescript
+new codebuild.Project(this, 'Project', {
+  logsConfig: {
+    cloudwatch: {
+      logGroup: new cloudwatch.LogGroup(this, `MyLogGroup`),
+    }
+  },
+  ...
+})
+```
+
+### S3 Logs Example
+
+```typescript
+new codebuild.Project(this, 'Project', {
+  logsConfig: {
+    s3: {
+      bucket: new s3.Bucket(this, `LogBucket`)
+    }
+  },
+  ...
+})
+```
+
 ## Credentials
 
 CodeBuild allows you to store credentials used when communicating with various sources,
