@@ -69,7 +69,7 @@ export class EcsDeployAction extends Action {
 
     const deploymentTimeout = props.deploymentTimeout?.toMinutes({ integral: true });
     if (typeof deploymentTimeout !== 'undefined' && (deploymentTimeout < 1 || deploymentTimeout > 60)) {
-      throw new Error('Deployment timeout has to be between 1 and 60 minutes');
+      throw new Error(`Deployment timeout must be between 1 and 60 minutes, got: ${deploymentTimeout}`);
     }
 
     this.props = props;
