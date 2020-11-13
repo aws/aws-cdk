@@ -1,6 +1,8 @@
 import * as path from 'path';
 import * as colors from 'colors/safe';
 import * as fs from 'fs-extra';
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const bundled = require('npm-bundled');
 
 // do not descend into these directories when searching for `package.json` files.
 export const PKGLINT_IGNORES = ['node_modules', 'cdk.out', '.cdk.staging'];
@@ -209,8 +211,11 @@ export class PackageJson {
     return Object.keys(this.json.dependencies || {}).filter(predicate).map(name => ({ name, version: this.json.dependencies[name] }));
   }
 
-  public getBundledDependencies(): string[] {
-    return this.json.bundledDependencies ?? [];
+  /**
+   * Retrieves all packages that are bundled in, including transitive bundled dependency of a bundled dependency.
+   */
+  public getAllBundledDependencies(): string[] {
+    return bundled.sync({ path: this.packageRoot });
   }
 
   /**
