@@ -10,6 +10,7 @@ import {
   Aws,
   CfnAutoScalingRollingUpdate, CfnCreationPolicy, CfnUpdatePolicy,
   Duration, Fn, IResource, Lazy, PhysicalName, Resource, Stack, Tags,
+  Token,
   Tokenization, withResolved,
 } from '@aws-cdk/core';
 import { Construct } from 'constructs';
@@ -765,10 +766,24 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
 
     const resourceLabel = `${this.albTargetGroup.firstLoadBalancerFullName}/${this.albTargetGroup.targetGroupFullName}`;
 
+    if ((props.targetRequestsPerMinute === undefined) === (props.targetRequestsPerSecond === undefined)) {
+      throw new Error('Specify exactly one of \'targetRequestsPerMinute\' or \'targetRequestsPerSecond\'');
+    }
+
+    let rpm: number;
+    if (props.targetRequestsPerSecond !== undefined) {
+      if (Token.isUnresolved(props.targetRequestsPerSecond)) {
+        throw new Error('\'targetRequestsPerSecond\' cannot be an unresolved value; use \'targetRequestsPerMinute\' instead.');
+      }
+      rpm = props.targetRequestsPerSecond * 60;
+    } else {
+      rpm = props.targetRequestsPerMinute!;
+    }
+
     const policy = new TargetTrackingScalingPolicy(this, `ScalingPolicy${id}`, {
       autoScalingGroup: this,
       predefinedMetric: PredefinedMetric.ALB_REQUEST_COUNT_PER_TARGET,
-      targetValue: props.targetRequestsPerSecond,
+      targetValue: rpm,
       resourceLabel,
       ...props,
     });
@@ -1603,8 +1618,15 @@ export interface NetworkUtilizationScalingProps extends BaseTargetTrackingProps 
 export interface RequestCountScalingProps extends BaseTargetTrackingProps {
   /**
    * Target average requests/seconds on each instance
+   *
+   * @deprecated Use 'targetRequestsPerMinute' instead
    */
-  readonly targetRequestsPerSecond: number;
+  readonly targetRequestsPerSecond?: number;
+
+  /**
+   * Target average requests/minute on each instance
+   */
+  readonly targetRequestsPerMinute?: number;
 }
 
 /**
