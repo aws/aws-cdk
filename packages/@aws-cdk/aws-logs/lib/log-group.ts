@@ -1,6 +1,6 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
-import { IKey } from '@aws-cdk/aws-kms';
+import * as kms from '@aws-cdk/aws-kms';
 import { IResource, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { LogStream } from './log-stream';
@@ -277,9 +277,9 @@ export interface LogGroupProps {
   /**
    * The KMS Key to encrypt the log group with.
    *
-   * @default No KMS key
+   * @default - log group is encrypted with the default master key
    */
-  readonly kmsKey?: IKey;
+  readonly encryptionKey?: kms.IKey;
 
   /**
    * Name of the log group.
@@ -371,7 +371,7 @@ export class LogGroup extends LogGroupBase {
     }
 
     const resource = new CfnLogGroup(this, 'Resource', {
-      kmsKeyId: props.kmsKey?.keyId,
+      kmsKeyId: props.encryptionKey?.keyId,
       logGroupName: this.physicalName,
       retentionInDays,
     });

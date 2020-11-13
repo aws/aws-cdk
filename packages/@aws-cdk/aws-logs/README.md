@@ -57,10 +57,10 @@ log streams in the future will require the same CMK to decrypt the data.
 Here's a simple example of creating an encrypted Log Group using a KMS CMK.
 
 ```ts
-const kmsKey = new kms.Key(this, 'Key');
+import * as kms from '@aws-cdk/aws-kms';
 
 new LogGroup(this, 'LogGroup', {
-  kmsKey,
+  encryptionKey: new kms.Key(this, 'Key'),
 });
 ```
 
