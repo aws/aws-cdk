@@ -737,7 +737,8 @@
                       "FargateServiceAC2B3B85",
                       "Name"
                     ]
-                  }
+                  },
+                  "DeploymentTimeout": 60
                 },
                 "InputArtifacts": [
                   {
