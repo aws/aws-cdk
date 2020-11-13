@@ -242,14 +242,14 @@ export class AssetStaging extends CoreConstruct {
     if (skip) {
       // We should have bundled, but didn't to save time. Still pretend to have a hash.
       // If the asset uses OUTPUT or BUNDLE, we use a CUSTOM hash to avoid fingerprinting
-      // a potentially very large source directory.
-      let hashType = AssetHashType.SOURCE;
-      if (this.hashType === AssetHashType.OUTPUT || AssetHashType.BUNDLE) {
+      // a potentially very large source directory. Other hash types are kept the same.
+      let hashType = this.hashType;
+      if (hashType === AssetHashType.OUTPUT || AssetHashType.BUNDLE) {
         this.customSourceFingerprint = Names.uniqueId(this);
         hashType = AssetHashType.CUSTOM;
       }
       return {
-        assetHash: this.calculateHash(hashType),
+        assetHash: this.calculateHash(hashType, bundling),
         stagedPath: this.sourcePath,
       };
     }
