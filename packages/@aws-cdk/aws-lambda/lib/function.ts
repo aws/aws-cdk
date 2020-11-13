@@ -349,7 +349,7 @@ export class Function extends FunctionBase {
     const originalLogicalId = this.stack.resolve(cfn.logicalId) as string;
 
     cfn.overrideLogicalId(Lazy.string({
-      produce: _ => {
+      produce: () => {
         const hash = calculateFunctionHash(this);
         const logicalId = trimFromStart(originalLogicalId, 255 - 32);
         return `${logicalId}${hash}`;
