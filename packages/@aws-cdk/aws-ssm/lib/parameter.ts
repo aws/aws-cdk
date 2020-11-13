@@ -1,10 +1,11 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import {
   CfnDynamicReference, CfnDynamicReferenceService, CfnParameter,
-  Construct, ContextProvider, Fn, IResource, Resource, Stack, Token,
+  Construct as CompatConstruct, ContextProvider, Fn, IResource, Resource, Stack, Token,
 } from '@aws-cdk/core';
-import * as cxapi from '@aws-cdk/cx-api';
+import { Construct } from 'constructs';
 import * as ssm from './ssm.generated';
 import { arnForParameterName, AUTOGEN_MARKER } from './util';
 
@@ -324,7 +325,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
 
     const stringValue = attrs.version
       ? new CfnDynamicReference(CfnDynamicReferenceService.SSM, `${attrs.parameterName}:${attrs.version}`).toString()
-      : new CfnParameter(scope, `${id}.Parameter`, { type: `AWS::SSM::Parameter::Value<${type}>`, default: attrs.parameterName }).valueAsString;
+      : new CfnParameter(scope as CompatConstruct, `${id}.Parameter`, { type: `AWS::SSM::Parameter::Value<${type}>`, default: attrs.parameterName }).valueAsString;
 
     class Import extends ParameterBase {
       public readonly parameterName = attrs.parameterName;
@@ -360,9 +361,9 @@ export class StringParameter extends ParameterBase implements IStringParameter {
    * Requires that the stack this scope is defined in will have explicit
    * account/region information. Otherwise, it will fail during synthesis.
    */
-  public static valueFromLookup(scope: Construct, parameterName: string): string {
+  public static valueFromLookup(scope: CompatConstruct, parameterName: string): string {
     const value = ContextProvider.getValue(scope, {
-      provider: cxapi.SSM_PARAMETER_PROVIDER,
+      provider: cxschema.ContextProvider.SSM_PARAMETER_PROVIDER,
       props: { parameterName },
       dummyValue: `dummy-value-for-${parameterName}`,
     }).value;

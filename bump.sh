@@ -13,11 +13,7 @@
 #
 # --------------------------------------------------------------------------------------------------
 set -euo pipefail
-version=${1:-minor}
-
-echo "Starting ${version} version bump"
-
-# /bin/bash ./install.sh
-
-# Generate CHANGELOG and create a commit (see .versionrc.json)
-npx standard-version --release-as ${version}
+scriptdir=$(cd $(dirname $0) && pwd)
+cd ${scriptdir}
+yarn --frozen-lockfile
+${scriptdir}/scripts/bump.js ${1:-minor}

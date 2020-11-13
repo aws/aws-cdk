@@ -1,3 +1,4 @@
+import * as path from 'path';
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import { Protocol } from '@aws-cdk/aws-ec2';
 import { Repository } from '@aws-cdk/aws-ecr';
@@ -6,7 +7,6 @@ import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as ssm from '@aws-cdk/aws-ssm';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import * as path from 'path';
 import * as ecs from '../../lib';
 
 export = {
@@ -420,7 +420,7 @@ export = {
       // THEN
       expect(stack).to(haveResource('AWS::ECR::Repository', {
         LifecyclePolicy: {
-          // tslint:disable-next-line:max-line-length
+          // eslint-disable-next-line max-len
           LifecyclePolicyText: '{"rules":[{"rulePriority":10,"selection":{"tagStatus":"tagged","tagPrefixList":["abc"],"countType":"imageCountMoreThan","countNumber":1},"action":{"type":"expire"}}]}',
           RegistryId: '123456789101',
         },
@@ -545,7 +545,12 @@ export = {
 
     'correctly sets containers from asset using default props'(test: Test) {
       // GIVEN
-      const stack = new cdk.Stack();
+      const app = new cdk.App({
+        context: {
+          '@aws-cdk/aws-ecr-assets:dockerIgnoreSupport': true,
+        },
+      });
+      const stack = new cdk.Stack(app, 'Stack');
 
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
@@ -557,7 +562,7 @@ export = {
 
       // THEN
       expect(stack).to(haveResource('AWS::ECS::TaskDefinition', {
-        Family: 'Ec2TaskDef',
+        Family: 'StackEc2TaskDefF03698CF',
         ContainerDefinitions: [
           {
             Essential: true,
@@ -576,7 +581,7 @@ export = {
                   {
                     Ref: 'AWS::URLSuffix',
                   },
-                  '/aws-cdk/assets:baa2d6eb2a17c75424df631c8c70ff39f2d5f3bee8b9e1a109ee24ca17300540',
+                  '/aws-cdk/assets:b2c69bfbfe983b634456574587443159b3b7258849856a118ad3d2772238f1a5',
                 ],
               ],
             },
@@ -975,6 +980,39 @@ export = {
             DriverOpts: {
               key1: 'value',
             },
+          },
+        }],
+      }));
+
+      test.done();
+    },
+
+    'correctly sets efsVolumeConfiguration'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const volume = {
+        name: 'scratch',
+        efsVolumeConfiguration: {
+          fileSystemId: 'local',
+        },
+      };
+
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
+        volumes: [volume],
+      });
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+        Family: 'Ec2TaskDef',
+        Volumes: [{
+          Name: 'scratch',
+          EfsVolumeConfiguration: {
+            FileSystemId: 'local',
           },
         }],
       }));

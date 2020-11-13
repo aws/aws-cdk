@@ -63,13 +63,39 @@
           "Statement": [
             {
               "Action": [
-                "ecs:CreateCluster",
                 "ecs:DeregisterContainerInstance",
-                "ecs:DiscoverPollEndpoint",
-                "ecs:Poll",
                 "ecs:RegisterContainerInstance",
-                "ecs:StartTelemetrySession",
-                "ecs:Submit*",
+                "ecs:Submit*"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "FargateCluster7CCD5F93",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": [
+                "ecs:Poll",
+                "ecs:StartTelemetrySession"
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+              "Condition": {
+                "ArnEquals": {
+                  "ecs:cluster": {
+                    "Fn::GetAtt": [
+                      "FargateCluster7CCD5F93",
+                      "Arn"
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "Action": [
+                "ecs:DiscoverPollEndpoint",
                 "ecr:GetAuthorizationToken",
                 "logs:CreateLogStream",
                 "logs:PutLogEvents"
@@ -243,7 +269,17 @@
                 "ecs:DescribeTasks"
               ],
               "Effect": "Allow",
-              "Resource": "*"
+              "Resource": "*",
+              "Condition": {
+                "ArnEquals": {
+                  "ecs:cluster": {
+                    "Fn::GetAtt": [
+                      "FargateCluster7CCD5F93",
+                      "Arn"
+                    ]
+                  }
+                }
+              }
             },
             {
               "Action": [
@@ -465,7 +501,7 @@
                   {
                     "Ref": "AWS::URLSuffix"
                   },
-                  "/aws-cdk/assets:1f37178655533422f6654c973b99eadec99a723c7181c912e4fb0976187c687c"
+                  "/aws-cdk/assets:709fd91ba301f9b460ce1066dbc339f6a29bd4a07609ff98fb0e0faa475b650d"
                 ]
               ]
             },

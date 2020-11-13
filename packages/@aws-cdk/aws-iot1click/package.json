@@ -23,9 +23,14 @@
       },
       "python": {
         "distName": "aws-cdk.aws-iot1click",
-        "module": "aws_cdk.aws_iot1click"
+        "module": "aws_cdk.aws_iot1click",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",
@@ -45,10 +50,15 @@
     "cfn2ts": "cfn2ts",
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test",
-    "compat": "cdk-compat"
+    "compat": "cdk-compat",
+    "gen": "cfn2ts"
   },
   "cdk-build": {
-    "cloudformation": "AWS::IoT1Click"
+    "cloudformation": "AWS::IoT1Click",
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "keywords": [
     "aws",
@@ -61,23 +71,6 @@
     "url": "https://aws.amazon.com",
     "organization": true
   },
-  "jest": {
-    "moduleFileExtensions": [
-      "js"
-    ],
-    "coverageThreshold": {
-      "global": {
-        "branches": 60,
-        "statements": 80
-      }
-    },
-    "collectCoverage": true,
-    "coverageReporters": [
-      "lcov",
-      "html",
-      "text-summary"
-    ]
-  },
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
@@ -87,14 +80,14 @@
   },
   "dependencies": {
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.2.0"
   },
   "peerDependencies": {
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.2.0"
   },
   "engines": {
-    "node": ">= 10.12.0"
+    "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "stability": "experimental",
   "maturity": "cfn-only",

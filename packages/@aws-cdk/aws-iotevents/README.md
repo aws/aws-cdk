@@ -12,5 +12,5 @@
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
 ```ts
-import iotevents = require('@aws-cdk/aws-iotevents');
+import * as iotevents from '@aws-cdk/aws-iotevents';
 ```

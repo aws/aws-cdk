@@ -1,7 +1,10 @@
+/// !cdk-integ pragma:ignore-assets
+import * as path from 'path';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { App, Construct, Stack } from '@aws-cdk/core';
-import * as path from 'path';
 import * as cfn from '../lib';
+
+/* eslint-disable cdk/no-core-construct */
 
 class NestedStack extends cfn.NestedStack {
   constructor(scope: Construct, id: string) {

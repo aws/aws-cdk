@@ -2,6 +2,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as ssm from '@aws-cdk/aws-ssm';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { NetworkMode, TaskDefinition } from './base/task-definition';
 import { ContainerImage, ContainerImageConfig } from './container-image';
 import { CfnTaskDefinition } from './ecs.generated';
@@ -36,11 +37,24 @@ export abstract class Secret {
   public static fromSecretsManager(secret: secretsmanager.ISecret, field?: string): Secret {
     return {
       arn: field ? `${secret.secretArn}:${field}::` : secret.secretArn,
+      hasField: !!field,
       grantRead: grantee => secret.grantRead(grantee),
     };
   }
 
+  /**
+   * The ARN of the secret
+   */
   public abstract readonly arn: string;
+
+  /**
+   * Whether this secret uses a specific JSON field
+   */
+  public abstract readonly hasField?: boolean;
+
+  /**
+   * Grants reading the secret to a principal
+   */
   public abstract grantRead(grantee: iam.IGrantable): iam.Grant;
 }
 
@@ -250,7 +264,7 @@ export interface ContainerDefinitionOptions {
    * Linux-specific modifications that are applied to the container, such as Linux kernel capabilities.
    * For more information see [KernelCapabilities](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_KernelCapabilities.html).
    *
-   * @default - No Linux paramters.
+   * @default - No Linux parameters.
    */
   readonly linuxParameters?: LinuxParameters;
 
@@ -348,10 +362,12 @@ export class ContainerDefinition extends cdk.Construct {
 
   private readonly imageConfig: ContainerImageConfig;
 
+  private readonly secrets?: CfnTaskDefinition.SecretProperty[];
+
   /**
    * Constructs a new instance of the ContainerDefinition class.
    */
-  constructor(scope: cdk.Construct, id: string, private readonly props: ContainerDefinitionProps) {
+  constructor(scope: Construct, id: string, private readonly props: ContainerDefinitionProps) {
     super(scope, id);
     if (props.memoryLimitMiB !== undefined && props.memoryReservationMiB !== undefined) {
       if (props.memoryLimitMiB < props.memoryReservationMiB) {
@@ -369,6 +385,20 @@ export class ContainerDefinition extends cdk.Construct {
       this.logDriverConfig = props.logging.bind(this, this);
     }
     props.taskDefinition._linkContainer(this);
+
+    if (props.secrets) {
+      this.secrets = [];
+      for (const [name, secret] of Object.entries(props.secrets)) {
+        if (this.taskDefinition.isFargateCompatible && secret.hasField) {
+          throw new Error(`Cannot specify secret JSON field for a task using the FARGATE launch type: '${name}' in container '${this.node.id}'`);
+        }
+        secret.grantRead(this.taskDefinition.obtainExecutionRole());
+        this.secrets.push({
+          name,
+          valueFrom: secret.arn,
+        });
+      }
+    }
   }
 
   /**
@@ -519,9 +549,9 @@ export class ContainerDefinition extends cdk.Construct {
   /**
    * Render this container definition to a CloudFormation object
    *
-   * @param taskDefinition [disable-awslint:ref-via-interface] (made optional to avoid breaking change)
+   * @param _taskDefinition [disable-awslint:ref-via-interface] (unused but kept to avoid breaking change)
    */
-  public renderContainerDefinition(taskDefinition?: TaskDefinition): CfnTaskDefinition.ContainerDefinitionProperty {
+  public renderContainerDefinition(_taskDefinition?: TaskDefinition): CfnTaskDefinition.ContainerDefinitionProperty {
     return {
       command: this.props.command,
       cpu: this.props.cpu,
@@ -551,16 +581,7 @@ export class ContainerDefinition extends cdk.Construct {
       workingDirectory: this.props.workingDirectory,
       logConfiguration: this.logDriverConfig,
       environment: this.props.environment && renderKV(this.props.environment, 'name', 'value'),
-      secrets: this.props.secrets && Object.entries(this.props.secrets)
-        .map(([k, v]) => {
-          if (taskDefinition) {
-            v.grantRead(taskDefinition.obtainExecutionRole());
-          }
-          return {
-            name: k,
-            valueFrom: v.arn,
-          };
-        }),
+      secrets: this.secrets,
       extraHosts: this.props.extraHosts && renderKV(this.props.extraHosts, 'hostname', 'ipAddress'),
       healthCheck: this.props.healthCheck && renderHealthCheck(this.props.healthCheck),
       links: cdk.Lazy.listValue({ produce: () => this.links }, { omitEmpty: true }),

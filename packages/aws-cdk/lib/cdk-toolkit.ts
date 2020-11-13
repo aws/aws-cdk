@@ -1,17 +1,16 @@
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import * as path from 'path';
+import { format } from 'util';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as colors from 'colors/safe';
 import * as fs from 'fs-extra';
-import * as path from 'path';
 import * as promptly from 'promptly';
-import { format } from 'util';
 import { environmentsFromDescriptors, globEnvironmentsFromStacks, looksLikeGlob } from '../lib/api/cxapp/environments';
-import { bootstrapEnvironment } from './api';
 import { SdkProvider } from './api/aws-auth';
-import { bootstrapEnvironment2, BootstrappingParameters } from './api/bootstrap';
+import { Bootstrapper, BootstrapEnvironmentOptions } from './api/bootstrap';
 import { CloudFormationDeployments } from './api/cloudformation-deployments';
 import { CloudAssembly, DefaultSelection, ExtendedStackSelection, StackCollection } from './api/cxapp/cloud-assembly';
 import { CloudExecutable } from './api/cxapp/cloud-executable';
+import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
 import { data, error, highlight, print, success, warning } from './logging';
 import { deserializeStructure } from './serialize';
@@ -101,7 +100,7 @@ export class CdkToolkit {
       for (const stack of stacks.stackArtifacts) {
         stream.write(format('Stack %s\n', colors.bold(stack.displayName)));
         const currentTemplate = await this.props.cloudFormation.readCurrentTemplate(stack);
-        diffs = printStackDiff(currentTemplate, stack, strict, contextLines, stream);
+        diffs += printStackDiff(currentTemplate, stack, strict, contextLines, stream);
       }
     }
 
@@ -113,7 +112,7 @@ export class CdkToolkit {
 
     const requireApproval = options.requireApproval !== undefined ? options.requireApproval : RequireApproval.Broadening;
 
-    const parameterMap: { [name: string]: { [name: string]: string | undefined } } = {'*': {}};
+    const parameterMap: { [name: string]: { [name: string]: string | undefined } } = { '*': {} };
     for (const key in options.parameters) {
       if (options.parameters.hasOwnProperty(key)) {
         const [stack, parameter] = key.split(':', 2);
@@ -134,12 +133,12 @@ export class CdkToolkit {
     for (const stack of stacks.stackArtifacts) {
       if (stacks.stackCount !== 1) { highlight(stack.displayName); }
       if (!stack.environment) {
-        // tslint:disable-next-line:max-line-length
+        // eslint-disable-next-line max-len
         throw new Error(`Stack ${stack.displayName} does not define an environment, and AWS credentials could not be obtained from standard locations or no region was configured.`);
       }
 
       if (Object.keys(stack.template.Resources || {}).length === 0) { // The generated stack has no resources
-        if (!await this.props.cloudFormation.stackExists({ stack }))  {
+        if (!await this.props.cloudFormation.stackExists({ stack })) {
           warning('%s: stack has no resources, skipping deployment.', colors.bold(stack.displayName));
         } else {
           warning('%s: stack has no resources, deleting existing stack.', colors.bold(stack.displayName));
@@ -189,6 +188,9 @@ export class CdkToolkit {
           execute: options.execute,
           force: options.force,
           parameters: Object.assign({}, parameterMap['*'], parameterMap[stack.stackName]),
+          usePreviousParameters: options.usePreviousParameters,
+          progress: options.progress,
+          ci: options.ci,
         });
 
         const message = result.noOp
@@ -203,7 +205,7 @@ export class CdkToolkit {
           stackOutputs[stack.stackName] = result.outputs;
         }
 
-        for (const name of Object.keys(result.outputs)) {
+        for (const name of Object.keys(result.outputs).sort()) {
           const value = result.outputs[name];
           print('%s.%s = %s', colors.cyan(stack.id), colors.cyan(name), colors.underline(colors.cyan(value)));
         }
@@ -236,7 +238,7 @@ export class CdkToolkit {
     stacks = stacks.reversed();
 
     if (!options.force) {
-      // tslint:disable-next-line:max-line-length
+      // eslint-disable-next-line max-len
       const confirmed = await promptly.confirm(`Are you sure you want to delete: ${colors.blue(stacks.stackArtifacts.map(s => s.id).join(', '))} (y/n)?`);
       if (!confirmed) {
         return;
@@ -328,9 +330,7 @@ export class CdkToolkit {
    *             all stacks are implicitly selected.
    * @param toolkitStackName the name to be used for the CDK Toolkit stack.
    */
-  public async bootstrap(
-    environmentSpecs: string[], toolkitStackName: string | undefined, roleArn: string | undefined,
-    useNewBootstrapping: boolean, force: boolean | undefined, props: BootstrappingParameters): Promise<void> {
+  public async bootstrap(environmentSpecs: string[], bootstrapper: Bootstrapper, options: BootstrapEnvironmentOptions): Promise<void> {
     // If there is an '--app' argument and an environment looks like a glob, we
     // select the environments from the app. Otherwise use what the user said.
 
@@ -345,18 +345,17 @@ export class CdkToolkit {
 
     const environments: cxapi.Environment[] = [
       ...environmentsFromDescriptors(environmentSpecs),
-      ...await globEnvironmentsFromStacks(await this.selectStacksForList([]), globSpecs, this.props.sdkProvider),
     ];
+
+    // If there is an '--app' argument, select the environments from the app.
+    if (this.props.cloudExecutable.hasApp) {
+      environments.push(...await globEnvironmentsFromStacks(await this.selectStacksForList([]), globSpecs, this.props.sdkProvider));
+    }
 
     await Promise.all(environments.map(async (environment) => {
       success(' ⏳  Bootstrapping environment %s...', colors.blue(environment.name));
       try {
-        const result = await (useNewBootstrapping ? bootstrapEnvironment2 : bootstrapEnvironment)(environment, this.props.sdkProvider, {
-          toolkitStackName,
-          roleArn,
-          force,
-          parameters: props,
-        });
+        const result = await bootstrapper.bootstrapEnvironment(environment, this.props.sdkProvider, options);
         const message = result.noOp
           ? ' ✅  Environment %s bootstrapped (no changes).'
           : ' ✅  Environment %s bootstrapped.';
@@ -446,6 +445,7 @@ export class CdkToolkit {
   private assembly(): Promise<CloudAssembly> {
     return this.props.cloudExecutable.synthesize();
   }
+
 }
 
 export interface DiffOptions {
@@ -564,10 +564,34 @@ export interface DeployOptions {
   parameters?: { [name: string]: string | undefined };
 
   /**
+   * Use previous values for unspecified parameters
+   *
+   * If not set, all parameters must be specified for every deployment.
+   *
+   * @default true
+   */
+  usePreviousParameters?: boolean;
+
+  /**
+   * Display mode for stack deployment progress.
+   *
+   * @default - StackActivityProgress.Bar - stack events will be displayed for
+   *   the resource currently being deployed.
+   */
+  progress?: StackActivityProgress;
+
+  /**
    * Path to file where stack outputs will be written after a successful deploy as JSON
    * @default - Outputs are not written to any file
    */
   outputsFile?: string;
+
+  /**
+   * Whether we are on a CI system
+   *
+   * @default false
+   */
+  readonly ci?: boolean;
 }
 
 export interface DestroyOptions {
@@ -601,21 +625,7 @@ export interface DestroyOptions {
  * @returns an array with the tags available in the stack metadata.
  */
 function tagsForStack(stack: cxapi.CloudFormationStackArtifact): Tag[] {
-  const tagLists = stack.findMetadataByType(cxschema.ArtifactMetadataEntryType.STACK_TAGS).map(
-    // the tags in the cloud assembly are stored differently
-    // unfortunately.
-    x => toCloudFormationTags(x.data as cxschema.Tag[]));
-  return Array.prototype.concat([], ...tagLists);
-}
-
-/**
- * Transform tags as they are retrieved from the cloud assembly,
- * to the way that CloudFormation expects them. (Different casing).
- */
-function toCloudFormationTags(tags: cxschema.Tag[]): Tag[] {
-  return tags.map(t => {
-    return { Key: t.key, Value: t.value };
-  });
+  return Object.entries(stack.tags).map(([Key, Value]) => ({ Key, Value }));
 }
 
 export interface Tag {

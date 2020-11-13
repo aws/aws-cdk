@@ -36,7 +36,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParametersa736580e4382e6d67a7acaedbbd271f559ed918382808ae1431364ae70286543S3BucketD096DC83"
+            "Ref": "AssetParametersd2bd5cfe4dc136ef456512a7d596b27f2da67bf81f6f0e20d8e0328f5fc3e636S3Bucket24297AFB"
           },
           "S3Key": {
             "Fn::Join": [
@@ -49,7 +49,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersa736580e4382e6d67a7acaedbbd271f559ed918382808ae1431364ae70286543S3VersionKeyA76287A5"
+                          "Ref": "AssetParametersd2bd5cfe4dc136ef456512a7d596b27f2da67bf81f6f0e20d8e0328f5fc3e636S3VersionKeyF5D64812"
                         }
                       ]
                     }
@@ -62,7 +62,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersa736580e4382e6d67a7acaedbbd271f559ed918382808ae1431364ae70286543S3VersionKeyA76287A5"
+                          "Ref": "AssetParametersd2bd5cfe4dc136ef456512a7d596b27f2da67bf81f6f0e20d8e0328f5fc3e636S3VersionKeyF5D64812"
                         }
                       ]
                     }
@@ -79,7 +79,12 @@
             "Arn"
           ]
         },
-        "Runtime": "nodejs12.x"
+        "Runtime": "nodejs12.x",
+        "Environment": {
+          "Variables": {
+            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
+          }
+        }
       },
       "DependsOn": [
         "tshandlerServiceRole8876B8E7"
@@ -121,7 +126,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParameters0d445d366e339b4344917ba638a4cb2dcddfd0e063b10fb909340fd1cc51c278S3BucketDBD288E6"
+            "Ref": "AssetParametersa3bab04de14ffc364f4351c7019d484a5e36b66f74fc6b33a3ea208c20a8d6baS3Bucket796E4856"
           },
           "S3Key": {
             "Fn::Join": [
@@ -134,7 +139,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters0d445d366e339b4344917ba638a4cb2dcddfd0e063b10fb909340fd1cc51c278S3VersionKey81058FB7"
+                          "Ref": "AssetParametersa3bab04de14ffc364f4351c7019d484a5e36b66f74fc6b33a3ea208c20a8d6baS3VersionKeyBCA2678F"
                         }
                       ]
                     }
@@ -147,7 +152,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters0d445d366e339b4344917ba638a4cb2dcddfd0e063b10fb909340fd1cc51c278S3VersionKey81058FB7"
+                          "Ref": "AssetParametersa3bab04de14ffc364f4351c7019d484a5e36b66f74fc6b33a3ea208c20a8d6baS3VersionKeyBCA2678F"
                         }
                       ]
                     }
@@ -164,7 +169,12 @@
             "Arn"
           ]
         },
-        "Runtime": "nodejs12.x"
+        "Runtime": "nodejs12.x",
+        "Environment": {
+          "Variables": {
+            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
+          }
+        }
       },
       "DependsOn": [
         "jshandlerServiceRole781AF366"
@@ -172,29 +182,29 @@
     }
   },
   "Parameters": {
-    "AssetParametersa736580e4382e6d67a7acaedbbd271f559ed918382808ae1431364ae70286543S3BucketD096DC83": {
+    "AssetParametersd2bd5cfe4dc136ef456512a7d596b27f2da67bf81f6f0e20d8e0328f5fc3e636S3Bucket24297AFB": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"a736580e4382e6d67a7acaedbbd271f559ed918382808ae1431364ae70286543\""
+      "Description": "S3 bucket for asset \"d2bd5cfe4dc136ef456512a7d596b27f2da67bf81f6f0e20d8e0328f5fc3e636\""
     },
-    "AssetParametersa736580e4382e6d67a7acaedbbd271f559ed918382808ae1431364ae70286543S3VersionKeyA76287A5": {
+    "AssetParametersd2bd5cfe4dc136ef456512a7d596b27f2da67bf81f6f0e20d8e0328f5fc3e636S3VersionKeyF5D64812": {
       "Type": "String",
-      "Description": "S3 key for asset version \"a736580e4382e6d67a7acaedbbd271f559ed918382808ae1431364ae70286543\""
+      "Description": "S3 key for asset version \"d2bd5cfe4dc136ef456512a7d596b27f2da67bf81f6f0e20d8e0328f5fc3e636\""
     },
-    "AssetParametersa736580e4382e6d67a7acaedbbd271f559ed918382808ae1431364ae70286543ArtifactHashB7337532": {
+    "AssetParametersd2bd5cfe4dc136ef456512a7d596b27f2da67bf81f6f0e20d8e0328f5fc3e636ArtifactHashBEFC24E5": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"a736580e4382e6d67a7acaedbbd271f559ed918382808ae1431364ae70286543\""
+      "Description": "Artifact hash for asset \"d2bd5cfe4dc136ef456512a7d596b27f2da67bf81f6f0e20d8e0328f5fc3e636\""
     },
-    "AssetParameters0d445d366e339b4344917ba638a4cb2dcddfd0e063b10fb909340fd1cc51c278S3BucketDBD288E6": {
+    "AssetParametersa3bab04de14ffc364f4351c7019d484a5e36b66f74fc6b33a3ea208c20a8d6baS3Bucket796E4856": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"0d445d366e339b4344917ba638a4cb2dcddfd0e063b10fb909340fd1cc51c278\""
+      "Description": "S3 bucket for asset \"a3bab04de14ffc364f4351c7019d484a5e36b66f74fc6b33a3ea208c20a8d6ba\""
     },
-    "AssetParameters0d445d366e339b4344917ba638a4cb2dcddfd0e063b10fb909340fd1cc51c278S3VersionKey81058FB7": {
+    "AssetParametersa3bab04de14ffc364f4351c7019d484a5e36b66f74fc6b33a3ea208c20a8d6baS3VersionKeyBCA2678F": {
       "Type": "String",
-      "Description": "S3 key for asset version \"0d445d366e339b4344917ba638a4cb2dcddfd0e063b10fb909340fd1cc51c278\""
+      "Description": "S3 key for asset version \"a3bab04de14ffc364f4351c7019d484a5e36b66f74fc6b33a3ea208c20a8d6ba\""
     },
-    "AssetParameters0d445d366e339b4344917ba638a4cb2dcddfd0e063b10fb909340fd1cc51c278ArtifactHashF5C1730B": {
+    "AssetParametersa3bab04de14ffc364f4351c7019d484a5e36b66f74fc6b33a3ea208c20a8d6baArtifactHashFF9F139E": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"0d445d366e339b4344917ba638a4cb2dcddfd0e063b10fb909340fd1cc51c278\""
+      "Description": "Artifact hash for asset \"a3bab04de14ffc364f4351c7019d484a5e36b66f74fc6b33a3ea208c20a8d6ba\""
     }
   }
 }

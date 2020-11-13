@@ -12,5 +12,5 @@
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
 ```ts
-import pinpointemail = require('@aws-cdk/aws-pinpointemail');
+import * as pinpointemail from '@aws-cdk/aws-pinpointemail';
 ```

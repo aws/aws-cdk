@@ -13,10 +13,11 @@ class TestStack extends cdk.Stack {
         version: '0.2',
         phases: {
           build: {
-            commands: [ 'ls' ],
+            commands: ['ls'],
           },
         },
       }),
+      grantReportGroupPermissions: false,
       /// !show
       environment: {
         buildImage: codebuild.LinuxBuildImage.fromEcrRepository(ecrRepository, 'v1.0'),

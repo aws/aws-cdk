@@ -1,6 +1,7 @@
-import * as fs from 'fs-extra';
 import * as path from 'path';
+import * as fs from 'fs-extra';
 import { AccountAccessKeyCache } from '../lib/api/aws-auth/account-cache';
+import { withMocked } from './util';
 
 async function makeCache() {
   const dir = await fs.mkdtemp('/tmp/account-cache-test');
@@ -15,6 +16,27 @@ async function makeCache() {
 async function nukeCache(cacheDir: string) {
   await fs.remove(cacheDir);
 }
+
+test('default account cache uses CDK_HOME', () => {
+  process.env.CDK_HOME = '/banana';
+  const cache = new AccountAccessKeyCache();
+  expect((cache as any).cacheFile).toContain('/banana/');
+});
+
+test('account cache does not fail when given a nonwritable directory', async () => {
+  const accessError = new Error('Oh no');
+  (accessError as any).code = 'EACCES';
+
+  return withMocked(fs, 'mkdirs', async (mkdirs) => {
+    // Have to do this because mkdirs has 2 overloads and it confuses TypeScript
+    (mkdirs as unknown as jest.Mock<Promise<void>, [any]>).mockRejectedValue(accessError);
+
+    const cache = new AccountAccessKeyCache('/abc/xyz');
+    await cache.fetch('xyz', () => Promise.resolve({ accountId: 'asdf', partition: 'swa' }));
+
+    // No exception
+  });
+});
 
 test('get(k) when cache is empty', async () => {
   const { cacheDir, cacheFile, cache } = await makeCache();
@@ -85,6 +107,17 @@ test(`cache is nuked if it exceeds ${AccountAccessKeyCache.MAX_ENTRIES} entries`
     for (let i = 0; i < AccountAccessKeyCache.MAX_ENTRIES; ++i) {
       expect(await otherCache.get(`key${i}`)).toBeUndefined();
     }
+  } finally {
+    await nukeCache(cacheDir);
+  }
+});
+
+test('cache pretends to be empty if cache file does not contain JSON', async() => {
+  const { cacheDir, cacheFile, cache } = await makeCache();
+  try {
+    await fs.writeFile(cacheFile, '');
+
+    await expect(cache.get('abc')).resolves.toEqual(undefined);
   } finally {
     await nukeCache(cacheDir);
   }

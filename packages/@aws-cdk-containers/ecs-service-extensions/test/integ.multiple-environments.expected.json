@@ -1,0 +1,2238 @@
+{
+  "Resources": {
+    "productionenvironmentvpcAEB47DF7": {
+      "Type": "AWS::EC2::VPC",
+      "Properties": {
+        "CidrBlock": "10.0.0.0/16",
+        "EnableDnsHostnames": true,
+        "EnableDnsSupport": true,
+        "InstanceTenancy": "default",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/production-environment-vpc"
+          }
+        ]
+      }
+    },
+    "productionenvironmentvpcPublicSubnet1Subnet8D92C089": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.0.0.0/19",
+        "VpcId": {
+          "Ref": "productionenvironmentvpcAEB47DF7"
+        },
+        "AvailabilityZone": "test-region-1a",
+        "MapPublicIpOnLaunch": true,
+        "Tags": [
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Public"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Public"
+          },
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/production-environment-vpc/PublicSubnet1"
+          }
+        ]
+      }
+    },
+    "productionenvironmentvpcPublicSubnet1RouteTable6E9ABC21": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "productionenvironmentvpcAEB47DF7"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/production-environment-vpc/PublicSubnet1"
+          }
+        ]
+      }
+    },
+    "productionenvironmentvpcPublicSubnet1RouteTableAssociationA8117374": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "productionenvironmentvpcPublicSubnet1RouteTable6E9ABC21"
+        },
+        "SubnetId": {
+          "Ref": "productionenvironmentvpcPublicSubnet1Subnet8D92C089"
+        }
+      }
+    },
+    "productionenvironmentvpcPublicSubnet1DefaultRoute524C894D": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "productionenvironmentvpcPublicSubnet1RouteTable6E9ABC21"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "productionenvironmentvpcIGWE7C39890"
+        }
+      },
+      "DependsOn": [
+        "productionenvironmentvpcVPCGW1B428D07"
+      ]
+    },
+    "productionenvironmentvpcPublicSubnet1EIP54BA88DB": {
+      "Type": "AWS::EC2::EIP",
+      "Properties": {
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/production-environment-vpc/PublicSubnet1"
+          }
+        ]
+      }
+    },
+    "productionenvironmentvpcPublicSubnet1NATGateway6075E4CA": {
+      "Type": "AWS::EC2::NatGateway",
+      "Properties": {
+        "AllocationId": {
+          "Fn::GetAtt": [
+            "productionenvironmentvpcPublicSubnet1EIP54BA88DB",
+            "AllocationId"
+          ]
+        },
+        "SubnetId": {
+          "Ref": "productionenvironmentvpcPublicSubnet1Subnet8D92C089"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/production-environment-vpc/PublicSubnet1"
+          }
+        ]
+      }
+    },
+    "productionenvironmentvpcPublicSubnet2Subnet298E6C31": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.0.32.0/19",
+        "VpcId": {
+          "Ref": "productionenvironmentvpcAEB47DF7"
+        },
+        "AvailabilityZone": "test-region-1b",
+        "MapPublicIpOnLaunch": true,
+        "Tags": [
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Public"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Public"
+          },
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/production-environment-vpc/PublicSubnet2"
+          }
+        ]
+      }
+    },
+    "productionenvironmentvpcPublicSubnet2RouteTable842A68D7": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "productionenvironmentvpcAEB47DF7"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/production-environment-vpc/PublicSubnet2"
+          }
+        ]
+      }
+    },
+    "productionenvironmentvpcPublicSubnet2RouteTableAssociation0A7549F3": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "productionenvironmentvpcPublicSubnet2RouteTable842A68D7"
+        },
+        "SubnetId": {
+          "Ref": "productionenvironmentvpcPublicSubnet2Subnet298E6C31"
+        }
+      }
+    },
+    "productionenvironmentvpcPublicSubnet2DefaultRoute92CD697D": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "productionenvironmentvpcPublicSubnet2RouteTable842A68D7"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "productionenvironmentvpcIGWE7C39890"
+        }
+      },
+      "DependsOn": [
+        "productionenvironmentvpcVPCGW1B428D07"
+      ]
+    },
+    "productionenvironmentvpcPublicSubnet2EIP14CA46AA": {
+      "Type": "AWS::EC2::EIP",
+      "Properties": {
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/production-environment-vpc/PublicSubnet2"
+          }
+        ]
+      }
+    },
+    "productionenvironmentvpcPublicSubnet2NATGatewayE1850FCC": {
+      "Type": "AWS::EC2::NatGateway",
+      "Properties": {
+        "AllocationId": {
+          "Fn::GetAtt": [
+            "productionenvironmentvpcPublicSubnet2EIP14CA46AA",
+            "AllocationId"
+          ]
+        },
+        "SubnetId": {
+          "Ref": "productionenvironmentvpcPublicSubnet2Subnet298E6C31"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/production-environment-vpc/PublicSubnet2"
+          }
+        ]
+      }
+    },
+    "productionenvironmentvpcPublicSubnet3SubnetC7B5665D": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.0.64.0/19",
+        "VpcId": {
+          "Ref": "productionenvironmentvpcAEB47DF7"
+        },
+        "AvailabilityZone": "test-region-1c",
+        "MapPublicIpOnLaunch": true,
+        "Tags": [
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Public"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Public"
+          },
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/production-environment-vpc/PublicSubnet3"
+          }
+        ]
+      }
+    },
+    "productionenvironmentvpcPublicSubnet3RouteTable00E3BF60": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "productionenvironmentvpcAEB47DF7"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/production-environment-vpc/PublicSubnet3"
+          }
+        ]
+      }
+    },
+    "productionenvironmentvpcPublicSubnet3RouteTableAssociationFA34D6E7": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "productionenvironmentvpcPublicSubnet3RouteTable00E3BF60"
+        },
+        "SubnetId": {
+          "Ref": "productionenvironmentvpcPublicSubnet3SubnetC7B5665D"
+        }
+      }
+    },
+    "productionenvironmentvpcPublicSubnet3DefaultRouteE1ADEA6C": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "productionenvironmentvpcPublicSubnet3RouteTable00E3BF60"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "productionenvironmentvpcIGWE7C39890"
+        }
+      },
+      "DependsOn": [
+        "productionenvironmentvpcVPCGW1B428D07"
+      ]
+    },
+    "productionenvironmentvpcPublicSubnet3EIP53405AED": {
+      "Type": "AWS::EC2::EIP",
+      "Properties": {
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/production-environment-vpc/PublicSubnet3"
+          }
+        ]
+      }
+    },
+    "productionenvironmentvpcPublicSubnet3NATGateway94604057": {
+      "Type": "AWS::EC2::NatGateway",
+      "Properties": {
+        "AllocationId": {
+          "Fn::GetAtt": [
+            "productionenvironmentvpcPublicSubnet3EIP53405AED",
+            "AllocationId"
+          ]
+        },
+        "SubnetId": {
+          "Ref": "productionenvironmentvpcPublicSubnet3SubnetC7B5665D"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/production-environment-vpc/PublicSubnet3"
+          }
+        ]
+      }
+    },
+    "productionenvironmentvpcPrivateSubnet1Subnet53F632E6": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.0.96.0/19",
+        "VpcId": {
+          "Ref": "productionenvironmentvpcAEB47DF7"
+        },
+        "AvailabilityZone": "test-region-1a",
+        "MapPublicIpOnLaunch": false,
+        "Tags": [
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Private"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Private"
+          },
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/production-environment-vpc/PrivateSubnet1"
+          }
+        ]
+      }
+    },
+    "productionenvironmentvpcPrivateSubnet1RouteTable2C6DFF0C": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "productionenvironmentvpcAEB47DF7"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/production-environment-vpc/PrivateSubnet1"
+          }
+        ]
+      }
+    },
+    "productionenvironmentvpcPrivateSubnet1RouteTableAssociation8BA32463": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "productionenvironmentvpcPrivateSubnet1RouteTable2C6DFF0C"
+        },
+        "SubnetId": {
+          "Ref": "productionenvironmentvpcPrivateSubnet1Subnet53F632E6"
+        }
+      }
+    },
+    "productionenvironmentvpcPrivateSubnet1DefaultRouteFBB3DE6C": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "productionenvironmentvpcPrivateSubnet1RouteTable2C6DFF0C"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "NatGatewayId": {
+          "Ref": "productionenvironmentvpcPublicSubnet1NATGateway6075E4CA"
+        }
+      }
+    },
+    "productionenvironmentvpcPrivateSubnet2Subnet756FB93C": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.0.128.0/19",
+        "VpcId": {
+          "Ref": "productionenvironmentvpcAEB47DF7"
+        },
+        "AvailabilityZone": "test-region-1b",
+        "MapPublicIpOnLaunch": false,
+        "Tags": [
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Private"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Private"
+          },
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/production-environment-vpc/PrivateSubnet2"
+          }
+        ]
+      }
+    },
+    "productionenvironmentvpcPrivateSubnet2RouteTable2F77D0D2": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "productionenvironmentvpcAEB47DF7"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/production-environment-vpc/PrivateSubnet2"
+          }
+        ]
+      }
+    },
+    "productionenvironmentvpcPrivateSubnet2RouteTableAssociation09188261": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "productionenvironmentvpcPrivateSubnet2RouteTable2F77D0D2"
+        },
+        "SubnetId": {
+          "Ref": "productionenvironmentvpcPrivateSubnet2Subnet756FB93C"
+        }
+      }
+    },
+    "productionenvironmentvpcPrivateSubnet2DefaultRoute5F9AB6C1": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "productionenvironmentvpcPrivateSubnet2RouteTable2F77D0D2"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "NatGatewayId": {
+          "Ref": "productionenvironmentvpcPublicSubnet2NATGatewayE1850FCC"
+        }
+      }
+    },
+    "productionenvironmentvpcPrivateSubnet3Subnet3BD4064E": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.0.160.0/19",
+        "VpcId": {
+          "Ref": "productionenvironmentvpcAEB47DF7"
+        },
+        "AvailabilityZone": "test-region-1c",
+        "MapPublicIpOnLaunch": false,
+        "Tags": [
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Private"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Private"
+          },
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/production-environment-vpc/PrivateSubnet3"
+          }
+        ]
+      }
+    },
+    "productionenvironmentvpcPrivateSubnet3RouteTable1A244D34": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "productionenvironmentvpcAEB47DF7"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/production-environment-vpc/PrivateSubnet3"
+          }
+        ]
+      }
+    },
+    "productionenvironmentvpcPrivateSubnet3RouteTableAssociation65F18B9C": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "productionenvironmentvpcPrivateSubnet3RouteTable1A244D34"
+        },
+        "SubnetId": {
+          "Ref": "productionenvironmentvpcPrivateSubnet3Subnet3BD4064E"
+        }
+      }
+    },
+    "productionenvironmentvpcPrivateSubnet3DefaultRoute2438918B": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "productionenvironmentvpcPrivateSubnet3RouteTable1A244D34"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "NatGatewayId": {
+          "Ref": "productionenvironmentvpcPublicSubnet3NATGateway94604057"
+        }
+      }
+    },
+    "productionenvironmentvpcIGWE7C39890": {
+      "Type": "AWS::EC2::InternetGateway",
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/production-environment-vpc"
+          }
+        ]
+      }
+    },
+    "productionenvironmentvpcVPCGW1B428D07": {
+      "Type": "AWS::EC2::VPCGatewayAttachment",
+      "Properties": {
+        "VpcId": {
+          "Ref": "productionenvironmentvpcAEB47DF7"
+        },
+        "InternetGatewayId": {
+          "Ref": "productionenvironmentvpcIGWE7C39890"
+        }
+      }
+    },
+    "productionenvironmentclusterC6599D2D": {
+      "Type": "AWS::ECS::Cluster"
+    },
+    "productionenvironmentclusterDefaultServiceDiscoveryNamespaceBE74D64D": {
+      "Type": "AWS::ServiceDiscovery::PrivateDnsNamespace",
+      "Properties": {
+        "Name": "production",
+        "Vpc": {
+          "Ref": "productionenvironmentvpcAEB47DF7"
+        }
+      }
+    },
+    "developmentenvironmentvpcCB4216A4": {
+      "Type": "AWS::EC2::VPC",
+      "Properties": {
+        "CidrBlock": "10.0.0.0/16",
+        "EnableDnsHostnames": true,
+        "EnableDnsSupport": true,
+        "InstanceTenancy": "default",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/development-environment-vpc"
+          }
+        ]
+      }
+    },
+    "developmentenvironmentvpcPublicSubnet1Subnet0D18046B": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.0.0.0/19",
+        "VpcId": {
+          "Ref": "developmentenvironmentvpcCB4216A4"
+        },
+        "AvailabilityZone": "test-region-1a",
+        "MapPublicIpOnLaunch": true,
+        "Tags": [
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Public"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Public"
+          },
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/development-environment-vpc/PublicSubnet1"
+          }
+        ]
+      }
+    },
+    "developmentenvironmentvpcPublicSubnet1RouteTable8FC58983": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "developmentenvironmentvpcCB4216A4"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/development-environment-vpc/PublicSubnet1"
+          }
+        ]
+      }
+    },
+    "developmentenvironmentvpcPublicSubnet1RouteTableAssociation8F257A0C": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "developmentenvironmentvpcPublicSubnet1RouteTable8FC58983"
+        },
+        "SubnetId": {
+          "Ref": "developmentenvironmentvpcPublicSubnet1Subnet0D18046B"
+        }
+      }
+    },
+    "developmentenvironmentvpcPublicSubnet1DefaultRoute2BAA794D": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "developmentenvironmentvpcPublicSubnet1RouteTable8FC58983"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "developmentenvironmentvpcIGW2B4E91B1"
+        }
+      },
+      "DependsOn": [
+        "developmentenvironmentvpcVPCGW702C2C38"
+      ]
+    },
+    "developmentenvironmentvpcPublicSubnet1EIPE8B9F4D4": {
+      "Type": "AWS::EC2::EIP",
+      "Properties": {
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/development-environment-vpc/PublicSubnet1"
+          }
+        ]
+      }
+    },
+    "developmentenvironmentvpcPublicSubnet1NATGateway6B01CC4E": {
+      "Type": "AWS::EC2::NatGateway",
+      "Properties": {
+        "AllocationId": {
+          "Fn::GetAtt": [
+            "developmentenvironmentvpcPublicSubnet1EIPE8B9F4D4",
+            "AllocationId"
+          ]
+        },
+        "SubnetId": {
+          "Ref": "developmentenvironmentvpcPublicSubnet1Subnet0D18046B"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/development-environment-vpc/PublicSubnet1"
+          }
+        ]
+      }
+    },
+    "developmentenvironmentvpcPublicSubnet2SubnetC2026CD3": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.0.32.0/19",
+        "VpcId": {
+          "Ref": "developmentenvironmentvpcCB4216A4"
+        },
+        "AvailabilityZone": "test-region-1b",
+        "MapPublicIpOnLaunch": true,
+        "Tags": [
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Public"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Public"
+          },
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/development-environment-vpc/PublicSubnet2"
+          }
+        ]
+      }
+    },
+    "developmentenvironmentvpcPublicSubnet2RouteTable803A92C2": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "developmentenvironmentvpcCB4216A4"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/development-environment-vpc/PublicSubnet2"
+          }
+        ]
+      }
+    },
+    "developmentenvironmentvpcPublicSubnet2RouteTableAssociation6630985C": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "developmentenvironmentvpcPublicSubnet2RouteTable803A92C2"
+        },
+        "SubnetId": {
+          "Ref": "developmentenvironmentvpcPublicSubnet2SubnetC2026CD3"
+        }
+      }
+    },
+    "developmentenvironmentvpcPublicSubnet2DefaultRoute2C5118B5": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "developmentenvironmentvpcPublicSubnet2RouteTable803A92C2"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "developmentenvironmentvpcIGW2B4E91B1"
+        }
+      },
+      "DependsOn": [
+        "developmentenvironmentvpcVPCGW702C2C38"
+      ]
+    },
+    "developmentenvironmentvpcPublicSubnet2EIP560C2BBA": {
+      "Type": "AWS::EC2::EIP",
+      "Properties": {
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/development-environment-vpc/PublicSubnet2"
+          }
+        ]
+      }
+    },
+    "developmentenvironmentvpcPublicSubnet2NATGateway15A9C252": {
+      "Type": "AWS::EC2::NatGateway",
+      "Properties": {
+        "AllocationId": {
+          "Fn::GetAtt": [
+            "developmentenvironmentvpcPublicSubnet2EIP560C2BBA",
+            "AllocationId"
+          ]
+        },
+        "SubnetId": {
+          "Ref": "developmentenvironmentvpcPublicSubnet2SubnetC2026CD3"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/development-environment-vpc/PublicSubnet2"
+          }
+        ]
+      }
+    },
+    "developmentenvironmentvpcPublicSubnet3Subnet00B8A77C": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.0.64.0/19",
+        "VpcId": {
+          "Ref": "developmentenvironmentvpcCB4216A4"
+        },
+        "AvailabilityZone": "test-region-1c",
+        "MapPublicIpOnLaunch": true,
+        "Tags": [
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Public"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Public"
+          },
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/development-environment-vpc/PublicSubnet3"
+          }
+        ]
+      }
+    },
+    "developmentenvironmentvpcPublicSubnet3RouteTableAEB3B528": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "developmentenvironmentvpcCB4216A4"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/development-environment-vpc/PublicSubnet3"
+          }
+        ]
+      }
+    },
+    "developmentenvironmentvpcPublicSubnet3RouteTableAssociationF90257AE": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "developmentenvironmentvpcPublicSubnet3RouteTableAEB3B528"
+        },
+        "SubnetId": {
+          "Ref": "developmentenvironmentvpcPublicSubnet3Subnet00B8A77C"
+        }
+      }
+    },
+    "developmentenvironmentvpcPublicSubnet3DefaultRoute11687292": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "developmentenvironmentvpcPublicSubnet3RouteTableAEB3B528"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "developmentenvironmentvpcIGW2B4E91B1"
+        }
+      },
+      "DependsOn": [
+        "developmentenvironmentvpcVPCGW702C2C38"
+      ]
+    },
+    "developmentenvironmentvpcPublicSubnet3EIPE2E366D3": {
+      "Type": "AWS::EC2::EIP",
+      "Properties": {
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/development-environment-vpc/PublicSubnet3"
+          }
+        ]
+      }
+    },
+    "developmentenvironmentvpcPublicSubnet3NATGatewayAD65DE0B": {
+      "Type": "AWS::EC2::NatGateway",
+      "Properties": {
+        "AllocationId": {
+          "Fn::GetAtt": [
+            "developmentenvironmentvpcPublicSubnet3EIPE2E366D3",
+            "AllocationId"
+          ]
+        },
+        "SubnetId": {
+          "Ref": "developmentenvironmentvpcPublicSubnet3Subnet00B8A77C"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/development-environment-vpc/PublicSubnet3"
+          }
+        ]
+      }
+    },
+    "developmentenvironmentvpcPrivateSubnet1SubnetAAECD171": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.0.96.0/19",
+        "VpcId": {
+          "Ref": "developmentenvironmentvpcCB4216A4"
+        },
+        "AvailabilityZone": "test-region-1a",
+        "MapPublicIpOnLaunch": false,
+        "Tags": [
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Private"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Private"
+          },
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/development-environment-vpc/PrivateSubnet1"
+          }
+        ]
+      }
+    },
+    "developmentenvironmentvpcPrivateSubnet1RouteTable29CEB1DB": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "developmentenvironmentvpcCB4216A4"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/development-environment-vpc/PrivateSubnet1"
+          }
+        ]
+      }
+    },
+    "developmentenvironmentvpcPrivateSubnet1RouteTableAssociation95EE92E6": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "developmentenvironmentvpcPrivateSubnet1RouteTable29CEB1DB"
+        },
+        "SubnetId": {
+          "Ref": "developmentenvironmentvpcPrivateSubnet1SubnetAAECD171"
+        }
+      }
+    },
+    "developmentenvironmentvpcPrivateSubnet1DefaultRoute1813B5F3": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "developmentenvironmentvpcPrivateSubnet1RouteTable29CEB1DB"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "NatGatewayId": {
+          "Ref": "developmentenvironmentvpcPublicSubnet1NATGateway6B01CC4E"
+        }
+      }
+    },
+    "developmentenvironmentvpcPrivateSubnet2Subnet20C1C37D": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.0.128.0/19",
+        "VpcId": {
+          "Ref": "developmentenvironmentvpcCB4216A4"
+        },
+        "AvailabilityZone": "test-region-1b",
+        "MapPublicIpOnLaunch": false,
+        "Tags": [
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Private"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Private"
+          },
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/development-environment-vpc/PrivateSubnet2"
+          }
+        ]
+      }
+    },
+    "developmentenvironmentvpcPrivateSubnet2RouteTable687AB03B": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "developmentenvironmentvpcCB4216A4"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/development-environment-vpc/PrivateSubnet2"
+          }
+        ]
+      }
+    },
+    "developmentenvironmentvpcPrivateSubnet2RouteTableAssociation1C336DAE": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "developmentenvironmentvpcPrivateSubnet2RouteTable687AB03B"
+        },
+        "SubnetId": {
+          "Ref": "developmentenvironmentvpcPrivateSubnet2Subnet20C1C37D"
+        }
+      }
+    },
+    "developmentenvironmentvpcPrivateSubnet2DefaultRoute1B4A6D0D": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "developmentenvironmentvpcPrivateSubnet2RouteTable687AB03B"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "NatGatewayId": {
+          "Ref": "developmentenvironmentvpcPublicSubnet2NATGateway15A9C252"
+        }
+      }
+    },
+    "developmentenvironmentvpcPrivateSubnet3SubnetAE84C610": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.0.160.0/19",
+        "VpcId": {
+          "Ref": "developmentenvironmentvpcCB4216A4"
+        },
+        "AvailabilityZone": "test-region-1c",
+        "MapPublicIpOnLaunch": false,
+        "Tags": [
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Private"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Private"
+          },
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/development-environment-vpc/PrivateSubnet3"
+          }
+        ]
+      }
+    },
+    "developmentenvironmentvpcPrivateSubnet3RouteTableBD7C810A": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "developmentenvironmentvpcCB4216A4"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/development-environment-vpc/PrivateSubnet3"
+          }
+        ]
+      }
+    },
+    "developmentenvironmentvpcPrivateSubnet3RouteTableAssociation08099995": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "developmentenvironmentvpcPrivateSubnet3RouteTableBD7C810A"
+        },
+        "SubnetId": {
+          "Ref": "developmentenvironmentvpcPrivateSubnet3SubnetAE84C610"
+        }
+      }
+    },
+    "developmentenvironmentvpcPrivateSubnet3DefaultRoute93B77208": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "developmentenvironmentvpcPrivateSubnet3RouteTableBD7C810A"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "NatGatewayId": {
+          "Ref": "developmentenvironmentvpcPublicSubnet3NATGatewayAD65DE0B"
+        }
+      }
+    },
+    "developmentenvironmentvpcIGW2B4E91B1": {
+      "Type": "AWS::EC2::InternetGateway",
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/development-environment-vpc"
+          }
+        ]
+      }
+    },
+    "developmentenvironmentvpcVPCGW702C2C38": {
+      "Type": "AWS::EC2::VPCGatewayAttachment",
+      "Properties": {
+        "VpcId": {
+          "Ref": "developmentenvironmentvpcCB4216A4"
+        },
+        "InternetGatewayId": {
+          "Ref": "developmentenvironmentvpcIGW2B4E91B1"
+        }
+      }
+    },
+    "developmentenvironmentcluster1B64BE8B": {
+      "Type": "AWS::ECS::Cluster"
+    },
+    "developmentenvironmentclusterDefaultServiceDiscoveryNamespace0F234767": {
+      "Type": "AWS::ServiceDiscovery::PrivateDnsNamespace",
+      "Properties": {
+        "Name": "development",
+        "Vpc": {
+          "Ref": "developmentenvironmentvpcCB4216A4"
+        }
+      }
+    },
+    "productionmeshB6E81744": {
+      "Type": "AWS::AppMesh::Mesh",
+      "Properties": {
+        "MeshName": "awsecsintegproductionmesh1A4ED585",
+        "Spec": {}
+      }
+    },
+    "developmentmeshCEC28AFE": {
+      "Type": "AWS::AppMesh::Mesh",
+      "Properties": {
+        "MeshName": "awsecsintegdevelopmentmeshEFC35179",
+        "Spec": {}
+      }
+    },
+    "nameproductiontaskdefinitionTaskRole93E922EB": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ecs-tasks.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "nameproductiontaskdefinition33A5D5E0": {
+      "Type": "AWS::ECS::TaskDefinition",
+      "Properties": {
+        "ContainerDefinitions": [
+          {
+            "Cpu": 1024,
+            "DependsOn": [
+              {
+                "Condition": "HEALTHY",
+                "ContainerName": "envoy"
+              }
+            ],
+            "Environment": [
+              {
+                "Name": "PORT",
+                "Value": "80"
+              }
+            ],
+            "Essential": true,
+            "Image": "nathanpeck/name",
+            "Memory": 2048,
+            "Name": "app",
+            "PortMappings": [
+              {
+                "ContainerPort": 80,
+                "Protocol": "tcp"
+              }
+            ],
+            "Ulimits": [
+              {
+                "HardLimit": 1024000,
+                "Name": "nofile",
+                "SoftLimit": 1024000
+              }
+            ]
+          },
+          {
+            "Environment": [
+              {
+                "Name": "APPMESH_VIRTUAL_NODE_NAME",
+                "Value": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "mesh/",
+                      {
+                        "Fn::GetAtt": [
+                          "productionmeshB6E81744",
+                          "MeshName"
+                        ]
+                      },
+                      "/virtualNode/name-production"
+                    ]
+                  ]
+                }
+              },
+              {
+                "Name": "AWS_REGION",
+                "Value": {
+                  "Ref": "AWS::Region"
+                }
+              },
+              {
+                "Name": "ENABLE_ENVOY_STATS_TAGS",
+                "Value": "1"
+              },
+              {
+                "Name": "ENABLE_ENVOY_DOG_STATSD",
+                "Value": "1"
+              }
+            ],
+            "Essential": true,
+            "HealthCheck": {
+              "Command": [
+                "CMD-SHELL",
+                "curl -s http://localhost:9901/server_info | grep state | grep -q LIVE"
+              ],
+              "Interval": 5,
+              "Retries": 3,
+              "StartPeriod": 10,
+              "Timeout": 2
+            },
+            "Image": {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Fn::FindInMap": [
+                      "nameproductionenvoyimageaccountmapping",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      "ecrRepo"
+                    ]
+                  },
+                  ".dkr.ecr.",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ".",
+                  {
+                    "Ref": "AWS::URLSuffix"
+                  },
+                  "/aws-appmesh-envoy:v1.15.1.0-prod"
+                ]
+              ]
+            },
+            "LogConfiguration": {
+              "LogDriver": "awslogs",
+              "Options": {
+                "awslogs-group": {
+                  "Ref": "nameproductiontaskdefinitionenvoyLogGroupF79A2732"
+                },
+                "awslogs-stream-prefix": "envoy",
+                "awslogs-region": {
+                  "Ref": "AWS::Region"
+                }
+              }
+            },
+            "MemoryReservation": 128,
+            "Name": "envoy",
+            "Ulimits": [
+              {
+                "HardLimit": 1024000,
+                "Name": "nofile",
+                "SoftLimit": 1024000
+              }
+            ],
+            "User": "1337"
+          }
+        ],
+        "Cpu": "1024",
+        "ExecutionRoleArn": {
+          "Fn::GetAtt": [
+            "nameproductiontaskdefinitionExecutionRoleB72DD86B",
+            "Arn"
+          ]
+        },
+        "Family": "awsecsintegnameproductiontaskdefinition9E1C363B",
+        "Memory": "2048",
+        "NetworkMode": "awsvpc",
+        "ProxyConfiguration": {
+          "ContainerName": "envoy",
+          "ProxyConfigurationProperties": [
+            {
+              "Name": "AppPorts",
+              "Value": "80"
+            },
+            {
+              "Name": "ProxyEgressPort",
+              "Value": "15001"
+            },
+            {
+              "Name": "ProxyIngressPort",
+              "Value": "15000"
+            },
+            {
+              "Name": "IgnoredUID",
+              "Value": "1337"
+            },
+            {
+              "Name": "IgnoredGID",
+              "Value": "1338"
+            },
+            {
+              "Name": "EgressIgnoredIPs",
+              "Value": "169.254.170.2,169.254.169.254"
+            }
+          ],
+          "Type": "APPMESH"
+        },
+        "RequiresCompatibilities": [
+          "EC2",
+          "FARGATE"
+        ],
+        "TaskRoleArn": {
+          "Fn::GetAtt": [
+            "nameproductiontaskdefinitionTaskRole93E922EB",
+            "Arn"
+          ]
+        }
+      }
+    },
+    "nameproductiontaskdefinitionenvoyLogGroupF79A2732": {
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
+    },
+    "nameproductiontaskdefinitionExecutionRoleB72DD86B": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ecs-tasks.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "nameproductiontaskdefinitionExecutionRoleDefaultPolicyB66C67BE": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "ecr:BatchCheckLayerAvailability",
+                "ecr:GetDownloadUrlForLayer",
+                "ecr:BatchGetImage"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:aws:ecr:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Fn::FindInMap": [
+                        "nameproductionenvoyimageaccountmapping",
+                        {
+                          "Ref": "AWS::Region"
+                        },
+                        "ecrRepo"
+                      ]
+                    },
+                    ":repository/aws-appmesh-envoy"
+                  ]
+                ]
+              }
+            },
+            {
+              "Action": "ecr:GetAuthorizationToken",
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "nameproductiontaskdefinitionenvoyLogGroupF79A2732",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "nameproductiontaskdefinitionExecutionRoleDefaultPolicyB66C67BE",
+        "Roles": [
+          {
+            "Ref": "nameproductiontaskdefinitionExecutionRoleB72DD86B"
+          }
+        ]
+      }
+    },
+    "nameproductionenvoytoappmesh1B44B04A": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "appmesh:StreamAggregatedResources",
+              "Effect": "Allow",
+              "Resource": {
+                "Ref": "productionmeshB6E81744"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "nameproductionenvoytoappmesh1B44B04A",
+        "Roles": [
+          {
+            "Ref": "nameproductiontaskdefinitionTaskRole93E922EB"
+          }
+        ]
+      }
+    },
+    "nameproductionserviceServiceB2D31516": {
+      "Type": "AWS::ECS::Service",
+      "Properties": {
+        "Cluster": {
+          "Ref": "productionenvironmentclusterC6599D2D"
+        },
+        "DeploymentConfiguration": {
+          "MaximumPercent": 200,
+          "MinimumHealthyPercent": 100
+        },
+        "DesiredCount": 1,
+        "EnableECSManagedTags": false,
+        "LaunchType": "FARGATE",
+        "NetworkConfiguration": {
+          "AwsvpcConfiguration": {
+            "AssignPublicIp": "DISABLED",
+            "SecurityGroups": [
+              {
+                "Fn::GetAtt": [
+                  "nameproductionserviceSecurityGroupF496E439",
+                  "GroupId"
+                ]
+              }
+            ],
+            "Subnets": [
+              {
+                "Ref": "productionenvironmentvpcPrivateSubnet1Subnet53F632E6"
+              },
+              {
+                "Ref": "productionenvironmentvpcPrivateSubnet2Subnet756FB93C"
+              },
+              {
+                "Ref": "productionenvironmentvpcPrivateSubnet3Subnet3BD4064E"
+              }
+            ]
+          }
+        },
+        "ServiceRegistries": [
+          {
+            "RegistryArn": {
+              "Fn::GetAtt": [
+                "nameproductionserviceCloudmapService60E3273A",
+                "Arn"
+              ]
+            }
+          }
+        ],
+        "TaskDefinition": {
+          "Ref": "nameproductiontaskdefinition33A5D5E0"
+        }
+      }
+    },
+    "nameproductionserviceCloudmapService60E3273A": {
+      "Type": "AWS::ServiceDiscovery::Service",
+      "Properties": {
+        "DnsConfig": {
+          "DnsRecords": [
+            {
+              "TTL": 10,
+              "Type": "A"
+            }
+          ],
+          "NamespaceId": {
+            "Fn::GetAtt": [
+              "productionenvironmentclusterDefaultServiceDiscoveryNamespaceBE74D64D",
+              "Id"
+            ]
+          },
+          "RoutingPolicy": "MULTIVALUE"
+        },
+        "HealthCheckCustomConfig": {
+          "FailureThreshold": 2
+        },
+        "Name": "name-production",
+        "NamespaceId": {
+          "Fn::GetAtt": [
+            "productionenvironmentclusterDefaultServiceDiscoveryNamespaceBE74D64D",
+            "Id"
+          ]
+        }
+      }
+    },
+    "nameproductionserviceSecurityGroupF496E439": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "aws-ecs-integ/name-production-service/SecurityGroup",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1"
+          }
+        ],
+        "VpcId": {
+          "Ref": "productionenvironmentvpcAEB47DF7"
+        }
+      }
+    },
+    "nameproductionvirtualnodeC78443D9": {
+      "Type": "AWS::AppMesh::VirtualNode",
+      "Properties": {
+        "MeshName": {
+          "Fn::GetAtt": [
+            "productionmeshB6E81744",
+            "MeshName"
+          ]
+        },
+        "Spec": {
+          "Listeners": [
+            {
+              "PortMapping": {
+                "Port": 80,
+                "Protocol": "http"
+              }
+            }
+          ],
+          "ServiceDiscovery": {
+            "AWSCloudMap": {
+              "NamespaceName": "production",
+              "ServiceName": {
+                "Fn::GetAtt": [
+                  "nameproductionserviceCloudmapService60E3273A",
+                  "Name"
+                ]
+              }
+            }
+          }
+        },
+        "VirtualNodeName": "name-production"
+      }
+    },
+    "nameproductionvirtualrouter00E3366D": {
+      "Type": "AWS::AppMesh::VirtualRouter",
+      "Properties": {
+        "MeshName": {
+          "Fn::GetAtt": [
+            "productionmeshB6E81744",
+            "MeshName"
+          ]
+        },
+        "Spec": {
+          "Listeners": [
+            {
+              "PortMapping": {
+                "Port": 80,
+                "Protocol": "http"
+              }
+            }
+          ]
+        },
+        "VirtualRouterName": "name-production"
+      }
+    },
+    "nameproductionvirtualrouternameproductionrouteE886BEFD": {
+      "Type": "AWS::AppMesh::Route",
+      "Properties": {
+        "MeshName": {
+          "Fn::GetAtt": [
+            "productionmeshB6E81744",
+            "MeshName"
+          ]
+        },
+        "RouteName": "name-production-route",
+        "Spec": {
+          "HttpRoute": {
+            "Action": {
+              "WeightedTargets": [
+                {
+                  "VirtualNode": {
+                    "Fn::GetAtt": [
+                      "nameproductionvirtualnodeC78443D9",
+                      "VirtualNodeName"
+                    ]
+                  },
+                  "Weight": 1
+                }
+              ]
+            },
+            "Match": {
+              "Prefix": "/"
+            }
+          }
+        },
+        "VirtualRouterName": {
+          "Fn::GetAtt": [
+            "nameproductionvirtualrouter00E3366D",
+            "VirtualRouterName"
+          ]
+        }
+      }
+    },
+    "nameproductionvirtualservice4D49D5F6": {
+      "Type": "AWS::AppMesh::VirtualService",
+      "Properties": {
+        "MeshName": {
+          "Fn::GetAtt": [
+            "productionmeshB6E81744",
+            "MeshName"
+          ]
+        },
+        "Spec": {
+          "Provider": {
+            "VirtualRouter": {
+              "VirtualRouterName": {
+                "Fn::GetAtt": [
+                  "nameproductionvirtualrouter00E3366D",
+                  "VirtualRouterName"
+                ]
+              }
+            }
+          }
+        },
+        "VirtualServiceName": "name-production.production"
+      }
+    },
+    "namedevelopmenttaskdefinitionTaskRole66A85BBB": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ecs-tasks.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "namedevelopmenttaskdefinition0468FBFF": {
+      "Type": "AWS::ECS::TaskDefinition",
+      "Properties": {
+        "ContainerDefinitions": [
+          {
+            "Cpu": 1024,
+            "DependsOn": [
+              {
+                "Condition": "HEALTHY",
+                "ContainerName": "envoy"
+              }
+            ],
+            "Environment": [
+              {
+                "Name": "PORT",
+                "Value": "80"
+              }
+            ],
+            "Essential": true,
+            "Image": "nathanpeck/name",
+            "Memory": 2048,
+            "Name": "app",
+            "PortMappings": [
+              {
+                "ContainerPort": 80,
+                "Protocol": "tcp"
+              }
+            ],
+            "Ulimits": [
+              {
+                "HardLimit": 1024000,
+                "Name": "nofile",
+                "SoftLimit": 1024000
+              }
+            ]
+          },
+          {
+            "Environment": [
+              {
+                "Name": "APPMESH_VIRTUAL_NODE_NAME",
+                "Value": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "mesh/",
+                      {
+                        "Fn::GetAtt": [
+                          "developmentmeshCEC28AFE",
+                          "MeshName"
+                        ]
+                      },
+                      "/virtualNode/name-development"
+                    ]
+                  ]
+                }
+              },
+              {
+                "Name": "AWS_REGION",
+                "Value": {
+                  "Ref": "AWS::Region"
+                }
+              },
+              {
+                "Name": "ENABLE_ENVOY_STATS_TAGS",
+                "Value": "1"
+              },
+              {
+                "Name": "ENABLE_ENVOY_DOG_STATSD",
+                "Value": "1"
+              }
+            ],
+            "Essential": true,
+            "HealthCheck": {
+              "Command": [
+                "CMD-SHELL",
+                "curl -s http://localhost:9901/server_info | grep state | grep -q LIVE"
+              ],
+              "Interval": 5,
+              "Retries": 3,
+              "StartPeriod": 10,
+              "Timeout": 2
+            },
+            "Image": {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Fn::FindInMap": [
+                      "namedevelopmentenvoyimageaccountmapping",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      "ecrRepo"
+                    ]
+                  },
+                  ".dkr.ecr.",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ".",
+                  {
+                    "Ref": "AWS::URLSuffix"
+                  },
+                  "/aws-appmesh-envoy:v1.15.1.0-prod"
+                ]
+              ]
+            },
+            "LogConfiguration": {
+              "LogDriver": "awslogs",
+              "Options": {
+                "awslogs-group": {
+                  "Ref": "namedevelopmenttaskdefinitionenvoyLogGroupF8FCAFD6"
+                },
+                "awslogs-stream-prefix": "envoy",
+                "awslogs-region": {
+                  "Ref": "AWS::Region"
+                }
+              }
+            },
+            "MemoryReservation": 128,
+            "Name": "envoy",
+            "Ulimits": [
+              {
+                "HardLimit": 1024000,
+                "Name": "nofile",
+                "SoftLimit": 1024000
+              }
+            ],
+            "User": "1337"
+          }
+        ],
+        "Cpu": "1024",
+        "ExecutionRoleArn": {
+          "Fn::GetAtt": [
+            "namedevelopmenttaskdefinitionExecutionRole48B53E4E",
+            "Arn"
+          ]
+        },
+        "Family": "awsecsintegnamedevelopmenttaskdefinitionC3797E10",
+        "Memory": "2048",
+        "NetworkMode": "awsvpc",
+        "ProxyConfiguration": {
+          "ContainerName": "envoy",
+          "ProxyConfigurationProperties": [
+            {
+              "Name": "AppPorts",
+              "Value": "80"
+            },
+            {
+              "Name": "ProxyEgressPort",
+              "Value": "15001"
+            },
+            {
+              "Name": "ProxyIngressPort",
+              "Value": "15000"
+            },
+            {
+              "Name": "IgnoredUID",
+              "Value": "1337"
+            },
+            {
+              "Name": "IgnoredGID",
+              "Value": "1338"
+            },
+            {
+              "Name": "EgressIgnoredIPs",
+              "Value": "169.254.170.2,169.254.169.254"
+            }
+          ],
+          "Type": "APPMESH"
+        },
+        "RequiresCompatibilities": [
+          "EC2",
+          "FARGATE"
+        ],
+        "TaskRoleArn": {
+          "Fn::GetAtt": [
+            "namedevelopmenttaskdefinitionTaskRole66A85BBB",
+            "Arn"
+          ]
+        }
+      }
+    },
+    "namedevelopmenttaskdefinitionenvoyLogGroupF8FCAFD6": {
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
+    },
+    "namedevelopmenttaskdefinitionExecutionRole48B53E4E": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ecs-tasks.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "namedevelopmenttaskdefinitionExecutionRoleDefaultPolicy34EAA008": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "ecr:BatchCheckLayerAvailability",
+                "ecr:GetDownloadUrlForLayer",
+                "ecr:BatchGetImage"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:aws:ecr:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Fn::FindInMap": [
+                        "namedevelopmentenvoyimageaccountmapping",
+                        {
+                          "Ref": "AWS::Region"
+                        },
+                        "ecrRepo"
+                      ]
+                    },
+                    ":repository/aws-appmesh-envoy"
+                  ]
+                ]
+              }
+            },
+            {
+              "Action": "ecr:GetAuthorizationToken",
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "namedevelopmenttaskdefinitionenvoyLogGroupF8FCAFD6",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "namedevelopmenttaskdefinitionExecutionRoleDefaultPolicy34EAA008",
+        "Roles": [
+          {
+            "Ref": "namedevelopmenttaskdefinitionExecutionRole48B53E4E"
+          }
+        ]
+      }
+    },
+    "namedevelopmentenvoytoappmesh45FF08AA": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "appmesh:StreamAggregatedResources",
+              "Effect": "Allow",
+              "Resource": {
+                "Ref": "developmentmeshCEC28AFE"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "namedevelopmentenvoytoappmesh45FF08AA",
+        "Roles": [
+          {
+            "Ref": "namedevelopmenttaskdefinitionTaskRole66A85BBB"
+          }
+        ]
+      }
+    },
+    "namedevelopmentserviceService8A24F793": {
+      "Type": "AWS::ECS::Service",
+      "Properties": {
+        "Cluster": {
+          "Ref": "developmentenvironmentcluster1B64BE8B"
+        },
+        "DeploymentConfiguration": {
+          "MaximumPercent": 200,
+          "MinimumHealthyPercent": 100
+        },
+        "DesiredCount": 1,
+        "EnableECSManagedTags": false,
+        "LaunchType": "FARGATE",
+        "NetworkConfiguration": {
+          "AwsvpcConfiguration": {
+            "AssignPublicIp": "DISABLED",
+            "SecurityGroups": [
+              {
+                "Fn::GetAtt": [
+                  "namedevelopmentserviceSecurityGroupE2ECED97",
+                  "GroupId"
+                ]
+              }
+            ],
+            "Subnets": [
+              {
+                "Ref": "developmentenvironmentvpcPrivateSubnet1SubnetAAECD171"
+              },
+              {
+                "Ref": "developmentenvironmentvpcPrivateSubnet2Subnet20C1C37D"
+              },
+              {
+                "Ref": "developmentenvironmentvpcPrivateSubnet3SubnetAE84C610"
+              }
+            ]
+          }
+        },
+        "ServiceRegistries": [
+          {
+            "RegistryArn": {
+              "Fn::GetAtt": [
+                "namedevelopmentserviceCloudmapService63674467",
+                "Arn"
+              ]
+            }
+          }
+        ],
+        "TaskDefinition": {
+          "Ref": "namedevelopmenttaskdefinition0468FBFF"
+        }
+      }
+    },
+    "namedevelopmentserviceCloudmapService63674467": {
+      "Type": "AWS::ServiceDiscovery::Service",
+      "Properties": {
+        "DnsConfig": {
+          "DnsRecords": [
+            {
+              "TTL": 10,
+              "Type": "A"
+            }
+          ],
+          "NamespaceId": {
+            "Fn::GetAtt": [
+              "developmentenvironmentclusterDefaultServiceDiscoveryNamespace0F234767",
+              "Id"
+            ]
+          },
+          "RoutingPolicy": "MULTIVALUE"
+        },
+        "HealthCheckCustomConfig": {
+          "FailureThreshold": 2
+        },
+        "Name": "name-development",
+        "NamespaceId": {
+          "Fn::GetAtt": [
+            "developmentenvironmentclusterDefaultServiceDiscoveryNamespace0F234767",
+            "Id"
+          ]
+        }
+      }
+    },
+    "namedevelopmentserviceSecurityGroupE2ECED97": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "aws-ecs-integ/name-development-service/SecurityGroup",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1"
+          }
+        ],
+        "VpcId": {
+          "Ref": "developmentenvironmentvpcCB4216A4"
+        }
+      }
+    },
+    "namedevelopmentvirtualnode55118E80": {
+      "Type": "AWS::AppMesh::VirtualNode",
+      "Properties": {
+        "MeshName": {
+          "Fn::GetAtt": [
+            "developmentmeshCEC28AFE",
+            "MeshName"
+          ]
+        },
+        "Spec": {
+          "Listeners": [
+            {
+              "PortMapping": {
+                "Port": 80,
+                "Protocol": "http"
+              }
+            }
+          ],
+          "ServiceDiscovery": {
+            "AWSCloudMap": {
+              "NamespaceName": "development",
+              "ServiceName": {
+                "Fn::GetAtt": [
+                  "namedevelopmentserviceCloudmapService63674467",
+                  "Name"
+                ]
+              }
+            }
+          }
+        },
+        "VirtualNodeName": "name-development"
+      }
+    },
+    "namedevelopmentvirtualrouter0AE5105D": {
+      "Type": "AWS::AppMesh::VirtualRouter",
+      "Properties": {
+        "MeshName": {
+          "Fn::GetAtt": [
+            "developmentmeshCEC28AFE",
+            "MeshName"
+          ]
+        },
+        "Spec": {
+          "Listeners": [
+            {
+              "PortMapping": {
+                "Port": 80,
+                "Protocol": "http"
+              }
+            }
+          ]
+        },
+        "VirtualRouterName": "name-development"
+      }
+    },
+    "namedevelopmentvirtualrouternamedevelopmentroute611E499A": {
+      "Type": "AWS::AppMesh::Route",
+      "Properties": {
+        "MeshName": {
+          "Fn::GetAtt": [
+            "developmentmeshCEC28AFE",
+            "MeshName"
+          ]
+        },
+        "RouteName": "name-development-route",
+        "Spec": {
+          "HttpRoute": {
+            "Action": {
+              "WeightedTargets": [
+                {
+                  "VirtualNode": {
+                    "Fn::GetAtt": [
+                      "namedevelopmentvirtualnode55118E80",
+                      "VirtualNodeName"
+                    ]
+                  },
+                  "Weight": 1
+                }
+              ]
+            },
+            "Match": {
+              "Prefix": "/"
+            }
+          }
+        },
+        "VirtualRouterName": {
+          "Fn::GetAtt": [
+            "namedevelopmentvirtualrouter0AE5105D",
+            "VirtualRouterName"
+          ]
+        }
+      }
+    },
+    "namedevelopmentvirtualserviceD936E3FD": {
+      "Type": "AWS::AppMesh::VirtualService",
+      "Properties": {
+        "MeshName": {
+          "Fn::GetAtt": [
+            "developmentmeshCEC28AFE",
+            "MeshName"
+          ]
+        },
+        "Spec": {
+          "Provider": {
+            "VirtualRouter": {
+              "VirtualRouterName": {
+                "Fn::GetAtt": [
+                  "namedevelopmentvirtualrouter0AE5105D",
+                  "VirtualRouterName"
+                ]
+              }
+            }
+          }
+        },
+        "VirtualServiceName": "name-development.development"
+      }
+    }
+  },
+  "Mappings": {
+    "nameproductionenvoyimageaccountmapping": {
+      "ap-northeast-1": {
+        "ecrRepo": "840364872350"
+      },
+      "ap-northeast-2": {
+        "ecrRepo": "840364872350"
+      },
+      "ap-south-1": {
+        "ecrRepo": "840364872350"
+      },
+      "ap-southeast-1": {
+        "ecrRepo": "840364872350"
+      },
+      "ap-southeast-2": {
+        "ecrRepo": "840364872350"
+      },
+      "ca-central-1": {
+        "ecrRepo": "840364872350"
+      },
+      "eu-central-1": {
+        "ecrRepo": "840364872350"
+      },
+      "eu-north-1": {
+        "ecrRepo": "840364872350"
+      },
+      "eu-south-1": {
+        "ecrRepo": "422531588944"
+      },
+      "eu-west-1": {
+        "ecrRepo": "840364872350"
+      },
+      "eu-west-2": {
+        "ecrRepo": "840364872350"
+      },
+      "eu-west-3": {
+        "ecrRepo": "840364872350"
+      },
+      "sa-east-1": {
+        "ecrRepo": "840364872350"
+      },
+      "us-east-1": {
+        "ecrRepo": "840364872350"
+      },
+      "us-east-2": {
+        "ecrRepo": "840364872350"
+      },
+      "us-west-1": {
+        "ecrRepo": "840364872350"
+      },
+      "us-west-2": {
+        "ecrRepo": "840364872350"
+      },
+      "me-south-1": {
+        "ecrRepo": "772975370895"
+      },
+      "ap-east-1": {
+        "ecrRepo": "856666278305"
+      }
+    },
+    "namedevelopmentenvoyimageaccountmapping": {
+      "ap-northeast-1": {
+        "ecrRepo": "840364872350"
+      },
+      "ap-northeast-2": {
+        "ecrRepo": "840364872350"
+      },
+      "ap-south-1": {
+        "ecrRepo": "840364872350"
+      },
+      "ap-southeast-1": {
+        "ecrRepo": "840364872350"
+      },
+      "ap-southeast-2": {
+        "ecrRepo": "840364872350"
+      },
+      "ca-central-1": {
+        "ecrRepo": "840364872350"
+      },
+      "eu-central-1": {
+        "ecrRepo": "840364872350"
+      },
+      "eu-north-1": {
+        "ecrRepo": "840364872350"
+      },
+      "eu-south-1": {
+        "ecrRepo": "422531588944"
+      },
+      "eu-west-1": {
+        "ecrRepo": "840364872350"
+      },
+      "eu-west-2": {
+        "ecrRepo": "840364872350"
+      },
+      "eu-west-3": {
+        "ecrRepo": "840364872350"
+      },
+      "sa-east-1": {
+        "ecrRepo": "840364872350"
+      },
+      "us-east-1": {
+        "ecrRepo": "840364872350"
+      },
+      "us-east-2": {
+        "ecrRepo": "840364872350"
+      },
+      "us-west-1": {
+        "ecrRepo": "840364872350"
+      },
+      "us-west-2": {
+        "ecrRepo": "840364872350"
+      },
+      "me-south-1": {
+        "ecrRepo": "772975370895"
+      },
+      "ap-east-1": {
+        "ecrRepo": "856666278305"
+      }
+    }
+  }
+}

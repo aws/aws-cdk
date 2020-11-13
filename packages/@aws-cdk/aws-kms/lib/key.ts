@@ -1,5 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct, IResource, RemovalPolicy, Resource, Stack } from '@aws-cdk/core';
+import { IResource, RemovalPolicy, Resource, Stack } from '@aws-cdk/core';
+import { IConstruct, Construct } from 'constructs';
 import { Alias } from './alias';
 import { CfnKey } from './kms.generated';
 
@@ -34,7 +35,7 @@ export interface IKey extends IResource {
    * defined (i.e. external key), the operation will fail. Otherwise, it will
    * no-op.
    */
-  addToResourcePolicy(statement: iam.PolicyStatement, allowNoOp?: boolean): void;
+  addToResourcePolicy(statement: iam.PolicyStatement, allowNoOp?: boolean): iam.AddToResourcePolicyResult;
 
   /**
    * Grant the indicated permissions on this key to the given principal
@@ -107,15 +108,22 @@ abstract class KeyBase extends Resource implements IKey {
    * defined (i.e. external key), the operation will fail. Otherwise, it will
    * no-op.
    */
-  public addToResourcePolicy(statement: iam.PolicyStatement, allowNoOp = true) {
+  public addToResourcePolicy(statement: iam.PolicyStatement, allowNoOp = true): iam.AddToResourcePolicyResult {
     const stack = Stack.of(this);
 
     if (!this.policy) {
-      if (allowNoOp) { return; }
+      if (allowNoOp) { return { statementAdded: false }; }
       throw new Error(`Unable to add statement to IAM resource policy for KMS key: ${JSON.stringify(stack.resolve(this.keyArn))}`);
     }
 
     this.policy.addStatements(statement);
+    return { statementAdded: true, policyDependable: this.policy };
+  }
+
+  protected validate(): string[] {
+    const errors = super.validate();
+    errors.push(...this.policy?.validateForResourcePolicy() || []);
+    return errors;
   }
 
   /**
@@ -200,11 +208,18 @@ abstract class KeyBase extends Resource implements IKey {
    *   undefined otherwise
    */
   private granteeStackDependsOnKeyStack(grantee: iam.IGrantable): string | undefined {
-    if (!(Construct.isConstruct(grantee))) {
+    const grantPrincipal = grantee.grantPrincipal;
+    if (!(grantPrincipal instanceof Construct)) {
       return undefined;
     }
+    // this logic should only apply to newly created
+    // (= not imported) resources
+    if (!this.principalIsANewlyCreatedResource(grantPrincipal)) {
+      return undefined;
+    }
+    // return undefined;
     const keyStack = Stack.of(this);
-    const granteeStack = Stack.of(grantee);
+    const granteeStack = Stack.of(grantPrincipal);
     if (keyStack === granteeStack) {
       return undefined;
     }
@@ -213,8 +228,16 @@ abstract class KeyBase extends Resource implements IKey {
       : undefined;
   }
 
+  private principalIsANewlyCreatedResource(principal: IConstruct): boolean {
+    // yes, this sucks
+    // this is just a temporary stopgap to stem the bleeding while we work on a proper fix
+    return principal instanceof iam.Role ||
+      principal instanceof iam.User ||
+      principal instanceof iam.Group;
+  }
+
   private isGranteeFromAnotherRegion(grantee: iam.IGrantable): boolean {
-    if (!(Construct.isConstruct(grantee))) {
+    if (!(grantee instanceof Construct)) {
       return false;
     }
     const bucketStack = Stack.of(this);
@@ -223,7 +246,7 @@ abstract class KeyBase extends Resource implements IKey {
   }
 
   private isGranteeFromAnotherAccount(grantee: iam.IGrantable): boolean {
-    if (!(Construct.isConstruct(grantee))) {
+    if (!(grantee instanceof Construct)) {
       return false;
     }
     const bucketStack = Stack.of(this);

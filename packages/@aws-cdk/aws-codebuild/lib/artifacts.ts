@@ -1,7 +1,10 @@
 import * as s3 from '@aws-cdk/aws-s3';
-import { Construct } from '@aws-cdk/core';
 import { CfnProject } from './codebuild.generated';
 import { IProject } from './project';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * The type returned from {@link IArtifacts#bind}.
@@ -35,7 +38,7 @@ export interface IArtifacts {
    * @param scope a root Construct that allows creating new Constructs
    * @param project the Project this Artifacts is used in
    */
-  bind(scope: Construct, project: IProject): ArtifactsConfig;
+  bind(scope: CoreConstruct, project: IProject): ArtifactsConfig;
 }
 
 /**
@@ -64,7 +67,7 @@ export abstract class Artifacts implements IArtifacts {
     this.identifier = props.identifier;
   }
 
-  public bind(_scope: Construct, _project: IProject): ArtifactsConfig {
+  public bind(_scope: CoreConstruct, _project: IProject): ArtifactsConfig {
     return {
       artifactsProperty: {
         artifactIdentifier: this.identifier,
@@ -87,6 +90,8 @@ export interface S3ArtifactsProps extends ArtifactsProps {
    * The path inside of the bucket for the build output .zip file or folder.
    * If a value is not specified, then build output will be stored at the root of the
    * bucket (or under the <build-id> directory if `includeBuildId` is set to true).
+   *
+   * @default the root of the bucket
    */
   readonly path?: string;
 
@@ -95,8 +100,13 @@ export interface S3ArtifactsProps extends ArtifactsProps {
    *
    * The full S3 object key will be "<path>/<build-id>/<name>" or
    * "<path>/<name>" depending on whether `includeBuildId` is set to true.
+   *
+   * If not set, `overrideArtifactName` will be set and the name from the
+   * buildspec will be used instead.
+   *
+   * @default undefined, and use the name from the buildspec
    */
-  readonly name: string;
+  readonly name?: string;
 
   /**
    * Indicates if the build ID should be included in the path. If this is set to true,
@@ -133,7 +143,7 @@ class S3Artifacts extends Artifacts {
     super(props);
   }
 
-  public bind(_scope: Construct, project: IProject): ArtifactsConfig {
+  public bind(_scope: CoreConstruct, project: IProject): ArtifactsConfig {
     this.props.bucket.grantReadWrite(project);
     const superConfig = super.bind(_scope, project);
     return {
@@ -142,9 +152,10 @@ class S3Artifacts extends Artifacts {
         location: this.props.bucket.bucketName,
         path: this.props.path,
         namespaceType: this.props.includeBuildId === false ? 'NONE' : 'BUILD_ID',
-        name: this.props.name,
+        name: this.props.name == null ? undefined : this.props.name,
         packaging: this.props.packageZip === false ? 'NONE' : 'ZIP',
         encryptionDisabled: this.props.encryption === false ? true : undefined,
+        overrideArtifactName: this.props.name == null ? true : undefined,
       },
     };
   }

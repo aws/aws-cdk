@@ -25,6 +25,27 @@ export function evaluateCFN(object: any, context: {[key: string]: string} = {}):
       }
       return context[key];
     },
+
+    'Fn::Sub'(argument: string | [string, Record<string, string>]) {
+      let template;
+      let placeholders: Record<string, string>;
+      if (Array.isArray(argument)) {
+        template = argument[0];
+        placeholders = evaluate(argument[1]);
+      } else {
+        template = argument;
+        placeholders = context;
+      }
+
+      if (typeof template !== 'string') {
+        throw new Error('The first argument to {Fn::Sub} must be a string literal (cannot be the result of an expression)');
+      }
+
+      return template.replace(/\$\{([a-zA-Z0-9.:-]*)\}/g, (_: string, key: string) => {
+        if (key in placeholders) { return placeholders[key]; }
+        throw new Error(`Unknown placeholder in Fn::Sub: ${key}`);
+      });
+    },
   };
 
   return evaluate(object);

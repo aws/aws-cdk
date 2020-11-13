@@ -24,19 +24,21 @@ export abstract class Action implements codepipeline.IAction {
 
   protected constructor(actionProperties: codepipeline.ActionProperties) {
     this.customerProvidedNamespace = actionProperties.variablesNamespace;
-    this.namespaceOrToken = Lazy.stringValue({ produce: () => {
+    this.namespaceOrToken = Lazy.stringValue({
+      produce: () => {
       // make sure the action was bound (= added to a pipeline)
-      if (this.actualNamespace !== undefined) {
-        return this.customerProvidedNamespace !== undefined
+        if (this.actualNamespace !== undefined) {
+          return this.customerProvidedNamespace !== undefined
           // if a customer passed a namespace explicitly, always use that
-          ? this.customerProvidedNamespace
+            ? this.customerProvidedNamespace
           // otherwise, only return a namespace if any variable was referenced
-          : (this.variableReferenced ? this.actualNamespace : undefined);
-      } else {
-        throw new Error(`Cannot reference variables of action '${this.actionProperties.actionName}', ` +
+            : (this.variableReferenced ? this.actualNamespace : undefined);
+        } else {
+          throw new Error(`Cannot reference variables of action '${this.actionProperties.actionName}', ` +
           'as that action was never added to a pipeline');
-      }
-    }});
+        }
+      },
+    });
     this.actionProperties = {
       ...actionProperties,
       variablesNamespace: this.namespaceOrToken,
@@ -61,12 +63,12 @@ export abstract class Action implements codepipeline.IAction {
     const rule = new events.Rule(this.scope, name, options);
     rule.addTarget(target);
     rule.addEventPattern({
-      detailType: [ 'CodePipeline Action Execution State Change' ],
-      source: [ 'aws.codepipeline' ],
-      resources: [ this.pipeline.pipelineArn ],
+      detailType: ['CodePipeline Action Execution State Change'],
+      source: ['aws.codepipeline'],
+      resources: [this.pipeline.pipelineArn],
       detail: {
-        stage: [ this.stage.stageName ],
-        action: [ this.actionProperties.actionName ],
+        stage: [this.stage.stageName],
+        action: [this.actionProperties.actionName],
       },
     });
     return rule;

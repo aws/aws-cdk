@@ -10,5 +10,5 @@
 <!--END STABILITY BANNER-->
 
 ```ts
-const dlm = require('@aws-cdk/aws-dlm');
+import * as dlm from '@aws-cdk/aws-dlm';
 ```

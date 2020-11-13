@@ -20,7 +20,7 @@ The CDK currently supports Amazon EC2, on-premise and AWS Lambda applications.
 To create a new CodeDeploy Application that deploys to EC2/on-premise instances:
 
 ```ts
-import codedeploy = require('@aws-cdk/aws-codedeploy');
+import * as codedeploy from '@aws-cdk/aws-codedeploy';
 
 const application = new codedeploy.ServerApplication(this, 'CodeDeployApplication', {
     applicationName: 'MyApplication', // optional property
@@ -106,7 +106,7 @@ with the `loadBalancer` property when creating a Deployment Group.
 With Classic Elastic Load Balancer, you provide it directly:
 
 ```ts
-import lb = require('@aws-cdk/aws-elasticloadbalancing');
+import * as lb from '@aws-cdk/aws-elasticloadbalancing';
 
 const elb = new lb.LoadBalancer(this, 'ELB', {
   // ...
@@ -125,7 +125,7 @@ With Application Load Balancer or Network Load Balancer,
 you provide a Target Group as the load balancer:
 
 ```ts
-import lbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
+import * as lbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 
 const alb = new lbv2.ApplicationLoadBalancer(this, 'ALB', {
   // ...
@@ -178,7 +178,7 @@ const deploymentConfig = codedeploy.ServerDeploymentConfig.fromServerDeploymentC
 To create a new CodeDeploy Application that deploys to a Lambda function:
 
 ```ts
-import codedeploy = require('@aws-cdk/aws-codedeploy');
+import * as codedeploy from '@aws-cdk/aws-codedeploy';
 
 const application = new codedeploy.LambdaApplication(this, 'CodeDeployApplication', {
     applicationName: 'MyApplication', // optional property
@@ -202,8 +202,8 @@ When you publish a new version of the function to your stack, CodeDeploy will se
 To create a new CodeDeploy Deployment Group that deploys to a Lambda function:
 
 ```ts
-import codedeploy = require('@aws-cdk/aws-codedeploy');
-import lambda = require('@aws-cdk/aws-lambda');
+import * as codedeploy from '@aws-cdk/aws-codedeploy';
+import * as lambda from '@aws-cdk/aws-lambda';
 
 const myApplication = new codedeploy.LambdaApplication(..);
 const func = new lambda.Function(..);
@@ -225,6 +225,36 @@ In order to deploy a new version of this function:
 2. Re-deploy the stack (this will trigger a deployment).
 3. Monitor the CodeDeploy deployment as traffic shifts between the versions.
 
+
+#### Create a custom Deployment Config
+
+CodeDeploy for Lambda comes with built-in configurations for traffic shifting.
+If you want to specify your own strategy,
+you can do so with the CustomLambdaDeploymentConfig construct,
+letting you specify precisely how fast a new function version is deployed.
+
+```ts
+const config = new codedeploy.CustomLambdaDeploymentConfig(stack, 'CustomConfig', {
+  type: codedeploy.CustomLambdaDeploymentConfigType.CANARY,
+  interval: Duration.minutes(1),
+  percentage: 5,
+});
+const deploymentGroup = new codedeploy.LambdaDeploymentGroup(stack, 'BlueGreenDeployment', {
+  application,
+  alias,
+  deploymentConfig: config,
+});
+```
+
+You can specify a custom name for your deployment config, but if you do you will not be able to update the interval/percentage through CDK.
+```ts
+const config = new codedeploy.CustomLambdaDeploymentConfig(stack, 'CustomConfig', {
+  type: codedeploy.CustomLambdaDeploymentConfigType.CANARY,
+  interval: Duration.minutes(1),
+  percentage: 5,
+  deploymentConfigName: 'MyDeploymentConfig',
+});
+```
 #### Rollbacks and Alarms
 
 CodeDeploy will roll back if the deployment fails. You can optionally trigger a rollback when one or more alarms are in a failed state:

@@ -5,13 +5,13 @@
  * have an AWS construct library.
  */
 
-import * as fs from 'fs-extra';
 import * as path from 'path';
+import * as fs from 'fs-extra';
 import * as cfnspec from '../lib';
 
 // don't be a prude:
-// tslint:disable:no-console
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable no-console */
+/* eslint-disable quote-props */
 
 async function main() {
   const root = path.join(__dirname, '..', '..');
@@ -107,6 +107,7 @@ async function main() {
       types: 'lib/index.d.ts',
       jsii: {
         outdir: 'dist',
+        projectReferences: true,
         targets: {
           dotnet: {
             namespace: dotnetPackage,
@@ -123,6 +124,10 @@ async function main() {
             },
           },
           python: {
+            classifiers: [
+              'Framework :: AWS CDK',
+              'Framework :: AWS CDK :: 1',
+            ],
             distName: pythonDistName,
             module: pythonModuleName,
           },
@@ -147,9 +152,14 @@ async function main() {
         'build+test+package': 'npm run build+test && npm run package',
         'build+test': 'npm run build && npm test',
         compat: 'cdk-compat',
+        gen: 'cfn2ts',
       },
       'cdk-build': {
         cloudformation: namespace,
+        jest: true,
+        env: {
+          AWSLINT_BASE_CONSTRUCT: 'true',
+        },
       },
       keywords: [
         'aws',
@@ -163,7 +173,6 @@ async function main() {
         url: 'https://aws.amazon.com',
         organization: true,
       },
-      jest: {},
       license: 'Apache-2.0',
       devDependencies: {
         '@aws-cdk/assert': version,
@@ -178,7 +187,7 @@ async function main() {
         '@aws-cdk/core': version,
       },
       engines: {
-        node: '>= 10.12.0',
+        node: '>= 10.13.0 <13 || >=13.7.0',
       },
       stability: 'experimental',
       maturity: 'cfn-only',
@@ -192,7 +201,6 @@ async function main() {
       '*.js.map',
       '*.d.ts',
       'tsconfig.json',
-      'tslint.json',
       'node_modules',
       '*.generated.ts',
       'dist',
@@ -206,6 +214,8 @@ async function main() {
       '*.snk',
       'nyc.config.js',
       '!.eslintrc.js',
+      '!jest.config.js',
+      'junit.xml',
     ]);
 
     await write('.npmignore', [
@@ -229,6 +239,14 @@ async function main() {
       '*.tsbuildinfo',
       '',
       'tsconfig.json',
+      '',
+      '.eslintrc.js',
+      'jest.config.js',
+      '',
+      '# exclude cdk artifacts',
+      '**/cdk.out',
+      'junit.xml',
+      'test/',
     ]);
 
     await write('lib/index.ts', [
@@ -264,8 +282,14 @@ async function main() {
       '```',
     ]);
 
-    await write('.eslintrc.json', [
-      "const baseConfig = require('../../../tools/cdk-build-tools/config/eslintrc');",
+    await write('.eslintrc.js', [
+      "const baseConfig = require('cdk-build-tools/config/eslintrc');",
+      "baseConfig.parserOptions.project = __dirname + '/tsconfig.json';",
+      'module.exports = baseConfig;',
+    ]);
+
+    await write('jest.config.js', [
+      "const baseConfig = require('cdk-build-tools/config/jest.config');",
       'module.exports = baseConfig;',
     ]);
 
@@ -274,19 +298,31 @@ async function main() {
       await fs.copy(path.join(templateDir, file), path.join(packagePath, file));
     }
 
-    // update decdk
-    const decdkPkgJsonPath = path.join(__dirname, '..', '..', '..', 'decdk', 'package.json');
-    const decdkPkg = JSON.parse(await fs.readFile(decdkPkgJsonPath, 'utf8'));
+    await addDependencyToMegaPackage(path.join('@aws-cdk', 'cloudformation-include'), packageName, version, ['dependencies', 'peerDependencies']);
+    await addDependencyToMegaPackage('aws-cdk-lib', packageName, version, ['devDependencies']);
+    await addDependencyToMegaPackage('monocdk', packageName, version, ['devDependencies']);
+    await addDependencyToMegaPackage('decdk', packageName, version, ['dependencies']);
+  }
+}
+
+/**
+ * A few of our packages (e.g., decdk, aws-cdk-lib) require a dependency on every service package.
+ * This automates adding the dependency (and peer dependency) to the package.json.
+ */
+async function addDependencyToMegaPackage(megaPackageName: string, packageName: string, version: string, dependencyTypes: string[]) {
+  const packageJsonPath = path.join(__dirname, '..', '..', '..', megaPackageName, 'package.json');
+  const packageJson = JSON.parse(await fs.readFile(packageJsonPath, 'utf8'));
+  dependencyTypes.forEach(dependencyType => {
     const unorderedDeps = {
-      ...decdkPkg.dependencies,
+      ...packageJson[dependencyType],
       [packageName]: version,
     };
-    decdkPkg.dependencies = {};
+    packageJson[dependencyType] = {};
     Object.keys(unorderedDeps).sort().forEach(k => {
-      decdkPkg.dependencies[k] = unorderedDeps[k];
+      packageJson[dependencyType][k] = unorderedDeps[k];
     });
-    await fs.writeFile(decdkPkgJsonPath, JSON.stringify(decdkPkg, null, 2) + '\n');
-  }
+  });
+  await fs.writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2) + '\n');
 }
 
 main().catch(e => {

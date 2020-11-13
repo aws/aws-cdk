@@ -1,4 +1,4 @@
-import { fromYAML, toYAML } from '../lib/serialize';
+import { deserializeStructure, toYAML } from '../lib/serialize';
 
 // Preferred quote of the YAML library
 const q = '"';
@@ -6,7 +6,7 @@ const q = '"';
 test('quote the word "ON"', () => {
   // NON NEGOTIABLE! If not quoted, will be interpreted as the boolean TRUE
 
-  // tslint:disable-next-line:no-console
+  // eslint-disable-next-line no-console
   const output = toYAML({
     notABoolean: 'ON',
   });
@@ -62,7 +62,7 @@ test('validate emission of very long lines', () => {
 
   const output = toYAML(template);
 
-  const parsed = fromYAML(output);
+  const parsed = deserializeStructure(output);
 
   expect(template).toEqual(parsed);
 });

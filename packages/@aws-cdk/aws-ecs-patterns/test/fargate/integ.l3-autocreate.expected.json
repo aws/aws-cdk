@@ -3,6 +3,12 @@
     "L3LB212FC0E0": {
       "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
       "Properties": {
+        "LoadBalancerAttributes": [
+          {
+            "Key": "deletion_protection.enabled",
+            "Value": "false"
+          }
+        ],
         "Scheme": "internet-facing",
         "SecurityGroups": [
           {
@@ -331,16 +337,16 @@
         "MapPublicIpOnLaunch": true,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "aws-ecs-integ/EcsDefaultClusterMnL3mNNYN/Vpc/PublicSubnet1"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Public"
           },
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Public"
+          },
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/EcsDefaultClusterMnL3mNNYN/Vpc/PublicSubnet1"
           }
         ]
       }
@@ -428,16 +434,16 @@
         "MapPublicIpOnLaunch": true,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "aws-ecs-integ/EcsDefaultClusterMnL3mNNYN/Vpc/PublicSubnet2"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Public"
           },
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Public"
+          },
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/EcsDefaultClusterMnL3mNNYN/Vpc/PublicSubnet2"
           }
         ]
       }
@@ -525,16 +531,16 @@
         "MapPublicIpOnLaunch": false,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "aws-ecs-integ/EcsDefaultClusterMnL3mNNYN/Vpc/PrivateSubnet1"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Private"
           },
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Private"
+          },
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/EcsDefaultClusterMnL3mNNYN/Vpc/PrivateSubnet1"
           }
         ]
       }
@@ -587,16 +593,16 @@
         "MapPublicIpOnLaunch": false,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "aws-ecs-integ/EcsDefaultClusterMnL3mNNYN/Vpc/PrivateSubnet2"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Private"
           },
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Private"
+          },
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/EcsDefaultClusterMnL3mNNYN/Vpc/PrivateSubnet2"
           }
         ]
       }
@@ -663,6 +669,12 @@
     "L3bLBB8FADA4E": {
       "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
       "Properties": {
+        "LoadBalancerAttributes": [
+          {
+            "Key": "deletion_protection.enabled",
+            "Value": "false"
+          }
+        ],
         "Scheme": "internet-facing",
         "SecurityGroups": [
           {

@@ -1,8 +1,8 @@
+import * as childProcess from 'child_process';
+import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
-import * as childProcess from 'child_process';
 import * as fs from 'fs-extra';
-import * as path from 'path';
 import { debug } from '../../logging';
 import { Configuration, PROJECT_CONFIG, USER_DEFAULTS } from '../../settings';
 import { versionNumber } from '../../version';
@@ -15,29 +15,33 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
   const context = config.context.all;
   await populateDefaultEnvironmentIfNeeded(aws, env);
 
-  const pathMetadata: boolean = config.settings.get(['pathMetadata']) ?? true;
+  const debugMode: boolean = config.settings.get(['debug']) ?? true;
+  if (debugMode) {
+    env.CDK_DEBUG = 'true';
+  }
 
+  const pathMetadata: boolean = config.settings.get(['pathMetadata']) ?? true;
   if (pathMetadata) {
     context[cxapi.PATH_METADATA_ENABLE_CONTEXT] = true;
   }
 
   const assetMetadata: boolean = config.settings.get(['assetMetadata']) ?? true;
-
   if (assetMetadata) {
     context[cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT] = true;
   }
 
   const versionReporting: boolean = config.settings.get(['versionReporting']) ?? true;
-
-  if (!versionReporting) {
-    context[cxapi.DISABLE_VERSION_REPORTING] = true;
-  }
+  if (versionReporting) { context[cxapi.ANALYTICS_REPORTING_ENABLED_CONTEXT] = true; }
+  // We need to keep on doing this for framework version from before this flag was deprecated.
+  if (!versionReporting) { context['aws:cdk:disable-version-reporting'] = true; }
 
   const stagingEnabled = config.settings.get(['staging']) ?? true;
-
   if (!stagingEnabled) {
     context[cxapi.DISABLE_ASSET_STAGING_CONTEXT] = true;
   }
+
+  const bundlingStacks = config.settings.get(['bundlingStacks']) ?? ['*'];
+  context[cxapi.BUNDLING_STACKS] = bundlingStacks;
 
   debug('context:', context);
   env[cxapi.CONTEXT_ENV] = JSON.stringify(context);
@@ -55,7 +59,7 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
 
   const commandLine = await guessExecutable(appToArray(app));
 
-  const outdir = config.settings.get([ 'output' ]);
+  const outdir = config.settings.get(['output']);
   if (!outdir) {
     throw new Error('unexpected: --output is required');
   }
@@ -81,7 +85,7 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
       if (error.message.includes(cxschema.VERSION_MISMATCH)) {
         // this means the CLI version is too old.
         // we instruct the user to upgrade.
-        throw new Error(`${error.message}.\nPlease upgrade your CLI in order to interact with this app.`);
+        throw new Error(`This CDK CLI is not compatible with the CDK library used by your application. Please upgrade the CLI to the latest version.\n(${error.message})`);
       }
       throw error;
     }
@@ -191,7 +195,7 @@ async function guessExecutable(commandLine: string[]) {
       return commandLine;
     }
 
-    // tslint:disable-next-line:no-bitwise
+    // eslint-disable-next-line no-bitwise
     const isExecutable = (fstat.mode & fs.constants.X_OK) !== 0;
     const isWindows = process.platform === 'win32';
 

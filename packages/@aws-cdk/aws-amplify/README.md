@@ -18,9 +18,9 @@ The AWS Amplify Console provides a Git-based workflow for deploying and hosting 
 ### Setting up an app with branches, custom rules and a domain
 To set up an Amplify Console app, define an `App`:
 ```ts
-import codebuild = require('@aws-cdk/aws-codebuild');
-import amplify = require('@aws-cdk/aws-amplify');
-import cdk = require('@aws-cdk/core');
+import * as codebuild from '@aws-cdk/aws-codebuild';
+import * as amplify from '@aws-cdk/aws-amplify';
+import * as cdk from '@aws-cdk/core';
 
 const amplifyApp = new amplify.App(this, 'MyApp', {
   sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
@@ -48,6 +48,17 @@ const amplifyApp = new amplify.App(this, 'MyApp', {
         files: '**/*'
       }
     }
+  })
+});
+```
+
+To connect your `App` to GitLab, use the `GitLabSourceCodeProvider`:
+```ts
+const amplifyApp = new amplify.App(this, 'MyApp', {
+  sourceCodeProvider: new amplify.GitLabSourceCodeProvider({
+    owner: '<user>',
+    repository: '<repo>',
+    oauthToken: cdk.SecretValue.secretsManager('my-gitlab-token')
   })
 });
 ```
@@ -83,9 +94,20 @@ amplifyApp.addCustomRule({
 });
 ```
 
+When working with a single page application (SPA), use the
+`CustomRule.SINGLE_PAGE_APPLICATION_REDIRECT` to set up a 200
+rewrite for all files to `index.html` except for the following
+file extensions: css, gif, ico, jpg, js, png, txt, svg, woff,
+ttf, map, json, webmanifest.
+
+```ts
+mySinglePageApp.addCustomRule(amplify.CustomRule.SINGLE_PAGE_APPLICATION_REDIRECT);
+```
+
 Add a domain and map sub domains to branches:
 ```ts
 const domain = amplifyApp.addDomain('example.com');
+domain.mapRoot(master); // map master branch to domain root
 domain.mapSubDomain(master, 'www');
 domain.mapSubDomain(dev); // sub domain prefix defaults to branch name
 ```
@@ -118,14 +140,17 @@ app.addBranch('feature/next', {
 });
 ```
 
-### Automatically creating branches
-Use the `autoBranchCreation` prop to automatically create new branches:
+### Automatically creating and deleting branches
+Use the `autoBranchCreation` and `autoBranchDeletion` props to control creation/deletion
+of branches:
+
 ```ts
 const amplifyApp = new amplify.App(this, 'MyApp', {
   repository: 'https://github.com/<user>/<repo>',
   oauthToken: cdk.SecretValue.secretsManager('my-github-token'),
-  autoBranchCreation: {
+  autoBranchCreation: { // Automatically connect branches that match a pattern set
     patterns: ['feature/*', 'test/*']
   }
+  autoBranchDeletion: true, // Automatically disconnect a branch when you delete a branch from your repository
 });
 ```

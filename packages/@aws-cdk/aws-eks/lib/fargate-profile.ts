@@ -1,10 +1,14 @@
-import { CustomResource } from '@aws-cdk/aws-cloudformation';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct, ITaggable, Lazy, TagManager, TagType } from '@aws-cdk/core';
+import { CustomResource, ITaggable, Lazy, TagManager, TagType } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Cluster } from './cluster';
 import { FARGATE_PROFILE_RESOURCE_TYPE } from './cluster-resource-handler/consts';
 import { ClusterResourceProvider } from './cluster-resource-provider';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Options for defining EKS Fargate Profiles.
@@ -109,7 +113,7 @@ export interface Selector {
  * eks.amazonaws.com/fargate-profile: profile_name. However, the pod must still
  * match a selector in that profile in order to be scheduled onto Fargate.
  */
-export class FargateProfile extends Construct implements ITaggable {
+export class FargateProfile extends CoreConstruct implements ITaggable {
 
   /**
    * The full Amazon Resource Name (ARN) of the Fargate profile.
@@ -130,15 +134,27 @@ export class FargateProfile extends Construct implements ITaggable {
    */
   public readonly tags: TagManager;
 
+  /**
+   * The pod execution role to use for pods that match the selectors in the
+   * Fargate profile. The pod execution role allows Fargate infrastructure to
+   * register with your cluster as a node, and it provides read access to Amazon
+   * ECR image repositories.
+   */
+  public readonly podExecutionRole: iam.IRole;
+
   constructor(scope: Construct, id: string, props: FargateProfileProps) {
     super(scope, id);
 
-    const provider = ClusterResourceProvider.getOrCreate(this);
-
-    const role = props.podExecutionRole ?? new iam.Role(this, 'PodExecutionRole', {
-      assumedBy: new iam.ServicePrincipal('eks-fargate-pods.amazonaws.com'),
-      managedPolicies: [ iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKSFargatePodExecutionRolePolicy') ],
+    const provider = ClusterResourceProvider.getOrCreate(this, {
+      adminRole: props.cluster.adminRole,
     });
+
+    this.podExecutionRole = props.podExecutionRole ?? new iam.Role(this, 'PodExecutionRole', {
+      assumedBy: new iam.ServicePrincipal('eks-fargate-pods.amazonaws.com'),
+      managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKSFargatePodExecutionRolePolicy')],
+    });
+
+    this.podExecutionRole.grantPassRole(props.cluster.adminRole);
 
     let subnets: string[] | undefined;
     if (props.vpc) {
@@ -157,14 +173,14 @@ export class FargateProfile extends Construct implements ITaggable {
     this.tags = new TagManager(TagType.MAP, 'AWS::EKS::FargateProfile');
 
     const resource = new CustomResource(this, 'Resource', {
-      provider: provider.provider,
+      serviceToken: provider.serviceToken,
       resourceType: FARGATE_PROFILE_RESOURCE_TYPE,
       properties: {
-        AssumeRoleArn: props.cluster._getKubectlCreationRoleArn(),
+        AssumeRoleArn: props.cluster.adminRole.roleArn,
         Config: {
           clusterName: props.cluster.clusterName,
           fargateProfileName: props.fargateProfileName,
-          podExecutionRoleArn: role.roleArn,
+          podExecutionRoleArn: this.podExecutionRole.roleArn,
           selectors: props.selectors,
           subnets,
           tags: Lazy.anyValue({ produce: () => this.tags.renderTags() }),
@@ -174,5 +190,24 @@ export class FargateProfile extends Construct implements ITaggable {
 
     this.fargateProfileArn = resource.getAttString('fargateProfileArn');
     this.fargateProfileName = resource.ref;
+
+    // Fargate profiles must be created sequentially. If other profile(s) already
+    // exist on the same cluster, create a dependency to force sequential creation.
+    const clusterFargateProfiles = props.cluster._attachFargateProfile(this);
+    if (clusterFargateProfiles.length > 1) {
+      const previousProfile = clusterFargateProfiles[clusterFargateProfiles.length - 2];
+      resource.node.addDependency(previousProfile);
+    }
+
+    // map the fargate pod execution role to the relevant groups in rbac
+    // see https://github.com/aws/aws-cdk/issues/7981
+    props.cluster.awsAuth.addRoleMapping(this.podExecutionRole, {
+      username: 'system:node:{{SessionName}}',
+      groups: [
+        'system:bootstrappers',
+        'system:nodes',
+        'system:node-proxier',
+      ],
+    });
   }
 }

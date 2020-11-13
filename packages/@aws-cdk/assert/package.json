@@ -14,14 +14,6 @@
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test"
   },
-  "jest": {
-    "coverageThreshold": {
-      "global": {
-        "statements": 75,
-        "branches": 65
-      }
-    }
-  },
   "author": {
     "name": "Amazon Web Services",
     "url": "https://aws.amazon.com",
@@ -29,23 +21,23 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/jest": "^25.2.1",
+    "@types/jest": "^26.0.15",
     "cdk-build-tools": "0.0.0",
-    "jest": "^25.5.1",
+    "jest": "^26.6.3",
     "pkglint": "0.0.0",
-    "ts-jest": "^25.4.0"
+    "ts-jest": "^26.4.4"
   },
   "dependencies": {
+    "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/cloudformation-diff": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
-    "@aws-cdk/cloud-assembly-schema": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.2.0"
   },
   "peerDependencies": {
     "@aws-cdk/core": "0.0.0",
-    "jest": "^25.5.1",
-    "constructs": "^3.0.2"
+    "constructs": "^3.2.0",
+    "jest": "^26.6.3"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",
@@ -58,8 +50,11 @@
   ],
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 10.12.0"
+    "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "stability": "experimental",
-  "maturity": "experimental"
+  "maturity": "experimental",
+  "cdk-build": {
+    "jest": true
+  }
 }

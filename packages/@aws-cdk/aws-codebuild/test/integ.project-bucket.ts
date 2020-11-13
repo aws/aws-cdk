@@ -19,6 +19,7 @@ new codebuild.Project(stack, 'MyProject', {
   environment: {
     computeType: codebuild.ComputeType.LARGE,
   },
+  grantReportGroupPermissions: false,
 });
 
 app.synth();

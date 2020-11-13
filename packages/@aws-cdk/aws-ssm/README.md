@@ -21,7 +21,7 @@ $ npm i @aws-cdk/aws-ssm
 Import it into your code:
 
 ```ts
-import ssm = require('@aws-cdk/aws-ssm');
+import * as ssm from '@aws-cdk/aws-ssm';
 ```
 
 ### Using existing SSM Parameters in your CDK app

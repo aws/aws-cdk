@@ -1,12 +1,11 @@
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
-import { Construct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 /**
  * The properties of a scalable attribute representing task count.
  */
-// tslint:disable-next-line:no-empty-interface
 export interface ScalableTaskCountProps extends appscaling.BaseScalableAttributeProps {
 
 }

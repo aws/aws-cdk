@@ -1,4 +1,6 @@
-import { App, Construct, RemovalPolicy, Stack, StackProps } from '@aws-cdk/core';
+/// !cdk-integ pragma:ignore-assets
+import { App, RemovalPolicy, Stack, StackProps } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as dynamodb from '../lib';
 
 class TestStack extends Stack {

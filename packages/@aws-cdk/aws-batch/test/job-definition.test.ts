@@ -26,7 +26,7 @@ describe('Batch Job Definition', () => {
     jobDefProps = {
       jobDefinitionName: 'test-job',
       container: {
-        command: [ 'echo "Hello World"' ],
+        command: ['echo "Hello World"'],
         environment: {
           foo: 'bar',
         },
@@ -78,6 +78,7 @@ describe('Batch Job Definition', () => {
         MountPoints: [],
         Privileged: jobDefProps.container.privileged,
         ReadonlyRootFilesystem: jobDefProps.container.readOnly,
+        ResourceRequirements: [{ Type: 'GPU', Value: String(jobDefProps.container.gpuCount) }],
         Ulimits: [],
         User: jobDefProps.container.user,
         Vcpus: jobDefProps.container.vcpus,
@@ -198,5 +199,15 @@ describe('Batch Job Definition', () => {
     // THEN
     expect(importedJob.jobDefinitionName).toEqual('job-def-name:1');
     expect(importedJob.jobDefinitionArn).toEqual('arn:aws:batch:us-east-1:123456789012:job-definition/job-def-name:1');
+  });
+
+  test('can be imported from a name', () => {
+    // WHEN
+    const importedJob = batch.JobDefinition.fromJobDefinitionName(stack, 'job-def-clone', 'job-def-name');
+
+    // THEN
+    expect(importedJob.jobDefinitionName).toEqual('job-def-name');
+    expect(importedJob.jobDefinitionArn)
+      .toEqual('arn:${Token[AWS.Partition.3]}:batch:${Token[AWS.Region.4]}:${Token[AWS.AccountId.0]}:job-definition/job-def-name');
   });
 });

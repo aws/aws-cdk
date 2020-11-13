@@ -1,10 +1,16 @@
-import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-import * as cdk from '@aws-cdk/core';
 import * as net from 'net';
-import { CfnCustomerGateway, CfnVPNConnection, CfnVPNConnectionRoute } from './ec2.generated';
-import { IVpc } from './vpc';
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import { IResource, Resource, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
+import {
+  CfnCustomerGateway,
+  CfnVPNConnection,
+  CfnVPNConnectionRoute,
+  CfnVPNGateway,
+} from './ec2.generated';
+import { IVpc, SubnetSelection } from './vpc';
 
-export interface IVpnConnection extends cdk.IResource {
+export interface IVpnConnection extends IResource {
   /**
    * The id of the VPN connection.
    */
@@ -24,6 +30,17 @@ export interface IVpnConnection extends cdk.IResource {
    * The ASN of the customer gateway.
    */
   readonly customerGatewayAsn: number;
+}
+
+/**
+ * The virtual private gateway interface
+ */
+export interface IVpnGateway extends IResource {
+
+  /**
+   * The virtual private gateway Id
+   */
+  readonly gatewayId: string
 }
 
 export interface VpnTunnelOption {
@@ -75,6 +92,34 @@ export interface VpnConnectionOptions {
   readonly tunnelOptions?: VpnTunnelOption[];
 }
 
+/**
+ * The VpnGateway Properties
+ */
+export interface VpnGatewayProps {
+
+  /**
+   * Default type ipsec.1
+   */
+  readonly type: string;
+
+  /**
+   * Explicitely specify an Asn or let aws pick an Asn for you.
+   * @default 65000
+   */
+  readonly amazonSideAsn?: number;
+}
+
+/**
+ * Options for the Vpc.enableVpnGateway() method
+ */
+export interface EnableVpnGatewayOptions extends VpnGatewayProps {
+  /**
+   * Provide an array of subnets where the route propagation shoud be added.
+   * @default noPropagation
+   */
+  readonly vpnRoutePropagation?: SubnetSelection[]
+}
+
 export interface VpnConnectionProps extends VpnConnectionOptions {
   /**
    * The VPC to connect to.
@@ -99,11 +144,33 @@ export enum VpnConnectionType {
 }
 
 /**
+ * The VPN Gateway that shall be added to the VPC
+ *
+ * @resource AWS::EC2::VPNGateway
+ */
+export class VpnGateway extends Resource implements IVpnGateway {
+
+  /**
+   * The virtual private gateway Id
+   */
+  public readonly gatewayId: string;
+
+  constructor(scope: Construct, id: string, props: VpnGatewayProps) {
+    super(scope, id);
+
+    // This is 'Default' instead of 'Resource', because using 'Default' will generate
+    // a logical ID for a VpnGateway which is exactly the same as the logical ID that used
+    // to be created for the CfnVPNGateway (and 'Resource' would not do that).
+    const vpnGW = new CfnVPNGateway(this, 'Default', props);
+    this.gatewayId = vpnGW.ref;
+  }
+}
+/**
  * Define a VPN Connection
  *
  * @resource AWS::EC2::VPNConnection
  */
-export class VpnConnection extends cdk.Resource implements IVpnConnection {
+export class VpnConnection extends Resource implements IVpnConnection {
   /**
    * Return the given named metric for all VPN connections in the account/region.
    */
@@ -147,11 +214,14 @@ export class VpnConnection extends cdk.Resource implements IVpnConnection {
   public readonly customerGatewayIp: string;
   public readonly customerGatewayAsn: number;
 
-  constructor(scope: cdk.Construct, id: string, props: VpnConnectionProps) {
+  constructor(scope: Construct, id: string, props: VpnConnectionProps) {
     super(scope, id);
 
     if (!props.vpc.vpnGatewayId) {
-      throw new Error('Cannot create a VPN connection when VPC has no VPN gateway.');
+      props.vpc.enableVpnGateway({
+        type: 'ipsec.1',
+        amazonSideAsn: props.asn,
+      });
     }
 
     if (!net.isIPv4(props.ip)) {
@@ -182,10 +252,10 @@ export class VpnConnection extends cdk.Resource implements IVpnConnection {
       }
 
       props.tunnelOptions.forEach((options, index) => {
-        if (options.preSharedKey && !/^[a-zA-Z1-9._][a-zA-Z\d._]{7,63}$/.test(options.preSharedKey)) {
-          // tslint:disable:max-line-length
+        if (options.preSharedKey && !Token.isUnresolved(options.preSharedKey) && !/^[a-zA-Z1-9._][a-zA-Z\d._]{7,63}$/.test(options.preSharedKey)) {
+          /* eslint-disable max-len */
           throw new Error(`The \`preSharedKey\` ${options.preSharedKey} for tunnel ${index + 1} is invalid. Allowed characters are alphanumeric characters and ._. Must be between 8 and 64 characters in length and cannot start with zero (0).`);
-          // tslint:enable:max-line-length
+          /* eslint-enable max-len */
         }
 
         if (options.tunnelInsideCidr) {
@@ -194,9 +264,8 @@ export class VpnConnection extends cdk.Resource implements IVpnConnection {
           }
 
           if (!/^169\.254\.\d{1,3}\.\d{1,3}\/30$/.test(options.tunnelInsideCidr)) {
-            // tslint:disable:max-line-length
+            /* eslint-disable-next-line max-len */
             throw new Error(`The \`tunnelInsideCidr\` ${options.tunnelInsideCidr} for tunnel ${index + 1} is not a size /30 CIDR block from the 169.254.0.0/16 range.`);
-            // tslint:enable:max-line-length
           }
         }
       });

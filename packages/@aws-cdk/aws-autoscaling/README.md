@@ -1,4 +1,5 @@
 ## Amazon EC2 Auto Scaling Construct Library
+
 <!--BEGIN STABILITY BANNER-->
 ---
 
@@ -11,16 +12,14 @@
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
-### Fleet
-
 ### Auto Scaling Group
 
 An `AutoScalingGroup` represents a number of instances on which you run your code. You
 pick the size of the fleet, the instance type and the OS image:
 
 ```ts
-import autoscaling = require('@aws-cdk/aws-autoscaling');
-import ec2 = require('@aws-cdk/aws-ec2');
+import * as autoscaling from '@aws-cdk/aws-autoscaling';
+import * as ec2 from '@aws-cdk/aws-ec2';
 
 new autoscaling.AutoScalingGroup(this, 'ASG', {
   vpc,
@@ -29,9 +28,20 @@ new autoscaling.AutoScalingGroup(this, 'ASG', {
 });
 ```
 
-> NOTE: AutoScalingGroup has an property called `allowAllOutbound` (allowing the instances to contact the
-> internet) which is set to `true` by default. Be sure to set this to `false`  if you don't want
-> your instances to be able to start arbitrary connections.
+NOTE: AutoScalingGroup has an property called `allowAllOutbound` (allowing the instances to contact the
+internet) which is set to `true` by default. Be sure to set this to `false`  if you don't want
+your instances to be able to start arbitrary connections. Alternatively, you can specify an existing security
+group to attach to the instances that are launched, rather than have the group create a new one.
+
+```ts
+const mySecurityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', {...});
+new autoscaling.AutoScalingGroup(this, 'ASG', {
+  vpc,
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO),
+  machineImage: new ec2.AmazonLinuxImage(),
+  securityGroup: mySecurityGroup,
+});
+```
 
 ### Machine Images (AMIs)
 
@@ -213,10 +223,140 @@ autoScalingGroup.scaleOnSchedule('AllowDownscalingAtNight', {
 });
 ```
 
+### Configuring Instances using CloudFormation Init
+
+It is possible to use the CloudFormation Init mechanism to configure the
+instances in the AutoScalingGroup. You can write files to it, run commands,
+start services, etc. See the documentation of
+[AWS::CloudFormation::Init](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-init.html)
+and the documentation of CDK's `aws-ec2` library for more information.
+
+When you specify a CloudFormation Init configuration for an AutoScalingGroup:
+
+* you *must* also specify `signals` to configure how long CloudFormation
+  should wait for the instances to successfully configure themselves.
+* you *should* also specify an `updatePolicy` to configure how instances
+  should be updated when the AutoScalingGroup is updated (for example,
+  when the AMI is updated). If you don't specify an update policy, a *rolling
+  update* is chosen by default.
+
+Here's an example of using CloudFormation Init to write a file to the
+instance hosts on startup:
+
+```ts
+new autoscaling.AutoScalingGroup(this, 'ASG', {
+  // ...
+
+  init: ec2.CloudFormationInit.fromElements(
+    ec2.InitFile.fromString('/etc/my_instance', 'This got written during instance startup'),
+  ),
+  signals: autoscaling.Signals.waitForAll({
+    timeout: Duration.minutes(10),
+  }),
+});
+```
+
+### Signals
+
+In normal operation, CloudFormation will send a Create or Update command to
+an AutoScalingGroup and proceed with the rest of the deployment without waiting
+for the *instances in the AutoScalingGroup*.
+
+Configure `signals` to tell CloudFormation to wait for a specific number of
+instances in the AutoScalingGroup to have been started (or failed to start)
+before moving on. An instance is supposed to execute the
+[`cfn-signal`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-signal.html)
+program as part of its startup to indicate whether it was started
+successfully or not.
+
+If you use CloudFormation Init support (described in the previous section),
+the appropriate call to `cfn-signal` is automatically added to the
+AutoScalingGroup's UserData. If you don't use the `signals` directly, you are
+responsible for adding such a call yourself.
+
+The following type of `Signals` are available:
+
+* `Signals.waitForAll([options])`: wait for all of `desiredCapacity` amount of instances
+  to have started (recommended).
+* `Signals.waitForMinCapacity([options])`: wait for a `minCapacity` amount of instances
+  to have started (use this if waiting for all instances takes too long and you are happy
+  with a minimum count of healthy hosts).
+* `Signals.waitForCount(count, [options])`: wait for a specific amount of instances to have
+  started.
+
+There are two `options` you can configure:
+
+* `timeout`: maximum time a host startup is allowed to take. If a host does not report
+  success within this time, it is considered a failure. Default is 5 minutes.
+* `minSuccessPercentage`: percentage of hosts that needs to be healthy in order for the
+  update to succeed. If you set this value lower than 100, some percentage of hosts may
+  report failure, while still considering the deployment a success. Default is 100%.
+
+### Update Policy
+
+The *update policy* describes what should happen to running instances when the definition
+of the AutoScalingGroup is changed. For example, if you add a command to the UserData
+of an AutoScalingGroup, do the existing instances get replaced with new instances that
+have executed the new UserData? Or do the "old" instances just keep on running?
+
+It is recommended to always use an update policy, otherwise the current state of your
+instances also depends the previous state of your instances, rather than just on your
+source code. This degrades the reproducibility of your deployments.
+
+The following update policies are available:
+
+* `UpdatePolicy.none()`: leave existing instances alone (not recommended).
+* `UpdatePolicy.rollingUpdate([options])`: progressively replace the existing
+  instances with new instances, in small batches. At any point in time,
+  roughly the same amount of total instances will be running. If the deployment
+  needs to be rolled back, the fresh instances will be replaced with the "old"
+  configuration again.
+* `UpdatePolicy.replacingUpdate([options])`: build a completely fresh copy
+  of the new AutoScalingGroup next to the old one. Once the AutoScalingGroup
+  has been successfully created (and the instances started, if `signals` is
+  configured on the AutoScalingGroup), the old AutoScalingGroup is deleted.
+  If the deployment needs to be rolled back, the new AutoScalingGroup is
+  deleted and the old one is left unchanged.
+
 ### Allowing Connections
 
 See the documentation of the `@aws-cdk/aws-ec2` package for more information
 about allowing connections between resources backed by instances.
+
+### Max Instance Lifetime
+
+To enable the max instance lifetime support, specify `maxInstanceLifetime` property
+for the `AutoscalingGroup` resource. The value must be between 7 and 365 days(inclusive).
+To clear a previously set value, leave this property undefined.
+
+### Instance Monitoring
+
+To disable detailed instance monitoring, specify `instanceMonitoring` property
+for the `AutoscalingGroup` resource as `Monitoring.BASIC`. Otherwise detailed monitoring
+will be enabled.
+
+### Monitoring Group Metrics
+
+Group metrics are used to monitor group level properties; they describe the group rather than any of its instances (e.g GroupMaxSize, the group maximum size). To enable group metrics monitoring, use the `groupMetrics` property.
+All group metrics are reported in a granularity of 1 minute at no additional charge.
+
+See [EC2 docs](https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-instance-monitoring.html#as-group-metrics) for a list of all available group metrics.
+
+To enable group metrics monitoring using the `groupMetrics` property:
+
+```ts
+// Enable monitoring of all group metrics
+new autoscaling.AutoScalingGroup(stack, 'ASG', {
+  groupMetrics: [GroupMetrics.all()],
+  // ...
+});
+
+// Enable monitoring for a subset of group metrics
+new autoscaling.AutoScalingGroup(stack, 'ASG', {
+  groupMetrics: [new autoscaling.GroupMetrics(GroupMetric.MIN_SIZE, GroupMetric.MAX_SIZE)],
+  // ...
+});
+```
 
 ### Future work
 

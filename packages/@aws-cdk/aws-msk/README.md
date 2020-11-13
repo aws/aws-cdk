@@ -12,5 +12,5 @@
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
 ```ts
-import msk = require('@aws-cdk/aws-msk');
+import * as msk from '@aws-cdk/aws-msk';
 ```

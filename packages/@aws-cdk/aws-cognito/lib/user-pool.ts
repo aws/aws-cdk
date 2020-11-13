@@ -1,10 +1,15 @@
 import { IRole, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Construct, Duration, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
+import { Duration, IResource, Lazy, Names, Resource, Stack, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
+import { toASCII as punycodeEncode } from 'punycode/';
 import { CfnUserPool } from './cognito.generated';
-import { ICustomAttribute, RequiredAttributes } from './user-pool-attr';
-import { IUserPoolClient, UserPoolClient, UserPoolClientOptions } from './user-pool-client';
+import { StandardAttributeNames } from './private/attr-names';
+import { ICustomAttribute, StandardAttribute, StandardAttributes } from './user-pool-attr';
+import { UserPoolClient, UserPoolClientOptions } from './user-pool-client';
 import { UserPoolDomain, UserPoolDomainOptions } from './user-pool-domain';
+import { IUserPoolIdentityProvider } from './user-pool-idp';
+import { UserPoolResourceServer, UserPoolResourceServerOptions } from './user-pool-resource-server';
 
 /**
  * The different ways in which users of this pool can sign up or sign in.
@@ -243,8 +248,8 @@ export interface UserVerificationConfig {
    * See https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pool-settings-message-templates.html to
    * learn more about message templates.
    *
-   * @default - 'Hello {username}, Your verification code is {####}' if VerificationEmailStyle.CODE is chosen,
-   * 'Hello {username}, Verify your account by clicking on {##Verify Email##}' if VerificationEmailStyle.LINK is chosen.
+   * @default - 'The verification code to your new account is {####}' if VerificationEmailStyle.CODE is chosen,
+   * 'Verify your account by clicking on {##Verify Email##}' if VerificationEmailStyle.LINK is chosen.
    */
   readonly emailBody?: string;
 
@@ -384,6 +389,47 @@ export interface EmailSettings {
 }
 
 /**
+ * How will a user be able to recover their account?
+ *
+ * When a user forgets their password, they can have a code sent to their verified email or verified phone to recover their account.
+ * You can choose the preferred way to send codes below.
+ * We recommend not allowing phone to be used for both password resets and multi-factor authentication (MFA).
+ *
+ * @see https://docs.aws.amazon.com/cognito/latest/developerguide/how-to-recover-a-user-account.html
+ */
+export enum AccountRecovery {
+  /**
+   * Email if available, otherwise phone, but don’t allow a user to reset their password via phone if they are also using it for MFA
+   */
+  EMAIL_AND_PHONE_WITHOUT_MFA,
+
+  /**
+   * Phone if available, otherwise email, but don’t allow a user to reset their password via phone if they are also using it for MFA
+   */
+  PHONE_WITHOUT_MFA_AND_EMAIL,
+
+  /**
+   * Email only
+   */
+  EMAIL_ONLY,
+
+  /**
+   * Phone only, but don’t allow a user to reset their password via phone if they are also using it for MFA
+   */
+  PHONE_ONLY_WITHOUT_MFA,
+
+  /**
+   * (Not Recommended) Phone if available, otherwise email, and do allow a user to reset their password via phone if they are also using it for MFA.
+   */
+  PHONE_AND_EMAIL,
+
+  /**
+   * None – users will have to contact an administrator to reset their passwords
+   */
+  NONE,
+}
+
+/**
  * Props for the UserPool construct
  */
 export interface UserPoolProps {
@@ -429,6 +475,13 @@ export interface UserPoolProps {
   readonly smsRoleExternalId?: string;
 
   /**
+   * Setting this would explicitly enable or disable SMS role creation.
+   * When left unspecified, CDK will determine based on other properties if a role is needed or not.
+   * @default - CDK will determine based on other properties of the user pool if an SMS role should be created or not.
+   */
+  readonly enableSmsRole?: boolean;
+
+  /**
    * Methods in which a user registers or signs in to a user pool.
    * Allows either username with aliases OR sign in with email, phone, or both.
    *
@@ -456,9 +509,9 @@ export interface UserPoolProps {
    * The set of attributes that are required for every user in the user pool.
    * Read more on attributes here - https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html
    *
-   * @default - No attributes are required.
+   * @default - All standard attributes are optional and mutable.
    */
-  readonly requiredAttributes?: RequiredAttributes;
+  readonly standardAttributes?: StandardAttributes;
 
   /**
    * Define a set of custom attributes that can be configured for each user in the user pool.
@@ -500,6 +553,20 @@ export interface UserPoolProps {
    * @default - No Lambda triggers.
    */
   readonly lambdaTriggers?: UserPoolTriggers;
+
+  /**
+   * Whether sign-in aliases should be evaluated with case sensitivity.
+   * For example, when this option is set to false, users will be able to sign in using either `MyUsername` or `myusername`.
+   * @default true
+   */
+  readonly signInCaseSensitive?: boolean;
+
+  /**
+   * How will a user be able to recover their account?
+   *
+   * @default AccountRecovery.PHONE_WITHOUT_MFA_AND_EMAIL
+   */
+  readonly accountRecovery?: AccountRecovery;
 }
 
 /**
@@ -519,33 +586,80 @@ export interface IUserPool extends IResource {
   readonly userPoolArn: string;
 
   /**
-   * Create a user pool client.
+   * Get all identity providers registered with this user pool.
    */
-  addClient(id: string, options?: UserPoolClientOptions): IUserPoolClient;
+  readonly identityProviders: IUserPoolIdentityProvider[];
+
+  /**
+   * Add a new app client to this user pool.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-client-apps.html
+   */
+  addClient(id: string, options?: UserPoolClientOptions): UserPoolClient;
+
+  /**
+   * Associate a domain to this user pool.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-assign-domain.html
+   */
+  addDomain(id: string, options: UserPoolDomainOptions): UserPoolDomain;
+
+  /**
+   * Add a new resource server to this user pool.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-resource-servers.html
+   */
+  addResourceServer(id: string, options: UserPoolResourceServerOptions): UserPoolResourceServer;
+
+  /**
+   * Register an identity provider with this user pool.
+   */
+  registerIdentityProvider(provider: IUserPoolIdentityProvider): void;
+}
+
+abstract class UserPoolBase extends Resource implements IUserPool {
+  public abstract readonly userPoolId: string;
+  public abstract readonly userPoolArn: string;
+  public readonly identityProviders: IUserPoolIdentityProvider[] = [];
+
+  public addClient(id: string, options?: UserPoolClientOptions): UserPoolClient {
+    return new UserPoolClient(this, id, {
+      userPool: this,
+      ...options,
+    });
+  }
+
+  public addDomain(id: string, options: UserPoolDomainOptions): UserPoolDomain {
+    return new UserPoolDomain(this, id, {
+      userPool: this,
+      ...options,
+    });
+  }
+
+  public addResourceServer(id: string, options: UserPoolResourceServerOptions): UserPoolResourceServer {
+    return new UserPoolResourceServer(this, id, {
+      userPool: this,
+      ...options,
+    });
+  }
+
+  public registerIdentityProvider(provider: IUserPoolIdentityProvider) {
+    this.identityProviders.push(provider);
+  }
 }
 
 /**
  * Define a Cognito User Pool
  */
-export class UserPool extends Resource implements IUserPool {
+export class UserPool extends UserPoolBase {
   /**
    * Import an existing user pool based on its id.
    */
   public static fromUserPoolId(scope: Construct, id: string, userPoolId: string): IUserPool {
-    class Import extends Resource implements IUserPool {
+    class Import extends UserPoolBase {
       public readonly userPoolId = userPoolId;
       public readonly userPoolArn = Stack.of(this).formatArn({
         service: 'cognito-idp',
         resource: 'userpool',
         resourceName: userPoolId,
       });
-
-      public addClient(clientId: string, options?: UserPoolClientOptions): IUserPoolClient {
-        return new UserPoolClient(this, clientId, {
-          userPool: this,
-          ...options,
-        });
-      }
     }
     return new Import(scope, id);
   }
@@ -579,7 +693,7 @@ export class UserPool extends Resource implements IUserPool {
    */
   public readonly userPoolProviderUrl: string;
 
-  private triggers: CfnUserPool.LambdaConfigProperty = { };
+  private triggers: CfnUserPool.LambdaConfigProperty = {};
 
   constructor(scope: Construct, id: string, props: UserPoolProps = {}) {
     super(scope, id);
@@ -634,9 +748,13 @@ export class UserPool extends Resource implements IUserPool {
       enabledMfas: this.mfaConfiguration(props),
       policies: passwordPolicy !== undefined ? { passwordPolicy } : undefined,
       emailConfiguration: undefinedIfNoKeys({
-        from: props.emailSettings?.from,
-        replyToEmailAddress: props.emailSettings?.replyTo,
+        from: encodePuny(props.emailSettings?.from),
+        replyToEmailAddress: encodePuny(props.emailSettings?.replyTo),
       }),
+      usernameConfiguration: undefinedIfNoKeys({
+        caseSensitive: props.signInCaseSensitive,
+      }),
+      accountRecoverySetting: this.accountRecovery(props),
     });
 
     this.userPoolId = userPool.ref;
@@ -659,28 +777,6 @@ export class UserPool extends Resource implements IUserPool {
     (this.triggers as any)[operation.operationName] = fn.functionArn;
   }
 
-  /**
-   * Add a new app client to this user pool.
-   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-client-apps.html
-   */
-  public addClient(id: string, options?: UserPoolClientOptions): IUserPoolClient {
-    return new UserPoolClient(this, id, {
-      userPool: this,
-      ...options,
-    });
-  }
-
-  /**
-   * Associate a domain to this user pool.
-   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-assign-domain.html
-   */
-  public addDomain(id: string, options: UserPoolDomainOptions): UserPoolDomain {
-    return new UserPoolDomain(this, id, {
-      userPool: this,
-      ...options,
-    });
-  }
-
   private addLambdaPermission(fn: lambda.IFunction, name: string): void {
     const capitalize = name.charAt(0).toUpperCase() + name.slice(1);
     fn.addPermission(`${capitalize}Cognito`, {
@@ -690,7 +786,6 @@ export class UserPool extends Resource implements IUserPool {
   }
 
   private verificationMessageConfiguration(props: UserPoolProps): CfnUserPool.VerificationMessageTemplateProperty {
-    const USERNAME_TEMPLATE = '{username}';
     const CODE_TEMPLATE = '{####}';
     const VERIFY_EMAIL_TEMPLATE = '{##Verify Email##}';
 
@@ -699,11 +794,11 @@ export class UserPool extends Resource implements IUserPool {
     const smsMessage = props.userVerification?.smsMessage ?? `The verification code to your new account is ${CODE_TEMPLATE}`;
 
     if (emailStyle === VerificationEmailStyle.CODE) {
-      const emailMessage = props.userVerification?.emailBody ?? `Hello ${USERNAME_TEMPLATE}, Your verification code is ${CODE_TEMPLATE}`;
-      if (emailMessage.indexOf(CODE_TEMPLATE) < 0) {
+      const emailMessage = props.userVerification?.emailBody ?? `The verification code to your new account is ${CODE_TEMPLATE}`;
+      if (!Token.isUnresolved(emailMessage) && emailMessage.indexOf(CODE_TEMPLATE) < 0) {
         throw new Error(`Verification email body must contain the template string '${CODE_TEMPLATE}'`);
       }
-      if (smsMessage.indexOf(CODE_TEMPLATE) < 0) {
+      if (!Token.isUnresolved(smsMessage) && smsMessage.indexOf(CODE_TEMPLATE) < 0) {
         throw new Error(`SMS message must contain the template string '${CODE_TEMPLATE}'`);
       }
       return {
@@ -714,8 +809,8 @@ export class UserPool extends Resource implements IUserPool {
       };
     } else {
       const emailMessage = props.userVerification?.emailBody ??
-        `Hello ${USERNAME_TEMPLATE}, Verify your account by clicking on ${VERIFY_EMAIL_TEMPLATE}`;
-      if (emailMessage.indexOf(VERIFY_EMAIL_TEMPLATE) < 0) {
+        `Verify your account by clicking on ${VERIFY_EMAIL_TEMPLATE}`;
+      if (!Token.isUnresolved(emailMessage) && emailMessage.indexOf(VERIFY_EMAIL_TEMPLATE) < 0) {
         throw new Error(`Verification email body must contain the template string '${VERIFY_EMAIL_TEMPLATE}'`);
       }
       return {
@@ -740,64 +835,79 @@ export class UserPool extends Resource implements IUserPool {
 
     if (signIn.username) {
       aliasAttrs = [];
-      if (signIn.email) { aliasAttrs.push(StandardAttribute.EMAIL); }
-      if (signIn.phone) { aliasAttrs.push(StandardAttribute.PHONE_NUMBER); }
-      if (signIn.preferredUsername) { aliasAttrs.push(StandardAttribute.PREFERRED_USERNAME); }
+      if (signIn.email) { aliasAttrs.push(StandardAttributeNames.email); }
+      if (signIn.phone) { aliasAttrs.push(StandardAttributeNames.phoneNumber); }
+      if (signIn.preferredUsername) { aliasAttrs.push(StandardAttributeNames.preferredUsername); }
       if (aliasAttrs.length === 0) { aliasAttrs = undefined; }
     } else {
       usernameAttrs = [];
-      if (signIn.email) { usernameAttrs.push(StandardAttribute.EMAIL); }
-      if (signIn.phone) { usernameAttrs.push(StandardAttribute.PHONE_NUMBER); }
+      if (signIn.email) { usernameAttrs.push(StandardAttributeNames.email); }
+      if (signIn.phone) { usernameAttrs.push(StandardAttributeNames.phoneNumber); }
     }
 
     if (props.autoVerify) {
       autoVerifyAttrs = [];
-      if (props.autoVerify.email) { autoVerifyAttrs.push(StandardAttribute.EMAIL); }
-      if (props.autoVerify.phone) { autoVerifyAttrs.push(StandardAttribute.PHONE_NUMBER); }
+      if (props.autoVerify.email) { autoVerifyAttrs.push(StandardAttributeNames.email); }
+      if (props.autoVerify.phone) { autoVerifyAttrs.push(StandardAttributeNames.phoneNumber); }
     } else if (signIn.email || signIn.phone) {
       autoVerifyAttrs = [];
-      if (signIn.email) { autoVerifyAttrs.push(StandardAttribute.EMAIL); }
-      if (signIn.phone) { autoVerifyAttrs.push(StandardAttribute.PHONE_NUMBER); }
+      if (signIn.email) { autoVerifyAttrs.push(StandardAttributeNames.email); }
+      if (signIn.phone) { autoVerifyAttrs.push(StandardAttributeNames.phoneNumber); }
     }
 
     return { usernameAttrs, aliasAttrs, autoVerifyAttrs };
   }
 
-  private smsConfiguration(props: UserPoolProps): CfnUserPool.SmsConfigurationProperty {
+  private smsConfiguration(props: UserPoolProps): CfnUserPool.SmsConfigurationProperty | undefined {
+    if (props.enableSmsRole === false && props.smsRole) {
+      throw new Error('enableSmsRole cannot be disabled when smsRole is specified');
+    }
+
     if (props.smsRole) {
       return {
         snsCallerArn: props.smsRole.roleArn,
         externalId: props.smsRoleExternalId,
       };
-    } else {
-      const smsRoleExternalId = this.node.uniqueId.substr(0, 1223); // sts:ExternalId max length of 1224
-      const smsRole = props.smsRole ?? new Role(this, 'smsRole', {
-        assumedBy: new ServicePrincipal('cognito-idp.amazonaws.com', {
-          conditions: {
-            StringEquals: { 'sts:ExternalId': smsRoleExternalId },
-          },
-        }),
-        inlinePolicies: {
-          /*
-           * The UserPool is very particular that it must contain an 'sns:Publish' action as an inline policy.
-           * Ideally, a conditional that restricts this action to 'sms' protocol needs to be attached, but the UserPool deployment fails validation.
-           * Seems like a case of being excessively strict.
-           */
-          'sns-publish': new PolicyDocument({
-            statements: [
-              new PolicyStatement({
-                actions: [ 'sns:Publish' ],
-                resources: [ '*' ],
-              }),
-            ],
-          }),
-        },
-      });
-      return {
-        externalId: smsRoleExternalId,
-        snsCallerArn: smsRole.roleArn,
-      };
     }
+
+    if (props.enableSmsRole === false) {
+      return undefined;
+    }
+
+    const mfaConfiguration = this.mfaConfiguration(props);
+    const phoneVerification = props.signInAliases?.phone === true || props.autoVerify?.phone === true;
+    const roleRequired = mfaConfiguration?.includes('SMS_MFA') || phoneVerification;
+    if (!roleRequired && props.enableSmsRole === undefined) {
+      return undefined;
+    }
+
+    const smsRoleExternalId = Names.uniqueId(this).substr(0, 1223); // sts:ExternalId max length of 1224
+    const smsRole = props.smsRole ?? new Role(this, 'smsRole', {
+      assumedBy: new ServicePrincipal('cognito-idp.amazonaws.com', {
+        conditions: {
+          StringEquals: { 'sts:ExternalId': smsRoleExternalId },
+        },
+      }),
+      inlinePolicies: {
+        /*
+          * The UserPool is very particular that it must contain an 'sns:Publish' action as an inline policy.
+          * Ideally, a conditional that restricts this action to 'sms' protocol needs to be attached, but the UserPool deployment fails validation.
+          * Seems like a case of being excessively strict.
+          */
+        'sns-publish': new PolicyDocument({
+          statements: [
+            new PolicyStatement({
+              actions: ['sns:Publish'],
+              resources: ['*'],
+            }),
+          ],
+        }),
+      },
+    });
+    return {
+      externalId: smsRoleExternalId,
+      snsCallerArn: smsRole.roleArn,
+    };
   }
 
   private mfaConfiguration(props: UserPoolProps): string[] | undefined {
@@ -806,7 +916,7 @@ export class UserPool extends Resource implements IUserPool {
       return undefined;
     } else if (props.mfaSecondFactor === undefined &&
       (props.mfa === Mfa.OPTIONAL || props.mfa === Mfa.REQUIRED)) {
-      return [ 'SMS_MFA' ];
+      return ['SMS_MFA'];
     } else {
       const enabledMfas = [];
       if (props.mfaSecondFactor!.sms) {
@@ -841,30 +951,16 @@ export class UserPool extends Resource implements IUserPool {
   private schemaConfiguration(props: UserPoolProps): CfnUserPool.SchemaAttributeProperty[] | undefined {
     const schema: CfnUserPool.SchemaAttributeProperty[] = [];
 
-    if (props.requiredAttributes) {
-      const stdAttributes: StandardAttribute[] = [];
+    if (props.standardAttributes) {
+      const stdAttributes = (Object.entries(props.standardAttributes) as Array<[keyof StandardAttributes, StandardAttribute]>)
+        .filter(([, attr]) => !!attr)
+        .map(([attrName, attr]) => ({
+          name: StandardAttributeNames[attrName],
+          mutable: attr.mutable ?? true,
+          required: attr.required ?? false,
+        }));
 
-      if (props.requiredAttributes.address) { stdAttributes.push(StandardAttribute.ADDRESS); }
-      if (props.requiredAttributes.birthdate) { stdAttributes.push(StandardAttribute.BIRTHDATE); }
-      if (props.requiredAttributes.email) { stdAttributes.push(StandardAttribute.EMAIL); }
-      if (props.requiredAttributes.familyName) { stdAttributes.push(StandardAttribute.FAMILY_NAME); }
-      if (props.requiredAttributes.fullname) { stdAttributes.push(StandardAttribute.NAME); }
-      if (props.requiredAttributes.gender) { stdAttributes.push(StandardAttribute.GENDER); }
-      if (props.requiredAttributes.givenName) { stdAttributes.push(StandardAttribute.GIVEN_NAME); }
-      if (props.requiredAttributes.lastUpdateTime) { stdAttributes.push(StandardAttribute.LAST_UPDATE_TIME); }
-      if (props.requiredAttributes.locale) { stdAttributes.push(StandardAttribute.LOCALE); }
-      if (props.requiredAttributes.middleName) { stdAttributes.push(StandardAttribute.MIDDLE_NAME); }
-      if (props.requiredAttributes.nickname) { stdAttributes.push(StandardAttribute.NICKNAME); }
-      if (props.requiredAttributes.phoneNumber) { stdAttributes.push(StandardAttribute.PHONE_NUMBER); }
-      if (props.requiredAttributes.preferredUsername) { stdAttributes.push(StandardAttribute.PREFERRED_USERNAME); }
-      if (props.requiredAttributes.profilePage) { stdAttributes.push(StandardAttribute.PROFILE_URL); }
-      if (props.requiredAttributes.profilePicture) { stdAttributes.push(StandardAttribute.PICTURE_URL); }
-      if (props.requiredAttributes.timezone) { stdAttributes.push(StandardAttribute.TIMEZONE); }
-      if (props.requiredAttributes.website) { stdAttributes.push(StandardAttribute.WEBSITE); }
-
-      schema.push(...stdAttributes.map((attr) => {
-        return { name: attr, required: true };
-      }));
+      schema.push(...stdAttributes);
     }
 
     if (props.customAttributes) {
@@ -882,8 +978,12 @@ export class UserPool extends Resource implements IUserPool {
         return {
           name: attrName,
           attributeDataType: attrConfig.dataType,
-          numberAttributeConstraints: (attrConfig.numberConstraints) ? numberConstraints : undefined,
-          stringAttributeConstraints: (attrConfig.stringConstraints) ? stringConstraints : undefined,
+          numberAttributeConstraints: attrConfig.numberConstraints
+            ? numberConstraints
+            : undefined,
+          stringAttributeConstraints: attrConfig.stringConstraints
+            ? stringConstraints
+            : undefined,
           mutable: attrConfig.mutable,
         };
       });
@@ -895,29 +995,48 @@ export class UserPool extends Resource implements IUserPool {
     }
     return schema;
   }
-}
 
-const enum StandardAttribute {
-  ADDRESS = 'address',
-  BIRTHDATE = 'birthdate',
-  EMAIL = 'email',
-  FAMILY_NAME = 'family_name',
-  GENDER = 'gender',
-  GIVEN_NAME = 'given_name',
-  LOCALE = 'locale',
-  MIDDLE_NAME = 'middle_name',
-  NAME = 'name',
-  NICKNAME = 'nickname',
-  PHONE_NUMBER = 'phone_number',
-  PICTURE_URL = 'picture',
-  PREFERRED_USERNAME = 'preferred_username',
-  PROFILE_URL = 'profile',
-  TIMEZONE = 'zoneinfo',
-  LAST_UPDATE_TIME = 'updated_at',
-  WEBSITE = 'website',
+  private accountRecovery(props: UserPoolProps): undefined | CfnUserPool.AccountRecoverySettingProperty {
+    const accountRecovery = props.accountRecovery ?? AccountRecovery.PHONE_WITHOUT_MFA_AND_EMAIL;
+    switch (accountRecovery) {
+      case AccountRecovery.EMAIL_AND_PHONE_WITHOUT_MFA:
+        return {
+          recoveryMechanisms: [
+            { name: 'verified_email', priority: 1 },
+            { name: 'verified_phone_number', priority: 2 },
+          ],
+        };
+      case AccountRecovery.PHONE_WITHOUT_MFA_AND_EMAIL:
+        return {
+          recoveryMechanisms: [
+            { name: 'verified_phone_number', priority: 1 },
+            { name: 'verified_email', priority: 2 },
+          ],
+        };
+      case AccountRecovery.EMAIL_ONLY:
+        return {
+          recoveryMechanisms: [{ name: 'verified_email', priority: 1 }],
+        };
+      case AccountRecovery.PHONE_ONLY_WITHOUT_MFA:
+        return {
+          recoveryMechanisms: [{ name: 'verified_phone_number', priority: 1 }],
+        };
+      case AccountRecovery.NONE:
+        return {
+          recoveryMechanisms: [{ name: 'admin_only', priority: 1 }],
+        };
+      case AccountRecovery.PHONE_AND_EMAIL:
+        return undefined;
+      default:
+        throw new Error(`Unsupported AccountRecovery type - ${accountRecovery}`);
+    }
+  }
 }
 
 function undefinedIfNoKeys(struct: object): object | undefined {
-  const allUndefined = Object.values(struct).reduce((acc, v) => acc && (v === undefined), true);
+  const allUndefined = Object.values(struct).every(val => val === undefined);
   return allUndefined ? undefined : struct;
+}
+function encodePuny(input: string | undefined): string | undefined {
+  return input !== undefined ? punycodeEncode(input) : input;
 }

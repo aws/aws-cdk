@@ -23,14 +23,17 @@
       },
       "python": {
         "distName": "aws-cdk.region-info",
-        "module": "aws_cdk.region_info"
+        "module": "aws_cdk.region_info",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
-    }
+    },
+    "projectReferences": true
   },
   "cdk-build": {
-    "pre": [
-      "npm run gen"
-    ]
+    "jest": true
   },
   "scripts": {
     "gen": "bash build-tools/generate.sh",
@@ -52,21 +55,10 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/fs-extra": "^8.1.0",
+    "@types/fs-extra": "^8.1.1",
     "cdk-build-tools": "0.0.0",
-    "fs-extra": "^8.1.0",
+    "fs-extra": "^9.0.1",
     "pkglint": "0.0.0"
-  },
-  "jest": {
-    "moduleFileExtensions": [
-      "ts",
-      "js"
-    ],
-    "preset": "ts-jest",
-    "testMatch": [
-      "**/__tests__/**/*.ts?(x)",
-      "**/?(*.)+(spec|test).ts?(x)"
-    ]
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",
@@ -79,7 +71,7 @@
   ],
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 10.12.0"
+    "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "stability": "experimental",
   "maturity": "experimental",

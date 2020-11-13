@@ -1,5 +1,5 @@
 import * as cdk from '@aws-cdk/core';
-import { IAlarm } from './alarm';
+import { IAlarm } from './alarm-base';
 import { IMetric } from './metric-types';
 import { allMetricsGraphJson } from './private/rendering';
 import { ConcreteWidget } from './widget';
@@ -122,6 +122,24 @@ export class AlarmWidget extends ConcreteWidget {
 }
 
 /**
+ * Types of view
+ */
+export enum GraphWidgetView {
+  /**
+   * Display as a line graph.
+   */
+  TIME_SERIES = 'timeSeries',
+  /**
+   * Display as a bar graph.
+   */
+  BAR = 'bar',
+  /**
+   * Display as a pie graph.
+   */
+  PIE = 'pie',
+}
+
+/**
  * Properties for a GraphWidget
  */
 export interface GraphWidgetProps extends MetricWidgetProps {
@@ -173,17 +191,63 @@ export interface GraphWidgetProps extends MetricWidgetProps {
    * @default - None
    */
   readonly rightYAxis?: YAxisProps;
+
+  /**
+   * Position of the legend
+   *
+   * @default - bottom
+   */
+  readonly legendPosition?: LegendPosition;
+
+  /**
+   * Whether the graph should show live data
+   *
+   * @default false
+   */
+  readonly liveData?: boolean;
+
+
+  /**
+   * Display this metric
+   *
+   * @default TimeSeries
+   */
+  readonly view?: GraphWidgetView;
 }
 
 /**
  * A dashboard widget that displays metrics
  */
 export class GraphWidget extends ConcreteWidget {
+
   private readonly props: GraphWidgetProps;
+
+  private readonly leftMetrics: IMetric[];
+  private readonly rightMetrics: IMetric[];
 
   constructor(props: GraphWidgetProps) {
     super(props.width || 6, props.height || 6);
     this.props = props;
+    this.leftMetrics = props.left ?? [];
+    this.rightMetrics = props.right ?? [];
+  }
+
+  /**
+   * Add another metric to the left Y axis of the GraphWidget
+   *
+   * @param metric the metric to add
+   */
+  public addLeftMetric(metric: IMetric) {
+    this.leftMetrics.push(metric);
+  }
+
+  /**
+   * Add another metric to the right Y axis of the GraphWidget
+   *
+   * @param metric the metric to add
+   */
+  public addRightMetric(metric: IMetric) {
+    this.rightMetrics.push(metric);
   }
 
   public toJson(): any[] {
@@ -192,7 +256,7 @@ export class GraphWidget extends ConcreteWidget {
       ...(this.props.rightAnnotations || []).map(mapAnnotation('right')),
     ];
 
-    const metrics = allMetricsGraphJson(this.props.left || [], this.props.right || []);
+    const metrics = allMetricsGraphJson(this.leftMetrics, this.rightMetrics);
     return [{
       type: 'metric',
       width: this.width,
@@ -200,7 +264,7 @@ export class GraphWidget extends ConcreteWidget {
       x: this.x,
       y: this.y,
       properties: {
-        view: 'timeSeries',
+        view: this.props.view ?? GraphWidgetView.TIME_SERIES,
         title: this.props.title,
         region: this.props.region || cdk.Aws.REGION,
         stacked: this.props.stacked,
@@ -210,6 +274,8 @@ export class GraphWidget extends ConcreteWidget {
           left: this.props.leftYAxis !== undefined ? this.props.leftYAxis : undefined,
           right: this.props.rightYAxis !== undefined ? this.props.rightYAxis : undefined,
         },
+        legend: this.props.legendPosition !== undefined ? { position: this.props.legendPosition } : undefined,
+        liveData: this.props.liveData,
       },
     }];
   }
@@ -347,6 +413,26 @@ export class Color {
 
   /** red - hex #d62728 */
   public static readonly RED = '#d62728';
+}
+
+/**
+ * The position of the legend on a GraphWidget.
+ */
+export enum LegendPosition {
+  /**
+   * Legend appears below the graph (default).
+   */
+  BOTTOM = 'bottom',
+
+  /**
+   * Add shading above the annotation
+   */
+  RIGHT = 'right',
+
+  /**
+   * Add shading below the annotation
+   */
+  HIDDEN = 'hidden'
 }
 
 function mapAnnotation(yAxis: string): ((x: HorizontalAnnotation) => any) {

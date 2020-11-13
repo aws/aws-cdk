@@ -1,18 +1,22 @@
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import * as cxapi from '@aws-cdk/cx-api';
 import { CloudExecutable } from '../lib/api/cxapp/cloud-executable';
 import { Configuration } from '../lib/settings';
 import { MockSdkProvider } from './util/mock-sdk';
 
+export const DEFAULT_FAKE_TEMPLATE = { No: 'Resources' };
+
 export interface TestStackArtifact {
   stackName: string;
-  template: any;
+  template?: any;
   env?: string,
   depends?: string[];
   metadata?: cxapi.StackMetadata;
   assets?: cxschema.AssetMetadataEntry[];
+  properties?: Partial<cxschema.AwsCloudFormationStackProperties>;
+  terminationProtection?: boolean;
 }
 
 export interface TestAssembly {
@@ -48,7 +52,8 @@ export function testAssembly(assembly: TestAssembly): cxapi.CloudAssembly {
 
   for (const stack of assembly.stacks) {
     const templateFile = `${stack.stackName}.template.json`;
-    fs.writeFileSync(path.join(builder.outdir, templateFile), JSON.stringify(stack.template, undefined, 2));
+    const template = stack.template ?? DEFAULT_FAKE_TEMPLATE;
+    fs.writeFileSync(path.join(builder.outdir, templateFile), JSON.stringify(template, undefined, 2));
 
     // we call patchStackTags here to simulate the tags formatter
     // that is used when building real manifest files.
@@ -70,7 +75,9 @@ export function testAssembly(assembly: TestAssembly): cxapi.CloudAssembly {
       dependencies: stack.depends,
       metadata,
       properties: {
+        ...stack.properties,
         templateFile,
+        terminationProtection: stack.terminationProtection,
       },
     });
   }
@@ -119,10 +126,60 @@ export function testStack(stack: TestStackArtifact) {
  * automatic detection of properties (as those exist on instances, not
  * classes).
  */
-export function classMockOf<A>(ctr: new (...args: any[]) => A): jest.Mocked<A> {
+export function instanceMockFrom<A>(ctr: new (...args: any[]) => A): jest.Mocked<A> {
   const ret: any = {};
   for (const methodName of Object.getOwnPropertyNames(ctr.prototype)) {
     ret[methodName] = jest.fn();
   }
   return ret;
+}
+
+/**
+ * Run an async block with a class (constructor) replaced with a mock
+ *
+ * The class constructor will be replaced with a constructor that returns
+ * a singleton, and the singleton will be passed to the block so that its
+ * methods can be mocked individually.
+ *
+ * Uses `instanceMockFrom` so is subject to the same limitations that hold
+ * for that function.
+ */
+export async function withMockedClassSingleton<A extends object, K extends keyof A, B>(
+  obj: A,
+  key: K,
+  cb: (mock: A[K] extends jest.Constructable ? jest.Mocked<InstanceType<A[K]>> : never) => Promise<B>,
+): Promise<B> {
+
+  const original = obj[key];
+  try {
+    const mock = instanceMockFrom(original as any);
+    obj[key] = jest.fn().mockReturnValue(mock) as any;
+    const ret = await cb(mock as any);
+    return ret;
+  } finally {
+    obj[key] = original;
+  }
+}
+
+export function withMocked<A extends object, K extends keyof A, B>(obj: A, key: K, block: (fn: jest.Mocked<A>[K]) => B): B {
+  const original = obj[key];
+  const mockFn = jest.fn();
+  (obj as any)[key] = mockFn;
+
+  let asyncFinally: boolean = false;
+  try {
+    const ret = block(mockFn as any);
+    if (!isPromise(ret)) { return ret; }
+
+    asyncFinally = true;
+    return ret.finally(() => { obj[key] = original; }) as any;
+  } finally {
+    if (!asyncFinally) {
+      obj[key] = original;
+    }
+  }
+}
+
+function isPromise<A>(object: any): object is Promise<A> {
+  return Promise.resolve(object) === object;
 }

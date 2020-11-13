@@ -10,5 +10,5 @@
 <!--END STABILITY BANNER-->
 
 ```ts
-const appstream = require('@aws-cdk/aws-appstream');
+import * as appstream from '@aws-cdk/aws-appstream';
 ```

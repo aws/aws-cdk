@@ -1,16 +1,19 @@
-import { CloudFormationStackArtifact } from '@aws-cdk/cx-api';
+import * as cxapi from '@aws-cdk/cx-api';
+import { AssetManifest } from 'cdk-assets';
 import { Tag } from '../cdk-toolkit';
 import { debug } from '../logging';
+import { publishAssets } from '../util/asset-publishing';
 import { Mode, SdkProvider } from './aws-auth';
 import { deployStack, DeployStackResult, destroyStack } from './deploy-stack';
 import { ToolkitInfo } from './toolkit-info';
 import { CloudFormationStack, Template } from './util/cloudformation';
+import { StackActivityProgress } from './util/cloudformation/stack-activity-monitor';
 
 export interface DeployStackOptions {
   /**
    * Stack to deploy
    */
-  stack: CloudFormationStackArtifact;
+  stack: cxapi.CloudFormationStackArtifact;
 
   /**
    * Execution role for the deployment (pass through to CloudFormation)
@@ -77,10 +80,34 @@ export interface DeployStackOptions {
    * @default - no additional parameters will be passed to the template
    */
   parameters?: { [name: string]: string | undefined };
+
+  /**
+   * Use previous values for unspecified parameters
+   *
+   * If not set, all parameters must be specified for every deployment.
+   *
+   * @default true
+   */
+  usePreviousParameters?: boolean;
+
+  /**
+   * Display mode for stack deployment progress.
+   *
+   * @default - StackActivityProgress.Bar - stack events will be displayed for
+   *   the resource currently being deployed.
+   */
+  progress?: StackActivityProgress;
+
+  /**
+   * Whether we are on a CI system
+   *
+   * @default false
+   */
+  readonly ci?: boolean;
 }
 
 export interface DestroyStackOptions {
-  stack: CloudFormationStackArtifact;
+  stack: cxapi.CloudFormationStackArtifact;
   deployName?: string;
   roleArn?: string;
   quiet?: boolean;
@@ -88,7 +115,7 @@ export interface DestroyStackOptions {
 }
 
 export interface StackExistsOptions {
-  stack: CloudFormationStackArtifact;
+  stack: cxapi.CloudFormationStackArtifact;
   deployName?: string;
 }
 
@@ -109,7 +136,7 @@ export class CloudFormationDeployments {
     this.sdkProvider = props.sdkProvider;
   }
 
-  public async readCurrentTemplate(stackArtifact: CloudFormationStackArtifact): Promise<Template> {
+  public async readCurrentTemplate(stackArtifact: cxapi.CloudFormationStackArtifact): Promise<Template> {
     debug(`Reading existing template for stack ${stackArtifact.displayName}.`);
     const { stackSdk } = await this.prepareSdkFor(stackArtifact, undefined, Mode.ForReading);
     const cfn = stackSdk.cloudFormation();
@@ -122,6 +149,12 @@ export class CloudFormationDeployments {
     const { stackSdk, resolvedEnvironment, cloudFormationRoleArn } = await this.prepareSdkFor(options.stack, options.roleArn);
 
     const toolkitInfo = await ToolkitInfo.lookup(resolvedEnvironment, stackSdk, options.toolkitStackName);
+
+    // Publish any assets before doing the actual deploy
+    await this.publishStackAssets(options.stack, toolkitInfo);
+
+    // Do a verification of the bootstrap stack version
+    this.validateBootstrapStackVersion(options.stack.stackName, options.stack.requiresBootstrapStackVersion, toolkitInfo);
 
     return deployStack({
       stack: options.stack,
@@ -138,6 +171,9 @@ export class CloudFormationDeployments {
       execute: options.execute,
       force: options.force,
       parameters: options.parameters,
+      usePreviousParameters: options.usePreviousParameters,
+      progress: options.progress,
+      ci: options.ci,
     });
   }
 
@@ -168,18 +204,85 @@ export class CloudFormationDeployments {
    * - SDK loaded with the right credentials for calling `CreateChangeSet`.
    * - The Execution Role that should be passed to CloudFormation.
    */
-  private async prepareSdkFor(stack: CloudFormationStackArtifact, roleArn?: string, mode = Mode.ForWriting) {
+  private async prepareSdkFor(stack: cxapi.CloudFormationStackArtifact, roleArn?: string, mode = Mode.ForWriting) {
     if (!stack.environment) {
       throw new Error(`The stack ${stack.displayName} does not have an environment`);
     }
+
     const resolvedEnvironment = await this.sdkProvider.resolveEnvironment(stack.environment);
 
-    const stackSdk = await this.sdkProvider.forEnvironment(stack.environment, mode);
+    // Substitute any placeholders with information about the current environment
+    const arns = await this.replaceEnvPlaceholders({
+      assumeRoleArn: stack.assumeRoleArn,
+
+      // Use the override if given, otherwise use the field from the stack
+      cloudFormationRoleArn: roleArn ?? stack.cloudFormationExecutionRoleArn,
+    }, resolvedEnvironment);
+
+    const stackSdk = arns.assumeRoleArn
+      ? await this.sdkProvider.withAssumedRole(arns.assumeRoleArn, undefined, resolvedEnvironment.region)
+      : await this.sdkProvider.forEnvironment(resolvedEnvironment, mode);
 
     return {
       stackSdk,
       resolvedEnvironment,
-      cloudFormationRoleArn: roleArn,
+      cloudFormationRoleArn: arns.cloudFormationRoleArn,
     };
   }
+
+  /**
+   * Replace the {ACCOUNT} and {REGION} placeholders in all strings found in a complex object.
+   */
+  private async replaceEnvPlaceholders<A extends { }>(object: A, env: cxapi.Environment): Promise<A> {
+    return cxapi.EnvironmentPlaceholders.replaceAsync(object, {
+      accountId: () => Promise.resolve(env.account),
+      region: () => Promise.resolve(env.region),
+      partition: async () => {
+        // We need to do a rather complicated dance here to get the right
+        // partition value to substitute into placeholders :(
+        const defaultAccount = await this.sdkProvider.defaultAccount();
+        return env.account === defaultAccount?.accountId
+          ? defaultAccount.partition
+          : (await (await this.sdkProvider.forEnvironment(env, Mode.ForReading)).currentAccount()).partition;
+      },
+    });
+  }
+
+  /**
+   * Publish all asset manifests that are referenced by the given stack
+   */
+  private async publishStackAssets(stack: cxapi.CloudFormationStackArtifact, bootstrapStack: ToolkitInfo | undefined) {
+    const stackEnv = await this.sdkProvider.resolveEnvironment(stack.environment);
+    const assetArtifacts = stack.dependencies.filter(isAssetManifestArtifact);
+
+    for (const assetArtifact of assetArtifacts) {
+      this.validateBootstrapStackVersion(stack.stackName, assetArtifact.requiresBootstrapStackVersion, bootstrapStack);
+
+      const manifest = AssetManifest.fromFile(assetArtifact.file);
+      await publishAssets(manifest, this.sdkProvider, stackEnv);
+    }
+  }
+
+  /**
+   * Validate that the bootstrap stack has the right version for this stack
+   */
+  private validateBootstrapStackVersion(
+    stackName: string,
+    requiresBootstrapStackVersion: number | undefined,
+    bootstrapStack: ToolkitInfo | undefined) {
+
+    if (requiresBootstrapStackVersion === undefined) { return; }
+
+    if (!bootstrapStack) {
+      throw new Error(`${stackName}: publishing assets requires bootstrap stack version '${requiresBootstrapStackVersion}', no bootstrap stack found. Please run 'cdk bootstrap'.`);
+    }
+
+    if (requiresBootstrapStackVersion > bootstrapStack.version) {
+      throw new Error(`${stackName}: publishing assets requires bootstrap stack version '${requiresBootstrapStackVersion}', found '${bootstrapStack.version}'. Please run 'cdk bootstrap' with a newer CLI version.`);
+    }
+  }
+}
+
+function isAssetManifestArtifact(art: cxapi.CloudArtifact): art is cxapi.AssetManifestArtifact {
+  return art instanceof cxapi.AssetManifestArtifact;
 }

@@ -1,5 +1,7 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-import { Construct, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
+import * as iam from '@aws-cdk/aws-iam';
+import { IResource, Lazy, Names, Resource, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnActivity } from './stepfunctions.generated';
 
 /**
@@ -71,6 +73,20 @@ export class Activity extends Resource implements IActivity {
       sep: ':',
     });
     this.activityName = this.getResourceNameAttribute(resource.attrName);
+  }
+
+  /**
+   * Grant the given identity permissions on this Activity
+   *
+   * @param identity The principal
+   * @param actions The list of desired actions
+   */
+  public grant(identity: iam.IGrantable, ...actions: string[]) {
+    return iam.Grant.addToPrincipal({
+      grantee: identity,
+      actions,
+      resourceArns: [this.activityArn],
+    });
   }
 
   /**
@@ -170,7 +186,7 @@ export class Activity extends Resource implements IActivity {
   }
 
   private generateName(): string {
-    const name = this.node.uniqueId;
+    const name = Names.uniqueId(this);
     if (name.length > 80) {
       return name.substring(0, 40) + name.substring(name.length - 40);
     }

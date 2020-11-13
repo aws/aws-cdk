@@ -10,5 +10,5 @@
 <!--END STABILITY BANNER-->
 
 ```ts
-const amazonmq = require('@aws-cdk/aws-amazonmq');
+import * as amazonmq from '@aws-cdk/aws-amazonmq';
 ```

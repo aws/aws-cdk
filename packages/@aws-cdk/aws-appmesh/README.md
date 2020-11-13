@@ -53,22 +53,21 @@ const mesh = new Mesh(stack, 'AppMesh', {
 
 ## Adding VirtualRouters
 
-The `Mesh` needs `VirtualRouters` as logical units to route to `VirtualNodes`.
+The _Mesh_ needs _VirtualRouters_ as logical units to route requests to _VirtualNodes_.
 
-Virtual routers handle traffic for one or more virtual services within your mesh. After you create a virtual router, you can create and associate routes for your virtual router that direct incoming requests to different virtual nodes.
+Virtual routers handle traffic for one or more virtual services within your mesh.
+After you create a virtual router, you can create and associate routes to your virtual router that direct incoming requests to different virtual nodes.
 
 ```typescript
 const router = mesh.addVirtualRouter('router', {
-  listener: {
-    portMapping: {
-      port: 8081,
-      protocol: Protocol.HTTP,
-    }
-  }
+  listeners: [ appmesh.VirtualRouterListener.http(8080) ],
 });
 ```
 
-The router can also be created using the constructor and passing in the mesh instead of calling the addVirtualRouter() method for the mesh.
+The router can also be created using the constructor and passing in the mesh instead of calling the `addVirtualRouter()` method for the mesh.
+The same pattern applies to all constructs within the appmesh library, for any mesh.addXZY method, a new constuctor can also be used.
+This is particularly useful for cross stack resources are required.
+Where creating the `mesh` as part of an infrastructure stack and creating the `resources` such as `nodes` is more useful to keep in the application stack.
 
 ```typescript
 const mesh = new Mesh(stack, 'AppMesh', {
@@ -78,18 +77,15 @@ const mesh = new Mesh(stack, 'AppMesh', {
 
 const router = new VirtualRouter(stack, 'router', {
   mesh, // notice that mesh is a required property when creating a router with a new statement
-  listener: {
-    portMapping: {
-      port: 8081,
-      protocol: Protocol.HTTP,
-    }
+  listeners: [ appmesh.VirtualRouterListener.http(8081) ]
   }
 });
 ```
 
-The listener protocol can be either `HTTP` or `TCP`.
-
-The same pattern applies to all constructs within the appmesh library, for any mesh.addXZY method, a new constuctor can also be used. This is particularly useful for cross stack resources are required. Where creating the `mesh` as part of an infrastructure stack and creating the `resources` such as `nodes` is more useful to keep in the application stack.
+The _VirtualRouterListener_ class provides an easy interface for defining new protocol specific listeners.
+The `http()`, `http2()`, `grpc()` and `tcp()` methods are available for use.
+They accept a single port parameter, that is used to define what port to match requests on.
+The port parameter can be omitted, and it will default to port 8080.
 
 ## Adding VirtualService
 
@@ -126,8 +122,6 @@ mesh.addVirtualService('virtual-service', {
 
 A `virtual node` acts as a logical pointer to a particular task group, such as an Amazon ECS service or a Kubernetes deployment.
 
-![Virtual node logical diagram](https://docs.aws.amazon.com/app-mesh/latest/userguide/images/virtual_node.png)
-
 When you create a `virtual node`, you must specify the DNS service discovery hostname for your task group. Any inbound traffic that your `virtual node` expects should be specified as a listener. Any outbound traffic that your `virtual node` expects to reach should be specified as a backend.
 
 The response metadata for your new `virtual node` contains the Amazon Resource Name (ARN) that is associated with the `virtual node`. Set this value (either the full ARN or the truncated resource name) as the APPMESH_VIRTUAL_NODE_NAME environment variable for your task group's Envoy proxy container in your task definition or pod spec. For example, the value could be mesh/default/virtualNode/simpleapp. This is then mapped to the node.id and node.cluster Envoy parameters.
@@ -144,13 +138,9 @@ const namespace = new servicediscovery.PrivateDnsNamespace(this, 'test-namespace
 const service = namespace.createService('Svc');
 
 const node = mesh.addVirtualNode('virtual-node', {
-  dnsHostName: 'node-a',
   cloudMapService: service,
-  listener: {
-    portMapping: {
-      port: 8081,
-      protocol: Protocol.HTTP,
-    },
+  listeners: [appmesh.VirtualNodeListener.httpNodeListener({
+    port: 8081,
     healthCheck: {
       healthyThreshold: 3,
       interval: Duration.seconds(5), // minimum
@@ -160,8 +150,9 @@ const node = mesh.addVirtualNode('virtual-node', {
       timeout: Duration.seconds(2), // minimum
       unhealthyThreshold: 2,
     },
-  },
-})
+  })],
+  accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
+});
 ```
 
 Create a `VirtualNode` with the the constructor and add tags.
@@ -169,13 +160,9 @@ Create a `VirtualNode` with the the constructor and add tags.
 ```typescript
 const node = new VirtualNode(this, 'node', {
   mesh,
-  dnsHostName: 'node-1',
   cloudMapService: service,
-  listener: {
-    portMapping: {
-      port: 8080,
-      protocol: Protocol.HTTP,
-    },
+  listeners: [appmesh.VirtualNodeListener.httpNodeListener({
+    port: 8080,
     healthCheck: {
       healthyThreshold: 3,
       interval: Duration.seconds(5), // min
@@ -184,14 +171,18 @@ const node = new VirtualNode(this, 'node', {
       protocol: Protocol.HTTP,
       timeout: Duration.seconds(2), // min
       unhealthyThreshold: 2,
+    }, 
+    timeout: {
+      idle: cdk.Duration.seconds(5),
     },
-  },
+  })],
+  accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
 });
 
 cdk.Tag.add(node, 'Environment', 'Dev');
 ```
 
-The listeners property can be left blank dded later with the `mesh.addListeners()` method. The `healthcheck` property is optional but if specifying a listener, the `portMappings` must contain at least one property.
+The `listeners` property can be left blank and added later with the `node.addListener()` method. The `healthcheck` and `timeout` properties are optional but if specifying a listener, the `port` must be added.
 
 ## Adding a Route
 
@@ -233,34 +224,108 @@ router.addRoute('route', {
 });
 ```
 
-Multiple routes may also be added at once to different applications or targets.
+## Adding a Virtual Gateway
+
+A _virtual gateway_ allows resources outside your mesh to communicate to resources that are inside your mesh.
+The virtual gateway represents an Envoy proxy running in an Amazon ECS task, in a Kubernetes service, or on an Amazon EC2 instance.
+Unlike a virtual node, which represents an Envoy running with an application, a virtual gateway represents Envoy deployed by itself.
+
+A virtual gateway is similar to a virtual node in that it has a listener that accepts traffic for a particular port and protocol (HTTP, HTTP2, GRPC).
+The traffic that the virtual gateway receives, is directed to other services in your mesh,
+using rules defined in gateway routes which can be added to your virtual gateway.
+
+Create a virtual gateway with the constructor:
 
 ```typescript
-ratingsRouter.addRoutes(
-  ['route1', 'route2'],
-  [
-    {
-      routeTargets: [
-        {
-          virtualNode,
-          weight: 1,
-        },
-      ],
-      prefix: `/path-to-app`,
-      routeType: RouteType.HTTP,
+const gateway = new appmesh.VirtualGateway(stack, 'gateway', {
+  mesh: mesh,
+  listeners: [appmesh.VirtualGatewayListener.httpGatewayListener({
+    port: 443,
+    healthCheck: {
+      interval: cdk.Duration.seconds(10),
     },
-    {
-      routeTargets: [
-        {
-          virtualNode: virtualNode2,
-          weight: 1,
-        },
-      ],
-      prefix: `/path-to-app2`,
-      routeType: RouteType.HTTP,
-    },
-  ]
-);
+  })],
+  accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
+  virtualGatewayName: 'virtualGateway',
+});
 ```
 
-The number of `route ids` and `route targets` must match as each route needs to have a unique name per router.
+Add a virtual gateway directly to the mesh:
+
+```typescript
+const gateway = mesh.addVirtualGateway('gateway', {
+  accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
+  virtualGatewayName: 'virtualGateway',
+    listeners: [appmesh.VirtualGatewayListener.httpGatewayListener({
+      port: 443,
+      healthCheck: {
+        interval: cdk.Duration.seconds(10),
+      },
+  })],
+});
+```
+
+The listeners field can be omitted which will default to an HTTP Listener on port 8080.
+A gateway route can be added using the `gateway.addGatewayRoute()` method.
+
+## Adding a Gateway Route
+
+A _gateway route_ is attached to a virtual gateway and routes traffic to an existing virtual service.
+If a route matches a request, it can distribute traffic to a target virtual service.
+
+For HTTP based routes, the match field can be used to match on a route prefix.
+By default, an HTTP based route will match on `/`. All matches must start with a leading `/`.
+
+```typescript
+gateway.addGatewayRoute('gateway-route-http', {
+  routeSpec: appmesh.GatewayRouteSpec.httpRouteSpec({
+    routeTarget: virtualService,
+    match: {
+      prefixMatch: '/',
+    },
+  }),
+});
+```
+
+For GRPC based routes, the match field can be used to match on service names.
+You cannot omit the field, and must specify a match for these routes.
+
+```typescript
+gateway.addGatewayRoute('gateway-route-grpc', {
+  routeSpec: appmesh.GatewayRouteSpec.grpcRouteSpec({
+    routeTarget: virtualService,
+    match: {
+      serviceName: 'my-service.default.svc.cluster.local',
+    },
+  }),
+});
+```
+
+## Importing Resources
+
+Each mesh resource comes with two static methods for importing a reference to an existing App Mesh resource.
+These imported resources can be used as references for other resources in your mesh.
+There are two static methods, `from<Resource>Arn` and `from<Resource>Attributes` where the `<Resource>` is replaced with the resource name.
+
+```typescript
+const arn = "arn:aws:appmesh:us-east-1:123456789012:mesh/testMesh/virtualNode/testNode";
+appmesh.VirtualNode.fromVirtualNodeArn(stack, 'importedVirtualNode', arn);
+```
+
+```typescript
+appmesh.VirtualNode.fromVirtualNodeAttributes(stack, 'imported-virtual-node', {
+  mesh: appmesh.Mesh.fromMeshName(stack, 'Mesh', 'testMesh'),
+  virtualNodeName: virtualNodeName,
+});
+```
+
+To import a mesh, there are two static methods, `fromMeshArn` and `fromMeshName`.
+
+```typescript
+const arn = 'arn:aws:appmesh:us-east-1:123456789012:mesh/testMesh';
+appmesh.Mesh.fromMeshArn(stack, 'imported-mesh', arn);
+```
+
+```typescript
+appmesh.Mesh.fromMeshName(stack, 'imported-mesh', 'abc');
+```

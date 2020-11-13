@@ -1,63 +1,29 @@
 {
   "Resources": {
-    "UserPoolsmsRole4EA729DD": {
-      "Type": "AWS::IAM::Role",
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Condition": {
-                "StringEquals": {
-                  "sts:ExternalId": "integuserpooldomaincfdistUserPool17475E8A"
-                }
-              },
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "cognito-idp.amazonaws.com"
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        },
-        "Policies": [
-          {
-            "PolicyDocument": {
-              "Statement": [
-                {
-                  "Action": "sns:Publish",
-                  "Effect": "Allow",
-                  "Resource": "*"
-                }
-              ],
-              "Version": "2012-10-17"
-            },
-            "PolicyName": "sns-publish"
-          }
-        ]
-      }
-    },
     "UserPool6BA7E5F2": {
       "Type": "AWS::Cognito::UserPool",
       "Properties": {
+        "AccountRecoverySetting": {
+          "RecoveryMechanisms": [
+            {
+              "Name": "verified_phone_number",
+              "Priority": 1
+            },
+            {
+              "Name": "verified_email",
+              "Priority": 2
+            }
+          ]
+        },
         "AdminCreateUserConfig": {
           "AllowAdminCreateUserOnly": true
         },
-        "EmailVerificationMessage": "Hello {username}, Your verification code is {####}",
+        "EmailVerificationMessage": "The verification code to your new account is {####}",
         "EmailVerificationSubject": "Verify your new account",
-        "SmsConfiguration": {
-          "ExternalId": "integuserpooldomaincfdistUserPool17475E8A",
-          "SnsCallerArn": {
-            "Fn::GetAtt": [
-              "UserPoolsmsRole4EA729DD",
-              "Arn"
-            ]
-          }
-        },
         "SmsVerificationMessage": "The verification code to your new account is {####}",
         "VerificationMessageTemplate": {
           "DefaultEmailOption": "CONFIRM_WITH_CODE",
-          "EmailMessage": "Hello {username}, Your verification code is {####}",
+          "EmailMessage": "The verification code to your new account is {####}",
           "EmailSubject": "Verify your new account",
           "SmsMessage": "The verification code to your new account is {####}"
         }
@@ -108,10 +74,14 @@
               "Ref": "UserPoolDomainD0EA232A"
             }
           }
-        }
+        },
+        "InstallLatestAwsSdk": true
       },
       "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete"
+      "DeletionPolicy": "Delete",
+      "DependsOn": [
+        "UserPoolDomainCloudFrontDomainNameCustomResourcePolicy7DE54188"
+      ]
     },
     "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2": {
       "Type": "AWS::IAM::Role",
@@ -144,25 +114,21 @@
         ]
       }
     },
-    "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleDefaultPolicyD28E1A5E": {
+    "UserPoolDomainCloudFrontDomainNameCustomResourcePolicy7DE54188": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
           "Statement": [
             {
-              "Action": "cognito-idp:DescribeUserPoolDomain",
-              "Effect": "Allow",
+              "Action":"cognito-idp:DescribeUserPoolDomain",
+              "Effect":"Allow",
               "Resource": "*"
             }
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleDefaultPolicyD28E1A5E",
-        "Roles": [
-          {
-            "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
-          }
-        ]
+        "PolicyName": "UserPoolDomainCloudFrontDomainNameCustomResourcePolicy7DE54188",
+        "Roles": [{"Ref":"AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"}]
       }
     },
     "AWS679f53fac002430cb0da5b7982bd22872D164C4C": {
@@ -170,7 +136,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParameters0317970d7c7695dbb9076b70f5eaa0a840dabe9a56c3389439ae5018b5a4cc5bS3BucketA3488101"
+            "Ref": "AssetParametersd731b1475f16a318a48a76c83d255f7422cfa5f025c5bff93537b8f0b8e94557S3BucketA250C084"
           },
           "S3Key": {
             "Fn::Join": [
@@ -183,7 +149,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters0317970d7c7695dbb9076b70f5eaa0a840dabe9a56c3389439ae5018b5a4cc5bS3VersionKey23A2E46C"
+                          "Ref": "AssetParametersd731b1475f16a318a48a76c83d255f7422cfa5f025c5bff93537b8f0b8e94557S3VersionKeyDC4F0CD7"
                         }
                       ]
                     }
@@ -196,7 +162,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters0317970d7c7695dbb9076b70f5eaa0a840dabe9a56c3389439ae5018b5a4cc5bS3VersionKey23A2E46C"
+                          "Ref": "AssetParametersd731b1475f16a318a48a76c83d255f7422cfa5f025c5bff93537b8f0b8e94557S3VersionKeyDC4F0CD7"
                         }
                       ]
                     }
@@ -217,7 +183,6 @@
         "Timeout": 120
       },
       "DependsOn": [
-        "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleDefaultPolicyD28E1A5E",
         "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
       ]
     }
@@ -238,17 +203,17 @@
     }
   },
   "Parameters": {
-    "AssetParameters0317970d7c7695dbb9076b70f5eaa0a840dabe9a56c3389439ae5018b5a4cc5bS3BucketA3488101": {
+    "AssetParametersd731b1475f16a318a48a76c83d255f7422cfa5f025c5bff93537b8f0b8e94557S3BucketA250C084": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"0317970d7c7695dbb9076b70f5eaa0a840dabe9a56c3389439ae5018b5a4cc5b\""
+      "Description": "S3 bucket for asset \"d731b1475f16a318a48a76c83d255f7422cfa5f025c5bff93537b8f0b8e94557\""
     },
-    "AssetParameters0317970d7c7695dbb9076b70f5eaa0a840dabe9a56c3389439ae5018b5a4cc5bS3VersionKey23A2E46C": {
+    "AssetParametersd731b1475f16a318a48a76c83d255f7422cfa5f025c5bff93537b8f0b8e94557S3VersionKeyDC4F0CD7": {
       "Type": "String",
-      "Description": "S3 key for asset version \"0317970d7c7695dbb9076b70f5eaa0a840dabe9a56c3389439ae5018b5a4cc5b\""
+      "Description": "S3 key for asset version \"d731b1475f16a318a48a76c83d255f7422cfa5f025c5bff93537b8f0b8e94557\""
     },
-    "AssetParameters0317970d7c7695dbb9076b70f5eaa0a840dabe9a56c3389439ae5018b5a4cc5bArtifactHashF6409D44": {
+    "AssetParametersd731b1475f16a318a48a76c83d255f7422cfa5f025c5bff93537b8f0b8e94557ArtifactHash5701DE73": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"0317970d7c7695dbb9076b70f5eaa0a840dabe9a56c3389439ae5018b5a4cc5b\""
+      "Description": "Artifact hash for asset \"d731b1475f16a318a48a76c83d255f7422cfa5f025c5bff93537b8f0b8e94557\""
     }
   }
 }

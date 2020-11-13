@@ -7,6 +7,8 @@
     <version>0.1</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <cdk.version>%cdk-version%</cdk.version>
+        <junit.version>5.7.0</junit.version>
     </properties>
     <build>
         <plugins>
@@ -22,7 +24,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
-                <version>1.6.0</version>
+                <version>3.0.0</version>
                 <configuration>
                     <mainClass>com.myorg.%name.PascalCased%App</mainClass>
                 </configuration>
@@ -34,31 +36,42 @@
         <dependency>
             <groupId>software.amazon.awscdk</groupId>
             <artifactId>core</artifactId>
-            <version>%cdk-version%</version>
+            <version>${cdk.version}</version>
         </dependency>
 
         <!-- Respective AWS Construct Libraries -->
         <dependency>
             <groupId>software.amazon.awscdk</groupId>
             <artifactId>sns</artifactId>
-            <version>%cdk-version%</version>
+            <version>${cdk.version}</version>
         </dependency>
         <dependency>
             <groupId>software.amazon.awscdk</groupId>
             <artifactId>sns-subscriptions</artifactId>
-            <version>%cdk-version%</version>
+            <version>${cdk.version}</version>
         </dependency>
         <dependency>
             <groupId>software.amazon.awscdk</groupId>
             <artifactId>sqs</artifactId>
-            <version>%cdk-version%</version>
+            <version>${cdk.version}</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/junit/junit -->
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.12</version>
+          <groupId>org.junit.jupiter</groupId>
+          <artifactId>junit-jupiter-api</artifactId>
+          <version>${junit.version}</version>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.junit.jupiter</groupId>
+          <artifactId>junit-jupiter-engine</artifactId>
+          <version>${junit.version}</version>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>3.18.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

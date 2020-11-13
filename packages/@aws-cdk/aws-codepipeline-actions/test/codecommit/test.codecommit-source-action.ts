@@ -2,11 +2,12 @@ import { countResources, expect, haveResourceLike, not } from '@aws-cdk/assert';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codecommit from '@aws-cdk/aws-codecommit';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
-import { Stack } from '@aws-cdk/core';
+import * as iam from '@aws-cdk/aws-iam';
+import { Stack, Lazy } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as cpactions from '../../lib';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
   'CodeCommit Source Action': {
@@ -110,6 +111,66 @@ export = {
       test.done();
     },
 
+    'cannot be created with an empty branch'(test: Test) {
+      const stack = new Stack();
+      const repo = new codecommit.Repository(stack, 'MyRepo', {
+        repositoryName: 'my-repo',
+      });
+
+      test.throws(() => {
+        new cpactions.CodeCommitSourceAction({
+          actionName: 'Source2',
+          repository: repo,
+          output: new codepipeline.Artifact(),
+          branch: '',
+        });
+      }, /'branch' parameter cannot be an empty string/);
+
+      test.done();
+    },
+
+    'allows using the same repository multiple times with different branches when trigger=EVENTS'(test: Test) {
+      const stack = new Stack();
+
+      const repo = new codecommit.Repository(stack, 'MyRepo', {
+        repositoryName: 'my-repo',
+      });
+      const sourceOutput1 = new codepipeline.Artifact();
+      const sourceOutput2 = new codepipeline.Artifact();
+      new codepipeline.Pipeline(stack, 'MyPipeline', {
+        stages: [
+          {
+            stageName: 'Source',
+            actions: [
+              new cpactions.CodeCommitSourceAction({
+                actionName: 'Source1',
+                repository: repo,
+                output: sourceOutput1,
+              }),
+              new cpactions.CodeCommitSourceAction({
+                actionName: 'Source2',
+                repository: repo,
+                output: sourceOutput2,
+                branch: 'develop',
+              }),
+            ],
+          },
+          {
+            stageName: 'Build',
+            actions: [
+              new cpactions.CodeBuildAction({
+                actionName: 'Build',
+                project: new codebuild.PipelineProject(stack, 'MyProject'),
+                input: sourceOutput1,
+              }),
+            ],
+          },
+        ],
+      });
+
+      test.done();
+    },
+
     'exposes variables for other actions to consume'(test: Test) {
       const stack = new Stack();
 
@@ -158,6 +219,105 @@ export = {
                 },
               },
             ],
+          },
+        ],
+      }));
+
+      test.done();
+    },
+
+    'allows using a Token for the branch name'(test: Test) {
+      const stack = new Stack();
+
+      const sourceOutput = new codepipeline.Artifact();
+      new codepipeline.Pipeline(stack, 'P', {
+        stages: [
+          {
+            stageName: 'Source',
+            actions: [
+              new cpactions.CodeCommitSourceAction({
+                actionName: 'CodeCommit',
+                repository: new codecommit.Repository(stack, 'R', {
+                  repositoryName: 'repository',
+                }),
+                branch: Lazy.stringValue({ produce: () => 'my-branch' }),
+                output: sourceOutput,
+              }),
+            ],
+          },
+          {
+            stageName: 'Build',
+            actions: [
+              new cpactions.CodeBuildAction({
+                actionName: 'Build',
+                project: new codebuild.PipelineProject(stack, 'CodeBuild'),
+                input: sourceOutput,
+              }),
+            ],
+          },
+        ],
+      });
+
+      expect(stack).to(haveResourceLike('AWS::Events::Rule', {
+        EventPattern: {
+          detail: {
+            referenceName: ['my-branch'],
+          },
+        },
+      }));
+
+      test.done();
+    },
+
+    'uses the role when passed'(test: Test) {
+      const stack = new Stack();
+
+      const pipeline = new codepipeline.Pipeline(stack, 'P', {
+        pipelineName: 'MyPipeline',
+      });
+
+      const triggerEventTestRole = new iam.Role(stack, 'Trigger-test-role', {
+        assumedBy: new iam.ServicePrincipal('events.amazonaws.com'),
+      });
+      triggerEventTestRole.addToPolicy(new iam.PolicyStatement({
+        actions: ['codepipeline:StartPipelineExecution'],
+        resources: [pipeline.pipelineArn],
+      }));
+
+      const sourceOutput = new codepipeline.Artifact();
+
+      const sourceAction = new cpactions.CodeCommitSourceAction({
+        actionName: 'CodeCommit',
+        repository: new codecommit.Repository(stack, 'R', {
+          repositoryName: 'repository',
+        }),
+        branch: Lazy.stringValue({ produce: () => 'my-branch' }),
+        output: sourceOutput,
+        eventRole: triggerEventTestRole,
+      });
+
+      pipeline.addStage({
+        stageName: 'Source',
+        actions: [sourceAction],
+      });
+
+      const buildAction = new cpactions.CodeBuildAction({
+        actionName: 'Build',
+        project: new codebuild.PipelineProject(stack, 'CodeBuild'),
+        input: sourceOutput,
+      });
+
+      pipeline.addStage({
+        stageName: 'build',
+        actions: [buildAction],
+      });
+
+      expect(stack).to(haveResourceLike('AWS::Events::Rule', {
+        Targets: [
+          {
+            Arn: stack.resolve(pipeline.pipelineArn),
+            Id: 'Target0',
+            RoleArn: stack.resolve(triggerEventTestRole.roleArn),
           },
         ],
       }));

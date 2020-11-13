@@ -15,3 +15,6 @@ nyc.config.js
 *.snk
 .cdk.staging
 !.eslintrc.js
+!jest.config.js
+
+junit.xml

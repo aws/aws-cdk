@@ -29,6 +29,8 @@ test('looks up the requested (symmetric) VPC', async () => {
   });
 
   const result = await new VpcNetworkContextProviderPlugin(mockSDK).getValue({
+    account: '1234',
+    region: 'us-east-1',
     filter: { foo: 'bar' },
     returnAsymmetricSubnets: true,
   });
@@ -83,6 +85,8 @@ test('throws when no such VPC is found', async () => {
   });
 
   await expect(new VpcNetworkContextProviderPlugin(mockSDK).getValue({
+    account: '1234',
+    region: 'us-east-1',
     filter: { foo: 'bar' },
     returnAsymmetricSubnets: true,
   })).rejects.toThrow(/Could not find any VPCs matching/);
@@ -92,11 +96,13 @@ test('throws when multiple VPCs are found', async () => {
   // GIVEN
   AWS.mock('EC2', 'describeVpcs', (params: aws.EC2.DescribeVpcsRequest, cb: AwsCallback<aws.EC2.DescribeVpcsResult>) => {
     expect(params.Filters).toEqual([{ Name: 'foo', Values: ['bar'] }]);
-    return cb(null, { Vpcs: [{ VpcId: 'vpc-1' }, { VpcId: 'vpc-2' }]});
+    return cb(null, { Vpcs: [{ VpcId: 'vpc-1' }, { VpcId: 'vpc-2' }] });
   });
 
   // WHEN
   await expect(new VpcNetworkContextProviderPlugin(mockSDK).getValue({
+    account: '1234',
+    region: 'us-east-1',
     filter: { foo: 'bar' },
     returnAsymmetricSubnets: true,
   })).rejects.toThrow(/Found 2 VPCs matching/);
@@ -116,6 +122,8 @@ test('uses the VPC main route table when a subnet has no specific association', 
   });
 
   const result = await new VpcNetworkContextProviderPlugin(mockSDK).getValue({
+    account: '1234',
+    region: 'us-east-1',
     filter: { foo: 'bar' },
     returnAsymmetricSubnets: true,
   });
@@ -199,6 +207,8 @@ test('Recognize public subnet by route table', async () => {
 
   // WHEN
   const result = await new VpcNetworkContextProviderPlugin(mockSDK).getValue({
+    account: '1234',
+    region: 'us-east-1',
     filter: { foo: 'bar' },
     returnAsymmetricSubnets: true,
   });
@@ -240,9 +250,9 @@ test('works for asymmetric subnets (not spanning the same Availability Zones)', 
   mockVpcLookup({
     subnets: [
       { SubnetId: 'pri-sub-in-1b', AvailabilityZone: 'us-west-1b', MapPublicIpOnLaunch: false, CidrBlock: '1.1.1.1/24' },
-      { SubnetId: 'pub-sub-in-1c', AvailabilityZone: 'us-west-1c', MapPublicIpOnLaunch: true, CidrBlock: '1.1.2.1/24'  },
-      { SubnetId: 'pub-sub-in-1b', AvailabilityZone: 'us-west-1b', MapPublicIpOnLaunch: true, CidrBlock: '1.1.3.1/24'  },
-      { SubnetId: 'pub-sub-in-1a', AvailabilityZone: 'us-west-1a', MapPublicIpOnLaunch: true, CidrBlock: '1.1.4.1/24'  },
+      { SubnetId: 'pub-sub-in-1c', AvailabilityZone: 'us-west-1c', MapPublicIpOnLaunch: true, CidrBlock: '1.1.2.1/24' },
+      { SubnetId: 'pub-sub-in-1b', AvailabilityZone: 'us-west-1b', MapPublicIpOnLaunch: true, CidrBlock: '1.1.3.1/24' },
+      { SubnetId: 'pub-sub-in-1a', AvailabilityZone: 'us-west-1a', MapPublicIpOnLaunch: true, CidrBlock: '1.1.4.1/24' },
     ],
     routeTables: [
       { Associations: [{ Main: true }], RouteTableId: 'rtb-123' },
@@ -251,6 +261,8 @@ test('works for asymmetric subnets (not spanning the same Availability Zones)', 
 
   // WHEN
   const result = await new VpcNetworkContextProviderPlugin(mockSDK).getValue({
+    account: '1234',
+    region: 'us-east-1',
     filter: { foo: 'bar' },
     returnAsymmetricSubnets: true,
   });
@@ -316,21 +328,37 @@ test('allows specifying the subnet group name tag', async () => {
   mockVpcLookup({
     subnets: [
       {
-        SubnetId: 'pri-sub-in-1b', AvailabilityZone: 'us-west-1b', MapPublicIpOnLaunch: false, Tags: [
+        SubnetId: 'pri-sub-in-1b',
+        AvailabilityZone: 'us-west-1b',
+        MapPublicIpOnLaunch: false,
+        Tags: [
           { Key: 'Tier', Value: 'restricted' },
-        ] },
+        ],
+      },
       {
-        SubnetId: 'pub-sub-in-1c', AvailabilityZone: 'us-west-1c', MapPublicIpOnLaunch: true, Tags: [
+        SubnetId: 'pub-sub-in-1c',
+        AvailabilityZone: 'us-west-1c',
+        MapPublicIpOnLaunch: true,
+        Tags: [
           { Key: 'Tier', Value: 'connectivity' },
-        ] },
+        ],
+      },
       {
-        SubnetId: 'pub-sub-in-1b', AvailabilityZone: 'us-west-1b', MapPublicIpOnLaunch: true, Tags: [
+        SubnetId: 'pub-sub-in-1b',
+        AvailabilityZone: 'us-west-1b',
+        MapPublicIpOnLaunch: true,
+        Tags: [
           { Key: 'Tier', Value: 'connectivity' },
-        ] },
+        ],
+      },
       {
-        SubnetId: 'pub-sub-in-1a', AvailabilityZone: 'us-west-1a', MapPublicIpOnLaunch: true, Tags: [
+        SubnetId: 'pub-sub-in-1a',
+        AvailabilityZone: 'us-west-1a',
+        MapPublicIpOnLaunch: true,
+        Tags: [
           { Key: 'Tier', Value: 'connectivity' },
-        ] },
+        ],
+      },
     ],
     routeTables: [
       { Associations: [{ Main: true }], RouteTableId: 'rtb-123' },
@@ -338,6 +366,8 @@ test('allows specifying the subnet group name tag', async () => {
   });
 
   const result = await new VpcNetworkContextProviderPlugin(mockSDK).getValue({
+    account: '1234',
+    region: 'us-east-1',
     filter: { foo: 'bar' },
     returnAsymmetricSubnets: true,
     subnetGroupNameTag: 'Tier',
@@ -424,9 +454,9 @@ function mockVpcLookup(options: VpcLookupOptions) {
 
   AWS.mock('EC2', 'describeVpnGateways', (params: aws.EC2.DescribeVpnGatewaysRequest, cb: AwsCallback<aws.EC2.DescribeVpnGatewaysResult>) => {
     expect(params.Filters).toEqual([
-      { Name: 'attachment.vpc-id', Values: [ VpcId ] },
-      { Name: 'attachment.state', Values: [ 'attached' ] },
-      { Name: 'state', Values: [ 'available' ] },
+      { Name: 'attachment.vpc-id', Values: [VpcId] },
+      { Name: 'attachment.state', Values: ['attached'] },
+      { Name: 'state', Values: ['available'] },
     ]);
     return cb(null, { VpnGateways: options.vpnGateways });
   });

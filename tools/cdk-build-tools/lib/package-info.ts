@@ -76,7 +76,6 @@ export interface CompilerOverrides {
   eslint?: string;
   jsii?: string;
   tsc?: string;
-  tslint?: string;
 }
 
 /**
@@ -84,11 +83,19 @@ export interface CompilerOverrides {
  */
 export function packageCompiler(compilers: CompilerOverrides): string[] {
   if (isJsii()) {
-    return [compilers.jsii || require.resolve('jsii/bin/jsii'), '--project-references', '--silence-warnings=reserved-word'];
+    return [compilers.jsii || require.resolve('jsii/bin/jsii'), '--silence-warnings=reserved-word'];
   } else {
     return [compilers.tsc || require.resolve('typescript/bin/tsc'), '--build'];
   }
 }
+
+/**
+ * Return the command defined in scripts.gen if exists
+ */
+export function genScript(): string | undefined {
+  return currentPackageJson().scripts?.gen;
+}
+
 
 export interface CDKBuildOptions {
   /**
@@ -104,10 +111,6 @@ export interface CDKBuildOptions {
      * Disable linting
      * @default false
      */
-    disable?: boolean;
-  };
-
-  tslint?: {
     disable?: boolean;
   };
 
@@ -133,6 +136,18 @@ export interface CDKBuildOptions {
    * An optional command (formatted as a list of strings) to run before testing.
    */
   test?: string[];
+
+  /**
+   * Whether the package uses Jest for tests.
+   * The default is NodeUnit,
+   * but we want to eventually move all of them to Jest.
+   */
+  jest?: boolean;
+
+  /**
+   * Environment variables to be passed to 'cdk-build' and all of its child processes.
+   */
+  env?: NodeJS.ProcessEnv;
 }
 
 /**

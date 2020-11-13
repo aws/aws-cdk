@@ -6,12 +6,14 @@ export * from './layers';
 export * from './permission';
 export * from './runtime';
 export * from './code';
+export * from './filesystem';
 export * from './lambda-version';
 export * from './singleton-lambda';
 export * from './event-source';
 export * from './event-source-mapping';
 export * from './destination';
 export * from './event-invoke-config';
+export * from './scalable-attribute-api';
 
 export * from './log-retention';
 

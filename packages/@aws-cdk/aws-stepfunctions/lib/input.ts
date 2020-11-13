@@ -1,4 +1,4 @@
-import { Context, Data } from './fields';
+import { JsonPath } from './fields';
 
 /**
  * Type union for task classes that accept multiple types of payload
@@ -19,8 +19,19 @@ export class TaskInput {
    * This object may contain Data and Context fields
    * as object values, if desired.
    */
-  public static fromObject(obj: {[key: string]: any}) {
+  public static fromObject(obj: { [key: string]: any }) {
     return new TaskInput(InputType.OBJECT, obj);
+  }
+
+  /**
+   * Use a part of the execution data or task context as task input
+   *
+   * Use this when you want to use a subobject or string from
+   * the current state machine execution or the current task context
+   * as complete payload to a task.
+   */
+  public static fromJsonPathAt(path: string) {
+    return new TaskInput(InputType.TEXT, JsonPath.stringAt(path));
   }
 
   /**
@@ -31,7 +42,7 @@ export class TaskInput {
    * to a task.
    */
   public static fromDataAt(path: string) {
-    return new TaskInput(InputType.TEXT, Data.stringAt(path));
+    return new TaskInput(InputType.TEXT, JsonPath.stringAt(path));
   }
 
   /**
@@ -42,7 +53,7 @@ export class TaskInput {
    * to a task.
    */
   public static fromContextAt(path: string) {
-    return new TaskInput(InputType.TEXT, Context.stringAt(path));
+    return new TaskInput(InputType.TEXT, JsonPath.stringAt(path));
   }
 
   /**
@@ -51,8 +62,7 @@ export class TaskInput {
    * @param value payload for the corresponding input type.
    * It can be a JSON-encoded object, context, data, etc.
    */
-  private constructor(public readonly type: InputType, public readonly value: any) {
-  }
+  private constructor(public readonly type: InputType, public readonly value: any) {}
 }
 
 /**
@@ -75,11 +85,11 @@ export enum InputType {
    * example:
    * {
    *  literal: 'literal',
-   *  SomeInput: sfn.Data.stringAt('$.someField')
+   *  SomeInput: sfn.JsonPath.stringAt('$.someField')
    * }
    *
    * @see https://docs.aws.amazon.com/step-functions/latest/dg/concepts-state-machine-data.html
    * @see https://docs.aws.amazon.com/step-functions/latest/dg/input-output-contextobject.html
    */
-  OBJECT
+  OBJECT,
 }

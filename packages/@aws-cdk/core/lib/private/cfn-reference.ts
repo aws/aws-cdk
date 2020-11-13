@@ -3,6 +3,24 @@ import { Reference } from '../reference';
 const CFN_REFERENCE_SYMBOL = Symbol.for('@aws-cdk/core.CfnReference');
 
 /**
+ * An enum that allows controlling how will the created reference
+ * be rendered in the resulting CloudFormation template.
+ */
+export enum ReferenceRendering {
+  /**
+   * Used for rendering a reference inside Fn::Sub expressions,
+   * which mean these must resolve to "${Sth}" instead of { Ref: "Sth" }.
+   */
+  FN_SUB,
+
+  /**
+   * Used for rendering Fn::GetAtt with its arguments in string form
+   * (as opposed to the more common arguments in array form, which we render by default).
+   */
+  GET_ATT_STRING,
+}
+
+/**
  * A Token that represents a CloudFormation reference to another resource
  *
  * If these references are used in a different stack from where they are
@@ -33,10 +51,20 @@ export class CfnReference extends Reference {
    * important that the state isn't lost if it's lazily created, like so:
    *
    *     Lazy.stringValue({ produce: () => new CfnReference(...) })
+   *
    */
-  public static for(target: CfnElement, attribute: string) {
-    return CfnReference.singletonReference(target, attribute, () => {
-      const cfnIntrinsic = attribute === 'Ref' ? { Ref: target.logicalId } : { 'Fn::GetAtt': [ target.logicalId, attribute ]};
+  public static for(target: CfnElement, attribute: string, refRender?: ReferenceRendering) {
+    return CfnReference.singletonReference(target, attribute, refRender, () => {
+      const cfnIntrinsic = refRender === ReferenceRendering.FN_SUB
+        ? ('${' + target.logicalId + (attribute === 'Ref' ? '' : `.${attribute}`) + '}')
+        : (attribute === 'Ref'
+          ? { Ref: target.logicalId }
+          : {
+            'Fn::GetAtt': refRender === ReferenceRendering.GET_ATT_STRING
+              ? `${target.logicalId}.${attribute}`
+              : [target.logicalId, attribute],
+          }
+        );
       return new CfnReference(cfnIntrinsic, attribute, target);
     });
   }
@@ -45,7 +73,7 @@ export class CfnReference extends Reference {
    * Return a CfnReference that references a pseudo referencd
    */
   public static forPseudo(pseudoName: string, scope: Construct) {
-    return CfnReference.singletonReference(scope, `Pseudo:${pseudoName}`, () => {
+    return CfnReference.singletonReference(scope, `Pseudo:${pseudoName}`, undefined, () => {
       const cfnIntrinsic = { Ref: pseudoName };
       return new CfnReference(cfnIntrinsic, pseudoName, scope);
     });
@@ -57,18 +85,28 @@ export class CfnReference extends Reference {
   private static referenceTable = new Map<Construct, Map<string, CfnReference>>();
 
   /**
-   * Get or create the table
+   * Get or create the table.
+   * Passing fnSub = true allows cloudformation-include to correctly handle Fn::Sub.
    */
-  private static singletonReference(target: Construct, attribKey: string, fresh: () => CfnReference) {
+  private static singletonReference(target: Construct, attribKey: string, refRender: ReferenceRendering | undefined, fresh: () => CfnReference) {
     let attribs = CfnReference.referenceTable.get(target);
     if (!attribs) {
       attribs = new Map();
       CfnReference.referenceTable.set(target, attribs);
     }
-    let ref = attribs.get(attribKey);
+    let cacheKey = attribKey;
+    switch (refRender) {
+      case ReferenceRendering.FN_SUB:
+        cacheKey += 'Fn::Sub';
+        break;
+      case ReferenceRendering.GET_ATT_STRING:
+        cacheKey += 'Fn::GetAtt::String';
+        break;
+    }
+    let ref = attribs.get(cacheKey);
     if (!ref) {
       ref = fresh();
-      attribs.set(attribKey, ref);
+      attribs.set(cacheKey, ref);
     }
     return ref;
   }
@@ -96,7 +134,7 @@ export class CfnReference extends Reference {
     const token = this.replacementTokens.get(consumingStack);
 
     // if (!token && this.isCrossStackReference(consumingStack) && !context.preparing) {
-    // tslint:disable-next-line:max-line-length
+    // eslint-disable-next-line max-len
     //   throw new Error(`Cross-stack reference (${context.scope.node.path} -> ${this.target.node.path}) has not been assigned a value--call prepare() first`);
     // }
 

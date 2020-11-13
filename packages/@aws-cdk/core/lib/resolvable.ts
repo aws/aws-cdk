@@ -38,7 +38,8 @@ export interface IResolvable {
    * The creation stack of this resolvable which will be appended to errors
    * thrown during resolution.
    *
-   * If this returns an empty array the stack will not be attached.
+   * This may return an array with a single informational element indicating how
+   * to get this property populated, if it was skipped for performance reasons.
    */
   readonly creationStack: string[];
 
@@ -58,7 +59,7 @@ export interface IResolvable {
 /**
  * A Token that can post-process the complete resolved value, after resolve() has recursed over it
  */
-export interface IPostProcessor  {
+export interface IPostProcessor {
   /**
    * Process the completely resolved value, after full recursion/resolution has happened
    */

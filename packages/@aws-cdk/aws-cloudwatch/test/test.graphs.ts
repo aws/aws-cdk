@@ -1,6 +1,6 @@
 import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { Alarm, AlarmWidget, Color, GraphWidget, Metric, Shading, SingleValueWidget } from '../lib';
+import { Alarm, AlarmWidget, Color, GraphWidget, GraphWidgetView, LegendPosition, LogQueryWidget, Metric, Shading, SingleValueWidget, LogQueryVisualizationType } from '../lib';
 
 export = {
   'add stacked property to graphs'(test: Test) {
@@ -61,11 +61,40 @@ export = {
     test.done();
   },
 
+  'add metrics to graphs on either axis lazily'(test: Test) {
+    // WHEN
+    const stack = new Stack();
+    const widget = new GraphWidget({
+      title: 'My fancy graph',
+    });
+    widget.addLeftMetric(new Metric({ namespace: 'CDK', metricName: 'Test' }));
+    widget.addRightMetric(new Metric({ namespace: 'CDK', metricName: 'Tast' }));
+
+    // THEN
+    test.deepEqual(stack.resolve(widget.toJson()), [{
+      type: 'metric',
+      width: 6,
+      height: 6,
+      properties: {
+        view: 'timeSeries',
+        title: 'My fancy graph',
+        region: { Ref: 'AWS::Region' },
+        metrics: [
+          ['CDK', 'Test'],
+          ['CDK', 'Tast', { yAxis: 'right' }],
+        ],
+        yAxis: {},
+      },
+    }]);
+
+    test.done();
+  },
+
   'label and color are respected in constructor'(test: Test) {
     // WHEN
     const stack = new Stack();
     const widget = new GraphWidget({
-      left: [new Metric({ namespace: 'CDK', metricName: 'Test', label: 'MyMetric', color: '000000' }) ],
+      left: [new Metric({ namespace: 'CDK', metricName: 'Test', label: 'MyMetric', color: '000000' })],
     });
 
     // THEN
@@ -86,6 +115,30 @@ export = {
     test.done();
   },
 
+  'bar view'(test: Test) {
+    // WHEN
+    const stack = new Stack();
+    const widget = new GraphWidget({
+      title: 'Test widget',
+      view: GraphWidgetView.BAR,
+    });
+
+    // THEN
+    test.deepEqual(stack.resolve(widget.toJson()), [{
+      type: 'metric',
+      width: 6,
+      height: 6,
+      properties: {
+        view: 'bar',
+        title: 'Test widget',
+        region: { Ref: 'AWS::Region' },
+        yAxis: {},
+      },
+    }]);
+
+    test.done();
+  },
+
   'singlevalue widget'(test: Test) {
     // GIVEN
     const stack = new Stack();
@@ -93,7 +146,7 @@ export = {
 
     // WHEN
     const widget = new SingleValueWidget({
-      metrics: [ metric ],
+      metrics: [metric],
     });
 
     // THEN
@@ -107,6 +160,157 @@ export = {
         metrics: [
           ['CDK', 'Test'],
         ],
+      },
+    }]);
+
+    test.done();
+  },
+
+  'query result widget'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const logGroup = { logGroupName: 'my-log-group' };
+
+    // WHEN
+    const widget = new LogQueryWidget({
+      logGroupNames: [logGroup.logGroupName],
+      queryLines: [
+        'fields @message',
+        'filter @message like /Error/',
+      ],
+    });
+
+    // THEN
+    test.deepEqual(stack.resolve(widget.toJson()), [{
+      type: 'log',
+      width: 6,
+      height: 6,
+      properties: {
+        view: 'table',
+        region: { Ref: 'AWS::Region' },
+        query: `SOURCE '${logGroup.logGroupName}' | fields @message\n| filter @message like /Error/`,
+      },
+    }]);
+
+    test.done();
+  },
+
+  'query result widget - bar'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const logGroup = { logGroupName: 'my-log-group' };
+
+    // WHEN
+    const widget = new LogQueryWidget({
+      logGroupNames: [logGroup.logGroupName],
+      view: LogQueryVisualizationType.BAR,
+      queryLines: [
+        'fields @message',
+        'filter @message like /Error/',
+      ],
+    });
+
+    // THEN
+    test.deepEqual(stack.resolve(widget.toJson()), [{
+      type: 'log',
+      width: 6,
+      height: 6,
+      properties: {
+        view: 'bar',
+        region: { Ref: 'AWS::Region' },
+        query: `SOURCE '${logGroup.logGroupName}' | fields @message\n| filter @message like /Error/`,
+      },
+    }]);
+
+    test.done();
+  },
+
+  'query result widget - pie'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const logGroup = { logGroupName: 'my-log-group' };
+
+    // WHEN
+    const widget = new LogQueryWidget({
+      logGroupNames: [logGroup.logGroupName],
+      view: LogQueryVisualizationType.PIE,
+      queryLines: [
+        'fields @message',
+        'filter @message like /Error/',
+      ],
+    });
+
+    // THEN
+    test.deepEqual(stack.resolve(widget.toJson()), [{
+      type: 'log',
+      width: 6,
+      height: 6,
+      properties: {
+        view: 'pie',
+        region: { Ref: 'AWS::Region' },
+        query: `SOURCE '${logGroup.logGroupName}' | fields @message\n| filter @message like /Error/`,
+      },
+    }]);
+
+    test.done();
+  },
+
+  'query result widget - line'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const logGroup = { logGroupName: 'my-log-group' } ;
+
+    // WHEN
+    const widget = new LogQueryWidget({
+      logGroupNames: [logGroup.logGroupName],
+      view: LogQueryVisualizationType.LINE,
+      queryLines: [
+        'fields @message',
+        'filter @message like /Error/',
+      ],
+    });
+
+    // THEN
+    test.deepEqual(stack.resolve(widget.toJson()), [{
+      type: 'log',
+      width: 6,
+      height: 6,
+      properties: {
+        view: 'timeSeries',
+        stacked: false,
+        region: { Ref: 'AWS::Region' },
+        query: `SOURCE '${logGroup.logGroupName}' | fields @message\n| filter @message like /Error/`,
+      },
+    }]);
+
+    test.done();
+  },
+
+  'query result widget - stackedarea'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const logGroup = { logGroupName: 'my-log-group' };
+
+    // WHEN
+    const widget = new LogQueryWidget({
+      logGroupNames: [logGroup.logGroupName],
+      view: LogQueryVisualizationType.STACKEDAREA,
+      queryLines: [
+        'fields @message',
+        'filter @message like /Error/',
+      ],
+    });
+
+    // THEN
+    test.deepEqual(stack.resolve(widget.toJson()), [{
+      type: 'log',
+      width: 6,
+      height: 6,
+      properties: {
+        view: 'timeSeries',
+        stacked: true,
+        region: { Ref: 'AWS::Region' },
+        query: `SOURCE '${logGroup.logGroupName}' | fields @message\n| filter @message like /Error/`,
       },
     }]);
 
@@ -136,7 +340,7 @@ export = {
         view: 'timeSeries',
         region: { Ref: 'AWS::Region' },
         annotations: {
-          alarms: [{ 'Fn::GetAtt': [ 'Alarm7103F465', 'Arn' ] }],
+          alarms: [{ 'Fn::GetAtt': ['Alarm7103F465', 'Arn'] }],
         },
         yAxis: {},
       },
@@ -173,13 +377,15 @@ export = {
         metrics: [
           ['CDK', 'Test'],
         ],
-        annotations: { horizontal: [{
-          yAxis: 'left',
-          value: 1000,
-          color: '667788',
-          fill: 'below',
-          label: 'this is the annotation',
-        }] },
+        annotations: {
+          horizontal: [{
+            yAxis: 'left',
+            value: 1000,
+            color: '667788',
+            fill: 'below',
+            label: 'this is the annotation',
+          }],
+        },
         yAxis: {},
       },
     }]);
@@ -201,8 +407,8 @@ export = {
 
     // WHEN
     const widget = new GraphWidget({
-      right: [ metric ],
-      rightAnnotations: [ alarm.toAnnotation() ],
+      right: [metric],
+      rightAnnotations: [alarm.toAnnotation()],
     });
 
     // THEN
@@ -267,7 +473,39 @@ export = {
         ],
         yAxis: {
           left: { label: 'Left yAxis', max: 100 },
-          right: { label: 'Right yAxis', min: 10, showUnits: false } },
+          right: { label: 'Right yAxis', min: 10, showUnits: false },
+        },
+      },
+    }]);
+
+    test.done();
+  },
+
+  'specify liveData property on graph'(test: Test) {
+    // WHEN
+    const stack = new Stack();
+    const widget = new GraphWidget({
+      title: 'My live graph',
+      left: [
+        new Metric({ namespace: 'CDK', metricName: 'Test' }),
+      ],
+      liveData: true,
+    });
+
+    // THEN
+    test.deepEqual(stack.resolve(widget.toJson()), [{
+      type: 'metric',
+      width: 6,
+      height: 6,
+      properties: {
+        view: 'timeSeries',
+        title: 'My live graph',
+        region: { Ref: 'AWS::Region' },
+        metrics: [
+          ['CDK', 'Test'],
+        ],
+        liveData: true,
+        yAxis: {},
       },
     }]);
 
@@ -297,7 +535,7 @@ export = {
 
     // WHEN
     const widget = new SingleValueWidget({
-      metrics: [ metric ],
+      metrics: [metric],
       setPeriodToTimeRange: true,
     });
 
@@ -360,8 +598,37 @@ export = {
       ],
     });
 
-    test.deepEqual(stack.resolve(widget.toJson())[0].properties.metrics[0], [ 'CDK', 'Test', { color: '#1f77b4' } ]);
+    test.deepEqual(stack.resolve(widget.toJson())[0].properties.metrics[0], ['CDK', 'Test', { color: '#1f77b4' }]);
     test.deepEqual(stack.resolve(widget.toJson())[0].properties.annotations.horizontal[0], { yAxis: 'left', value: 100, color: '#d62728' });
+    test.done();
+  },
+
+  'legend position is respected in constructor'(test: Test) {
+    // WHEN
+    const stack = new Stack();
+    const widget = new GraphWidget({
+      left: [new Metric({ namespace: 'CDK', metricName: 'Test' })],
+      legendPosition: LegendPosition.RIGHT,
+    });
+
+    // THEN
+    test.deepEqual(stack.resolve(widget.toJson()), [{
+      type: 'metric',
+      width: 6,
+      height: 6,
+      properties: {
+        view: 'timeSeries',
+        region: { Ref: 'AWS::Region' },
+        metrics: [
+          ['CDK', 'Test'],
+        ],
+        yAxis: {},
+        legend: {
+          position: 'right',
+        },
+      },
+    }]);
+
     test.done();
   },
 };

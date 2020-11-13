@@ -9,3 +9,9 @@ tsconfig.json
 *.ts
 !*.d.ts
 .eslintrc.js
+jest.config.js
+
+# exclude cdk artifacts
+**/cdk.out
+junit.xml
+test/

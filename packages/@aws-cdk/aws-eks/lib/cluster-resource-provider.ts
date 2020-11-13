@@ -1,12 +1,23 @@
-import { NestedStack } from '@aws-cdk/aws-cloudformation';
+import * as path from 'path';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Construct, Duration, Stack } from '@aws-cdk/core';
+import { Duration, NestedStack, Stack } from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
-import * as path from 'path';
+import { Construct } from 'constructs';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 const HANDLER_DIR = path.join(__dirname, 'cluster-resource-handler');
 const HANDLER_RUNTIME = lambda.Runtime.NODEJS_12_X;
+
+export interface ClusterResourceProviderProps {
+  /**
+   * The IAM role to assume in order to interact with the cluster.
+   */
+  readonly adminRole: iam.IRole;
+}
 
 /**
  * A custom resource provider that handles cluster operations. It serves
@@ -17,10 +28,10 @@ const HANDLER_RUNTIME = lambda.Runtime.NODEJS_12_X;
  */
 export class ClusterResourceProvider extends NestedStack {
 
-  public static getOrCreate(scope: Construct) {
+  public static getOrCreate(scope: Construct, props: ClusterResourceProviderProps) {
     const stack = Stack.of(scope);
     const uid = '@aws-cdk/aws-eks.ClusterResourceProvider';
-    return stack.node.tryFindChild(uid) as ClusterResourceProvider || new ClusterResourceProvider(stack, uid);
+    return stack.node.tryFindChild(uid) as ClusterResourceProvider ?? new ClusterResourceProvider(stack, uid, props);
   }
 
   /**
@@ -28,13 +39,8 @@ export class ClusterResourceProvider extends NestedStack {
    */
   public readonly provider: cr.Provider;
 
-  /**
-   * The IAM roles used by the provider's lambda handlers.
-   */
-  public readonly roles: iam.IRole[];
-
-  private constructor(scope: Construct, id: string) {
-    super(scope, id);
+  private constructor(scope: Construct, id: string, props: ClusterResourceProviderProps) {
+    super(scope as CoreConstruct, id);
 
     const onEvent = new lambda.Function(this, 'OnEventHandler', {
       code: lambda.Code.fromAsset(HANDLER_DIR),
@@ -59,6 +65,12 @@ export class ClusterResourceProvider extends NestedStack {
       queryInterval: Duration.minutes(1),
     });
 
-    this.roles = [ onEvent.role!, isComplete.role! ];
+    props.adminRole.grant(onEvent.role!, 'sts:AssumeRole');
+    props.adminRole.grant(isComplete.role!, 'sts:AssumeRole');
   }
+
+  /**
+   * The custom resource service token for this provider.
+   */
+  public get serviceToken() { return this.provider.serviceToken; }
 }

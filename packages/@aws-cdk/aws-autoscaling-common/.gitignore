@@ -18,3 +18,5 @@ tsconfig.json
 
 *.snk
 !.eslintrc.js
+
+junit.xml

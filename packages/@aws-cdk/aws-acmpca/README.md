@@ -12,5 +12,5 @@
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
 ```ts
-import acmpca = require('@aws-cdk/aws-acmpca');
+import * as acmpca from '@aws-cdk/aws-acmpca';
 ```

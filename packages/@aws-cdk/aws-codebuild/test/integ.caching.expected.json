@@ -1,9 +1,9 @@
 {
   "Resources": {
     "CacheBucket41D9D0B0": {
-      "DeletionPolicy": "Delete",
+      "Type": "AWS::S3::Bucket",
       "UpdateReplacePolicy": "Delete",
-      "Type": "AWS::S3::Bucket"
+      "DeletionPolicy": "Delete"
     },
     "MyProjectRole9BBE5233": {
       "Type": "AWS::IAM::Role",
@@ -137,6 +137,7 @@
         "Environment": {
           "ComputeType": "BUILD_GENERAL1_SMALL",
           "Image": "aws/codebuild/standard:1.0",
+          "ImagePullCredentialsType": "CODEBUILD",
           "PrivilegedMode": false,
           "Type": "LINUX_CONTAINER"
         },
@@ -165,7 +166,8 @@
             ]
           },
           "Type": "S3"
-        }
+        },
+        "EncryptionKey": "alias/aws/s3"
       }
     }
   }

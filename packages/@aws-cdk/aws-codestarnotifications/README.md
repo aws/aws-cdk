@@ -12,5 +12,5 @@
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
 ```ts
-import codestarnotifications = require('@aws-cdk/aws-codestarnotifications');
+import * as codestarnotifications from '@aws-cdk/aws-codestarnotifications';
 ```

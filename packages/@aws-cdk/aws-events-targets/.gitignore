@@ -17,3 +17,6 @@ nyc.config.js
 
 lib/sdk-api-metadata.json
 !.eslintrc.js
+!jest.config.js
+
+junit.xml

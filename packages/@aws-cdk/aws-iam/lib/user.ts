@@ -1,11 +1,12 @@
-import { Construct, Lazy, Resource, SecretValue, Stack } from '@aws-cdk/core';
+import { Aws, Lazy, Resource, SecretValue, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { IGroup } from './group';
 import { CfnUser } from './iam.generated';
 import { IIdentity } from './identity-base';
 import { IManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
 import { PolicyStatement } from './policy-statement';
-import { ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
+import { AddToPrincipalPolicyResult, ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
 import { AttachedPolicies, undefinedIfEmpty } from './util';
 
 /**
@@ -139,6 +140,7 @@ export class User extends Resource implements IIdentity, IUser {
 
     class Import extends Resource implements IUser {
       public readonly grantPrincipal: IPrincipal = this;
+      public readonly principalAccount = Aws.ACCOUNT_ID;
       public readonly userName: string = userName;
       public readonly userArn: string = arn;
       public readonly assumeRoleAction: string = 'sts:AssumeRole';
@@ -146,12 +148,16 @@ export class User extends Resource implements IIdentity, IUser {
       private defaultPolicy?: Policy;
 
       public addToPolicy(statement: PolicyStatement): boolean {
+        return this.addToPrincipalPolicy(statement).statementAdded;
+      }
+
+      public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
         if (!this.defaultPolicy) {
           this.defaultPolicy = new Policy(this, 'Policy');
           this.defaultPolicy.attachToUser(this);
         }
         this.defaultPolicy.addStatements(statement);
-        return true;
+        return { statementAdded: true, policyDependable: this.defaultPolicy };
       }
 
       public addToGroup(_group: IGroup): void {
@@ -171,6 +177,7 @@ export class User extends Resource implements IIdentity, IUser {
   }
 
   public readonly grantPrincipal: IPrincipal = this;
+  public readonly principalAccount: string | undefined = this.env.account;
   public readonly assumeRoleAction: string = 'sts:AssumeRole';
 
   /**
@@ -258,14 +265,18 @@ export class User extends Resource implements IIdentity, IUser {
    *
    * @returns true
    */
-  public addToPolicy(statement: PolicyStatement): boolean {
+  public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
     if (!this.defaultPolicy) {
       this.defaultPolicy = new Policy(this, 'DefaultPolicy');
       this.defaultPolicy.attachToUser(this);
     }
 
     this.defaultPolicy.addStatements(statement);
-    return true;
+    return { statementAdded: true, policyDependable: this.defaultPolicy };
+  }
+
+  public addToPolicy(statement: PolicyStatement): boolean {
+    return this.addToPrincipalPolicy(statement).statementAdded;
   }
 
   private parseLoginProfile(props: UserProps): CfnUser.LoginProfileProperty | undefined {

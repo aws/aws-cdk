@@ -57,7 +57,7 @@ export = {
 
   'When adding a Virtual Router to existing mesh': {
     'with at least one complete port mappings': {
-      'shoulld create proper router'(test: Test) {
+      'should create proper router'(test: Test) {
         // GIVEN
         const stack = new cdk.Stack();
 
@@ -66,14 +66,7 @@ export = {
           meshName: 'test-mesh',
         });
 
-        mesh.addVirtualRouter('router', {
-          listener: {
-            portMapping: {
-              port: 8080,
-              protocol: appmesh.Protocol.HTTP,
-            },
-          },
-        });
+        mesh.addVirtualRouter('router');
 
         // THEN
         expect(stack).to(
@@ -121,7 +114,7 @@ export = {
         ServiceDiscovery: {
           AWSCloudMap: {
             NamespaceName: 'domain.local',
-            ServiceName: { 'Fn::GetAtt': [ 'testnamespaceSvcB55702EC', 'Name' ] },
+            ServiceName: { 'Fn::GetAtt': ['testnamespaceSvcB55702EC', 'Name'] },
           },
         },
       },
@@ -147,12 +140,9 @@ export = {
         });
 
         const testRouter = mesh.addVirtualRouter('router', {
-          listener: {
-            portMapping: {
-              port: 8080,
-              protocol: appmesh.Protocol.HTTP,
-            },
-          },
+          listeners: [
+            appmesh.VirtualRouterListener.http(),
+          ],
         });
 
         // THEN
@@ -178,12 +168,9 @@ export = {
         });
 
         const testRouter = mesh.addVirtualRouter('test-router', {
-          listener: {
-            portMapping: {
-              port: 8080,
-              protocol: appmesh.Protocol.HTTP,
-            },
-          },
+          listeners: [
+            appmesh.VirtualRouterListener.http(),
+          ],
         });
 
         mesh.addVirtualService('service', {
@@ -221,12 +208,9 @@ export = {
 
         const node = mesh.addVirtualNode('test-node', {
           dnsHostName: 'test.domain.local',
-          listener: {
-            portMapping: {
-              port: 8080,
-              protocol: appmesh.Protocol.HTTP,
-            },
-          },
+          listeners: [appmesh.VirtualNodeListener.http({
+            port: 8080,
+          })],
         });
 
         mesh.addVirtualService('service2', {
@@ -276,13 +260,6 @@ export = {
             },
             Spec: {
               // Specifically: no Listeners and Backends
-              Logging: {
-                AccessLog: {
-                  File: {
-                    Path: '/dev/stdout',
-                  },
-                },
-              },
               ServiceDiscovery: {
                 DNS: {
                   Hostname: 'test.domain.local',
@@ -307,12 +284,9 @@ export = {
 
         mesh.addVirtualNode('test-node', {
           dnsHostName: 'test.domain.local',
-          listener: {
-            portMapping: {
-              port: 8080,
-              protocol: appmesh.Protocol.HTTP,
-            },
-          },
+          listeners: [appmesh.VirtualNodeListener.http({
+            port: 8080,
+          })],
         });
 
         // THEN
@@ -349,11 +323,8 @@ export = {
 
         mesh.addVirtualNode('test-node', {
           dnsHostName: 'test.domain.local',
-          listener: {
-            portMapping: {
-              port: 8080,
-              protocol: appmesh.Protocol.HTTP,
-            },
+          listeners: [appmesh.VirtualNodeListener.http({
+            port: 8080,
             healthCheck: {
               healthyThreshold: 3,
               path: '/',
@@ -361,7 +332,7 @@ export = {
               timeout: cdk.Duration.seconds(2), // min
               unhealthyThreshold: 2,
             },
-          },
+          })],
         });
 
         // THEN
@@ -408,12 +379,9 @@ export = {
 
         mesh.addVirtualNode('test-node', {
           dnsHostName: 'test.domain.local',
-          listener: {
-            portMapping: {
-              port: 8080,
-              protocol: appmesh.Protocol.HTTP,
-            },
-          },
+          listeners: [appmesh.VirtualNodeListener.http({
+            port: 8080,
+          })],
           backends: [
             service1,
           ],

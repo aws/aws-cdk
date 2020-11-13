@@ -1,10 +1,11 @@
-import { CustomResource, CustomResourceProvider } from '@aws-cdk/aws-cloudformation';
+import * as fs from 'fs';
+import * as path from 'path';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
-import * as fs from 'fs';
-import * as path from 'path';
+import { Construct } from 'constructs';
+import { PHYSICAL_RESOURCE_ID_REFERENCE, flatten } from './runtime';
 
 // don't use "require" since the typescript compiler emits errors since this
 // file is not listed in tsconfig.json.
@@ -16,6 +17,18 @@ const metadata = JSON.parse(fs.readFileSync(path.join(__dirname, 'sdk-api-metada
 export type AwsSdkMetadata = {[key: string]: any};
 
 const awsSdkMetadata: AwsSdkMetadata = metadata;
+
+/**
+ * Reference to the physical resource id that can be passed to the AWS operation as a parameter.
+ */
+export class PhysicalResourceIdReference {
+  /**
+   * toJSON serialization to replace `PhysicalResourceIdReference` with a magic string.
+   */
+  public toJSON() {
+    return PHYSICAL_RESOURCE_ID_REFERENCE;
+  }
+}
 
 /**
  * Physical ID of the custom resource.
@@ -64,7 +77,7 @@ export interface AwsSdkCall {
   /**
    * The parameters for the service action
    *
-   * @default - no paramters
+   * @default - no parameters
    * @see https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/index.html
    */
   readonly parameters?: any;
@@ -206,7 +219,8 @@ export interface AwsCustomResourceProps {
   readonly onDelete?: AwsSdkCall;
 
   /**
-   * The policy to apply to the resource.
+   * The policy that will be added to the execution role of the Lambda
+   * function implementing this custom resource provider.
    *
    * The custom resource also implements `iam.IGrantable`, making it possible
    * to use the `grantXxx()` methods.
@@ -244,6 +258,24 @@ export interface AwsCustomResourceProps {
    * @default logs.RetentionDays.INFINITE
    */
   readonly logRetention?: logs.RetentionDays;
+
+  /**
+   * Whether to install the latest AWS SDK v2. Allows to use the latest API
+   * calls documented at https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/index.html.
+   *
+   * The installation takes around 60 seconds.
+   *
+   * @default true
+   */
+  readonly installLatestAwsSdk?: boolean;
+
+  /**
+   * A name for the Lambda function implementing this custom resource.
+   *
+   * @default - AWS CloudFormation generates a unique physical ID and uses that
+   * ID for the function's name. For more information, see Name Type.
+   */
+  readonly functionName?: string;
 }
 
 /**
@@ -267,12 +299,12 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
 
   public readonly grantPrincipal: iam.IPrincipal;
 
-  private readonly customResource: CustomResource;
+  private readonly customResource: cdk.CustomResource;
   private readonly props: AwsCustomResourceProps;
 
   // 'props' cannot be optional, even though all its properties are optional.
   // this is because at least one sdk call must be provided.
-  constructor(scope: cdk.Construct, id: string, props: AwsCustomResourceProps) {
+  constructor(scope: Construct, id: string, props: AwsCustomResourceProps) {
     super(scope, id);
 
     if (!props.onCreate && !props.onUpdate && !props.onDelete) {
@@ -291,6 +323,15 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
       }
     }
 
+    if (props.onCreate?.parameters) {
+      const flattenedOnCreateParams = flatten(JSON.parse(JSON.stringify(props.onCreate.parameters)));
+      for (const param in flattenedOnCreateParams) {
+        if (flattenedOnCreateParams[param] === PHYSICAL_RESOURCE_ID_REFERENCE) {
+          throw new Error('`PhysicalResourceIdReference` must not be specified in `onCreate` parameters.');
+        }
+      }
+    }
+
     this.props = props;
 
     const provider = new lambda.SingletonFunction(this, 'Provider', {
@@ -302,37 +343,51 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
       timeout: props.timeout || cdk.Duration.minutes(2),
       role: props.role,
       logRetention: props.logRetention,
+      functionName: props.functionName,
     });
     this.grantPrincipal = provider.grantPrincipal;
 
+    // Create the policy statements for the custom resource function role, or use the user-provided ones
+    const statements = [];
     if (props.policy.statements.length !== 0) {
       // Use custom statements provided by the user
       for (const statement of props.policy.statements) {
-        provider.addToRolePolicy(statement);
+        statements.push(statement);
       }
     } else {
       // Derive statements from AWS SDK calls
       for (const call of [props.onCreate, props.onUpdate, props.onDelete]) {
         if (call) {
-          provider.addToRolePolicy(new iam.PolicyStatement({
+          const statement = new iam.PolicyStatement({
             actions: [awsSdkToIamAction(call.service, call.action)],
             resources: props.policy.resources,
-          }));
+          });
+          statements.push(statement);
         }
       }
-
     }
-
+    const policy = new iam.Policy(this, 'CustomResourcePolicy', {
+      statements: statements,
+    });
+    if (provider.role !== undefined) {
+      policy.attachToRole(provider.role);
+    }
     const create = props.onCreate || props.onUpdate;
-    this.customResource = new CustomResource(this, 'Resource', {
+    this.customResource = new cdk.CustomResource(this, 'Resource', {
       resourceType: props.resourceType || 'Custom::AWS',
-      provider: CustomResourceProvider.fromLambda(provider),
+      serviceToken: provider.functionArn,
+      pascalCaseProperties: true,
       properties: {
         create: create && encodeBooleans(create),
         update: props.onUpdate && encodeBooleans(props.onUpdate),
         delete: props.onDelete && encodeBooleans(props.onDelete),
+        installLatestAwsSdk: props.installLatestAwsSdk ?? true,
       },
     });
+
+    // If the policy was deleted first, then the function might lose permissions to delete the custom resource
+    // This is here so that the policy doesn't get removed before onDelete is called
+    this.customResource.node.addDependency(policy);
   }
 
   /**

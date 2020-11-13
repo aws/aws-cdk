@@ -1,8 +1,12 @@
-import { IConstruct } from '../construct-compat';
+import { IConstruct } from 'constructs';
 import { DefaultTokenResolver, IPostProcessor, IResolvable, IResolveContext, ITokenResolver, StringConcat } from '../resolvable';
 import { TokenizedStringFragments } from '../string-fragments';
 import { containsListTokenElement, TokenString, unresolved } from './encoding';
 import { TokenMap } from './token-map';
+
+// v2 - leave this as a separate section so it reduces merge conflicts when compat is removed
+// eslint-disable-next-line import/order
+import { IConstruct as ICoreConstruct } from '../construct-compat';
 
 // This file should not be exported to consumers, resolving should happen through Construct.resolve()
 
@@ -44,12 +48,12 @@ export function resolve(obj: any, options: IResolveOptions): any {
 
     const context: IResolveContext = {
       preparing: options.preparing,
-      scope: options.scope,
+      scope: options.scope as ICoreConstruct,
       registerPostProcessor(pp) { postProcessor = pp; },
       resolve(x: any) { return resolve(x, { ...options, prefix: newPrefix }); },
     };
 
-    return [context, { postProcess(x) { return postProcessor ? postProcessor.postProcess(x, context) : x; }}];
+    return [context, { postProcess(x) { return postProcessor ? postProcessor.postProcess(x, context) : x; } }];
   }
 
   // protect against cyclic references by limiting depth.
@@ -148,7 +152,8 @@ export function resolve(obj: any, options: IResolveOptions): any {
   for (const key of Object.keys(obj)) {
     const resolvedKey = makeContext()[0].resolve(key);
     if (typeof(resolvedKey) !== 'string') {
-      throw new Error(`"${key}" is used as the key in a map so must resolve to a string, but it resolves to: ${JSON.stringify(resolvedKey)}`);
+      // eslint-disable-next-line max-len
+      throw new Error(`"${key}" is used as the key in a map so must resolve to a string, but it resolves to: ${JSON.stringify(resolvedKey)}. Consider using "CfnJson" to delay resolution to deployment-time`);
     }
 
     const value = makeContext(key)[0].resolve(obj[key]);

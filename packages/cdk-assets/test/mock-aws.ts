@@ -7,19 +7,21 @@ export function mockAws() {
 
   // Sane defaults which can be overridden
   mockS3.getBucketLocation = mockedApiResult({});
-  mockEcr.describeRepositories = mockedApiResult({ repositories: [
-    {
-      repositoryUri: '12345.amazonaws.com/repo',
-    },
-  ] });
+  mockEcr.describeRepositories = mockedApiResult({
+    repositories: [
+      {
+        repositoryUri: '12345.amazonaws.com/repo',
+      },
+    ],
+  });
 
   return {
     mockEcr,
     mockS3,
     discoverCurrentAccount: jest.fn(() => Promise.resolve({ accountId: 'current_account', partition: 'swa' })),
     discoverDefaultRegion: jest.fn(() => Promise.resolve('current_region')),
-    ecrClient: jest.fn().mockReturnValue(Promise.resolve(mockEcr)),
-    s3Client: jest.fn().mockReturnValue(Promise.resolve(mockS3)),
+    ecrClient: jest.fn(() => Promise.resolve(mockEcr)),
+    s3Client: jest.fn(() => Promise.resolve(mockS3)),
   };
 }
 

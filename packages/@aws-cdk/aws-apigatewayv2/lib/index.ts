@@ -1,2 +1,3 @@
-// AWS::APIGatewayv2 CloudFormation Resources:
 export * from './apigatewayv2.generated';
+export * from './common';
+export * from './http';

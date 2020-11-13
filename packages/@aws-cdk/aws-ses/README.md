@@ -20,10 +20,10 @@ Create a receipt rule set with rules and actions (actions can be found in the
 `@aws-cdk/aws-ses-actions` package):
 
 ```ts
-import s3 = require('@aws-cdk/aws-s3');
-import ses = require('@aws-cdk/aws-ses');
-import actions = require('@aws-cdk/aws-ses-actions');
-import sns = require('@aws-cdk/aws-sns');
+import * as s3 from '@aws-cdk/aws-s3';
+import * as ses from '@aws-cdk/aws-ses';
+import * as actions from '@aws-cdk/aws-ses-actions';
+import * as sns from '@aws-cdk/aws-sns';
 
 const bucket = new s3.Bucket(stack, 'Bucket');
 const topic = new sns.Topic(stack, 'Topic');

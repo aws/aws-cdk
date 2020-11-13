@@ -63,6 +63,45 @@ test('create a domain', () => {
   });
 });
 
+test('map a branch to the domain root', () => {
+  // GIVEN
+  const stack = new Stack();
+  const app = new amplify.App(stack, 'App', {
+    sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
+      owner: 'aws',
+      repository: 'aws-cdk',
+      oauthToken: SecretValue.plainText('secret'),
+    }),
+  });
+  const prodBranch = app.addBranch('master');
+
+  // WHEN
+  const domain = app.addDomain('amazon.com');
+  domain.mapRoot(prodBranch);
+
+  // THEN
+  expect(stack).toHaveResource('AWS::Amplify::Domain', {
+    AppId: {
+      'Fn::GetAtt': [
+        'AppF1B96344',
+        'AppId',
+      ],
+    },
+    DomainName: 'amazon.com',
+    SubDomainSettings: [
+      {
+        BranchName: {
+          'Fn::GetAtt': [
+            'Appmaster71597E87',
+            'BranchName',
+          ],
+        },
+        Prefix: '',
+      },
+    ],
+  });
+});
+
 test('throws at synthesis without subdomains', () => {
   // GIVEN
   const app = new App();

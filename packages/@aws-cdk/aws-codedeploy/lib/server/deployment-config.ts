@@ -1,11 +1,12 @@
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnDeploymentConfig } from '../codedeploy.generated';
 import { arnForDeploymentConfig } from '../utils';
 
 /**
  * The Deployment Configuration of an EC2/on-premise Deployment Group.
  * The default, pre-defined Configurations are available as constants on the {@link ServerDeploymentConfig} class
- * (`ServerDeploymentConfig.HalfAtATime`, `ServerDeploymentConfig.AllAtOnce`, etc.).
+ * (`ServerDeploymentConfig.HALF_AT_A_TIME`, `ServerDeploymentConfig.ALL_AT_ONCE`, etc.).
  * To create a custom Deployment Configuration,
  * instantiate the {@link ServerDeploymentConfig} Construct.
  */
@@ -79,9 +80,9 @@ export interface ServerDeploymentConfigProps {
  * @resource AWS::CodeDeploy::DeploymentConfig
  */
 export class ServerDeploymentConfig extends cdk.Resource implements IServerDeploymentConfig {
-  public static readonly ONE_AT_A_TIME  = deploymentConfig('CodeDeployDefault.OneAtATime');
+  public static readonly ONE_AT_A_TIME = deploymentConfig('CodeDeployDefault.OneAtATime');
   public static readonly HALF_AT_A_TIME = deploymentConfig('CodeDeployDefault.HalfAtATime');
-  public static readonly ALL_AT_ONCE   = deploymentConfig('CodeDeployDefault.AllAtOnce');
+  public static readonly ALL_AT_ONCE = deploymentConfig('CodeDeployDefault.AllAtOnce');
 
   /**
    * Import a custom Deployment Configuration for an EC2/on-premise Deployment Group defined either outside the CDK app,
@@ -93,7 +94,7 @@ export class ServerDeploymentConfig extends cdk.Resource implements IServerDeplo
    * @returns a Construct representing a reference to an existing custom Deployment Configuration
    */
   public static fromServerDeploymentConfigName(
-    scope: cdk.Construct,
+    scope: Construct,
     id: string,
     serverDeploymentConfigName: string): IServerDeploymentConfig {
 
@@ -105,7 +106,7 @@ export class ServerDeploymentConfig extends cdk.Resource implements IServerDeplo
   public readonly deploymentConfigName: string;
   public readonly deploymentConfigArn: string;
 
-  constructor(scope: cdk.Construct, id: string, props: ServerDeploymentConfigProps) {
+  constructor(scope: Construct, id: string, props: ServerDeploymentConfigProps) {
     super(scope, id, {
       physicalName: props.deploymentConfigName,
     });

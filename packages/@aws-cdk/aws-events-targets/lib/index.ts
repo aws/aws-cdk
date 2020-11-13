@@ -8,3 +8,5 @@ export * from './lambda';
 export * from './ecs-task-properties';
 export * from './ecs-task';
 export * from './state-machine';
+export * from './kinesis-stream';
+export * from './kinesis-firehose-stream';

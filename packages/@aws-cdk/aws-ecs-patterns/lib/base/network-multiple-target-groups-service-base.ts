@@ -1,10 +1,18 @@
 import { IVpc } from '@aws-cdk/aws-ec2';
-import * as ecs from '@aws-cdk/aws-ecs';
-import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
+import {
+  AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerDefinition, ContainerImage, ICluster, LogDriver,
+  PropagatedTagSource, Protocol, Secret,
+} from '@aws-cdk/aws-ecs';
+import { NetworkListener, NetworkLoadBalancer, NetworkTargetGroup } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { IRole } from '@aws-cdk/aws-iam';
 import { ARecord, IHostedZone, RecordTarget } from '@aws-cdk/aws-route53';
 import { LoadBalancerTarget } from '@aws-cdk/aws-route53-targets';
-import { CfnOutput, Construct, Duration, Stack } from '@aws-cdk/core';
+import { CfnOutput, Duration, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * The properties for the base NetworkMultipleTargetGroupsEc2Service or NetworkMultipleTargetGroupsFargateService service.
@@ -267,7 +275,7 @@ export interface NetworkTargetProps {
 /**
  * The base class for NetworkMultipleTargetGroupsEc2Service and NetworkMultipleTargetGroupsFargateService classes.
  */
-export abstract class NetworkMultipleTargetGroupsServiceBase extends Construct {
+export abstract class NetworkMultipleTargetGroupsServiceBase extends CoreConstruct {
   /**
    * The desired number of instantiations of the task definition to keep running on the service.
    */

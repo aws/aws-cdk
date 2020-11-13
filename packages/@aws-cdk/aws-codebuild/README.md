@@ -29,7 +29,7 @@ $ npm i @aws-cdk/aws-codebuild
 Import it into your code:
 
 ```ts
-import codebuild = require('@aws-cdk/aws-codebuild');
+import * as codebuild from '@aws-cdk/aws-codebuild';
 ```
 
 The `codebuild.Project` construct represents a build project resource. See the
@@ -54,8 +54,8 @@ CodeBuild!`:
 Use an AWS CodeCommit repository as the source of this build:
 
 ```ts
-import codebuild = require('@aws-cdk/aws-codebuild');
-import codecommit = require('@aws-cdk/aws-codecommit');
+import * as codebuild from '@aws-cdk/aws-codebuild';
+import * as codecommit from '@aws-cdk/aws-codecommit';
 
 const repository = new codecommit.Repository(this, 'MyRepo', { repositoryName: 'foo' });
 new codebuild.Project(this, 'MyFirstCodeCommitProject', {
@@ -68,8 +68,8 @@ new codebuild.Project(this, 'MyFirstCodeCommitProject', {
 Create a CodeBuild project with an S3 bucket as the source:
 
 ```ts
-import codebuild = require('@aws-cdk/aws-codebuild');
-import s3 = require('@aws-cdk/aws-s3');
+import * as codebuild from '@aws-cdk/aws-codebuild';
+import * as s3 from '@aws-cdk/aws-s3';
 
 const bucket = new s3.Bucket(this, 'MyBucket');
 new codebuild.Project(this, 'MyProject', {
@@ -89,9 +89,12 @@ Example:
 const gitHubSource = codebuild.Source.gitHub({
   owner: 'awslabs',
   repo: 'aws-cdk',
-  webhook: true, // optional, default: true if `webhookFilteres` were provided, false otherwise
+  webhook: true, // optional, default: true if `webhookFilters` were provided, false otherwise
   webhookFilters: [
-    codebuild.FilterGroup.inEventOf(codebuild.EventAction.PUSH).andBranchIs('master'),
+    codebuild.FilterGroup
+      .inEventOf(codebuild.EventAction.PUSH)
+      .andBranchIs('master')
+      .andCommitMessageIs('the commit message'),
   ], // optional, by default all pushes and Pull Requests will trigger a build
 });
 ```
@@ -114,6 +117,42 @@ const bbSource = codebuild.Source.bitBucket({
   repo: 'repo',
 });
 ```
+
+### For all Git sources
+
+For all Git sources, you can fetch submodules while cloing git repo.
+
+```typescript
+const gitHubSource = codebuild.Source.gitHub({
+  owner: 'awslabs',
+  repo: 'aws-cdk',
+  fetchSubmodules: true,
+});
+```
+
+## Artifacts
+
+CodeBuild Projects can produce Artifacts and upload them to S3. For example:
+
+```ts
+const project = codebuild.Project(stack, 'MyProject', {
+  buildSpec: codebuild.BuildSpec.fromObject({
+    version: '0.2',
+  }),
+  artifacts: codebuild.Artifacts.s3({
+      bucket,
+      includeBuildId: false,
+      packageZip: true,
+      path: 'another/path',
+      identifier: 'AddArtifact1',
+    }),
+});
+```
+
+Because we've not set the `name` property, this example will set the
+`overrideArtifactName` parameter, and produce an artifact named as defined in
+the Buildspec file, uploaded to an S3 bucket (`bucket`). The path will be
+`another/path` and the artifact will be a zipfile.
 
 ## CodePipeline
 
@@ -189,18 +228,36 @@ The CodeBuild library supports both Linux and Windows images via the
 `LinuxBuildImage` and `WindowsBuildImage` classes, respectively.
 
 You can specify one of the predefined Windows/Linux images by using one
-of the constants such as `WindowsBuildImage.WINDOWS_BASE_2_0` or
-`LinuxBuildImage.STANDARD_2_0`.
+of the constants such as `WindowsBuildImage.WIN_SERVER_CORE_2019_BASE`,
+`WindowsBuildImage.WINDOWS_BASE_2_0` or `LinuxBuildImage.STANDARD_2_0`.
 
 Alternatively, you can specify a custom image using one of the static methods on
-`XxxBuildImage`:
+`LinuxBuildImage`:
 
-* Use `.fromDockerRegistry(image[, { secretsManagerCredentials }])` to reference an image in any public or private Docker registry.
-* Use `.fromEcrRepository(repo[, tag])` to reference an image available in an
+* `LinuxBuildImage.fromDockerRegistry(image[, { secretsManagerCredentials }])` to reference an image in any public or private Docker registry.
+* `LinuxBuildImage.fromEcrRepository(repo[, tag])` to reference an image available in an
   ECR repository.
-* Use `.fromAsset(directory)` to use an image created from a
+* `LinuxBuildImage.fromAsset(parent, id, props)` to use an image created from a
   local asset.
-* Use `.fromCodeBuildImageId(id)` to reference a pre-defined, CodeBuild-provided Docker image.
+* `LinuxBuildImage.fromCodeBuildImageId(id)` to reference a pre-defined, CodeBuild-provided Docker image.
+
+or one of the corresponding methods on `WindowsBuildImage`:
+
+* `WindowsBuildImage.fromDockerRegistry(image[, { secretsManagerCredentials }, imageType])`
+* `WindowsBuildImage.fromEcrRepository(repo[, tag, imageType])`
+* `WindowsBuildImage.fromAsset(parent, id, props, [, imageType])`
+
+Note that the `WindowsBuildImage` version of the static methods accepts an optional parameter of type `WindowsImageType`, 
+which can be either `WindowsImageType.STANDARD`, the default, or `WindowsImageType.SERVER_2019`:
+
+```typescript
+new codebuild.Project(this, 'Project', {
+  environment: {
+    buildImage: codebuild.WindowsBuildImage.fromEcrRepository(ecrRepository, 'v1.0', codebuild.WindowsImageType.SERVER_2019),
+  },
+  ...
+})
+```
 
 The following example shows how to define an image from a Docker asset:
 
@@ -213,6 +270,40 @@ The following example shows how to define an image from an ECR repository:
 The following example shows how to define an image from a private docker registry:
 
 [Docker Registry example](./test/integ.docker-registry.lit.ts)
+
+### GPU images
+
+The class `LinuxGpuBuildImage` contains constants for working with
+[AWS Deep Learning Container images](https://aws.amazon.com/releasenotes/available-deep-learning-containers-images):
+
+
+```typescript
+new codebuild.Project(this, 'Project', {
+  environment: {
+    buildImage: codebuild.LinuxGpuBuildImage.DLC_TENSORFLOW_2_1_0_INFERENCE,
+  },
+  ...
+})
+```
+
+One complication is that the repositories for the DLC images are in
+different accounts in different AWS regions.
+In most cases, the CDK will handle providing the correct account for you;
+in rare cases (for example, deploying to new regions)
+where our information might be out of date,
+you can always specify the account
+(along with the repository name and tag)
+explicitly using the `awsDeepLearningContainersImage` method:
+
+```typescript
+new codebuild.Project(this, 'Project', {
+  environment: {
+    buildImage: codebuild.LinuxGpuBuildImage.awsDeepLearningContainersImage(
+      'tensorflow-inference', '2.1.0-gpu-py36-cu101-ubuntu18.04', '123456789012'),
+  },
+  ...
+})
+```
 
 ## Credentials
 
@@ -245,6 +336,68 @@ any attempt to save more than one will result in an error.
 You can use the [`list-source-credentials` AWS CLI operation](https://docs.aws.amazon.com/cli/latest/reference/codebuild/list-source-credentials.html)
 to inspect what credentials are stored in your account.
 
+## Test reports
+
+You can specify a test report in your buildspec:
+
+```typescript
+const project = new codebuild.Project(this, 'Project', {
+  buildSpec: codebuild.BuildSpec.fromObject({
+    // ...
+    reports: {
+      myReport: {
+        files: '**/*',
+        'base-directory': 'build/test-results',
+      },
+    },
+  }),
+});
+```
+
+This will create a new test report group,
+with the name `<ProjectName>-myReport`.
+
+The project's role in the CDK will always be granted permissions to create and use report groups
+with names starting with the project's name;
+if you'd rather not have those permissions added,
+you can opt out of it when creating the project:
+
+```typescript
+const project = new codebuild.Project(this, 'Project', {
+  // ...
+  grantReportGroupPermissions: false,
+});
+```
+
+Alternatively, you can specify an ARN of an existing resource group,
+instead of a simple name, in your buildspec:
+
+```typescript
+// create a new ReportGroup
+const reportGroup = new codebuild.ReportGroup(this, 'ReportGroup');
+
+const project = new codebuild.Project(this, 'Project', {
+  buildSpec: codebuild.BuildSpec.fromObject({
+    // ...
+    reports: {
+      [reportGroup.reportGroupArn]: {
+        files: '**/*',
+        'base-directory': 'build/test-results',
+      },
+    },
+  }),
+});
+```
+
+If you do that, you need to grant the project's role permissions to write reports to that report group:
+
+```typescript
+reportGroup.grantWrite(project);
+```
+
+For more information on the test reports feature,
+see the [AWS CodeBuild documentation](https://docs.aws.amazon.com/codebuild/latest/userguide/test-reporting.html).
+
 ## Events
 
 CodeBuild projects can be used either as a source for events or be triggered
@@ -257,7 +410,7 @@ project as a AWS CloudWatch event rule target:
 
 ```ts
 // start build when a commit is pushed
-const targets = require('@aws-cdk/aws-events-targets');
+import * as targets from '@aws-cdk/aws-events-targets';
 
 codeCommitRepository.onCommit('OnCommit', {
   target: new targets.CodeBuildProject(project),

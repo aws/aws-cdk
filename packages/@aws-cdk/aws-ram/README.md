@@ -12,5 +12,5 @@
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
 ```ts
-import ram = require('@aws-cdk/aws-ram');
+import * as ram from '@aws-cdk/aws-ram';
 ```

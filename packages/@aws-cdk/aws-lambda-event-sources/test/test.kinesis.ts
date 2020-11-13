@@ -6,7 +6,7 @@ import { Test } from 'nodeunit';
 import * as sources from '../lib';
 import { TestFunction } from './test-function';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
   'sufficiently complex example'(test: Test) {
@@ -66,7 +66,7 @@ export = {
           'Arn',
         ],
       },
-      'FunctionName':  {
+      'FunctionName': {
         'Ref': 'Fn9270CBC0',
       },
       'BatchSize': 100,
@@ -96,7 +96,7 @@ export = {
           'Arn',
         ],
       },
-      'FunctionName':  {
+      'FunctionName': {
         'Ref': 'Fn9270CBC0',
       },
       'BatchSize': 50,
@@ -136,6 +136,21 @@ export = {
     test.done();
   },
 
+  'accepts if batch size is a token'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const stream = new kinesis.Stream(stack, 'S');
+
+    // WHEN
+    fn.addEventSource(new sources.KinesisEventSource(stream, {
+      batchSize: cdk.Lazy.numberValue({ produce: () => 10 }),
+      startingPosition: lambda.StartingPosition.LATEST,
+    }));
+
+    test.done();
+  },
+
   'specific maxBatchingWindow'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -156,7 +171,7 @@ export = {
           'Arn',
         ],
       },
-      'FunctionName':  {
+      'FunctionName': {
         'Ref': 'Fn9270CBC0',
       },
       'MaximumBatchingWindowInSeconds': 120,
@@ -193,6 +208,26 @@ export = {
 
     // WHEN/THEN
     test.throws(() => eventSource.eventSourceMappingId, /KinesisEventSource is not yet bound to an event source mapping/);
+    test.done();
+  },
+
+  'event source disabled'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const stream = new kinesis.Stream(stack, 'S');
+    const eventSource = new sources.KinesisEventSource(stream, {
+      startingPosition: lambda.StartingPosition.LATEST,
+      enabled: false,
+    });
+
+    // WHEN
+    fn.addEventSource(eventSource);
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::EventSourceMapping', {
+      'Enabled': false,
+    }));
     test.done();
   },
 };

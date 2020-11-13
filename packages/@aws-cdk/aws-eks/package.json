@@ -23,9 +23,14 @@
       },
       "python": {
         "distName": "aws-cdk.aws-eks",
-        "module": "aws_cdk.aws_eks"
+        "module": "aws_cdk.aws_eks",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",
@@ -44,10 +49,14 @@
     "cfn2ts": "cfn2ts",
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test",
-    "compat": "cdk-compat"
+    "compat": "cdk-compat",
+    "gen": "cfn2ts"
   },
   "cdk-build": {
-    "cloudformation": "AWS::EKS"
+    "cloudformation": "AWS::EKS",
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "keywords": [
     "aws",
@@ -63,54 +72,56 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
-    "@types/nodeunit": "^0.0.30",
-    "aws-sdk": "^2.665.0",
+    "@types/nodeunit": "^0.0.31",
+    "@types/yaml": "1.9.6",
+    "aws-sdk": "^2.792.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
     "nodeunit": "^0.11.3",
     "pkglint": "0.0.0",
-    "sinon": "^9.0.2"
+    "sinon": "^9.2.1",
+    "cdk8s-plus": "^0.33.0",
+    "cdk8s": "^0.33.0"
   },
   "dependencies": {
     "@aws-cdk/aws-autoscaling": "0.0.0",
-    "@aws-cdk/aws-cloudformation": "0.0.0",
     "@aws-cdk/aws-ec2": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-kms": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-ssm": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/custom-resources": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.2.0",
+    "yaml": "1.10.0"
   },
+  "bundledDependencies": [
+    "yaml"
+  ],
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/aws-autoscaling": "0.0.0",
-    "@aws-cdk/aws-cloudformation": "0.0.0",
     "@aws-cdk/aws-ec2": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-kms": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-ssm": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/custom-resources": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.2.0"
   },
   "engines": {
-    "node": ">= 10.12.0"
+    "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "awslint": {
     "exclude": [
-      "resource-attribute:@aws-cdk/aws-eks.FargateCluster.clusterSecurityGroupId",
-      "resource-attribute:@aws-cdk/aws-eks.FargateCluster.clusterEncryptionConfigKeyArn",
-      "resource-attribute:@aws-cdk/aws-eks.Cluster.clusterSecurityGroupId",
-      "resource-attribute:@aws-cdk/aws-eks.Cluster.clusterEncryptionConfigKeyArn",
       "props-no-arn-refs:@aws-cdk/aws-eks.ClusterProps.outputMastersRoleArn",
-      "resource-attribute:@aws-cdk/aws-eks.Cluster.clusterSecurityGroupId",
-      "resource-attribute:@aws-cdk/aws-eks.Cluster.clusterSecurityGroupId"
+      "props-physical-name:@aws-cdk/aws-eks.OpenIdConnectProviderProps"
     ]
   },
   "stability": "experimental",
-  "maturity": "experimental",
+  "maturity": "developer-preview",
   "awscdkio": {
     "announce": false
   }

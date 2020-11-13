@@ -149,6 +149,16 @@ export enum InstanceClass {
   R5AD = 'r5a',
 
   /**
+   * Memory optimized instances, 6th generation with Graviton2 processors
+   */
+  MEMORY6_GRAVITON = 'r6g',
+
+  /**
+   * Memory optimized instances, 6th generation with Graviton2 processors
+   */
+  R6G = 'r6g',
+
+  /**
    * Compute optimized instances, 3rd generation
    */
   COMPUTE3 = 'c3',
@@ -184,6 +194,16 @@ export enum InstanceClass {
   COMPUTE5_NVME_DRIVE = 'c5d',
 
   /**
+   * Compute optimized instances based on AMD EPYC, 5th generation.
+   */
+  COMPUTE5_AMD = 'c5a',
+
+  /**
+   * Compute optimized instances based on AMD EPYC, 5th generation
+   */
+  C5A = 'c5a',
+
+  /**
    * Compute optimized instances with local NVME drive, 5th generation
    */
   C5D = 'c5d',
@@ -197,6 +217,28 @@ export enum InstanceClass {
    * Compute optimized instances for high performance computing, 5th generation
    */
   C5N = 'c5n',
+
+  /**
+   * Compute optimized instances for high performance computing, 6th generation with Graviton2 processors
+   */
+  COMPUTE6_GRAVITON2 = 'c6g',
+
+  /**
+   * Compute optimized instances for high performance computing, 6th generation with Graviton2 processors
+   */
+  C6G = 'c6g',
+
+  /**
+   * Compute optimized instances for high performance computing, 6th generation with Graviton2 processors
+   * and local NVME drive
+   */
+  COMPUTE6_GRAVITON2_NVME_DRIVE = 'c6gd',
+
+  /**
+   * Compute optimized instances for high performance computing, 6th generation with Graviton2 processors
+   * and local NVME drive
+   */
+  C6GD = 'c6gd',
 
   /**
    * Storage-optimized instances, 2nd generation
@@ -267,6 +309,16 @@ export enum InstanceClass {
    * Burstable instances based on AMD EPYC, 3rd generation
    */
   T3A = 't3a',
+
+  /**
+   * Burstable instances, 4th generation with Graviton2 processors
+   */
+  BURSTABLE4_GRAVITON = 't4g',
+
+  /**
+   * Burstable instances, 4th generation with Graviton2 processors
+   */
+  T4G = 't4g',
 
   /**
    * Memory-intensive instances, 1st generation
@@ -383,23 +435,96 @@ export enum InstanceClass {
  * What size of instance to use
  */
 export enum InstanceSize {
+  /**
+   * Instance size NANO (nano)
+   */
   NANO = 'nano',
+
+  /**
+   * Instance size MICRO (micro)
+   */
   MICRO = 'micro',
+
+  /**
+   * Instance size SMALL (small)
+   */
   SMALL = 'small',
+
+  /**
+   * Instance size MEDIUM (medium)
+   */
   MEDIUM = 'medium',
+
+  /**
+   * Instance size LARGE (large)
+   */
   LARGE = 'large',
+
+  /**
+   * Instance size XLARGE (xlarge)
+   */
   XLARGE = 'xlarge',
+
+  /**
+   * Instance size XLARGE2 (2xlarge)
+   */
   XLARGE2 = '2xlarge',
+
+  /**
+   * Instance size XLARGE4 (4xlarge)
+   */
   XLARGE4 = '4xlarge',
+
+  /**
+   * Instance size XLARGE6 (6xlarge)
+   */
+  XLARGE6 = '6xlarge',
+
+  /**
+   * Instance size XLARGE8 (8xlarge)
+   */
   XLARGE8 = '8xlarge',
+
+  /**
+   * Instance size XLARGE9 (9xlarge)
+   */
   XLARGE9 = '9xlarge',
+
+  /**
+   * Instance size XLARGE10 (10xlarge)
+   */
   XLARGE10 = '10xlarge',
+
+  /**
+   * Instance size XLARGE12 (12xlarge)
+   */
   XLARGE12 = '12xlarge',
+
+  /**
+   * Instance size XLARGE16 (16xlarge)
+   */
   XLARGE16 = '16xlarge',
+
+  /**
+   * Instance size XLARGE18 (18xlarge)
+   */
   XLARGE18 = '18xlarge',
+
+  /**
+   * Instance size XLARGE24 (24xlarge)
+   */
   XLARGE24 = '24xlarge',
+
+  /**
+   * Instance size XLARGE32 (32xlarge)
+   */
   XLARGE32 = '32xlarge',
+
+  /**
+   * Instance size METAL (metal)
+   */
   METAL = 'metal',
+
 }
 
 /**

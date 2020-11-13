@@ -40,6 +40,18 @@
     "myuserpool01998219": {
       "Type": "AWS::Cognito::UserPool",
       "Properties": {
+        "AccountRecoverySetting": {
+          "RecoveryMechanisms": [
+            {
+              "Name": "verified_phone_number",
+              "Priority": 1
+            },
+            {
+              "Name": "verified_email",
+              "Priority": 2
+            }
+          ]
+        },
         "AdminCreateUserConfig": {
           "AllowAdminCreateUserOnly": false
         },
@@ -75,23 +87,41 @@
         }
       }
     },
+    "myuserpoolmyuserpooldomainEE1E11AF": {
+      "Type": "AWS::Cognito::UserPoolDomain",
+      "Properties": {
+        "Domain": "integ-user-pool-signup-link",
+        "UserPoolId": {
+          "Ref": "myuserpool01998219"
+        }
+      }
+    },
     "myuserpoolclient8A58A3E4": {
       "Type": "AWS::Cognito::UserPoolClient",
       "Properties": {
         "UserPoolId": {
           "Ref": "myuserpool01998219"
         },
+        "AllowedOAuthFlows": [
+          "implicit",
+          "code"
+        ],
+        "AllowedOAuthFlowsUserPoolClient": true,
+        "AllowedOAuthScopes": [
+          "profile",
+          "phone",
+          "email",
+          "openid",
+          "aws.cognito.signin.user.admin"
+        ],
+        "CallbackURLs": [
+          "https://example.com"
+        ],
         "ClientName": "signup-test",
-        "GenerateSecret": false
-      }
-    },
-    "myuserpooldomain": {
-      "Type": "AWS::Cognito::UserPoolDomain",
-      "Properties": {
-        "Domain": "integuserpoolsignuplinkmyuserpoolA8374994",
-        "UserPoolId": {
-          "Ref": "myuserpool01998219"
-        }
+        "GenerateSecret": false,
+        "SupportedIdentityProviders": [
+          "COGNITO"
+        ]
       }
     }
   },

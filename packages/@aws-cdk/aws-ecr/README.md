@@ -20,6 +20,24 @@ holds multiple verions of a single container image.
 const repository = new ecr.Repository(this, 'Repository');
 ```
 
+### Image scanning
+
+Amazon ECR image scanning helps in identifying software vulnerabilities in your container images. You can manually scan container images stored in Amazon ECR, or you can configure your repositories to scan images when you push them to a repository. To create a new repository to scan on push, simply enable `imageScanOnPush` in the properties
+
+```ts
+const repository = new ecr.Repository(stack, 'Repo', {
+  imageScanOnPush: true
+});
+```
+
+To create an `onImageScanCompleted` event rule and trigger the event target
+
+```ts
+repository.onImageScanCompleted('ImageScanComplete')
+  .addTarget(...)
+```
+
+
 ### Automatically clean up repositories
 
 You can set life cycle rules to automatically clean up old images from your

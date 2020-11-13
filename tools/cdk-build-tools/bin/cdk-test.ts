@@ -1,7 +1,7 @@
 import * as fs from 'fs-extra';
 import * as yargs from 'yargs';
 import { shell } from '../lib/os';
-import { cdkBuildOptions, configFilePath, currentPackageJson, hasIntegTests, unitTestFiles } from '../lib/package-info';
+import { cdkBuildOptions, configFilePath, hasIntegTests, unitTestFiles } from '../lib/package-info';
 import { Timers } from '../lib/timer';
 
 async function main() {
@@ -30,25 +30,25 @@ async function main() {
 
   const options = cdkBuildOptions();
 
+  const defaultShellOptions = {
+    timers,
+    env: {
+      CDK_DISABLE_STACK_TRACE: '1',
+    },
+  };
+
   if (options.test) {
-    await shell(options.test, { timers });
+    await shell(options.test, defaultShellOptions);
   }
 
   const testFiles = await unitTestFiles();
-  const packageJson = currentPackageJson();
-  const useJest = 'jest' in packageJson;
+  const useJest = options.jest;
 
   if (useJest) {
     if (testFiles.length > 0) {
-      throw new Error(`Jest is enabled, but ${testFiles.length} nodeunit tests were found!`);
+      throw new Error(`Jest is enabled, but ${testFiles.length} nodeunit tests were found!: ${testFiles.map(f => f.filename)}`);
     }
-    const globalJestConfig = JSON.parse(await fs.readFile(configFilePath('jest.config.json'), 'utf-8'));
-    const jestConfig = { ...globalJestConfig, ...packageJson.jest };
-
-    const jestConfigFile = 'jest.config.gen.json';
-    await fs.writeFile(jestConfigFile, JSON.stringify(jestConfig));
-
-    await shell([args.jest, '--config', jestConfigFile], { timers });
+    await shell([args.jest], defaultShellOptions);
   } else if (testFiles.length > 0) {
     const testCommand: string[] = [];
 
@@ -72,12 +72,12 @@ async function main() {
     testCommand.push(args.nodeunit);
     testCommand.push(...testFiles.map(f => f.path));
 
-    await shell(testCommand, { timers });
+    await shell(testCommand, defaultShellOptions);
   }
 
   // Run integration test if the package has integ test files
   if (await hasIntegTests()) {
-    await shell(['cdk-integ-assert'], { timers });
+    await shell(['cdk-integ-assert'], defaultShellOptions);
   }
 }
 

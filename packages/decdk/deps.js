@@ -21,6 +21,11 @@ for (const dir of modules) {
     continue;
   }
 
+  // skip the `@aws-cdk/cloudformation-include` module
+  if (dir === 'cloudformation-include') {
+    continue;
+  }
+
   const exists = deps[meta.name];
 
   if (meta.deprecated) {
@@ -29,6 +34,10 @@ for (const dir of modules) {
       errors = true;
     }
     delete deps[meta.name];
+    continue;
+  }
+  // skip private packages
+  if (meta.private) {
     continue;
   }
 

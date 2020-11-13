@@ -1,9 +1,9 @@
-import { NestedStack } from '@aws-cdk/aws-cloudformation';
+import * as path from 'path';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Construct, Duration, Stack } from '@aws-cdk/core';
+import { Construct as CoreConstruct, Duration, NestedStack, Stack } from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
-import * as path from 'path';
+import { Construct } from 'constructs';
 
 export class ReplicaProvider extends NestedStack {
   /**
@@ -31,11 +31,13 @@ export class ReplicaProvider extends NestedStack {
   public readonly isCompleteHandler: lambda.Function;
 
   private constructor(scope: Construct, id: string) {
-    super(scope, id);
+    super(scope as CoreConstruct, id);
+
+    const code = lambda.Code.fromAsset(path.join(__dirname, 'replica-handler'));
 
     // Issues UpdateTable API calls
     this.onEventHandler = new lambda.Function(this, 'OnEventHandler', {
-      code: lambda.Code.fromAsset(path.join(__dirname, 'replica-handler')),
+      code,
       runtime: lambda.Runtime.NODEJS_12_X,
       handler: 'index.onEventHandler',
       timeout: Duration.minutes(5),
@@ -43,7 +45,7 @@ export class ReplicaProvider extends NestedStack {
 
     // Checks if table is back to `ACTIVE` state
     this.isCompleteHandler = new lambda.Function(this, 'IsCompleteHandler', {
-      code: lambda.Code.fromAsset(path.join(__dirname, 'replica-handler')),
+      code,
       runtime: lambda.Runtime.NODEJS_12_X,
       handler: 'index.isCompleteHandler',
       timeout: Duration.seconds(30),

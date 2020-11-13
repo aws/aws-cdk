@@ -2,7 +2,12 @@ import { ScalingInterval } from '@aws-cdk/aws-applicationautoscaling';
 import { IVpc } from '@aws-cdk/aws-ec2';
 import { AwsLogDriver, BaseService, Cluster, ContainerImage, ICluster, LogDriver, PropagatedTagSource, Secret } from '@aws-cdk/aws-ecs';
 import { IQueue, Queue } from '@aws-cdk/aws-sqs';
-import { CfnOutput, Construct, Duration, Stack } from '@aws-cdk/core';
+import { CfnOutput, Duration, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * The properties for the base QueueProcessingEc2Service or QueueProcessingFargateService service.
@@ -147,12 +152,30 @@ export interface QueueProcessingServiceBaseProps {
    * @default - Automatically generated name.
    */
   readonly family?: string;
+
+  /**
+   * The maximum number of tasks, specified as a percentage of the Amazon ECS
+   * service's DesiredCount value, that can run in a service during a
+   * deployment.
+   *
+   * @default - default from underlying service.
+   */
+  readonly maxHealthyPercent?: number;
+
+  /**
+   * The minimum number of tasks, specified as a percentage of
+   * the Amazon ECS service's DesiredCount value, that must
+   * continue to run and remain healthy during a deployment.
+   *
+   * @default - default from underlying service.
+   */
+  readonly minHealthyPercent?: number;
 }
 
 /**
  * The base class for QueueProcessingEc2Service and QueueProcessingFargateService services.
  */
-export abstract class QueueProcessingServiceBase extends Construct {
+export abstract class QueueProcessingServiceBase extends CoreConstruct {
   /**
    * The SQS queue that the service will process from
    */

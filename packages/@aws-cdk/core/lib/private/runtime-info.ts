@@ -1,8 +1,11 @@
+import { basename, dirname } from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { major as nodeMajorVersion } from './node-version';
 
 // list of NPM scopes included in version reporting e.g. @aws-cdk and @aws-solutions-konstruk
-const WHITELIST_SCOPES = ['@aws-cdk', '@aws-solutions-konstruk'];
+const WHITELIST_SCOPES = ['@aws-cdk', '@aws-cdk-containers', '@aws-solutions-konstruk', '@aws-solutions-constructs', '@amzn'];
+// list of NPM packages included in version reporting
+const WHITELIST_PACKAGES = ['aws-rfdk', 'aws-cdk-lib'];
 
 /**
  * Returns a list of loaded modules and their versions.
@@ -25,6 +28,7 @@ export function collectRuntimeInformation(): cxschema.RuntimeInfo {
         foundMatch = true;
       }
     }
+    foundMatch = foundMatch || WHITELIST_PACKAGES.includes(name);
 
     if (!foundMatch) {
       delete libraries[name];
@@ -64,7 +68,7 @@ export function collectRuntimeInformation(): cxschema.RuntimeInfo {
 function findNpmPackage(fileName: string): { name: string, version: string, private?: boolean } | undefined {
   const mod = require.cache[fileName];
 
-  if (!mod.paths) {
+  if (!mod?.paths) {
     // sometimes this can be undefined. for example when querying for .json modules
     // inside a jest runtime environment.
     // see https://github.com/aws/aws-cdk/issues/7657
@@ -72,7 +76,8 @@ function findNpmPackage(fileName: string): { name: string, version: string, priv
     return undefined;
   }
 
-  const paths = mod.paths.map(stripNodeModules);
+  // For any path in ``mod.paths`` that is a node_modules folder, use its parent directory instead.
+  const paths = mod?.paths.map((path: string) => basename(path) === 'node_modules' ? dirname(path) : path);
 
   try {
     const packagePath = require.resolve(
@@ -84,19 +89,6 @@ function findNpmPackage(fileName: string): { name: string, version: string, priv
     return require(packagePath);
   } catch (e) {
     return undefined;
-  }
-
-  /**
-   * @param s a path.
-   * @returns ``s`` with any terminating ``/node_modules``
-   *      (or ``\\node_modules``) stripped off.)
-   */
-  function stripNodeModules(s: string): string {
-    if (s.endsWith('/node_modules') || s.endsWith('\\node_modules')) {
-      // /node_modules is 13 characters
-      return s.substr(0, s.length - 13);
-    }
-    return s;
   }
 }
 

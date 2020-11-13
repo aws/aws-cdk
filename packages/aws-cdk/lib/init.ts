@@ -1,22 +1,20 @@
-import * as cxapi from '@aws-cdk/cx-api';
 import * as childProcess from 'child_process';
+import * as path from 'path';
+import * as cxapi from '@aws-cdk/cx-api';
 import * as colors from 'colors/safe';
 import * as fs from 'fs-extra';
-import * as os from 'os';
-import * as path from 'path';
 import { error, print, warning } from './logging';
+import { cdkHomeDir } from './util/directories';
 
 export type InvokeHook = (targetDirectory: string) => Promise<void>;
 
-// tslint:disable:no-var-requires those libraries don't have up-to-date @types modules
+/* eslint-disable @typescript-eslint/no-var-requires */ // Packages don't have @types module
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const camelCase = require('camelcase');
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const decamelize = require('decamelize');
-// tslint:enable:no-var-requires
 
 const TEMPLATES_DIR = path.join(__dirname, 'init-templates');
-const CDK_HOME = process.env.CDK_HOME ? path.resolve(process.env.CDK_HOME) : path.join(os.homedir(), '.cdk');
 
 /**
  * Initialize a CDK package in the current directory
@@ -165,7 +163,7 @@ export class InitTemplate {
       .replace(/%name\.camelCased%/g, camelCase(project.name))
       .replace(/%name\.PascalCased%/g, camelCase(project.name, { pascalCase: true }))
       .replace(/%cdk-version%/g, cdkVersion)
-      .replace(/%cdk-home%/g, CDK_HOME)
+      .replace(/%cdk-home%/g, cdkHomeDir())
       .replace(/%name\.PythonModule%/g, project.name.replace(/-/g, '_'))
       .replace(/%python-executable%/g, pythonExecutable())
       .replace(/%name\.StackName%/g, project.name.replace(/[^A-Za-z0-9-]/g, '-'));
@@ -242,15 +240,16 @@ async function initializeProject(template: InitTemplate, language: string, canUs
   await assertIsEmptyDirectory(workDir);
   print(`Applying project template ${colors.green(template.name)} for ${colors.blue(language)}`);
   await template.install(language, workDir);
+  if (await fs.pathExists('README.md')) {
+    print(colors.green(await fs.readFile('README.md', { encoding: 'utf-8' })));
+  }
+
   if (!generateOnly) {
     await initializeGitRepository(workDir);
     await postInstall(language, canUseNetwork, workDir);
   }
-  if (await fs.pathExists('README.md')) {
-    print(colors.green(await fs.readFile('README.md', { encoding: 'utf-8' })));
-  } else {
-    print('✅ All done!');
-  }
+
+  print('✅ All done!');
 }
 
 async function assertIsEmptyDirectory(workDir: string) {
@@ -275,13 +274,13 @@ async function initializeGitRepository(workDir: string) {
 async function postInstall(language: string, canUseNetwork: boolean, workDir: string) {
   switch (language) {
     case 'javascript':
-      return await postInstallJavascript(canUseNetwork, workDir);
+      return postInstallJavascript(canUseNetwork, workDir);
     case 'typescript':
-      return await postInstallTypescript(canUseNetwork, workDir);
+      return postInstallTypescript(canUseNetwork, workDir);
     case 'java':
-      return await postInstallJava(canUseNetwork, workDir);
+      return postInstallJava(canUseNetwork, workDir);
     case 'python':
-      return await postInstallPython(workDir);
+      return postInstallPython(workDir);
   }
 }
 
@@ -293,7 +292,7 @@ async function postInstallTypescript(canUseNetwork: boolean, cwd: string) {
   const command = 'npm';
 
   if (!canUseNetwork) {
-    print(`Please run ${colors.green(`${command} install`)}!`);
+    warning(`Please run '${command} install'!`);
     return;
   }
 
@@ -301,28 +300,36 @@ async function postInstallTypescript(canUseNetwork: boolean, cwd: string) {
   try {
     await execute(command, ['install'], { cwd });
   } catch (e) {
-    throw new Error(`${colors.green(`${command} install`)} failed: ` + e.message);
+    warning(`${command} install failed: ` + e.message);
   }
 }
 
 async function postInstallJava(canUseNetwork: boolean, cwd: string) {
+  const mvnPackageWarning = 'Please run \'mvn package\'!';
   if (!canUseNetwork) {
-    print(`Please run ${colors.green('mvn package')}!`);
+    warning(mvnPackageWarning);
     return;
   }
 
-  print(`Executing ${colors.green('mvn package')}...`);
-  await execute('mvn', ['package'], { cwd });
+  print('Executing \'mvn package\'');
+  try {
+    await execute('mvn', ['package'], { cwd });
+  } catch (e) {
+    warning('Unable to package compiled code as JAR');
+    warning(mvnPackageWarning);
+  }
+
 }
 
 async function postInstallPython(cwd: string) {
   const python = pythonExecutable();
+  warning(`Please run '${python} -m venv .venv'!`);
   print(`Executing ${colors.green('Creating virtualenv...')}`);
   try {
-    await execute(python, ['-m venv', '.env'], { cwd });
+    await execute(python, ['-m venv', '.venv'], { cwd });
   } catch (e) {
-    print('Unable to create virtualenv automatically');
-    print(`Please run ${colors.green(python + ' -m venv .env')}!`);
+    warning('Unable to create virtualenv automatically');
+    warning(`Please run '${python} -m venv .venv'!`);
   }
 }
 
@@ -355,7 +362,7 @@ function isRoot(dir: string) {
  * @returns STDOUT (if successful).
  */
 async function execute(cmd: string, args: string[], { cwd }: { cwd: string }) {
-  const child = childProcess.spawn(cmd, args, { cwd, shell: true, stdio: [ 'ignore', 'pipe', 'inherit' ] });
+  const child = childProcess.spawn(cmd, args, { cwd, shell: true, stdio: ['ignore', 'pipe', 'inherit'] });
   let stdout = '';
   child.stdout.on('data', chunk => stdout += chunk.toString());
   return new Promise<string>((ok, fail) => {

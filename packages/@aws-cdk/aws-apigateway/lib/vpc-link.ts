@@ -1,6 +1,18 @@
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
-import { Construct, Lazy, Resource } from '@aws-cdk/core';
+import { IResource, Lazy, Names, Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnVpcLink } from './apigateway.generated';
+
+/**
+ * Represents an API Gateway VpcLink
+ */
+export interface IVpcLink extends IResource {
+  /**
+   * Physical ID of the VpcLink resource
+   * @attribute
+   */
+  readonly vpcLinkId: string;
+}
 
 /**
  * Properties for a VpcLink
@@ -31,19 +43,30 @@ export interface VpcLinkProps {
  * Define a new VPC Link
  * Specifies an API Gateway VPC link for a RestApi to access resources in an Amazon Virtual Private Cloud (VPC).
  */
-export class VpcLink extends Resource {
+export class VpcLink extends Resource implements IVpcLink {
+  /**
+   * Import a VPC Link by its Id
+   */
+  public static fromVpcLinkId(scope: Construct, id: string, vpcLinkId: string): IVpcLink {
+    class Import extends Resource implements IVpcLink {
+      public vpcLinkId = vpcLinkId;
+    }
+
+    return new Import(scope, id);
+  }
+
   /**
    * Physical ID of the VpcLink resource
    * @attribute
    */
   public readonly vpcLinkId: string;
 
-  private readonly targets = new Array<elbv2.INetworkLoadBalancer>();
+  private readonly _targets = new Array<elbv2.INetworkLoadBalancer>();
 
   constructor(scope: Construct, id: string, props: VpcLinkProps = {}) {
     super(scope, id, {
       physicalName: props.vpcLinkName ||
-        Lazy.stringValue({ produce: () => this.node.uniqueId }),
+        Lazy.stringValue({ produce: () => Names.nodeUniqueId(this.node) }),
     });
 
     const cfnResource = new CfnVpcLink(this, 'Resource', {
@@ -60,17 +83,25 @@ export class VpcLink extends Resource {
   }
 
   public addTargets(...targets: elbv2.INetworkLoadBalancer[]) {
-    this.targets.push(...targets);
+    this._targets.push(...targets);
+  }
+
+  /**
+   * Return the list of DNS names from the target NLBs.
+   * @internal
+   * */
+  public get _targetDnsNames(): string[] {
+    return this._targets.map(t => t.loadBalancerDnsName);
   }
 
   protected validate(): string[] {
-    if (this.targets.length === 0) {
-      return [ 'No targets added to vpc link' ];
+    if (this._targets.length === 0) {
+      return ['No targets added to vpc link'];
     }
     return [];
   }
 
   private renderTargets() {
-    return this.targets.map(nlb => nlb.loadBalancerArn);
+    return this._targets.map(nlb => nlb.loadBalancerArn);
   }
 }

@@ -1,7 +1,7 @@
 {
   "name": "@aws-cdk/aws-codebuild",
   "version": "0.0.0",
-  "description": "CDK Constructs for AWS CodeBuild",
+  "description": "The CDK Construct Library for AWS::CodeBuild",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
@@ -23,9 +23,14 @@
       },
       "python": {
         "distName": "aws-cdk.aws-codebuild",
-        "module": "aws_cdk.aws_codebuild"
+        "module": "aws_cdk.aws_codebuild",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",
@@ -44,10 +49,14 @@
     "cfn2ts": "cfn2ts",
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test",
-    "compat": "cdk-compat"
+    "compat": "cdk-compat",
+    "gen": "cfn2ts"
   },
   "cdk-build": {
-    "cloudformation": "AWS::CodeBuild"
+    "cloudformation": "AWS::CodeBuild",
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "nyc": {
     "statements": 74,
@@ -69,8 +78,8 @@
     "@aws-cdk/assert": "0.0.0",
     "@aws-cdk/aws-sns": "0.0.0",
     "@aws-cdk/aws-sqs": "0.0.0",
-    "@types/nodeunit": "^0.0.30",
-    "aws-sdk": "^2.665.0",
+    "@types/nodeunit": "^0.0.31",
+    "aws-sdk": "^2.792.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
@@ -91,7 +100,8 @@
     "@aws-cdk/aws-s3-assets": "0.0.0",
     "@aws-cdk/aws-secretsmanager": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.2"
+    "@aws-cdk/region-info": "0.0.0",
+    "constructs": "^3.2.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -108,10 +118,11 @@
     "@aws-cdk/aws-s3-assets": "0.0.0",
     "@aws-cdk/aws-secretsmanager": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.2"
+    "@aws-cdk/region-info": "0.0.0",
+    "constructs": "^3.2.0"
   },
   "engines": {
-    "node": ">= 10.12.0"
+    "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "awslint": {
     "exclude": [

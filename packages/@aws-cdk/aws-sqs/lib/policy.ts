@@ -1,8 +1,12 @@
 import { PolicyDocument } from '@aws-cdk/aws-iam';
-import { Construct, Resource } from '@aws-cdk/core';
+import { Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { IQueue } from './queue-base';
 import { CfnQueuePolicy } from './sqs.generated';
 
+/**
+ * Properties to associate SQS queues with a policy
+ */
 export interface QueuePolicyProps {
   /**
    * The set of queues this policy applies to.

@@ -14,7 +14,7 @@
 To construct an empty Pipeline:
 
 ```ts
-import codepipeline = require('@aws-cdk/aws-codepipeline');
+import * as codepipeline from '@aws-cdk/aws-codepipeline';
 
 const pipeline = new codepipeline.Pipeline(this, 'MyFirstPipeline');
 ```
@@ -24,6 +24,22 @@ To give the Pipeline a nice, human-readable name:
 ```ts
 const pipeline = new codepipeline.Pipeline(this, 'MyFirstPipeline', {
   pipelineName: 'MyPipeline',
+});
+```
+
+Be aware that in the default configuration, the `Pipeline` construct creates
+an AWS Key Management Service (AWS KMS) Customer Master Key (CMK) for you to
+encrypt the artifacts in the artifact bucket, which incurs a cost of
+**$1/month**. This default configuration is necessary to allow cross-account
+actions.
+
+If you do not intend to perform cross-account deployments, you can disable
+the creation of the Customer Master Keys by passing `crossAccountKeys: false`
+when defining the Pipeline:
+
+```ts
+const pipeline = new codepipeline.Pipeline(this, 'MyFirstPipeline', {
+  crossAccountKeys: false,
 });
 ```
 
@@ -80,16 +96,101 @@ or you can use the `IStage.addAction()` method to mutate an existing Stage:
 sourceStage.addAction(someAction);
 ```
 
-### Cross-region CodePipelines
+### Cross-account CodePipelines
 
-You can also use the cross-region feature to deploy resources
-into a different region than your Pipeline is in.
+> Cross-account Pipeline actions require that the Pipeline has *not* been
+> created with `crossAccountKeys: false`.
 
-It works like this:
+Most pipeline Actions accept an AWS resource object to operate on. For example:
+
+* `S3DeployAction` accepts an `s3.IBucket`.
+* `CodeBuildAction` accepts a `codebuild.IProject`.
+* etc.
+
+These resources can be either newly defined (`new s3.Bucket(...)`) or imported
+(`s3.Bucket.fromBucketAttributes(...)`) and identify the resource that should
+be changed.
+
+These resources can be in different accounts than the pipeline itself. For
+example, the following action deploys to an imported S3 bucket from a
+different account:
 
 ```typescript
-const pipeline = new codepipeline.Pipeline(this, 'MyFirstPipeline', {
+stage.addAction(new codepipeline_actions.S3DeployAction({
+  bucket: s3.Bucket.fromBucketAttributes(this, 'Bucket', {
+    account: '123456789012',
+    // ...
+  }),
   // ...
+}));
+```
+
+Actions that don't accept a resource object accept an explicit `account` parameter:
+
+```typescript
+stage.addAction(new codepipeline_actions.CloudFormationCreateUpdateStackAction({
+  account: '123456789012',
+  // ...
+}));
+```
+
+The `Pipeline` construct automatically defines an **IAM Role** for you in the
+target account which the pipeline will assume to perform that action. This
+Role will be defined in a **support stack** named
+`<PipelineStackName>-support-<account>`, that will automatically be deployed
+before the stack containing the pipeline.
+
+If you do not want to use the generated role, you can also explicitly pass a
+`role` when creating the action. In that case, the action will operate in the
+account the role belongs to:
+
+```ts
+stage.addAction(new codepipeline_actions.CloudFormationCreateUpdateStackAction({
+  // ...
+  role: iam.Role.fromRoleArn(this, 'ActionRole', '...'),
+}));
+```
+
+### Cross-region CodePipelines
+
+Similar to how you set up a cross-account Action, the AWS resource object you
+pass to actions can also be in different *Regions*. For example, the
+following Action deploys to an imported S3 bucket from a different Region:
+
+```typescript
+stage.addAction(new codepipeline_actions.S3DeployAction({
+  bucket: s3.Bucket.fromBucketAttributes(this, 'Bucket', {
+    region: 'us-west-1',
+    // ...
+  }),
+  // ...
+}));
+```
+
+Actions that don't take an AWS resource will accept an explicit `region`
+parameter:
+
+```typescript
+stage.addAction(new codepipeline_actions.CloudFormationCreateUpdateStackAction({
+  // ...
+  region: 'us-west-1',
+}));
+```
+
+The `Pipeline` construct automatically defines a **replication bucket** for
+you in the target region, which the pipeline will replicate artifacts to and
+from. This Bucket will be defined in a **support stack** named
+`<PipelineStackName>-support-<region>`, that will automatically be deployed
+before the stack containing the pipeline.
+
+If you don't want to use these support stacks, and already have buckets in
+place to serve as replication buckets, you can supply these at Pipeline definition
+time using the `crossRegionReplicationBuckets` parameter. Example:
+
+```ts
+const pipeline = new codepipeline.Pipeline(this, 'MyFirstPipeline', { /* ... */ });
+  // ...
+
   crossRegionReplicationBuckets: {
     // note that a physical name of the replication Bucket must be known at synthesis time
     'us-west-1': s3.Bucket.fromBucketAttributes(this, 'UsWest1ReplicationBucket', {
@@ -101,32 +202,6 @@ const pipeline = new codepipeline.Pipeline(this, 'MyFirstPipeline', {
     }),
   },
 });
-
-// later in the code...
-new codepipeline_actions.CloudFormationCreateUpdateStackAction({
-  actionName: 'CFN_US_West_1',
-  // ...
-  region: 'us-west-1',
-});
-```
-
-This way, the `CFN_US_West_1` Action will operate in the `us-west-1` region,
-regardless of which region your Pipeline is in.
-
-If you don't provide a bucket for a region (other than the Pipeline's region)
-that you're using for an Action,
-there will be a new Stack, called `<nameOfYourPipelineStack>-support-<region>`,
-defined for you, containing a replication Bucket.
-This new Stack will depend on your Pipeline Stack,
-so deploying the Pipeline Stack will deploy the support Stack(s) first.
-Example:
-
-```bash
-$ cdk ls
-MyMainStack
-MyMainStack-support-us-west-1
-$ cdk deploy MyMainStack
-# output of cdk deploy here...
 ```
 
 See [the AWS docs here](https://docs.aws.amazon.com/codepipeline/latest/userguide/actions-create-cross-region.html)
@@ -236,8 +311,8 @@ for more details on how to use the variables feature.
 A pipeline can be used as a target for a CloudWatch event rule:
 
 ```ts
-import targets = require('@aws-cdk/aws-events-targets');
-import events = require('@aws-cdk/aws-events');
+import * as targets from '@aws-cdk/aws-events-targets';
+import * as events from '@aws-cdk/aws-events';
 
 // kick off the pipeline every day
 const rule = new events.Rule(this, 'Daily', {

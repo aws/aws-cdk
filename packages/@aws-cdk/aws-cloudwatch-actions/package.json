@@ -23,9 +23,14 @@
       },
       "python": {
         "distName": "aws-cdk.aws-cloudwatch-actions",
-        "module": "aws_cdk.aws_cloudwatch_actions"
+        "module": "aws_cdk.aws_cloudwatch_actions",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",
@@ -41,7 +46,6 @@
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
-    "cfn2ts": "cfn2ts",
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test",
     "compat": "cdk-compat"
@@ -57,23 +61,6 @@
     "url": "https://aws.amazon.com",
     "organization": true
   },
-  "jest": {
-    "moduleFileExtensions": [
-      "js"
-    ],
-    "coverageThreshold": {
-      "global": {
-        "branches": 70,
-        "statements": 80
-      }
-    },
-    "collectCoverage": true,
-    "coverageReporters": [
-      "lcov",
-      "html",
-      "text-summary"
-    ]
-  },
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
@@ -81,7 +68,7 @@
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
-    "jest": "^25.5.1",
+    "jest": "^26.6.3",
     "pkglint": "0.0.0"
   },
   "dependencies": {
@@ -91,7 +78,7 @@
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-sns": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.2.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -101,21 +88,20 @@
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-sns": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.2.0"
   },
   "engines": {
-    "node": ">= 10.12.0"
+    "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "stability": "stable",
-  "awslint": {
-    "exclude": [
-      "docs-public-apis:@aws-cdk/aws-cloudwatch-actions.ApplicationScalingAction.bind",
-      "docs-public-apis:@aws-cdk/aws-cloudwatch-actions.AutoScalingAction.bind",
-      "docs-public-apis:@aws-cdk/aws-cloudwatch-actions.SnsAction.bind"
-    ]
-  },
   "awscdkio": {
     "announce": false
   },
-  "maturity": "stable"
+  "maturity": "stable",
+  "cdk-build": {
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
+  }
 }

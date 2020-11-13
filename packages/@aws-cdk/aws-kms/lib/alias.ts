@@ -1,5 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
+import { RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { IKey } from './key';
 import { CfnAlias } from './kms.generated';
 
@@ -73,8 +74,8 @@ abstract class AliasBase extends Resource implements IAlias {
     return this.aliasTargetKey.addAlias(alias);
   }
 
-  public addToResourcePolicy(statement: iam.PolicyStatement, allowNoOp?: boolean): void {
-    this.aliasTargetKey.addToResourcePolicy(statement, allowNoOp);
+  public addToResourcePolicy(statement: iam.PolicyStatement, allowNoOp?: boolean): iam.AddToResourcePolicyResult {
+    return this.aliasTargetKey.addToResourcePolicy(statement, allowNoOp);
   }
 
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
@@ -129,12 +130,39 @@ export class Alias extends AliasBase {
    * @param attrs the properties of the referenced KMS Alias
    */
   public static fromAliasAttributes(scope: Construct, id: string, attrs: AliasAttributes): IAlias {
-    // tslint:disable-next-line: class-name
     class _Alias extends AliasBase {
       public get aliasName() { return attrs.aliasName; }
       public get aliasTargetKey() { return attrs.aliasTargetKey; }
     }
     return new _Alias(scope, id);
+  }
+
+  /**
+   * Import an existing KMS Alias defined outside the CDK app, by the alias name. This method should be used
+   * instead of 'fromAliasAttributes' when the underlying KMS Key ARN is not available.
+   * This Alias will not have a direct reference to the KMS Key, so addAlias and grant* methods are not supported.
+   *
+   * @param scope The parent creating construct (usually `this`).
+   * @param id The construct's name.
+   * @param aliasName The full name of the KMS Alias (e.g., 'alias/aws/s3', 'alias/myKeyAlias').
+   */
+  public static fromAliasName(scope: Construct, id: string, aliasName: string): IAlias {
+    class Import extends Resource implements IAlias {
+      public readonly keyArn = Stack.of(this).formatArn({ service: 'kms', resource: aliasName });
+      public readonly keyId = aliasName;
+      public readonly aliasName = aliasName;
+      public get aliasTargetKey(): IKey { throw new Error('Cannot access aliasTargetKey on an Alias imnported by Alias.fromAliasName().'); }
+      public addAlias(_alias: string): Alias { throw new Error('Cannot call addAlias on an Alias imported by Alias.fromAliasName().'); }
+      public addToResourcePolicy(_statement: iam.PolicyStatement, _allowNoOp?: boolean): iam.AddToResourcePolicyResult {
+        return { statementAdded: false };
+      }
+      public grant(grantee: iam.IGrantable, ..._actions: string[]): iam.Grant { return iam.Grant.drop(grantee, ''); }
+      public grantDecrypt(grantee: iam.IGrantable): iam.Grant { return iam.Grant.drop(grantee, ''); }
+      public grantEncrypt(grantee: iam.IGrantable): iam.Grant { return iam.Grant.drop(grantee, ''); }
+      public grantEncryptDecrypt(grantee: iam.IGrantable): iam.Grant { return iam.Grant.drop(grantee, ''); }
+    }
+
+    return new Import(scope, id);
   }
 
   public readonly aliasName: string;

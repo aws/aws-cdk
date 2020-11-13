@@ -24,14 +24,14 @@ test('queues can be used as destinations', () => {
           ],
           Condition: {
             ArnLike: {
-              'aws:SourceArn': { 'Fn::GetAtt': [ 'Bucket83908E77', 'Arn' ] },
+              'aws:SourceArn': { 'Fn::GetAtt': ['Bucket83908E77', 'Arn'] },
             },
           },
           Effect: 'Allow',
           Principal: {
             Service: 's3.amazonaws.com',
           },
-          Resource: { 'Fn::GetAtt': [ 'Queue4A7E3555', 'Arn' ] },
+          Resource: { 'Fn::GetAtt': ['Queue4A7E3555', 'Arn'] },
 
         },
       ],
@@ -100,19 +100,20 @@ test('if the queue is encrypted with a custom kms key, the key resource policy i
           ],
           Effect: 'Allow',
           Principal: {
-            AWS: { 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root' ] ] },
+            AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']] },
           },
           Resource: '*',
         },
         {
           Action: [
+            'kms:Decrypt',
             'kms:Encrypt',
             'kms:ReEncrypt*',
             'kms:GenerateDataKey*',
           ],
           Condition: {
             ArnLike: {
-              'aws:SourceArn': { 'Fn::GetAtt': [ 'Bucket83908E77', 'Arn' ] },
+              'aws:SourceArn': { 'Fn::GetAtt': ['Bucket83908E77', 'Arn'] },
             },
           },
           Effect: 'Allow',
@@ -135,6 +136,6 @@ test('if the queue is encrypted with a custom kms key, the key resource policy i
       ],
       Version: '2012-10-17',
     },
-    Description: 'Created by Queue',
+    Description: 'Created by Default/Queue',
   });
 });

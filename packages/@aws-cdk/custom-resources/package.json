@@ -23,9 +23,14 @@
       },
       "python": {
         "distName": "aws-cdk.custom-resources",
-        "module": "aws_cdk.custom_resources"
+        "module": "aws_cdk.custom_resources",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",
@@ -41,15 +46,16 @@
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
-    "cfn2ts": "cfn2ts",
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test",
-    "compat": "cdk-compat"
+    "compat": "cdk-compat",
+    "gen": "cp -f $(node -p 'require.resolve(\"aws-sdk/apis/metadata.json\")') lib/aws-custom-resource/sdk-api-metadata.json && rm -rf test/aws-custom-resource/cdk.out"
   },
   "cdk-build": {
-    "pre": [
-      "cp -f $(node -p 'require.resolve(\"aws-sdk/apis/metadata.json\")') lib/aws-custom-resource/sdk-api-metadata.json && rm -rf test/aws-custom-resource/cdk.out"
-    ]
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "keywords": [
     "aws",
@@ -70,18 +76,18 @@
     "@aws-cdk/aws-events": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/aws-ssm": "0.0.0",
-    "@types/aws-lambda": "^8.10.39",
-    "@types/fs-extra": "^8.1.0",
-    "@types/sinon": "^9.0.0",
-    "aws-sdk": "^2.665.0",
+    "@types/aws-lambda": "^8.10.64",
+    "@types/fs-extra": "^8.1.1",
+    "@types/sinon": "^9.0.8",
+    "aws-sdk": "^2.792.0",
     "aws-sdk-mock": "^5.1.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
-    "fs-extra": "^8.1.0",
-    "nock": "^12.0.3",
+    "fs-extra": "^9.0.1",
+    "nock": "^13.0.5",
     "pkglint": "0.0.0",
-    "sinon": "^9.0.2"
+    "sinon": "^9.2.1"
   },
   "dependencies": {
     "@aws-cdk/aws-cloudformation": "0.0.0",
@@ -90,7 +96,7 @@
     "@aws-cdk/aws-logs": "0.0.0",
     "@aws-cdk/aws-sns": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.2.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -100,27 +106,10 @@
     "@aws-cdk/aws-logs": "0.0.0",
     "@aws-cdk/aws-sns": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.2"
-  },
-  "jest": {
-    "moduleFileExtensions": [
-      "js"
-    ],
-    "coverageThreshold": {
-      "global": {
-        "branches": 70,
-        "statements": 80
-      }
-    },
-    "collectCoverage": true,
-    "coverageReporters": [
-      "lcov",
-      "html",
-      "text-summary"
-    ]
+    "constructs": "^3.2.0"
   },
   "engines": {
-    "node": ">= 10.12.0"
+    "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "stability": "stable",
   "awslint": {

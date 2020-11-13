@@ -1,4 +1,4 @@
-import { expect, haveResource, isSuperObject } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike, isSuperObject } from '@aws-cdk/assert';
 import * as cfn from '@aws-cdk/aws-cloudformation';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
@@ -8,6 +8,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cdk from '@aws-cdk/core';
+import * as constructs from 'constructs';
 import * as fc from 'fast-check';
 import * as nodeunit from 'nodeunit';
 import { PipelineDeployStackAction } from '../lib/pipeline-deploy-stack-action';
@@ -406,6 +407,43 @@ export = nodeunit.testCase({
     );
     test.done();
   },
+
+  'allows overriding the ChangeSet and Execute action names'(test: nodeunit.Test) {
+    const stack = getTestStack();
+    const selfUpdatingPipeline = createSelfUpdatingStack(stack);
+    selfUpdatingPipeline.pipeline.addStage({
+      stageName: 'Deploy',
+      actions: [
+        new PipelineDeployStackAction({
+          input: selfUpdatingPipeline.synthesizedApp,
+          adminPermissions: true,
+          stack,
+          createChangeSetActionName: 'Prepare',
+          executeChangeSetActionName: 'Deploy',
+        }),
+      ],
+    });
+
+    expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+      Stages: [
+        {},
+        {},
+        {
+          Name: 'Deploy',
+          Actions: [
+            {
+              Name: 'Prepare',
+            },
+            {
+              Name: 'Deploy',
+            },
+          ],
+        },
+      ],
+    }));
+
+    test.done();
+  },
 });
 
 class FakeAction implements codepipeline.IAction {
@@ -422,7 +460,7 @@ class FakeAction implements codepipeline.IAction {
     this.outputArtifact = new codepipeline.Artifact('OutputArtifact');
   }
 
-  public bind(_scope: cdk.Construct, _stage: codepipeline.IStage, _options: codepipeline.ActionBindOptions):
+  public bind(_scope: constructs.Construct, _stage: codepipeline.IStage, _options: codepipeline.ActionBindOptions):
   codepipeline.ActionConfig {
     return {};
   }
@@ -467,7 +505,7 @@ function createSelfUpdatingStack(pipelineStack: cdk.Stack): SelfUpdatingPipeline
     stageName: 'build',
     actions: [buildAction],
   });
-  return {synthesizedApp: buildOutput, pipeline};
+  return { synthesizedApp: buildOutput, pipeline };
 }
 
 function hasPipelineAction(expectedAction: any): (props: any) => boolean {

@@ -62,6 +62,12 @@ You can customize the health check for your target group; otherwise it defaults 
 
 Fargate services will use the `LATEST` platform version by default, but you can override by providing a value for the `platformVersion` property in the constructor.
 
+Fargate services use the default VPC Security Group unless one or more are provided using the `securityGroups` property in the constructor.
+
+By setting `redirectHTTP` to true, CDK will automatically create a listener on port 80 that redirects HTTP traffic to the HTTPS port.
+
+If you specify the option `recordType` you can decide if you want the construct to use CNAME or Route53-Aliases as record sets.
+
 Additionally, if more than one application target group are needed, instantiate one of the following:
 
 * `ApplicationMultipleTargetGroupsEc2Service`
@@ -148,6 +154,8 @@ const loadBalancedFargateService = new ecsPatterns.NetworkLoadBalancedFargateSer
 The CDK will create a new Amazon ECS cluster if you specify a VPC and omit `cluster`. If you deploy multiple services the CDK will only create one cluster per VPC.
 
 If `cluster` and `vpc` are omitted, the CDK creates a new VPC with subnets in two Availability Zones and a cluster within this VPC.
+
+If you specify the option `recordType` you can decide if you want the construct to use CNAME or Route53-Aliases as record sets.
 
 Additionally, if more than one network target group is needed, instantiate one of the following:
 
@@ -358,3 +366,22 @@ scalableTarget.scaleOnMemoryUtilization('MemoryScaling', {
   targetUtilizationPercent: 50,
 });
 ```
+
+### Set deployment configuration on QueueProcessingService
+
+```ts
+const queueProcessingFargateService = new QueueProcessingFargateService(stack, 'Service', {
+  cluster,
+  memoryLimitMiB: 512,
+  image: ecs.ContainerImage.fromRegistry('test'),
+  command: ["-c", "4", "amazon.com"],
+  enableLogging: false,
+  desiredTaskCount: 2,
+  environment: {},
+  queue,
+  maxScalingCapacity: 5,
+  maxHealthyPercent: 200,
+  minHealthPercent: 66,
+});
+```
+

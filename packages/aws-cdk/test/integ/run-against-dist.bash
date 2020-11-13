@@ -4,6 +4,19 @@ npmws=/tmp/cdk-rundist
 rm -rf $npmws
 mkdir -p $npmws
 
+# This script must create 1 or 2 traps, and the 'trap' command will replace
+# the previous trap, so get some 'dynamic traps' mechanism in place
+TRAPS=()
+
+function run_traps() {
+  for cmd in "${TRAPS[@]}"; do
+    echo "cleanup: $cmd" >&2
+    eval "$cmd"
+  done
+}
+
+trap run_traps EXIT
+
 function log() {
   echo >&2 "| $@"
 }
@@ -21,80 +34,24 @@ function serve_npm_packages() {
     return 1
   fi
 
-  if [ ! -z "${USE_PUBLISHED_FRAMEWORK_VERSION:-}" ]; then
-
-    echo "Testing against latest published versions of the framework"
-
-    # when using latest published framework, only
-    # install the cli and its dependencies.
-
-    cli_root=./package
-
-    version=$(node -p "require('${cli_root}/package.json').version")
-
-    # good lord
-    echo "Fetching @aws-cdk CLI dependencies from package.json"
-    cli_deps=$(node -p "Object.entries(require('${cli_root}/package.json').dependencies).filter(x => x[0].includes('@aws-cdk')).map(x => x[0].replace('@aws-cdk/', '')).join(' ')")
-
-    # tarballs_glob is going to look like "{file,file,...}"
-    tarballs_glob="{$dist_root/js/aws-cdk-${version}.tgz"
-
-    for dep in ${cli_deps}; do
-      tarball=$dist_root/js/${dep}@${version}.jsii.tgz
-      if [ ! -f ${tarball} ]; then
-        # not a jsii dependency, the tarball is different...
-        tarball=$dist_root/js/aws-cdk-${dep}-${version}.tgz
-      fi
-
-      tarballs_glob="${tarballs_glob},${tarball}"
-    done
-
-    # manually add cdk-assets since its not prefixed with @aws-cdk and
-    # hence isn't picked up from package.json
-    echo "Adding cdk-assets to CLI dependencies"
-    tarballs_glob="${tarballs_glob},$dist_root/js/cdk-assets-${version}.tgz"
-
-    # manually add @aws-cdk/cfnspec since its a transitive dependency via @aws-cdk/cloudformation-diff
-    # hence isn't picked up from package.json
-    echo "Adding @aws-cdk/cfnspec to CLI dependencies"
-    tarballs_glob="${tarballs_glob},$dist_root/js/aws-cdk-cfnspec-${version}.tgz"
-
-    tarballs_glob="${tarballs_glob}}"
-  else
-
-    echo "Testing against local versions of the framework"
-    tarballs_glob="$dist_root/js/*.tgz"
-  fi
-
   #------------------------------------------------------------------------------
   # Start a mock npm repository from the given tarballs
   #------------------------------------------------------------------------------
-  header "Starting local NPM Repository"
+  header "Starting local NPM Repository (Serving version ${CANDIDATE_VERSION})"
+
+  tarballs_glob="$dist_root/js/*.tgz"
 
   # When using '--daemon', 'npm install' first so the files are permanent, or
   # 'npx' will remove them too soon.
   npm install serve-npm-tarballs
   eval $(npx serve-npm-tarballs --glob "${tarballs_glob}" --daemon)
-  trap "kill $SERVE_NPM_TARBALLS_PID" EXIT
+  TRAPS+=("kill $SERVE_NPM_TARBALLS_PID")
 }
 
-# Make sure that installed CLI matches the build version
-function verify_installed_cli_version() {
-  local expected_version="$(node -e "console.log(require('${dist_root}/build.json').version)")"
-  header "Expected CDK version: ${expected_version}"
-
-  log "Found CDK: $(type -p cdk)"
-
-  # Execute "cdk --version" as a validation that the toolkit is installed
-  local actual_version="$(cdk --version | cut -d" " -f1)"
-
-  if [ "${expected_version}" != "${actual_version}" ]; then
-    log "Mismatched CDK version. Expected: ${expected_version}, actual: ${actual_version}"
-    cdk --version
-    exit 1
-  else
-    log "Verified CDK version is: ${expected_version}"
-  fi
+function install_cli() {
+  echo "Installing CLI aws-cdk@${CANDIDATE_VERSION}"
+  (cd ${npmws} && npm install --prefix $npmws aws-cdk@${CANDIDATE_VERSION})
+  export PATH=$npmws/node_modules/.bin:$PATH
 }
 
 function prepare_java_packages() {
@@ -136,7 +93,7 @@ function prepare_nuget_packages() {
     mv $HOME/.nuget/NuGet/NuGet.Config $HOME/.nuget/NuGet/NuGet.Config.bak
   fi
 
-  trap clean_up_nuget_config EXIT
+  TRAPS+=('clean_up_nuget_config')
 
   cat > $HOME/.nuget/NuGet/NuGet.Config <<EOF
 <?xml version="1.0" encoding="utf-8"?>

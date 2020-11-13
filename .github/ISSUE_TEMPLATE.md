@@ -25,9 +25,10 @@ falling prey to the [X/Y problem][2]!
 
   - **CDK CLI Version:** <!-- Output of `cdk version` -->
   - **Module Version:** <!-- Version of the module in question -->
+  - **Node.js Version:** <!-- Version of Node.js (run the command `node -v`) -->
   - **OS:** <!-- [all | Windows 10 | OSX Mojave | Ubuntu | etc... ] -->
   - **Language:** <!-- [all | TypeScript | Java | Python ] etc... ] -->
 
 
 ### Other information
-<!-- e.g. detailed explanation, stacktraces, related issues, suggestions how to fix, links for us to have context, eg. associated pull-request, stackoverflow, gitter, etc -->
+<!-- e.g. detailed explanation, stacktraces, related issues, suggestions how to fix, links for us to have context, eg. associated pull-request, stackoverflow, slack, etc -->

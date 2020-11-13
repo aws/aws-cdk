@@ -63,7 +63,6 @@ export class PluginHost {
   public load(moduleSpec: string) {
     try {
       /* eslint-disable @typescript-eslint/no-require-imports */
-      // tslint:disable-next-line:no-var-requires
       const plugin = require(moduleSpec);
       /* eslint-enable */
       if (!isPlugin(plugin)) {

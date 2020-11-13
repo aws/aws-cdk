@@ -1,13 +1,14 @@
-import { Construct, Resource, Stack } from '@aws-cdk/core';
+import { Resource, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnMethod, CfnMethodProps } from './apigateway.generated';
 import { Authorizer, IAuthorizer } from './authorizer';
-import { ConnectionType, Integration } from './integration';
+import { Integration, IntegrationConfig } from './integration';
 import { MockIntegration } from './integrations/mock';
 import { MethodResponse } from './methodresponse';
 import { IModel } from './model';
 import { IRequestValidator, RequestValidatorOptions } from './requestvalidator';
 import { IResource } from './resource';
-import { RestApi } from './restapi';
+import { IRestApi, RestApi, RestApiBase } from './restapi';
 import { validateHttpMethod } from './util';
 
 export interface MethodOptions {
@@ -159,13 +160,16 @@ export class Method extends Resource {
 
   public readonly httpMethod: string;
   public readonly resource: IResource;
-  public readonly restApi: RestApi;
+  /**
+   * The API Gateway RestApi associated with this method.
+   */
+  public readonly api: IRestApi;
 
   constructor(scope: Construct, id: string, props: MethodProps) {
     super(scope, id);
 
     this.resource = props.resource;
-    this.restApi = props.resource.restApi;
+    this.api = props.resource.api;
     this.httpMethod = props.httpMethod.toUpperCase();
 
     validateHttpMethod(this.httpMethod);
@@ -186,19 +190,22 @@ export class Method extends Resource {
     }
 
     if (Authorizer.isAuthorizer(authorizer)) {
-      authorizer._attachToApi(this.restApi);
+      authorizer._attachToApi(this.api);
     }
+
+    const integration = props.integration ?? this.resource.defaultIntegration ?? new MockIntegration();
+    const bindResult = integration.bind(this);
 
     const methodProps: CfnMethodProps = {
       resourceId: props.resource.resourceId,
-      restApiId: this.restApi.restApiId,
+      restApiId: this.api.restApiId,
       httpMethod: this.httpMethod,
       operationName: options.operationName || defaultMethodOptions.operationName,
       apiKeyRequired: options.apiKeyRequired || defaultMethodOptions.apiKeyRequired,
       authorizationType,
       authorizerId,
       requestParameters: options.requestParameters || defaultMethodOptions.requestParameters,
-      integration: this.renderIntegration(props.integration),
+      integration: this.renderIntegration(bindResult),
       methodResponses: this.renderMethodResponses(options.methodResponses),
       requestModels: this.renderRequestModels(options.requestModels),
       requestValidatorId: this.requestValidatorId(options),
@@ -209,13 +216,28 @@ export class Method extends Resource {
 
     this.methodId = resource.ref;
 
-    props.resource.restApi._attachMethod(this);
+    if (RestApiBase._isRestApiBase(props.resource.api)) {
+      props.resource.api._attachMethod(this);
+    }
 
-    const deployment = props.resource.restApi.latestDeployment;
+    const deployment = props.resource.api.latestDeployment;
     if (deployment) {
       deployment.node.addDependency(resource);
-      deployment.addToLogicalId({ method: methodProps });
+      deployment.addToLogicalId({
+        method: {
+          ...methodProps,
+          integrationToken: bindResult?.deploymentToken,
+        },
+      });
     }
+  }
+
+  /**
+   * The RestApi associated with this Method
+   * @deprecated - Throws an error if this Resource is not associated with an instance of `RestApi`. Use `api` instead.
+   */
+  public get restApi(): RestApi {
+    return this.resource.restApi;
   }
 
   /**
@@ -224,19 +246,14 @@ export class Method extends Resource {
    *   arn:aws:execute-api:{region}:{account}:{restApiId}/{stage}/{method}/{path}
    *
    * NOTE: {stage} will refer to the `restApi.deploymentStage`, which will
-   * automatically set if auto-deploy is enabled.
+   * automatically set if auto-deploy is enabled, or can be explicitly assigned.
+   * When not configured, {stage} will be set to '*', as a shorthand for 'all stages'.
    *
    * @attribute
    */
   public get methodArn(): string {
-    if (!this.restApi.deploymentStage) {
-      throw new Error(
-        `Unable to determine ARN for method "${this.node.id}" since there is no stage associated with this API.\n` +
-        'Either use the `deploy` prop or explicitly assign `deploymentStage` on the RestApi');
-    }
-
-    const stage = this.restApi.deploymentStage.stageName.toString();
-    return this.restApi.arnForExecuteApi(this.httpMethod, this.resource.path, stage);
+    const stage = this.api.deploymentStage?.stageName;
+    return this.api.arnForExecuteApi(this.httpMethod, pathForArn(this.resource.path), stage);
   }
 
   /**
@@ -244,52 +261,27 @@ export class Method extends Resource {
    * This stage is used by the AWS Console UI when testing the method.
    */
   public get testMethodArn(): string {
-    return this.restApi.arnForExecuteApi(this.httpMethod, this.resource.path, 'test-invoke-stage');
+    return this.api.arnForExecuteApi(this.httpMethod, pathForArn(this.resource.path), 'test-invoke-stage');
   }
 
-  private renderIntegration(integration?: Integration): CfnMethod.IntegrationProperty {
-    if (!integration) {
-      // use defaultIntegration from API if defined
-      if (this.resource.defaultIntegration) {
-        return this.renderIntegration(this.resource.defaultIntegration);
-      }
-
-      // fallback to mock
-      return this.renderIntegration(new MockIntegration());
-    }
-
-    integration.bind(this);
-
-    const options = integration._props.options || { };
-
+  private renderIntegration(bindResult: IntegrationConfig): CfnMethod.IntegrationProperty {
+    const options = bindResult.options ?? {};
     let credentials;
-    if (options.credentialsPassthrough !== undefined && options.credentialsRole !== undefined) {
-      throw new Error('\'credentialsPassthrough\' and \'credentialsRole\' are mutually exclusive');
-    }
-
-    if (options.connectionType === ConnectionType.VPC_LINK && options.vpcLink === undefined) {
-      throw new Error('\'connectionType\' of VPC_LINK requires \'vpcLink\' prop to be set');
-    }
-
-    if (options.connectionType === ConnectionType.INTERNET && options.vpcLink !== undefined) {
-      throw new Error('cannot set \'vpcLink\' where \'connectionType\' is INTERNET');
-    }
-
     if (options.credentialsRole) {
       credentials = options.credentialsRole.roleArn;
     } else if (options.credentialsPassthrough) {
       // arn:aws:iam::*:user/*
-      // tslint:disable-next-line:max-line-length
+      // eslint-disable-next-line max-len
       credentials = Stack.of(this).formatArn({ service: 'iam', region: '', account: '*', resource: 'user', sep: '/', resourceName: '*' });
     }
 
     return {
-      type: integration._props.type,
-      uri: integration._props.uri,
+      type: bindResult.type,
+      uri: bindResult.uri,
       cacheKeyParameters: options.cacheKeyParameters,
       cacheNamespace: options.cacheNamespace,
       contentHandling: options.contentHandling,
-      integrationHttpMethod: integration._props.integrationHttpMethod,
+      integrationHttpMethod: bindResult.integrationHttpMethod,
       requestParameters: options.requestParameters,
       requestTemplates: options.requestTemplates,
       passthroughBehavior: options.passthroughBehavior,
@@ -379,4 +371,8 @@ export enum AuthorizationType {
    * Use an AWS Cognito user pool.
    */
   COGNITO = 'COGNITO_USER_POOLS',
+}
+
+function pathForArn(path: string): string {
+  return path.replace(/\{[^\}]*\}/g, '*'); // replace path parameters (like '{bookId}') with asterisk
 }
