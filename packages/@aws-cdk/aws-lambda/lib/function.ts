@@ -604,7 +604,9 @@ export class Function extends FunctionBase {
       timeout: props.timeout && props.timeout.toSeconds(),
       runtime: props.runtime.name,
       role: this.role.roleArn,
-      environment: Lazy.any({ produce: () => this.renderEnvironment() }),
+      // Uncached because calling '_checkEdgeCompatibility', which gets called in the resolve of another
+      // Token, actually *modifies* the 'environment' map.
+      environment: Lazy.uncachedAny({ produce: () => this.renderEnvironment() }),
       memorySize: props.memorySize,
       vpcConfig: this.configureVpc(props),
       deadLetterConfig: this.buildDeadLetterConfig(this.deadLetterQueue),
