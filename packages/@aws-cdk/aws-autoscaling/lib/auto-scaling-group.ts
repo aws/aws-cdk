@@ -1620,11 +1620,13 @@ export interface RequestCountScalingProps extends BaseTargetTrackingProps {
    * Target average requests/seconds on each instance
    *
    * @deprecated Use 'targetRequestsPerMinute' instead
+   * @default - Specify exactly one of 'targetRequestsPerSecond' and 'targetRequestsPerSecond'
    */
   readonly targetRequestsPerSecond?: number;
 
   /**
    * Target average requests/minute on each instance
+   * @default - Specify exactly one of 'targetRequestsPerSecond' and 'targetRequestsPerSecond'
    */
   readonly targetRequestsPerMinute?: number;
 }
