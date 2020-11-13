@@ -1,5 +1,5 @@
 import * as iam from '@aws-cdk/aws-iam';
-import { IResource, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
+import { IResource, Lazy, Names, Resource, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnEventBus } from './events.generated';
 
@@ -219,7 +219,7 @@ export class EventBus extends Resource implements IEventBus {
 
   constructor(scope: Construct, id: string, props?: EventBusProps) {
     const { eventBusName, eventSourceName } = EventBus.eventBusProps(
-      Lazy.string({ produce: () => this.node.uniqueId }),
+      Lazy.string({ produce: () => Names.uniqueId(this) }),
       props,
     );
 

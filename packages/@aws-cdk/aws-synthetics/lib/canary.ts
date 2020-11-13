@@ -195,10 +195,8 @@ export interface CanaryProps {
    * Specify the runtime version to use for the canary.
    *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_Library.html
-   *
-   * @default Runtime.SYNTHETICS_NODEJS_2_0
    */
-  readonly runtime?: Runtime;
+  readonly runtime: Runtime;
 
   /**
    * The type of test that you want your canary to run. Use `Test.custom()` to specify the test to run.
@@ -260,7 +258,7 @@ export class Canary extends cdk.Resource {
       artifactS3Location: this.artifactsBucket.s3UrlForObject(props.artifactsBucketLocation?.prefix),
       executionRoleArn: this.role.roleArn,
       startCanaryAfterCreation: props.startAfterCreation ?? true,
-      runtimeVersion: props.runtime?.name ?? Runtime.SYNTHETICS_NODEJS_2_0.name,
+      runtimeVersion: props.runtime.name,
       name: this.physicalName,
       schedule: this.createSchedule(props),
       failureRetentionPeriod: props.failureRetentionPeriod?.toDays(),
@@ -390,7 +388,7 @@ export class Canary extends cdk.Resource {
    * Creates a unique name for the canary. The generated name is the physical ID of the canary.
    */
   private generateUniqueName(): string {
-    const name = this.node.uniqueId.toLowerCase().replace(' ', '-');
+    const name = cdk.Names.uniqueId(this).toLowerCase().replace(' ', '-');
     if (name.length <= 21) {
       return name;
     } else {

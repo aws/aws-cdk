@@ -505,7 +505,7 @@ export class CfnParser {
         if (!mapping) {
           throw new Error(`Mapping used in FindInMap expression with name '${value[0]}' was not found in the template`);
         }
-        return Fn.findInMap(mapping.logicalId, value[1], value[2]);
+        return Fn._findInMap(mapping.logicalId, value[1], value[2]);
       }
       case 'Fn::Select': {
         const value = this.parseValue(object[key]);

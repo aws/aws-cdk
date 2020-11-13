@@ -46,11 +46,11 @@ nodeunitShim({
   },
 
   'bundling with image from asset'(test: Test) {
-    const imageId = 'abcdef123456';
+    const imageId = 'sha256:abcdef123456';
     const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
       status: 0,
       stderr: Buffer.from('stderr'),
-      stdout: Buffer.from(`sha256:${imageId}`),
+      stdout: Buffer.from(imageId),
       pid: 123,
       output: ['stdout', 'stderr'],
       signal: null,
@@ -133,11 +133,11 @@ nodeunitShim({
   },
 
   'BundlerDockerImage json is the bundler image if building an image'(test: Test) {
-    const imageId = 'abcdef123456';
+    const imageId = 'sha256:abcdef123456';
     sinon.stub(child_process, 'spawnSync').returns({
       status: 0,
       stderr: Buffer.from('stderr'),
-      stdout: Buffer.from(`sha256:${imageId}`),
+      stdout: Buffer.from(imageId),
       pid: 123,
       output: ['stdout', 'stderr'],
       signal: null,
