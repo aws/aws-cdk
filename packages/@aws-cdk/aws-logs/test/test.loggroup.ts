@@ -18,7 +18,8 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::Logs::LogGroup', {
-      KmsKeyId: { Ref: 'Key961B73FD' },
+      KmsKeyId: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
+
     }));
 
     test.done();
