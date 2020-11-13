@@ -141,7 +141,7 @@ class LatestDeploymentResource extends CfnDeployment {
 
     this.api = props.restApi;
     this.originalLogicalId = this.stack.getLogicalId(this);
-    this.overrideLogicalId(Lazy.string({ produce: () => this.calculateLogicalId() }));
+    this.overrideLogicalId(Lazy.uncachedString({ produce: () => this.calculateLogicalId() }));
   }
 
   /**
