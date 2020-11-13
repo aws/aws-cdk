@@ -8,7 +8,7 @@ import * as path from 'path';
  * Relevant if the current system is a Windows machine but is generating
  * commands for a Linux CodeBuild image.
  */
-export function toPosixPath(osPath: string) {
-  const regex = new RegExp(`\\${path.sep}`, 'g');
+export function toPosixPath(osPath: string, currentSep?: string) {
+  const regex = new RegExp(`\\${currentSep ?? path.sep}`, 'g');
   return osPath.replace(regex, '/');
 }
