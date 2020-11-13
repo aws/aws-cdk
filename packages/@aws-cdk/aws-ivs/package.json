@@ -32,6 +32,15 @@
       }
     }
   },
+  "awslint": {
+    "exclude": [
+      "props-physical-name:@aws-cdk/aws-ivs.ChannelProps",
+      "props-physical-name:@aws-cdk/aws-ivs.StreamKeyProps",
+      "props-physical-name:@aws-cdk/aws-ivs.PlaybackKeyPairProps",
+      "from-method:@aws-cdk/aws-ivs.StreamKey",
+      "from-method:@aws-cdk/aws-ivs.PlaybackKeyPair"
+    ]
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/aws/aws-cdk.git",
@@ -63,6 +72,7 @@
   "keywords": [
     "aws",
     "cdk",
+    "ivs",
     "constructs",
     "AWS::IVS",
     "aws-ivs"
@@ -76,14 +86,17 @@
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
     "cdk-build-tools": "0.0.0",
+    "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
     "pkglint": "0.0.0"
   },
   "dependencies": {
-    "@aws-cdk/core": "0.0.0"
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^3.2.0"
   },
   "peerDependencies": {
-    "@aws-cdk/core": "0.0.0"
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^3.2.0"
   },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
