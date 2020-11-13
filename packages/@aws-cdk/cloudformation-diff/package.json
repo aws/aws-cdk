@@ -55,5 +55,8 @@
   "maturity": "experimental",
   "cdk-build": {
     "jest": true
+  },
+  "ubergen": {
+    "exclude": true
   }
 }

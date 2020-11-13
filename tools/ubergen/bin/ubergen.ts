@@ -181,11 +181,15 @@ async function verifyDependencies(libraries: readonly LibraryReference[]): Promi
       changed = true;
     }
   }
-  packageJson.bundledDependencies = packageJson.bundledDependencies?.filter((dep: string) => !spuriousBundledDeps.has(dep));
-  for (const toRemove of Array.from(spuriousBundledDeps)) {
-    delete packageJson.dependencies[toRemove];
-    changed = true;
-  }
+  const libNames = libraries.map(x => x.packageJson.name);
+  packageJson.bundledDependencies = packageJson.bundledDependencies.filter((dep: string) => {
+    if (libNames.includes(dep)) {
+      console.log(`\t⚠️ Incorrect dependency: ${dep} part of the uberpackage, must not be bundled`);
+      changed = true;
+      return false;
+    }
+    return true;
+  });
 
   if (workspaceChanged) {
     await fs.writeFile(workspacePath, JSON.stringify(workspace, null, 2) + '\n', { encoding: 'utf-8' });

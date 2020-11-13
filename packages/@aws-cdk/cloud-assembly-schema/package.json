@@ -91,5 +91,8 @@
   "maturity": "stable",
   "cdk-build": {
     "jest": true
+  },
+  "ubergen": {
+    "exclude": true
   }
 }
