@@ -342,18 +342,11 @@ const codebuildProject = new codebuild.Project(stack, 'Project', {
 const task = new tasks.CodeBuildStartBuild(stack, 'Task', {
   project: codebuildProject,
   integrationPattern: sfn.IntegrationPattern.RUN_JOB,
-  overrides: {
-    environmentVariables: {
-        ZONE: {
-          type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,          
-          value: sfn.JsonPath.stringAt('$.envVariables.zone'),
-        },
+  environmentVariablesOverride: {
+    ZONE: {
+      type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
+      value: sfn.JsonPath.stringAt('$.envVariables.zone'),
     },
-    source: codebuild.Source.gitHub({
-      branchOrRef: sfn.JsonPath.stringAt('$.commitHash'),
-      owner,
-      repo,
-    }),
   },
 });
 ```
