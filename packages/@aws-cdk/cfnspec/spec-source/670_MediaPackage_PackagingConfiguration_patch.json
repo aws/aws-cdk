@@ -1,0 +1,29 @@
+{
+  "PropertyTypes": {
+    "patch": {
+      "description": "missing type information for SpekeKeyProvider - mirrors patch in cfn-lint (https://github.com/aws-cloudformation/cfn-python-lint/pull/1751)",
+      "operations": [
+        {
+          "op": "add",
+          "path": "/AWS::MediaPackage::PackagingConfiguration.CmafEncryption/Properties/SpekeKeyProvider/Type",
+          "value": "SpekeKeyProvider"
+        },
+        {
+          "op": "add",
+          "path": "/AWS::MediaPackage::PackagingConfiguration.DashEncryption/Properties/SpekeKeyProvider/Type",
+          "value": "SpekeKeyProvider"
+        },
+        {
+          "op": "add",
+          "path": "/AWS::MediaPackage::PackagingConfiguration.HlsEncryption/Properties/SpekeKeyProvider/Type",
+          "value": "SpekeKeyProvider"
+        },
+        {
+          "op": "add",
+          "path": "/AWS::MediaPackage::PackagingConfiguration.MssEncryption/Properties/SpekeKeyProvider/Type",
+          "value": "SpekeKeyProvider"
+        }
+      ]
+    }
+  }
+}
