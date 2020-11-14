@@ -1009,21 +1009,45 @@ export = {
 
   },
 
-  'throws when using a specific secret JSON field as environment variable for a Fargate task'(test: Test) {
+  'use a specific secret JSON field as environment variable for a Fargate task'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
 
     const secret = new secretsmanager.Secret(stack, 'Secret');
 
-    // THEN
-    test.throws(() => taskDefinition.addContainer('cont', {
+    // WHEN
+    taskDefinition.addContainer('cont', {
       image: ecs.ContainerImage.fromRegistry('test'),
       memoryLimitMiB: 1024,
       secrets: {
         SECRET_KEY: ecs.Secret.fromSecretsManager(secret, 'specificKey'),
       },
-    }), /Cannot specify secret JSON field for a task using the FARGATE launch type/);
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          Secrets: [
+            {
+              Name: 'SECRET_KEY',
+              ValueFrom: {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      Ref: 'SecretA720EF05',
+                    },
+                    ':specificKey::',
+                  ],
+                ],
+              },
+            },
+          ],
+        },
+      ],
+    }));
 
     test.done();
   },
@@ -1530,7 +1554,12 @@ export = {
 
   'can use a DockerImageAsset directly for a container image'(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack();
+    const app = new cdk.App({
+      context: {
+        '@aws-cdk/aws-ecr-assets:dockerIgnoreSupport': true,
+      },
+    });
+    const stack = new cdk.Stack(app, 'Stack');
     const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
     const asset = new ecr_assets.DockerImageAsset(stack, 'MyDockerImage', {
       directory: path.join(__dirname, 'demo-image'),
@@ -1556,7 +1585,7 @@ export = {
                 { Ref: 'AWS::Region' },
                 '.',
                 { Ref: 'AWS::URLSuffix' },
-                '/aws-cdk/assets:baa2d6eb2a17c75424df631c8c70ff39f2d5f3bee8b9e1a109ee24ca17300540',
+                '/aws-cdk/assets:b2c69bfbfe983b634456574587443159b3b7258849856a118ad3d2772238f1a5',
               ],
             ],
           },
@@ -1596,7 +1625,11 @@ export = {
 
   'docker image asset options can be used when using container image'(test: Test) {
     // GIVEN
-    const app = new cdk.App();
+    const app = new cdk.App({
+      context: {
+        '@aws-cdk/aws-ecr-assets:dockerIgnoreSupport': true,
+      },
+    });
     const stack = new cdk.Stack(app, 'MyStack');
     const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
 
@@ -1613,11 +1646,11 @@ export = {
     const asm = app.synth();
     test.deepEqual(asm.getStackArtifact(stack.artifactId).assets[0], {
       repositoryName: 'aws-cdk/assets',
-      imageTag: 'f9014d1df7c8f5a5e7abaf18eb5bc895e82f8b06eeed6f75a40cf1bc2a78955a',
-      id: 'f9014d1df7c8f5a5e7abaf18eb5bc895e82f8b06eeed6f75a40cf1bc2a78955a',
+      imageTag: 'ce3419d7c5d2d44e2789b13ccbd2d54ddf682557669f68bcee753231f5f1c0a5',
+      id: 'ce3419d7c5d2d44e2789b13ccbd2d54ddf682557669f68bcee753231f5f1c0a5',
       packaging: 'container-image',
-      path: 'asset.f9014d1df7c8f5a5e7abaf18eb5bc895e82f8b06eeed6f75a40cf1bc2a78955a',
-      sourceHash: 'f9014d1df7c8f5a5e7abaf18eb5bc895e82f8b06eeed6f75a40cf1bc2a78955a',
+      path: 'asset.ce3419d7c5d2d44e2789b13ccbd2d54ddf682557669f68bcee753231f5f1c0a5',
+      sourceHash: 'ce3419d7c5d2d44e2789b13ccbd2d54ddf682557669f68bcee753231f5f1c0a5',
       target: 'build-target',
       file: 'index.py',
     });
