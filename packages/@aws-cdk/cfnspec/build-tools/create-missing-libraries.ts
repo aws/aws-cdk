@@ -298,19 +298,31 @@ async function main() {
       await fs.copy(path.join(templateDir, file), path.join(packagePath, file));
     }
 
-    // update decdk
-    const decdkPkgJsonPath = path.join(__dirname, '..', '..', '..', 'decdk', 'package.json');
-    const decdkPkg = JSON.parse(await fs.readFile(decdkPkgJsonPath, 'utf8'));
+    await addDependencyToMegaPackage(path.join('@aws-cdk', 'cloudformation-include'), packageName, version, ['dependencies', 'peerDependencies']);
+    await addDependencyToMegaPackage('aws-cdk-lib', packageName, version, ['devDependencies']);
+    await addDependencyToMegaPackage('monocdk', packageName, version, ['devDependencies']);
+    await addDependencyToMegaPackage('decdk', packageName, version, ['dependencies']);
+  }
+}
+
+/**
+ * A few of our packages (e.g., decdk, aws-cdk-lib) require a dependency on every service package.
+ * This automates adding the dependency (and peer dependency) to the package.json.
+ */
+async function addDependencyToMegaPackage(megaPackageName: string, packageName: string, version: string, dependencyTypes: string[]) {
+  const packageJsonPath = path.join(__dirname, '..', '..', '..', megaPackageName, 'package.json');
+  const packageJson = JSON.parse(await fs.readFile(packageJsonPath, 'utf8'));
+  dependencyTypes.forEach(dependencyType => {
     const unorderedDeps = {
-      ...decdkPkg.dependencies,
+      ...packageJson[dependencyType],
       [packageName]: version,
     };
-    decdkPkg.dependencies = {};
+    packageJson[dependencyType] = {};
     Object.keys(unorderedDeps).sort().forEach(k => {
-      decdkPkg.dependencies[k] = unorderedDeps[k];
+      packageJson[dependencyType][k] = unorderedDeps[k];
     });
-    await fs.writeFile(decdkPkgJsonPath, JSON.stringify(decdkPkg, null, 2) + '\n');
-  }
+  });
+  await fs.writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2) + '\n');
 }
 
 main().catch(e => {
