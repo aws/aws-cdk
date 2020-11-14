@@ -6,7 +6,7 @@ import { arnForDeploymentConfig } from '../utils';
 /**
  * The Deployment Configuration of an EC2/on-premise Deployment Group.
  * The default, pre-defined Configurations are available as constants on the {@link ServerDeploymentConfig} class
- * (`ServerDeploymentConfig.HalfAtATime`, `ServerDeploymentConfig.AllAtOnce`, etc.).
+ * (`ServerDeploymentConfig.HALF_AT_A_TIME`, `ServerDeploymentConfig.ALL_AT_ONCE`, etc.).
  * To create a custom Deployment Configuration,
  * instantiate the {@link ServerDeploymentConfig} Construct.
  */

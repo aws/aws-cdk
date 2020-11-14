@@ -26,7 +26,7 @@ export interface IVirtualGateway extends cdk.IResource {
   readonly virtualGatewayArn: string;
 
   /**
-   * The mesh which the VirtualGateway belongs to
+   * The Mesh which the VirtualGateway belongs to
    */
   readonly mesh: IMesh;
 
@@ -67,7 +67,7 @@ export interface VirtualGatewayBaseProps {
  */
 export interface VirtualGatewayProps extends VirtualGatewayBaseProps {
   /**
-   * The mesh which the VirtualGateway belongs to
+   * The Mesh which the VirtualGateway belongs to
    */
   readonly mesh: IMesh;
 }
@@ -84,7 +84,7 @@ abstract class VirtualGatewayBase extends cdk.Resource implements IVirtualGatewa
   public abstract readonly virtualGatewayArn: string;
 
   /**
-   * The name of the mesh which the VirtualGateway belongs to
+   * The Mesh which the VirtualGateway belongs to
    */
   public abstract readonly mesh: IMesh;
 
@@ -112,7 +112,27 @@ export class VirtualGateway extends VirtualGatewayBase {
    * Import an existing VirtualGateway given an ARN
    */
   public static fromVirtualGatewayArn(scope: Construct, id: string, virtualGatewayArn: string): IVirtualGateway {
-    return new ImportedVirtualGateway(scope, id, { virtualGatewayArn });
+    return new class extends VirtualGatewayBase {
+      private readonly parsedArn = cdk.Fn.split('/', cdk.Stack.of(scope).parseArn(virtualGatewayArn).resourceName!);
+      readonly mesh = Mesh.fromMeshName(this, 'Mesh', cdk.Fn.select(0, this.parsedArn));
+      readonly virtualGatewayArn = virtualGatewayArn;
+      readonly virtualGatewayName = cdk.Fn.select(2, this.parsedArn);
+    }(scope, id);
+  }
+
+  /**
+   * Import an existing VirtualGateway given its attributes
+   */
+  public static fromVirtualGatewayAttributes(scope: Construct, id: string, attrs: VirtualGatewayAttributes): IVirtualGateway {
+    return new class extends VirtualGatewayBase {
+      readonly mesh = attrs.mesh;
+      readonly virtualGatewayName = attrs.virtualGatewayName;
+      readonly virtualGatewayArn = cdk.Stack.of(this).formatArn({
+        service: 'appmesh',
+        resource: `mesh/${attrs.mesh.meshName}/virtualGateway`,
+        resourceName: this.virtualGatewayName,
+      });
+    }(scope, id);
   }
 
   /**
@@ -171,56 +191,14 @@ export class VirtualGateway extends VirtualGatewayBase {
 /**
  * Unterface with properties necessary to import a reusable VirtualGateway
  */
-interface VirtualGatewayAttributes {
+export interface VirtualGatewayAttributes {
   /**
    * The name of the VirtualGateway
    */
-  readonly virtualGatewayName?: string;
-
-  /**
-   * The Amazon Resource Name (ARN) belonging to the VirtualGateway
-   */
-  readonly virtualGatewayArn?: string;
+  readonly virtualGatewayName: string;
 
   /**
    * The Mesh that the VirtualGateway belongs to
    */
-  readonly mesh?: IMesh;
-
-  /**
-   * The name of the mesh that the VirtualGateway belongs to
-   */
-  readonly meshName?: string;
-}
-
-/**
- * Used to import a VirtualGateway and read its properties
- */
-class ImportedVirtualGateway extends VirtualGatewayBase {
-  /**
-   * The name of the VirtualGateway
-   */
-  public readonly virtualGatewayName: string;
-
-  /**
-   * The Amazon Resource Name (ARN) belonging to the VirtualGateway
-   */
-  public readonly virtualGatewayArn: string;
-
-  /**
-   * The Mesh that the VirtualGateway belongs to
-   */
-  public readonly mesh: IMesh;
-
-  constructor(scope: Construct, id: string, props: VirtualGatewayAttributes) {
-    super(scope, id);
-    if (props.virtualGatewayArn) {
-      const meshName = cdk.Fn.select(0, cdk.Fn.split('/', cdk.Stack.of(scope).parseArn(props.virtualGatewayArn).resourceName!));
-      this.mesh = Mesh.fromMeshName(this, 'Mesh', meshName);
-      this.virtualGatewayArn = props.virtualGatewayArn;
-      this.virtualGatewayName = cdk.Fn.select(2, cdk.Fn.split('/', cdk.Stack.of(scope).parseArn(props.virtualGatewayArn).resourceName!));
-    } else {
-      throw new Error('Need virtualGatewayArn');
-    }
-  }
+  readonly mesh: IMesh;
 }

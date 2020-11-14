@@ -19,15 +19,17 @@ describe('FeatureStabilityRule', () => {
 
   test('feature table is rendered', async () => {
     fakeModule = new FakeModule({
-      packagejson: {
-        features: [
-          { name: 'Experimental Feature', stability: 'Experimental' },
-          { name: 'Stable Feature', stability: 'Stable' },
-          { name: 'Dev Preview Feature', stability: 'Developer Preview' },
-          { name: 'Not Implemented Feature', stability: 'Not Implemented' },
-        ],
+      files: {
+        'package.json': {
+          features: [
+            { name: 'Experimental Feature', stability: 'Experimental' },
+            { name: 'Stable Feature', stability: 'Stable' },
+            { name: 'Dev Preview Feature', stability: 'Developer Preview' },
+            { name: 'Not Implemented Feature', stability: 'Not Implemented' },
+          ],
+        },
+        'README.md': '',
       },
-      readme: [],
     });
     const dirPath = await fakeModule.tmpdir();
     const rule = new rules.FeatureStabilityRule();
@@ -47,11 +49,13 @@ describe('FeatureStabilityRule', () => {
 
   test('CFN Resources is rendered', async () => {
     fakeModule = new FakeModule({
-      packagejson: {
-        'cdk-build': { cloudformation: 'Foo::Bar' },
-        'features': [],
+      files: {
+        'package.json': {
+          'cdk-build': { cloudformation: 'Foo::Bar' },
+          'features': [],
+        },
+        'README.md': '',
       },
-      readme: [],
     });
     const dirPath = await fakeModule.tmpdir();
 
@@ -68,11 +72,13 @@ describe('FeatureStabilityRule', () => {
   describe('banner notices', () => {
     test('CFN Resources', async () => {
       fakeModule = new FakeModule({
-        packagejson: {
-          'cdk-build': { cloudformation: 'Foo::Bar' },
-          'features': [],
+        files: {
+          'package.json': {
+            'cdk-build': { cloudformation: 'Foo::Bar' },
+            'features': [],
+          },
+          'README.md': '',
         },
-        readme: [],
       });
       const dirPath = await fakeModule.tmpdir();
       const rule = new rules.FeatureStabilityRule();
@@ -87,12 +93,14 @@ describe('FeatureStabilityRule', () => {
 
     test('experimental', async () => {
       fakeModule = new FakeModule({
-        packagejson: {
-          features: [
-            { name: 'Feature', stability: 'Experimental' },
-          ],
+        files: {
+          'package.json': {
+            features: [
+              { name: 'Feature', stability: 'Experimental' },
+            ],
+          },
+          'README.md': '',
         },
-        readme: [],
       });
       const dirPath = await fakeModule.tmpdir();
       const rule = new rules.FeatureStabilityRule();
@@ -109,12 +117,14 @@ describe('FeatureStabilityRule', () => {
 
     test('developer preview', async () => {
       fakeModule = new FakeModule({
-        packagejson: {
-          features: [
-            { name: 'Feature', stability: 'Developer Preview' },
-          ],
+        files: {
+          'package.json': {
+            features: [
+              { name: 'Feature', stability: 'Developer Preview' },
+            ],
+          },
+          'README.md': '',
         },
-        readme: [],
       });
       const dirPath = await fakeModule.tmpdir();
       const rule = new rules.FeatureStabilityRule();
@@ -131,12 +141,14 @@ describe('FeatureStabilityRule', () => {
 
     test('stable', async () => {
       fakeModule = new FakeModule({
-        packagejson: {
-          features: [
-            { name: 'Feature', stability: 'Stable' },
-          ],
+        files: {
+          'package.json': {
+            features: [
+              { name: 'Feature', stability: 'Stable' },
+            ],
+          },
+          'README.md': '',
         },
-        readme: [],
       });
       const dirPath = await fakeModule.tmpdir();
       const rule = new rules.FeatureStabilityRule();
@@ -154,13 +166,15 @@ describe('FeatureStabilityRule', () => {
 
   test('skip if package private', async () => {
     fakeModule = new FakeModule({
-      packagejson: {
-        private: true,
-        features: [
-          { name: 'Experimental Feature', stability: 'Experimental' },
-        ],
+      files: {
+        'package.json': {
+          private: true,
+          features: [
+            { name: 'Experimental Feature', stability: 'Experimental' },
+          ],
+        },
+        'README.md': '',
       },
-      readme: [],
     });
     const dirPath = await fakeModule.tmpdir();
     const rule = new rules.FeatureStabilityRule();
@@ -173,8 +187,10 @@ describe('FeatureStabilityRule', () => {
 
   test('skip if features is not specified', async () => {
     fakeModule = new FakeModule({
-      packagejson: {},
-      readme: [],
+      files: {
+        'package.json': {},
+        'README.md': '',
+      },
     });
     const dirPath = await fakeModule.tmpdir();
     const rule = new rules.FeatureStabilityRule();
@@ -187,10 +203,12 @@ describe('FeatureStabilityRule', () => {
 
   test('skip if README.md is missing', async () => {
     fakeModule = new FakeModule({
-      packagejson: {
-        features: [
-          { name: 'Experimental Feature', stability: 'Experimental' },
-        ],
+      files: {
+        'package.json': {
+          features: [
+            { name: 'Experimental Feature', stability: 'Experimental' },
+          ],
+        },
       },
     });
     const dirPath = await fakeModule.tmpdir();
@@ -218,10 +236,14 @@ describe('ThirdPartyAttributions', () => {
 
   test('errors when attribution missing for bundled dependencies', async() => {
     fakeModule = new FakeModule({
-      packagejson: {
-        bundledDependencies: ['dep1', 'dep2'],
+      files: {
+        'package.json': {
+          bundledDependencies: ['dep1', 'dep2'],
+        },
+        'node_modules/dep1/package.json': {},
+        'node_modules/dep2/package.json': {},
+        'NOTICE': '',
       },
-      notice: [],
     });
     const dirPath = await fakeModule.tmpdir();
 
@@ -242,14 +264,17 @@ describe('ThirdPartyAttributions', () => {
 
   test('errors when there are excessive attributions', async() => {
     fakeModule = new FakeModule({
-      packagejson: {
-        bundledDependencies: ['dep1'],
+      files: {
+        'package.json': {
+          bundledDependencies: ['dep1'],
+        },
+        'node_modules/dep1/package.json': {},
+        'NOTICE': [
+          '** dep1 - https://link-somewhere',
+          '** dep2 - https://link-elsewhere',
+          '** dep3-rev - https://link-elsewhere',
+        ].join('\n'),
       },
-      notice: [
-        '** dep1 - https://link-somewhere',
-        '** dep2 - https://link-elsewhere',
-        '** dep3-rev - https://link-elsewhere',
-      ],
     });
     const dirPath = await fakeModule.tmpdir();
 
@@ -270,13 +295,17 @@ describe('ThirdPartyAttributions', () => {
 
   test('passes when attribution is present', async() => {
     fakeModule = new FakeModule({
-      packagejson: {
-        bundledDependencies: ['dep1', 'dep2'],
+      files: {
+        'package.json': {
+          bundledDependencies: ['dep1', 'dep2'],
+        },
+        'node_modules/dep1/package.json': {},
+        'node_modules/dep2/package.json': {},
+        'NOTICE': [
+          '** dep1 - https://link-somewhere',
+          '** dep2 - https://link-elsewhere',
+        ].join('\n'),
       },
-      notice: [
-        '** dep1 - https://link-somewhere',
-        '** dep2 - https://link-elsewhere',
-      ],
     });
     const dirPath = await fakeModule.tmpdir();
 
@@ -288,11 +317,68 @@ describe('ThirdPartyAttributions', () => {
     expect(pkgJson.hasReports).toBe(false);
   });
 
+  test('passes when attribution for transitive bundled deps are present', async() => {
+    fakeModule = new FakeModule({
+      files: {
+        'package.json': {
+          bundledDependencies: ['dep1'],
+        },
+        'node_modules/dep1/package.json': {
+          dependencies: { dep2: '1.2.3' },
+        },
+        'node_modules/dep2/package.json': {},
+        'NOTICE': [
+          '** dep1 - https://link-somewhere',
+          '** dep2 - https://link-elsewhere',
+        ].join('\n'),
+      },
+    });
+    const dirPath = await fakeModule.tmpdir();
+
+    const rule = new rules.ThirdPartyAttributions();
+
+    const pkgJson = new PackageJson(path.join(dirPath, 'package.json'));
+    rule.validate(pkgJson);
+
+    expect(pkgJson.hasReports).toBe(false);
+  });
+
+  test('fails when attribution for transitive bundled deps are missing', async() => {
+    fakeModule = new FakeModule({
+      files: {
+        'package.json': {
+          bundledDependencies: ['dep1'],
+        },
+        'node_modules/dep1/package.json': {
+          dependencies: { dep2: '1.2.3' },
+        },
+        'node_modules/dep2/package.json': {},
+        'NOTICE': [
+          '** dep1 - https://link-somewhere',
+        ].join('\n'),
+      },
+    });
+    const dirPath = await fakeModule.tmpdir();
+
+    const rule = new rules.ThirdPartyAttributions();
+
+    const pkgJson = new PackageJson(path.join(dirPath, 'package.json'));
+    rule.validate(pkgJson);
+
+    expect(pkgJson.hasReports).toBe(true);
+    expect(pkgJson.reports.length).toEqual(1);
+    expect(pkgJson.reports[0].ruleName).toEqual('license/3p-attributions');
+    expect(pkgJson.reports[0].message).toContain('Missing attribution');
+    expect(pkgJson.reports[0].message).toContain('dep2');
+  });
+
   test('skipped when no bundled dependencies', async() => {
     fakeModule = new FakeModule({
-      packagejson: {
+      files: {
+        'package.json': {
+        },
+        'NOTICE': '',
       },
-      notice: [],
     });
     const dirPath = await fakeModule.tmpdir();
 
@@ -306,11 +392,15 @@ describe('ThirdPartyAttributions', () => {
 
   test('skipped for private packages', async () => {
     fakeModule = new FakeModule({
-      packagejson: {
-        private: true,
-        bundledDependencies: ['dep1', 'dep2'],
+      files: {
+        'package.json': {
+          private: true,
+          bundledDependencies: ['dep1', 'dep2'],
+        },
+        'node_modules/dep1/package.json': {},
+        'node_modules/dep2/package.json': {},
+        'NOTICE': '',
       },
-      notice: [],
     });
     const dirPath = await fakeModule.tmpdir();
 

@@ -56,6 +56,25 @@ the access point. You may specify custom path with the `path` property. If `path
 created with the settings defined in the `creationInfo`. See
 [Creating Access Points](https://docs.aws.amazon.com/efs/latest/ug/create-access-point.html) for more details.
 
+Any access point that has been created outside the stack can be imported into your CDK app.
+
+Use the `fromAccessPointAttributes()` API to import an existing access point.
+
+```ts
+efs.AccessPoint.fromAccessPointAttributes(this, 'ap', {
+  accessPointArn: 'fsap-1293c4d9832fo0912',
+  fileSystem: efs.FileSystem.fromFileSystemAttributes(this, 'efs', {
+    fileSystemId: 'fs-099d3e2f',
+    securityGroup: SecurityGroup.fromSecurityGroupId(this, 'sg', 'sg-51530134'),
+  }),
+});
+```
+
+⚠️ Notice: When importing an Access Point using `fromAccessPointAttributes()`, you must make sure the mount targets are deployed and their lifecycle state is `available`. Otherwise, you may encounter the following error when deploying:
+> EFS file system <ARN of efs> referenced by access point <ARN of access point of EFS> has
+mount targets created in all availability zones the function will execute in, but not all are in the available life cycle
+state yet. Please wait for them to become available and try the request again.
+
 ### Connecting
 
 To control who can access the EFS, use the `.connections` attribute. EFS has

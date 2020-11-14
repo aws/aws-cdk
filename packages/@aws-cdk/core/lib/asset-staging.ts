@@ -165,6 +165,7 @@ export class AssetStaging extends CoreConstruct {
       customFingerprint: this.customSourceFingerprint,
       extraHash: props.extraHash,
       exclude: props.exclude,
+      ignoreMode: props.ignoreMode,
       skip,
     });
 
