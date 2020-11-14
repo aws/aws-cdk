@@ -10,7 +10,7 @@ import { Container } from './container';
 import { ServiceExtension, ServiceBuild } from './extension-interfaces';
 
 // The version of the App Mesh envoy sidecar to add to the task.
-const APP_MESH_ENVOY_SIDECAR_VERSION = 'v1.15.0.0-prod';
+const APP_MESH_ENVOY_SIDECAR_VERSION = 'v1.15.1.0-prod';
 
 /**
  * The settings for the App Mesh extension.
@@ -70,7 +70,7 @@ export class AppMeshExtension extends ServiceExtension {
     // Make sure that the parent cluster for this service has
     // a namespace attached.
     if (!this.parentService.cluster.defaultCloudMapNamespace) {
-      this.parentService.cluster.addDefaultCloudMapNamespace({
+      this.parentService.environment.addDefaultCloudMapNamespace({
         // Name the namespace after the environment name.
         // Service DNS will be like <service id>.<environment id>
         name: this.parentService.environment.id,
@@ -259,29 +259,37 @@ export class AppMeshExtension extends ServiceExtension {
       throw new Error('You must add a CloudMap namespace to the ECS cluster in order to use the AppMesh extension');
     }
 
+    function addListener(protocol: appmesh.Protocol, port: number): appmesh.VirtualNodeListener {
+      switch (protocol) {
+        case appmesh.Protocol.HTTP :
+          return appmesh.VirtualNodeListener.http({ port });
+
+        case appmesh.Protocol.HTTP2 :
+          return appmesh.VirtualNodeListener.http2({ port });
+
+        case appmesh.Protocol.GRPC :
+          return appmesh.VirtualNodeListener.grpc({ port });
+
+        case appmesh.Protocol.TCP :
+          return appmesh.VirtualNodeListener.tcp({ port });
+      }
+    }
+
     // Create a virtual node for the name service
     this.virtualNode = new appmesh.VirtualNode(this.scope, `${this.parentService.id}-virtual-node`, {
       mesh: this.mesh,
       virtualNodeName: this.parentService.id,
       cloudMapService: service.cloudMapService,
-      listener: {
-        portMapping: {
-          port: containerextension.trafficPort,
-          protocol: this.protocol,
-        },
-      },
+      listeners: [addListener(this.protocol, containerextension.trafficPort)],
     });
 
     // Create a virtual router for this service. This allows for retries
     // and other similar behaviors.
     this.virtualRouter = new appmesh.VirtualRouter(this.scope, `${this.parentService.id}-virtual-router`, {
       mesh: this.mesh,
-      listener: {
-        portMapping: {
-          port: containerextension.trafficPort,
-          protocol: this.protocol,
-        },
-      },
+      listeners: [
+        this.virtualRouterListener(containerextension.trafficPort),
+      ],
       virtualRouterName: `${this.parentService.id}`,
     });
 
@@ -329,6 +337,15 @@ export class AppMeshExtension extends ServiceExtension {
     // Next update the app mesh config so that the local Envoy
     // proxy on this service knows how to route traffic to
     // nodes from the other service.
-    this.virtualNode.addBackends(otherAppMesh.virtualService);
+    this.virtualNode.addBackend(otherAppMesh.virtualService);
+  }
+
+  private virtualRouterListener(port: number): appmesh.VirtualRouterListener {
+    switch (this.protocol) {
+      case appmesh.Protocol.HTTP: return appmesh.VirtualRouterListener.http(port);
+      case appmesh.Protocol.HTTP2: return appmesh.VirtualRouterListener.http2(port);
+      case appmesh.Protocol.GRPC: return appmesh.VirtualRouterListener.grpc(port);
+      case appmesh.Protocol.TCP: return appmesh.VirtualRouterListener.tcp(port);
+    }
   }
 }
