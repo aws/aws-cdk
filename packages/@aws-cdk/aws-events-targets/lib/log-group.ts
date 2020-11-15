@@ -35,7 +35,6 @@ export class CloudWatchLogGroup implements events.IRuleTarget {
 
     if (!this.logGroup.node.tryFindChild(resourcePolicyId)) {
       new LogGroupResourcePolicy(logGroupStack, resourcePolicyId, {
-        policyName: `${this.logGroup.logGroupName}EventsLogPolicy`,
         policyStatements: [new iam.PolicyStatement({
           effect: iam.Effect.ALLOW,
           actions: ['logs:PutLogEvents', 'logs:CreateLogStream'],
