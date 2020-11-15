@@ -101,17 +101,7 @@
           "service": "CloudWatchLogs",
           "action": "putResourcePolicy",
           "parameters": {
-            "policyName": {
-              "Fn::Join": [
-                "",
-                [
-                  {
-                    "Ref": "loggroupB02AAEB1"
-                  },
-                  "EventsLogPolicy"
-                ]
-              ]
-            },
+            "policyName": "loggroupeventsEventsLogGroupPolicyloggroupeventsTimerC63340B025F606BE",
             "policyDocument": {
               "Fn::Join": [
                 "",
@@ -136,17 +126,7 @@
           "service": "CloudWatchLogs",
           "action": "putResourcePolicy",
           "parameters": {
-            "policyName": {
-              "Fn::Join": [
-                "",
-                [
-                  {
-                    "Ref": "loggroupB02AAEB1"
-                  },
-                  "EventsLogPolicy"
-                ]
-              ]
-            },
+            "policyName": "loggroupeventsEventsLogGroupPolicyloggroupeventsTimerC63340B025F606BE",
             "policyDocument": {
               "Fn::Join": [
                 "",
@@ -171,17 +151,7 @@
           "service": "CloudWatchLogs",
           "action": "deleteResourcePolicy",
           "parameters": {
-            "policyName": {
-              "Fn::Join": [
-                "",
-                [
-                  {
-                    "Ref": "loggroupB02AAEB1"
-                  },
-                  "EventsLogPolicy"
-                ]
-              ]
-            }
+            "policyName": "loggroupeventsEventsLogGroupPolicyloggroupeventsTimerC63340B025F606BE"
           },
           "ignoreErrorCodesMatching": "400"
         },
@@ -359,17 +329,7 @@
           "service": "CloudWatchLogs",
           "action": "putResourcePolicy",
           "parameters": {
-            "policyName": {
-              "Fn::Join": [
-                "",
-                [
-                  {
-                    "Ref": "loggroup2F19C5C9B"
-                  },
-                  "EventsLogPolicy"
-                ]
-              ]
-            },
+            "policyName": "loggroupeventsEventsLogGroupPolicyloggroupeventsTimer289E3527EF8F6205F",
             "policyDocument": {
               "Fn::Join": [
                 "",
@@ -394,17 +354,7 @@
           "service": "CloudWatchLogs",
           "action": "putResourcePolicy",
           "parameters": {
-            "policyName": {
-              "Fn::Join": [
-                "",
-                [
-                  {
-                    "Ref": "loggroup2F19C5C9B"
-                  },
-                  "EventsLogPolicy"
-                ]
-              ]
-            },
+            "policyName": "loggroupeventsEventsLogGroupPolicyloggroupeventsTimer289E3527EF8F6205F",
             "policyDocument": {
               "Fn::Join": [
                 "",
@@ -429,17 +379,7 @@
           "service": "CloudWatchLogs",
           "action": "deleteResourcePolicy",
           "parameters": {
-            "policyName": {
-              "Fn::Join": [
-                "",
-                [
-                  {
-                    "Ref": "loggroup2F19C5C9B"
-                  },
-                  "EventsLogPolicy"
-                ]
-              ]
-            }
+            "policyName": "loggroupeventsEventsLogGroupPolicyloggroupeventsTimer289E3527EF8F6205F"
           },
           "ignoreErrorCodesMatching": "400"
         },
@@ -522,7 +462,7 @@
           "service": "CloudWatchLogs",
           "action": "putResourcePolicy",
           "parameters": {
-            "policyName": "MyLogGroupNameToBeImportedEventsLogPolicy",
+            "policyName": "loggroupeventsEventsLogGroupPolicyloggroupeventsTimer37DF74C17EF314A8E",
             "policyDocument": {
               "Fn::Join": [
                 "",
@@ -552,7 +492,7 @@
           "service": "CloudWatchLogs",
           "action": "putResourcePolicy",
           "parameters": {
-            "policyName": "MyLogGroupNameToBeImportedEventsLogPolicy",
+            "policyName": "loggroupeventsEventsLogGroupPolicyloggroupeventsTimer37DF74C17EF314A8E",
             "policyDocument": {
               "Fn::Join": [
                 "",
@@ -582,7 +522,7 @@
           "service": "CloudWatchLogs",
           "action": "deleteResourcePolicy",
           "parameters": {
-            "policyName": "MyLogGroupNameToBeImportedEventsLogPolicy"
+            "policyName": "loggroupeventsEventsLogGroupPolicyloggroupeventsTimer37DF74C17EF314A8E"
           },
           "ignoreErrorCodesMatching": "400"
         },
