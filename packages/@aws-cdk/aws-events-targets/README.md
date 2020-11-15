@@ -41,7 +41,7 @@ import * as logs from "@aws-cdk/aws-logs";
 import * as events from "@aws-cdk/aws-events";
 import * as targets from "@aws-cdk/aws-events-targets";
 
-const logGroup = new log.LogGroup(this, 'MyLogGroup', {
+const logGroup = new logs.LogGroup(this, 'MyLogGroup', {
   logGroupName: 'MyLogGroup',
 });
 
@@ -51,5 +51,5 @@ const rule = new events.Rule(this, 'rule', {
   },
 });
 
-rule.addTarget(new targets.LogGroup(logGroup));
+rule.addTarget(new targets.CloudWatchLogGroup(logGroup));
 ```
