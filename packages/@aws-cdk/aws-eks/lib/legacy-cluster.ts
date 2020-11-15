@@ -250,7 +250,7 @@ export class LegacyCluster extends Resource implements ICluster {
   }
 
   /**
-   * Since we dont really want to make it required on the top-level ICluster
+   * Since we don't really want to make it required on the top-level ICluster
    * we do this trick here in return type to match interface type
    */
   public get openIdConnectProvider(): iam.IOpenIdConnectProvider {

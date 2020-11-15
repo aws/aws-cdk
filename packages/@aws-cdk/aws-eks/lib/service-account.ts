@@ -84,9 +84,9 @@ export class ServiceAccount extends CoreConstruct implements IPrincipal {
     this.policyFragment = this.role.policyFragment;
 
     // Note that we cannot use `cluster.addManifest` here because that would create the manifest
-    // constrct in the scope of the cluster stack, which might be a different stack than this one.
+    // construct in the scope of the cluster stack, which might be a different stack than this one.
     // This means that the cluster stack would depend on this stack because of the role,
-    // and since this stack inherintely depends on the cluster stack, we will have a circular dependency.
+    // and since this stack inherently depends on the cluster stack, we will have a circular dependency.
     new KubernetesManifest(this, `manifest-${id}ServiceAccountResource`, {
       cluster,
       manifest: [{
