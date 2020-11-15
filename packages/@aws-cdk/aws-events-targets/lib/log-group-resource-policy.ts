@@ -47,7 +47,7 @@ export class LogGroupResourcePolicy extends cr.AwsCustomResource {
       policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
         // putResourcePolicy and deleteResourcePolicy don't support resource-level permissions. We must specify all resources ("*").
         // https://docs.aws.amazon.com/IAM/latest/UserGuide/list_amazoncloudwatchlogs.html
-        resources: ['*'],
+        resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,
       }),
     });
   }

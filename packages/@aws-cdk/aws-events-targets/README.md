@@ -33,37 +33,23 @@ EventBridge.
 
 Use the `LogGroup` target to log your events in a CloudWatch LogGroup.
 
-```ts
-const rule = new Rule(this, 'rule', {
-  eventPattern: {
-    source: [stack.account],
-  },
-});
+For example, the following code snippet creates an event rule with a CloudWatch LogGroup as a target.
+Every events sent from the `aws.ec2` source will be sent to the CloudWatch LogGroup.
 
-const logGroup = new LogGroup(this, 'MyLogGroup', {
+```ts
+import * as logs from "@aws-cdk/aws-logs";
+import * as events from "@aws-cdk/aws-events";
+import * as targets from "@aws-cdk/aws-events-targets";
+
+const logGroup = new log.LogGroup(this, 'MyLogGroup', {
   logGroupName: 'MyLogGroup',
 });
 
-rule.addTarget(targets.LogGroup(logGroup));
-```
-
-You can also use an [InputTransformer](https://docs.aws.amazon.com/eventbridge/latest/APIReference/API_InputTransformer.html).
-
-```ts
-const rule = new Rule(this, 'rule', {
+const rule = new events.Rule(this, 'rule', {
   eventPattern: {
-    source: [stack.account],
+    source: ["aws.ec2"],
   },
 });
 
-const logGroup = new LogGroup(this, 'MyLogGroup', {
-  logGroupName: 'MyLogGroup',
-});
-
-rule.addTarget(new targets.LogGroup(logGroup, {
-  event: events.RuleTargetInput.fromObject({
-    status: events.EventField.fromPath('$.detail.status'),
-    instanceId: events.EventField.fromPath('$.detail.instance-id'),
-  })
-}));
+rule.addTarget(new targets.LogGroup(logGroup));
 ```
