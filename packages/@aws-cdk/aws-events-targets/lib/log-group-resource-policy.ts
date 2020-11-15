@@ -8,8 +8,6 @@ import * as cr from '@aws-cdk/custom-resources';
 export interface LogGroupResourcePolicyProps {
   /**
    * The log group resource policy name
-   *
-   * @default: an opaque tree-unique address for this construct (node.addr).
    */
   readonly policyName?: string;
   /**
@@ -27,7 +25,7 @@ export class LogGroupResourcePolicy extends cr.AwsCustomResource {
       statements: props.policyStatements,
     });
 
-    let policyName = props.policyName || cdk.Lazy.stringValue({ produce: () => this.node.addr });
+    let policyName = props.policyName || cdk.Lazy.stringValue({ produce: () => cdk.Names.uniqueId(this) });
 
     super(scope, id, {
       resourceType: 'Custom::CloudwatchLogResourcePolicy',
