@@ -1,5 +1,5 @@
 import { IVpc } from '@aws-cdk/aws-ec2';
-import { AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerImage, ICluster, LogDriver, PropagatedTagSource, Secret } from '@aws-cdk/aws-ecs';
+import { AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerImage, DeploymentController, ICluster, LogDriver, PropagatedTagSource, Secret } from '@aws-cdk/aws-ecs';
 import { INetworkLoadBalancer, NetworkListener, NetworkLoadBalancer, NetworkTargetGroup } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { IRole } from '@aws-cdk/aws-iam';
 import { ARecord, CnameRecord, IHostedZone, RecordTarget } from '@aws-cdk/aws-route53';
@@ -162,6 +162,14 @@ export interface NetworkLoadBalancedServiceBaseProps {
    * @default NetworkLoadBalancedServiceRecordType.ALIAS
    */
   readonly recordType?: NetworkLoadBalancedServiceRecordType;
+
+  /**
+ * Specifies which deployment controller to use for the service. For more information, see
+ * [Amazon ECS Deployment Types](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-types.html)
+ *
+ * @default - Rolling update (ECS)
+ */
+  readonly deploymentController?: DeploymentController;
 }
 
 export interface NetworkLoadBalancedTaskImageOptions {

@@ -1,4 +1,4 @@
-import { DeploymentController, FargatePlatformVersion, FargateService, FargateTaskDefinition } from '@aws-cdk/aws-ecs';
+import { FargatePlatformVersion, FargateService, FargateTaskDefinition } from '@aws-cdk/aws-ecs';
 import { Construct } from 'constructs';
 import { NetworkLoadBalancedServiceBase, NetworkLoadBalancedServiceBaseProps } from '../base/network-load-balanced-service-base';
 
@@ -75,14 +75,6 @@ export interface NetworkLoadBalancedFargateServiceProps extends NetworkLoadBalan
    * @default Latest
    */
   readonly platformVersion?: FargatePlatformVersion;
-
-  /**
-   * Specifies which deployment controller to use for the service. For more information, see
-   * [Amazon ECS Deployment Types](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-types.html)
-   *
-   * @default - Rolling update (ECS)
-   */
-  readonly deploymentController?: DeploymentController;
 }
 
 /**

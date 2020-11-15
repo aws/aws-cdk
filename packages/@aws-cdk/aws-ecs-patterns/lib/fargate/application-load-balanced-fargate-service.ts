@@ -1,5 +1,5 @@
 import { ISecurityGroup } from '@aws-cdk/aws-ec2';
-import { DeploymentController, FargatePlatformVersion, FargateService, FargateTaskDefinition } from '@aws-cdk/aws-ecs';
+import { FargatePlatformVersion, FargateService, FargateTaskDefinition } from '@aws-cdk/aws-ecs';
 import { Construct } from 'constructs';
 import { ApplicationLoadBalancedServiceBase, ApplicationLoadBalancedServiceBaseProps } from '../base/application-load-balanced-service-base';
 
@@ -76,14 +76,6 @@ export interface ApplicationLoadBalancedFargateServiceProps extends ApplicationL
    * @default Latest
    */
   readonly platformVersion?: FargatePlatformVersion;
-
-  /**
-   * Specifies which deployment controller to use for the service. For more information, see
-   * [Amazon ECS Deployment Types](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-types.html)
-   *
-   * @default - Rolling update (ECS)
-   */
-  readonly deploymentController?: DeploymentController;
 
   /**
    * The security groups to associate with the service. If you do not specify a security group, the default security group for the VPC is used.
