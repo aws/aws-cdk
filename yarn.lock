@@ -578,6 +578,12 @@
   dependencies:
     jsonschema "^1.4.0"
 
+"@jsii/spec@^1.14.2-dev.2230.0", "@jsii/spec@file:vendor/jsii-spec.tgz":
+  version "1.14.2-dev.2230.0"
+  resolved "file:vendor/jsii-spec.tgz#131429d76ea844bdc343773db2ff6496fc57baee"
+  dependencies:
+    jsonschema "^1.4.0"
+
 "@lerna/add@3.21.0":
   version "3.21.0"
   resolved "https://registry.yarnpkg.com/@lerna/add/-/add-3.21.0.tgz#27007bde71cc7b0a2969ab3c2f0ae41578b4577b"
@@ -6370,12 +6376,11 @@ jsii-reflect@^1.14.1:
     oo-ascii-tree "^1.14.1"
     yargs "^16.1.0"
 
-jsii-rosetta@^1.14.1:
-  version "1.14.1"
-  resolved "https://registry.yarnpkg.com/jsii-rosetta/-/jsii-rosetta-1.14.1.tgz#797c433d9b353d360de4c9c71d0913b9b33fcb1c"
-  integrity sha512-HfM1IO7eIQ8qyDxTRRdV3TraBhnCivq3N3qMdJuPEJ3O2lprx0TS6pvIXzv9DgDWJwLVDaxI1ecTZhSl9poGeQ==
+jsii-rosetta@^1.14.1, "jsii-rosetta@file:vendor/jsii-rosetta.tgz":
+  version "1.14.2-dev.2230.0"
+  resolved "file:vendor/jsii-rosetta.tgz#7c93903ec66d7b9fb31ea806579ecfba4c087366"
   dependencies:
-    "@jsii/spec" "^1.14.1"
+    "@jsii/spec" "^1.14.2-dev.2230.0"
     commonmark "^0.29.2"
     fs-extra "^9.0.1"
     typescript "~3.9.7"
