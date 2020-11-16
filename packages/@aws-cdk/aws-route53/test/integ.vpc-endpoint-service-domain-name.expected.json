@@ -587,7 +587,7 @@
             "PrivateDnsName": "my-stuff.aws-cdk.dev"
           },
           "physicalResourceId": {
-            "id": "EndpointDomain"
+            "id": "awscdkvpcendpointdnsintegVPCES2D7BC258"
           }
         },
         "Update": {
@@ -600,7 +600,7 @@
             "PrivateDnsName": "my-stuff.aws-cdk.dev"
           },
           "physicalResourceId": {
-            "id": "EndpointDomain"
+            "id": "awscdkvpcendpointdnsintegVPCES2D7BC258"
           }
         },
         "Delete": {
@@ -668,7 +668,7 @@
             ]
           },
           "physicalResourceId": {
-            "id": "a9ec58f193062687221bdba740df4abc"
+            "id": "0b26ca4969ad06c279e229b1b55b9bc2"
           }
         },
         "Update": {
@@ -682,7 +682,7 @@
             ]
           },
           "physicalResourceId": {
-            "id": "a9ec58f193062687221bdba740df4abc"
+            "id": "0b26ca4969ad06c279e229b1b55b9bc2"
           }
         },
         "InstallLatestAwsSdk": true
