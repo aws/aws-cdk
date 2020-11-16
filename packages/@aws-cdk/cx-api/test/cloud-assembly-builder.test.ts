@@ -174,6 +174,28 @@ test('write and read nested cloud assembly artifact', () => {
   expect(nested?.artifacts.length).toEqual(0);
 });
 
+test('missing values are reported to top-level asm', () => {
+  // GIVEN
+  const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'cloud-assembly-builder-tests'));
+  const session = new cxapi.CloudAssemblyBuilder(outdir);
+
+  const innerAsm = session.createNestedAssembly('hello', 'hello');
+
+  // WHEN
+  const props: cxschema.ContextQueryProperties = {
+    account: '1234',
+    region: 'asdf',
+    filter: { a: 'a' },
+  };
+
+  innerAsm.addMissing({ key: 'foo', provider: cxschema.ContextProvider.VPC_PROVIDER, props });
+
+  // THEN
+  const assembly = session.buildAssembly();
+
+  expect(assembly.manifest.missing?.length).toEqual(1);
+});
+
 test('artifcats are written in topological order', () => {
   // GIVEN
   const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'cloud-assembly-builder-tests'));
