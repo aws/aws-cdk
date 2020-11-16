@@ -100,7 +100,6 @@
   ],
   "bundledDependencies": [
     "@aws-cdk/yaml-cfn",
-    "@aws-cdk/cloudformation-diff",
     "@aws-cdk/region-info"
   ],
   "homepage": "https://github.com/aws/aws-cdk",

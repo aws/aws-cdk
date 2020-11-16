@@ -95,8 +95,6 @@
       "aws-cdk-lib/semver/**",
       "aws-cdk-lib/yaml",
       "aws-cdk-lib/yaml/**",
-      "aws-cdk/@aws-cdk/cloudformation-diff",
-      "aws-cdk/@aws-cdk/cloudformation-diff/**",
       "aws-cdk/@aws-cdk/region-info",
       "aws-cdk/@aws-cdk/region-info/**",
       "aws-cdk/@aws-cdk/yaml-cfn",
