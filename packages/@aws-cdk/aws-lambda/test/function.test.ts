@@ -281,7 +281,7 @@ describe('function', () => {
       // WHEN
       const iFunc = lambda.Function.fromFunctionAttributes(stack, 'iFunc', {
         functionArn: 'arn:aws:lambda:us-east-1:123456789012:function:BaseFunction',
-        sameEnvironment: true,
+        sameEnvironment: true, // since this is false, by default, for env agnostic stacks
       });
       iFunc.addPermission('iFunc', {
         principal: new iam.ServicePrincipal('cloudformation.amazonaws.com'),

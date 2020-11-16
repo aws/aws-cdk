@@ -158,7 +158,8 @@ export interface FunctionAttributes {
    *
    * Set this to property *ONLY IF* the imported function is in the same account as the stack
    * it's imported in.
-   * @default - true, if the Stack is configured with an `env` and the account is the same as this function. false, otherwise.
+   * @default - depends: true, if the Stack is configured with an explicit `env` (account and region) and the account is the same as this function.
+   * For environment-agnostic stacks this will default to `false`.
    */
   readonly sameEnvironment?: boolean;
 }
