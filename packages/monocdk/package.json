@@ -77,8 +77,6 @@
   },
   "license": "Apache-2.0",
   "bundledDependencies": [
-    "@aws-cdk/cloud-assembly-schema",
-    "@aws-cdk/cx-api",
     "@balena/dockerignore",
     "case",
     "fs-extra",
