@@ -93,6 +93,16 @@ integTest('context setting', withDefaultFixture(async (fixture) => {
   }
 }));
 
+integTest('context in stage propagates to top', withDefaultFixture(async (fixture) => {
+  await fixture.cdkSynth({
+    // This will make it error to prove that the context bubbles up, and also that we can fail on command
+    options: ['--no-lookups'],
+    modEnv: {
+      INTEG_STACK_SET: 'stage-using-context',
+    },
+  });
+}));
+
 integTest('deploy', withDefaultFixture(async (fixture) => {
   const stackArn = await fixture.cdkDeploy('test-2', { captureStderr: false });
 
