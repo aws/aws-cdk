@@ -106,13 +106,9 @@ export = {
 
       const node = mesh.addVirtualNode('test-node', {
         dnsHostName: 'test',
-        listener: {
-          portMapping:
-            {
-              port: 8080,
-              protocol: appmesh.Protocol.HTTP,
-            },
-        },
+        listeners: [appmesh.VirtualNodeListener.http({
+          port: 8080,
+        })],
         backends: [service1],
       });
 
@@ -179,39 +175,27 @@ export = {
 
       const node = mesh.addVirtualNode('test-node', {
         dnsHostName: 'test',
-        listener: {
-          portMapping:
-            {
-              port: 8080,
-              protocol: appmesh.Protocol.HTTP,
-            },
-        },
+        listeners: [appmesh.VirtualNodeListener.http({
+          port: 8080,
+        })],
         backends: [
           service1,
         ],
       });
       const node2 = mesh.addVirtualNode('test-node2', {
         dnsHostName: 'test',
-        listener: {
-          portMapping:
-            {
-              port: 8080,
-              protocol: appmesh.Protocol.HTTP,
-            },
-        },
+        listeners: [appmesh.VirtualNodeListener.http({
+          port: 8080,
+        })],
         backends: [
           service2,
         ],
       });
       const node3 = mesh.addVirtualNode('test-node3', {
         dnsHostName: 'test',
-        listener: {
-          portMapping:
-            {
-              port: 8080,
-              protocol: appmesh.Protocol.HTTP,
-            },
-        },
+        listeners: [appmesh.VirtualNodeListener.http({
+          port: 8080,
+        })],
         backends: [
           service1,
         ],
@@ -337,13 +321,9 @@ export = {
 
       const node = mesh.addVirtualNode('test-node', {
         dnsHostName: 'test',
-        listener: {
-          portMapping:
-            {
-              port: 8080,
-              protocol: appmesh.Protocol.HTTP,
-            },
-        },
+        listeners: [appmesh.VirtualNodeListener.http({
+          port: 8080,
+        })],
         backends: [
           service1,
         ],
