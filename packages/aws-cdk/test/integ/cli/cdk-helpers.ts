@@ -184,7 +184,7 @@ export class TestFixture {
   public async cdkSynth(options: CdkCliOptions = {}) {
     return this.cdk([
       'synth',
-      ...(options.options ?? [])
+      ...(options.options ?? []),
     ], options);
   }
 
