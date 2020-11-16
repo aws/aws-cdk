@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "description": "The CDK Construct Library for AWS::IVS",
   "main": "lib/index.js",
+  "private": true,
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
