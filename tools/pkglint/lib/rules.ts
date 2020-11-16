@@ -1460,7 +1460,15 @@ export class JestSetup extends ValidationRule {
 
 export class UbergenPackageVisibility extends ValidationRule {
   public readonly name = 'ubergen/package-visibility';
-  private readonly publicPackages = ['aws-cdk-lib', 'cdk', 'aws-cdk', 'awslint'];
+  private readonly publicPackages = [
+    '@aws-cdk/cloud-assembly-schema',
+    '@aws-cdk/cloudformation-diff',
+    '@aws-cdk/cx-api',
+    'aws-cdk-lib',
+    'aws-cdk',
+    'awslint',
+    'cdk',
+  ];
 
   public validate(pkg: PackageJson): void {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
