@@ -1,6 +1,6 @@
 import '@aws-cdk/assert/jest';
 import { App, SecretValue, Stack } from '@aws-cdk/core';
-import { ManagedPolicy, PolicyStatement, User } from '../lib';
+import { ManagedPolicy, Policy, PolicyStatement, User } from '../lib';
 
 describe('IAM user', () => {
   test('default user', () => {
@@ -103,6 +103,37 @@ describe('IAM user', () => {
     user.addToPrincipalPolicy(new PolicyStatement({
       actions: ['aws:Use'],
       resources: ['*'],
+    }));
+
+    // THEN
+    expect(stack).toHaveResource('AWS::IAM::Policy', {
+      Users: ['john'],
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'aws:Use',
+            Effect: 'Allow',
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
+  test('attach policy to imported user', () => {
+    // GIVEN
+    const stack = new Stack();
+    const user = User.fromUserName(stack, 'ImportedUser', 'john');
+
+    // WHEN
+    user.attachInlinePolicy(new Policy(stack, 'Policy', {
+      statements: [
+        new PolicyStatement({
+          actions: ['aws:Use'],
+          resources: ['*'],
+        }),
+      ],
     }));
 
     // THEN
