@@ -1,7 +1,6 @@
 {
   "name": "@aws-cdk/cloud-assembly-schema",
   "version": "0.0.0",
-  "private": true,
   "description": "Cloud Assembly Schema",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
