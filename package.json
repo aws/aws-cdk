@@ -20,7 +20,7 @@
     "jest-junit": "^12.0.0",
     "jsii-diff": "^1.14.1",
     "jsii-pacmak": "^1.14.1",
-    "jsii-rosetta": "^1.14.1",
+    "jsii-rosetta": "file:vendor/jsii-rosetta.tgz",
     "lerna": "^3.22.1",
     "standard-version": "^9.0.0",
     "typescript": "~3.9.7"
@@ -28,7 +28,6 @@
   "resolutions-comment": "should be removed or reviewed when nodeunit dependency is dropped or adjusted",
   "resolutions": {
     "tap-mocha-reporter": "^5.0.1",
-    "jsii-rosetta": "file:vendor/jsii-rosetta.tgz",
     "jsii-rosetta/@jsii/spec": "file:vendor/jsii-spec.tgz"
   },
   "repository": {
