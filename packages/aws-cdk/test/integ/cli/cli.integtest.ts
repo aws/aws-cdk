@@ -94,13 +94,14 @@ integTest('context setting', withDefaultFixture(async (fixture) => {
 }));
 
 integTest('context in stage propagates to top', withDefaultFixture(async (fixture) => {
-  await fixture.cdkSynth({
+  await expect(fixture.cdkSynth({
     // This will make it error to prove that the context bubbles up, and also that we can fail on command
     options: ['--no-lookups'],
     modEnv: {
       INTEG_STACK_SET: 'stage-using-context',
     },
-  });
+    allowErrExit: true,
+  })).resolves.toContain('Context lookups have been disabled');
 }));
 
 integTest('deploy', withDefaultFixture(async (fixture) => {

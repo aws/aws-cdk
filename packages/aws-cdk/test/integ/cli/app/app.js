@@ -324,6 +324,10 @@ switch (stackSet) {
     break;
 
   case 'stage-using-context':
+    // Cannot be combined with other test stacks, because we use this to test
+    // that stage context is propagated up and causes synth to fail when combined
+    // with '--no-lookups'.
+
     // Needs a dummy stack at the top level because the CLI will fail otherwise
     new YourStack(app, `${stackPrefix}-toplevel`, { env: defaultEnv });
     new StageUsingContext(app, `${stackPrefix}-stage-using-context`, {
