@@ -160,7 +160,7 @@ export interface FunctionAttributes {
    * it's imported in.
    * @default - true, if the Stack is configured with an `env` and the account is the same as this function. false, otherwise.
    */
-  readonly assumeSameEnv?: boolean;
+  readonly sameEnvironment?: boolean;
 }
 
 export abstract class FunctionBase extends Resource implements IFunction {
