@@ -1,10 +1,16 @@
+import * as ecr from '@aws-cdk/aws-ecr';
+import * as ecr_assets from '@aws-cdk/aws-ecr-assets';
+import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import * as cdk from '@aws-cdk/core';
 
+/**
+ * Represents the Lambda Handler Code.
+ */
 export abstract class Code {
   /**
-   * @returns `LambdaS3Code` associated with the specified S3 object.
+   * Lambda handler code as an S3 object.
    * @param bucket The S3 bucket
    * @param key The object key
    * @param objectVersion Optional S3 object version
@@ -14,6 +20,7 @@ export abstract class Code {
   }
 
   /**
+   * Lambda handler code as an S3 object.
    * @deprecated use `fromBucket`
    */
   public static bucket(bucket: s3.IBucket, key: string, objectVersion?: string): S3Code {
@@ -21,6 +28,7 @@ export abstract class Code {
   }
 
   /**
+   * Inline code for Lambda handler
    * @returns `LambdaInlineCode` with inline code.
    * @param code The actual handler code (limited to 4KiB)
    */
@@ -29,6 +37,7 @@ export abstract class Code {
   }
 
   /**
+   * Inline code for Lambda handler
    * @deprecated use `fromInline`
    */
   public static inline(code: string): InlineCode {
@@ -45,6 +54,7 @@ export abstract class Code {
   }
 
   /**
+   * Loads the function code from a local disk path.
    * @deprecated use `fromAsset`
    */
   public static asset(path: string): AssetCode {
@@ -62,10 +72,25 @@ export abstract class Code {
   }
 
   /**
+   * Creates a new Lambda source defined using CloudFormation parameters.
    * @deprecated use `fromCfnParameters`
    */
   public static cfnParameters(props?: CfnParametersCodeProps): CfnParametersCode {
     return this.fromCfnParameters(props);
+  }
+
+  /**
+   * Use an existing ECR image as the Lambda code.
+   */
+  public static fromEcrRepository(repository: ecr.IRepository, tag: string = 'latest') {
+    return new EcrImage(repository, tag);
+  }
+
+  /**
+   * Create an ECR image from the specified asset and bind it as the Lambda code.
+   */
+  public static fromAssetImage(directory: string, props: AssetImageProps = {}) {
+    return new AssetImage(directory, props);
   }
 
   /**
@@ -95,16 +120,27 @@ export abstract class Code {
   }
 }
 
+/**
+ * Result of binding `Code` into a `Function`.
+ */
 export interface CodeConfig {
   /**
-   * The location of the code in S3 (mutually exclusive with `inlineCode`).
+   * The location of the code in S3 (mutually exclusive with `inlineCode` and `imageName`).
+   * @default - code is not an s3 location
    */
   readonly s3Location?: s3.Location;
 
   /**
-   * Inline code (mutually exclusive with `s3Location`).
+   * Inline code (mutually exclusive with `s3Location` and `imageName`).
+   * @default - code is not an inline code
    */
   readonly inlineCode?: string;
+
+  /**
+   * URI to the Docker image (mutually exclusive with `s3Location` and `inlineCode`).
+   * @default - code is not an ECR container image
+   */
+  readonly imageUri?: string;
 }
 
 /**
@@ -311,5 +347,59 @@ export class CfnParametersCode extends Code {
     } else {
       throw new Error('Pass CfnParametersCode to a Lambda Function before accessing the objectKeyParam property');
     }
+  }
+}
+
+/**
+ * Represents a Docker image in ECR that can be bound as Lambda Code.
+ */
+export class EcrImage extends Code {
+  public readonly isInline: boolean = false;
+
+  constructor(private readonly repository: ecr.IRepository, private readonly tag: string) {
+    super();
+  }
+
+  public bind(_: cdk.Construct): CodeConfig {
+    this.repository.addToResourcePolicy(new iam.PolicyStatement({
+      actions: ['ecr:BatchGetImage', 'ecr:GetDownloadUrlForLayer'],
+      principals: [new iam.ServicePrincipal('lambda.amazonaws.com')],
+    }));
+    return {
+      imageUri: this.repository.repositoryUriForTag(this.tag),
+    };
+  }
+}
+
+/**
+ * Properties to initialize a new AssetImage
+ */
+export interface AssetImageProps extends ecr_assets.DockerImageAssetOptions {
+}
+
+/**
+ * Represents an ECR image that will be constructed from the specified asset and can be bound as Lambda code.
+ */
+export class AssetImage extends Code {
+  public readonly isInline: boolean = false;
+
+  constructor(private readonly directory: string, private readonly props: AssetImageProps) {
+    super();
+  }
+
+  public bind(scope: cdk.Construct): CodeConfig {
+    const asset = new ecr_assets.DockerImageAsset(scope, 'AssetImage', {
+      directory: this.directory,
+      ...this.props,
+    });
+
+    asset.repository.addToResourcePolicy(new iam.PolicyStatement({
+      actions: ['ecr:BatchGetImage', 'ecr:GetDownloadUrlForLayer'],
+      principals: [new iam.ServicePrincipal('lambda.amazonaws.com')],
+    }));
+
+    return {
+      imageUri: asset.imageUri,
+    };
   }
 }

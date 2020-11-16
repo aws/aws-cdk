@@ -288,8 +288,10 @@ export interface FunctionProps extends FunctionOptions {
    * The runtime environment for the Lambda function that you are uploading.
    * For valid values, see the Runtime property in the AWS Lambda Developer
    * Guide.
+   *
+   * @default - not needed when using `Code.fromEcrImage()` or `Code.fromAssetImage()`. Mandatory for all other usages.
    */
-  readonly runtime: Runtime;
+  readonly runtime?: Runtime;
 
   /**
    * The source code of your Lambda function. You can point to a file in an
@@ -307,8 +309,10 @@ export interface FunctionProps extends FunctionOptions {
    * NOTE: If you specify your source code as inline text by specifying the
    * ZipFile property within the Code property, specify index.function_name as
    * the handler.
+   *
+   * @default - not needed when using `Code.fromEcrImage()` or `Code.fromAssetImage()`. Mandatory for all other usages.
    */
-  readonly handler: string;
+  readonly handler?: string;
 }
 
 /**
@@ -491,11 +495,6 @@ export class Function extends FunctionBase {
   public readonly role?: iam.IRole;
 
   /**
-   * The runtime configured for this lambda.
-   */
-  public readonly runtime: Runtime;
-
-  /**
    * The principal this Lambda Function is running as
    */
   public readonly grantPrincipal: iam.IPrincipal;
@@ -512,6 +511,7 @@ export class Function extends FunctionBase {
   private readonly layers: ILayerVersion[] = [];
 
   private _logGroup?: logs.ILogGroup;
+  private _runtime?: Runtime;
 
   /**
    * Environment variables for this function
@@ -557,7 +557,7 @@ export class Function extends FunctionBase {
     }
 
     const code = props.code.bind(this);
-    verifyCodeConfig(code, props.runtime);
+    verifyCodeConfig(code, props);
 
     let profilingGroupEnvironmentVariables: { [key: string]: string } = {};
     if (props.profilingGroup && props.profiling !== false) {
@@ -598,11 +598,12 @@ export class Function extends FunctionBase {
         s3Key: code.s3Location && code.s3Location.objectKey,
         s3ObjectVersion: code.s3Location && code.s3Location.objectVersion,
         zipFile: code.inlineCode,
+        imageUri: code.imageUri,
       },
       layers: Lazy.list({ produce: () => this.layers.map(layer => layer.layerVersionArn) }, { omitEmpty: true }),
       handler: props.handler,
       timeout: props.timeout && props.timeout.toSeconds(),
-      runtime: props.runtime.name,
+      runtime: props.runtime?.name,
       role: this.role.roleArn,
       // Uncached because calling '_checkEdgeCompatibility', which gets called in the resolve of another
       // Token, actually *modifies* the 'environment' map.
@@ -624,7 +625,7 @@ export class Function extends FunctionBase {
       sep: ':',
     });
 
-    this.runtime = props.runtime;
+    this._runtime = props.runtime;
 
     if (props.layers) {
       this.addLayers(...props.layers);
@@ -674,6 +675,17 @@ export class Function extends FunctionBase {
         ],
       );
     }
+  }
+
+  /**
+   * The runtime configured for this lambda.
+   * Throws an error if no runtime is configured.
+   */
+  public get runtime(): Runtime {
+    if (!this._runtime) {
+      throw new Error();
+    }
+    return this._runtime;
   }
 
   /**
@@ -966,14 +978,32 @@ function extractNameFromArn(arn: string) {
   return Fn.select(6, Fn.split(':', arn));
 }
 
-export function verifyCodeConfig(code: CodeConfig, runtime: Runtime) {
+export function verifyCodeConfig(code: CodeConfig, props: FunctionProps) {
   // mutually exclusive
-  if ((!code.inlineCode && !code.s3Location) || (code.inlineCode && code.s3Location)) {
+  const codeType = [code.inlineCode, code.s3Location, code.imageUri];
+  const atleastOne = codeType.reduce((agg, type) => {
+    if (type !== undefined) {
+      if (agg) {
+        throw new Error('lambda.Code must specify one of "inlineCode" or "s3Location" but not both');
+      }
+      return true;
+    }
+    return agg || false;
+  }, false);
+  if (!atleastOne) {
     throw new Error('lambda.Code must specify one of "inlineCode" or "s3Location" but not both');
   }
 
+  if ((code.inlineCode || code.s3Location) && props.handler === undefined) {
+    throw new Error('handler must be specified when using non-image asset for Lambda function');
+  }
+
+  if ((code.inlineCode || code.s3Location) && props.runtime === undefined) {
+    throw new Error('runtime must be specified when using non-image asset for Lambda function');
+  }
+
   // if this is inline code, check that the runtime supports
-  if (code.inlineCode && !runtime.supportsInlineCode) {
-    throw new Error(`Inline source not allowed for ${runtime.name}`);
+  if (code.inlineCode && !props.runtime!.supportsInlineCode) {
+    throw new Error(`Inline source not allowed for ${props.runtime!.name}`);
   }
 }

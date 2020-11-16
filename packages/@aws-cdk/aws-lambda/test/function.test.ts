@@ -1814,6 +1814,98 @@ describe('function', () => {
       });
     });
   });
+
+  describe('code config', () => {
+    class MyCode extends lambda.Code {
+      public readonly isInline: boolean;
+      constructor(private readonly config: lambda.CodeConfig) {
+        super();
+        this.isInline = 'inlineCode' in config;
+      }
+
+      public bind(_scope: constructs.Construct): lambda.CodeConfig {
+        return this.config;
+      }
+    }
+
+    test('only one of inline, s3 or imageConfig are allowed', () => {
+      const stack = new cdk.Stack();
+
+      expect(() => new lambda.Function(stack, 'Fn1', {
+        code: new MyCode({}),
+      })).toThrow(/lambda.Code must specify one of/);
+
+      expect(() => new lambda.Function(stack, 'Fn2', {
+        code: new MyCode({ inlineCode: 'foo', imageUri: 'bar' }),
+      })).toThrow(/lambda.Code must specify one of/);
+
+      expect(() => new lambda.Function(stack, 'Fn3', {
+        code: new MyCode({ imageUri: 'baz', s3Location: { bucketName: 's3foo', objectKey: 's3bar' } }),
+      })).toThrow(/lambda.Code must specify one of/);
+
+      expect(() => new lambda.Function(stack, 'Fn4', {
+        code: new MyCode({ inlineCode: 'baz', s3Location: { bucketName: 's3foo', objectKey: 's3bar' } }),
+      })).toThrow(/lambda.Code must specify one of/);
+    });
+
+    test('handler must be specified when non-container asset is specified', () => {
+      const stack = new cdk.Stack();
+
+      expect(() => new lambda.Function(stack, 'Fn1', {
+        code: lambda.Code.fromInline('foo'),
+      })).toThrow(/handler must be specified/);
+
+      expect(() => new lambda.Function(stack, 'Fn2', {
+        code: lambda.Code.fromAsset('test/my-lambda-handler'),
+      })).toThrow(/handler must be specified/);
+    });
+
+    test('handler can be omitted for container assets', () => {
+      const stack = new cdk.Stack();
+
+      expect(() => new lambda.Function(stack, 'Fn', {
+        code: lambda.Code.fromAssetImage('test/docker-lambda-handler'),
+      })).not.toThrow();
+    });
+
+    test('runtime must be specified when non-container asset is specified', () => {
+      const stack = new cdk.Stack();
+
+      expect(() => new lambda.Function(stack, 'Fn1', {
+        code: lambda.Code.fromInline('foo'),
+        handler: 'index.handler',
+      })).toThrow(/runtime must be specified/);
+
+      expect(() => new lambda.Function(stack, 'Fn2', {
+        code: lambda.Code.fromAsset('test/my-lambda-handler'),
+        handler: 'index.handler',
+      })).toThrow(/runtime must be specified/);
+    });
+
+    test('runtime can be ommitted for container assets', () => {
+      const stack = new cdk.Stack();
+
+      expect(() => new lambda.Function(stack, 'Fn', {
+        code: lambda.Code.fromAssetImage('test/docker-lambda-handler'),
+      })).not.toThrow();
+    });
+
+    test('imageUri is correctly configured', () => {
+      const stack = new cdk.Stack();
+
+      new lambda.Function(stack, 'Fn1', {
+        code: new MyCode({
+          imageUri: 'ecr image uri',
+        }),
+      });
+
+      expect(stack).toHaveResource('AWS::Lambda::Function', {
+        Code: {
+          ImageUri: 'ecr image uri',
+        },
+      });
+    });
+  });
 });
 
 function newTestLambda(scope: constructs.Construct) {
