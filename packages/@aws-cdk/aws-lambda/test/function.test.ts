@@ -281,7 +281,7 @@ describe('function', () => {
       // WHEN
       const iFunc = lambda.Function.fromFunctionAttributes(stack, 'iFunc', {
         functionArn: 'arn:aws:lambda:us-east-1:123456789012:function:BaseFunction',
-        allowPermissions: true,
+        assumeSameEnv: true,
       });
       iFunc.addPermission('iFunc', {
         principal: new iam.ServicePrincipal('cloudformation.amazonaws.com'),
@@ -984,7 +984,7 @@ describe('function', () => {
       const stack = new cdk.Stack();
       const fn = lambda.Function.fromFunctionAttributes(stack, 'Function', {
         functionArn: 'arn:aws:lambda:us-east-1:123456789012:function:MyFn',
-        allowPermissions: true,
+        assumeSameEnv: true,
       });
 
       // WHEN

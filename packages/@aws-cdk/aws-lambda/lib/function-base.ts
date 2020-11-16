@@ -151,15 +151,16 @@ export interface FunctionAttributes {
   readonly securityGroup?: ec2.ISecurityGroup;
 
   /**
-   * Setting this property informs the CDK that permissions can be added to this function.
-   * When not configured, the CDK attempts to auto-determine this. If determined as false, adding permission
-   * to this function will fail.
+   * Setting this property informs the CDK that the imported function is in the same environment as the stack.
+   * This affects certain behaviours such as, whether this function's permission can be modified.
+   * When not configured, the CDK attempts to auto-determine this. For environment agnostic stacks, i.e., stacks
+   * where the account is not specified with the `env` property, this is determined to be false.
    *
    * Set this to property *ONLY IF* the imported function is in the same account as the stack
    * it's imported in.
    * @default - true, if the Stack is configured with an `env` and the account is the same as this function. false, otherwise.
    */
-  readonly allowPermissions?: boolean;
+  readonly assumeSameEnv?: boolean;
 }
 
 export abstract class FunctionBase extends Resource implements IFunction {
@@ -373,7 +374,7 @@ export abstract class FunctionBase extends Resource implements IFunction {
    * ..which means that in order to extract the `account-id` component from the ARN, we can
    * split the ARN using ":" and select the component in index 4.
    *
-   * @returns true if account id of function matches this account, or the accounts are unresolved.
+   * @returns true if account id of function matches the account specified on the stack, false otherwise.
    *
    * @internal
    */
