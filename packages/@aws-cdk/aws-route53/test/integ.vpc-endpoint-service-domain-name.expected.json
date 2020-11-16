@@ -567,9 +567,16 @@
                     {
                       "Ref": "AWS::AccountId"
                     },
-                    "vpc-endpoint-service",
                     {
-                      "Ref": "VPCES3AE7D565"
+                      "Fn::Join": [
+                        "/",
+                        [
+                          "vpc-endpoint-service",
+                          {
+                            "Ref": "VPCES3AE7D565"
+                          }
+                        ]
+                      ]
                     }
                   ]
                 ]
@@ -784,9 +791,16 @@
                     {
                       "Ref": "AWS::AccountId"
                     },
-                    "vpc-endpoint-service",
                     {
-                      "Ref": "VPCES3AE7D565"
+                      "Fn::Join": [
+                        "/",
+                        [
+                          "vpc-endpoint-service",
+                          {
+                            "Ref": "VPCES3AE7D565"
+                          }
+                        ]
+                      ]
                     }
                   ]
                 ]
