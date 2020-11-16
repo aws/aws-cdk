@@ -146,7 +146,7 @@ export class ThirdPartyAttributions extends ValidationRule {
     if (pkg.json.private && !alwaysCheck.includes(pkg.json.name)) {
       return;
     }
-    const bundled = pkg.getAllBundledDependencies();
+    const bundled = pkg.getAllBundledDependencies().filter(dep => !dep.startsWith('@aws-cdk'));
     const lines = fs.readFileSync(path.join(pkg.packageRoot, 'NOTICE'), { encoding: 'utf8' }).split('\n');
 
     const re = /^\*\* (\S+)/;
