@@ -1,7 +1,7 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import {
   Annotations, ConcreteDependable, ContextProvider, DependableTrait, IConstruct,
-  IDependable, IResource, Lazy, Resource, Stack, Token, Tags,
+  IDependable, IResource, Lazy, Resource, Stack, Token, Tags, Names,
 } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct, Node } from 'constructs';
@@ -1486,6 +1486,12 @@ export class Subnet extends Resource implements ISubnet {
   public readonly subnetIpv6CidrBlocks: string[];
 
   /**
+   * The Amazon Resource Name (ARN) of the Outpost for this subnet (if one exists).
+   * @attribute
+   */
+  public readonly subnetOutpostArn: string;
+
+  /**
    * @attribute
    */
   public readonly subnetNetworkAclAssociationId: string;
@@ -1525,6 +1531,7 @@ export class Subnet extends Resource implements ISubnet {
     this.subnetVpcId = subnet.attrVpcId;
     this.subnetAvailabilityZone = subnet.attrAvailabilityZone;
     this.subnetIpv6CidrBlocks = subnet.attrIpv6CidrBlocks;
+    this.subnetOutpostArn = subnet.attrOutpostArn;
 
     // subnet.attrNetworkAclAssociationId is the default ACL after the subnet
     // was just created. However, the ACL can be replaced at a later time.
@@ -1617,7 +1624,7 @@ export class Subnet extends Resource implements ISubnet {
 
     const scope = CoreConstruct.isConstruct(networkAcl) ? networkAcl : this;
     const other = CoreConstruct.isConstruct(networkAcl) ? this : networkAcl;
-    new SubnetNetworkAclAssociation(scope, id + other.node.uniqueId, {
+    new SubnetNetworkAclAssociation(scope, id + Names.nodeUniqueId(other.node), {
       networkAcl,
       subnet: this,
     });
@@ -1955,7 +1962,7 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
   public associateNetworkAcl(id: string, networkAcl: INetworkAcl): void {
     const scope = CoreConstruct.isConstruct(networkAcl) ? networkAcl : this;
     const other = CoreConstruct.isConstruct(networkAcl) ? this : networkAcl;
-    new SubnetNetworkAclAssociation(scope, id + other.node.uniqueId, {
+    new SubnetNetworkAclAssociation(scope, id + Names.nodeUniqueId(other.node), {
       networkAcl,
       subnet: this,
     });

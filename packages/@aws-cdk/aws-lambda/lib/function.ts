@@ -4,7 +4,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { Annotations, CfnResource, Duration, Fn, Lazy, Stack } from '@aws-cdk/core';
+import { Annotations, CfnResource, Duration, Fn, Lazy, Names, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Code, CodeConfig } from './code';
 import { EventInvokeConfigOptions } from './event-invoke-config';
@@ -383,7 +383,7 @@ export class Function extends FunctionBase {
       public readonly role = role;
       public readonly permissionsNode = this.node;
 
-      protected readonly canCreatePermissions = this._isStackAccount();
+      protected readonly canCreatePermissions = attrs.sameEnvironment ?? this._isStackAccount();
 
       constructor(s: Construct, i: string) {
         super(s, i);
@@ -839,7 +839,7 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     } else {
       const securityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'SecurityGroup', {
         vpc: props.vpc,
-        description: 'Automatic security group for Lambda Function ' + this.node.uniqueId,
+        description: 'Automatic security group for Lambda Function ' + Names.uniqueId(this),
         allowAllOutbound: props.allowAllOutbound,
       });
       securityGroups = [securityGroup];

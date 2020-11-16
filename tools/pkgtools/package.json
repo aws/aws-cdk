@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "fs-extra": "^9.0.1",
-    "yargs": "^16.1.0"
+    "yargs": "^16.1.1"
   },
   "keywords": [
     "aws",
@@ -45,5 +45,8 @@
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
+  },
+  "ubergen": {
+    "exclude": true
   }
 }
