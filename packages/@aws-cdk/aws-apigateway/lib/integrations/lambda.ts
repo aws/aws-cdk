@@ -9,7 +9,7 @@ export interface LambdaIntegrationOptions extends IntegrationOptions {
   /**
    * Use proxy integration or normal (request/response mapping) integration.
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-output-format
-   * 
+   *
    * @default true
    */
   readonly proxy?: boolean;
