@@ -2,6 +2,173 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.73.0](https://github.com/aws/aws-cdk/compare/v1.72.0...v1.73.0) (2020-11-11)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **apigatewayv2:** `LambdaProxyIntegration` and `HttpProxyIntegration`
+classes have moved to the `@aws-cdk/aws-apigatewayv2-integrations` module.
+* **appmesh:** VirtualRouter's Listeners are no longer a struct; use the static factory methods of the `VirtualNodeListener` class to obtain instances of them
+* **appmesh:** VirtualRouter accepts a list of listeners instead of a single listener
+* **appmesh:** all `fromResourceName()` methods in the AppMesh module have been replaced with `fromResourceAttributes()`
+
+### Features
+
+* **apigateway:** default value for enum type in schema models ([#11064](https://github.com/aws/aws-cdk/issues/11064)) ([9eff751](https://github.com/aws/aws-cdk/commit/9eff751609597c35baadb559144b2069a2211215)), closes [#11065](https://github.com/aws/aws-cdk/issues/11065)
+* **appmesh:** change VirtualRouter's Listener to a union-like class ([#11277](https://github.com/aws/aws-cdk/issues/11277)) ([0a3e980](https://github.com/aws/aws-cdk/commit/0a3e980cb880ee546d0840281aa9e2a781d7412b))
+* **appmesh:** remove from*Name() methods and replace with from*Attributes() ([#11266](https://github.com/aws/aws-cdk/issues/11266)) ([13d713e](https://github.com/aws/aws-cdk/commit/13d713e6358b29e55a626c44c7b2f0dcd946fddc))
+* **cli:** process credentials ([#11114](https://github.com/aws/aws-cdk/issues/11114)) ([6efa5e1](https://github.com/aws/aws-cdk/commit/6efa5e10e01a5f46b914601a807b932b4c745dae)), closes [#3008](https://github.com/aws/aws-cdk/issues/3008)
+* **cloudwatch:** add methods for lazy addition of graph metrics ([#11380](https://github.com/aws/aws-cdk/issues/11380)) ([55e9576](https://github.com/aws/aws-cdk/commit/55e9576810d8cb3115b7bd52d704ffe793a3dd27)), closes [#11305](https://github.com/aws/aws-cdk/issues/11305)
+* **cloudwatch:** different view types in GraphWidget ([#11160](https://github.com/aws/aws-cdk/issues/11160)) ([24de577](https://github.com/aws/aws-cdk/commit/24de5774379b7258f3629448a760b86613acc397)), closes [#11063](https://github.com/aws/aws-cdk/issues/11063)
+* **cognito:** user pool resource server ([#11118](https://github.com/aws/aws-cdk/issues/11118)) ([474f6c6](https://github.com/aws/aws-cdk/commit/474f6c673e9f419bbc80c1a7797348e98767e8c9))
+* **cognito:** user pools - non-ascii email domains ([#11099](https://github.com/aws/aws-cdk/issues/11099)) ([5d907b6](https://github.com/aws/aws-cdk/commit/5d907b62abd4428c27677965353fb04d92267e2c)), closes [#8473](https://github.com/aws/aws-cdk/issues/8473) [#8473](https://github.com/aws/aws-cdk/issues/8473)
+* **core:** natively support .dockerignore ([#10922](https://github.com/aws/aws-cdk/issues/10922)) ([cdb9942](https://github.com/aws/aws-cdk/commit/cdb9942bebc60abf98a74c6f9071e3527f0f01e1))
+* **eks:** IAM Roles for service accounts in imported clusters ([#10774](https://github.com/aws/aws-cdk/issues/10774)) ([76c795a](https://github.com/aws/aws-cdk/commit/76c795ae37d4168e8a98b3bc81034b455a8ae05e)), closes [#10601](https://github.com/aws/aws-cdk/issues/10601)
+* **elasticloadbalancingv2:** add load balancer lookups ([#11089](https://github.com/aws/aws-cdk/issues/11089)) ([0153028](https://github.com/aws/aws-cdk/commit/0153028e6438eb13b07b8f2043745e5bc3faa6b7)), closes [#11088](https://github.com/aws/aws-cdk/issues/11088)
+* **pipelines:** room for extra sequential intermediary actions in CdkStage addApplication() ([#11376](https://github.com/aws/aws-cdk/issues/11376)) ([32c164c](https://github.com/aws/aws-cdk/commit/32c164c4aa498b9bce03583f76cc21c7257a48ef))
+* **pipelines:** ShellScriptAction can configure environment ([#11229](https://github.com/aws/aws-cdk/issues/11229)) ([ab9bcf2](https://github.com/aws/aws-cdk/commit/ab9bcf26ecb8c171cf4ba3bdc795cb45c7096fd8)), closes [#10919](https://github.com/aws/aws-cdk/issues/10919)
+* **region-info:** added AppMesh ECR account for eu-south-1 region ([#11207](https://github.com/aws/aws-cdk/issues/11207)) ([54c276d](https://github.com/aws/aws-cdk/commit/54c276d215fd636c2f8970795512a838377b2f21))
+* **route53-targets:** aws-apigatewayv2 target ([#10191](https://github.com/aws/aws-cdk/issues/10191)) ([030c5c5](https://github.com/aws/aws-cdk/commit/030c5c58e2cedda8e74d7988dc44b042def9e703))
+
+
+### Bug Fixes
+
+* **apigateway:** api key not supported for SpecRestApi ([#11235](https://github.com/aws/aws-cdk/issues/11235)) ([52da8cb](https://github.com/aws/aws-cdk/commit/52da8cb3c65c41bf7cbd3c8001cf586a5c89041b)), closes [#11079](https://github.com/aws/aws-cdk/issues/11079)
+* **appsync:** HttpDataSource extends BackedDataSource instead of BaseDataSource ([#11185](https://github.com/aws/aws-cdk/issues/11185)) ([4b4d011](https://github.com/aws/aws-cdk/commit/4b4d0114e849ad96fccafd4cebb0edbead83ed83)), closes [#11183](https://github.com/aws/aws-cdk/issues/11183)
+* **cfn-include:** Fn::FindInMap cannot be used for boolean properties ([#11323](https://github.com/aws/aws-cdk/issues/11323)) ([47b698e](https://github.com/aws/aws-cdk/commit/47b698ebfea300978e101234bcd80145b6f1ed17)), closes [#11300](https://github.com/aws/aws-cdk/issues/11300)
+* **cli:** deployments are skipped if stack is in a _failed state ([#10847](https://github.com/aws/aws-cdk/issues/10847)) ([4887ba6](https://github.com/aws/aws-cdk/commit/4887ba6004b20c86c0025d16e235b8333d6efa6b)), closes [#10784](https://github.com/aws/aws-cdk/issues/10784)
+* **cli:** Python `id` parameter in init template conflicts with built-in ([#10874](https://github.com/aws/aws-cdk/issues/10874)) ([37a149b](https://github.com/aws/aws-cdk/commit/37a149b03751810d9ed984e415bbfb216881e74b))
+* **cloudwatch:** composite alarm ARN uses wrong separator ([#11186](https://github.com/aws/aws-cdk/issues/11186)) ([3009490](https://github.com/aws/aws-cdk/commit/3009490c4e1e1a10a9e4ea52cefe03aac296d649))
+* **elasticsearch:** use correct latency metric names ([#11175](https://github.com/aws/aws-cdk/issues/11175)) ([7ab5ab8](https://github.com/aws/aws-cdk/commit/7ab5ab8dad9ad08ff43602d5ee78c31e6b8413ed)), closes [#11174](https://github.com/aws/aws-cdk/issues/11174)
+* **rds:** customizing secret results in unusable password and lost attachment ([#11237](https://github.com/aws/aws-cdk/issues/11237)) ([a4567f5](https://github.com/aws/aws-cdk/commit/a4567f53d6e06d50f22d56364f69f0209c48874e)), closes [#11040](https://github.com/aws/aws-cdk/issues/11040)
+
+
+* **apigatewayv2:** move lambda and http proxy integrations to the 'integrations' module ([#11339](https://github.com/aws/aws-cdk/issues/11339)) ([17611d6](https://github.com/aws/aws-cdk/commit/17611d6e0f1085505c90cf4d6d4f22b91c530ce1))
+
+## [1.72.0](https://github.com/aws/aws-cdk/compare/v1.71.0...v1.72.0) (2020-11-06)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **rds:** Serverless cluster `enableHttpEndpoint` renamed to `enableDataApi`
+* **stepfunctions-tasks:** type of `outputLocation` in the experimental Athena `StartQueryExecution` has been changed to `s3.Location` from `string`
+
+### Features
+
+* **apigatewayv2:** http api - endpoint url ([#11092](https://github.com/aws/aws-cdk/issues/11092)) ([c200413](https://github.com/aws/aws-cdk/commit/c20041356940c5569c00e82f9e6bee794002929b)), closes [#10651](https://github.com/aws/aws-cdk/issues/10651)
+* **apigatewayv2:** vpc link and private integrations ([#11198](https://github.com/aws/aws-cdk/issues/11198)) ([e87a6a3](https://github.com/aws/aws-cdk/commit/e87a6a333c06d157f6d9074e05f251505525d0d5)), closes [#10531](https://github.com/aws/aws-cdk/issues/10531) [#10119](https://github.com/aws/aws-cdk/issues/10119) [aws/jsii#1947](https://github.com/aws/jsii/issues/1947)
+* **appmesh:** add Virtual Gateways and Gateway Routes ([#10879](https://github.com/aws/aws-cdk/issues/10879)) ([79200e7](https://github.com/aws/aws-cdk/commit/79200e75b2468ccdee46154d049f3ceb30bb51e1))
+* **appsync:** add RDS datasource ([#9258](https://github.com/aws/aws-cdk/issues/9258)) ([23d0943](https://github.com/aws/aws-cdk/commit/23d0943216df76bea395b319deb21282e4c57a7c)), closes [#9152](https://github.com/aws/aws-cdk/issues/9152)
+* **appsync:** support custom cloudWatchLogsRoleArn for GraphqlApi ([#10357](https://github.com/aws/aws-cdk/issues/10357)) ([bed89a5](https://github.com/aws/aws-cdk/commit/bed89a5d0aabe7d9a25ad7fac74a38f03b92e4c9)), closes [#9441](https://github.com/aws/aws-cdk/issues/9441)
+* **ec2:** Add Lambda interface endpoint ([#11260](https://github.com/aws/aws-cdk/issues/11260)) ([9d0c935](https://github.com/aws/aws-cdk/commit/9d0c935fc62f325105598473e39b47b247437146)), closes [#11259](https://github.com/aws/aws-cdk/issues/11259)
+* intro "Names.uniqueId()" instead of the deprecated "node.uniqueId" ([#11166](https://github.com/aws/aws-cdk/issues/11166)) ([5e433b1](https://github.com/aws/aws-cdk/commit/5e433b1d52470c3ecf5a460f79e4b8103542c35c)), closes [aws/constructs#314](https://github.com/aws/constructs/issues/314)
+* **ecs-patterns:** add option to create cname instead of alias record ([#10812](https://github.com/aws/aws-cdk/issues/10812)) ([89a5055](https://github.com/aws/aws-cdk/commit/89a505524ae3fe1c726d6988df07da6167493480))
+* **ecs-service-extensions:** create an `Environment` from attributes ([#10932](https://github.com/aws/aws-cdk/issues/10932)) ([d395b5e](https://github.com/aws/aws-cdk/commit/d395b5e618fc423c46c65b9be40d0c1423e2b578)), closes [#10931](https://github.com/aws/aws-cdk/issues/10931)
+* **rds:** add grant method for Data API ([#10748](https://github.com/aws/aws-cdk/issues/10748)) ([884539b](https://github.com/aws/aws-cdk/commit/884539b231245c893c456b2c619fe661cd39960f)), closes [#10744](https://github.com/aws/aws-cdk/issues/10744)
+
+
+### Bug Fixes
+
+* **apigateway:** changes to gateway response does not trigger auto deployment ([#11068](https://github.com/aws/aws-cdk/issues/11068)) ([0c8264a](https://github.com/aws/aws-cdk/commit/0c8264adf782d1adbfe8d538186a71093d9c8834)), closes [#10963](https://github.com/aws/aws-cdk/issues/10963)
+* **cfnspec:** incorrect Route 53 health check configuration properties in CloudFormation specification ([#11280](https://github.com/aws/aws-cdk/issues/11280)) ([f3c8b50](https://github.com/aws/aws-cdk/commit/f3c8b5034eb7ad1ccd9eecb4a929c8f11a2336d0)), closes [#issuecomment-717435271](https://github.com/aws/aws-cdk/issues/11096#issuecomment-717435271) [#11096](https://github.com/aws/aws-cdk/issues/11096)
+* **cli:** `--no-previous-parameters` incorrectly skips updates ([#11288](https://github.com/aws/aws-cdk/issues/11288)) ([1bfc649](https://github.com/aws/aws-cdk/commit/1bfc64948b6ac63f93f030c5a2064b3ac4376289))
+* **core:** many nested stacks make NodeJS run out of memory ([#11250](https://github.com/aws/aws-cdk/issues/11250)) ([c124886](https://github.com/aws/aws-cdk/commit/c124886fbcabea166f34250cad84f7526e05b1bf))
+* **core:** multiple library copies lead to 'Assets must be defined within Stage or App' error ([#11113](https://github.com/aws/aws-cdk/issues/11113)) ([fcfed39](https://github.com/aws/aws-cdk/commit/fcfed39e3524eef66d3638896bf4ca86697f1718)), closes [#10314](https://github.com/aws/aws-cdk/issues/10314)
+* **core:** support docker engine v20.10.0-beta1 ([#11124](https://github.com/aws/aws-cdk/issues/11124)) ([87887a3](https://github.com/aws/aws-cdk/commit/87887a3faf24f5fde608135429585c6521637764))
+* **dynamodb:** Misconfigured metrics causing empty graphs ([#11283](https://github.com/aws/aws-cdk/issues/11283)) ([9968669](https://github.com/aws/aws-cdk/commit/9968669e4f4602a03de67e12bc5636a4f4bb1fd7))
+* **ecs:** redirect config should honor openListener flag ([#11115](https://github.com/aws/aws-cdk/issues/11115)) ([ed6e7ed](https://github.com/aws/aws-cdk/commit/ed6e7ed9ebee7dc8932c35885698fc72e2052085))
+* **event-targets:** circular dependency when the lambda target is in a different stack ([#11217](https://github.com/aws/aws-cdk/issues/11217)) ([e21f249](https://github.com/aws/aws-cdk/commit/e21f249f7b9c78ed5948d63e7650ee7b8d5b3f8b)), closes [#10942](https://github.com/aws/aws-cdk/issues/10942)
+* **pipelines:** asset stage can't support more than 50 assets ([#11284](https://github.com/aws/aws-cdk/issues/11284)) ([5db8e80](https://github.com/aws/aws-cdk/commit/5db8e8018d2b8304025b7e61178c7a747c778a78)), closes [#9353](https://github.com/aws/aws-cdk/issues/9353)
+* **secretsmanager:** can't export secret name from Secret ([#11202](https://github.com/aws/aws-cdk/issues/11202)) ([5dcdecb](https://github.com/aws/aws-cdk/commit/5dcdecb2c5d6ce19517af66090cfacabed88025b)), closes [#10914](https://github.com/aws/aws-cdk/issues/10914)
+* **secretsmanager:** Secret.fromSecretName doesn't work with ECS ([#11042](https://github.com/aws/aws-cdk/issues/11042)) ([fe1ce73](https://github.com/aws/aws-cdk/commit/fe1ce73ec59fc3ad9d8b138ba2122303e77c0531)), closes [#10309](https://github.com/aws/aws-cdk/issues/10309) [#10519](https://github.com/aws/aws-cdk/issues/10519)
+* **stepfunctions:** stack overflow when referenced json path finding encounters a circular object graph ([#11225](https://github.com/aws/aws-cdk/issues/11225)) ([f14d823](https://github.com/aws/aws-cdk/commit/f14d823279e4dbb6ac90ab21d219257b22b81278)), closes [#9319](https://github.com/aws/aws-cdk/issues/9319)
+* **stepfunctions-tasks:** Athena* APIs have incorrect supported integration patterns ([#11188](https://github.com/aws/aws-cdk/issues/11188)) ([0f66833](https://github.com/aws/aws-cdk/commit/0f6683394fa6f96d6839b2c107f3dab8045509b4)), closes [#11045](https://github.com/aws/aws-cdk/issues/11045) [#11246](https://github.com/aws/aws-cdk/issues/11246)
+* **stepfunctions-tasks:** incorrect S3 permissions for AthenaStartQueryExecution ([#11203](https://github.com/aws/aws-cdk/issues/11203)) ([b35c423](https://github.com/aws/aws-cdk/commit/b35c423644fbd8f20705c16c0809a9fb93e6d6f3))
+* explicitly set the 'ImagePullPrincipalType' of image ([#11264](https://github.com/aws/aws-cdk/issues/11264)) ([29aa223](https://github.com/aws/aws-cdk/commit/29aa223f05b5f012b42b662e7a9fcc8fe82167a7)), closes [#10569](https://github.com/aws/aws-cdk/issues/10569)
+
+## [1.71.0](https://github.com/aws/aws-cdk/compare/v1.70.0...v1.71.0) (2020-10-29)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **synthetics:** `runtime` is now a required property.
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **core:** Creation stack traces for `Lazy` values are no longer
+captured by default. The `CDK_DEBUG=true` environment variable must be
+set in order to capture stack traces (this is also achieved by using the
+`--debug` option of the `cdk` CLI). Users should not need those stack
+traces most of the time, and should only enable creation stack trace
+captures when tyring to troubleshoot a resolution error that they are
+otherwise unable to trace back.
+
+### Features
+
+* **autoscaling:** CloudFormation init for ASGs ([#9674](https://github.com/aws/aws-cdk/issues/9674)) ([bdf1d30](https://github.com/aws/aws-cdk/commit/bdf1d30a08c034703ca05eebe8e9d0cc5e070949)), closes [#9065](https://github.com/aws/aws-cdk/issues/9065) [#9664](https://github.com/aws/aws-cdk/issues/9664)
+* **cli:** `--all` flag to select all stacks ([#10745](https://github.com/aws/aws-cdk/issues/10745)) ([bcd9d0a](https://github.com/aws/aws-cdk/commit/bcd9d0aa900aceb32e50031ea1a8f8a21e07a963)), closes [#3222](https://github.com/aws/aws-cdk/issues/3222)
+* **cli:** change virtualenv directory to `.venv` to comply with python recommendation ([#10995](https://github.com/aws/aws-cdk/issues/10995)) ([a4a41b5](https://github.com/aws/aws-cdk/commit/a4a41b5e006110304b51ee55c34e91cc3f129281)), closes [#9134](https://github.com/aws/aws-cdk/issues/9134)
+* **cli:** disable version check ([#10975](https://github.com/aws/aws-cdk/issues/10975)) ([575e47e](https://github.com/aws/aws-cdk/commit/575e47e4d6e8b89b4402ddc4b7bdea985b1e6edf)), closes [#10974](https://github.com/aws/aws-cdk/issues/10974)
+* **core:** make creationStack collection for Lazy opt-in ([#11170](https://github.com/aws/aws-cdk/issues/11170)) ([a3fae02](https://github.com/aws/aws-cdk/commit/a3fae02a5256a25fca011bab2a2aa9be58121c6e))
+* **init-templates:** Java init template tests updated to JUnit 5 ([#11101](https://github.com/aws/aws-cdk/issues/11101)) ([e0c00a1](https://github.com/aws/aws-cdk/commit/e0c00a1aafe82d390fd1859090e0bbe1ac249043)), closes [#10694](https://github.com/aws/aws-cdk/issues/10694)
+* upgrade "constructs" to 3.2.0 ([#11145](https://github.com/aws/aws-cdk/issues/11145)) ([d85e3ed](https://github.com/aws/aws-cdk/commit/d85e3eda8a0d97d60d178922bf9db33a31f4abe9))
+* **redshift:** add publiclyAccessible prop ([#11162](https://github.com/aws/aws-cdk/issues/11162)) ([9f8a6de](https://github.com/aws/aws-cdk/commit/9f8a6dee36105f7bbf7f433075881d5068fb5779)), closes [#11161](https://github.com/aws/aws-cdk/issues/11161)
+* **stepfunctions-tasks:** Support for Athena APIs: StartQueryExecution, StopQueryExeuction, GetQueryResults and GetQueryExecution  ([#11045](https://github.com/aws/aws-cdk/issues/11045)) ([19180cc](https://github.com/aws/aws-cdk/commit/19180cc7dd2e3cfbbcc82ef2b45f3a8f60894f8c))
+* **synthetics:** The CloudWatch Synthetics Construct Library is now in Developer Preview ([#11180](https://github.com/aws/aws-cdk/issues/11180)) ([b3b5f48](https://github.com/aws/aws-cdk/commit/b3b5f48ba457d382b6289997f164444ac6dfed0a))
+
+
+### Bug Fixes
+
+* **aws-rds/aws-secretmanager:** `credentials.fromSecret` does not access `secretsmanager.ISecret` ([#11033](https://github.com/aws/aws-cdk/issues/11033)) ([35ad608](https://github.com/aws/aws-cdk/commit/35ad608fb0c9801756b0557b460e3587684b7110)), closes [#11015](https://github.com/aws/aws-cdk/issues/11015)
+* **bootstrap:** same-account modern bootstrapping still requires policy ARNs ([#9867](https://github.com/aws/aws-cdk/issues/9867)) ([f5ab374](https://github.com/aws/aws-cdk/commit/f5ab374eafeafff02f386be445d10863717b51ed)), closes [#8571](https://github.com/aws/aws-cdk/issues/8571)
+* **codebuild:** ReportGroup name is ignored ([#11080](https://github.com/aws/aws-cdk/issues/11080)) ([1e2250a](https://github.com/aws/aws-cdk/commit/1e2250aa8345ee9fe22ed2a7395ba28994fe8ff1)), closes [#11052](https://github.com/aws/aws-cdk/issues/11052)
+* **core:** assets are duplicated between nested Cloud Assemblies ([#11008](https://github.com/aws/aws-cdk/issues/11008)) ([c84217f](https://github.com/aws/aws-cdk/commit/c84217f94cf66cae800d434350b3b3d7676a03b3)), closes [#10877](https://github.com/aws/aws-cdk/issues/10877) [#9627](https://github.com/aws/aws-cdk/issues/9627) [#9917](https://github.com/aws/aws-cdk/issues/9917)
+* **ec2:** `CfnInit` cannot be used with custom constructs ([#11167](https://github.com/aws/aws-cdk/issues/11167)) ([01c52c8](https://github.com/aws/aws-cdk/commit/01c52c84118b101de9aaca3091673b16d6871386))
+* **region-info:** incorrect S3 static website endpoint for us-gov-west-1 ([#10920](https://github.com/aws/aws-cdk/issues/10920)) ([dde9c55](https://github.com/aws/aws-cdk/commit/dde9c5530478e9371726278ef34b82da19624a4b)), closes [40aws-cdk/region-info/build-tools/generate-static-data.ts#L47-L49](https://github.com/40aws-cdk/region-info/build-tools/generate-static-data.ts/issues/L47-L49)
+
+
+## [1.70.0](https://github.com/aws/aws-cdk/compare/v1.69.0...v1.70.0) (2020-10-23)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **cognito:** the `UserPoolIdentityProviderBase` abstract class has been removed. Use the `UserPoolIdentityProvider*` classes directly.
+
+### Features
+
+* **cloudfront:** brotli compression support ([#10950](https://github.com/aws/aws-cdk/issues/10950)) ([dd81e77](https://github.com/aws/aws-cdk/commit/dd81e77e6ad606c2e76e01de1c7d38b762357d26)), closes [#10947](https://github.com/aws/aws-cdk/issues/10947)
+* **cloudfront-origins:** move cloudfront-origins to Developer Preview ([#11005](https://github.com/aws/aws-cdk/issues/11005)) ([6956aad](https://github.com/aws/aws-cdk/commit/6956aadd6043499d8d55ca2d1a8ee65a91ac1bc6)), closes [#10831](https://github.com/aws/aws-cdk/issues/10831)
+* **codebuild:** add COMMIT_MESSAGE support for webhook FilterGroup ([#11011](https://github.com/aws/aws-cdk/issues/11011)) ([fd8bce3](https://github.com/aws/aws-cdk/commit/fd8bce3d1409fd66877ca7530f8e74d9d78e0b8a)), closes [#9033](https://github.com/aws/aws-cdk/issues/9033)
+* **cognito:** Cognito User Pools is now in Generally Available (stable) ([#11003](https://github.com/aws/aws-cdk/issues/11003)) ([7435db8](https://github.com/aws/aws-cdk/commit/7435db853636628a60c8aa465481fc01136aa4a1))
+* **events-targets:** add support for Kinesis Firehose as a target ([#10400](https://github.com/aws/aws-cdk/issues/10400)) ([b93cda6](https://github.com/aws/aws-cdk/commit/b93cda6f528e0e1d98b88ad8407620b8ef472125)), closes [#10349](https://github.com/aws/aws-cdk/issues/10349)
+* **lambda-event-sources:** disable source mapping ([#10927](https://github.com/aws/aws-cdk/issues/10927)) ([f4f53a6](https://github.com/aws/aws-cdk/commit/f4f53a65e55d895338aecf8cb63637c6d265b929)), closes [#5750](https://github.com/aws/aws-cdk/issues/5750)
+
+
+### Bug Fixes
+
+* **cloudfront:** logging bucket uses global domain name ([#10945](https://github.com/aws/aws-cdk/issues/10945)) ([aa3f3fd](https://github.com/aws/aws-cdk/commit/aa3f3fdc92545157205e533e124412d0db08c575)), closes [#10923](https://github.com/aws/aws-cdk/issues/10923)
+* **lambda-nodejs:** docker build is not working ([#10885](https://github.com/aws/aws-cdk/issues/10885)) ([191d7b7](https://github.com/aws/aws-cdk/commit/191d7b7706282812878e1aeed79d8f4b39d1f797)), closes [#10881](https://github.com/aws/aws-cdk/issues/10881)
+* **ses-actions:** invalid action in policy statement created when using SES S3 action ([#11061](https://github.com/aws/aws-cdk/issues/11061)) ([5dc1d96](https://github.com/aws/aws-cdk/commit/5dc1d96e77ec2359a77aed7266c4e7769d04e084))
+* **cognito:** reorganize identity providers structure so that UserPoolIdentityProviderBase is not exported ([#10925](https://github.com/aws/aws-cdk/issues/10925)) ([60f493c](https://github.com/aws/aws-cdk/commit/60f493c9a606162816c14149ea578341ea458a05))
+
+## [1.69.0](https://github.com/aws/aws-cdk/compare/v1.68.0...v1.69.0) (2020-10-19)
+
+
+### Features
+
+* **apigatewayv2:** configure description for HttpApi ([#10863](https://github.com/aws/aws-cdk/issues/10863)) ([895372f](https://github.com/aws/aws-cdk/commit/895372fc8b027bd12d64450c429c04d8efdd27f4))
+* **pipelines:** temporarily disable self-mutation ([#10466](https://github.com/aws/aws-cdk/issues/10466)) ([8ffabb4](https://github.com/aws/aws-cdk/commit/8ffabb4325d2853f8650f991706eccfe233b2c74))
+
+
+### Bug Fixes
+
+* **apigateway:** cannot configure stage for SpecRestApi ([#10749](https://github.com/aws/aws-cdk/issues/10749)) ([62a2286](https://github.com/aws/aws-cdk/commit/62a2286f6dc46059160daa3c7466e712dad9f136)), closes [#10300](https://github.com/aws/aws-cdk/issues/10300)
+* **apigateway:** lambda integration does not recognize allowTestInvoke ([#10828](https://github.com/aws/aws-cdk/issues/10828)) ([650c23f](https://github.com/aws/aws-cdk/commit/650c23f1fe9e87a7b1eb521faf57c7ed341d0eb6)), closes [#7605](https://github.com/aws/aws-cdk/issues/7605) [#7604](https://github.com/aws/aws-cdk/issues/7604)
+* **cli:** `cdk context --reset <number>` does not work ([#10753](https://github.com/aws/aws-cdk/issues/10753)) ([2f3a167](https://github.com/aws/aws-cdk/commit/2f3a167797e60fd2df6c83bc2f3906ddc8eb8966)), closes [#3033](https://github.com/aws/aws-cdk/issues/3033) [#10619](https://github.com/aws/aws-cdk/issues/10619)
+* **cli:** failure if account cache is malformed ([#10887](https://github.com/aws/aws-cdk/issues/10887)) ([9b2438a](https://github.com/aws/aws-cdk/commit/9b2438a6e78fc7a9622e79b1435ea6f8b76d98f7))
+* **lambda-python:** asset hashes changed ([#10959](https://github.com/aws/aws-cdk/issues/10959)) ([b8de264](https://github.com/aws/aws-cdk/commit/b8de264af75aed11e14fb715f40d6d2e41d5233e)), closes [#10958](https://github.com/aws/aws-cdk/issues/10958) [#10957](https://github.com/aws/aws-cdk/issues/10957)
+
 ## [1.68.0](https://github.com/aws/aws-cdk/compare/v1.67.0...v1.68.0) (2020-10-15)
 
 

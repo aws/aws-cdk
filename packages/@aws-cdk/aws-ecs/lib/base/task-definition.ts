@@ -1,6 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { IResource, Lazy, Resource } from '@aws-cdk/core';
+import { IResource, Lazy, Names, Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { ContainerDefinition, ContainerDefinitionOptions, PortMapping, Protocol } from '../container-definition';
 import { CfnTaskDefinition } from '../ecs.generated';
@@ -261,13 +261,15 @@ export class TaskDefinition extends TaskDefinitionBase {
 
   private _executionRole?: iam.IRole;
 
+  private _referencesSecretJsonField?: boolean;
+
   /**
    * Constructs a new instance of the TaskDefinition class.
    */
   constructor(scope: Construct, id: string, props: TaskDefinitionProps) {
     super(scope, id);
 
-    this.family = props.family || this.node.uniqueId;
+    this.family = props.family || Names.uniqueId(this);
     this.compatibility = props.compatibility;
 
     if (props.volumes) {
@@ -435,6 +437,9 @@ export class TaskDefinition extends TaskDefinitionBase {
     if (this.defaultContainer === undefined && container.essential) {
       this.defaultContainer = container;
     }
+    if (container.referencesSecretJsonField) {
+      this._referencesSecretJsonField = true;
+    }
   }
 
   /**
@@ -474,6 +479,14 @@ export class TaskDefinition extends TaskDefinitionBase {
       });
     }
     return this._executionRole;
+  }
+
+  /**
+   * Whether this task definition has at least a container that references a
+   * specific JSON field of a secret stored in Secrets Manager.
+   */
+  public get referencesSecretJsonField(): boolean | undefined {
+    return this._referencesSecretJsonField;
   }
 
   /**

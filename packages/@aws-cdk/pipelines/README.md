@@ -341,6 +341,16 @@ testingStage.addApplication(new MyApplication2(this, 'MyApp2', {
 }));
 ```
 
+Even more, adding a manual approval action or reserving space for some extra sequential actions 
+between 'Prepare' and 'Execute' ChangeSet actions is possible.
+
+```ts
+  pipeline.addApplicationStage(new MyApplication(this, 'Production'), {
+    manualApprovals: true,
+    extraRunOrderSpace: 1,
+  });
+```
+
 ## Adding validations to the pipeline
 
 You can add any type of CodePipeline Action to the pipeline in order to validate
@@ -362,7 +372,8 @@ stage.addActions(new ShellScriptAction({
   vpc,
   // Optionally specify SecurityGroups
   securityGroups,
-  // ... more configuration ...
+  // Optionally specify a BuildEnvironment
+  environment,
 }));
 ```
 
@@ -543,6 +554,24 @@ class MyPipelineStack extends Stack {
   }
 }
 ```
+
+### Developing the pipeline
+
+The self-mutation feature of the `CdkPipeline` might at times get in the way
+of the pipeline development workflow. Each change to the pipeline must be pushed
+to git, otherwise, after the pipeline was updated using `cdk deploy`, it will
+automatically revert to the state found in git.
+
+To make the development more convenient, the self-mutation feature can be turned
+off temporarily, by passing `selfMutating: false` property, example:
+
+```ts
+const pipeline = new CdkPipeline(this, 'Pipeline', {
+  selfMutating: false,
+  ...  
+});
+```
+
 
 ## CDK Environment Bootstrapping
 

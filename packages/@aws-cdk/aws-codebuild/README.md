@@ -91,7 +91,10 @@ const gitHubSource = codebuild.Source.gitHub({
   repo: 'aws-cdk',
   webhook: true, // optional, default: true if `webhookFilters` were provided, false otherwise
   webhookFilters: [
-    codebuild.FilterGroup.inEventOf(codebuild.EventAction.PUSH).andBranchIs('master'),
+    codebuild.FilterGroup
+      .inEventOf(codebuild.EventAction.PUSH)
+      .andBranchIs('master')
+      .andCommitMessageIs('the commit message'),
   ], // optional, by default all pushes and Pull Requests will trigger a build
 });
 ```
