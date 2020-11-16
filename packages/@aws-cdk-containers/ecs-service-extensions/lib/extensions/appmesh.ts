@@ -259,17 +259,28 @@ export class AppMeshExtension extends ServiceExtension {
       throw new Error('You must add a CloudMap namespace to the ECS cluster in order to use the AppMesh extension');
     }
 
+    function addListener(protocol: appmesh.Protocol, port: number): appmesh.VirtualNodeListener {
+      switch (protocol) {
+        case appmesh.Protocol.HTTP :
+          return appmesh.VirtualNodeListener.http({ port });
+
+        case appmesh.Protocol.HTTP2 :
+          return appmesh.VirtualNodeListener.http2({ port });
+
+        case appmesh.Protocol.GRPC :
+          return appmesh.VirtualNodeListener.grpc({ port });
+
+        case appmesh.Protocol.TCP :
+          return appmesh.VirtualNodeListener.tcp({ port });
+      }
+    }
+
     // Create a virtual node for the name service
     this.virtualNode = new appmesh.VirtualNode(this.scope, `${this.parentService.id}-virtual-node`, {
       mesh: this.mesh,
       virtualNodeName: this.parentService.id,
       cloudMapService: service.cloudMapService,
-      listener: {
-        portMapping: {
-          port: containerextension.trafficPort,
-          protocol: this.protocol,
-        },
-      },
+      listeners: [addListener(this.protocol, containerextension.trafficPort)],
     });
 
     // Create a virtual router for this service. This allows for retries
@@ -326,7 +337,7 @@ export class AppMeshExtension extends ServiceExtension {
     // Next update the app mesh config so that the local Envoy
     // proxy on this service knows how to route traffic to
     // nodes from the other service.
-    this.virtualNode.addBackends(otherAppMesh.virtualService);
+    this.virtualNode.addBackend(otherAppMesh.virtualService);
   }
 
   private virtualRouterListener(port: number): appmesh.VirtualRouterListener {

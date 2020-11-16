@@ -206,27 +206,17 @@ export interface FileSystemAttributes {
  * @resource AWS::EFS::FileSystem
  */
 export class FileSystem extends Resource implements IFileSystem {
+  /**
+   * The default port File System listens on.
+   */
+  public static readonly DEFAULT_PORT: number = 2049;
 
   /**
    * Import an existing File System from the given properties.
    */
   public static fromFileSystemAttributes(scope: Construct, id: string, attrs: FileSystemAttributes): IFileSystem {
-    class Import extends Resource implements IFileSystem {
-      public readonly fileSystemId = attrs.fileSystemId;
-      public readonly connections = new ec2.Connections({
-        securityGroups: [attrs.securityGroup],
-        defaultPort: ec2.Port.tcp(FileSystem.DEFAULT_PORT),
-      });
-      public readonly mountTargetsAvailable = new ConcreteDependable();
-    }
-
-    return new Import(scope, id);
+    return new ImportedFileSystem(scope, id, attrs);
   }
-
-  /**
-   * The default port File System listens on.
-   */
-  private static readonly DEFAULT_PORT: number = 2049;
 
   /**
    * The security groups/rules used to allow network connections to the file system.
@@ -302,4 +292,37 @@ export class FileSystem extends Resource implements IFileSystem {
       ...accessPointOptions,
     });
   }
+}
+
+
+class ImportedFileSystem extends Resource implements IFileSystem {
+  /**
+   * The security groups/rules used to allow network connections to the file system.
+   */
+  public readonly connections: ec2.Connections;
+
+  /**
+   * @attribute
+   */
+  public readonly fileSystemId: string;
+
+  /**
+   * Dependable that can be depended upon to ensure the mount targets of the filesystem are ready
+   */
+  public readonly mountTargetsAvailable: IDependable;
+
+  constructor(scope: Construct, id: string, attrs: FileSystemAttributes) {
+    super(scope, id);
+
+    this.fileSystemId = attrs.fileSystemId;
+
+    this.connections = new ec2.Connections({
+      securityGroups: [attrs.securityGroup],
+      defaultPort: ec2.Port.tcp(FileSystem.DEFAULT_PORT),
+    });
+
+    this.mountTargetsAvailable = new ConcreteDependable();
+  }
+
+
 }

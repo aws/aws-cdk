@@ -274,4 +274,9 @@ export enum ServiceNamespace {
    * Comprehend
    */
   COMPREHEND = 'comprehend',
+
+  /**
+   * Kafka
+   */
+  KAFKA = 'kafka',
 }

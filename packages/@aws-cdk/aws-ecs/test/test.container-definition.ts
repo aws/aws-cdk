@@ -846,21 +846,45 @@ export = {
 
   },
 
-  'throws when using a specific secret JSON field as environment variable for a Fargate task'(test: Test) {
+  'use a specific secret JSON field as environment variable for a Fargate task'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
 
     const secret = new secretsmanager.Secret(stack, 'Secret');
 
-    // THEN
-    test.throws(() => taskDefinition.addContainer('cont', {
+    // WHEN
+    taskDefinition.addContainer('cont', {
       image: ecs.ContainerImage.fromRegistry('test'),
       memoryLimitMiB: 1024,
       secrets: {
         SECRET_KEY: ecs.Secret.fromSecretsManager(secret, 'specificKey'),
       },
-    }), /Cannot specify secret JSON field for a task using the FARGATE launch type/);
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          Secrets: [
+            {
+              Name: 'SECRET_KEY',
+              ValueFrom: {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      Ref: 'SecretA720EF05',
+                    },
+                    ':specificKey::',
+                  ],
+                ],
+              },
+            },
+          ],
+        },
+      ],
+    }));
 
     test.done();
   },
