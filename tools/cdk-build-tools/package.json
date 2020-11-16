@@ -39,7 +39,7 @@
     "pkglint": "0.0.0"
   },
   "dependencies": {
-    "@typescript-eslint/eslint-plugin": "^4.7.0",
+    "@typescript-eslint/eslint-plugin": "^4.8.0",
     "@typescript-eslint/parser": "^4.7.0",
     "eslint-plugin-cdk": "0.0.0",
     "awslint": "0.0.0",
@@ -56,7 +56,7 @@
     "nyc": "^15.1.0",
     "ts-jest": "^26.4.4",
     "typescript": "~3.9.7",
-    "yargs": "^16.1.0",
+    "yargs": "^16.1.1",
     "yarn-cling": "0.0.0"
   },
   "keywords": [
