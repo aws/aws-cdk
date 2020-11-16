@@ -250,11 +250,16 @@ const policyDocument = {
   ]
 };
 
-const newPolicyDocument = PolicyDocument.fromJson(policyDocument);
+const customPolicyDocument = PolicyDocument.fromJson(policyDocument);
 
-const newManagedPolicy = new ManagedPolicy(stack, 'MyNewManagedPolicy', { managedPolicyName: 'MyNewManagedPolicy', document: newPolicyDocument });
-const newPolicy = new Policy(stack, 'MyNewPolicy', { policyName: 'MyNewPolicy', document: newPolicyDocument });
-
+// You can pass this document as an initial document to a ManagedPolicy
+// or inline Policy.
+const newManagedPolicy = new ManagedPolicy(stack, 'MyNewManagedPolicy', { 
+  document: customPolicyDocument
+});
+const newPolicy = new Policy(stack, 'MyNewPolicy', { 
+  document: customPolicyDocument
+});
 ```
 
 ### OpenID Connect Providers
