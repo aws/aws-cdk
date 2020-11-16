@@ -1,6 +1,6 @@
 import * as crypto from 'crypto';
 import { IVpcEndpointService } from '@aws-cdk/aws-ec2';
-import { Fn, Names } from '@aws-cdk/core';
+import { Fn, Names, Stack } from '@aws-cdk/core';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '@aws-cdk/custom-resources';
 import { Construct } from 'constructs';
 import { IPublicHostedZone, TxtRecord } from '../lib';
@@ -115,7 +115,17 @@ export class VpcEndpointServiceDomainName extends CoreConstruct {
       onUpdate: enablePrivateDnsAction,
       onDelete: removePrivateDnsAction,
       policy: AwsCustomResourcePolicy.fromSdkCalls({
-        resources: AwsCustomResourcePolicy.ANY_RESOURCE,
+        resources: [
+          Fn.join(':', [
+            'arn',
+            Stack.of(this).partition,
+            'ec2',
+            Stack.of(this).region,
+            Stack.of(this).account,
+            'vpc-endpoint-service',
+            serviceId,
+          ]),
+        ],
       }),
     });
 
@@ -137,6 +147,7 @@ export class VpcEndpointServiceDomainName extends CoreConstruct {
     const getNames = new AwsCustomResource(this, 'GetNames', {
       onCreate: retriveNameValuePairAction,
       onUpdate: retriveNameValuePairAction,
+      // describeVpcEndpointServiceConfigurations can't take an ARN for granular permissions
       policy: AwsCustomResourcePolicy.fromSdkCalls({
         resources: AwsCustomResourcePolicy.ANY_RESOURCE,
       }),
@@ -178,7 +189,17 @@ export class VpcEndpointServiceDomainName extends CoreConstruct {
       onCreate: startVerificationAction,
       onUpdate: startVerificationAction,
       policy: AwsCustomResourcePolicy.fromSdkCalls({
-        resources: AwsCustomResourcePolicy.ANY_RESOURCE,
+        resources: [
+          Fn.join(':', [
+            'arn',
+            Stack.of(this).partition,
+            'ec2',
+            Stack.of(this).region,
+            Stack.of(this).account,
+            'vpc-endpoint-service',
+            config.serviceId,
+          ]),
+        ],
       }),
     });
     // Only verify after the record has been created

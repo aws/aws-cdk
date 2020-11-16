@@ -552,7 +552,28 @@
             {
               "Action": "ec2:ModifyVpcEndpointServiceConfiguration",
               "Effect": "Allow",
-              "Resource": "*"
+              "Resource": {
+                "Fn::Join": [
+                  ":",
+                  [
+                    "arn",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    "ec2",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    "vpc-endpoint-service",
+                    {
+                      "Ref": "VPCES3AE7D565"
+                    }
+                  ]
+                ]
+              }
             }
           ],
           "Version": "2012-10-17"
@@ -748,7 +769,28 @@
             {
               "Action": "ec2:StartVpcEndpointServicePrivateDnsVerification",
               "Effect": "Allow",
-              "Resource": "*"
+              "Resource": {
+                "Fn::Join": [
+                  ":",
+                  [
+                    "arn",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    "ec2",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    "vpc-endpoint-service",
+                    {
+                      "Ref": "VPCES3AE7D565"
+                    }
+                  ]
+                ]
+              }
             }
           ],
           "Version": "2012-10-17"
