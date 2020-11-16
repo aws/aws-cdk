@@ -261,6 +261,8 @@ export class TaskDefinition extends TaskDefinitionBase {
 
   private _executionRole?: iam.IRole;
 
+  private _referencesSecretJsonField?: boolean;
+
   /**
    * Constructs a new instance of the TaskDefinition class.
    */
@@ -435,6 +437,9 @@ export class TaskDefinition extends TaskDefinitionBase {
     if (this.defaultContainer === undefined && container.essential) {
       this.defaultContainer = container;
     }
+    if (container.referencesSecretJsonField) {
+      this._referencesSecretJsonField = true;
+    }
   }
 
   /**
@@ -474,6 +479,14 @@ export class TaskDefinition extends TaskDefinitionBase {
       });
     }
     return this._executionRole;
+  }
+
+  /**
+   * Whether this task definition has at least a container that references a
+   * specific JSON field of a secret stored in Secrets Manager.
+   */
+  public get referencesSecretJsonField(): boolean | undefined {
+    return this._referencesSecretJsonField;
   }
 
   /**
