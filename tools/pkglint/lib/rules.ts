@@ -1464,10 +1464,13 @@ export class UbergenPackageVisibility extends ValidationRule {
     '@aws-cdk/cloud-assembly-schema',
     '@aws-cdk/cloudformation-diff',
     '@aws-cdk/cx-api',
+    '@aws-cdk/region-info',
+    '@aws-cdk/yaml-cfn',
     'aws-cdk-lib',
     'aws-cdk',
     'awslint',
     'cdk',
+    'cdk-assets',
   ];
 
   public validate(pkg: PackageJson): void {
