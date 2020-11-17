@@ -99,6 +99,8 @@
       "aws-cdk/@aws-cdk/region-info/**",
       "aws-cdk/@aws-cdk/yaml-cfn",
       "aws-cdk/@aws-cdk/yaml-cfn/**",
+      "aws-cdk/cdk-assets",
+      "aws-cdk/cdk-assets/**",
       "monocdk/@balena/dockerignore",
       "monocdk/@balena/dockerignore/**",
       "monocdk/case",
