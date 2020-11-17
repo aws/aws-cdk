@@ -1460,6 +1460,8 @@ export class JestSetup extends ValidationRule {
 
 export class UbergenPackageVisibility extends ValidationRule {
   public readonly name = 'ubergen/package-visibility';
+
+  // These include dependencies of the CDK CLI (aws-cdk).
   private readonly publicPackages = [
     '@aws-cdk/cloud-assembly-schema',
     '@aws-cdk/cloudformation-diff',
