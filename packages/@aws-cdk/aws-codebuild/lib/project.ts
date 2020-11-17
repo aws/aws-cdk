@@ -5,7 +5,6 @@ import { DockerImageAsset, DockerImageAssetProps } from '@aws-cdk/aws-ecr-assets
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { Aws, Duration, IResource, Lazy, Names, PhysicalName, Resource, Stack } from '@aws-cdk/core';
@@ -19,6 +18,7 @@ import { IFileSystemLocation } from './file-location';
 import { NoArtifacts } from './no-artifacts';
 import { NoSource } from './no-source';
 import { runScriptLinuxBuildSpec, S3_BUCKET_ENV, S3_KEY_ENV } from './private/run-script-linux-build-spec';
+import { LogsConfig } from './project-logs';
 import { renderReportGroupArn } from './report-group-utils';
 import { ISource } from './source';
 import { CODEPIPELINE_SOURCE_ARTIFACTS_TYPE, NO_SOURCE_TYPE } from './source-types';
@@ -395,88 +395,6 @@ abstract class ProjectBase extends Resource implements IProject {
       ...props,
     });
   }
-}
-
-/**
- * Statuses for Log Configurations
- */
-export enum LogStatus {
-  /**
-   * Enables the log configuration
-   */
-  ENABLED='ENABLED',
-
-  /**
-   * Disables the log configuration
-   */
-  DISABLED='DISABLED'
-}
-
-/**
- * Information about logs built to an S3 bucket for a build project.
- */
-export interface S3LogsConfig {
-  /**
-   * Encrypt the S3 build log output
-   * @default true
-   */
-  readonly encrypted?: boolean;
-
-  /**
-   * The S3 Bucket to send logs to
-   */
-  readonly bucket: s3.IBucket;
-
-  /**
-   * The path prefix for S3 logs
-   * @default - no prefix
-   */
-  readonly prefix?: string;
-
-  /**
-   * The current status of the logs in Amazon CloudWatch Logs for a build project
-   * @default ENABLED
-   */
-  readonly status?: LogStatus;
-}
-
-/**
- * Information about logs built to an S3 bucket for a build project.
- */
-export interface CloudwatchLogsConfig {
-  /**
-   * The S3 Bucket to send logs to
-   */
-  readonly logGroup: logs.ILogGroup;
-
-  /**
-   * The prefix of the stream name of the Amazon CloudWatch Logs
-   * @default - no prefix
-   */
-  readonly prefix?: string;
-
-  /**
-   * The current status of the logs in Amazon CloudWatch Logs for a build project
-   * @default ENABLED
-   */
-  readonly status?: LogStatus;
-}
-
-/**
- * Information about logs for the build project. A project can create logs in Amazon CloudWatch Logs, an S3 bucket, or both.
- */
-export interface LogsConfig {
-  /**
-   * Information about logs built to an S3 bucket for a build project.
-   * @default - disabled
-   */
-  readonly s3?: S3LogsConfig;
-
-  /**
-   * Information about Amazon CloudWatch Logs for a build project.
-   * @default - enabled
-   */
-  readonly cloudwatch?: CloudwatchLogsConfig;
 }
 
 export interface CommonProjectProps {
@@ -1133,8 +1051,13 @@ export class Project extends ProjectBase {
     if (props.logsConfig?.s3) {
       const s3Logs = props.logsConfig.s3;
 
+      let status = 'ENABLED';
+      if ('enabled' in s3Logs) {
+        status = s3Logs.enabled ? 'ENABLED' : 'DISABLED';
+      }
+
       s3Config = {
-        status: s3Logs.status || LogStatus.ENABLED,
+        status,
         location: `${s3Logs.bucket.bucketName}${s3Logs.prefix}`,
         encryptionDisabled: s3Logs.encrypted ?? false,
       };
@@ -1144,8 +1067,12 @@ export class Project extends ProjectBase {
 
     if (props.logsConfig?.cloudwatch) {
       const cloudWatchLogs = props.logsConfig.cloudwatch;
+      let status = 'ENABLED';
+      if ('enabled' in cloudWatchLogs) {
+        status = cloudWatchLogs.enabled ? 'ENABLED' : 'DISABLED';
+      }
       cloudwatchConfig = {
-        status: cloudWatchLogs.status || LogStatus.ENABLED,
+        status,
         groupName: cloudWatchLogs.logGroup.logGroupName,
         streamName: cloudWatchLogs.prefix,
       };

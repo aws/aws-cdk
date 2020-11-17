@@ -667,5 +667,48 @@ export = {
 
       test.done();
     },
+
+    'logs config - cloudwatch and s3'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const bucket = s3.Bucket.fromBucketName(stack, 'LogBucket2', 'MyBucketName');
+      const logGroup = logs.LogGroup.fromLogGroupName(stack, 'LogGroup2', 'MyLogGroupName');
+
+      // WHEN
+      new codebuild.Project(stack, 'Project', {
+        source: codebuild.Source.s3({
+          bucket: new s3.Bucket(stack, 'Bucket'),
+          path: 'path',
+        }),
+        logsConfig: {
+          cloudwatch: {
+            logGroup,
+            prefix: '/my-logs',
+          },
+          s3: {
+            bucket,
+            prefix: '/my-logs',
+          },
+        },
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+        LogsConfig: objectLike({
+          CloudWatchLogs: {
+            GroupName: 'MyLogGroupName',
+            Status: 'ENABLED',
+            StreamName: '/my-logs',
+          },
+          S3Logs: {
+            EncryptionDisabled: false,
+            Location: 'MyBucketName/my-logs',
+            Status: 'ENABLED',
+          },
+        }),
+      }));
+
+      test.done();
+    },
   },
 };
