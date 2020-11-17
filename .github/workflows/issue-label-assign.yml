@@ -103,7 +103,7 @@ jobs:
            {"keywords":["[@aws-cdk/aws-iot1click]","[aws-iot1click]","[iot1click]","[iot 1click]"],"labels":["@aws-cdk/aws-iot1click"],"assignees":["shivlaks"]},
            {"keywords":["[@aws-cdk/aws-iotanalytics]","[aws-iotanalytics]","[iotanalytics]","[iot analytics]","[iot-analytics]"],"labels":["@aws-cdk/aws-iotanalytics"],"assignees":["shivlaks"]},
            {"keywords":["[@aws-cdk/aws-iotevents]","[aws-iotevents]","[iotevents]","[iot events]","[iot-events]"],"labels":["@aws-cdk/aws-iotevents"],"assignees":["shivlaks"]},
-           {"keywords":["[@aws-cdk/aws-iotsitewise]","[aws-iotsitewise]","[iotsitewise]","[iot sitewise]","[iot-sitewise]","[iot-site-wise]",[iot site wise]"],"labels":["@aws-cdk/aws-iotsitewise"],"assignees":["shivlaks"]},
+           {"keywords":["[@aws-cdk/aws-iotsitewise]","[aws-iotsitewise]","[iotsitewise]","[iot sitewise]","[iot-sitewise]","[iot-site-wise]","[iot site wise]"],"labels":["@aws-cdk/aws-iotsitewise"],"assignees":["shivlaks"]},
            {"keywords":["[@aws-cdk/aws-iotthingsgraph]","[aws-iotthingsgraph]","[iotthingsgraph]","[iot things graph]","[iot-things-graph]"],"labels":["@aws-cdk/aws-iotthingsgraph"],"assignees":["shivlaks"]},
            {"keywords":["[@aws-cdk/aws-ivs]","[aws-ivs]","[Interactive Video Service]","[ivs]"],"labels":["@aws-cdk/aws-ivs"],"assignees":["shivlaks"]},
            {"keywords":["[@aws-cdk/aws-kendra]","[aws-kendra]","[kendra]"],"labels":["@aws-cdk/aws-kendra"],"assignees":["shivlaks"]},
