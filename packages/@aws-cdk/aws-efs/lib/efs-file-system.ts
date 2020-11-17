@@ -244,7 +244,7 @@ export class FileSystem extends Resource implements IFileSystem {
 
     const filesystem = new CfnFileSystem(this, 'Resource', {
       encrypted: props.encrypted,
-      kmsKeyId: (props.kmsKey ? props.kmsKey.keyId : undefined),
+      kmsKeyId: props.kmsKey?.keyArn,
       lifecyclePolicies: (props.lifecyclePolicy ? [{ transitionToIa: props.lifecyclePolicy }] : undefined),
       performanceMode: props.performanceMode,
       throughputMode: props.throughputMode,
