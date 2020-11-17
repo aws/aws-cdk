@@ -93,7 +93,7 @@ export function exec(cmd: string, args: string[], options?: SpawnSyncOptions) {
 /**
  * Extract dependencies from a package.json
  */
-export function extractDependencies(pkgPath: any, modules: string[]): { [key: string]: string } {
+export function extractDependencies(pkgPath: string, modules: string[]): { [key: string]: string } {
   const dependencies: { [key: string]: string } = {};
 
   // Use require for cache
