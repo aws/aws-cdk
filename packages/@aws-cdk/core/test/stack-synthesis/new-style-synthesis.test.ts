@@ -225,7 +225,7 @@ nodeunitShim({
     const myapp = new App();
 
     // WHEN
-    const mystack = new Stack(myapp, 'mystack', {
+    const mystack = new Stack(myapp, 'mystack-bucketPrefix', {
       synthesizer: new DefaultStackSynthesizer({
         bucketPrefix: '000000000000/',
       }),
