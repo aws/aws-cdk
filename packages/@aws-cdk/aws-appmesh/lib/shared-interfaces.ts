@@ -69,44 +69,6 @@ export interface HealthCheck {
 }
 
 /**
- * Port mappings for resources that require these attributes, such as VirtualNodes and Routes
- */
-export interface PortMapping {
-  /**
-   * Port mapped to the VirtualNode / Route
-   *
-   * @default 8080
-   */
-  readonly port: number;
-
-  /**
-   * Protocol for the VirtualNode / Route, only GRPC, HTTP, HTTP2, or TCP is supported
-   *
-   * @default HTTP
-   */
-  readonly protocol: Protocol;
-}
-
-/**
- * Represents the properties needed to define healthy and active listeners for nodes
- */
-export interface VirtualNodeListener {
-  /**
-   * Array of PortMappingProps for the listener
-   *
-   * @default - HTTP port 8080
-   */
-  readonly portMapping?: PortMapping;
-
-  /**
-   * Health checking strategy upstream nodes should use when communicating with the listener
-   *
-   * @default - no healthcheck
-   */
-  readonly healthCheck?: HealthCheck;
-}
-
-/**
  * All Properties for Envoy Access logs for mesh endpoints
  */
 export interface AccessLogConfig {

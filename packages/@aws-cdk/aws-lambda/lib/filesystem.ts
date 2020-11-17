@@ -50,7 +50,7 @@ export class FileSystem {
    * @param ap the Amazon EFS access point
    * @param mountPath the target path in the lambda runtime environment
    */
-  public static fromEfsAccessPoint(ap: efs.AccessPoint, mountPath: string): FileSystem {
+  public static fromEfsAccessPoint(ap: efs.IAccessPoint, mountPath: string): FileSystem {
     return new FileSystem({
       localMountPath: mountPath,
       arn: ap.accessPointArn,

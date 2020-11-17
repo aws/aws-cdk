@@ -139,11 +139,8 @@ const service = namespace.createService('Svc');
 
 const node = mesh.addVirtualNode('virtual-node', {
   cloudMapService: service,
-  listener: {
-    portMapping: {
-      port: 8081,
-      protocol: Protocol.HTTP,
-    },
+  listeners: [appmesh.VirtualNodeListener.httpNodeListener({
+    port: 8081,
     healthCheck: {
       healthyThreshold: 3,
       interval: Duration.seconds(5), // minimum
@@ -153,9 +150,9 @@ const node = mesh.addVirtualNode('virtual-node', {
       timeout: Duration.seconds(2), // minimum
       unhealthyThreshold: 2,
     },
-  },
+  })],
   accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
-})
+});
 ```
 
 Create a `VirtualNode` with the the constructor and add tags.
@@ -164,11 +161,8 @@ Create a `VirtualNode` with the the constructor and add tags.
 const node = new VirtualNode(this, 'node', {
   mesh,
   cloudMapService: service,
-  listener: {
-    portMapping: {
-      port: 8080,
-      protocol: Protocol.HTTP,
-    },
+  listeners: [appmesh.VirtualNodeListener.httpNodeListener({
+    port: 8080,
     healthCheck: {
       healthyThreshold: 3,
       interval: Duration.seconds(5), // min
@@ -177,15 +171,18 @@ const node = new VirtualNode(this, 'node', {
       protocol: Protocol.HTTP,
       timeout: Duration.seconds(2), // min
       unhealthyThreshold: 2,
+    }, 
+    timeout: {
+      idle: cdk.Duration.seconds(5),
     },
-  },
+  })],
   accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
 });
 
 cdk.Tag.add(node, 'Environment', 'Dev');
 ```
 
-The listeners property can be left blank and added later with the `node.addListeners()` method. The `healthcheck` property is optional but if specifying a listener, the `portMappings` must contain at least one property.
+The `listeners` property can be left blank and added later with the `node.addListener()` method. The `healthcheck` and `timeout` properties are optional but if specifying a listener, the `port` must be added.
 
 ## Adding a Route
 
