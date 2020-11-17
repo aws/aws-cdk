@@ -6,7 +6,6 @@ import { BundlingOptions } from './types';
 import { exec, extractDependencies, findUp, getEsBuildVersion, LockFile } from './util';
 
 const ESBUILD_VERSION = '0';
-const ESBUILD_MAJOR_VERSION_REGEXP = new RegExp(`^${ESBUILD_VERSION}`);
 
 /**
  * Bundling properties
@@ -58,7 +57,9 @@ export class Bundling implements cdk.BundlingOptions {
   private readonly externals: string[];
 
   constructor(private readonly props: BundlingProps) {
-    Bundling.runsLocally = Bundling.runsLocally ?? ESBUILD_MAJOR_VERSION_REGEXP.test(getEsBuildVersion() ?? '');
+    Bundling.runsLocally = Bundling.runsLocally
+      ?? getEsBuildVersion()?.startsWith(ESBUILD_VERSION)
+      ?? false;
 
     const projectRoot = path.dirname(props.depsLockFilePath);
     this.relativeEntryPath = path.relative(projectRoot, path.resolve(props.entry));
@@ -152,7 +153,7 @@ export class Bundling implements cdk.BundlingOptions {
       const dependencies = extractDependencies(pkgPath, this.props.nodeModules);
       let installer = Installer.NPM;
       let lockFile = LockFile.NPM;
-      if (new RegExp(`${LockFile.YARN}$`).test(this.props.depsLockFilePath)) {
+      if (this.props.depsLockFilePath.endsWith(LockFile.YARN)) {
         lockFile = LockFile.YARN;
         installer = Installer.YARN;
       }
