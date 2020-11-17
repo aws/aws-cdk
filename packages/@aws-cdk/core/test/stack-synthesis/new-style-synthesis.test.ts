@@ -218,6 +218,53 @@ nodeunitShim({
 
     test.done();
   },
+
+
+  'synthesis with bucketPrefix'(test: Test) {
+    // GIVEN
+    const myapp = new App();
+
+    // WHEN
+    const mystack = new Stack(myapp, 'mystack', {
+      synthesizer: new DefaultStackSynthesizer({
+        bucketPrefix: '000000000000/',
+      }),
+    });
+
+    mystack.synthesizer.addFileAsset({
+      fileName: __filename,
+      packaging: FileAssetPackaging.FILE,
+      sourceHash: 'abcdef',
+    });
+    stack.synthesizer.addDockerImageAsset({
+      directoryName: '.',
+      sourceHash: 'abcdef',
+    });
+
+    // WHEN
+    const asm = myapp.synth();
+
+    // THEN - we have an asset manifest with both assets and the stack template in there
+    const manifest = readAssetManifest(asm);
+
+    test.equals(Object.keys(manifest.files || {}).length, 2);
+    test.equals(Object.keys(manifest.dockerImages || {}).length, 1);
+
+    // THEN - every artifact has an assumeRoleArn
+    for (const file of Object.values(manifest.files ?? {})) {
+      for (const destination of Object.values(file.destinations)) {
+        test.deepEqual(destination.assumeRoleArn, 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}');
+      }
+    }
+
+    for (const file of Object.values(manifest.dockerImages ?? {})) {
+      for (const destination of Object.values(file.destinations)) {
+        test.deepEqual(destination.assumeRoleArn, 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-image-publishing-role-${AWS::AccountId}-${AWS::Region}');
+      }
+    }
+
+    test.done();
+  },
 });
 
 /**
