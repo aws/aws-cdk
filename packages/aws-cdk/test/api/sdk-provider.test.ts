@@ -29,6 +29,7 @@ const defaultCredOptions = {
 let uid: string;
 let pluginQueried = false;
 let defaultEnv: cxapi.Environment;
+let pluginEnv: cxapi.Environment;
 let getCallerIdentityError: Error | null = null;
 
 beforeEach(() => {
@@ -60,6 +61,7 @@ beforeEach(() => {
   });
 
   defaultEnv = cxapi.EnvironmentUtils.make(`${uid}the_account_#`, 'def');
+  pluginEnv = cxapi.EnvironmentUtils.make(`${uid}plugin_account_#`, 'def');
 
   // Scrub some environment variables that might be set if we're running on CodeBuild which will interfere with the tests.
   delete process.env.AWS_PROFILE;
@@ -327,6 +329,12 @@ describe('with default config files', () => {
     test('uses plugin for other account', async () => {
       const provider = await SdkProvider.withAwsCliCompatibleDefaults({ ...defaultCredOptions });
       await provider.forEnvironment({ ...defaultEnv, account: `${uid}plugin_account_#` }, Mode.ForReading);
+      expect(pluginQueried).toEqual(true);
+    });
+
+    test('can assume role with credentials from plugin', async () => {
+      const provider = await SdkProvider.withAwsCliCompatibleDefaults({ ...defaultCredOptions });
+      await provider.withAssumedRole('arn:aws:iam::12356789012:role/Assumable', undefined, pluginEnv, Mode.ForReading);
       expect(pluginQueried).toEqual(true);
     });
   });

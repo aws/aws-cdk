@@ -136,9 +136,9 @@ export class SdkProvider {
    * Return an SDK which uses assumed role credentials
    *
    * The base credentials used to retrieve the assumed role credentials will be the
-   * current credentials (no plugin lookup will be done!).
+   * same credentials returned by obtainCredentials if an environment and mode is passed,
+   * otherwise it will be the current credentials.
    *
-   * If `region` is undefined, the default value will be used.
    */
   public async withAssumedRole(roleArn: string, externalId: string | undefined, environment: cxapi.Environment | undefined, mode: Mode | undefined) {
     debug(`Assuming role '${roleArn}'.`);
