@@ -157,7 +157,7 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
           }),
           cdk.Stack.of(this).formatArn({
             service: 'glue',
-            resource: 'userdefinedfunction',
+            resource: 'userDefinedFunction',
             resourceName: (this.props.queryExecutionContext?.databaseName ?? 'default') + '/*', // grant access to get all user defined functions for the particular database in the request or the default database https://docs.aws.amazon.com/IAM/latest/UserGuide/list_awsglue.html
           }),
         ],
@@ -165,6 +165,17 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
     );
 
     return policyStatements;
+  }
+
+  private renderEncryption(): any {
+    const encryptionConfiguration = this.props.resultConfiguration?.encryptionConfiguration !== undefined
+      ? {
+        EncryptionOption: this.props.resultConfiguration.encryptionConfiguration.encryptionOption,
+        KmsKey: this.props.resultConfiguration.encryptionConfiguration.encryptionKey,
+      }
+      : undefined;
+
+    return encryptionConfiguration;
   }
 
   /**
@@ -185,10 +196,7 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
             Database: this.props.queryExecutionContext?.databaseName,
           },
           ResultConfiguration: {
-            EncryptionConfiguration: {
-              EncryptionOption: this.props.resultConfiguration?.encryptionConfiguration?.encryptionOption,
-              KmsKey: this.props.resultConfiguration?.encryptionConfiguration?.encryptionKey,
-            },
+            EncryptionConfiguration: this.renderEncryption(),
             OutputLocation: `s3://${this.props.resultConfiguration?.outputLocation?.bucketName}/${this.props.resultConfiguration?.outputLocation?.objectKey}/`,
           },
           WorkGroup: this.props.workGroup,
@@ -205,10 +213,7 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
             Database: this.props.queryExecutionContext?.databaseName,
           },
           ResultConfiguration: {
-            EncryptionConfiguration: {
-              EncryptionOption: this.props.resultConfiguration?.encryptionConfiguration?.encryptionOption,
-              KmsKey: this.props.resultConfiguration?.encryptionConfiguration?.encryptionKey,
-            },
+            EncryptionConfiguration: this.renderEncryption(),
           },
           WorkGroup: this.props.workGroup,
         }),
