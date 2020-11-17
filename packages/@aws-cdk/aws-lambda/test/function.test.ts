@@ -270,6 +270,24 @@ describe('function', () => {
       });
 
       // THEN
+      expect(stack).not.toHaveResource('AWS::Lambda::Permission');
+    });
+
+    test('imported Function w/ unresolved account & allowPermissions set', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Imports');
+
+      // WHEN
+      const iFunc = lambda.Function.fromFunctionAttributes(stack, 'iFunc', {
+        functionArn: 'arn:aws:lambda:us-east-1:123456789012:function:BaseFunction',
+        sameEnvironment: true, // since this is false, by default, for env agnostic stacks
+      });
+      iFunc.addPermission('iFunc', {
+        principal: new iam.ServicePrincipal('cloudformation.amazonaws.com'),
+      });
+
+      // THEN
       expect(stack).toHaveResource('AWS::Lambda::Permission');
     });
 
@@ -953,9 +971,21 @@ describe('function', () => {
     });
 
     test('on an imported function (unresolved account)', () => {
-      // GIVEN
       const stack = new cdk.Stack();
       const fn = lambda.Function.fromFunctionArn(stack, 'Function', 'arn:aws:lambda:us-east-1:123456789012:function:MyFn');
+
+      expect(
+        () => fn.grantInvoke(new iam.ServicePrincipal('elasticloadbalancing.amazonaws.com')),
+      ).toThrow(/Cannot modify permission to lambda function/);
+    });
+
+    test('on an imported function (unresolved account & w/ allowPermissions)', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = lambda.Function.fromFunctionAttributes(stack, 'Function', {
+        functionArn: 'arn:aws:lambda:us-east-1:123456789012:function:MyFn',
+        sameEnvironment: true,
+      });
 
       // WHEN
       fn.grantInvoke(new iam.ServicePrincipal('elasticloadbalancing.amazonaws.com'));

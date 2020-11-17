@@ -1,3 +1,43 @@
+# CloudFormation Resource Specification v20.2.0
+
+## New Resource Types
+
+* AWS::CloudWatch::MetricStream
+* AWS::Events::Archive
+* AWS::IoT::DomainConfiguration
+* AWS::RDS::GlobalCluster
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::CodeArtifact::Domain Tags (__added__)
+* AWS::CodeArtifact::Repository Tags (__added__)
+* AWS::Kendra::DataSource DataSourceConfiguration.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Kendra::DataSource RoleArn.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::S3::Bucket IntelligentTieringConfigurations (__added__)
+* AWS::S3::Bucket OwnershipControls (__added__)
+* AWS::SecretsManager::ResourcePolicy BlockPublicPolicy (__added__)
+
+## Property Type Changes
+
+* AWS::Batch::JobDefinition.EvaluateOnExit (__added__)
+* AWS::S3::Bucket.IntelligentTieringConfiguration (__added__)
+* AWS::S3::Bucket.OwnershipControls (__added__)
+* AWS::S3::Bucket.OwnershipControlsRule (__added__)
+* AWS::S3::Bucket.Tiering (__added__)
+* AWS::Batch::JobDefinition.RetryStrategy EvaluateOnExit (__added__)
+* AWS::EC2::LaunchTemplate.CapacityReservationTarget CapacityReservationResourceGroupArn (__added__)
+* AWS::EC2::LaunchTemplate.NetworkInterface AssociateCarrierIpAddress (__added__)
+* AWS::EC2::LaunchTemplate.NetworkInterface NetworkCardIndex (__added__)
+* AWS::Kendra::DataSource.S3DataSourceConfiguration InclusionPatterns (__added__)
+
+
 # CloudFormation Resource Specification v20.0.0
 
 ## New Resource Types
