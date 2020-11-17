@@ -1,7 +1,6 @@
 {
   "name": "@aws-cdk/yaml-cfn",
   "version": "0.0.0",
-  "private": true,
   "description": "Utilities for handling CloudFormation-flavored YAML",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
