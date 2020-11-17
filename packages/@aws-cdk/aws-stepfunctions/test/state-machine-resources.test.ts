@@ -591,7 +591,7 @@ describe('State Machine Resources', () => {
   test('Imported state machine can provide metrics', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const stateMachineArn = 'arn:aws:states:::my-state-machine';
+    const stateMachineArn = 'arn:aws:states:us-east-1:123456789012:stateMachine:my-state-machine';
     const stateMachine = stepfunctions.StateMachine.fromStateMachineArn(stack, 'StateMachine', stateMachineArn);
     const color = '#00ff00';
 
