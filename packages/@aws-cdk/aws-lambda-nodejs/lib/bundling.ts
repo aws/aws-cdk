@@ -3,7 +3,7 @@ import * as path from 'path';
 import { AssetCode, Code, Runtime } from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import { BundlingOptions } from './types';
-import { exec, extractDependencies, findLockFile, findUp, getEsBuildVersion, LockFile } from './util';
+import { exec, extractDependencies, findUp, getEsBuildVersion, LockFile } from './util';
 
 const ESBUILD_VERSION = '0';
 const ESBUILD_MAJOR_VERSION_REGEXP = new RegExp(`^${ESBUILD_VERSION}`);
@@ -13,9 +13,9 @@ const ESBUILD_MAJOR_VERSION_REGEXP = new RegExp(`^${ESBUILD_VERSION}`);
  */
 export interface BundlingProps extends BundlingOptions {
   /**
-   * Project root
+   * Path to lock file
    */
-  readonly projectRoot: string;
+  readonly depsLockFilePath: string;
 
   /**
    * Entry file
@@ -36,7 +36,7 @@ export class Bundling implements cdk.BundlingOptions {
    * esbuild bundled Lambda asset code
    */
   public static bundle(options: BundlingProps): AssetCode {
-    return Code.fromAsset(options.projectRoot, {
+    return Code.fromAsset(path.dirname(options.depsLockFilePath), {
       assetHashType: cdk.AssetHashType.OUTPUT,
       bundling: new Bundling(options),
     });
@@ -46,12 +46,7 @@ export class Bundling implements cdk.BundlingOptions {
     this.runsLocally = undefined;
   }
 
-  public static clearLockFileCache(): void {
-    this.lockFile = undefined;
-  }
-
   private static runsLocally?: boolean;
-  private static lockFile?: string;
 
   // Core bundling options
   public readonly image: cdk.BundlingDockerImage;
@@ -65,7 +60,8 @@ export class Bundling implements cdk.BundlingOptions {
   constructor(private readonly props: BundlingProps) {
     Bundling.runsLocally = Bundling.runsLocally ?? ESBUILD_MAJOR_VERSION_REGEXP.test(getEsBuildVersion() ?? '');
 
-    this.relativeEntryPath = path.relative(props.projectRoot, path.resolve(props.entry));
+    const projectRoot = path.dirname(props.depsLockFilePath);
+    this.relativeEntryPath = path.relative(projectRoot, path.resolve(props.entry));
 
     this.externals = [
       ...this.props.externalModules ?? ['aws-sdk'], // Mark aws-sdk as external by default (available in the runtime)
@@ -91,7 +87,7 @@ export class Bundling implements cdk.BundlingOptions {
     // Local bundling
     if (!props.forceDockerBundling) { // only if Docker is not forced
       const osPlatform = os.platform();
-      const createLocalCommand = (outputDir: string) => this.createBundlingCommand(props.projectRoot, outputDir, osPlatform);
+      const createLocalCommand = (outputDir: string) => this.createBundlingCommand(projectRoot, outputDir, osPlatform);
 
       this.local = {
         tryBundle(outputDir: string) {
@@ -153,10 +149,11 @@ export class Bundling implements cdk.BundlingOptions {
       }
 
       // Determine dependencies versions, lock file and installer
-      const dependencies = extractDependencies(path.join(pkgPath, 'package.json'), this.props.nodeModules);
-      Bundling.lockFile = Bundling.lockFile ?? findLockFile(this.props.projectRoot);
+      const dependencies = extractDependencies(pkgPath, this.props.nodeModules);
       let installer = Installer.NPM;
-      if (Bundling.lockFile === LockFile.YARN) {
+      let lockFile = LockFile.NPM;
+      if (new RegExp(`${LockFile.YARN}$`).test(this.props.depsLockFilePath)) {
+        lockFile = LockFile.YARN;
         installer = Installer.YARN;
       }
 
@@ -165,7 +162,7 @@ export class Bundling implements cdk.BundlingOptions {
       // Create dummy package.json, copy lock file if any and then install
       depsCommand = chain([
         osCommand.writeJson(pathJoin(outputDir, 'package.json'), { dependencies }),
-        Bundling.lockFile ? osCommand.copy(pathJoin(inputDir, Bundling.lockFile), pathJoin(outputDir, Bundling.lockFile)) : '',
+        osCommand.copy(pathJoin(inputDir, lockFile), pathJoin(outputDir, lockFile)),
         osCommand.changeDirectory(outputDir),
         `${installer} install`,
       ]);

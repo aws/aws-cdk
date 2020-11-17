@@ -4,7 +4,7 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import { Bundling } from './bundling';
 import { BundlingOptions } from './types';
-import { findProjectRoot, nodeMajorVersion, parseStackTrace } from './util';
+import { findUp, LockFile, nodeMajorVersion, parseStackTrace } from './util';
 
 /**
  * Properties for a NodejsFunction
@@ -50,30 +50,42 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions, BundlingOpt
   readonly awsSdkConnectionReuse?: boolean;
 
   /**
-   * The root of the project. This will be used as the source for the volume
-   * mounted in the Docker container. If you specify this prop, ensure that
-   * this path includes `entry` and any module/dependencies used by your
-   * function otherwise bundling will not be possible.
+   * The path to the dependencies lock file (`yarn.lock` or `package-lock.json`).
    *
-   * @default - the closest path containing a .git folder
+   * This will be used as the source for the volume mounted in the Docker
+   * container.
+   *
+   * Modules specified in `nodeModules` will be installed using the right
+   * installer (`npm` or `yarn`) along with this lock file.
+   *
+   * @default - the path is found by walking up parent directories searching for
+   *   a `yarn.lock` or `package-lock.json` file
    */
-  readonly projectRoot?: string;
+  readonly depsLockFilePath?: string;
 }
 
 /**
  * A Node.js Lambda function bundled using esbuild
  */
 export class NodejsFunction extends lambda.Function {
-  private static projectRoot?: string;
-
   constructor(scope: cdk.Construct, id: string, props: NodejsFunctionProps = {}) {
     if (props.runtime && props.runtime.family !== lambda.RuntimeFamily.NODEJS) {
       throw new Error('Only `NODEJS` runtimes are supported.');
     }
 
-    NodejsFunction.projectRoot = NodejsFunction.projectRoot ?? findProjectRoot(props.projectRoot);
-    if (!NodejsFunction.projectRoot) {
-      throw new Error('Cannot find project root. Please specify it with `projectRoot`.');
+    // Find lock file
+    let depsLockFilePath: string;
+    if (props.depsLockFilePath) {
+      if (!fs.existsSync(props.depsLockFilePath)) {
+        throw new Error(`Lock file at ${props.depsLockFilePath} doesn't exist`);
+      }
+      depsLockFilePath = props.depsLockFilePath;
+    } else {
+      const lockFile = findUp(LockFile.YARN) ?? findUp(LockFile.NPM);
+      if (!lockFile) {
+        throw new Error('Cannot find a lock file. Please specify it with `depsFileLockPath`.');
+      }
+      depsLockFilePath = lockFile;
     }
 
     // Entry and defaults
@@ -91,7 +103,7 @@ export class NodejsFunction extends lambda.Function {
         ...props,
         entry,
         runtime,
-        projectRoot: NodejsFunction.projectRoot,
+        depsLockFilePath,
       }),
       handler: `index.${handler}`,
     });

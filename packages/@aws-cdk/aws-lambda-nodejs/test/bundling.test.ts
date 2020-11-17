@@ -1,5 +1,4 @@
 import * as child_process from 'child_process';
-import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import { Code, Runtime } from '@aws-cdk/aws-lambda';
@@ -17,7 +16,6 @@ beforeEach(() => {
   jest.clearAllMocks();
   jest.resetAllMocks();
   Bundling.clearRunsLocallyCache();
-  Bundling.clearLockFileCache();
   getEsBuildVersionMock.mockReturnValue('0.8.8');
   fromAssetMock.mockReturnValue({
     image: 'built-image',
@@ -27,11 +25,14 @@ beforeEach(() => {
   });
 });
 
+let depsLockFilePath = '/project/yarn.lock';
+let entry = '/project/lib/handler.ts';
+
 test('esbuild bundling in Docker', () => {
   Bundling.bundle({
-    entry: '/project/folder/entry.ts',
+    entry,
+    depsLockFilePath,
     runtime: Runtime.NODEJS_12_X,
-    projectRoot: '/project',
     bundlingEnvironment: {
       KEY: 'value',
     },
@@ -42,7 +43,7 @@ test('esbuild bundling in Docker', () => {
   });
 
   // Correctly bundles with esbuild
-  expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
+  expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(depsLockFilePath), {
     assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       environment: {
@@ -50,7 +51,7 @@ test('esbuild bundling in Docker', () => {
       },
       command: [
         'bash', '-c',
-        'npx esbuild --bundle /asset-input/folder/entry.ts --target=node12 --platform=node --outfile=/asset-output/index.js --external:aws-sdk --loader:.png=dataurl',
+        'npx esbuild --bundle /asset-input/lib/handler.ts --target=node12 --platform=node --outfile=/asset-output/index.js --external:aws-sdk --loader:.png=dataurl',
       ],
     }),
   });
@@ -58,9 +59,9 @@ test('esbuild bundling in Docker', () => {
 
 test('esbuild bundling with handler named index.ts', () => {
   Bundling.bundle({
-    entry: '/project/folder/index.ts',
+    entry: '/project/lib/index.ts',
+    depsLockFilePath,
     runtime: Runtime.NODEJS_12_X,
-    projectRoot: '/project',
     forceDockerBundling: true,
   });
 
@@ -70,7 +71,7 @@ test('esbuild bundling with handler named index.ts', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        'npx esbuild --bundle /asset-input/folder/index.ts --target=node12 --platform=node --outfile=/asset-output/index.js --external:aws-sdk',
+        'npx esbuild --bundle /asset-input/lib/index.ts --target=node12 --platform=node --outfile=/asset-output/index.js --external:aws-sdk',
       ],
     }),
   });
@@ -78,9 +79,9 @@ test('esbuild bundling with handler named index.ts', () => {
 
 test('esbuild bundling with tsx handler', () => {
   Bundling.bundle({
-    entry: '/project/folder/handler.tsx',
+    entry: '/project/lib/handler.tsx',
+    depsLockFilePath,
     runtime: Runtime.NODEJS_12_X,
-    projectRoot: '/project',
     forceDockerBundling: true,
   });
 
@@ -90,7 +91,7 @@ test('esbuild bundling with tsx handler', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        'npx esbuild --bundle /asset-input/folder/handler.tsx --target=node12 --platform=node --outfile=/asset-output/index.js --external:aws-sdk',
+        'npx esbuild --bundle /asset-input/lib/handler.tsx --target=node12 --platform=node --outfile=/asset-output/index.js --external:aws-sdk',
       ],
     }),
   });
@@ -102,11 +103,11 @@ test('esbuild with Windows paths', () => {
   Bundling.bundle({
     entry: 'C:\\my-project\\lib\\entry.ts',
     runtime: Runtime.NODEJS_12_X,
-    projectRoot: 'C:\\my-project',
+    depsLockFilePath: 'C:\\my-project\\package-lock.json',
     forceDockerBundling: true,
   });
 
-  expect(Code.fromAsset).toHaveBeenCalledWith('C:\\my-project', expect.objectContaining({
+  expect(Code.fromAsset).toHaveBeenCalledWith(expect.any(String), expect.objectContaining({
     bundling: expect.objectContaining({
       command: expect.arrayContaining([
         expect.stringContaining('/lib/entry.ts'),
@@ -118,19 +119,18 @@ test('esbuild with Windows paths', () => {
 });
 
 test('esbuild bundling with externals and dependencies', () => {
-  const projectRoot = path.join(__dirname, '..');
-  const entry = __filename;
+  const packageLock = path.join(__dirname, '..', 'package-lock.json');
   Bundling.bundle({
-    entry,
+    entry: __filename,
+    depsLockFilePath: packageLock,
     runtime: Runtime.NODEJS_12_X,
-    projectRoot,
     externalModules: ['abc'],
     nodeModules: ['delay'],
     forceDockerBundling: true,
   });
 
   // Correctly bundles with esbuild
-  expect(Code.fromAsset).toHaveBeenCalledWith(projectRoot, {
+  expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(packageLock), {
     assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       command: [
@@ -138,6 +138,7 @@ test('esbuild bundling with externals and dependencies', () => {
         [
           'npx esbuild --bundle /asset-input/test/bundling.test.js --target=node12 --platform=node --outfile=/asset-output/index.js --external:abc --external:delay',
           `echo \'{\"dependencies\":{\"delay\":\"${delayVersion}\"}}\' > /asset-output/package.json`,
+          'cp /asset-input/package-lock.json /asset-output/package-lock.json',
           'cd /asset-output',
           'npm install',
         ].join(' && '),
@@ -147,29 +148,17 @@ test('esbuild bundling with externals and dependencies', () => {
 });
 
 test('Detects yarn.lock', () => {
-  const projectRoot = path.join(__dirname, '..');
-  const entry = __filename;
-
-  const existsSyncOriginal = fs.existsSync;
-  const existsSyncMock = jest.spyOn(fs, 'existsSync');
-
-  existsSyncMock.mockImplementation((p: fs.PathLike) => {
-    if (/yarn.lock/.test(p.toString())) {
-      return true;
-    }
-    return existsSyncOriginal(p);
-  });
-
+  const yarnLock = path.join(__dirname, '..', 'yarn.lock');
   Bundling.bundle({
-    entry,
+    entry: __filename,
+    depsLockFilePath: yarnLock,
     runtime: Runtime.NODEJS_12_X,
-    projectRoot,
     nodeModules: ['delay'],
     forceDockerBundling: true,
   });
 
   // Correctly bundles with esbuild
-  expect(Code.fromAsset).toHaveBeenCalledWith(projectRoot, {
+  expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(yarnLock), {
     assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       command: expect.arrayContaining([
@@ -177,15 +166,13 @@ test('Detects yarn.lock', () => {
       ]),
     }),
   });
-
-  existsSyncMock.mockRestore();
 });
 
 test('with Docker build args', () => {
   Bundling.bundle({
-    entry: '/project/folder/entry.ts',
+    entry,
+    depsLockFilePath,
     runtime: Runtime.NODEJS_12_X,
-    projectRoot: '/project',
     buildArgs: {
       HELLO: 'WORLD',
     },
@@ -210,9 +197,9 @@ test('Local bundling', () => {
   });
 
   const bundler = new Bundling({
+    entry,
+    depsLockFilePath,
     runtime: Runtime.NODEJS_12_X,
-    projectRoot: __dirname,
-    entry: `${__dirname}/folder/entry.ts`,
     bundlingEnvironment: {
       KEY: 'value',
     },
@@ -225,10 +212,10 @@ test('Local bundling', () => {
 
   expect(spawnSyncMock).toHaveBeenCalledWith(
     'bash',
-    expect.arrayContaining(['-c', expect.stringContaining(__dirname)]),
+    expect.arrayContaining(['-c', expect.stringContaining(entry)]),
     expect.objectContaining({
       env: expect.objectContaining({ KEY: 'value' }),
-      cwd: expect.stringContaining(path.join(__dirname, 'folder')),
+      cwd: '/project/lib',
     }),
   );
 
@@ -243,9 +230,9 @@ test('Incorrect esbuild version', () => {
   getEsBuildVersionMock.mockReturnValueOnce('3.4.5');
 
   const bundler = new Bundling({
+    entry,
+    depsLockFilePath,
     runtime: Runtime.NODEJS_12_X,
-    projectRoot: __dirname,
-    entry: `${__dirname}/folder/entry.ts`,
   });
 
   const tryBundle = bundler.local?.tryBundle('/outdir', { image: Runtime.NODEJS_12_X.bundlingDockerImage });
@@ -254,8 +241,8 @@ test('Incorrect esbuild version', () => {
 
 test('Custom bundling docker image', () => {
   Bundling.bundle({
-    entry: '/project/folder/entry.ts',
-    projectRoot: '/project',
+    entry,
+    depsLockFilePath,
     runtime: Runtime.NODEJS_12_X,
     bundlingDockerImage: BundlingDockerImage.fromRegistry('my-custom-image'),
     forceDockerBundling: true,

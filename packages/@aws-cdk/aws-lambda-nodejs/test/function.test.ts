@@ -98,6 +98,12 @@ test('throws with the wrong runtime family', () => {
   })).toThrow(/Only `NODEJS` runtimes are supported/);
 });
 
+test('throws with non existing lock file', () => {
+  expect(() => new NodejsFunction(stack, 'handler1', {
+    depsLockFilePath: '/does/not/exist.lock',
+  })).toThrow(/Lock file at \/does\/not\/exist.lock doesn't exist/);
+});
+
 test('resolves entry to an absolute path', () => {
   // WHEN
   new NodejsFunction(stack, 'fn', {

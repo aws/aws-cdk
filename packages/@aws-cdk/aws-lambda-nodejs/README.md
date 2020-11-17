@@ -78,21 +78,13 @@ should also have `npm` or `yarn` depending on the lock file you're using.
 Use the [default image provided by `@aws-cdk/aws-lambda-nodejs`](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-lambda-nodejs/lib/Dockerfile)
 as a source of inspiration.
 
-### Project root
-The `NodejsFunction` tries to automatically determine your project root, that is
-the root of your node project. This is usually where the top level `node_modules`
-folder of your project is located. When bundling in a Docker container, the
-project root is used as the source (`/asset-input`) for the volume mounted in
-the container.
+### Lock file
+The `NodejsFunction` tries to automatically determine your project lock file
+(`package-lock.json` or `yarn.lock`). When bundling in a Docker container, the
+path containing this lock file is used as the source (`/asset-input`) for the
+volume mounted in the container.
 
-The following folders are considered by walking up parent folders starting from
-the current working directory (order matters):
-* the folder containing your `.git` folder
-* the folder containing a `yarn.lock` file
-* the folder containing a `package-lock.json` file
-* the folder containing a `package.json` file
-
-Alternatively, you can specify the `projectRoot` prop manually. In this case you
+Alternatively, you can specify the `depsLockFilePath` prop manually. In this case you
 need to ensure that this path includes `entry` and any module/dependencies used
 by your function. Otherwise bundling will fail.
 

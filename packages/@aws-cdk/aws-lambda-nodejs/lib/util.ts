@@ -58,8 +58,9 @@ export function nodeMajorVersion(): number {
 export function findUp(name: string, directory: string = process.cwd()): string | undefined {
   const absoluteDirectory = path.resolve(directory);
 
-  if (fs.existsSync(path.join(directory, name))) {
-    return directory;
+  const file = path.join(directory, name);
+  if (fs.existsSync(file)) {
+    return file;
   }
 
   const { root } = path.parse(absoluteDirectory);
@@ -116,32 +117,6 @@ export function extractDependencies(pkgPath: string, modules: string[]): { [key:
 }
 
 /**
- * Finds the project root
- */
-export function findProjectRoot(projectRoot?: string): string | undefined {
-  return projectRoot
-    ?? findUp(`.git${path.sep}`)
-    ?? findUp(LockFile.YARN)
-    ?? findUp(LockFile.NPM)
-    ?? findUp('package.json');
-}
-
-/**
- * Finds the lock file of a project
- */
-export function findLockFile(projectRoot: string): LockFile | undefined {
-  if (fs.existsSync(path.join(projectRoot, LockFile.YARN))) {
-    return LockFile.YARN;
-  }
-
-  if (fs.existsSync(path.join(projectRoot, LockFile.NPM))) {
-    return LockFile.NPM;
-  }
-
-  return undefined;
-}
-
-/**
  * Returns the installed esbuild version
  */
 export function getEsBuildVersion(): string | undefined {
@@ -151,7 +126,7 @@ export function getEsBuildVersion(): string | undefined {
     const npx = os.platform() === 'win32' ? 'npx.cmd' : 'npx';
     const esbuild = spawnSync(npx, ['--no-install', 'esbuild', '--version']);
 
-    if (esbuild.status !== 0) {
+    if (esbuild.status !== 0 || esbuild.error) {
       return undefined;
     }
 
