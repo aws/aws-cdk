@@ -7,6 +7,7 @@ import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { PHYSICAL_RESOURCE_ID_REFERENCE, flatten } from './runtime';
 
+let awsSdkMetadata: AwsSdkMetadata;
 /**
  * AWS SDK service metadata.
  */
@@ -429,7 +430,7 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
  */
 function awsSdkToIamAction(service: string, action: string): string {
   const srv = service.toLowerCase();
-  const awsSdkMetadata = getAwsSdkMetadata();
+  awsSdkMetadata = getAwsSdkMetadata();
   const iamService = (awsSdkMetadata[srv] && awsSdkMetadata[srv].prefix) || srv;
   const iamAction = action.charAt(0).toUpperCase() + action.slice(1);
   return `${iamService}:${iamAction}`;
@@ -451,6 +452,13 @@ function encodeBooleans(object: object) {
   });
 }
 
+/**
+ * Gets awsSdkMetaData from file or from cache
+ */
 function getAwsSdkMetadata(): AwsSdkMetadata {
-  return JSON.parse(fs.readFileSync(path.join(__dirname, 'sdk-api-metadata.json'), 'utf-8'));
-}
+  if (awsSdkMetadata) {
+    return awsSdkMetadata;
+  } else {
+    return JSON.parse(fs.readFileSync(path.join(__dirname, 'sdk-api-metadata.json'), 'utf-8'));
+  }
+};
