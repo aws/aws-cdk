@@ -537,7 +537,7 @@
         },
         "RouteName": "route-2",
         "Spec": {
-          "HttpRoute": {
+          "Http2Route": {
             "Action": {
               "WeightedTargets": [
                 {
@@ -588,6 +588,49 @@
                   "Weight": 20
                 }
               ]
+            }
+          }
+        },
+        "VirtualRouterName": {
+          "Fn::GetAtt": [
+            "meshrouter81B8087E",
+            "VirtualRouterName"
+          ]
+        }
+      }
+    },
+    "meshrouterroute417D3F5B5": {
+      "Type": "AWS::AppMesh::Route",
+      "Properties": {
+        "MeshName": {
+          "Fn::GetAtt": [
+            "meshACDFE68E",
+            "MeshName"
+          ]
+        },
+        "RouteName": "route-4",
+        "Spec": {
+          "GrpcRoute": {
+            "Action": {
+              "WeightedTargets": [
+                {
+                  "VirtualNode": {
+                    "Fn::GetAtt": [
+                      "meshnode3D2A19CF2",
+                      "VirtualNodeName"
+                    ]
+                  },
+                  "Weight": 20
+                }
+              ]
+            },
+            "Match": {
+              "ServiceName": {
+                "Fn::GetAtt": [
+                  "meshserviceE06ECED5",
+                  "VirtualServiceName"
+                ]
+              }
             }
           }
         },

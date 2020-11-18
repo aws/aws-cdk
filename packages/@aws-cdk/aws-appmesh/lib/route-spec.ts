@@ -34,6 +34,16 @@ export interface HttpRouteMatch {
 }
 
 /**
+ * The criterion for determining a request match for this GatewayRoute
+ */
+export interface GrpcRouteMatch {
+  /**
+   * The fully qualified domain name for the service to match from the request
+   */
+  readonly serviceName: string;
+}
+
+/**
  * Properties specific for HTTP Based Routes
  */
 export interface HttpRouteSpecOptions {
@@ -54,6 +64,23 @@ export interface HttpRouteSpecOptions {
  * Properties specific for a TCP Based Routes
  */
 export interface TcpRouteSpecOptions {
+  /**
+   * List of targets that traffic is routed to when a request matches the route
+   */
+  readonly weightedTargets: WeightedTarget[];
+}
+
+/**
+ * Properties specific for a GRPC Based Routes
+ */
+export interface GrpcRouteSpecOptions {
+  /**
+   * The criterion for determining a request match for this Route
+   *
+   * @default - no default
+   */
+  readonly match: GrpcRouteMatch;
+
   /**
    * List of targets that traffic is routed to when a request matches the route
    */
@@ -117,6 +144,13 @@ export abstract class RouteSpec {
    */
   public static tcp(options: TcpRouteSpecOptions): RouteSpec {
     return new TcpRouteSpec(options);
+  }
+
+  /**
+   * Creates a GRPC Based RouteSpec
+   */
+  public static grpc(options: GrpcRouteSpecOptions): RouteSpec {
+    return new GrpcRouteSpec(options);
   }
 
   /**
@@ -210,3 +244,26 @@ class TcpRouteSpec extends RouteSpec {
   }
 }
 
+class GrpcRouteSpec extends RouteSpec {
+  public readonly weightedTargets: WeightedTarget[];
+  public readonly match: GrpcRouteMatch;
+
+  constructor(props: GrpcRouteSpecOptions) {
+    super();
+    this.weightedTargets = props.weightedTargets;
+    this.match = props.match;
+  }
+
+  public bind(_scope: cdk.Construct): RouteSpecConfig {
+    return {
+      grpcRouteSpec: {
+        action: {
+          weightedTargets: this.renderWeightedTargets(),
+        },
+        match: {
+          serviceName: this.match.serviceName,
+        },
+      },
+    };
+  }
+}

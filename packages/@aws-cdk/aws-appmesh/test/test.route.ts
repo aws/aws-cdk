@@ -58,6 +58,19 @@ export = {
         }),
       });
 
+      router.addRoute('test-grpc-route', {
+        routeSpec: appmesh.RouteSpec.grpc({
+          weightedTargets: [
+            {
+              virtualNode: node,
+            },
+          ],
+          match: {
+            serviceName: 'test.svc.local',
+          },
+        }),
+      });
+
       // THEN
       expect(stack).to(haveResourceLike('AWS::AppMesh::Route', {
         Spec: {
@@ -126,6 +139,30 @@ export = {
           },
         },
         RouteName: 'test-tcp-route',
+      }));
+
+      expect(stack).to(haveResourceLike('AWS::AppMesh::Route', {
+        Spec: {
+          GrpcRoute: {
+            Action: {
+              WeightedTargets: [
+                {
+                  VirtualNode: {
+                    'Fn::GetAtt': [
+                      'meshtestnodeF93946D4',
+                      'VirtualNodeName',
+                    ],
+                  },
+                  Weight: 1,
+                },
+              ],
+            },
+            Match: {
+              ServiceName: 'test.svc.local',
+            },
+          },
+        },
+        RouteName: 'test-grpc-route',
       }));
 
       test.done();
