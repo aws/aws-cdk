@@ -287,7 +287,7 @@ obtained from either DockerHub or from ECR repositories, or built directly from 
 
 ### Environment variables
 
-To pass environment variables to the container, use the `environment` and `secrets` props.
+To pass environment variables to the container, you can use the `environment`, `environmentFiles`, and `secrets` props.
 
 ```ts
 taskDefinition.addContainer('container', {
@@ -296,15 +296,21 @@ taskDefinition.addContainer('container', {
   environment: { // clear text, not for sensitive data
     STAGE: 'prod',
   },
+  environmentFiles: [ // list of environment files hosted either on local disk or S3
+    ecs.EnvironmentFile.fromAsset('./demo-env-file.env'),
+    ecs.EnvironmentFile.fromBucket(s3Bucket, 'assets/demo-env-file.env'),
+  ],
   secrets: { // Retrieved from AWS Secrets Manager or AWS Systems Manager Parameter Store at container start-up.
     SECRET: ecs.Secret.fromSecretsManager(secret),
-    DB_PASSWORD: ecs.Secret.fromSecretsManager(dbSecret, 'password'), // Reference a specific JSON field
+    DB_PASSWORD: ecs.Secret.fromSecretsManager(dbSecret, 'password'), // Reference a specific JSON field, (requires platform version 1.4.0 or later for Fargate tasks)
     PARAMETER: ecs.Secret.fromSsmParameter(parameter),
   }
 });
 ```
 
-The task execution role is automatically granted read permissions on the secrets/parameters.
+The task execution role is automatically granted read permissions on the secrets/parameters. Support for environment
+files is restricted to the EC2 launch type for files hosted on S3. Further details provided in the AWS documentation
+about [specifying environment variables](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/taskdef-envfiles.html).
 
 ## Service
 
