@@ -12,7 +12,7 @@
           },
           "Region": "us-east-1",
           "ParameterName": "EdgeFunctionArnLambda",
-          "RefreshToken": "8c3807e02cf900042110f90b9f67a5c7"
+          "RefreshToken": "4412ddb0ae449da20173ca211c51fddc"
         },
         "UpdateReplacePolicy": "Delete",
         "DeletionPolicy": "Delete"
@@ -181,7 +181,7 @@
   },
   {
     "Resources": {
-      "LambdaServiceRoleA527BFC4": {
+      "LambdaServiceRoleA8ED4D3B": {
         "Type": "AWS::IAM::Role",
         "Properties": {
           "AssumeRolePolicyDocument": {
@@ -190,10 +190,14 @@
                 "Action": "sts:AssumeRole",
                 "Effect": "Allow",
                 "Principal": {
-                  "Service": [
-                    "lambda.amazonaws.com",
-                    "edgelambda.amazonaws.com"
-                  ]
+                  "Service": "lambda.amazonaws.com"
+                }
+              },
+              {
+                "Action": "sts:AssumeRole",
+                "Effect": "Allow",
+                "Principal": {
+                  "Service": "edgelambda.amazonaws.com"
                 }
               }
             ],
@@ -224,17 +228,17 @@
           "Handler": "index.handler",
           "Role": {
             "Fn::GetAtt": [
-              "LambdaServiceRoleA527BFC4",
+              "LambdaServiceRoleA8ED4D3B",
               "Arn"
             ]
           },
           "Runtime": "nodejs10.x"
         },
         "DependsOn": [
-          "LambdaServiceRoleA527BFC4"
+          "LambdaServiceRoleA8ED4D3B"
         ]
       },
-      "LambdaCurrentVersionDF706F6A0f8c72b9e713429e33ca31f5e72137a2": {
+      "LambdaCurrentVersionDF706F6A97fb843e9bd06fcd2bb15eeace80e13e": {
         "Type": "AWS::Lambda::Version",
         "Properties": {
           "FunctionName": {
@@ -247,7 +251,7 @@
         "Properties": {
           "Type": "String",
           "Value": {
-            "Ref": "LambdaCurrentVersionDF706F6A0f8c72b9e713429e33ca31f5e72137a2"
+            "Ref": "LambdaCurrentVersionDF706F6A97fb843e9bd06fcd2bb15eeace80e13e"
           },
           "Name": "EdgeFunctionArnLambda"
         }

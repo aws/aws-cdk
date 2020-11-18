@@ -16,7 +16,7 @@ import { Construct } from 'constructs';
  * Properties for creating a Lambda@Edge function
  * @experimental
  */
-export interface EdgeFunctionExperimentalProps extends lambda.FunctionProps { }
+export interface EdgeFunctionProps extends lambda.FunctionProps { }
 
 /**
  * A Lambda@Edge function.
@@ -27,7 +27,7 @@ export interface EdgeFunctionExperimentalProps extends lambda.FunctionProps { }
  * @resource AWS::Lambda::Function
  * @experimental
  */
-export class EdgeFunctionExperimental extends Resource implements lambda.IVersion {
+export class EdgeFunction extends Resource implements lambda.IVersion {
 
   private static readonly EDGE_REGION: string = 'us-east-1';
 
@@ -44,7 +44,7 @@ export class EdgeFunctionExperimental extends Resource implements lambda.IVersio
   private readonly functionStack: Stack;
   private readonly _edgeFunction: lambda.Function;
 
-  constructor(scope: Construct, id: string, props: EdgeFunctionExperimentalProps) {
+  constructor(scope: Construct, id: string, props: EdgeFunctionProps) {
     super(scope, id);
 
     // Create a simple Function if we're already in us-east-1; otherwise create a cross-region stack.
@@ -108,19 +108,19 @@ export class EdgeFunctionExperimental extends Resource implements lambda.IVersio
     return this.lambda.grantInvoke(identity);
   }
   public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.lambda.metric(metricName, { ...props, region: EdgeFunctionExperimental.EDGE_REGION });
+    return this.lambda.metric(metricName, { ...props, region: EdgeFunction.EDGE_REGION });
   }
   public metricDuration(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.lambda.metricDuration({ ...props, region: EdgeFunctionExperimental.EDGE_REGION });
+    return this.lambda.metricDuration({ ...props, region: EdgeFunction.EDGE_REGION });
   }
   public metricErrors(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.lambda.metricErrors({ ...props, region: EdgeFunctionExperimental.EDGE_REGION });
+    return this.lambda.metricErrors({ ...props, region: EdgeFunction.EDGE_REGION });
   }
   public metricInvocations(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.lambda.metricInvocations({ ...props, region: EdgeFunctionExperimental.EDGE_REGION });
+    return this.lambda.metricInvocations({ ...props, region: EdgeFunction.EDGE_REGION });
   }
   public metricThrottles(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.lambda.metricThrottles({ ...props, region: EdgeFunctionExperimental.EDGE_REGION });
+    return this.lambda.metricThrottles({ ...props, region: EdgeFunction.EDGE_REGION });
   }
   /** Adds an event source to this function. */
   public addEventSource(source: lambda.IEventSource): void {
@@ -164,7 +164,7 @@ export class EdgeFunctionExperimental extends Resource implements lambda.IVersio
     // must work for multiple EdgeFunctions.
     const parameterArnPrefix = this.stack.formatArn({
       service: 'ssm',
-      region: EdgeFunctionExperimental.EDGE_REGION,
+      region: EdgeFunction.EDGE_REGION,
       resource: 'parameter',
       resourceName: parameterNamePrefix + '*',
     });
@@ -183,7 +183,7 @@ export class EdgeFunctionExperimental extends Resource implements lambda.IVersio
       resourceType: resourceType,
       serviceToken,
       properties: {
-        Region: EdgeFunctionExperimental.EDGE_REGION,
+        Region: EdgeFunction.EDGE_REGION,
         ParameterName: parameterName,
         // This is used to determine when the function has changed, to refresh the ARN from the custom resource.
         RefreshToken: calculateFunctionHash(edgeFunction),
@@ -208,7 +208,7 @@ export class EdgeFunctionExperimental extends Resource implements lambda.IVersio
     if (!edgeStack) {
       edgeStack = new Stack(stage, edgeStackId, {
         synthesizer: crossRegionSupportSynthesizer(this.stack),
-        env: { region: EdgeFunctionExperimental.EDGE_REGION },
+        env: { region: EdgeFunction.EDGE_REGION },
       });
     }
     this.stack.addDependency(edgeStack);
