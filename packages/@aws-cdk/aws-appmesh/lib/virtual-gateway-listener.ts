@@ -6,7 +6,7 @@ import { HealthCheck, Protocol } from './shared-interfaces';
 /**
  * Represents the properties needed to define HTTP Listeners for a VirtualGateway
  */
-export interface HttpGatewayListenerProps {
+export interface HttpGatewayListenerOptions {
   /**
    * Port to listen for connections on
    *
@@ -25,7 +25,7 @@ export interface HttpGatewayListenerProps {
 /**
  * Represents the properties needed to define GRPC Listeners for a VirtualGateway
  */
-export interface GrpcGatewayListenerProps {
+export interface GrpcGatewayListenerOptions {
   /**
    * Port to listen for connections on
    *
@@ -58,21 +58,21 @@ export abstract class VirtualGatewayListener {
   /**
    * Returns an HTTP Listener for a VirtualGateway
    */
-  public static httpGatewayListener(props: HttpGatewayListenerProps = {}): VirtualGatewayListener {
+  public static http(props: HttpGatewayListenerOptions = {}): VirtualGatewayListener {
     return new HttpGatewayListener(props);
   }
 
   /**
    * Returns an HTTP2 Listener for a VirtualGateway
    */
-  public static http2GatewayListener(props: HttpGatewayListenerProps = {}): VirtualGatewayListener {
+  public static http2(props: HttpGatewayListenerOptions = {}): VirtualGatewayListener {
     return new Http2GatewayListener(props);
   }
 
   /**
    * Returns a GRPC Listener for a VirtualGateway
    */
-  public static grpcGatewayListener(props: GrpcGatewayListenerProps = {}): VirtualGatewayListener {
+  public static grpc(props: GrpcGatewayListenerOptions = {}): VirtualGatewayListener {
     return new GrpcGatewayListener(props);
   }
 
@@ -147,7 +147,7 @@ class HttpGatewayListener extends VirtualGatewayListener {
    */
   protected protocol: Protocol = Protocol.HTTP;
 
-  constructor(props: HttpGatewayListenerProps = {}) {
+  constructor(props: HttpGatewayListenerOptions = {}) {
     super();
     this.port = props.port ? props.port : 8080;
     this.healthCheck = props.healthCheck;
@@ -174,7 +174,7 @@ class HttpGatewayListener extends VirtualGatewayListener {
 * Represents the properties needed to define an HTTP2 Listener for a VirtualGateway
 */
 class Http2GatewayListener extends HttpGatewayListener {
-  constructor(props: HttpGatewayListenerProps = {}) {
+  constructor(props: HttpGatewayListenerOptions = {}) {
     super(props);
     this.protocol = Protocol.HTTP2;
   }
@@ -203,7 +203,7 @@ class GrpcGatewayListener extends VirtualGatewayListener {
    */
   protected protocol: Protocol = Protocol.GRPC;
 
-  constructor(props: HttpGatewayListenerProps = {}) {
+  constructor(props: HttpGatewayListenerOptions = {}) {
     super();
     this.port = props.port ? props.port : 8080;
     this.healthCheck = props.healthCheck;

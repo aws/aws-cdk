@@ -29,7 +29,7 @@ export interface GrpcGatewayRouteMatch {
 /**
  * Properties specific for HTTP Based GatewayRoutes
  */
-export interface HttpRouteSpecProps {
+export interface HttpRouteSpecOptions {
   /**
    * The criterion for determining a request match for this GatewayRoute
    *
@@ -46,7 +46,7 @@ export interface HttpRouteSpecProps {
 /**
  * Properties specific for a GRPC GatewayRoute
  */
-export interface GrpcRouteSpecProps {
+export interface GrpcRouteSpecOptions {
   /**
    * The criterion for determining a request match for this GatewayRoute
    */
@@ -93,7 +93,7 @@ export abstract class GatewayRouteSpec {
    *
    * @param props - no http gateway route
    */
-  public static httpRouteSpec(props: HttpRouteSpecProps): GatewayRouteSpec {
+  public static http(props: HttpRouteSpecOptions): GatewayRouteSpec {
     return new HttpGatewayRouteSpec(props, Protocol.HTTP);
   }
 
@@ -102,7 +102,7 @@ export abstract class GatewayRouteSpec {
    *
    * @param props - no http2 gateway route
    */
-  public static http2RouteSpec(props: HttpRouteSpecProps): GatewayRouteSpec {
+  public static http2(props: HttpRouteSpecOptions): GatewayRouteSpec {
     return new HttpGatewayRouteSpec(props, Protocol.HTTP2);
   }
 
@@ -111,7 +111,7 @@ export abstract class GatewayRouteSpec {
    *
    * @param props - no grpc gateway route
    */
-  public static grpcRouteSpec(props: GrpcRouteSpecProps): GatewayRouteSpec {
+  public static grpc(props: GrpcRouteSpecOptions): GatewayRouteSpec {
     return new GrpcGatewayRouteSpec(props);
   }
 
@@ -140,7 +140,7 @@ class HttpGatewayRouteSpec extends GatewayRouteSpec {
    */
   readonly routeType: Protocol;
 
-  constructor(props: HttpRouteSpecProps, protocol: Protocol.HTTP | Protocol.HTTP2) {
+  constructor(props: HttpRouteSpecOptions, protocol: Protocol.HTTP | Protocol.HTTP2) {
     super();
     this.routeTarget = props.routeTarget;
     this.routeType = protocol;
@@ -184,7 +184,7 @@ class GrpcGatewayRouteSpec extends GatewayRouteSpec {
    */
   readonly routeTarget: IVirtualService;
 
-  constructor(props: GrpcRouteSpecProps) {
+  constructor(props: GrpcRouteSpecOptions) {
     super();
     this.match = props.match;
     this.routeTarget = props.routeTarget;
