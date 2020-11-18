@@ -28,7 +28,7 @@ event when the pipeline changes it's state.
   Service](https://docs.aws.amazon.com/eventbridge/latest/userguide/event-types.html).
 * __Targets__: A target processes events. Targets can include Amazon EC2
   instances, AWS Lambda functions, Kinesis streams, Amazon ECS tasks, Step
-  Functions state machines, Amazon SNS topics, Amazon SQS queues, and built-in
+  Functions state machines, Amazon SNS topics, Amazon SQS queues, Amazon CloudWatch LogGroups, and built-in
   targets. A target receives events in JSON format.
 * __Rules__: A rule matches incoming events and routes them to targets for
   processing. A single rule can route to multiple targets, all of which are
