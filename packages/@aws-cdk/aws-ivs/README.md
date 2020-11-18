@@ -69,3 +69,12 @@ const keyPair = new ivs.PlaybackKeyPair(this, 'PlaybackKeyPair', {
   publicKeyMaterial: myPublicKeyPemString,
 });
 ```
+
+Then, when creating a channel, specify the authorized property
+```ts
+const myChannel = new ivs.Channel(this, 'Channel', {
+  authorized: true,
+});
+```
+
+
