@@ -63,6 +63,8 @@ export class AwsCliCompatible {
 
     if (options.containerCreds ?? hasEcsCredentials()) {
       sources.push(() => new AWS.ECSCredentials());
+    } else if (options.containerCreds ?? hasEksCredentials() ) {
+      sources.push(() => new AWS.TokenFileWebIdentityCredentials());
     } else if (options.ec2instance ?? await isEc2Instance()) {
       // else if: don't get EC2 creds if we should have gotten ECS creds--ECS instances also
       // run on EC2 boxes but the creds represent something different. Same behavior as
@@ -154,6 +156,14 @@ export class AwsCliCompatible {
  */
 function hasEcsCredentials(): boolean {
   return (AWS.ECSCredentials.prototype as any).isConfiguredForEcsCredentials();
+}
+
+/**
+ * Return whether it looks like we'll have EKS credentials available
+ * @see
+ */
+function hasEksCredentials(): boolean {
+  return Boolean(process && process.env && (process.env.AWS_ROLE_ARN && process.env.AWS_WEB_IDENTITY_TOKEN_FILE));
 }
 
 /**
