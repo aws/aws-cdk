@@ -2,14 +2,14 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
-import { Bundling, ParcelBaseOptions } from './bundling';
-import { PackageJsonManager } from './package-json-manager';
-import { nodeMajorVersion, parseStackTrace } from './util';
+import { Bundling } from './bundling';
+import { BundlingOptions } from './types';
+import { findUp, LockFile, nodeMajorVersion, parseStackTrace } from './util';
 
 /**
  * Properties for a NodejsFunction
  */
-export interface NodejsFunctionProps extends lambda.FunctionOptions, ParcelBaseOptions {
+export interface NodejsFunctionProps extends lambda.FunctionOptions, BundlingOptions {
   /**
    * Path to the entry file (JavaScript or TypeScript).
    *
@@ -48,15 +48,44 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions, ParcelBaseO
    * @default true
    */
   readonly awsSdkConnectionReuse?: boolean;
+
+  /**
+   * The path to the dependencies lock file (`yarn.lock` or `package-lock.json`).
+   *
+   * This will be used as the source for the volume mounted in the Docker
+   * container.
+   *
+   * Modules specified in `nodeModules` will be installed using the right
+   * installer (`npm` or `yarn`) along with this lock file.
+   *
+   * @default - the path is found by walking up parent directories searching for
+   *   a `yarn.lock` or `package-lock.json` file
+   */
+  readonly depsLockFilePath?: string;
 }
 
 /**
- * A Node.js Lambda function bundled using Parcel
+ * A Node.js Lambda function bundled using esbuild
  */
 export class NodejsFunction extends lambda.Function {
   constructor(scope: cdk.Construct, id: string, props: NodejsFunctionProps = {}) {
     if (props.runtime && props.runtime.family !== lambda.RuntimeFamily.NODEJS) {
       throw new Error('Only `NODEJS` runtimes are supported.');
+    }
+
+    // Find lock file
+    let depsLockFilePath: string;
+    if (props.depsLockFilePath) {
+      if (!fs.existsSync(props.depsLockFilePath)) {
+        throw new Error(`Lock file at ${props.depsLockFilePath} doesn't exist`);
+      }
+      depsLockFilePath = props.depsLockFilePath;
+    } else {
+      const lockFile = findUp(LockFile.YARN) ?? findUp(LockFile.NPM);
+      if (!lockFile) {
+        throw new Error('Cannot find a package lock file (`yarn.lock` or `package-lock.json`). Please specify it with `depsFileLockPath`.');
+      }
+      depsLockFilePath = lockFile;
     }
 
     // Entry and defaults
@@ -67,29 +96,21 @@ export class NodejsFunction extends lambda.Function {
       : lambda.Runtime.NODEJS_10_X;
     const runtime = props.runtime ?? defaultRunTime;
 
-    // Look for the closest package.json starting in the directory of the entry
-    // file. We need to restore it after bundling.
-    const packageJsonManager = new PackageJsonManager(path.dirname(entry));
-
-    try {
-      super(scope, id, {
+    super(scope, id, {
+      ...props,
+      runtime,
+      code: Bundling.bundle({
         ...props,
+        entry,
         runtime,
-        code: Bundling.parcel({
-          ...props,
-          entry,
-          runtime,
-        }),
-        handler: `index.${handler}`,
-      });
+        depsLockFilePath,
+      }),
+      handler: `index.${handler}`,
+    });
 
-      // Enable connection reuse for aws-sdk
-      if (props.awsSdkConnectionReuse ?? true) {
-        this.addEnvironment('AWS_NODEJS_CONNECTION_REUSE_ENABLED', '1', { removeInEdge: true });
-      }
-    } finally {
-      // We can only restore after the code has been bound to the function
-      packageJsonManager.restore();
+    // Enable connection reuse for aws-sdk
+    if (props.awsSdkConnectionReuse ?? true) {
+      this.addEnvironment('AWS_NODEJS_CONNECTION_REUSE_ENABLED', '1', { removeInEdge: true });
     }
   }
 }
