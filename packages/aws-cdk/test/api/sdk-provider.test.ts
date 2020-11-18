@@ -411,6 +411,40 @@ test('can assume role with ecs credentials', async () => {
 
 });
 
+test('can assume role with eks credentials', async () => {
+
+  return withMocked(AWS.TokenFileWebIdentityCredentials.prototype, 'needsRefresh', async (needsRefresh) => {
+
+    // GIVEN
+    bockfs({
+      '/home/me/.bxt/credentials': '',
+      '/home/me/.bxt/config': dedent(`
+      [profile eks]
+      role_arn=arn:aws:iam::12356789012:role/Assumable
+      credential_source = EksContainer
+    `),
+    });
+
+    // Set environment variables that we want
+    process.env.AWS_CONFIG_FILE = bockfs.path('/home/me/.bxt/config');
+    process.env.AWS_SHARED_CREDENTIALS_FILE = bockfs.path('/home/me/.bxt/credentials');
+
+    // WHEN
+    const provider = await SdkProvider.withAwsCliCompatibleDefaults({
+      ...defaultCredOptions,
+      profile: 'eks',
+    });
+
+    await provider.defaultAccount();
+
+    // THEN
+    // expect(account?.accountId).toEqual(`${uid}the_account_#`);
+    expect(needsRefresh).toHaveBeenCalled();
+
+  });
+
+});
+
 test('can assume role with ec2 credentials', async () => {
 
   return withMocked(AWS.EC2MetadataCredentials.prototype, 'needsRefresh', async (needsRefresh) => {
