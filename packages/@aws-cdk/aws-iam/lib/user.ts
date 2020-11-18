@@ -145,6 +145,7 @@ export class User extends Resource implements IIdentity, IUser {
       public readonly userArn: string = arn;
       public readonly assumeRoleAction: string = 'sts:AssumeRole';
       public readonly policyFragment: PrincipalPolicyFragment = new ArnPrincipal(arn).policyFragment;
+      private readonly attachedPolicies = new AttachedPolicies();
       private defaultPolicy?: Policy;
 
       public addToPolicy(statement: PolicyStatement): boolean {
@@ -164,8 +165,9 @@ export class User extends Resource implements IIdentity, IUser {
         throw new Error('Cannot add imported User to Group');
       }
 
-      public attachInlinePolicy(_policy: Policy): void {
-        throw new Error('Cannot add inline policy to imported User');
+      public attachInlinePolicy(policy: Policy): void {
+        this.attachedPolicies.attach(policy);
+        policy.attachToUser(this);
       }
 
       public addManagedPolicy(_policy: IManagedPolicy): void {
