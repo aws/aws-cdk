@@ -528,6 +528,7 @@
             }
           ],
           "Image": "aws/codebuild/docker:17.09.0",
+          "ImagePullCredentialsType": "CODEBUILD",
           "PrivilegedMode": true,
           "Type": "LINUX_CONTAINER"
         },
@@ -736,7 +737,8 @@
                       "FargateServiceAC2B3B85",
                       "Name"
                     ]
-                  }
+                  },
+                  "DeploymentTimeout": 60
                 },
                 "InputArtifacts": [
                   {

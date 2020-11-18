@@ -3,7 +3,7 @@ import * as path from 'path';
 import { expect, haveResource, matchTemplate, SynthUtils } from '@aws-cdk/assert';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import * as sns from '@aws-cdk/aws-sns';
-import { App, CfnParameter, CfnResource, Construct, ContextProvider, LegacyStackSynthesizer, Stack } from '@aws-cdk/core';
+import { App, CfnParameter, CfnResource, Construct, ContextProvider, LegacyStackSynthesizer, Names, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { NestedStack } from '../lib/nested-stack';
 
@@ -63,7 +63,7 @@ export = {
     const assembly = app.synth();
 
     // THEN
-    const template = JSON.parse(fs.readFileSync(path.join(assembly.directory, `${nested.node.uniqueId}.nested.template.json`), 'utf-8'));
+    const template = JSON.parse(fs.readFileSync(path.join(assembly.directory, `${Names.uniqueId(nested)}.nested.template.json`), 'utf-8'));
     test.deepEqual(template, {
       Resources: {
         ResourceInNestedStack: {

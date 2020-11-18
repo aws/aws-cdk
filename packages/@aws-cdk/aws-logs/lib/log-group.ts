@@ -1,5 +1,6 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import { IResource, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { LogStream } from './log-stream';
@@ -274,6 +275,13 @@ export enum RetentionDays {
  */
 export interface LogGroupProps {
   /**
+   * The KMS Key to encrypt the log group with.
+   *
+   * @default - log group is encrypted with the default master key
+   */
+  readonly encryptionKey?: kms.IKey;
+
+  /**
    * Name of the log group.
    *
    * @default Automatically generated
@@ -363,6 +371,7 @@ export class LogGroup extends LogGroupBase {
     }
 
     const resource = new CfnLogGroup(this, 'Resource', {
+      kmsKeyId: props.encryptionKey?.keyArn,
       logGroupName: this.physicalName,
       retentionInDays,
     });

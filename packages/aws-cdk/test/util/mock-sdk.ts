@@ -77,6 +77,13 @@ export class MockSdkProvider extends SdkProvider {
   public stubSTS(stubs: SyncHandlerSubsetOf<AWS.STS>) {
     (this.sdk as any).sts = jest.fn().mockReturnValue(partialAwsService<AWS.STS>(stubs));
   }
+
+  /**
+   * Replace the ELBv2 client with the given object
+   */
+  public stubELBv2(stubs: SyncHandlerSubsetOf<AWS.ELBv2>) {
+    (this.sdk as any).elbv2 = jest.fn().mockReturnValue(partialAwsService<AWS.ELBv2>(stubs));
+  }
 }
 
 export class MockSdk implements ISDK {
@@ -87,6 +94,7 @@ export class MockSdk implements ISDK {
   public readonly s3 = jest.fn();
   public readonly route53 = jest.fn();
   public readonly ecr = jest.fn();
+  public readonly elbv2 = jest.fn();
 
   public currentAccount(): Promise<Account> {
     return Promise.resolve({ accountId: '123456789012', partition: 'aws' });
