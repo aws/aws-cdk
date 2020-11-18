@@ -91,28 +91,28 @@ export abstract class GatewayRouteSpec {
   /**
    * Creates an HTTP Based GatewayRoute
    *
-   * @param props - no http gateway route
+   * @param options - no http gateway route
    */
-  public static http(props: HttpRouteSpecOptions): GatewayRouteSpec {
-    return new HttpGatewayRouteSpec(props, Protocol.HTTP);
+  public static http(options: HttpRouteSpecOptions): GatewayRouteSpec {
+    return new HttpGatewayRouteSpec(options, Protocol.HTTP);
   }
 
   /**
    * Creates an HTTP2 Based GatewayRoute
    *
-   * @param props - no http2 gateway route
+   * @param options - no http2 gateway route
    */
-  public static http2(props: HttpRouteSpecOptions): GatewayRouteSpec {
-    return new HttpGatewayRouteSpec(props, Protocol.HTTP2);
+  public static http2(options: HttpRouteSpecOptions): GatewayRouteSpec {
+    return new HttpGatewayRouteSpec(options, Protocol.HTTP2);
   }
 
   /**
    * Creates an GRPC Based GatewayRoute
    *
-   * @param props - no grpc gateway route
+   * @param options - no grpc gateway route
    */
-  public static grpc(props: GrpcRouteSpecOptions): GatewayRouteSpec {
-    return new GrpcGatewayRouteSpec(props);
+  public static grpc(options: GrpcRouteSpecOptions): GatewayRouteSpec {
+    return new GrpcGatewayRouteSpec(options);
   }
 
   /**
@@ -140,11 +140,11 @@ class HttpGatewayRouteSpec extends GatewayRouteSpec {
    */
   readonly routeType: Protocol;
 
-  constructor(props: HttpRouteSpecOptions, protocol: Protocol.HTTP | Protocol.HTTP2) {
+  constructor(options: HttpRouteSpecOptions, protocol: Protocol.HTTP | Protocol.HTTP2) {
     super();
-    this.routeTarget = props.routeTarget;
+    this.routeTarget = options.routeTarget;
     this.routeType = protocol;
-    this.match = props.match;
+    this.match = options.match;
   }
 
   public bind(_scope: cdk.Construct): GatewayRouteSpecConfig {
@@ -184,10 +184,10 @@ class GrpcGatewayRouteSpec extends GatewayRouteSpec {
    */
   readonly routeTarget: IVirtualService;
 
-  constructor(props: GrpcRouteSpecOptions) {
+  constructor(options: GrpcRouteSpecOptions) {
     super();
-    this.match = props.match;
-    this.routeTarget = props.routeTarget;
+    this.match = options.match;
+    this.routeTarget = options.routeTarget;
   }
 
   public bind(_scope: cdk.Construct): GatewayRouteSpecConfig {
