@@ -18,7 +18,7 @@ import { IFileSystemLocation } from './file-location';
 import { NoArtifacts } from './no-artifacts';
 import { NoSource } from './no-source';
 import { runScriptLinuxBuildSpec, S3_BUCKET_ENV, S3_KEY_ENV } from './private/run-script-linux-build-spec';
-import { LogsConfig } from './project-logs';
+import { LogsOptions } from './project-logs';
 import { renderReportGroupArn } from './report-group-utils';
 import { ISource } from './source';
 import { CODEPIPELINE_SOURCE_ARTIFACTS_TYPE, NO_SOURCE_TYPE } from './source-types';
@@ -544,7 +544,7 @@ export interface CommonProjectProps {
    * Information about logs for the build project. A project can create logs in Amazon CloudWatch Logs, an S3 bucket, or both.
    * @default - no log configuration is set
    */
-  readonly logsConfig?: LogsConfig;
+  readonly logging?: LogsOptions;
 }
 
 export interface ProjectProps extends CommonProjectProps {
@@ -778,7 +778,7 @@ export class Project extends ProjectBase {
       triggers: sourceConfig.buildTriggers,
       sourceVersion: sourceConfig.sourceVersion,
       vpcConfig: this.configureVpc(props),
-      logsConfig: props.logsConfig && this.renderLogs(props),
+      logsConfig: props.logging && this.renderLogs(props),
     });
 
     this.addVpcRequiredPermissions(props, resource);
@@ -1048,8 +1048,8 @@ export class Project extends ProjectBase {
     let s3Config: CfnProject.S3LogsConfigProperty|undefined;
     let cloudwatchConfig: CfnProject.CloudWatchLogsConfigProperty|undefined;
 
-    if (props.logsConfig?.s3) {
-      const s3Logs = props.logsConfig.s3;
+    if (props.logging?.s3) {
+      const s3Logs = props.logging.s3;
 
       let status = 'ENABLED';
       if ('enabled' in s3Logs) {
@@ -1065,15 +1065,20 @@ export class Project extends ProjectBase {
       s3Config = undefined;
     }
 
-    if (props.logsConfig?.cloudwatch) {
-      const cloudWatchLogs = props.logsConfig.cloudwatch;
+    if (props.logging?.cloudwatch) {
+      const cloudWatchLogs = props.logging.cloudwatch;
       let status = 'ENABLED';
       if ('enabled' in cloudWatchLogs) {
         status = cloudWatchLogs.enabled ? 'ENABLED' : 'DISABLED';
       }
+
+      if (status === 'ENABLED' && !(cloudWatchLogs.logGroup)) {
+        throw new Error('A log group is required if cloudwatch logging is enabled');
+      }
+
       cloudwatchConfig = {
         status,
-        groupName: cloudWatchLogs.logGroup.logGroupName,
+        groupName: cloudWatchLogs.logGroup?.logGroupName,
         streamName: cloudWatchLogs.prefix,
       };
     } else {

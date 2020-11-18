@@ -613,7 +613,7 @@ export = {
           bucket: new s3.Bucket(stack, 'Bucket'),
           path: 'path',
         }),
-        logsConfig: {
+        logging: {
           cloudwatch: {
             logGroup,
             prefix: '/my-logs',
@@ -635,6 +635,35 @@ export = {
       test.done();
     },
 
+    'logs config - cloudwatch disabled'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      new codebuild.Project(stack, 'Project', {
+        source: codebuild.Source.s3({
+          bucket: new s3.Bucket(stack, 'Bucket'),
+          path: 'path',
+        }),
+        logging: {
+          cloudwatch: {
+            enabled: false,
+          },
+        },
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+        LogsConfig: objectLike({
+          CloudWatchLogs: {
+            Status: 'DISABLED',
+          },
+        }),
+      }));
+
+      test.done();
+    },
+
     'logs config - s3'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
@@ -646,7 +675,7 @@ export = {
           bucket: new s3.Bucket(stack, 'Bucket'),
           path: 'path',
         }),
-        logsConfig: {
+        logging: {
           s3: {
             bucket,
             prefix: '/my-logs',
@@ -680,7 +709,7 @@ export = {
           bucket: new s3.Bucket(stack, 'Bucket'),
           path: 'path',
         }),
-        logsConfig: {
+        logging: {
           cloudwatch: {
             logGroup,
             prefix: '/my-logs',
