@@ -542,6 +542,7 @@ export interface CommonProjectProps {
 
   /**
    * Information about logs for the build project. A project can create logs in Amazon CloudWatch Logs, an S3 bucket, or both.
+   *
    * @default - no log configuration is set
    */
   readonly logging?: LogsOptions;
