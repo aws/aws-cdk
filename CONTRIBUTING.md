@@ -67,7 +67,7 @@ as described in ['Quick Iteration'](#quick-iteration) below.
 
 Gitpod is free for 50 hours per month -
 make sure to stop your workspace when you're done
-(you can always resume it later, and it won't need to run the build again).
+(you can always resume it later, and it won't need to run the build again). 
 
 ### Local dependencies
 
