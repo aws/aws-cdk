@@ -97,6 +97,12 @@ export class Asset extends cdk.Construct implements cdk.IAsset {
   public readonly bucket: s3.IBucket;
 
   /**
+   * Indicates if this asset is a single file. Allows constructs to ensure that the
+   * correct file type was used.
+   */
+  public readonly isFile: boolean;
+
+  /**
    * Indicates if this asset is a zip archive. Allows constructs to ensure that the
    * correct file type was used.
    */
@@ -130,6 +136,8 @@ export class Asset extends cdk.Construct implements cdk.IAsset {
     this.assetPath = staging.relativeStagedPath(stack);
 
     const packaging = determinePackaging(staging.sourcePath);
+
+    this.isFile = packaging === cdk.FileAssetPackaging.FILE;
 
     // sets isZipArchive based on the type of packaging and file extension
     this.isZipArchive = packaging === cdk.FileAssetPackaging.ZIP_DIRECTORY
