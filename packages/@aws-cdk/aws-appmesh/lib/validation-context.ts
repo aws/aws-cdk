@@ -25,6 +25,7 @@ export abstract class TLSValidationContext {
    */
   public abstract bind(scope: cdk.Construct): TLSValidationConfig;
 }
+
 /**
  * Represents a Transport Layer Security (TLS) validation context trust for a local file
  */

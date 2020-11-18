@@ -1,7 +1,7 @@
 import { TLSValidationContext } from './validation-context';
 
 /**
- * Default configuration that is applied to all backends for the virtual node.
+ * Default configuration that is applied to all backends.
  * Any configuration defined will be overwritten by configurations specified for a particular backend.
  */
 export interface ClientPolicy {

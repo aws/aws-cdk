@@ -222,7 +222,6 @@ export = {
           timeout: { idle: cdk.Duration.seconds(10) },
         }));
 
-
         // THEN
         expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
           Spec: {
