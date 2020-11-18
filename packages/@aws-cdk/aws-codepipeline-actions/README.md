@@ -515,7 +515,7 @@ for more details about using CloudFormation in CodePipeline.
 
 #### Actions defined by this package
 
-This package defines the following actions:
+This package contains the following CloudFormation actions:
 
 * **CloudFormationCreateUpdateStackAction** - Deploy a CloudFormation template directly from the pipeline. The indicated stack is created,
   or updated if it already exists. If the stack is in a failure state, deployment will fail (unless `replaceOnFailure`
@@ -656,6 +656,18 @@ const deployStage = pipeline.addStage({
 ```
 
 [image definition file]: https://docs.aws.amazon.com/codepipeline/latest/userguide/pipelines-create.html#pipelines-create-image-definitions
+
+#### Deploying ECS applications stored in a separate source code repository
+
+The idiomatic CDK way of deploying an ECS application is to have their Docker files and the CDK code residing in the same source code repository,
+leveraging [Docker Assets])(https://docs.aws.amazon.com/cdk/latest/guide/assets.html#assets_types_docker),
+and use the [CDK Pipelines module](https://docs.aws.amazon.com/cdk/api/latest/docs/pipelines-readme.html).
+
+However, if you want to deploy a Docker application whose source code is kept in a separate version control repository than the CDK code,
+you can use the `TagParameterContainerImage` class from the ECS module.
+Here's an example:
+
+[example ECS pipeline for an application in a separate source code repository](test/integ.pipeline-ecs-separate-source.lit.ts)
 
 ### AWS S3 Deployment
 
