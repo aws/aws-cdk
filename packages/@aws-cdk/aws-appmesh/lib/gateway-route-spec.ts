@@ -1,7 +1,30 @@
 import * as cdk from '@aws-cdk/core';
 import { CfnGatewayRoute } from './appmesh.generated';
-import { GrpcRouteMatch, HttpRouteMatch, Protocol } from './shared-interfaces';
+import { Protocol } from './shared-interfaces';
 import { IVirtualService } from './virtual-service';
+
+/**
+ * The criterion for determining a request match for this GatewayRoute
+ */
+export interface HttpGatewayRouteMatch {
+  /**
+   * Specifies the path to match requests with.
+   * This parameter must always start with /, which by itself matches all requests to the virtual service name.
+   * You can also match for path-based routing of requests. For example, if your virtual service name is my-service.local
+   * and you want the route to match requests to my-service.local/metrics, your prefix should be /metrics.
+   */
+  readonly prefixPath: string;
+}
+
+/**
+ * The criterion for determining a request match for this GatewayRoute
+ */
+export interface GrpcGatewayRouteMatch {
+  /**
+   * The fully qualified domain name for the service to match from the request
+   */
+  readonly serviceName: string;
+}
 
 /**
  * Properties specific for HTTP Based GatewayRoutes
@@ -12,7 +35,7 @@ export interface HttpRouteSpecProps {
    *
    * @default - matches on '/'
    */
-  readonly match?: HttpRouteMatch;
+  readonly match?: HttpGatewayRouteMatch;
 
   /**
    * The VirtualService this GatewayRoute directs traffic to
@@ -27,7 +50,7 @@ export interface GrpcRouteSpecProps {
   /**
    * The criterion for determining a request match for this GatewayRoute
    */
-  readonly match: GrpcRouteMatch;
+  readonly match: GrpcGatewayRouteMatch;
 
   /**
    * The VirtualService this GatewayRoute directs traffic to
@@ -105,7 +128,7 @@ class HttpGatewayRouteSpec extends GatewayRouteSpec {
    *
    * @default - matches on '/'
    */
-  readonly match?: HttpRouteMatch;
+  readonly match?: HttpGatewayRouteMatch;
 
   /**
    * The VirtualService this GatewayRoute directs traffic to
@@ -154,7 +177,7 @@ class GrpcGatewayRouteSpec extends GatewayRouteSpec {
    *
    * @default - no default
    */
-  readonly match: GrpcRouteMatch;
+  readonly match: GrpcGatewayRouteMatch;
 
   /**
    * The VirtualService this GatewayRoute directs traffic to
