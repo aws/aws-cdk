@@ -46,7 +46,7 @@ export class EmrModifyInstanceGroupByName extends sfn.TaskStateBase {
     this.taskPolicies = [
       new iam.PolicyStatement({
         actions: ['elasticmapreduce:ModifyInstanceGroups', 'elasticmapreduce:ListInstanceGroups'],
-        resources: [`arn:aws:elasticmapreduce:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:cluster/*`],
+        resources: [`arn:${cdk.Aws.PARTITION}:elasticmapreduce:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:cluster/*`],
       }),
     ];
   }

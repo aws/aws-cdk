@@ -165,7 +165,7 @@ export class EmrAddStep extends sfn.TaskStateBase {
           'elasticmapreduce:DescribeStep',
           'elasticmapreduce:CancelSteps',
         ],
-        resources: [`arn:aws:elasticmapreduce:${Aws.REGION}:${Aws.ACCOUNT_ID}:cluster/*`],
+        resources: [`arn:${Aws.PARTITION}:elasticmapreduce:${Aws.REGION}:${Aws.ACCOUNT_ID}:cluster/*`],
       }),
     ];
 

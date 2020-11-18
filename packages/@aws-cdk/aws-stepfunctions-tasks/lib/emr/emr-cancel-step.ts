@@ -36,7 +36,7 @@ export class EmrCancelStep extends sfn.TaskStateBase {
     this.taskPolicies = [
       new iam.PolicyStatement({
         actions: ['elasticmapreduce:CancelSteps'],
-        resources: [`arn:aws:elasticmapreduce:${Aws.REGION}:${Aws.ACCOUNT_ID}:cluster/*`],
+        resources: [`arn:${Aws.PARTITION}:elasticmapreduce:${Aws.REGION}:${Aws.ACCOUNT_ID}:cluster/*`],
       }),
     ];
   }

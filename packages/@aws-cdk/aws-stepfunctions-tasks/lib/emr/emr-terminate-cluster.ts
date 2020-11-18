@@ -64,7 +64,7 @@ export class EmrTerminateCluster extends sfn.TaskStateBase {
           'elasticmapreduce:DescribeCluster',
           'elasticmapreduce:TerminateJobFlows',
         ],
-        resources: [`arn:aws:elasticmapreduce:${Aws.REGION}:${Aws.ACCOUNT_ID}:cluster/*`],
+        resources: [`arn:${Aws.PARTITION}:elasticmapreduce:${Aws.REGION}:${Aws.ACCOUNT_ID}:cluster/*`],
       }),
     ];
 

@@ -58,7 +58,7 @@ export class EmrModifyInstanceFleetByName extends sfn.TaskStateBase {
           'elasticmapreduce:ModifyInstanceFleet',
           'elasticmapreduce:ListInstanceFleets',
         ],
-        resources: [`arn:aws:elasticmapreduce:${Aws.REGION}:${Aws.ACCOUNT_ID}:cluster/*`],
+        resources: [`arn:${Aws.PARTITION}:elasticmapreduce:${Aws.REGION}:${Aws.ACCOUNT_ID}:cluster/*`],
       }),
     ];
   }
