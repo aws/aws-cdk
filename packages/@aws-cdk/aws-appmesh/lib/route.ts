@@ -108,7 +108,6 @@ export class Route extends cdk.Resource implements IRoute {
         tcpRoute: spec.tcpRouteSpec,
         httpRoute: spec.httpRouteSpec,
         http2Route: spec.http2RouteSpec,
-        priority: spec.priority,
       },
     });
 

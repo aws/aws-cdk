@@ -35,13 +35,6 @@ export interface HttpRouteSpecOptions {
    * List of targets that traffic is routed to when a request matches the route
    */
   readonly weightedTargets: WeightedTarget[];
-
-  /**
-   * The priority for the route. Routes are matched based on the specified value, where 0 is the highest priority.
-   *
-   * @default - none
-   */
-  readonly priority?: number;
 }
 
 /**
@@ -85,13 +78,6 @@ export interface RouteSpecConfig {
    * @default - no tcp spec
    */
   readonly tcpRouteSpec?: CfnRoute.TcpRouteProperty;
-
-  /**
-   * The priority for the route. Routes are matched based on the specified value, where 0 is the highest priority
-   *
-   * @default - none
-   */
-  readonly priority?: number;
 }
 
 /**
@@ -124,11 +110,6 @@ export abstract class RouteSpec {
    * List of targets that traffic is routed to when a request matches the route
    */
   abstract readonly weightedTargets: WeightedTarget[];
-
-  /**
-   * The priority for the route. Routes are matched based on the specified value, where 0 is the highest priority
-   */
-  abstract readonly priority?: number;
 
   /**
    * Called when the GatewayRouteSpec type is initialized. Can be used to enforce
@@ -167,17 +148,11 @@ class HttpRouteSpec extends RouteSpec {
    */
   public readonly weightedTargets: WeightedTarget[];
 
-  /**
-   * The priority for the route. Routes are matched based on the specified value, where 0 is the highest priority
-   */
-  public readonly priority?: number;
-
   constructor(props: HttpRouteSpecOptions, protocol: Protocol) {
     super();
     this.protocol = protocol;
     this.match = props.match;
     this.weightedTargets = props.weightedTargets;
-    this.priority = props.priority;
   }
 
   public bind(_scope: cdk.Construct): RouteSpecConfig {
@@ -196,7 +171,6 @@ class HttpRouteSpec extends RouteSpec {
     return {
       httpRouteSpec: this.protocol === Protocol.HTTP ? httpConfig : undefined,
       http2RouteSpec: this.protocol === Protocol.HTTP2 ? httpConfig : undefined,
-      priority: this.priority,
     };
   }
 }
@@ -206,8 +180,6 @@ class TcpRouteSpec extends RouteSpec {
    * List of targets that traffic is routed to when a request matches the route
    */
   public readonly weightedTargets: WeightedTarget[];
-
-  public readonly priority?: number;
 
   constructor(props: TcpRouteSpecOptions) {
     super();
@@ -221,7 +193,6 @@ class TcpRouteSpec extends RouteSpec {
           weightedTargets: this.renderWeightedTargets(),
         },
       },
-      priority: this.priority,
     };
   }
 }

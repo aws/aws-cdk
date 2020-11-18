@@ -130,6 +130,7 @@ export = {
 
       test.done();
     },
+
     'should have expected features'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
@@ -159,7 +160,6 @@ export = {
               virtualNode: node,
             },
           ],
-          priority: 1,
           match: {
             prefixPath: '/node',
           },
@@ -187,7 +187,6 @@ export = {
               Prefix: '/node',
             },
           },
-          Priority: 1,
         },
         RouteName: 'test-http-route',
       }));
