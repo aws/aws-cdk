@@ -1,6 +1,7 @@
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnVirtualGateway } from './appmesh.generated';
+import { ClientPolicy } from './client-policy';
 import { GatewayRoute, GatewayRouteBaseProps } from './gateway-route';
 
 import { IMesh, Mesh } from './mesh';
@@ -60,6 +61,13 @@ export interface VirtualGatewayBaseProps {
    * @default - no access logging
    */
   readonly accessLog?: AccessLog;
+
+  /**
+   * Default Configuration Virtual Node uses to communicate with Virtual Service
+   *
+   * @default - No Config
+   */
+  readonly backendDefaults?: ClientPolicy;
 }
 
 /**
@@ -151,6 +159,7 @@ export class VirtualGateway extends VirtualGatewayBase {
   public readonly mesh: IMesh;
 
   protected readonly listeners = new Array<VirtualGatewayListenerConfig>();
+  private readonly backendDefaults: CfnVirtualGateway.VirtualGatewayBackendDefaultsProperty;
 
   constructor(scope: Construct, id: string, props: VirtualGatewayProps) {
     super(scope, id, {
@@ -166,6 +175,12 @@ export class VirtualGateway extends VirtualGatewayBase {
       props.listeners.forEach(listener => this.listeners.push(listener.bind(this)));
     }
 
+    if (props.backendDefaults) {
+      this.backendDefaults = this.addBackendDefaults(props.backendDefaults);
+    } else {
+      this.backendDefaults = {};
+    }
+
     const accessLogging = props.accessLog?.bind(this);
 
     const node = new CfnVirtualGateway(this, 'Resource', {
@@ -173,6 +188,7 @@ export class VirtualGateway extends VirtualGatewayBase {
       meshName: this.mesh.meshName,
       spec: {
         listeners: this.listeners.map(listener => listener.listener),
+        backendDefaults: Object.keys(this.backendDefaults).length === 0 ? undefined : this.backendDefaults,
         logging: accessLogging !== undefined ? {
           accessLog: accessLogging.virtualGatewayAccessLog,
         } : undefined,
@@ -185,6 +201,21 @@ export class VirtualGateway extends VirtualGatewayBase {
       resource: `mesh/${props.mesh.meshName}/virtualGateway`,
       resourceName: this.physicalName,
     });
+  }
+
+  /**
+   * Adds Default Backend Configuration for Virtual Gateway to communicate with Virtual Services.
+   */
+  private addBackendDefaults(clientPolicy: ClientPolicy): CfnVirtualGateway.VirtualGatewayBackendDefaultsProperty {
+    return {
+      clientPolicy: {
+        tls: {
+          enforce: clientPolicy.tlsClientPolicy.enforce ?? true,
+          validation: clientPolicy.tlsClientPolicy.validation.bind(this).tlsValidation,
+          ports: clientPolicy.tlsClientPolicy.ports,
+        },
+      },
+    };
   }
 }
 

@@ -2,9 +2,9 @@ import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnVirtualNode } from './appmesh.generated';
+import { ClientPolicy } from './client-policy';
 import { IMesh, Mesh } from './mesh';
 import { AccessLog } from './shared-interfaces';
-import { ClientPolicy } from './validation-context';
 import { VirtualNodeListener, VirtualNodeListenerConfig } from './virtual-node-listener';
 import { IVirtualService } from './virtual-service';
 
@@ -97,7 +97,7 @@ export interface VirtualNodeBaseProps {
   readonly accessLog?: AccessLog;
 
   /**
-   * Default Configuration Virtual Node uses to communicate with Vritual Service
+   * Default Configuration Virtual Node uses to communicate with Virtual Service
    *
    * @default - No Config
    */
@@ -183,7 +183,7 @@ export class VirtualNode extends VirtualNodeBase {
    */
   public readonly mesh: IMesh;
 
-  private readonly backendDefaults = new Array<CfnVirtualNode.BackendDefaultsProperty>();
+  private readonly backendDefaults: CfnVirtualNode.BackendDefaultsProperty;
   private readonly backends = new Array<CfnVirtualNode.BackendProperty>();
   private readonly listeners = new Array<VirtualNodeListenerConfig>();
 
@@ -197,7 +197,9 @@ export class VirtualNode extends VirtualNodeBase {
     props.backends?.forEach(backend => this.addBackend(backend));
     props.listeners?.forEach(listener => this.addListener(listener));
     if (props.backendDefaults) {
-      this.addBackendDefaults(props.backendDefaults);
+      this.backendDefaults = this.addBackendDefaults(props.backendDefaults);
+    } else {
+      this.backendDefaults = {};
     }
     const accessLogging = props.accessLog?.bind(this);
 
@@ -207,7 +209,7 @@ export class VirtualNode extends VirtualNodeBase {
       spec: {
         backends: cdk.Lazy.anyValue({ produce: () => this.backends }, { omitEmptyArray: true }),
         listeners: cdk.Lazy.anyValue({ produce: () => this.listeners.map(listener => listener.listener) }, { omitEmptyArray: true }),
-        backendDefaults: cdk.Lazy.anyValue({ produce: () => this.backendDefaults[0] }, { omitEmptyArray: true }),
+        backendDefaults: Object.keys(this.backendDefaults).length === 0 ? undefined : this.backendDefaults,
         serviceDiscovery: {
           dns: props.dnsHostName !== undefined ? { hostname: props.dnsHostName } : undefined,
           awsCloudMap: props.cloudMapService !== undefined ? {
@@ -232,20 +234,16 @@ export class VirtualNode extends VirtualNodeBase {
   /**
    * Adds Default Backend Configuration for virtual node to communicate with Virtual Services.
    */
-  public addBackendDefaults(clientPolicy: ClientPolicy) {
-    if (this.backendDefaults.length === 0) {
-      this.backendDefaults.push({
-        clientPolicy: {
-          tls: {
-            enforce: clientPolicy.tlsClientPolicy.enforce ?? true,
-            validation: clientPolicy.tlsClientPolicy.validation.bind(this).tlsValidation,
-            ports: clientPolicy.tlsClientPolicy.ports,
-          },
+  private addBackendDefaults(clientPolicy: ClientPolicy): CfnVirtualNode.BackendDefaultsProperty {
+    return {
+      clientPolicy: {
+        tls: {
+          enforce: clientPolicy.tlsClientPolicy.enforce ?? true,
+          validation: clientPolicy.tlsClientPolicy.validation.bind(this).tlsValidation,
+          ports: clientPolicy.tlsClientPolicy.ports,
         },
-      });
-    } else {
-      throw new Error('Virtual Node can have only one backend default');
-    }
+      },
+    };
   }
 
   /**

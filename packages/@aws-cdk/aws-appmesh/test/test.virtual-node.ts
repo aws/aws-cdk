@@ -266,17 +266,16 @@ export = {
           meshName: 'test-mesh',
         });
 
-        const node = new appmesh.VirtualNode(stack, 'test-node', {
+        new appmesh.VirtualNode(stack, 'test-node', {
           mesh,
           dnsHostName: 'test',
-        });
-
-        node.addBackendDefaults({
-          tlsClientPolicy: {
-            validation: appmesh.TLSClientValidation.fileTrust({
-              certificateChain: 'path-to-certificate',
-            }),
-            ports: [8080, 8081],
+          backendDefaults: {
+            tlsClientPolicy: {
+              validation: appmesh.TLSValidationContext.fileTrust({
+                certificateChain: 'path-to-certificate',
+              }),
+              ports: [8080, 8081],
+            },
           },
         });
 
@@ -330,7 +329,7 @@ export = {
           mesh,
           clientPolicy: {
             tlsClientPolicy: {
-              validation: appmesh.TLSClientValidation.fileTrust({
+              validation: appmesh.TLSValidationContext.fileTrust({
                 certificateChain: 'path-to-certificate',
               }),
               ports: [8080, 8081],

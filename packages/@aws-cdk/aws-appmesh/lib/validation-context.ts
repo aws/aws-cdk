@@ -1,21 +1,22 @@
 import * as cdk from '@aws-cdk/core';
 import { CfnVirtualNode } from './appmesh.generated';
+import { ACMTrustOptions, FileTrustOptions } from './client-policy';
 
 /**
  * Defines the TLS validation context trust.
  */
-export abstract class TLSClientValidation {
+export abstract class TLSValidationContext {
   /**
-   * TLS validation context trust for a local file
+   * Tells envoy where to fetch the validation context from
    */
-  public static fileTrust(props: FileTrustOptions): TLSClientValidation {
+  public static fileTrust(props: FileTrustOptions): TLSValidationContext {
     return new FileTrust(props);
   }
 
   /**
    * TLS validation context trust for ACM Private Certificate Authority (CA).
    */
-  public static acmTrust(props: ACMTrustOptions): TLSClientValidation {
+  public static acmTrust(props: ACMTrustOptions): TLSValidationContext {
     return new ACMTrust(props);
   }
 
@@ -27,7 +28,7 @@ export abstract class TLSClientValidation {
 /**
  * Represents a Transport Layer Security (TLS) validation context trust for a local file
  */
-class FileTrust extends TLSClientValidation {
+class FileTrust extends TLSValidationContext {
   /**
    * Path to the Certificate Chain file on the file system where the Envoy is deployed.
    */
@@ -54,7 +55,7 @@ class FileTrust extends TLSClientValidation {
 /**
  * Represents a TLS validation context trust for an AWS Certicate Manager (ACM) certificate.
  */
-class ACMTrust extends TLSClientValidation {
+class ACMTrust extends TLSValidationContext {
   /**
    * Amazon Resource Name of the Certificates
    */
@@ -86,61 +87,4 @@ export interface TLSValidationConfig {
    * Represents single validation context property
    */
   readonly tlsValidation: CfnVirtualNode.TlsValidationContextProperty;
-}
-
-/**
- * Default configuration that is applied to all backends for the virtual node.
- * Any configuration defined will be overwritten by configurations specified for a particular backend.
- */
-export interface ClientPolicy {
-  /**
-   * Client policy for TLS
-   */
-  readonly tlsClientPolicy: TLSClientPolicyOptions;
-}
-
-/**
- * TLS Connections with downstream server will always be enforced if True
- */
-export interface TLSClientPolicyOptions {
-  /**
-   * TLS enforced if True.
-   *
-   * @default - True
-   */
-  readonly enforce?: boolean;
-
-  /**
-   * TLS enforced on these ports. If not specified it is enforced on all ports.
-   *
-   * @default - none
-   */
-  readonly ports?: number[];
-
-  /**
-   * Policy used to determine if the TLS certificate the server presents is accepted
-   *
-   * @default - none
-   */
-  readonly validation: TLSClientValidation;
-}
-
-/**
- * ACM Trust Properties
- */
-export interface ACMTrustOptions {
-  /**
-   * Amazon Resource Names (ARN) of trusted ACM Private Certificate Authorities
-   */
-  readonly certificateAuthorityArns: string[];
-}
-
-/**
- * File Trust Properties
- */
-export interface FileTrustOptions {
-  /**
-   * Path to the Certificate Chain file on the file system where the Envoy is deployed.
-   */
-  readonly certificateChain: string;
 }
