@@ -1,6 +1,7 @@
 import * as core from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnChannel } from './ivs.generated';
+import { StreamKey } from './stream-key';
 
 /**
  * Represents an IVS Channel
@@ -12,14 +13,25 @@ export interface IChannel extends core.IResource {
    * @attribute
    */
   readonly channelArn: string;
+
+  /**
+   * Adds a stream key for this IVS Channel.
+   * @param id construct ID
+   */
+  addStreamKey(id: string): StreamKey;
 }
 
 /**
  * Reference to a new or existing IVS Channel
  */
 abstract class ChannelBase extends core.Resource implements IChannel {
-  // these stay abstract at this level
   public abstract readonly channelArn: string;
+
+  public addStreamKey(id: string): StreamKey {
+    return new StreamKey(this, id, {
+      channel: this,
+    });
+  }
 }
 
 /**
@@ -63,14 +75,18 @@ export enum ChannelType {
  */
 export interface ChannelProps {
   /**
-   * Whether the channel is authorized. Default: false
+   * Whether the channel is authorized.
+   *
+   * If you wish to make an authorized channel, you will need to ensure that
+   * a PlaybackKeyPair has been uploaded to your account as this is used to
+   * validate the signed JWT that is required for authorization
    *
    * @default false
    */
   readonly authorized?: boolean;
 
   /**
-   * Whether the channel is authorized. Default: false
+   * Channel latency mode.
    *
    * @default LatencyMode.LOW
    */
@@ -85,7 +101,7 @@ export interface ChannelProps {
 
   /**
    * The channel type, which determines the allowable resolution and bitrate.
-   * If you exceed the allowable resolution or bitrate, the stream probably will disconnect immediately
+   * If you exceed the allowable resolution or bitrate, the stream will disconnect immediately
    *
    * @default ChannelType.STANDARD
    */

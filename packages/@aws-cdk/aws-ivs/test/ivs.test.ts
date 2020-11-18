@@ -96,7 +96,7 @@ test('channel latency mode', () => {
 
 test('channel from arn', () => {
   const stack = new Stack();
-  let channel = ivs.Channel.fromChannelArn(stack, 'Channel', 'arn:aws:ivs:us-west-2:123456789012:channel/abcdABCDefgh');
+  const channel = ivs.Channel.fromChannelArn(stack, 'Channel', 'arn:aws:ivs:us-west-2:123456789012:channel/abcdABCDefgh');
 
   expect(stack.resolve(channel.channelArn)).toBe('arn:aws:ivs:us-west-2:123456789012:channel/abcdABCDefgh');
 });
@@ -165,6 +165,43 @@ test('stream key mandatory properties', () => {
   expectStack(stack).toMatch({
     Resources: {
       StreamKey9F296F4F: {
+        Type: 'AWS::IVS::StreamKey',
+        Properties: {
+          ChannelArn: 'arn:aws:ivs:us-west-2:123456789012:channel/abcdABCDefgh',
+        },
+      },
+    },
+  });
+});
+
+test('channel and stream key.. at the same time', () => {
+  const stack = new Stack();
+  const channel = new ivs.Channel(stack, 'Channel');
+  channel.addStreamKey('StreamKey');
+
+  expectStack(stack).toMatch({
+    Resources: {
+      Channel4048F119: {
+        Type: 'AWS::IVS::Channel',
+      },
+      ChannelStreamKey60BDC2BE: {
+        Type: 'AWS::IVS::StreamKey',
+        Properties: {
+          ChannelArn: { 'Fn::GetAtt': ['Channel4048F119', 'Arn'] },
+        },
+      },
+    },
+  });
+});
+
+test('stream key from channel reference', () => {
+  const stack = new Stack();
+  const channel = ivs.Channel.fromChannelArn(stack, 'Channel', 'arn:aws:ivs:us-west-2:123456789012:channel/abcdABCDefgh');
+  channel.addStreamKey('StreamKey');
+
+  expectStack(stack).toMatch({
+    Resources: {
+      ChannelStreamKey60BDC2BE: {
         Type: 'AWS::IVS::StreamKey',
         Properties: {
           ChannelArn: 'arn:aws:ivs:us-west-2:123456789012:channel/abcdABCDefgh',

@@ -30,31 +30,32 @@ channel’s stream key to start your live stream.
 You can create a channel
 
 ```ts
-let myChannel = new ivs.Channel(this, 'Channel');
+const myChannel = new ivs.Channel(this, 'Channel');
 ```
 
+#### Importing an existing channel
 You can reference an existing channel, for example, if you need to create a
 stream key for an existing channel
 
 ```ts
-let myChannel = ivs.Channel.fromChannelArn(this, 'Channel', myChannelArn)
+const myChannelArn = 'arn:aws:ivs:us-west-2:123456789012:channel/abcdABCDefgh';
+const myChannel = ivs.Channel.fromChannelArn(this, 'Channel', myChannelArn);
 ```
 
-You can create stream keys
+#### Stream Keys
+
+You can create a stream key for a given channel
 
 ```ts
-new ivs.StreamKey(this, 'StreamKey', {
-  channel: myChannel,
-});
+const myStreamKey = myChannel.addStreamKey('StreamKey');
 ```
 
-### Private Streams
+#### Private Channels
 
-Amazon Interactive Video Service (IVS) offers customers the ability to create
-private channels, allowing customers to restrict their streams by channel or
-viewer. Customers control access to video playback by enabling playback
-authorization on channels and generating signed JSON Web Tokens (JWTs) for
-authorized playback requests.
+Amazon IVS offers customers the ability to create private channels, allowing
+customers to restrict their streams by channel or viewer. Customers control
+access to video playback by enabling playback authorization on channels and
+generating signed JSON Web Tokens (JWTs) for authorized playback requests.
 
 A playback token is a JWT that the Amazon IVS customer signs (with a playback
 authorization key) and includes with every playback request for a channel that
@@ -64,7 +65,7 @@ In order for Amazon IVS to validate the token, the customer needs to upload
 the public key that corresponds to the private key they used to sign the token.
 
 ```ts
-new ivs.PlaybackKeyPair(this, 'PlaybackKeyPair', {
+const keyPair = new ivs.PlaybackKeyPair(this, 'PlaybackKeyPair', {
   publicKeyMaterial: myPublicKeyPemString,
 });
 ```
