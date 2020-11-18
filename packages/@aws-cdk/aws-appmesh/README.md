@@ -242,14 +242,14 @@ By default, an HTTP based route will match on `/`. All matches must start with a
 
 ```typescript
 router.addRoute('route-http', {
-  routeSpec: appmesh.RouteSpec.http({
+  routeSpec: appmesh.RouteSpec.grpc({
     weightedTargets: [
       {
         virtualNode: node,
       },
     ],
     match: {
-      prefixPath: '/node',
+      serviceName: 'my-service.default.svc.cluster.local',
     },
   }),
 });
