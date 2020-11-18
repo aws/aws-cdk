@@ -3,7 +3,7 @@ import { Asset, AssetOptions } from '@aws-cdk/aws-s3-assets';
 import { Construct } from '@aws-cdk/core';
 
 /**
- * Constructs for types of environment filess
+ * Constructs for types of environment files
  */
 export abstract class EnvironmentFile {
   /**
