@@ -1,5 +1,6 @@
 import { spawnSync, SpawnSyncOptions } from 'child_process';
 import * as fs from 'fs';
+import * as os from 'os';
 import * as path from 'path';
 
 // From https://github.com/errwischt/stacktrace-parser/blob/master/src/stack-trace-parser.js
@@ -57,8 +58,9 @@ export function nodeMajorVersion(): number {
 export function findUp(name: string, directory: string = process.cwd()): string | undefined {
   const absoluteDirectory = path.resolve(directory);
 
-  if (fs.existsSync(path.join(directory, name))) {
-    return directory;
+  const file = path.join(directory, name);
+  if (fs.existsSync(file)) {
+    return file;
   }
 
   const { root } = path.parse(absoluteDirectory);
@@ -87,4 +89,54 @@ export function exec(cmd: string, args: string[], options?: SpawnSyncOptions) {
   }
 
   return proc;
+}
+
+/**
+ * Extract dependencies from a package.json
+ */
+export function extractDependencies(pkgPath: string, modules: string[]): { [key: string]: string } {
+  const dependencies: { [key: string]: string } = {};
+
+  // Use require for cache
+  const pkgJson = require(pkgPath); // eslint-disable-line @typescript-eslint/no-require-imports
+
+  const pkgDependencies = {
+    ...pkgJson.dependencies ?? {},
+    ...pkgJson.devDependencies ?? {},
+    ...pkgJson.peerDependencies ?? {},
+  };
+
+  for (const mod of modules) {
+    if (!pkgDependencies[mod]) {
+      throw new Error(`Cannot extract version for module '${mod}' in package.json`);
+    }
+    dependencies[mod] = pkgDependencies[mod];
+  }
+
+  return dependencies;
+}
+
+/**
+ * Returns the installed esbuild version
+ */
+export function getEsBuildVersion(): string | undefined {
+  try {
+    // --no-install ensures that we are checking for an installed version
+    // (either locally or globally)
+    const npx = os.platform() === 'win32' ? 'npx.cmd' : 'npx';
+    const esbuild = spawnSync(npx, ['--no-install', 'esbuild', '--version']);
+
+    if (esbuild.status !== 0 || esbuild.error) {
+      return undefined;
+    }
+
+    return esbuild.stdout.toString().trim();
+  } catch (err) {
+    return undefined;
+  }
+}
+
+export enum LockFile {
+  NPM = 'package-lock.json',
+  YARN = 'yarn.lock'
 }
