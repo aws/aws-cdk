@@ -79,7 +79,7 @@ export interface ChannelProps {
   /**
    * Channel name.
    *
-   * @default Empty String
+   * @default - None
    */
   readonly name?: string;
 
