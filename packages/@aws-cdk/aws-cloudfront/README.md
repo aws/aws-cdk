@@ -277,7 +277,7 @@ new cloudfront.Distribution(this, 'myDist', {
 > `EdgeFunctionExperimental` has the same interface as `Function` and can be created and used interchangably.
 
 ```ts
-// As an *experimental* replacement, `cloudfront.EdgeFunctionExperimental` can be used in place of `lambda.Function`
+// `cloudfront.EdgeFunctionExperimental` can be used in place of `lambda.Function`.
 // It will automatically create the `Function` in `us-east-1`, regardless of the current stack's region.
 const myFunc = new cloudfront.EdgeFunctionExperimental(this, 'MyFunction', {
   runtime: lambda.Runtime.NODEJS_10_X,

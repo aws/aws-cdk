@@ -67,16 +67,18 @@ describe('stacks', () => {
 
     expect(fnStack).toHaveResource('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
-        Statement: [{
-          Action: 'sts:AssumeRole',
-          Effect: 'Allow',
-          Principal: {
-            Service: [
-              'lambda.amazonaws.com',
-              'edgelambda.amazonaws.com',
-            ],
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: { Service: 'lambda.amazonaws.com' },
           },
-        }],
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: { Service: 'edgelambda.amazonaws.com' },
+          },
+        ],
         Version: '2012-10-17',
       },
       ManagedPolicyArns: [
@@ -86,7 +88,7 @@ describe('stacks', () => {
     expect(fnStack).toHaveResource('AWS::Lambda::Function', {
       Code: { ZipFile: 'foo' },
       Handler: 'index.handler',
-      Role: { 'Fn::GetAtt': ['MyFnServiceRole10C2021A', 'Arn'] },
+      Role: { 'Fn::GetAtt': ['MyFnServiceRoleF3016589', 'Arn'] },
       Runtime: 'nodejs12.x',
     });
     expect(fnStack).toHaveResource('AWS::Lambda::Version', {
@@ -94,7 +96,7 @@ describe('stacks', () => {
     });
     expect(fnStack).toHaveResource('AWS::SSM::Parameter', {
       Type: 'String',
-      Value: { Ref: 'MyFnCurrentVersion309B29FCd8b4ee70a56dc81a87f1bef55d3f737c' },
+      Value: { Ref: 'MyFnCurrentVersion309B29FC29686ce94039b6e08d1645be854b3ac9' },
       Name: 'EdgeFunctionArnMyFn',
     });
   });
@@ -108,16 +110,18 @@ describe('stacks', () => {
 
     expect(stack).toHaveResource('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
-        Statement: [{
-          Action: 'sts:AssumeRole',
-          Effect: 'Allow',
-          Principal: {
-            Service: [
-              'lambda.amazonaws.com',
-              'edgelambda.amazonaws.com',
-            ],
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: { Service: 'lambda.amazonaws.com' },
           },
-        }],
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: { Service: 'edgelambda.amazonaws.com' },
+          },
+        ],
         Version: '2012-10-17',
       },
       ManagedPolicyArns: [
@@ -127,7 +131,7 @@ describe('stacks', () => {
     expect(stack).toHaveResource('AWS::Lambda::Function', {
       Code: { ZipFile: 'foo' },
       Handler: 'index.handler',
-      Role: { 'Fn::GetAtt': ['MyFnMyFnServiceRole787DF257', 'Arn'] },
+      Role: { 'Fn::GetAtt': ['MyFnServiceRole3F9D41E1', 'Arn'] },
       Runtime: 'nodejs12.x',
     });
     expect(stack).toHaveResource('AWS::Lambda::Version', {
