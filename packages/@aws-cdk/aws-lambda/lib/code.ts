@@ -82,8 +82,8 @@ export abstract class Code {
   /**
    * Use an existing ECR image as the Lambda code.
    */
-  public static fromEcrRepository(repository: ecr.IRepository, tag: string = 'latest') {
-    return new EcrImage(repository, tag);
+  public static fromEcrRepository(repository: ecr.IRepository, props?: EcrImageProps) {
+    return new EcrImage(repository, props);
   }
 
   /**
@@ -140,7 +140,34 @@ export interface CodeConfig {
    * URI to the Docker image (mutually exclusive with `s3Location` and `inlineCode`).
    * @default - code is not an ECR container image
    */
-  readonly imageUri?: string;
+  readonly image?: ImageConfig;
+}
+
+/**
+ * Result of the bind when an ECR image is used.
+ */
+export interface ImageConfig {
+  /**
+   * URI to the Docker image (mutually exclusive with `s3Location` and `inlineCode`).
+   */
+  readonly imageUri: string;
+
+  /**
+   * Specify or override the CMD on the specified Docker image or Dockerfile.
+   * This needs to be in the 'exec form', viz., `[ 'executable', 'param1', 'param2' ]`.
+   * @see https://docs.docker.com/engine/reference/builder/#cmd
+   * @default - use the CMD specified in the docker image or Dockerfile.
+   */
+  readonly cmd?: string[];
+
+  /**
+   * Specify or override the ENTRYPOINT on the specified Docker image or Dockerfile.
+   * An ENTRYPOINT allows you to configure a container that will run as an executable.
+   * This needs to be in the 'exec form', viz., `[ 'executable', 'param1', 'param2' ]`.
+   * @see https://docs.docker.com/engine/reference/builder/#entrypoint
+   * @default - use the ENTRYPOINT in the docker image or Dockerfile.
+   */
+  readonly entrypoint?: string[];
 }
 
 /**
@@ -351,12 +378,41 @@ export class CfnParametersCode extends Code {
 }
 
 /**
+ * Properties to initialize a new EcrImage
+ */
+export interface EcrImageProps {
+  /**
+   * Specify or override the CMD on the specified Docker image or Dockerfile.
+   * This needs to be in the 'exec form', viz., `[ 'executable', 'param1', 'param2' ]`.
+   * @see https://docs.docker.com/engine/reference/builder/#cmd
+   * @default - use the CMD specified in the docker image or Dockerfile.
+   */
+  readonly cmd?: string[];
+
+  /**
+   * Specify or override the ENTRYPOINT on the specified Docker image or Dockerfile.
+   * An ENTRYPOINT allows you to configure a container that will run as an executable.
+   * This needs to be in the 'exec form', viz., `[ 'executable', 'param1', 'param2' ]`.
+   * @see https://docs.docker.com/engine/reference/builder/#entrypoint
+   * @default - use the ENTRYPOINT in the docker image or Dockerfile.
+   */
+  readonly entrypoint?: string[];
+
+  /**
+   * The image tag to use when pulling the image from ECR
+   * @see https://docs.aws.amazon.com/AmazonECR/latest/userguide/ecr-using-tags.html
+   * @default 'latest'
+   */
+  readonly tag?: string;
+}
+
+/**
  * Represents a Docker image in ECR that can be bound as Lambda Code.
  */
 export class EcrImage extends Code {
   public readonly isInline: boolean = false;
 
-  constructor(private readonly repository: ecr.IRepository, private readonly tag: string) {
+  constructor(private readonly repository: ecr.IRepository, private readonly props: EcrImageProps = {}) {
     super();
   }
 
@@ -366,7 +422,11 @@ export class EcrImage extends Code {
       principals: [new iam.ServicePrincipal('lambda.amazonaws.com')],
     }));
     return {
-      imageUri: this.repository.repositoryUriForTag(this.tag),
+      image: {
+        imageUri: this.repository.repositoryUriForTag(this.props?.tag ?? 'latest'),
+        cmd: this.props.cmd,
+        entrypoint: this.props.entrypoint,
+      },
     };
   }
 }
@@ -375,6 +435,22 @@ export class EcrImage extends Code {
  * Properties to initialize a new AssetImage
  */
 export interface AssetImageProps extends ecr_assets.DockerImageAssetOptions {
+  /**
+   * Specify or override the CMD on the specified Docker image or Dockerfile.
+   * This needs to be in the 'exec form', viz., `[ 'executable', 'param1', 'param2' ]`.
+   * @see https://docs.docker.com/engine/reference/builder/#cmd
+   * @default - use the CMD specified in the docker image or Dockerfile.
+   */
+  readonly cmd?: string[];
+
+  /**
+   * Specify or override the ENTRYPOINT on the specified Docker image or Dockerfile.
+   * An ENTRYPOINT allows you to configure a container that will run as an executable.
+   * This needs to be in the 'exec form', viz., `[ 'executable', 'param1', 'param2' ]`.
+   * @see https://docs.docker.com/engine/reference/builder/#entrypoint
+   * @default - use the ENTRYPOINT in the docker image or Dockerfile.
+   */
+  readonly entrypoint?: string[];
 }
 
 /**
@@ -399,7 +475,11 @@ export class AssetImage extends Code {
     }));
 
     return {
-      imageUri: asset.imageUri,
+      image: {
+        imageUri: asset.imageUri,
+        entrypoint: this.props.entrypoint,
+        cmd: this.props.cmd,
+      },
     };
   }
 }

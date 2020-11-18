@@ -598,7 +598,7 @@ export class Function extends FunctionBase {
         s3Key: code.s3Location && code.s3Location.objectKey,
         s3ObjectVersion: code.s3Location && code.s3Location.objectVersion,
         zipFile: code.inlineCode,
-        imageUri: code.imageUri,
+        imageUri: code.image?.imageUri,
       },
       layers: Lazy.list({ produce: () => this.layers.map(layer => layer.layerVersionArn) }, { omitEmpty: true }),
       handler: props.handler,
@@ -613,6 +613,10 @@ export class Function extends FunctionBase {
       deadLetterConfig: this.buildDeadLetterConfig(this.deadLetterQueue),
       tracingConfig: this.buildTracingConfig(props),
       reservedConcurrentExecutions: props.reservedConcurrentExecutions,
+      imageConfig: undefinedIfNoKeys({
+        command: code.image?.cmd,
+        entryPoint: code.image?.entrypoint,
+      }),
     });
 
     resource.node.addDependency(this.role);
@@ -980,7 +984,7 @@ function extractNameFromArn(arn: string) {
 
 export function verifyCodeConfig(code: CodeConfig, props: FunctionProps) {
   // mutually exclusive
-  const codeType = [code.inlineCode, code.s3Location, code.imageUri];
+  const codeType = [code.inlineCode, code.s3Location, code.image];
   const atleastOne = codeType.reduce((agg, type) => {
     if (type !== undefined) {
       if (agg) {
@@ -1006,4 +1010,9 @@ export function verifyCodeConfig(code: CodeConfig, props: FunctionProps) {
   if (code.inlineCode && !props.runtime!.supportsInlineCode) {
     throw new Error(`Inline source not allowed for ${props.runtime!.name}`);
   }
+}
+
+function undefinedIfNoKeys<A>(struct: A): A | undefined {
+  const allUndefined = Object.values(struct).every(val => val === undefined);
+  return allUndefined ? undefined : struct;
 }

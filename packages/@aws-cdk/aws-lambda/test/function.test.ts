@@ -1836,11 +1836,17 @@ describe('function', () => {
       })).toThrow(/lambda.Code must specify one of/);
 
       expect(() => new lambda.Function(stack, 'Fn2', {
-        code: new MyCode({ inlineCode: 'foo', imageUri: 'bar' }),
+        code: new MyCode({
+          inlineCode: 'foo',
+          image: { imageUri: 'bar' },
+        }),
       })).toThrow(/lambda.Code must specify one of/);
 
       expect(() => new lambda.Function(stack, 'Fn3', {
-        code: new MyCode({ imageUri: 'baz', s3Location: { bucketName: 's3foo', objectKey: 's3bar' } }),
+        code: new MyCode({
+          image: { imageUri: 'baz' },
+          s3Location: { bucketName: 's3foo', objectKey: 's3bar' },
+        }),
       })).toThrow(/lambda.Code must specify one of/);
 
       expect(() => new lambda.Function(stack, 'Fn4', {
@@ -1882,7 +1888,7 @@ describe('function', () => {
       })).toThrow(/runtime must be specified/);
     });
 
-    test('runtime can be ommitted for container assets', () => {
+    test('runtime can be omitted for container assets', () => {
       const stack = new cdk.Stack();
 
       expect(() => new lambda.Function(stack, 'Fn', {
@@ -1895,13 +1901,37 @@ describe('function', () => {
 
       new lambda.Function(stack, 'Fn1', {
         code: new MyCode({
-          imageUri: 'ecr image uri',
+          image: {
+            imageUri: 'ecr image uri',
+          },
         }),
       });
 
       expect(stack).toHaveResource('AWS::Lambda::Function', {
         Code: {
           ImageUri: 'ecr image uri',
+        },
+        ImageConfig: ABSENT,
+      });
+    });
+
+    test('imageConfig is correctly configured', () => {
+      const stack = new cdk.Stack();
+
+      new lambda.Function(stack, 'Fn1', {
+        code: new MyCode({
+          image: {
+            imageUri: 'ecr image uri',
+            cmd: ['cmd', 'param1'],
+            entrypoint: ['entrypoint', 'param2'],
+          },
+        }),
+      });
+
+      expect(stack).toHaveResource('AWS::Lambda::Function', {
+        ImageConfig: {
+          Command: ['cmd', 'param1'],
+          EntryPoint: ['entrypoint', 'param2'],
         },
       });
     });
