@@ -83,7 +83,7 @@ export class NodejsFunction extends lambda.Function {
     } else {
       const lockFile = findUp(LockFile.YARN) ?? findUp(LockFile.NPM);
       if (!lockFile) {
-        throw new Error('Cannot find a lock file. Please specify it with `depsFileLockPath`.');
+        throw new Error('Cannot find a package lock file (`yarn.lock` or `package-lock.json`). Please specify it with `depsFileLockPath`.');
       }
       depsLockFilePath = lockFile;
     }

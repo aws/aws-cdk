@@ -79,14 +79,15 @@ Use the [default image provided by `@aws-cdk/aws-lambda-nodejs`](https://github.
 as a source of inspiration.
 
 ### Lock file
-The `NodejsFunction` tries to automatically determine your project lock file
-(`package-lock.json` or `yarn.lock`). When bundling in a Docker container, the
-path containing this lock file is used as the source (`/asset-input`) for the
-volume mounted in the container.
+The `NodejsFunction` requires a dependencies lock file (`yarn.lock` or
+`package-lock.json`). When bundling in a Docker container, the path containing this
+lock file is used as the source (`/asset-input`) for the volume mounted in the
+container.
 
-Alternatively, you can specify the `depsLockFilePath` prop manually. In this case you
-need to ensure that this path includes `entry` and any module/dependencies used
-by your function. Otherwise bundling will fail.
+By default, it will try to automatically determine your project lock file.
+Alternatively, you can specify the `depsLockFilePath` prop manually. In this
+case you need to ensure that this path includes `entry` and any module/dependencies
+used by your function. Otherwise bundling will fail.
 
 ### Configuring esbuild
 The `NodejsFunction` construct exposes some [esbuild](https://esbuild.github.io/) options via properties: `minify`, `sourceMaps` and `target`.
@@ -119,8 +120,8 @@ new lambda.NodejsFunction(this, 'my-handler', {
 ```
 
 The modules listed in `nodeModules` must be present in the `package.json`'s dependencies. The
-same version will be used for installation. If a lock file is detected (`package-lock.json` or
-`yarn.lock`) it will be used along with the right installer (`npm` or `yarn`).
+same version will be used for installation. The lock file (`yarn.lock` or `package-lock.json`)
+will be used along with the right installer (`yarn` or `npm`).
 
 ### Local bundling
 If esbuild is available it will be used to bundle your code in your environment. Otherwise,
