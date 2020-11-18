@@ -146,7 +146,7 @@ export class ThirdPartyAttributions extends ValidationRule {
     if (pkg.json.private && !alwaysCheck.includes(pkg.json.name)) {
       return;
     }
-    const bundled = pkg.getAllBundledDependencies();
+    const bundled = pkg.getAllBundledDependencies().filter(dep => !dep.startsWith('@aws-cdk'));
     const lines = fs.readFileSync(path.join(pkg.packageRoot, 'NOTICE'), { encoding: 'utf8' }).split('\n');
 
     const re = /^\*\* (\S+)/;
@@ -1460,7 +1460,21 @@ export class JestSetup extends ValidationRule {
 
 export class UbergenPackageVisibility extends ValidationRule {
   public readonly name = 'ubergen/package-visibility';
-  private readonly publicPackages = ['aws-cdk-lib', 'cdk', 'aws-cdk', 'awslint'];
+
+  // These include dependencies of the CDK CLI (aws-cdk).
+  private readonly publicPackages = [
+    '@aws-cdk/cfnspec',
+    '@aws-cdk/cloud-assembly-schema',
+    '@aws-cdk/cloudformation-diff',
+    '@aws-cdk/cx-api',
+    '@aws-cdk/region-info',
+    '@aws-cdk/yaml-cfn',
+    'aws-cdk-lib',
+    'aws-cdk',
+    'awslint',
+    'cdk',
+    'cdk-assets',
+  ];
 
   public validate(pkg: PackageJson): void {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
