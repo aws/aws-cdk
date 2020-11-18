@@ -43,17 +43,17 @@ export interface IKey extends IResource {
   grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
 
   /**
-   * Grant decryption permisisons using this key to the given principal
+   * Grant decryption permissions using this key to the given principal
    */
   grantDecrypt(grantee: iam.IGrantable): iam.Grant;
 
   /**
-   * Grant encryption permisisons using this key to the given principal
+   * Grant encryption permissions using this key to the given principal
    */
   grantEncrypt(grantee: iam.IGrantable): iam.Grant;
 
   /**
-   * Grant encryption and decryption permisisons using this key to the given principal
+   * Grant encryption and decryption permissions using this key to the given principal
    */
   grantEncryptDecrypt(grantee: iam.IGrantable): iam.Grant;
 }
