@@ -362,3 +362,11 @@ The following environment variables affect aws-cdk:
 
 - `CDK_DISABLE_VERSION_CHECK`: If set, disable automatic check for newer versions.
 - `CDK_NEW_BOOTSTRAP`: use the modern bootstrapping stack.
+
+
+#### Supported credential providers
+
+- (shared) config file
+- ecs
+- eks with WEB_IDENTITY_TOKEN_FILE
+- Instance profile
