@@ -35,7 +35,7 @@
     "@types/jest": "^26.0.15",
     "@types/jszip": "^3.4.1",
     "@types/mock-fs": "^4.13.0",
-    "@types/node": "^10.17.45",
+    "@types/node": "^10.17.46",
     "@types/yargs": "^15.0.10",
     "cdk-build-tools": "0.0.0",
     "jest": "^26.6.3",
