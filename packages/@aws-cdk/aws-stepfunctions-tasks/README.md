@@ -26,6 +26,8 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
   - [ResultPath](#resultpath)
 - [Parameters](#task-parameters-from-the-state-json)
 - [Evaluate Expression](#evaluate-expression)
+- [API Gateway](#api-gateway)
+  - [Invoke](#invoke)
 - [Athena](#athena)
   - [StartQueryExecution](#startQueryExecution)
   - [GetQueryExecution](#getQueryExecution)
@@ -210,6 +212,25 @@ The `EvaluateExpression` supports a `runtime` prop to specify the Lambda
 runtime to use to evaluate the expression. Currently, the only runtime
 supported is `lambda.Runtime.NODEJS_10_X`.
 
+
+## API Gateway
+
+Step Functions supports [API Gateway](https://docs.aws.amazon.com/step-functions/latest/dg/connect-api-gateway.html) through the service integration pattern.
+
+### Invoke
+
+The [Invoke](https://docs.aws.amazon.com/step-functions/latest/dg/connect-api-gateway.html) API calls the API endpoint.
+
+```ts
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+import * as tasks from `@aws-cdk/aws-stepfunctions-tasks`;
+
+const invokeJob = new tasks.ApiGatewayInvoke(stack, 'Invoke APIGW', {
+  apiEndpoint: 'APIID.execute-api.REGION.amazonaws.com',
+  stage: 'prod',
+  method: ApiGatewayMethodType.GET,
+});
+```
 
 ## Athena
 

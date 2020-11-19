@@ -43,3 +43,4 @@ export * from './athena/start-query-execution';
 export * from './athena/stop-query-execution';
 export * from './athena/get-query-execution';
 export * from './athena/get-query-results';
+export * from './apigateway/invoke';
