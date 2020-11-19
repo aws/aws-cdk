@@ -1,4 +1,4 @@
-import { expect, haveResourceLike } from '@aws-cdk/assert';
+import { expect, haveResourceLike, objectLike, SynthUtils } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';
@@ -64,17 +64,53 @@ nodeunitShim({
 
   'action name validation': {
     'throws an exception when adding an Action with an empty name to the Pipeline'(test: Test) {
-      const stack = new cdk.Stack();
+      // GIVEN
+      test.throws(() => {
+        new FakeSourceAction({
+          actionName: '',
+          output: new codepipeline.Artifact(),
+        });
+      }, /Action name must match regular expression:/);
+
+      test.done();
+    },
+
+    'fail validation if Action name is changed after creation'(test: Test) {
+      // GIVEN
       const action = new FakeSourceAction({
-        actionName: '',
+        actionName: 'a',
         output: new codepipeline.Artifact(),
       });
 
+      // WHEN
+      test.throws(() => action.actionName = '', /Action name must match regular expression:/);
+
+      test.done();
+    },
+
+    'cannot add Actions with duplicate names to the Pipeline'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
       const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
       const stage = pipeline.addStage({ stageName: 'Source' });
-      test.throws(() => {
-        stage.addAction(action);
-      }, /Action name must match regular expression:/);
+      const artifact = new codepipeline.Artifact();
+      const action1 = new FakeSourceAction({
+        actionName: 'a',
+        output: artifact,
+      });
+      const action2 = new FakeBuildAction({
+        actionName: 'b',
+        runOrder: 2,
+        input: artifact,
+      });
+
+      // WHEN
+      stage.addAction(action1);
+      stage.addAction(action2);
+      action2.actionName = 'a';
+
+      // THEN
+      test.throws(() => SynthUtils.toCloudFormation(stack), /already contains an action with name/);
 
       test.done();
     },
@@ -275,6 +311,47 @@ nodeunitShim({
     test.done();
   },
 
+  'runOrder can be mutated after creation'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
+    const artifact = new codepipeline.Artifact();
+    const action1 = new FakeSourceAction({
+      actionName: 'a',
+      output: artifact,
+    });
+    const action2 = new FakeBuildAction({
+      actionName: 'b',
+      input: artifact,
+    });
+    pipeline.addStage({ stageName: 'Source' }).addAction(action1);
+    pipeline.addStage({ stageName: 'Build' }).addAction(action2);
+
+    // WHEN
+    action1.runOrder = 5;
+    action2.runOrder = 3;
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+      Stages: [
+        {
+          Name: 'Source',
+          Actions: [
+            objectLike({ RunOrder: 5 }),
+          ],
+        },
+        {
+          Name: 'Build',
+          Actions: [
+            objectLike({ RunOrder: 3 }),
+          ],
+        },
+      ],
+    }));
+
+    test.done();
+  },
+
   'input Artifacts': {
     'can be added multiple times to an Action safely'(test: Test) {
       const artifact = new codepipeline.Artifact('SomeArtifact');
@@ -301,6 +378,51 @@ nodeunitShim({
           extraInputs: [artifact2],
         });
       });
+
+      test.done();
+    },
+
+    'can be changed after instantiation'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const source1 = new codepipeline.Artifact('Source1');
+      const sourceAction = new FakeSourceAction({
+        actionName: 'Source',
+        output: source1,
+      });
+      const buildAction = new FakeBuildAction({
+        actionName: 'Build',
+        input: source1,
+      });
+      new codepipeline.Pipeline(stack, 'Pipeline', {
+        stages: [
+          { stageName: 'Source', actions: [sourceAction] },
+          { stageName: 'Build', actions: [buildAction] },
+        ],
+      });
+
+      // WHEN
+      const source2 = new codepipeline.Artifact('Source2');
+      sourceAction.testChangeOutputs([source2]);
+      buildAction.testChangeInputs([source2]);
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+        Stages: [
+          {
+            Name: 'Source',
+            Actions: [
+              objectLike({ OutputArtifacts: [{ Name: 'Source2' }] }),
+            ],
+          },
+          {
+            Name: 'Build',
+            Actions: [
+              objectLike({ InputArtifacts: [{ Name: 'Source2' }] }),
+            ],
+          },
+        ],
+      }));
 
       test.done();
     },

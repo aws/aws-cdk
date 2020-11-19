@@ -1,33 +1,15 @@
-import * as events from '@aws-cdk/aws-events';
-import { Construct, ResourceEnvironment, Stack, Token, TokenComparison } from '@aws-cdk/core';
-import { ActionBindOptions, ActionConfig, ActionProperties, IAction, IPipeline, IStage } from '../action';
+import { ResourceEnvironment, Stack, Token, TokenComparison } from '@aws-cdk/core';
+import { IAction, IPipeline } from '../action';
 
 /**
- * Helper routines to work with Actions
+ * Helper routines reason about an Action's environment
  *
- * Can't put these on Action themselves since we only have an interface
- * and every library would need to reimplement everything (there is no
- * `ActionBase`).
- *
- * So here go the members that should have gone onto the Action class
- * but can't.
- *
- * It was probably my own idea but I don't want it anymore:
- * https://github.com/aws/aws-cdk/issues/10393
+ * These are inappropriate to put on Action directly because they're only
+ * interesting to the pipeline itself, and we can't put them on `FullActionDescriptor`
+ * either since we need them before we have a `FullActionDescriptor`.
  */
-export class RichAction implements IAction {
-  public readonly actionProperties: ActionProperties;
-
-  constructor(private readonly action: IAction, private readonly pipeline: IPipeline) {
-    this.actionProperties = action.actionProperties;
-  }
-
-  public bind(scope: Construct, stage: IStage, options: ActionBindOptions): ActionConfig {
-    return this.action.bind(scope, stage, options);
-  }
-
-  public onStateChange(name: string, target?: events.IRuleTarget, options?: events.RuleProps): events.Rule {
-    return this.action.onStateChange(name, target, options);
+export class ActionEnvironment {
+  constructor(public readonly action: IAction, private readonly pipeline: IPipeline) {
   }
 
   public get isCrossRegion(): boolean {
@@ -46,7 +28,7 @@ export class RichAction implements IAction {
    * (which can happen for imported resources).
    */
   public get resourceStack(): Stack | undefined {
-    const actionResource = this.actionProperties.resource;
+    const actionResource = this.action.actionProperties.resource;
     if (!actionResource) {
       return undefined;
     }

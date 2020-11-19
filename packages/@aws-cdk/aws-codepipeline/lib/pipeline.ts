@@ -9,11 +9,11 @@ import {
 import { Construct } from 'constructs';
 import { ActionCategory, IAction, IPipeline, IStage } from './action';
 import { CfnPipeline } from './codepipeline.generated';
+import { ActionEnvironment } from './private/action-environment';
 import { CrossRegionSupportConstruct, CrossRegionSupportStack } from './private/cross-region-support-stack';
 import { FullActionDescriptor } from './private/full-action-descriptor';
-import { RichAction } from './private/rich-action';
 import { Stage } from './private/stage';
-import { validateName, validateNamespaceName, validateSourceAction } from './private/validation';
+import { validateName } from './private/validation';
 
 /**
  * Allows you to control where to place a new Stage when it's added to the Pipeline.
@@ -251,7 +251,7 @@ export class Pipeline extends PipelineBase {
     let propsBucket = this.getArtifactBucketFromProps(props);
 
     if (!propsBucket) {
-      let encryptionKey;
+      let encryptionKey: kms.Key | undefined;
 
       if (this.crossAccountKeys) {
         encryptionKey = new kms.Key(this, 'ArtifactsBucketEncryptionKey', {
@@ -344,7 +344,7 @@ export class Pipeline extends PipelineBase {
    * Adds a statement to the pipeline role.
    */
   public addToRolePolicy(statement: iam.PolicyStatement) {
-    this.role.addToPolicy(statement);
+    this.role.addToPrincipalPolicy(statement);
   }
 
   /**
@@ -394,31 +394,35 @@ export class Pipeline extends PipelineBase {
 
   /** @internal */
   public _attachActionToPipeline(stage: Stage, action: IAction, actionScope: CoreConstruct): FullActionDescriptor {
-    const richAction = new RichAction(action, this);
+    const actionEnv = new ActionEnvironment(action, this);
 
     // handle cross-region actions here
-    const crossRegionInfo = this.ensureReplicationResourcesExistFor(richAction);
+    const crossRegionInfo = this.ensureReplicationResourcesExistFor(actionEnv);
 
     // get the role for the given action, handling if it's cross-account
-    const actionRole = this.getRoleForAction(stage, richAction, actionScope);
-
-    // // CodePipeline Variables
-    validateNamespaceName(richAction.actionProperties.variablesNamespace);
+    const actionRole = this.getRoleForAction(stage, actionEnv, actionScope);
 
     // bind the Action
-    const actionConfig = richAction.bind(actionScope, stage, {
-      role: actionRole ? actionRole : this.role,
+    const config = action.bind(actionScope, stage, {
+      role: actionRole ?? this.role,
       bucket: crossRegionInfo.artifactBucket,
     });
 
-    return new FullActionDescriptor({
-      // must be 'action', not 'richAction',
-      // as those are returned by the IStage.actions property,
-      // and it's important customers of Pipeline get the same instance
-      // back as they added to the pipeline
+    if (config.boundAction && config.configuration) {
+      throw new Error('The Action returned both a \'configuration\' and a \'boundAction\'; it should return one or the other');
+    }
+
+    // Use the returned bound action or build a mock one (for backwards compat)
+    const boundAction = config.boundAction ?? {
       action,
-      actionConfig,
+      configuration: () => config.configuration,
+    };
+
+    return new FullActionDescriptor({
+      boundAction,
+      // actionRole may be undefined for non-AWS actions, otherwise it will always be set.
       actionRole,
+      // actionRegion is undefined if it's the same as the pipeline region
       actionRegion: crossRegionInfo.region,
     });
   }
@@ -440,7 +444,7 @@ export class Pipeline extends PipelineBase {
     ];
   }
 
-  private ensureReplicationResourcesExistFor(action: RichAction): CrossRegionInfo {
+  private ensureReplicationResourcesExistFor(action: ActionEnvironment): CrossRegionInfo {
     if (!action.isCrossRegion) {
       return {
         artifactBucket: this.artifactBucket,
@@ -452,8 +456,8 @@ export class Pipeline extends PipelineBase {
     this.requireRegion();
 
     // source actions have to be in the same region as the pipeline
-    if (action.actionProperties.category === ActionCategory.SOURCE) {
-      throw new Error(`Source action '${action.actionProperties.actionName}' must be in the same region as the pipeline`);
+    if (action.action.actionProperties.category === ActionCategory.SOURCE) {
+      throw new Error(`Source action '${action.action.actionProperties.actionName}' must be in the same region as the pipeline`);
     }
 
     // check whether we already have a bucket in that region,
@@ -474,7 +478,7 @@ export class Pipeline extends PipelineBase {
   /**
    * Get or create the cross-region support construct for the given action
    */
-  private obtainCrossRegionSupportFor(action: RichAction) {
+  private obtainCrossRegionSupportFor(action: ActionEnvironment) {
     // this method is never called for non cross-region actions
     const actionRegion = action.effectiveRegion!;
     let crossRegionSupport = this._crossRegionSupport[actionRegion];
@@ -562,16 +566,18 @@ export class Pipeline extends PipelineBase {
    * Gets the role used for this action,
    * including handling the case when the action is supposed to be cross-account.
    *
+   * Returns `undefined` if this is a non-cross account/non-AWS action.
+   *
    * @param stage the stage the action belongs to
    * @param action the action to return/create a role for
    * @param actionScope the scope, unique to the action, to create new resources in
    */
-  private getRoleForAction(stage: Stage, action: RichAction, actionScope: Construct): iam.IRole | undefined {
+  private getRoleForAction(stage: Stage, action: ActionEnvironment, actionScope: Construct): iam.IRole | undefined {
     const pipelineStack = Stack.of(this);
 
     let actionRole = this.getRoleFromActionPropsOrGenerateIfCrossAccount(stage, action);
 
-    if (!actionRole && this.isAwsOwned(action)) {
+    if (!actionRole && this.isAwsOwned(action.action)) {
       // generate a Role for this specific Action
       actionRole = new iam.Role(actionScope, 'CodePipelineActionRole', {
         assumedBy: new iam.AccountPrincipal(pipelineStack.account),
@@ -580,7 +586,7 @@ export class Pipeline extends PipelineBase {
 
     // the pipeline role needs assumeRole permissions to the action role
     if (actionRole) {
-      this.role.addToPolicy(new iam.PolicyStatement({
+      this.role.addToPrincipalPolicy(new iam.PolicyStatement({
         actions: ['sts:AssumeRole'],
         resources: [actionRole.roleArn],
       }));
@@ -589,7 +595,14 @@ export class Pipeline extends PipelineBase {
     return actionRole;
   }
 
-  private getRoleFromActionPropsOrGenerateIfCrossAccount(stage: Stage, action: RichAction): iam.IRole | undefined {
+  /**
+   * Returns the role from the action if supplied or cross-account
+   *
+   * - If a Role is specified on the action, use that
+   * - Otherwise, if the action is cross-account, generate a role and use that.
+   * - If the action is not cross-account, return `undefined`.
+   */
+  private getRoleFromActionPropsOrGenerateIfCrossAccount(stage: Stage, action: ActionEnvironment): iam.IRole | undefined {
     const pipelineStack = Stack.of(this);
 
     // if we have a cross-account action, the pipeline's bucket must have a KMS key
@@ -598,7 +611,7 @@ export class Pipeline extends PipelineBase {
       const artifactBucket = this.ensureReplicationResourcesExistFor(action).artifactBucket;
       if (!artifactBucket.encryptionKey) {
         throw new Error(
-          `Artifact Bucket must have a KMS Key to add cross-account action '${action.actionProperties.actionName}' ` +
+          `Artifact Bucket must have a KMS Key to add cross-account action '${action.action.actionProperties.actionName}' ` +
           `(pipeline account: '${renderEnvDimension(this.env.account)}', action account: '${renderEnvDimension(action.effectiveAccount)}'). ` +
           'Create Pipeline with \'crossAccountKeys: true\' (or pass an existing Bucket with a key)',
         );
@@ -608,38 +621,38 @@ export class Pipeline extends PipelineBase {
     // if a Role has been passed explicitly, always use it
     // (even if the backing resource is from a different account -
     // this is how the user can override our default support logic)
-    if (action.actionProperties.role) {
-      if (this.isAwsOwned(action)) {
+    if (action.action.actionProperties.role) {
+      if (this.isAwsOwned(action.action)) {
         // the role has to be deployed before the pipeline
         // (our magical cross-stack dependencies will not work,
         // because the role might be from a different environment),
         // but _only_ if it's a new Role -
         // an imported Role should not add the dependency
-        if (action.actionProperties.role instanceof iam.Role) {
-          const roleStack = Stack.of(action.actionProperties.role);
+        if (action.action.actionProperties.role instanceof iam.Role) {
+          const roleStack = Stack.of(action.action.actionProperties.role);
           pipelineStack.addDependency(roleStack);
         }
 
-        return action.actionProperties.role;
+        return action.action.actionProperties.role;
       } else {
         // ...except if the Action is not owned by 'AWS',
         // as that would be rejected by CodePipeline at deploy time
         throw new Error("Specifying a Role is not supported for actions with an owner different than 'AWS' - " +
-          `got '${action.actionProperties.owner}' (Action: '${action.actionProperties.actionName}' in Stage: '${stage.stageName}')`);
+          `got '${action.action.actionProperties.owner}' (Action: '${action.action.actionProperties.actionName}' in Stage: '${stage.stageName}')`);
       }
     }
 
     // if we don't have a Role passed,
     // and the action is cross-account,
     // generate a Role in that other account stack
-    const otherAccountStack = this.getOtherStackIfActionIsCrossAccount(action);
+    const otherAccountStack = this.getOtherStackIfActionIsCrossAccount(action.action);
     if (!otherAccountStack) {
       return undefined;
     }
 
     // generate a role in the other stack, that the Pipeline will assume for executing this action
     const ret = new iam.Role(otherAccountStack,
-      `${Names.uniqueId(this)}-${stage.stageName}-${action.actionProperties.actionName}-ActionRole`, {
+      `${Names.uniqueId(this)}-${stage.stageName}-${action.action.actionProperties.actionName}-ActionRole`, {
         assumedBy: new iam.AccountPrincipal(pipelineStack.account),
         roleName: PhysicalName.GENERATE_IF_NEEDED,
       });
@@ -765,7 +778,7 @@ export class Pipeline extends PipelineBase {
     for (const stage of this._stages) {
       const onlySourceActionsPermitted = firstStage;
       for (const action of stage.actionDescriptors) {
-        errors.push(...validateSourceAction(onlySourceActionsPermitted, action.category, action.actionName, stage.stageName));
+        errors.push(...action.validateSourceActionPosition(onlySourceActionsPermitted, stage.stageName));
       }
       firstStage = false;
     }
@@ -931,6 +944,11 @@ export interface CrossRegionSupport {
 interface CrossRegionInfo {
   readonly artifactBucket: s3.IBucket;
 
+  /**
+   * Region where we're going to deploy
+   *
+   * @default - Same region as the pipeline
+   */
   readonly region?: string;
 }
 

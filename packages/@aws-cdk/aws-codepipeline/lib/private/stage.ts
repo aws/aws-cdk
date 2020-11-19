@@ -1,7 +1,6 @@
 import * as events from '@aws-cdk/aws-events';
 import * as cdk from '@aws-cdk/core';
 import { IAction, IPipeline, IStage } from '../action';
-import { Artifact } from '../artifact';
 import { CfnPipeline } from '../codepipeline.generated';
 import { Pipeline, StageProps } from '../pipeline';
 import { FullActionDescriptor } from './full-action-descriptor';
@@ -57,7 +56,7 @@ export class Stage implements IStage {
   public render(): CfnPipeline.StageDeclarationProperty {
     // first, assign names to output Artifacts who don't have one
     for (const action of this._actions) {
-      const outputArtifacts = action.outputs;
+      const outputArtifacts = action.action.actionProperties.outputs ?? [];
 
       const unnamedOutputs = outputArtifacts.filter(o => !o.artifactName);
 
@@ -74,21 +73,21 @@ export class Stage implements IStage {
 
     return {
       name: this.stageName,
-      actions: this._actions.map(action => this.renderAction(action)),
+      actions: this._actions.map(action => action.render()),
     };
   }
 
   public addAction(action: IAction): void {
-    const actionName = action.actionProperties.actionName;
-    // validate the name
-    validation.validateName('Action', actionName);
+    validation.validateName('Action', action.actionProperties.actionName);
 
-    // check for duplicate Actions and names
-    if (this._actions.find(a => a.actionName === actionName)) {
-      throw new Error(`Stage ${this.stageName} already contains an action with name '${actionName}'`);
-    }
+    // Action Names don't have to be unique yet (only at synth time), so we can't rely on the
+    // ActionName producing a unique scope id
+    const actionScope = new cdk.Construct(this.scope, this.freshScopeName(action.actionProperties.actionName));
 
-    this._actions.push(this.attachActionToPipeline(action));
+    // notify the Pipeline of the new Action
+    const fad = this._pipeline._attachActionToPipeline(this, action, actionScope);
+
+    this._actions.push(fad);
   }
 
   public onStateChange(name: string, target?: events.IRuleTarget, options?: events.RuleProps): events.Rule {
@@ -122,50 +121,29 @@ export class Stage implements IStage {
   private validateActions(): string[] {
     const ret = new Array<string>();
     for (const action of this.actionDescriptors) {
-      ret.push(...this.validateAction(action));
+      ret.push(...action.validateAction());
     }
+
+    // check for duplicate Actions and names
+    for (const dupe of duplicateStrings(this.actionDescriptors.map(a => a.actionName))) {
+      ret.push(`Stage ${this.stageName} already contains an action with name '${dupe}'`);
+    }
+
     return ret;
   }
 
-  private validateAction(action: FullActionDescriptor): string[] {
-    return validation.validateArtifactBounds('input', action.inputs, action.artifactBounds.minInputs,
-      action.artifactBounds.maxInputs, action.category, action.provider)
-      .concat(validation.validateArtifactBounds('output', action.outputs, action.artifactBounds.minOutputs,
-        action.artifactBounds.maxOutputs, action.category, action.provider),
-      );
-  }
-
-  private attachActionToPipeline(action: IAction): FullActionDescriptor {
-    // notify the Pipeline of the new Action
-    const actionScope = new cdk.Construct(this.scope, action.actionProperties.actionName);
-    return this._pipeline._attachActionToPipeline(this, action, actionScope);
-  }
-
-  private renderAction(action: FullActionDescriptor): CfnPipeline.ActionDeclarationProperty {
-    const outputArtifacts = cdk.Lazy.anyValue({ produce: () => this.renderArtifacts(action.outputs) }, { omitEmptyArray: true });
-    const inputArtifacts = cdk.Lazy.anyValue({ produce: () => this.renderArtifacts(action.inputs) }, { omitEmptyArray: true });
-    return {
-      name: action.actionName,
-      inputArtifacts,
-      outputArtifacts,
-      actionTypeId: {
-        category: action.category.toString(),
-        version: action.version,
-        owner: action.owner,
-        provider: action.provider,
-      },
-      configuration: action.configuration,
-      runOrder: action.runOrder,
-      roleArn: action.role ? action.role.roleArn : undefined,
-      region: action.region,
-      namespace: action.namespace,
-    };
-  }
-
-  private renderArtifacts(artifacts: Artifact[]): CfnPipeline.InputArtifactProperty[] {
-    return artifacts
-      .filter(a => a.artifactName)
-      .map(a => ({ name: a.artifactName! }));
+  /**
+   * Return an unused child scope id based on the given string
+   */
+  private freshScopeName(base: string) {
+    let ctr = 1;
+    let id = base;
+    while (true) {
+      if (this.scope.node.tryFindChild(id) === undefined) {
+        return id;
+      }
+      id = `${base}${++ctr}`;
+    }
   }
 }
 
@@ -173,4 +151,14 @@ function sanitizeArtifactName(artifactName: string): string {
   // strip out some characters that are legal in Stage and Action names,
   // but not in Artifact names
   return artifactName.replace(/[@.]/g, '');
+}
+
+function* duplicateStrings(xs: string[]): IterableIterator<string> {
+  const seen = new Set();
+  for (const x of xs) {
+    if (seen.has(x)) {
+      yield x;
+    }
+    seen.add(x);
+  }
 }

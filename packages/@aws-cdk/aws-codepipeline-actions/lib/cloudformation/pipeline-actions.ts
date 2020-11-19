@@ -60,9 +60,15 @@ interface CloudFormationActionProps extends codepipeline.CommonAwsActionProps {
  * Base class for Actions that execute CloudFormation
  */
 abstract class CloudFormationAction extends Action {
+  private _outputFile?: codepipeline.ArtifactPath;
+
   private readonly props: CloudFormationActionProps;
 
   constructor(props: CloudFormationActionProps, inputs: codepipeline.Artifact[] | undefined) {
+    const outputFile = props.outputFileName
+      ? (props.output || new codepipeline.Artifact(`${props.actionName}_${props.stackName}_Artifact`)).atPath(props.outputFileName)
+      : undefined;
+
     super({
       ...props,
       provider: 'CloudFormation',
@@ -74,12 +80,26 @@ abstract class CloudFormationAction extends Action {
         maxOutputs: 1,
       },
       inputs,
-      outputs: props.outputFileName
-        ? [props.output || new codepipeline.Artifact(`${props.actionName}_${props.stackName}_Artifact`)]
-        : undefined,
+      outputs: outputFile ? [outputFile.artifact] : undefined,
     });
 
+    this._outputFile = outputFile;
     this.props = props;
+  }
+
+  /**
+   * The JSON output file containing the Stack Outputs
+   */
+  public get outputFile(): codepipeline.ArtifactPath | undefined {
+    return this._outputFile;
+  }
+
+  /**
+   * The JSON output file containing the Stack Outputs
+   */
+  public set outputFile(outputFile: codepipeline.ArtifactPath | undefined) {
+    this._outputFile = outputFile;
+    this.changeOutputs(outputFile ? [outputFile.artifact] : []);
   }
 
   protected bound(_scope: cdk.Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
@@ -93,9 +113,12 @@ abstract class CloudFormationAction extends Action {
     }
 
     return {
-      configuration: {
-        StackName: this.props.stackName,
-        OutputFileName: this.props.outputFileName,
+      boundAction: {
+        action: this,
+        configuration: () => ({
+          StackName: this.props.stackName,
+          OutputFileName: this.outputFile?.fileName,
+        }),
       },
     };
   }
@@ -129,11 +152,13 @@ export class CloudFormationExecuteChangeSetAction extends CloudFormationAction {
 
     const actionConfig = super.bound(scope, stage, options);
     return {
-      ...actionConfig,
-      configuration: {
-        ...actionConfig.configuration,
-        ActionMode: 'CHANGE_SET_EXECUTE',
-        ChangeSetName: this.props2.changeSetName,
+      boundAction: {
+        action: this,
+        configuration: () => ({
+          ...superConfiguration(actionConfig),
+          ActionMode: 'CHANGE_SET_EXECUTE',
+          ChangeSetName: this.props2.changeSetName,
+        }),
       },
     };
   }
@@ -303,17 +328,16 @@ abstract class CloudFormationDeployAction extends CloudFormationAction {
 
     const actionConfig = super.bound(scope, stage, options);
     return {
-      ...actionConfig,
-      configuration: {
-        ...actionConfig.configuration,
-        // None evaluates to empty string which is falsey and results in undefined
-        Capabilities: parseCapabilities(capabilities),
-        RoleArn: this.deploymentRole.roleArn,
-        ParameterOverrides: cdk.Stack.of(scope).toJsonString(this.props2.parameterOverrides),
-        TemplateConfiguration: this.props2.templateConfiguration
-          ? this.props2.templateConfiguration.location
-          : undefined,
-        StackName: this.props2.stackName,
+      boundAction: {
+        action: this,
+        configuration: () => ({
+          ...superConfiguration(actionConfig),
+          // None evaluates to empty string which is falsey and results in undefined
+          Capabilities: parseCapabilities(capabilities),
+          RoleArn: this.deploymentRole.roleArn,
+          ParameterOverrides: cdk.Stack.of(scope).toJsonString(this.props2.parameterOverrides),
+          TemplateConfiguration: this.props2.templateConfiguration?.location,
+        }),
       },
     };
   }
@@ -367,12 +391,14 @@ export class CloudFormationCreateReplaceChangeSetAction extends CloudFormationDe
     SingletonPolicy.forRole(options.role).grantCreateReplaceChangeSet(this.props3);
 
     return {
-      ...actionConfig,
-      configuration: {
-        ...actionConfig.configuration,
-        ActionMode: 'CHANGE_SET_REPLACE',
-        ChangeSetName: this.props3.changeSetName,
-        TemplatePath: this.props3.templatePath.location,
+      boundAction: {
+        action: this,
+        configuration: () => ({
+          ...superConfiguration(actionConfig),
+          ActionMode: 'CHANGE_SET_REPLACE',
+          ChangeSetName: this.props3.changeSetName,
+          TemplatePath: this.props3.templatePath.location,
+        }),
       },
     };
   }
@@ -436,11 +462,13 @@ export class CloudFormationCreateUpdateStackAction extends CloudFormationDeployA
     SingletonPolicy.forRole(options.role).grantCreateUpdateStack(this.props3);
 
     return {
-      ...actionConfig,
-      configuration: {
-        ...actionConfig.configuration,
-        ActionMode: this.props3.replaceOnFailure ? 'REPLACE_ON_FAILURE' : 'CREATE_UPDATE',
-        TemplatePath: this.props3.templatePath.location,
+      boundAction: {
+        action: this,
+        configuration: () => ({
+          ...superConfiguration(actionConfig),
+          ActionMode: this.props3.replaceOnFailure ? 'REPLACE_ON_FAILURE' : 'CREATE_UPDATE',
+          TemplatePath: this.props3.templatePath.location,
+        }),
       },
     };
   }
@@ -475,10 +503,12 @@ export class CloudFormationDeleteStackAction extends CloudFormationDeployAction 
     SingletonPolicy.forRole(options.role).grantDeleteStack(this.props3);
 
     return {
-      ...actionConfig,
-      configuration: {
-        ...actionConfig.configuration,
-        ActionMode: 'DELETE_ONLY',
+      boundAction: {
+        action: this,
+        configuration: () => ({
+          ...superConfiguration(actionConfig),
+          ActionMode: 'DELETE_ONLY',
+        }),
       },
     };
   }
@@ -627,4 +657,8 @@ function parseCapabilities(capabilities: cloudformation.CloudFormationCapabiliti
   }
 
   return undefined;
+}
+
+function superConfiguration(config: codepipeline.ActionConfig) {
+  return config.boundAction ? config.boundAction.configuration() : config.configuration;
 }

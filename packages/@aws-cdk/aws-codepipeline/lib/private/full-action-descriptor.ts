@@ -1,67 +1,101 @@
 import * as iam from '@aws-cdk/aws-iam';
-import { ActionArtifactBounds, ActionCategory, ActionConfig, IAction } from '../action';
-import { Artifact } from '../artifact';
+import { IAction, IBoundAction } from '../action';
+import { CfnPipeline } from '../codepipeline.generated';
+import { renderArtifacts } from './artifacts';
+import * as validation from './validation';
 
 export interface FullActionDescriptorProps {
-  readonly action: IAction;
-  readonly actionConfig: ActionConfig;
+  readonly boundAction: IBoundAction;
   readonly actionRole: iam.IRole | undefined;
   readonly actionRegion: string | undefined;
 }
 
 /**
+ * Rendering and validation logic for a Bound action.
+ *
  * This class is private to the aws-codepipeline package.
  */
 export class FullActionDescriptor {
   public readonly action: IAction;
-  public readonly actionName: string;
-  public readonly category: ActionCategory;
-  public readonly owner: string;
-  public readonly provider: string;
-  public readonly version: string;
-  public readonly runOrder: number;
-  public readonly artifactBounds: ActionArtifactBounds;
-  public readonly namespace?: string;
-  public readonly inputs: Artifact[];
-  public readonly outputs: Artifact[];
-  public readonly region?: string;
-  public readonly role?: iam.IRole;
-  public readonly configuration: any;
 
-  constructor(props: FullActionDescriptorProps) {
-    this.action = props.action;
-    const actionProperties = props.action.actionProperties;
-    this.actionName = actionProperties.actionName;
-    this.category = actionProperties.category;
-    this.owner = actionProperties.owner || 'AWS';
-    this.provider = actionProperties.provider;
-    this.version = actionProperties.version || '1';
-    this.runOrder = actionProperties.runOrder === undefined ? 1 : actionProperties.runOrder;
-    this.artifactBounds = actionProperties.artifactBounds;
-    this.namespace = actionProperties.variablesNamespace;
-    this.inputs = deduplicateArtifacts(actionProperties.inputs);
-    this.outputs = deduplicateArtifacts(actionProperties.outputs);
-    this.region = props.actionRegion || actionProperties.region;
-    this.role = actionProperties.role !== undefined ? actionProperties.role : props.actionRole;
-
-    this.configuration = props.actionConfig.configuration;
+  constructor(private readonly props: FullActionDescriptorProps) {
+    this.action = props.boundAction.action;
   }
-}
 
-function deduplicateArtifacts(artifacts?: Artifact[]): Artifact[] {
-  const ret = new Array<Artifact>();
-  for (const artifact of artifacts || []) {
-    if (artifact.artifactName) {
-      if (ret.find(a => a.artifactName === artifact.artifactName)) {
-        continue;
-      }
-    } else {
-      if (ret.find(a => a === artifact)) {
-        continue;
-      }
-    }
-
-    ret.push(artifact);
+  public get actionName(): string {
+    return this.action.actionProperties.actionName;
   }
-  return ret;
+
+  public get runOrder(): number {
+    return this.action.actionProperties.runOrder;
+  }
+
+  public get inputs() {
+    return this.action.actionProperties.inputs;
+  }
+
+  public get outputs() {
+    return this.action.actionProperties.outputs;
+  }
+
+  public get region(): string | undefined {
+    // Take the props region, which is going to be the target region EXCEPT if it's the
+    // pipeline region (in which case it will be undefined).
+    //
+    // But if the user specified a region on the action's props, then render
+    // it anyway because they apparently dearly want it in the template.
+    return this.props.actionRegion ?? this.action.actionProperties.region;
+  }
+
+  public get role(): iam.IRole | undefined {
+    return this.action.actionProperties.role;
+  }
+
+  public render(): CfnPipeline.ActionDeclarationProperty {
+    const actionProperties = this.action.actionProperties;
+    return {
+      name: actionProperties.actionName,
+      inputArtifacts: renderArtifacts(actionProperties.inputs ?? []),
+      outputArtifacts: renderArtifacts(actionProperties.outputs ?? []),
+      actionTypeId: {
+        category: actionProperties.category.toString(),
+        version: actionProperties.version ?? '1',
+        owner: actionProperties.owner ?? 'AWS',
+        provider: actionProperties.provider,
+      },
+      configuration: this.props.boundAction.configuration(),
+      runOrder: this.runOrder,
+      namespace: actionProperties.variablesNamespace,
+      roleArn: this.role?.roleArn,
+      region: this.region,
+    };
+  }
+
+  public validateAction(): string[] {
+    const actionProperties = this.action.actionProperties;
+    return [
+      ...validation.validateArtifactBounds(
+        'input',
+        actionProperties.inputs ?? [],
+        actionProperties.artifactBounds.minInputs,
+        actionProperties.artifactBounds.maxInputs,
+        actionProperties.category,
+        actionProperties.provider),
+      ...validation.validateArtifactBounds(
+        'output',
+        actionProperties.outputs ?? [],
+        actionProperties.artifactBounds.minOutputs,
+        actionProperties.artifactBounds.maxOutputs,
+        actionProperties.category,
+        actionProperties.provider),
+    ];
+  }
+
+  public validateSourceActionPosition(mustBeSource: boolean, stageName: string): string[] {
+    return validation.validateSourceAction(
+      mustBeSource,
+      this.action.actionProperties.category,
+      this.action.actionProperties.actionName,
+      stageName);
+  }
 }

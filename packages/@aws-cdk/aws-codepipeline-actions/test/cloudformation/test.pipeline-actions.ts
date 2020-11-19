@@ -1,12 +1,15 @@
+import { arrayWith, expect, haveResourceLike, objectLike } from '@aws-cdk/assert';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
-import * as constructs from 'constructs';
+import { Construct, IConstruct } from 'constructs';
 import * as _ from 'lodash';
 import * as nodeunit from 'nodeunit';
 import * as cpactions from '../../lib';
+import { FakeBuildAction } from '../fake-build-action';
+import { FakeSourceAction } from '../fake-source-action';
 
 export = nodeunit.testCase({
   CreateReplaceChangeSet: {
@@ -39,10 +42,10 @@ export = nodeunit.testCase({
       _assertPermissionGranted(test, stack, pipelineRole.statements, 'cloudformation:DeleteChangeSet', stackArn, changeSetCondition);
 
       // TODO: revert "as any" once we move all actions into a single package.
-      test.deepEqual(stage.fullActions[0].actionProperties.inputs, [artifact],
+      test.deepEqual(stage.boundActions[0].action.actionProperties.inputs, [artifact],
         'The input was correctly registered');
 
-      _assertActionMatches(test, stack, stage.fullActions, 'CloudFormation', 'Deploy', {
+      _assertActionMatches(test, stack, stage.boundActions, 'CloudFormation', 'Deploy', {
         ActionMode: 'CHANGE_SET_CREATE_REPLACE',
         StackName: 'MyStack',
         ChangeSetName: 'MyChangeSet',
@@ -128,7 +131,7 @@ export = nodeunit.testCase({
       _assertPermissionGranted(test, stack, pipelineRole.statements, 'cloudformation:ExecuteChangeSet', stackArn,
         { StringEqualsIfExists: { 'cloudformation:ChangeSetName': 'MyChangeSet' } });
 
-      _assertActionMatches(test, stack, stage.fullActions, 'CloudFormation', 'Deploy', {
+      _assertActionMatches(test, stack, stage.boundActions, 'CloudFormation', 'Deploy', {
         ActionMode: 'CHANGE_SET_EXECUTE',
         StackName: 'MyStack',
         ChangeSetName: 'MyChangeSet',
@@ -176,6 +179,80 @@ export = nodeunit.testCase({
           },
         ],
       );
+
+      test.done();
+    },
+
+    'output file leads to output artifact'(test: nodeunit.Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fixture = new PipelineFixture(stack, 'Pipeline');
+
+      // WHEN
+      fixture.pipeline.addStage({
+        stageName: 'Deploy',
+        actions: [
+          new cpactions.CloudFormationExecuteChangeSetAction({
+            actionName: 'Action',
+            changeSetName: 'MyChangeSet',
+            stackName: 'MyStack',
+            outputFileName: 'outputs.json',
+          }),
+        ],
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+        Stages: arrayWith(objectLike({
+          Name: 'Deploy',
+          Actions: [
+            objectLike({
+              Name: 'Action',
+              OutputArtifacts: [{ Name: 'Action_MyStack_Artifact' }],
+              Configuration: objectLike({
+                OutputFileName: 'outputs.json',
+              }),
+            }),
+          ],
+        })),
+      }));
+
+      test.done();
+    },
+
+    'can mutate outputfile'(test: nodeunit.Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fixture = new PipelineFixture(stack, 'Pipeline');
+      const action = new cpactions.CloudFormationExecuteChangeSetAction({
+        actionName: 'Action',
+        changeSetName: 'MyChangeSet',
+        stackName: 'MyStack',
+        outputFileName: 'outputs.json',
+      });
+      fixture.pipeline.addStage({
+        stageName: 'Deploy',
+        actions: [action],
+      });
+
+      // WHEN
+      action.outputFile = new codepipeline.Artifact().atPath('other.json');
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+        Stages: arrayWith(objectLike({
+          Name: 'Deploy',
+          Actions: [
+            objectLike({
+              Name: 'Action',
+              OutputArtifacts: [{ Name: 'Artifact_Deploy_Action' }],
+              Configuration: objectLike({
+                OutputFileName: 'other.json',
+              }),
+            }),
+          ],
+        })),
+      }));
 
       test.done();
     },
@@ -240,7 +317,7 @@ interface PolicyStatementJson {
 function _assertActionMatches(
   test: nodeunit.Test,
   stack: cdk.Stack,
-  actions: FullAction[],
+  actions: codepipeline.IBoundAction[],
   provider: string,
   category: string,
   configuration?: { [key: string]: any }) {
@@ -249,10 +326,10 @@ function _assertActionMatches(
     : '';
   const actionsStr = JSON.stringify(actions.map(a =>
     ({
-      owner: a.actionProperties.owner,
-      provider: a.actionProperties.provider,
-      category: a.actionProperties.category,
-      configuration: stack.resolve(a.actionConfig.configuration),
+      owner: a.action.actionProperties.owner,
+      provider: a.action.actionProperties.provider,
+      category: a.action.actionProperties.category,
+      configuration: a.configuration(),
     }),
   ), null, 2);
   test.ok(_hasAction(stack, actions, provider, category, configuration),
@@ -260,15 +337,15 @@ function _assertActionMatches(
 }
 
 function _hasAction(
-  stack: cdk.Stack, actions: FullAction[], provider: string, category: string,
+  stack: cdk.Stack, actions: codepipeline.IBoundAction[], provider: string, category: string,
   configuration?: { [key: string]: any}) {
   for (const action of actions) {
-    if (action.actionProperties.provider !== provider) { continue; }
-    if (action.actionProperties.category !== category) { continue; }
-    if (configuration && !action.actionConfig.configuration) { continue; }
+    if (action.action.actionProperties.provider !== provider) { continue; }
+    if (action.action.actionProperties.category !== category) { continue; }
+    if (configuration && !action.configuration()) { continue; }
     if (configuration) {
       for (const key of Object.keys(configuration)) {
-        if (!_.isEqual(stack.resolve(action.actionConfig.configuration[key]), stack.resolve(configuration[key]))) {
+        if (!_.isEqual(stack.resolve((action.configuration() ?? {})[key]), stack.resolve(configuration[key]))) {
           continue;
         }
       }
@@ -315,7 +392,7 @@ function _isOrContains(stack: cdk.Stack, entity: string | string[], value: strin
   return false;
 }
 
-function _stackArn(stackName: string, scope: constructs.IConstruct): string {
+function _stackArn(stackName: string, scope: IConstruct): string {
   return cdk.Stack.of(scope).formatArn({
     service: 'cloudformation',
     resource: 'stack',
@@ -329,7 +406,7 @@ class PipelineDouble extends cdk.Resource implements codepipeline.IPipeline {
   public readonly role: iam.Role;
   public readonly artifactBucket: s3.IBucket;
 
-  constructor(scope: constructs.Construct, id: string, { pipelineName, role }: { pipelineName?: string, role: iam.Role }) {
+  constructor(scope: Construct, id: string, { pipelineName, role }: { pipelineName?: string, role: iam.Role }) {
     super(scope, id);
     this.pipelineName = pipelineName || 'TestPipeline';
     this.pipelineArn = cdk.Stack.of(this).formatArn({ service: 'codepipeline', resource: 'pipeline', resourceName: this.pipelineName });
@@ -345,19 +422,11 @@ class PipelineDouble extends cdk.Resource implements codepipeline.IPipeline {
   }
 }
 
-class FullAction {
-  constructor(
-    readonly actionProperties: codepipeline.ActionProperties,
-    readonly actionConfig: codepipeline.ActionConfig) {
-    // empty
-  }
-}
-
 class StageDouble implements codepipeline.IStage {
   public readonly stageName: string;
   public readonly pipeline: codepipeline.IPipeline;
   public readonly actions: codepipeline.IAction[] = [];
-  public readonly fullActions: FullAction[];
+  public readonly boundActions: codepipeline.IBoundAction[];
 
   public get node(): cdk.ConstructNode {
     throw new Error('StageDouble is not a real construct');
@@ -368,15 +437,13 @@ class StageDouble implements codepipeline.IStage {
     this.pipeline = pipeline;
 
     const stageParent = new cdk.Construct(pipeline, this.stageName);
-    const fullActions = new Array<FullAction>();
-    for (const action of actions) {
+    this.boundActions = actions.map(action => {
       const actionParent = new cdk.Construct(stageParent, action.actionProperties.actionName);
-      fullActions.push(new FullAction(action.actionProperties, action.bind(actionParent, this, {
+      return action.bind(actionParent, this, {
         role: pipeline.role,
         bucket: pipeline.artifactBucket,
-      })));
-    }
-    this.fullActions = fullActions;
+      }).boundAction!;
+    });
   }
 
   public addAction(_action: codepipeline.IAction): void {
@@ -392,7 +459,7 @@ class StageDouble implements codepipeline.IStage {
 class RoleDouble extends iam.Role {
   public readonly statements = new Array<iam.PolicyStatement>();
 
-  constructor(scope: constructs.Construct, id: string, props: iam.RoleProps = { assumedBy: new iam.ServicePrincipal('test') }) {
+  constructor(scope: Construct, id: string, props: iam.RoleProps = { assumedBy: new iam.ServicePrincipal('test') }) {
     super(scope, id, props);
   }
 
@@ -414,5 +481,40 @@ class BucketDouble extends s3.Bucket {
 
   public grantReadWrite(identity: iam.IGrantable, _objectsKeyPattern: any = '*'): iam.Grant {
     return iam.Grant.drop(identity, '');
+  }
+}
+
+
+class PipelineFixture extends cdk.Construct {
+  public readonly sourceArtifact = new codepipeline.Artifact();
+  public readonly buildArtifact = new codepipeline.Artifact();
+  public readonly pipeline: codepipeline.Pipeline;
+
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+
+    this.pipeline = new codepipeline.Pipeline(this, 'Default', {
+      stages: [
+        {
+          stageName: 'Source',
+          actions: [
+            new FakeSourceAction({
+              actionName: 'Pull',
+              output: this.sourceArtifact,
+            }),
+          ],
+        },
+        {
+          stageName: 'Build',
+          actions: [
+            new FakeBuildAction({
+              actionName: 'Build',
+              input: this.sourceArtifact,
+              output: this.buildArtifact,
+            }),
+          ],
+        },
+      ],
+    });
   }
 }

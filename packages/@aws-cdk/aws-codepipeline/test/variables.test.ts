@@ -89,18 +89,12 @@ nodeunitShim({
     },
 
     'fails when trying add an action using variables with an empty string for the namespace to a pipeline'(test: Test) {
-      const stack = new cdk.Stack();
-      const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
-      const sourceStage = pipeline.addStage({ stageName: 'Source' });
-
-      const sourceAction = new FakeSourceAction({
-        actionName: 'Source',
-        output: new codepipeline.Artifact(),
-        variablesNamespace: '',
-      });
-
       test.throws(() => {
-        sourceStage.addAction(sourceAction);
+        new FakeSourceAction({
+          actionName: 'Source',
+          output: new codepipeline.Artifact(),
+          variablesNamespace: '',
+        });
       }, /Namespace name must match regular expression:/);
 
       test.done();
