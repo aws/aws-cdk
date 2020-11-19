@@ -32,6 +32,20 @@ export interface TopicProps {
    * @default None
    */
   readonly masterKey?: IKey;
+
+  /**
+   * Enables content-based deduplication for FIFO topics.
+   *
+   * @default None
+   */
+  readonly contentBasedDeduplication?: boolean;
+
+  /**
+   * Set to true to create a FIFO topic.
+   *
+   * @default None
+   */
+  readonly fifoTopic?: boolean;
 }
 
 /**
@@ -70,6 +84,8 @@ export class Topic extends TopicBase {
       displayName: props.displayName,
       topicName: this.physicalName,
       kmsMasterKeyId: props.masterKey && props.masterKey.keyArn,
+      contentBasedDeduplication: props.contentBasedDeduplication,
+      fifoTopic: props.fifoTopic,
     });
 
     this.topicArn = this.getResourceArnAttribute(resource.ref, {

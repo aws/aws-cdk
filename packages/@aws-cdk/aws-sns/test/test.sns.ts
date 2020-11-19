@@ -103,6 +103,48 @@ export = {
 
       test.done();
     },
+
+    'specify contentBasedDeduplication'(test: Test) {
+      const stack = new cdk.Stack();
+
+      new sns.Topic(stack, 'MyTopic', {
+        contentBasedDeduplication: true,
+      });
+
+      expect(stack).toMatch({
+        'Resources': {
+          'MyTopic86869434': {
+            'Type': 'AWS::SNS::Topic',
+            'Properties': {
+              'ContentBasedDeduplication': true,
+            },
+          },
+        },
+      });
+
+      test.done();
+    },
+
+    'specify fifoTopic'(test: Test) {
+      const stack = new cdk.Stack();
+
+      new sns.Topic(stack, 'MyTopic', {
+        fifoTopic: true,
+      });
+
+      expect(stack).toMatch({
+        'Resources': {
+          'MyTopic86869434': {
+            'Type': 'AWS::SNS::Topic',
+            'Properties': {
+              'FifoTopic': true,
+            },
+          },
+        },
+      });
+
+      test.done();
+    },
   },
 
   'can add a policy to the topic'(test: Test) {
