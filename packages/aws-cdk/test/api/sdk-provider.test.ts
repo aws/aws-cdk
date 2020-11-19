@@ -425,22 +425,16 @@ test('can assume role with eks credentials', async () => {
 
     // GIVEN
     bockfs({
-      '/home/me/.bxt/credentials': '',
-      '/home/me/.bxt/config': dedent(`
-      [profile eks]
-      role_arn=arn:aws:iam::12356789012:role/Assumable
-      credential_source = EcsContainer
-    `),
+      '/var/run/secrets/eks.amazonaws.com/serviceaccount/token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL29pZGMuZWtzLmV1LWNlbnRyYWwtMS5hbWF6b25hd3MuY29tL2lkLzEyMzQ1NjY3ODlBQkNERUZHSElKS0xNTk9QUVJTVFVXWFlaIiwiaWF0IjoxNjA1ODA2Mjc2LCJleHAiOjE2MzczNDIyNzYsImF1ZCI6InN0cy5hbWF6b25hd3MuY29tIiwic3ViIjoic3lzdGVtOnNlcnZpY2VhY2NvdW50OnRlc3Q6c2VydmljZWFjY291bnQiLCJrdWJlcm5ldGVzLmlvIjoieyAgICAgXCJuYW1lc3BhY2VcIjogXCJtb3AtYmFzZS0tcnVubmVyc1wiLCAgICAgXCJwb2RcIjogeyAgICAgICBcIm5hbWVcIjogXCJnaXRsYWJydW5uZXItY2RrYnVpbGQtZ2l0bGFiLXJ1bm5lci02NmI0YmY0Yjc3LTVycXZzXCIsICAgICAgIFwidWlkXCI6IFwiMWViZmQ5NTgtZDgwZi00ZTk0LWE5NDktOWRhMjU4YWQwNzlhXCIgICAgIH0sICAgICBcInNlcnZpY2VhY2NvdW50XCI6IHsgICAgICAgXCJuYW1lXCI6IFwiZ2l0bGFicnVubmVyLWNka2J1aWxkLWdpdGxhYi1ydW5uZXJcIiwgICAgICAgXCJ1aWRcIjogXCI1OTI2MjE0MC0xNTQ2LTRmMGYtODczMC1lOWFlODE5NTU1MjJcIiAgICAgfSAgIH0ifQ.s_n7Cn-KZ9Fi-EGjOqAbIom0_oStPAZ3TxD4N6OIZcM'
     });
 
     // Set environment variables that we want
-    process.env.AWS_CONFIG_FILE = bockfs.path('/home/me/.bxt/config');
-    process.env.AWS_SHARED_CREDENTIALS_FILE = bockfs.path('/home/me/.bxt/credentials');
+    process.env.AWS_ROLE_ARN = 'arn:aws:iam::12356789012:role/Assumable';
+    process.env.AWS_WEB_IDENTITY_TOKEN_FILE = bockfs.path('/var/run/secrets/eks.amazonaws.com/serviceaccount/token');
 
     // WHEN
     const provider = await SdkProvider.withAwsCliCompatibleDefaults({
       ...defaultCredOptions,
-      profile: 'eks',
     });
 
     await provider.defaultAccount();
