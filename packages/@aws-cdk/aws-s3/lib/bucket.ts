@@ -1013,12 +1013,12 @@ export interface BucketProps {
   readonly encryptionKey?: kms.IKey;
 
   /**
-  * Enforces all of the AWS Foundational Security Best Practices Regarding S3
-  * Details: https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-fsbp-controls.html
+  * Enforces SSL for requests. S3.5 of the AWS Foundational Security Best Practices Regarding S3.
+  * @see https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-fsbp-controls.html#fsbp-s3-5
   *
   * @default false
   */
-  readonly enforceSecurityBestPractice?: boolean;
+  readonly enforceSSL?: boolean;
 
   /**
    * Physical name of this bucket.
@@ -1233,7 +1233,7 @@ export class Bucket extends BucketBase {
   private accessControl?: BucketAccessControl;
   private readonly lifecycleRules: LifecycleRule[] = [];
   private readonly versioned?: boolean;
-  private readonly enforceSecurityBestPractice?: boolean;
+  private readonly enforceSSL?: boolean;
   private readonly blockPublicAccess: BlockPublicAccess | undefined;
   private readonly notifications: BucketNotifications;
   private readonly metrics: BucketMetrics[] = [];
@@ -1248,8 +1248,8 @@ export class Bucket extends BucketBase {
     const { bucketEncryption, encryptionKey } = this.parseEncryption(props);
 
     this.validateBucketName(this.physicalName);
-    this.enforceSecurityBestPractice = props.enforceSecurityBestPractice;
     this.blockPublicAccess = props.blockPublicAccess;
+    this.enforceSSL = props.enforceSSL;
 
     const websiteConfiguration = this.renderWebsiteConfiguration(props);
     this.isWebsite = (websiteConfiguration !== undefined);
@@ -1291,12 +1291,8 @@ export class Bucket extends BucketBase {
     this.accessControl = props.accessControl;
 
     // Enforce AWS Foundational Security Best Practice
-    if (this.enforceSecurityBestPractice) {
-      // Require requests to use Secure Socket Layer
-      this.enforceSSL();
-      // Block all public access
-      this.blockPublicAccess = BlockPublicAccess.BLOCK_ALL;
-      resource.publicAccessBlockConfiguration = this.blockPublicAccess;
+    if (this.enforceSSL) {
+      this.enforceSSLStatement();
     }
 
     if (props.serverAccessLogsBucket instanceof Bucket) {
@@ -1413,14 +1409,19 @@ export class Bucket extends BucketBase {
     this.inventories.push(inventory);
   }
 
-  private enforceSSL() {
+  /**
+   * Adds an iam statement to enforce SSL requests only.
+   */
+  private enforceSSLStatement() {
     const statement = new iam.PolicyStatement({
       actions: ['s3:*'],
+      conditions: {
+        Bool: { 'aws:SecureTransport': 'false' },
+      },
       effect: iam.Effect.DENY,
-      resources: [this.bucketArn, `${this.bucketArn}/*`],
+      resources: [this.arnForObjects('*')],
       principals: [new iam.AnyPrincipal()],
     });
-    statement.addCondition('Bool', { 'aws:SecureTransport': 'false' });
     this.addToResourcePolicy(statement);
   }
 
@@ -1483,11 +1484,6 @@ export class Bucket extends BucketBase {
     // if encryption key is set, encryption must be set to KMS.
     if (encryptionType !== BucketEncryption.KMS && props.encryptionKey) {
       throw new Error(`encryptionKey is specified, so 'encryption' must be set to KMS (value: ${encryptionType})`);
-    }
-
-    // Ensure SSE is enabled if best practices are enforced.
-    if (this.enforceSecurityBestPractice && encryptionType === BucketEncryption.UNENCRYPTED) {
-      encryptionType = BucketEncryption.S3_MANAGED;
     }
 
     if (encryptionType === BucketEncryption.UNENCRYPTED) {
