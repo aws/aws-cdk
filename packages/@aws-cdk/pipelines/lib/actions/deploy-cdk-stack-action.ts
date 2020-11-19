@@ -9,6 +9,7 @@ import { Aws, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct, Node } from 'constructs';
 import { appOf, assemblyBuilderOf } from '../private/construct-internals';
+import { toPosixPath } from '../private/fs';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
 // eslint-disable-next-line
@@ -186,8 +187,8 @@ export class DeployCdkStackAction implements codepipeline.IAction {
     return new DeployCdkStackAction({
       actionRole,
       cloudFormationExecutionRole,
-      templatePath: path.relative(appAsmRoot, fullTemplatePath),
-      templateConfigurationPath: fullConfigPath ? path.relative(appAsmRoot, fullConfigPath) : undefined,
+      templatePath: toPosixPath(path.relative(appAsmRoot, fullTemplatePath)),
+      templateConfigurationPath: fullConfigPath ? toPosixPath(path.relative(appAsmRoot, fullConfigPath)) : undefined,
       region,
       stackArtifactId: artifact.id,
       dependencyStackArtifactIds: artifact.dependencies.filter(isStackArtifact).map(s => s.id),
