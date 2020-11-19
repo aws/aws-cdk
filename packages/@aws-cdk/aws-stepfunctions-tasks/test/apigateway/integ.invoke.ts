@@ -1,6 +1,8 @@
+import * as apigateway from '@aws-cdk/aws-apigateway';
+import * as lambda from '@aws-cdk/aws-lambda';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
-import { ApiGatewayInvoke, HttpMethod } from '../../lib';
+import { ApiGatewayInvoke, AuthType, HttpMethod } from '../../lib';
 
 /*
  * Stack verification steps:
@@ -10,11 +12,28 @@ import { ApiGatewayInvoke, HttpMethod } from '../../lib';
  */
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-stepfunctions-tasks-apigateway-invoke-integ');
+const restApi = new apigateway.RestApi(stack, 'MyRestApi');
+
+const hello = new apigateway.LambdaIntegration(new lambda.Function(stack, 'Hello', {
+  runtime: lambda.Runtime.NODEJS_10_X,
+  handler: 'index.handler',
+  code: lambda.Code.inline(`exports.handler = ${helloCode}`),
+}));
+
+function helloCode(_event: any, _context: any, callback: any) {
+  return callback(undefined, {
+    statusCode: 200,
+    body: 'hello, world!',
+  });
+}
+restApi.root.addMethod('ANY', hello);
 
 const invokeJob = new ApiGatewayInvoke(stack, 'Invoke APIGW', {
-  apiEndpoint: 'apiid.execute-api.us-east-1.amazonaws.com',
-  stage: 'prod',
+  api: restApi,
+  apiEndpoint: restApi.restApiId,
+  stageName: 'prod',
   method: HttpMethod.GET,
+  authType: AuthType.IAM_ROLE,
 });
 
 const chain = sfn.Chain.start(invokeJob);

@@ -1,6 +1,7 @@
+import * as apigateway from '@aws-cdk/aws-apigateway';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
-import { Stack } from '@aws-cdk/core';
+import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
@@ -9,28 +10,36 @@ import { integrationResourceArn, validatePatternSupported } from '../private/tas
  */
 export interface ApiGatewayInvokeProps extends sfn.TaskStateBaseProps {
 
+  /** API to call */
+  readonly api: apigateway.IRestApi;
+
   /**
    * hostname of an API Gateway URL
    * @example {ApiId}.execute-api.{region}.amazonaws.com
    */
   readonly apiEndpoint: string;
 
-  /**
-   * Http method for the API
-   */
+  /** Http method for the API */
   readonly method: HttpMethod;
 
   /**
-   * HTTP headers string to list of strings
+   * HTTP request information that does not relate to contents of the request
    * @default - No headers
+   * @example
+   * Headers: {
+   *   type: 1,
+   *   value:{
+   *     'TaskToken.$': 'States.Array($$.Task.Token)',
+   *   }
+   * },
    */
-  readonly headers?: sfn.TaskInput;
+  readonly headers?: { [key: string]: any };
 
   /**
    * Name of the stage where the API is deployed to in API Gateway
    * @default - Required for REST and $default for HTTP
    */
-  readonly stage?: string;
+  readonly stageName?: string;
 
   /**
    * Path parameters appended after API endpoint
@@ -39,30 +48,33 @@ export interface ApiGatewayInvokeProps extends sfn.TaskStateBaseProps {
   readonly path?: string;
 
   /**
-   * Query strings string to list of strings
+   * Query strings attatched to end of request
    * @default - No query parameters
+   * @example
+   * "QueryParameters": {
+   *   "billId": ["123", "456"]
+   * },
    */
-  readonly queryParameters?: sfn.TaskInput;
+  readonly queryParameters?: { [key: string]: any };
 
   /**
    * HTTP Request body
    * @default - No requestBody
+   * @example
+   * "RequestBody": {
+   *   "billId": ["my-new-bill"]
+   * },
    */
   readonly requestBody?: sfn.TaskInput;
+
   /**
    * Authentication methods
-   *
-   * NO_AUTH: call the API direclty with no authorization method
-   *
-   * IAM_ROLE: Use the IAM role associated with the current state machine for authorization
-   *
-   * RESOURCE_POLICY: Use the resource policy of the API for authorization
-   *
    * @default - NO_AUTH
    */
-  readonly authType?: sfn.TaskInput;
+  readonly authType?: AuthType;
 
 }
+
 /**
  * Invoke an API endpoint as a Task
  *
@@ -74,9 +86,9 @@ export class ApiGatewayInvoke extends sfn.TaskStateBase {
     sfn.IntegrationPattern.REQUEST_RESPONSE,
     sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
   ];
-
   protected readonly taskMetrics?: sfn.TaskMetricsConfig;
   protected readonly taskPolicies?: iam.PolicyStatement[];
+  protected readonly apiEndpoint: string;
 
   private readonly integrationPattern: sfn.IntegrationPattern;
 
@@ -85,44 +97,9 @@ export class ApiGatewayInvoke extends sfn.TaskStateBase {
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
 
     validatePatternSupported(this.integrationPattern, ApiGatewayInvoke.SUPPORTED_INTEGRATION_PATTERNS);
-    const authType = this.props.authType ? this.props.authType.value : sfn.TaskInput.fromDataAt('$.AuthType').value;
-    if (authType === 'IAM_ROLE') {
-      const resource = props.apiEndpoint.split('.', 1)[0] + '/' + (props.stage ? props.stage + '/' : '$default/') + props.method + '/' + (props.path ?? '');
 
-      this.taskPolicies = [
-        new iam.PolicyStatement({
-          resources: [
-            Stack.of(this).formatArn({
-              service: 'execute-api',
-              resource: resource,
-            }),
-          ],
-          actions: ['execute-api:Invoke'],
-        }),
-      ];
-    } else if (authType === 'RESOURCE_POLICY') {
-      if (!sfn.FieldUtils.containsTaskToken(props.headers)) {
-        throw new Error('Task Token is required in `headers` Use JsonPath.taskToken to set the token.');
-      }
-      const resource = props.apiEndpoint.split('.', 1)[0] + '/' + (props.stage ? props.stage + '/' : '') + props.method + '/' + (props.path ? props.path + '/*' : '*');
-
-      this.taskPolicies = [
-        new iam.PolicyStatement({
-          resources: [
-            Stack.of(this).formatArn({
-              service: 'execute-api',
-              resource: resource,
-            }),
-          ],
-          actions: ['execute-api:Invoke'],
-          conditions: {
-            StringEquals: {
-              'aws:SourceArn': '*',
-            },
-          },
-        }),
-      ];
-    }
+    this.taskPolicies = this.createPolicyStatements();
+    this.apiEndpoint = this.createApiEndpoint();
   }
 
   /**
@@ -132,107 +109,72 @@ export class ApiGatewayInvoke extends sfn.TaskStateBase {
    * @internal
    */
   protected _renderTask(): any {
-    if (this.props.headers && this.props.queryParameters && this.props.requestBody) {
-      return {
-        Resource: integrationResourceArn('apigateway', 'invoke', this.integrationPattern),
-        Parameters: sfn.FieldUtils.renderObject({
-          ApiEndpoint: this.props.apiEndpoint,
-          Method: this.props.method,
-          Headers: this.props.headers ? this.props.headers.value : sfn.TaskInput.fromDataAt('$.Headers').value,
-          Stage: this.props.stage,
-          Path: this.props.path,
-          QueryParameters: this.props.queryParameters ? this.props.queryParameters.value : sfn.TaskInput.fromDataAt('$.QueryParameters').value,
-          RequestBody: this.props.requestBody ? this.props.requestBody.value : sfn.TaskInput.fromDataAt('$.RequestBody').value,
-          AuthType: (this.props.authType ? this.props.authType.value : sfn.TaskInput.fromDataAt('$.AuthType').value) === '$' ? (this.props.authType ? this.props.authType.value : sfn.TaskInput.fromDataAt('$.AuthType').value) : 'NO_AUTH',
+    return {
+      Resource: integrationResourceArn('apigateway', 'invoke', this.integrationPattern),
+      Parameters: sfn.FieldUtils.renderObject({
+        ApiEndpoint: this.apiEndpoint,
+        Method: this.props.method,
+        Headers: this.props.headers,
+        Stage: this.props.stageName,
+        Path: this.props.path,
+        QueryParameters: this.props.queryParameters,
+        RequestBody: this.props.requestBody,
+        AuthType: this.props.authType ? this.props.authType : 'NO_AUTH',
+      }),
+    };
+  }
+
+  /**
+   * Gets the "execute-api" ARN
+   * @returns The "execute-api" ARN.
+   * @default "*" returns the execute API ARN for all methods/resources in
+   * this API.
+   * @param method The method (default `*`)
+   * @param path The resource path. Must start with '/' (default `*`)
+   * @param stage The stage (default `*`)
+   */
+  get arnForExecuteApi() {
+    return this.props.api.arnForExecuteApi(this.props.method, this.props.path, this.props.stageName);
+  }
+
+  /**
+   * Generates the api endpoint
+   * @returns The api id
+   * @example {ApiId}.execute-api.{region}.amazonaws.com
+   */
+  private createApiEndpoint(): string {
+    const apiStack = cdk.Stack.of(this.props.api);
+    return `${this.props.api.restApiId}.execute-api.${apiStack.region}.${apiStack.urlSuffix}`;
+  }
+
+  /**
+   * This generates the PolicyStatements required by the Task to call invoke.
+   */
+  private createPolicyStatements(): iam.PolicyStatement[] {
+    if (this.props.authType === AuthType.IAM_ROLE) {
+      return [
+        new iam.PolicyStatement({
+          resources: [this.arnForExecuteApi],
+          actions: ['ExecuteAPI:Invoke'],
         }),
-      };
-    } else if (this.props.headers && this.props.queryParameters) {
-      return {
-        Resource: integrationResourceArn('apigateway', 'invoke', this.integrationPattern),
-        Parameters: sfn.FieldUtils.renderObject({
-          ApiEndpoint: this.props.apiEndpoint,
-          Method: this.props.method,
-          Headers: this.props.headers ? this.props.headers.value : sfn.TaskInput.fromDataAt('$.Headers').value,
-          Stage: this.props.stage,
-          Path: this.props.path,
-          QueryParameters: this.props.queryParameters ? this.props.queryParameters.value : sfn.TaskInput.fromDataAt('$.QueryParameters').value,
-          AuthType: (this.props.authType ? this.props.authType.value : sfn.TaskInput.fromDataAt('$.AuthType').value) === '$' ? (this.props.authType ? this.props.authType.value : sfn.TaskInput.fromDataAt('$.AuthType').value) : 'NO_AUTH',
+      ];
+    } else if (this.props.authType === AuthType.RESOURCE_POLICY) {
+      if (!sfn.FieldUtils.containsTaskToken(this.props.headers)) {
+        throw new Error('Task Token is required in `headers` Use JsonPath.taskToken to set the token.');
+      }
+      return [
+        new iam.PolicyStatement({
+          resources: [this.arnForExecuteApi],
+          actions: ['ExecuteAPI:Invoke'],
+          conditions: {
+            StringEquals: {
+              'aws:SourceArn': '*',
+            },
+          },
         }),
-      };
-    } else if (this.props.queryParameters && this.props.requestBody) {
-      return {
-        Resource: integrationResourceArn('apigateway', 'invoke', this.integrationPattern),
-        Parameters: sfn.FieldUtils.renderObject({
-          ApiEndpoint: this.props.apiEndpoint,
-          Method: this.props.method,
-          Stage: this.props.stage,
-          Path: this.props.path,
-          QueryParameters: this.props.queryParameters ? this.props.queryParameters.value : sfn.TaskInput.fromDataAt('$.QueryParameters').value,
-          RequestBody: this.props.requestBody ? this.props.requestBody.value : sfn.TaskInput.fromDataAt('$.RequestBody').value,
-          AuthType: (this.props.authType ? this.props.authType.value : sfn.TaskInput.fromDataAt('$.AuthType').value) === '$' ? (this.props.authType ? this.props.authType.value : sfn.TaskInput.fromDataAt('$.AuthType').value) : 'NO_AUTH',
-        }),
-      };
-    } else if (this.props.headers && this.props.requestBody) {
-      return {
-        Resource: integrationResourceArn('apigateway', 'invoke', this.integrationPattern),
-        Parameters: sfn.FieldUtils.renderObject({
-          ApiEndpoint: this.props.apiEndpoint,
-          Method: this.props.method,
-          Headers: this.props.headers ? this.props.headers.value : sfn.TaskInput.fromDataAt('$.Headers').value,
-          Stage: this.props.stage,
-          Path: this.props.path,
-          RequestBody: this.props.requestBody ? this.props.requestBody.value : sfn.TaskInput.fromDataAt('$.RequestBody').value,
-          AuthType: (this.props.authType ? this.props.authType.value : sfn.TaskInput.fromDataAt('$.AuthType').value) === '$' ? (this.props.authType ? this.props.authType.value : sfn.TaskInput.fromDataAt('$.AuthType').value) : 'NO_AUTH',
-        }),
-      };
-    } else if (this.props.headers) {
-      return {
-        Resource: integrationResourceArn('apigateway', 'invoke', this.integrationPattern),
-        Parameters: sfn.FieldUtils.renderObject({
-          ApiEndpoint: this.props.apiEndpoint,
-          Method: this.props.method,
-          Headers: this.props.headers ? this.props.headers.value : sfn.TaskInput.fromDataAt('$.Headers').value,
-          Stage: this.props.stage,
-          Path: this.props.path,
-          AuthType: (this.props.authType ? this.props.authType.value : sfn.TaskInput.fromDataAt('$.AuthType').value) === '$' ? (this.props.authType ? this.props.authType.value : sfn.TaskInput.fromDataAt('$.AuthType').value) : 'NO_AUTH',
-        }),
-      };
-    } else if (this.props.queryParameters) {
-      return {
-        Resource: integrationResourceArn('apigateway', 'invoke', this.integrationPattern),
-        Parameters: sfn.FieldUtils.renderObject({
-          ApiEndpoint: this.props.apiEndpoint,
-          Method: this.props.method,
-          Stage: this.props.stage,
-          Path: this.props.path,
-          QueryParameters: this.props.queryParameters ? this.props.queryParameters.value : sfn.TaskInput.fromDataAt('$.QueryParameters').value,
-          AuthType: (this.props.authType ? this.props.authType.value : sfn.TaskInput.fromDataAt('$.AuthType').value) === '$' ? (this.props.authType ? this.props.authType.value : sfn.TaskInput.fromDataAt('$.AuthType').value) : 'NO_AUTH',
-        }),
-      };
-    } else if (this.props.requestBody) {
-      return {
-        Resource: integrationResourceArn('apigateway', 'invoke', this.integrationPattern),
-        Parameters: sfn.FieldUtils.renderObject({
-          ApiEndpoint: this.props.apiEndpoint,
-          Method: this.props.method,
-          Stage: this.props.stage,
-          Path: this.props.path,
-          RequestBody: this.props.requestBody ? this.props.requestBody.value : sfn.TaskInput.fromDataAt('$.RequestBody').value,
-          AuthType: (this.props.authType ? this.props.authType.value : sfn.TaskInput.fromDataAt('$.AuthType').value) === '$' ? (this.props.authType ? this.props.authType.value : sfn.TaskInput.fromDataAt('$.AuthType').value) : 'NO_AUTH',
-        }),
-      };
-    } else {
-      return {
-        Resource: integrationResourceArn('apigateway', 'invoke', this.integrationPattern),
-        Parameters: sfn.FieldUtils.renderObject({
-          ApiEndpoint: this.props.apiEndpoint,
-          Method: this.props.method,
-          Stage: this.props.stage,
-          Path: this.props.path,
-          AuthType: (this.props.authType ? this.props.authType.value : sfn.TaskInput.fromDataAt('$.AuthType').value) === '$' ? (this.props.authType ? this.props.authType.value : sfn.TaskInput.fromDataAt('$.AuthType').value) : 'NO_AUTH',
-        }),
-      };
+      ];
     }
+    return [];
   }
 }
 
@@ -245,33 +187,36 @@ export enum HttpMethod {
    */
   GET = 'GET',
 
-  /**
-   * Send data to the API endpoint to create or udpate a resource
-   */
+  /** Send data to the API endpoint to create or udpate a resource */
   POST = 'POST',
 
-  /**
-   * Send data to the API endpoint to update or create a resource
-   */
+  /** Send data to the API endpoint to update or create a resource */
   PUT = 'PUT',
 
-  /**
-   * Delete the resource at the specified endpoint
-   */
+  /** Delete the resource at the specified endpoint */
   DELETE = 'DELETE',
 
-  /**
-   * Apply partial modifications to the resource
-   */
+  /** Apply partial modifications to the resource */
   PATCH = 'PATCH',
 
-  /**
-   * Retreive data from a server at the specified resource without the response body
-   */
+  /** Retreive data from a server at the specified resource without the response body */
   HEAD = 'HEAD',
 
-  /**
-   * Return data describing what other methods and operations the server supports
-   */
+  /** Return data describing what other methods and operations the server supports */
   OPTIONS = 'OPTIONS'
+}
+
+/**
+ * The authentication method used to call the endpoint
+ * @default NO_AUTH
+ */
+export enum AuthType {
+  /** Call the API direclty with no authorization method */
+  NO_AUTH = 'NO_AUTH',
+
+  /** * Use the IAM role associated with the current state machine for authorization */
+  IAM_ROLE = 'IAM_ROLE',
+
+  /** Use the resource policy of the API for authorization */
+  RESOURCE_POLICY = 'RESOURCE_POLICY',
 }
