@@ -4,7 +4,7 @@ import * as s3 from '@aws-cdk/aws-s3';
 /**
  * Information about logs built to an S3 bucket for a build project.
  */
-export interface S3LogsOptions {
+export interface S3LoggingOptions {
   /**
    * Encrypt the S3 build log output
    *
@@ -33,9 +33,9 @@ export interface S3LogsOptions {
 }
 
 /**
- * Information about logs built to a Cloudwatch Log Group for a build project.
+ * Information about logs built to a CloudWatch Log Group for a build project.
  */
-export interface CloudwatchLogsOptions {
+export interface CloudWatchLoggingOptions {
   /**
    * The Log Group to send logs to
    *
@@ -61,18 +61,18 @@ export interface CloudwatchLogsOptions {
 /**
  * Information about logs for the build project. A project can create logs in Amazon CloudWatch Logs, an S3 bucket, or both.
  */
-export interface LogsOptions {
+export interface LoggingOptions {
   /**
    * Information about logs built to an S3 bucket for a build project.
    *
    * @default - disabled
    */
-  readonly s3?: S3LogsOptions;
+  readonly s3?: S3LoggingOptions;
 
   /**
    * Information about Amazon CloudWatch Logs for a build project.
    *
    * @default - enabled
    */
-  readonly cloudwatch?: CloudwatchLogsOptions;
+  readonly cloudWatch?: CloudWatchLoggingOptions;
 }

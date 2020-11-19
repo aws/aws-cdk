@@ -602,7 +602,7 @@ export = {
       test.done();
     },
 
-    'logs config - cloudwatch'(test: Test) {
+    'logs config - cloudWatch'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
       const logGroup = logs.LogGroup.fromLogGroupName(stack, 'LogGroup', 'MyLogGroupName');
@@ -614,7 +614,7 @@ export = {
           path: 'path',
         }),
         logging: {
-          cloudwatch: {
+          cloudWatch: {
             logGroup,
             prefix: '/my-logs',
           },
@@ -635,7 +635,7 @@ export = {
       test.done();
     },
 
-    'logs config - cloudwatch disabled'(test: Test) {
+    'logs config - cloudWatch disabled'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
 
@@ -646,7 +646,7 @@ export = {
           path: 'path',
         }),
         logging: {
-          cloudwatch: {
+          cloudWatch: {
             enabled: false,
           },
         },
@@ -687,7 +687,6 @@ export = {
       expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
         LogsConfig: objectLike({
           S3Logs: {
-            EncryptionDisabled: false,
             Location: 'MyBucketName/my-logs',
             Status: 'ENABLED',
           },
@@ -697,7 +696,7 @@ export = {
       test.done();
     },
 
-    'logs config - cloudwatch and s3'(test: Test) {
+    'logs config - cloudWatch and s3'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
       const bucket = s3.Bucket.fromBucketName(stack, 'LogBucket2', 'MyBucketName');
@@ -710,7 +709,7 @@ export = {
           path: 'path',
         }),
         logging: {
-          cloudwatch: {
+          cloudWatch: {
             logGroup,
             prefix: '/my-logs',
           },
@@ -730,7 +729,6 @@ export = {
             StreamName: '/my-logs',
           },
           S3Logs: {
-            EncryptionDisabled: false,
             Location: 'MyBucketName/my-logs',
             Status: 'ENABLED',
           },

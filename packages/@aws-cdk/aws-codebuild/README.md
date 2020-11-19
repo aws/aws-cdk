@@ -316,7 +316,7 @@ By default, logs will go to cloudwatch.
 ```typescript
 new codebuild.Project(this, 'Project', {
   logging: {
-    cloudwatch: {
+    cloudWatch: {
       logGroup: new cloudwatch.LogGroup(this, `MyLogGroup`),
     }
   },
