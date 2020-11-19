@@ -76,7 +76,7 @@ describe('Invoke API', () => {
       api: restApi,
       apiEndpoint: restApi.restApiId,
       method: HttpMethod.GET,
-      headers: sfn.TaskInput.fromObject(taskToken),
+      headers: taskToken,
       stageName: '$default',
       path: 'path',
     });
@@ -117,10 +117,7 @@ describe('Invoke API', () => {
           ],
         },
         Headers: {
-          type: 1,
-          value: {
-            'TaskToken.$': 'States.Array($$.Task.Token)',
-          },
+          'TaskToken.$': 'States.Array($$.Task.Token)',
         },
         Method: HttpMethod.GET,
         AuthType: 'NO_AUTH',
