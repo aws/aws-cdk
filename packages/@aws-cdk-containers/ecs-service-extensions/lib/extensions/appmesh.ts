@@ -293,14 +293,16 @@ export class AppMeshExtension extends ServiceExtension {
       virtualRouterName: `${this.parentService.id}`,
     });
 
+    // Form the service name that requests will be made to
+    const serviceName = `${this.parentService.id}.${cloudmapNamespace.namespaceName}`;
+    const weightedTargets: appmesh.WeightedTarget[] = [{
+      virtualNode: this.virtualNode,
+      weight: 1,
+    }];
     // Now add the virtual node as a route in the virtual router
+    // Ensure that the route type matches the protocol type.
     this.route = this.virtualRouter.addRoute(`${this.parentService.id}-route`, {
-      routeTargets: [{
-        virtualNode: this.virtualNode,
-        weight: 1,
-      }],
-      // Ensure that the route type matches the protocol type.
-      routeType: this.protocol == appmesh.Protocol.HTTP ? appmesh.RouteType.HTTP : appmesh.RouteType.TCP,
+      routeSpec: this.routeSpec(weightedTargets, serviceName),
     });
 
     // Now create a virtual service. Relationship goes like this:
@@ -308,7 +310,7 @@ export class AppMeshExtension extends ServiceExtension {
     this.virtualService = new appmesh.VirtualService(this.scope, `${this.parentService.id}-virtual-service`, {
       mesh: this.mesh,
       virtualRouter: this.virtualRouter,
-      virtualServiceName: `${this.parentService.id}.${cloudmapNamespace.namespaceName}`,
+      virtualServiceName: serviceName,
     });
   }
 
@@ -338,6 +340,26 @@ export class AppMeshExtension extends ServiceExtension {
     // proxy on this service knows how to route traffic to
     // nodes from the other service.
     this.virtualNode.addBackend(otherAppMesh.virtualService);
+  }
+
+  private routeSpec(weightedTargets: appmesh.WeightedTarget[], serviceName: string): appmesh.RouteSpec {
+    switch (this.protocol) {
+      case appmesh.Protocol.HTTP: return appmesh.RouteSpec.http({
+        weightedTargets: weightedTargets,
+      });
+      case appmesh.Protocol.HTTP2: return appmesh.RouteSpec.http2({
+        weightedTargets: weightedTargets,
+      });
+      case appmesh.Protocol.GRPC: return appmesh.RouteSpec.grpc({
+        weightedTargets: weightedTargets,
+        match: {
+          serviceName: serviceName,
+        },
+      });
+      case appmesh.Protocol.TCP: return appmesh.RouteSpec.tcp({
+        weightedTargets: weightedTargets,
+      });
+    }
   }
 
   private virtualRouterListener(port: number): appmesh.VirtualRouterListener {
