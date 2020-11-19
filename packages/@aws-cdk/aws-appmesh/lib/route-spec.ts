@@ -76,8 +76,6 @@ export interface TcpRouteSpecOptions {
 export interface GrpcRouteSpecOptions {
   /**
    * The criterion for determining a request match for this Route
-   *
-   * @default - no default
    */
   readonly match: GrpcRouteMatch;
 
@@ -154,29 +152,10 @@ export abstract class RouteSpec {
   }
 
   /**
-   * List of targets that traffic is routed to when a request matches the route
-   */
-  abstract readonly weightedTargets: WeightedTarget[];
-
-  /**
    * Called when the GatewayRouteSpec type is initialized. Can be used to enforce
    * mutual exclusivity with future properties
    */
   public abstract bind(scope: cdk.Construct): RouteSpecConfig;
-
-  /**
-  * Utility method to add weighted route targets to an existing route
-  */
-  protected renderWeightedTargets() {
-    const renderedTargets: CfnRoute.WeightedTargetProperty[] = [];
-    for (const t of this.weightedTargets) {
-      renderedTargets.push({
-        virtualNode: t.virtualNode.virtualNodeName,
-        weight: t.weight || 1,
-      });
-    }
-    return renderedTargets;
-  }
 }
 
 class HttpRouteSpec extends RouteSpec {
@@ -209,7 +188,7 @@ class HttpRouteSpec extends RouteSpec {
     }
     const httpConfig: CfnRoute.HttpRouteProperty = {
       action: {
-        weightedTargets: this.renderWeightedTargets(),
+        weightedTargets: renderWeightedTargets(this.weightedTargets),
       },
       match: {
         prefix: prefixPath,
@@ -237,7 +216,7 @@ class TcpRouteSpec extends RouteSpec {
     return {
       tcpRouteSpec: {
         action: {
-          weightedTargets: this.renderWeightedTargets(),
+          weightedTargets: renderWeightedTargets(this.weightedTargets),
         },
       },
     };
@@ -258,7 +237,7 @@ class GrpcRouteSpec extends RouteSpec {
     return {
       grpcRouteSpec: {
         action: {
-          weightedTargets: this.renderWeightedTargets(),
+          weightedTargets: renderWeightedTargets(this.weightedTargets),
         },
         match: {
           serviceName: this.match.serviceName,
@@ -266,4 +245,18 @@ class GrpcRouteSpec extends RouteSpec {
       },
     };
   }
+}
+
+/**
+* Utility method to add weighted route targets to an existing route
+*/
+function renderWeightedTargets(weightedTargets: WeightedTarget[]): CfnRoute.WeightedTargetProperty[] {
+  const renderedTargets: CfnRoute.WeightedTargetProperty[] = [];
+  for (const t of weightedTargets) {
+    renderedTargets.push({
+      virtualNode: t.virtualNode.virtualNodeName,
+      weight: t.weight || 1,
+    });
+  }
+  return renderedTargets;
 }

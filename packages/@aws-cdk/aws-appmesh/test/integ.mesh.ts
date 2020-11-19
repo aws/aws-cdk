@@ -103,7 +103,7 @@ const node3 = mesh.addVirtualNode('node3', {
 });
 
 router.addRoute('route-2', {
-  routeSpec: appmesh.RouteSpec.http2({
+  routeSpec: appmesh.RouteSpec.http({
     weightedTargets: [
       {
         virtualNode: node2,
@@ -117,27 +117,13 @@ router.addRoute('route-2', {
 });
 
 router.addRoute('route-3', {
-  routeSpec: appmesh.RouteSpec.tcp({
+  routeSpec: appmesh.RouteSpec.http({
     weightedTargets: [
       {
         virtualNode: node3,
         weight: 20,
       },
     ],
-  }),
-});
-
-router.addRoute('route-4', {
-  routeSpec: appmesh.RouteSpec.grpc({
-    weightedTargets: [
-      {
-        virtualNode: node3,
-        weight: 20,
-      },
-    ],
-    match: {
-      serviceName: virtualService.virtualServiceName,
-    },
   }),
 });
 
