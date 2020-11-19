@@ -225,9 +225,12 @@ The [Invoke](https://docs.aws.amazon.com/step-functions/latest/dg/connect-api-ga
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as tasks from `@aws-cdk/aws-stepfunctions-tasks`;
 
+const restApi = new apigateway.RestApi(stack, 'MyRestApi');
+
 const invokeJob = new tasks.ApiGatewayInvoke(stack, 'Invoke APIGW', {
-  apiEndpoint: 'APIID.execute-api.REGION.amazonaws.com',
-  stage: 'prod',
+  api: restApi,
+  apiEndpoint: restApi.restApiId,
+  stageName: 'prod',
   method: ApiGatewayMethodType.GET,
 });
 ```
