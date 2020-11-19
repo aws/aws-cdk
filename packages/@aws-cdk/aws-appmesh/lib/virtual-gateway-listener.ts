@@ -77,51 +77,10 @@ export abstract class VirtualGatewayListener {
   }
 
   /**
-   * Protocol the listener implements
-   */
-  protected abstract protocol: Protocol;
-
-  /**
-   * Port to listen for connections on
-   */
-  protected abstract port: number;
-
-  /**
-   * Health checking strategy upstream nodes should use when communicating with the listener
-   */
-  protected abstract healthCheck?: HealthCheck;
-
-  /**
    * Called when the GatewayListener type is initialized. Can be used to enforce
    * mutual exclusivity
    */
   public abstract bind(scope: cdk.Construct): VirtualGatewayListenerConfig;
-
-  protected renderHealthCheck(hc: HealthCheck): CfnVirtualGateway.VirtualGatewayHealthCheckPolicyProperty | undefined {
-    if (hc.protocol === Protocol.TCP) {
-      throw new Error('TCP health checks are not permitted for gateway listeners');
-    }
-
-    if (hc.protocol === Protocol.GRPC && hc.path) {
-      throw new Error('The path property cannot be set with Protocol.GRPC');
-    }
-
-    const protocol = hc.protocol? hc.protocol : this.protocol;
-
-    const healthCheck: CfnVirtualGateway.VirtualGatewayHealthCheckPolicyProperty = {
-      healthyThreshold: hc.healthyThreshold || 2,
-      intervalMillis: (hc.interval || cdk.Duration.seconds(5)).toMilliseconds(), // min
-      path: hc.path || ((protocol === Protocol.HTTP || protocol === Protocol.HTTP2) ? '/' : undefined),
-      port: hc.port || this.port,
-      protocol: hc.protocol || this.protocol,
-      timeoutMillis: (hc.timeout || cdk.Duration.seconds(2)).toMilliseconds(),
-      unhealthyThreshold: hc.unhealthyThreshold || 2,
-    };
-
-    validateHealthChecks(healthCheck);
-
-    return healthCheck;
-  }
 }
 
 /**
@@ -164,7 +123,7 @@ class HttpGatewayListener extends VirtualGatewayListener {
           port: this.port,
           protocol: this.protocol,
         },
-        healthCheck: this.healthCheck ? this.renderHealthCheck(this.healthCheck): undefined,
+        healthCheck: this.healthCheck ? renderHealthCheck(this.healthCheck, this.protocol, this.port): undefined,
       },
     };
   }
@@ -220,8 +179,36 @@ class GrpcGatewayListener extends VirtualGatewayListener {
           port: this.port,
           protocol: Protocol.GRPC,
         },
-        healthCheck: this.healthCheck? this.renderHealthCheck(this.healthCheck): undefined,
+        healthCheck: this.healthCheck ? renderHealthCheck(this.healthCheck, this.protocol, this.port): undefined,
       },
     };
   }
+}
+
+function renderHealthCheck(
+  hc: HealthCheck, listenerProtocol: Protocol, listenerPort: number): CfnVirtualGateway.VirtualGatewayHealthCheckPolicyProperty {
+
+  if (hc.protocol === Protocol.TCP) {
+    throw new Error('TCP health checks are not permitted for gateway listeners');
+  }
+
+  if (hc.protocol === Protocol.GRPC && hc.path) {
+    throw new Error('The path property cannot be set with Protocol.GRPC');
+  }
+
+  const protocol = hc.protocol? hc.protocol : listenerProtocol;
+
+  const healthCheck: CfnVirtualGateway.VirtualGatewayHealthCheckPolicyProperty = {
+    healthyThreshold: hc.healthyThreshold || 2,
+    intervalMillis: (hc.interval || cdk.Duration.seconds(5)).toMilliseconds(), // min
+    path: hc.path || ((protocol === Protocol.HTTP || protocol === Protocol.HTTP2) ? '/' : undefined),
+    port: hc.port || listenerPort,
+    protocol: hc.protocol || listenerProtocol,
+    timeoutMillis: (hc.timeout || cdk.Duration.seconds(2)).toMilliseconds(),
+    unhealthyThreshold: hc.unhealthyThreshold || 2,
+  };
+
+  validateHealthChecks(healthCheck);
+
+  return healthCheck;
 }

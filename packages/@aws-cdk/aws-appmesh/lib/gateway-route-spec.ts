@@ -29,7 +29,7 @@ export interface GrpcGatewayRouteMatch {
 /**
  * Properties specific for HTTP Based GatewayRoutes
  */
-export interface HttpRouteSpecOptions {
+export interface HttpGatewayRouteSpecOptions {
   /**
    * The criterion for determining a request match for this GatewayRoute
    *
@@ -46,7 +46,7 @@ export interface HttpRouteSpecOptions {
 /**
  * Properties specific for a GRPC GatewayRoute
  */
-export interface GrpcRouteSpecOptions {
+export interface GrpcGatewayRouteSpecOptions {
   /**
    * The criterion for determining a request match for this GatewayRoute
    */
@@ -93,7 +93,7 @@ export abstract class GatewayRouteSpec {
    *
    * @param options - no http gateway route
    */
-  public static http(options: HttpRouteSpecOptions): GatewayRouteSpec {
+  public static http(options: HttpGatewayRouteSpecOptions): GatewayRouteSpec {
     return new HttpGatewayRouteSpec(options, Protocol.HTTP);
   }
 
@@ -102,7 +102,7 @@ export abstract class GatewayRouteSpec {
    *
    * @param options - no http2 gateway route
    */
-  public static http2(options: HttpRouteSpecOptions): GatewayRouteSpec {
+  public static http2(options: HttpGatewayRouteSpecOptions): GatewayRouteSpec {
     return new HttpGatewayRouteSpec(options, Protocol.HTTP2);
   }
 
@@ -111,7 +111,7 @@ export abstract class GatewayRouteSpec {
    *
    * @param options - no grpc gateway route
    */
-  public static grpc(options: GrpcRouteSpecOptions): GatewayRouteSpec {
+  public static grpc(options: GrpcGatewayRouteSpecOptions): GatewayRouteSpec {
     return new GrpcGatewayRouteSpec(options);
   }
 
@@ -140,7 +140,7 @@ class HttpGatewayRouteSpec extends GatewayRouteSpec {
    */
   readonly routeType: Protocol;
 
-  constructor(options: HttpRouteSpecOptions, protocol: Protocol.HTTP | Protocol.HTTP2) {
+  constructor(options: HttpGatewayRouteSpecOptions, protocol: Protocol.HTTP | Protocol.HTTP2) {
     super();
     this.routeTarget = options.routeTarget;
     this.routeType = protocol;
@@ -184,7 +184,7 @@ class GrpcGatewayRouteSpec extends GatewayRouteSpec {
    */
   readonly routeTarget: IVirtualService;
 
-  constructor(options: GrpcRouteSpecOptions) {
+  constructor(options: GrpcGatewayRouteSpecOptions) {
     super();
     this.match = options.match;
     this.routeTarget = options.routeTarget;
