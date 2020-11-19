@@ -18,6 +18,7 @@ import { IFileSystemLocation } from './file-location';
 import { NoArtifacts } from './no-artifacts';
 import { NoSource } from './no-source';
 import { runScriptLinuxBuildSpec, S3_BUCKET_ENV, S3_KEY_ENV } from './private/run-script-linux-build-spec';
+import { LoggingOptions } from './project-logs';
 import { renderReportGroupArn } from './report-group-utils';
 import { ISource } from './source';
 import { CODEPIPELINE_SOURCE_ARTIFACTS_TYPE, NO_SOURCE_TYPE } from './source-types';
@@ -538,6 +539,13 @@ export interface CommonProjectProps {
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/test-report-group-naming.html
    */
   readonly grantReportGroupPermissions?: boolean;
+
+  /**
+   * Information about logs for the build project. A project can create logs in Amazon CloudWatch Logs, an S3 bucket, or both.
+   *
+   * @default - no log configuration is set
+   */
+  readonly logging?: LoggingOptions;
 }
 
 export interface ProjectProps extends CommonProjectProps {
@@ -771,6 +779,7 @@ export class Project extends ProjectBase {
       triggers: sourceConfig.buildTriggers,
       sourceVersion: sourceConfig.sourceVersion,
       vpcConfig: this.configureVpc(props),
+      logsConfig: this.renderLoggingConfiguration(props.logging),
     });
 
     this.addVpcRequiredPermissions(props, resource);
@@ -1033,6 +1042,44 @@ export class Project extends ProjectBase {
       vpcId: props.vpc.vpcId,
       subnets: props.vpc.selectSubnets(props.subnetSelection).subnetIds,
       securityGroupIds: this.connections.securityGroups.map(s => s.securityGroupId),
+    };
+  }
+
+  private renderLoggingConfiguration(props: LoggingOptions | undefined): CfnProject.LogsConfigProperty | undefined {
+    if (props === undefined) {
+      return undefined;
+    };
+
+    let s3Config: CfnProject.S3LogsConfigProperty|undefined = undefined;
+    let cloudwatchConfig: CfnProject.CloudWatchLogsConfigProperty|undefined = undefined;
+
+    if (props.s3) {
+      const s3Logs = props.s3;
+      s3Config = {
+        status: (s3Logs.enabled ?? true) ? 'ENABLED' : 'DISABLED',
+        location: `${s3Logs.bucket.bucketName}/${s3Logs.prefix}`,
+        encryptionDisabled: s3Logs.encrypted,
+      };
+    }
+
+    if (props.cloudWatch) {
+      const cloudWatchLogs = props.cloudWatch;
+      const status = (cloudWatchLogs.enabled ?? true) ? 'ENABLED' : 'DISABLED';
+
+      if (status === 'ENABLED' && !(cloudWatchLogs.logGroup)) {
+        throw new Error('Specifying a LogGroup is required if CloudWatch logging for CodeBuild is enabled');
+      }
+
+      cloudwatchConfig = {
+        status,
+        groupName: cloudWatchLogs.logGroup?.logGroupName,
+        streamName: cloudWatchLogs.prefix,
+      };
+    }
+
+    return {
+      s3Logs: s3Config,
+      cloudWatchLogs: cloudwatchConfig,
     };
   }
 
