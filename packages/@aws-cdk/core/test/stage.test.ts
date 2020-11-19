@@ -1,3 +1,4 @@
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import { App, CfnResource, Construct, IAspect, IConstruct, Stack, Stage, Aspects } from '../lib';
@@ -280,6 +281,69 @@ nodeunitShim({
     test.throws(() => new Stage(app, 'mystage', { outdir: '/tmp/foo/bar' }), /"outdir" cannot be specified for nested stages/);
     test.done();
   },
+
+  'Stage.isStage indicates that a construct is a stage'(test: Test) {
+    // WHEN
+    const app = new App();
+    const stack = new Stack();
+    const stage = new Stage(app, 'Stage');
+
+    // THEN
+    test.ok(Stage.isStage(stage));
+    test.ok(Stage.isStage(app));
+    test.ok(!Stage.isStage(stack));
+    test.done();
+  },
+
+  'Stage.isStage indicates that a construct is a stage based on symbol'(test: Test) {
+    // WHEN
+    const app = new App();
+    const stage = new Stage(app, 'Stage');
+
+    const externalStage = {};
+    const STAGE_SYMBOL = Symbol.for('@aws-cdk/core.Stage');
+    Object.defineProperty(externalStage, STAGE_SYMBOL, { value: true });
+
+    // THEN
+    test.ok(Stage.isStage(stage));
+    test.ok(Stage.isStage(app));
+    test.ok(Stage.isStage(externalStage));
+    test.done();
+  },
+});
+
+test('missing context in Stages is propagated up to root assembly', () => {
+  // GIVEN
+  const app = new App();
+  const stage = new Stage(app, 'Stage', {
+    env: { account: 'account', region: 'region' },
+  });
+  const stack = new Stack(stage, 'Stack');
+  new CfnResource(stack, 'Resource', { type: 'Something' });
+
+  // WHEN
+  stack.reportMissingContext({
+    key: 'missing-context-key',
+    provider: cxschema.ContextProvider.AVAILABILITY_ZONE_PROVIDER,
+    props: {
+      account: 'account',
+      region: 'region',
+    },
+  });
+
+  // THEN
+  const assembly = app.synth();
+
+  expect(assembly.manifest.missing).toEqual([
+    {
+      key: 'missing-context-key',
+      provider: cxschema.ContextProvider.AVAILABILITY_ZONE_PROVIDER,
+      props: {
+        account: 'account',
+        region: 'region',
+      },
+    },
+  ]);
 });
 
 class TouchingAspect implements IAspect {
