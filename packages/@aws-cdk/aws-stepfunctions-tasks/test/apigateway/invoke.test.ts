@@ -118,9 +118,9 @@ describe('Invoke API', () => {
         },
         Headers: {
           type: 1,
-          value:{
+          value: {
             'TaskToken.$': 'States.Array($$.Task.Token)',
-          }
+          },
         },
         Method: HttpMethod.GET,
         AuthType: 'NO_AUTH',
