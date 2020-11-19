@@ -1,6 +1,7 @@
 import * as path from 'path';
 import { expect, haveResource, haveResourceLike, InspectionFailure } from '@aws-cdk/assert';
 import * as ecr_assets from '@aws-cdk/aws-ecr-assets';
+import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as ssm from '@aws-cdk/aws-ssm';
 import * as cdk from '@aws-cdk/core';
@@ -60,6 +61,7 @@ export = {
           key: 'foo',
           value: 'bar',
         },
+        environmentFiles: [ecs.EnvironmentFile.fromAsset(path.join(__dirname, 'demo-envfiles/test-envfile.env'))],
         essential: true,
         extraHosts: {
           name: 'dev-db.hostname.pvt',
@@ -118,6 +120,47 @@ export = {
                 Value: 'bar',
               },
             ],
+            EnvironmentFiles: [{
+              Type: 's3',
+              Value: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:aws:s3:::',
+                    {
+                      Ref: 'AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dS3Bucket7B2069B7',
+                    },
+                    '/',
+                    {
+                      'Fn::Select': [
+                        0,
+                        {
+                          'Fn::Split': [
+                            '||',
+                            {
+                              Ref: 'AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dS3VersionKey40E12C15',
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                    {
+                      'Fn::Select': [
+                        1,
+                        {
+                          'Fn::Split': [
+                            '||',
+                            {
+                              Ref: 'AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dS3VersionKey40E12C15',
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                  ],
+                ],
+              },
+            }],
             Essential: true,
             ExtraHosts: [
               {
@@ -659,6 +702,126 @@ export = {
 
   },
 
+  'Environment Files': {
+    'can add asset environment file to the container definition'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+      // WHEN
+      taskDefinition.addContainer('cont', {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        memoryLimitMiB: 1024,
+        environmentFiles: [ecs.EnvironmentFile.fromAsset(path.join(__dirname, 'demo-envfiles/test-envfile.env'))],
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+        ContainerDefinitions: [
+          {
+            EnvironmentFiles: [{
+              Type: 's3',
+              Value: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:aws:s3:::',
+                    {
+                      Ref: 'AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dS3Bucket7B2069B7',
+                    },
+                    '/',
+                    {
+                      'Fn::Select': [
+                        0,
+                        {
+                          'Fn::Split': [
+                            '||',
+                            {
+                              Ref: 'AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dS3VersionKey40E12C15',
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                    {
+                      'Fn::Select': [
+                        1,
+                        {
+                          'Fn::Split': [
+                            '||',
+                            {
+                              Ref: 'AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dS3VersionKey40E12C15',
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                  ],
+                ],
+              },
+            }],
+          },
+        ],
+      }));
+
+      test.done();
+    },
+    'can add s3 bucket environment file to the container definition'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const bucket = new s3.Bucket(stack, 'Bucket', {
+        bucketName: 'test-bucket',
+      });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+      // WHEN
+      taskDefinition.addContainer('cont', {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        memoryLimitMiB: 1024,
+        environmentFiles: [ecs.EnvironmentFile.fromBucket(bucket, 'test-key')],
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+        ContainerDefinitions: [
+          {
+            EnvironmentFiles: [{
+              Type: 's3',
+              Value: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:aws:s3:::',
+                    {
+                      Ref: 'Bucket83908E77',
+                    },
+                    '/test-key',
+                  ],
+                ],
+              },
+            }],
+          },
+        ],
+      }));
+
+      test.done();
+    },
+    'throws when using environment files for a Fargate task'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
+
+      // THEN
+      test.throws(() => taskDefinition.addContainer('cont', {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        memoryLimitMiB: 1024,
+        environmentFiles: [ecs.EnvironmentFile.fromAsset(path.join(__dirname, 'demo-envfiles/test-envfile.env'))],
+      }), /Cannot specify environment files for a task using the FARGATE launch type in container/);
+
+      test.done();
+    },
+  },
+
   'Given GPU count parameter': {
     'will add resource requirements to container definition'(test: Test) {
       // GIVEN
@@ -846,21 +1009,45 @@ export = {
 
   },
 
-  'throws when using a specific secret JSON field as environment variable for a Fargate task'(test: Test) {
+  'use a specific secret JSON field as environment variable for a Fargate task'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
 
     const secret = new secretsmanager.Secret(stack, 'Secret');
 
-    // THEN
-    test.throws(() => taskDefinition.addContainer('cont', {
+    // WHEN
+    taskDefinition.addContainer('cont', {
       image: ecs.ContainerImage.fromRegistry('test'),
       memoryLimitMiB: 1024,
       secrets: {
         SECRET_KEY: ecs.Secret.fromSecretsManager(secret, 'specificKey'),
       },
-    }), /Cannot specify secret JSON field for a task using the FARGATE launch type/);
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          Secrets: [
+            {
+              Name: 'SECRET_KEY',
+              ValueFrom: {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      Ref: 'SecretA720EF05',
+                    },
+                    ':specificKey::',
+                  ],
+                ],
+              },
+            },
+          ],
+        },
+      ],
+    }));
 
     test.done();
   },
