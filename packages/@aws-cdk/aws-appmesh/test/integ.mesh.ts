@@ -114,7 +114,7 @@ router.addRoute('route-2', {
 });
 
 router.addRoute('route-3', {
-  routeSpec: appmesh.RouteSpec.http({
+  routeSpec: appmesh.RouteSpec.tcp({
     weightedTargets: [
       {
         virtualNode: node3,

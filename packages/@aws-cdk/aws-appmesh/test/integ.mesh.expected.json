@@ -575,7 +575,7 @@
         },
         "RouteName": "route-3",
         "Spec": {
-          "HttpRoute": {
+          "TcpRoute": {
             "Action": {
               "WeightedTargets": [
                 {
@@ -588,9 +588,6 @@
                   "Weight": 20
                 }
               ]
-            },
-            "Match": {
-              "Prefix": "/"
             }
           }
         },
