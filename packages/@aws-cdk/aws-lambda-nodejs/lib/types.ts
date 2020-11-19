@@ -101,4 +101,33 @@ export interface BundlingOptions {
    * @default - use the Docker image provided by @aws-cdk/aws-lambda-nodejs
    */
   readonly bundlingDockerImage?: BundlingDockerImage;
+
+  /**
+   * Command hooks
+   *
+   * @default - do not run additional commands
+   */
+  readonly commandHooks?: ICommandHooks;
+}
+
+/**
+ * Command hooks
+ */
+export interface ICommandHooks {
+  /**
+   * Returns a command to run before bundling
+   */
+  beforeBundling?(inputDir: string, outputDir: string): string;
+
+  /**
+   * Returns a command to run before installing node modules.
+   *
+   * This hook only runs when node modules are installed
+   */
+  beforeInstall?(inputDir: string, outputDir: string): string;
+
+  /**
+   * Returns a command to run after bundling
+   */
+  afterBundling?(inputDir: string, outputDir: string): string;
 }

@@ -144,3 +144,26 @@ $ yarn add --dev esbuild@0
 To force bundling in a Docker container, set the `forceDockerBundling` prop to `true`. This
 is useful if your function relies on node modules that should be installed (`nodeModules` prop, see [above](#install-modules)) in a Lambda compatible environment. This is usually the
 case with modules using native dependencies.
+
+### Command hooks
+It is possible to run additional commands by specifying the `commandHooks` prop:
+
+```ts
+new lambda.NodejsFunction(this, 'my-handler-with-commands', {
+  commandHooks: {
+    // Copy a file so that it will be included in the bundled asset
+    afterBundling(inputDir: string, outputDir: string): string {
+      return `cp ${inputDir}/important-file.node ${outputDir}`
+    }
+  }
+});
+```
+
+The following hooks are available:
+- `beforeBundling`: runs before all bundling commands
+- `afterInstall`: runs before node modules installation
+- `afterBundling`: runs after all bundling commands
+
+They all receive the directory containing the lock file (`inputDir`) and the
+directory where the bundled asset will be output (`outputDir`). They must return
+the command to run as a `string`.
