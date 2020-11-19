@@ -497,26 +497,18 @@ export = {
       test.done();
     },
 
-    'bucket with aws foundational security best practice'(test: Test) {
+    'bucket with aws foundational security best practice enforce ssl'(test: Test) {
       const stack = new cdk.Stack();
       new s3.Bucket(stack, 'MyBucket', {
-        enforceSecurityBestPractice: true,
+        enforceSSL: true,
       });
 
       expect(stack).toMatch({
         'Resources': {
           'MyBucketF68F3FF0': {
             'Type': 'AWS::S3::Bucket',
-            'DeletionPolicy': 'Retain',
             'UpdateReplacePolicy': 'Retain',
-            'Properties': {
-              'PublicAccessBlockConfiguration': {
-                'BlockPublicAcls': true,
-                'BlockPublicPolicy': true,
-                'IgnorePublicAcls': true,
-                'RestrictPublicBuckets': true,
-              },
-            },
+            'DeletionPolicy': 'Retain',
           },
           'MyBucketPolicyE7FBAC7B': {
             'Type': 'AWS::S3::BucketPolicy',
@@ -535,28 +527,20 @@ export = {
                     },
                     'Effect': 'Deny',
                     'Principal': '*',
-                    'Resource': [
-                      {
-                        'Fn::GetAtt': [
-                          'MyBucketF68F3FF0',
-                          'Arn',
+                    'Resource': {
+                      'Fn::Join': [
+                        '',
+                        [
+                          {
+                            'Fn::GetAtt': [
+                              'MyBucketF68F3FF0',
+                              'Arn',
+                            ],
+                          },
+                          '/*',
                         ],
-                      },
-                      {
-                        'Fn::Join': [
-                          '',
-                          [
-                            {
-                              'Fn::GetAtt': [
-                                'MyBucketF68F3FF0',
-                                'Arn',
-                              ],
-                            },
-                            '/*',
-                          ],
-                        ],
-                      },
-                    ],
+                      ],
+                    },
                   },
                 ],
                 'Version': '2012-10-17',
