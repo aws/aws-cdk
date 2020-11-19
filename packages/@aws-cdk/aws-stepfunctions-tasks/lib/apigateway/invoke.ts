@@ -178,13 +178,9 @@ export class ApiGatewayInvoke extends sfn.TaskStateBase {
   }
 }
 
-/**
- * Http Methods that API Gateway supports
- */
+/** Http Methods that API Gateway supports */
 export enum HttpMethod {
-  /**
-   * Retreive data from a server at the specified resource
-   */
+  /** Retreive data from a server at the specified resource */
   GET = 'GET',
 
   /** Send data to the API endpoint to create or udpate a resource */
