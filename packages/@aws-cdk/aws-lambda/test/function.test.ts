@@ -1833,25 +1833,25 @@ describe('function', () => {
 
       expect(() => new lambda.Function(stack, 'Fn1', {
         code: new MyCode({}),
-      })).toThrow(/lambda.Code must specify one of/);
+      })).toThrow(/lambda.Code must specify exactly one of/);
 
       expect(() => new lambda.Function(stack, 'Fn2', {
         code: new MyCode({
           inlineCode: 'foo',
           image: { imageUri: 'bar' },
         }),
-      })).toThrow(/lambda.Code must specify one of/);
+      })).toThrow(/lambda.Code must specify exactly one of/);
 
       expect(() => new lambda.Function(stack, 'Fn3', {
         code: new MyCode({
           image: { imageUri: 'baz' },
           s3Location: { bucketName: 's3foo', objectKey: 's3bar' },
         }),
-      })).toThrow(/lambda.Code must specify one of/);
+      })).toThrow(/lambda.Code must specify exactly one of/);
 
       expect(() => new lambda.Function(stack, 'Fn4', {
         code: new MyCode({ inlineCode: 'baz', s3Location: { bucketName: 's3foo', objectKey: 's3bar' } }),
-      })).toThrow(/lambda.Code must specify one of/);
+      })).toThrow(/lambda.Code must specify exactly one of/);
     });
 
     test('handler must be specified when non-container asset is specified', () => {

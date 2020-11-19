@@ -687,7 +687,7 @@ export class Function extends FunctionBase {
    */
   public get runtime(): Runtime {
     if (!this._runtime) {
-      throw new Error();
+      throw new Error('no runtime defined for this lambda function');
     }
     return this._runtime;
   }
@@ -985,17 +985,9 @@ function extractNameFromArn(arn: string) {
 export function verifyCodeConfig(code: CodeConfig, props: FunctionProps) {
   // mutually exclusive
   const codeType = [code.inlineCode, code.s3Location, code.image];
-  const atleastOne = codeType.reduce((agg, type) => {
-    if (type !== undefined) {
-      if (agg) {
-        throw new Error('lambda.Code must specify one of "inlineCode" or "s3Location" but not both');
-      }
-      return true;
-    }
-    return agg || false;
-  }, false);
-  if (!atleastOne) {
-    throw new Error('lambda.Code must specify one of "inlineCode" or "s3Location" but not both');
+
+  if (codeType.filter(x => !!x).length !== 1) {
+    throw new Error('lambda.Code must specify exactly one of: "inlineCode", "s3Location", or "image"');
   }
 
   if ((code.inlineCode || code.s3Location) && props.handler === undefined) {

@@ -403,8 +403,7 @@ export interface EcrImageCodeProps {
   readonly entrypoint?: string[];
 
   /**
-   * The image tag to use when pulling the image from ECR
-   * @see https://docs.aws.amazon.com/AmazonECR/latest/userguide/ecr-using-tags.html
+   * The image tag to use when pulling the image from ECR.
    * @default 'latest'
    */
   readonly tag?: string;
