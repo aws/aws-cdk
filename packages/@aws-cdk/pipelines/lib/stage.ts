@@ -96,7 +96,7 @@ export class CdkStage extends CoreConstruct {
       // now is where we add a manual approval step, and we allocate 1 more runOrder
       // for the execute.
       if (options.manualApprovals) {
-        this.addManualApprovalAction({ runOrder: executeRunOrder });
+        this.addManualApprovalAction({ runOrder: runOrder + 1 });
         executeRunOrder = this.nextSequentialRunOrder();
       }
 
