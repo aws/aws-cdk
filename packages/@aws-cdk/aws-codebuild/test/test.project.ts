@@ -678,7 +678,7 @@ export = {
         logging: {
           s3: {
             bucket,
-            prefix: '/my-logs',
+            prefix: 'my-logs',
           },
         },
       });
@@ -715,7 +715,7 @@ export = {
           },
           s3: {
             bucket,
-            prefix: '/my-logs',
+            prefix: 'my-logs',
           },
         },
       });

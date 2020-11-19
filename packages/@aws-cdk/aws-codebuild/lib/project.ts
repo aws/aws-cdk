@@ -1057,7 +1057,7 @@ export class Project extends ProjectBase {
       const s3Logs = props.s3;
       s3Config = {
         status: (s3Logs.enabled ?? true) ? 'ENABLED' : 'DISABLED',
-        location: `${s3Logs.bucket.bucketName}${s3Logs.prefix}`,
+        location: `${s3Logs.bucket.bucketName}/${s3Logs.prefix}`,
         encryptionDisabled: s3Logs.encrypted,
       };
     }
