@@ -5,8 +5,23 @@ import { renderArtifacts } from './artifacts';
 import * as validation from './validation';
 
 export interface FullActionDescriptorProps {
+  /**
+   * The handle to the bound Action
+   */
   readonly boundAction: IBoundAction;
+
+  /**
+   * Role of the action
+   *
+   * @default - Pipeline action
+   */
   readonly actionRole: iam.IRole | undefined;
+
+  /**
+   * Region of the action, if different from the Pipeline region
+   *
+   * @default - Pipeline region
+   */
   readonly actionRegion: string | undefined;
 }
 
@@ -38,36 +53,32 @@ export class FullActionDescriptor {
     return this.action.actionProperties.outputs;
   }
 
-  public get region(): string | undefined {
-    // Take the props region, which is going to be the target region EXCEPT if it's the
-    // pipeline region (in which case it will be undefined).
-    //
-    // But if the user specified a region on the action's props, then render
-    // it anyway because they apparently dearly want it in the template.
-    return this.props.actionRegion ?? this.action.actionProperties.region;
-  }
-
-  public get role(): iam.IRole | undefined {
-    return this.action.actionProperties.role;
+  public get isCrossRegion() {
+    return this.props.actionRegion !== undefined;
   }
 
   public render(): CfnPipeline.ActionDeclarationProperty {
     const actionProperties = this.action.actionProperties;
     return {
       name: actionProperties.actionName,
-      inputArtifacts: renderArtifacts(actionProperties.inputs ?? []),
-      outputArtifacts: renderArtifacts(actionProperties.outputs ?? []),
+      inputArtifacts: renderArtifacts(actionProperties.inputs),
+      outputArtifacts: renderArtifacts(actionProperties.outputs),
       actionTypeId: {
         category: actionProperties.category.toString(),
-        version: actionProperties.version ?? '1',
-        owner: actionProperties.owner ?? 'AWS',
+        version: actionProperties.version,
+        owner: actionProperties.owner,
         provider: actionProperties.provider,
       },
       configuration: this.props.boundAction.configuration(),
-      runOrder: this.runOrder,
+      runOrder: actionProperties.runOrder,
       namespace: actionProperties.variablesNamespace,
-      roleArn: this.role?.roleArn,
-      region: this.region,
+      roleArn: this.props.actionRole?.roleArn,
+      // Take the props region, which is going to be the target region EXCEPT if it's the
+      // pipeline region (in which case it will be undefined).
+      //
+      // But if the user specified a region on the action's props, then render
+      // it anyway because they apparently dearly want it in the template.
+      region: this.props.actionRegion ?? actionProperties.region,
     };
   }
 

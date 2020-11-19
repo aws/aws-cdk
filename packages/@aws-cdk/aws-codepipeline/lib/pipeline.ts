@@ -809,7 +809,7 @@ export class Pipeline extends PipelineBase {
     for (const [stageIndex, stage] of enumerate(this._stages)) {
       // For every output artifact, get the producer
       for (const action of stage.actionDescriptors) {
-        const actionLoc = new PipelineLocation(stageIndex, stage, action);
+        const actionLoc = new PipelineLocation(stageIndex, stage.stageName, action.runOrder, action.actionName);
 
         for (const outputArtifact of action.outputs) {
           // output Artifacts always have a name set
@@ -896,7 +896,7 @@ export class Pipeline extends PipelineBase {
 
   private get crossRegion(): boolean {
     if (this.crossRegionBucketsPassed) { return true; }
-    return this._stages.some(stage => stage.actionDescriptors.some(action => action.region !== undefined));
+    return this._stages.some(stage => stage.actionDescriptors.some(action => action.isCrossRegion));
   }
 
   private renderStages(): CfnPipeline.StageDeclarationProperty[] {
@@ -961,15 +961,11 @@ function enumerate<A>(xs: A[]): Array<[number, A]> {
 }
 
 class PipelineLocation {
-  constructor(private readonly stageIndex: number, private readonly stage: IStage, private readonly action: FullActionDescriptor) {
-  }
-
-  public get stageName() {
-    return this.stage.stageName;
-  }
-
-  public get actionName() {
-    return this.action.actionName;
+  constructor(
+    private readonly stageIndex: number,
+    private readonly stageName: string,
+    private readonly runOrder: number,
+    public readonly actionName: string) {
   }
 
   /**
@@ -977,7 +973,7 @@ class PipelineLocation {
    */
   public beforeOrEqual(rhs: PipelineLocation) {
     if (this.stageIndex !== rhs.stageIndex) { return rhs.stageIndex < rhs.stageIndex; }
-    return this.action.runOrder <= rhs.action.runOrder;
+    return this.runOrder <= rhs.runOrder;
   }
 
   /**
@@ -989,7 +985,7 @@ class PipelineLocation {
 
   public toString() {
     // runOrders are 1-based, so make the stageIndex also 1-based otherwise it's going to be confusing.
-    return `Stage ${this.stageIndex + 1} Action ${this.action.runOrder} ('${this.stageName}'/'${this.actionName}')`;
+    return `Stage ${this.stageIndex + 1} Action ${this.runOrder} ('${this.stageName}'/'${this.actionName}')`;
   }
 }
 
