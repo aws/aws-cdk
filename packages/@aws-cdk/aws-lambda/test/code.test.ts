@@ -233,8 +233,9 @@ describe('code', () => {
           Statement: [
             {
               Action: [
-                'ecr:BatchGetImage',
+                'ecr:BatchCheckLayerAvailability',
                 'ecr:GetDownloadUrlForLayer',
+                'ecr:BatchGetImage',
               ],
               Effect: 'Allow',
               Principal: {

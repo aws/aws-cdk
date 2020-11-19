@@ -421,7 +421,7 @@ export class EcrImageCode extends Code {
   }
 
   public bind(_: cdk.Construct): CodeConfig {
-    grantLambdaToEcr(this.repository);
+    this.repository.grantPull(new iam.ServicePrincipal('lambda.amazonaws.com'));
 
     return {
       image: {
@@ -471,7 +471,7 @@ export class AssetImageCode extends Code {
       ...this.props,
     });
 
-    grantLambdaToEcr(asset.repository);
+    asset.repository.grantPull(new iam.ServicePrincipal('lambda.amazonaws.com'));
 
     return {
       image: {
@@ -481,11 +481,4 @@ export class AssetImageCode extends Code {
       },
     };
   }
-}
-
-function grantLambdaToEcr(repository: ecr.IRepository) {
-  repository.addToResourcePolicy(new iam.PolicyStatement({
-    actions: ['ecr:BatchGetImage', 'ecr:GetDownloadUrlForLayer'],
-    principals: [new iam.ServicePrincipal('lambda.amazonaws.com')],
-  }));
 }
