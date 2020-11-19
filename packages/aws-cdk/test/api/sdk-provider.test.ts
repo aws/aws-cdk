@@ -429,7 +429,7 @@ test('can assume role with eks credentials', async () => {
       '/home/me/.bxt/config': dedent(`
       [profile eks]
       role_arn=arn:aws:iam::12356789012:role/Assumable
-      credential_source = EksContainer
+      credential_source = EcsContainer
     `),
     });
 
