@@ -10,7 +10,7 @@ class TestStack extends Stack {
     });
 
     new Function(this, 'MyLambda', {
-      code: Code.fromAssetImage(path.join(__dirname, 'docker-lambda-handler')),
+      code: Code.fromImageAsset(path.join(__dirname, 'docker-lambda-handler')),
       handler: 'app.handler',
       runtime: Runtime.NODEJS_12_X,
     });

@@ -20,7 +20,7 @@ export abstract class Code {
   }
 
   /**
-   * Lambda handler code as an S3 object.
+   * DEPRECATED
    * @deprecated use `fromBucket`
    */
   public static bucket(bucket: s3.IBucket, key: string, objectVersion?: string): S3Code {
@@ -37,7 +37,7 @@ export abstract class Code {
   }
 
   /**
-   * Inline code for Lambda handler
+   * DEPRECATED
    * @deprecated use `fromInline`
    */
   public static inline(code: string): InlineCode {
@@ -54,7 +54,7 @@ export abstract class Code {
   }
 
   /**
-   * Loads the function code from a local disk path.
+   * DEPRECATED
    * @deprecated use `fromAsset`
    */
   public static asset(path: string): AssetCode {
@@ -81,16 +81,20 @@ export abstract class Code {
 
   /**
    * Use an existing ECR image as the Lambda code.
+   * @param repository the ECR repository that the image is in
+   * @param props properties to further configure the selected image
    */
-  public static fromEcrRepository(repository: ecr.IRepository, props?: EcrImageProps) {
-    return new EcrImage(repository, props);
+  public static fromEcr(repository: ecr.IRepository, props?: EcrImageCodeProps) {
+    return new EcrImageCode(repository, props);
   }
 
   /**
    * Create an ECR image from the specified asset and bind it as the Lambda code.
+   * @param directory the directory from which the asset must be created
+   * @param props properties to further configure the selected image
    */
-  public static fromAssetImage(directory: string, props: AssetImageProps = {}) {
-    return new AssetImage(directory, props);
+  public static fromImageAsset(directory: string, props: AssetImageCodeProps = {}) {
+    return new AssetImageCode(directory, props);
   }
 
   /**
@@ -125,30 +129,30 @@ export abstract class Code {
  */
 export interface CodeConfig {
   /**
-   * The location of the code in S3 (mutually exclusive with `inlineCode` and `imageName`).
+   * The location of the code in S3 (mutually exclusive with `inlineCode` and `image`).
    * @default - code is not an s3 location
    */
   readonly s3Location?: s3.Location;
 
   /**
-   * Inline code (mutually exclusive with `s3Location` and `imageName`).
+   * Inline code (mutually exclusive with `s3Location` and `image`).
    * @default - code is not an inline code
    */
   readonly inlineCode?: string;
 
   /**
-   * URI to the Docker image (mutually exclusive with `s3Location` and `inlineCode`).
+   * Docker image configuration (mutually exclusive with `s3Location` and `inlineCode`).
    * @default - code is not an ECR container image
    */
-  readonly image?: ImageConfig;
+  readonly image?: CodeImageConfig;
 }
 
 /**
  * Result of the bind when an ECR image is used.
  */
-export interface ImageConfig {
+export interface CodeImageConfig {
   /**
-   * URI to the Docker image (mutually exclusive with `s3Location` and `inlineCode`).
+   * URI to the Docker image.
    */
   readonly imageUri: string;
 
@@ -380,7 +384,7 @@ export class CfnParametersCode extends Code {
 /**
  * Properties to initialize a new EcrImage
  */
-export interface EcrImageProps {
+export interface EcrImageCodeProps {
   /**
    * Specify or override the CMD on the specified Docker image or Dockerfile.
    * This needs to be in the 'exec form', viz., `[ 'executable', 'param1', 'param2' ]`.
@@ -409,18 +413,16 @@ export interface EcrImageProps {
 /**
  * Represents a Docker image in ECR that can be bound as Lambda Code.
  */
-export class EcrImage extends Code {
+export class EcrImageCode extends Code {
   public readonly isInline: boolean = false;
 
-  constructor(private readonly repository: ecr.IRepository, private readonly props: EcrImageProps = {}) {
+  constructor(private readonly repository: ecr.IRepository, private readonly props: EcrImageCodeProps = {}) {
     super();
   }
 
   public bind(_: cdk.Construct): CodeConfig {
-    this.repository.addToResourcePolicy(new iam.PolicyStatement({
-      actions: ['ecr:BatchGetImage', 'ecr:GetDownloadUrlForLayer'],
-      principals: [new iam.ServicePrincipal('lambda.amazonaws.com')],
-    }));
+    grantLambdaToEcr(this.repository);
+
     return {
       image: {
         imageUri: this.repository.repositoryUriForTag(this.props?.tag ?? 'latest'),
@@ -434,7 +436,7 @@ export class EcrImage extends Code {
 /**
  * Properties to initialize a new AssetImage
  */
-export interface AssetImageProps extends ecr_assets.DockerImageAssetOptions {
+export interface AssetImageCodeProps extends ecr_assets.DockerImageAssetOptions {
   /**
    * Specify or override the CMD on the specified Docker image or Dockerfile.
    * This needs to be in the 'exec form', viz., `[ 'executable', 'param1', 'param2' ]`.
@@ -456,10 +458,10 @@ export interface AssetImageProps extends ecr_assets.DockerImageAssetOptions {
 /**
  * Represents an ECR image that will be constructed from the specified asset and can be bound as Lambda code.
  */
-export class AssetImage extends Code {
+export class AssetImageCode extends Code {
   public readonly isInline: boolean = false;
 
-  constructor(private readonly directory: string, private readonly props: AssetImageProps) {
+  constructor(private readonly directory: string, private readonly props: AssetImageCodeProps) {
     super();
   }
 
@@ -469,10 +471,7 @@ export class AssetImage extends Code {
       ...this.props,
     });
 
-    asset.repository.addToResourcePolicy(new iam.PolicyStatement({
-      actions: ['ecr:BatchGetImage', 'ecr:GetDownloadUrlForLayer'],
-      principals: [new iam.ServicePrincipal('lambda.amazonaws.com')],
-    }));
+    grantLambdaToEcr(asset.repository);
 
     return {
       image: {
@@ -482,4 +481,11 @@ export class AssetImage extends Code {
       },
     };
   }
+}
+
+function grantLambdaToEcr(repository: ecr.IRepository) {
+  repository.addToResourcePolicy(new iam.PolicyStatement({
+    actions: ['ecr:BatchGetImage', 'ecr:GetDownloadUrlForLayer'],
+    principals: [new iam.ServicePrincipal('lambda.amazonaws.com')],
+  }));
 }

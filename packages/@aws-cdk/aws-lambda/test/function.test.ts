@@ -1870,7 +1870,7 @@ describe('function', () => {
       const stack = new cdk.Stack();
 
       expect(() => new lambda.Function(stack, 'Fn', {
-        code: lambda.Code.fromAssetImage('test/docker-lambda-handler'),
+        code: lambda.Code.fromImageAsset('test/docker-lambda-handler'),
       })).not.toThrow();
     });
 
@@ -1892,7 +1892,7 @@ describe('function', () => {
       const stack = new cdk.Stack();
 
       expect(() => new lambda.Function(stack, 'Fn', {
-        code: lambda.Code.fromAssetImage('test/docker-lambda-handler'),
+        code: lambda.Code.fromImageAsset('test/docker-lambda-handler'),
       })).not.toThrow();
     });
 
