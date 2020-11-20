@@ -65,6 +65,10 @@ export class AwsCliCompatible {
       sources.push(() => new AWS.ECSCredentials());
     } else if (options.containerCreds ?? hasEksCredentials() ) {
       sources.push(() => new AWS.TokenFileWebIdentityCredentials());
+      // eslint-disable-next-line no-console
+      console.log('EksCreds have been pushed');
+      // eslint-disable-next-line no-console
+      console.log(sources);
     } else if (options.ec2instance ?? await isEc2Instance()) {
       // else if: don't get EC2 creds if we should have gotten ECS creds--ECS instances also
       // run on EC2 boxes but the creds represent something different. Same behavior as
