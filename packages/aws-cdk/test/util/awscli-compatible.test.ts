@@ -1,5 +1,4 @@
 import * as AWS from 'aws-sdk';
-import { createBrotliCompress } from 'zlib';
 import { AwsCliCompatible } from '../../lib/api/aws-auth/awscli-compatible';
 import { withMockedClassSingleton } from '../util';
 
