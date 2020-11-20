@@ -60,12 +60,19 @@ export class AwsCliCompatible {
       sources.push(() => profileCredentials(implicitProfile));
       sources.push(() => new AWS.ProcessCredentials({ profile: implicitProfile }));
     }
-
+    // eslint-disable-next-line no-console
+    console.log('EksCheckpoint in awscli-compatible.ts');
     if (options.containerCreds ?? hasEcsCredentials()) {
+      // eslint-disable-next-line no-console
+      console.log('EksCheckpoint in awscli-compatible.ts => ECS True');
       sources.push(() => new AWS.ECSCredentials());
     } else if (options.containerCreds ?? hasEksCredentials() ) {
+      // eslint-disable-next-line no-console
+      console.log('EksCheckpoint in awscli-compatible.ts => EKS True');
       sources.push(() => new AWS.TokenFileWebIdentityCredentials());
     } else if (options.ec2instance ?? await isEc2Instance()) {
+      // eslint-disable-next-line no-console
+      console.log('EksCheckpoint in awscli-compatible.ts => EC2 True');
       // else if: don't get EC2 creds if we should have gotten ECS creds--ECS instances also
       // run on EC2 boxes but the creds represent something different. Same behavior as
       // upstream code.
