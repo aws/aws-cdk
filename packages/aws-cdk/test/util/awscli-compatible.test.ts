@@ -55,6 +55,6 @@ test('on EKS Pod, make sure WEB_IDENTITY_TOKEN is used', async () => {
 
     // THEN
     // expect(account?.accountId).toEqual(`${uid}the_account_#`);
-    expect(tfwiCreds.refresh).toHaveBeenCalled();
+    expect(tfwiCreds.needsRefresh).toHaveBeenCalled();
   });
 });
