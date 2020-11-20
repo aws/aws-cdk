@@ -434,6 +434,11 @@ test('can assume role with eks credentials', async () => {
     process.env.AWS_ROLE_ARN = 'arn:aws:iam::12356789012:role/Assumable';
     process.env.AWS_WEB_IDENTITY_TOKEN_FILE = bockfs.path('/var/run/secrets/eks.amazonaws.com/serviceaccount/token');
 
+    // Scrub some environment variables that are maybe set for Ecs Credentials
+    delete process.env.ECS_CONTAINER_METADATA_URI_V4;
+    delete process.env.ECS_CONTAINER_METADATA_URI;
+    delete process.env.AWS_CONTAINER_CREDENTIALS_RELATIVE_URI;
+
     // eslint-disable-next-line no-console
     console.log(process.env);
     // WHEN
