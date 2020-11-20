@@ -56,11 +56,11 @@ Lambda functions allow specifying their handlers within docker images. The docke
 image can be an image from ECR or a local asset that the CDK will package and load
 into ECR.
 
-The following creates an 'ECRFunction' that uses an existing Docker image and a
-'AssetFunction' that uses a local folder with a Dockerfile in it.
+The following 'ECRFunction' construct uses an existing Docker image and the
+'AssetFunction' construct uses a local folder with a Dockerfile in it.
 
 ```ts
-const repo = new ecr.Repository(...);
+const repo = new ecr.Repository(this, 'Repository');
 
 new lambda.DockerImageFunction(this, 'ECRFunction', {
   code: DockerImageCode.fromEcr(repo),

@@ -136,7 +136,7 @@ export interface CodeConfig {
 
   /**
    * Inline code (mutually exclusive with `s3Location` and `image`).
-   * @default - code is not an inline code
+   * @default - code is not inline code
    */
   readonly inlineCode?: string;
 
@@ -382,7 +382,7 @@ export class CfnParametersCode extends Code {
 }
 
 /**
- * Properties to initialize a new EcrImage
+ * Properties to initialize a new EcrImageCode
  */
 export interface EcrImageCodeProps {
   /**

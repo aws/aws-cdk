@@ -771,6 +771,7 @@ describe('function', () => {
     expect(stack).toHaveResource('AWS::Lambda::Function', {
       Runtime: ABSENT,
       Handler: ABSENT,
+      PackageType: 'Image',
     });
   });
 
@@ -1890,7 +1891,7 @@ describe('function', () => {
         code: lambda.Code.fromImageAsset('test/docker-lambda-handler'),
         handler: 'index.handler',
         runtime: lambda.Runtime.FROM_IMAGE,
-      })).toThrow(/handler must be set.*FROM_IMAGE/);
+      })).toThrow(/handler must be.*FROM_IMAGE/);
     });
 
     test('runtime must be FROM_IMAGE when image asset is specified', () => {
@@ -1906,7 +1907,7 @@ describe('function', () => {
         code: lambda.Code.fromImageAsset('test/docker-lambda-handler'),
         handler: lambda.Handler.FROM_IMAGE,
         runtime: lambda.Runtime.GO_1_X,
-      })).toThrow(/runtime must be set.*FROM_IMAGE/);
+      })).toThrow(/runtime must be.*FROM_IMAGE/);
     });
 
     test('imageUri is correctly configured', () => {

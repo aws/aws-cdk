@@ -290,7 +290,7 @@ export interface FunctionProps extends FunctionOptions {
    * For valid values, see the Runtime property in the AWS Lambda Developer
    * Guide.
    *
-   * Use `Runtime.FROM_IMAGE` when using `Code.fromEcr()` or `Code.fromAssetImage()`.
+   * Use `Runtime.FROM_IMAGE` when when defining a function from a Docker image.
    */
   readonly runtime: Runtime;
 
@@ -608,6 +608,7 @@ export class Function extends FunctionBase {
       layers: Lazy.list({ produce: () => this.layers.map(layer => layer.layerVersionArn) }, { omitEmpty: true }),
       handler: props.handler === Handler.FROM_IMAGE ? undefined : props.handler,
       timeout: props.timeout && props.timeout.toSeconds(),
+      packageType: props.runtime === Runtime.FROM_IMAGE ? 'Image' : undefined,
       runtime: props.runtime === Runtime.FROM_IMAGE ? undefined : props.runtime?.name,
       role: this.role.roleArn,
       // Uncached because calling '_checkEdgeCompatibility', which gets called in the resolve of another
@@ -984,12 +985,12 @@ export function verifyCodeConfig(code: CodeConfig, props: FunctionProps) {
     throw new Error('lambda.Code must specify exactly one of: "inlineCode", "s3Location", or "image"');
   }
 
-  if (code.image && props.handler !== Handler.FROM_IMAGE) {
-    throw new Error('handler must be set to `Handler.FROM_IMAGE` when using image asset for Lambda function');
+  if (!!code.image === (props.handler !== Handler.FROM_IMAGE)) {
+    throw new Error('handler must be `Handler.FROM_IMAGE` when using image asset for Lambda function');
   }
 
-  if (code.image && props.runtime !== Runtime.FROM_IMAGE) {
-    throw new Error('runtime must be set to `Runtime.FROM_IMAGE` when using image asset for Lambda function');
+  if (!!code.image === (props.runtime !== Runtime.FROM_IMAGE)) {
+    throw new Error('runtime must be `Runtime.FROM_IMAGE` when using image asset for Lambda function');
   }
 
   // if this is inline code, check that the runtime supports
