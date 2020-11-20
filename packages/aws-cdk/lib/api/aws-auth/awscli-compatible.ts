@@ -62,7 +62,6 @@ export class AwsCliCompatible {
     }
 
     if (options.containerCreds ?? hasEcsCredentials()) {
-
       sources.push(() => new AWS.ECSCredentials());
     } else if (options.containerCreds ?? hasEksCredentials() ) {
       sources.push(() => new AWS.TokenFileWebIdentityCredentials());
