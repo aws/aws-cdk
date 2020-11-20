@@ -449,7 +449,7 @@ test('can assume role with eks credentials', async () => {
 
     // THEN
     // expect(account?.accountId).toEqual(`${uid}the_account_#`);
-    expect(needsRefresh).toHaveBeenCalled();
+    expect(needsRefresh).toThrowError();
   });
 
 });
