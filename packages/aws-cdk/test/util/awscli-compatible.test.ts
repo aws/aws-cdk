@@ -1,6 +1,5 @@
 import * as AWS from 'aws-sdk';
 import { AwsCliCompatible } from '../../lib/api/aws-auth/awscli-compatible';
-import { SdkProvider } from '../../lib/api/aws-auth/sdk-provider';
 import { withMockedClassSingleton } from '../util';
 import * as bockfs from '../bockfs';
 
