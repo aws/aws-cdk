@@ -5,6 +5,7 @@ export * from './base/task-definition';
 export * from './container-definition';
 export * from './container-image';
 export * from './cluster';
+export * from './environment-file';
 export * from './firelens-log-router';
 export * from './placement';
 

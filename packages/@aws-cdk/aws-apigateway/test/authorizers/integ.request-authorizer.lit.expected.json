@@ -36,7 +36,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParametersfec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3S3Bucket2E551A38"
+            "Ref": "AssetParameters3dc8c5549b88fef617feef923524902b3650973ae1159c9489ee8405344dd5a0S3BucketD7637C1B"
           },
           "S3Key": {
             "Fn::Join": [
@@ -49,7 +49,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersfec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3S3VersionKeyE54FD621"
+                          "Ref": "AssetParameters3dc8c5549b88fef617feef923524902b3650973ae1159c9489ee8405344dd5a0S3VersionKeyC19FD924"
                         }
                       ]
                     }
@@ -62,7 +62,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersfec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3S3VersionKeyE54FD621"
+                          "Ref": "AssetParameters3dc8c5549b88fef617feef923524902b3650973ae1159c9489ee8405344dd5a0S3VersionKeyC19FD924"
                         }
                       ]
                     }
@@ -85,7 +85,7 @@
         "MyAuthorizerFunctionServiceRole8A34C19E"
       ]
     },
-    "MyAuthorizerFunctionTokenAuthorizerIntegMyAuthorizer793B1D5FPermissions7557AE26": {
+    "MyAuthorizerFunctionRequestAuthorizerIntegMyAuthorizer5D9D41C5PermissionsCB8B246E": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -242,7 +242,7 @@
         "RestApiId": {
           "Ref": "MyRestApi2D1F47A9"
         },
-        "Type": "TOKEN",
+        "Type": "REQUEST",
         "AuthorizerUri": {
           "Fn::Join": [
             "",
@@ -266,23 +266,23 @@
             ]
           ]
         },
-        "IdentitySource": "method.request.header.Authorization",
-        "Name": "TokenAuthorizerIntegMyAuthorizer793B1D5F"
+        "IdentitySource": "method.request.header.Authorization,method.request.querystring.allow",
+        "Name": "RequestAuthorizerIntegMyAuthorizer5D9D41C5"
       }
     }
   },
   "Parameters": {
-    "AssetParametersfec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3S3Bucket2E551A38": {
+    "AssetParameters3dc8c5549b88fef617feef923524902b3650973ae1159c9489ee8405344dd5a0S3BucketD7637C1B": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"fec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3\""
+      "Description": "S3 bucket for asset \"3dc8c5549b88fef617feef923524902b3650973ae1159c9489ee8405344dd5a0\""
     },
-    "AssetParametersfec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3S3VersionKeyE54FD621": {
+    "AssetParameters3dc8c5549b88fef617feef923524902b3650973ae1159c9489ee8405344dd5a0S3VersionKeyC19FD924": {
       "Type": "String",
-      "Description": "S3 key for asset version \"fec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3\""
+      "Description": "S3 key for asset version \"3dc8c5549b88fef617feef923524902b3650973ae1159c9489ee8405344dd5a0\""
     },
-    "AssetParametersfec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3ArtifactHashD7A29DA9": {
+    "AssetParameters3dc8c5549b88fef617feef923524902b3650973ae1159c9489ee8405344dd5a0ArtifactHash9DF43F02": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"fec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3\""
+      "Description": "Artifact hash for asset \"3dc8c5549b88fef617feef923524902b3650973ae1159c9489ee8405344dd5a0\""
     }
   },
   "Outputs": {
