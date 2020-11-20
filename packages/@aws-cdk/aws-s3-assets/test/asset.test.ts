@@ -141,6 +141,24 @@ test('multiple assets under the same parent', () => {
   expect(() => new Asset(stack, 'MyDirectory2', { path: path.join(__dirname, 'sample-asset-directory') })).not.toThrow();
 });
 
+test('isFile indicates if the asset represents a single file', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  const directoryAsset = new Asset(stack, 'DirectoryAsset', {
+    path: path.join(__dirname, 'sample-asset-directory'),
+  });
+
+  const fileAsset = new Asset(stack, 'FileAsset', {
+    path: path.join(__dirname, 'sample-asset-directory', 'sample-asset-file.txt'),
+  });
+
+  // THEN
+  expect(directoryAsset.isFile).toBe(false);
+  expect(fileAsset.isFile).toBe(true);
+});
+
 test('isZipArchive indicates if the asset represents a .zip file (either explicitly or via ZipDirectory packaging)', () => {
   // GIVEN
   const stack = new cdk.Stack();

@@ -28,8 +28,7 @@ up the entry file:
 ├── stack.my-handler.ts # exports a function named 'handler'
 ```
 
-This file is used as "entry" for [Parcel](https://parceljs.org/). This means that your code is
-automatically transpiled and bundled whether it's written in JavaScript or TypeScript.
+This file is used as "entry" for [esbuild](https://esbuild.github.io/). This means that your code is automatically transpiled and bundled whether it's written in JavaScript or TypeScript.
 
 Alternatively, an entry file and handler can be specified:
 
@@ -45,11 +44,11 @@ All other properties of `lambda.Function` are supported, see also the [AWS Lambd
 The `NodejsFunction` construct automatically [reuses existing connections](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/node-reusing-connections.html)
 when working with the AWS SDK for JavaScript. Set the `awsSdkConnectionReuse` prop to `false` to disable it.
 
-Use the `parcelEnvironment` prop to define environments variables when Parcel runs:
+Use the `bundlingEnvironment` prop to define environments variables when esbuild runs:
 
 ```ts
 new lambda.NodejsFunction(this, 'my-handler', {
-  parcelEnvironment: {
+  bundlingEnvironment: {
     NODE_ENV: 'production',
   },
 });
@@ -73,37 +72,25 @@ new lambda.NodejsFunction(this, 'my-handler', {
 });
 ```
 
-This image should have Parcel installed at `/`. If you plan to use `nodeModules` it
+This image should have esbuild installed globally. If you plan to use `nodeModules` it
 should also have `npm` or `yarn` depending on the lock file you're using.
 
-Use the [default image provided by `@aws-cdk/aws-lambda-nodejs`](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-lambda-nodejs/parcel/Dockerfile)
+Use the [default image provided by `@aws-cdk/aws-lambda-nodejs`](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-lambda-nodejs/lib/Dockerfile)
 as a source of inspiration.
 
-### Project root
-The `NodejsFunction` tries to automatically determine your project root, that is
-the root of your node project. This is usually where the top level `node_modules`
-folder of your project is located. When bundling in a Docker container, the
-project root is used as the source (`/asset-input`) for the volume mounted in
-the container.
+### Lock file
+The `NodejsFunction` requires a dependencies lock file (`yarn.lock` or
+`package-lock.json`). When bundling in a Docker container, the path containing this
+lock file is used as the source (`/asset-input`) for the volume mounted in the
+container.
 
-The following folders are considered by walking up parent folders starting from
-the current working directory (order matters):
-* the folder containing your `.git` folder
-* the folder containing a `yarn.lock` file
-* the folder containing a `package-lock.json` file
-* the folder containing a `package.json` file
+By default, it will try to automatically determine your project lock file.
+Alternatively, you can specify the `depsLockFilePath` prop manually. In this
+case you need to ensure that this path includes `entry` and any module/dependencies
+used by your function. Otherwise bundling will fail.
 
-Alternatively, you can specify the `projectRoot` prop manually. In this case you
-need to ensure that this path includes `entry` and any module/dependencies used
-by your function. Otherwise bundling will fail.
-
-### Configuring Parcel
-The `NodejsFunction` construct exposes some [Parcel](https://parceljs.org/) options via properties: `minify`, `sourceMaps` and `cacheDir`.
-
-Parcel transpiles your code (every internal module) with [@babel/preset-env](https://babeljs.io/docs/en/babel-preset-env) and uses the
-runtime version of your Lambda function as target.
-
-Configuring Babel with Parcel is possible via a `.babelrc` or a `babel` config in `package.json`.
+### Configuring esbuild
+The `NodejsFunction` construct exposes some [esbuild](https://esbuild.github.io/) options via properties: `minify`, `sourceMaps` and `target`.
 
 ### Working with modules
 
@@ -121,10 +108,10 @@ new lambda.NodejsFunction(this, 'my-handler', {
 ```
 
 #### Install modules
-By default, all node modules referenced in your Lambda code will be bundled by Parcel.
+By default, all node modules referenced in your Lambda code will be bundled by esbuild.
 Use the `nodeModules` prop to specify a list of modules that should not be bundled
 but instead included in the `node_modules` folder of the Lambda package. This is useful
-when working with native dependencies or when Parcel fails to bundle a module.
+when working with native dependencies or when esbuild fails to bundle a module.
 
 ```ts
 new lambda.NodejsFunction(this, 'my-handler', {
@@ -133,25 +120,25 @@ new lambda.NodejsFunction(this, 'my-handler', {
 ```
 
 The modules listed in `nodeModules` must be present in the `package.json`'s dependencies. The
-same version will be used for installation. If a lock file is detected (`package-lock.json` or
-`yarn.lock`) it will be used along with the right installer (`npm` or `yarn`).
+same version will be used for installation. The lock file (`yarn.lock` or `package-lock.json`)
+will be used along with the right installer (`yarn` or `npm`).
 
 ### Local bundling
-If Parcel v2.0.0-beta.1 is available it will be used to bundle your code in your environment. Otherwise,
+If esbuild is available it will be used to bundle your code in your environment. Otherwise,
 bundling will happen in a [Lambda compatible Docker container](https://hub.docker.com/r/amazon/aws-sam-cli-build-image-nodejs12.x).
 
-For macOS the recommendend approach is to install Parcel as Docker volume performance is really poor.
+For macOS the recommendend approach is to install esbuild as Docker volume performance is really poor.
 
-Parcel v2.0.0-beta.1 can be installed with:
+esbuild can be installed with:
 
 ```bash
-$ npm install --save-dev --save-exact parcel@2.0.0-beta.1
+$ npm install --save-dev esbuild@0
 ```
 
 OR
 
 ```bash
-$ yarn add --dev --exact parcel@2.0.0-beta.1
+$ yarn add --dev esbuild@0
 ```
 
 To force bundling in a Docker container, set the `forceDockerBundling` prop to `true`. This
