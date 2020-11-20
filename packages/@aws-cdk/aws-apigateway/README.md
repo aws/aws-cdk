@@ -51,7 +51,7 @@ APIs are defined as a hierarchy of resources and methods. `addResource` and
 `api.root`.
 
 For example, the following code defines an API that includes the following HTTP
-endpoints: `ANY /, GET /books`, `POST /books`, `GET /books/{book_id}`, `DELETE /books/{book_id}`.
+endpoints: `ANY /`, `GET /books`, `POST /books`, `GET /books/{book_id}`, `DELETE /books/{book_id}`.
 
 ```ts
 const api = new apigateway.RestApi(this, 'books-api');
@@ -524,7 +524,9 @@ books.addMethod('GET', new apigateway.HttpIntegration('http://amazon.com'), {
 });
 ```
 
-You can find a full working example [here](test/authorizers/integ.token-authorizer.ts).
+A full working example is shown below.
+
+[Full token authorizer example](test/authorizers/integ.token-authorizer.lit.ts).
 
 By default, the `TokenAuthorizer` looks for the authorization token in the request header with the key 'Authorization'. This can,
 however, be modified by changing the `identitySource` property.
@@ -565,7 +567,9 @@ books.addMethod('GET', new apigateway.HttpIntegration('http://amazon.com'), {
 });
 ```
 
-You can find a full working example [here](test/authorizers/integ.request-authorizer.ts).
+A full working example is shown below.
+
+[Full request authorizer example](test/authorizers/integ.request-authorizer.lit.ts).
 
 By default, the `RequestAuthorizer` does not pass any kind of information from the request. This can,
 however, be modified by changing the `identitySource` property, and is required when specifying a value for caching.
@@ -581,7 +585,7 @@ Mutual TLS can be configured to limit access to your API based by using client c
 ```ts
 new apigw.DomainName(this, 'domain-name', {
   domainName: 'example.com',
-  certificate: acm.Certificate.fromCertificateArn(this, 'cert' 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
+  certificate: acm.Certificate.fromCertificateArn(this, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
   mtls: {
     bucket: new Bucket(this, 'bucket')),
     key: 'truststore.pem',
@@ -743,7 +747,7 @@ new route53.ARecord(this, 'CustomDomainAliasRecord', {
 
 ## Access Logging
 
-Access logging creates logs everytime an API method is accessed. Access logs can have information on
+Access logging creates logs every time an API method is accessed. Access logs can have information on
 who has accessed the API, how the caller accessed the API and what responses were generated.
 Access logs are configured on a Stage of the RestApi.
 Access logs can be expressed in a format of your choosing, and can contain any access details, with a
