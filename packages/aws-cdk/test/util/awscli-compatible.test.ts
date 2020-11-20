@@ -52,8 +52,14 @@ test('on EKS Pod, make sure WEB_IDENTITY_TOKEN is used', async () => {
     process.env.AWS_WEB_IDENTITY_TOKEN_FILE = bockfs.path('/var/run/secrets/eks.amazonaws.com/serviceaccount/token');
 
     // WHEN
+    // eslint-disable-next-line no-console
+    console.log('EKS Before Provider');
     const provider = await SdkProvider.withAwsCliCompatibleDefaults({});
+    // eslint-disable-next-line no-console
+    console.log('EKS After provider');
     await provider.defaultAccount();
+    // eslint-disable-next-line no-console
+    console.log('EKS after provider.defaultAccount');
     // THEN
     // expect(account?.accountId).toEqual(`${uid}the_account_#`);
     expect(tfwiCreds.refresh).toHaveBeenCalled();
