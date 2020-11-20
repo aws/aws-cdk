@@ -6,6 +6,7 @@ import { Construct } from 'constructs';
 import { NetworkMode, TaskDefinition } from './base/task-definition';
 import { ContainerImage, ContainerImageConfig } from './container-image';
 import { CfnTaskDefinition } from './ecs.generated';
+import { EnvironmentFile, EnvironmentFileConfig } from './environment-file';
 import { LinuxParameters } from './linux-parameters';
 import { LogDriver, LogDriverConfig } from './log-drivers/log-driver';
 
@@ -140,6 +141,15 @@ export interface ContainerDefinitionOptions {
    * @default - No environment variables.
    */
   readonly environment?: { [key: string]: string };
+
+  /**
+   * The environment files to pass to the container.
+   *
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/taskdef-envfiles.html
+   *
+   * @default - No environment files.
+   */
+  readonly environmentFiles?: EnvironmentFile[];
 
   /**
    * The secret environment variables to pass to the container.
@@ -351,9 +361,20 @@ export class ContainerDefinition extends cdk.Construct {
   public readonly taskDefinition: TaskDefinition;
 
   /**
+   * The environment files for this container
+   */
+  public readonly environmentFiles?: EnvironmentFileConfig[];
+
+  /**
    * The log configuration specification for the container.
    */
   public readonly logDriverConfig?: LogDriverConfig;
+
+  /**
+   * Whether this container definition references a specific JSON field of a secret
+   * stored in Secrets Manager.
+   */
+  public readonly referencesSecretJsonField?: boolean;
 
   /**
    * The configured container links
@@ -384,13 +405,12 @@ export class ContainerDefinition extends cdk.Construct {
     if (props.logging) {
       this.logDriverConfig = props.logging.bind(this, this);
     }
-    props.taskDefinition._linkContainer(this);
 
     if (props.secrets) {
       this.secrets = [];
       for (const [name, secret] of Object.entries(props.secrets)) {
-        if (this.taskDefinition.isFargateCompatible && secret.hasField) {
-          throw new Error(`Cannot specify secret JSON field for a task using the FARGATE launch type: '${name}' in container '${this.node.id}'`);
+        if (secret.hasField) {
+          this.referencesSecretJsonField = true;
         }
         secret.grantRead(this.taskDefinition.obtainExecutionRole());
         this.secrets.push({
@@ -399,6 +419,20 @@ export class ContainerDefinition extends cdk.Construct {
         });
       }
     }
+
+    if (this.taskDefinition.isFargateCompatible && props.environmentFiles) {
+      throw new Error(`Cannot specify environment files for a task using the FARGATE launch type in container '${this.node.id}'.`);
+    }
+
+    if (props.environmentFiles) {
+      this.environmentFiles = [];
+
+      for (const environmentFile of props.environmentFiles) {
+        this.environmentFiles.push(environmentFile.bind(this));
+      }
+    }
+
+    props.taskDefinition._linkContainer(this);
   }
 
   /**
@@ -581,6 +615,7 @@ export class ContainerDefinition extends cdk.Construct {
       workingDirectory: this.props.workingDirectory,
       logConfiguration: this.logDriverConfig,
       environment: this.props.environment && renderKV(this.props.environment, 'name', 'value'),
+      environmentFiles: this.environmentFiles && renderEnvironmentFiles(this.environmentFiles),
       secrets: this.secrets,
       extraHosts: this.props.extraHosts && renderKV(this.props.extraHosts, 'hostname', 'ipAddress'),
       healthCheck: this.props.healthCheck && renderHealthCheck(this.props.healthCheck),
@@ -643,9 +678,26 @@ export interface HealthCheck {
 }
 
 function renderKV(env: { [key: string]: string }, keyName: string, valueName: string): any[] {
-  const ret = new Array();
+  const ret = [];
   for (const [key, value] of Object.entries(env)) {
     ret.push({ [keyName]: key, [valueName]: value });
+  }
+  return ret;
+}
+
+function renderEnvironmentFiles(environmentFiles: EnvironmentFileConfig[]): any[] {
+  const ret = [];
+  for (const environmentFile of environmentFiles) {
+    const s3Location = environmentFile.s3Location;
+
+    if (!s3Location) {
+      throw Error('Environment file must specify an S3 location');
+    }
+
+    ret.push({
+      type: environmentFile.fileType,
+      value: `arn:aws:s3:::${s3Location.bucketName}/${s3Location.objectKey}`,
+    });
   }
   return ret;
 }

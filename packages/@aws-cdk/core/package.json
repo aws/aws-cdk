@@ -168,18 +168,18 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/lodash": "^4.14.164",
+    "@types/lodash": "^4.14.165",
     "@types/minimatch": "^3.0.3",
-    "@types/node": "^10.17.44",
+    "@types/node": "^10.17.46",
     "@types/sinon": "^9.0.8",
     "cdk-build-tools": "0.0.0",
     "cfn2ts": "0.0.0",
-    "fast-check": "^2.6.0",
+    "fast-check": "^2.7.0",
     "lodash": "^4.17.20",
     "nodeunit-shim": "0.0.0",
     "pkglint": "0.0.0",
     "sinon": "^9.2.1",
-    "ts-mock-imports": "^1.3.0"
+    "ts-mock-imports": "^1.3.1"
   },
   "dependencies": {
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
@@ -187,11 +187,15 @@
     "@aws-cdk/region-info": "0.0.0",
     "constructs": "^3.2.0",
     "fs-extra": "^9.0.1",
-    "minimatch": "^3.0.4"
+    "minimatch": "^3.0.4",
+    "@balena/dockerignore": "^1.0.2",
+    "ignore": "^5.1.8"
   },
   "bundledDependencies": [
     "fs-extra",
-    "minimatch"
+    "minimatch",
+    "@balena/dockerignore",
+    "ignore"
   ],
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {

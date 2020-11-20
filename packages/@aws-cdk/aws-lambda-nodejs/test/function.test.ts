@@ -10,7 +10,7 @@ import { Bundling } from '../lib/bundling';
 jest.mock('../lib/bundling', () => {
   return {
     Bundling: {
-      parcel: jest.fn().mockReturnValue({
+      bundle: jest.fn().mockReturnValue({
         bind: () => {
           return { inlineCode: 'code' };
         },
@@ -30,7 +30,7 @@ test('NodejsFunction with .ts handler', () => {
   // WHEN
   new NodejsFunction(stack, 'handler1');
 
-  expect(Bundling.parcel).toHaveBeenCalledWith(expect.objectContaining({
+  expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
     entry: expect.stringContaining('function.test.handler1.ts'), // Automatically finds .ts handler file
   }));
 
@@ -44,7 +44,7 @@ test('NodejsFunction with .js handler', () => {
   new NodejsFunction(stack, 'handler2');
 
   // THEN
-  expect(Bundling.parcel).toHaveBeenCalledWith(expect.objectContaining({
+  expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
     entry: expect.stringContaining('function.test.handler2.js'), // Automatically finds .ts handler file
   }));
 });
@@ -52,13 +52,13 @@ test('NodejsFunction with .js handler', () => {
 test('NodejsFunction with container env vars', () => {
   // WHEN
   new NodejsFunction(stack, 'handler1', {
-    parcelEnvironment: {
+    bundlingEnvironment: {
       KEY: 'VALUE',
     },
   });
 
-  expect(Bundling.parcel).toHaveBeenCalledWith(expect.objectContaining({
-    parcelEnvironment: {
+  expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
+    bundlingEnvironment: {
       KEY: 'VALUE',
     },
   }));
@@ -98,13 +98,19 @@ test('throws with the wrong runtime family', () => {
   })).toThrow(/Only `NODEJS` runtimes are supported/);
 });
 
+test('throws with non existing lock file', () => {
+  expect(() => new NodejsFunction(stack, 'handler1', {
+    depsLockFilePath: '/does/not/exist.lock',
+  })).toThrow(/Lock file at \/does\/not\/exist.lock doesn't exist/);
+});
+
 test('resolves entry to an absolute path', () => {
   // WHEN
   new NodejsFunction(stack, 'fn', {
     entry: 'lib/index.ts',
   });
 
-  expect(Bundling.parcel).toHaveBeenCalledWith(expect.objectContaining({
+  expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
     entry: expect.stringMatching(/@aws-cdk\/aws-lambda-nodejs\/lib\/index.ts$/),
   }));
 });

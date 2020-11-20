@@ -2,9 +2,7 @@
 <!--BEGIN STABILITY BANNER-->
 ---
 
-![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
-
-> The APIs of higher level constructs in this module are experimental and under active development. They are subject to non-backward compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be announced in the release notes. This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
 <!--END STABILITY BANNER-->
@@ -16,9 +14,10 @@ The `Service` construct provided by this module can be extended with optional `S
 
 - [AWS X-Ray](https://aws.amazon.com/xray/) for tracing your application
 - [Amazon CloudWatch Agent](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Install-CloudWatch-Agent.html) for capturing per task stats
-- [AWS AppMesh f](https://aws.amazon.com/app-mesh/)or adding your application to a service mesh
+- [AWS AppMesh](https://aws.amazon.com/app-mesh/) for adding your application to a service mesh
 - [Application Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html), for exposing your service to the public
 - [AWS FireLens](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_firelens.html), for filtering and routing application logs
+- [Community Extensions](#community-extensions), providing support for advanced use cases
 
 The `ServiceExtension` class is an abstract class which you can also implement in
 order to build your own custom service extensions for modifying your service, or
@@ -300,3 +299,13 @@ const environment = Environment.fromEnvironmentAttributes(stack, 'Environment', 
 });
 
 ```
+
+## Community Extensions
+
+We encourage the development of Community Service Extensions that support
+advanced features. Here are some useful extensions that we have reviewed:
+
+* [ListenerRulesExtension](https://www.npmjs.com/package/@wheatstalk/ecs-service-extension-listener-rules) for more precise control over Application Load Balancer rules
+
+> Please submit a pull request so that we can review your service extension and
+> list it here.
