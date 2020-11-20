@@ -606,9 +606,9 @@ export class Function extends FunctionBase {
         imageUri: code.image?.imageUri,
       },
       layers: Lazy.list({ produce: () => this.layers.map(layer => layer.layerVersionArn) }, { omitEmpty: true }),
-      handler: props.handler,
+      handler: props.handler === Handler.FROM_IMAGE ? undefined : props.handler,
       timeout: props.timeout && props.timeout.toSeconds(),
-      runtime: props.runtime?.name,
+      runtime: props.runtime === Runtime.FROM_IMAGE ? undefined : props.runtime?.name,
       role: this.role.roleArn,
       // Uncached because calling '_checkEdgeCompatibility', which gets called in the resolve of another
       // Token, actually *modifies* the 'environment' map.

@@ -759,6 +759,21 @@ describe('function', () => {
     }, ResourcePart.CompleteDefinition);
   });
 
+  test('runtime and handler set to FROM_IMAGE are set to undefined in CloudFormation', () => {
+    const stack = new cdk.Stack();
+
+    new lambda.Function(stack, 'MyLambda', {
+      code: lambda.Code.fromImageAsset(path.join(__dirname, 'docker-lambda-handler')),
+      handler: lambda.Handler.FROM_IMAGE,
+      runtime: lambda.Runtime.FROM_IMAGE,
+    });
+
+    expect(stack).toHaveResource('AWS::Lambda::Function', {
+      Runtime: ABSENT,
+      Handler: ABSENT,
+    });
+  });
+
   describe('grantInvoke', () => {
 
     test('adds iam:InvokeFunction', () => {

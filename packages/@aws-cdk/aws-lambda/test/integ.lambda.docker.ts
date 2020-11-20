@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { App, Aspects, IAspect, Stack } from '@aws-cdk/core';
 import { IConstruct } from 'constructs';
-import { CfnFunction, Code, Function, Runtime } from '../lib';
+import { CfnFunction, DockerImageCode, DockerImageFunction } from '../lib';
 
 class TestStack extends Stack {
   constructor(scope: App, id: string) {
@@ -9,10 +9,8 @@ class TestStack extends Stack {
       env: { region: 'sa-east-1' }, // the feature is available only in sa-east-1 during private beta. Remove after launch.
     });
 
-    new Function(this, 'MyLambda', {
-      code: Code.fromImageAsset(path.join(__dirname, 'docker-lambda-handler')),
-      handler: 'app.handler',
-      runtime: Runtime.NODEJS_12_X,
+    new DockerImageFunction(this, 'MyLambda', {
+      code: DockerImageCode.fromImageAsset(path.join(__dirname, 'docker-lambda-handler')),
     });
   }
 }
