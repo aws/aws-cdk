@@ -10,6 +10,7 @@ import { ISDK, Mode, SdkProvider } from '../../lib/api/aws-auth';
 import * as logging from '../../lib/logging';
 import * as bockfs from '../bockfs';
 import { withMocked } from '../util';
+import { AwsCliCompatible } from '../../lib/api/aws-auth/awscli-compatible';
 
 // Mock promptly prompt to test MFA support
 jest.mock('promptly', () => ({
@@ -421,7 +422,7 @@ test('can assume role with ecs credentials', async () => {
 
 test('can assume role with eks credentials', async () => {
 
-  return withMocked(AWS.TokenFileWebIdentityCredentials.prototype, 'needsRefresh', async (needsRefresh) => {
+  return withMocked(AwsCliCompatible, 'credentialChain', async (credentialChain) => {
 
     // GIVEN
     bockfs({
@@ -443,13 +444,11 @@ test('can assume role with eks credentials', async () => {
     // eslint-disable-next-line no-console
     console.log(process.env);
     // WHEN
-    const provider = await SdkProvider.withAwsCliCompatibleDefaults({});
-
-    await provider.defaultAccount();
+    await SdkProvider.withAwsCliCompatibleDefaults({});
 
     // THEN
     // expect(account?.accountId).toEqual(`${uid}the_account_#`);
-    expect(needsRefresh).toThrowError();
+    expect(credentialChain).toMatchSnapshot();
   });
 
 });
