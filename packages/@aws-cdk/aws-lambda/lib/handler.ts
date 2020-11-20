@@ -5,7 +5,7 @@ export class Handler {
   /**
    * A special handler when the function handler is part of a Docker image.
    */
-  public static FROM_IMAGE = 'FROM_IMAGE';
+  public static readonly FROM_IMAGE = 'FROM_IMAGE';
 
   /**
    * Your own handler string

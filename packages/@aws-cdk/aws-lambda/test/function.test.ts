@@ -1833,6 +1833,8 @@ describe('function', () => {
 
       expect(() => new lambda.Function(stack, 'Fn1', {
         code: new MyCode({}),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.GO_1_X,
       })).toThrow(/lambda.Code must specify exactly one of/);
 
       expect(() => new lambda.Function(stack, 'Fn2', {
@@ -1840,6 +1842,8 @@ describe('function', () => {
           inlineCode: 'foo',
           image: { imageUri: 'bar' },
         }),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.GO_1_X,
       })).toThrow(/lambda.Code must specify exactly one of/);
 
       expect(() => new lambda.Function(stack, 'Fn3', {
@@ -1847,53 +1851,47 @@ describe('function', () => {
           image: { imageUri: 'baz' },
           s3Location: { bucketName: 's3foo', objectKey: 's3bar' },
         }),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.GO_1_X,
       })).toThrow(/lambda.Code must specify exactly one of/);
 
       expect(() => new lambda.Function(stack, 'Fn4', {
         code: new MyCode({ inlineCode: 'baz', s3Location: { bucketName: 's3foo', objectKey: 's3bar' } }),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.GO_1_X,
       })).toThrow(/lambda.Code must specify exactly one of/);
     });
 
-    test('handler must be specified when non-container asset is specified', () => {
+    test('handler must be FROM_IMAGE when image asset is specified', () => {
       const stack = new cdk.Stack();
 
       expect(() => new lambda.Function(stack, 'Fn1', {
-        code: lambda.Code.fromInline('foo'),
-      })).toThrow(/handler must be specified/);
+        code: lambda.Code.fromImageAsset('test/docker-lambda-handler'),
+        handler: lambda.Handler.FROM_IMAGE,
+        runtime: lambda.Runtime.FROM_IMAGE,
+      })).not.toThrow();
 
       expect(() => new lambda.Function(stack, 'Fn2', {
-        code: lambda.Code.fromAsset('test/my-lambda-handler'),
-      })).toThrow(/handler must be specified/);
-    });
-
-    test('handler can be omitted for container assets', () => {
-      const stack = new cdk.Stack();
-
-      expect(() => new lambda.Function(stack, 'Fn', {
         code: lambda.Code.fromImageAsset('test/docker-lambda-handler'),
-      })).not.toThrow();
+        handler: 'index.handler',
+        runtime: lambda.Runtime.FROM_IMAGE,
+      })).toThrow(/handler must be set.*FROM_IMAGE/);
     });
 
-    test('runtime must be specified when non-container asset is specified', () => {
+    test('runtime must be FROM_IMAGE when image asset is specified', () => {
       const stack = new cdk.Stack();
 
       expect(() => new lambda.Function(stack, 'Fn1', {
-        code: lambda.Code.fromInline('foo'),
-        handler: 'index.handler',
-      })).toThrow(/runtime must be specified/);
+        code: lambda.Code.fromImageAsset('test/docker-lambda-handler'),
+        handler: lambda.Handler.FROM_IMAGE,
+        runtime: lambda.Runtime.FROM_IMAGE,
+      })).not.toThrow();
 
       expect(() => new lambda.Function(stack, 'Fn2', {
-        code: lambda.Code.fromAsset('test/my-lambda-handler'),
-        handler: 'index.handler',
-      })).toThrow(/runtime must be specified/);
-    });
-
-    test('runtime can be omitted for container assets', () => {
-      const stack = new cdk.Stack();
-
-      expect(() => new lambda.Function(stack, 'Fn', {
         code: lambda.Code.fromImageAsset('test/docker-lambda-handler'),
-      })).not.toThrow();
+        handler: lambda.Handler.FROM_IMAGE,
+        runtime: lambda.Runtime.GO_1_X,
+      })).toThrow(/runtime must be set.*FROM_IMAGE/);
     });
 
     test('imageUri is correctly configured', () => {
@@ -1905,6 +1903,8 @@ describe('function', () => {
             imageUri: 'ecr image uri',
           },
         }),
+        handler: lambda.Handler.FROM_IMAGE,
+        runtime: lambda.Runtime.FROM_IMAGE,
       });
 
       expect(stack).toHaveResource('AWS::Lambda::Function', {
@@ -1926,6 +1926,8 @@ describe('function', () => {
             entrypoint: ['entrypoint', 'param2'],
           },
         }),
+        handler: lambda.Handler.FROM_IMAGE,
+        runtime: lambda.Runtime.FROM_IMAGE,
       });
 
       expect(stack).toHaveResource('AWS::Lambda::Function', {

@@ -29,7 +29,7 @@ export abstract class DockerImageCode {
    */
   public static fromEcr(repository: ecr.IRepository, props?: EcrImageCodeProps): DockerImageCode {
     return {
-      bind() {
+      _bind() {
         return new EcrImageCode(repository, props);
       },
     };
@@ -43,7 +43,7 @@ export abstract class DockerImageCode {
    */
   public static fromImageAsset(directory: string, props: AssetImageCodeProps = {}): DockerImageCode {
     return {
-      bind() {
+      _bind() {
         return new AssetImageCode(directory, props);
       },
     };
@@ -53,7 +53,7 @@ export abstract class DockerImageCode {
    * Produce a `Code` instance from this `DockerImageCode`.
    * @internal
    */
-  public abstract bind(): Code;
+  public abstract _bind(): Code;
 }
 
 /**
@@ -65,7 +65,7 @@ export class DockerImageFunction extends Function {
       ...props,
       handler: Handler.FROM_IMAGE,
       runtime: Runtime.FROM_IMAGE,
-      code: props.code.bind(),
+      code: props.code._bind(),
     });
   }
 }

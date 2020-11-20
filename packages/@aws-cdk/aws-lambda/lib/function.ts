@@ -12,6 +12,7 @@ import { IEventSource } from './event-source';
 import { FileSystem } from './filesystem';
 import { FunctionAttributes, FunctionBase, IFunction } from './function-base';
 import { calculateFunctionHash, trimFromStart } from './function-hash';
+import { Handler } from './handler';
 import { Version, VersionOptions } from './lambda-version';
 import { CfnFunction } from './lambda.generated';
 import { ILayerVersion } from './layers';
@@ -983,12 +984,12 @@ export function verifyCodeConfig(code: CodeConfig, props: FunctionProps) {
     throw new Error('lambda.Code must specify exactly one of: "inlineCode", "s3Location", or "image"');
   }
 
-  if ((code.inlineCode || code.s3Location) && props.handler === undefined) {
-    throw new Error('handler must be specified when using non-image asset for Lambda function');
+  if (code.image && props.handler !== Handler.FROM_IMAGE) {
+    throw new Error('handler must be set to `Handler.FROM_IMAGE` when using image asset for Lambda function');
   }
 
-  if ((code.inlineCode || code.s3Location) && props.runtime === undefined) {
-    throw new Error('runtime must be specified when using non-image asset for Lambda function');
+  if (code.image && props.runtime !== Runtime.FROM_IMAGE) {
+    throw new Error('runtime must be set to `Runtime.FROM_IMAGE` when using image asset for Lambda function');
   }
 
   // if this is inline code, check that the runtime supports

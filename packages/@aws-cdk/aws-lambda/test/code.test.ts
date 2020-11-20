@@ -180,6 +180,8 @@ describe('code', () => {
       // when
       new lambda.Function(stack, 'Fn', {
         code: lambda.Code.fromEcr(repo),
+        handler: lambda.Handler.FROM_IMAGE,
+        runtime: lambda.Runtime.FROM_IMAGE,
       });
 
       // then
@@ -203,6 +205,8 @@ describe('code', () => {
           entrypoint: ['entrypoint', 'param2'],
           tag: 'mytag',
         }),
+        handler: lambda.Handler.FROM_IMAGE,
+        runtime: lambda.Runtime.FROM_IMAGE,
       });
 
       // then
@@ -225,6 +229,8 @@ describe('code', () => {
       // when
       new lambda.Function(stack, 'Fn', {
         code: lambda.Code.fromEcr(repo),
+        handler: lambda.Handler.FROM_IMAGE,
+        runtime: lambda.Runtime.FROM_IMAGE,
       });
 
       // then
@@ -256,6 +262,8 @@ describe('code', () => {
       // when
       new lambda.Function(stack, 'Fn', {
         code: lambda.Code.fromImageAsset(path.join(__dirname, 'docker-lambda-handler')),
+        handler: lambda.Handler.FROM_IMAGE,
+        runtime: lambda.Runtime.FROM_IMAGE,
       });
 
       // then
@@ -286,6 +294,8 @@ describe('code', () => {
           cmd: ['cmd', 'param1'],
           entrypoint: ['entrypoint', 'param2'],
         }),
+        handler: lambda.Handler.FROM_IMAGE,
+        runtime: lambda.Runtime.FROM_IMAGE,
       });
 
       // then
