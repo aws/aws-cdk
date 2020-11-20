@@ -434,6 +434,8 @@ test('can assume role with eks credentials', async () => {
     process.env.AWS_ROLE_ARN = 'arn:aws:iam::12356789012:role/Assumable';
     process.env.AWS_WEB_IDENTITY_TOKEN_FILE = bockfs.path('/var/run/secrets/eks.amazonaws.com/serviceaccount/token');
 
+    // eslint-disable-next-line no-console
+    console.log(process.env);
     // WHEN
     const provider = await SdkProvider.withAwsCliCompatibleDefaults({
       ...defaultCredOptions,
