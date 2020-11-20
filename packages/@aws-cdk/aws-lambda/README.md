@@ -60,6 +60,7 @@ The following 'ECRFunction' construct uses an existing Docker image and the
 'AssetFunction' construct uses a local folder with a Dockerfile in it.
 
 ```ts
+import * as ecr from '@aws-cdk/aws-ecr';
 const repo = new ecr.Repository(this, 'Repository');
 
 new lambda.DockerImageFunction(this, 'ECRFunction', {
