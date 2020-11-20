@@ -164,6 +164,14 @@ function hasEcsCredentials(): boolean {
  * @see https://github.com/aws/aws-sdk-js/blob/3ccfd94da07234ae87037f55c138392f38b6881d/lib/credentials/token_file_web_identity_credentials.js#L59
  */
 function hasEksCredentials(): boolean {
+  // eslint-disable-next-line no-console
+  console.log('HasEksCreds has been called');
+  // eslint-disable-next-line no-console
+  console.log(`EksCredsState: ${Boolean(process && process.env && (process.env.AWS_ROLE_ARN && process.env.AWS_WEB_IDENTITY_TOKEN_FILE))}`);
+  // eslint-disable-next-line no-console
+  console.log(`EksEnv.AWS_ROLE_ARN: ${process.env.AWS_ROLE_ARN}`);
+  // eslint-disable-next-line no-console
+  console.log(`EksEnv.AWS_WEB_IDENTITY_TOKEN_FILE: ${process.env.AWS_WEB_IDENTITY_TOKEN_FILE}`);
   return Boolean(process && process.env && (process.env.AWS_ROLE_ARN && process.env.AWS_WEB_IDENTITY_TOKEN_FILE));
 }
 
