@@ -34,7 +34,6 @@ test('on EKS Pod, make sure WEB_IDENTITY_TOKEN is used', async () => {
     // eslint-disable-next-line no-console
     console.log(tfwiCreds);
     tfwiCreds.refresh.mockImplementation((cb) => { cb(undefined); });
-    tfwiCreds.needsRefresh.mockImplementation(() => false);
 
     // Scrub some environment variables that are maybe set for Ecs Credentials
     delete process.env.ECS_CONTAINER_METADATA_URI_V4;
@@ -53,10 +52,10 @@ test('on EKS Pod, make sure WEB_IDENTITY_TOKEN is used', async () => {
     process.env.AWS_WEB_IDENTITY_TOKEN_FILE = bockfs.path('/var/run/secrets/eks.amazonaws.com/serviceaccount/token');
 
     // WHEN
-    await SdkProvider.withAwsCliCompatibleDefaults({});
-
+    const provider = await SdkProvider.withAwsCliCompatibleDefaults({});
+    await provider.defaultAccount();
     // THEN
     // expect(account?.accountId).toEqual(`${uid}the_account_#`);
-    expect(tfwiCreds.needsRefresh).toHaveBeenCalled();
+    expect(tfwiCreds.refresh).toHaveBeenCalled();
   });
 });
