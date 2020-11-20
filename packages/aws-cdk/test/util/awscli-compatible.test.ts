@@ -31,6 +31,8 @@ test('on an EC2 instance, region lookup queries IMDS', async () => {
 
 test('on EKS Pod, make sure WEB_IDENTITY_TOKEN is used', async () => {
   return withMockedClassSingleton(AWS, 'TokenFileWebIdentityCredentials', async (tfwiCreds) => {
+    // eslint-disable-next-line no-console
+    console.log(tfwiCreds);
     tfwiCreds.refresh.mockImplementation((cb) => { cb(undefined); });
     tfwiCreds.needsRefresh.mockImplementation(() => false);
 
