@@ -31,11 +31,8 @@ test('on an EC2 instance, region lookup queries IMDS', async () => {
 
 test('on EKS Pod, make sure WEB_IDENTITY_TOKEN is used', async () => {
   return withMockedClassSingleton(AWS, 'TokenFileWebIdentityCredentials', async (tfwiCreds) => {
-    tfwiCreds.refresh
-      // First call for a token
-      .mockImplementation((cb) => { cb(undefined); });
-    tfwiCreds.needsRefresh
-      .mockImplementation(() => false);
+    tfwiCreds.refresh.mockImplementation((cb) => { cb(undefined); });
+    tfwiCreds.needsRefresh.mockImplementation(() => false);
 
     // Scrub some environment variables that are maybe set for Ecs Credentials
     delete process.env.ECS_CONTAINER_METADATA_URI_V4;
