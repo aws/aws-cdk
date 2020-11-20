@@ -68,7 +68,7 @@ export class AwsCliCompatible {
       // eslint-disable-next-line no-console
       console.log('EksCreds have been pushed');
       // eslint-disable-next-line no-console
-      console.log(sources);
+      console.log(JSON.stringify(sources));
     } else if (options.ec2instance ?? await isEc2Instance()) {
       // else if: don't get EC2 creds if we should have gotten ECS creds--ECS instances also
       // run on EC2 boxes but the creds represent something different. Same behavior as
