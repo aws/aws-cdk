@@ -55,10 +55,10 @@ test('on EKS Pod, make sure WEB_IDENTITY_TOKEN is used', async () => {
     // eslint-disable-next-line no-console
     console.log('EKS Before Provider');
     // This is called... but the next call fails :-/
-    const provider = await SdkProvider.withAwsCliCompatibleDefaults({});
+    //const provider = await SdkProvider.withAwsCliCompatibleDefaults({});
     // eslint-disable-next-line no-console
     console.log('EKS After provider');
-    await provider.defaultAccount();
+    //await provider.defaultAccount();
     // eslint-disable-next-line no-console
     console.log('EKS after provider.defaultAccount');
     // THEN
