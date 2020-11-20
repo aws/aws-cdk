@@ -219,11 +219,35 @@ export interface GraphWidgetProps extends MetricWidgetProps {
  * A dashboard widget that displays metrics
  */
 export class GraphWidget extends ConcreteWidget {
+
   private readonly props: GraphWidgetProps;
+
+  private readonly leftMetrics: IMetric[];
+  private readonly rightMetrics: IMetric[];
 
   constructor(props: GraphWidgetProps) {
     super(props.width || 6, props.height || 6);
     this.props = props;
+    this.leftMetrics = props.left ?? [];
+    this.rightMetrics = props.right ?? [];
+  }
+
+  /**
+   * Add another metric to the left Y axis of the GraphWidget
+   *
+   * @param metric the metric to add
+   */
+  public addLeftMetric(metric: IMetric) {
+    this.leftMetrics.push(metric);
+  }
+
+  /**
+   * Add another metric to the right Y axis of the GraphWidget
+   *
+   * @param metric the metric to add
+   */
+  public addRightMetric(metric: IMetric) {
+    this.rightMetrics.push(metric);
   }
 
   public toJson(): any[] {
@@ -232,7 +256,7 @@ export class GraphWidget extends ConcreteWidget {
       ...(this.props.rightAnnotations || []).map(mapAnnotation('right')),
     ];
 
-    const metrics = allMetricsGraphJson(this.props.left || [], this.props.right || []);
+    const metrics = allMetricsGraphJson(this.leftMetrics, this.rightMetrics);
     return [{
       type: 'metric',
       width: this.width,

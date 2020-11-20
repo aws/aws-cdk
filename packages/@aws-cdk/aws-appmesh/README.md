@@ -139,11 +139,8 @@ const service = namespace.createService('Svc');
 
 const node = mesh.addVirtualNode('virtual-node', {
   cloudMapService: service,
-  listener: {
-    portMapping: {
-      port: 8081,
-      protocol: Protocol.HTTP,
-    },
+  listeners: [appmesh.VirtualNodeListener.httpNodeListener({
+    port: 8081,
     healthCheck: {
       healthyThreshold: 3,
       interval: Duration.seconds(5), // minimum
@@ -153,9 +150,9 @@ const node = mesh.addVirtualNode('virtual-node', {
       timeout: Duration.seconds(2), // minimum
       unhealthyThreshold: 2,
     },
-  },
+  })],
   accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
-})
+});
 ```
 
 Create a `VirtualNode` with the the constructor and add tags.
@@ -164,11 +161,8 @@ Create a `VirtualNode` with the the constructor and add tags.
 const node = new VirtualNode(this, 'node', {
   mesh,
   cloudMapService: service,
-  listener: {
-    portMapping: {
-      port: 8080,
-      protocol: Protocol.HTTP,
-    },
+  listeners: [appmesh.VirtualNodeListener.httpNodeListener({
+    port: 8080,
     healthCheck: {
       healthyThreshold: 3,
       interval: Duration.seconds(5), // min
@@ -177,53 +171,80 @@ const node = new VirtualNode(this, 'node', {
       protocol: Protocol.HTTP,
       timeout: Duration.seconds(2), // min
       unhealthyThreshold: 2,
+    }, 
+    timeout: {
+      idle: cdk.Duration.seconds(5),
     },
-  },
+  })],
   accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
 });
 
 cdk.Tag.add(node, 'Environment', 'Dev');
 ```
 
-The listeners property can be left blank and added later with the `node.addListeners()` method. The `healthcheck` property is optional but if specifying a listener, the `portMappings` must contain at least one property.
+The `listeners` property can be left blank and added later with the `node.addListener()` method. The `healthcheck` and `timeout` properties are optional but if specifying a listener, the `port` must be added.
 
 ## Adding a Route
 
 A `route` is associated with a virtual router, and it's used to match requests for a virtual router and distribute traffic accordingly to its associated virtual nodes.
 
-You can use the prefix parameter in your `route` specification for path-based routing of requests. For example, if your virtual service name is my-service.local and you want the `route` to match requests to my-service.local/metrics, your prefix should be /metrics.
-
 If your `route` matches a request, you can distribute traffic to one or more target virtual nodes with relative weighting.
 
 ```typescript
-router.addRoute('route', {
-  routeTargets: [
-    {
-      virtualNode,
-      weight: 1,
+router.addRoute('route-http', {
+  routeSpec: appmesh.RouteSpec.http({
+    weightedTargets: [
+      {
+        virtualNode: node,
+      },
+    ],
+    match: {
+      prefixPath: '/path-to-app',
     },
-  ],
-  prefix: `/path-to-app`,
-  routeType: RouteType.HTTP,
+  }),
 });
 ```
 
 Add a single route with multiple targets and split traffic 50/50
 
 ```typescript
-router.addRoute('route', {
-  routeTargets: [
-    {
-      virtualNode,
-      weight: 50,
+router.addRoute('route-http', {
+  routeSpec: appmesh.RouteSpec.http({
+    weightedTargets: [
+      {
+        virtualNode: node,
+        weight: 50,
+      },
+      {
+        virtualNode: node,
+        weight: 50,
+      },
+    ],
+    match: {
+      prefixPath: '/path-to-app',
     },
-    {
-      virtualNode2,
-      weight: 50,
+  }),
+});
+```
+
+The _RouteSpec_ class provides an easy interface for defining new protocol specific route specs.
+The `tcp()`, `http()` and `http2()` methods provide the spec necessary to define a protocol specific spec.
+
+For HTTP based routes, the match field can be used to match on a route prefix.
+By default, an HTTP based route will match on `/`. All matches must start with a leading `/`.
+
+```typescript
+router.addRoute('route-http', {
+  routeSpec: appmesh.RouteSpec.grpc({
+    weightedTargets: [
+      {
+        virtualNode: node,
+      },
+    ],
+    match: {
+      serviceName: 'my-service.default.svc.cluster.local',
     },
-  ],
-  prefix: `/path-to-app`,
-  routeType: RouteType.HTTP,
+  }),
 });
 ```
 
