@@ -437,16 +437,13 @@ test('can assume role with eks credentials', async () => {
     delete process.env.ECS_CONTAINER_METADATA_URI_V4;
     delete process.env.ECS_CONTAINER_METADATA_URI;
     delete process.env.AWS_CONTAINER_CREDENTIALS_RELATIVE_URI;
-    delete process.env.AWS_CONFIG_FILE;
     delete process.env.AWS_SHARED_CREDENTIALS_FILE;
     delete process.env.AWS_SDK_LOAD_CONFIG;
 
     // eslint-disable-next-line no-console
     console.log(process.env);
     // WHEN
-    const provider = await SdkProvider.withAwsCliCompatibleDefaults({
-      ...defaultCredOptions,
-    });
+    const provider = await SdkProvider.withAwsCliCompatibleDefaults({});
 
     await provider.defaultAccount();
 
