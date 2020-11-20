@@ -33,7 +33,7 @@ test('on EKS Pod, make sure WEB_IDENTITY_TOKEN is used', async () => {
   return withMockedClassSingleton(AWS, 'TokenFileWebIdentityCredentials', async (tfwiCreds) => {
     tfwiCreds.refresh
       // First call for a token
-      .mockImplementationOnce((cb) => { cb(undefined); });
+      .mockImplementation((cb) => { cb(undefined); });
 
     // Scrub some environment variables that are maybe set for Ecs Credentials
     delete process.env.ECS_CONTAINER_METADATA_URI_V4;
