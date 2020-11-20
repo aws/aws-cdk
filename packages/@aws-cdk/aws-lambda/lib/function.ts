@@ -289,9 +289,9 @@ export interface FunctionProps extends FunctionOptions {
    * For valid values, see the Runtime property in the AWS Lambda Developer
    * Guide.
    *
-   * @default - not needed when using `Code.fromEcrImage()` or `Code.fromAssetImage()`. Mandatory for all other usages.
+   * Use `Runtime.FROM_IMAGE` when using `Code.fromEcr()` or `Code.fromAssetImage()`.
    */
-  readonly runtime?: Runtime;
+  readonly runtime: Runtime;
 
   /**
    * The source code of your Lambda function. You can point to a file in an
@@ -306,13 +306,13 @@ export interface FunctionProps extends FunctionOptions {
    * namespaces and other qualifiers, depending on the runtime.
    * For more information, see https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-features.html#gettingstarted-features-programmingmodel.
    *
+   * Use `Handler.FROM_IMAGE` when defining a function from a Docker image.
+   *
    * NOTE: If you specify your source code as inline text by specifying the
    * ZipFile property within the Code property, specify index.function_name as
    * the handler.
-   *
-   * @default - not needed when using `Code.fromEcrImage()` or `Code.fromAssetImage()`. Mandatory for all other usages.
    */
-  readonly handler?: string;
+  readonly handler: string;
 }
 
 /**
@@ -495,6 +495,11 @@ export class Function extends FunctionBase {
   public readonly role?: iam.IRole;
 
   /**
+   * The runtime configured for this lambda.
+   */
+  public readonly runtime: Runtime;
+
+  /**
    * The principal this Lambda Function is running as
    */
   public readonly grantPrincipal: iam.IPrincipal;
@@ -511,7 +516,6 @@ export class Function extends FunctionBase {
   private readonly layers: ILayerVersion[] = [];
 
   private _logGroup?: logs.ILogGroup;
-  private _runtime?: Runtime;
 
   /**
    * Environment variables for this function
@@ -629,7 +633,7 @@ export class Function extends FunctionBase {
       sep: ':',
     });
 
-    this._runtime = props.runtime;
+    this.runtime = props.runtime;
 
     if (props.layers) {
       this.addLayers(...props.layers);
@@ -679,17 +683,6 @@ export class Function extends FunctionBase {
         ],
       );
     }
-  }
-
-  /**
-   * The runtime configured for this lambda.
-   * Throws an error if no runtime is configured.
-   */
-  public get runtime(): Runtime {
-    if (!this._runtime) {
-      throw new Error('no runtime defined for this lambda function');
-    }
-    return this._runtime;
   }
 
   /**

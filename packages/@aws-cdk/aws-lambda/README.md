@@ -50,6 +50,27 @@ to our CDK project directory. This is especially important when we want to share
 this construct through a library. Different programming languages will have
 different techniques for bundling resources into libraries.
 
+### Docker Images
+
+Lambda functions allow specifying their handlers within docker images. The docker
+image can be an image from ECR or a local asset that the CDK will package and load
+into ECR.
+
+The following creates an 'ECRFunction' that uses an existing Docker image and a
+'AssetFunction' that uses a local folder with a Dockerfile in it.
+
+```ts
+const repo = new ecr.Repository(...);
+
+new lambda.DockerImageFunction(this, 'ECRFunction', {
+  code: DockerImageCode.fromEcr(repo),
+});
+
+new lambda.DockerImageFunction(this, 'AssetFunction', {
+  code: DockerImageCode.fromImageAsset(path.join(__dirname, 'docker-handler')),
+});
+```
+
 ### Execution Role
 
 Lambda functions assume an IAM role during execution. In CDK by default, Lambda
