@@ -68,6 +68,8 @@ By setting `redirectHTTP` to true, CDK will automatically create a listener on p
 
 If you specify the option `recordType` you can decide if you want the construct to use CNAME or Route53-Aliases as record sets.
 
+If you need to encrypt the traffic between the load balancer and the ECS tasks, you can set the `targetProtocol` to `HTTPS`.
+
 Additionally, if more than one application target group are needed, instantiate one of the following:
 
 * `ApplicationMultipleTargetGroupsEc2Service`

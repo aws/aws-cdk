@@ -7,17 +7,6 @@ import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { PHYSICAL_RESOURCE_ID_REFERENCE, flatten } from './runtime';
 
-// don't use "require" since the typescript compiler emits errors since this
-// file is not listed in tsconfig.json.
-const metadata = JSON.parse(fs.readFileSync(path.join(__dirname, 'sdk-api-metadata.json'), 'utf-8'));
-
-/**
- * AWS SDK service metadata.
- */
-export type AwsSdkMetadata = {[key: string]: any};
-
-const awsSdkMetadata: AwsSdkMetadata = metadata;
-
 /**
  * Reference to the physical resource id that can be passed to the AWS operation as a parameter.
  */
@@ -428,6 +417,25 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
 }
 
 /**
+ * AWS SDK service metadata.
+ */
+export type AwsSdkMetadata = {[key: string]: any};
+
+/**
+ * Gets awsSdkMetaData from file or from cache
+ */
+let getAwsSdkMetadata = (() => {
+  let _awsSdkMetadata: AwsSdkMetadata;
+  return function () {
+    if (_awsSdkMetadata) {
+      return _awsSdkMetadata;
+    } else {
+      return _awsSdkMetadata = JSON.parse(fs.readFileSync(path.join(__dirname, 'sdk-api-metadata.json'), 'utf-8'));
+    }
+  };
+})();
+
+/**
  * Transform SDK service/action to IAM action using metadata from aws-sdk module.
  * Example: CloudWatchLogs with putRetentionPolicy => logs:PutRetentionPolicy
  *
@@ -435,6 +443,7 @@ export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
  */
 function awsSdkToIamAction(service: string, action: string): string {
   const srv = service.toLowerCase();
+  const awsSdkMetadata = getAwsSdkMetadata();
   const iamService = (awsSdkMetadata[srv] && awsSdkMetadata[srv].prefix) || srv;
   const iamAction = action.charAt(0).toUpperCase() + action.slice(1);
   return `${iamService}:${iamAction}`;
