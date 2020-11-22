@@ -65,10 +65,6 @@ export class AwsCliCompatible {
       sources.push(() => new AWS.ECSCredentials());
     } else if (options.containerCreds ?? hasEksCredentials() ) {
       sources.push(() => new AWS.TokenFileWebIdentityCredentials());
-      // eslint-disable-next-line no-console
-      console.log('EksCreds have been pushed');
-      // eslint-disable-next-line no-console
-      console.log(JSON.stringify(sources));
     } else if (options.ec2instance ?? await isEc2Instance()) {
       // else if: don't get EC2 creds if we should have gotten ECS creds--ECS instances also
       // run on EC2 boxes but the creds represent something different. Same behavior as
@@ -168,7 +164,7 @@ function hasEcsCredentials(): boolean {
  * @see https://github.com/aws/aws-sdk-js/blob/3ccfd94da07234ae87037f55c138392f38b6881d/lib/credentials/token_file_web_identity_credentials.js#L59
  */
 function hasEksCredentials(): boolean {
-  return Boolean(process && process.env && (process.env.AWS_ROLE_ARN && process.env.AWS_WEB_IDENTITY_TOKEN_FILE));
+  return Boolean(process.env.AWS_ROLE_ARN && process.env.AWS_WEB_IDENTITY_TOKEN_FILE);
 }
 
 /**
