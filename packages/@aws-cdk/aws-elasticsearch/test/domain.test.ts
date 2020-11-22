@@ -24,6 +24,17 @@ const readWriteActions = [
   ...writeActions,
 ];
 
+test('log publishing keys do not exist if not configured', () => {
+
+  new Domain(stack, 'Domain', { version: ElasticsearchVersion.V7_1 });
+
+  expect(stack).toHaveResource('AWS::Elasticsearch::Domain', {
+    LogPublishingOptions: {},
+  });
+
+
+});
+
 test('minimal example renders correctly', () => {
   new Domain(stack, 'Domain', { version: ElasticsearchVersion.V7_1 });
 
