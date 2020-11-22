@@ -2106,6 +2106,73 @@ export = {
       test.done();
     },
 
+    'private endpoint access selects only private subnets from looked up vpc with concrete subnet selection'(test: Test) {
+
+      const vpcId = 'vpc-12345';
+      // can't use the regular fixture because it also adds a VPC to the stack, which prevents
+      // us from setting context.
+      const stack = new cdk.Stack(new cdk.App(), 'Stack', {
+        env: {
+          account: '11112222',
+          region: 'us-east-1',
+        },
+      });
+      stack.node.setContext(`vpc-provider:account=${stack.account}:filter.vpc-id=${vpcId}:region=${stack.region}:returnAsymmetricSubnets=true`, {
+        vpcId: vpcId,
+        vpcCidrBlock: '10.0.0.0/16',
+        subnetGroups: [
+          {
+            name: 'Private',
+            type: 'Private',
+            subnets: [
+              {
+                subnetId: 'subnet-private-in-us-east-1a',
+                cidr: '10.0.1.0/24',
+                availabilityZone: 'us-east-1a',
+                routeTableId: 'rtb-06068e4c4049921ef',
+              },
+            ],
+          },
+          {
+            name: 'Public',
+            type: 'Public',
+            subnets: [
+              {
+                subnetId: 'subnet-public-in-us-east-1c',
+                cidr: '10.0.0.0/24',
+                availabilityZone: 'us-east-1c',
+                routeTableId: 'rtb-0ff08e62195198dbb',
+              },
+            ],
+          },
+        ],
+      });
+      const vpc = ec2.Vpc.fromLookup(stack, 'Vpc', {
+        vpcId: vpcId,
+      });
+
+      new eks.Cluster(stack, 'Cluster', {
+        vpc,
+        version: CLUSTER_VERSION,
+        endpointAccess: eks.EndpointAccess.PRIVATE,
+        vpcSubnets: [{
+          subnets: [
+            ec2.Subnet.fromSubnetId(stack, 'Private', 'subnet-private-in-us-east-1a'),
+            ec2.Subnet.fromSubnetId(stack, 'Public', 'subnet-public-in-us-east-1c'),
+          ],
+        }],
+      });
+
+      const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
+      const template = expect(nested).value;
+
+      test.deepEqual(template.Resources.Handler886CB40B.Properties.VpcConfig.SubnetIds, [
+        'subnet-private-in-us-east-1a',
+      ]);
+
+      test.done();
+    },
+
     'private endpoint access considers specific subnet selection'(test: Test) {
       const { stack } = testFixture();
       new eks.Cluster(stack, 'Cluster', {
