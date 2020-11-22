@@ -28,39 +28,21 @@ test('on an EC2 instance, region lookup queries IMDS', async () => {
   });
 });
 
-test('on EKS Pod, make sure WEB_IDENTITY_TOKEN is used', async () => {
-  return withMockedClassSingleton(AWS, 'TokenFileWebIdentityCredentials', async (tfwiCreds) => {
-    // eslint-disable-next-line no-console
-    console.log(tfwiCreds);
-    tfwiCreds.refresh.mockImplementation((cb) => { cb(undefined); });
+test('Use web identity when available', async () => {
 
-    // Scrub some environment variables that are maybe set for Ecs Credentials
-    delete process.env.ECS_CONTAINER_METADATA_URI_V4;
-    delete process.env.ECS_CONTAINER_METADATA_URI;
-    delete process.env.AWS_CONTAINER_CREDENTIALS_RELATIVE_URI;
-    delete process.env.AWS_SHARED_CREDENTIALS_FILE;
-    delete process.env.AWS_SDK_LOAD_CONFIG;
+  // Scrub some environment variables that are maybe set for Ecs Credentials
+  delete process.env.ECS_CONTAINER_METADATA_URI_V4;
+  delete process.env.ECS_CONTAINER_METADATA_URI;
+  delete process.env.AWS_CONTAINER_CREDENTIALS_RELATIVE_URI;
 
-    bockfs({
-      '/var/run/secrets/eks.amazonaws.com/serviceaccount/token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL29pZGMuZWtzLmV1LWNlbnRyYWwtMS5hbWF6b25hd3MuY29tL2lkLzEyMzQ1NjY3ODlBQkNERUZHSElKS0xNTk9QUVJTVFVXWFlaIiwiaWF0IjoxNjA1ODA2Mjc2LCJleHAiOjE2MzczNDIyNzYsImF1ZCI6InN0cy5hbWF6b25hd3MuY29tIiwic3ViIjoic3lzdGVtOnNlcnZpY2VhY2NvdW50OnRlc3Q6c2VydmljZWFjY291bnQiLCJrdWJlcm5ldGVzLmlvIjoieyAgICAgXCJuYW1lc3BhY2VcIjogXCJtb3AtYmFzZS0tcnVubmVyc1wiLCAgICAgXCJwb2RcIjogeyAgICAgICBcIm5hbWVcIjogXCJnaXRsYWJydW5uZXItY2RrYnVpbGQtZ2l0bGFiLXJ1bm5lci02NmI0YmY0Yjc3LTVycXZzXCIsICAgICAgIFwidWlkXCI6IFwiMWViZmQ5NTgtZDgwZi00ZTk0LWE5NDktOWRhMjU4YWQwNzlhXCIgICAgIH0sICAgICBcInNlcnZpY2VhY2NvdW50XCI6IHsgICAgICAgXCJuYW1lXCI6IFwiZ2l0bGFicnVubmVyLWNka2J1aWxkLWdpdGxhYi1ydW5uZXJcIiwgICAgICAgXCJ1aWRcIjogXCI1OTI2MjE0MC0xNTQ2LTRmMGYtODczMC1lOWFlODE5NTU1MjJcIiAgICAgfSAgIH0ifQ.s_n7Cn-KZ9Fi-EGjOqAbIom0_oStPAZ3TxD4N6OIZcM',
-    });
+  // create and configure the web identity token file
+  process.env.AWS_WEB_IDENTITY_TOKEN_FILE = 'some-value';
+  process.env.AWS_ROLE_ARN = 'some-value';
 
-    // Set environment variables that we want
-    process.env.AWS_CONFIG_FILE = bockfs.path('/home/me/.bxt/config');
-    process.env.AWS_ROLE_ARN = 'arn:aws:iam::12356789012:role/Assumable';
-    process.env.AWS_WEB_IDENTITY_TOKEN_FILE = bockfs.path('/var/run/secrets/eks.amazonaws.com/serviceaccount/token');
+  // create the chain
+  const providers = (await AwsCliCompatible.credentialChain()).providers;
 
-    // WHEN
-    // eslint-disable-next-line no-console
-    console.log('EKS Before Provider');
-    // This is called... but the next call fails :-/
-    //const provider = await SdkProvider.withAwsCliCompatibleDefaults({});
-    // eslint-disable-next-line no-console
-    console.log('EKS After provider');
-    //await provider.defaultAccount();
-    // eslint-disable-next-line no-console
-    console.log('EKS after provider.defaultAccount');
-    // THEN
-    expect(true);
-  });
+  // make sure the web identity provider is in the chain
+  const webIdentify = (providers[2] as Function)();
+  expect(webIdentify).toBeInstanceOf(AWS.TokenFileWebIdentityCredentials);
 });
