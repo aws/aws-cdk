@@ -2173,6 +2173,36 @@ export = {
       test.done();
     },
 
+    'private endpoint access selects only private subnets from managed vpc with concrete subnet selection'(test: Test) {
+
+      const { stack } = testFixture();
+
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+
+      new eks.Cluster(stack, 'Cluster', {
+        vpc,
+        version: CLUSTER_VERSION,
+        endpointAccess: eks.EndpointAccess.PRIVATE,
+        vpcSubnets: [{
+          subnets: [
+            vpc.privateSubnets[0],
+            vpc.publicSubnets[1],
+            ec2.Subnet.fromSubnetId(stack, 'Private', 'subnet-unknown'),
+          ],
+        }],
+      });
+
+      const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
+      const template = expect(nested).value;
+
+      test.deepEqual(template.Resources.Handler886CB40B.Properties.VpcConfig.SubnetIds, [
+        { Ref: 'referencetoStackVpcPrivateSubnet1Subnet8E6A14CBRef' },
+        'subnet-unknown',
+      ]);
+
+      test.done();
+    },
+
     'private endpoint access considers specific subnet selection'(test: Test) {
       const { stack } = testFixture();
       new eks.Cluster(stack, 'Cluster', {
