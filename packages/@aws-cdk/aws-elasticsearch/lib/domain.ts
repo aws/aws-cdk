@@ -1419,6 +1419,30 @@ export class Domain extends DomainBase implements IDomain {
       });
     }
 
+    const logPublishing: Record<string, any> = {};
+
+    // https://github.com/aws/aws-cdk/issues/11223
+    if (this.appLogGroup) {
+      logPublishing.ES_APPLICATION_LOGS = {
+        enabled: true,
+        cloudWatchLogsLogGroupArn: this.appLogGroup.logGroupArn,
+      };
+    }
+
+    if (this.slowSearchLogGroup) {
+      logPublishing.SEARCH_SLOW_LOGS = {
+        enabled: true,
+        cloudWatchLogsLogGroupArn: this.slowSearchLogGroup.logGroupArn,
+      };
+    }
+
+    if (this.slowIndexLogGroup) {
+      logPublishing.INDEX_SLOW_LOGS = {
+        enabled: true,
+        cloudWatchLogsLogGroupArn: this.slowIndexLogGroup.logGroupArn,
+      };
+    }
+
     // Create the domain
     this.domain = new CfnDomain(this, 'Resource', {
       domainName: this.physicalName,
@@ -1451,20 +1475,7 @@ export class Domain extends DomainBase implements IDomain {
           : undefined,
       },
       nodeToNodeEncryptionOptions: { enabled: nodeToNodeEncryptionEnabled },
-      logPublishingOptions: {
-        ES_APPLICATION_LOGS: {
-          enabled: this.appLogGroup != null,
-          cloudWatchLogsLogGroupArn: this.appLogGroup?.logGroupArn,
-        },
-        SEARCH_SLOW_LOGS: {
-          enabled: this.slowSearchLogGroup != null,
-          cloudWatchLogsLogGroupArn: this.slowSearchLogGroup?.logGroupArn,
-        },
-        INDEX_SLOW_LOGS: {
-          enabled: this.slowIndexLogGroup != null,
-          cloudWatchLogsLogGroupArn: this.slowIndexLogGroup?.logGroupArn,
-        },
-      },
+      logPublishingOptions: logPublishing,
       cognitoOptions: {
         enabled: props.cognitoKibanaAuth != null,
         identityPoolId: props.cognitoKibanaAuth?.identityPoolId,
