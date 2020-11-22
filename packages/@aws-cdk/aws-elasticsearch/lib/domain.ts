@@ -1421,7 +1421,6 @@ export class Domain extends DomainBase implements IDomain {
 
     const logPublishing: Record<string, any> = {};
 
-    // https://github.com/aws/aws-cdk/issues/11223
     if (this.appLogGroup) {
       logPublishing.ES_APPLICATION_LOGS = {
         enabled: true,
