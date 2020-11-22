@@ -1,7 +1,6 @@
 import * as AWS from 'aws-sdk';
 import { AwsCliCompatible } from '../../lib/api/aws-auth/awscli-compatible';
 import { withMockedClassSingleton } from '../util';
-import * as bockfs from '../bockfs';
 
 beforeEach(() => {
   // Set to paths that don't exist so the SDK doesn't accidentally load this config
