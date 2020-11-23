@@ -90,13 +90,14 @@ describe('exec', () => {
 
 describe('extractDependencies', () => {
   test('with dependencies referenced in package.json', () => {
-    expect(extractDependencies(
+    const deps = extractDependencies(
       path.join(__dirname, '../package.json'),
       ['@aws-cdk/aws-lambda', '@aws-cdk/core'],
-    )).toEqual({
-      '@aws-cdk/aws-lambda': '0.0.0',
-      '@aws-cdk/core': '0.0.0',
-    });
+    );
+    expect(Object.keys(deps)).toEqual([
+      '@aws-cdk/aws-lambda',
+      '@aws-cdk/core',
+    ]);
   });
 
   test('with transitive dependencies', () => {
@@ -107,7 +108,6 @@ describe('extractDependencies', () => {
       // eslint-disable-next-line @typescript-eslint/no-require-imports, import/no-extraneous-dependencies
       typescript: require('typescript/package.json').version,
     });
-    /* eslint-enable @typescript-eslint/no-require-imports */
   });
 
   test('with unknown dependency', () => {
