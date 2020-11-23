@@ -63,7 +63,7 @@ export class AwsCliCompatible {
 
     if (options.containerCreds ?? hasEcsCredentials()) {
       sources.push(() => new AWS.ECSCredentials());
-    } else if (options.containerCreds ?? hasEksCredentials() ) {
+    } else if (options.containerCreds ?? hasWebIdentityCredentials() ) {
       sources.push(() => new AWS.TokenFileWebIdentityCredentials());
     } else if (options.ec2instance ?? await isEc2Instance()) {
       // else if: don't get EC2 creds if we should have gotten ECS creds--ECS instances also
@@ -159,11 +159,11 @@ function hasEcsCredentials(): boolean {
 }
 
 /**
- * Return whether it looks like we'll have EKS credentials available
+ * Return whether it looks like we'll have WebIdentityCredentials (that's what EKS uses) available
  * No check like hasEcsCredentials available, so have to implement our own.
  * @see https://github.com/aws/aws-sdk-js/blob/3ccfd94da07234ae87037f55c138392f38b6881d/lib/credentials/token_file_web_identity_credentials.js#L59
  */
-function hasEksCredentials(): boolean {
+function hasWebIdentityCredentials(): boolean {
   return Boolean(process.env.AWS_ROLE_ARN && process.env.AWS_WEB_IDENTITY_TOKEN_FILE);
 }
 
