@@ -164,8 +164,8 @@ export class Lazy {
    * If you are simply looking to force a value to a `string` type and don't need
    * the calculation to be deferred, use `Token.asString()` instead.
    *
-   * The inner function will only be invoked one time and cannot depend on
-   * resolution context.
+   * The inner function will only be invoked once, and the resolved value
+   * cannot depend on the Stack the Token is used in.
    */
   public static string(producer: IStableStringProducer, options: LazyStringValueOptions = {}) {
     return Token.asString(new LazyString(producer, true), options);
@@ -174,12 +174,14 @@ export class Lazy {
   /**
    * Defer the calculation of a string value to synthesis time
    *
-   * Use if this function is not recommended; unless you know you need it for sure, you
+   * Use of this function is not recommended; unless you know you need it for sure, you
    * probably don't. Use `Lazy.string()` instead.
    *
-   * The inner function may be invoked multiple times during synthesis. You should
-   * only use this function if the calculated value may change during the 'prepare'
-   * phase of synthesis.
+   * The inner function may be invoked multiple times during synthesis. You
+   * should only use this method if the returned value depends on variables
+   * that may change during the Aspect application phase of synthesis, or if
+   * the value depends on the Stack the value is being used in. Both of these
+   * cases are rare, and only ever occur for AWS Construct Library authors.
    */
   public static uncachedString(producer: IStringProducer, options: LazyStringValueOptions = {}) {
     return Token.asString(new LazyString(producer, false), options);
@@ -209,8 +211,8 @@ export class Lazy {
    * If you are simply looking to force a value to a `number` type and don't need
    * the calculation to be deferred, use `Token.asNumber()` instead.
    *
-   * The inner function will only be invoked one time and cannot depend on
-   * resolution context.
+   * The inner function will only be invoked once, and the resolved value
+   * cannot depend on the Stack the Token is used in.
    */
   public static number(producer: IStableNumberProducer) {
     return Token.asNumber(new LazyNumber(producer, true));
@@ -219,12 +221,14 @@ export class Lazy {
   /**
    * Defer the calculation of a number value to synthesis time
    *
-   * Use if this function is not recommended; unless you know you need it for sure, you
+   * Use of this function is not recommended; unless you know you need it for sure, you
    * probably don't. Use `Lazy.number()` instead.
    *
-   * The inner function may be invoked multiple times during synthesis. You should
-   * only use this function if the calculated value may change during the 'prepare'
-   * phase of synthesis.
+   * The inner function may be invoked multiple times during synthesis. You
+   * should only use this method if the returned value depends on variables
+   * that may change during the Aspect application phase of synthesis, or if
+   * the value depends on the Stack the value is being used in. Both of these
+   * cases are rare, and only ever occur for AWS Construct Library authors.
    */
   public static uncachedNumber(producer: INumberProducer) {
     return Token.asNumber(new LazyNumber(producer, false));
@@ -248,12 +252,14 @@ export class Lazy {
   /**
    * Defer the calculation of a list value to synthesis time
    *
-   * Use if this function is not recommended; unless you know you need it for sure, you
+   * Use of this function is not recommended; unless you know you need it for sure, you
    * probably don't. Use `Lazy.list()` instead.
    *
-   * The inner function may be invoked multiple times during synthesis. You should
-   * only use this function if the calculated value may change during the 'prepare'
-   * phase of synthesis.
+   * The inner function may be invoked multiple times during synthesis. You
+   * should only use this method if the returned value depends on variables
+   * that may change during the Aspect application phase of synthesis, or if
+   * the value depends on the Stack the value is being used in. Both of these
+   * cases are rare, and only ever occur for AWS Construct Library authors.
    */
   public static uncachedList(producer: IListProducer, options: LazyListValueOptions = {}) {
     return Token.asList(new LazyList(producer, false, options), options);
@@ -268,8 +274,8 @@ export class Lazy {
    * If you are simply looking to force a value to a `string[]` type and don't need
    * the calculation to be deferred, use `Token.asList()` instead.
    *
-   * The inner function will only be invoked one time and cannot depend on
-   * resolution context.
+   * The inner function will only be invoked once, and the resolved value
+   * cannot depend on the Stack the Token is used in.
    */
   public static list(producer: IStableListProducer, options: LazyListValueOptions = {}) {
     return Token.asList(new LazyList(producer, true, options), options);
@@ -303,12 +309,14 @@ export class Lazy {
   /**
    * Defer the calculation of an untyped value to synthesis time
    *
-   * Use if this function is not recommended; unless you know you need it for sure, you
+   * Use of this function is not recommended; unless you know you need it for sure, you
    * probably don't. Use `Lazy.any()` instead.
    *
-   * The inner function may be invoked multiple times during synthesis. You should
-   * only use this function if the calculated value may change during the 'prepare'
-   * phase of synthesis.
+   * The inner function may be invoked multiple times during synthesis. You
+   * should only use this method if the returned value depends on variables
+   * that may change during the Aspect application phase of synthesis, or if
+   * the value depends on the Stack the value is being used in. Both of these
+   * cases are rare, and only ever occur for AWS Construct Library authors.
    */
   public static uncachedAny(producer: IAnyProducer, options: LazyAnyValueOptions = {}): IResolvable {
     return new LazyAny(producer, false, options);
@@ -318,11 +326,16 @@ export class Lazy {
   }
 }
 
+
+interface ILazyProducer<A> {
+  produce(context: IResolveContext): A | undefined;
+}
+
 abstract class LazyBase<A> implements IResolvable {
   public readonly creationStack: string[];
-  protected _cached?: A;
+  private _cached?: A;
 
-  constructor() {
+  constructor(private readonly producer: ILazyProducer<A>, private readonly cache: boolean) {
     // Stack trace capture is conditionned to `debugModeEnabled()`, because
     // lazies can be created in a fairly thrashy way, and the stack traces are
     // large and slow to obtain; but are mostly useful only when debugging a
@@ -332,7 +345,13 @@ abstract class LazyBase<A> implements IResolvable {
       : [`Execute again with ${CDK_DEBUG}=true to capture stack traces`];
   }
 
-  public abstract resolve(context: IResolveContext): any;
+  public resolve(context: IResolveContext) {
+    if (this.cache) {
+      return this._cached ?? (this._cached = this.producer.produce(context));
+    } else {
+      return this.producer.produce(context);
+    }
+  }
 
   public toString() {
     return Token.asString(this);
@@ -350,64 +369,35 @@ abstract class LazyBase<A> implements IResolvable {
 }
 
 class LazyString extends LazyBase<string> {
-
-  constructor(private readonly producer: IStringProducer, private readonly cache: boolean) {
-    super();
-  }
-
-  public resolve(context: IResolveContext) {
-    if (this.cache) {
-      return this._cached ?? (this._cached = this.producer.produce(context));
-    } else {
-      return this.producer.produce(context);
-    }
-  }
 }
 
 class LazyNumber extends LazyBase<number> {
-  constructor(private readonly producer: INumberProducer, private readonly cache: boolean) {
-    super();
-  }
-
-  public resolve(context: IResolveContext) {
-    if (this.cache) {
-      return this._cached ?? (this._cached = this.producer.produce(context));
-    } else {
-      return this.producer.produce(context);
-    }
-  }
 }
 
 class LazyList extends LazyBase<Array<string>> {
-  constructor(private readonly producer: IListProducer, private readonly cache: boolean, private readonly options: LazyListValueOptions = {}) {
-    super();
+  constructor(producer: IListProducer, cache: boolean, private readonly options: LazyListValueOptions = {}) {
+    super(producer, cache);
   }
 
   public resolve(context: IResolveContext) {
-    if (!this.cache || this._cached === undefined) {
-      this._cached = this.producer.produce(context);
-    }
-
-    if (this._cached !== undefined && this._cached.length === 0 && this.options.omitEmpty) {
+    const resolved = super.resolve(context);
+    if (resolved?.length === 0 && this.options.omitEmpty) {
       return undefined;
     }
-    return this._cached;
+    return resolved;
   }
 }
 
 class LazyAny extends LazyBase<any> {
-  constructor(private readonly producer: IAnyProducer, private readonly cache: boolean, private readonly options: LazyAnyValueOptions = {}) {
-    super();
+  constructor(producer: IAnyProducer, cache: boolean, private readonly options: LazyAnyValueOptions = {}) {
+    super(producer, cache);
   }
 
   public resolve(context: IResolveContext) {
-    if (!this.cache || this._cached === undefined) {
-      this._cached = this.producer.produce(context);
-    }
-
-    if (Array.isArray(this._cached) && this._cached.length === 0 && this.options.omitEmptyArray) {
+    const resolved = super.resolve(context);
+    if (Array.isArray(resolved) && resolved.length === 0 && this.options.omitEmptyArray) {
       return undefined;
     }
-    return this._cached;
+    return resolved;
   }
 }
