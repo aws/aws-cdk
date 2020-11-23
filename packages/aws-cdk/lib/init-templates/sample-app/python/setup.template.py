@@ -19,12 +19,7 @@ setuptools.setup(
     packages=setuptools.find_packages(where="%name.PythonModule%"),
 
     install_requires=[
-        "aws-cdk.core==%cdk-version%",
-        "aws-cdk.aws_iam==%cdk-version%",
-        "aws-cdk.aws_sqs==%cdk-version%",
-        "aws-cdk.aws_sns==%cdk-version%",
-        "aws-cdk.aws_sns_subscriptions==%cdk-version%",
-        "aws-cdk.aws_s3==%cdk-version%",
+        "aws-cdk-lib==%cdk-version%",
     ],
 
     python_requires=">=3.6",

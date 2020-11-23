@@ -1,7 +1,7 @@
 import json
 import pytest
 
-from aws_cdk import core
+import aws_cdk_lib as core
 from %name%.%name.PythonModule%_stack import %name.PascalCased%Stack
 
 

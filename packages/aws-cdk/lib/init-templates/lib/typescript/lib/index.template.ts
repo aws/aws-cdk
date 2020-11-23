@@ -1,4 +1,4 @@
-import * as cdk from '@aws-cdk/core';
+import * as cdk from 'aws-cdk-lib';
 
 export interface %name.PascalCased%Props {
   // Define construct properties here

@@ -1,5 +1,4 @@
-import { expect as expectCDK, matchTemplate, MatchStyle } from '@aws-cdk/assert';
-import * as cdk from '@aws-cdk/core';
+import * as cdk from 'aws-cdk-lib';
 import * as %name.PascalCased% from '../lib/%name%-stack';
 
 test('Empty Stack', () => {
@@ -7,7 +6,6 @@ test('Empty Stack', () => {
     // WHEN
     const stack = new %name.PascalCased%.%name.PascalCased%Stack(app, 'MyTestStack');
     // THEN
-    expectCDK(stack).to(matchTemplate({
-      "Resources": {}
-    }, MatchStyle.EXACT))
+    const actual = app.synth().getStackArtifact(stack.artifactId).template;
+    expect(actual).toEqual({});
 });

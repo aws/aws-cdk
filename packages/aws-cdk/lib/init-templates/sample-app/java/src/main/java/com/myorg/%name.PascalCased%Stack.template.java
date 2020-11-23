@@ -1,9 +1,9 @@
 package com.myorg;
 
-import software.amazon.awscdk.core.Construct;
-import software.amazon.awscdk.core.Duration;
-import software.amazon.awscdk.core.Stack;
-import software.amazon.awscdk.core.StackProps;
+import software.amazon.awscdk.lib.Construct;
+import software.amazon.awscdk.lib.Duration;
+import software.amazon.awscdk.lib.Stack;
+import software.amazon.awscdk.lib.StackProps;
 import software.amazon.awscdk.services.sns.Topic;
 import software.amazon.awscdk.services.sns.subscriptions.SqsSubscription;
 import software.amazon.awscdk.services.sqs.Queue;

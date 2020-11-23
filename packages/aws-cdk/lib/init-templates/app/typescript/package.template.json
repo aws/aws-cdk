@@ -11,7 +11,6 @@
     "cdk": "cdk"
   },
   "devDependencies": {
-    "@aws-cdk/assert": "%cdk-version%",
     "@types/jest": "^26.0.10",
     "@types/node": "10.17.27",
     "jest": "^26.4.2",
@@ -21,7 +20,8 @@
     "typescript": "~3.9.7"
   },
   "dependencies": {
-    "@aws-cdk/core": "%cdk-version%",
+    "aws-cdk-lib": "%cdk-version%",
+    "constructs": "^3.0.4",
     "source-map-support": "^0.5.16"
   }
 }
