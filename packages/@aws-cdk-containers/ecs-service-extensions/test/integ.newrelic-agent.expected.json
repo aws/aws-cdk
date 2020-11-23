@@ -4,7 +4,11 @@
       "Type": "AWS::AppMesh::Mesh",
       "Properties": {
         "MeshName": "awsecsintegmymeshFCC0D554",
-        "Spec": {}
+        "Spec": {
+          "EgressFilter": {
+            "Type": "ALLOW_ALL"
+          }
+        }
       }
     },
     "productionenvironmentvpcAEB47DF7": {
@@ -533,6 +537,15 @@
         }
       }
     },
+    "namelogsF4B17D31": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "name-logs",
+        "RetentionInDays": 731
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
+    },
     "nametaskdefinitionTaskRole50FE844E": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -560,6 +573,10 @@
               {
                 "Condition": "HEALTHY",
                 "ContainerName": "envoy"
+              },
+              {
+                "Condition": "START",
+                "ContainerName": "newrelic-infrastructure-agent"
               }
             ],
             "Environment": [
@@ -568,16 +585,24 @@
                 "Value": "80"
               },
               {
-                "Name": "TEST_DATADOG",
+                "Name": "TEST_NEWRELIC",
                 "Value": "true"
               },
               {
-                "Name": "DD_TRACE_ANALYTICS_ENABLED",
+                "Name": "NEW_RELIC_NO_CONFIG_FILE",
                 "Value": "true"
               },
               {
-                "Name": "DD_SERVICE",
+                "Name": "NEW_RELIC_APP_NAME",
                 "Value": "name"
+              },
+              {
+                "Name": "NEW_RELIC_LOG",
+                "Value": "stdout"
+              },
+              {
+                "Name": "NEW_RELIC_DISTRIBUTED_TRACING_ENABLED",
+                "Value": "true"
               }
             ],
             "Essential": true,
@@ -600,12 +625,30 @@
                 ]
               ]
             },
+            "LogConfiguration": {
+              "LogDriver": "awslogs",
+              "Options": {
+                "awslogs-group": {
+                  "Ref": "namelogsF4B17D31"
+                },
+                "awslogs-stream-prefix": "name",
+                "awslogs-region": {
+                  "Ref": "AWS::Region"
+                }
+              }
+            },
             "Memory": 2048,
             "Name": "app",
             "PortMappings": [
               {
                 "ContainerPort": 80,
                 "Protocol": "tcp"
+              }
+            ],
+            "Secrets": [
+              {
+                "Name": "NEW_RELIC_LICENSE_KEY",
+                "ValueFrom": "arn:aws:secretsmanager:us-west-2:209640446841:secret:newrelic-license-key-secret-8KnPij"
               }
             ],
             "Ulimits": [
@@ -719,52 +762,50 @@
             ],
             "Environment": [
               {
-                "Name": "DD_ENV",
-                "Value": "production"
+                "Name": "NRIA_OVERRIDE_HOST_ROOT",
+                "Value": ""
               },
               {
-                "Name": "ECS_FARGATE",
+                "Name": "NRIA_IS_SECURE_FORWARD_ONLY",
                 "Value": "true"
               },
               {
-                "Name": "DD_APM_ENABLED",
+                "Name": "FARGATE",
                 "Value": "true"
               },
               {
-                "Name": "DD_APM_NON_LOCAL_TRAFFIC",
+                "Name": "ENABLE_NRI_ECS",
                 "Value": "true"
               },
               {
-                "Name": "DD_ECS_COLLECT_RESOURCE_TAGS_EC2",
-                "Value": "true"
+                "Name": "NRIA_PASSTHROUGH_ENVIRONMENT",
+                "Value": "ECS_CONTAINER_METADATA_URI,ENABLE_NRI_ECS,FARGATE"
+              },
+              {
+                "Name": "NRIA_CUSTOM_ATTRIBUTES",
+                "Value": "{\"nrDeployMethod\":\"ecs-service-extensions\"}"
               }
             ],
             "Essential": true,
-            "Image": "datadog/agent:latest",
+            "Image": "newrelic/infrastructure-bundle:1.5.0",
             "LogConfiguration": {
               "LogDriver": "awslogs",
               "Options": {
                 "awslogs-group": {
-                  "Ref": "nametaskdefinitiondatadogagentLogGroupE981E66F"
+                  "Ref": "nametaskdefinitionnewrelicinfrastructureagentLogGroup21262351"
                 },
-                "awslogs-stream-prefix": "datadog-agent",
+                "awslogs-stream-prefix": "newrelic-agent",
                 "awslogs-region": {
                   "Ref": "AWS::Region"
                 }
               }
             },
             "MemoryReservation": 50,
-            "Name": "datadog-agent",
-            "PortMappings": [
-              {
-                "ContainerPort": 8126,
-                "Protocol": "tcp"
-              }
-            ],
+            "Name": "newrelic-infrastructure-agent",
             "Secrets": [
               {
-                "Name": "DD_API_KEY",
-                "ValueFrom": "arn:aws:secretsmanager:us-west-2:209640446841:secret:datadog-api-key-secret-JxST1g"
+                "Name": "NRIA_LICENSE_KEY",
+                "ValueFrom": "arn:aws:secretsmanager:us-west-2:209640446841:secret:newrelic-license-key-secret-8KnPij"
               }
             ],
             "User": "0:1338"
@@ -879,6 +920,27 @@
             },
             {
               "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "namelogsF4B17D31",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": [
+                "secretsmanager:GetSecretValue",
+                "secretsmanager:DescribeSecret"
+              ],
+              "Effect": "Allow",
+              "Resource": "arn:aws:secretsmanager:us-west-2:209640446841:secret:newrelic-license-key-secret-8KnPij"
+            },
+            {
+              "Action": [
                 "ecr:BatchCheckLayerAvailability",
                 "ecr:GetDownloadUrlForLayer",
                 "ecr:BatchGetImage"
@@ -928,18 +990,10 @@
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
-                  "nametaskdefinitiondatadogagentLogGroupE981E66F",
+                  "nametaskdefinitionnewrelicinfrastructureagentLogGroup21262351",
                   "Arn"
                 ]
               }
-            },
-            {
-              "Action": [
-                "secretsmanager:GetSecretValue",
-                "secretsmanager:DescribeSecret"
-              ],
-              "Effect": "Allow",
-              "Resource": "arn:aws:secretsmanager:us-west-2:209640446841:secret:datadog-api-key-secret-JxST1g"
             }
           ],
           "Version": "2012-10-17"
@@ -957,7 +1011,7 @@
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain"
     },
-    "nametaskdefinitiondatadogagentLogGroupE981E66F": {
+    "nametaskdefinitionnewrelicinfrastructureagentLogGroup21262351": {
       "Type": "AWS::Logs::LogGroup",
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain"
@@ -1221,6 +1275,15 @@
         "VirtualServiceName": "name.production"
       }
     },
+    "greetinglogsCC360934": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "greeting-logs",
+        "RetentionInDays": 731
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
+    },
     "greetingtaskdefinitionTaskRole9179DA4A": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -1248,6 +1311,10 @@
               {
                 "Condition": "HEALTHY",
                 "ContainerName": "envoy"
+              },
+              {
+                "Condition": "START",
+                "ContainerName": "newrelic-infrastructure-agent"
               }
             ],
             "Environment": [
@@ -1256,16 +1323,24 @@
                 "Value": "80"
               },
               {
-                "Name": "TEST_DATADOG",
+                "Name": "TEST_NEWRELIC",
                 "Value": "true"
               },
               {
-                "Name": "DD_TRACE_ANALYTICS_ENABLED",
+                "Name": "NEW_RELIC_NO_CONFIG_FILE",
                 "Value": "true"
               },
               {
-                "Name": "DD_SERVICE",
+                "Name": "NEW_RELIC_APP_NAME",
                 "Value": "greeting"
+              },
+              {
+                "Name": "NEW_RELIC_LOG",
+                "Value": "stdout"
+              },
+              {
+                "Name": "NEW_RELIC_DISTRIBUTED_TRACING_ENABLED",
+                "Value": "true"
               }
             ],
             "Essential": true,
@@ -1288,12 +1363,30 @@
                 ]
               ]
             },
+            "LogConfiguration": {
+              "LogDriver": "awslogs",
+              "Options": {
+                "awslogs-group": {
+                  "Ref": "greetinglogsCC360934"
+                },
+                "awslogs-stream-prefix": "greeting",
+                "awslogs-region": {
+                  "Ref": "AWS::Region"
+                }
+              }
+            },
             "Memory": 2048,
             "Name": "app",
             "PortMappings": [
               {
                 "ContainerPort": 80,
                 "Protocol": "tcp"
+              }
+            ],
+            "Secrets": [
+              {
+                "Name": "NEW_RELIC_LICENSE_KEY",
+                "ValueFrom": "arn:aws:secretsmanager:us-west-2:209640446841:secret:newrelic-license-key-secret-8KnPij"
               }
             ],
             "Ulimits": [
@@ -1407,52 +1500,50 @@
             ],
             "Environment": [
               {
-                "Name": "DD_ENV",
-                "Value": "production"
+                "Name": "NRIA_OVERRIDE_HOST_ROOT",
+                "Value": ""
               },
               {
-                "Name": "ECS_FARGATE",
+                "Name": "NRIA_IS_SECURE_FORWARD_ONLY",
                 "Value": "true"
               },
               {
-                "Name": "DD_APM_ENABLED",
+                "Name": "FARGATE",
                 "Value": "true"
               },
               {
-                "Name": "DD_APM_NON_LOCAL_TRAFFIC",
+                "Name": "ENABLE_NRI_ECS",
                 "Value": "true"
               },
               {
-                "Name": "DD_ECS_COLLECT_RESOURCE_TAGS_EC2",
-                "Value": "true"
+                "Name": "NRIA_PASSTHROUGH_ENVIRONMENT",
+                "Value": "ECS_CONTAINER_METADATA_URI,ENABLE_NRI_ECS,FARGATE"
+              },
+              {
+                "Name": "NRIA_CUSTOM_ATTRIBUTES",
+                "Value": "{\"nrDeployMethod\":\"ecs-service-extensions\"}"
               }
             ],
             "Essential": true,
-            "Image": "datadog/agent:latest",
+            "Image": "newrelic/infrastructure-bundle:1.5.0",
             "LogConfiguration": {
               "LogDriver": "awslogs",
               "Options": {
                 "awslogs-group": {
-                  "Ref": "greetingtaskdefinitiondatadogagentLogGroup9DC4DE26"
+                  "Ref": "greetingtaskdefinitionnewrelicinfrastructureagentLogGroup73EC31A2"
                 },
-                "awslogs-stream-prefix": "datadog-agent",
+                "awslogs-stream-prefix": "newrelic-agent",
                 "awslogs-region": {
                   "Ref": "AWS::Region"
                 }
               }
             },
             "MemoryReservation": 50,
-            "Name": "datadog-agent",
-            "PortMappings": [
-              {
-                "ContainerPort": 8126,
-                "Protocol": "tcp"
-              }
-            ],
+            "Name": "newrelic-infrastructure-agent",
             "Secrets": [
               {
-                "Name": "DD_API_KEY",
-                "ValueFrom": "arn:aws:secretsmanager:us-west-2:209640446841:secret:datadog-api-key-secret-JxST1g"
+                "Name": "NRIA_LICENSE_KEY",
+                "ValueFrom": "arn:aws:secretsmanager:us-west-2:209640446841:secret:newrelic-license-key-secret-8KnPij"
               }
             ],
             "User": "0:1338"
@@ -1567,6 +1658,27 @@
             },
             {
               "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "greetinglogsCC360934",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": [
+                "secretsmanager:GetSecretValue",
+                "secretsmanager:DescribeSecret"
+              ],
+              "Effect": "Allow",
+              "Resource": "arn:aws:secretsmanager:us-west-2:209640446841:secret:newrelic-license-key-secret-8KnPij"
+            },
+            {
+              "Action": [
                 "ecr:BatchCheckLayerAvailability",
                 "ecr:GetDownloadUrlForLayer",
                 "ecr:BatchGetImage"
@@ -1616,18 +1728,10 @@
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
-                  "greetingtaskdefinitiondatadogagentLogGroup9DC4DE26",
+                  "greetingtaskdefinitionnewrelicinfrastructureagentLogGroup73EC31A2",
                   "Arn"
                 ]
               }
-            },
-            {
-              "Action": [
-                "secretsmanager:GetSecretValue",
-                "secretsmanager:DescribeSecret"
-              ],
-              "Effect": "Allow",
-              "Resource": "arn:aws:secretsmanager:us-west-2:209640446841:secret:datadog-api-key-secret-JxST1g"
             }
           ],
           "Version": "2012-10-17"
@@ -1645,7 +1749,7 @@
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain"
     },
-    "greetingtaskdefinitiondatadogagentLogGroup9DC4DE26": {
+    "greetingtaskdefinitionnewrelicinfrastructureagentLogGroup73EC31A2": {
       "Type": "AWS::Logs::LogGroup",
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain"
@@ -1909,6 +2013,15 @@
         "VirtualServiceName": "greeting.production"
       }
     },
+    "greeterlogsCCD2F8B2": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "greeter-logs",
+        "RetentionInDays": 731
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
+    },
     "greeterloadbalancer85256741": {
       "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
       "Properties": {
@@ -2047,6 +2160,10 @@
               {
                 "Condition": "HEALTHY",
                 "ContainerName": "envoy"
+              },
+              {
+                "Condition": "START",
+                "ContainerName": "newrelic-infrastructure-agent"
               }
             ],
             "Environment": [
@@ -2055,7 +2172,7 @@
                 "Value": "80"
               },
               {
-                "Name": "TEST_DATADOG",
+                "Name": "TEST_NEWRELIC",
                 "Value": "true"
               },
               {
@@ -2067,12 +2184,20 @@
                 "Value": "http://name.production"
               },
               {
-                "Name": "DD_TRACE_ANALYTICS_ENABLED",
+                "Name": "NEW_RELIC_NO_CONFIG_FILE",
                 "Value": "true"
               },
               {
-                "Name": "DD_SERVICE",
+                "Name": "NEW_RELIC_APP_NAME",
                 "Value": "greeter"
+              },
+              {
+                "Name": "NEW_RELIC_LOG",
+                "Value": "stdout"
+              },
+              {
+                "Name": "NEW_RELIC_DISTRIBUTED_TRACING_ENABLED",
+                "Value": "true"
               }
             ],
             "Essential": true,
@@ -2095,12 +2220,30 @@
                 ]
               ]
             },
+            "LogConfiguration": {
+              "LogDriver": "awslogs",
+              "Options": {
+                "awslogs-group": {
+                  "Ref": "greeterlogsCCD2F8B2"
+                },
+                "awslogs-stream-prefix": "greeter",
+                "awslogs-region": {
+                  "Ref": "AWS::Region"
+                }
+              }
+            },
             "Memory": 2048,
             "Name": "app",
             "PortMappings": [
               {
                 "ContainerPort": 80,
                 "Protocol": "tcp"
+              }
+            ],
+            "Secrets": [
+              {
+                "Name": "NEW_RELIC_LICENSE_KEY",
+                "ValueFrom": "arn:aws:secretsmanager:us-west-2:209640446841:secret:newrelic-license-key-secret-8KnPij"
               }
             ],
             "Ulimits": [
@@ -2214,52 +2357,50 @@
             ],
             "Environment": [
               {
-                "Name": "DD_ENV",
-                "Value": "production"
+                "Name": "NRIA_OVERRIDE_HOST_ROOT",
+                "Value": ""
               },
               {
-                "Name": "ECS_FARGATE",
+                "Name": "NRIA_IS_SECURE_FORWARD_ONLY",
                 "Value": "true"
               },
               {
-                "Name": "DD_APM_ENABLED",
+                "Name": "FARGATE",
                 "Value": "true"
               },
               {
-                "Name": "DD_APM_NON_LOCAL_TRAFFIC",
+                "Name": "ENABLE_NRI_ECS",
                 "Value": "true"
               },
               {
-                "Name": "DD_ECS_COLLECT_RESOURCE_TAGS_EC2",
-                "Value": "true"
+                "Name": "NRIA_PASSTHROUGH_ENVIRONMENT",
+                "Value": "ECS_CONTAINER_METADATA_URI,ENABLE_NRI_ECS,FARGATE"
+              },
+              {
+                "Name": "NRIA_CUSTOM_ATTRIBUTES",
+                "Value": "{\"nrDeployMethod\":\"ecs-service-extensions\"}"
               }
             ],
             "Essential": true,
-            "Image": "datadog/agent:latest",
+            "Image": "newrelic/infrastructure-bundle:1.5.0",
             "LogConfiguration": {
               "LogDriver": "awslogs",
               "Options": {
                 "awslogs-group": {
-                  "Ref": "greetertaskdefinitiondatadogagentLogGroup5751CBB6"
+                  "Ref": "greetertaskdefinitionnewrelicinfrastructureagentLogGroupAC9FF208"
                 },
-                "awslogs-stream-prefix": "datadog-agent",
+                "awslogs-stream-prefix": "newrelic-agent",
                 "awslogs-region": {
                   "Ref": "AWS::Region"
                 }
               }
             },
             "MemoryReservation": 50,
-            "Name": "datadog-agent",
-            "PortMappings": [
-              {
-                "ContainerPort": 8126,
-                "Protocol": "tcp"
-              }
-            ],
+            "Name": "newrelic-infrastructure-agent",
             "Secrets": [
               {
-                "Name": "DD_API_KEY",
-                "ValueFrom": "arn:aws:secretsmanager:us-west-2:209640446841:secret:datadog-api-key-secret-JxST1g"
+                "Name": "NRIA_LICENSE_KEY",
+                "ValueFrom": "arn:aws:secretsmanager:us-west-2:209640446841:secret:newrelic-license-key-secret-8KnPij"
               }
             ],
             "User": "0:1338"
@@ -2374,6 +2515,27 @@
             },
             {
               "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "greeterlogsCCD2F8B2",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": [
+                "secretsmanager:GetSecretValue",
+                "secretsmanager:DescribeSecret"
+              ],
+              "Effect": "Allow",
+              "Resource": "arn:aws:secretsmanager:us-west-2:209640446841:secret:newrelic-license-key-secret-8KnPij"
+            },
+            {
+              "Action": [
                 "ecr:BatchCheckLayerAvailability",
                 "ecr:GetDownloadUrlForLayer",
                 "ecr:BatchGetImage"
@@ -2423,18 +2585,10 @@
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
-                  "greetertaskdefinitiondatadogagentLogGroup5751CBB6",
+                  "greetertaskdefinitionnewrelicinfrastructureagentLogGroupAC9FF208",
                   "Arn"
                 ]
               }
-            },
-            {
-              "Action": [
-                "secretsmanager:GetSecretValue",
-                "secretsmanager:DescribeSecret"
-              ],
-              "Effect": "Allow",
-              "Resource": "arn:aws:secretsmanager:us-west-2:209640446841:secret:datadog-api-key-secret-JxST1g"
             }
           ],
           "Version": "2012-10-17"
@@ -2452,7 +2606,7 @@
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain"
     },
-    "greetertaskdefinitiondatadogagentLogGroup5751CBB6": {
+    "greetertaskdefinitionnewrelicinfrastructureagentLogGroupAC9FF208": {
       "Type": "AWS::Logs::LogGroup",
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain"

@@ -19,10 +19,6 @@ The `Service` construct provided by this module can be extended with optional `S
 - [AWS FireLens](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_firelens.html), for filtering and routing application logs
 - [Community Extensions](#community-extensions), providing support for advanced use cases
 
-The `ServiceExtension` class is an abstract class which you can also implement in
-order to build your own custom service extensions for modifying your service, or
-attaching your own custom resources or sidecars.
-
 ## Example
 
 ```ts
@@ -84,6 +80,23 @@ const environment = new Environment(stack, 'production', {
 });
 ```
 
+### Importing a pre-existing cluster
+
+To create an environment with a pre-existing cluster, you must import the cluster first, then use `Environment.fromEnvironmentAttributes()`. When a cluster is imported into an environment, the cluster is treated as immutable. As a result, no extension may modify the cluster to change a setting. Note that this will interfere with extensions like the `AppMeshExtension` which needs to enable Cloud Map Service Discovery on the ECS cluster.
+
+```ts
+
+const cluster = ecs.Cluster.fromClusterAttributes(stack, 'Cluster', {
+  ...
+});
+
+const environment = Environment.fromEnvironmentAttributes(stack, 'Environment', {
+  capacityType: EnvironmentCapacityType.EC2, // or `FARGATE`
+  cluster,
+});
+
+```
+
 ## Defining your `ServiceDescription`
 
 The `ServiceDescription` defines what application you want the service to run and
@@ -130,6 +143,11 @@ const nameService = new Service(stack, 'name', {
 At this point, all the service resources will be created. This includes the ECS Task
 Definition, Service, as well as any other attached resources, such as App Mesh Virtual
 Node or an Application Load Balancer.
+
+## Included service extensions
+
+- `HttpLoadBalancerExtension` - This extension provisions an HTTP Application Load Balancer and attaches it to the ECS service. This load balancer is configured to accept inbound traffic from the public on port 80, and forward this traffic to the configured traffic port on your application container.
+- `AppMeshExtension` -
 
 ## Creating your own custom `ServiceExtension`
 
@@ -282,23 +300,6 @@ The above code uses the well known service discovery name for each
 service, and passes it as an environment variable to the container so
 that the container knows what address to use when communicating to
 the other service.
-
-## Importing a pre-existing cluster
-
-To create an environment with a pre-existing cluster, you must import the cluster first, then use `Environment.fromEnvironmentAttributes()`. When a cluster is imported into an environment, the cluster is treated as immutable. As a result, no extension may modify the cluster to change a setting.
-
-```ts
-
-const cluster = ecs.Cluster.fromClusterAttributes(stack, 'Cluster', {
-  ...
-});
-
-const environment = Environment.fromEnvironmentAttributes(stack, 'Environment', {
-  capacityType: EnvironmentCapacityType.EC2, // or `FARGATE`
-  cluster,
-});
-
-```
 
 ## Community Extensions
 

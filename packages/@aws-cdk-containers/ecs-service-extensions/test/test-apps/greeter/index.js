@@ -1,3 +1,10 @@
+// Setup the APM instrumentation
+if (process.env.TEST_DATADOG == 'true') {
+  require('dd-trace').init();
+} else if (process.env.TEST_NEWRELIC == 'true') {
+  require('newrelic');
+}
+
 var request = require('request-promise-native');
 const express = require('express');
 const app = express();

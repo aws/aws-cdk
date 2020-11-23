@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "express": "4.17.1",
-    "dd-trace": "0.28.1"
+    "dd-trace": "0.28.1",
+    "newrelic": "7.0.1"
   }
 }

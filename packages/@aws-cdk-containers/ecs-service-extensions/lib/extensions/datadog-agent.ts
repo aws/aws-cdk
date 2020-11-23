@@ -83,7 +83,7 @@ export interface DatadogExtensionProps {
  * This extension adds a Datadog agent to the task definition and
  * configures the primary container to be able to connect to it
  */
-export class DatadogAgentExtension extends ServiceExtension {
+export class DatadogAgent extends ServiceExtension {
   private apmEnabled: boolean;
   private traceAnalyticsEnabled: boolean;
   private datadogApiKey: ecs.Secret;
