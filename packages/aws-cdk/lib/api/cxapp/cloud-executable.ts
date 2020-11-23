@@ -73,7 +73,7 @@ export class CloudExecutable {
           throw new Error(
             'Context lookups have been disabled. '
             + 'Make sure all necessary context is already in \'cdk.context.json\' by running \'cdk synth\' on a machine with sufficient AWS credentials and committing the result. '
-            + `Missing context keys: '${Array.from(missingKeys)}'`);
+            + `Missing context keys: '${Array.from(missingKeys).join(', ')}'`);
         }
 
         let tryLookup = true;
