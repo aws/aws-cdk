@@ -92,7 +92,10 @@ export function exec(cmd: string, args: string[], options?: SpawnSyncOptions) {
 }
 
 /**
- * Extract dependencies from a package.json
+ * Extract versions for a list of modules.
+ *
+ * First lookup the version in the package.json and then fallback to requiring
+ * the module's package.json. The fallback is needed for transitive dependencies.
  */
 export function extractDependencies(pkgPath: string, modules: string[]): { [key: string]: string } {
   const dependencies: { [key: string]: string } = {};
@@ -107,10 +110,13 @@ export function extractDependencies(pkgPath: string, modules: string[]): { [key:
   };
 
   for (const mod of modules) {
-    if (!pkgDependencies[mod]) {
-      throw new Error(`Cannot extract version for module '${mod}' in package.json`);
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const version = pkgDependencies[mod] ?? require(`${mod}/package.json`).version;
+      dependencies[mod] = version;
+    } catch (err) {
+      throw new Error(`Cannot extract version for module '${mod}'. Check that it's referenced in your package.json or installed.`);
     }
-    dependencies[mod] = pkgDependencies[mod];
   }
 
   return dependencies;

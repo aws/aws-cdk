@@ -220,7 +220,7 @@ export class CloudFormationDeployments {
     }, resolvedEnvironment);
 
     const stackSdk = arns.assumeRoleArn
-      ? await this.sdkProvider.withAssumedRole(arns.assumeRoleArn, undefined, resolvedEnvironment.region)
+      ? await this.sdkProvider.withAssumedRole(arns.assumeRoleArn, undefined, resolvedEnvironment, mode)
       : await this.sdkProvider.forEnvironment(resolvedEnvironment, mode);
 
     return {

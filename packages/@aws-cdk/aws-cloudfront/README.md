@@ -23,9 +23,9 @@ your users. CloudFront delivers your content through a worldwide network of data
 you're serving with CloudFront, the user is routed to the edge location that provides the lowest latency, so that content is delivered with the best
 possible performance.
 
-## Distribution API - Experimental
+## Distribution API - Developer Preview
 
-![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
+![Developer Preview](https://img.shields.io/badge/developer--preview-informational.svg?style=for-the-badge)
 
 The `Distribution` API is currently being built to replace the existing `CloudFrontWebDistribution` API. The `Distribution` API is optimized for the
 most common use cases of CloudFront distributions (e.g., single origin and behavior, few customizations) while still providing the ability for more
