@@ -219,7 +219,7 @@ export class EventBus extends Resource implements IEventBus {
 
   constructor(scope: Construct, id: string, props?: EventBusProps) {
     const { eventBusName, eventSourceName } = EventBus.eventBusProps(
-      Lazy.stringValue({ produce: () => Names.uniqueId(this) }),
+      Lazy.string({ produce: () => Names.uniqueId(this) }),
       props,
     );
 
