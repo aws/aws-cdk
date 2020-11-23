@@ -72,7 +72,7 @@ export abstract class Code {
   }
 
   /**
-   * Creates a new Lambda source defined using CloudFormation parameters.
+   * DEPRECATED
    * @deprecated use `fromCfnParameters`
    */
   public static cfnParameters(props?: CfnParametersCodeProps): CfnParametersCode {
@@ -84,7 +84,7 @@ export abstract class Code {
    * @param repository the ECR repository that the image is in
    * @param props properties to further configure the selected image
    */
-  public static fromEcr(repository: ecr.IRepository, props?: EcrImageCodeProps) {
+  public static fromEcrImage(repository: ecr.IRepository, props?: EcrImageCodeProps) {
     return new EcrImageCode(repository, props);
   }
 
@@ -93,7 +93,7 @@ export abstract class Code {
    * @param directory the directory from which the asset must be created
    * @param props properties to further configure the selected image
    */
-  public static fromImageAsset(directory: string, props: AssetImageCodeProps = {}) {
+  public static fromAssetImage(directory: string, props: AssetImageCodeProps = {}) {
     return new AssetImageCode(directory, props);
   }
 

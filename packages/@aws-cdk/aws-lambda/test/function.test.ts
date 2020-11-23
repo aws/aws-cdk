@@ -763,7 +763,7 @@ describe('function', () => {
     const stack = new cdk.Stack();
 
     new lambda.Function(stack, 'MyLambda', {
-      code: lambda.Code.fromImageAsset(path.join(__dirname, 'docker-lambda-handler')),
+      code: lambda.Code.fromAssetImage(path.join(__dirname, 'docker-lambda-handler')),
       handler: lambda.Handler.FROM_IMAGE,
       runtime: lambda.Runtime.FROM_IMAGE,
     });
@@ -1882,13 +1882,13 @@ describe('function', () => {
       const stack = new cdk.Stack();
 
       expect(() => new lambda.Function(stack, 'Fn1', {
-        code: lambda.Code.fromImageAsset('test/docker-lambda-handler'),
+        code: lambda.Code.fromAssetImage('test/docker-lambda-handler'),
         handler: lambda.Handler.FROM_IMAGE,
         runtime: lambda.Runtime.FROM_IMAGE,
       })).not.toThrow();
 
       expect(() => new lambda.Function(stack, 'Fn2', {
-        code: lambda.Code.fromImageAsset('test/docker-lambda-handler'),
+        code: lambda.Code.fromAssetImage('test/docker-lambda-handler'),
         handler: 'index.handler',
         runtime: lambda.Runtime.FROM_IMAGE,
       })).toThrow(/handler must be.*FROM_IMAGE/);
@@ -1898,13 +1898,13 @@ describe('function', () => {
       const stack = new cdk.Stack();
 
       expect(() => new lambda.Function(stack, 'Fn1', {
-        code: lambda.Code.fromImageAsset('test/docker-lambda-handler'),
+        code: lambda.Code.fromAssetImage('test/docker-lambda-handler'),
         handler: lambda.Handler.FROM_IMAGE,
         runtime: lambda.Runtime.FROM_IMAGE,
       })).not.toThrow();
 
       expect(() => new lambda.Function(stack, 'Fn2', {
-        code: lambda.Code.fromImageAsset('test/docker-lambda-handler'),
+        code: lambda.Code.fromAssetImage('test/docker-lambda-handler'),
         handler: lambda.Handler.FROM_IMAGE,
         runtime: lambda.Runtime.GO_1_X,
       })).toThrow(/runtime must be.*FROM_IMAGE/);

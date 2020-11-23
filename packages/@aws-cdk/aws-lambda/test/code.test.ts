@@ -179,7 +179,7 @@ describe('code', () => {
 
       // when
       new lambda.Function(stack, 'Fn', {
-        code: lambda.Code.fromEcr(repo),
+        code: lambda.Code.fromEcrImage(repo),
         handler: lambda.Handler.FROM_IMAGE,
         runtime: lambda.Runtime.FROM_IMAGE,
       });
@@ -200,7 +200,7 @@ describe('code', () => {
 
       // when
       new lambda.Function(stack, 'Fn', {
-        code: lambda.Code.fromEcr(repo, {
+        code: lambda.Code.fromEcrImage(repo, {
           cmd: ['cmd', 'param1'],
           entrypoint: ['entrypoint', 'param2'],
           tag: 'mytag',
@@ -228,7 +228,7 @@ describe('code', () => {
 
       // when
       new lambda.Function(stack, 'Fn', {
-        code: lambda.Code.fromEcr(repo),
+        code: lambda.Code.fromEcrImage(repo),
         handler: lambda.Handler.FROM_IMAGE,
         runtime: lambda.Runtime.FROM_IMAGE,
       });
@@ -261,7 +261,7 @@ describe('code', () => {
 
       // when
       new lambda.Function(stack, 'Fn', {
-        code: lambda.Code.fromImageAsset(path.join(__dirname, 'docker-lambda-handler')),
+        code: lambda.Code.fromAssetImage(path.join(__dirname, 'docker-lambda-handler')),
         handler: lambda.Handler.FROM_IMAGE,
         runtime: lambda.Runtime.FROM_IMAGE,
       });
@@ -290,7 +290,7 @@ describe('code', () => {
 
       // when
       new lambda.Function(stack, 'Fn', {
-        code: lambda.Code.fromImageAsset(path.join(__dirname, 'docker-lambda-handler'), {
+        code: lambda.Code.fromAssetImage(path.join(__dirname, 'docker-lambda-handler'), {
           cmd: ['cmd', 'param1'],
           entrypoint: ['entrypoint', 'param2'],
         }),
