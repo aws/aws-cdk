@@ -262,11 +262,14 @@ test('with command hooks', () => {
     depsLockFilePath,
     runtime: Runtime.NODEJS_12_X,
     commandHooks: {
-      beforeBundling(inputDir: string, outputDir: string): string {
-        return `cp ${inputDir}/a.txt ${outputDir}`;
+      beforeBundling(inputDir: string, outputDir: string): string[] {
+        return [
+          `echo hello > ${inputDir}/a.txt`,
+          `cp ${inputDir}/a.txt ${outputDir}`,
+        ];
       },
-      afterBundling(inputDir: string, outputDir: string): string {
-        return `cp ${inputDir}/b.txt ${outputDir}/txt`;
+      afterBundling(inputDir: string, outputDir: string): string[] {
+        return [`cp ${inputDir}/b.txt ${outputDir}/txt`];
       },
     },
     forceDockerBundling: true,
@@ -277,7 +280,7 @@ test('with command hooks', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        expect.stringMatching(/^cp \/asset-input\/a.txt \/asset-output && .+ && cp \/asset-input\/b.txt \/asset-output\/txt$/),
+        expect.stringMatching(/^echo hello > \/asset-input\/a.txt && cp \/asset-input\/a.txt \/asset-output && .+ && cp \/asset-input\/b.txt \/asset-output\/txt$/),
       ],
     }),
   });

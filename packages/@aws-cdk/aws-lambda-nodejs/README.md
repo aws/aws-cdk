@@ -152,8 +152,8 @@ It is possible to run additional commands by specifying the `commandHooks` prop:
 new lambda.NodejsFunction(this, 'my-handler-with-commands', {
   commandHooks: {
     // Copy a file so that it will be included in the bundled asset
-    afterBundling(inputDir: string, outputDir: string): string {
-      return `cp ${inputDir}/important-file.node ${outputDir}`
+    afterBundling(inputDir: string, outputDir: string): string[] {
+      return [`cp ${inputDir}/my-binary.node ${outputDir}`];
     }
   }
 });
@@ -161,9 +161,12 @@ new lambda.NodejsFunction(this, 'my-handler-with-commands', {
 
 The following hooks are available:
 - `beforeBundling`: runs before all bundling commands
-- `afterInstall`: runs before node modules installation
+- `beforeInstall`: runs before node modules installation
 - `afterBundling`: runs after all bundling commands
 
 They all receive the directory containing the lock file (`inputDir`) and the
 directory where the bundled asset will be output (`outputDir`). They must return
-the command to run as a `string`.
+an array of commands to run. Commands are chained with `&&`.
+
+The commands will run in the environment in which bundling occurs: inside the
+container for Docker bundling or on the host OS for local bundling.

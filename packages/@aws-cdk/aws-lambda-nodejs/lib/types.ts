@@ -112,22 +112,42 @@ export interface BundlingOptions {
 
 /**
  * Command hooks
+ *
+ * These commands will run in the environment in which bundling occurs: inside
+ * the container for Docker bundling or on the host OS for local bundling.
+ *
+ * Commands are chained with `&&`.
+ *
+ * @example
+ * {
+ *   // Copy a file from the input directory to the output directory
+ *   // to include it in the bundled asset
+ *   afterBundling(inputDir: string, outputDir: string): string[] {
+ *     return [`cp ${inputDir}/my-binary.node ${outputDir}`];
+ *   }
+ * }
  */
 export interface ICommandHooks {
   /**
-   * Returns a command to run before bundling
-   */
-  beforeBundling?(inputDir: string, outputDir: string): string;
-
-  /**
-   * Returns a command to run before installing node modules.
+   * Returns commands to run before bundling.
    *
-   * This hook only runs when node modules are installed
+   * Commands are chained with `&&`.
    */
-  beforeInstall?(inputDir: string, outputDir: string): string;
+  beforeBundling?(inputDir: string, outputDir: string): string[];
 
   /**
-   * Returns a command to run after bundling
+   * Returns commands to run before installing node modules.
+   *
+   * This hook only runs when node modules are installed.
+   *
+   * Commands are chained with `&&`.
    */
-  afterBundling?(inputDir: string, outputDir: string): string;
+  beforeInstall?(inputDir: string, outputDir: string): string[];
+
+  /**
+   * Returns commands to run after bundling.
+   *
+   * Commands are chained with `&&`.
+   */
+  afterBundling?(inputDir: string, outputDir: string): string[];
 }
