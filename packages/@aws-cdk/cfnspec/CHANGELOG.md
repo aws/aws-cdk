@@ -1,3 +1,86 @@
+# CloudFormation Resource Specification v20.3.0
+
+## New Resource Types
+
+* AWS::DataBrew::Dataset
+* AWS::DataBrew::Job
+* AWS::DataBrew::Project
+* AWS::DataBrew::Recipe
+* AWS::DataBrew::Schedule
+
+## Attribute Changes
+
+* AWS::ElasticLoadBalancingV2::Listener ListenerArn (__added__)
+
+## Property Changes
+
+* AWS::CodeStar::GitHubRepository ConnectionArn (__added__)
+* AWS::CodeStar::GitHubRepository RepositoryAccessToken.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DMS::ReplicationInstance AvailabilityZone.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::EC2::ClientVpnEndpoint ClientConnectOptions (__added__)
+* AWS::EC2::VPCEndpointService GatewayLoadBalancerArns (__added__)
+* AWS::ElasticLoadBalancingV2::Listener AlpnPolicy.DuplicatesAllowed (__deleted__)
+* AWS::Lambda::EventSourceMapping PartialBatchResponse (__added__)
+* AWS::Lambda::EventSourceMapping TumblingWindowInSeconds (__added__)
+
+## Property Type Changes
+
+* AWS::AppMesh::VirtualGateway.VirtualGatewayConnectionPool (__added__)
+* AWS::AppMesh::VirtualGateway.VirtualGatewayGrpcConnectionPool (__added__)
+* AWS::AppMesh::VirtualGateway.VirtualGatewayHttp2ConnectionPool (__added__)
+* AWS::AppMesh::VirtualGateway.VirtualGatewayHttpConnectionPool (__added__)
+* AWS::AppMesh::VirtualNode.OutlierDetection (__added__)
+* AWS::AppMesh::VirtualNode.VirtualNodeConnectionPool (__added__)
+* AWS::AppMesh::VirtualNode.VirtualNodeGrpcConnectionPool (__added__)
+* AWS::AppMesh::VirtualNode.VirtualNodeHttp2ConnectionPool (__added__)
+* AWS::AppMesh::VirtualNode.VirtualNodeHttpConnectionPool (__added__)
+* AWS::AppMesh::VirtualNode.VirtualNodeTcpConnectionPool (__added__)
+* AWS::EC2::ClientVpnEndpoint.ClientConnectOptions (__added__)
+* AWS::AppFlow::ConnectorProfile.SalesforceConnectorProfileCredentials ClientCredentialsArn (__added__)
+* AWS::AppMesh::VirtualGateway.VirtualGatewayListener ConnectionPool (__added__)
+* AWS::AppMesh::VirtualNode.Listener ConnectionPool (__added__)
+* AWS::AppMesh::VirtualNode.Listener OutlierDetection (__added__)
+* AWS::ElasticLoadBalancingV2::Listener.Action AuthenticateCognitoConfig.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listener-defaultactions.html#cfn-elasticloadbalancingv2-listener-action-authenticatecognitoconfig
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listener-action.html#cfn-elasticloadbalancingv2-listener-action-authenticatecognitoconfig
+* AWS::ElasticLoadBalancingV2::Listener.Action AuthenticateOidcConfig.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listener-defaultactions.html#cfn-elasticloadbalancingv2-listener-action-authenticateoidcconfig
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listener-action.html#cfn-elasticloadbalancingv2-listener-action-authenticateoidcconfig
+* AWS::ElasticLoadBalancingV2::Listener.Action FixedResponseConfig.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listener-defaultactions.html#cfn-elasticloadbalancingv2-listener-action-fixedresponseconfig
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listener-action.html#cfn-elasticloadbalancingv2-listener-action-fixedresponseconfig
+* AWS::ElasticLoadBalancingV2::Listener.Action ForwardConfig.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listener-defaultactions.html#cfn-elasticloadbalancingv2-listener-action-forwardconfig
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listener-action.html#cfn-elasticloadbalancingv2-listener-action-forwardconfig
+* AWS::ElasticLoadBalancingV2::Listener.Action Order.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listener-defaultactions.html#cfn-elasticloadbalancingv2-listener-action-order
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listener-action.html#cfn-elasticloadbalancingv2-listener-action-order
+* AWS::ElasticLoadBalancingV2::Listener.Action RedirectConfig.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listener-defaultactions.html#cfn-elasticloadbalancingv2-listener-action-redirectconfig
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listener-action.html#cfn-elasticloadbalancingv2-listener-action-redirectconfig
+* AWS::ElasticLoadBalancingV2::Listener.Action TargetGroupArn.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listener-defaultactions.html#cfn-elasticloadbalancingv2-listener-defaultactions-targetgrouparn
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listener-action.html#cfn-elasticloadbalancingv2-listener-action-targetgrouparn
+* AWS::ElasticLoadBalancingV2::Listener.Action Type.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listener-defaultactions.html#cfn-elasticloadbalancingv2-listener-defaultactions-type
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listener-action.html#cfn-elasticloadbalancingv2-listener-action-type
+* AWS::ElasticLoadBalancingV2::Listener.AuthenticateCognitoConfig AuthenticationRequestExtraParams.DuplicatesAllowed (__deleted__)
+* AWS::ElasticLoadBalancingV2::Listener.AuthenticateCognitoConfig SessionTimeout.PrimitiveType (__changed__)
+  * Old: Long
+  * New: String
+* AWS::ElasticLoadBalancingV2::Listener.AuthenticateOidcConfig AuthenticationRequestExtraParams.DuplicatesAllowed (__deleted__)
+* AWS::ElasticLoadBalancingV2::Listener.AuthenticateOidcConfig SessionTimeout.PrimitiveType (__changed__)
+  * Old: Long
+  * New: String
+* AWS::ElasticLoadBalancingV2::Listener.Certificate CertificateArn.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listener-certificates.html#cfn-elasticloadbalancingv2-listener-certificates-certificatearn
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listener-certificate.html#cfn-elasticloadbalancingv2-listener-certificate-certificatearn
+
+
 # CloudFormation Resource Specification v20.2.0
 
 ## New Resource Types
