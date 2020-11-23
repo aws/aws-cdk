@@ -936,7 +936,7 @@ export interface SubnetConfiguration {
    *
    * When true, the IP space for the subnet is reserved but no actual
    * resources are provisioned. This space is only dependent on the
-   * number of availibility zones and on `cidrMask` - all other subnet
+   * number of availability zones and on `cidrMask` - all other subnet
    * properties are ignored.
    *
    * @default false
@@ -1342,9 +1342,9 @@ export class Vpc extends VpcBase {
     }
 
     const totalRemaining = remainingSpaceSubnets.length * this.availabilityZones.length;
-    const cidrMaskForRemaing = this.networkBuilder.maskForRemainingSubnets(totalRemaining);
+    const cidrMaskForRemaining = this.networkBuilder.maskForRemainingSubnets(totalRemaining);
     for (const subnet of remainingSpaceSubnets) {
-      this.createSubnetResources(subnet, cidrMaskForRemaing);
+      this.createSubnetResources(subnet, cidrMaskForRemaining);
     }
   }
 
@@ -1580,7 +1580,7 @@ export class Subnet extends Resource implements ISubnet {
    * explicit DENY entries that you add.
    *
    * You can replace it with a custom ACL which denies all traffic except
-   * the explic it ALLOW entries that you add by creating a `NetworkAcl`
+   * the explicit ALLOW entries that you add by creating a `NetworkAcl`
    * object and calling `associateNetworkAcl()`.
    */
   public get networkAcl(): INetworkAcl {
