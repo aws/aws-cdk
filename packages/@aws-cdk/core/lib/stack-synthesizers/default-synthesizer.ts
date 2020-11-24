@@ -233,6 +233,10 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
   }
 
   public bind(stack: Stack): void {
+    if (this._stack !== undefined) {
+      throw new Error('A StackSynthesizer can only be used for one Stack: create a new instance to use with a different Stack');
+    }
+
     this._stack = stack;
 
     const qualifier = this.props.qualifier ?? stack.node.tryGetContext(BOOTSTRAP_QUALIFIER_CONTEXT) ?? DefaultStackSynthesizer.DEFAULT_QUALIFIER;
