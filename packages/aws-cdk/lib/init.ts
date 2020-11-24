@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as colors from 'colors/safe';
 import * as fs from 'fs-extra';
+import * as semver from 'semver';
 import { error, print, warning } from './logging';
 import { cdkHomeDir } from './util/directories';
 import { versionNumber } from './version';
@@ -195,7 +196,7 @@ interface ProjectInfo {
 
 function versionedTemplatesDir(): Promise<string> {
   return new Promise(async resolve => {
-    const majorVersion = versionNumber().replace(/\..+/, '');
+    const majorVersion = semver.major(versionNumber());
     resolve(path.join(__dirname, 'init-templates', `v${majorVersion}`));
   });
 }
