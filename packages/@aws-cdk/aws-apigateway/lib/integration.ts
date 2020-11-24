@@ -204,7 +204,7 @@ export class Integration {
     const options = this.props.options;
 
     if (options?.connectionType === ConnectionType.VPC_LINK && uri === undefined) {
-      uri = Lazy.stringValue({
+      uri = Lazy.string({
         // needs to be a lazy since the targets can be added to the VpcLink construct after initialization.
         produce: () => {
           const vpcLink = options.vpcLink;

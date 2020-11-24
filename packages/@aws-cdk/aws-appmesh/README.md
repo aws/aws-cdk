@@ -188,39 +188,63 @@ The `listeners` property can be left blank and added later with the `node.addLis
 
 A `route` is associated with a virtual router, and it's used to match requests for a virtual router and distribute traffic accordingly to its associated virtual nodes.
 
-You can use the prefix parameter in your `route` specification for path-based routing of requests. For example, if your virtual service name is my-service.local and you want the `route` to match requests to my-service.local/metrics, your prefix should be /metrics.
-
 If your `route` matches a request, you can distribute traffic to one or more target virtual nodes with relative weighting.
 
 ```typescript
-router.addRoute('route', {
-  routeTargets: [
-    {
-      virtualNode,
-      weight: 1,
+router.addRoute('route-http', {
+  routeSpec: appmesh.RouteSpec.http({
+    weightedTargets: [
+      {
+        virtualNode: node,
+      },
+    ],
+    match: {
+      prefixPath: '/path-to-app',
     },
-  ],
-  prefix: `/path-to-app`,
-  routeType: RouteType.HTTP,
+  }),
 });
 ```
 
 Add a single route with multiple targets and split traffic 50/50
 
 ```typescript
-router.addRoute('route', {
-  routeTargets: [
-    {
-      virtualNode,
-      weight: 50,
+router.addRoute('route-http', {
+  routeSpec: appmesh.RouteSpec.http({
+    weightedTargets: [
+      {
+        virtualNode: node,
+        weight: 50,
+      },
+      {
+        virtualNode: node,
+        weight: 50,
+      },
+    ],
+    match: {
+      prefixPath: '/path-to-app',
     },
-    {
-      virtualNode2,
-      weight: 50,
+  }),
+});
+```
+
+The _RouteSpec_ class provides an easy interface for defining new protocol specific route specs.
+The `tcp()`, `http()` and `http2()` methods provide the spec necessary to define a protocol specific spec.
+
+For HTTP based routes, the match field can be used to match on a route prefix.
+By default, an HTTP based route will match on `/`. All matches must start with a leading `/`.
+
+```typescript
+router.addRoute('route-http', {
+  routeSpec: appmesh.RouteSpec.grpc({
+    weightedTargets: [
+      {
+        virtualNode: node,
+      },
+    ],
+    match: {
+      serviceName: 'my-service.default.svc.cluster.local',
     },
-  ],
-  prefix: `/path-to-app`,
-  routeType: RouteType.HTTP,
+  }),
 });
 ```
 
@@ -239,7 +263,7 @@ Create a virtual gateway with the constructor:
 ```typescript
 const gateway = new appmesh.VirtualGateway(stack, 'gateway', {
   mesh: mesh,
-  listeners: [appmesh.VirtualGatewayListener.httpGatewayListener({
+  listeners: [appmesh.VirtualGatewayListener.http({
     port: 443,
     healthCheck: {
       interval: cdk.Duration.seconds(10),
@@ -256,7 +280,7 @@ Add a virtual gateway directly to the mesh:
 const gateway = mesh.addVirtualGateway('gateway', {
   accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
   virtualGatewayName: 'virtualGateway',
-    listeners: [appmesh.VirtualGatewayListener.httpGatewayListener({
+    listeners: [appmesh.VirtualGatewayListener.http({
       port: 443,
       healthCheck: {
         interval: cdk.Duration.seconds(10),
@@ -278,7 +302,7 @@ By default, an HTTP based route will match on `/`. All matches must start with a
 
 ```typescript
 gateway.addGatewayRoute('gateway-route-http', {
-  routeSpec: appmesh.GatewayRouteSpec.httpRouteSpec({
+  routeSpec: appmesh.GatewayRouteSpec.http({
     routeTarget: virtualService,
     match: {
       prefixMatch: '/',
@@ -292,7 +316,7 @@ You cannot omit the field, and must specify a match for these routes.
 
 ```typescript
 gateway.addGatewayRoute('gateway-route-grpc', {
-  routeSpec: appmesh.GatewayRouteSpec.grpcRouteSpec({
+  routeSpec: appmesh.GatewayRouteSpec.grpc({
     routeTarget: virtualService,
     match: {
       serviceName: 'my-service.default.svc.cluster.local',
