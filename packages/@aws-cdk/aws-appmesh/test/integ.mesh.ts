@@ -49,13 +49,17 @@ node.addBackend(new appmesh.VirtualService(stack, 'service-2', {
 );
 
 router.addRoute('route-1', {
-  routeTargets: [
-    {
-      virtualNode: node,
-      weight: 50,
+  routeSpec: appmesh.RouteSpec.http({
+    weightedTargets: [
+      {
+        virtualNode: node,
+        weight: 50,
+      },
+    ],
+    match: {
+      prefixPath: '/',
     },
-  ],
-  prefix: '/',
+  }),
 });
 
 const node2 = mesh.addVirtualNode('node2', {
@@ -104,22 +108,28 @@ const node3 = mesh.addVirtualNode('node3', {
 });
 
 router.addRoute('route-2', {
-  routeTargets: [
-    {
-      virtualNode: node2,
-      weight: 30,
+  routeSpec: appmesh.RouteSpec.http({
+    weightedTargets: [
+      {
+        virtualNode: node2,
+        weight: 30,
+      },
+    ],
+    match: {
+      prefixPath: '/path2',
     },
-  ],
-  prefix: '/path2',
+  }),
 });
 
 router.addRoute('route-3', {
-  routeTargets: [
-    {
-      virtualNode: node3,
-      weight: 20,
-    },
-  ],
+  routeSpec: appmesh.RouteSpec.tcp({
+    weightedTargets: [
+      {
+        virtualNode: node3,
+        weight: 20,
+      },
+    ],
+  }),
 });
 
 const gateway = mesh.addVirtualGateway('gateway1', {
@@ -129,7 +139,7 @@ const gateway = mesh.addVirtualGateway('gateway1', {
 
 new appmesh.VirtualGateway(stack, 'gateway2', {
   mesh: mesh,
-  listeners: [appmesh.VirtualGatewayListener.httpGatewayListener({
+  listeners: [appmesh.VirtualGatewayListener.http({
     port: 443,
     healthCheck: {
       interval: cdk.Duration.seconds(10),
@@ -138,19 +148,19 @@ new appmesh.VirtualGateway(stack, 'gateway2', {
 });
 
 gateway.addGatewayRoute('gateway1-route-http', {
-  routeSpec: appmesh.GatewayRouteSpec.httpRouteSpec({
+  routeSpec: appmesh.GatewayRouteSpec.http({
     routeTarget: virtualService,
   }),
 });
 
 gateway.addGatewayRoute('gateway1-route-http2', {
-  routeSpec: appmesh.GatewayRouteSpec.http2RouteSpec({
+  routeSpec: appmesh.GatewayRouteSpec.http2({
     routeTarget: virtualService,
   }),
 });
 
 gateway.addGatewayRoute('gateway1-route-grpc', {
-  routeSpec: appmesh.GatewayRouteSpec.grpcRouteSpec({
+  routeSpec: appmesh.GatewayRouteSpec.grpc({
     routeTarget: virtualService,
     match: {
       serviceName: virtualService.virtualServiceName,

@@ -50,7 +50,7 @@ export class CfnReference extends Reference {
    * the prepare() phase (for the purpose of cross-stack references), it's
    * important that the state isn't lost if it's lazily created, like so:
    *
-   *     Lazy.stringValue({ produce: () => new CfnReference(...) })
+   *     Lazy.string({ produce: () => new CfnReference(...) })
    *
    */
   public static for(target: CfnElement, attribute: string, refRender?: ReferenceRendering) {

@@ -60,7 +60,7 @@ export abstract class CfnElement extends CoreConstruct {
 
     this.stack = Stack.of(this);
 
-    this.logicalId = Lazy.stringValue({ produce: () => this.synthesizeLogicalId() }, {
+    this.logicalId = Lazy.uncachedString({ produce: () => this.synthesizeLogicalId() }, {
       displayHint: `${notTooLong(Node.of(this).path)}.LogicalID`,
     });
 
