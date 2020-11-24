@@ -764,18 +764,18 @@ export class Project extends ProjectBase {
       artifacts: artifactsConfig.artifactsProperty,
       serviceRole: this.role.roleArn,
       environment: this.renderEnvironment(props.environment, environmentVariables),
-      fileSystemLocations: Lazy.anyValue({ produce: () => this.renderFileSystemLocations() }),
+      fileSystemLocations: Lazy.any({ produce: () => this.renderFileSystemLocations() }),
       // lazy, because we have a setter for it in setEncryptionKey
       // The 'alias/aws/s3' default is necessary because leaving the `encryptionKey` field
       // empty will not remove existing encryptionKeys during an update (ref. t/D17810523)
-      encryptionKey: Lazy.stringValue({ produce: () => this._encryptionKey ? this._encryptionKey.keyArn : 'alias/aws/s3' }),
+      encryptionKey: Lazy.string({ produce: () => this._encryptionKey ? this._encryptionKey.keyArn : 'alias/aws/s3' }),
       badgeEnabled: props.badge,
       cache: cache._toCloudFormation(),
       name: this.physicalName,
       timeoutInMinutes: props.timeout && props.timeout.toMinutes(),
-      secondarySources: Lazy.anyValue({ produce: () => this.renderSecondarySources() }),
-      secondarySourceVersions: Lazy.anyValue({ produce: () => this.renderSecondarySourceVersions() }),
-      secondaryArtifacts: Lazy.anyValue({ produce: () => this.renderSecondaryArtifacts() }),
+      secondarySources: Lazy.any({ produce: () => this.renderSecondarySources() }),
+      secondarySourceVersions: Lazy.any({ produce: () => this.renderSecondarySourceVersions() }),
+      secondaryArtifacts: Lazy.any({ produce: () => this.renderSecondaryArtifacts() }),
       triggers: sourceConfig.buildTriggers,
       sourceVersion: sourceConfig.sourceVersion,
       vpcConfig: this.configureVpc(props),
