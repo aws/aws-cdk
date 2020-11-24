@@ -99,7 +99,7 @@ export class Manifest {
     if (semver.gt(actual, maxSupported)) {
       // we use a well known error prefix so that the CLI can identify this specific error
       // and print some more context to the user.
-      throw new Error(`${VERSION_MISMATCH}: Maximum schema version supported is ${maxSupported}, but found ${actual}`);
+      throw new Error(`${VERSION_MISMATCH}: The CLI scheme version found is ${maxSupported}, but the framwork version used requires at least ${actual}`);
     }
 
     // now validate the format is good.
