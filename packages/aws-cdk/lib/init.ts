@@ -193,14 +193,16 @@ interface ProjectInfo {
   readonly name: string;
 }
 
-const versionedTemplatesDir: Promise<string> =
-  new Promise(async resolve => {
+function versionedTemplatesDir(): Promise<string> {
+  return new Promise(async resolve => {
     const majorVersion = versionNumber().replace(/\..+/, '');
     resolve(path.join(__dirname, 'init-templates', `v${majorVersion}`));
   });
+}
+
 export const availableInitTemplates: Promise<InitTemplate[]> =
   new Promise(async resolve => {
-    const templatesDir = await versionedTemplatesDir;
+    const templatesDir = await versionedTemplatesDir();
     const templateNames = await listDirectory(templatesDir);
     const templates = new Array<InitTemplate>();
     for (const templateName of templateNames) {
