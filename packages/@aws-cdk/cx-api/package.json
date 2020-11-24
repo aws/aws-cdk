@@ -157,7 +157,6 @@
     "announce": false
   },
   "cdk-build": {
-    "jest": true,
-    "rosetta": "strict"
+    "jest": true
   }
 }

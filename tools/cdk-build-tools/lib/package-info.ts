@@ -133,16 +133,6 @@ export interface CDKBuildOptions {
   post?: string[];
 
   /**
-   * Configures the mode of operation for jsii-rosetta. There are two possible
-   * values: 'loose' (examples may fail compilation and hence be incorrectly
-   * translated to other languages) and 'strict' (failure to compile examples
-   * will cause the build to fail).
-   *
-   * @default 'loose'
-   */
-  rosetta?: 'loose' | 'strict',
-
-  /**
    * An optional command (formatted as a list of strings) to run before testing.
    */
   test?: string[];
