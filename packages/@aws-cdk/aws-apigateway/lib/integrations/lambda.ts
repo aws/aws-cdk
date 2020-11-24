@@ -63,7 +63,7 @@ export class LambdaIntegration extends AwsIntegration {
     this.handler.addPermission(`ApiPermission.${desc}`, {
       principal,
       scope: method,
-      sourceArn: Lazy.stringValue({ produce: () => method.methodArn }),
+      sourceArn: Lazy.string({ produce: () => method.methodArn }),
     });
 
     // add permission to invoke from the console
