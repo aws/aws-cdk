@@ -7,10 +7,5 @@ export class Handler {
    */
   public static readonly FROM_IMAGE = 'FROM_IMAGE';
 
-  /**
-   * Your own handler string
-   */
-  public static custom(handler: string) {
-    return handler;
-  }
+  private constructor() {}
 }

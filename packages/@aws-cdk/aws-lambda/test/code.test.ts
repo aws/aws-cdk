@@ -276,7 +276,7 @@ describe('code', () => {
               { Ref: 'AWS::Region' },
               '.',
               { Ref: 'AWS::URLSuffix' },
-              '/aws-cdk/assets:97d0c2189f553d878ffdeaacd2867d499e63c515db303993a3e33df197a31506',
+              '/aws-cdk/assets:0874c7dfd254e95f5181cc7fa643e4abf010f68e5717e373b6e635b49a115b2b',
             ]],
           },
         },

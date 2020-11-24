@@ -994,7 +994,7 @@ export function verifyCodeConfig(code: CodeConfig, props: FunctionProps) {
   }
 
   // if this is inline code, check that the runtime supports
-  if (code.inlineCode && !props.runtime!.supportsInlineCode) {
+  if (code.inlineCode && !props.runtime.supportsInlineCode) {
     throw new Error(`Inline source not allowed for ${props.runtime!.name}`);
   }
 }
