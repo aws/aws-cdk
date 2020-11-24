@@ -2,7 +2,7 @@ import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnRoute } from './appmesh.generated';
 import { IMesh } from './mesh';
-import { IVirtualNode } from './virtual-node';
+import { RouteSpec } from './route-spec';
 import { IVirtualRouter, VirtualRouter } from './virtual-router';
 
 /**
@@ -41,57 +41,9 @@ export interface RouteBaseProps {
   readonly routeName?: string;
 
   /**
-   * The path prefix to match for the route
-   *
-   * @default "/" if http otherwise none
+   * Protocol specific spec
    */
-  readonly prefix?: string;
-
-  /**
-   * Array of weighted route targets
-   *
-   * @requires minimum of 1
-   */
-  readonly routeTargets: WeightedTargetProps[];
-
-  /**
-   * Weather the route is HTTP based
-   *
-   * @default - HTTP if `prefix` is given, TCP otherwise
-   */
-  readonly routeType?: RouteType;
-}
-
-/**
- * Type of route
- */
-export enum RouteType {
-  /**
-   * HTTP route
-   */
-  HTTP = 'http',
-
-  /**
-   * TCP route
-   */
-  TCP = 'tcp'
-}
-
-/**
- * Properties for the Weighted Targets in the route
- */
-export interface WeightedTargetProps {
-  /**
-   * The VirtualNode the route points to
-   */
-  readonly virtualNode: IVirtualNode;
-
-  /**
-   * The weight for the target
-   *
-   * @default 1
-   */
-  readonly weight?: number;
+  readonly routeSpec: RouteSpec;
 }
 
 /**
@@ -156,34 +108,24 @@ export class Route extends cdk.Resource implements IRoute {
    */
   public readonly virtualRouter: IVirtualRouter;
 
-  private readonly weightedTargets = new Array<CfnRoute.WeightedTargetProperty>();
-  private readonly httpRoute?: CfnRoute.HttpRouteProperty;
-  private readonly tcpRoute?: CfnRoute.TcpRouteProperty;
-
   constructor(scope: Construct, id: string, props: RouteProps) {
     super(scope, id, {
-      physicalName: props.routeName || cdk.Lazy.stringValue({ produce: () => cdk.Names.uniqueId(this) }),
+      physicalName: props.routeName || cdk.Lazy.string({ produce: () => cdk.Names.uniqueId(this) }),
     });
 
     this.virtualRouter = props.virtualRouter;
 
-    const routeType = props.routeType !== undefined ? props.routeType :
-      props.prefix !== undefined ? RouteType.HTTP :
-        RouteType.TCP;
-
-    if (routeType === RouteType.HTTP) {
-      this.httpRoute = this.renderHttpRoute(props);
-    } else {
-      this.tcpRoute = this.renderTcpRoute(props);
-    }
+    const spec = props.routeSpec.bind(this);
 
     const route = new CfnRoute(this, 'Resource', {
       routeName: this.physicalName,
       meshName: this.virtualRouter.mesh.meshName,
       virtualRouterName: this.virtualRouter.virtualRouterName,
       spec: {
-        tcpRoute: this.tcpRoute,
-        httpRoute: this.httpRoute,
+        tcpRoute: spec.tcpRouteSpec,
+        httpRoute: spec.httpRouteSpec,
+        http2Route: spec.http2RouteSpec,
+        grpcRoute: spec.grpcRouteSpec,
       },
     });
 
@@ -193,39 +135,6 @@ export class Route extends cdk.Resource implements IRoute {
       resource: `mesh/${props.mesh.meshName}/virtualRouter/${props.virtualRouter.virtualRouterName}/route`,
       resourceName: this.physicalName,
     });
-  }
-
-  /**
-   * Utility method to add weighted route targets to an existing route
-   */
-  private renderWeightedTargets(props: WeightedTargetProps[]) {
-    for (const t of props) {
-      this.weightedTargets.push({
-        virtualNode: t.virtualNode.virtualNodeName,
-        weight: t.weight || 1,
-      });
-    }
-
-    return this.weightedTargets;
-  }
-
-  private renderHttpRoute(props: RouteProps) {
-    return {
-      match: {
-        prefix: props.prefix || '/',
-      },
-      action: {
-        weightedTargets: this.renderWeightedTargets(props.routeTargets),
-      },
-    };
-  }
-
-  private renderTcpRoute(props: RouteProps) {
-    return {
-      action: {
-        weightedTargets: this.renderWeightedTargets(props.routeTargets),
-      },
-    };
   }
 }
 

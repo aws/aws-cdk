@@ -125,7 +125,7 @@ export class ScalableTarget extends Resource implements IScalableTarget {
       resourceId: props.resourceId,
       roleArn: this.role.roleArn,
       scalableDimension: props.scalableDimension,
-      scheduledActions: Lazy.anyValue({ produce: () => this.actions }, { omitEmptyArray: true }),
+      scheduledActions: Lazy.any({ produce: () => this.actions }, { omitEmptyArray: true }),
       serviceNamespace: props.serviceNamespace,
     });
 

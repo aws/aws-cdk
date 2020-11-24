@@ -55,12 +55,16 @@ export function create(context: Rule.RuleContext): Rule.NodeListener {
       if (!isTestFile(context.getFilename())) {
         return;
       }
+      // Only apply rule to bindings (variables and function parameters)
       const typeAnnotation = node.typeAnnotation?.typeAnnotation
       if (!typeAnnotation) {
         return;
-      } 
+      }
       const type = typeAnnotation.typeName;
       if (!type) { return; }
+
+      const message = 'Use Construct and IConstruct from the "constructs" module in variable declarations (not "@aws-cdk/core")';
+
       if (type.type === 'TSQualifiedName') {
         // barrel import
         const qualifier = type.left.name;
@@ -71,7 +75,7 @@ export function create(context: Rule.RuleContext): Rule.NodeListener {
         }
         context.report({
           node,
-          message: 'avoid Construct and IConstruct from "@aws-cdk/core"',
+          message,
           fix: (fixer: Rule.RuleFixer) => {
             const fixes: Rule.Fix[] = [];
             if (!importsFixed) {
@@ -90,7 +94,7 @@ export function create(context: Rule.RuleContext): Rule.NodeListener {
         }
         context.report({
           node,
-          message: 'avoid Construct and IConstruct from "@aws-cdk/core"',
+          message,
           fix: (fixer: Rule.RuleFixer) => {
             const fixes: Rule.Fix[] = [];
             if (!importsFixed) {

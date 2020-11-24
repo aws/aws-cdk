@@ -21,7 +21,7 @@ export = {
 
       new appmesh.VirtualGateway(stack, 'httpGateway', {
         mesh: mesh,
-        listeners: [appmesh.VirtualGatewayListener.httpGatewayListener({
+        listeners: [appmesh.VirtualGatewayListener.http({
           port: 443,
           healthCheck: {
             interval: cdk.Duration.seconds(10),
@@ -31,7 +31,7 @@ export = {
 
       new appmesh.VirtualGateway(stack, 'http2Gateway', {
         mesh: mesh,
-        listeners: [appmesh.VirtualGatewayListener.http2GatewayListener({
+        listeners: [appmesh.VirtualGatewayListener.http2({
           port: 443,
           healthCheck: {
             interval: cdk.Duration.seconds(10),
@@ -113,7 +113,7 @@ export = {
 
       new appmesh.VirtualGateway(stack, 'testGateway', {
         virtualGatewayName: 'test-gateway',
-        listeners: [appmesh.VirtualGatewayListener.grpcGatewayListener({
+        listeners: [appmesh.VirtualGatewayListener.grpc({
           port: 80,
           healthCheck: {
           },
@@ -174,7 +174,7 @@ export = {
 
       virtualGateway.addGatewayRoute('testGatewayRoute', {
         gatewayRouteName: 'test-gateway-route',
-        routeSpec: appmesh.GatewayRouteSpec.httpRouteSpec({
+        routeSpec: appmesh.GatewayRouteSpec.http({
           routeTarget: virtualService,
         }),
       });
@@ -218,13 +218,13 @@ export = {
       const virtualGateway = mesh.addVirtualGateway('gateway');
       virtualGateway.addGatewayRoute('testGatewayRoute', {
         gatewayRouteName: 'test-gateway-route',
-        routeSpec: appmesh.GatewayRouteSpec.httpRouteSpec({
+        routeSpec: appmesh.GatewayRouteSpec.http({
           routeTarget: virtualService,
         }),
       });
       virtualGateway.addGatewayRoute('testGatewayRoute2', {
         gatewayRouteName: 'test-gateway-route-2',
-        routeSpec: appmesh.GatewayRouteSpec.httpRouteSpec({
+        routeSpec: appmesh.GatewayRouteSpec.http({
           routeTarget: virtualService,
         }),
       });

@@ -83,7 +83,11 @@ export function withCdkApp<A extends TestContext & AwsContext>(block: (context: 
       success = false;
       throw e;
     } finally {
-      await fixture.dispose(success);
+      if (process.env.INTEG_NO_CLEAN) {
+        process.stderr.write(`Left test directory in '${integTestDir}' ($INTEG_NO_CLEAN)\n`);
+      } else {
+        await fixture.dispose(success);
+      }
     }
   };
 }
@@ -175,6 +179,13 @@ export class TestFixture {
       ...(neverRequireApproval ? ['--require-approval=never'] : []), // Default to no approval in an unattended test
       ...(options.options ?? []),
       ...this.fullStackName(stackNames)], options);
+  }
+
+  public async cdkSynth(options: CdkCliOptions = {}) {
+    return this.cdk([
+      'synth',
+      ...(options.options ?? []),
+    ], options);
   }
 
   public async cdkDestroy(stackNames: string | string[], options: CdkCliOptions = {}) {

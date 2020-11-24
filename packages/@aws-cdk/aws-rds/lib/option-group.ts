@@ -135,7 +135,7 @@ export class OptionGroup extends Resource implements IOptionGroup {
       engineName: props.engine.engineType,
       majorEngineVersion,
       optionGroupDescription: props.description || `Option group for ${props.engine.engineType} ${majorEngineVersion}`,
-      optionConfigurations: Lazy.anyValue({ produce: () => this.renderConfigurations(this.configurations) }),
+      optionConfigurations: Lazy.any({ produce: () => this.renderConfigurations(this.configurations) }),
     });
 
     this.optionGroupName = optionGroup.ref;

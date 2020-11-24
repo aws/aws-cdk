@@ -277,11 +277,11 @@ export class Distribution extends Resource implements IDistribution {
     const distribution = new CfnDistribution(this, 'Resource', {
       distributionConfig: {
         enabled: props.enabled ?? true,
-        origins: Lazy.anyValue({ produce: () => this.renderOrigins() }),
-        originGroups: Lazy.anyValue({ produce: () => this.renderOriginGroups() }),
+        origins: Lazy.any({ produce: () => this.renderOrigins() }),
+        originGroups: Lazy.any({ produce: () => this.renderOriginGroups() }),
         defaultCacheBehavior: this.defaultBehavior._renderBehavior(),
         aliases: props.domainNames,
-        cacheBehaviors: Lazy.anyValue({ produce: () => this.renderCacheBehaviors() }),
+        cacheBehaviors: Lazy.any({ produce: () => this.renderCacheBehaviors() }),
         comment: props.comment,
         customErrorResponses: this.renderErrorResponses(),
         defaultRootObject: props.defaultRootObject,
@@ -316,13 +316,15 @@ export class Distribution extends Resource implements IDistribution {
   }
 
   private addOrigin(origin: IOrigin, isFailoverOrigin: boolean = false): string {
+    const ORIGIN_ID_MAX_LENGTH = 128;
+
     const existingOrigin = this.boundOrigins.find(boundOrigin => boundOrigin.origin === origin);
     if (existingOrigin) {
       return existingOrigin.originGroupId ?? existingOrigin.originId;
     } else {
       const originIndex = this.boundOrigins.length + 1;
       const scope = new CoreConstruct(this, `Origin${originIndex}`);
-      const originId = Names.uniqueId(scope);
+      const originId = Names.uniqueId(scope).slice(-ORIGIN_ID_MAX_LENGTH);
       const originBindConfig = origin.bind(scope, { originId });
       if (!originBindConfig.failoverConfig) {
         this.boundOrigins.push({ origin, originId, ...originBindConfig });
@@ -331,7 +333,7 @@ export class Distribution extends Resource implements IDistribution {
           throw new Error('An Origin cannot use an Origin with its own failover configuration as its fallback origin!');
         }
         const groupIndex = this.originGroups.length + 1;
-        const originGroupId = Names.uniqueId(new CoreConstruct(this, `OriginGroup${groupIndex}`));
+        const originGroupId = Names.uniqueId(new CoreConstruct(this, `OriginGroup${groupIndex}`)).slice(-ORIGIN_ID_MAX_LENGTH);
         this.boundOrigins.push({ origin, originId, originGroupId, ...originBindConfig });
 
         const failoverOriginId = this.addOrigin(originBindConfig.failoverConfig.failoverOrigin, true);

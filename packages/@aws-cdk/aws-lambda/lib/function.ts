@@ -348,8 +348,8 @@ export class Function extends FunctionBase {
     const cfn = this._currentVersion.node.defaultChild as CfnResource;
     const originalLogicalId = this.stack.resolve(cfn.logicalId) as string;
 
-    cfn.overrideLogicalId(Lazy.stringValue({
-      produce: _ => {
+    cfn.overrideLogicalId(Lazy.uncachedString({
+      produce: () => {
         const hash = calculateFunctionHash(this);
         const logicalId = trimFromStart(originalLogicalId, 255 - 32);
         return `${logicalId}${hash}`;
@@ -599,12 +599,14 @@ export class Function extends FunctionBase {
         s3ObjectVersion: code.s3Location && code.s3Location.objectVersion,
         zipFile: code.inlineCode,
       },
-      layers: Lazy.listValue({ produce: () => this.layers.map(layer => layer.layerVersionArn) }, { omitEmpty: true }),
+      layers: Lazy.list({ produce: () => this.layers.map(layer => layer.layerVersionArn) }, { omitEmpty: true }),
       handler: props.handler,
       timeout: props.timeout && props.timeout.toSeconds(),
       runtime: props.runtime.name,
       role: this.role.roleArn,
-      environment: Lazy.anyValue({ produce: () => this.renderEnvironment() }),
+      // Uncached because calling '_checkEdgeCompatibility', which gets called in the resolve of another
+      // Token, actually *modifies* the 'environment' map.
+      environment: Lazy.uncachedAny({ produce: () => this.renderEnvironment() }),
       memorySize: props.memorySize,
       vpcConfig: this.configureVpc(props),
       deadLetterConfig: this.buildDeadLetterConfig(this.deadLetterQueue),
