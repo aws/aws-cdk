@@ -512,65 +512,6 @@ new CustomResource(this, 'MyResource', {
 
 See the [documentation](https://docs.aws.amazon.com/cdk/api/latest/docs/custom-resources-readme.html) for more details.
 
-#### Amazon SNS Topic
-
-Every time a resource event occurs (CREATE/UPDATE/DELETE), an SNS notification
-is sent to the SNS topic. Users must process these notifications (e.g. through a
-fleet of worker hosts) and submit success/failure responses to the
-CloudFormation service.
-
-Set `serviceToken` to `topic.topicArn`  in order to use this provider:
-
-```ts
-const topic = new sns.Topic(this, 'MyProvider');
-
-new CustomResource(this, 'MyResource', {
-  serviceToken: topic.topicArn
-});
-```
-
-#### AWS Lambda Function
-
-An AWS lambda function is called *directly* by CloudFormation for all resource
-events. The handler must take care of explicitly submitting a success/failure
-response to the CloudFormation service and handle various error cases.
-
-Set `serviceToken` to `lambda.functionArn` to use this provider:
-
-```ts
-const fn = new lambda.Function(this, 'MyProvider', functionProps);
-
-new CustomResource(this, 'MyResource', {
-  serviceToken: fn.functionArn,
-});
-```
-
-#### The Custom Resource Provider Framework
-
-The [`@aws-cdk/custom-resources`] module includes an advanced framework for
-implementing custom resource providers.
-
-[`@aws-cdk/custom-resources`]: https://docs.aws.amazon.com/cdk/api/latest/docs/custom-resources-readme.html
-
-Handlers are implemented as AWS Lambda functions, which means that they can be
-implemented in any Lambda-supported runtime. Furthermore, this provider has an
-asynchronous mode, which means that users can provide an `isComplete` lambda
-function which is called periodically until the operation is complete. This
-allows implementing providers that can take up to two hours to stabilize.
-
-Set `serviceToken` to `provider.serviceToken` to use this provider:
-
-```ts
-const provider = new customresources.Provider(this, 'MyProvider', {
-  onEventHandler,
-  isCompleteHandler, // optional async waiter
-});
-
-new CustomResource(this, 'MyResource', {
-  serviceToken: provider.serviceToken,
-});
-```
-
 ## AWS CloudFormation features
 
 A CDK stack synthesizes to an AWS CloudFormation Template. This section
