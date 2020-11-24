@@ -1,6 +1,7 @@
 import '@aws-cdk/assert/jest';
 import * as events from '@aws-cdk/aws-events';
 import * as lambda from '@aws-cdk/aws-lambda';
+import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
 import * as constructs from 'constructs';
 import * as targets from '../../lib';
@@ -124,6 +125,52 @@ test('lambda handler and cloudwatch event across stacks', () => {
 
   // the Permission resource should be in the event stack
   expect(eventStack).toCountResources('AWS::Lambda::Permission', 1);
+});
+
+test('use a Dead Letter Queue for the rule target', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'Stack');
+
+  const fn = new lambda.Function(stack, 'MyLambda', {
+    code: new lambda.InlineCode('foo'),
+    handler: 'bar',
+    runtime: lambda.Runtime.PYTHON_2_7,
+  });
+
+  const queue = new sqs.Queue(stack, 'Queue');
+
+  new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+    targets: [new targets.LambdaFunction(fn, {
+      deadLetterQueue: queue,
+    })],
+  });
+
+  expect(() => app.synth()).not.toThrow();
+
+  // the Permission resource should be in the event stack
+  expect(stack).toHaveResource('AWS::Events::Rule', {
+    Targets: [
+      {
+        Arn: {
+          'Fn::GetAtt': [
+            'MyLambdaCCE802FB',
+            'Arn',
+          ],
+        },
+        DeadLetterConfig: {
+          Arn: {
+            'Fn::GetAtt': [
+              'Queue4A7E3555',
+              'Arn',
+            ],
+          },
+        },
+        Id: 'Target0',
+      },
+    ],
+  });
 });
 
 function newTestLambda(scope: constructs.Construct) {

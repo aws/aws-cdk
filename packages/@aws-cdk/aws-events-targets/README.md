@@ -29,7 +29,37 @@ Currently supported are:
 See the README of the `@aws-cdk/aws-events` library for more information on
 EventBridge.
 
-## LogGroup
+## Invoke a Lambda function
+
+Use the `LambdaFunction` target to invoke a lambda function.
+
+The code snippet below creates an event rule with a Lambda function as a target triggered for every events from `aws.ec2` source. You can optionally attach a [dead letter queue](https://docs.aws.amazon.com/eventbridge/latest/userguide/rule-dlq.html).
+
+```ts
+import * as lambda from "@aws-cdk/aws-lambda";
+import * as events from "@aws-cdk/aws-events";
+import * as targets from "@aws-cdk/aws-events-targets";
+
+const fn = new lambda.Function(stack, 'MyFunc', {
+  runtime: lambda.Runtime.NODEJS_10_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromInline(`exports.handler = ${handler.toString()}`),
+});
+
+const rule = new events.Rule(this, 'rule', {
+  eventPattern: {
+    source: ["aws.ec2"],
+  },
+});
+
+const queue = new sqs.Queue(stack, 'Queue');
+
+rule.addTarget(new targets.LambdaFunction(fn, {
+  deadLetterQueue: queue, // Optional: add a dead letter queue
+}));
+```
+
+## Log an event into a LogGroup
 
 Use the `LogGroup` target to log your events in a CloudWatch LogGroup.
 
