@@ -2,7 +2,7 @@ import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnVirtualNode } from './appmesh.generated';
-import { ClientPolicy } from './client-policy';
+import { ClientPolicy, ClientPolicyConfig } from './client-policy';
 import { IMesh, Mesh } from './mesh';
 import { AccessLog } from './shared-interfaces';
 import { VirtualNodeListener, VirtualNodeListenerConfig } from './virtual-node-listener';
@@ -183,7 +183,7 @@ export class VirtualNode extends VirtualNodeBase {
    */
   public readonly mesh: IMesh;
 
-  private readonly backendDefaults: CfnVirtualNode.BackendDefaultsProperty;
+  private readonly backendDefaults = new Array<ClientPolicyConfig>();
   private readonly backends = new Array<CfnVirtualNode.BackendProperty>();
   private readonly listeners = new Array<VirtualNodeListenerConfig>();
 
@@ -197,10 +197,9 @@ export class VirtualNode extends VirtualNodeBase {
     props.backends?.forEach(backend => this.addBackend(backend));
     props.listeners?.forEach(listener => this.addListener(listener));
     if (props.backendDefaults) {
-      this.backendDefaults = this.addBackendDefaults(props.backendDefaults);
-    } else {
-      this.backendDefaults = {};
+      this.setBackendDefaults(props.backendDefaults);
     }
+
     const accessLogging = props.accessLog?.bind(this);
 
     const node = new CfnVirtualNode(this, 'Resource', {
@@ -209,7 +208,7 @@ export class VirtualNode extends VirtualNodeBase {
       spec: {
         backends: cdk.Lazy.anyValue({ produce: () => this.backends }, { omitEmptyArray: true }),
         listeners: cdk.Lazy.anyValue({ produce: () => this.listeners.map(listener => listener.listener) }, { omitEmptyArray: true }),
-        backendDefaults: Object.keys(this.backendDefaults).length === 0 ? undefined : this.backendDefaults,
+        backendDefaults: cdk.Lazy.anyValue({ produce: () => this.backendDefaults[0] }, { omitEmptyArray: true }),
         serviceDiscovery: {
           dns: props.dnsHostName !== undefined ? { hostname: props.dnsHostName } : undefined,
           awsCloudMap: props.cloudMapService !== undefined ? {
@@ -234,18 +233,9 @@ export class VirtualNode extends VirtualNodeBase {
   /**
    * Adds Default Backend Configuration for virtual node to communicate with Virtual Services.
    */
-  private addBackendDefaults(clientPolicy: ClientPolicy): CfnVirtualNode.BackendDefaultsProperty {
-    return {
-      clientPolicy: {
-        tls: {
-          enforce: clientPolicy.tlsClientPolicy.enforce ?? true,
-          validation: clientPolicy.tlsClientPolicy.validation.bind(this).tlsValidation,
-          ports: clientPolicy.tlsClientPolicy.ports,
-        },
-      },
-    };
+  private setBackendDefaults(backendDefaults: ClientPolicy) {
+    this.backendDefaults.push(backendDefaults.bind(this));
   }
-
   /**
    * Utility method to add an inbound listener for this VirtualNode
    */
@@ -260,13 +250,7 @@ export class VirtualNode extends VirtualNodeBase {
     this.backends.push({
       virtualService: {
         virtualServiceName: virtualService.virtualServiceName,
-        clientPolicy: virtualService.clientPolicy ? {
-          tls: {
-            enforce: virtualService.clientPolicy?.tlsClientPolicy.enforce ?? true,
-            validation: virtualService.clientPolicy?.tlsClientPolicy.validation.bind(this).tlsValidation,
-            ports: virtualService.clientPolicy?.tlsClientPolicy.ports,
-          },
-        } : undefined,
+        clientPolicy: virtualService.clientPolicy?.bind(this).clientPolicy,
       },
     });
   }

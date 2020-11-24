@@ -1,7 +1,6 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-
 import * as appmesh from '../lib';
 
 export = {
@@ -265,17 +264,15 @@ export = {
           meshName: 'test-mesh',
         });
 
+
         new appmesh.VirtualNode(stack, 'test-node', {
           mesh,
           dnsHostName: 'test',
-          backendDefaults: {
-            tlsClientPolicy: {
-              validation: appmesh.TLSValidationContext.fileTrust({
-                certificateChain: 'path-to-certificate',
-              }),
-              ports: [8080, 8081],
-            },
-          },
+          backendDefaults: appmesh.ClientPolicy.acmTrust({
+            certificateAuthorityArns: ['path-to-certificate'],
+            enforceTls: true,
+            ports: [8080, 8081],
+          }),
         });
 
         // THEN
@@ -288,8 +285,8 @@ export = {
                   Ports: [8080, 8081],
                   Validation: {
                     Trust: {
-                      File: {
-                        CertificateChain: 'path-to-certificate',
+                      ACM: {
+                        CertificateAuthorityArns: ['path-to-certificate'],
                       },
                     },
                   },
@@ -326,14 +323,11 @@ export = {
         const service1 = new appmesh.VirtualService(stack, 'service-1', {
           virtualServiceName: 'service1.domain.local',
           mesh,
-          clientPolicy: {
-            tlsClientPolicy: {
-              validation: appmesh.TLSValidationContext.fileTrust({
-                certificateChain: 'path-to-certificate',
-              }),
-              ports: [8080, 8081],
-            },
-          },
+          clientPolicy: appmesh.ClientPolicy.fileTrust({
+            certificateChain: ['path-to-certificate'],
+            enforceTls: true,
+            ports: [8080, 8081],
+          }),
         });
 
         node.addBackend(service1);
