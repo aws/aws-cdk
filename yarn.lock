@@ -568,9 +568,9 @@
   dependencies:
     jsonschema "^1.4.0"
 
-"@jsii/spec@^1.14.2-dev.2230.0", "@jsii/spec@file:vendor/jsii-spec.tgz":
-  version "1.14.2-dev.2230.0"
-  resolved "file:vendor/jsii-spec.tgz#131429d76ea844bdc343773db2ff6496fc57baee"
+"@jsii/spec@^1.14.2-dev.20201124.0", "@jsii/spec@file:vendor/jsii-spec-1.14.2-dev.20201124.0.tgz":
+  version "1.14.2-dev.20201124.0"
+  resolved "file:vendor/jsii-spec-1.14.2-dev.20201124.0.tgz#b7d598e5d19cdb27ec28f09f46aedaa3e07d29f0"
   dependencies:
     jsonschema "^1.4.0"
 
@@ -6251,16 +6251,16 @@ jsii-rosetta@^1.14.1:
     xmldom "^0.4.0"
     yargs "^16.1.0"
 
-"jsii-rosetta@file:vendor/jsii-rosetta.tgz":
-  version "1.14.2-dev.2230.0"
-  resolved "file:vendor/jsii-rosetta.tgz#7c93903ec66d7b9fb31ea806579ecfba4c087366"
+"jsii-rosetta@file:vendor/jsii-rosetta-1.14.2-dev.20201124.0.tgz":
+  version "1.14.2-dev.20201124.0"
+  resolved "file:vendor/jsii-rosetta-1.14.2-dev.20201124.0.tgz#65a007feb38b2d9927dfa4f6a5e10bfa23d65649"
   dependencies:
-    "@jsii/spec" "^1.14.2-dev.2230.0"
+    "@jsii/spec" "^1.14.2-dev.20201124.0"
     commonmark "^0.29.2"
     fs-extra "^9.0.1"
     typescript "~3.9.7"
     xmldom "^0.4.0"
-    yargs "^16.1.0"
+    yargs "^16.1.1"
 
 jsii@^1.14.1:
   version "1.14.1"
