@@ -1,4 +1,5 @@
 import { HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig } from '@aws-cdk/aws-apigatewayv2';
+import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import { HttpPrivateIntegrationOptions } from './base-types';
 import { HttpPrivateIntegration } from './private/integration';
@@ -8,9 +9,15 @@ import { HttpPrivateIntegration } from './private/integration';
  */
 export interface HttpNlbIntegrationProps extends HttpPrivateIntegrationOptions {
   /**
-   * The listener to the netwwork load balancer used for the integration
+   * The listener to the network load balancer used for the integration
    */
-  readonly listener: elbv2.NetworkListener;
+  readonly listener: elbv2.INetworkListener;
+
+  /**
+   * The VPC which the Network Listener is part of. This property is required if the Network Listener is imported.
+   * @default - the vpc associated with the network listener, if it's defined within the CDK app.
+   */
+  readonly vpc?: ec2.IVpc;
 }
 
 /**
@@ -22,9 +29,17 @@ export class HttpNlbIntegration extends HttpPrivateIntegration {
   }
 
   public bind(options: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig {
+    let vpc: ec2.IVpc | undefined = this.props.vpc;
+    if (!vpc && (this.props.listener instanceof elbv2.NetworkListener)) {
+      vpc = this.props.listener.loadBalancer.vpc;
+    }
+    if (!vpc) {
+      throw new Error('The vpc property must be specified.');
+    }
+
     const vpcLink = this._configureVpcLink(options, {
       vpcLink: this.props.vpcLink,
-      vpc: this.props.listener.loadBalancer.vpc,
+      vpc,
     });
 
     return {

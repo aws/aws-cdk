@@ -9,7 +9,7 @@ export interface HttpServiceDiscoveryIntegrationProps {
   /**
    * The discovery service used for the integration
    */
-  readonly service: servicediscovery.Service;
+  readonly service: servicediscovery.IService;
 
   /**
    * The vpc link to be used for the private integration

@@ -91,11 +91,13 @@ listener.addTargets('target', {
 });
 
 const httpEndpoint = new HttpApi(stack, 'HttpProxyPrivateApi', {
-  defaultIntegration: new HttpAlbIntegrationProps({
+  defaultIntegration: new HttpAlbIntegration({
     listener,
   }),
 });
 ```
+
+When an imported load balancer is used, the `vpc` option must be specified for `HttpAlbIntegration`.
 
 #### Network Load Balancer
 
@@ -110,11 +112,13 @@ listener.addTargets('target', {
 });
 
 const httpEndpoint = new HttpApi(stack, 'HttpProxyPrivateApi', {
-  defaultIntegration: new HttpNlbIntegrationProps({
+  defaultIntegration: new HttpNlbIntegration({
     listener,
   }),
 });
 ```
+
+When an imported load balancer is used, the `vpc` option must be specified for `HttpNlbIntegration`.
 
 #### Cloud Map Service Discovery
 
