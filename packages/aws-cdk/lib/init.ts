@@ -5,6 +5,7 @@ import * as colors from 'colors/safe';
 import * as fs from 'fs-extra';
 import { error, print, warning } from './logging';
 import { cdkHomeDir } from './util/directories';
+import { versionNumber } from './version';
 
 export type InvokeHook = (targetDirectory: string) => Promise<void>;
 
@@ -13,8 +14,6 @@ export type InvokeHook = (targetDirectory: string) => Promise<void>;
 const camelCase = require('camelcase');
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const decamelize = require('decamelize');
-
-const TEMPLATES_DIR = path.join(__dirname, 'init-templates');
 
 /**
  * Initialize a CDK package in the current directory
@@ -57,8 +56,8 @@ function pythonExecutable() {
 const INFO_DOT_JSON = 'info.json';
 
 export class InitTemplate {
-  public static async fromName(name: string) {
-    const basePath = path.join(TEMPLATES_DIR, name);
+  public static async fromName(templatesDir: string, name: string) {
+    const basePath = path.join(templatesDir, name);
     const languages = (await listDirectory(basePath)).filter(f => f !== INFO_DOT_JSON);
     const info = await fs.readJson(path.join(basePath, INFO_DOT_JSON));
     return new InitTemplate(basePath, name, languages, info);
@@ -194,12 +193,18 @@ interface ProjectInfo {
   readonly name: string;
 }
 
+const versionedTemplatesDir: Promise<string> =
+  new Promise(async resolve => {
+    const majorVersion = versionNumber().replace(/\..+/, '');
+    resolve(path.join(__dirname, 'init-templates', `v${majorVersion}`));
+  });
 export const availableInitTemplates: Promise<InitTemplate[]> =
   new Promise(async resolve => {
-    const templateNames = await listDirectory(TEMPLATES_DIR);
+    const templatesDir = await versionedTemplatesDir;
+    const templateNames = await listDirectory(templatesDir);
     const templates = new Array<InitTemplate>();
     for (const templateName of templateNames) {
-      templates.push(await InitTemplate.fromName(templateName));
+      templates.push(await InitTemplate.fromName(templatesDir, templateName));
     }
     resolve(templates);
   });
