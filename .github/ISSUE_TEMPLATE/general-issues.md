@@ -1,7 +1,7 @@
 ---
 name: "\U00002753 General Issue"
 about: Create a new issue
-title: "(insert module name): short issue description"
+title: "(module name): short issue description"
 labels: needs-triage, guidance
 ---
 
