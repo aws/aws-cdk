@@ -63,7 +63,8 @@ export class AwsCliCompatible {
 
     if (options.containerCreds ?? hasEcsCredentials()) {
       sources.push(() => new AWS.ECSCredentials());
-    } else if (options.containerCreds ?? hasWebIdentityCredentials() ) {
+    } else if (hasWebIdentityCredentials()) {
+      // else if: we have found WebIdentityCredentials as provided by EKS ServiceAccounts
       sources.push(() => new AWS.TokenFileWebIdentityCredentials());
     } else if (options.ec2instance ?? await isEc2Instance()) {
       // else if: don't get EC2 creds if we should have gotten ECS creds--ECS instances also
