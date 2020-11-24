@@ -28,8 +28,8 @@ export = {
       const stack = new cdk.Stack();
 
       new ecs.FargateTaskDefinition(stack, 'FargateTaskDef', {
-        cpu: cdk.Lazy.numberValue({ produce: () => 128 }),
-        memoryLimitMiB: cdk.Lazy.numberValue({ produce: () => 1024 }),
+        cpu: cdk.Lazy.number({ produce: () => 128 }),
+        memoryLimitMiB: cdk.Lazy.number({ produce: () => 1024 }),
       });
 
       // THEN
