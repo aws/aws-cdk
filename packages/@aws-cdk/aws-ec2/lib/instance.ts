@@ -324,8 +324,8 @@ export class Instance extends Resource implements IInstance {
     // use delayed evaluation
     const imageConfig = props.machineImage.getImage(this);
     this.userData = props.userData ?? imageConfig.userData;
-    const userDataToken = Lazy.stringValue({ produce: () => Fn.base64(this.userData.render()) });
-    const securityGroupsToken = Lazy.listValue({ produce: () => this.securityGroups.map(sg => sg.securityGroupId) });
+    const userDataToken = Lazy.string({ produce: () => Fn.base64(this.userData.render()) });
+    const securityGroupsToken = Lazy.list({ produce: () => this.securityGroups.map(sg => sg.securityGroupId) });
 
     const { subnets } = props.vpc.selectSubnets(props.vpcSubnets);
     let subnet;
@@ -385,7 +385,7 @@ export class Instance extends Resource implements IInstance {
 
     // Trigger replacement (via new logical ID) on user data change, if specified or cfn-init is being used.
     const originalLogicalId = Stack.of(this).getLogicalId(this.instance);
-    this.instance.overrideLogicalId(Lazy.stringValue({
+    this.instance.overrideLogicalId(Lazy.uncachedString({
       produce: () => {
         let logicalId = originalLogicalId;
         if (props.userDataCausesReplacement ?? props.initOptions) {
