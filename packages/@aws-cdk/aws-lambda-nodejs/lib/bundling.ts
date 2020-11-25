@@ -170,11 +170,11 @@ export class Bundling implements cdk.BundlingOptions {
     }
 
     return chain([
-      ...this.props.commandHooks?.beforeBundling?.(inputDir, outputDir) ?? [],
+      ...this.props.commandHooks?.beforeBundling(inputDir, outputDir) ?? [],
       esbuildCommand,
-      ...(this.props.nodeModules && this.props.commandHooks?.beforeInstall?.(inputDir, outputDir)) ?? [],
+      ...(this.props.nodeModules && this.props.commandHooks?.beforeInstall(inputDir, outputDir)) ?? [],
       depsCommand,
-      ...this.props.commandHooks?.afterBundling?.(inputDir, outputDir) ?? [],
+      ...this.props.commandHooks?.afterBundling(inputDir, outputDir) ?? [],
     ]);
   }
 }

@@ -133,7 +133,7 @@ export interface ICommandHooks {
    *
    * Commands are chained with `&&`.
    */
-  beforeBundling?(inputDir: string, outputDir: string): string[];
+  beforeBundling(inputDir: string, outputDir: string): string[];
 
   /**
    * Returns commands to run before installing node modules.
@@ -142,12 +142,12 @@ export interface ICommandHooks {
    *
    * Commands are chained with `&&`.
    */
-  beforeInstall?(inputDir: string, outputDir: string): string[];
+  beforeInstall(inputDir: string, outputDir: string): string[];
 
   /**
    * Returns commands to run after bundling.
    *
    * Commands are chained with `&&`.
    */
-  afterBundling?(inputDir: string, outputDir: string): string[];
+  afterBundling(inputDir: string, outputDir: string): string[];
 }

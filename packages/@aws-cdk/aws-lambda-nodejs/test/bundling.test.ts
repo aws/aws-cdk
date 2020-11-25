@@ -271,6 +271,9 @@ test('with command hooks', () => {
       afterBundling(inputDir: string, outputDir: string): string[] {
         return [`cp ${inputDir}/b.txt ${outputDir}/txt`];
       },
+      beforeInstall() {
+        return [];
+      },
     },
     forceDockerBundling: true,
   });
