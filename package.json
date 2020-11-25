@@ -18,17 +18,16 @@
     "fs-extra": "^9.0.1",
     "graceful-fs": "^4.2.4",
     "jest-junit": "^12.0.0",
-    "jsii-diff": "^1.14.1",
-    "jsii-pacmak": "^1.14.1",
-    "jsii-rosetta": "file:vendor/jsii-rosetta-1.14.2-dev.20201124.0.tgz",
+    "jsii-diff": "^1.15.0",
+    "jsii-pacmak": "^1.15.0",
+    "jsii-rosetta": "^1.15.0",
     "lerna": "^3.22.1",
     "standard-version": "^9.0.0",
     "typescript": "~3.9.7"
   },
   "resolutions-comment": "should be removed or reviewed when nodeunit dependency is dropped or adjusted",
   "resolutions": {
-    "tap-mocha-reporter": "^5.0.1",
-    "jsii-rosetta/@jsii/spec": "file:vendor/jsii-spec-1.14.2-dev.20201124.0.tgz"
+    "tap-mocha-reporter": "^5.0.1"
   },
   "repository": {
     "type": "git",
