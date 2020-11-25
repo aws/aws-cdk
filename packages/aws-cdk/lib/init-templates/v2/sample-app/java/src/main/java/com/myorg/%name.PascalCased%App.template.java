@@ -1,6 +1,6 @@
 package com.myorg;
 
-import software.amazon.awscdk.core.App;
+import software.amazon.awscdk.lib.App;
 
 public final class %name.PascalCased%App {
     public static void main(final String[] args) {

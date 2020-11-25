@@ -1,4 +1,4 @@
-const cdk = require('@aws-cdk/core');
+const cdk = require('aws-cdk-lib');
 
 class %name.PascalCased%Stack extends cdk.Stack {
   /**

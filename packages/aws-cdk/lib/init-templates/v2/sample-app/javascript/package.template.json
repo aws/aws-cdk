@@ -10,14 +10,11 @@
     "test": "jest"
   },
   "devDependencies": {
-    "@aws-cdk/assert": "%cdk-version%",
     "aws-cdk": "%cdk-version%",
     "jest": "^26.4.2"
   },
   "dependencies": {
-    "@aws-cdk/aws-sns": "%cdk-version%",
-    "@aws-cdk/aws-sns-subscriptions": "%cdk-version%",
-    "@aws-cdk/aws-sqs": "%cdk-version%",
-    "@aws-cdk/core": "%cdk-version%"
+    "aws-cdk-lib": "%cdk-version%",
+    "constructs": "^3.0.4"
   }
 }

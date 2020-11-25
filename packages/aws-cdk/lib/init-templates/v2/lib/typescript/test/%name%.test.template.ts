@@ -1,15 +1,12 @@
-import { expect as expectCDK, countResources } from '@aws-cdk/assert';
-import * as cdk from '@aws-cdk/core';
+import * as cdk from 'aws-cdk-lib';
 import * as %name.PascalCased% from '../lib/index';
 
-/*
- * Example test 
- */
-test('SNS Topic Created', () => {
+test('Empty Stack', () => {
   const app = new cdk.App();
   const stack = new cdk.Stack(app, "TestStack");
   // WHEN
   new %name.PascalCased%.%name.PascalCased%(stack, 'MyTestConstruct');
   // THEN
-  expectCDK(stack).to(countResources("AWS::SNS::Topic",0));
+  const actual = app.synth().getStackArtifact(stack.artifactId).template;
+  expect(actual).toEqual({});
 });
