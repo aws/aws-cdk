@@ -2,7 +2,7 @@ import { EOL } from 'os';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { Fn, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
+import { Aspects, Fn, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { BucketPolicy } from './bucket-policy';
 import { IBucketNotificationDestination } from './destination';
@@ -1014,7 +1014,7 @@ export interface BucketProps {
 
   /**
   * Enforces SSL for requests. S3.5 of the AWS Foundational Security Best Practices Regarding S3.
-  * @see https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-fsbp-controls.html#fsbp-s3-5
+  * @see https://docs.aws.amazon.com/config/latest/developerguide/s3-bucket-ssl-requests-only.html
   *
   * @default false
   */
