@@ -91,7 +91,7 @@ export class CompositeAlarm extends AlarmBase {
 
   constructor(scope: Construct, id: string, props: CompositeAlarmProps) {
     super(scope, id, {
-      physicalName: props.compositeAlarmName ?? Lazy.stringValue({ produce: () => this.generateUniqueId() }),
+      physicalName: props.compositeAlarmName ?? Lazy.string({ produce: () => this.generateUniqueId() }),
     });
 
     if (props.alarmRule.renderAlarmRule().length > 10240) {
@@ -105,9 +105,9 @@ export class CompositeAlarm extends AlarmBase {
       alarmRule: this.alarmRule,
       alarmDescription: props.alarmDescription,
       actionsEnabled: props.actionsEnabled,
-      alarmActions: Lazy.listValue({ produce: () => this.alarmActionArns }),
-      insufficientDataActions: Lazy.listValue({ produce: (() => this.insufficientDataActionArns) }),
-      okActions: Lazy.listValue({ produce: () => this.okActionArns }),
+      alarmActions: Lazy.list({ produce: () => this.alarmActionArns }),
+      insufficientDataActions: Lazy.list({ produce: (() => this.insufficientDataActionArns) }),
+      okActions: Lazy.list({ produce: () => this.okActionArns }),
     });
 
     this.alarmName = this.getResourceNameAttribute(alarm.ref);

@@ -263,7 +263,7 @@ Create a virtual gateway with the constructor:
 ```typescript
 const gateway = new appmesh.VirtualGateway(stack, 'gateway', {
   mesh: mesh,
-  listeners: [appmesh.VirtualGatewayListener.httpGatewayListener({
+  listeners: [appmesh.VirtualGatewayListener.http({
     port: 443,
     healthCheck: {
       interval: cdk.Duration.seconds(10),
@@ -280,7 +280,7 @@ Add a virtual gateway directly to the mesh:
 const gateway = mesh.addVirtualGateway('gateway', {
   accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
   virtualGatewayName: 'virtualGateway',
-    listeners: [appmesh.VirtualGatewayListener.httpGatewayListener({
+    listeners: [appmesh.VirtualGatewayListener.http({
       port: 443,
       healthCheck: {
         interval: cdk.Duration.seconds(10),
@@ -302,7 +302,7 @@ By default, an HTTP based route will match on `/`. All matches must start with a
 
 ```typescript
 gateway.addGatewayRoute('gateway-route-http', {
-  routeSpec: appmesh.GatewayRouteSpec.httpRouteSpec({
+  routeSpec: appmesh.GatewayRouteSpec.http({
     routeTarget: virtualService,
     match: {
       prefixMatch: '/',
@@ -316,7 +316,7 @@ You cannot omit the field, and must specify a match for these routes.
 
 ```typescript
 gateway.addGatewayRoute('gateway-route-grpc', {
-  routeSpec: appmesh.GatewayRouteSpec.grpcRouteSpec({
+  routeSpec: appmesh.GatewayRouteSpec.grpc({
     routeTarget: virtualService,
     match: {
       serviceName: 'my-service.default.svc.cluster.local',

@@ -1240,7 +1240,7 @@ export class Domain extends DomainBase implements IDomain {
       effect: iam.Effect.ALLOW,
       actions: ['es:ESHttp*'],
       principals: [new iam.Anyone()],
-      resources: [cdk.Lazy.stringValue({ produce: () => `${this.domainArn}/*` })],
+      resources: [cdk.Lazy.string({ produce: () => `${this.domainArn}/*` })],
     });
 
     const masterUserArn = props.fineGrainedAccessControl?.masterUserArn;
