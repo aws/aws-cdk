@@ -52,13 +52,15 @@ test('NodejsFunction with .js handler', () => {
 test('NodejsFunction with container env vars', () => {
   // WHEN
   new NodejsFunction(stack, 'handler1', {
-    bundlingEnvironment: {
-      KEY: 'VALUE',
+    bundling: {
+      environment: {
+        KEY: 'VALUE',
+      },
     },
   });
 
   expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
-    bundlingEnvironment: {
+    environment: {
       KEY: 'VALUE',
     },
   }));

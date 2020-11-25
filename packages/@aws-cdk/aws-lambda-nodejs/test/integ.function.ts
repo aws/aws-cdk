@@ -11,7 +11,7 @@ class TestStack extends Stack {
     new lambda.NodejsFunction(this, 'ts-handler', {
       entry: path.join(__dirname, 'integ-handlers/ts-handler.ts'),
       runtime: Runtime.NODEJS_12_X,
-      minify: true,
+      bundling: { minify: true },
     });
 
     new lambda.NodejsFunction(this, 'js-handler', {

@@ -33,7 +33,7 @@ test('esbuild bundling in Docker', () => {
     entry,
     depsLockFilePath,
     runtime: Runtime.NODEJS_12_X,
-    bundlingEnvironment: {
+    environment: {
       KEY: 'value',
     },
     loader: {
@@ -200,7 +200,7 @@ test('Local bundling', () => {
     entry,
     depsLockFilePath,
     runtime: Runtime.NODEJS_12_X,
-    bundlingEnvironment: {
+    environment: {
       KEY: 'value',
     },
   });

@@ -46,7 +46,7 @@ export interface BundlingOptions {
    *
    * @default - no environment variables are defined.
    */
-  readonly bundlingEnvironment?: { [key: string]: string; };
+  readonly environment?: { [key: string]: string; };
 
   /**
    * A list of modules that should be considered as externals (already available
