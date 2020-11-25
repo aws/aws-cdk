@@ -1,6 +1,7 @@
 import * as crypto from 'crypto';
 import * as schema from './schema';
 export { schema };
+export * from './canned-metrics';
 
 /**
  * The complete AWS CloudFormation Resource specification, having any CDK patches and enhancements included in it.

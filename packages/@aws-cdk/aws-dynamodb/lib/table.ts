@@ -7,6 +7,7 @@ import {
   IResource, Lazy, Names, RemovalPolicy, Resource, Stack, Token,
 } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { DynamoDBMetrics } from './dynamodb-canned-metrics.generated';
 import { CfnTable, CfnTableProps } from './dynamodb.generated';
 import * as perms from './perms';
 import { ReplicaProvider } from './replica-provider';
@@ -459,7 +460,6 @@ export interface ITable extends IResource {
    *
    */
   metricSuccessfulRequestLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
-
 }
 
 /**
@@ -702,7 +702,10 @@ abstract class TableBase extends Resource implements ITable {
    * You can customize this by using the `statistic` and `period` properties.
    */
   public metricConsumedReadCapacityUnits(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('ConsumedReadCapacityUnits', { statistic: 'sum', ...props });
+    return new cloudwatch.Metric({
+      ...DynamoDBMetrics.consumedReadCapacityUnitsSum({ TableName: this.tableName }),
+      ...props,
+    });
   }
 
   /**
@@ -712,7 +715,10 @@ abstract class TableBase extends Resource implements ITable {
    * You can customize this by using the `statistic` and `period` properties.
    */
   public metricConsumedWriteCapacityUnits(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('ConsumedWriteCapacityUnits', { statistic: 'sum', ...props });
+    return new cloudwatch.Metric({
+      ...DynamoDBMetrics.consumedWriteCapacityUnitsSum({ TableName: this.tableName }),
+      ...props,
+    });
   }
 
   /**
@@ -721,7 +727,6 @@ abstract class TableBase extends Resource implements ITable {
    * @deprecated use `metricSystemErrorsForOperations`.
    */
   public metricSystemErrors(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-
     if (!props?.dimensions?.Operation) {
       // 'Operation' must be passed because its an operational metric.
       throw new Error("'Operation' dimension must be passed for the 'SystemErrors' metric.");
@@ -743,7 +748,6 @@ abstract class TableBase extends Resource implements ITable {
    * You can customize this by using the `statistic` and `period` properties.
    */
   public metricUserErrors(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-
     if (props?.dimensions) {
       throw new Error("'dimensions' is not supported for the 'UserErrors' metric");
     }
@@ -768,20 +772,22 @@ abstract class TableBase extends Resource implements ITable {
    *
    * By default, the metric will be calculated as an average over a period of 5 minutes.
    * You can customize this by using the `statistic` and `period` properties.
-   *
    */
   public metricSuccessfulRequestLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-
     if (!props?.dimensions?.Operation) {
       throw new Error("'Operation' dimension must be passed for the 'SuccessfulRequestLatency' metric.");
     }
 
     const dimensions = {
       TableName: this.tableName,
-      ...props?.dimensions ?? {},
+      Operation: props.dimensions.Operation,
     };
 
-    return this.metric('SuccessfulRequestLatency', { statistic: 'avg', ...props, dimensions });
+    return new cloudwatch.Metric({
+      ...DynamoDBMetrics.successfulRequestLatencyAverage(dimensions),
+      ...props,
+      ...dimensions,
+    });
   }
 
   /**
