@@ -1,5 +1,82 @@
 {
   "Resources": {
+    "Key961B73FD": {
+      "Type": "AWS::KMS::Key",
+      "Properties": {
+        "KeyPolicy": {
+          "Statement": [
+            {
+              "Action": [
+                "kms:Create*",
+                "kms:Describe*",
+                "kms:Enable*",
+                "kms:List*",
+                "kms:Put*",
+                "kms:Update*",
+                "kms:Revoke*",
+                "kms:Disable*",
+                "kms:Get*",
+                "kms:Delete*",
+                "kms:ScheduleKeyDeletion",
+                "kms:CancelKeyDeletion",
+                "kms:GenerateDataKey",
+                "kms:TagResource",
+                "kms:UntagResource"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              },
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
+    },
+    "DomainESLogGroupPolicyCustomResourcePolicyB35C8E41": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "logs:PutResourcePolicy",
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": "logs:DeleteResourcePolicy",
+              "Effect": "Allow",
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "DomainESLogGroupPolicyCustomResourcePolicyB35C8E41",
+        "Roles": [
+          {
+            "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+          }
+        ]
+      }
+    },
     "DomainESLogGroupPolicy5373A2E8": {
       "Type": "Custom::CloudwatchLogResourcePolicy",
       "Properties": {
@@ -83,11 +160,11 @@
         },
         "InstallLatestAwsSdk": true
       },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete",
       "DependsOn": [
         "DomainESLogGroupPolicyCustomResourcePolicyB35C8E41"
-      ]
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "Domain66AC69E0": {
       "Type": "AWS::Elasticsearch::Domain",
@@ -112,7 +189,10 @@
         },
         "ElasticsearchVersion": "7.1",
         "EncryptionAtRestOptions": {
-          "Enabled": true
+          "Enabled": true,
+          "KmsKeyId": {
+            "Ref": "Key961B73FD"
+          }
         },
         "LogPublishingOptions": {
           "ES_APPLICATION_LOGS": {
@@ -145,6 +225,101 @@
         "DomainESLogGroupPolicyCustomResourcePolicyB35C8E41",
         "DomainESLogGroupPolicy5373A2E8"
       ]
+    },
+    "DomainESAccessPolicyCustomResourcePolicy9747FC42": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "es:UpdateElasticsearchDomainConfig",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "Domain66AC69E0",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "DomainESAccessPolicyCustomResourcePolicy9747FC42",
+        "Roles": [
+          {
+            "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+          }
+        ]
+      },
+      "DependsOn": [
+        "Domain66AC69E0"
+      ]
+    },
+    "DomainESAccessPolicy89986F33": {
+      "Type": "Custom::ElasticsearchAccessPolicy",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
+            "Arn"
+          ]
+        },
+        "Create": {
+          "action": "updateElasticsearchDomainConfig",
+          "service": "ES",
+          "parameters": {
+            "DomainName": {
+              "Ref": "Domain66AC69E0"
+            },
+            "AccessPolicies": "{\"Statement\":[{\"Action\":\"es:ESHttp*\",\"Effect\":\"Allow\",\"Principal\":\"*\",\"Resource\":\"*\"}],\"Version\":\"2012-10-17\"}"
+          },
+          "outputPath": "DomainConfig.ElasticsearchClusterConfig.AccessPolicies",
+          "physicalResourceId": {
+            "id": {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Ref": "Domain66AC69E0"
+                  },
+                  "AccessPolicy"
+                ]
+              ]
+            }
+          }
+        },
+        "Update": {
+          "action": "updateElasticsearchDomainConfig",
+          "service": "ES",
+          "parameters": {
+            "DomainName": {
+              "Ref": "Domain66AC69E0"
+            },
+            "AccessPolicies": "{\"Statement\":[{\"Action\":\"es:ESHttp*\",\"Effect\":\"Allow\",\"Principal\":\"*\",\"Resource\":\"*\"}],\"Version\":\"2012-10-17\"}"
+          },
+          "outputPath": "DomainConfig.ElasticsearchClusterConfig.AccessPolicies",
+          "physicalResourceId": {
+            "id": {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Ref": "Domain66AC69E0"
+                  },
+                  "AccessPolicy"
+                ]
+              ]
+            }
+          }
+        },
+        "InstallLatestAwsSdk": true
+      },
+      "DependsOn": [
+        "DomainESAccessPolicyCustomResourcePolicy9747FC42",
+        "Domain66AC69E0"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "SlowSearchLogsE00DC2E7": {
       "Type": "AWS::Logs::LogGroup",
@@ -193,25 +368,29 @@
         ]
       }
     },
-    "DomainESLogGroupPolicyCustomResourcePolicyB35C8E41": {
+    "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleDefaultPolicyD28E1A5E": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
           "Statement": [
             {
-              "Action": "logs:PutResourcePolicy",
+              "Action": [
+                "kms:List*",
+                "kms:Describe*",
+                "kms:CreateGrant"
+              ],
               "Effect": "Allow",
-              "Resource": "*"
-            },
-            {
-              "Action": "logs:DeleteResourcePolicy",
-              "Effect": "Allow",
-              "Resource": "*"
+              "Resource": {
+                "Fn::GetAtt": [
+                  "Key961B73FD",
+                  "Arn"
+                ]
+              }
             }
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "DomainESLogGroupPolicyCustomResourcePolicyB35C8E41",
+        "PolicyName": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleDefaultPolicyD28E1A5E",
         "Roles": [
           {
             "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
@@ -271,15 +450,12 @@
         "Timeout": 120
       },
       "DependsOn": [
+        "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleDefaultPolicyD28E1A5E",
         "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
       ]
     }
   },
   "Parameters": {
-    "AssetParametersb64b129569a5ac7a9abf88a18ac0b504d1fb1208872460476ed3fd435830eb94ArtifactHash782948FC": {
-      "Type":"String",
-      "Description":"Artifact hash for asset \"b64b129569a5ac7a9abf88a18ac0b504d1fb1208872460476ed3fd435830eb94\""
-    },
     "AssetParametersb64b129569a5ac7a9abf88a18ac0b504d1fb1208872460476ed3fd435830eb94S3Bucket38F1BB8E": {
       "Type": "String",
       "Description": "S3 bucket for asset \"b64b129569a5ac7a9abf88a18ac0b504d1fb1208872460476ed3fd435830eb94\""
@@ -287,6 +463,10 @@
     "AssetParametersb64b129569a5ac7a9abf88a18ac0b504d1fb1208872460476ed3fd435830eb94S3VersionKeyCCDC67C0": {
       "Type": "String",
       "Description": "S3 key for asset version \"b64b129569a5ac7a9abf88a18ac0b504d1fb1208872460476ed3fd435830eb94\""
+    },
+    "AssetParametersb64b129569a5ac7a9abf88a18ac0b504d1fb1208872460476ed3fd435830eb94ArtifactHash782948FC": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"b64b129569a5ac7a9abf88a18ac0b504d1fb1208872460476ed3fd435830eb94\""
     }
   }
 }
