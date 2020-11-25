@@ -184,12 +184,12 @@ export class CodeDeployEcsDeployAction extends Action {
         ApplicationName: this.actionProps.deploymentGroup.application.applicationName,
         DeploymentGroupName: this.actionProps.deploymentGroup.deploymentGroupName,
 
-        TaskDefinitionTemplateArtifact: Lazy.stringValue({ produce: () => taskDefinitionTemplateArtifact.artifactName }),
+        TaskDefinitionTemplateArtifact: Lazy.string({ produce: () => taskDefinitionTemplateArtifact.artifactName }),
         TaskDefinitionTemplatePath: this.actionProps.taskDefinitionTemplateFile
           ? this.actionProps.taskDefinitionTemplateFile.fileName
           : 'taskdef.json',
 
-        AppSpecTemplateArtifact: Lazy.stringValue({ produce: () => appSpecTemplateArtifact.artifactName }),
+        AppSpecTemplateArtifact: Lazy.string({ produce: () => appSpecTemplateArtifact.artifactName }),
         AppSpecTemplatePath: this.actionProps.appSpecTemplateFile
           ? this.actionProps.appSpecTemplateFile.fileName
           : 'appspec.yaml',
@@ -199,7 +199,7 @@ export class CodeDeployEcsDeployAction extends Action {
     if (this.actionProps.containerImageInputs) {
       for (let i = 1; i <= this.actionProps.containerImageInputs.length; i++) {
         const imageInput = this.actionProps.containerImageInputs[i - 1];
-        actionConfig.configuration[`Image${i}ArtifactName`] = Lazy.stringValue({ produce: () => imageInput.input.artifactName });
+        actionConfig.configuration[`Image${i}ArtifactName`] = Lazy.string({ produce: () => imageInput.input.artifactName });
         actionConfig.configuration[`Image${i}ContainerName`] = imageInput.taskDefinitionPlaceholder
           ? imageInput.taskDefinitionPlaceholder
           : 'IMAGE';
