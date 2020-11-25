@@ -37,7 +37,7 @@ async function parseCommandLineArguments() {
   //
   //   ./prog --arg one --arg two position  =>  will parse to  { arg: ['one', 'two'], _: ['positional'] }.
 
-  const initTemplateLanuages = await availableInitLanguages;
+  const initTemplateLanuages = await availableInitLanguages();
   return yargs
     .env('CDK')
     .usage('Usage: cdk -a <cdk-app> COMMAND')
