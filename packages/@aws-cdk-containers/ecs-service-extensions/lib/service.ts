@@ -196,7 +196,11 @@ export class Service extends cdk.Construct {
     if (this.capacityType === EnvironmentCapacityType.EC2) {
       this.ecsService = new ecs.Ec2Service(this.scope, `${this.id}-service`, serviceProps);
     } else if (this.capacityType === EnvironmentCapacityType.FARGATE) {
-      this.ecsService = new ecs.FargateService(this.scope, `${this.id}-service`, serviceProps);
+      let fargateServiceProps = {
+        ...serviceProps,
+        platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
+      } as ecs.FargateServiceProps;
+      this.ecsService = new ecs.FargateService(this.scope, `${this.id}-service`, fargateServiceProps);
     } else {
       throw new Error(`Unknown capacity type for service ${this.id}`);
     }

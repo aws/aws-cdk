@@ -20,6 +20,7 @@ receivers:
   awsxray:
     endpoint: 0.0.0.0:2000
     transport: udp
+  awsecscontainermetrics:
 
 processors:
   batch/traces:
@@ -39,7 +40,7 @@ service:
       processors: [batch/traces]
       exporters: [awsxray]
     metrics:
-      receivers: [otlp]
+      receivers: [otlp, awsecscontainermetrics]
       processors: [batch/metrics]
       exporters: [awsemf]
 
@@ -150,7 +151,7 @@ export class OpenTelemetryCollector extends ServiceExtension {
     });
 
     // Make sure that the open telemetry collector waits for the config
-    // writer to complete writing the config file first.
+    // writer to complete writingfirst.
     this.container.addContainerDependencies({
       container: this.configContainer,
       condition: ecs.ContainerDependencyCondition.SUCCESS,
