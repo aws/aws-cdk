@@ -100,5 +100,5 @@ export interface BundlingOptions {
    *
    * @default - use the Docker image provided by @aws-cdk/aws-lambda-nodejs
    */
-  readonly bundlingDockerImage?: BundlingDockerImage;
+  readonly dockerImage?: BundlingDockerImage;
 }

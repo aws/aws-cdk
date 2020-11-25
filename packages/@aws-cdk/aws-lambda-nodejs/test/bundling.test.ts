@@ -244,7 +244,7 @@ test('Custom bundling docker image', () => {
     entry,
     depsLockFilePath,
     runtime: Runtime.NODEJS_12_X,
-    bundlingDockerImage: BundlingDockerImage.fromRegistry('my-custom-image'),
+    dockerImage: BundlingDockerImage.fromRegistry('my-custom-image'),
     forceDockerBundling: true,
   });
 
