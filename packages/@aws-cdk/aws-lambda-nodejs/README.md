@@ -44,12 +44,14 @@ All other properties of `lambda.Function` are supported, see also the [AWS Lambd
 The `NodejsFunction` construct automatically [reuses existing connections](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/node-reusing-connections.html)
 when working with the AWS SDK for JavaScript. Set the `awsSdkConnectionReuse` prop to `false` to disable it.
 
-Use the `bundlingEnvironment` prop to define environments variables when esbuild runs:
+Use the `environment` prop to define environments variables when esbuild runs:
 
 ```ts
 new lambda.NodejsFunction(this, 'my-handler', {
-  bundlingEnvironment: {
-    NODE_ENV: 'production',
+  bundling: {
+    environment: {
+      NODE_ENV: 'production',
+    },
   },
 });
 ```
@@ -58,17 +60,21 @@ Use the `buildArgs` prop to pass build arguments when building the bundling imag
 
 ```ts
 new lambda.NodejsFunction(this, 'my-handler', {
-  buildArgs: {
-    HTTPS_PROXY: 'https://127.0.0.1:3001',
-  },
+  bundling: {
+      buildArgs: {
+        HTTPS_PROXY: 'https://127.0.0.1:3001',
+      },
+  }
 });
 ```
 
-Use the `bundlingDockerImage` prop to use a custom bundling image:
+Use the `dockerImage` prop to use a custom bundling image:
 
 ```ts
 new lambda.NodejsFunction(this, 'my-handler', {
-  bundlingDockerImage: dk.BundlingDockerImage.fromAsset('/path/to/Dockerfile'),
+  bundling: {
+    dockerImage: cdk.BundlingDockerImage.fromAsset('/path/to/Dockerfile'),
+  },
 });
 ```
 
@@ -100,10 +106,12 @@ the `externalModules` prop.
 
 ```ts
 new lambda.NodejsFunction(this, 'my-handler', {
-  externalModules: [
-    'aws-sdk', // Use the 'aws-sdk' available in the Lambda runtime
-    'cool-module', // 'cool-module' is already available in a Layer
-  ],
+  bundling: {
+    externalModules: [
+      'aws-sdk', // Use the 'aws-sdk' available in the Lambda runtime
+      'cool-module', // 'cool-module' is already available in a Layer
+    ],
+  },
 });
 ```
 
@@ -115,7 +123,9 @@ when working with native dependencies or when esbuild fails to bundle a module.
 
 ```ts
 new lambda.NodejsFunction(this, 'my-handler', {
-  nodeModules: ['native-module', 'other-module']
+  bundling: {
+    nodeModules: ['native-module', 'other-module'],
+  },
 });
 ```
 
