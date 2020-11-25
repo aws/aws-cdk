@@ -251,7 +251,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
 
     // Check compatibility at synthesis. It could be that the version was associated
     // with a CloudFront distribution first and made incompatible afterwards.
-    return Lazy.stringValue({
+    return Lazy.string({
       produce: () => {
         // Validate that the underlying function can be used for Lambda@Edge
         if (this.lambda instanceof Function) {

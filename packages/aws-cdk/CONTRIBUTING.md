@@ -58,6 +58,9 @@ than one test will run at a time in that region.
 If `AWS_REGIONS` is not set, all tests will sequentially run in the one
 region set in `AWS_REGION`.
 
+Run with `env INTEG_NO_CLEAN=1` to forego cleaning up the temporary directory,
+in order to be able to debug 'cdk synth' output.
+
 ### CLI integration tests
 
 CLI tests will exercise a number of common CLI scenarios, and deploy actual

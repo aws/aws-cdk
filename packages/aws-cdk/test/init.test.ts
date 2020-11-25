@@ -1,3 +1,7 @@
+jest.mock('../lib/version', () => ({
+  versionNumber: mockVersionNumber,
+}));
+
 import * as os from 'os';
 import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
@@ -87,4 +91,15 @@ async function withTempDir(cb: (dir: string) => void | Promise<any>) {
   } finally {
     await fs.remove(tmpDir);
   }
+}
+
+/**
+ * The init templates rely on parsing the current major version to find the correct template directory.
+ * During tests, the current package version is '0.0.0', rather than a specific version.
+ * The below mocks the versionNumber to return the same major version as the current release.
+ */
+function mockVersionNumber() {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const releaseJson = require(`${__dirname}/../../../release.json`);
+  return `${releaseJson.majorVersion}.0.0`;
 }
