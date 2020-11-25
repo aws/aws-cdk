@@ -164,7 +164,6 @@
       "docs-public-apis:@aws-cdk/aws-lambda.FunctionProps",
       "docs-public-apis:@aws-cdk/aws-lambda.IAlias",
       "docs-public-apis:@aws-cdk/aws-lambda.IFunction",
-      "docs-public-apis:@aws-cdk/aws-lambda.IFunction.addEventSource",
       "docs-public-apis:@aws-cdk/aws-lambda.ILayerVersion",
       "docs-public-apis:@aws-cdk/aws-lambda.IVersion",
       "docs-public-apis:@aws-cdk/aws-lambda.LambdaRuntimeProps",
