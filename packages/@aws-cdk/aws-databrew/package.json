@@ -92,5 +92,6 @@
   "maturity": "cfn-only",
   "awscdkio": {
     "announce": false
-  }
+  },
+  "private": true
 }
