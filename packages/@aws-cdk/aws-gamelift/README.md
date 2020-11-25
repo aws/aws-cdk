@@ -1,4 +1,4 @@
-## Amazon GameLift Construct Library
+# Amazon GameLift Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

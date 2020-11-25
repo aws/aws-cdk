@@ -1,4 +1,4 @@
-## Amazon Athena Construct Library
+# Amazon Athena Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

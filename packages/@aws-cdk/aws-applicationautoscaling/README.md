@@ -1,4 +1,4 @@
-## AWS Auto Scaling Construct Library
+# AWS Auto Scaling Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 
@@ -20,7 +20,7 @@ offer AutoScaling features for their own constructs.
 This document will describe the general autoscaling features and concepts;
 your particular service may offer only a subset of these.
 
-### AutoScaling basics
+## AutoScaling basics
 
 Resources can offer one or more **attributes** to autoscale, typically
 representing some capacity dimension of the underlying service. For example,
@@ -60,7 +60,7 @@ capacity.scaleToTrackMetric(...);
 capacity.scaleOnSchedule(...);
 ```
 
-### Step Scaling
+## Step Scaling
 
 This type of scaling scales in and out in deterministic steps that you
 configure, in response to metric values. For example, your scaling strategy
@@ -97,7 +97,7 @@ capacity.scaleOnMetric('ScaleToCPU', {
 The AutoScaling construct library will create the required CloudWatch alarms and
 AutoScaling policies for you.
 
-### Target Tracking Scaling
+## Target Tracking Scaling
 
 This type of scaling scales in and out in order to keep a metric (typically
 representing utilization) around a value you prefer. This type of scaling is
@@ -118,7 +118,7 @@ readCapacity.scaleOnUtilization({
 });
 ```
 
-### Scheduled Scaling
+## Scheduled Scaling
 
 This type of scaling is used to change capacities based on time. It works
 by changing the `minCapacity` and `maxCapacity` of the attribute, and so

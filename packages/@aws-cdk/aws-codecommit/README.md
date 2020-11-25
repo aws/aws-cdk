@@ -1,4 +1,4 @@
-## AWS CodeCommit Construct Library
+# AWS CodeCommit Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

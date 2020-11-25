@@ -1,4 +1,4 @@
-## AWS Database Migration Service Construct Library
+# AWS Database Migration Service Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

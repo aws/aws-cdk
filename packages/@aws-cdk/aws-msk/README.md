@@ -1,4 +1,4 @@
-## Amazon Managed Streaming for Apache Kafka Construct Library
+# Amazon Managed Streaming for Apache Kafka Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

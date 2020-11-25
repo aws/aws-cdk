@@ -1,4 +1,4 @@
-## AWS::CodeStarNotifications Construct Library
+# AWS::CodeStarNotifications Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

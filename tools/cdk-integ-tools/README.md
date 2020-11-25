@@ -7,7 +7,7 @@ If deployment succeeds, the synthesized template is saved in a local file and
 "locked". During build, the test app is only synthesized and compared against
 the checked-in file to protect against regressions.
 
-### Setup
+## Setup
 
 Create any number of files called `integ.*.ts` in your `test` directory. These
 should be CDK apps containing a single stack.

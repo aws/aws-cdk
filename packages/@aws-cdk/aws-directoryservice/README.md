@@ -1,4 +1,4 @@
-## AWS Directory Service Construct Library
+# AWS Directory Service Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

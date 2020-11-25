@@ -1,4 +1,4 @@
-## AWS CodePipeline Actions
+# AWS CodePipeline Actions
 <!--BEGIN STABILITY BANNER-->
 ---
 
@@ -510,7 +510,7 @@ directly from a CodeCommit repository, with a manual approval step in between to
 See [the AWS documentation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/continuous-delivery-codepipeline.html)
 for more details about using CloudFormation in CodePipeline.
 
-##### Actions defined by this package
+#### Actions defined by this package
 
 This package defines the following actions:
 
@@ -523,7 +523,7 @@ This package defines the following actions:
   changes from the people (or system) applying the changes.
 * **CloudFormationExecuteChangeSetAction** - Execute a change set prepared previously.
 
-##### Lambda deployed through CodePipeline
+#### Lambda deployed through CodePipeline
 
 If you want to deploy your Lambda through CodePipeline,
 and you don't use assets (for example, because your CDK code and Lambda code are separate),

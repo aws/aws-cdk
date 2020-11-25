@@ -1,4 +1,4 @@
-## Amazon DynamoDB Construct Library
+# Amazon DynamoDB Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 
@@ -19,7 +19,7 @@ const table = new dynamodb.Table(this, 'Table', {
 });
 ```
 
-### Importing existing tables
+## Importing existing tables
 
 To import an existing table into your CDK application, use the `Table.fromTableName`, `Table.fromTableArn` or `Table.fromTableAttributes`
 factory method. This method accepts table name or table ARN which describes the properties of an already
@@ -35,12 +35,12 @@ If you intend to use the `tableStreamArn` (including indirectly, for example by 
 `@aws-cdk/aws-lambda-event-source.DynamoEventSource` on the imported table), you *must* use the
 `Table.fromTableAttributes` method and the `tableStreamArn` property *must* be populated.
 
-### Keys
+## Keys
 
 When a table is defined, you must define it's schema using the `partitionKey`
 (required) and `sortKey` (optional) properties.
 
-### Billing Mode
+## Billing Mode
 
 DynamoDB supports two billing modes:
 * PROVISIONED - the default mode where the table and global secondary indexes have configured read and write capacity.
@@ -58,7 +58,7 @@ const table = new dynamodb.Table(this, 'Table', {
 Further reading:
 https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ReadWriteCapacityMode.
 
-### Configure AutoScaling for your table
+## Configure AutoScaling for your table
 
 You can have DynamoDB automatically raise and lower the read and write capacities
 of your table by setting up autoscaling. You can use this to either keep your
@@ -73,7 +73,7 @@ Further reading:
 https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/AutoScaling.html
 https://aws.amazon.com/blogs/database/how-to-use-aws-cloudformation-to-configure-auto-scaling-for-amazon-dynamodb-tables-and-indexes/
 
-### Amazon DynamoDB Global Tables
+## Amazon DynamoDB Global Tables
 
 You can create DynamoDB Global Tables by setting the `replicationRegions` property on a `Table`:
 
@@ -89,7 +89,7 @@ const globalTable = new dynamodb.Table(this, 'Table', {
 When doing so, a CloudFormation Custom Resource will be added to the stack in order to create the replica tables in the
 selected regions.
 
-### Encryption
+## Encryption
 
 All user data stored in Amazon DynamoDB is fully encrypted at rest. When creating a new table, you can choose to encrypt using the following customer master keys (CMK) to encrypt your table:
 * AWS owned CMK - By default, all tables are encrypted under an AWS owned customer master key (CMK) in the DynamoDB service account (no additional charges apply).

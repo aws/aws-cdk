@@ -1,4 +1,4 @@
-## Utilities to diff AWS CDK stacks against CloudFormation templates
+# Utilities to diff AWS CDK stacks against CloudFormation templates
 <!--BEGIN STABILITY BANNER-->
 ---
 

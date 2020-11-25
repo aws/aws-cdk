@@ -1,4 +1,4 @@
-## Amazon EKS Construct Library
+# Amazon EKS Construct Library
 
 <!--BEGIN STABILITY BANNER-->
 ---
@@ -12,7 +12,7 @@
 
 **This module is available for backwards compatibility purposes only ([details](https://github.com/aws/aws-cdk/pull/5540)). It will
 no longer be released with the CDK starting March 1st, 2020. See [issue
-# 5544](https://github.com/aws/aws-cdk/issues/5544) for upgrade instructions.**
+## 5544](https://github.com/aws/aws-cdk/issues/5544) for upgrade instructions.**
 
 ---
 

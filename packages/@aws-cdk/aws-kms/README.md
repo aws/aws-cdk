@@ -1,4 +1,4 @@
-## AWS Key Management Service Construct Library
+# AWS Key Management Service Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 
@@ -27,7 +27,7 @@ key.addAlias('alias/foo');
 key.addAlias('alias/bar');
 ```
 
-### Sharing keys between stacks
+## Sharing keys between stacks
 
 > see Trust Account Identities for additional details
 
@@ -37,7 +37,7 @@ pass the construct to the other stack:
 [sharing key between stacks](test/integ.key-sharing.lit.ts)
 
 
-### Importing existing keys
+## Importing existing keys
 
 > see Trust Account Identities for additional details
 
@@ -70,7 +70,7 @@ Note that calls to `addToResourcePolicy` and `grant*` methods on `myKeyAlias` wi
 no-ops, and `addAlias` and `aliasTargetKey` will fail, as the imported alias does not
 have a reference to the underlying KMS Key.
 
-### Trust Account Identities
+## Trust Account Identities
 
 KMS keys can be created to trust IAM policies. This is the default behavior in
 the console and is described

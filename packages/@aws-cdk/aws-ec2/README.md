@@ -1,4 +1,4 @@
-## Amazon EC2 Construct Library
+# Amazon EC2 Construct Library
 
 <!--BEGIN STABILITY BANNER-->
 ---

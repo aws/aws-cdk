@@ -1,4 +1,4 @@
-## Testing utilities and assertions for CDK libraries
+# Testing utilities and assertions for CDK libraries
 <!--BEGIN STABILITY BANNER-->
 ---
 
@@ -11,7 +11,7 @@
 
 This library contains helpers for writing unit tests and integration tests for CDK libraries
 
-### Unit tests
+## Unit tests
 
 Write your unit tests like this:
 
@@ -27,7 +27,7 @@ expect(stack).to(someExpectation(...));
 
 Here are the expectations you can use:
 
-### Verify (parts of) a template
+## Verify (parts of) a template
 
 Check that the synthesized stack template looks like the given template, or is a superset of it. These functions match logical IDs and all properties of a resource.
 
@@ -57,7 +57,7 @@ expect(stack).to(beASupersetOfTemplate({
 ```
 
 
-### Check existence of a resource
+## Check existence of a resource
 
 If you only care that a resource of a particular type exists (regardless of its logical identifier), and that *some* of its properties are set to specific values:
 
@@ -114,7 +114,7 @@ expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
 }));
 ```
 
-### Capturing values from a match
+## Capturing values from a match
 
 Special `Capture` matchers exist to capture values encountered during a match. These can be
 used for two typical purposes:
@@ -173,7 +173,7 @@ same value: the last value encountered by the `Capture` (as determined by the
 behavior of the matchers around it) is stored into it and will be the one
 available after the match has completed.
 
-### Check number of resources
+## Check number of resources
 
 If you want to assert that `n` number of resources of a particular type exist, with or without specific properties:
 
@@ -194,7 +194,7 @@ expect(stack).to(countResourcesLike('AWS::ApiGateway::Method', 1, {
 }));
 ```
 
-### Check existence of an output
+## Check existence of an output
 `haveOutput` assertion can be used to check that a stack contains specific output.
 Parameters to check against can be:
 - `outputName`

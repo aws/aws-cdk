@@ -1,4 +1,4 @@
-## AWS::AppFlow Construct Library
+# AWS::AppFlow Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

@@ -1,4 +1,4 @@
-## AWS::ACMPCA Construct Library
+# AWS::ACMPCA Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

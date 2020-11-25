@@ -1,4 +1,4 @@
-## AWS::CodeGuruReviewer Construct Library
+# AWS::CodeGuruReviewer Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

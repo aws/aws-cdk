@@ -1,4 +1,4 @@
-## Amazon DynamoDB Accelerator Construct Library
+# Amazon DynamoDB Accelerator Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

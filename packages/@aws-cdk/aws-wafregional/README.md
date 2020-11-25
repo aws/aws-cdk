@@ -1,4 +1,4 @@
-## AWS WAF Regional Construct Library
+# AWS WAF Regional Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

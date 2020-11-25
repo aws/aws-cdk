@@ -1,4 +1,4 @@
-## AWS Cloud Development Kit Core Library
+# AWS Cloud Development Kit Core Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

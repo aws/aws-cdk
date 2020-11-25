@@ -1,4 +1,4 @@
-## AWS CloudTrail Construct Library
+# AWS CloudTrail Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

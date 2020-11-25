@@ -1,4 +1,4 @@
-## Amazon FSx Construct Library
+# Amazon FSx Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

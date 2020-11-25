@@ -1,4 +1,4 @@
-## AWS Transfer for SFTP Construct Library
+# AWS Transfer for SFTP Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

@@ -1,4 +1,4 @@
-## AWS::CodeStarConnections Construct Library
+# AWS::CodeStarConnections Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

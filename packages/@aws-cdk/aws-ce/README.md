@@ -1,4 +1,4 @@
-## AWS::CE Construct Library
+# AWS::CE Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

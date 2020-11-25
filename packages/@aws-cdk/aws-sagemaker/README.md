@@ -1,4 +1,4 @@
-## Amazon SageMaker Construct Library
+# Amazon SageMaker Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

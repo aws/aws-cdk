@@ -1,4 +1,4 @@
-## Amazon Inspector Construct Library
+# Amazon Inspector Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

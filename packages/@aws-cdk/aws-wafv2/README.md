@@ -1,4 +1,4 @@
-## AWS::WAFv2 Construct Library
+# AWS::WAFv2 Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

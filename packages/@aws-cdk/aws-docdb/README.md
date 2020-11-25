@@ -1,4 +1,4 @@
-## Amazon DocumentDB Construct Library
+# Amazon DocumentDB Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 
@@ -13,7 +13,7 @@
 ---
 <!--END STABILITY BANNER-->
 
-### Starting a Clustered Database
+## Starting a Clustered Database
 
 To set up a clustered DocumentDB database, define a `DatabaseCluster`. You must
 always launch a database in a VPC. Use the `vpcSubnets` attribute to control whether
@@ -37,7 +37,7 @@ By default, the master password will be generated and stored in AWS Secrets Mana
 
 Your cluster will be empty by default.
 
-### Connecting
+## Connecting
 
 To control who can access the cluster, use the `.connections` attribute. DocumentDB databases have a default port, so
 you don't need to specify the port:
@@ -53,7 +53,7 @@ attributes:
 const writeAddress = cluster.clusterEndpoint.socketAddress;   // "HOSTNAME:PORT"
 ```
 
-### Rotating credentials
+## Rotating credentials
 When the master password is generated and stored in AWS Secrets Manager, it can be rotated automatically:
 ```ts
 cluster.addRotationSingleUser(); // Will rotate automatically after 30 days

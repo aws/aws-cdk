@@ -1,4 +1,4 @@
-## AWS::QLDB Construct Library
+# AWS::QLDB Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

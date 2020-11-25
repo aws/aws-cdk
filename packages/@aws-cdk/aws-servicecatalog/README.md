@@ -1,4 +1,4 @@
-## AWS Service Catalog Construct Library
+# AWS Service Catalog Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

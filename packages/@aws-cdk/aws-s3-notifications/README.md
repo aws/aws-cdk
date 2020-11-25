@@ -1,4 +1,4 @@
-## S3 Bucket Notifications Destinations
+# S3 Bucket Notifications Destinations
 <!--BEGIN STABILITY BANNER-->
 ---
 

@@ -1,4 +1,4 @@
-## Amazon Lambda Destinations Library
+# Amazon Lambda Destinations Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

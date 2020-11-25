@@ -1,4 +1,4 @@
-## Amazon Kinesis Data Analytics Construct Library
+# Amazon Kinesis Data Analytics Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

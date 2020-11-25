@@ -1,4 +1,4 @@
-## AWS::Detective Construct Library
+# AWS::Detective Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

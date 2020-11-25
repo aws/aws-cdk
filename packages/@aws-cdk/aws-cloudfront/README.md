@@ -1,4 +1,4 @@
-## Amazon CloudFront Construct Library
+# Amazon CloudFront Construct Library
 
 <!--BEGIN STABILITY BANNER-->
 ---

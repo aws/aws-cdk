@@ -1,4 +1,4 @@
-## AWS OpsWorks Construct Library
+# AWS OpsWorks Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

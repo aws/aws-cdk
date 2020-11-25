@@ -1,4 +1,4 @@
-## AWS::CodeArtifact Construct Library
+# AWS::CodeArtifact Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

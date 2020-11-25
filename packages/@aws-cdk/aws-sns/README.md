@@ -1,4 +1,4 @@
-## Amazon Simple Notification Service Construct Library
+# Amazon Simple Notification Service Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 
@@ -19,7 +19,7 @@ const topic = new sns.Topic(this, 'Topic', {
 });
 ```
 
-### Subscriptions
+## Subscriptions
 
 Various subscriptions can be added to the topic by calling the
 `.addSubscription(...)` method on the topic. It accepts a *subscription* object,
@@ -45,7 +45,7 @@ myTopic.addSubscription(new subs.SqsSubscription(queue));
 Note that subscriptions of queues in different accounts need to be manually confirmed by
 reading the initial message from the queue and visiting the link found in it.
 
-#### Filter policy
+### Filter policy
 A filter policy can be specified when subscribing an endpoint to a topic.
 
 Example with a Lambda subscription:
@@ -76,7 +76,7 @@ topic.addSubscription(new subs.LambdaSubscription(fn, {
 }));
 ```
 
-### DLQ setup for SNS Subscription
+## DLQ setup for SNS Subscription
 CDK can attach provided Queue as DLQ for your SNS subscription.
 See the [SNS DLQ configuration docs](https://docs.aws.amazon.com/sns/latest/dg/sns-configure-dead-letter-queue.html) for more information about this feature.
 
@@ -97,7 +97,7 @@ new sns.Subscription(stack, 'Subscription', {
 });
 ```
 
-### CloudWatch Event Rule Target
+## CloudWatch Event Rule Target
 
 SNS topics can be used as targets for CloudWatch event rules.
 

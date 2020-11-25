@@ -1,4 +1,4 @@
-## AWS::ManagedBlockchain Construct Library
+# AWS::ManagedBlockchain Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

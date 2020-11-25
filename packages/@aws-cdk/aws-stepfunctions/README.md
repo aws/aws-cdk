@@ -1,4 +1,4 @@
-## AWS Step Functions Construct Library
+# AWS Step Functions Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 
@@ -17,7 +17,7 @@ to call other AWS services.
 Defining a workflow looks like this (for the [Step Functions Job Poller
 example](https://docs.aws.amazon.com/step-functions/latest/dg/job-status-poller-sample.html)):
 
-### Example
+## Example
 
 ```ts
 import * as sfn from '@aws-cdk/aws-stepfunctions';

@@ -1,4 +1,4 @@
-## Amazon Data Lifecycle Manager Construct Library
+# Amazon Data Lifecycle Manager Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

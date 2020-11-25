@@ -1,4 +1,4 @@
-## AWS::CodeStar Construct Library
+# AWS::CodeStar Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

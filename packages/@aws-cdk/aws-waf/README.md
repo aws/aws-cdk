@@ -1,4 +1,4 @@
-## AWS Web Application Firewall Construct Library
+# AWS Web Application Firewall Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

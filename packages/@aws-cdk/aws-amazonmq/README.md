@@ -1,4 +1,4 @@
-## Amazon MQ Construct Library
+# Amazon MQ Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

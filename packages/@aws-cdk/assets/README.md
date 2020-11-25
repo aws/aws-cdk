@@ -1,4 +1,4 @@
-## AWS CDK Assets
+# AWS CDK Assets
 <!--BEGIN STABILITY BANNER-->
 ---
 

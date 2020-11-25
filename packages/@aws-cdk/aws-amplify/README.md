@@ -1,4 +1,4 @@
-## AWS Amplify Construct Library
+# AWS Amplify Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 
@@ -15,7 +15,7 @@
 
 The AWS Amplify Console provides a Git-based workflow for deploying and hosting fullstack serverless web applications. A fullstack serverless app consists of a backend built with cloud resources such as GraphQL or REST APIs, file and data storage, and a frontend built with single page application frameworks such as React, Angular, Vue, or Gatsby.
 
-### Setting up an app with branches, custom rules and a domain
+## Setting up an app with branches, custom rules and a domain
 To set up an Amplify Console app, define an `App`:
 ```ts
 import * as codebuild from '@aws-cdk/aws-codebuild';
@@ -112,7 +112,7 @@ domain.mapSubDomain(master, 'www');
 domain.mapSubDomain(dev); // sub domain prefix defaults to branch name
 ```
 
-### Restricting access
+## Restricting access
 Password protect the app with basic auth by specifying the `basicAuth` prop.
 
 Use `BasicAuth.fromCredentials` when referencing an existing secret:
@@ -140,7 +140,7 @@ app.addBranch('feature/next', {
 });
 ```
 
-### Automatically creating and deleting branches
+## Automatically creating and deleting branches
 Use the `autoBranchCreation` and `autoBranchDeletion` props to control creation/deletion
 of branches:
 

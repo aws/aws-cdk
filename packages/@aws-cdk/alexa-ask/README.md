@@ -1,4 +1,4 @@
-## Alexa Skills Kit Construct Library
+# Alexa Skills Kit Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

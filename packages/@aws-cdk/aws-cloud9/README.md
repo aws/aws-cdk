@@ -1,4 +1,4 @@
-## AWS Cloud9 Construct Library
+# AWS Cloud9 Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 
@@ -18,7 +18,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
 AWS Cloud9 is a cloud-based integrated development environment (IDE) that lets you write, run, and debug your code with just a browser. It includes a code editor, debugger, and terminal. Cloud9 comes prepackaged with essential tools for popular programming languages, including JavaScript, Python, PHP, and more, so you don’t need to install files or configure your development machine to start new projects. Since your Cloud9 IDE is cloud-based, you can work on your projects from your office, home, or anywhere using an internet-connected machine. Cloud9 also provides a seamless experience for developing serverless applications enabling you to easily define resources, debug, and switch between local and remote execution of serverless applications. With Cloud9, you can quickly share your development environment with your team, enabling you to pair program and track each other's inputs in real time.
 
 
-### Creating EC2 Environment
+## Creating EC2 Environment
 
 EC2 Environments are defined with `Ec2Environment`. To create an EC2 environment in the private subnet, specify `subnetSelection` with private `subnetType`.
 
@@ -49,7 +49,7 @@ const c9env = new cloud9.Ec2Environment(this, 'Cloud9Env3', {
 new cdk.CfnOutput(this, 'URL', { value: c9env.ideUrl });
 ```
 
-### Cloning Repositories
+## Cloning Repositories
 
 Use `clonedRepositories` to clone one or multiple AWS Codecommit repositories into the environment:
 

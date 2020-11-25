@@ -1,4 +1,4 @@
-## AWS::IVS Construct Library
+# AWS::IVS Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

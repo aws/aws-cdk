@@ -1,4 +1,4 @@
-## AWS::IoTSiteWise Construct Library
+# AWS::IoTSiteWise Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

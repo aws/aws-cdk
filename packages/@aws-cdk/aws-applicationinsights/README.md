@@ -1,4 +1,4 @@
-## AWS::ApplicationInsights Construct Library
+# AWS::ApplicationInsights Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

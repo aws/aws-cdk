@@ -1,4 +1,4 @@
-## AWS::ImageBuilder Construct Library
+# AWS::ImageBuilder Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

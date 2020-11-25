@@ -1,4 +1,4 @@
-## Amazon Cognito Construct Library
+# Amazon Cognito Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

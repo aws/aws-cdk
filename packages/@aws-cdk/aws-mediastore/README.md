@@ -1,4 +1,4 @@
-## AWS Elemental MediaStore Construct Library
+# AWS Elemental MediaStore Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

@@ -1,4 +1,4 @@
-## Amazon Simple Email Service Actions Library
+# Amazon Simple Email Service Actions Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

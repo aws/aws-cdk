@@ -1,4 +1,4 @@
-## Amazon Lambda Node.js Library
+# Amazon Lambda Node.js Library
 <!--BEGIN STABILITY BANNER-->
 ---
 
@@ -13,7 +13,7 @@ This library provides constructs for Node.js Lambda functions.
 
 To use this module, you will need to have Docker installed.
 
-### Node.js Function
+## Node.js Function
 Define a `NodejsFunction`:
 
 ```ts
@@ -78,7 +78,7 @@ should also have `npm` or `yarn` depending on the lock file you're using.
 Use the [default image provided by `@aws-cdk/aws-lambda-nodejs`](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-lambda-nodejs/lib/Dockerfile)
 as a source of inspiration.
 
-### Lock file
+## Lock file
 The `NodejsFunction` requires a dependencies lock file (`yarn.lock` or
 `package-lock.json`). When bundling in a Docker container, the path containing this
 lock file is used as the source (`/asset-input`) for the volume mounted in the
@@ -89,12 +89,12 @@ Alternatively, you can specify the `depsLockFilePath` prop manually. In this
 case you need to ensure that this path includes `entry` and any module/dependencies
 used by your function. Otherwise bundling will fail.
 
-### Configuring esbuild
+## Configuring esbuild
 The `NodejsFunction` construct exposes some [esbuild](https://esbuild.github.io/) options via properties: `minify`, `sourceMaps` and `target`.
 
-### Working with modules
+## Working with modules
 
-#### Externals
+### Externals
 By default, all node modules are bundled except for `aws-sdk`. This can be configured by specifying
 the `externalModules` prop.
 
@@ -107,7 +107,7 @@ new lambda.NodejsFunction(this, 'my-handler', {
 });
 ```
 
-#### Install modules
+### Install modules
 By default, all node modules referenced in your Lambda code will be bundled by esbuild.
 Use the `nodeModules` prop to specify a list of modules that should not be bundled
 but instead included in the `node_modules` folder of the Lambda package. This is useful
@@ -123,7 +123,7 @@ The modules listed in `nodeModules` must be present in the `package.json`'s depe
 same version will be used for installation. The lock file (`yarn.lock` or `package-lock.json`)
 will be used along with the right installer (`yarn` or `npm`).
 
-### Local bundling
+## Local bundling
 If esbuild is available it will be used to bundle your code in your environment. Otherwise,
 bundling will happen in a [Lambda compatible Docker container](https://hub.docker.com/r/amazon/aws-sam-cli-build-image-nodejs12.x).
 

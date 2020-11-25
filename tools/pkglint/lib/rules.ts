@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as caseUtils from 'case';
+import { Node, NodeWalker, NodeWalkingStep, Parser } from 'commonmark';
 import * as glob from 'glob';
 import * as semver from 'semver';
 import { LICENSE, NOTICE } from './licensing';
@@ -212,13 +213,13 @@ export class ReadmeFile extends ValidationRule {
         fix: () => fs.writeFileSync(
           readmeFile,
           [
-            `## ${headline || pkg.json.description}`,
+            `# ${headline || pkg.json.description}`,
             'This module is part of the[AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.',
           ].join('\n'),
         ),
       });
     } else if (headline) {
-      const requiredFirstLine = `## ${headline}`;
+      const requiredFirstLine = `# ${headline}`;
       const [firstLine, ...rest] = fs.readFileSync(readmeFile, { encoding: 'utf8' }).split('\n');
       if (firstLine !== requiredFirstLine) {
         pkg.report({
@@ -227,6 +228,84 @@ export class ReadmeFile extends ValidationRule {
           fix: () => fs.writeFileSync(readmeFile, [requiredFirstLine, ...rest].join('\n')),
         });
       }
+    }
+  }
+}
+
+/**
+ * Headings in the README.md file must be consistent. Concretely, this means the very first heading found in the file
+ * must be at H1, and subsequent headings are required to be H2 or deeper. The document is not allowed to skip a heading
+ * level (i.e: an H4 nested under and H2 - that should have been an H3), nor to have another H1 heading.
+ *
+ * Those validations help ensure a smooth and consistent rendering in the documentation site, especially in the Python
+ * reference documentation.
+ */
+export class ReadmeFileHeadings extends ValidationRule {
+  public readonly name = 'package-info/README.md/Headings';
+
+  public validate(pkg: PackageJson): void {
+    const readmeFile = path.join(pkg.packageRoot, 'README.md');
+
+    if (!fs.existsSync(readmeFile)) {
+      // Does not exist, nothing to validate (another rule will enforce presence).
+      return;
+    }
+
+    const parsed = new Parser().parse(fs.readFileSync(readmeFile, { encoding: 'utf-8' }));
+    for (const { node, original } of headingNeedsCorrections(parsed.walker())) {
+      const [[line, column]] = node.sourcepos;
+      pkg.report({
+        ruleName: this.name,
+        message: `${readmeFile}:${line}:${column}: Heading is H${original} but should be H${node.level}`,
+        fix: () => {
+          const lines = fs.readFileSync(readmeFile, { encoding: 'utf-8' }).split('\n');
+          // Careful - the array is 0-indexed, but sourcepos is 1-indexed...
+          lines[line - 1] = lines[line - 1].replace(new RegExp(`^#{${original}} `), `${'#'.repeat(node.level)} `);
+          fs.writeFileSync(readmeFile, lines.join('\n'), { encoding: 'utf-8' });
+        },
+      });
+    }
+
+    function headingNeedsCorrections(walker: NodeWalker) {
+      const levelStack = new Array<{ original: number, adjusted: number }>();
+      const corrections = new Array<{ node: Node, original: number }>();
+
+      let step: NodeWalkingStep;
+      while ((step = walker.next())) {
+        const { entering, node } = step;
+        if (!entering || node.type !== 'heading') {
+          continue;
+        }
+
+        if (levelStack.length === 0) {
+          levelStack.push({ original: node.level, adjusted: 1 });
+        } else {
+          // Pop out as needed, or until we have reached back out to H1 level
+          while (node.level < levelStack[levelStack.length - 1].original && levelStack[levelStack.length - 1].adjusted > 1) {
+            levelStack.pop();
+          }
+
+          const stackTip = levelStack[levelStack.length - 1];
+
+          if (node.level === 1) {
+            // Attempted to get a second H1 in the document. This should be H2.
+            if (stackTip.adjusted !== 2) {
+              levelStack.push({ original: node.level, adjusted: 2 });
+            }
+          } else if (node.level > stackTip.original || stackTip.adjusted === 1) {
+            // Introduced a deeper heading level, reflecting that on the stack
+            levelStack.push({ original: node.level, adjusted: stackTip.adjusted + 1 });
+          }
+        }
+
+        const stackTip = levelStack[levelStack.length - 1];
+        if (node.level !== stackTip.adjusted) {
+          corrections.push({ node, original: node.level });
+          node.level = stackTip.adjusted;
+        }
+      }
+
+      return corrections;
     }
   }
 }

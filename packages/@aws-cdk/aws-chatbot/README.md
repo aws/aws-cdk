@@ -1,4 +1,4 @@
-## AWS::Chatbot Construct Library
+# AWS::Chatbot Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 
@@ -40,7 +40,7 @@ slackChannel.addToPrincipalPolicy(new iam.PolicyStatement({
 }));
 ```
 
-### Log Group
+## Log Group
 
 Slack channel configuration automatically create a log group with the name `/aws/chatbot/<configuration-name>` in `us-east-1` upon first execution with
 log data set to never expire.

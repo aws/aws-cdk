@@ -1,4 +1,4 @@
-## AWS Budgets Construct Library
+# AWS Budgets Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

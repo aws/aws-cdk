@@ -1,4 +1,4 @@
-## AWS Data Pipeline Construct Library
+# AWS Data Pipeline Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

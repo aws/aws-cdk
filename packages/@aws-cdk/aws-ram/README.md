@@ -1,4 +1,4 @@
-## AWS Resource Access Manager Construct Library
+# AWS Resource Access Manager Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

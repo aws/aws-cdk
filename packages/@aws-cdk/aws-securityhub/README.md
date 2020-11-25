@@ -1,4 +1,4 @@
-## AWS Security Hub Construct Library
+# AWS Security Hub Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

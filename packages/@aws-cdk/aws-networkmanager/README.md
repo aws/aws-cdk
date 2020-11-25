@@ -1,4 +1,4 @@
-## AWS::NetworkManager Construct Library
+# AWS::NetworkManager Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

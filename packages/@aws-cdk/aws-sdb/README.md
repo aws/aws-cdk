@@ -1,4 +1,4 @@
-## Amazon SimpleDB Construct Library
+# Amazon SimpleDB Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

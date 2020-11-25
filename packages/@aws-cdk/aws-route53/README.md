@@ -1,4 +1,4 @@
-## Amazon Route53 Construct Library
+# Amazon Route53 Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 
@@ -37,7 +37,7 @@ const zone = new route53.PrivateHostedZone(this, 'HostedZone', {
 
 Additional VPCs can be added with `zone.addVpc()`.
 
-### Adding Records
+## Adding Records
 
 To add a TXT record to your zone:
 ```ts
@@ -83,7 +83,7 @@ Constructs are available for A, AAAA, CAA, CNAME, MX, NS, SRV and TXT records.
 Use the `CaaAmazonRecord` construct to easily restrict certificate authorities
 allowed to issue certificates for a domain to Amazon only.
 
-### Imports
+## Imports
 
 If you don't know the ID of the Hosted Zone to import, you can use the 
 `HostedZone.fromLookup`:

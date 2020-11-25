@@ -1,4 +1,4 @@
-## AWS Auto Scaling Plans Construct Library
+# AWS Auto Scaling Plans Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

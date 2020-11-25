@@ -1,4 +1,4 @@
-## AWS::GlobalAccelerator Construct Library
+# AWS::GlobalAccelerator Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

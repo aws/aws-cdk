@@ -1,4 +1,4 @@
-## AWS::Macie Construct Library
+# AWS::Macie Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

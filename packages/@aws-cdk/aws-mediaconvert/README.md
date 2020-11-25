@@ -1,4 +1,4 @@
-## AWS::MediaConvert Construct Library
+# AWS::MediaConvert Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

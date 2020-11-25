@@ -1,4 +1,4 @@
-## AWS AppSync Construct Library
+# AWS AppSync Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 
@@ -16,9 +16,9 @@
 The `@aws-cdk/aws-appsync` package contains constructs for building flexible
 APIs that use GraphQL. 
 
-### Example
+## Example
 
-### DynamoDB
+## DynamoDB
 
 Example of a GraphQL API with `AWS_IAM` authorization resolving into a DynamoDb
 backend data source.
@@ -147,7 +147,7 @@ rdsDS.createResolver({
 });
 ```
 
-#### HTTP Endpoints
+### HTTP Endpoints
 GraphQL schema file `schema.graphql`:
 
 ```gql
@@ -743,7 +743,7 @@ api.addType(episode);
 
 To learn more about **Enum Types**, read the docs [here](https://graphql.org/learn/schema/#enumeration-types).
 
-##### Input Types
+#### Input Types
 
 **Input Types** are special types of Intermediate Types. They give users an
 easy way to pass complex objects for top level Mutation and Queries.

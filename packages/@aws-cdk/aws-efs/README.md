@@ -1,4 +1,4 @@
-## Amazon Elastic File System Construct Library
+# Amazon Elastic File System Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 
@@ -37,7 +37,7 @@ const fileSystem =  new FileSystem(this, 'EfsFileSystem', {
 });
 ```
 
-### Access Point
+## Access Point
 
 An access point is an application-specific view into an EFS file system that applies an operating system user and
 group, and a file system path, to any file system request made through the access point. The operating system user
@@ -75,7 +75,7 @@ efs.AccessPoint.fromAccessPointAttributes(this, 'ap', {
 mount targets created in all availability zones the function will execute in, but not all are in the available life cycle
 state yet. Please wait for them to become available and try the request again.
 
-### Connecting
+## Connecting
 
 To control who can access the EFS, use the `.connections` attribute. EFS has
 a fixed default port, so you don't need to specify the port:
@@ -83,7 +83,7 @@ a fixed default port, so you don't need to specify the port:
 ```ts
 fileSystem.connections.allowDefaultPortFrom(instance);
 ```
-### Mounting the file system using User Data
+## Mounting the file system using User Data
 
 In order to automatically mount this file system during instance launch, 
 following code can be used as reference:

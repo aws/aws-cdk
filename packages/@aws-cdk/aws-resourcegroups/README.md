@@ -1,4 +1,4 @@
-## AWS::ResourceGroups Construct Library
+# AWS::ResourceGroups Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

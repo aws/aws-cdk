@@ -1,4 +1,4 @@
-## Amazon CloudWatch Synthetics Construct Library
+# Amazon CloudWatch Synthetics Construct Library
 
 <!--BEGIN STABILITY BANNER-->
 ---

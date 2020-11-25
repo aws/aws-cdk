@@ -1,4 +1,4 @@
-## Amazon EMR Construct Library
+# Amazon EMR Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

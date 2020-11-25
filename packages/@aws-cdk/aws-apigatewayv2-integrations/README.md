@@ -1,4 +1,4 @@
-## AWS APIGatewayv2 Integrations
+# AWS APIGatewayv2 Integrations
 <!--BEGIN STABILITY BANNER-->
 ---
 

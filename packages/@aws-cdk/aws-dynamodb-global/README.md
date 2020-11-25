@@ -1,4 +1,4 @@
-## @aws-cdk/aws-dynamodb-global
+# @aws-cdk/aws-dynamodb-global
 <!--BEGIN STABILITY BANNER-->
 ---
 
@@ -9,7 +9,7 @@
 ---
 <!--END STABILITY BANNER-->
 
-### NOTICE: This module has been deprecated in favor of `@aws-cdk/aws-dynamodb.Table.replicationRegions`
+## NOTICE: This module has been deprecated in favor of `@aws-cdk/aws-dynamodb.Table.replicationRegions`
 
 ---
 

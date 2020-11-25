@@ -1,4 +1,4 @@
-## Amazon Neptune Construct Library
+# Amazon Neptune Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

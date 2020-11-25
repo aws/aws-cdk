@@ -1,4 +1,4 @@
-## AWS IoT Greengrass Construct Library
+# AWS IoT Greengrass Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

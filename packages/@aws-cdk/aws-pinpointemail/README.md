@@ -1,4 +1,4 @@
-## Amazon Pinpoint Email Construct Library
+# Amazon Pinpoint Email Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

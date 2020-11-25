@@ -1,4 +1,4 @@
-## AWS::IoTEvents Construct Library
+# AWS::IoTEvents Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

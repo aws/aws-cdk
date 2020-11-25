@@ -1,4 +1,4 @@
-## AWS AutoScaling Common Library
+# AWS AutoScaling Common Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

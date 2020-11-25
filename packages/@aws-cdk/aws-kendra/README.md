@@ -1,4 +1,4 @@
-## AWS::Kendra Construct Library
+# AWS::Kendra Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

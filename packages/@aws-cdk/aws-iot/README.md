@@ -1,4 +1,4 @@
-## AWS IoT Construct Library
+# AWS IoT Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

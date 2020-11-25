@@ -1,4 +1,4 @@
-## AWS CodePipeline Construct Library
+# AWS CodePipeline Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 
@@ -9,7 +9,7 @@
 ---
 <!--END STABILITY BANNER-->
 
-### Pipeline
+## Pipeline
 
 To construct an empty Pipeline:
 
@@ -43,7 +43,7 @@ const pipeline = new codepipeline.Pipeline(this, 'MyFirstPipeline', {
 });
 ```
 
-### Stages
+## Stages
 
 You can provide Stages when creating the Pipeline:
 
@@ -84,7 +84,7 @@ const someStage = pipeline.addStage({
 });
 ```
 
-### Actions
+## Actions
 
 Actions live in a separate package, `@aws-cdk/aws-codepipeline-actions`.
 
@@ -96,7 +96,7 @@ or you can use the `IStage.addAction()` method to mutate an existing Stage:
 sourceStage.addAction(someAction);
 ```
 
-### Cross-account CodePipelines
+## Cross-account CodePipelines
 
 > Cross-account Pipeline actions require that the Pipeline has *not* been
 > created with `crossAccountKeys: false`.
@@ -151,7 +151,7 @@ stage.addAction(new codepipeline_actions.CloudFormationCreateUpdateStackAction({
 }));
 ```
 
-### Cross-region CodePipelines
+## Cross-region CodePipelines
 
 Similar to how you set up a cross-account Action, the AWS resource object you
 pass to actions can also be in different *Regions*. For example, the
@@ -207,7 +207,7 @@ const pipeline = new codepipeline.Pipeline(this, 'MyFirstPipeline', { /* ... */ 
 See [the AWS docs here](https://docs.aws.amazon.com/codepipeline/latest/userguide/actions-create-cross-region.html)
 for more information on cross-region CodePipelines.
 
-#### Creating an encrypted replication bucket
+### Creating an encrypted replication bucket
 
 If you're passing a replication bucket created in a different stack,
 like this:
@@ -254,7 +254,7 @@ const replicationBucket = new s3.Bucket(replicationStack, 'ReplicationBucket', {
 });
 ```
 
-### Variables
+## Variables
 
 The library supports the CodePipeline Variables feature.
 Each action class that emits variables has a separate variables interface,
@@ -304,9 +304,9 @@ for details on how to use the variables for each action class.
 See the [CodePipeline documentation](https://docs.aws.amazon.com/codepipeline/latest/userguide/reference-variables.html)
 for more details on how to use the variables feature.
 
-### Events
+## Events
 
-#### Using a pipeline as an event target
+### Using a pipeline as an event target
 
 A pipeline can be used as a target for a CloudWatch event rule:
 
@@ -326,7 +326,7 @@ When a pipeline is used as an event target, the
 "codepipeline:StartPipelineExecution" permission is granted to the AWS
 CloudWatch Events service.
 
-#### Event sources
+### Event sources
 
 Pipelines emit CloudWatch events. To define event rules for events emitted by
 the pipeline, stages or action, use the `onXxx` methods on the respective

@@ -1,4 +1,4 @@
-## AWS::FMS Construct Library
+# AWS::FMS Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

@@ -68,7 +68,7 @@ const asset = new DockerImageAsset(this, 'MyBuildImage', {
   target: 'a-target'
 })
 ```
-### Pull Permissions
+## Pull Permissions
 
 Depending on the consumer of your image asset, you will need to make sure
 the principal has permissions to pull the image.

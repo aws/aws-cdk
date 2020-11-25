@@ -1,4 +1,4 @@
-## Amazon EKS Construct Library
+# Amazon EKS Construct Library
 
 <!--BEGIN STABILITY BANNER-->
 ---
@@ -43,7 +43,7 @@ Table Of Contents
 * [Using existing clusters](#using-existing-clusters)
 * [Known Issues and Limitations](#known-issues-and-limitations)
 
-## Quick Start
+### Quick Start
 
 This example defines an Amazon EKS cluster with the following configuration:
 
@@ -100,7 +100,7 @@ pod/coredns-5cb4fb54c7-v9nxx   1/1     Running   0          23m
 ...
 ```
 
-## Architectural Overview
+### Architectural Overview
 
 The following is a qualitative diagram of the various possible components involved in the cluster deployment.
 
@@ -140,7 +140,7 @@ In a nutshell:
 
 A more detailed breakdown of each is provided further down this README.
 
-## Provisioning clusters
+### Provisioning clusters
 
 Creating a new cluster is done using the `Cluster` or `FargateCluster` constructs. The only required property is the kubernetes `version`.
 
@@ -163,7 +163,7 @@ new eks.FargateCluster(this, 'HelloEKS', {
 Below you'll find a few important cluster configuration options. First of which is Capacity.
 Capacity is the amount and the type of worker nodes that are available to the cluster for deploying resources. Amazon EKS offers 3 ways of configuring capacity, which you can combine as you like:
 
-### Managed node groups
+#### Managed node groups
 
 Amazon EKS managed node groups automate the provisioning and lifecycle management of nodes (Amazon EC2 instances) for Amazon EKS Kubernetes clusters.
 With Amazon EKS managed node groups, you don’t need to separately provision or register the Amazon EC2 instances that provide compute capacity to run your Kubernetes applications. You can create, update, or terminate nodes for your cluster with a single operation. Nodes run using the latest Amazon EKS optimized AMIs in your AWS account while node updates and terminations gracefully drain nodes to ensure that your applications stay available.
@@ -203,7 +203,7 @@ cluster.addNodegroupCapacity('custom-node-group', {
 });
 ```
 
-#### Launch Template Support
+##### Launch Template Support
 
 You can specify a launch template that the node group will use. Note that when using a custom AMI, Amazon EKS doesn't merge any user data.
 Rather, You are responsible for supplying the required bootstrap commands for nodes to join the cluster.
@@ -234,7 +234,7 @@ cluster.addNodegroupCapacity('extra-ng', {
 
 Graviton 2 instance types are supported including `c6g`, `m6g`, `r6g` and `t4g`.
 
-### Fargate profiles
+#### Fargate profiles
 
 AWS Fargate is a technology that provides on-demand, right-sized compute
 capacity for containers. With AWS Fargate, you no longer have to provision,
@@ -280,7 +280,7 @@ pods running on Fargate. For ingress, we recommend that you use the [ALB Ingress
 Controller](https://docs.aws.amazon.com/eks/latest/userguide/alb-ingress.html)
 on Amazon EKS (minimum version v1.1.4).
 
-### Self-managed nodes
+#### Self-managed nodes
 
 Another way of allocating capacity to an EKS cluster is by using self-managed nodes.
 EC2 instances that are part of the auto-scaling group will serve as worker nodes for the cluster.
@@ -333,7 +333,7 @@ cluster.connectAutoScalingGroupCapacity(asg);
 
 This will add the necessary user-data and configure all connections, roles, and tags needed for the instances in the auto-scaling group to properly join the cluster.
 
-#### Spot Instances
+##### Spot Instances
 
 When using self-managed nodes, you can configure the capacity to use spot instances, greatly reducing capacity cost.
 To enable spot capacity, use the `spotPrice` property:
@@ -359,7 +359,7 @@ terminated.
 >
 > Chart Version: [0.9.5](https://github.com/aws/eks-charts/blob/v0.0.28/stable/aws-node-termination-handler/Chart.yaml)
 
-#### Bottlerocket
+##### Bottlerocket
 
 [Bottlerocket](https://aws.amazon.com/bottlerocket/) is a Linux-based open-source operating system that is purpose-built by Amazon Web Services for running containers on virtual machines or bare metal hosts.
 At this moment, `Bottlerocket` is only supported when using self-managed auto-scaling groups.
@@ -384,7 +384,7 @@ For example, if the Amazon EKS cluster version is `1.17`, the Bottlerocket AMI v
 
 Please note Bottlerocket does not allow to customize bootstrap options and `bootstrapOptions` properties is not supported when you create the `Bottlerocket` capacity.
 
-### Endpoint Access
+#### Endpoint Access
 
 When you create a new cluster, Amazon EKS creates an endpoint for the managed Kubernetes API server that you use to communicate with your cluster (using Kubernetes management tools such as `kubectl`)
 
@@ -400,7 +400,7 @@ const cluster = new eks.Cluster(this, 'hello-eks', {
 });
 ```
 
-### VPC Support
+#### VPC Support
 
 You can specify the VPC of the cluster using the `vpc` and `vpcSubnets` properties:
 
@@ -428,7 +428,7 @@ cluster.addAutoScalingGroupCapacity('nodes', {
 In addition to the cluster and the capacity, there are two additional components you might want to
 provision within a VPC.
 
-#### Kubectl Handler
+##### Kubectl Handler
 
 The `KubectlHandler` is a Lambda function responsible to issuing `kubectl` and `helm` commands against the cluster when you add resource manifests to the cluster.
 
@@ -438,11 +438,11 @@ Breaking this down, it means that if the endpoint exposes private access (via `E
 
 If the endpoint does not expose private access (via `EndpointAccess.PUBLIC`) **or** the VPC does not contain private subnets, the function will not be provisioned within the VPC.
 
-#### Cluster Handler
+##### Cluster Handler
 
 The `ClusterHandler` is a Lambda function responsible to interact the EKS API in order to control the cluster lifecycle. At the moment, this function cannot be provisioned inside the VPC. See [Attach all Lambda Function to a VPC](https://github.com/aws/aws-cdk/issues/9509) for more details.
 
-### Kubectl Support
+#### Kubectl Support
 
 The resources are created in the cluster by running `kubectl apply` from a python lambda function. You can configure the environment of this function by specifying it at cluster instantiation. For example, this can be useful in order to configure an http proxy:
 
@@ -490,7 +490,7 @@ const cluster = eks.Cluster.fromClusterAttributes(this, 'MyCluster', {
 > Instructions on how to build `layer.zip` can be found
 > [here](https://github.com/aws-samples/aws-lambda-layer-kubectl/blob/master/cdk/README.md).
 
-### ARM64 Support
+#### ARM64 Support
 
 Instance types with `ARM64` architecture are supported in both managed nodegroup and self-managed capacity. Simply specify an ARM64 `instanceType` (such as `m6g.medium`), and the latest
 Amazon Linux 2 AMI for ARM64 will be automatically selected.
@@ -509,7 +509,7 @@ cluster.addAutoScalingGroupCapacity('self-ng-arm', {
 })
 ```
 
-### Masters Role
+#### Masters Role
 
 When you create a cluster, you can specify a `mastersRole`. The `Cluster` construct will associate this role with the `system:masters` [RBAC](https://kubernetes.io/docs/reference/access-authn-authz/rbac/) group, giving it super-user access to the cluster.
 
@@ -532,7 +532,7 @@ Added new context arn:aws:eks:rrrrr:112233445566:cluster/cluster-xxxxx to /home/
 
 The default value is `eks.EndpointAccess.PUBLIC_AND_PRIVATE`. Which means the cluster endpoint is accessible from outside of your VPC, but worker node traffic and `kubectl` commands issued by this library stay within your VPC.
 
-### Encryption
+#### Encryption
 
 When you create an Amazon EKS cluster, envelope encryption of Kubernetes secrets using the AWS Key Management Service (AWS KMS) can be enabled.
 The documentation on [creating a cluster](https://docs.aws.amazon.com/eks/latest/userguide/create-cluster.html)
@@ -556,11 +556,11 @@ The Amazon Resource Name (ARN) for that CMK can be retrieved.
 const clusterEncryptionConfigKeyArn = cluster.clusterEncryptionConfigKeyArn;
 ```
 
-## Permissions and Security
+### Permissions and Security
 
 Amazon EKS provides several mechanism of securing the cluster and granting permissions to specific IAM users and roles.
 
-### AWS IAM Mapping
+#### AWS IAM Mapping
 
 As described in the [Amazon EKS User Guide](https://docs.aws.amazon.com/en_us/eks/latest/userguide/add-user-role.html), you can map AWS IAM users and roles to [Kubernetes Role-based access control (RBAC)](https://kubernetes.io/docs/reference/access-authn-authz/rbac).
 
@@ -582,7 +582,7 @@ A convenience method for mapping a role to the `system:masters` group is also av
 cluster.awsAuth.addMastersRole(role)
 ```
 
-### Cluster Security Group
+#### Cluster Security Group
 
 When you create an Amazon EKS cluster, a [cluster security group](https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html)
 is automatically created as well. This security group is designed to allow all traffic from the control plane and managed node groups to flow freely
@@ -594,7 +594,7 @@ The ID for that security group can be retrieved after creating the cluster.
 const clusterSecurityGroupId = cluster.clusterSecurityGroupId;
 ```
 
-### Node SSH Access
+#### Node SSH Access
 
 If you want to be able to SSH into your worker nodes, you must already have an SSH key in the region you're connecting to and pass it when
 you add capacity to the cluster. You must also be able to connect to the hosts (meaning they must have a public IP and you
@@ -605,7 +605,7 @@ See [SSH into nodes](test/example.ssh-into-nodes.lit.ts) for a code example.
 If you want to SSH into nodes in a private subnet, you should set up a bastion host in a public subnet. That setup is recommended, but is
 unfortunately beyond the scope of this documentation.
 
-### Service Accounts
+#### Service Accounts
 
 With services account you can provide Kubernetes Pods access to AWS resources.
 
@@ -669,11 +669,11 @@ Note that adding service accounts requires running `kubectl` commands against th
 This means you must also pass the `kubectlRoleArn` when importing the cluster. 
 See [Using existing Clusters](https://github.com/aws/aws-cdk/tree/master/packages/@aws-cdk/aws-eks#using-existing-clusters).
 
-## Applying Kubernetes Resources
+### Applying Kubernetes Resources
 
 The library supports several popular resource deployment mechanisms, among which are:
 
-### Kubernetes Manifests
+#### Kubernetes Manifests
 
 The `KubernetesManifest` construct or `cluster.addManifest` method can be used
 to apply Kubernetes resource manifests to this cluster.
@@ -731,7 +731,7 @@ new KubernetesManifest(this, 'hello-kub', {
 cluster.addManifest('hello-kub', service, deployment);
 ```
 
-#### Adding resources from a URL
+##### Adding resources from a URL
 
 The following example will deploy the resource manifest hosting on remote server:
 
@@ -744,7 +744,7 @@ const manifest = yaml.safeLoadAll(request('GET', manifestUrl).getBody());
 cluster.addManifest('my-resource', ...manifest);
 ```
 
-#### Dependencies
+##### Dependencies
 
 There are cases where Kubernetes resources must be deployed in a specific order.
 For example, you cannot define a resource in a Kubernetes namespace before the
@@ -783,11 +783,11 @@ CDK. This means that if the manifest is deleted from your code (or the stack is
 deleted), the next `cdk deploy` will issue a `kubectl delete` command and the
 Kubernetes resources in that manifest will be deleted.
 
-#### Caveat
+##### Caveat
 
 If you have multiple resources in a single `KubernetesManifest`, and one of those **resources** is removed from the manifest, it will not be deleted and will remain orphan. See [Support Object pruning](https://github.com/aws/aws-cdk/issues/10495) for more details.
 
-### Helm Charts
+#### Helm Charts
 
 The `HelmChart` construct or `cluster.addHelmChart` method can be used
 to add Kubernetes resources to this cluster using Helm.
@@ -841,7 +841,7 @@ const chart2 = cluster.addHelmChart(...);
 chart2.node.addDependency(chart1);
 ```
 
-#### CDK8s Charts
+##### CDK8s Charts
 
 [CDK8s](https://cdk8s.io/) is an open-source library that enables Kubernetes manifest authoring using familiar programming languages. It is founded on the same technologies as the AWS CDK, such as [`constructs`](https://github.com/aws/constructs) and [`jsii`](https://github.com/aws/jsii).
 
@@ -921,7 +921,7 @@ const myChart = new MyChart(new cdk8s.App(), 'MyChart', { bucket });
 cluster.addCdk8sChart('my-chart', myChart);
 ```
 
-##### Custom CDK8s Constructs
+###### Custom CDK8s Constructs
 
 You can also compose a few stock `cdk8s+` constructs into your own custom construct. However, since mixing scopes between `aws-cdk` and `cdk8s` is currently not supported, the `Construct` class
 you'll need to use is the one from the [`constructs`](https://github.com/aws/constructs) module, and not from `@aws-cdk/core` like you normally would.
@@ -957,13 +957,13 @@ export class LoadBalancedWebService extends constructs.Construct {
 }
 ```
 
-##### Manually importing k8s specs and CRD's
+###### Manually importing k8s specs and CRD's
 
 If you find yourself unable to use `cdk8s+`, or just like to directly use the `k8s` native objects or CRD's, you can do so by manually importing them using the `cdk8s-cli`.
 
 See [Importing kubernetes objects](https://github.com/awslabs/cdk8s/tree/master/packages/cdk8s-cli#import) for detailed instructions.
 
-## Patching Kubernetes Resources
+### Patching Kubernetes Resources
 
 The `KubernetesPatch` construct can be used to update existing kubernetes
 resources. The following example can be used to patch the `hello-kubernetes`
@@ -978,7 +978,7 @@ new KubernetesPatch(this, 'hello-kub-deployment-label', {
 })
 ```
 
-## Querying Kubernetes Resources
+### Querying Kubernetes Resources
 
 The `KubernetesObjectValue` construct can be used to query for information about kubernetes objects,
 and use that as part of your CDK application.
@@ -1009,7 +1009,7 @@ Specifically, since the above use-case is quite common, there is an easier way t
 const loadBalancerAddress = cluster.getServiceLoadBalancerAddress('my-service');
 ```
 
-## Using existing clusters
+### Using existing clusters
 
 The Amazon EKS library allows defining Kubernetes resources such as [Kubernetes
 manifests](#kubernetes-resources) and [Helm charts](#helm-charts) on clusters
@@ -1062,7 +1062,7 @@ Kubernetes [endpoint access](#endpoint-access), you must also specify:
 - `kubectlPrivateSubnetIds` - a list of private VPC subnets IDs that will be used
   to access the Kubernetes endpoint.
 
-## Known Issues and Limitations
+### Known Issues and Limitations
 
 - [One cluster per stack](https://github.com/aws/aws-cdk/issues/10073)
 - [Object pruning](https://github.com/aws/aws-cdk/issues/10495)

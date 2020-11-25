@@ -1,4 +1,4 @@
-## AWS Backup Construct Library
+# AWS Backup Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 
@@ -15,7 +15,7 @@
 
 AWS Backup is a fully managed backup service that makes it easy to centralize and automate the backup of data across AWS services in the cloud and on premises. Using AWS Backup, you can configure backup policies and monitor backup activity for your AWS resources in one place.
 
-### Backup plan and selection
+## Backup plan and selection
 
 In AWS Backup, a *backup plan* is a policy expression that defines when and how you want to back up your AWS resources, such as Amazon DynamoDB tables or Amazon Elastic File System (Amazon EFS) file systems. You can assign resources to backup plans, and AWS Backup automatically backs up and retains backups for those resources according to the backup plan. You can create multiple backup plans if you have workloads with different backup requirements.
 
@@ -74,7 +74,7 @@ const plan = backup.BackupPlan.daily35DayRetention(this, 'Plan', myVault); // Us
 plan.addRule(BackupPlanRule.monthly1Year(otherVault)); // Use `otherVault` for this specific rule
 ```
 
-### Backup vault
+## Backup vault
 In AWS Backup, a *backup vault* is a container that you organize your backups in. You can use backup vaults to set the AWS Key Management Service (AWS KMS) encryption key that is used to encrypt backups in the backup vault and to control access to the backups in the backup vault. If you require different encryption keys or access policies for different groups of backups, you can optionally create multiple backup vaults.
 
 ```ts

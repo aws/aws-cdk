@@ -1,4 +1,4 @@
-## AWS S3 Deployment Construct Library
+# AWS S3 Deployment Construct Library
 
 <!--BEGIN STABILITY BANNER-->
 ---

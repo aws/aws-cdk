@@ -1,4 +1,4 @@
-## Amazon EventBridge Construct Library
+# Amazon EventBridge Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

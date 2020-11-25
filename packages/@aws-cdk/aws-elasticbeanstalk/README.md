@@ -1,4 +1,4 @@
-## AWS Elastic Beanstalk Construct Library
+# AWS Elastic Beanstalk Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

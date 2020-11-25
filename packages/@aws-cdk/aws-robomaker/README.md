@@ -1,4 +1,4 @@
-## AWS RoboMaker Construct Library
+# AWS RoboMaker Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

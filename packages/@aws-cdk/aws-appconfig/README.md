@@ -1,4 +1,4 @@
-## AWS::AppConfig Construct Library
+# AWS::AppConfig Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

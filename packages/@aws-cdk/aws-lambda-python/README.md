@@ -1,4 +1,4 @@
-## Amazon Lambda Python Library
+# Amazon Lambda Python Library
 <!--BEGIN STABILITY BANNER-->
 ---
 
@@ -13,7 +13,7 @@ This library provides constructs for Python Lambda functions.
 
 To use this module, you will need to have Docker installed.
 
-### Python Function
+## Python Function
 Define a `PythonFunction`:
 
 ```ts
@@ -30,7 +30,7 @@ new PythonFunction(this, 'MyFunction', {
 
 All other properties of `lambda.Function` are supported, see also the [AWS Lambda construct library](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-lambda).
 
-### Module Dependencies
+## Module Dependencies
 
 If `requirements.txt` or `Pipfile` exists at the entry path, the construct will handle installing
 all required modules in a [Lambda compatible Docker container](https://hub.docker.com/r/amazon/aws-sam-cli-build-image-python3.7)

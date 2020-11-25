@@ -1,4 +1,4 @@
-## AWS Serverless Application Model Construct Library
+# AWS Serverless Application Model Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 
@@ -15,7 +15,7 @@ This module includes low-level constructs that synthesize into `AWS::Serverless`
 import * as sam from '@aws-cdk/aws-sam';
 ```
 
-### Related
+## Related
 
 The following AWS CDK modules include constructs that can be used to work with Amazon API Gateway and AWS Lambda:
 

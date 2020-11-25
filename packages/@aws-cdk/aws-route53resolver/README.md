@@ -1,4 +1,4 @@
-## Amazon Route53 Resolver Construct Library
+# Amazon Route53 Resolver Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

@@ -1,4 +1,4 @@
-## AWS::SSO Construct Library
+# AWS::SSO Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

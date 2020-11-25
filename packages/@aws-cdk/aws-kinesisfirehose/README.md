@@ -1,4 +1,4 @@
-## Amazon Kinesis Data Firehose Construct Library
+# Amazon Kinesis Data Firehose Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

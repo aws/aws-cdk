@@ -264,7 +264,7 @@ async function main() {
     ]);
 
     await write('README.md', [
-      `## ${namespace} Construct Library`,
+      `# ${namespace} Construct Library`,
       '<!--BEGIN STABILITY BANNER-->',
       '---',
       '',

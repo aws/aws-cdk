@@ -1,4 +1,4 @@
-## Amazon Kinesis Construct Library
+# Amazon Kinesis Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

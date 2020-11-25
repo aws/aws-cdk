@@ -1,4 +1,4 @@
-## AWS::LakeFormation Construct Library
+# AWS::LakeFormation Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

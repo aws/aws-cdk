@@ -1,4 +1,4 @@
-## AWS CloudFormation Construct Library
+# AWS CloudFormation Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

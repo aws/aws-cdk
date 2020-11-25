@@ -1,4 +1,4 @@
-## Amazon WorkSpaces Construct Library
+# Amazon WorkSpaces Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

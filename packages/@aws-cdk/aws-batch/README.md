@@ -1,4 +1,4 @@
-## AWS Batch Construct Library
+# AWS Batch Construct Library
 
 <!--BEGIN STABILITY BANNER-->
 ---

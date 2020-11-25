@@ -1,4 +1,4 @@
-## Amazon ECS Construct Library
+# Amazon ECS Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

@@ -1,4 +1,4 @@
-## AWS App Mesh Construct Library
+# AWS App Mesh Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

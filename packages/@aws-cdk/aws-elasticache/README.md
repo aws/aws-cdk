@@ -1,4 +1,4 @@
-## Amazon ElastiCache Construct Library
+# Amazon ElastiCache Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

@@ -1,4 +1,4 @@
-## Amazon GuardDuty Construct Library
+# Amazon GuardDuty Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

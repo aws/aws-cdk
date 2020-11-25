@@ -1,4 +1,4 @@
-## CloudFormation YAML utilities
+# CloudFormation YAML utilities
 
 <!--BEGIN STABILITY BANNER-->
 ---

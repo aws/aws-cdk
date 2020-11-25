@@ -1,4 +1,4 @@
-## AWS::EventSchemas Construct Library
+# AWS::EventSchemas Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

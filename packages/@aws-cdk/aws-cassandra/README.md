@@ -1,4 +1,4 @@
-## AWS::Cassandra Construct Library
+# AWS::Cassandra Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

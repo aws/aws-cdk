@@ -1,4 +1,4 @@
-## Continuous Integration / Continuous Delivery for CDK Applications
+# Continuous Integration / Continuous Delivery for CDK Applications
 <!--BEGIN STABILITY BANNER-->
 ---
 
@@ -14,18 +14,18 @@ This library includes a *CodePipeline* composite Action for deploying AWS CDK Ap
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
 
-# Replacement recommended
+## Replacement recommended
 
 This library has been deprecated. We recommend you use the
 [@aws-cdk/pipelines](https://docs.aws.amazon.com/cdk/api/latest/docs/pipelines-readme.html) module instead.
 
 
-### Limitations
+## Limitations
 The construct library in it's current form has the following limitations:
 1. It can only deploy stacks that are hosted in the same AWS account and region as the *CodePipeline* is.
 2. Stacks that make use of `Asset`s cannot be deployed successfully.
 
-### Getting Started
+## Getting Started
 In order to add the `PipelineDeployStackAction` to your *CodePipeline*, you need to have a *CodePipeline* artifact that
 contains the result of invoking `cdk synth -o <dir>` on your *CDK App*. You can for example achieve this using a
 *CodeBuild* project.
@@ -45,7 +45,7 @@ The example below defines a *CDK App* that contains 3 stacks:
   ┗━━━━━━━━━━━━━━━━┛  ┗━━━━━━━━━━━━━━━━┛  ┗━━━━━━━━━━━━━━━━━┛  ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 ```
 
-#### `index.ts`
+### `index.ts`
 
 ```typescript
 import * as codebuild from '@aws-cdk/aws-codebuild';
@@ -138,7 +138,7 @@ deployStage.addAction(new cicd.PipelineDeployStackAction({
 }));
 ```
 
-#### `buildspec.yml`
+### `buildspec.yml`
 The repository can contain a file at the root level named `buildspec.yml`, or
 you can in-line the buildspec. Note that `buildspec.yaml` is not compatible.
 

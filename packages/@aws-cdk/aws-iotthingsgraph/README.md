@@ -1,4 +1,4 @@
-## AWS IoT Things Graph Construct Library
+# AWS IoT Things Graph Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

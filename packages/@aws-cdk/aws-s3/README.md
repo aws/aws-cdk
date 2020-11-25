@@ -1,4 +1,4 @@
-## Amazon S3 Construct Library
+# Amazon S3 Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 
@@ -36,7 +36,7 @@ new Bucket(this, 'MyFirstBucket');
  * `s3UrlForObject(key)` - the S3 URL of an object within the bucket (i.e.
    `s3://bucket/mykey`)
 
-### Encryption
+## Encryption
 
 Define a KMS-encrypted bucket:
 
@@ -72,7 +72,7 @@ const bucket = new Bucket(this, 'Buck', {
 assert(bucket.encryptionKey == null);
 ```
 
-### Permissions
+## Permissions
 
 A bucket policy will be automatically created for the bucket upon the first call to
 `addToResourcePolicy(statement)`:
@@ -107,13 +107,13 @@ bucket.grantReadWrite(lambda);
 Will give the Lambda's execution role permissions to read and write
 from the bucket.
 
-### Sharing buckets between stacks
+## Sharing buckets between stacks
 
 To use a bucket in a different stack in the same CDK application, pass the object to the other stack:
 
 [sharing bucket between stacks](test/integ.bucket-sharing.lit.ts)
 
-### Importing existing buckets
+## Importing existing buckets
 
 To import an existing bucket into your CDK application, use the `Bucket.fromBucketAttributes`
 factory method. This method accepts `BucketAttributes` which describes the properties of an already
@@ -148,7 +148,7 @@ const myCrossRegionBucket = Bucket.fromBucketAttributes(this, 'CrossRegionImport
 // myCrossRegionBucket.bucketRegionalDomainName === 'my-bucket.s3.us-east-1.amazonaws.com'
 ```
 
-### Bucket Notifications
+## Bucket Notifications
 
 The Amazon S3 notification feature enables you to receive notifications when
 certain events happen in your bucket as described under [S3 Bucket
@@ -185,7 +185,7 @@ bucket.addEventNotification(s3.EventType.OBJECT_REMOVED,
 [S3 Bucket Notifications]: https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html
 
 
-### Block Public Access
+## Block Public Access
 
 Use `blockPublicAccess` to specify [block public access settings] on the bucket.
 
@@ -214,7 +214,7 @@ When `blockPublicPolicy` is set to `true`, `grantPublicRead()` throws an error.
 
 [block public access settings]: https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html
 
-### Logging configuration
+## Logging configuration
 
 Use `serverAccessLogsBucket` to describe where server access logs are to be stored.
 
@@ -237,7 +237,7 @@ const bucket = new Bucket(this, 'MyBucket', {
 
 [S3 Server access logging]: https://docs.aws.amazon.com/AmazonS3/latest/dev/ServerLogs.html
 
-### S3 Inventory
+## S3 Inventory
 
 An [inventory](https://docs.aws.amazon.com/AmazonS3/latest/dev/storage-inventory.html) contains a list of the objects in the source bucket and metadata for each object. The inventory lists are stored in the destination bucket as a CSV file compressed with GZIP, as an Apache optimized row columnar (ORC) file compressed with ZLIB, or as an Apache Parquet (Parquet) file compressed with Snappy.
 
@@ -285,13 +285,13 @@ However, if you use an imported bucket (i.e `Bucket.fromXXX()`), you'll have to 
 }
 ```
 
-### Website redirection
+## Website redirection
 
 You can use the two following properties to specify the bucket [redirection policy]. Please note that these methods cannot both be applied to the same bucket.
 
 [redirection policy]: https://docs.aws.amazon.com/AmazonS3/latest/dev/how-to-page-redirect.html#advanced-conditional-redirects
 
-#### Static redirection
+### Static redirection
 
 You can statically redirect a to a given Bucket URL or any other host name with `websiteRedirect`:
 
@@ -301,7 +301,7 @@ const bucket = new Bucket(this, 'MyRedirectedBucket', {
 });
 ```
 
-#### Routing rules
+### Routing rules
 
 Alternatively, you can also define multiple `websiteRoutingRules`, to define complex, conditional redirections:
 
@@ -320,13 +320,13 @@ const bucket = new Bucket(this, 'MyRedirectedBucket', {
 });
 ```
 
-### Filling the bucket as part of deployment
+## Filling the bucket as part of deployment
 
 To put files into a bucket as part of a deployment (for example, to host a
 website), see the `@aws-cdk/aws-s3-deployment` package, which provides a
 resource that can do just that.
 
-### The URL for objects
+## The URL for objects
 
 S3 provides two types of URLs for accessing objects via HTTP(S). Path-Style and
 [Virtual Hosted-Style](https://docs.aws.amazon.com/AmazonS3/latest/dev/VirtualHosting.html)

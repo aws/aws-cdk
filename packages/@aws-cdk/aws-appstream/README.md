@@ -1,4 +1,4 @@
-## Amazon AppStream 2.0 Construct Library
+# Amazon AppStream 2.0 Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

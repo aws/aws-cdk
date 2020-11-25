@@ -1,4 +1,4 @@
-## Cloud Assembly Schema
+# Cloud Assembly Schema
 <!--BEGIN STABILITY BANNER-->
 ---
 

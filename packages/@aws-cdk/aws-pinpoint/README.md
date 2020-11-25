@@ -1,4 +1,4 @@
-## Amazon Pinpoint Construct Library
+# Amazon Pinpoint Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

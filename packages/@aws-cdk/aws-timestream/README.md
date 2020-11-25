@@ -1,4 +1,4 @@
-## AWS::Timestream Construct Library
+# AWS::Timestream Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

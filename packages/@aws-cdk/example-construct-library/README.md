@@ -1,4 +1,4 @@
-## An example Construct Library module
+# An example Construct Library module
 
 <!--BEGIN STABILITY BANNER-->
 ---

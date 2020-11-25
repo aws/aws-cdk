@@ -1,4 +1,4 @@
-## AWS CodeBuild Construct Library
+# AWS CodeBuild Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

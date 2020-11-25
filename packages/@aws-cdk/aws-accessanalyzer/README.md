@@ -1,4 +1,4 @@
-## AWS::AccessAnalyzer Construct Library
+# AWS::AccessAnalyzer Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

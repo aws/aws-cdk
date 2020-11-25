@@ -1,4 +1,4 @@
-## AWS::MediaPackage Construct Library
+# AWS::MediaPackage Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 
