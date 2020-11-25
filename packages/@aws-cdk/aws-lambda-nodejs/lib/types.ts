@@ -125,6 +125,7 @@ export interface BundlingOptions {
  *   afterBundling(inputDir: string, outputDir: string): string[] {
  *     return [`cp ${inputDir}/my-binary.node ${outputDir}`];
  *   }
+ *   // ...
  * }
  */
 export interface ICommandHooks {

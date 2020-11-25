@@ -155,6 +155,7 @@ new lambda.NodejsFunction(this, 'my-handler-with-commands', {
     afterBundling(inputDir: string, outputDir: string): string[] {
       return [`cp ${inputDir}/my-binary.node ${outputDir}`];
     }
+    // ...
   }
 });
 ```
