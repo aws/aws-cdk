@@ -9,3 +9,4 @@ export * from './datadog-agent';
 export * from './newrelic-infrastructure-agent';
 export * from './assign-public-ip';
 export * from './cloudwatch-logs';
+export * from './open-telemetry';
