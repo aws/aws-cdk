@@ -1,6 +1,6 @@
 import * as child_process from 'child_process';
 import * as path from 'path';
-import { InvokeHook } from '../../../init';
+import { InvokeHook } from '../../../../init';
 
 export const invoke: InvokeHook = async (targetDirectory: string) => {
   const slnPath = path.join(targetDirectory, 'src', '%name.PascalCased%.sln');
