@@ -98,6 +98,19 @@ used by your function. Otherwise bundling will fail.
 ### Configuring esbuild
 The `NodejsFunction` construct exposes some [esbuild](https://esbuild.github.io/) options via properties under `bundling`: `minify`, `sourceMap`, `target` and `loader`.
 
+```ts
+new lambda.NodejsFunction(this, 'my-handler', {
+  bundling: {
+    minify: true, // minify code, defaults to false
+    sourceMap: true, // include source map, defaults to false
+    target: 'es2020', // target environment for the generated JavaScript code
+    loader: { // Use the 'dataurl' loader for '.png' files
+      '.png': 'dataurl',
+    },
+  },
+});
+```
+
 ### Working with modules
 
 #### Externals
