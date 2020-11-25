@@ -57,7 +57,7 @@
         "LambdaServiceRoleA8ED4D3B"
       ]
     },
-    "LambdaCurrentVersionDF706F6A97fb843e9bd06fcd2bb15eeace80e13e": {
+    "LambdaCurrentVersionDF706F6Ad17005953cc06239800336982aeb19d9": {
       "Type": "AWS::Lambda::Version",
       "Properties": {
         "FunctionName": {
@@ -76,7 +76,7 @@
               {
                 "EventType": "origin-request",
                 "LambdaFunctionARN": {
-                  "Ref": "LambdaCurrentVersionDF706F6A97fb843e9bd06fcd2bb15eeace80e13e"
+                  "Ref": "LambdaCurrentVersionDF706F6Ad17005953cc06239800336982aeb19d9"
                 }
               }
             ],
