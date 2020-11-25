@@ -44,7 +44,7 @@ All other properties of `lambda.Function` are supported, see also the [AWS Lambd
 The `NodejsFunction` construct automatically [reuses existing connections](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/node-reusing-connections.html)
 when working with the AWS SDK for JavaScript. Set the `awsSdkConnectionReuse` prop to `false` to disable it.
 
-Use the `environment` prop to define environments variables when esbuild runs:
+Use the `environment` prop under `bundling` to define environments variables when esbuild runs:
 
 ```ts
 new lambda.NodejsFunction(this, 'my-handler', {
@@ -56,7 +56,7 @@ new lambda.NodejsFunction(this, 'my-handler', {
 });
 ```
 
-Use the `buildArgs` prop to pass build arguments when building the bundling image:
+Use the `buildArgs` under `bundling` prop to pass build arguments when building the bundling image:
 
 ```ts
 new lambda.NodejsFunction(this, 'my-handler', {
@@ -68,7 +68,7 @@ new lambda.NodejsFunction(this, 'my-handler', {
 });
 ```
 
-Use the `dockerImage` prop to use a custom bundling image:
+Use the `dockerImage` prop under `bundling` to use a custom bundling image:
 
 ```ts
 new lambda.NodejsFunction(this, 'my-handler', {
@@ -96,13 +96,13 @@ case you need to ensure that this path includes `entry` and any module/dependenc
 used by your function. Otherwise bundling will fail.
 
 ### Configuring esbuild
-The `NodejsFunction` construct exposes some [esbuild](https://esbuild.github.io/) options via properties: `minify`, `sourceMaps` and `target`.
+The `NodejsFunction` construct exposes some [esbuild](https://esbuild.github.io/) options via properties under `bundling`: `minify`, `sourceMap`, `target` and `loader`.
 
 ### Working with modules
 
 #### Externals
 By default, all node modules are bundled except for `aws-sdk`. This can be configured by specifying
-the `externalModules` prop.
+the `externalModules` prop under `bundling`.
 
 ```ts
 new lambda.NodejsFunction(this, 'my-handler', {
@@ -117,8 +117,8 @@ new lambda.NodejsFunction(this, 'my-handler', {
 
 #### Install modules
 By default, all node modules referenced in your Lambda code will be bundled by esbuild.
-Use the `nodeModules` prop to specify a list of modules that should not be bundled
-but instead included in the `node_modules` folder of the Lambda package. This is useful
+Use the `nodeModules` prop under `bundling` to specify a list of modules that should not be
+bundled but instead included in the `node_modules` folder of the Lambda package. This is useful
 when working with native dependencies or when esbuild fails to bundle a module.
 
 ```ts
