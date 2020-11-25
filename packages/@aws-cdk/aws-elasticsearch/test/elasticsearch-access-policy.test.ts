@@ -1,4 +1,5 @@
 import '@aws-cdk/assert/jest';
+import * as assert from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import { App, Stack } from '@aws-cdk/core';
@@ -30,28 +31,26 @@ test('grants kms permissions if needed', () => {
     kmsKey: key,
   });
 
-  expect(stack).toHaveResource('AWS::IAM::Policy', {
-    PolicyDocument: {
-      Statement: [
-        {
-          Action: [
-            'kms:List*',
-            'kms:Describe*',
-            'kms:CreateGrant',
+  const resources = assert.expect(stack).value.Resources;
+  expect(resources.AWS679f53fac002430cb0da5b7982bd2287ServiceRoleDefaultPolicyD28E1A5E.Properties.PolicyDocument).toEqual({
+    Statement: [
+      {
+        Action: [
+          'kms:List*',
+          'kms:Describe*',
+          'kms:CreateGrant',
+        ],
+        Effect: 'Allow',
+        Resource: {
+          'Fn::GetAtt': [
+            'Key961B73FD',
+            'Arn',
           ],
-          Effect: 'Allow',
-          Resource: {
-            'Fn::GetAtt': [
-              'Key961B73FD',
-              'Arn',
-            ],
-          },
         },
-      ],
-      Version: '2012-10-17',
-    },
+      },
+    ],
+    Version: '2012-10-17',
   });
-
 });
 
 test('minimal example renders correctly', () => {
