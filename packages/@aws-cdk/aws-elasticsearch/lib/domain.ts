@@ -1515,6 +1515,7 @@ export class Domain extends DomainBase implements IDomain {
         domainName: this.domainName,
         domainArn: this.domainArn,
         accessPolicies: accessPolicyStatements,
+        kmsKey: props.encryptionAtRest?.kmsKey,
       });
 
       accessPolicy.node.addDependency(this.domain);

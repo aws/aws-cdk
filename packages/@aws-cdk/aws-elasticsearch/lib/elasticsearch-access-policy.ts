@@ -56,8 +56,14 @@ export class ElasticsearchAccessPolicy extends cr.AwsCustomResource {
       policy: cr.AwsCustomResourcePolicy.fromSdkCalls({ resources: [props.domainArn] }),
     });
 
-    // https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/encryption-at-rest.html
     if (props.kmsKey) {
+
+      // https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/encryption-at-rest.html
+
+      // these permissions are documented as required during domain creation.
+      // while not strictly documented for updates as well, it stands to reason that an update
+      // operation might require these in case the cluster uses a kms key.
+      // empircal evidence shows this is indeed required: https://github.com/aws/aws-cdk/issues/11412
       this.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
         actions: ['kms:List*', 'kms:Describe*', 'kms:CreateGrant'],
         resources: [props.kmsKey.keyArn],
