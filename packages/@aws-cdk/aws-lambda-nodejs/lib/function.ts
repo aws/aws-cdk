@@ -158,6 +158,7 @@ function findDefiningFile(): string {
     if (site.getFunctionName() === 'NodejsFunction') {
       // The next site is the site where the NodejsFunction was created
       definingIndex = index + 1;
+      break;
     }
   }
 
