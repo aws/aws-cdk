@@ -65,6 +65,7 @@ const queue = new sqs.Queue(this, 'MyQueue', {
 
 lambda.addEventSource(new SqsEventSource(queue, {
   batchSize: 10, // default
+  maxBatchingWindow: Duration.minutes(5),
 }));
 ```
 
