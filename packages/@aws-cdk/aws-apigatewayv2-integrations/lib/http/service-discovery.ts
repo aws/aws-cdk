@@ -31,7 +31,7 @@ export class HttpServiceDiscoveryIntegration extends HttpPrivateIntegration {
       payloadFormatVersion: this.payloadFormatVersion,
       type: this.integrationType,
       connectionType: this.connectionType,
-      connectionId: this.props.vpcLink?.vpcLinkId,
+      connectionId: this.props.vpcLink.vpcLinkId,
       uri: this.props.service.serviceArn,
     };
   }

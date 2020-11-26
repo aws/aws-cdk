@@ -28,7 +28,7 @@ export class HttpAlbIntegration extends HttpPrivateIntegration {
       vpc = this.props.listener.loadBalancer.vpc;
     }
     if (!vpc) {
-      throw new Error('The vpcLink property must be specified.');
+      throw new Error('The vpcLink property must be specified when using an imported Application Listener.');
     }
 
     const vpcLink = this._configureVpcLink(options, {
