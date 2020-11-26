@@ -52,6 +52,8 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
   - [Cancel Step](#cancel-step)
   - [Modify Instance Fleet](#modify-instance-fleet)
   - [Modify Instance Group](#modify-instance-group)
+- [EKS](#eks)
+  - [Call](#call)
 - [Glue](#glue)
 - [Lambda](#lambda)
 - [SageMaker](#sagemaker)
@@ -654,6 +656,28 @@ new tasks.EmrModifyInstanceGroupByName(stack, 'Task', {
   instanceGroup: {
     instanceCount: 1,
   },
+});
+```
+
+## EKS
+
+Step Functions supports Amazon EKS through the service integration pattern.
+The service integration APIs correspond to Amazon EKS APIs.
+
+[Read more](https://docs.aws.amazon.com/step-functions/latest/dg/connect-eks.html) about the differences when using these service integrations.
+
+### Call
+
+Read and write Kubernetes resource objects via a Kubernetes API endpoint.
+Corresponds to the [`call`](https://docs.aws.amazon.com/step-functions/latest/dg/connect-eks.html) API in Step Functions Connector.
+
+```ts
+new tasks.EksCall(stack, 'Call a EKS Endpoint', {
+  clusterName: 'clusterName',
+  certificateAuthority: 'certificateAuthority',
+  endpoint: 'https://apiid.gr7.us-east-1.eks.amazonaws.com',
+  httpMethod: MethodType.GET,
+  path: '/api/v1/namespaces/default/pods',
 });
 ```
 
