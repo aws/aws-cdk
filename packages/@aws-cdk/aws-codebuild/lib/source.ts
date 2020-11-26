@@ -483,6 +483,13 @@ interface ThirdPartyGitSourceProps extends GitSourceProps {
   readonly webhook?: boolean;
 
   /**
+   * Start a batch build when the webhook is triggered instead of a standard one.
+   *
+   * @default false
+   */
+  readonly startBatchBuild?: boolean;
+
+  /**
    * A list of webhook filters that can constraint what events in the repository will trigger a build.
    * A build is triggered if any of the provided filter groups match.
    * Only valid if `webhook` was not provided as false.
@@ -500,6 +507,7 @@ abstract class ThirdPartyGitSource extends GitSource {
   protected readonly webhookFilters: FilterGroup[];
   private readonly reportBuildStatus: boolean;
   private readonly webhook?: boolean;
+  private readonly startBatchBuild?: boolean;
 
   protected constructor(props: ThirdPartyGitSourceProps) {
     super(props);
@@ -522,6 +530,7 @@ abstract class ThirdPartyGitSource extends GitSource {
       sourceVersion: superConfig.sourceVersion,
       buildTriggers: webhook === undefined ? undefined : {
         webhook,
+        buildType: this.startBatchBuild ? 'BUILD_BATCH' : undefined,
         filterGroups: anyFilterGroupsProvided ? this.webhookFilters.map(fg => fg._toJson()) : undefined,
       },
     };

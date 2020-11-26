@@ -694,6 +694,56 @@ export = {
 
       test.done();
     },
+    'with startBatchBuild option'(test: Test) {
+      const stack = new cdk.Stack();
+
+      new codebuild.Project(stack, 'Project', {
+        source: codebuild.Source.gitHub({
+          owner: 'testowner',
+          repo: 'testrepo',
+          cloneDepth: 3,
+          fetchSubmodules: true,
+          webhook: true,
+          startBatchBuild: true,
+          reportBuildStatus: false,
+          webhookFilters: [
+            codebuild.FilterGroup.inEventOf(codebuild.EventAction.PUSH).andTagIsNot('stable'),
+            codebuild.FilterGroup.inEventOf(codebuild.EventAction.PULL_REQUEST_REOPENED).andBaseBranchIs('master'),
+          ],
+        }),
+      });
+
+      expect(stack).to(haveResource('AWS::CodeBuild::Project', {
+        Source: {
+          Type: 'GITHUB',
+          Location: 'https://github.com/testowner/testrepo.git',
+          ReportBuildStatus: false,
+          GitCloneDepth: 3,
+          GitSubmodulesConfig: {
+            FetchSubmodules: true,
+          },
+        },
+      }));
+
+      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+        Triggers: {
+          Webhook: true,
+          BuildType: 'BUILD_BATCH',
+          FilterGroups: [
+            [
+              { Type: 'EVENT', Pattern: 'PUSH' },
+              { Type: 'HEAD_REF', Pattern: 'refs/tags/stable', ExcludeMatchedPattern: true },
+            ],
+            [
+              { Type: 'EVENT', Pattern: 'PULL_REQUEST_REOPENED' },
+              { Type: 'BASE_REF', Pattern: 'refs/heads/master' },
+            ],
+          ],
+        },
+      }));
+
+      test.done();
+    },
     'fail creating a Project when no build spec is given'(test: Test) {
       const stack = new cdk.Stack();
 
