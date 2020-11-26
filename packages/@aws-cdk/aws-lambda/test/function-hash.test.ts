@@ -37,7 +37,7 @@ describe('function hash', () => {
       });
 
       expect(calculateFunctionHash(fn1)).toEqual(calculateFunctionHash(fn2));
-      expect(calculateFunctionHash(fn1)).toEqual('d0cf052aead13ed6112b2e8a2f728908');
+      expect(calculateFunctionHash(fn1)).toEqual('aea5463dba236007afe91d2832b3c836');
     });
   });
 
@@ -49,8 +49,8 @@ describe('function hash', () => {
       handler: 'index.handler',
     });
 
-    expect(calculateFunctionHash(fn1)).not.toEqual('d0cf052aead13ed6112b2e8a2f728908');
-    expect(calculateFunctionHash(fn1)).toEqual('14b543c4b1a9e5425d92ef93557eb5bd');
+    expect(calculateFunctionHash(fn1)).not.toEqual('aea5463dba236007afe91d2832b3c836');
+    expect(calculateFunctionHash(fn1)).toEqual('979b4a14c6f174c745cdbcd1036cf844');
   });
 
   test('environment variables impact hash', () => {
@@ -74,7 +74,8 @@ describe('function hash', () => {
       },
     });
 
-    expect(calculateFunctionHash(fn1)).not.toEqual(calculateFunctionHash(fn2));
+    expect(calculateFunctionHash(fn1)).toEqual('d1bc824ac5022b7d62d8b12dbae6580c');
+    expect(calculateFunctionHash(fn2)).toEqual('3b683d05465012b0aa9c4ff53b32f014');
   });
 
   test('runtime impacts hash', () => {
@@ -98,7 +99,8 @@ describe('function hash', () => {
       },
     });
 
-    expect(calculateFunctionHash(fn1)).not.toEqual(calculateFunctionHash(fn2));
+    expect(calculateFunctionHash(fn1)).toEqual('d1bc824ac5022b7d62d8b12dbae6580c');
+    expect(calculateFunctionHash(fn2)).toEqual('0f168f0772463e8e547bb3800937e54d');
   });
 
   test('inline code change impacts the hash', () => {
@@ -116,7 +118,8 @@ describe('function hash', () => {
       handler: 'index.handler',
     });
 
-    expect(calculateFunctionHash(fn1)).not.toEqual(calculateFunctionHash(fn2));
+    expect(calculateFunctionHash(fn1)).toEqual('ebf2e871fc6a3062e8bdcc5ebe16db3f');
+    expect(calculateFunctionHash(fn2)).toEqual('ffedf6424a18a594a513129dc97bf53c');
   });
 
   describe('impact of env variables order on hash', () => {

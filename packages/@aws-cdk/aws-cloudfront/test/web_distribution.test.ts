@@ -460,7 +460,7 @@ nodeunitShim({
               'EventType': 'origin-request',
               'IncludeBody': true,
               'LambdaFunctionARN': {
-                'Ref': 'LambdaCurrentVersionDF706F6Ad17005953cc06239800336982aeb19d9',
+                'Ref': 'LambdaCurrentVersionDF706F6A97fb843e9bd06fcd2bb15eeace80e13e',
               },
             },
           ],

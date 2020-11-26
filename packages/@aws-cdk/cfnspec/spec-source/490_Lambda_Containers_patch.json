@@ -53,16 +53,6 @@
         "description": "updates to Lambda Function to support Container Image",
         "operations": [
           {
-            "op": "replace",
-            "path": "/Properties/Handler/Required",
-            "value": false
-          },
-          {
-            "op": "replace",
-            "path": "/Properties/Runtime/Required",
-            "value": false
-          },
-          {
             "op": "add",
             "path": "/Properties/ImageConfig",
             "value": {
