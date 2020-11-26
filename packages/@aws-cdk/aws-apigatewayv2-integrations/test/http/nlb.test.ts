@@ -99,7 +99,7 @@ describe('HttpNlbIntegration', () => {
     });
   });
 
-  test('fails when imported NLB is used without specifying load balancer', () => {
+  test('fails when imported NLB is used without specifying vpcLink', () => {
     const stack = new Stack();
     const listener = elbv2.NetworkListener.fromNetworkListenerArn(stack, 'Listener',
       'arn:aws:elasticloadbalancing:us-east-1:012345655:listener/net/myloadbalancer/lb-12345/listener-12345');
@@ -111,40 +111,6 @@ describe('HttpNlbIntegration', () => {
         listener,
       }),
       routeKey: HttpRouteKey.with('/pets'),
-    })).toThrow(/vpc property must be specified/);
-  });
-
-  test('uses specified load balancer', () => {
-    // GIVEN
-    const stack = new Stack();
-    const lbVpc = new ec2.Vpc(stack, 'VPC');
-    const lb = new elbv2.NetworkLoadBalancer(stack, 'lb', { vpc: lbVpc });
-    const listener = lb.addListener('listener', { port: 80 });
-    listener.addTargets('target', { port: 80 });
-    const myvpc = new ec2.Vpc(stack, 'MyVpc', {
-      subnetConfiguration: [
-        { name: 'subnet-1', cidrMask: 20, subnetType: ec2.SubnetType.PRIVATE },
-        { name: 'subnet-2', cidrMask: 20, subnetType: ec2.SubnetType.PUBLIC },
-      ],
-    });
-
-    // WHEN
-    const api = new HttpApi(stack, 'HttpApi');
-    new HttpRoute(stack, 'HttpProxyPrivateRoute', {
-      httpApi: api,
-      integration: new HttpNlbIntegration({
-        listener,
-        vpc: myvpc,
-      }),
-      routeKey: HttpRouteKey.with('/pets'),
-    });
-
-    // THEN
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::VpcLink', {
-      SubnetIds: [
-        { Ref: 'MyVpcsubnet1Subnet1SubnetB9C401D7' },
-        { Ref: 'MyVpcsubnet1Subnet2Subnet42713E5A' },
-      ],
-    });
+    })).toThrow(/vpcLink property must be specified/);
   });
 });

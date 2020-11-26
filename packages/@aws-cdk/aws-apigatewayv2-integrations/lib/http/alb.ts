@@ -12,12 +12,6 @@ export interface HttpAlbIntegrationProps extends HttpPrivateIntegrationOptions {
    * The listener to the application load balancer used for the integration
    */
   readonly listener: elbv2.IApplicationListener;
-
-  /**
-   * The VPC which the Network Listener is part of. This property is required if the Network Listener is imported.
-   * @default - the vpc associated with the network listener, if it's defined within the CDK app.
-   */
-  readonly vpc?: ec2.IVpc;
 }
 
 /**
@@ -29,12 +23,12 @@ export class HttpAlbIntegration extends HttpPrivateIntegration {
   }
 
   public bind(options: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig {
-    let vpc: ec2.IVpc | undefined = this.props.vpc;
+    let vpc: ec2.IVpc | undefined = this.props.vpcLink?.vpc;
     if (!vpc && (this.props.listener instanceof elbv2.ApplicationListener)) {
       vpc = this.props.listener.loadBalancer.vpc;
     }
     if (!vpc) {
-      throw new Error('The vpc property must be specified.');
+      throw new Error('The vpcLink property must be specified.');
     }
 
     const vpcLink = this._configureVpcLink(options, {

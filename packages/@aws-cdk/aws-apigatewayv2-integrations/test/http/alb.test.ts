@@ -114,40 +114,6 @@ describe('HttpAlbIntegration', () => {
         listener,
       }),
       routeKey: HttpRouteKey.with('/pets'),
-    })).toThrow(/vpc property must be specified/);
-  });
-
-  test('uses specified load balancer', () => {
-    // GIVEN
-    const stack = new Stack();
-    const lbVpc = new ec2.Vpc(stack, 'VPC');
-    const lb = new elbv2.ApplicationLoadBalancer(stack, 'lb', { vpc: lbVpc });
-    const listener = lb.addListener('listener', { port: 80 });
-    listener.addTargets('target', { port: 80 });
-    const myvpc = new ec2.Vpc(stack, 'MyVpc', {
-      subnetConfiguration: [
-        { name: 'subnet-1', cidrMask: 20, subnetType: ec2.SubnetType.PRIVATE },
-        { name: 'subnet-2', cidrMask: 20, subnetType: ec2.SubnetType.PUBLIC },
-      ],
-    });
-
-    // WHEN
-    const api = new HttpApi(stack, 'HttpApi');
-    new HttpRoute(stack, 'HttpProxyPrivateRoute', {
-      httpApi: api,
-      integration: new HttpAlbIntegration({
-        listener,
-        vpc: myvpc,
-      }),
-      routeKey: HttpRouteKey.with('/pets'),
-    });
-
-    // THEN
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::VpcLink', {
-      SubnetIds: [
-        { Ref: 'MyVpcsubnet1Subnet1SubnetB9C401D7' },
-        { Ref: 'MyVpcsubnet1Subnet2Subnet42713E5A' },
-      ],
-    });
+    })).toThrow(/vpcLink property must be specified/);
   });
 });
