@@ -73,7 +73,11 @@ function lcfirst(s: string) {
  * If not a valid identifier, prefix with a '_'
  */
 function makeIdentifier(s: string) {
-  return s.match(/^[a-zA-Z_]/) ? s : `_${s}`;
+  // Strip invalid characters from identifier
+  s = s.replace(/([^a-zA-Z0-9_])/g, '');
+  // If it doesn't start with an alpha char, prefix with _
+  s = s.replace(/^([^a-zA-Z_])/, '_$1');
+  return s;
 }
 
 /**
