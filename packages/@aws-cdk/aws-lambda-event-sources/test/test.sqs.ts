@@ -113,6 +113,93 @@ export = {
     test.done();
   },
 
+  'batch size is > 10 and batch window is defined'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const q = new sqs.Queue(stack, 'Q');
+
+    // WHEN
+    fn.addEventSource(new sources.SqsEventSource(q, {
+      batchSize: 1000,
+      maxBatchingWindow: cdk.Duration.minutes(5),
+    }));
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::EventSourceMapping', {
+      'EventSourceArn': {
+        'Fn::GetAtt': [
+          'Q63C6E3AB',
+          'Arn',
+        ],
+      },
+      'FunctionName': {
+        'Ref': 'Fn9270CBC0',
+      },
+      'BatchSize': 1000,
+      'MaximumBatchingWindowInSeconds': 300,
+    }));
+
+    test.done();
+  },
+
+  'fails if batch size is > 10000 and batch window is defined'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const q = new sqs.Queue(stack, 'Q');
+
+    // WHEN/THEN
+    test.throws(() => fn.addEventSource(new sources.SqsEventSource(q, {
+      batchSize: 11000,
+      maxBatchingWindow: cdk.Duration.minutes(5),
+    })), /Maximum batch size must be between 1 and 10000 inclusive \(given 11000\)/);
+
+    test.done();
+  },
+
+  'specific batch window'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const q = new sqs.Queue(stack, 'Q');
+
+    // WHEN
+    fn.addEventSource(new sources.SqsEventSource(q, {
+      maxBatchingWindow: cdk.Duration.minutes(5),
+    }));
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::EventSourceMapping', {
+      'EventSourceArn': {
+        'Fn::GetAtt': [
+          'Q63C6E3AB',
+          'Arn',
+        ],
+      },
+      'FunctionName': {
+        'Ref': 'Fn9270CBC0',
+      },
+      'MaximumBatchingWindowInSeconds': 300,
+    }));
+
+    test.done();
+  },
+
+  'fails if batch window is > 5'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const q = new sqs.Queue(stack, 'Q');
+
+    // WHEN/THEN
+    test.throws(() => fn.addEventSource(new sources.SqsEventSource(q, {
+      maxBatchingWindow: cdk.Duration.minutes(7),
+    })), /maxBatchingWindow cannot be over 300 seconds, got 420/);
+
+    test.done();
+  },
+
   'contains eventSourceMappingId after lambda binding'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
