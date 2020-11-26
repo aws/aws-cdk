@@ -86,6 +86,7 @@
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-sam": "0.0.0",
     "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/cx-api": "0.0.0",
     "constructs": "^3.2.0"
   },
   "peerDependencies": {
@@ -95,6 +96,7 @@
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-sam": "0.0.0",
     "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/cx-api": "0.0.0",
     "constructs": "^3.2.0"
   },
   "engines": {
