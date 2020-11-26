@@ -1,5 +1,6 @@
 # AWS Lambda Construct Library
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
@@ -7,6 +8,7 @@
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
 
 This construct library allows you to define AWS Lambda Functions.
@@ -93,10 +95,10 @@ the stable production version.
 
 The function version includes the following information:
 
-- The function code and all associated dependencies.
-- The Lambda runtime that executes the function.
-- All of the function settings, including the environment variables.
-- A unique Amazon Resource Name (ARN) to identify this version of the function.
+* The function code and all associated dependencies.
+* The Lambda runtime that executes the function.
+* All of the function settings, including the environment variables.
+* A unique Amazon Resource Name (ARN) to identify this version of the function.
 
 You can define one or more
 [aliases](https://docs.aws.amazon.com/lambda/latest/dg/configuration-aliases.html)
@@ -377,12 +379,14 @@ For example, the `LogRetention` construct requires only one single lambda functi
 retention it seeks to manage.
 
 ## Bundling Asset Code
+
 When using `lambda.Code.fromAsset(path)` it is possible to bundle the code by running a
 command in a Docker container. The asset path will be mounted at `/asset-input`. The
 Docker container is responsible for putting content at `/asset-output`. The content at
 `/asset-output` will be zipped and used as Lambda code.
 
 Example with Python:
+
 ```ts
 new lambda.Function(this, 'Function', {
   code: lambda.Code.fromAsset(path.join(__dirname, 'my-python-handler'), {
@@ -400,6 +404,7 @@ new lambda.Function(this, 'Function', {
   handler: 'index.handler',
 });
 ```
+
 Runtimes expose a `bundlingDockerImage` property that points to the [AWS SAM](https://github.com/awslabs/aws-sam-cli) build image.
 
 Use `cdk.BundlingDockerImage.fromRegistry(image)` to use an existing image or
@@ -424,6 +429,7 @@ new lambda.Function(this, 'Function', {
 ```
 
 ## Language-specific APIs
+
 Language-specific higher level constructs are provided in separate modules:
 
 * Node.js: [`@aws-cdk/aws-lambda-nodejs`](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-lambda-nodejs)

@@ -1,5 +1,6 @@
 # Amazon S3 Construct Library
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
@@ -7,6 +8,7 @@
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
 
 Define an unencrypted S3 bucket.
@@ -190,6 +192,7 @@ bucket.addEventNotification(s3.EventType.OBJECT_REMOVED,
 Use `blockPublicAccess` to specify [block public access settings] on the bucket.
 
 Enable all block public access settings:
+
 ```ts
 const bucket = new Bucket(this, 'MyBlockedBucket', {
     blockPublicAccess: BlockPublicAccess.BLOCK_ALL
@@ -197,6 +200,7 @@ const bucket = new Bucket(this, 'MyBlockedBucket', {
 ```
 
 Block and ignore public ACLs:
+
 ```ts
 const bucket = new Bucket(this, 'MyBlockedBucket', {
     blockPublicAccess: BlockPublicAccess.BLOCK_ACLS
@@ -204,6 +208,7 @@ const bucket = new Bucket(this, 'MyBlockedBucket', {
 ```
 
 Alternatively, specify the settings manually:
+
 ```ts
 const bucket = new Bucket(this, 'MyBlockedBucket', {
     blockPublicAccess: new BlockPublicAccess({ blockPublicPolicy: true })
@@ -270,7 +275,7 @@ const dataBucket = new s3.Bucket(this, 'DataBucket', {
 If the destination bucket is created as part of the same CDK application, the necessary permissions will be automatically added to the bucket policy.
 However, if you use an imported bucket (i.e `Bucket.fromXXX()`), you'll have to make sure it contains the following policy document:
 
-```
+```json
 {
   "Version": "2012-10-17",
   "Statement": [

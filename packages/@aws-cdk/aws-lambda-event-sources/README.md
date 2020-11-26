@@ -1,10 +1,12 @@
 # AWS Lambda Event Sources
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
 
 An event source mapping is an AWS Lambda resource that reads from an event source and invokes a Lambda function.

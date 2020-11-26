@@ -1,5 +1,6 @@
 # Continuous Integration / Continuous Delivery for CDK Applications
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![Deprecated](https://img.shields.io/badge/deprecated-critical.svg?style=for-the-badge)
@@ -7,6 +8,7 @@
 > This API may emit warnings. Backward compatibility is not guaranteed.
 
 ---
+
 <!--END STABILITY BANNER-->
 
 This library includes a *CodePipeline* composite Action for deploying AWS CDK Applications.
@@ -21,20 +23,24 @@ This library has been deprecated. We recommend you use the
 
 
 ## Limitations
+
 The construct library in it's current form has the following limitations:
+
 1. It can only deploy stacks that are hosted in the same AWS account and region as the *CodePipeline* is.
 2. Stacks that make use of `Asset`s cannot be deployed successfully.
 
 ## Getting Started
+
 In order to add the `PipelineDeployStackAction` to your *CodePipeline*, you need to have a *CodePipeline* artifact that
 contains the result of invoking `cdk synth -o <dir>` on your *CDK App*. You can for example achieve this using a
 *CodeBuild* project.
 
 The example below defines a *CDK App* that contains 3 stacks:
+
 * `CodePipelineStack` manages the *CodePipeline* resources, and self-updates before deploying any other stack
 * `ServiceStackA` and `ServiceStackB` are service infrastructure stacks, and need to be deployed in this order
 
-```
+```plaintext
   ┏━━━━━━━━━━━━━━━━┓  ┏━━━━━━━━━━━━━━━━┓  ┏━━━━━━━━━━━━━━━━━┓  ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
   ┃     Source     ┃  ┃     Build      ┃  ┃  Self-Update    ┃  ┃             Deploy              ┃
   ┃                ┃  ┃                ┃  ┃                 ┃  ┃                                 ┃
@@ -47,7 +53,7 @@ The example below defines a *CDK App* that contains 3 stacks:
 
 ### `index.ts`
 
-```typescript
+```ts
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
@@ -139,6 +145,7 @@ deployStage.addAction(new cicd.PipelineDeployStackAction({
 ```
 
 ### `buildspec.yml`
+
 The repository can contain a file at the root level named `buildspec.yml`, or
 you can in-line the buildspec. Note that `buildspec.yaml` is not compatible.
 

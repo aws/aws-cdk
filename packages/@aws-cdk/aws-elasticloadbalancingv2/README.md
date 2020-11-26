@@ -1,6 +1,6 @@
 # Amazon Elastic Load Balancing V2 Construct Library
-
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
@@ -8,7 +8,9 @@
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
+
 
 The `@aws-cdk/aws-elasticloadbalancingv2` package provides constructs for
 configuring application and network load balancers.
@@ -380,6 +382,7 @@ than one load balancer matches, CDK will throw an error requesting that you
 provide more specific criteria.
 
 **Look up a Application Load Balancer by ARN**
+
 ```ts
 const loadBalancer = ApplicationLoadBalancer.fromLookup(stack, 'ALB', {
   loadBalancerArn: YOUR_ALB_ARN,
@@ -387,6 +390,7 @@ const loadBalancer = ApplicationLoadBalancer.fromLookup(stack, 'ALB', {
 ```
 
 **Look up an Application Load Balancer by tags**
+
 ```ts
 const loadBalancer = ApplicationLoadBalancer.fromLookup(stack, 'ALB', {
   loadBalancerTags: {

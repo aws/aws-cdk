@@ -1,12 +1,18 @@
 # Testing utilities and assertions for CDK libraries
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
 
-> The APIs of higher level constructs in this module are experimental and under active development. They are subject to non-backward compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be announced in the release notes. This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
+> The APIs of higher level constructs in this module are experimental and under active development.
+> They are subject to non-backward compatible changes or removal in any future version. These are
+> not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be
+> announced in the release notes. This means that while you may use them, you may need to update
+> your source code when upgrading to a newer version of this package.
 
 ---
+
 <!--END STABILITY BANNER-->
 
 This library contains helpers for writing unit tests and integration tests for CDK libraries
@@ -119,8 +125,8 @@ expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
 Special `Capture` matchers exist to capture values encountered during a match. These can be
 used for two typical purposes:
 
-* Apply additional assertions to the values found during a matching operation.
-* Use the value found during a matching operation in a new matching operation.
+- Apply additional assertions to the values found during a matching operation.
+- Use the value found during a matching operation in a new matching operation.
 
 `Capture` matchers take an inner matcher as an argument, and will only capture the value
 if the inner matcher succeeds in matching the given value.
@@ -195,8 +201,10 @@ expect(stack).to(countResourcesLike('AWS::ApiGateway::Method', 1, {
 ```
 
 ## Check existence of an output
+
 `haveOutput` assertion can be used to check that a stack contains specific output.
 Parameters to check against can be:
+
 - `outputName`
 - `outputValue`
 - `exportName`
@@ -204,6 +212,7 @@ Parameters to check against can be:
 If `outputValue` is provided, at least one of `outputName`, `exportName` should be provided as well
 
 Example
+
 ```ts
 expect(synthStack).to(haveOutput({
   outputName: 'TestOutputName',

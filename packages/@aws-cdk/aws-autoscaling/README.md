@@ -1,6 +1,6 @@
 # Amazon EC2 Auto Scaling Construct Library
-
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
@@ -8,7 +8,9 @@
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
+
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
@@ -114,7 +116,7 @@ configure, in response to metric values. For example, your scaling strategy to
 scale in response to a metric that represents your average worker pool usage
 might look like this:
 
-```
+```plaintext
  Scaling        -1          (no change)          +1       +3
             │        │                       │        │        │
             ├────────┼───────────────────────┼────────┼────────┤
@@ -360,5 +362,5 @@ new autoscaling.AutoScalingGroup(stack, 'ASG', {
 
 ## Future work
 
-- [ ] CloudWatch Events (impossible to add currently as the AutoScalingGroup ARN is
+* [ ] CloudWatch Events (impossible to add currently as the AutoScalingGroup ARN is
   necessary to make this rule and this cannot be accessed from CloudFormation).

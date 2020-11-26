@@ -1,5 +1,6 @@
 # Amazon Simple Notification Service Construct Library
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
@@ -7,6 +8,7 @@
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
 
 Add an SNS Topic to your stack:
@@ -46,9 +48,11 @@ Note that subscriptions of queues in different accounts need to be manually conf
 reading the initial message from the queue and visiting the link found in it.
 
 ### Filter policy
+
 A filter policy can be specified when subscribing an endpoint to a topic.
 
 Example with a Lambda subscription:
+
 ```ts
 const myTopic = new sns.Topic(this, 'MyTopic');
 const fn = new lambda.Function(this, 'Function', ...);
@@ -77,6 +81,7 @@ topic.addSubscription(new subs.LambdaSubscription(fn, {
 ```
 
 ## DLQ setup for SNS Subscription
+
 CDK can attach provided Queue as DLQ for your SNS subscription.
 See the [SNS DLQ configuration docs](https://docs.aws.amazon.com/sns/latest/dg/sns-configure-dead-letter-queue.html) for more information about this feature.
 

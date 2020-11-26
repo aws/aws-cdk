@@ -1,5 +1,6 @@
 # AWS Auto Scaling Construct Library
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
@@ -7,6 +8,7 @@
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
 
 **Application AutoScaling** is used to configure autoscaling for all
@@ -66,7 +68,7 @@ This type of scaling scales in and out in deterministic steps that you
 configure, in response to metric values. For example, your scaling strategy
 to scale in response to CPU usage might look like this:
 
-```
+```plaintext
  Scaling        -1          (no change)          +1       +3
             │        │                       │        │        │
             ├────────┼───────────────────────┼────────┼────────┤
@@ -177,7 +179,7 @@ def handler(event, context):
     }`),
       reservedConcurrentExecutions: 2,
     });
-    
+
     const fnVer = handler.addVersion('CDKLambdaVersion', undefined, 'demo alias', 10);
 
     new apigateway.LambdaRestApi(this, 'API', { handler: fnVer })

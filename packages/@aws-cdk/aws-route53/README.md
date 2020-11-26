@@ -1,5 +1,6 @@
 # Amazon Route53 Construct Library
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
@@ -7,6 +8,7 @@
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
 
 To add a public hosted zone:
@@ -40,6 +42,7 @@ Additional VPCs can be added with `zone.addVpc()`.
 ## Adding Records
 
 To add a TXT record to your zone:
+
 ```ts
 import * as route53 from '@aws-cdk/aws-route53';
 
@@ -58,6 +61,7 @@ new route53.TxtRecord(this, 'TXTRecord', {
 ```
 
 To add a A record to your zone:
+
 ```ts
 import * as route53 from '@aws-cdk/aws-route53';
 
@@ -68,6 +72,7 @@ new route53.ARecord(this, 'ARecord', {
 ```
 
 To add a AAAA record pointing to a CloudFront distribution:
+
 ```ts
 import * as route53 from '@aws-cdk/aws-route53';
 import * as targets from '@aws-cdk/aws-route53-targets';

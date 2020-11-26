@@ -1,5 +1,6 @@
 # Amazon DynamoDB Construct Library
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
@@ -7,6 +8,7 @@
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
 
 Here is a minimal deployable DynamoDB table definition:
@@ -43,6 +45,7 @@ When a table is defined, you must define it's schema using the `partitionKey`
 ## Billing Mode
 
 DynamoDB supports two billing modes:
+
 * PROVISIONED - the default mode where the table and global secondary indexes have configured read and write capacity.
 * PAY_PER_REQUEST - on-demand pricing and scaling. You only pay for what you use and there is no read and write capacity for the table or its global secondary indexes.
 
@@ -92,6 +95,7 @@ selected regions.
 ## Encryption
 
 All user data stored in Amazon DynamoDB is fully encrypted at rest. When creating a new table, you can choose to encrypt using the following customer master keys (CMK) to encrypt your table:
+
 * AWS owned CMK - By default, all tables are encrypted under an AWS owned customer master key (CMK) in the DynamoDB service account (no additional charges apply).
 * AWS managed CMK - AWS KMS keys (one per region) are created in your account, managed, and used on your behalf by AWS DynamoDB (AWS KMS chages apply).
 * Customer managed CMK - You have full control over the KMS key used to encrypt the DynamoDB Table (AWS KMS charges apply).

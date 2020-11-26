@@ -43,7 +43,9 @@ This installs two tools into your scripts:
 
 Usage:
 
-    cdk-integ [TEST...] [--no-clean] [--verbose]
+```console
+cdk-integ [TEST...] [--no-clean] [--verbose]
+```
 
 Will deploy test stacks from `test/integ.*.js` and store the synthesized output
 under `test/integ.*.expected.json`.

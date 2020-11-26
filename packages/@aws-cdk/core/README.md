@@ -1,5 +1,6 @@
 # AWS Cloud Development Kit Core Library
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
@@ -7,6 +8,7 @@
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
 
 This library includes the basic building blocks of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) (AWS CDK). It defines the core classes that are used in the rest of the
@@ -156,10 +158,10 @@ const secret = SecretValue.secretsManager('secretId', {
 Using AWS Secrets Manager is the recommended way to reference secrets in a CDK app.
 `SecretValue` also supports the following secret sources:
 
- * `SecretValue.plainText(secret)`: stores the secret as plain text in your app and the resulting template (not recommended).
- * `SecretValue.ssmSecure(param, version)`: refers to a secret stored as a SecureString in the SSM Parameter Store.
- * `SecretValue.cfnParameter(param)`: refers to a secret passed through a CloudFormation parameter (must have `NoEcho: true`).
- * `SecretValue.cfnDynamicReference(dynref)`: refers to a secret described by a CloudFormation dynamic reference (used by `ssmSecure` and `secretsManager`).
+ - `SecretValue.plainText(secret)`: stores the secret as plain text in your app and the resulting template (not recommended).
+ - `SecretValue.ssmSecure(param, version)`: refers to a secret stored as a SecureString in the SSM Parameter Store.
+ - `SecretValue.cfnParameter(param)`: refers to a secret passed through a CloudFormation parameter (must have `NoEcho: true`).
+ - `SecretValue.cfnDynamicReference(dynref)`: refers to a secret described by a CloudFormation dynamic reference (used by `ssmSecure` and `secretsManager`).
 
 ## ARN manipulation
 
@@ -244,13 +246,13 @@ between two stacks by using the `stackA.addDependency(stackB)` method.
 
 A stack dependency has the following implications:
 
-* Cyclic dependencies are not allowed, so if `stackA` is using resources from
+- Cyclic dependencies are not allowed, so if `stackA` is using resources from
   `stackB`, the reverse is not possible anymore.
-* Stacks with dependencies between them are treated specially by the CDK
+- Stacks with dependencies between them are treated specially by the CDK
   toolkit:
-  * If `stackA` depends on `stackB`, running `cdk deploy stackA` will also
+  - If `stackA` depends on `stackB`, running `cdk deploy stackA` will also
     automatically deploy `stackB`.
-  * `stackB`'s deployment will be performed *before* `stackA`'s deployment.
+  - `stackB`'s deployment will be performed *before* `stackA`'s deployment.
 
 ## Custom Resources
 
@@ -518,73 +520,6 @@ new CustomResource(this, 'MyResource', {
 
 See the [documentation](https://docs.aws.amazon.com/cdk/api/latest/docs/custom-resources-readme.html) for more details.
 
-#### Amazon SNS Topic
-
-Every time a resource event occurs (CREATE/UPDATE/DELETE), an SNS notification
-is sent to the SNS topic. Users must process these notifications (e.g. through a
-fleet of worker hosts) and submit success/failure responses to the
-CloudFormation service.
-
-Set `serviceToken` to `topic.topicArn`  in order to use this provider:
-
-```ts
-import * as sns from '@aws-cdk/aws-sns';
-import { CustomResource } from '@aws-cdk/core';
-
-const topic = new sns.Topic(this, 'MyProvider');
-
-new CustomResource(this, 'MyResource', {
-  serviceToken: topic.topicArn
-});
-```
-
-#### AWS Lambda Function
-
-An AWS lambda function is called *directly* by CloudFormation for all resource
-events. The handler must take care of explicitly submitting a success/failure
-response to the CloudFormation service and handle various error cases.
-
-Set `serviceToken` to `lambda.functionArn` to use this provider:
-
-```ts
-import * as lambda from '@aws-cdk/aws-lambda';
-import { CustomResource } from '@aws-cdk/core';
-
-const fn = new lambda.Function(this, 'MyProvider');
-
-new CustomResource(this, 'MyResource', {
-  serviceToken: lambda.functionArn
-});
-```
-
-#### The Custom Resource Provider Framework
-
-The [`@aws-cdk/custom-resource`] module includes an advanced framework for
-implementing custom resource providers.
-
-[`@aws-cdk/custom-resource`]: https://docs.aws.amazon.com/cdk/api/latest/docs/custom-resources-readme.html
-
-Handlers are implemented as AWS Lambda functions, which means that they can be
-implemented in any Lambda-supported runtime. Furthermore, this provider has an
-asynchronous mode, which means that users can provide an `isComplete` lambda
-function which is called periodically until the operation is complete. This
-allows implementing providers that can take up to two hours to stabilize.
-
-Set `serviceToken` to `provider.serviceToken` to use this provider:
-
-```ts
-import { Provider } from 'custom-resources';
-
-const provider = new Provider(this, 'MyProvider', {
-  onEventHandler: onEventLambdaFunction,
-  isCompleteHandler: isCompleteLambdaFunction // optional async waiter
-});
-
-new CustomResource(this, 'MyResource', {
-  serviceToken: provider.serviceToken
-});
-```
-
 ## AWS CloudFormation features
 
 A CDK stack synthesizes to an AWS CloudFormation Template. This section
@@ -847,6 +782,7 @@ new CfnInclude(this, 'ID', {
 ```
 
 ### Termination Protection
+
 You can prevent a stack from being accidentally deleted by enabling termination
 protection on the stack. If a user attempts to delete a stack with termination
 protection enabled, the deletion fails and the stack--including its status--remains

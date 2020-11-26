@@ -1,5 +1,6 @@
 # AWS Identity and Access Management Construct Library
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
@@ -7,6 +8,7 @@
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
 
 Define a role and add permissions to it. This will automatically create and
@@ -27,7 +29,7 @@ Managed policies can be attached using `xxx.addManagedPolicy(ManagedPolicy.fromA
 
 Many of the AWS CDK resources have `grant*` methods that allow you to grant other resources access to that resource. As an example, the following code gives a Lambda function write permissions (Put, Update, Delete) to a DynamoDB table.
 
-```typescript
+```ts
 const fn = new lambda.Function(...);
 const table = new dynamodb.Table(...);
 
@@ -36,7 +38,7 @@ table.grantWriteData(fn);
 
 The more generic `grant` method allows you to give specific permissions to a resource:
 
-```typescript
+```ts
 const fn = new lambda.Function(...);
 const table = new dynamodb.Table(...);
 
@@ -254,10 +256,10 @@ const customPolicyDocument = PolicyDocument.fromJson(policyDocument);
 
 // You can pass this document as an initial document to a ManagedPolicy
 // or inline Policy.
-const newManagedPolicy = new ManagedPolicy(stack, 'MyNewManagedPolicy', { 
+const newManagedPolicy = new ManagedPolicy(stack, 'MyNewManagedPolicy', {
   document: customPolicyDocument
 });
-const newPolicy = new Policy(stack, 'MyNewPolicy', { 
+const newPolicy = new Policy(stack, 'MyNewPolicy', {
   document: customPolicyDocument
 });
 ```

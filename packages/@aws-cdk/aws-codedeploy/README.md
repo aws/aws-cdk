@@ -1,5 +1,6 @@
 # AWS CodeDeploy Construct Library
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
@@ -7,6 +8,7 @@
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
 
 AWS CodeDeploy is a deployment service that automates application deployments to
@@ -221,6 +223,7 @@ const deploymentGroup = new codedeploy.LambdaDeploymentGroup(stack, 'BlueGreenDe
 ```
 
 In order to deploy a new version of this function:
+
 1. Increment the version, e.g. `const version = func.addVersion('2')`.
 2. Re-deploy the stack (this will trigger a deployment).
 3. Monitor the CodeDeploy deployment as traffic shifts between the versions.
@@ -247,6 +250,7 @@ const deploymentGroup = new codedeploy.LambdaDeploymentGroup(stack, 'BlueGreenDe
 ```
 
 You can specify a custom name for your deployment config, but if you do you will not be able to update the interval/percentage through CDK.
+
 ```ts
 const config = new codedeploy.CustomLambdaDeploymentConfig(stack, 'CustomConfig', {
   type: codedeploy.CustomLambdaDeploymentConfigType.CANARY,
@@ -255,6 +259,7 @@ const config = new codedeploy.CustomLambdaDeploymentConfig(stack, 'CustomConfig'
   deploymentConfigName: 'MyDeploymentConfig',
 });
 ```
+
 ### Rollbacks and Alarms
 
 CodeDeploy will roll back if the deployment fails. You can optionally trigger a rollback when one or more alarms are in a failed state:

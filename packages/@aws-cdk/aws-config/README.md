@@ -1,18 +1,26 @@
 # AWS Config Construct Library
 <!--BEGIN STABILITY BANNER-->
----
-
-| Features | Stability |
-| --- | --- |
-| CFN Resources | ![Stable](https://img.shields.io/badge/stable-success.svg?style=for-the-badge) |
-| Higher level constructs for Config Rules | ![Stable](https://img.shields.io/badge/stable-success.svg?style=for-the-badge) |
-| Higher level constructs for initial set-up (delivery channel & configuration recorder) | ![Not Implemented](https://img.shields.io/badge/not--implemented-black.svg?style=for-the-badge) |
-
-> **CFN Resources:** All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) are always stable and safe to use.
-
-> **Stable:** Higher level constructs in this module that are marked stable will not undergo any breaking changes. They will strictly follow the [Semantic Versioning](https://semver.org/) model.
 
 ---
+
+Features                                                                               | Stability
+---------------------------------------------------------------------------------------|------------
+CFN Resources                                                                          | ![Stable](https://img.shields.io/badge/stable-success.svg?style=for-the-badge)
+Higher level constructs for Config Rules                                               | ![Stable](https://img.shields.io/badge/stable-success.svg?style=for-the-badge)
+Higher level constructs for initial set-up (delivery channel & configuration recorder) | ![Not Implemented](https://img.shields.io/badge/not--implemented-black.svg?style=for-the-badge)
+
+> **CFN Resources:** All classes with the `Cfn` prefix in this module ([CFN Resources]) are always
+> stable and safe to use.
+>
+> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib
+
+<!-- -->
+
+> **Stable:** Higher level constructs in this module that are marked stable will not undergo any
+> breaking changes. They will strictly follow the [Semantic Versioning](https://semver.org/) model.
+
+---
+
 <!--END STABILITY BANNER-->
 
 [AWS Config](https://docs.aws.amazon.com/config/latest/developerguide/WhatIsConfig.html) provides a detailed view of the configuration of AWS resources in your AWS account.
