@@ -12,6 +12,7 @@ class SqsEventSourceTest extends cdk.Stack {
 
     fn.addEventSource(new SqsEventSource(queue, {
       batchSize: 5,
+      maxBatchingWindow: cdk.Duration.minutes(3),
     }));
   }
 }
