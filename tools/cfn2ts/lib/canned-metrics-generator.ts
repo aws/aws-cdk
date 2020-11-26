@@ -60,7 +60,7 @@ export class CannedMetricsGenerator {
     return this.code.save(dir);
   }
 
-  private functionName(metric: cfnspec.CannedServiceMetric) {
+  private functionName(metric: cfnspec.CannedMetric) {
     return makeIdentifier(lcfirst(`${metric.metricName}${metric.defaultStat}`));
   }
 }
@@ -83,8 +83,8 @@ function dimensionsType(dims: string[]) {
   return `{ ${dims.map(d => `${d}: string`).join(', ')} }`;
 }
 
-function groupByNamespace(metrics: cfnspec.CannedServiceMetric[]): Record<string, cfnspec.CannedServiceMetric[]> {
-  const ret: Record<string, cfnspec.CannedServiceMetric[]> = {};
+function groupByNamespace(metrics: cfnspec.CannedMetric[]): Record<string, cfnspec.CannedMetric[]> {
+  const ret: Record<string, cfnspec.CannedMetric[]> = {};
   for (const metric of metrics) {
     // Always starts with 'AWS/'
     const [, namespace] = metric.namespace.split('/');

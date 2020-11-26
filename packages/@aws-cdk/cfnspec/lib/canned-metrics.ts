@@ -7,7 +7,7 @@ export type NonEmptyArray<T> = [T, ...T[]];
  *
  * These are kindly provided to us by the good people of CloudWatch Explorer.
  */
-export interface CannedServiceMetric {
+export interface CannedMetric {
   /**
    * Metric namespace
    */
@@ -45,7 +45,7 @@ export interface CannedServiceMetric {
 /**
  * Return the list of canned metrics for the given service
  */
-export function cannedMetricsForService(cloudFormationNamespace: string): CannedServiceMetric[] {
+export function cannedMetricsForService(cloudFormationNamespace: string): CannedMetric[] {
   // One metricTemplate has a single set of dimensions, but the same metric NAME
   // may occur in multiple metricTemplates (if it has multiple sets of dimensions)
   const metricTemplates = cannedMetricsIndex()[cloudFormationNamespace] ?? [];
