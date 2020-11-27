@@ -515,6 +515,7 @@ abstract class ThirdPartyGitSource extends GitSource {
     this.webhook = props.webhook;
     this.reportBuildStatus = props.reportBuildStatus === undefined ? true : props.reportBuildStatus;
     this.webhookFilters = props.webhookFilters || [];
+    this.startBatchBuild = props.startBatchBuild;
   }
 
   public bind(_scope: CoreConstruct, _project: IProject): SourceConfig {
