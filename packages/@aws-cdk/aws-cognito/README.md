@@ -550,6 +550,18 @@ pool.addClient('app-client', {
 });
 ```
 
+Each app client allows you to configure the expiration time for access token, ID token and refresh token. If no values are specified, the default values from Cognito are used.
+
+```ts
+const pool = new cognito.UserPool(this, 'Pool');
+pool.addClient('app-client', {
+  // ...
+  accessTokenValidity: Duration.minutes(60),
+  idTokenValidity: Duration.minutes(60),
+  refreshTokenValidity: Duration.days(30),
+});
+```
+
 ### Resource Servers
 
 A resource server is a server for access-protected resources. It handles authenticated requests from an app that has an

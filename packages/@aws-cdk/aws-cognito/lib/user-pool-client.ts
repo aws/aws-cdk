@@ -1,4 +1,4 @@
-import { IResource, Resource } from '@aws-cdk/core';
+import { IResource, Resource, Duration } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnUserPoolClient } from './cognito.generated';
 import { IUserPool } from './user-pool';
@@ -248,6 +248,30 @@ export interface UserPoolClientOptions {
    * registered with the user pool using the `UserPool.registerIdentityProvider()` API.
    */
   readonly supportedIdentityProviders?: UserPoolClientIdentityProvider[];
+
+  /**
+   * Duration that specifies how long the ID token in the user pool client is valid.
+   * Values between 5 minutes and 1 day are valid. The duration can not be longer than the refresh token validity.
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cognito-userpoolclient.html#cfn-cognito-userpoolclient-idtokenvalidity
+   * @default Duration.minutes(60)
+   */
+  readonly idTokenValidity?: Duration;
+
+  /**
+   * Duration that specifies how long the refresh token in the user pool client is valid.
+   * Values between 60 minutes and 3650 days are valid.
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cognito-userpoolclient.html#cfn-cognito-userpoolclient-refreshtokenvalidity
+   * @default Duration.days(30)
+   */
+  readonly refreshTokenValidity?: Duration;
+
+  /**
+   * Duration that specifies how long the access token in the user pool client is valid.
+   * Values between 5 minutes and 1 day are valid. The duration can not be longer than the refresh token validity.
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cognito-userpoolclient.html#cfn-cognito-userpoolclient-accesstokenvalidity
+   * @default Duration.minutes(60)
+   */
+  readonly accessTokenValidity?: Duration;
 }
 
 /**
@@ -322,6 +346,15 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       }
     }
 
+    let tokenValidityUnits : CfnUserPoolClient.TokenValidityUnitsProperty | undefined;
+    if (props.accessTokenValidity || props.idTokenValidity || props.refreshTokenValidity) {
+      tokenValidityUnits = {
+        idToken: props.idTokenValidity ? 'minutes' : undefined,
+        accessToken: props.accessTokenValidity ? 'minutes' : undefined,
+        refreshToken: props.refreshTokenValidity ? 'minutes' : undefined,
+      };
+    }
+
     const resource = new CfnUserPoolClient(this, 'Resource', {
       clientName: props.userPoolClientName,
       generateSecret: props.generateSecret,
@@ -334,6 +367,10 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       allowedOAuthFlowsUserPoolClient: !props.disableOAuth,
       preventUserExistenceErrors: this.configurePreventUserExistenceErrors(props.preventUserExistenceErrors),
       supportedIdentityProviders: this.configureIdentityProviders(props),
+      idTokenValidity: props.idTokenValidity ? props.idTokenValidity.toMinutes() : undefined,
+      refreshTokenValidity: props.refreshTokenValidity ? props.refreshTokenValidity.toMinutes() : undefined,
+      accessTokenValidity: props.accessTokenValidity ? props.accessTokenValidity.toMinutes() : undefined,
+      tokenValidityUnits,
     });
 
     this.userPoolClientId = resource.ref;

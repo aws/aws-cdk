@@ -1,6 +1,6 @@
 import { ABSENT } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
-import { Stack } from '@aws-cdk/core';
+import { Stack, Duration } from '@aws-cdk/core';
 import { OAuthScope, ResourceServerScope, UserPool, UserPoolClient, UserPoolClientIdentityProvider, UserPoolIdentityProvider } from '../lib';
 
 describe('User Pool Client', () => {
@@ -539,5 +539,65 @@ describe('User Pool Client', () => {
         },
       },
     })).toThrow(/disableOAuth is set/);
+  });
+
+  test('token validity', () => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+
+    // WHEN
+    pool.addClient('Client1', {
+      userPoolClientName: 'Client1',
+      accessTokenValidity: Duration.minutes(60),
+      idTokenValidity: Duration.minutes(60),
+      refreshTokenValidity: Duration.days(30),
+    });
+    pool.addClient('Client2', {
+      userPoolClientName: 'Client2',
+      accessTokenValidity: Duration.minutes(60),
+    });
+    pool.addClient('Client3', {
+      userPoolClientName: 'Client3',
+      idTokenValidity: Duration.minutes(60),
+    });
+    pool.addClient('Client4', {
+      userPoolClientName: 'Client4',
+      refreshTokenValidity: Duration.days(30),
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolClient', {
+      ClientName: 'Client1',
+      AccessTokenValidity: 60,
+      IdTokenValidity: 60,
+      RefreshTokenValidity: 43200,
+      TokenValidityUnits: {
+        AccessToken: 'minutes',
+        IdToken: 'minutes',
+        RefreshToken: 'minutes',
+      },
+    });
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolClient', {
+      ClientName: 'Client2',
+      AccessTokenValidity: 60,
+      TokenValidityUnits: {
+        AccessToken: 'minutes',
+      },
+    });
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolClient', {
+      ClientName: 'Client3',
+      IdTokenValidity: 60,
+      TokenValidityUnits: {
+        IdToken: 'minutes',
+      },
+    });
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolClient', {
+      ClientName: 'Client4',
+      RefreshTokenValidity: 43200,
+      TokenValidityUnits: {
+        RefreshToken: 'minutes',
+      },
+    });
   });
 });
