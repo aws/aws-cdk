@@ -31,7 +31,10 @@ export interface ISecret extends IResource {
   readonly secretFullArn?: string;
 
   /**
-   * The name of the secret
+   * The name of the secret.
+   *
+   * For "owned" secrets, this will be the full resource name (secret name + suffix), unless the
+   * '@aws-cdk/aws-secretsmanager:parseOwnedSecretName' feature flag is set.
    */
   readonly secretName: string;
 
@@ -712,7 +715,7 @@ function parseSecretName(construct: IConstruct, secretArn: string) {
 }
 
 /**
- * Parses the secret name from the ARN of an owned secret. With owned secrets we know that a few things we don't with imported secrets:
+ * Parses the secret name from the ARN of an owned secret. With owned secrets we know a few things we don't with imported secrets:
  * - The ARN is guaranteed to be a full ARN, with suffix.
  * - The name -- if provided -- will tell us how many hyphens to expect in the final secret name.
  * - If the name is not provided, we know the format used by CloudFormation for auto-generated names.
