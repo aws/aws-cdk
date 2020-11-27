@@ -10,3 +10,4 @@ jobs:
       - uses: tjenkinson/gh-action-auto-merge-dependency-updates@5a9e8e4
         with:
           allowed-actors: dependabot-preview[bot], dependabot[bot]
+          allowed-update-types: devDependencies:minor, devDependencies:patch, dependencies:minor, dependencies:patch
