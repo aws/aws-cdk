@@ -441,10 +441,13 @@ export abstract class RestApiBase extends Resource implements IRestApi {
   /**
    * Metric for the total number API requests in a given period.
    *
-   * Default: sum over 5 minutes
+   * Default: samplecount over 5 minutes
    */
   public metricCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.cannedMetric(ApiGatewayMetrics.countSum, props);
+    return this.cannedMetric(ApiGatewayMetrics.countSum, {
+      statistic: 'SampleCount',
+      ...props,
+    });
   }
 
   /**
