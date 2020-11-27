@@ -789,7 +789,7 @@ abstract class TableBase extends Resource implements ITable {
     return new cloudwatch.Metric({
       ...DynamoDBMetrics.successfulRequestLatencyAverage(dimensions),
       ...props,
-      ...dimensions,
+      dimensions,
     }).attachTo(this);
   }
 
