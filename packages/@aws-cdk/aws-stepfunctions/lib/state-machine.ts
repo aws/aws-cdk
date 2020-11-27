@@ -4,6 +4,7 @@ import * as logs from '@aws-cdk/aws-logs';
 import { Arn, Duration, IResource, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { StateGraph } from './state-graph';
+import { StatesMetrics } from './stepfunctions-canned-metrics.generated';
 import { CfnStateMachine } from './stepfunctions.generated';
 import { IChainable } from './types';
 
@@ -249,7 +250,10 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
    * @default - sum over 5 minutes
    */
   public metricFailed(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('ExecutionsFailed', props);
+    return this.cannedMetric(StatesMetrics.executionsFailedAverage, {
+      statistic: 'sum',
+      ...props,
+    });
   }
 
   /**
@@ -258,6 +262,7 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
    * @default - sum over 5 minutes
    */
   public metricThrottled(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    // There's a typo in the "canned" version of this
     return this.metric('ExecutionThrottled', props);
   }
 
@@ -267,7 +272,10 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
    * @default - sum over 5 minutes
    */
   public metricAborted(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('ExecutionsAborted', props);
+    return this.cannedMetric(StatesMetrics.executionsAbortedAverage, {
+      statistic: 'sum',
+      ...props,
+    });
   }
 
   /**
@@ -276,7 +284,10 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
    * @default - sum over 5 minutes
    */
   public metricSucceeded(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('ExecutionsSucceeded', props);
+    return this.cannedMetric(StatesMetrics.executionsSucceededAverage, {
+      statistic: 'sum',
+      ...props,
+    });
   }
 
   /**
@@ -285,7 +296,10 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
    * @default - sum over 5 minutes
    */
   public metricTimedOut(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('ExecutionsTimedOut', props);
+    return this.cannedMetric(StatesMetrics.executionsTimedOutAverage, {
+      statistic: 'sum',
+      ...props,
+    });
   }
 
   /**
@@ -300,10 +314,12 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
   /**
    * Metric for the interval, in milliseconds, between the time the execution starts and the time it closes
    *
-   * @default - sum over 5 minutes
+   * NOTE: The default this metric returns is
+   *
+   * @default - average over 5 minutes
    */
   public metricTime(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('ExecutionTime', props);
+    return this.cannedMetric(StatesMetrics.executionTimeAverage, props);
   }
 
   /**
@@ -316,6 +332,15 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
       resourceName: Arn.parse(this.stateMachineArn, ':').resourceName,
       sep: ':',
     });
+  }
+
+  private cannedMetric(
+    fn: (dims: { StateMachineArn: string }) => cloudwatch.MetricProps,
+    props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return new cloudwatch.Metric({
+      ...fn({ StateMachineArn: this.stateMachineArn }),
+      ...props,
+    }).attachTo(this);
   }
 }
 

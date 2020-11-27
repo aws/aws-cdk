@@ -1,4 +1,4 @@
-import { Metric, MetricOptions } from '@aws-cdk/aws-cloudwatch';
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import { Duration, IResource, Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnApi, CfnApiProps } from '../apigatewayv2.generated';
@@ -28,35 +28,35 @@ export interface IHttpApi extends IResource {
    *
    * @default - average over 5 minutes
    */
-  metric(metricName: string, props?: MetricOptions): Metric;
+  metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
    * Metric for the number of client-side errors captured in a given period.
    *
    * @default - sum over 5 minutes
    */
-  metricClientError(props?: MetricOptions): Metric;
+  metricClientError(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
    * Metric for the number of server-side errors captured in a given period.
    *
    * @default - sum over 5 minutes
    */
-  metricServerError(props?: MetricOptions): Metric;
+  metricServerError(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
    * Metric for the amount of data processed in bytes.
    *
    * @default - sum over 5 minutes
    */
-  metricDataProcessed(props?: MetricOptions): Metric;
+  metricDataProcessed(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
    * Metric for the total number API requests in a given period.
    *
    * @default - SampleCount over 5 minutes
    */
-  metricCount(props?: MetricOptions): Metric;
+  metricCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
    * Metric for the time between when API Gateway relays a request to the backend
@@ -64,7 +64,7 @@ export interface IHttpApi extends IResource {
    *
    * @default - no statistic
    */
-  metricIntegrationLatency(props?: MetricOptions): Metric;
+  metricIntegrationLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
    * The time between when API Gateway receives a request from a client
@@ -73,7 +73,7 @@ export interface IHttpApi extends IResource {
    *
    * @default - no statistic
    */
-  metricLatency(props?: MetricOptions): Metric;
+  metricLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
    * Add a new VpcLink
@@ -186,8 +186,8 @@ abstract class HttpApiBase extends Resource implements IHttpApi { // note that t
   public abstract readonly httpApiId: string;
   private vpcLinks: Record<string, VpcLink> = {};
 
-  public metric(metricName: string, props?: MetricOptions): Metric {
-    return new Metric({
+  public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return new cloudwatch.Metric({
       namespace: 'AWS/ApiGateway',
       metricName,
       dimensions: { ApiId: this.httpApiId },
@@ -195,27 +195,27 @@ abstract class HttpApiBase extends Resource implements IHttpApi { // note that t
     }).attachTo(this);
   }
 
-  public metricClientError(props?: MetricOptions): Metric {
+  public metricClientError(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric('4XXError', { statistic: 'Sum', ...props });
   }
 
-  public metricServerError(props?: MetricOptions): Metric {
+  public metricServerError(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric('5XXError', { statistic: 'Sum', ...props });
   }
 
-  public metricDataProcessed(props?: MetricOptions): Metric {
+  public metricDataProcessed(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric('DataProcessed', { statistic: 'Sum', ...props });
   }
 
-  public metricCount(props?: MetricOptions): Metric {
+  public metricCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric('Count', { statistic: 'SampleCount', ...props });
   }
 
-  public metricIntegrationLatency(props?: MetricOptions): Metric {
+  public metricIntegrationLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric('IntegrationLatency', props);
   }
 
-  public metricLatency(props?: MetricOptions): Metric {
+  public metricLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric('Latency', props);
   }
 

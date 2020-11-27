@@ -692,7 +692,7 @@ abstract class TableBase extends Resource implements ITable {
         TableName: this.tableName,
       },
       ...props,
-    });
+    }).attachTo(this);
   }
 
   /**
@@ -702,10 +702,7 @@ abstract class TableBase extends Resource implements ITable {
    * You can customize this by using the `statistic` and `period` properties.
    */
   public metricConsumedReadCapacityUnits(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return new cloudwatch.Metric({
-      ...DynamoDBMetrics.consumedReadCapacityUnitsSum({ TableName: this.tableName }),
-      ...props,
-    });
+    return this.cannedMetric(DynamoDBMetrics.consumedReadCapacityUnitsSum, props);
   }
 
   /**
@@ -715,10 +712,7 @@ abstract class TableBase extends Resource implements ITable {
    * You can customize this by using the `statistic` and `period` properties.
    */
   public metricConsumedWriteCapacityUnits(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return new cloudwatch.Metric({
-      ...DynamoDBMetrics.consumedWriteCapacityUnitsSum({ TableName: this.tableName }),
-      ...props,
-    });
+    return this.cannedMetric(DynamoDBMetrics.consumedWriteCapacityUnitsSum, props);
   }
 
   /**
@@ -768,6 +762,15 @@ abstract class TableBase extends Resource implements ITable {
   }
 
   /**
+   * How many requests are throttled on this table
+   *
+   * Default: sum over 5 minutes
+   */
+  public metricThrottledRequests(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(DynamoDBMetrics.throttledRequestsSum, props);
+  }
+
+  /**
    * Metric for the successful request latency this table.
    *
    * By default, the metric will be calculated as an average over a period of 5 minutes.
@@ -787,7 +790,7 @@ abstract class TableBase extends Resource implements ITable {
       ...DynamoDBMetrics.successfulRequestLatencyAverage(dimensions),
       ...props,
       ...dimensions,
-    });
+    }).attachTo(this);
   }
 
   /**
@@ -909,6 +912,15 @@ abstract class TableBase extends Resource implements ITable {
       return ret;
     }
     throw new Error(`Unexpected 'action', ${ opts.tableActions || opts.streamActions }`);
+  }
+
+  private cannedMetric(
+    fn: (dims: { TableName: string }) => cloudwatch.MetricProps,
+    props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return new cloudwatch.Metric({
+      ...fn({ TableName: this.tableName }),
+      ...props,
+    }).attachTo(this);
   }
 }
 

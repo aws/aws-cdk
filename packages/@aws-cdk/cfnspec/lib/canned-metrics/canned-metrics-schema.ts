@@ -8,11 +8,7 @@ export function loadCannedMetricsFile(): CannedMetricsFile {
 
 /**
  * Schema definitions for the accompanying file "services.json".
- *
- * This source of AWS metrics is kindly provided to us by the CloudWatch Explorer team
- * (and used in their console).
  */
-
 export type CannedMetricsFile = MetricInfoGroup[];
 
 export interface MetricInfoGroup {

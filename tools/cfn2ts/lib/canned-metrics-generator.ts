@@ -1,5 +1,5 @@
 import * as cfnspec from '@aws-cdk/cfnspec';
-import { CodeMaker } from 'codemaker';
+import { CodeMaker, toCamelCase } from 'codemaker';
 
 
 /**
@@ -11,6 +11,18 @@ import { CodeMaker } from 'codemaker';
  *
  * Instead, we generate functions that return the set of properties that should
  * be passed to a `cloudwatch.Metric` to construct it.
+ *
+ * ----------------------------------------------------------
+ *
+ * Generates code similar to the following:
+ *
+ * ```
+ * export class <Namespace>Metrics {
+ *   public static <metric><statistic>(<dimensions>): Props {
+ *     // ...
+ *   }
+ * }
+ * ```
  */
 export class CannedMetricsGenerator {
   private readonly code = new CodeMaker({ indentationLevel: 2 });
@@ -23,9 +35,12 @@ export class CannedMetricsGenerator {
     this.code.line(`// Copyright 2012-${new Date().getFullYear()} Amazon.com, Inc. or its affiliates. All Rights Reserved.`);
     this.code.line();
     this.code.line('/* eslint-disable max-len */ // This is generated code - line lengths are difficult to control');
+    this.code.line();
   }
 
   public generate(): boolean {
+    let emittedOverloads = false;
+
     const namespaces = groupByNamespace(cfnspec.cannedMetricsForService(this.namespace));
     for (const [namespace, metrics] of Object.entries(namespaces)) {
       this.code.openBlock(`export class ${namespace}Metrics`);
@@ -33,10 +48,19 @@ export class CannedMetricsGenerator {
       for (const metric of metrics) {
         const functionName = this.functionName(metric);
 
-        // Anonymous type for the dimensions (TypeScript only)
-        const allDimsType = metric.dimensions.map(dimensionsType).join(' | ');
+        if (metric.dimensions.length > 1) {
+          emittedOverloads = true;
+          // Generate overloads for every possible dimensions type
+          for (const dims of metric.dimensions) {
+            const dimsType = dimensionsType(dims);
+            this.code.line(`public static ${functionName}(dimensions: ${dimsType}): MetricWithDims<${dimsType}>;`);
+          }
+          this.code.openBlock(`public static ${functionName}(dimensions: any)`);
+        } else {
+          // Else just the one type
+          this.code.openBlock(`public static ${functionName}(dimensions: ${dimensionsType(metric.dimensions[0])})`);
+        }
 
-        this.code.openBlock(`public static ${functionName}(dimensions: ${allDimsType})`);
         this.code.line('return {');
         this.code.line(`  namespace: '${metric.namespace}',`);
         this.code.line(`  metricName: '${metric.metricName}',`);
@@ -47,6 +71,10 @@ export class CannedMetricsGenerator {
       }
 
       this.code.closeBlock();
+    }
+
+    if (emittedOverloads) {
+      this.emitTypeDef();
     }
 
     return Object.keys(namespaces).length > 0;
@@ -61,12 +89,12 @@ export class CannedMetricsGenerator {
   }
 
   private functionName(metric: cfnspec.CannedMetric) {
-    return makeIdentifier(lcfirst(`${metric.metricName}${metric.defaultStat}`));
+    return makeIdentifier(toCamelCase(`${metric.metricName}${metric.defaultStat}`));
   }
-}
 
-function lcfirst(s: string) {
-  return s.substr(0, 1).toLowerCase() + s.substr(1);
+  private emitTypeDef() {
+    this.code.line('type MetricWithDims<D> = { namespace: string, metricName: string, statistic: string, dimensions: D };');
+  }
 }
 
 /**
@@ -90,8 +118,8 @@ function dimensionsType(dims: string[]) {
 function groupByNamespace(metrics: cfnspec.CannedMetric[]): Record<string, cfnspec.CannedMetric[]> {
   const ret: Record<string, cfnspec.CannedMetric[]> = {};
   for (const metric of metrics) {
-    // Always starts with 'AWS/'
-    const [, namespace] = metric.namespace.split('/');
+    // Always starts with 'AWS/' (except when it doesn't, looking at you `CloudWatchSynthetics`)
+    const namespace = metric.namespace.replace(/^AWS\//, '');
     (ret[namespace] ?? (ret[namespace] = [])).push(metric);
   }
   return ret;
