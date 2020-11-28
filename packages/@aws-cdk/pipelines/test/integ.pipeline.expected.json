@@ -1,36 +1,4 @@
 {
-  "Parameters": {
-    "BootstrapVersion": {
-      "Type": "AWS::SSM::Parameter::Value<String>",
-      "Default": "/cdk-bootstrap/hnb659fds/version",
-      "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store."
-    }
-  },
-  "Rules": {
-    "CheckBootstrapVersion": {
-      "Assertions": [
-        {
-          "Assert": {
-            "Fn::Not": [
-              {
-                "Fn::Contains": [
-                  [
-                    "1",
-                    "2",
-                    "3"
-                  ],
-                  {
-                    "Ref": "BootstrapVersion"
-                  }
-                ]
-              }
-            ]
-          },
-          "AssertDescription": "CDK bootstrap stack version 4 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
-        }
-      ]
-    }
-  },
   "Resources": {
     "PipelineArtifactsBucketEncryptionKeyF5BF0670": {
       "Type": "AWS::KMS::Key",
@@ -170,6 +138,28 @@
               "Effect": "Allow",
               "Principal": {
                 "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region"
+                    ]
+                  ]
+                }
+              },
+              "Resource": "*"
+            },
+            {
+              "Action": [
+                "kms:Decrypt",
+                "kms:DescribeKey"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
                   "Fn::GetAtt": [
                     "PipelinePreProdUseSourceProjectRole69B20A71",
                     "Arn"
@@ -195,31 +185,23 @@
                 }
               },
               "Resource": "*"
-            },
-            {
-              "Action": [
-                "kms:Decrypt",
-                "kms:DescribeKey"
-              ],
-              "Effect": "Allow",
-              "Principal": {
-                "AWS": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region"
-                    ]
-                  ]
-                }
-              },
-              "Resource": "*"
             }
           ],
           "Version": "2012-10-17"
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "PipelineArtifactsBucketEncryptionKeyAlias94A07392": {
+      "Type": "AWS::KMS::Alias",
+      "Properties": {
+        "AliasName": "alias/codepipeline-pipelinestackpipelinee95eedaa",
+        "TargetKeyId": {
+          "Fn::GetAtt": [
+            "PipelineArtifactsBucketEncryptionKeyF5BF0670",
+            "Arn"
+          ]
         }
       },
       "UpdateReplacePolicy": "Delete",
@@ -252,20 +234,6 @@
       },
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain"
-    },
-    "PipelineArtifactsBucketEncryptionKeyAlias94A07392": {
-      "Type": "AWS::KMS::Alias",
-      "Properties": {
-        "AliasName": "alias/codepipeline-pipelinestackpipelinee95eedaa",
-        "TargetKeyId": {
-          "Fn::GetAtt": [
-            "PipelineArtifactsBucketEncryptionKeyF5BF0670",
-            "Arn"
-          ]
-        }
-      },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete"
     },
     "PipelineRoleB27FAA37": {
       "Type": "AWS::IAM::Role",
@@ -362,16 +330,6 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Resource": {
-                "Fn::GetAtt": [
-                  "PipelinePreProdUseSourceCodePipelineActionRoleA2043BDA",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Resource": {
                 "Fn::Join": [
                   "",
                   [
@@ -381,6 +339,16 @@
                     },
                     ":iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region"
                   ]
+                ]
+              }
+            },
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "PipelinePreProdUseSourceCodePipelineActionRoleA2043BDA",
+                  "Arn"
                 ]
               }
             }
@@ -507,32 +475,6 @@
             "Actions": [
               {
                 "ActionTypeId": {
-                  "Category": "Build",
-                  "Owner": "AWS",
-                  "Provider": "CodeBuild",
-                  "Version": "1"
-                },
-                "Configuration": {
-                  "ProjectName": {
-                    "Ref": "PipelinePreProdUseSourceProject2E711EB4"
-                  }
-                },
-                "InputArtifacts": [
-                  {
-                    "Name": "Artifact_Source_GitHub"
-                  }
-                ],
-                "Name": "UseSource",
-                "RoleArn": {
-                  "Fn::GetAtt": [
-                    "PipelinePreProdUseSourceCodePipelineActionRoleA2043BDA",
-                    "Arn"
-                  ]
-                },
-                "RunOrder": 100
-              },
-              {
-                "ActionTypeId": {
                   "Category": "Deploy",
                   "Owner": "AWS",
                   "Provider": "CloudFormation",
@@ -603,6 +545,32 @@
                   ]
                 },
                 "RunOrder": 2
+              },
+              {
+                "ActionTypeId": {
+                  "Category": "Build",
+                  "Owner": "AWS",
+                  "Provider": "CodeBuild",
+                  "Version": "1"
+                },
+                "Configuration": {
+                  "ProjectName": {
+                    "Ref": "PipelinePreProdUseSourceProject2E711EB4"
+                  }
+                },
+                "InputArtifacts": [
+                  {
+                    "Name": "Artifact_Source_GitHub"
+                  }
+                ],
+                "Name": "UseSource",
+                "RoleArn": {
+                  "Fn::GetAtt": [
+                    "PipelinePreProdUseSourceCodePipelineActionRoleA2043BDA",
+                    "Arn"
+                  ]
+                },
+                "RunOrder": 100
               }
             ],
             "Name": "PreProd"
@@ -1395,6 +1363,38 @@
           ]
         }
       }
+    }
+  },
+  "Parameters": {
+    "BootstrapVersion": {
+      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Default": "/cdk-bootstrap/hnb659fds/version",
+      "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store."
+    }
+  },
+  "Rules": {
+    "CheckBootstrapVersion": {
+      "Assertions": [
+        {
+          "Assert": {
+            "Fn::Not": [
+              {
+                "Fn::Contains": [
+                  [
+                    "1",
+                    "2",
+                    "3"
+                  ],
+                  {
+                    "Ref": "BootstrapVersion"
+                  }
+                ]
+              }
+            ]
+          },
+          "AssertDescription": "CDK bootstrap stack version 4 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+        }
+      ]
     }
   }
 }

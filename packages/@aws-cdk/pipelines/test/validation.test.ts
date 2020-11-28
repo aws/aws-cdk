@@ -210,11 +210,16 @@ test('ShellScriptAction is IGrantable', () => {
     additionalArtifacts: [integTestArtifact],
     commands: ['true'],
   });
-  pipeline.addStage('Test').addActions(action);
+  const stage = pipeline.addStage('Test');
+  stage.addActions(action);
   const bucket = new s3.Bucket(pipelineStack, 'Bucket');
 
   // WHEN
-  bucket.grantRead(action);
+  stage.afterPreparation({
+    act: () => {
+      bucket.grantRead(action);
+    },
+  });
 
   // THEN
   expect(pipelineStack).toHaveResourceLike('AWS::IAM::Policy', {

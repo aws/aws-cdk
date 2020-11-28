@@ -258,17 +258,20 @@ export class CdkPipeline extends CoreConstruct {
    * Actions to a pipeline.
    */
   public addStage(stageName: string) {
-    const pipelineStage = this._pipeline.addStage({
-      stageName,
-    });
-
+    let pipelineStageCounter = 1;
     const stage = new CdkStage(this, stageName, {
       cloudAssemblyArtifact: this._cloudAssemblyArtifact,
-      pipelineStage,
       stageName,
       host: {
         publishAsset: this._assets.addPublishAssetAction.bind(this._assets),
         stackOutputArtifact: (artifactId) => this._outputArtifacts[artifactId],
+        createNewPipelineStage: () => {
+          const pipelineStageName = pipelineStageCounter === 1 ? stageName : stageName + pipelineStageCounter;
+          pipelineStageCounter++;
+          return this._pipeline.addStage({
+            stageName: pipelineStageName,
+          });
+        },
       },
     });
     this._stages.push(stage);

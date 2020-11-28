@@ -21,11 +21,6 @@ export interface CdkStageProps {
   readonly stageName: string;
 
   /**
-   * The underlying Pipeline Stage associated with thisCdkStage
-   */
-  readonly pipelineStage: codepipeline.IStage;
-
-  /**
    * The CodePipeline Artifact with the Cloud Assembly
    */
   readonly cloudAssemblyArtifact: codepipeline.Artifact;
@@ -43,20 +38,21 @@ export interface CdkStageProps {
  * `cdkPipeline.addStage()` instead.
  */
 export class CdkStage extends CoreConstruct {
+  private static MAX_ACTIONS_PER_STAGE = 50;
+
   private _nextSequentialRunOrder = 1; // Must start at 1 eh
   private _manualApprovalCounter = 1;
-  private readonly pipelineStage: codepipeline.IStage;
   private readonly cloudAssemblyArtifact: codepipeline.Artifact;
-  private readonly stacksToDeploy = new Array<DeployStackCommand>();
+  private readonly commandsToPrepare = new Array<ICdkStageCommand>();
   private readonly stageName: string;
   private readonly host: IStageHost;
+  private afterPreparationAct?: ICdkStageAfterPrepareAct;
   private _prepared = false;
 
   constructor(scope: Construct, id: string, props: CdkStageProps) {
     super(scope, id);
 
     this.stageName = props.stageName;
-    this.pipelineStage = props.pipelineStage;
     this.cloudAssemblyArtifact = props.cloudAssemblyArtifact;
     this.host = props.host;
 
@@ -118,11 +114,8 @@ export class CdkStage extends CoreConstruct {
     // We know that deploying a stack is going to take up 2 runorder slots later on.
     const runOrder = options.runOrder ?? this.nextSequentialRunOrder(2);
     const executeRunOrder = options.executeRunOrder ?? runOrder + 1;
-    this.stacksToDeploy.push({
-      prepareRunOrder: runOrder,
-      executeRunOrder,
-      stackArtifact,
-    });
+    this.commandsToPrepare
+      .push(new DeployStackCommand(runOrder, executeRunOrder, stackArtifact));
 
     this.advanceRunOrderPast(runOrder);
     this.advanceRunOrderPast(executeRunOrder);
@@ -155,7 +148,7 @@ export class CdkStage extends CoreConstruct {
    */
   public addActions(...actions: codepipeline.IAction[]) {
     for (const action of actions) {
-      this.pipelineStage.addAction(action);
+      this.commandsToPrepare.push(new ActionCommand(action));
     }
   }
 
@@ -176,11 +169,21 @@ export class CdkStage extends CoreConstruct {
    * Whether this Stage contains an action to deploy the given stack, identified by its artifact ID
    */
   public deploysStack(artifactId: string) {
-    return this.stacksToDeploy.map(s => s.stackArtifact.id).includes(artifactId);
+    return this.commandsToPrepare.some(c => c.deploysStack(artifactId));
   }
 
   /**
-   * Actually add all the DeployStack actions to the stage.
+   * Register a function to be called after the Cdk stage is prepared.
+   * In this function, further things can be done to the actions inserted into the stage,
+   * as the actions are now effectively bound to their codepipeline stages.
+   * @param act the function to be called after Cdk stage preparation.
+   */
+  public afterPreparation(act: ICdkStageAfterPrepareAct) {
+    this.afterPreparationAct = act;
+  }
+
+  /**
+   * Actually add all the actions to the stage.
    *
    * We do this late because before we can render the actual DeployActions,
    * we need to know whether or not we need to capture the stack outputs.
@@ -196,17 +199,25 @@ export class CdkStage extends CoreConstruct {
     if (this._prepared) { return; }
     this._prepared = true;
 
-    for (const { prepareRunOrder, stackArtifact, executeRunOrder } of this.stacksToDeploy) {
-      const artifact = this.host.stackOutputArtifact(stackArtifact.id);
+    let currentPipelineStage = this.host.createNewPipelineStage();
+    let actionsInStage = 0;
 
-      this.pipelineStage.addAction(DeployCdkStackAction.fromStackArtifact(this, stackArtifact, {
-        baseActionName: this.simplifyStackName(stackArtifact.stackName),
-        cloudAssemblyInput: this.cloudAssemblyArtifact,
-        output: artifact,
-        outputFileName: artifact ? 'outputs.json' : undefined,
-        prepareRunOrder,
-        executeRunOrder,
-      }));
+    this.commandsToPrepare
+      .sort((a, b) => a.runOrder() - b.runOrder());
+
+    for (const command of this.commandsToPrepare) {
+      // Check if enough room in the codepipeline stage.
+      if (actionsInStage +command.actionsCount() > CdkStage.MAX_ACTIONS_PER_STAGE) {
+        currentPipelineStage = this.host.createNewPipelineStage();
+        actionsInStage = 0;
+      }
+      // Prepare the command.
+      command.prepare(this, this.stageName, currentPipelineStage, this.cloudAssemblyArtifact, this.host);
+      actionsInStage += command.actionsCount();
+    }
+
+    if (this.afterPreparationAct) {
+      this.afterPreparationAct.act();
     }
   }
 
@@ -215,13 +226,6 @@ export class CdkStage extends CoreConstruct {
    */
   private advanceRunOrderPast(lastUsed: number) {
     this._nextSequentialRunOrder = Math.max(lastUsed + 1, this._nextSequentialRunOrder);
-  }
-
-  /**
-   * Simplify the stack name by removing the `Stage-` prefix if it exists.
-   */
-  private simplifyStackName(s: string) {
-    return stripPrefix(s, `${this.stageName}-`);
   }
 
   /**
@@ -332,6 +336,12 @@ export interface IStageHost {
    * Return the Artifact the given stack has to emit its outputs into, if any
    */
   stackOutputArtifact(stackArtifactId: string): codepipeline.Artifact | undefined;
+
+  /**
+   * Creates a new codepipeline stage for this Cdk stage.
+   * It follows the previous one in the pipeline.
+   */
+  createNewPipelineStage(): codepipeline.IStage
 }
 
 /**
@@ -402,11 +412,110 @@ export interface AddManualApprovalOptions {
   readonly runOrder?: number;
 }
 
+interface ICdkStageCommand {
+  /**
+   * Prepare the cdk stage command by adding the needed actions into the pipeline.
+   * Note: currently, it will only work if the added actions are following each other in run order.
+   * @param scope the construct scope.
+   * @param stageName the cdk stage name.
+   * @param pipelineStage the current pipeline stage in which the actions must be inserted.
+   * @param cloudAssemblyArtifact the artifact containing the cloud assembly generated by the CDK.
+   * @param host some methods to manipulate the parent pipeline.
+   */
+  prepare(scope: Construct, stageName: string, pipelineStage: codepipeline.IStage,
+    cloudAssemblyArtifact: codepipeline.Artifact, host: IStageHost): void;
+
+  /**
+   * Returns the actions count this command will create when calling prepare.
+   * (use to see if a new codepipeline stage is required to fit the new actions).
+   */
+  actionsCount(): number;
+
+  /**
+   * Get the global run order of the command.
+   */
+  runOrder(): number;
+
+  /**
+   * Whether the Cdk Stage deploys the given stack.
+   * @param artifactId the stack artifact id.
+   */
+  deploysStack(artifactId: string): boolean;
+}
+
 /**
  * Queued "deploy stack" command that is reified during prepare()
  */
-interface DeployStackCommand {
-  prepareRunOrder: number;
-  executeRunOrder: number;
-  stackArtifact: cxapi.CloudFormationStackArtifact;
+export class DeployStackCommand implements ICdkStageCommand {
+
+  constructor(
+    private readonly prepareRunOrder: number,
+    private readonly executeRunOrder: number,
+    private readonly stackArtifact: cxapi.CloudFormationStackArtifact) {}
+
+  prepare(scope: Construct, stageName: string, pipelineStage: codepipeline.IStage,
+    cloudAssemblyArtifact: codepipeline.Artifact, host: IStageHost): void {
+    const artifact = host.stackOutputArtifact(this.stackArtifact.id);
+
+    pipelineStage.addAction(DeployCdkStackAction.fromStackArtifact(scope, this.stackArtifact, {
+      baseActionName: this.simplifyStackName(this.stackArtifact.stackName, stageName),
+      cloudAssemblyInput: cloudAssemblyArtifact,
+      output: artifact,
+      outputFileName: artifact ? 'outputs.json' : undefined,
+      prepareRunOrder: this.prepareRunOrder,
+      executeRunOrder: this.executeRunOrder,
+    }));
+  }
+
+  actionsCount(): number {
+    return 2;
+  }
+
+  runOrder(): number {
+    return this.prepareRunOrder;
+  }
+
+  deploysStack(artifactId: string): boolean {
+    return this.stackArtifact.id === artifactId;
+  }
+
+  /**
+   * Simplify the stack name by removing the `Stage-` prefix if it exists.
+   */
+  private simplifyStackName(s: string, stageName: string) {
+    return stripPrefix(s, `${stageName}-`);
+  }
+
+}
+
+class ActionCommand implements ICdkStageCommand {
+  constructor(private pipelineAction: codepipeline.IAction) {}
+
+  prepare(_scope: Construct, _stageName: string, pipelineStage: codepipeline.IStage,
+    _cloudAssemblyArtifact: codepipeline.Artifact, _host: IStageHost): void {
+    pipelineStage.addAction(this.pipelineAction);
+  }
+
+  actionsCount(): number {
+    return 1;
+  }
+
+  runOrder(): number {
+    return this.pipelineAction.actionProperties.runOrder != null ?
+      this.pipelineAction.actionProperties.runOrder : 1;
+  }
+
+  deploysStack(_artifactId: string): boolean {
+    return false;
+  }
+}
+
+/**
+ * Provide some code to execute after the CdkStage is prepared.
+ */
+export interface ICdkStageAfterPrepareAct {
+  /**
+   * The function to be run after the CdkStage is prepared.
+   */
+  act(): void;
 }
