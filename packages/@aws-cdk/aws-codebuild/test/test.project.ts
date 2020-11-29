@@ -7,7 +7,6 @@ import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as codebuild from '../lib';
-import { BuildEnvironmentVariableType } from '../lib';
 
 /* eslint-disable quote-props */
 
@@ -756,7 +755,7 @@ export = {
         },
         environmentVariables: {
           'ENV_VAR1': {
-            type: BuildEnvironmentVariableType.PARAMETER_STORE,
+            type: codebuild.BuildEnvironmentVariableType.PARAMETER_STORE,
             value: '/params/param1',
           },
         },
@@ -792,11 +791,11 @@ export = {
         },
         environmentVariables: {
           'ENV_VAR1': {
-            type: BuildEnvironmentVariableType.PARAMETER_STORE,
+            type: codebuild.BuildEnvironmentVariableType.PARAMETER_STORE,
             value: '/params/param1',
           },
           'ENV_VAR2': {
-            type: BuildEnvironmentVariableType.PARAMETER_STORE,
+            type: codebuild.BuildEnvironmentVariableType.PARAMETER_STORE,
             value: '/params/param2',
           },
         },
@@ -872,7 +871,7 @@ export = {
         },
         environmentVariables: {
           'ENV_VAR1': {
-            type: BuildEnvironmentVariableType.PLAINTEXT,
+            type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
             value: 'var1-value',
           },
         },
