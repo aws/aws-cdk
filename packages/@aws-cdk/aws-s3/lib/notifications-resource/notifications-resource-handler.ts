@@ -54,9 +54,9 @@ export class NotificationsResourceHandler extends cdk.Construct {
       ],
     });
 
-    // handler allows to put bucket notification on s3 buckets.
+    // handler allowed to get existing bucket notification configuration and put bucket notification on s3 buckets.
     role.addToPolicy(new iam.PolicyStatement({
-      actions: ['s3:PutBucketNotification'],
+      actions: ['s3:PutBucketNotification', 's3:GetBucketNotification'],
       resources: ['*'],
     }));
 
@@ -108,15 +108,13 @@ const handler = (event: any, context: any) => {
 
   log(JSON.stringify(event, undefined, 2));
 
-  const props = event.ResourceProperties;
-
-  if (event.RequestType === 'Delete') {
-    props.NotificationConfiguration = { }; // this is how you clean out notifications
+  const [notificationConfiguration, notificationErr] = getNotificationConfiguration();
+  if (notificationErr) {
+    return submitResponse('FAILED', notificationErr.message + `\nMore information in CloudWatch Log Stream: ${context.logStreamName}`);
   }
-
   const req = {
-    Bucket: props.BucketName,
-    NotificationConfiguration: props.NotificationConfiguration,
+    Bucket: event.ResourceProperties.BucketName,
+    NotificationConfiguration: notificationConfiguration,
   };
 
   return s3.putBucketNotificationConfiguration(req, (err: any, data: any) => {
@@ -127,6 +125,56 @@ const handler = (event: any, context: any) => {
       return submitResponse('SUCCESS');
     }
   });
+
+  function getNotificationConfiguration() {
+    // Try to preserve existing bucket notifications
+    const [bucketNotifcations, err] = filteredBucketNotification();
+    if (err) {
+      return err;
+    }
+    if (event.RequestType !== 'Delete') {
+      // Add updated configuration
+      const inConfiguration = event.ResourceProperties.NotificationConfiguration;
+      if (inConfiguration.TopicConfigurations) {
+        bucketNotifcations.TopicConfigurations = inConfiguration.TopicConfigurations;
+      }
+      if (inConfiguration.LambdaFunctionConfigurations) {
+        bucketNotifcations.LambdaFunctionConfigurations = inConfiguration.LambdaFunctionConfigurations;
+      }
+      if (inConfiguration.QueueConfigurations) {
+        bucketNotifcations.QueueConfigurations = inConfiguration.QueueConfigurations;
+      }
+    }
+    return [bucketNotifcations, null];
+  }
+
+  function filteredBucketNotification() {
+    const params = {
+      Bucket: event.ResourceProperties.BucketName,
+    };
+    let error = null;
+    let response: any = {};
+    // Get existing bucket notificaitons and filter out the incoming configuration
+    s3.getBucketNotificationConfiguration(params, function(err: any, data: any) {
+      log({ err, data });
+      if (err) {
+        error = err;
+      } else {
+        const inConfiguration = event.ResourceProperties.NotificationConfiguration;
+        if (inConfiguration.TopicConfigurations) {
+          delete data.TopicConfigurations;
+        }
+        if (inConfiguration.LambdaFunctionConfigurations) {
+          delete data.LambdaFunctionConfigurations;
+        }
+        if (inConfiguration.QueueConfigurations) {
+          delete data.QueueConfigurations;
+        }
+        response = data;
+      }
+    });
+    return [response, error];
+  }
 
   function log(obj: any) {
     console.error(event.RequestId, event.StackId, event.LogicalResourceId, obj);

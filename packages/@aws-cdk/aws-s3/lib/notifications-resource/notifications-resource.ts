@@ -55,6 +55,8 @@ export class BucketNotifications extends cdk.Construct {
     // policies to allow this notification to happen.
     const targetProps = target.bind(this, this.bucket);
     const commonConfig: CommonConfiguration = {
+      // TODO - Create a hash of the arn + target + filters
+      Id: targetProps.arn,
       Events: [event],
       Filter: renderFilters(filters),
     };
