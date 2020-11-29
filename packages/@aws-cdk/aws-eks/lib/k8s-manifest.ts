@@ -39,7 +39,7 @@ export interface KubernetesManifestProps {
    * }]
    *
    */
-  readonly manifest: any[];
+  readonly manifest: Record<string, any>[];
 }
 
 /**
