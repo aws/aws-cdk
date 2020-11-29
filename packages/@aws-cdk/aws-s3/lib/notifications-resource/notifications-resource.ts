@@ -1,5 +1,5 @@
 import * as cdk from '@aws-cdk/core';
-import { Bucket, BucketBase, EventType, NotificationKeyFilter } from '../bucket';
+import { BucketBase, EventType, NotificationKeyFilter } from '../bucket';
 import { BucketNotificationDestinationType, IBucketNotificationDestination } from '../destination';
 import { NotificationsResourceHandler } from './notifications-resource-handler';
 
