@@ -96,7 +96,8 @@ export class NotificationsResourceHandler extends cdk.Construct {
  * to .toString() this function and inline it as Lambda code.
  *
  * The function will issue a putBucketNotificationConfiguration request for the
- * specified bucket.
+ * specified bucket. And getBucketNotificationConfiguration to load the existing
+ * configuration and try to preserve it.
  */
 const handler = (event: any, context: any) => {
   // eslint-disable-next-line @typescript-eslint/no-require-imports, import/no-extraneous-dependencies
@@ -127,7 +128,6 @@ const handler = (event: any, context: any) => {
   });
 
   function getNotificationConfiguration() {
-    // Try to preserve existing bucket notifications
     const [bucketNotifcations, err] = filteredBucketNotification();
     if (err) {
       return err;
@@ -149,25 +149,30 @@ const handler = (event: any, context: any) => {
   }
 
   function filteredBucketNotification() {
+    let error = null;
+    let response: any = {};
     const params = {
       Bucket: event.ResourceProperties.BucketName,
     };
-    let error = null;
-    let response: any = {};
-    // Get existing bucket notificaitons and filter out the incoming configuration
+    // Get existing bucket notificaitons and remove the new or previous configuration elements
     s3.getBucketNotificationConfiguration(params, function(err: any, data: any) {
       log({ err, data });
       if (err) {
         error = err;
       } else {
-        const inConfiguration = event.ResourceProperties.NotificationConfiguration;
-        if (inConfiguration.TopicConfigurations) {
+        let config = null;
+        if (event.OldResourceProperties && event.OldResourceProperties.NotificationConfiguration) {
+          config = event.OldResourceProperties.NotificationConfiguration;
+        } else {
+          config = event.ResourceProperties.NotificationConfiguration;
+        }
+        if (config.TopicConfigurations) {
           delete data.TopicConfigurations;
         }
-        if (inConfiguration.LambdaFunctionConfigurations) {
+        if (config.LambdaFunctionConfigurations) {
           delete data.LambdaFunctionConfigurations;
         }
-        if (inConfiguration.QueueConfigurations) {
+        if (config.QueueConfigurations) {
           delete data.QueueConfigurations;
         }
         response = data;
