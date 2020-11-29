@@ -1,5 +1,5 @@
 import * as cdk from '@aws-cdk/core';
-import { Bucket, EventType, NotificationKeyFilter } from '../bucket';
+import { Bucket, BucketBase, EventType, NotificationKeyFilter } from '../bucket';
 import { BucketNotificationDestinationType, IBucketNotificationDestination } from '../destination';
 import { NotificationsResourceHandler } from './notifications-resource-handler';
 
@@ -10,7 +10,7 @@ interface NotificationsProps {
    * This cannot be an `IBucket` because the bucket maintains the 1:1
    * relationship with this resource.
    */
-  bucket: Bucket;
+  bucket: BucketBase;
 }
 
 /**
@@ -33,7 +33,7 @@ export class BucketNotifications extends cdk.Construct {
   private readonly queueNotifications = new Array<QueueConfiguration>();
   private readonly topicNotifications = new Array<TopicConfiguration>();
   private resource?: cdk.CfnResource;
-  private readonly bucket: Bucket;
+  private readonly bucket: BucketBase;
 
   constructor(scope: cdk.Construct, id: string, props: NotificationsProps) {
     super(scope, id);
