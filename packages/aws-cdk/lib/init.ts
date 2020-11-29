@@ -196,7 +196,13 @@ interface ProjectInfo {
 
 function versionedTemplatesDir(): Promise<string> {
   return new Promise(async resolve => {
-    const majorVersion = semver.major(versionNumber());
+    let currentVersion = versionNumber();
+    // If the CLI is invoked from source (i.e., developement), rather than from a packaged distribution,
+    // the version number will be '0.0.0'. We will (currently) default to the v1 templates in this case.
+    if (currentVersion === '0.0.0') {
+      currentVersion = '1.0.0';
+    }
+    const majorVersion = semver.major(currentVersion);
     resolve(path.join(__dirname, 'init-templates', `v${majorVersion}`));
   });
 }
