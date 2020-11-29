@@ -7,6 +7,70 @@ import { CfnJobDefinition } from './batch.generated';
 import { JobDefinitionImageConfig } from './job-definition-image-config';
 
 /**
+ * The log driver to use for the container.
+ */
+export enum LogDriver {
+  /**
+   * Specifies the Amazon CloudWatch Logs logging driver.
+   */
+  AWSLOGS = 'awslogs',
+
+  /**
+   * Specifies the Fluentd logging driver.
+   */
+  FLUENTD = 'fluentd',
+
+  /**
+   * Specifies the Graylog Extended Format (GELF) logging driver.
+   */
+  GELF = 'gelf',
+
+  /**
+   * Specifies the journald logging driver.
+   */
+  JOURNALD = 'journald',
+
+  /**
+   * Specifies the JSON file logging driver.
+   */
+  JSON_FILE = 'json-file',
+
+  /**
+   * Specifies the Splunk logging driver.
+   */
+  SPLUNK = 'splunk',
+
+  /**
+   * Specifies the syslog logging driver.
+   */
+  SYSLOG = 'syslog'
+}
+
+/**
+ * Log configuration options to send to a custom log driver for the container.
+ */
+export interface LogConfiguration {
+  /**
+   * The log driver to use for the container.
+   */
+  readonly logDriver: LogDriver;
+
+  /**
+   * The configuration options to send to the log driver.
+   *
+   * @default - No configuration options are sent
+   */
+  readonly options?: any;
+
+  /**
+   * The secrets to pass to the log configuration.
+   *
+   * @default - No secrets are passed
+   */
+  readonly secrets?: CfnJobDefinition.SecretProperty[];
+}
+
+/**
  * Properties of a job definition container.
  */
 export interface JobDefinitionContainer {
@@ -54,6 +118,13 @@ export interface JobDefinitionContainer {
    * @default - None will be used.
    */
   readonly linuxParams?: ecs.LinuxParameters;
+
+  /**
+   * The log configuration specification for the container.
+   *
+   * @default - containers use the same logging driver that the Docker daemon uses
+   */
+  readonly logConfiguration?: LogConfiguration;
 
   /**
    * The hard limit (in MiB) of memory to present to the container. If your container attempts to exceed
@@ -362,6 +433,11 @@ export class JobDefinition extends Resource implements IJobDefinition {
       linuxParameters: container.linuxParams
         ? { devices: container.linuxParams.renderLinuxParameters().devices }
         : undefined,
+      logConfiguration: container.logConfiguration ? {
+        logDriver: container.logConfiguration.logDriver,
+        options: container.logConfiguration.options,
+        secretOptions: container.logConfiguration.secrets,
+      } : undefined,
       memory: container.memoryLimitMiB || 4,
       mountPoints: container.mountPoints,
       privileged: container.privileged || false,

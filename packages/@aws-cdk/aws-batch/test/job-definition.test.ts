@@ -23,6 +23,12 @@ describe('Batch Job Definition', () => {
       sharedMemorySize: 1,
     });
 
+    const logConfiguration: batch.LogConfiguration = {
+      logDriver: batch.LogDriver.AWSLOGS,
+      options: { 'awslogs-region': 'us-east-1' },
+      secrets: [{ name: 'abc', valueFrom: 'abc' }],
+    };
+
     jobDefProps = {
       jobDefinitionName: 'test-job',
       container: {
@@ -35,6 +41,7 @@ describe('Batch Job Definition', () => {
         image: ecs.EcrImage.fromRegistry('docker/whalesay'),
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.T2, ec2.InstanceSize.MICRO),
         linuxParams,
+        logConfiguration,
         memoryLimitMiB: 1,
         mountPoints: new Array<ecs.MountPoint>(),
         privileged: true,
@@ -74,6 +81,18 @@ describe('Batch Job Definition', () => {
         ],
         InstanceType: jobDefProps.container.instanceType ? jobDefProps.container.instanceType.toString() : '',
         LinuxParameters: {},
+        LogConfiguration: {
+          LogDriver: 'awslogs',
+          Options: {
+            'awslogs-region': 'us-east-1',
+          },
+          SecretOptions: [
+            {
+              Name: 'abc',
+              ValueFrom: 'abc',
+            },
+          ],
+        },
         Memory: jobDefProps.container.memoryLimitMiB,
         MountPoints: [],
         Privileged: jobDefProps.container.privileged,
