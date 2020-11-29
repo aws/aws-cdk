@@ -9,7 +9,7 @@ import { findUp, LockFile, nodeMajorVersion, parseStackTrace } from './util';
 /**
  * Properties for a NodejsFunction
  */
-export interface NodejsFunctionProps extends lambda.FunctionOptions, BundlingOptions {
+export interface NodejsFunctionProps extends lambda.FunctionOptions {
   /**
    * Path to the entry file (JavaScript or TypeScript).
    *
@@ -62,6 +62,14 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions, BundlingOpt
    *   a `yarn.lock` or `package-lock.json` file
    */
   readonly depsLockFilePath?: string;
+
+  /**
+   * Bundling options
+   *
+   * @default - use default bundling options: no minify, no sourcemap, all
+   *   modules are bundled.
+   */
+  readonly bundling?: BundlingOptions;
 }
 
 /**
@@ -100,7 +108,7 @@ export class NodejsFunction extends lambda.Function {
       ...props,
       runtime,
       code: Bundling.bundle({
-        ...props,
+        ...props.bundling ?? {},
         entry,
         runtime,
         depsLockFilePath,
