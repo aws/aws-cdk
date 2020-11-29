@@ -2,6 +2,7 @@ import '@aws-cdk/assert/jest';
 import * as fs from 'fs';
 import * as path from 'path';
 import { ABSENT } from '@aws-cdk/assert';
+import { Vpc } from '@aws-cdk/aws-ec2';
 import { Runtime } from '@aws-cdk/aws-lambda';
 import { Stack } from '@aws-cdk/core';
 import { NodejsFunction } from '../lib';
@@ -52,13 +53,15 @@ test('NodejsFunction with .js handler', () => {
 test('NodejsFunction with container env vars', () => {
   // WHEN
   new NodejsFunction(stack, 'handler1', {
-    bundlingEnvironment: {
-      KEY: 'VALUE',
+    bundling: {
+      environment: {
+        KEY: 'VALUE',
+      },
     },
   });
 
   expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
-    bundlingEnvironment: {
+    environment: {
       KEY: 'VALUE',
     },
   }));
@@ -136,5 +139,35 @@ test('can opt-out of connection reuse for aws sdk', () => {
 
   expect(stack).toHaveResource('AWS::Lambda::Function', {
     Environment: ABSENT,
+  });
+});
+
+test('NodejsFunction in a VPC', () => {
+  // GIVEN
+  const vpc = new Vpc(stack, 'Vpc');
+
+  // WHEN
+  new NodejsFunction(stack, 'handler1', { vpc });
+
+  // THEN
+  expect(stack).toHaveResource('AWS::Lambda::Function', {
+    VpcConfig: {
+      SecurityGroupIds: [
+        {
+          'Fn::GetAtt': [
+            'handler1SecurityGroup30688A62',
+            'GroupId',
+          ],
+        },
+      ],
+      SubnetIds: [
+        {
+          Ref: 'VpcPrivateSubnet1Subnet536B997A',
+        },
+        {
+          Ref: 'VpcPrivateSubnet2Subnet3788AAA1',
+        },
+      ],
+    },
   });
 });
