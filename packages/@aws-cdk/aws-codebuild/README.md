@@ -90,7 +90,7 @@ const gitHubSource = codebuild.Source.gitHub({
   owner: 'awslabs',
   repo: 'aws-cdk',
   webhook: true, // optional, default: true if `webhookFilters` were provided, false otherwise
-  startBatchBuild: true, //optional, set to true to trigger a batch build
+  startBatchBuild: true, // optional, default is false
   webhookFilters: [
     codebuild.FilterGroup
       .inEventOf(codebuild.EventAction.PUSH)
