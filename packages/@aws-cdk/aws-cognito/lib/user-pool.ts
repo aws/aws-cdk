@@ -34,7 +34,7 @@ export interface SignInAliases {
   readonly phone?: boolean;
 
   /**
-   * Whether a user is allowed to ign in with a secondary username, that can be set and modified after sign up.
+   * Whether a user is allowed to sign in with a secondary username, that can be set and modified after sign up.
    * Can only be used in conjunction with `USERNAME`.
    * @default false
    */
@@ -736,7 +736,7 @@ export class UserPool extends UserPoolBase {
       usernameAttributes: signIn.usernameAttrs,
       aliasAttributes: signIn.aliasAttrs,
       autoVerifiedAttributes: signIn.autoVerifyAttrs,
-      lambdaConfig: Lazy.anyValue({ produce: () => undefinedIfNoKeys(this.triggers) }),
+      lambdaConfig: Lazy.any({ produce: () => undefinedIfNoKeys(this.triggers) }),
       smsConfiguration: this.smsConfiguration(props),
       adminCreateUserConfig,
       emailVerificationMessage,

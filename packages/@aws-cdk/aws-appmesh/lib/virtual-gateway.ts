@@ -161,7 +161,7 @@ export class VirtualGateway extends VirtualGatewayBase {
 
     if (!props.listeners) {
       // Use listener default of http listener port 8080 if no listener is defined
-      this.listeners.push(VirtualGatewayListener.httpGatewayListener().bind(this));
+      this.listeners.push(VirtualGatewayListener.http().bind(this));
     } else {
       props.listeners.forEach(listener => this.listeners.push(listener.bind(this)));
     }
