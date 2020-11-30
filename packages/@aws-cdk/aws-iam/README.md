@@ -28,8 +28,8 @@ Managed policies can be attached using `xxx.addManagedPolicy(ManagedPolicy.fromA
 Many of the AWS CDK resources have `grant*` methods that allow you to grant other resources access to that resource. As an example, the following code gives a Lambda function write permissions (Put, Update, Delete) to a DynamoDB table.
 
 ```typescript
-const fn = new lambda.Function(...);
-const table = new dynamodb.Table(...);
+const fn = new lambda.Function(this, 'Function', functionProps);
+const table = new dynamodb.Table(this, 'Table', tableProps);
 
 table.grantWriteData(fn);
 ```
@@ -37,8 +37,8 @@ table.grantWriteData(fn);
 The more generic `grant` method allows you to give specific permissions to a resource:
 
 ```typescript
-const fn = new lambda.Function(...);
-const table = new dynamodb.Table(...);
+const fn = new lambda.Function(this, 'Function', functionProps);
+const table = new dynamodb.Table(this, 'Table', tableProps);
 
 table.grant(fn, 'dynamodb:PutItem');
 ```
@@ -98,9 +98,9 @@ new codepipeline.Pipeline(this, 'Pipeline', {
 
 // You now have to manage the Role policies yourself
 role.addToPolicy(new iam.PolicyStatement({
-  action: [/* whatever actions you want */],
-  resource: [/* whatever resources you intend to touch */],
-});
+  actions: [/* whatever actions you want */],
+  resources: [/* whatever resources you intend to touch */],
+}));
 ```
 
 #### Using existing roles
@@ -160,7 +160,7 @@ To add a principal to a policy statement you can either use the abstract
 If multiple principals are added to the policy statement, they will be merged together:
 
 ```ts
-const statement = new PolicyStatement();
+const statement = new iam.PolicyStatement();
 statement.addServicePrincipal('cloudwatch.amazonaws.com');
 statement.addServicePrincipal('ec2.amazonaws.com');
 statement.addArnPrincipal('arn:aws:boom:boom');
@@ -250,14 +250,14 @@ const policyDocument = {
   ]
 };
 
-const customPolicyDocument = PolicyDocument.fromJson(policyDocument);
+const customPolicyDocument = iam.PolicyDocument.fromJson(policyDocument);
 
 // You can pass this document as an initial document to a ManagedPolicy
 // or inline Policy.
-const newManagedPolicy = new ManagedPolicy(stack, 'MyNewManagedPolicy', { 
+const newManagedPolicy = new ManagedPolicy(stack, 'MyNewManagedPolicy', {
   document: customPolicyDocument
 });
-const newPolicy = new Policy(stack, 'MyNewPolicy', { 
+const newPolicy = new Policy(stack, 'MyNewPolicy', {
   document: customPolicyDocument
 });
 ```
@@ -283,9 +283,9 @@ The following examples defines an OpenID Connect provider. Two client IDs
 https://openid/connect.
 
 ```ts
-const provider = new OpenIdConnectProvider(this, 'MyProvider', {
+const provider = new iam.OpenIdConnectProvider(this, 'MyProvider', {
   url: 'https://openid/connect',
-  clients: [ 'myclient1', 'myclient2' ]
+  clientIds: [ 'myclient1', 'myclient2' ],
 });
 ```
 
@@ -302,16 +302,18 @@ you can reference the provider's ARN as follows:
 
 ```ts
 new cognito.CfnIdentityPool(this, 'IdentityPool', {
-  openIdConnectProviderARNs: [ provider.openIdConnectProviderArn ]
+  openIdConnectProviderArns: [myProvider.openIdConnectProviderArn],
+  // And the other properties for your identity pool
+  allowUnauthenticatedIdentities,
 });
 ```
 
 The `OpenIdConnectPrincipal` class can be used as a principal used with a `OpenIdConnectProvider`, for example:
 
 ```ts
-const provider = new OpenIdConnectProvider(this, 'MyProvider', {
+const provider = new iam.OpenIdConnectProvider(this, 'MyProvider', {
   url: 'https://openid/connect',
-  clients: [ 'myclient1', 'myclient2' ]
+  clientIds: [ 'myclient1', 'myclient2' ]
 });
 const principal = new iam.OpenIdConnectPrincipal(provider);
 ```

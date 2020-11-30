@@ -1,4 +1,4 @@
-## AWS::DataBrew Construct Library
+# AWS::DataBrew Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 
