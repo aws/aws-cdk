@@ -10,6 +10,7 @@ export class AuthorizationToken {
   public static grantRead(grantee: iam.IGrantable) {
     grantee.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
       actions: ['ecr:GetAuthorizationToken'],
+      // GetAuthorizationToken only allows '*'. See https://docs.aws.amazon.com/service-authorization/latest/reference/list_amazonelasticcontainerregistry.html#amazonelasticcontainerregistry-actions-as-permissions
       resources: ['*'],
     }));
   }
