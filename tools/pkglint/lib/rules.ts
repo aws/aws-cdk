@@ -147,7 +147,10 @@ export class ThirdPartyAttributions extends ValidationRule {
       return;
     }
     const bundled = pkg.getAllBundledDependencies().filter(dep => !dep.startsWith('@aws-cdk'));
-    const lines = fs.readFileSync(path.join(pkg.packageRoot, 'NOTICE'), { encoding: 'utf8' }).split('\n');
+    const noticePath = path.join(pkg.packageRoot, 'NOTICE');
+    const lines = fs.existsSync(noticePath)
+      ? fs.readFileSync(noticePath, { encoding: 'utf8' }).split('\n')
+      : [];
 
     const re = /^\*\* (\S+)/;
     const attributions = lines.filter(l => re.test(l)).map(l => l.match(re)![1]);
@@ -1032,6 +1035,19 @@ export class MustUseCDKWatch extends ValidationRule {
     if (!shouldUseCDKBuildTools(pkg)) { return; }
 
     expectJSON(this.name, pkg, 'scripts.watch', 'cdk-watch');
+  }
+}
+
+/**
+ * Must have 'rosetta:extract' command if this package is JSII-enabled.
+ */
+export class MustHaveRosettaExtract extends ValidationRule {
+  public readonly name = 'package-info/scripts/rosetta:extract';
+
+  public validate(pkg: PackageJson): void {
+    if (!isJSII(pkg)) { return; }
+
+    expectJSON(this.name, pkg, 'scripts.rosetta:extract', 'yarn --silent jsii-rosetta extract');
   }
 }
 

@@ -48,7 +48,7 @@ new glue.Table(stack, 'MyTable', {
     name: 'col2',
     type: glue.Schema.array(Schema.STRING),
     comment: 'col2 is an array of strings' // comment is optional
-  }]
+  }],
   dataFormat: glue.DataFormat.JSON
 });
 ```
