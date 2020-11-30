@@ -44,31 +44,37 @@ All other properties of `lambda.Function` are supported, see also the [AWS Lambd
 The `NodejsFunction` construct automatically [reuses existing connections](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/node-reusing-connections.html)
 when working with the AWS SDK for JavaScript. Set the `awsSdkConnectionReuse` prop to `false` to disable it.
 
-Use the `bundlingEnvironment` prop to define environments variables when esbuild runs:
+Use the `environment` prop under `bundling` to define environments variables when esbuild runs:
 
 ```ts
 new lambda.NodejsFunction(this, 'my-handler', {
-  bundlingEnvironment: {
-    NODE_ENV: 'production',
+  bundling: {
+    environment: {
+      NODE_ENV: 'production',
+    },
   },
 });
 ```
 
-Use the `buildArgs` prop to pass build arguments when building the bundling image:
+Use the `buildArgs` under `bundling` prop to pass build arguments when building the bundling image:
 
 ```ts
 new lambda.NodejsFunction(this, 'my-handler', {
-  buildArgs: {
-    HTTPS_PROXY: 'https://127.0.0.1:3001',
-  },
+  bundling: {
+      buildArgs: {
+        HTTPS_PROXY: 'https://127.0.0.1:3001',
+      },
+  }
 });
 ```
 
-Use the `bundlingDockerImage` prop to use a custom bundling image:
+Use the `dockerImage` prop under `bundling` to use a custom bundling image:
 
 ```ts
 new lambda.NodejsFunction(this, 'my-handler', {
-  bundlingDockerImage: dk.BundlingDockerImage.fromAsset('/path/to/Dockerfile'),
+  bundling: {
+    dockerImage: cdk.BundlingDockerImage.fromAsset('/path/to/Dockerfile'),
+  },
 });
 ```
 
@@ -90,32 +96,49 @@ case you need to ensure that this path includes `entry` and any module/dependenc
 used by your function. Otherwise bundling will fail.
 
 ### Configuring esbuild
-The `NodejsFunction` construct exposes some [esbuild](https://esbuild.github.io/) options via properties: `minify`, `sourceMaps` and `target`.
+The `NodejsFunction` construct exposes some [esbuild](https://esbuild.github.io/) options via properties under `bundling`: `minify`, `sourceMap`, `target` and `loader`.
+
+```ts
+new lambda.NodejsFunction(this, 'my-handler', {
+  bundling: {
+    minify: true, // minify code, defaults to false
+    sourceMap: true, // include source map, defaults to false
+    target: 'es2020', // target environment for the generated JavaScript code
+    loader: { // Use the 'dataurl' loader for '.png' files
+      '.png': 'dataurl',
+    },
+  },
+});
+```
 
 ### Working with modules
 
 #### Externals
 By default, all node modules are bundled except for `aws-sdk`. This can be configured by specifying
-the `externalModules` prop.
+the `externalModules` prop under `bundling`.
 
 ```ts
 new lambda.NodejsFunction(this, 'my-handler', {
-  externalModules: [
-    'aws-sdk', // Use the 'aws-sdk' available in the Lambda runtime
-    'cool-module', // 'cool-module' is already available in a Layer
-  ],
+  bundling: {
+    externalModules: [
+      'aws-sdk', // Use the 'aws-sdk' available in the Lambda runtime
+      'cool-module', // 'cool-module' is already available in a Layer
+    ],
+  },
 });
 ```
 
 #### Install modules
 By default, all node modules referenced in your Lambda code will be bundled by esbuild.
-Use the `nodeModules` prop to specify a list of modules that should not be bundled
-but instead included in the `node_modules` folder of the Lambda package. This is useful
+Use the `nodeModules` prop under `bundling` to specify a list of modules that should not be
+bundled but instead included in the `node_modules` folder of the Lambda package. This is useful
 when working with native dependencies or when esbuild fails to bundle a module.
 
 ```ts
 new lambda.NodejsFunction(this, 'my-handler', {
-  nodeModules: ['native-module', 'other-module']
+  bundling: {
+    nodeModules: ['native-module', 'other-module'],
+  },
 });
 ```
 
@@ -144,3 +167,30 @@ $ yarn add --dev esbuild@0
 To force bundling in a Docker container, set the `forceDockerBundling` prop to `true`. This
 is useful if your function relies on node modules that should be installed (`nodeModules` prop, see [above](#install-modules)) in a Lambda compatible environment. This is usually the
 case with modules using native dependencies.
+
+### Command hooks
+It is possible to run additional commands by specifying the `commandHooks` prop:
+
+```ts
+new lambda.NodejsFunction(this, 'my-handler-with-commands', {
+  commandHooks: {
+    // Copy a file so that it will be included in the bundled asset
+    afterBundling(inputDir: string, outputDir: string): string[] {
+      return [`cp ${inputDir}/my-binary.node ${outputDir}`];
+    }
+    // ...
+  }
+});
+```
+
+The following hooks are available:
+- `beforeBundling`: runs before all bundling commands
+- `beforeInstall`: runs before node modules installation
+- `afterBundling`: runs after all bundling commands
+
+They all receive the directory containing the lock file (`inputDir`) and the
+directory where the bundled asset will be output (`outputDir`). They must return
+an array of commands to run. Commands are chained with `&&`.
+
+The commands will run in the environment in which bundling occurs: inside the
+container for Docker bundling or on the host OS for local bundling.

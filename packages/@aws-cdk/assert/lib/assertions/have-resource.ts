@@ -32,7 +32,7 @@ export function haveResource(
 }
 
 /**
- * Sugar for calling ``haveResources`` with ``allowValueExtension`` set to ``true``.
+ * Sugar for calling ``haveResource`` with ``allowValueExtension`` set to ``true``.
  */
 export function haveResourceLike(
   resourceType: string,
