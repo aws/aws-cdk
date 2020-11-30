@@ -132,17 +132,17 @@ export class ArtifactPath {
   public get location() {
     const artifactName = this.artifact.artifactName
       ? this.artifact.artifactName
-      : Lazy.stringValue({ produce: () => this.artifact.artifactName });
+      : Lazy.string({ produce: () => this.artifact.artifactName });
     return `${artifactName}::${this.fileName}`;
   }
 }
 
 function artifactAttribute(artifact: Artifact, attributeName: string) {
-  const lazyArtifactName = Lazy.stringValue({ produce: () => artifact.artifactName });
+  const lazyArtifactName = Lazy.string({ produce: () => artifact.artifactName });
   return Token.asString({ 'Fn::GetArtifactAtt': [lazyArtifactName, attributeName] });
 }
 
 function artifactGetParam(artifact: Artifact, jsonFile: string, keyName: string) {
-  const lazyArtifactName = Lazy.stringValue({ produce: () => artifact.artifactName });
+  const lazyArtifactName = Lazy.string({ produce: () => artifact.artifactName });
   return Token.asString({ 'Fn::GetParam': [lazyArtifactName, jsonFile, keyName] });
 }
