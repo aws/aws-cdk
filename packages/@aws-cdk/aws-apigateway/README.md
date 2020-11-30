@@ -1,4 +1,4 @@
-# Amazon API Gateway Construct Library
+## Amazon API Gateway Construct Library
 
 <!--BEGIN STABILITY BANNER-->
 ---
