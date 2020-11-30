@@ -694,6 +694,7 @@ export = {
 
       test.done();
     },
+
     'with startBatchBuild option'(test: Test) {
       const stack = new cdk.Stack();
 
@@ -712,18 +713,6 @@ export = {
           ],
         }),
       });
-
-      expect(stack).to(haveResource('AWS::CodeBuild::Project', {
-        Source: {
-          Type: 'GITHUB',
-          Location: 'https://github.com/testowner/testrepo.git',
-          ReportBuildStatus: false,
-          GitCloneDepth: 3,
-          GitSubmodulesConfig: {
-            FetchSubmodules: true,
-          },
-        },
-      }));
 
       expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
         Triggers: {
@@ -744,6 +733,7 @@ export = {
 
       test.done();
     },
+
     'fail creating a Project when no build spec is given'(test: Test) {
       const stack = new cdk.Stack();
 
