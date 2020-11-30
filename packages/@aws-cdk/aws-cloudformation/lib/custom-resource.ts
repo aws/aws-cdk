@@ -157,7 +157,7 @@ export class CustomResource extends core.CustomResource {
       properties: props.properties,
       removalPolicy: props.removalPolicy,
       resourceType: props.resourceType,
-      serviceToken: core.Lazy.string({ produce: () => props.provider.bind(this).serviceToken }),
+      serviceToken: core.Lazy.stringValue({ produce: () => props.provider.bind(this).serviceToken }),
     });
   }
 }

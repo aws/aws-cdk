@@ -1,7 +1,7 @@
 ---
 name: "\U0001F41B Bug Report"
 about: Report a bug
-title: "(module name): short issue description"
+title: "[module] "
 labels: bug, needs-triage
 ---
 
