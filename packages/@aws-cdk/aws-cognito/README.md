@@ -550,7 +550,9 @@ pool.addClient('app-client', {
 });
 ```
 
-Each app client allows you to configure the expiration time for access token, ID token and refresh token. If no values are specified, the default values from Cognito are used.
+In accordance with the OIDC open standard, Cognito user pool clients provide access tokens, ID tokens and refresh tokens.
+More information is available at [Using Tokens with User Pools](https://docs.aws.amazon.com/en_us/cognito/latest/developerguide/amazon-cognito-user-pools-using-tokens-with-identity-providers.html).
+The expiration time for these tokens can be configured as shown below.
 
 ```ts
 const pool = new cognito.UserPool(this, 'Pool');

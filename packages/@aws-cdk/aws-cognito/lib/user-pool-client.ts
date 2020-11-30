@@ -250,25 +250,25 @@ export interface UserPoolClientOptions {
   readonly supportedIdentityProviders?: UserPoolClientIdentityProvider[];
 
   /**
-   * Duration that specifies how long the ID token in the user pool client is valid.
+   * Validity of the ID token.
    * Values between 5 minutes and 1 day are valid. The duration can not be longer than the refresh token validity.
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cognito-userpoolclient.html#cfn-cognito-userpoolclient-idtokenvalidity
+   * @see https://docs.aws.amazon.com/en_us/cognito/latest/developerguide/amazon-cognito-user-pools-using-tokens-with-identity-providers.html#amazon-cognito-user-pools-using-the-id-token
    * @default Duration.minutes(60)
    */
   readonly idTokenValidity?: Duration;
 
   /**
-   * Duration that specifies how long the refresh token in the user pool client is valid.
-   * Values between 60 minutes and 3650 days are valid.
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cognito-userpoolclient.html#cfn-cognito-userpoolclient-refreshtokenvalidity
+   * Validity of the refresh token.
+   * Values between 60 minutes and 10 years are valid.
+   * @see https://docs.aws.amazon.com/en_us/cognito/latest/developerguide/amazon-cognito-user-pools-using-tokens-with-identity-providers.html#amazon-cognito-user-pools-using-the-refresh-token
    * @default Duration.days(30)
    */
   readonly refreshTokenValidity?: Duration;
 
   /**
-   * Duration that specifies how long the access token in the user pool client is valid.
+   * Validity of the access token.
    * Values between 5 minutes and 1 day are valid. The duration can not be longer than the refresh token validity.
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cognito-userpoolclient.html#cfn-cognito-userpoolclient-accesstokenvalidity
+   * @see https://docs.aws.amazon.com/en_us/cognito/latest/developerguide/amazon-cognito-user-pools-using-tokens-with-identity-providers.html#amazon-cognito-user-pools-using-the-access-token
    * @default Duration.minutes(60)
    */
   readonly accessTokenValidity?: Duration;
@@ -346,15 +346,6 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       }
     }
 
-    let tokenValidityUnits : CfnUserPoolClient.TokenValidityUnitsProperty | undefined;
-    if (props.accessTokenValidity || props.idTokenValidity || props.refreshTokenValidity) {
-      tokenValidityUnits = {
-        idToken: props.idTokenValidity ? 'minutes' : undefined,
-        accessToken: props.accessTokenValidity ? 'minutes' : undefined,
-        refreshToken: props.refreshTokenValidity ? 'minutes' : undefined,
-      };
-    }
-
     const resource = new CfnUserPoolClient(this, 'Resource', {
       clientName: props.userPoolClientName,
       generateSecret: props.generateSecret,
@@ -367,11 +358,8 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       allowedOAuthFlowsUserPoolClient: !props.disableOAuth,
       preventUserExistenceErrors: this.configurePreventUserExistenceErrors(props.preventUserExistenceErrors),
       supportedIdentityProviders: this.configureIdentityProviders(props),
-      idTokenValidity: props.idTokenValidity ? props.idTokenValidity.toMinutes() : undefined,
-      refreshTokenValidity: props.refreshTokenValidity ? props.refreshTokenValidity.toMinutes() : undefined,
-      accessTokenValidity: props.accessTokenValidity ? props.accessTokenValidity.toMinutes() : undefined,
-      tokenValidityUnits,
     });
+    this.configureTokenValidity(resource, props);
 
     this.userPoolClientId = resource.ref;
     this._userPoolClientName = props.userPoolClientName;
@@ -452,5 +440,30 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
     }
     if (providers.length === 0) { return undefined; }
     return Array.from(providers);
+  }
+
+  private configureTokenValidity(resource: CfnUserPoolClient, props: UserPoolClientProps) {
+    this.validateDurationInRangeOrUndefined('idTokenValidity', Duration.minutes(5), Duration.days(1), props.idTokenValidity);
+    this.validateDurationInRangeOrUndefined('accessTokenValidity', Duration.minutes(5), Duration.days(1), props.accessTokenValidity);
+    this.validateDurationInRangeOrUndefined('refreshTokenValidity', Duration.minutes(60), Duration.days(10 * 365), props.refreshTokenValidity);
+
+    if (props.accessTokenValidity || props.idTokenValidity || props.refreshTokenValidity) {
+      resource.tokenValidityUnits = {
+        idToken: props.idTokenValidity ? 'minutes' : undefined,
+        accessToken: props.accessTokenValidity ? 'minutes' : undefined,
+        refreshToken: props.refreshTokenValidity ? 'minutes' : undefined,
+      };
+    };
+
+    resource.idTokenValidity = props.idTokenValidity ? props.idTokenValidity.toMinutes() : undefined;
+    resource.refreshTokenValidity = props.refreshTokenValidity ? props.refreshTokenValidity.toMinutes() : undefined;
+    resource.accessTokenValidity = props.accessTokenValidity ? props.accessTokenValidity.toMinutes() : undefined;
+  }
+
+  private validateDurationInRangeOrUndefined(name: string, min: Duration, max: Duration, value?: Duration) {
+    if (value === undefined) { return; }
+    if (value.toMilliseconds() < min.toMilliseconds() || value.toMilliseconds() > max.toMilliseconds()) {
+      throw new Error(`${name}: Must be a duration between ${min.toHumanString()} and ${max.toHumanString()} (inclusive); received ${value.toHumanString()}.`);
+    }
   }
 }
