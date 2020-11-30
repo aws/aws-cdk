@@ -90,7 +90,7 @@ export class StepScalingAction extends cdk.Construct {
         cooldown: props.cooldown && props.cooldown.toSeconds(),
         minAdjustmentMagnitude: props.minAdjustmentMagnitude,
         metricAggregationType: props.metricAggregationType,
-        stepAdjustments: cdk.Lazy.any({ produce: () => this.adjustments }),
+        stepAdjustments: cdk.Lazy.anyValue({ produce: () => this.adjustments }),
       } as CfnScalingPolicy.StepScalingPolicyConfigurationProperty,
     });
 

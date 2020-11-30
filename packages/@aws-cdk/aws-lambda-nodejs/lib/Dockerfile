@@ -16,11 +16,6 @@ RUN mkdir /tmp/npm-cache && \
     chmod -R 777 /tmp/npm-cache && \
     npm config --global set cache /tmp/npm-cache
 
-# Ensure all users can write to yarn cache
-RUN mkdir /tmp/yarn-cache && \
-    chmod -R 777 /tmp/yarn-cache && \
-    yarn config set cache-folder /tmp/yarn-cache
-
 # Disable npm update notifications
 RUN npm config --global set update-notifier false
 

@@ -39,7 +39,7 @@ export = {
     'properly resolves any Tokens passed in userParameters'(test: Test) {
       const stack = stackIncludingLambdaInvokeCodePipeline({
         userParams: {
-          key: Lazy.string({ produce: () => Aws.REGION }),
+          key: Lazy.stringValue({ produce: () => Aws.REGION }),
         },
       });
 
