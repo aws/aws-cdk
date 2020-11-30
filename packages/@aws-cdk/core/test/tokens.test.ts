@@ -273,7 +273,7 @@ nodeunitShim({
 
   'tokens can be nested in hash keys'(test: Test) {
     // GIVEN
-    const token = new Intrinsic(Lazy.string({ produce: () => Lazy.string({ produce: (() => 'I am a string') }) }));
+    const token = new Intrinsic(Lazy.stringValue({ produce: () => Lazy.stringValue({ produce: (() => 'I am a string') }) }));
 
     // WHEN
     const s = {
@@ -282,55 +282,6 @@ nodeunitShim({
 
     // THEN
     test.deepEqual(resolve(s), { 'I am a string': 'boom I am a string' });
-    test.done();
-  },
-
-  'Function passed to Lazy.uncachedString() is evaluated multiple times'(test: Test) {
-    // GIVEN
-    let counter = 0;
-    const counterString = Lazy.uncachedString({ produce: () => `${++counter}` });
-
-    // THEN
-    expect(resolve(counterString)).toEqual('1');
-    expect(resolve(counterString)).toEqual('2');
-
-    test.done();
-  },
-
-  'Function passed to Lazy.string() is only evaluated once'(test: Test) {
-    // GIVEN
-    let counter = 0;
-    const counterString = Lazy.string({ produce: () => `${++counter}` });
-
-    // THEN
-    expect(resolve(counterString)).toEqual('1');
-    expect(resolve(counterString)).toEqual('1');
-
-    test.done();
-  },
-
-  'Uncached tokens returned by cached tokens are still evaluated multiple times'(test: Test) {
-    // Check that nested token returns aren't accidentally fully resolved by the
-    // first resolution. On every evaluation, Tokens referenced inside the
-    // structure should be given a chance to be either cached or uncached.
-
-    // GIVEN
-    let counter = 0;
-    const uncachedToken = Lazy.uncachedString({ produce: () => `${++counter}` });
-    // Directly returned
-    const counterString1 = Lazy.string({ produce: () => uncachedToken });
-    // In quoted context
-    const counterString2 = Lazy.string({ produce: () => `->${uncachedToken}` });
-    // In object context
-    const counterObject = Lazy.any({ produce: () => ({ finalCount: uncachedToken }) });
-
-    // THEN
-    expect(resolve(counterString1)).toEqual('1');
-    expect(resolve(counterString1)).toEqual('2');
-    expect(resolve(counterString2)).toEqual('->3');
-    expect(resolve(counterString2)).toEqual('->4');
-    expect(resolve(counterObject)).toEqual({ finalCount: '5' });
-
     test.done();
   },
 
@@ -640,7 +591,7 @@ nodeunitShim({
 
   'creation stack is attached to errors emitted during resolve with CDK_DEBUG=true'(test: Test) {
     function showMeInTheStackTrace() {
-      return Lazy.string({ produce: () => { throw new Error('fooError'); } });
+      return Lazy.stringValue({ produce: () => { throw new Error('fooError'); } });
     }
 
     const previousValue = process.env.CDK_DEBUG;
@@ -707,7 +658,7 @@ nodeunitShim({
 
     'lazy Ref remains the same'(test: Test) {
       const resolvedVal = { Ref: 'SomeLogicalId' };
-      const tokenizedVal = Lazy.any({
+      const tokenizedVal = Lazy.anyValue({
         produce: () => resolvedVal,
       });
       const res = Tokenization.stringifyNumber(tokenizedVal as any) as any;
@@ -769,7 +720,7 @@ class DataType extends BaseDataType {
 function tokensThatResolveTo(value: any): Token[] {
   return [
     new Intrinsic(value),
-    Lazy.any({ produce: () => value }),
+    Lazy.anyValue({ produce: () => value }),
   ];
 }
 

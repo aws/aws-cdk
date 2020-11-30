@@ -643,7 +643,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
 
     this.connections = new ec2.Connections({
       securityGroups,
-      defaultPort: ec2.Port.tcp(Lazy.number({ produce: () => this.instanceEndpoint.port })),
+      defaultPort: ec2.Port.tcp(Lazy.numberValue({ produce: () => this.instanceEndpoint.port })),
     });
 
     let monitoringRole;
@@ -683,13 +683,13 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       availabilityZone: props.multiAz ? undefined : props.availabilityZone,
       backupRetentionPeriod: props.backupRetention ? props.backupRetention.toDays() : undefined,
       copyTagsToSnapshot: props.copyTagsToSnapshot !== undefined ? props.copyTagsToSnapshot : true,
-      dbInstanceClass: Lazy.string({ produce: () => `db.${this.instanceType}` }),
+      dbInstanceClass: Lazy.stringValue({ produce: () => `db.${this.instanceType}` }),
       dbInstanceIdentifier: props.instanceIdentifier,
       dbSubnetGroupName: subnetGroup.subnetGroupName,
       deleteAutomatedBackups: props.deleteAutomatedBackups,
       deletionProtection: defaultDeletionProtection(props.deletionProtection, props.removalPolicy),
       enableCloudwatchLogsExports: this.cloudwatchLogsExports,
-      enableIamDatabaseAuthentication: Lazy.any({ produce: () => this.enableIamAuthentication }),
+      enableIamDatabaseAuthentication: Lazy.anyValue({ produce: () => this.enableIamAuthentication }),
       enablePerformanceInsights: enablePerformanceInsights || props.enablePerformanceInsights, // fall back to undefined if not set,
       iops,
       monitoringInterval: props.monitoringInterval && props.monitoringInterval.toSeconds(),

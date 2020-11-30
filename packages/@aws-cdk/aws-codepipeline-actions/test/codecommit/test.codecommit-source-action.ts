@@ -240,7 +240,7 @@ export = {
                 repository: new codecommit.Repository(stack, 'R', {
                   repositoryName: 'repository',
                 }),
-                branch: Lazy.string({ produce: () => 'my-branch' }),
+                branch: Lazy.stringValue({ produce: () => 'my-branch' }),
                 output: sourceOutput,
               }),
             ],
@@ -291,7 +291,7 @@ export = {
         repository: new codecommit.Repository(stack, 'R', {
           repositoryName: 'repository',
         }),
-        branch: Lazy.string({ produce: () => 'my-branch' }),
+        branch: Lazy.stringValue({ produce: () => 'my-branch' }),
         output: sourceOutput,
         eventRole: triggerEventTestRole,
       });

@@ -1246,14 +1246,14 @@ export class Bucket extends BucketBase {
       bucketName: this.physicalName,
       bucketEncryption,
       versioningConfiguration: props.versioned ? { status: 'Enabled' } : undefined,
-      lifecycleConfiguration: Lazy.any({ produce: () => this.parseLifecycleConfiguration() }),
+      lifecycleConfiguration: Lazy.anyValue({ produce: () => this.parseLifecycleConfiguration() }),
       websiteConfiguration,
       publicAccessBlockConfiguration: props.blockPublicAccess,
-      metricsConfigurations: Lazy.any({ produce: () => this.parseMetricConfiguration() }),
-      corsConfiguration: Lazy.any({ produce: () => this.parseCorsConfiguration() }),
-      accessControl: Lazy.string({ produce: () => this.accessControl }),
+      metricsConfigurations: Lazy.anyValue({ produce: () => this.parseMetricConfiguration() }),
+      corsConfiguration: Lazy.anyValue({ produce: () => this.parseCorsConfiguration() }),
+      accessControl: Lazy.stringValue({ produce: () => this.accessControl }),
       loggingConfiguration: this.parseServerAccessLogs(props),
-      inventoryConfigurations: Lazy.any({ produce: () => this.parseInventoryConfiguration() }),
+      inventoryConfigurations: Lazy.anyValue({ produce: () => this.parseInventoryConfiguration() }),
     });
 
     resource.applyRemovalPolicy(props.removalPolicy);

@@ -141,7 +141,7 @@ export class Branch extends Resource implements IBranch {
       description: props.description,
       enableAutoBuild: props.autoBuild === undefined ? true : props.autoBuild,
       enablePullRequestPreview: props.pullRequestPreview === undefined ? true : props.pullRequestPreview,
-      environmentVariables: Lazy.any({ produce: () => renderEnvironmentVariables(this.environmentVariables) }, { omitEmptyArray: true }),
+      environmentVariables: Lazy.anyValue({ produce: () => renderEnvironmentVariables(this.environmentVariables) }, { omitEmptyArray: true }),
       pullRequestEnvironmentName: props.pullRequestEnvironmentName,
       stage: props.stage,
     });

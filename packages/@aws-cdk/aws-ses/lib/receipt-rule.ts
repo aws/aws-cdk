@@ -126,7 +126,7 @@ export class ReceiptRule extends Resource implements IReceiptRule {
     const resource = new CfnReceiptRule(this, 'Resource', {
       after: props.after ? props.after.receiptRuleName : undefined,
       rule: {
-        actions: Lazy.any({ produce: () => this.renderActions() }),
+        actions: Lazy.anyValue({ produce: () => this.renderActions() }),
         enabled: props.enabled === undefined ? true : props.enabled,
         name: this.physicalName,
         recipients: props.recipients,

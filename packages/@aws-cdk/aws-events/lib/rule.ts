@@ -132,8 +132,8 @@ export class Rule extends Resource implements IRule {
       description: this.description,
       state: props.enabled == null ? 'ENABLED' : (props.enabled ? 'ENABLED' : 'DISABLED'),
       scheduleExpression: this.scheduleExpression,
-      eventPattern: Lazy.any({ produce: () => this._renderEventPattern() }),
-      targets: Lazy.any({ produce: () => this.renderTargets() }),
+      eventPattern: Lazy.anyValue({ produce: () => this._renderEventPattern() }),
+      targets: Lazy.anyValue({ produce: () => this.renderTargets() }),
       eventBusName: props.eventBus && props.eventBus.eventBusName,
     });
 

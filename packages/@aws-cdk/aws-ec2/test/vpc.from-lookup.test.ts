@@ -13,7 +13,7 @@ nodeunitShim({
 
       test.throws(() => {
         Vpc.fromLookup(stack, 'Vpc', {
-          vpcId: Lazy.string({ produce: () => 'some-id' }),
+          vpcId: Lazy.stringValue({ produce: () => 'some-id' }),
         });
 
       }, 'All arguments to Vpc.fromLookup() must be concrete');

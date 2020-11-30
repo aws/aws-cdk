@@ -123,7 +123,7 @@ nodeunitShim({
     class MyCfnResource extends AbstractCfnResource {
       protected get cfnProperties(): { [key: string]: any } {
         return {
-          lazykey: Lazy.string({ produce: () => 'LazyResolved!' }),
+          lazykey: Lazy.stringValue({ produce: () => 'LazyResolved!' }),
           cfnparamkey: cfnparam,
         };
       }
@@ -178,7 +178,7 @@ nodeunitShim({
 
       constructor(scope: Construct, id: string) {
         super(scope, id);
-        this.lazykey = Lazy.string({ produce: () => 'LazyResolved!' });
+        this.lazykey = Lazy.stringValue({ produce: () => 'LazyResolved!' });
       }
 
       protected get cfnProperties(): { [key: string]: any } {

@@ -170,9 +170,9 @@ nodeunitShim({
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
-      minCapacity: cdk.Lazy.number({ produce: () => 5 }),
-      maxCapacity: cdk.Lazy.number({ produce: () => 1 }),
-      desiredCapacity: cdk.Lazy.number({ produce: () => 20 }),
+      minCapacity: cdk.Lazy.numberValue({ produce: () => 5 }),
+      maxCapacity: cdk.Lazy.numberValue({ produce: () => 1 }),
+      desiredCapacity: cdk.Lazy.numberValue({ produce: () => 20 }),
     });
 
     // THEN: no exception

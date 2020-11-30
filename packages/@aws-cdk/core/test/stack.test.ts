@@ -309,7 +309,7 @@ nodeunitShim({
     const stack2 = new Stack(app, 'Stack2');
 
     // WHEN - used in another stack
-    new CfnParameter(stack2, 'SomeParameter', { type: 'String', default: Lazy.string({ produce: () => account1 }) });
+    new CfnParameter(stack2, 'SomeParameter', { type: 'String', default: Lazy.stringValue({ produce: () => account1 }) });
 
     const assembly = app.synth();
     const template1 = assembly.getStackByName(stack1.stackName).template;

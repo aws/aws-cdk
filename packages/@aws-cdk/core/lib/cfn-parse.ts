@@ -492,7 +492,7 @@ export class CfnParser {
         // as otherwise Fn.join() will try to concatenate
         // the non-token parts,
         // causing a diff with the original template
-        return Fn.join(value[0], Lazy.list({ produce: () => value[1] }));
+        return Fn.join(value[0], Lazy.listValue({ produce: () => value[1] }));
       }
       case 'Fn::Cidr': {
         const value = this.parseValue(object[key]);
@@ -670,7 +670,7 @@ export class CfnParser {
         // as Fn.valueOf() returns a string,
         // which is incorrect
         // (Fn::ValueOf can also return an array)
-        return Lazy.any({ produce: () => ({ 'Fn::ValueOf': [param.logicalId, value[1]] }) });
+        return Lazy.anyValue({ produce: () => ({ 'Fn::ValueOf': [param.logicalId, value[1]] }) });
       }
       default:
         // I don't want to hard-code the list of supported Rules-specific intrinsics in this function;

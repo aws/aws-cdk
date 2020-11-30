@@ -105,7 +105,7 @@ export class Domain extends Resource {
     const domain = new CfnDomain(this, 'Resource', {
       appId: props.app.appId,
       domainName,
-      subDomainSettings: Lazy.any({ produce: () => this.renderSubDomainSettings() }, { omitEmptyArray: true }),
+      subDomainSettings: Lazy.anyValue({ produce: () => this.renderSubDomainSettings() }, { omitEmptyArray: true }),
     });
 
     this.arn = domain.attrArn;

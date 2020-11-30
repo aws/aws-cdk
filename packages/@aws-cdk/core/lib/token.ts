@@ -179,7 +179,7 @@ export class Tokenization {
     // only convert numbers to strings so that Refs, conditions, and other things don't end up synthesizing as [object object]
 
     if (Token.isUnresolved(x)) {
-      return Lazy.uncachedString({
+      return Lazy.stringValue({
         produce: context => {
           const resolved = context.resolve(x);
           return typeof resolved !== 'number' ? resolved : `${resolved}`;

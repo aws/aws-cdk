@@ -59,7 +59,7 @@ test('Name validation does not fail when using Tokens', () => {
 
   // WHEN
   new synthetics.Canary(stack, 'Canary', {
-    canaryName: Lazy.string({ produce: () => 'My Canary' }),
+    canaryName: Lazy.stringValue({ produce: () => 'My Canary' }),
     test: synthetics.Test.custom({
       handler: 'index.handler',
       code: synthetics.Code.fromInline('/* Synthetics handler code */'),
