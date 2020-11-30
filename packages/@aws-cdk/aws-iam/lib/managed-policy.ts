@@ -156,7 +156,7 @@ export class ManagedPolicy extends Resource implements IManagedPolicy {
    */
   public static fromAwsManagedPolicyName(managedPolicyName: string): IManagedPolicy {
     class AwsManagedPolicy implements IManagedPolicy {
-      public readonly managedPolicyArn = Lazy.stringValue({
+      public readonly managedPolicyArn = Lazy.uncachedString({
         produce(ctx: IResolveContext) {
           return Stack.of(ctx.scope).formatArn({
             service: 'iam',

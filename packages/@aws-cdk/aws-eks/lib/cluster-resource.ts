@@ -122,7 +122,7 @@ export class ClusterResource extends CoreConstruct {
     // this role to manage all clusters in the account. this must be lazy since
     // `props.name` may contain a lazy value that conditionally resolves to a
     // physical name.
-    const resourceArns = Lazy.listValue({
+    const resourceArns = Lazy.list({
       produce: () => {
         const arn = stack.formatArn(clusterArnComponents(stack.resolve(props.name)));
         return stack.resolve(props.name)
@@ -131,7 +131,7 @@ export class ClusterResource extends CoreConstruct {
       },
     });
 
-    const fargateProfileResourceArn = Lazy.stringValue({
+    const fargateProfileResourceArn = Lazy.string({
       produce: () => stack.resolve(props.name)
         ? stack.formatArn({ service: 'eks', resource: 'fargateprofile', resourceName: stack.resolve(props.name) + '/*' })
         : '*',

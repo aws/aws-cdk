@@ -1,10 +1,14 @@
 import * as child_process from 'child_process';
 import * as os from 'os';
 import * as path from 'path';
-import { exec, extractDependencies, findUp, getEsBuildVersion } from '../lib/util';
+import { callsites, exec, extractDependencies, findUp, getEsBuildVersion } from '../lib/util';
 
 beforeEach(() => {
   jest.clearAllMocks();
+});
+
+describe('callsites', () => {
+  expect(callsites()[0].getFileName()).toMatch(/\/test\/util.test.js$/);
 });
 
 describe('findUp', () => {
@@ -89,7 +93,7 @@ describe('exec', () => {
 });
 
 describe('extractDependencies', () => {
-  test('with depencies referenced in package.json', () => {
+  test('with dependencies referenced in package.json', () => {
     const deps = extractDependencies(
       path.join(__dirname, '../package.json'),
       ['@aws-cdk/aws-lambda', '@aws-cdk/core'],
@@ -100,11 +104,21 @@ describe('extractDependencies', () => {
     ]);
   });
 
+  test('with transitive dependencies', () => {
+    expect(extractDependencies(
+      path.join(__dirname, '../package.json'),
+      ['typescript'],
+    )).toEqual({
+      // eslint-disable-next-line @typescript-eslint/no-require-imports, import/no-extraneous-dependencies
+      typescript: require('typescript/package.json').version,
+    });
+  });
+
   test('with unknown dependency', () => {
     expect(() => extractDependencies(
       path.join(__dirname, '../package.json'),
       ['unknown'],
-    )).toThrow(/Cannot extract version for module 'unknown' in package.json/);
+    )).toThrow(/Cannot extract version for module 'unknown'/);
   });
 });
 

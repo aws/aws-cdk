@@ -989,8 +989,8 @@ For example, you can fetch the address of a [`LoadBalancer`](https://kubernetes.
 // query the load balancer address
 const myServiceAddress = new KubernetesObjectValue(this, 'LoadBalancerAttribute', {
   cluster: cluster,
-  resourceType: 'service',
-  resourceName: 'my-service',
+  objectType: 'service',
+  objectName: 'my-service',
   jsonPath: '.status.loadBalancer.ingress[0].hostname', // https://kubernetes.io/docs/reference/kubectl/jsonpath/
 });
 

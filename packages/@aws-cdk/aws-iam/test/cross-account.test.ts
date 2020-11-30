@@ -170,7 +170,7 @@ class FakeResource extends cdk.Resource implements iam.IResourceWithPolicy {
     new cdk.CfnResource(this, 'Default', {
       type: 'Test::Fake::Resource',
       properties: {
-        ResourcePolicy: cdk.Lazy.anyValue({ produce: () => this.policy }),
+        ResourcePolicy: cdk.Lazy.any({ produce: () => this.policy }),
       },
     });
   }
