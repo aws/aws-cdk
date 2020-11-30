@@ -27,7 +27,7 @@ import * as sns from '@aws-cdk/aws-sns';
 const topic = new sns.Topic(this, 'Topic', {
     contentBasedDeduplication: true,
     displayName: 'Customer subscription topic',
-    fifoTopic: true,
+    fifo: true,
 });
 ```
 

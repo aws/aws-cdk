@@ -45,7 +45,7 @@ export interface TopicProps {
    *
    * @default None
    */
-  readonly fifoTopic?: boolean;
+  readonly fifo?: boolean;
 }
 
 /**
@@ -85,7 +85,7 @@ export class Topic extends TopicBase {
       topicName: this.physicalName,
       kmsMasterKeyId: props.masterKey && props.masterKey.keyArn,
       contentBasedDeduplication: props.contentBasedDeduplication,
-      fifoTopic: props.fifoTopic,
+      fifoTopic: props.fifo,
     });
 
     this.topicArn = this.getResourceArnAttribute(resource.ref, {

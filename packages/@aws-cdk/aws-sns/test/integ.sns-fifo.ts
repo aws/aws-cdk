@@ -9,7 +9,7 @@ class SNSFifoInteg extends Stack {
       topicName: 'fooTopic.fifo',
       displayName: 'fooDisplayName',
       contentBasedDeduplication: true,
-      fifoTopic: true,
+      fifo: true,
     });
   }
 }

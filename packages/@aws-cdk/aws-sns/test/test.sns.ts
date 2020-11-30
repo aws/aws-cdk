@@ -129,7 +129,7 @@ export = {
       const stack = new cdk.Stack();
 
       new sns.Topic(stack, 'MyTopic', {
-        fifoTopic: true,
+        fifo: true,
       });
 
       expect(stack).toMatch({
