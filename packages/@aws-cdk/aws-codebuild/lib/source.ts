@@ -483,7 +483,7 @@ interface ThirdPartyGitSourceProps extends GitSourceProps {
   readonly webhook?: boolean;
 
   /**
-   * Start a batch build when the webhook is triggered instead of a standard one.
+   * Start a batch build instead of a standard one.
    *
    * @default false
    */
