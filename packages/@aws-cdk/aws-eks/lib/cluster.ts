@@ -1427,6 +1427,19 @@ export class Cluster extends ClusterBase {
       for (const subnet of subnets) {
         // if this is not a concrete subnet, attach a construct warning
         if (!ec2.Subnet.isVpcSubnet(subnet)) {
+          let hasTag = false;
+          for (const child of subnet.node.findAll()) {
+            if (child instanceof ec2.CfnSubnet) {
+              const tags = child.tags.tagValues();
+              if (tags[tag] == '1') {
+                hasTag = true;
+                break;
+              }
+            }
+          }
+          if (hasTag) {
+            continue;
+          }
           // message (if token): "could not auto-tag public/private subnet with tag..."
           // message (if not token): "count not auto-tag public/private subnet xxxxx with tag..."
           const subnetID = Token.isUnresolved(subnet.subnetId) ? '' : ` ${subnet.subnetId}`;
