@@ -792,6 +792,7 @@ export class Project extends ProjectBase {
     this.projectName = this.getResourceNameAttribute(resource.ref);
 
     this.addToRolePolicy(this.createLoggingPermission());
+    this.addParameterStorePermission(props);
     // add permissions to create and use test report groups
     // with names starting with the project's name,
     // unless the customer explicitly opts out of it
@@ -921,6 +922,30 @@ export class Project extends ProjectBase {
       resources: [logGroupArn, logGroupStarArn],
       actions: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
     });
+  }
+
+  private addParameterStorePermission(props: ProjectProps) {
+    if (!props.environmentVariables) {
+      return;
+    }
+
+    const resources = Object.values(props.environmentVariables)
+      .filter(envVariable => envVariable.type === BuildEnvironmentVariableType.PARAMETER_STORE)
+      .map(envVariable => Stack.of(this).formatArn({
+        service: 'ssm',
+        resource: 'parameter',
+        sep: ':',
+        resourceName: envVariable.value,
+      }));
+
+    if (resources.length === 0) {
+      return;
+    }
+
+    this.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['ssm:GetParameters'],
+      resources,
+    }));
   }
 
   private renderEnvironment(
