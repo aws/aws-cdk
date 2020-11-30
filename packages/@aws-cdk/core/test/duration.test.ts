@@ -145,7 +145,7 @@ nodeunitShim({
 
   'to human string'(test: Test) {
     test.equal(Duration.minutes(0).toHumanString(), '0 minutes');
-    test.equal(Duration.minutes(Lazy.number({ produce: () => 5 })).toHumanString(), '<token> minutes');
+    test.equal(Duration.minutes(Lazy.numberValue({ produce: () => 5 })).toHumanString(), '<token> minutes');
 
     test.equal(Duration.minutes(10).toHumanString(), '10 minutes');
     test.equal(Duration.minutes(1).toHumanString(), '1 minute');

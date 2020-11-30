@@ -277,11 +277,11 @@ export class Distribution extends Resource implements IDistribution {
     const distribution = new CfnDistribution(this, 'Resource', {
       distributionConfig: {
         enabled: props.enabled ?? true,
-        origins: Lazy.any({ produce: () => this.renderOrigins() }),
-        originGroups: Lazy.any({ produce: () => this.renderOriginGroups() }),
+        origins: Lazy.anyValue({ produce: () => this.renderOrigins() }),
+        originGroups: Lazy.anyValue({ produce: () => this.renderOriginGroups() }),
         defaultCacheBehavior: this.defaultBehavior._renderBehavior(),
         aliases: props.domainNames,
-        cacheBehaviors: Lazy.any({ produce: () => this.renderCacheBehaviors() }),
+        cacheBehaviors: Lazy.anyValue({ produce: () => this.renderCacheBehaviors() }),
         comment: props.comment,
         customErrorResponses: this.renderErrorResponses(),
         defaultRootObject: props.defaultRootObject,

@@ -16,7 +16,7 @@ export = {
       });
 
       const virtualGateway = new appmesh.VirtualGateway(stack, 'gateway-1', {
-        listeners: [appmesh.VirtualGatewayListener.http()],
+        listeners: [appmesh.VirtualGatewayListener.httpGatewayListener()],
         mesh: mesh,
       });
 
@@ -27,21 +27,21 @@ export = {
 
       // Add an HTTP Route
       virtualGateway.addGatewayRoute('gateway-http-route', {
-        routeSpec: appmesh.GatewayRouteSpec.http({
+        routeSpec: appmesh.GatewayRouteSpec.httpRouteSpec({
           routeTarget: virtualService,
         }),
         gatewayRouteName: 'gateway-http-route',
       });
 
       virtualGateway.addGatewayRoute('gateway-http2-route', {
-        routeSpec: appmesh.GatewayRouteSpec.http2({
+        routeSpec: appmesh.GatewayRouteSpec.http2RouteSpec({
           routeTarget: virtualService,
         }),
         gatewayRouteName: 'gateway-http2-route',
       });
 
       virtualGateway.addGatewayRoute('gateway-grpc-route', {
-        routeSpec: appmesh.GatewayRouteSpec.grpc({
+        routeSpec: appmesh.GatewayRouteSpec.grpcRouteSpec({
           routeTarget: virtualService,
           match: {
             serviceName: virtualService.virtualServiceName,
@@ -122,7 +122,7 @@ export = {
       });
 
       const virtualService = mesh.addVirtualService('testVirtualService');
-      test.throws(() => appmesh.GatewayRouteSpec.http({
+      test.throws(() => appmesh.GatewayRouteSpec.httpRouteSpec({
         routeTarget: virtualService,
         match: {
           prefixPath: 'wrong',

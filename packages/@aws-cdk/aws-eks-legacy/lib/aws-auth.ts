@@ -92,7 +92,7 @@ export class AwsAuth extends Construct {
   }
 
   private synthesizeMapRoles() {
-    return Lazy.any({
+    return Lazy.anyValue({
       produce: () => this.stack.toJsonString(this.roleMappings.map(m => ({
         rolearn: m.role.roleArn,
         username: m.mapping.username,
@@ -102,7 +102,7 @@ export class AwsAuth extends Construct {
   }
 
   private synthesizeMapUsers() {
-    return Lazy.any({
+    return Lazy.anyValue({
       produce: () => this.stack.toJsonString(this.userMappings.map(m => ({
         userarn: m.user.userArn,
         username: m.mapping.username,
@@ -112,7 +112,7 @@ export class AwsAuth extends Construct {
   }
 
   private synthesizeMapAccounts() {
-    return Lazy.any({
+    return Lazy.anyValue({
       produce: () => this.stack.toJsonString(this.accounts),
     });
   }
