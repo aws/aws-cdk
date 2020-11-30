@@ -80,10 +80,6 @@
         },
         "Tags": [
           {
-            "Key": "kubernetes.io/role/elb",
-            "Value": "1"
-          },
-          {
             "Key": "Name",
             "Value": "aws-cdk-eks-cluster-private-endpoint-test/Vpc/PublicSubnet1"
           }
@@ -122,10 +118,6 @@
         "Domain": "vpc",
         "Tags": [
           {
-            "Key": "kubernetes.io/role/elb",
-            "Value": "1"
-          },
-          {
             "Key": "Name",
             "Value": "aws-cdk-eks-cluster-private-endpoint-test/Vpc/PublicSubnet1"
           }
@@ -145,10 +137,6 @@
           "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
         },
         "Tags": [
-          {
-            "Key": "kubernetes.io/role/elb",
-            "Value": "1"
-          },
           {
             "Key": "Name",
             "Value": "aws-cdk-eks-cluster-private-endpoint-test/Vpc/PublicSubnet1"
@@ -192,10 +180,6 @@
           "Ref": "Vpc8378EB38"
         },
         "Tags": [
-          {
-            "Key": "kubernetes.io/role/elb",
-            "Value": "1"
-          },
           {
             "Key": "Name",
             "Value": "aws-cdk-eks-cluster-private-endpoint-test/Vpc/PublicSubnet2"
@@ -266,10 +250,6 @@
         },
         "Tags": [
           {
-            "Key": "kubernetes.io/role/elb",
-            "Value": "1"
-          },
-          {
             "Key": "Name",
             "Value": "aws-cdk-eks-cluster-private-endpoint-test/Vpc/PublicSubnet3"
           }
@@ -339,10 +319,6 @@
         },
         "Tags": [
           {
-            "Key": "kubernetes.io/role/internal-elb",
-            "Value": "1"
-          },
-          {
             "Key": "Name",
             "Value": "aws-cdk-eks-cluster-private-endpoint-test/Vpc/PrivateSubnet1"
           }
@@ -409,10 +385,6 @@
         },
         "Tags": [
           {
-            "Key": "kubernetes.io/role/internal-elb",
-            "Value": "1"
-          },
-          {
             "Key": "Name",
             "Value": "aws-cdk-eks-cluster-private-endpoint-test/Vpc/PrivateSubnet2"
           }
@@ -478,10 +450,6 @@
           "Ref": "Vpc8378EB38"
         },
         "Tags": [
-          {
-            "Key": "kubernetes.io/role/internal-elb",
-            "Value": "1"
-          },
           {
             "Key": "Name",
             "Value": "aws-cdk-eks-cluster-private-endpoint-test/Vpc/PrivateSubnet3"

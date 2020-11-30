@@ -1434,7 +1434,9 @@ export class Cluster extends ClusterBase {
           continue;
         }
 
-        Tags.of(subnet).add(tag, '1');
+        Tags.of(subnet).add(tag, '1', {
+          includeResourceTypes: [ec2.CfnSubnet.CFN_RESOURCE_TYPE_NAME],
+        });
       }
     };
 

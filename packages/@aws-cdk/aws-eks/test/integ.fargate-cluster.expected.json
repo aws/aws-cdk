@@ -52,10 +52,6 @@
         },
         "Tags": [
           {
-            "Key": "kubernetes.io/role/elb",
-            "Value": "1"
-          },
-          {
             "Key": "Name",
             "Value": "aws-cdk-eks-fargate-cluster-test/FargateCluster/DefaultVpc/PublicSubnet1"
           }
@@ -94,10 +90,6 @@
         "Domain": "vpc",
         "Tags": [
           {
-            "Key": "kubernetes.io/role/elb",
-            "Value": "1"
-          },
-          {
             "Key": "Name",
             "Value": "aws-cdk-eks-fargate-cluster-test/FargateCluster/DefaultVpc/PublicSubnet1"
           }
@@ -117,10 +109,6 @@
           "Ref": "FargateClusterDefaultVpcPublicSubnet1Subnet96AFDABC"
         },
         "Tags": [
-          {
-            "Key": "kubernetes.io/role/elb",
-            "Value": "1"
-          },
           {
             "Key": "Name",
             "Value": "aws-cdk-eks-fargate-cluster-test/FargateCluster/DefaultVpc/PublicSubnet1"
@@ -165,10 +153,6 @@
         },
         "Tags": [
           {
-            "Key": "kubernetes.io/role/elb",
-            "Value": "1"
-          },
-          {
             "Key": "Name",
             "Value": "aws-cdk-eks-fargate-cluster-test/FargateCluster/DefaultVpc/PublicSubnet2"
           }
@@ -207,10 +191,6 @@
         "Domain": "vpc",
         "Tags": [
           {
-            "Key": "kubernetes.io/role/elb",
-            "Value": "1"
-          },
-          {
             "Key": "Name",
             "Value": "aws-cdk-eks-fargate-cluster-test/FargateCluster/DefaultVpc/PublicSubnet2"
           }
@@ -230,10 +210,6 @@
           "Ref": "FargateClusterDefaultVpcPublicSubnet2Subnet92A9CC93"
         },
         "Tags": [
-          {
-            "Key": "kubernetes.io/role/elb",
-            "Value": "1"
-          },
           {
             "Key": "Name",
             "Value": "aws-cdk-eks-fargate-cluster-test/FargateCluster/DefaultVpc/PublicSubnet2"
@@ -278,10 +254,6 @@
         },
         "Tags": [
           {
-            "Key": "kubernetes.io/role/elb",
-            "Value": "1"
-          },
-          {
             "Key": "Name",
             "Value": "aws-cdk-eks-fargate-cluster-test/FargateCluster/DefaultVpc/PublicSubnet3"
           }
@@ -320,10 +292,6 @@
         "Domain": "vpc",
         "Tags": [
           {
-            "Key": "kubernetes.io/role/elb",
-            "Value": "1"
-          },
-          {
             "Key": "Name",
             "Value": "aws-cdk-eks-fargate-cluster-test/FargateCluster/DefaultVpc/PublicSubnet3"
           }
@@ -343,10 +311,6 @@
           "Ref": "FargateClusterDefaultVpcPublicSubnet3SubnetB408ADA9"
         },
         "Tags": [
-          {
-            "Key": "kubernetes.io/role/elb",
-            "Value": "1"
-          },
           {
             "Key": "Name",
             "Value": "aws-cdk-eks-fargate-cluster-test/FargateCluster/DefaultVpc/PublicSubnet3"
@@ -390,10 +354,6 @@
           "Ref": "FargateClusterDefaultVpcE69D3A13"
         },
         "Tags": [
-          {
-            "Key": "kubernetes.io/role/internal-elb",
-            "Value": "1"
-          },
           {
             "Key": "Name",
             "Value": "aws-cdk-eks-fargate-cluster-test/FargateCluster/DefaultVpc/PrivateSubnet1"
@@ -461,10 +421,6 @@
         },
         "Tags": [
           {
-            "Key": "kubernetes.io/role/internal-elb",
-            "Value": "1"
-          },
-          {
             "Key": "Name",
             "Value": "aws-cdk-eks-fargate-cluster-test/FargateCluster/DefaultVpc/PrivateSubnet2"
           }
@@ -530,10 +486,6 @@
           "Ref": "FargateClusterDefaultVpcE69D3A13"
         },
         "Tags": [
-          {
-            "Key": "kubernetes.io/role/internal-elb",
-            "Value": "1"
-          },
           {
             "Key": "Name",
             "Value": "aws-cdk-eks-fargate-cluster-test/FargateCluster/DefaultVpc/PrivateSubnet3"
