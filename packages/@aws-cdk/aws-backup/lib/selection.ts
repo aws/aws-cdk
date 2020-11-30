@@ -96,10 +96,10 @@ export class BackupSelection extends Resource implements iam.IGrantable {
       backupSelection: {
         iamRoleArn: role.roleArn,
         selectionName: props.backupSelectionName || this.node.id,
-        listOfTags: Lazy.any({
+        listOfTags: Lazy.anyValue({
           produce: () => this.listOfTags,
         }, { omitEmptyArray: true }),
-        resources: Lazy.list({
+        resources: Lazy.listValue({
           produce: () => [...this.resources, ...this.backupableResourcesCollector.resources],
         }, { omitEmpty: true }),
       },
@@ -130,7 +130,7 @@ export class BackupSelection extends Resource implements iam.IGrantable {
       Aspects.of(resource.construct).add(this.backupableResourcesCollector);
       // Cannot push `this.backupableResourcesCollector.resources` to
       // `this.resources` here because it has not been evaluated yet.
-      // Will be concatenated to `this.resources` in a `Lazy.list`
+      // Will be concatenated to `this.resources` in a `Lazy.listValue`
       // in the constructor instead.
     }
   }

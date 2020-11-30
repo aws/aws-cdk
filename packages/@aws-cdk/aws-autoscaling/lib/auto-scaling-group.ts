@@ -936,8 +936,8 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     // use delayed evaluation
     const imageConfig = props.machineImage.getImage(this);
     this.userData = props.userData ?? imageConfig.userData;
-    const userDataToken = Lazy.string({ produce: () => Fn.base64(this.userData.render()) });
-    const securityGroupsToken = Lazy.list({ produce: () => this.securityGroups.map(sg => sg.securityGroupId) });
+    const userDataToken = Lazy.stringValue({ produce: () => Fn.base64(this.userData.render()) });
+    const securityGroupsToken = Lazy.listValue({ produce: () => this.securityGroups.map(sg => sg.securityGroupId) });
 
     const launchConfig = new CfnLaunchConfiguration(this, 'LaunchConfig', {
       imageId: imageConfig.imageId,
@@ -1014,10 +1014,10 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       maxSize: Tokenization.stringifyNumber(maxCapacity),
       desiredCapacity: desiredCapacity !== undefined ? Tokenization.stringifyNumber(desiredCapacity) : undefined,
       launchConfigurationName: launchConfig.ref,
-      loadBalancerNames: Lazy.list({ produce: () => this.loadBalancerNames }, { omitEmpty: true }),
-      targetGroupArns: Lazy.list({ produce: () => this.targetGroupArns }, { omitEmpty: true }),
+      loadBalancerNames: Lazy.listValue({ produce: () => this.loadBalancerNames }, { omitEmpty: true }),
+      targetGroupArns: Lazy.listValue({ produce: () => this.targetGroupArns }, { omitEmpty: true }),
       notificationConfigurations: this.renderNotificationConfiguration(),
-      metricsCollection: Lazy.any({ produce: () => this.renderMetricsCollection() }),
+      metricsCollection: Lazy.anyValue({ produce: () => this.renderMetricsCollection() }),
       vpcZoneIdentifier: subnetIds,
       healthCheckType: props.healthCheck && props.healthCheck.type,
       healthCheckGracePeriod: props.healthCheck && props.healthCheck.gracePeriod && props.healthCheck.gracePeriod.toSeconds(),

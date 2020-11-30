@@ -1352,20 +1352,18 @@ export class Cluster extends ClusterBase {
 
   private selectPrivateSubnets(): ec2.ISubnet[] {
     const privateSubnets: ec2.ISubnet[] = [];
-    const vpcPrivateSubnetIds = this.vpc.privateSubnets.map(s => s.subnetId);
-    const vpcPublicSubnetIds = this.vpc.publicSubnets.map(s => s.subnetId);
 
     for (const placement of this.vpcSubnets) {
 
       for (const subnet of this.vpc.selectSubnets(placement).subnets) {
 
-        if (vpcPrivateSubnetIds.includes(subnet.subnetId)) {
+        if (this.vpc.privateSubnets.includes(subnet)) {
           // definitely private, take it.
           privateSubnets.push(subnet);
           continue;
         }
 
-        if (vpcPublicSubnetIds.includes(subnet.subnetId)) {
+        if (this.vpc.publicSubnets.includes(subnet)) {
           // definitely public, skip it.
           continue;
         }

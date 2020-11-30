@@ -192,7 +192,7 @@ export class GatewayVpcEndpoint extends VpcEndpoint implements IGatewayVpcEndpoi
     }
 
     const endpoint = new CfnVPCEndpoint(this, 'Resource', {
-      policyDocument: Lazy.any({ produce: () => this.policyDocument }),
+      policyDocument: Lazy.anyValue({ produce: () => this.policyDocument }),
       routeTableIds,
       serviceName: props.service.name,
       vpcEndpointType: VpcEndpointType.GATEWAY,
@@ -318,7 +318,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public readonly privateDnsDefault?: boolean = true;
 
   constructor(name: string, prefix?: string, port?: number) {
-    const region = Lazy.uncachedString({
+    const region = Lazy.stringValue({
       produce: (context) => Stack.of(context.scope).region,
     });
     this.name = `${prefix || 'com.amazonaws'}.${region}.${name}`;
@@ -482,7 +482,7 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
 
     const endpoint = new CfnVPCEndpoint(this, 'Resource', {
       privateDnsEnabled: props.privateDnsEnabled ?? props.service.privateDnsDefault ?? true,
-      policyDocument: Lazy.any({ produce: () => this.policyDocument }),
+      policyDocument: Lazy.anyValue({ produce: () => this.policyDocument }),
       securityGroupIds: securityGroups.map(s => s.securityGroupId),
       serviceName: props.service.name,
       vpcEndpointType: VpcEndpointType.INTERFACE,

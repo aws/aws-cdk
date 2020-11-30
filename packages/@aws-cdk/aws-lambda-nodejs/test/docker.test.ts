@@ -5,7 +5,7 @@ beforeAll(() => {
   spawnSync('docker', ['build', '-t', 'esbuild', path.join(__dirname, '../lib')]);
 });
 
-test('esbuild is available', () => {
+test('esbuild is available', async () => {
   const proc = spawnSync('docker', [
     'run', 'esbuild',
     'esbuild', '--version',
@@ -13,7 +13,7 @@ test('esbuild is available', () => {
   expect(proc.status).toEqual(0);
 });
 
-test('can npm install with non root user', () => {
+test('can npm install with non root user', async () => {
   const proc = spawnSync('docker', [
     'run', '-u', '1000:1000',
     'esbuild',
@@ -26,7 +26,7 @@ test('can npm install with non root user', () => {
   expect(proc.status).toEqual(0);
 });
 
-test('can yarn install with non root user', () => {
+test('can yarn install with non root user', async () => {
   const proc = spawnSync('docker', [
     'run', '-u', '500:500',
     'esbuild',
@@ -37,15 +37,4 @@ test('can yarn install with non root user', () => {
     ].join(' && '),
   ]);
   expect(proc.status).toEqual(0);
-});
-
-test('cache folders have the right permissions', () => {
-  const proc = spawnSync('docker', [
-    'run', 'esbuild',
-    'bash', '-c', [
-      'stat -c \'%a\' /tmp/npm-cache',
-      'stat -c \'%a\' /tmp/yarn-cache',
-    ].join(' &&  '),
-  ]);
-  expect(proc.stdout.toString()).toMatch('777\n777');
 });

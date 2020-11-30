@@ -256,18 +256,6 @@ nodeunitShim({
 
     test.done();
   },
-
-  'cannot use same synthesizer for multiple stacks'(test: Test) {
-    // GIVEN
-    const synthesizer = new DefaultStackSynthesizer();
-
-    // WHEN
-    new Stack(app, 'Stack2', { synthesizer });
-    test.throws(() => {
-      new Stack(app, 'Stack3', { synthesizer });
-    }, /A StackSynthesizer can only be used for one Stack/);
-    test.done();
-  },
 });
 
 /**
