@@ -244,7 +244,7 @@ export class AssetStaging extends CoreConstruct {
       // If the asset uses OUTPUT or BUNDLE, we use a CUSTOM hash to avoid fingerprinting
       // a potentially very large source directory. Other hash types are kept the same.
       let hashType = this.hashType;
-      if (hashType === AssetHashType.OUTPUT || AssetHashType.BUNDLE) {
+      if (hashType === AssetHashType.OUTPUT || hashType === AssetHashType.BUNDLE) {
         this.customSourceFingerprint = Names.uniqueId(this);
         hashType = AssetHashType.CUSTOM;
       }
