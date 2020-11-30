@@ -1,6 +1,7 @@
 import { countResources, expect, haveResource, haveResourceLike, objectLike, not, ResourcePart } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
+import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as cdk from '@aws-cdk/core';
@@ -594,6 +595,142 @@ export = {
           RegistryCredential: {
             CredentialProvider: 'SECRETS_MANAGER',
             Credential: 'MySecretName',
+          },
+        }),
+      }));
+
+      test.done();
+    },
+
+    'logs config - cloudWatch'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const logGroup = logs.LogGroup.fromLogGroupName(stack, 'LogGroup', 'MyLogGroupName');
+
+      // WHEN
+      new codebuild.Project(stack, 'Project', {
+        source: codebuild.Source.s3({
+          bucket: new s3.Bucket(stack, 'Bucket'),
+          path: 'path',
+        }),
+        logging: {
+          cloudWatch: {
+            logGroup,
+            prefix: '/my-logs',
+          },
+        },
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+        LogsConfig: objectLike({
+          CloudWatchLogs: {
+            GroupName: 'MyLogGroupName',
+            Status: 'ENABLED',
+            StreamName: '/my-logs',
+          },
+        }),
+      }));
+
+      test.done();
+    },
+
+    'logs config - cloudWatch disabled'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      new codebuild.Project(stack, 'Project', {
+        source: codebuild.Source.s3({
+          bucket: new s3.Bucket(stack, 'Bucket'),
+          path: 'path',
+        }),
+        logging: {
+          cloudWatch: {
+            enabled: false,
+          },
+        },
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+        LogsConfig: objectLike({
+          CloudWatchLogs: {
+            Status: 'DISABLED',
+          },
+        }),
+      }));
+
+      test.done();
+    },
+
+    'logs config - s3'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const bucket = s3.Bucket.fromBucketName(stack, 'LogBucket', 'MyBucketName');
+
+      // WHEN
+      new codebuild.Project(stack, 'Project', {
+        source: codebuild.Source.s3({
+          bucket: new s3.Bucket(stack, 'Bucket'),
+          path: 'path',
+        }),
+        logging: {
+          s3: {
+            bucket,
+            prefix: 'my-logs',
+          },
+        },
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+        LogsConfig: objectLike({
+          S3Logs: {
+            Location: 'MyBucketName/my-logs',
+            Status: 'ENABLED',
+          },
+        }),
+      }));
+
+      test.done();
+    },
+
+    'logs config - cloudWatch and s3'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const bucket = s3.Bucket.fromBucketName(stack, 'LogBucket2', 'MyBucketName');
+      const logGroup = logs.LogGroup.fromLogGroupName(stack, 'LogGroup2', 'MyLogGroupName');
+
+      // WHEN
+      new codebuild.Project(stack, 'Project', {
+        source: codebuild.Source.s3({
+          bucket: new s3.Bucket(stack, 'Bucket'),
+          path: 'path',
+        }),
+        logging: {
+          cloudWatch: {
+            logGroup,
+            prefix: '/my-logs',
+          },
+          s3: {
+            bucket,
+            prefix: 'my-logs',
+          },
+        },
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+        LogsConfig: objectLike({
+          CloudWatchLogs: {
+            GroupName: 'MyLogGroupName',
+            Status: 'ENABLED',
+            StreamName: '/my-logs',
+          },
+          S3Logs: {
+            Location: 'MyBucketName/my-logs',
+            Status: 'ENABLED',
           },
         }),
       }));
