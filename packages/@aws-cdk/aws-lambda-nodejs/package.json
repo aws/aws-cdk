@@ -64,10 +64,11 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
+    "@aws-cdk/aws-ec2": "0.0.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "delay": "4.4.0",
-    "esbuild": "^0.8.9",
+    "esbuild": "^0.8.17",
     "pkglint": "0.0.0"
   },
   "dependencies": {
