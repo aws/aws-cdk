@@ -5,7 +5,7 @@ Thanks for your interest in contributing to the AWS CDK! ❤️
 This document describes how to set up a development environment and submit your contributions. Please read it carefully
 and let us know if it's not up-to-date (even better, submit a PR with your  corrections ;-)).
 
-- [Getting Started](#getting-started) 
+- [Getting Started](#getting-started)
 - [Pull Requests](#pull-requests)
   - [Pull Request Checklist](#pull-request-checklist)
   - [Step 1: Open Issue](#step-1-open-issue)
