@@ -174,7 +174,7 @@ export class CodeBuildAction extends Action {
     };
     if ((this.actionProperties.inputs || []).length > 1) {
       // lazy, because the Artifact name might be generated lazily
-      configuration.PrimarySource = cdk.Lazy.stringValue({ produce: () => this.props.input.artifactName });
+      configuration.PrimarySource = cdk.Lazy.string({ produce: () => this.props.input.artifactName });
     }
     return {
       configuration,
