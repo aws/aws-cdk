@@ -553,6 +553,9 @@ export class Cluster extends ClusterBase {
       }
       return undefined;
     } else {
+      if (Token.isUnresolved(numberOfNodes)) {
+        return numberOfNodes;
+      }
       const nodeCount = numberOfNodes ?? 2;
       if (nodeCount < 2 || nodeCount > 100) {
         throw new Error('Number of nodes for cluster type multi-node must be at least 2 and no more than 100');

@@ -3,46 +3,33 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 
-// From https://github.com/errwischt/stacktrace-parser/blob/master/src/stack-trace-parser.js
-const STACK_RE = /^\s*at (?:((?:\[object object\])?[^\\/]+(?: \[as \S+\])?) )?\(?(.*?):(\d+)(?::(\d+))?\)?\s*$/i;
-
-/**
- * A parsed stack trace line
- */
-export interface StackTrace {
-  readonly file: string;
-  readonly methodName?: string;
-  readonly lineNumber: number;
-  readonly column: number;
+export interface CallSite {
+  getThis(): any;
+  getTypeName(): string;
+  getFunctionName(): string;
+  getMethodName(): string;
+  getFileName(): string;
+  getLineNumber(): number;
+  getColumnNumber(): number;
+  getFunction(): Function;
+  getEvalOrigin(): string;
+  isNative(): boolean;
+  isToplevel(): boolean;
+  isEval(): boolean;
+  isConstructor(): boolean;
 }
 
 /**
- * Parses the stack trace of an error
+ * Get callsites from the V8 stack trace API
+ *
+ * https://github.com/sindresorhus/callsites
  */
-export function parseStackTrace(error?: Error): StackTrace[] {
-  const err = error || new Error();
-
-  if (!err.stack) {
-    return [];
-  }
-
-  const lines = err.stack.split('\n');
-
-  const stackTrace: StackTrace[] = [];
-
-  for (const line of lines) {
-    const results = STACK_RE.exec(line);
-    if (results) {
-      stackTrace.push({
-        file: results[2],
-        methodName: results[1],
-        lineNumber: parseInt(results[3], 10),
-        column: parseInt(results[4], 10),
-      });
-    }
-  }
-
-  return stackTrace;
+export function callsites(): CallSite[] {
+  const _prepareStackTrace = Error.prepareStackTrace;
+  Error.prepareStackTrace = (_, stack) => stack;
+  const stack = new Error().stack?.slice(1);
+  Error.prepareStackTrace = _prepareStackTrace;
+  return stack as unknown as CallSite[];
 }
 
 /**
@@ -92,7 +79,10 @@ export function exec(cmd: string, args: string[], options?: SpawnSyncOptions) {
 }
 
 /**
- * Extract dependencies from a package.json
+ * Extract versions for a list of modules.
+ *
+ * First lookup the version in the package.json and then fallback to requiring
+ * the module's package.json. The fallback is needed for transitive dependencies.
  */
 export function extractDependencies(pkgPath: string, modules: string[]): { [key: string]: string } {
   const dependencies: { [key: string]: string } = {};
@@ -107,10 +97,13 @@ export function extractDependencies(pkgPath: string, modules: string[]): { [key:
   };
 
   for (const mod of modules) {
-    if (!pkgDependencies[mod]) {
-      throw new Error(`Cannot extract version for module '${mod}' in package.json`);
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const version = pkgDependencies[mod] ?? require(`${mod}/package.json`).version;
+      dependencies[mod] = version;
+    } catch (err) {
+      throw new Error(`Cannot extract version for module '${mod}'. Check that it's referenced in your package.json or installed.`);
     }
-    dependencies[mod] = pkgDependencies[mod];
   }
 
   return dependencies;

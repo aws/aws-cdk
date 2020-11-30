@@ -319,7 +319,7 @@ describe('stage', () => {
 
     // WHEN
     const testLogGroup = new logs.LogGroup(stack, 'LogGroup');
-    const testFormat = apigateway.AccessLogFormat.custom(cdk.Lazy.stringValue({ produce: () => 'test' }));
+    const testFormat = apigateway.AccessLogFormat.custom(cdk.Lazy.string({ produce: () => 'test' }));
 
     // THEN
     expect(() => new apigateway.Stage(stack, 'my-stage', {

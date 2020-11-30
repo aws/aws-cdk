@@ -18,6 +18,9 @@ export class NestedStackSynthesizer extends StackSynthesizer {
   }
 
   public bind(stack: Stack): void {
+    if (this.stack !== undefined) {
+      throw new Error('A StackSynthesizer can only be used for one Stack: create a new instance to use with a different Stack');
+    }
     this.stack = stack;
   }
 
