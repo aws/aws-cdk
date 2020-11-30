@@ -182,6 +182,7 @@ is useful if your function relies on node modules that should be installed (`nod
 case with modules using native dependencies.
 
 ### Command hooks
+
 It is possible to run additional commands by specifying the `commandHooks` prop:
 
 ```ts
@@ -197,6 +198,7 @@ new lambda.NodejsFunction(this, 'my-handler-with-commands', {
 ```
 
 The following hooks are available:
+
 - `beforeBundling`: runs before all bundling commands
 - `beforeInstall`: runs before node modules installation
 - `afterBundling`: runs after all bundling commands
