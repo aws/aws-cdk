@@ -37,6 +37,22 @@ repository.onImageScanCompleted('ImageScanComplete')
   .addTarget(...)
 ```
 
+### Authorization Token
+
+Besides the Amazon ECR APIs, ECR also allows the Docker CLI or a language-specific Docker library to push and pull
+images from an ECR repository. However, the Docker CLI does not support native IAM authentication methods and
+additional steps must be taken so that Amazon ECR can authenticate and authorize Docker push and pull requests.
+More information can be found at at [Registry Authentication](https://docs.aws.amazon.com/AmazonECR/latest/userguide/Registries.html#registry_auth).
+
+A Docker authorization token can be obtained using the `GetAuthorizationToken` ECR API. The following code snippets
+grants an IAM user access to call this API.
+
+```ts
+import * as iam from '@aws-cdk/aws-iam';
+
+const user = new iam.User(this, 'User', { ... });
+AuthorizationToken.grantRead(user);
+```
 
 ### Automatically clean up repositories
 
