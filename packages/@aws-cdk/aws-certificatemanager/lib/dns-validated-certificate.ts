@@ -98,7 +98,7 @@ export class DnsValidatedCertificate extends cdk.Resource implements ICertificat
       serviceToken: requestorFunction.functionArn,
       properties: {
         DomainName: props.domainName,
-        SubjectAlternativeNames: cdk.Lazy.listValue({ produce: () => props.subjectAlternativeNames }, { omitEmpty: true }),
+        SubjectAlternativeNames: cdk.Lazy.list({ produce: () => props.subjectAlternativeNames }, { omitEmpty: true }),
         HostedZoneId: this.hostedZoneId,
         Region: props.region,
         Route53Endpoint: props.route53Endpoint,
