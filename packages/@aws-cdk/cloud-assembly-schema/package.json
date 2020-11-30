@@ -30,7 +30,14 @@
         ]
       }
     },
-    "projectReferences": true
+    "projectReferences": true,
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
+    }
   },
   "scripts": {
     "build": "cdk-build",
@@ -43,7 +50,8 @@
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test",
     "compat": "cdk-compat",
-    "update-schema": "bash scripts/update-schema.sh"
+    "update-schema": "bash scripts/update-schema.sh",
+    "rosetta:extract": "yarn --silent jsii-rosetta extract"
   },
   "author": {
     "name": "Amazon Web Services",
