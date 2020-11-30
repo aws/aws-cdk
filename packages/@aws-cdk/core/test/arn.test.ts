@@ -1,6 +1,7 @@
 import { nodeunitShim, Test } from 'nodeunit-shim';
-import { ArnComponents, Aws, CfnOutput, ScopedAws, Stack } from '../lib';
+import { Arn, ArnComponents, Aws, CfnOutput, ScopedAws, Stack, Token } from '../lib';
 import { Intrinsic } from '../lib/private/intrinsic';
+import { evaluateCFN } from './evaluate-cfn';
 import { toCloudFormation } from './util';
 
 nodeunitShim({
@@ -208,6 +209,31 @@ nodeunitShim({
       test.deepEqual(stack.resolve(parsed.resource), { 'Fn::Select': [0, { 'Fn::Split': ['/', { 'Fn::Select': [5, { 'Fn::Split': [':', theToken] }] }] }] });
       // eslint-disable-next-line max-len
       test.deepEqual(stack.resolve(parsed.resourceName), { 'Fn::Select': [1, { 'Fn::Split': ['/', { 'Fn::Select': [5, { 'Fn::Split': [':', theToken] }] }] }] });
+
+      test.done();
+    },
+
+    'extracing resource name from a complex ARN'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const theToken = Token.asString({ Ref: 'SomeParameter' });
+
+      // WHEN
+      const parsed = Arn.extractResourceName(theToken, 'role');
+
+      // THEN
+      test.deepEqual(evaluateCFN(stack.resolve(parsed), {
+        SomeParameter: 'arn:aws:iam::111111111111:role/path/to/role/name',
+      }), 'path/to/role/name');
+
+      test.done();
+    },
+
+    'extractResourceName validates resource type if possible'(test: Test) {
+      // WHEN
+      test.throws(() => {
+        Arn.extractResourceName('arn:aws:iam::111111111111:banana/rama', 'role');
+      }, /Expected resource type/);
 
       test.done();
     },
