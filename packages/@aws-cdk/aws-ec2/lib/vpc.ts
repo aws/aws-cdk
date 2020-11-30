@@ -1536,7 +1536,7 @@ export class Subnet extends Resource implements ISubnet {
     // subnet.attrNetworkAclAssociationId is the default ACL after the subnet
     // was just created. However, the ACL can be replaced at a later time.
     this._networkAcl = NetworkAcl.fromNetworkAclId(this, 'Acl', subnet.attrNetworkAclAssociationId);
-    this.subnetNetworkAclAssociationId = Lazy.string({ produce: () => this._networkAcl.networkAclId });
+    this.subnetNetworkAclAssociationId = Lazy.stringValue({ produce: () => this._networkAcl.networkAclId });
     this.node.defaultChild = subnet;
 
     const table = new CfnRouteTable(this, 'RouteTable', {

@@ -179,9 +179,9 @@ export class Alarm extends AlarmBase {
 
       // Actions
       actionsEnabled: props.actionsEnabled,
-      alarmActions: Lazy.list({ produce: () => this.alarmActionArns }),
-      insufficientDataActions: Lazy.list({ produce: (() => this.insufficientDataActionArns) }),
-      okActions: Lazy.list({ produce: () => this.okActionArns }),
+      alarmActions: Lazy.listValue({ produce: () => this.alarmActionArns }),
+      insufficientDataActions: Lazy.listValue({ produce: (() => this.insufficientDataActionArns) }),
+      okActions: Lazy.listValue({ produce: () => this.okActionArns }),
 
       // Metric
       ...metricProps,

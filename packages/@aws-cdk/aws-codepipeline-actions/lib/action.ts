@@ -24,7 +24,7 @@ export abstract class Action implements codepipeline.IAction {
 
   protected constructor(actionProperties: codepipeline.ActionProperties) {
     this.customerProvidedNamespace = actionProperties.variablesNamespace;
-    this.namespaceOrToken = Lazy.string({
+    this.namespaceOrToken = Lazy.stringValue({
       produce: () => {
       // make sure the action was bound (= added to a pipeline)
         if (this.actualNamespace !== undefined) {

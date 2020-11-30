@@ -107,7 +107,7 @@ nodeunitShim({
     const stack = new cdk.Stack();
 
     test.doesNotThrow(() => new s3.Bucket(stack, 'MyBucket', {
-      bucketName: cdk.Lazy.string({ produce: () => '_BUCKET' }),
+      bucketName: cdk.Lazy.stringValue({ produce: () => '_BUCKET' }),
     }));
 
     test.done();

@@ -29,7 +29,7 @@ export interface GrpcGatewayRouteMatch {
 /**
  * Properties specific for HTTP Based GatewayRoutes
  */
-export interface HttpGatewayRouteSpecOptions {
+export interface HttpRouteSpecProps {
   /**
    * The criterion for determining a request match for this GatewayRoute
    *
@@ -46,7 +46,7 @@ export interface HttpGatewayRouteSpecOptions {
 /**
  * Properties specific for a GRPC GatewayRoute
  */
-export interface GrpcGatewayRouteSpecOptions {
+export interface GrpcRouteSpecProps {
   /**
    * The criterion for determining a request match for this GatewayRoute
    */
@@ -91,28 +91,28 @@ export abstract class GatewayRouteSpec {
   /**
    * Creates an HTTP Based GatewayRoute
    *
-   * @param options - no http gateway route
+   * @param props - no http gateway route
    */
-  public static http(options: HttpGatewayRouteSpecOptions): GatewayRouteSpec {
-    return new HttpGatewayRouteSpec(options, Protocol.HTTP);
+  public static httpRouteSpec(props: HttpRouteSpecProps): GatewayRouteSpec {
+    return new HttpGatewayRouteSpec(props, Protocol.HTTP);
   }
 
   /**
    * Creates an HTTP2 Based GatewayRoute
    *
-   * @param options - no http2 gateway route
+   * @param props - no http2 gateway route
    */
-  public static http2(options: HttpGatewayRouteSpecOptions): GatewayRouteSpec {
-    return new HttpGatewayRouteSpec(options, Protocol.HTTP2);
+  public static http2RouteSpec(props: HttpRouteSpecProps): GatewayRouteSpec {
+    return new HttpGatewayRouteSpec(props, Protocol.HTTP2);
   }
 
   /**
    * Creates an GRPC Based GatewayRoute
    *
-   * @param options - no grpc gateway route
+   * @param props - no grpc gateway route
    */
-  public static grpc(options: GrpcGatewayRouteSpecOptions): GatewayRouteSpec {
-    return new GrpcGatewayRouteSpec(options);
+  public static grpcRouteSpec(props: GrpcRouteSpecProps): GatewayRouteSpec {
+    return new GrpcGatewayRouteSpec(props);
   }
 
   /**
@@ -140,11 +140,11 @@ class HttpGatewayRouteSpec extends GatewayRouteSpec {
    */
   readonly routeType: Protocol;
 
-  constructor(options: HttpGatewayRouteSpecOptions, protocol: Protocol.HTTP | Protocol.HTTP2) {
+  constructor(props: HttpRouteSpecProps, protocol: Protocol.HTTP | Protocol.HTTP2) {
     super();
-    this.routeTarget = options.routeTarget;
+    this.routeTarget = props.routeTarget;
     this.routeType = protocol;
-    this.match = options.match;
+    this.match = props.match;
   }
 
   public bind(_scope: cdk.Construct): GatewayRouteSpecConfig {
@@ -184,10 +184,10 @@ class GrpcGatewayRouteSpec extends GatewayRouteSpec {
    */
   readonly routeTarget: IVirtualService;
 
-  constructor(options: GrpcGatewayRouteSpecOptions) {
+  constructor(props: GrpcRouteSpecProps) {
     super();
-    this.match = options.match;
-    this.routeTarget = options.routeTarget;
+    this.match = props.match;
+    this.routeTarget = props.routeTarget;
   }
 
   public bind(_scope: cdk.Construct): GatewayRouteSpecConfig {

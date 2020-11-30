@@ -417,8 +417,8 @@ export class Repository extends RepositoryBase {
     const resource = new CfnRepository(this, 'Resource', {
       repositoryName: this.physicalName,
       // It says "Text", but they actually mean "Object".
-      repositoryPolicyText: Lazy.any({ produce: () => this.policyDocument }),
-      lifecyclePolicy: Lazy.any({ produce: () => this.renderLifecyclePolicy() }),
+      repositoryPolicyText: Lazy.anyValue({ produce: () => this.policyDocument }),
+      lifecyclePolicy: Lazy.anyValue({ produce: () => this.renderLifecyclePolicy() }),
       imageScanningConfiguration: !props.imageScanOnPush ? undefined : {
         scanOnPush: true,
       },

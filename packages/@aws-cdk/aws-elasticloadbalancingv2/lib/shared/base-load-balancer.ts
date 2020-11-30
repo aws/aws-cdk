@@ -209,7 +209,7 @@ export abstract class BaseLoadBalancer extends Resource {
       name: this.physicalName,
       subnets: subnetIds,
       scheme: internetFacing ? 'internet-facing' : 'internal',
-      loadBalancerAttributes: Lazy.any({ produce: () => renderAttributes(this.attributes) }, { omitEmptyArray: true } ),
+      loadBalancerAttributes: Lazy.anyValue({ produce: () => renderAttributes(this.attributes) }, { omitEmptyArray: true } ),
       ...additionalProps,
     });
     if (internetFacing) {

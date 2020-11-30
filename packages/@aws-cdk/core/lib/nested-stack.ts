@@ -120,9 +120,8 @@ export class NestedStack extends Stack {
     this.parameters = props.parameters || {};
 
     this.resource = new CfnStack(parentScope, `${id}.NestedStackResource`, {
-      // This value cannot be cached since it changes during the synthesis phase
-      templateUrl: Lazy.uncachedString({ produce: () => this._templateUrl || '<unresolved>' }),
-      parameters: Lazy.any({ produce: () => Object.keys(this.parameters).length > 0 ? this.parameters : undefined }),
+      templateUrl: Lazy.stringValue({ produce: () => this._templateUrl || '<unresolved>' }),
+      parameters: Lazy.anyValue({ produce: () => Object.keys(this.parameters).length > 0 ? this.parameters : undefined }),
       notificationArns: props.notificationArns,
       timeoutInMinutes: props.timeout ? props.timeout.toMinutes() : undefined,
     });

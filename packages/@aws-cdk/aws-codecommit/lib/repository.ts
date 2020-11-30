@@ -335,7 +335,7 @@ export class Repository extends RepositoryBase {
     this.repository = new CfnRepository(this, 'Resource', {
       repositoryName: props.repositoryName,
       repositoryDescription: props.description,
-      triggers: Lazy.any({ produce: () => this.triggers }, { omitEmptyArray: true }),
+      triggers: Lazy.anyValue({ produce: () => this.triggers }, { omitEmptyArray: true }),
     });
 
     this.repositoryName = this.getResourceNameAttribute(this.repository.attrName);

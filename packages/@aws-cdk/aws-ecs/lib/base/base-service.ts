@@ -340,7 +340,7 @@ export abstract class BaseService extends Resource
     this.resource = new CfnService(this, 'Service', {
       desiredCount: props.desiredCount,
       serviceName: this.physicalName,
-      loadBalancers: Lazy.any({ produce: () => this.loadBalancers }, { omitEmptyArray: true }),
+      loadBalancers: Lazy.anyValue({ produce: () => this.loadBalancers }, { omitEmptyArray: true }),
       deploymentConfiguration: {
         maximumPercent: props.maxHealthyPercent || 200,
         minimumHealthyPercent: props.minHealthyPercent === undefined ? 50 : props.minHealthyPercent,
@@ -351,8 +351,8 @@ export abstract class BaseService extends Resource
       launchType: props.deploymentController?.type === DeploymentControllerType.EXTERNAL ? undefined : props.launchType,
       healthCheckGracePeriodSeconds: this.evaluateHealthGracePeriod(props.healthCheckGracePeriod),
       /* role: never specified, supplanted by Service Linked Role */
-      networkConfiguration: Lazy.any({ produce: () => this.networkConfiguration }, { omitEmptyArray: true }),
-      serviceRegistries: Lazy.any({ produce: () => this.serviceRegistries }, { omitEmptyArray: true }),
+      networkConfiguration: Lazy.anyValue({ produce: () => this.networkConfiguration }, { omitEmptyArray: true }),
+      serviceRegistries: Lazy.anyValue({ produce: () => this.serviceRegistries }, { omitEmptyArray: true }),
       ...additionalProps,
     });
 
@@ -606,7 +606,7 @@ export abstract class BaseService extends Resource
       awsvpcConfiguration: {
         assignPublicIp: assignPublicIp ? 'ENABLED' : 'DISABLED',
         subnets: vpc.selectSubnets(vpcSubnets).subnetIds,
-        securityGroups: Lazy.list({ produce: () => [securityGroup!.securityGroupId] }),
+        securityGroups: Lazy.listValue({ produce: () => [securityGroup!.securityGroupId] }),
       },
     };
   }
@@ -714,7 +714,7 @@ export abstract class BaseService extends Resource
    *  healthCheckGracePeriod is not already set
    */
   private evaluateHealthGracePeriod(providedHealthCheckGracePeriod?: Duration): IResolvable {
-    return Lazy.any({
+    return Lazy.anyValue({
       produce: () => providedHealthCheckGracePeriod !== undefined ? providedHealthCheckGracePeriod.toSeconds() :
         this.loadBalancers.length > 0 ? 60 :
           undefined,
