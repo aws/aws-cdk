@@ -159,15 +159,6 @@ export class Role extends Resource implements IRole {
   /**
    * Import an external role by ARN.
    *
-   * If the imported Role ARN is a Token (such as a
-   * `CfnParameter.valueAsString` or a `Fn.importValue()`) *and* the referenced
-   * role has a `path` (like `arn:...:role/AdminRoles/Alice`), the
-   * `roleName` property will not resolve to the correct value. Instead it
-   * will resolve to the first path component. We unfortunately cannot express
-   * the correct calculation of the full path name as a CloudFormation
-   * expression. In this scenario the Role ARN should be supplied without the
-   * `path` in order to resolve the correct role resource.
-   *
    * @param scope construct scope
    * @param id construct id
    * @param roleArn the ARN of the role to import

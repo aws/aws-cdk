@@ -110,17 +110,7 @@ export class Arn {
    * since we don't have the actual value yet at the time of this function
    * call. You will have to know the separator and the type of ARN. The
    * resulting `ArnComponents` object will contain tokens for the
-   * subexpressions of the ARN, not string literals. In this case this
-   * function cannot properly parse the complete final resourceName (path) out
-   * of ARNs that use '/' to both separate the 'resource' from the
-   * 'resourceName' AND to subdivide the resourceName further. For example, in
-   * S3 ARNs:
-   *
-   *    arn:aws:s3:::my_corporate_bucket/path/to/exampleobject.png
-   *
-   * After parsing the resourceName will not contain
-   * 'path/to/exampleobject.png' but simply 'path'. This is a limitation
-   * because there is no slicing functionality in CloudFormation templates.
+   * subexpressions of the ARN, not string literals.
    *
    * @param arn The ARN to parse
    * @param sepIfToken The separator used to separate resource from resourceName
@@ -219,17 +209,6 @@ export class Arn {
  * The resulting `ArnComponents` object will contain tokens for the
  * subexpressions of the ARN, not string literals.
  *
- * WARNING: this function cannot properly parse the complete final
- * resourceName (path) out of ARNs that use '/' to both separate the
- * 'resource' from the 'resourceName' AND to subdivide the resourceName
- * further. For example, in S3 ARNs:
- *
- *    arn:aws:s3:::my_corporate_bucket/path/to/exampleobject.png
- *
- * After parsing the resourceName will not contain 'path/to/exampleobject.png'
- * but simply 'path'. This is a limitation because there is no slicing
- * functionality in CloudFormation templates.
- *
  * @param arnToken The input token that contains an ARN
  * @param sep The separator used to separate resource from resourceName
  * @param hasName Whether there is a name component in the ARN at all.
@@ -260,10 +239,19 @@ function parseToken(arnToken: string, sep: string = '/', hasName: boolean = true
 
     return { partition, service, region, account, resource, resourceName, sep };
   } else {
-    const lastComponents = Fn.split(sep, Fn.select(5, components));
+    const nameAndPath = Fn.select(5, components);
 
-    const resource = Fn.select(0, lastComponents).toString();
-    const resourceName = hasName ? Fn.select(1, lastComponents).toString() : undefined;
+    // Get the resource[type] as the word between the final `:` and the first separator
+    // "arn:...:role/path/to/role" => "role"
+    const resource = Fn.select(0, Fn.split(sep, nameAndPath)).toString();
+
+    // We get the resource name by splitting the entire ARN on ':<resource>/' and taking
+    // the 2nd element of the resulting array.
+    // "arn:...:role/path/to/role" => "path/to/role"
+    //
+    // This is safe as long as the "path" part doesn't contain `:<resource>/`, which should be
+    // so exceedingly rare as to be ignorable.
+    const resourceName = hasName ? Fn.select(1, Fn.split(`:${resource}/`, arnToken)) : undefined;
 
     return { partition, service, region, account, resource, resourceName, sep };
   }

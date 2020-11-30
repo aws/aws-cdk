@@ -544,8 +544,8 @@ describe('managed policy', () => {
       actions: ['a:abc'],
     }));
 
-    expect(stack.resolve(mp.managedPolicyName)).toEqual({
-      'Fn::Select': [1,
+    const resourceType = {
+      'Fn::Select': [0,
         {
           'Fn::Split': ['/',
             {
@@ -555,6 +555,16 @@ describe('managed policy', () => {
                     { Ref: 'Policy23B91518' }],
                 }],
             }],
+        }],
+    };
+
+    expect(stack.resolve(mp.managedPolicyName)).toEqual({
+      'Fn::Select': [1,
+        {
+          'Fn::Split': [
+            { 'Fn::Join': ['', [':', resourceType, '/']] },
+            { Ref: 'Policy23B91518' },
+          ],
         }],
     });
   });

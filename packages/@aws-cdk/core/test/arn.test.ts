@@ -1,6 +1,7 @@
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import { ArnComponents, Aws, CfnOutput, ScopedAws, Stack } from '../lib';
 import { Intrinsic } from '../lib/private/intrinsic';
+import { evaluateCFN } from './evaluate-cfn';
 import { toCloudFormation } from './util';
 
 nodeunitShim({
@@ -207,7 +208,25 @@ nodeunitShim({
       // eslint-disable-next-line max-len
       test.deepEqual(stack.resolve(parsed.resource), { 'Fn::Select': [0, { 'Fn::Split': ['/', { 'Fn::Select': [5, { 'Fn::Split': [':', theToken] }] }] }] });
       // eslint-disable-next-line max-len
-      test.deepEqual(stack.resolve(parsed.resourceName), { 'Fn::Select': [1, { 'Fn::Split': ['/', { 'Fn::Select': [5, { 'Fn::Split': [':', theToken] }] }] }] });
+      test.deepEqual(stack.resolve(parsed.resourceName), {
+        'Fn::Select': [1, {
+          'Fn::Split': [
+            {
+              'Fn::Join': ['', [
+                ':',
+                { 'Fn::Select': [0, { 'Fn::Split': ['/', { 'Fn::Select': [5, { 'Fn::Split': [':', theToken] }] }] }] },
+                '/',
+              ]],
+            },
+            theToken,
+          ],
+        }],
+      });
+
+      // Check that the CFN expression evaluates to the right thing
+      test.deepEqual(evaluateCFN(stack.resolve(parsed.resourceName), {
+        SomeParameter: 'arn:aws:iam::111111111111:role/path/to/role/name',
+      }), 'path/to/role/name');
 
       test.done();
     },

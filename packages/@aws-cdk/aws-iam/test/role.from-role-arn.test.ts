@@ -306,16 +306,7 @@ describe('IAM Role.fromRoleArn', () => {
 
   describe('imported with a dynamic ARN', () => {
     const dynamicValue = Lazy.string({ produce: () => 'role-arn' });
-    const roleName: any = {
-      'Fn::Select': [1,
-        {
-          'Fn::Split': ['/',
-            {
-              'Fn::Select': [5,
-                { 'Fn::Split': [':', 'role-arn'] }],
-            }],
-        }],
-    };
+    const roleName: any = resourceNameExpr('role-arn');
 
     describe('into an env-agnostic stack', () => {
       beforeEach(() => {
@@ -573,4 +564,29 @@ function _assertStackContainsPolicyResource(stack: Stack, roleNames: any[], name
   }
 
   expect(stack).toHaveResourceLike('AWS::IAM::Policy', expected);
+}
+
+
+function resourceNameExpr(arn: any) {
+  const resourceType = {
+    'Fn::Select': [0,
+      {
+        'Fn::Split': ['/',
+          {
+            'Fn::Select': [5,
+              {
+                'Fn::Split': [':', arn],
+              }],
+          }],
+      }],
+  };
+  return {
+    'Fn::Select': [1,
+      {
+        'Fn::Split': [
+          { 'Fn::Join': ['', [':', resourceType, '/']] },
+          arn,
+        ],
+      }],
+  };
 }

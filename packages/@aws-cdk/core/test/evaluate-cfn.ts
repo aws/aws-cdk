@@ -8,7 +8,15 @@ import { isNameOfCloudFormationIntrinsic } from '../lib/private/cloudformation-l
 export function evaluateCFN(object: any, context: {[key: string]: string} = {}): any {
   const intrinsics: any = {
     'Fn::Join'(separator: string, args: string[]) {
-      return args.map(evaluate).join(separator);
+      return evaluate(args).map(evaluate).join(evaluate(separator));
+    },
+
+    'Fn::Split'(separator: string, args: string) {
+      return evaluate(args).split(evaluate(separator));
+    },
+
+    'Fn::Select'(index: number, args: string[]) {
+      return evaluate(args).map(evaluate)[index];
     },
 
     'Ref'(logicalId: string) {
