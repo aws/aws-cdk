@@ -135,7 +135,7 @@ export class StepFunctionInvokeAction extends Action {
       resources: [cdk.Stack.of(this.props.stateMachine).formatArn({
         service: 'states',
         resource: 'execution',
-        resourceName: `${this.props.stateMachine.stateMachineArn}:${this.props.executionNamePrefix ?? ''}*`,
+        resourceName: `${cdk.Stack.of(this.props.stateMachine).parseArn(this.props.stateMachine.stateMachineArn, ':').resourceName}:${this.props.executionNamePrefix ?? ''}*`,
         sep: ':',
       })],
     }));
