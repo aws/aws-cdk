@@ -1,5 +1,11 @@
+import { ICertificateAuthority } from '@aws-cdk/aws-acmpca';
 import * as cdk from '@aws-cdk/core';
 import { CfnVirtualNode } from './appmesh.generated';
+
+enum CertificateType {
+  ACMPCA = 'acm',
+  FILE = 'file'
+}
 
 /**
  * Properties of TLS validation context
@@ -23,7 +29,7 @@ export interface ClientPolicyOptions {
   readonly enforceTls?: boolean;
 
   /**
-   * TLS enforced on these ports. If not specified it is enforced on all ports used for communication
+   * TLS is enforced on the ports specified here.
    *
    * @default - none
    */
@@ -37,7 +43,7 @@ export interface AcmTrustOptions extends ClientPolicyOptions {
   /**
    * Amazon Resource Names (ARN) of trusted ACM Private Certificate Authorities
    */
-  readonly certificateAuthorityArns: string[];
+  readonly certificateAuthorityArns: ICertificateAuthority[];
 }
 
 /**
@@ -47,7 +53,7 @@ export interface FileTrustOptions extends ClientPolicyOptions {
   /**
    * Path to the Certificate Chain file on the file system where the Envoy is deployed.
    */
-  readonly certificateChain: string[];
+  readonly certificateChain: string;
 }
 
 /**
@@ -59,14 +65,14 @@ export abstract class ClientPolicy {
    * Tells envoy where to fetch the validation context from
    */
   public static fileTrust(props: FileTrustOptions): ClientPolicy {
-    return new ClientPolicyImpl(props.enforceTls, props.ports, 'file', props.certificateChain);
+    return new ClientPolicyImpl(props.enforceTls, props.ports, CertificateType.FILE, props.certificateChain, undefined);
   }
 
   /**
    * TLS validation context trust for ACM Private Certificate Authority (CA).
    */
   public static acmTrust(props: AcmTrustOptions): ClientPolicy {
-    return new ClientPolicyImpl(props.enforceTls, props.ports, 'acm', props.certificateAuthorityArns);
+    return new ClientPolicyImpl(props.enforceTls, props.ports, CertificateType.ACMPCA, undefined, props.certificateAuthorityArns);
   }
 
   /**
@@ -77,10 +83,11 @@ export abstract class ClientPolicy {
 }
 
 class ClientPolicyImpl extends ClientPolicy {
-  constructor (private readonly enforce: boolean = true,
+  constructor (private readonly enforce: boolean | undefined,
     private readonly ports: number[] | undefined,
-    private readonly certificateType: string,
-    private readonly certificate: string[]) { super(); }
+    private readonly certificateType: CertificateType,
+    private readonly certificateChain: string| undefined,
+    private readonly certificateAuthorityArns: ICertificateAuthority[] | undefined) { super(); }
 
   public bind(_scope: cdk.Construct): ClientPolicyConfig {
     return {
@@ -88,21 +95,17 @@ class ClientPolicyImpl extends ClientPolicy {
         tls: {
           ports: this.ports,
           enforce: this.enforce,
-          validation: this.renderValidation(),
+          validation: {
+            trust: {
+              [this.certificateType]: this.certificateType === 'file' ? {
+                certificateChain: this.certificateChain,
+              } : {
+                certificateAuthorityArns: this.certificateAuthorityArns?.map(certificateArn => certificateArn.certificateAuthorityArn),
+              },
+            },
+          },
         },
       },
     };
-  }
-
-  private renderValidation(): CfnVirtualNode.TlsValidationContextProperty {
-    return ({
-      trust: {
-        [this.certificateType]: this.certificateType === 'file' ? {
-          certificateChain: this.certificate[0],
-        } : {
-          certificateAuthorityArns: this.certificate,
-        },
-      },
-    });
   }
 }

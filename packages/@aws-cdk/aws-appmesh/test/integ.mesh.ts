@@ -1,3 +1,4 @@
+import { CertificateAuthority } from '@aws-cdk/aws-acmpca';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
@@ -62,6 +63,8 @@ router.addRoute('route-1', {
   }),
 });
 
+const arn = 'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/12345678-1234-1234-1234-123456789012';
+
 const node2 = mesh.addVirtualNode('node2', {
   dnsHostName: `node2.${namespace.namespaceName}`,
   listeners: [appmesh.VirtualNodeListener.http({
@@ -75,10 +78,12 @@ const node2 = mesh.addVirtualNode('node2', {
       unhealthyThreshold: 2,
     },
   })],
-  backendDefaults: appmesh.ClientPolicy.fileTrust({
-    certificateChain: ['path-to-file'],
-    enforceTls: true,
-  }),
+  backendDefaults: {
+    clientPolicy: appmesh.ClientPolicy.acmTrust({
+      certificateAuthorityArns: [CertificateAuthority.fromCertificateAuthorityArn(stack, 'certificate', arn)],
+      enforceTls: true,
+    }),
+  },
   backends: [
     new appmesh.VirtualService(stack, 'service-3', {
       virtualServiceName: 'service3.domain.local',
@@ -100,10 +105,12 @@ const node3 = mesh.addVirtualNode('node3', {
       unhealthyThreshold: 2,
     },
   })],
-  backendDefaults: appmesh.ClientPolicy.fileTrust({
-    certificateChain: ['path-to-certificate'],
-    enforceTls: true,
-  }),
+  backendDefaults: {
+    clientPolicy: appmesh.ClientPolicy.fileTrust({
+      certificateChain: 'path-to-certificate',
+      enforceTls: true,
+    }),
+  },
   accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
 });
 

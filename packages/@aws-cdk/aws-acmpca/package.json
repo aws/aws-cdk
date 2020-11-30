@@ -90,6 +90,13 @@
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
   },
+  "awslint": {
+    "exclude": [
+      "props-no-arn-refs:@aws-cdk/aws-acmpca.CertificateAuthorityProps.certificateAuthorityArn",
+      "resource-attribute:@aws-cdk/aws-acmpca.CertificateAuthority.certificateAuthorityCertificateSigningRequest",
+      "props-physical-name:@aws-cdk/aws-acmpca.CertificateAuthorityProps"
+    ]
+  },
   "stability": "experimental",
   "maturity": "cfn-only",
   "awscdkio": {

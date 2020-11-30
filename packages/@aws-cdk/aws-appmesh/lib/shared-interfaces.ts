@@ -1,5 +1,6 @@
 import * as cdk from '@aws-cdk/core';
 import { CfnVirtualGateway, CfnVirtualNode } from './appmesh.generated';
+import { ClientPolicy } from './client-policy';
 
 /**
  * Enum of supported AppMesh protocols
@@ -138,4 +139,13 @@ class FileAccessLog extends AccessLog {
       },
     };
   }
+}
+/**
+ * Represents the default properties for a backend
+ */
+export interface BackendDefaults {
+  /**
+   * Represents Client Policy
+   */
+  readonly clientPolicy: ClientPolicy;
 }

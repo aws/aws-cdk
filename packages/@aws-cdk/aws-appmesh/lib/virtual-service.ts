@@ -67,7 +67,7 @@ export interface VirtualServiceBaseProps {
   /**
    * Client policy for Virtual Service
    *
-   * @default - as specified in backend defaults
+   * @default - none
    */
   readonly clientPolicy?: ClientPolicy;
 }
@@ -109,6 +109,7 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
     return new class extends cdk.Resource implements IVirtualService {
       readonly virtualServiceName = attrs.virtualServiceName;
       readonly mesh = attrs.mesh;
+      readonly clientPolicy = attrs.clientPolicy;
       readonly virtualServiceArn = cdk.Stack.of(this).formatArn({
         service: 'appmesh',
         resource: `mesh/${attrs.mesh.meshName}/virtualService`,
@@ -132,9 +133,6 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
    */
   public readonly mesh: IMesh;
 
-  /**
-   * Client policy for Virtual Service
-   */
   public readonly clientPolicy?: ClientPolicy;
 
   private readonly virtualServiceProvider?: CfnVirtualService.VirtualServiceProviderProperty;
@@ -205,4 +203,11 @@ export interface VirtualServiceAttributes {
    * The Mesh which the VirtualService belongs to
    */
   readonly mesh: IMesh;
+
+  /**
+   * Client policy for Virtual Service
+   *
+   * @default - none
+   */
+  readonly clientPolicy?: ClientPolicy;
 }

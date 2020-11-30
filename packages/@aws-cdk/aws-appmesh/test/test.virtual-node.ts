@@ -1,4 +1,5 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
+import { CertificateAuthority } from '@aws-cdk/aws-acmpca';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as appmesh from '../lib';
@@ -264,15 +265,18 @@ export = {
           meshName: 'test-mesh',
         });
 
+        const arn = 'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/12345678-1234-1234-1234-123456789012';
 
         new appmesh.VirtualNode(stack, 'test-node', {
           mesh,
           dnsHostName: 'test',
-          backendDefaults: appmesh.ClientPolicy.acmTrust({
-            certificateAuthorityArns: ['path-to-certificate'],
-            enforceTls: true,
-            ports: [8080, 8081],
-          }),
+          backendDefaults: {
+            clientPolicy: appmesh.ClientPolicy.acmTrust({
+              certificateAuthorityArns: [CertificateAuthority.fromCertificateAuthorityArn(stack, 'certificate', arn)],
+              enforceTls: true,
+              ports: [8080, 8081],
+            }),
+          },
         });
 
         // THEN
@@ -286,7 +290,7 @@ export = {
                   Validation: {
                     Trust: {
                       ACM: {
-                        CertificateAuthorityArns: ['path-to-certificate'],
+                        CertificateAuthorityArns: ['arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/12345678-1234-1234-1234-123456789012'],
                       },
                     },
                   },
@@ -314,17 +318,11 @@ export = {
           dnsHostName: 'test',
         });
 
-        node.addListener(appmesh.VirtualNodeListener.tcp({
-          port: 80,
-          healthCheck: { timeout: cdk.Duration.seconds(3) },
-          timeout: { idle: cdk.Duration.seconds(10) },
-        }));
-
         const service1 = new appmesh.VirtualService(stack, 'service-1', {
           virtualServiceName: 'service1.domain.local',
           mesh,
           clientPolicy: appmesh.ClientPolicy.fileTrust({
-            certificateChain: ['path-to-certificate'],
+            certificateChain: 'path-to-certificate',
             enforceTls: true,
             ports: [8080, 8081],
           }),
@@ -335,30 +333,6 @@ export = {
         // THEN
         expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
           Spec: {
-            Listeners: [
-              {
-                HealthCheck: {
-                  HealthyThreshold: 2,
-                  IntervalMillis: 5000,
-                  Port: 80,
-                  Protocol: 'tcp',
-                  TimeoutMillis: 3000,
-                  UnhealthyThreshold: 2,
-                },
-                PortMapping: {
-                  Port: 80,
-                  Protocol: 'tcp',
-                },
-                Timeout: {
-                  TCP: {
-                    Idle: {
-                      Unit: 'ms',
-                      Value: 10000,
-                    },
-                  },
-                },
-              },
-            ],
             Backends: [
               {
                 VirtualService: {

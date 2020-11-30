@@ -1,10 +1,9 @@
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnVirtualGateway } from './appmesh.generated';
-import { ClientPolicy, ClientPolicyConfig } from './client-policy';
 import { GatewayRoute, GatewayRouteBaseProps } from './gateway-route';
 import { IMesh, Mesh } from './mesh';
-import { AccessLog } from './shared-interfaces';
+import { AccessLog, BackendDefaults } from './shared-interfaces';
 import { VirtualGatewayListener, VirtualGatewayListenerConfig } from './virtual-gateway-listener';
 
 /**
@@ -66,7 +65,7 @@ export interface VirtualGatewayBaseProps {
    *
    * @default - No Config
    */
-  readonly backendDefaults?: ClientPolicy;
+  readonly backendDefaults?: BackendDefaults;
 }
 
 /**
@@ -158,7 +157,6 @@ export class VirtualGateway extends VirtualGatewayBase {
   public readonly mesh: IMesh;
 
   protected readonly listeners = new Array<VirtualGatewayListenerConfig>();
-  private readonly backendDefaults = new Array<ClientPolicyConfig>();
 
   constructor(scope: Construct, id: string, props: VirtualGatewayProps) {
     super(scope, id, {
@@ -173,11 +171,7 @@ export class VirtualGateway extends VirtualGatewayBase {
     } else {
       props.listeners.forEach(listener => this.listeners.push(listener.bind(this)));
     }
-
-    if (props.backendDefaults) {
-      this.addBackendDefaults(props.backendDefaults);
-    }
-
+    const backendDefaults = props.backendDefaults?.clientPolicy.bind(this);
     const accessLogging = props.accessLog?.bind(this);
 
     const node = new CfnVirtualGateway(this, 'Resource', {
@@ -185,7 +179,7 @@ export class VirtualGateway extends VirtualGatewayBase {
       meshName: this.mesh.meshName,
       spec: {
         listeners: this.listeners.map(listener => listener.listener),
-        backendDefaults: cdk.Lazy.anyValue({ produce: () => this.backendDefaults[0] }, { omitEmptyArray: true }),
+        backendDefaults: backendDefaults,
         logging: accessLogging !== undefined ? {
           accessLog: accessLogging.virtualGatewayAccessLog,
         } : undefined,
@@ -198,13 +192,6 @@ export class VirtualGateway extends VirtualGatewayBase {
       resource: `mesh/${props.mesh.meshName}/virtualGateway`,
       resourceName: this.physicalName,
     });
-  }
-
-  /**
-   * Adds Default Backend Configuration for virtual node to communicate with Virtual Services.
-   */
-  private addBackendDefaults(backendDefaults: ClientPolicy) {
-    this.backendDefaults.push(backendDefaults.bind(this));
   }
 }
 
