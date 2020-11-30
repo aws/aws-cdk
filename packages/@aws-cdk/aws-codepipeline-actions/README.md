@@ -309,7 +309,7 @@ const buildAction = new codepipeline_actions.CodeBuildAction({
   project,
   input: sourceOutput,
   outputs: [new codepipeline.Artifact()], // optional
-  batchEnabled: true // optional, defaults to false
+  executeBatchBuild: true // optional, defaults to false
 });
 
 new codepipeline.Pipeline(this, 'MyPipeline', {

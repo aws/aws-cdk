@@ -229,7 +229,7 @@ export = {
                 actionName: 'CodeBuild',
                 input: sourceOutput,
                 project: codeBuildProject,
-                batchEnabled: true,
+                executeBatchBuild: true,
               }),
             ],
           },

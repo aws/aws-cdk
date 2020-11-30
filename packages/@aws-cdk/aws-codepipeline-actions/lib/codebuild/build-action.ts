@@ -83,7 +83,7 @@ export interface CodeBuildActionProps extends codepipeline.CommonAwsActionProps 
    *
    * @default false
    */
-  readonly batchEnabled?: boolean;
+  readonly executeBatchBuild?: boolean;
 }
 
 /**
@@ -183,7 +183,7 @@ export class CodeBuildAction extends Action {
       // lazy, because the Artifact name might be generated lazily
       configuration.PrimarySource = cdk.Lazy.string({ produce: () => this.props.input.artifactName });
     }
-    if (this.props.batchEnabled) {
+    if (this.props.executeBatchBuild) {
       configuration.BatchEnabled = 'true';
     }
     return {
