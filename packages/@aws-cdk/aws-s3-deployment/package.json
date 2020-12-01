@@ -50,7 +50,8 @@
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test",
     "compat": "cdk-compat",
-    "gen": "/bin/bash lambda/build.sh"
+    "gen": "/bin/bash lambda/build.sh",
+    "rosetta:extract": "yarn --silent jsii-rosetta extract"
   },
   "cdk-build": {
     "test": [

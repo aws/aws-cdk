@@ -1032,7 +1032,7 @@ to configure these.
 There are a number of limitations in using OpenAPI definitions in API Gateway. Read the [Amazon API Gateway important
 notes for REST APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-known-issues.html#api-gateway-known-issues-rest-apis)
 for more details.
- 
+
 **Note:** When starting off with an OpenAPI definition using `SpecRestApi`, it is not possible to configure some
 properties that can be configured directly in the OpenAPI specification file. This is to prevent people duplication
 of these properties and potential confusion.
@@ -1050,10 +1050,10 @@ const api = new apigateway.SpecRestApi(this, 'ExampleRestApi', {
 });
 ```
 
-**Note:** For private endpoints you will still need to provide the 
-[`x-amazon-apigateway-policy`](https://docs.aws.amazon.com/apigateway/latest/developerguide/openapi-extensions-policy.html) and 
-[`x-amazon-apigateway-endpoint-configuration`](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-swagger-extensions-endpoint-configuration.html) 
-in your openApi file. 
+**Note:** For private endpoints you will still need to provide the
+[`x-amazon-apigateway-policy`](https://docs.aws.amazon.com/apigateway/latest/developerguide/openapi-extensions-policy.html) and
+[`x-amazon-apigateway-endpoint-configuration`](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-swagger-extensions-endpoint-configuration.html)
+in your openApi file.
 
 ## Metrics
 

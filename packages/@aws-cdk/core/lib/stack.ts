@@ -63,7 +63,7 @@ export interface StackProps {
    *
    * // Use a concrete account and region to deploy this stack to:
    * // `.account` and `.region` will simply return these values.
-   * new MyStack(app, 'Stack1', {
+   * new Stack(app, 'Stack1', {
    *   env: {
    *     account: '123456789012',
    *     region: 'us-east-1'
@@ -73,7 +73,7 @@ export interface StackProps {
    * // Use the CLI's current credentials to determine the target environment:
    * // `.account` and `.region` will reflect the account+region the CLI
    * // is configured to use (based on the user CLI credentials)
-   * new MyStack(app, 'Stack2', {
+   * new Stack(app, 'Stack2', {
    *   env: {
    *     account: process.env.CDK_DEFAULT_ACCOUNT,
    *     region: process.env.CDK_DEFAULT_REGION
@@ -91,7 +91,7 @@ export interface StackProps {
    * // both of these stacks will use the stage's account/region:
    * // `.account` and `.region` will resolve to the concrete values as above
    * new MyStack(myStage, 'Stack1');
-   * new YourStack(myStage, 'Stack1');
+   * new YourStack(myStage, 'Stack2');
    *
    * // Define an environment-agnostic stack:
    * // `.account` and `.region` will resolve to `{ "Ref": "AWS::AccountId" }` and `{ "Ref": "AWS::Region" }` respectively.
@@ -277,7 +277,7 @@ export class Stack extends CoreConstruct implements ITaggable {
    * The name of the CloudFormation template file emitted to the output
    * directory during synthesis.
    *
-   * @example MyStack.template.json
+   * @example 'MyStack.template.json'
    */
   public readonly templateFile: string;
 
@@ -519,7 +519,9 @@ export class Stack extends CoreConstruct implements ITaggable {
   /**
    * The ID of the stack
    *
-   * @example After resolving, looks like arn:aws:cloudformation:us-west-2:123456789012:stack/teststack/51af3dc0-da77-11e4-872e-1234567db123
+   * @example
+   * // After resolving, looks like
+   * 'arn:aws:cloudformation:us-west-2:123456789012:stack/teststack/51af3dc0-da77-11e4-872e-1234567db123'
    */
   public get stackId(): string {
     return new ScopedAws(this).stackId;
@@ -683,7 +685,7 @@ export class Stack extends CoreConstruct implements ITaggable {
    *
    * Duplicate values are removed when stack is synthesized.
    *
-   * @example addTransform('AWS::Serverless-2016-10-31')
+   * @example stack.addTransform('AWS::Serverless-2016-10-31')
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/transform-section-structure.html
    *
