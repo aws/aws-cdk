@@ -93,6 +93,9 @@ export class AssetStaging extends CoreConstruct {
    * a temporary directory used for bundling.
    *
    * If asset staging is enabled it will be the staged path.
+   *
+   * IMPORTANT: If you are going to call `addFileAsset()`, use
+   * `relativeStagedPath()` instead.
    */
   public readonly stagedPath: string;
 
