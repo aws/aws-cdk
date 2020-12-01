@@ -139,18 +139,14 @@ export class Arn {
     if (components === 'unparseable') {
       return parseToken(arn, sepIfToken, hasName);
     }
-    // If the ARN merely contains Tokens, but otherwise *looks* mostly like an ARN,
-    // it's a string of the form 'arn:${partition}:service:${region}:${account}:abc/xyz'.
-    // Parse fields out to the best of our ability.
-    // Tokens won't contain ":", so this won't break them.
 
-    const [, partition, service, region, account, sixth, ...rest] = components;
+    const [, partition, service, region, account, resourceTypeOrName, ...rest] = components;
 
     let resource: string;
     let resourceName: string | undefined;
     let sep: string | undefined;
 
-    let sepIndex = sixth.indexOf('/');
+    let sepIndex = resourceTypeOrName.indexOf('/');
     if (sepIndex !== -1) {
       sep = '/';
     } else if (rest.length > 0) {
@@ -159,10 +155,10 @@ export class Arn {
     }
 
     if (sepIndex !== -1) {
-      resource = sixth.substr(0, sepIndex);
-      resourceName = sixth.substr(sepIndex + 1);
+      resource = resourceTypeOrName.substr(0, sepIndex);
+      resourceName = resourceTypeOrName.substr(sepIndex + 1);
     } else {
-      resource = sixth;
+      resource = resourceTypeOrName;
     }
 
     if (rest.length > 0) {
@@ -290,29 +286,20 @@ function parseToken(arnToken: string, sep: string = '/', hasName: boolean = true
  * Validate that a string is either unparseable or looks mostly like an ARN
  */
 function parseArnShape(arn: string): 'unparseable' | string[] {
-  const components = arn.split(':') as Array<string>;
+  const components = arn.split(':');
   const looksLikeArn = arn.startsWith('arn:') && components.length >= 6 && components.length <= 7;
-  if (Token.isUnresolved(arn) && !looksLikeArn) {
-    return 'unparseable';
-  }
-  // If the ARN merely contains Tokens, but otherwise *looks* mostly like an ARN,
-  // it's a string of the form 'arn:${partition}:service:${region}:${account}:abc/xyz'.
-  // Parse fields out to the best of our ability.
-  // Tokens won't contain ":", so this won't break them.
 
-  if (components.length < 6) {
-    throw new Error('ARNs must have at least 6 components: ' + arn);
+  if (!looksLikeArn) {
+    if (Token.isUnresolved(arn)) { return 'unparseable'; }
+    throw new Error(`ARNs must start with "arn:" and have at least 6 components: ${arn}`);
   }
 
   // If the ARN merely contains Tokens, but otherwise *looks* mostly like an ARN,
   // it's a string of the form 'arn:${partition}:service:${region}:${account}:abc/xyz'.
   // Parse fields out to the best of our ability.
   // Tokens won't contain ":", so this won't break them.
-  const [arnPrefix, , service, , , sixth] = components;
 
-  if (arnPrefix !== 'arn') {
-    throw new Error('ARNs must start with "arn:": ' + arn);
-  }
+  const [/* arn */, /* partition */, service, /* region */ , /* account */ , resource] = components;
 
   // partition is not required, 'cognito-sync' doesn't use it.
 
@@ -320,7 +307,7 @@ function parseArnShape(arn: string): 'unparseable' | string[] {
     throw new Error('The `service` component (3rd component) is required: ' + arn);
   }
 
-  if (!sixth) {
+  if (!resource) {
     throw new Error('The `resource` component (6th component) is required: ' + arn);
   }
 

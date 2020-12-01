@@ -213,7 +213,7 @@ nodeunitShim({
       test.done();
     },
 
-    'extracing resource name from a complex ARN'(test: Test) {
+    'extracting resource name from a complex ARN'(test: Test) {
       // GIVEN
       const stack = new Stack();
       const theToken = Token.asString({ Ref: 'SomeParameter' });

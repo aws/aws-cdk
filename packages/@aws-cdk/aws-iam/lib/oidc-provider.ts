@@ -1,12 +1,12 @@
 import * as path from 'path';
 import {
+  Arn,
   CustomResource,
   CustomResourceProvider,
   CustomResourceProviderRuntime,
   IResource,
   Resource,
   Token,
-  Arn,
 } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 
