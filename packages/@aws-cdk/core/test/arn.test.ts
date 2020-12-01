@@ -157,7 +157,7 @@ nodeunitShim({
           resourceName: '81e900317347585a0601e04c8d52eaEX',
           sep: ':',
         },
-        'arn::cognito-sync:::identitypool/us-east-1:1a1a1a1a-ffff-1111-9999-12345678:bla': {
+        'arn:aws:cognito-sync:::identitypool/us-east-1:1a1a1a1a-ffff-1111-9999-12345678:bla': {
           service: 'cognito-sync',
           region: '',
           account: '',

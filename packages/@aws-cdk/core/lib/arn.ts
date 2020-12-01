@@ -299,9 +299,11 @@ function parseArnShape(arn: string): 'unparseable' | string[] {
   // Parse fields out to the best of our ability.
   // Tokens won't contain ":", so this won't break them.
 
-  const [/* arn */, /* partition */, service, /* region */ , /* account */ , resource] = components;
+  const [/* arn */, partition, service, /* region */ , /* account */ , resource] = components;
 
-  // partition is not required, 'cognito-sync' doesn't use it.
+  if (!partition) {
+    throw new Error('The `partition` component (2nd component) is required: ' + arn);
+  }
 
   if (!service) {
     throw new Error('The `service` component (3rd component) is required: ' + arn);
@@ -310,6 +312,10 @@ function parseArnShape(arn: string): 'unparseable' | string[] {
   if (!resource) {
     throw new Error('The `resource` component (6th component) is required: ' + arn);
   }
+
+  // Region can be missing in global ARNs (such as used by IAM)
+
+  // Account can be missing in some ARN types (such as used for S3 buckets)
 
   return components;
 }
