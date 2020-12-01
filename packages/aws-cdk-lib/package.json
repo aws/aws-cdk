@@ -22,7 +22,8 @@
     "build+test": "npm run build && npm test",
     "build+test+package": "npm run build+test && npm run package",
     "watch": "cdk-watch",
-    "compat": "cdk-compat"
+    "compat": "cdk-compat",
+    "rosetta:extract": "yarn --silent jsii-rosetta extract"
   },
   "awslint": {
     "exclude": [
