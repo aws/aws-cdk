@@ -50,7 +50,8 @@
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test",
     "compat": "cdk-compat",
-    "gen": "cfn2ts"
+    "gen": "cfn2ts",
+    "rosetta:extract": "yarn --silent jsii-rosetta extract"
   },
   "cdk-build": {
     "cloudformation": "AWS::Lambda",
@@ -164,7 +165,6 @@
       "docs-public-apis:@aws-cdk/aws-lambda.FunctionProps",
       "docs-public-apis:@aws-cdk/aws-lambda.IAlias",
       "docs-public-apis:@aws-cdk/aws-lambda.IFunction",
-      "docs-public-apis:@aws-cdk/aws-lambda.IFunction.addEventSource",
       "docs-public-apis:@aws-cdk/aws-lambda.ILayerVersion",
       "docs-public-apis:@aws-cdk/aws-lambda.IVersion",
       "docs-public-apis:@aws-cdk/aws-lambda.LambdaRuntimeProps",

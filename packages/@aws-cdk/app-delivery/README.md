@@ -14,7 +14,7 @@ This library includes a *CodePipeline* composite Action for deploying AWS CDK Ap
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
 
-# Replacement recommended
+### Replacement recommended
 
 This library has been deprecated. We recommend you use the
 [@aws-cdk/pipelines](https://docs.aws.amazon.com/cdk/api/latest/docs/pipelines-readme.html) module instead.
