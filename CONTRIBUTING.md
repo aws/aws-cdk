@@ -173,6 +173,9 @@ Work your magic. Here are some guidelines:
   Feel free to start your contribution by copy&pasting files from that project,
   and then edit and rename them as appropriate -
   it might be easier to get started that way.
+* If your change includes code examples (in the `README.md` file or as part of regular TSDoc tags),
+  you should probably validate those examples can be successfully compiled and trans-literated by
+  running `yarn rosetta:extract` (this requires other packages used by code examples are built).
 
 #### Integration Tests
 
