@@ -32,7 +32,7 @@
       }
     },
     "MyLambdaCCE802FB": {
-      "Type": "AWSLambdaBeta::Lambda::Function",
+      "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
           "ImageUri": {
@@ -42,7 +42,11 @@
                 {
                   "Ref": "AWS::AccountId"
                 },
-                ".dkr.ecr.sa-east-1.",
+                ".dkr.ecr.",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ".",
                 {
                   "Ref": "AWS::URLSuffix"
                 },
