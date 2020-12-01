@@ -104,13 +104,13 @@ nodeunitShim({
     fails: {
       'if doesn\'t start with "arn:"'(test: Test) {
         const stack = new Stack();
-        test.throws(() => stack.parseArn('barn:foo:x:a:1:2'), /ARNs must start with "arn:": barn:foo/);
+        test.throws(() => stack.parseArn('barn:foo:x:a:1:2'), /ARNs must start with "arn:".*barn:foo/);
         test.done();
       },
 
       'if the ARN doesnt have enough components'(test: Test) {
         const stack = new Stack();
-        test.throws(() => stack.parseArn('arn:is:too:short'), /ARNs must have at least 6 components: arn:is:too:short/);
+        test.throws(() => stack.parseArn('arn:is:too:short'), /ARNs must.*have at least 6 components.*arn:is:too:short/);
         test.done();
       },
 
@@ -161,6 +161,7 @@ nodeunitShim({
           service: 'cognito-sync',
           region: '',
           account: '',
+          partition: 'aws',
           resource: 'identitypool',
           resourceName: 'us-east-1:1a1a1a1a-ffff-1111-9999-12345678:bla',
           sep: '/',
@@ -219,7 +220,7 @@ nodeunitShim({
       const theToken = Token.asString({ Ref: 'SomeParameter' });
 
       // WHEN
-      const parsed = Arn.extractResourceName(theToken, 'role');
+      const parsed = Arn.parseResourceName(theToken, 'role');
 
       // THEN
       test.deepEqual(evaluateCFN(stack.resolve(parsed), {
@@ -232,7 +233,7 @@ nodeunitShim({
     'extractResourceName validates resource type if possible'(test: Test) {
       // WHEN
       test.throws(() => {
-        Arn.extractResourceName('arn:aws:iam::111111111111:banana/rama', 'role');
+        Arn.parseResourceName('arn:aws:iam::111111111111:banana/rama', 'role');
       }, /Expected resource type/);
 
       test.done();
