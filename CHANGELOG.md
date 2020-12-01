@@ -17,6 +17,7 @@ All notable changes to this project will be documented in this file. See [standa
 * **appmesh:** renames gateway listener static methods to use shorter names
 * **appmesh:** renames gateway route static methods to use shorter names
 * **appmesh:** changes Route's spec to a union-like class. RouteSpec is now defined using protocol variant static methods
+* **efs:** `keyId` property uses the ARN instead of the `keyId` to support cross-account encryption key usage. The filesystem will be replaced.
 * **lambda-nodejs:** local bundling now requires `esbuild` to be installed.
 * **lambda-nodejs**: `projectRoot` has been replaced by `depsLockFilePath`. It should point to your dependency lock file (`package-lock.json` or `yarn.lock`)
 * **lambda-nodejs**: `parcelEnvironment` has been renamed to `bundlingEnvironment`
