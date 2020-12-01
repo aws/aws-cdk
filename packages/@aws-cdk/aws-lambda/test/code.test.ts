@@ -1,6 +1,7 @@
 import '@aws-cdk/assert/jest';
 import * as path from 'path';
-import { ResourcePart } from '@aws-cdk/assert';
+import { ABSENT, ResourcePart } from '@aws-cdk/assert';
+import * as ecr from '@aws-cdk/aws-ecr';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as lambda from '../lib';
@@ -167,6 +168,143 @@ describe('code', () => {
       // then
       expect(overrides['BucketNameParam']).toEqual('SomeBucketName');
       expect(overrides['ObjectKeyParam']).toEqual('SomeObjectKey');
+    });
+  });
+
+  describe('lambda.Code.fromEcr', () => {
+    test('repository uri is correctly identified', () => {
+      // given
+      const stack = new cdk.Stack();
+      const repo = new ecr.Repository(stack, 'Repo');
+
+      // when
+      new lambda.Function(stack, 'Fn', {
+        code: lambda.Code.fromEcrImage(repo),
+        handler: lambda.Handler.FROM_IMAGE,
+        runtime: lambda.Runtime.FROM_IMAGE,
+      });
+
+      // then
+      expect(stack).toHaveResource('AWS::Lambda::Function', {
+        Code: {
+          ImageUri: stack.resolve(repo.repositoryUriForTag('latest')),
+        },
+        ImageConfig: ABSENT,
+      });
+    });
+
+    test('props are correctly resolved', () => {
+      // given
+      const stack = new cdk.Stack();
+      const repo = new ecr.Repository(stack, 'Repo');
+
+      // when
+      new lambda.Function(stack, 'Fn', {
+        code: lambda.Code.fromEcrImage(repo, {
+          cmd: ['cmd', 'param1'],
+          entrypoint: ['entrypoint', 'param2'],
+          tag: 'mytag',
+        }),
+        handler: lambda.Handler.FROM_IMAGE,
+        runtime: lambda.Runtime.FROM_IMAGE,
+      });
+
+      // then
+      expect(stack).toHaveResource('AWS::Lambda::Function', {
+        Code: {
+          ImageUri: stack.resolve(repo.repositoryUriForTag('mytag')),
+        },
+        ImageConfig: {
+          Command: ['cmd', 'param1'],
+          EntryPoint: ['entrypoint', 'param2'],
+        },
+      });
+    });
+
+    test('permission grants', () => {
+      // given
+      const stack = new cdk.Stack();
+      const repo = new ecr.Repository(stack, 'Repo');
+
+      // when
+      new lambda.Function(stack, 'Fn', {
+        code: lambda.Code.fromEcrImage(repo),
+        handler: lambda.Handler.FROM_IMAGE,
+        runtime: lambda.Runtime.FROM_IMAGE,
+      });
+
+      // then
+      expect(stack).toHaveResourceLike('AWS::ECR::Repository', {
+        RepositoryPolicyText: {
+          Statement: [
+            {
+              Action: [
+                'ecr:BatchCheckLayerAvailability',
+                'ecr:GetDownloadUrlForLayer',
+                'ecr:BatchGetImage',
+              ],
+              Effect: 'Allow',
+              Principal: {
+                Service: 'lambda.amazonaws.com',
+              },
+            },
+          ],
+        },
+      });
+    });
+  });
+
+  describe('lambda.Code.fromImageAsset', () => {
+    test('repository uri is correctly identified', () => {
+      // given
+      const stack = new cdk.Stack();
+
+      // when
+      new lambda.Function(stack, 'Fn', {
+        code: lambda.Code.fromAssetImage(path.join(__dirname, 'docker-lambda-handler')),
+        handler: lambda.Handler.FROM_IMAGE,
+        runtime: lambda.Runtime.FROM_IMAGE,
+      });
+
+      // then
+      expect(stack).toHaveResource('AWS::Lambda::Function', {
+        Code: {
+          ImageUri: {
+            'Fn::Join': ['', [
+              { Ref: 'AWS::AccountId' },
+              '.dkr.ecr.',
+              { Ref: 'AWS::Region' },
+              '.',
+              { Ref: 'AWS::URLSuffix' },
+              '/aws-cdk/assets:0874c7dfd254e95f5181cc7fa643e4abf010f68e5717e373b6e635b49a115b2b',
+            ]],
+          },
+        },
+        ImageConfig: ABSENT,
+      });
+    });
+
+    test('props are correctly resolved', () => {
+      // given
+      const stack = new cdk.Stack();
+
+      // when
+      new lambda.Function(stack, 'Fn', {
+        code: lambda.Code.fromAssetImage(path.join(__dirname, 'docker-lambda-handler'), {
+          cmd: ['cmd', 'param1'],
+          entrypoint: ['entrypoint', 'param2'],
+        }),
+        handler: lambda.Handler.FROM_IMAGE,
+        runtime: lambda.Runtime.FROM_IMAGE,
+      });
+
+      // then
+      expect(stack).toHaveResource('AWS::Lambda::Function', {
+        ImageConfig: {
+          Command: ['cmd', 'param1'],
+          EntryPoint: ['entrypoint', 'param2'],
+        },
+      });
     });
   });
 });
