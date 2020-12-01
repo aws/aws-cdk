@@ -50,7 +50,8 @@
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test",
     "compat": "cdk-compat",
-    "gen": "cfn2ts"
+    "gen": "cfn2ts",
+    "rosetta:extract": "yarn --silent jsii-rosetta extract"
   },
   "cdk-build": {
     "cloudformation": "AWS::Cognito",
@@ -88,7 +89,6 @@
     "@aws-cdk/custom-resources": "0.0.0",
     "constructs": "^3.2.0",
     "punycode": "^2.1.1"
-
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
