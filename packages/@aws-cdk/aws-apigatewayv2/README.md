@@ -1,4 +1,4 @@
-## AWS::APIGatewayv2 Construct Library
+# AWS::APIGatewayv2 Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

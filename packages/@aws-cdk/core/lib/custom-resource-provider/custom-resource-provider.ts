@@ -41,7 +41,7 @@ export interface CustomResourceProviderProps {
    *
    * @example
    *
-   *   policyStatements: [ { Effect: 'Allow', Action: 's3:PutObject*', Resource: '*' } ]
+   *   [{ Effect: 'Allow', Action: 's3:PutObject*', Resource: '*' }]
    *
    */
   readonly policyStatements?: any[];
@@ -113,10 +113,9 @@ export class CustomResourceProvider extends CoreConstruct {
    * `serviceToken` when defining a custom resource.
    *
    * @example
-   *
    *   new CustomResource(this, 'MyCustomResource', {
    *     // ...
-   *     serviceToken: provider.serviceToken // <--- here
+   *     serviceToken: myProvider.serviceToken, // <--- here
    *   })
    *
    */
