@@ -167,6 +167,7 @@ Resources:
             RestrictPublicBuckets: true
           - Ref: AWS::NoValue
     UpdateReplacePolicy: Retain
+    DeletionPolicy: Retain
   StagingBucketPolicy:
     Type: 'AWS::S3::BucketPolicy'
     Properties:

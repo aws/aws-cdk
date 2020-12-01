@@ -52,7 +52,8 @@
     "build+test": "npm run build && npm test",
     "build+test+package": "npm run build+test && npm run package",
     "compat": "cdk-compat",
-    "gen": "cfn2ts"
+    "gen": "cfn2ts",
+    "rosetta:extract": "yarn --silent jsii-rosetta extract"
   },
   "cdk-build": {
     "cloudformation": "AWS::IoTEvents",

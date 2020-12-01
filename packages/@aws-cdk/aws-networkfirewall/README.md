@@ -1,4 +1,4 @@
-## AWS::NetworkFirewall Construct Library
+# AWS::NetworkFirewall Construct Library
 <!--BEGIN STABILITY BANNER-->
 ---
 

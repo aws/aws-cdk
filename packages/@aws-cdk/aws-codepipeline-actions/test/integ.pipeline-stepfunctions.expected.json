@@ -559,7 +559,17 @@
                     },
                     ":execution:",
                     {
-                      "Ref": "SimpleStateMachineE8E2CF40"
+                      "Fn::Select": [
+                        6,
+                        {
+                          "Fn::Split": [
+                            ":",
+                            {
+                              "Ref": "SimpleStateMachineE8E2CF40"
+                            }
+                          ]
+                        }
+                      ]
                     },
                     ":*"
                   ]

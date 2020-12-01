@@ -32,12 +32,12 @@ export interface StageProps {
    * @example
    *
    * // Use a concrete account and region to deploy this Stage to
-   * new MyStage(app, 'Stage1', {
+   * new Stage(app, 'Stage1', {
    *   env: { account: '123456789012', region: 'us-east-1' },
    * });
    *
    * // Use the CLI's current credentials to determine the target environment
-   * new MyStage(app, 'Stage2', {
+   * new Stage(app, 'Stage2', {
    *   env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
    * });
    *
