@@ -94,14 +94,17 @@ export class PipelineStack extends cdk.Stack {
             commands: [
               // push the built image into the ECR repository
               'docker push $REPOSITORY_URI:$CODEBUILD_RESOLVED_SOURCE_VERSION',
-              // save the tag that was just built and pushed in a JSON file,
-              // so that it can be read in the later deploy action
-              'printf \'{ "imageTag": "%s" }\' $CODEBUILD_RESOLVED_SOURCE_VERSION > imageTag.json',
+              // save the declared tag as an environment variable,
+              // that is then exported below in the 'exported-variables' section as a CodePipeline Variable
+              'export imageTag=$CODEBUILD_RESOLVED_SOURCE_VERSION',
             ],
           },
         },
-        artifacts: {
-          files: 'imageTag.json',
+        env: {
+          // save the imageTag environment variable as a CodePipeline Variable
+          'exported-variables': [
+            'imageTag',
+          ],
         },
       }),
       environmentVariables: {
@@ -143,8 +146,12 @@ export class PipelineStack extends cdk.Stack {
 
     const appCodeSourceOutput = new codepipeline.Artifact();
     const cdkCodeSourceOutput = new codepipeline.Artifact();
-    const appCodeBuildOutput = new codepipeline.Artifact();
     const cdkCodeBuildOutput = new codepipeline.Artifact();
+    const appCodeBuildAction = new codepipeline_actions.CodeBuildAction({
+      actionName: 'AppCodeDockerImageBuildAndPush',
+      project: appCodeDockerBuild,
+      input: appCodeSourceOutput,
+    });
     new codepipeline.Pipeline(this, 'CodePipelineDeployingEcsApplication', {
       artifactBucket: new s3.Bucket(this, 'ArtifactBucket', {
         removalPolicy: cdk.RemovalPolicy.DESTROY,
@@ -171,12 +178,7 @@ export class PipelineStack extends cdk.Stack {
         {
           stageName: 'Build',
           actions: [
-            new codepipeline_actions.CodeBuildAction({
-              actionName: 'AppCodeDockerImageBuildAndPush',
-              project: appCodeDockerBuild,
-              input: appCodeSourceOutput,
-              outputs: [appCodeBuildOutput],
-            }),
+            appCodeBuildAction,
             new codepipeline_actions.CodeBuildAction({
               actionName: 'CdkCodeBuildAndSynth',
               project: cdkCodeBuild,
@@ -195,11 +197,10 @@ export class PipelineStack extends cdk.Stack {
               templatePath: cdkCodeBuildOutput.atPath('EcsStackDeployedInPipeline.template.json'),
               adminPermissions: true,
               parameterOverrides: {
-                // read the tag pushed to the ECR repository from the file saved by the application build step,
+                // read the tag pushed to the ECR repository from the CodePipeline Variable saved by the application build step,
                 // and pass it as the CloudFormation Parameter for the tag
-                [this.tagParameterContainerImage.tagParameterName]: appCodeBuildOutput.getParam('imageTag.json', 'imageTag'),
+                [this.tagParameterContainerImage.tagParameterName]: appCodeBuildAction.variable('imageTag'),
               },
-              extraInputs: [appCodeBuildOutput],
             }),
           ],
         },
