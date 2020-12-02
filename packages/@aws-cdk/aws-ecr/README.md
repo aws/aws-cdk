@@ -1,5 +1,6 @@
-## Amazon ECR Construct Library
+# Amazon ECR Construct Library
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
@@ -7,11 +8,12 @@
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
 
 This package contains constructs for working with Amazon Elastic Container Registry.
 
-### Repositories
+## Repositories
 
 Define a repository by creating a new instance of `Repository`. A repository
 holds multiple verions of a single container image.
@@ -20,7 +22,7 @@ holds multiple verions of a single container image.
 const repository = new ecr.Repository(this, 'Repository');
 ```
 
-### Image scanning
+## Image scanning
 
 Amazon ECR image scanning helps in identifying software vulnerabilities in your container images. You can manually scan container images stored in Amazon ECR, or you can configure your repositories to scan images when you push them to a repository. To create a new repository to scan on push, simply enable `imageScanOnPush` in the properties
 
@@ -54,7 +56,7 @@ const user = new iam.User(this, 'User', { ... });
 AuthorizationToken.grantRead(user);
 ```
 
-### Automatically clean up repositories
+## Automatically clean up repositories
 
 You can set life cycle rules to automatically clean up old images from your
 repository. The first life cycle rule that matches an image will be applied
