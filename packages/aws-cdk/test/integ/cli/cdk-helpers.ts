@@ -83,7 +83,11 @@ export function withCdkApp<A extends TestContext & AwsContext>(block: (context: 
       success = false;
       throw e;
     } finally {
-      await fixture.dispose(success);
+      if (process.env.INTEG_NO_CLEAN) {
+        process.stderr.write(`Left test directory in '${integTestDir}' ($INTEG_NO_CLEAN)\n`);
+      } else {
+        await fixture.dispose(success);
+      }
     }
   };
 }
@@ -177,6 +181,13 @@ export class TestFixture {
       ...this.fullStackName(stackNames)], options);
   }
 
+  public async cdkSynth(options: CdkCliOptions = {}) {
+    return this.cdk([
+      'synth',
+      ...(options.options ?? []),
+    ], options);
+  }
+
   public async cdkDestroy(stackNames: string | string[], options: CdkCliOptions = {}) {
     stackNames = typeof stackNames === 'string' ? [stackNames] : stackNames;
 
@@ -229,6 +240,8 @@ export class TestFixture {
     // Bootstrap stacks have buckets that need to be cleaned
     const bucketNames = stacksToDelete.map(stack => outputFromStack('BucketName', stack)).filter(defined);
     await Promise.all(bucketNames.map(b => this.aws.emptyBucket(b)));
+    // The bootstrap bucket has a removal policy of RETAIN by default, so add it to the buckets to be cleaned up.
+    this.bucketsToDelete.push(...bucketNames);
 
     // Bootstrap stacks have ECR repositories with images which should be deleted
     const imageRepositoryNames = stacksToDelete.map(stack => outputFromStack('ImageRepositoryName', stack)).filter(defined);

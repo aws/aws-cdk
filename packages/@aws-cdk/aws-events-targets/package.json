@@ -49,7 +49,8 @@
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test",
     "compat": "cdk-compat",
-    "gen": "node ./build-tools/gen.js"
+    "gen": "node ./build-tools/gen.js",
+    "rosetta:extract": "yarn --silent jsii-rosetta extract"
   },
   "cdk-build": {
     "jest": true,
@@ -75,7 +76,7 @@
     "@aws-cdk/assert": "0.0.0",
     "@aws-cdk/aws-codecommit": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
-    "aws-sdk": "^2.797.0",
+    "aws-sdk": "^2.802.0",
     "aws-sdk-mock": "^5.1.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
