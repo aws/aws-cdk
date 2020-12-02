@@ -1,15 +1,17 @@
-## AWS CodePipeline Actions
+# AWS CodePipeline Actions
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
 
 This package contains Actions that can be used in a CodePipeline.
 
-```typescript
+```ts
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
 ```
@@ -57,7 +59,7 @@ const sourceAction = new codepipeline_actions.CodeCommitSourceAction({
 
 The CodeCommit source action emits variables:
 
-```typescript
+```ts
 const sourceAction = new codepipeline_actions.CodeCommitSourceAction({
   // ...
   variablesNamespace: 'MyNamespace', // optional - by default, a name will be generated for you
@@ -83,15 +85,15 @@ If you want to use a GitHub repository as the source, you must create:
   with scopes **repo** and **admin:repo_hook**.
 * A [Secrets Manager Secret](https://docs.aws.amazon.com/secretsmanager/latest/userguide/manage_create-basic-secret.html)
   with the value of the **GitHub Access Token**. Pick whatever name you want (for example `my-github-token`).
-  This token can be stored either as Plaintext or as a Secret key/value. 
-  If you stored the token as Plaintext, 
-  set `cdk.SecretValue.secretsManager('my-github-token')` as the value of `oauthToken`. 
-  If you stored it as a Secret key/value, 
+  This token can be stored either as Plaintext or as a Secret key/value.
+  If you stored the token as Plaintext,
+  set `cdk.SecretValue.secretsManager('my-github-token')` as the value of `oauthToken`.
+  If you stored it as a Secret key/value,
   you must set `cdk.SecretValue.secretsManager('my-github-token', { jsonField : 'my-github-token' })` as the value of `oauthToken`.
 
 To use GitHub as the source of a CodePipeline:
 
-```typescript
+```ts
 // Read the secret from Secrets Manager
 const sourceOutput = new codepipeline.Artifact();
 const sourceAction = new codepipeline_actions.GitHubSourceAction({
@@ -110,7 +112,7 @@ pipeline.addStage({
 
 The GitHub source action emits variables:
 
-```typescript
+```ts
 const sourceAction = new codepipeline_actions.GitHubSourceAction({
   // ...
   variablesNamespace: 'MyNamespace', // optional - by default, a name will be generated for you
@@ -144,7 +146,7 @@ to find it.
 After that, you can safely abort creating or editing the pipeline -
 the connection has already been created.
 
-```typescript
+```ts
 const sourceOutput = new codepipeline.Artifact();
 const sourceAction = new codepipeline_actions.BitBucketSourceAction({
   actionName: 'BitBucket_Source',
@@ -159,7 +161,7 @@ const sourceAction = new codepipeline_actions.BitBucketSourceAction({
 the above class `BitBucketSourceAction` is experimental -
 we reserve the right to make breaking changes to it.
 
-### AWS S3
+### AWS S3 Source
 
 To use an S3 Bucket as a source in CodePipeline:
 
@@ -205,7 +207,7 @@ otherwise, the CloudWatch Events will not be emitted,
 and your Pipeline will not react to changes in the Bucket.
 You can do it through the CDK:
 
-```typescript
+```ts
 import * as cloudtrail from '@aws-cdk/aws-cloudtrail';
 
 const key = 'some/key.zip';
@@ -224,7 +226,7 @@ const sourceAction = new codepipeline_actions.S3SourceAction({
 
 The S3 source action emits variables:
 
-```typescript
+```ts
 const sourceAction = new codepipeline_actions.S3SourceAction({
   // ...
   variablesNamespace: 'MyNamespace', // optional - by default, a name will be generated for you
@@ -265,7 +267,7 @@ pipeline.addStage({
 
 The ECR source action emits variables:
 
-```typescript
+```ts
 const sourceAction = new codepipeline_actions.EcrSourceAction({
   // ...
   variablesNamespace: 'MyNamespace', // optional - by default, a name will be generated for you
@@ -289,7 +291,7 @@ new codepipeline_actions.CodeBuildAction({
 
 Example of a CodeBuild Project used in a Pipeline, alongside CodeCommit:
 
-```typescript
+```ts
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codecommit from '@aws-cdk/aws-codecommit';
 
@@ -329,7 +331,7 @@ The default category of the CodeBuild Action is `Build`;
 if you want a `Test` Action instead,
 override the `type` property:
 
-```typescript
+```ts
 const testAction = new codepipeline_actions.CodeBuildAction({
   actionName: 'IntegrationTest',
   project,
@@ -420,7 +422,7 @@ but dynamic, defined in the buildspec,
 in the 'exported-variables' subsection of the 'env' section.
 Example:
 
-```typescript
+```ts
 const buildAction = new codepipeline_actions.CodeBuildAction({
   actionName: 'Build1',
   input: sourceOutput,
@@ -510,7 +512,7 @@ directly from a CodeCommit repository, with a manual approval step in between to
 See [the AWS documentation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/continuous-delivery-codepipeline.html)
 for more details about using CloudFormation in CodePipeline.
 
-##### Actions defined by this package
+#### Actions defined by this package
 
 This package defines the following actions:
 
@@ -523,7 +525,7 @@ This package defines the following actions:
   changes from the people (or system) applying the changes.
 * **CloudFormationExecuteChangeSetAction** - Execute a change set prepared previously.
 
-##### Lambda deployed through CodePipeline
+#### Lambda deployed through CodePipeline
 
 If you want to deploy your Lambda through CodePipeline,
 and you don't use assets (for example, because your CDK code and Lambda code are separate),
@@ -539,7 +541,7 @@ using a CloudFormation CodePipeline Action. Example:
 If you want to update stacks in a different account,
 pass the `account` property when creating the action:
 
-```typescript
+```ts
 new codepipeline_actions.CloudFormationCreateUpdateStackAction({
   // ...
   account: '123456789012',
@@ -554,7 +556,7 @@ You can also pass a role explicitly when creating the action -
 in that case, the `account` property is ignored,
 and the action will operate in the same account the role belongs to:
 
-```typescript
+```ts
 import { PhysicalName } from '@aws-cdk/core';
 
 // in stack for account 123456789012...
@@ -601,7 +603,7 @@ pipeline.addStage({
 
 To use CodeDeploy for blue-green Lambda deployments in a Pipeline:
 
-```typescript
+```ts
 const lambdaCode = lambda.Code.fromCfnParameters();
 const func = new lambda.Function(lambdaStack, 'Lambda', {
   code: lambdaCode,
@@ -631,7 +633,7 @@ and deploy the `lambdaStack` using a CloudFormation CodePipeline Action
 CodePipeline can deploy an ECS service.
 The deploy Action receives one input Artifact which contains the [image definition file]:
 
-```typescript
+```ts
 const deployStage = pipeline.addStage({
   stageName: 'Deploy',
   actions: [
@@ -654,7 +656,7 @@ const deployStage = pipeline.addStage({
 
 [image definition file]: https://docs.aws.amazon.com/codepipeline/latest/userguide/pipelines-create.html#pipelines-create-image-definitions
 
-### AWS S3
+### AWS S3 Deployment
 
 To use an S3 Bucket as a deployment target in CodePipeline:
 
@@ -754,7 +756,7 @@ new codepipeline.Pipeline(this, 'Pipeline', {
 
 This package contains an Action that stops the Pipeline until someone manually clicks the approve button:
 
-```typescript
+```ts
 const manualApprovalAction = new codepipeline_actions.ManualApprovalAction({
   actionName: 'Approve',
   notificationTopic: new sns.Topic(this, 'Topic'), // optional
@@ -794,7 +796,7 @@ pipeline.addStage({
 The Lambda Action can have up to 5 inputs,
 and up to 5 outputs:
 
-```typescript
+```ts
 
 const lambdaAction = new codepipeline_actions.LambdaInvokeAction({
   actionName: 'Lambda',
@@ -816,7 +818,7 @@ but dynamic, defined by the function calling the `PutJobSuccessResult`
 API with the `outputVariables` property filled with the map of variables
 Example:
 
-```typescript
+```ts
 import * as lambda from '@aws-cdk/aws-lambda';
 
 const lambdaInvokeAction = new codepipeline_actions.LambdaInvokeAction({
