@@ -1,7 +1,8 @@
 import { spawnSync } from 'child_process';
+import * as path from 'path';
 
 beforeAll(() => {
-  spawnSync('docker', ['build', '-t', 'golang', __dirname]);
+  spawnSync('docker', ['build', '-t', 'golang', path.join(__dirname, '../lib')]);
 });
 
 test('golang is available', async () => {
