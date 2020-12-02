@@ -112,7 +112,7 @@ export class OpenIdConnectProvider extends Resource implements IOpenIdConnectPro
    * @param openIdConnectProviderArn the ARN to import
    */
   public static fromOpenIdConnectProviderArn(scope: Construct, id: string, openIdConnectProviderArn: string): IOpenIdConnectProvider {
-    const resourceName = Arn.parseResourceName(openIdConnectProviderArn, 'oidc-provider');
+    const resourceName = Arn.extractResourceName(openIdConnectProviderArn, 'oidc-provider');
 
     class Import extends Resource implements IOpenIdConnectProvider {
       public readonly openIdConnectProviderArn = openIdConnectProviderArn;
@@ -149,7 +149,7 @@ export class OpenIdConnectProvider extends Resource implements IOpenIdConnectPro
     });
 
     this.openIdConnectProviderArn = Token.asString(resource.ref);
-    this.openIdConnectProviderIssuer = Arn.parseResourceName(this.openIdConnectProviderArn, 'oidc-provider');
+    this.openIdConnectProviderIssuer = Arn.extractResourceName(this.openIdConnectProviderArn, 'oidc-provider');
   }
 
   private getOrCreateProvider() {

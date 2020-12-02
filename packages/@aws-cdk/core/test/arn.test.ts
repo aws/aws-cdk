@@ -220,7 +220,7 @@ nodeunitShim({
       const theToken = Token.asString({ Ref: 'SomeParameter' });
 
       // WHEN
-      const parsed = Arn.parseResourceName(theToken, 'role');
+      const parsed = Arn.extractResourceName(theToken, 'role');
 
       // THEN
       test.deepEqual(evaluateCFN(stack.resolve(parsed), {
@@ -233,7 +233,7 @@ nodeunitShim({
     'extractResourceName validates resource type if possible'(test: Test) {
       // WHEN
       test.throws(() => {
-        Arn.parseResourceName('arn:aws:iam::111111111111:banana/rama', 'role');
+        Arn.extractResourceName('arn:aws:iam::111111111111:banana/rama', 'role');
       }, /Expected resource type/);
 
       test.done();

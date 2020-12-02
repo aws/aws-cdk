@@ -120,7 +120,7 @@ export class Arn {
    * char is '/', and happens for example for S3 object ARNs, IAM Role ARNs,
    * IAM OIDC Provider ARNs, etc. To properly extract the resource name from a
    * Tokenized ARN, you must know the resource type and call
-   * `Arn.parseResourceName`.
+   * `Arn.extractResourceName`.
    *
    * @param arn The ARN to parse
    * @param sepIfToken The separator used to separate resource from resourceName
@@ -200,7 +200,7 @@ export class Arn {
    *
    * Only necessary for ARN formats for which the type-name separator is `/`.
    */
-  public static parseResourceName(arn: string, resourceType: string): string {
+  public static extractResourceName(arn: string, resourceType: string): string {
     const components = parseArnShape(arn);
     if (components === 'token') {
       return Fn.select(1, Fn.split(`:${resourceType}/`, arn));

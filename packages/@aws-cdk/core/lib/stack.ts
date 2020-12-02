@@ -584,7 +584,7 @@ export class Stack extends CoreConstruct implements ITaggable {
    * char is '/', and happens for example for S3 object ARNs, IAM Role ARNs,
    * IAM OIDC Provider ARNs, etc. To properly extract the resource name from a
    * Tokenized ARN, you must know the resource type and call
-   * `Arn.parseResourceName`.
+   * `Arn.extractResourceName`.
    *
    * @param arn The ARN string to parse
    * @param sepIfToken The separator used to separate resource from resourceName
