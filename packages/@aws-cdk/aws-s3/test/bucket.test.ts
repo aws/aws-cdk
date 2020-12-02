@@ -2248,4 +2248,72 @@ nodeunitShim({
     test.done();
   },
 
+  'Bucket with objectOwnerships set to BUCKET_OWNER_PREFERRED'(test: Test) {
+    const stack = new cdk.Stack();
+    new s3.Bucket(stack, 'MyBucket', {
+      objectOwnerships: [s3.ObjectOwnership.BUCKET_OWNER_PREFERRED],
+    });
+    expect(stack).toMatch({
+      'Resources': {
+        'MyBucketF68F3FF0': {
+          'Type': 'AWS::S3::Bucket',
+          'Properties': {
+            'OwnershipControls': {
+              'Rules': [
+                {
+                  'ObjectOwnership': 'BucketOwnerPreferred',
+                },
+              ],
+            },
+          },
+          'UpdateReplacePolicy': 'Retain',
+          'DeletionPolicy': 'Retain',
+        },
+      },
+    });
+    test.done();
+  },
+
+  'Bucket with objectOwnerships set to OBJECT_WRITER'(test: Test) {
+    const stack = new cdk.Stack();
+    new s3.Bucket(stack, 'MyBucket', {
+      objectOwnerships: [s3.ObjectOwnership.OBJECT_WRITER],
+    });
+    expect(stack).toMatch({
+      'Resources': {
+        'MyBucketF68F3FF0': {
+          'Type': 'AWS::S3::Bucket',
+          'Properties': {
+            'OwnershipControls': {
+              'Rules': [
+                {
+                  'ObjectOwnership': 'ObjectWriter',
+                },
+              ],
+            },
+          },
+          'UpdateReplacePolicy': 'Retain',
+          'DeletionPolicy': 'Retain',
+        },
+      },
+    });
+    test.done();
+  },
+
+  'Bucket with objectOwnerships set to empty array'(test: Test) {
+    const stack = new cdk.Stack();
+    new s3.Bucket(stack, 'MyBucket', {
+      objectOwnerships: [],
+    });
+    expect(stack).toMatch({
+      'Resources': {
+        'MyBucketF68F3FF0': {
+          'Type': 'AWS::S3::Bucket',
+          'UpdateReplacePolicy': 'Retain',
+          'DeletionPolicy': 'Retain',
+        },
+      },
+    });
+    test.done();
+  },
 });

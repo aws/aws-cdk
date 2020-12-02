@@ -341,3 +341,21 @@ bucket.urlForObject('objectname'); // Path-Style URL
 bucket.virtualHostedUrlForObject('objectname'); // Virtual Hosted-Style URL
 bucket.virtualHostedUrlForObject('objectname', { regional: false }); // Virtual Hosted-Style URL but non-regional
 ```
+### Object Ownership
+You can use the two following properties to specify the bucket [object Ownership]. 
+
+[object Ownership]: https://docs.aws.amazon.com/AmazonS3/latest/dev/about-object-ownership.html
+
+#### Object writer
+The Uploading account will own the object.
+```ts
+new s3.Bucket(this, 'MyBucket', {
+  objectOwnerships: [s3.ObjectOwnership.OBJECT_WRITER],
+});
+```
+#### Bucket owner preferred
+The bucket owner will own the object if the object is uploaded with the bucket-owner-full-control canned ACL. Without this setting and canned ACL, the object is uploaded and remains owned by the uploading account. 
+```ts
+new s3.Bucket(this, 'MyBucket', {
+  objectOwnerships: [s3.ObjectOwnership.BUCKET_OWNER_PREFERRED],
+});
