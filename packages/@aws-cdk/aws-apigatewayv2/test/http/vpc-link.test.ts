@@ -180,7 +180,13 @@ describe('VpcLink', () => {
     const stack = new Stack();
 
     // WHEN
-    VpcLink.fromVpcLinkId(stack, 'ImportedVpcLink', 'vpclink-id');
+    VpcLink.fromVpcLinkAttributes(stack, 'ImportedVpcLink', {
+      vpcLinkId: 'vpclink-id',
+      vpc: ec2.Vpc.fromVpcAttributes(stack, 'ImportedVpc', {
+        vpcId: 'vpc-12345',
+        availabilityZones: ['us-east-1'],
+      }),
+    });
 
     // THEN
     expect(stack).not.toHaveResource('AWS::ApiGatewayV2::VpcLink');
