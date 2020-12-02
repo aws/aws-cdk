@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.76.0](https://github.com/aws/aws-cdk/compare/v1.75.0...v1.76.0) (2020-12-01)
+
+
+### Features
+
+* **lambda:** container images ([#11809](https://github.com/aws/aws-cdk/issues/11809)) ([02ced10](https://github.com/aws/aws-cdk/commit/02ced10739ecacc9ca39e9e0b563ddfbf5d0b245))
+
 ## [1.75.0](https://github.com/aws/aws-cdk/compare/v1.74.0...v1.75.0) (2020-11-24)
 
 
@@ -10,6 +17,7 @@ All notable changes to this project will be documented in this file. See [standa
 * **appmesh:** renames gateway listener static methods to use shorter names
 * **appmesh:** renames gateway route static methods to use shorter names
 * **appmesh:** changes Route's spec to a union-like class. RouteSpec is now defined using protocol variant static methods
+* **efs:** `keyId` property uses the ARN instead of the `keyId` to support cross-account encryption key usage. The filesystem will be replaced.
 * **lambda-nodejs:** local bundling now requires `esbuild` to be installed.
 * **lambda-nodejs**: `projectRoot` has been replaced by `depsLockFilePath`. It should point to your dependency lock file (`package-lock.json` or `yarn.lock`)
 * **lambda-nodejs**: `parcelEnvironment` has been renamed to `bundlingEnvironment`
