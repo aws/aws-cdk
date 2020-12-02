@@ -139,7 +139,7 @@ export class CustomResourceProvider extends CoreConstruct {
     });
 
     const asset = stack.addFileAsset({
-      fileName: staging.stagedPath,
+      fileName: staging.relativeStagedPath(stack),
       sourceHash: staging.sourceHash,
       packaging: FileAssetPackaging.ZIP_DIRECTORY,
     });
