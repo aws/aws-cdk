@@ -443,9 +443,13 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
   }
 
   private configureTokenValidity(resource: CfnUserPoolClient, props: UserPoolClientProps) {
-    this.validateDurationInRangeOrUndefined('idTokenValidity', Duration.minutes(5), Duration.days(1), props.idTokenValidity);
-    this.validateDurationInRangeOrUndefined('accessTokenValidity', Duration.minutes(5), Duration.days(1), props.accessTokenValidity);
-    this.validateDurationInRangeOrUndefined('refreshTokenValidity', Duration.minutes(60), Duration.days(10 * 365), props.refreshTokenValidity);
+    this.validateDuration('idTokenValidity', Duration.minutes(5), Duration.days(1), props.idTokenValidity);
+    this.validateDuration('accessTokenValidity', Duration.minutes(5), Duration.days(1), props.accessTokenValidity);
+    this.validateDuration('refreshTokenValidity', Duration.minutes(60), Duration.days(10 * 365), props.refreshTokenValidity);
+    if (props.refreshTokenValidity) {
+      this.validateDuration('idTokenValidity', Duration.minutes(5), props.refreshTokenValidity, props.idTokenValidity);
+      this.validateDuration('accessTokenValidity', Duration.minutes(5), props.refreshTokenValidity, props.accessTokenValidity);
+    }
 
     if (props.accessTokenValidity || props.idTokenValidity || props.refreshTokenValidity) {
       resource.tokenValidityUnits = {
@@ -460,7 +464,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
     resource.accessTokenValidity = props.accessTokenValidity ? props.accessTokenValidity.toMinutes() : undefined;
   }
 
-  private validateDurationInRangeOrUndefined(name: string, min: Duration, max: Duration, value?: Duration) {
+  private validateDuration(name: string, min: Duration, max: Duration, value?: Duration) {
     if (value === undefined) { return; }
     if (value.toMilliseconds() < min.toMilliseconds() || value.toMilliseconds() > max.toMilliseconds()) {
       throw new Error(`${name}: Must be a duration between ${min.toHumanString()} and ${max.toHumanString()} (inclusive); received ${value.toHumanString()}.`);

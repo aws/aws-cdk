@@ -656,6 +656,38 @@ describe('User Pool Client', () => {
   });
 
   test.each([
+    Duration.hours(1).plus(Duration.minutes(1)),
+    Duration.hours(12),
+    Duration.days(1),
+  ])('validates accessTokenValidity is not greater than refresh token expiration', (validity) => {
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+    expect(() => {
+      pool.addClient('Client1', {
+        userPoolClientName: 'Client1',
+        accessTokenValidity: validity,
+        refreshTokenValidity: Duration.hours(1),
+      });
+    }).toThrow(`accessTokenValidity: Must be a duration between 5 minutes and 60 minutes (inclusive); received ${validity.toHumanString()}.`);
+  });
+
+  test.each([
+    Duration.hours(1).plus(Duration.minutes(1)),
+    Duration.hours(12),
+    Duration.days(1),
+  ])('validates idTokenValidity is not greater than refresh token expiration', (validity) => {
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+    expect(() => {
+      pool.addClient('Client1', {
+        userPoolClientName: 'Client1',
+        idTokenValidity: validity,
+        refreshTokenValidity: Duration.hours(1),
+      });
+    }).toThrow(`idTokenValidity: Must be a duration between 5 minutes and 60 minutes (inclusive); received ${validity.toHumanString()}.`);
+  });
+
+  test.each([
     Duration.minutes(0),
     Duration.minutes(59),
     Duration.days(10 * 365).plus(Duration.minutes(1)),
@@ -740,6 +772,56 @@ describe('User Pool Client', () => {
       RefreshTokenValidity: validity.toMinutes(),
       TokenValidityUnits: {
         RefreshToken: 'minutes',
+      },
+    });
+  });
+
+  test.each([
+    Duration.minutes(5),
+    Duration.minutes(60),
+    Duration.hours(1),
+  ])('validates accessTokenValidity is not greater than refresh token expiration (valid)', (validity) => {
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+
+    // WHEN
+    pool.addClient('Client1', {
+      userPoolClientName: 'Client1',
+      accessTokenValidity: validity,
+      refreshTokenValidity: Duration.hours(1),
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolClient', {
+      ClientName: 'Client1',
+      AccessTokenValidity: validity.toMinutes(),
+      TokenValidityUnits: {
+        AccessToken: 'minutes',
+      },
+    });
+  });
+
+  test.each([
+    Duration.minutes(5),
+    Duration.minutes(60),
+    Duration.hours(1),
+  ])('validates idTokenValidity is not greater than refresh token expiration (valid)', (validity) => {
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+
+    // WHEN
+    pool.addClient('Client1', {
+      userPoolClientName: 'Client1',
+      idTokenValidity: validity,
+      refreshTokenValidity: Duration.hours(1),
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolClient', {
+      ClientName: 'Client1',
+      IdTokenValidity: validity.toMinutes(),
+      TokenValidityUnits: {
+        IdToken: 'minutes',
       },
     });
   });
