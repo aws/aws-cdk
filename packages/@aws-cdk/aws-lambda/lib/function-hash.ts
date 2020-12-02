@@ -22,7 +22,7 @@ function usefulKeys(cfnObject: any): any {
   const keysToRemove = ['ReservedConcurrentExecutions', 'Tags'];
   const keys = Object.keys(cfnObject.Resources);
   if (keys.length !== 1) {
-    throw new Error(`Expected 1 key but found ${keys.length}`);
+    throw new Error(`Expected one rendered CloudFormation resource but found ${keys.length}`);
   }
   const props = cfnObject.Resources[keys[0]].Properties;
   keysToRemove.forEach(k => delete props[k]);

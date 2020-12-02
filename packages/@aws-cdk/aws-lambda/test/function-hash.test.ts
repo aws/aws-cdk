@@ -1,6 +1,7 @@
 import '@aws-cdk/assert/jest';
 import * as path from 'path';
-import { CfnOutput, Stack } from '@aws-cdk/core';
+import * as iam from '@aws-cdk/aws-iam';
+import { CfnOutput, Stack, Tags } from '@aws-cdk/core';
 import * as lambda from '../lib';
 import { calculateFunctionHash, trimFromStart } from '../lib/function-hash';
 
@@ -118,8 +119,82 @@ describe('function hash', () => {
       handler: 'index.handler',
     });
 
-    expect(calculateFunctionHash(fn1)).toEqual('ebf2e871fc6a3062e8bdcc5ebe16db3f');
-    expect(calculateFunctionHash(fn2)).toEqual('ffedf6424a18a594a513129dc97bf53c');
+    expect(calculateFunctionHash(fn1)).toEqual('ae3a05e0797a7b59e850d453a2e8ea97');
+    expect(calculateFunctionHash(fn2)).toEqual('bdce872a679fc58e06ab8b0cd30ffb37');
+  });
+
+  test('CloudFormation "DependsOn" does not affect function hash', () => {
+    // GIVEN
+    const stack = new Stack();
+    const fn = new lambda.Function(stack, 'MyFunction', {
+      runtime: lambda.Runtime.NODEJS_12_X,
+      code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
+      handler: 'index.handler',
+    });
+    const expected = calculateFunctionHash(fn);
+    const role = new iam.User(stack, 'MyUser');
+
+    // WHEN
+    fn.node.addDependency(role);
+
+    // THEN
+    expect(calculateFunctionHash(fn)).toEqual(expected);
+  });
+
+  test('excluded properties do not affect function hash', () => {
+    // GIVEN
+    const stack = new Stack();
+    const role = new iam.Role(stack, 'FunctionRole', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+    const fn1 = new lambda.Function(stack, 'MyFunction1', {
+      runtime: lambda.Runtime.NODEJS_12_X,
+      code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
+      handler: 'index.handler',
+      role,
+      reservedConcurrentExecutions: 10,
+    });
+    const fn2 = new lambda.Function(stack, 'MyFunction2', {
+      runtime: lambda.Runtime.NODEJS_12_X,
+      code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
+      handler: 'index.handler',
+      role,
+      reservedConcurrentExecutions: 5,
+    });
+
+    // THEN
+    expect(calculateFunctionHash(fn2)).toEqual(calculateFunctionHash(fn1));
+  });
+
+  test('tags do not affect function hash', () => {
+    // GIVEN
+    const stack = new Stack();
+    const role = new iam.Role(stack, 'FunctionRole', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+    const fn1 = new lambda.Function(stack, 'MyFunction1', {
+      runtime: lambda.Runtime.NODEJS_12_X,
+      code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
+      handler: 'index.handler',
+      role,
+      reservedConcurrentExecutions: 10,
+    });
+    const fn2 = new lambda.Function(stack, 'MyFunction2', {
+      runtime: lambda.Runtime.NODEJS_12_X,
+      code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
+      handler: 'index.handler',
+      role,
+      reservedConcurrentExecutions: 5,
+    });
+    Tags.of(fn2).add('key', 'val');
+
+    // THEN
+    expect(stack).toHaveResource('AWS::Lambda::Function', {
+      Tags: [
+        { Key: 'key', Value: 'val' },
+      ],
+    });
+    expect(calculateFunctionHash(fn2)).toEqual(calculateFunctionHash(fn1));
   });
 
   describe('impact of env variables order on hash', () => {
