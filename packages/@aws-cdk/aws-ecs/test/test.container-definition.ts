@@ -806,20 +806,6 @@ export = {
 
       test.done();
     },
-    'throws when using environment files for a Fargate task'(test: Test) {
-      // GIVEN
-      const stack = new cdk.Stack();
-      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
-
-      // THEN
-      test.throws(() => taskDefinition.addContainer('cont', {
-        image: ecs.ContainerImage.fromRegistry('test'),
-        memoryLimitMiB: 1024,
-        environmentFiles: [ecs.EnvironmentFile.fromAsset(path.join(__dirname, 'demo-envfiles/test-envfile.env'))],
-      }), /Cannot specify environment files for a task using the FARGATE launch type in container/);
-
-      test.done();
-    },
   },
 
   'Given GPU count parameter': {
