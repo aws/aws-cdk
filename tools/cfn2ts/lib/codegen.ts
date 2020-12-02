@@ -371,8 +371,12 @@ export default class CodeGenerator {
       }
       this.code.line(`${prop}: this.${prop},`);
     }
+    this.retainPropertiesNotInCfnSchema(Object.values(propMap), 'this._cfnProperties');
     this.code.unindent('};');
     this.code.closeBlock();
+
+    this.code.line();
+
     this.code.openBlock('protected renderProperties(props: {[key: string]: any}): { [key: string]: any } ');
     this.code.line(`return ${genspec.cfnMapperName(propsType).fqn}(props);`);
     this.code.closeBlock();
@@ -447,7 +451,7 @@ export default class CodeGenerator {
     this.code.line(`${validatorName.fqn}(properties).assertSuccess();`);
 
     // Generate the return object
-    this.code.line('return {');
+    this.code.indent('return {');
 
     const self = this;
     Object.keys(nameConversionTable).forEach(cfnName => {
@@ -500,9 +504,10 @@ export default class CodeGenerator {
         },
       });
 
-      self.code.line(`  ${cfnName}: ${mapperExpression}(properties.${propName}),`);
+      self.code.line(`${cfnName}: ${mapperExpression}(properties.${propName}),`);
     });
-    this.code.line('};');
+    this.retainPropertiesNotInCfnSchema(Object.values(nameConversionTable), 'properties');
+    this.code.unindent('};');
     this.code.closeBlock();
   }
 
@@ -619,15 +624,14 @@ export default class CodeGenerator {
     }
 
     Object.keys(nameConversionTable).forEach(cfnName => {
-      const propName = nameConversionTable[cfnName];
       const propSpec = propSpecs[cfnName];
-
       const simpleCfnPropAccessExpr = `properties.${cfnName}`;
+      const deserializedExpression = genspec.typeDispatch<string>(resource, propSpec, new FromCloudFormationFactoryVisitor()) +
+        `(${simpleCfnPropAccessExpr})`;
 
-      const deserializer = genspec.typeDispatch<string>(resource, propSpec, new FromCloudFormationFactoryVisitor());
-      const deserialized = `${deserializer}(${simpleCfnPropAccessExpr})`;
-      let valueExpression = propSpec.Required ? deserialized : `${simpleCfnPropAccessExpr} != null ? ${deserialized} : undefined`;
-
+      let valueExpression = propSpec.Required
+        ? deserializedExpression
+        : `${simpleCfnPropAccessExpr} != null ? ${deserializedExpression} : undefined`;
       if (schema.isTagPropertyName(cfnName)) {
         // Properties that have names considered to denote tags
         // have their type generated without a union with IResolvable.
@@ -640,8 +644,10 @@ export default class CodeGenerator {
         valueExpression += ' as any';
       }
 
-      self.code.line(`${propName}: ${valueExpression},`);
+      self.code.line(`${nameConversionTable[cfnName]}: ${valueExpression},`);
     });
+
+    this.retainPropertiesNotInCfnSchema(Object.keys(nameConversionTable), 'properties');
     // close the return object brace
     this.code.unindent('};');
 
@@ -891,6 +897,14 @@ export default class CodeGenerator {
     }
     this.code.line(' */');
     return;
+  }
+
+  private retainPropertiesNotInCfnSchema(propertiesToOmit: string[], propertyObject: string) {
+    // add a line that saves any extra properties that we don't have in the CFN schema
+    const omittedProperties = propertiesToOmit
+      .map(cdkPropName => `'${cdkPropName}'`)
+      .join(', ');
+    this.code.line(`...${CFN_PARSE}.FromCloudFormation.omit(${propertyObject}, ${omittedProperties}),`);
   }
 }
 

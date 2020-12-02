@@ -30,6 +30,24 @@ import { undefinedIfAllValuesAreEmpty } from './util';
  * @experimental
  */
 export class FromCloudFormation {
+  /**
+   * Creates a new object by removing all entries with the given keys from the argument object.
+   *
+   * @param object the object whose keys should be filtered out
+   * @param props the list of property names which should be removed from `object`
+   * @returns a new object with all the entries in `object`,
+   *   except those whose keys are one of the names provided in `props`
+   */
+  public static omit(object: object, ...props: string[]): object {
+    const ret: { [key: string]: any } = {};
+    for (const [prop, value] of Object.entries(object)) {
+      if (props.indexOf(prop) === -1) {
+        ret[prop] = value;
+      }
+    }
+    return ret;
+  }
+
   // nothing to for any but return it
   public static getAny(value: any) { return value; }
 
