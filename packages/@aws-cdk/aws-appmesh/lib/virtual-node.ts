@@ -194,7 +194,6 @@ export class VirtualNode extends VirtualNodeBase {
 
     props.backends?.forEach(backend => this.addBackend(backend));
     props.listeners?.forEach(listener => this.addListener(listener));
-    const backendDefaults = props.backendDefaults?.clientPolicy.bind(this);
 
     const accessLogging = props.accessLog?.bind(this);
 
@@ -204,7 +203,7 @@ export class VirtualNode extends VirtualNodeBase {
       spec: {
         backends: cdk.Lazy.anyValue({ produce: () => this.backends }, { omitEmptyArray: true }),
         listeners: cdk.Lazy.anyValue({ produce: () => this.listeners.map(listener => listener.listener) }, { omitEmptyArray: true }),
-        backendDefaults: backendDefaults,
+        backendDefaults: props.backendDefaults?.clientPolicy.bind(this),
         serviceDiscovery: {
           dns: props.dnsHostName !== undefined ? { hostname: props.dnsHostName } : undefined,
           awsCloudMap: props.cloudMapService !== undefined ? {

@@ -30,7 +30,7 @@ export interface IVirtualService extends cdk.IResource {
   readonly mesh: IMesh;
 
   /**
-   * Client policy for Virtual Service
+   * Client policy for this Virtual Service
    */
   readonly clientPolicy?: ClientPolicy;
 }
@@ -65,7 +65,7 @@ export interface VirtualServiceBaseProps {
   readonly virtualNode?: IVirtualNode;
 
   /**
-   * Client policy for Virtual Service
+   * Client policy for this Virtual Service
    *
    * @default - none
    */
@@ -205,7 +205,7 @@ export interface VirtualServiceAttributes {
   readonly mesh: IMesh;
 
   /**
-   * Client policy for Virtual Service
+   * Client policy for this Virtual Service
    *
    * @default - none
    */

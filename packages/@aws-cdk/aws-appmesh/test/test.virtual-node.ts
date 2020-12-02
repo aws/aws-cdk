@@ -1,5 +1,5 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
-import { CertificateAuthority } from '@aws-cdk/aws-acmpca';
+import * as acmpca from '@aws-cdk/aws-acmpca';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as appmesh from '../lib';
@@ -251,6 +251,7 @@ export = {
             ],
           },
         }));
+
         test.done();
       },
     },
@@ -265,14 +266,14 @@ export = {
           meshName: 'test-mesh',
         });
 
-        const arn = 'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/12345678-1234-1234-1234-123456789012';
+        const certificateAuthorityArn = 'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/12345678-1234-1234-1234-123456789012';
 
         new appmesh.VirtualNode(stack, 'test-node', {
           mesh,
           dnsHostName: 'test',
           backendDefaults: {
             clientPolicy: appmesh.ClientPolicy.acmTrust({
-              certificateAuthorityArns: [CertificateAuthority.fromCertificateAuthorityArn(stack, 'certificate', arn)],
+              certificateAuthorityArns: [acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'certificate', certificateAuthorityArn)],
               enforceTls: true,
               ports: [8080, 8081],
             }),
@@ -290,7 +291,7 @@ export = {
                   Validation: {
                     Trust: {
                       ACM: {
-                        CertificateAuthorityArns: ['arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/12345678-1234-1234-1234-123456789012'],
+                        CertificateAuthorityArns: [`${certificateAuthorityArn}`],
                       },
                     },
                   },
@@ -299,12 +300,13 @@ export = {
             },
           },
         }));
+
         test.done();
       },
     },
 
     'when a backend is added': {
-      'should add a backend visrtual service to the resource'(test: Test) {
+      'should add a backend virtual service to the resource'(test: Test) {
         // GIVEN
         const stack = new cdk.Stack();
 
@@ -357,6 +359,7 @@ export = {
             ],
           },
         }));
+
         test.done();
       },
     },

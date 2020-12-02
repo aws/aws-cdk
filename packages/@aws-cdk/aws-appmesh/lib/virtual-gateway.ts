@@ -171,7 +171,6 @@ export class VirtualGateway extends VirtualGatewayBase {
     } else {
       props.listeners.forEach(listener => this.listeners.push(listener.bind(this)));
     }
-    const backendDefaults = props.backendDefaults?.clientPolicy.bind(this);
     const accessLogging = props.accessLog?.bind(this);
 
     const node = new CfnVirtualGateway(this, 'Resource', {
@@ -179,7 +178,7 @@ export class VirtualGateway extends VirtualGatewayBase {
       meshName: this.mesh.meshName,
       spec: {
         listeners: this.listeners.map(listener => listener.listener),
-        backendDefaults: backendDefaults,
+        backendDefaults: props.backendDefaults?.clientPolicy.bind(this),
         logging: accessLogging !== undefined ? {
           accessLog: accessLogging.virtualGatewayAccessLog,
         } : undefined,

@@ -1,4 +1,4 @@
-import { ICertificateAuthority } from '@aws-cdk/aws-acmpca';
+import * as acmpca from '@aws-cdk/aws-acmpca';
 import * as cdk from '@aws-cdk/core';
 import { CfnVirtualNode } from './appmesh.generated';
 
@@ -22,7 +22,7 @@ export interface ClientPolicyConfig {
  */
 export interface ClientPolicyOptions {
   /**
-   * TLS enforced if True.
+   * TLS enforced on all backends, if True.
    *
    * @default true
    */
@@ -30,6 +30,7 @@ export interface ClientPolicyOptions {
 
   /**
    * TLS is enforced on the ports specified here.
+   * If TLS is enforced by default (i.e. enforceTls is true) and no ports are specified, TLS will be enforced on all the ports.
    *
    * @default - none
    */
@@ -41,9 +42,9 @@ export interface ClientPolicyOptions {
  */
 export interface AcmTrustOptions extends ClientPolicyOptions {
   /**
-   * Amazon Resource Names (ARN) of trusted ACM Private Certificate Authorities
+   * Contains information for your private certificate authority
    */
-  readonly certificateAuthorityArns: ICertificateAuthority[];
+  readonly certificateAuthorityArns: acmpca.ICertificateAuthority[];
 }
 
 /**
@@ -87,7 +88,7 @@ class ClientPolicyImpl extends ClientPolicy {
     private readonly ports: number[] | undefined,
     private readonly certificateType: CertificateType,
     private readonly certificateChain: string| undefined,
-    private readonly certificateAuthorityArns: ICertificateAuthority[] | undefined) { super(); }
+    private readonly certificateAuthorityArns: acmpca.ICertificateAuthority[] | undefined) { super(); }
 
   public bind(_scope: cdk.Construct): ClientPolicyConfig {
     return {
@@ -97,11 +98,14 @@ class ClientPolicyImpl extends ClientPolicy {
           enforce: this.enforce,
           validation: {
             trust: {
-              [this.certificateType]: this.certificateType === 'file' ? {
-                certificateChain: this.certificateChain,
-              } : {
-                certificateAuthorityArns: this.certificateAuthorityArns?.map(certificateArn => certificateArn.certificateAuthorityArn),
-              },
+              [this.certificateType]: this.certificateType === CertificateType.FILE
+                ? {
+                  certificateChain: this.certificateChain,
+                }
+                : {
+                  certificateAuthorityArns: this.certificateAuthorityArns?.map(certificateArn =>
+                    certificateArn.certificateAuthorityArn),
+                },
             },
           },
         },

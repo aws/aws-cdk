@@ -140,6 +140,7 @@ class FileAccessLog extends AccessLog {
     };
   }
 }
+
 /**
  * Represents the default properties for a backend
  */

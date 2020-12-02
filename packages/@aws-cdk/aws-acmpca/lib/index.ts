@@ -1,3 +1,3 @@
 // AWS::ACMPCA CloudFormation Resources:
 export * from './acmpca.generated';
-export * from './acmpca';
+export * from './certificate-authority';
