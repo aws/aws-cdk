@@ -420,10 +420,6 @@ export class ContainerDefinition extends cdk.Construct {
       }
     }
 
-    if (this.taskDefinition.isFargateCompatible && props.environmentFiles) {
-      throw new Error(`Cannot specify environment files for a task using the FARGATE launch type in container '${this.node.id}'.`);
-    }
-
     if (props.environmentFiles) {
       this.environmentFiles = [];
 
