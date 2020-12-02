@@ -96,8 +96,23 @@ export class AssetStaging extends CoreConstruct {
    *
    * IMPORTANT: If you are going to call `addFileAsset()`, use
    * `relativeStagedPath()` instead.
+   *
+   * @deprecated - Use `absoluteStagedPath` instead.
    */
   public readonly stagedPath: string;
+
+  /**
+   * Absolute path to the asset data.
+   *
+   * If asset staging is disabled, this will just be the source path or
+   * a temporary directory used for bundling.
+   *
+   * If asset staging is enabled it will be the staged path.
+   *
+   * IMPORTANT: If you are going to call `addFileAsset()`, use
+   * `relativeStagedPath()` instead.
+   */
+  public readonly absoluteStagedPath: string;
 
   /**
    * The absolute path of the asset as it was referenced by the user.
@@ -175,6 +190,7 @@ export class AssetStaging extends CoreConstruct {
 
     const staged = AssetStaging.assetCache.obtain(this.cacheKey, stageThisAsset);
     this.stagedPath = staged.stagedPath;
+    this.absoluteStagedPath = staged.stagedPath;
     this.assetHash = staged.assetHash;
   }
 
