@@ -1,5 +1,6 @@
-## AWS CodeBuild Construct Library
+# AWS CodeBuild Construct Library
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
@@ -7,6 +8,7 @@
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
 
 AWS CodeBuild is a fully managed continuous integration service that compiles
@@ -85,7 +87,7 @@ new codebuild.Project(this, 'MyProject', {
 These source types can be used to build code from a GitHub repository.
 Example:
 
-```typescript
+```ts
 const gitHubSource = codebuild.Source.gitHub({
   owner: 'awslabs',
   repo: 'aws-cdk',
@@ -103,7 +105,7 @@ To provide GitHub credentials, please either go to AWS CodeBuild Console to conn
 or call `ImportSourceCredentials` to persist your personal access token.
 Example:
 
-```
+```console
 aws codebuild import-source-credentials --server-type GITHUB --auth-type PERSONAL_ACCESS_TOKEN --token <token_value>
 ```
 
@@ -122,7 +124,7 @@ const bbSource = codebuild.Source.bitBucket({
 
 For all Git sources, you can fetch submodules while cloing git repo.
 
-```typescript
+```ts
 const gitHubSource = codebuild.Source.gitHub({
   owner: 'awslabs',
   repo: 'aws-cdk',
@@ -163,7 +165,7 @@ It's a simple class that doesn't allow you to specify `sources`,
 as these are handled by setting input and output CodePipeline `Artifact` instances on the Action,
 instead of setting them on the Project.
 
-```typescript
+```ts
 const project = new codebuild.PipelineProject(this, 'Project', {
   // properties as above...
 })
@@ -179,7 +181,7 @@ You can save time when your project builds by using a cache. A cache can store r
 
 With S3 caching, the cache is stored in an S3 bucket which is available from multiple hosts.
 
-```typescript
+```ts
 new codebuild.Project(this, 'Project', {
   source: codebuild.Source.bitBucket({
     owner: 'awslabs',
@@ -199,7 +201,7 @@ guarantee cache hits. For example, when a build starts and caches files locally,
 * `LocalCacheMode.DOCKER_LAYER` caches existing Docker layers.
 * `LocalCacheMode.CUSTOM` caches directories you specify in the buildspec file.
 
-```typescript
+```ts
 new codebuild.Project(this, 'Project', {
   source: codebuild.Source.gitHubEnterprise({
     httpsCloneUrl: 'https://my-github-enterprise.com/owner/repo',
@@ -247,10 +249,10 @@ or one of the corresponding methods on `WindowsBuildImage`:
 * `WindowsBuildImage.fromEcrRepository(repo[, tag, imageType])`
 * `WindowsBuildImage.fromAsset(parent, id, props, [, imageType])`
 
-Note that the `WindowsBuildImage` version of the static methods accepts an optional parameter of type `WindowsImageType`, 
+Note that the `WindowsBuildImage` version of the static methods accepts an optional parameter of type `WindowsImageType`,
 which can be either `WindowsImageType.STANDARD`, the default, or `WindowsImageType.SERVER_2019`:
 
-```typescript
+```ts
 new codebuild.Project(this, 'Project', {
   environment: {
     buildImage: codebuild.WindowsBuildImage.fromEcrRepository(ecrRepository, 'v1.0', codebuild.WindowsImageType.SERVER_2019),
@@ -277,7 +279,7 @@ The class `LinuxGpuBuildImage` contains constants for working with
 [AWS Deep Learning Container images](https://aws.amazon.com/releasenotes/available-deep-learning-containers-images):
 
 
-```typescript
+```ts
 new codebuild.Project(this, 'Project', {
   environment: {
     buildImage: codebuild.LinuxGpuBuildImage.DLC_TENSORFLOW_2_1_0_INFERENCE,
@@ -295,7 +297,7 @@ you can always specify the account
 (along with the repository name and tag)
 explicitly using the `awsDeepLearningContainersImage` method:
 
-```typescript
+```ts
 new codebuild.Project(this, 'Project', {
   environment: {
     buildImage: codebuild.LinuxGpuBuildImage.awsDeepLearningContainersImage(
@@ -313,7 +315,7 @@ By default, logs will go to cloudwatch.
 
 ### CloudWatch Logs Example
 
-```typescript
+```ts
 new codebuild.Project(this, 'Project', {
   logging: {
     cloudWatch: {
@@ -326,7 +328,7 @@ new codebuild.Project(this, 'Project', {
 
 ### S3 Logs Example
 
-```typescript
+```ts
 new codebuild.Project(this, 'Project', {
   logging: {
     s3: {
@@ -342,7 +344,7 @@ new codebuild.Project(this, 'Project', {
 CodeBuild allows you to store credentials used when communicating with various sources,
 like GitHub:
 
-```typescript
+```ts
 new codebuild.GitHubSourceCredentials(this, 'CodeBuildGitHubCreds', {
   accessToken: cdk.SecretValue.secretsManager('my-token'),
 });
@@ -352,7 +354,7 @@ new codebuild.GitHubSourceCredentials(this, 'CodeBuildGitHubCreds', {
 
 and BitBucket:
 
-```typescript
+```ts
 new codebuild.BitBucketSourceCredentials(this, 'CodeBuildBitBucketCreds', {
   username: cdk.SecretValue.secretsManager('my-bitbucket-creds', { jsonField: 'username' }),
   password: cdk.SecretValue.secretsManager('my-bitbucket-creds', { jsonField: 'password' }),
@@ -372,7 +374,7 @@ to inspect what credentials are stored in your account.
 
 You can specify a test report in your buildspec:
 
-```typescript
+```ts
 const project = new codebuild.Project(this, 'Project', {
   buildSpec: codebuild.BuildSpec.fromObject({
     // ...
@@ -394,7 +396,7 @@ with names starting with the project's name;
 if you'd rather not have those permissions added,
 you can opt out of it when creating the project:
 
-```typescript
+```ts
 const project = new codebuild.Project(this, 'Project', {
   // ...
   grantReportGroupPermissions: false,
@@ -404,7 +406,7 @@ const project = new codebuild.Project(this, 'Project', {
 Alternatively, you can specify an ARN of an existing resource group,
 instead of a simple name, in your buildspec:
 
-```typescript
+```ts
 // create a new ReportGroup
 const reportGroup = new codebuild.ReportGroup(this, 'ReportGroup');
 
@@ -423,7 +425,7 @@ const project = new codebuild.Project(this, 'Project', {
 
 If you do that, you need to grant the project's role permissions to write reports to that report group:
 
-```typescript
+```ts
 reportGroup.grantWrite(project);
 ```
 
@@ -498,7 +500,7 @@ with their identifier.
 
 So, a buildspec for the above Project could look something like this:
 
-```typescript
+```ts
 const project = new codebuild.Project(this, 'MyProject', {
   // secondary sources and artifacts as above...
   buildSpec: codebuild.BuildSpec.fromObject({

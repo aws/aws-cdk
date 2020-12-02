@@ -99,28 +99,28 @@ export class Arn {
   /**
    * Given an ARN, parses it and returns components.
    *
-   * If the ARN is a concrete string, it will be parsed and validated. The
-   * separator (`sep`) will be set to '/' if the 6th component includes a '/',
-   * in which case, `resource` will be set to the value before the '/' and
-   * `resourceName` will be the rest. In case there is no '/', `resource` will
-   * be set to the 6th components and `resourceName` will be set to the rest
-   * of the string.
+   * IF THE ARN IS A CONCRETE STRING...
    *
-   * If the ARN includes tokens (or is a token), the ARN cannot be validated,
-   * since we don't have the actual value yet at the time of this function
-   * call. You will have to know the separator and the type of ARN. The
-   * resulting `ArnComponents` object will contain tokens for the
-   * subexpressions of the ARN, not string literals. In this case this
-   * function cannot properly parse the complete final resourceName (path) out
-   * of ARNs that use '/' to both separate the 'resource' from the
-   * 'resourceName' AND to subdivide the resourceName further. For example, in
-   * S3 ARNs:
+   * ...it will be parsed and validated. The separator (`sep`) will be set to '/'
+   * if the 6th component includes a '/', in which case, `resource` will be set
+   * to the value before the '/' and `resourceName` will be the rest. In case
+   * there is no '/', `resource` will be set to the 6th components and
+   * `resourceName` will be set to the rest of the string.
    *
-   *    arn:aws:s3:::my_corporate_bucket/path/to/exampleobject.png
+   * IF THE ARN IS A TOKEN...
    *
-   * After parsing the resourceName will not contain
-   * 'path/to/exampleobject.png' but simply 'path'. This is a limitation
-   * because there is no slicing functionality in CloudFormation templates.
+   * ...it cannot be validated, since we don't have the actual value yet at the
+   * time of this function call. You will have to supply `sepIfToken` and
+   * whether or not ARNs of the expected format usually have resource names
+   * in order to parse it properly. The resulting `ArnComponents` object will
+   * contain tokens for the subexpressions of the ARN, not string literals.
+   *
+   * If the resource name could possibly contain the separator char, the actual
+   * resource name cannot be properly parsed. This only occurs if the separator
+   * char is '/', and happens for example for S3 object ARNs, IAM Role ARNs,
+   * IAM OIDC Provider ARNs, etc. To properly extract the resource name from a
+   * Tokenized ARN, you must know the resource type and call
+   * `Arn.extractResourceName`.
    *
    * @param arn The ARN to parse
    * @param sepIfToken The separator used to separate resource from resourceName
@@ -135,39 +135,18 @@ export class Arn {
    *      components of the ARN.
    */
   public static parse(arn: string, sepIfToken: string = '/', hasName: boolean = true): ArnComponents {
-    const components = arn.split(':') as Array<string | undefined>;
-    const looksLikeArn = arn.startsWith('arn:') && components.length >= 6 && components.length <= 7;
-    if (Token.isUnresolved(arn) && !looksLikeArn) {
+    const components = parseArnShape(arn);
+    if (components === 'token') {
       return parseToken(arn, sepIfToken, hasName);
     }
-    // If the ARN merely contains Tokens, but otherwise *looks* mostly like an ARN,
-    // it's a string of the form 'arn:${partition}:service:${region}:${account}:abc/xyz'.
-    // Parse fields out to the best of our ability.
-    // Tokens won't contain ":", so this won't break them.
 
-    if (components.length < 6) {
-      throw new Error('ARNs must have at least 6 components: ' + arn);
-    }
-
-    const [arnPrefix, partition, service, region, account, sixth, ...rest] = components;
-
-    if (arnPrefix !== 'arn') {
-      throw new Error('ARNs must start with "arn:": ' + arn);
-    }
-
-    if (!service) {
-      throw new Error('The `service` component (3rd component) is required: ' + arn);
-    }
-
-    if (!sixth) {
-      throw new Error('The `resource` component (6th component) is required: ' + arn);
-    }
+    const [, partition, service, region, account, resourceTypeOrName, ...rest] = components;
 
     let resource: string;
     let resourceName: string | undefined;
     let sep: string | undefined;
 
-    let sepIndex = sixth.indexOf('/');
+    let sepIndex = resourceTypeOrName.indexOf('/');
     if (sepIndex !== -1) {
       sep = '/';
     } else if (rest.length > 0) {
@@ -176,10 +155,10 @@ export class Arn {
     }
 
     if (sepIndex !== -1) {
-      resource = sixth.substr(0, sepIndex);
-      resourceName = sixth.substr(sepIndex + 1);
+      resource = resourceTypeOrName.substr(0, sepIndex);
+      resourceName = resourceTypeOrName.substr(sepIndex + 1);
     } else {
-      resource = sixth;
+      resource = resourceTypeOrName;
     }
 
     if (rest.length > 0) {
@@ -204,6 +183,39 @@ export class Arn {
       resourceName,
       sep,
     });
+  }
+
+  /**
+   * Extract the full resource name from an ARN
+   *
+   * Necessary for resource names (paths) that may contain the separator, like
+   * `arn:aws:iam::111111111111:role/path/to/role/name`.
+   *
+   * Only works if we statically know the expected `resourceType` beforehand, since we're going
+   * to use that to split the string on ':<resourceType>/' (and take the right-hand side).
+   *
+   * We can't extract the 'resourceType' from the ARN at hand, because CloudFormation Expressions
+   * only allow literals in the 'separator' argument to `{ Fn::Split }`, and so it can't be
+   * `{ Fn::Select: [5, { Fn::Split: [':', ARN] }}`.
+   *
+   * Only necessary for ARN formats for which the type-name separator is `/`.
+   */
+  public static extractResourceName(arn: string, resourceType: string): string {
+    const components = parseArnShape(arn);
+    if (components === 'token') {
+      return Fn.select(1, Fn.split(`:${resourceType}/`, arn));
+    }
+
+    // Apparently we could just parse this right away. Validate that we got the right
+    // resource type (to notify authors of incorrect assumptions right away).
+    const parsed = Arn.parse(arn, '/', true);
+    if (!Token.isUnresolved(parsed.resource) && parsed.resource !== resourceType) {
+      throw new Error(`Expected resource type '${resourceType}' in ARN, got '${parsed.resource}' in '${arn}'`);
+    }
+    if (!parsed.resourceName) {
+      throw new Error(`Expected resource name in ARN, didn't find one: '${arn}'`);
+    }
+    return parsed.resourceName;
   }
 
   private constructor() { }
@@ -267,4 +279,43 @@ function parseToken(arnToken: string, sep: string = '/', hasName: boolean = true
 
     return { partition, service, region, account, resource, resourceName, sep };
   }
+}
+
+
+/**
+ * Validate that a string is either unparseable or looks mostly like an ARN
+ */
+function parseArnShape(arn: string): 'token' | string[] {
+  const components = arn.split(':');
+  const looksLikeArn = arn.startsWith('arn:') && components.length >= 6;
+
+  if (!looksLikeArn) {
+    if (Token.isUnresolved(arn)) { return 'token'; }
+    throw new Error(`ARNs must start with "arn:" and have at least 6 components: ${arn}`);
+  }
+
+  // If the ARN merely contains Tokens, but otherwise *looks* mostly like an ARN,
+  // it's a string of the form 'arn:${partition}:service:${region}:${account}:abc/xyz'.
+  // Parse fields out to the best of our ability.
+  // Tokens won't contain ":", so this won't break them.
+
+  const [/* arn */, partition, service, /* region */ , /* account */ , resource] = components;
+
+  if (!partition) {
+    throw new Error('The `partition` component (2nd component) is required: ' + arn);
+  }
+
+  if (!service) {
+    throw new Error('The `service` component (3rd component) is required: ' + arn);
+  }
+
+  if (!resource) {
+    throw new Error('The `resource` component (6th component) is required: ' + arn);
+  }
+
+  // Region can be missing in global ARNs (such as used by IAM)
+
+  // Account can be missing in some ARN types (such as used for S3 buckets)
+
+  return components;
 }

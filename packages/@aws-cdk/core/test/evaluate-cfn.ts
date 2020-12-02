@@ -6,9 +6,25 @@
 import { isNameOfCloudFormationIntrinsic } from '../lib/private/cloudformation-lang';
 
 export function evaluateCFN(object: any, context: {[key: string]: string} = {}): any {
-  const intrinsics: any = {
+  const intrinsicFns: any = {
     'Fn::Join'(separator: string, args: string[]) {
-      return args.map(evaluate).join(separator);
+      if (typeof separator !== 'string') {
+        // CFN does not support expressions here!
+        throw new Error('\'separator\' argument of { Fn::Join } must be a string literal');
+      }
+      return evaluate(args).map(evaluate).join(separator);
+    },
+
+    'Fn::Split'(separator: string, args: any) {
+      if (typeof separator !== 'string') {
+        // CFN does not support expressions here!
+        throw new Error('\'separator\' argument of { Fn::Split } must be a string literal');
+      }
+      return evaluate(args).split(separator);
+    },
+
+    'Fn::Select'(index: number, args: any) {
+      return evaluate(args).map(evaluate)[index];
     },
 
     'Ref'(logicalId: string) {
@@ -56,13 +72,13 @@ export function evaluateCFN(object: any, context: {[key: string]: string} = {}):
     }
 
     if (typeof obj === 'object') {
-      const keys = Object.keys(obj);
-      if (keys.length === 1 && (isNameOfCloudFormationIntrinsic(keys[0]) || keys[0] === 'Ref')) {
-        return evaluateIntrinsic(keys[0], obj[keys[0]]);
+      const intrinsic = parseIntrinsic(obj);
+      if (intrinsic) {
+        return evaluateIntrinsic(intrinsic);
       }
 
       const ret: {[key: string]: any} = {};
-      for (const key of keys) {
+      for (const key of Object.keys(obj)) {
         ret[key] = evaluateCFN(obj[key]);
       }
       return ret;
@@ -71,15 +87,30 @@ export function evaluateCFN(object: any, context: {[key: string]: string} = {}):
     return obj;
   }
 
-  function evaluateIntrinsic(name: string, args: any) {
-    if (!(name in intrinsics)) {
-      throw new Error(`Intrinsic ${name} not supported here`);
+  function evaluateIntrinsic(intrinsic: Intrinsic) {
+    if (!(intrinsic.name in intrinsicFns)) {
+      throw new Error(`Intrinsic ${intrinsic.name} not supported here`);
     }
 
-    if (!Array.isArray(args)) {
-      args = [args];
-    }
+    const argsAsArray = Array.isArray(intrinsic.args) ? intrinsic.args : [intrinsic.args];
 
-    return intrinsics[name].apply(intrinsics, args);
+    return intrinsicFns[intrinsic.name].apply(intrinsicFns, argsAsArray);
   }
+}
+
+interface Intrinsic {
+  readonly name: string;
+  readonly args: any;
+}
+
+function parseIntrinsic(x: any): Intrinsic | undefined {
+  if (typeof x !== 'object' || x === null) { return undefined; }
+  const keys = Object.keys(x);
+  if (keys.length === 1 && (isNameOfCloudFormationIntrinsic(keys[0]) || keys[0] === 'Ref')) {
+    return {
+      name: keys[0],
+      args: x[keys[0]],
+    };
+  }
+  return undefined;
 }

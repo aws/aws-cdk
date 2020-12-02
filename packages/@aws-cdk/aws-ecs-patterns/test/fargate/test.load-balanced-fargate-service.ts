@@ -229,6 +229,52 @@ export = {
     test.done();
   },
 
+  'selecting correct vpcSubnets'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc', {
+      maxAzs: 2,
+      subnetConfiguration: [
+        {
+          subnetType: ec2.SubnetType.PUBLIC,
+          cidrMask: 20,
+          name: 'Public',
+        },
+        {
+          subnetType: ec2.SubnetType.ISOLATED,
+          cidrMask: 20,
+          name: 'ISOLATED',
+        },
+      ],
+    });
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+      vpc,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+      },
+      taskSubnets: {
+        subnetType: ec2.SubnetType.ISOLATED,
+      },
+    });
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::Service', {
+      NetworkConfiguration: {
+        AwsvpcConfiguration: {
+          Subnets: [
+            {
+              Ref: 'VpcISOLATEDSubnet1Subnet80F07FA0',
+            },
+            {
+              Ref: 'VpcISOLATEDSubnet2SubnetB0B548C3',
+            },
+          ],
+        },
+      },
+    }));
+    test.done();
+  },
+
   'target group uses HTTP/80 as default'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
