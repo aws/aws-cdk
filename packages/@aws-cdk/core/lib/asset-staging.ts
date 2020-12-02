@@ -8,6 +8,7 @@ import * as minimatch from 'minimatch';
 import { AssetHashType, AssetOptions } from './assets';
 import { BundlingOptions } from './bundling';
 import { FileSystem, FingerprintOptions } from './fs';
+import { Names } from './names';
 import { Cache } from './private/cache';
 import { Stack } from './stack';
 import { Stage } from './stage';
@@ -115,7 +116,7 @@ export class AssetStaging extends CoreConstruct {
    *
    * Will not be used literally, always hashed later on.
    */
-  private readonly customSourceFingerprint?: string;
+  private customSourceFingerprint?: string;
 
   private readonly cacheKey: string;
 
@@ -239,10 +240,16 @@ export class AssetStaging extends CoreConstruct {
    */
   private stageByBundling(bundling: BundlingOptions, skip: boolean): StagedAsset {
     if (skip) {
-      // We should have bundled, but didn't to save time. Still pretend to have a hash,
-      // but always base it on sources.
+      // We should have bundled, but didn't to save time. Still pretend to have a hash.
+      // If the asset uses OUTPUT or BUNDLE, we use a CUSTOM hash to avoid fingerprinting
+      // a potentially very large source directory. Other hash types are kept the same.
+      let hashType = this.hashType;
+      if (hashType === AssetHashType.OUTPUT || hashType === AssetHashType.BUNDLE) {
+        this.customSourceFingerprint = Names.uniqueId(this);
+        hashType = AssetHashType.CUSTOM;
+      }
       return {
-        assetHash: this.calculateHash(AssetHashType.SOURCE),
+        assetHash: this.calculateHash(hashType, bundling),
         stagedPath: this.sourcePath,
       };
     }

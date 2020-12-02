@@ -23,9 +23,9 @@ your users. CloudFront delivers your content through a worldwide network of data
 you're serving with CloudFront, the user is routed to the edge location that provides the lowest latency, so that content is delivered with the best
 possible performance.
 
-## Distribution API - Experimental
+## Distribution API - Developer Preview
 
-![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
+![Developer Preview](https://img.shields.io/badge/developer--preview-informational.svg?style=for-the-badge)
 
 The `Distribution` API is currently being built to replace the existing `CloudFrontWebDistribution` API. The `Distribution` API is optimized for the
 most common use cases of CloudFront distributions (e.g., single origin and behavior, few customizations) while still providing the ability for more
@@ -251,8 +251,12 @@ or authorize requests based on headers or authorization tokens.
 
 The following shows a Lambda@Edge function added to the default behavior and triggered on every request:
 
-```typescript
-const myFunc = new lambda.Function(...);
+```ts
+const myFunc = new cloudfront.experimental.EdgeFunction(this, 'MyFunction', {
+  runtime: lambda.Runtime.NODEJS_10_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
+});
 new cloudfront.Distribution(this, 'myDist', {
   defaultBehavior: {
     origin: new origins.S3Origin(myBucket),
@@ -266,9 +270,23 @@ new cloudfront.Distribution(this, 'myDist', {
 });
 ```
 
+> **Note:** Lambda@Edge functions must be created in the `us-east-1` region, regardless of the region of the CloudFront distribution and stack.
+> To make it easier to request functions for Lambda@Edge, the `EdgeFunction` construct can be used.
+> The `EdgeFunction` construct will automatically request a function in `us-east-1`, regardless of the region of the current stack.
+> `EdgeFunction` has the same interface as `Function` and can be created and used interchangably.
+
+If the stack is in `us-east-1`, a "normal" `lambda.Function` can be used instead of an `EdgeFunction`.
+
+```ts
+const myFunc = new lambda.Function(this, 'MyFunction', {
+  runtime: lambda.Runtime.NODEJS_10_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
+});
+```
+
 Lambda@Edge functions can also be associated with additional behaviors,
-either at Distribution creation time,
-or after.
+either at or after Distribution creation time.
 
 ```typescript
 // assigning at Distribution creation

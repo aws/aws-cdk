@@ -275,6 +275,43 @@ export = {
     test.done();
   },
 
+  'target group uses HTTP/80 as default'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+      },
+    });
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      Port: 80,
+      Protocol: 'HTTP',
+    }));
+    test.done();
+  },
+
+  'target group uses HTTPS/443 when configured'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+      },
+      targetProtocol: ApplicationProtocol.HTTPS,
+    });
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      Port: 443,
+      Protocol: 'HTTPS',
+    }));
+    test.done();
+  },
+
   'setting platform version'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();

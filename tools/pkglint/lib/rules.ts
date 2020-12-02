@@ -147,7 +147,10 @@ export class ThirdPartyAttributions extends ValidationRule {
       return;
     }
     const bundled = pkg.getAllBundledDependencies().filter(dep => !dep.startsWith('@aws-cdk'));
-    const lines = fs.readFileSync(path.join(pkg.packageRoot, 'NOTICE'), { encoding: 'utf8' }).split('\n');
+    const noticePath = path.join(pkg.packageRoot, 'NOTICE');
+    const lines = fs.existsSync(noticePath)
+      ? fs.readFileSync(noticePath, { encoding: 'utf8' }).split('\n')
+      : [];
 
     const re = /^\*\* (\S+)/;
     const attributions = lines.filter(l => re.test(l)).map(l => l.match(re)![1]);
@@ -1022,6 +1025,19 @@ export class MustUseCDKWatch extends ValidationRule {
 }
 
 /**
+ * Must have 'rosetta:extract' command if this package is JSII-enabled.
+ */
+export class MustHaveRosettaExtract extends ValidationRule {
+  public readonly name = 'package-info/scripts/rosetta:extract';
+
+  public validate(pkg: PackageJson): void {
+    if (!isJSII(pkg)) { return; }
+
+    expectJSON(this.name, pkg, 'scripts.rosetta:extract', 'yarn --silent jsii-rosetta extract');
+  }
+}
+
+/**
  * Must use 'cdk-test' command
  */
 export class MustUseCDKTest extends ValidationRule {
@@ -1460,14 +1476,20 @@ export class JestSetup extends ValidationRule {
 
 export class UbergenPackageVisibility extends ValidationRule {
   public readonly name = 'ubergen/package-visibility';
+
+  // These include dependencies of the CDK CLI (aws-cdk).
   private readonly publicPackages = [
+    '@aws-cdk/cfnspec',
     '@aws-cdk/cloud-assembly-schema',
     '@aws-cdk/cloudformation-diff',
     '@aws-cdk/cx-api',
+    '@aws-cdk/region-info',
+    '@aws-cdk/yaml-cfn',
     'aws-cdk-lib',
     'aws-cdk',
     'awslint',
     'cdk',
+    'cdk-assets',
   ];
 
   public validate(pkg: PackageJson): void {

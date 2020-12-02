@@ -22,7 +22,8 @@
     "build+test": "npm run build && npm test",
     "build+test+package": "npm run build+test && npm run package",
     "watch": "cdk-watch",
-    "compat": "cdk-compat"
+    "compat": "cdk-compat",
+    "rosetta:extract": "yarn --silent jsii-rosetta extract"
   },
   "awslint": {
     "exclude": [
@@ -149,6 +150,7 @@
     "@aws-cdk/aws-codestarnotifications": "0.0.0",
     "@aws-cdk/aws-cognito": "0.0.0",
     "@aws-cdk/aws-config": "0.0.0",
+    "@aws-cdk/aws-databrew": "0.0.0",
     "@aws-cdk/aws-datapipeline": "0.0.0",
     "@aws-cdk/aws-dax": "0.0.0",
     "@aws-cdk/aws-detective": "0.0.0",
@@ -214,6 +216,7 @@
     "@aws-cdk/aws-mediastore": "0.0.0",
     "@aws-cdk/aws-msk": "0.0.0",
     "@aws-cdk/aws-neptune": "0.0.0",
+    "@aws-cdk/aws-networkfirewall": "0.0.0",
     "@aws-cdk/aws-networkmanager": "0.0.0",
     "@aws-cdk/aws-opsworks": "0.0.0",
     "@aws-cdk/aws-opsworkscm": "0.0.0",
@@ -242,6 +245,7 @@
     "@aws-cdk/aws-servicediscovery": "0.0.0",
     "@aws-cdk/aws-ses": "0.0.0",
     "@aws-cdk/aws-ses-actions": "0.0.0",
+    "@aws-cdk/aws-signer": "0.0.0",
     "@aws-cdk/aws-sns": "0.0.0",
     "@aws-cdk/aws-sns-subscriptions": "0.0.0",
     "@aws-cdk/aws-sqs": "0.0.0",
@@ -265,7 +269,7 @@
     "@aws-cdk/region-info": "0.0.0",
     "@aws-cdk/yaml-cfn": "0.0.0",
     "@types/fs-extra": "^8.1.1",
-    "@types/node": "^10.17.44",
+    "@types/node": "^10.17.48",
     "cdk-build-tools": "0.0.0",
     "constructs": "^3.2.0",
     "fs-extra": "^9.0.1",
