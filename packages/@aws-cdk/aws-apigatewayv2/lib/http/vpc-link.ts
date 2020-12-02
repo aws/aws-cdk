@@ -12,6 +12,11 @@ export interface IVpcLink extends IResource {
    * @attribute
    */
   readonly vpcLinkId: string;
+
+  /**
+   * The VPC to which this VPC Link is associated with.
+   */
+  readonly vpc: ec2.IVpc;
 }
 
 /**
@@ -44,6 +49,20 @@ export interface VpcLinkProps {
   readonly securityGroups?: ec2.ISecurityGroup[];
 }
 
+/**
+ * Attributes when importing a new VpcLink
+ */
+export interface VpcLinkAttributes {
+  /**
+   * The VPC Link id
+   */
+  readonly vpcLinkId: string;
+  /**
+   * The VPC to which this VPC link is associated with.
+   */
+  readonly vpc: ec2.IVpc;
+}
+
 
 /**
  * Define a new VPC Link
@@ -51,27 +70,26 @@ export interface VpcLinkProps {
  */
 export class VpcLink extends Resource implements IVpcLink {
   /**
-   * Import a VPC Link by its Id
+   * Import a VPC Link by specifying its attributes.
    */
-  public static fromVpcLinkId(scope: Construct, id: string, vpcLinkId: string): IVpcLink {
+  public static fromVpcLinkAttributes(scope: Construct, id: string, attrs: VpcLinkAttributes): IVpcLink {
     class Import extends Resource implements IVpcLink {
-      public vpcLinkId = vpcLinkId;
+      public vpcLinkId = attrs.vpcLinkId;
+      public vpc = attrs.vpc;
     }
 
     return new Import(scope, id);
   }
 
-  /**
-   * Physical ID of the VpcLink resource
-   * @attribute
-   */
   public readonly vpcLinkId: string;
+  public readonly vpc: ec2.IVpc;
 
   private readonly subnets = new Array<ec2.ISubnet>();
   private readonly securityGroups = new Array<ec2.ISecurityGroup>();
 
   constructor(scope: Construct, id: string, props: VpcLinkProps) {
     super(scope, id);
+    this.vpc = props.vpc;
 
     const cfnResource = new CfnVpcLink(this, 'Resource', {
       name: props.vpcLinkName || Lazy.stringValue({ produce: () => this.node.uniqueId }),
