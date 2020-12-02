@@ -1,10 +1,12 @@
 # Event Targets for Amazon EventBridge
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
 
 This library contains integration classes to send Amazon EventBridge to any

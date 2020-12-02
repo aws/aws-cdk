@@ -1,6 +1,6 @@
-## Amazon Relational Database Service Construct Library
-
+# Amazon Relational Database Service Construct Library
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
@@ -8,13 +8,15 @@
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
 
-```typescript
+
+```ts
 import * as rds from '@aws-cdk/aws-rds';
 ```
 
-### Starting a clustered database
+## Starting a clustered database
 
 To set up a clustered database (like Aurora), define a `DatabaseCluster`. You must
 always launch a database in a VPC. Use the `vpcSubnets` attribute to control whether
@@ -59,7 +61,7 @@ new rds.DatabaseClusterFromSnapshot(stack, 'Database', {
 });
 ```
 
-### Starting an instance database
+## Starting an instance database
 
 To set up a instance database, define a `DatabaseInstance`. You must
 always launch a database in a VPC. Use the `vpcSubnets` attribute to control whether
@@ -125,7 +127,7 @@ Creating a "production" Oracle database instance with option and parameter group
 
 [example of setting up a production oracle instance](test/integ.instance.lit.ts)
 
-### Instance events
+## Instance events
 
 To define Amazon CloudWatch event rules for database instances, use the `onEvent`
 method:
@@ -134,7 +136,7 @@ method:
 const rule = instance.onEvent('InstanceEvent', { target: new targets.LambdaFunction(fn) });
 ```
 
-### Login credentials
+## Login credentials
 
 By default, database instances and clusters will have `admin` user with an auto-generated password.
 An alternative username (and password) may be specified for the admin user instead of the default.
@@ -163,7 +165,7 @@ new rds.DatabaseInstance(this, 'InstanceWithSecretLogin', {
 });
 ```
 
-### Connecting
+## Connecting
 
 To control who can access the cluster or instance, use the `.connections` attribute. RDS databases have
 a default port, so you don't need to specify the port:
@@ -185,7 +187,7 @@ For an instance database:
 const address = instance.instanceEndpoint.socketAddress;   // "HOSTNAME:PORT"
 ```
 
-### Rotating credentials
+## Rotating credentials
 
 When the master password is generated and stored in AWS Secrets Manager, it can be rotated automatically:
 
@@ -226,7 +228,7 @@ The rotation will start as soon as this user exists.
 
 See also [@aws-cdk/aws-secretsmanager](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-secretsmanager/README.md) for credentials rotation of existing clusters/instances.
 
-### IAM Authentication
+## IAM Authentication
 
 You can also authenticate to a database instance using AWS Identity and Access Management (IAM) database authentication;
 See <https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.html> for more information
@@ -247,7 +249,7 @@ instance.grantConnect(role); // Grant the role connection access to the DB.
 **Note**: In addition to the setup above, a database user will need to be created to support IAM auth.
 See <https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.DBAccounts.html> for setup instructions.
 
-### Kerberos Authentication
+## Kerberos Authentication
 
 You can also authenticate using Kerberos to a database instance using AWS Managed Microsoft AD for authentication;
 See <https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/kerberos-authentication.html> for more information
@@ -277,7 +279,7 @@ appropriate security groups/network ACL to allow traffic between the database in
 Once configured, see <https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/kerberos-authentication.html> for details
 on configuring users for each available database engine.
 
-### Metrics
+## Metrics
 
 Database instances and clusters both expose metrics (`cloudwatch.Metric`):
 
@@ -292,7 +294,7 @@ const cpuUtilization = cluster.metricCPUUtilization();
 const readLatency = instance.metric('ReadLatency', { statistic: 'Average', periodSec: 60 });
 ```
 
-### Enabling S3 integration
+## Enabling S3 integration
 
 Data in S3 buckets can be imported to and exported from certain database engines using SQL queries. To enable this
 functionality, set the `s3ImportBuckets` and `s3ExportBuckets` properties for import and export respectively. When
@@ -323,7 +325,7 @@ new rds.DatabaseCluster(this, 'dbcluster', {
 });
 ```
 
-### Creating a Database Proxy
+## Creating a Database Proxy
 
 Amazon RDS Proxy sits between your application and your relational database to efficiently manage
 connections to the database and improve scalability of the application. Learn more about at [Amazon RDS Proxy](https://aws.amazon.com/rds/proxy/)
@@ -349,7 +351,7 @@ const proxy = dbInstance.addProxy('proxy', {
 });
 ```
 
-### Exporting Logs
+## Exporting Logs
 
 You can publish database logs to Amazon CloudWatch Logs. With CloudWatch Logs, you can perform real-time analysis of the log data,
 store the data in highly durable storage, and manage the data with the CloudWatch Logs Agent. This is available for both database
@@ -379,7 +381,7 @@ const instance = new rds.DatabaseInstance(this, 'Instance', {
 });
 ```
 
-### Option Groups
+## Option Groups
 
 Some DB engines offer additional features that make it easier to manage data and databases, and to provide additional security for your database.
 Amazon RDS uses option groups to enable and configure these features. An option group can specify features, called options,
@@ -403,7 +405,7 @@ new rds.OptionGroup(stack, 'Options', {
 });
 ```
 
-### Serverless
+## Serverless
 
 [Amazon Aurora Serverless]((https://aws.amazon.com/rds/aurora/serverless/)) is an on-demand, auto-scaling configuration for Amazon
 Aurora. The database will automatically start up, shut down, and scale capacity
@@ -451,7 +453,7 @@ Read more about the [limitations of Aurora Serverless](https://docs.aws.amazon.c
 
 Learn more about using Amazon Aurora Serverless by reading the [documentation](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless.html)
 
-#### Data API
+### Data API
 
 You can access your Aurora Serverless DB cluster using the built-in Data API. The Data API doesn't require a persistent connection to the DB cluster. Instead, it provides a secure HTTP endpoint and integration with AWS SDKs.
 
