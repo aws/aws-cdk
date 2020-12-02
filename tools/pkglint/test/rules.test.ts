@@ -40,10 +40,10 @@ describe('FeatureStabilityRule', () => {
     expect(pkgJson.hasReports).toBe(true);
     pkgJson.applyFixes();
     const fixedContents = await fs.readFile(path.join(dirPath, 'README.md'), { encoding: 'utf8' });
-    expect(fixedContents).toMatch(/Experimental Feature \| \!\[Experimental\]/);
-    expect(fixedContents).toMatch(/Dev Preview Feature \| \!\[Developer Preview\]/);
-    expect(fixedContents).toMatch(/Stable Feature \| \!\[Stable\]/);
-    expect(fixedContents).toMatch(/Not Implemented Feature \| \!\[Not Implemented\]/);
+    expect(fixedContents).toMatch(/Experimental Feature\s* \| \!\[Experimental\]/);
+    expect(fixedContents).toMatch(/Dev Preview Feature\s* \| \!\[Developer Preview\]/);
+    expect(fixedContents).toMatch(/Stable Feature\s* \| \!\[Stable\]/);
+    expect(fixedContents).toMatch(/Not Implemented Feature\s* \| \!\[Not Implemented\]/);
     expect(fixedContents).not.toMatch(/CFN Resources/);
   });
 

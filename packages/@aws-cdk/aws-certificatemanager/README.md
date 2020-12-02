@@ -1,6 +1,6 @@
-## AWS Certificate Manager Construct Library
-
+# AWS Certificate Manager Construct Library
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
@@ -8,7 +8,9 @@
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
+
 
 AWS Certificate Manager (ACM) handles the complexity of creating, storing, and renewing public and private SSL/TLS X.509 certificates and keys that
 protect your AWS websites and applications. ACM certificates can secure singular domain names, multiple specific domain names, wildcard domains, or
@@ -28,7 +30,7 @@ service, or provision them manually and import them into your CDK application.
 The default limit is 2000, but this limit may be (much) lower on new AWS accounts.
 See https://docs.aws.amazon.com/acm/latest/userguide/acm-limits.html for more information.
 
-### DNS validation
+## DNS validation
 
 DNS validation is the preferred method to validate domain ownership, as it has a number of advantages over email validation.
 See also [Validate with DNS](https://docs.aws.amazon.com/acm/latest/userguide/gs-acm-validate-dns.html)
@@ -81,7 +83,7 @@ const cert = new acm.Certificate(this, 'Certificate', {
 });
 ```
 
-### Email validation
+## Email validation
 
 Email-validated certificates (the default) are validated by receiving an
 email on one of a number of predefined domains and following the instructions
@@ -97,7 +99,7 @@ new acm.Certificate(this, 'Certificate', {
 });
 ```
 
-### Cross-region Certificates
+## Cross-region Certificates
 
 ACM certificates that are used with CloudFront -- or higher-level constructs which rely on CloudFront -- must be in the `us-east-1` region.
 The `DnsValidatedCertificate` construct exists to faciliate creating these certificates cross-region. This resource can only be used with
@@ -111,7 +113,7 @@ new acm.DnsValidatedCertificate(this, 'CrossRegionCertificate', {
 });
 ```
 
-### Importing
+## Importing
 
 If you want to import an existing certificate, you can do so from its ARN:
 
@@ -120,7 +122,7 @@ const arn = 'arn:aws:...';
 const certificate = Certificate.fromCertificateArn(this, 'Certificate', arn);
 ```
 
-### Sharing between Stacks
+## Sharing between Stacks
 
 To share the certificate between stacks in the same CDK application, simply
 pass the `Certificate` object between the stacks.

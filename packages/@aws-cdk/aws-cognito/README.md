@@ -1,18 +1,26 @@
-## Amazon Cognito Construct Library
+# Amazon Cognito Construct Library
 <!--BEGIN STABILITY BANNER-->
----
-
-| Features | Stability |
-| --- | --- |
-| CFN Resources | ![Stable](https://img.shields.io/badge/stable-success.svg?style=for-the-badge) |
-| Higher level constructs for User Pools | ![Stable](https://img.shields.io/badge/stable-success.svg?style=for-the-badge) |
-| Higher level constructs for Identity Pools | ![Not Implemented](https://img.shields.io/badge/not--implemented-black.svg?style=for-the-badge) |
-
-> **CFN Resources:** All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) are always stable and safe to use.
-
-> **Stable:** Higher level constructs in this module that are marked stable will not undergo any breaking changes. They will strictly follow the [Semantic Versioning](https://semver.org/) model.
 
 ---
+
+Features                                   | Stability
+-------------------------------------------|--------------------------------------------------------
+CFN Resources                              | ![Stable](https://img.shields.io/badge/stable-success.svg?style=for-the-badge)
+Higher level constructs for User Pools     | ![Stable](https://img.shields.io/badge/stable-success.svg?style=for-the-badge)
+Higher level constructs for Identity Pools | ![Not Implemented](https://img.shields.io/badge/not--implemented-black.svg?style=for-the-badge)
+
+> **CFN Resources:** All classes with the `Cfn` prefix in this module ([CFN Resources]) are always
+> stable and safe to use.
+>
+> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib
+
+<!-- -->
+
+> **Stable:** Higher level constructs in this module that are marked stable will not undergo any
+> breaking changes. They will strictly follow the [Semantic Versioning](https://semver.org/) model.
+
+---
+
 <!--END STABILITY BANNER-->
 
 [Amazon Cognito](https://docs.aws.amazon.com/cognito/latest/developerguide/what-is-amazon-cognito.html) provides
@@ -113,10 +121,10 @@ here](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-poo
 Users registering or signing in into your application can do so with multiple identifiers. There are 4 options
 available:
 
-* `username`: Allow signing in using the one time immutable user name that the user chose at the time of sign up.
-* `email`: Allow signing in using the email address that is associated with the account.
-* `phone`: Allow signing in using the phone number that is associated with the account.
-* `preferredUsername`: Allow signing in with an alternate user name that the user can change at any time. However, this
+- `username`: Allow signing in using the one time immutable user name that the user chose at the time of sign up.
+- `email`: Allow signing in using the email address that is associated with the account.
+- `phone`: Allow signing in using the phone number that is associated with the account.
+- `preferredUsername`: Allow signing in with an alternate user name that the user can change at any time. However, this
   is not available if the `username` option is not chosen.
 
 The following code sets up a user pool so that the user can sign in with either their username or their email address -
@@ -407,9 +415,9 @@ Party](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-po
 
 The following third-party identity providers are currently supported in the CDK -
 
-* [Login With Amazon](https://developer.amazon.com/apps-and-games/login-with-amazon)
-* [Facebook Login](https://developers.facebook.com/docs/facebook-login/)
-* [Google Login](https://developers.google.com/identity/sign-in/web/sign-in)
+- [Login With Amazon](https://developer.amazon.com/apps-and-games/login-with-amazon)
+- [Facebook Login](https://developers.facebook.com/docs/facebook-login/)
+- [Google Login](https://developers.google.com/identity/sign-in/web/sign-in)
 
 The following code configures a user pool to federate with the third party provider, 'Login with Amazon'. The identity
 provider needs to be configured with a set of credentials that the Cognito backend can use to federate with the
