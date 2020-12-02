@@ -244,6 +244,12 @@ export default class CodeGenerator {
       this.code.line(`const props = ${genspec.fromCfnFactoryName(propsType).fqn}(resourceProperties);`);
       // finally, instantiate the resource class
       this.code.line(`const ret = new ${resourceName.className}(scope, id, props);`);
+      // save all keys from the resourceProperties that are not in the current CFN schema in the resource using overrides
+      const resourceSchemaPropertyNames = Object.keys(spec.Properties || {}).map(cfnType => `'${cfnType}'`);
+      this.code.line(`const resourcePropsOutsideCfnSchema = ${CFN_PARSE}.FromCloudFormation.omit(resourceProperties ?? {}, ${resourceSchemaPropertyNames.join(', ')});`);
+      this.code.openBlock('for (const [propKey, propVal] of Object.entries(resourcePropsOutsideCfnSchema)) ');
+      this.code.line('ret.addPropertyOverride(propKey, propVal);');
+      this.code.closeBlock();
     } else {
       // no props type - we simply instantiate the construct without the third argument
       this.code.line(`const ret = new ${resourceName.className}(scope, id);`);
@@ -371,7 +377,6 @@ export default class CodeGenerator {
       }
       this.code.line(`${prop}: this.${prop},`);
     }
-    this.retainPropertiesNotInCfnSchema(Object.values(propMap), 'this._cfnProperties');
     this.code.unindent('};');
     this.code.closeBlock();
 
@@ -506,7 +511,6 @@ export default class CodeGenerator {
 
       self.code.line(`${cfnName}: ${mapperExpression}(properties.${propName}),`);
     });
-    this.retainPropertiesNotInCfnSchema(Object.values(nameConversionTable), 'properties');
     this.code.unindent('};');
     this.code.closeBlock();
   }
@@ -646,8 +650,6 @@ export default class CodeGenerator {
 
       self.code.line(`${nameConversionTable[cfnName]}: ${valueExpression},`);
     });
-
-    this.retainPropertiesNotInCfnSchema(Object.keys(nameConversionTable), 'properties');
     // close the return object brace
     this.code.unindent('};');
 
@@ -897,14 +899,6 @@ export default class CodeGenerator {
     }
     this.code.line(' */');
     return;
-  }
-
-  private retainPropertiesNotInCfnSchema(propertiesToOmit: string[], propertyObject: string) {
-    // add a line that saves any extra properties that we don't have in the CFN schema
-    const omittedProperties = propertiesToOmit
-      .map(cdkPropName => `'${cdkPropName}'`)
-      .join(', ');
-    this.code.line(`...${CFN_PARSE}.FromCloudFormation.omit(${propertyObject}, ${omittedProperties}),`);
   }
 }
 

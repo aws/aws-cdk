@@ -3,7 +3,11 @@
     "Bucket": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
-        "PropertyNotInCfnSchema": 1
+        "PropertyNotInCfnSchema": 1,
+        "AccelerateConfiguration": {
+          "AccelerationStatus": "Enabled",
+          "PropertyNotInCfnSchema": false
+        }
       }
     }
   }
