@@ -15,7 +15,7 @@ class TestStack extends Stack {
     super(scope, id, props);
 
     const fn = new lambda.PythonFunction(this, "my_handler", {
-      entry: path.join(__dirname, "lambda-handler-pipenv"),
+      entry: path.join(__dirname, "lambda-handler-poetry"),
       runtime: Runtime.PYTHON_3_8,
     });
 
