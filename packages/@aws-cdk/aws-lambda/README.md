@@ -63,7 +63,7 @@ Dockerfile as the asset that will be used as the function handler.
 
 ```ts
 new lambda.DockerImageFunction(this, 'AssetFunction', {
-  code: DockerImageCode.fromAssetImage(path.join(__dirname, 'docker-handler')),
+  code: lambda.DockerImageCode.fromImageAsset(path.join(__dirname, 'docker-handler')),
 });
 ```
 
@@ -74,7 +74,7 @@ import * as ecr from '@aws-cdk/aws-ecr';
 const repo = new ecr.Repository(this, 'Repository');
 
 new lambda.DockerImageFunction(this, 'ECRFunction', {
-  code: DockerImageCode.fromEcrImage(repo),
+  code: lambda.DockerImageCode.fromEcr(repo),
 });
 ```
 
