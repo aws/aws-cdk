@@ -1,4 +1,5 @@
 # Amazon Lambda Python Library
+
 <!--BEGIN STABILITY BANNER-->
 
 ---
@@ -25,13 +26,13 @@ Define a `PythonFunction`:
 
 ```ts
 import * as lambda from "@aws-cdk/aws-lambda";
-import { PythonFunction } from "@aws-cdk/aws-lambda-python"
+import { PythonFunction } from "@aws-cdk/aws-lambda-python";
 
-new PythonFunction(this, 'MyFunction', {
-  entry: '/path/to/my/function', // required
-  index: 'my_index.py', // optional, defaults to 'index.py'
-  handler: 'my_exported_func', // optional, defaults to 'handler'
-  runtime: lambda.Runtime.PYTHON_3_6 // optional, defaults to lambda.Runtime.PYTHON_3_7
+new PythonFunction(this, "MyFunction", {
+  entry: "/path/to/my/function", // required
+  index: "my_index.py", // optional, defaults to 'index.py'
+  handler: "my_exported_func", // optional, defaults to 'handler'
+  runtime: lambda.Runtime.PYTHON_3_6, // optional, defaults to lambda.Runtime.PYTHON_3_7
 });
 ```
 
@@ -60,18 +61,27 @@ according to the `runtime`.
 ├── Pipfile.lock # your lock file
 ```
 
+**Lambda with a poetry.lock**
+
+```plaintext
+.
+├── lambda_function.py # exports a function named 'handler'
+├── pyproject.toml # has to be present at the entry path
+├── poetry.lock # your poetry lock file
+```
+
 **Lambda Layer Support**
 
 You may create a python-based lambda layer with `PythonLayerVersion`. If `PythonLayerVersion` detects a `requirements.txt`
-or `Pipfile` at the entry path, then `PythonLayerVersion` will include the dependencies inline with your code in the
+or `Pipfile` or `poetry.lock` with the associated `pyproject.toml` at the entry path, then `PythonLayerVersion` will include the dependencies inline with your code in the
 layer.
 
 ```ts
-new lambda.PythonFunction(this, 'MyFunction', {
-  entry: '/path/to/my/function',
+new lambda.PythonFunction(this, "MyFunction", {
+  entry: "/path/to/my/function",
   layers: [
-    new lambda.PythonLayerVersion(this, 'MyLayer', {
-      entry: '/path/to/my/layer', // point this to your library's directory
+    new lambda.PythonLayerVersion(this, "MyLayer", {
+      entry: "/path/to/my/layer", // point this to your library's directory
     }),
   ],
 });
