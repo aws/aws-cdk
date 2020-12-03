@@ -1,5 +1,6 @@
-## AWS Step Functions Construct Library
+# AWS Step Functions Construct Library
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
@@ -7,6 +8,7 @@
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
 
 The `@aws-cdk/aws-stepfunctions` package contains constructs for building
@@ -17,7 +19,7 @@ to call other AWS services.
 Defining a workflow looks like this (for the [Step Functions Job Poller
 example](https://docs.aws.amazon.com/step-functions/latest/dg/job-status-poller-sample.html)):
 
-### Example
+## Example
 
 ```ts
 import * as sfn from '@aws-cdk/aws-stepfunctions';
@@ -217,8 +219,10 @@ If your `Choice` doesn't have an `otherwise()` and none of the conditions match
 the JSON state, a `NoChoiceMatched` error will be thrown. Wrap the state machine
 in a `Parallel` state if you want to catch and recover from this.
 
-#### Available Conditions: 
+#### Available Conditions
+
 see [step function comparison operators](https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-choice-state.html#amazon-states-language-choice-state-rules)
+
 * `Condition.isPresent` - matches if a json path is present
 * `Condition.isNotPresent` - matches if a json path is not present
 * `Condition.isString` - matches if a json path contains a string
@@ -481,6 +485,7 @@ new stepfunctions.Parallel(this, 'All jobs')
 ```
 
 A few utility functions are available to parse state machine fragments.
+
 * `State.findReachableStates`: Retrieve the list of states reachable from a given state.
 * `State.findReachableEndStates`: Retrieve the list of end or terminal states reachable from a given state.
 
@@ -590,13 +595,13 @@ IAM roles, users, or groups which need to be able to work with a State Machine s
 
 Any object that implements the `IGrantable` interface (has an associated principal) can be granted permissions by calling:
 
-- `stateMachine.grantStartExecution(principal)` - grants the principal the ability to execute the state machine
-- `stateMachine.grantRead(principal)` - grants the principal read access
-- `stateMachine.grantTaskResponse(principal)` - grants the principal the ability to send task tokens to the state machine
-- `stateMachine.grantExecution(principal, actions)` - grants the principal execution-level permissions for the IAM actions specified 
-- `stateMachine.grant(principal, actions)` - grants the principal state-machine-level permissions for the IAM actions specified
+* `stateMachine.grantStartExecution(principal)` - grants the principal the ability to execute the state machine
+* `stateMachine.grantRead(principal)` - grants the principal read access
+* `stateMachine.grantTaskResponse(principal)` - grants the principal the ability to send task tokens to the state machine
+* `stateMachine.grantExecution(principal, actions)` - grants the principal execution-level permissions for the IAM actions specified
+* `stateMachine.grant(principal, actions)` - grants the principal state-machine-level permissions for the IAM actions specified
 
-### Start Execution Permission 
+### Start Execution Permission
 
 Grant permission to start an execution of a state machine by calling the `grantStartExecution()` API.
 
@@ -615,7 +620,7 @@ stateMachine.grantStartExecution(role);
 
 The following permission is provided to a service principal by the `grantStartExecution()` API:
 
-- `states:StartExecution` - to state machine
+* `states:StartExecution` - to state machine
 
 ### Read Permissions
 
@@ -636,14 +641,14 @@ stateMachine.grantRead(role);
 
 The following read permissions are provided to a service principal by the `grantRead()` API:
 
-- `states:ListExecutions` - to state machine
-- `states:ListStateMachines` - to state machine
-- `states:DescribeExecution` - to executions
-- `states:DescribeStateMachineForExecution` - to executions
-- `states:GetExecutionHistory` - to executions
-- `states:ListActivities` - to `*`
-- `states:DescribeStateMachine` - to `*`
-- `states:DescribeActivity` - to `*`
+* `states:ListExecutions` - to state machine
+* `states:ListStateMachines` - to state machine
+* `states:DescribeExecution` - to executions
+* `states:DescribeStateMachineForExecution` - to executions
+* `states:GetExecutionHistory` - to executions
+* `states:ListActivities` - to `*`
+* `states:DescribeStateMachine` - to `*`
+* `states:DescribeActivity` - to `*`
 
 ### Task Response Permissions
 
@@ -664,9 +669,9 @@ stateMachine.grantTaskResponse(role);
 
 The following read permissions are provided to a service principal by the `grantRead()` API:
 
-- `states:SendTaskSuccess` - to state machine
-- `states:SendTaskFailure` - to state machine
-- `states:SendTaskHeartbeat` - to state machine
+* `states:SendTaskSuccess` - to state machine
+* `states:SendTaskFailure` - to state machine
+* `states:SendTaskHeartbeat` - to state machine
 
 ### Execution-level Permissions
 

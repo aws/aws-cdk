@@ -49,7 +49,8 @@
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test",
     "compat": "cdk-compat",
-    "gen": "cp -f $(node -p 'require.resolve(\"aws-sdk/apis/metadata.json\")') lib/aws-custom-resource/sdk-api-metadata.json && rm -rf test/aws-custom-resource/cdk.out"
+    "gen": "cp -f $(node -p 'require.resolve(\"aws-sdk/apis/metadata.json\")') lib/aws-custom-resource/sdk-api-metadata.json && rm -rf test/aws-custom-resource/cdk.out",
+    "rosetta:extract": "yarn --silent jsii-rosetta extract"
   },
   "cdk-build": {
     "jest": true,
@@ -79,7 +80,7 @@
     "@types/aws-lambda": "^8.10.64",
     "@types/fs-extra": "^8.1.1",
     "@types/sinon": "^9.0.9",
-    "aws-sdk": "^2.799.0",
+    "aws-sdk": "^2.802.0",
     "aws-sdk-mock": "^5.1.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
