@@ -80,6 +80,13 @@ export function hasDependencies(entry: string): boolean {
     return true;
   }
 
+  if (
+    fs.existsSync(path.join(entry, "pyproject.toml")) &&
+    fs.existsSync(path.join(entry, "poetry.lock"))
+  ) {
+    return true;
+  }
+
   if (fs.existsSync(path.join(entry, 'requirements.txt'))) {
     return true;
   }
