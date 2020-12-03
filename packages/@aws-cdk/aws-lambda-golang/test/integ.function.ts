@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { Runtime } from '@aws-cdk/aws-lambda';
-import { App, Stack, StackProps } from '@aws-cdk/core';
+import { App, AssetHashType, Stack, StackProps } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as lambda from '../lib';
 
@@ -16,6 +16,7 @@ class TestStack extends Stack {
     new lambda.GolangFunction(this, 'go-handler-vendor', {
       entry: path.join(__dirname, 'lambda-handler-vendor/cmd/api'),
       bundling: {
+        assetHashType: AssetHashType.SOURCE,
         commandHooks: {
           afterBundling(): string[] {
             return [];
@@ -35,6 +36,7 @@ class TestStack extends Stack {
     new lambda.GolangFunction(this, 'go-handler-docker', {
       entry: path.join(__dirname, 'lambda-handler-vendor/cmd/api'),
       bundling: {
+        assetHashType: AssetHashType.SOURCE,
         forcedDockerBundling: true,
         commandHooks: {
           afterBundling(): string[] {
