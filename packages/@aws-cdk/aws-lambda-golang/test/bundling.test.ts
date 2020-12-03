@@ -38,7 +38,7 @@ test('bundling', () => {
   });
 
   expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(modFilePath), {
-    assetHashType: AssetHashType.SOURCE,
+    assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       environment: {
         KEY: 'value',
@@ -64,7 +64,7 @@ test('bundling with file as entry', () => {
   });
 
   expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
-    assetHashType: AssetHashType.SOURCE,
+    assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
@@ -84,7 +84,7 @@ test('bundling with file in subdirectory as entry', () => {
   });
 
   expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
-    assetHashType: AssetHashType.SOURCE,
+    assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
@@ -106,7 +106,7 @@ test('go with Windows paths', () => {
   });
 
   expect(Code.fromAsset).toHaveBeenCalledWith(expect.any(String), expect.objectContaining({
-    assetHashType: AssetHashType.SOURCE,
+    assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       command: expect.arrayContaining([
         expect.stringContaining('cmd/api'),
@@ -195,7 +195,7 @@ test('Custom bundling docker image', () => {
   });
 
   expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
-    assetHashType: AssetHashType.SOURCE,
+    assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       image: { image: 'my-custom-image' },
     }),
@@ -214,7 +214,7 @@ test('Go build flags can be passed', () => {
   });
 
   expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
-    assetHashType: AssetHashType.SOURCE,
+    assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       environment: {
         KEY: 'value',
@@ -285,7 +285,7 @@ test('with command hooks', () => {
   });
 
   expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(modFilePath), {
-    assetHashType: AssetHashType.SOURCE,
+    assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',

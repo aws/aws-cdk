@@ -23,8 +23,8 @@ class TestStack extends Stack {
           beforeInstall(): string[] {
             return [];
           },
-          beforeBundling(inputDir: string): string[] {
-            return [`cd ${inputDir}`, 'go test ./cmd/api -v'];
+          beforeBundling(): string[] {
+            return ['go test -mod=vendor ./cmd/api -v'];
           },
         },
         goBuildFlags: ['-ldflags "-s -w"'],
@@ -43,8 +43,10 @@ class TestStack extends Stack {
           beforeInstall(): string[] {
             return [];
           },
-          beforeBundling(inputDir: string): string[] {
-            return [`cd ${inputDir}`, 'go test ./cmd/api -v'];
+          beforeBundling(): string[] {
+            return [
+              'go test -mod=vendor ./cmd/api -v'
+            ];
           },
         },
         goBuildFlags: ['-ldflags "-s -w"'],

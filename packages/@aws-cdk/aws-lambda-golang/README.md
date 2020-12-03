@@ -196,13 +196,13 @@ container for Docker bundling or on the host OS for local bundling.
 ## Additional considerations
 
 Depending on how you structure your Golang application, you may want to change the `assetHashType` parameter.
-By default this parameter is set to `AssetHashType.SOURCE` which means that the CDK will calculate the asset hash
-(and determine whether or not your code has changed) by looking at the folder you specified in `entry`. If
-all of your dependencies for your app are within that folder then `AssetHashType.SOURCE` will probaby suffice.
+By default this parameter is set to `AssetHashType.OUTPUT` which means that the CDK will calculate the asset hash
+(and determine whether or not your code has changed) based on the Golang executable that is created.
 
-If you have dependencies outside of the `entry` folder then you may want to change this to `AssetHashType.OUTPUT`
-Changing this to `OUTPUT` will instruct the CDK to calculate the hash based on the Golang executable that
-is created.
+If you specify `AssetHashType.SOURCE`, the CDK will calculate the asset hash by looking at the folder
+that contains your `go.mod` file. If you are deploying a single Lambda function, or you want to redeploy
+all of your functions if anything changes, then `AssetHashType.SOURCE` will probaby work.
+
 
 For example, if my app looked like this:
 
@@ -219,5 +219,31 @@ lamda-app
 ```
 
 With this structure I would provide the `entry` as `cmd/api` which means that the CDK
-will only recognize changes within that folder. If I made changes to the `pkg` directory
-the CDK would not recognize a code change. In this case I might want to update the `assetHashType` to `OUTPUT`.
+will determine that the protect root is `lambda-app` (it contains the `go.mod` file).
+Since I only have a single Lambda function, and any update to files within the `lambda-app` directory
+should trigger a new deploy, I could specify `AssetHashType.SOURCE`.
+
+On the other hand, if I had a project that deployed mmultiple Lambda functions, for example:
+
+```bash
+lamda-app
+├── cmd
+│   ├── api
+│   │   └── main.go
+│   └── anotherApi
+│       └── main.go
+├── go.mod
+├── go.sum
+└── pkg
+    ├── auth
+    │   └── auth.go
+    └── middleware
+        └── middleware.go
+```
+
+Then I would most likely want `AssetHashType.OUTPUT`. With `OUTPUT`
+the CDK will only recognize changes if the Golang executable has changed,
+and Go only includes dependencies that are used in the executable. So in this case
+if `cmd/api` used the `auth` & `middleware` packages, but `cmd/anotherApi` did not, then
+an update to `auth` or `middleware` would only trigger an update to the `cmd/api` Lambda
+Function.

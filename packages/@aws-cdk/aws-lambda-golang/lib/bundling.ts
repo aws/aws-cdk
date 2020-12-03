@@ -32,7 +32,7 @@ export class Bundling implements cdk.BundlingOptions {
 
   public static bundle(options: BundlingProps): AssetCode {
     return Code.fromAsset(path.dirname(options.modFilePath), {
-      assetHashType: options.assetHashType ?? cdk.AssetHashType.SOURCE,
+      assetHashType: options.assetHashType ?? cdk.AssetHashType.OUTPUT,
       bundling: new Bundling(options),
     });
   }
