@@ -59,8 +59,11 @@ export class Bundling implements cdk.BundlingOptions {
     const projectRoot = path.dirname(props.modFilePath);
     this.relativeEntryPath = `./${path.relative(projectRoot, path.resolve(props.entry))}`;
 
+    const cgoEnabled = props.cgoEnabled ? '1' : '0';
+
     const environment = {
       ...props.environment,
+      CGO_ENABLED: cgoEnabled,
       GO111MODULE: 'on',
       GOARCH: 'amd64',
       GOOS: 'linux',

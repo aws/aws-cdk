@@ -42,6 +42,7 @@ test('bundling', () => {
     bundling: expect.objectContaining({
       environment: {
         KEY: 'value',
+        CGO_ENABLED: '0',
         GO111MODULE: 'on',
         GOARCH: 'amd64',
         GOOS: 'linux',
@@ -218,6 +219,7 @@ test('Go build flags can be passed', () => {
     bundling: expect.objectContaining({
       environment: {
         KEY: 'value',
+        CGO_ENABLED: '0',
         GO111MODULE: 'on',
         GOARCH: 'amd64',
         GOOS: 'linux',
@@ -248,6 +250,7 @@ test('AssetHashType can be specified', () => {
     bundling: expect.objectContaining({
       environment: {
         KEY: 'value',
+        CGO_ENABLED: '0',
         GO111MODULE: 'on',
         GOARCH: 'amd64',
         GOOS: 'linux',

@@ -56,6 +56,15 @@ export interface BundlingOptions {
    * @default - do not run additional commands
    */
   readonly commandHooks?: ICommandHooks;
+
+  /**
+   * Whether or not to enable cgo during go build
+   *
+   * This will set the CGO_ENABLED environment variable
+   *
+   * @default - false
+   */
+  readonly cgoEnabled?: boolean;
 }
 
 /**
