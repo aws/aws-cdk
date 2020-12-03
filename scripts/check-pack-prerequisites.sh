@@ -1,8 +1,7 @@
 #!/bin/bash
 set -euo pipefail
-set -x;
+
 scriptdir=$(cd $(dirname $0) && pwd)
-source ${scriptdir}/check-prerequisites.sh
 source ${scriptdir}/check-build-prerequisites.sh
 
 # Testing with this to simulate different installed apps:
