@@ -215,13 +215,13 @@ export class ReadmeFile extends ValidationRule {
         fix: () => fs.writeFileSync(
           readmeFile,
           [
-            `## ${headline || pkg.json.description}`,
+            `# ${headline || pkg.json.description}`,
             'This module is part of the[AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.',
           ].join('\n'),
         ),
       });
     } else if (headline) {
-      const requiredFirstLine = `## ${headline}`;
+      const requiredFirstLine = `# ${headline}`;
       const [firstLine, ...rest] = fs.readFileSync(readmeFile, { encoding: 'utf8' }).split('\n');
       if (firstLine !== requiredFirstLine) {
         pkg.report({
@@ -323,11 +323,13 @@ export class MaturitySetting extends ValidationRule {
 
     return [
       '<!--BEGIN STABILITY BANNER-->',
+      '',
       '---',
       '',
       ...bannerLines,
       '',
       '---',
+      '',
       '<!--END STABILITY BANNER-->',
       '',
     ].join('\n');
@@ -407,17 +409,25 @@ export class FeatureStabilityRule extends ValidationRule {
       return;
     }
 
+    const featuresColumnWitdh = Math.max(
+      13, // 'CFN Resources'.length
+      ...pkg.json.features.map((feat: { name: string; }) => feat.name.length),
+    );
+
     const stabilityBanner: string = [
       '<!--BEGIN STABILITY BANNER-->',
+      '',
       '---',
       '',
-      '| Features | Stability |',
-      '| --- | --- |',
-      ...this.featureEntries(pkg),
+      `Features${' '.repeat(featuresColumnWitdh - 8)} | Stability`,
+      `--------${'-'.repeat(featuresColumnWitdh - 8)}-|-----------${'-'.repeat(Math.max(0, 100 - featuresColumnWitdh - 13))}`,
+      ...this.featureEntries(pkg, featuresColumnWitdh),
       '',
       ...this.bannerNotices(pkg),
       '---',
+      '',
       '<!--END STABILITY BANNER-->',
+      '',
     ].join('\n');
 
     const readmeFile = path.join(pkg.packageRoot, 'README.md');
@@ -437,17 +447,17 @@ export class FeatureStabilityRule extends ValidationRule {
     }
   }
 
-  private featureEntries(pkg: PackageJson): string[] {
+  private featureEntries(pkg: PackageJson, featuresColumnWitdh: number): string[] {
     const entries: string[] = [];
     if (pkg.json['cdk-build']?.cloudformation) {
-      entries.push(`| CFN Resources | ![Stable](${this.badges.Stable}) |`);
+      entries.push(`CFN Resources${' '.repeat(featuresColumnWitdh - 13)} | ![Stable](${this.badges.Stable})`);
     }
     pkg.json.features.forEach((feature: { [key: string]: string }) => {
       const badge = this.badges[feature.stability];
       if (!badge) {
         throw new Error(`Unknown stability - ${feature.stability}`);
       }
-      entries.push(`| ${feature.name} | ![${feature.stability}](${badge}) |`);
+      entries.push(`${feature.name}${' '.repeat(featuresColumnWitdh - feature.name.length)} | ![${feature.stability}](${badge})`);
     });
     return entries;
   }
@@ -462,11 +472,15 @@ export class FeatureStabilityRule extends ValidationRule {
     const noticeOrder = ['Experimental', 'Developer Preview', 'Stable'];
     const stabilities = pkg.json.features.map((f: { [k: string]: string }) => f.stability);
     const filteredNotices = noticeOrder.filter(v => stabilities.includes(v));
-    filteredNotices.map((notice) => {
+    for (const notice of filteredNotices) {
+      if (notices.length !== 0) {
+        // This delimiter helps ensure proper parsing & rendering with various parsers
+        notices.push('<!-- -->', '');
+      }
       const lowerTrainCase = notice.toLowerCase().replace(/\s/g, '-');
       notices.push(readBannerFile(`features-${lowerTrainCase}.md`));
       notices.push('');
-    });
+    }
     return notices;
   }
 }
@@ -1596,5 +1610,5 @@ function toRegExp(str: string): RegExp {
 }
 
 function readBannerFile(file: string): string {
-  return fs.readFileSync(path.join(__dirname, 'banners', file), { encoding: 'utf-8' });
+  return fs.readFileSync(path.join(__dirname, 'banners', file), { encoding: 'utf-8' }).trim();
 }

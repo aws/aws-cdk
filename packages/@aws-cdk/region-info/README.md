@@ -1,20 +1,28 @@
 # AWS Region-Specific Information Directory
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
 
-> The APIs of higher level constructs in this module are experimental and under active development. They are subject to non-backward compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be announced in the release notes. This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
+> The APIs of higher level constructs in this module are experimental and under active development.
+> They are subject to non-backward compatible changes or removal in any future version. These are
+> not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be
+> announced in the release notes. This means that while you may use them, you may need to update
+> your source code when upgrading to a newer version of this package.
 
 ---
+
 <!--END STABILITY BANNER-->
 
 ## Usage
+
 Some information used in CDK Applications differs from one AWS region to
 another, such as service principals used in IAM policies, S3 static website
 endpoints, ...
 
 ### The `RegionInfo` class
+
 The library offers a simple interface to obtain region specific information in
 the form of the `RegionInfo` class. This is the preferred way to interact with
 the regional information database:
@@ -35,6 +43,7 @@ below and can be used to register additional data, including user-defined facts
 that are not available through the `RegionInfo` interface.
 
 ### Low-Level API
+
 This library offers a primitive database of such information so that CDK
 constructs can easily access regional information. The `FactName` class provides
 a list of known fact names, which can then be used with the `RegionInfo` to
@@ -51,6 +60,7 @@ const staticWebsite = regionInfo.Fact.find('ap-northeast-1', regionInfo.FactName
 ```
 
 ## Supplying new or missing information
+
 As new regions are released, it might happen that a particular fact you need is
 missing from the library. In such cases, the `Fact.register` method can be used
 to inject FactName into the database:
@@ -64,6 +74,7 @@ regionInfo.Fact.register({
 ```
 
 ## Overriding incorrect information
+
 In the event information provided by the library is incorrect, it can be
 overridden using the same `Fact.register` method demonstrated above, simply
 adding an extra boolean argument:

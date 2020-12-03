@@ -1,5 +1,6 @@
-## AWS Cloud Development Kit Core Library
+# AWS Cloud Development Kit Core Library
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
@@ -7,6 +8,7 @@
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
 
 This library includes the basic building blocks of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) (AWS CDK). It defines the core classes that are used in the rest of the
@@ -152,10 +154,10 @@ const secret = SecretValue.secretsManager('secretId', {
 Using AWS Secrets Manager is the recommended way to reference secrets in a CDK app.
 `SecretValue` also supports the following secret sources:
 
- * `SecretValue.plainText(secret)`: stores the secret as plain text in your app and the resulting template (not recommended).
- * `SecretValue.ssmSecure(param, version)`: refers to a secret stored as a SecureString in the SSM Parameter Store.
- * `SecretValue.cfnParameter(param)`: refers to a secret passed through a CloudFormation parameter (must have `NoEcho: true`).
- * `SecretValue.cfnDynamicReference(dynref)`: refers to a secret described by a CloudFormation dynamic reference (used by `ssmSecure` and `secretsManager`).
+ - `SecretValue.plainText(secret)`: stores the secret as plain text in your app and the resulting template (not recommended).
+ - `SecretValue.ssmSecure(param, version)`: refers to a secret stored as a SecureString in the SSM Parameter Store.
+ - `SecretValue.cfnParameter(param)`: refers to a secret passed through a CloudFormation parameter (must have `NoEcho: true`).
+ - `SecretValue.cfnDynamicReference(dynref)`: refers to a secret described by a CloudFormation dynamic reference (used by `ssmSecure` and `secretsManager`).
 
 ## ARN manipulation
 
@@ -240,13 +242,13 @@ between two stacks by using the `stackA.addDependency(stackB)` method.
 
 A stack dependency has the following implications:
 
-* Cyclic dependencies are not allowed, so if `stackA` is using resources from
+- Cyclic dependencies are not allowed, so if `stackA` is using resources from
   `stackB`, the reverse is not possible anymore.
-* Stacks with dependencies between them are treated specially by the CDK
+- Stacks with dependencies between them are treated specially by the CDK
   toolkit:
-  * If `stackA` depends on `stackB`, running `cdk deploy stackA` will also
+  - If `stackA` depends on `stackB`, running `cdk deploy stackA` will also
     automatically deploy `stackB`.
-  * `stackB`'s deployment will be performed *before* `stackA`'s deployment.
+  - `stackB`'s deployment will be performed *before* `stackA`'s deployment.
 
 ## Custom Resources
 
@@ -774,6 +776,7 @@ new CfnInclude(this, 'ID', {
 ```
 
 ### Termination Protection
+
 You can prevent a stack from being accidentally deleted by enabling termination
 protection on the stack. If a user attempts to delete a stack with termination
 protection enabled, the deletion fails and the stack--including its status--remains
