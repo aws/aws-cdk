@@ -1,18 +1,26 @@
-## AWS Config Construct Library
+# AWS Config Construct Library
 <!--BEGIN STABILITY BANNER-->
----
-
-| Features | Stability |
-| --- | --- |
-| CFN Resources | ![Stable](https://img.shields.io/badge/stable-success.svg?style=for-the-badge) |
-| Higher level constructs for Config Rules | ![Stable](https://img.shields.io/badge/stable-success.svg?style=for-the-badge) |
-| Higher level constructs for initial set-up (delivery channel & configuration recorder) | ![Not Implemented](https://img.shields.io/badge/not--implemented-black.svg?style=for-the-badge) |
-
-> **CFN Resources:** All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) are always stable and safe to use.
-
-> **Stable:** Higher level constructs in this module that are marked stable will not undergo any breaking changes. They will strictly follow the [Semantic Versioning](https://semver.org/) model.
 
 ---
+
+Features                                                                               | Stability
+---------------------------------------------------------------------------------------|------------
+CFN Resources                                                                          | ![Stable](https://img.shields.io/badge/stable-success.svg?style=for-the-badge)
+Higher level constructs for Config Rules                                               | ![Stable](https://img.shields.io/badge/stable-success.svg?style=for-the-badge)
+Higher level constructs for initial set-up (delivery channel & configuration recorder) | ![Not Implemented](https://img.shields.io/badge/not--implemented-black.svg?style=for-the-badge)
+
+> **CFN Resources:** All classes with the `Cfn` prefix in this module ([CFN Resources]) are always
+> stable and safe to use.
+>
+> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib
+
+<!-- -->
+
+> **Stable:** Higher level constructs in this module that are marked stable will not undergo any
+> breaking changes. They will strictly follow the [Semantic Versioning](https://semver.org/) model.
+
+---
+
 <!--END STABILITY BANNER-->
 
 [AWS Config](https://docs.aws.amazon.com/config/latest/developerguide/WhatIsConfig.html) provides a detailed view of the configuration of AWS resources in your AWS account.
@@ -21,7 +29,7 @@ past so that you can see how the configurations and relationships change over ti
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
-### Initial Setup
+## Initial Setup
 
 Before using the constructs provided in this module, you need to set up AWS Config
 in the region in which it will be used. This setup includes the one-time creation of the
@@ -35,14 +43,14 @@ The following guides provide the steps for getting started with AWS Config:
 - [Using the AWS Console](https://docs.aws.amazon.com/config/latest/developerguide/gs-console.html)
 - [Using the AWS CLI](https://docs.aws.amazon.com/config/latest/developerguide/gs-cli.html)
 
-### Rules
+## Rules
 
 AWS Config can evaluate the configuration settings of your AWS resources by creating AWS Config rules,
 which represent your ideal configuration settings.
 
 See [Evaluating Resources with AWS Config Rules](https://docs.aws.amazon.com/config/latest/developerguide/evaluate-config.html) to learn more about AWS Config rules.
 
-#### AWS Managed Rules
+### AWS Managed Rules
 
 AWS Config provides AWS managed rules, which are predefined, customizable rules that AWS Config
 uses to evaluate whether your AWS resources comply with common best practices.
@@ -69,7 +77,7 @@ You can find supported input parameters in the [List of AWS Config Managed Rules
 
 The following higher level constructs for AWS managed rules are available.
 
-##### Access Key rotation
+#### Access Key rotation
 
 Checks whether your active access keys are rotated within the number of days specified.
 
@@ -81,7 +89,7 @@ import * as cdk from '@aws-cdk/aws-cdk';
 new config.AccessKeysRotated(this, 'AccessKeyRotated');
 ```
 
-##### CloudFormation Stack drift detection
+#### CloudFormation Stack drift detection
 
 Checks whether your CloudFormation stack's actual configuration differs, or has drifted,
 from it's expected configuration. 
@@ -97,7 +105,7 @@ new config.CloudFormationStackDriftDetectionCheck(stack, 'Drift', {
 });
 ```
 
-##### CloudFormation Stack notifications
+#### CloudFormation Stack notifications
 
 Checks whether your CloudFormation stacks are sending event notifications to a SNS topic.
 
@@ -115,13 +123,13 @@ new config.CloudFormationStackNotificationCheck(this, 'NotificationCheck', {
 })
 ```
 
-#### Custom rules
+### Custom rules
 
 You can develop custom rules and add them to AWS Config. You associate each custom rule with an
 AWS Lambda function, which contains the logic that evaluates whether your AWS resources comply
 with the rule.
 
-#### Triggers
+### Triggers
 
 AWS Lambda executes functions in response to events that are published by AWS Services.
 The function for a custom Config rule receives an event that is published by AWS Config,
@@ -149,7 +157,7 @@ The AWS documentation has examples of Lambda functions for evaluations that are
 [triggered by configuration changes](https://docs.aws.amazon.com/config/latest/developerguide/evaluate-config_develop-rules_nodejs-sample.html#event-based-example-rule) and [triggered periodically](https://docs.aws.amazon.com/config/latest/developerguide/evaluate-config_develop-rules_nodejs-sample.html#periodic-example-rule)
 
 
-#### Scope
+### Scope
 
 By default rules are triggered by changes to all [resources](https://docs.aws.amazon.com/config/latest/developerguide/resource-config-reference.html#supported-resources).
 
@@ -177,7 +185,7 @@ const tagRule = new config.CustomRule(this, 'CostCenterTagRule', {
 });
 ```
 
-#### Events
+### Events
 
 You can define Amazon EventBridge event rules which trigger when a compliance check fails
 or when a rule is re-evaluated.
@@ -214,7 +222,7 @@ rule.onReEvaluationStatus('ReEvaluationEvent', {
 })
 ```
 
-#### Example
+### Example
 
 The following example creates a custom rule that evaluates whether EC2 instances are compliant.
 Compliance events are published to an SNS topic.

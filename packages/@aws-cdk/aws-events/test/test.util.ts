@@ -55,5 +55,43 @@ export = {
       }), /Invalid event pattern field array. Type mismatch between existing pattern \[1\] and added pattern \{"value":\["hello"\]\}/);
       test.done();
     },
+
+    'deduplicate match values in pattern array'(test: Test) {
+      test.deepEqual(mergeEventPattern({
+        'detail-type': ['AWS API Call via CloudTrail'],
+      }, {
+        'detail-type': ['AWS API Call via CloudTrail'],
+      }), {
+        'detail-type': ['AWS API Call via CloudTrail'],
+      });
+      test.deepEqual(mergeEventPattern({
+        time: [{ prefix: '2017-10-02' }],
+      }, {
+        time: [{ prefix: '2017-10-02' }, { prefix: '2017-10-03' }],
+      }), {
+        time: [{ prefix: '2017-10-02' }, { prefix: '2017-10-03' }],
+      });
+      test.deepEqual(mergeEventPattern({
+        'detail-type': ['AWS API Call via CloudTrail'],
+        'time': [{ prefix: '2017-10-02' }],
+      }, {
+        'detail-type': ['AWS API Call via CloudTrail'],
+        'time': [{ prefix: '2017-10-02' }, { prefix: '2017-10-03' }],
+      }), {
+        'detail-type': ['AWS API Call via CloudTrail'],
+        'time': [{ prefix: '2017-10-02' }, { prefix: '2017-10-03' }],
+      });
+      test.deepEqual(mergeEventPattern({
+        'detail-type': ['AWS API Call via CloudTrail', 'AWS API Call via CloudTrail'],
+        'time': [{ prefix: '2017-10-02' }],
+      }, {
+        'detail-type': ['AWS API Call via CloudTrail', 'AWS API Call via CloudTrail'],
+        'time': [{ prefix: '2017-10-02' }, { prefix: '2017-10-03' }, { prefix: '2017-10-02' }],
+      }), {
+        'detail-type': ['AWS API Call via CloudTrail'],
+        'time': [{ prefix: '2017-10-02' }, { prefix: '2017-10-03' }],
+      });
+      test.done();
+    },
   },
 };
