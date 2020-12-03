@@ -45,7 +45,7 @@ class TestStack extends Stack {
           },
           beforeBundling(): string[] {
             return [
-              'go test -mod=vendor ./cmd/api -v'
+              'go test -mod=vendor ./cmd/api -v',
             ];
           },
         },
