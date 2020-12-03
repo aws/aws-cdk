@@ -35,7 +35,7 @@ runtime code.
    limited to supported runtimes and the code cannot exceed 4KiB.
  * `lambda.Code.fromAsset(path)` - specify a directory or a .zip file in the local
    filesystem which will be zipped and uploaded to S3 before deployment. See also
-   [bundling asset code](#Bundling-Asset-Code).
+   [bundling asset code](#bundling-asset-code).
 
 The following example shows how to define a Python function and deploy the code
 from the local directory `my-lambda-handler` to it:
