@@ -2,7 +2,7 @@ import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { Construct, ConstructNode, IConstruct, Names, Stack } from '@aws-cdk/core';
+import { Annotations, Construct, ConstructNode, IConstruct, Names, Stack } from '@aws-cdk/core';
 
 /**
  * Obtain the Role for the EventBridge event
@@ -48,18 +48,21 @@ export function addLambdaPermission(rule: events.IRule, handler: lambda.IFunctio
 }
 
 
+/**
+ * Allow a rule to send events with failed invocation to an Amazon SQS queue.
+ */
 export function addToDeadLetterQueueResourcePolicy(rule: events.IRule, queue: sqs.IQueue) {
   const ruleParsedStack = Stack.of(rule);
   const queueParsedStack = Stack.of(queue);
 
+
   if (ruleParsedStack.region !== queueParsedStack.region) {
-    throw new Error(`Cannot assign Dead Letter Queue to the rule ${rule}. Both the queue and the rule must be in the same region`);
+    throw new Error(`Cannot assign Dead Letter Queue in region ${queueParsedStack.region} to the rule ${Names.nodeUniqueId(rule.node)} in region ${ruleParsedStack.region}. Both the queue and the rule must be in the same region.`);
   }
 
   // Skip Resource Policy creation if the Queue is not in the same account.
   // There is no way to add a target onto an imported rule, so we can assume we will run the following code only
   // in the account where the rule is created.
-
   if (ruleParsedStack.account === queueParsedStack.account) {
     const policyStatementId = `AllowEventRule${Names.nodeUniqueId(rule.node)}`;
 
@@ -76,6 +79,6 @@ export function addToDeadLetterQueueResourcePolicy(rule: events.IRule, queue: sq
       },
     }));
   } else {
-    // Maybe we could post a warning telling the user to create the permission in the target account manually ?
+    Annotations.of(rule).addWarning(`Cannot add a resource policy to your dead letter queue associated with rule ${rule.ruleName} because the queue is in a different account. You must add the resource policy manually to the dead letter queue in account ${queueParsedStack.account}.`);
   }
 }

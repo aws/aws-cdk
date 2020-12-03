@@ -171,6 +171,137 @@ test('use a Dead Letter Queue for the rule target', () => {
       },
     ],
   });
+
+  expect(stack).toHaveResource('AWS::SQS::QueuePolicy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'sqs:SendMessage',
+          Condition: {
+            ArnEquals: {
+              'aws:SourceArn': {
+                'Fn::GetAtt': [
+                  'Rule4C995B7F',
+                  'Arn',
+                ],
+              },
+            },
+          },
+          Effect: 'Allow',
+          Principal: {
+            Service: 'events.amazonaws.com',
+          },
+          Resource: {
+            'Fn::GetAtt': [
+              'Queue4A7E3555',
+              'Arn',
+            ],
+          },
+          Sid: 'AllowEventRuleStackRuleF6E31DD0',
+        },
+      ],
+      Version: '2012-10-17',
+    },
+    Queues: [
+      {
+        Ref: 'Queue4A7E3555',
+      },
+    ],
+  });
+});
+
+test('throw an error when using a Dead Letter Queue for the rule target in a different region', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack1 = new cdk.Stack(app, 'Stack1', {
+    env: {
+      region: 'eu-west-1',
+    },
+  });
+  const stack2 = new cdk.Stack(app, 'Stack2', {
+    env: {
+      region: 'eu-west-2',
+    },
+  });
+
+  const fn = new lambda.Function(stack1, 'MyLambda', {
+    code: new lambda.InlineCode('foo'),
+    handler: 'bar',
+    runtime: lambda.Runtime.PYTHON_2_7,
+  });
+
+  const queue = new sqs.Queue(stack2, 'Queue');
+
+  let rule = new events.Rule(stack1, 'Rule', {
+    schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+  });
+
+
+  expect(() => {
+    rule.addTarget(new targets.LambdaFunction(fn, {
+      deadLetterQueue: queue,
+    }));
+  }).toThrow(/Cannot assign Dead Letter Queue in region eu-west-2 to the rule Stack1Rule92BA1111 in region eu-west-1. Both the queue and the rule must be in the same region./);
+});
+
+test('must display a warning when using a Dead Letter Queue from another account', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack1 = new cdk.Stack(app, 'Stack1', {
+    env: {
+      region: 'eu-west-1',
+      account: '111111111111',
+    },
+  });
+
+  const stack2 = new cdk.Stack(app, 'Stack2', {
+    env: {
+      region: 'eu-west-1',
+      account: '222222222222',
+    },
+  });
+
+  const fn = new lambda.Function(stack1, 'MyLambda', {
+    code: new lambda.InlineCode('foo'),
+    handler: 'bar',
+    runtime: lambda.Runtime.PYTHON_2_7,
+  });
+
+  const queue = sqs.Queue.fromQueueArn(stack2, 'Queue', 'arn:aws:sqs:eu-west-1:444455556666:queue1');
+
+  new events.Rule(stack1, 'Rule', {
+    schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+    targets: [new targets.LambdaFunction(fn, {
+      deadLetterQueue: queue,
+    })],
+  });
+
+  expect(() => app.synth()).not.toThrow();
+
+  // the Permission resource should be in the event stack
+  expect(stack1).toHaveResource('AWS::Events::Rule', {
+    ScheduleExpression: 'rate(1 minute)',
+    State: 'ENABLED',
+    Targets: [
+      {
+        Arn: {
+          'Fn::GetAtt': [
+            'MyLambdaCCE802FB',
+            'Arn',
+          ],
+        },
+        DeadLetterConfig: {
+          Arn: 'arn:aws:sqs:eu-west-1:444455556666:queue1',
+        },
+        Id: 'Target0',
+      },
+    ],
+  });
+
+  expect(stack1).not.toHaveResource('AWS::SQS::QueuePolicy');
+
+  let rule = stack1.node.children.find(child => child instanceof events.Rule);
+  expect(rule?.node.metadata[0].data).toEqual('Cannot add a resource policy to your dead letter queue associated with rule ${Token[TOKEN.251]} because the queue is in a different account. You must add the resource policy manually to the dead letter queue in account 222222222222.');
 });
 
 function newTestLambda(scope: constructs.Construct) {

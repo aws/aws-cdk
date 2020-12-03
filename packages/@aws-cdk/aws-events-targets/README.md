@@ -40,7 +40,7 @@ import * as lambda from "@aws-cdk/aws-lambda";
 import * as events from "@aws-cdk/aws-events";
 import * as targets from "@aws-cdk/aws-events-targets";
 
-const fn = new lambda.Function(stack, 'MyFunc', {
+const fn = new lambda.Function(this, 'MyFunc', {
   runtime: lambda.Runtime.NODEJS_10_X,
   handler: 'index.handler',
   code: lambda.Code.fromInline(`exports.handler = ${handler.toString()}`),
@@ -52,7 +52,7 @@ const rule = new events.Rule(this, 'rule', {
   },
 });
 
-const queue = new sqs.Queue(stack, 'Queue');
+const queue = new sqs.Queue(this, 'Queue');
 
 rule.addTarget(new targets.LambdaFunction(fn, {
   deadLetterQueue: queue, // Optional: add a dead letter queue
