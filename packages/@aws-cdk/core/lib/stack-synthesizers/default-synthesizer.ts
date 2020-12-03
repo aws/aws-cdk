@@ -424,7 +424,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
     //
     // Instead, we'll have a protocol with the CLI that we put an 's3://.../...' URL here, and the CLI
     // is going to resolve it to the correct 'https://.../' URL before it gives it to CloudFormation.
-    return `s3://${this.bucketName}/${sourceHash}`;
+    return `s3://${this.bucketName}/${this.bucketPrefix}${sourceHash}`;
   }
 
   /**
