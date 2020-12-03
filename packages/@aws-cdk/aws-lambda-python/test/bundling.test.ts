@@ -140,6 +140,20 @@ describe('Dependency detection', () => {
     expect(hasDependencies('/asset-input')).toEqual(true);
   });
 
+  test('Detects poetry', () => {
+    existsSyncMock.mockImplementation((p: fs.PathLike) => {
+      if (
+        /pyproject.toml/.test(p.toString()) &&
+        /poetry.lock/.test(p.toString())
+      ) {
+        return true;
+      }
+      return existsSyncOriginal(p);
+    });
+
+    expect(hasDependencies('/asset-input')).toEqual(true);
+  });
+
   test('Detects requirements.txt', () => {
     existsSyncMock.mockImplementation((p: fs.PathLike) => {
       if (/requirements.txt/.test(p.toString())) {
