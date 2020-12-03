@@ -1,5 +1,6 @@
-## Amazon EventBridge Construct Library
+# Amazon EventBridge Construct Library
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
@@ -7,6 +8,7 @@
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
 
 Amazon EventBridge delivers a near real-time stream of system events that
@@ -80,7 +82,7 @@ onCommitRule.addTarget(new targets.SnsTopic(topic, {
 
 ## Scheduling
 
-You can configure a Rule to run on a schedule (cron or rate). 
+You can configure a Rule to run on a schedule (cron or rate).
 
 The following example runs a task every day at 4am:
 
@@ -98,6 +100,7 @@ new Rule(this, 'ScheduleRule', {
 ```
 
 If you want to specify Fargate platform version, set `platformVersion` in EcsTask's props like the following example:
+
 ```ts
 const platformVersion = ecs.FargatePlatformVersion.VERSION1_4;
 const ecsTaskTarget = new EcsTask({ cluster, taskDefinition, role, platformVersion });
@@ -124,7 +127,7 @@ The following targets are supported:
 
 It's possible to have the source of the event and a target in separate AWS accounts:
 
-```typescript
+```ts
 import { App, Stack } from '@aws-cdk/core';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codecommit from '@aws-cdk/aws-codecommit';

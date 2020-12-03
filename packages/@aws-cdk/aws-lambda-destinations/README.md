@@ -1,10 +1,12 @@
-## Amazon Lambda Destinations Library
+# Amazon Lambda Destinations Library
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
 
 This library provides constructs for adding destinations to a Lambda function.
@@ -37,6 +39,7 @@ const myFn = new lambda.Function(this, 'Fn', {
 See also [Configuring Destinations for Asynchronous Invocation](https://docs.aws.amazon.com/lambda/latest/dg/invocation-async.html#invocation-async-destinations).
 
 ### Invocation record
+
 When a lambda function is configured with a destination, an invocation record is created by the Lambda service
 when the lambda function completes. The invocation record contains the details of the function, its context, and
 the request and response payloads.
@@ -93,6 +96,7 @@ In case of failure, the record contains the reason and error object:
 ```
 
 #### Destination-specific JSON format
+
 * For SNS/SQS (`SnsDestionation`/`SqsDestination`), the invocation record JSON is passed as the `Message` to the destination.
 * For Lambda (`LambdaDestination`), the invocation record JSON is passed as the payload to the function.
 * For EventBridge (`EventBridgeDestination`), the invocation record JSON is passed as the `detail` in the PutEvents call.
@@ -103,6 +107,7 @@ contains the function and destination ARNs. See [AWS Events](https://docs.aws.am
 for the different event fields.
 
 ### Auto-extract response payload with lambda destination
+
 The `responseOnly` option of `LambdaDestination` allows to auto-extract the response payload from the
 invocation record:
 
