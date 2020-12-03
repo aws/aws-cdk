@@ -1,6 +1,6 @@
-## Amazon API Gateway Construct Library
-
+# Amazon API Gateway Construct Library
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
@@ -8,7 +8,9 @@
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
+
 
 Amazon API Gateway is a fully managed service that makes it easy for developers
 to publish, maintain, monitor, and secure APIs at any scale. Create an API to
@@ -121,11 +123,11 @@ The following example uses sets up two Resources '/pets' and '/books' in separat
 Methods are associated with backend integrations, which are invoked when this
 method is called. API Gateway supports the following integrations:
 
-* `MockIntegration` - can be used to test APIs. This is the default
+- `MockIntegration` - can be used to test APIs. This is the default
    integration if one is not specified.
-* `LambdaIntegration` - can be used to invoke an AWS Lambda function.
-* `AwsIntegration` - can be used to invoke arbitrary AWS service APIs.
-* `HttpIntegration` - can be used to invoke HTTP endpoints.
+- `LambdaIntegration` - can be used to invoke an AWS Lambda function.
+- `AwsIntegration` - can be used to invoke arbitrary AWS service APIs.
+- `HttpIntegration` - can be used to invoke HTTP endpoints.
 
 The following example shows how to integrate the `GET /book/{book_id}` method to
 an AWS Lambda function:
@@ -607,7 +609,7 @@ The URL of your API can be obtained from the attribute `restApi.url`, and is
 also exported as an `Output` from your stack, so it's printed when you `cdk
 deploy` your app:
 
-```
+```console
 $ cdk deploy
 ...
 books.booksapiEndpointE230E8D5 = https://6lyktd4lpk.execute-api.us-east-1.amazonaws.com/prod/
@@ -932,7 +934,7 @@ const api = new apigw.RestApi(stack, 'api', {
 
 By performing this association, we can invoke the API gateway using the following format:
 
-```
+```plaintext
 https://{rest-api-id}-{vpce-id}.execute-api.{region}.amazonaws.com/{stage}
 ```
 

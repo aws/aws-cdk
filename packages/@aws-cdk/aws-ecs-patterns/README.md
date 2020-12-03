@@ -1,10 +1,12 @@
 # CDK Construct library for higher-level ECS Constructs
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
 
 This library provides higher-level Amazon ECS constructs which follow common architectural patterns. It contains:
