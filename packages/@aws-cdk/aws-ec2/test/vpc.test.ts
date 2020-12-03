@@ -818,7 +818,7 @@ nodeunitShim({
       const stack = new Stack();
       test.throws(() => {
         new Vpc(stack, 'Vpc', {
-          cidr: Lazy.stringValue({ produce: () => 'abc' }),
+          cidr: Lazy.string({ produce: () => 'abc' }),
         });
       }, /property must be a concrete CIDR string/);
 

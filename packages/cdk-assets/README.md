@@ -1,12 +1,18 @@
 # cdk-assets
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
 
-> The APIs of higher level constructs in this module are experimental and under active development. They are subject to non-backward compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be announced in the release notes. This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
+> The APIs of higher level constructs in this module are experimental and under active development.
+> They are subject to non-backward compatible changes or removal in any future version. These are
+> not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be
+> announced in the release notes. This means that while you may use them, you may need to update
+> your source code when upgrading to a newer version of this package.
 
 ---
+
 <!--END STABILITY BANNER-->
 
 A tool for publishing CDK assets to AWS environments.
@@ -44,7 +50,7 @@ default [`aws-sdk`](https://github.com/aws/aws-sdk-js) implementation allows.
 
 Command-line use looks like this:
 
-```
+```console
 $ cdk-assets /path/to/cdk.out [ASSET:DEST] [ASSET] [:DEST] [...]
 ```
 
@@ -58,7 +64,7 @@ asset IDs or destination IDs.
 
 An asset manifest looks like this:
 
-```
+```json
 {
   "version": "1.22.0",
   "files": {
