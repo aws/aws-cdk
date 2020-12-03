@@ -49,90 +49,92 @@ export class FromCloudFormation {
   }
 
   // nothing to for any but return it
-  public static getAny(value: any) { return value; }
+  public static getAny(value: any): FromCloudFormationResult<any> {
+    return new FromCloudFormationResult(value);
+  }
 
-  public static getBoolean(value: any): boolean | IResolvable {
+  public static getBoolean(value: any): FromCloudFormationResult<boolean | IResolvable> {
     if (typeof value === 'string') {
       // CloudFormation allows passing strings as boolean
       switch (value) {
-        case 'true': return true;
-        case 'false': return false;
+        case 'true': return new FromCloudFormationResult(true);
+        case 'false': return new FromCloudFormationResult(false);
         default: throw new Error(`Expected 'true' or 'false' for boolean value, got: '${value}'`);
       }
     }
 
     // in all other cases, just return the value,
     // and let a validator handle if it's not a boolean
-    return value;
+    return new FromCloudFormationResult(value);
   }
 
-  public static getDate(value: any): Date | IResolvable {
+  public static getDate(value: any): FromCloudFormationResult<Date | IResolvable> {
     // if the date is a deploy-time value, just return it
     if (isResolvableObject(value)) {
-      return value;
+      return new FromCloudFormationResult(value);
     }
 
     // if the date has been given as a string, convert it
     if (typeof value === 'string') {
-      return new Date(value);
+      return new FromCloudFormationResult(new Date(value));
     }
 
     // all other cases - just return the value,
     // if it's not a Date, a validator should catch it
-    return value;
+    return new FromCloudFormationResult(value);
   }
 
   // won't always return a string; if the input can't be resolved to a string,
   // the input will be returned.
-  public static getString(value: any): string {
+  public static getString(value: any): FromCloudFormationResult<string> {
     // if the string is a deploy-time value, serialize it to a Token
     if (isResolvableObject(value)) {
-      return value.toString();
+      return new FromCloudFormationResult(value.toString());
     }
 
     // CloudFormation treats numbers and strings interchangeably;
     // so, if we get a number here, convert it to a string
     if (typeof value === 'number') {
-      return value.toString();
+      return new FromCloudFormationResult(value.toString());
     }
 
     // in all other cases, just return the input,
     // and let a validator handle it if it's not a string
-    return value;
+    return new FromCloudFormationResult(value);
   }
 
   // won't always return a number; if the input can't be parsed to a number,
   // the input will be returned.
-  public static getNumber(value: any): number {
+  public static getNumber(value: any): FromCloudFormationResult<number> {
     // if the string is a deploy-time value, serialize it to a Token
     if (isResolvableObject(value)) {
-      return Token.asNumber(value);
+      return new FromCloudFormationResult(Token.asNumber(value));
     }
 
     // return a number, if the input can be parsed as one
     if (typeof value === 'string') {
       const parsedValue = parseFloat(value);
       if (!isNaN(parsedValue)) {
-        return parsedValue;
+        return new FromCloudFormationResult(parsedValue);
       }
     }
 
     // otherwise return the input,
     // and let a validator handle it if it's not a number
-    return value;
+    return new FromCloudFormationResult(value);
   }
 
-  public static getStringArray(value: any): string[] {
+  public static getStringArray(value: any): FromCloudFormationResult<string[]> {
     // if the array is a deploy-time value, serialize it to a Token
     if (isResolvableObject(value)) {
-      return Token.asList(value);
+      return new FromCloudFormationResult(Token.asList(value));
     }
 
     // in all other cases, delegate to the standard mapping logic
     return this.getArray(this.getString)(value);
   }
 
-  public static getArray<T>(mapper: (arg: any) => T): (x: any) => T[] {
+  public static getArray<T>(mapper: (arg: any) => FromCloudFormationResult<T>): (x: any) => FromCloudFormationResult<T[]> {
     return (value: any) => {
       if (!Array.isArray(value)) {
         // break the type system, and just return the given value,
@@ -140,55 +142,56 @@ export class FromCloudFormation {
         // of the property we're transforming
         // (unless it's a deploy-time value,
         // which we can't map over at build time anyway)
-        return value;
+        return new FromCloudFormationResult(value);
       }
 
-      return value.map(mapper);
+      return new FromCloudFormationResult(value.map(arg => mapper(arg).value));
     };
   }
 
-  public static getMap<T>(mapper: (arg: any) => T): (x: any) => { [key: string]: T } {
+  public static getMap<T>(mapper: (arg: any) => FromCloudFormationResult<T>): (x: any) => FromCloudFormationResult<{ [key: string]: T }> {
     return (value: any) => {
       if (typeof value !== 'object') {
         // if the input is not a map (= object in JS land),
         // just return it, and let the validator of this property handle it
         // (unless it's a deploy-time value,
         // which we can't map over at build time anyway)
-        return value;
+        return new FromCloudFormationResult(value);
       }
 
       const ret: { [key: string]: T } = {};
       for (const [key, val] of Object.entries(value)) {
-        ret[key] = mapper(val);
+        ret[key] = mapper(val).value;
       }
-      return ret;
+      return new FromCloudFormationResult(ret);
     };
   }
 
-  public static getCfnTag(tag: any): CfnTag {
+  public static getCfnTag(tag: any): FromCloudFormationResult<CfnTag> {
     return tag == null
-      ? { } as any // break the type system - this should be detected at runtime by a tag validator
-      : {
+      ? new FromCloudFormationResult({ } as any) // break the type system - this should be detected at runtime by a tag validator
+      : new FromCloudFormationResult({
         key: tag.Key,
         value: tag.Value,
-      };
+      });
   }
 
   /**
    * Return a function that, when applied to a value, will return the first validly deserialized one
    */
-  public static getTypeUnion(validators: Validator[], mappers: Mapper[]): (x: any) => any {
-    return (value: any): any => {
-      for (let i = 0; i < validators.length; i++) {
-        const candidate = mappers[i](value);
-        if (validators[i](candidate).isSuccess) {
-          return candidate;
-        }
-      }
-
-      // if nothing matches, just return the input unchanged, and let validators catch it
-      return value;
-    };
+  public static getTypeUnion(_validators: Validator[], _mappers: Mapper[]): (x: any) => any {
+    // return (value: any): any => {
+    //   for (let i = 0; i < validators.length; i++) {
+    //     const candidate = mappers[i](value);
+    //     if (validators[i](candidate).isSuccess) {
+    //       return candidate;
+    //     }
+    //   }
+    //
+    //   // if nothing matches, just return the input unchanged, and let validators catch it
+    //   return value;
+    // };
+    throw new Error('I will figure out getTypeUnion() later');
   }
 }
 
@@ -235,6 +238,21 @@ export interface FromCloudFormationOptions {
    * The parser used to convert CloudFormation to values the CDK understands.
    */
   readonly parser: CfnParser;
+}
+
+/**
+ * The class used as the intermediate result from the generated L1 methods
+ * that convert from CloudFormation's UpperCase to CDK's lowerCase property names.
+ * Saves any extra properties that were present in the argument object,
+ * but that were not found in the CFN schema,
+ * so that they're not lost from the final CDK-rendered template.
+ */
+export class FromCloudFormationResult<T> {
+  public readonly value: T;
+
+  public constructor(value: T) {
+    this.value = value;
+  }
 }
 
 /**
@@ -398,10 +416,10 @@ export class CfnParser {
       if (typeof p !== 'object') { return undefined; }
 
       return {
-        beforeAllowTrafficHook: FromCloudFormation.getString(p.BeforeAllowTrafficHook),
-        afterAllowTrafficHook: FromCloudFormation.getString(p.AfterAllowTrafficHook),
-        applicationName: FromCloudFormation.getString(p.ApplicationName),
-        deploymentGroupName: FromCloudFormation.getString(p.DeploymentGroupName),
+        beforeAllowTrafficHook: FromCloudFormation.getString(p.BeforeAllowTrafficHook).value,
+        afterAllowTrafficHook: FromCloudFormation.getString(p.AfterAllowTrafficHook).value,
+        applicationName: FromCloudFormation.getString(p.ApplicationName).value,
+        deploymentGroupName: FromCloudFormation.getString(p.DeploymentGroupName).value,
       };
     }
 

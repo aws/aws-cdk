@@ -241,7 +241,7 @@ export default class CodeGenerator {
       // translate the template properties to CDK objects
       this.code.line('const resourceProperties = options.parser.parseValue(resourceAttributes.Properties);');
       // translate to props, using a (module-private) factory function
-      this.code.line(`const props = ${genspec.fromCfnFactoryName(propsType).fqn}(resourceProperties);`);
+      this.code.line(`const props = ${genspec.fromCfnFactoryName(propsType).fqn}(resourceProperties).value;`);
       // finally, instantiate the resource class
       this.code.line(`const ret = new ${resourceName.className}(scope, id, props);`);
       // save all keys from the resourceProperties that are not in the current CFN schema in the resource using overrides
@@ -539,18 +539,18 @@ export default class CodeGenerator {
     // but never used as types of properties,
     // and in those cases this function will never be called.
     this.code.line('// @ts-ignore TS6133');
-    this.code.openBlock(`function ${factoryName.functionName}(properties: any): ${typeName.fqn}` +
-      (allowReturningIResolvable ? ` | ${CORE}.IResolvable` : ''));
+    this.code.openBlock(`function ${factoryName.functionName}(properties: any): ${CFN_PARSE}.FromCloudFormationResult<` +
+      `${typeName.fqn}${allowReturningIResolvable ? ' | ' + CORE + '.IResolvable' : ''}>`);
 
     if (allowReturningIResolvable) {
       this.code.openBlock(`if (${CORE}.isResolvableObject(properties))`);
-      this.code.line('return properties;');
+      this.code.line(`return new ${CFN_PARSE}.FromCloudFormationResult(properties);`);
       this.code.closeBlock();
     }
 
     this.code.line('properties = properties || {};');
     // Generate the return object
-    this.code.indent('return {');
+    this.code.indent(`return new ${CFN_PARSE}.FromCloudFormationResult({`);
     const self = this;
 
     // class used for the visitor
@@ -631,7 +631,7 @@ export default class CodeGenerator {
       const propSpec = propSpecs[cfnName];
       const simpleCfnPropAccessExpr = `properties.${cfnName}`;
       const deserializedExpression = genspec.typeDispatch<string>(resource, propSpec, new FromCloudFormationFactoryVisitor()) +
-        `(${simpleCfnPropAccessExpr})`;
+        `(${simpleCfnPropAccessExpr}).value`;
 
       let valueExpression = propSpec.Required
         ? deserializedExpression
@@ -651,7 +651,7 @@ export default class CodeGenerator {
       self.code.line(`${nameConversionTable[cfnName]}: ${valueExpression},`);
     });
     // close the return object brace
-    this.code.unindent('};');
+    this.code.unindent('});');
 
     // close the function brace
     this.code.closeBlock();
