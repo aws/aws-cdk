@@ -13,7 +13,6 @@ describe('Invoke API', () => {
     // WHEN
     const task = new ApiGatewayInvoke(stack, 'Invoke', {
       api: restApi,
-      apiEndpoint: restApi.restApiId,
       method: HttpMethod.GET,
       stageName: '$default',
       path: 'path',
@@ -74,7 +73,6 @@ describe('Invoke API', () => {
     const task = new ApiGatewayInvoke(stack, 'Invoke', {
       integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
       api: restApi,
-      apiEndpoint: restApi.restApiId,
       method: HttpMethod.GET,
       headers: taskToken,
       stageName: '$default',
@@ -134,7 +132,6 @@ describe('Invoke API', () => {
       new ApiGatewayInvoke(stack, 'Invoke', {
         integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
         api: restApi,
-        apiEndpoint: restApi.restApiId,
         method: HttpMethod.GET,
         authType: AuthType.RESOURCE_POLICY,
       });

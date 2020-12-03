@@ -13,12 +13,6 @@ export interface ApiGatewayInvokeProps extends sfn.TaskStateBaseProps {
   /** API to call */
   readonly api: apigateway.IRestApi;
 
-  /**
-   * hostname of an API Gateway URL
-   * @example {ApiId}.execute-api.{region}.amazonaws.com
-   */
-  readonly apiEndpoint: string;
-
   /** Http method for the API */
   readonly method: HttpMethod;
 
@@ -37,7 +31,7 @@ export interface ApiGatewayInvokeProps extends sfn.TaskStateBaseProps {
 
   /**
    * Name of the stage where the API is deployed to in API Gateway
-   * @default - Required for REST and $default for HTTP
+   * @default - Required for REST and $default for HTTP which acts as a catch-all for requests that don’t match any other routes
    */
   readonly stageName?: string;
 
@@ -69,7 +63,7 @@ export interface ApiGatewayInvokeProps extends sfn.TaskStateBaseProps {
 
   /**
    * Authentication methods
-   * @default - NO_AUTH
+   * @default AuthType.NO_AUTH
    */
   readonly authType?: AuthType;
 
@@ -104,8 +98,6 @@ export class ApiGatewayInvoke extends sfn.TaskStateBase {
 
   /**
    * Provides the API Gateway Invoke service integration task configuration
-   */
-  /**
    * @internal
    */
   protected _renderTask(): any {
@@ -125,13 +117,13 @@ export class ApiGatewayInvoke extends sfn.TaskStateBase {
   }
 
   /**
-   * Gets the "execute-api" ARN
-   * @returns The "execute-api" ARN.
-   * @default "*" returns the execute API ARN for all methods/resources in
-   * this API.
+   * Gets the resource to attatched to the ExecuteAPI:Invoke
+   * @returns resource.
+   * @default "*" returns the execute API ARN for all methods/resources in this API.
    * @param method The method (default `*`)
    * @param path The resource path. Must start with '/' (default `*`)
    * @param stage The stage (default `*`)
+   * @example {ApiId}/{stage}/{method}/{path}
    */
   get arnForExecuteApi() {
     return this.props.api.arnForExecuteApi(this.props.method, this.props.path, this.props.stageName);
@@ -204,7 +196,6 @@ export enum HttpMethod {
 
 /**
  * The authentication method used to call the endpoint
- * @default NO_AUTH
  */
 export enum AuthType {
   /** Call the API direclty with no authorization method */

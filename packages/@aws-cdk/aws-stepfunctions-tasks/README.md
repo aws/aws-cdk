@@ -229,7 +229,6 @@ const restApi = new apigateway.RestApi(stack, 'MyRestApi');
 
 const invokeJob = new tasks.ApiGatewayInvoke(stack, 'Invoke APIGW', {
   api: restApi,
-  apiEndpoint: restApi.restApiId,
   stageName: 'prod',
   method: ApiGatewayMethodType.GET,
 });
