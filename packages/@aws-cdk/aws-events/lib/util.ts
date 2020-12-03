@@ -38,9 +38,11 @@ export function mergeEventPattern(dest: any, src: any) {
           `Type mismatch between existing pattern ${JSON.stringify(destValue)} and added pattern ${JSON.stringify(srcValue)}`);
       }
 
-      // if this is an array, concat the values
+      // if this is an array, concat and deduplicate the values
       if (Array.isArray(srcValue)) {
-        destObj[field] = destValue.concat(srcValue);
+        const result = [...destValue, ...srcValue];
+        const resultJson = result.map(i => JSON.stringify(i));
+        destObj[field] = result.filter((value, index) => resultJson.indexOf(JSON.stringify(value)) === index);
         continue;
       }
 

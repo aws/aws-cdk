@@ -1,16 +1,24 @@
-## AWS App Mesh Construct Library
+# AWS App Mesh Construct Library
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
 
-> All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) are always stable and safe to use.
+> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.
+>
+> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib
 
 ![cdk-constructs: Developer Preview](https://img.shields.io/badge/cdk--constructs-developer--preview-informational.svg?style=for-the-badge)
 
-> The APIs of higher level constructs in this module are in **developer preview** before they become stable. We will only make breaking changes to address unforeseen API issues. Therefore, these APIs are not subject to [Semantic Versioning](https://semver.org/), and breaking changes will be announced in release notes. This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
+> The APIs of higher level constructs in this module are in **developer preview** before they
+> become stable. We will only make breaking changes to address unforeseen API issues. Therefore,
+> these APIs are not subject to [Semantic Versioning](https://semver.org/), and breaking changes
+> will be announced in release notes. This means that while you may use them, you may need to
+> update your source code when upgrading to a newer version of this package.
 
 ---
+
 <!--END STABILITY BANNER-->
 
 AWS App Mesh is a service mesh based on the [Envoy](https://www.envoyproxy.io/) proxy that makes it easy to monitor and control microservices. App Mesh standardizes how your microservices communicate, giving you end-to-end visibility and helping to ensure high-availability for your applications.
@@ -23,7 +31,7 @@ For futher information on **AWS AppMesh** visit the [AWS Docs for AppMesh](https
 
 ## Create the App and Stack
 
-```typescript
+```ts
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'stack');
 ```
@@ -36,7 +44,7 @@ After you create your service mesh, you can create virtual services, virtual nod
 
 The following example creates the `AppMesh` service mesh with the default filter of `DROP_ALL`, see [docs](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appmesh-mesh-egressfilter.html) here for more info on egress filters.
 
-```typescript
+```ts
 const mesh = new Mesh(stack, 'AppMesh', {
   meshName: 'myAwsmMesh',
 });
@@ -44,7 +52,7 @@ const mesh = new Mesh(stack, 'AppMesh', {
 
 The mesh can also be created with the "ALLOW_ALL" egress filter by overwritting the property.
 
-```typescript
+```ts
 const mesh = new Mesh(stack, 'AppMesh', {
   meshName: 'myAwsmMesh',
   egressFilter: MeshFilterType.ALLOW_ALL,
@@ -58,7 +66,7 @@ The _Mesh_ needs _VirtualRouters_ as logical units to route requests to _Virtual
 Virtual routers handle traffic for one or more virtual services within your mesh.
 After you create a virtual router, you can create and associate routes to your virtual router that direct incoming requests to different virtual nodes.
 
-```typescript
+```ts
 const router = mesh.addVirtualRouter('router', {
   listeners: [ appmesh.VirtualRouterListener.http(8080) ],
 });
@@ -69,7 +77,7 @@ The same pattern applies to all constructs within the appmesh library, for any m
 This is particularly useful for cross stack resources are required.
 Where creating the `mesh` as part of an infrastructure stack and creating the `resources` such as `nodes` is more useful to keep in the application stack.
 
-```typescript
+```ts
 const mesh = new Mesh(stack, 'AppMesh', {
   meshName: 'myAwsmMesh',
   egressFilter: MeshFilterType.Allow_All,
@@ -100,7 +108,7 @@ When creating a virtual service:
 
 Adding a virtual router as the provider:
 
-```typescript
+```ts
 mesh.addVirtualService('virtual-service', {
   virtualRouter: router,
   virtualServiceName: 'my-service.default.svc.cluster.local',
@@ -109,7 +117,7 @@ mesh.addVirtualService('virtual-service', {
 
 Adding a virtual node as the provider:
 
-```typescript
+```ts
 mesh.addVirtualService('virtual-service', {
   virtualNode: node,
   virtualServiceName: `my-service.default.svc.cluster.local`,
@@ -129,7 +137,7 @@ The response metadata for your new `virtual node` contains the Amazon Resource N
 > Note
 > If you require your Envoy stats or tracing to use a different name, you can override the node.cluster value that is set by APPMESH_VIRTUAL_NODE_NAME with the APPMESH_VIRTUAL_NODE_CLUSTER environment variable.
 
-```typescript
+```ts
 const vpc = new ec2.Vpc(stack, 'vpc');
 const namespace = new servicediscovery.PrivateDnsNamespace(this, 'test-namespace', {
     vpc,
@@ -157,7 +165,7 @@ const node = mesh.addVirtualNode('virtual-node', {
 
 Create a `VirtualNode` with the the constructor and add tags.
 
-```typescript
+```ts
 const node = new VirtualNode(this, 'node', {
   mesh,
   cloudMapService: service,
@@ -171,7 +179,7 @@ const node = new VirtualNode(this, 'node', {
       protocol: Protocol.HTTP,
       timeout: Duration.seconds(2), // min
       unhealthyThreshold: 2,
-    }, 
+    },
     timeout: {
       idle: cdk.Duration.seconds(5),
     },
@@ -190,7 +198,7 @@ A `route` is associated with a virtual router, and it's used to match requests f
 
 If your `route` matches a request, you can distribute traffic to one or more target virtual nodes with relative weighting.
 
-```typescript
+```ts
 router.addRoute('route-http', {
   routeSpec: appmesh.RouteSpec.http({
     weightedTargets: [
@@ -207,7 +215,7 @@ router.addRoute('route-http', {
 
 Add a single route with multiple targets and split traffic 50/50
 
-```typescript
+```ts
 router.addRoute('route-http', {
   routeSpec: appmesh.RouteSpec.http({
     weightedTargets: [
@@ -233,7 +241,7 @@ The `tcp()`, `http()` and `http2()` methods provide the spec necessary to define
 For HTTP based routes, the match field can be used to match on a route prefix.
 By default, an HTTP based route will match on `/`. All matches must start with a leading `/`.
 
-```typescript
+```ts
 router.addRoute('route-http', {
   routeSpec: appmesh.RouteSpec.grpc({
     weightedTargets: [
@@ -260,7 +268,7 @@ using rules defined in gateway routes which can be added to your virtual gateway
 
 Create a virtual gateway with the constructor:
 
-```typescript
+```ts
 const gateway = new appmesh.VirtualGateway(stack, 'gateway', {
   mesh: mesh,
   listeners: [appmesh.VirtualGatewayListener.http({
@@ -276,7 +284,7 @@ const gateway = new appmesh.VirtualGateway(stack, 'gateway', {
 
 Add a virtual gateway directly to the mesh:
 
-```typescript
+```ts
 const gateway = mesh.addVirtualGateway('gateway', {
   accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
   virtualGatewayName: 'virtualGateway',
@@ -300,7 +308,7 @@ If a route matches a request, it can distribute traffic to a target virtual serv
 For HTTP based routes, the match field can be used to match on a route prefix.
 By default, an HTTP based route will match on `/`. All matches must start with a leading `/`.
 
-```typescript
+```ts
 gateway.addGatewayRoute('gateway-route-http', {
   routeSpec: appmesh.GatewayRouteSpec.http({
     routeTarget: virtualService,
@@ -314,7 +322,7 @@ gateway.addGatewayRoute('gateway-route-http', {
 For GRPC based routes, the match field can be used to match on service names.
 You cannot omit the field, and must specify a match for these routes.
 
-```typescript
+```ts
 gateway.addGatewayRoute('gateway-route-grpc', {
   routeSpec: appmesh.GatewayRouteSpec.grpc({
     routeTarget: virtualService,
@@ -331,12 +339,12 @@ Each mesh resource comes with two static methods for importing a reference to an
 These imported resources can be used as references for other resources in your mesh.
 There are two static methods, `from<Resource>Arn` and `from<Resource>Attributes` where the `<Resource>` is replaced with the resource name.
 
-```typescript
+```ts
 const arn = "arn:aws:appmesh:us-east-1:123456789012:mesh/testMesh/virtualNode/testNode";
 appmesh.VirtualNode.fromVirtualNodeArn(stack, 'importedVirtualNode', arn);
 ```
 
-```typescript
+```ts
 appmesh.VirtualNode.fromVirtualNodeAttributes(stack, 'imported-virtual-node', {
   mesh: appmesh.Mesh.fromMeshName(stack, 'Mesh', 'testMesh'),
   virtualNodeName: virtualNodeName,
@@ -345,11 +353,11 @@ appmesh.VirtualNode.fromVirtualNodeAttributes(stack, 'imported-virtual-node', {
 
 To import a mesh, there are two static methods, `fromMeshArn` and `fromMeshName`.
 
-```typescript
+```ts
 const arn = 'arn:aws:appmesh:us-east-1:123456789012:mesh/testMesh';
 appmesh.Mesh.fromMeshArn(stack, 'imported-mesh', arn);
 ```
 
-```typescript
+```ts
 appmesh.Mesh.fromMeshName(stack, 'imported-mesh', 'abc');
 ```

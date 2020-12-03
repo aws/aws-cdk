@@ -8,6 +8,7 @@ import * as minimatch from 'minimatch';
 import { AssetHashType, AssetOptions } from './assets';
 import { BundlingOptions } from './bundling';
 import { FileSystem, FingerprintOptions } from './fs';
+import { Names } from './names';
 import { Cache } from './private/cache';
 import { Stack } from './stack';
 import { Stage } from './stage';
@@ -92,8 +93,26 @@ export class AssetStaging extends CoreConstruct {
    * a temporary directory used for bundling.
    *
    * If asset staging is enabled it will be the staged path.
+   *
+   * IMPORTANT: If you are going to call `addFileAsset()`, use
+   * `relativeStagedPath()` instead.
+   *
+   * @deprecated - Use `absoluteStagedPath` instead.
    */
   public readonly stagedPath: string;
+
+  /**
+   * Absolute path to the asset data.
+   *
+   * If asset staging is disabled, this will just be the source path or
+   * a temporary directory used for bundling.
+   *
+   * If asset staging is enabled it will be the staged path.
+   *
+   * IMPORTANT: If you are going to call `addFileAsset()`, use
+   * `relativeStagedPath()` instead.
+   */
+  public readonly absoluteStagedPath: string;
 
   /**
    * The absolute path of the asset as it was referenced by the user.
@@ -115,7 +134,7 @@ export class AssetStaging extends CoreConstruct {
    *
    * Will not be used literally, always hashed later on.
    */
-  private readonly customSourceFingerprint?: string;
+  private customSourceFingerprint?: string;
 
   private readonly cacheKey: string;
 
@@ -171,6 +190,7 @@ export class AssetStaging extends CoreConstruct {
 
     const staged = AssetStaging.assetCache.obtain(this.cacheKey, stageThisAsset);
     this.stagedPath = staged.stagedPath;
+    this.absoluteStagedPath = staged.stagedPath;
     this.assetHash = staged.assetHash;
   }
 
@@ -239,10 +259,16 @@ export class AssetStaging extends CoreConstruct {
    */
   private stageByBundling(bundling: BundlingOptions, skip: boolean): StagedAsset {
     if (skip) {
-      // We should have bundled, but didn't to save time. Still pretend to have a hash,
-      // but always base it on sources.
+      // We should have bundled, but didn't to save time. Still pretend to have a hash.
+      // If the asset uses OUTPUT or BUNDLE, we use a CUSTOM hash to avoid fingerprinting
+      // a potentially very large source directory. Other hash types are kept the same.
+      let hashType = this.hashType;
+      if (hashType === AssetHashType.OUTPUT || hashType === AssetHashType.BUNDLE) {
+        this.customSourceFingerprint = Names.uniqueId(this);
+        hashType = AssetHashType.CUSTOM;
+      }
       return {
-        assetHash: this.calculateHash(AssetHashType.SOURCE),
+        assetHash: this.calculateHash(hashType, bundling),
         stagedPath: this.sourcePath,
       };
     }

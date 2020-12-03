@@ -61,7 +61,7 @@ nodeunitShim({
     'fails if ARN has invalid format'(test: Test) {
       const stack = new cdk.Stack();
       const bucketArn = 'invalid-arn';
-      test.throws(() => parseBucketName(stack, { bucketArn }), /ARNs must have at least 6 components/);
+      test.throws(() => parseBucketName(stack, { bucketArn }), /ARNs must/);
       test.done();
     },
   },
