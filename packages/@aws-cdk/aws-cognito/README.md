@@ -558,6 +558,20 @@ pool.addClient('app-client', {
 });
 ```
 
+In accordance with the OIDC open standard, Cognito user pool clients provide access tokens, ID tokens and refresh tokens.
+More information is available at [Using Tokens with User Pools](https://docs.aws.amazon.com/en_us/cognito/latest/developerguide/amazon-cognito-user-pools-using-tokens-with-identity-providers.html).
+The expiration time for these tokens can be configured as shown below.
+
+```ts
+const pool = new cognito.UserPool(this, 'Pool');
+pool.addClient('app-client', {
+  // ...
+  accessTokenValidity: Duration.minutes(60),
+  idTokenValidity: Duration.minutes(60),
+  refreshTokenValidity: Duration.days(30),
+});
+```
+
 ### Resource Servers
 
 A resource server is a server for access-protected resources. It handles authenticated requests from an app that has an
