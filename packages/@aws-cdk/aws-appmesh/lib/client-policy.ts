@@ -8,29 +8,22 @@ enum CertificateType {
 }
 
 /**
- * Properties of TLS validation context
+ * Properties of TLS Client Policy
  */
 export interface ClientPolicyConfig {
   /**
-   * Represents single validation context property
+   * Represents single Client Policy property
    */
   readonly clientPolicy: CfnVirtualNode.ClientPolicyProperty;
 }
 
 /**
- * TLS Connections with downstream server will always be enforced if True
+ * Represents the property needed to define a Client Policy
  */
 export interface ClientPolicyOptions {
   /**
-   * TLS enforced on all backends, if True.
-   *
-   * @default true
-   */
-  readonly enforceTls?: boolean;
-
-  /**
    * TLS is enforced on the ports specified here.
-   * If TLS is enforced by default (i.e. enforceTls is true) and no ports are specified, TLS will be enforced on all the ports.
+   * If no ports are specified, TLS will be enforced on all the ports.
    *
    * @default - none
    */
@@ -66,14 +59,14 @@ export abstract class ClientPolicy {
    * Tells envoy where to fetch the validation context from
    */
   public static fileTrust(props: FileTrustOptions): ClientPolicy {
-    return new ClientPolicyImpl(props.enforceTls, props.ports, CertificateType.FILE, props.certificateChain, undefined);
+    return new ClientPolicyImpl(props.ports, CertificateType.FILE, props.certificateChain, undefined);
   }
 
   /**
    * TLS validation context trust for ACM Private Certificate Authority (CA).
    */
   public static acmTrust(props: AcmTrustOptions): ClientPolicy {
-    return new ClientPolicyImpl(props.enforceTls, props.ports, CertificateType.ACMPCA, undefined, props.certificateAuthorityArns);
+    return new ClientPolicyImpl(props.ports, CertificateType.ACMPCA, undefined, props.certificateAuthorityArns);
   }
 
   /**
@@ -84,8 +77,7 @@ export abstract class ClientPolicy {
 }
 
 class ClientPolicyImpl extends ClientPolicy {
-  constructor (private readonly enforce: boolean | undefined,
-    private readonly ports: number[] | undefined,
+  constructor (private readonly ports: number[] | undefined,
     private readonly certificateType: CertificateType,
     private readonly certificateChain: string| undefined,
     private readonly certificateAuthorityArns: acmpca.ICertificateAuthority[] | undefined) { super(); }
@@ -95,7 +87,6 @@ class ClientPolicyImpl extends ClientPolicy {
       clientPolicy: {
         tls: {
           ports: this.ports,
-          enforce: this.enforce,
           validation: {
             trust: {
               [this.certificateType]: this.certificateType === CertificateType.FILE

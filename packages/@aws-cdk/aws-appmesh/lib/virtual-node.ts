@@ -2,8 +2,9 @@ import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnVirtualNode } from './appmesh.generated';
+import { ClientPolicy } from './client-policy';
 import { IMesh, Mesh } from './mesh';
-import { AccessLog, BackendDefaults } from './shared-interfaces';
+import { AccessLog } from './shared-interfaces';
 import { VirtualNodeListener, VirtualNodeListenerConfig } from './virtual-node-listener';
 import { IVirtualService } from './virtual-service';
 
@@ -100,7 +101,7 @@ export interface VirtualNodeBaseProps {
    *
    * @default - No Config
    */
-  readonly backendDefaults?: BackendDefaults;
+  readonly backendDefaultsClientPolicy?: ClientPolicy;
 }
 
 /**
@@ -203,7 +204,7 @@ export class VirtualNode extends VirtualNodeBase {
       spec: {
         backends: cdk.Lazy.anyValue({ produce: () => this.backends }, { omitEmptyArray: true }),
         listeners: cdk.Lazy.anyValue({ produce: () => this.listeners.map(listener => listener.listener) }, { omitEmptyArray: true }),
-        backendDefaults: props.backendDefaults?.clientPolicy.bind(this),
+        backendDefaults: props.backendDefaultsClientPolicy?.bind(this),
         serviceDiscovery: {
           dns: props.dnsHostName !== undefined ? { hostname: props.dnsHostName } : undefined,
           awsCloudMap: props.cloudMapService !== undefined ? {

@@ -694,7 +694,6 @@
           "BackendDefaults": {
             "ClientPolicy": {
               "TLS": {
-                "Enforce": true,
                 "Validation": {
                   "Trust": {
                     "ACM": {
@@ -756,7 +755,6 @@
           "BackendDefaults": {
             "ClientPolicy": {
               "TLS": {
-                "Enforce": true,
                 "Validation": {
                   "Trust": {
                     "File": {

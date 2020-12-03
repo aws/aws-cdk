@@ -77,12 +77,9 @@ const node2 = mesh.addVirtualNode('node2', {
       unhealthyThreshold: 2,
     },
   })],
-  backendDefaults: {
-    clientPolicy: appmesh.ClientPolicy.acmTrust({
-      certificateAuthorityArns: [acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'certificate', certificateAuthorityArn)],
-      enforceTls: true,
-    }),
-  },
+  backendDefaultsClientPolicy: appmesh.ClientPolicy.acmTrust({
+    certificateAuthorityArns: [acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'certificate', certificateAuthorityArn)],
+  }),
   backends: [
     new appmesh.VirtualService(stack, 'service-3', {
       virtualServiceName: 'service3.domain.local',
@@ -104,12 +101,9 @@ const node3 = mesh.addVirtualNode('node3', {
       unhealthyThreshold: 2,
     },
   })],
-  backendDefaults: {
-    clientPolicy: appmesh.ClientPolicy.fileTrust({
-      certificateChain: 'path-to-certificate',
-      enforceTls: true,
-    }),
-  },
+  backendDefaultsClientPolicy: appmesh.ClientPolicy.fileTrust({
+    certificateChain: 'path-to-certificate',
+  }),
   accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
 });
 
