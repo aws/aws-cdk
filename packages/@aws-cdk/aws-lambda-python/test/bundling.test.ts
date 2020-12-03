@@ -142,10 +142,7 @@ describe('Dependency detection', () => {
 
   test('Detects poetry', () => {
     existsSyncMock.mockImplementation((p: fs.PathLike) => {
-      if (
-        /pyproject.toml/.test(p.toString()) &&
-        /poetry.lock/.test(p.toString())
-      ) {
+      if (/poetry.lock/.test(p.toString())) {
         return true;
       }
       return existsSyncOriginal(p);

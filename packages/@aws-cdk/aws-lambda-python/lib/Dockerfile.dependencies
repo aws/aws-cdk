@@ -13,7 +13,7 @@ RUN pip install pipenv poetry
 WORKDIR /var/dependencies
 COPY Pipfile* pyproject.toml poetry.lock requirements.tx[t] ./
 RUN [ -f 'Pipfile' ] && pipenv lock -r >requirements.txt; \
-    [[ -f 'pyproject.toml'  && -f 'poetry.lock' ]] && poetry export --with-credentials --format requirements.txt --output requirements.txt; \
+    [ -f 'poetry.lock' ] && poetry export --with-credentials --format requirements.txt --output requirements.txt; \
     [ -f 'requirements.txt' ] && pip install -r requirements.txt -t .;
 
 CMD [ "python" ]
