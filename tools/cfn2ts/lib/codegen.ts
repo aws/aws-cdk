@@ -241,13 +241,11 @@ export default class CodeGenerator {
       // translate the template properties to CDK objects
       this.code.line('const resourceProperties = options.parser.parseValue(resourceAttributes.Properties);');
       // translate to props, using a (module-private) factory function
-      this.code.line(`const props = ${genspec.fromCfnFactoryName(propsType).fqn}(resourceProperties).value;`);
+      this.code.line(`const propsResult = ${genspec.fromCfnFactoryName(propsType).fqn}(resourceProperties);`);
       // finally, instantiate the resource class
-      this.code.line(`const ret = new ${resourceName.className}(scope, id, props);`);
-      // save all keys from the resourceProperties that are not in the current CFN schema in the resource using overrides
-      const resourceSchemaPropertyNames = Object.keys(spec.Properties || {}).map(cfnType => `'${cfnType}'`);
-      this.code.line(`const resourcePropsOutsideCfnSchema = ${CFN_PARSE}.FromCloudFormation.omit(resourceProperties ?? {}, ${resourceSchemaPropertyNames.join(', ')});`);
-      this.code.openBlock('for (const [propKey, propVal] of Object.entries(resourcePropsOutsideCfnSchema)) ');
+      this.code.line(`const ret = new ${resourceName.className}(scope, id, propsResult.value);`);
+      // save all keys from extraProperties in the resource using property overrides
+      this.code.openBlock('for (const [propKey, propVal] of Object.entries(propsResult.extraProperties)) ');
       this.code.line('ret.addPropertyOverride(propKey, propVal);');
       this.code.closeBlock();
     } else {
@@ -549,10 +547,8 @@ export default class CodeGenerator {
     }
 
     this.code.line('properties = properties || {};');
-    // Generate the return object
-    this.code.indent(`return new ${CFN_PARSE}.FromCloudFormationResult({`);
-    const self = this;
 
+    const self = this;
     // class used for the visitor
     class FromCloudFormationFactoryVisitor implements genspec.PropertyVisitor<string> {
       public visitAtom(type: genspec.CodeName): string {
@@ -627,16 +623,16 @@ export default class CodeGenerator {
       }
     }
 
-    Object.keys(nameConversionTable).forEach(cfnName => {
-      const propSpec = propSpecs[cfnName];
-      const simpleCfnPropAccessExpr = `properties.${cfnName}`;
+    for (const [cfnPropName, cdkPropName] of Object.entries(nameConversionTable)) {
+      const propSpec = propSpecs[cfnPropName];
+      const simpleCfnPropAccessExpr = `properties.${cfnPropName}`;
       const deserializedExpression = genspec.typeDispatch<string>(resource, propSpec, new FromCloudFormationFactoryVisitor()) +
-        `(${simpleCfnPropAccessExpr}).value`;
+        `(${simpleCfnPropAccessExpr})`;
 
       let valueExpression = propSpec.Required
         ? deserializedExpression
         : `${simpleCfnPropAccessExpr} != null ? ${deserializedExpression} : undefined`;
-      if (schema.isTagPropertyName(cfnName)) {
+      if (schema.isTagPropertyName(cfnPropName)) {
         // Properties that have names considered to denote tags
         // have their type generated without a union with IResolvable.
         // However, we can't possibly know that when generating the factory
@@ -648,10 +644,31 @@ export default class CodeGenerator {
         valueExpression += ' as any';
       }
 
-      self.code.line(`${nameConversionTable[cfnName]}: ${valueExpression},`);
-    });
+      self.code.line(`const ${cdkPropName}Result = ${valueExpression};`);
+    }
+
+    // Generate the return object
+    this.code.indent(`const ret = new ${CFN_PARSE}.FromCloudFormationResult({`);
+    for (const cdkPropName of Object.values(nameConversionTable)) {
+      this.code.line(`${cdkPropName}: ${cdkPropName}Result?.value,`);
+    }
     // close the return object brace
     this.code.unindent('});');
+
+    // append all extra properties to the return object
+    for (const [cfnPropName, cdkPropName] of Object.entries(nameConversionTable)) {
+      this.code.line(`ret.appendExtraProperties('${cfnPropName}', ${cdkPropName}Result?.extraProperties);`);
+    }
+    // save any extra properties we find on this level
+    const omittedProperties = Object.keys(nameConversionTable)
+      .map(cfnPropName => `'${cfnPropName}'`)
+      .join(', ');
+    this.code.openBlock(`for (const [key, val] of Object.entries(${CFN_PARSE}.FromCloudFormation.omit(properties, ${omittedProperties}))) `);
+    this.code.line('ret.appendExtraProperty(key, val);');
+    this.code.closeBlock();
+
+    // return the result object
+    this.code.line('return ret;');
 
     // close the function brace
     this.code.closeBlock();

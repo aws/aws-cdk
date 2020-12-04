@@ -12,9 +12,36 @@ import { CfnTag } from './cfn-tag';
 import { Lazy } from './lazy';
 import { CfnReference, ReferenceRendering } from './private/cfn-reference';
 import { IResolvable } from './resolvable';
-import { Mapper, Validator } from './runtime';
+import { Validator } from './runtime';
 import { isResolvableObject, Token } from './token';
 import { undefinedIfAllValuesAreEmpty } from './util';
+
+/**
+ * The class used as the intermediate result from the generated L1 methods
+ * that convert from CloudFormation's UpperCase to CDK's lowerCase property names.
+ * Saves any extra properties that were present in the argument object,
+ * but that were not found in the CFN schema,
+ * so that they're not lost from the final CDK-rendered template.
+ */
+export class FromCloudFormationResult<T> {
+  public readonly value: T;
+  public readonly extraProperties: { [key: string]: any };
+
+  public constructor(value: T) {
+    this.value = value;
+    this.extraProperties = {};
+  }
+
+  public appendExtraProperty(key: string, val: any): void {
+    this.extraProperties[key] = val;
+  }
+
+  public appendExtraProperties(prefix: string, properties: { [key: string]: any } | undefined): void {
+    for (const [key, val] of Object.entries(properties ?? {})) {
+      this.extraProperties[`${prefix}.${key}`] = val;
+    }
+  }
+}
 
 /**
  * This class contains static methods called when going from
@@ -145,7 +172,14 @@ export class FromCloudFormation {
         return new FromCloudFormationResult(value);
       }
 
-      return new FromCloudFormationResult(value.map(arg => mapper(arg).value));
+      const values = new Array<any>();
+      const ret = new FromCloudFormationResult(values);
+      for (let i = 0; i < value.length; i++) {
+        const result = mapper(value[i]);
+        values.push(result.value);
+        ret.appendExtraProperties(`${i}`, result.extraProperties);
+      }
+      return ret;
     };
   }
 
@@ -159,11 +193,14 @@ export class FromCloudFormation {
         return new FromCloudFormationResult(value);
       }
 
-      const ret: { [key: string]: T } = {};
+      const values: { [key: string]: T } = {};
+      const ret = new FromCloudFormationResult(values);
       for (const [key, val] of Object.entries(value)) {
-        ret[key] = mapper(val).value;
+        const result = mapper(val);
+        values[key] = result.value;
+        ret.appendExtraProperties(key, result.extraProperties);
       }
-      return new FromCloudFormationResult(ret);
+      return ret;
     };
   }
 
@@ -179,19 +216,19 @@ export class FromCloudFormation {
   /**
    * Return a function that, when applied to a value, will return the first validly deserialized one
    */
-  public static getTypeUnion(_validators: Validator[], _mappers: Mapper[]): (x: any) => any {
-    // return (value: any): any => {
-    //   for (let i = 0; i < validators.length; i++) {
-    //     const candidate = mappers[i](value);
-    //     if (validators[i](candidate).isSuccess) {
-    //       return candidate;
-    //     }
-    //   }
-    //
-    //   // if nothing matches, just return the input unchanged, and let validators catch it
-    //   return value;
-    // };
-    throw new Error('I will figure out getTypeUnion() later');
+  public static getTypeUnion(validators: Validator[], mappers: Array<(x: any) => FromCloudFormationResult<any>>):
+  (x: any) => FromCloudFormationResult<any> {
+    return (value: any) => {
+      for (let i = 0; i < validators.length; i++) {
+        const candidate = mappers[i](value);
+        if (validators[i](candidate.value).isSuccess) {
+          return candidate;
+        }
+      }
+
+      // if nothing matches, just return the input unchanged, and let validators catch it
+      return new FromCloudFormationResult(value);
+    };
   }
 }
 
@@ -238,21 +275,6 @@ export interface FromCloudFormationOptions {
    * The parser used to convert CloudFormation to values the CDK understands.
    */
   readonly parser: CfnParser;
-}
-
-/**
- * The class used as the intermediate result from the generated L1 methods
- * that convert from CloudFormation's UpperCase to CDK's lowerCase property names.
- * Saves any extra properties that were present in the argument object,
- * but that were not found in the CFN schema,
- * so that they're not lost from the final CDK-rendered template.
- */
-export class FromCloudFormationResult<T> {
-  public readonly value: T;
-
-  public constructor(value: T) {
-    this.value = value;
-  }
 }
 
 /**
@@ -362,7 +384,7 @@ export class CfnParser {
       if (typeof p !== 'object') { return undefined; }
 
       return undefinedIfAllValuesAreEmpty({
-        minSuccessfulInstancesPercent: FromCloudFormation.getNumber(p.MinSuccessfulInstancesPercent),
+        minSuccessfulInstancesPercent: FromCloudFormation.getNumber(p.MinSuccessfulInstancesPercent).value,
       });
     }
 
@@ -370,8 +392,8 @@ export class CfnParser {
       if (typeof p !== 'object') { return undefined; }
 
       return undefinedIfAllValuesAreEmpty({
-        count: FromCloudFormation.getNumber(p.Count),
-        timeout: FromCloudFormation.getString(p.Timeout),
+        count: FromCloudFormation.getNumber(p.Count).value,
+        timeout: FromCloudFormation.getString(p.Timeout).value,
       });
     }
   }
@@ -387,8 +409,8 @@ export class CfnParser {
       autoScalingRollingUpdate: parseAutoScalingRollingUpdate(policy.AutoScalingRollingUpdate),
       autoScalingScheduledAction: parseAutoScalingScheduledAction(policy.AutoScalingScheduledAction),
       codeDeployLambdaAliasUpdate: parseCodeDeployLambdaAliasUpdate(policy.CodeDeployLambdaAliasUpdate),
-      enableVersionUpgrade: FromCloudFormation.getBoolean(policy.EnableVersionUpgrade),
-      useOnlineResharding: FromCloudFormation.getBoolean(policy.UseOnlineResharding),
+      enableVersionUpgrade: FromCloudFormation.getBoolean(policy.EnableVersionUpgrade).value,
+      useOnlineResharding: FromCloudFormation.getBoolean(policy.UseOnlineResharding).value,
     });
 
     function parseAutoScalingReplacingUpdate(p: any): CfnAutoScalingReplacingUpdate | undefined {
@@ -403,12 +425,12 @@ export class CfnParser {
       if (typeof p !== 'object') { return undefined; }
 
       return undefinedIfAllValuesAreEmpty({
-        maxBatchSize: FromCloudFormation.getNumber(p.MaxBatchSize),
-        minInstancesInService: FromCloudFormation.getNumber(p.MinInstancesInService),
-        minSuccessfulInstancesPercent: FromCloudFormation.getNumber(p.MinSuccessfulInstancesPercent),
-        pauseTime: FromCloudFormation.getString(p.PauseTime),
-        suspendProcesses: FromCloudFormation.getStringArray(p.SuspendProcesses),
-        waitOnResourceSignals: FromCloudFormation.getBoolean(p.WaitOnResourceSignals),
+        maxBatchSize: FromCloudFormation.getNumber(p.MaxBatchSize).value,
+        minInstancesInService: FromCloudFormation.getNumber(p.MinInstancesInService).value,
+        minSuccessfulInstancesPercent: FromCloudFormation.getNumber(p.MinSuccessfulInstancesPercent).value,
+        pauseTime: FromCloudFormation.getString(p.PauseTime).value,
+        suspendProcesses: FromCloudFormation.getStringArray(p.SuspendProcesses).value,
+        waitOnResourceSignals: FromCloudFormation.getBoolean(p.WaitOnResourceSignals).value,
       });
     }
 
@@ -427,7 +449,7 @@ export class CfnParser {
       if (typeof p !== 'object') { return undefined; }
 
       return undefinedIfAllValuesAreEmpty({
-        ignoreUnmodifiedGroupSizeProperties: p.IgnoreUnmodifiedGroupSizeProperties,
+        ignoreUnmodifiedGroupSizeProperties: FromCloudFormation.getBoolean(p.IgnoreUnmodifiedGroupSizeProperties).value,
       });
     }
   }
