@@ -1,6 +1,6 @@
 {
   "Resources": {
-    "myhandlerinlineServiceRole77891068": {
+    "myhandlerinlineServiceRole10C681F6": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -31,7 +31,7 @@
         ]
       }
     },
-    "myhandlerinlineD202FA8E": {
+    "myhandlerinline53D120C7": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
@@ -75,17 +75,17 @@
         "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
-            "myhandlerinlineServiceRole77891068",
+            "myhandlerinlineServiceRole10C681F6",
             "Arn"
           ]
         },
         "Runtime": "python3.6"
       },
       "DependsOn": [
-        "myhandlerinlineServiceRole77891068"
+        "myhandlerinlineServiceRole10C681F6"
       ]
     },
-    "myhandlerpython27ServiceRole77891068": {
+    "myhandlerpython27ServiceRole2ED49C06": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -116,7 +116,7 @@
         ]
       }
     },
-    "myhandlerpython27D202FA8E": {
+    "myhandlerpython274D7465EA": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
@@ -160,17 +160,17 @@
         "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
-            "myhandlerpython27ServiceRole77891068",
+            "myhandlerpython27ServiceRole2ED49C06",
             "Arn"
           ]
         },
         "Runtime": "python2.7"
       },
       "DependsOn": [
-        "myhandlerpython27ServiceRole77891068"
+        "myhandlerpython27ServiceRole2ED49C06"
       ]
     },
-    "myhandlerpython38ServiceRole77891068": {
+    "myhandlerpython38ServiceRole2049AFF7": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -201,7 +201,7 @@
         ]
       }
     },
-    "myhandlerpython38D202FA8E": {
+    "myhandlerpython384D62BBB5": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
@@ -245,14 +245,14 @@
         "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
-            "myhandlerpython38ServiceRole77891068",
+            "myhandlerpython38ServiceRole2049AFF7",
             "Arn"
           ]
         },
         "Runtime": "python3.8"
       },
       "DependsOn": [
-        "myhandlerpython38ServiceRole77891068"
+        "myhandlerpython38ServiceRole2049AFF7"
       ]
     }
   },
@@ -297,17 +297,17 @@
   "Outputs": {
     "InlineFunctionName": {
       "Value": {
-        "Ref": "myhandlerinlineD202FA8E"
+        "Ref": "myhandlerinline53D120C7"
       }
     },
     "Python27FunctionName": {
       "Value": {
-        "Ref": "myhandlerpython27D202FA8E"
+        "Ref": "myhandlerpython274D7465EA"
       }
     },
     "Python38FunctionName": {
       "Value": {
-        "Ref": "myhandlerpython38D202FA8E"
+        "Ref": "myhandlerpython384D62BBB5"
       }
     }
   }
