@@ -54,7 +54,6 @@ export interface FileTrustOptions extends ClientPolicyOptions {
  * Defines the TLS validation context trust.
  */
 export abstract class ClientPolicy {
-
   /**
    * Tells envoy where to fetch the validation context from
    */
@@ -83,24 +82,29 @@ class ClientPolicyImpl extends ClientPolicy {
     private readonly certificateAuthorityArns: acmpca.ICertificateAuthority[] | undefined) { super(); }
 
   public bind(_scope: cdk.Construct): ClientPolicyConfig {
-    return {
-      clientPolicy: {
-        tls: {
-          ports: this.ports,
-          validation: {
-            trust: {
-              [this.certificateType]: this.certificateType === CertificateType.FILE
-                ? {
-                  certificateChain: this.certificateChain,
-                }
-                : {
-                  certificateAuthorityArns: this.certificateAuthorityArns?.map(certificateArn =>
-                    certificateArn.certificateAuthorityArn),
-                },
+    if (this.certificateType === CertificateType.ACMPCA && this.certificateAuthorityArns?.map(certificateArn =>
+      certificateArn.certificateAuthorityArn).length === 0) {
+      throw new Error('Certificate Authority ARN is required but empty');
+    } else {
+      return {
+        clientPolicy: {
+          tls: {
+            ports: this.ports,
+            validation: {
+              trust: {
+                [this.certificateType]: this.certificateType === CertificateType.FILE
+                  ? {
+                    certificateChain: this.certificateChain,
+                  }
+                  : {
+                    certificateAuthorityArns: this.certificateAuthorityArns?.map(certificateArn =>
+                      certificateArn.certificateAuthorityArn),
+                  },
+              },
             },
           },
         },
-      },
-    };
+      };
+    }
   }
 }
