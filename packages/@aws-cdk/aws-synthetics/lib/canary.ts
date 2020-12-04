@@ -428,8 +428,9 @@ export class Canary extends cdk.Resource {
    * Retruns a runConfig object
    */
   private createRunConfig(props:CanaryProps): CfnCanary.RunConfigProperty {
+    const DEFAULT_CANARY_TIMEOUT_IN_SECONDS = 900;
     return {
-      timeoutInSeconds: props.timeout?.toSeconds() ?? 3,
+      timeoutInSeconds: props.timeout?.toSeconds() ?? DEFAULT_CANARY_TIMEOUT_IN_SECONDS,
       activeTracing: props.tracing,
       environmentVariables: props.environment,
       memoryInMb: props.memorySize,
