@@ -205,29 +205,6 @@ test('RunConfig attributes can be specified', () => {
   });
 });
 
-test('Timeout can be specified', () => {
-  // GIVEN
-  const stack = new Stack(new App(), 'canaries');
-  const timeout = 10;
-
-  // WHEN
-  new synthetics.Canary(stack, 'Canary', {
-    runtime: synthetics.Runtime.SYNTHETICS_1_0,
-    test: synthetics.Test.custom({
-      handler: 'index.handler',
-      code: synthetics.Code.fromInline('/* Synthetics handler code */'),
-    }),
-    timeout: Duration.seconds(timeout),
-  });
-
-  // THEN
-  expect(stack).toHaveResourceLike('AWS::Synthetics::Canary', {
-    RunConfig: {
-      TimeoutInSeconds: timeout,
-    },
-  });
-});
-
 test('Runtime can be customized', () => {
   // GIVEN
   const stack = new Stack(new App(), 'canaries');
