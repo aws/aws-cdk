@@ -171,7 +171,7 @@ export = {
       new appmesh.VirtualGateway(stack, 'testGateway', {
         virtualGatewayName: 'test-gateway',
         mesh: mesh,
-        listeners: [appmesh.VirtualGatewayListener.httpGatewayListener({
+        listeners: [appmesh.VirtualGatewayListener.http({
           port: 8080,
           tlsCertificate: appmesh.TlsCertificate.acm({
             tlsMode: TlsMode.STRICT,
@@ -218,7 +218,7 @@ export = {
       new appmesh.VirtualGateway(stack, 'testGateway', {
         virtualGatewayName: 'test-gateway',
         mesh: mesh,
-        listeners: [appmesh.VirtualGatewayListener.grpcGatewayListener({
+        listeners: [appmesh.VirtualGatewayListener.grpc({
           port: 8080,
           tlsCertificate: appmesh.TlsCertificate.file({
             certificateChain: 'path/to/certChain',
@@ -265,7 +265,7 @@ export = {
       new appmesh.VirtualGateway(stack, 'testGateway', {
         virtualGatewayName: 'test-gateway',
         mesh: mesh,
-        listeners: [appmesh.VirtualGatewayListener.grpcGatewayListener({
+        listeners: [appmesh.VirtualGatewayListener.grpc({
           port: 8080,
           tlsCertificate: appmesh.TlsCertificate.file({
             certificateChain: 'path/to/certChain',
