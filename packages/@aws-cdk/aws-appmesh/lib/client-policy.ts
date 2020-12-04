@@ -78,7 +78,7 @@ export abstract class ClientPolicy {
 class ClientPolicyImpl extends ClientPolicy {
   constructor (private readonly ports: number[] | undefined,
     private readonly certificateType: CertificateType,
-    private readonly certificateChain: string| undefined,
+    private readonly certificateChain: string | undefined,
     private readonly certificateAuthorityArns: acmpca.ICertificateAuthority[] | undefined) { super(); }
 
   public bind(_scope: cdk.Construct): ClientPolicyConfig {
