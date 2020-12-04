@@ -44,7 +44,7 @@ test('Canary can have generated name', () => {
       handler: 'index.handler',
       code: synthetics.Code.fromInline('/* Synthetics handler code */'),
     }),
-    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_0,
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_2,
   });
 
   // THEN
@@ -220,7 +220,7 @@ test('Schedule can be set to 1 minute', () => {
       handler: 'index.handler',
       code: synthetics.Code.fromInline('/* Synthetics handler code */'),
     }),
-    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_0,
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_2,
   });
 
   // THEN
@@ -240,7 +240,7 @@ test('Schedule can be set with Expression', () => {
       handler: 'index.handler',
       code: synthetics.Code.fromInline('/* Synthetics handler code */'),
     }),
-    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_0,
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_2,
   });
 
   // THEN
@@ -260,7 +260,7 @@ test('Schedule can be set to run once', () => {
       handler: 'index.handler',
       code: synthetics.Code.fromInline('/* Synthetics handler code */'),
     }),
-    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_0,
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_2,
   });
 
   // THEN
@@ -280,7 +280,7 @@ test('Throws when rate above 60 minutes', () => {
       handler: 'index.handler',
       code: synthetics.Code.fromInline('/* Synthetics handler code */'),
     }),
-    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_0,
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_2,
   }))
     .toThrowError('Schedule duration must be between 1 and 60 minutes');
 });
@@ -296,7 +296,7 @@ test('Throws when rate above is not a whole number of minutes', () => {
       handler: 'index.handler',
       code: synthetics.Code.fromInline('/* Synthetics handler code */'),
     }),
-    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_0,
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_2,
   }))
     .toThrowError('\'59 seconds\' cannot be converted into a whole number of minutes.');
 });
@@ -312,7 +312,7 @@ test('Can share artifacts bucket between canaries', () => {
       handler: 'index.handler',
       code: synthetics.Code.fromInline('/* Synthetics handler code */'),
     }),
-    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_0,
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_2,
   });
 
   const canary2 = new synthetics.Canary(stack, 'Canary2', {
@@ -322,7 +322,7 @@ test('Can share artifacts bucket between canaries', () => {
       code: synthetics.Code.fromInline('/* Synthetics handler code */'),
     }),
     artifactsBucketLocation: { bucket: canary1.artifactsBucket },
-    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_0,
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_2,
   });
 
   // THEN
@@ -342,7 +342,7 @@ test('can specify custom test', () => {
           console.log(\'hello world\');
         };`),
     }),
-    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_0,
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_2,
   });
 
   // THEN

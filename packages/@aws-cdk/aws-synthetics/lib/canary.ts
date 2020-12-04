@@ -76,7 +76,7 @@ export class Runtime {
    * - Puppeteer-core version 1.14.0
    * - The Chromium version that matches Puppeteer-core 1.14.0
    *
-   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_Library.html#CloudWatch_Synthetics_runtimeversion-1.0
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-1.0
    */
   public static readonly SYNTHETICS_1_0 = new Runtime('syn-1.0');
 
@@ -84,11 +84,42 @@ export class Runtime {
    * `syn-nodejs-2.0` includes the following:
    * - Lambda runtime Node.js 10.x
    * - Puppeteer-core version 3.3.0
-   * - Chromium version 81.0.4044.0
+   * - Chromium version 83.0.4103.0
    *
-   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_Library.html#CloudWatch_Synthetics_runtimeversion-2.0
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-2.0
    */
   public static readonly SYNTHETICS_NODEJS_2_0 = new Runtime('syn-nodejs-2.0');
+
+
+  /**
+   * `syn-nodejs-2.1` includes the following:
+   * - Lambda runtime Node.js 10.x
+   * - Puppeteer-core version 3.3.0
+   * - Chromium version 83.0.4103.0
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-2.1
+   */
+  public static readonly SYNTHETICS_NODEJS_2_1 = new Runtime('syn-nodejs-2.1');
+
+  /**
+   * `syn-nodejs-2.2` includes the following:
+   * - Lambda runtime Node.js 10.x
+   * - Puppeteer-core version 3.3.0
+   * - Chromium version 83.0.4103.0
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-2.2
+   */
+  public static readonly SYNTHETICS_NODEJS_2_2 = new Runtime('syn-nodejs-2.2');
+
+  /**
+   * `syn-python-selenium-1.0` includes the following:
+   * - Lambda runtime Python 3.8
+   * - Selenium version 3.141.0
+   * - Chromium version 83.0.4103.0
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_python_selenium.html#CloudWatch_Synthetics_runtimeversion-syn-python-selenium-1.0
+   */
+  public static readonly SYNTHETICS_PYTHON_1_0 = new Runtime('syn-python-selenium-1.0');
 
   /**
    * @param name The name of the runtime version
