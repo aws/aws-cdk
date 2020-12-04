@@ -537,8 +537,12 @@ export default class CodeGenerator {
     // but never used as types of properties,
     // and in those cases this function will never be called.
     this.code.line('// @ts-ignore TS6133');
-    this.code.openBlock(`function ${factoryName.functionName}(properties: any): ${CFN_PARSE}.FromCloudFormationResult<` +
-      `${typeName.fqn}${allowReturningIResolvable ? ' | ' + CORE + '.IResolvable' : ''}>`);
+
+    const returnType = `${typeName.fqn}${allowReturningIResolvable ? ' | ' + CORE + '.IResolvable' : ''}`;
+
+
+    this.code.openBlock(`function ${factoryName.functionName}(properties: any): ` +
+      `${CFN_PARSE}.FromCloudFormationResult<${returnType}>`);
 
     if (allowReturningIResolvable) {
       this.code.openBlock(`if (${CORE}.isResolvableObject(properties))`);
@@ -547,6 +551,7 @@ export default class CodeGenerator {
     }
 
     this.code.line('properties = properties || {};');
+    this.code.line(`const ret = new ${CFN_PARSE}.FromCloudFormationPropertyObject<${typeName.fqn}>();`);
 
     const self = this;
     // class used for the visitor
@@ -644,21 +649,9 @@ export default class CodeGenerator {
         valueExpression += ' as any';
       }
 
-      self.code.line(`const ${cdkPropName}Result = ${valueExpression};`);
+      self.code.line(`ret.addPropertyResult('${cdkPropName}', '${cfnPropName}', ${valueExpression});`);
     }
 
-    // Generate the return object
-    this.code.indent(`const ret = new ${CFN_PARSE}.FromCloudFormationResult({`);
-    for (const cdkPropName of Object.values(nameConversionTable)) {
-      this.code.line(`${cdkPropName}: ${cdkPropName}Result?.value,`);
-    }
-    // close the return object brace
-    this.code.unindent('});');
-
-    // append all extra properties to the return object
-    for (const [cfnPropName, cdkPropName] of Object.entries(nameConversionTable)) {
-      this.code.line(`ret.appendExtraProperties('${cfnPropName}', ${cdkPropName}Result?.extraProperties);`);
-    }
     // save any extra properties we find on this level
     const omittedProperties = Object.keys(nameConversionTable)
       .map(cfnPropName => `'${cfnPropName}'`)

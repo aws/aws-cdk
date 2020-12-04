@@ -44,6 +44,24 @@ export class FromCloudFormationResult<T> {
 }
 
 /**
+ * A property object we will accumulate properties into
+ */
+export class FromCloudFormationPropertyObject<T extends Record<string, any>> extends FromCloudFormationResult<T> {
+  public constructor() {
+    super({} as any); // We're still accumulating
+  }
+
+  /**
+   * Add a parse result under a given key
+   */
+  public addPropertyResult(translatedPropertyKey: keyof T, extraPrefixKey: string, result?: FromCloudFormationResult<any>) {
+    if (!result) { return; }
+    this.value[translatedPropertyKey] = result.value;
+    this.appendExtraProperties(extraPrefixKey, result.extraProperties);
+  }
+}
+
+/**
  * This class contains static methods called when going from
  * translated values received from {@link CfnParser.parseValue}
  * to the actual L1 properties -
