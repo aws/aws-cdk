@@ -539,8 +539,6 @@ export default class CodeGenerator {
     this.code.line('// @ts-ignore TS6133');
 
     const returnType = `${typeName.fqn}${allowReturningIResolvable ? ' | ' + CORE + '.IResolvable' : ''}`;
-
-
     this.code.openBlock(`function ${factoryName.functionName}(properties: any): ` +
       `${CFN_PARSE}.FromCloudFormationResult<${returnType}>`);
 
@@ -653,12 +651,7 @@ export default class CodeGenerator {
     }
 
     // save any extra properties we find on this level
-    const omittedProperties = Object.keys(nameConversionTable)
-      .map(cfnPropName => `'${cfnPropName}'`)
-      .join(', ');
-    this.code.openBlock(`for (const [key, val] of Object.entries(${CFN_PARSE}.FromCloudFormation.omit(properties, ${omittedProperties}))) `);
-    this.code.line('ret.appendExtraProperty(key, val);');
-    this.code.closeBlock();
+    this.code.line('ret.addUnrecognizedPropertiesAsExtra(properties);');
 
     // return the result object
     this.code.line('return ret;');

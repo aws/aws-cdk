@@ -32,10 +32,6 @@ export class FromCloudFormationResult<T> {
     this.extraProperties = {};
   }
 
-  public appendExtraProperty(key: string, val: any): void {
-    this.extraProperties[key] = val;
-  }
-
   public appendExtraProperties(prefix: string, properties: { [key: string]: any } | undefined): void {
     for (const [key, val] of Object.entries(properties ?? {})) {
       this.extraProperties[`${prefix}.${key}`] = val;
@@ -47,6 +43,8 @@ export class FromCloudFormationResult<T> {
  * A property object we will accumulate properties into
  */
 export class FromCloudFormationPropertyObject<T extends Record<string, any>> extends FromCloudFormationResult<T> {
+  private readonly recognizedProperties = new Set<string>();
+
   public constructor() {
     super({} as any); // We're still accumulating
   }
@@ -54,10 +52,19 @@ export class FromCloudFormationPropertyObject<T extends Record<string, any>> ext
   /**
    * Add a parse result under a given key
    */
-  public addPropertyResult(translatedPropertyKey: keyof T, extraPrefixKey: string, result?: FromCloudFormationResult<any>) {
+  public addPropertyResult(cdkPropName: keyof T, cfnPropName: string, result?: FromCloudFormationResult<any>): void {
+    this.recognizedProperties.add(cfnPropName);
     if (!result) { return; }
-    this.value[translatedPropertyKey] = result.value;
-    this.appendExtraProperties(extraPrefixKey, result.extraProperties);
+    this.value[cdkPropName] = result.value;
+    this.appendExtraProperties(cfnPropName, result.extraProperties);
+  }
+
+  public addUnrecognizedPropertiesAsExtra(properties: object): void {
+    for (const [key, val] of Object.entries(properties)) {
+      if (!this.recognizedProperties.has(key)) {
+        this.extraProperties[key] = val;
+      }
+    }
   }
 }
 
@@ -75,24 +82,6 @@ export class FromCloudFormationPropertyObject<T extends Record<string, any>> ext
  * @experimental
  */
 export class FromCloudFormation {
-  /**
-   * Creates a new object by removing all entries with the given keys from the argument object.
-   *
-   * @param object the object whose keys should be filtered out
-   * @param props the list of property names which should be removed from `object`
-   * @returns a new object with all the entries in `object`,
-   *   except those whose keys are one of the names provided in `props`
-   */
-  public static omit(object: object, ...props: string[]): object {
-    const ret: { [key: string]: any } = {};
-    for (const [prop, value] of Object.entries(object)) {
-      if (props.indexOf(prop) === -1) {
-        ret[prop] = value;
-      }
-    }
-    return ret;
-  }
-
   // nothing to for any but return it
   public static getAny(value: any): FromCloudFormationResult<any> {
     return new FromCloudFormationResult(value);
