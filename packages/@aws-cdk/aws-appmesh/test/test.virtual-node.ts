@@ -1,8 +1,10 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
+import { Certificate } from '@aws-cdk/aws-certificatemanager';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 
 import * as appmesh from '../lib';
+import { TlsMode } from '../lib/tls-certificate';
 
 export = {
   'When an existing VirtualNode': {
@@ -253,6 +255,158 @@ export = {
         }));
 
         test.done();
+      },
+    },
+    'when a grpc listener is added with a TLS certificate from ACM': {
+      'the listener should include the TLS configuration'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+
+        // WHEN
+        const mesh = new appmesh.Mesh(stack, 'mesh', {
+          meshName: 'test-mesh',
+        });
+
+        const cert = new Certificate(stack, 'cert', {
+          domainName: '',
+        });
+
+        new appmesh.VirtualNode(stack, 'test-node', {
+          mesh,
+          dnsHostName: 'test',
+          listeners: [appmesh.VirtualNodeListener.grpc({
+            port: 80,
+            tlsCertificate: appmesh.TlsCertificate.acm({
+              acmCertificate: cert,
+              tlsMode: TlsMode.STRICT,
+            }),
+          },
+          )],
+        });
+
+        // THEN
+        expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
+          Spec: {
+            Listeners: [
+              {
+                PortMapping: {
+                  Port: 80,
+                  Protocol: 'grpc',
+                },
+                TLS: {
+                  Mode: TlsMode.STRICT,
+                  Certificate: {
+                    ACM: {
+                      CertificateArn: {
+                        Ref: 'cert56CA94EB',
+                      },
+                    },
+                  },
+                },
+              },
+            ],
+          },
+        }));
+
+        test.done();
+      },
+    },
+    'when an http listener is added with a TLS certificate from file': {
+      'the listener should include the TLS configuration'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+
+        // WHEN
+        const mesh = new appmesh.Mesh(stack, 'mesh', {
+          meshName: 'test-mesh',
+        });
+
+        new appmesh.VirtualNode(stack, 'test-node', {
+          mesh,
+          dnsHostName: 'test',
+          listeners: [appmesh.VirtualNodeListener.http({
+            port: 80,
+            tlsCertificate: appmesh.TlsCertificate.file({
+              certificateChain: 'path/to/certChain',
+              privateKey: 'path/to/privateKey',
+              tlsMode: TlsMode.STRICT,
+            }),
+          })],
+        });
+
+        // THEN
+        expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
+          Spec: {
+            Listeners: [
+              {
+                PortMapping: {
+                  Port: 80,
+                  Protocol: 'http',
+                },
+                TLS: {
+                  Mode: TlsMode.STRICT,
+                  Certificate: {
+                    File: {
+                      CertificateChain: 'path/to/certChain',
+                      PrivateKey: 'path/to/privateKey',
+                    },
+                  },
+                },
+              },
+            ],
+          },
+        }));
+
+        test.done();
+      },
+      'when an http listener is added with the TLS mode permissive': {
+        'the listener should include the TLS configuration'(test: Test) {
+          // GIVEN
+          const stack = new cdk.Stack();
+
+          // WHEN
+          const mesh = new appmesh.Mesh(stack, 'mesh', {
+            meshName: 'test-mesh',
+          });
+
+          new appmesh.VirtualNode(stack, 'test-node', {
+            mesh,
+            dnsHostName: 'test',
+            listeners: [appmesh.VirtualNodeListener.http({
+              port: 80,
+              tlsCertificate: appmesh.TlsCertificate.file({
+                certificateChain: 'path/to/certChain',
+                privateKey: 'path/to/privateKey',
+                tlsMode: TlsMode.PERMISSIVE,
+              }),
+            })],
+          });
+
+          // THEN
+          expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
+            Spec: {
+              Listeners: [
+                {
+                  PortMapping: {
+                    Port: 80,
+                    Protocol: 'http',
+                  },
+                  TLS: {
+                    Mode: TlsMode.PERMISSIVE,
+                    Certificate: {
+                      File: {
+                        CertificateChain: 'path/to/certChain',
+                        PrivateKey: 'path/to/privateKey',
+                      },
+                    },
+                  },
+                },
+              ],
+            },
+          }));
+
+          test.done();
+        },
       },
     },
   },

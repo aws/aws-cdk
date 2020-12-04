@@ -36,6 +36,11 @@ const node = mesh.addVirtualNode('node', {
       healthyThreshold: 3,
       path: '/check-path',
     },
+    tlsCertificate: appmesh.TlsCertificate.file({
+      certificateChain: 'path/to/certChain',
+      privateKey: 'path/to/privateKey',
+      tlsMode: appmesh.TlsMode.STRICT,
+    }),
   })],
   backends: [
     virtualService,
@@ -136,6 +141,11 @@ new appmesh.VirtualGateway(stack, 'gateway2', {
     healthCheck: {
       interval: cdk.Duration.seconds(10),
     },
+    tlsCertificate: appmesh.TlsCertificate.file({
+      certificateChain: 'path/to/certChain',
+      privateKey: 'path/to/privateKey',
+      tlsMode: appmesh.TlsMode.STRICT,
+    }),
   })],
 });
 

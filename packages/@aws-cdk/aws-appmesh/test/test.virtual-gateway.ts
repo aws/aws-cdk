@@ -1,8 +1,10 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
+import { Certificate } from '@aws-cdk/aws-certificatemanager';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 
 import * as appmesh from '../lib';
+import { TlsMode } from '../lib/tls-certificate';
 
 export = {
   'When creating a VirtualGateway': {
@@ -151,6 +153,151 @@ export = {
         },
         VirtualGatewayName: 'test-gateway',
       }));
+      test.done();
+    },
+    'with an http listener with a TLS certificate from ACM'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const mesh = new appmesh.Mesh(stack, 'mesh', {
+        meshName: 'test-mesh',
+      });
+
+      const cert = new Certificate(stack, 'cert', {
+        domainName: '',
+      });
+
+      new appmesh.VirtualGateway(stack, 'testGateway', {
+        virtualGatewayName: 'test-gateway',
+        mesh: mesh,
+        listeners: [appmesh.VirtualGatewayListener.httpGatewayListener({
+          port: 8080,
+          tlsCertificate: appmesh.TlsCertificate.acm({
+            tlsMode: TlsMode.STRICT,
+            acmCertificate: cert,
+          }),
+        })],
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualGateway', {
+        Spec: {
+          Listeners: [
+            {
+              PortMapping: {
+                Port: 8080,
+                Protocol: appmesh.Protocol.HTTP,
+              },
+              TLS: {
+                Mode: TlsMode.STRICT,
+                Certificate: {
+                  ACM: {
+                    CertificateArn: {
+                      Ref: 'cert56CA94EB',
+                    },
+                  },
+                },
+              },
+            },
+          ],
+        },
+      }));
+
+      test.done();
+    },
+    'with an grpc listener with a TLS certificate from file'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const mesh = new appmesh.Mesh(stack, 'mesh', {
+        meshName: 'test-mesh',
+      });
+
+      new appmesh.VirtualGateway(stack, 'testGateway', {
+        virtualGatewayName: 'test-gateway',
+        mesh: mesh,
+        listeners: [appmesh.VirtualGatewayListener.grpcGatewayListener({
+          port: 8080,
+          tlsCertificate: appmesh.TlsCertificate.file({
+            certificateChain: 'path/to/certChain',
+            privateKey: 'path/to/privateKey',
+            tlsMode: TlsMode.STRICT,
+          }),
+        })],
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualGateway', {
+        Spec: {
+          Listeners: [
+            {
+              PortMapping: {
+                Port: 8080,
+                Protocol: appmesh.Protocol.GRPC,
+              },
+              TLS: {
+                Mode: TlsMode.STRICT,
+                Certificate: {
+                  File: {
+                    CertificateChain: 'path/to/certChain',
+                    PrivateKey: 'path/to/privateKey',
+                  },
+                },
+              },
+            },
+          ],
+        },
+      }));
+
+      test.done();
+    },
+    'with an grpc listener with the TLS mode permissive'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const mesh = new appmesh.Mesh(stack, 'mesh', {
+        meshName: 'test-mesh',
+      });
+
+      new appmesh.VirtualGateway(stack, 'testGateway', {
+        virtualGatewayName: 'test-gateway',
+        mesh: mesh,
+        listeners: [appmesh.VirtualGatewayListener.grpcGatewayListener({
+          port: 8080,
+          tlsCertificate: appmesh.TlsCertificate.file({
+            certificateChain: 'path/to/certChain',
+            privateKey: 'path/to/privateKey',
+            tlsMode: TlsMode.PERMISSIVE,
+          }),
+        })],
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualGateway', {
+        Spec: {
+          Listeners: [
+            {
+              PortMapping: {
+                Port: 8080,
+                Protocol: appmesh.Protocol.GRPC,
+              },
+              TLS: {
+                Mode: TlsMode.PERMISSIVE,
+                Certificate: {
+                  File: {
+                    CertificateChain: 'path/to/certChain',
+                    PrivateKey: 'path/to/privateKey',
+                  },
+                },
+              },
+            },
+          ],
+        },
+      }));
+
       test.done();
     },
   },

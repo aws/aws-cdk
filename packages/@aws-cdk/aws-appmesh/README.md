@@ -192,6 +192,42 @@ cdk.Tag.add(node, 'Environment', 'Dev');
 
 The `listeners` property can be left blank and added later with the `node.addListener()` method. The `healthcheck` and `timeout` properties are optional but if specifying a listener, the `port` must be added.
 
+## Adding TLS to a listener
+
+The `tlsCertificate` property can be added to a Virtual Node listener or Virtual Gateway listener to add TLS configuration. A certificate from AWS Certificate Manager can be incorporated or a customer provided certificate can be specified with a `certificateChain` path file and a `privateKey` file path.
+
+```typescript
+// A Virtual Node with listener TLS from an ACM provided certificate
+const cert = new Certificate(this, 'cert', {...});
+
+const node = new appmesh.VirtualNode(stack, 'node', {
+  mesh,
+  dnsHostName: 'node',
+  listeners: [appmesh.VirtualNodeListener.grpc({
+    port: 80,
+    tlsCertificate: appmesh.TlsCertificate.acm({
+      acmCertificate: cert,
+      tlsMode: TlsMode.STRICT,
+    }),
+  },
+  )],
+});
+
+// A Virtual Gateway with listener TLS from a customer provided file certificate
+const gateway = new appmesh.VirtualGateway(this, 'gateway', {
+  mesh: mesh,
+  listeners: [appmesh.VirtualGatewayListener.grpcGatewayListener({
+    port: 8080,
+    tlsCertificate: appmesh.TlsCertificate.file({
+      certificateChain: 'path/to/certChain',
+      privateKey: 'path/to/privateKey',
+      tlsMode: TlsMode.STRICT,
+    }),
+  })],
+  virtualGatewayName: 'gateway',
+});
+```
+
 ## Adding a Route
 
 A `route` is associated with a virtual router, and it's used to match requests for a virtual router and distribute traffic accordingly to its associated virtual nodes.

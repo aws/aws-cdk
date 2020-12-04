@@ -669,6 +669,15 @@
               "PortMapping": {
                 "Port": 8080,
                 "Protocol": "http"
+              },
+              "TLS": {
+                "Certificate": {
+                  "File": {
+                    "CertificateChain": "path/to/certChain",
+                    "PrivateKey": "path/to/privateKey"
+                  }
+                },
+                "Mode": "STRICT"
               }
             }
           ],
@@ -967,6 +976,15 @@
               "PortMapping": {
                 "Port": 443,
                 "Protocol": "http"
+              },
+              "TLS": {
+                "Certificate": {
+                  "File": {
+                    "CertificateChain": "path/to/certChain",
+                    "PrivateKey": "path/to/privateKey"
+                  }
+                },
+                "Mode": "STRICT"
               }
             }
           ]
