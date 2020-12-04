@@ -203,6 +203,45 @@ export interface CanaryProps {
    */
   readonly test: Test;
 
+  /**
+   * Key-value pairs that the Synthetics caches and makes available for your canary
+   * scripts. Use environment variables to apply configuration changes, such
+   * as test and production environment configurations, without changing your
+   * Canary script source code.
+   *
+   * @default - No environment variables.
+   */
+  readonly environment?: { [key: string]: string };
+
+  /**
+   * The function execution time (in seconds) after which Lambda terminates
+   * the function. Because the execution time affects cost, set this value
+   * based on the function's expected execution time.
+   *
+   * @default cdk.Duration.seconds(900)
+   */
+  readonly timeout?: cdk.Duration;
+
+  /**
+   * The amount of memory, in MB, that is allocated to your Lambda function.
+   * Lambda uses this value to proportionally allocate the amount of CPU
+   * power. For more information, see Resource Model in the AWS Lambda
+   * Developer Guide.
+   *
+   * @default 128
+   */
+  readonly memorySize?: number;
+
+  /**
+   * Specifies whether this canary is to use active AWS X-Ray tracing when it runs.
+   * Active tracing enables this canary run to be displayed in the ServiceLens and
+   * X-Ray service maps even if the canary does not hit an endpoint that has
+   * X-ray tracing enabled.
+   *
+   * @default false
+   */
+  readonly tracing?: boolean;
+
 }
 
 /**
@@ -264,6 +303,7 @@ export class Canary extends cdk.Resource {
       failureRetentionPeriod: props.failureRetentionPeriod?.toDays(),
       successRetentionPeriod: props.successRetentionPeriod?.toDays(),
       code: this.createCode(props),
+      runConfig: this.createRunConfig(props),
     });
 
     this.canaryId = resource.attrId;
@@ -381,6 +421,18 @@ export class Canary extends cdk.Resource {
     return {
       durationInSeconds: String(`${props.timeToLive?.toSeconds() ?? 0}`),
       expression: props.schedule?.expressionString ?? 'rate(5 minutes)',
+    };
+  }
+
+  /**
+   * Retruns a runConfig object
+   */
+  private createRunConfig(props:CanaryProps): CfnCanary.RunConfigProperty {
+    return {
+      timeoutInSeconds: props.timeout?.toSeconds() ?? 3,
+      activeTracing: props.tracing,
+      environmentVariables: props.environment,
+      memoryInMb: props.memorySize,
     };
   }
 

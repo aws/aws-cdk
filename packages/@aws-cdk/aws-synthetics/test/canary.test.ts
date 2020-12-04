@@ -170,6 +170,64 @@ test('Runtime can be specified', () => {
   });
 });
 
+test('RunConfig attributes can be specified', () => {
+  // GIVEN
+  const stack = new Stack(new App(), 'canaries');
+  const environmentVariables = {
+    test_key_1: 'TEST_VALUE_1',
+    test_key_2: 'TEST_VALUE_2',
+  };
+  const timeout = 10;
+  const memorySize = 256;
+  const activateTracing = true;
+
+  // WHEN
+  new synthetics.Canary(stack, 'Canary', {
+    runtime: synthetics.Runtime.SYNTHETICS_1_0,
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+    }),
+    environment: environmentVariables,
+    timeout: Duration.seconds(timeout),
+    memorySize: memorySize,
+    tracing: activateTracing,
+  });
+
+  // THEN
+  expect(stack).toHaveResourceLike('AWS::Synthetics::Canary', {
+    RunConfig: {
+      EnvironmentVariables: environmentVariables,
+      TimeoutInSeconds: timeout,
+      MemoryInMB: memorySize,
+      ActiveTracing: activateTracing,
+    },
+  });
+});
+
+test('Timeout can be specified', () => {
+  // GIVEN
+  const stack = new Stack(new App(), 'canaries');
+  const timeout = 10;
+
+  // WHEN
+  new synthetics.Canary(stack, 'Canary', {
+    runtime: synthetics.Runtime.SYNTHETICS_1_0,
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+    }),
+    timeout: Duration.seconds(timeout),
+  });
+
+  // THEN
+  expect(stack).toHaveResourceLike('AWS::Synthetics::Canary', {
+    RunConfig: {
+      TimeoutInSeconds: timeout,
+    },
+  });
+});
+
 test('Runtime can be customized', () => {
   // GIVEN
   const stack = new Stack(new App(), 'canaries');
