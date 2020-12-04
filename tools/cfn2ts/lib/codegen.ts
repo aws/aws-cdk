@@ -241,9 +241,13 @@ export default class CodeGenerator {
       // translate the template properties to CDK objects
       this.code.line('const resourceProperties = options.parser.parseValue(resourceAttributes.Properties);');
       // translate to props, using a (module-private) factory function
-      this.code.line(`const props = ${genspec.fromCfnFactoryName(propsType).fqn}(resourceProperties);`);
+      this.code.line(`const propsResult = ${genspec.fromCfnFactoryName(propsType).fqn}(resourceProperties);`);
       // finally, instantiate the resource class
-      this.code.line(`const ret = new ${resourceName.className}(scope, id, props);`);
+      this.code.line(`const ret = new ${resourceName.className}(scope, id, propsResult.value);`);
+      // save all keys from extraProperties in the resource using property overrides
+      this.code.openBlock('for (const [propKey, propVal] of Object.entries(propsResult.extraProperties)) ');
+      this.code.line('ret.addPropertyOverride(propKey, propVal);');
+      this.code.closeBlock();
     } else {
       // no props type - we simply instantiate the construct without the third argument
       this.code.line(`const ret = new ${resourceName.className}(scope, id);`);
@@ -373,6 +377,9 @@ export default class CodeGenerator {
     }
     this.code.unindent('};');
     this.code.closeBlock();
+
+    this.code.line();
+
     this.code.openBlock('protected renderProperties(props: {[key: string]: any}): { [key: string]: any } ');
     this.code.line(`return ${genspec.cfnMapperName(propsType).fqn}(props);`);
     this.code.closeBlock();
@@ -447,7 +454,7 @@ export default class CodeGenerator {
     this.code.line(`${validatorName.fqn}(properties).assertSuccess();`);
 
     // Generate the return object
-    this.code.line('return {');
+    this.code.indent('return {');
 
     const self = this;
     Object.keys(nameConversionTable).forEach(cfnName => {
@@ -500,9 +507,9 @@ export default class CodeGenerator {
         },
       });
 
-      self.code.line(`  ${cfnName}: ${mapperExpression}(properties.${propName}),`);
+      self.code.line(`${cfnName}: ${mapperExpression}(properties.${propName}),`);
     });
-    this.code.line('};');
+    this.code.unindent('};');
     this.code.closeBlock();
   }
 
@@ -530,20 +537,21 @@ export default class CodeGenerator {
     // but never used as types of properties,
     // and in those cases this function will never be called.
     this.code.line('// @ts-ignore TS6133');
-    this.code.openBlock(`function ${factoryName.functionName}(properties: any): ${typeName.fqn}` +
-      (allowReturningIResolvable ? ` | ${CORE}.IResolvable` : ''));
+
+    const returnType = `${typeName.fqn}${allowReturningIResolvable ? ' | ' + CORE + '.IResolvable' : ''}`;
+    this.code.openBlock(`function ${factoryName.functionName}(properties: any): ` +
+      `${CFN_PARSE}.FromCloudFormationResult<${returnType}>`);
 
     if (allowReturningIResolvable) {
       this.code.openBlock(`if (${CORE}.isResolvableObject(properties))`);
-      this.code.line('return properties;');
+      this.code.line(`return new ${CFN_PARSE}.FromCloudFormationResult(properties);`);
       this.code.closeBlock();
     }
 
     this.code.line('properties = properties || {};');
-    // Generate the return object
-    this.code.indent('return {');
-    const self = this;
+    this.code.line(`const ret = new ${CFN_PARSE}.FromCloudFormationPropertyObject<${typeName.fqn}>();`);
 
+    const self = this;
     // class used for the visitor
     class FromCloudFormationFactoryVisitor implements genspec.PropertyVisitor<string> {
       public visitAtom(type: genspec.CodeName): string {
@@ -618,17 +626,16 @@ export default class CodeGenerator {
       }
     }
 
-    Object.keys(nameConversionTable).forEach(cfnName => {
-      const propName = nameConversionTable[cfnName];
-      const propSpec = propSpecs[cfnName];
+    for (const [cfnPropName, cdkPropName] of Object.entries(nameConversionTable)) {
+      const propSpec = propSpecs[cfnPropName];
+      const simpleCfnPropAccessExpr = `properties.${cfnPropName}`;
+      const deserializedExpression = genspec.typeDispatch<string>(resource, propSpec, new FromCloudFormationFactoryVisitor()) +
+        `(${simpleCfnPropAccessExpr})`;
 
-      const simpleCfnPropAccessExpr = `properties.${cfnName}`;
-
-      const deserializer = genspec.typeDispatch<string>(resource, propSpec, new FromCloudFormationFactoryVisitor());
-      const deserialized = `${deserializer}(${simpleCfnPropAccessExpr})`;
-      let valueExpression = propSpec.Required ? deserialized : `${simpleCfnPropAccessExpr} != null ? ${deserialized} : undefined`;
-
-      if (schema.isTagPropertyName(cfnName)) {
+      let valueExpression = propSpec.Required
+        ? deserializedExpression
+        : `${simpleCfnPropAccessExpr} != null ? ${deserializedExpression} : undefined`;
+      if (schema.isTagPropertyName(cfnPropName)) {
         // Properties that have names considered to denote tags
         // have their type generated without a union with IResolvable.
         // However, we can't possibly know that when generating the factory
@@ -640,10 +647,14 @@ export default class CodeGenerator {
         valueExpression += ' as any';
       }
 
-      self.code.line(`${propName}: ${valueExpression},`);
-    });
-    // close the return object brace
-    this.code.unindent('};');
+      self.code.line(`ret.addPropertyResult('${cdkPropName}', '${cfnPropName}', ${valueExpression});`);
+    }
+
+    // save any extra properties we find on this level
+    this.code.line('ret.addUnrecognizedPropertiesAsExtra(properties);');
+
+    // return the result object
+    this.code.line('return ret;');
 
     // close the function brace
     this.code.closeBlock();
