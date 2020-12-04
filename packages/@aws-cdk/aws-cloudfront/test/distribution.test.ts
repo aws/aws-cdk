@@ -318,20 +318,6 @@ describe('certificates', () => {
 
 describe('custom error responses', () => {
 
-  test('should fail if responsePagePath is defined but responseCode is not', () => {
-    const origin = defaultOrigin();
-
-    expect(() => {
-      new Distribution(stack, 'Dist', {
-        defaultBehavior: { origin },
-        errorResponses: [{
-          httpStatus: 404,
-          responsePagePath: '/errors/404.html',
-        }],
-      });
-    }).toThrow(/\'responseCode\' must be provided if \'responsePagePath\' is defined/);
-  });
-
   test('should fail if only the error code is provided', () => {
     const origin = defaultOrigin();
 
@@ -340,7 +326,7 @@ describe('custom error responses', () => {
         defaultBehavior: { origin },
         errorResponses: [{ httpStatus: 404 }],
       });
-    }).toThrow(/A custom error response without either a \'responseCode\' or \'errorCachingMinTtl\' is not valid./);
+    }).toThrow(/A custom error response without either a \'responseHttpStatus\' or \'ttl\' is not valid./);
   });
 
   test('should render the array of error configs if provided', () => {
@@ -348,13 +334,20 @@ describe('custom error responses', () => {
     new Distribution(stack, 'Dist', {
       defaultBehavior: { origin },
       errorResponses: [{
+        // responseHttpStatus defaults to httpsStatus
         httpStatus: 404,
-        responseHttpStatus: 404,
         responsePagePath: '/errors/404.html',
       },
       {
+        // without responsePagePath
         httpStatus: 500,
         ttl: Duration.seconds(2),
+      },
+      {
+        // with responseHttpStatus different from httpStatus
+        httpStatus: 403,
+        responseHttpStatus: 200,
+        responsePagePath: '/index.html',
       }],
     });
 
@@ -369,6 +362,11 @@ describe('custom error responses', () => {
           {
             ErrorCachingMinTTL: 2,
             ErrorCode: 500,
+          },
+          {
+            ErrorCode: 403,
+            ResponseCode: 200,
+            ResponsePagePath: '/index.html',
           },
         ],
       },
