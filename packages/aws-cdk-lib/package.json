@@ -274,7 +274,7 @@
     "constructs": "^3.2.0",
     "fs-extra": "^9.0.1",
     "pkglint": "0.0.0",
-    "ts-node": "^9.0.0",
+    "ts-node": "^9.1.0",
     "typescript": "~3.8.3",
     "ubergen": "0.0.0"
   },
