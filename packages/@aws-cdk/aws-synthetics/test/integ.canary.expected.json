@@ -108,7 +108,10 @@
           "DurationInSeconds": "0",
           "Expression": "rate(1 minute)"
         },
-        "StartCanaryAfterCreation": true
+        "StartCanaryAfterCreation": true,
+        "RunConfig": {
+            "TimeoutInSeconds":3
+        }
       }
     },
     "MyCanaryOneArtifactsBucketDF4A487D": {
@@ -264,7 +267,10 @@
           "DurationInSeconds": "0",
           "Expression": "rate(5 minutes)"
         },
-        "StartCanaryAfterCreation": true
+        "StartCanaryAfterCreation": true,
+        "RunConfig": {
+            "TimeoutInSeconds":3
+        }
       }
     },
     "MyCanaryTwoArtifactsBucket79B179B6": {
@@ -420,7 +426,10 @@
           "DurationInSeconds": "0",
           "Expression": "rate(5 minutes)"
         },
-        "StartCanaryAfterCreation": true
+        "StartCanaryAfterCreation": true,
+        "RunConfig": {
+            "TimeoutInSeconds":3
+        }
       }
     }
   },
