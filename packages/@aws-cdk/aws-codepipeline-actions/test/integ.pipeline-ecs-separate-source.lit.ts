@@ -23,7 +23,7 @@ import * as codepipeline_actions from '../lib';
 /**
  * These are the construction properties for {@link EcsAppStack}.
  * They extend the standard Stack properties,
- * but also require providing the Image that the service will use.
+ * but also require providing the ContainerImage that the service will use.
  * That Image will be provided from the Stack containing the CodePipeline.
  */
 export interface EcsAppStackProps extends cdk.StackProps {
@@ -31,8 +31,7 @@ export interface EcsAppStackProps extends cdk.StackProps {
 }
 
 /**
- * This is a simple ECS Service,
- * that uses the provided ContainerImage.
+ * This is the Stack containing a simple ECS Service that uses the provided ContainerImage.
  */
 export class EcsAppStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: EcsAppStackProps) {
@@ -58,7 +57,7 @@ export class EcsAppStack extends cdk.Stack {
 }
 
 /**
- * This is the Stack containing the CodePipeline definition that deploys
+ * This is the Stack containing the CodePipeline definition that deploys an ECS Service.
  */
 export class PipelineStack extends cdk.Stack {
   public readonly tagParameterContainerImage: ecs.TagParameterContainerImage;
@@ -68,7 +67,7 @@ export class PipelineStack extends cdk.Stack {
 
     /* ********** ECS part **************** */
 
-    // this is the ECR repository the built Docker image will be pushed to
+    // this is the ECR repository where the built Docker image will be pushed
     const appEcrRepo = new ecr.Repository(this, 'EcsDeployRepository');
     // the build that creates the Docker image, and pushes it to the ECR repo
     const appCodeDockerBuild = new codebuild.PipelineProject(this, 'AppCodeDockerImageBuildAndPushProject', {
