@@ -197,6 +197,29 @@ new Vpc(stack, 'TheVPC', {
 provider.connections.allowFrom(Peer.ipv4('1.2.3.4/8'), Port.tcp(80));
 ```
 
+### Specifying existing EIP for NAT gateways
+
+The default `NatProvider.gateway()` generates new EIP allocations when creating
+the gateway. If you have an existing EIP allocation which can not be replaced
+you can configure provide a list of these allocations to the provider.
+
+If the number of `allocationIds` matches the requested number of NAT gateways
+they will all be used. If not enough allocationIds are provided, new EIPs will
+be created to fill the difference:
+
+```ts
+const provider = NatProvider.gateway({
+  allocationIds: ["eipalloc-0123456789abcdef", "eipalloc-fedcba09876543210"]
+});
+
+// This will create 3 NAT gateways, 2 of which will use the EIP allocations above
+new Vpc(stack, 'TheVPC', {
+  natGatewayProvider: provider,
+  natGateways: 3,
+});
+```
+
+
 ### Advanced Subnet Configuration
 
 If the default VPC configuration (public and private subnets spanning the

@@ -39,8 +39,8 @@ export abstract class NatProvider {
    *
    * @see https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html
    */
-  public static gateway(): NatProvider {
-    return new NatGatewayProvider();
+  public static gateway(props?: NatGatewayProps): NatProvider {
+    return new NatGatewayProvider(props);
   }
 
   /**
@@ -100,6 +100,20 @@ export interface ConfigureNatOptions {
    * There may be more private subnets than public subnets with NAT providers.
    */
   readonly privateSubnets: PrivateSubnet[];
+}
+
+/**
+ * Properties for a NAT gateway
+ *
+ * @experimental
+ */
+export interface NatGatewayProps {
+  /**
+   * A list of EIP allocation IDs to use when creating NAT gateways
+   *
+   * @default - Create new EIP for every NAT gateway
+   */
+  readonly allocationIds?: string[];
 }
 
 /**
@@ -166,11 +180,19 @@ export interface NatInstanceProps {
  */
 class NatGatewayProvider extends NatProvider {
   private gateways: PrefSet<string> = new PrefSet<string>();
+  private allocationIds: Array<string | undefined> | undefined
+
+  constructor(props?: NatGatewayProps) {
+    super();
+    this.allocationIds = props?.allocationIds;
+  }
 
   public configureNat(options: ConfigureNatOptions) {
     // Create the NAT gateways
-    for (const sub of options.natSubnets) {
-      const gateway = sub.addNatGateway();
+    for (let i = 0; i < options.natSubnets.length; i++) {
+      const sub = options.natSubnets[i];
+      const allocationId = this.allocationIds?.[i];
+      const gateway = sub.addNatGateway(allocationId);
       this.gateways.add(sub.availabilityZone, gateway.ref);
     }
 

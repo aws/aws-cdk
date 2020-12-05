@@ -834,6 +834,17 @@ nodeunitShim({
 
       test.done();
     },
+    'Default NAT gateway provider with allocationIds'(test: Test) {
+      const stack = new Stack();
+      const natGatewayProvider = NatProvider.gateway({ allocationIds: ['eipalloc-0123456789abcdef'] });
+      new Vpc(stack, 'VpcNetwork', { natGatewayProvider });
+
+      expect(stack).to(haveResourceLike('AWS::EC2::NatGateway', {
+        AllocationId: 'eipalloc-0123456789abcdef',
+      }));
+
+      test.done();
+    },
     'Can add an IPv6 route'(test: Test) {
       // GIVEN
       const stack = getTestStack();
