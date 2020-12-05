@@ -8,7 +8,7 @@ import { ContainerImage, ContainerImageConfig } from '../container-image';
  * but a CloudFormation Parameter for the tag of the image in that repository.
  * This allows providing this tag through the Parameter at deploy time,
  * for example in a CodePipeline that pushes a new tag of the image to the repository during a build step,
- * and then provides that new tag through the Parameter in the deploy step.
+ * and then provides that new tag through the CloudFormation Parameter in the deploy step.
  *
  * @see #tagParameterName
  */
