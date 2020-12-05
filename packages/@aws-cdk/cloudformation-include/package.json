@@ -368,8 +368,8 @@
       "props-no-cfn-types:@aws-cdk/cloudformation-include.CfnIncludeProps.loadNestedStacks"
     ]
   },
-  "stability": "experimental",
-  "maturity": "developer-preview",
+  "stability": "stable",
+  "maturity": "stable",
   "awscdkio": {
     "announce": false
   }

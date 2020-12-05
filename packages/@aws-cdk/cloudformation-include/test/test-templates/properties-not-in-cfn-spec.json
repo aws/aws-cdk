@@ -1,0 +1,50 @@
+{
+  "Resources": {
+    "Bucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "PropertyNotInCfnSchema": 1,
+        "AccelerateConfiguration": {
+          "AccelerationStatus": "Enabled",
+          "PropertyNotInCfnSchema": false
+        },
+        "CorsConfiguration": {
+          "CorsRules": [
+            {
+              "AllowedMethods": [
+                "GET"
+              ],
+              "AllowedOrigins": [
+                "origin1"
+              ],
+              "MaxAge": 5,
+              "PropertyNotInCfnSchema": "unmodeled property in array"
+            }
+          ]
+        }
+      }
+    },
+    "Function": {
+      "Type": "AWS::Serverless::Function",
+      "Properties": {
+        "Handler": "index.handler",
+        "Runtime": "nodejs12.x",
+        "CodeUri": {
+          "Bucket": "bucket",
+          "Key": "key"
+        },
+        "Events": {
+          "Api": {
+            "Properties": {
+              "Method": "GET",
+              "Path": "/"
+            },
+            "Type": "Api",
+            "PropertyNotInCfnSchema": "unmodeled property in map"
+          }
+        }
+      }
+    }
+  },
+  "Transform": "AWS::Serverless-2016-10-31"
+}
