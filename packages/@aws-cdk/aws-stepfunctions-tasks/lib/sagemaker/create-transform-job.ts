@@ -4,7 +4,7 @@ import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Size, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
-import { BatchStrategy, S3DataType, TransformInput, TransformOutput, TransformResources, ModelClientConfig } from './base-types';
+import { BatchStrategy, ModelClientConfig, S3DataType, TransformInput, TransformOutput, TransformResources } from './base-types';
 import { renderTags } from './private/utils';
 
 /**
