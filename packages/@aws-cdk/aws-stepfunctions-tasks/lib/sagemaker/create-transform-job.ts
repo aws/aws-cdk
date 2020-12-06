@@ -4,7 +4,7 @@ import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Size, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
-import { BatchStrategy, S3DataType, TransformInput, TransformOutput, TransformResources } from './base-types';
+import { BatchStrategy, S3DataType, TransformInput, TransformOutput, TransformResources, ModelClientConfig } from './base-types';
 import { renderTags } from './private/utils';
 
 /**
@@ -58,6 +58,13 @@ export interface SageMakerCreateTransformJobProps extends sfn.TaskStateBaseProps
    * Name of the model that you want to use for the transform job.
    */
   readonly modelName: string;
+
+  /**
+   * Configures the timeout and maximum number of retries for processing a transform job invocation.
+   *
+   * @default
+   */
+  readonly modelClientConfig?: ModelClientConfig;
 
   /**
    * Tags to be applied to the train job.
@@ -164,12 +171,20 @@ export class SageMakerCreateTransformJob extends sfn.TaskStateBase {
       ...this.renderEnvironment(this.props.environment),
       ...(this.props.maxConcurrentTransforms ? { MaxConcurrentTransforms: this.props.maxConcurrentTransforms } : {}),
       ...(this.props.maxPayload ? { MaxPayloadInMB: this.props.maxPayload.toMebibytes() } : {}),
+      ...(this.props.modelClientConfig ? { ModelClientConfig: this.renderModelClientConfig(this.props.modelClientConfig) } : {}),
       ModelName: this.props.modelName,
       ...renderTags(this.props.tags),
       ...this.renderTransformInput(this.transformInput),
       TransformJobName: this.props.transformJobName,
       ...this.renderTransformOutput(this.props.transformOutput),
       ...this.renderTransformResources(this.transformResources),
+    };
+  }
+
+  private renderModelClientConfig(config: ModelClientConfig): { [key: string]: any } {
+    return {
+      InvocationsMaxRetries: config.invocationsMaxRetries,
+      InvocationsTimeoutInSeconds: config.invocationsTimeout,
     };
   }
 
