@@ -201,7 +201,6 @@
     "Python36FunctionName": {
       "Value": {
         "Ref": "myhandler53D120C7"
-      }
     },
     "Python38FunctionName": {
       "Value": {
