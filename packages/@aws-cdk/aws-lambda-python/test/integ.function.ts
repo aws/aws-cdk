@@ -13,20 +13,13 @@ class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const python36Function = new lambda.PythonFunction(this, 'my_handler', {
+    const fn = new lambda.PythonFunction(this, 'my_handler', {
       entry: path.join(__dirname, 'lambda-handler'),
       runtime: Runtime.PYTHON_3_6,
     });
-    new CfnOutput(this, 'Python36FunctionName', {
-      value: python36Function.functionName,
-    });
 
-    const python38Function = new lambda.PythonFunction(this, 'my_handler_python_38', {
-      entry: path.join(__dirname, 'lambda-handler'),
-      runtime: Runtime.PYTHON_3_8,
-    });
-    new CfnOutput(this, 'Python38FunctionName', {
-      value: python38Function.functionName,
+    new CfnOutput(this, 'FunctionArn', {
+      value: fn.functionArn,
     });
   }
 }
