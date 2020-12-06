@@ -832,6 +832,10 @@ You can call the [`CreateTransformJob`](https://docs.aws.amazon.com/sagemaker/la
 new sfn.SagemakerTransformTask(this, 'Batch Inference', {
   transformJobName: 'MyTransformJob',
   modelName: 'MyModelName',
+  modelConfig: {
+    invocationMaxRetries: 3,
+    invocationTimeout: cdk.Duration.seconds(300),
+  }
   role,
   transformInput: {
     transformDataSource: {
