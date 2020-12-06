@@ -116,7 +116,7 @@ export class PublishAssetsAction extends CoreConstruct implements codepipeline.I
             commands: `npm install -g cdk-assets${installSuffix}`,
           },
           build: {
-            commands: Lazy.listValue({ produce: () => this.commands }),
+            commands: Lazy.list({ produce: () => this.commands }),
           },
         },
       }),

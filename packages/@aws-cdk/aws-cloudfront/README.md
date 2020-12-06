@@ -1,21 +1,35 @@
-## Amazon CloudFront Construct Library
-
+# Amazon CloudFront Construct Library
 <!--BEGIN STABILITY BANNER-->
----
-
-| Features | Stability |
-| --- | --- |
-| CFN Resources | ![Stable](https://img.shields.io/badge/stable-success.svg?style=for-the-badge) |
-| Higher level constructs for Distribution | ![Developer Preview](https://img.shields.io/badge/developer--preview-informational.svg?style=for-the-badge) |
-| Higher level constructs for CloudFrontWebDistribution | ![Stable](https://img.shields.io/badge/stable-success.svg?style=for-the-badge) |
-
-> **CFN Resources:** All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) are always stable and safe to use.
-
-> **Developer Preview:** Higher level constructs in this module that are marked as developer preview have completed their phase of active development and are looking for adoption and feedback. While the same caveats around non-backward compatible as Experimental constructs apply, they will undergo fewer breaking changes. Just as with Experimental constructs, these are not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be announced in the release notes.
-
-> **Stable:** Higher level constructs in this module that are marked stable will not undergo any breaking changes. They will strictly follow the [Semantic Versioning](https://semver.org/) model.
 
 ---
+
+Features                                              | Stability
+------------------------------------------------------|---------------------------------------------
+CFN Resources                                         | ![Stable](https://img.shields.io/badge/stable-success.svg?style=for-the-badge)
+Higher level constructs for Distribution              | ![Developer Preview](https://img.shields.io/badge/developer--preview-informational.svg?style=for-the-badge)
+Higher level constructs for CloudFrontWebDistribution | ![Stable](https://img.shields.io/badge/stable-success.svg?style=for-the-badge)
+
+> **CFN Resources:** All classes with the `Cfn` prefix in this module ([CFN Resources]) are always
+> stable and safe to use.
+>
+> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib
+
+<!-- -->
+
+> **Developer Preview:** Higher level constructs in this module that are marked as developer
+> preview have completed their phase of active development and are looking for adoption and
+> feedback. While the same caveats around non-backward compatible as Experimental constructs apply,
+> they will undergo fewer breaking changes. Just as with Experimental constructs, these are not
+> subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be
+> announced in the release notes.
+
+<!-- -->
+
+> **Stable:** Higher level constructs in this module that are marked stable will not undergo any
+> breaking changes. They will strictly follow the [Semantic Versioning](https://semver.org/) model.
+
+---
+
 <!--END STABILITY BANNER-->
 
 Amazon CloudFront is a web service that speeds up distribution of your static and dynamic web content, such as .html, .css, .js, and image files, to
@@ -251,8 +265,12 @@ or authorize requests based on headers or authorization tokens.
 
 The following shows a Lambda@Edge function added to the default behavior and triggered on every request:
 
-```typescript
-const myFunc = new lambda.Function(...);
+```ts
+const myFunc = new cloudfront.experimental.EdgeFunction(this, 'MyFunction', {
+  runtime: lambda.Runtime.NODEJS_10_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
+});
 new cloudfront.Distribution(this, 'myDist', {
   defaultBehavior: {
     origin: new origins.S3Origin(myBucket),
@@ -266,11 +284,25 @@ new cloudfront.Distribution(this, 'myDist', {
 });
 ```
 
-Lambda@Edge functions can also be associated with additional behaviors,
-either at Distribution creation time,
-or after.
+> **Note:** Lambda@Edge functions must be created in the `us-east-1` region, regardless of the region of the CloudFront distribution and stack.
+> To make it easier to request functions for Lambda@Edge, the `EdgeFunction` construct can be used.
+> The `EdgeFunction` construct will automatically request a function in `us-east-1`, regardless of the region of the current stack.
+> `EdgeFunction` has the same interface as `Function` and can be created and used interchangably.
 
-```typescript
+If the stack is in `us-east-1`, a "normal" `lambda.Function` can be used instead of an `EdgeFunction`.
+
+```ts
+const myFunc = new lambda.Function(this, 'MyFunction', {
+  runtime: lambda.Runtime.NODEJS_10_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
+});
+```
+
+Lambda@Edge functions can also be associated with additional behaviors,
+either at or after Distribution creation time.
+
+```ts
 // assigning at Distribution creation
 const myOrigin = new origins.S3Origin(myBucket);
 new cloudfront.Distribution(this, 'myDist', {
