@@ -171,7 +171,7 @@ export class SageMakerCreateTransformJob extends sfn.TaskStateBase {
       ...this.renderEnvironment(this.props.environment),
       ...(this.props.maxConcurrentTransforms ? { MaxConcurrentTransforms: this.props.maxConcurrentTransforms } : {}),
       ...(this.props.maxPayload ? { MaxPayloadInMB: this.props.maxPayload.toMebibytes() } : {}),
-      ...this.renderModelClientConfig(this.props.modelClientConfig),
+      ...this.props.modelClientConfig ? this.renderModelClientConfig(this.props.modelClientConfig) : {},
       ModelName: this.props.modelName,
       ...renderTags(this.props.tags),
       ...this.renderTransformInput(this.transformInput),
@@ -184,9 +184,9 @@ export class SageMakerCreateTransformJob extends sfn.TaskStateBase {
   private renderModelClientConfig(config: ModelClientConfig): { [key: string]: any } {
     return {
       ModelClientConfig: {
-            InvocationsMaxRetries: config?.invocationsMaxRetries?,
-            InvocationsTimeoutInSeconds: config?.invocationsTimeout?.toSeconds(),
-        },
+        InvocationsMaxRetries: config?.invocationsMaxRetries,
+        InvocationsTimeoutInSeconds: config?.invocationsTimeout?.toSeconds(),
+      },
     };
   }
 
