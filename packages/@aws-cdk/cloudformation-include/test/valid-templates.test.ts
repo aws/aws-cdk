@@ -999,6 +999,14 @@ describe('CDK Include', () => {
       });
     }).toThrow(/Parameter with logical ID 'FakeParameter' was not found in the template/);
   });
+
+  test('can ingest a template that contains properties not in the current CFN spec, and output it unchanged', () => {
+    includeTestTemplate(stack, 'properties-not-in-cfn-spec.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('properties-not-in-cfn-spec.json'),
+    );
+  });
 });
 
 interface IncludeTestTemplateProps {

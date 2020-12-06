@@ -1,5 +1,6 @@
-## Amazon ECS Construct Library
+# Amazon ECS Construct Library
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
@@ -7,6 +8,7 @@
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
 
 This package contains constructs for working with **Amazon Elastic Container
@@ -207,6 +209,7 @@ const fargateTaskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef', {
   cpu: 256
 });
 ```
+
 To add containers to a task definition, call `addContainer()`:
 
 ```ts
@@ -276,13 +279,13 @@ const taskDefinition = new ecs.TaskDefinition(this, 'TaskDef', {
 Images supply the software that runs inside the container. Images can be
 obtained from either DockerHub or from ECR repositories, or built directly from a local Dockerfile.
 
-* `ecs.ContainerImage.fromRegistry(imageName)`: use a public image.
-* `ecs.ContainerImage.fromRegistry(imageName, { credentials: mySecret })`: use a private image that requires credentials.
-* `ecs.ContainerImage.fromEcrRepository(repo, tag)`: use the given ECR repository as the image
+- `ecs.ContainerImage.fromRegistry(imageName)`: use a public image.
+- `ecs.ContainerImage.fromRegistry(imageName, { credentials: mySecret })`: use a private image that requires credentials.
+- `ecs.ContainerImage.fromEcrRepository(repo, tag)`: use the given ECR repository as the image
   to start. If no tag is provided, "latest" is assumed.
-* `ecs.ContainerImage.fromAsset('./image')`: build and upload an
+- `ecs.ContainerImage.fromAsset('./image')`: build and upload an
   image directly from a `Dockerfile` in your source directory.
-* `ecs.ContainerImage.fromDockerImageAsset(asset)`: uses an existing
+- `ecs.ContainerImage.fromDockerImageAsset(asset)`: uses an existing
   `@aws-cdk/aws-ecr-assets.DockerImageAsset` as a container image.
 
 ### Environment variables
@@ -328,6 +331,7 @@ const service = new ecs.FargateService(this, 'Service', {
   desiredCount: 5
 });
 ```
+
 `Services` by default will create a security group if not provided.
 If you'd like to specify which security groups to use you can override the `securityGroups` property.
 
@@ -394,6 +398,7 @@ See the [ecs/cross-stack-load-balancer example](https://github.com/aws-samples/a
 for the alternatives.
 
 ### Include a classic load balancer
+
 `Services` can also be directly attached to a classic load balancer as targets:
 
 ```ts
@@ -423,8 +428,8 @@ lb.addTarget(service.loadBalancerTarget{
 
 There are two higher-level constructs available which include a load balancer for you that can be found in the aws-ecs-patterns module:
 
-* `LoadBalancedFargateService`
-* `LoadBalancedEc2Service`
+- `LoadBalancedFargateService`
+- `LoadBalancedEc2Service`
 
 ## Task Auto-Scaling
 
