@@ -120,6 +120,14 @@ export interface ICluster extends IResource, ec2.IConnectable {
   readonly kubectlLayer?: lambda.ILayerVersion;
 
   /**
+   * Indicates whether Kubernetes resources can be automatically pruned. When
+   * this is enabled (default), prune labels will be allocated and injected to
+   * each resource. These labels will then be used when issuing the `kubectl
+   * apply` operation with the `--prune` switch.
+   */
+  readonly prune: boolean;
+
+  /**
    * Creates a new service account with corresponding IAM Role (IRSA).
    *
    * @param id logical id of service account
@@ -271,6 +279,16 @@ export interface ClusterAttributes {
    * @see https://github.com/aws-samples/aws-lambda-layer-kubectl
    */
   readonly kubectlLayer?: lambda.ILayerVersion;
+
+  /**
+   * Indicates whether Kubernetes resources added through `addManifest()` can be
+   * automatically pruned. When this is enabled (default), prune labels will be
+   * allocated and injected to each resource. These labels will then be used
+   * when issuing the `kubectl apply` operation with the `--prune` switch.
+   *
+   * @default true
+   */
+  readonly prune?: boolean;
 }
 
 /**
@@ -540,6 +558,16 @@ export interface ClusterProps extends ClusterOptions {
   readonly kubectlEnabled?: boolean;
 
   /**
+   * Indicates whether Kubernetes resources added through `addManifest()` can be
+   * automatically pruned. When this is enabled (default), prune labels will be
+   * allocated and injected to each resource. These labels will then be used
+   * when issuing the `kubectl apply` operation with the `--prune` switch.
+   *
+   * @default true
+   */
+  readonly prune?: boolean;
+
+  /**
    * Number of instances to allocate as an initial capacity for this cluster.
    * Instance type can be configured through `defaultCapacityInstanceType`,
    * which defaults to `m5.large`.
@@ -630,6 +658,7 @@ abstract class ClusterBase extends Resource implements ICluster {
   public abstract readonly kubectlEnvironment?: { [key: string]: string };
   public abstract readonly kubectlSecurityGroup?: ec2.ISecurityGroup;
   public abstract readonly kubectlPrivateSubnets?: ec2.ISubnet[];
+  public abstract readonly prune: boolean;
   public abstract readonly openIdConnectProvider: iam.IOpenIdConnectProvider;
 
   /**
@@ -843,6 +872,11 @@ export class Cluster extends ClusterBase {
   public readonly kubectlLayer?: lambda.ILayerVersion;
 
   /**
+   * Determines if Kubernetes resources can be pruned automatically.
+   */
+  public readonly prune: boolean;
+
+  /**
    * If this cluster is kubectl-enabled, returns the `ClusterResource` object
    * that manages it. If this cluster is not kubectl-enabled (i.e. uses the
    * stock `CfnCluster`), this is `undefined`.
@@ -902,6 +936,7 @@ export class Cluster extends ClusterBase {
 
     const stack = Stack.of(this);
 
+    this.prune = props.prune ?? true;
     this.vpc = props.vpc || new ec2.Vpc(this, 'DefaultVpc');
     this.version = props.version;
 
@@ -1630,6 +1665,7 @@ class ImportedCluster extends ClusterBase {
   public readonly kubectlSecurityGroup?: ec2.ISecurityGroup | undefined;
   public readonly kubectlPrivateSubnets?: ec2.ISubnet[] | undefined;
   public readonly kubectlLayer?: lambda.ILayerVersion;
+  public readonly prune: boolean;
 
   constructor(scope: Construct, id: string, private readonly props: ClusterAttributes) {
     super(scope, id);
@@ -1641,6 +1677,7 @@ class ImportedCluster extends ClusterBase {
     this.kubectlEnvironment = props.kubectlEnvironment;
     this.kubectlPrivateSubnets = props.kubectlPrivateSubnetIds ? props.kubectlPrivateSubnetIds.map((subnetid, index) => ec2.Subnet.fromSubnetId(this, `KubectlSubnet${index}`, subnetid)) : undefined;
     this.kubectlLayer = props.kubectlLayer;
+    this.prune = props.prune ?? true;
 
     let i = 1;
     for (const sgid of props.securityGroupIds ?? []) {
