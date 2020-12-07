@@ -495,7 +495,7 @@ nodeunitShim({
       test.done();
     },
 
-    'bucket with aws foundational security best practice enforce ssl'(test: Test) {
+    'can set enforceSsl'(test: Test) {
       const stack = new cdk.Stack();
       new s3.Bucket(stack, 'MyBucket', {
         enforceSSL: true,
