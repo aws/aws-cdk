@@ -74,17 +74,19 @@ have a reference to the underlying KMS Key.
 
 ## Trust Account Identities
 
-KMS keys can be created to trust IAM policies. This is the default behavior in
-the console and is described
-[here](https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html).
-This same behavior can be enabled by:
+KMS keys can be created to trust IAM policies. This is the default behavior for both the KMS APIs and in
+the console and is described [here](https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html).
+
+This behavior is enabled by the '@aws-cdk/aws-kms:defaultKeyPolicies' feature flag,
+which is set for all new projects. For existing projects, this same behavior can be enabled by:
 
 ```ts
 new Key(stack, 'MyKey', { trustAccountIdentities: true });
 ```
 
-Using `trustAccountIdentities` solves many issues around cyclic dependencies
-between stacks. The most common use case is creating an S3 Bucket with CMK
+Adopting the default KMS key policy (and so trusting account identities)
+solves many issues around cyclic dependencies between stacks.
+The most common use case is creating an S3 Bucket with CMK
 default encryption which is later accessed by IAM roles in other stacks.
 
 stack-1 (bucket and key created)
@@ -138,5 +140,3 @@ As the name suggests this trusts IAM policies to control access to the key.
 If account root does not have permissions to the specific actions, then the key
 policy and the IAM policy for the entity (e.g. Lambda) both need to grant
 permission.
-
-

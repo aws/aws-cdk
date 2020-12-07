@@ -1,8 +1,10 @@
 import * as iam from '@aws-cdk/aws-iam';
-import { IResource, RemovalPolicy, Resource, Stack } from '@aws-cdk/core';
+import { Annotations, FeatureFlags, IResource, RemovalPolicy, Resource, Stack } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { IConstruct, Construct } from 'constructs';
 import { Alias } from './alias';
 import { CfnKey } from './kms.generated';
+import * as perms from './perms';
 
 /**
  * A KMS Key, either managed by this CDK app, or imported.
@@ -77,8 +79,9 @@ abstract class KeyBase extends Resource implements IKey {
   /**
    * Optional property to control trusting account identities.
    *
-   * If specified grants will default identity policies instead of to both
-   * resource and identity policies.
+   * If specified, grants will default identity policies instead of to both
+   * resource and identity policies. This matches the default behavior when creating
+   * KMS keys via the API or console.
    */
   protected abstract readonly trustAccountIdentities: boolean;
 
@@ -171,32 +174,21 @@ abstract class KeyBase extends Resource implements IKey {
    * Grant decryption permisisons using this key to the given principal
    */
   public grantDecrypt(grantee: iam.IGrantable): iam.Grant {
-    return this.grant(grantee,
-      'kms:Decrypt',
-    );
+    return this.grant(grantee, ...perms.DECRYPT_ACTIONS);
   }
 
   /**
    * Grant encryption permisisons using this key to the given principal
    */
   public grantEncrypt(grantee: iam.IGrantable): iam.Grant {
-    return this.grant(grantee,
-      'kms:Encrypt',
-      'kms:ReEncrypt*',
-      'kms:GenerateDataKey*',
-    );
+    return this.grant(grantee, ...perms.ENCRYPT_ACTIONS);
   }
 
   /**
    * Grant encryption and decryption permisisons using this key to the given principal
    */
   public grantEncryptDecrypt(grantee: iam.IGrantable): iam.Grant {
-    return this.grant(grantee,
-      'kms:Decrypt',
-      'kms:Encrypt',
-      'kms:ReEncrypt*',
-      'kms:GenerateDataKey*',
-    );
+    return this.grant(grantee, ...[...perms.DECRYPT_ACTIONS, ...perms.ENCRYPT_ACTIONS]);
   }
 
   /**
@@ -293,6 +285,10 @@ export interface KeyProps {
   /**
    * Custom policy document to attach to the KMS key.
    *
+   * NOTE - If the '@aws-cdk/aws-kms:defaultKeyPolicies' feature flag is set (the default for new projects),
+   * this policy will *override* the default key policy and become the only key policy for the key. If the
+   * feature flag is not set, this policy will be appended to the default key policy.
+   *
    * @default - A policy document with permissions for the account root to
    * administer the key will be created.
    */
@@ -311,9 +307,13 @@ export interface KeyProps {
    *
    * Setting this to true adds a default statement which delegates key
    * access control completely to the identity's IAM policy (similar
-   * to how it works for other AWS resources).
+   * to how it works for other AWS resources). This matches the default behavior
+   * when creating KMS keys via the API or console.
    *
-   * @default false
+   * If the '@aws-cdk/aws-kms:defaultKeyPolicies' feature flag is set (the default for new projects),
+   * this flag will always be treated as 'true' and does not need to be explicitly set.
+   *
+   * @default - false, unless the '@aws-cdk/aws-kms:defaultKeyPolicies' feature flag is set.
    * @see https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html#key-policy-default-allow-root-enable-iam
    */
   readonly trustAccountIdentities?: boolean;
@@ -365,12 +365,26 @@ export class Key extends KeyBase {
   constructor(scope: Construct, id: string, props: KeyProps = {}) {
     super(scope, id);
 
-    this.policy = props.policy || new iam.PolicyDocument();
-    this.trustAccountIdentities = props.trustAccountIdentities || false;
-    if (this.trustAccountIdentities) {
-      this.allowAccountIdentitiesToControl();
+    const defaultKeyPoliciesEnabled = FeatureFlags.of(this).isEnabled(cxapi.KMS_DEFAULT_KEY_POLICIES);
+
+    this.policy = props.policy ?? new iam.PolicyDocument();
+    if (defaultKeyPoliciesEnabled) {
+      if (props.trustAccountIdentities === false) {
+        Annotations.of(this).addWarning('`trustAccountIdentities` has no impact if the @aws-cdk/aws-kms:defaultKeyPolicies feature flag is set');
+      }
+
+      this.trustAccountIdentities = true;
+      // Set the default key policy if one hasn't been provided by the user.
+      if (!props.policy) {
+        this.grantDefaultKeyPolicy();
+      }
     } else {
-      this.allowAccountToAdmin();
+      this.trustAccountIdentities = props.trustAccountIdentities || false;
+      if (this.trustAccountIdentities) {
+        this.grantDefaultKeyPolicy();
+      } else {
+        this.grantAccountAdminPrivilegesPlusGenerateDataKey();
+      }
     }
 
     const resource = new CfnKey(this, 'Resource', {
@@ -389,41 +403,33 @@ export class Key extends KeyBase {
     }
   }
 
-  private allowAccountIdentitiesToControl() {
+  /**
+   * Adds the default key policy to the key. This policy gives the AWS account (root user) full access to the CMK,
+   * which reduces the risk of the CMK becoming unmanageable and enables IAM policies to allow access to the CMK.
+   * This is the same policy that is default when creating a Key via the KMS API or Console.
+   * @see https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html#key-policy-default
+   */
+  private grantDefaultKeyPolicy() {
     this.addToResourcePolicy(new iam.PolicyStatement({
       resources: ['*'],
       actions: ['kms:*'],
       principals: [new iam.AccountRootPrincipal()],
     }));
-
   }
-  /**
-   * Let users or IAM policies from this account admin this key.
-   * @link https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html#key-policy-default
-   * @link https://aws.amazon.com/premiumsupport/knowledge-center/update-key-policy-future/
-   */
-  private allowAccountToAdmin() {
-    const actions = [
-      'kms:Create*',
-      'kms:Describe*',
-      'kms:Enable*',
-      'kms:List*',
-      'kms:Put*',
-      'kms:Update*',
-      'kms:Revoke*',
-      'kms:Disable*',
-      'kms:Get*',
-      'kms:Delete*',
-      'kms:ScheduleKeyDeletion',
-      'kms:CancelKeyDeletion',
-      'kms:GenerateDataKey',
-      'kms:TagResource',
-      'kms:UntagResource',
-    ];
 
+  /**
+   * Grants the account admin privileges -- not full account access -- plus the GenerateDataKey action.
+   * The GenerateDataKey action was added for interop with S3 in https://github.com/aws/aws-cdk/issues/3458.
+   *
+   * This policy is discouraged and deprecated by the '@aws-cdk/aws-kms:defaultKeyPolicies' feature flag.
+   *
+   * @link https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html#key-policy-default
+   * @deprecated
+   */
+  private grantAccountAdminPrivilegesPlusGenerateDataKey() {
     this.addToResourcePolicy(new iam.PolicyStatement({
       resources: ['*'],
-      actions,
+      actions: [...perms.ADMIN_ACTIONS, 'kms:GenerateDataKey'],
       principals: [new iam.AccountRootPrincipal()],
     }));
   }
