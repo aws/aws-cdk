@@ -4,6 +4,8 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecr from '@aws-cdk/aws-ecr';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as iam from '@aws-cdk/aws-iam';
+import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
+import * as ssm from '@aws-cdk/aws-ssm';
 import * as cdk from '@aws-cdk/core';
 import * as batch from '../lib';
 
@@ -26,7 +28,6 @@ describe('Batch Job Definition', () => {
     const logConfiguration: batch.LogConfiguration = {
       logDriver: batch.LogDriver.AWSLOGS,
       options: { 'awslogs-region': 'us-east-1' },
-      secrets: [{ name: 'abc', valueFrom: 'abc' }],
     };
 
     jobDefProps = {
@@ -86,12 +87,6 @@ describe('Batch Job Definition', () => {
           Options: {
             'awslogs-region': 'us-east-1',
           },
-          SecretOptions: [
-            {
-              Name: 'abc',
-              ValueFrom: 'abc',
-            },
-          ],
         },
         Memory: jobDefProps.container.memoryLimitMiB,
         MountPoints: [],
@@ -228,5 +223,91 @@ describe('Batch Job Definition', () => {
     expect(importedJob.jobDefinitionName).toEqual('job-def-name');
     expect(importedJob.jobDefinitionArn)
       .toEqual('arn:${Token[AWS.Partition.3]}:batch:${Token[AWS.Region.4]}:${Token[AWS.AccountId.0]}:job-definition/job-def-name');
+  });
+
+  describe('LogConfiguration Secrets', () => {
+    test('can configure log configuration secrets properly', () => {
+      // GIVEN
+      const secretArn = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret-f3gDy9';
+
+      const logConfiguration: batch.LogConfiguration = {
+        logDriver: batch.LogDriver.AWSLOGS,
+        options: { 'awslogs-region': 'us-east-1' },
+        secrets: [{
+          name: 'abc',
+          secretsManagerValue: secretsmanager.Secret.fromSecretCompleteArn(stack, 'secret', secretArn),
+        }],
+      };
+
+      // WHEN
+      new batch.JobDefinition(stack, 'job-def', {
+        container: {
+          image: ecs.EcrImage.fromRegistry('docker/whalesay'),
+          logConfiguration,
+        },
+      });
+
+      // THEN
+      expect(stack).toHaveResourceLike('AWS::Batch::JobDefinition', {
+        ContainerProperties: {
+          LogConfiguration: {
+            LogDriver: 'awslogs',
+            Options: {
+              'awslogs-region': 'us-east-1',
+            },
+            SecretOptions: [
+              {
+                Name: 'abc',
+                ValueFrom: secretArn,
+              },
+            ],
+          },
+        },
+      }, ResourcePart.Properties);
+    });
+
+    test('throws if both values are passed', () => {
+      // GIVEN
+      const secretArn = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret-f3gDy9';
+
+      const logConfiguration: batch.LogConfiguration = {
+        logDriver: batch.LogDriver.AWSLOGS,
+        options: { 'awslogs-region': 'us-east-1' },
+        secrets: [{
+          name: 'abc',
+          secretsManagerValue: secretsmanager.Secret.fromSecretCompleteArn(stack, 'secret', secretArn),
+          parametersStoreValue: ssm.StringParameter.fromStringParameterName(stack, 'parameter', 'abc'),
+        }],
+      };
+
+      // WHEN
+      expect(() =>
+        new batch.JobDefinition(stack, 'job-def', {
+          container: {
+            image: ecs.EcrImage.fromRegistry('docker/whalesay'),
+            logConfiguration,
+          },
+        }),
+      ).toThrow('Only one of secretsManagerValue and parametersStoreValue is supported');
+    });
+
+    test('throws if no value is passed', () => {
+      // GIVEN
+      const logConfiguration: batch.LogConfiguration = {
+        logDriver: batch.LogDriver.AWSLOGS,
+        options: { 'awslogs-region': 'us-east-1' },
+        secrets: [{ name: 'abc' }],
+      };
+
+      // WHEN
+      expect(() =>
+        new batch.JobDefinition(stack, 'job-def', {
+          container: {
+            image: ecs.EcrImage.fromRegistry('docker/whalesay'),
+            logConfiguration,
+          },
+        }),
+      ).toThrow('At least one of secretsManagerValue and parametersStoreValue is required');
+    });
   });
 });
