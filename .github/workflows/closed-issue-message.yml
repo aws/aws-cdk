@@ -1,6 +1,6 @@
 name: Closed Issue Message
 on:
-   issues:
+    issues:
        types: [closed]
 jobs:
     auto_comment:
