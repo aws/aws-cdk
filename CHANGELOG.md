@@ -9,7 +9,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 * **apigatewayv2:** The `VpcLink.fromVpcLinkId()` API has been
 replaced with `VpcLink.fromVpcLinkAttributes()`.
-* **secretsmanager:** (feature flag) Secret.secretName for owned secrets will now
+* **secretsmanager:** (feature flag) Secret.secretName for owned secrets will now return
 only the secret name (without suffix) and not the full resource name. This is
 enabled through the `@aws-cdk/secretsmanager:parseOwnedSecretName` flag.
 * **lambda-nodejs:** bundling customization options like `minify` or `sourceMap` are now gathered under a new `bundling` prop.
@@ -20,6 +20,7 @@ enabled through the `@aws-cdk/secretsmanager:parseOwnedSecretName` flag.
 
 * **apigatewayv2:** private integration with imported services ([#11661](https://github.com/aws/aws-cdk/issues/11661)) ([6bf0da0](https://github.com/aws/aws-cdk/commit/6bf0da05348557386a72af6323d0165c594caf6c)), closes [#11603](https://github.com/aws/aws-cdk/issues/11603)
 * **cfn-include:** preserve properties of resources that are not in the current CFN schema ([#11822](https://github.com/aws/aws-cdk/issues/11822)) ([45677ca](https://github.com/aws/aws-cdk/commit/45677cac1b8a13d272c8e7ecea74b2beba590df7)), closes [#9717](https://github.com/aws/aws-cdk/issues/9717)
+* **cfn-include:** the cloudformation-include module is now Generally Available (stable) ([#11882](https://github.com/aws/aws-cdk/issues/11882)) ([11df56b](https://github.com/aws/aws-cdk/commit/11df56b7fa1c976641da1a26f3c5ce012d9a92fa))
 * **cfnspec:** cloudformation spec v21.0.0 ([#11694](https://github.com/aws/aws-cdk/issues/11694)) ([d1d9fc4](https://github.com/aws/aws-cdk/commit/d1d9fc49afbd5bfde6b30bbfb92bb179e79d5743))
 * **cli:** support WebIdentityCredentials (as used by EKS) ([#11559](https://github.com/aws/aws-cdk/issues/11559)) ([5cfbe6c](https://github.com/aws/aws-cdk/commit/5cfbe6c96df5d590588337c1ca8e41272a8d09fb)), closes [#11543](https://github.com/aws/aws-cdk/issues/11543)
 * **cloudfront:** Lambda@Edge construct ([#10500](https://github.com/aws/aws-cdk/issues/10500)) ([3b30123](https://github.com/aws/aws-cdk/commit/3b301231a2d28c3f46d22d44010eb75adc77bc6b)), closes [#9833](https://github.com/aws/aws-cdk/issues/9833) [#1575](https://github.com/aws/aws-cdk/issues/1575) [#9862](https://github.com/aws/aws-cdk/issues/9862)
@@ -27,7 +28,6 @@ enabled through the `@aws-cdk/secretsmanager:parseOwnedSecretName` flag.
 * **cognito:** user pool client - token validity ([#11752](https://github.com/aws/aws-cdk/issues/11752)) ([78b3c39](https://github.com/aws/aws-cdk/commit/78b3c3934c054ef27dc0e164af88d83692ead91d)), closes [#11689](https://github.com/aws/aws-cdk/issues/11689)
 * **ecr:** authorization token retrieval grants ([#11783](https://github.com/aws/aws-cdk/issues/11783)) ([c072981](https://github.com/aws/aws-cdk/commit/c072981c175bf0509e9c606ff9ed441a0c7aef31))
 * **ecs-patterns:** allow to select vpc subnets for LB fargate service ([#11823](https://github.com/aws/aws-cdk/issues/11823)) ([869c884](https://github.com/aws/aws-cdk/commit/869c884a9bd02a5fa116a8339ef7a6cedbeb33ac)), closes [#8621](https://github.com/aws/aws-cdk/issues/8621)
-* the cloudformation-include module is now Generally Available (stable) ([#11882](https://github.com/aws/aws-cdk/issues/11882)) ([11df56b](https://github.com/aws/aws-cdk/commit/11df56b7fa1c976641da1a26f3c5ce012d9a92fa))
 * **lambda-nodejs:** command hooks ([#11583](https://github.com/aws/aws-cdk/issues/11583)) ([0608670](https://github.com/aws/aws-cdk/commit/0608670f5a4d78c0de2e394b3dee8f87211a7c61)), closes [#11468](https://github.com/aws/aws-cdk/issues/11468)
 * **lambda-python:** support poetry packaging for PythonFunction ([#11850](https://github.com/aws/aws-cdk/issues/11850)) ([c5c258a](https://github.com/aws/aws-cdk/commit/c5c258ac8c7cf24e541472d1fce1e971604e0aaa)), closes [#11753](https://github.com/aws/aws-cdk/issues/11753)
 
