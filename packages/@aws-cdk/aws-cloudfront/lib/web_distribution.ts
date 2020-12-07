@@ -640,8 +640,6 @@ interface BehaviorWithOrigin extends Behavior {
 
 /**
  * Attributes used to import a Distribution.
- *
- * @experimental
  */
 export interface CloudFrontWebDistributionAttributes {
   /**
