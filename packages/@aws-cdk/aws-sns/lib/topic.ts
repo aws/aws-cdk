@@ -80,6 +80,10 @@ export class Topic extends TopicBase {
       physicalName: props.topicName,
     });
 
+    if (props.contentBasedDeduplication && !props.fifo) {
+      throw new Error('Content based deduplication can only be enabled for FIFO SNS topics.');
+    }
+
     const resource = new CfnTopic(this, 'Resource', {
       displayName: props.displayName,
       topicName: this.physicalName,
