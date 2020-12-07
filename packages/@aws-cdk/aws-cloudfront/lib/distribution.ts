@@ -43,8 +43,6 @@ export interface IDistribution extends IResource {
 
 /**
  * Attributes used to import a Distribution.
- *
- * @experimental
  */
 export interface DistributionAttributes {
   /**
@@ -69,8 +67,6 @@ interface BoundOrigin extends OriginBindOptions, OriginBindConfig {
 
 /**
  * Properties for a Distribution
- *
- * @experimental
  */
 export interface DistributionProps {
   /**
@@ -214,8 +210,6 @@ export interface DistributionProps {
 
 /**
  * A CloudFront distribution with associated origin(s) and caching behavior(s).
- *
- * @experimental
  */
 export class Distribution extends Resource implements IDistribution {
 
@@ -555,8 +549,6 @@ export class CachedMethods {
 
 /**
  * Options for configuring custom error responses.
- *
- * @experimental
  */
 export interface ErrorResponse {
   /**
@@ -640,8 +632,6 @@ export interface EdgeLambda {
 
 /**
  * Options for adding a new behavior to a Distribution.
- *
- * @experimental
  */
 export interface AddBehaviorOptions {
   /**
@@ -709,8 +699,6 @@ export interface AddBehaviorOptions {
 
 /**
  * Options for creating a new behavior.
- *
- * @experimental
  */
 export interface BehaviorOptions extends AddBehaviorOptions {
   /**
