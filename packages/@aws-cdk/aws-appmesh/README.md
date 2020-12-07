@@ -184,7 +184,7 @@ const node = new VirtualNode(this, 'node', {
       idle: cdk.Duration.seconds(5),
     },
   })],
-  backendDefaultsClientPolicy: appmesh.ClientPolicy.fileTrust({
+  backendsDefaultClientPolicy: appmesh.ClientPolicy.fileTrust({
     certificateChain: '/keys/local_cert_chain.pem',
   }),
   accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
@@ -233,7 +233,7 @@ The `listeners` property can be left blank and added later with the `node.addLis
 
 The `backends` property can be added with `node.addBackend()`. We define a virtual service and add it to the virtual node to allow egress traffic to other node.
 
-The `backendDefaultsClientPolicy` property are added to the node while creating the virtual node. These are virtual node's service backends client policy defaults.
+The `backendsDefaultClientPolicy` property are added to the node while creating the virtual node. These are virtual node's service backends client policy defaults.
 
 ## Adding a Route
 
