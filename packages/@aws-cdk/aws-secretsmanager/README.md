@@ -1,6 +1,6 @@
-## AWS Secrets Manager Construct Library
-
+# AWS Secrets Manager Construct Library
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
@@ -8,13 +8,15 @@
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
+
 
 ```ts
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 ```
 
-### Create a new Secret in a Stack
+## Create a new Secret in a Stack
 
 In order to have SecretsManager generate a new secret value automatically,
 you can get started with the following:
@@ -43,7 +45,7 @@ list of properties, see [the CloudFormation Dynamic References documentation](ht
 
 A secret can set `RemovalPolicy`. If it set to `RETAIN`, that removing a secret will fail.
 
-### Grant permission to use the secret to a role
+## Grant permission to use the secret to a role
 
 You must grant permission to a resource for that resource to be allowed to
 use a secret. This can be achieved with the `Secret.grantRead` and/or `Secret.grantUpdate`
@@ -69,9 +71,9 @@ then `Secret.grantRead` and `Secret.grantWrite` will also grant the role the
 relevant encrypt and decrypt permissions to the KMS key through the
 SecretsManager service principal.
 
-### Rotating a Secret
+## Rotating a Secret
 
-#### Using a Custom Lambda Function
+### Using a Custom Lambda Function
 
 A rotation schedule can be added to a Secret using a custom Lambda function:
 
@@ -87,7 +89,7 @@ secret.addRotationSchedule('RotationSchedule', {
 
 See [Overview of the Lambda Rotation Function](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets-lambda-function-overview.html) on how to implement a Lambda Rotation Function.
 
-#### Using a Hosted Lambda Function
+### Using a Hosted Lambda Function
 
 Use the `hostedRotation` prop to rotate a secret with a hosted Lambda function:
 
@@ -112,7 +114,7 @@ dbConnections.allowDefaultPortFrom(hostedRotation);
 
 See also [Automating secret creation in AWS CloudFormation](https://docs.aws.amazon.com/secretsmanager/latest/userguide/integrating_cloudformation.html).
 
-### Rotating database credentials
+## Rotating database credentials
 
 Define a `SecretRotation` to rotate database credentials:
 
@@ -157,7 +159,7 @@ new secretsmanager.SecretRotation(stack, 'SecretRotation', {
 See also [aws-rds](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-rds/README.md) where
 credentials generation and rotation is integrated.
 
-### Importing Secrets
+## Importing Secrets
 
 Existing secrets can be imported by ARN, name, and other attributes (including the KMS key used to encrypt the secret).
 Secrets imported by name should use the short-form of the name (without the SecretsManager-provided suffx);
