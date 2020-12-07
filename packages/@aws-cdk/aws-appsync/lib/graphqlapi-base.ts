@@ -3,8 +3,8 @@ import { IFunction } from '@aws-cdk/aws-lambda';
 import { IDatabaseCluster } from '@aws-cdk/aws-rds';
 import { ISecret } from '@aws-cdk/aws-secretsmanager';
 import { CfnResource, IResource, Resource } from '@aws-cdk/core';
-import { Resolver, ExtendedResolverProps } from './resolver';
 import { DynamoDbDataSource, HttpDataSource, LambdaDataSource, NoneDataSource, RdsDataSource, AwsIamConfig } from './data-source';
+import { Resolver, ExtendedResolverProps } from './resolver';
 
 /**
  * Optional configuration for data sources
