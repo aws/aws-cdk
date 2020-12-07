@@ -238,11 +238,11 @@ test('add s3 action', () => {
             'kms:Disable*',
             'kms:Get*',
             'kms:Delete*',
+            'kms:TagResource',
+            'kms:UntagResource',
             'kms:ScheduleKeyDeletion',
             'kms:CancelKeyDeletion',
             'kms:GenerateDataKey',
-            'kms:TagResource',
-            'kms:UntagResource',
           ],
           Effect: 'Allow',
           Principal: {

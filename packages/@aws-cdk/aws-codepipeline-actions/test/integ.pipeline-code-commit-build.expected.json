@@ -250,11 +250,11 @@
                 "kms:Disable*",
                 "kms:Get*",
                 "kms:Delete*",
+                "kms:TagResource",
+                "kms:UntagResource",
                 "kms:ScheduleKeyDeletion",
                 "kms:CancelKeyDeletion",
-                "kms:GenerateDataKey",
-                "kms:TagResource",
-                "kms:UntagResource"
+                "kms:GenerateDataKey"
               ],
               "Effect": "Allow",
               "Principal": {

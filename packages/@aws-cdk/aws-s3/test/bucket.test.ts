@@ -273,11 +273,11 @@ nodeunitShim({
                     'kms:Disable*',
                     'kms:Get*',
                     'kms:Delete*',
+                    'kms:TagResource',
+                    'kms:UntagResource',
                     'kms:ScheduleKeyDeletion',
                     'kms:CancelKeyDeletion',
                     'kms:GenerateDataKey',
-                    'kms:TagResource',
-                    'kms:UntagResource',
                   ],
                   'Effect': 'Allow',
                   'Principal': {
@@ -883,8 +883,8 @@ nodeunitShim({
           'Statement': [
             {
               'Action': ['kms:Create*', 'kms:Describe*', 'kms:Enable*', 'kms:List*', 'kms:Put*', 'kms:Update*',
-                'kms:Revoke*', 'kms:Disable*', 'kms:Get*', 'kms:Delete*', 'kms:ScheduleKeyDeletion', 'kms:CancelKeyDeletion',
-                'kms:GenerateDataKey', 'kms:TagResource', 'kms:UntagResource'],
+                'kms:Revoke*', 'kms:Disable*', 'kms:Get*', 'kms:Delete*', 'kms:TagResource', 'kms:UntagResource',
+                'kms:ScheduleKeyDeletion', 'kms:CancelKeyDeletion', 'kms:GenerateDataKey'],
               'Effect': 'Allow',
               'Principal': {
                 'AWS': {
@@ -937,11 +937,11 @@ nodeunitShim({
                       'kms:Disable*',
                       'kms:Get*',
                       'kms:Delete*',
+                      'kms:TagResource',
+                      'kms:UntagResource',
                       'kms:ScheduleKeyDeletion',
                       'kms:CancelKeyDeletion',
                       'kms:GenerateDataKey',
-                      'kms:TagResource',
-                      'kms:UntagResource',
                     ],
                     'Effect': 'Allow',
                     'Principal': {
@@ -1112,11 +1112,11 @@ nodeunitShim({
                     'kms:Disable*',
                     'kms:Get*',
                     'kms:Delete*',
+                    'kms:TagResource',
+                    'kms:UntagResource',
                     'kms:ScheduleKeyDeletion',
                     'kms:CancelKeyDeletion',
                     'kms:GenerateDataKey',
-                    'kms:TagResource',
-                    'kms:UntagResource',
                   ],
                   'Effect': 'Allow',
                   'Principal': {
