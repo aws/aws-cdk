@@ -22,7 +22,8 @@
     "build+test": "npm run build && npm test",
     "build+test+package": "npm run build+test && npm run package",
     "watch": "cdk-watch",
-    "compat": "cdk-compat"
+    "compat": "cdk-compat",
+    "rosetta:extract": "yarn --silent jsii-rosetta extract"
   },
   "awslint": {
     "exclude": [
@@ -32,10 +33,7 @@
   "cdk-build": {
     "eslint": {
       "disable": true
-    },
-    "pre": [
-      "npm run gen"
-    ]
+    }
   },
   "pkglint": {
     "exclude": [
@@ -81,18 +79,24 @@
   },
   "license": "Apache-2.0",
   "bundledDependencies": [
+    "@balena/dockerignore",
     "case",
     "fs-extra",
+    "ignore",
     "jsonschema",
     "minimatch",
+    "punycode",
     "semver",
     "yaml"
   ],
   "dependencies": {
+    "@balena/dockerignore": "^1.0.2",
     "case": "1.6.3",
     "fs-extra": "^9.0.1",
-    "jsonschema": "^1.2.6",
+    "ignore": "^5.1.8",
+    "jsonschema": "^1.4.0",
     "minimatch": "^3.0.4",
+    "punycode": "^2.1.1",
     "semver": "^7.3.2",
     "yaml": "1.10.0"
   },
@@ -106,6 +110,7 @@
     "@aws-cdk/aws-amplify": "0.0.0",
     "@aws-cdk/aws-apigateway": "0.0.0",
     "@aws-cdk/aws-apigatewayv2": "0.0.0",
+    "@aws-cdk/aws-apigatewayv2-integrations": "0.0.0",
     "@aws-cdk/aws-appconfig": "0.0.0",
     "@aws-cdk/aws-appflow": "0.0.0",
     "@aws-cdk/aws-applicationautoscaling": "0.0.0",
@@ -132,6 +137,7 @@
     "@aws-cdk/aws-cloudtrail": "0.0.0",
     "@aws-cdk/aws-cloudwatch": "0.0.0",
     "@aws-cdk/aws-cloudwatch-actions": "0.0.0",
+    "@aws-cdk/aws-codeartifact": "0.0.0",
     "@aws-cdk/aws-codebuild": "0.0.0",
     "@aws-cdk/aws-codecommit": "0.0.0",
     "@aws-cdk/aws-codedeploy": "0.0.0",
@@ -144,6 +150,7 @@
     "@aws-cdk/aws-codestarnotifications": "0.0.0",
     "@aws-cdk/aws-cognito": "0.0.0",
     "@aws-cdk/aws-config": "0.0.0",
+    "@aws-cdk/aws-databrew": "0.0.0",
     "@aws-cdk/aws-datapipeline": "0.0.0",
     "@aws-cdk/aws-dax": "0.0.0",
     "@aws-cdk/aws-detective": "0.0.0",
@@ -185,11 +192,13 @@
     "@aws-cdk/aws-iot1click": "0.0.0",
     "@aws-cdk/aws-iotanalytics": "0.0.0",
     "@aws-cdk/aws-iotevents": "0.0.0",
+    "@aws-cdk/aws-iotsitewise": "0.0.0",
     "@aws-cdk/aws-iotthingsgraph": "0.0.0",
+    "@aws-cdk/aws-ivs": "0.0.0",
+    "@aws-cdk/aws-kendra": "0.0.0",
     "@aws-cdk/aws-kinesis": "0.0.0",
     "@aws-cdk/aws-kinesisanalytics": "0.0.0",
     "@aws-cdk/aws-kinesisfirehose": "0.0.0",
-    "@aws-cdk/aws-kendra": "0.0.0",
     "@aws-cdk/aws-kms": "0.0.0",
     "@aws-cdk/aws-lakeformation": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
@@ -203,9 +212,11 @@
     "@aws-cdk/aws-managedblockchain": "0.0.0",
     "@aws-cdk/aws-mediaconvert": "0.0.0",
     "@aws-cdk/aws-medialive": "0.0.0",
+    "@aws-cdk/aws-mediapackage": "0.0.0",
     "@aws-cdk/aws-mediastore": "0.0.0",
     "@aws-cdk/aws-msk": "0.0.0",
     "@aws-cdk/aws-neptune": "0.0.0",
+    "@aws-cdk/aws-networkfirewall": "0.0.0",
     "@aws-cdk/aws-networkmanager": "0.0.0",
     "@aws-cdk/aws-opsworks": "0.0.0",
     "@aws-cdk/aws-opsworkscm": "0.0.0",
@@ -234,6 +245,7 @@
     "@aws-cdk/aws-servicediscovery": "0.0.0",
     "@aws-cdk/aws-ses": "0.0.0",
     "@aws-cdk/aws-ses-actions": "0.0.0",
+    "@aws-cdk/aws-signer": "0.0.0",
     "@aws-cdk/aws-sns": "0.0.0",
     "@aws-cdk/aws-sns-subscriptions": "0.0.0",
     "@aws-cdk/aws-sqs": "0.0.0",
@@ -242,6 +254,7 @@
     "@aws-cdk/aws-stepfunctions": "0.0.0",
     "@aws-cdk/aws-stepfunctions-tasks": "0.0.0",
     "@aws-cdk/aws-synthetics": "0.0.0",
+    "@aws-cdk/aws-timestream": "0.0.0",
     "@aws-cdk/aws-transfer": "0.0.0",
     "@aws-cdk/aws-waf": "0.0.0",
     "@aws-cdk/aws-wafregional": "0.0.0",
@@ -256,12 +269,12 @@
     "@aws-cdk/region-info": "0.0.0",
     "@aws-cdk/yaml-cfn": "0.0.0",
     "@types/fs-extra": "^8.1.1",
-    "@types/node": "^10.17.35",
+    "@types/node": "^10.17.48",
     "cdk-build-tools": "0.0.0",
-    "constructs": "^3.0.4",
+    "constructs": "^3.2.0",
     "fs-extra": "^9.0.1",
     "pkglint": "0.0.0",
-    "ts-node": "^9.0.0",
+    "ts-node": "^9.1.0",
     "typescript": "~3.8.3",
     "ubergen": "0.0.0"
   },
@@ -278,5 +291,8 @@
   ],
   "awscdkio": {
     "announce": false
+  },
+  "ubergen": {
+    "exclude": true
   }
 }

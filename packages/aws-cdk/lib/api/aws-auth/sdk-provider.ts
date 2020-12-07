@@ -3,7 +3,7 @@ import * as os from 'os';
 import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
-import { ConfigurationOptions } from 'aws-sdk/lib/config';
+import type { ConfigurationOptions } from 'aws-sdk/lib/config-base';
 import * as fs from 'fs-extra';
 import { debug } from '../../logging';
 import { cached } from '../../util/functions';
@@ -136,13 +136,24 @@ export class SdkProvider {
    * Return an SDK which uses assumed role credentials
    *
    * The base credentials used to retrieve the assumed role credentials will be the
-   * current credentials (no plugin lookup will be done!).
+   * same credentials returned by obtainCredentials if an environment and mode is passed,
+   * otherwise it will be the current credentials.
    *
-   * If `region` is undefined, the default value will be used.
    */
-  public async withAssumedRole(roleArn: string, externalId: string | undefined, region: string | undefined) {
+  public async withAssumedRole(roleArn: string, externalId: string | undefined, environment: cxapi.Environment | undefined, mode: Mode | undefined) {
     debug(`Assuming role '${roleArn}'.`);
-    region = region ?? this.defaultRegion;
+
+    let region: string;
+    let masterCredentials: AWS.Credentials;
+
+    if (environment !== undefined && mode !== undefined) {
+      const env = await this.resolveEnvironment(environment);
+      masterCredentials = await this.obtainCredentials(env.account, mode);
+      region = env.region;
+    } else {
+      region = this.defaultRegion;
+      masterCredentials = await this.defaultCredentials();
+    }
 
     const creds = new AWS.ChainableTemporaryCredentials({
       params: {
@@ -154,7 +165,7 @@ export class SdkProvider {
         region,
         ...this.sdkOptions,
       },
-      masterCredentials: await this.defaultCredentials(),
+      masterCredentials: masterCredentials,
     });
 
     return new SDK(creds, region, this.sdkOptions);

@@ -260,6 +260,7 @@ export = {
         dockerSecurityOptions: ['ECS_SELINUX_CAPABLE=true'],
         entryPoint: ['/app/node_modules/.bin/cdk'],
         environment: { TEST_ENVIRONMENT_VARIABLE: 'test environment variable value' },
+        environmentFiles: [ecs.EnvironmentFile.fromAsset(path.join(__dirname, '../demo-envfiles/test-envfile.env'))],
         essential: true,
         extraHosts: { EXTRAHOST: 'extra host' },
         healthCheck: {
@@ -316,6 +317,47 @@ export = {
                 Value: 'test environment variable value',
               },
             ],
+            EnvironmentFiles: [{
+              Type: 's3',
+              Value: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:aws:s3:::',
+                    {
+                      Ref: 'AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dS3Bucket7B2069B7',
+                    },
+                    '/',
+                    {
+                      'Fn::Select': [
+                        0,
+                        {
+                          'Fn::Split': [
+                            '||',
+                            {
+                              Ref: 'AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dS3VersionKey40E12C15',
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                    {
+                      'Fn::Select': [
+                        1,
+                        {
+                          'Fn::Split': [
+                            '||',
+                            {
+                              Ref: 'AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dS3VersionKey40E12C15',
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                  ],
+                ],
+              },
+            }],
             Essential: true,
             ExtraHosts: [
               {
@@ -545,7 +587,12 @@ export = {
 
     'correctly sets containers from asset using default props'(test: Test) {
       // GIVEN
-      const stack = new cdk.Stack();
+      const app = new cdk.App({
+        context: {
+          '@aws-cdk/aws-ecr-assets:dockerIgnoreSupport': true,
+        },
+      });
+      const stack = new cdk.Stack(app, 'Stack');
 
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
@@ -557,7 +604,7 @@ export = {
 
       // THEN
       expect(stack).to(haveResource('AWS::ECS::TaskDefinition', {
-        Family: 'Ec2TaskDef',
+        Family: 'StackEc2TaskDefF03698CF',
         ContainerDefinitions: [
           {
             Essential: true,
@@ -576,7 +623,7 @@ export = {
                   {
                     Ref: 'AWS::URLSuffix',
                   },
-                  '/aws-cdk/assets:baa2d6eb2a17c75424df631c8c70ff39f2d5f3bee8b9e1a109ee24ca17300540',
+                  '/aws-cdk/assets:b2c69bfbfe983b634456574587443159b3b7258849856a118ad3d2772238f1a5',
                 ],
               ],
             },

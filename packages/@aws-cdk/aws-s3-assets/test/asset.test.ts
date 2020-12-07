@@ -10,6 +10,7 @@ import * as path from 'path';
 import { Asset } from '../lib/asset';
 
 const SAMPLE_ASSET_DIR = path.join(__dirname, 'sample-asset-directory');
+const SAMPLE_ASSET_HASH = '6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2';
 
 test('simple use case', () => {
   const app = new cdk.App({
@@ -140,6 +141,24 @@ test('multiple assets under the same parent', () => {
   expect(() => new Asset(stack, 'MyDirectory2', { path: path.join(__dirname, 'sample-asset-directory') })).not.toThrow();
 });
 
+test('isFile indicates if the asset represents a single file', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  const directoryAsset = new Asset(stack, 'DirectoryAsset', {
+    path: path.join(__dirname, 'sample-asset-directory'),
+  });
+
+  const fileAsset = new Asset(stack, 'FileAsset', {
+    path: path.join(__dirname, 'sample-asset-directory', 'sample-asset-file.txt'),
+  });
+
+  // THEN
+  expect(directoryAsset.isFile).toBe(false);
+  expect(fileAsset.isFile).toBe(true);
+});
+
 test('isZipArchive indicates if the asset represents a .zip file (either explicitly or via ZipDirectory packaging)', () => {
   // GIVEN
   const stack = new cdk.Stack();
@@ -207,6 +226,60 @@ test('asset metadata is only emitted if ASSET_RESOURCE_METADATA_ENABLED_CONTEXT 
     },
   }, ResourcePart.CompleteDefinition);
 });
+
+test('nested assemblies share assets: legacy synth edition', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack1 = new cdk.Stack(new cdk.Stage(app, 'Stage1'), 'Stack', { synthesizer: new cdk.LegacyStackSynthesizer() });
+  const stack2 = new cdk.Stack(new cdk.Stage(app, 'Stage2'), 'Stack', { synthesizer: new cdk.LegacyStackSynthesizer() });
+
+  // WHEN
+  new Asset(stack1, 'MyAsset', { path: SAMPLE_ASSET_DIR });
+  new Asset(stack2, 'MyAsset', { path: SAMPLE_ASSET_DIR });
+
+  // THEN
+  const assembly = app.synth();
+
+  // Read the assets from the stack metadata
+  for (const stageName of ['Stage1', 'Stage2']) {
+    const stackArtifact = assembly.getNestedAssembly(`assembly-${stageName}`).artifacts.filter(isStackArtifact)[0];
+    const assetMeta = stackArtifact.findMetadataByType(cxschema.ArtifactMetadataEntryType.ASSET);
+    expect(assetMeta[0]).toEqual(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          packaging: 'zip',
+          path: `../asset.${SAMPLE_ASSET_HASH}`,
+        }),
+      }),
+    );
+  }
+});
+
+test('nested assemblies share assets: default synth edition', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack1 = new cdk.Stack(new cdk.Stage(app, 'Stage1'), 'Stack', { synthesizer: new cdk.DefaultStackSynthesizer() });
+  const stack2 = new cdk.Stack(new cdk.Stage(app, 'Stage2'), 'Stack', { synthesizer: new cdk.DefaultStackSynthesizer() });
+
+  // WHEN
+  new Asset(stack1, 'MyAsset', { path: SAMPLE_ASSET_DIR });
+  new Asset(stack2, 'MyAsset', { path: SAMPLE_ASSET_DIR });
+
+  // THEN
+  const assembly = app.synth();
+
+  // Read the asset manifests to verify the file paths
+  for (const stageName of ['Stage1', 'Stage2']) {
+    const manifestArtifact = assembly.getNestedAssembly(`assembly-${stageName}`).artifacts.filter(isAssetManifestArtifact)[0];
+    const manifest = JSON.parse(fs.readFileSync(manifestArtifact.file, { encoding: 'utf-8' }));
+
+    expect(manifest.files[SAMPLE_ASSET_HASH].source).toEqual({
+      packaging: 'zip',
+      path: `../asset.${SAMPLE_ASSET_HASH}`,
+    });
+  }
+});
+
 
 describe('staging', () => {
   test('copy file assets under <outdir>/${fingerprint}.ext', () => {
@@ -325,4 +398,12 @@ describe('staging', () => {
 
 function mkdtempSync() {
   return fs.mkdtempSync(path.join(os.tmpdir(), 'assets.test'));
+}
+
+function isStackArtifact(x: any): x is cxapi.CloudFormationStackArtifact {
+  return x instanceof cxapi.CloudFormationStackArtifact;
+}
+
+function isAssetManifestArtifact(x: any): x is cxapi.AssetManifestArtifact {
+  return x instanceof cxapi.AssetManifestArtifact;
 }

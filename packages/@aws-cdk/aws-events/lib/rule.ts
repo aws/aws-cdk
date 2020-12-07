@@ -1,4 +1,4 @@
-import { App, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
+import { App, Lazy, Names, Resource, Stack, Token } from '@aws-cdk/core';
 import { Construct, Node } from 'constructs';
 import { IEventBus } from './event-bus';
 import { EventPattern } from './event-pattern';
@@ -132,8 +132,8 @@ export class Rule extends Resource implements IRule {
       description: this.description,
       state: props.enabled == null ? 'ENABLED' : (props.enabled ? 'ENABLED' : 'DISABLED'),
       scheduleExpression: this.scheduleExpression,
-      eventPattern: Lazy.anyValue({ produce: () => this._renderEventPattern() }),
-      targets: Lazy.anyValue({ produce: () => this.renderTargets() }),
+      eventPattern: Lazy.any({ produce: () => this._renderEventPattern() }),
+      targets: Lazy.any({ produce: () => this.renderTargets() }),
       eventBusName: props.eventBus && props.eventBus.eventBusName,
     });
 
@@ -276,7 +276,7 @@ export class Rule extends Resource implements IRule {
           }
         }
 
-        new CopyRule(targetStack, `${this.node.uniqueId}-${id}`, {
+        new CopyRule(targetStack, `${Names.uniqueId(this)}-${id}`, {
           targets: [target],
           eventPattern: this.eventPattern,
           schedule: this.scheduleExpression ? Schedule.expression(this.scheduleExpression) : undefined,

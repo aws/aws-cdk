@@ -2,7 +2,8 @@ import '@aws-cdk/assert/jest';
 import { ABSENT } from '@aws-cdk/assert/lib/assertions/have-resource';
 import { Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { CfnParameter, Construct, Duration, Stack, Tags } from '@aws-cdk/core';
+import { CfnParameter, Duration, Stack, Tags } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { AccountRecovery, Mfa, NumberAttribute, StringAttribute, UserPool, UserPoolIdentityProvider, UserPoolOperation, VerificationEmailStyle } from '../lib';
 
 describe('User Pool', () => {
@@ -882,6 +883,36 @@ describe('User Pool', () => {
     });
   });
 
+  test('addResourceServer', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const userpool = new UserPool(stack, 'Pool');
+    userpool.addResourceServer('ResourceServer', {
+      identifier: 'users',
+      scopes: [
+        {
+          scopeName: 'read',
+          scopeDescription: 'Read-only access',
+        },
+      ],
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolResourceServer', {
+      Identifier: 'users',
+      Name: 'users',
+      UserPoolId: stack.resolve(userpool.userPoolId),
+      Scopes: [
+        {
+          ScopeDescription: 'Read-only access',
+          ScopeName: 'read',
+        },
+      ],
+    });
+  });
+
   test('addDomain', () => {
     // GIVEN
     const stack = new Stack();
@@ -1268,6 +1299,27 @@ describe('User Pool', () => {
         smsRole,
         enableSmsRole: false,
       })).toThrow(/enableSmsRole cannot be disabled/);
+    });
+  });
+
+  test('email transmission with cyrillic characters are encoded', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'Pool', {
+      emailSettings: {
+        from: 'от@домен.рф',
+        replyTo: 'ответить@домен.рф',
+      },
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+      EmailConfiguration: {
+        From: 'от@xn--d1acufc.xn--p1ai',
+        ReplyToEmailAddress: 'ответить@xn--d1acufc.xn--p1ai',
+      },
     });
   });
 });

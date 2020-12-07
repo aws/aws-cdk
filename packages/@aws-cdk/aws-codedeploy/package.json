@@ -49,7 +49,9 @@
     "cfn2ts": "cfn2ts",
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test",
-    "compat": "cdk-compat"
+    "compat": "cdk-compat",
+    "gen": "cfn2ts",
+    "rosetta:extract": "yarn --silent jsii-rosetta extract"
   },
   "cdk-build": {
     "cloudformation": "AWS::CodeDeploy",
@@ -91,7 +93,8 @@
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.4"
+    "@aws-cdk/custom-resources": "0.0.0",
+    "constructs": "^3.2.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -104,7 +107,8 @@
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.4"
+    "@aws-cdk/custom-resources": "0.0.0",
+    "constructs": "^3.2.0"
   },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
@@ -163,7 +167,8 @@
       "docs-public-apis:@aws-cdk/aws-codedeploy.IEcsApplication.applicationArn",
       "docs-public-apis:@aws-cdk/aws-codedeploy.IEcsApplication.applicationName",
       "docs-public-apis:@aws-cdk/aws-codedeploy.IEcsDeploymentConfig.deploymentConfigArn",
-      "docs-public-apis:@aws-cdk/aws-codedeploy.IEcsDeploymentConfig.deploymentConfigName"
+      "docs-public-apis:@aws-cdk/aws-codedeploy.IEcsDeploymentConfig.deploymentConfigName",
+      "props-physical-name:@aws-cdk/aws-codedeploy.CustomLambdaDeploymentConfigProps"
     ]
   },
   "stability": "stable",

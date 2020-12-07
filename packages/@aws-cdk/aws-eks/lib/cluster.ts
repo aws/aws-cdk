@@ -19,6 +19,7 @@ import { KubernetesObjectValue } from './k8s-object-value';
 import { KubernetesPatch } from './k8s-patch';
 import { KubectlProvider } from './kubectl-provider';
 import { Nodegroup, NodegroupOptions } from './managed-nodegroup';
+import { OpenIdConnectProvider } from './oidc-provider';
 import { BottleRocketImage } from './private/bottlerocket';
 import { ServiceAccount, ServiceAccountOptions } from './service-account';
 import { LifecycleLabel, renderAmazonLinuxUserData, renderBottlerocketUserData } from './user-data';
@@ -78,6 +79,11 @@ export interface ICluster extends IResource, ec2.IConnectable {
   readonly clusterEncryptionConfigKeyArn: string;
 
   /**
+   * The Open ID Connect Provider of the cluster used to configure Service Accounts.
+   */
+  readonly openIdConnectProvider: iam.IOpenIdConnectProvider;
+
+  /**
    * An IAM role that can perform kubectl operations against this cluster.
    *
    * The role should be mapped to the `system:masters` Kubernetes RBAC role.
@@ -114,6 +120,14 @@ export interface ICluster extends IResource, ec2.IConnectable {
   readonly kubectlLayer?: lambda.ILayerVersion;
 
   /**
+   * Creates a new service account with corresponding IAM Role (IRSA).
+   *
+   * @param id logical id of service account
+   * @param options service account options
+   */
+  addServiceAccount(id: string, options?: ServiceAccountOptions): ServiceAccount;
+
+  /**
    * Defines a Kubernetes resource in this cluster.
    *
    * The manifest will be applied/deleted using kubectl as needed.
@@ -122,7 +136,7 @@ export interface ICluster extends IResource, ec2.IConnectable {
    * @param manifest a list of Kubernetes resource specifications
    * @returns a `KubernetesManifest` object.
    */
-  addManifest(id: string, ...manifest: any[]): KubernetesManifest;
+  addManifest(id: string, ...manifest: Record<string, any>[]): KubernetesManifest;
 
   /**
    * Defines a Helm chart in this cluster.
@@ -132,6 +146,16 @@ export interface ICluster extends IResource, ec2.IConnectable {
    * @returns a `HelmChart` construct
    */
   addHelmChart(id: string, options: HelmChartOptions): HelmChart;
+
+  /**
+   * Defines a CDK8s chart in this cluster.
+   *
+   * @param id logical id of this chart.
+   * @param chart the cdk8s chart.
+   * @returns a `KubernetesManifest` construct representing the chart.
+   */
+  addCdk8sChart(id: string, chart: Construct): KubernetesManifest;
+
 }
 
 /**
@@ -209,6 +233,14 @@ export interface ClusterAttributes {
    * @default - k8s endpoint is expected to be accessible publicly
    */
   readonly kubectlPrivateSubnetIds?: string[];
+
+  /**
+   * An Open ID Connect provider for this cluster that can be used to configure service accounts.
+   * You can either import an existing provider using `iam.OpenIdConnectProvider.fromProviderArn`,
+   * or create a new provider using `new eks.OpenIdConnectProvider`
+   * @default - if not specified `cluster.openIdConnectProvider` and `cluster.addServiceAccount` will throw an error.
+   */
+  readonly openIdConnectProvider?: iam.IOpenIdConnectProvider;
 
   /**
    * An AWS Lambda Layer which includes `kubectl`, Helm and the AWS CLI.
@@ -569,6 +601,11 @@ export class KubernetesVersion {
   public static readonly V1_17 = KubernetesVersion.of('1.17');
 
   /**
+   * Kubernetes version 1.18
+   */
+  public static readonly V1_18 = KubernetesVersion.of('1.18');
+
+  /**
    * Custom cluster version
    * @param version custom version number
    */
@@ -593,6 +630,7 @@ abstract class ClusterBase extends Resource implements ICluster {
   public abstract readonly kubectlEnvironment?: { [key: string]: string };
   public abstract readonly kubectlSecurityGroup?: ec2.ISecurityGroup;
   public abstract readonly kubectlPrivateSubnets?: ec2.ISubnet[];
+  public abstract readonly openIdConnectProvider: iam.IOpenIdConnectProvider;
 
   /**
    * Defines a Kubernetes resource in this cluster.
@@ -603,7 +641,7 @@ abstract class ClusterBase extends Resource implements ICluster {
    * @param manifest a list of Kubernetes resource specifications
    * @returns a `KubernetesResource` object.
    */
-  public addManifest(id: string, ...manifest: any[]): KubernetesManifest {
+  public addManifest(id: string, ...manifest: Record<string, any>[]): KubernetesManifest {
     return new KubernetesManifest(this, `manifest-${id}`, { cluster: this, manifest });
   }
 
@@ -616,6 +654,32 @@ abstract class ClusterBase extends Resource implements ICluster {
    */
   public addHelmChart(id: string, options: HelmChartOptions): HelmChart {
     return new HelmChart(this, `chart-${id}`, { cluster: this, ...options });
+  }
+
+  /**
+   * Defines a CDK8s chart in this cluster.
+   *
+   * @param id logical id of this chart.
+   * @param chart the cdk8s chart.
+   * @returns a `KubernetesManifest` construct representing the chart.
+   */
+  public addCdk8sChart(id: string, chart: Construct): KubernetesManifest {
+
+    const cdk8sChart = chart as any;
+
+    // see https://github.com/awslabs/cdk8s/blob/master/packages/cdk8s/src/chart.ts#L84
+    if (typeof cdk8sChart.toJson !== 'function') {
+      throw new Error(`Invalid cdk8s chart. Must contain a 'toJson' method, but found ${typeof cdk8sChart.toJson}`);
+    }
+
+    return this.addManifest(id, ...cdk8sChart.toJson());
+  }
+
+  public addServiceAccount(id: string, options: ServiceAccountOptions = {}): ServiceAccount {
+    return new ServiceAccount(this, id, {
+      ...options,
+      cluster: this,
+    });
   }
 }
 
@@ -768,6 +832,11 @@ export class Cluster extends ClusterBase {
   private readonly _fargateProfiles: FargateProfile[] = [];
 
   /**
+   * an Open ID Connect Provider instance
+   */
+  private _openIdConnectProvider?: iam.IOpenIdConnectProvider;
+
+  /**
    * The AWS Lambda layer that contains `kubectl`, `helm` and the AWS CLI. If
    * undefined, a SAR app that contains this layer will be used.
    */
@@ -784,8 +853,6 @@ export class Cluster extends ClusterBase {
    * Manages the aws-auth config map.
    */
   private _awsAuth?: AwsAuth;
-
-  private _openIdConnectProvider?: iam.OpenIdConnectProvider;
 
   private _spotInterruptHandler?: HelmChart;
 
@@ -817,7 +884,7 @@ export class Cluster extends ClusterBase {
    * Initiates an EKS Cluster with the supplied arguments
    *
    * @param scope a Construct, most likely a cdk.Stack created
-   * @param name the name of the Construct to create
+   * @param id the id of the Construct to create
    * @param props properties in the IClusterProps interface
    */
   constructor(scope: Construct, id: string, props: ClusterProps) {
@@ -1215,15 +1282,8 @@ export class Cluster extends ClusterBase {
    */
   public get openIdConnectProvider() {
     if (!this._openIdConnectProvider) {
-      this._openIdConnectProvider = new iam.OpenIdConnectProvider(this, 'OpenIdConnectProvider', {
+      this._openIdConnectProvider = new OpenIdConnectProvider(this, 'OpenIdConnectProvider', {
         url: this.clusterOpenIdConnectIssuerUrl,
-        clientIds: ['sts.amazonaws.com'],
-        /**
-         * For some reason EKS isn't validating the root certificate but a intermediat certificate
-         * which is one level up in the tree. Because of the a constant thumbprint value has to be
-         * stated with this OpenID Connect provider. The certificate thumbprint is the same for all the regions.
-         */
-        thumbprints: ['9e99a48a9960b14926bb7f3b02e22da2b0ab7280'],
       });
     }
 
@@ -1239,19 +1299,6 @@ export class Cluster extends ClusterBase {
    */
   public addFargateProfile(id: string, options: FargateProfileOptions) {
     return new FargateProfile(this, `fargate-profile-${id}`, {
-      ...options,
-      cluster: this,
-    });
-  }
-
-  /**
-   * Adds a service account to this cluster.
-   *
-   * @param id the id of this service account
-   * @param options service account options
-   */
-  public addServiceAccount(id: string, options: ServiceAccountOptions = { }) {
-    return new ServiceAccount(this, id, {
       ...options,
       cluster: this,
     });
@@ -1305,18 +1352,20 @@ export class Cluster extends ClusterBase {
 
   private selectPrivateSubnets(): ec2.ISubnet[] {
     const privateSubnets: ec2.ISubnet[] = [];
+    const vpcPrivateSubnetIds = this.vpc.privateSubnets.map(s => s.subnetId);
+    const vpcPublicSubnetIds = this.vpc.publicSubnets.map(s => s.subnetId);
 
     for (const placement of this.vpcSubnets) {
 
       for (const subnet of this.vpc.selectSubnets(placement).subnets) {
 
-        if (this.vpc.privateSubnets.includes(subnet)) {
+        if (vpcPrivateSubnetIds.includes(subnet.subnetId)) {
           // definitely private, take it.
           privateSubnets.push(subnet);
           continue;
         }
 
-        if (this.vpc.publicSubnets.includes(subnet)) {
+        if (vpcPublicSubnetIds.includes(subnet.subnetId)) {
           // definitely public, skip it.
           continue;
         }
@@ -1572,7 +1621,7 @@ export interface AutoScalingGroupOptions {
 /**
  * Import a cluster to use in another stack
  */
-class ImportedCluster extends ClusterBase implements ICluster {
+class ImportedCluster extends ClusterBase {
   public readonly clusterName: string;
   public readonly clusterArn: string;
   public readonly connections = new ec2.Connections();
@@ -1637,6 +1686,13 @@ class ImportedCluster extends ClusterBase implements ICluster {
       throw new Error('"clusterEncryptionConfigKeyArn" is not defined for this imported cluster');
     }
     return this.props.clusterEncryptionConfigKeyArn;
+  }
+
+  public get openIdConnectProvider(): iam.IOpenIdConnectProvider {
+    if (!this.props.openIdConnectProvider) {
+      throw new Error('"openIdConnectProvider" is not defined for this imported cluster');
+    }
+    return this.props.openIdConnectProvider;
   }
 }
 

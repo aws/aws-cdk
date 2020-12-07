@@ -1,13 +1,14 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
+import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { Resource, Duration, Token, Annotations, RemovalPolicy, IResource } from '@aws-cdk/core';
+import { Resource, Duration, Token, Annotations, RemovalPolicy, IResource, Stack, Lazy } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IClusterEngine } from './cluster-engine';
-import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { IParameterGroup } from './parameter-group';
-import { applyRemovalPolicy, defaultDeletionProtection, DEFAULT_PASSWORD_EXCLUDE_CHARS } from './private/util';
+import { DATA_API_ACTIONS } from './perms';
+import { applyRemovalPolicy, defaultDeletionProtection, DEFAULT_PASSWORD_EXCLUDE_CHARS, renderCredentials } from './private/util';
 import { Credentials, RotationMultiUserOptions, RotationSingleUserOptions } from './props';
 import { CfnDBCluster } from './rds.generated';
 import { ISubnetGroup, SubnetGroup } from './subnet-group';
@@ -24,6 +25,11 @@ export interface IServerlessCluster extends IResource, ec2.IConnectable, secrets
   readonly clusterIdentifier: string;
 
   /**
+   * The ARN of the cluster
+   */
+  readonly clusterArn: string;
+
+  /**
    * The endpoint to use for read/write operations
    * @attribute EndpointAddress,EndpointPort
    */
@@ -34,6 +40,13 @@ export interface IServerlessCluster extends IResource, ec2.IConnectable, secrets
    * @attribute ReadEndpointAddress
    */
   readonly clusterReadEndpoint: Endpoint;
+
+  /**
+   * Grant the given identity to access to the Data API.
+   *
+   * @param grantee The principal to grant access to
+   */
+  grantDataApiAccess(grantee: iam.IGrantable): iam.Grant
 }
 /**
  *  Properties to configure an Aurora Serverless Cluster
@@ -61,8 +74,9 @@ export interface ServerlessClusterProps {
   readonly clusterIdentifier?: string;
 
   /**
-   * The number of days during which automatic DB snapshots are retained. Set
-   * to zero to disable backups.
+   * The number of days during which automatic DB snapshots are retained.
+   * Automatic backup retention cannot be disabled on serverless clusters.
+   * Must be a value from 1 day to 35 days.
    *
    * @default Duration.days(1)
    */
@@ -83,14 +97,13 @@ export interface ServerlessClusterProps {
   readonly deletionProtection?: boolean;
 
   /**
-   * Whether to enable the HTTP endpoint for an Aurora Serverless database cluster.
-   * The HTTP endpoint must be explicitly enabled to enable the Data API.
+   * Whether to enable the Data API.
    *
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/data-api.html
     *
    * @default false
    */
-  readonly enableHttpEndpoint?: boolean;
+  readonly enableDataApi?: boolean;
 
   /**
    * The VPC that this Aurora Serverless cluster has been created in.
@@ -188,6 +201,13 @@ export interface ServerlessClusterAttributes {
    * @default - no reader address
    */
   readonly readerEndpointAddress?: string;
+
+  /**
+   * The secret attached to the database cluster
+   *
+   * @default - no secret
+   */
+  readonly secret?: secretsmanager.ISecret;
 }
 
 /**
@@ -204,6 +224,8 @@ export enum AuroraCapacityUnit {
   ACU_1 = 1,
   /** 2 Aurora Capacity Units */
   ACU_2 = 2,
+  /** 4 Aurora Capacity Units */
+  ACU_4 = 4,
   /** 8 Aurora Capacity Units */
   ACU_8 = 8,
   /** 16 Aurora Capacity Units */
@@ -283,6 +305,46 @@ abstract class ServerlessClusterBase extends Resource implements IServerlessClus
   public abstract readonly connections: ec2.Connections;
 
   /**
+   * The secret attached to this cluster
+   */
+  public abstract readonly secret?: secretsmanager.ISecret
+
+  protected abstract enableDataApi?: boolean;
+
+  /**
+   * The ARN of the cluster
+   */
+  public get clusterArn(): string {
+    return Stack.of(this).formatArn({
+      service: 'rds',
+      resource: 'cluster',
+      sep: ':',
+      resourceName: this.clusterIdentifier,
+    });
+  }
+
+  /**
+   * Grant the given identity to access to the Data API, including read access to the secret attached to the cluster if present
+   *
+   * @param grantee The principal to grant access to
+   */
+  public grantDataApiAccess(grantee: iam.IGrantable): iam.Grant {
+    if (this.enableDataApi === false) {
+      throw new Error('Cannot grant Data API access when the Data API is disabled');
+    }
+
+    this.enableDataApi = true;
+    const ret = iam.Grant.addToPrincipal({
+      grantee,
+      actions: DATA_API_ACTIONS,
+      resourceArns: ['*'],
+      scope: this,
+    });
+    this.secret?.grantRead(grantee);
+    return ret;
+  }
+
+  /**
    * Renders the secret attachment target specifications.
    */
   public asSecretAttachmentTarget(): secretsmanager.SecretAttachmentTargetProps {
@@ -316,10 +378,10 @@ export class ServerlessCluster extends ServerlessClusterBase {
   public readonly clusterReadEndpoint: Endpoint;
   public readonly connections: ec2.Connections;
 
-  /**
-   * The secret attached to this cluster
-   */
-  private readonly secret?: secretsmanager.ISecret;
+  public readonly secret?: secretsmanager.ISecret;
+
+  protected enableDataApi?: boolean
+
   private readonly subnetGroup: ISubnetGroup;
   private readonly vpc: ec2.IVpc;
   private readonly vpcSubnets?: ec2.SubnetSelection;
@@ -327,7 +389,7 @@ export class ServerlessCluster extends ServerlessClusterBase {
   private readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
   private readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
 
-  constructor(scope:Construct, id: string, props: ServerlessClusterProps) {
+  constructor(scope: Construct, id: string, props: ServerlessClusterProps) {
     super(scope, id);
 
     this.vpc = props.vpc;
@@ -335,6 +397,8 @@ export class ServerlessCluster extends ServerlessClusterBase {
 
     this.singleUserRotationApplication = props.engine.singleUserRotationApplication;
     this.multiUserRotationApplication = props.engine.multiUserRotationApplication;
+
+    this.enableDataApi = props.enableDataApi;
 
     const { subnetIds } = this.vpc.selectSubnets(this.vpcSubnets);
 
@@ -350,14 +414,14 @@ export class ServerlessCluster extends ServerlessClusterBase {
       removalPolicy: props.removalPolicy === RemovalPolicy.RETAIN ? props.removalPolicy : undefined,
     });
 
-    let credentials = props.credentials ?? Credentials.fromUsername(props.engine.defaultUsername ?? 'admin');
-    if (!credentials.secret && !credentials.password) {
-      credentials = Credentials.fromSecret(new DatabaseSecret(this, 'Secret', {
-        username: credentials.username,
-        encryptionKey: credentials.encryptionKey,
-        excludeCharacters: credentials.excludeCharacters,
-      }));
+    if (props.backupRetention) {
+      const backupRetentionDays = props.backupRetention.toDays();
+      if (backupRetentionDays < 1 || backupRetentionDays > 35) {
+        throw new Error(`backup retention period must be between 1 and 35 days. received: ${backupRetentionDays}`);
+      }
     }
+
+    const credentials = renderCredentials(this, props.engine, props.credentials);
     const secret = credentials.secret;
 
     // bind the engine to the Cluster
@@ -384,7 +448,7 @@ export class ServerlessCluster extends ServerlessClusterBase {
       engine: props.engine.engineType,
       engineVersion: props.engine.engineVersion?.fullVersion,
       engineMode: 'serverless',
-      enableHttpEndpoint: props.enableHttpEndpoint,
+      enableHttpEndpoint: Lazy.anyValue({ produce: () => this.enableDataApi }),
       kmsKeyId: props.storageEncryptionKey?.keyArn,
       masterUsername: credentials.username,
       masterUserPassword: credentials.password?.toString(),
@@ -483,6 +547,10 @@ class ImportedServerlessCluster extends ServerlessClusterBase implements IServer
   public readonly clusterIdentifier: string;
   public readonly connections: ec2.Connections;
 
+  public readonly secret?: secretsmanager.ISecret;
+
+  protected readonly enableDataApi = true
+
   private readonly _clusterEndpoint?: Endpoint;
   private readonly _clusterReadEndpoint?: Endpoint;
 
@@ -496,6 +564,8 @@ class ImportedServerlessCluster extends ServerlessClusterBase implements IServer
       securityGroups: attrs.securityGroups,
       defaultPort,
     });
+
+    this.secret = attrs.secret;
 
     this._clusterEndpoint = (attrs.clusterEndpointAddress && attrs.port) ? new Endpoint(attrs.clusterEndpointAddress, attrs.port) : undefined;
     this._clusterReadEndpoint = (attrs.readerEndpointAddress && attrs.port) ? new Endpoint(attrs.readerEndpointAddress, attrs.port) : undefined;

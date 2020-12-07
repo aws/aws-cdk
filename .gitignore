@@ -37,8 +37,10 @@ cdk.out/
 # Yarn error log
 yarn-error.log
 
-# Parcel default cache directory
-.parcel-cache
+# VSCode history plugin
+.vscode/.history/
 
 # Cloud9
 .c9
+
+/.versionrc.json

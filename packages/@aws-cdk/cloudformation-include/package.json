@@ -48,13 +48,17 @@
     "awslint": "cdk-awslint",
     "build+test": "npm run build && npm test",
     "build+test+package": "npm run build+test && npm run package",
-    "compat": "cdk-compat"
+    "compat": "cdk-compat",
+    "rosetta:extract": "yarn --silent jsii-rosetta extract"
   },
   "cdk-build": {
     "pre": [
       "node ./build.js"
     ],
-    "jest": true
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": "true"
+    }
   },
   "author": {
     "name": "Amazon Web Services",
@@ -91,6 +95,7 @@
     "@aws-cdk/aws-cloudfront": "0.0.0",
     "@aws-cdk/aws-cloudtrail": "0.0.0",
     "@aws-cdk/aws-cloudwatch": "0.0.0",
+    "@aws-cdk/aws-codeartifact": "0.0.0",
     "@aws-cdk/aws-codebuild": "0.0.0",
     "@aws-cdk/aws-codecommit": "0.0.0",
     "@aws-cdk/aws-codedeploy": "0.0.0",
@@ -102,6 +107,7 @@
     "@aws-cdk/aws-codestarnotifications": "0.0.0",
     "@aws-cdk/aws-cognito": "0.0.0",
     "@aws-cdk/aws-config": "0.0.0",
+    "@aws-cdk/aws-databrew": "0.0.0",
     "@aws-cdk/aws-datapipeline": "0.0.0",
     "@aws-cdk/aws-dax": "0.0.0",
     "@aws-cdk/aws-detective": "0.0.0",
@@ -137,11 +143,13 @@
     "@aws-cdk/aws-iot1click": "0.0.0",
     "@aws-cdk/aws-iotanalytics": "0.0.0",
     "@aws-cdk/aws-iotevents": "0.0.0",
+    "@aws-cdk/aws-iotsitewise": "0.0.0",
     "@aws-cdk/aws-iotthingsgraph": "0.0.0",
+    "@aws-cdk/aws-ivs": "0.0.0",
+    "@aws-cdk/aws-kendra": "0.0.0",
     "@aws-cdk/aws-kinesis": "0.0.0",
     "@aws-cdk/aws-kinesisanalytics": "0.0.0",
     "@aws-cdk/aws-kinesisfirehose": "0.0.0",
-    "@aws-cdk/aws-kendra": "0.0.0",
     "@aws-cdk/aws-kms": "0.0.0",
     "@aws-cdk/aws-lakeformation": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
@@ -150,9 +158,11 @@
     "@aws-cdk/aws-managedblockchain": "0.0.0",
     "@aws-cdk/aws-mediaconvert": "0.0.0",
     "@aws-cdk/aws-medialive": "0.0.0",
+    "@aws-cdk/aws-mediapackage": "0.0.0",
     "@aws-cdk/aws-mediastore": "0.0.0",
     "@aws-cdk/aws-msk": "0.0.0",
     "@aws-cdk/aws-neptune": "0.0.0",
+    "@aws-cdk/aws-networkfirewall": "0.0.0",
     "@aws-cdk/aws-networkmanager": "0.0.0",
     "@aws-cdk/aws-opsworks": "0.0.0",
     "@aws-cdk/aws-opsworkscm": "0.0.0",
@@ -175,19 +185,22 @@
     "@aws-cdk/aws-servicecatalog": "0.0.0",
     "@aws-cdk/aws-servicediscovery": "0.0.0",
     "@aws-cdk/aws-ses": "0.0.0",
+    "@aws-cdk/aws-signer": "0.0.0",
     "@aws-cdk/aws-sns": "0.0.0",
     "@aws-cdk/aws-sqs": "0.0.0",
     "@aws-cdk/aws-ssm": "0.0.0",
     "@aws-cdk/aws-sso": "0.0.0",
     "@aws-cdk/aws-stepfunctions": "0.0.0",
     "@aws-cdk/aws-synthetics": "0.0.0",
+    "@aws-cdk/aws-timestream": "0.0.0",
     "@aws-cdk/aws-transfer": "0.0.0",
     "@aws-cdk/aws-waf": "0.0.0",
     "@aws-cdk/aws-wafregional": "0.0.0",
     "@aws-cdk/aws-wafv2": "0.0.0",
     "@aws-cdk/aws-workspaces": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "@aws-cdk/yaml-cfn": "0.0.0"
+    "@aws-cdk/yaml-cfn": "0.0.0",
+    "constructs": "^3.2.0"
   },
   "peerDependencies": {
     "@aws-cdk/alexa-ask": "0.0.0",
@@ -218,6 +231,7 @@
     "@aws-cdk/aws-cloudfront": "0.0.0",
     "@aws-cdk/aws-cloudtrail": "0.0.0",
     "@aws-cdk/aws-cloudwatch": "0.0.0",
+    "@aws-cdk/aws-codeartifact": "0.0.0",
     "@aws-cdk/aws-codebuild": "0.0.0",
     "@aws-cdk/aws-codecommit": "0.0.0",
     "@aws-cdk/aws-codedeploy": "0.0.0",
@@ -229,6 +243,7 @@
     "@aws-cdk/aws-codestarnotifications": "0.0.0",
     "@aws-cdk/aws-cognito": "0.0.0",
     "@aws-cdk/aws-config": "0.0.0",
+    "@aws-cdk/aws-databrew": "0.0.0",
     "@aws-cdk/aws-datapipeline": "0.0.0",
     "@aws-cdk/aws-dax": "0.0.0",
     "@aws-cdk/aws-detective": "0.0.0",
@@ -264,7 +279,9 @@
     "@aws-cdk/aws-iot1click": "0.0.0",
     "@aws-cdk/aws-iotanalytics": "0.0.0",
     "@aws-cdk/aws-iotevents": "0.0.0",
+    "@aws-cdk/aws-iotsitewise": "0.0.0",
     "@aws-cdk/aws-iotthingsgraph": "0.0.0",
+    "@aws-cdk/aws-ivs": "0.0.0",
     "@aws-cdk/aws-kendra": "0.0.0",
     "@aws-cdk/aws-kinesis": "0.0.0",
     "@aws-cdk/aws-kinesisanalytics": "0.0.0",
@@ -277,9 +294,11 @@
     "@aws-cdk/aws-managedblockchain": "0.0.0",
     "@aws-cdk/aws-mediaconvert": "0.0.0",
     "@aws-cdk/aws-medialive": "0.0.0",
+    "@aws-cdk/aws-mediapackage": "0.0.0",
     "@aws-cdk/aws-mediastore": "0.0.0",
     "@aws-cdk/aws-msk": "0.0.0",
     "@aws-cdk/aws-neptune": "0.0.0",
+    "@aws-cdk/aws-networkfirewall": "0.0.0",
     "@aws-cdk/aws-networkmanager": "0.0.0",
     "@aws-cdk/aws-opsworks": "0.0.0",
     "@aws-cdk/aws-opsworkscm": "0.0.0",
@@ -302,12 +321,14 @@
     "@aws-cdk/aws-servicecatalog": "0.0.0",
     "@aws-cdk/aws-servicediscovery": "0.0.0",
     "@aws-cdk/aws-ses": "0.0.0",
+    "@aws-cdk/aws-signer": "0.0.0",
     "@aws-cdk/aws-sns": "0.0.0",
     "@aws-cdk/aws-sqs": "0.0.0",
     "@aws-cdk/aws-ssm": "0.0.0",
     "@aws-cdk/aws-sso": "0.0.0",
     "@aws-cdk/aws-stepfunctions": "0.0.0",
     "@aws-cdk/aws-synthetics": "0.0.0",
+    "@aws-cdk/aws-timestream": "0.0.0",
     "@aws-cdk/aws-transfer": "0.0.0",
     "@aws-cdk/aws-waf": "0.0.0",
     "@aws-cdk/aws-wafregional": "0.0.0",
@@ -315,16 +336,16 @@
     "@aws-cdk/aws-workspaces": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/yaml-cfn": "0.0.0",
-    "constructs": "^3.0.4"
+    "constructs": "^3.2.0"
   },
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
-    "@types/jest": "^26.0.14",
+    "@types/jest": "^26.0.15",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
-    "jest": "^26.4.2",
+    "jest": "^26.6.3",
     "pkglint": "0.0.0",
-    "ts-jest": "^26.3.0"
+    "ts-jest": "^26.4.4"
   },
   "keywords": [
     "aws",
@@ -346,8 +367,8 @@
       "props-no-cfn-types:@aws-cdk/cloudformation-include.CfnIncludeProps.loadNestedStacks"
     ]
   },
-  "stability": "experimental",
-  "maturity": "developer-preview",
+  "stability": "stable",
+  "maturity": "stable",
   "awscdkio": {
     "announce": false
   }

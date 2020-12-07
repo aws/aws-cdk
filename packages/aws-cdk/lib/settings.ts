@@ -43,6 +43,7 @@ export type Arguments = {
   readonly _: [Command, ...string[]];
   readonly exclusively?: boolean;
   readonly STACKS?: string[];
+  readonly lookups?: boolean;
   readonly [name: string]: unknown;
 };
 
@@ -227,6 +228,7 @@ export class Settings {
       app: argv.app,
       browser: argv.browser,
       context,
+      debug: argv.debug,
       tags,
       language: argv.language,
       pathMetadata: argv.pathMetadata,
@@ -244,6 +246,7 @@ export class Settings {
       output: argv.output,
       progress: argv.progress,
       bundlingStacks,
+      lookups: argv.lookups,
     });
   }
 

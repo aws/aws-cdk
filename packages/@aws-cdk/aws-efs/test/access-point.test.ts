@@ -31,7 +31,7 @@ test('new AccessPoint correctly', () => {
   expectCDK(stack).to(haveResource('AWS::EFS::AccessPoint'));
 });
 
-test('import correctly', () => {
+test('import an AccessPoint using fromAccessPointId', () => {
   // WHEN
   const ap = new AccessPoint(stack, 'MyAccessPoint', {
     fileSystem,
@@ -39,6 +39,87 @@ test('import correctly', () => {
   const imported = AccessPoint.fromAccessPointId(stack, 'ImportedAccessPoint', ap.accessPointId);
   // THEN
   expect(imported.accessPointId).toEqual(ap.accessPointId);
+});
+
+test('import an AccessPoint using fromAccessPointId', () => {
+  // WHEN
+  const ap = new AccessPoint(stack, 'MyAccessPoint', {
+    fileSystem,
+  });
+  const imported = AccessPoint.fromAccessPointId(stack, 'ImportedAccessPoint', ap.accessPointId);
+  // THEN
+  expect(() => imported.fileSystem).toThrow(/fileSystem is not available when 'fromAccessPointId\(\)' is used. Use 'fromAccessPointAttributes\(\)' instead/);
+});
+
+test('import an AccessPoint using fromAccessPointAttributes and the accessPointId', () => {
+  // WHEN
+  const ap = new AccessPoint(stack, 'MyAccessPoint', {
+    fileSystem,
+  });
+  const imported = AccessPoint.fromAccessPointAttributes(stack, 'ImportedAccessPoint', {
+    accessPointId: ap.accessPointId,
+    fileSystem: fileSystem,
+  });
+  // THEN
+  expect(imported.accessPointId).toEqual(ap.accessPointId);
+  expect(imported.accessPointArn).toEqual(ap.accessPointArn);
+  expect(imported.fileSystem).toEqual(ap.fileSystem);
+});
+
+test('import an AccessPoint using fromAccessPointAttributes and the accessPointArn', () => {
+  // WHEN
+  const ap = new AccessPoint(stack, 'MyAccessPoint', {
+    fileSystem,
+  });
+  const imported = AccessPoint.fromAccessPointAttributes(stack, 'ImportedAccessPoint', {
+    accessPointArn: ap.accessPointArn,
+    fileSystem: fileSystem,
+  });
+  // THEN
+  expect(imported.accessPointId).toEqual(ap.accessPointId);
+  expect(imported.accessPointArn).toEqual(ap.accessPointArn);
+  expect(imported.fileSystem).toEqual(ap.fileSystem);
+});
+
+test('import using accessPointArn', () => {
+  // WHEN
+  const ap = new AccessPoint(stack, 'MyAccessPoint', {
+    fileSystem,
+  });
+  const imported = AccessPoint.fromAccessPointAttributes(stack, 'ImportedAccessPoint', {
+    accessPointArn: ap.accessPointArn,
+    fileSystem: fileSystem,
+  });
+  // THEN
+  expect(imported.accessPointId).toEqual(ap.accessPointId);
+  expect(imported.accessPointArn).toEqual(ap.accessPointArn);
+  expect(imported.fileSystem).toEqual(ap.fileSystem);
+});
+
+test('throw when import using accessPointArn and accessPointId', () => {
+  // WHEN
+  const ap = new AccessPoint(stack, 'MyAccessPoint', {
+    fileSystem,
+  });
+
+  // THEN
+  expect(() => AccessPoint.fromAccessPointAttributes(stack, 'ImportedAccessPoint', {
+    accessPointArn: ap.accessPointArn,
+    accessPointId: ap.accessPointId,
+    fileSystem: fileSystem,
+  })).toThrow(/Only one of accessPointId or AccessPointArn can be provided!/);
+});
+
+test('throw when import without accessPointArn or accessPointId', () => {
+  // WHEN
+  new AccessPoint(stack, 'MyAccessPoint', {
+    fileSystem,
+  });
+
+  // THEN
+  expect(() => AccessPoint.fromAccessPointAttributes(stack, 'ImportedAccessPoint', {
+    fileSystem: fileSystem,
+  })).toThrow(/One of accessPointId or AccessPointArn is required!/);
 });
 
 test('custom access point is created correctly', () => {

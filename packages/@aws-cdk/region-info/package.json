@@ -33,9 +33,6 @@
     "projectReferences": true
   },
   "cdk-build": {
-    "pre": [
-      "npm run gen"
-    ],
     "jest": true
   },
   "scripts": {
@@ -49,7 +46,8 @@
     "package": "cdk-package",
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test",
-    "compat": "cdk-compat"
+    "compat": "cdk-compat",
+    "rosetta:extract": "yarn --silent jsii-rosetta extract"
   },
   "author": {
     "name": "Amazon Web Services",

@@ -3,6 +3,8 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import { CustomResource, CustomResourceProvider } from '../lib';
 
+/* eslint-disable cdk/no-core-construct */
+
 interface DemoResourceProps {
   /**
    * Message to echo

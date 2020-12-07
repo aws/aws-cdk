@@ -1,6 +1,6 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
-import { IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
+import { IResource, Lazy, Names, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnActivity } from './stepfunctions.generated';
 
@@ -59,7 +59,7 @@ export class Activity extends Resource implements IActivity {
   constructor(scope: Construct, id: string, props: ActivityProps = {}) {
     super(scope, id, {
       physicalName: props.activityName ||
-                Lazy.stringValue({ produce: () => this.generateName() }),
+                Lazy.string({ produce: () => this.generateName() }),
     });
 
     const resource = new CfnActivity(this, 'Resource', {
@@ -186,7 +186,7 @@ export class Activity extends Resource implements IActivity {
   }
 
   private generateName(): string {
-    const name = this.node.uniqueId;
+    const name = Names.uniqueId(this);
     if (name.length > 80) {
       return name.substring(0, 40) + name.substring(name.length - 40);
     }

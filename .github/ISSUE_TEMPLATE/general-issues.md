@@ -1,7 +1,7 @@
 ---
 name: "\U00002753 General Issue"
 about: Create a new issue
-title: "[module] "
+title: "(module name): short issue description"
 labels: needs-triage, guidance
 ---
 
@@ -32,4 +32,4 @@ falling prey to the [X/Y problem][2]!
 
 
 ### Other information
-<!-- e.g. detailed explanation, stacktraces, related issues, suggestions on how to fix, links for us to have context, eg. associated pull-request, stackoverflow, gitter, etc -->
+<!-- e.g. detailed explanation, stacktraces, related issues, suggestions on how to fix, links for us to have context, eg. associated pull-request, stackoverflow, slack, etc -->

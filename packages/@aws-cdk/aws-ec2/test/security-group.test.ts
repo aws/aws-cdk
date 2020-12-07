@@ -1,5 +1,5 @@
 import { expect, haveResource, not } from '@aws-cdk/assert';
-import { Intrinsic, Lazy, Stack, Token } from '@aws-cdk/core';
+import { App, Intrinsic, Lazy, Stack, Token } from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import { Peer, Port, SecurityGroup, Vpc } from '../lib';
 
@@ -163,11 +163,11 @@ nodeunitShim({
 
     const ports = [
       Port.tcp(1234),
-      Port.tcp(Lazy.numberValue({ produce: () => 5000 })),
+      Port.tcp(Lazy.number({ produce: () => 5000 })),
       Port.allTcp(),
       Port.tcpRange(80, 90),
       Port.udp(2345),
-      Port.udp(Lazy.numberValue({ produce: () => 7777 })),
+      Port.udp(Lazy.number({ produce: () => 7777 })),
       Port.allUdp(),
       Port.udpRange(85, 95),
       Port.icmpTypeAndCode(5, 1),
@@ -192,8 +192,8 @@ nodeunitShim({
 
   'if tokens are used in ports, `canInlineRule` should be false to avoid cycles'(test: Test) {
     // GIVEN
-    const p1 = Lazy.numberValue({ produce: () => 80 });
-    const p2 = Lazy.numberValue({ produce: () => 5000 });
+    const p1 = Lazy.number({ produce: () => 80 });
+    const p2 = Lazy.number({ produce: () => 5000 });
 
     // WHEN
     const ports = [
@@ -292,5 +292,22 @@ nodeunitShim({
 
       test.done();
     },
+  },
+
+  'can look up a security group'(test: Test) {
+    const app = new App();
+    const stack = new Stack(app, 'stack', {
+      env: {
+        account: '1234',
+        region: 'us-east-1',
+      },
+    });
+
+    const securityGroup = SecurityGroup.fromLookup(stack, 'stack', 'sg-1234');
+
+    test.equal(securityGroup.securityGroupId, 'sg-12345');
+    test.equal(securityGroup.allowAllOutbound, true);
+
+    test.done();
   },
 });
