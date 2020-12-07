@@ -70,7 +70,7 @@
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "delay": "4.4.0",
-    "esbuild": "^0.8.19",
+    "esbuild": "^0.8.20",
     "pkglint": "0.0.0"
   },
   "dependencies": {
