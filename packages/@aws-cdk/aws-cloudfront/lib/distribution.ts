@@ -393,21 +393,18 @@ export class Distribution extends Resource implements IDistribution {
 
   private renderErrorResponses(): CfnDistribution.CustomErrorResponseProperty[] | undefined {
     if (this.errorResponses.length === 0) { return undefined; }
-    function validateCustomErrorResponse(errorResponse: ErrorResponse) {
-      if (errorResponse.responsePagePath && !errorResponse.responseHttpStatus) {
-        throw new Error('\'responseCode\' must be provided if \'responsePagePath\' is defined');
-      }
-      if (!errorResponse.responseHttpStatus && !errorResponse.ttl) {
-        throw new Error('A custom error response without either a \'responseCode\' or \'errorCachingMinTtl\' is not valid.');
-      }
-    }
-    this.errorResponses.forEach(e => validateCustomErrorResponse(e));
 
     return this.errorResponses.map(errorConfig => {
+      if (!errorConfig.responseHttpStatus && !errorConfig.ttl && !errorConfig.responsePagePath) {
+        throw new Error('A custom error response without either a \'responseHttpStatus\', \'ttl\' or \'responsePagePath\' is not valid.');
+      }
+
       return {
         errorCachingMinTtl: errorConfig.ttl?.toSeconds(),
         errorCode: errorConfig.httpStatus,
-        responseCode: errorConfig.responseHttpStatus,
+        responseCode: errorConfig.responsePagePath
+          ? errorConfig.responseHttpStatus ?? errorConfig.httpStatus
+          : errorConfig.responseHttpStatus,
         responsePagePath: errorConfig.responsePagePath,
       };
     });
@@ -577,7 +574,7 @@ export interface ErrorResponse {
    *
    * If you specify a value for `responseHttpStatus`, you must also specify a value for `responsePagePath`.
    *
-   * @default - not set, the error code will be returned as the response code.
+   * @default - the error code will be returned as the response code.
    */
   readonly responseHttpStatus?: number;
   /**
