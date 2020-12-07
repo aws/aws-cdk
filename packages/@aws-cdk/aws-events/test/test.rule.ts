@@ -126,14 +126,14 @@ export = {
     rule.addEventPattern({
       account: ['12345'],
       detail: {
-        foo: ['hello'],
+        foo: ['hello', 'bar', 'hello'],
       },
     });
 
     rule.addEventPattern({
       source: ['aws.source'],
       detail: {
-        foo: ['bar'],
+        foo: ['bar', 'hello'],
         goo: {
           hello: ['world'],
         },
@@ -162,6 +162,37 @@ export = {
               },
               'source': [
                 'aws.source',
+              ],
+            },
+            'State': 'ENABLED',
+          },
+        },
+      },
+    });
+    test.done();
+  },
+
+  'addEventPattern can de-duplicate filters and keep the order'(test: Test) {
+    const stack = new cdk.Stack();
+
+    const rule = new Rule(stack, 'MyRule');
+    rule.addEventPattern({
+      detailType: ['AWS API Call via CloudTrail', 'AWS API Call via CloudTrail'],
+    });
+
+    rule.addEventPattern({
+      detailType: ['EC2 Instance State-change Notification', 'AWS API Call via CloudTrail'],
+    });
+
+    expect(stack).toMatch({
+      'Resources': {
+        'MyRuleA44AB831': {
+          'Type': 'AWS::Events::Rule',
+          'Properties': {
+            'EventPattern': {
+              'detail-type': [
+                'AWS API Call via CloudTrail',
+                'EC2 Instance State-change Notification',
               ],
             },
             'State': 'ENABLED',
@@ -362,7 +393,7 @@ export = {
     const t1: IRuleTarget = {
       bind: (eventRule: IRule) => {
         receivedRuleArn = eventRule.ruleArn;
-        receivedRuleId = eventRule.node.uniqueId;
+        receivedRuleId = cdk.Names.nodeUniqueId(eventRule.node);
 
         return {
           id: '',
@@ -376,7 +407,7 @@ export = {
     rule.addTarget(t1);
 
     test.deepEqual(stack.resolve(receivedRuleArn), stack.resolve(rule.ruleArn));
-    test.deepEqual(receivedRuleId, rule.node.uniqueId);
+    test.deepEqual(receivedRuleId, cdk.Names.uniqueId(rule));
     test.done();
   },
 
@@ -737,6 +768,7 @@ export = {
 };
 
 class SomeTarget implements IRuleTarget {
+  // eslint-disable-next-line cdk/no-core-construct
   public constructor(private readonly id?: string, private readonly resource?: cdk.IConstruct) {
   }
 

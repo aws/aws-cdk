@@ -116,7 +116,7 @@ export class PublishAssetsAction extends CoreConstruct implements codepipeline.I
             commands: `npm install -g cdk-assets${installSuffix}`,
           },
           build: {
-            commands: Lazy.listValue({ produce: () => this.commands }),
+            commands: Lazy.list({ produce: () => this.commands }),
           },
         },
       }),
@@ -137,6 +137,10 @@ export class PublishAssetsAction extends CoreConstruct implements codepipeline.I
       project,
       input: this.props.cloudAssemblyInput,
       role: props.role,
+      // Add this purely so that the pipeline will selfupdate if the CLI version changes
+      environmentVariables: props.cdkCliVersion ? {
+        CDK_CLI_VERSION: { value: props.cdkCliVersion },
+      } : undefined,
     });
   }
 

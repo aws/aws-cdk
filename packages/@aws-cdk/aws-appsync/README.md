@@ -1,24 +1,32 @@
-## AWS AppSync Construct Library
+# AWS AppSync Construct Library
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
 
-> All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) are always stable and safe to use.
+> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.
+>
+> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib
 
 ![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
 
-> The APIs of higher level constructs in this module are experimental and under active development. They are subject to non-backward compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be announced in the release notes. This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
+> The APIs of higher level constructs in this module are experimental and under active development.
+> They are subject to non-backward compatible changes or removal in any future version. These are
+> not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be
+> announced in the release notes. This means that while you may use them, you may need to update
+> your source code when upgrading to a newer version of this package.
 
 ---
+
 <!--END STABILITY BANNER-->
 
 The `@aws-cdk/aws-appsync` package contains constructs for building flexible
-APIs that use GraphQL. 
+APIs that use GraphQL.
 
-### Example
+## Example
 
-### DynamoDB
+## DynamoDB
 
 Example of a GraphQL API with `AWS_IAM` authorization resolving into a DynamoDb
 backend data source.
@@ -31,7 +39,7 @@ type demo {
   version: String!
 }
 type Query {
-  getDemos: [ test! ]
+  getDemos: [ demo! ]
 }
 input DemoInput {
   version: String!
@@ -84,7 +92,71 @@ demoDS.createResolver({
 });
 ```
 
-#### HTTP Endpoints
+## Aurora Serverless
+
+AppSync provides a data source for executing SQL commands against Amazon Aurora
+Serverless clusters. You can use AppSync resolvers to execute SQL statements
+against the Data API with GraphQL queries, mutations, and subscriptions.
+
+```ts
+// Create username and password secret for DB Cluster
+const secret = new rds.DatabaseSecret(stack, 'AuroraSecret', {
+  username: 'clusteradmin',
+});
+
+// Create the DB cluster, provide all values needed to customise the database.
+const cluster = new rds.DatabaseCluster(stack, 'AuroraCluster', {
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_2_07_1 }),
+  credentials: { username: 'clusteradmin' },
+  clusterIdentifier: 'db-endpoint-test',
+  defaultDatabaseName: 'demos',
+});
+
+// Build a data source for AppSync to access the database.
+const rdsDS = api.addRdsDataSource('rds', 'The rds data source', cluster, secret);
+
+// Set up a resolver for an RDS query.
+rdsDS.createResolver({
+  typeName: 'Query',
+  fieldName: 'getDemosRds',
+  requestMappingTemplate: MappingTemplate.fromString(`
+  {
+    "version": "2018-05-29",
+    "statements": [
+      "SELECT * FROM demos"
+    ]
+  }
+  `),
+  responseMappingTemplate: MappingTemplate.fromString(`
+    $util.rds.toJsonObject($ctx.result)
+  `),
+});
+
+// Set up a resolver for an RDS mutation.
+rdsDS.createResolver({
+  typeName: 'Mutation',
+  fieldName: 'addDemoRds',
+  requestMappingTemplate: MappingTemplate.fromString(`
+  {
+    "version": "2018-05-29",
+    "statements": [
+      "INSERT INTO demos VALUES (:id, :version)",
+      "SELECT * WHERE id = :id"
+    ],
+    "variableMap": {
+      ":id": $util.toJson($util.autoId()),
+      ":version": $util.toJson($ctx.args.version)
+    }
+  }
+  `),
+  responseMappingTemplate: MappingTemplate.fromString(`
+    $util.rds.toJsonObject($ctx.result)
+  `),
+});
+```
+
+### HTTP Endpoints
+
 GraphQL schema file `schema.graphql`:
 
 ```gql
@@ -104,7 +176,7 @@ type Mutation {
 
 GraphQL request mapping template `request.vtl`:
 
-```
+```json
 {
   "version": "2018-05-29",
   "method": "POST",
@@ -124,7 +196,7 @@ GraphQL request mapping template `request.vtl`:
 
 GraphQL response mapping template `response.vtl`:
 
-```
+```json
 {
   "id": "${context.result.id}"
 }
@@ -141,8 +213,8 @@ const api = new appsync.GraphqlApi(scope, 'api', {
 });
 
 const httpDs = api.addHttpDataSource(
-  'ds', 
-  'https://states.amazonaws.com', 
+  'ds',
+  'https://states.amazonaws.com',
   {
     name: 'httpDsWithStepF',
     description: 'from appsync to StepFunctions Workflow',
@@ -170,7 +242,7 @@ or schema-first.
 #### Code-First
 
 When declaring your GraphQL Api, CDK defaults to a code-first approach if the
-`schema` property is not configured. 
+`schema` property is not configured.
 
 ```ts
 const api = new appsync.GraphqlApi(stack, 'api', { name: 'myApi' });
@@ -208,8 +280,9 @@ const api = appsync.GraphqlApi(stack, 'api', {
 ```
 
 ### Imports
-Any GraphQL Api that has been created outside the stack can be imported from 
-another stack into your CDK app. Utilizing the `fromXxx` function, you have 
+
+Any GraphQL Api that has been created outside the stack can be imported from
+another stack into your CDK app. Utilizing the `fromXxx` function, you have
 the ability to add data sources and resolvers through a `IGraphqlApi` interface.
 
 ```ts
@@ -221,7 +294,7 @@ importedApi.addDynamoDbDataSource('TableDataSource', table);
 ```
 
 If you don't specify `graphqlArn` in `fromXxxAttributes`, CDK will autogenerate
-the expected `arn` for the imported api, given the `apiId`. For creating data 
+the expected `arn` for the imported api, given the `apiId`. For creating data
 sources and resolvers, an `apiId` is sufficient.
 
 ### Permissions
@@ -234,6 +307,7 @@ accessible by `IAM` authorization. For example, if you want to only allow mutabi
 for `IAM` authorized access you would configure the following.
 
 In `schema.graphql`:
+
 ```ts
 type Mutation {
   updateExample(...): ...
@@ -242,6 +316,7 @@ type Mutation {
 ```
 
 In `IAM`:
+
 ```json
 {
    "Version": "2012-10-17",
@@ -291,6 +366,7 @@ In order to use the `grant` functions, you need to use the class `IamResource`.
 Alternatively, you can use more generic `grant` functions to accomplish the same usage.
 
 These include:
+
 - grantMutation (use to grant access to Mutation fields)
 - grantQuery (use to grant access to Query fields)
 - grantSubscription (use to grant access to Subscription fields)
@@ -337,8 +413,9 @@ Learn more about Pipeline Resolvers and AppSync Functions [here](https://docs.aw
 
 ### Code-First Schema
 
-CDK offers the ability to generate your schema in a code-first approach. 
+CDK offers the ability to generate your schema in a code-first approach.
 A code-first approach offers a developer workflow with:
+
 - **modularity**: organizing schema type definitions into different files
 - **reusability**: simplifying down boilerplate/repetitive code
 - **consistency**: resolvers and schema definition will always be synced
@@ -369,7 +446,7 @@ type FilmConnection {
 }
 
 type FilmEdge {
-  node: Film 
+  node: Film
   cursor: String
 }
 ```
@@ -389,7 +466,7 @@ export const int = appsync.GraphqlType.int();
 
 In another separate file, we can declare our object types and related functions.
 We will call this file `object-types.ts` and we will have created it in a way that
-allows us to generate other `XxxConnection` and `XxxEdges` in the future. 
+allows us to generate other `XxxConnection` and `XxxEdges` in the future.
 
 ```ts
 const pluralize = require('pluralize');
@@ -397,7 +474,7 @@ import * as scalar from './scalar-types.ts';
 import * as appsync from '@aws-cdk/aws-appsync';
 
 export const args = {
-  after: scalar.string, 
+  after: scalar.string,
   first: scalar.int,
   before: scalar.string,
   last: scalar.int,
@@ -463,18 +540,19 @@ Check out a more in-depth example [here](https://github.com/BryanPan342/starwars
 
 #### GraphQL Types
 
-One of the benefits of GraphQL is its strongly typed nature. We define the 
-types within an object, query, mutation, interface, etc. as **GraphQL Types**. 
+One of the benefits of GraphQL is its strongly typed nature. We define the
+types within an object, query, mutation, interface, etc. as **GraphQL Types**.
 
-GraphQL Types are the building blocks of types, whether they are scalar, objects, 
+GraphQL Types are the building blocks of types, whether they are scalar, objects,
 interfaces, etc. GraphQL Types can be:
-- [**Scalar Types**](https://docs.aws.amazon.com/appsync/latest/devguide/scalars.html): Id, Int, String, AWSDate, etc. 
+
+- [**Scalar Types**](https://docs.aws.amazon.com/appsync/latest/devguide/scalars.html): Id, Int, String, AWSDate, etc.
 - [**Object Types**](#Object-Types): types that you generate (i.e. `demo` from the example above)
-- [**Interface Types**](#Interface-Types): abstract types that define the base implementation of other 
+- [**Interface Types**](#Interface-Types): abstract types that define the base implementation of other
 Intermediate Types
 
-More concretely, GraphQL Types are simply the types appended to variables. 
-Referencing the object type `Demo` in the previous example, the GraphQL Types 
+More concretely, GraphQL Types are simply the types appended to variables.
+Referencing the object type `Demo` in the previous example, the GraphQL Types
 is `String!` and is applied to both the names `id` and `version`.
 
 #### Directives
@@ -542,7 +620,7 @@ The CDK code required would be:
 
 ```ts
 const info = new appsync.ObjectType('Info', {
-  definition: { 
+  definition: {
     node: new appsync.ResolvableField({
       returnType: appsync.GraphqlType.string(),
       args: {
@@ -570,7 +648,7 @@ The CDK code required would be:
 
 ```ts
 const query = new appsync.ObjectType('Query', {
-  definition: { 
+  definition: {
     get: new appsync.ResolvableField({
       returnType: appsync.GraphqlType.string(),
       args: {
@@ -588,11 +666,12 @@ Learn more about fields and resolvers [here](https://docs.aws.amazon.com/appsync
 
 #### Intermediate Types
 
-Intermediate Types are defined by Graphql Types and Fields. They have a set of defined 
-fields, where each field corresponds to another type in the system. Intermediate 
+Intermediate Types are defined by Graphql Types and Fields. They have a set of defined
+fields, where each field corresponds to another type in the system. Intermediate
 Types will be the meat of your GraphQL Schema as they are the types defined by you.
 
 Intermediate Types include:
+
 - [**Interface Types**](#Interface-Types)
 - [**Object Types**](#Object-Types)
 - [**Enum Types**](#Enum-Types)
@@ -606,6 +685,7 @@ intermediate types. They are useful for eliminating duplication and can be used
 to generate Object Types with less work.
 
 You can create Interface Types ***externally***.
+
 ```ts
 const node = new appsync.InterfaceType('Node', {
   definition: {
@@ -619,12 +699,13 @@ To learn more about **Interface Types**, read the docs [here](https://graphql.or
 ##### Object Types
 
 **Object Types** are types that you declare. For example, in the [code-first example](#code-first-example)
-the `demo` variable is an **Object Type**. **Object Types** are defined by 
+the `demo` variable is an **Object Type**. **Object Types** are defined by
 GraphQL Types and are only usable when linked to a GraphQL Api.
 
 You can create Object Types in three ways:
 
 1. Object Types can be created ***externally***.
+
     ```ts
     const api = new appsync.GraphqlApi(stack, 'Api', {
       name: 'demo',
@@ -638,15 +719,18 @@ You can create Object Types in three ways:
 
     api.addType(object);
     ```
-    > This method allows for reusability and modularity, ideal for larger projects. 
+
+    > This method allows for reusability and modularity, ideal for larger projects.
     For example, imagine moving all Object Type definition outside the stack.
 
     `scalar-types.ts` - a file for scalar type definitions
+
     ```ts
     export const required_string = appsync.GraphqlType.string({ isRequired: true });
     ```
 
     `object-types.ts` - a file for object type definitions
+
     ```ts
     import { required_string } from './scalar-types';
     export const demo = new appsync.ObjectType('Demo', {
@@ -658,12 +742,14 @@ You can create Object Types in three ways:
     ```
 
     `cdk-stack.ts` - a file containing our cdk stack
+
     ```ts
     import { demo } from './object-types';
     api.addType(demo);
     ```
 
 2. Object Types can be created ***externally*** from an Interface Type.
+
     ```ts
     const node = new appsync.InterfaceType('Node', {
       definition: {
@@ -677,6 +763,7 @@ You can create Object Types in three ways:
       },
     });
     ```
+
     > This method allows for reusability and modularity, ideal for reducing code duplication.
 
 To learn more about **Object Types**, read the docs [here](https://graphql.org/learn/schema/#object-types-and-fields).
@@ -706,13 +793,13 @@ const episode = new appsync.EnumType('Episode', {
     'EMPIRE',
     'JEDI',
   ],
-}); 
+});
 api.addType(episode);
 ```
 
 To learn more about **Enum Types**, read the docs [here](https://graphql.org/learn/schema/#enumeration-types).
 
-##### Input Types
+#### Input Types
 
 **Input Types** are special types of Intermediate Types. They give users an
 easy way to pass complex objects for top level Mutation and Queries.
@@ -732,7 +819,7 @@ const review = new appsync.InputType('Review', {
     stars: GraphqlType.int({ isRequired: true }),
     commentary: GraphqlType.string(),
   },
-}); 
+});
 api.addType(review);
 ```
 
@@ -760,7 +847,7 @@ const droid = new appsync.ObjectType('Droid', { definition: { name: string } });
 const starship = new appsync.ObjectType('Starship', { definition: { name: string } }););
 const search = new appsync.UnionType('Search', {
   definition: [ human, droid, starship ],
-}); 
+});
 api.addType(search);
 ```
 
@@ -787,12 +874,12 @@ api.addQuery('allFilms', new appsync.ResolvableField({
 }));
 ```
 
-To learn more about top level operations, check out the docs [here](https://docs.aws.amazon.com/appsync/latest/devguide/graphql-overview.html). 
+To learn more about top level operations, check out the docs [here](https://docs.aws.amazon.com/appsync/latest/devguide/graphql-overview.html).
 
 #### Mutation
 
 Every schema **can** have a top level Mutation type. By default, the schema will look
-for the `Object Type` named `Mutation`. The top level `Mutation` Type is the only exposed
+for the `ObjectType` named `Mutation`. The top level `Mutation` Type is the only exposed
 type that users can access to perform `mutable` operations on your Api.
 
 To add fields for these mutations, we can simply run the `addMutation` function to add
@@ -810,14 +897,14 @@ api.addMutation('addFilm', new appsync.ResolvableField({
 }));
 ```
 
-To learn more about top level operations, check out the docs [here](https://docs.aws.amazon.com/appsync/latest/devguide/graphql-overview.html). 
+To learn more about top level operations, check out the docs [here](https://docs.aws.amazon.com/appsync/latest/devguide/graphql-overview.html).
 
 #### Subscription
 
 Every schema **can** have a top level Subscription type. The top level `Subscription` Type
 is the only exposed type that users can access to invoke a response to a mutation. `Subscriptions`
 notify users when a mutation specific mutation is called. This means you can make any data source
-real time by specify a GraphQL Schema directive on a mutation. 
+real time by specify a GraphQL Schema directive on a mutation.
 
 **Note**: The AWS AppSync client SDK automatically handles subscription connection management.
 
@@ -832,4 +919,4 @@ api.addSubscription('addedFilm', new appsync.ResolvableField({
 }));
 ```
 
-To learn more about top level operations, check out the docs [here](https://docs.aws.amazon.com/appsync/latest/devguide/real-time-data.html). 
+To learn more about top level operations, check out the docs [here](https://docs.aws.amazon.com/appsync/latest/devguide/real-time-data.html).

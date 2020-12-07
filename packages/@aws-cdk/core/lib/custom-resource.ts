@@ -1,5 +1,5 @@
+import { Construct } from 'constructs';
 import { CfnResource } from './cfn-resource';
-import { Construct } from './construct-compat';
 import { RemovalPolicy } from './removal-policy';
 import { Resource } from './resource';
 import { Token } from './token';
@@ -23,13 +23,13 @@ export interface CustomResourceProps {
    *
    * ```ts
    * // use the provider framework from aws-cdk/custom-resources:
-   * const provider = new custom_resources.Provider({
-   *   onEventHandler: myOnEventLambda,
-   *   isCompleteHandler: myIsCompleteLambda, // optional
+   * const provider = new customresources.Provider(this, 'ResourceProvider', {
+   *   onEventHandler,
+   *   isCompleteHandler, // optional
    * });
    *
    * new CustomResource(this, 'MyResource', {
-   *   serviceToken: provider.serviceToken
+   *   serviceToken: provider.serviceToken,
    * });
    * ```
    *
@@ -37,14 +37,18 @@ export interface CustomResourceProps {
    *
    * ```ts
    * // invoke an AWS Lambda function when a lifecycle event occurs:
-   * serviceToken: myFunction.functionArn
+   * new CustomResource(this, 'MyResource', {
+   *   serviceToken: myFunction.functionArn,
+   * });
    * ```
    *
    * SNS topic:
    *
    * ```ts
    * // publish lifecycle events to an SNS topic:
-   * serviceToken: myTopic.topicArn
+   * new CustomResource(this, 'MyResource', {
+   *   serviceToken: myTopic.topicArn,
+   * });
    * ```
    */
   readonly serviceToken: string;

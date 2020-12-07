@@ -1,10 +1,12 @@
 import { anything, arrayWith, deepObjectLike, encodedJson } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
+import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
-import { CfnOutput, Construct, Stack, Stage, StageProps } from '@aws-cdk/core';
+import { CfnOutput, Stack, Stage, StageProps } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as cdkp from '../lib';
 import { } from './testmatchers';
 import { BucketStack, PIPELINE_ENV, TestApp, TestGitHubNpmPipeline } from './testutil';
@@ -285,6 +287,104 @@ test('run ShellScriptAction in a VPC', () => {
           },
         },
       })),
+    },
+  });
+});
+
+test('run ShellScriptAction with Security Group', () => {
+  // WHEN
+  const vpc = new ec2.Vpc(pipelineStack, 'VPC');
+  const sg = new ec2.SecurityGroup(pipelineStack, 'SG', { vpc });
+  pipeline.addStage('Test').addActions(new cdkp.ShellScriptAction({
+    vpc,
+    securityGroups: [sg],
+    actionName: 'sgAction',
+    additionalArtifacts: [integTestArtifact],
+    commands: ['true'],
+  }));
+
+  // THEN
+  expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+    Stages: arrayWith({
+      Name: 'Test',
+      Actions: [
+        deepObjectLike({
+          Name: 'sgAction',
+        }),
+      ],
+    }),
+  });
+  expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    VpcConfig: {
+      SecurityGroupIds: [
+        {
+          'Fn::GetAtt': [
+            'SGADB53937',
+            'GroupId',
+          ],
+        },
+      ],
+      VpcId: {
+        Ref: 'VPCB9E5F0B4',
+      },
+    },
+  });
+});
+
+test('run ShellScriptAction with specified codebuild image', () => {
+  // WHEN
+  pipeline.addStage('Test').addActions(new cdkp.ShellScriptAction({
+    actionName: 'imageAction',
+    additionalArtifacts: [integTestArtifact],
+    commands: ['true'],
+    environment: { buildImage: codebuild.LinuxBuildImage.STANDARD_2_0 },
+  }));
+
+  // THEN
+  expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+    Stages: arrayWith({
+      Name: 'Test',
+      Actions: [
+        deepObjectLike({
+          Name: 'imageAction',
+        }),
+      ],
+    }),
+  });
+  expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Environment: {
+      Image: 'aws/codebuild/standard:2.0',
+    },
+  });
+});
+
+test('run ShellScriptAction with specified BuildEnvironment', () => {
+  // WHEN
+  pipeline.addStage('Test').addActions(new cdkp.ShellScriptAction({
+    actionName: 'imageAction',
+    additionalArtifacts: [integTestArtifact],
+    commands: ['true'],
+    environment: {
+      buildImage: codebuild.LinuxBuildImage.STANDARD_2_0,
+      computeType: codebuild.ComputeType.LARGE,
+      environmentVariables: { FOO: { value: 'BAR', type: codebuild.BuildEnvironmentVariableType.PLAINTEXT } },
+      privileged: true,
+    },
+  }));
+
+  // THEN
+  expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Environment: {
+      Image: 'aws/codebuild/standard:2.0',
+      PrivilegedMode: true,
+      ComputeType: 'BUILD_GENERAL1_LARGE',
+      EnvironmentVariables: [
+        {
+          Type: 'PLAINTEXT',
+          Value: 'BAR',
+          Name: 'FOO',
+        },
+      ],
     },
   });
 });

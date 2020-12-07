@@ -1,5 +1,5 @@
+import { Construct } from 'constructs';
 import { CfnElement } from './cfn-element';
-import { Construct } from './construct-compat';
 
 export interface CfnOutputProps {
   /**
@@ -103,7 +103,8 @@ export class CfnOutput extends CfnElement {
   /**
    * The name used to export the value of this output across stacks.
    *
-   * To import the value from another stack, use `Fn.importValue(exportName)`.
+   * To use the value in another stack, pass the value of
+   * `output.importValue` to it.
    *
    * @default - the output is not exported
    */
@@ -113,6 +114,38 @@ export class CfnOutput extends CfnElement {
 
   public set exportName(exportName: string | undefined) {
     this._exportName = exportName;
+  }
+
+  /**
+   * Return the `Fn.importValue` expression to import this value into another stack
+   *
+   * The returned value should not be used in the same stack, but in a
+   * different one. It must be deployed to the same environment, as
+   * CloudFormation exports can only be imported in the same Region and
+   * account.
+   *
+   * The is no automatic registration of dependencies between stacks when using
+   * this mechanism, so you should make sure to deploy them in the right order
+   * yourself.
+   *
+   * You can use this mechanism to share values across Stacks in different
+   * Stages. If you intend to share the value to another Stack inside the same
+   * Stage, the automatic cross-stack referencing mechanism is more convenient.
+   */
+  public get importValue() {
+    // We made _exportName mutable so this will have to be lazy.
+    return Fn.importValue(Lazy.stringValue({
+      produce: (ctx) => {
+        if (Stack.of(ctx.scope) === this.stack) {
+          throw new Error(`'importValue' property of '${this.node.path}' should only be used in a different Stack`);
+        }
+        if (!this._exportName) {
+          throw new Error(`Add an exportName to the CfnOutput at '${this.node.path}' in order to use 'output.importValue'`);
+        }
+
+        return this._exportName;
+      },
+    }));
   }
 
   /**
@@ -130,6 +163,18 @@ export class CfnOutput extends CfnElement {
       },
     };
   }
+
+  protected validate(): string[] {
+    if (this._exportName && !Token.isUnresolved(this._exportName) && this._exportName.length > 255) {
+      return [`Export name cannot exceed 255 characters (got ${this._exportName.length} characters)`];
+    }
+    return [];
+  }
 }
 
 import { CfnCondition } from './cfn-condition';
+import { Fn } from './cfn-fn';
+import { Lazy } from './lazy';
+import { Stack } from './stack';
+import { Token } from './token';
+

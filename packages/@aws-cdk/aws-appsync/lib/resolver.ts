@@ -18,7 +18,7 @@ export interface BaseResolverProps {
    */
   readonly typeName: string;
   /**
-   * name of the GraphQL fiel din the given type this resolver is attached to
+   * name of the GraphQL field in the given type this resolver is attached to
    */
   readonly fieldName: string;
   /**

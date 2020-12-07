@@ -1,12 +1,18 @@
 # AWS CDK Docker Image Assets
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
 
-> The APIs of higher level constructs in this module are experimental and under active development. They are subject to non-backward compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be announced in the release notes. This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
+> The APIs of higher level constructs in this module are experimental and under active development.
+> They are subject to non-backward compatible changes or removal in any future version. These are
+> not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be
+> announced in the release notes. This means that while you may use them, you may need to update
+> your source code when upgrading to a newer version of this package.
 
 ---
+
 <!--END STABILITY BANNER-->
 
 This module allows bundling Docker images as assets.
@@ -15,7 +21,7 @@ Images are built from a local Docker context directory (with a `Dockerfile`),
 uploaded to ECR by the CDK toolkit and/or your app's CI-CD pipeline, and can be
 naturally referenced in your CDK app.
 
-```typescript
+```ts
 import { DockerImageAsset } from '@aws-cdk/aws-ecr-assets';
 
 const asset = new DockerImageAsset(this, 'MyBuildImage', {
@@ -29,13 +35,28 @@ This will instruct the toolkit to build a Docker image from `my-image`, push it
 to an AWS ECR repository and wire the name of the repository as CloudFormation
 parameters to your stack.
 
+By default, all files in the given directory will be copied into the docker
+*build context*. If there is a large directory that you know you definitely
+don't need in the build context you can improve the performance by adding the
+names of files and directories to ignore to a file called `.dockerignore`, or
+pass them via the `exclude` property. If both are available, the patterns
+found in `exclude` are appended to the patterns found in `.dockerignore`.
+
+The `ignoreMode` property controls how the set of ignore patterns is
+interpreted. The recommended setting for Docker image assets is
+`IgnoreMode.DOCKER`. If the context flag
+`@aws-cdk/aws-ecr-assets:dockerIgnoreSupport` is set to `true` in your
+`cdk.json` (this is by default for new projects, but must be set manually for
+old projects) then `IgnoreMode.DOCKER` is the default and you don't need to
+configure it on the asset itself.
+
 Use `asset.imageUri` to reference the image (it includes both the ECR image URL
 and tag.
 
 You can optionally pass build args to the `docker build` command by specifying
 the `buildArgs` property:
 
-```typescript
+```ts
 const asset = new DockerImageAsset(this, 'MyBuildImage', {
   directory: path.join(__dirname, 'my-image'),
   buildArgs: {
@@ -47,13 +68,14 @@ const asset = new DockerImageAsset(this, 'MyBuildImage', {
 You can optionally pass a target to the `docker build` command by specifying
 the `target` property:
 
-```typescript
+```ts
 const asset = new DockerImageAsset(this, 'MyBuildImage', {
   directory: path.join(__dirname, 'my-image'),
   target: 'a-target'
 })
 ```
-### Pull Permissions
+
+## Pull Permissions
 
 Depending on the consumer of your image asset, you will need to make sure
 the principal has permissions to pull the image.

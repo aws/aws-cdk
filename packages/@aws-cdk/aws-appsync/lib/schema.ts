@@ -80,7 +80,7 @@ export class Schema {
       this.schema = new CfnGraphQLSchema(api, 'Schema', {
         apiId: api.apiId,
         definition: this.mode === SchemaMode.CODE ?
-          Lazy.stringValue({
+          Lazy.string({
             produce: () => this.types.reduce((acc, type) => `${acc}${type._bindToGraphqlApi(api).toString()}\n`,
               `${this.declareSchema()}${this.definition}`),
           })

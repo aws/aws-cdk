@@ -1,8 +1,10 @@
 import { ITable } from '@aws-cdk/aws-dynamodb';
 import { IFunction } from '@aws-cdk/aws-lambda';
+import { IDatabaseCluster } from '@aws-cdk/aws-rds';
+import { ISecret } from '@aws-cdk/aws-secretsmanager';
 import { CfnResource, IResource, Resource } from '@aws-cdk/core';
-import { AwsIamConfig, DynamoDbDataSource, HttpDataSource, LambdaDataSource, NoneDataSource } from './data-source';
 import { Resolver, ExtendedResolverProps } from './resolver';
+import { DynamoDbDataSource, HttpDataSource, LambdaDataSource, NoneDataSource, RdsDataSource, AwsIamConfig } from './data-source';
 
 /**
  * Optional configuration for data sources
@@ -90,6 +92,21 @@ export interface IGraphqlApi extends IResource {
    * @param options The optional configuration for this data source
    */
   addLambdaDataSource(id: string, lambdaFunction: IFunction, options?: DataSourceOptions): LambdaDataSource;
+
+  /**
+   * add a new Rds data source to this API
+   *
+   * @param id The data source's id
+   * @param databaseCluster The database cluster to interact with this data source
+   * @param secretStore The secret store that contains the username and password for the database cluster
+   * @param options The optional configuration for this data source
+   */
+  addRdsDataSource(
+    id: string,
+    databaseCluster: IDatabaseCluster,
+    secretStore: ISecret,
+    options?: DataSourceOptions
+  ): RdsDataSource;
 
   /**
    * creates a new resolver for this datasource and API using the given properties
@@ -181,6 +198,28 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
       lambdaFunction,
       name: options?.name,
       description: options?.description,
+    });
+  }
+
+  /**
+   * add a new Rds data source to this API
+   * @param id The data source's id
+   * @param databaseCluster The database cluster to interact with this data source
+   * @param secretStore The secret store that contains the username and password for the database cluster
+   * @param options The optional configuration for this data source
+   */
+  public addRdsDataSource(
+    id: string,
+    databaseCluster: IDatabaseCluster,
+    secretStore: ISecret,
+    options?: DataSourceOptions,
+  ): RdsDataSource {
+    return new RdsDataSource(this, id, {
+      api: this,
+      name: options?.name,
+      description: options?.description,
+      databaseCluster,
+      secretStore,
     });
   }
 

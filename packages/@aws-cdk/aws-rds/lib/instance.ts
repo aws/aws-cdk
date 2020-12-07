@@ -12,7 +12,7 @@ import { Endpoint } from './endpoint';
 import { IInstanceEngine } from './instance-engine';
 import { IOptionGroup } from './option-group';
 import { IParameterGroup } from './parameter-group';
-import { applyRemovalPolicy, DEFAULT_PASSWORD_EXCLUDE_CHARS, defaultDeletionProtection, engineDescription, setupS3ImportExport } from './private/util';
+import { applyRemovalPolicy, DEFAULT_PASSWORD_EXCLUDE_CHARS, defaultDeletionProtection, engineDescription, renderCredentials, setupS3ImportExport } from './private/util';
 import { Credentials, PerformanceInsightRetention, RotationMultiUserOptions, RotationSingleUserOptions, SnapshotCredentials } from './props';
 import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
 import { CfnDBInstance, CfnDBInstanceProps } from './rds.generated';
@@ -365,8 +365,10 @@ export interface DatabaseInstanceNewProps {
   readonly iamAuthentication?: boolean;
 
   /**
-   * The number of days during which automatic DB snapshots are retained. Set
-   * to zero to disable backups.
+   * The number of days during which automatic DB snapshots are retained.
+   * Set to zero to disable backups.
+   * When creating a read replica, you must enable automatic backups on the source
+   * database instance by setting the backup retention to a value other than zero.
    *
    * @default Duration.days(1)
    */
@@ -641,7 +643,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
 
     this.connections = new ec2.Connections({
       securityGroups,
-      defaultPort: ec2.Port.tcp(Lazy.numberValue({ produce: () => this.instanceEndpoint.port })),
+      defaultPort: ec2.Port.tcp(Lazy.number({ produce: () => this.instanceEndpoint.port })),
     });
 
     let monitoringRole;
@@ -681,13 +683,13 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       availabilityZone: props.multiAz ? undefined : props.availabilityZone,
       backupRetentionPeriod: props.backupRetention ? props.backupRetention.toDays() : undefined,
       copyTagsToSnapshot: props.copyTagsToSnapshot !== undefined ? props.copyTagsToSnapshot : true,
-      dbInstanceClass: Lazy.stringValue({ produce: () => `db.${this.instanceType}` }),
+      dbInstanceClass: Lazy.string({ produce: () => `db.${this.instanceType}` }),
       dbInstanceIdentifier: props.instanceIdentifier,
       dbSubnetGroupName: subnetGroup.subnetGroupName,
       deleteAutomatedBackups: props.deleteAutomatedBackups,
       deletionProtection: defaultDeletionProtection(props.deletionProtection, props.removalPolicy),
       enableCloudwatchLogsExports: this.cloudwatchLogsExports,
-      enableIamDatabaseAuthentication: Lazy.anyValue({ produce: () => this.enableIamAuthentication }),
+      enableIamDatabaseAuthentication: Lazy.any({ produce: () => this.enableIamAuthentication }),
       enablePerformanceInsights: enablePerformanceInsights || props.enablePerformanceInsights, // fall back to undefined if not set,
       iops,
       monitoringInterval: props.monitoringInterval && props.monitoringInterval.toSeconds(),
@@ -945,14 +947,7 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
   constructor(scope: Construct, id: string, props: DatabaseInstanceProps) {
     super(scope, id, props);
 
-    let credentials = props.credentials ?? Credentials.fromUsername(props.engine.defaultUsername ?? 'admin');
-    if (!credentials.secret && !credentials.password) {
-      credentials = Credentials.fromSecret(new DatabaseSecret(this, 'Secret', {
-        username: credentials.username,
-        encryptionKey: credentials.encryptionKey,
-        excludeCharacters: credentials.excludeCharacters,
-      }));
-    }
+    const credentials = renderCredentials(this, props.engine, props.credentials);
     const secret = credentials.secret;
 
     const instance = new CfnDBInstance(this, 'Resource', {
@@ -1030,6 +1025,7 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
         username: credentials.username,
         encryptionKey: credentials.encryptionKey,
         excludeCharacters: credentials.excludeCharacters,
+        replaceOnPasswordCriteriaChanges: credentials.replaceOnPasswordCriteriaChanges,
       });
     }
 

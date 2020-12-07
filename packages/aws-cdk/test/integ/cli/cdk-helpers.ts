@@ -10,7 +10,10 @@ const REGIONS = process.env.AWS_REGIONS
   ? process.env.AWS_REGIONS.split(',')
   : [process.env.AWS_REGION ?? process.env.AWS_DEFAULT_REGION ?? 'us-east-1'];
 
+const FRAMEWORK_VERSION = process.env.FRAMEWORK_VERSION;
+
 process.stdout.write(`Using regions: ${REGIONS}\n`);
+process.stdout.write(`Using framework version: ${FRAMEWORK_VERSION}\n`);
 
 const REGION_POOL = new ResourcePool(REGIONS);
 
@@ -58,7 +61,7 @@ export function withCdkApp<A extends TestContext & AwsContext>(block: (context: 
 
     let success = true;
     try {
-      await fixture.shell(['npm', 'install',
+      let modules = [
         '@aws-cdk/core',
         '@aws-cdk/aws-sns',
         '@aws-cdk/aws-iam',
@@ -66,7 +69,12 @@ export function withCdkApp<A extends TestContext & AwsContext>(block: (context: 
         '@aws-cdk/aws-ssm',
         '@aws-cdk/aws-ecr-assets',
         '@aws-cdk/aws-cloudformation',
-        '@aws-cdk/aws-ec2']);
+        '@aws-cdk/aws-ec2',
+      ];
+      if (FRAMEWORK_VERSION) {
+        modules = modules.map(module => `${module}@${FRAMEWORK_VERSION}`);
+      }
+      await fixture.shell(['npm', 'install', ...modules]);
 
       await ensureBootstrapped(fixture);
 
@@ -75,7 +83,11 @@ export function withCdkApp<A extends TestContext & AwsContext>(block: (context: 
       success = false;
       throw e;
     } finally {
-      await fixture.dispose(success);
+      if (process.env.INTEG_NO_CLEAN) {
+        process.stderr.write(`Left test directory in '${integTestDir}' ($INTEG_NO_CLEAN)\n`);
+      } else {
+        await fixture.dispose(success);
+      }
     }
   };
 }
@@ -169,6 +181,13 @@ export class TestFixture {
       ...this.fullStackName(stackNames)], options);
   }
 
+  public async cdkSynth(options: CdkCliOptions = {}) {
+    return this.cdk([
+      'synth',
+      ...(options.options ?? []),
+    ], options);
+  }
+
   public async cdkDestroy(stackNames: string | string[], options: CdkCliOptions = {}) {
     stackNames = typeof stackNames === 'string' ? [stackNames] : stackNames;
 
@@ -221,6 +240,8 @@ export class TestFixture {
     // Bootstrap stacks have buckets that need to be cleaned
     const bucketNames = stacksToDelete.map(stack => outputFromStack('BucketName', stack)).filter(defined);
     await Promise.all(bucketNames.map(b => this.aws.emptyBucket(b)));
+    // The bootstrap bucket has a removal policy of RETAIN by default, so add it to the buckets to be cleaned up.
+    this.bucketsToDelete.push(...bucketNames);
 
     // Bootstrap stacks have ECR repositories with images which should be deleted
     const imageRepositoryNames = stacksToDelete.map(stack => outputFromStack('ImageRepositoryName', stack)).filter(defined);

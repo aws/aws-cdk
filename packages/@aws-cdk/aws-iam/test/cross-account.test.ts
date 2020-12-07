@@ -1,5 +1,6 @@
 import '@aws-cdk/assert/jest';
 import * as cdk from '@aws-cdk/core';
+import * as constructs from 'constructs';
 import * as iam from '../lib';
 
 // Test cross-account grant scenario's for principals
@@ -163,13 +164,13 @@ class FakeResource extends cdk.Resource implements iam.IResourceWithPolicy {
   public readonly arn = 'arn:aws:resource';
   private readonly policy = new iam.PolicyDocument();
 
-  constructor(scope: cdk.Construct, id: string) {
+  constructor(scope: constructs.Construct, id: string) {
     super(scope, id);
 
     new cdk.CfnResource(this, 'Default', {
       type: 'Test::Fake::Resource',
       properties: {
-        ResourcePolicy: cdk.Lazy.anyValue({ produce: () => this.policy }),
+        ResourcePolicy: cdk.Lazy.any({ produce: () => this.policy }),
       },
     });
   }
