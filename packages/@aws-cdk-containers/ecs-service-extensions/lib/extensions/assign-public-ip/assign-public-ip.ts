@@ -60,7 +60,7 @@ export class AssignPublicIpExtension extends ServiceExtension {
     }
   }
 
-  public modifyServiceProps(props: ServiceBuild) {
+  public modifyServiceProps(props: ServiceBuild): ServiceBuild {
     return {
       ...props,
       assignPublicIp: true,
