@@ -8,18 +8,18 @@ import { BatchStrategy, ModelClientConfig, S3DataType, TransformInput, Transform
 import { renderTags } from './private/utils';
 
 /**
- * Properties for creating an Amazon SageMaker training job task
+ * Properties for creating an Amazon SageMaker transform job task
  *
  *  @experimental
  */
 export interface SageMakerCreateTransformJobProps extends sfn.TaskStateBaseProps {
   /**
-   * Training Job Name.
+   * Transform Job Name.
    */
   readonly transformJobName: string;
 
   /**
-   * Role for the Training Job.
+   * Role for the Transform Job.
    *
    * @default - A role is created with `AmazonSageMakerFullAccess` managed policy
    */
@@ -92,7 +92,7 @@ export interface SageMakerCreateTransformJobProps extends sfn.TaskStateBaseProps
 }
 
 /**
- * Class representing the SageMaker Create Training Job task.
+ * Class representing the SageMaker Create Transform Job task.
  *
  *  @experimental
  */
@@ -154,7 +154,7 @@ export class SageMakerCreateTransformJob extends sfn.TaskStateBase {
   }
 
   /**
-   * The execution role for the Sagemaker training job.
+   * The execution role for the Sagemaker transform job.
    *
    * Only available after task has been added to a state machine.
    */
