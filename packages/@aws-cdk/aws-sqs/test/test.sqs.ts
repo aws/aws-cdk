@@ -162,7 +162,7 @@ export = {
       test.deepEqual(stack.resolve(imports.queueArn), 'arn:aws:sqs:us-east-1:123456789012:queue1');
       test.deepEqual(stack.resolve(imports.queueUrl), {
         'Fn::Join':
-        ['', ['https://sqs.', { Ref: 'AWS::Region' }, '.', { Ref: 'AWS::URLSuffix' }, '/', { Ref: 'AWS::AccountId' }, '/queue1']],
+        ['', ['https://sqs.us-east-1.', { Ref: 'AWS::URLSuffix' }, '/123456789012/queue1']],
       });
       test.deepEqual(stack.resolve(imports.queueName), 'queue1');
       test.done();
@@ -174,6 +174,25 @@ export = {
       const fifoQueue = sqs.Queue.fromQueueArn(stack, 'FifoQueue', 'arn:aws:sqs:us-east-1:123456789012:queue2.fifo');
       test.deepEqual(stdQueue.fifo, false);
       test.deepEqual(fifoQueue.fifo, true);
+      test.done();
+    },
+
+    'importing works correctly for cross region queue'(test: Test) {
+      // GIVEN
+      const stack = new Stack(undefined, 'Stack', { env: { region: 'us-east-1' } });
+
+      // WHEN
+      const imports = sqs.Queue.fromQueueArn(stack, 'Imported', 'arn:aws:sqs:us-west-2:123456789012:queue1');
+
+      // THEN
+
+      // "import" returns an IQueue bound to `Fn::ImportValue`s.
+      test.deepEqual(stack.resolve(imports.queueArn), 'arn:aws:sqs:us-west-2:123456789012:queue1');
+      test.deepEqual(stack.resolve(imports.queueUrl), {
+        'Fn::Join':
+        ['', ['https://sqs.us-west-2.', { Ref: 'AWS::URLSuffix' }, '/123456789012/queue1']],
+      });
+      test.deepEqual(stack.resolve(imports.queueName), 'queue1');
       test.done();
     },
   },
