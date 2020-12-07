@@ -86,6 +86,63 @@ export = {
 
       test.done();
     },
+
+    'Allows the pipeline to describe this stepfunction execution'(test: Test) {
+      const stack = new Stack();
+
+      minimalPipeline(stack);
+
+      expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {},
+            {
+              Action: 'states:DescribeExecution',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':states:',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    ':',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':execution:',
+                    {
+                      'Fn::Select': [
+                        6,
+                        {
+                          'Fn::Split': [
+                            ':',
+                            {
+                              Ref: 'SimpleStateMachineE8E2CF40',
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                    ':*',
+                  ],
+                ],
+              },
+              Effect: 'Allow',
+            },
+          ],
+        },
+      }));
+
+      expect(stack).to(haveResourceLike('AWS::IAM::Role'));
+
+      test.done();
+    },
+
   },
 };
 
