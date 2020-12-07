@@ -934,8 +934,10 @@ export class Project extends ProjectBase {
       .map(envVariable =>
         // If the parameter name starts with / the resource name is not separated with a double '/'
         // arn:aws:ssm:region:1111111111:parameter/PARAM_NAME
-        (envVariable.value as string).startsWith('/') ?
-          (envVariable.value as string).substr(1) : envVariable.value)
+        (envVariable.value as string).startsWith('/')
+          ? (envVariable.value as string).substr(1)
+          : envVariable.value
+      )
       .map(envVariable => Stack.of(this).formatArn({
         service: 'ssm',
         resource: 'parameter',
