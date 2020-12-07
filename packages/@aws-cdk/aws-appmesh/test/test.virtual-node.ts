@@ -271,8 +271,8 @@ export = {
         new appmesh.VirtualNode(stack, 'test-node', {
           mesh,
           dnsHostName: 'test',
-          backendDefaultsClientPolicy: appmesh.ClientPolicy.acmTrust({
-            certificateAuthorityArns: [acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'certificate', certificateAuthorityArn)],
+          backendsDefaultClientPolicy: appmesh.ClientPolicy.acmTrust({
+            certificateAuthorities: [acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'certificate', certificateAuthorityArn)],
             ports: [8080, 8081],
           }),
         });

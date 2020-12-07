@@ -252,7 +252,7 @@ export = {
       new appmesh.VirtualGateway(stack, 'virtual-gateway', {
         virtualGatewayName: 'virtual-gateway',
         mesh: mesh,
-        backendDefaultsClientPolicy: appmesh.ClientPolicy.fileTrust({
+        backendsDefaultClientPolicy: appmesh.ClientPolicy.fileTrust({
           certificateChain: 'path-to-certificate',
         }),
       });
@@ -276,6 +276,7 @@ export = {
           },
         },
       }));
+
       test.done();
     },
   },

@@ -66,7 +66,7 @@ export interface VirtualGatewayBaseProps {
    *
    * @default - No Config
    */
-  readonly backendDefaultsClientPolicy?: ClientPolicy;
+  readonly backendsDefaultClientPolicy?: ClientPolicy;
 }
 
 /**
@@ -172,6 +172,7 @@ export class VirtualGateway extends VirtualGatewayBase {
     } else {
       props.listeners.forEach(listener => this.listeners.push(listener.bind(this)));
     }
+
     const accessLogging = props.accessLog?.bind(this);
 
     const node = new CfnVirtualGateway(this, 'Resource', {
@@ -179,7 +180,7 @@ export class VirtualGateway extends VirtualGatewayBase {
       meshName: this.mesh.meshName,
       spec: {
         listeners: this.listeners.map(listener => listener.listener),
-        backendDefaults: props.backendDefaultsClientPolicy?.bind(this),
+        backendDefaults: props.backendsDefaultClientPolicy?.bind(this),
         logging: accessLogging !== undefined ? {
           accessLog: accessLogging.virtualGatewayAccessLog,
         } : undefined,

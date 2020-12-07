@@ -101,7 +101,7 @@ export interface VirtualNodeBaseProps {
    *
    * @default - No Config
    */
-  readonly backendDefaultsClientPolicy?: ClientPolicy;
+  readonly backendsDefaultClientPolicy?: ClientPolicy;
 }
 
 /**
@@ -195,7 +195,6 @@ export class VirtualNode extends VirtualNodeBase {
 
     props.backends?.forEach(backend => this.addBackend(backend));
     props.listeners?.forEach(listener => this.addListener(listener));
-
     const accessLogging = props.accessLog?.bind(this);
 
     const node = new CfnVirtualNode(this, 'Resource', {
@@ -204,7 +203,7 @@ export class VirtualNode extends VirtualNodeBase {
       spec: {
         backends: cdk.Lazy.anyValue({ produce: () => this.backends }, { omitEmptyArray: true }),
         listeners: cdk.Lazy.anyValue({ produce: () => this.listeners.map(listener => listener.listener) }, { omitEmptyArray: true }),
-        backendDefaults: props.backendDefaultsClientPolicy?.bind(this),
+        backendDefaults: props.backendsDefaultClientPolicy?.bind(this),
         serviceDiscovery: {
           dns: props.dnsHostName !== undefined ? { hostname: props.dnsHostName } : undefined,
           awsCloudMap: props.cloudMapService !== undefined ? {

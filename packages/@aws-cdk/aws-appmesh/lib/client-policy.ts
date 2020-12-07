@@ -4,7 +4,7 @@ import { CfnVirtualNode } from './appmesh.generated';
 
 enum CertificateType {
   ACMPCA = 'acm',
-  FILE = 'file'
+  FILE = 'file',
 }
 
 /**
@@ -37,7 +37,7 @@ export interface AcmTrustOptions extends ClientPolicyOptions {
   /**
    * Contains information for your private certificate authority
    */
-  readonly certificateAuthorityArns: acmpca.ICertificateAuthority[];
+  readonly certificateAuthorities: acmpca.ICertificateAuthority[];
 }
 
 /**
@@ -65,7 +65,7 @@ export abstract class ClientPolicy {
    * TLS validation context trust for ACM Private Certificate Authority (CA).
    */
   public static acmTrust(props: AcmTrustOptions): ClientPolicy {
-    return new ClientPolicyImpl(props.ports, CertificateType.ACMPCA, undefined, props.certificateAuthorityArns);
+    return new ClientPolicyImpl(props.ports, CertificateType.ACMPCA, undefined, props.certificateAuthorities);
   }
 
   /**
@@ -84,7 +84,7 @@ class ClientPolicyImpl extends ClientPolicy {
   public bind(_scope: cdk.Construct): ClientPolicyConfig {
     if (this.certificateType === CertificateType.ACMPCA && this.certificateAuthorityArns?.map(certificateArn =>
       certificateArn.certificateAuthorityArn).length === 0) {
-      throw new Error('Certificate Authority ARN is required but empty');
+      throw new Error('You must provide at least one Certificate Authority when creating an ACM Trust ClientPolicy');
     } else {
       return {
         clientPolicy: {
