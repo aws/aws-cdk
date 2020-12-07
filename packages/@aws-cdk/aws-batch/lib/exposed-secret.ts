@@ -2,53 +2,25 @@ import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as ssm from '@aws-cdk/aws-ssm';
 
 /**
- * Properties for SecretsManagerSecret
- */
-export interface SecretsManagerSecretProps {
-  /**
-   * The name of the secret.
-   */
-  readonly name: string;
-
-  /**
-   * A secret from secrets manager
-   */
-  readonly value: secretsmanager.ISecret;
-}
-
-/**
- * Properties for ParametersStoreSecret
- */
-export interface ParametersStoreSecretProps {
-  /**
-   * The name of the secret.
-   */
-  readonly name: string;
-
-  /**
-   * A parameter from parameters store
-   */
-  readonly value: ssm.IParameter;
-}
-
-/**
  * Exposed secret for log configuration
  */
 export abstract class ExposedSecret {
   /**
    * Use Secrets Manager Secret
-   * @param props SecretsManagerSecretProps
+   * @param name The name of the secret
+   * @param secret A secret from secrets manager
    */
-  public static fromSecretsManager(props: SecretsManagerSecretProps): ExposedSecret {
-    return new SecretsManagerSecret(props);
+  public static fromSecretsManager(name: string, secret: secretsmanager.ISecret): ExposedSecret {
+    return new SecretsManagerSecret(name, secret);
   }
 
   /**
    * User Parameters Store Parameter
-   * @param props ParametersStoreSecretProps
+   * @param name The name of the secret
+   * @param parameter A parameter from parameters store
    */
-  public static fromParametersStore(props: ParametersStoreSecretProps): ExposedSecret {
-    return new ParametersStoreSecret(props);
+  public static fromParametersStore(name: string, parameter: ssm.IParameter): ExposedSecret {
+    return new ParametersStoreSecret(name, parameter);
   }
 
   /**
@@ -70,10 +42,10 @@ class SecretsManagerSecret extends ExposedSecret {
   public secretName: string;
   public secretArn: string;
 
-  constructor(props: SecretsManagerSecretProps) {
+  constructor(name: string, secret: secretsmanager.ISecret) {
     super();
-    this.secretName = props.name;
-    this.secretArn = props.value.secretArn;
+    this.secretName = name;
+    this.secretArn = secret.secretArn;
   }
 }
 
@@ -84,9 +56,9 @@ class ParametersStoreSecret extends ExposedSecret {
   public secretName: string;
   public secretArn: string;
 
-  constructor(props: ParametersStoreSecretProps) {
+  constructor(name: string, parameter: ssm.IParameter) {
     super();
-    this.secretName = props.name;
-    this.secretArn = props.value.parameterArn;
+    this.secretName = name;
+    this.secretArn = parameter.parameterArn;
   }
 }

@@ -248,6 +248,25 @@ new batch.JobDefinition(stack, 'batch-job-def-from-local', {
 });
 ```
 
+### Providing custom log configuration
+
+You can configure custom log driver and its configuration for the container.
+
+```ts
+new batch.JobDefinition(stack, 'job-def', {
+  container: {
+    image: ecs.EcrImage.fromRegistry('docker/whalesay'),
+    logConfiguration: {
+      logDriver: batch.LogDriver.AWSLOGS,
+      options: { 'awslogs-region': 'us-east-1' },
+      secrets: [
+        batch.ExposedSecret.fromParametersStore('xyz', ssm.StringParameter.fromStringParameterName(stack, 'parameter', 'xyz')),
+      ],
+    },
+  },
+});
+```
+
 ### Importing an existing Job Definition
 
 #### From ARN

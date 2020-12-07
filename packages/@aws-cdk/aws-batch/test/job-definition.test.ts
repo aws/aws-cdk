@@ -233,14 +233,8 @@ describe('Batch Job Definition', () => {
       logDriver: batch.LogDriver.AWSLOGS,
       options: { 'awslogs-region': 'us-east-1' },
       secrets: [
-        batch.ExposedSecret.fromSecretsManager({
-          name: 'abc',
-          value: secretsmanager.Secret.fromSecretCompleteArn(stack, 'secret', secretArn),
-        }),
-        batch.ExposedSecret.fromParametersStore({
-          name: 'xyz',
-          value: ssm.StringParameter.fromStringParameterName(stack, 'parameter', 'xyz'),
-        }),
+        batch.ExposedSecret.fromSecretsManager('abc', secretsmanager.Secret.fromSecretCompleteArn(stack, 'secret', secretArn)),
+        batch.ExposedSecret.fromParametersStore('xyz', ssm.StringParameter.fromStringParameterName(stack, 'parameter', 'xyz')),
       ],
     };
 
