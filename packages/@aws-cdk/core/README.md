@@ -486,6 +486,20 @@ const sum = new Sum(this, 'MySum', { lhs: 40, rhs: 2 });
 new CfnOutput(this, 'Result', { value: Token.asString(sum.result) });
 ```
 
+To access the ARN of the provider's AWS Lambda function role, use the `getOrCreateProvider()`
+built-in singleton:
+
+```ts
+const provider = CustomResourceProvider.getOrCreateProvider(this, 'Custom::MyCustomResourceType', {
+  codeDirectory: `${__dirname}/my-handler`,
+  runtime: CustomResourceProviderRuntime.NODEJS_12, // currently the only supported runtime
+});
+
+const roleArn = provider.roleArn;
+```
+
+This role ARN can then be used in resource-based policies.
+
 #### The Custom Resource Provider Framework
 
 The [`@aws-cdk/custom-resources`] module includes an advanced framework for

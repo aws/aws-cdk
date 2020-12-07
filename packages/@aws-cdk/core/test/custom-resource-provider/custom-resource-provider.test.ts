@@ -232,5 +232,25 @@ nodeunitShim({
     });
     test.done();
   },
+
+  'roleArn'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const cr = CustomResourceProvider.getOrCreateProvider(stack, 'Custom:MyResourceType', {
+      codeDirectory: TEST_HANDLER,
+      runtime: CustomResourceProviderRuntime.NODEJS_12,
+    });
+
+    // THEN
+    test.deepEqual(stack.resolve(cr.roleArn), {
+      'Fn::GetAtt': [
+        'CustomMyResourceTypeCustomResourceProviderRoleBD5E655F',
+        'Arn',
+      ],
+    });
+    test.done();
+  },
 });
 
