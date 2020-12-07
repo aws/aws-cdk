@@ -112,16 +112,6 @@ export class Runtime {
   public static readonly SYNTHETICS_NODEJS_2_2 = new Runtime('syn-nodejs-2.2');
 
   /**
-   * `syn-python-selenium-1.0` includes the following:
-   * - Lambda runtime Python 3.8
-   * - Selenium version 3.141.0
-   * - Chromium version 83.0.4103.0
-   *
-   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_python_selenium.html#CloudWatch_Synthetics_runtimeversion-syn-python-selenium-1.0
-   */
-  public static readonly SYNTHETICS_PYTHON_1_0 = new Runtime('syn-python-selenium-1.0');
-
-  /**
    * @param name The name of the runtime version
    */
   public constructor(public readonly name: string) {
