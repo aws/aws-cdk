@@ -213,8 +213,9 @@ function generateExportName(stackExports: Construct, id: string) {
     id,
   ];
   const prefix = stack.stackName ? stack.stackName + ':' : '';
-  const exportName = prefix + makeUniqueId(components);
-  return exportName;
+  const localPart = makeUniqueId(components);
+  const maxLength = 255;
+  return prefix + localPart.slice(Math.max(0, localPart.length - maxLength + prefix.length));
 }
 
 // ------------------------------------------------------------------------------------------------
