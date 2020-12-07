@@ -326,7 +326,7 @@ describe('custom error responses', () => {
         defaultBehavior: { origin },
         errorResponses: [{ httpStatus: 404 }],
       });
-    }).toThrow(/A custom error response without either a \'responseHttpStatus\' or \'ttl\' is not valid./);
+    }).toThrow(/A custom error response without either a \'responseHttpStatus\', \'ttl\' or \'responsePagePath\' is not valid./);
   });
 
   test('should render the array of error configs if provided', () => {
