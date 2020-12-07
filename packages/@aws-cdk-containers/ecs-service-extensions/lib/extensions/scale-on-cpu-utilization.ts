@@ -1,5 +1,4 @@
 import * as ecs from '@aws-cdk/aws-ecs';
-import { Service } from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
 import { ServiceExtension, ServiceBuild } from './extension-interfaces';
 
