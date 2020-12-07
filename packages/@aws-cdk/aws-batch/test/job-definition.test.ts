@@ -225,89 +225,72 @@ describe('Batch Job Definition', () => {
       .toEqual('arn:${Token[AWS.Partition.3]}:batch:${Token[AWS.Region.4]}:${Token[AWS.AccountId.0]}:job-definition/job-def-name');
   });
 
-  describe('LogConfiguration Secrets', () => {
-    test('can configure log configuration secrets properly', () => {
-      // GIVEN
-      const secretArn = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret-f3gDy9';
+  test('can configure log configuration secrets properly', () => {
+    // GIVEN
+    const secretArn = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret-f3gDy9';
 
-      const logConfiguration: batch.LogConfiguration = {
-        logDriver: batch.LogDriver.AWSLOGS,
-        options: { 'awslogs-region': 'us-east-1' },
-        secrets: [{
+    const logConfiguration: batch.LogConfiguration = {
+      logDriver: batch.LogDriver.AWSLOGS,
+      options: { 'awslogs-region': 'us-east-1' },
+      secrets: [
+        batch.ExposedSecret.fromSecretsManager({
           name: 'abc',
-          secretsManagerValue: secretsmanager.Secret.fromSecretCompleteArn(stack, 'secret', secretArn),
-        }],
-      };
+          value: secretsmanager.Secret.fromSecretCompleteArn(stack, 'secret', secretArn),
+        }),
+        batch.ExposedSecret.fromParametersStore({
+          name: 'xyz',
+          value: ssm.StringParameter.fromStringParameterName(stack, 'parameter', 'xyz'),
+        }),
+      ],
+    };
 
-      // WHEN
-      new batch.JobDefinition(stack, 'job-def', {
-        container: {
-          image: ecs.EcrImage.fromRegistry('docker/whalesay'),
-          logConfiguration,
-        },
-      });
+    // WHEN
+    new batch.JobDefinition(stack, 'job-def', {
+      container: {
+        image: ecs.EcrImage.fromRegistry('docker/whalesay'),
+        logConfiguration,
+      },
+    });
 
-      // THEN
-      expect(stack).toHaveResourceLike('AWS::Batch::JobDefinition', {
-        ContainerProperties: {
-          LogConfiguration: {
-            LogDriver: 'awslogs',
-            Options: {
-              'awslogs-region': 'us-east-1',
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::Batch::JobDefinition', {
+      ContainerProperties: {
+        LogConfiguration: {
+          LogDriver: 'awslogs',
+          Options: {
+            'awslogs-region': 'us-east-1',
+          },
+          SecretOptions: [
+            {
+              Name: 'abc',
+              ValueFrom: secretArn,
             },
-            SecretOptions: [
-              {
-                Name: 'abc',
-                ValueFrom: secretArn,
+            {
+              Name: 'xyz',
+              ValueFrom: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':ssm:',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    ':',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':parameter/xyz',
+                  ],
+                ],
               },
-            ],
-          },
+            },
+          ],
         },
-      }, ResourcePart.Properties);
-    });
-
-    test('throws if both values are passed', () => {
-      // GIVEN
-      const secretArn = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret-f3gDy9';
-
-      const logConfiguration: batch.LogConfiguration = {
-        logDriver: batch.LogDriver.AWSLOGS,
-        options: { 'awslogs-region': 'us-east-1' },
-        secrets: [{
-          name: 'abc',
-          secretsManagerValue: secretsmanager.Secret.fromSecretCompleteArn(stack, 'secret', secretArn),
-          parametersStoreValue: ssm.StringParameter.fromStringParameterName(stack, 'parameter', 'abc'),
-        }],
-      };
-
-      // WHEN
-      expect(() =>
-        new batch.JobDefinition(stack, 'job-def', {
-          container: {
-            image: ecs.EcrImage.fromRegistry('docker/whalesay'),
-            logConfiguration,
-          },
-        }),
-      ).toThrow('Only one of secretsManagerValue and parametersStoreValue is supported');
-    });
-
-    test('throws if no value is passed', () => {
-      // GIVEN
-      const logConfiguration: batch.LogConfiguration = {
-        logDriver: batch.LogDriver.AWSLOGS,
-        options: { 'awslogs-region': 'us-east-1' },
-        secrets: [{ name: 'abc' }],
-      };
-
-      // WHEN
-      expect(() =>
-        new batch.JobDefinition(stack, 'job-def', {
-          container: {
-            image: ecs.EcrImage.fromRegistry('docker/whalesay'),
-            logConfiguration,
-          },
-        }),
-      ).toThrow('At least one of secretsManagerValue and parametersStoreValue is required');
-    });
+      },
+    }, ResourcePart.Properties);
   });
 });

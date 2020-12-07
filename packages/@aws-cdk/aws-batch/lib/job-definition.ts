@@ -1,11 +1,10 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as iam from '@aws-cdk/aws-iam';
-import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import * as ssm from '@aws-cdk/aws-ssm';
 import { Duration, IResource, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnJobDefinition } from './batch.generated';
+import { ExposedSecret } from './exposed-secret';
 import { JobDefinitionImageConfig } from './job-definition-image-config';
 
 /**
@@ -54,28 +53,6 @@ export enum LogDriver {
 }
 
 /**
- * An object representing the secret to expose to your container
- */
-export interface SecretProperty {
-  /**
-   * The name of the secret.
-   */
-  readonly name: string;
-
-  /**
-   * A secret from secrets manager
-   * @default - one of secretsManagerValue or parametersStoreValue is required
-   */
-  readonly secretsManagerValue?: secretsmanager.ISecret;
-
-  /**
-   * A parameter from parameters store
-   * @default - one of secretsManagerValue or parametersStoreValue is required
-   */
-  readonly parametersStoreValue?: ssm.IParameter;
-}
-
-/**
  * Log configuration options to send to a custom log driver for the container.
  */
 export interface LogConfiguration {
@@ -96,7 +73,7 @@ export interface LogConfiguration {
    *
    * @default - No secrets are passed
    */
-  readonly secrets?: SecretProperty[];
+  readonly secrets?: ExposedSecret[];
 }
 
 /**
@@ -494,24 +471,11 @@ export class JobDefinition extends Resource implements IJobDefinition {
     return rangeProps;
   }
 
-  private buildLogConfigurationSecrets(secrets: SecretProperty[]): CfnJobDefinition.SecretProperty[] {
+  private buildLogConfigurationSecrets(secrets: ExposedSecret[]): CfnJobDefinition.SecretProperty[] {
     return secrets.map(secret => {
-      if (secret.secretsManagerValue && secret.parametersStoreValue) {
-        throw new Error('Only one of secretsManagerValue and parametersStoreValue is supported');
-      }
-
-      let secretArn: string;
-      if (secret.secretsManagerValue) {
-        secretArn = secret.secretsManagerValue.secretArn;
-      } else if (secret.parametersStoreValue) {
-        secretArn = secret.parametersStoreValue.parameterArn;
-      } else {
-        throw new Error('At least one of secretsManagerValue and parametersStoreValue is required');
-      }
-
       return {
-        name: secret.name,
-        valueFrom: secretArn,
+        name: secret.secretName,
+        valueFrom: secret.secretArn,
       };
     });
   }
