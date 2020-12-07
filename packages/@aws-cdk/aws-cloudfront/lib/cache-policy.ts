@@ -4,7 +4,6 @@ import { CfnCachePolicy } from './cloudfront.generated';
 
 /**
  * Represents a Cache Policy
- * @experimental
  */
 export interface ICachePolicy {
   /**
@@ -16,7 +15,6 @@ export interface ICachePolicy {
 
 /**
  * Properties for creating a Cache Policy
- * @experimental
  */
 export interface CachePolicyProps {
   /**
@@ -87,7 +85,6 @@ export interface CachePolicyProps {
  * A Cache Policy configuration.
  *
  * @resource AWS::CloudFront::CachePolicy
- * @experimental
  */
 export class CachePolicy extends Resource implements ICachePolicy {
 
@@ -178,7 +175,6 @@ export class CachePolicy extends Resource implements ICachePolicy {
 /**
  * Determines whether any cookies in viewer requests are included in the cache key and
  * automatically included in requests that CloudFront sends to the origin.
- * @experimental
  */
 export class CacheCookieBehavior {
   /**
@@ -226,7 +222,6 @@ export class CacheCookieBehavior {
 
 /**
  * Determines whether any HTTP headers are included in the cache key and automatically included in requests that CloudFront sends to the origin.
- * @experimental
  */
 export class CacheHeaderBehavior {
   /** HTTP headers are not included in the cache key and are not automatically included in requests that CloudFront sends to the origin. */
@@ -253,7 +248,6 @@ export class CacheHeaderBehavior {
 /**
  * Determines whether any URL query strings in viewer requests are included in the cache key
  * and automatically included in requests that CloudFront sends to the origin.
- * @experimental
  */
 export class CacheQueryStringBehavior {
   /**
