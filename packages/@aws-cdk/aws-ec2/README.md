@@ -1,6 +1,6 @@
-## Amazon EC2 Construct Library
-
+# Amazon EC2 Construct Library
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
@@ -8,7 +8,9 @@
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
+
 
 The `@aws-cdk/aws-ec2` package contains primitives for setting up networking and
 instances.

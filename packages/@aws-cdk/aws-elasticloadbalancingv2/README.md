@@ -1,6 +1,6 @@
-## Amazon Elastic Load Balancing V2 Construct Library
-
+# Amazon Elastic Load Balancing V2 Construct Library
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
@@ -8,7 +8,9 @@
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
+
 
 The `@aws-cdk/aws-elasticloadbalancingv2` package provides constructs for
 configuring application and network load balancers.
@@ -17,7 +19,7 @@ For more information, see the AWS documentation for
 [Application Load Balancers](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html)
 and [Network Load Balancers](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/introduction.html).
 
-### Defining an Application Load Balancer
+## Defining an Application Load Balancer
 
 You define an application load balancer by creating an instance of
 `ApplicationLoadBalancer`, adding a Listener to the load balancer
@@ -77,7 +79,7 @@ const securityGroup2 = new ec2.SecurityGroup(stack, 'SecurityGroup2', { vpc });
 lb.addSecurityGroup(securityGroup2);
 ```
 
-#### Conditions
+### Conditions
 
 It's possible to route traffic to targets based on conditions in the incoming
 HTTP request. For example, the following will route requests to the indicated
@@ -104,7 +106,7 @@ targets with conditions. The lowest number wins.
 Every listener must have at least one target without conditions, which is
 where all requests that didn't match any of the conditions will be sent.
 
-#### Convenience methods and more complex Actions
+### Convenience methods and more complex Actions
 
 Routing traffic from a Load Balancer to a Target involves the following steps:
 
@@ -180,7 +182,7 @@ lb.addRedirect({
 
 If you do not provide any options for this method, it redirects HTTP port 80 to HTTPS port 443.
 
-### Defining a Network Load Balancer
+## Defining a Network Load Balancer
 
 Network Load Balancers are defined in a similar way to Application Load
 Balancers:
@@ -219,7 +221,7 @@ and [Register targets with your Target
 Group](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/target-group-register-targets.html)
 for more information.
 
-### Targets and Target Groups
+## Targets and Target Groups
 
 Application and Network Load Balancers organize load balancing targets in Target
 Groups. If you add your balancing targets (such as AutoScalingGroups, ECS
@@ -241,7 +243,7 @@ const group = listener.addTargets('AppFleet', {
 group.addTarget(asg2);
 ```
 
-### Using Lambda Targets
+## Using Lambda Targets
 
 To use a Lambda Function as a target, use the integration class in the
 `@aws-cdk/aws-elasticloadbalancingv2-targets` package:
@@ -268,7 +270,7 @@ listener.addTargets('Targets', {
 
 Only a single Lambda function can be added to a single listener rule.
 
-### Configuring Health Checks
+## Configuring Health Checks
 
 Health checks are configured upon creation of a target group:
 
@@ -303,7 +305,7 @@ listener.addTargets('AppFleet', {
 listener.connections.allowFrom(lb, ec2.Port.tcp(8088));
 ```
 
-### Using a Load Balancer from a different Stack
+## Using a Load Balancer from a different Stack
 
 If you want to put your Load Balancer and the Targets it is load balancing to in
 different stacks, you may not be able to use the convenience methods
@@ -319,7 +321,7 @@ For an example of the alternatives while load balancing to an ECS service, see t
 [ecs/cross-stack-load-balancer
 example](https://github.com/aws-samples/aws-cdk-examples/tree/master/typescript/ecs/cross-stack-load-balancer/).
 
-### Protocol for Load Balancer Targets
+## Protocol for Load Balancer Targets
 
 Constructs that want to be a load balancer target should implement
 `IApplicationLoadBalancerTarget` and/or `INetworkLoadBalancerTarget`, and
@@ -380,6 +382,7 @@ than one load balancer matches, CDK will throw an error requesting that you
 provide more specific criteria.
 
 **Look up a Application Load Balancer by ARN**
+
 ```ts
 const loadBalancer = ApplicationLoadBalancer.fromLookup(stack, 'ALB', {
   loadBalancerArn: YOUR_ALB_ARN,
@@ -387,6 +390,7 @@ const loadBalancer = ApplicationLoadBalancer.fromLookup(stack, 'ALB', {
 ```
 
 **Look up an Application Load Balancer by tags**
+
 ```ts
 const loadBalancer = ApplicationLoadBalancer.fromLookup(stack, 'ALB', {
   loadBalancerTags: {

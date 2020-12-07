@@ -1,10 +1,14 @@
 import * as child_process from 'child_process';
 import * as os from 'os';
 import * as path from 'path';
-import { exec, extractDependencies, findUp, getEsBuildVersion } from '../lib/util';
+import { callsites, exec, extractDependencies, findUp, getEsBuildVersion } from '../lib/util';
 
 beforeEach(() => {
   jest.clearAllMocks();
+});
+
+describe('callsites', () => {
+  expect(callsites()[0].getFileName()).toMatch(/\/test\/util.test.js$/);
 });
 
 describe('findUp', () => {

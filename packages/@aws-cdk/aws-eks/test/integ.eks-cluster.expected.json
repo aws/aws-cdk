@@ -3530,7 +3530,7 @@
                   1,
                   {
                     "Fn::Split": [
-                      "oidc-provider/",
+                      ":oidc-provider/",
                       {
                         "Ref": "ClusterOpenIdConnectProviderE7EB0530"
                       }
@@ -3544,7 +3544,7 @@
                   1,
                   {
                     "Fn::Split": [
-                      "oidc-provider/",
+                      ":oidc-provider/",
                       {
                         "Ref": "ClusterOpenIdConnectProviderE7EB0530"
                       }

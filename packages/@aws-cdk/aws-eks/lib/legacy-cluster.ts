@@ -376,7 +376,7 @@ export class LegacyCluster extends Resource implements ICluster {
     });
   }
 
-  public addManifest(_id: string, ..._manifest: any[]): KubernetesManifest {
+  public addManifest(_id: string, ..._manifest: Record<string, any>[]): KubernetesManifest {
     throw new Error('legacy cluster does not support adding kubernetes manifests');
   }
 
@@ -438,7 +438,7 @@ class ImportedCluster extends Resource implements ICluster {
     }
   }
 
-  public addManifest(_id: string, ..._manifest: any[]): KubernetesManifest {
+  public addManifest(_id: string, ..._manifest: Record<string, any>[]): KubernetesManifest {
     throw new Error('legacy cluster does not support adding kubernetes manifests');
   }
 

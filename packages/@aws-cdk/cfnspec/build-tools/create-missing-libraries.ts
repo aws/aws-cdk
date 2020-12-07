@@ -153,6 +153,7 @@ async function main() {
         'build+test': 'npm run build && npm test',
         compat: 'cdk-compat',
         gen: 'cfn2ts',
+        'rosetta:extract': 'yarn --silent jsii-rosetta extract',
       },
       'cdk-build': {
         cloudformation: namespace,
@@ -264,7 +265,7 @@ async function main() {
     ]);
 
     await write('README.md', [
-      `## ${namespace} Construct Library`,
+      `# ${namespace} Construct Library`,
       '<!--BEGIN STABILITY BANNER-->',
       '---',
       '',

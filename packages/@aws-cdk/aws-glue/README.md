@@ -1,21 +1,29 @@
-## AWS Glue Construct Library
+# AWS Glue Construct Library
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
 
-> All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) are always stable and safe to use.
+> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.
+>
+> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib
 
 ![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
 
-> The APIs of higher level constructs in this module are experimental and under active development. They are subject to non-backward compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be announced in the release notes. This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
+> The APIs of higher level constructs in this module are experimental and under active development.
+> They are subject to non-backward compatible changes or removal in any future version. These are
+> not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be
+> announced in the release notes. This means that while you may use them, you may need to update
+> your source code when upgrading to a newer version of this package.
 
 ---
+
 <!--END STABILITY BANNER-->
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
-### Database
+## Database
 
 A `Database` is a logical grouping of `Tables` in the Glue Catalog.
 
@@ -25,7 +33,7 @@ new glue.Database(stack, 'MyDatabase', {
 });
 ```
 
-### Table
+## Table
 
 A Glue table describes a table of data in S3: its structure (column names and types), location of data (S3 objects with a common prefix in a S3 bucket), and format for the files (Json, Avro, Parquet, etc.):
 
@@ -40,7 +48,7 @@ new glue.Table(stack, 'MyTable', {
     name: 'col2',
     type: glue.Schema.array(Schema.STRING),
     comment: 'col2 is an array of strings' // comment is optional
-  }]
+  }],
   dataFormat: glue.DataFormat.JSON
 });
 ```
@@ -57,7 +65,7 @@ new glue.Table(stack, 'MyTable', {
 
 By default, an S3 bucket will be created to store the table's data and stored in the bucket root. You can also manually pass the `bucket` and `s3Prefix`:
 
-#### Partitions
+### Partitions
 
 To improve query performance, a table can specify `partitionKeys` on which data is stored and queried separately. For example, you might partition a table by `year` and `month` to optimize queries based on a time window:
 
@@ -80,17 +88,20 @@ new glue.Table(stack, 'MyTable', {
 });
 ```
 
-### [Encryption](https://docs.aws.amazon.com/athena/latest/ug/encryption.html)
+## [Encryption](https://docs.aws.amazon.com/athena/latest/ug/encryption.html)
 
 You can enable encryption on a Table's data:
+
 * `Unencrypted` - files are not encrypted. The default encryption setting.
 * [S3Managed](https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingServerSideEncryption.html) - Server side encryption (`SSE-S3`) with an Amazon S3-managed key.
+
 ```ts
 new glue.Table(stack, 'MyTable', {
   encryption: glue.TableEncryption.S3_MANAGED
   ...
 });
 ```
+
 * [Kms](https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingKMSEncryption.html) - Server-side encryption (`SSE-KMS`) with an AWS KMS Key managed by the account owner.
 
 ```ts
@@ -107,14 +118,18 @@ new glue.Table(stack, 'MyTable', {
   ...
 });
 ```
+
 * [KmsManaged](https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingKMSEncryption.html) - Server-side encryption (`SSE-KMS`), like `Kms`, except with an AWS KMS Key managed by the AWS Key Management Service.
+
 ```ts
 new glue.Table(stack, 'MyTable', {
   encryption: glue.TableEncryption.KMS_MANAGED
   ...
 });
 ```
+
 * [ClientSideKms](https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingClientSideEncryption.html#client-side-encryption-kms-managed-master-key-intro) - Client-side encryption (`CSE-KMS`) with an AWS KMS Key managed by the account owner.
+
 ```ts
 // KMS key is created automatically
 new glue.Table(stack, 'MyTable', {
@@ -132,7 +147,7 @@ new glue.Table(stack, 'MyTable', {
 
 *Note: you cannot provide a `Bucket` when creating the `Table` if you wish to use server-side encryption (`KMS`, `KMS_MANAGED` or `S3_MANAGED`)*.
 
-### Types
+## Types
 
 A table's schema is a collection of columns, each of which have a `name` and a `type`. Types are recursive structures, consisting of primitive and complex types:
 
@@ -163,9 +178,10 @@ new glue.Table(stack, 'MyTable', {
   ...
 ```
 
-#### Primitives
+### Primitives
 
-##### Numeric
+#### Numeric
+
 | Name      	| Type     	| Comments                                                                                                          |
 |-----------	|----------	|------------------------------------------------------------------------------------------------------------------	|
 | FLOAT     	| Constant 	| A 32-bit single-precision floating point number                                                                   |
@@ -175,14 +191,14 @@ new glue.Table(stack, 'MyTable', {
 | SMALL_INT 	| Constant 	| A 16-bit signed INTEGER in two’s complement format, with a minimum value of -2^15 and a maximum value of 2^15-1   |
 | TINY_INT  	| Constant 	| A 8-bit signed INTEGER in two’s complement format, with a minimum value of -2^7 and a maximum value of 2^7-1      |
 
-##### Date and time
+#### Date and time
 
 | Name      	| Type     	| Comments                                                                                                                                                                	|
 |-----------	|----------	|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------	|
 | DATE      	| Constant 	| A date in UNIX format, such as YYYY-MM-DD.                                                                                                                              	|
 | TIMESTAMP 	| Constant 	| Date and time instant in the UNiX format, such as yyyy-mm-dd hh:mm:ss[.f...]. For example, TIMESTAMP '2008-09-15 03:04:05.324'. This format uses the session time zone. 	|
 
-##### String
+#### String
 
 | Name                                       	| Type     	| Comments                                                                                                                                                                                          	|
 |--------------------------------------------	|----------	|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------	|
@@ -191,14 +207,14 @@ new glue.Table(stack, 'MyTable', {
 | char(length: number)                       	| Function 	| Fixed length character data, with a specified length between 1 and 255, such as char(10)                                                                                                          	|
 | varchar(length: number)                    	| Function 	| Variable length character data, with a specified length between 1 and 65535, such as varchar(10)                                                                                                  	|
 
-##### Miscellaneous
+#### Miscellaneous
 
 | Name    	| Type     	| Comments                      	|
 |---------	|----------	|-------------------------------	|
 | BOOLEAN 	| Constant 	| Values are `true` and `false` 	|
 | BINARY  	| Constant 	| Value is in binary            	|
 
-#### Complex
+### Complex
 
 | Name                                	| Type     	| Comments                                                          	|
 |-------------------------------------	|----------	|-------------------------------------------------------------------	|

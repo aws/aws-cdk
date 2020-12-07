@@ -1,8 +1,8 @@
 /* eslint-disable no-console */
 import * as fs from 'fs';
+import { promisify } from 'util';
 import * as _glob from 'glob';
 
-import { promisify } from 'util';
 import { rewriteImports } from '../lib/rewrite';
 
 const glob = promisify(_glob);

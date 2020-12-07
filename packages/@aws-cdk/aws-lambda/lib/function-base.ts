@@ -106,6 +106,17 @@ export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
    */
   metricThrottles(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
+  /**
+   * Adds an event source to this function.
+   *
+   * Event sources are implemented in the @aws-cdk/aws-lambda-event-sources module.
+   *
+   * The following example adds an SQS Queue as an event source:
+   * ```
+   * import { SqsEventSource } from '@aws-cdk/aws-lambda-event-sources';
+   * myFunction.addEventSource(new SqsEventSource(myQueue));
+   * ```
+   */
   addEventSource(source: IEventSource): void;
 
   /**
@@ -329,18 +340,6 @@ export abstract class FunctionBase extends Resource implements IFunction {
     return grant;
   }
 
-  /**
-   * Adds an event source to this function.
-   *
-   * Event sources are implemented in the @aws-cdk/aws-lambda-event-sources module.
-   *
-   * The following example adds an SQS Queue as an event source:
-   *
-   *     import { SqsEventSource } from '@aws-cdk/aws-lambda-event-sources';
-   *     myFunction.addEventSource(new SqsEventSource(myQueue));
-   *
-   * @param source The event source to bind to this function
-   */
   public addEventSource(source: IEventSource) {
     source.bind(this);
   }

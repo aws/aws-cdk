@@ -1,12 +1,18 @@
 # AWS CDK Docker Image Assets
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
 
-> The APIs of higher level constructs in this module are experimental and under active development. They are subject to non-backward compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be announced in the release notes. This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
+> The APIs of higher level constructs in this module are experimental and under active development.
+> They are subject to non-backward compatible changes or removal in any future version. These are
+> not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be
+> announced in the release notes. This means that while you may use them, you may need to update
+> your source code when upgrading to a newer version of this package.
 
 ---
+
 <!--END STABILITY BANNER-->
 
 This module allows bundling Docker images as assets.
@@ -15,7 +21,7 @@ Images are built from a local Docker context directory (with a `Dockerfile`),
 uploaded to ECR by the CDK toolkit and/or your app's CI-CD pipeline, and can be
 naturally referenced in your CDK app.
 
-```typescript
+```ts
 import { DockerImageAsset } from '@aws-cdk/aws-ecr-assets';
 
 const asset = new DockerImageAsset(this, 'MyBuildImage', {
@@ -50,7 +56,7 @@ and tag.
 You can optionally pass build args to the `docker build` command by specifying
 the `buildArgs` property:
 
-```typescript
+```ts
 const asset = new DockerImageAsset(this, 'MyBuildImage', {
   directory: path.join(__dirname, 'my-image'),
   buildArgs: {
@@ -62,13 +68,14 @@ const asset = new DockerImageAsset(this, 'MyBuildImage', {
 You can optionally pass a target to the `docker build` command by specifying
 the `target` property:
 
-```typescript
+```ts
 const asset = new DockerImageAsset(this, 'MyBuildImage', {
   directory: path.join(__dirname, 'my-image'),
   target: 'a-target'
 })
 ```
-### Pull Permissions
+
+## Pull Permissions
 
 Depending on the consumer of your image asset, you will need to make sure
 the principal has permissions to pull the image.

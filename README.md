@@ -56,7 +56,7 @@ Modules in the AWS Construct Library are designated Experimental while we build
 them; experimental modules may have breaking API changes in any release.  After
 a module is designated Stable, it adheres to [semantic versioning](https://semver.org/),
 and only major releases can have breaking changes. Each module's stability designation
-is available on its Overview page in the [AWS CDK API Reference](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-construct-library.html). 
+is available on its Overview page in the [AWS CDK API Reference](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-construct-library.html).
 For more information, see [Versioning](https://docs.aws.amazon.com/cdk/latest/guide/reference.html#versioning)
 in the CDK Developer Guide.
 
@@ -77,7 +77,7 @@ For a detailed walkthrough, see the [tutorial](https://docs.aws.amazon.com/cdk/l
 Install or update the [AWS CDK CLI] from npm (requires [Node.js ≥ 10.13.0](https://nodejs.org/download/release/latest-v10.x/)). We recommend using a version in [Active LTS](https://nodejs.org/en/about/releases/)
 ⚠️ versions `13.0.0` to `13.6.0` are not supported due to compatibility issues with our dependencies.
 
-```bash
+```console
 $ npm i -g aws-cdk
 ```
 
@@ -85,7 +85,7 @@ $ npm i -g aws-cdk
 
 Initialize a project:
 
-```bash
+```console
 $ mkdir hello-cdk
 $ cd hello-cdk
 $ cdk init sample-app --language=typescript
@@ -111,7 +111,7 @@ export class HelloCdkStack extends cdk.Stack {
 
 Deploy this to your account:
 
-```bash
+```console
 $ cdk deploy
 ```
 
@@ -148,4 +148,4 @@ environment and submit code.
 * [Examples](https://github.com/aws-samples/aws-cdk-examples)
 * [Changelog](./CHANGELOG.md)
 * [NOTICE](./NOTICE)
-* [License](./LICENSE) 
+* [License](./LICENSE)
