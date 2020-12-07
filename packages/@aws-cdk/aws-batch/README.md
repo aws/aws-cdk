@@ -250,7 +250,7 @@ new batch.JobDefinition(stack, 'batch-job-def-from-local', {
 
 ### Providing custom log configuration
 
-You can configure custom log driver and its configuration for the container.
+You can provide custom log driver and its configuration for the container.
 
 ```ts
 new batch.JobDefinition(stack, 'job-def', {

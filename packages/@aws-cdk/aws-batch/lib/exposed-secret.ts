@@ -7,8 +7,8 @@ import * as ssm from '@aws-cdk/aws-ssm';
 export abstract class ExposedSecret {
   /**
    * Use Secrets Manager Secret
-   * @param name The name of the secret
-   * @param secret A secret from secrets manager
+   * @param name - The name of the secret
+   * @param secret - A secret from secrets manager
    */
   public static fromSecretsManager(name: string, secret: secretsmanager.ISecret): ExposedSecret {
     return new SecretsManagerSecret(name, secret);
@@ -16,8 +16,8 @@ export abstract class ExposedSecret {
 
   /**
    * User Parameters Store Parameter
-   * @param name The name of the secret
-   * @param parameter A parameter from parameters store
+   * @param name - The name of the secret
+   * @param parameter - A parameter from parameters store
    */
   public static fromParametersStore(name: string, parameter: ssm.IParameter): ExposedSecret {
     return new ParametersStoreSecret(name, parameter);
