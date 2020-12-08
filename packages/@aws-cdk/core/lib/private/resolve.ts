@@ -89,6 +89,12 @@ export function resolve(obj: any, options: IResolveOptions): any {
   // string - potentially replace all stringified Tokens
   //
   if (typeof(obj) === 'string') {
+    // If this is a "list element" Token, it should never occur by itself in string context
+    if (TokenString.forListToken(obj).test()) {
+      throw new Error('Found an encoded list token string in a scalar string context. Use \'Fn.select(0, list)\' (not \'list[0]\') to extract elements from token lists.');
+    }
+
+    // Otherwise look for a stringified Token in this object
     const str = TokenString.forString(obj);
     if (str.test()) {
       const fragments = str.split(tokenMap.lookupToken.bind(tokenMap));
