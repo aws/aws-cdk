@@ -370,10 +370,11 @@ export async function shell(command: string[], options: ShellOptions = {}): Prom
     child.once('error', reject);
 
     child.once('close', code => {
+      const output = (Buffer.concat(stdout).toString('utf-8') + Buffer.concat(stderr).toString('utf-8')).trim();
       if (code === 0 || options.allowErrExit) {
-        resolve((Buffer.concat(stdout).toString('utf-8') + Buffer.concat(stderr).toString('utf-8')).trim());
+        resolve(output);
       } else {
-        reject(new Error(`'${command.join(' ')}' exited with error code ${code}`));
+        reject(new Error(`'${command.join(' ')}' exited with error code ${code}. Output: \n${output}`));
       }
     });
   });
