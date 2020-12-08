@@ -487,7 +487,7 @@ new CfnOutput(this, 'Result', { value: Token.asString(sum.result) });
 ```
 
 To access the ARN of the provider's AWS Lambda function role, use the `getOrCreateProvider()`
-built-in singleton:
+built-in singleton method:
 
 ```ts
 const provider = CustomResourceProvider.getOrCreateProvider(this, 'Custom::MyCustomResourceType', {
@@ -498,7 +498,7 @@ const provider = CustomResourceProvider.getOrCreateProvider(this, 'Custom::MyCus
 const roleArn = provider.roleArn;
 ```
 
-This role ARN can then be used in resource-based policies.
+This role ARN can then be used in resource-based IAM policies.
 
 #### The Custom Resource Provider Framework
 
