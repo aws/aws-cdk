@@ -81,7 +81,7 @@ export class Schema {
         apiId: api.apiId,
         definition: this.mode === SchemaMode.CODE ?
           Lazy.string({
-            produce: () => this.types.reduce((acc, type) => { return `${acc}${type._bindToGraphqlApi(api).toString()}\n`; },
+            produce: () => this.types.reduce((acc, type) => `${acc}${type._bindToGraphqlApi(api).toString()}\n`,
               `${this.declareSchema()}${this.definition}`),
           })
           : this.definition,

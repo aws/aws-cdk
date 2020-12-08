@@ -3,30 +3,9 @@
 
 ---
 
-Features                                              | Stability
-------------------------------------------------------|---------------------------------------------
-CFN Resources                                         | ![Stable](https://img.shields.io/badge/stable-success.svg?style=for-the-badge)
-Higher level constructs for Distribution              | ![Developer Preview](https://img.shields.io/badge/developer--preview-informational.svg?style=for-the-badge)
-Higher level constructs for CloudFrontWebDistribution | ![Stable](https://img.shields.io/badge/stable-success.svg?style=for-the-badge)
+![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
 
-> **CFN Resources:** All classes with the `Cfn` prefix in this module ([CFN Resources]) are always
-> stable and safe to use.
->
-> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib
-
-<!-- -->
-
-> **Developer Preview:** Higher level constructs in this module that are marked as developer
-> preview have completed their phase of active development and are looking for adoption and
-> feedback. While the same caveats around non-backward compatible as Experimental constructs apply,
-> they will undergo fewer breaking changes. Just as with Experimental constructs, these are not
-> subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be
-> announced in the release notes.
-
-<!-- -->
-
-> **Stable:** Higher level constructs in this module that are marked stable will not undergo any
-> breaking changes. They will strictly follow the [Semantic Versioning](https://semver.org/) model.
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
 
@@ -37,9 +16,7 @@ your users. CloudFront delivers your content through a worldwide network of data
 you're serving with CloudFront, the user is routed to the edge location that provides the lowest latency, so that content is delivered with the best
 possible performance.
 
-## Distribution API - Developer Preview
-
-![Developer Preview](https://img.shields.io/badge/developer--preview-informational.svg?style=for-the-badge)
+## Distribution API
 
 The `Distribution` API is currently being built to replace the existing `CloudFrontWebDistribution` API. The `Distribution` API is optimized for the
 most common use cases of CloudFront distributions (e.g., single origin and behavior, few customizations) while still providing the ability for more
@@ -384,11 +361,10 @@ const distribution = cloudfront.Distribution.fromDistributionAttributes(scope, '
 });
 ```
 
-## CloudFrontWebDistribution API - Stable
+## CloudFrontWebDistribution API
 
-![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
-
-A CloudFront construct - for setting up the AWS CDN with ease!
+> The `CloudFrontWebDistribution` construct is the original construct written for working with CloudFront distributions.
+> Users are encouraged to use the newer `Distribution` instead, as it has a simpler interface and receives new features faster.
 
 Example usage:
 
