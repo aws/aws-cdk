@@ -1,6 +1,6 @@
 import * as cdk from '@aws-cdk/core';
 import { CfnRoute } from './appmesh.generated';
-import { Protocol } from './shared-interfaces';
+import { Protocol, HttpTimeout, GrpcTimeout, TcpTimeout } from './shared-interfaces';
 import { IVirtualNode } from './virtual-node';
 
 /**
@@ -58,6 +58,12 @@ export interface HttpRouteSpecOptions {
    * List of targets that traffic is routed to when a request matches the route
    */
   readonly weightedTargets: WeightedTarget[];
+
+  /**
+   * An object that represents a http timeout
+   * @default - None
+   */
+  readonly timeout?: HttpTimeout;
 }
 
 /**
@@ -68,6 +74,12 @@ export interface TcpRouteSpecOptions {
    * List of targets that traffic is routed to when a request matches the route
    */
   readonly weightedTargets: WeightedTarget[];
+
+  /**
+   * An object that represents a tcp timeout
+   * @default - None
+   */
+  readonly timeout?: TcpTimeout;
 }
 
 /**
@@ -78,6 +90,12 @@ export interface GrpcRouteSpecOptions {
    * The criterion for determining a request match for this Route
    */
   readonly match: GrpcRouteMatch;
+
+  /**
+   * An object that represents a grpc timeout
+   * @default - None
+   */
+  readonly timeout?: GrpcTimeout;
 
   /**
    * List of targets that traffic is routed to when a request matches the route
@@ -170,6 +188,11 @@ class HttpRouteSpec extends RouteSpec {
   public readonly match?: HttpRouteMatch;
 
   /**
+   * The criteria for determining a timeout configuration
+   */
+  public readonly timeout?: HttpTimeout;
+
+  /**
    * List of targets that traffic is routed to when a request matches the route
    */
   public readonly weightedTargets: WeightedTarget[];
@@ -179,6 +202,7 @@ class HttpRouteSpec extends RouteSpec {
     this.protocol = protocol;
     this.match = props.match;
     this.weightedTargets = props.weightedTargets;
+    this.timeout = props.timeout;
   }
 
   public bind(_scope: cdk.Construct): RouteSpecConfig {
@@ -193,11 +217,25 @@ class HttpRouteSpec extends RouteSpec {
       match: {
         prefix: prefixPath,
       },
+      timeout: this.timeout ? this.renderTimeout(this.timeout): undefined,
     };
     return {
       httpRouteSpec: this.protocol === Protocol.HTTP ? httpConfig : undefined,
       http2RouteSpec: this.protocol === Protocol.HTTP2 ? httpConfig : undefined,
     };
+  }
+
+  private renderTimeout(timeout: HttpTimeout): CfnRoute.HttpTimeoutProperty {
+    return ({
+      idle: timeout?.idle !== undefined ? {
+        unit: 'ms',
+        value: timeout?.idle.toMilliseconds(),
+      } : undefined,
+      perRequest: timeout?.perRequest !== undefined ? {
+        unit: 'ms',
+        value: timeout?.perRequest.toMilliseconds(),
+      } : undefined,
+    });
   }
 }
 
@@ -207,9 +245,15 @@ class TcpRouteSpec extends RouteSpec {
    */
   public readonly weightedTargets: WeightedTarget[];
 
+  /**
+   * The criteria for determining a timeout configuration
+   */
+  public readonly timeout?: TcpTimeout;
+
   constructor(props: TcpRouteSpecOptions) {
     super();
     this.weightedTargets = props.weightedTargets;
+    this.timeout = props.timeout;
   }
 
   public bind(_scope: cdk.Construct): RouteSpecConfig {
@@ -218,19 +262,31 @@ class TcpRouteSpec extends RouteSpec {
         action: {
           weightedTargets: renderWeightedTargets(this.weightedTargets),
         },
+        timeout: this.timeout ? this.renderTimeout(this.timeout): undefined,
       },
     };
+  }
+
+  private renderTimeout(timeout: TcpTimeout): CfnRoute.TcpTimeoutProperty {
+    return ({
+      idle: timeout?.idle !== undefined ? {
+        unit: 'ms',
+        value: timeout?.idle.toMilliseconds(),
+      } : undefined,
+    });
   }
 }
 
 class GrpcRouteSpec extends RouteSpec {
   public readonly weightedTargets: WeightedTarget[];
   public readonly match: GrpcRouteMatch;
+  public readonly timeout?: GrpcTimeout;
 
   constructor(props: GrpcRouteSpecOptions) {
     super();
     this.weightedTargets = props.weightedTargets;
     this.match = props.match;
+    this.timeout = props.timeout;
   }
 
   public bind(_scope: cdk.Construct): RouteSpecConfig {
@@ -242,8 +298,22 @@ class GrpcRouteSpec extends RouteSpec {
         match: {
           serviceName: this.match.serviceName,
         },
+        timeout: this.timeout ? this.renderTimeout(this.timeout): undefined,
       },
     };
+  }
+
+  private renderTimeout(timeout: GrpcTimeout): CfnRoute.GrpcTimeoutProperty {
+    return ({
+      idle: timeout?.idle !== undefined ? {
+        unit: 'ms',
+        value: timeout?.idle.toMilliseconds(),
+      } : undefined,
+      perRequest: timeout?.perRequest !== undefined ? {
+        unit: 'ms',
+        value: timeout?.perRequest.toMilliseconds(),
+      } : undefined,
+    });
   }
 }
 
