@@ -52,6 +52,30 @@ describe('BasePathMapping', () => {
     });
   });
 
+  test('throw error for invalid basePath property', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigw.RestApi(stack, 'MyApi');
+    api.root.addMethod('GET'); // api must have atleast one method.
+    const domain = new apigw.DomainName(stack, 'MyDomain', {
+      domainName: 'example.com',
+      certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
+      endpointType: apigw.EndpointType.REGIONAL,
+    });
+
+    // WHEN
+    const invalidBasePath = '/invalid-/base-path';
+
+    // THEN
+    expect(() => {
+      new apigw.BasePathMapping(stack, 'MyBasePath', {
+        restApi: api,
+        domainName: domain,
+        basePath: invalidBasePath,
+      });
+    }).toThrowError(`A base path may only contain letters, numbers, and one of "$-_.+!*'()", received: ${invalidBasePath}`);
+  });
+
   test('specify stage property', () => {
     // GIVEN
     const stack = new cdk.Stack();
