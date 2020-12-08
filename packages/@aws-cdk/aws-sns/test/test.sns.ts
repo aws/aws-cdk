@@ -104,6 +104,27 @@ export = {
       test.done();
     },
 
+    'specify fifo without contentBasedDeduplication'(test: Test) {
+      const stack = new cdk.Stack();
+
+      new sns.Topic(stack, 'MyTopic', {
+        fifo: true,
+      });
+
+      expect(stack).toMatch({
+        'Resources': {
+          'MyTopic86869434': {
+            'Type': 'AWS::SNS::Topic',
+            'Properties': {
+              'FifoTopic': true,
+            },
+          },
+        },
+      });
+
+      test.done();
+    },
+
     'specify fifo with contentBasedDeduplication'(test: Test) {
       const stack = new cdk.Stack();
 
