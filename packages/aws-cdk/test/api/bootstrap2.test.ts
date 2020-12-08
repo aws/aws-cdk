@@ -6,12 +6,12 @@ jest.mock('../../lib/api/deploy-stack', () => ({
 
 let mockTheToolkitInfo: any;
 
-import { Bootstrapper, DeployStackOptions, ToolkitInfo } from '../../lib/api';
-import { MockSdkProvider, mockToolkitInfo } from '../util/mock-sdk';
+import { Bootstrapper, DeployStackOptions, ToolkitStackInfo } from '../../lib/api';
+import { MockSdkProvider, mockToolkitStackInfo } from '../util/mock-sdk';
 
 let bootstrapper: Bootstrapper;
 beforeEach(() => {
-  (ToolkitInfo as any).lookup = jest.fn().mockImplementation(() => Promise.resolve(mockTheToolkitInfo));
+  (ToolkitStackInfo as any).lookup = jest.fn().mockImplementation(() => Promise.resolve(mockTheToolkitInfo));
   bootstrapper = new Bootstrapper({ source: 'default' });
 });
 
@@ -200,7 +200,7 @@ describe('Bootstrapping v2', () => {
     });
 
     test('termination protection is left alone when option is not given', async () => {
-      mockTheToolkitInfo = mockToolkitInfo({
+      mockTheToolkitInfo = mockToolkitStackInfo({
         EnableTerminationProtection: true,
       });
 
@@ -218,7 +218,7 @@ describe('Bootstrapping v2', () => {
     });
 
     test('termination protection can be switched off', async () => {
-      mockTheToolkitInfo = mockToolkitInfo({
+      mockTheToolkitInfo = mockToolkitStackInfo({
         EnableTerminationProtection: true,
       });
 
@@ -275,7 +275,7 @@ describe('Bootstrapping v2', () => {
       ['AWS_MANAGED_KEY', true, ''],
     ])('(upgrading) current param %p, createCustomerMasterKey=%p => parameter becomes %p ', async (currentKeyId, createCustomerMasterKey, paramKeyId) => {
       // GIVEN
-      mockTheToolkitInfo = mockToolkitInfo({
+      mockTheToolkitInfo = mockToolkitStackInfo({
         Parameters: currentKeyId ? [{ ParameterKey: 'FileAssetsBucketKmsKeyId', ParameterValue: currentKeyId }] : undefined,
       });
 

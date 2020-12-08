@@ -1,6 +1,6 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
-import { Account, ISDK, SDK, SdkProvider, ToolkitInfo } from '../../lib';
+import { Account, ISDK, SDK, SdkProvider, ToolkitStackInfo } from '../../lib';
 import { CloudFormationStack } from '../../lib/api/util/cloudformation';
 
 const FAKE_CREDENTIALS = new AWS.Credentials({ accessKeyId: 'ACCESS', secretAccessKey: 'SECRET', sessionToken: 'TOKEN ' });
@@ -206,9 +206,9 @@ export function mockBootstrapStack(sdk: ISDK | undefined, stack?: Partial<AWS.Cl
   });
 }
 
-export function mockToolkitInfo(stack?: Partial<AWS.CloudFormation.Stack>) {
+export function mockToolkitStackInfo(stack?: Partial<AWS.CloudFormation.Stack>) {
   const sdk = new MockSdk();
-  return new ToolkitInfo(mockBootstrapStack(sdk, stack), sdk);
+  return new ToolkitStackInfo(mockBootstrapStack(sdk, stack), sdk);
 }
 
 export function mockResolvedEnvironment(): cxapi.Environment {

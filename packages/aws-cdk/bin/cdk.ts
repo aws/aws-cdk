@@ -5,7 +5,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as colors from 'colors/safe';
 import * as yargs from 'yargs';
 
-import { ToolkitInfo, BootstrapSource, Bootstrapper } from '../lib';
+import { ToolkitStackInfo, BootstrapSource, Bootstrapper } from '../lib';
 import { SdkProvider } from '../lib/api/aws-auth';
 import { CloudFormationDeployments } from '../lib/api/cloudformation-deployments';
 import { CloudExecutable } from '../lib/api/cxapp/cloud-executable';
@@ -211,7 +211,7 @@ async function initCommandLine() {
   }
 
   async function main(command: string, args: any): Promise<number | string | {} | void> {
-    const toolkitStackName: string = ToolkitInfo.determineName(configuration.settings.get(['toolkitStackName']));
+    const toolkitStackName: string = ToolkitStackInfo.determineName(configuration.settings.get(['toolkitStackName']));
     debug(`Toolkit stack: ${colors.bold(toolkitStackName)}`);
 
     if (args.all && args.STACKS) {

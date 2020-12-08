@@ -5,7 +5,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
 import { Mode, SdkProvider, ISDK } from '../aws-auth';
 import { deployStack, DeployStackResult } from '../deploy-stack';
-import { DEFAULT_TOOLKIT_STACK_NAME, ToolkitInfo } from '../toolkit-info';
+import { DEFAULT_TOOLKIT_STACK_NAME, ToolkitStackInfo } from '../toolkit-info';
 import { BOOTSTRAP_VERSION_OUTPUT, BootstrapEnvironmentOptions, BOOTSTRAP_VERSION_RESOURCE } from './bootstrap-props';
 
 /**
@@ -33,7 +33,7 @@ export class BootstrapStack {
 
     const resolvedEnvironment = await sdkProvider.resolveEnvironment(environment);
     const sdk = await sdkProvider.forEnvironment(resolvedEnvironment, Mode.ForWriting);
-    const currentToolkitInfo = await ToolkitInfo.lookup(resolvedEnvironment, sdk, toolkitStackName);
+    const currentToolkitInfo = await ToolkitStackInfo.lookup(resolvedEnvironment, sdk, toolkitStackName);
 
     return new BootstrapStack(sdkProvider, sdk, resolvedEnvironment, toolkitStackName, currentToolkitInfo);
   }
@@ -43,7 +43,7 @@ export class BootstrapStack {
     private readonly sdk: ISDK,
     private readonly resolvedEnvironment: cxapi.Environment,
     private readonly toolkitStackName: string,
-    private readonly currentToolkitInfo?: ToolkitInfo) {
+    private readonly currentToolkitInfo?: ToolkitStackInfo) {
   }
 
   public get parameters(): Record<string, string> {

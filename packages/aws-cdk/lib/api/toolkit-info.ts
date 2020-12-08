@@ -7,6 +7,42 @@ import { stabilizeStack, CloudFormationStack } from './util/cloudformation';
 
 export const DEFAULT_TOOLKIT_STACK_NAME = 'CDKToolkit';
 
+export class ToolkitStackInfo {
+  public static determineName(overrideName?: string) {
+    return overrideName ?? DEFAULT_TOOLKIT_STACK_NAME;
+  }
+
+  public static async lookup(environment: cxapi.Environment, sdk: ISDK, stackName: string | undefined): Promise<ToolkitStackInfo | undefined> {
+    const cfn = sdk.cloudFormation();
+    const stack = await stabilizeStack(cfn, stackName ?? DEFAULT_TOOLKIT_STACK_NAME);
+    if (!stack) {
+      debug('The environment %s doesn\'t have the CDK toolkit stack (%s) installed. Use %s to setup your environment for use with the toolkit.',
+        environment.name, stackName, colors.blue(`cdk bootstrap "${environment.name}"`));
+      return undefined;
+    }
+    if (stack.stackStatus.isCreationFailure) {
+      // Treat a "failed to create" bootstrap stack as an absent one.
+      debug('The environment %s has a CDK toolkit stack (%s) that failed to create. Use %s to try provisioning it again.',
+        environment.name, stackName, colors.blue(`cdk bootstrap "${environment.name}"`));
+      return undefined;
+    }
+
+    return new ToolkitStackInfo(stack);
+  }
+
+  constructor(public readonly stack: CloudFormationStack) {
+  }
+
+  public get version() {
+    return parseInt(this.stack.outputs[BOOTSTRAP_VERSION_OUTPUT] ?? '0', 10);
+  }
+
+  public get parameters(): Record<string, string> {
+    return this.stack.parameters ?? {};
+  }
+
+}
+
 /**
  * Information on the Bootstrap stack
  *
@@ -15,10 +51,6 @@ export const DEFAULT_TOOLKIT_STACK_NAME = 'CDKToolkit';
  * @experimental
  */
 export class ToolkitInfo {
-  public static determineName(overrideName?: string) {
-    return overrideName ?? DEFAULT_TOOLKIT_STACK_NAME;
-  }
-
   /** @experimental */
   public static async lookup(environment: cxapi.Environment, sdk: ISDK, stackName: string | undefined): Promise<ToolkitInfo | undefined> {
     const cfn = sdk.cloudFormation();
@@ -51,10 +83,6 @@ export class ToolkitInfo {
 
   public get version() {
     return parseInt(this.stack.outputs[BOOTSTRAP_VERSION_OUTPUT] ?? '0', 10);
-  }
-
-  public get parameters(): Record<string, string> {
-    return this.stack.parameters ?? {};
   }
 
   /**
