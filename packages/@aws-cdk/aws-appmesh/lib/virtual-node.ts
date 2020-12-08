@@ -1,6 +1,7 @@
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnVirtualNode } from './appmesh.generated';
+import { ClientPolicy } from './client-policy';
 import { IMesh, Mesh } from './mesh';
 import { ServiceDiscovery } from './service-discovery';
 import { AccessLog } from './shared-interfaces';
@@ -75,6 +76,13 @@ export interface VirtualNodeBaseProps {
    * @default - No access logging
    */
   readonly accessLog?: AccessLog;
+
+  /**
+   * Default Configuration Virtual Node uses to communicate with Virtual Service
+   *
+   * @default - No Config
+   */
+  readonly backendsDefaultClientPolicy?: ClientPolicy;
 }
 
 /**
@@ -161,7 +169,7 @@ export class VirtualNode extends VirtualNodeBase {
 
   constructor(scope: Construct, id: string, props: VirtualNodeProps) {
     super(scope, id, {
-      physicalName: props.virtualNodeName || cdk.Lazy.stringValue({ produce: () => cdk.Names.uniqueId(this) }),
+      physicalName: props.virtualNodeName || cdk.Lazy.string({ produce: () => cdk.Names.uniqueId(this) }),
     });
 
     this.mesh = props.mesh;
@@ -177,6 +185,7 @@ export class VirtualNode extends VirtualNodeBase {
       spec: {
         backends: cdk.Lazy.anyValue({ produce: () => this.backends }, { omitEmptyArray: true }),
         listeners: cdk.Lazy.anyValue({ produce: () => this.listeners.map(listener => listener.listener) }, { omitEmptyArray: true }),
+        backendDefaults: props.backendsDefaultClientPolicy?.bind(this),
         serviceDiscovery: {
           dns: serviceDiscovery?.dns,
           awsCloudMap: serviceDiscovery?.cloudmap,
@@ -209,6 +218,7 @@ export class VirtualNode extends VirtualNodeBase {
     this.backends.push({
       virtualService: {
         virtualServiceName: virtualService.virtualServiceName,
+        clientPolicy: virtualService.clientPolicy?.bind(this).clientPolicy,
       },
     });
   }

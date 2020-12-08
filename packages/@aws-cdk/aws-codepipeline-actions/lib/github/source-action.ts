@@ -71,7 +71,7 @@ export interface GitHubSourceActionProps extends codepipeline.CommonActionProps 
    * * **repo** - to read the repository
    * * **admin:repo_hook** - if you plan to use webhooks (true by default)
    *
-   * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/GitHub-create-personal-token-CLI.html
+   * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/appendix-github-oauth.html#GitHub-create-personal-token-CLI
    */
   readonly oauthToken: SecretValue;
 

@@ -1,6 +1,6 @@
-## Amazon API Gateway Construct Library
-
+# Amazon API Gateway Construct Library
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
@@ -8,7 +8,9 @@
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
+
 
 Amazon API Gateway is a fully managed service that makes it easy for developers
 to publish, maintain, monitor, and secure APIs at any scale. Create an API to
@@ -121,11 +123,11 @@ The following example uses sets up two Resources '/pets' and '/books' in separat
 Methods are associated with backend integrations, which are invoked when this
 method is called. API Gateway supports the following integrations:
 
-* `MockIntegration` - can be used to test APIs. This is the default
+- `MockIntegration` - can be used to test APIs. This is the default
    integration if one is not specified.
-* `LambdaIntegration` - can be used to invoke an AWS Lambda function.
-* `AwsIntegration` - can be used to invoke arbitrary AWS service APIs.
-* `HttpIntegration` - can be used to invoke HTTP endpoints.
+- `LambdaIntegration` - can be used to invoke an AWS Lambda function.
+- `AwsIntegration` - can be used to invoke arbitrary AWS service APIs.
+- `HttpIntegration` - can be used to invoke HTTP endpoints.
 
 The following example shows how to integrate the `GET /book/{book_id}` method to
 an AWS Lambda function:
@@ -524,7 +526,9 @@ books.addMethod('GET', new apigateway.HttpIntegration('http://amazon.com'), {
 });
 ```
 
-You can find a full working example [here](test/authorizers/integ.token-authorizer.ts).
+A full working example is shown below.
+
+[Full token authorizer example](test/authorizers/integ.token-authorizer.lit.ts).
 
 By default, the `TokenAuthorizer` looks for the authorization token in the request header with the key 'Authorization'. This can,
 however, be modified by changing the `identitySource` property.
@@ -565,7 +569,9 @@ books.addMethod('GET', new apigateway.HttpIntegration('http://amazon.com'), {
 });
 ```
 
-You can find a full working example [here](test/authorizers/integ.request-authorizer.ts).
+A full working example is shown below.
+
+[Full request authorizer example](test/authorizers/integ.request-authorizer.lit.ts).
 
 By default, the `RequestAuthorizer` does not pass any kind of information from the request. This can,
 however, be modified by changing the `identitySource` property, and is required when specifying a value for caching.
@@ -583,7 +589,7 @@ new apigw.DomainName(this, 'domain-name', {
   domainName: 'example.com',
   certificate: acm.Certificate.fromCertificateArn(this, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
   mtls: {
-    bucket: new Bucket(this, 'bucket')),
+    bucket: new Bucket(this, 'bucket'),
     key: 'truststore.pem',
     version: 'version',
   },
@@ -603,7 +609,7 @@ The URL of your API can be obtained from the attribute `restApi.url`, and is
 also exported as an `Output` from your stack, so it's printed when you `cdk
 deploy` your app:
 
-```
+```console
 $ cdk deploy
 ...
 books.booksapiEndpointE230E8D5 = https://6lyktd4lpk.execute-api.us-east-1.amazonaws.com/prod/
@@ -928,7 +934,7 @@ const api = new apigw.RestApi(stack, 'api', {
 
 By performing this association, we can invoke the API gateway using the following format:
 
-```
+```plaintext
 https://{rest-api-id}-{vpce-id}.execute-api.{region}.amazonaws.com/{stage}
 ```
 
@@ -1028,7 +1034,7 @@ to configure these.
 There are a number of limitations in using OpenAPI definitions in API Gateway. Read the [Amazon API Gateway important
 notes for REST APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-known-issues.html#api-gateway-known-issues-rest-apis)
 for more details.
- 
+
 **Note:** When starting off with an OpenAPI definition using `SpecRestApi`, it is not possible to configure some
 properties that can be configured directly in the OpenAPI specification file. This is to prevent people duplication
 of these properties and potential confusion.
@@ -1046,10 +1052,10 @@ const api = new apigateway.SpecRestApi(this, 'ExampleRestApi', {
 });
 ```
 
-**Note:** For private endpoints you will still need to provide the 
-[`x-amazon-apigateway-policy`](https://docs.aws.amazon.com/apigateway/latest/developerguide/openapi-extensions-policy.html) and 
-[`x-amazon-apigateway-endpoint-configuration`](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-swagger-extensions-endpoint-configuration.html) 
-in your openApi file. 
+**Note:** For private endpoints you will still need to provide the
+[`x-amazon-apigateway-policy`](https://docs.aws.amazon.com/apigateway/latest/developerguide/openapi-extensions-policy.html) and
+[`x-amazon-apigateway-endpoint-configuration`](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-swagger-extensions-endpoint-configuration.html)
+in your openApi file.
 
 ## Metrics
 
