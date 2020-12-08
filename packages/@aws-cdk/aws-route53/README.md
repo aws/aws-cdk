@@ -136,9 +136,11 @@ When you create a VPC endpoint service, AWS generates endpoint-specific DNS host
 For example, vpce-1234-abcdev-us-east-1.vpce-svc-123345.us-east-1.vpce.amazonaws.com.
 By default, your consumers access the service with that DNS name.
 This can cause problems with HTTPS traffic because the DNS will not match the backend certificate:
+
 ```console
 curl: (60) SSL: no alternative certificate subject name matches target host name 'vpce-abcdefghijklmnopq-rstuvwx.vpce-svc-abcdefghijklmnopq.us-east-1.vpce.amazonaws.com'
 ```
+
 Effectively, the endpoint appears untrustworthy. To mitigate this, clients have to create an alias for this DNS name in Route53.
 
 Private DNS for an endpoint service lets you configure a private DNS name so consumers can
