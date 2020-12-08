@@ -673,9 +673,9 @@ Creates and starts running a cluster.
 Corresponds to the [`createCluster`](https://docs.aws.amazon.com/eks/latest/APIReference/API_CreateCluster.html) API in EKS.
 
 ```ts
-new tasks.EksCreateCluster(stack, 'Create a Cluster', {
+new tasks.EksCreateCluster(this, 'Create an EKS Cluster', {
   name: 'clusterName',
-  role: '*',
+  role: NodeInstanceRole,
   resourcesVpcConfig: {
     subnetIds: ['<PUBSUBNET_AZ_1>', '<PUBSUBNET_AZ_2>'],
     endpointPublicAccess: true,
@@ -690,8 +690,8 @@ Deletes a running cluster.
 Corresponds to the [`deleteCluster`](https://docs.aws.amazon.com/eks/latest/APIReference/API_DeleteCluster.html) API in EKS.
 
 ```ts
-new tasks.EksDeleteCluster(stack, 'Delete a Cluster', {
-  name: 'clusterName',
+new tasks.EksDeleteCluster(this, 'Deletes an EKS Cluster', {
+  cluster: cluster,
 });
 ```
 

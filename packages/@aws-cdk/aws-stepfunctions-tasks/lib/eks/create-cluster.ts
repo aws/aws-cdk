@@ -1,3 +1,5 @@
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as eks from '@aws-cdk/aws-eks';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Construct } from 'constructs';
@@ -12,19 +14,39 @@ export interface EksCreateClusterProps extends sfn.TaskStateBaseProps {
    * The desired Kubernetes version for your cluster.
    * @default - latest
    */
-  readonly kubernetesVersion?: string;
+  readonly kubernetesVersion?: eks.KubernetesVersion;
 
   /** EKS Role ARN to create a cluster */
-  readonly role: string;
+  readonly role: iam.IRole;
 
   /** VPC configuration used by the cluster control plane */
-  readonly resourcesVpcConfig: VpcConfigRequest;
+  readonly resourcesVpcConfig: ec2.IVpc;
+
+  /**
+   * Indicates if private access is enabled.
+   * @default false
+   */
+  readonly privateAccess?: boolean;
+
+  /**
+   * Indicates if public access is enabled.
+   * @default true
+   */
+  readonly publicAccess?: boolean;
+
+  /**
+   * Public access is allowed only from these CIDR blocks.
+   * An empty array means access is open to any address.
+   *
+   * @default - No restrictions.
+   */
+  readonly publicCidrs?: string[];
 
   /**
    * Enable or disable exporting the Kubernetes control plane logs for your cluster to CloudWatch Logs.
    * @default - no logging configuration
    */
-  readonly loggingConfiguration?: LoggingConfig;
+  readonly loggingConfiguration?: LoggingOptions;
 
   /**
    * Unique, case-sensitive identifier that you provide to ensure the idempotency of the request.
@@ -68,14 +90,25 @@ export class EksCreateCluster extends sfn.TaskStateBase {
 
     validatePatternSupported(this.integrationPattern, EksCreateCluster.SUPPORTED_INTEGRATION_PATTERNS);
 
+    let iamActions: string[] | undefined;
+    if (this.integrationPattern === sfn.IntegrationPattern.REQUEST_RESPONSE) {
+      iamActions = ['eks:CreateCluster'];
+    } else if (this.integrationPattern === sfn.IntegrationPattern.RUN_JOB) {
+      iamActions = [
+        'eks:CreateCluster',
+        'eks:DeleteCluster',
+        'eks:DescribeCluster',
+      ];
+    }
+
     this.taskPolicies = [
       new iam.PolicyStatement({
-        resources: ['*'],
-        actions: ['eks:CreateCluster'],
+        resources: ['*'], // Need wildcard permissions to create cluster with any name https://docs.aws.amazon.com/step-functions/latest/dg/eks-iam.html
+        actions: iamActions,
       }),
       new iam.PolicyStatement({
         actions: ['iam:PassRole'],
-        resources: [props.role],
+        resources: [props.role.roleArn],
         conditions: {
           StringEquals: { 'iam:PassedToService': 'eks.amazonaws.com' },
         },
@@ -90,83 +123,44 @@ export class EksCreateCluster extends sfn.TaskStateBase {
    * @internal
    */
   protected _renderTask(): any {
-    if (this.props.loggingConfiguration?.clusterLoggingList) {
-      return {
-        Resource: integrationResourceArn('eks', 'createCluster', this.integrationPattern),
-        Parameters: sfn.FieldUtils.renderObject({
-          Name: this.props.name,
-          Version: this.props.kubernetesVersion,
-          RoleArn: this.props.role,
-          ResourcesVpcConfig: {
-            SubnetIds: this.props.resourcesVpcConfig.subnetIds,
-            SecurityGroupIds: this.props.resourcesVpcConfig.securityGroupIds,
-            EndpointPublicAccess: this.props.resourcesVpcConfig.endpointPublicAccess,
-            EndpointPrivateAccess: this.props.resourcesVpcConfig.endpointPrivateAccess,
-            PublicAccessCidrs: this.props.resourcesVpcConfig.publicAccessCidrs,
-          },
+    const subnets: string[] = [];
+    this.props.resourcesVpcConfig.publicSubnets.forEach(element => subnets?.push(element.subnetId));
+    this.props.resourcesVpcConfig.privateSubnets.forEach(element => subnets?.push(element.subnetId));
+    this.props.resourcesVpcConfig.isolatedSubnets.forEach(element => subnets?.push(element.subnetId));
+
+    const securityGroup = new ec2.SecurityGroup(this, 'ControlPlaneSecurityGroup', {
+      vpc: this.props.resourcesVpcConfig,
+      description: 'EKS Control Plane Security Group',
+    });
+
+    return {
+      Resource: integrationResourceArn('eks', 'createCluster', this.integrationPattern),
+      Parameters: sfn.FieldUtils.renderObject({
+        Name: this.props.name,
+        Version: this.props.kubernetesVersion?.version,
+        RoleArn: this.props.role.roleArn,
+        ResourcesVpcConfig: {
+          SubnetIds: subnets,
+          SecurityGroupIds: [securityGroup.securityGroupId],
+          EndpointPublicAccess: this.props.publicAccess ?? true,
+          EndpointPrivateAccess: this.props.privateAccess ?? false,
+          PublicAccessCidrs: [this.props.publicCidrs ?? '0.0.0.0/0'],
+        },
+        ...(this.props.loggingConfiguration?.clusterLoggingList ? {
           Logging: {
             ClusterLogging: this.props.loggingConfiguration?.clusterLoggingList,
           },
-          ClientRequestToken: this.props.clientRequestToken,
-          Tags: this.props.tags,
-          EncryptionConfig: this.props.encryptionConfig,
-        }),
-      };
-    } else {
-      return {
-        Resource: integrationResourceArn('eks', 'createCluster', this.integrationPattern),
-        Parameters: sfn.FieldUtils.renderObject({
-          Name: this.props.name,
-          Version: this.props.kubernetesVersion,
-          RoleArn: this.props.role,
-          ResourcesVpcConfig: {
-            SubnetIds: this.props.resourcesVpcConfig.subnetIds,
-            SecurityGroupIds: this.props.resourcesVpcConfig.securityGroupIds,
-            EndpointPublicAccess: this.props.resourcesVpcConfig.endpointPublicAccess,
-            EndpointPrivateAccess: this.props.resourcesVpcConfig.endpointPrivateAccess,
-            PublicAccessCidrs: this.props.resourcesVpcConfig.publicAccessCidrs,
-          },
-          ClientRequestToken: this.props.clientRequestToken,
-          Tags: this.props.tags,
-          EncryptionConfig: this.props.encryptionConfig,
-        }),
-      };
-    }
+        } : {} ),
+        ClientRequestToken: this.props.clientRequestToken,
+        Tags: this.props.tags,
+        EncryptionConfig: this.props.encryptionConfig,
+      }),
+    };
   }
 }
 
-/** VPC configuration used by the cluster control plane */
-export interface VpcConfigRequest {
-  /** Subnets associated with your cluster */
-  readonly subnetIds: string[];
-
-  /**
-   * Security groups associated with the cross-account elastic network interfaces
-   * @default - default security group for your VPC is used
-   */
-  readonly securityGroupIds?: string[];
-
-  /**
-   * Parameter indicates whether the Amazon EKS public API server endpoint is enabled
-   * @default - true
-   */
-  readonly endpointPublicAccess?: boolean;
-
-  /**
-   * Parameter indicates whether the Amazon EKS private API server endpoint is enabled
-   * @default - false
-   */
-  readonly endpointPrivateAccess?: boolean;
-
-  /**
-   * CIDR blocks that are allowed access to your cluster's public Kubernetes API server endpoint
-   * @default - no public access CIDRs
-   */
-  readonly publicAccessCidrs?: string[];
-}
-
 /** Enable or disable exporting the Kubernetes control plane logs for your cluster to CloudWatch Logs */
-export interface LoggingConfig {
+export interface LoggingOptions {
 
   /**
    * The cluster control plane logging configuration for your cluster
@@ -221,5 +215,5 @@ export interface Provider {
    *
    * @default - no keyArn
   */
-  readonly keyArn?: String;
+  readonly keyArn?: string;
 }

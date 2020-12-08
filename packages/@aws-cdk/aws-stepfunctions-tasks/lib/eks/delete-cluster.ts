@@ -1,3 +1,4 @@
+import * as eks from '@aws-cdk/aws-eks';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Stack } from '@aws-cdk/core';
@@ -8,8 +9,8 @@ import { integrationResourceArn, validatePatternSupported } from '../private/tas
  * Properties for calling a EKS endpoint with EksCall
  */
 export interface EksDeleteClusterProps extends sfn.TaskStateBaseProps {
-  /** Name of the cluster */
-  readonly name: string;
+  /** Cluster to delete */
+  readonly cluster: eks.ICluster;
 }
 
 /**
@@ -34,6 +35,15 @@ export class EksDeleteCluster extends sfn.TaskStateBase {
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
 
     validatePatternSupported(this.integrationPattern, EksDeleteCluster.SUPPORTED_INTEGRATION_PATTERNS);
+    let iamActions: string[] | undefined;
+    if (this.integrationPattern === sfn.IntegrationPattern.REQUEST_RESPONSE) {
+      iamActions = ['eks:DeleteCluster'];
+    } else if (this.integrationPattern === sfn.IntegrationPattern.RUN_JOB) {
+      iamActions = [
+        'eks:DeleteCluster',
+        'eks:DescribeCluster',
+      ];
+    }
 
     this.taskPolicies = [
       new iam.PolicyStatement({
@@ -41,25 +51,23 @@ export class EksDeleteCluster extends sfn.TaskStateBase {
           Stack.of(this).formatArn({
             service: 'eks',
             resource: 'cluster',
-            resourceName: this.props.name,
+            resourceName: this.props.cluster.clusterName,
           }),
         ],
-        actions: ['eks:DeleteCluster'],
+        actions: iamActions,
       }),
     ];
   }
 
   /**
    * Provides the EKS delete cluster service integration task configuration
-   */
-  /**
    * @internal
    */
   protected _renderTask(): any {
     return {
       Resource: integrationResourceArn('eks', 'deleteCluster', this.integrationPattern),
       Parameters: sfn.FieldUtils.renderObject({
-        Name: this.props.name,
+        Name: this.props.cluster.clusterName,
       }),
     };
   }

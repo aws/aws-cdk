@@ -1,5 +1,86 @@
 {
   "Resources": {
+    "Role1ABCC5F0": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "eks.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/AmazonEKSWorkerNodePolicy"
+              ]
+            ]
+          },
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+              ]
+            ]
+          },
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/AmazonEKSClusterPolicy"
+              ]
+            ]
+          },
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/AmazonEKS_CNI_Policy"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "CreateaClusterControlPlaneSecurityGroupF5B7A2D0": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "EKS Control Plane Security Group",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1"
+          }
+        ],
+        "VpcId": "vpc-60900905"
+      }
+    },
     "StateMachineRoleB840431D": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -9,18 +90,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "states.",
-                      {
-                        "Ref": "AWS::Region"
-                      },
-                      ".amazonaws.com"
-                    ]
-                  ]
-                }
+                "Service": "states.test-region.amazonaws.com"
               }
             }
           ],
@@ -46,7 +116,12 @@
                 }
               },
               "Effect": "Allow",
-              "Resource": "*"
+              "Resource": {
+                "Fn::GetAtt": [
+                  "Role1ABCC5F0",
+                  "Arn"
+                ]
+              }
             },
             {
               "Action": "eks:DeleteCluster",
@@ -59,15 +134,7 @@
                     {
                       "Ref": "AWS::Partition"
                     },
-                    ":eks:",
-                    {
-                      "Ref": "AWS::Region"
-                    },
-                    ":",
-                    {
-                      "Ref": "AWS::AccountId"
-                    },
-                    ":cluster/clusterName"
+                    ":eks:test-region:12345678:cluster/deleteclusterinteg"
                   ]
                 ]
               }
@@ -100,11 +167,25 @@
               {
                 "Ref": "AWS::Partition"
               },
-              ":states:::eks:createCluster\",\"Parameters\":{\"Name\":\"clusterName\",\"RoleArn\":\"*\",\"ResourcesVpcConfig\":{\"SubnetIds\":[\"<PUBSUBNET_AZ_1>\",\"<PUBSUBNET_AZ_2>\"],\"EndpointPublicAccess\":true,\"EndpointPrivateAccess\":false}}},\"Delete a Cluster\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:",
+              ":states:::eks:createCluster\",\"Parameters\":{\"Name\":\"deleteclusterinteg\",\"Version\":\"1.18\",\"RoleArn\":\"",
+              {
+                "Fn::GetAtt": [
+                  "Role1ABCC5F0",
+                  "Arn"
+                ]
+              },
+              "\",\"ResourcesVpcConfig\":{\"SubnetIds\":[\"subnet-e19455ca\",\"subnet-e0c24797\",\"subnet-ccd77395\"],\"SecurityGroupIds\":[\"",
+              {
+                "Fn::GetAtt": [
+                  "CreateaClusterControlPlaneSecurityGroupF5B7A2D0",
+                  "GroupId"
+                ]
+              },
+              "\"],\"EndpointPublicAccess\":true,\"EndpointPrivateAccess\":false,\"PublicAccessCidrs\":[\"0.0.0.0/0\"]}}},\"Delete a Cluster\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:",
               {
                 "Ref": "AWS::Partition"
               },
-              ":states:::eks:deleteCluster\",\"Parameters\":{\"Name\":\"clusterName\"}}},\"TimeoutSeconds\":30}"
+              ":states:::eks:deleteCluster\",\"Parameters\":{\"Name\":\"deleteclusterinteg\"}}},\"TimeoutSeconds\":30}"
             ]
           ]
         }
