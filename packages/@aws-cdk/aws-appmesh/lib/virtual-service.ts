@@ -1,6 +1,7 @@
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnVirtualService } from './appmesh.generated';
+import { ClientPolicy } from './client-policy';
 import { IMesh, Mesh } from './mesh';
 import { IVirtualNode } from './virtual-node';
 import { IVirtualRouter } from './virtual-router';
@@ -27,6 +28,11 @@ export interface IVirtualService extends cdk.IResource {
    * The Mesh which the VirtualService belongs to
    */
   readonly mesh: IMesh;
+
+  /**
+   * Client policy for this Virtual Service
+   */
+  readonly clientPolicy?: ClientPolicy;
 }
 
 /**
@@ -57,6 +63,13 @@ export interface VirtualServiceBaseProps {
    * @default - At most one of virtualRouter and virtualNode is allowed.
    */
   readonly virtualNode?: IVirtualNode;
+
+  /**
+   * Client policy for this Virtual Service
+   *
+   * @default - none
+   */
+  readonly clientPolicy?: ClientPolicy;
 }
 
 /**
@@ -96,6 +109,7 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
     return new class extends cdk.Resource implements IVirtualService {
       readonly virtualServiceName = attrs.virtualServiceName;
       readonly mesh = attrs.mesh;
+      readonly clientPolicy = attrs.clientPolicy;
       readonly virtualServiceArn = cdk.Stack.of(this).formatArn({
         service: 'appmesh',
         resource: `mesh/${attrs.mesh.meshName}/virtualService`,
@@ -119,6 +133,8 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
    */
   public readonly mesh: IMesh;
 
+  public readonly clientPolicy?: ClientPolicy;
+
   private readonly virtualServiceProvider?: CfnVirtualService.VirtualServiceProviderProperty;
 
   constructor(scope: Construct, id: string, props: VirtualServiceProps) {
@@ -131,6 +147,7 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
     }
 
     this.mesh = props.mesh;
+    this.clientPolicy = props.clientPolicy;
 
     // Check which provider to use node or router (or neither)
     if (props.virtualRouter) {
@@ -186,4 +203,11 @@ export interface VirtualServiceAttributes {
    * The Mesh which the VirtualService belongs to
    */
   readonly mesh: IMesh;
+
+  /**
+   * Client policy for this Virtual Service
+   *
+   * @default - none
+   */
+  readonly clientPolicy?: ClientPolicy;
 }

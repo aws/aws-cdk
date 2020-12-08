@@ -2,6 +2,7 @@ import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnVirtualNode } from './appmesh.generated';
+import { ClientPolicy } from './client-policy';
 import { IMesh, Mesh } from './mesh';
 import { AccessLog } from './shared-interfaces';
 import { VirtualNodeListener, VirtualNodeListenerConfig } from './virtual-node-listener';
@@ -94,6 +95,13 @@ export interface VirtualNodeBaseProps {
    * @default - No access logging
    */
   readonly accessLog?: AccessLog;
+
+  /**
+   * Default Configuration Virtual Node uses to communicate with Virtual Service
+   *
+   * @default - No Config
+   */
+  readonly backendsDefaultClientPolicy?: ClientPolicy;
 }
 
 /**
@@ -193,8 +201,9 @@ export class VirtualNode extends VirtualNodeBase {
       virtualNodeName: this.physicalName,
       meshName: this.mesh.meshName,
       spec: {
-        backends: cdk.Lazy.any({ produce: () => this.backends }, { omitEmptyArray: true }),
-        listeners: cdk.Lazy.any({ produce: () => this.listeners.map(listener => listener.listener) }, { omitEmptyArray: true }),
+        backends: cdk.Lazy.anyValue({ produce: () => this.backends }, { omitEmptyArray: true }),
+        listeners: cdk.Lazy.anyValue({ produce: () => this.listeners.map(listener => listener.listener) }, { omitEmptyArray: true }),
+        backendDefaults: props.backendsDefaultClientPolicy?.bind(this),
         serviceDiscovery: {
           dns: props.dnsHostName !== undefined ? { hostname: props.dnsHostName } : undefined,
           awsCloudMap: props.cloudMapService !== undefined ? {
@@ -231,6 +240,7 @@ export class VirtualNode extends VirtualNodeBase {
     this.backends.push({
       virtualService: {
         virtualServiceName: virtualService.virtualServiceName,
+        clientPolicy: virtualService.clientPolicy?.bind(this).clientPolicy,
       },
     });
   }
