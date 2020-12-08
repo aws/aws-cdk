@@ -279,7 +279,9 @@ export class AppMeshExtension extends ServiceExtension {
     this.virtualNode = new appmesh.VirtualNode(this.scope, `${this.parentService.id}-virtual-node`, {
       mesh: this.mesh,
       virtualNodeName: this.parentService.id,
-      cloudMapService: service.cloudMapService,
+      serviceDiscovery: service.cloudMapService? appmesh.ServiceDiscovery.cloudmap({
+        service: service.cloudMapService,
+      }): undefined,
       listeners: [addListener(this.protocol, containerextension.trafficPort)],
     });
 
