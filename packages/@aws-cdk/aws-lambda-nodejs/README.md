@@ -1,19 +1,26 @@
-## Amazon Lambda Node.js Library
+# Amazon Lambda Node.js Library
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
 
-> The APIs of higher level constructs in this module are experimental and under active development. They are subject to non-backward compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be announced in the release notes. This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
+> The APIs of higher level constructs in this module are experimental and under active development.
+> They are subject to non-backward compatible changes or removal in any future version. These are
+> not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be
+> announced in the release notes. This means that while you may use them, you may need to update
+> your source code when upgrading to a newer version of this package.
 
 ---
+
 <!--END STABILITY BANNER-->
 
 This library provides constructs for Node.js Lambda functions.
 
 To use this module, you will need to have Docker installed.
 
-### Node.js Function
+## Node.js Function
+
 Define a `NodejsFunction`:
 
 ```ts
@@ -22,7 +29,8 @@ new lambda.NodejsFunction(this, 'my-handler');
 
 By default, the construct will use the name of the defining file and the construct's id to look
 up the entry file:
-```
+
+```plaintext
 .
 ├── stack.ts # defines a 'NodejsFunction' with 'my-handler' as id
 ├── stack.my-handler.ts # exports a function named 'handler'
@@ -84,7 +92,8 @@ should also have `npm` or `yarn` depending on the lock file you're using.
 Use the [default image provided by `@aws-cdk/aws-lambda-nodejs`](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-lambda-nodejs/lib/Dockerfile)
 as a source of inspiration.
 
-### Lock file
+## Lock file
+
 The `NodejsFunction` requires a dependencies lock file (`yarn.lock` or
 `package-lock.json`). When bundling in a Docker container, the path containing this
 lock file is used as the source (`/asset-input`) for the volume mounted in the
@@ -96,6 +105,7 @@ case you need to ensure that this path includes `entry` and any module/dependenc
 used by your function. Otherwise bundling will fail.
 
 ### Configuring esbuild
+
 The `NodejsFunction` construct exposes some [esbuild](https://esbuild.github.io/) options via properties under `bundling`: `minify`, `sourceMap`, `target` and `loader`.
 
 ```ts
@@ -111,9 +121,10 @@ new lambda.NodejsFunction(this, 'my-handler', {
 });
 ```
 
-### Working with modules
+## Working with modules
 
-#### Externals
+### Externals
+
 By default, all node modules are bundled except for `aws-sdk`. This can be configured by specifying
 the `externalModules` prop under `bundling`.
 
@@ -128,7 +139,8 @@ new lambda.NodejsFunction(this, 'my-handler', {
 });
 ```
 
-#### Install modules
+### Install modules
+
 By default, all node modules referenced in your Lambda code will be bundled by esbuild.
 Use the `nodeModules` prop under `bundling` to specify a list of modules that should not be
 bundled but instead included in the `node_modules` folder of the Lambda package. This is useful
@@ -146,7 +158,8 @@ The modules listed in `nodeModules` must be present in the `package.json`'s depe
 same version will be used for installation. The lock file (`yarn.lock` or `package-lock.json`)
 will be used along with the right installer (`yarn` or `npm`).
 
-### Local bundling
+## Local bundling
+
 If esbuild is available it will be used to bundle your code in your environment. Otherwise,
 bundling will happen in a [Lambda compatible Docker container](https://hub.docker.com/r/amazon/aws-sam-cli-build-image-nodejs12.x).
 
@@ -154,13 +167,13 @@ For macOS the recommendend approach is to install esbuild as Docker volume perfo
 
 esbuild can be installed with:
 
-```bash
+```console
 $ npm install --save-dev esbuild@0
 ```
 
 OR
 
-```bash
+```console
 $ yarn add --dev esbuild@0
 ```
 
@@ -169,6 +182,7 @@ is useful if your function relies on node modules that should be installed (`nod
 case with modules using native dependencies.
 
 ### Command hooks
+
 It is possible to run additional commands by specifying the `commandHooks` prop:
 
 ```ts
@@ -184,6 +198,7 @@ new lambda.NodejsFunction(this, 'my-handler-with-commands', {
 ```
 
 The following hooks are available:
+
 - `beforeBundling`: runs before all bundling commands
 - `beforeInstall`: runs before node modules installation
 - `afterBundling`: runs after all bundling commands
