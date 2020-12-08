@@ -1,10 +1,12 @@
-## S3 Bucket Notifications Destinations
+# S3 Bucket Notifications Destinations
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
 
 This module includes integration classes for using Topics, Queues or Lambdas

@@ -12,6 +12,7 @@ import { IEventSource } from './event-source';
 import { FileSystem } from './filesystem';
 import { FunctionAttributes, FunctionBase, IFunction } from './function-base';
 import { calculateFunctionHash, trimFromStart } from './function-hash';
+import { Handler } from './handler';
 import { Version, VersionOptions } from './lambda-version';
 import { CfnFunction } from './lambda.generated';
 import { ILayerVersion } from './layers';
@@ -288,6 +289,8 @@ export interface FunctionProps extends FunctionOptions {
    * The runtime environment for the Lambda function that you are uploading.
    * For valid values, see the Runtime property in the AWS Lambda Developer
    * Guide.
+   *
+   * Use `Runtime.FROM_IMAGE` when when defining a function from a Docker image.
    */
   readonly runtime: Runtime;
 
@@ -303,6 +306,8 @@ export interface FunctionProps extends FunctionOptions {
    * your function. The format includes the file name. It can also include
    * namespaces and other qualifiers, depending on the runtime.
    * For more information, see https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-features.html#gettingstarted-features-programmingmodel.
+   *
+   * Use `Handler.FROM_IMAGE` when defining a function from a Docker image.
    *
    * NOTE: If you specify your source code as inline text by specifying the
    * ZipFile property within the Code property, specify index.function_name as
@@ -557,7 +562,7 @@ export class Function extends FunctionBase {
     }
 
     const code = props.code.bind(this);
-    verifyCodeConfig(code, props.runtime);
+    verifyCodeConfig(code, props);
 
     let profilingGroupEnvironmentVariables: { [key: string]: string } = {};
     if (props.profilingGroup && props.profiling !== false) {
@@ -590,6 +595,8 @@ export class Function extends FunctionBase {
 
     this.deadLetterQueue = this.buildDeadLetterQueue(props);
 
+    const UNDEFINED_MARKER = '$$$undefined';
+
     const resource: CfnFunction = new CfnFunction(this, 'Resource', {
       functionName: this.physicalName,
       description: props.description,
@@ -598,11 +605,13 @@ export class Function extends FunctionBase {
         s3Key: code.s3Location && code.s3Location.objectKey,
         s3ObjectVersion: code.s3Location && code.s3Location.objectVersion,
         zipFile: code.inlineCode,
+        imageUri: code.image?.imageUri,
       },
       layers: Lazy.list({ produce: () => this.layers.map(layer => layer.layerVersionArn) }, { omitEmpty: true }),
-      handler: props.handler,
+      handler: props.handler === Handler.FROM_IMAGE ? UNDEFINED_MARKER : props.handler,
       timeout: props.timeout && props.timeout.toSeconds(),
-      runtime: props.runtime.name,
+      packageType: props.runtime === Runtime.FROM_IMAGE ? 'Image' : undefined,
+      runtime: props.runtime === Runtime.FROM_IMAGE ? UNDEFINED_MARKER : props.runtime?.name,
       role: this.role.roleArn,
       // Uncached because calling '_checkEdgeCompatibility', which gets called in the resolve of another
       // Token, actually *modifies* the 'environment' map.
@@ -612,7 +621,20 @@ export class Function extends FunctionBase {
       deadLetterConfig: this.buildDeadLetterConfig(this.deadLetterQueue),
       tracingConfig: this.buildTracingConfig(props),
       reservedConcurrentExecutions: props.reservedConcurrentExecutions,
+      imageConfig: undefinedIfNoKeys({
+        command: code.image?.cmd,
+        entryPoint: code.image?.entrypoint,
+      }),
     });
+
+    // since patching the CFN spec to make Runtime and Handler optional causes a
+    // change in the order of the JSON keys, which results in a change of
+    // function hash (and invalidation of all lambda functions everywhere), we
+    // are using a marker to indicate this fields needs to be erased using an
+    // escape hatch. this should be fixed once the new spec is published and a
+    // patch is no longer needed.
+    if (resource.runtime === UNDEFINED_MARKER) { resource.addPropertyOverride('Runtime', undefined); }
+    if (resource.handler === UNDEFINED_MARKER) { resource.addPropertyOverride('Handler', undefined); }
 
     resource.node.addDependency(this.role);
 
@@ -966,14 +988,29 @@ function extractNameFromArn(arn: string) {
   return Fn.select(6, Fn.split(':', arn));
 }
 
-export function verifyCodeConfig(code: CodeConfig, runtime: Runtime) {
+export function verifyCodeConfig(code: CodeConfig, props: FunctionProps) {
   // mutually exclusive
-  if ((!code.inlineCode && !code.s3Location) || (code.inlineCode && code.s3Location)) {
-    throw new Error('lambda.Code must specify one of "inlineCode" or "s3Location" but not both');
+  const codeType = [code.inlineCode, code.s3Location, code.image];
+
+  if (codeType.filter(x => !!x).length !== 1) {
+    throw new Error('lambda.Code must specify exactly one of: "inlineCode", "s3Location", or "image"');
+  }
+
+  if (!!code.image === (props.handler !== Handler.FROM_IMAGE)) {
+    throw new Error('handler must be `Handler.FROM_IMAGE` when using image asset for Lambda function');
+  }
+
+  if (!!code.image === (props.runtime !== Runtime.FROM_IMAGE)) {
+    throw new Error('runtime must be `Runtime.FROM_IMAGE` when using image asset for Lambda function');
   }
 
   // if this is inline code, check that the runtime supports
-  if (code.inlineCode && !runtime.supportsInlineCode) {
-    throw new Error(`Inline source not allowed for ${runtime.name}`);
+  if (code.inlineCode && !props.runtime.supportsInlineCode) {
+    throw new Error(`Inline source not allowed for ${props.runtime!.name}`);
   }
+}
+
+function undefinedIfNoKeys<A>(struct: A): A | undefined {
+  const allUndefined = Object.values(struct).every(val => val === undefined);
+  return allUndefined ? undefined : struct;
 }

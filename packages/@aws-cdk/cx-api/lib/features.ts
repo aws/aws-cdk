@@ -57,6 +57,15 @@ export const STACK_RELATIVE_EXPORTS_CONTEXT = '@aws-cdk/core:stackRelativeExport
 export const DOCKER_IGNORE_SUPPORT = '@aws-cdk/aws-ecr-assets:dockerIgnoreSupport';
 
 /**
+ * Secret.secretName for an "owned" secret will attempt to parse the secretName from the ARN,
+ * rather than the default full resource name, which includes the SecretsManager suffix.
+ *
+ * If this flag is not set, Secret.secretName will include the SecretsManager suffix, which cannot be directly
+ * used by SecretsManager.DescribeSecret, and must be parsed by the user first (e.g., Fn:Join, Fn:Select, Fn:Split).
+ */
+export const SECRETS_MANAGER_PARSE_OWNED_SECRET_NAME = '@aws-cdk/aws-secretsmanager:parseOwnedSecretName';
+
+/**
  * This map includes context keys and values for feature flags that enable
  * capabilities "from the future", which we could not introduce as the default
  * behavior due to backwards compatibility for existing projects.
@@ -74,6 +83,7 @@ export const FUTURE_FLAGS = {
   [ENABLE_DIFF_NO_FAIL_CONTEXT]: 'true',
   [STACK_RELATIVE_EXPORTS_CONTEXT]: 'true',
   [DOCKER_IGNORE_SUPPORT]: true,
+  [SECRETS_MANAGER_PARSE_OWNED_SECRET_NAME]: true,
 
   // We will advertise this flag when the feature is complete
   // [NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: 'true',
@@ -89,6 +99,7 @@ const FUTURE_FLAGS_DEFAULTS: { [key: string]: boolean } = {
   [STACK_RELATIVE_EXPORTS_CONTEXT]: false,
   [NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
   [DOCKER_IGNORE_SUPPORT]: false,
+  [SECRETS_MANAGER_PARSE_OWNED_SECRET_NAME]: false,
 };
 
 export function futureFlagDefault(flag: string): boolean {

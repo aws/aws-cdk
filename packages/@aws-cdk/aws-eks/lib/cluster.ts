@@ -136,7 +136,7 @@ export interface ICluster extends IResource, ec2.IConnectable {
    * @param manifest a list of Kubernetes resource specifications
    * @returns a `KubernetesManifest` object.
    */
-  addManifest(id: string, ...manifest: any[]): KubernetesManifest;
+  addManifest(id: string, ...manifest: Record<string, any>[]): KubernetesManifest;
 
   /**
    * Defines a Helm chart in this cluster.
@@ -641,7 +641,7 @@ abstract class ClusterBase extends Resource implements ICluster {
    * @param manifest a list of Kubernetes resource specifications
    * @returns a `KubernetesResource` object.
    */
-  public addManifest(id: string, ...manifest: any[]): KubernetesManifest {
+  public addManifest(id: string, ...manifest: Record<string, any>[]): KubernetesManifest {
     return new KubernetesManifest(this, `manifest-${id}`, { cluster: this, manifest });
   }
 

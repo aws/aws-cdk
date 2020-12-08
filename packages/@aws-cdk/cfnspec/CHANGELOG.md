@@ -1,3 +1,91 @@
+# CloudFormation Resource Specification v21.0.0
+
+## New Resource Types
+
+* AWS::CloudFront::KeyGroup
+* AWS::CloudFront::PublicKey
+* AWS::Glue::Registry
+* AWS::Glue::Schema
+* AWS::Glue::SchemaVersion
+* AWS::Glue::SchemaVersionMetadata
+* AWS::IoT::TopicRuleDestination
+* AWS::Lambda::CodeSigningConfig
+* AWS::NetworkFirewall::Firewall
+* AWS::NetworkFirewall::FirewallPolicy
+* AWS::NetworkFirewall::LoggingConfiguration
+* AWS::NetworkFirewall::RuleGroup
+* AWS::S3::StorageLens
+* AWS::Signer::ProfilePermission
+* AWS::Signer::SigningProfile
+
+## Attribute Changes
+
+* AWS::SageMaker::MonitoringSchedule CreationTime (__added__)
+* AWS::SageMaker::MonitoringSchedule LastModifiedTime (__added__)
+
+## Property Changes
+
+* AWS::Amplify::App CustomHeaders (__added__)
+* AWS::DataBrew::Recipe ProjectName (__deleted__)
+* AWS::DataBrew::Recipe Version (__deleted__)
+* AWS::Events::EventBusPolicy Statement (__added__)
+* AWS::Events::EventBusPolicy Action.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Events::EventBusPolicy Principal.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Glue::MLTransform TransformEncryption (__added__)
+* AWS::KMS::Key KeySpec (__added__)
+* AWS::Lambda::Function CodeSigningConfigArn (__added__)
+* AWS::SageMaker::MonitoringSchedule CreationTime (__deleted__)
+* AWS::SageMaker::MonitoringSchedule LastModifiedTime (__deleted__)
+
+## Property Type Changes
+
+* AWS::Batch::ComputeEnvironment.Ec2ConfigurationObject (__added__)
+* AWS::DLM::LifecyclePolicy.Action (__added__)
+* AWS::DLM::LifecyclePolicy.CrossRegionCopyAction (__added__)
+* AWS::DLM::LifecyclePolicy.EncryptionConfiguration (__added__)
+* AWS::DLM::LifecyclePolicy.EventParameters (__added__)
+* AWS::DLM::LifecyclePolicy.EventSource (__added__)
+* AWS::DLM::LifecyclePolicy.ShareRule (__added__)
+* AWS::EC2::LaunchTemplate.EnclaveOptions (__added__)
+* AWS::Glue::Database.DataLakePrincipal (__added__)
+* AWS::Glue::Database.DatabaseIdentifier (__added__)
+* AWS::Glue::Database.PrincipalPrivileges (__added__)
+* AWS::Glue::MLTransform.MLUserDataEncryption (__added__)
+* AWS::Glue::MLTransform.TransformEncryption (__added__)
+* AWS::Glue::Table.TableIdentifier (__added__)
+* AWS::SageMaker::Model.MultiModelConfig (__added__)
+* AWS::Batch::ComputeEnvironment.ComputeResources Ec2Configuration (__added__)
+* AWS::CloudFront::Distribution.CacheBehavior TrustedKeyGroups (__added__)
+* AWS::CloudFront::Distribution.DefaultCacheBehavior TrustedKeyGroups (__added__)
+* AWS::DLM::LifecyclePolicy.PolicyDetails Actions (__added__)
+* AWS::DLM::LifecyclePolicy.PolicyDetails EventSource (__added__)
+* AWS::DLM::LifecyclePolicy.PolicyDetails ResourceTypes.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DLM::LifecyclePolicy.PolicyDetails Schedules.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DLM::LifecyclePolicy.PolicyDetails TargetTags.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DLM::LifecyclePolicy.Schedule ShareRules (__added__)
+* AWS::DataBrew::Recipe.RecipeStep Action.PrimitiveType (__deleted__)
+* AWS::EC2::LaunchTemplate.LaunchTemplateData EnclaveOptions (__added__)
+* AWS::Glue::Connection.ConnectionInput ConnectionProperties.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Glue::Crawler.S3Target ConnectionName (__added__)
+* AWS::Glue::Database.DatabaseInput CreateTableDefaultPermissions (__added__)
+* AWS::Glue::Database.DatabaseInput TargetDatabase (__added__)
+* AWS::Glue::Table.TableInput TargetTable (__added__)
+* AWS::SageMaker::Model.ContainerDefinition MultiModelConfig (__added__)
+* AWS::Synthetics::Canary.RunConfig EnvironmentVariables (__added__)
+
+
 # CloudFormation Resource Specification v20.3.0
 
 ## New Resource Types
