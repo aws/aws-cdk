@@ -2,6 +2,7 @@
 export * from './appmesh.generated';
 export * from './mesh';
 export * from './route';
+export * from './service-discovery';
 export * from './shared-interfaces';
 export * from './virtual-node';
 export * from './virtual-router';

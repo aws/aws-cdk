@@ -1,8 +1,8 @@
-import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnVirtualNode } from './appmesh.generated';
 import { IMesh, Mesh } from './mesh';
+import { ServiceDiscovery } from './service-discovery';
 import { AccessLog } from './shared-interfaces';
 import { VirtualNodeListener, VirtualNodeListenerConfig } from './virtual-node-listener';
 import { IVirtualService } from './virtual-service';
@@ -55,7 +55,7 @@ export interface VirtualNodeBaseProps {
    *
    * @default - Don't use DNS-based service discovery
    */
-  readonly dnsHostName?: string;
+  // readonly dnsHostName?: string;
 
   /**
    * CloudMap service where Virtual Node members register themselves
@@ -65,14 +65,16 @@ export interface VirtualNodeBaseProps {
    *
    * @default - Don't use CloudMap-based service discovery
    */
-  readonly cloudMapService?: cloudmap.IService;
+  // readonly cloudMapService?: cloudmap.IService;
+
+  readonly serviceDiscovery?: ServiceDiscovery;
 
   /**
    * Filter down the list of CloudMap service instance
    *
    * @default - No CloudMap instance filter
    */
-  readonly cloudMapServiceInstanceAttributes?: {[key: string]: string};
+  // readonly cloudMapServiceInstanceAttributes?: {[key: string]: string};
 
   /**
    * Virtual Services that this is node expected to send outbound traffic to
@@ -188,6 +190,7 @@ export class VirtualNode extends VirtualNodeBase {
     props.backends?.forEach(backend => this.addBackend(backend));
     props.listeners?.forEach(listener => this.addListener(listener));
     const accessLogging = props.accessLog?.bind(this);
+    const serviceDiscovery = props.serviceDiscovery?.bind(this);
 
     const node = new CfnVirtualNode(this, 'Resource', {
       virtualNodeName: this.physicalName,
@@ -196,12 +199,8 @@ export class VirtualNode extends VirtualNodeBase {
         backends: cdk.Lazy.anyValue({ produce: () => this.backends }, { omitEmptyArray: true }),
         listeners: cdk.Lazy.anyValue({ produce: () => this.listeners.map(listener => listener.listener) }, { omitEmptyArray: true }),
         serviceDiscovery: {
-          dns: props.dnsHostName !== undefined ? { hostname: props.dnsHostName } : undefined,
-          awsCloudMap: props.cloudMapService !== undefined ? {
-            serviceName: props.cloudMapService.serviceName,
-            namespaceName: props.cloudMapService.namespace.namespaceName,
-            attributes: renderAttributes(props.cloudMapServiceInstanceAttributes),
-          } : undefined,
+          dns: serviceDiscovery?.dns,
+          awsCloudMap: serviceDiscovery?.cloudmap,
         },
         logging: accessLogging !== undefined ? {
           accessLog: accessLogging.virtualNodeAccessLog,
@@ -234,11 +233,6 @@ export class VirtualNode extends VirtualNodeBase {
       },
     });
   }
-}
-
-function renderAttributes(attrs?: {[key: string]: string}) {
-  if (attrs === undefined) { return undefined; }
-  return Object.entries(attrs).map(([key, value]) => ({ key, value }));
 }
 
 /**

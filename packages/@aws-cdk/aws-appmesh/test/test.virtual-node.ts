@@ -27,7 +27,7 @@ export = {
 
         const node = new appmesh.VirtualNode(stack, 'test-node', {
           mesh,
-          dnsHostName: 'test',
+          serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
           backends: [service1],
         });
 
@@ -70,7 +70,7 @@ export = {
         });
 
         const node = mesh.addVirtualNode('test-node', {
-          dnsHostName: 'test',
+          serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
         });
 
         node.addListener(appmesh.VirtualNodeListener.tcp({
@@ -107,7 +107,7 @@ export = {
 
         new appmesh.VirtualNode(stack, 'test-node', {
           mesh,
-          dnsHostName: 'test',
+          serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
           listeners: [appmesh.VirtualNodeListener.grpc({
             port: 80,
             timeout: {
@@ -159,7 +159,7 @@ export = {
 
         new appmesh.VirtualNode(stack, 'test-node', {
           mesh,
-          dnsHostName: 'test',
+          serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
           listeners: [appmesh.VirtualNodeListener.http2({
             port: 80,
             healthCheck: {},
@@ -213,7 +213,7 @@ export = {
 
         const node = new appmesh.VirtualNode(stack, 'test-node', {
           mesh,
-          dnsHostName: 'test',
+          serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
         });
 
         node.addListener(appmesh.VirtualNodeListener.tcp({

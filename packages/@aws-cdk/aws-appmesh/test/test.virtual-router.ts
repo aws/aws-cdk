@@ -105,7 +105,7 @@ export = {
       });
 
       const node = mesh.addVirtualNode('test-node', {
-        dnsHostName: 'test',
+        serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
         listeners: [appmesh.VirtualNodeListener.http({
           port: 8080,
         })],
@@ -174,7 +174,7 @@ export = {
       });
 
       const node = mesh.addVirtualNode('test-node', {
-        dnsHostName: 'test',
+        serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
         listeners: [appmesh.VirtualNodeListener.http({
           port: 8080,
         })],
@@ -183,7 +183,7 @@ export = {
         ],
       });
       const node2 = mesh.addVirtualNode('test-node2', {
-        dnsHostName: 'test',
+        serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
         listeners: [appmesh.VirtualNodeListener.http({
           port: 8080,
         })],
@@ -192,7 +192,7 @@ export = {
         ],
       });
       const node3 = mesh.addVirtualNode('test-node3', {
-        dnsHostName: 'test',
+        serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
         listeners: [appmesh.VirtualNodeListener.http({
           port: 8080,
         })],
@@ -320,7 +320,7 @@ export = {
       });
 
       const node = mesh.addVirtualNode('test-node', {
-        dnsHostName: 'test',
+        serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
         listeners: [appmesh.VirtualNodeListener.http({
           port: 8080,
         })],

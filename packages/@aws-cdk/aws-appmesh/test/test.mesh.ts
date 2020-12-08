@@ -105,7 +105,9 @@ export = {
     // WHEN
     new appmesh.VirtualNode(stack, 'test-node', {
       mesh,
-      cloudMapService: service,
+      serviceDiscovery: appmesh.ServiceDiscovery.cloudmap({
+        service: service,
+      }),
     });
 
     // THEN
@@ -136,7 +138,7 @@ export = {
 
         const testNode = new appmesh.VirtualNode(stack, 'test-node', {
           mesh,
-          dnsHostName: 'test-node',
+          serviceDiscovery: appmesh.ServiceDiscovery.dns('test-node'),
         });
 
         const testRouter = mesh.addVirtualRouter('router', {
@@ -207,7 +209,7 @@ export = {
         });
 
         const node = mesh.addVirtualNode('test-node', {
-          dnsHostName: 'test.domain.local',
+          serviceDiscovery: appmesh.ServiceDiscovery.dns('test.domain.local'),
           listeners: [appmesh.VirtualNodeListener.http({
             port: 8080,
           })],
@@ -249,7 +251,7 @@ export = {
         });
 
         mesh.addVirtualNode('test-node', {
-          dnsHostName: 'test.domain.local',
+          serviceDiscovery: appmesh.ServiceDiscovery.dns('test.domain.local'),
         });
 
         // THEN
@@ -283,7 +285,7 @@ export = {
         });
 
         mesh.addVirtualNode('test-node', {
-          dnsHostName: 'test.domain.local',
+          serviceDiscovery: appmesh.ServiceDiscovery.dns('test.domain.local'),
           listeners: [appmesh.VirtualNodeListener.http({
             port: 8080,
           })],
@@ -322,7 +324,7 @@ export = {
         });
 
         mesh.addVirtualNode('test-node', {
-          dnsHostName: 'test.domain.local',
+          serviceDiscovery: appmesh.ServiceDiscovery.dns('test.domain.local'),
           listeners: [appmesh.VirtualNodeListener.http({
             port: 8080,
             healthCheck: {
@@ -378,7 +380,7 @@ export = {
         });
 
         mesh.addVirtualNode('test-node', {
-          dnsHostName: 'test.domain.local',
+          serviceDiscovery: appmesh.ServiceDiscovery.dns('test.domain.local'),
           listeners: [appmesh.VirtualNodeListener.http({
             port: 8080,
           })],
