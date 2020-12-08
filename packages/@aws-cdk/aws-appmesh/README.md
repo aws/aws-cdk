@@ -163,7 +163,37 @@ const node = mesh.addVirtualNode('virtual-node', {
 });
 ```
 
-Create a `VirtualNode` with the the constructor and add tags.
+Create a `VirtualNode` with the constructor and add tags.
+
+```ts
+const node = new VirtualNode(this, 'node', {
+  mesh,
+  cloudMapService: service,
+  listeners: [appmesh.VirtualNodeListener.httpNodeListener({
+    port: 8080,
+    healthCheck: {
+      healthyThreshold: 3,
+      interval: Duration.seconds(5), // min
+      path: '/ping',
+      port: 8080,
+      protocol: Protocol.HTTP,
+      timeout: Duration.seconds(2), // min
+      unhealthyThreshold: 2,
+    },
+    timeout: {
+      idle: cdk.Duration.seconds(5),
+    },
+  })],
+  backendsDefaultClientPolicy: appmesh.ClientPolicy.fileTrust({
+    certificateChain: '/keys/local_cert_chain.pem',
+  }),
+  accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
+});
+
+cdk.Tag.add(node, 'Environment', 'Dev');
+```
+
+Create a `VirtualNode` with the constructor and add backend virtual service.
 
 ```ts
 const node = new VirtualNode(this, 'node', {
@@ -187,10 +217,23 @@ const node = new VirtualNode(this, 'node', {
   accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
 });
 
-cdk.Tag.add(node, 'Environment', 'Dev');
+const virtualService = new appmesh.VirtualService(stack, 'service-1', {
+  virtualServiceName: 'service1.domain.local',
+  mesh,
+  clientPolicy: appmesh.ClientPolicy.fileTrust({
+    certificateChain: '/keys/local_cert_chain.pem',
+    ports: [8080, 8081],
+  }),
+});
+
+node.addBackend(virtualService);
 ```
 
 The `listeners` property can be left blank and added later with the `node.addListener()` method. The `healthcheck` and `timeout` properties are optional but if specifying a listener, the `port` must be added.
+
+The `backends` property can be added with `node.addBackend()`. We define a virtual service and add it to the virtual node to allow egress traffic to other node.
+
+The `backendsDefaultClientPolicy` property are added to the node while creating the virtual node. These are virtual node's service backends client policy defaults.
 
 ## Adding a Route
 
@@ -269,6 +312,8 @@ using rules defined in gateway routes which can be added to your virtual gateway
 Create a virtual gateway with the constructor:
 
 ```ts
+const certificateAuthorityArn = 'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/12345678-1234-1234-1234-123456789012';
+
 const gateway = new appmesh.VirtualGateway(stack, 'gateway', {
   mesh: mesh,
   listeners: [appmesh.VirtualGatewayListener.http({
@@ -277,6 +322,10 @@ const gateway = new appmesh.VirtualGateway(stack, 'gateway', {
       interval: cdk.Duration.seconds(10),
     },
   })],
+  backendsDefaultClientPolicy: appmesh.ClientPolicy.acmTrust({
+    certificateAuthorities: [acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'certificate', certificateAuthorityArn)],
+    ports: [8080, 8081],
+  }),
   accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
   virtualGatewayName: 'virtualGateway',
 });
@@ -299,6 +348,8 @@ const gateway = mesh.addVirtualGateway('gateway', {
 
 The listeners field can be omitted which will default to an HTTP Listener on port 8080.
 A gateway route can be added using the `gateway.addGatewayRoute()` method.
+
+The `backendsDefaultClientPolicy` property are added to the node while creating the virtual gateway. These are virtual gateway's service backends client policy defaults.
 
 ## Adding a Gateway Route
 
