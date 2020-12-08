@@ -40,7 +40,6 @@ You can reference an existing channel, for example, if you need to create a
 stream key for an existing channel
 
 ```ts
-const myChannelArn = 'arn:aws:ivs:us-west-2:123456789012:channel/abcdABCDefgh';
 const myChannel = ivs.Channel.fromChannelArn(this, 'Channel', myChannelArn);
 ```
 
@@ -51,7 +50,7 @@ storing this value, it should be treated as if it were a password.
 
 You can create a stream key for a given channel
 
-```ts
+```ts fixture=with-channel
 const myStreamKey = myChannel.addStreamKey('StreamKey');
 ```
 
