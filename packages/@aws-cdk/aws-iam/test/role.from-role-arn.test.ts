@@ -305,7 +305,7 @@ describe('IAM Role.fromRoleArn', () => {
   });
 
   describe('imported with a dynamic ARN', () => {
-    const dynamicValue = Lazy.stringValue({ produce: () => 'role-arn' });
+    const dynamicValue = Lazy.string({ produce: () => 'role-arn' });
     const roleName: any = {
       'Fn::Select': [1,
         {

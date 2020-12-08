@@ -1,7 +1,7 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
+import * as acmpca from '@aws-cdk/aws-acmpca';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-
 import * as appmesh from '../lib';
 
 export = {
@@ -244,6 +244,108 @@ export = {
                     Idle: {
                       Unit: 'ms',
                       Value: 10000,
+                    },
+                  },
+                },
+              },
+            ],
+          },
+        }));
+
+        test.done();
+      },
+    },
+
+    'when a default backend is added': {
+      'should add a backend default to the resource'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+
+        // WHEN
+        const mesh = new appmesh.Mesh(stack, 'mesh', {
+          meshName: 'test-mesh',
+        });
+
+        const certificateAuthorityArn = 'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/12345678-1234-1234-1234-123456789012';
+
+        new appmesh.VirtualNode(stack, 'test-node', {
+          mesh,
+          dnsHostName: 'test',
+          backendsDefaultClientPolicy: appmesh.ClientPolicy.acmTrust({
+            certificateAuthorities: [acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'certificate', certificateAuthorityArn)],
+            ports: [8080, 8081],
+          }),
+        });
+
+        // THEN
+        expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
+          Spec: {
+            BackendDefaults: {
+              ClientPolicy: {
+                TLS: {
+                  Ports: [8080, 8081],
+                  Validation: {
+                    Trust: {
+                      ACM: {
+                        CertificateAuthorityArns: [`${certificateAuthorityArn}`],
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        }));
+
+        test.done();
+      },
+    },
+
+    'when a backend is added': {
+      'should add a backend virtual service to the resource'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+
+        // WHEN
+        const mesh = new appmesh.Mesh(stack, 'mesh', {
+          meshName: 'test-mesh',
+        });
+
+        const node = new appmesh.VirtualNode(stack, 'test-node', {
+          mesh,
+          dnsHostName: 'test',
+        });
+
+        const service1 = new appmesh.VirtualService(stack, 'service-1', {
+          virtualServiceName: 'service1.domain.local',
+          mesh,
+          clientPolicy: appmesh.ClientPolicy.fileTrust({
+            certificateChain: 'path-to-certificate',
+            ports: [8080, 8081],
+          }),
+        });
+
+        node.addBackend(service1);
+
+        // THEN
+        expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
+          Spec: {
+            Backends: [
+              {
+                VirtualService: {
+                  VirtualServiceName: {
+                    'Fn::GetAtt': ['service1A48078CF', 'VirtualServiceName'],
+                  },
+                  ClientPolicy: {
+                    TLS: {
+                      Ports: [8080, 8081],
+                      Validation: {
+                        Trust: {
+                          File: {
+                            CertificateChain: 'path-to-certificate',
+                          },
+                        },
+                      },
                     },
                   },
                 },

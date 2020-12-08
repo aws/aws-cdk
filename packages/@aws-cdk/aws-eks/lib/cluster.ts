@@ -136,7 +136,7 @@ export interface ICluster extends IResource, ec2.IConnectable {
    * @param manifest a list of Kubernetes resource specifications
    * @returns a `KubernetesManifest` object.
    */
-  addManifest(id: string, ...manifest: any[]): KubernetesManifest;
+  addManifest(id: string, ...manifest: Record<string, any>[]): KubernetesManifest;
 
   /**
    * Defines a Helm chart in this cluster.
@@ -641,7 +641,7 @@ abstract class ClusterBase extends Resource implements ICluster {
    * @param manifest a list of Kubernetes resource specifications
    * @returns a `KubernetesResource` object.
    */
-  public addManifest(id: string, ...manifest: any[]): KubernetesManifest {
+  public addManifest(id: string, ...manifest: Record<string, any>[]): KubernetesManifest {
     return new KubernetesManifest(this, `manifest-${id}`, { cluster: this, manifest });
   }
 
@@ -1352,18 +1352,20 @@ export class Cluster extends ClusterBase {
 
   private selectPrivateSubnets(): ec2.ISubnet[] {
     const privateSubnets: ec2.ISubnet[] = [];
+    const vpcPrivateSubnetIds = this.vpc.privateSubnets.map(s => s.subnetId);
+    const vpcPublicSubnetIds = this.vpc.publicSubnets.map(s => s.subnetId);
 
     for (const placement of this.vpcSubnets) {
 
       for (const subnet of this.vpc.selectSubnets(placement).subnets) {
 
-        if (this.vpc.privateSubnets.includes(subnet)) {
+        if (vpcPrivateSubnetIds.includes(subnet.subnetId)) {
           // definitely private, take it.
           privateSubnets.push(subnet);
           continue;
         }
 
-        if (this.vpc.publicSubnets.includes(subnet)) {
+        if (vpcPublicSubnetIds.includes(subnet.subnetId)) {
           // definitely public, skip it.
           continue;
         }
