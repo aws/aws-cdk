@@ -1,11 +1,10 @@
 import { arrayWith, ResourcePart } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as iam from '@aws-cdk/aws-iam';
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cdk from '@aws-cdk/core';
 import * as kms from '../lib';
 
-const LEGACY_ADMIN_ACTIONS: string[] = [
+const ADMIN_ACTIONS: string[] = [
   'kms:Create*',
   'kms:Describe*',
   'kms:Enable*',
@@ -20,7 +19,24 @@ const LEGACY_ADMIN_ACTIONS: string[] = [
   'kms:UntagResource',
   'kms:ScheduleKeyDeletion',
   'kms:CancelKeyDeletion',
+];
+
+const LEGACY_ADMIN_ACTIONS: string[] = [
+  'kms:Create*',
+  'kms:Describe*',
+  'kms:Enable*',
+  'kms:List*',
+  'kms:Put*',
+  'kms:Update*',
+  'kms:Revoke*',
+  'kms:Disable*',
+  'kms:Get*',
+  'kms:Delete*',
+  'kms:ScheduleKeyDeletion',
+  'kms:CancelKeyDeletion',
   'kms:GenerateDataKey',
+  'kms:TagResource',
+  'kms:UntagResource',
 ];
 
 let app: cdk.App;
@@ -196,6 +212,35 @@ describe('key policies', () => {
       },
     });
   });
+
+  test('additional key admins can be specified', () => {
+    const adminRole = iam.Role.fromRoleArn(stack, 'Admin', 'arn:aws:iam::123456789012:role/TrustedAdmin');
+    new kms.Key(stack, 'MyKey', { admins: [adminRole] });
+
+    expect(stack).toHaveResource('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: [
+          {
+            Action: 'kms:*',
+            Effect: 'Allow',
+            Principal: {
+              AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']] },
+            },
+            Resource: '*',
+          },
+          {
+            Action: ADMIN_ACTIONS,
+            Effect: 'Allow',
+            Principal: {
+              AWS: 'arn:aws:iam::123456789012:role/TrustedAdmin',
+            },
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
 });
 
 test('key with some options', () => {
@@ -228,11 +273,9 @@ test('key with some options', () => {
   });
 });
 
-test('trustAccountIdentities will warn if set to false (when the defaultKeyPolicies feature flag is enabled)', () => {
-  const key = new kms.Key(stack, 'MyKey', { trustAccountIdentities: false });
-
-  expect(key.node.metadata[0].type).toEqual(cxschema.ArtifactMetadataEntryType.WARN);
-  expect(key.node.metadata[0].data).toEqual('`trustAccountIdentities` has no impact if the @aws-cdk/aws-kms:defaultKeyPolicies feature flag is set');
+test('setting trustAccountIdentities to false will throw (when the defaultKeyPolicies feature flag is enabled)', () => {
+  expect(() => new kms.Key(stack, 'MyKey', { trustAccountIdentities: false }))
+    .toThrow('`trustAccountIdentities` cannot be false if the @aws-cdk/aws-kms:defaultKeyPolicies feature flag is set');
 });
 
 test('addAlias creates an alias', () => {
@@ -463,6 +506,35 @@ describe('when the defaultKeyPolicies feature flag is disabled', () => {
             Resource: '*',
           },
         ],
+      },
+    });
+  });
+
+  test('additional key admins can be specified', () => {
+    const adminRole = iam.Role.fromRoleArn(stack, 'Admin', 'arn:aws:iam::123456789012:role/TrustedAdmin');
+    new kms.Key(stack, 'MyKey', { admins: [adminRole] });
+
+    expect(stack).toHaveResource('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: [
+          {
+            Action: LEGACY_ADMIN_ACTIONS,
+            Effect: 'Allow',
+            Principal: {
+              AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']] },
+            },
+            Resource: '*',
+          },
+          {
+            Action: ADMIN_ACTIONS,
+            Effect: 'Allow',
+            Principal: {
+              AWS: 'arn:aws:iam::123456789012:role/TrustedAdmin',
+            },
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
       },
     });
   });

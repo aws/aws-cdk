@@ -1,10 +1,10 @@
 import * as iam from '@aws-cdk/aws-iam';
-import { Annotations, FeatureFlags, IResource, RemovalPolicy, Resource, Stack } from '@aws-cdk/core';
+import { FeatureFlags, IResource, RemovalPolicy, Resource, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { IConstruct, Construct } from 'constructs';
 import { Alias } from './alias';
 import { CfnKey } from './kms.generated';
-import * as perms from './perms';
+import * as perms from './private/perms';
 
 /**
  * A KMS Key, either managed by this CDK app, or imported.
@@ -295,6 +295,18 @@ export interface KeyProps {
   readonly policy?: iam.PolicyDocument;
 
   /**
+   * A list of principals to add as key administrators to the key policy.
+   *
+   * Key administrators have permissions to manage the key (e.g., change permissions, revoke), but do not have permissions
+   * to use the key in cryptographic operations (e.g., encrypt, decrypt).
+   *
+   * These principals will be added to the default key policy (if none specified), or to the specified policy (if provided).
+   *
+   * @default []
+   */
+  readonly admins?: iam.IPrincipal[];
+
+  /**
    * Whether the encryption key should be retained when it is removed from the Stack. This is useful when one wants to
    * retain access to data that was encrypted with a key that is being retired.
    *
@@ -315,6 +327,7 @@ export interface KeyProps {
    *
    * @default - false, unless the '@aws-cdk/aws-kms:defaultKeyPolicies' feature flag is set.
    * @see https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html#key-policy-default-allow-root-enable-iam
+   * @deprecated redundant with the '@aws-cdk/aws-kms:defaultKeyPolicies' feature flag
    */
   readonly trustAccountIdentities?: boolean;
 }
@@ -365,27 +378,29 @@ export class Key extends KeyBase {
   constructor(scope: Construct, id: string, props: KeyProps = {}) {
     super(scope, id);
 
-    const defaultKeyPoliciesEnabled = FeatureFlags.of(this).isEnabled(cxapi.KMS_DEFAULT_KEY_POLICIES);
+    const defaultKeyPoliciesFeatureEnabled = FeatureFlags.of(this).isEnabled(cxapi.KMS_DEFAULT_KEY_POLICIES);
 
     this.policy = props.policy ?? new iam.PolicyDocument();
-    if (defaultKeyPoliciesEnabled) {
+    if (defaultKeyPoliciesFeatureEnabled) {
       if (props.trustAccountIdentities === false) {
-        Annotations.of(this).addWarning('`trustAccountIdentities` has no impact if the @aws-cdk/aws-kms:defaultKeyPolicies feature flag is set');
+        throw new Error('`trustAccountIdentities` cannot be false if the @aws-cdk/aws-kms:defaultKeyPolicies feature flag is set');
       }
 
       this.trustAccountIdentities = true;
       // Set the default key policy if one hasn't been provided by the user.
       if (!props.policy) {
-        this.grantDefaultKeyPolicy();
+        this.addDefaultAdminPolicy();
       }
     } else {
-      this.trustAccountIdentities = props.trustAccountIdentities || false;
+      this.trustAccountIdentities = props.trustAccountIdentities ?? false;
       if (this.trustAccountIdentities) {
-        this.grantDefaultKeyPolicy();
+        this.addDefaultAdminPolicy();
       } else {
-        this.grantAccountAdminPrivilegesPlusGenerateDataKey();
+        this.addLegacyAdminPolicy();
       }
     }
+
+    (props.admins ?? []).forEach((p) => this.addAdmin(p));
 
     const resource = new CfnKey(this, 'Resource', {
       description: props.description,
@@ -404,12 +419,26 @@ export class Key extends KeyBase {
   }
 
   /**
+   * Adds the specified principal to the key policy as a key administrator.
+   *
+   * Key administrators have permissions to manage the key (e.g., change permissions, revoke), but do not have permissions
+   * to use the key in cryptographic operations (e.g., encrypt, decrypt).
+   */
+  public addAdmin(principal: iam.IPrincipal) {
+    this.addToResourcePolicy(new iam.PolicyStatement({
+      resources: ['*'],
+      actions: perms.ADMIN_ACTIONS,
+      principals: [principal],
+    }));
+  }
+
+  /**
    * Adds the default key policy to the key. This policy gives the AWS account (root user) full access to the CMK,
    * which reduces the risk of the CMK becoming unmanageable and enables IAM policies to allow access to the CMK.
    * This is the same policy that is default when creating a Key via the KMS API or Console.
    * @see https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html#key-policy-default
    */
-  private grantDefaultKeyPolicy() {
+  private addDefaultAdminPolicy() {
     this.addToResourcePolicy(new iam.PolicyStatement({
       resources: ['*'],
       actions: ['kms:*'],
@@ -426,10 +455,30 @@ export class Key extends KeyBase {
    * @link https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html#key-policy-default
    * @deprecated
    */
-  private grantAccountAdminPrivilegesPlusGenerateDataKey() {
+  private addLegacyAdminPolicy() {
+    // This is equivalent to `[...perms.ADMIN_ACTIONS, 'kms:GenerateDataKey']`,
+    // but keeping this explicit ordering for backwards-compatibility (changing the ordering causes resource updates)
+    const actions = [
+      'kms:Create*',
+      'kms:Describe*',
+      'kms:Enable*',
+      'kms:List*',
+      'kms:Put*',
+      'kms:Update*',
+      'kms:Revoke*',
+      'kms:Disable*',
+      'kms:Get*',
+      'kms:Delete*',
+      'kms:ScheduleKeyDeletion',
+      'kms:CancelKeyDeletion',
+      'kms:GenerateDataKey',
+      'kms:TagResource',
+      'kms:UntagResource',
+    ];
+
     this.addToResourcePolicy(new iam.PolicyStatement({
       resources: ['*'],
-      actions: [...perms.ADMIN_ACTIONS, 'kms:GenerateDataKey'],
+      actions,
       principals: [new iam.AccountRootPrincipal()],
     }));
   }
