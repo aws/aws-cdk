@@ -43,6 +43,9 @@ const myChannel = ivs.Channel.fromChannelArn(this, 'Channel', myChannelArn);
 ```
 
 #### Stream Keys
+A Stream Key is used by a broadcast encoder to initiate a stream and identify
+to Amazon IVS which customer and channel the stream is for. If a customer is
+storing this value, it should be treated as if it were a password.
 
 You can create a stream key for a given channel
 
