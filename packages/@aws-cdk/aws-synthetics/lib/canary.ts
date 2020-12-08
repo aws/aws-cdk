@@ -293,17 +293,19 @@ export class Canary extends cdk.Resource {
 
     this.role = props.role ?? this.createDefaultRole(props.artifactsBucketLocation?.prefix);
 
+    const schedule = this.createSchedule(props);
+
     const resource: CfnCanary = new CfnCanary(this, 'Resource', {
       artifactS3Location: this.artifactsBucket.s3UrlForObject(props.artifactsBucketLocation?.prefix),
       executionRoleArn: this.role.roleArn,
       startCanaryAfterCreation: props.startAfterCreation ?? true,
       runtimeVersion: props.runtime.name,
       name: this.physicalName,
-      schedule: this.createSchedule(props),
+      schedule: schedule,
       failureRetentionPeriod: props.failureRetentionPeriod?.toDays(),
       successRetentionPeriod: props.successRetentionPeriod?.toDays(),
       code: this.createCode(props),
-      runConfig: this.createRunConfig(props),
+      runConfig: this.createRunConfig(props, schedule),
     });
 
     this.canaryId = resource.attrId;
@@ -427,8 +429,13 @@ export class Canary extends cdk.Resource {
   /**
    * Retruns a runConfig object
    */
-  private createRunConfig(props:CanaryProps): CfnCanary.RunConfigProperty {
-    const DEFAULT_CANARY_TIMEOUT_IN_SECONDS = 900;
+  private createRunConfig(props:CanaryProps, schedule: CfnCanary.ScheduleProperty): CfnCanary.RunConfigProperty {
+    // Default timeout will be adjusted to the rate if provided and under max (900s)
+    // @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-synthetics-canary-runconfig.html#cfn-synthetics-canary-runconfig-timeoutinseconds
+    const MAX_CANARY_TIMEOUT = 900;
+    const RATE_IN_SECONDS = Schedule.expressionToRateInSeconds(schedule.expression);
+    const DEFAULT_CANARY_TIMEOUT_IN_SECONDS = RATE_IN_SECONDS <= MAX_CANARY_TIMEOUT ? RATE_IN_SECONDS : MAX_CANARY_TIMEOUT;
+
     return {
       timeoutInSeconds: props.timeout?.toSeconds() ?? DEFAULT_CANARY_TIMEOUT_IN_SECONDS,
       activeTracing: props.tracing,

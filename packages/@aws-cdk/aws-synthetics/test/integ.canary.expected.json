@@ -110,7 +110,7 @@
         },
         "StartCanaryAfterCreation": true,
         "RunConfig": {
-            "TimeoutInSeconds":900
+            "TimeoutInSeconds":60
         }
       }
     },
@@ -269,7 +269,7 @@
         },
         "StartCanaryAfterCreation": true,
         "RunConfig": {
-            "TimeoutInSeconds":900
+            "TimeoutInSeconds":300
         }
       }
     },
@@ -428,7 +428,7 @@
         },
         "StartCanaryAfterCreation": true,
         "RunConfig": {
-            "TimeoutInSeconds":900
+            "TimeoutInSeconds":300
         }
       }
     }

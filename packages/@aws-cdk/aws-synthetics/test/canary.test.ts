@@ -205,6 +205,95 @@ test('RunConfig attributes can be specified', () => {
   });
 });
 
+test('If timeout not provided it default to schedule set with rate', () => {
+  // GIVEN
+  const stack = new Stack(new App(), 'canaries');
+  const scheduledRate = Duration.minutes(3);
+  // WHEN
+  new synthetics.Canary(stack, 'Canary', {
+    runtime: synthetics.Runtime.SYNTHETICS_1_0,
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+    }),
+    schedule: synthetics.Schedule.rate(scheduledRate),
+  });
+
+  // THEN
+  expect(stack).toHaveResourceLike('AWS::Synthetics::Canary', {
+    RunConfig: {
+      TimeoutInSeconds: scheduledRate.toSeconds(),
+    },
+  });
+});
+
+test('If timeout not provided it default to schedule  set with expressionString', () => {
+  // GIVEN
+  const stack = new Stack(new App(), 'canaries');
+  // WHEN
+  new synthetics.Canary(stack, 'Canary', {
+    runtime: synthetics.Runtime.SYNTHETICS_1_0,
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+    }),
+    schedule: {
+      expressionString: 'rate(2 minutes)',
+    },
+  });
+
+  // THEN
+  expect(stack).toHaveResourceLike('AWS::Synthetics::Canary', {
+    RunConfig: {
+      TimeoutInSeconds: 120,
+    },
+  });
+});
+
+
+test('If timeout not provided it default to default schedule if schedule is not set', () => {
+  // GIVEN
+  const stack = new Stack(new App(), 'canaries');
+  // WHEN
+  new synthetics.Canary(stack, 'Canary', {
+    runtime: synthetics.Runtime.SYNTHETICS_1_0,
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+    }),
+  });
+
+  // THEN
+  expect(stack).toHaveResourceLike('AWS::Synthetics::Canary', {
+    RunConfig: {
+      TimeoutInSeconds: 300,
+    },
+  });
+});
+
+test('If timeout not provided it default to MAX timeout if schedule is higher than max', () => {
+  // GIVEN
+  const stack = new Stack(new App(), 'canaries');
+  const scheduledRate = Duration.hours(1);
+
+  // WHEN
+  new synthetics.Canary(stack, 'Canary', {
+    runtime: synthetics.Runtime.SYNTHETICS_1_0,
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+    }),
+    schedule: synthetics.Schedule.rate(scheduledRate),
+  });
+
+  // THEN
+  expect(stack).toHaveResourceLike('AWS::Synthetics::Canary', {
+    RunConfig: {
+      TimeoutInSeconds: 900,
+    },
+  });
+});
+
 test('Runtime can be customized', () => {
   // GIVEN
   const stack = new Stack(new App(), 'canaries');
