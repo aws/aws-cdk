@@ -29,6 +29,7 @@ const defaultCredOptions = {
 let uid: string;
 let pluginQueried = false;
 let defaultEnv: cxapi.Environment;
+let pluginEnv: cxapi.Environment;
 let getCallerIdentityError: Error | null = null;
 
 beforeEach(() => {
@@ -60,6 +61,7 @@ beforeEach(() => {
   });
 
   defaultEnv = cxapi.EnvironmentUtils.make(`${uid}the_account_#`, 'def');
+  pluginEnv = cxapi.EnvironmentUtils.make(`${uid}plugin_account_#`, 'def');
 
   // Scrub some environment variables that might be set if we're running on CodeBuild which will interfere with the tests.
   delete process.env.AWS_PROFILE;
@@ -200,7 +202,7 @@ describe('with default config files', () => {
 
       // THEN
       try {
-        await provider.withAssumedRole('arn:aws:iam::account:role/role', undefined, undefined);
+        await provider.withAssumedRole('arn:aws:iam::account:role/role', undefined, undefined, Mode.ForReading);
         fail('Should error as no credentials could be loaded');
       } catch (e) {
         // Mock response was set to fail to make sure we don't call STS
@@ -270,7 +272,7 @@ describe('with default config files', () => {
       });
 
       // WHEN
-      const sdk = await provider.withAssumedRole('bla.role.arn', undefined, undefined);
+      const sdk = await provider.withAssumedRole('bla.role.arn', undefined, undefined, Mode.ForReading);
       makeAssumeRoleFail(sdk);
 
       // THEN - error message contains both a helpful hint and the underlying AssumeRole message
@@ -305,7 +307,7 @@ describe('with default config files', () => {
 
           // WHEN
           const provider = new SdkProvider(new AWS.CredentialProviderChain([() => new AWS.Credentials({ accessKeyId: 'a', secretAccessKey: 's' })]), 'eu-somewhere');
-          const sdk = await provider.withAssumedRole('bla.role.arn', undefined, undefined);
+          const sdk = await provider.withAssumedRole('bla.role.arn', undefined, undefined, Mode.ForReading);
 
           await sdk.currentCredentials();
 
@@ -327,6 +329,12 @@ describe('with default config files', () => {
     test('uses plugin for other account', async () => {
       const provider = await SdkProvider.withAwsCliCompatibleDefaults({ ...defaultCredOptions });
       await provider.forEnvironment({ ...defaultEnv, account: `${uid}plugin_account_#` }, Mode.ForReading);
+      expect(pluginQueried).toEqual(true);
+    });
+
+    test('can assume role with credentials from plugin', async () => {
+      const provider = await SdkProvider.withAwsCliCompatibleDefaults({ ...defaultCredOptions });
+      await provider.withAssumedRole('arn:aws:iam::12356789012:role/Assumable', undefined, pluginEnv, Mode.ForReading);
       expect(pluginQueried).toEqual(true);
     });
   });

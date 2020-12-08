@@ -6,6 +6,7 @@ import { Construct } from 'constructs';
 import { NetworkMode, TaskDefinition } from './base/task-definition';
 import { ContainerImage, ContainerImageConfig } from './container-image';
 import { CfnTaskDefinition } from './ecs.generated';
+import { EnvironmentFile, EnvironmentFileConfig } from './environment-file';
 import { LinuxParameters } from './linux-parameters';
 import { LogDriver, LogDriverConfig } from './log-drivers/log-driver';
 
@@ -140,6 +141,15 @@ export interface ContainerDefinitionOptions {
    * @default - No environment variables.
    */
   readonly environment?: { [key: string]: string };
+
+  /**
+   * The environment files to pass to the container.
+   *
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/taskdef-envfiles.html
+   *
+   * @default - No environment files.
+   */
+  readonly environmentFiles?: EnvironmentFile[];
 
   /**
    * The secret environment variables to pass to the container.
@@ -351,6 +361,11 @@ export class ContainerDefinition extends cdk.Construct {
   public readonly taskDefinition: TaskDefinition;
 
   /**
+   * The environment files for this container
+   */
+  public readonly environmentFiles?: EnvironmentFileConfig[];
+
+  /**
    * The log configuration specification for the container.
    */
   public readonly logDriverConfig?: LogDriverConfig;
@@ -402,6 +417,18 @@ export class ContainerDefinition extends cdk.Construct {
           name,
           valueFrom: secret.arn,
         });
+      }
+    }
+
+    if (this.taskDefinition.isFargateCompatible && props.environmentFiles) {
+      throw new Error(`Cannot specify environment files for a task using the FARGATE launch type in container '${this.node.id}'.`);
+    }
+
+    if (props.environmentFiles) {
+      this.environmentFiles = [];
+
+      for (const environmentFile of props.environmentFiles) {
+        this.environmentFiles.push(environmentFile.bind(this));
       }
     }
 
@@ -563,7 +590,7 @@ export class ContainerDefinition extends cdk.Construct {
       command: this.props.command,
       cpu: this.props.cpu,
       disableNetworking: this.props.disableNetworking,
-      dependsOn: cdk.Lazy.anyValue({ produce: () => this.containerDependencies.map(renderContainerDependency) }, { omitEmptyArray: true }),
+      dependsOn: cdk.Lazy.any({ produce: () => this.containerDependencies.map(renderContainerDependency) }, { omitEmptyArray: true }),
       dnsSearchDomains: this.props.dnsSearchDomains,
       dnsServers: this.props.dnsServers,
       dockerLabels: this.props.dockerLabels,
@@ -574,24 +601,25 @@ export class ContainerDefinition extends cdk.Construct {
       image: this.imageConfig.imageName,
       memory: this.props.memoryLimitMiB,
       memoryReservation: this.props.memoryReservationMiB,
-      mountPoints: cdk.Lazy.anyValue({ produce: () => this.mountPoints.map(renderMountPoint) }, { omitEmptyArray: true }),
+      mountPoints: cdk.Lazy.any({ produce: () => this.mountPoints.map(renderMountPoint) }, { omitEmptyArray: true }),
       name: this.containerName,
-      portMappings: cdk.Lazy.anyValue({ produce: () => this.portMappings.map(renderPortMapping) }, { omitEmptyArray: true }),
+      portMappings: cdk.Lazy.any({ produce: () => this.portMappings.map(renderPortMapping) }, { omitEmptyArray: true }),
       privileged: this.props.privileged,
       readonlyRootFilesystem: this.props.readonlyRootFilesystem,
       repositoryCredentials: this.imageConfig.repositoryCredentials,
       startTimeout: this.props.startTimeout && this.props.startTimeout.toSeconds(),
       stopTimeout: this.props.stopTimeout && this.props.stopTimeout.toSeconds(),
-      ulimits: cdk.Lazy.anyValue({ produce: () => this.ulimits.map(renderUlimit) }, { omitEmptyArray: true }),
+      ulimits: cdk.Lazy.any({ produce: () => this.ulimits.map(renderUlimit) }, { omitEmptyArray: true }),
       user: this.props.user,
-      volumesFrom: cdk.Lazy.anyValue({ produce: () => this.volumesFrom.map(renderVolumeFrom) }, { omitEmptyArray: true }),
+      volumesFrom: cdk.Lazy.any({ produce: () => this.volumesFrom.map(renderVolumeFrom) }, { omitEmptyArray: true }),
       workingDirectory: this.props.workingDirectory,
       logConfiguration: this.logDriverConfig,
       environment: this.props.environment && renderKV(this.props.environment, 'name', 'value'),
+      environmentFiles: this.environmentFiles && renderEnvironmentFiles(this.environmentFiles),
       secrets: this.secrets,
       extraHosts: this.props.extraHosts && renderKV(this.props.extraHosts, 'hostname', 'ipAddress'),
       healthCheck: this.props.healthCheck && renderHealthCheck(this.props.healthCheck),
-      links: cdk.Lazy.listValue({ produce: () => this.links }, { omitEmpty: true }),
+      links: cdk.Lazy.list({ produce: () => this.links }, { omitEmpty: true }),
       linuxParameters: this.linuxParameters && this.linuxParameters.renderLinuxParameters(),
       resourceRequirements: (this.props.gpuCount !== undefined) ? renderResourceRequirements(this.props.gpuCount) : undefined,
     };
@@ -650,9 +678,26 @@ export interface HealthCheck {
 }
 
 function renderKV(env: { [key: string]: string }, keyName: string, valueName: string): any[] {
-  const ret = new Array();
+  const ret = [];
   for (const [key, value] of Object.entries(env)) {
     ret.push({ [keyName]: key, [valueName]: value });
+  }
+  return ret;
+}
+
+function renderEnvironmentFiles(environmentFiles: EnvironmentFileConfig[]): any[] {
+  const ret = [];
+  for (const environmentFile of environmentFiles) {
+    const s3Location = environmentFile.s3Location;
+
+    if (!s3Location) {
+      throw Error('Environment file must specify an S3 location');
+    }
+
+    ret.push({
+      type: environmentFile.fileType,
+      value: `arn:aws:s3:::${s3Location.bucketName}/${s3Location.objectKey}`,
+    });
   }
   return ret;
 }

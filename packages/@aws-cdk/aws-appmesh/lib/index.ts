@@ -2,6 +2,7 @@
 export * from './appmesh.generated';
 export * from './mesh';
 export * from './route';
+export * from './route-spec';
 export * from './shared-interfaces';
 export * from './virtual-node';
 export * from './virtual-router';
@@ -12,3 +13,4 @@ export * from './virtual-gateway';
 export * from './virtual-gateway-listener';
 export * from './gateway-route';
 export * from './gateway-route-spec';
+export * from './client-policy';
