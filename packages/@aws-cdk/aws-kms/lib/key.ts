@@ -171,21 +171,21 @@ abstract class KeyBase extends Resource implements IKey {
   }
 
   /**
-   * Grant decryption permisisons using this key to the given principal
+   * Grant decryption permissions using this key to the given principal
    */
   public grantDecrypt(grantee: iam.IGrantable): iam.Grant {
     return this.grant(grantee, ...perms.DECRYPT_ACTIONS);
   }
 
   /**
-   * Grant encryption permisisons using this key to the given principal
+   * Grant encryption permissions using this key to the given principal
    */
   public grantEncrypt(grantee: iam.IGrantable): iam.Grant {
     return this.grant(grantee, ...perms.ENCRYPT_ACTIONS);
   }
 
   /**
-   * Grant encryption and decryption permisisons using this key to the given principal
+   * Grant encryption and decryption permissions using this key to the given principal
    */
   public grantEncryptDecrypt(grantee: iam.IGrantable): iam.Grant {
     return this.grant(grantee, ...[...perms.DECRYPT_ACTIONS, ...perms.ENCRYPT_ACTIONS]);
@@ -400,8 +400,6 @@ export class Key extends KeyBase {
       }
     }
 
-    (props.admins ?? []).forEach((p) => this.addAdmin(p));
-
     const resource = new CfnKey(this, 'Resource', {
       description: props.description,
       enableKeyRotation: props.enableKeyRotation,
@@ -413,23 +411,21 @@ export class Key extends KeyBase {
     this.keyId = resource.ref;
     resource.applyRemovalPolicy(props.removalPolicy);
 
+    (props.admins ?? []).forEach((p) => this.grantAdmin(p));
+
     if (props.alias !== undefined) {
       this.addAlias(props.alias);
     }
   }
 
   /**
-   * Adds the specified principal to the key policy as a key administrator.
+   * Grant admins permissions using this key to the given principal
    *
    * Key administrators have permissions to manage the key (e.g., change permissions, revoke), but do not have permissions
    * to use the key in cryptographic operations (e.g., encrypt, decrypt).
    */
-  public addAdmin(principal: iam.IPrincipal) {
-    this.addToResourcePolicy(new iam.PolicyStatement({
-      resources: ['*'],
-      actions: perms.ADMIN_ACTIONS,
-      principals: [principal],
-    }));
+  public grantAdmin(grantee: iam.IGrantable): iam.Grant {
+    return this.grant(grantee, ...perms.ADMIN_ACTIONS);
   }
 
   /**

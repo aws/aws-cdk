@@ -213,7 +213,7 @@ describe('key policies', () => {
     });
   });
 
-  test('additional key admins can be specified', () => {
+  test('additional key admins can be specified (with imported/immutable principal)', () => {
     const adminRole = iam.Role.fromRoleArn(stack, 'Admin', 'arn:aws:iam::123456789012:role/TrustedAdmin');
     new kms.Key(stack, 'MyKey', { admins: [adminRole] });
 
@@ -235,6 +235,42 @@ describe('key policies', () => {
               AWS: 'arn:aws:iam::123456789012:role/TrustedAdmin',
             },
             Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
+  test('additional key admins can be specified (with owned/mutable principal)', () => {
+    const adminRole = new iam.Role(stack, 'AdminRole', {
+      assumedBy: new iam.AccountRootPrincipal(),
+    });
+    new kms.Key(stack, 'MyKey', { admins: [adminRole] });
+
+    expect(stack).toHaveResource('AWS::KMS::Key', {
+      KeyPolicy: {
+        // Unmodified - default key policy
+        Statement: [
+          {
+            Action: 'kms:*',
+            Effect: 'Allow',
+            Principal: {
+              AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']] },
+            },
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+    expect(stack).toHaveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: ADMIN_ACTIONS,
+            Effect: 'Allow',
+            Resource: { 'Fn::GetAtt': ['MyKey6AB29FA6', 'Arn'] },
           },
         ],
         Version: '2012-10-17',
@@ -510,7 +546,7 @@ describe('when the defaultKeyPolicies feature flag is disabled', () => {
     });
   });
 
-  test('additional key admins can be specified', () => {
+  test('additional key admins can be specified (with imported/immutable principal)', () => {
     const adminRole = iam.Role.fromRoleArn(stack, 'Admin', 'arn:aws:iam::123456789012:role/TrustedAdmin');
     new kms.Key(stack, 'MyKey', { admins: [adminRole] });
 
@@ -532,6 +568,49 @@ describe('when the defaultKeyPolicies feature flag is disabled', () => {
               AWS: 'arn:aws:iam::123456789012:role/TrustedAdmin',
             },
             Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
+  test('additional key admins can be specified (with owned/mutable principal)', () => {
+    const adminRole = new iam.Role(stack, 'AdminRole', {
+      assumedBy: new iam.AccountRootPrincipal(),
+    });
+    new kms.Key(stack, 'MyKey', { admins: [adminRole] });
+
+    expect(stack).toHaveResource('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: [
+          {
+            Action: LEGACY_ADMIN_ACTIONS,
+            Effect: 'Allow',
+            Principal: {
+              AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']] },
+            },
+            Resource: '*',
+          },
+          {
+            Action: ADMIN_ACTIONS,
+            Effect: 'Allow',
+            Principal: {
+              AWS: { 'Fn::GetAtt': ['AdminRole38563C57', 'Arn'] },
+            },
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+    expect(stack).toHaveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: ADMIN_ACTIONS,
+            Effect: 'Allow',
+            Resource: { 'Fn::GetAtt': ['MyKey6AB29FA6', 'Arn'] },
           },
         ],
         Version: '2012-10-17',
