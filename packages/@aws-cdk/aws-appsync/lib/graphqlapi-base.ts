@@ -4,6 +4,7 @@ import { IDatabaseCluster } from '@aws-cdk/aws-rds';
 import { ISecret } from '@aws-cdk/aws-secretsmanager';
 import { CfnResource, IResource, Resource } from '@aws-cdk/core';
 import { DynamoDbDataSource, HttpDataSource, LambdaDataSource, NoneDataSource, RdsDataSource, AwsIamConfig } from './data-source';
+import { Resolver, ExtendedResolverProps } from './resolver';
 
 /**
  * Optional configuration for data sources
@@ -106,6 +107,11 @@ export interface IGraphqlApi extends IResource {
     secretStore: ISecret,
     options?: DataSourceOptions
   ): RdsDataSource;
+
+  /**
+   * creates a new resolver for this datasource and API using the given properties
+   */
+  createResolver(props: ExtendedResolverProps): Resolver;
 
   /**
    * Add schema dependency if not imported
@@ -214,6 +220,16 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
       description: options?.description,
       databaseCluster,
       secretStore,
+    });
+  }
+
+  /**
+   * creates a new resolver for this datasource and API using the given properties
+   */
+  public createResolver(props: ExtendedResolverProps): Resolver {
+    return new Resolver(this, `${props.typeName}${props.fieldName}Resolver`, {
+      api: this,
+      ...props,
     });
   }
 
