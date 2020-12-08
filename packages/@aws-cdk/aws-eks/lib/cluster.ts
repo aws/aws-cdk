@@ -434,6 +434,16 @@ export interface ClusterOptions extends CommonClusterOptions {
    * @see https://github.com/aws-samples/aws-lambda-layer-kubectl
    */
   readonly kubectlLayer?: lambda.ILayerVersion;
+
+  /**
+   * Indicates whether Kubernetes resources added through `addManifest()` can be
+   * automatically pruned. When this is enabled (default), prune labels will be
+   * allocated and injected to each resource. These labels will then be used
+   * when issuing the `kubectl apply` operation with the `--prune` switch.
+   *
+   * @default true
+   */
+  readonly prune?: boolean;
 }
 
 /**
@@ -556,16 +566,6 @@ export interface ClusterProps extends ClusterOptions {
    * @default true
    */
   readonly kubectlEnabled?: boolean;
-
-  /**
-   * Indicates whether Kubernetes resources added through `addManifest()` can be
-   * automatically pruned. When this is enabled (default), prune labels will be
-   * allocated and injected to each resource. These labels will then be used
-   * when issuing the `kubectl apply` operation with the `--prune` switch.
-   *
-   * @default true
-   */
-  readonly prune?: boolean;
 
   /**
    * Number of instances to allocate as an initial capacity for this cluster.
