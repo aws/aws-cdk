@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "scripts": {
     "update": "cdk-build && /bin/bash build-tools/update.sh",
+    "update-metrics": "/bin/bash build-tools/update-metrics.sh",
     "build": "cdk-build && node build-tools/build",
     "watch": "cdk-watch",
     "lint": "cdk-lint",

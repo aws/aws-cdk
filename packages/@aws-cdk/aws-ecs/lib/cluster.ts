@@ -8,6 +8,7 @@ import * as ssm from '@aws-cdk/aws-ssm';
 import { Duration, IResource, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
+import { ECSMetrics } from './ecs-canned-metrics.generated';
 import { CfnCluster } from './ecs.generated';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
@@ -331,7 +332,16 @@ export class Cluster extends Resource implements ICluster {
    * @default average over 5 minutes
    */
   public metricCpuReservation(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('CPUReservation', props);
+    return this.cannedMetric(ECSMetrics.cpuReservationAverage, props);
+  }
+
+  /**
+   * This method returns the CloudWatch metric for this clusters CPU utilization.
+   *
+   * @default average over 5 minutes
+   */
+  public metricCpuUtilization(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(ECSMetrics.cpuUtilizationAverage, props);
   }
 
   /**
@@ -340,7 +350,16 @@ export class Cluster extends Resource implements ICluster {
    * @default average over 5 minutes
    */
   public metricMemoryReservation(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('MemoryReservation', props);
+    return this.cannedMetric(ECSMetrics.memoryReservationAverage, props);
+  }
+
+  /**
+   * This method returns the CloudWatch metric for this clusters memory utilization.
+   *
+   * @default average over 5 minutes
+   */
+  public metricMemoryUtilization(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(ECSMetrics.memoryUtilizationAverage, props);
   }
 
   /**
@@ -351,6 +370,15 @@ export class Cluster extends Resource implements ICluster {
       namespace: 'AWS/ECS',
       metricName,
       dimensions: { ClusterName: this.clusterName },
+      ...props,
+    }).attachTo(this);
+  }
+
+  private cannedMetric(
+    fn: (dims: { ClusterName: string }) => cloudwatch.MetricProps,
+    props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return new cloudwatch.Metric({
+      ...fn({ ClusterName: this.clusterName }),
       ...props,
     }).attachTo(this);
   }
