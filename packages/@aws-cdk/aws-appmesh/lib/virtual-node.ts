@@ -47,34 +47,13 @@ export interface VirtualNodeBaseProps {
    */
   readonly virtualNodeName?: string;
 
-  /**
-   * Host name of DNS record used to discover Virtual Node members
-   *
-   * The IP addresses returned by querying this DNS record will be considered
-   * part of the Virtual Node.
-   *
-   * @default - Don't use DNS-based service discovery
-   */
-  // readonly dnsHostName?: string;
 
   /**
-   * CloudMap service where Virtual Node members register themselves
+   * Defines how upstream clients will discover this VirtualNode
    *
-   * Instances registering themselves into this CloudMap will
-   * be considered part of the Virtual Node.
-   *
-   * @default - Don't use CloudMap-based service discovery
+   * @default - No Service Discovery
    */
-  // readonly cloudMapService?: cloudmap.IService;
-
   readonly serviceDiscovery?: ServiceDiscovery;
-
-  /**
-   * Filter down the list of CloudMap service instance
-   *
-   * @default - No CloudMap instance filter
-   */
-  // readonly cloudMapServiceInstanceAttributes?: {[key: string]: string};
 
   /**
    * Virtual Services that this is node expected to send outbound traffic to
