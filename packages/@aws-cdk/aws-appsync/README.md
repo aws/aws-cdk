@@ -379,6 +379,38 @@ api.grantMutation(role, 'updateExample');
 api.grant(role, appsync.IamResource.ofType('Mutation', 'updateExample'), 'appsync:GraphQL');
 ```
 
+### Pipeline Resolvers and AppSync Functions
+
+AppSync Functions are local functions that perform certain operations onto a
+backend data source. Developers can compose operations (Functions) and execute
+them in sequence with Pipeline Resolvers.
+
+```ts
+const appsyncFunction = new appsync.AppsyncFunction(stack, 'function', {
+  name: 'appsync_function',
+  api: api,
+  dataSource: apiDataSource,
+  requestMappingTemplate: appsync.MappingTemplate.fromFile('request.vtl'),
+  responseMappingTemplate: appsync.MappingTemplate.fromFile('response.vtl'),
+});
+```
+
+AppSync Functions are used in tandem with pipeline resolvers to compose multiple
+operations.
+
+```ts
+const pipelineResolver = new appsync.Resolver(stack, 'pipeline', {
+  name: 'pipeline_resolver',
+  api: api,
+  dataSource: apiDataSource,
+  requestMappingTemplate: appsync.MappingTemplate.fromFile('beforeRequest.vtl'),
+  pipelineConfig: [appsyncFunction],
+  responseMappingTemplate: appsync.MappingTemplate.fromFile('afterResponse.vtl'),
+});
+```
+
+Learn more about Pipeline Resolvers and AppSync Functions [here](https://docs.aws.amazon.com/appsync/latest/devguide/pipeline-resolvers.html).
+
 ### Code-First Schema
 
 CDK offers the ability to generate your schema in a code-first approach.
@@ -543,7 +575,7 @@ To learn more about authorization and directives, read these docs [here](https:/
 While `GraphqlType` is a base implementation for GraphQL fields, we have abstractions
 on top of `GraphqlType` that provide finer grain support.
 
-##### Field
+#### Field
 
 `Field` extends `GraphqlType` and will allow you to define arguments. [**Interface Types**](#Interface-Types) are not resolvable and this class will allow you to define arguments,
 but not its resolvers.
@@ -570,7 +602,7 @@ const type = new appsync.InterfaceType('Node', {
 });
 ```
 
-##### Resolvable Fields
+#### Resolvable Fields
 
 `ResolvableField` extends `Field` and will allow you to define arguments and its resolvers.
 [**Object Types**](#Object-Types) can have fields that resolve and perform operations on
@@ -646,7 +678,7 @@ Intermediate Types include:
 - [**Input Types**](#Input-Types)
 - [**Union Types**](#Union-Types)
 
-##### Interface Types
+#### Interface Types
 
 **Interface Types** are abstract types that define the implementation of other
 intermediate types. They are useful for eliminating duplication and can be used
