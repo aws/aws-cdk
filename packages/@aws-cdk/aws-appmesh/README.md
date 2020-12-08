@@ -130,7 +130,7 @@ mesh.addVirtualService('virtual-service', {
 
 A `virtual node` acts as a logical pointer to a particular task group, such as an Amazon ECS service or a Kubernetes deployment.
 
-When you create a `virtual node`, you must specify the DNS service discovery hostname for your task group. Any inbound traffic that your `virtual node` expects should be specified as a listener. Any outbound traffic that your `virtual node` expects to reach should be specified as a backend.
+When you create a `virtual node`, any inbound traffic that your `virtual node` expects should be specified as a listener. Any outbound traffic that your `virtual node` expects to reach should be specified as a backend.
 
 The response metadata for your new `virtual node` contains the Amazon Resource Name (ARN) that is associated with the `virtual node`. Set this value (either the full ARN or the truncated resource name) as the APPMESH_VIRTUAL_NODE_NAME environment variable for your task group's Envoy proxy container in your task definition or pod spec. For example, the value could be mesh/default/virtualNode/simpleapp. This is then mapped to the node.id and node.cluster Envoy parameters.
 
@@ -146,7 +146,9 @@ const namespace = new servicediscovery.PrivateDnsNamespace(this, 'test-namespace
 const service = namespace.createService('Svc');
 
 const node = mesh.addVirtualNode('virtual-node', {
-  cloudMapService: service,
+  serviceDiscovery: appmesh.ServiceDiscovery.cloudmap({
+    service: service,
+  }),
   listeners: [appmesh.VirtualNodeListener.httpNodeListener({
     port: 8081,
     healthCheck: {
@@ -168,7 +170,9 @@ Create a `VirtualNode` with the constructor and add tags.
 ```ts
 const node = new VirtualNode(this, 'node', {
   mesh,
-  cloudMapService: service,
+  serviceDiscovery: appmesh.ServiceDiscovery.cloudmap({
+    service: service,
+  }),
   listeners: [appmesh.VirtualNodeListener.httpNodeListener({
     port: 8080,
     healthCheck: {
@@ -198,7 +202,9 @@ Create a `VirtualNode` with the constructor and add backend virtual service.
 ```ts
 const node = new VirtualNode(this, 'node', {
   mesh,
-  cloudMapService: service,
+  serviceDiscovery: appmesh.ServiceDiscovery.cloudmap({
+    service: service,
+  }),
   listeners: [appmesh.VirtualNodeListener.httpNodeListener({
     port: 8080,
     healthCheck: {
@@ -218,7 +224,7 @@ const node = new VirtualNode(this, 'node', {
 });
 
 const virtualService = new appmesh.VirtualService(stack, 'service-1', {
-  virtualServiceName: 'service1.domain.local',
+  serviceDiscovery: appmesh.ServiceDiscovery.dns('service1.domain.local'),
   mesh,
   clientPolicy: appmesh.ClientPolicy.fileTrust({
     certificateChain: '/keys/local_cert_chain.pem',
