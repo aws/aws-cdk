@@ -270,7 +270,7 @@ export = {
 
         new appmesh.VirtualNode(stack, 'test-node', {
           mesh,
-          dnsHostName: 'test',
+          serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
           backendsDefaultClientPolicy: appmesh.ClientPolicy.acmTrust({
             certificateAuthorities: [acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'certificate', certificateAuthorityArn)],
             ports: [8080, 8081],
@@ -313,7 +313,7 @@ export = {
 
         const node = new appmesh.VirtualNode(stack, 'test-node', {
           mesh,
-          dnsHostName: 'test',
+          serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
         });
 
         const service1 = new appmesh.VirtualService(stack, 'service-1', {

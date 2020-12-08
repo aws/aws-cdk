@@ -18,7 +18,7 @@ export = {
 
       // WHEN
       const node = mesh.addVirtualNode('test-node', {
-        dnsHostName: 'test',
+        serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
         listeners: [appmesh.VirtualNodeListener.http()],
       });
 
@@ -174,7 +174,7 @@ export = {
 
       // WHEN
       const node = mesh.addVirtualNode('test-node', {
-        dnsHostName: 'test',
+        serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
         listeners: [appmesh.VirtualNodeListener.http()],
       });
 
