@@ -12,6 +12,7 @@ import { Construct } from 'constructs';
 import { IArtifacts } from './artifacts';
 import { BuildSpec } from './build-spec';
 import { Cache } from './cache';
+import { CodeBuildMetrics } from './codebuild-canned-metrics.generated';
 import { CfnProject } from './codebuild.generated';
 import { CodePipelineArtifacts } from './codepipeline-artifacts';
 import { IFileSystemLocation } from './file-location';
@@ -340,11 +341,8 @@ abstract class ProjectBase extends Resource implements IProject {
    *
    * @default sum over 5 minutes
    */
-  public metricBuilds(props?: cloudwatch.MetricOptions) {
-    return this.metric('Builds', {
-      statistic: 'sum',
-      ...props,
-    });
+  public metricBuilds(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(CodeBuildMetrics.buildsSum, props);
   }
 
   /**
@@ -356,11 +354,8 @@ abstract class ProjectBase extends Resource implements IProject {
    *
    * @default average over 5 minutes
    */
-  public metricDuration(props?: cloudwatch.MetricOptions) {
-    return this.metric('Duration', {
-      statistic: 'avg',
-      ...props,
-    });
+  public metricDuration(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(CodeBuildMetrics.durationAverage, props);
   }
 
   /**
@@ -372,11 +367,8 @@ abstract class ProjectBase extends Resource implements IProject {
    *
    * @default sum over 5 minutes
    */
-  public metricSucceededBuilds(props?: cloudwatch.MetricOptions) {
-    return this.metric('SucceededBuilds', {
-      statistic: 'sum',
-      ...props,
-    });
+  public metricSucceededBuilds(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(CodeBuildMetrics.succeededBuildsSum, props);
   }
 
   /**
@@ -389,11 +381,17 @@ abstract class ProjectBase extends Resource implements IProject {
    *
    * @default sum over 5 minutes
    */
-  public metricFailedBuilds(props?: cloudwatch.MetricOptions) {
-    return this.metric('FailedBuilds', {
-      statistic: 'sum',
+  public metricFailedBuilds(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(CodeBuildMetrics.failedBuildsSum, props);
+  }
+
+  private cannedMetric(
+    fn: (dims: { ProjectName: string }) => cloudwatch.MetricProps,
+    props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return new cloudwatch.Metric({
+      ...fn({ ProjectName: this.projectName }),
       ...props,
-    });
+    }).attachTo(this);
   }
 }
 
