@@ -123,6 +123,10 @@ export = {
           match: {
             prefixPath: '/',
           },
+          timeout: {
+            idle: cdk.Duration.seconds(8),
+            perRequest: cdk.Duration.seconds(8),
+          },
         }),
       });
 
@@ -216,6 +220,10 @@ export = {
           match: {
             prefixPath: '/',
           },
+          timeout: {
+            idle: cdk.Duration.seconds(9),
+            perRequest: cdk.Duration.seconds(9),
+          },
         }),
       });
 
@@ -230,6 +238,10 @@ export = {
           match: {
             prefixPath: '/path2',
           },
+          timeout: {
+            idle: cdk.Duration.seconds(10),
+            perRequest: cdk.Duration.seconds(10),
+          },
         }),
       });
 
@@ -243,6 +255,10 @@ export = {
           ],
           match: {
             prefixPath: '/path3',
+          },
+          timeout: {
+            idle: cdk.Duration.seconds(11),
+            perRequest: cdk.Duration.seconds(11),
           },
         }),
       });
@@ -353,6 +369,9 @@ export = {
               weight: 50,
             },
           ],
+          timeout: {
+            idle: cdk.Duration.seconds(10),
+          },
         }),
       });
 
