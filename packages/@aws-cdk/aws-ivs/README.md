@@ -1,6 +1,5 @@
 # AWS::IVS Construct Library
 <!--BEGIN STABILITY BANNER-->
-
 ---
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
@@ -10,7 +9,6 @@
 > [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib
 
 ---
-
 <!--END STABILITY BANNER-->
 
 Amazon Interactive Video Service (Amazon IVS) is a managed live streaming

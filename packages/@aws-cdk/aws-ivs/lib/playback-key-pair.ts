@@ -51,7 +51,7 @@ export class PlaybackKeyPair extends PlaybackKeyPairBase {
   *
   * @attribute
   */
-  public readonly fingerprint: string;
+  public readonly playbackKeyPairFingerprint: string;
 
   constructor(scope: Construct, id: string, props: PlaybackKeyPairProps) {
     super(scope, id, {});
@@ -67,6 +67,6 @@ export class PlaybackKeyPair extends PlaybackKeyPairBase {
     });
 
     this.playbackKeyPairArn = resource.attrArn;
-    this.fingerprint = resource.attrFingerprint;
+    this.playbackKeyPairFingerprint = resource.attrFingerprint;
   }
 }
