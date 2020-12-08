@@ -314,8 +314,6 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
   /**
    * Metric for the interval, in milliseconds, between the time the execution starts and the time it closes
    *
-   * NOTE: The default this metric returns is
-   *
    * @default - average over 5 minutes
    */
   public metricTime(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
