@@ -4,6 +4,7 @@ import { CfnAuthorizer } from '../apigatewayv2.generated';
 
 import { IAuthorizer } from '../common';
 import { IHttpApi } from './api';
+import { IHttpRoute } from './route';
 
 /**
  * Supported Authorizer types
@@ -22,7 +23,6 @@ export enum HttpAuthorizerType {
 export interface HttpAuthorizerProps {
   /**
    * Name of the authorizer
-   *
    * @default - id of the HttpAuthorizer construct.
    */
   readonly authorizerName?: string
@@ -31,89 +31,121 @@ export interface HttpAuthorizerProps {
    * HTTP Api to attach the authorizer to
    */
   readonly httpApi: IHttpApi
-}
-
-/**
- * Describes an instance of `IHttpAuthorizer`
- */
-export interface IHttpAuthorizer extends IAuthorizer {
-  /**
-   * Type of authorizer
-   * @attribute
-   */
-  readonly authorizerType: HttpAuthorizerType;
-}
-
-/**
- * Specifies the configuration of a JWT authorizer
- */
-export interface JwtConfiguration {
-  /**
-   * A list of the intended recipients of the JWT
-   */
-  readonly audience: string[]
 
   /**
-   * The base domain of the identity provider that issues JSON Web Tokens.
+   * The type of authorizer
    */
-  readonly issuer: string;
-}
+  readonly type: HttpAuthorizerType;
 
-/**
- * Properties to initialize an instance of `HttpAuthorizer`.
- */
-export interface HttpJwtAuthorizerProps extends HttpAuthorizerProps {
   /**
    * The identity source for which authorization is requested.
-   *
-   * @default ['$request.header.Authorization']
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigatewayv2-authorizer.html#cfn-apigatewayv2-authorizer-identitysource
    */
-  readonly identitySource?: string[],
+  readonly identitySource: string[];
 
   /**
-   * Configuration of a JWT authorizer.
-   * Required for the JWT authorizer type. Supported only for HTTP APIs.
-   *
-   * @default - No configuration
+   * A list of the intended recipients of the JWT.
+   * A valid JWT must provide an aud that matches at least one entry in this list.
+   * @default - required for JWT authorizer typess.
    */
-  readonly jwtConfiguration: JwtConfiguration
+  readonly jwtAudience?: string[]
+
+  /**
+   * The base domain of the identity provider that issues JWT.
+   * @default - required for JWT authorizer types.
+   */
+  readonly jwtIssuer?: string;
 }
 
 /**
- * Create a new JwtAuthorizer for Http APIs
+ * An authorizer for HTTP APIs
+ */
+export interface IHttpAuthorizer extends IAuthorizer {
+}
+
+/**
+ * An authorizer for Http Apis
  * @resource AWS::ApiGatewayV2::Authorizer
  */
-export class HttpJwtAuthorizer extends Resource implements IHttpAuthorizer {
-
+export class HttpAuthorizer extends Resource implements IHttpAuthorizer {
   /**
    * Import an existing HTTP Authorizer into this CDK app.
    */
   public static fromAuthorizerId(scope: Construct, id: string, authorizerId: string): IHttpAuthorizer {
     class Import extends Resource implements IHttpAuthorizer {
       public readonly authorizerId = authorizerId;
-      public readonly authorizerType = HttpAuthorizerType.JWT;
     }
     return new Import(scope, id);
   }
 
   public readonly authorizerId: string;
-  public readonly authorizerType: HttpAuthorizerType = HttpAuthorizerType.JWT;
 
-  constructor(scope: Construct, id: string, props: HttpJwtAuthorizerProps) {
+  constructor(scope: Construct, id: string, props: HttpAuthorizerProps) {
     super(scope, id);
 
-    const authorizerName = props.authorizerName ?? id;
-
-    const identitySource = props.identitySource ?? ['$request.header.Authorization'];
+    if (props.type === HttpAuthorizerType.JWT && (!props.jwtAudience || props.jwtAudience.length === 0 || !props.jwtIssuer)) {
+      throw new Error('jwtAudience and jwtIssuer are mandatory for JWT authorizers');
+    }
 
     const resource = new CfnAuthorizer(this, 'Resource', {
-      name: authorizerName,
+      name: props.authorizerName ?? id,
       apiId: props.httpApi.httpApiId,
-      authorizerType: this.authorizerType,
-      identitySource,
-      jwtConfiguration: props.jwtConfiguration,
+      authorizerType: props.type,
+      identitySource: props.identitySource,
+      jwtConfiguration: undefinedIfNoKeys({
+        audience: props.jwtAudience,
+        issuer: props.jwtIssuer,
+      }),
     });
 
     this.authorizerId = resource.ref;
   }
+}
+
+/**
+ * Input to the bind() operation, that binds an authorizer to a route.
+ */
+export interface HttpRouteAuthorizerBindOptions {
+  /**
+   * The route to which the authorizer is being bound.
+   */
+  readonly route: IHttpRoute;
+  /**
+   * The scope for any constructs created as part of the bind.
+   */
+  readonly scope: Construct;
+}
+
+/**
+ * Results of binding an authorizer to an http route.
+ */
+export interface HttpRouteAuthorizerConfig {
+  /**
+   * The authorizer id
+   */
+  readonly authorizerId: string;
+  /**
+   * The type of authorization
+   */
+  readonly authorizationType: HttpAuthorizerType;
+  /**
+   * The list of OIDC scopes to include in the authorization.
+   * @default - no authorization scopes
+   */
+  readonly authorizationScopes?: string[];
+}
+
+/**
+ * An authorizer that can attach to an Http Route.
+ */
+export interface IHttpRouteAuthorizer {
+  /**
+   * Bind this authorizer to a specified Http route.
+   */
+  bind(options: HttpRouteAuthorizerBindOptions): HttpRouteAuthorizerConfig;
+}
+
+function undefinedIfNoKeys<A>(obj: A): A | undefined {
+  const allUndefined = Object.values(obj).every(val => val === undefined);
+  return allUndefined ? undefined : obj;
 }

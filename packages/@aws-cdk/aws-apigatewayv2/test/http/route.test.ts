@@ -1,8 +1,8 @@
 import '@aws-cdk/assert/jest';
 import { Stack } from '@aws-cdk/core';
 import {
-  HttpApi, HttpConnectionType, HttpIntegrationType, HttpMethod, HttpRoute, HttpRouteIntegrationConfig, HttpRouteKey, IHttpRouteIntegration,
-  PayloadFormatVersion, HttpJwtAuthorizer,
+  HttpApi, HttpAuthorizerType, HttpConnectionType, HttpIntegrationType, HttpMethod, HttpRoute, HttpRouteAuthorizerBindOptions,
+  HttpRouteAuthorizerConfig, HttpRouteIntegrationConfig, HttpRouteKey, IHttpRouteAuthorizer, IHttpRouteIntegration, PayloadFormatVersion,
 } from '../../lib';
 
 describe('HttpRoute', () => {
@@ -118,20 +118,13 @@ describe('HttpRoute', () => {
     const stack = new Stack();
     const httpApi = new HttpApi(stack, 'HttpApi');
 
-    const authorizer = new HttpJwtAuthorizer(stack, 'HttpAuthorizer', {
-      httpApi,
-      jwtConfiguration: {
-        audience: ['cognito-pool'],
-        issuer: 'http://congnito.aws',
-      },
-    });
+    const authorizer = new DummyAuthorizer();
 
     new HttpRoute(stack, 'HttpRoute', {
       httpApi,
       integration: new DummyIntegration(),
       routeKey: HttpRouteKey.with('/books', HttpMethod.GET),
       authorizer,
-      authorizationScopes: ['books:read'],
     });
 
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
@@ -144,9 +137,8 @@ describe('HttpRoute', () => {
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Authorizer');
 
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Route', {
-      AuthorizerId: stack.resolve(authorizer.authorizerId),
+      AuthorizerId: 'auth-1234',
       AuthorizationType: 'JWT',
-      AuthorizationScopes: ['books:read'],
     });
   });
 });
@@ -158,6 +150,15 @@ class DummyIntegration implements IHttpRouteIntegration {
       payloadFormatVersion: PayloadFormatVersion.VERSION_2_0,
       uri: 'some-uri',
       method: HttpMethod.DELETE,
+    };
+  }
+}
+
+class DummyAuthorizer implements IHttpRouteAuthorizer {
+  public bind(_: HttpRouteAuthorizerBindOptions): HttpRouteAuthorizerConfig {
+    return {
+      authorizerId: 'auth-1234',
+      authorizationType: HttpAuthorizerType.JWT,
     };
   }
 }

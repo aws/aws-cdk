@@ -3,7 +3,7 @@ import { Construct } from 'constructs';
 import { CfnRoute, CfnRouteProps } from '../apigatewayv2.generated';
 import { IRoute } from '../common';
 import { IHttpApi } from './api';
-import { IHttpAuthorizer } from './authorizer';
+import { IHttpRouteAuthorizer } from './authorizer';
 import { HttpIntegration, IHttpRouteIntegration } from './integration';
 
 /**
@@ -109,15 +109,7 @@ export interface HttpRouteProps extends BatchHttpRouteOptions {
    * Authorizer for a WebSocket API or an HTTP API.
    * @default - No authorizer
    */
-  readonly authorizer?: IHttpAuthorizer;
-
-  /**
-   * Scopes required to access this route
-   *
-   * Useless if no authorizer is passed in
-   * @default - No scopes
-   */
-  readonly authorizationScopes?: string[];
+  readonly authorizer?: IHttpRouteAuthorizer;
 }
 
 /**
@@ -150,15 +142,18 @@ export class HttpRoute extends Resource implements IHttpRoute {
       payloadFormatVersion: config.payloadFormatVersion,
     });
 
+    const authBindResult = props.authorizer ? props.authorizer.bind({
+      route: this,
+      scope: this.httpApi instanceof Construct ? this.httpApi : this, // scope under the API if it's not imported
+    }) : undefined;
+
     const routeProps: CfnRouteProps = {
       apiId: props.httpApi.httpApiId,
       routeKey: props.routeKey.key,
       target: `integrations/${integration.integrationId}`,
-      ...props.authorizer ? {
-        authorizerId: props.authorizer.authorizerId,
-        authorizationType: props.authorizer.authorizerType,
-        authorizationScopes: props.authorizationScopes,
-      }: {},
+      authorizerId: authBindResult?.authorizerId,
+      authorizationType: authBindResult?.authorizationType,
+      authorizationScopes: authBindResult?.authorizationScopes,
     };
 
     const route = new CfnRoute(this, 'Resource', routeProps);

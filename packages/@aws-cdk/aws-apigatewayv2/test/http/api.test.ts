@@ -3,7 +3,10 @@ import { ABSENT } from '@aws-cdk/assert';
 import { Metric } from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { Duration, Stack } from '@aws-cdk/core';
-import { HttpApi, HttpIntegrationType, HttpMethod, HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig, IHttpRouteIntegration, PayloadFormatVersion, HttpJwtAuthorizer } from '../../lib';
+import {
+  HttpApi, HttpAuthorizerType, HttpIntegrationType, HttpMethod, HttpRouteAuthorizerBindOptions, HttpRouteAuthorizerConfig,
+  HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig, IHttpRouteAuthorizer, IHttpRouteIntegration, PayloadFormatVersion,
+} from '../../lib';
 
 describe('HttpApi', () => {
   test('default', () => {
@@ -266,25 +269,12 @@ describe('HttpApi', () => {
     const stack = new Stack();
     const httpApi = new HttpApi(stack, 'api');
 
-    const authorizer = new HttpJwtAuthorizer(stack, 'HttpAuthorizer', {
-      httpApi,
-      jwtConfiguration: {
-        audience: ['cognito-pool'],
-        issuer: 'http://congnito.aws',
-      },
-    });
+    const authorizer = new DummyAuthorizer();
 
     httpApi.addRoutes({
       path: '/pets',
-      integration: new LambdaProxyIntegration({
-        handler: new Function(stack, 'fn', {
-          code: Code.fromInline('foo'),
-          runtime: Runtime.NODEJS_12_X,
-          handler: 'index.handler',
-        }),
-      }),
+      integration: new DummyRouteIntegration(),
       authorizer,
-      authorizationScopes: ['pets:read'],
     });
 
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Api', {
@@ -293,9 +283,8 @@ describe('HttpApi', () => {
     });
 
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Route', {
-      AuthorizerId: stack.resolve(authorizer.authorizerId),
+      AuthorizerId: 'auth-1234',
       AuthorizationType: 'JWT',
-      AuthorizationScopes: ['pets:read'],
     });
   });
 });
@@ -306,6 +295,15 @@ class DummyRouteIntegration implements IHttpRouteIntegration {
       payloadFormatVersion: PayloadFormatVersion.VERSION_2_0,
       type: HttpIntegrationType.HTTP_PROXY,
       uri: 'some-uri',
+    };
+  }
+}
+
+class DummyAuthorizer implements IHttpRouteAuthorizer {
+  public bind(_: HttpRouteAuthorizerBindOptions): HttpRouteAuthorizerConfig {
+    return {
+      authorizerId: 'auth-1234',
+      authorizationType: HttpAuthorizerType.JWT,
     };
   }
 }
