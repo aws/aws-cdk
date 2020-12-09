@@ -297,15 +297,12 @@ export class Canary extends cdk.Resource {
   /**
    * Measure the number of failed canary runs over a given time period.
    *
-   * Default: average over 5 minutes
+   * Default: sum over 5 minutes
    *
    * @param options - configuration options for the metric
    */
   public metricFailed(options?: MetricOptions): Metric {
-    return this.cannedMetric(CloudWatchSyntheticsMetrics.failedSum, {
-      statistic: 'Average',
-      ...options,
-    });
+    return this.cannedMetric(CloudWatchSyntheticsMetrics.failedSum, options);
   }
 
   /**
