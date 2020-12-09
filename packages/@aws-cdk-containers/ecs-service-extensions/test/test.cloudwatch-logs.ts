@@ -5,6 +5,26 @@ import { Test } from 'nodeunit';
 import { CloudWatchLogsExtension, Container, Environment, Service, ServiceDescription } from '../lib';
 
 export = {
+  'should throw an error if there is no Container in the service description'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const environment = new Environment(stack, 'production');
+    const serviceDescription = new ServiceDescription();
+    serviceDescription.add(new CloudWatchLogsExtension());
+
+    // THEN
+    test.throws(() => {
+      new Service(stack, 'my-service', {
+        environment,
+        serviceDescription,
+      });
+    }, /Service 'my-service' must have a Container extension/);
+
+    test.done();
+  },
+
   'should be able to add CloudWatch logs to a service'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();

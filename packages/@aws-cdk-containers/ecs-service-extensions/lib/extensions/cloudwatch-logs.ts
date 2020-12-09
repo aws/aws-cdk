@@ -90,10 +90,6 @@ export class CloudWatchLogsExtension extends ServiceExtension {
   public addHooks() {
     const container = this.parentService.serviceDescription.get('service-container') as Container;
 
-    if (!container) {
-      throw new Error('Cloudwatch extension requires an application extension');
-    }
-
     container.addContainerMutatingHook(new CloudWatchLogsMutatingHook({
       parentService: this.parentService,
       logGroup: this.logGroup,
