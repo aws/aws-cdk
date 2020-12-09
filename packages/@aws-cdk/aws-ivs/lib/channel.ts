@@ -116,14 +116,8 @@ export class Channel extends ChannelBase {
    * Import an existing channel
    */
   public static fromChannelArn(scope: Construct, id: string, channelArn: string): IChannel {
-    // The astute among you may notice that this regex differs from the documentation
-    // This is because the documentation is wrong :)
-    let channelArnRegex = /^arn:aws:ivs:[a-z0-9-]+:[0-9]+:channel\/[a-zA-Z0-9-]+$/;
-
-    // I feel like there's probably a more CDK centric way of checking the validity of an arn, please let me know if so
-    if (!core.Token.isUnresolved(channelArn) && !channelArnRegex.test(channelArn)) {
-      throw new Error(`channelArn is of an unexpected format: got: '${channelArn}'`);
-    }
+    // This will throw an error if the arn cannot be parsed
+    core.Arn.parse(channelArn);
 
     class Import extends ChannelBase {
       public readonly channelArn = channelArn;
@@ -154,8 +148,7 @@ export class Channel extends ChannelBase {
     });
 
     if (props.name !== undefined && !core.Token.isUnresolved(props.name) && !/^[a-zA-Z0-9-_]*$/.test(props.name)) {
-      throw new Error('name must contain only numbers, letters, hyphens and underscores, ' +
-        `got: '${props.name}'`);
+      throw new Error(`name must contain only numbers, letters, hyphens and underscores, got: '${props.name}'`);
     }
 
     const resource = new CfnChannel(this, 'Resource', {

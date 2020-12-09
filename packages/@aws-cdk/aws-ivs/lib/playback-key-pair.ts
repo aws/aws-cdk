@@ -35,7 +35,7 @@ export interface PlaybackKeyPairProps {
    * An arbitrary string (a nickname) assigned to a playback key pair that helps the customer identify that resource.
    * The value does not need to be unique.
    *
-   * @default Empty String
+   * @default None
    */
   readonly name?: string;
 }
@@ -57,8 +57,7 @@ export class PlaybackKeyPair extends PlaybackKeyPairBase {
     super(scope, id, {});
 
     if (props.name !== undefined && !core.Token.isUnresolved(props.name) && !/^[a-zA-Z0-9-_]*$/.test(props.name)) {
-      throw new Error('name must contain only numbers, letters, hyphens and underscores, ' +
-        `got: '${props.name}'`);
+      throw new Error(`name must contain only numbers, letters, hyphens and underscores, got: '${props.name}'`);
     }
 
     const resource = new CfnPlaybackKeyPair(this, 'Resource', {

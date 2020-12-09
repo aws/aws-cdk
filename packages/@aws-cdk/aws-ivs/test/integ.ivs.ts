@@ -1,6 +1,16 @@
 import { App, CfnOutput, Stack } from '@aws-cdk/core';
 import * as ivs from '../lib';
 
+/*
+ * Creates a channel, playback key pair and stream key
+ *
+ * Stack verification steps:
+ * Check to make sure the resources exist
+ *
+ * -- aws ivs get-channel --arn <channel-arn-from-output> provides channel with name IVSIntegrationTestChannel
+ * -- aws ivs get-stream-key --arn <streamkey-arn-from-output> provides stream key for the channel with the arn from output
+ * -- aws ivs get-playback-key-pair --arn <playback-key-pair-arn-from-output> provides playback key pair with name IVSIntegrationTestPlaybackKeyPair
+ */
 const app = new App();
 
 const stack = new Stack(app, 'aws-cdk-ivs');

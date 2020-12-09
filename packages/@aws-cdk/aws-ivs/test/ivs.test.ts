@@ -215,5 +215,5 @@ test('stream key from invalid channel arn throws error', () => {
   const stack = new Stack();
   expect(() => new ivs.StreamKey(stack, 'StreamKey', {
     channel: ivs.Channel.fromChannelArn(stack, 'ChannelRef', 'this is an invalid arn, in fact, it is a carrot 🥕'),
-  })).toThrow('channelArn is of an unexpected format: got: \'this is an invalid arn, in fact, it is a carrot 🥕\'');
+  })).toThrow('ARNs must have at least 6 components: this is an invalid arn, in fact, it is a carrot 🥕');
 });

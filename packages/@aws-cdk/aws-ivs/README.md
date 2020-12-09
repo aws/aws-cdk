@@ -8,6 +8,14 @@
 >
 > [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib
 
+![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
+
+> The APIs of higher level constructs in this module are experimental and under active development.
+> They are subject to non-backward compatible changes or removal in any future version. These are
+> not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be
+> announced in the release notes. This means that while you may use them, you may need to update
+> your source code when upgrading to a newer version of this package.
+
 ---
 <!--END STABILITY BANNER-->
 
@@ -36,6 +44,7 @@ const myChannel = new ivs.Channel(this, 'Channel');
 ```
 
 #### Importing an existing channel
+
 You can reference an existing channel, for example, if you need to create a
 stream key for an existing channel
 
@@ -44,8 +53,9 @@ const myChannel = ivs.Channel.fromChannelArn(this, 'Channel', myChannelArn);
 ```
 
 #### Stream Keys
+
 A Stream Key is used by a broadcast encoder to initiate a stream and identify
-to Amazon IVS which customer and channel the stream is for. If a customer is
+to Amazon IVS which customer and channel the stream is for. If you are
 storing this value, it should be treated as if it were a password.
 
 You can create a stream key for a given channel
@@ -56,17 +66,17 @@ const myStreamKey = myChannel.addStreamKey('StreamKey');
 
 #### Private Channels
 
-Amazon IVS offers customers the ability to create private channels, allowing
-customers to restrict their streams by channel or viewer. Customers control
-access to video playback by enabling playback authorization on channels and
+Amazon IVS offers the ability to create private channels, allowing
+you to restrict your streams by channel or viewer. You control access
+to video playback by enabling playback authorization on channels and
 generating signed JSON Web Tokens (JWTs) for authorized playback requests.
 
-A playback token is a JWT that the Amazon IVS customer signs (with a playback
-authorization key) and includes with every playback request for a channel that
-has playback authorization enabled.
+A playback token is a JWT that you sign (with a playback authorization key)
+and include with every playback request for a channel that has playback
+authorization enabled.
 
-In order for Amazon IVS to validate the token, the customer needs to upload
-the public key that corresponds to the private key they used to sign the token.
+In order for Amazon IVS to validate the token, you need to upload
+the public key that corresponds to the private key you use to sign the token.
 
 ```ts
 const keyPair = new ivs.PlaybackKeyPair(this, 'PlaybackKeyPair', {
@@ -77,7 +87,7 @@ const keyPair = new ivs.PlaybackKeyPair(this, 'PlaybackKeyPair', {
 Then, when creating a channel, specify the authorized property
 ```ts
 const myChannel = new ivs.Channel(this, 'Channel', {
-  authorized: true,
+  authorized: true, // default value is false
 });
 ```
 
