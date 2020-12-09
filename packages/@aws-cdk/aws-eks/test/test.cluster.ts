@@ -12,7 +12,7 @@ import * as constructs from 'constructs';
 import { Test } from 'nodeunit';
 import * as YAML from 'yaml';
 import * as eks from '../lib';
-import { getOrCreateKubectlLayer } from '../lib/kubectl-provider';
+import * as kubectl from '../lib/kubectl-provider';
 import { BottleRocketImage } from '../lib/private/bottlerocket';
 import { testFixture, testFixtureNoVpc } from './util';
 
@@ -391,7 +391,7 @@ export = {
     // WHEN
     const vpc = new ec2.Vpc(stack, 'VPC');
     new eks.Cluster(stack, 'Cluster', { vpc, defaultCapacity: 0, version: CLUSTER_VERSION });
-    getOrCreateKubectlLayer(stack);
+    kubectl.getOrCreateKubectlLayer(stack);
 
     // THEN
     expect(stack).to(haveResource('Custom::AWSCDK-EKS-Cluster'));
@@ -411,7 +411,7 @@ export = {
     // WHEN
     const vpc = new ec2.Vpc(stack, 'VPC');
     new eks.Cluster(stack, 'Cluster', { vpc, defaultCapacity: 0, version: CLUSTER_VERSION });
-    getOrCreateKubectlLayer(stack);
+    kubectl.getOrCreateKubectlLayer(stack);
 
     // THEN
     expect(stack).to(haveResource('Custom::AWSCDK-EKS-Cluster'));
@@ -2581,6 +2581,44 @@ export = {
         }],
       },
     }));
+    test.done();
+  },
+
+  'custom memory size for kubectl provider'(test: Test) {
+    // GIVEN
+    const { stack, vpc, app } = testFixture();
+
+    // WHEN
+    new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      version: CLUSTER_VERSION,
+      kubectlMemory: cdk.Size.gibibytes(2),
+    });
+
+    // THEN
+    const casm = app.synth();
+    const providerNestedStackTemplate = JSON.parse(fs.readFileSync(path.join(casm.directory, 'StackawscdkawseksKubectlProvider7346F799.nested.template.json'), 'utf-8'));
+    test.equal(providerNestedStackTemplate?.Resources?.Handler886CB40B?.Properties?.MemorySize, 2048);
+    test.done();
+  },
+
+  'custom memory size for imported clusters'(test: Test) {
+    // GIVEN
+    const { stack, app } = testFixture();
+
+    // WHEN
+    const cluster = eks.Cluster.fromClusterAttributes(stack, 'Imported', {
+      clusterName: 'my-cluster',
+      kubectlRoleArn: 'arn:aws:iam::123456789012:role/MyRole',
+      kubectlMemory: cdk.Size.gibibytes(4),
+    });
+
+    cluster.addManifest('foo', { bar: 123 });
+
+    // THEN
+    const casm = app.synth();
+    const providerNestedStackTemplate = JSON.parse(fs.readFileSync(path.join(casm.directory, 'StackStackImported1CBA9C50KubectlProviderAA00BA49.nested.template.json'), 'utf-8'));
+    test.equal(providerNestedStackTemplate?.Resources?.Handler886CB40B?.Properties?.MemorySize, 4096);
     test.done();
   },
 };

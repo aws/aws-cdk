@@ -48,7 +48,7 @@ export class BasePathMapping extends Resource {
     super(scope, id);
 
     if (props.basePath && !Token.isUnresolved(props.basePath)) {
-      if (!props.basePath.match(/^[a-z0-9$_.+!*'()-]+$/)) {
+      if (!props.basePath.match(/^[a-zA-Z0-9$_.+!*'()-]+$/)) {
         throw new Error(`A base path may only contain letters, numbers, and one of "$-_.+!*'()", received: ${props.basePath}`);
       }
     }
