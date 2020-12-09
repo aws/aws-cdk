@@ -151,6 +151,8 @@ currently deployed stack to the template and tags that are about to be deployed 
 will skip deployment if they are identical. Use `--force` to override this behavior
 and always deploy the stack.
 
+If environment was bootsrapped with non default qualifier, pass `--bootstrap-qualifier` argument at deploy time.
+
 #### Deploying multiple stacks
 
 You can have multiple stacks in a cdk app. An example can be found in [how to create multiple stacks](https://docs.aws.amazon.com/cdk/latest/guide/stack_how_to_create_multiple_stacks.html).
