@@ -73,7 +73,7 @@ describe('BasePathMapping', () => {
         domainName: domain,
         basePath: invalidBasePath,
       });
-    }).toThrowError(`A base path may only contain letters, numbers, and one of "$-_.+!*'()", received: ${invalidBasePath}`);
+    }).toThrowError(/base path may only only contain/);
   });
 
   test('specify stage property', () => {
