@@ -79,14 +79,15 @@ and optionally complemented with resource policies. For more in-depth understand
 
 KMS keys can be created to trust IAM policies. This is the default behavior for both the KMS APIs and in
 the console. This behavior is enabled by the '@aws-cdk/aws-kms:defaultKeyPolicies' feature flag,
-which is set for all new projects; for existing projects, this same behavior can be enabled by:
+which is set for all new projects; for existing projects, this same behavior can be enabled by
+passing the `trustAccountIdentities` property as `true` when creating the key:
 
 ```ts
 new kms.Key(stack, 'MyKey', { trustAccountIdentities: true });
 ```
 
-With either the `defaultKeyPolicies` feature flag set, or `trustAccountIdentities` set,
-the Key will be given the following default key policy:
+With either the `@aws-cdk/aws-kms:defaultKeyPolicies` feature flag set,
+or the `trustAccountIdentities` prop set, the Key will be given the following default key policy:
 
 ```json
 {
@@ -103,7 +104,7 @@ With the above default policy, future permissions can be added to either the key
 
 ```ts
 const key = new kms.Key(stack, 'MyKey');
-const user = new iam.user(stack, 'MyUser');
+const user = new iam.User(stack, 'MyUser');
 key.grantEncrypt(user); // Adds encrypt permissions to user policy; key policy is unmodified.
 ```
 
@@ -118,7 +119,7 @@ which can cause cyclic dependencies if the permissions cross stack boundaries.
 The default key policy can be amended or replaced entirely, depending on your use case and requirements.
 A common addition to the key policy would be to add other key admins that are allowed to administer the key
 (e.g., change permissions, revoke, delete). Additional key admins can be specified at key creation or after
-via the `addAdmin` method.
+via the `grantAdmin` method.
 
 ```ts
 const myTrustedAdminRole = iam.Role.fromRoleArn(stack, 'TrustedRole', 'arn:aws:iam:....');
@@ -127,13 +128,13 @@ const key = new kms.Key(stack, 'MyKey', {
 });
 
 const secondKey = new kms.Key(stack, 'MyKey2');
-secondKey.addAdmin(myTrustedAdminRole);
+secondKey.grantAdmin(myTrustedAdminRole);
 ```
 
 Alternatively, a custom key policy can be specified, which will replace the default key policy.
 
-> **Note**: In applications without the '@aws-cdk/aws-kms:defaultKeyPolicies' feature flag set,
-or `trustedAccountIdentities` set to false, specifying a policy at key creation _appends_ the
+> **Note**: In applications without the '@aws-cdk/aws-kms:defaultKeyPolicies' feature flag set
+and with `trustedAccountIdentities` set to false (the default), specifying a policy at key creation _appends_ the
 provided policy to the default key policy, rather than _replacing_ the default policy.
 
 ```ts
