@@ -4,7 +4,6 @@ import { CfnOriginRequestPolicy } from './cloudfront.generated';
 
 /**
  * Represents a Origin Request Policy
- * @experimental
  */
 export interface IOriginRequestPolicy {
   /**
@@ -16,7 +15,6 @@ export interface IOriginRequestPolicy {
 
 /**
  * Properties for creating a Origin Request Policy
- * @experimental
  */
 export interface OriginRequestPolicyProps {
   /**
@@ -55,7 +53,6 @@ export interface OriginRequestPolicyProps {
  * A Origin Request Policy configuration.
  *
  * @resource AWS::CloudFront::OriginRequestPolicy
- * @experimental
  */
 export class OriginRequestPolicy extends Resource implements IOriginRequestPolicy {
 
@@ -126,7 +123,6 @@ export class OriginRequestPolicy extends Resource implements IOriginRequestPolic
 /**
  * Ddetermines whether any cookies in viewer requests (and if so, which cookies)
  * are included in requests that CloudFront sends to the origin.
- * @experimental
  */
 export class OriginRequestCookieBehavior {
   /**
@@ -159,7 +155,6 @@ export class OriginRequestCookieBehavior {
 
 /**
  * Determines whether any HTTP headers (and if so, which headers) are included in requests that CloudFront sends to the origin.
- * @experimental
  */
 export class OriginRequestHeaderBehavior {
   /**
@@ -206,7 +201,6 @@ export class OriginRequestHeaderBehavior {
 /**
  * Determines whether any URL query strings in viewer requests (and if so, which query strings)
  * are included in requests that CloudFront sends to the origin.
- * @experimental
  */
 export class OriginRequestQueryStringBehavior {
   /**
