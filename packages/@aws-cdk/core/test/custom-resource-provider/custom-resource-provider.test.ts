@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { nodeunitShim, Test } from 'nodeunit-shim';
-import { AssetStaging, CustomResourceProvider, CustomResourceProviderRuntime, Duration, Size, Stack } from '../../lib';
+import { App, AssetStaging, CustomResourceProvider, CustomResourceProviderRuntime, DockerImageAssetLocation, DockerImageAssetSource, Duration, FileAssetLocation, FileAssetSource, ISynthesisSession, Size, Stack } from '../../lib';
 import { toCloudFormation } from '../util';
 
 const TEST_HANDLER = `${__dirname}/mock-provider`;
@@ -120,6 +120,43 @@ nodeunitShim({
         },
       },
     });
+    test.done();
+  },
+
+  'custom resource provided creates asset in new-style synthesis with relative path'(test: Test) {
+    // GIVEN
+
+    let assetFilename : string | undefined;
+
+    const app = new App();
+    const stack = new Stack(app, 'Stack', {
+      synthesizer: {
+        bind(_stack: Stack): void { },
+
+        addFileAsset(asset: FileAssetSource): FileAssetLocation {
+          assetFilename = asset.fileName;
+          return { bucketName: '', httpUrl: '', objectKey: '', s3ObjectUrl: '', s3Url: '', kmsKeyArn: '' };
+        },
+
+        addDockerImageAsset(_asset: DockerImageAssetSource): DockerImageAssetLocation {
+          return { imageUri: '', repositoryName: '' };
+        },
+
+        synthesize(_session: ISynthesisSession): void { },
+      },
+    });
+
+    // WHEN
+    CustomResourceProvider.getOrCreate(stack, 'Custom:MyResourceType', {
+      codeDirectory: TEST_HANDLER,
+      runtime: CustomResourceProviderRuntime.NODEJS_12,
+    });
+
+    // THEN -- no exception
+    if (!assetFilename || assetFilename.startsWith(path.sep)) {
+      throw new Error(`Asset filename must be a relative path, got: ${assetFilename}`);
+    }
+
     test.done();
   },
 
