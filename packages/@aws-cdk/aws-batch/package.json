@@ -86,6 +86,8 @@
     "@aws-cdk/aws-ecr": "0.0.0",
     "@aws-cdk/aws-ecs": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-secretsmanager": "0.0.0",
+    "@aws-cdk/aws-ssm": "0.0.0",
     "constructs": "^3.2.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
@@ -95,6 +97,8 @@
     "@aws-cdk/aws-ecr": "0.0.0",
     "@aws-cdk/aws-ecs": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-secretsmanager": "0.0.0",
+    "@aws-cdk/aws-ssm": "0.0.0",
     "constructs": "^3.2.0"
   },
   "engines": {
