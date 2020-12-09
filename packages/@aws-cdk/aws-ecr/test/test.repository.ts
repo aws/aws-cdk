@@ -81,28 +81,6 @@ export = {
     test.done();
   },
 
-  'repository creation with tag immutablility is disabled'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-
-    // WHEN
-    new ecr.Repository(stack, 'Repo', { imageTagImmutable: false });
-
-    // THEN
-    // TODO: ditto
-    expect(stack).toMatch({
-      Resources: {
-        Repo02AC86CF: {
-          Type: 'AWS::ECR::Repository',
-          DeletionPolicy: 'Retain',
-          UpdateReplacePolicy: 'Retain',
-        },
-      },
-    });
-
-    test.done();
-  },
-
   'tag-based lifecycle policy'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
