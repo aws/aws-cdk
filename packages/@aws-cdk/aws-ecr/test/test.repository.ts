@@ -44,6 +44,65 @@ export = {
     test.done();
   },
 
+  'repository creation with tag immutablility is enabled'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new ecr.Repository(stack, 'Repo', { imageTagImmutable: true });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ECR::Repository', {
+      ImageTagMutability: 'IMMUTABLE',
+    }));
+
+    test.done();
+  },
+
+  'repository creation with tag immutablility is disabled'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new ecr.Repository(stack, 'Repo', { imageTagImmutable: false });
+
+    // THEN
+    // TODO: Is it possible to specify a field is absent instead of specifying the full json here?
+    expect(stack).toMatch({
+      Resources: {
+        Repo02AC86CF: {
+          Type: 'AWS::ECR::Repository',
+          DeletionPolicy: 'Retain',
+          UpdateReplacePolicy: 'Retain',
+        },
+      },
+    });
+
+    test.done();
+  },
+
+  'repository creation with tag immutablility is disabled'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new ecr.Repository(stack, 'Repo', { imageTagImmutable: false });
+
+    // THEN
+    // TODO: ditto
+    expect(stack).toMatch({
+      Resources: {
+        Repo02AC86CF: {
+          Type: 'AWS::ECR::Repository',
+          DeletionPolicy: 'Retain',
+          UpdateReplacePolicy: 'Retain',
+        },
+      },
+    });
+
+    test.done();
+  },
+
   'tag-based lifecycle policy'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();

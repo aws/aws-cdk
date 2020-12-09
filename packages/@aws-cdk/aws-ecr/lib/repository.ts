@@ -324,6 +324,13 @@ export interface RepositoryProps {
    *  @default false
    */
   readonly imageScanOnPush?: boolean;
+
+  /**
+   * Enable image tag references to be mutable
+   *
+   *  @default true
+   */
+  readonly imageTagImmutable?: boolean;
 }
 
 export interface RepositoryAttributes {
@@ -422,6 +429,7 @@ export class Repository extends RepositoryBase {
       imageScanningConfiguration: !props.imageScanOnPush ? undefined : {
         scanOnPush: true,
       },
+      imageTagMutability: props.imageTagImmutable ? 'IMMUTABLE' : undefined,
     });
 
     resource.applyRemovalPolicy(props.removalPolicy);

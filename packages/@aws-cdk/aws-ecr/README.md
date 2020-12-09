@@ -68,3 +68,13 @@ is important here):
 repository.addLifecycleRule({ tagPrefixList: ['prod'], maxImageCount: 9999 });
 repository.addLifecycleRule({ maxImageAge: cdk.Duration.days(30) });
 ```
+
+## Immutable tags
+
+Repositories configured with immutable tags prevent image tags from being overwritten. By default, tags are mutable. To create a new repository with immutable tags, simply enable `imageScanOnPush` in the properties
+
+```ts
+const repository = new ecr.Repository(stack, 'Repo', {
+  imageTagImmutable: true
+});
+```
