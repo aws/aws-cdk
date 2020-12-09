@@ -142,6 +142,7 @@
     "@aws-cdk/aws-mediastore": "0.0.0",
     "@aws-cdk/aws-msk": "0.0.0",
     "@aws-cdk/aws-neptune": "0.0.0",
+    "@aws-cdk/aws-networkfirewall": "0.0.0",
     "@aws-cdk/aws-networkmanager": "0.0.0",
     "@aws-cdk/aws-opsworks": "0.0.0",
     "@aws-cdk/aws-opsworkscm": "0.0.0",
@@ -170,6 +171,7 @@
     "@aws-cdk/aws-servicediscovery": "0.0.0",
     "@aws-cdk/aws-ses": "0.0.0",
     "@aws-cdk/aws-ses-actions": "0.0.0",
+    "@aws-cdk/aws-signer": "0.0.0",
     "@aws-cdk/aws-sns": "0.0.0",
     "@aws-cdk/aws-sns-subscriptions": "0.0.0",
     "@aws-cdk/aws-sqs": "0.0.0",
@@ -194,10 +196,10 @@
     "@aws-cdk/yaml-cfn": "0.0.0",
     "constructs": "^3.2.0",
     "fs-extra": "^9.0.1",
-    "jsii-reflect": "^1.14.1",
+    "jsii-reflect": "^1.15.0",
     "jsonschema": "^1.4.0",
     "yaml": "1.10.0",
-    "yargs": "^16.1.1"
+    "yargs": "^16.2.0"
   },
   "devDependencies": {
     "@types/fs-extra": "^8.1.1",
@@ -205,7 +207,7 @@
     "@types/yaml": "1.9.7",
     "@types/yargs": "^15.0.10",
     "jest": "^26.6.3",
-    "jsii": "^1.14.1"
+    "jsii": "^1.15.0"
   },
   "keywords": [
     "aws",

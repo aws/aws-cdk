@@ -78,7 +78,7 @@ export class AppMeshExtension extends ServiceExtension {
     }
   }
 
-  public modifyTaskDefinitionProps(props: ecs.TaskDefinitionProps) {
+  public modifyTaskDefinitionProps(props: ecs.TaskDefinitionProps): ecs.TaskDefinitionProps {
     // Find the app extension, to get its port
     const containerextension = this.parentService.serviceDescription.get('service-container') as Container;
 
@@ -223,7 +223,7 @@ export class AppMeshExtension extends ServiceExtension {
   }
 
   // Enable CloudMap for the service.
-  public modifyServiceProps(props: ServiceBuild) {
+  public modifyServiceProps(props: ServiceBuild): ServiceBuild {
     return {
       ...props,
 

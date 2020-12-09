@@ -1,7 +1,7 @@
 ---
 name: "\U0001F680 Feature Request"
 about: Request a new feature
-title: "[module] "
+title: "(module name): short issue description"
 labels: feature-request, needs-triage
 ---
 

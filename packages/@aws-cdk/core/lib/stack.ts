@@ -63,7 +63,7 @@ export interface StackProps {
    *
    * // Use a concrete account and region to deploy this stack to:
    * // `.account` and `.region` will simply return these values.
-   * new MyStack(app, 'Stack1', {
+   * new Stack(app, 'Stack1', {
    *   env: {
    *     account: '123456789012',
    *     region: 'us-east-1'
@@ -73,7 +73,7 @@ export interface StackProps {
    * // Use the CLI's current credentials to determine the target environment:
    * // `.account` and `.region` will reflect the account+region the CLI
    * // is configured to use (based on the user CLI credentials)
-   * new MyStack(app, 'Stack2', {
+   * new Stack(app, 'Stack2', {
    *   env: {
    *     account: process.env.CDK_DEFAULT_ACCOUNT,
    *     region: process.env.CDK_DEFAULT_REGION
@@ -91,7 +91,7 @@ export interface StackProps {
    * // both of these stacks will use the stage's account/region:
    * // `.account` and `.region` will resolve to the concrete values as above
    * new MyStack(myStage, 'Stack1');
-   * new YourStack(myStage, 'Stack1');
+   * new YourStack(myStage, 'Stack2');
    *
    * // Define an environment-agnostic stack:
    * // `.account` and `.region` will resolve to `{ "Ref": "AWS::AccountId" }` and `{ "Ref": "AWS::Region" }` respectively.
@@ -277,7 +277,7 @@ export class Stack extends CoreConstruct implements ITaggable {
    * The name of the CloudFormation template file emitted to the output
    * directory during synthesis.
    *
-   * @example MyStack.template.json
+   * @example 'MyStack.template.json'
    */
   public readonly templateFile: string;
 
@@ -519,7 +519,9 @@ export class Stack extends CoreConstruct implements ITaggable {
   /**
    * The ID of the stack
    *
-   * @example After resolving, looks like arn:aws:cloudformation:us-west-2:123456789012:stack/teststack/51af3dc0-da77-11e4-872e-1234567db123
+   * @example
+   * // After resolving, looks like
+   * 'arn:aws:cloudformation:us-west-2:123456789012:stack/teststack/51af3dc0-da77-11e4-872e-1234567db123'
    */
   public get stackId(): string {
     return new ScopedAws(this).stackId;
@@ -563,28 +565,28 @@ export class Stack extends CoreConstruct implements ITaggable {
   /**
    * Given an ARN, parses it and returns components.
    *
-   * If the ARN is a concrete string, it will be parsed and validated. The
-   * separator (`sep`) will be set to '/' if the 6th component includes a '/',
-   * in which case, `resource` will be set to the value before the '/' and
-   * `resourceName` will be the rest. In case there is no '/', `resource` will
-   * be set to the 6th components and `resourceName` will be set to the rest
-   * of the string.
+   * IF THE ARN IS A CONCRETE STRING...
    *
-   * If the ARN includes tokens (or is a token), the ARN cannot be validated,
-   * since we don't have the actual value yet at the time of this function
-   * call. You will have to know the separator and the type of ARN. The
-   * resulting `ArnComponents` object will contain tokens for the
-   * subexpressions of the ARN, not string literals. In this case this
-   * function cannot properly parse the complete final resourceName (path) out
-   * of ARNs that use '/' to both separate the 'resource' from the
-   * 'resourceName' AND to subdivide the resourceName further. For example, in
-   * S3 ARNs:
+   * ...it will be parsed and validated. The separator (`sep`) will be set to '/'
+   * if the 6th component includes a '/', in which case, `resource` will be set
+   * to the value before the '/' and `resourceName` will be the rest. In case
+   * there is no '/', `resource` will be set to the 6th components and
+   * `resourceName` will be set to the rest of the string.
    *
-   *    arn:aws:s3:::my_corporate_bucket/path/to/exampleobject.png
+   * IF THE ARN IS A TOKEN...
    *
-   * After parsing the resourceName will not contain
-   * 'path/to/exampleobject.png' but simply 'path'. This is a limitation
-   * because there is no slicing functionality in CloudFormation templates.
+   * ...it cannot be validated, since we don't have the actual value yet at the
+   * time of this function call. You will have to supply `sepIfToken` and
+   * whether or not ARNs of the expected format usually have resource names
+   * in order to parse it properly. The resulting `ArnComponents` object will
+   * contain tokens for the subexpressions of the ARN, not string literals.
+   *
+   * If the resource name could possibly contain the separator char, the actual
+   * resource name cannot be properly parsed. This only occurs if the separator
+   * char is '/', and happens for example for S3 object ARNs, IAM Role ARNs,
+   * IAM OIDC Provider ARNs, etc. To properly extract the resource name from a
+   * Tokenized ARN, you must know the resource type and call
+   * `Arn.extractResourceName`.
    *
    * @param arn The ARN string to parse
    * @param sepIfToken The separator used to separate resource from resourceName
@@ -683,7 +685,7 @@ export class Stack extends CoreConstruct implements ITaggable {
    *
    * Duplicate values are removed when stack is synthesized.
    *
-   * @example addTransform('AWS::Serverless-2016-10-31')
+   * @example stack.addTransform('AWS::Serverless-2016-10-31')
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/transform-section-structure.html
    *
