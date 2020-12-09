@@ -105,7 +105,7 @@ export = {
     // WHEN
     new appmesh.VirtualNode(stack, 'test-node', {
       mesh,
-      serviceDiscovery: appmesh.ServiceDiscovery.cloudmap({
+      serviceDiscovery: appmesh.ServiceDiscovery.cloudMap({
         service: service,
       }),
     });

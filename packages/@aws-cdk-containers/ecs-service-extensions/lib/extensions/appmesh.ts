@@ -280,10 +280,10 @@ export class AppMeshExtension extends ServiceExtension {
       mesh: this.mesh,
       virtualNodeName: this.parentService.id,
       serviceDiscovery: service.cloudMapService
-        ? appmesh.ServiceDiscovery.cloudmap({
+        ? appmesh.ServiceDiscovery.cloudMap({
           service: service.cloudMapService,
         })
-       : undefined,
+        : undefined,
       listeners: [addListener(this.protocol, containerextension.trafficPort)],
     });
 

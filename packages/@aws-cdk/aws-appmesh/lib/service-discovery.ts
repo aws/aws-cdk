@@ -56,7 +56,7 @@ export abstract class ServiceDiscovery {
   /**
    * Returns Cloud Map based service discovery
    */
-  public static cloudmap(options: CloudMapServiceDiscoveryOptions): ServiceDiscovery {
+  public static cloudMap(options: CloudMapServiceDiscoveryOptions): ServiceDiscovery {
     return new CloudMapServiceDiscovery(options);
   }
 
