@@ -73,7 +73,7 @@ describe('BasePathMapping', () => {
         domainName: domain,
         basePath: invalidBasePath,
       });
-    }).toThrowError(/base path may only only contain/);
+    }).toThrowError(/base path may only contain/);
   });
 
   test('specify stage property', () => {
