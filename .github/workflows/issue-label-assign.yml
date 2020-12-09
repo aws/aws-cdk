@@ -53,7 +53,7 @@ jobs:
            {"keywords":["(@aws-cdk/aws-cloudformation)","(aws-cloudformation)","(cloudformation)","(cloud formation)"],"labels":["@aws-cdk/aws-cloudformation"],"assignees":["rix0rrr"]},
            {"keywords":["(@aws-cdk/aws-cloudfront)","(aws-cloudfront)","(cloudfront)","(cloud front)"],"labels":["@aws-cdk/aws-cloudfront"],"assignees":["njlynch"]},
            {"keywords":["(@aws-cdk/aws-cloudfront-origins)","(aws-cloudfront-origins)","(cloudfront-origins)","(cloudfront origins)"],"labels":["@aws-cdk/aws-cloudfront-origins"],"assignees":["njlynch"]},
-           {"keywords":["(@aws-cdk/aws-cloudtrail)","(aws-cloudtrail)","(cloudtrail)","(cloud trail)"],"labels":["@aws-cdk/aws-cloudtrail"],"assignees":["nija"]},
+           {"keywords":["(@aws-cdk/aws-cloudtrail)","(aws-cloudtrail)","(cloudtrail)","(cloud trail)"],"labels":["@aws-cdk/aws-cloudtrail"],"assignees":["rix0rrr"]},
            {"keywords":["(@aws-cdk/aws-cloudwatch)","(aws-cloudwatch)","(cloudwatch)","(cloud watch)"],"labels":["@aws-cdk/aws-cloudwatch"],"assignees":["rix0rrr"]},
            {"keywords":["(@aws-cdk/aws-cloudwatch-actions)","(aws-cloudwatch-actions)","(cloudwatch-actions)","(cloudwatch actions)"],"labels":["@aws-cdk/aws-cloudwatch-actions"],"assignees":["rix0rrr"]},
            {"keywords":["(@aws-cdk/aws-codeartifact)","(aws-codeartifact)","(codeartifact)","(code artifact)","(code-artifact)"],"labels":["@aws-cdk/aws-codeartifact"],"assignees":["njlynch"]},
