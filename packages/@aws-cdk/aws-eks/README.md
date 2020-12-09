@@ -214,7 +214,7 @@ cluster.addNodegroupCapacity('custom-node-group', {
 Use `capacityType` to create the Spot managed node groups. To maximize the availability of your applications while using
 Spot Instances, we recommend that you configure a Spot managed node group to use multiple instance types. 
 
-> For more details visit [Managed node group capacity types ](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html#managed-node-group-capacity-types).
+> For more details visit [Managed node group capacity types](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html#managed-node-group-capacity-types).
 
 
 ```ts
