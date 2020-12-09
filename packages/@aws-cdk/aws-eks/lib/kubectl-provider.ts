@@ -67,6 +67,7 @@ export class KubectlProvider extends NestedStack {
     }
 
     const layer = cluster.kubectlLayer ?? getOrCreateKubectlLayer(this);
+    const memorySize = cluster.kubectlMemory ? cluster.kubectlMemory.toMebibytes() : 1024;
 
     const handler = new lambda.Function(this, 'Handler', {
       code: lambda.Code.fromAsset(path.join(__dirname, 'kubectl-handler')),
@@ -75,7 +76,7 @@ export class KubectlProvider extends NestedStack {
       timeout: Duration.minutes(15),
       description: 'onEvent handler for EKS kubectl resource provider',
       layers: [layer],
-      memorySize: 256,
+      memorySize,
       environment: cluster.kubectlEnvironment,
 
       // defined only when using private access
