@@ -70,7 +70,7 @@ export interface LogConfiguration {
 
   /**
    * The secrets to pass to the log configuration as options.
-   * For more information, see https://docs.aws.amazon.com/batch/latest/userguide/specifying-sensitive-data.html
+   * For more information, see https://docs.aws.amazon.com/batch/latest/userguide/specifying-sensitive-data-secrets.html#secrets-logconfig
    *
    * @default - No secrets are passed
    */
