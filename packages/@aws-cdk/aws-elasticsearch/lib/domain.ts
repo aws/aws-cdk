@@ -871,7 +871,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
         ClientId: this.stack.account,
       },
       ...props,
-    });
+    }).attachTo(this);
   }
 
   /**
@@ -1067,6 +1067,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
 
     return grant;
   }
+
 }
 
 
