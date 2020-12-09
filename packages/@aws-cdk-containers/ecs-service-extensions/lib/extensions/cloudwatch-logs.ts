@@ -54,7 +54,7 @@ export interface CloudWatchLogsExtensionProps {
   /**
    * The log group into which logs should be routed
    */
-  readonly logGroup?: awslogs.LogGroup;
+  readonly logGroup: awslogs.LogGroup;
 }
 
 /**
