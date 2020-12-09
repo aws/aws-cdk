@@ -450,7 +450,11 @@ The `ClusterHandler` is a Lambda function responsible to interact the EKS API in
 
 ### Kubectl Support
 
-The resources are created in the cluster by running `kubectl apply` from a python lambda function. You can configure the environment of this function by specifying it at cluster instantiation. For example, this can be useful in order to configure an http proxy:
+The resources are created in the cluster by running `kubectl apply` from a python lambda function.
+
+#### Environment
+
+You can configure the environment of this function by specifying it at cluster instantiation. For example, this can be useful in order to configure an http proxy:
 
 ```ts
 const cluster = new eks.Cluster(this, 'hello-eks', {
@@ -460,6 +464,8 @@ const cluster = new eks.Cluster(this, 'hello-eks', {
   }
 });
 ```
+
+#### Runtime
 
 By default, the `kubectl`, `helm` and `aws` commands used to operate the cluster are provided by an AWS Lambda Layer from the AWS Serverless Application in [aws-lambda-layer-kubectl](https://github.com/aws-samples/aws-lambda-layer-kubectl). In most cases this should be sufficient.
 
@@ -495,6 +501,23 @@ const cluster = eks.Cluster.fromClusterAttributes(this, 'MyCluster', {
 
 > Instructions on how to build `layer.zip` can be found
 > [here](https://github.com/aws-samples/aws-lambda-layer-kubectl/blob/master/cdk/README.md).
+
+#### Memory
+
+By default, the kubectl provider is configured with 1024MiB of memory. You can use the `kubectlMemory` option to specify the memory size for the AWS Lambda function:
+
+```ts
+import { Size } from '@aws-cdk/core';
+
+new eks.Cluster(this, 'MyCluster', {
+  kubectlMemory: Size.gibibytes(4)
+});
+
+// or
+eks.Cluster.fromClusterAttributes(this, 'MyCluster', {
+  kubectlMemory: Size.gibibytes(4)
+});
+```
 
 ### ARM64 Support
 
