@@ -106,24 +106,24 @@ export = {
 
       const node = mesh.addVirtualNode('test-node', {
         dnsHostName: 'test',
-        listener: {
-          portMapping:
-            {
-              port: 8080,
-              protocol: appmesh.Protocol.HTTP,
-            },
-        },
+        listeners: [appmesh.VirtualNodeListener.http({
+          port: 8080,
+        })],
         backends: [service1],
       });
 
       router.addRoute('route-1', {
-        routeTargets: [
-          {
-            virtualNode: node,
-            weight: 50,
+        routeSpec: appmesh.RouteSpec.http({
+          weightedTargets: [
+            {
+              virtualNode: node,
+              weight: 50,
+            },
+          ],
+          match: {
+            prefixPath: '/',
           },
-        ],
-        prefix: '/',
+        }),
       });
 
       // THEN
@@ -179,72 +179,72 @@ export = {
 
       const node = mesh.addVirtualNode('test-node', {
         dnsHostName: 'test',
-        listener: {
-          portMapping:
-            {
-              port: 8080,
-              protocol: appmesh.Protocol.HTTP,
-            },
-        },
+        listeners: [appmesh.VirtualNodeListener.http({
+          port: 8080,
+        })],
         backends: [
           service1,
         ],
       });
       const node2 = mesh.addVirtualNode('test-node2', {
         dnsHostName: 'test',
-        listener: {
-          portMapping:
-            {
-              port: 8080,
-              protocol: appmesh.Protocol.HTTP,
-            },
-        },
+        listeners: [appmesh.VirtualNodeListener.http({
+          port: 8080,
+        })],
         backends: [
           service2,
         ],
       });
       const node3 = mesh.addVirtualNode('test-node3', {
         dnsHostName: 'test',
-        listener: {
-          portMapping:
-            {
-              port: 8080,
-              protocol: appmesh.Protocol.HTTP,
-            },
-        },
+        listeners: [appmesh.VirtualNodeListener.http({
+          port: 8080,
+        })],
         backends: [
           service1,
         ],
       });
 
       router.addRoute('route-1', {
-        routeTargets: [
-          {
-            virtualNode: node,
-            weight: 50,
+        routeSpec: appmesh.RouteSpec.http({
+          weightedTargets: [
+            {
+              virtualNode: node,
+              weight: 50,
+            },
+          ],
+          match: {
+            prefixPath: '/',
           },
-        ],
-        prefix: '/',
+        }),
       });
 
       router.addRoute('route-2', {
-        routeTargets: [
-          {
-            virtualNode: node2,
-            weight: 30,
+        routeSpec: appmesh.RouteSpec.http({
+          weightedTargets: [
+            {
+              virtualNode: node2,
+              weight: 30,
+            },
+          ],
+          match: {
+            prefixPath: '/path2',
           },
-        ],
-        prefix: '/path2',
+        }),
       });
 
       router.addRoute('route-3', {
-        routeTargets: [
-          {
-            virtualNode: node3,
-            weight: 20,
+        routeSpec: appmesh.RouteSpec.http({
+          weightedTargets: [
+            {
+              virtualNode: node3,
+              weight: 20,
+            },
+          ],
+          match: {
+            prefixPath: '/path3',
           },
-        ],
-        prefix: '/path3',
+        }),
       });
 
       // THEN
@@ -337,25 +337,23 @@ export = {
 
       const node = mesh.addVirtualNode('test-node', {
         dnsHostName: 'test',
-        listener: {
-          portMapping:
-            {
-              port: 8080,
-              protocol: appmesh.Protocol.HTTP,
-            },
-        },
+        listeners: [appmesh.VirtualNodeListener.http({
+          port: 8080,
+        })],
         backends: [
           service1,
         ],
       });
 
       router.addRoute('route-tcp-1', {
-        routeTargets: [
-          {
-            virtualNode: node,
-            weight: 50,
-          },
-        ],
+        routeSpec: appmesh.RouteSpec.tcp({
+          weightedTargets: [
+            {
+              virtualNode: node,
+              weight: 50,
+            },
+          ],
+        }),
       });
 
       // THEN

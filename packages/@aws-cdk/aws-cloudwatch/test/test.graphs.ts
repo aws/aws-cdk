@@ -61,6 +61,35 @@ export = {
     test.done();
   },
 
+  'add metrics to graphs on either axis lazily'(test: Test) {
+    // WHEN
+    const stack = new Stack();
+    const widget = new GraphWidget({
+      title: 'My fancy graph',
+    });
+    widget.addLeftMetric(new Metric({ namespace: 'CDK', metricName: 'Test' }));
+    widget.addRightMetric(new Metric({ namespace: 'CDK', metricName: 'Tast' }));
+
+    // THEN
+    test.deepEqual(stack.resolve(widget.toJson()), [{
+      type: 'metric',
+      width: 6,
+      height: 6,
+      properties: {
+        view: 'timeSeries',
+        title: 'My fancy graph',
+        region: { Ref: 'AWS::Region' },
+        metrics: [
+          ['CDK', 'Test'],
+          ['CDK', 'Tast', { yAxis: 'right' }],
+        ],
+        yAxis: {},
+      },
+    }]);
+
+    test.done();
+  },
+
   'label and color are respected in constructor'(test: Test) {
     // WHEN
     const stack = new Stack();

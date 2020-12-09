@@ -169,7 +169,7 @@ export class EndpointGroup extends cdk.Resource implements IEndpointGroup {
     const resource = new ga.CfnEndpointGroup(this, 'Resource', {
       listenerArn: props.listener.listenerArn,
       endpointGroupRegion: props.region ?? cdk.Stack.of(this).region,
-      endpointConfigurations: cdk.Lazy.anyValue({ produce: () => this.renderEndpoints() }, { omitEmptyArray: true }),
+      endpointConfigurations: cdk.Lazy.any({ produce: () => this.renderEndpoints() }, { omitEmptyArray: true }),
     });
 
     this.endpointGroupArn = resource.attrEndpointGroupArn;

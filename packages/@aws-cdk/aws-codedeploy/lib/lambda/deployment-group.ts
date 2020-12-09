@@ -170,8 +170,8 @@ export class LambdaDeploymentGroup extends cdk.Resource implements ILambdaDeploy
         deploymentType: 'BLUE_GREEN',
         deploymentOption: 'WITH_TRAFFIC_CONTROL',
       },
-      alarmConfiguration: cdk.Lazy.anyValue({ produce: () => renderAlarmConfiguration(this.alarms, props.ignorePollAlarmsFailure) }),
-      autoRollbackConfiguration: cdk.Lazy.anyValue({ produce: () => renderAutoRollbackConfiguration(this.alarms, props.autoRollback) }),
+      alarmConfiguration: cdk.Lazy.any({ produce: () => renderAlarmConfiguration(this.alarms, props.ignorePollAlarmsFailure) }),
+      autoRollbackConfiguration: cdk.Lazy.any({ produce: () => renderAutoRollbackConfiguration(this.alarms, props.autoRollback) }),
     });
 
     this.deploymentGroupName = this.getResourceNameAttribute(resource.ref);
@@ -193,8 +193,8 @@ export class LambdaDeploymentGroup extends cdk.Resource implements ILambdaDeploy
       codeDeployLambdaAliasUpdate: {
         applicationName: this.application.applicationName,
         deploymentGroupName: resource.ref,
-        beforeAllowTrafficHook: cdk.Lazy.stringValue({ produce: () => this.preHook && this.preHook.functionName }),
-        afterAllowTrafficHook: cdk.Lazy.stringValue({ produce: () => this.postHook && this.postHook.functionName }),
+        beforeAllowTrafficHook: cdk.Lazy.string({ produce: () => this.preHook && this.preHook.functionName }),
+        afterAllowTrafficHook: cdk.Lazy.string({ produce: () => this.postHook && this.postHook.functionName }),
       },
     };
 

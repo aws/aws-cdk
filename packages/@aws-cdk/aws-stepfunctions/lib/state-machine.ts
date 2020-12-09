@@ -4,6 +4,7 @@ import * as logs from '@aws-cdk/aws-logs';
 import { Arn, Duration, IResource, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { StateGraph } from './state-graph';
+import { StatesMetrics } from './stepfunctions-canned-metrics.generated';
 import { CfnStateMachine } from './stepfunctions.generated';
 import { IChainable } from './types';
 
@@ -227,6 +228,98 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
     });
   }
 
+
+  /**
+   * Return the given named metric for this State Machine's executions
+   *
+   * @default - sum over 5 minutes
+   */
+  public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return new cloudwatch.Metric({
+      namespace: 'AWS/States',
+      metricName,
+      dimensions: { StateMachineArn: this.stateMachineArn },
+      statistic: 'sum',
+      ...props,
+    }).attachTo(this);
+  }
+
+  /**
+   * Metric for the number of executions that failed
+   *
+   * @default - sum over 5 minutes
+   */
+  public metricFailed(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(StatesMetrics.executionsFailedAverage, {
+      statistic: 'sum',
+      ...props,
+    });
+  }
+
+  /**
+   * Metric for the number of executions that were throttled
+   *
+   * @default - sum over 5 minutes
+   */
+  public metricThrottled(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    // There's a typo in the "canned" version of this
+    return this.metric('ExecutionThrottled', props);
+  }
+
+  /**
+   * Metric for the number of executions that were aborted
+   *
+   * @default - sum over 5 minutes
+   */
+  public metricAborted(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(StatesMetrics.executionsAbortedAverage, {
+      statistic: 'sum',
+      ...props,
+    });
+  }
+
+  /**
+   * Metric for the number of executions that succeeded
+   *
+   * @default - sum over 5 minutes
+   */
+  public metricSucceeded(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(StatesMetrics.executionsSucceededAverage, {
+      statistic: 'sum',
+      ...props,
+    });
+  }
+
+  /**
+   * Metric for the number of executions that timed out
+   *
+   * @default - sum over 5 minutes
+   */
+  public metricTimedOut(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(StatesMetrics.executionsTimedOutAverage, {
+      statistic: 'sum',
+      ...props,
+    });
+  }
+
+  /**
+   * Metric for the number of executions that were started
+   *
+   * @default - sum over 5 minutes
+   */
+  public metricStarted(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.metric('ExecutionsStarted', props);
+  }
+
+  /**
+   * Metric for the interval, in milliseconds, between the time the execution starts and the time it closes
+   *
+   * @default - average over 5 minutes
+   */
+  public metricTime(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(StatesMetrics.executionTimeAverage, props);
+  }
+
   /**
    * Returns the pattern for the execution ARN's of the state machine
    */
@@ -237,6 +330,15 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
       resourceName: Arn.parse(this.stateMachineArn, ':').resourceName,
       sep: ':',
     });
+  }
+
+  private cannedMetric(
+    fn: (dims: { StateMachineArn: string }) => cloudwatch.MetricProps,
+    props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return new cloudwatch.Metric({
+      ...fn({ StateMachineArn: this.stateMachineArn }),
+      ...props,
+    }).attachTo(this);
   }
 }
 
@@ -309,84 +411,6 @@ export class StateMachine extends StateMachineBase {
    */
   public addToRolePolicy(statement: iam.PolicyStatement) {
     this.role.addToPrincipalPolicy(statement);
-  }
-
-  /**
-   * Return the given named metric for this State Machine's executions
-   *
-   * @default sum over 5 minutes
-   */
-  public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return new cloudwatch.Metric({
-      namespace: 'AWS/States',
-      metricName,
-      dimensions: { StateMachineArn: this.stateMachineArn },
-      statistic: 'sum',
-      ...props,
-    }).attachTo(this);
-  }
-
-  /**
-   * Metric for the number of executions that failed
-   *
-   * @default sum over 5 minutes
-   */
-  public metricFailed(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('ExecutionsFailed', props);
-  }
-
-  /**
-   * Metric for the number of executions that were throttled
-   *
-   * @default sum over 5 minutes
-   */
-  public metricThrottled(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('ExecutionThrottled', props);
-  }
-
-  /**
-   * Metric for the number of executions that were aborted
-   *
-   * @default sum over 5 minutes
-   */
-  public metricAborted(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('ExecutionsAborted', props);
-  }
-
-  /**
-   * Metric for the number of executions that succeeded
-   *
-   * @default sum over 5 minutes
-   */
-  public metricSucceeded(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('ExecutionsSucceeded', props);
-  }
-
-  /**
-   * Metric for the number of executions that timed out
-   *
-   * @default sum over 5 minutes
-   */
-  public metricTimedOut(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('ExecutionsTimedOut', props);
-  }
-
-  /**
-   * Metric for the number of executions that were started
-   *
-   * @default sum over 5 minutes
-   */
-  public metricStarted(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('ExecutionsStarted', props);
-  }
-
-  /**
-   * Metric for the interval, in milliseconds, between the time the execution starts and the time it closes
-   *
-   * @default sum over 5 minutes
-   */
-  public metricTime(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('ExecutionTime', props);
   }
 
   private buildLoggingConfiguration(logOptions: LogOptions): CfnStateMachine.LoggingConfigurationProperty {
@@ -481,4 +505,60 @@ export interface IStateMachine extends IResource {
    * @param actions The list of desired actions
    */
   grant(identity: iam.IGrantable, ...actions: string[]): iam.Grant;
+
+  /**
+   * Return the given named metric for this State Machine's executions
+   *
+   * @default - sum over 5 minutes
+   */
+  metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * Metric for the number of executions that failed
+   *
+   * @default - sum over 5 minutes
+   */
+  metricFailed(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * Metric for the number of executions that were throttled
+   *
+   * @default sum over 5 minutes
+   */
+  metricThrottled(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * Metric for the number of executions that were aborted
+   *
+   * @default - sum over 5 minutes
+   */
+  metricAborted(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * Metric for the number of executions that succeeded
+   *
+   * @default - sum over 5 minutes
+   */
+  metricSucceeded(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * Metric for the number of executions that timed out
+   *
+   * @default - sum over 5 minutes
+   */
+  metricTimedOut(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * Metric for the number of executions that were started
+   *
+   * @default - sum over 5 minutes
+   */
+  metricStarted(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * Metric for the interval, in milliseconds, between the time the execution starts and the time it closes
+   *
+   * @default - sum over 5 minutes
+   */
+  metricTime(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 }

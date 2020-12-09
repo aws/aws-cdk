@@ -12,3 +12,4 @@ export * from './fargate-cluster';
 export * from './service-account';
 export * from './managed-nodegroup';
 export * from './kubectl-layer';
+export * from './oidc-provider';

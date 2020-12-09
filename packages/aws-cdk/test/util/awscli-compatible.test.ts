@@ -27,3 +27,21 @@ test('on an EC2 instance, region lookup queries IMDS', async () => {
   });
 });
 
+test('Use web identity when available', async () => {
+
+  // Scrub some environment variables that are maybe set for Ecs Credentials
+  delete process.env.ECS_CONTAINER_METADATA_URI_V4;
+  delete process.env.ECS_CONTAINER_METADATA_URI;
+  delete process.env.AWS_CONTAINER_CREDENTIALS_RELATIVE_URI;
+
+  // create and configure the web identity token file
+  process.env.AWS_WEB_IDENTITY_TOKEN_FILE = 'some-value';
+  process.env.AWS_ROLE_ARN = 'some-value';
+
+  // create the chain
+  const providers = (await AwsCliCompatible.credentialChain()).providers;
+
+  // make sure the web identity provider is in the chain
+  const webIdentify = (providers[2] as Function)();
+  expect(webIdentify).toBeInstanceOf(AWS.TokenFileWebIdentityCredentials);
+});

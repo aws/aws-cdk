@@ -1,8 +1,9 @@
 import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
-import { FingerprintOptions, SymlinkFollowMode } from './options';
-import { shouldExclude, shouldFollow } from './utils';
+import { IgnoreStrategy } from './ignore';
+import { FingerprintOptions, IgnoreMode, SymlinkFollowMode } from './options';
+import { shouldFollow } from './utils';
 
 const BUFFER_SIZE = 8 * 1024;
 const CTRL_SOH = '\x01';
@@ -33,18 +34,26 @@ export function fingerprint(fileOrDirectory: string, options: FingerprintOptions
   if (exclude.length) {
     _hashField(hash, 'options.exclude', JSON.stringify(exclude));
   }
+
+  const ignoreMode = options.ignoreMode || IgnoreMode.GLOB;
+  if (ignoreMode != IgnoreMode.GLOB) {
+    _hashField(hash, 'options.ignoreMode', ignoreMode);
+  }
+
+  const ignoreStrategy = IgnoreStrategy.fromCopyOptions(options, fileOrDirectory);
   const isDir = fs.statSync(fileOrDirectory).isDirectory();
   _processFileOrDirectory(fileOrDirectory, isDir);
 
   return hash.digest('hex');
 
   function _processFileOrDirectory(symbolicPath: string, isRootDir: boolean = false, realPath = symbolicPath) {
-    if (!isRootDir && shouldExclude(exclude, symbolicPath)) {
+    const relativePath = path.relative(fileOrDirectory, symbolicPath);
+
+    if (!isRootDir && ignoreStrategy.ignores(symbolicPath)) {
       return;
     }
 
     const stat = fs.lstatSync(realPath);
-    const relativePath = path.relative(fileOrDirectory, symbolicPath);
 
     if (stat.isSymbolicLink()) {
       const linkTarget = fs.readlinkSync(realPath);

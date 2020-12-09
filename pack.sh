@@ -19,6 +19,10 @@ distdir="$PWD/dist"
 rm -fr ${distdir}
 mkdir -p ${distdir}
 
+if ${CHECK_PREREQS:-true}; then
+  /bin/bash ./scripts/check-pack-prerequisites.sh
+fi
+
 # Split out jsii and non-jsii packages. Jsii packages will be built all at once.
 # Non-jsii packages will be run individually.
 echo "Collecting package list..." >&2
@@ -84,7 +88,7 @@ cp ${changelog_file} ${distdir}/CHANGELOG.md
 # defensive: make sure our artifacts don't use the version marker (this means
 # that "pack" will always fails when building in a dev environment)
 # when we get to 10.0.0, we can fix this...
-if find dist/ | grep "${marker}"; then
+if find dist/ | grep -F "${marker}"; then
   echo "ERROR: build artifacts use the version marker '${marker}' instead of a real version."
   echo "This is expected for builds in a development environment but should not happen in CI builds!"
   exit 1
