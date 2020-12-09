@@ -4,14 +4,14 @@ import * as ssm from '@aws-cdk/aws-ssm';
 /**
  * Exposed secret for log configuration
  */
-export abstract class ExposedSecret {
+export class ExposedSecret {
   /**
    * Use Secrets Manager Secret
    * @param name - The name of the secret
    * @param secret - A secret from secrets manager
    */
   public static fromSecretsManager(name: string, secret: secretsmanager.ISecret): ExposedSecret {
-    return new SecretsManagerSecret(name, secret);
+    return new ExposedSecret(name, secret.secretArn);
   }
 
   /**
@@ -20,45 +20,21 @@ export abstract class ExposedSecret {
    * @param parameter - A parameter from parameters store
    */
   public static fromParametersStore(name: string, parameter: ssm.IParameter): ExposedSecret {
-    return new ParametersStoreSecret(name, parameter);
+    return new ExposedSecret(name, parameter.parameterArn);
   }
 
   /**
    * Name of the secret
    */
-  public abstract secretName: string;
+  public secretName: string;
 
   /**
    * ARN of the secret
    */
-  public abstract secretArn: string;
-}
-
-
-/**
- * ExposedSecret for Secrets Manager
- */
-class SecretsManagerSecret extends ExposedSecret {
-  public secretName: string;
   public secretArn: string;
 
-  constructor(name: string, secret: secretsmanager.ISecret) {
-    super();
-    this.secretName = name;
-    this.secretArn = secret.secretArn;
-  }
-}
-
-/**
- * ExposedSecret for ParametersStore
- */
-class ParametersStoreSecret extends ExposedSecret {
-  public secretName: string;
-  public secretArn: string;
-
-  constructor(name: string, parameter: ssm.IParameter) {
-    super();
-    this.secretName = name;
-    this.secretArn = parameter.parameterArn;
+  constructor(secretName: string, secretArn: string) {
+    this.secretName = secretName;
+    this.secretArn = secretArn;
   }
 }
