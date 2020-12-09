@@ -60,7 +60,6 @@ async function parseCommandLineArguments() {
     .option('path-metadata', { type: 'boolean', desc: 'Include "aws:cdk:path" CloudFormation metadata for each resource (enabled by default)', default: true })
     .option('asset-metadata', { type: 'boolean', desc: 'Include "aws:asset:*" CloudFormation metadata for resources that user assets (enabled by default)', default: true })
     .option('role-arn', { type: 'string', alias: 'r', desc: 'ARN of Role to use when invoking CloudFormation', default: undefined, requiresArg: true })
-    .option('toolkit-stack-name', { type: 'string', desc: 'The name of the CDK toolkit stack', requiresArg: true })
     .option('staging', { type: 'boolean', desc: 'Copy assets to the output directory (use --no-staging to disable, needed for local debugging the source files with SAM CLI)', default: true })
     .option('output', { type: 'string', alias: 'o', desc: 'Emits the synthesized cloud assembly into a directory (default: cdk.out)', requiresArg: true })
     .option('no-color', { type: 'boolean', desc: 'Removes colors and other style from console output', default: false })
@@ -76,6 +75,7 @@ async function parseCommandLineArguments() {
       .option('qualifier', { type: 'string', desc: 'Unique string to distinguish multiple bootstrap stacks', default: undefined })
       .option('public-access-block-configuration', { type: 'boolean', desc: 'Block public access configuration on CDK toolkit bucket (enabled by default) ', default: undefined })
       .option('tags', { type: 'array', alias: 't', desc: 'Tags to add for the stack (KEY=VALUE)', nargs: 1, requiresArg: true, default: [] })
+      .option('toolkit-stack-name', { type: 'string', desc: 'The name of the CDK toolkit stack', requiresArg: true })
       .option('execute', { type: 'boolean', desc: 'Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet)', default: true })
       .option('trust', { type: 'array', desc: 'The AWS account IDs that should be trusted to perform deployments into this environment (may be repeated, modern bootstrapping only)', default: [], nargs: 1, requiresArg: true })
       .option('cloudformation-execution-policies', { type: 'array', desc: 'The Managed Policy ARNs that should be attached to the role performing deployments into this environment (may be repeated, modern bootstrapping only)', default: [], nargs: 1, requiresArg: true })
@@ -90,6 +90,7 @@ async function parseCommandLineArguments() {
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only deploy requested stacks, don\'t include dependencies' })
       .option('require-approval', { type: 'string', choices: [RequireApproval.Never, RequireApproval.AnyChange, RequireApproval.Broadening], desc: 'What security-sensitive changes need manual approval' })
       .option('ci', { type: 'boolean', desc: 'Force CI detection', default: process.env.CI !== undefined })
+      .option('bootstrap-qualifier', { type: 'string', desc: 'Bootstrap stack qualifier to use', default: undefined, requiresArg: true })
       .option('notification-arns', { type: 'array', desc: 'ARNs of SNS topics that CloudFormation will notify with stack related events', nargs: 1, requiresArg: true })
       // @deprecated(v2) -- tags are part of the Cloud Assembly and tags specified here will be overwritten on the next deployment
       .option('tags', { type: 'array', alias: 't', desc: 'Tags to add to the stack (KEY=VALUE), overrides tags from Cloud Assembly (deprecated)', nargs: 1, requiresArg: true })
@@ -211,9 +212,6 @@ async function initCommandLine() {
   }
 
   async function main(command: string, args: any): Promise<number | string | {} | void> {
-    const toolkitStackName: string = ToolkitStackInfo.determineName(configuration.settings.get(['toolkitStackName']));
-    debug(`Toolkit stack: ${colors.bold(toolkitStackName)}`);
-
     if (args.all && args.STACKS) {
       throw new Error('You must either specify a list of Stacks or the `--all` argument');
     }
@@ -274,6 +272,9 @@ async function initCommandLine() {
           return bootstrapper.showTemplate();
         }
 
+        const toolkitStackName: string = ToolkitStackInfo.determineName(configuration.settings.get(['toolkitStackName']));
+        debug(`Toolkit stack: ${colors.bold(toolkitStackName)}`);
+
         return cli.bootstrap(args.ENVIRONMENTS, bootstrapper, {
           roleArn: args.roleArn,
           force: argv.force,
@@ -303,7 +304,7 @@ async function initCommandLine() {
         return cli.deploy({
           stackNames: stacks,
           exclusively: args.exclusively,
-          toolkitStackName,
+          bootstrapQualifier: configuration.settings.get(['bootstrap-qualifier']) ?? 'hnb659fds',
           roleArn: args.roleArn,
           notificationArns: args.notificationArns,
           requireApproval: configuration.settings.get(['requireApproval']),

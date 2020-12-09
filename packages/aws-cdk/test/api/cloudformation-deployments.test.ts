@@ -1,7 +1,7 @@
 const mockToolkitInfoLookup = jest.fn();
 jest.mock('../../lib/api/deploy-stack');
 jest.mock('../../lib/api/toolkit-info', () => ({
-  ToolkitInfo: {
+  ToolkitResourcesInfo: {
     lookup: mockToolkitInfoLookup,
   },
 }));

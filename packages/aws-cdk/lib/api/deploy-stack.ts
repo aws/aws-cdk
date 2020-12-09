@@ -9,7 +9,7 @@ import { AssetManifestBuilder } from '../util/asset-manifest-builder';
 import { publishAssets } from '../util/asset-publishing';
 import { contentHash } from '../util/content-hash';
 import { ISDK, SdkProvider } from './aws-auth';
-import { ToolkitInfo } from './toolkit-info';
+import { ToolkitResourcesInfo } from './toolkit-info';
 import { changeSetHasNoChanges, CloudFormationStack, TemplateParameters, waitForChangeSet, waitForStackDeploy, waitForStackDelete } from './util/cloudformation';
 import { StackActivityMonitor, StackActivityProgress } from './util/cloudformation/stack-activity-monitor';
 
@@ -82,7 +82,7 @@ export interface DeployStackOptions {
    *
    * @default - Assume there is no bootstrap stack
    */
-  toolkitInfo?: ToolkitInfo;
+  toolkitInfo?: ToolkitResourcesInfo;
 
   /**
    * Role to pass to CloudFormation to execute the change set
@@ -313,7 +313,7 @@ async function makeBodyParameter(
   stack: cxapi.CloudFormationStackArtifact,
   resolvedEnvironment: cxapi.Environment,
   assetManifest: AssetManifestBuilder,
-  toolkitInfo?: ToolkitInfo): Promise<TemplateBodyParameter> {
+  toolkitInfo?: ToolkitResourcesInfo): Promise<TemplateBodyParameter> {
 
   // If the template has already been uploaded to S3, just use it from there.
   if (stack.stackTemplateAssetObjectUrl) {

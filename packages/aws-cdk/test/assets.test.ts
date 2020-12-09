@@ -1,10 +1,10 @@
 import { AssetMetadataEntry } from '@aws-cdk/cloud-assembly-schema';
-import { ToolkitInfo } from '../lib';
+import { ToolkitResourcesInfo } from '../lib';
 import { addMetadataAssetsToManifest } from '../lib/assets';
 import { AssetManifestBuilder } from '../lib/util/asset-manifest-builder';
 import { testStack } from './util';
 
-let toolkit: ToolkitInfo;
+let toolkit: ToolkitResourcesInfo;
 let assets: AssetManifestBuilder;
 beforeEach(() => {
   toolkit = {

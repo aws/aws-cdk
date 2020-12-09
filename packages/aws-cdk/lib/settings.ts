@@ -237,6 +237,7 @@ export class Settings {
       plugin: argv.plugin,
       requireApproval: argv.requireApproval,
       toolkitStackName: argv.toolkitStackName,
+      bootstrapQualifier: argv.bootstrapQualifier,
       toolkitBucket: {
         bucketName: argv.bootstrapBucketName,
         kmsKeyId: argv.bootstrapKmsKeyId,

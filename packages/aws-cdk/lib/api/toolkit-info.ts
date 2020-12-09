@@ -2,7 +2,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as colors from 'colors/safe';
 import { debug } from '../logging';
 import { ISDK } from './aws-auth';
-import { BOOTSTRAP_VERSION_OUTPUT, BUCKET_DOMAIN_NAME_OUTPUT, BUCKET_NAME_OUTPUT } from './bootstrap';
+import { BOOTSTRAP_VERSION_OUTPUT } from './bootstrap';
 import { stabilizeStack, CloudFormationStack } from './util/cloudformation';
 
 export const DEFAULT_TOOLKIT_STACK_NAME = 'CDKToolkit';
@@ -43,6 +43,12 @@ export class ToolkitStackInfo {
 
 }
 
+interface ToolkitResorcesInfoProps {
+  bucketName: string;
+  bucketDomainName: string;
+  version: number;
+}
+
 /**
  * Information on the Bootstrap stack
  *
@@ -50,39 +56,33 @@ export class ToolkitStackInfo {
  *
  * @experimental
  */
-export class ToolkitInfo {
+export class ToolkitResourcesInfo {
   /** @experimental */
-  public static async lookup(environment: cxapi.Environment, sdk: ISDK, stackName: string | undefined): Promise<ToolkitInfo | undefined> {
-    const cfn = sdk.cloudFormation();
-    const stack = await stabilizeStack(cfn, stackName ?? DEFAULT_TOOLKIT_STACK_NAME);
-    if (!stack) {
-      debug('The environment %s doesn\'t have the CDK toolkit stack (%s) installed. Use %s to setup your environment for use with the toolkit.',
-        environment.name, stackName, colors.blue(`cdk bootstrap "${environment.name}"`));
+  public static async lookup(environment: cxapi.Environment, sdk: ISDK, qualifier?: string): Promise<ToolkitResourcesInfo | undefined> {
+    const ssm = sdk.ssm();
+    const qualifierValue = qualifier ?? 'hnb659fds';
+    const bucketName = (await ssm.getParameter({ Name: `/cdk-bootstrap/${qualifierValue}/bucket-name` }).promise()).Parameter?.Value;
+    const bucketDomainName = (await ssm.getParameter({ Name: `/cdk-bootstrap/${qualifierValue}/bucket-domain-name` }).promise()).Parameter?.Value;
+    const version = parseInt((await ssm.getParameter({ Name: `/cdk-bootstrap/${qualifierValue}/version` }).promise()).Parameter?.Value ?? '0', 10);
+
+
+    if (bucketName === undefined || bucketDomainName === undefined || version == 0) {
+      debug('The environment %s doesn\'t have the CDK toolkit stack installed. Use %s to setup your environment for use with the toolkit.',
+        environment.name, colors.blue(`cdk bootstrap "${environment.name}"`));
       return undefined;
     }
-    if (stack.stackStatus.isCreationFailure) {
-      // Treat a "failed to create" bootstrap stack as an absent one.
-      debug('The environment %s has a CDK toolkit stack (%s) that failed to create. Use %s to try provisioning it again.',
-        environment.name, stackName, colors.blue(`cdk bootstrap "${environment.name}"`));
-      return undefined;
-    }
 
-    return new ToolkitInfo(stack, sdk);
+    return new ToolkitResourcesInfo(sdk, { bucketName, bucketDomainName, version });
   }
 
-  constructor(public readonly stack: CloudFormationStack, private readonly sdk?: ISDK) {
-  }
+  public readonly bucketName: string;
+  public readonly bucketUrl: string;
+  public readonly version: number;
 
-  public get bucketUrl() {
-    return `https://${this.requireOutput(BUCKET_DOMAIN_NAME_OUTPUT)}`;
-  }
-
-  public get bucketName() {
-    return this.requireOutput(BUCKET_NAME_OUTPUT);
-  }
-
-  public get version() {
-    return parseInt(this.stack.outputs[BOOTSTRAP_VERSION_OUTPUT] ?? '0', 10);
+  constructor(private readonly sdk: ISDK, { bucketName, bucketDomainName, version }: ToolkitResorcesInfoProps) {
+    this.bucketName = bucketName;
+    this.bucketUrl = `https://${bucketDomainName}`;
+    this.version = version;
   }
 
   /**
@@ -122,13 +122,6 @@ export class ToolkitInfo {
     await ecr.putImageScanningConfiguration({ repositoryName, imageScanningConfiguration: { scanOnPush: true } }).promise();
 
     return { repositoryUri };
-  }
-
-  private requireOutput(output: string): string {
-    if (!(output in this.stack.outputs)) {
-      throw new Error(`The CDK toolkit stack (${this.stack.stackName}) does not have an output named ${output}. Use 'cdk bootstrap' to correct this.`);
-    }
-    return this.stack.outputs[output];
   }
 }
 

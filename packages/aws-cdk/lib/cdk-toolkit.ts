@@ -181,7 +181,7 @@ export class CdkToolkit {
           stack,
           deployName: stack.stackName,
           roleArn: options.roleArn,
-          toolkitStackName: options.toolkitStackName,
+          bootstrapQualifier: options.bootstrapQualifier,
           reuseAssets: options.reuseAssets,
           notificationArns: options.notificationArns,
           tags,
@@ -515,7 +515,14 @@ export interface DeployOptions {
    *
    * @default CDKToolkit
    */
-  toolkitStackName?: string;
+  //toolkitStackName?: string;
+
+  /**
+   * Bootstrap stack qualifier to use
+   *
+   * @default 'hnb659fds'
+   */
+  bootstrapQualifier?: string;
 
   /**
    * Role to pass to CloudFormation for deployment

@@ -5,7 +5,7 @@ import { debug } from '../logging';
 import { publishAssets } from '../util/asset-publishing';
 import { Mode, SdkProvider } from './aws-auth';
 import { deployStack, DeployStackResult, destroyStack } from './deploy-stack';
-import { ToolkitInfo } from './toolkit-info';
+import { ToolkitResourcesInfo } from './toolkit-info';
 import { CloudFormationStack, Template } from './util/cloudformation';
 import { StackActivityProgress } from './util/cloudformation/stack-activity-monitor';
 
@@ -48,7 +48,14 @@ export interface DeployStackOptions {
    *
    * @default 'CDKToolkit'
    */
-  toolkitStackName?: string;
+  //toolkitStackName?: string;
+
+  /**
+   * Name of the toolkit stack qualifier, if not the default
+   *
+   * @default 'hnb659fds'
+   */
+  bootstrapQualifier?: string;
 
   /**
    * List of asset IDs which should NOT be built or uploaded
@@ -148,7 +155,7 @@ export class CloudFormationDeployments {
   public async deployStack(options: DeployStackOptions): Promise<DeployStackResult> {
     const { stackSdk, resolvedEnvironment, cloudFormationRoleArn } = await this.prepareSdkFor(options.stack, options.roleArn);
 
-    const toolkitInfo = await ToolkitInfo.lookup(resolvedEnvironment, stackSdk, options.toolkitStackName);
+    const toolkitInfo = await ToolkitResourcesInfo.lookup(resolvedEnvironment, stackSdk, options.bootstrapQualifier);
 
     // Publish any assets before doing the actual deploy
     await this.publishStackAssets(options.stack, toolkitInfo);
@@ -251,7 +258,7 @@ export class CloudFormationDeployments {
   /**
    * Publish all asset manifests that are referenced by the given stack
    */
-  private async publishStackAssets(stack: cxapi.CloudFormationStackArtifact, bootstrapStack: ToolkitInfo | undefined) {
+  private async publishStackAssets(stack: cxapi.CloudFormationStackArtifact, bootstrapStack: ToolkitResourcesInfo | undefined) {
     const stackEnv = await this.sdkProvider.resolveEnvironment(stack.environment);
     const assetArtifacts = stack.dependencies.filter(isAssetManifestArtifact);
 
@@ -269,7 +276,7 @@ export class CloudFormationDeployments {
   private validateBootstrapStackVersion(
     stackName: string,
     requiresBootstrapStackVersion: number | undefined,
-    bootstrapStack: ToolkitInfo | undefined) {
+    bootstrapStack: ToolkitResourcesInfo | undefined) {
 
     if (requiresBootstrapStackVersion === undefined) { return; }
 

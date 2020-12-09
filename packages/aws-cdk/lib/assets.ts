@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as colors from 'colors';
-import { ToolkitInfo } from './api/toolkit-info';
+import { ToolkitResourcesInfo } from './api/toolkit-info';
 import { debug } from './logging';
 import { AssetManifestBuilder } from './util/asset-manifest-builder';
 
@@ -14,7 +14,7 @@ import { AssetManifestBuilder } from './util/asset-manifest-builder';
  * pass Asset coordinates.
  */
 // eslint-disable-next-line max-len
-export async function addMetadataAssetsToManifest(stack: cxapi.CloudFormationStackArtifact, assetManifest: AssetManifestBuilder, toolkitInfo?: ToolkitInfo, reuse?: string[]): Promise<Record<string, string>> {
+export async function addMetadataAssetsToManifest(stack: cxapi.CloudFormationStackArtifact, assetManifest: AssetManifestBuilder, toolkitInfo?: ToolkitResourcesInfo, reuse?: string[]): Promise<Record<string, string>> {
   reuse = reuse || [];
   const assets = stack.assets;
 
@@ -51,7 +51,7 @@ export async function addMetadataAssetsToManifest(stack: cxapi.CloudFormationSta
 }
 
 // eslint-disable-next-line max-len
-async function prepareAsset(asset: cxschema.AssetMetadataEntry, assetManifest: AssetManifestBuilder, toolkitInfo: ToolkitInfo): Promise<Record<string, string>> {
+async function prepareAsset(asset: cxschema.AssetMetadataEntry, assetManifest: AssetManifestBuilder, toolkitInfo: ToolkitResourcesInfo): Promise<Record<string, string>> {
   switch (asset.packaging) {
     case 'zip':
     case 'file':
@@ -71,7 +71,7 @@ async function prepareAsset(asset: cxschema.AssetMetadataEntry, assetManifest: A
 function prepareFileAsset(
   asset: cxschema.FileAssetMetadataEntry,
   assetManifest: AssetManifestBuilder,
-  toolkitInfo: ToolkitInfo,
+  toolkitInfo: ToolkitResourcesInfo,
   packaging: cxschema.FileAssetPackaging): Record<string, string> {
 
   const extension = packaging === cxschema.FileAssetPackaging.ZIP_DIRECTORY ? '.zip' : path.extname(asset.path);
@@ -101,7 +101,7 @@ function prepareFileAsset(
 async function prepareDockerImageAsset(
   asset: cxschema.ContainerImageAssetMetadataEntry,
   assetManifest: AssetManifestBuilder,
-  toolkitInfo: ToolkitInfo): Promise<Record<string, string>> {
+  toolkitInfo: ToolkitResourcesInfo): Promise<Record<string, string>> {
 
   // Pre-1.21.0, repositoryName can be specified by the user or can be left out, in which case we make
   // a per-asset repository which will get adopted and cleaned up along with the stack.
