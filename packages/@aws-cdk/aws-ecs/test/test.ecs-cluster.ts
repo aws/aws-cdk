@@ -1477,7 +1477,7 @@ export = {
     test.done();
   },
 
-  'default container insights is disabled'(test: Test) {
+  'default container insights is undefined'(test: Test) {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
@@ -1498,6 +1498,7 @@ export = {
 
     test.done();
   },
+
   'BottleRocketImage() returns correct AMI'(test: Test) {
     // GIVEN
     const app = new cdk.App();
