@@ -62,7 +62,7 @@ export interface CloudWatchLogsExtensionProps {
  * logs
  */
 export class CloudWatchLogsExtension extends ServiceExtension {
-  private logGroup!: awslogs.LogGroup;
+  private logGroup?: awslogs.LogGroup;
 
   constructor(props?: CloudWatchLogsExtensionProps) {
     super('cloudwatch-logs');
@@ -90,9 +90,11 @@ export class CloudWatchLogsExtension extends ServiceExtension {
   public addHooks() {
     const container = this.parentService.serviceDescription.get('service-container') as Container;
 
-    container.addContainerMutatingHook(new CloudWatchLogsMutatingHook({
-      parentService: this.parentService,
-      logGroup: this.logGroup,
-    }));
+    if (this.logGroup) {
+      container.addContainerMutatingHook(new CloudWatchLogsMutatingHook({
+        parentService: this.parentService,
+        logGroup: this.logGroup,
+      }));
+    }
   }
 }
