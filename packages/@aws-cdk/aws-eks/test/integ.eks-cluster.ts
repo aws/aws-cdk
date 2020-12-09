@@ -53,6 +53,8 @@ class EksClusterStack extends TestStack {
 
     this.assertNodeGroupX86();
 
+    this.assertNodeGroupSpot();
+
     this.assertNodeGroupArm();
 
     this.assertNodeGroupCustomAmi();
@@ -140,10 +142,23 @@ class EksClusterStack extends TestStack {
   private assertNodeGroupX86() {
     // add a extra nodegroup
     this.cluster.addNodegroupCapacity('extra-ng', {
-      instanceType: new ec2.InstanceType('t3.small'),
       minSize: 1,
       // reusing the default capacity nodegroup instance role when available
       nodeRole: this.cluster.defaultCapacity ? this.cluster.defaultCapacity.role : undefined,
+    });
+  }
+  private assertNodeGroupSpot() {
+    // add a extra nodegroup
+    this.cluster.addNodegroupCapacity('extra-ng-spot', {
+      instanceType: [
+        new ec2.InstanceType('c5.large'),
+        new ec2.InstanceType('c5a.large'),
+        new ec2.InstanceType('c5d.large'),
+      ],
+      minSize: 3,
+      // reusing the default capacity nodegroup instance role when available
+      nodeRole: this.cluster.defaultCapacity ? this.cluster.defaultCapacity.role : undefined,
+      capacityType: eks.CapacityType.SPOT,
     });
   }
   private assertNodeGroupCustomAmi() {
@@ -173,7 +188,7 @@ class EksClusterStack extends TestStack {
   private assertNodeGroupArm() {
     // add a extra nodegroup
     this.cluster.addNodegroupCapacity('extra-ng-arm', {
-      instanceType: new ec2.InstanceType('m6g.medium'),
+      instanceType: [new ec2.InstanceType('m6g.medium')],
       minSize: 1,
       // reusing the default capacity nodegroup instance role when available
       nodeRole: this.cluster.defaultCapacity ? this.cluster.defaultCapacity.role : undefined,

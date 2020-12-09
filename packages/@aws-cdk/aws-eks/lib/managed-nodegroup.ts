@@ -38,6 +38,20 @@ export enum NodegroupAmiType {
 }
 
 /**
+ * Capacity type of the managed node group
+ */
+export enum CapacityType {
+  /**
+   * spot instances
+   */
+  SPOT = 'SPOT',
+  /**
+   * on-demand instances
+   */
+  ON_DEMAND = 'ON_DEMAND'
+}
+
+/**
  * The remote access (SSH) configuration to use with your node group.
  *
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-eks-nodegroup-remoteaccess.html
@@ -139,7 +153,7 @@ export interface NodegroupOptions {
    *
    * @default t3.medium
    */
-  readonly instanceType?: InstanceType;
+  readonly instanceType?: InstanceType[];
   /**
    * The Kubernetes labels to be applied to the nodes in the node group when they are created.
    *
@@ -183,6 +197,12 @@ export interface NodegroupOptions {
    * @default - no launch template
    */
   readonly launchTemplateSpec?: LaunchTemplateSpec;
+  /**
+   * The capacity type of the nodegroup.
+   *
+   * @default - ON_DEMAND
+   */
+  readonly capacityType?: CapacityType;
 }
 
 /**
@@ -271,11 +291,11 @@ export class Nodegroup extends Resource implements INodegroup {
       nodegroupName: props.nodegroupName,
       nodeRole: this.role.roleArn,
       subnets: this.cluster.vpc.selectSubnets(props.subnets).subnetIds,
-      amiType: props.amiType ?? (props.instanceType ? getAmiTypeForInstanceType(props.instanceType).toString() :
+      amiType: props.amiType ?? (props.instanceType ? getAmiTypeForInstanceType(props.instanceType[0]).toString() :
         undefined),
       diskSize: props.diskSize,
       forceUpdateEnabled: props.forceUpdate ?? true,
-      instanceTypes: props.instanceType ? [props.instanceType.toString()] : undefined,
+      instanceTypes: props.instanceType ? props.instanceType.map(t => t.toString()) : undefined,
       labels: props.labels,
       releaseVersion: props.releaseVersion,
       remoteAccess: props.remoteAccess ? {
@@ -291,17 +311,21 @@ export class Nodegroup extends Resource implements INodegroup {
       tags: props.tags,
     });
 
+    if (props.capacityType) {
+      resource.addPropertyOverride('CapacityType', props.capacityType.valueOf());
+    }
+
     if (props.launchTemplateSpec) {
       if (props.diskSize) {
         // see - https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html
         // and https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eks-nodegroup.html#cfn-eks-nodegroup-disksize
         throw new Error('diskSize must be specified within the launch template');
       }
-      if (props.instanceType) {
-        // see - https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html
-        // and https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eks-nodegroup.html#cfn-eks-nodegroup-disksize
-        throw new Error('Instance types must be specified within the launch template');
-      }
+      /**
+       * Instance types can be specified either in `instanceType` or launch template but not both. AS we can not check the content of
+       * the provided launch template and the `instanceType` property is preferrable. We allow users to define `instanceType` property here.
+       * see - https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eks-nodegroup.html#cfn-eks-nodegroup-instancetypes
+       */
       // TODO: update this when the L1 resource spec is updated.
       resource.addPropertyOverride('LaunchTemplate', {
         Id: props.launchTemplateSpec.id,
