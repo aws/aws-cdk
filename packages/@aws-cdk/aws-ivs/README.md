@@ -33,7 +33,7 @@ viewers on your own websites and applications.
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
-### Channels
+## Channels
 
 An Amazon IVS channel stores configuration information related to your live
 stream. You first create a channel and then contribute video to it using the
@@ -45,7 +45,7 @@ You can create a channel
 const myChannel = new ivs.Channel(this, 'Channel');
 ```
 
-#### Importing an existing channel
+### Importing an existing channel
 
 You can reference an existing channel, for example, if you need to create a
 stream key for an existing channel
@@ -54,7 +54,7 @@ stream key for an existing channel
 const myChannel = ivs.Channel.fromChannelArn(this, 'Channel', myChannelArn);
 ```
 
-#### Stream Keys
+## Stream Keys
 
 A Stream Key is used by a broadcast encoder to initiate a stream and identify
 to Amazon IVS which customer and channel the stream is for. If you are
@@ -66,7 +66,7 @@ You can create a stream key for a given channel
 const myStreamKey = myChannel.addStreamKey('StreamKey');
 ```
 
-#### Private Channels
+## Private Channels
 
 Amazon IVS offers the ability to create private channels, allowing
 you to restrict your streams by channel or viewer. You control access
@@ -87,6 +87,7 @@ const keyPair = new ivs.PlaybackKeyPair(this, 'PlaybackKeyPair', {
 ```
 
 Then, when creating a channel, specify the authorized property
+
 ```ts
 const myChannel = new ivs.Channel(this, 'Channel', {
   authorized: true, // default value is false
