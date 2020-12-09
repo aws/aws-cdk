@@ -214,7 +214,7 @@ test('stream key from channel reference', () => {
 test('channel from invalid channel arn throws error', () => {
   const stack = new Stack();
   expect(() => ivs.Channel.fromChannelArn(stack, 'ChannelRef', 'this is an invalid arn, in fact, it is a carrot 🥕'))
-    .toThrow('ARNs must have at least 6 components: this is an invalid arn, in fact, it is a carrot 🥕');
+    .toThrow('ARNs must start with \"arn:\" and have at least 6 components: this is an invalid arn, in fact, it is a carrot 🥕');
 });
 
 test('channel from invalid channel arn service throws error', () => {
