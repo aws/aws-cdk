@@ -232,7 +232,7 @@ describe('Batch Job Definition', () => {
     const logConfiguration: batch.LogConfiguration = {
       logDriver: batch.LogDriver.AWSLOGS,
       options: { 'awslogs-region': 'us-east-1' },
-      secrets: [
+      secretOptions: [
         batch.ExposedSecret.fromSecretsManager('abc', secretsmanager.Secret.fromSecretCompleteArn(stack, 'secret', secretArn)),
         batch.ExposedSecret.fromParametersStore('xyz', ssm.StringParameter.fromStringParameterName(stack, 'parameter', 'xyz')),
       ],

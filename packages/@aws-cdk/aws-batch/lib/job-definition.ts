@@ -69,11 +69,12 @@ export interface LogConfiguration {
   readonly options?: any;
 
   /**
-   * The secrets to pass to the log configuration.
+   * The secrets to pass to the log configuration as options.
+   * For more information, see https://docs.aws.amazon.com/batch/latest/userguide/specifying-sensitive-data.html
    *
    * @default - No secrets are passed
    */
-  readonly secrets?: ExposedSecret[];
+  readonly secretOptions?: ExposedSecret[];
 }
 
 /**
@@ -442,7 +443,9 @@ export class JobDefinition extends Resource implements IJobDefinition {
       logConfiguration: container.logConfiguration ? {
         logDriver: container.logConfiguration.logDriver,
         options: container.logConfiguration.options,
-        secretOptions: container.logConfiguration.secrets ? this.buildLogConfigurationSecrets(container.logConfiguration.secrets) : undefined,
+        secretOptions: container.logConfiguration.secretOptions
+          ? this.buildLogConfigurationSecretOptions(container.logConfiguration.secretOptions)
+          : undefined,
       } : undefined,
       memory: container.memoryLimitMiB || 4,
       mountPoints: container.mountPoints,
@@ -471,11 +474,11 @@ export class JobDefinition extends Resource implements IJobDefinition {
     return rangeProps;
   }
 
-  private buildLogConfigurationSecrets(secrets: ExposedSecret[]): CfnJobDefinition.SecretProperty[] {
-    return secrets.map(secret => {
+  private buildLogConfigurationSecretOptions(secretOptions: ExposedSecret[]): CfnJobDefinition.SecretProperty[] {
+    return secretOptions.map(secretOption => {
       return {
-        name: secret.secretName,
-        valueFrom: secret.secretArn,
+        name: secretOption.optionName,
+        valueFrom: secretOption.secretArn,
       };
     });
   }

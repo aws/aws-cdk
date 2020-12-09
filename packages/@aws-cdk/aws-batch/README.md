@@ -259,7 +259,7 @@ new batch.JobDefinition(stack, 'job-def', {
     logConfiguration: {
       logDriver: batch.LogDriver.AWSLOGS,
       options: { 'awslogs-region': 'us-east-1' },
-      secrets: [
+      secretOptions: [
         batch.ExposedSecret.fromParametersStore('xyz', ssm.StringParameter.fromStringParameterName(stack, 'parameter', 'xyz')),
       ],
     },

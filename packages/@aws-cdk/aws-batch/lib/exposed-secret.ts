@@ -7,34 +7,34 @@ import * as ssm from '@aws-cdk/aws-ssm';
 export class ExposedSecret {
   /**
    * Use Secrets Manager Secret
-   * @param name - The name of the secret
+   * @param optionaName - The name of the option
    * @param secret - A secret from secrets manager
    */
-  public static fromSecretsManager(name: string, secret: secretsmanager.ISecret): ExposedSecret {
-    return new ExposedSecret(name, secret.secretArn);
+  public static fromSecretsManager(optionaName: string, secret: secretsmanager.ISecret): ExposedSecret {
+    return new ExposedSecret(optionaName, secret.secretArn);
   }
 
   /**
    * User Parameters Store Parameter
-   * @param name - The name of the secret
+   * @param optionaName - The name of the option
    * @param parameter - A parameter from parameters store
    */
-  public static fromParametersStore(name: string, parameter: ssm.IParameter): ExposedSecret {
-    return new ExposedSecret(name, parameter.parameterArn);
+  public static fromParametersStore(optionaName: string, parameter: ssm.IParameter): ExposedSecret {
+    return new ExposedSecret(optionaName, parameter.parameterArn);
   }
 
   /**
-   * Name of the secret
+   * Name of the option
    */
-  public secretName: string;
+  public optionName: string;
 
   /**
-   * ARN of the secret
+   * ARN of the secret option
    */
   public secretArn: string;
 
-  constructor(secretName: string, secretArn: string) {
-    this.secretName = secretName;
+  constructor(optionName: string, secretArn: string) {
+    this.optionName = optionName;
     this.secretArn = secretArn;
   }
 }
