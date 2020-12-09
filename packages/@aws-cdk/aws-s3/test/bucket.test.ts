@@ -2248,10 +2248,10 @@ nodeunitShim({
     test.done();
   },
 
-  'Bucket with objectOwnerships set to BUCKET_OWNER_PREFERRED'(test: Test) {
+  'Bucket with objectOwnership set to BUCKET_OWNER_PREFERRED'(test: Test) {
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket', {
-      objectOwnerships: [s3.ObjectOwnership.BUCKET_OWNER_PREFERRED],
+      objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_PREFERRED,
     });
     expect(stack).toMatch({
       'Resources': {
@@ -2274,10 +2274,10 @@ nodeunitShim({
     test.done();
   },
 
-  'Bucket with objectOwnerships set to OBJECT_WRITER'(test: Test) {
+  'Bucket with objectOwnership set to OBJECT_WRITER'(test: Test) {
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket', {
-      objectOwnerships: [s3.ObjectOwnership.OBJECT_WRITER],
+      objectOwnership: s3.ObjectOwnership.OBJECT_WRITER,
     });
     expect(stack).toMatch({
       'Resources': {
@@ -2300,10 +2300,10 @@ nodeunitShim({
     test.done();
   },
 
-  'Bucket with objectOwnerships set to empty array'(test: Test) {
+  'Bucket with objectOwnerships set to undefined'(test: Test) {
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket', {
-      objectOwnerships: [],
+      objectOwnership: undefined,
     });
     expect(stack).toMatch({
       'Resources': {

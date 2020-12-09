@@ -1154,15 +1154,12 @@ export interface BucketProps {
   /**
    * The objectOwnership of the bucket.
    *
-   *  if you choose BucketOwnerPreferred it will set ownershipControls rules with objectOwnership = BucketOwnerPreferred
-   *
-   *  if you choose ObjectWriter it will set ownershipControls rules with objectOwnership = ObjectWriter
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/about-object-ownership.html
    *
    * @default - No ObjectOwnership configuration, uploading account will own the object.
    *
    */
-  readonly objectOwnerships?: ObjectOwnership[];
+  readonly objectOwnership?: ObjectOwnership;
 }
 
 /**
@@ -1625,17 +1622,14 @@ export class Bucket extends BucketBase {
     }));
   }
 
-  private parseOwnershipControls({ objectOwnerships }: BucketProps): CfnBucket.OwnershipControlsProperty | undefined {
-    if (!objectOwnerships || !objectOwnerships.length) {
+  private parseOwnershipControls({ objectOwnership }: BucketProps): CfnBucket.OwnershipControlsProperty | undefined {
+    if (!objectOwnership) {
       return undefined;
     }
-
-    const rules: CfnBucket.OwnershipControlsRuleProperty[] = objectOwnerships.map((objectOwnership) => ({
-      objectOwnership,
-    }));
-
     return {
-      rules,
+      rules: [{
+        objectOwnership,
+      }],
     };
   }
 
