@@ -117,7 +117,15 @@ export class Channel extends ChannelBase {
    */
   public static fromChannelArn(scope: Construct, id: string, channelArn: string): IChannel {
     // This will throw an error if the arn cannot be parsed
-    core.Arn.parse(channelArn);
+    let arnComponents = core.Arn.parse(channelArn);
+
+    if (arnComponents.service !== 'ivs') {
+      throw new Error(`Invalid service, expected 'ivs', got '${arnComponents.service}'`);
+    }
+
+    if (arnComponents.resource !== 'channel') {
+      throw new Error(`Invalid resource, expected 'channel', got '${arnComponents.resource}'`);
+    }
 
     class Import extends ChannelBase {
       public readonly channelArn = channelArn;

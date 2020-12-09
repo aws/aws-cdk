@@ -211,9 +211,22 @@ test('stream key from channel reference', () => {
   });
 });
 
-test('stream key from invalid channel arn throws error', () => {
+test('channel from invalid channel arn throws error', () => {
   const stack = new Stack();
-  expect(() => new ivs.StreamKey(stack, 'StreamKey', {
-    channel: ivs.Channel.fromChannelArn(stack, 'ChannelRef', 'this is an invalid arn, in fact, it is a carrot 🥕'),
-  })).toThrow('ARNs must have at least 6 components: this is an invalid arn, in fact, it is a carrot 🥕');
+  expect(() => ivs.Channel.fromChannelArn(stack, 'ChannelRef', 'this is an invalid arn, in fact, it is a carrot 🥕'))
+    .toThrow('ARNs must have at least 6 components: this is an invalid arn, in fact, it is a carrot 🥕');
+});
+
+test('channel from invalid channel arn service throws error', () => {
+  const stack = new Stack();
+  expect(
+    () => ivs.Channel.fromChannelArn(stack, 'ChannelRef', 'arn:aws:ec2:us-west-2:123456789012:instance/abcdABCDefgh'))
+    .toThrow('Invalid service, expected \'ivs\', got \'ec2\'');
+});
+
+test('channel from invalid channel arn resource throws error', () => {
+  const stack = new Stack();
+  expect(
+    () => ivs.Channel.fromChannelArn(stack, 'ChannelRef', 'arn:aws:ivs:us-west-2:123456789012:stream-key/abcdABCDefgh'))
+    .toThrow('Invalid resource, expected \'channel\', got \'stream-key\'');
 });
