@@ -4,6 +4,7 @@ import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { Duration, Lazy, Names, Resource } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
+import { ApplicationELBMetrics } from '../elasticloadbalancingv2-canned-metrics.generated';
 import { BaseLoadBalancer, BaseLoadBalancerLookupOptions, BaseLoadBalancerProps, ILoadBalancerV2 } from '../shared/base-load-balancer';
 import { IpAddressType, ApplicationProtocol } from '../shared/enums';
 import { ApplicationListener, BaseApplicationListenerProps } from './application-listener';
@@ -155,10 +156,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * @default Sum over 5 minutes
    */
   public metricActiveConnectionCount(props?: cloudwatch.MetricOptions) {
-    return this.metric('ActiveConnectionCount', {
-      statistic: 'sum',
-      ...props,
-    });
+    return this.cannedMetric(ApplicationELBMetrics.activeConnectionCountSum, props);
   }
 
   /**
@@ -169,10 +167,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * @default Sum over 5 minutes
    */
   public metricClientTlsNegotiationErrorCount(props?: cloudwatch.MetricOptions) {
-    return this.metric('ClientTLSNegotiationErrorCount', {
-      statistic: 'sum',
-      ...props,
-    });
+    return this.cannedMetric(ApplicationELBMetrics.clientTlsNegotiationErrorCountSum, props);
   }
 
   /**
@@ -181,7 +176,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * @default Sum over 5 minutes
    */
   public metricConsumedLCUs(props?: cloudwatch.MetricOptions) {
-    return this.metric('ConsumedLCUs', {
+    return this.cannedMetric(ApplicationELBMetrics.consumedLcUsAverage, {
       statistic: 'sum',
       ...props,
     });
@@ -193,10 +188,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * @default Sum over 5 minutes
    */
   public metricHttpFixedResponseCount(props?: cloudwatch.MetricOptions) {
-    return this.metric('HTTP_Fixed_Response_Count', {
-      statistic: 'Sum',
-      ...props,
-    });
+    return this.cannedMetric(ApplicationELBMetrics.httpFixedResponseCountSum, props);
   }
 
   /**
@@ -205,10 +197,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * @default Sum over 5 minutes
    */
   public metricHttpRedirectCount(props?: cloudwatch.MetricOptions) {
-    return this.metric('HTTP_Redirect_Count', {
-      statistic: 'Sum',
-      ...props,
-    });
+    return this.cannedMetric(ApplicationELBMetrics.httpRedirectCountSum, props);
   }
 
   /**
@@ -218,10 +207,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * @default Sum over 5 minutes
    */
   public metricHttpRedirectUrlLimitExceededCount(props?: cloudwatch.MetricOptions) {
-    return this.metric('HTTP_Redirect_Url_Limit_Exceeded_Count', {
-      statistic: 'Sum',
-      ...props,
-    });
+    return this.cannedMetric(ApplicationELBMetrics.httpRedirectUrlLimitExceededCountSum, props);
   }
 
   /**
@@ -259,10 +245,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * @default Sum over 5 minutes
    */
   public metricIpv6ProcessedBytes(props?: cloudwatch.MetricOptions) {
-    return this.metric('IPv6ProcessedBytes', {
-      statistic: 'Sum',
-      ...props,
-    });
+    return this.cannedMetric(ApplicationELBMetrics.iPv6ProcessedBytesSum, props);
   }
 
   /**
@@ -271,10 +254,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * @default Sum over 5 minutes
    */
   public metricIpv6RequestCount(props?: cloudwatch.MetricOptions) {
-    return this.metric('IPv6RequestCount', {
-      statistic: 'Sum',
-      ...props,
-    });
+    return this.cannedMetric(ApplicationELBMetrics.iPv6RequestCountSum, props);
   }
 
   /**
@@ -284,10 +264,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * @default Sum over 5 minutes
    */
   public metricNewConnectionCount(props?: cloudwatch.MetricOptions) {
-    return this.metric('NewConnectionCount', {
-      statistic: 'Sum',
-      ...props,
-    });
+    return this.cannedMetric(ApplicationELBMetrics.newConnectionCountSum, props);
   }
 
   /**
@@ -296,10 +273,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * @default Sum over 5 minutes
    */
   public metricProcessedBytes(props?: cloudwatch.MetricOptions) {
-    return this.metric('ProcessedBytes', {
-      statistic: 'Sum',
-      ...props,
-    });
+    return this.cannedMetric(ApplicationELBMetrics.processedBytesSum, props);
   }
 
   /**
@@ -309,10 +283,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * @default Sum over 5 minutes
    */
   public metricRejectedConnectionCount(props?: cloudwatch.MetricOptions) {
-    return this.metric('RejectedConnectionCount', {
-      statistic: 'Sum',
-      ...props,
-    });
+    return this.cannedMetric(ApplicationELBMetrics.rejectedConnectionCountSum, props);
   }
 
   /**
@@ -323,10 +294,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * @default Sum over 5 minutes
    */
   public metricRequestCount(props?: cloudwatch.MetricOptions) {
-    return this.metric('RequestCount', {
-      statistic: 'Sum',
-      ...props,
-    });
+    return this.cannedMetric(ApplicationELBMetrics.requestCountSum, props);
   }
 
   /**
@@ -335,10 +303,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * @default Sum over 5 minutes
    */
   public metricRuleEvaluations(props?: cloudwatch.MetricOptions) {
-    return this.metric('RuleEvaluations', {
-      statistic: 'Sum',
-      ...props,
-    });
+    return this.cannedMetric(ApplicationELBMetrics.ruleEvaluationsSum, props);
   }
 
   /**
@@ -436,6 +401,15 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
       statistic: 'Sum',
       ...props,
     });
+  }
+
+  private cannedMetric(
+    fn: (dims: { LoadBalancer: string }) => cloudwatch.MetricProps,
+    props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return new cloudwatch.Metric({
+      ...fn({ LoadBalancer: this.loadBalancerFullName }),
+      ...props,
+    }).attachTo(this);
   }
 }
 

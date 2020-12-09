@@ -796,7 +796,7 @@ export = {
           },
           'ENV_VAR2': {
             type: codebuild.BuildEnvironmentVariableType.PARAMETER_STORE,
-            value: '/params/param2',
+            value: 'params/param2',
           },
         },
       });
@@ -823,7 +823,7 @@ export = {
                   {
                     Ref: 'AWS::AccountId',
                   },
-                  ':parameter:/params/param1',
+                  ':parameter/params/param1',
                 ],
               ],
             },
@@ -843,7 +843,7 @@ export = {
                   {
                     Ref: 'AWS::AccountId',
                   },
-                  ':parameter:/params/param2',
+                  ':parameter/params/param2',
                 ],
               ],
             }],
