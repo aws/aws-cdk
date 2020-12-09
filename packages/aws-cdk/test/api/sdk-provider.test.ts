@@ -6,7 +6,7 @@ import type { ConfigurationOptions } from 'aws-sdk/lib/config-base';
 import * as promptly from 'promptly';
 import * as uuid from 'uuid';
 import { PluginHost } from '../../lib';
-import { ISDK, Mode, SdkProvider } from '../../lib/api/aws-auth';
+import { ISDK, Mode, SDK, SdkProvider } from '../../lib/api/aws-auth';
 import * as logging from '../../lib/logging';
 import * as bockfs from '../bockfs';
 import { withMocked } from '../util';
@@ -202,7 +202,7 @@ describe('with default config files', () => {
 
       // THEN
       try {
-        await provider.withAssumedRole('arn:aws:iam::account:role/role', undefined, undefined, Mode.ForReading);
+        await provider.forEnvironment(defaultEnv, Mode.ForReading);
         fail('Should error as no credentials could be loaded');
       } catch (e) {
         // Mock response was set to fail to make sure we don't call STS
@@ -272,7 +272,9 @@ describe('with default config files', () => {
       });
 
       // WHEN
-      const sdk = await provider.withAssumedRole('bla.role.arn', undefined, undefined, Mode.ForReading);
+      const sdk = await provider.forEnvironment(defaultEnv, Mode.ForReading, {
+        assumeRoleArn: 'bla.role.arn',
+      });
       makeAssumeRoleFail(sdk);
 
       // THEN - error message contains both a helpful hint and the underlying AssumeRole message
@@ -307,7 +309,7 @@ describe('with default config files', () => {
 
           // WHEN
           const provider = new SdkProvider(new AWS.CredentialProviderChain([() => new AWS.Credentials({ accessKeyId: 'a', secretAccessKey: 's' })]), 'eu-somewhere');
-          const sdk = await provider.withAssumedRole('bla.role.arn', undefined, undefined, Mode.ForReading);
+          const sdk = await provider.forEnvironment(defaultEnv, Mode.ForReading, { assumeRoleArn: 'bla.role.arn' }) as SDK;
 
           await sdk.currentCredentials();
 
@@ -334,7 +336,9 @@ describe('with default config files', () => {
 
     test('can assume role with credentials from plugin', async () => {
       const provider = await SdkProvider.withAwsCliCompatibleDefaults({ ...defaultCredOptions });
-      await provider.withAssumedRole('arn:aws:iam::12356789012:role/Assumable', undefined, pluginEnv, Mode.ForReading);
+      await provider.forEnvironment(pluginEnv, Mode.ForReading, {
+        assumeRoleArn: 'arn:aws:iam::12356789012:role/Assumable',
+      });
       expect(pluginQueried).toEqual(true);
     });
   });
