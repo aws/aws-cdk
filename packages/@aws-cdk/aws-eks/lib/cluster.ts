@@ -452,7 +452,7 @@ export interface ClusterOptions extends CommonClusterOptions {
    * @default Size.gibibytes(1)
    */
   readonly kubectlMemory?: Size;
-  
+
   /**
    * Indicates whether Kubernetes resources added through `addManifest()` can be
    * automatically pruned. When this is enabled (default), prune labels will be
