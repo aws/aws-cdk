@@ -124,8 +124,15 @@ export class Cluster extends Resource implements ICluster {
       physicalName: props.clusterName,
     });
 
-    const containerInsights = props.containerInsights !== undefined ? props.containerInsights : false;
-    const clusterSettings = containerInsights ? [{ name: 'containerInsights', value: 'enabled' }] : undefined;
+    /**
+     * clusterSettings needs to be undefined if containerInsights is not explicitly set in order to allow any
+     * containerInsights settings on the account to apply.  See:
+     * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-cluster-clustersettings.html#cfn-ecs-cluster-clustersettings-value
+    */
+    let clusterSettings = undefined;
+    if (props.containerInsights !== undefined) {
+      clusterSettings = [{ name: 'containerInsights', value: props.containerInsights ? ContainerInsights.ENABLED : ContainerInsights.DISABLED }];
+    }
 
     const cluster = new CfnCluster(this, 'Resource', {
       clusterName: this.physicalName,
@@ -882,4 +889,17 @@ export enum AmiHardwareType {
    * Use the Amazon ECS-optimized Amazon Linux 2 (arm64) AMI.
    */
   ARM = 'ARM64',
+}
+
+enum ContainerInsights {
+  /**
+   * Enable CloudWatch Container Insights for the cluster
+   */
+
+  ENABLED = 'enabled',
+
+  /**
+   * Disable CloudWatch Container Insights for the cluster
+   */
+  DISABLED = 'disabled',
 }
