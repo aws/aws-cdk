@@ -505,18 +505,19 @@ export enum CompressionType {
  *
  *  @experimental
  */
-export interface ModelClientConfig {
+export interface ModelClientOptions {
 
   /**
    * The maximum number of retries when invocation requests are failing.
    *
-   * @default NONE
+   * @default 0
    */
   readonly invocationsMaxRetries?: number;
 
   /**
-   * The timeout value in seconds for an invocation request.
-   * @default NONE
+   * The timeout duration for an invocation request.
+   *
+   * @default 300
    */
   readonly invocationsTimeout?: Duration;
 }
