@@ -74,7 +74,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
-    "aws-sdk": "^2.802.0",
+    "aws-sdk": "^2.804.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
@@ -109,18 +109,8 @@
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
   },
-  "stability": "experimental",
-  "maturity": "experimental",
-  "features": [
-    {
-      "name": "Higher level constructs for Distribution",
-      "stability": "Developer Preview"
-    },
-    {
-      "name": "Higher level constructs for CloudFrontWebDistribution",
-      "stability": "Stable"
-    }
-  ],
+  "stability": "stable",
+  "maturity": "stable",
   "awslint": {
     "exclude": [
       "props-physical-name:@aws-cdk/aws-cloudfront.Distribution",
