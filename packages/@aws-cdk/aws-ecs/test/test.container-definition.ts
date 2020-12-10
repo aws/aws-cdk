@@ -703,108 +703,215 @@ export = {
   },
 
   'Environment Files': {
-    'can add asset environment file to the container definition'(test: Test) {
-      // GIVEN
-      const stack = new cdk.Stack();
-      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+    'with EC2 task definitions': {
+      'can add asset environment file to the container definition'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
 
-      // WHEN
-      taskDefinition.addContainer('cont', {
-        image: ecs.ContainerImage.fromRegistry('test'),
-        memoryLimitMiB: 1024,
-        environmentFiles: [ecs.EnvironmentFile.fromAsset(path.join(__dirname, 'demo-envfiles/test-envfile.env'))],
-      });
+        // WHEN
+        taskDefinition.addContainer('cont', {
+          image: ecs.ContainerImage.fromRegistry('test'),
+          memoryLimitMiB: 1024,
+          environmentFiles: [ecs.EnvironmentFile.fromAsset(path.join(__dirname, 'demo-envfiles/test-envfile.env'))],
+        });
 
-      // THEN
-      expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
-        ContainerDefinitions: [
-          {
-            EnvironmentFiles: [{
-              Type: 's3',
-              Value: {
-                'Fn::Join': [
-                  '',
-                  [
-                    'arn:aws:s3:::',
-                    {
-                      Ref: 'AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dS3Bucket7B2069B7',
-                    },
-                    '/',
-                    {
-                      'Fn::Select': [
-                        0,
-                        {
-                          'Fn::Split': [
-                            '||',
-                            {
-                              Ref: 'AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dS3VersionKey40E12C15',
-                            },
-                          ],
-                        },
-                      ],
-                    },
-                    {
-                      'Fn::Select': [
-                        1,
-                        {
-                          'Fn::Split': [
-                            '||',
-                            {
-                              Ref: 'AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dS3VersionKey40E12C15',
-                            },
-                          ],
-                        },
-                      ],
-                    },
+        // THEN
+        expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+          ContainerDefinitions: [
+            {
+              EnvironmentFiles: [{
+                Type: 's3',
+                Value: {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:aws:s3:::',
+                      {
+                        Ref: 'AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dS3Bucket7B2069B7',
+                      },
+                      '/',
+                      {
+                        'Fn::Select': [
+                          0,
+                          {
+                            'Fn::Split': [
+                              '||',
+                              {
+                                Ref: 'AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dS3VersionKey40E12C15',
+                              },
+                            ],
+                          },
+                        ],
+                      },
+                      {
+                        'Fn::Select': [
+                          1,
+                          {
+                            'Fn::Split': [
+                              '||',
+                              {
+                                Ref: 'AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dS3VersionKey40E12C15',
+                              },
+                            ],
+                          },
+                        ],
+                      },
+                    ],
                   ],
-                ],
-              },
-            }],
-          },
-        ],
-      }));
+                },
+              }],
+            },
+          ],
+        }));
 
-      test.done();
+        test.done();
+      },
+      'can add s3 bucket environment file to the container definition'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const bucket = new s3.Bucket(stack, 'Bucket', {
+          bucketName: 'test-bucket',
+        });
+        const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+        // WHEN
+        taskDefinition.addContainer('cont', {
+          image: ecs.ContainerImage.fromRegistry('test'),
+          memoryLimitMiB: 1024,
+          environmentFiles: [ecs.EnvironmentFile.fromBucket(bucket, 'test-key')],
+        });
+
+        // THEN
+        expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+          ContainerDefinitions: [
+            {
+              EnvironmentFiles: [{
+                Type: 's3',
+                Value: {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:aws:s3:::',
+                      {
+                        Ref: 'Bucket83908E77',
+                      },
+                      '/test-key',
+                    ],
+                  ],
+                },
+              }],
+            },
+          ],
+        }));
+
+        test.done();
+      },
     },
-    'can add s3 bucket environment file to the container definition'(test: Test) {
-      // GIVEN
-      const stack = new cdk.Stack();
-      const bucket = new s3.Bucket(stack, 'Bucket', {
-        bucketName: 'test-bucket',
-      });
-      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+    'with Fargate task definitions': {
+      'can add asset environment file to the container definition'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
 
-      // WHEN
-      taskDefinition.addContainer('cont', {
-        image: ecs.ContainerImage.fromRegistry('test'),
-        memoryLimitMiB: 1024,
-        environmentFiles: [ecs.EnvironmentFile.fromBucket(bucket, 'test-key')],
-      });
+        // WHEN
+        taskDefinition.addContainer('cont', {
+          image: ecs.ContainerImage.fromRegistry('test'),
+          memoryLimitMiB: 1024,
+          environmentFiles: [ecs.EnvironmentFile.fromAsset(path.join(__dirname, 'demo-envfiles/test-envfile.env'))],
+        });
 
-      // THEN
-      expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
-        ContainerDefinitions: [
-          {
-            EnvironmentFiles: [{
-              Type: 's3',
-              Value: {
-                'Fn::Join': [
-                  '',
-                  [
-                    'arn:aws:s3:::',
-                    {
-                      Ref: 'Bucket83908E77',
-                    },
-                    '/test-key',
+        // THEN
+        expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+          ContainerDefinitions: [
+            {
+              EnvironmentFiles: [{
+                Type: 's3',
+                Value: {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:aws:s3:::',
+                      {
+                        Ref: 'AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dS3Bucket7B2069B7',
+                      },
+                      '/',
+                      {
+                        'Fn::Select': [
+                          0,
+                          {
+                            'Fn::Split': [
+                              '||',
+                              {
+                                Ref: 'AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dS3VersionKey40E12C15',
+                              },
+                            ],
+                          },
+                        ],
+                      },
+                      {
+                        'Fn::Select': [
+                          1,
+                          {
+                            'Fn::Split': [
+                              '||',
+                              {
+                                Ref: 'AssetParameters872561bf078edd1685d50c9ff821cdd60d2b2ddfb0013c4087e79bf2bb50724dS3VersionKey40E12C15',
+                              },
+                            ],
+                          },
+                        ],
+                      },
+                    ],
                   ],
-                ],
-              },
-            }],
-          },
-        ],
-      }));
+                },
+              }],
+            },
+          ],
+        }));
 
-      test.done();
+        test.done();
+      },
+      'can add s3 bucket environment file to the container definition'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const bucket = new s3.Bucket(stack, 'Bucket', {
+          bucketName: 'test-bucket',
+        });
+        const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
+
+        // WHEN
+        taskDefinition.addContainer('cont', {
+          image: ecs.ContainerImage.fromRegistry('test'),
+          memoryLimitMiB: 1024,
+          environmentFiles: [ecs.EnvironmentFile.fromBucket(bucket, 'test-key')],
+        });
+
+        // THEN
+        expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+          ContainerDefinitions: [
+            {
+              EnvironmentFiles: [{
+                Type: 's3',
+                Value: {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:aws:s3:::',
+                      {
+                        Ref: 'Bucket83908E77',
+                      },
+                      '/test-key',
+                    ],
+                  ],
+                },
+              }],
+            },
+          ],
+        }));
+
+        test.done();
+      },
     },
   },
 
