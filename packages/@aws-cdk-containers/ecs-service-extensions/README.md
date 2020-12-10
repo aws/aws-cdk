@@ -133,6 +133,51 @@ At this point, all the service resources will be created. This includes the ECS 
 Definition, Service, as well as any other attached resources, such as App Mesh Virtual
 Node or an Application Load Balancer.
 
+## Built-in extensions
+
+The following extensions come built-in, and ready to use.
+
+- ### `new AppMeshExtension({ mesh })`
+
+  This extension adds an Envoy Proxy sidecar to your service, and creates an App Mesh virtual node and virtual service to represent your service inside the service mesh. It accepts an AppMesh service mesh as input:
+
+  ```js
+  const mesh = new appmesh.Mesh(stack, 'my-mesh');
+  myService.add(new AppMeshExtension({ mesh }));
+  ```
+
+  If two service both have an `AppMeshExtension` added to them you can connect the two services to each other using the `connectTo()` method like this:
+
+  ```js
+  serviceA.connectTo(serviceB)
+  ```
+
+  The `AppMeshExtension` will respond to this connection request by creating a service mesh route between these two services, and opening their security groups so service A can connect to service B.
+
+- ### `new FireLensExtension()`
+
+  This extension adds and configures a Fluent Bit sidecar for log collection into a CloudWatch log group.
+
+- ### `new XRayExtension()`
+
+  This extension adds the X-Ray daemon for collecting application trace spans and dispatching them to AWS X-Ray.
+
+- ### `new CloudwatchAgentExtension()`
+
+  This extension launchs a CloudWatch agent which can collect statsd format stats and send them to CloudWatch. It would generally be used in combination with the `AppMeshExtension` to capture stats from the service mesh.
+
+- ### `new CloudWatchLogsExtension()`
+
+  This extension configures the `awslogs` logging driver for piping your container's stdout and stderr output into a CloudWatch Log Group. This extension works with the built-in log exploration feature in the AWS ECS console.
+
+- ### `new HttpLoadBalancerExtension()`
+
+  This extension adds a basic HTTP load balancer as an ingress for sending traffic to the service. Note that this extension just sets up a basic Application Load Balancer with no HTTPS certificate. Therefore it is ideal for setting up a quick test service, but not intended for production usage.
+
+- ### `new AssignPublicIpExtension()`
+
+  This extension creates a public DNS A record for your service. This record can contain multiple IP addresses which correspond to the public IP addresses of your tasks. It also opens the traffic port of your service to direct inbound traffic from the internet. This is intended for low cost development environments and other front facing services where you do not want to have a load balancer, you just want public traffic from the internet to go directly to your container.
+
 ## Creating your own custom `ServiceExtension`
 
 In addition to using the default service extensions that come with this module, you

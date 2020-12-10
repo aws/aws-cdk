@@ -4,7 +4,13 @@ import { Service } from '../service';
 import { Container } from './container';
 import { ContainerMutatingHook, ServiceExtension } from './extension-interfaces';
 
-const DATADOG_AGENT_IMAGE = 'datadog/agent:latest';
+// The version of the Datadog Agent to add to the task
+export enum DatadogAgentVersion {
+  DATADOG_AGENT_7_JMX = 'public.ecr.aws/datadog/agent:7-jmx',
+  DATADOG_AGENT_7 = 'public.ecr.aws/datadog/agent:7',
+  DATADOG_AGENT_LATEST = 'public.ecr.aws/datadog/agent:latest',
+  DATADOG_AGENT_LATEST_JMX = 'public.ecr.aws/datadog/agent:latest-jmx',
+}
 
 /**
  * Settings for the client SDK inside the primary container of the service
@@ -77,6 +83,12 @@ export interface DatadogExtensionProps {
    * Whether or not to capture the application logs
    */
   readonly logCaptureEnabled?: boolean
+
+  /**
+   * The version of the Datadog agent to use
+   * @default - DatadogAgentVersion.DATADOG_AGENT_7
+   */
+  readonly agentVersion?: DatadogAgentVersion
 }
 
 /**
@@ -87,22 +99,14 @@ export class DatadogAgent extends ServiceExtension {
   private apmEnabled: boolean;
   private traceAnalyticsEnabled: boolean;
   private datadogApiKey: ecs.Secret;
+  private agentVersion: DatadogAgentVersion;
 
   constructor(props: DatadogExtensionProps) {
     super('datadogAgent');
 
-    if (props.apmEnabled === undefined) {
-      this.apmEnabled = false;
-    } else {
-      this.apmEnabled = props.apmEnabled;
-    }
-
-    if (props.traceAnalyticsEnabled === undefined) {
-      this.traceAnalyticsEnabled = false;
-    } else {
-      this.traceAnalyticsEnabled = props.traceAnalyticsEnabled;
-    }
-
+    this.apmEnabled = props.apmEnabled === undefined ? false : props.apmEnabled;
+    this.traceAnalyticsEnabled = props.traceAnalyticsEnabled === undefined ? false : props.traceAnalyticsEnabled;
+    this.agentVersion = props.agentVersion === undefined ? DatadogAgentVersion.DATADOG_AGENT_7 : props.agentVersion;
     this.datadogApiKey = props.datadogApiKey;
   }
 
@@ -120,10 +124,6 @@ export class DatadogAgent extends ServiceExtension {
     }
 
     const container = this.parentService.serviceDescription.get('service-container') as Container;
-
-    if (!container) {
-      throw new Error('Firelens extension requires an application extension');
-    }
 
     container.addContainerMutatingHook(new DatadogAgentMutatingHook({
       traceAnalyticsEnabled: this.traceAnalyticsEnabled,
@@ -150,7 +150,7 @@ export class DatadogAgent extends ServiceExtension {
 
     // Add the Datadog Agent to this task
     this.container = taskDefinition.addContainer('datadog-agent', {
-      image: ecs.ContainerImage.fromRegistry(DATADOG_AGENT_IMAGE),
+      image: ecs.ContainerImage.fromRegistry(this.agentVersion),
       environment: envVariables,
       logging: new ecs.AwsLogDriver({ streamPrefix: 'datadog-agent' }),
       user: '0:1338', // Ensure that agent outbound traffic doesn't go through proxy
@@ -171,10 +171,10 @@ export class DatadogAgent extends ServiceExtension {
       throw new Error('The container dependency hook was called before the container was created');
     }
 
-    const appmeshextension = this.parentService.serviceDescription.get('appmesh');
-    if (appmeshextension && appmeshextension.container) {
+    const appMeshExtension = this.parentService.serviceDescription.get('appmesh');
+    if (appMeshExtension && appMeshExtension.container) {
       this.container.addContainerDependencies({
-        container: appmeshextension.container,
+        container: appMeshExtension.container,
         condition: ecs.ContainerDependencyCondition.HEALTHY,
       });
     }
