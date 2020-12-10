@@ -9,7 +9,7 @@ const getNode = (stack: cdk.Stack) => {
     meshName: 'test-mesh',
   });
   return mesh.addVirtualNode(`virtual-node-${idCounter}`, {
-    dnsHostName: 'test-node',
+    serviceDiscovery: appmesh.ServiceDiscovery.dns('test-node'),
   });
 };
 
