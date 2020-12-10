@@ -132,19 +132,21 @@ const handler = (event: any, context: any) => {
     if (err) {
       return err;
     }
+
     if (event.RequestType !== 'Delete') {
-      // Add updated configuration
-      const inConfiguration = event.ResourceProperties.NotificationConfiguration;
-      if (inConfiguration.TopicConfigurations) {
-        bucketNotifcations.TopicConfigurations = inConfiguration.TopicConfigurations;
+      // Add back the updated configuration
+      const inConfig = event.ResourceProperties.NotificationConfiguration;
+      if (inConfig.TopicConfigurations) {
+        bucketNotifcations.TopicConfigurations = inConfig.TopicConfigurations;
       }
-      if (inConfiguration.LambdaFunctionConfigurations) {
-        bucketNotifcations.LambdaFunctionConfigurations = inConfiguration.LambdaFunctionConfigurations;
+      if (inConfig.LambdaFunctionConfigurations) {
+        bucketNotifcations.LambdaFunctionConfigurations = inConfig.LambdaFunctionConfigurations;
       }
-      if (inConfiguration.QueueConfigurations) {
-        bucketNotifcations.QueueConfigurations = inConfiguration.QueueConfigurations;
+      if (inConfig.QueueConfigurations) {
+        bucketNotifcations.QueueConfigurations = inConfig.QueueConfigurations;
       }
     }
+
     return [bucketNotifcations, null];
   }
 
@@ -154,30 +156,33 @@ const handler = (event: any, context: any) => {
     const params = {
       Bucket: event.ResourceProperties.BucketName,
     };
-    // Get existing bucket notificaitons and remove the new or previous configuration elements
+
+    // Get existing bucket notificaitons and remove the previous or new configuration elements
     s3.getBucketNotificationConfiguration(params, function(err: any, data: any) {
       log({ err, data });
       if (err) {
         error = err;
       } else {
-        let config = null;
+        let inConfig = null;
         if (event.OldResourceProperties && event.OldResourceProperties.NotificationConfiguration) {
-          config = event.OldResourceProperties.NotificationConfiguration;
+          inConfig = event.OldResourceProperties.NotificationConfiguration;
         } else {
-          config = event.ResourceProperties.NotificationConfiguration;
+          inConfig = event.ResourceProperties.NotificationConfiguration;
         }
-        if (config.TopicConfigurations) {
+
+        if (inConfig.TopicConfigurations) {
           delete data.TopicConfigurations;
         }
-        if (config.LambdaFunctionConfigurations) {
+        if (inConfig.LambdaFunctionConfigurations) {
           delete data.LambdaFunctionConfigurations;
         }
-        if (config.QueueConfigurations) {
+        if (inConfig.QueueConfigurations) {
           delete data.QueueConfigurations;
         }
         response = data;
       }
     });
+
     return [response, error];
   }
 
