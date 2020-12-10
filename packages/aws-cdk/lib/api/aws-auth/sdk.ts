@@ -230,7 +230,7 @@ export class SDK implements ISDK {
           ? [`using ${this.sdkOptions.assumeRoleCredentialsSourceDescription}`]
           : [],
         '(did you bootstrap the environment with the right \'--trust\'s?)',
-      ].join(' ' );
+      ].join(' ');
     }
 
     // Replace the message on this error with a concatenation of all inner error messages.

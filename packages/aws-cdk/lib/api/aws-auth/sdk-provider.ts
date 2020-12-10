@@ -94,8 +94,12 @@ const CACHED_DEFAULT_CREDENTIALS = Symbol('cached_default_credentials');
  *   established in the previous process to assume that role.
  *   - If assuming the role fails and the base credentials are for the correct
  *     account, return those. This is a fallback for people who are trying to interact
- *     with a Default Synthesized stack and already have right credentials setup (though
- *     they accidentally fail to have `sts:AssumeRole` setup, maybe using a `ReadOnly` role).
+ *     with a Default Synthesized stack and already have right credentials setup.
+ *
+ *     Typical cases we see in the wild:
+ *     - Credential plugin setup that, although not recommended, works for them
+ *     - Seeded terminal with `ReadOnly` credentials in order to do `cdk diff`--the `ReadOnly`
+ *       role doesn't have `sts:AssumeRole` and will fail for no real good reason.
  */
 export class SdkProvider {
   /**
@@ -144,41 +148,34 @@ export class SdkProvider {
     // At this point, we need at least SOME credentials
     if (baseCreds.source === 'none') { throw new Error(fmtObtainCredentialsError(env.account, baseCreds)); }
 
-    // Even if the current or provided credentials weren't for the correct account, we're going to give
-    // the current creds an opportunity to AssumeRole if that's what's requested.
-    //
-    // And even if AssumeRole fails, we might just try and fall back to the current credentials if they look
-    // okay enough.
-    //
-    // Yes, it's a rather complicated dance :(.
-    if (options?.assumeRoleArn) {
-      const sdk = await this.withAssumedRole(baseCreds, options.assumeRoleArn, options.assumeRoleExternalId, env.region);
-      // Do a call on this SDK. We don't care about the answer, but we want to excercise the AssumeRoleCredentialsProvider
-      // we've gotten at least once so we can show an accurate error message about the chain of events
-      // in case the AssumeRole fails.
-      try {
-        await sdk.currentAccount();
-        return sdk;
-      } catch (e) {
-        // AssumeRole failed. Proceed and warn *if and only if* the baseCredentials were already for the right account
-        // or returned from a plugin. This is to cover some current setups for people using plugins or preferring to
-        // feed the CLI credentials which are sufficient by themselves. Prefer to assume the correct role if we can,
-        // but if we can't then let's just try with available credentials anyway.
-        if (baseCreds.source !== 'correctDefault' && baseCreds.source !== 'plugin') {
-          throw e;
-        }
-
-        debug(e.message);
-        warning(`${fmtObtainedCredentials(baseCreds)} could not be used to assume '${options.assumeRoleArn}', but are for the right account. Proceeding anyway.`);
-        // NOTE: fall-through
-      }
+    // Simple case is if we don't need to "assumeRole" here. If so, we must now have credentials for the right
+    // account.
+    if (options?.assumeRoleArn === undefined) {
+      if (baseCreds.source === 'incorrectDefault') { throw new Error(fmtObtainCredentialsError(env.account, baseCreds)); }
+      return new SDK(baseCreds.credentials, env.region, this.sdkOptions);
     }
 
-    // If we didn't AssumeRole, then we must have gotten correct credentials from the default,
-    // or "correct I promise" credentials from the plugin.
-    if (baseCreds.source === 'incorrectDefault') { throw new Error(fmtObtainCredentialsError(env.account, baseCreds)); }
+    // We will proceed to AssumeRole using whatever we've been given.
+    const sdk = await this.withAssumedRole(baseCreds, options.assumeRoleArn, options.assumeRoleExternalId, env.region);
 
-    return new SDK(baseCreds.credentials, env.region, this.sdkOptions);
+    // Do a call on this SDK. We don't care about the answer, but we want to excercise the AssumeRoleCredentialsProvider
+    // we've gotten at least once so we can determine whether the AssumeRole call succeeds or not.
+    try {
+      await sdk.currentAccount();
+      return sdk;
+    } catch (e) {
+      // AssumeRole failed. Proceed and warn *if and only if* the baseCredentials were already for the right account
+      // or returned from a plugin. This is to cover some current setups for people using plugins or preferring to
+      // feed the CLI credentials which are sufficient by themselves. Prefer to assume the correct role if we can,
+      // but if we can't then let's just try with available credentials anyway.
+      if (baseCreds.source === 'correctDefault' || baseCreds.source === 'plugin') {
+        debug(e.message);
+        warning(`${fmtObtainedCredentials(baseCreds)} could not be used to assume '${options.assumeRoleArn}', but are for the right account. Proceeding anyway.`);
+        return new SDK(baseCreds.credentials, env.region, this.sdkOptions);
+      }
+
+      throw e;
+    }
   }
 
   /**
