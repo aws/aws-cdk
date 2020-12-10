@@ -97,7 +97,7 @@ export = {
             },
           ],
           Essential: true,
-          Image: 'datadog/agent:latest',
+          Image: 'public.ecr.aws/datadog/agent:7',
           LogConfiguration: {
             LogDriver: 'awslogs',
             Options: {
