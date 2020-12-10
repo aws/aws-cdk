@@ -102,9 +102,9 @@ test('create complex transform job', () => {
   const task = new SageMakerCreateTransformJob(stack, 'TransformTask', {
     transformJobName: 'MyTransformJob',
     modelName: 'MyModelName',
-    modelClientConfig: {
+    modelClientOptions: {
       invocationsMaxRetries: 1,
-      invocationsTimeout: cdk.Duration.seconds(2400),
+      invocationsTimeout: cdk.Duration.minutes(20),
     },
     integrationPattern: sfn.IntegrationPattern.RUN_JOB,
     role,
@@ -157,7 +157,7 @@ test('create complex transform job', () => {
       ModelName: 'MyModelName',
       ModelClientConfig: {
         InvocationsMaxRetries: 1,
-        InvocationsTimeoutInSeconds: 2400,
+        InvocationsTimeoutInSeconds: 1200,
       },
       TransformInput: {
         DataSource: {
