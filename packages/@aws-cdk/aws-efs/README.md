@@ -21,54 +21,78 @@
 
 <!--END STABILITY BANNER-->
 
-This construct library allows you to set up AWS Elastic File System (EFS).
+[Amazon Elastic File System](https://docs.aws.amazon.com/efs/latest/ug/whatisefs.html) (Amazon EFS) provides a simple, scalable,
+fully managed elastic NFS file system for use with AWS Cloud services and on-premises resources.
+Amazon EFS provides file storage in the AWS Cloud. With Amazon EFS, you can create a file system,
+mount the file system on an Amazon EC2 instance, and then read and write data to and from your file system.
+
+This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
+
+## File Systems
+
+Amazon EFS provides elastic, shared file storage that is POSIX-compliant. The file system you create
+supports concurrent read and write access from multiple Amazon EC2 instances and is accessible from
+all of the Availability Zones in the AWS Region where it is created. Learn more about [file systems](https://docs.aws.amazon.com/efs/latest/ug/creating-using.html)
+
+### Create an Amazon EFS file system
+
+A Virtual Private Cloud (VPC) is required where you want EC2 instances to connect to your file system.
+The following example creates a file system that is not encrypted at rest, running in `General Purpose`
+performance mode, and `Bursting` throughput mode and does not transition files to the Infrequent
+Access (IA) storage class.
 
 ```ts
 import * as efs from '@aws-cdk/aws-efs';
+import * as ec2 from '@aws-cdk/aws-ec2';
 
-const myVpc = new ec2.Vpc(this, 'VPC');
 const fileSystem = new efs.FileSystem(this, 'MyEfsFileSystem', {
-  vpc: myVpc,
-  encrypted: true,
-  lifecyclePolicy: efs.LifecyclePolicy.AFTER_14_DAYS,
-  performanceMode: efs.PerformanceMode.GENERAL_PURPOSE,
-  throughputMode: efs.ThroughputMode.BURSTING
+  vpc: new ec2.Vpc(this, 'VPC'),
+  encrypted: true, // file system is not encrypted by default
+  lifecyclePolicy: efs.LifecyclePolicy.AFTER_14_DAYS, // files are not transitioned to infrequent access (IA) storage by default
 });
 ```
 
-A file system can set `RemovalPolicy`. Default policy is `RETAIN`.
+Since file systems are stateful resources, by default the file system will not be deleted when your
+stack is deleted.
+
+You can configure the file system to be destroyed on stack deletion by setting a `removalPolicy`
 
 ```ts
-const fileSystem =  new FileSystem(this, 'EfsFileSystem', {
-  vpc,
+import * as efs from '@aws-cdk/aws-efs';
+import * as ec2 from '@aws-cdk/aws-ec2';
+
+const fileSystem =  new efs.FileSystem(this, 'EfsFileSystem', {
+  vpc: new ec2.Vpc(this, 'VPC'),
   removalPolicy: RemovalPolicy.DESTROY
 });
 ```
+### Access Point
 
-## Access Point
+An access point is an application-specific view into an EFS file system that applies an operating
+system user and group, and a file system path, to any file system request made through the access
+point. The operating system user and group override any identity information provided by the NFS
+client. The file system path is exposed as the access point's root directory. Applications using
+the access point can only access data in its own directory and below. To learn more, see [Mounting a File System Using EFS Access Points](https://docs.aws.amazon.com/efs/latest/ug/efs-access-points.html).
 
-An access point is an application-specific view into an EFS file system that applies an operating system user and
-group, and a file system path, to any file system request made through the access point. The operating system user
-and group override any identity information provided by the NFS client. The file system path is exposed as the
-access point's root directory. Applications using the access point can only access data in its own directory and
-below. To learn more, see [Mounting a File System Using EFS Access Points](https://docs.aws.amazon.com/efs/latest/ug/efs-access-points.html).
-
-Use `addAccessPoint` to create an access point from a fileSystem:
+Use the `addAccessPoint` API to create an access point from a fileSystem.
 
 ```ts
 fileSystem.addAccessPoint('AccessPoint');
 ```
 
-By default, when you create an access point, the root(`/`) directory is exposed to the client connecting to
-the access point. You may specify custom path with the `path` property. If `path` does not exist, it will be
-created with the settings defined in the `creationInfo`. See
-[Creating Access Points](https://docs.aws.amazon.com/efs/latest/ug/create-access-point.html) for more details.
+By default, when you create an access point, the root(`/`) directory is exposed to the client
+connecting to the access point. You can specify a custom path with the `path` property.
+
+If `path` does not exist, it will be created with the settings defined in the `creationInfo`.
+See [Creating Access Points](https://docs.aws.amazon.com/efs/latest/ug/create-access-point.html) for more details.
 
 Any access point that has been created outside the stack can be imported into your CDK app.
 
 Use the `fromAccessPointAttributes()` API to import an existing access point.
 
 ```ts
+import * as efs from '@aws-cdk/aws-efs';
+
 efs.AccessPoint.fromAccessPointAttributes(this, 'ap', {
   accessPointArn: 'fsap-1293c4d9832fo0912',
   fileSystem: efs.FileSystem.fromFileSystemAttributes(this, 'efs', {
@@ -78,12 +102,15 @@ efs.AccessPoint.fromAccessPointAttributes(this, 'ap', {
 });
 ```
 
-⚠️ Notice: When importing an Access Point using `fromAccessPointAttributes()`, you must make sure the mount targets are deployed and their lifecycle state is `available`. Otherwise, you may encounter the following error when deploying:
+⚠️ Notice: When importing an Access Point using `fromAccessPointAttributes()`, you must make sure
+the mount targets are deployed and their lifecycle state is `available`. Otherwise, you may encounter
+the following error when deploying:
 > EFS file system <ARN of efs> referenced by access point <ARN of access point of EFS> has
-mount targets created in all availability zones the function will execute in, but not all are in the available life cycle
-state yet. Please wait for them to become available and try the request again.
+> mount targets created in all availability zones the function will execute in, but not all
+>are in the available life cycle state yet. Please wait for them to become available and
+> try the request again.
 
-## Connecting
+### Connecting
 
 To control who can access the EFS, use the `.connections` attribute. EFS has
 a fixed default port, so you don't need to specify the port:
@@ -91,13 +118,19 @@ a fixed default port, so you don't need to specify the port:
 ```ts
 fileSystem.connections.allowDefaultPortFrom(instance);
 ```
+Learn more about [managing file system network accessibility](https://docs.aws.amazon.com/efs/latest/ug/manage-fs-access.html)
 
-## Mounting the file system using User Data
+### Mounting the file system using User Data
 
-In order to automatically mount this file system during instance launch, 
-following code can be used as reference:
+After you create a file system, you can create mount targets. Then you can mount the file system on
+EC2 instances, containers, and Lambda functions in your virtual private cloud (VPC).
+
+The following example automatically mounts a file system during instance launch.
 
 ```ts
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as efs from '@aws-cdk/aws-efs';
+
 const vpc = new ec2.Vpc(this, 'VPC');
 
 const fileSystem = new efs.FileSystem(this, 'MyEfsFileSystem', {
@@ -109,7 +142,7 @@ const fileSystem = new efs.FileSystem(this, 'MyEfsFileSystem', {
   enableAutomaticBackups: true
 });
 
-const inst = new Instance(this, 'inst', {
+const instance = new ec2.Instance(this, 'inst', {
   instanceType: InstanceType.of(InstanceClass.T2, InstanceSize.LARGE),
   machineImage: new AmazonLinuxImage({
     generation: AmazonLinuxGeneration.AMAZON_LINUX_2
@@ -134,4 +167,4 @@ inst.userData.addCommands("yum check-update -y",    // Ubuntu: apt-get -y update
   "mount -a -t efs,nfs4 defaults");
 ```
 
-This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
+Learn more about [mounting EFS file systems](https://docs.aws.amazon.com/efs/latest/ug/mounting-fs.html)
