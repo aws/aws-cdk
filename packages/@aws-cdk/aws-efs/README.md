@@ -32,12 +32,12 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
 
 Amazon EFS provides elastic, shared file storage that is POSIX-compliant. The file system you create
 supports concurrent read and write access from multiple Amazon EC2 instances and is accessible from
-all of the Availability Zones in the AWS Region where it is created. Learn more about [file systems](https://docs.aws.amazon.com/efs/latest/ug/creating-using.html)
+all of the Availability Zones in the AWS Region where it is created. Learn more about [EFS file systems](https://docs.aws.amazon.com/efs/latest/ug/creating-using.html)
 
 ### Create an Amazon EFS file system
 
 A Virtual Private Cloud (VPC) is required where you want EC2 instances to connect to your file system.
-The following example creates a file system that is not encrypted at rest, running in `General Purpose`
+The following example creates a file system that is encrypted at rest, running in `General Purpose`
 performance mode, and `Bursting` throughput mode and does not transition files to the Infrequent
 Access (IA) storage class.
 
@@ -95,7 +95,7 @@ Use the `fromAccessPointAttributes()` API to import an existing access point.
 import * as efs from '@aws-cdk/aws-efs';
 
 efs.AccessPoint.fromAccessPointAttributes(this, 'ap', {
-  accessPointArn: 'fsap-1293c4d9832fo0912',
+  accessPointId: 'fsap-1293c4d9832fo0912',
   fileSystem: efs.FileSystem.fromFileSystemAttributes(this, 'efs', {
     fileSystemId: 'fs-099d3e2f',
     securityGroup: SecurityGroup.fromSecurityGroupId(this, 'sg', 'sg-51530134'),
