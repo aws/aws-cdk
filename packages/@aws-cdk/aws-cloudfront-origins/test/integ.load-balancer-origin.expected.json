@@ -422,7 +422,10 @@
           "Origins": [
             {
               "CustomOriginConfig": {
-                "OriginProtocolPolicy": "https-only"
+                "OriginProtocolPolicy": "https-only",
+                "OriginSslProtocols": [
+                  "TLSv1.2"
+                ]
               },
               "DomainName": {
                 "Fn::GetAtt": [
