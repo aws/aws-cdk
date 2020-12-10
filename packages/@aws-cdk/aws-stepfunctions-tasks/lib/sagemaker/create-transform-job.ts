@@ -4,7 +4,7 @@ import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Size, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
-import { BatchStrategy, ModelClientConfig, S3DataType, TransformInput, TransformOutput, TransformResources } from './base-types';
+import { BatchStrategy, ModelClientOptions, S3DataType, TransformInput, TransformOutput, TransformResources } from './base-types';
 import { renderTags } from './private/utils';
 
 /**
@@ -62,9 +62,9 @@ export interface SageMakerCreateTransformJobProps extends sfn.TaskStateBaseProps
   /**
    * Configures the timeout and maximum number of retries for processing a transform job invocation.
    *
-   * @default
+   * @default - 0 retries and 300 seconds of timeout
    */
-  readonly modelClientConfig?: ModelClientConfig;
+  readonly modelClientOptions?: ModelClientOptions;
 
   /**
    * Tags to be applied to the train job.
@@ -171,7 +171,7 @@ export class SageMakerCreateTransformJob extends sfn.TaskStateBase {
       ...this.renderEnvironment(this.props.environment),
       ...(this.props.maxConcurrentTransforms ? { MaxConcurrentTransforms: this.props.maxConcurrentTransforms } : {}),
       ...(this.props.maxPayload ? { MaxPayloadInMB: this.props.maxPayload.toMebibytes() } : {}),
-      ...this.props.modelClientConfig ? this.renderModelClientConfig(this.props.modelClientConfig) : {},
+      ...this.props.modelClientOptions ? this.renderModelClientConfig(this.props.modelClientOptions) : {},
       ModelName: this.props.modelName,
       ...renderTags(this.props.tags),
       ...this.renderTransformInput(this.transformInput),
@@ -181,11 +181,11 @@ export class SageMakerCreateTransformJob extends sfn.TaskStateBase {
     };
   }
 
-  private renderModelClientConfig(config: ModelClientConfig): { [key: string]: any } {
+  private renderModelClientConfig(config: ModelClientOptions): { [key: string]: any } {
     return {
       ModelClientConfig: {
-        InvocationsMaxRetries: config?.invocationsMaxRetries,
-        InvocationsTimeoutInSeconds: config?.invocationsTimeout?.toSeconds(),
+        InvocationsMaxRetries: config.invocationsMaxRetries,
+        InvocationsTimeoutInSeconds: config.invocationsTimeout?.toSeconds(),
       },
     };
   }
