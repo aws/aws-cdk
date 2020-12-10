@@ -61,6 +61,7 @@ export interface HttpRouteSpecOptions {
 
   /**
    * An object that represents a http timeout
+   *
    * @default - None
    */
   readonly timeout?: HttpTimeout;
@@ -77,6 +78,7 @@ export interface TcpRouteSpecOptions {
 
   /**
    * An object that represents a tcp timeout
+   *
    * @default - None
    */
   readonly timeout?: TcpTimeout;
@@ -93,6 +95,7 @@ export interface GrpcRouteSpecOptions {
 
   /**
    * An object that represents a grpc timeout
+   *
    * @default - None
    */
   readonly timeout?: GrpcTimeout;
@@ -184,6 +187,7 @@ class HttpRouteSpec extends RouteSpec {
 
   /**
    * The criteria for determining a request match
+   *
    */
   public readonly match?: HttpRouteMatch;
 
@@ -226,7 +230,7 @@ class HttpRouteSpec extends RouteSpec {
   }
 
   private renderTimeout(timeout: HttpTimeout): CfnRoute.HttpTimeoutProperty {
-    return ({
+    return {
       idle: timeout?.idle !== undefined ? {
         unit: 'ms',
         value: timeout?.idle.toMilliseconds(),
@@ -235,7 +239,7 @@ class HttpRouteSpec extends RouteSpec {
         unit: 'ms',
         value: timeout?.perRequest.toMilliseconds(),
       } : undefined,
-    });
+    };
   }
 }
 

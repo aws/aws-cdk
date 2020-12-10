@@ -31,7 +31,7 @@ export = {
           ],
           timeout: {
             idle: cdk.Duration.seconds(10),
-            perRequest: cdk.Duration.seconds(10),
+            perRequest: cdk.Duration.seconds(11),
           },
         }),
       });
@@ -45,7 +45,7 @@ export = {
           ],
           timeout: {
             idle: cdk.Duration.seconds(10),
-            perRequest: cdk.Duration.seconds(10),
+            perRequest: cdk.Duration.seconds(11),
           },
         }),
       });
@@ -75,7 +75,7 @@ export = {
           },
           timeout: {
             idle: cdk.Duration.seconds(10),
-            perRequest: cdk.Duration.seconds(10),
+            perRequest: cdk.Duration.seconds(11),
           },
         }),
       });
@@ -99,6 +99,16 @@ export = {
             },
             Match: {
               Prefix: '/',
+            },
+            Timeout: {
+              Idle: {
+                Value: 10000,
+                Unit: 'ms',
+              },
+              PerRequest: {
+                Value: 11000,
+                Unit: 'ms',
+              },
             },
           },
         },
@@ -124,6 +134,16 @@ export = {
             Match: {
               Prefix: '/',
             },
+            Timeout: {
+              Idle: {
+                Value: 10000,
+                Unit: 'ms',
+              },
+              PerRequest: {
+                Value: 11000,
+                Unit: 'ms',
+              },
+            },
           },
         },
         RouteName: 'test-http2-route',
@@ -144,6 +164,12 @@ export = {
                   Weight: 1,
                 },
               ],
+            },
+            Timeout: {
+              Idle: {
+                Value: 10000,
+                Unit: 'ms',
+              },
             },
           },
         },
@@ -168,6 +194,16 @@ export = {
             },
             Match: {
               ServiceName: 'test.svc.local',
+            },
+            Timeout: {
+              Idle: {
+                Value: 10000,
+                Unit: 'ms',
+              },
+              PerRequest: {
+                Value: 11000,
+                Unit: 'ms',
+              },
             },
           },
         },
