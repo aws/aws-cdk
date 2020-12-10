@@ -6,7 +6,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as ssm from '@aws-cdk/aws-ssm';
-import { Annotations, CfnOutput, CfnResource, IResource, Resource, Stack, Tags, Token, Duration } from '@aws-cdk/core';
+import { Annotations, CfnOutput, CfnResource, IResource, Resource, Stack, Tags, Token, Duration, Size } from '@aws-cdk/core';
 import { Construct, Node } from 'constructs';
 import * as YAML from 'yaml';
 import { AwsAuth } from './aws-auth';
@@ -92,14 +92,13 @@ export interface ICluster extends IResource, ec2.IConnectable {
 
   /**
    * Custom environment variables when running `kubectl` against this cluster.
-   * @default - no additional environment variables
    */
   readonly kubectlEnvironment?: { [key: string]: string };
 
   /**
    * A security group to use for `kubectl` execution.
    *
-   * @default - If not specified, the k8s endpoint is expected to be accessible
+   * If this is undefined, the k8s endpoint is expected to be accessible
    * publicly.
    */
   readonly kubectlSecurityGroup?: ec2.ISecurityGroup;
@@ -107,7 +106,7 @@ export interface ICluster extends IResource, ec2.IConnectable {
   /**
    * Subnets to host the `kubectl` compute resources.
    *
-   * @default - If not specified, the k8s endpoint is expected to be accessible
+   * If this is undefined, the k8s endpoint is expected to be accessible
    * publicly.
    */
   readonly kubectlPrivateSubnets?: ec2.ISubnet[];
@@ -119,6 +118,10 @@ export interface ICluster extends IResource, ec2.IConnectable {
    */
   readonly kubectlLayer?: lambda.ILayerVersion;
 
+  /**
+   * Amount of memory to allocate to the provider's lambda function.
+   */
+  readonly kubectlMemory?: Size;
   /**
    * Creates a new service account with corresponding IAM Role (IRSA).
    *
@@ -271,6 +274,13 @@ export interface ClusterAttributes {
    * @see https://github.com/aws-samples/aws-lambda-layer-kubectl
    */
   readonly kubectlLayer?: lambda.ILayerVersion;
+
+  /**
+   * Amount of memory to allocate to the provider's lambda function.
+   *
+   * @default Size.gibibytes(1)
+   */
+  readonly kubectlMemory?: Size;
 }
 
 /**
@@ -416,6 +426,13 @@ export interface ClusterOptions extends CommonClusterOptions {
    * @see https://github.com/aws-samples/aws-lambda-layer-kubectl
    */
   readonly kubectlLayer?: lambda.ILayerVersion;
+
+  /**
+   * Amount of memory to allocate to the provider's lambda function.
+   *
+   * @default Size.gibibytes(1)
+   */
+  readonly kubectlMemory?: Size;
 }
 
 /**
@@ -630,6 +647,7 @@ abstract class ClusterBase extends Resource implements ICluster {
   public abstract readonly kubectlEnvironment?: { [key: string]: string };
   public abstract readonly kubectlSecurityGroup?: ec2.ISecurityGroup;
   public abstract readonly kubectlPrivateSubnets?: ec2.ISubnet[];
+  public abstract readonly kubectlMemory?: Size;
   public abstract readonly openIdConnectProvider: iam.IOpenIdConnectProvider;
 
   /**
@@ -843,6 +861,11 @@ export class Cluster extends ClusterBase {
   public readonly kubectlLayer?: lambda.ILayerVersion;
 
   /**
+   * The amount of memory allocated to the kubectl provider's lambda function.
+   */
+  public readonly kubectlMemory?: Size;
+
+  /**
    * If this cluster is kubectl-enabled, returns the `ClusterResource` object
    * that manages it. If this cluster is not kubectl-enabled (i.e. uses the
    * stock `CfnCluster`), this is `undefined`.
@@ -929,6 +952,7 @@ export class Cluster extends ClusterBase {
     this.endpointAccess = props.endpointAccess ?? EndpointAccess.PUBLIC_AND_PRIVATE;
     this.kubectlEnvironment = props.kubectlEnvironment;
     this.kubectlLayer = props.kubectlLayer;
+    this.kubectlMemory = props.kubectlMemory;
 
     const privateSubents = this.selectPrivateSubnets().slice(0, 16);
     const publicAccessDisabled = !this.endpointAccess._config.publicAccess;
@@ -1630,6 +1654,7 @@ class ImportedCluster extends ClusterBase {
   public readonly kubectlSecurityGroup?: ec2.ISecurityGroup | undefined;
   public readonly kubectlPrivateSubnets?: ec2.ISubnet[] | undefined;
   public readonly kubectlLayer?: lambda.ILayerVersion;
+  public readonly kubectlMemory?: Size;
 
   constructor(scope: Construct, id: string, private readonly props: ClusterAttributes) {
     super(scope, id);
@@ -1641,6 +1666,7 @@ class ImportedCluster extends ClusterBase {
     this.kubectlEnvironment = props.kubectlEnvironment;
     this.kubectlPrivateSubnets = props.kubectlPrivateSubnetIds ? props.kubectlPrivateSubnetIds.map((subnetid, index) => ec2.Subnet.fromSubnetId(this, `KubectlSubnet${index}`, subnetid)) : undefined;
     this.kubectlLayer = props.kubectlLayer;
+    this.kubectlMemory = props.kubectlMemory;
 
     let i = 1;
     for (const sgid of props.securityGroupIds ?? []) {
