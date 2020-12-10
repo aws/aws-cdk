@@ -187,7 +187,6 @@ class HttpRouteSpec extends RouteSpec {
 
   /**
    * The criteria for determining a request match
-   *
    */
   public readonly match?: HttpRouteMatch;
 
@@ -221,24 +220,11 @@ class HttpRouteSpec extends RouteSpec {
       match: {
         prefix: prefixPath,
       },
-      timeout: this.timeout ? this.renderTimeout(this.timeout): undefined,
+      timeout: this.timeout ? renderTimeout(this.timeout): undefined,
     };
     return {
       httpRouteSpec: this.protocol === Protocol.HTTP ? httpConfig : undefined,
       http2RouteSpec: this.protocol === Protocol.HTTP2 ? httpConfig : undefined,
-    };
-  }
-
-  private renderTimeout(timeout: HttpTimeout): CfnRoute.HttpTimeoutProperty {
-    return {
-      idle: timeout?.idle !== undefined ? {
-        unit: 'ms',
-        value: timeout?.idle.toMilliseconds(),
-      } : undefined,
-      perRequest: timeout?.perRequest !== undefined ? {
-        unit: 'ms',
-        value: timeout?.perRequest.toMilliseconds(),
-      } : undefined,
     };
   }
 }
@@ -266,18 +252,9 @@ class TcpRouteSpec extends RouteSpec {
         action: {
           weightedTargets: renderWeightedTargets(this.weightedTargets),
         },
-        timeout: this.timeout ? this.renderTimeout(this.timeout): undefined,
+        timeout: this.timeout ? renderTimeout(this.timeout): undefined,
       },
     };
-  }
-
-  private renderTimeout(timeout: TcpTimeout): CfnRoute.TcpTimeoutProperty {
-    return ({
-      idle: timeout?.idle !== undefined ? {
-        unit: 'ms',
-        value: timeout?.idle.toMilliseconds(),
-      } : undefined,
-    });
   }
 }
 
@@ -302,22 +279,9 @@ class GrpcRouteSpec extends RouteSpec {
         match: {
           serviceName: this.match.serviceName,
         },
-        timeout: this.timeout ? this.renderTimeout(this.timeout): undefined,
+        timeout: this.timeout ? renderTimeout(this.timeout): undefined,
       },
     };
-  }
-
-  private renderTimeout(timeout: GrpcTimeout): CfnRoute.GrpcTimeoutProperty {
-    return ({
-      idle: timeout?.idle !== undefined ? {
-        unit: 'ms',
-        value: timeout?.idle.toMilliseconds(),
-      } : undefined,
-      perRequest: timeout?.perRequest !== undefined ? {
-        unit: 'ms',
-        value: timeout?.perRequest.toMilliseconds(),
-      } : undefined,
-    });
   }
 }
 
@@ -333,4 +297,20 @@ function renderWeightedTargets(weightedTargets: WeightedTarget[]): CfnRoute.Weig
     });
   }
   return renderedTargets;
+}
+
+/**
+ * Utility method to construct a route timeout object
+ */
+function renderTimeout(timeout: HttpTimeout): CfnRoute.HttpTimeoutProperty {
+  return {
+    idle: timeout?.idle !== undefined ? {
+      unit: 'ms',
+      value: timeout?.idle.toMilliseconds(),
+    } : undefined,
+    perRequest: timeout?.perRequest !== undefined ? {
+      unit: 'ms',
+      value: timeout?.perRequest.toMilliseconds(),
+    } : undefined,
+  };
 }

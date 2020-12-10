@@ -391,6 +391,12 @@ export = {
                   },
                 ],
               },
+              Timeout: {
+                Idle: {
+                  Value: 10000,
+                  Unit: 'ms',
+                },
+              },
             },
           },
           VirtualRouterName: {

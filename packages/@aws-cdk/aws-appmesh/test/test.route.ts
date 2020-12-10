@@ -241,7 +241,7 @@ export = {
           },
           timeout: {
             idle: cdk.Duration.seconds(10),
-            perRequest: cdk.Duration.seconds(10),
+            perRequest: cdk.Duration.seconds(11),
           },
         }),
       });
@@ -265,6 +265,16 @@ export = {
             },
             Match: {
               Prefix: '/node',
+            },
+            Timeout: {
+              Idle: {
+                Value: 10000,
+                Unit: 'ms',
+              },
+              PerRequest: {
+                Value: 11000,
+                Unit: 'ms',
+              },
             },
           },
         },
