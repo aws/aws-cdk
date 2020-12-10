@@ -197,10 +197,10 @@ module.exports = {
     }],
 
     // Overrides for plugin:jest/recommended
-    "jest/no-conditional-expect": "warn",
+    "jest/no-conditional-expect": "off",
     "jest/no-done-callback": "off", // Far too many of these in the codebase.
     "jest/no-standalone-expect": "off", // nodeunitShim confuses this check.
     "jest/valid-expect": "off", // expect from '@aws-cdk/assert' can take a second argument
-    "jest/valid-title": "warn", // A little over-zealous with test('test foo') being an error.
+    "jest/valid-title": "off", // A little over-zealous with test('test foo') being an error.
   },
 };
