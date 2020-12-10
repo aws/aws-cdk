@@ -124,39 +124,6 @@ export = {
   },
 
   'When adding a VirtualService to a mesh': {
-    'with VirtualRouter and VirtualNode as providers': {
-      'should throw error'(test: Test) {
-        // GIVEN
-        const stack = new cdk.Stack();
-
-        // WHEN
-        const mesh = new appmesh.Mesh(stack, 'mesh', {
-          meshName: 'test-mesh',
-        });
-
-        const testNode = new appmesh.VirtualNode(stack, 'test-node', {
-          mesh,
-          dnsHostName: 'test-node',
-        });
-
-        const testRouter = mesh.addVirtualRouter('router', {
-          listeners: [
-            appmesh.VirtualRouterListener.http(),
-          ],
-        });
-
-        // THEN
-        test.throws(() => {
-          mesh.addVirtualService('service', {
-            virtualServiceName: 'test-service.domain.local',
-            virtualNode: testNode,
-            virtualRouter: testRouter,
-          });
-        });
-
-        test.done();
-      },
-    },
     'with single virtual router provider resource': {
       'should create service'(test: Test) {
         // GIVEN
@@ -175,7 +142,7 @@ export = {
 
         mesh.addVirtualService('service', {
           virtualServiceName: 'test-service.domain.local',
-          virtualRouter: testRouter,
+          virtualServiceProvider: appmesh.VirtualServiceProvider.virtualRouter(testRouter),
         });
 
         // THEN
@@ -215,7 +182,7 @@ export = {
 
         mesh.addVirtualService('service2', {
           virtualServiceName: 'test-service.domain.local',
-          virtualNode: node,
+          virtualServiceProvider: appmesh.VirtualServiceProvider.virtualNode(node),
         });
 
         // THEN

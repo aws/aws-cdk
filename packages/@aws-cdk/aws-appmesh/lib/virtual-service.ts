@@ -51,18 +51,11 @@ export interface VirtualServiceBaseProps {
   readonly virtualServiceName?: string;
 
   /**
-   * The VirtualRouter which the VirtualService uses as provider
+   * The VirtualNode or VirtualRouter which the VirtualService uses as its provider
    *
-   * @default - At most one of virtualRouter and virtualNode is allowed.
+   * @default - No provider
    */
-  readonly virtualRouter?: IVirtualRouter;
-
-  /**
-   * The VirtualNode attached to the virtual service
-   *
-   * @default - At most one of virtualRouter and virtualNode is allowed.
-   */
-  readonly virtualNode?: IVirtualNode;
+  readonly virtualServiceProvider?: VirtualServiceProvider;
 
   /**
    * Client policy for this Virtual Service
@@ -135,33 +128,24 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
 
   public readonly clientPolicy?: ClientPolicy;
 
-  private readonly virtualServiceProvider?: CfnVirtualService.VirtualServiceProviderProperty;
-
   constructor(scope: Construct, id: string, props: VirtualServiceProps) {
     super(scope, id, {
       physicalName: props.virtualServiceName || cdk.Lazy.string({ produce: () => cdk.Names.uniqueId(this) }),
     });
 
-    if (props.virtualNode && props.virtualRouter) {
-      throw new Error('Must provide only one of virtualNode or virtualRouter for the provider');
-    }
+    const provider = props.virtualServiceProvider?.bind(this);
 
     this.mesh = props.mesh;
     this.clientPolicy = props.clientPolicy;
-
-    // Check which provider to use node or router (or neither)
-    if (props.virtualRouter) {
-      this.virtualServiceProvider = this.addVirtualRouter(props.virtualRouter.virtualRouterName);
-    }
-    if (props.virtualNode) {
-      this.virtualServiceProvider = this.addVirtualNode(props.virtualNode.virtualNodeName);
-    }
 
     const svc = new CfnVirtualService(this, 'Resource', {
       meshName: this.mesh.meshName,
       virtualServiceName: this.physicalName,
       spec: {
-        provider: this.virtualServiceProvider,
+        provider: provider ? {
+          virtualNode: provider?.virtualNodeProvider,
+          virtualRouter: provider?.virtualRouterProvider,
+        }: undefined,
       },
     });
 
@@ -171,22 +155,6 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
       resource: `mesh/${props.mesh.meshName}/virtualService`,
       resourceName: this.physicalName,
     });
-  }
-
-  private addVirtualRouter(name: string): CfnVirtualService.VirtualServiceProviderProperty {
-    return {
-      virtualRouter: {
-        virtualRouterName: name,
-      },
-    };
-  }
-
-  private addVirtualNode(name: string): CfnVirtualService.VirtualServiceProviderProperty {
-    return {
-      virtualNode: {
-        virtualNodeName: name,
-      },
-    };
   }
 }
 
@@ -210,4 +178,69 @@ export interface VirtualServiceAttributes {
    * @default - none
    */
   readonly clientPolicy?: ClientPolicy;
+}
+
+/**
+ * Properties for a VirtualService provider
+ */
+export interface VirtualServiceProviderConfig {
+  /**
+   * Virtual Node based provider
+   *
+   * @default - none
+   */
+  readonly virtualNodeProvider?: CfnVirtualService.VirtualNodeServiceProviderProperty;
+
+  /**
+   * Virtual Router based provider
+   *
+   * @default - none
+   */
+  readonly virtualRouterProvider?: CfnVirtualService.VirtualRouterServiceProviderProperty;
+}
+
+/**
+ * Represents the properties needed to define the provider for a VirtualService
+ */
+export abstract class VirtualServiceProvider {
+  /**
+   * Returns a VirtualNode based Provider for a VirtualService
+   */
+  public static virtualNode(virtualNode: IVirtualNode): VirtualServiceProvider {
+    return new VirtualServiceProviderImpl(virtualNode, undefined);
+  }
+
+  /**
+   * Returns a VirtualRouter based Provider for a VirtualService
+   */
+  public static virtualRouter(virtualRouter: IVirtualRouter): VirtualServiceProvider {
+    return new VirtualServiceProviderImpl(undefined, virtualRouter);
+  }
+
+  /**
+   * Enforces mutual exclusivity for VirtualService provider types.
+   */
+  public abstract bind(_construct: cdk.Construct): VirtualServiceProviderConfig;
+}
+
+class VirtualServiceProviderImpl extends VirtualServiceProvider {
+  private readonly virtualNode?: IVirtualNode;
+  private readonly virtualRouter?: IVirtualRouter;
+
+  constructor(virtualNode?: IVirtualNode, virtualRouter?: IVirtualRouter) {
+    super();
+    this.virtualNode = virtualNode;
+    this.virtualRouter = virtualRouter;
+  }
+
+  public bind(_construct: cdk.Construct): VirtualServiceProviderConfig {
+    return {
+      virtualNodeProvider: this.virtualNode? {
+        virtualNodeName: this.virtualNode.virtualNodeName,
+      }: undefined,
+      virtualRouterProvider: this.virtualRouter? {
+        virtualRouterName: this.virtualRouter.virtualRouterName,
+      }: undefined,
+    };
+  }
 }
