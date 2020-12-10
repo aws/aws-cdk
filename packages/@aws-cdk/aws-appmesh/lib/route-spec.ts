@@ -228,19 +228,6 @@ class HttpRouteSpec extends RouteSpec {
       http2RouteSpec: this.protocol === Protocol.HTTP2 ? httpConfig : undefined,
     };
   }
-
-  private renderTimeout(timeout: HttpTimeout): CfnRoute.HttpTimeoutProperty {
-    return {
-      idle: timeout?.idle !== undefined ? {
-        unit: 'ms',
-        value: timeout?.idle.toMilliseconds(),
-      } : undefined,
-      perRequest: timeout?.perRequest !== undefined ? {
-        unit: 'ms',
-        value: timeout?.perRequest.toMilliseconds(),
-      } : undefined,
-    };
-  }
 }
 
 class TcpRouteSpec extends RouteSpec {
@@ -266,22 +253,9 @@ class TcpRouteSpec extends RouteSpec {
         action: {
           weightedTargets: renderWeightedTargets(this.weightedTargets),
         },
-<<<<<<< HEAD
         timeout: this.timeout ? renderTimeout(this.timeout): undefined,
-=======
-        timeout: this.timeout ? this.renderTimeout(this.timeout): undefined,
->>>>>>> 65ca4ed162f7e5ad3c7eb7811761edbd11d7b870
       },
     };
-  }
-
-  private renderTimeout(timeout: TcpTimeout): CfnRoute.TcpTimeoutProperty {
-    return ({
-      idle: timeout?.idle !== undefined ? {
-        unit: 'ms',
-        value: timeout?.idle.toMilliseconds(),
-      } : undefined,
-    });
   }
 }
 
@@ -306,26 +280,9 @@ class GrpcRouteSpec extends RouteSpec {
         match: {
           serviceName: this.match.serviceName,
         },
-<<<<<<< HEAD
         timeout: this.timeout ? renderTimeout(this.timeout): undefined,
-=======
-        timeout: this.timeout ? this.renderTimeout(this.timeout): undefined,
->>>>>>> 65ca4ed162f7e5ad3c7eb7811761edbd11d7b870
       },
     };
-  }
-
-  private renderTimeout(timeout: GrpcTimeout): CfnRoute.GrpcTimeoutProperty {
-    return ({
-      idle: timeout?.idle !== undefined ? {
-        unit: 'ms',
-        value: timeout?.idle.toMilliseconds(),
-      } : undefined,
-      perRequest: timeout?.perRequest !== undefined ? {
-        unit: 'ms',
-        value: timeout?.perRequest.toMilliseconds(),
-      } : undefined,
-    });
   }
 }
 
