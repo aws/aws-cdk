@@ -66,6 +66,7 @@ const fileSystem =  new efs.FileSystem(this, 'EfsFileSystem', {
   removalPolicy: RemovalPolicy.DESTROY
 });
 ```
+
 ### Access Point
 
 An access point is an application-specific view into an EFS file system that applies an operating
@@ -118,6 +119,7 @@ a fixed default port, so you don't need to specify the port:
 ```ts
 fileSystem.connections.allowDefaultPortFrom(instance);
 ```
+
 Learn more about [managing file system network accessibility](https://docs.aws.amazon.com/efs/latest/ug/manage-fs-access.html)
 
 ### Mounting the file system using User Data
@@ -142,20 +144,20 @@ const fileSystem = new efs.FileSystem(this, 'MyEfsFileSystem', {
   enableAutomaticBackups: true
 });
 
-const instance = new ec2.Instance(this, 'inst', {
-  instanceType: InstanceType.of(InstanceClass.T2, InstanceSize.LARGE),
-  machineImage: new AmazonLinuxImage({
-    generation: AmazonLinuxGeneration.AMAZON_LINUX_2
+const instance = new ec2.Instance(this, 'instance', {
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.T2, ec2.InstanceSize.LARGE),
+  machineImage: new ec2.AmazonLinuxImage({
+    generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2
   }),
   vpc,
   vpcSubnets: {
-    subnetType: SubnetType.PUBLIC,
+    subnetType: ec2.SubnetType.PUBLIC,
   }
 });
 
-fileSystem.connections.allowDefaultPortFrom(inst);
+fileSystem.connections.allowDefaultPortFrom(instance);
 
-inst.userData.addCommands("yum check-update -y",    // Ubuntu: apt-get -y update
+instance.userData.addCommands("yum check-update -y",    // Ubuntu: apt-get -y update
   "yum upgrade -y",                                 // Ubuntu: apt-get -y upgrade
   "yum install -y amazon-efs-utils",                // Ubuntu: apt-get -y install amazon-efs-utils
   "yum install -y nfs-utils",                       // Ubuntu: apt-get -y install nfs-common
