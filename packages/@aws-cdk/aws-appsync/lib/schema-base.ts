@@ -142,7 +142,7 @@ export interface IIntermediateType {
   /**
    * Method called when the stringifying Intermediate Types for schema generation
    *
-   * @param api The binding GraphQL Api [disable-awslint:ref-via-interface]
+   * @param api The binding GraphQL Api
    *
    * @internal
    */

@@ -1,11 +1,12 @@
 import * as crypto from 'crypto';
-import { Metric, MetricOptions } from '@aws-cdk/aws-cloudwatch';
+import { Metric, MetricOptions, MetricProps } from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Code } from './code';
 import { Schedule } from './schedule';
+import { CloudWatchSyntheticsMetrics } from './synthetics-canned-metrics.generated';
 import { CfnCanary } from './synthetics.generated';
 
 /**
@@ -279,7 +280,7 @@ export class Canary extends cdk.Resource {
    * @default avg over 5 minutes
    */
   public metricDuration(options?: MetricOptions): Metric {
-    return this.metric('Duration', options);
+    return this.cannedMetric(CloudWatchSyntheticsMetrics.durationAverage, options);
   }
 
   /**
@@ -290,35 +291,18 @@ export class Canary extends cdk.Resource {
    * @default avg over 5 minutes
    */
   public metricSuccessPercent(options?: MetricOptions): Metric {
-    return this.metric('SuccessPercent', options);
+    return this.cannedMetric(CloudWatchSyntheticsMetrics.successPercentAverage, options);
   }
 
   /**
    * Measure the number of failed canary runs over a given time period.
    *
-   * @param options - configuration options for the metric
+   * Default: sum over 5 minutes
    *
-   * @default avg over 5 minutes
+   * @param options - configuration options for the metric
    */
   public metricFailed(options?: MetricOptions): Metric {
-    return this.metric('Failed', options);
-  }
-
-  /**
-   * @param metricName - the name of the metric
-   * @param options - configuration options for the metric
-   *
-   * @returns a CloudWatch metric associated with the canary.
-   * @default avg over 5 minutes
-   */
-  private metric(metricName: string, options?: MetricOptions): Metric {
-    return new Metric({
-      metricName,
-      namespace: 'CloudWatchSynthetics',
-      dimensions: { CanaryName: this.canaryName },
-      statistic: 'avg',
-      ...options,
-    }).attachTo(this);
+    return this.cannedMetric(CloudWatchSyntheticsMetrics.failedSum, options);
   }
 
   /**
@@ -394,6 +378,15 @@ export class Canary extends cdk.Resource {
     } else {
       return name.substring(0, 15) + nameHash(name);
     }
+  }
+
+  private cannedMetric(
+    fn: (dims: { CanaryName: string }) => MetricProps,
+    props?: MetricOptions): Metric {
+    return new Metric({
+      ...fn({ CanaryName: this.canaryName }),
+      ...props,
+    }).attachTo(this);
   }
 }
 

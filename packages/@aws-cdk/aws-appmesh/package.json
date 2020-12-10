@@ -86,6 +86,7 @@
     "pkglint": "0.0.0"
   },
   "dependencies": {
+    "@aws-cdk/aws-acmpca": "0.0.0",
     "@aws-cdk/aws-ec2": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-servicediscovery": "0.0.0",
@@ -93,6 +94,7 @@
     "constructs": "^3.2.0"
   },
   "peerDependencies": {
+    "@aws-cdk/aws-acmpca": "0.0.0",
     "@aws-cdk/aws-ec2": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-servicediscovery": "0.0.0",

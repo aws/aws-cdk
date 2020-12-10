@@ -48,8 +48,6 @@ export interface IOrigin {
 
 /**
  * Properties to define an Origin.
- *
- * @experimental
  */
 export interface OriginProps {
   /**
@@ -85,8 +83,6 @@ export interface OriginProps {
 
 /**
  * Options passed to Origin.bind().
- *
- * @experimental
  */
 export interface OriginBindOptions {
   /**
@@ -99,8 +95,6 @@ export interface OriginBindOptions {
 /**
  * Represents a distribution origin, that describes the Amazon S3 bucket, HTTP server (for example, a web server),
  * Amazon MediaStore, or other server from which CloudFront gets your files.
- *
- * @experimental
  */
 export abstract class OriginBase implements IOrigin {
   private readonly domainName: string;

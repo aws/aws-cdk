@@ -315,7 +315,7 @@ describe('tests', () => {
     expect(() => listener.addTargets('Targets', { port: 8080 })).not.toThrow();
   });
 
-  test.only('can add secondary security groups', () => {
+  test('can add secondary security groups', () => {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Stack');
 
@@ -355,11 +355,11 @@ describe('tests', () => {
 
       // THEN
       expect(stack).not.toHaveResource('AWS::ElasticLoadBalancingV2::ApplicationLoadBalancer');
-      expect(loadBalancer.loadBalancerArn).toEqual('arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-load-balancer/50dc6c495c0c9188');
+      expect(loadBalancer.loadBalancerArn).toEqual('arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/application/my-load-balancer/50dc6c495c0c9188');
       expect(loadBalancer.loadBalancerCanonicalHostedZoneId).toEqual('Z3DZXE0EXAMPLE');
       expect(loadBalancer.loadBalancerDnsName).toEqual('my-load-balancer-1234567890.us-west-2.elb.amazonaws.com');
       expect(loadBalancer.ipAddressType).toEqual(elbv2.IpAddressType.DUAL_STACK);
-      expect(loadBalancer.connections.securityGroups[0].securityGroupId).toEqual('sg-1234');
+      expect(loadBalancer.connections.securityGroups[0].securityGroupId).toEqual('sg-12345');
     });
 
     test('Can add listeners to a looked-up ApplicationLoadBalancer', () => {
@@ -381,6 +381,7 @@ describe('tests', () => {
       // WHEN
       loadBalancer.addListener('listener', {
         protocol: elbv2.ApplicationProtocol.HTTP,
+        defaultAction: elbv2.ListenerAction.fixedResponse(200),
       });
 
       // THEN

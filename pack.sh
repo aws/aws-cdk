@@ -19,6 +19,10 @@ distdir="$PWD/dist"
 rm -fr ${distdir}
 mkdir -p ${distdir}
 
+if ${CHECK_PREREQS:-true}; then
+  /bin/bash ./scripts/check-pack-prerequisites.sh
+fi
+
 # Split out jsii and non-jsii packages. Jsii packages will be built all at once.
 # Non-jsii packages will be run individually.
 echo "Collecting package list..." >&2

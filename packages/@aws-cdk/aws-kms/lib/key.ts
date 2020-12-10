@@ -1,8 +1,10 @@
 import * as iam from '@aws-cdk/aws-iam';
-import { IResource, RemovalPolicy, Resource, Stack } from '@aws-cdk/core';
+import { FeatureFlags, IResource, RemovalPolicy, Resource, Stack } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { IConstruct, Construct } from 'constructs';
 import { Alias } from './alias';
 import { CfnKey } from './kms.generated';
+import * as perms from './private/perms';
 
 /**
  * A KMS Key, either managed by this CDK app, or imported.
@@ -77,8 +79,9 @@ abstract class KeyBase extends Resource implements IKey {
   /**
    * Optional property to control trusting account identities.
    *
-   * If specified grants will default identity policies instead of to both
-   * resource and identity policies.
+   * If specified, grants will default identity policies instead of to both
+   * resource and identity policies. This matches the default behavior when creating
+   * KMS keys via the API or console.
    */
   protected abstract readonly trustAccountIdentities: boolean;
 
@@ -168,35 +171,24 @@ abstract class KeyBase extends Resource implements IKey {
   }
 
   /**
-   * Grant decryption permisisons using this key to the given principal
+   * Grant decryption permissions using this key to the given principal
    */
   public grantDecrypt(grantee: iam.IGrantable): iam.Grant {
-    return this.grant(grantee,
-      'kms:Decrypt',
-    );
+    return this.grant(grantee, ...perms.DECRYPT_ACTIONS);
   }
 
   /**
-   * Grant encryption permisisons using this key to the given principal
+   * Grant encryption permissions using this key to the given principal
    */
   public grantEncrypt(grantee: iam.IGrantable): iam.Grant {
-    return this.grant(grantee,
-      'kms:Encrypt',
-      'kms:ReEncrypt*',
-      'kms:GenerateDataKey*',
-    );
+    return this.grant(grantee, ...perms.ENCRYPT_ACTIONS);
   }
 
   /**
-   * Grant encryption and decryption permisisons using this key to the given principal
+   * Grant encryption and decryption permissions using this key to the given principal
    */
   public grantEncryptDecrypt(grantee: iam.IGrantable): iam.Grant {
-    return this.grant(grantee,
-      'kms:Decrypt',
-      'kms:Encrypt',
-      'kms:ReEncrypt*',
-      'kms:GenerateDataKey*',
-    );
+    return this.grant(grantee, ...[...perms.DECRYPT_ACTIONS, ...perms.ENCRYPT_ACTIONS]);
   }
 
   /**
@@ -293,10 +285,26 @@ export interface KeyProps {
   /**
    * Custom policy document to attach to the KMS key.
    *
+   * NOTE - If the '@aws-cdk/aws-kms:defaultKeyPolicies' feature flag is set (the default for new projects),
+   * this policy will *override* the default key policy and become the only key policy for the key. If the
+   * feature flag is not set, this policy will be appended to the default key policy.
+   *
    * @default - A policy document with permissions for the account root to
    * administer the key will be created.
    */
   readonly policy?: iam.PolicyDocument;
+
+  /**
+   * A list of principals to add as key administrators to the key policy.
+   *
+   * Key administrators have permissions to manage the key (e.g., change permissions, revoke), but do not have permissions
+   * to use the key in cryptographic operations (e.g., encrypt, decrypt).
+   *
+   * These principals will be added to the default key policy (if none specified), or to the specified policy (if provided).
+   *
+   * @default []
+   */
+  readonly admins?: iam.IPrincipal[];
 
   /**
    * Whether the encryption key should be retained when it is removed from the Stack. This is useful when one wants to
@@ -311,10 +319,15 @@ export interface KeyProps {
    *
    * Setting this to true adds a default statement which delegates key
    * access control completely to the identity's IAM policy (similar
-   * to how it works for other AWS resources).
+   * to how it works for other AWS resources). This matches the default behavior
+   * when creating KMS keys via the API or console.
    *
-   * @default false
+   * If the '@aws-cdk/aws-kms:defaultKeyPolicies' feature flag is set (the default for new projects),
+   * this flag will always be treated as 'true' and does not need to be explicitly set.
+   *
+   * @default - false, unless the '@aws-cdk/aws-kms:defaultKeyPolicies' feature flag is set.
    * @see https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html#key-policy-default-allow-root-enable-iam
+   * @deprecated redundant with the '@aws-cdk/aws-kms:defaultKeyPolicies' feature flag
    */
   readonly trustAccountIdentities?: boolean;
 }
@@ -365,12 +378,26 @@ export class Key extends KeyBase {
   constructor(scope: Construct, id: string, props: KeyProps = {}) {
     super(scope, id);
 
-    this.policy = props.policy || new iam.PolicyDocument();
-    this.trustAccountIdentities = props.trustAccountIdentities || false;
-    if (this.trustAccountIdentities) {
-      this.allowAccountIdentitiesToControl();
+    const defaultKeyPoliciesFeatureEnabled = FeatureFlags.of(this).isEnabled(cxapi.KMS_DEFAULT_KEY_POLICIES);
+
+    this.policy = props.policy ?? new iam.PolicyDocument();
+    if (defaultKeyPoliciesFeatureEnabled) {
+      if (props.trustAccountIdentities === false) {
+        throw new Error('`trustAccountIdentities` cannot be false if the @aws-cdk/aws-kms:defaultKeyPolicies feature flag is set');
+      }
+
+      this.trustAccountIdentities = true;
+      // Set the default key policy if one hasn't been provided by the user.
+      if (!props.policy) {
+        this.addDefaultAdminPolicy();
+      }
     } else {
-      this.allowAccountToAdmin();
+      this.trustAccountIdentities = props.trustAccountIdentities ?? false;
+      if (this.trustAccountIdentities) {
+        this.addDefaultAdminPolicy();
+      } else {
+        this.addLegacyAdminPolicy();
+      }
     }
 
     const resource = new CfnKey(this, 'Resource', {
@@ -384,25 +411,49 @@ export class Key extends KeyBase {
     this.keyId = resource.ref;
     resource.applyRemovalPolicy(props.removalPolicy);
 
+    (props.admins ?? []).forEach((p) => this.grantAdmin(p));
+
     if (props.alias !== undefined) {
       this.addAlias(props.alias);
     }
   }
 
-  private allowAccountIdentitiesToControl() {
+  /**
+   * Grant admins permissions using this key to the given principal
+   *
+   * Key administrators have permissions to manage the key (e.g., change permissions, revoke), but do not have permissions
+   * to use the key in cryptographic operations (e.g., encrypt, decrypt).
+   */
+  public grantAdmin(grantee: iam.IGrantable): iam.Grant {
+    return this.grant(grantee, ...perms.ADMIN_ACTIONS);
+  }
+
+  /**
+   * Adds the default key policy to the key. This policy gives the AWS account (root user) full access to the CMK,
+   * which reduces the risk of the CMK becoming unmanageable and enables IAM policies to allow access to the CMK.
+   * This is the same policy that is default when creating a Key via the KMS API or Console.
+   * @see https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html#key-policy-default
+   */
+  private addDefaultAdminPolicy() {
     this.addToResourcePolicy(new iam.PolicyStatement({
       resources: ['*'],
       actions: ['kms:*'],
       principals: [new iam.AccountRootPrincipal()],
     }));
-
   }
+
   /**
-   * Let users or IAM policies from this account admin this key.
+   * Grants the account admin privileges -- not full account access -- plus the GenerateDataKey action.
+   * The GenerateDataKey action was added for interop with S3 in https://github.com/aws/aws-cdk/issues/3458.
+   *
+   * This policy is discouraged and deprecated by the '@aws-cdk/aws-kms:defaultKeyPolicies' feature flag.
+   *
    * @link https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html#key-policy-default
-   * @link https://aws.amazon.com/premiumsupport/knowledge-center/update-key-policy-future/
+   * @deprecated
    */
-  private allowAccountToAdmin() {
+  private addLegacyAdminPolicy() {
+    // This is equivalent to `[...perms.ADMIN_ACTIONS, 'kms:GenerateDataKey']`,
+    // but keeping this explicit ordering for backwards-compatibility (changing the ordering causes resource updates)
     const actions = [
       'kms:Create*',
       'kms:Describe*',

@@ -1,8 +1,9 @@
 import { AuthorizationType, GraphqlApi } from './graphqlapi';
+import { IGraphqlApi } from './graphqlapi-base';
 import { shapeAddition } from './private';
 import { Resolver } from './resolver';
 import { Directive, IField, IIntermediateType, AddFieldOptions } from './schema-base';
-import { BaseTypeOptions, GraphqlType, ResolvableFieldOptions } from './schema-field';
+import { BaseTypeOptions, GraphqlType, ResolvableFieldOptions, ResolvableField } from './schema-field';
 
 /**
  * Properties for configuring an Intermediate Type
@@ -159,11 +160,27 @@ export class ObjectType extends InterfaceType implements IIntermediateType {
     super(name, options);
     this.interfaceTypes = props.interfaceTypes;
     this.resolvers = [];
+  }
 
+  /**
+   * Method called when the stringifying Intermediate Types for schema generation
+   *
+   * @internal
+   */
+  public _bindToGraphqlApi(api: GraphqlApi): IIntermediateType {
+    this.modes = api.modes;
+    // If the resolvers have been generated, skip the bind
+    if (this.resolvers && this.resolvers.length > 0) {
+      return this;
+    }
     Object.keys(this.definition).forEach((fieldName) => {
       const field = this.definition[fieldName];
-      this.generateResolver(fieldName, field.fieldOptions);
+      if (field instanceof ResolvableField) {
+        if (!this.resolvers) this.resolvers = [];
+        this.resolvers.push(this.generateResolver(api, fieldName, field.fieldOptions));
+      }
     });
+    return this;
   }
 
   /**
@@ -177,7 +194,6 @@ export class ObjectType extends InterfaceType implements IIntermediateType {
     if (!options.fieldName || !options.field) {
       throw new Error('Object Types must have both fieldName and field options.');
     }
-    this.generateResolver(options.fieldName, options.field.fieldOptions);
     this.definition[options.fieldName] = options.field;
   }
 
@@ -201,16 +217,15 @@ export class ObjectType extends InterfaceType implements IIntermediateType {
   /**
    * Generate the resolvers linked to this Object Type
    */
-  protected generateResolver(fieldName: string, options?: ResolvableFieldOptions): void {
-    if (!options?.dataSource) return;
-    if (!this.resolvers) { this.resolvers = []; }
-    this.resolvers.push(options.dataSource.createResolver({
+  protected generateResolver(api: IGraphqlApi, fieldName: string, options?: ResolvableFieldOptions): Resolver {
+    return api.createResolver({
       typeName: this.name,
       fieldName: fieldName,
-      pipelineConfig: options.pipelineConfig,
-      requestMappingTemplate: options.requestMappingTemplate,
-      responseMappingTemplate: options.responseMappingTemplate,
-    }));
+      dataSource: options?.dataSource,
+      pipelineConfig: options?.pipelineConfig,
+      requestMappingTemplate: options?.requestMappingTemplate,
+      responseMappingTemplate: options?.responseMappingTemplate,
+    });
   }
 }
 

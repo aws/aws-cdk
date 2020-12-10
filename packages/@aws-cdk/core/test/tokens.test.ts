@@ -474,6 +474,18 @@ nodeunitShim({
 
       test.done();
     },
+
+    'detect and error when list token values are illegally extracted'(test: Test) {
+      // GIVEN
+      const encoded: string[] = Token.asList({ Ref: 'Other' });
+
+      // THEN
+      test.throws(() => {
+        resolve({ value: encoded[0] });
+      }, /Found an encoded list/);
+
+      test.done();
+    },
   },
 
   'number encoding': {

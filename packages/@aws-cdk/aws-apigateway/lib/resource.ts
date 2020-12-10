@@ -37,7 +37,7 @@ export interface IResource extends IResourceBase {
   readonly resourceId: string;
 
   /**
-   * The full path of this resuorce.
+   * The full path of this resource.
    */
   readonly path: string;
 
