@@ -918,6 +918,27 @@ export interface DatabaseInstanceProps extends DatabaseInstanceSourceProps {
  * @resource AWS::RDS::DBInstance
  */
 export class DatabaseInstance extends DatabaseInstanceSource implements IDatabaseInstance {
+  /**
+  * Import an existing database instance.
+  */
+  public static fromDatabaseInstanceAttributes(scope: Construct, id: string, attrs: DatabaseInstanceAttributes): IDatabaseInstance {
+    class Import extends DatabaseInstanceBase implements IDatabaseInstance {
+      public readonly defaultPort = ec2.Port.tcp(attrs.port);
+      public readonly connections = new ec2.Connections({
+        securityGroups: attrs.securityGroups,
+        defaultPort: this.defaultPort,
+      });
+      public readonly instanceIdentifier = attrs.instanceIdentifier;
+      public readonly dbInstanceEndpointAddress = attrs.instanceEndpointAddress;
+      public readonly dbInstanceEndpointPort = attrs.port.toString();
+      public readonly instanceEndpoint = new Endpoint(attrs.instanceEndpointAddress, attrs.port);
+      public readonly engine = attrs.engine;
+      protected enableIamAuthentication = true;
+    }
+
+    return new Import(scope, id);
+  }
+
   public readonly instanceIdentifier: string;
   public readonly dbInstanceEndpointAddress: string;
   public readonly dbInstanceEndpointPort: string;
@@ -954,27 +975,6 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
     }
 
     this.setLogRetention();
-  }
-
-  /**
-   * Import an existing database instance.
-   */
-  public static fromDatabaseInstanceAttributes(scope: Construct, id: string, attrs: DatabaseInstanceAttributes): IDatabaseInstance {
-    class Import extends DatabaseInstanceBase implements IDatabaseInstance {
-      public readonly defaultPort = ec2.Port.tcp(attrs.port);
-      public readonly connections = new ec2.Connections({
-        securityGroups: attrs.securityGroups,
-        defaultPort: this.defaultPort,
-      });
-      public readonly instanceIdentifier = attrs.instanceIdentifier;
-      public readonly dbInstanceEndpointAddress = attrs.instanceEndpointAddress;
-      public readonly dbInstanceEndpointPort = attrs.port.toString();
-      public readonly instanceEndpoint = new Endpoint(attrs.instanceEndpointAddress, attrs.port);
-      public readonly engine = attrs.engine;
-      protected enableIamAuthentication = true;
-    }
-
-    return new Import(scope, id);
   }
 
 }
