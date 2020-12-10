@@ -28,6 +28,7 @@ export = {
 
     const cluster = new eks.Cluster(stack, 'Cluster', {
       version: CLUSTER_VERSION,
+      prune: false,
     });
 
     // create a plain construct, not a cdk8s chart
@@ -44,6 +45,7 @@ export = {
 
     const cluster = new eks.Cluster(stack, 'Cluster', {
       version: CLUSTER_VERSION,
+      prune: false,
     });
 
     // create a plain construct, not a cdk8s chart
@@ -60,6 +62,7 @@ export = {
 
     const cluster = new eks.Cluster(stack, 'Cluster', {
       version: CLUSTER_VERSION,
+      prune: false,
     });
 
     const app = new cdk8s.App();
@@ -103,6 +106,7 @@ export = {
 
     const cluster = new eks.Cluster(stack, 'Cluster', {
       version: CLUSTER_VERSION,
+      prune: false,
     });
 
     test.deepEqual(cluster.connections.securityGroups.map(sg => stack.resolve(sg.securityGroupId)), [
@@ -123,6 +127,7 @@ export = {
         super(scope, id);
         this.eksCluster = new eks.Cluster(this, 'Cluster', {
           version: CLUSTER_VERSION,
+          prune: false,
           securityGroup: props.sg,
           vpc: props.vpc,
         });
@@ -161,6 +166,7 @@ export = {
         super(scope, id, props);
         this.eksCluster = new eks.Cluster(this, 'Cluster', {
           version: CLUSTER_VERSION,
+          prune: false,
         });
       }
     }
@@ -212,6 +218,7 @@ export = {
         super(scope, id, props);
         this.eksCluster = new eks.Cluster(this, 'Cluster', {
           version: CLUSTER_VERSION,
+          prune: false,
         });
       }
     }
@@ -254,6 +261,7 @@ export = {
         super(scope, id, props);
         this.eksCluster = new eks.Cluster(this, 'Cluster', {
           version: CLUSTER_VERSION,
+          prune: false,
         });
       }
     }
@@ -287,6 +295,7 @@ export = {
         super(scope, id, props);
         this.eksCluster = new eks.Cluster(this, 'Cluster', {
           version: CLUSTER_VERSION,
+          prune: false,
         });
       }
     }
@@ -307,7 +316,6 @@ export = {
             nodeType: eks.NodeType.STANDARD,
           }),
         });
-
       }
     }
 
@@ -334,6 +342,7 @@ export = {
         super(scope, id, props);
         this.eksCluster = new eks.Cluster(this, 'EKSCluster', {
           version: CLUSTER_VERSION,
+          prune: false,
         });
       }
     }
@@ -361,7 +370,7 @@ export = {
     const { stack, vpc } = testFixture();
 
     // WHEN
-    new eks.Cluster(stack, 'Cluster', { vpc, defaultCapacity: 0, version: CLUSTER_VERSION });
+    new eks.Cluster(stack, 'Cluster', { vpc, defaultCapacity: 0, version: CLUSTER_VERSION, prune: false });
 
     // THEN
     expect(stack).to(haveResourceLike('Custom::AWSCDK-EKS-Cluster', {
@@ -390,7 +399,7 @@ export = {
 
     // WHEN
     const vpc = new ec2.Vpc(stack, 'VPC');
-    new eks.Cluster(stack, 'Cluster', { vpc, defaultCapacity: 0, version: CLUSTER_VERSION });
+    new eks.Cluster(stack, 'Cluster', { vpc, defaultCapacity: 0, version: CLUSTER_VERSION, prune: false });
     kubectl.getOrCreateKubectlLayer(stack);
 
     // THEN
@@ -410,7 +419,7 @@ export = {
 
     // WHEN
     const vpc = new ec2.Vpc(stack, 'VPC');
-    new eks.Cluster(stack, 'Cluster', { vpc, defaultCapacity: 0, version: CLUSTER_VERSION });
+    new eks.Cluster(stack, 'Cluster', { vpc, defaultCapacity: 0, version: CLUSTER_VERSION, prune: false });
     kubectl.getOrCreateKubectlLayer(stack);
 
     // THEN
@@ -428,7 +437,7 @@ export = {
     const { stack } = testFixtureNoVpc();
 
     // WHEN
-    new eks.Cluster(stack, 'cluster', { version: CLUSTER_VERSION }) ;
+    new eks.Cluster(stack, 'cluster', { version: CLUSTER_VERSION, prune: false }) ;
 
     // THEN
     expect(stack).to(haveResource('AWS::EC2::VPC'));
@@ -442,7 +451,7 @@ export = {
       const { stack } = testFixtureNoVpc();
 
       // WHEN
-      const cluster = new eks.Cluster(stack, 'cluster', { version: CLUSTER_VERSION });
+      const cluster = new eks.Cluster(stack, 'cluster', { version: CLUSTER_VERSION, prune: false });
 
       // THEN
       test.ok(cluster.defaultNodegroup);
@@ -468,6 +477,7 @@ export = {
         defaultCapacity: 10,
         defaultCapacityInstance: new ec2.InstanceType('m2.xlarge'),
         version: CLUSTER_VERSION,
+        prune: false,
       });
 
       // THEN
@@ -488,7 +498,7 @@ export = {
       const { stack } = testFixtureNoVpc();
 
       // WHEN
-      const cluster = new eks.Cluster(stack, 'cluster', { defaultCapacity: 0, version: CLUSTER_VERSION });
+      const cluster = new eks.Cluster(stack, 'cluster', { defaultCapacity: 0, version: CLUSTER_VERSION, prune: false });
 
       // THEN
       test.ok(!cluster.defaultCapacity);
@@ -503,7 +513,7 @@ export = {
     const { stack, vpc } = testFixture();
 
     // WHEN
-    new eks.Cluster(stack, 'Cluster', { vpc, defaultCapacity: 0, version: CLUSTER_VERSION });
+    new eks.Cluster(stack, 'Cluster', { vpc, defaultCapacity: 0, version: CLUSTER_VERSION, prune: false });
 
     // THEN
     expect(stack).to(haveResource('AWS::EC2::Subnet', {
@@ -523,7 +533,7 @@ export = {
     const { stack, vpc } = testFixture();
 
     // WHEN
-    new eks.Cluster(stack, 'Cluster', { vpc, defaultCapacity: 0, version: CLUSTER_VERSION });
+    new eks.Cluster(stack, 'Cluster', { vpc, defaultCapacity: 0, version: CLUSTER_VERSION, prune: false });
 
     // THEN
     expect(stack).to(haveResource('AWS::EC2::Subnet', {
@@ -546,6 +556,7 @@ export = {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      prune: false,
     });
 
     // WHEN
@@ -564,6 +575,7 @@ export = {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      prune: false,
     });
 
     // WHEN
@@ -599,6 +611,7 @@ export = {
       defaultCapacity: 10,
       defaultCapacityInstance: new ec2.InstanceType('m2.xlarge'),
       version: CLUSTER_VERSION,
+      prune: false,
     });
 
     const existingRole = new iam.Role(stack, 'ExistingRole', {
@@ -629,6 +642,7 @@ export = {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      prune: false,
     });
 
     // WHEN
@@ -662,6 +676,7 @@ export = {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      prune: false,
     });
 
     test.throws(() => cluster.addAutoScalingGroupCapacity('Bottlerocket', {
@@ -703,6 +718,7 @@ export = {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      prune: false,
     });
 
     // WHEN
@@ -759,6 +775,7 @@ export = {
       mastersRole: role,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      prune: false,
     });
 
     // THEN
@@ -797,6 +814,7 @@ export = {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      prune: false,
     });
 
     // WHEN
@@ -818,7 +836,7 @@ export = {
   'kubectl resources can be created in a separate stack'(test: Test) {
     // GIVEN
     const { stack, app } = testFixture();
-    const cluster = new eks.Cluster(stack, 'cluster', { version: CLUSTER_VERSION }); // cluster is under stack2
+    const cluster = new eks.Cluster(stack, 'cluster', { version: CLUSTER_VERSION, prune: false }); // cluster is under stack2
 
     // WHEN resource is under stack2
     const stack2 = new cdk.Stack(app, 'stack2', { env: { account: stack.account, region: stack.region } });
@@ -859,6 +877,7 @@ export = {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      prune: false,
     });
 
     // WHEN
@@ -909,6 +928,7 @@ export = {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      prune: false,
     });
 
     // WHEN
@@ -951,7 +971,7 @@ export = {
       const { app, stack } = testFixtureNoVpc();
 
       // WHEN
-      new eks.Cluster(stack, 'Cluster', { version: CLUSTER_VERSION });
+      new eks.Cluster(stack, 'Cluster', { version: CLUSTER_VERSION, prune: false });
 
       // THEN
       const assembly = app.synth();
@@ -972,6 +992,7 @@ export = {
       new eks.Cluster(stack, 'Cluster', {
         mastersRole,
         version: CLUSTER_VERSION,
+        prune: false,
       });
 
       // THEN
@@ -994,6 +1015,7 @@ export = {
         mastersRole,
         outputConfigCommand: false,
         version: CLUSTER_VERSION,
+        prune: false,
       });
 
       // THEN
@@ -1012,6 +1034,7 @@ export = {
         outputConfigCommand: false,
         outputClusterName: true,
         version: CLUSTER_VERSION,
+        prune: false,
       });
 
       // THEN
@@ -1033,6 +1056,7 @@ export = {
         outputMastersRoleArn: true,
         mastersRole: new iam.Role(stack, 'masters', { assumedBy: new iam.AccountRootPrincipal() }),
         version: CLUSTER_VERSION,
+        prune: false,
       });
 
       // THEN
@@ -1049,7 +1073,7 @@ export = {
       'rendered by default for ASGs'(test: Test) {
         // GIVEN
         const { app, stack } = testFixtureNoVpc();
-        const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION });
+        const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION, prune: false });
 
         // WHEN
         cluster.addAutoScalingGroupCapacity('MyCapcity', { instanceType: new ec2.InstanceType('m3.xlargs') });
@@ -1064,7 +1088,7 @@ export = {
       'not rendered if bootstrap is disabled'(test: Test) {
         // GIVEN
         const { app, stack } = testFixtureNoVpc();
-        const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION });
+        const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION, prune: false });
 
         // WHEN
         cluster.addAutoScalingGroupCapacity('MyCapcity', {
@@ -1083,7 +1107,7 @@ export = {
       'bootstrap options'(test: Test) {
         // GIVEN
         const { app, stack } = testFixtureNoVpc();
-        const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION });
+        const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION, prune: false });
 
         // WHEN
         cluster.addAutoScalingGroupCapacity('MyCapcity', {
@@ -1105,7 +1129,7 @@ export = {
         'nodes labeled an tainted accordingly'(test: Test) {
           // GIVEN
           const { app, stack } = testFixtureNoVpc();
-          const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION });
+          const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION, prune: false });
 
           // WHEN
           cluster.addAutoScalingGroupCapacity('MyCapcity', {
@@ -1123,7 +1147,7 @@ export = {
         'interrupt handler is added'(test: Test) {
           // GIVEN
           const { stack } = testFixtureNoVpc();
-          const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION });
+          const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION, prune: false });
 
           // WHEN
           cluster.addAutoScalingGroupCapacity('MyCapcity', {
@@ -1145,7 +1169,7 @@ export = {
         'its possible to add two capacities with spot instances and only one stop handler will be installed'(test: Test) {
           // GIVEN
           const { stack } = testFixtureNoVpc();
-          const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION });
+          const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION, prune: false });
 
           // WHEN
           cluster.addAutoScalingGroupCapacity('Spot1', {
@@ -1170,7 +1194,7 @@ export = {
     'if bootstrap is disabled cannot specify options'(test: Test) {
       // GIVEN
       const { stack } = testFixtureNoVpc();
-      const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION });
+      const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION, prune: false });
 
       // THEN
       test.throws(() => cluster.addAutoScalingGroupCapacity('MyCapcity', {
@@ -1232,6 +1256,7 @@ export = {
       new eks.Cluster(stack, 'cluster', {
         defaultCapacity: 1,
         version: CLUSTER_VERSION,
+        prune: false,
         defaultCapacityInstance: new ec2.InstanceType('m6g.medium'),
       });
 
@@ -1250,6 +1275,7 @@ export = {
       new eks.Cluster(stack, 'cluster', {
         defaultCapacity: 0,
         version: CLUSTER_VERSION,
+        prune: false,
         defaultCapacityInstance: new ec2.InstanceType('m6g.medium'),
       }).addNodegroupCapacity('ng', {
         instanceType: new ec2.InstanceType('m6g.medium'),
@@ -1270,6 +1296,7 @@ export = {
       new eks.Cluster(stack, 'cluster', {
         defaultCapacity: 0,
         version: CLUSTER_VERSION,
+        prune: false,
         defaultCapacityInstance: new ec2.InstanceType('t4g.medium'),
       }).addNodegroupCapacity('ng', {
         instanceType: new ec2.InstanceType('t4g.medium'),
@@ -1290,6 +1317,7 @@ export = {
       new eks.Cluster(stack, 'cluster', {
         defaultCapacity: 0,
         version: CLUSTER_VERSION,
+        prune: false,
       }).addAutoScalingGroupCapacity('ng', {
         instanceType: new ec2.InstanceType('t4g.medium'),
       });
@@ -1312,6 +1340,7 @@ export = {
       new eks.Cluster(stack, 'cluster', {
         defaultCapacity: 0,
         version: CLUSTER_VERSION,
+        prune: false,
       }).addAutoScalingGroupCapacity('GPUCapacity', {
         instanceType: new ec2.InstanceType('g4dn.xlarge'),
       });
@@ -1333,6 +1362,7 @@ export = {
       new eks.Cluster(stack, 'cluster', {
         defaultCapacity: 0,
         version: CLUSTER_VERSION,
+        prune: false,
       }).addAutoScalingGroupCapacity('ARMCapacity', {
         instanceType: new ec2.InstanceType('m6g.medium'),
       });
@@ -1375,6 +1405,7 @@ export = {
       new eks.Cluster(stack, 'MyCluster', {
         clusterName: 'my-cluster-name',
         version: CLUSTER_VERSION,
+        prune: false,
       });
 
       // THEN
@@ -1555,7 +1586,7 @@ export = {
       const { stack } = testFixture();
 
       // WHEN
-      new eks.Cluster(stack, 'MyCluster', { version: CLUSTER_VERSION });
+      new eks.Cluster(stack, 'MyCluster', { version: CLUSTER_VERSION, prune: false });
 
       // THEN
       expect(stack).to(haveResource('AWS::IAM::Policy', {
@@ -1648,6 +1679,7 @@ export = {
       const cluster = new eks.Cluster(stack, 'MyCluster', {
         clusterName: 'my-cluster-name',
         version: CLUSTER_VERSION,
+        prune: false,
       });
 
       // WHEN
@@ -1697,6 +1729,7 @@ export = {
       new eks.Cluster(stack, 'MyCluster', {
         coreDnsComputeType: eks.CoreDnsComputeType.FARGATE,
         version: CLUSTER_VERSION,
+        prune: false,
       });
 
       // THEN
@@ -1720,7 +1753,7 @@ export = {
     'if openIDConnectProvider a new OpenIDConnectProvider resource is created and exposed'(test: Test) {
       // GIVEN
       const { stack } = testFixtureNoVpc();
-      const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION });
+      const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION, prune: false });
 
       // WHEN
       const provider = cluster.openIdConnectProvider;
@@ -1752,7 +1785,7 @@ export = {
     'inference instances are supported'(test: Test) {
       // GIVEN
       const { stack } = testFixtureNoVpc();
-      const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION });
+      const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION, prune: false });
 
       // WHEN
       cluster.addAutoScalingGroupCapacity('InferenceInstances', {
@@ -1772,7 +1805,7 @@ export = {
     'kubectl resources are always created after all fargate profiles'(test: Test) {
       // GIVEN
       const { stack, app } = testFixture();
-      const cluster = new eks.Cluster(stack, 'Cluster', { version: CLUSTER_VERSION });
+      const cluster = new eks.Cluster(stack, 'Cluster', { version: CLUSTER_VERSION, prune: false });
 
       // WHEN
       cluster.addFargateProfile('profile1', { selectors: [{ namespace: 'profile1' }] });
@@ -1820,7 +1853,7 @@ export = {
     'kubectl provider role can assume creation role'(test: Test) {
       // GIVEN
       const { stack } = testFixture();
-      const c1 = new eks.Cluster(stack, 'Cluster1', { version: CLUSTER_VERSION });
+      const c1 = new eks.Cluster(stack, 'Cluster1', { version: CLUSTER_VERSION, prune: false });
 
       // WHEN
 
@@ -1862,6 +1895,7 @@ export = {
 
     const cluster = new eks.Cluster(stack, 'Cluster1', {
       version: CLUSTER_VERSION,
+      prune: false,
       endpointAccess: eks.EndpointAccess.PRIVATE,
       kubectlEnvironment: {
         Foo: 'Bar',
@@ -1908,6 +1942,7 @@ export = {
 
       new eks.Cluster(stack, 'Cluster', {
         version: CLUSTER_VERSION,
+        prune: false,
         endpointAccess: eks.EndpointAccess.PUBLIC,
         vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }],
       });
@@ -1928,6 +1963,7 @@ export = {
 
       new eks.Cluster(stack, 'Cluster', {
         version: CLUSTER_VERSION,
+        prune: false,
         endpointAccess: eks.EndpointAccess.PUBLIC,
       });
 
@@ -1948,6 +1984,7 @@ export = {
       test.throws(() => {
         new eks.Cluster(stack, 'Cluster', {
           version: CLUSTER_VERSION,
+          prune: false,
           endpointAccess: eks.EndpointAccess.PRIVATE,
           vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }],
         });
@@ -1962,6 +1999,7 @@ export = {
 
       new eks.Cluster(stack, 'Cluster', {
         version: CLUSTER_VERSION,
+        prune: false,
         endpointAccess: eks.EndpointAccess.PRIVATE,
       });
 
@@ -1981,6 +2019,7 @@ export = {
 
       new eks.Cluster(stack, 'Cluster', {
         version: CLUSTER_VERSION,
+        prune: false,
         endpointAccess: eks.EndpointAccess.PUBLIC_AND_PRIVATE,
         vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }],
       });
@@ -2000,6 +2039,7 @@ export = {
 
       new eks.Cluster(stack, 'Cluster', {
         version: CLUSTER_VERSION,
+        prune: false,
         endpointAccess: eks.EndpointAccess.PUBLIC_AND_PRIVATE,
       });
 
@@ -2019,6 +2059,7 @@ export = {
       test.throws(() => {
         new eks.Cluster(stack, 'Cluster', {
           version: CLUSTER_VERSION,
+          prune: false,
           endpointAccess: eks.EndpointAccess.PUBLIC_AND_PRIVATE.onlyFrom('1.2.3.4/32'),
           vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }],
         });
@@ -2032,6 +2073,7 @@ export = {
 
       new eks.Cluster(stack, 'Cluster', {
         version: CLUSTER_VERSION,
+        prune: false,
         endpointAccess: eks.EndpointAccess.PUBLIC_AND_PRIVATE.onlyFrom('1.2.3.4/32'),
       });
 
@@ -2093,6 +2135,7 @@ export = {
       new eks.Cluster(stack, 'Cluster', {
         vpc,
         version: CLUSTER_VERSION,
+        prune: false,
         endpointAccess: eks.EndpointAccess.PRIVATE,
       });
 
@@ -2154,6 +2197,7 @@ export = {
       new eks.Cluster(stack, 'Cluster', {
         vpc,
         version: CLUSTER_VERSION,
+        prune: false,
         endpointAccess: eks.EndpointAccess.PRIVATE,
         vpcSubnets: [{
           subnets: [
@@ -2182,6 +2226,7 @@ export = {
       new eks.Cluster(stack, 'Cluster', {
         vpc,
         version: CLUSTER_VERSION,
+        prune: false,
         endpointAccess: eks.EndpointAccess.PRIVATE,
         vpcSubnets: [{
           subnets: [
@@ -2207,6 +2252,7 @@ export = {
       const { stack } = testFixture();
       new eks.Cluster(stack, 'Cluster', {
         version: CLUSTER_VERSION,
+        prune: false,
         endpointAccess:
         eks.EndpointAccess.PRIVATE,
         vpcSubnets: [{
@@ -2231,7 +2277,7 @@ export = {
     'can configure private endpoint access'(test: Test) {
       // GIVEN
       const { stack } = testFixture();
-      new eks.Cluster(stack, 'Cluster1', { version: CLUSTER_VERSION, endpointAccess: eks.EndpointAccess.PRIVATE });
+      new eks.Cluster(stack, 'Cluster1', { version: CLUSTER_VERSION, endpointAccess: eks.EndpointAccess.PRIVATE, prune: false });
 
       test.equal(expect(stack).value.Resources.Cluster1B02DD5A2.Properties.Config.resourcesVpcConfig.endpointPrivateAccess, true);
       test.equal(expect(stack).value.Resources.Cluster1B02DD5A2.Properties.Config.resourcesVpcConfig.endpointPublicAccess, false);
@@ -2260,6 +2306,7 @@ export = {
 
       const cluster = new eks.Cluster(stack, 'Cluster1', {
         version: CLUSTER_VERSION,
+        prune: false,
         endpointAccess: eks.EndpointAccess.PRIVATE,
         vpc,
       });
@@ -2325,6 +2372,7 @@ export = {
 
       const cluster = new eks.Cluster(stack, 'Cluster1', {
         version: CLUSTER_VERSION,
+        prune: false,
         endpointAccess: eks.EndpointAccess.PRIVATE,
         vpc: vpc2,
       });
@@ -2374,6 +2422,7 @@ export = {
 
       const cluster = new eks.Cluster(stack, 'Cluster1', {
         version: CLUSTER_VERSION,
+        prune: false,
         endpointAccess: eks.EndpointAccess.PRIVATE,
         vpc: vpc2,
         vpcSubnets: [{ subnetGroupName: 'Private1' }, { subnetGroupName: 'Private2' }],
@@ -2429,6 +2478,7 @@ export = {
             enableDnsSupport: false,
           }),
           version: CLUSTER_VERSION,
+          prune: false,
         });
       }, /Private endpoint access requires the VPC to have DNS support and DNS hostnames enabled/);
       test.done();
@@ -2444,6 +2494,7 @@ export = {
             enableDnsHostnames: false,
           }),
           version: CLUSTER_VERSION,
+          prune: false,
         });
       }, /Private endpoint access requires the VPC to have DNS support and DNS hostnames enabled/);
       test.done();
@@ -2462,7 +2513,7 @@ export = {
   'getServiceLoadBalancerAddress'(test: Test) {
 
     const { stack } = testFixture();
-    const cluster = new eks.Cluster(stack, 'Cluster1', { version: CLUSTER_VERSION });
+    const cluster = new eks.Cluster(stack, 'Cluster1', { version: CLUSTER_VERSION, prune: false });
 
     const loadBalancerAddress = cluster.getServiceLoadBalancerAddress('myservice');
 
@@ -2511,6 +2562,7 @@ export = {
     const layer = lambda.LayerVersion.fromLayerVersionArn(stack, 'MyLayer', 'arn:of:layer');
     new eks.Cluster(stack, 'Cluster1', {
       version: CLUSTER_VERSION,
+      prune: false,
       kubectlLayer: layer,
     });
 
@@ -2535,6 +2587,7 @@ export = {
 
     new eks.Cluster(stack, 'Cluster1', {
       version: CLUSTER_VERSION,
+      prune: false,
       kubectlLayer: layer,
     });
 
@@ -2562,6 +2615,7 @@ export = {
     new eks.Cluster(stack, 'Cluster', {
       vpc,
       version: CLUSTER_VERSION,
+      prune: false,
       secretsEncryptionKey: new kms.Key(stack, 'Key'),
     });
 
