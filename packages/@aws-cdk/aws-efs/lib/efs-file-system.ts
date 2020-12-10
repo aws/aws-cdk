@@ -45,7 +45,7 @@ export enum LifecyclePolicy {
 export enum PerformanceMode {
   /**
    * General Purpose is ideal for latency-sensitive use cases, like web serving
-   * environments, content management systems, home directories, and general file serving. 
+   * environments, content management systems, home directories, and general file serving.
    * Recommended for the majority of Amazon EFS file systems.
    */
   GENERAL_PURPOSE = 'generalPurpose',
@@ -55,7 +55,7 @@ export enum PerformanceMode {
    * throughput and operations per second. This scaling is done with a tradeoff
    * of slightly higher latencies for file metadata operations.
    * Highly parallelized applications and workloads, such as big data analysis,
-   * media processing, and genomics analysis, can benefit from this mode. 
+   * media processing, and genomics analysis, can benefit from this mode.
    */
   MAX_IO = 'maxIO'
 }
