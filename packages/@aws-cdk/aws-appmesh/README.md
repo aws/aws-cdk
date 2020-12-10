@@ -146,7 +146,7 @@ const namespace = new servicediscovery.PrivateDnsNamespace(this, 'test-namespace
 const service = namespace.createService('Svc');
 
 const node = mesh.addVirtualNode('virtual-node', {
-  serviceDiscovery: appmesh.ServiceDiscovery.cloudmap({
+  serviceDiscovery: appmesh.ServiceDiscovery.cloudMap({
     service: service,
   }),
   listeners: [appmesh.VirtualNodeListener.httpNodeListener({
@@ -170,7 +170,7 @@ Create a `VirtualNode` with the constructor and add tags.
 ```ts
 const node = new VirtualNode(this, 'node', {
   mesh,
-  serviceDiscovery: appmesh.ServiceDiscovery.cloudmap({
+  serviceDiscovery: appmesh.ServiceDiscovery.cloudMap({
     service: service,
   }),
   listeners: [appmesh.VirtualNodeListener.httpNodeListener({
@@ -202,7 +202,7 @@ Create a `VirtualNode` with the constructor and add backend virtual service.
 ```ts
 const node = new VirtualNode(this, 'node', {
   mesh,
-  serviceDiscovery: appmesh.ServiceDiscovery.cloudmap({
+  serviceDiscovery: appmesh.ServiceDiscovery.cloudMap({
     service: service,
   }),
   listeners: [appmesh.VirtualNodeListener.httpNodeListener({
