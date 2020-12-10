@@ -891,7 +891,7 @@ export enum AmiHardwareType {
   ARM = 'ARM64',
 }
 
-export enum ContainerInsights {
+enum ContainerInsights {
   /**
    * Enable CloudWatch Container Insights for the cluster
    */
