@@ -49,6 +49,19 @@ interface ToolkitResorcesInfoProps {
   version: number;
 }
 
+
+async function getSsmParameterValue(sdk: ISDK, parameterName: string): Promise<AWS.SSM.GetParameterResult> {
+  const ssm = sdk.ssm();
+  try {
+    return await ssm.getParameter({ Name: parameterName }).promise();
+  } catch (e) {
+    if (e.code === 'ParameterNotFound') {
+      return {};
+    }
+    throw e;
+  }
+}
+
 /**
  * Information on the Bootstrap stack
  *
@@ -59,12 +72,10 @@ interface ToolkitResorcesInfoProps {
 export class ToolkitResourcesInfo {
   /** @experimental */
   public static async lookup(environment: cxapi.Environment, sdk: ISDK, qualifier?: string): Promise<ToolkitResourcesInfo | undefined> {
-    const ssm = sdk.ssm();
     const qualifierValue = qualifier ?? 'hnb659fds';
-    const bucketName = (await ssm.getParameter({ Name: `/cdk-bootstrap/${qualifierValue}/bucket-name` }).promise()).Parameter?.Value;
-    const bucketDomainName = (await ssm.getParameter({ Name: `/cdk-bootstrap/${qualifierValue}/bucket-domain-name` }).promise()).Parameter?.Value;
-    const version = parseInt((await ssm.getParameter({ Name: `/cdk-bootstrap/${qualifierValue}/version` }).promise()).Parameter?.Value ?? '0', 10);
-
+    const bucketName = (await getSsmParameterValue(sdk, `/cdk-bootstrap/${qualifierValue}/bucket-name`)).Parameter?.Value;
+    const bucketDomainName = (await getSsmParameterValue(sdk, `/cdk-bootstrap/${qualifierValue}/bucket-domain-name`)).Parameter?.Value;
+    const version = parseInt((await getSsmParameterValue(sdk, `/cdk-bootstrap/${qualifierValue}/version`)).Parameter?.Value ?? '0', 10);
 
     if (bucketName === undefined || bucketDomainName === undefined || version == 0) {
       debug('The environment %s doesn\'t have the CDK toolkit stack installed. Use %s to setup your environment for use with the toolkit.',
