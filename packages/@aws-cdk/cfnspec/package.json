@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "scripts": {
     "update": "cdk-build && /bin/bash build-tools/update.sh",
+    "update-metrics": "/bin/bash build-tools/update-metrics.sh",
     "build": "cdk-build && node build-tools/build",
     "watch": "cdk-watch",
     "lint": "cdk-lint",
@@ -24,7 +25,7 @@
   "types": "lib/index.d.ts",
   "devDependencies": {
     "@types/fs-extra": "^8.1.1",
-    "@types/md5": "^2.2.0",
+    "@types/md5": "^2.2.1",
     "@types/nodeunit": "^0.0.31",
     "cdk-build-tools": "0.0.0",
     "fast-json-patch": "^2.2.1",

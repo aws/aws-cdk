@@ -334,4 +334,57 @@ describe('tests', () => {
       Type: 'application',
     });
   });
+
+  describe('lookup', () => {
+    test('Can look up an ApplicationLoadBalancer', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'stack', {
+        env: {
+          account: '123456789012',
+          region: 'us-west-2',
+        },
+      });
+
+      // WHEN
+      const loadBalancer = elbv2.ApplicationLoadBalancer.fromLookup(stack, 'a', {
+        loadBalancerTags: {
+          some: 'tag',
+        },
+      });
+
+      // THEN
+      expect(stack).not.toHaveResource('AWS::ElasticLoadBalancingV2::ApplicationLoadBalancer');
+      expect(loadBalancer.loadBalancerArn).toEqual('arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-load-balancer/50dc6c495c0c9188');
+      expect(loadBalancer.loadBalancerCanonicalHostedZoneId).toEqual('Z3DZXE0EXAMPLE');
+      expect(loadBalancer.loadBalancerDnsName).toEqual('my-load-balancer-1234567890.us-west-2.elb.amazonaws.com');
+      expect(loadBalancer.ipAddressType).toEqual(elbv2.IpAddressType.DUAL_STACK);
+      expect(loadBalancer.connections.securityGroups[0].securityGroupId).toEqual('sg-1234');
+    });
+
+    test('Can add listeners to a looked-up ApplicationLoadBalancer', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'stack', {
+        env: {
+          account: '123456789012',
+          region: 'us-west-2',
+        },
+      });
+
+      const loadBalancer = elbv2.ApplicationLoadBalancer.fromLookup(stack, 'a', {
+        loadBalancerTags: {
+          some: 'tag',
+        },
+      });
+
+      // WHEN
+      loadBalancer.addListener('listener', {
+        protocol: elbv2.ApplicationProtocol.HTTP,
+      });
+
+      // THEN
+      expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::Listener');
+    });
+  });
 });

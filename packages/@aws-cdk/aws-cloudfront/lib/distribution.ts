@@ -1,11 +1,13 @@
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
-import { IResource, Lazy, Resource, Stack, Token, Duration } from '@aws-cdk/core';
-import { Construct, Node } from 'constructs';
+import { IResource, Lazy, Resource, Stack, Token, Duration, Names } from '@aws-cdk/core';
+import { Construct } from 'constructs';
+import { ICachePolicy } from './cache-policy';
 import { CfnDistribution } from './cloudfront.generated';
 import { GeoRestriction } from './geo-restriction';
 import { IOrigin, OriginBindConfig, OriginBindOptions } from './origin';
+import { IOriginRequestPolicy } from './origin-request-policy';
 import { CacheBehavior } from './private/cache-behavior';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
@@ -41,8 +43,6 @@ export interface IDistribution extends IResource {
 
 /**
  * Attributes used to import a Distribution.
- *
- * @experimental
  */
 export interface DistributionAttributes {
   /**
@@ -67,8 +67,6 @@ interface BoundOrigin extends OriginBindOptions, OriginBindConfig {
 
 /**
  * Properties for a Distribution
- *
- * @experimental
  */
 export interface DistributionProps {
   /**
@@ -212,8 +210,6 @@ export interface DistributionProps {
 
 /**
  * A CloudFront distribution with associated origin(s) and caching behavior(s).
- *
- * @experimental
  */
 export class Distribution extends Resource implements IDistribution {
 
@@ -275,11 +271,11 @@ export class Distribution extends Resource implements IDistribution {
     const distribution = new CfnDistribution(this, 'Resource', {
       distributionConfig: {
         enabled: props.enabled ?? true,
-        origins: Lazy.anyValue({ produce: () => this.renderOrigins() }),
-        originGroups: Lazy.anyValue({ produce: () => this.renderOriginGroups() }),
+        origins: Lazy.any({ produce: () => this.renderOrigins() }),
+        originGroups: Lazy.any({ produce: () => this.renderOriginGroups() }),
         defaultCacheBehavior: this.defaultBehavior._renderBehavior(),
         aliases: props.domainNames,
-        cacheBehaviors: Lazy.anyValue({ produce: () => this.renderCacheBehaviors() }),
+        cacheBehaviors: Lazy.any({ produce: () => this.renderCacheBehaviors() }),
         comment: props.comment,
         customErrorResponses: this.renderErrorResponses(),
         defaultRootObject: props.defaultRootObject,
@@ -314,13 +310,15 @@ export class Distribution extends Resource implements IDistribution {
   }
 
   private addOrigin(origin: IOrigin, isFailoverOrigin: boolean = false): string {
+    const ORIGIN_ID_MAX_LENGTH = 128;
+
     const existingOrigin = this.boundOrigins.find(boundOrigin => boundOrigin.origin === origin);
     if (existingOrigin) {
       return existingOrigin.originGroupId ?? existingOrigin.originId;
     } else {
       const originIndex = this.boundOrigins.length + 1;
       const scope = new CoreConstruct(this, `Origin${originIndex}`);
-      const originId = Node.of(scope).uniqueId;
+      const originId = Names.uniqueId(scope).slice(-ORIGIN_ID_MAX_LENGTH);
       const originBindConfig = origin.bind(scope, { originId });
       if (!originBindConfig.failoverConfig) {
         this.boundOrigins.push({ origin, originId, ...originBindConfig });
@@ -329,7 +327,7 @@ export class Distribution extends Resource implements IDistribution {
           throw new Error('An Origin cannot use an Origin with its own failover configuration as its fallback origin!');
         }
         const groupIndex = this.originGroups.length + 1;
-        const originGroupId = Node.of(new CoreConstruct(this, `OriginGroup${groupIndex}`)).uniqueId;
+        const originGroupId = Names.uniqueId(new CoreConstruct(this, `OriginGroup${groupIndex}`)).slice(-ORIGIN_ID_MAX_LENGTH);
         this.boundOrigins.push({ origin, originId, originGroupId, ...originBindConfig });
 
         const failoverOriginId = this.addOrigin(originBindConfig.failoverConfig.failoverOrigin, true);
@@ -389,21 +387,18 @@ export class Distribution extends Resource implements IDistribution {
 
   private renderErrorResponses(): CfnDistribution.CustomErrorResponseProperty[] | undefined {
     if (this.errorResponses.length === 0) { return undefined; }
-    function validateCustomErrorResponse(errorResponse: ErrorResponse) {
-      if (errorResponse.responsePagePath && !errorResponse.responseHttpStatus) {
-        throw new Error('\'responseCode\' must be provided if \'responsePagePath\' is defined');
-      }
-      if (!errorResponse.responseHttpStatus && !errorResponse.ttl) {
-        throw new Error('A custom error response without either a \'responseCode\' or \'errorCachingMinTtl\' is not valid.');
-      }
-    }
-    this.errorResponses.forEach(e => validateCustomErrorResponse(e));
 
     return this.errorResponses.map(errorConfig => {
+      if (!errorConfig.responseHttpStatus && !errorConfig.ttl && !errorConfig.responsePagePath) {
+        throw new Error('A custom error response without either a \'responseHttpStatus\', \'ttl\' or \'responsePagePath\' is not valid.');
+      }
+
       return {
         errorCachingMinTtl: errorConfig.ttl?.toSeconds(),
         errorCode: errorConfig.httpStatus,
-        responseCode: errorConfig.responseHttpStatus,
+        responseCode: errorConfig.responsePagePath
+          ? errorConfig.responseHttpStatus ?? errorConfig.httpStatus
+          : errorConfig.responseHttpStatus,
         responsePagePath: errorConfig.responsePagePath,
       };
     });
@@ -417,7 +412,7 @@ export class Distribution extends Resource implements IDistribution {
 
     const bucket = props.logBucket ?? new s3.Bucket(this, 'LoggingBucket');
     return {
-      bucket: bucket.bucketDomainName,
+      bucket: bucket.bucketRegionalDomainName,
       includeCookies: props.logIncludesCookies,
       prefix: props.logFilePrefix,
     };
@@ -554,8 +549,6 @@ export class CachedMethods {
 
 /**
  * Options for configuring custom error responses.
- *
- * @experimental
  */
 export interface ErrorResponse {
   /**
@@ -573,7 +566,7 @@ export interface ErrorResponse {
    *
    * If you specify a value for `responseHttpStatus`, you must also specify a value for `responsePagePath`.
    *
-   * @default - not set, the error code will be returned as the response code.
+   * @default - the error code will be returned as the response code.
    */
   readonly responseHttpStatus?: number;
   /**
@@ -639,8 +632,6 @@ export interface EdgeLambda {
 
 /**
  * Options for adding a new behavior to a Distribution.
- *
- * @experimental
  */
 export interface AddBehaviorOptions {
   /**
@@ -658,30 +649,30 @@ export interface AddBehaviorOptions {
   readonly cachedMethods?: CachedMethods;
 
   /**
+   * The cache policy for this behavior. The cache policy determines what values are included in the cache key,
+   * and the time-to-live (TTL) values for the cache.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/controlling-the-cache-key.html.
+   * @default CachePolicy.CACHING_OPTIMIZED
+   */
+  readonly cachePolicy?: ICachePolicy;
+
+  /**
    * Whether you want CloudFront to automatically compress certain files for this cache behavior.
    * See https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/ServingCompressedFiles.html#compressed-content-cloudfront-file-types
    * for file types CloudFront will compress.
    *
-   * @default false
+   * @default true
    */
   readonly compress?: boolean;
 
   /**
-   * Whether CloudFront will forward query strings to the origin.
-   * If this is set to true, CloudFront will forward all query parameters to the origin, and cache
-   * based on all parameters. See `forwardQueryStringCacheKeys` for a way to limit the query parameters
-   * CloudFront caches on.
+   * The origin request policy for this behavior. The origin request policy determines which values (e.g., headers, cookies)
+   * are included in requests that CloudFront sends to the origin.
    *
-   * @default false
+   * @default - none
    */
-  readonly forwardQueryString?: boolean;
-
-  /**
-   * A set of query string parameter names to use for caching if `forwardQueryString` is set to true.
-   *
-   * @default []
-   */
-  readonly forwardQueryStringCacheKeys?: string[];
+  readonly originRequestPolicy?: IOriginRequestPolicy;
 
   /**
    * Set this to true to indicate you want to distribute media files in the Microsoft Smooth Streaming format using this behavior.
@@ -708,8 +699,6 @@ export interface AddBehaviorOptions {
 
 /**
  * Options for creating a new behavior.
- *
- * @experimental
  */
 export interface BehaviorOptions extends AddBehaviorOptions {
   /**

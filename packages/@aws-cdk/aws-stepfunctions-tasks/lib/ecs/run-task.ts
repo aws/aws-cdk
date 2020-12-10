@@ -3,6 +3,7 @@ import * as ecs from '@aws-cdk/aws-ecs';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { ContainerOverride } from '..';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
@@ -235,7 +236,7 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
   private networkConfiguration?: any;
   private readonly integrationPattern: sfn.IntegrationPattern;
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: EcsRunTaskProps) {
+  constructor(scope: Construct, id: string, private readonly props: EcsRunTaskProps) {
     super(scope, id, props);
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
 
@@ -293,7 +294,7 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
       AwsvpcConfiguration: {
         AssignPublicIp: this.props.assignPublicIp ? (this.props.assignPublicIp ? 'ENABLED' : 'DISABLED') : undefined,
         Subnets: this.props.cluster.vpc.selectSubnets(subnetSelection).subnetIds,
-        SecurityGroups: cdk.Lazy.listValue({ produce: () => this.securityGroups?.map(sg => sg.securityGroupId) }),
+        SecurityGroups: cdk.Lazy.list({ produce: () => this.securityGroups?.map(sg => sg.securityGroupId) }),
       },
     };
 

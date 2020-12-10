@@ -1,6 +1,7 @@
 /// !cdk-integ * pragma:ignore-assets
 import * as s3 from '@aws-cdk/aws-s3';
-import { App, CfnOutput, Construct, Stack } from '@aws-cdk/core';
+import { App, CfnOutput, Stack } from '@aws-cdk/core';
+import { Construct, Node } from 'constructs';
 import { S3Assert } from './integration-test-fixtures/s3-assert';
 import { S3File } from './integration-test-fixtures/s3-file';
 
@@ -30,7 +31,7 @@ class TestStack extends Stack {
     });
 
     // delay file2 updates so we can test async assertions
-    file2.node.addDependency(file1);
+    Node.of(file2).addDependency(file1);
 
     new CfnOutput(this, 'file1-url', { value: file1.url });
     new CfnOutput(this, 'file2-url', { value: file2.url });

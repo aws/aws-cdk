@@ -1457,7 +1457,27 @@ export = {
     test.done();
   },
 
-  'default container insights undefined'(test: Test) {
+  'disable container insights'(test: Test) {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+
+    new ecs.Cluster(stack, 'EcsCluster', { containerInsights: false });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ECS::Cluster', {
+      ClusterSettings: [
+        {
+          Name: 'containerInsights',
+          Value: 'disabled',
+        },
+      ],
+    }, ResourcePart.Properties));
+
+    test.done();
+  },
+
+  'default container insights is undefined'(test: Test) {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
@@ -1478,6 +1498,7 @@ export = {
 
     test.done();
   },
+
   'BottleRocketImage() returns correct AMI'(test: Test) {
     // GIVEN
     const app = new cdk.App();

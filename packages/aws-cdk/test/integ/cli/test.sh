@@ -6,12 +6,6 @@ echo '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
 echo 'CLI Integration Tests'
 echo '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
 
-current_version=$(node -p "require('${scriptdir}/../../../package.json').version")
-
-# This allows injecting different versions, not just the current one.
-# Useful when testing.
-export VERSION_UNDER_TEST=${VERSION_UNDER_TEST:-${current_version}}
-
 cd $scriptdir
 
 # Install these dependencies that the tests (written in Jest) need.

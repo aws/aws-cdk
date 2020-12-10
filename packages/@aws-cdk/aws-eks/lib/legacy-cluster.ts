@@ -3,13 +3,15 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as ssm from '@aws-cdk/aws-ssm';
-import { Annotations, CfnOutput, Construct, Resource, Stack, Token, Tags } from '@aws-cdk/core';
+import { Annotations, CfnOutput, Resource, Stack, Token, Tags } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { ICluster, ClusterAttributes, KubernetesVersion, NodeType, DefaultCapacityType, EksOptimizedImage, AutoScalingGroupCapacityOptions, MachineImageType, AutoScalingGroupOptions, CommonClusterOptions } from './cluster';
 import { clusterArnComponents } from './cluster-resource';
 import { CfnCluster, CfnClusterProps } from './eks.generated';
 import { HelmChartOptions, HelmChart } from './helm-chart';
 import { KubernetesManifest } from './k8s-manifest';
 import { Nodegroup, NodegroupOptions } from './managed-nodegroup';
+import { ServiceAccount, ServiceAccountOptions } from './service-account';
 import { renderAmazonLinuxUserData, renderBottlerocketUserData } from './user-data';
 
 // defaults are based on https://eksctl.io
@@ -243,6 +245,18 @@ export class LegacyCluster extends Resource implements ICluster {
     }
   }
 
+  public addServiceAccount(_id: string, _options?: ServiceAccountOptions): ServiceAccount {
+    throw new Error('legacy cluster does not support adding service accounts');
+  }
+
+  /**
+   * Since we dont really want to make it required on the top-level ICluster
+   * we do this trick here in return type to match interface type
+   */
+  public get openIdConnectProvider(): iam.IOpenIdConnectProvider {
+    throw new Error('legacy cluster does not support open id connect providers');
+  }
+
   /**
    * Add nodes to this EKS cluster
    *
@@ -362,12 +376,16 @@ export class LegacyCluster extends Resource implements ICluster {
     });
   }
 
-  public addManifest(_id: string, ..._manifest: any[]): KubernetesManifest {
+  public addManifest(_id: string, ..._manifest: Record<string, any>[]): KubernetesManifest {
     throw new Error('legacy cluster does not support adding kubernetes manifests');
   }
 
   public addHelmChart(_id: string, _options: HelmChartOptions): HelmChart {
     throw new Error('legacy cluster does not support adding helm charts');
+  }
+
+  public addCdk8sChart(_id: string, _chart: Construct): KubernetesManifest {
+    throw new Error('legacy cluster does not support adding cdk8s charts');
   }
 
   /**
@@ -420,12 +438,24 @@ class ImportedCluster extends Resource implements ICluster {
     }
   }
 
-  public addManifest(_id: string, ..._manifest: any[]): KubernetesManifest {
+  public addManifest(_id: string, ..._manifest: Record<string, any>[]): KubernetesManifest {
     throw new Error('legacy cluster does not support adding kubernetes manifests');
   }
 
   public addHelmChart(_id: string, _options: HelmChartOptions): HelmChart {
     throw new Error('legacy cluster does not support adding helm charts');
+  }
+
+  public addCdk8sChart(_id: string, _chart: Construct): KubernetesManifest {
+    throw new Error('legacy cluster does not support adding cdk8s charts');
+  }
+
+  public addServiceAccount(_id: string, _options?: ServiceAccountOptions): ServiceAccount {
+    throw new Error('legacy cluster does not support adding service accounts');
+  }
+
+  public get openIdConnectProvider(): iam.IOpenIdConnectProvider {
+    throw new Error('legacy cluster does not support open id connect providers');
   }
 
   public get vpc() {

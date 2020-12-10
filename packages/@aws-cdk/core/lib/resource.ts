@@ -126,7 +126,7 @@ export abstract class Resource extends CoreConstruct implements IResource {
       // auto-generate only if cross-env is required
       this._physicalName = undefined;
       this._allowCrossEnvironment = true;
-      physicalName = Lazy.stringValue({ produce: () => this._physicalName });
+      physicalName = Lazy.string({ produce: () => this._physicalName });
     } else if (props.physicalName && !Token.isUnresolved(props.physicalName)) {
       // concrete value specified by the user
       this._physicalName = props.physicalName;
@@ -181,7 +181,7 @@ export abstract class Resource extends CoreConstruct implements IResource {
    * @experimental
    */
   protected getResourceNameAttribute(nameAttr: string) {
-    return Lazy.stringValue({
+    return Lazy.uncachedString({
       produce: (context: IResolveContext) => {
         const consumingStack = Stack.of(context.scope);
 

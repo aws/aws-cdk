@@ -1,12 +1,15 @@
 import { IRole, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Construct, Duration, IResource, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
+import { Duration, IResource, Lazy, Names, Resource, Stack, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
+import { toASCII as punycodeEncode } from 'punycode/';
 import { CfnUserPool } from './cognito.generated';
 import { StandardAttributeNames } from './private/attr-names';
 import { ICustomAttribute, StandardAttribute, StandardAttributes } from './user-pool-attr';
 import { UserPoolClient, UserPoolClientOptions } from './user-pool-client';
 import { UserPoolDomain, UserPoolDomainOptions } from './user-pool-domain';
 import { IUserPoolIdentityProvider } from './user-pool-idp';
+import { UserPoolResourceServer, UserPoolResourceServerOptions } from './user-pool-resource-server';
 
 /**
  * The different ways in which users of this pool can sign up or sign in.
@@ -31,7 +34,7 @@ export interface SignInAliases {
   readonly phone?: boolean;
 
   /**
-   * Whether a user is allowed to ign in with a secondary username, that can be set and modified after sign up.
+   * Whether a user is allowed to sign in with a secondary username, that can be set and modified after sign up.
    * Can only be used in conjunction with `USERNAME`.
    * @default false
    */
@@ -600,6 +603,12 @@ export interface IUserPool extends IResource {
   addDomain(id: string, options: UserPoolDomainOptions): UserPoolDomain;
 
   /**
+   * Add a new resource server to this user pool.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-resource-servers.html
+   */
+  addResourceServer(id: string, options: UserPoolResourceServerOptions): UserPoolResourceServer;
+
+  /**
    * Register an identity provider with this user pool.
    */
   registerIdentityProvider(provider: IUserPoolIdentityProvider): void;
@@ -619,6 +628,13 @@ abstract class UserPoolBase extends Resource implements IUserPool {
 
   public addDomain(id: string, options: UserPoolDomainOptions): UserPoolDomain {
     return new UserPoolDomain(this, id, {
+      userPool: this,
+      ...options,
+    });
+  }
+
+  public addResourceServer(id: string, options: UserPoolResourceServerOptions): UserPoolResourceServer {
+    return new UserPoolResourceServer(this, id, {
       userPool: this,
       ...options,
     });
@@ -720,7 +736,7 @@ export class UserPool extends UserPoolBase {
       usernameAttributes: signIn.usernameAttrs,
       aliasAttributes: signIn.aliasAttrs,
       autoVerifiedAttributes: signIn.autoVerifyAttrs,
-      lambdaConfig: Lazy.anyValue({ produce: () => undefinedIfNoKeys(this.triggers) }),
+      lambdaConfig: Lazy.any({ produce: () => undefinedIfNoKeys(this.triggers) }),
       smsConfiguration: this.smsConfiguration(props),
       adminCreateUserConfig,
       emailVerificationMessage,
@@ -732,8 +748,8 @@ export class UserPool extends UserPoolBase {
       enabledMfas: this.mfaConfiguration(props),
       policies: passwordPolicy !== undefined ? { passwordPolicy } : undefined,
       emailConfiguration: undefinedIfNoKeys({
-        from: props.emailSettings?.from,
-        replyToEmailAddress: props.emailSettings?.replyTo,
+        from: encodePuny(props.emailSettings?.from),
+        replyToEmailAddress: encodePuny(props.emailSettings?.replyTo),
       }),
       usernameConfiguration: undefinedIfNoKeys({
         caseSensitive: props.signInCaseSensitive,
@@ -865,7 +881,7 @@ export class UserPool extends UserPoolBase {
       return undefined;
     }
 
-    const smsRoleExternalId = this.node.uniqueId.substr(0, 1223); // sts:ExternalId max length of 1224
+    const smsRoleExternalId = Names.uniqueId(this).substr(0, 1223); // sts:ExternalId max length of 1224
     const smsRole = props.smsRole ?? new Role(this, 'smsRole', {
       assumedBy: new ServicePrincipal('cognito-idp.amazonaws.com', {
         conditions: {
@@ -1018,6 +1034,9 @@ export class UserPool extends UserPoolBase {
 }
 
 function undefinedIfNoKeys(struct: object): object | undefined {
-  const allUndefined = Object.values(struct).reduce((acc, v) => acc && (v === undefined), true);
+  const allUndefined = Object.values(struct).every(val => val === undefined);
   return allUndefined ? undefined : struct;
+}
+function encodePuny(input: string | undefined): string | undefined {
+  return input !== undefined ? punycodeEncode(input) : input;
 }

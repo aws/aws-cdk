@@ -61,17 +61,18 @@
     "awslint": "cdk-awslint",
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test",
-    "compat": "cdk-compat"
+    "compat": "cdk-compat",
+    "rosetta:extract": "yarn --silent jsii-rosetta extract"
   },
   "dependencies": {
     "yaml": "1.10.0"
   },
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
-    "@types/jest": "^26.0.10",
+    "@types/jest": "^26.0.15",
     "@types/yaml": "^1.9.7",
     "cdk-build-tools": "0.0.0",
-    "jest": "^25.5.4",
+    "jest": "^26.6.3",
     "pkglint": "0.0.0"
   },
   "bundledDependencies": [

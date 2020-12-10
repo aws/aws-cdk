@@ -2,7 +2,8 @@ import * as os from 'os';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
 import * as SDKMock from 'aws-sdk-mock';
-import { ConfigurationOptions } from 'aws-sdk/lib/config';
+import type { ConfigurationOptions } from 'aws-sdk/lib/config-base';
+import * as promptly from 'promptly';
 import * as uuid from 'uuid';
 import { PluginHost } from '../../lib';
 import { ISDK, Mode, SdkProvider } from '../../lib/api/aws-auth';
@@ -28,6 +29,7 @@ const defaultCredOptions = {
 let uid: string;
 let pluginQueried = false;
 let defaultEnv: cxapi.Environment;
+let pluginEnv: cxapi.Environment;
 let getCallerIdentityError: Error | null = null;
 
 beforeEach(() => {
@@ -59,6 +61,7 @@ beforeEach(() => {
   });
 
   defaultEnv = cxapi.EnvironmentUtils.make(`${uid}the_account_#`, 'def');
+  pluginEnv = cxapi.EnvironmentUtils.make(`${uid}plugin_account_#`, 'def');
 
   // Scrub some environment variables that might be set if we're running on CodeBuild which will interfere with the tests.
   delete process.env.AWS_PROFILE;
@@ -195,12 +198,16 @@ describe('with default config files', () => {
       // WHEN
       const provider = await SdkProvider.withAwsCliCompatibleDefaults({ ...defaultCredOptions, profile: 'mfa-role' });
 
+      const promptlyMockCalls = (promptly.prompt as jest.Mock).mock.calls.length;
+
       // THEN
       try {
-        await provider.withAssumedRole('arn:aws:iam::account:role/role', undefined, undefined);
+        await provider.withAssumedRole('arn:aws:iam::account:role/role', undefined, undefined, Mode.ForReading);
+        fail('Should error as no credentials could be loaded');
       } catch (e) {
-        // Mock response was set to fail with message test to make sure we don't call STS
-        expect(e.message).toEqual('Error fetching MFA token: test');
+        // Mock response was set to fail to make sure we don't call STS
+        // Make sure the MFA mock was called during this test
+        expect((promptly.prompt as jest.Mock).mock.calls.length).toBe(promptlyMockCalls + 1);
       }
     });
 
@@ -265,7 +272,7 @@ describe('with default config files', () => {
       });
 
       // WHEN
-      const sdk = await provider.withAssumedRole('bla.role.arn', undefined, undefined);
+      const sdk = await provider.withAssumedRole('bla.role.arn', undefined, undefined, Mode.ForReading);
       makeAssumeRoleFail(sdk);
 
       // THEN - error message contains both a helpful hint and the underlying AssumeRole message
@@ -300,7 +307,7 @@ describe('with default config files', () => {
 
           // WHEN
           const provider = new SdkProvider(new AWS.CredentialProviderChain([() => new AWS.Credentials({ accessKeyId: 'a', secretAccessKey: 's' })]), 'eu-somewhere');
-          const sdk = await provider.withAssumedRole('bla.role.arn', undefined, undefined);
+          const sdk = await provider.withAssumedRole('bla.role.arn', undefined, undefined, Mode.ForReading);
 
           await sdk.currentCredentials();
 
@@ -322,6 +329,12 @@ describe('with default config files', () => {
     test('uses plugin for other account', async () => {
       const provider = await SdkProvider.withAwsCliCompatibleDefaults({ ...defaultCredOptions });
       await provider.forEnvironment({ ...defaultEnv, account: `${uid}plugin_account_#` }, Mode.ForReading);
+      expect(pluginQueried).toEqual(true);
+    });
+
+    test('can assume role with credentials from plugin', async () => {
+      const provider = await SdkProvider.withAwsCliCompatibleDefaults({ ...defaultCredOptions });
+      await provider.withAssumedRole('arn:aws:iam::12356789012:role/Assumable', undefined, pluginEnv, Mode.ForReading);
       expect(pluginQueried).toEqual(true);
     });
   });

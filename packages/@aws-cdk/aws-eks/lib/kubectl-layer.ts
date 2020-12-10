@@ -1,10 +1,15 @@
 import * as crypto from 'crypto';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { CfnResource, Construct, Token, Stack, ResourceEnvironment } from '@aws-cdk/core';
+import { CfnResource, Token, Stack, ResourceEnvironment } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 const KUBECTL_APP_ARN = 'arn:aws:serverlessrepo:us-east-1:903779448426:applications/lambda-layer-kubectl';
 const KUBECTL_APP_CN_ARN = 'arn:aws-cn:serverlessrepo:cn-north-1:487369736442:applications/lambda-layer-kubectl';
 const KUBECTL_APP_VERSION = '2.0.0';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Properties for KubectlLayer.
@@ -30,7 +35,7 @@ export interface KubectlLayerProps {
  *
  * @see https://github.com/aws-samples/aws-lambda-layer-kubectl
  */
-export class KubectlLayer extends Construct implements lambda.ILayerVersion {
+export class KubectlLayer extends CoreConstruct implements lambda.ILayerVersion {
   /**
    * The ARN of the AWS Lambda layer version.
    */

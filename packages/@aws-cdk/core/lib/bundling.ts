@@ -110,13 +110,14 @@ export class BundlingDockerImage {
 
     const dockerArgs: string[] = [
       'build', '-q',
+      ...(options.file ? ['-f', options.file] : []),
       ...flatten(Object.entries(buildArgs).map(([k, v]) => ['--build-arg', `${k}=${v}`])),
       path,
     ];
 
     const docker = dockerExec(dockerArgs);
 
-    const match = docker.stdout.toString().match(/sha256:([a-z0-9]+)/);
+    const match = docker.stdout.toString().match(/sha256:[a-z0-9]+/);
 
     if (!match) {
       throw new Error('Failed to extract image ID from Docker build output');
@@ -128,7 +129,7 @@ export class BundlingDockerImage {
     // different every time the Docker layer cache is cleared, due primarily to
     // timestamps.
     const hash = FileSystem.fingerprint(path, { extraHash: JSON.stringify(options) });
-    return new BundlingDockerImage(match[1], hash);
+    return new BundlingDockerImage(match[0], hash);
   }
 
   /** @param image The Docker image */
@@ -145,10 +146,8 @@ export class BundlingDockerImage {
 
   /**
    * Runs a Docker image
-   *
-   * @internal
    */
-  public _run(options: DockerRunOptions = {}) {
+  public run(options: DockerRunOptions = {}) {
     const volumes = options.volumes || [];
     const environment = options.environment || {};
     const command = options.command || [];
@@ -174,6 +173,27 @@ export class BundlingDockerImage {
         'inherit', // inherit stderr
       ],
     });
+  }
+
+  /**
+   * Copies a file or directory out of the Docker image to the local filesystem
+   */
+  public cp(imagePath: string, outputPath: string) {
+    const { stdout } = dockerExec(['create', this.image]);
+    const match = stdout.toString().match(/([0-9a-f]{16,})/);
+    if (!match) {
+      throw new Error('Failed to extract container ID from Docker create output');
+    }
+
+    const containerId = match[1];
+    const containerPath = `${containerId}:${imagePath}`;
+    try {
+      dockerExec(['cp', containerPath, outputPath]);
+    } catch (err) {
+      throw new Error(`Failed to copy files from ${containerPath} to ${outputPath}: ${err}`);
+    } finally {
+      dockerExec(['rm', '-v', containerId]);
+    }
   }
 }
 
@@ -221,7 +241,7 @@ export enum DockerVolumeConsistency {
 /**
  * Docker run options
  */
-interface DockerRunOptions {
+export interface DockerRunOptions {
   /**
    * The command to run in the container.
    *
@@ -268,6 +288,13 @@ export interface DockerBuildOptions {
    * @default - no build args
    */
   readonly buildArgs?: { [key: string]: string };
+
+  /**
+   * Name of the Dockerfile
+   *
+   * @default - The Dockerfile immediately within the build context path
+   */
+  readonly file?: string;
 }
 
 function flatten(x: string[][]) {

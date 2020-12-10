@@ -2,7 +2,7 @@ import * as codecommit from '@aws-cdk/aws-codecommit';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as targets from '@aws-cdk/aws-events-targets';
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct, Token } from '@aws-cdk/core';
+import { Construct, Names, Token } from '@aws-cdk/core';
 import { Action } from '../action';
 import { sourceArtifactBounds } from '../common';
 
@@ -77,6 +77,14 @@ export interface CodeCommitSourceActionProps extends codepipeline.CommonAwsActio
    * The CodeCommit repository.
    */
   readonly repository: codecommit.IRepository;
+
+  /**
+   * Role to be used by on commit event rule.
+   * Used only when trigger value is CodeCommitTrigger.EVENTS.
+   *
+   * @default a new role will be created.
+   */
+  readonly eventRole?: iam.IRole;
 }
 
 /**
@@ -124,7 +132,9 @@ export class CodeCommitSourceAction extends Action {
     if (createEvent) {
       const eventId = this.generateEventId(stage);
       this.props.repository.onCommit(eventId, {
-        target: new targets.CodePipeline(stage.pipeline),
+        target: new targets.CodePipeline(stage.pipeline, {
+          eventRole: this.props.eventRole,
+        }),
         branches: [this.branch],
       });
     }
@@ -155,7 +165,7 @@ export class CodeCommitSourceAction extends Action {
   }
 
   private generateEventId(stage: codepipeline.IStage): string {
-    const baseId = stage.pipeline.node.uniqueId;
+    const baseId = Names.nodeUniqueId(stage.pipeline.node);
     if (Token.isUnresolved(this.branch)) {
       let candidate = '';
       let counter = 0;
@@ -165,7 +175,7 @@ export class CodeCommitSourceAction extends Action {
       } while (this.props.repository.node.tryFindChild(candidate) !== undefined);
       return candidate;
     } else {
-      const branchIdDisambiguator = this.branch === 'master' ? '' : '-${this.branch}-';
+      const branchIdDisambiguator = this.branch === 'master' ? '' : `-${this.branch}-`;
       return this.eventIdFromPrefix(`${baseId}${branchIdDisambiguator}`);
     }
   }

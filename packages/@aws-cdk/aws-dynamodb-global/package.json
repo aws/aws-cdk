@@ -55,7 +55,7 @@
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.4"
+    "constructs": "^3.2.0"
   },
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
@@ -70,7 +70,7 @@
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.4"
+    "constructs": "^3.2.0"
   },
   "scripts": {
     "build": "cdk-build",
@@ -83,7 +83,8 @@
     "awslint": "cdk-awslint",
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test",
-    "compat": "cdk-compat"
+    "compat": "cdk-compat",
+    "rosetta:extract": "yarn --silent jsii-rosetta extract"
   },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"

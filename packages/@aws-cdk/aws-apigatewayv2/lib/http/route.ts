@@ -120,16 +120,18 @@ export class HttpRoute extends Resource implements IHttpRoute {
     this.httpApi = props.httpApi;
     this.path = props.routeKey.path;
 
-    let integration: HttpIntegration | undefined;
     const config = props.integration.bind({
       route: this,
       scope: this,
     });
-    integration = new HttpIntegration(this, `${this.node.id}-Integration`, {
+
+    const integration = new HttpIntegration(this, `${this.node.id}-Integration`, {
       httpApi: props.httpApi,
       integrationType: config.type,
       integrationUri: config.uri,
       method: config.method,
+      connectionId: config.connectionId,
+      connectionType: config.connectionType,
       payloadFormatVersion: config.payloadFormatVersion,
     });
 

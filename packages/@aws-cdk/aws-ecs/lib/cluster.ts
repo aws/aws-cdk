@@ -5,9 +5,15 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as ssm from '@aws-cdk/aws-ssm';
-import { Construct, Duration, IResource, Resource, Stack } from '@aws-cdk/core';
+import { Duration, IResource, Resource, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
+import { ECSMetrics } from './ecs-canned-metrics.generated';
 import { CfnCluster } from './ecs.generated';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * The properties used to define an ECS cluster.
@@ -118,8 +124,15 @@ export class Cluster extends Resource implements ICluster {
       physicalName: props.clusterName,
     });
 
-    const containerInsights = props.containerInsights !== undefined ? props.containerInsights : false;
-    const clusterSettings = containerInsights ? [{ name: 'containerInsights', value: 'enabled' }] : undefined;
+    /**
+     * clusterSettings needs to be undefined if containerInsights is not explicitly set in order to allow any
+     * containerInsights settings on the account to apply.  See:
+     * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-cluster-clustersettings.html#cfn-ecs-cluster-clustersettings-value
+    */
+    let clusterSettings = undefined;
+    if (props.containerInsights !== undefined) {
+      clusterSettings = [{ name: 'containerInsights', value: props.containerInsights ? ContainerInsights.ENABLED : ContainerInsights.DISABLED }];
+    }
 
     const cluster = new CfnCluster(this, 'Resource', {
       clusterName: this.physicalName,
@@ -326,7 +339,16 @@ export class Cluster extends Resource implements ICluster {
    * @default average over 5 minutes
    */
   public metricCpuReservation(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('CPUReservation', props);
+    return this.cannedMetric(ECSMetrics.cpuReservationAverage, props);
+  }
+
+  /**
+   * This method returns the CloudWatch metric for this clusters CPU utilization.
+   *
+   * @default average over 5 minutes
+   */
+  public metricCpuUtilization(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(ECSMetrics.cpuUtilizationAverage, props);
   }
 
   /**
@@ -335,7 +357,16 @@ export class Cluster extends Resource implements ICluster {
    * @default average over 5 minutes
    */
   public metricMemoryReservation(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('MemoryReservation', props);
+    return this.cannedMetric(ECSMetrics.memoryReservationAverage, props);
+  }
+
+  /**
+   * This method returns the CloudWatch metric for this clusters memory utilization.
+   *
+   * @default average over 5 minutes
+   */
+  public metricMemoryUtilization(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(ECSMetrics.memoryUtilizationAverage, props);
   }
 
   /**
@@ -346,6 +377,15 @@ export class Cluster extends Resource implements ICluster {
       namespace: 'AWS/ECS',
       metricName,
       dimensions: { ClusterName: this.clusterName },
+      ...props,
+    }).attachTo(this);
+  }
+
+  private cannedMetric(
+    fn: (dims: { ClusterName: string }) => cloudwatch.MetricProps,
+    props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return new cloudwatch.Metric({
+      ...fn({ ClusterName: this.clusterName }),
       ...props,
     }).attachTo(this);
   }
@@ -444,7 +484,7 @@ export class EcsOptimizedAmi implements ec2.IMachineImage {
   /**
    * Return the correct image
    */
-  public getImage(scope: Construct): ec2.MachineImageConfig {
+  public getImage(scope: CoreConstruct): ec2.MachineImageConfig {
     const ami = ssm.StringParameter.valueForTypedStringParameter(scope, this.amiParameterName, ssm.ParameterType.AWS_EC2_IMAGE_ID);
     const osType = this.windowsVersion ? ec2.OperatingSystemType.WINDOWS : ec2.OperatingSystemType.LINUX;
     return {
@@ -517,7 +557,7 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
   /**
    * Return the correct image
    */
-  public getImage(scope: Construct): ec2.MachineImageConfig {
+  public getImage(scope: CoreConstruct): ec2.MachineImageConfig {
     const ami = ssm.StringParameter.valueForTypedStringParameter(scope, this.amiParameterName, ssm.ParameterType.AWS_EC2_IMAGE_ID);
     const osType = this.windowsVersion ? ec2.OperatingSystemType.WINDOWS : ec2.OperatingSystemType.LINUX;
     return {
@@ -575,7 +615,7 @@ export class BottleRocketImage implements ec2.IMachineImage {
   /**
    * Return the correct image
    */
-  public getImage(scope: Construct): ec2.MachineImageConfig {
+  public getImage(scope: CoreConstruct): ec2.MachineImageConfig {
     const ami = ssm.StringParameter.valueForStringParameter(scope, this.amiParameterName);
     return {
       imageId: ami,
@@ -849,4 +889,17 @@ export enum AmiHardwareType {
    * Use the Amazon ECS-optimized Amazon Linux 2 (arm64) AMI.
    */
   ARM = 'ARM64',
+}
+
+enum ContainerInsights {
+  /**
+   * Enable CloudWatch Container Insights for the cluster
+   */
+
+  ENABLED = 'enabled',
+
+  /**
+   * Disable CloudWatch Container Insights for the cluster
+   */
+  DISABLED = 'disabled',
 }

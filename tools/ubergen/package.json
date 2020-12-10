@@ -12,8 +12,9 @@
     "ubergen": "bin/ubergen"
   },
   "scripts": {
-    "build": "tsc -b && chmod +x bin/ubergen && eslint . --ext=.ts",
-    "watch": "tsc -b -w",
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
     "pkglint": "pkglint -f",
     "test": "echo success",
     "build+test+package": "npm run build+test",
@@ -41,5 +42,8 @@
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
+  },
+  "ubergen": {
+    "exclude": true
   }
 }

@@ -1,5 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
-import { Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
+import { IResource, Lazy, Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { IInstanceEngine } from './instance-engine';
 import { CfnOptionGroup } from './rds.generated';
 
@@ -134,7 +135,7 @@ export class OptionGroup extends Resource implements IOptionGroup {
       engineName: props.engine.engineType,
       majorEngineVersion,
       optionGroupDescription: props.description || `Option group for ${props.engine.engineType} ${majorEngineVersion}`,
-      optionConfigurations: Lazy.anyValue({ produce: () => this.renderConfigurations(this.configurations) }),
+      optionConfigurations: Lazy.any({ produce: () => this.renderConfigurations(this.configurations) }),
     });
 
     this.optionGroupName = optionGroup.ref;

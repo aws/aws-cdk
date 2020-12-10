@@ -4,7 +4,7 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import {
   App, BootstraplessSynthesizer, Construct as CoreConstruct, DefaultStackSynthesizer,
-  IStackSynthesizer, Lazy, PhysicalName, RemovalPolicy, Resource, Stack, Token,
+  IStackSynthesizer, Lazy, Names, PhysicalName, RemovalPolicy, Resource, Stack, Token,
 } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { ActionCategory, IAction, IPipeline, IStage } from './action';
@@ -283,9 +283,9 @@ export class Pipeline extends PipelineBase {
     });
 
     const codePipeline = new CfnPipeline(this, 'Resource', {
-      artifactStore: Lazy.anyValue({ produce: () => this.renderArtifactStoreProperty() }),
-      artifactStores: Lazy.anyValue({ produce: () => this.renderArtifactStoresProperty() }),
-      stages: Lazy.anyValue({ produce: () => this.renderStages() }),
+      artifactStore: Lazy.any({ produce: () => this.renderArtifactStoreProperty() }),
+      artifactStores: Lazy.any({ produce: () => this.renderArtifactStoresProperty() }),
+      stages: Lazy.any({ produce: () => this.renderStages() }),
       roleArn: this.role.roleArn,
       restartExecutionOnUpdate: props && props.restartExecutionOnUpdate,
       name: this.physicalName,
@@ -552,7 +552,7 @@ export class Pipeline extends PipelineBase {
   private generateNameForDefaultBucketKeyAlias(): string {
     const prefix = 'alias/codepipeline-';
     const maxAliasLength = 256;
-    const uniqueId = this.node.uniqueId;
+    const uniqueId = Names.uniqueId(this);
     // take the last 256 - (prefix length) characters of uniqueId
     const startIndex = Math.max(0, uniqueId.length - (maxAliasLength - prefix.length));
     return prefix + uniqueId.substring(startIndex).toLowerCase();
@@ -639,7 +639,7 @@ export class Pipeline extends PipelineBase {
 
     // generate a role in the other stack, that the Pipeline will assume for executing this action
     const ret = new iam.Role(otherAccountStack,
-      `${this.node.uniqueId}-${stage.stageName}-${action.actionProperties.actionName}-ActionRole`, {
+      `${Names.uniqueId(this)}-${stage.stageName}-${action.actionProperties.actionName}-ActionRole`, {
         assumedBy: new iam.AccountPrincipal(pipelineStack.account),
         roleName: PhysicalName.GENERATE_IF_NEEDED,
       });

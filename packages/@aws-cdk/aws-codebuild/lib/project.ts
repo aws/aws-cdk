@@ -7,19 +7,26 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { Aws, Construct, Duration, IResource, Lazy, PhysicalName, Resource, Stack } from '@aws-cdk/core';
+import { Aws, Duration, IResource, Lazy, Names, PhysicalName, Resource, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { IArtifacts } from './artifacts';
 import { BuildSpec } from './build-spec';
 import { Cache } from './cache';
+import { CodeBuildMetrics } from './codebuild-canned-metrics.generated';
 import { CfnProject } from './codebuild.generated';
 import { CodePipelineArtifacts } from './codepipeline-artifacts';
 import { IFileSystemLocation } from './file-location';
 import { NoArtifacts } from './no-artifacts';
 import { NoSource } from './no-source';
 import { runScriptLinuxBuildSpec, S3_BUCKET_ENV, S3_KEY_ENV } from './private/run-script-linux-build-spec';
+import { LoggingOptions } from './project-logs';
 import { renderReportGroupArn } from './report-group-utils';
 import { ISource } from './source';
 import { CODEPIPELINE_SOURCE_ARTIFACTS_TYPE, NO_SOURCE_TYPE } from './source-types';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 export interface IProject extends IResource, iam.IGrantable, ec2.IConnectable {
   /**
@@ -334,11 +341,8 @@ abstract class ProjectBase extends Resource implements IProject {
    *
    * @default sum over 5 minutes
    */
-  public metricBuilds(props?: cloudwatch.MetricOptions) {
-    return this.metric('Builds', {
-      statistic: 'sum',
-      ...props,
-    });
+  public metricBuilds(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(CodeBuildMetrics.buildsSum, props);
   }
 
   /**
@@ -350,11 +354,8 @@ abstract class ProjectBase extends Resource implements IProject {
    *
    * @default average over 5 minutes
    */
-  public metricDuration(props?: cloudwatch.MetricOptions) {
-    return this.metric('Duration', {
-      statistic: 'avg',
-      ...props,
-    });
+  public metricDuration(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(CodeBuildMetrics.durationAverage, props);
   }
 
   /**
@@ -366,11 +367,8 @@ abstract class ProjectBase extends Resource implements IProject {
    *
    * @default sum over 5 minutes
    */
-  public metricSucceededBuilds(props?: cloudwatch.MetricOptions) {
-    return this.metric('SucceededBuilds', {
-      statistic: 'sum',
-      ...props,
-    });
+  public metricSucceededBuilds(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(CodeBuildMetrics.succeededBuildsSum, props);
   }
 
   /**
@@ -383,11 +381,17 @@ abstract class ProjectBase extends Resource implements IProject {
    *
    * @default sum over 5 minutes
    */
-  public metricFailedBuilds(props?: cloudwatch.MetricOptions) {
-    return this.metric('FailedBuilds', {
-      statistic: 'sum',
+  public metricFailedBuilds(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(CodeBuildMetrics.failedBuildsSum, props);
+  }
+
+  private cannedMetric(
+    fn: (dims: { ProjectName: string }) => cloudwatch.MetricProps,
+    props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return new cloudwatch.Metric({
+      ...fn({ ProjectName: this.projectName }),
       ...props,
-    });
+    }).attachTo(this);
   }
 }
 
@@ -533,6 +537,13 @@ export interface CommonProjectProps {
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/test-report-group-naming.html
    */
   readonly grantReportGroupPermissions?: boolean;
+
+  /**
+   * Information about logs for the build project. A project can create logs in Amazon CloudWatch Logs, an S3 bucket, or both.
+   *
+   * @default - no log configuration is set
+   */
+  readonly logging?: LoggingOptions;
 }
 
 export interface ProjectProps extends CommonProjectProps {
@@ -751,21 +762,22 @@ export class Project extends ProjectBase {
       artifacts: artifactsConfig.artifactsProperty,
       serviceRole: this.role.roleArn,
       environment: this.renderEnvironment(props.environment, environmentVariables),
-      fileSystemLocations: Lazy.anyValue({ produce: () => this.renderFileSystemLocations() }),
+      fileSystemLocations: Lazy.any({ produce: () => this.renderFileSystemLocations() }),
       // lazy, because we have a setter for it in setEncryptionKey
       // The 'alias/aws/s3' default is necessary because leaving the `encryptionKey` field
       // empty will not remove existing encryptionKeys during an update (ref. t/D17810523)
-      encryptionKey: Lazy.stringValue({ produce: () => this._encryptionKey ? this._encryptionKey.keyArn : 'alias/aws/s3' }),
+      encryptionKey: Lazy.string({ produce: () => this._encryptionKey ? this._encryptionKey.keyArn : 'alias/aws/s3' }),
       badgeEnabled: props.badge,
       cache: cache._toCloudFormation(),
       name: this.physicalName,
       timeoutInMinutes: props.timeout && props.timeout.toMinutes(),
-      secondarySources: Lazy.anyValue({ produce: () => this.renderSecondarySources() }),
-      secondarySourceVersions: Lazy.anyValue({ produce: () => this.renderSecondarySourceVersions() }),
-      secondaryArtifacts: Lazy.anyValue({ produce: () => this.renderSecondaryArtifacts() }),
+      secondarySources: Lazy.any({ produce: () => this.renderSecondarySources() }),
+      secondarySourceVersions: Lazy.any({ produce: () => this.renderSecondarySourceVersions() }),
+      secondaryArtifacts: Lazy.any({ produce: () => this.renderSecondaryArtifacts() }),
       triggers: sourceConfig.buildTriggers,
       sourceVersion: sourceConfig.sourceVersion,
       vpcConfig: this.configureVpc(props),
+      logsConfig: this.renderLoggingConfiguration(props.logging),
     });
 
     this.addVpcRequiredPermissions(props, resource);
@@ -778,6 +790,7 @@ export class Project extends ProjectBase {
     this.projectName = this.getResourceNameAttribute(resource.ref);
 
     this.addToRolePolicy(this.createLoggingPermission());
+    this.addParameterStorePermission(props);
     // add permissions to create and use test report groups
     // with names starting with the project's name,
     // unless the customer explicitly opts out of it
@@ -788,6 +801,7 @@ export class Project extends ProjectBase {
           'codebuild:CreateReport',
           'codebuild:UpdateReport',
           'codebuild:BatchPutTestCases',
+          'codebuild:BatchPutCodeCoverages',
         ],
         resources: [renderReportGroupArn(this, `${this.projectName}-*`)],
       }));
@@ -853,7 +867,7 @@ export class Project extends ProjectBase {
    * @param _scope the construct the binding is taking place in
    * @param options additional options for the binding
    */
-  public bindToCodePipeline(_scope: Construct, options: BindToCodePipelineOptions): void {
+  public bindToCodePipeline(_scope: CoreConstruct, options: BindToCodePipelineOptions): void {
     // work around a bug in CodeBuild: it ignores the KMS key set on the pipeline,
     // and always uses its own, project-level key
     if (options.artifactBucket.encryptionKey && !this._encryptionKey) {
@@ -908,6 +922,35 @@ export class Project extends ProjectBase {
     });
   }
 
+  private addParameterStorePermission(props: ProjectProps) {
+    if (!props.environmentVariables) {
+      return;
+    }
+
+    const resources = Object.values(props.environmentVariables)
+      .filter(envVariable => envVariable.type === BuildEnvironmentVariableType.PARAMETER_STORE)
+      .map(envVariable =>
+        // If the parameter name starts with / the resource name is not separated with a double '/'
+        // arn:aws:ssm:region:1111111111:parameter/PARAM_NAME
+        (envVariable.value as string).startsWith('/')
+          ? (envVariable.value as string).substr(1)
+          : envVariable.value)
+      .map(envVariable => Stack.of(this).formatArn({
+        service: 'ssm',
+        resource: 'parameter',
+        resourceName: envVariable,
+      }));
+
+    if (resources.length === 0) {
+      return;
+    }
+
+    this.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['ssm:GetParameters'],
+      resources,
+    }));
+  }
+
   private renderEnvironment(
     env: BuildEnvironment = {},
     projectVars: { [name: string]: BuildEnvironmentVariable } = {}): CfnProject.EnvironmentProperty {
@@ -932,7 +975,7 @@ export class Project extends ProjectBase {
     }
 
     const imagePullPrincipalType = this.buildImage.imagePullPrincipalType === ImagePullPrincipalType.CODEBUILD
-      ? undefined
+      ? ImagePullPrincipalType.CODEBUILD
       : ImagePullPrincipalType.SERVICE_ROLE;
     if (this.buildImage.repository) {
       if (imagePullPrincipalType === ImagePullPrincipalType.SERVICE_ROLE) {
@@ -950,14 +993,17 @@ export class Project extends ProjectBase {
       this.buildImage.secretsManagerCredentials?.grantRead(this);
     }
 
+    const secret = this.buildImage.secretsManagerCredentials;
     return {
       type: this.buildImage.type,
       image: this.buildImage.imageId,
       imagePullCredentialsType: imagePullPrincipalType,
-      registryCredential: this.buildImage.secretsManagerCredentials
+      registryCredential: secret
         ? {
           credentialProvider: 'SECRETS_MANAGER',
-          credential: this.buildImage.secretsManagerCredentials.secretArn,
+          // Secrets must be referenced by either the full ARN (with SecretsManager suffix), or by name.
+          // "Partial" ARNs (without the suffix) will fail a validation regex at deploy-time.
+          credential: secret.secretFullArn ?? secret.secretName,
         }
         : undefined,
       privilegedMode: env.privileged || false,
@@ -1013,7 +1059,7 @@ export class Project extends ProjectBase {
     } else {
       const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', {
         vpc: props.vpc,
-        description: 'Automatic generated security group for CodeBuild ' + this.node.uniqueId,
+        description: 'Automatic generated security group for CodeBuild ' + Names.uniqueId(this),
         allowAllOutbound: props.allowAllOutbound,
       });
       securityGroups = [securityGroup];
@@ -1027,19 +1073,57 @@ export class Project extends ProjectBase {
     };
   }
 
+  private renderLoggingConfiguration(props: LoggingOptions | undefined): CfnProject.LogsConfigProperty | undefined {
+    if (props === undefined) {
+      return undefined;
+    };
+
+    let s3Config: CfnProject.S3LogsConfigProperty|undefined = undefined;
+    let cloudwatchConfig: CfnProject.CloudWatchLogsConfigProperty|undefined = undefined;
+
+    if (props.s3) {
+      const s3Logs = props.s3;
+      s3Config = {
+        status: (s3Logs.enabled ?? true) ? 'ENABLED' : 'DISABLED',
+        location: `${s3Logs.bucket.bucketName}/${s3Logs.prefix}`,
+        encryptionDisabled: s3Logs.encrypted,
+      };
+    }
+
+    if (props.cloudWatch) {
+      const cloudWatchLogs = props.cloudWatch;
+      const status = (cloudWatchLogs.enabled ?? true) ? 'ENABLED' : 'DISABLED';
+
+      if (status === 'ENABLED' && !(cloudWatchLogs.logGroup)) {
+        throw new Error('Specifying a LogGroup is required if CloudWatch logging for CodeBuild is enabled');
+      }
+
+      cloudwatchConfig = {
+        status,
+        groupName: cloudWatchLogs.logGroup?.logGroupName,
+        streamName: cloudWatchLogs.prefix,
+      };
+    }
+
+    return {
+      s3Logs: s3Config,
+      cloudWatchLogs: cloudwatchConfig,
+    };
+  }
+
   private addVpcRequiredPermissions(props: ProjectProps, project: CfnProject): void {
     if (!props.vpc || !this.role) {
       return;
     }
 
     this.role.addToPolicy(new iam.PolicyStatement({
-      resources: [`arn:aws:ec2:${Aws.REGION}:${Aws.ACCOUNT_ID}:network-interface/*`],
+      resources: [`arn:${Aws.PARTITION}:ec2:${Aws.REGION}:${Aws.ACCOUNT_ID}:network-interface/*`],
       actions: ['ec2:CreateNetworkInterfacePermission'],
       conditions: {
         StringEquals: {
           'ec2:Subnet': props.vpc
             .selectSubnets(props.subnetSelection).subnetIds
-            .map(si => `arn:aws:ec2:${Aws.REGION}:${Aws.ACCOUNT_ID}:subnet/${si}`),
+            .map(si => `arn:${Aws.PARTITION}:ec2:${Aws.REGION}:${Aws.ACCOUNT_ID}:subnet/${si}`),
           'ec2:AuthorizedService': 'codebuild.amazonaws.com',
         },
       },
@@ -1214,7 +1298,7 @@ export interface BuildImageConfig {}
 /** A variant of {@link IBuildImage} that allows binding to the project. */
 export interface IBindableBuildImage extends IBuildImage {
   /** Function that allows the build image access to the construct tree. */
-  bind(scope: Construct, project: IProject, options: BuildImageBindOptions): BuildImageConfig;
+  bind(scope: CoreConstruct, project: IProject, options: BuildImageBindOptions): BuildImageConfig;
 }
 
 class ArmBuildImage implements IBuildImage {

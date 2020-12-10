@@ -3,6 +3,7 @@ import '@aws-cdk/assert/jest';
 import { Metric } from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
+import * as constructs from 'constructs';
 import * as elbv2 from '../../lib';
 import { FakeSelfRegisteringTarget } from '../helpers';
 
@@ -1363,10 +1364,96 @@ describe('tests', () => {
       });
     }).toThrow(/Specify at most one/);
   });
+
+  describe('lookup', () => {
+    test('Can look up an ApplicationListener', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'stack', {
+        env: {
+          account: '123456789012',
+          region: 'us-west-2',
+        },
+      });
+
+      // WHEN
+      const listener = elbv2.ApplicationListener.fromLookup(stack, 'a', {
+        loadBalancerTags: {
+          some: 'tag',
+        },
+      });
+
+      // THEN
+      expect(stack).not.toHaveResource('AWS::ElasticLoadBalancingV2::Listener');
+      expect(listener.listenerArn).toEqual('arn:aws:elasticloadbalancing:us-west-2:123456789012:listener/application/my-load-balancer/50dc6c495c0c9188/f2f7dc8efc522ab2');
+      expect(listener.connections.securityGroups[0].securityGroupId).toEqual('sg-12345');
+    });
+
+    test('Can add rules to a looked-up ApplicationListener', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'stack', {
+        env: {
+          account: '123456789012',
+          region: 'us-west-2',
+        },
+      });
+
+      const listener = elbv2.ApplicationListener.fromLookup(stack, 'a', {
+        loadBalancerTags: {
+          some: 'tag',
+        },
+      });
+
+      // WHEN
+      new elbv2.ApplicationListenerRule(stack, 'rule', {
+        listener,
+        conditions: [
+          elbv2.ListenerCondition.hostHeaders(['example.com']),
+        ],
+        action: elbv2.ListenerAction.fixedResponse(200),
+        priority: 5,
+      });
+
+      // THEN
+      expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::ListenerRule', {
+        Priority: 5,
+      });
+    });
+
+    test('Can add certificates to a looked-up ApplicationListener', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'stack', {
+        env: {
+          account: '123456789012',
+          region: 'us-west-2',
+        },
+      });
+
+      const listener = elbv2.ApplicationListener.fromLookup(stack, 'a', {
+        loadBalancerTags: {
+          some: 'tag',
+        },
+      });
+
+      // WHEN
+      listener.addCertificateArns('certs', [
+        'arn:something',
+      ]);
+
+      // THEN
+      expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::ListenerCertificate', {
+        Certificates: [
+          { CertificateArn: 'arn:something' },
+        ],
+      });
+    });
+  });
 });
 
 class ResourceWithLBDependency extends cdk.CfnResource {
-  constructor(scope: cdk.Construct, id: string, targetGroup: elbv2.ITargetGroup) {
+  constructor(scope: constructs.Construct, id: string, targetGroup: elbv2.ITargetGroup) {
     super(scope, id, { type: 'Test::Resource' });
     this.node.addDependency(targetGroup.loadBalancerAttached);
   }

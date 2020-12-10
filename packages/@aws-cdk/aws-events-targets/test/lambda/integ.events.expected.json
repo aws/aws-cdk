@@ -50,44 +50,6 @@
         "MyFuncServiceRole54065130"
       ]
     },
-    "MyFuncAllowEventRulelambdaeventsTimer0E6AB6D8E3B334A3": {
-      "Type": "AWS::Lambda::Permission",
-      "Properties": {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": {
-          "Fn::GetAtt": [
-            "MyFunc8A243A2C",
-            "Arn"
-          ]
-        },
-        "Principal": "events.amazonaws.com",
-        "SourceArn": {
-          "Fn::GetAtt": [
-            "TimerBF6F831F",
-            "Arn"
-          ]
-        }
-      }
-    },
-    "MyFuncAllowEventRulelambdaeventsTimer27F866A1E0669C645": {
-      "Type": "AWS::Lambda::Permission",
-      "Properties": {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": {
-          "Fn::GetAtt": [
-            "MyFunc8A243A2C",
-            "Arn"
-          ]
-        },
-        "Principal": "events.amazonaws.com",
-        "SourceArn": {
-          "Fn::GetAtt": [
-            "Timer2B6F162E9",
-            "Arn"
-          ]
-        }
-      }
-    },
     "TimerBF6F831F": {
       "Type": "AWS::Events::Rule",
       "Properties": {
@@ -106,6 +68,25 @@
         ]
       }
     },
+    "TimerAllowEventRulelambdaeventsTimer0E6AB6D890F582F4": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "MyFunc8A243A2C",
+            "Arn"
+          ]
+        },
+        "Principal": "events.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "TimerBF6F831F",
+            "Arn"
+          ]
+        }
+      }
+    },
     "Timer2B6F162E9": {
       "Type": "AWS::Events::Rule",
       "Properties": {
@@ -122,6 +103,25 @@
             "Id": "Target0"
           }
         ]
+      }
+    },
+    "Timer2AllowEventRulelambdaeventsTimer27F866A1E50659689": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "MyFunc8A243A2C",
+            "Arn"
+          ]
+        },
+        "Principal": "events.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "Timer2B6F162E9",
+            "Arn"
+          ]
+        }
       }
     }
   }

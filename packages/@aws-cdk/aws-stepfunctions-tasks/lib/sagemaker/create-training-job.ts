@@ -1,7 +1,8 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
-import { Construct, Duration, Lazy, Size, Stack } from '@aws-cdk/core';
+import { Duration, Lazy, Size, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 import { AlgorithmSpecification, Channel, InputMode, OutputDataConfig, ResourceConfig, S3DataType, StoppingCondition, VpcConfig } from './base-types';
 import { renderTags } from './private/utils';
@@ -301,7 +302,7 @@ export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam
     return config
       ? {
         VpcConfig: {
-          SecurityGroupIds: Lazy.listValue({ produce: () => this.securityGroups.map((sg) => sg.securityGroupId) }),
+          SecurityGroupIds: Lazy.list({ produce: () => this.securityGroups.map((sg) => sg.securityGroupId) }),
           Subnets: this.subnets,
         },
       }

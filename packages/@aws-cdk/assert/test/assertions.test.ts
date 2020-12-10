@@ -1,5 +1,6 @@
 import * as cdk from '@aws-cdk/core';
 import * as cx from '@aws-cdk/cx-api';
+import * as constructs from 'constructs';
 
 import { countResources, countResourcesLike, exist, expect as cdkExpect, haveType, MatchStyle, matchTemplate } from '../lib/index';
 
@@ -332,7 +333,7 @@ interface TestResourceProps extends cdk.CfnResourceProps {
 }
 
 class TestResource extends cdk.CfnResource {
-  constructor(scope: cdk.Construct, id: string, props: TestResourceProps) {
+  constructor(scope: constructs.Construct, id: string, props: TestResourceProps) {
     super(scope, id, props);
   }
 }
@@ -342,7 +343,7 @@ interface TestParameterProps extends cdk.CfnParameterProps {
 }
 
 class TestParameter extends cdk.CfnParameter {
-  constructor(scope: cdk.Construct, id: string, props: TestParameterProps) {
+  constructor(scope: constructs.Construct, id: string, props: TestParameterProps) {
     super(scope, id, props);
   }
 }

@@ -64,7 +64,8 @@
               "Action": [
                 "kms:Encrypt",
                 "kms:ReEncrypt*",
-                "kms:GenerateDataKey*"
+                "kms:GenerateDataKey*",
+                "kms:Decrypt"
               ],
               "Effect": "Allow",
               "Principal": {
@@ -227,7 +228,8 @@
               "Action": [
                 "kms:Encrypt",
                 "kms:ReEncrypt*",
-                "kms:GenerateDataKey*"
+                "kms:GenerateDataKey*",
+                "kms:Decrypt"
               ],
               "Effect": "Allow",
               "Resource": {

@@ -11,6 +11,7 @@ export * from './endpoint';
 export * from './option-group';
 export * from './instance';
 export * from './proxy';
+export * from './serverless-cluster';
 export * from './subnet-group';
 
 // AWS::RDS CloudFormation Resources:

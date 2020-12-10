@@ -755,7 +755,7 @@
             ]
           }
         ],
-        "Version": "1.16"
+        "Version": "1.18"
       }
     },
     "EKSClusterNodesInstanceSecurityGroup460A275E": {
@@ -954,7 +954,7 @@
       "Type": "AWS::AutoScaling::LaunchConfiguration",
       "Properties": {
         "ImageId": {
-          "Ref": "SsmParameterValueawsserviceeksoptimizedami116amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+          "Ref": "SsmParameterValueawsserviceeksoptimizedami118amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
         },
         "InstanceType": "t2.medium",
         "IamInstanceProfile": {
@@ -1086,9 +1086,9 @@
     }
   },
   "Parameters": {
-    "SsmParameterValueawsserviceeksoptimizedami116amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+    "SsmParameterValueawsserviceeksoptimizedami118amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
       "Type": "AWS::SSM::Parameter::Value<String>",
-      "Default": "/aws/service/eks/optimized-ami/1.16/amazon-linux-2/recommended/image_id"
+      "Default": "/aws/service/eks/optimized-ami/1.18/amazon-linux-2/recommended/image_id"
     }
   }
 }

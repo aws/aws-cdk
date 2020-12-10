@@ -89,6 +89,14 @@ export function packageCompiler(compilers: CompilerOverrides): string[] {
   }
 }
 
+/**
+ * Return the command defined in scripts.gen if exists
+ */
+export function genScript(): string | undefined {
+  return currentPackageJson().scripts?.gen;
+}
+
+
 export interface CDKBuildOptions {
   /**
    * What CloudFormation scope to generate resources for, if any

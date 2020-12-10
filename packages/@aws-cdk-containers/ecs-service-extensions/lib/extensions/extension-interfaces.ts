@@ -38,6 +38,15 @@ export interface ServiceBuild {
   readonly taskDefinition: ecs.TaskDefinition,
 
   /**
+   * Specifies whether the task's elastic network interface receives a public IP address.
+   *
+   * If true, each task will receive a public IP address.
+   *
+   * @default false
+   */
+  readonly assignPublicIp?: boolean;
+
+  /**
    * Configuration for how to register the service in service discovery
    * @default - No Cloud Map configured
    */
@@ -132,7 +141,7 @@ export abstract class ServiceExtension {
    * the task.
    * @param props - Properties of the task definition to be created
    */
-  public modifyTaskDefinitionProps(props: ecs.TaskDefinitionProps) {
+  public modifyTaskDefinitionProps(props: ecs.TaskDefinitionProps): ecs.TaskDefinitionProps {
     return {
       ...props,
     } as ecs.TaskDefinitionProps;
@@ -176,7 +185,7 @@ export abstract class ServiceExtension {
    * of the service to be created
    * @param props - The service properties to mutate
    */
-  public modifyServiceProps(props: ServiceBuild) {
+  public modifyServiceProps(props: ServiceBuild): ServiceBuild {
     return {
       ...props,
     } as ServiceBuild;
@@ -216,7 +225,7 @@ export abstract class ContainerMutatingHook {
    * settings of the application container.
    * @param props - The container definition to mutate
    */
-  public mutateContainerDefinition(props: ecs.ContainerDefinitionOptions) {
+  public mutateContainerDefinition(props: ecs.ContainerDefinitionOptions): ecs.ContainerDefinitionOptions {
     return {
       ...props,
     } as ecs.ContainerDefinitionOptions;

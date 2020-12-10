@@ -1,5 +1,6 @@
 import '@aws-cdk/assert/jest';
 import * as cdk from '@aws-cdk/core';
+import * as constructs from 'constructs';
 import * as stepfunctions from '../lib';
 
 describe('States Language', () => {
@@ -692,7 +693,7 @@ describe('States Language', () => {
 class ReusableStateMachine extends stepfunctions.StateMachineFragment {
   public readonly startState: stepfunctions.State;
   public readonly endStates: stepfunctions.INextable[];
-  constructor(scope: cdk.Construct, id: string) {
+  constructor(scope: constructs.Construct, id: string) {
     super(scope, id);
 
     const choice = new stepfunctions.Choice(this, 'Choice')
@@ -709,7 +710,7 @@ class SimpleChain extends stepfunctions.StateMachineFragment {
   public readonly endStates: stepfunctions.INextable[];
 
   private readonly task2: stepfunctions.Task;
-  constructor(scope: cdk.Construct, id: string) {
+  constructor(scope: constructs.Construct, id: string) {
     super(scope, id);
 
     const task1 = new stepfunctions.Task(this, 'Task1', { task: new FakeTask() });

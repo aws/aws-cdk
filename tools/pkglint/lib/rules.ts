@@ -8,7 +8,7 @@ import { PackageJson, ValidationRule } from './packagejson';
 import {
   deepGet, deepSet,
   expectDevDependency, expectJSON,
-  fileShouldBe, fileShouldContain,
+  fileShouldBe, fileShouldBeginWith, fileShouldContain,
   fileShouldNotContain,
   findInnerPackages,
   monoRepoRoot,
@@ -131,7 +131,46 @@ export class NoticeFile extends ValidationRule {
   public readonly name = 'license/notice-file';
 
   public validate(pkg: PackageJson): void {
-    fileShouldBe(this.name, pkg, 'NOTICE', NOTICE);
+    fileShouldBeginWith(this.name, pkg, 'NOTICE', ...NOTICE.split('\n'));
+  }
+}
+
+/**
+ * NOTICE files must contain 3rd party attributions
+ */
+export class ThirdPartyAttributions extends ValidationRule {
+  public readonly name = 'license/3p-attributions';
+
+  public validate(pkg: PackageJson): void {
+    const alwaysCheck = ['monocdk', 'aws-cdk-lib'];
+    if (pkg.json.private && !alwaysCheck.includes(pkg.json.name)) {
+      return;
+    }
+    const bundled = pkg.getAllBundledDependencies().filter(dep => !dep.startsWith('@aws-cdk'));
+    const noticePath = path.join(pkg.packageRoot, 'NOTICE');
+    const lines = fs.existsSync(noticePath)
+      ? fs.readFileSync(noticePath, { encoding: 'utf8' }).split('\n')
+      : [];
+
+    const re = /^\*\* (\S+)/;
+    const attributions = lines.filter(l => re.test(l)).map(l => l.match(re)![1]);
+
+    for (const dep of bundled) {
+      if (!attributions.includes(dep)) {
+        pkg.report({
+          message: `Missing attribution for bundled dependency '${dep}' in NOTICE file.`,
+          ruleName: this.name,
+        });
+      }
+    }
+    for (const attr of attributions) {
+      if (!bundled.includes(attr)) {
+        pkg.report({
+          message: `Unnecessary attribution found for dependency '${attr}' in NOTICE file.`,
+          ruleName: this.name,
+        });
+      }
+    }
   }
 }
 
@@ -176,13 +215,13 @@ export class ReadmeFile extends ValidationRule {
         fix: () => fs.writeFileSync(
           readmeFile,
           [
-            `## ${headline || pkg.json.description}`,
+            `# ${headline || pkg.json.description}`,
             'This module is part of the[AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.',
           ].join('\n'),
         ),
       });
     } else if (headline) {
-      const requiredFirstLine = `## ${headline}`;
+      const requiredFirstLine = `# ${headline}`;
       const [firstLine, ...rest] = fs.readFileSync(readmeFile, { encoding: 'utf8' }).split('\n');
       if (firstLine !== requiredFirstLine) {
         pkg.report({
@@ -284,11 +323,13 @@ export class MaturitySetting extends ValidationRule {
 
     return [
       '<!--BEGIN STABILITY BANNER-->',
+      '',
       '---',
       '',
       ...bannerLines,
       '',
       '---',
+      '',
       '<!--END STABILITY BANNER-->',
       '',
     ].join('\n');
@@ -368,17 +409,25 @@ export class FeatureStabilityRule extends ValidationRule {
       return;
     }
 
+    const featuresColumnWitdh = Math.max(
+      13, // 'CFN Resources'.length
+      ...pkg.json.features.map((feat: { name: string; }) => feat.name.length),
+    );
+
     const stabilityBanner: string = [
       '<!--BEGIN STABILITY BANNER-->',
+      '',
       '---',
       '',
-      '| Features | Stability |',
-      '| --- | --- |',
-      ...this.featureEntries(pkg),
+      `Features${' '.repeat(featuresColumnWitdh - 8)} | Stability`,
+      `--------${'-'.repeat(featuresColumnWitdh - 8)}-|-----------${'-'.repeat(Math.max(0, 100 - featuresColumnWitdh - 13))}`,
+      ...this.featureEntries(pkg, featuresColumnWitdh),
       '',
       ...this.bannerNotices(pkg),
       '---',
+      '',
       '<!--END STABILITY BANNER-->',
+      '',
     ].join('\n');
 
     const readmeFile = path.join(pkg.packageRoot, 'README.md');
@@ -398,17 +447,17 @@ export class FeatureStabilityRule extends ValidationRule {
     }
   }
 
-  private featureEntries(pkg: PackageJson): string[] {
+  private featureEntries(pkg: PackageJson, featuresColumnWitdh: number): string[] {
     const entries: string[] = [];
     if (pkg.json['cdk-build']?.cloudformation) {
-      entries.push(`| CFN Resources | ![Stable](${this.badges.Stable}) |`);
+      entries.push(`CFN Resources${' '.repeat(featuresColumnWitdh - 13)} | ![Stable](${this.badges.Stable})`);
     }
     pkg.json.features.forEach((feature: { [key: string]: string }) => {
       const badge = this.badges[feature.stability];
       if (!badge) {
         throw new Error(`Unknown stability - ${feature.stability}`);
       }
-      entries.push(`| ${feature.name} | ![${feature.stability}](${badge}) |`);
+      entries.push(`${feature.name}${' '.repeat(featuresColumnWitdh - feature.name.length)} | ![${feature.stability}](${badge})`);
     });
     return entries;
   }
@@ -423,11 +472,15 @@ export class FeatureStabilityRule extends ValidationRule {
     const noticeOrder = ['Experimental', 'Developer Preview', 'Stable'];
     const stabilities = pkg.json.features.map((f: { [k: string]: string }) => f.stability);
     const filteredNotices = noticeOrder.filter(v => stabilities.includes(v));
-    filteredNotices.map((notice) => {
+    for (const notice of filteredNotices) {
+      if (notices.length !== 0) {
+        // This delimiter helps ensure proper parsing & rendering with various parsers
+        notices.push('<!-- -->', '');
+      }
       const lowerTrainCase = notice.toLowerCase().replace(/\s/g, '-');
       notices.push(readBannerFile(`features-${lowerTrainCase}.md`));
       notices.push('');
-    });
+    }
     return notices;
   }
 }
@@ -482,8 +535,29 @@ export class JSIIProjectReferences extends ValidationRule {
       this.name,
       pkg,
       'jsii.projectReferences',
-      pkg.json.name !== 'monocdk-experiment' && pkg.json.name !== 'aws-cdk-lib',
+      pkg.json.name !== 'monocdk' && pkg.json.name !== 'aws-cdk-lib',
     );
+  }
+}
+
+export class NoPeerDependenciesMonocdk extends ValidationRule {
+  public readonly name = 'monocdk/no-peer';
+  private readonly allowedPeer = ['constructs'];
+  private readonly modules = ['monocdk', 'aws-cdk-lib'];
+
+  public validate(pkg: PackageJson): void {
+    if (!this.modules.includes(pkg.packageName)) {
+      return;
+    }
+
+    const peers = Object.keys(pkg.peerDependencies).filter(peer => !this.allowedPeer.includes(peer));
+    if (peers.length > 0) {
+      pkg.report({
+        ruleName: this.name,
+        message: `Adding a peer dependency to the monolithic package ${pkg.packageName} is a breaking change, and thus not allowed.
+         Added ${peers.join(' ')}`,
+      });
+    }
   }
 }
 
@@ -571,6 +645,21 @@ export class NoTsBuildInfo extends ValidationRule {
     // We might at some point also want to strip tsconfig.json but for now,
     // the TypeScript DOCS BUILD needs to it to load the typescript source.
     fileShouldContain(this.name, pkg, '.npmignore', '*.tsbuildinfo');
+  }
+}
+
+export class NoTestsInNpmPackage extends ValidationRule {
+  public readonly name = 'npmignore/test';
+
+  public validate(pkg: PackageJson): void {
+    // skip private packages
+    if (pkg.json.private) { return; }
+
+    // Skip the CLI package, as its 'test' subdirectory is used at runtime.
+    if (pkg.packageName === 'aws-cdk') { return; }
+
+    // Exclude 'test/' directories from being packaged
+    fileShouldContain(this.name, pkg, '.npmignore', 'test/');
   }
 }
 
@@ -950,6 +1039,19 @@ export class MustUseCDKWatch extends ValidationRule {
 }
 
 /**
+ * Must have 'rosetta:extract' command if this package is JSII-enabled.
+ */
+export class MustHaveRosettaExtract extends ValidationRule {
+  public readonly name = 'package-info/scripts/rosetta:extract';
+
+  public validate(pkg: PackageJson): void {
+    if (!isJSII(pkg)) { return; }
+
+    expectJSON(this.name, pkg, 'scripts.rosetta:extract', 'yarn --silent jsii-rosetta extract');
+  }
+}
+
+/**
  * Must use 'cdk-test' command
  */
 export class MustUseCDKTest extends ValidationRule {
@@ -1252,7 +1354,7 @@ export class ConstructsDependency extends ValidationRule {
   public readonly name = 'constructs/dependency';
 
   public validate(pkg: PackageJson) {
-    const REQUIRED_VERSION = '^3.0.4';
+    const REQUIRED_VERSION = '^3.2.0';
 
     if (pkg.devDependencies?.constructs && pkg.devDependencies?.constructs !== REQUIRED_VERSION) {
       pkg.report({
@@ -1386,6 +1488,63 @@ export class JestSetup extends ValidationRule {
   }
 }
 
+export class UbergenPackageVisibility extends ValidationRule {
+  public readonly name = 'ubergen/package-visibility';
+
+  // These include dependencies of the CDK CLI (aws-cdk).
+  private readonly publicPackages = [
+    '@aws-cdk/cfnspec',
+    '@aws-cdk/cloud-assembly-schema',
+    '@aws-cdk/cloudformation-diff',
+    '@aws-cdk/cx-api',
+    '@aws-cdk/region-info',
+    '@aws-cdk/yaml-cfn',
+    'aws-cdk-lib',
+    'aws-cdk',
+    'awslint',
+    'cdk',
+    'cdk-assets',
+  ];
+
+  public validate(pkg: PackageJson): void {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const releaseJson = require(`${__dirname}/../../../release.json`);
+    if (releaseJson.majorVersion === 2) {
+      // Only packages in the publicPackages list should be "public". Everything else should be private.
+      if (this.publicPackages.includes(pkg.json.name) && pkg.json.private === true) {
+        pkg.report({
+          ruleName: this.name,
+          message: 'Package must be public',
+          fix: () => {
+            delete pkg.json.private;
+          },
+        });
+      } else if (!this.publicPackages.includes(pkg.json.name) && pkg.json.private !== true) {
+        pkg.report({
+          ruleName: this.name,
+          message: 'Package must not be public',
+          fix: () => {
+            delete pkg.json.private;
+            pkg.json.private = true;
+          },
+        });
+      }
+    } else {
+      if (pkg.json.private && !pkg.json.ubergen?.exclude) {
+        pkg.report({
+          ruleName: this.name,
+          message: 'ubergen.exclude must be configured for private packages',
+          fix: () => {
+            pkg.json.ubergen = {
+              exclude: true,
+            };
+          },
+        });
+      }
+    }
+  }
+}
+
 /**
  * Determine whether this is a JSII package
  *
@@ -1428,9 +1587,14 @@ function hasIntegTests(pkg: PackageJson) {
  * Return whether this package should use CDK build tools
  */
 function shouldUseCDKBuildTools(pkg: PackageJson) {
-  // The packages that DON'T use CDKBuildTools are the package itself
-  // and the packages used by it.
-  return pkg.packageName !== 'cdk-build-tools' && pkg.packageName !== 'merkle-build' && pkg.packageName !== 'awslint';
+  const exclude = [
+    'cdk-build-tools',
+    'merkle-build',
+    'awslint',
+    'script-tests',
+  ];
+
+  return !exclude.includes(pkg.packageName);
 }
 
 function repoRoot(dir: string) {
@@ -1446,5 +1610,5 @@ function toRegExp(str: string): RegExp {
 }
 
 function readBannerFile(file: string): string {
-  return fs.readFileSync(path.join(__dirname, 'banners', file), { encoding: 'utf-8' });
+  return fs.readFileSync(path.join(__dirname, 'banners', file), { encoding: 'utf-8' }).trim();
 }

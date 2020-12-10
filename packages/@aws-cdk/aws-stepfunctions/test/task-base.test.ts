@@ -2,6 +2,7 @@ import '@aws-cdk/assert/jest';
 import { Metric } from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
+import * as constructs from 'constructs';
 import * as sfn from '../lib';
 
 describe('Task base', () => {
@@ -387,7 +388,7 @@ class FakeTask extends sfn.TaskStateBase {
   protected readonly taskMetrics?: sfn.TaskMetricsConfig;
   protected readonly taskPolicies?: iam.PolicyStatement[];
 
-  constructor(scope: cdk.Construct, id: string, props: FakeTaskProps = {}) {
+  constructor(scope: constructs.Construct, id: string, props: FakeTaskProps = {}) {
     super(scope, id, props);
     this.taskMetrics = props.metrics;
   }

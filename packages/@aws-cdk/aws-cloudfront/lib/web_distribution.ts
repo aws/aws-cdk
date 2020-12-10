@@ -640,8 +640,6 @@ interface BehaviorWithOrigin extends Behavior {
 
 /**
  * Attributes used to import a Distribution.
- *
- * @experimental
  */
 export interface CloudFrontWebDistributionAttributes {
   /**
@@ -899,7 +897,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
       distributionConfig = {
         ...distributionConfig,
         logging: {
-          bucket: this.loggingBucket.bucketDomainName,
+          bucket: this.loggingBucket.bucketRegionalDomainName,
           includeCookies: props.loggingConfig.includeCookies || false,
           prefix: props.loggingConfig.prefix,
         },

@@ -58,6 +58,27 @@ integTest('upgrade legacy bootstrap stack to new bootstrap stack while in use', 
   });
 }));
 
+integTest('can and deploy if omitting execution policies', withDefaultFixture(async (fixture) => {
+  const bootstrapStackName = fixture.fullStackName('bootstrap-stack');
+
+  await fixture.cdk(['bootstrap',
+    '--toolkit-stack-name', bootstrapStackName,
+    '--qualifier', fixture.qualifier], {
+    modEnv: {
+      CDK_NEW_BOOTSTRAP: '1',
+    },
+  });
+
+  // Deploy stack that uses file assets
+  await fixture.cdkDeploy('lambda', {
+    options: [
+      '--toolkit-stack-name', bootstrapStackName,
+      '--context', `@aws-cdk/core:bootstrapQualifier=${fixture.qualifier}`,
+      '--context', '@aws-cdk/core:newStyleStackSynthesis=1',
+    ],
+  });
+}));
+
 integTest('deploy new style synthesis to new style bootstrap', withDefaultFixture(async (fixture) => {
   const bootstrapStackName = fixture.fullStackName('bootstrap-stack');
 

@@ -192,7 +192,7 @@ export class GatewayVpcEndpoint extends VpcEndpoint implements IGatewayVpcEndpoi
     }
 
     const endpoint = new CfnVPCEndpoint(this, 'Resource', {
-      policyDocument: Lazy.anyValue({ produce: () => this.policyDocument }),
+      policyDocument: Lazy.any({ produce: () => this.policyDocument }),
       routeTableIds,
       serviceName: props.service.name,
       vpcEndpointType: VpcEndpointType.GATEWAY,
@@ -281,6 +281,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly CODECOMMIT_GIT = new InterfaceVpcEndpointAwsService('git-codecommit');
   public static readonly CODECOMMIT_GIT_FIPS = new InterfaceVpcEndpointAwsService('git-codecommit-fips');
   public static readonly KINESIS_STREAMS = new InterfaceVpcEndpointAwsService('kinesis-streams');
+  public static readonly KINESIS_FIREHOSE = new InterfaceVpcEndpointAwsService('kinesis-firehose');
   public static readonly KMS = new InterfaceVpcEndpointAwsService('kms');
   public static readonly CLOUDWATCH_LOGS = new InterfaceVpcEndpointAwsService('logs');
   public static readonly CLOUDWATCH = new InterfaceVpcEndpointAwsService('monitoring');
@@ -299,6 +300,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly REKOGNITION = new InterfaceVpcEndpointAwsService('rekognition');
   public static readonly REKOGNITION_FIPS = new InterfaceVpcEndpointAwsService('rekognition-fips');
   public static readonly STEP_FUNCTIONS = new InterfaceVpcEndpointAwsService('states');
+  public static readonly LAMBDA = new InterfaceVpcEndpointAwsService('lambda');
 
   /**
    * The name of the service.
@@ -316,7 +318,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public readonly privateDnsDefault?: boolean = true;
 
   constructor(name: string, prefix?: string, port?: number) {
-    const region = Lazy.stringValue({
+    const region = Lazy.uncachedString({
       produce: (context) => Stack.of(context.scope).region,
     });
     this.name = `${prefix || 'com.amazonaws'}.${region}.${name}`;
@@ -480,7 +482,7 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
 
     const endpoint = new CfnVPCEndpoint(this, 'Resource', {
       privateDnsEnabled: props.privateDnsEnabled ?? props.service.privateDnsDefault ?? true,
-      policyDocument: Lazy.anyValue({ produce: () => this.policyDocument }),
+      policyDocument: Lazy.any({ produce: () => this.policyDocument }),
       securityGroupIds: securityGroups.map(s => s.securityGroupId),
       serviceName: props.service.name,
       vpcEndpointType: VpcEndpointType.INTERFACE,

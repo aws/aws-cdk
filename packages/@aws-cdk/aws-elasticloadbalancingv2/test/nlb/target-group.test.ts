@@ -1,4 +1,5 @@
 import '@aws-cdk/assert/jest';
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import * as elbv2 from '../../lib';
@@ -203,5 +204,65 @@ describe('tests', () => {
     expect(() => {
       app.synth();
     }).toThrow(/Healthy and Unhealthy Threshold Counts must be the same: 5 is not equal to 3./);
+  });
+
+  test('Exercise metrics', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
+    const listener = new elbv2.NetworkListener(stack, 'Listener', {
+      loadBalancer: lb,
+      port: 80,
+    });
+    const targetGroup = new elbv2.NetworkTargetGroup(stack, 'Group', {
+      vpc,
+      port: 80,
+    });
+    listener.addTargetGroups('unused', targetGroup);
+
+    // WHEN
+    const metrics = new Array<cloudwatch.Metric>();
+    metrics.push(targetGroup.metricHealthyHostCount());
+    metrics.push(targetGroup.metricUnHealthyHostCount());
+
+    // THEN
+
+    // Ideally, this would just be a GetAtt of the LB name, but the target group
+    // doesn't have a direct reference to the LB, and instead builds up the LB name
+    // from the listener ARN.
+    const splitListenerName = { 'Fn::Split': ['/', { Ref: 'Listener828B0E81' }] };
+    const loadBalancerNameFromListener = {
+      'Fn::Join': ['',
+        [
+          { 'Fn::Select': [1, splitListenerName] },
+          '/',
+          { 'Fn::Select': [2, splitListenerName] },
+          '/',
+          { 'Fn::Select': [3, splitListenerName] },
+        ]],
+    };
+
+    for (const metric of metrics) {
+      expect(metric.namespace).toEqual('AWS/NetworkELB');
+      expect(stack.resolve(metric.dimensions)).toEqual({
+        LoadBalancer: loadBalancerNameFromListener,
+        TargetGroup: { 'Fn::GetAtt': ['GroupC77FDACD', 'TargetGroupFullName'] },
+      });
+    }
+  });
+
+  test('Metrics requires a listener to be present', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const targetGroup = new elbv2.NetworkTargetGroup(stack, 'Group', {
+      vpc,
+      port: 80,
+    });
+
+    // THEN
+    expect(() => targetGroup.metricHealthyHostCount()).toThrow(/The TargetGroup needs to be attached to a LoadBalancer/);
+    expect(() => targetGroup.metricUnHealthyHostCount()).toThrow(/The TargetGroup needs to be attached to a LoadBalancer/);
   });
 });

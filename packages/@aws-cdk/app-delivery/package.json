@@ -38,11 +38,13 @@
     "pkglint": "pkglint -f",
     "test": "cdk-test",
     "watch": "cdk-watch",
+    "lint": "cdk-lint",
     "integ": "cdk-integ",
     "awslint": "cdk-awslint",
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test",
-    "compat": "cdk-compat"
+    "compat": "cdk-compat",
+    "rosetta:extract": "yarn --silent jsii-rosetta extract"
   },
   "dependencies": {
     "@aws-cdk/aws-cloudformation": "0.0.0",
@@ -54,7 +56,7 @@
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
-    "constructs": "^3.0.4"
+    "constructs": "^3.2.0"
   },
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
@@ -62,7 +64,7 @@
     "@types/nodeunit": "^0.0.31",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
-    "fast-check": "^2.3.0",
+    "fast-check": "^2.7.0",
     "nodeunit": "^0.11.3",
     "pkglint": "0.0.0"
   },
@@ -92,7 +94,7 @@
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
-    "constructs": "^3.0.4"
+    "constructs": "^3.2.0"
   },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"

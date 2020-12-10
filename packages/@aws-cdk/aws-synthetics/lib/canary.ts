@@ -1,11 +1,12 @@
 import * as crypto from 'crypto';
-import { Metric, MetricOptions } from '@aws-cdk/aws-cloudwatch';
+import { Metric, MetricOptions, MetricProps } from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Code } from './code';
 import { Schedule } from './schedule';
+import { CloudWatchSyntheticsMetrics } from './synthetics-canned-metrics.generated';
 import { CfnCanary } from './synthetics.generated';
 
 /**
@@ -195,10 +196,8 @@ export interface CanaryProps {
    * Specify the runtime version to use for the canary.
    *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_Library.html
-   *
-   * @default Runtime.SYNTHETICS_NODEJS_2_0
    */
-  readonly runtime?: Runtime;
+  readonly runtime: Runtime;
 
   /**
    * The type of test that you want your canary to run. Use `Test.custom()` to specify the test to run.
@@ -245,7 +244,7 @@ export class Canary extends cdk.Resource {
     }
 
     super(scope, id, {
-      physicalName: props.canaryName || cdk.Lazy.stringValue({
+      physicalName: props.canaryName || cdk.Lazy.string({
         produce: () => this.generateUniqueName(),
       }),
     });
@@ -260,7 +259,7 @@ export class Canary extends cdk.Resource {
       artifactS3Location: this.artifactsBucket.s3UrlForObject(props.artifactsBucketLocation?.prefix),
       executionRoleArn: this.role.roleArn,
       startCanaryAfterCreation: props.startAfterCreation ?? true,
-      runtimeVersion: props.runtime?.name ?? Runtime.SYNTHETICS_NODEJS_2_0.name,
+      runtimeVersion: props.runtime.name,
       name: this.physicalName,
       schedule: this.createSchedule(props),
       failureRetentionPeriod: props.failureRetentionPeriod?.toDays(),
@@ -281,7 +280,7 @@ export class Canary extends cdk.Resource {
    * @default avg over 5 minutes
    */
   public metricDuration(options?: MetricOptions): Metric {
-    return this.metric('Duration', options);
+    return this.cannedMetric(CloudWatchSyntheticsMetrics.durationAverage, options);
   }
 
   /**
@@ -292,35 +291,18 @@ export class Canary extends cdk.Resource {
    * @default avg over 5 minutes
    */
   public metricSuccessPercent(options?: MetricOptions): Metric {
-    return this.metric('SuccessPercent', options);
+    return this.cannedMetric(CloudWatchSyntheticsMetrics.successPercentAverage, options);
   }
 
   /**
    * Measure the number of failed canary runs over a given time period.
    *
-   * @param options - configuration options for the metric
+   * Default: sum over 5 minutes
    *
-   * @default avg over 5 minutes
+   * @param options - configuration options for the metric
    */
   public metricFailed(options?: MetricOptions): Metric {
-    return this.metric('Failed', options);
-  }
-
-  /**
-   * @param metricName - the name of the metric
-   * @param options - configuration options for the metric
-   *
-   * @returns a CloudWatch metric associated with the canary.
-   * @default avg over 5 minutes
-   */
-  private metric(metricName: string, options?: MetricOptions): Metric {
-    return new Metric({
-      metricName,
-      namespace: 'CloudWatchSynthetics',
-      dimensions: { CanaryName: this.canaryName },
-      statistic: 'avg',
-      ...options,
-    }).attachTo(this);
+    return this.cannedMetric(CloudWatchSyntheticsMetrics.failedSum, options);
   }
 
   /**
@@ -390,12 +372,21 @@ export class Canary extends cdk.Resource {
    * Creates a unique name for the canary. The generated name is the physical ID of the canary.
    */
   private generateUniqueName(): string {
-    const name = this.node.uniqueId.toLowerCase().replace(' ', '-');
+    const name = cdk.Names.uniqueId(this).toLowerCase().replace(' ', '-');
     if (name.length <= 21) {
       return name;
     } else {
       return name.substring(0, 15) + nameHash(name);
     }
+  }
+
+  private cannedMetric(
+    fn: (dims: { CanaryName: string }) => MetricProps,
+    props?: MetricOptions): Metric {
+    return new Metric({
+      ...fn({ CanaryName: this.canaryName }),
+      ...props,
+    }).attachTo(this);
   }
 }
 

@@ -727,7 +727,7 @@
                   {
                     "Ref": "AWS::URLSuffix"
                   },
-                  "/aws-appmesh-envoy:v1.15.0.0-prod"
+                  "/aws-appmesh-envoy:v1.15.1.0-prod"
                 ]
               ]
             },
@@ -1303,13 +1303,6 @@
               }
             }
           ],
-          "Logging": {
-            "AccessLog": {
-              "File": {
-                "Path": "/dev/stdout"
-              }
-            }
-          },
           "ServiceDiscovery": {
             "AWSCloudMap": {
               "NamespaceName": "production",
@@ -1603,7 +1596,7 @@
                   {
                     "Ref": "AWS::URLSuffix"
                   },
-                  "/aws-appmesh-envoy:v1.15.0.0-prod"
+                  "/aws-appmesh-envoy:v1.15.1.0-prod"
                 ]
               ]
             },
@@ -2179,13 +2172,6 @@
               }
             }
           ],
-          "Logging": {
-            "AccessLog": {
-              "File": {
-                "Path": "/dev/stdout"
-              }
-            }
-          },
           "ServiceDiscovery": {
             "AWSCloudMap": {
               "NamespaceName": "production",
@@ -2598,7 +2584,7 @@
                   {
                     "Ref": "AWS::URLSuffix"
                   },
-                  "/aws-appmesh-envoy:v1.15.0.0-prod"
+                  "/aws-appmesh-envoy:v1.15.1.0-prod"
                 ]
               ]
             },
@@ -3210,13 +3196,6 @@
               }
             }
           ],
-          "Logging": {
-            "AccessLog": {
-              "File": {
-                "Path": "/dev/stdout"
-              }
-            }
-          },
           "ServiceDiscovery": {
             "AWSCloudMap": {
               "NamespaceName": "production",
@@ -3344,7 +3323,7 @@
         "ecrRepo": "840364872350"
       },
       "eu-south-1": {
-        "ecrRepo": "840364872350"
+        "ecrRepo": "422531588944"
       },
       "eu-west-1": {
         "ecrRepo": "840364872350"
@@ -3403,7 +3382,7 @@
         "ecrRepo": "840364872350"
       },
       "eu-south-1": {
-        "ecrRepo": "840364872350"
+        "ecrRepo": "422531588944"
       },
       "eu-west-1": {
         "ecrRepo": "840364872350"
@@ -3462,7 +3441,7 @@
         "ecrRepo": "840364872350"
       },
       "eu-south-1": {
-        "ecrRepo": "840364872350"
+        "ecrRepo": "422531588944"
       },
       "eu-west-1": {
         "ecrRepo": "840364872350"
