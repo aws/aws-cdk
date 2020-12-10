@@ -423,7 +423,7 @@
             {
               "CustomOriginConfig": {
                 "OriginProtocolPolicy": "https-only",
-                "OriginSslProtocols": [
+                "OriginSSLProtocols": [
                   "TLSv1.2"
                 ]
               },
