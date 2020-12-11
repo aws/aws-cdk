@@ -871,7 +871,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
         ClientId: this.stack.account,
       },
       ...props,
-    });
+    }).attachTo(this);
   }
 
   /**
@@ -1038,7 +1038,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * @default p99 over 5 minutes
    */
   public metricSearchLatency(props?: MetricOptions): Metric {
-    return this.metric('SearchLatencyP99', { statistic: 'p99', ...props });
+    return this.metric('SearchLatency', { statistic: 'p99', ...props });
   }
 
   /**
@@ -1047,7 +1047,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * @default p99 over 5 minutes
    */
   public metricIndexingLatency(props?: MetricOptions): Metric {
-    return this.metric('IndexingLatencyP99', { statistic: 'p99', ...props });
+    return this.metric('IndexingLatency', { statistic: 'p99', ...props });
   }
 
   private grant(
@@ -1067,6 +1067,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
 
     return grant;
   }
+
 }
 
 
@@ -1240,7 +1241,7 @@ export class Domain extends DomainBase implements IDomain {
       effect: iam.Effect.ALLOW,
       actions: ['es:ESHttp*'],
       principals: [new iam.Anyone()],
-      resources: [cdk.Lazy.stringValue({ produce: () => `${this.domainArn}/*` })],
+      resources: [cdk.Lazy.string({ produce: () => `${this.domainArn}/*` })],
     });
 
     const masterUserArn = props.fineGrainedAccessControl?.masterUserArn;

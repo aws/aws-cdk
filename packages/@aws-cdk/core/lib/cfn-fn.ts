@@ -22,11 +22,6 @@ export class Fn {
     return new FnRef(logicalName).toString();
   }
 
-  /** @internal */
-  public static _ref(logicalId: string): IResolvable {
-    return new FnRef(logicalId);
-  }
-
   /**
    * The ``Fn::GetAtt`` intrinsic function returns the value of an attribute
    * from a resource in the template.
@@ -178,7 +173,17 @@ export class Fn {
    * @returns a token represented as a string
    */
   public static findInMap(mapName: string, topLevelKey: string, secondLevelKey: string): string {
-    return new FnFindInMap(mapName, topLevelKey, secondLevelKey).toString();
+    return Fn._findInMap(mapName, topLevelKey, secondLevelKey).toString();
+  }
+
+  /**
+   * An additional function used in CfnParser,
+   * as Fn::FindInMap does not always return a string.
+   *
+   * @internal
+   */
+  public static _findInMap(mapName: string, topLevelKey: string, secondLevelKey: string): IResolvable {
+    return new FnFindInMap(mapName, topLevelKey, secondLevelKey);
   }
 
   /**

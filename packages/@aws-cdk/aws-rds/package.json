@@ -50,7 +50,8 @@
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test",
     "compat": "cdk-compat",
-    "gen": "cfn2ts"
+    "gen": "cfn2ts",
+    "rosetta:extract": "yarn --silent jsii-rosetta extract"
   },
   "cdk-build": {
     "cloudformation": "AWS::RDS",
@@ -111,6 +112,7 @@
   },
   "awslint": {
     "exclude": [
+      "attribute-tag:@aws-cdk/aws-rds.DatabaseSecret.secretFullArn",
       "attribute-tag:@aws-cdk/aws-rds.DatabaseSecret.secretName",
       "props-physical-name:@aws-cdk/aws-rds.ParameterGroupProps",
       "props-physical-name:@aws-cdk/aws-rds.DatabaseClusterProps",

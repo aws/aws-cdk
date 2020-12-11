@@ -87,8 +87,8 @@ async function findLibrariesToPackage(): Promise<readonly LibraryReference[]> {
   for (const dir of await fs.readdir(librariesRoot)) {
     const packageJson = await fs.readJson(path.resolve(librariesRoot, dir, 'package.json'));
 
-    if (packageJson.private) {
-      console.log(`\t⚠️ Skipping (private):          ${packageJson.name}`);
+    if (packageJson.ubergen?.exclude) {
+      console.log(`\t⚠️ Skipping (ubergen excluded): ${packageJson.name}`);
       continue;
     } else if (packageJson.deprecated) {
       console.log(`\t⚠️ Skipping (deprecated):       ${packageJson.name}`);

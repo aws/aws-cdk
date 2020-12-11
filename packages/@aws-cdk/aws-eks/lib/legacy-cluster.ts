@@ -11,6 +11,7 @@ import { CfnCluster, CfnClusterProps } from './eks.generated';
 import { HelmChartOptions, HelmChart } from './helm-chart';
 import { KubernetesManifest } from './k8s-manifest';
 import { Nodegroup, NodegroupOptions } from './managed-nodegroup';
+import { ServiceAccount, ServiceAccountOptions } from './service-account';
 import { renderAmazonLinuxUserData, renderBottlerocketUserData } from './user-data';
 
 // defaults are based on https://eksctl.io
@@ -146,6 +147,8 @@ export class LegacyCluster extends Resource implements ICluster {
    */
   public readonly defaultNodegroup?: Nodegroup;
 
+  public readonly prune: boolean = false;
+
   private readonly version: KubernetesVersion;
 
   /**
@@ -242,6 +245,18 @@ export class LegacyCluster extends Resource implements ICluster {
       new CfnOutput(this, 'ConfigCommand', { value: `${updateConfigCommandPrefix} ${postfix}` });
       new CfnOutput(this, 'GetTokenCommand', { value: `${getTokenCommandPrefix} ${postfix}` });
     }
+  }
+
+  public addServiceAccount(_id: string, _options?: ServiceAccountOptions): ServiceAccount {
+    throw new Error('legacy cluster does not support adding service accounts');
+  }
+
+  /**
+   * Since we dont really want to make it required on the top-level ICluster
+   * we do this trick here in return type to match interface type
+   */
+  public get openIdConnectProvider(): iam.IOpenIdConnectProvider {
+    throw new Error('legacy cluster does not support open id connect providers');
   }
 
   /**
@@ -363,7 +378,7 @@ export class LegacyCluster extends Resource implements ICluster {
     });
   }
 
-  public addManifest(_id: string, ..._manifest: any[]): KubernetesManifest {
+  public addManifest(_id: string, ..._manifest: Record<string, any>[]): KubernetesManifest {
     throw new Error('legacy cluster does not support adding kubernetes manifests');
   }
 
@@ -411,6 +426,7 @@ class ImportedCluster extends Resource implements ICluster {
   public readonly clusterName: string;
   public readonly clusterArn: string;
   public readonly connections = new ec2.Connections();
+  public readonly prune: boolean = false;
 
   constructor(scope: Construct, id: string, private readonly props: ClusterAttributes) {
     super(scope, id);
@@ -425,7 +441,7 @@ class ImportedCluster extends Resource implements ICluster {
     }
   }
 
-  public addManifest(_id: string, ..._manifest: any[]): KubernetesManifest {
+  public addManifest(_id: string, ..._manifest: Record<string, any>[]): KubernetesManifest {
     throw new Error('legacy cluster does not support adding kubernetes manifests');
   }
 
@@ -435,6 +451,14 @@ class ImportedCluster extends Resource implements ICluster {
 
   public addCdk8sChart(_id: string, _chart: Construct): KubernetesManifest {
     throw new Error('legacy cluster does not support adding cdk8s charts');
+  }
+
+  public addServiceAccount(_id: string, _options?: ServiceAccountOptions): ServiceAccount {
+    throw new Error('legacy cluster does not support adding service accounts');
+  }
+
+  public get openIdConnectProvider(): iam.IOpenIdConnectProvider {
+    throw new Error('legacy cluster does not support open id connect providers');
   }
 
   public get vpc() {

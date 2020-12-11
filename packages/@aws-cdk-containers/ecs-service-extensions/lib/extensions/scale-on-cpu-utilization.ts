@@ -105,7 +105,7 @@ export class ScaleOnCpuUtilization extends ServiceExtension {
 
   // This service modifies properties of the service prior
   // to construct creation.
-  public modifyServiceProps(props: ServiceBuild) {
+  public modifyServiceProps(props: ServiceBuild): ServiceBuild {
     return {
       ...props,
 

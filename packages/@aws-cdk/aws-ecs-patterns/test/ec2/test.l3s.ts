@@ -1127,6 +1127,7 @@ export = {
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
     cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+    const zone = new PublicHostedZone(stack, 'HostedZone', { zoneName: 'example.com' });
 
     // WHEN
     new ecsPatterns.ApplicationLoadBalancedEc2Service(stack, 'Service', {
@@ -1135,7 +1136,11 @@ export = {
       taskImageOptions: {
         image: ecs.ContainerImage.fromRegistry('test'),
       },
+      domainName: 'api.example.com',
+      domainZone: zone,
+      certificate: Certificate.fromCertificateArn(stack, 'Cert', 'helloworld'),
       openListener: false,
+      redirectHTTP: true,
     });
 
     // THEN - Stack contains no ingress security group rules

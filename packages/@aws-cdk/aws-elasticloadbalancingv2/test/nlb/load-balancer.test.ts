@@ -401,4 +401,64 @@ describe('tests', () => {
       Type: 'network',
     });
   });
+
+  describe('lookup', () => {
+    test('Can look up a NetworkLoadBalancer', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'stack', {
+        env: {
+          account: '123456789012',
+          region: 'us-west-2',
+        },
+      });
+
+      // WHEN
+      const loadBalancer = elbv2.NetworkLoadBalancer.fromLookup(stack, 'a', {
+        loadBalancerTags: {
+          some: 'tag',
+        },
+      });
+
+      // THEN
+      expect(stack).not.toHaveResource('AWS::ElasticLoadBalancingV2::NetworkLoadBalancer');
+      expect(loadBalancer.loadBalancerArn).toEqual('arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/network/my-load-balancer/50dc6c495c0c9188');
+      expect(loadBalancer.loadBalancerCanonicalHostedZoneId).toEqual('Z3DZXE0EXAMPLE');
+      expect(loadBalancer.loadBalancerDnsName).toEqual('my-load-balancer-1234567890.us-west-2.elb.amazonaws.com');
+    });
+
+    test('Can add listeners to a looked-up NetworkLoadBalancer', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'stack', {
+        env: {
+          account: '123456789012',
+          region: 'us-west-2',
+        },
+      });
+
+      const loadBalancer = elbv2.NetworkLoadBalancer.fromLookup(stack, 'a', {
+        loadBalancerTags: {
+          some: 'tag',
+        },
+      });
+
+      const targetGroup = new elbv2.NetworkTargetGroup(stack, 'tg', {
+        vpc: loadBalancer.vpc,
+        port: 3000,
+      });
+
+      // WHEN
+      loadBalancer.addListener('listener', {
+        protocol: elbv2.Protocol.TCP_UDP,
+        port: 3000,
+        defaultAction: elbv2.NetworkListenerAction.forward([targetGroup]),
+      });
+
+      // THEN
+      expect(stack).not.toHaveResource('AWS::ElasticLoadBalancingV2::NetworkLoadBalancer');
+      expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::Listener');
+    });
+  });
 });
+
