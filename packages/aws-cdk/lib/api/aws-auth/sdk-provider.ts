@@ -73,13 +73,6 @@ export interface SdkHttpOptions {
    * @default - <package-name>/<package-version>
    */
   readonly userAgent?: string;
-
-  /**
-   * Custom agent for HTTP calls
-   *
-   * Intended only for testing!
-   */
-  readonly httpAgent?: https.Agent;
 }
 
 const CACHED_ACCOUNT = Symbol('cached_account');
@@ -400,9 +393,6 @@ function parseHttpOptions(options: SdkHttpOptions) {
       keepAlive: true,
     });
   }
-  if (options.httpAgent) {
-    config.httpOptions.agent = options.httpAgent;
-  }
 
   return config;
 }
@@ -482,7 +472,7 @@ type ObtainBaseCredentialsResult =
   | { source: 'none'; unusedPlugins: string[] };
 
 /**
- * Isolating all the code that translates calculation errors into human error messages
+ * Isolating the code that translates calculation errors into human error messages
  *
  * We cover the following cases:
  *
@@ -509,8 +499,9 @@ function fmtObtainCredentialsError(targetAccountId: string, obtainResult: Obtain
  *
  * We cover the following cases:
  *
- * - No credentials are available at all
- * - Default credentials are for the wrong account
+ * - Default credentials for the right account
+ * - Default credentials for the wrong account
+ * - Credentials returned from a plugin
  */
 function fmtObtainedCredentials(
   obtainResult: Exclude<ObtainBaseCredentialsResult, { source: 'none' }>): string {

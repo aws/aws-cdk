@@ -40,9 +40,6 @@ export class AccountAccessKeyCache {
    * @param resolver
    */
   public async fetch<A extends Account>(accessKeyId: string, resolver: () => Promise<A>) {
-    if (accessKeyId === undefined) {
-      throw new Error('Illegal missing access key');
-    }
     // try to get account ID based on this access key ID from disk.
     const cached = await this.get(accessKeyId);
     if (cached) {
