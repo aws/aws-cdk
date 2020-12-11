@@ -35,7 +35,7 @@ feature flag.
 
 ### Bug Fixes
 
-* **apigateway:** base path url cannot contain upper case characters ([#11799](https://github.com/aws/aws-cdk/issues/11799)) ([8069a7e](https://github.com/aws/aws-cdk/commit/8069a7e85c7c1652848624ba1b8085c89d3b1db2)), closes [40aws-cdk/aws-apigateway/lib/base-path-mapping.ts#L52](https://github.com/40aws-cdk/aws-apigateway/lib/base-path-mapping.ts/issues/L52)
+* **apigateway:** base path url cannot contain upper case characters ([#11799](https://github.com/aws/aws-cdk/issues/11799)) ([8069a7e](https://github.com/aws/aws-cdk/commit/8069a7e85c7c1652848624ba1b8085c89d3b1db2))
 * **cfn-include:** cfn-include fails in monocdk ([#11595](https://github.com/aws/aws-cdk/issues/11595)) ([45e43f2](https://github.com/aws/aws-cdk/commit/45e43f28f5d175bba654ee44d683aa3fc1854f9a)), closes [#11342](https://github.com/aws/aws-cdk/issues/11342)
 * **cli:** cross-account deployment no longer works ([#11966](https://github.com/aws/aws-cdk/issues/11966)) ([6fb3448](https://github.com/aws/aws-cdk/commit/6fb34483432b5cdcc485bbf6bfdb7bbb74f4b895)), closes [#11350](https://github.com/aws/aws-cdk/issues/11350) [#11792](https://github.com/aws/aws-cdk/issues/11792) [#11792](https://github.com/aws/aws-cdk/issues/11792)
 * **codebuild:** incorrect SSM Parameter ARN in Project's IAM permissions ([#11917](https://github.com/aws/aws-cdk/issues/11917)) ([7a09c18](https://github.com/aws/aws-cdk/commit/7a09c185f03a22c78f83536da07535227b301a1b)), closes [#9980](https://github.com/aws/aws-cdk/issues/9980)
