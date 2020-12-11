@@ -54,7 +54,7 @@ export class LambdaRestApi extends RestApi {
       throw new Error('Cannot specify "defaultIntegration" since Lambda integration is automatically defined');
     }
     if (props.integrationOptions?.proxy === false) {
-      throw new Error('Cannot specify "integrationOptions.proxy" as false since Lambda integration is automatically defined');
+      throw new Error('Cannot specify "props.integrationOptions.proxy" as false. Instead, use `props.proxy`.');
     }
 
     super(scope, id, {
