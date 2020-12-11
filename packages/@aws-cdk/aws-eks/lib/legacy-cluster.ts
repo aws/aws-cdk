@@ -147,6 +147,8 @@ export class LegacyCluster extends Resource implements ICluster {
    */
   public readonly defaultNodegroup?: Nodegroup;
 
+  public readonly prune: boolean = false;
+
   private readonly version: KubernetesVersion;
 
   /**
@@ -424,6 +426,7 @@ class ImportedCluster extends Resource implements ICluster {
   public readonly clusterName: string;
   public readonly clusterArn: string;
   public readonly connections = new ec2.Connections();
+  public readonly prune: boolean = false;
 
   constructor(scope: Construct, id: string, private readonly props: ClusterAttributes) {
     super(scope, id);

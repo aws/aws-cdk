@@ -41,13 +41,13 @@ describe('DomainName', () => {
 
     // WHEN
     const imported = DomainName.fromDomainNameAttributes(stack, 'dn', {
-      domainName: dn.domainName,
+      name: dn.name,
       regionalDomainName: dn.regionalDomainName,
       regionalHostedZoneId: dn.regionalHostedZoneId,
     });
 
     // THEN;
-    expect(imported.domainName).toEqual(dn.domainName);
+    expect(imported.name).toEqual(dn.name);
     expect(imported.regionalDomainName).toEqual(dn.regionalDomainName);
     expect(imported.regionalHostedZoneId).toEqual(dn.regionalHostedZoneId);
   });
