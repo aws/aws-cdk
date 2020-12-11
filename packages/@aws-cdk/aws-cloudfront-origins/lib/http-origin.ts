@@ -3,8 +3,6 @@ import * as cdk from '@aws-cdk/core';
 
 /**
  * Properties for an Origin backed by an S3 website-configured bucket, load balancer, or custom HTTP server.
- *
- * @experimental
  */
 export interface HttpOriginProps extends cloudfront.OriginProps {
   /**
@@ -54,8 +52,6 @@ export interface HttpOriginProps extends cloudfront.OriginProps {
 
 /**
  * An Origin for an HTTP server or S3 bucket configured for website hosting.
- *
- * @experimental
  */
 export class HttpOrigin extends cloudfront.OriginBase {
 
