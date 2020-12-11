@@ -6,6 +6,10 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
+    "diagnostics": {
+      "language-compatibility/member-name-conflicts-with-type-name": "error",
+      "language-compatibility/reserved-word": "error"
+    },
     "targets": {
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.APIGatewayv2",
