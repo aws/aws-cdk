@@ -2,7 +2,7 @@ import * as cdk from '@aws-cdk/core';
 import { CfnVirtualNode } from './appmesh.generated';
 import { validateHealthChecks } from './private/utils';
 import { HealthCheck, Protocol } from './shared-interfaces';
-import { TlsCertificate, TlsMode } from './tls-certificate';
+import { TlsCertificate } from './tls-certificate';
 
 /**
  * Properties for a VirtualNode listener
@@ -31,13 +31,6 @@ interface VirtualNodeListenerCommonOptions {
    * @default - no healthcheck
    */
   readonly healthCheck?: HealthCheck;
-
-  /**
-   * The TLS mode.
-   *
-   * @default - none
-   */
-  readonly tlsMode?: TlsMode;
 
   /**
    * Represents the listener certificate
@@ -172,6 +165,16 @@ export abstract class VirtualNodeListener {
 
 }
 
+/**
+ * Renders the TLS config for a listener
+ */
+function renderTls(scope: cdk.Construct, tlsCertificate: TlsCertificate): CfnVirtualNode.ListenerTlsProperty {
+  return {
+    certificate: tlsCertificate.bind(scope).tlsCertificate,
+    mode: tlsCertificate.tlsMode.toString(),
+  };
+}
+
 class VirtualNodeListenerImpl extends VirtualNodeListener {
   constructor(private readonly protocol: Protocol,
     private readonly healthCheck: HealthCheck | undefined,
@@ -179,7 +182,7 @@ class VirtualNodeListenerImpl extends VirtualNodeListener {
     private readonly port: number = 8080,
     private readonly tlsCertificate: TlsCertificate | undefined) { super(); }
 
-  public bind(_scope: cdk.Construct): VirtualNodeListenerConfig {
+  public bind(scope: cdk.Construct): VirtualNodeListenerConfig {
     return {
       listener: {
         portMapping: {
@@ -188,7 +191,7 @@ class VirtualNodeListenerImpl extends VirtualNodeListener {
         },
         healthCheck: this.healthCheck ? this.renderHealthCheck(this.healthCheck) : undefined,
         timeout: this.timeout ? this.renderTimeout(this.timeout) : undefined,
-        tls: this.tlsCertificate ? this.renderTls(this.tlsCertificate) : undefined,
+        tls: this.tlsCertificate ? renderTls(scope, this.tlsCertificate) : undefined,
       },
     };
   }
@@ -232,12 +235,5 @@ class VirtualNodeListenerImpl extends VirtualNodeListener {
         } : undefined,
       },
     });
-  }
-
-  private renderTls(tlsCertificate: TlsCertificate): CfnVirtualNode.ListenerTlsProperty {
-    return {
-      certificate: tlsCertificate.bind().virtualNodeListenerTlsCertificate,
-      mode: tlsCertificate.tlsMode.toString(),
-    };
   }
 }

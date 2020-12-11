@@ -1,10 +1,8 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
-import { Certificate } from '@aws-cdk/aws-certificatemanager';
+import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-
 import * as appmesh from '../lib';
-import { TlsMode } from '../lib/tls-certificate';
 
 export = {
   'When creating a VirtualGateway': {
@@ -155,6 +153,7 @@ export = {
       }));
       test.done();
     },
+
     'with an http listener with a TLS certificate from ACM'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
@@ -164,7 +163,7 @@ export = {
         meshName: 'test-mesh',
       });
 
-      const cert = new Certificate(stack, 'cert', {
+      const cert = new acm.Certificate(stack, 'cert', {
         domainName: '',
       });
 
@@ -174,7 +173,7 @@ export = {
         listeners: [appmesh.VirtualGatewayListener.http({
           port: 8080,
           tlsCertificate: appmesh.TlsCertificate.acm({
-            tlsMode: TlsMode.STRICT,
+            tlsMode: appmesh.TlsMode.STRICT,
             acmCertificate: cert,
           }),
         })],
@@ -185,12 +184,8 @@ export = {
         Spec: {
           Listeners: [
             {
-              PortMapping: {
-                Port: 8080,
-                Protocol: appmesh.Protocol.HTTP,
-              },
               TLS: {
-                Mode: TlsMode.STRICT,
+                Mode: appmesh.TlsMode.STRICT,
                 Certificate: {
                   ACM: {
                     CertificateArn: {
@@ -206,6 +201,7 @@ export = {
 
       test.done();
     },
+
     'with an grpc listener with a TLS certificate from file'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
@@ -223,7 +219,7 @@ export = {
           tlsCertificate: appmesh.TlsCertificate.file({
             certificateChain: 'path/to/certChain',
             privateKey: 'path/to/privateKey',
-            tlsMode: TlsMode.STRICT,
+            tlsMode: appmesh.TlsMode.STRICT,
           }),
         })],
       });
@@ -233,12 +229,8 @@ export = {
         Spec: {
           Listeners: [
             {
-              PortMapping: {
-                Port: 8080,
-                Protocol: appmesh.Protocol.GRPC,
-              },
               TLS: {
-                Mode: TlsMode.STRICT,
+                Mode: appmesh.TlsMode.STRICT,
                 Certificate: {
                   File: {
                     CertificateChain: 'path/to/certChain',
@@ -253,6 +245,7 @@ export = {
 
       test.done();
     },
+
     'with an grpc listener with the TLS mode permissive'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
@@ -270,7 +263,7 @@ export = {
           tlsCertificate: appmesh.TlsCertificate.file({
             certificateChain: 'path/to/certChain',
             privateKey: 'path/to/privateKey',
-            tlsMode: TlsMode.PERMISSIVE,
+            tlsMode: appmesh.TlsMode.PERMISSIVE,
           }),
         })],
       });
@@ -280,12 +273,8 @@ export = {
         Spec: {
           Listeners: [
             {
-              PortMapping: {
-                Port: 8080,
-                Protocol: appmesh.Protocol.GRPC,
-              },
               TLS: {
-                Mode: TlsMode.PERMISSIVE,
+                Mode: appmesh.TlsMode.PERMISSIVE,
                 Certificate: {
                   File: {
                     CertificateChain: 'path/to/certChain',

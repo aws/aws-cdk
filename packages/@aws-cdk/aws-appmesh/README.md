@@ -197,8 +197,10 @@ The `listeners` property can be left blank and added later with the `node.addLis
 The `tlsCertificate` property can be added to a Virtual Node listener or Virtual Gateway listener to add TLS configuration. A certificate from AWS Certificate Manager can be incorporated or a customer provided certificate can be specified with a `certificateChain` path file and a `privateKey` file path.
 
 ```typescript
+import * as certificatemanager from '@aws-cdk/aws-certificatemanager';
+
 // A Virtual Node with listener TLS from an ACM provided certificate
-const cert = new Certificate(this, 'cert', {...});
+const cert = new certificatemanager.Certificate(this, 'cert', {...});
 
 const node = new appmesh.VirtualNode(stack, 'node', {
   mesh,

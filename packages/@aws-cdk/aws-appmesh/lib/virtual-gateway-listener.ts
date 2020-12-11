@@ -81,6 +81,16 @@ export interface VirtualGatewayListenerConfig {
 }
 
 /**
+ * Renders the TLS config for a listener
+ */
+function renderTls(scope: cdk.Construct, tlsCertificate: TlsCertificate): CfnVirtualGateway.VirtualGatewayListenerTlsProperty {
+  return {
+    certificate: tlsCertificate.bind(scope).tlsCertificate,
+    mode: tlsCertificate.tlsMode.toString(),
+  };
+}
+
+/**
  * Represents the properties needed to define listeners for a VirtualGateway
  */
 export abstract class VirtualGatewayListener {
@@ -121,18 +131,11 @@ export abstract class VirtualGatewayListener {
   protected abstract healthCheck?: HealthCheck;
 
   /**
-   * The TLS mode.
-   *
-   * @default - none
-   */
-  readonly tlsMode?: TlsMode;
-
-  /**
    * Represents the listener certificate
    *
    * @default - none
    */
-  readonly tlsCertificate?: TlsCertificate;
+  protected readonly tlsCertificate?: TlsCertificate;
 
   /**
    * Called when the GatewayListener type is initialized. Can be used to enforce
@@ -164,13 +167,6 @@ export abstract class VirtualGatewayListener {
     validateHealthChecks(healthCheck);
 
     return healthCheck;
-  }
-
-  protected renderTls(tlsCertificate: TlsCertificate): CfnVirtualGateway.VirtualGatewayListenerTlsProperty {
-    return {
-      certificate: tlsCertificate.bind().virtualGatewayListenerTlsCertificate,
-      mode: tlsCertificate.tlsMode.toString(),
-    };
   }
 }
 
@@ -223,7 +219,7 @@ class HttpGatewayListener extends VirtualGatewayListener {
    * Called when the GatewayListener type is initialized. Can be used to enforce
    * mutual exclusivity
    */
-  public bind(_scope: cdk.Construct): VirtualGatewayListenerConfig {
+  public bind(scope: cdk.Construct): VirtualGatewayListenerConfig {
     return {
       listener: {
         portMapping: {
@@ -231,7 +227,7 @@ class HttpGatewayListener extends VirtualGatewayListener {
           protocol: this.protocol,
         },
         healthCheck: this.healthCheck ? renderHealthCheck(this.healthCheck, this.protocol, this.port): undefined,
-        tls: this.tlsCertificate ? this.renderTls(this.tlsCertificate) : undefined,
+        tls: this.tlsCertificate ? renderTls(scope, this.tlsCertificate) : undefined,
       },
     };
   }
@@ -271,13 +267,6 @@ class GrpcGatewayListener extends VirtualGatewayListener {
   protected protocol: Protocol = Protocol.GRPC;
 
   /**
-   * The TLS mode.
-   *
-   * @default - none
-   */
-  readonly tlsMode?: TlsMode;
-
-  /**
    * Represents the listener certificate
    *
    * @default - none
@@ -288,7 +277,6 @@ class GrpcGatewayListener extends VirtualGatewayListener {
     super();
     this.port = props.port ? props.port : 8080;
     this.healthCheck = props.healthCheck;
-    this.tlsMode = props.tlsMode;
     this.tlsCertificate = props.tlsCertificate;
   }
 
@@ -296,7 +284,7 @@ class GrpcGatewayListener extends VirtualGatewayListener {
    * Called when the GatewayListener type is initialized. Can be used to enforce
    * mutual exclusivity
    */
-  public bind(_scope: cdk.Construct): VirtualGatewayListenerConfig {
+  public bind(scope: cdk.Construct): VirtualGatewayListenerConfig {
     return {
       listener: {
         portMapping: {
@@ -304,7 +292,7 @@ class GrpcGatewayListener extends VirtualGatewayListener {
           protocol: Protocol.GRPC,
         },
         healthCheck: this.healthCheck ? renderHealthCheck(this.healthCheck, this.protocol, this.port): undefined,
-        tls: this.tlsCertificate ? this.renderTls(this.tlsCertificate) : undefined,
+        tls: this.tlsCertificate ? renderTls(scope, this.tlsCertificate) : undefined,
       },
     };
   }
