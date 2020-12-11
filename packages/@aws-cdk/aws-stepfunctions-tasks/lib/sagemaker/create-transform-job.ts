@@ -62,7 +62,7 @@ export interface SageMakerCreateTransformJobProps extends sfn.TaskStateBaseProps
   /**
    * Configures the timeout and maximum number of retries for processing a transform job invocation.
    *
-   * @default - 0 retries and 300 seconds of timeout
+   * @default - 0 retries and 60 seconds of timeout
    */
   readonly modelClientOptions?: ModelClientOptions;
 
@@ -184,8 +184,8 @@ export class SageMakerCreateTransformJob extends sfn.TaskStateBase {
   private renderModelClientOptions(config: ModelClientOptions): { [key: string]: any } {
     return {
       ModelClientConfig: {
-        InvocationsMaxRetries: config.invocationsMaxRetries ?? 0,
-        InvocationsTimeoutInSeconds: config.invocationsTimeout?.toSeconds() ?? 300,
+        InvocationsMaxRetries: config.invocationsMaxRetries?,
+        InvocationsTimeoutInSeconds: config.invocationsTimeout?.toSeconds(),
       },
     };
   }

@@ -834,7 +834,7 @@ new sfn.SagemakerTransformTask(this, 'Batch Inference', {
   modelName: 'MyModelName',
   modelClientOptions: {
     invocationMaxRetries: 3,  // default is 0
-    invocationTimeout: cdk.Duration.seconds(300),  // default is 300
+    invocationTimeout: cdk.Duration.minutes(5),  // default is 60 seconds
   }
   role,
   transformInput: {

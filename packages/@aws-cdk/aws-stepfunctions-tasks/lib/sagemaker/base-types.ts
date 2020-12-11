@@ -517,7 +517,7 @@ export interface ModelClientOptions {
   /**
    * The timeout duration for an invocation request.
    *
-   * @default 300
+   * @default Duration.minutes(1)
    */
   readonly invocationsTimeout?: Duration;
 }
