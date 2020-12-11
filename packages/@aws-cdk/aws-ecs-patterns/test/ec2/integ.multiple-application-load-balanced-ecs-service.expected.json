@@ -868,6 +868,7 @@
             "Value": "false"
           }
         ],
+        "Name": "LB",
         "Scheme": "internet-facing",
         "SecurityGroups": [
           {
