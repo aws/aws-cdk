@@ -52,7 +52,7 @@ export function withCdkApp<A extends TestContext & AwsContext>(block: (context: 
     context.output.write(` Test directory: ${integTestDir}\n`);
     context.output.write(` Region:         ${context.aws.region}\n`);
 
-    await cloneDirectory(path.join(__dirname, 'app'), integTestDir, context.output);
+    await cloneDirectory(path.join(__dirname, '..', 'cli', 'app'), integTestDir, context.output);
     const fixture = new TestFixture(
       integTestDir,
       stackNamePrefix,
