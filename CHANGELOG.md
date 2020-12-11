@@ -2,6 +2,52 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.78.0](https://github.com/aws/aws-cdk/compare/v1.77.0...v1.78.0) (2020-12-11)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **cloudfront-origins:** Default minimum origin SSL protocol for `HttpOrigin` and `LoadBalancerOrigin` changed from SSLv3 to TLSv1.2.
+* **apigatewayv2:** `domainName` property under `DomainName` has been
+renamed to `name`.
+* **appmesh:** the properties `dnsHostName` and `awsCloudMap` of `VirtualNodeProps` have been replaced with the property `serviceDiscovery`
+* **kms:** change the default value of trustAccountIdentities to true,
+which will result in the key getting the KMS-recommended default key
+policy. This is enabled through the '@aws-cdk/aws-kms:defaultKeyPolicies'
+feature flag.
+
+### Features
+
+* **appmesh:** add ClientPolicy to VirtualNode, VirtualGateway and VirtualService ([#11563](https://github.com/aws/aws-cdk/issues/11563)) ([bfee58c](https://github.com/aws/aws-cdk/commit/bfee58c702c31fb8e89cf99c8b6fb944ef6a96a4))
+* **appmesh:** change Virtual Node service discovery to a union-like class ([#11926](https://github.com/aws/aws-cdk/issues/11926)) ([f75c264](https://github.com/aws/aws-cdk/commit/f75c264df04f7250a4ec4692b6e8a7105d62e535))
+* **appsync:** support appsync functions for pipelineConfig ([#10111](https://github.com/aws/aws-cdk/issues/10111)) ([cb703c7](https://github.com/aws/aws-cdk/commit/cb703c7a7efaeb5d64d4dc73f5f6c3680928dd40)), closes [#9092](https://github.com/aws/aws-cdk/issues/9092)
+* **batch:** Log configuration for job definitions ([#11771](https://github.com/aws/aws-cdk/issues/11771)) ([84c959c](https://github.com/aws/aws-cdk/commit/84c959c1734f308e8c53c7f7e6ca9e6a4f129e7e)), closes [#11218](https://github.com/aws/aws-cdk/issues/11218)
+* **cloudfront:** responseHttpStatus defaults to httpStatus in errorResponses ([#11879](https://github.com/aws/aws-cdk/issues/11879)) ([c6052ae](https://github.com/aws/aws-cdk/commit/c6052aead191fca8d384be8377fd4d3990b3ba03))
+* **cloudfront:** the Distribution construct is now Generally Available (stable) ([#11919](https://github.com/aws/aws-cdk/issues/11919)) ([442bf7e](https://github.com/aws/aws-cdk/commit/442bf7e097768646f8c8a7502762a8455f87e371))
+* **cloudfront-origins:** ability to specify minimum origin SSL protocol ([#11997](https://github.com/aws/aws-cdk/issues/11997)) ([a0aa61d](https://github.com/aws/aws-cdk/commit/a0aa61d5bc1134accef7bab2707edb497fce2c57)), closes [#11994](https://github.com/aws/aws-cdk/issues/11994)
+* **cloudfront-origins:** CloudFront Origins is now Generally Available ([#12011](https://github.com/aws/aws-cdk/issues/12011)) ([daace16](https://github.com/aws/aws-cdk/commit/daace1684638b8fb8b89b60bf39b24c65a769d64)), closes [#11919](https://github.com/aws/aws-cdk/issues/11919)
+* **codeguruprofiler:** the CodeGuru Profiler Construct Library is now Generally Available (stable) ([#11924](https://github.com/aws/aws-cdk/issues/11924)) ([cbe7a10](https://github.com/aws/aws-cdk/commit/cbe7a10053ce0e4e766f360cf8792f0b46c565f0))
+* **ecs:** introduce a new Image type, TagParameterContainerImage, to be used in CodePipeline ([#11795](https://github.com/aws/aws-cdk/issues/11795)) ([4182c40](https://github.com/aws/aws-cdk/commit/4182c40a237efa9f663e46263b8d9424104f5363)), closes [#1237](https://github.com/aws/aws-cdk/issues/1237) [#7746](https://github.com/aws/aws-cdk/issues/7746)
+* **eks:** kubernetes resource pruning ([#11932](https://github.com/aws/aws-cdk/issues/11932)) ([1fdd549](https://github.com/aws/aws-cdk/commit/1fdd549af6372a7b639e9db5435f755e5a2515ad)), closes [#10495](https://github.com/aws/aws-cdk/issues/10495)
+* **kms:** change default key policy to align with KMS best practices (under feature flag) ([#11918](https://github.com/aws/aws-cdk/issues/11918)) ([ff695da](https://github.com/aws/aws-cdk/commit/ff695daee41b22bfaeef148dd0faa8e451bfd9af)), closes [#5575](https://github.com/aws/aws-cdk/issues/5575) [#8977](https://github.com/aws/aws-cdk/issues/8977) [#10575](https://github.com/aws/aws-cdk/issues/10575) [#11309](https://github.com/aws/aws-cdk/issues/11309)
+* **s3:** add support to set bucket OwnershipControls ([#11834](https://github.com/aws/aws-cdk/issues/11834)) ([0d289cc](https://github.com/aws/aws-cdk/commit/0d289cc5e0f87c416c8490c514a158fa162ee8b9)), closes [#11591](https://github.com/aws/aws-cdk/issues/11591)
+
+
+### Bug Fixes
+
+* **apigateway:** base path url cannot contain upper case characters ([#11799](https://github.com/aws/aws-cdk/issues/11799)) ([8069a7e](https://github.com/aws/aws-cdk/commit/8069a7e85c7c1652848624ba1b8085c89d3b1db2)), closes [40aws-cdk/aws-apigateway/lib/base-path-mapping.ts#L52](https://github.com/40aws-cdk/aws-apigateway/lib/base-path-mapping.ts/issues/L52)
+* **cfn-include:** cfn-include fails in monocdk ([#11595](https://github.com/aws/aws-cdk/issues/11595)) ([45e43f2](https://github.com/aws/aws-cdk/commit/45e43f28f5d175bba654ee44d683aa3fc1854f9a)), closes [#11342](https://github.com/aws/aws-cdk/issues/11342)
+* **cli:** cross-account deployment no longer works ([#11966](https://github.com/aws/aws-cdk/issues/11966)) ([6fb3448](https://github.com/aws/aws-cdk/commit/6fb34483432b5cdcc485bbf6bfdb7bbb74f4b895)), closes [#11350](https://github.com/aws/aws-cdk/issues/11350) [#11792](https://github.com/aws/aws-cdk/issues/11792) [#11792](https://github.com/aws/aws-cdk/issues/11792)
+* **codebuild:** incorrect SSM Parameter ARN in Project's IAM permissions ([#11917](https://github.com/aws/aws-cdk/issues/11917)) ([7a09c18](https://github.com/aws/aws-cdk/commit/7a09c185f03a22c78f83536da07535227b301a1b)), closes [#9980](https://github.com/aws/aws-cdk/issues/9980)
+* **core:** autogenerated exports do not account for stack name length ([#11909](https://github.com/aws/aws-cdk/issues/11909)) ([0df79a2](https://github.com/aws/aws-cdk/commit/0df79a278755ced9c60b78c5cdea69111cd8d8b3)), closes [#9733](https://github.com/aws/aws-cdk/issues/9733)
+* **ecs:** cannot disable container insights of an ECS cluster ([#9151](https://github.com/aws/aws-cdk/issues/9151)) ([e328f22](https://github.com/aws/aws-cdk/commit/e328f22e7daa5fb5ea3de9fb26828314131e8a57)), closes [#9149](https://github.com/aws/aws-cdk/issues/9149)
+* **ecspatterns:** honor name in createLoadBalancer() ([abc0356](https://github.com/aws/aws-cdk/commit/abc03569d9f87037c7c418b43b4734a710a2dbad))
+* **eks:** kubectl provider out-of-memory for large manifests/charts (now 1GiB) ([#11957](https://github.com/aws/aws-cdk/issues/11957)) ([2ec2948](https://github.com/aws/aws-cdk/commit/2ec294803427675b0ba594e929f32aca1ffdb075)), closes [#11787](https://github.com/aws/aws-cdk/issues/11787)
+* **synthetics:** `metricFailed` uses `Average` instead of `Sum` by default ([#11941](https://github.com/aws/aws-cdk/issues/11941)) ([3530e8c](https://github.com/aws/aws-cdk/commit/3530e8c758df3ea2fb26d654109e17a75f157b37))
+
+
+* **apigatewayv2:** rename 'domainName' to 'name' in the DomainName construct ([#11989](https://github.com/aws/aws-cdk/issues/11989)) ([1be831a](https://github.com/aws/aws-cdk/commit/1be831abc873c60df16c769ccf5e21fb9b1733c0))
+
 ## [1.77.0](https://github.com/aws/aws-cdk/compare/v1.76.0...v1.77.0) (2020-12-07)
 
 
