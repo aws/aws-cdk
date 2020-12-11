@@ -440,6 +440,14 @@ export interface ITable extends IResource {
   metricSystemErrors(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
+   * Metric for the system errors this table
+   *
+   * @param props properties of a metric
+   *
+   */
+  metricSystemErrorsForOperations(props?: SystemErrorsForOperationsMetricOptions): cloudwatch.IMetric;
+
+  /**
    * Metric for the user errors
    *
    * @param props properties of a metric
@@ -452,6 +460,14 @@ export interface ITable extends IResource {
    * @param props properties of a metric
    */
   metricConditionalCheckFailedRequests(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * Metric for throttled requests
+   *
+   * @param props properties of a metric
+   *
+   */
+  metricThrottledRequests(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
    * Metric for the successful request latency

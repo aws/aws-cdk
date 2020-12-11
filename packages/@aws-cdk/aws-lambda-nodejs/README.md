@@ -52,46 +52,6 @@ All other properties of `lambda.Function` are supported, see also the [AWS Lambd
 The `NodejsFunction` construct automatically [reuses existing connections](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/node-reusing-connections.html)
 when working with the AWS SDK for JavaScript. Set the `awsSdkConnectionReuse` prop to `false` to disable it.
 
-Use the `environment` prop under `bundling` to define environments variables when esbuild runs:
-
-```ts
-new lambda.NodejsFunction(this, 'my-handler', {
-  bundling: {
-    environment: {
-      NODE_ENV: 'production',
-    },
-  },
-});
-```
-
-Use the `buildArgs` under `bundling` prop to pass build arguments when building the bundling image:
-
-```ts
-new lambda.NodejsFunction(this, 'my-handler', {
-  bundling: {
-      buildArgs: {
-        HTTPS_PROXY: 'https://127.0.0.1:3001',
-      },
-  }
-});
-```
-
-Use the `dockerImage` prop under `bundling` to use a custom bundling image:
-
-```ts
-new lambda.NodejsFunction(this, 'my-handler', {
-  bundling: {
-    dockerImage: cdk.BundlingDockerImage.fromAsset('/path/to/Dockerfile'),
-  },
-});
-```
-
-This image should have esbuild installed globally. If you plan to use `nodeModules` it
-should also have `npm` or `yarn` depending on the lock file you're using.
-
-Use the [default image provided by `@aws-cdk/aws-lambda-nodejs`](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-lambda-nodejs/lib/Dockerfile)
-as a source of inspiration.
-
 ## Lock file
 
 The `NodejsFunction` requires a dependencies lock file (`yarn.lock` or
@@ -99,34 +59,41 @@ The `NodejsFunction` requires a dependencies lock file (`yarn.lock` or
 lock file is used as the source (`/asset-input`) for the volume mounted in the
 container.
 
-By default, it will try to automatically determine your project lock file.
+By default, the construct will try to automatically determine your project lock file.
 Alternatively, you can specify the `depsLockFilePath` prop manually. In this
 case you need to ensure that this path includes `entry` and any module/dependencies
 used by your function. Otherwise bundling will fail.
 
-### Configuring esbuild
+## Local bundling
 
-The `NodejsFunction` construct exposes some [esbuild](https://esbuild.github.io/) options via properties under `bundling`: `minify`, `sourceMap`, `target` and `loader`.
+If `esbuild` is available it will be used to bundle your code in your environment. Otherwise,
+bundling will happen in a [Lambda compatible Docker container](https://hub.docker.com/r/amazon/aws-sam-cli-build-image-nodejs12.x).
 
-```ts
-new lambda.NodejsFunction(this, 'my-handler', {
-  bundling: {
-    minify: true, // minify code, defaults to false
-    sourceMap: true, // include source map, defaults to false
-    target: 'es2020', // target environment for the generated JavaScript code
-    loader: { // Use the 'dataurl' loader for '.png' files
-      '.png': 'dataurl',
-    },
-  },
-});
+For macOS the recommendend approach is to install `esbuild` as Docker volume performance is really poor.
+
+`esbuild` can be installed with:
+
+```console
+$ npm install --save-dev esbuild@0
 ```
+
+OR
+
+```console
+$ yarn add --dev esbuild@0
+```
+
+To force bundling in a Docker container even if `esbuild` is available in your environment,
+set `bundling.forceDockerBundling` to `true`. This is useful if your function relies on node
+modules that should be installed (`nodeModules` prop, see [below](#install-modules)) in a Lambda
+compatible environment. This is usually the case with modules using native dependencies.
 
 ## Working with modules
 
 ### Externals
 
 By default, all node modules are bundled except for `aws-sdk`. This can be configured by specifying
-the `externalModules` prop under `bundling`.
+`bundling.externalModules`:
 
 ```ts
 new lambda.NodejsFunction(this, 'my-handler', {
@@ -141,10 +108,10 @@ new lambda.NodejsFunction(this, 'my-handler', {
 
 ### Install modules
 
-By default, all node modules referenced in your Lambda code will be bundled by esbuild.
+By default, all node modules referenced in your Lambda code will be bundled by `esbuild`.
 Use the `nodeModules` prop under `bundling` to specify a list of modules that should not be
 bundled but instead included in the `node_modules` folder of the Lambda package. This is useful
-when working with native dependencies or when esbuild fails to bundle a module.
+when working with native dependencies or when `esbuild` fails to bundle a module.
 
 ```ts
 new lambda.NodejsFunction(this, 'my-handler', {
@@ -154,34 +121,33 @@ new lambda.NodejsFunction(this, 'my-handler', {
 });
 ```
 
-The modules listed in `nodeModules` must be present in the `package.json`'s dependencies. The
-same version will be used for installation. The lock file (`yarn.lock` or `package-lock.json`)
-will be used along with the right installer (`yarn` or `npm`).
+The modules listed in `nodeModules` must be present in the `package.json`'s dependencies or
+installed. The same version will be used for installation. The lock file (`yarn.lock` or
+`package-lock.json`) will be used along with the right installer (`yarn` or `npm`).
 
-## Local bundling
+When working with `nodeModules` using native dependencies, you might want to force bundling in a
+Docker container even if `esbuild` is available in your environment. This can be done by setting
+`bundling.forceDockerBundling` to `true`.
 
-If esbuild is available it will be used to bundle your code in your environment. Otherwise,
-bundling will happen in a [Lambda compatible Docker container](https://hub.docker.com/r/amazon/aws-sam-cli-build-image-nodejs12.x).
+## Configuring `esbuild`
 
-For macOS the recommendend approach is to install esbuild as Docker volume performance is really poor.
+The `NodejsFunction` construct exposes some [esbuild options](https://esbuild.github.io/api/#build-api)
+via properties under `bundling`: `minify`, `sourceMap`, `target` and `loader`.
 
-esbuild can be installed with:
-
-```console
-$ npm install --save-dev esbuild@0
+```ts
+new lambda.NodejsFunction(this, 'my-handler', {
+  bundling: {
+    minify: true, // minify code, defaults to false
+    sourceMap: true, // include source map, defaults to false
+    target: 'es2020', // target environment for the generated JavaScript code
+    loader: { // Use the 'dataurl' loader for '.png' files
+      '.png': 'dataurl',
+    },
+  },
+});
 ```
 
-OR
-
-```console
-$ yarn add --dev esbuild@0
-```
-
-To force bundling in a Docker container, set the `forceDockerBundling` prop to `true`. This
-is useful if your function relies on node modules that should be installed (`nodeModules` prop, see [above](#install-modules)) in a Lambda compatible environment. This is usually the
-case with modules using native dependencies.
-
-### Command hooks
+## Command hooks
 
 It is possible to run additional commands by specifying the `commandHooks` prop:
 
@@ -209,3 +175,45 @@ an array of commands to run. Commands are chained with `&&`.
 
 The commands will run in the environment in which bundling occurs: inside the
 container for Docker bundling or on the host OS for local bundling.
+
+## Customizing Docker bundling
+
+Use `bundling.environment` to define environments variables when `esbuild` runs:
+
+```ts
+new lambda.NodejsFunction(this, 'my-handler', {
+  bundling: {
+    environment: {
+      NODE_ENV: 'production',
+    },
+  },
+});
+```
+
+Use `bundling.buildArgs` to pass build arguments when building the Docker bundling image:
+
+```ts
+new lambda.NodejsFunction(this, 'my-handler', {
+  bundling: {
+      buildArgs: {
+        HTTPS_PROXY: 'https://127.0.0.1:3001',
+      },
+  }
+});
+```
+
+Use `bundling.dockerImage` to use a custom Docker bundling image:
+
+```ts
+new lambda.NodejsFunction(this, 'my-handler', {
+  bundling: {
+    dockerImage: cdk.BundlingDockerImage.fromAsset('/path/to/Dockerfile'),
+  },
+});
+```
+
+This image should have `esbuild` installed **globally**. If you plan to use `nodeModules` it
+should also have `npm` or `yarn` depending on the lock file you're using.
+
+Use the [default image provided by `@aws-cdk/aws-lambda-nodejs`](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-lambda-nodejs/lib/Dockerfile)
+as a source of inspiration.
