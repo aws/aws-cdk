@@ -1,5 +1,5 @@
-import * as cdk from '@aws-cdk/core';
 import * as acm from '@aws-cdk/aws-certificatemanager';
+import * as cdk from '@aws-cdk/core';
 import { CfnVirtualNode } from './appmesh.generated';
 
 /**
@@ -38,8 +38,6 @@ export interface TlsCertificateConfig {
 export interface AcmCertificateOptions {
   /**
    * The TLS mode.
-   *
-   * @default - none
    */
   readonly tlsMode: TlsMode;
 
@@ -55,8 +53,6 @@ export interface AcmCertificateOptions {
 export interface FileCertificateOptions {
   /**
    * The TLS mode.
-   *
-   * @default - none
    */
   readonly tlsMode: TlsMode;
 
@@ -91,8 +87,6 @@ export abstract class TlsCertificate {
 
   /**
    * The TLS mode.
-   *
-   * @default - none
    */
   public readonly abstract tlsMode: TlsMode;
 
@@ -110,7 +104,7 @@ class AcmTlsCertificate extends TlsCertificate {
   /**
    * The TLS mode.
    *
-   * @default - none
+   * @default - TlsMode.DISABLED
    */
   readonly tlsMode: TlsMode;
 
@@ -121,7 +115,7 @@ class AcmTlsCertificate extends TlsCertificate {
 
   constructor(props: AcmCertificateOptions) {
     super();
-    this.tlsMode = props.tlsMode;
+    this.tlsMode = props.tlsMode ? props.tlsMode : TlsMode.DISABLED;
     this.acmCertificate = props.acmCertificate;
   }
 
@@ -143,7 +137,7 @@ class FileTlsCertificate extends TlsCertificate {
   /**
    * The TLS mode.
    *
-   * @default - none
+   * @default - TlsMode.DISABLED
    */
   readonly tlsMode: TlsMode;
 
@@ -159,7 +153,7 @@ class FileTlsCertificate extends TlsCertificate {
 
   constructor(props: FileCertificateOptions) {
     super();
-    this.tlsMode = props.tlsMode;
+    this.tlsMode = props.tlsMode ? props.tlsMode : TlsMode.DISABLED;
     this.certificateChain = props.certificateChain;
     this.privateKey = props.privateKey;
   }

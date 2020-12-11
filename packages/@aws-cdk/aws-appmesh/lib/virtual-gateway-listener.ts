@@ -128,32 +128,6 @@ export abstract class VirtualGatewayListener {
    * mutual exclusivity
    */
   public abstract bind(scope: cdk.Construct): VirtualGatewayListenerConfig;
-
-  protected renderHealthCheck(hc: HealthCheck): CfnVirtualGateway.VirtualGatewayHealthCheckPolicyProperty | undefined {
-    if (hc.protocol === Protocol.TCP) {
-      throw new Error('TCP health checks are not permitted for gateway listeners');
-    }
-
-    if (hc.protocol === Protocol.GRPC && hc.path) {
-      throw new Error('The path property cannot be set with Protocol.GRPC');
-    }
-
-    const protocol = hc.protocol? hc.protocol : this.protocol;
-
-    const healthCheck: CfnVirtualGateway.VirtualGatewayHealthCheckPolicyProperty = {
-      healthyThreshold: hc.healthyThreshold || 2,
-      intervalMillis: (hc.interval || cdk.Duration.seconds(5)).toMilliseconds(), // min
-      path: hc.path || ((protocol === Protocol.HTTP || protocol === Protocol.HTTP2) ? '/' : undefined),
-      port: hc.port || this.port,
-      protocol: hc.protocol || this.protocol,
-      timeoutMillis: (hc.timeout || cdk.Duration.seconds(2)).toMilliseconds(),
-      unhealthyThreshold: hc.unhealthyThreshold || 2,
-    };
-
-    validateHealthChecks(healthCheck);
-
-    return healthCheck;
-  }
 }
 
 /**
