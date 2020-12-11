@@ -336,6 +336,12 @@ Resources:
                   - kms:GenerateDataKey*
                 Resource: "*"
                 Effect: Allow
+              - Action:
+                  - ssm:GetParameter
+                  - ssm:GetParameters
+                Resource:
+                  Fn::Sub: "arn:${AWS::Partition}:ssm:${AWS::Region}:${AWS::AccountId}:parameter/cdk-bootstrap/${Qualifier}/*"
+                Effect: Allow
               - Action: iam:PassRole
                 Resource:
                   Fn::Sub: "${CloudFormationExecutionRole.Arn}"
