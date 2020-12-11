@@ -72,7 +72,7 @@ test('cloud assembly builder', () => {
     missing: [
       {
         key: 'foo',
-        provider: 'vpc-provider',
+        provider: cxschema.ContextProvider.VPC_PROVIDER,
         props: {
           account: '1234',
           region: 'us-east-1',
@@ -84,13 +84,13 @@ test('cloud assembly builder', () => {
     ],
     artifacts: {
       'tree-artifact': {
-        type: 'cdk:tree',
+        type: cxschema.ArtifactType.CDK_TREE,
         properties: {
           file: 'foo.tree.json',
         },
       },
       'my-first-artifact': {
-        type: 'aws:cloudformation:stack',
+        type: cxschema.ArtifactType.AWS_CLOUDFORMATION_STACK,
         environment: 'aws://1222344/us-east-1',
         dependencies: ['minimal-artifact'],
         metadata: { foo: [{ data: '123', type: 'foo', trace: [] }] },
@@ -103,7 +103,7 @@ test('cloud assembly builder', () => {
         },
       },
       'minimal-artifact': {
-        type: 'aws:cloudformation:stack',
+        type: cxschema.ArtifactType.AWS_CLOUDFORMATION_STACK,
         environment: 'aws://111/helo-world',
         properties: { templateFile: 'foo.template.json' },
       },

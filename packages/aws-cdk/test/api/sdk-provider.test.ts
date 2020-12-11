@@ -201,14 +201,12 @@ describe('with default config files', () => {
       const promptlyMockCalls = (promptly.prompt as jest.Mock).mock.calls.length;
 
       // THEN
-      try {
-        await provider.withAssumedRole('arn:aws:iam::account:role/role', undefined, undefined, Mode.ForReading);
-        fail('Should error as no credentials could be loaded');
-      } catch (e) {
-        // Mock response was set to fail to make sure we don't call STS
-        // Make sure the MFA mock was called during this test
-        expect((promptly.prompt as jest.Mock).mock.calls.length).toBe(promptlyMockCalls + 1);
-      }
+      await expect(() => provider.withAssumedRole('arn:aws:iam::account:role/role', undefined, undefined, Mode.ForReading))
+        .rejects
+        .toThrowError();
+      // Mock response was set to fail to make sure we don't call STS
+      // Make sure the MFA mock was called during this test
+      expect((promptly.prompt as jest.Mock).mock.calls.length).toBe(promptlyMockCalls + 1);
     });
 
     test('different account throws', async () => {
