@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 import { ArtifactType } from '@aws-cdk/cloud-assembly-schema';
+import { Annotations } from '../annotations';
 import { Construct, IConstruct, ISynthesisSession } from '../construct-compat';
 import { Stack } from '../stack';
 import { IInspectable, TreeInspector } from '../tree';
@@ -32,7 +33,7 @@ export class TreeMetadata extends Construct {
         try {
           return visit(c);
         } catch (e) {
-          this.node.addWarning(`Failed to render tree metadata for node [${c.node.id}]. Reason: ${e}`);
+          Annotations.of(this).addWarning(`Failed to render tree metadata for node [${c.node.id}]. Reason: ${e}`);
           return undefined;
         }
       });

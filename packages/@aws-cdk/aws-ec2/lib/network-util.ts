@@ -130,7 +130,7 @@ export class NetworkBuilder {
    * Add {count} number of subnets to the network and update the maxIpConsumed
    */
   public addSubnets(mask: number, count: number = 1): string[] {
-    if (mask < 16 || mask > 28  ) {
+    if (mask < 16 || mask > 28 ) {
       throw new InvalidCidrRangeError(`x.x.x.x/${mask}`);
     }
     const maxIp = this.nextAvailableIp + (CidrBlock.calculateNetsize(mask) * count);
@@ -219,7 +219,7 @@ export class CidrBlock {
    * mask expects a number
    *
    * If the given `cidr` or `ipAddress` is not the beginning of the block,
-   * then the next avaiable block will be returned. For example, if
+   * then the next available block will be returned. For example, if
    * `10.0.3.1/28` is given the returned block will represent `10.0.3.16/28`.
    */
   constructor(cidr: string)

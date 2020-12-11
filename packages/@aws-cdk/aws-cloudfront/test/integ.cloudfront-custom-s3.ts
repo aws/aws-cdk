@@ -1,5 +1,6 @@
 import * as s3 from '@aws-cdk/aws-s3';
-import { App, Construct, Stack } from '@aws-cdk/core';
+import { App, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as cloudfront from '../lib';
 
 class TestStack extends Stack {
@@ -17,7 +18,7 @@ class TestStack extends Stack {
       priceClass: cloudfront.PriceClass.PRICE_CLASS_200,
       originConfigs: [
         {
-          behaviors: [ { isDefaultBehavior: true } ],
+          behaviors: [{ isDefaultBehavior: true }],
           customOriginSource: {
             originProtocolPolicy: cloudfront.OriginProtocolPolicy.HTTP_ONLY,
             domainName: bucket.bucketWebsiteDomainName,

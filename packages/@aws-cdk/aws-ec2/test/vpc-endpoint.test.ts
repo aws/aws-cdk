@@ -340,7 +340,7 @@ nodeunitShim({
       expect(stack).to(haveResourceLike('AWS::EC2::SecurityGroup', {
         SecurityGroupIngress: [
           {
-            CidrIp: { 'Fn::GetAtt': [ 'VpcNetworkB258E83A', 'CidrBlock' ] },
+            CidrIp: { 'Fn::GetAtt': ['VpcNetworkB258E83A', 'CidrBlock'] },
             FromPort: 443,
             IpProtocol: 'tcp',
             ToPort: 443,
@@ -375,9 +375,11 @@ nodeunitShim({
 
       // WHEN
       vpc.addInterfaceEndpoint('YourService', {
-        service: {name: 'com.amazonaws.vpce.us-east-1.vpce-svc-mktplacesvcwprdns',
+        service: {
+          name: 'com.amazonaws.vpce.us-east-1.vpce-svc-mktplacesvcwprdns',
           port: 443,
-          privateDnsDefault: true},
+          privateDnsDefault: true,
+        },
       });
 
       // THEN
@@ -414,7 +416,8 @@ nodeunitShim({
       vpc.addInterfaceEndpoint('YourService', {
         service: {
           name: 'com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc',
-          port: 443},
+          port: 443,
+        },
         lookupSupportedAzs: true,
       });
 
@@ -450,7 +453,8 @@ nodeunitShim({
       vpc.addInterfaceEndpoint('YourService', {
         service: {
           name: 'com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc',
-          port: 443},
+          port: 443,
+        },
         lookupSupportedAzs: true,
       });
 

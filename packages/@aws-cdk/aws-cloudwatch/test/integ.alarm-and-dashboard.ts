@@ -9,7 +9,7 @@ import * as cloudwatch from '../lib';
 
 const app = new cdk.App();
 
-const stack = new cdk.Stack(app, 'aws-cdk-cloudwatch');
+const stack = new cdk.Stack(app, 'aws-cdk-cloudwatch-alarms');
 
 const queue = new cdk.CfnResource(stack, 'queue', { type: 'AWS::SQS::Queue' });
 
@@ -50,6 +50,34 @@ dashboard.addWidgets(new cloudwatch.SingleValueWidget({
 }));
 dashboard.addWidgets(new cloudwatch.LogQueryWidget({
   title: 'Errors in my log group',
+  logGroupNames: ['my-log-group'],
+  queryString: `fields @message
+                | filter @message like /Error/`,
+}));
+dashboard.addWidgets(new cloudwatch.LogQueryWidget({
+  title: 'Errors in my log group - bar',
+  view: cloudwatch.LogQueryVisualizationType.BAR,
+  logGroupNames: ['my-log-group'],
+  queryString: `fields @message
+                | filter @message like /Error/`,
+}));
+dashboard.addWidgets(new cloudwatch.LogQueryWidget({
+  title: 'Errors in my log group - line',
+  view: cloudwatch.LogQueryVisualizationType.LINE,
+  logGroupNames: ['my-log-group'],
+  queryString: `fields @message
+                | filter @message like /Error/`,
+}));
+dashboard.addWidgets(new cloudwatch.LogQueryWidget({
+  title: 'Errors in my log group - stacked',
+  view: cloudwatch.LogQueryVisualizationType.STACKEDAREA,
+  logGroupNames: ['my-log-group'],
+  queryString: `fields @message
+                | filter @message like /Error/`,
+}));
+dashboard.addWidgets(new cloudwatch.LogQueryWidget({
+  title: 'Errors in my log group - pie',
+  view: cloudwatch.LogQueryVisualizationType.PIE,
   logGroupNames: ['my-log-group'],
   queryString: `fields @message
                 | filter @message like /Error/`,

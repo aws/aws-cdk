@@ -43,6 +43,15 @@ export interface IPrincipal extends IGrantable {
   readonly policyFragment: PrincipalPolicyFragment;
 
   /**
+   * The AWS account ID of this principal.
+   * Can be undefined when the account is not known
+   * (for example, for service principals).
+   * Can be a Token - in that case,
+   * it's assumed to be AWS::AccountId.
+   */
+  readonly principalAccount?: string;
+
+  /**
    * Add to the policy of this principal.
    *
    * @returns true if the statement was added, false if the principal in
@@ -83,6 +92,7 @@ export interface AddToPrincipalPolicyResult {
  */
 export abstract class PrincipalBase implements IPrincipal {
   public readonly grantPrincipal: IPrincipal = this;
+  public readonly principalAccount: string | undefined = undefined;
 
   /**
    * Return the policy fragment that identifies this principal in a Policy.

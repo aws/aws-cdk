@@ -4,6 +4,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnDeploymentGroup } from '../codedeploy.generated';
 import { AutoRollbackConfig } from '../rollback-config';
 import { arnForDeploymentGroup, renderAlarmConfiguration, renderAutoRollbackConfiguration } from '../utils';
@@ -24,7 +25,7 @@ export interface IServerDeploymentGroup extends cdk.IResource {
    */
   readonly deploymentGroupArn: string;
   readonly deploymentConfig: IServerDeploymentConfig;
-  readonly autoScalingGroups?: autoscaling.AutoScalingGroup[];
+  readonly autoScalingGroups?: autoscaling.IAutoScalingGroup[];
 }
 
 /**
@@ -69,9 +70,9 @@ abstract class ServerDeploymentGroupBase extends cdk.Resource implements IServer
   public abstract readonly deploymentGroupName: string;
   public abstract readonly deploymentGroupArn: string;
   public readonly deploymentConfig: IServerDeploymentConfig;
-  public abstract readonly autoScalingGroups?: autoscaling.AutoScalingGroup[];
+  public abstract readonly autoScalingGroups?: autoscaling.IAutoScalingGroup[];
 
-  constructor(scope: cdk.Construct, id: string, deploymentConfig?: IServerDeploymentConfig, props?: cdk.ResourceProps) {
+  constructor(scope: Construct, id: string, deploymentConfig?: IServerDeploymentConfig, props?: cdk.ResourceProps) {
     super(scope, id, props);
     this.deploymentConfig = deploymentConfig || ServerDeploymentConfig.ONE_AT_A_TIME;
   }
@@ -84,7 +85,7 @@ class ImportedServerDeploymentGroup extends ServerDeploymentGroupBase {
   public readonly deploymentGroupArn: string;
   public readonly autoScalingGroups?: autoscaling.AutoScalingGroup[] = undefined;
 
-  constructor(scope: cdk.Construct, id: string, props: ServerDeploymentGroupAttributes) {
+  constructor(scope: Construct, id: string, props: ServerDeploymentGroupAttributes) {
     super(scope, id, props.deploymentConfig);
 
     this.application = props.application;
@@ -171,7 +172,7 @@ export interface ServerDeploymentGroupProps {
    *
    * @default []
    */
-  readonly autoScalingGroups?: autoscaling.AutoScalingGroup[];
+  readonly autoScalingGroups?: autoscaling.IAutoScalingGroup[];
 
   /**
    * If you've provided any auto-scaling groups with the {@link #autoScalingGroups} property,
@@ -247,7 +248,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
    * @returns a Construct representing a reference to an existing Deployment Group
    */
   public static fromServerDeploymentGroupAttributes(
-    scope: cdk.Construct,
+    scope: Construct,
     id: string,
     attrs: ServerDeploymentGroupAttributes): IServerDeploymentGroup {
     return new ImportedServerDeploymentGroup(scope, id, attrs);
@@ -258,12 +259,12 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
   public readonly deploymentGroupArn: string;
   public readonly deploymentGroupName: string;
 
-  private readonly _autoScalingGroups: autoscaling.AutoScalingGroup[];
+  private readonly _autoScalingGroups: autoscaling.IAutoScalingGroup[];
   private readonly installAgent: boolean;
   private readonly codeDeployBucket: s3.IBucket;
   private readonly alarms: cloudwatch.IAlarm[];
 
-  constructor(scope: cdk.Construct, id: string, props: ServerDeploymentGroupProps = {}) {
+  constructor(scope: Construct, id: string, props: ServerDeploymentGroupProps = {}) {
     super(scope, id, props.deploymentConfig, {
       physicalName: props.deploymentGroupName,
     });
@@ -290,7 +291,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
       serviceRoleArn: this.role.roleArn,
       deploymentConfigName: props.deploymentConfig &&
         props.deploymentConfig.deploymentConfigName,
-      autoScalingGroups: cdk.Lazy.listValue({ produce: () => this._autoScalingGroups.map(asg => asg.autoScalingGroupName) }, { omitEmpty: true }),
+      autoScalingGroups: cdk.Lazy.list({ produce: () => this._autoScalingGroups.map(asg => asg.autoScalingGroupName) }, { omitEmpty: true }),
       loadBalancerInfo: this.loadBalancerInfo(props.loadBalancer),
       deploymentStyle: props.loadBalancer === undefined
         ? undefined
@@ -299,8 +300,8 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
         },
       ec2TagSet: this.ec2TagSet(props.ec2InstanceTags),
       onPremisesTagSet: this.onPremiseTagSet(props.onPremiseInstanceTags),
-      alarmConfiguration: cdk.Lazy.anyValue({ produce: () => renderAlarmConfiguration(this.alarms, props.ignorePollAlarmsFailure) }),
-      autoRollbackConfiguration: cdk.Lazy.anyValue({ produce: () => renderAutoRollbackConfiguration(this.alarms, props.autoRollback) }),
+      alarmConfiguration: cdk.Lazy.any({ produce: () => renderAlarmConfiguration(this.alarms, props.ignorePollAlarmsFailure) }),
+      autoRollbackConfiguration: cdk.Lazy.any({ produce: () => renderAutoRollbackConfiguration(this.alarms, props.autoRollback) }),
     });
 
     this.deploymentGroupName = this.getResourceNameAttribute(resource.ref);
@@ -333,16 +334,16 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
     this.alarms.push(alarm);
   }
 
-  public get autoScalingGroups(): autoscaling.AutoScalingGroup[] | undefined {
+  public get autoScalingGroups(): autoscaling.IAutoScalingGroup[] | undefined {
     return this._autoScalingGroups.slice();
   }
 
-  private addCodeDeployAgentInstallUserData(asg: autoscaling.AutoScalingGroup): void {
+  private addCodeDeployAgentInstallUserData(asg: autoscaling.IAutoScalingGroup): void {
     if (!this.installAgent) {
       return;
     }
 
-    this.codeDeployBucket.grantRead(asg.role, 'latest/*');
+    this.codeDeployBucket.grantRead(asg, 'latest/*');
 
     switch (asg.osType) {
       case ec2.OperatingSystemType.LINUX:

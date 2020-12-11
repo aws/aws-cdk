@@ -98,7 +98,7 @@ function updatedLocationOf(modulePath: string): string | undefined {
   }
 
   if (modulePath === '@aws-cdk/core') {
-    return 'monocdk-experiment';
+    return 'monocdk';
   }
 
   if (modulePath === '@aws-cdk/assert') {
@@ -109,5 +109,5 @@ function updatedLocationOf(modulePath: string): string | undefined {
     return '@monocdk-experiment/assert/jest';
   }
 
-  return `monocdk-experiment/${modulePath.substring(9)}`;
+  return `monocdk/${modulePath.substring(9)}`;
 }

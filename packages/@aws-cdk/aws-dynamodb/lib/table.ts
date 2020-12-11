@@ -3,9 +3,11 @@ import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import {
-  Aws, CfnCondition, CfnCustomResource, Construct, CustomResource, Fn,
-  IResource, Lazy, RemovalPolicy, Resource, Stack, Token,
+  Aws, CfnCondition, CfnCustomResource, Construct as CoreConstruct, CustomResource, Fn,
+  IResource, Lazy, Names, RemovalPolicy, Resource, Stack, Token,
 } from '@aws-cdk/core';
+import { Construct } from 'constructs';
+import { DynamoDBMetrics } from './dynamodb-canned-metrics.generated';
 import { CfnTable, CfnTableProps } from './dynamodb.generated';
 import * as perms from './perms';
 import { ReplicaProvider } from './replica-provider';
@@ -17,6 +19,54 @@ const RANGE_KEY_TYPE = 'RANGE';
 
 // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Limits.html#limits-secondary-indexes
 const MAX_LOCAL_SECONDARY_INDEX_COUNT = 5;
+
+/**
+ * Options for configuring a system errors metric that considers multiple operations.
+ */
+export interface SystemErrorsForOperationsMetricOptions extends cloudwatch.MetricOptions {
+
+  /**
+   * The operations to apply the metric to.
+   *
+   * @default - All operations available by DynamoDB tables will be considered.
+   */
+  readonly operations?: Operation[];
+
+}
+
+/**
+ * Supported DynamoDB table operations.
+ */
+export enum Operation {
+
+  /** GetItem */
+  GET_ITEM = 'GetItem',
+
+  /** BatchGetItem */
+  BATCH_GET_ITEM = 'BatchGetItem',
+
+  /** Scan */
+  SCAN = 'Scan',
+
+  /** Query */
+  QUERY = 'Query',
+
+  /** GetRecords */
+  GET_RECORDS = 'GetRecords',
+
+  /** PutItem */
+  PUT_ITEM = 'PutItem',
+
+  /** DeleteItem */
+  DELETE_ITEM = 'DeleteItem',
+
+  /** UpdateItem */
+  UPDATE_ITEM = 'UpdateItem',
+
+  /** BatchWriteItem */
+  BATCH_WRITE_ITEM = 'BatchWriteItem',
+
+}
 
 /**
  * Represents an attribute for describing the key schema for the table
@@ -384,8 +434,18 @@ export interface ITable extends IResource {
    * Metric for the system errors
    *
    * @param props properties of a metric
+   *
+   * @deprecated use `metricSystemErrorsForOperations`
    */
   metricSystemErrors(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * Metric for the system errors this table
+   *
+   * @param props properties of a metric
+   *
+   */
+  metricSystemErrorsForOperations(props?: SystemErrorsForOperationsMetricOptions): cloudwatch.IMetric;
 
   /**
    * Metric for the user errors
@@ -402,9 +462,18 @@ export interface ITable extends IResource {
   metricConditionalCheckFailedRequests(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
+   * Metric for throttled requests
+   *
+   * @param props properties of a metric
+   *
+   */
+  metricThrottledRequests(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
    * Metric for the successful request latency
    *
    * @param props properties of a metric
+   *
    */
   metricSuccessfulRequestLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 }
@@ -505,9 +574,9 @@ abstract class TableBase extends Resource implements ITable {
       actions,
       resourceArns: [
         this.tableArn,
-        Lazy.stringValue({ produce: () => this.hasIndex ? `${this.tableArn}/index/*` : Aws.NO_VALUE }),
+        Lazy.string({ produce: () => this.hasIndex ? `${this.tableArn}/index/*` : Aws.NO_VALUE }),
         ...this.regionalArns,
-        ...this.regionalArns.map(arn => Lazy.stringValue({
+        ...this.regionalArns.map(arn => Lazy.string({
           produce: () => this.hasIndex ? `${arn}/index/*` : Aws.NO_VALUE,
         })),
       ],
@@ -564,10 +633,7 @@ abstract class TableBase extends Resource implements ITable {
     return iam.Grant.addToPrincipal({
       grantee,
       actions: ['dynamodb:ListStreams'],
-      resourceArns: [
-        Lazy.stringValue({ produce: () => `${this.tableArn}/stream/*` }),
-        ...this.regionalArns.map(arn => Lazy.stringValue({ produce: () => `${arn}/stream/*` })),
-      ],
+      resourceArns: ['*'],
     });
   }
 
@@ -630,6 +696,9 @@ abstract class TableBase extends Resource implements ITable {
 
   /**
    * Return the given named metric for this Table
+   *
+   * By default, the metric will be calculated as a sum over a period of 5 minutes.
+   * You can customize this by using the `statistic` and `period` properties.
    */
   public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return new cloudwatch.Metric({
@@ -639,61 +708,180 @@ abstract class TableBase extends Resource implements ITable {
         TableName: this.tableName,
       },
       ...props,
-    });
+    }).attachTo(this);
   }
 
   /**
    * Metric for the consumed read capacity units this table
    *
-   * @default sum over a minute
+   * By default, the metric will be calculated as a sum over a period of 5 minutes.
+   * You can customize this by using the `statistic` and `period` properties.
    */
   public metricConsumedReadCapacityUnits(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('ConsumedReadCapacityUnits', { statistic: 'sum', ...props});
+    return this.cannedMetric(DynamoDBMetrics.consumedReadCapacityUnitsSum, props);
   }
 
   /**
    * Metric for the consumed write capacity units this table
    *
-   * @default sum over a minute
+   * By default, the metric will be calculated as a sum over a period of 5 minutes.
+   * You can customize this by using the `statistic` and `period` properties.
    */
   public metricConsumedWriteCapacityUnits(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('ConsumedWriteCapacityUnits', { statistic: 'sum', ...props});
+    return this.cannedMetric(DynamoDBMetrics.consumedWriteCapacityUnitsSum, props);
   }
 
   /**
    * Metric for the system errors this table
    *
-   * @default sum over a minute
+   * @deprecated use `metricSystemErrorsForOperations`.
    */
   public metricSystemErrors(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('SystemErrors', { statistic: 'sum', ...props});
+    if (!props?.dimensions?.Operation) {
+      // 'Operation' must be passed because its an operational metric.
+      throw new Error("'Operation' dimension must be passed for the 'SystemErrors' metric.");
+    }
+
+    const dimensions = {
+      TableName: this.tableName,
+      ...props?.dimensions ?? {},
+    };
+
+    return this.metric('SystemErrors', { statistic: 'sum', ...props, dimensions });
   }
 
   /**
-   * Metric for the user errors this table
+   * Metric for the user errors. Note that this metric reports user errors across all
+   * the tables in the account and region the table resides in.
    *
-   * @default sum over a minute
+   * By default, the metric will be calculated as a sum over a period of 5 minutes.
+   * You can customize this by using the `statistic` and `period` properties.
    */
   public metricUserErrors(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('UserErrors', { statistic: 'sum', ...props});
+    if (props?.dimensions) {
+      throw new Error("'dimensions' is not supported for the 'UserErrors' metric");
+    }
+
+    // overriding 'dimensions' here because this metric is an account metric.
+    // see 'UserErrors' in https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/metrics-dimensions.html
+    return this.metric('UserErrors', { statistic: 'sum', ...props, dimensions: {} });
   }
 
   /**
    * Metric for the conditional check failed requests this table
    *
-   * @default sum over a minute
+   * By default, the metric will be calculated as a sum over a period of 5 minutes.
+   * You can customize this by using the `statistic` and `period` properties.
    */
   public metricConditionalCheckFailedRequests(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('ConditionalCheckFailedRequests', { statistic: 'sum', ...props});
+    return this.metric('ConditionalCheckFailedRequests', { statistic: 'sum', ...props });
   }
 
   /**
-   * Metric for the successful request latency this table
+   * How many requests are throttled on this table
    *
-   * @default avg over a minute
+   * Default: sum over 5 minutes
+   */
+  public metricThrottledRequests(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(DynamoDBMetrics.throttledRequestsSum, props);
+  }
+
+  /**
+   * Metric for the successful request latency this table.
+   *
+   * By default, the metric will be calculated as an average over a period of 5 minutes.
+   * You can customize this by using the `statistic` and `period` properties.
    */
   public metricSuccessfulRequestLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('SuccessfulRequestLatency', { statistic: 'avg', ...props});
+    if (!props?.dimensions?.Operation) {
+      throw new Error("'Operation' dimension must be passed for the 'SuccessfulRequestLatency' metric.");
+    }
+
+    const dimensions = {
+      TableName: this.tableName,
+      Operation: props.dimensions.Operation,
+    };
+
+    return new cloudwatch.Metric({
+      ...DynamoDBMetrics.successfulRequestLatencyAverage(dimensions),
+      ...props,
+      dimensions,
+    }).attachTo(this);
+  }
+
+  /**
+   * Metric for the system errors this table.
+   *
+   * This will sum errors across all possible operations.
+   * Note that by default, each individual metric will be calculated as a sum over a period of 5 minutes.
+   * You can customize this by using the `statistic` and `period` properties.
+   */
+  public metricSystemErrorsForOperations(props?: SystemErrorsForOperationsMetricOptions): cloudwatch.IMetric {
+
+    if (props?.dimensions?.Operation) {
+      throw new Error("The Operation dimension is not supported. Use the 'operations' property.");
+    }
+
+    const operations = props?.operations ?? Object.values(Operation);
+
+    const values = this.createMetricsForOperations('SystemErrors', operations, { statistic: 'sum', ...props });
+
+    const sum = new cloudwatch.MathExpression({
+      expression: `${Object.keys(values).join(' + ')}`,
+      usingMetrics: { ...values },
+      color: props?.color,
+      label: 'Sum of errors across all operations',
+      period: props?.period,
+    });
+
+    return sum;
+  }
+
+  /**
+   * Create a map of metrics that can be used in a math expression.
+   *
+   * Using the return value of this function as the `usingMetrics` property in `cloudwatch.MathExpression` allows you to
+   * use the keys of this map as metric names inside you expression.
+   *
+   * @param metricName The metric name.
+   * @param operations The list of operations to create metrics for.
+   * @param props Properties for the individual metrics.
+   * @param metricNameMapper Mapper function to allow controlling the individual metric name per operation.
+   */
+  private createMetricsForOperations(metricName: string, operations: Operation[],
+    props?: cloudwatch.MetricOptions, metricNameMapper?: (op: Operation) => string): Record<string, cloudwatch.IMetric> {
+
+    const metrics: Record<string, cloudwatch.IMetric> = {};
+
+    const mapper = metricNameMapper ?? (op => op.toLowerCase());
+
+    if (props?.dimensions?.Operation) {
+      throw new Error('Invalid properties. Operation dimension is not supported when calculating operational metrics');
+    }
+
+    for (const operation of operations) {
+
+      const metric = this.metric(metricName, {
+        ...props,
+        dimensions: {
+          TableName: this.tableName,
+          Operation: operation,
+          ...props?.dimensions,
+        },
+      });
+
+      const operationMetricName = mapper(operation);
+      const firstChar = operationMetricName.charAt(0);
+
+      if (firstChar === firstChar.toUpperCase()) {
+        // https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/using-metric-math.html#metric-math-syntax
+        throw new Error(`Mapper generated an illegal operation metric name: ${operationMetricName}. Must start with a lowercase letter`);
+      }
+
+      metrics[operationMetricName] = metric;
+    }
+
+    return metrics;
   }
 
   protected abstract get hasIndex(): boolean;
@@ -710,12 +898,11 @@ abstract class TableBase extends Resource implements ITable {
   ): iam.Grant {
     if (opts.tableActions) {
       const resources = [this.tableArn,
-        Lazy.stringValue({ produce: () => this.hasIndex ? `${this.tableArn}/index/*` : Aws.NO_VALUE }),
+        Lazy.string({ produce: () => this.hasIndex ? `${this.tableArn}/index/*` : Aws.NO_VALUE }),
         ...this.regionalArns,
-        ...this.regionalArns.map(arn => Lazy.stringValue({
+        ...this.regionalArns.map(arn => Lazy.string({
           produce: () => this.hasIndex ? `${arn}/index/*` : Aws.NO_VALUE,
-        })),
-      ];
+        }))];
       const ret = iam.Grant.addToPrincipal({
         grantee,
         actions: opts.tableActions,
@@ -731,7 +918,7 @@ abstract class TableBase extends Resource implements ITable {
       if (!this.tableStreamArn) {
         throw new Error(`DynamoDB Streams must be enabled on the table ${this.node.path}`);
       }
-      const resources = [ this.tableStreamArn];
+      const resources = [this.tableStreamArn];
       const ret = iam.Grant.addToPrincipal({
         grantee,
         actions: opts.streamActions,
@@ -741,6 +928,15 @@ abstract class TableBase extends Resource implements ITable {
       return ret;
     }
     throw new Error(`Unexpected 'action', ${ opts.tableActions || opts.streamActions }`);
+  }
+
+  private cannedMetric(
+    fn: (dims: { TableName: string }) => cloudwatch.MetricProps,
+    props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return new cloudwatch.Metric({
+      ...fn({ TableName: this.tableName }),
+      ...props,
+    }).attachTo(this);
   }
 }
 
@@ -897,8 +1093,8 @@ export class Table extends TableBase {
       tableName: this.physicalName,
       keySchema: this.keySchema,
       attributeDefinitions: this.attributeDefinitions,
-      globalSecondaryIndexes: Lazy.anyValue({ produce: () => this.globalSecondaryIndexes }, { omitEmptyArray: true }),
-      localSecondaryIndexes: Lazy.anyValue({ produce: () => this.localSecondaryIndexes }, { omitEmptyArray: true }),
+      globalSecondaryIndexes: Lazy.any({ produce: () => this.globalSecondaryIndexes }, { omitEmptyArray: true }),
+      localSecondaryIndexes: Lazy.any({ produce: () => this.localSecondaryIndexes }, { omitEmptyArray: true }),
       pointInTimeRecoverySpecification: props.pointInTimeRecovery ? { pointInTimeRecoveryEnabled: props.pointInTimeRecovery } : undefined,
       billingMode: this.billingMode === BillingMode.PAY_PER_REQUEST ? this.billingMode : undefined,
       provisionedThroughput: this.billingMode === BillingMode.PAY_PER_REQUEST ? undefined : {
@@ -1334,8 +1530,8 @@ export class Table extends TableBase {
       encryptionType = props.encryptionKey != null
         // If there is a configured encyptionKey, the encryption is implicitly CUSTOMER_MANAGED
         ? TableEncryption.CUSTOMER_MANAGED
-        // Otherwise, if severSideEncryption is enabled, it's AWS_MANAGED; else DEFAULT
-        : props.serverSideEncryption ? TableEncryption.AWS_MANAGED : TableEncryption.DEFAULT;
+        // Otherwise, if severSideEncryption is enabled, it's AWS_MANAGED; else undefined (do not set anything)
+        : props.serverSideEncryption ? TableEncryption.AWS_MANAGED : undefined;
     }
 
     if (encryptionType !== TableEncryption.CUSTOMER_MANAGED && props.encryptionKey) {
@@ -1363,6 +1559,9 @@ export class Table extends TableBase {
         return { sseSpecification: { sseEnabled: true } };
 
       case TableEncryption.DEFAULT:
+        return { sseSpecification: { sseEnabled: false } };
+
+      case undefined:
         // Not specifying "sseEnabled: false" here because it would cause phony changes to existing stacks.
         return { sseSpecification: undefined };
 
@@ -1449,12 +1648,12 @@ interface ScalableAttributePair {
  * policy resource), new permissions are in effect before clean up happens, and so replicas that
  * need to be dropped can no longer be due to lack of permissions.
  */
-class SourceTableAttachedPolicy extends Construct implements iam.IGrantable {
+class SourceTableAttachedPolicy extends CoreConstruct implements iam.IGrantable {
   public readonly grantPrincipal: iam.IPrincipal;
   public readonly policy: iam.IPolicy;
 
   public constructor(sourceTable: Table, role: iam.IRole) {
-    super(sourceTable, `SourceTableAttachedPolicy-${role.node.uniqueId}`);
+    super(sourceTable, `SourceTableAttachedPolicy-${Names.nodeUniqueId(role.node)}`);
 
     const policy = new iam.Policy(this, 'Resource', { roles: [role] });
     this.policy = policy;

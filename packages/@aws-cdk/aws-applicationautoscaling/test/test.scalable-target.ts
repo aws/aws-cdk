@@ -40,8 +40,8 @@ export = {
       serviceNamespace: appscaling.ServiceNamespace.DYNAMODB,
       scalableDimension: 'test:TestCount',
       resourceId: 'test:this/test',
-      minCapacity: cdk.Lazy.numberValue({ produce: () => 10 }),
-      maxCapacity: cdk.Lazy.numberValue({ produce: () => 1 }),
+      minCapacity: cdk.Lazy.number({ produce: () => 10 }),
+      maxCapacity: cdk.Lazy.number({ produce: () => 1 }),
     });
 
     // THEN: no exception

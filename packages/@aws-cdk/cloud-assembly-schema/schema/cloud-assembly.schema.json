@@ -247,11 +247,11 @@
             "type": "object",
             "properties": {
                 "key": {
-                    "description": "Tag key.",
+                    "description": "Tag key.\n\n(In the actual file on disk this will be cased as \"Key\", and the structure is\npatched to match this structure upon loading:\nhttps://github.com/aws/aws-cdk/blob/4aadaa779b48f35838cccd4e25107b2338f05547/packages/%40aws-cdk/cloud-assembly-schema/lib/manifest.ts#L137)",
                     "type": "string"
                 },
                 "value": {
-                    "description": "Tag value.",
+                    "description": "Tag value.\n\n(In the actual file on disk this will be cased as \"Value\", and the structure is\npatched to match this structure upon loading:\nhttps://github.com/aws/aws-cdk/blob/4aadaa779b48f35838cccd4e25107b2338f05547/packages/%40aws-cdk/cloud-assembly-schema/lib/manifest.ts#L137)",
                     "type": "string"
                 }
             },
@@ -270,6 +270,13 @@
                 },
                 "parameters": {
                     "description": "Values for CloudFormation stack parameters that should be passed when the stack is deployed. (Default - No parameters)",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "tags": {
+                    "description": "Values for CloudFormation stack tags that should be passed when the stack is deployed. (Default - No tags)",
                     "type": "object",
                     "additionalProperties": {
                         "type": "string"
@@ -384,6 +391,15 @@
                         },
                         {
                             "$ref": "#/definitions/EndpointServiceAvailabilityZonesContextQuery"
+                        },
+                        {
+                            "$ref": "#/definitions/LoadBalancerContextQuery"
+                        },
+                        {
+                            "$ref": "#/definitions/LoadBalancerListenerContextQuery"
+                        },
+                        {
+                            "$ref": "#/definitions/SecurityGroupContextQuery"
                         }
                     ]
                 }
@@ -401,6 +417,9 @@
                 "availability-zones",
                 "endpoint-service-availability-zones",
                 "hosted-zone",
+                "load-balancer",
+                "load-balancer-listener",
+                "security-group",
                 "ssm",
                 "vpc-provider"
             ],
@@ -571,6 +590,125 @@
                 "account",
                 "region",
                 "serviceName"
+            ]
+        },
+        "LoadBalancerContextQuery": {
+            "description": "Query input for looking up a load balancer",
+            "type": "object",
+            "properties": {
+                "account": {
+                    "description": "Query account",
+                    "type": "string"
+                },
+                "region": {
+                    "description": "Query region",
+                    "type": "string"
+                },
+                "loadBalancerType": {
+                    "$ref": "#/definitions/LoadBalancerType",
+                    "description": "Filter load balancers by their type"
+                },
+                "loadBalancerArn": {
+                    "description": "Find by load balancer's ARN (Default - does not search by load balancer arn)",
+                    "type": "string"
+                },
+                "loadBalancerTags": {
+                    "description": "Match load balancer tags (Default - does not match load balancers by tags)",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Tag"
+                    }
+                }
+            },
+            "required": [
+                "account",
+                "loadBalancerType",
+                "region"
+            ]
+        },
+        "LoadBalancerType": {
+            "description": "Type of load balancer",
+            "enum": [
+                "application",
+                "network"
+            ],
+            "type": "string"
+        },
+        "LoadBalancerListenerContextQuery": {
+            "description": "Query input for looking up a load balancer listener",
+            "type": "object",
+            "properties": {
+                "account": {
+                    "description": "Query account",
+                    "type": "string"
+                },
+                "region": {
+                    "description": "Query region",
+                    "type": "string"
+                },
+                "listenerArn": {
+                    "description": "Find by listener's arn (Default - does not find by listener arn)",
+                    "type": "string"
+                },
+                "listenerProtocol": {
+                    "description": "Filter by listener protocol (Default - does not filter by listener protocol)",
+                    "enum": [
+                        "HTTP",
+                        "HTTPS",
+                        "TCP",
+                        "TCP_UDP",
+                        "TLS",
+                        "UDP"
+                    ],
+                    "type": "string"
+                },
+                "listenerPort": {
+                    "description": "Filter listeners by listener port (Default - does not filter by a listener port)",
+                    "type": "number"
+                },
+                "loadBalancerType": {
+                    "$ref": "#/definitions/LoadBalancerType",
+                    "description": "Filter load balancers by their type"
+                },
+                "loadBalancerArn": {
+                    "description": "Find by load balancer's ARN (Default - does not search by load balancer arn)",
+                    "type": "string"
+                },
+                "loadBalancerTags": {
+                    "description": "Match load balancer tags (Default - does not match load balancers by tags)",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Tag"
+                    }
+                }
+            },
+            "required": [
+                "account",
+                "loadBalancerType",
+                "region"
+            ]
+        },
+        "SecurityGroupContextQuery": {
+            "description": "Query input for looking up a security group",
+            "type": "object",
+            "properties": {
+                "account": {
+                    "description": "Query account",
+                    "type": "string"
+                },
+                "region": {
+                    "description": "Query region",
+                    "type": "string"
+                },
+                "securityGroupId": {
+                    "description": "Security group id",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "account",
+                "region",
+                "securityGroupId"
             ]
         },
         "RuntimeInfo": {

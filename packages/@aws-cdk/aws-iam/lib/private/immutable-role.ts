@@ -1,4 +1,5 @@
-import { ConcreteDependable, Construct, DependableTrait } from '@aws-cdk/core';
+import { ConcreteDependable, DependableTrait, Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Grant } from '../grant';
 import { IManagedPolicy } from '../managed-policy';
 import { Policy } from '../policy';
@@ -19,20 +20,24 @@ import { IRole } from '../role';
  * which was imported into the CDK with {@link Role.fromRoleArn}, you don't have to use this class -
  * simply pass the property mutable = false when calling {@link Role.fromRoleArn}.
  */
-export class ImmutableRole extends Construct implements IRole {
+export class ImmutableRole extends Resource implements IRole {
   public readonly assumeRoleAction = this.role.assumeRoleAction;
   public readonly policyFragment = this.role.policyFragment;
   public readonly grantPrincipal = this;
+  public readonly principalAccount = this.role.principalAccount;
   public readonly roleArn = this.role.roleArn;
   public readonly roleName = this.role.roleName;
   public readonly stack = this.role.stack;
 
   constructor(scope: Construct, id: string, private readonly role: IRole) {
-    super(scope, id);
+    super(scope, id, {
+      account: role.env.account,
+      region: role.env.region,
+    });
 
     // implement IDependable privately
     DependableTrait.implement(this, {
-      dependencyRoots: [ role ],
+      dependencyRoots: [role],
     });
   }
 

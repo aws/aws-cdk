@@ -3,6 +3,7 @@ import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as cdk from '@aws-cdk/core';
+import * as constructs from 'constructs';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as autoscaling from '../lib';
 
@@ -74,7 +75,7 @@ nodeunitShim({
       test.done();
     },
 
-    'request count'(test: Test) {
+    'request count per second'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
       const fixture = new ASGFixture(stack, 'Fixture');
@@ -95,7 +96,56 @@ nodeunitShim({
         'Fn::Split': [
           '/',
           { Ref: 'ALBListener3B99FF85' },
-        ]};
+        ],
+      };
+
+      expect(stack).to(haveResource('AWS::AutoScaling::ScalingPolicy', {
+        PolicyType: 'TargetTrackingScaling',
+        TargetTrackingConfiguration: {
+          TargetValue: 600,
+          PredefinedMetricSpecification: {
+            PredefinedMetricType: 'ALBRequestCountPerTarget',
+            ResourceLabel: {
+              'Fn::Join': ['', [
+                { 'Fn::Select': [1, arnParts] },
+                '/',
+                { 'Fn::Select': [2, arnParts] },
+                '/',
+                { 'Fn::Select': [3, arnParts] },
+                '/',
+                { 'Fn::GetAtt': ['ALBListenerTargetsGroup01D7716A', 'TargetGroupFullName'] },
+              ]],
+            },
+          },
+        },
+      }));
+
+      test.done();
+    },
+
+    'request count per minute'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fixture = new ASGFixture(stack, 'Fixture');
+      const alb = new elbv2.ApplicationLoadBalancer(stack, 'ALB', { vpc: fixture.vpc });
+      const listener = alb.addListener('Listener', { port: 80 });
+      listener.addTargets('Targets', {
+        port: 80,
+        targets: [fixture.asg],
+      });
+
+      // WHEN
+      fixture.asg.scaleOnRequestCount('ScaleRequest', {
+        targetRequestsPerMinute: 10,
+      });
+
+      // THEN
+      const arnParts = {
+        'Fn::Split': [
+          '/',
+          { Ref: 'ALBListener3B99FF85' },
+        ],
+      };
 
       expect(stack).to(haveResource('AWS::AutoScaling::ScalingPolicy', {
         PolicyType: 'TargetTrackingScaling',
@@ -103,16 +153,16 @@ nodeunitShim({
           TargetValue: 10,
           PredefinedMetricSpecification: {
             PredefinedMetricType: 'ALBRequestCountPerTarget',
-            ResourceLabel: { 'Fn::Join': [ '', [
-              { 'Fn::Select': [ 1, arnParts ] },
-              '/',
-              { 'Fn::Select': [ 2, arnParts ] },
-              '/',
-              { 'Fn::Select': [ 3, arnParts ] },
-              '/',
-              { 'Fn::GetAtt': [ 'ALBListenerTargetsGroup01D7716A', 'TargetGroupFullName' ] },
-            ],
-            ],
+            ResourceLabel: {
+              'Fn::Join': ['', [
+                { 'Fn::Select': [1, arnParts] },
+                '/',
+                { 'Fn::Select': [2, arnParts] },
+                '/',
+                { 'Fn::Select': [3, arnParts] },
+                '/',
+                { 'Fn::GetAtt': ['ALBListenerTargetsGroup01D7716A', 'TargetGroupFullName'] },
+              ]],
             },
           },
         },
@@ -196,7 +246,7 @@ nodeunitShim({
     expect(stack).to(haveResource('AWS::CloudWatch::Alarm', {
       ComparisonOperator: 'GreaterThanOrEqualToThreshold',
       Threshold: 3,
-      AlarmActions: [ { Ref: 'FixtureASGMetricUpperPolicyC464CAFB' } ],
+      AlarmActions: [{ Ref: 'FixtureASGMetricUpperPolicyC464CAFB' }],
       AlarmDescription: 'Upper threshold scaling alarm',
     }));
 
@@ -215,7 +265,7 @@ nodeunitShim({
     expect(stack).to(haveResource('AWS::CloudWatch::Alarm', {
       ComparisonOperator: 'LessThanOrEqualToThreshold',
       Threshold: 2,
-      AlarmActions: [ { Ref: 'FixtureASGMetricLowerPolicy4A1CDE42' } ],
+      AlarmActions: [{ Ref: 'FixtureASGMetricLowerPolicy4A1CDE42' }],
       AlarmDescription: 'Lower threshold scaling alarm',
     }));
 
@@ -227,7 +277,7 @@ class ASGFixture extends cdk.Construct {
   public readonly vpc: ec2.Vpc;
   public readonly asg: autoscaling.AutoScalingGroup;
 
-  constructor(scope: cdk.Construct, id: string) {
+  constructor(scope: constructs.Construct, id: string) {
     super(scope, id);
 
     this.vpc = new ec2.Vpc(this, 'VPC');

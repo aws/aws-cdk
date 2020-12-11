@@ -84,7 +84,7 @@ export class Docker {
 
 async function obtainEcrCredentials(ecr: AWS.ECR, logger?: Logger) {
   if (logger) { logger('Fetching ECR authorization token'); }
-  const authData =  (await ecr.getAuthorizationToken({ }).promise()).authorizationData || [];
+  const authData = (await ecr.getAuthorizationToken({ }).promise()).authorizationData || [];
   if (authData.length === 0) {
     throw new Error('No authorization data received from ECR');
   }

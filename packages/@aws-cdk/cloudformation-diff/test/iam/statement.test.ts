@@ -7,7 +7,7 @@ test('can parse all positive fields', () => {
     Effect: 'Allow',
     Resource: ['resource'],
     Action: ['action'],
-    Principal: [{AWS: 'arn'}],
+    Principal: [{ AWS: 'arn' }],
     Condition: { StringEquals: { 'Amzn-This': 'That' } },
   });
 
@@ -35,7 +35,7 @@ test('correctly parses NotFields', () => {
   const statement = new Statement({
     NotResource: ['resource'],
     NotAction: ['action'],
-    NotPrincipal: [{AWS: 'arn'}],
+    NotPrincipal: [{ AWS: 'arn' }],
   });
 
   expect(statement.resources.not).toBe(true);
@@ -153,8 +153,8 @@ const arbitraryPrincipal = fc.oneof<any>(
 );
 const arbitraryCondition = fc.oneof(
   fc.constant(undefined),
-  fc.constant({ StringEquals: { Key: 'Value' }}),
-  fc.constant({ StringEquals: { Key: 'Value' }, NumberEquals: { Key: 5 }}),
+  fc.constant({ StringEquals: { Key: 'Value' } }),
+  fc.constant({ StringEquals: { Key: 'Value' }, NumberEquals: { Key: 5 } }),
 );
 
 const arbitraryStatement = fc.record({

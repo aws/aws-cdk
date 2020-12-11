@@ -72,17 +72,17 @@ export = {
 
     new Rule(stack, 'MyRule', {
       eventPattern: {
-        account: [ 'account1', 'account2' ],
+        account: ['account1', 'account2'],
         detail: {
-          foo: [ 1, 2 ],
+          foo: [1, 2],
         },
-        detailType: [ 'detailType1' ],
-        id: [ 'id1', 'id2' ],
-        region: [ 'region1', 'region2', 'region3' ],
-        resources: [ 'r1' ],
-        source: [ 'src1', 'src2' ],
-        time: [ 't1' ],
-        version: [ '0' ],
+        detailType: ['detailType1'],
+        id: ['id1', 'id2'],
+        region: ['region1', 'region2', 'region3'],
+        resources: ['r1'],
+        source: ['src1', 'src2'],
+        time: ['t1'],
+        version: ['0'],
       },
     });
 
@@ -92,15 +92,15 @@ export = {
           'Type': 'AWS::Events::Rule',
           'Properties': {
             'EventPattern': {
-              account: [ 'account1', 'account2' ],
-              detail: { foo: [ 1, 2 ] },
-              'detail-type': [ 'detailType1' ],
-              id: [ 'id1', 'id2' ],
-              region: [ 'region1', 'region2', 'region3' ],
-              resources: [ 'r1' ],
-              source: [ 'src1', 'src2' ],
-              time: [ 't1' ],
-              version: [ '0' ],
+              account: ['account1', 'account2'],
+              detail: { foo: [1, 2] },
+              'detail-type': ['detailType1'],
+              id: ['id1', 'id2'],
+              region: ['region1', 'region2', 'region3'],
+              resources: ['r1'],
+              source: ['src1', 'src2'],
+              time: ['t1'],
+              version: ['0'],
             },
             'State': 'ENABLED',
           },
@@ -124,18 +124,18 @@ export = {
 
     const rule = new Rule(stack, 'MyRule');
     rule.addEventPattern({
-      account: [ '12345' ],
+      account: ['12345'],
       detail: {
-        foo: [ 'hello' ],
+        foo: ['hello', 'bar', 'hello'],
       },
     });
 
     rule.addEventPattern({
-      source: [ 'aws.source' ],
+      source: ['aws.source'],
       detail: {
-        foo: [ 'bar' ],
+        foo: ['bar', 'hello'],
         goo: {
-          hello: [ 'world' ],
+          hello: ['world'],
         },
       },
     });
@@ -172,6 +172,37 @@ export = {
     test.done();
   },
 
+  'addEventPattern can de-duplicate filters and keep the order'(test: Test) {
+    const stack = new cdk.Stack();
+
+    const rule = new Rule(stack, 'MyRule');
+    rule.addEventPattern({
+      detailType: ['AWS API Call via CloudTrail', 'AWS API Call via CloudTrail'],
+    });
+
+    rule.addEventPattern({
+      detailType: ['EC2 Instance State-change Notification', 'AWS API Call via CloudTrail'],
+    });
+
+    expect(stack).toMatch({
+      'Resources': {
+        'MyRuleA44AB831': {
+          'Type': 'AWS::Events::Rule',
+          'Properties': {
+            'EventPattern': {
+              'detail-type': [
+                'AWS API Call via CloudTrail',
+                'EC2 Instance State-change Notification',
+              ],
+            },
+            'State': 'ENABLED',
+          },
+        },
+      },
+    });
+    test.done();
+  },
+
   'targets can be added via props or addTarget with input transformer'(test: Test) {
     const stack = new cdk.Stack();
     const t1: IRuleTarget = {
@@ -191,7 +222,7 @@ export = {
     };
 
     const rule = new Rule(stack, 'EventRule', {
-      targets: [ t1 ],
+      targets: [t1],
       schedule: Schedule.rate(cdk.Duration.minutes(5)),
     });
 
@@ -249,8 +280,9 @@ export = {
     rule.addTarget({
       bind: () => ({
         id: '',
-        arn: 'ARN1', kinesisParameters: { partitionKeyPath: 'partitionKeyPath' },
-        input: RuleTargetInput.fromText(cdk.Fn.join('', [ 'a', 'b' ]).toString()),
+        arn: 'ARN1',
+        kinesisParameters: { partitionKeyPath: 'partitionKeyPath' },
+        input: RuleTargetInput.fromText(cdk.Fn.join('', ['a', 'b']).toString()),
       }),
     });
 
@@ -344,7 +376,7 @@ export = {
         {
           'Arn': 'ARN2',
           'Id': 'Target0',
-          'RoleArn': {'Fn::GetAtt': ['SomeRole6DDC54DD', 'Arn']},
+          'RoleArn': { 'Fn::GetAtt': ['SomeRole6DDC54DD', 'Arn'] },
         },
       ],
     }));
@@ -361,7 +393,7 @@ export = {
     const t1: IRuleTarget = {
       bind: (eventRule: IRule) => {
         receivedRuleArn = eventRule.ruleArn;
-        receivedRuleId = eventRule.node.uniqueId;
+        receivedRuleId = cdk.Names.nodeUniqueId(eventRule.node);
 
         return {
           id: '',
@@ -375,7 +407,7 @@ export = {
     rule.addTarget(t1);
 
     test.deepEqual(stack.resolve(receivedRuleArn), stack.resolve(rule.ruleArn));
-    test.deepEqual(receivedRuleId, rule.node.uniqueId);
+    test.deepEqual(receivedRuleId, cdk.Names.uniqueId(rule));
     test.done();
   },
 
@@ -471,7 +503,7 @@ export = {
 
     new Rule(stack, 'EventRule', {
       schedule: Schedule.rate(cdk.Duration.minutes(5)),
-      targets: [ t1 ],
+      targets: [t1],
     });
 
     expect(stack).to(haveResource('AWS::Events::Rule', {
@@ -736,13 +768,15 @@ export = {
 };
 
 class SomeTarget implements IRuleTarget {
+  // eslint-disable-next-line cdk/no-core-construct
   public constructor(private readonly id?: string, private readonly resource?: cdk.IConstruct) {
   }
 
   public bind(): RuleTargetConfig {
     return {
       id: this.id || '',
-      arn: 'ARN1', kinesisParameters: { partitionKeyPath: 'partitionKeyPath' },
+      arn: 'ARN1',
+      kinesisParameters: { partitionKeyPath: 'partitionKeyPath' },
       targetResource: this.resource,
     };
   }

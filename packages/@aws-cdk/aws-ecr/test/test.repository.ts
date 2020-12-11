@@ -28,7 +28,7 @@ export = {
     test.done();
   },
 
-  'repository creation with imageScanOnPush creates custom resource'(test: Test) {
+  'repository creation with imageScanOnPush'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -36,7 +36,11 @@ export = {
     new ecr.Repository(stack, 'Repo', { imageScanOnPush: true });
 
     // THEN
-    expect(stack).to(haveResource('Custom::ECRImageScanOnPush'));
+    expect(stack).to(haveResource('AWS::ECR::Repository', {
+      ImageScanningConfiguration: {
+        scanOnPush: true,
+      },
+    }));
     test.done();
   },
 
@@ -244,8 +248,8 @@ export = {
         { Ref: 'AWS::Region' },
         ':',
         { Ref: 'AWS::AccountId' },
-        ':repository/my-repo'],
-      ],
+        ':repository/my-repo',
+      ]],
     });
     test.deepEqual(stack.resolve(repo.repositoryName), 'my-repo');
     test.done();
@@ -273,7 +277,8 @@ export = {
         ':',
         { Ref: 'AWS::AccountId' },
         ':repository/',
-        { 'Fn::GetAtt': ['Boom', 'Name'] }]],
+        { 'Fn::GetAtt': ['Boom', 'Name'] },
+      ]],
     });
     test.done();
   },
@@ -284,7 +289,10 @@ export = {
     const repo = new ecr.Repository(stack, 'Repo');
 
     // WHEN
-    repo.addToResourcePolicy(new iam.PolicyStatement({ actions: ['*'] }));
+    repo.addToResourcePolicy(new iam.PolicyStatement({
+      actions: ['*'],
+      principals: [new iam.AnyPrincipal()],
+    }));
 
     // THEN
     expect(stack).to(haveResource('AWS::ECR::Repository', {
@@ -293,12 +301,47 @@ export = {
           {
             Action: '*',
             Effect: 'Allow',
+            Principal: '*',
           },
         ],
         Version: '2012-10-17',
       },
     }));
 
+    test.done();
+  },
+
+  'fails if repository policy has no actions'(test: Test) {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'my-stack');
+    const repo = new ecr.Repository(stack, 'Repo');
+
+    // WHEN
+    repo.addToResourcePolicy(new iam.PolicyStatement({
+      resources: ['*'],
+      principals: [new iam.ArnPrincipal('arn')],
+    }));
+
+    // THEN
+    test.throws(() => app.synth(), /A PolicyStatement must specify at least one \'action\' or \'notAction\'/);
+    test.done();
+  },
+
+  'fails if repository policy has no IAM principals'(test: Test) {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'my-stack');
+    const repo = new ecr.Repository(stack, 'Repo');
+
+    // WHEN
+    repo.addToResourcePolicy(new iam.PolicyStatement({
+      resources: ['*'],
+      actions: ['ecr:*'],
+    }));
+
+    // THEN
+    test.throws(() => app.synth(), /A PolicyStatement used in a resource-based policy must specify at least one IAM principal/);
     test.done();
   },
 

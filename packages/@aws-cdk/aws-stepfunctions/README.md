@@ -1,5 +1,6 @@
-## AWS Step Functions Construct Library
+# AWS Step Functions Construct Library
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
@@ -7,6 +8,7 @@
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
 
 The `@aws-cdk/aws-stepfunctions` package contains constructs for building
@@ -17,7 +19,7 @@ to call other AWS services.
 Defining a workflow looks like this (for the [Step Functions Job Poller
 example](https://docs.aws.amazon.com/step-functions/latest/dg/job-status-poller-sample.html)):
 
-### Example
+## Example
 
 ```ts
 import * as sfn from '@aws-cdk/aws-stepfunctions';
@@ -154,7 +156,7 @@ and also injects a field called `otherData`.
 ```ts
 const pass = new stepfunctions.Pass(this, 'Filter input and inject data', {
   parameters: { // input to the pass state
-    input: stepfunctions.JsonPath.stringAt('$.input.greeting')
+    input: stepfunctions.JsonPath.stringAt('$.input.greeting'),
     otherData: 'some-extra-stuff'
   },
 });
@@ -216,6 +218,56 @@ choice.afterwards().next(shipTheItem);
 If your `Choice` doesn't have an `otherwise()` and none of the conditions match
 the JSON state, a `NoChoiceMatched` error will be thrown. Wrap the state machine
 in a `Parallel` state if you want to catch and recover from this.
+
+#### Available Conditions
+
+see [step function comparison operators](https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-choice-state.html#amazon-states-language-choice-state-rules)
+
+* `Condition.isPresent` - matches if a json path is present
+* `Condition.isNotPresent` - matches if a json path is not present
+* `Condition.isString` - matches if a json path contains a string
+* `Condition.isNotString` - matches if a json path is not a string
+* `Condition.isNumeric` - matches if a json path is numeric
+* `Condition.isNotNumeric` - matches if a json path is not numeric
+* `Condition.isBoolean` - matches if a json path is boolean
+* `Condition.isNotBoolean` - matches if a json path is not boolean
+* `Condition.isTimestamp` - matches if a json path is a timestamp
+* `Condition.isNotTimestamp` - matches if a json path is not a timestamp
+* `Condition.isNotNull` - matches if a json path is not null
+* `Condition.isNull` - matches if a json path is null
+* `Condition.booleanEquals` - matches if a boolean field has a given value
+* `Condition.booleanEqualsJsonPath` - matches if a boolean field equals a value in a given mapping path
+* `Condition.stringEqualsJsonPath` - matches if a string field equals a given mapping path
+* `Condition.stringEquals` - matches if a field equals a string value
+* `Condition.stringLessThan` - matches if a string field sorts before a given value
+* `Condition.stringLessThanJsonPath` - matches if a string field sorts before a value at given mapping path
+* `Condition.stringLessThanEquals` - matches if a string field sorts equal to or before a given value
+* `Condition.stringLessThanEqualsJsonPath` - matches if a string field sorts equal to or before a given mapping
+* `Condition.stringGreaterThan` - matches if a string field sorts after a given value
+* `Condition.stringGreaterThanJsonPath` - matches if a string field sorts after a value at a given mapping path
+* `Condition.stringGreaterThanEqualsJsonPath` - matches if a string field sorts after or equal to value at a given mapping path
+* `Condition.stringGreaterThanEquals` - matches if a string field sorts after or equal to a given value
+* `Condition.numberEquals` - matches if a numeric field has the given value
+* `Condition.numberEqualsJsonPath` - matches if a numeric field has the value in a given mapping path
+* `Condition.numberLessThan` - matches if a numeric field is less than the given value
+* `Condition.numberLessThanJsonPath` - matches if a numeric field is less than the value at the given mapping path
+* `Condition.numberLessThanEquals` - matches if a numeric field is less than or equal to the given value
+* `Condition.numberLessThanEqualsJsonPath` - matches if a numeric field is less than or equal to the numeric value at given mapping path
+* `Condition.numberGreaterThan` - matches if a numeric field is greater than the given value
+* `Condition.numberGreaterThanJsonPath` - matches if a numeric field is greater than the value at a given mapping path
+* `Condition.numberGreaterThanEquals` - matches if a numeric field is greater than or equal to the given value
+* `Condition.numberGreaterThanEqualsJsonPath` - matches if a numeric field is greater than or equal to the value at a given mapping path
+* `Condition.timestampEquals` - matches if a timestamp field is the same time as the given timestamp
+* `Condition.timestampEqualsJsonPath` - matches if a timestamp field is the same time as the timestamp at a given mapping path
+* `Condition.timestampLessThan` - matches if a timestamp field is before the given timestamp
+* `Condition.timestampLessThanJsonPath` - matches if a timestamp field is before the timestamp at a given mapping path
+* `Condition.timestampLessThanEquals` - matches if a timestamp field is before or equal to the given timestamp
+* `Condition.timestampLessThanEqualsJsonPath` - matches if a timestamp field is before or equal to the timestamp at a given mapping path
+* `Condition.timestampGreaterThan` - matches if a timestamp field is after the timestamp at a given mapping path
+* `Condition.timestampGreaterThanJsonPath` - matches if a timestamp field is after the timestamp at a given mapping path
+* `Condition.timestampGreaterThanEquals` - matches if a timestamp field is after or equal to the given timestamp
+* `Condition.timestampGreaterThanEqualsJsonPath` - matches if a timestamp field is after or equal to the timestamp at a given mapping path
+* `Condition.stringMatches` - matches if a field matches a string pattern that can contain a wild card (\*) e.g: log-\*.txt or \*LATEST\*. No other characters other than "\*" have any special meaning - \* can be escaped: \\\\*
 
 ### Parallel
 
@@ -433,6 +485,7 @@ new stepfunctions.Parallel(this, 'All jobs')
 ```
 
 A few utility functions are available to parse state machine fragments.
+
 * `State.findReachableStates`: Retrieve the list of states reachable from a given state.
 * `State.findReachableEndStates`: Retrieve the list of end or terminal states reachable from a given state.
 
@@ -514,11 +567,27 @@ const logGroup = new logs.LogGroup(stack, 'MyLogGroup');
 new stepfunctions.StateMachine(stack, 'MyStateMachine', {
     definition: stepfunctions.Chain.start(new stepfunctions.Pass(stack, 'Pass')),
     logs: {
-      destinations: logGroup,
+      destination: logGroup,
       level: stepfunctions.LogLevel.ALL,
     }
 });
 ```
+
+## X-Ray tracing
+
+Enable X-Ray tracing for StateMachine:
+
+```ts
+const logGroup = new logs.LogGroup(stack, 'MyLogGroup');
+
+new stepfunctions.StateMachine(stack, 'MyStateMachine', {
+    definition: stepfunctions.Chain.start(new stepfunctions.Pass(stack, 'Pass')),
+    tracingEnabled: true
+});
+```
+
+See [the AWS documentation](https://docs.aws.amazon.com/step-functions/latest/dg/concepts-xray-tracing.html)
+to learn more about AWS Step Functions's X-Ray support.
 
 ## State Machine Permission Grants
 
@@ -526,13 +595,13 @@ IAM roles, users, or groups which need to be able to work with a State Machine s
 
 Any object that implements the `IGrantable` interface (has an associated principal) can be granted permissions by calling:
 
-- `stateMachine.grantStartExecution(principal)` - grants the principal the ability to execute the state machine
-- `stateMachine.grantRead(principal)` - grants the principal read access
-- `stateMachine.grantTaskResponse(principal)` - grants the principal the ability to send task tokens to the state machine
-- `stateMachine.grantExecution(principal, actions)` - grants the principal execution-level permissions for the IAM actions specified 
-- `stateMachine.grant(principal, actions)` - grants the principal state-machine-level permissions for the IAM actions specified
+* `stateMachine.grantStartExecution(principal)` - grants the principal the ability to execute the state machine
+* `stateMachine.grantRead(principal)` - grants the principal read access
+* `stateMachine.grantTaskResponse(principal)` - grants the principal the ability to send task tokens to the state machine
+* `stateMachine.grantExecution(principal, actions)` - grants the principal execution-level permissions for the IAM actions specified
+* `stateMachine.grant(principal, actions)` - grants the principal state-machine-level permissions for the IAM actions specified
 
-### Start Execution Permission 
+### Start Execution Permission
 
 Grant permission to start an execution of a state machine by calling the `grantStartExecution()` API.
 
@@ -551,7 +620,7 @@ stateMachine.grantStartExecution(role);
 
 The following permission is provided to a service principal by the `grantStartExecution()` API:
 
-- `states:StartExecution` - to state machine
+* `states:StartExecution` - to state machine
 
 ### Read Permissions
 
@@ -572,14 +641,14 @@ stateMachine.grantRead(role);
 
 The following read permissions are provided to a service principal by the `grantRead()` API:
 
-- `states:ListExecutions` - to state machine
-- `states:ListStateMachines` - to state machine
-- `states:DescribeExecution` - to executions
-- `states:DescribeStateMachineForExecution` - to executions
-- `states:GetExecutionHistory` - to executions
-- `states:ListActivities` - to `*`
-- `states:DescribeStateMachine` - to `*`
-- `states:DescribeActivity` - to `*`
+* `states:ListExecutions` - to state machine
+* `states:ListStateMachines` - to state machine
+* `states:DescribeExecution` - to executions
+* `states:DescribeStateMachineForExecution` - to executions
+* `states:GetExecutionHistory` - to executions
+* `states:ListActivities` - to `*`
+* `states:DescribeStateMachine` - to `*`
+* `states:DescribeActivity` - to `*`
 
 ### Task Response Permissions
 
@@ -600,9 +669,9 @@ stateMachine.grantTaskResponse(role);
 
 The following read permissions are provided to a service principal by the `grantRead()` API:
 
-- `states:SendTaskSuccess` - to state machine
-- `states:SendTaskFailure` - to state machine
-- `states:SendTaskHeartbeat` - to state machine
+* `states:SendTaskSuccess` - to state machine
+* `states:SendTaskFailure` - to state machine
+* `states:SendTaskHeartbeat` - to state machine
 
 ### Execution-level Permissions
 

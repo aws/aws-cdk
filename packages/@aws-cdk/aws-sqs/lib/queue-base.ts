@@ -40,7 +40,7 @@ export interface IQueue extends IResource {
    *
    * If this queue was created in this stack (`new Queue`), a queue policy
    * will be automatically created upon the first call to `addToPolicy`. If
-   * the queue is improted (`Queue.import`), then this is a no-op.
+   * the queue is imported (`Queue.import`), then this is a no-op.
    */
   addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult;
 
@@ -139,11 +139,11 @@ export abstract class QueueBase extends Resource implements IQueue {
    *
    * If this queue was created in this stack (`new Queue`), a queue policy
    * will be automatically created upon the first call to `addToPolicy`. If
-   * the queue is improted (`Queue.import`), then this is a no-op.
+   * the queue is imported (`Queue.import`), then this is a no-op.
    */
   public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
     if (!this.policy && this.autoCreatePolicy) {
-      this.policy = new QueuePolicy(this, 'Policy', { queues: [ this ] });
+      this.policy = new QueuePolicy(this, 'Policy', { queues: [this] });
     }
 
     if (this.policy) {
@@ -152,6 +152,12 @@ export abstract class QueueBase extends Resource implements IQueue {
     }
 
     return { statementAdded: false };
+  }
+
+  protected validate(): string[] {
+    const errors = super.validate();
+    errors.push(...this.policy?.document.validateForResourcePolicy() || []);
+    return errors;
   }
 
   /**

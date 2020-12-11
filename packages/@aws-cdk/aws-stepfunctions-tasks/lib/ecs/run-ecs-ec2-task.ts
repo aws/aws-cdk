@@ -87,7 +87,7 @@ function validateNoNetworkingProps(props: RunEcsEc2TaskProps) {
 }
 
 function uppercaseKeys(obj: {[key: string]: any}): {[key: string]: any} {
-  const ret: {[key: string]: any}  = {};
+  const ret: {[key: string]: any} = {};
   for (const key of Object.keys(obj)) {
     ret[key.slice(0, 1).toUpperCase() + key.slice(1)] = obj[key];
   }

@@ -1,7 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as sns from '@aws-cdk/aws-sns';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { Construct, Stack } from '@aws-cdk/core';
+import { Construct, Names, Stack } from '@aws-cdk/core';
 import { SubscriptionProps } from './subscription';
 
 /**
@@ -48,7 +48,7 @@ export class SqsSubscription implements sns.ITopicSubscription {
 
     return {
       subscriberScope: this.queue,
-      subscriberId: topic.node.uniqueId,
+      subscriberId: Names.nodeUniqueId(topic.node),
       endpoint: this.queue.queueArn,
       protocol: sns.SubscriptionProtocol.SQS,
       rawMessageDelivery: this.props.rawMessageDelivery,

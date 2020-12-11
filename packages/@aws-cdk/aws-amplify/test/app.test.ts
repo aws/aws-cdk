@@ -371,3 +371,20 @@ test('with auto branch creation', () => {
     },
   });
 });
+
+test('with auto branch deletion', () => {
+  // WHEN
+  new amplify.App(stack, 'App', {
+    sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
+      owner: 'aws',
+      repository: 'aws-cdk',
+      oauthToken: SecretValue.plainText('secret'),
+    }),
+    autoBranchDeletion: true,
+  });
+
+  // THEN
+  expect(stack).toHaveResource('AWS::Amplify::App', {
+    EnableBranchAutoDeletion: true,
+  });
+});

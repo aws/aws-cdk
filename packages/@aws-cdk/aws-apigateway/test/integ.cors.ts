@@ -1,7 +1,8 @@
 /// !cdk-integ pragma:ignore-assets
-import * as lambda from '@aws-cdk/aws-lambda';
-import { App, Construct, Stack, StackProps } from '@aws-cdk/core';
 import * as path from 'path';
+import * as lambda from '@aws-cdk/aws-lambda';
+import { App, Stack, StackProps } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as apigw from '../lib';
 
 class TestStack extends Stack {
@@ -19,10 +20,10 @@ class TestStack extends Stack {
     const twitch = api.root.addResource('twitch');
     const backend = new apigw.LambdaIntegration(handler);
 
-    twitch.addMethod('GET', backend);    // GET /twitch
-    twitch.addMethod('POST', backend);   // POST /twitch
+    twitch.addMethod('GET', backend); // GET /twitch
+    twitch.addMethod('POST', backend); // POST /twitch
     twitch.addMethod('DELETE', backend); // DELETE /twitch
-    twitch.addCorsPreflight({ allowOrigins: [ 'https://google.com', 'https://www.test-cors.org' ] });
+    twitch.addCorsPreflight({ allowOrigins: ['https://google.com', 'https://www.test-cors.org'] });
   }
 }
 

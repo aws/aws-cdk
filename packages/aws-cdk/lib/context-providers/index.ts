@@ -7,11 +7,13 @@ import { AmiContextProviderPlugin } from './ami';
 import { AZContextProviderPlugin } from './availability-zones';
 import { EndpointServiceAZContextProviderPlugin } from './endpoint-service-availability-zones';
 import { HostedZoneContextProviderPlugin } from './hosted-zones';
+import { LoadBalancerListenerContextProviderPlugin, LoadBalancerContextProviderPlugin } from './load-balancers';
 import { ContextProviderPlugin } from './provider';
+import { SecurityGroupContextProviderPlugin } from './security-groups';
 import { SSMContextProviderPlugin } from './ssm-parameters';
 import { VpcNetworkContextProviderPlugin } from './vpcs';
 
-type ProviderConstructor =  (new (sdk: SdkProvider) => ContextProviderPlugin);
+type ProviderConstructor = (new (sdk: SdkProvider) => ContextProviderPlugin);
 export type ProviderMap = {[name: string]: ProviderConstructor};
 
 /**
@@ -61,4 +63,7 @@ const availableContextProviders: ProviderMap = {
   [cxschema.ContextProvider.VPC_PROVIDER]: VpcNetworkContextProviderPlugin,
   [cxschema.ContextProvider.AMI_PROVIDER]: AmiContextProviderPlugin,
   [cxschema.ContextProvider.ENDPOINT_SERVICE_AVAILABILITY_ZONE_PROVIDER]: EndpointServiceAZContextProviderPlugin,
+  [cxschema.ContextProvider.SECURITY_GROUP_PROVIDER]: SecurityGroupContextProviderPlugin,
+  [cxschema.ContextProvider.LOAD_BALANCER_PROVIDER]: LoadBalancerContextProviderPlugin,
+  [cxschema.ContextProvider.LOAD_BALANCER_LISTENER_PROVIDER]: LoadBalancerListenerContextProviderPlugin,
 };

@@ -2,7 +2,7 @@ import * as reflect from 'jsii-reflect';
 import { Linter } from '../linter';
 import { CfnResourceReflection } from './cfn-resource';
 
-interface ModuleLinterContext  {
+interface ModuleLinterContext {
   readonly assembly: reflect.Assembly;
   readonly namespace: string;
 }
@@ -13,13 +13,13 @@ export const moduleLinter = new Linter<ModuleLinterContext>(assembly => {
     return undefined; // no resources
   }
 
-  return [ {
+  return [{
     assembly,
     namespace: cfnResources[0].namespace,
-  } ];
+  }];
 });
 
-moduleLinter.add(  {
+moduleLinter.add( {
   code: 'module-name',
   message: 'module name must be @aws-cdk/aws-<namespace>',
   eval: e => {

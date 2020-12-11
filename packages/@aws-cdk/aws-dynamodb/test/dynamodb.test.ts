@@ -3,7 +3,7 @@ import '@aws-cdk/assert/jest';
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { App, CfnDeletionPolicy, ConstructNode, Duration, PhysicalName, RemovalPolicy, Stack, Tag } from '@aws-cdk/core';
+import { App, CfnDeletionPolicy, ConstructNode, Duration, PhysicalName, RemovalPolicy, Stack, Tags } from '@aws-cdk/core';
 import {
   Attribute,
   AttributeType,
@@ -14,6 +14,7 @@ import {
   StreamViewType,
   Table,
   TableEncryption,
+  Operation,
 } from '../lib';
 
 /* eslint-disable quote-props */
@@ -324,7 +325,7 @@ test('when specifying every property', () => {
     partitionKey: TABLE_PARTITION_KEY,
     sortKey: TABLE_SORT_KEY,
   });
-  table.node.applyAspect(new Tag('Environment', 'Production'));
+  Tags.of(table).add('Environment', 'Production');
 
   expect(stack).toHaveResource('AWS::DynamoDB::Table',
     {
@@ -357,7 +358,7 @@ test('when specifying sse with customer managed CMK', () => {
     encryption: TableEncryption.CUSTOMER_MANAGED,
     partitionKey: TABLE_PARTITION_KEY,
   });
-  table.node.applyAspect(new Tag('Environment', 'Production'));
+  Tags.of(table).add('Environment', 'Production');
 
   expect(stack).toHaveResource('AWS::DynamoDB::Table', {
     'SSESpecification': {
@@ -383,7 +384,7 @@ test('when specifying only encryptionKey', () => {
     encryptionKey,
     partitionKey: TABLE_PARTITION_KEY,
   });
-  table.node.applyAspect(new Tag('Environment', 'Production'));
+  Tags.of(table).add('Environment', 'Production');
 
   expect(stack).toHaveResource('AWS::DynamoDB::Table', {
     'SSESpecification': {
@@ -410,7 +411,7 @@ test('when specifying sse with customer managed CMK with encryptionKey provided 
     encryptionKey,
     partitionKey: TABLE_PARTITION_KEY,
   });
-  table.node.applyAspect(new Tag('Environment', 'Production'));
+  Tags.of(table).add('Environment', 'Production');
 
   expect(stack).toHaveResource('AWS::DynamoDB::Table', {
     'SSESpecification': {
@@ -600,20 +601,7 @@ test('if an encryption key is included, decrypt permissions are also added for g
               {
                 'Action': 'dynamodb:ListStreams',
                 'Effect': 'Allow',
-                'Resource': {
-                  'Fn::Join': [
-                    '',
-                    [
-                      {
-                        'Fn::GetAtt': [
-                          'TableA3D7B5AFA',
-                          'Arn',
-                        ],
-                      },
-                      '/stream/*',
-                    ],
-                  ],
-                },
+                'Resource': '*',
               },
               {
                 'Action': [
@@ -1112,7 +1100,7 @@ test('error when adding a global secondary index with projection type KEYS_ONLY,
   })).toThrow(/non-key attributes should not be specified when not using INCLUDE projection type/);
 });
 
-test('error when adding a global secondary index with projection type INCLUDE, but with more than 20 non-key attributes', () => {
+test('error when adding a global secondary index with projection type INCLUDE, but with more than 100 non-key attributes', () => {
   const stack = new Stack();
   const table = new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY, sortKey: TABLE_SORT_KEY });
   const gsiNonKeyAttributeGenerator = NON_KEY_ATTRIBUTE_GENERATOR(GSI_NON_KEY);
@@ -1578,6 +1566,96 @@ describe('metrics', () => {
     });
   });
 
+  test('Using metricSystemErrorsForOperations with no operations will default to all', () => {
+
+    const stack = new Stack();
+    const table = new Table(stack, 'Table', {
+      partitionKey: { name: 'id', type: AttributeType.STRING },
+    });
+
+    expect(Object.keys(table.metricSystemErrorsForOperations().toMetricConfig().mathExpression!.usingMetrics)).toEqual([
+      'getitem',
+      'batchgetitem',
+      'scan',
+      'query',
+      'getrecords',
+      'putitem',
+      'deleteitem',
+      'updateitem',
+      'batchwriteitem',
+    ]);
+
+  });
+
+  test('Can use metricSystemErrors without the TableName dimension', () => {
+
+    const stack = new Stack();
+    const table = new Table(stack, 'Table', {
+      partitionKey: { name: 'id', type: AttributeType.STRING },
+    });
+
+    expect(table.metricSystemErrors({ dimensions: { Operation: 'GetItem' } }).dimensions).toEqual({
+      TableName: table.tableName,
+      Operation: 'GetItem',
+    });
+
+  });
+
+  test('Using metricSystemErrors without the Operation dimension will fail', () => {
+
+    const stack = new Stack();
+    const table = new Table(stack, 'Table', {
+      partitionKey: { name: 'id', type: AttributeType.STRING },
+    });
+
+    expect(() => table.metricSystemErrors({ dimensions: { TableName: table.tableName } }))
+      .toThrow(/'Operation' dimension must be passed for the 'SystemErrors' metric./);
+
+  });
+
+  test('Can use metricSystemErrorsForOperations on a Dynamodb Table', () => {
+
+    // GIVEN
+    const stack = new Stack();
+    const table = new Table(stack, 'Table', {
+      partitionKey: { name: 'id', type: AttributeType.STRING },
+    });
+
+    // THEN
+    expect(stack.resolve(table.metricSystemErrorsForOperations({ operations: [Operation.GET_ITEM, Operation.PUT_ITEM] }))).toEqual({
+      expression: 'getitem + putitem',
+      label: 'Sum of errors across all operations',
+      period: Duration.minutes(5),
+      usingMetrics: {
+        getitem: {
+          dimensions: {
+            Operation: 'GetItem',
+            TableName: {
+              Ref: 'TableCD117FA1',
+            },
+          },
+          metricName: 'SystemErrors',
+          namespace: 'AWS/DynamoDB',
+          period: Duration.minutes(5),
+          statistic: 'Sum',
+        },
+        putitem: {
+          dimensions: {
+            Operation: 'PutItem',
+            TableName: {
+              Ref: 'TableCD117FA1',
+            },
+          },
+          metricName: 'SystemErrors',
+          namespace: 'AWS/DynamoDB',
+          period: Duration.minutes(5),
+          statistic: 'Sum',
+        },
+      },
+    });
+
+  });
+
   test('Can use metricSystemErrors on a Dynamodb Table', () => {
     // GIVEN
     const stack = new Stack();
@@ -1586,13 +1664,24 @@ describe('metrics', () => {
     });
 
     // THEN
-    expect(stack.resolve(table.metricSystemErrors())).toEqual({
+    expect(stack.resolve(table.metricSystemErrors({ dimensions: { TableName: table.tableName, Operation: 'GetItem' } }))).toEqual({
       period: Duration.minutes(5),
-      dimensions: { TableName: { Ref: 'TableCD117FA1' } },
+      dimensions: { TableName: { Ref: 'TableCD117FA1' }, Operation: 'GetItem' },
       namespace: 'AWS/DynamoDB',
       metricName: 'SystemErrors',
       statistic: 'Sum',
     });
+  });
+
+  test('Using metricUserErrors with dimensions will fail', () => {
+    // GIVEN
+    const stack = new Stack();
+    const table = new Table(stack, 'Table', {
+      partitionKey: { name: 'id', type: AttributeType.STRING },
+    });
+
+    expect(() => table.metricUserErrors({ dimensions: { TableName: table.tableName } })).toThrow(/'dimensions' is not supported for the 'UserErrors' metric/);
+
   });
 
   test('Can use metricUserErrors on a Dynamodb Table', () => {
@@ -1605,7 +1694,7 @@ describe('metrics', () => {
     // THEN
     expect(stack.resolve(table.metricUserErrors())).toEqual({
       period: Duration.minutes(5),
-      dimensions: { TableName: { Ref: 'TableCD117FA1' } },
+      dimensions: {},
       namespace: 'AWS/DynamoDB',
       metricName: 'UserErrors',
       statistic: 'Sum',
@@ -1629,6 +1718,32 @@ describe('metrics', () => {
     });
   });
 
+  test('Can use metricSuccessfulRequestLatency without the TableName dimension', () => {
+
+    const stack = new Stack();
+    const table = new Table(stack, 'Table', {
+      partitionKey: { name: 'id', type: AttributeType.STRING },
+    });
+
+    expect(table.metricSuccessfulRequestLatency({ dimensions: { Operation: 'GetItem' } }).dimensions).toEqual({
+      TableName: table.tableName,
+      Operation: 'GetItem',
+    });
+
+  });
+
+  test('Using metricSuccessfulRequestLatency without the Operation dimension will fail', () => {
+
+    const stack = new Stack();
+    const table = new Table(stack, 'Table', {
+      partitionKey: { name: 'id', type: AttributeType.STRING },
+    });
+
+    expect(() => table.metricSuccessfulRequestLatency({ dimensions: { TableName: table.tableName } }))
+      .toThrow(/'Operation' dimension must be passed for the 'SuccessfulRequestLatency' metric./);
+
+  });
+
   test('Can use metricSuccessfulRequestLatency on a Dynamodb Table', () => {
     // GIVEN
     const stack = new Stack();
@@ -1637,9 +1752,14 @@ describe('metrics', () => {
     });
 
     // THEN
-    expect(stack.resolve(table.metricSuccessfulRequestLatency())).toEqual({
+    expect(stack.resolve(table.metricSuccessfulRequestLatency({
+      dimensions: {
+        TableName: table.tableName,
+        Operation: 'GetItem',
+      },
+    }))).toEqual({
       period: Duration.minutes(5),
-      dimensions: { TableName: { Ref: 'TableCD117FA1' } },
+      dimensions: { TableName: { Ref: 'TableCD117FA1' }, Operation: 'GetItem' },
       namespace: 'AWS/DynamoDB',
       metricName: 'SuccessfulRequestLatency',
       statistic: 'Average',
@@ -1697,7 +1817,7 @@ describe('grants', () => {
     });
   });
 
-  test('"grant" allows adding arbitrary actions associated with this table resource', () => {
+  test('"grant" allows adding arbitrary actions associated with this table resource (via testGrant)', () => {
     testGrant(
       ['action1', 'action2'], (p, t) => t.grant(p, 'dynamodb:action1', 'dynamodb:action2'));
   });
@@ -1715,7 +1835,8 @@ describe('grants', () => {
   test('"grantReadWriteData" allows the principal to read/write data', () => {
     testGrant([
       'BatchGetItem', 'GetRecords', 'GetShardIterator', 'Query', 'GetItem', 'Scan',
-      'BatchWriteItem', 'PutItem', 'UpdateItem', 'DeleteItem'], (p, t) => t.grantReadWriteData(p));
+      'BatchWriteItem', 'PutItem', 'UpdateItem', 'DeleteItem',
+    ], (p, t) => t.grantReadWriteData(p));
   });
 
   test('"grantFullAccess" allows the principal to perform any action on the table ("*")', () => {
@@ -1783,7 +1904,7 @@ describe('grants', () => {
           {
             'Action': 'dynamodb:ListStreams',
             'Effect': 'Allow',
-            'Resource': { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['mytable0324D45C', 'Arn'] }, '/stream/*']] },
+            'Resource': '*',
           },
         ],
         'Version': '2012-10-17',
@@ -1829,7 +1950,7 @@ describe('grants', () => {
           {
             'Action': 'dynamodb:ListStreams',
             'Effect': 'Allow',
-            'Resource': { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['mytable0324D45C', 'Arn'] }, '/stream/*']] },
+            'Resource': '*',
           },
           {
             'Action': [
@@ -2106,7 +2227,7 @@ describe('import', () => {
       'Roles': [{ 'Ref': 'NewRole99763075' }],
     });
 
-    expect(table.tableArn).toBe('arn:${Token[AWS::Partition.3]}:dynamodb:${Token[AWS::Region.4]}:${Token[AWS::AccountId.0]}:table/MyTable');
+    expect(table.tableArn).toBe('arn:${Token[AWS.Partition.3]}:dynamodb:${Token[AWS.Region.4]}:${Token[AWS.AccountId.0]}:table/MyTable');
     expect(stack.resolve(table.tableName)).toBe(tableName);
   });
 
@@ -2144,7 +2265,7 @@ describe('import', () => {
             {
               Action: 'dynamodb:ListStreams',
               Effect: 'Allow',
-              Resource: stack.resolve(`${table.tableArn}/stream/*`),
+              Resource: '*',
             },
           ],
           Version: '2012-10-17',
@@ -2172,7 +2293,7 @@ describe('import', () => {
             {
               Action: 'dynamodb:ListStreams',
               Effect: 'Allow',
-              Resource: stack.resolve(`${table.tableArn}/stream/*`),
+              Resource: '*',
             },
             {
               Action: ['dynamodb:DescribeStream', 'dynamodb:GetRecords', 'dynamodb:GetShardIterator'],
@@ -2637,56 +2758,7 @@ describe('global', () => {
           {
             Action: 'dynamodb:ListStreams',
             Effect: 'Allow',
-            Resource: [
-              {
-                'Fn::Join': [
-                  '',
-                  [
-                    'arn:',
-                    {
-                      Ref: 'AWS::Partition',
-                    },
-                    ':dynamodb:us-east-1:',
-                    {
-                      Ref: 'AWS::AccountId',
-                    },
-                    ':table/my-table/stream/*',
-                  ],
-                ],
-              },
-              {
-                'Fn::Join': [
-                  '',
-                  [
-                    'arn:',
-                    {
-                      Ref: 'AWS::Partition',
-                    },
-                    ':dynamodb:eu-west-2:',
-                    {
-                      Ref: 'AWS::AccountId',
-                    },
-                    ':table/my-table/stream/*',
-                  ],
-                ],
-              },
-              {
-                'Fn::Join': [
-                  '',
-                  [
-                    'arn:',
-                    {
-                      Ref: 'AWS::Partition',
-                    },
-                    ':dynamodb:eu-central-1:',
-                    {
-                      Ref: 'AWS::AccountId',
-                    },
-                    ':table/my-table/stream/*',
-                  ],
-                ],
-              },
-            ],
+            Resource: '*',
           },
         ],
         Version: '2012-10-17',

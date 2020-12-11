@@ -1,5 +1,5 @@
 import * as AWS from 'aws-sdk';
-import { ConfigurationOptions } from 'aws-sdk/lib/config';
+import type { ConfigurationOptions } from 'aws-sdk/lib/config-base';
 import { debug, trace } from '../../logging';
 import { cached } from '../../util/functions';
 import { AccountAccessKeyCache } from './account-cache';
@@ -29,6 +29,7 @@ export interface ISDK {
   s3(): AWS.S3;
   route53(): AWS.Route53;
   ecr(): AWS.ECR;
+  elbv2(): AWS.ELBv2;
 }
 
 /**
@@ -92,6 +93,10 @@ export class SDK implements ISDK {
     return wrapServiceErrorHandling(new AWS.ECR(this.config));
   }
 
+  public elbv2(): AWS.ELBv2 {
+    return wrapServiceErrorHandling(new AWS.ELBv2(this.config));
+  }
+
   public async currentAccount(): Promise<Account> {
     return cached(this, CURRENT_ACCOUNT_KEY, () => SDK.accountCache.fetch(this.credentials.accessKeyId, async () => {
       // if we don't have one, resolve from STS and store in cache.
@@ -105,6 +110,16 @@ export class SDK implements ISDK {
       debug('Default account ID:', accountId);
       return { accountId, partition };
     }));
+  }
+
+  /**
+   * Return the current credentials
+   *
+   * Don't use -- only used to write tests around assuming roles.
+   */
+  public async currentCredentials(): Promise<AWS.Credentials> {
+    await this.credentials.getPromise();
+    return this.credentials;
   }
 }
 

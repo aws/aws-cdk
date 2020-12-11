@@ -298,6 +298,20 @@
         ],
         "TTL": "1800"
       }
+    },
+    "TXT0D5C5ACF": {
+      "Type": "AWS::Route53::RecordSet",
+      "Properties": {
+        "Name": "cdk.test.",
+        "Type": "TXT",
+        "HostedZoneId": {
+          "Ref": "PublicZone2E1C4E34"
+        },
+        "ResourceRecords": [
+          "\"this is a very long stringthis is a very long stringthis is a very long stringthis is a very long stringthis is a very long stringthis is a very long stringthis is a very long stringthis is a very long stringthis is a very long stringthis is a very long s\"\"tring\""
+        ],
+        "TTL": "1800"
+      }
     }
   },
   "Outputs": {

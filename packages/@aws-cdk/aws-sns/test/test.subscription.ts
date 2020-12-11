@@ -134,9 +134,9 @@ export = {
         color: [
           'red',
           'green',
-          {'anything-but': ['white', 'orange']},
-          { prefix: 'bl'},
-          { prefix: 'ye'},
+          { 'anything-but': ['white', 'orange'] },
+          { prefix: 'bl' },
+          { prefix: 'ye' },
         ],
         price: [
           { numeric: ['=', 100] },

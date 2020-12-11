@@ -50,5 +50,5 @@ async function tryReadPackageJson() {
     return undefined;
   }
 
-  return await fs.readJSON('./package.json');
+  return fs.readJSON('./package.json');
 }

@@ -1,5 +1,6 @@
-import { Construct, IResource,  Resource } from '@aws-cdk/core';
-import { CfnNetworkAcl, CfnNetworkAclEntry, CfnSubnetNetworkAclAssociation  } from './ec2.generated';
+import { IResource, Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
+import { CfnNetworkAcl, CfnNetworkAclEntry, CfnSubnetNetworkAclAssociation } from './ec2.generated';
 import { AclCidr, AclTraffic } from './network-acl-types';
 import { ISubnet, IVpc, SubnetSelection } from './vpc';
 

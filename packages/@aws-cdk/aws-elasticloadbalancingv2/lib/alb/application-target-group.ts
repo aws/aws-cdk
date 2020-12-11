@@ -1,6 +1,8 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
-import { Construct, Duration, IConstruct } from '@aws-cdk/core';
+import { Annotations, Construct as CoreConstruct, Duration } from '@aws-cdk/core';
+import { IConstruct, Construct } from 'constructs';
+import { ApplicationELBMetrics } from '../elasticloadbalancingv2-canned-metrics.generated';
 import {
   BaseTargetGroupProps, ITargetGroup, loadBalancerNameFromListenerArn, LoadBalancerTargetProps,
   TargetGroupAttributes, TargetGroupBase, TargetGroupImportProps,
@@ -159,7 +161,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
       listener.registerConnectable(member.connectable, member.portRange);
     }
     this.listeners.push(listener);
-    this.loadBalancerAttachedDependencies.add(associatingConstruct || listener);
+    this.loadBalancerAttachedDependencies.add((associatingConstruct || listener) as CoreConstruct);
   }
 
   /**
@@ -200,10 +202,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
    * @default Sum over 5 minutes
    */
   public metricIpv6RequestCount(props?: cloudwatch.MetricOptions) {
-    return this.metric('IPv6RequestCount', {
-      statistic: 'Sum',
-      ...props,
-    });
+    return this.cannedMetric(ApplicationELBMetrics.iPv6RequestCountSum, props);
   }
 
   /**
@@ -214,10 +213,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
    * @default Sum over 5 minutes
    */
   public metricRequestCount(props?: cloudwatch.MetricOptions) {
-    return this.metric('RequestCount', {
-      statistic: 'Sum',
-      ...props,
-    });
+    return this.cannedMetric(ApplicationELBMetrics.requestCountSum, props);
   }
 
   /**
@@ -310,7 +306,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
     });
   }
 
-  protected validate(): string[]  {
+  protected validate(): string[] {
     const ret = super.validate();
 
     if (this.targetType !== undefined && this.targetType !== TargetType.LAMBDA
@@ -326,6 +322,18 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
     }
 
     return ret;
+  }
+
+  private cannedMetric(
+    fn: (dims: { LoadBalancer: string, TargetGroup: string }) => cloudwatch.MetricProps,
+    props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return new cloudwatch.Metric({
+      ...fn({
+        LoadBalancer: this.firstLoadBalancerFullName,
+        TargetGroup: this.targetGroupFullName,
+      }),
+      ...props,
+    }).attachTo(this);
   }
 }
 
@@ -374,11 +382,11 @@ export interface IApplicationTargetGroup extends ITargetGroup {
 class ImportedApplicationTargetGroup extends ImportedTargetGroupBase implements IApplicationTargetGroup {
   public registerListener(_listener: IApplicationListener, _associatingConstruct?: IConstruct) {
     // Nothing to do, we know nothing of our members
-    this.node.addWarning('Cannot register listener on imported target group -- security groups might need to be updated manually');
+    Annotations.of(this).addWarning('Cannot register listener on imported target group -- security groups might need to be updated manually');
   }
 
   public registerConnectable(_connectable: ec2.IConnectable, _portRange?: ec2.Port | undefined): void {
-    this.node.addWarning('Cannot register connectable on imported target group -- security groups might need to be updated manually');
+    Annotations.of(this).addWarning('Cannot register connectable on imported target group -- security groups might need to be updated manually');
   }
 
   public addTarget(...targets: IApplicationLoadBalancerTarget[]) {

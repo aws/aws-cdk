@@ -21,7 +21,7 @@ describe('Pass State', () => {
   }),
 
   test('fromObject has proper value', () => {
-    const testValue = {a: 1};
+    const testValue = { a: 1 };
     const result = Result.fromObject(testValue);
     expect(result.value).toStrictEqual(testValue);
   }),

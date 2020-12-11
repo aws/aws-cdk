@@ -36,6 +36,13 @@ type Query @aws_api_key {
   getCustomerOrdersGe(customer: String): Order
   getCustomerOrdersFilter(customer: String, order: String): Order
   getCustomerOrdersBetween(customer: String, order1: String, order2: String): Order
+  getOrderCustomersEq(order: String): [Customer]
+  getOrderCustomersLt(order: String): [Customer]
+  getOrderCustomersLe(order: String): [Customer]
+  getOrderCustomersGt(order: String): [Customer]
+  getOrderCustomersGe(order: String): [Customer]
+  getOrderCustomersFilter(order: String, customer: String): [Customer]
+  getOrderCustomersBetween(order: String, customer1: String, customer2: String): [Customer]
   getPayment(id: String): Payment
 }
 

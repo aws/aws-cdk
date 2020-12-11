@@ -32,7 +32,7 @@ export interface ITopic extends IResource {
    *
    * If this topic was created in this stack (`new Topic`), a topic policy
    * will be automatically created upon the first call to `addToPolicy`. If
-   * the topic is improted (`Topic.import`), then this is a no-op.
+   * the topic is imported (`Topic.import`), then this is a no-op.
    */
   addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult;
 
@@ -88,11 +88,11 @@ export abstract class TopicBase extends Resource implements ITopic {
    *
    * If this topic was created in this stack (`new Topic`), a topic policy
    * will be automatically created upon the first call to `addToPolicy`. If
-   * the topic is improted (`Topic.import`), then this is a no-op.
+   * the topic is imported (`Topic.import`), then this is a no-op.
    */
   public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
     if (!this.policy && this.autoCreatePolicy) {
-      this.policy = new TopicPolicy(this, 'Policy', { topics: [ this ] });
+      this.policy = new TopicPolicy(this, 'Policy', { topics: [this] });
     }
 
     if (this.policy) {
@@ -100,6 +100,12 @@ export abstract class TopicBase extends Resource implements ITopic {
       return { statementAdded: true, policyDependable: this.policy };
     }
     return { statementAdded: false };
+  }
+
+  protected validate(): string[] {
+    const errors = super.validate();
+    errors.push(...this.policy?.document.validateForResourcePolicy() || []);
+    return errors;
   }
 
   /**

@@ -1,6 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
-import { ConcreteDependable, Construct, IDependable, IResource, RemovalPolicy, Resource, Size, Tag } from '@aws-cdk/core';
+import { ConcreteDependable, IDependable, IResource, RemovalPolicy, Resource, Size, Tags } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { AccessPoint, AccessPointOptions } from './access-point';
 import { CfnFileSystem, CfnMountTarget } from './efs.generated';
 
@@ -13,27 +14,27 @@ export enum LifecyclePolicy {
   /**
    * After 7 days of not being accessed.
    */
-  AFTER_7_DAYS,
+  AFTER_7_DAYS = 'AFTER_7_DAYS',
 
   /**
    * After 14 days of not being accessed.
    */
-  AFTER_14_DAYS,
+  AFTER_14_DAYS = 'AFTER_14_DAYS',
 
   /**
    * After 30 days of not being accessed.
    */
-  AFTER_30_DAYS,
+  AFTER_30_DAYS = 'AFTER_30_DAYS',
 
   /**
    * After 60 days of not being accessed.
    */
-  AFTER_60_DAYS,
+  AFTER_60_DAYS = 'AFTER_60_DAYS',
 
   /**
    * After 90 days of not being accessed.
    */
-  AFTER_90_DAYS
+  AFTER_90_DAYS = 'AFTER_90_DAYS'
 }
 
 /**
@@ -170,6 +171,13 @@ export interface FileSystemProps {
    * @default RemovalPolicy.RETAIN
    */
   readonly removalPolicy?: RemovalPolicy;
+
+  /**
+   * Whether to enable automatic backups for the file system.
+   *
+   * @default false
+   */
+  readonly enableAutomaticBackups?: boolean;
 }
 
 /**
@@ -198,27 +206,17 @@ export interface FileSystemAttributes {
  * @resource AWS::EFS::FileSystem
  */
 export class FileSystem extends Resource implements IFileSystem {
+  /**
+   * The default port File System listens on.
+   */
+  public static readonly DEFAULT_PORT: number = 2049;
 
   /**
    * Import an existing File System from the given properties.
    */
   public static fromFileSystemAttributes(scope: Construct, id: string, attrs: FileSystemAttributes): IFileSystem {
-    class Import extends Resource implements IFileSystem {
-      public readonly fileSystemId = attrs.fileSystemId;
-      public readonly connections = new ec2.Connections({
-        securityGroups: [attrs.securityGroup],
-        defaultPort: ec2.Port.tcp(FileSystem.DEFAULT_PORT),
-      });
-      public readonly mountTargetsAvailable = new ConcreteDependable();
-    }
-
-    return new Import(scope, id);
+    return new ImportedFileSystem(scope, id, attrs);
   }
-
-  /**
-   * The default port File System listens on.
-   */
-  private static readonly DEFAULT_PORT: number = 2049;
 
   /**
    * The security groups/rules used to allow network connections to the file system.
@@ -246,18 +244,17 @@ export class FileSystem extends Resource implements IFileSystem {
 
     const filesystem = new CfnFileSystem(this, 'Resource', {
       encrypted: props.encrypted,
-      kmsKeyId: (props.kmsKey ? props.kmsKey.keyId : undefined),
-      lifecyclePolicies: (props.lifecyclePolicy ? Array.of({
-        transitionToIa: LifecyclePolicy[props.lifecyclePolicy],
-      } as CfnFileSystem.LifecyclePolicyProperty) : undefined),
+      kmsKeyId: props.kmsKey?.keyArn,
+      lifecyclePolicies: (props.lifecyclePolicy ? [{ transitionToIa: props.lifecyclePolicy }] : undefined),
       performanceMode: props.performanceMode,
       throughputMode: props.throughputMode,
       provisionedThroughputInMibps: props.provisionedThroughputPerSecond?.toMebibytes(),
+      backupPolicy: props.enableAutomaticBackups ? { status: 'ENABLED' } : undefined,
     });
     filesystem.applyRemovalPolicy(props.removalPolicy);
 
     this.fileSystemId = filesystem.ref;
-    Tag.add(this, 'Name', props.fileSystemName || this.node.path);
+    Tags.of(this).add('Name', props.fileSystemName || this.node.path);
 
     const securityGroup = (props.securityGroup || new ec2.SecurityGroup(this, 'EfsSecurityGroup', {
       vpc: props.vpc,
@@ -295,4 +292,37 @@ export class FileSystem extends Resource implements IFileSystem {
       ...accessPointOptions,
     });
   }
+}
+
+
+class ImportedFileSystem extends Resource implements IFileSystem {
+  /**
+   * The security groups/rules used to allow network connections to the file system.
+   */
+  public readonly connections: ec2.Connections;
+
+  /**
+   * @attribute
+   */
+  public readonly fileSystemId: string;
+
+  /**
+   * Dependable that can be depended upon to ensure the mount targets of the filesystem are ready
+   */
+  public readonly mountTargetsAvailable: IDependable;
+
+  constructor(scope: Construct, id: string, attrs: FileSystemAttributes) {
+    super(scope, id);
+
+    this.fileSystemId = attrs.fileSystemId;
+
+    this.connections = new ec2.Connections({
+      securityGroups: [attrs.securityGroup],
+      defaultPort: ec2.Port.tcp(FileSystem.DEFAULT_PORT),
+    });
+
+    this.mountTargetsAvailable = new ConcreteDependable();
+  }
+
+
 }

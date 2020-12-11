@@ -3,6 +3,7 @@ import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
+import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
@@ -301,6 +302,31 @@ export = {
       test.done();
     },
 
+    'throws whith secret json field on unsupported platform version'(test: Test) {
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaksDef');
+      const secret = new secretsmanager.Secret(stack, 'Secret');
+      taskDefinition.addContainer('BaseContainer', {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        secrets: {
+          SECRET_KEY: ecs.Secret.fromSecretsManager(secret, 'specificKey'),
+        },
+      });
+
+      // THEN
+      test.throws(() => {
+        new ecs.FargateService(stack, 'FargateService', {
+          cluster,
+          taskDefinition,
+          platformVersion: ecs.FargatePlatformVersion.VERSION1_3,
+        });
+      }, new RegExp(`uses at least one container that references a secret JSON field.+platform version ${ecs.FargatePlatformVersion.VERSION1_4} or later`));
+
+      test.done();
+    },
+
     'ignore task definition and launch type if deployment controller is set to be EXTERNAL'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
@@ -464,7 +490,7 @@ export = {
           cluster,
           taskDefinition,
           securityGroup: securityGroup1,
-          securityGroups: [ securityGroup2 ],
+          securityGroups: [securityGroup2],
         });
       }, /Only one of SecurityGroup or SecurityGroups can be populated./);
 
@@ -497,7 +523,7 @@ export = {
       new ecs.FargateService(stack, 'FargateService', {
         cluster,
         taskDefinition,
-        securityGroups: [ securityGroup1, securityGroup2 ],
+        securityGroups: [securityGroup1, securityGroup2],
       });
 
       // THEN
@@ -619,7 +645,7 @@ export = {
         image: ecs.ContainerImage.fromRegistry('hello'),
       });
       container.addPortMappings({ containerPort: 8000 });
-      const service = new ecs.FargateService(stack, 'Service', { cluster, taskDefinition});
+      const service = new ecs.FargateService(stack, 'Service', { cluster, taskDefinition });
 
       const lb = new elbv2.ApplicationLoadBalancer(stack, 'lb', { vpc });
       const listener = lb.addListener('listener', { port: 80 });

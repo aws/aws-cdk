@@ -10,8 +10,8 @@ import { publishAssets } from '../util/asset-publishing';
 import { contentHash } from '../util/content-hash';
 import { ISDK, SdkProvider } from './aws-auth';
 import { ToolkitInfo } from './toolkit-info';
-import { changeSetHasNoChanges, CloudFormationStack, StackParameters, TemplateParameters, waitForChangeSet, waitForStackDeploy, waitForStackDelete } from './util/cloudformation';
-import { StackActivityMonitor } from './util/cloudformation/stack-activity-monitor';
+import { changeSetHasNoChanges, CloudFormationStack, TemplateParameters, waitForChangeSet, waitForStackDeploy, waitForStackDelete } from './util/cloudformation';
+import { StackActivityMonitor, StackActivityProgress } from './util/cloudformation/stack-activity-monitor';
 
 // We need to map regions to domain suffixes, and the SDK already has a function to do this.
 // It's not part of the public API, but it's also unlikely to go away.
@@ -149,15 +149,30 @@ export interface DeployStackOptions {
    *
    * If not set, all parameters must be specified for every deployment.
    *
-   * @default true
+   * @default false
    */
   usePreviousParameters?: boolean;
+
+  /**
+   * Display mode for stack deployment progress.
+   *
+   * @default StackActivityProgress.Bar stack events will be displayed for
+   *   the resource currently being deployed.
+   */
+  progress?: StackActivityProgress;
 
   /**
    * Deploy even if the deployed template is identical to the one we are about to deploy.
    * @default false
    */
   force?: boolean;
+
+  /**
+   * Whether we are on a CI system
+   *
+   * @default false
+   */
+  readonly ci?: boolean;
 }
 
 const LARGE_TEMPLATE_SIZE_KB = 50;
@@ -195,10 +210,10 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
 
   const templateParams = TemplateParameters.fromTemplate(stackArtifact.template);
   const stackParams = options.usePreviousParameters
-    ? templateParams.diff(finalParameterValues, cloudFormationStack.parameters)
-    : templateParams.toStackParameters(finalParameterValues);
+    ? templateParams.updateExisting(finalParameterValues, cloudFormationStack.parameters)
+    : templateParams.supplyAll(finalParameterValues);
 
-  if (await canSkipDeploy(options, cloudFormationStack, stackParams)) {
+  if (await canSkipDeploy(options, cloudFormationStack, stackParams.hasChanges(cloudFormationStack.parameters))) {
     debug(`${deployName}: skipping deployment (use --force to override)`);
     return {
       noOp: true,
@@ -230,7 +245,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     Parameters: stackParams.apiParameters,
     RoleARN: options.roleArn,
     NotificationARNs: options.notificationArns,
-    Capabilities: [ 'CAPABILITY_IAM', 'CAPABILITY_NAMED_IAM', 'CAPABILITY_AUTO_EXPAND' ],
+    Capabilities: ['CAPABILITY_IAM', 'CAPABILITY_NAMED_IAM', 'CAPABILITY_AUTO_EXPAND'],
     Tags: options.tags,
   }).promise();
   debug('Initiated creation of changeset: %s; waiting for it to finish creating...', changeSet.Id);
@@ -256,10 +271,12 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
   const execute = options.execute === undefined ? true : options.execute;
   if (execute) {
     debug('Initiating execution of changeset %s on stack %s', changeSetName, deployName);
-    await cfn.executeChangeSet({StackName: deployName, ChangeSetName: changeSetName}).promise();
+    await cfn.executeChangeSet({ StackName: deployName, ChangeSetName: changeSetName }).promise();
     // eslint-disable-next-line max-len
-    const monitor = options.quiet ? undefined : new StackActivityMonitor(cfn, deployName, stackArtifact, {
+    const monitor = options.quiet ? undefined : StackActivityMonitor.withDefaultPrinter(cfn, deployName, stackArtifact, {
       resourcesTotal: (changeSetDescription.Changes ?? []).length,
+      progress: options.progress,
+      changeSetCreationTime: changeSetDescription.CreationTime,
     }).start();
     debug('Execution of changeset %s on stack %s has started; waiting for the update to complete...', changeSetName, deployName);
     try {
@@ -357,7 +374,7 @@ export async function destroyStack(options: DestroyStackOptions) {
   if (!currentStack.exists) {
     return;
   }
-  const monitor = options.quiet ? undefined : new StackActivityMonitor(cfn, deployName, options.stack).start();
+  const monitor = options.quiet ? undefined : StackActivityMonitor.withDefaultPrinter(cfn, deployName, options.stack).start();
 
   try {
     await cfn.deleteStack({ StackName: deployName, RoleARN: options.roleArn }).promise();
@@ -382,7 +399,7 @@ export async function destroyStack(options: DestroyStackOptions) {
 async function canSkipDeploy(
   deployStackOptions: DeployStackOptions,
   cloudFormationStack: CloudFormationStack,
-  params: StackParameters): Promise<boolean> {
+  parameterChanges: boolean): Promise<boolean> {
 
   const deployName = deployStackOptions.deployName || deployStackOptions.stack.stackName;
   debug(`${deployName}: checking if we can skip deploy`);
@@ -418,8 +435,14 @@ async function canSkipDeploy(
   }
 
   // Parameters have changed
-  if (params.changed) {
+  if (parameterChanges) {
     debug(`${deployName}: parameters have changed`);
+    return false;
+  }
+
+  // Existing stack is in a failed state
+  if (cloudFormationStack.stackStatus.isFailure) {
+    debug(`${deployName}: stack is in a failure state`);
     return false;
   }
 

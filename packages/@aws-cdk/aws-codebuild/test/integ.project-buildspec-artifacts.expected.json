@@ -1,9 +1,9 @@
 {
   "Resources": {
     "MyBucketF68F3FF0": {
-      "DeletionPolicy": "Delete",
+      "Type": "AWS::S3::Bucket",
       "UpdateReplacePolicy": "Delete",
-      "Type": "AWS::S3::Bucket"
+      "DeletionPolicy": "Delete"
     },
     "MyProjectRole9BBE5233": {
       "Type": "AWS::IAM::Role",
@@ -133,7 +133,9 @@
       "Properties": {
         "Artifacts": {
           "ArtifactIdentifier": "AddArtifact1",
-          "Location": { "Ref": "MyBucketF68F3FF0" },
+          "Location": {
+            "Ref": "MyBucketF68F3FF0"
+          },
           "NamespaceType": "NONE",
           "OverrideArtifactName": true,
           "Packaging": "ZIP",
@@ -143,6 +145,7 @@
         "Environment": {
           "ComputeType": "BUILD_GENERAL1_SMALL",
           "Image": "aws/codebuild/standard:1.0",
+          "ImagePullCredentialsType": "CODEBUILD",
           "PrivilegedMode": false,
           "Type": "LINUX_CONTAINER"
         },
@@ -155,9 +158,9 @@
         "Source": {
           "BuildSpec": "{\n  \"version\": \"0.2\"\n}",
           "Type": "NO_SOURCE"
-        }
+        },
+        "EncryptionKey": "alias/aws/s3"
       }
     }
   }
 }
-

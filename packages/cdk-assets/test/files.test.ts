@@ -64,7 +64,7 @@ test('pass destination properties to AWS client', async () => {
 });
 
 test('Do nothing if file already exists', async () => {
-  const pub = new AssetPublishing(AssetManifest.fromPath('/simple/cdk.out') , { aws });
+  const pub = new AssetPublishing(AssetManifest.fromPath('/simple/cdk.out'), { aws });
 
   aws.mockS3.listObjectsV2 = mockedApiResult({ Contents: [{ Key: 'some_key' }] });
 
