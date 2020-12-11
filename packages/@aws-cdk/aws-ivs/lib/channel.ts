@@ -119,11 +119,11 @@ export class Channel extends ChannelBase {
     // This will throw an error if the arn cannot be parsed
     let arnComponents = core.Arn.parse(channelArn);
 
-    if (arnComponents.service !== 'ivs') {
+    if (!core.Token.isUnresolved(arnComponents.service) && arnComponents.service !== 'ivs') {
       throw new Error(`Invalid service, expected 'ivs', got '${arnComponents.service}'`);
     }
 
-    if (arnComponents.resource !== 'channel') {
+    if (!core.Token.isUnresolved(arnComponents.resource) && arnComponents.resource !== 'channel') {
       throw new Error(`Invalid resource, expected 'channel', got '${arnComponents.resource}'`);
     }
 
@@ -155,7 +155,7 @@ export class Channel extends ChannelBase {
       physicalName: props.name,
     });
 
-    if (props.name !== undefined && !core.Token.isUnresolved(props.name) && !/^[a-zA-Z0-9-_]*$/.test(props.name)) {
+    if (props.name && !core.Token.isUnresolved(props.name) && !/^[a-zA-Z0-9-_]*$/.test(props.name)) {
       throw new Error(`name must contain only numbers, letters, hyphens and underscores, got: '${props.name}'`);
     }
 

@@ -56,7 +56,7 @@ export class PlaybackKeyPair extends PlaybackKeyPairBase {
   constructor(scope: Construct, id: string, props: PlaybackKeyPairProps) {
     super(scope, id, {});
 
-    if (props.name !== undefined && !core.Token.isUnresolved(props.name) && !/^[a-zA-Z0-9-_]*$/.test(props.name)) {
+    if (props.name && !core.Token.isUnresolved(props.name) && !/^[a-zA-Z0-9-_]*$/.test(props.name)) {
       throw new Error(`name must contain only numbers, letters, hyphens and underscores, got: '${props.name}'`);
     }
 
