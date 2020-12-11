@@ -100,14 +100,14 @@ export function withMonolithicCfnIncludeApp<A extends TestContext>(block: (conte
     }
 
     const randy = randomString();
-    const stackNamePrefix = `cdk-monolithic-${randy}`;
-    const integTestDir = path.join(os.tmpdir(), `cdk-integ-${randy}`);
+    const stackNamePrefix = `cdk-uber-cfn-include-${randy}`;
+    const integTestDir = path.join(os.tmpdir(), `cdk-uber-cfn-include-${randy}`);
 
     context.output.write(` Stack prefix:   ${stackNamePrefix}\n`);
     context.output.write(` Test directory: ${integTestDir}\n`);
 
     const awsClients = await AwsClients.default(context.output);
-    await cloneDirectory(path.join(__dirname, 'cfn-include'), integTestDir, context.output);
+    await cloneDirectory(path.join(__dirname, '..', 'uberpackage', 'cfn-include-app'), integTestDir, context.output);
     const fixture = new TestFixture(
       integTestDir,
       stackNamePrefix,
