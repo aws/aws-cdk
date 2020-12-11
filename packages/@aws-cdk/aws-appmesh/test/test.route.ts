@@ -44,8 +44,8 @@ export = {
             },
           ],
           timeout: {
-            idle: cdk.Duration.seconds(10),
-            perRequest: cdk.Duration.seconds(11),
+            idle: cdk.Duration.seconds(12),
+            perRequest: cdk.Duration.seconds(13),
           },
         }),
       });
@@ -58,7 +58,7 @@ export = {
             },
           ],
           timeout: {
-            idle: cdk.Duration.seconds(10),
+            idle: cdk.Duration.seconds(14),
           },
         }),
       });
@@ -74,8 +74,8 @@ export = {
             serviceName: 'test.svc.local',
           },
           timeout: {
-            idle: cdk.Duration.seconds(10),
-            perRequest: cdk.Duration.seconds(11),
+            idle: cdk.Duration.seconds(15),
+            perRequest: cdk.Duration.seconds(16),
           },
         }),
       });
@@ -136,11 +136,11 @@ export = {
             },
             Timeout: {
               Idle: {
-                Value: 10000,
+                Value: 12000,
                 Unit: 'ms',
               },
               PerRequest: {
-                Value: 11000,
+                Value: 13000,
                 Unit: 'ms',
               },
             },
@@ -167,7 +167,7 @@ export = {
             },
             Timeout: {
               Idle: {
-                Value: 10000,
+                Value: 14000,
                 Unit: 'ms',
               },
             },
@@ -197,11 +197,11 @@ export = {
             },
             Timeout: {
               Idle: {
-                Value: 10000,
+                Value: 15000,
                 Unit: 'ms',
               },
               PerRequest: {
-                Value: 11000,
+                Value: 16000,
                 Unit: 'ms',
               },
             },

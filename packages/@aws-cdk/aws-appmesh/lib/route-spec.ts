@@ -187,7 +187,6 @@ class HttpRouteSpec extends RouteSpec {
 
   /**
    * The criteria for determining a request match
-   *
    */
   public readonly match?: HttpRouteMatch;
 
@@ -305,13 +304,17 @@ function renderWeightedTargets(weightedTargets: WeightedTarget[]): CfnRoute.Weig
  */
 function renderTimeout(timeout: HttpTimeout): CfnRoute.HttpTimeoutProperty {
   return {
-    idle: timeout?.idle !== undefined ? {
-      unit: 'ms',
-      value: timeout?.idle.toMilliseconds(),
-    } : undefined,
-    perRequest: timeout?.perRequest !== undefined ? {
-      unit: 'ms',
-      value: timeout?.perRequest.toMilliseconds(),
-    } : undefined,
+    idle: timeout?.idle !== undefined 
+      ? {
+        unit: 'ms',
+        value: timeout?.idle.toMilliseconds(),
+      } 
+      : undefined,
+    perRequest: timeout?.perRequest !== undefined 
+      ? {
+        unit: 'ms',
+        value: timeout?.perRequest.toMilliseconds(),
+      } 
+      : undefined,
   };
 }
