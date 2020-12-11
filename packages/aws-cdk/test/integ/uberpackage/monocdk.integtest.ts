@@ -1,5 +1,5 @@
-import { withMonolithicCfnIncludeApp } from '../cli/cdk-helpers';
-import { integTest } from '../cli/test-helpers';
+import { withMonolithicCfnIncludeApp } from '../helpers/cdk-helpers';
+import { integTest } from '../helpers/test-helpers';
 
 jest.setTimeout(600_000);
 
