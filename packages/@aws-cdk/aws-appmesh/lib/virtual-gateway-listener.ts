@@ -2,7 +2,7 @@ import * as cdk from '@aws-cdk/core';
 import { CfnVirtualGateway } from './appmesh.generated';
 import { validateHealthChecks } from './private/utils';
 import { HealthCheck, Protocol } from './shared-interfaces';
-import { TlsCertificate, TlsMode } from './tls-certificate';
+import { TlsCertificate } from './tls-certificate';
 
 /**
  * Represents the properties needed to define HTTP Listeners for a VirtualGateway
@@ -21,13 +21,6 @@ export interface HttpGatewayListenerOptions {
    * @default - no healthcheck
    */
   readonly healthCheck?: HealthCheck;
-
-  /**
-   * The TLS mode.
-   *
-   * @default - none
-   */
-  readonly tlsMode?: TlsMode;
 
   /**
    * Represents the listener certificate
@@ -54,13 +47,6 @@ export interface GrpcGatewayListenerOptions {
    * @default - no healthcheck
    */
   readonly healthCheck?: HealthCheck;
-
-  /**
-   * The TLS mode
-   *
-   * @default - none
-   */
-  readonly tlsMode?: TlsMode;
 
   /**
    * Represents the listener certificate
@@ -194,24 +180,16 @@ class HttpGatewayListener extends VirtualGatewayListener {
   protected protocol: Protocol = Protocol.HTTP;
 
   /**
-   * The TLS mode.
-   *
-   * @default - none
-   */
-  readonly tlsMode?: TlsMode;
-
-  /**
    * Represents the listener certificate
    *
    * @default - none
    */
-  readonly tlsCertificate?: TlsCertificate;
+  protected readonly tlsCertificate?: TlsCertificate;
 
   constructor(props: HttpGatewayListenerOptions = {}) {
     super();
     this.port = props.port ? props.port : 8080;
     this.healthCheck = props.healthCheck;
-    this.tlsMode = props.tlsMode;
     this.tlsCertificate = props.tlsCertificate;
   }
 
@@ -271,7 +249,7 @@ class GrpcGatewayListener extends VirtualGatewayListener {
    *
    * @default - none
    */
-  readonly tlsCertificate?: TlsCertificate;
+  protected readonly tlsCertificate?: TlsCertificate;
 
   constructor(props: HttpGatewayListenerOptions = {}) {
     super();
