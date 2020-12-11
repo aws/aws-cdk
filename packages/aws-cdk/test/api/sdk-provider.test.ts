@@ -558,6 +558,15 @@ test('plugins are still queried even if current credentials are expired', async 
   expect(pluginQueried).toEqual(true);
 });
 
+test('even if current credentials are for the wrong account, we will still use them to AssumeRole', async () => {
+});
+
+test('if AssumeRole fails but current credentials are for the right account, we will still use them', async () => {
+});
+
+test('if AssumeRole fails but current credentials are from a plugin, we will still use them', async () => {
+});
+
 /**
  * Strip shared whitespace from the start of lines
  */

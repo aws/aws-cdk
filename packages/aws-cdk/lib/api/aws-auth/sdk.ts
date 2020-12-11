@@ -68,7 +68,7 @@ export class SDK implements ISDK {
   private readonly cloudFormationRetryOptions = { maxRetries: 10, retryDelayOptions: { base: 1_000 } };
 
   constructor(
-    private readonly credentials: AWS.Credentials,
+    private readonly _credentials: AWS.Credentials,
     region: string,
     httpOptions: ConfigurationOptions = {},
     private readonly sdkOptions: SdkOptions = {}) {
@@ -76,7 +76,7 @@ export class SDK implements ISDK {
     this.config = {
       ...httpOptions,
       ...this.retryOptions,
-      credentials,
+      credentials: _credentials,
       region,
       logger: { log: (...messages) => messages.forEach(m => trace('%s', m)) },
     };
@@ -115,7 +115,10 @@ export class SDK implements ISDK {
   }
 
   public async currentAccount(): Promise<Account> {
-    return cached(this, CURRENT_ACCOUNT_KEY, () => SDK.accountCache.fetch(this.credentials.accessKeyId, async () => {
+    // Get/refresh if necessary before we can access `accessKeyId`
+    await this.forceCredentialRetrieval();
+
+    return cached(this, CURRENT_ACCOUNT_KEY, () => SDK.accountCache.fetch(this._credentials.accessKeyId, async () => {
       // if we don't have one, resolve from STS and store in cache.
       debug('Looking up default account ID from STS');
       const result = await new AWS.STS(this.config).getCallerIdentity().promise();
@@ -135,8 +138,31 @@ export class SDK implements ISDK {
    * Don't use -- only used to write tests around assuming roles.
    */
   public async currentCredentials(): Promise<AWS.Credentials> {
-    await this.credentials.getPromise();
-    return this.credentials;
+    await this.forceCredentialRetrieval();
+    return this._credentials;
+  }
+
+  /**
+   * Force retrieval of the current credentials
+   *
+   * Relevant if the current credentials are AssumeRole credentials -- do the actual
+   * lookup, and translate any error into a useful error message (taking into
+   * account credential provenance).
+   */
+  public async forceCredentialRetrieval() {
+    try {
+      await this._credentials.getPromise();
+    } catch (e) {
+      debug(`Assuming role failed: ${e.message}`);
+      throw new Error([
+        'Could not assume role in target account',
+        ...this.sdkOptions.assumeRoleCredentialsSourceDescription
+          ? [`using ${this.sdkOptions.assumeRoleCredentialsSourceDescription}`]
+          : [],
+        '(did you bootstrap the environment with the right \'--trust\'s?):',
+        e.message,
+      ].join(' '));
+    }
   }
 
   /**
@@ -206,6 +232,9 @@ export class SDK implements ISDK {
 
   /**
    * Extract a more detailed error out of a generic error if we can
+   *
+   * If this is an error about Assuming Roles, add in the context showing the
+   * chain of credentials we used to try to assume the role.
    */
   private makeDetailedException(e: Error): Error {
     // This is the super-generic "something's wrong" error that the JS SDK wraps other errors in.

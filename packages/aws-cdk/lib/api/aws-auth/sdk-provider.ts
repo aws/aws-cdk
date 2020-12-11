@@ -73,6 +73,13 @@ export interface SdkHttpOptions {
    * @default - <package-name>/<package-version>
    */
   readonly userAgent?: string;
+
+  /**
+   * Custom agent for HTTP calls
+   *
+   * Intended only for testing!
+   */
+  readonly httpAgent?: https.Agent;
 }
 
 const CACHED_ACCOUNT = Symbol('cached_account');
@@ -158,10 +165,10 @@ export class SdkProvider {
     // We will proceed to AssumeRole using whatever we've been given.
     const sdk = await this.withAssumedRole(baseCreds, options.assumeRoleArn, options.assumeRoleExternalId, env.region);
 
-    // Do a call on this SDK. We don't care about the answer, but we want to excercise the AssumeRoleCredentialsProvider
-    // we've gotten at least once so we can determine whether the AssumeRole call succeeds or not.
+    // Exercise the AssumeRoleCredentialsProvider we've gotten at least once so
+    // we can determine whether the AssumeRole call succeeds or not.
     try {
-      await sdk.currentAccount();
+      await sdk.forceCredentialRetrieval();
       return sdk;
     } catch (e) {
       // AssumeRole failed. Proceed and warn *if and only if* the baseCredentials were already for the right account
@@ -393,6 +400,9 @@ function parseHttpOptions(options: SdkHttpOptions) {
       keepAlive: true,
     });
   }
+  if (options.httpAgent) {
+    config.httpOptions.agent = options.httpAgent;
+  }
 
   return config;
 }
@@ -511,11 +521,13 @@ function fmtObtainedCredentials(
       return `credentials returned by plugin '${obtainResult.pluginName}'`;
     case 'incorrectDefault':
       const msg = [];
-      msg.push(`current credentials (which are for account ${obtainResult.accountId})`);
+      msg.push(`current credentials (which are for account ${obtainResult.accountId}`);
 
       if (obtainResult.unusedPlugins.length > 0) {
-        msg.push(`(none of the following plugins provided credentials: ${obtainResult.unusedPlugins.join(', ')})`);
+        msg.push(`, and none of the following plugins provided credentials: ${obtainResult.unusedPlugins.join(', ')}`);
       }
-      return msg.join(' ');
+      msg.push(')');
+
+      return msg.join('');
   }
 }
