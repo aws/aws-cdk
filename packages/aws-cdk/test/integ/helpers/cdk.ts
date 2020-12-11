@@ -2,7 +2,7 @@ import * as child_process from 'child_process';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { outputFromStack, AwsClients } from './aws-helpers';
+import { outputFromStack, AwsClients } from './aws';
 import { ResourcePool } from './resource-pool';
 import { TestContext } from './test-helpers';
 
@@ -92,7 +92,7 @@ export function withCdkApp<A extends TestContext & AwsContext>(block: (context: 
   };
 }
 
-export function withMonolithicCfnIncludeApp<A extends TestContext>(block: (context: TestFixture) => Promise<void>) {
+export function withMonolithicCfnIncludeCdkApp<A extends TestContext>(block: (context: TestFixture) => Promise<void>) {
   return async (context: A) => {
     const uberPackage = process.env.UBERPACKAGE;
     if (!uberPackage) {

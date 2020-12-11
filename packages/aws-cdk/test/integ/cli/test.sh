@@ -8,4 +8,5 @@ echo '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
 
 cd $scriptdir
 
-../common/jest-test.bash
+source ../common/jest-test.bash
+invokeJest "$@"
