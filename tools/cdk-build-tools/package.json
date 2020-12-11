@@ -57,7 +57,7 @@
     "nyc": "^15.1.0",
     "ts-jest": "^26.4.4",
     "typescript": "~3.9.7",
-    "yargs": "^16.1.1",
+    "yargs": "^16.2.0",
     "yarn-cling": "0.0.0"
   },
   "keywords": [
