@@ -184,7 +184,7 @@ export class SageMakerCreateTransformJob extends sfn.TaskStateBase {
   private renderModelClientOptions(config: ModelClientOptions): { [key: string]: any } {
     return {
       ModelClientConfig: {
-        InvocationsMaxRetries: config.invocationsMaxRetries?,
+        InvocationsMaxRetries: config.invocationsMaxRetries ?? 0,
         InvocationsTimeoutInSeconds: config.invocationsTimeout?.toSeconds(),
       },
     };
