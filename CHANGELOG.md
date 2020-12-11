@@ -44,8 +44,6 @@ feature flag.
 * **ecspatterns:** honor name in createLoadBalancer() ([#12005](https://github.com/aws/aws-cdk/pull/12005)) ([abc0356](https://github.com/aws/aws-cdk/commit/abc03569d9f87037c7c418b43b4734a710a2dbad)), closes [#8464](https://github.com/aws/aws-cdk/pull/8464) [#8561](https://github.com/aws/aws-cdk/pull/8561)
 * **eks:** kubectl provider out-of-memory for large manifests/charts (now 1GiB) ([#11957](https://github.com/aws/aws-cdk/issues/11957)) ([2ec2948](https://github.com/aws/aws-cdk/commit/2ec294803427675b0ba594e929f32aca1ffdb075)), closes [#11787](https://github.com/aws/aws-cdk/issues/11787)
 * **synthetics:** `metricFailed` uses `Average` instead of `Sum` by default ([#11941](https://github.com/aws/aws-cdk/issues/11941)) ([3530e8c](https://github.com/aws/aws-cdk/commit/3530e8c758df3ea2fb26d654109e17a75f157b37))
-
-
 * **apigatewayv2:** rename 'domainName' to 'name' in the DomainName construct ([#11989](https://github.com/aws/aws-cdk/issues/11989)) ([1be831a](https://github.com/aws/aws-cdk/commit/1be831abc873c60df16c769ccf5e21fb9b1733c0))
 
 ## [1.77.0](https://github.com/aws/aws-cdk/compare/v1.76.0...v1.77.0) (2020-12-07)
