@@ -353,9 +353,6 @@ export = {
               weight: 50,
             },
           ],
-          timeout: {
-            idle: cdk.Duration.seconds(10),
-          },
         }),
       });
 
@@ -374,12 +371,6 @@ export = {
                     Weight: 50,
                   },
                 ],
-              },
-              Timeout: {
-                Idle: {
-                  Value: 10000,
-                  Unit: 'ms',
-                },
               },
             },
           },
