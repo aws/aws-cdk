@@ -4,4 +4,4 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## 2.0.0-alpha.0 (2020-12-11)
 
-This is the first alpha release of CDK 2.0.
+This is the first alpha release of CDK 2.0. 🎉 
