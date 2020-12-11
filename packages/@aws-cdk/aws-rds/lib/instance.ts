@@ -111,6 +111,14 @@ export interface DatabaseInstanceAttributes {
  * A new or imported database instance.
  */
 export abstract class DatabaseInstanceBase extends Resource implements IDatabaseInstance {
+  /**
+   * Import an existing database instance.
+   *
+   * @deprecated use DatabaseInstance.fromDatabaseInstanceAttributes
+   */
+  public static fromDatabaseInstanceAttributes(scope: Construct, id: string, attrs: DatabaseInstanceAttributes): IDatabaseInstance {
+    return DatabaseInstance.fromDatabaseInstanceAttributes(scope, id, attrs);
+  }
 
   public abstract readonly instanceIdentifier: string;
   public abstract readonly dbInstanceEndpointAddress: string;
@@ -976,7 +984,6 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
 
     this.setLogRetention();
   }
-
 }
 
 /**
