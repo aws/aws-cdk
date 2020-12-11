@@ -92,6 +92,51 @@ export function withCdkApp<A extends TestContext & AwsContext>(block: (context: 
   };
 }
 
+export function withMonolithicCfnIncludeApp<A extends TestContext>(block: (context: TestFixture) => Promise<void>) {
+  return async (context: A) => {
+    const uberPackage = process.env.UBERPACKAGE;
+    if (!uberPackage) {
+      throw new Error('The UBERPACKAGE environment variable is required for running this test!');
+    }
+
+    const randy = randomString();
+    const stackNamePrefix = `cdk-monolithic-${randy}`;
+    const integTestDir = path.join(os.tmpdir(), `cdk-integ-${randy}`);
+
+    context.output.write(` Stack prefix:   ${stackNamePrefix}\n`);
+    context.output.write(` Test directory: ${integTestDir}\n`);
+
+    const awsClients = await AwsClients.default(context.output);
+    await cloneDirectory(path.join(__dirname, 'cfn-include'), integTestDir, context.output);
+    const fixture = new TestFixture(
+      integTestDir,
+      stackNamePrefix,
+      context.output,
+      awsClients,
+    );
+
+    let success = true;
+    try {
+      let module = uberPackage;
+      if (FRAMEWORK_VERSION) {
+        module = `${module}@${FRAMEWORK_VERSION}`;
+      }
+      await fixture.shell(['npm', 'install', 'constructs', module]);
+
+      await block(fixture);
+    } catch (e) {
+      success = false;
+      throw e;
+    } finally {
+      if (process.env.INTEG_NO_CLEAN) {
+        process.stderr.write(`Left test directory in '${integTestDir}' ($INTEG_NO_CLEAN)\n`);
+      } else {
+        await fixture.dispose(success);
+      }
+    }
+  };
+}
+
 /**
  * Default test fixture for most (all?) integ tests
  *
