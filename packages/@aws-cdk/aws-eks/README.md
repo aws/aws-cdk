@@ -450,7 +450,11 @@ The `ClusterHandler` is a Lambda function responsible to interact the EKS API in
 
 ### Kubectl Support
 
-The resources are created in the cluster by running `kubectl apply` from a python lambda function. You can configure the environment of this function by specifying it at cluster instantiation. For example, this can be useful in order to configure an http proxy:
+The resources are created in the cluster by running `kubectl apply` from a python lambda function.
+
+#### Environment
+
+You can configure the environment of this function by specifying it at cluster instantiation. For example, this can be useful in order to configure an http proxy:
 
 ```ts
 const cluster = new eks.Cluster(this, 'hello-eks', {
@@ -460,6 +464,8 @@ const cluster = new eks.Cluster(this, 'hello-eks', {
   }
 });
 ```
+
+#### Runtime
 
 By default, the `kubectl`, `helm` and `aws` commands used to operate the cluster are provided by an AWS Lambda Layer from the AWS Serverless Application in [aws-lambda-layer-kubectl](https://github.com/aws-samples/aws-lambda-layer-kubectl). In most cases this should be sufficient.
 
@@ -495,6 +501,23 @@ const cluster = eks.Cluster.fromClusterAttributes(this, 'MyCluster', {
 
 > Instructions on how to build `layer.zip` can be found
 > [here](https://github.com/aws-samples/aws-lambda-layer-kubectl/blob/master/cdk/README.md).
+
+#### Memory
+
+By default, the kubectl provider is configured with 1024MiB of memory. You can use the `kubectlMemory` option to specify the memory size for the AWS Lambda function:
+
+```ts
+import { Size } from '@aws-cdk/core';
+
+new eks.Cluster(this, 'MyCluster', {
+  kubectlMemory: Size.gibibytes(4)
+});
+
+// or
+eks.Cluster.fromClusterAttributes(this, 'MyCluster', {
+  kubectlMemory: Size.gibibytes(4)
+});
+```
 
 ### ARM64 Support
 
@@ -784,16 +807,29 @@ or through `cluster.addManifest()`) (e.g. `cluster.addManifest('foo', r1, r2,
 r3,...)`), these resources will be applied as a single manifest via `kubectl`
 and will be applied sequentially (the standard behavior in `kubectl`).
 
-----------------------
+---
 
 Since Kubernetes manifests are implemented as CloudFormation resources in the
 CDK. This means that if the manifest is deleted from your code (or the stack is
 deleted), the next `cdk deploy` will issue a `kubectl delete` command and the
 Kubernetes resources in that manifest will be deleted.
 
-#### Caveat
+#### Resource Pruning
 
-If you have multiple resources in a single `KubernetesManifest`, and one of those **resources** is removed from the manifest, it will not be deleted and will remain orphan. See [Support Object pruning](https://github.com/aws/aws-cdk/issues/10495) for more details.
+When a resource is deleted from a Kubernetes manifest, the EKS module will
+automatically delete these resources by injecting a _prune label_ to all
+manifest resources. This label is then passed to [`kubectl apply --prune`].
+
+[`kubectl apply --prune`]: https://kubernetes.io/docs/tasks/manage-kubernetes-objects/declarative-config/#alternative-kubectl-apply-f-directory-prune-l-your-label
+
+Pruning is enabled by default but can be disabled through the `prune` option
+when a cluster is defined:
+
+```ts
+new Cluster(this, 'MyCluster', {
+  prune: false
+});
+```
 
 ### Helm Charts
 
