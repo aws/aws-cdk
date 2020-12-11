@@ -20,31 +20,33 @@ running on AWS Lambda, or any web application.
 
 ## Table of Contents
 
-- [Defining APIs](#defining-apis)
-  - [Breaking up Methods and Resources across Stacks](#breaking-up-methods-and-resources-across-stacks)
-- [AWS Lambda-backed APIs](#aws-lambda-backed-apis)
-- [Integration Targets](#integration-targets)
-- [API Keys](#api-keys)
-- [Working with models](#working-with-models)
-- [Default Integration and Method Options](#default-integration-and-method-options)
-- [Proxy Routes](#proxy-routes)
-- [Authorizers](#authorizers)
-  - [IAM-based authorizer](#iam-based-authorizer)
-  - [Lambda-based token authorizer](#lambda-based-token-authorizer)
-  - [Lambda-based request authorizer](#lambda-based-request-authorizer)
-- [Mutual TLS](#mutal-tls-mtls)
-- [Deployments](#deployments)
-  - [Deep dive: Invalidation of deployments](#deep-dive-invalidation-of-deployments)
-- [Custom Domains](#custom-domains)
-- [Access Logging](#access-logging)
-- [Cross Origin Resource Sharing (CORS)](#cross-origin-resource-sharing-cors)
-- [Endpoint Configuration](#endpoint-configuration)
-- [Private Integrations](#private-integrations)
-- [Gateway Response](#gateway-response)
-- [OpenAPI Definition](#openapi-definition)
-  - [Endpoint configuration](#endpoint-configuration)
-- [Metrics](#metrics)
-- [APIGateway v2](#apigateway-v2)
+- [Amazon API Gateway Construct Library](#amazon-api-gateway-construct-library)
+  - [Table of Contents](#table-of-contents)
+  - [Defining APIs](#defining-apis)
+  - [AWS Lambda-backed APIs](#aws-lambda-backed-apis)
+    - [Breaking up Methods and Resources across Stacks](#breaking-up-methods-and-resources-across-stacks)
+  - [Integration Targets](#integration-targets)
+  - [API Keys](#api-keys)
+  - [Working with models](#working-with-models)
+  - [Default Integration and Method Options](#default-integration-and-method-options)
+  - [Proxy Routes](#proxy-routes)
+  - [Authorizers](#authorizers)
+    - [IAM-based authorizer](#iam-based-authorizer)
+    - [Lambda-based token authorizer](#lambda-based-token-authorizer)
+    - [Lambda-based request authorizer](#lambda-based-request-authorizer)
+  - [Mutual TLS (mTLS)](#mutual-tls-mtls)
+  - [Deployments](#deployments)
+    - [Deep dive: Invalidation of deployments](#deep-dive-invalidation-of-deployments)
+  - [Custom Domains](#custom-domains)
+  - [Access Logging](#access-logging)
+  - [Cross Origin Resource Sharing (CORS)](#cross-origin-resource-sharing-cors)
+  - [Endpoint Configuration](#endpoint-configuration)
+  - [Private Integrations](#private-integrations)
+  - [Gateway response](#gateway-response)
+  - [OpenAPI Definition](#openapi-definition)
+    - [Endpoint configuration](#endpoint-configuration-1)
+  - [Metrics](#metrics)
+  - [APIGateway v2](#apigateway-v2)
 
 ## Defining APIs
 
@@ -104,6 +106,16 @@ item.addMethod('GET');   // GET /items/{item}
 // the default integration for methods is "handler", but one can
 // customize this behavior per method or even a sub path.
 item.addMethod('DELETE', new apigateway.HttpIntegration('http://amazon.com'));
+```
+
+You can also supply `integrationOptions` to explicitly define options of Lambda integrations:
+
+```ts
+const backend = new lambda.Function(...);
+const api = new apigateway.LambdaRestApi(this, 'myapi', {
+  handler: backend,
+  integrationOptions: { allowTestInvoke: false }
+});
 ```
 
 ### Breaking up Methods and Resources across Stacks
