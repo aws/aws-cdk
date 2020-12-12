@@ -118,7 +118,6 @@ export class PatchedSharedIniFileCredentials extends AWS.SharedIniFileCredential
       return;
     }
     sts.assumeRole(roleParams, callback);
-
   }
 
   private sourceProfileCredentials(sourceProfile: string, profiles: Record<string, Record<string, string>>) {

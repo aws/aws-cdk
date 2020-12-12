@@ -43,8 +43,6 @@ export interface IDistribution extends IResource {
 
 /**
  * Attributes used to import a Distribution.
- *
- * @experimental
  */
 export interface DistributionAttributes {
   /**
@@ -69,8 +67,6 @@ interface BoundOrigin extends OriginBindOptions, OriginBindConfig {
 
 /**
  * Properties for a Distribution
- *
- * @experimental
  */
 export interface DistributionProps {
   /**
@@ -214,8 +210,6 @@ export interface DistributionProps {
 
 /**
  * A CloudFront distribution with associated origin(s) and caching behavior(s).
- *
- * @experimental
  */
 export class Distribution extends Resource implements IDistribution {
 
@@ -393,21 +387,18 @@ export class Distribution extends Resource implements IDistribution {
 
   private renderErrorResponses(): CfnDistribution.CustomErrorResponseProperty[] | undefined {
     if (this.errorResponses.length === 0) { return undefined; }
-    function validateCustomErrorResponse(errorResponse: ErrorResponse) {
-      if (errorResponse.responsePagePath && !errorResponse.responseHttpStatus) {
-        throw new Error('\'responseCode\' must be provided if \'responsePagePath\' is defined');
-      }
-      if (!errorResponse.responseHttpStatus && !errorResponse.ttl) {
-        throw new Error('A custom error response without either a \'responseCode\' or \'errorCachingMinTtl\' is not valid.');
-      }
-    }
-    this.errorResponses.forEach(e => validateCustomErrorResponse(e));
 
     return this.errorResponses.map(errorConfig => {
+      if (!errorConfig.responseHttpStatus && !errorConfig.ttl && !errorConfig.responsePagePath) {
+        throw new Error('A custom error response without either a \'responseHttpStatus\', \'ttl\' or \'responsePagePath\' is not valid.');
+      }
+
       return {
         errorCachingMinTtl: errorConfig.ttl?.toSeconds(),
         errorCode: errorConfig.httpStatus,
-        responseCode: errorConfig.responseHttpStatus,
+        responseCode: errorConfig.responsePagePath
+          ? errorConfig.responseHttpStatus ?? errorConfig.httpStatus
+          : errorConfig.responseHttpStatus,
         responsePagePath: errorConfig.responsePagePath,
       };
     });
@@ -558,8 +549,6 @@ export class CachedMethods {
 
 /**
  * Options for configuring custom error responses.
- *
- * @experimental
  */
 export interface ErrorResponse {
   /**
@@ -577,7 +566,7 @@ export interface ErrorResponse {
    *
    * If you specify a value for `responseHttpStatus`, you must also specify a value for `responsePagePath`.
    *
-   * @default - not set, the error code will be returned as the response code.
+   * @default - the error code will be returned as the response code.
    */
   readonly responseHttpStatus?: number;
   /**
@@ -643,8 +632,6 @@ export interface EdgeLambda {
 
 /**
  * Options for adding a new behavior to a Distribution.
- *
- * @experimental
  */
 export interface AddBehaviorOptions {
   /**
@@ -712,8 +699,6 @@ export interface AddBehaviorOptions {
 
 /**
  * Options for creating a new behavior.
- *
- * @experimental
  */
 export interface BehaviorOptions extends AddBehaviorOptions {
   /**

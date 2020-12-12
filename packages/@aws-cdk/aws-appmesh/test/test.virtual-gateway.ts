@@ -238,6 +238,49 @@ export = {
       test.done();
     },
   },
+
+  'When creating a VirtualGateway with backend defaults': {
+    'should add backend defaults to the VirtualGateway'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const mesh = new appmesh.Mesh(stack, 'mesh', {
+        meshName: 'test-mesh',
+      });
+
+      new appmesh.VirtualGateway(stack, 'virtual-gateway', {
+        virtualGatewayName: 'virtual-gateway',
+        mesh: mesh,
+        backendsDefaultClientPolicy: appmesh.ClientPolicy.fileTrust({
+          certificateChain: 'path-to-certificate',
+        }),
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualGateway', {
+        VirtualGatewayName: 'virtual-gateway',
+        Spec: {
+          BackendDefaults: {
+            ClientPolicy: {
+              TLS: {
+                Validation: {
+                  Trust: {
+                    File: {
+                      CertificateChain: 'path-to-certificate',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      }));
+
+      test.done();
+    },
+  },
+
   'Can import VirtualGateways using an ARN'(test: Test) {
     const app = new cdk.App();
     // GIVEN

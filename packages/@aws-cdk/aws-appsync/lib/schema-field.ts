@@ -1,3 +1,4 @@
+import { IAppsyncFunction } from './appsync-function';
 import { BaseDataSource } from './data-source';
 import { AuthorizationType } from './graphqlapi';
 import { MappingTemplate } from './mapping-template';
@@ -423,7 +424,7 @@ export interface ResolvableFieldOptions extends FieldOptions {
    * @default - no pipeline resolver configuration
    * An empty array or undefined prop will set resolver to be of type unit
    */
-  readonly pipelineConfig?: string[];
+  readonly pipelineConfig?: IAppsyncFunction[];
   /**
    * The request mapping template for this resolver
    *
