@@ -74,6 +74,7 @@ export interface ICluster extends IResource, ec2.IConnectable {
 
   /**
    * The cluster security group that was created by Amazon EKS for the cluster.
+   * @attribute
    */
   readonly clusterSecurityGroup: ec2.ISecurityGroup;
 
