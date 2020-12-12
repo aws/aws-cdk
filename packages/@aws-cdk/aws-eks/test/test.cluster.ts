@@ -52,7 +52,7 @@ export = {
     test.done();
   },
 
-  'cluster security group is attached to self managed nodes'(test: Test) {
+  'cluster security group is attached when adding self-managed nodes'(test: Test) {
 
     // GIVEN
     const { stack, vpc } = testFixture();
@@ -70,6 +70,34 @@ export = {
 
     test.deepEqual(expect(stack).value.Resources.ClusterselfmanagedLaunchConfigA5B57EF6.Properties.SecurityGroups, [
       { 'Fn::GetAtt': ['ClusterselfmanagedInstanceSecurityGroup64468C3A', 'GroupId'] },
+      { 'Fn::GetAtt': ['Cluster9EE0221C', 'ClusterSecurityGroupId'] },
+    ]);
+    test.done();
+
+  },
+
+  'cluster security group is attached when connecting self-managed nodes'(test: Test) {
+
+    // GIVEN
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+      prune: false,
+    });
+
+    const selfManaged = new asg.AutoScalingGroup(stack, 'self-managed', {
+      instanceType: new ec2.InstanceType('t2.medium'),
+      vpc: vpc,
+      machineImage: new ec2.AmazonLinuxImage(),
+    });
+
+    // WHEN
+    cluster.connectAutoScalingGroupCapacity(selfManaged, {});
+
+    test.deepEqual(expect(stack).value.Resources.selfmanagedLaunchConfigD41289EB.Properties.SecurityGroups, [
+      { 'Fn::GetAtt': ['selfmanagedInstanceSecurityGroupEA6D80C9', 'GroupId'] },
       { 'Fn::GetAtt': ['Cluster9EE0221C', 'ClusterSecurityGroupId'] },
     ]);
     test.done();
