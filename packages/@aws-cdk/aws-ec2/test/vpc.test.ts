@@ -1251,7 +1251,7 @@ nodeunitShim({
 
       // THEN - No exception
       expect(stack).to(haveResource('Some::Resource', {
-        subnetIds: { 'Fn::ImportValue': 'myPublicSubnetIds' },
+        subnetIds: { 'Fn::Split': [',', { 'Fn::ImportValue': 'myPublicSubnetIds' }] },
       }));
 
       test.done();
