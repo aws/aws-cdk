@@ -1,5 +1,21 @@
 {
   "Resources": {
+    "DomainSlowSearchLogs5B35A97A": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "RetentionInDays": 30
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
+    },
+    "DomainAppLogs21698C1B": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "RetentionInDays": 30
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
+    },
     "DomainESLogGroupPolicyCustomResourcePolicyB35C8E41": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
@@ -39,7 +55,7 @@
           "service": "CloudWatchLogs",
           "action": "putResourcePolicy",
           "parameters": {
-            "policyName": "ESLogPolicyc8afc96ec29caac204615fb31aa47d4fbe24d80147",
+            "policyName": "ESLogPolicy",
             "policyDocument": {
               "Fn::Join": [
                 "",
@@ -47,14 +63,14 @@
                   "{\"Statement\":[{\"Action\":[\"logs:PutLogEvents\",\"logs:CreateLogStream\"],\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"es.amazonaws.com\"},\"Resource\":[\"",
                   {
                     "Fn::GetAtt": [
-                      "SlowSearchLogsE00DC2E7",
+                      "DomainSlowSearchLogs5B35A97A",
                       "Arn"
                     ]
                   },
                   "\",\"",
                   {
                     "Fn::GetAtt": [
-                      "AppLogsC5DF83A6",
+                      "DomainAppLogs21698C1B",
                       "Arn"
                     ]
                   },
@@ -71,7 +87,7 @@
           "service": "CloudWatchLogs",
           "action": "putResourcePolicy",
           "parameters": {
-            "policyName": "ESLogPolicyc8afc96ec29caac204615fb31aa47d4fbe24d80147",
+            "policyName": "ESLogPolicy",
             "policyDocument": {
               "Fn::Join": [
                 "",
@@ -79,14 +95,14 @@
                   "{\"Statement\":[{\"Action\":[\"logs:PutLogEvents\",\"logs:CreateLogStream\"],\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"es.amazonaws.com\"},\"Resource\":[\"",
                   {
                     "Fn::GetAtt": [
-                      "SlowSearchLogsE00DC2E7",
+                      "DomainSlowSearchLogs5B35A97A",
                       "Arn"
                     ]
                   },
                   "\",\"",
                   {
                     "Fn::GetAtt": [
-                      "AppLogsC5DF83A6",
+                      "DomainAppLogs21698C1B",
                       "Arn"
                     ]
                   },
@@ -103,7 +119,7 @@
           "service": "CloudWatchLogs",
           "action": "deleteResourcePolicy",
           "parameters": {
-            "policyName": "ESLogPolicyc8afc96ec29caac204615fb31aa47d4fbe24d80147"
+            "policyName": "ESLogPolicy"
           },
           "ignoreErrorCodesMatching": "400"
         },
@@ -144,7 +160,7 @@
           "ES_APPLICATION_LOGS": {
             "CloudWatchLogsLogGroupArn": {
               "Fn::GetAtt": [
-                "AppLogsC5DF83A6",
+                "DomainAppLogs21698C1B",
                 "Arn"
               ]
             },
@@ -153,7 +169,7 @@
           "SEARCH_SLOW_LOGS": {
             "CloudWatchLogsLogGroupArn": {
               "Fn::GetAtt": [
-                "SlowSearchLogsE00DC2E7",
+                "DomainSlowSearchLogs5B35A97A",
                 "Arn"
               ]
             },
@@ -171,22 +187,6 @@
         "DomainESLogGroupPolicyCustomResourcePolicyB35C8E41",
         "DomainESLogGroupPolicy5373A2E8"
       ]
-    },
-    "SlowSearchLogsE00DC2E7": {
-      "Type": "AWS::Logs::LogGroup",
-      "Properties": {
-        "RetentionInDays": 30
-      },
-      "UpdateReplacePolicy": "Retain",
-      "DeletionPolicy": "Retain"
-    },
-    "AppLogsC5DF83A6": {
-      "Type": "AWS::Logs::LogGroup",
-      "Properties": {
-        "RetentionInDays": 30
-      },
-      "UpdateReplacePolicy": "Retain",
-      "DeletionPolicy": "Retain"
     },
     "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2": {
       "Type": "AWS::IAM::Role",
