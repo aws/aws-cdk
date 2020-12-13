@@ -152,6 +152,23 @@ describe('log groups', () => {
     });
   });
 
+  test('appLogEnabled should create a uniquely named log group policy', () => {
+    new Domain(stack, 'Domain', {
+      version: ElasticsearchVersion.V7_4,
+      logging: {
+        appLogEnabled: true,
+      },
+    });
+
+    expect(stack).toHaveResourceLike('Custom::CloudwatchLogResourcePolicy', {
+      Create: {
+        parameters: {
+          policyName: 'ESLogPolicyc8d1b675eb302568ed639d317898554769727a62ea',
+        },
+      },
+    });
+  });
+
 });
 
 describe('grants', () => {
