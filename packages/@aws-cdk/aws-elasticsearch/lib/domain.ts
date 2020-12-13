@@ -1378,7 +1378,7 @@ export class Domain extends DomainBase implements IDomain {
 
     if (props.logging?.slowSearchLogEnabled) {
       this.slowSearchLogGroup = props.logging.slowSearchLogGroup ??
-        new logs.LogGroup(scope, 'SlowSearchLogs', {
+        new logs.LogGroup(this, 'SlowSearchLogs', {
           retention: logs.RetentionDays.ONE_MONTH,
         });
 
@@ -1387,7 +1387,7 @@ export class Domain extends DomainBase implements IDomain {
 
     if (props.logging?.slowIndexLogEnabled) {
       this.slowIndexLogGroup = props.logging.slowIndexLogGroup ??
-        new logs.LogGroup(scope, 'SlowIndexLogs', {
+        new logs.LogGroup(this, 'SlowIndexLogs', {
           retention: logs.RetentionDays.ONE_MONTH,
         });
 
@@ -1396,7 +1396,7 @@ export class Domain extends DomainBase implements IDomain {
 
     if (props.logging?.appLogEnabled) {
       this.appLogGroup = props.logging.appLogGroup ??
-        new logs.LogGroup(scope, 'AppLogs', {
+        new logs.LogGroup(this, 'AppLogs', {
           retention: logs.RetentionDays.ONE_MONTH,
         });
 
