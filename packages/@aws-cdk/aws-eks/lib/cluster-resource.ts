@@ -21,6 +21,7 @@ export interface ClusterResourceProps {
   readonly endpointPublicAccess: boolean;
   readonly publicAccessCidrs?: string[];
   readonly vpc: ec2.IVpc;
+  readonly subnets?: ec2.ISubnet[];
   readonly secretsEncryptionKey?: kms.IKey;
 }
 
@@ -57,6 +58,8 @@ export class ClusterResource extends CoreConstruct {
 
     const provider = ClusterResourceProvider.getOrCreate(this, {
       adminRole: this.adminRole,
+      subnets: props.subnets,
+      vpc: props.vpc,
     });
 
     const resource = new CustomResource(this, 'Resource', {

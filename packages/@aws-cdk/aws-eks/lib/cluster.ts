@@ -462,6 +462,14 @@ export interface ClusterOptions extends CommonClusterOptions {
    * @default true
    */
   readonly prune?: boolean;
+
+  /**
+   * If set to true, the cluster handler functions will be placed in the private subnets
+   * of the cluster vpc, subject to the `vpcSubnets` selection strategy.
+   *
+   * @default false
+   */
+  readonly placeClusterHandlersInVpc?: boolean;
 }
 
 /**
@@ -1029,6 +1037,7 @@ export class Cluster extends ClusterBase {
       publicAccessCidrs: this.endpointAccess._config.publicCidrs,
       secretsEncryptionKey: props.secretsEncryptionKey,
       vpc: this.vpc,
+      subnets: (props.placeClusterHandlersInVpc ?? false) ? privateSubents : undefined,
     });
 
     if (this.endpointAccess._config.privateAccess && privateSubents.length !== 0) {
