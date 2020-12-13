@@ -147,6 +147,8 @@ export class LegacyCluster extends Resource implements ICluster {
    */
   public readonly defaultNodegroup?: Nodegroup;
 
+  public readonly prune: boolean = false;
+
   private readonly version: KubernetesVersion;
 
   /**
@@ -376,7 +378,7 @@ export class LegacyCluster extends Resource implements ICluster {
     });
   }
 
-  public addManifest(_id: string, ..._manifest: any[]): KubernetesManifest {
+  public addManifest(_id: string, ..._manifest: Record<string, any>[]): KubernetesManifest {
     throw new Error('legacy cluster does not support adding kubernetes manifests');
   }
 
@@ -424,6 +426,7 @@ class ImportedCluster extends Resource implements ICluster {
   public readonly clusterName: string;
   public readonly clusterArn: string;
   public readonly connections = new ec2.Connections();
+  public readonly prune: boolean = false;
 
   constructor(scope: Construct, id: string, private readonly props: ClusterAttributes) {
     super(scope, id);
@@ -438,7 +441,7 @@ class ImportedCluster extends Resource implements ICluster {
     }
   }
 
-  public addManifest(_id: string, ..._manifest: any[]): KubernetesManifest {
+  public addManifest(_id: string, ..._manifest: Record<string, any>[]): KubernetesManifest {
     throw new Error('legacy cluster does not support adding kubernetes manifests');
   }
 

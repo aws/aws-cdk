@@ -871,7 +871,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
         ClientId: this.stack.account,
       },
       ...props,
-    });
+    }).attachTo(this);
   }
 
   /**
@@ -1067,6 +1067,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
 
     return grant;
   }
+
 }
 
 
@@ -1240,7 +1241,7 @@ export class Domain extends DomainBase implements IDomain {
       effect: iam.Effect.ALLOW,
       actions: ['es:ESHttp*'],
       principals: [new iam.Anyone()],
-      resources: [cdk.Lazy.stringValue({ produce: () => `${this.domainArn}/*` })],
+      resources: [cdk.Lazy.string({ produce: () => `${this.domainArn}/*` })],
     });
 
     const masterUserArn = props.fineGrainedAccessControl?.masterUserArn;

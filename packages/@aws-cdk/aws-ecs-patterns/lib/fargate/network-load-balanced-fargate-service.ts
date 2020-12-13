@@ -1,3 +1,4 @@
+import { SubnetSelection } from '@aws-cdk/aws-ec2';
 import { FargatePlatformVersion, FargateService, FargateTaskDefinition } from '@aws-cdk/aws-ecs';
 import { Construct } from 'constructs';
 import { NetworkLoadBalancedServiceBase, NetworkLoadBalancedServiceBaseProps } from '../base/network-load-balanced-service-base';
@@ -64,6 +65,13 @@ export interface NetworkLoadBalancedFargateServiceProps extends NetworkLoadBalan
    * @default false
    */
   readonly assignPublicIp?: boolean;
+
+  /**
+   * The subnets to associate with the service.
+   *
+   * @default - Public subnets if `assignPublicIp` is set, otherwise the first available one of Private, Isolated, Public, in that order.
+   */
+  readonly taskSubnets?: SubnetSelection;
 
   /**
    * The platform version on which to run your service.
@@ -147,6 +155,7 @@ export class NetworkLoadBalancedFargateService extends NetworkLoadBalancedServic
       enableECSManagedTags: props.enableECSManagedTags,
       cloudMapOptions: props.cloudMapOptions,
       platformVersion: props.platformVersion,
+      vpcSubnets: props.taskSubnets,
     });
     this.addServiceAsTarget(this.service);
   }

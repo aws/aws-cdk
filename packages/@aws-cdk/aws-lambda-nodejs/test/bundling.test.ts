@@ -33,7 +33,7 @@ test('esbuild bundling in Docker', () => {
     entry,
     depsLockFilePath,
     runtime: Runtime.NODEJS_12_X,
-    bundlingEnvironment: {
+    environment: {
       KEY: 'value',
     },
     loader: {
@@ -200,7 +200,7 @@ test('Local bundling', () => {
     entry,
     depsLockFilePath,
     runtime: Runtime.NODEJS_12_X,
-    bundlingEnvironment: {
+    environment: {
       KEY: 'value',
     },
   });
@@ -244,7 +244,7 @@ test('Custom bundling docker image', () => {
     entry,
     depsLockFilePath,
     runtime: Runtime.NODEJS_12_X,
-    bundlingDockerImage: BundlingDockerImage.fromRegistry('my-custom-image'),
+    dockerImage: BundlingDockerImage.fromRegistry('my-custom-image'),
     forceDockerBundling: true,
   });
 
@@ -252,6 +252,39 @@ test('Custom bundling docker image', () => {
     assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       image: { image: 'my-custom-image' },
+    }),
+  });
+});
+
+test('with command hooks', () => {
+  Bundling.bundle({
+    entry,
+    depsLockFilePath,
+    runtime: Runtime.NODEJS_12_X,
+    commandHooks: {
+      beforeBundling(inputDir: string, outputDir: string): string[] {
+        return [
+          `echo hello > ${inputDir}/a.txt`,
+          `cp ${inputDir}/a.txt ${outputDir}`,
+        ];
+      },
+      afterBundling(inputDir: string, outputDir: string): string[] {
+        return [`cp ${inputDir}/b.txt ${outputDir}/txt`];
+      },
+      beforeInstall() {
+        return [];
+      },
+    },
+    forceDockerBundling: true,
+  });
+
+  expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(depsLockFilePath), {
+    assetHashType: AssetHashType.OUTPUT,
+    bundling: expect.objectContaining({
+      command: [
+        'bash', '-c',
+        expect.stringMatching(/^echo hello > \/asset-input\/a.txt && cp \/asset-input\/a.txt \/asset-output && .+ && cp \/asset-input\/b.txt \/asset-output\/txt$/),
+      ],
     }),
   });
 });

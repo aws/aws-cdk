@@ -35,7 +35,7 @@ export class FirelensMutatingHook extends ContainerMutatingHook {
     this.logGroup = props.logGroup;
   }
 
-  public mutateContainerDefinition(props: ecs.ContainerDefinitionOptions) {
+  public mutateContainerDefinition(props: ecs.ContainerDefinitionOptions): ecs.ContainerDefinitionOptions {
     return {
       ...props,
 
