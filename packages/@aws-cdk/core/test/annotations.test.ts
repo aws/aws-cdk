@@ -1,6 +1,7 @@
 import { CloudAssembly } from '@aws-cdk/cx-api';
+import { Construct } from 'constructs';
 import { nodeunitShim, Test } from 'nodeunit-shim';
-import { Construct, App, Stack } from '../lib';
+import { App, Stack } from '../lib';
 import { Annotations } from '../lib/annotations';
 
 const restore = process.env.CDK_BLOCK_DEPRECATIONS;

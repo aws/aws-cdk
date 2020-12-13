@@ -1,3 +1,4 @@
+/* eslint-disable import/order */
 import { Reference } from '../reference';
 
 const CFN_REFERENCE_SYMBOL = Symbol.for('@aws-cdk/core.CfnReference');
@@ -174,8 +175,8 @@ export class CfnReference extends Reference {
   }
 }
 
+import { Construct, IConstruct } from 'constructs';
 import { CfnElement } from '../cfn-element';
-import { Construct, IConstruct } from '../construct-compat';
 import { IResolvable, IResolveContext } from '../resolvable';
 import { Stack } from '../stack';
 import { Token } from '../token';
