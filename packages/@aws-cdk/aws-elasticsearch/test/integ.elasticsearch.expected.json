@@ -55,7 +55,7 @@
           "service": "CloudWatchLogs",
           "action": "putResourcePolicy",
           "parameters": {
-            "policyName": "ESLogPolicy",
+            "policyName": "ESLogPolicyc8afc96ec29caac204615fb31aa47d4fbe24d80147",
             "policyDocument": {
               "Fn::Join": [
                 "",
@@ -87,7 +87,7 @@
           "service": "CloudWatchLogs",
           "action": "putResourcePolicy",
           "parameters": {
-            "policyName": "ESLogPolicy",
+            "policyName": "ESLogPolicyc8afc96ec29caac204615fb31aa47d4fbe24d80147",
             "policyDocument": {
               "Fn::Join": [
                 "",
@@ -119,7 +119,7 @@
           "service": "CloudWatchLogs",
           "action": "deleteResourcePolicy",
           "parameters": {
-            "policyName": "ESLogPolicy"
+            "policyName": "ESLogPolicyc8afc96ec29caac204615fb31aa47d4fbe24d80147"
           },
           "ignoreErrorCodesMatching": "400"
         },
