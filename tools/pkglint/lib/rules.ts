@@ -1354,7 +1354,7 @@ export class ConstructsDependency extends ValidationRule {
   public readonly name = 'constructs/dependency';
 
   public validate(pkg: PackageJson) {
-    const REQUIRED_VERSION = '^3.2.0';
+    const REQUIRED_VERSION = '10.0.0-pre.5';
 
     if (pkg.devDependencies?.constructs && pkg.devDependencies?.constructs !== REQUIRED_VERSION) {
       pkg.report({
