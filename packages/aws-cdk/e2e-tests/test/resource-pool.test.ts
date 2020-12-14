@@ -1,4 +1,4 @@
-import { ResourcePool } from './resource-pool';
+import { ResourcePool } from '../lib/resource-pool';
 
 test('take and dispose', async () => {
   const pool = new ResourcePool(['a']);

@@ -1,4 +1,5 @@
 #!/bin/bash
+
 # Run a given test against the publicly released packages
 #
 # - Install the latest CLI somewhere and put it on the PATH.

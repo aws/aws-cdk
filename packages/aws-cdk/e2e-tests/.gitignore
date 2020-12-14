@@ -1,0 +1,3 @@
+!jest.config.common.js
+!jest.config.e2e.js
+!jest.config.unit.js

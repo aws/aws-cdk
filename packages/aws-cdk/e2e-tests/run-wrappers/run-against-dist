@@ -12,8 +12,8 @@ scriptdir=$(cd $(dirname $0) && pwd)
 source $scriptdir/run-against-dist.bash
 
 # If DIST_ROOT is not given, guess at a sane location.
-if [[ "${DIST_ROOT:-}" == "" && -f $scriptdir/../../../dist/build.json ]]; then
-  DIST_ROOT=$scriptdir/../../../dist
+if [[ "${DIST_ROOT:-}" == "" && -f $scriptdir/../../dist/build.json ]]; then
+  DIST_ROOT=$scriptdir/../../dist
 fi
 
 dist_root=$(cd ${DIST_ROOT:-.} && pwd)
@@ -34,7 +34,7 @@ prepare_nuget_packages
 prepare_python_packages
 
 # Install additional tool wrappers before running the target script
-export PATH="$scriptdir/run-wrappers/dist:$PATH"
+export PATH="$scriptdir/dist:$PATH"
 hash -r
 
 # Run target script

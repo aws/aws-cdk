@@ -45,6 +45,7 @@
       "packages/@aws-cdk-containers/*",
       "packages/@monocdk-experiment/*",
       "packages/@aws-cdk/*/lambda-packages/*",
+      "packages/aws-cdk/e2e-tests",
       "tools/*",
       "scripts/script-tests"
     ],

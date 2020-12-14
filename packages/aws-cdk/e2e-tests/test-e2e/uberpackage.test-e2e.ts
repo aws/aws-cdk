@@ -1,7 +1,5 @@
-import { withMonolithicCfnIncludeCdkApp } from '../helpers/cdk';
-import { integTest } from '../helpers/test-helpers';
-
-jest.setTimeout(600_000);
+import { withMonolithicCfnIncludeCdkApp } from '../lib/cdk';
+import { integTest } from '../lib/test-helpers';
 
 describe('uberpackage', () => {
   integTest('works with cloudformation-include', withMonolithicCfnIncludeCdkApp(async (fixture) => {

@@ -1,4 +1,5 @@
 #!/bin/bash
+
 # Script to run a given test against the monorepo.
 #
 # Set up paths so that `cdk` binary is on the path, and make it
@@ -17,6 +18,6 @@ export REPO_ROOT="$repo_root"
 export ORIGINAL_NPM="$(type -p npm)"
 export TEST_RUNNER=repo
 
-export PATH="$cli_dir/bin:$cli_dir/test/integ/run-wrappers/repo:$PATH"
+export PATH="$cli_dir/bin:$cli_dir/e2e-test/run-wrappers/repo:$PATH"
 hash -r
 exec "$@"

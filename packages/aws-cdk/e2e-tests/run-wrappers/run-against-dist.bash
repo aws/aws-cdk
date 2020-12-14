@@ -43,10 +43,7 @@ function serve_npm_packages() {
 
   tarballs_glob="$dist_root/js/*.tgz"
 
-  # When using '--daemon', 'npm install' first so the files are permanent, or
-  # 'npx' will remove them too soon.
-  npm install serve-npm-tarballs
-  eval $(npx serve-npm-tarballs --glob "${tarballs_glob}" --daemon)
+  eval $(npx --no-install serve-npm-tarballs --glob "${tarballs_glob}" --daemon)
   TRAPS+=("kill $SERVE_NPM_TARBALLS_PID")
 }
 

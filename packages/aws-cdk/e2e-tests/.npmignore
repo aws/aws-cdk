@@ -1,0 +1,7 @@
+# we don't need the .d.ts files for this
+*.d.ts
+
+# we don't need the unit tests
+test/**
+
+node_modules/**

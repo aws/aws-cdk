@@ -1,9 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { randomString, withDefaultFixture } from '../helpers/cdk';
-import { integTest } from '../helpers/test-helpers';
-
-jest.setTimeout(600_000);
+import { randomString, withDefaultFixture } from '../../lib/cdk';
+import { integTest } from '../../lib/test-helpers';
 
 integTest('can bootstrap without execution', withDefaultFixture(async (fixture) => {
   const bootstrapStackName = fixture.fullStackName('bootstrap-stack');

@@ -52,7 +52,7 @@ export function withCdkApp<A extends TestContext & AwsContext>(block: (context: 
     context.output.write(` Test directory: ${integTestDir}\n`);
     context.output.write(` Region:         ${context.aws.region}\n`);
 
-    await cloneDirectory(path.join(__dirname, '..', 'cli', 'app'), integTestDir, context.output);
+    await cloneDirectory(path.join(__dirname, 'fixture-apps', 'default'), integTestDir, context.output);
     const fixture = new TestFixture(
       integTestDir,
       stackNamePrefix,
@@ -107,7 +107,7 @@ export function withMonolithicCfnIncludeCdkApp<A extends TestContext>(block: (co
     context.output.write(` Test directory: ${integTestDir}\n`);
 
     const awsClients = await AwsClients.default(context.output);
-    await cloneDirectory(path.join(__dirname, '..', 'uberpackage', 'cfn-include-app'), integTestDir, context.output);
+    await cloneDirectory(path.join(__dirname, 'fixture-apps', 'cfn-include'), integTestDir, context.output);
     const fixture = new TestFixture(
       integTestDir,
       stackNamePrefix,

@@ -1,0 +1,35 @@
+{
+  "name": "e2e-tests",
+  "description": "The end-to-end tests for the AWS CDK (libraries and CLI)",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "test": "jest --config jest.config.unit.js",
+    "build+test": "npm run build && npm run test",
+
+    "test-e2e-against-repo": "./run-wrappers/run-against-repo jest --runInBand --config jest.config.e2e.js",
+    "test-e2e-against-dist": "./run-wrappers/run-against-dist jest --runInBand --config jest.config.e2e.js",
+    "test-e2e-against-release": "./run-wrappers/run-against-release jest --runInBand --config jest.config.e2e.js",
+
+    "test-init-against-dist": "./run-wrappers/run-against-dist test-init/test-all.sh",
+
+    "integ-cli": "npm run integ-cli-regression && npm run test-e2e-against-repo",
+    "integ-cli-regression": "npm run integ-cli-regression-latest-release && npm run integ-cli-regression-latest-code",
+    "integ-cli-regression-latest-release": "./run-wrappers/run-against-dist test-cli-regression-against-latest-release.sh",
+    "integ-cli-regression-latest-code": "./run-wrappers/run-against-dist test-cli-regression-against-current-code.sh"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.804.0",
+    "jest": "^26.6.3",
+    "jest-junit": "^12.0.0",
+    "serve-npm-tarballs": "^0.1.12"
+  },
+  "devDependencies": {
+    "@types/jest": "^26.0.15",
+    "@types/node": "^10.17.48",
+    "ts-jest": "^26.4.4",
+    "typescript": "~3.9.7"
+  }
+}

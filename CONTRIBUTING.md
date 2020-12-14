@@ -667,7 +667,7 @@ To update all dependencies (without bumping major versions):
 
 The CLI package (`packages/aws-cdk`) has some integration tests that aren't
 run as part of the regular build, since they have some particular requirements.
-See the [CLI CONTRIBUTING.md file](packages/aws-cdk/CONTRIBUTING.md) for
+See the [CLI CONTRIBUTING.md file](packages/aws-cdk/e2e-tests/CONTRIBUTING.md) for
 more information on running those tests.
 
 ### Changing Cloud Assembly Schema
