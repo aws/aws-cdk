@@ -1,6 +1,6 @@
 {
   "Resources": {
-    "DomainSlowSearchLogs5B35A97A": {
+    "Domain1SlowSearchLogs8F3B0506": {
       "Type": "AWS::Logs::LogGroup",
       "Properties": {
         "RetentionInDays": 30
@@ -8,7 +8,7 @@
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain"
     },
-    "DomainAppLogs21698C1B": {
+    "Domain1AppLogs6E8D1D67": {
       "Type": "AWS::Logs::LogGroup",
       "Properties": {
         "RetentionInDays": 30
@@ -16,7 +16,7 @@
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain"
     },
-    "DomainESLogGroupPolicyCustomResourcePolicyB35C8E41": {
+    "Domain1ESLogGroupPolicyc8858d5dba055f677469d76cb6ad538fd732ba69a6CustomResourcePolicy24436E05": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -34,7 +34,7 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "DomainESLogGroupPolicyCustomResourcePolicyB35C8E41",
+        "PolicyName": "Domain1ESLogGroupPolicyc8858d5dba055f677469d76cb6ad538fd732ba69a6CustomResourcePolicy24436E05",
         "Roles": [
           {
             "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
@@ -42,7 +42,7 @@
         ]
       }
     },
-    "DomainESLogGroupPolicy5373A2E8": {
+    "Domain1ESLogGroupPolicyc8858d5dba055f677469d76cb6ad538fd732ba69a6D8BDCF36": {
       "Type": "Custom::CloudwatchLogResourcePolicy",
       "Properties": {
         "ServiceToken": {
@@ -55,7 +55,7 @@
           "service": "CloudWatchLogs",
           "action": "putResourcePolicy",
           "parameters": {
-            "policyName": "ESLogPolicy",
+            "policyName": "ESLogPolicyc8858d5dba055f677469d76cb6ad538fd732ba69a6",
             "policyDocument": {
               "Fn::Join": [
                 "",
@@ -63,14 +63,14 @@
                   "{\"Statement\":[{\"Action\":[\"logs:PutLogEvents\",\"logs:CreateLogStream\"],\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"es.amazonaws.com\"},\"Resource\":[\"",
                   {
                     "Fn::GetAtt": [
-                      "DomainSlowSearchLogs5B35A97A",
+                      "Domain1SlowSearchLogs8F3B0506",
                       "Arn"
                     ]
                   },
                   "\",\"",
                   {
                     "Fn::GetAtt": [
-                      "DomainAppLogs21698C1B",
+                      "Domain1AppLogs6E8D1D67",
                       "Arn"
                     ]
                   },
@@ -80,14 +80,14 @@
             }
           },
           "physicalResourceId": {
-            "id": "ESLogGroupPolicy"
+            "id": "ESLogGroupPolicyc8858d5dba055f677469d76cb6ad538fd732ba69a6"
           }
         },
         "Update": {
           "service": "CloudWatchLogs",
           "action": "putResourcePolicy",
           "parameters": {
-            "policyName": "ESLogPolicy",
+            "policyName": "ESLogPolicyc8858d5dba055f677469d76cb6ad538fd732ba69a6",
             "policyDocument": {
               "Fn::Join": [
                 "",
@@ -95,14 +95,14 @@
                   "{\"Statement\":[{\"Action\":[\"logs:PutLogEvents\",\"logs:CreateLogStream\"],\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"es.amazonaws.com\"},\"Resource\":[\"",
                   {
                     "Fn::GetAtt": [
-                      "DomainSlowSearchLogs5B35A97A",
+                      "Domain1SlowSearchLogs8F3B0506",
                       "Arn"
                     ]
                   },
                   "\",\"",
                   {
                     "Fn::GetAtt": [
-                      "DomainAppLogs21698C1B",
+                      "Domain1AppLogs6E8D1D67",
                       "Arn"
                     ]
                   },
@@ -112,26 +112,26 @@
             }
           },
           "physicalResourceId": {
-            "id": "ESLogGroupPolicy"
+            "id": "ESLogGroupPolicyc8858d5dba055f677469d76cb6ad538fd732ba69a6"
           }
         },
         "Delete": {
           "service": "CloudWatchLogs",
           "action": "deleteResourcePolicy",
           "parameters": {
-            "policyName": "ESLogPolicy"
+            "policyName": "ESLogPolicyc8858d5dba055f677469d76cb6ad538fd732ba69a6"
           },
           "ignoreErrorCodesMatching": "400"
         },
         "InstallLatestAwsSdk": true
       },
       "DependsOn": [
-        "DomainESLogGroupPolicyCustomResourcePolicyB35C8E41"
+        "Domain1ESLogGroupPolicyc8858d5dba055f677469d76cb6ad538fd732ba69a6CustomResourcePolicy24436E05"
       ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
-    "Domain66AC69E0": {
+    "Domain19FCBCB91": {
       "Type": "AWS::Elasticsearch::Domain",
       "Properties": {
         "CognitoOptions": {
@@ -160,7 +160,7 @@
           "ES_APPLICATION_LOGS": {
             "CloudWatchLogsLogGroupArn": {
               "Fn::GetAtt": [
-                "DomainAppLogs21698C1B",
+                "Domain1AppLogs6E8D1D67",
                 "Arn"
               ]
             },
@@ -169,7 +169,7 @@
           "SEARCH_SLOW_LOGS": {
             "CloudWatchLogsLogGroupArn": {
               "Fn::GetAtt": [
-                "DomainSlowSearchLogs5B35A97A",
+                "Domain1SlowSearchLogs8F3B0506",
                 "Arn"
               ]
             },
@@ -184,8 +184,8 @@
         }
       },
       "DependsOn": [
-        "DomainESLogGroupPolicyCustomResourcePolicyB35C8E41",
-        "DomainESLogGroupPolicy5373A2E8"
+        "Domain1ESLogGroupPolicyc8858d5dba055f677469d76cb6ad538fd732ba69a6CustomResourcePolicy24436E05",
+        "Domain1ESLogGroupPolicyc8858d5dba055f677469d76cb6ad538fd732ba69a6D8BDCF36"
       ]
     },
     "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2": {
@@ -272,6 +272,194 @@
       },
       "DependsOn": [
         "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+      ]
+    },
+    "Domain2SlowSearchLogs0C75F64B": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "RetentionInDays": 30
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
+    },
+    "Domain2AppLogs810876E2": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "RetentionInDays": 30
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
+    },
+    "Domain2ESLogGroupPolicyc8405238e455eeabd840cf6933e1814efc51d2de71CustomResourcePolicy77691A33": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "logs:PutResourcePolicy",
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": "logs:DeleteResourcePolicy",
+              "Effect": "Allow",
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "Domain2ESLogGroupPolicyc8405238e455eeabd840cf6933e1814efc51d2de71CustomResourcePolicy77691A33",
+        "Roles": [
+          {
+            "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+          }
+        ]
+      }
+    },
+    "Domain2ESLogGroupPolicyc8405238e455eeabd840cf6933e1814efc51d2de71F1DE93A1": {
+      "Type": "Custom::CloudwatchLogResourcePolicy",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
+            "Arn"
+          ]
+        },
+        "Create": {
+          "service": "CloudWatchLogs",
+          "action": "putResourcePolicy",
+          "parameters": {
+            "policyName": "ESLogPolicyc8405238e455eeabd840cf6933e1814efc51d2de71",
+            "policyDocument": {
+              "Fn::Join": [
+                "",
+                [
+                  "{\"Statement\":[{\"Action\":[\"logs:PutLogEvents\",\"logs:CreateLogStream\"],\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"es.amazonaws.com\"},\"Resource\":[\"",
+                  {
+                    "Fn::GetAtt": [
+                      "Domain2SlowSearchLogs0C75F64B",
+                      "Arn"
+                    ]
+                  },
+                  "\",\"",
+                  {
+                    "Fn::GetAtt": [
+                      "Domain2AppLogs810876E2",
+                      "Arn"
+                    ]
+                  },
+                  "\"]}],\"Version\":\"2012-10-17\"}"
+                ]
+              ]
+            }
+          },
+          "physicalResourceId": {
+            "id": "ESLogGroupPolicyc8405238e455eeabd840cf6933e1814efc51d2de71"
+          }
+        },
+        "Update": {
+          "service": "CloudWatchLogs",
+          "action": "putResourcePolicy",
+          "parameters": {
+            "policyName": "ESLogPolicyc8405238e455eeabd840cf6933e1814efc51d2de71",
+            "policyDocument": {
+              "Fn::Join": [
+                "",
+                [
+                  "{\"Statement\":[{\"Action\":[\"logs:PutLogEvents\",\"logs:CreateLogStream\"],\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"es.amazonaws.com\"},\"Resource\":[\"",
+                  {
+                    "Fn::GetAtt": [
+                      "Domain2SlowSearchLogs0C75F64B",
+                      "Arn"
+                    ]
+                  },
+                  "\",\"",
+                  {
+                    "Fn::GetAtt": [
+                      "Domain2AppLogs810876E2",
+                      "Arn"
+                    ]
+                  },
+                  "\"]}],\"Version\":\"2012-10-17\"}"
+                ]
+              ]
+            }
+          },
+          "physicalResourceId": {
+            "id": "ESLogGroupPolicyc8405238e455eeabd840cf6933e1814efc51d2de71"
+          }
+        },
+        "Delete": {
+          "service": "CloudWatchLogs",
+          "action": "deleteResourcePolicy",
+          "parameters": {
+            "policyName": "ESLogPolicyc8405238e455eeabd840cf6933e1814efc51d2de71"
+          },
+          "ignoreErrorCodesMatching": "400"
+        },
+        "InstallLatestAwsSdk": true
+      },
+      "DependsOn": [
+        "Domain2ESLogGroupPolicyc8405238e455eeabd840cf6933e1814efc51d2de71CustomResourcePolicy77691A33"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "Domain2644FE48C": {
+      "Type": "AWS::Elasticsearch::Domain",
+      "Properties": {
+        "CognitoOptions": {
+          "Enabled": false
+        },
+        "DomainEndpointOptions": {
+          "EnforceHTTPS": false,
+          "TLSSecurityPolicy": "Policy-Min-TLS-1-0-2019-07"
+        },
+        "EBSOptions": {
+          "EBSEnabled": true,
+          "VolumeSize": 10,
+          "VolumeType": "gp2"
+        },
+        "ElasticsearchClusterConfig": {
+          "DedicatedMasterEnabled": false,
+          "InstanceCount": 1,
+          "InstanceType": "r5.large.elasticsearch",
+          "ZoneAwarenessEnabled": false
+        },
+        "ElasticsearchVersion": "7.1",
+        "EncryptionAtRestOptions": {
+          "Enabled": true
+        },
+        "LogPublishingOptions": {
+          "ES_APPLICATION_LOGS": {
+            "CloudWatchLogsLogGroupArn": {
+              "Fn::GetAtt": [
+                "Domain2AppLogs810876E2",
+                "Arn"
+              ]
+            },
+            "Enabled": true
+          },
+          "SEARCH_SLOW_LOGS": {
+            "CloudWatchLogsLogGroupArn": {
+              "Fn::GetAtt": [
+                "Domain2SlowSearchLogs0C75F64B",
+                "Arn"
+              ]
+            },
+            "Enabled": true
+          },
+          "INDEX_SLOW_LOGS": {
+            "Enabled": false
+          }
+        },
+        "NodeToNodeEncryptionOptions": {
+          "Enabled": true
+        }
+      },
+      "DependsOn": [
+        "Domain2ESLogGroupPolicyc8405238e455eeabd840cf6933e1814efc51d2de71CustomResourcePolicy77691A33",
+        "Domain2ESLogGroupPolicyc8405238e455eeabd840cf6933e1814efc51d2de71F1DE93A1"
       ]
     }
   },
