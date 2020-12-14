@@ -1,7 +1,7 @@
-import { ABSENT } from '@aws-cdk/assert';
+import { ABSENT, arrayWith } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import { Stack, Duration } from '@aws-cdk/core';
-import { OAuthScope, ResourceServerScope, UserPool, UserPoolClient, UserPoolClientIdentityProvider, UserPoolIdentityProvider } from '../lib';
+import { OAuthScope, ResourceServerScope, UserPool, UserPoolClient, UserPoolClientIdentityProvider, UserPoolIdentityProvider, AttributeSet } from '../lib';
 
 describe('User Pool Client', () => {
   test('default setup', () => {
@@ -824,6 +824,43 @@ describe('User Pool Client', () => {
         TokenValidityUnits: {
           IdToken: 'minutes',
         },
+      });
+    });
+  });
+
+  describe('read and write attributes', () => {
+    test('undefined by default', () => {
+      // GIVEN
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'Pool');
+
+      // WHEN
+      pool.addClient('Client', {});
+
+      // EXPECT
+      expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolClient', {
+        ReadAttributes: ABSENT,
+        WriteAttributes: ABSENT,
+      });
+    });
+
+    test('set attributes', () => {
+      // GIVEN
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'Pool');
+      const writeAttributes = AttributeSet.profileWritable(['custom:my_first']);
+      const readAttributes = AttributeSet.allStandard();
+
+      // WHEN
+      pool.addClient('Client', {
+        readAttributes,
+        writeAttributes,
+      });
+
+      // EXPECT
+      expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolClient', {
+        ReadAttributes: arrayWith('name', 'given_name', 'family_name', 'middle_name', 'nickname', 'preferred_username', 'profile', 'picture', 'website', 'email', 'email_verified', 'gender', 'birthdate', 'zoneinfo', 'locale', 'phone_number', 'phone_number_verified', 'address', 'updated_at'),
+        WriteAttributes: arrayWith('name', 'given_name', 'family_name', 'middle_name', 'nickname', 'preferred_username', 'profile', 'picture', 'website', 'email', 'gender', 'birthdate', 'zoneinfo', 'locale', 'phone_number', 'address', 'updated_at', 'custom:my_first'),
       });
     });
   });

@@ -584,6 +584,7 @@ export class AttributeSet {
    * The list of attributes represented by this AttributeSet
    */
   public attributes(): string[] {
-    return Array.from(this.attributeSet);
+    // sorting is unnecessary but it simplify testing
+    return Array.from(this.attributeSet).sort();
   }
 }
