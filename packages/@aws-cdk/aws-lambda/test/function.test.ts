@@ -142,25 +142,6 @@ describe('function', () => {
           [{ 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole']] }],
       });
 
-      expect(stack).toHaveResource('AWS::Lambda::Function', {
-        Properties: {
-          Code: {
-            ZipFile: 'foo',
-          },
-          Handler: 'bar',
-          Role: {
-            'Fn::GetAtt': [
-              'MyLambdaServiceRole4539ECB6',
-              'Arn',
-            ],
-          },
-          Runtime: 'python2.7',
-        },
-        DependsOn: [
-          'MyLambdaServiceRole4539ECB6',
-        ],
-      }, ResourcePart.CompleteDefinition);
-
       expect(stack).toHaveResource('AWS::Lambda::Permission', {
         Action: 'lambda:*',
         FunctionName: {
@@ -407,33 +388,16 @@ describe('function', () => {
       ],
     });
     expect(stack).toHaveResource('AWS::Lambda::Function', {
-      Properties: {
-        Code: {
-          ZipFile: 'foo',
-        },
-        Handler: 'index.handler',
-        Role: {
+      FunctionName: 'OneFunctionToRuleThemAll',
+      DeadLetterConfig: {
+        TargetArn: {
           'Fn::GetAtt': [
-            'MyLambdaServiceRole4539ECB6',
+            'MyLambdaDeadLetterQueue399EEA2D',
             'Arn',
           ],
         },
-        Runtime: 'nodejs10.x',
-        DeadLetterConfig: {
-          TargetArn: {
-            'Fn::GetAtt': [
-              'MyLambdaDeadLetterQueue399EEA2D',
-              'Arn',
-            ],
-          },
-        },
-        FunctionName: 'OneFunctionToRuleThemAll',
       },
-      DependsOn: [
-        'MyLambdaServiceRoleDefaultPolicy5BBC6F68',
-        'MyLambdaServiceRole4539ECB6',
-      ],
-    }, ResourcePart.CompleteDefinition);
+    });
   });
 
   test('default function with SQS DLQ when client sets deadLetterQueueEnabled to true and functionName not defined by client', () => {
@@ -628,27 +592,10 @@ describe('function', () => {
     });
 
     expect(stack).toHaveResource('AWS::Lambda::Function', {
-      Properties: {
-        Code: {
-          ZipFile: 'foo',
-        },
-        Handler: 'index.handler',
-        Role: {
-          'Fn::GetAtt': [
-            'MyLambdaServiceRole4539ECB6',
-            'Arn',
-          ],
-        },
-        Runtime: 'nodejs10.x',
-        TracingConfig: {
-          Mode: 'Active',
-        },
+      TracingConfig: {
+        Mode: 'Active',
       },
-      DependsOn: [
-        'MyLambdaServiceRoleDefaultPolicy5BBC6F68',
-        'MyLambdaServiceRole4539ECB6',
-      ],
-    }, ResourcePart.CompleteDefinition);
+    });
   });
 
   test('default function with PassThrough tracing', () => {
@@ -684,27 +631,10 @@ describe('function', () => {
     });
 
     expect(stack).toHaveResource('AWS::Lambda::Function', {
-      Properties: {
-        Code: {
-          ZipFile: 'foo',
-        },
-        Handler: 'index.handler',
-        Role: {
-          'Fn::GetAtt': [
-            'MyLambdaServiceRole4539ECB6',
-            'Arn',
-          ],
-        },
-        Runtime: 'nodejs10.x',
-        TracingConfig: {
-          Mode: 'PassThrough',
-        },
+      TracingConfig: {
+        Mode: 'PassThrough',
       },
-      DependsOn: [
-        'MyLambdaServiceRoleDefaultPolicy5BBC6F68',
-        'MyLambdaServiceRole4539ECB6',
-      ],
-    }, ResourcePart.CompleteDefinition);
+    });
   });
 
   test('default function with Disabled tracing', () => {
@@ -740,23 +670,8 @@ describe('function', () => {
     });
 
     expect(stack).toHaveResource('AWS::Lambda::Function', {
-      Properties: {
-        Code: {
-          ZipFile: 'foo',
-        },
-        Handler: 'index.handler',
-        Role: {
-          'Fn::GetAtt': [
-            'MyLambdaServiceRole4539ECB6',
-            'Arn',
-          ],
-        },
-        Runtime: 'nodejs10.x',
-      },
-      DependsOn: [
-        'MyLambdaServiceRole4539ECB6',
-      ],
-    }, ResourcePart.CompleteDefinition);
+      TracingConfig: ABSENT,
+    });
   });
 
   describe('grantInvoke', () => {
