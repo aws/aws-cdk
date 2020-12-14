@@ -572,6 +572,21 @@ pool.addClient('app-client', {
 });
 ```
 
+Clients can (and should) be allowed to read and write relevant user attributes only. Usually every client can be allowed to read the `given_name`
+attribute but not every client should be allowed to set the `email_verified` attribute.
+The same criteria applies for both standard and custom attributes, more info is available at
+[Attribute Permissions and Scopes](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html#user-pool-settings-attribute-permissions-and-scopes).
+The default behaviour is to allow read and write permissions on all attributes.
+
+```ts
+const pool = new cognito.UserPool(this, 'Pool');
+pool.addClient('app-client', {
+  // ...
+  readAttributes: AttributeSet.allStandard(['custom:my_attribute_1', 'custom:my_attribute_2']),
+  writeAttributes: AttributeSet.from({name: true, locale: true}),
+});
+```
+
 ### Resource Servers
 
 A resource server is a server for access-protected resources. It handles authenticated requests from an app that has an
