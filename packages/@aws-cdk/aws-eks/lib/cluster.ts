@@ -469,7 +469,7 @@ export interface ClusterOptions extends CommonClusterOptions {
    *
    * @default false
    */
-  readonly placeClusterHandlersInVpc?: boolean;
+  readonly placeClusterHandlerInVpc?: boolean;
 }
 
 /**
@@ -1016,6 +1016,12 @@ export class Cluster extends ClusterBase {
       throw new Error('Vpc must contain private subnets when public endpoint access is restricted');
     }
 
+    const placeClusterHandlerInVpc = props.placeClusterHandlerInVpc ?? false;
+
+    if (placeClusterHandlerInVpc && privateSubents.length === 0) {
+      throw new Error('Cannot place cluster handler in the VPC since no private subnets could be selected');
+    }
+
     const resource = this._clusterResource = new ClusterResource(this, 'Resource', {
       name: this.physicalName,
       roleArn: this.role.roleArn,
@@ -1037,7 +1043,7 @@ export class Cluster extends ClusterBase {
       publicAccessCidrs: this.endpointAccess._config.publicCidrs,
       secretsEncryptionKey: props.secretsEncryptionKey,
       vpc: this.vpc,
-      subnets: (props.placeClusterHandlersInVpc ?? false) ? privateSubents : undefined,
+      subnets: placeClusterHandlerInVpc ? privateSubents : undefined,
     });
 
     if (this.endpointAccess._config.privateAccess && privateSubents.length !== 0) {
