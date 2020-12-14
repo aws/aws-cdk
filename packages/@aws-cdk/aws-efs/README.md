@@ -42,15 +42,16 @@ performance mode, and `Bursting` throughput mode and does not transition files t
 Access (IA) storage class.
 
 ```ts
-import * as efs from '@aws-cdk/aws-efs';
-import * as ec2 from '@aws-cdk/aws-ec2';
-
 const fileSystem = new efs.FileSystem(this, 'MyEfsFileSystem', {
   vpc: new ec2.Vpc(this, 'VPC'),
   encrypted: true, // file system is not encrypted by default
   lifecyclePolicy: efs.LifecyclePolicy.AFTER_14_DAYS, // files are not transitioned to infrequent access (IA) storage by default
+  performanceMode: efs.PerformanceMode.GENERAL_PURPOSE, // default
 });
 ```
+
+⚠️ An Amazon EFS file system's performance mode can't be changed after the file system has been created.
+Updating this property will replace the file system.
 
 ### Access Point
 
@@ -62,7 +63,7 @@ the access point can only access data in its own directory and below. To learn m
 
 Use the `addAccessPoint` API to create an access point from a fileSystem.
 
-```ts
+```ts fixture=with-filesystem-instance
 fileSystem.addAccessPoint('AccessPoint');
 ```
 
@@ -77,13 +78,11 @@ Any access point that has been created outside the stack can be imported into yo
 Use the `fromAccessPointAttributes()` API to import an existing access point.
 
 ```ts
-import * as efs from '@aws-cdk/aws-efs';
-
 efs.AccessPoint.fromAccessPointAttributes(this, 'ap', {
   accessPointId: 'fsap-1293c4d9832fo0912',
   fileSystem: efs.FileSystem.fromFileSystemAttributes(this, 'efs', {
     fileSystemId: 'fs-099d3e2f',
-    securityGroup: SecurityGroup.fromSecurityGroupId(this, 'sg', 'sg-51530134'),
+    securityGroup: ec2.SecurityGroup.fromSecurityGroupId(this, 'sg', 'sg-51530134'),
   }),
 });
 ```
@@ -101,7 +100,7 @@ the following error when deploying:
 To control who can access the EFS, use the `.connections` attribute. EFS has
 a fixed default port, so you don't need to specify the port:
 
-```ts
+```ts fixture=with-filesystem-instance
 fileSystem.connections.allowDefaultPortFrom(instance);
 ```
 
@@ -114,32 +113,7 @@ EC2 instances, containers, and Lambda functions in your virtual private cloud (V
 
 The following example automatically mounts a file system during instance launch.
 
-```ts
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as efs from '@aws-cdk/aws-efs';
-
-const vpc = new ec2.Vpc(this, 'VPC');
-
-const fileSystem = new efs.FileSystem(this, 'MyEfsFileSystem', {
-  vpc,
-  encrypted: true,
-  lifecyclePolicy: efs.LifecyclePolicy.AFTER_14_DAYS,
-  performanceMode: efs.PerformanceMode.GENERAL_PURPOSE,
-  throughputMode: efs.ThroughputMode.BURSTING,
-  enableAutomaticBackups: true
-});
-
-const instance = new ec2.Instance(this, 'instance', {
-  instanceType: ec2.InstanceType.of(ec2.InstanceClass.T2, ec2.InstanceSize.LARGE),
-  machineImage: new ec2.AmazonLinuxImage({
-    generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2
-  }),
-  vpc,
-  vpcSubnets: {
-    subnetType: ec2.SubnetType.PUBLIC,
-  }
-});
-
+```ts fixture=with-filesystem-instance
 fileSystem.connections.allowDefaultPortFrom(instance);
 
 instance.userData.addCommands("yum check-update -y",    // Ubuntu: apt-get -y update
@@ -150,7 +124,7 @@ instance.userData.addCommands("yum check-update -y",    // Ubuntu: apt-get -y up
   "efs_mount_point_1=/mnt/efs/fs1",
   "mkdir -p \"${efs_mount_point_1}\"",
   "test -f \"/sbin/mount.efs\" && echo \"${file_system_id_1}:/ ${efs_mount_point_1} efs defaults,_netdev\" >> /etc/fstab || " +
-  "echo \"${file_system_id_1}.efs." + cdk.Stack.of(this).region + ".amazonaws.com:/ ${efs_mount_point_1} nfs4 nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport,_netdev 0 0\" >> /etc/fstab",
+  "echo \"${file_system_id_1}.efs." + Stack.of(this).region + ".amazonaws.com:/ ${efs_mount_point_1} nfs4 nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport,_netdev 0 0\" >> /etc/fstab",
   "mount -a -t efs,nfs4 defaults");
 ```
 
@@ -164,9 +138,6 @@ stack is deleted.
 You can configure the file system to be destroyed on stack deletion by setting a `removalPolicy`
 
 ```ts
-import * as efs from '@aws-cdk/aws-efs';
-import * as ec2 from '@aws-cdk/aws-ec2';
-
 const fileSystem =  new efs.FileSystem(this, 'EfsFileSystem', {
   vpc: new ec2.Vpc(this, 'VPC'),
   removalPolicy: RemovalPolicy.DESTROY

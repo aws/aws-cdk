@@ -148,7 +148,9 @@ export interface FileSystemProps {
   readonly lifecyclePolicy?: LifecyclePolicy;
 
   /**
-   * Enum to mention the performance mode of the file system.
+   * The performance mode that the file system will operate under.
+   * An Amazon EFS file system's performance mode can't be changed after the file system has been created.
+   * Updating this property will replace the file system.
    *
    * @default PerformanceMode.GENERAL_PURPOSE
    */
