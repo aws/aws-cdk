@@ -405,10 +405,6 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
    * Imports an existing interface VPC endpoint.
    */
   public static fromInterfaceVpcEndpointAttributes(scope: Construct, id: string, attrs: InterfaceVpcEndpointAttributes): IInterfaceVpcEndpoint {
-    if (!attrs.securityGroups && !attrs.securityGroupId) {
-      throw new Error('Either `securityGroups` or `securityGroupId` must be specified.');
-    }
-
     const securityGroups = attrs.securityGroupId
       ? [SecurityGroup.fromSecurityGroupId(scope, 'SecurityGroup', attrs.securityGroupId)]
       : attrs.securityGroups;
