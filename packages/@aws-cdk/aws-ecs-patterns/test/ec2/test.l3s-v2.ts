@@ -234,33 +234,6 @@ export = {
           ],
         },
       }));
-      expect(stack).to(haveResourceLike('AWS::ElasticLoadBalancingV2::LoadBalancer', {
-        LoadBalancerAttributes: [
-          {
-            Key: 'deletion_protection.enabled',
-            Value: 'false',
-          },
-        ],
-        Name: 'lb',
-        Scheme: 'internal',
-        SecurityGroups: [
-          {
-            'Fn::GetAtt': [
-              'ServicelbSecurityGroup961F0769',
-              'GroupId',
-            ],
-          },
-        ],
-        Subnets: [
-          {
-            Ref: 'VPCPrivateSubnet1Subnet8BCA10E0',
-          },
-          {
-            Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A',
-          },
-        ],
-        Type: 'application',
-      }));
 
       test.done();
     },
