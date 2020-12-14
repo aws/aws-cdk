@@ -72,6 +72,17 @@ export interface KubernetesManifestProps extends KubernetesManifestOptions {
    *
    */
   readonly manifest: Record<string, any>[];
+
+  /**
+   * Overwrite any existing resources.
+   *
+   * If this is set, we will use `kubectl apply` instead of `kubectl create`
+   * when the resource is created. Otherwise, if there is already a resource
+   * in the cluster with the same name, the operation will fail.
+   *
+   * @default false
+   */
+  readonly overwrite?: boolean;
 }
 
 /**
@@ -110,6 +121,7 @@ export class KubernetesManifest extends CoreConstruct {
         ClusterName: props.cluster.clusterName,
         RoleArn: provider.roleArn, // TODO: bake into provider's environment
         PruneLabel: pruneLabel,
+        Overwrite: props.overwrite,
       },
     });
   }
