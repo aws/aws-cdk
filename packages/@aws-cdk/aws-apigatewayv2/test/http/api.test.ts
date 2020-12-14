@@ -261,11 +261,11 @@ describe('HttpApi', () => {
     expect(api.apiEndpoint).toBeDefined();
   });
 
-  test('apiEndpoint for imported ', () => {
+  test('apiEndpoint for imported', () => {
     const stack = new Stack();
     const api = HttpApi.fromHttpApiAttributes(stack, 'imported', { httpApiId: 'api-1234' });
 
-    expect(api.apiEndpoint).toThrow(/apiEndpoint is not configured/);
+    expect(() => api.apiEndpoint).toThrow(/apiEndpoint is not configured/);
   });
 });
 
