@@ -1,3 +1,4 @@
+import '@aws-cdk/assert/jest';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
 import * as tasks from '../../lib';
@@ -35,6 +36,49 @@ test('Cancel a Step with static ClusterId and StepId', () => {
     Parameters: {
       ClusterId: 'ClusterId',
       StepId: 'StepId',
+    },
+  });
+});
+
+test('task policies are generated', () => {
+  // WHEN
+  const task = new tasks.EmrCancelStep(stack, 'Task', {
+    clusterId: 'ClusterId',
+    stepId: 'StepId',
+  });
+  new sfn.StateMachine(stack, 'SM', {
+    definition: task,
+  });
+
+  // THEN
+  expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'elasticmapreduce:CancelSteps',
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':elasticmapreduce:',
+                {
+                  Ref: 'AWS::Region',
+                },
+                ':',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':cluster/*',
+              ],
+            ],
+          },
+        },
+      ],
     },
   });
 });
