@@ -304,7 +304,7 @@ cluster.addAutoScalingGroupCapacity('frontend-nodes', {
 });
 ```
 
-To connect an already initialized auto-scaling group, use the `cluster.connectAutoScalingGroupCapacity` method:
+To connect an already initialized auto-scaling group, use the `cluster.connectAutoScalingGroupCapacity()` method:
 
 ```ts
 const asg = new ec2.AutoScalingGroup(...);
