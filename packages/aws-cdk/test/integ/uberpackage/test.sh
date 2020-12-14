@@ -1,9 +1,11 @@
 #!/bin/bash
+
 set -euo pipefail
+
 scriptdir=$(cd $(dirname $0) && pwd)
 
 echo '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
-echo 'CLI Integration Tests'
+echo 'UberCDK Integration Tests'
 echo '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
 
 cd $scriptdir
