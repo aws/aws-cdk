@@ -209,7 +209,7 @@ async function prepareSourceFiles(libraries: readonly LibraryReference[], packag
   const indexStatements = new Array<string>();
   for (const library of libraries) {
     const libDir = path.join(LIB_ROOT, library.shortName);
-    await transformPackage(library, packageJson.jsii.targets, libDir, libraries);
+    await transformPackage(library, packageJson, libDir, libraries);
 
     if (library.shortName === 'core') {
       indexStatements.push(`export * from './${library.shortName}';`);
@@ -225,13 +225,13 @@ async function prepareSourceFiles(libraries: readonly LibraryReference[], packag
 
 async function transformPackage(
   library: LibraryReference,
-  config: PackageJson['jsii']['targets'],
+  uberPackageJson: PackageJson,
   destination: string,
   allLibraries: readonly LibraryReference[],
 ) {
   await fs.mkdirp(destination);
 
-  await copyOrTransformFiles(library.root, destination, allLibraries);
+  await copyOrTransformFiles(library.root, destination, allLibraries, uberPackageJson);
 
   await fs.writeFile(
     path.join(destination, 'index.ts'),
@@ -240,6 +240,7 @@ async function transformPackage(
   );
 
   if (library.shortName !== 'core') {
+    const config = uberPackageJson.jsii.targets;
     await fs.writeJson(
       path.join(destination, '.jsiirc.json'),
       {
@@ -291,7 +292,7 @@ function transformTargets(monoConfig: PackageJson['jsii']['targets'], targets: P
   return result;
 }
 
-async function copyOrTransformFiles(from: string, to: string, libraries: readonly LibraryReference[]) {
+async function copyOrTransformFiles(from: string, to: string, libraries: readonly LibraryReference[], uberPackageJson: PackageJson) {
   const promises = (await fs.readdir(from)).map(async name => {
     if (shouldIgnoreFile(name)) { return; }
 
@@ -308,7 +309,7 @@ async function copyOrTransformFiles(from: string, to: string, libraries: readonl
     const stat = await fs.stat(source);
     if (stat.isDirectory()) {
       await fs.mkdirp(destination);
-      return copyOrTransformFiles(source, destination, libraries);
+      return copyOrTransformFiles(source, destination, libraries, uberPackageJson);
     }
     if (name.endsWith('.ts')) {
       return fs.writeFile(
@@ -316,6 +317,17 @@ async function copyOrTransformFiles(from: string, to: string, libraries: readonl
         await rewriteImports(source, to, libraries),
         { encoding: 'utf8' },
       );
+    } else if (name === 'cfn-types-2-classes.json') {
+      // This is a special file used by the cloudformation-include module that contains mappings
+      // of CFN resource types to the fully-qualified class names of the CDK L1 classes.
+      // We need to rewrite it to refer to the uberpackage instead of the individual packages
+      const cfnTypes2Classes: { [key: string]: string } = await fs.readJson(source);
+      for (const cfnType of Object.keys(cfnTypes2Classes)) {
+        const fqn = cfnTypes2Classes[cfnType];
+        // replace @aws-cdk/aws-<service> with <uber-package-name>/aws-<service>
+        cfnTypes2Classes[cfnType] = fqn.replace('@aws-cdk', uberPackageJson.name);
+      }
+      await fs.writeJson(destination, cfnTypes2Classes, { spaces: 2 });
     } else {
       return fs.copyFile(source, destination);
     }
