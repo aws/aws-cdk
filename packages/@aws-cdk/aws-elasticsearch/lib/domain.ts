@@ -186,7 +186,7 @@ export interface EbsOptions {
   readonly volumeSize?: number;
 
   /**
-   * The EBS volume type to use with the Amazon ES domain, such as standard, gp2, io1, st1, or sc1.
+   * The EBS volume type to use with the Amazon ES domain, such as standard, gp2, io1.
    * For more information, see[Configuring EBS-based Storage]
    * (https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-createupdatedomains.html#es-createdomain-configure-ebs)
    * in the Amazon Elasticsearch Service Developer Guide.

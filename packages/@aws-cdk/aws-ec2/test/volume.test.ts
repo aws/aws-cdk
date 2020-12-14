@@ -338,6 +338,25 @@ nodeunitShim({
     test.done();
   },
 
+  'volume: io2'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new Volume(stack, 'Volume', {
+      availabilityZone: 'us-east-1a',
+      size: cdk.Size.gibibytes(500),
+      volumeType: EbsDeviceVolumeType.PROVISIONED_IOPS_SSD,
+    });
+
+    // THEN
+    cdkExpect(stack).to(haveResourceLike('AWS::EC2::Volume', {
+      VolumeType: 'io2',
+    }, ResourcePart.Properties));
+
+    test.done();
+  },
+
   'volume: gp2'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -352,6 +371,25 @@ nodeunitShim({
     // THEN
     cdkExpect(stack).to(haveResourceLike('AWS::EC2::Volume', {
       VolumeType: 'gp2',
+    }, ResourcePart.Properties));
+
+    test.done();
+  },
+
+  'volume: gp3'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new Volume(stack, 'Volume', {
+      availabilityZone: 'us-east-1a',
+      size: cdk.Size.gibibytes(500),
+      volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD,
+    });
+
+    // THEN
+    cdkExpect(stack).to(haveResourceLike('AWS::EC2::Volume', {
+      VolumeType: 'gp3',
     }, ResourcePart.Properties));
 
     test.done();
