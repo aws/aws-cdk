@@ -155,6 +155,7 @@ export class NetworkLoadBalancedFargateService extends NetworkLoadBalancedServic
       enableECSManagedTags: props.enableECSManagedTags,
       cloudMapOptions: props.cloudMapOptions,
       platformVersion: props.platformVersion,
+      deploymentController: props.deploymentController,
       vpcSubnets: props.taskSubnets,
     });
     this.addServiceAsTarget(this.service);

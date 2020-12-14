@@ -383,6 +383,50 @@ export = {
     test.done();
   },
 
+  'setting ALB deployment controller'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+      },
+      deploymentController: {
+        type: ecs.DeploymentControllerType.CODE_DEPLOY,
+      },
+    });
+    // THEN
+    expect(stack).to(haveResource('AWS::ECS::Service', {
+      DeploymentController: {
+        Type: 'CODE_DEPLOY',
+      },
+    }));
+    test.done();
+  },
+
+  'setting NLB deployment controller'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'Service', {
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+      },
+      deploymentController: {
+        type: ecs.DeploymentControllerType.CODE_DEPLOY,
+      },
+    });
+    // THEN
+    expect(stack).to(haveResource('AWS::ECS::Service', {
+      DeploymentController: {
+        Type: 'CODE_DEPLOY',
+      },
+    }));
+    test.done();
+  },
+
   'setting NLB special listener port to create the listener'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();

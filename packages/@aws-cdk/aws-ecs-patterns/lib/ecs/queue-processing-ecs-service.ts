@@ -100,6 +100,7 @@ export class QueueProcessingEc2Service extends QueueProcessingServiceBase {
       maxHealthyPercent: props.maxHealthyPercent,
       propagateTags: props.propagateTags,
       enableECSManagedTags: props.enableECSManagedTags,
+      deploymentController: props.deploymentController,
     });
     this.configureAutoscalingForService(this.service);
     this.grantPermissionsToService(this.service);
