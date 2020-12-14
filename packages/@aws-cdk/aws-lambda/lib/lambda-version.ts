@@ -1,10 +1,11 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-import { Fn, Lazy, RemovalPolicy } from '@aws-cdk/core';
+import { CfnResource, Fn, Lazy, RemovalPolicy } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Alias, AliasOptions } from './alias';
 import { EventInvokeConfigOptions } from './event-invoke-config';
 import { Function } from './function';
 import { IFunction, QualifiedFunctionBase } from './function-base';
+import * as fnhash from './function-hash';
 import { CfnVersion } from './lambda.generated';
 import { addAlias } from './util';
 
@@ -89,6 +90,14 @@ export interface VersionAttributes {
    * The lambda function.
    */
   readonly lambda: IFunction;
+}
+
+/**
+ * @internal
+ */
+export interface HashConfig {
+  hashAlgorithm: 'none' | 'v1' | 'v2';
+  function?: Function;
 }
 
 /**
@@ -179,6 +188,10 @@ export class Version extends QualifiedFunctionBase implements IVersion {
   protected readonly qualifier: string;
   protected readonly canCreatePermissions = true;
 
+  private hashConfig: HashConfig = {
+    hashAlgorithm: 'none',
+  };
+
   constructor(scope: Construct, id: string, props: VersionProps) {
     super(scope, id);
 
@@ -210,6 +223,32 @@ export class Version extends QualifiedFunctionBase implements IVersion {
         retryAttempts: props.retryAttempts,
       });
     }
+
+    const cfn = this.node.defaultChild as CfnResource;
+    const originalLogicalId = this.stack.resolve(cfn.logicalId) as string;
+
+    // override the version's logical ID with a lazy string which includes the
+    // hash of the function itself, so a new version resource is created when
+    // the function configuration changes.
+    cfn.overrideLogicalId(Lazy.uncachedString({
+      produce: () => {
+        let newLogicalId: string;
+        if (this.hashConfig.hashAlgorithm === 'none') {
+          newLogicalId = originalLogicalId;
+        } else {
+          if (!this.hashConfig.function) {
+            throw new Error('Unexpected error: Cannot compute function version logical id without the function.');
+          }
+          const logicalId = fnhash.trimFromStart(originalLogicalId, 255 - 32);
+          if (this.hashConfig.hashAlgorithm === 'v1') {
+            newLogicalId = `${logicalId}${fnhash.calculateFunctionHash(this.hashConfig.function)}`;
+          } else {
+            newLogicalId = `${logicalId}${fnhash.calculateFunctionHashV2(this.hashConfig.function)}`;
+          }
+        }
+        return newLogicalId;
+      },
+    }));
   }
 
   public get grantPrincipal() {
@@ -249,6 +288,8 @@ export class Version extends QualifiedFunctionBase implements IVersion {
       throw new Error('$LATEST function version cannot be used for Lambda@Edge');
     }
 
+    this.hashConfig.hashAlgorithm = 'v1';
+
     // Check compatibility at synthesis. It could be that the version was associated
     // with a CloudFront distribution first and made incompatible afterwards.
     return Lazy.string({
@@ -261,6 +302,17 @@ export class Version extends QualifiedFunctionBase implements IVersion {
         return this.functionArn;
       },
     });
+  }
+
+  /**
+   * Configure the version's logical ID with a lazy string which includes the
+   * hash of the function itself, so a new version resource is created when
+   * the function configuration changes.
+   * @internal
+   */
+  public _appendHashToLogicalId(fn: Function) {
+    this.hashConfig.hashAlgorithm = 'v2';
+    this.hashConfig.function = fn;
   }
 
   /**

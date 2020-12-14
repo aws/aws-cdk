@@ -4,7 +4,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { Annotations, CfnResource, Duration, Fn, Lazy, Names, Stack } from '@aws-cdk/core';
+import { Annotations, Duration, Fn, Lazy, Names, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Code, CodeConfig } from './code';
 import { EventInvokeConfigOptions } from './event-invoke-config';
@@ -337,13 +337,12 @@ export class Function extends FunctionBase {
       return this._currentVersion;
     }
 
-    /*
-     * The `currentVersion()` API uses the function's hash as the function version's logical id.
-     * Any change to the hash logic will change its logical id and require a replacement.
-     * However, the Lambda service blocks creating new function versions when the function is unchanged.
-     *
-     * Inject this salt as an environment variable so that the function does change.
-     */
+    // The `currentVersion()` API uses the function's hash as the function version's logical id.
+    // Any change to the hash logic will change its logical id and require a replacement.
+    // However, the Lambda service blocks creating new function versions when the function is unchanged.
+    // Hence, Inject this salt as an environment variable so that the function does change.
+    // At the same time, we're skipping this logic for Lambda@Edge since there is no environment variable
+    // support there.
     this.addEnvironment('CDK_ENVIRONMENT_SALT', fnhash.ENV_SALT, { removeInEdge: true });
 
     this._currentVersion = new Version(this, 'CurrentVersion', {
@@ -351,19 +350,7 @@ export class Function extends FunctionBase {
       ...this.currentVersionOptions,
     });
 
-    // override the version's logical ID with a lazy string which includes the
-    // hash of the function itself, so a new version resource is created when
-    // the function configuration changes.
-    const cfn = this._currentVersion.node.defaultChild as CfnResource;
-    const originalLogicalId = this.stack.resolve(cfn.logicalId) as string;
-
-    cfn.overrideLogicalId(Lazy.uncachedString({
-      produce: () => {
-        const hash = fnhash.calculateFunctionHash(this);
-        const logicalId = fnhash.trimFromStart(originalLogicalId, 255 - 32);
-        return `${logicalId}${hash}`;
-      },
-    }));
+    this._currentVersion._appendHashToLogicalId(this);
 
     return this._currentVersion;
   }

@@ -11,6 +11,20 @@ export function calculateFunctionHash(fn: LambdaFunction) {
   const functionResource = fn.node.defaultChild as CfnResource;
 
   // render the cloudformation resource from this function
+  const config = stack.resolve((functionResource as any)._toCloudFormation());
+
+  const hash = crypto.createHash('md5');
+  hash.update(JSON.stringify(config));
+
+  return hash.digest('hex');
+}
+
+export function calculateFunctionHashV2(fn: LambdaFunction) {
+  const stack = Stack.of(fn);
+
+  const functionResource = fn.node.defaultChild as CfnResource;
+
+  // render the cloudformation resource from this function
   const cfn = stack.resolve((functionResource as any)._toCloudFormation());
   const config = usefulKeys(cfn);
 

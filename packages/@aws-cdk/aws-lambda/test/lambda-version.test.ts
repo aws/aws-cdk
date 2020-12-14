@@ -142,7 +142,7 @@ describe('lambda version', () => {
     const version = fn.currentVersion;
 
     // THEN
-    expect(stack.resolve(version.edgeArn)).toEqual({ Ref: 'FnCurrentVersion17A89ABB60415807620115f34aaea569cf042980' });
+    expect(stack.resolve(version.edgeArn)).toEqual({ Ref: 'FnCurrentVersion17A89ABB19ed45993ff69fd011ae9fd4ab6e2005' });
   });
 
   test('edgeArn throws with $LATEST', () => {
