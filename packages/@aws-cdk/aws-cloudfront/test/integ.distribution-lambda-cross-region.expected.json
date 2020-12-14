@@ -12,7 +12,7 @@
           },
           "Region": "us-east-1",
           "ParameterName": "EdgeFunctionArnLambda",
-          "RefreshToken": "4412ddb0ae449da20173ca211c51fddc"
+          "RefreshToken": "LambdaCurrentVersionDF706F6A97fb843e9bd06fcd2bb15eeace80e13e"
         },
         "UpdateReplacePolicy": "Delete",
         "DeletionPolicy": "Delete"
