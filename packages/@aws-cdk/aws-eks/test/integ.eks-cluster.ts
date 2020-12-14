@@ -59,6 +59,8 @@ class EksClusterStack extends TestStack {
 
     this.assertSimpleManifest();
 
+    this.assertManifestWithoutValidation();
+
     this.assertSimpleHelmChart();
 
     this.assertSimpleCdk8sChart();
@@ -136,6 +138,23 @@ class EksClusterStack extends TestStack {
   private assertSimpleManifest() {
     // apply a kubernetes manifest
     this.cluster.addManifest('HelloApp', ...hello.resources);
+  }
+  private assertManifestWithoutValidation() {
+    // apply a kubernetes manifest
+    new eks.KubernetesManifest(this, 'HelloAppWithoutValidation', {
+      cluster: this.cluster,
+      manifest: [{
+        apiVersion: 'v1',
+        kind: 'Service',
+        metadata: { name: 'hello-kubernetes-without-validation' },
+        spec: {
+          type: 'LoadBalancer',
+          ports: [{ port: 80, targetPort: 8080 }],
+          selector: { app: 'hello-kubernetes-without-validation' },
+        },
+      }],
+      validate: false,
+    });
   }
   private assertNodeGroupX86() {
     // add a extra nodegroup

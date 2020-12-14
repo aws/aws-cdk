@@ -856,6 +856,19 @@ new Cluster(this, 'MyCluster', {
 });
 ```
 
+#### Manifests Validation
+
+The `kubectl` CLI supports applying a manifest by skipping the validation.
+This can be accomplished by setting the `validate` flag to `false` in the `KubernetesManifest` props.
+
+```ts
+new eks.KubernetesManifest(this, 'HelloAppWithoutValidation', {
+  cluster: this.cluster,
+  manifest: [ deployment, service ],
+  validate: false,
+});
+```
+
 ### Helm Charts
 
 The `HelmChart` construct or `cluster.addHelmChart` method can be used

@@ -24,6 +24,7 @@ def apply_handler(event, context):
     role_arn      = props['RoleArn']
     prune_label   = props.get('PruneLabel', None)
     overwrite     = props.get('Overwrite', False)
+    validation_flag = props.get('ValidationFlag', None)
 
     # "log in" to the cluster
     cmd = [ 'aws', 'eks', 'update-kubeconfig',
@@ -55,7 +56,10 @@ def apply_handler(event, context):
     elif request_type == 'Update':
         opts = []
         if prune_label is not None:
-            opts = ['--prune', '-l', prune_label]
+            opts.extend(['--prune', '-l', prune_label])
+        if validation_flag is not None:
+            opts.extend([f'--validate={validation_flag}'])
+
         kubectl('apply', manifest_file, *opts)
     elif request_type == "Delete":
         try:

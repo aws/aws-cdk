@@ -3912,11 +3912,11 @@
               "Arn"
             ]
           },
-          "referencetoawscdkeksclustertestAssetParameterse4ce1c625ef8590bc63f26160777b1c74421c8f5290dc5d15227810eedff2e6cS3Bucket13E8DC72Ref": {
-            "Ref": "AssetParameterse4ce1c625ef8590bc63f26160777b1c74421c8f5290dc5d15227810eedff2e6cS3BucketD473D2B6"
+          "referencetoawscdkeksclustertestAssetParametersdfe650d4c89c598a843bfdae91a4b83ec5d7c16da24ac19070eecb712bb0422cS3Bucket383BFE4BRef": {
+            "Ref": "AssetParametersdfe650d4c89c598a843bfdae91a4b83ec5d7c16da24ac19070eecb712bb0422cS3Bucket311A7B71"
           },
-          "referencetoawscdkeksclustertestAssetParameterse4ce1c625ef8590bc63f26160777b1c74421c8f5290dc5d15227810eedff2e6cS3VersionKeyEDAB3239Ref": {
-            "Ref": "AssetParameterse4ce1c625ef8590bc63f26160777b1c74421c8f5290dc5d15227810eedff2e6cS3VersionKey8213FD47"
+          "referencetoawscdkeksclustertestAssetParametersdfe650d4c89c598a843bfdae91a4b83ec5d7c16da24ac19070eecb712bb0422cS3VersionKeyD8A227A8Ref": {
+            "Ref": "AssetParametersdfe650d4c89c598a843bfdae91a4b83ec5d7c16da24ac19070eecb712bb0422cS3VersionKeyBC9F431C"
           },
           "referencetoawscdkeksclustertestVpcPrivateSubnet1Subnet32A4EC2ARef": {
             "Ref": "VpcPrivateSubnet1Subnet536B997A"
@@ -3968,6 +3968,34 @@
           }
         }
       }
+    },
+    "HelloAppWithoutValidation7C638ACB": {
+      "Type": "Custom::AWSCDK-EKS-KubernetesResource",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B",
+            "Outputs.awscdkeksclustertestawscdkawseksKubectlProviderframeworkonEventC681B49AArn"
+          ]
+        },
+        "Manifest": "[{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"name\":\"hello-kubernetes-without-validation\",\"labels\":{\"aws.cdk.eks/prune-c89cbcc5d9bdd35cfc69c0334c0a9af21d1e0e372e\":\"\"}},\"spec\":{\"type\":\"LoadBalancer\",\"ports\":[{\"port\":80,\"targetPort\":8080}],\"selector\":{\"app\":\"hello-kubernetes-without-validation\"}}}]",
+        "ClusterName": {
+          "Ref": "Cluster9EE0221C"
+        },
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "ClusterCreationRole360249B6",
+            "Arn"
+          ]
+        },
+        "PruneLabel": "aws.cdk.eks/prune-c89cbcc5d9bdd35cfc69c0334c0a9af21d1e0e372e",
+        "ValidationFlag": false
+      },
+      "DependsOn": [
+        "ClusterKubectlReadyBarrier200052AF"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderRole517FED65": {
       "Type": "AWS::IAM::Role",
@@ -4575,17 +4603,17 @@
       "Type": "String",
       "Description": "Artifact hash for asset \"daeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1\""
     },
-    "AssetParameterse4ce1c625ef8590bc63f26160777b1c74421c8f5290dc5d15227810eedff2e6cS3BucketD473D2B6": {
+    "AssetParametersdfe650d4c89c598a843bfdae91a4b83ec5d7c16da24ac19070eecb712bb0422cS3Bucket311A7B71": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"e4ce1c625ef8590bc63f26160777b1c74421c8f5290dc5d15227810eedff2e6c\""
+      "Description": "S3 bucket for asset \"dfe650d4c89c598a843bfdae91a4b83ec5d7c16da24ac19070eecb712bb0422c\""
     },
-    "AssetParameterse4ce1c625ef8590bc63f26160777b1c74421c8f5290dc5d15227810eedff2e6cS3VersionKey8213FD47": {
+    "AssetParametersdfe650d4c89c598a843bfdae91a4b83ec5d7c16da24ac19070eecb712bb0422cS3VersionKeyBC9F431C": {
       "Type": "String",
-      "Description": "S3 key for asset version \"e4ce1c625ef8590bc63f26160777b1c74421c8f5290dc5d15227810eedff2e6c\""
+      "Description": "S3 key for asset version \"dfe650d4c89c598a843bfdae91a4b83ec5d7c16da24ac19070eecb712bb0422c\""
     },
-    "AssetParameterse4ce1c625ef8590bc63f26160777b1c74421c8f5290dc5d15227810eedff2e6cArtifactHashDEE5AB5C": {
+    "AssetParametersdfe650d4c89c598a843bfdae91a4b83ec5d7c16da24ac19070eecb712bb0422cArtifactHashF7CECEF8": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"e4ce1c625ef8590bc63f26160777b1c74421c8f5290dc5d15227810eedff2e6c\""
+      "Description": "Artifact hash for asset \"dfe650d4c89c598a843bfdae91a4b83ec5d7c16da24ac19070eecb712bb0422c\""
     },
     "AssetParametersb075459e6bf309093fbd4b9a9e576a5f172b91c14d84eedb0f069566f6abb0deS3Bucket14156880": {
       "Type": "String",
