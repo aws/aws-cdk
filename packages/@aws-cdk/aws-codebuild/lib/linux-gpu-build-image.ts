@@ -1,6 +1,7 @@
 import * as ecr from '@aws-cdk/aws-ecr';
 import * as core from '@aws-cdk/core';
 import { FactName, RegionInfo } from '@aws-cdk/region-info';
+import { Construct } from 'constructs';
 import { BuildSpec } from './build-spec';
 import { runScriptLinuxBuildSpec } from './private/run-script-linux-build-spec';
 import {
@@ -99,7 +100,7 @@ export class LinuxGpuBuildImage implements IBindableBuildImage {
     this.imageId = `${this.accountExpression}.dkr.ecr.${core.Aws.REGION}.${core.Aws.URL_SUFFIX}/${repositoryName}:${tag}`;
   }
 
-  public bind(scope: core.Construct, project: IProject, _options: BuildImageBindOptions): BuildImageConfig {
+  public bind(scope: Construct, project: IProject, _options: BuildImageBindOptions): BuildImageConfig {
     if (!this.account) {
       const scopeStack = core.Stack.of(scope);
       // Unfortunately, the account IDs of the DLC repositories are not the same in all regions.

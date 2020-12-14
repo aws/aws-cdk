@@ -2,6 +2,7 @@ import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as iam from '@aws-cdk/aws-iam';
 import * as stepfunction from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Action } from '../action';
 
 /**
@@ -121,7 +122,7 @@ export class StepFunctionInvokeAction extends Action {
     this.props = props;
   }
 
-  protected bound(_scope: cdk.Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
+  protected bound(_scope: Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
   codepipeline.ActionConfig {
     // allow pipeline to invoke this step function
     options.role.addToPolicy(new iam.PolicyStatement({

@@ -1,6 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import * as core from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { IEngine } from './engine';
 import { EngineVersion } from './engine-version';
 import { IParameterGroup, ParameterGroup } from './parameter-group';
@@ -97,7 +97,7 @@ export interface IClusterEngine extends IEngine {
   /**
    * Method called when the engine is used to create a new cluster.
    */
-  bindToCluster(scope: core.Construct, options: ClusterEngineBindOptions): ClusterEngineConfig;
+  bindToCluster(scope: Construct, options: ClusterEngineBindOptions): ClusterEngineConfig;
 }
 
 interface ClusterEngineBaseProps {
@@ -130,7 +130,7 @@ abstract class ClusterEngineBase implements IClusterEngine {
     this.parameterGroupFamily = this.engineVersion ? `${this.engineType}${this.engineVersion.majorVersion}` : undefined;
   }
 
-  public bindToCluster(scope: core.Construct, options: ClusterEngineBindOptions): ClusterEngineConfig {
+  public bindToCluster(scope: Construct, options: ClusterEngineBindOptions): ClusterEngineConfig {
     const parameterGroup = options.parameterGroup ?? this.defaultParameterGroup(scope);
     return {
       parameterGroup,
@@ -144,7 +144,7 @@ abstract class ClusterEngineBase implements IClusterEngine {
    * possibly an imported one,
    * if one wasn't provided by the customer explicitly.
    */
-  protected abstract defaultParameterGroup(scope: core.Construct): IParameterGroup | undefined;
+  protected abstract defaultParameterGroup(scope: Construct): IParameterGroup | undefined;
 }
 
 interface MysqlClusterEngineBaseProps {
@@ -166,7 +166,7 @@ abstract class MySqlClusterEngineBase extends ClusterEngineBase {
     });
   }
 
-  public bindToCluster(scope: core.Construct, options: ClusterEngineBindOptions): ClusterEngineConfig {
+  public bindToCluster(scope: Construct, options: ClusterEngineBindOptions): ClusterEngineConfig {
     const config = super.bindToCluster(scope, options);
     const parameterGroup = options.parameterGroup ?? (options.s3ImportRole || options.s3ExportRole
       ? new ParameterGroup(scope, 'ClusterParameterGroup', {
@@ -271,7 +271,7 @@ class AuroraClusterEngine extends MySqlClusterEngineBase {
     });
   }
 
-  protected defaultParameterGroup(_scope: core.Construct): IParameterGroup | undefined {
+  protected defaultParameterGroup(_scope: Construct): IParameterGroup | undefined {
     // the default.aurora5.6 ParameterGroup is actually the default,
     // so just return undefined in this case
     return undefined;
@@ -378,7 +378,7 @@ class AuroraMysqlClusterEngine extends MySqlClusterEngineBase {
     });
   }
 
-  protected defaultParameterGroup(scope: core.Construct): IParameterGroup | undefined {
+  protected defaultParameterGroup(scope: Construct): IParameterGroup | undefined {
     return ParameterGroup.fromParameterGroupName(scope, 'AuroraMySqlDatabaseClusterEngineDefaultParameterGroup',
       `default.${this.parameterGroupFamily}`);
   }
@@ -524,7 +524,7 @@ class AuroraPostgresClusterEngine extends ClusterEngineBase {
     });
   }
 
-  public bindToCluster(scope: core.Construct, options: ClusterEngineBindOptions): ClusterEngineConfig {
+  public bindToCluster(scope: Construct, options: ClusterEngineBindOptions): ClusterEngineConfig {
     const config = super.bindToCluster(scope, options);
     // skip validation for unversioned as it might be supported/unsupported. we cannot reliably tell at compile-time
     if (this.engineVersion?.fullVersion) {
@@ -538,7 +538,7 @@ class AuroraPostgresClusterEngine extends ClusterEngineBase {
     return config;
   }
 
-  protected defaultParameterGroup(scope: core.Construct): IParameterGroup | undefined {
+  protected defaultParameterGroup(scope: Construct): IParameterGroup | undefined {
     if (!this.parameterGroupFamily) {
       throw new Error('Could not create a new ParameterGroup for an unversioned aurora-postgresql cluster engine. ' +
         'Please either use a versioned engine, or pass an explicit ParameterGroup when creating the cluster');

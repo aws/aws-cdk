@@ -3,7 +3,7 @@ import '@aws-cdk/assert/jest';
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { App, CfnDeletionPolicy, ConstructNode, Duration, PhysicalName, RemovalPolicy, Stack, Tags } from '@aws-cdk/core';
+import { App, CfnDeletionPolicy, Duration, PhysicalName, RemovalPolicy, Stack, Tags } from '@aws-cdk/core';
 import {
   Attribute,
   AttributeType,
@@ -1394,10 +1394,10 @@ test('error when validating construct if a local secondary index exists without 
     sortKey: LSI_SORT_KEY,
   });
 
-  const errors = ConstructNode.validate(table.node);
+  const errors = table.node.validate();
 
   expect(errors.length).toBe(1);
-  expect(errors[0]?.message).toBe('a sort key of the table must be specified to add local secondary indexes');
+  expect(errors[0]).toBe('a sort key of the table must be specified to add local secondary indexes');
 });
 
 test('can enable Read AutoScaling', () => {

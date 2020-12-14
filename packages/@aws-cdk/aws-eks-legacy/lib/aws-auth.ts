@@ -1,5 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct, Lazy, Stack } from '@aws-cdk/core';
+import { Lazy, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Mapping } from './aws-auth-mapping';
 import { Cluster } from './cluster';
 import { KubernetesResource } from './k8s-resource';

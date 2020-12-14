@@ -1,5 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct, IResource, Resource, Token } from '@aws-cdk/core';
+import { IResource, Resource, ResourceProps, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { TopicPolicy } from './policy';
 import { ITopicSubscription } from './subscriber';
 import { Subscription } from './subscription';
@@ -59,6 +60,14 @@ export abstract class TopicBase extends Resource implements ITopic {
 
   private policy?: TopicPolicy;
 
+  constructor(scope: Construct, id: string, props: ResourceProps = {}) {
+    super(scope, id, props);
+
+    this.node.addValidation({
+      validate: () => this.policy?.document.validateForResourcePolicy() ?? [],
+    });
+  }
+
   /**
    * Subscribe some endpoint to this topic
    */
@@ -100,12 +109,6 @@ export abstract class TopicBase extends Resource implements ITopic {
       return { statementAdded: true, policyDependable: this.policy };
     }
     return { statementAdded: false };
-  }
-
-  protected validate(): string[] {
-    const errors = super.validate();
-    errors.push(...this.policy?.document.validateForResourcePolicy() || []);
-    return errors;
   }
 
   /**

@@ -194,7 +194,7 @@ export interface RedirectResponse {
 /**
  * Define a new listener rule
  */
-export class ApplicationListenerRule extends cdk.Construct {
+export class ApplicationListenerRule extends Construct {
   /**
    * The ARN of this rule
    */

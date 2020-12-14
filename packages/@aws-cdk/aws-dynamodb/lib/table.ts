@@ -3,7 +3,7 @@ import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import {
-  Aws, CfnCondition, CfnCustomResource, Construct as CoreConstruct, CustomResource, Fn,
+  Aws, CfnCondition, CfnCustomResource, CustomResource, Fn,
   IResource, Lazy, Names, RemovalPolicy, Resource, Stack, Token,
 } from '@aws-cdk/core';
 import { Construct } from 'constructs';
@@ -1648,7 +1648,7 @@ interface ScalableAttributePair {
  * policy resource), new permissions are in effect before clean up happens, and so replicas that
  * need to be dropped can no longer be due to lack of permissions.
  */
-class SourceTableAttachedPolicy extends CoreConstruct implements iam.IGrantable {
+class SourceTableAttachedPolicy extends Construct implements iam.IGrantable {
   public readonly grantPrincipal: iam.IPrincipal;
   public readonly policy: iam.IPolicy;
 

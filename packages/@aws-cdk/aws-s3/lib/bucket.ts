@@ -2,7 +2,7 @@ import { EOL } from 'os';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { Fn, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
+import { Fn, IResource, Lazy, RemovalPolicy, Resource, ResourceProps, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { BucketPolicy } from './bucket-policy';
 import { IBucketNotificationDestination } from './destination';
@@ -377,6 +377,12 @@ abstract class BucketBase extends Resource implements IBucket {
    */
   protected abstract disallowPublicAccess?: boolean;
 
+  constructor(scope: Construct, id: string, props: ResourceProps = {}) {
+    super(scope, id, props);
+
+    this.node.addValidation({ validate: () => this.policy?.document.validateForResourcePolicy() ?? [] });
+  }
+
   /**
    * Define a CloudWatch event that triggers when something happens to this repository
    *
@@ -475,12 +481,6 @@ abstract class BucketBase extends Resource implements IBucket {
     }
 
     return { statementAdded: false };
-  }
-
-  protected validate(): string[] {
-    const errors = super.validate();
-    errors.push(...this.policy?.document.validateForResourcePolicy() || []);
-    return errors;
   }
 
   /**

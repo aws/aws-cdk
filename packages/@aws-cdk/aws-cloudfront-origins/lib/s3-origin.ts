@@ -1,6 +1,7 @@
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { HttpOrigin } from './http-origin';
 
 /**
@@ -45,7 +46,7 @@ export class S3Origin implements cloudfront.IOrigin {
       new S3BucketOrigin(bucket, props);
   }
 
-  public bind(scope: cdk.Construct, options: cloudfront.OriginBindOptions): cloudfront.OriginBindConfig {
+  public bind(scope: Construct, options: cloudfront.OriginBindOptions): cloudfront.OriginBindConfig {
     return this.origin.bind(scope, options);
   }
 }
@@ -65,7 +66,7 @@ class S3BucketOrigin extends cloudfront.OriginBase {
     }
   }
 
-  public bind(scope: cdk.Construct, options: cloudfront.OriginBindOptions): cloudfront.OriginBindConfig {
+  public bind(scope: Construct, options: cloudfront.OriginBindOptions): cloudfront.OriginBindConfig {
     if (!this.originAccessIdentity) {
       // Using a bucket from another stack creates a cyclic reference with
       // the bucket taking a dependency on the generated S3CanonicalUserId when `grantRead` is called,

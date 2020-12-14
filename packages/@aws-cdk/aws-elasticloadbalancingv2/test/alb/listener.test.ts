@@ -111,14 +111,14 @@ describe('tests', () => {
     const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
 
     // WHEN
-    lb.addListener('Listener', {
+    const listener = lb.addListener('Listener', {
       port: 443,
       defaultTargetGroups: [new elbv2.ApplicationTargetGroup(stack, 'Group', { vpc, port: 80 })],
     });
 
     // THEN
-    const errors = cdk.ConstructNode.validate(stack.node);
-    expect(errors.map(e => e.message)).toEqual(['HTTPS Listener needs at least one certificate (call addCertificates)']);
+    const errors = listener.node.validate();
+    expect(errors).toEqual(['HTTPS Listener needs at least one certificate (call addCertificates)']);
   });
 
   test('HTTPS listener can add certificate after construction', () => {

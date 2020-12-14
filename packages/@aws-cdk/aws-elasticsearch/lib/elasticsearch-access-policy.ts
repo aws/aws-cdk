@@ -1,6 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
-import * as cdk from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
+import { Construct } from 'constructs';
 
 /**
  * Construction properties for ElasticsearchAccessPolicy
@@ -26,7 +26,7 @@ export interface ElasticsearchAccessPolicyProps {
  * Creates LogGroup resource policies.
  */
 export class ElasticsearchAccessPolicy extends cr.AwsCustomResource {
-  constructor(scope: cdk.Construct, id: string, props: ElasticsearchAccessPolicyProps) {
+  constructor(scope: Construct, id: string, props: ElasticsearchAccessPolicyProps) {
     const policyDocument = new iam.PolicyDocument({
       statements: props.accessPolicies,
     });

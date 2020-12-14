@@ -10,7 +10,7 @@ enum CoreTypesFqn {
   PhysicalName = '@aws-cdk/core.PhysicalName',
 
   Construct = 'constructs.Construct',
-  ConstructInterface = 'constructs.Construct',
+  ConstructInterface = 'constructs.IConstruct',
 }
 
 export class CoreTypes {

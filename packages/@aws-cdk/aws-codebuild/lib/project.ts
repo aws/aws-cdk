@@ -24,10 +24,6 @@ import { renderReportGroupArn } from './report-group-utils';
 import { ISource } from './source';
 import { CODEPIPELINE_SOURCE_ARTIFACTS_TYPE, NO_SOURCE_TYPE } from './source-types';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 export interface IProject extends IResource, iam.IGrantable, ec2.IConnectable {
   /**
    * The ARN of this Project.
@@ -867,7 +863,7 @@ export class Project extends ProjectBase {
    * @param _scope the construct the binding is taking place in
    * @param options additional options for the binding
    */
-  public bindToCodePipeline(_scope: CoreConstruct, options: BindToCodePipelineOptions): void {
+  public bindToCodePipeline(_scope: Construct, options: BindToCodePipelineOptions): void {
     // work around a bug in CodeBuild: it ignores the KMS key set on the pipeline,
     // and always uses its own, project-level key
     if (options.artifactBucket.encryptionKey && !this._encryptionKey) {
@@ -1298,7 +1294,7 @@ export interface BuildImageConfig {}
 /** A variant of {@link IBuildImage} that allows binding to the project. */
 export interface IBindableBuildImage extends IBuildImage {
   /** Function that allows the build image access to the construct tree. */
-  bind(scope: CoreConstruct, project: IProject, options: BuildImageBindOptions): BuildImageConfig;
+  bind(scope: Construct, project: IProject, options: BuildImageBindOptions): BuildImageConfig;
 }
 
 class ArmBuildImage implements IBuildImage {

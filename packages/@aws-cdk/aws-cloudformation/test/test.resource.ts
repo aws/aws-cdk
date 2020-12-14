@@ -2,6 +2,7 @@ import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Test, testCase } from 'nodeunit';
 import { CustomResource, CustomResourceProvider } from '../lib';
 
@@ -212,10 +213,10 @@ export = testCase({
   },
 });
 
-class TestCustomResource extends cdk.Construct {
+class TestCustomResource extends Construct {
   public readonly resource: CustomResource;
 
-  constructor(scope: cdk.Construct, id: string, opts: { removalPolicy?: cdk.RemovalPolicy } = {}) {
+  constructor(scope: Construct, id: string, opts: { removalPolicy?: cdk.RemovalPolicy } = {}) {
     super(scope, id);
 
     const singletonLambda = new lambda.SingletonFunction(this, 'Lambda', {

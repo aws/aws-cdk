@@ -301,7 +301,7 @@ export interface ContainerDefinitionProps extends ContainerDefinitionOptions {
 /**
  * A container definition is used in a task definition to describe the containers that are launched as part of a task.
  */
-export class ContainerDefinition extends cdk.Construct {
+export class ContainerDefinition extends Construct {
   /**
    * The Linux-specific modifications that are applied to the container, such as Linux kernel capabilities.
    */

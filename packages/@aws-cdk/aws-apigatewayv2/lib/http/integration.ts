@@ -5,10 +5,6 @@ import { IIntegration } from '../common';
 import { IHttpApi } from './api';
 import { HttpMethod, IHttpRoute } from './route';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 /**
  * Represents an Integration for an HTTP API.
  */
@@ -161,7 +157,7 @@ export interface HttpRouteIntegrationBindOptions {
    * If the `HttpRouteIntegration` being bound creates additional constructs,
    * this will be used as their parent scope.
    */
-  readonly scope: CoreConstruct;
+  readonly scope: Construct;
 }
 
 /**

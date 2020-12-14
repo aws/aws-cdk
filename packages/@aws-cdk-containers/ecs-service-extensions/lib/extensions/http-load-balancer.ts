@@ -1,6 +1,7 @@
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as alb from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Service } from '../service';
 import { ServiceExtension, ServiceBuild } from './extension-interfaces';
 
@@ -17,7 +18,7 @@ export class HttpLoadBalancerExtension extends ServiceExtension {
   }
 
   // Before the service is created go ahead and create the load balancer itself.
-  public prehook(service: Service, scope: cdk.Construct) {
+  public prehook(service: Service, scope: Construct) {
     this.parentService = service;
 
     this.loadBalancer = new alb.ApplicationLoadBalancer(scope, `${this.parentService.id}-load-balancer`, {

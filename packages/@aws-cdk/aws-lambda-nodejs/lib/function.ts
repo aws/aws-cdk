@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as lambda from '@aws-cdk/aws-lambda';
-import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Bundling } from './bundling';
 import { BundlingOptions } from './types';
 import { callsites, findUp, LockFile, nodeMajorVersion } from './util';
@@ -76,7 +76,7 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
  * A Node.js Lambda function bundled using esbuild
  */
 export class NodejsFunction extends lambda.Function {
-  constructor(scope: cdk.Construct, id: string, props: NodejsFunctionProps = {}) {
+  constructor(scope: Construct, id: string, props: NodejsFunctionProps = {}) {
     if (props.runtime && props.runtime.family !== lambda.RuntimeFamily.NODEJS) {
       throw new Error('Only `NODEJS` runtimes are supported.');
     }

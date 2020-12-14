@@ -1,6 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
-import { Construct } from 'constructs';
+import { Construct, IConstruct } from 'constructs';
 import { CfnTargetGroup } from '../elasticloadbalancingv2.generated';
 import { Protocol, TargetType } from './enums';
 import { Attributes, renderAttributes } from './util';
@@ -145,7 +145,7 @@ export interface HealthCheck {
 /**
  * Define the target of a load balancer
  */
-export abstract class TargetGroupBase extends cdk.Construct implements ITargetGroup {
+export abstract class TargetGroupBase extends Construct implements ITargetGroup {
   /**
    * The ARN of the target group
    */
@@ -269,6 +269,22 @@ export abstract class TargetGroupBase extends cdk.Construct implements ITargetGr
     this.loadBalancerArns = this.resource.attrLoadBalancerArns.toString();
     this.targetGroupName = this.resource.attrTargetGroupName;
     this.defaultPort = additionalProps.port;
+
+    this.node.addValidation({
+      validate: () => {
+        const ret = new Array<string>();
+
+        if (this.targetType === undefined && this.targetsJson.length === 0) {
+          cdk.Annotations.of(this).addWarning("When creating an empty TargetGroup, you should specify a 'targetType' (this warning may become an error in the future).");
+        }
+
+        if (this.targetType !== TargetType.LAMBDA && this.vpc === undefined) {
+          ret.push("'vpc' is required for a non-Lambda TargetGroup");
+        }
+
+        return ret;
+      },
+    });
   }
 
   /**
@@ -311,20 +327,6 @@ export abstract class TargetGroupBase extends cdk.Construct implements ITargetGr
       this.targetsJson.push(props.targetJson);
     }
   }
-
-  protected validate(): string[] {
-    const ret = super.validate();
-
-    if (this.targetType === undefined && this.targetsJson.length === 0) {
-      cdk.Annotations.of(this).addWarning("When creating an empty TargetGroup, you should specify a 'targetType' (this warning may become an error in the future).");
-    }
-
-    if (this.targetType !== TargetType.LAMBDA && this.vpc === undefined) {
-      ret.push("'vpc' is required for a non-Lambda TargetGroup");
-    }
-
-    return ret;
-  }
 }
 
 /**
@@ -360,7 +362,7 @@ export interface TargetGroupImportProps extends TargetGroupAttributes {
 /**
  * A target group
  */
-export interface ITargetGroup extends cdk.IConstruct {
+export interface ITargetGroup extends IConstruct {
   /**
    * ARN of the target group
    */

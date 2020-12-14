@@ -1,11 +1,10 @@
 /// !cdk-integ *
 import * as sns from '@aws-cdk/aws-sns';
-import { App, Construct, Fn, Stack } from '@aws-cdk/core';
+import { App, Fn, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as cfn from '../lib';
 
 // non-nested non-parent stack consumes a resource from a nested stack
-
-/* eslint-disable cdk/no-core-construct */
 
 class ProducerNestedStack extends cfn.NestedStack {
   public readonly topic: sns.Topic;
