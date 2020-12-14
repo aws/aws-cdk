@@ -36,7 +36,7 @@ all of the Availability Zones in the AWS Region where it is created. Learn more 
 
 ### Create an Amazon EFS file system
 
-A Virtual Private Cloud (VPC) is required where you want EC2 instances to connect to your file system.
+A Virtual Private Cloud (VPC) is required to create an Amazon EFS file system.
 The following example creates a file system that is encrypted at rest, running in `General Purpose`
 performance mode, and `Bursting` throughput mode and does not transition files to the Infrequent
 Access (IA) storage class.
@@ -49,21 +49,6 @@ const fileSystem = new efs.FileSystem(this, 'MyEfsFileSystem', {
   vpc: new ec2.Vpc(this, 'VPC'),
   encrypted: true, // file system is not encrypted by default
   lifecyclePolicy: efs.LifecyclePolicy.AFTER_14_DAYS, // files are not transitioned to infrequent access (IA) storage by default
-});
-```
-
-Since file systems are stateful resources, by default the file system will not be deleted when your
-stack is deleted.
-
-You can configure the file system to be destroyed on stack deletion by setting a `removalPolicy`
-
-```ts
-import * as efs from '@aws-cdk/aws-efs';
-import * as ec2 from '@aws-cdk/aws-ec2';
-
-const fileSystem =  new efs.FileSystem(this, 'EfsFileSystem', {
-  vpc: new ec2.Vpc(this, 'VPC'),
-  removalPolicy: RemovalPolicy.DESTROY
 });
 ```
 
@@ -170,3 +155,20 @@ instance.userData.addCommands("yum check-update -y",    // Ubuntu: apt-get -y up
 ```
 
 Learn more about [mounting EFS file systems](https://docs.aws.amazon.com/efs/latest/ug/mounting-fs.html)
+
+### Deleting
+
+Since file systems are stateful resources, by default the file system will not be deleted when your
+stack is deleted.
+
+You can configure the file system to be destroyed on stack deletion by setting a `removalPolicy`
+
+```ts
+import * as efs from '@aws-cdk/aws-efs';
+import * as ec2 from '@aws-cdk/aws-ec2';
+
+const fileSystem =  new efs.FileSystem(this, 'EfsFileSystem', {
+  vpc: new ec2.Vpc(this, 'VPC'),
+  removalPolicy: RemovalPolicy.DESTROY
+});
+```
