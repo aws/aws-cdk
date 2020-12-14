@@ -16,7 +16,10 @@
           "Origins": [
             {
               "CustomOriginConfig": {
-                "OriginProtocolPolicy": "https-only"
+                "OriginProtocolPolicy": "https-only",
+                "OriginSSLProtocols": [
+                  "TLSv1.2"
+                ]
               },
               "DomainName": "www.example.com",
               "Id": "cloudfronthttporiginDistributionOrigin162B02709"
