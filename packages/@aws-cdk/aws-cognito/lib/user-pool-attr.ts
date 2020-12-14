@@ -480,7 +480,7 @@ export class AttributeSet {
     if (standard.birthdate === true) { aux.add('birthdate'); }
     if (standard.email === true) { aux.add('email'); }
     if (standard.familyName === true) { aux.add('family_name'); }
-    if (standard.fullname === true) { aux.add('fullname'); }
+    if (standard.fullname === true) { aux.add('name'); }
     if (standard.gender === true) { aux.add('gender'); }
     if (standard.givenName === true) { aux.add('given_name'); }
     if (standard.lastUpdateTime === true) { aux.add('updated_at'); }
@@ -489,8 +489,8 @@ export class AttributeSet {
     if (standard.nickname === true) { aux.add('nickname'); }
     if (standard.phoneNumber === true) { aux.add('phone_number'); }
     if (standard.preferredUsername === true) { aux.add('preferred_username'); }
-    if (standard.profilePage === true) { aux.add('profile_page'); }
-    if (standard.profilePicture === true) { aux.add('profile_picture'); }
+    if (standard.profilePage === true) { aux.add('profile'); }
+    if (standard.profilePicture === true) { aux.add('picture'); }
     if (standard.timezone === true) { aux.add('zoneinfo'); }
     if (standard.emailVerified === true) { aux.add('email_verified'); }
     if (standard.phoneNumberVerified === true) { aux.add('phone_number_verified'); }
