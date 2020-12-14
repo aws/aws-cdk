@@ -132,8 +132,7 @@ Docker container even if `esbuild` is available in your environment. This can be
 ## Configuring `esbuild`
 
 The `NodejsFunction` construct exposes some [esbuild options](https://esbuild.github.io/api/#build-api)
-via properties under `bundling`: `minify`, `sourceMap`, `target`, `loader`, `logLevel` and
-`keepNames`.
+via properties under `bundling`:
 
 ```ts
 new lambda.NodejsFunction(this, 'my-handler', {
