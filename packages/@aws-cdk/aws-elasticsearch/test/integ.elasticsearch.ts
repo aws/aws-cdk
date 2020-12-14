@@ -2,13 +2,12 @@ import { EbsDeviceVolumeType } from '@aws-cdk/aws-ec2';
 import { App, Stack, StackProps } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as es from '../lib';
-import {DomainProps} from "../lib";
 
 class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const domainProps: DomainProps = {
+    const domainProps: es.DomainProps = {
       version: es.ElasticsearchVersion.V7_1,
       ebs: {
         volumeSize: 10,
