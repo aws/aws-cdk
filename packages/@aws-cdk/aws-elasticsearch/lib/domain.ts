@@ -1414,7 +1414,7 @@ export class Domain extends DomainBase implements IDomain {
 
       // Use a custom resource to set the log group resource policy since it is not supported by CDK and cfn.
       // https://github.com/aws/aws-cdk/issues/5343
-      logGroupResourcePolicy = new LogGroupResourcePolicy(this, 'ESLogGroupPolicy', {
+      logGroupResourcePolicy = new LogGroupResourcePolicy(this, `ESLogGroupPolicy${this.node.addr}`, {
         // create a cloudwatch logs resource policy name that is unique to this domain instance
         policyName: `ESLogPolicy${this.node.addr}`,
         policyStatements: [logPolicyStatement],

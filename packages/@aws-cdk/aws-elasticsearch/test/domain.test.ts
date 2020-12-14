@@ -233,18 +233,33 @@ describe('log groups', () => {
     });
   });
 
-  test('appLogEnabled should create a uniquely named log group policy', () => {
-    new Domain(stack, 'Domain', {
+  test('log group policy is uniquely named for each domain', () => {
+    new Domain(stack, 'Domain1', {
+      version: ElasticsearchVersion.V7_4,
+      logging: {
+        appLogEnabled: true,
+      },
+    });
+    new Domain(stack, 'Domain2', {
       version: ElasticsearchVersion.V7_4,
       logging: {
         appLogEnabled: true,
       },
     });
 
+    // Domain1
     expect(stack).toHaveResourceLike('Custom::CloudwatchLogResourcePolicy', {
       Create: {
         parameters: {
-          policyName: 'ESLogPolicyc8d1b675eb302568ed639d317898554769727a62ea',
+          policyName: 'ESLogPolicyc836fd92f07ec41eb70c2f6f08dc4b43cfb7c25391',
+        },
+      },
+    });
+    // Domain2
+    expect(stack).toHaveResourceLike('Custom::CloudwatchLogResourcePolicy', {
+      Create: {
+        parameters: {
+          policyName: 'ESLogPolicyc8f05f015be3baf6ec1ee06cd1ee5cc8706ebbe5b2',
         },
       },
     });

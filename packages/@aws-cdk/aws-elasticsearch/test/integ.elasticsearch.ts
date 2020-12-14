@@ -2,12 +2,13 @@ import { EbsDeviceVolumeType } from '@aws-cdk/aws-ec2';
 import { App, Stack, StackProps } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as es from '../lib';
+import {DomainProps} from "../lib";
 
 class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    new es.Domain(this, 'Domain', {
+    const domainProps: DomainProps = {
       version: es.ElasticsearchVersion.V7_1,
       ebs: {
         volumeSize: 10,
@@ -21,7 +22,11 @@ class TestStack extends Stack {
       encryptionAtRest: {
         enabled: true,
       },
-    });
+    };
+
+    // create 2 elasticsearch domains to ensure that Cloudwatch Log Group policy names dont conflict
+    new es.Domain(this, 'Domain1', domainProps);
+    new es.Domain(this, 'Domain2', domainProps);
   }
 }
 
