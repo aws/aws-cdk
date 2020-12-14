@@ -502,16 +502,17 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
    */
   private endpointSubnets(props: InterfaceVpcEndpointProps) {
     const lookupSupportedAzs = props.lookupSupportedAzs ?? false;
-    const subnets = props.vpc.selectSubnets({ ...props.subnets, onePerAz: true }).subnets;
+    const subnetSelection = props.vpc.selectSubnets({ ...props.subnets, onePerAz: true });
+    const subnets = subnetSelection.subnets;
 
     // Sanity check the subnet count
-    if (subnets.length == 0) {
+    if (subnetSelection.subnets.length == 0) {
       throw new Error('Cannot create a VPC Endpoint with no subnets');
     }
 
     // If we aren't going to lookup supported AZs we'll exit early, returning the subnetIds from the provided subnet selection
     if (!lookupSupportedAzs) {
-      return subnets.map(s => s.subnetId);
+      return subnetSelection.subnetIds;
     }
 
     // Some service names, such as AWS service name references, use Tokens to automatically fill in the region
@@ -546,8 +547,10 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
     const agnosticAcct = Token.isUnresolved(this.stack.account);
     const agnosticRegion = Token.isUnresolved(this.stack.region);
     const agnosticService = Token.isUnresolved(serviceName);
+
     // Having subnets with Token AZs can cause the endpoint to be created with no subnets, failing at deployment time
-    const agnosticSubnets = subnets.filter(s => Token.isUnresolved(s.availabilityZone));
+    const agnosticSubnets = subnets.some(s => Token.isUnresolved(s.availabilityZone));
+    const agnosticSubnetList = Token.isUnresolved(subnets.map(s => s.availabilityZone));
 
     // Context provider cannot make an AWS call without an account/region
     if (agnosticAcct || agnosticRegion) {
@@ -562,8 +565,9 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
     // The AWS call return strings for AZs, like us-east-1a, us-east-1b, etc
     // If the subnet AZs are Tokens, a string comparison between the subnet AZs and the AZs from the AWS call
     // will not match
-    if (agnosticSubnets.length > 0) {
-      throw new Error(`lookupSupportedAzs cannot filter on subnets with Token AZs: ${agnosticSubnets}`);
+    if (agnosticSubnets || agnosticSubnetList) {
+      const agnostic = subnets.filter(s => Token.isUnresolved(s.availabilityZone));
+      throw new Error(`lookupSupportedAzs cannot filter on subnets with Token AZs: ${agnostic}`);
     }
   }
 
