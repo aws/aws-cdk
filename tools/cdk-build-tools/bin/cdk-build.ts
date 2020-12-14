@@ -2,7 +2,7 @@ import * as yargs from 'yargs';
 import { compileCurrentPackage } from '../lib/compile';
 import { lintCurrentPackage } from '../lib/lint';
 import { shell } from '../lib/os';
-import { cdkBuildOptions, CompilerOverrides } from '../lib/package-info';
+import { cdkBuildOptions, CompilerOverrides, currentPackageJson, genScript } from '../lib/package-info';
 import { Timers } from '../lib/timer';
 
 async function main() {
@@ -19,51 +19,49 @@ async function main() {
       desc: 'Specify a different tsc executable',
       defaultDescription: 'tsc provided by node dependencies',
     })
-    .option('tslint', {
-      type: 'string',
-      desc: 'Specify a different tslint executable',
-      defaultDescription: 'tslint provided by node dependencies',
-    })
     .option('eslint', {
       type: 'string',
       desc: 'Specify a different eslint executable',
       defaultDescription: 'eslint provided by node dependencies',
     })
+    .option('gen', {
+      type: 'boolean',
+      desc: 'execute gen script',
+      default: true,
+    })
     .argv;
 
   const options = cdkBuildOptions();
+  const env = options.env;
 
   if (options.pre) {
-    await shell(options.pre, { timers });
+    const commands = options.pre.join(' && ');
+    await shell([commands], { timers, env });
   }
 
-  // See if we need to call cfn2ts
-  if (options.cloudformation) {
-    if (typeof options.cloudformation === 'string') {
-      // There can be multiple scopes, ensuring it's always an array.
-      options.cloudformation = [options.cloudformation];
-    }
-    await shell(['cfn2ts', ...options.cloudformation.map(scope => `--scope=${scope}`)], { timers });
+  const gen = genScript();
+  if (args.gen && gen) {
+    await shell([gen], { timers, env });
   }
 
-  const overrides: CompilerOverrides = { eslint: args.eslint, jsii: args.jsii, tsc: args.tsc, tslint: args.tslint };
-  await compileCurrentPackage(timers, overrides);
+  const overrides: CompilerOverrides = { eslint: args.eslint, jsii: args.jsii, tsc: args.tsc };
+  await compileCurrentPackage(options, timers, overrides);
   await lintCurrentPackage(options, overrides);
 
   if (options.post) {
-    await shell(options.post, { timers });
+    await shell(options.post, { timers, env });
   }
 }
 
 const timers = new Timers();
 const buildTimer = timers.start('Total time');
 
-main().then(() => {
-  buildTimer.end();
-}).catch(e => {
-  buildTimer.end();
+main().catch(e => {
   process.stderr.write(`${e.toString()}\n`);
-  process.stderr.write('Build failed. ${timers.display()}\n');
+  process.stderr.write('Build failed.');
   process.stderr.write('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n');
   process.exit(1);
+}).finally(() => {
+  buildTimer.end();
+  process.stdout.write(`Build times for ${currentPackageJson().name}: ${timers.display()}\n`);
 });

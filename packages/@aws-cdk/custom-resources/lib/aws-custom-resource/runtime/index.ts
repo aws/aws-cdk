@@ -1,6 +1,11 @@
-// tslint:disable:no-console
+/* eslint-disable no-console */
 import { execSync } from 'child_process';
 import { AwsSdkCall } from '../aws-custom-resource';
+
+/**
+ * Serialized form of the physical resource id for use in the operation parameters
+ */
+export const PHYSICAL_RESOURCE_ID_REFERENCE = 'PHYSICAL:RESOURCEID:';
 
 /**
  * Flattens a nested object
@@ -13,25 +18,28 @@ export function flatten(object: object): { [key: string]: string } {
     {},
     ...function _flatten(child: any, path: string[] = []): any {
       return [].concat(...Object.keys(child)
-        .map(key =>
-          typeof child[key] === 'object' && child[key] !== null
-            ? _flatten(child[key], path.concat([key]))
-            : ({ [path.concat([key]).join('.')]: child[key] }),
-        ));
+        .map(key => {
+          const childKey = Buffer.isBuffer(child[key]) ? child[key].toString('utf8') : child[key];
+          return typeof childKey === 'object' && childKey !== null
+            ? _flatten(childKey, path.concat([key]))
+            : ({ [path.concat([key]).join('.')]: childKey });
+        }));
     }(object),
   );
 }
 
 /**
- * Decodes encoded true/false values
+ * Decodes encoded special values (booleans and physicalResourceId)
  */
-function decodeBooleans(object: object) {
+function decodeSpecialValues(object: object, physicalResourceId: string) {
   return JSON.parse(JSON.stringify(object), (_k, v) => {
     switch (v) {
       case 'TRUE:BOOLEAN':
         return true;
       case 'FALSE:BOOLEAN':
         return false;
+      case PHYSICAL_RESOURCE_ID_REFERENCE:
+        return physicalResourceId;
       default:
         return v;
     }
@@ -53,6 +61,10 @@ function filterKeys(object: object, pred: (key: string) => boolean) {
 
 let latestSdkInstalled = false;
 
+export function forceSdkInstallation() {
+  latestSdkInstalled = false;
+}
+
 /**
  * Installs latest AWS SDK v2
  */
@@ -67,7 +79,7 @@ function installLatestSdk(): void {
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent, context: AWSLambda.Context) {
   try {
     let AWS: any;
-    if (!latestSdkInstalled) {
+    if (!latestSdkInstalled && event.ResourceProperties.InstallLatestAwsSdk === 'true') {
       try {
         installLatestSdk();
         AWS = require('/tmp/node_modules/aws-sdk');
@@ -75,11 +87,9 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
         console.log(`Failed to install latest AWS SDK v2: ${e}`);
         AWS = require('aws-sdk'); // Fallback to pre-installed version
       }
-    } else {
+    } else if (latestSdkInstalled) {
       AWS = require('/tmp/node_modules/aws-sdk');
-    }
-
-    if (process.env.USE_NORMAL_SDK) { // For tests only
+    } else {
       AWS = require('aws-sdk');
     }
 
@@ -112,7 +122,8 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
       });
 
       try {
-        const response = await awsService[call.action](call.parameters && decodeBooleans(call.parameters)).promise();
+        const response = await awsService[call.action](
+          call.parameters && decodeSpecialValues(call.parameters, physicalResourceId)).promise();
         flatData = {
           apiVersion: awsService.config.apiVersion, // For test purposes: check if apiVersion was correctly passed.
           region: awsService.config.region, // For test purposes: check if region was correctly passed.

@@ -20,7 +20,7 @@ export async function shell(command: string[], options: ShellOptions = {}): Prom
   }
   const child = child_process.spawn(command[0], command.slice(1), {
     ...options,
-    stdio: [ options.input ? 'pipe' : 'ignore', 'pipe', 'pipe' ],
+    stdio: [options.input ? 'pipe' : 'ignore', 'pipe', 'pipe'],
   });
 
   return new Promise<string>((resolve, reject) => {
@@ -30,6 +30,7 @@ export async function shell(command: string[], options: ShellOptions = {}): Prom
     }
 
     const stdout = new Array<any>();
+    const stderr = new Array<any>();
 
     // Both write to stdout and collect
     child.stdout.on('data', chunk => {
@@ -43,6 +44,8 @@ export async function shell(command: string[], options: ShellOptions = {}): Prom
       if (!options.quiet) {
         process.stderr.write(chunk);
       }
+
+      stderr.push(chunk);
     });
 
     child.once('error', reject);
@@ -51,7 +54,8 @@ export async function shell(command: string[], options: ShellOptions = {}): Prom
       if (code === 0) {
         resolve(Buffer.concat(stdout).toString('utf-8'));
       } else {
-        reject(new ProcessFailed(code, `${renderCommandLine(command)} exited with error code ${code}`));
+        const out = Buffer.concat(stderr).toString('utf-8').trim();
+        reject(new ProcessFailed(code, `${renderCommandLine(command)} exited with error code ${code}: ${out}`));
       }
     });
   });

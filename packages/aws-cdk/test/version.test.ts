@@ -1,9 +1,10 @@
-import * as fs from 'fs-extra';
 import * as path from 'path';
-import * as sinon from 'sinon';
 import { setTimeout as _setTimeout } from 'timers';
 import { promisify } from 'util';
-import { latestVersionIfHigher, VersionCheckTTL } from '../lib/version';
+import * as fs from 'fs-extra';
+import * as sinon from 'sinon';
+import * as logging from '../lib/logging';
+import { latestVersionIfHigher, VersionCheckTTL, displayVersionMessage } from '../lib/version';
 
 const setTimeout = promisify(_setTimeout);
 
@@ -71,4 +72,12 @@ test('No Version specified for storage in the TTL file', async () => {
   await cache.update();
   const storedVersion = fs.readFileSync(cacheFile, 'utf8');
   expect(storedVersion).toBe('');
+});
+
+test('Skip version check if environment variable is set', async () => {
+  process.stdout.isTTY = true;
+  process.env.CDK_DISABLE_VERSION_CHECK = '1';
+  const printStub = sinon.stub(logging, 'print');
+  await displayVersionMessage();
+  expect(printStub.called).toEqual(false);
 });

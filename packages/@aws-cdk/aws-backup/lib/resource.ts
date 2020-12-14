@@ -2,7 +2,12 @@ import * as dynamodb from '@aws-cdk/aws-dynamodb';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as efs from '@aws-cdk/aws-efs';
 import * as rds from '@aws-cdk/aws-rds';
-import { Construct, Stack } from '@aws-cdk/core';
+import { Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * An operation that is applied to a key-value pair
@@ -64,14 +69,14 @@ export class BackupResource {
   /**
    * A DynamoDB table
    */
-  public static fromDynamoDbTable(table: dynamodb.Table) {
+  public static fromDynamoDbTable(table: dynamodb.ITable) {
     return BackupResource.fromArn(table.tableArn);
   }
 
   /**
    * An EC2 instance
    */
-  public static fromEc2Instance(instance: ec2.Instance) {
+  public static fromEc2Instance(instance: ec2.IInstance) {
     return BackupResource.fromArn(Stack.of(instance).formatArn({
       service: 'ec2',
       resource: 'instance',
@@ -82,7 +87,7 @@ export class BackupResource {
   /**
    * An EFS file system
    */
-  public static fromEfsFileSystem(fileSystem: efs.FileSystem) {
+  public static fromEfsFileSystem(fileSystem: efs.IFileSystem) {
     return BackupResource.fromArn(Stack.of(fileSystem).formatArn({
       service: 'elasticfilesystem',
       resource: 'file-system',
@@ -93,7 +98,7 @@ export class BackupResource {
   /**
    * A RDS database instance
    */
-  public static fromRdsDatabaseInstance(instance: rds.DatabaseInstance) {
+  public static fromRdsDatabaseInstance(instance: rds.IDatabaseInstance) {
     return BackupResource.fromArn(instance.instanceArn);
   }
 
@@ -129,11 +134,11 @@ export class BackupResource {
   /**
    * A construct
    */
-  public readonly construct?: Construct;
+  public readonly construct?: CoreConstruct;
 
   constructor(resource?: string, tagCondition?: TagCondition, construct?: Construct) {
     this.resource = resource;
     this.tagCondition = tagCondition;
-    this.construct = construct;
+    this.construct = construct as CoreConstruct;
   }
 }

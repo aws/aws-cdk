@@ -1,10 +1,14 @@
-import * as cfn from '@aws-cdk/aws-cloudformation';
+import * as path from 'path';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
-import { Construct, Duration, Stack } from '@aws-cdk/core';
-import * as path from 'path';
+import { CustomResource, Duration, Stack } from '@aws-cdk/core';
+import { Construct, Node } from 'constructs';
 import * as cr from '../../../lib';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 export interface S3AssertProps {
   /**
@@ -30,13 +34,13 @@ export interface S3AssertProps {
  *
  * Code is written in Python because why not.
  */
-export class S3Assert extends Construct {
+export class S3Assert extends CoreConstruct {
 
   constructor(scope: Construct, id: string, props: S3AssertProps) {
     super(scope, id);
 
-    new cfn.CustomResource(this, 'Resource', {
-      provider: S3AssertProvider.getOrCreate(this),
+    new CustomResource(this, 'Resource', {
+      serviceToken: S3AssertProvider.getOrCreate(this),
       resourceType: 'Custom::S3Assert',
       properties: {
         BucketName: props.bucket.bucketName,
@@ -47,7 +51,7 @@ export class S3Assert extends Construct {
   }
 }
 
-class S3AssertProvider extends Construct {
+class S3AssertProvider extends CoreConstruct {
 
   /**
    * Returns the singleton provider.
@@ -55,8 +59,8 @@ class S3AssertProvider extends Construct {
   public static getOrCreate(scope: Construct) {
     const providerId = 'com.amazonaws.cdk.custom-resources.s3assert-provider';
     const stack = Stack.of(scope);
-    const group = stack.node.tryFindChild(providerId) as S3AssertProvider || new S3AssertProvider(stack, providerId);
-    return group.provider;
+    const group = Node.of(stack).tryFindChild(providerId) as S3AssertProvider || new S3AssertProvider(stack, providerId);
+    return group.provider.serviceToken;
   }
 
   private readonly provider: cr.Provider;
@@ -76,7 +80,7 @@ class S3AssertProvider extends Construct {
       handler: 'index.is_complete',
       initialPolicy: [
         new iam.PolicyStatement({
-          resources: [ '*' ],
+          resources: ['*'],
           actions: [
             's3:GetObject*',
             's3:GetBucket*',

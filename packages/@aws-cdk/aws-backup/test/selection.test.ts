@@ -2,8 +2,13 @@ import '@aws-cdk/assert/jest';
 import * as dynamodb from '@aws-cdk/aws-dynamodb';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as efs from '@aws-cdk/aws-efs';
-import { Construct, Stack } from '@aws-cdk/core';
+import { Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { BackupPlan, BackupResource, BackupSelection } from '../lib';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 let stack: Stack;
 let plan: BackupPlan;
@@ -120,13 +125,13 @@ test('allow restores', () => {
 
 test('fromConstruct', () => {
   // GIVEN
-  class EfsConstruct extends Construct {
+  class EfsConstruct extends CoreConstruct {
     constructor(scope: Construct, id: string) {
       super(scope, id);
       new efs.CfnFileSystem(this, 'FileSystem');
     }
   }
-  class MyConstruct extends Construct {
+  class MyConstruct extends CoreConstruct {
     constructor(scope: Construct, id: string) {
       super(scope, id);
 
@@ -285,6 +290,47 @@ test('fromEc2Instance', () => {
             ],
           ],
         },
+      ],
+      SelectionName: 'Selection',
+    },
+  });
+});
+
+test('fromDynamoDbTable', () => {
+  // GIVEN
+  const newTable = new dynamodb.Table(stack, 'New', {
+    partitionKey: {
+      name: 'id',
+      type: dynamodb.AttributeType.STRING,
+    },
+  });
+  const existingTable = dynamodb.Table.fromTableArn(stack, 'Existing', 'arn:aws:dynamodb:eu-west-1:123456789012:table/existing');
+
+  // WHEN
+  plan.addSelection('Selection', {
+    resources: [
+      BackupResource.fromDynamoDbTable(newTable),
+      BackupResource.fromDynamoDbTable(existingTable),
+    ],
+  });
+
+  // THEN
+  expect(stack).toHaveResource('AWS::Backup::BackupSelection', {
+    BackupSelection: {
+      IamRoleArn: {
+        'Fn::GetAtt': [
+          'PlanSelectionRole6D10F4B7',
+          'Arn',
+        ],
+      },
+      Resources: [
+        {
+          'Fn::GetAtt': [
+            'New8A81B073',
+            'Arn',
+          ],
+        },
+        'arn:aws:dynamodb:eu-west-1:123456789012:table/existing',
       ],
       SelectionName: 'Selection',
     },

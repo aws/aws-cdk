@@ -1,4 +1,5 @@
-import { Construct, Duration, IResource, Resource, Token } from '@aws-cdk/core';
+import { Duration, IResource, Resource, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { IAliasRecordTarget } from './alias-record-target';
 import { IHostedZone } from './hosted-zone-ref';
 import { CfnRecordSet } from './route53.generated';
@@ -322,9 +323,29 @@ export class TxtRecord extends RecordSet {
     super(scope, id, {
       ...props,
       recordType: RecordType.TXT,
-      target: RecordTarget.fromValues(...props.values.map(v => JSON.stringify(v))),
+      target: RecordTarget.fromValues(...props.values.map(v => formatTxt(v))),
     });
   }
+}
+
+/**
+ * Formats a text value for use in a TXT record
+ *
+ * Use `JSON.stringify` to correctly escape and enclose in double quotes ("").
+ *
+ * DNS TXT records can contain up to 255 characters in a single string. TXT
+ * record strings over 255 characters must be split into multiple text strings
+ * within the same record.
+ *
+ * @see https://aws.amazon.com/premiumsupport/knowledge-center/route53-resolve-dkim-text-record-error/
+ */
+function formatTxt(string: string): string {
+  const result = [];
+  let idx = 0;
+  while (idx < string.length) {
+    result.push(string.slice(idx, idx += 255)); // chunks of 255 characters long
+  }
+  return result.map(r => JSON.stringify(r)).join('');
 }
 
 /**

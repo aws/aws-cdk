@@ -1,5 +1,5 @@
 import { Ec2Service, Ec2TaskDefinition } from '@aws-cdk/aws-ecs';
-import { Construct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { QueueProcessingServiceBase, QueueProcessingServiceBaseProps } from '../base/queue-processing-service-base';
 
 /**
@@ -96,6 +96,8 @@ export class QueueProcessingEc2Service extends QueueProcessingServiceBase {
       desiredCount: this.desiredCount,
       taskDefinition: this.taskDefinition,
       serviceName: props.serviceName,
+      minHealthyPercent: props.minHealthyPercent,
+      maxHealthyPercent: props.maxHealthyPercent,
       propagateTags: props.propagateTags,
       enableECSManagedTags: props.enableECSManagedTags,
     });

@@ -1,7 +1,8 @@
 ---
-name: "📕 Documentation issue"
+name: "📕 Documentation Issue"
 about: Issue in the reference documentation or developer guide
-labels: feature-request, needs-triage
+title: "(module name): short issue description"
+labels: feature-request, documentation, needs-triage
 ---
 
 <!-- 

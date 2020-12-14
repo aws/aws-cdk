@@ -5,7 +5,7 @@ import * as sfn from '@aws-cdk/aws-stepfunctions';
 /**
  * Properties for InvokeFunction
  *
- * @deprecated use `RunLambdaTask`
+ * @deprecated use `LambdaInvoke`
  */
 export interface InvokeFunctionProps {
   /**
@@ -25,7 +25,7 @@ export interface InvokeFunctionProps {
  *
  * OUTPUT: the output of this task is the return value of the Lambda Function.
  *
- * @deprecated Use `RunLambdaTask`
+ * @deprecated Use `LambdaInvoke`
  */
 export class InvokeFunction implements sfn.IStepFunctionsTask {
   constructor(private readonly lambdaFunction: lambda.IFunction, private readonly props: InvokeFunctionProps = {}) {

@@ -18,7 +18,7 @@ export function setLogThreshold(threshold: LogLevel) {
 
 export function log(level: LogLevel, message: string) {
   if (LOG_LEVELS[level] >= LOG_LEVELS[logThreshold]) {
-    // tslint:disable-next-line:no-console
+    // eslint-disable-next-line no-console
     console.error(`${level.padEnd(7, ' ')}: ${message}`);
   }
 }

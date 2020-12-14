@@ -3,6 +3,9 @@ import * as kms from '@aws-cdk/aws-kms';
 import { IResource, Resource } from '@aws-cdk/core';
 import { QueuePolicy } from './policy';
 
+/**
+ * Represents an SQS queue
+ */
 export interface IQueue extends IResource {
   /**
    * The ARN of this queue
@@ -37,9 +40,9 @@ export interface IQueue extends IResource {
    *
    * If this queue was created in this stack (`new Queue`), a queue policy
    * will be automatically created upon the first call to `addToPolicy`. If
-   * the queue is improted (`Queue.import`), then this is a no-op.
+   * the queue is imported (`Queue.import`), then this is a no-op.
    */
-  addToResourcePolicy(statement: iam.PolicyStatement): void;
+  addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult;
 
   /**
    * Grant permissions to consume messages from a queue
@@ -136,16 +139,25 @@ export abstract class QueueBase extends Resource implements IQueue {
    *
    * If this queue was created in this stack (`new Queue`), a queue policy
    * will be automatically created upon the first call to `addToPolicy`. If
-   * the queue is improted (`Queue.import`), then this is a no-op.
+   * the queue is imported (`Queue.import`), then this is a no-op.
    */
-  public addToResourcePolicy(statement: iam.PolicyStatement) {
+  public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
     if (!this.policy && this.autoCreatePolicy) {
-      this.policy = new QueuePolicy(this, 'Policy', { queues: [ this ] });
+      this.policy = new QueuePolicy(this, 'Policy', { queues: [this] });
     }
 
     if (this.policy) {
       this.policy.document.addStatements(statement);
+      return { statementAdded: true, policyDependable: this.policy };
     }
+
+    return { statementAdded: false };
+  }
+
+  protected validate(): string[] {
+    const errors = super.validate();
+    errors.push(...this.policy?.document.validateForResourcePolicy() || []);
+    return errors;
   }
 
   /**
@@ -194,9 +206,9 @@ export abstract class QueueBase extends Resource implements IQueue {
       'sqs:GetQueueUrl');
 
     if (this.encryptionMasterKey) {
-      this.encryptionMasterKey.grantEncrypt(grantee);
+      // kms:Decrypt necessary to execute grantsendMessages to an SSE enabled SQS queue
+      this.encryptionMasterKey.grantEncryptDecrypt(grantee);
     }
-
     return ret;
   }
 
@@ -234,7 +246,6 @@ export abstract class QueueBase extends Resource implements IQueue {
     });
   }
 }
-
 /**
  * Reference to a queue
  */
@@ -246,6 +257,9 @@ export interface QueueAttributes {
 
   /**
    * The URL of the queue.
+   * @see https://docs.aws.amazon.com/sdk-for-net/v2/developer-guide/QueueURL.html
+   *
+   * @default - 'https://sqs.<region-endpoint>/<account-ID>/<queue-name>'
    */
   readonly queueUrl?: string;
 
@@ -257,6 +271,8 @@ export interface QueueAttributes {
 
   /**
    * KMS encryption key, if this queue is server-side encrypted by a KMS key.
+   *
+   * @default - None
    */
   readonly keyArn?: string;
 }

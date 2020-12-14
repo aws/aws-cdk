@@ -480,7 +480,7 @@ Object {
               Object {
                 "Ref": "MyApi49610EDF",
               },
-              "/test-invoke-stage/*/{proxy+}",
+              "/test-invoke-stage/*/*",
             ],
           ],
         },
@@ -521,7 +521,7 @@ Object {
               Object {
                 "Ref": "MyApiDeploymentStageprodE1054AF0",
               },
-              "/*/{proxy+}",
+              "/*/*",
             ],
           ],
         },
@@ -765,16 +765,16 @@ Object {
         "MapPublicIpOnLaunch": false,
         "Tags": Array [
           Object {
-            "Key": "Name",
-            "Value": "ecs/VPC/PrivateSubnet1",
-          },
-          Object {
             "Key": "aws-cdk:subnet-name",
             "Value": "Private",
           },
           Object {
             "Key": "aws-cdk:subnet-type",
             "Value": "Private",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "ecs/VPC/PrivateSubnet1",
           },
         ],
         "VpcId": Object {
@@ -869,16 +869,16 @@ Object {
         "MapPublicIpOnLaunch": true,
         "Tags": Array [
           Object {
-            "Key": "Name",
-            "Value": "ecs/VPC/PublicSubnet1",
-          },
-          Object {
             "Key": "aws-cdk:subnet-name",
             "Value": "Public",
           },
           Object {
             "Key": "aws-cdk:subnet-type",
             "Value": "Public",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "ecs/VPC/PublicSubnet1",
           },
         ],
         "VpcId": Object {
@@ -1092,20 +1092,7 @@ Object {
             Object {
               "Action": "dynamodb:ListStreams",
               "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
-                  "",
-                  Array [
-                    Object {
-                      "Fn::GetAtt": Array [
-                        "TableCD117FA1",
-                        "Arn",
-                      ],
-                    },
-                    "/stream/*",
-                  ],
-                ],
-              },
+              "Resource": "*",
             },
             Object {
               "Action": Array [
@@ -1651,6 +1638,7 @@ Object {
         "Environment": Object {
           "ComputeType": "BUILD_GENERAL1_SMALL",
           "Image": "aws/codebuild/standard:1.0",
+          "ImagePullCredentialsType": "CODEBUILD",
           "PrivilegedMode": false,
           "Type": "LINUX_CONTAINER",
         },
@@ -1743,6 +1731,40 @@ Object {
                   ],
                 },
               ],
+            },
+            Object {
+              "Action": Array [
+                "codebuild:CreateReportGroup",
+                "codebuild:CreateReport",
+                "codebuild:UpdateReport",
+                "codebuild:BatchPutTestCases",
+                "codebuild:BatchPutCodeCoverages",
+              ],
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::Join": Array [
+                  "",
+                  Array [
+                    "arn:",
+                    Object {
+                      "Ref": "AWS::Partition",
+                    },
+                    ":codebuild:",
+                    Object {
+                      "Ref": "AWS::Region",
+                    },
+                    ":",
+                    Object {
+                      "Ref": "AWS::AccountId",
+                    },
+                    ":report-group/",
+                    Object {
+                      "Ref": "BuildProject097C5DB7",
+                    },
+                    "-*",
+                  ],
+                ],
+              },
             },
             Object {
               "Action": Array [
@@ -3017,16 +3039,16 @@ Object {
         "MapPublicIpOnLaunch": false,
         "Tags": Array [
           Object {
-            "Key": "Name",
-            "Value": "vpc/VPC/PrivateSubnet1",
-          },
-          Object {
             "Key": "aws-cdk:subnet-name",
             "Value": "Private",
           },
           Object {
             "Key": "aws-cdk:subnet-type",
             "Value": "Private",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "vpc/VPC/PrivateSubnet1",
           },
         ],
         "VpcId": Object {
@@ -3086,16 +3108,16 @@ Object {
         "MapPublicIpOnLaunch": false,
         "Tags": Array [
           Object {
-            "Key": "Name",
-            "Value": "vpc/VPC/PrivateSubnet2",
-          },
-          Object {
             "Key": "aws-cdk:subnet-name",
             "Value": "Private",
           },
           Object {
             "Key": "aws-cdk:subnet-type",
             "Value": "Private",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "vpc/VPC/PrivateSubnet2",
           },
         ],
         "VpcId": Object {
@@ -3190,16 +3212,16 @@ Object {
         "MapPublicIpOnLaunch": true,
         "Tags": Array [
           Object {
-            "Key": "Name",
-            "Value": "vpc/VPC/PublicSubnet1",
-          },
-          Object {
             "Key": "aws-cdk:subnet-name",
             "Value": "Public",
           },
           Object {
             "Key": "aws-cdk:subnet-type",
             "Value": "Public",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "vpc/VPC/PublicSubnet1",
           },
         ],
         "VpcId": Object {
@@ -3294,16 +3316,16 @@ Object {
         "MapPublicIpOnLaunch": true,
         "Tags": Array [
           Object {
-            "Key": "Name",
-            "Value": "vpc/VPC/PublicSubnet2",
-          },
-          Object {
             "Key": "aws-cdk:subnet-name",
             "Value": "Public",
           },
           Object {
             "Key": "aws-cdk:subnet-type",
             "Value": "Public",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "vpc/VPC/PublicSubnet2",
           },
         ],
         "VpcId": Object {

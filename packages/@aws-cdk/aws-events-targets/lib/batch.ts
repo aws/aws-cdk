@@ -1,6 +1,7 @@
 import * as batch from '@aws-cdk/aws-batch';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
+import { Names } from '@aws-cdk/core';
 import { singletonEventRole } from './util';
 
 /**
@@ -13,7 +14,7 @@ export interface BatchJobProps {
    *
    * This will be the payload sent to the Lambda Function.
    *
-   * @default the entire CloudWatch event
+   * @default the entire EventBridge event
    */
   readonly event?: events.RuleTargetInput;
 
@@ -54,12 +55,12 @@ export class BatchJob implements events.IRuleTarget {
 
   /**
    * Returns a RuleTarget that can be used to trigger queue this batch job as a
-   * result from a CloudWatch event.
+   * result from an EventBridge event.
    */
   public bind(rule: events.IRule, _id?: string): events.RuleTargetConfig {
     const batchParameters: events.CfnRule.BatchParametersProperty = {
       jobDefinition: this.jobDefinition.jobDefinitionArn,
-      jobName: this.props.jobName ?? rule.node.uniqueId,
+      jobName: this.props.jobName ?? Names.nodeUniqueId(rule.node),
       arrayProperties: this.props.size ? { size: this.props.size } : undefined,
       retryStrategy: this.props.attempts ? { attempts: this.props.attempts } : undefined,
     };

@@ -2,8 +2,6 @@
   "Resources": {
     "MyBucketF68F3FF0": {
       "Type": "AWS::S3::Bucket",
-      "DeletionPolicy": "Delete",
-      "UpdateReplacePolicy": "Delete",
       "Properties": {
         "LifecycleConfiguration": {
           "Rules": [
@@ -13,7 +11,9 @@
             }
           ]
         }
-      }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     }
   }
 }

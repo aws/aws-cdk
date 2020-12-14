@@ -2,7 +2,7 @@ import * as colors from 'colors/safe';
 import * as jsiiReflect from 'jsii-reflect';
 import { SchemaContext, schemaForTypeReference } from '../lib/jsii2schema';
 
-// tslint:disable:no-console
+/* eslint-disable no-console */
 
 export interface RenderSchemaOptions {
   warnings?: boolean;
@@ -22,7 +22,7 @@ export function renderFullSchema(typeSystem: jsiiReflect.TypeSystem, options: Re
   // Find all constructs for which the props interface
   // (transitively) only consists of JSON primitives or interfaces
   // that consist of JSON primitives
-  const constructType = typeSystem.findClass('@aws-cdk/core.Construct');
+  const constructType = typeSystem.findClass('constructs.Construct');
   const constructs = typeSystem.classes.filter(c => c.extends(constructType));
 
   const deconstructs = constructs

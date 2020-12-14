@@ -1,6 +1,7 @@
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct, IConstruct, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
+import { IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
+import { IConstruct, Construct } from 'constructs';
 import { CfnRepository } from './ecr.generated';
 import { LifecycleRule, TagStatus } from './lifecycle';
 
@@ -41,7 +42,7 @@ export interface IRepository extends IResource {
   /**
    * Add a policy statement to the repository's resource policy
    */
-  addToResourcePolicy(statement: iam.PolicyStatement): void;
+  addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult;
 
   /**
    * Grant the given principal identity permissions to perform the actions on this repository
@@ -114,7 +115,7 @@ export abstract class RepositoryBase extends Resource implements IRepository {
   /**
    * Add a policy statement to the repository's resource policy
    */
-  public abstract addToResourcePolicy(statement: iam.PolicyStatement): void;
+  public abstract addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult;
 
   /**
    * The URI of this repository (represents the latest image):
@@ -316,6 +317,13 @@ export interface RepositoryProps {
    * @default RemovalPolicy.Retain
    */
   readonly removalPolicy?: RemovalPolicy;
+
+  /**
+   * Enable the scan on push when creating the repository
+   *
+   *  @default false
+   */
+  readonly imageScanOnPush?: boolean;
 }
 
 export interface RepositoryAttributes {
@@ -335,8 +343,9 @@ export class Repository extends RepositoryBase {
       public readonly repositoryName = attrs.repositoryName;
       public readonly repositoryArn = attrs.repositoryArn;
 
-      public addToResourcePolicy(_statement: iam.PolicyStatement) {
+      public addToResourcePolicy(_statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
         // dropped
+        return { statementAdded: false };
       }
     }
 
@@ -358,8 +367,9 @@ export class Repository extends RepositoryBase {
       public repositoryName = repositoryName;
       public repositoryArn = repositoryArn;
 
-      public addToResourcePolicy(_statement: iam.PolicyStatement): void {
+      public addToResourcePolicy(_statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
         // dropped
+        return { statementAdded: false };
       }
     }
 
@@ -371,8 +381,9 @@ export class Repository extends RepositoryBase {
       public repositoryName = repositoryName;
       public repositoryArn = Repository.arnForLocalRepository(repositoryName, scope);
 
-      public addToResourcePolicy(_statement: iam.PolicyStatement): void {
+      public addToResourcePolicy(_statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
         // dropped
+        return { statementAdded: false };
       }
     }
 
@@ -383,8 +394,9 @@ export class Repository extends RepositoryBase {
    * Returns an ECR ARN for a repository that resides in the same account/region
    * as the current stack.
    */
-  public static arnForLocalRepository(repositoryName: string, scope: IConstruct): string {
+  public static arnForLocalRepository(repositoryName: string, scope: IConstruct, account?: string): string {
     return Stack.of(scope).formatArn({
+      account,
       service: 'ecr',
       resource: 'repository',
       resourceName: repositoryName,
@@ -405,8 +417,11 @@ export class Repository extends RepositoryBase {
     const resource = new CfnRepository(this, 'Resource', {
       repositoryName: this.physicalName,
       // It says "Text", but they actually mean "Object".
-      repositoryPolicyText: Lazy.anyValue({ produce: () => this.policyDocument }),
-      lifecyclePolicy: Lazy.anyValue({ produce: () => this.renderLifecyclePolicy() }),
+      repositoryPolicyText: Lazy.any({ produce: () => this.policyDocument }),
+      lifecyclePolicy: Lazy.any({ produce: () => this.renderLifecyclePolicy() }),
+      imageScanningConfiguration: !props.imageScanOnPush ? undefined : {
+        scanOnPush: true,
+      },
     });
 
     resource.applyRemovalPolicy(props.removalPolicy);
@@ -424,11 +439,18 @@ export class Repository extends RepositoryBase {
     });
   }
 
-  public addToResourcePolicy(statement: iam.PolicyStatement) {
+  public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
     if (this.policyDocument === undefined) {
       this.policyDocument = new iam.PolicyDocument();
     }
     this.policyDocument.addStatements(statement);
+    return { statementAdded: false, policyDependable: this.policyDocument };
+  }
+
+  protected validate(): string[] {
+    const errors = super.validate();
+    errors.push(...this.policyDocument?.validateForResourcePolicy() || []);
+    return errors;
   }
 
   /**

@@ -1,8 +1,12 @@
-import { Construct, Duration } from '@aws-cdk/core';
+import { Duration } from '@aws-cdk/core';
 import { ContainerDefinition } from '../container-definition';
 import { BaseLogDriverProps } from './base-log-driver';
 import { LogDriver, LogDriverConfig } from './log-driver';
 import { ensureInRange, ensurePositiveInteger, renderCommonLogDriverOptions, stringifyOptions } from './utils';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * The type of compression the GELF driver uses to compress each log message.
@@ -84,7 +88,7 @@ export class GelfLogDriver extends LogDriver {
   /**
    * Called when the log driver is configured on a container
    */
-  public bind(_scope: Construct, _containerDefinition: ContainerDefinition): LogDriverConfig {
+  public bind(_scope: CoreConstruct, _containerDefinition: ContainerDefinition): LogDriverConfig {
     return {
       logDriver: 'gelf',
       options: stringifyOptions({

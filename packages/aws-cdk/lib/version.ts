@@ -1,9 +1,9 @@
 import { exec as _exec } from 'child_process';
+import * as path from 'path';
+import { promisify } from 'util';
 import * as colors from 'colors/safe';
 import * as fs from 'fs-extra';
-import * as path from 'path';
 import * as semver from 'semver';
-import { promisify } from 'util';
 import { debug, print } from '../lib/logging';
 import { formatAsBanner } from '../lib/util/console-formatters';
 import { cdkCacheDir } from './util/directories';
@@ -98,7 +98,7 @@ export async function latestVersionIfHigher(currentVersion: string, cacheFile: V
 }
 
 export async function displayVersionMessage(): Promise<void> {
-  if (!process.stdout.isTTY) {
+  if (!process.stdout.isTTY || process.env.CDK_DISABLE_VERSION_CHECK) {
     return;
   }
 

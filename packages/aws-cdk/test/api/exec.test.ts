@@ -5,18 +5,18 @@ import * as semver from 'semver';
 import * as sinon from 'sinon';
 import { ImportMock } from 'ts-mock-imports';
 import { execProgram } from '../../lib/api/cxapp/exec';
-import { setVerbose } from '../../lib/logging';
+import { LogLevel, setLogLevel } from '../../lib/logging';
 import { Configuration } from '../../lib/settings';
 import * as bockfs from '../bockfs';
 import { testAssembly } from '../util';
 import { mockSpawn } from '../util/mock-child_process';
 import { MockSdkProvider } from '../util/mock-sdk';
 
-setVerbose(true);
-
 let sdkProvider: MockSdkProvider;
 let config: Configuration;
 beforeEach(() => {
+  setLogLevel(LogLevel.DEBUG);
+
   sdkProvider = new MockSdkProvider();
   config = new Configuration();
 
@@ -34,6 +34,8 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  setLogLevel(LogLevel.DEFAULT);
+
   sinon.restore();
   bockfs.restore();
 });
@@ -44,7 +46,7 @@ afterEach(() => {
 const TEN_SECOND_TIMEOUT = 10000;
 
 function createApp(): cdk.App {
-  const app = new cdk.App({outdir: 'cdk.out'});
+  const app = new cdk.App({ outdir: 'cdk.out' });
   const stack = new cdk.Stack(app, 'Stack');
 
   new cdk.CfnResource(stack, 'Role', {
@@ -72,8 +74,8 @@ test('cli throws when manifest version > schema version', async () => {
     mockVersionNumber.restore();
   }
 
-  const expectedError = `Cloud assembly schema version mismatch: Maximum schema version supported is ${currentSchemaVersion}, but found ${mockManifestVersion}.`
-    +  '\nPlease upgrade your CLI in order to interact with this app.';
+  const expectedError = 'This CDK CLI is not compatible with the CDK library used by your application. Please upgrade the CLI to the latest version.'
+    + `\n(Cloud assembly schema version mismatch: Maximum schema version supported is ${currentSchemaVersion}, but found ${mockManifestVersion})`;
 
   config.settings.set(['app'], 'cdk.out');
 

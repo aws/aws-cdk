@@ -7,7 +7,7 @@ import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as cpactions from '../lib';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 const app = new cdk.App();
 
@@ -72,6 +72,7 @@ const project = new codebuild.PipelineProject(stack, 'EcsProject', {
       value: repository.repositoryUri,
     },
   },
+  grantReportGroupPermissions: false,
 });
 // needed for `docker push`
 repository.grantPullPush(project);
@@ -101,6 +102,7 @@ new codepipeline.Pipeline(stack, 'MyPipeline', {
           actionName: 'DeployAction',
           input: buildOutput,
           service,
+          deploymentTimeout: cdk.Duration.minutes(60),
         }),
       ],
     },

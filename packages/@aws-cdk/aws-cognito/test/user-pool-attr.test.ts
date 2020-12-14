@@ -1,5 +1,6 @@
 import '@aws-cdk/assert/jest';
-import { BooleanAttribute, CustomAttributeConfig, DateTimeAttribute, ICustomAttribute, NumberAttribute, StringAttribute } from '../lib';
+import { CfnParameter, Stack } from '@aws-cdk/core';
+import { BooleanAttribute, CustomAttributeConfig, DateTimeAttribute, ICustomAttribute, NumberAttribute, StringAttribute, AttributeSet } from '../lib';
 
 describe('User Pool Attributes', () => {
 
@@ -104,6 +105,18 @@ describe('User Pool Attributes', () => {
       expect(() => new StringAttribute({ maxLen: 5000 }))
         .toThrow(/maxLen cannot be greater than/);
     });
+
+    test('validation is skipped when minLen or maxLen are tokens', () => {
+      const stack = new Stack();
+      const parameter = new CfnParameter(stack, 'Parameter', {
+        type: 'Number',
+      });
+
+      expect(() => new StringAttribute({ minLen: parameter.valueAsNumber }))
+        .not.toThrow();
+      expect(() => new StringAttribute({ maxLen: parameter.valueAsNumber }))
+        .not.toThrow();
+    });
   });
 
   describe('NumberAttribute', () => {
@@ -163,6 +176,58 @@ describe('User Pool Attributes', () => {
       expect(bound.dataType).toEqual('DateTime');
       expect(bound.stringConstraints).toBeUndefined();
       expect(bound.numberConstraints).toBeUndefined();
+    });
+  });
+
+  describe('AttributeSet', () => {
+    test('create empty AttributeSet', () => {
+      // WHEN
+      const attributeSet = AttributeSet.empty();
+
+      // THEN
+      expect(attributeSet.attributes()).toStrictEqual([]);
+    });
+
+    test('create AttributeSet with all standard attributes', () => {
+      // GIVEN
+      const customAttributes = ['custom:my_attribute'];
+
+      // WHEN
+      const attributeSet = AttributeSet.allStandard(customAttributes);
+      const attributes = attributeSet.attributes();
+
+      // THEN
+      expect(attributes.length).toEqual(20);
+      expect(attributes).toContain('preferred_username');
+      expect(attributes).toContain('email_verified');
+      expect(attributes).toContain('phone_number_verified');
+      expect(attributes).toContain('custom:my_attribute');
+    });
+
+    test('create AttributeSet with profileWritable attributes', () => {
+      // GIVEN
+      const attributeSet = AttributeSet.profileWritable();
+      const attributes = attributeSet.attributes();
+
+      // THEN
+      expect(attributes.length).toEqual(17);
+      expect(attributes).toContain('preferred_username');
+      expect(attributes).not.toContain('email_verified');
+      expect(attributes).not.toContain('phone_number_verified');
+    });
+
+    test('create AttributeSet with custom attributes only', () => {
+      // GIVEN
+      const customAttributes = ['custom:my_first', 'custom:my_second'];
+
+      // WHEN
+      const attributeSet = AttributeSet.from({}, customAttributes);
+      const attributes = attributeSet.attributes();
+
+      // EXPECT
+      expect(attributes.length).toEqual(2);
+      expect(attributes).toContain('custom:my_first');
+      expect(attributes).toContain('custom:my_second');
     });
   });
 });

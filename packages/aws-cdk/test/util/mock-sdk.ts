@@ -1,6 +1,25 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
 import { Account, ISDK, SDK, SdkProvider, ToolkitInfo } from '../../lib';
+import { CloudFormationStack } from '../../lib/api/util/cloudformation';
+
+const FAKE_CREDENTIALS = new AWS.Credentials({ accessKeyId: 'ACCESS', secretAccessKey: 'SECRET', sessionToken: 'TOKEN ' });
+
+const FAKE_CREDENTIAL_CHAIN = new AWS.CredentialProviderChain([
+  () => FAKE_CREDENTIALS,
+]);
+
+export interface MockSdkProviderOptions {
+  /**
+   * Whether the mock provider should produce a real SDK
+   *
+   * Some tests require a real SDK because they use `AWS-mock` to replace
+   * the underlying calls. Other tests do their work completely using jest-mocks.
+   *
+   * @default true
+   */
+  readonly realSdk?: boolean;
+}
 
 /**
  * An SDK that allows replacing (some of) the clients
@@ -11,15 +30,16 @@ import { Account, ISDK, SDK, SdkProvider, ToolkitInfo } from '../../lib';
 export class MockSdkProvider extends SdkProvider {
   private readonly sdk: ISDK;
 
-  constructor() {
-    super(new AWS.CredentialProviderChain([]), 'bermuda-triangle-1337', { customUserAgent: 'aws-cdk/jest' });
+  constructor(options: MockSdkProviderOptions = {}) {
+    super(FAKE_CREDENTIAL_CHAIN, 'bermuda-triangle-1337', { customUserAgent: 'aws-cdk/jest' });
 
     // SDK contains a real SDK, since some test use 'AWS-mock' to replace the underlying
     // AWS calls which a real SDK would do, and some tests use the 'stub' functionality below.
-    this.sdk = new SDK(
-      new AWS.Credentials({ accessKeyId: 'ACCESS', secretAccessKey: 'SECRET', sessionToken: 'TOKEN '}),
-      this.defaultRegion,
-      { customUserAgent: 'aws-cdk/jest' });
+    if (options.realSdk ?? true) {
+      this.sdk = new SDK(FAKE_CREDENTIALS, this.defaultRegion, { customUserAgent: 'aws-cdk/jest' });
+    } else {
+      this.sdk = new MockSdk();
+    }
   }
 
   public defaultAccount(): Promise<Account | undefined> {
@@ -57,6 +77,13 @@ export class MockSdkProvider extends SdkProvider {
   public stubSTS(stubs: SyncHandlerSubsetOf<AWS.STS>) {
     (this.sdk as any).sts = jest.fn().mockReturnValue(partialAwsService<AWS.STS>(stubs));
   }
+
+  /**
+   * Replace the ELBv2 client with the given object
+   */
+  public stubELBv2(stubs: SyncHandlerSubsetOf<AWS.ELBv2>) {
+    (this.sdk as any).elbv2 = jest.fn().mockReturnValue(partialAwsService<AWS.ELBv2>(stubs));
+  }
 }
 
 export class MockSdk implements ISDK {
@@ -67,6 +94,7 @@ export class MockSdk implements ISDK {
   public readonly s3 = jest.fn();
   public readonly route53 = jest.fn();
   public readonly ecr = jest.fn();
+  public readonly elbv2 = jest.fn();
 
   public currentAccount(): Promise<Account> {
     return Promise.resolve({ accountId: '123456789012', partition: 'aws' });
@@ -164,14 +192,23 @@ class FakeAWSResponse<T> {
   }
 }
 
-export function mockToolkitInfo() {
-  return new ToolkitInfo({
-    sdk: new MockSdk(),
-    bucketName: 'BUCKET_NAME',
-    bucketEndpoint: 'BUCKET_ENDPOINT',
-    environment: { name: 'env', account: '1234', region: 'abc' },
-    version: 1,
+export function mockBootstrapStack(sdk: ISDK | undefined, stack?: Partial<AWS.CloudFormation.Stack>) {
+  return CloudFormationStack.fromStaticInformation((sdk ?? new MockSdk()).cloudFormation(), 'CDKToolkit', {
+    CreationTime: new Date(),
+    StackName: 'CDKToolkit',
+    StackStatus: 'CREATE_COMPLETE',
+    Outputs: [
+      { OutputKey: 'BucketName', OutputValue: 'BUCKET_NAME' },
+      { OutputKey: 'BucketDomainName', OutputValue: 'BUCKET_ENDPOINT' },
+      { OutputKey: 'BootstrapVersion', OutputValue: '1' },
+    ],
+    ...stack,
   });
+}
+
+export function mockToolkitInfo(stack?: Partial<AWS.CloudFormation.Stack>) {
+  const sdk = new MockSdk();
+  return new ToolkitInfo(mockBootstrapStack(sdk, stack), sdk);
 }
 
 export function mockResolvedEnvironment(): cxapi.Environment {

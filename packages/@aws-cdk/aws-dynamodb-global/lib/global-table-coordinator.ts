@@ -1,8 +1,7 @@
-import * as cfn from '@aws-cdk/aws-cloudformation';
+import * as path from 'path';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
-import * as path from 'path';
 import { GlobalTableProps } from './aws-dynamodb-global';
 
 /**
@@ -23,8 +22,9 @@ export class GlobalTableCoordinator extends cdk.Stack {
 
     grantCreateGlobalTableLambda(lambdaFunction.role);
 
-    new cfn.CustomResource(this, 'CfnCustomResource', {
-      provider: cfn.CustomResourceProvider.lambda(lambdaFunction),
+    new cdk.CustomResource(this, 'CfnCustomResource', {
+      serviceToken: lambdaFunction.functionArn,
+      pascalCaseProperties: true,
       properties: {
         regions: props.regions,
         resourceType: 'Custom::DynamoGlobalTableCoordinator',

@@ -50,7 +50,7 @@ export function determineFullyQualifiedDomainName(providedName: string, hostedZo
     return providedName;
   }
 
-  const hostedZoneName =  hostedZone.zoneName.endsWith('.')
+  const hostedZoneName = hostedZone.zoneName.endsWith('.')
     ? hostedZone.zoneName.substring(0, hostedZone.zoneName.length - 1)
     : hostedZone.zoneName;
 

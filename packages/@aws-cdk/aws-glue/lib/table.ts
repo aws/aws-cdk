@@ -1,7 +1,8 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
-import { Construct, Fn, IResource, Resource, Stack } from '@aws-cdk/core';
+import { Fn, IResource, Resource, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { DataFormat } from './data-format';
 import { IDatabase } from './database';
 import { CfnTable } from './glue.generated';
@@ -87,7 +88,7 @@ export interface TableProps {
   /**
    * S3 prefix under which table objects are stored.
    *
-   * @default data/
+   * @default - No prefix. The data will be stored under the root of the bucket.
    */
   readonly s3Prefix?: string;
 
@@ -236,14 +237,14 @@ export class Table extends Resource implements ITable {
 
     this.database = props.database;
     this.dataFormat = props.dataFormat;
-    this.s3Prefix = (props.s3Prefix !== undefined && props.s3Prefix !== null) ? props.s3Prefix : 'data/';
+    this.s3Prefix = props.s3Prefix ?? '';
 
     validateSchema(props.columns, props.partitionKeys);
     this.columns = props.columns;
     this.partitionKeys = props.partitionKeys;
 
     this.compressed = props.compressed === undefined ? false : props.compressed;
-    const {bucket, encryption, encryptionKey} = createBucket(this, props);
+    const { bucket, encryption, encryptionKey } = createBucket(this, props);
     this.bucket = bucket;
     this.encryption = encryption;
     this.encryptionKey = encryptionKey;
@@ -260,6 +261,7 @@ export class Table extends Resource implements ITable {
         partitionKeys: renderColumns(props.partitionKeys),
 
         parameters: {
+          classification: props.dataFormat.classificationString?.value,
           has_encrypted_data: this.encryption !== TableEncryption.UNENCRYPTED,
         },
         storageDescriptor: {
@@ -295,7 +297,7 @@ export class Table extends Resource implements ITable {
   public grantRead(grantee: iam.IGrantable): iam.Grant {
     const ret = this.grant(grantee, readPermissions);
     if (this.encryptionKey && this.encryption === TableEncryption.CLIENT_SIDE_KMS) { this.encryptionKey.grantDecrypt(grantee); }
-    this.bucket.grantRead(grantee, this.s3Prefix);
+    this.bucket.grantRead(grantee, this.getS3PrefixForGrant());
     return ret;
   }
 
@@ -307,7 +309,7 @@ export class Table extends Resource implements ITable {
   public grantWrite(grantee: iam.IGrantable): iam.Grant {
     const ret = this.grant(grantee, writePermissions);
     if (this.encryptionKey && this.encryption === TableEncryption.CLIENT_SIDE_KMS) { this.encryptionKey.grantEncrypt(grantee); }
-    this.bucket.grantWrite(grantee, this.s3Prefix);
+    this.bucket.grantWrite(grantee, this.getS3PrefixForGrant());
     return ret;
   }
 
@@ -319,7 +321,7 @@ export class Table extends Resource implements ITable {
   public grantReadWrite(grantee: iam.IGrantable): iam.Grant {
     const ret = this.grant(grantee, [...readPermissions, ...writePermissions]);
     if (this.encryptionKey && this.encryption === TableEncryption.CLIENT_SIDE_KMS) { this.encryptionKey.grantEncryptDecrypt(grantee); }
-    this.bucket.grantReadWrite(grantee, this.s3Prefix);
+    this.bucket.grantReadWrite(grantee, this.getS3PrefixForGrant());
     return ret;
   }
 
@@ -329,6 +331,10 @@ export class Table extends Resource implements ITable {
       resourceArns: [this.tableArn],
       actions,
     });
+  }
+
+  private getS3PrefixForGrant() {
+    return this.s3Prefix + '*';
   }
 }
 
@@ -340,7 +346,7 @@ function validateSchema(columns: Column[], partitionKeys?: Column[]): void {
   const names = new Set<string>();
   (columns.concat(partitionKeys || [])).forEach(column => {
     if (names.has(column.name)) {
-      throw new Error('column names and partition keys must be unique, but \'p1\' is duplicated');
+      throw new Error(`column names and partition keys must be unique, but \'${column.name}\' is duplicated`);
     }
     names.add(column.name);
   });
@@ -400,6 +406,7 @@ const readPermissions = [
   'glue:GetPartitions',
   'glue:GetTable',
   'glue:GetTables',
+  'glue:GetTableVersion',
   'glue:GetTableVersions',
 ];
 

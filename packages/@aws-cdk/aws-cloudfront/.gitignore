@@ -13,3 +13,8 @@ nyc.config.js
 .LAST_PACKAGE
 *.snk
 !.eslintrc.js
+!jest.config.js
+
+!lib/experimental/edge-function/index.js
+
+junit.xml

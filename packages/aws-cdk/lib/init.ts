@@ -1,21 +1,20 @@
-import * as cxapi from '@aws-cdk/cx-api';
 import * as childProcess from 'child_process';
+import * as path from 'path';
+import * as cxapi from '@aws-cdk/cx-api';
 import * as colors from 'colors/safe';
 import * as fs from 'fs-extra';
-import * as path from 'path';
+import * as semver from 'semver';
 import { error, print, warning } from './logging';
 import { cdkHomeDir } from './util/directories';
+import { versionNumber } from './version';
 
 export type InvokeHook = (targetDirectory: string) => Promise<void>;
 
-// tslint:disable:no-var-requires those libraries don't have up-to-date @types modules
+/* eslint-disable @typescript-eslint/no-var-requires */ // Packages don't have @types module
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const camelCase = require('camelcase');
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const decamelize = require('decamelize');
-// tslint:enable:no-var-requires
-
-const TEMPLATES_DIR = path.join(__dirname, 'init-templates');
 
 /**
  * Initialize a CDK package in the current directory
@@ -28,7 +27,7 @@ export async function cliInit(type?: string, language?: string, canUseNetwork = 
 
   type = type || 'default'; // "default" is the default type (and maps to "app")
 
-  const template = (await availableInitTemplates).find(t => t.hasName(type!));
+  const template = (await availableInitTemplates()).find(t => t.hasName(type!));
   if (!template) {
     await printAvailableTemplates(language);
     throw new Error(`Unknown init template: ${type}`);
@@ -58,8 +57,8 @@ function pythonExecutable() {
 const INFO_DOT_JSON = 'info.json';
 
 export class InitTemplate {
-  public static async fromName(name: string) {
-    const basePath = path.join(TEMPLATES_DIR, name);
+  public static async fromName(templatesDir: string, name: string) {
+    const basePath = path.join(templatesDir, name);
     const languages = (await listDirectory(basePath)).filter(f => f !== INFO_DOT_JSON);
     const info = await fs.readJson(path.join(basePath, INFO_DOT_JSON));
     return new InitTemplate(basePath, name, languages, info);
@@ -195,18 +194,33 @@ interface ProjectInfo {
   readonly name: string;
 }
 
-export const availableInitTemplates: Promise<InitTemplate[]> =
-  new Promise(async resolve => {
-    const templateNames = await listDirectory(TEMPLATES_DIR);
+function versionedTemplatesDir(): Promise<string> {
+  return new Promise(async resolve => {
+    let currentVersion = versionNumber();
+    // If the CLI is invoked from source (i.e., developement), rather than from a packaged distribution,
+    // the version number will be '0.0.0'. We will (currently) default to the v1 templates in this case.
+    if (currentVersion === '0.0.0') {
+      currentVersion = '1.0.0';
+    }
+    const majorVersion = semver.major(currentVersion);
+    resolve(path.join(__dirname, 'init-templates', `v${majorVersion}`));
+  });
+}
+
+export async function availableInitTemplates(): Promise<InitTemplate[]> {
+  return new Promise(async resolve => {
+    const templatesDir = await versionedTemplatesDir();
+    const templateNames = await listDirectory(templatesDir);
     const templates = new Array<InitTemplate>();
     for (const templateName of templateNames) {
-      templates.push(await InitTemplate.fromName(templateName));
+      templates.push(await InitTemplate.fromName(templatesDir, templateName));
     }
     resolve(templates);
   });
-export const availableInitLanguages: Promise<string[]> =
-  new Promise(async resolve => {
-    const templates = await availableInitTemplates;
+}
+export async function availableInitLanguages(): Promise<string[]> {
+  return new Promise(async resolve => {
+    const templates = await availableInitTemplates();
     const result = new Set<string>();
     for (const template of templates) {
       for (const language of template.languages) {
@@ -215,6 +229,8 @@ export const availableInitLanguages: Promise<string[]> =
     }
     resolve([...result]);
   });
+}
+
 /**
  * @param dirPath is the directory to be listed.
  * @returns the list of file or directory names contained in ``dirPath``, excluding any dot-file, and sorted.
@@ -227,7 +243,7 @@ async function listDirectory(dirPath: string) {
 
 export async function printAvailableTemplates(language?: string) {
   print('Available templates:');
-  for (const template of await availableInitTemplates) {
+  for (const template of await availableInitTemplates()) {
     if (language && template.languages.indexOf(language) === -1) { continue; }
     print(`* ${colors.green(template.name)}: ${template.description}`);
     const languageArg = language ? colors.bold(language)
@@ -241,15 +257,16 @@ async function initializeProject(template: InitTemplate, language: string, canUs
   await assertIsEmptyDirectory(workDir);
   print(`Applying project template ${colors.green(template.name)} for ${colors.blue(language)}`);
   await template.install(language, workDir);
+  if (await fs.pathExists('README.md')) {
+    print(colors.green(await fs.readFile('README.md', { encoding: 'utf-8' })));
+  }
+
   if (!generateOnly) {
     await initializeGitRepository(workDir);
     await postInstall(language, canUseNetwork, workDir);
   }
-  if (await fs.pathExists('README.md')) {
-    print(colors.green(await fs.readFile('README.md', { encoding: 'utf-8' })));
-  } else {
-    print('✅ All done!');
-  }
+
+  print('✅ All done!');
 }
 
 async function assertIsEmptyDirectory(workDir: string) {
@@ -274,13 +291,13 @@ async function initializeGitRepository(workDir: string) {
 async function postInstall(language: string, canUseNetwork: boolean, workDir: string) {
   switch (language) {
     case 'javascript':
-      return await postInstallJavascript(canUseNetwork, workDir);
+      return postInstallJavascript(canUseNetwork, workDir);
     case 'typescript':
-      return await postInstallTypescript(canUseNetwork, workDir);
+      return postInstallTypescript(canUseNetwork, workDir);
     case 'java':
-      return await postInstallJava(canUseNetwork, workDir);
+      return postInstallJava(canUseNetwork, workDir);
     case 'python':
-      return await postInstallPython(workDir);
+      return postInstallPython(workDir);
   }
 }
 
@@ -292,7 +309,7 @@ async function postInstallTypescript(canUseNetwork: boolean, cwd: string) {
   const command = 'npm';
 
   if (!canUseNetwork) {
-    print(`Please run ${colors.green(`${command} install`)}!`);
+    warning(`Please run '${command} install'!`);
     return;
   }
 
@@ -300,28 +317,36 @@ async function postInstallTypescript(canUseNetwork: boolean, cwd: string) {
   try {
     await execute(command, ['install'], { cwd });
   } catch (e) {
-    throw new Error(`${colors.green(`${command} install`)} failed: ` + e.message);
+    warning(`${command} install failed: ` + e.message);
   }
 }
 
 async function postInstallJava(canUseNetwork: boolean, cwd: string) {
+  const mvnPackageWarning = 'Please run \'mvn package\'!';
   if (!canUseNetwork) {
-    print(`Please run ${colors.green('mvn package')}!`);
+    warning(mvnPackageWarning);
     return;
   }
 
-  print(`Executing ${colors.green('mvn package')}...`);
-  await execute('mvn', ['package'], { cwd });
+  print('Executing \'mvn package\'');
+  try {
+    await execute('mvn', ['package'], { cwd });
+  } catch (e) {
+    warning('Unable to package compiled code as JAR');
+    warning(mvnPackageWarning);
+  }
+
 }
 
 async function postInstallPython(cwd: string) {
   const python = pythonExecutable();
+  warning(`Please run '${python} -m venv .venv'!`);
   print(`Executing ${colors.green('Creating virtualenv...')}`);
   try {
-    await execute(python, ['-m venv', '.env'], { cwd });
+    await execute(python, ['-m venv', '.venv'], { cwd });
   } catch (e) {
-    print('Unable to create virtualenv automatically');
-    print(`Please run ${colors.green(python + ' -m venv .env')}!`);
+    warning('Unable to create virtualenv automatically');
+    warning(`Please run '${python} -m venv .venv'!`);
   }
 }
 
@@ -354,7 +379,7 @@ function isRoot(dir: string) {
  * @returns STDOUT (if successful).
  */
 async function execute(cmd: string, args: string[], { cwd }: { cwd: string }) {
-  const child = childProcess.spawn(cmd, args, { cwd, shell: true, stdio: [ 'ignore', 'pipe', 'inherit' ] });
+  const child = childProcess.spawn(cmd, args, { cwd, shell: true, stdio: ['ignore', 'pipe', 'inherit'] });
   let stdout = '';
   child.stdout.on('data', chunk => stdout += chunk.toString());
   return new Promise<string>((ok, fail) => {

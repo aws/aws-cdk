@@ -1,7 +1,12 @@
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct, Resource } from '@aws-cdk/core';
+import { Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { ILogGroup, SubscriptionFilterOptions } from './log-group';
 import { CfnSubscriptionFilter } from './logs.generated';
+
+// v2 - keep this section separate to reduce merge conflicts when merging forwrad into v2 branch
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Interface for classes that can be the destination of a log Subscription
@@ -17,7 +22,7 @@ export interface ILogSubscriptionDestination {
    * The destination may reconfigure its own permissions in response to this
    * function call.
    */
-  bind(scope: Construct, sourceLogGroup: ILogGroup): LogSubscriptionDestinationConfig;
+  bind(scope: CoreConstruct, sourceLogGroup: ILogGroup): LogSubscriptionDestinationConfig;
 }
 
 /**

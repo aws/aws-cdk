@@ -1,6 +1,8 @@
 import * as cdk from '@aws-cdk/core';
-import { AccountPrincipal, AccountRootPrincipal, Anyone, ArnPrincipal, CanonicalUserPrincipal,
-  FederatedPrincipal, IPrincipal, PrincipalBase, PrincipalPolicyFragment, ServicePrincipal, ServicePrincipalOpts } from './principals';
+import {
+  AccountPrincipal, AccountRootPrincipal, Anyone, ArnPrincipal, CanonicalUserPrincipal,
+  FederatedPrincipal, IPrincipal, PrincipalBase, PrincipalPolicyFragment, ServicePrincipal, ServicePrincipalOpts,
+} from './principals';
 import { mergePrincipal } from './util';
 
 const ensureArrayOrUndefined = (field: any) => {
@@ -35,8 +37,8 @@ export class PolicyStatement {
       effect: obj.Effect,
       notActions: ensureArrayOrUndefined(obj.NotAction),
       notResources: ensureArrayOrUndefined(obj.NotResource),
-      principals: obj.Principal ? [ new JsonPrincipal(obj.Principal) ] : undefined,
-      notPrincipals: obj.NotPrincipal ? [ new JsonPrincipal(obj.NotPrincipal) ] : undefined,
+      principals: obj.Principal ? [new JsonPrincipal(obj.Principal)] : undefined,
+      notPrincipals: obj.NotPrincipal ? [new JsonPrincipal(obj.NotPrincipal)] : undefined,
     });
   }
 
@@ -56,6 +58,7 @@ export class PolicyStatement {
   private readonly resource = new Array<any>();
   private readonly notResource = new Array<any>();
   private readonly condition: { [key: string]: any } = { };
+  private principalConditionsJson?: string;
 
   constructor(props: PolicyStatementProps = {}) {
     // Validate actions
@@ -137,7 +140,7 @@ export class PolicyStatement {
     for (const principal of principals) {
       const fragment = principal.policyFragment;
       mergePrincipal(this.principal, fragment.principalJson);
-      this.addConditions(fragment.conditions);
+      this.addPrincipalConditions(fragment.conditions);
     }
   }
 
@@ -156,7 +159,7 @@ export class PolicyStatement {
     for (const notPrincipal of notPrincipals) {
       const fragment = notPrincipal.policyFragment;
       mergePrincipal(this.notPrincipal, fragment.principalJson);
-      this.addConditions(fragment.conditions);
+      this.addPrincipalConditions(fragment.conditions);
     }
   }
 
@@ -379,6 +382,69 @@ export class PolicyStatement {
    */
   public toJSON() {
     return this.toStatementJson();
+  }
+
+  /**
+   * Add a principal's conditions
+   *
+   * For convenience, principals have been modeled as both a principal
+   * and a set of conditions. This makes it possible to have a single
+   * object represent e.g. an "SNS Topic" (SNS service principal + aws:SourcArn
+   * condition) or an Organization member (* + aws:OrgId condition).
+   *
+   * However, when using multiple principals in the same policy statement,
+   * they must all have the same conditions or the OR samentics
+   * implied by a list of principals cannot be guaranteed (user needs to
+   * add multiple statements in that case).
+   */
+  private addPrincipalConditions(conditions: Conditions) {
+    // Stringifying the conditions is an easy way to do deep equality
+    const theseConditions = JSON.stringify(conditions);
+    if (this.principalConditionsJson === undefined) {
+      // First principal, anything goes
+      this.principalConditionsJson = theseConditions;
+    } else {
+      if (this.principalConditionsJson !== theseConditions) {
+        throw new Error(`All principals in a PolicyStatement must have the same Conditions (got '${this.principalConditionsJson}' and '${theseConditions}'). Use multiple statements instead.`);
+      }
+    }
+    this.addConditions(conditions);
+  }
+
+  /**
+   * Validate that the policy statement satisfies base requirements for a policy.
+   */
+  public validateForAnyPolicy(): string[] {
+    const errors = new Array<string>();
+    if (this.action.length === 0 && this.notAction.length === 0) {
+      errors.push('A PolicyStatement must specify at least one \'action\' or \'notAction\'.');
+    }
+    return errors;
+  }
+
+  /**
+   * Validate that the policy statement satisfies all requirements for a resource-based policy.
+   */
+  public validateForResourcePolicy(): string[] {
+    const errors = this.validateForAnyPolicy();
+    if (Object.keys(this.principal).length === 0 && Object.keys(this.notPrincipal).length === 0) {
+      errors.push('A PolicyStatement used in a resource-based policy must specify at least one IAM principal.');
+    }
+    return errors;
+  }
+
+  /**
+   * Validate that the policy statement satisfies all requirements for an identity-based policy.
+   */
+  public validateForIdentityPolicy(): string[] {
+    const errors = this.validateForAnyPolicy();
+    if (Object.keys(this.principal).length > 0 || Object.keys(this.notPrincipal).length > 0) {
+      errors.push('A PolicyStatement used in an identity-based policy cannot specify any IAM principals.');
+    }
+    if (Object.keys(this.resource).length === 0 && Object.keys(this.notResource).length === 0) {
+      errors.push('A PolicyStatement used in an identity-based policy must specify at least one resource.');
+    }
+    return errors;
   }
 }
 

@@ -7,7 +7,7 @@ import { Aws, Lazy, SecretValue, Stack, Token } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as cpactions from '../../lib';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
   'Lambda invoke Action': {
@@ -39,7 +39,7 @@ export = {
     'properly resolves any Tokens passed in userParameters'(test: Test) {
       const stack = stackIncludingLambdaInvokeCodePipeline({
         userParams: {
-          key: Lazy.stringValue({ produce: () => Aws.REGION }),
+          key: Lazy.string({ produce: () => Aws.REGION }),
         },
       });
 

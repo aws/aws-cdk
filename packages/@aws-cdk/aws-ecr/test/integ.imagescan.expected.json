@@ -2,8 +2,13 @@
   "Resources": {
     "Repo02AC86CF": {
       "Type": "AWS::ECR::Repository",
-      "UpdateReplacePolicy": "Retain",
-      "DeletionPolicy": "Retain"
+      "Properties": {
+        "ImageScanningConfiguration": {
+          "scanOnPush": true
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "RepoImageScanComplete7BC71935": {
       "Type": "AWS::Events::Rule",

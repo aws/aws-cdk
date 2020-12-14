@@ -1,7 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sns from '@aws-cdk/aws-sns';
-import { Construct, Stack } from '@aws-cdk/core';
+import { Construct, Names, Stack } from '@aws-cdk/core';
 import { SubscriptionProps } from './subscription';
 
 /**
@@ -17,6 +17,9 @@ export class LambdaSubscription implements sns.ITopicSubscription {
   constructor(private readonly fn: lambda.IFunction, private readonly props: LambdaSubscriptionProps = {}) {
   }
 
+  /**
+   * Returns a configuration for a Lambda function to subscribe to an SNS topic
+   */
   public bind(topic: sns.ITopic): sns.TopicSubscriptionConfig {
     // Create subscription under *consuming* construct to make sure it ends up
     // in the correct stack in cases of cross-stack subscriptions.
@@ -24,7 +27,7 @@ export class LambdaSubscription implements sns.ITopicSubscription {
       throw new Error('The supplied lambda Function object must be an instance of Construct');
     }
 
-    this.fn.addPermission(`AllowInvoke:${topic.node.uniqueId}`, {
+    this.fn.addPermission(`AllowInvoke:${Names.nodeUniqueId(topic.node)}`, {
       sourceArn: topic.topicArn,
       principal: new iam.ServicePrincipal('sns.amazonaws.com'),
     });
@@ -36,6 +39,7 @@ export class LambdaSubscription implements sns.ITopicSubscription {
       protocol: sns.SubscriptionProtocol.LAMBDA,
       filterPolicy: this.props.filterPolicy,
       region: this.regionFromArn(topic),
+      deadLetterQueue: this.props.deadLetterQueue,
     };
   }
 

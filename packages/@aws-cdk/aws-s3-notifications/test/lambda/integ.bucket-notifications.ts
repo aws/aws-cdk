@@ -26,7 +26,7 @@ bucketB.addEventNotification(s3.EventType.OBJECT_REMOVED, new s3n.LambdaDestinat
 
 app.synth();
 
-// tslint:disable:no-console
+/* eslint-disable no-console */
 function handler(event: any, _context: any, callback: any) {
   console.log(JSON.stringify(event, undefined, 2));
   return callback(null, event);

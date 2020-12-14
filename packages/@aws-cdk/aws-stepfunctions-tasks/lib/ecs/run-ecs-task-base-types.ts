@@ -1,3 +1,5 @@
+import { ContainerDefinition } from '@aws-cdk/aws-ecs';
+
 /**
  * A list of container overrides that specify the name of a container
  * and the overrides it should receive.
@@ -6,7 +8,7 @@ export interface ContainerOverride {
   /**
    * Name of the container inside the task definition
    */
-  readonly containerName: string;
+  readonly containerDefinition: ContainerDefinition;
 
   /**
    * Command to run inside the container

@@ -1,110 +1,136 @@
+import { Token } from '@aws-cdk/core';
+
 /**
- * The set of standard attributes that can be marked as required.
+ * The set of standard attributes that can be marked as required or mutable.
  *
  * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html#cognito-user-pools-standard-attributes
  */
-export interface RequiredAttributes {
+export interface StandardAttributes {
   /**
-   * Whether the user's postal address is a required attribute.
-   * @default false
+   * The user's postal address.
+   * @default - see the defaults under `StandardAttribute`
    */
-  readonly address?: boolean;
+  readonly address?: StandardAttribute;
 
   /**
-   * Whether the user's birthday, represented as an ISO 8601:2004 format, is a required attribute.
-   * @default false
+   * The user's birthday, represented as an ISO 8601:2004 format.
+   * @default - see the defaults under `StandardAttribute`
    */
-  readonly birthdate?: boolean;
+  readonly birthdate?: StandardAttribute;
 
   /**
-   * Whether theb user's e-mail address, represented as an RFC 5322 [RFC5322] addr-spec, is a required attribute.
-   * @default false
+   * The user's e-mail address, represented as an RFC 5322 [RFC5322] addr-spec.
+   * @default - see the defaults under `StandardAttribute`
    */
-  readonly email?: boolean;
+  readonly email?: StandardAttribute;
 
   /**
-   * Whether the surname or last name of the user is a required attribute.
-   * @default false
+   * The surname or last name of the user.
+   * @default - see the defaults under `StandardAttribute`
    */
-  readonly familyName?: boolean;
+  readonly familyName?: StandardAttribute;
 
   /**
-   * Whether the user's gender is a required attribute.
-   * @default false
+   * The user's gender.
+   * @default - see the defaults under `StandardAttribute`
    */
-  readonly gender?: boolean;
+  readonly gender?: StandardAttribute;
 
   /**
-   * Whether the user's first name or give name is a required attribute.
-   * @default false
+   * The user's first name or give name.
+   * @default - see the defaults under `StandardAttribute`
    */
-  readonly givenName?: boolean;
+  readonly givenName?: StandardAttribute;
 
   /**
-   * Whether the user's locale, represented as a BCP47 [RFC5646] language tag, is a required attribute.
-   * @default false
+   * The user's locale, represented as a BCP47 [RFC5646] language tag.
+   * @default - see the defaults under `StandardAttribute`
    */
-  readonly locale?: boolean;
+  readonly locale?: StandardAttribute;
 
   /**
-   * Whether the user's middle name is a required attribute.
-   * @default false
+   * The user's middle name.
+   * @default - see the defaults under `StandardAttribute`
    */
-  readonly middleName?: boolean;
+  readonly middleName?: StandardAttribute;
 
   /**
-   * Whether user's full name in displayable form, including all name parts, titles and suffixes, is a required attibute.
-   * @default false
+   * The user's full name in displayable form, including all name parts, titles and suffixes.
+   * @default - see the defaults under `StandardAttribute`
    */
-  readonly fullname?: boolean;
+  readonly fullname?: StandardAttribute;
 
   /**
-   * Whether the user's nickname or casual name is a required attribute.
-   * @default false
+   * The user's nickname or casual name.
+   * @default - see the defaults under `StandardAttribute`
    */
-  readonly nickname?: boolean;
+  readonly nickname?: StandardAttribute;
 
   /**
-   * Whether the user's telephone number is a required attribute.
-   * @default false
+   * The user's telephone number.
+   * @default - see the defaults under `StandardAttribute`
    */
-  readonly phoneNumber?: boolean;
+  readonly phoneNumber?: StandardAttribute;
 
   /**
-   * Whether the URL to the user's profile picture is a required attribute.
-   * @default false
+   * The URL to the user's profile picture.
+   * @default - see the defaults under `StandardAttribute`
    */
-  readonly profilePicture?: boolean;
+  readonly profilePicture?: StandardAttribute;
 
   /**
-   * Whether the user's preffered username, different from the immutable user name, is a required attribute.
-   * @default false
+   * The user's preffered username, different from the immutable user name.
+   * @default - see the defaults under `StandardAttribute`
    */
-  readonly preferredUsername?: boolean;
+  readonly preferredUsername?: StandardAttribute;
 
   /**
-   * Whether the URL to the user's profile page is a required attribute.
-   * @default false
+   * The URL to the user's profile page.
+   * @default - see the defaults under `StandardAttribute`
    */
-  readonly profilePage?: boolean;
+  readonly profilePage?: StandardAttribute;
 
   /**
-   * Whether the user's time zone is a required attribute.
-   * @default false
+   * The user's time zone.
+   * @default - see the defaults under `StandardAttribute`
    */
-  readonly timezone?: boolean;
+  readonly timezone?: StandardAttribute;
 
   /**
-   * Whether the time, the user's information was last updated, is a required attribute.
-   * @default false
+   * The time, the user's information was last updated.
+   * @default - see the defaults under `StandardAttribute`
    */
-  readonly lastUpdateTime?: boolean;
+  readonly lastUpdateTime?: StandardAttribute;
 
   /**
-   * Whether the URL to the user's web page or blog is a required attribute.
+   * The URL to the user's web page or blog.
+   * @default - see the defaults under `StandardAttribute`
+   */
+  readonly website?: StandardAttribute;
+}
+
+/**
+ * Standard attribute that can be marked as required or mutable.
+ *
+ * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html#cognito-user-pools-standard-attributes
+ */
+export interface StandardAttribute {
+  /**
+   * Specifies whether the value of the attribute can be changed.
+   * For any user pool attribute that's mapped to an identity provider attribute, this must be set to `true`.
+   * Amazon Cognito updates mapped attributes when users sign in to your application through an identity provider.
+   * If an attribute is immutable, Amazon Cognito throws an error when it attempts to update the attribute.
+   *
+   * @default true
+   */
+  readonly mutable?: boolean;
+  /**
+   * Specifies whether the attribute is required upon user registration.
+   * If the attribute is required and the user does not provide a value, registration or sign-in will fail.
+   *
    * @default false
    */
-  readonly website?: boolean;
+  readonly required?: boolean;
 }
 
 /**
@@ -121,14 +147,12 @@ export interface ICustomAttribute {
  * Configuration that will be fed into CloudFormation for any custom attribute type.
  */
 export interface CustomAttributeConfig {
-  // tslint:disable:max-line-length
   /**
    * The data type of the custom attribute.
    *
    * @see https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_SchemaAttributeType.html#CognitoUserPools-Type-SchemaAttributeType-AttributeDataType
    */
   readonly dataType: string;
-  // tslint:enable:max-line-length
 
   /**
    * The constraints for a custom attribute of 'String' data type.
@@ -150,7 +174,7 @@ export interface CustomAttributeConfig {
    *
    * @default false
    */
-  readonly mutable?: boolean
+  readonly mutable?: boolean;
 }
 
 /**
@@ -200,10 +224,10 @@ export class StringAttribute implements ICustomAttribute {
   private readonly mutable?: boolean;
 
   constructor(props: StringAttributeProps = {}) {
-    if (props.minLen && props.minLen < 0) {
+    if (props.minLen && !Token.isUnresolved(props.minLen) && props.minLen < 0) {
       throw new Error(`minLen cannot be less than 0 (value: ${props.minLen}).`);
     }
-    if (props.maxLen && props.maxLen > 2048) {
+    if (props.maxLen && !Token.isUnresolved(props.maxLen) && props.maxLen > 2048) {
       throw new Error(`maxLen cannot be greater than 2048 (value: ${props.maxLen}).`);
     }
     this.minLen = props?.minLen;
@@ -315,5 +339,252 @@ export class DateTimeAttribute implements ICustomAttribute {
       dataType: 'DateTime',
       mutable: this.mutable,
     };
+  }
+}
+
+/**
+ * This interface contains all standard attributes recognized by Cognito
+ * from https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html
+ * including `preferred_email` and `preferred_phone_number`
+ */
+export interface StandardAttributesMask {
+  /**
+   * The user's postal address.
+   * @default false
+   */
+  readonly address?: boolean;
+
+  /**
+   * The user's birthday, represented as an ISO 8601:2004 format.
+   * @default false
+   */
+  readonly birthdate?: boolean;
+
+  /**
+   * The user's e-mail address, represented as an RFC 5322 [RFC5322] addr-spec.
+   * @default false
+   */
+  readonly email?: boolean;
+
+  /**
+   * The surname or last name of the user.
+   * @default false
+   */
+  readonly familyName?: boolean;
+
+  /**
+   * The user's gender.
+   * @default false
+   */
+  readonly gender?: boolean;
+
+  /**
+   * The user's first name or give name.
+   * @default false
+   */
+  readonly givenName?: boolean;
+
+  /**
+   * The user's locale, represented as a BCP47 [RFC5646] language tag.
+   * @default false
+   */
+  readonly locale?: boolean;
+
+  /**
+   * The user's middle name.
+   * @default false
+   */
+  readonly middleName?: boolean;
+
+  /**
+   * The user's full name in displayable form, including all name parts, titles and suffixes.
+   * @default false
+   */
+  readonly fullname?: boolean;
+
+  /**
+   * The user's nickname or casual name.
+   * @default false
+   */
+  readonly nickname?: boolean;
+
+  /**
+   * The user's telephone number.
+   * @default false
+   */
+  readonly phoneNumber?: boolean;
+
+  /**
+   * The URL to the user's profile picture.
+   * @default false
+   */
+  readonly profilePicture?: boolean;
+
+  /**
+   * The user's preffered username, different from the immutable user name.
+   * @default false
+   */
+  readonly preferredUsername?: boolean;
+
+  /**
+   * The URL to the user's profile page.
+   * @default false
+   */
+  readonly profilePage?: boolean;
+
+  /**
+   * The user's time zone.
+   * @default false
+   */
+  readonly timezone?: boolean;
+
+  /**
+   * The time, the user's information was last updated.
+   * @default false
+   */
+  readonly lastUpdateTime?: boolean;
+
+  /**
+   * Whether the email address has been verified.
+   * @default false
+   */
+  readonly emailVerified?: boolean;
+
+  /**
+   * Whether the phone number has been verified.
+   * @default false
+   */
+  readonly phoneNumberVerified?: boolean;
+
+  /**
+   * The URL to the user's web page or blog.
+   * @default false
+   */
+  readonly website?: boolean;
+}
+
+
+/**
+ * A set of attributes, useful to set Read and Write attributes
+ */
+export class AttributeSet {
+
+  /**
+   * Creates a custom AttributeSet with the specified attributes
+   * @param standard a mask with the standard attributes to include in the set
+   * @param custom a list of custom attributes to add to the set
+   */
+  public static from(standard: StandardAttributesMask, custom?: string[]): AttributeSet {
+    const aux = new Set(custom);
+    if (standard.address === true) { aux.add('address'); }
+    if (standard.birthdate === true) { aux.add('birthdate'); }
+    if (standard.email === true) { aux.add('email'); }
+    if (standard.familyName === true) { aux.add('family_name'); }
+    if (standard.fullname === true) { aux.add('name'); }
+    if (standard.gender === true) { aux.add('gender'); }
+    if (standard.givenName === true) { aux.add('given_name'); }
+    if (standard.lastUpdateTime === true) { aux.add('updated_at'); }
+    if (standard.locale === true) { aux.add('locale'); }
+    if (standard.middleName === true) { aux.add('middle_name'); }
+    if (standard.nickname === true) { aux.add('nickname'); }
+    if (standard.phoneNumber === true) { aux.add('phone_number'); }
+    if (standard.preferredUsername === true) { aux.add('preferred_username'); }
+    if (standard.profilePage === true) { aux.add('profile'); }
+    if (standard.profilePicture === true) { aux.add('picture'); }
+    if (standard.timezone === true) { aux.add('zoneinfo'); }
+    if (standard.emailVerified === true) { aux.add('email_verified'); }
+    if (standard.phoneNumberVerified === true) { aux.add('phone_number_verified'); }
+    if (standard.website === true) { aux.add('website'); }
+    return new AttributeSet(aux);
+  }
+
+  /**
+   * Creates an empty AttributeSet
+   */
+  public static empty(): AttributeSet {
+    return new AttributeSet(new Set());
+  }
+
+  /**
+   * Creates an attributes set with all default Cognito Attributes
+   * from https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html
+   *
+   * @note there are some attributes (i.e. `verified_email` and `verified_phone_number`)
+   * that should be kept readonly by most clients. @see `AttributeSet.profileWritable`
+   * @param custom a list of custom attributes to add to the set
+   */
+  public static allStandard(custom?: string[]): AttributeSet {
+    let standardAttributes: StandardAttributesMask = {
+      address: true,
+      birthdate: true,
+      email: true,
+      familyName: true,
+      fullname: true,
+      gender: true,
+      givenName: true,
+      lastUpdateTime: true,
+      locale: true,
+      middleName: true,
+      nickname: true,
+      phoneNumber: true,
+      preferredUsername: true,
+      profilePage: true,
+      profilePicture: true,
+      timezone: true,
+      emailVerified: true,
+      phoneNumberVerified: true,
+      website: true,
+    };
+    return AttributeSet.from(standardAttributes, custom);
+  }
+
+  /**
+   * Creates an attributes set with all Cognito Attributes except verified_email and verified_phone_number
+   * from https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html
+   *
+   * @note there are some attributes (i.e. `verified_email` and `verified_phone_number`)
+   * that should be kept readonly by most clients.
+   * @param custom a list of custom attributes to add to the set
+   */
+  public static profileWritable(custom?: string[]): AttributeSet {
+    let standardAttributes: StandardAttributesMask = {
+      address: true,
+      birthdate: true,
+      email: true,
+      familyName: true,
+      fullname: true,
+      gender: true,
+      givenName: true,
+      lastUpdateTime: true,
+      locale: true,
+      middleName: true,
+      nickname: true,
+      phoneNumber: true,
+      preferredUsername: true,
+      profilePage: true,
+      profilePicture: true,
+      timezone: true,
+      emailVerified: false,
+      phoneNumberVerified: false,
+      website: true,
+    };
+    return AttributeSet.from(standardAttributes, custom);
+  }
+
+  /**
+   * The set of attributes
+   */
+  private readonly attributeSet: Set<string> = new Set<string>();
+
+  private constructor(attributeSet: Set<string>) {
+    this.attributeSet = attributeSet;
+  }
+
+  /**
+   * The list of attributes represented by this AttributeSet
+   */
+  public attributes(): string[] {
+    // sorting is unnecessary but it simplify testing
+    return Array.from(this.attributeSet).sort();
   }
 }

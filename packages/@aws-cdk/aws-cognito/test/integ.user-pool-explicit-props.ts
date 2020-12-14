@@ -26,9 +26,14 @@ const userpool = new UserPool(stack, 'myuserpool', {
     email: true,
     phone: true,
   },
-  requiredAttributes: {
-    fullname: true,
-    email: true,
+  standardAttributes: {
+    fullname: {
+      required: true,
+      mutable: true,
+    },
+    email: {
+      required: true,
+    },
   },
   customAttributes: {
     'some-string-attr': new StringAttribute(),
@@ -38,7 +43,7 @@ const userpool = new UserPool(stack, 'myuserpool', {
     'some-boolean-attr': new BooleanAttribute(),
     'some-datetime-attr': new DateTimeAttribute(),
   },
-  mfa: Mfa.REQUIRED,
+  mfa: Mfa.OFF,
   mfaSecondFactor: {
     sms: true,
     otp: true,
@@ -50,10 +55,6 @@ const userpool = new UserPool(stack, 'myuserpool', {
     requireLowercase: true,
     requireUppercase: true,
     requireSymbols: true,
-  },
-  emailSettings: {
-    from: 'noreply@myawesomeapp.com',
-    replyTo: 'support@myawesomeapp.com',
   },
   lambdaTriggers: {
     createAuthChallenge: dummyTrigger('createAuthChallenge'),

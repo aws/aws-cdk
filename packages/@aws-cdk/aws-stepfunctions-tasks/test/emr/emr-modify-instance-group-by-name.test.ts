@@ -1,3 +1,4 @@
+import '@aws-cdk/assert/jest';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
 import * as tasks from '../../lib';
@@ -11,29 +12,27 @@ beforeEach(() => {
 
 test('Modify an InstanceGroup with static ClusterId, InstanceGroupName, and InstanceGroup', () => {
   // WHEN
-  const task = new sfn.Task(stack, 'Task', {
-    task: new tasks.EmrModifyInstanceGroupByName({
-      clusterId: 'ClusterId',
-      instanceGroupName: 'InstanceGroupName',
-      instanceGroup: {
-        configurations: [{
-          classification: 'Classification',
-          properties: {
-            Key: 'Value',
-          },
-        }],
-        eC2InstanceIdsToTerminate: ['InstanceToTerminate'],
-        instanceCount: 1,
-        shrinkPolicy: {
-          decommissionTimeout: cdk.Duration.seconds(1),
-          instanceResizePolicy: {
-            instanceTerminationTimeout: cdk.Duration.seconds(1),
-            instancesToProtect: ['InstanceToProtect'],
-            instancesToTerminate: ['InstanceToTerminate'],
-          },
+  const task = new tasks.EmrModifyInstanceGroupByName(stack, 'Task', {
+    clusterId: 'ClusterId',
+    instanceGroupName: 'InstanceGroupName',
+    instanceGroup: {
+      configurations: [{
+        classification: 'Classification',
+        properties: {
+          Key: 'Value',
+        },
+      }],
+      eC2InstanceIdsToTerminate: ['InstanceToTerminate'],
+      instanceCount: 1,
+      shrinkPolicy: {
+        decommissionTimeout: cdk.Duration.seconds(1),
+        instanceResizePolicy: {
+          instanceTerminationTimeout: cdk.Duration.seconds(1),
+          instancesToProtect: ['InstanceToProtect'],
+          instancesToTerminate: ['InstanceToTerminate'],
         },
       },
-    }),
+    },
   });
 
   // THEN
@@ -77,16 +76,68 @@ test('Modify an InstanceGroup with static ClusterId, InstanceGroupName, and Inst
   });
 });
 
+test('task policies are generated', () => {
+  // WHEN
+  const task = new tasks.EmrModifyInstanceGroupByName(stack, 'Task', {
+    clusterId: 'ClusterId',
+    instanceGroupName: 'InstanceGroupName',
+    instanceGroup: {
+      configurations: [{
+        classification: 'Classification',
+        properties: {
+          Key: 'Value',
+        },
+      }],
+    },
+  });
+  new sfn.StateMachine(stack, 'SM', {
+    definition: task,
+  });
+
+  // THEN
+  expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: [
+            'elasticmapreduce:ModifyInstanceGroups',
+            'elasticmapreduce:ListInstanceGroups',
+          ],
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':elasticmapreduce:',
+                {
+                  Ref: 'AWS::Region',
+                },
+                ':',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':cluster/*',
+              ],
+            ],
+          },
+        },
+      ],
+    },
+  });
+});
+
 test('Modify an InstanceGroup with ClusterId from payload and static InstanceGroupName and InstanceGroupConfiguration', () => {
   // WHEN
-  const task = new sfn.Task(stack, 'Task', {
-    task: new tasks.EmrModifyInstanceGroupByName({
-      clusterId: sfn.Data.stringAt('$.ClusterId'),
-      instanceGroupName: 'InstanceGroupName',
-      instanceGroup: {
-        instanceCount: 1,
-      },
-    }),
+  const task = new tasks.EmrModifyInstanceGroupByName(stack, 'Task', {
+    clusterId: sfn.JsonPath.stringAt('$.ClusterId'),
+    instanceGroupName: 'InstanceGroupName',
+    instanceGroup: {
+      instanceCount: 1,
+    },
   });
 
   // THEN
@@ -117,14 +168,12 @@ test('Modify an InstanceGroup with ClusterId from payload and static InstanceGro
 
 test('Modify an InstanceGroup with static ClusterId and InstanceGroupConfigurateion and InstanceGroupName from payload', () => {
   // WHEN
-  const task = new sfn.Task(stack, 'Task', {
-    task: new tasks.EmrModifyInstanceGroupByName({
-      clusterId: 'ClusterId',
-      instanceGroupName: sfn.Data.stringAt('$.InstanceGroupName'),
-      instanceGroup: {
-        instanceCount: 1,
-      },
-    }),
+  const task = new tasks.EmrModifyInstanceGroupByName(stack, 'Task', {
+    clusterId: 'ClusterId',
+    instanceGroupName: sfn.JsonPath.stringAt('$.InstanceGroupName'),
+    instanceGroup: {
+      instanceCount: 1,
+    },
   });
 
   // THEN
@@ -155,14 +204,12 @@ test('Modify an InstanceGroup with static ClusterId and InstanceGroupConfigurate
 
 test('Modify an InstanceGroup with static ClusterId and InstanceGroupName and InstanceCount from payload', () => {
   // WHEN
-  const task = new sfn.Task(stack, 'Task', {
-    task: new tasks.EmrModifyInstanceGroupByName({
-      clusterId: 'ClusterId',
-      instanceGroupName: 'InstanceGroupName',
-      instanceGroup: {
-        instanceCount: sfn.Data.numberAt('$.InstanceCount'),
-      },
-    }),
+  const task = new tasks.EmrModifyInstanceGroupByName(stack, 'Task', {
+    clusterId: 'ClusterId',
+    instanceGroupName: 'InstanceGroupName',
+    instanceGroup: {
+      instanceCount: sfn.JsonPath.numberAt('$.InstanceCount'),
+    },
   });
 
   // THEN

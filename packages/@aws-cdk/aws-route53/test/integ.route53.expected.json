@@ -26,16 +26,16 @@
         "MapPublicIpOnLaunch": true,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "aws-cdk-route53-integ/VPC/PublicSubnet1"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Public"
           },
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Public"
+          },
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-route53-integ/VPC/PublicSubnet1"
           }
         ]
       }
@@ -123,16 +123,16 @@
         "MapPublicIpOnLaunch": false,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "aws-cdk-route53-integ/VPC/PrivateSubnet1"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Private"
           },
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Private"
+          },
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-route53-integ/VPC/PrivateSubnet1"
           }
         ]
       }
@@ -295,6 +295,20 @@
         },
         "ResourceRecords": [
           "0 issue \"amazon.com\""
+        ],
+        "TTL": "1800"
+      }
+    },
+    "TXT0D5C5ACF": {
+      "Type": "AWS::Route53::RecordSet",
+      "Properties": {
+        "Name": "cdk.test.",
+        "Type": "TXT",
+        "HostedZoneId": {
+          "Ref": "PublicZone2E1C4E34"
+        },
+        "ResourceRecords": [
+          "\"this is a very long stringthis is a very long stringthis is a very long stringthis is a very long stringthis is a very long stringthis is a very long stringthis is a very long stringthis is a very long stringthis is a very long stringthis is a very long s\"\"tring\""
         ],
         "TTL": "1800"
       }

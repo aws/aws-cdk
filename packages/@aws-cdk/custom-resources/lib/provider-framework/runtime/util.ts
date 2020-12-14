@@ -1,4 +1,4 @@
-// tslint:disable: no-console
+/* eslint-disable no-console */
 
 export function getEnv(name: string): string {
   const value = process.env[name];

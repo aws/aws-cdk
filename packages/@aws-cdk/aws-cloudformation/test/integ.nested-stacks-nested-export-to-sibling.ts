@@ -1,4 +1,4 @@
-/// !cdk-integ Stack2
+/// !cdk-integ Stack1 Stack2
 
 import * as sns from '@aws-cdk/aws-sns';
 import { App, Fn, Stack } from '@aws-cdk/core';

@@ -1,8 +1,8 @@
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import * as cxapi from '@aws-cdk/cx-api';
 import { writeFileSync } from 'fs';
 import { join } from 'path';
-import { ABSENT, expect as cdkExpect, haveResource } from '../lib/index';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import * as cxapi from '@aws-cdk/cx-api';
+import { ABSENT, arrayWith, exactValue, expect as cdkExpect, haveResource, haveResourceLike, Capture, anything } from '../lib/index';
 
 test('support resource with no properties', () => {
   const synthStack = mkStack({
@@ -138,6 +138,119 @@ describe('property absence', () => {
     }).toThrowError(/Prop/);
   });
 
+  test('can use matcher to test for list element', () => {
+    const synthStack = mkSomeResource({
+      List: [
+        { Prop: 'distraction' },
+        { Prop: 'goal' },
+      ],
+    });
+
+    expect(() => {
+      cdkExpect(synthStack).to(haveResource('Some::Resource', {
+        List: arrayWith({ Prop: 'goal' }),
+      }));
+    }).not.toThrowError();
+
+    expect(() => {
+      cdkExpect(synthStack).to(haveResource('Some::Resource', {
+        List: arrayWith({ Prop: 'missme' }),
+      }));
+    }).toThrowError(/Array did not contain expected element/);
+  });
+
+  test('arrayContaining must match all elements in any order', () => {
+    const synthStack = mkSomeResource({
+      List: ['a', 'b'],
+    });
+
+    expect(() => {
+      cdkExpect(synthStack).to(haveResource('Some::Resource', {
+        List: arrayWith('b', 'a'),
+      }));
+    }).not.toThrowError();
+
+    expect(() => {
+      cdkExpect(synthStack).to(haveResource('Some::Resource', {
+        List: arrayWith('a', 'c'),
+      }));
+    }).toThrowError(/Array did not contain expected element/);
+  });
+
+  test('exactValue escapes from deep fuzzy matching', () => {
+    const synthStack = mkSomeResource({
+      Deep: {
+        PropA: 'A',
+        PropB: 'B',
+      },
+    });
+
+    expect(() => {
+      cdkExpect(synthStack).to(haveResourceLike('Some::Resource', {
+        Deep: {
+          PropA: 'A',
+        },
+      }));
+    }).not.toThrowError();
+
+    expect(() => {
+      cdkExpect(synthStack).to(haveResourceLike('Some::Resource', {
+        Deep: exactValue({
+          PropA: 'A',
+        }),
+      }));
+    }).toThrowError(/Unexpected keys present in object/);
+  });
+
+  /**
+   * Backwards compatibility test
+   *
+   * If we had designed this with a matcher library from the start, we probably wouldn't
+   * have had this behavior, but here we are.
+   *
+   * Historically, when we do `haveResourceLike` (which maps to `objectContainingDeep`) with
+   * a pattern containing lists of objects, the objects inside the list are also matched
+   * as 'containing' keys (instead of having to completely 'match' the pattern objects).
+   *
+   * People will have written assertions depending on this behavior, so we have to maintain
+   * it.
+   */
+  test('objectContainingDeep has deep effect through lists', () => {
+    const synthStack = mkSomeResource({
+      List: [
+        {
+          PropA: 'A',
+          PropB: 'B',
+        },
+        {
+          PropA: 'A',
+          PropB: 'B',
+        },
+      ],
+    });
+
+    expect(() => {
+      cdkExpect(synthStack).to(haveResourceLike('Some::Resource', {
+        List: [
+          { PropA: 'A' },
+          { PropB: 'B' },
+        ],
+      }));
+    }).not.toThrowError();
+  });
+
+  test('test capturing', () => {
+    const synthStack = mkSomeResource({
+      Prop: 'somevalue',
+    });
+
+    const propValue = Capture.aString();
+    cdkExpect(synthStack).to(haveResourceLike('Some::Resource', {
+      Prop: propValue.capture(anything()),
+    }));
+
+    expect(propValue.capturedValue).toEqual('somevalue');
+  });
 });
 
 function mkStack(template: any): cxapi.CloudFormationStackArtifact {

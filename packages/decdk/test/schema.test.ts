@@ -5,7 +5,7 @@ import { SchemaContext, schemaForInterface } from '../lib/jsii2schema';
 
 const fixturedir = path.join(__dirname, 'fixture');
 
-// tslint:disable:no-console
+/* eslint-disable no-console */
 
 // building the decdk schema often does not complete in the default 5 second Jest timeout
 jest.setTimeout(60_000);

@@ -1,14 +1,14 @@
-import * as asset_schema from '@aws-cdk/cdk-assets-schema';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cdk_assets from 'cdk-assets';
 
 export class AssetManifestBuilder {
-  private readonly manifest: asset_schema.ManifestFile = {
-    version: asset_schema.AssetManifestSchema.currentVersion(),
+  private readonly manifest: cxschema.AssetManifest = {
+    version: cxschema.Manifest.version(),
     files: {},
     dockerImages: {},
   };
 
-  public addFileAsset(id: string, source: asset_schema.FileSource, destination: asset_schema.FileDestination) {
+  public addFileAsset(id: string, source: cxschema.FileSource, destination: cxschema.FileDestination) {
     this.manifest.files![id] = {
       source,
       destinations: {
@@ -17,7 +17,7 @@ export class AssetManifestBuilder {
     };
   }
 
-  public addDockerImageAsset(id: string, source: asset_schema.DockerImageSource, destination: asset_schema.DockerImageDestination) {
+  public addDockerImageAsset(id: string, source: cxschema.DockerImageSource, destination: cxschema.DockerImageDestination) {
     this.manifest.dockerImages![id] = {
       source,
       destinations: {

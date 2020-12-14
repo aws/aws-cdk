@@ -39,7 +39,7 @@ test('Lambda function payload ends up in Parameters', () => {
     definition: new sfn.Task(stack, 'Task', {
       task: new tasks.InvokeFunction(fn, {
         payload: {
-          foo: sfn.Data.stringAt('$.bar'),
+          foo: sfn.JsonPath.stringAt('$.bar'),
         },
       }),
     }),

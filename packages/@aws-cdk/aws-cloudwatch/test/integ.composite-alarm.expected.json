@@ -1,0 +1,94 @@
+{
+  "Resources": {
+    "Alarm1F9009D71": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+        "EvaluationPeriods": 3,
+        "MetricName": "Metric",
+        "Namespace": "CDK/Test",
+        "Period": 300,
+        "Statistic": "Average",
+        "Threshold": 100
+      }
+    },
+    "Alarm2A7122E13": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+        "EvaluationPeriods": 3,
+        "MetricName": "Metric",
+        "Namespace": "CDK/Test",
+        "Period": 300,
+        "Statistic": "Average",
+        "Threshold": 1000
+      }
+    },
+    "Alarm32341D8D9": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+        "EvaluationPeriods": 3,
+        "MetricName": "Metric",
+        "Namespace": "CDK/Test",
+        "Period": 300,
+        "Statistic": "Average",
+        "Threshold": 10000
+      }
+    },
+    "Alarm4671832C8": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+        "EvaluationPeriods": 3,
+        "MetricName": "Metric",
+        "Namespace": "CDK/Test",
+        "Period": 300,
+        "Statistic": "Average",
+        "Threshold": 100000
+      }
+    },
+    "CompositeAlarmF4C3D082": {
+      "Type": "AWS::CloudWatch::CompositeAlarm",
+      "Properties": {
+        "AlarmName": "CompositeAlarmIntegrationTestCompositeAlarm742D2FBA",
+        "AlarmRule": {
+          "Fn::Join": [
+            "",
+            [
+              "(((ALARM(",
+              {
+                "Fn::GetAtt": [
+                  "Alarm1F9009D71",
+                  "Arn"
+                ]
+              },
+              ") OR OK(",
+              {
+                "Fn::GetAtt": [
+                  "Alarm2A7122E13",
+                  "Arn"
+                ]
+              },
+              ") OR ALARM(",
+              {
+                "Fn::GetAtt": [
+                  "Alarm32341D8D9",
+                  "Arn"
+                ]
+              },
+              ")) AND (NOT (INSUFFICIENT_DATA(",
+              {
+                "Fn::GetAtt": [
+                  "Alarm4671832C8",
+                  "Arn"
+                ]
+              },
+              ")))) OR FALSE)"
+            ]
+          ]
+        }
+      }
+    }
+  }
+}

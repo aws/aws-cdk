@@ -1,0 +1,92 @@
+{
+  "name": "@aws-cdk/yaml-cfn",
+  "version": "0.0.0",
+  "description": "Utilities for handling CloudFormation-flavored YAML",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "repository": {
+    "url": "https://github.com/aws/aws-cdk.git",
+    "type": "git",
+    "directory": "packages/@aws-cdk/yaml-cfn"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "license": "Apache-2.0",
+  "keywords": [
+    "aws",
+    "cdk",
+    "cfn",
+    "cloudformation",
+    "yaml"
+  ],
+  "jsii": {
+    "outdir": "dist",
+    "targets": {
+      "java": {
+        "package": "software.amazon.awscdk.yaml.cfn",
+        "maven": {
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "cdk-yaml-cfn"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.CDK.Yaml.Cfn",
+        "packageId": "Amazon.CDK.Yaml.Cfn",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+      },
+      "python": {
+        "distName": "aws-cdk.yaml-cfn",
+        "module": "aws_cdk.yaml_cfn",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
+      }
+    },
+    "projectReferences": true
+  },
+  "scripts": {
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "cdk-test",
+    "pkglint": "pkglint -f",
+    "package": "cdk-package",
+    "awslint": "cdk-awslint",
+    "build+test+package": "npm run build+test && npm run package",
+    "build+test": "npm run build && npm test",
+    "compat": "cdk-compat",
+    "rosetta:extract": "yarn --silent jsii-rosetta extract"
+  },
+  "dependencies": {
+    "yaml": "1.10.0"
+  },
+  "devDependencies": {
+    "@aws-cdk/assert": "0.0.0",
+    "@types/jest": "^26.0.15",
+    "@types/yaml": "^1.9.7",
+    "cdk-build-tools": "0.0.0",
+    "jest": "^26.6.3",
+    "pkglint": "0.0.0"
+  },
+  "bundledDependencies": [
+    "yaml"
+  ],
+  "cdk-build": {
+    "jest": true
+  },
+  "engines": {
+    "node": ">= 10.13.0 <13 || >=13.7.0"
+  },
+  "stability": "experimental",
+  "maturity": "experimental",
+  "awscdkio": {
+    "announce": false
+  }
+}

@@ -1,0 +1,13 @@
+github:
+  prebuilds:
+    pullRequestsFromForks: true
+    addComment: true
+
+image: jsii/superchain
+
+tasks:
+  - init: yarn build --skip-test --no-bail --skip-prereqs --skip-compat
+
+vscode:
+  extensions:
+    - dbaeumer.vscode-eslint@2.1.5:9Wg0Glx/TwD8ElFBg+FKcQ==

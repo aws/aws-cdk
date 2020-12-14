@@ -8,9 +8,6 @@ import { Action } from '../action';
  * Construction properties of the {@link LambdaInvokeAction Lambda invoke CodePipeline Action}.
  */
 export interface LambdaInvokeActionProps extends codepipeline.CommonAwsActionProps {
-  // because of @see links
-  // tslint:disable:max-line-length
-
   /**
    * The optional input Artifacts of the Action.
    * A Lambda Action can have up to 5 inputs.
@@ -40,8 +37,6 @@ export interface LambdaInvokeActionProps extends codepipeline.CommonAwsActionPro
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/actions-invoke-lambda-function.html#actions-invoke-lambda-function-json-event-example
    */
   readonly userParameters?: { [key: string]: any };
-
-  // tslint:enable:max-line-length
 
   /**
    * The lambda function to invoke.

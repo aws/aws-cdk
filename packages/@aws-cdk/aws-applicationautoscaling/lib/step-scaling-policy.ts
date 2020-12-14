@@ -1,6 +1,7 @@
 import { findAlarmThresholds, normalizeIntervals } from '@aws-cdk/aws-autoscaling-common';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { IScalableTarget } from './scalable-target';
 import { AdjustmentType, MetricAggregationType, StepScalingAction } from './step-scaling-action';
 
@@ -68,7 +69,7 @@ export class StepScalingPolicy extends cdk.Construct {
   public readonly upperAlarm?: cloudwatch.Alarm;
   public readonly upperAction?: StepScalingAction;
 
-  constructor(scope: cdk.Construct, id: string, props: StepScalingPolicyProps) {
+  constructor(scope: Construct, id: string, props: StepScalingPolicyProps) {
     super(scope, id);
 
     if (props.scalingSteps.length < 2) {

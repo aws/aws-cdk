@@ -1,4 +1,5 @@
-import * as cdk from '@aws-cdk/core';
+import { Construct as CoreConstruct, Duration, Lazy } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { IAutoScalingGroup } from './auto-scaling-group';
 import { CfnScalingPolicy } from './autoscaling.generated';
 
@@ -16,14 +17,14 @@ export interface StepScalingActionProps {
    *
    * @default The default cooldown configured on the AutoScalingGroup
    */
-  readonly cooldown?: cdk.Duration;
+  readonly cooldown?: Duration;
 
   /**
    * Estimated time until a newly launched instance can send metrics to CloudWatch.
    *
    * @default Same as the cooldown
    */
-  readonly estimatedInstanceWarmup?: cdk.Duration;
+  readonly estimatedInstanceWarmup?: Duration;
 
   /**
    * How the adjustment numbers are interpreted
@@ -59,7 +60,7 @@ export interface StepScalingActionProps {
  *
  * This Action must be used as the target of a CloudWatch alarm to take effect.
  */
-export class StepScalingAction extends cdk.Construct {
+export class StepScalingAction extends CoreConstruct {
   /**
    * ARN of the scaling policy
    */
@@ -67,7 +68,7 @@ export class StepScalingAction extends cdk.Construct {
 
   private readonly adjustments = new Array<CfnScalingPolicy.StepAdjustmentProperty>();
 
-  constructor(scope: cdk.Construct, id: string, props: StepScalingActionProps) {
+  constructor(scope: Construct, id: string, props: StepScalingActionProps) {
     super(scope, id);
 
     const resource = new CfnScalingPolicy(this, 'Resource', {
@@ -78,7 +79,7 @@ export class StepScalingAction extends cdk.Construct {
       adjustmentType: props.adjustmentType,
       minAdjustmentMagnitude: props.minAdjustmentMagnitude,
       metricAggregationType: props.metricAggregationType,
-      stepAdjustments: cdk.Lazy.anyValue({ produce: () => this.adjustments }),
+      stepAdjustments: Lazy.any({ produce: () => this.adjustments }),
     });
 
     this.scalingPolicyArn = resource.ref;

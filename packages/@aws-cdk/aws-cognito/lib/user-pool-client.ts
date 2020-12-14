@@ -1,6 +1,9 @@
-import { Construct, IResource, Resource } from '@aws-cdk/core';
+import { IResource, Resource, Duration } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnUserPoolClient } from './cognito.generated';
-import { IUserPool, StandardAttribute } from './user-pool';
+import { IUserPool } from './user-pool';
+import { AttributeSet } from './user-pool-attr';
+import { IUserPoolResourceServer, ResourceServerScope } from './user-pool-resource-server';
 
 /**
  * Types of authentication flow
@@ -30,12 +33,6 @@ export interface AuthFlow {
    * @default false
    */
   readonly userSrp?: boolean;
-
-  /**
-   * Enable authflow to refresh tokens
-   * @default false
-   */
-  readonly refreshToken?: boolean;
 }
 
 /**
@@ -46,22 +43,28 @@ export interface OAuthSettings {
   /**
    * OAuth flows that are allowed with this client.
    * @see - the 'Allowed OAuth Flows' section at https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-app-idp-settings.html
-   * @default - all OAuth flows disabled
+   * @default {authorizationCodeGrant:true,implicitCodeGrant:true}
    */
-  readonly flows: OAuthFlows;
+  readonly flows?: OAuthFlows;
 
   /**
    * List of allowed redirect URLs for the identity providers.
-   * @default - no callback URLs
+   * @default - ['https://example.com'] if either authorizationCodeGrant or implicitCodeGrant flows are enabled, no callback URLs otherwise.
    */
   readonly callbackUrls?: string[];
 
   /**
+   * List of allowed logout URLs for the identity providers.
+   * @default - no logout URLs
+   */
+  readonly logoutUrls?: string[];
+
+  /**
    * OAuth scopes that are allowed with this client.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-app-idp-settings.html
-   * @default - no OAuth scopes are configured.
+   * @default [OAuthScope.PHONE,OAuthScope.EMAIL,OAuthScope.OPENID,OAuthScope.PROFILE,OAuthScope.COGNITO_ADMIN]
    */
-  readonly scopes: OAuthScope[];
+  readonly scopes?: OAuthScope[];
 }
 
 /**
@@ -132,16 +135,64 @@ export class OAuthScope {
     return new OAuthScope(name);
   }
 
-  // tslint:disable:max-line-length
+  /**
+   * Adds a custom scope that's tied to a resource server in your stack
+   */
+  public static resourceServer(server: IUserPoolResourceServer, scope: ResourceServerScope) {
+    return new OAuthScope(`${server.userPoolResourceServerId}/${scope.scopeName}`);
+  }
+
   /**
    * The name of this scope as recognized by CloudFormation.
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cognito-userpoolclient.html#cfn-cognito-userpoolclient-allowedoauthscopes
    */
-  // tslint:enable:max-line-length
   public readonly scopeName: string;
 
   private constructor(scopeName: string) {
     this.scopeName = scopeName;
+  }
+}
+
+/**
+ * Identity providers supported by the UserPoolClient
+ */
+export class UserPoolClientIdentityProvider {
+  /**
+   * Allow users to sign in using 'Facebook Login'.
+   * A `UserPoolIdentityProviderFacebook` must be attached to the user pool.
+   */
+  public static readonly FACEBOOK = new UserPoolClientIdentityProvider('Facebook');
+
+  /**
+   * Allow users to sign in using 'Google Login'.
+   * A `UserPoolIdentityProviderGoogle` must be attached to the user pool.
+   */
+  public static readonly GOOGLE = new UserPoolClientIdentityProvider('Google');
+
+  /**
+   * Allow users to sign in using 'Login With Amazon'.
+   * A `UserPoolIdentityProviderAmazon` must be attached to the user pool.
+   */
+  public static readonly AMAZON = new UserPoolClientIdentityProvider('LoginWithAmazon');
+
+  /**
+   * Allow users to sign in directly as a user of the User Pool
+   */
+  public static readonly COGNITO = new UserPoolClientIdentityProvider('COGNITO');
+
+  /**
+   * Specify a provider not yet supported by the CDK.
+   * @param name name of the identity provider as recognized by CloudFormation property `SupportedIdentityProviders`
+   */
+  public static custom(name: string) {
+    return new UserPoolClientIdentityProvider(name);
+  }
+
+  /** The name of the identity provider as recognized by CloudFormation property `SupportedIdentityProviders` */
+  public readonly name: string;
+
+  private constructor(name: string) {
+    this.name = name;
   }
 }
 
@@ -169,50 +220,73 @@ export interface UserPoolClientOptions {
   readonly authFlows?: AuthFlow;
 
   /**
+   * Turns off all OAuth interactions for this client.
+   * @default false
+   */
+  readonly disableOAuth?: boolean;
+
+  /**
    * OAuth settings for this to client to interact with the app.
-   * @default - see defaults in `OAuthSettings`
+   * An error is thrown when this is specified and `disableOAuth` is set.
+   * @default - see defaults in `OAuthSettings`. meaningless if `disableOAuth` is set.
    */
   readonly oAuth?: OAuthSettings;
 
   /**
-   * The attributes this client will be able to read.
-   * This should be used to restrict the attributes the client will be
-   * able to read.
+   * Whether Cognito returns a UserNotFoundException exception when the
+   * user does not exist in the user pool (false), or whether it returns
+   * another type of error that doesn't reveal the user's absence.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pool-managing-errors.html
+   * @default true for new stacks
+   */
+  readonly preventUserExistenceErrors?: boolean;
+
+  /**
+   * The list of identity providers that users should be able to use to sign in using this client.
+   *
+   * @default - supports all identity providers that are registered with the user pool. If the user pool and/or
+   * identity providers are imported, either specify this option explicitly or ensure that the identity providers are
+   * registered with the user pool using the `UserPool.registerIdentityProvider()` API.
+   */
+  readonly supportedIdentityProviders?: UserPoolClientIdentityProvider[];
+
+  /**
+   * Validity of the ID token.
+   * Values between 5 minutes and 1 day are valid. The duration can not be longer than the refresh token validity.
+   * @see https://docs.aws.amazon.com/en_us/cognito/latest/developerguide/amazon-cognito-user-pools-using-tokens-with-identity-providers.html#amazon-cognito-user-pools-using-the-id-token
+   * @default Duration.minutes(60)
+   */
+  readonly idTokenValidity?: Duration;
+
+  /**
+   * Validity of the refresh token.
+   * Values between 60 minutes and 10 years are valid.
+   * @see https://docs.aws.amazon.com/en_us/cognito/latest/developerguide/amazon-cognito-user-pools-using-tokens-with-identity-providers.html#amazon-cognito-user-pools-using-the-refresh-token
+   * @default Duration.days(30)
+   */
+  readonly refreshTokenValidity?: Duration;
+
+  /**
+   * Validity of the access token.
+   * Values between 5 minutes and 1 day are valid. The duration can not be longer than the refresh token validity.
+   * @see https://docs.aws.amazon.com/en_us/cognito/latest/developerguide/amazon-cognito-user-pools-using-tokens-with-identity-providers.html#amazon-cognito-user-pools-using-the-access-token
+   * @default Duration.minutes(60)
+   */
+  readonly accessTokenValidity?: Duration;
+
+  /**
+   * The set of attributes this client will be able to read.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html#user-pool-settings-attribute-permissions-and-scopes
-   *
-   * @default - all attributes are readable
+   * @default undefined - all attributes will be readable
    */
-  readonly readAttributes?: UserPoolClientAttributes;
+  readonly readAttributes?: AttributeSet;
 
   /**
-   * The attributes this client will be able to write.
-   * This should be used to restrict the attributes the client will be able to write,
+   * The set of attributes this client will be able to write.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html#user-pool-settings-attribute-permissions-and-scopes
-   *
-   * @default - all attributes are writable
+   * @default undefined - all attributes will be writable
    */
-  readonly writeAttributes?: UserPoolClientAttributes;
-}
-
-/**
- * Represent a list of attributes (standard and custom)
- */
-export interface UserPoolClientAttributes {
-  /**
-   * A list of standard attributes
-   *
-   * @default []
-   */
-  readonly standard?: StandardAttribute[]
-
-  /**
-   * A list of custom attributes.
-   *
-   * @note You don't need to prepend them with `custom:`
-   *
-   * @default []
-   */
-  readonly custom?: string[]
+  readonly writeAttributes?: AttributeSet;
 }
 
 /**
@@ -252,6 +326,10 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
   }
 
   public readonly userPoolClientId: string;
+  /**
+   * The OAuth flows enabled for this client.
+   */
+  public readonly oAuthFlows: OAuthFlows;
   private readonly _userPoolClientName?: string;
 
   /*
@@ -265,18 +343,40 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
   constructor(scope: Construct, id: string, props: UserPoolClientProps) {
     super(scope, id);
 
+    if (props.disableOAuth && props.oAuth) {
+      throw new Error('OAuth settings cannot be specified when disableOAuth is set.');
+    }
+
+    this.oAuthFlows = props.oAuth?.flows ?? {
+      implicitCodeGrant: true,
+      authorizationCodeGrant: true,
+    };
+
+    let callbackUrls: string[] | undefined = props.oAuth?.callbackUrls;
+    if (this.oAuthFlows.authorizationCodeGrant || this.oAuthFlows.implicitCodeGrant) {
+      if (callbackUrls === undefined) {
+        callbackUrls = ['https://example.com'];
+      } else if (callbackUrls.length === 0) {
+        throw new Error('callbackUrl must not be empty when codeGrant or implicitGrant OAuth flows are enabled.');
+      }
+    }
+
     const resource = new CfnUserPoolClient(this, 'Resource', {
       clientName: props.userPoolClientName,
       generateSecret: props.generateSecret,
       userPoolId: props.userPool.userPoolId,
       explicitAuthFlows: this.configureAuthFlows(props),
-      allowedOAuthFlows: this.configureOAuthFlows(props.oAuth),
-      allowedOAuthScopes: this.configureOAuthScopes(props.oAuth),
-      callbackUrLs: (props.oAuth?.callbackUrls && props.oAuth?.callbackUrls.length > 0) ? props.oAuth?.callbackUrls : undefined,
-      allowedOAuthFlowsUserPoolClient: props.oAuth ? true : undefined,
-      readAttributes: this.configureAttributes(props.readAttributes),
-      writeAttributes: this.configureAttributes(props.writeAttributes),
+      allowedOAuthFlows: props.disableOAuth ? undefined : this.configureOAuthFlows(),
+      allowedOAuthScopes: props.disableOAuth ? undefined : this.configureOAuthScopes(props.oAuth),
+      callbackUrLs: callbackUrls && callbackUrls.length > 0 && !props.disableOAuth ? callbackUrls : undefined,
+      logoutUrLs: props.oAuth?.logoutUrls,
+      allowedOAuthFlowsUserPoolClient: !props.disableOAuth,
+      preventUserExistenceErrors: this.configurePreventUserExistenceErrors(props.preventUserExistenceErrors),
+      supportedIdentityProviders: this.configureIdentityProviders(props),
+      readAttributes: props.readAttributes?.attributes(),
+      writeAttributes: props.writeAttributes?.attributes(),
     });
+    this.configureTokenValidity(resource, props);
 
     this.userPoolClientId = resource.ref;
     this._userPoolClientName = props.userPoolClientName;
@@ -293,33 +393,19 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
     return this._userPoolClientName;
   }
 
-  private configureAttributes(conf: UserPoolClientAttributes | undefined): string[] | undefined {
-    let aux: string[] | undefined;
-    // if the configuration in missing (undefined)
-    // the default behavior is to allow all attributes to be read/written
-    // so undefined is returned.
-    if (conf === undefined) {
-      aux = undefined;
-    } else {
-      // get the standard attributes, if any is specified
-      const standard: string[] = conf.standard ?? [];
-      // get all custom attributes and prepend the `custom:` prefix
-      const custom: string[] = conf.custom?.map(attr => {
-        // if the attribute does not start with `custom:` it should be added
-        return attr.startsWith('custom:') ? attr : `custom:${attr}`;
-      }) ?? [];
-      aux = standard.concat(custom);
-    }
-    return aux;
-  }
-
   private configureAuthFlows(props: UserPoolClientProps): string[] | undefined {
+    if (!props.authFlows) return undefined;
+
     const authFlows: string[] = [];
-    if (props.authFlows?.userPassword) { authFlows.push('ALLOW_USER_PASSWORD_AUTH'); }
-    if (props.authFlows?.adminUserPassword) { authFlows.push('ALLOW_ADMIN_USER_PASSWORD_AUTH'); }
-    if (props.authFlows?.custom) { authFlows.push('ALLOW_CUSTOM_AUTH'); }
-    if (props.authFlows?.userSrp) { authFlows.push('ALLOW_USER_SRP_AUTH'); }
-    if (props.authFlows?.refreshToken) { authFlows.push('ALLOW_REFRESH_TOKEN_AUTH'); }
+    if (props.authFlows.userPassword) { authFlows.push('ALLOW_USER_PASSWORD_AUTH'); }
+    if (props.authFlows.adminUserPassword) { authFlows.push('ALLOW_ADMIN_USER_PASSWORD_AUTH'); }
+    if (props.authFlows.custom) { authFlows.push('ALLOW_CUSTOM_AUTH'); }
+    if (props.authFlows.userSrp) { authFlows.push('ALLOW_USER_SRP_AUTH'); }
+
+    // refreshToken should always be allowed if authFlows are present
+    if (authFlows.length > 0) {
+      authFlows.push('ALLOW_REFRESH_TOKEN_AUTH');
+    }
 
     if (authFlows.length === 0) {
       return undefined;
@@ -327,20 +413,14 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
     return authFlows;
   }
 
-  private configureOAuthFlows(oAuth?: OAuthSettings): string[] | undefined {
-    if (oAuth?.flows.authorizationCodeGrant || oAuth?.flows.implicitCodeGrant) {
-      if (oAuth?.callbackUrls === undefined || oAuth?.callbackUrls.length === 0) {
-        throw new Error('callbackUrl must be specified when codeGrant or implicitGrant OAuth flows are enabled.');
-      }
-      if (oAuth?.flows.clientCredentials) {
-        throw new Error('clientCredentials OAuth flow cannot be selected along with codeGrant or implicitGrant.');
-      }
+  private configureOAuthFlows(): string[] | undefined {
+    if ((this.oAuthFlows.authorizationCodeGrant || this.oAuthFlows.implicitCodeGrant) && this.oAuthFlows.clientCredentials) {
+      throw new Error('clientCredentials OAuth flow cannot be selected along with codeGrant or implicitGrant.');
     }
-
     const oAuthFlows: string[] = [];
-    if (oAuth?.flows.clientCredentials) { oAuthFlows.push('client_credentials'); }
-    if (oAuth?.flows.implicitCodeGrant) { oAuthFlows.push('implicit'); }
-    if (oAuth?.flows.authorizationCodeGrant) { oAuthFlows.push('code'); }
+    if (this.oAuthFlows.clientCredentials) { oAuthFlows.push('client_credentials'); }
+    if (this.oAuthFlows.implicitCodeGrant) { oAuthFlows.push('implicit'); }
+    if (this.oAuthFlows.authorizationCodeGrant) { oAuthFlows.push('code'); }
 
     if (oAuthFlows.length === 0) {
       return undefined;
@@ -348,15 +428,63 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
     return oAuthFlows;
   }
 
-  private configureOAuthScopes(oAuth?: OAuthSettings): string[] | undefined {
-    const oAuthScopes = new Set(oAuth?.scopes.map((x) => x.scopeName));
-    const autoOpenIdScopes = [ OAuthScope.PHONE, OAuthScope.EMAIL, OAuthScope.PROFILE ];
-    if (autoOpenIdScopes.reduce((agg, s) => agg || oAuthScopes.has(s.scopeName), false)) {
-      oAuthScopes.add(OAuthScope.OPENID.scopeName);
+  private configureOAuthScopes(oAuth?: OAuthSettings): string[] {
+    const scopes = oAuth?.scopes ?? [OAuthScope.PROFILE, OAuthScope.PHONE, OAuthScope.EMAIL, OAuthScope.OPENID,
+      OAuthScope.COGNITO_ADMIN];
+    const scopeNames = new Set(scopes.map((x) => x.scopeName));
+    const autoOpenIdScopes = [OAuthScope.PHONE, OAuthScope.EMAIL, OAuthScope.PROFILE];
+    if (autoOpenIdScopes.reduce((agg, s) => agg || scopeNames.has(s.scopeName), false)) {
+      scopeNames.add(OAuthScope.OPENID.scopeName);
     }
-    if (oAuthScopes.size > 0) {
-      return Array.from(oAuthScopes);
+    return Array.from(scopeNames);
+  }
+
+  private configurePreventUserExistenceErrors(prevent?: boolean): string | undefined {
+    if (prevent === undefined) {
+      return undefined;
     }
-    return undefined;
+    return prevent ? 'ENABLED' : 'LEGACY';
+  }
+
+  private configureIdentityProviders(props: UserPoolClientProps): string[] | undefined {
+    let providers: string[];
+    if (!props.supportedIdentityProviders) {
+      const providerSet = new Set(props.userPool.identityProviders.map((p) => p.providerName));
+      providerSet.add('COGNITO');
+      providers = Array.from(providerSet);
+    } else {
+      providers = props.supportedIdentityProviders.map((p) => p.name);
+    }
+    if (providers.length === 0) { return undefined; }
+    return Array.from(providers);
+  }
+
+  private configureTokenValidity(resource: CfnUserPoolClient, props: UserPoolClientProps) {
+    this.validateDuration('idTokenValidity', Duration.minutes(5), Duration.days(1), props.idTokenValidity);
+    this.validateDuration('accessTokenValidity', Duration.minutes(5), Duration.days(1), props.accessTokenValidity);
+    this.validateDuration('refreshTokenValidity', Duration.minutes(60), Duration.days(10 * 365), props.refreshTokenValidity);
+    if (props.refreshTokenValidity) {
+      this.validateDuration('idTokenValidity', Duration.minutes(5), props.refreshTokenValidity, props.idTokenValidity);
+      this.validateDuration('accessTokenValidity', Duration.minutes(5), props.refreshTokenValidity, props.accessTokenValidity);
+    }
+
+    if (props.accessTokenValidity || props.idTokenValidity || props.refreshTokenValidity) {
+      resource.tokenValidityUnits = {
+        idToken: props.idTokenValidity ? 'minutes' : undefined,
+        accessToken: props.accessTokenValidity ? 'minutes' : undefined,
+        refreshToken: props.refreshTokenValidity ? 'minutes' : undefined,
+      };
+    };
+
+    resource.idTokenValidity = props.idTokenValidity ? props.idTokenValidity.toMinutes() : undefined;
+    resource.refreshTokenValidity = props.refreshTokenValidity ? props.refreshTokenValidity.toMinutes() : undefined;
+    resource.accessTokenValidity = props.accessTokenValidity ? props.accessTokenValidity.toMinutes() : undefined;
+  }
+
+  private validateDuration(name: string, min: Duration, max: Duration, value?: Duration) {
+    if (value === undefined) { return; }
+    if (value.toMilliseconds() < min.toMilliseconds() || value.toMilliseconds() > max.toMilliseconds()) {
+      throw new Error(`${name}: Must be a duration between ${min.toHumanString()} and ${max.toHumanString()} (inclusive); received ${value.toHumanString()}.`);
+    }
   }
 }

@@ -1,47 +1,75 @@
-import { rewriteFile, rewriteLine } from '../lib/rewrite';
+import { rewriteImports } from '../lib/rewrite';
 
-describe('rewriteLine', () => {
-  test('quotes', () => {
-    expect(rewriteLine('import * as s3 from \'@aws-cdk/aws-s3\''))
-      .toEqual('import * as s3 from \'monocdk-experiment/aws-s3\'');
+describe(rewriteImports, () => {
+  test('correctly rewrites naked "import"', () => {
+    const output = rewriteImports(`
+    // something before
+    import '@aws-cdk/assert/jest';
+    // something after
+
+    console.log('Look! I did something!');`, 'subhect.ts');
+
+    expect(output).toBe(`
+    // something before
+    import '@monocdk-experiment/assert/jest';
+    // something after
+
+    console.log('Look! I did something!');`);
   });
 
-  test('double quotes', () => {
-    expect(rewriteLine('import * as s3 from "@aws-cdk/aws-s3"'))
-      .toEqual('import * as s3 from "monocdk-experiment/aws-s3"');
+  test('correctly rewrites naked "require"', () => {
+    const output = rewriteImports(`
+    // something before
+    require('@aws-cdk/assert/jest');
+    // something after
+
+    console.log('Look! I did something!');`, 'subhect.ts');
+
+    expect(output).toBe(`
+    // something before
+    require('@monocdk-experiment/assert/jest');
+    // something after
+
+    console.log('Look! I did something!');`);
   });
 
-  test('@aws-cdk/core', () => {
-    expect(rewriteLine('import * as s3 from "@aws-cdk/core"'))
-      .toEqual('import * as s3 from "monocdk-experiment"');
-    expect(rewriteLine('import * as s3 from \'@aws-cdk/core\''))
-      .toEqual('import * as s3 from \'monocdk-experiment\'');
-  });
-
-  test('non-jsii modules are ignored', () => {
-    expect(rewriteLine('import * as cfndiff from \'@aws-cdk/cloudformation-diff\''))
-      .toEqual('import * as cfndiff from \'@aws-cdk/cloudformation-diff\'');
-    expect(rewriteLine('import * as cfndiff from \'@aws-cdk/assert'))
-      .toEqual('import * as cfndiff from \'@aws-cdk/assert');
-  });
-});
-
-describe('rewriteFile', () => {
-  const output = rewriteFile(`
+  test('correctly rewrites "import from"', () => {
+    const output = rewriteImports(`
   // something before
   import * as s3 from '@aws-cdk/aws-s3';
   import * as cfndiff from '@aws-cdk/cloudformation-diff';
-  import * as s3 from '@aws-cdk/core';
+  import { Construct } from "@aws-cdk/core";
   // something after
 
-  // hello`);
+  console.log('Look! I did something!');`, 'subject.ts');
 
-  expect(output).toEqual(`
+    expect(output).toBe(`
   // something before
-  import * as s3 from 'monocdk-experiment/aws-s3';
+  import * as s3 from 'monocdk/aws-s3';
   import * as cfndiff from '@aws-cdk/cloudformation-diff';
-  import * as s3 from 'monocdk-experiment';
+  import { Construct } from "monocdk";
   // something after
 
-  // hello`);
+  console.log('Look! I did something!');`);
+  });
+
+  test('correctly rewrites "import = require"', () => {
+    const output = rewriteImports(`
+  // something before
+  import s3 = require('@aws-cdk/aws-s3');
+  import cfndiff = require('@aws-cdk/cloudformation-diff');
+  import { Construct } = require("@aws-cdk/core");
+  // something after
+
+  console.log('Look! I did something!');`, 'subject.ts');
+
+    expect(output).toBe(`
+  // something before
+  import s3 = require('monocdk/aws-s3');
+  import cfndiff = require('@aws-cdk/cloudformation-diff');
+  import { Construct } = require("monocdk");
+  // something after
+
+  console.log('Look! I did something!');`);
+  });
 });

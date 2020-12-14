@@ -23,9 +23,14 @@
       },
       "python": {
         "distName": "aws-cdk.cdk-assets-schema",
-        "module": "aws_cdk.cdk_assets_schema"
+        "module": "aws_cdk.cdk_assets_schema",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
-    }
+    },
+    "projectReferences": true
   },
   "scripts": {
     "build": "cdk-build",
@@ -37,38 +42,19 @@
     "awslint": "cdk-awslint",
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test",
-    "compat": "cdk-compat"
+    "compat": "cdk-compat",
+    "rosetta:extract": "yarn --silent jsii-rosetta extract"
   },
   "author": {
     "name": "Amazon Web Services",
     "url": "https://aws.amazon.com",
     "organization": true
   },
-  "dependencies": {
-    "semver": "^7.2.2"
-  },
-  "jest": {
-    "moduleFileExtensions": [
-      "js"
-    ],
-    "coverageThreshold": {
-      "global": {
-        "branches": 70,
-        "statements": 80
-      }
-    },
-    "collectCoverage": true,
-    "coverageReporters": [
-      "lcov",
-      "html",
-      "text-summary"
-    ]
-  },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/jest": "^25.2.1",
+    "@types/jest": "^26.0.15",
     "cdk-build-tools": "0.0.0",
-    "jest": "^25.5.4",
+    "jest": "^26.6.3",
     "pkglint": "0.0.0"
   },
   "repository": {
@@ -81,15 +67,16 @@
     "cdk"
   ],
   "homepage": "https://github.com/aws/aws-cdk",
-  "bundledDependencies": [
-    "semver"
-  ],
   "engines": {
-    "node": ">= 10.13.0"
+    "node": ">= 10.13.0 <13 || >=13.7.0"
   },
-  "stability": "stable",
+  "stability": "deprecated",
   "awscdkio": {
     "announce": false
   },
-  "maturity": "stable"
+  "deprecated": "merged into @aws-cdk/cloud-assembly-schema",
+  "maturity": "deprecated",
+  "cdk-build": {
+    "jest": true
+  }
 }

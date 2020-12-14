@@ -3,12 +3,13 @@ import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
+import * as constructs from 'constructs';
 import * as _ from 'lodash';
 import * as nodeunit from 'nodeunit';
 import * as cpactions from '../../lib';
 
 export = nodeunit.testCase({
-  'CreateReplaceChangeSet': {
+  CreateReplaceChangeSet: {
     'works'(test: nodeunit.Test) {
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'Stack');
@@ -26,7 +27,7 @@ export = nodeunit.testCase({
         actions: [action],
       });
 
-      cdk.ConstructNode.prepare(stack.node);
+      app.synth();
 
       _assertPermissionGranted(test, stack, pipelineRole.statements, 'iam:PassRole', action.deploymentRole.roleArn);
 
@@ -81,8 +82,8 @@ export = nodeunit.testCase({
             Action: 'iam:PassRole',
             Effect: 'Allow',
             Resource: [
-              { 'Fn::GetAtt': [ 'PipelineTestStageActionARole9283FBE3', 'Arn' ] },
-              { 'Fn::GetAtt': [ 'PipelineTestStageActionBRoleCABC8FA5', 'Arn' ] },
+              { 'Fn::GetAtt': ['PipelineTestStageActionARole9283FBE3', 'Arn'] },
+              { 'Fn::GetAtt': ['PipelineTestStageActionBRoleCABC8FA5', 'Arn'] },
             ],
           },
           {
@@ -95,10 +96,10 @@ export = nodeunit.testCase({
             Condition: { StringEqualsIfExists: { 'cloudformation:ChangeSetName': 'MyChangeSet' } },
             Effect: 'Allow',
             Resource: [
-              // tslint:disable-next-line:max-line-length
-              { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':cloudformation:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':stack/StackA/*' ] ] },
-              // tslint:disable-next-line:max-line-length
-              { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':cloudformation:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':stack/StackB/*' ] ] },
+              // eslint-disable-next-line max-len
+              { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':cloudformation:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':stack/StackA/*']] },
+              // eslint-disable-next-line max-len
+              { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':cloudformation:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':stack/StackB/*']] },
             ],
           },
         ],
@@ -108,7 +109,7 @@ export = nodeunit.testCase({
     },
   },
 
-  'ExecuteChangeSet': {
+  ExecuteChangeSet: {
     'works'(test: nodeunit.Test) {
       const stack = new cdk.Stack();
       const pipelineRole = new RoleDouble(stack, 'PipelineRole');
@@ -167,10 +168,10 @@ export = nodeunit.testCase({
             Condition: { StringEqualsIfExists: { 'cloudformation:ChangeSetName': 'MyChangeSet' } },
             Effect: 'Allow',
             Resource: [
-              // tslint:disable-next-line:max-line-length
-              { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':cloudformation:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':stack/StackA/*' ] ] },
-              // tslint:disable-next-line:max-line-length
-              { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':cloudformation:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':stack/StackB/*' ] ] },
+              // eslint-disable-next-line max-len
+              { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':cloudformation:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':stack/StackA/*']] },
+              // eslint-disable-next-line max-len
+              { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':cloudformation:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':stack/StackB/*']] },
             ],
           },
         ],
@@ -247,8 +248,11 @@ function _assertActionMatches(
     ? `, configuration including ${JSON.stringify(stack.resolve(configuration), null, 2)}`
     : '';
   const actionsStr = JSON.stringify(actions.map(a =>
-    ({ owner: a.actionProperties.owner, provider: a.actionProperties.provider,
-      category: a.actionProperties.category, configuration: stack.resolve(a.actionConfig.configuration),
+    ({
+      owner: a.actionProperties.owner,
+      provider: a.actionProperties.provider,
+      category: a.actionProperties.category,
+      configuration: stack.resolve(a.actionConfig.configuration),
     }),
   ), null, 2);
   test.ok(_hasAction(stack, actions, provider, category, configuration),
@@ -311,7 +315,7 @@ function _isOrContains(stack: cdk.Stack, entity: string | string[], value: strin
   return false;
 }
 
-function _stackArn(stackName: string, scope: cdk.IConstruct): string {
+function _stackArn(stackName: string, scope: constructs.IConstruct): string {
   return cdk.Stack.of(scope).formatArn({
     service: 'cloudformation',
     resource: 'stack',
@@ -325,7 +329,7 @@ class PipelineDouble extends cdk.Resource implements codepipeline.IPipeline {
   public readonly role: iam.Role;
   public readonly artifactBucket: s3.IBucket;
 
-  constructor(scope: cdk.Construct, id: string, { pipelineName, role }: { pipelineName?: string, role: iam.Role }) {
+  constructor(scope: constructs.Construct, id: string, { pipelineName, role }: { pipelineName?: string, role: iam.Role }) {
     super(scope, id);
     this.pipelineName = pipelineName || 'TestPipeline';
     this.pipelineArn = cdk.Stack.of(this).formatArn({ service: 'codepipeline', resource: 'pipeline', resourceName: this.pipelineName });
@@ -388,7 +392,7 @@ class StageDouble implements codepipeline.IStage {
 class RoleDouble extends iam.Role {
   public readonly statements = new Array<iam.PolicyStatement>();
 
-  constructor(scope: cdk.Construct, id: string, props: iam.RoleProps = { assumedBy: new iam.ServicePrincipal('test') }) {
+  constructor(scope: constructs.Construct, id: string, props: iam.RoleProps = { assumedBy: new iam.ServicePrincipal('test') }) {
     super(scope, id, props);
   }
 

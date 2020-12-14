@@ -1,3 +1,4 @@
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Mode, SdkProvider } from '../api';
 import { debug, print } from '../logging';
@@ -10,7 +11,7 @@ export class AmiContextProviderPlugin implements ContextProviderPlugin {
   constructor(private readonly aws: SdkProvider) {
   }
 
-  public async getValue(args: cxapi.AmiContextQuery & { region: string, account: string }) {
+  public async getValue(args: cxschema.AmiContextQuery) {
     const region = args.region;
     const account = args.account;
 

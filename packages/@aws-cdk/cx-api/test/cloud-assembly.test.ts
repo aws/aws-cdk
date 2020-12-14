@@ -44,7 +44,7 @@ test('assembly with invalid tree metadata', () => {
 });
 
 test('assembly with tree metadata having no file property specified', () => {
-  expect(() => new CloudAssembly(path.join(FIXTURES, 'tree-no-file-property'))).toThrow(/Invalid TreeCloudArtifact/);
+  expect(() => new CloudAssembly(path.join(FIXTURES, 'tree-no-file-property'))).toThrow(/Invalid assembly manifest/);
 });
 
 test('assembly with cloudformation artifact having no environment property specified', () => {
@@ -85,7 +85,7 @@ test('assets', () => {
 test('can-read-0.36.0', () => {
   // WHEN
   new CloudAssembly(path.join(FIXTURES, 'single-stack-0.36'));
-  // THEN: no eexception
+  // THEN: no exception
   expect(true).toBeTruthy();
 });
 
@@ -94,11 +94,11 @@ test('dependencies', () => {
   expect(assembly.stacks).toHaveLength(4);
 
   // expect stacks to be listed in topological order
-  expect(assembly.stacks.map(s => s.id)).toEqual([ 'StackA', 'StackD', 'StackC', 'StackB' ]);
+  expect(assembly.stacks.map(s => s.id)).toEqual(['StackA', 'StackD', 'StackC', 'StackB']);
   expect(assembly.stacks[0].dependencies).toEqual([]);
   expect(assembly.stacks[1].dependencies).toEqual([]);
-  expect(assembly.stacks[2].dependencies.map(x => x.id)).toEqual([ 'StackD' ]);
-  expect(assembly.stacks[3].dependencies.map(x => x.id)).toEqual([ 'StackC', 'StackD' ]);
+  expect(assembly.stacks[2].dependencies.map(x => x.id)).toEqual(['StackD']);
+  expect(assembly.stacks[3].dependencies.map(x => x.id)).toEqual(['StackC', 'StackD']);
 });
 
 test('fails for invalid dependencies', () => {
@@ -118,6 +118,7 @@ test('stack artifacts can specify an explicit stack name that is different from 
 
 test('getStackByName fails if there are multiple stacks with the same name', () => {
   const assembly = new CloudAssembly(path.join(FIXTURES, 'multiple-stacks-same-name'));
+  // eslint-disable-next-line max-len
   expect(() => assembly.getStackByName('the-physical-name-of-the-stack')).toThrow(/There are multiple stacks with the stack name \"the-physical-name-of-the-stack\" \(stack1\,stack2\)\. Use \"getStackArtifact\(id\)\" instead/);
 });
 
@@ -143,4 +144,10 @@ test('displayName shows both artifact ID and stack name if needed', () => {
   expect(art1.displayName).toBe('MyStackName');
   expect(art1.id).toBe('MyStackName');
   expect(art1.stackName).toBe('MyStackName');
+});
+
+test('can read assembly with asset manifest', () => {
+  const assembly = new CloudAssembly(path.join(FIXTURES, 'asset-manifest'));
+  expect(assembly.stacks).toHaveLength(1);
+  expect(assembly.artifacts).toHaveLength(2);
 });

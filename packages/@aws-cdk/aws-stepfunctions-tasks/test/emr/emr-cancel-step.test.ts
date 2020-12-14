@@ -1,3 +1,4 @@
+import '@aws-cdk/assert/jest';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
 import * as tasks from '../../lib';
@@ -11,11 +12,9 @@ beforeEach(() => {
 
 test('Cancel a Step with static ClusterId and StepId', () => {
   // WHEN
-  const task = new sfn.Task(stack, 'Task', {
-    task: new tasks.EmrCancelStep({
-      clusterId: 'ClusterId',
-      stepId: 'StepId',
-    }),
+  const task = new tasks.EmrCancelStep(stack, 'Task', {
+    clusterId: 'ClusterId',
+    stepId: 'StepId',
   });
 
   // THEN
@@ -41,13 +40,54 @@ test('Cancel a Step with static ClusterId and StepId', () => {
   });
 });
 
+test('task policies are generated', () => {
+  // WHEN
+  const task = new tasks.EmrCancelStep(stack, 'Task', {
+    clusterId: 'ClusterId',
+    stepId: 'StepId',
+  });
+  new sfn.StateMachine(stack, 'SM', {
+    definition: task,
+  });
+
+  // THEN
+  expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'elasticmapreduce:CancelSteps',
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':elasticmapreduce:',
+                {
+                  Ref: 'AWS::Region',
+                },
+                ':',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':cluster/*',
+              ],
+            ],
+          },
+        },
+      ],
+    },
+  });
+});
+
 test('Cancel a Step with static ClusterId and StepId from payload', () => {
   // WHEN
-  const task = new sfn.Task(stack, 'Task', {
-    task: new tasks.EmrCancelStep({
-      clusterId: 'ClusterId',
-      stepId: sfn.TaskInput.fromDataAt('$.StepId').value,
-    }),
+  const task = new tasks.EmrCancelStep(stack, 'Task', {
+    clusterId: 'ClusterId',
+    stepId: sfn.TaskInput.fromDataAt('$.StepId').value,
   });
 
   // THEN
@@ -75,11 +115,9 @@ test('Cancel a Step with static ClusterId and StepId from payload', () => {
 
 test('Cancel a Step with ClusterId from payload and static StepId', () => {
   // WHEN
-  const task = new sfn.Task(stack, 'Task', {
-    task: new tasks.EmrCancelStep({
-      clusterId: sfn.TaskInput.fromDataAt('$.ClusterId').value,
-      stepId: 'StepId',
-    }),
+  const task = new tasks.EmrCancelStep(stack, 'Task', {
+    clusterId: sfn.TaskInput.fromDataAt('$.ClusterId').value,
+    stepId: 'StepId',
   });
 
   // THEN

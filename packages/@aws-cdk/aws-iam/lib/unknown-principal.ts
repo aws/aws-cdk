@@ -1,6 +1,7 @@
-import { IConstruct, Stack } from '@aws-cdk/core';
+import { Annotations, ConcreteDependable, Stack } from '@aws-cdk/core';
+import { IConstruct, Node } from 'constructs';
 import { PolicyStatement } from './policy-statement';
-import { IPrincipal, PrincipalPolicyFragment } from './principals';
+import { AddToPrincipalPolicyResult, IPrincipal, PrincipalPolicyFragment } from './principals';
 
 /**
  * Properties for an UnknownPrincipal
@@ -34,13 +35,18 @@ export class UnknownPrincipal implements IPrincipal {
   }
 
   public get policyFragment(): PrincipalPolicyFragment {
-    throw new Error(`Cannot get policy fragment of ${this.resource.node.path}, resource imported without a role`);
+    throw new Error(`Cannot get policy fragment of ${Node.of(this.resource).path}, resource imported without a role`);
+  }
+
+  public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
+    const stack = Stack.of(this.resource);
+    const repr = JSON.stringify(stack.resolve(statement));
+    Annotations.of(this.resource).addWarning(`Add statement to this resource's role: ${repr}`);
+    // Pretend we did the work. The human will do it for us, eventually.
+    return { statementAdded: true, policyDependable: new ConcreteDependable() };
   }
 
   public addToPolicy(statement: PolicyStatement): boolean {
-    const stack = Stack.of(this.resource);
-    const repr = JSON.stringify(stack.resolve(statement));
-    this.resource.node.addWarning(`Add statement to this resource's role: ${repr}`);
-    return true; // Pretend we did the work. The human will do it for us, eventually.
+    return this.addToPrincipalPolicy(statement).statementAdded;
   }
 }

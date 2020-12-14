@@ -63,8 +63,20 @@
                 },
                 "properties": {
                     "description": "The set of properties for this artifact (depends on type) (Default - no properties.)",
-                    "type": "object",
-                    "additionalProperties": {}
+                    "anyOf": [
+                        {
+                            "$ref": "#/definitions/AwsCloudFormationStackProperties"
+                        },
+                        {
+                            "$ref": "#/definitions/AssetManifestProperties"
+                        },
+                        {
+                            "$ref": "#/definitions/TreeArtifactProperties"
+                        },
+                        {
+                            "$ref": "#/definitions/NestedCloudAssemblyProperties"
+                        }
+                    ]
                 }
             },
             "required": [
@@ -75,6 +87,8 @@
             "description": "Type of cloud artifact.",
             "enum": [
                 "aws:cloudformation:stack",
+                "cdk:asset-manifest",
+                "cdk:cloud-assembly",
                 "cdk:tree",
                 "none"
             ],
@@ -152,7 +166,7 @@
                     "type": "string"
                 },
                 "sourceHash": {
-                    "description": "The hash of the source directory used to build the asset.",
+                    "description": "The hash of the asset source.",
                     "type": "string"
                 },
                 "path": {
@@ -213,7 +227,7 @@
                     "type": "string"
                 },
                 "sourceHash": {
-                    "description": "The hash of the source directory used to build the asset.",
+                    "description": "The hash of the asset source.",
                     "type": "string"
                 },
                 "path": {
@@ -233,17 +247,116 @@
             "type": "object",
             "properties": {
                 "key": {
-                    "description": "Tag key.",
+                    "description": "Tag key.\n\n(In the actual file on disk this will be cased as \"Key\", and the structure is\npatched to match this structure upon loading:\nhttps://github.com/aws/aws-cdk/blob/4aadaa779b48f35838cccd4e25107b2338f05547/packages/%40aws-cdk/cloud-assembly-schema/lib/manifest.ts#L137)",
                     "type": "string"
                 },
                 "value": {
-                    "description": "Tag value.",
+                    "description": "Tag value.\n\n(In the actual file on disk this will be cased as \"Value\", and the structure is\npatched to match this structure upon loading:\nhttps://github.com/aws/aws-cdk/blob/4aadaa779b48f35838cccd4e25107b2338f05547/packages/%40aws-cdk/cloud-assembly-schema/lib/manifest.ts#L137)",
                     "type": "string"
                 }
             },
             "required": [
                 "key",
                 "value"
+            ]
+        },
+        "AwsCloudFormationStackProperties": {
+            "description": "Artifact properties for CloudFormation stacks.",
+            "type": "object",
+            "properties": {
+                "templateFile": {
+                    "description": "A file relative to the assembly root which contains the CloudFormation template for this stack.",
+                    "type": "string"
+                },
+                "parameters": {
+                    "description": "Values for CloudFormation stack parameters that should be passed when the stack is deployed. (Default - No parameters)",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "tags": {
+                    "description": "Values for CloudFormation stack tags that should be passed when the stack is deployed. (Default - No tags)",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "stackName": {
+                    "description": "The name to use for the CloudFormation stack. (Default - name derived from artifact ID)",
+                    "type": "string"
+                },
+                "terminationProtection": {
+                    "description": "Whether to enable termination protection for this stack.",
+                    "default": false,
+                    "type": "boolean"
+                },
+                "assumeRoleArn": {
+                    "description": "The role that needs to be assumed to deploy the stack (Default - No role is assumed (current credentials are used))",
+                    "type": "string"
+                },
+                "cloudFormationExecutionRoleArn": {
+                    "description": "The role that is passed to CloudFormation to execute the change set (Default - No role is passed (currently assumed role/credentials are used))",
+                    "type": "string"
+                },
+                "stackTemplateAssetObjectUrl": {
+                    "description": "If the stack template has already been included in the asset manifest, its asset URL (Default - Not uploaded yet, upload just before deploying)",
+                    "type": "string"
+                },
+                "requiresBootstrapStackVersion": {
+                    "description": "Version of bootstrap stack required to deploy this stack (Default - No bootstrap stack required)",
+                    "type": "number"
+                }
+            },
+            "required": [
+                "templateFile"
+            ]
+        },
+        "AssetManifestProperties": {
+            "description": "Artifact properties for the Asset Manifest",
+            "type": "object",
+            "properties": {
+                "file": {
+                    "description": "Filename of the asset manifest",
+                    "type": "string"
+                },
+                "requiresBootstrapStackVersion": {
+                    "description": "Version of bootstrap stack required to deploy this stack (Default - Version 1 (basic modern bootstrap stack))",
+                    "type": "number"
+                }
+            },
+            "required": [
+                "file"
+            ]
+        },
+        "TreeArtifactProperties": {
+            "description": "Artifact properties for the Construct Tree Artifact",
+            "type": "object",
+            "properties": {
+                "file": {
+                    "description": "Filename of the tree artifact",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "file"
+            ]
+        },
+        "NestedCloudAssemblyProperties": {
+            "description": "Artifact properties for nested cloud assemblies",
+            "type": "object",
+            "properties": {
+                "directoryName": {
+                    "description": "Relative path to the nested cloud assembly",
+                    "type": "string"
+                },
+                "displayName": {
+                    "description": "Display name for the cloud assembly (Default - The artifact ID)",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "directoryName"
             ]
         },
         "MissingContext": {
@@ -255,27 +368,347 @@
                     "type": "string"
                 },
                 "provider": {
-                    "description": "The provider from which we expect this context key to be obtained.",
-                    "type": "string"
+                    "$ref": "#/definitions/ContextProvider",
+                    "description": "The provider from which we expect this context key to be obtained."
                 },
                 "props": {
                     "description": "A set of provider-specific options.",
-                    "type": "object",
-                    "additionalProperties": {},
-                    "properties": {
-                        "account": {
-                            "type": "string"
+                    "anyOf": [
+                        {
+                            "$ref": "#/definitions/AmiContextQuery"
                         },
-                        "region": {
-                            "type": "string"
+                        {
+                            "$ref": "#/definitions/AvailabilityZonesContextQuery"
+                        },
+                        {
+                            "$ref": "#/definitions/HostedZoneContextQuery"
+                        },
+                        {
+                            "$ref": "#/definitions/SSMParameterContextQuery"
+                        },
+                        {
+                            "$ref": "#/definitions/VpcContextQuery"
+                        },
+                        {
+                            "$ref": "#/definitions/EndpointServiceAvailabilityZonesContextQuery"
+                        },
+                        {
+                            "$ref": "#/definitions/LoadBalancerContextQuery"
+                        },
+                        {
+                            "$ref": "#/definitions/LoadBalancerListenerContextQuery"
+                        },
+                        {
+                            "$ref": "#/definitions/SecurityGroupContextQuery"
                         }
-                    }
+                    ]
                 }
             },
             "required": [
                 "key",
                 "props",
                 "provider"
+            ]
+        },
+        "ContextProvider": {
+            "description": "Identifier for the context provider",
+            "enum": [
+                "ami",
+                "availability-zones",
+                "endpoint-service-availability-zones",
+                "hosted-zone",
+                "load-balancer",
+                "load-balancer-listener",
+                "security-group",
+                "ssm",
+                "vpc-provider"
+            ],
+            "type": "string"
+        },
+        "AmiContextQuery": {
+            "description": "Query to AMI context provider",
+            "type": "object",
+            "properties": {
+                "account": {
+                    "description": "Account to query",
+                    "type": "string"
+                },
+                "region": {
+                    "description": "Region to query",
+                    "type": "string"
+                },
+                "owners": {
+                    "description": "Owners to DescribeImages call (Default - All owners)",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "filters": {
+                    "description": "Filters to DescribeImages call",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "required": [
+                "account",
+                "filters",
+                "region"
+            ]
+        },
+        "AvailabilityZonesContextQuery": {
+            "description": "Query to availability zone context provider",
+            "type": "object",
+            "properties": {
+                "account": {
+                    "description": "Query account",
+                    "type": "string"
+                },
+                "region": {
+                    "description": "Query region",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "account",
+                "region"
+            ]
+        },
+        "HostedZoneContextQuery": {
+            "description": "Query to hosted zone context provider",
+            "type": "object",
+            "properties": {
+                "account": {
+                    "description": "Query account",
+                    "type": "string"
+                },
+                "region": {
+                    "description": "Query region",
+                    "type": "string"
+                },
+                "domainName": {
+                    "description": "The domain name e.g. example.com to lookup",
+                    "type": "string"
+                },
+                "privateZone": {
+                    "description": "True if the zone you want to find is a private hosted zone",
+                    "default": false,
+                    "type": "boolean"
+                },
+                "vpcId": {
+                    "description": "The VPC ID to that the private zone must be associated with\n\nIf you provide VPC ID and privateZone is false, this will return no results\nand raise an error. (Default - Required if privateZone=true)",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "account",
+                "domainName",
+                "region"
+            ]
+        },
+        "SSMParameterContextQuery": {
+            "description": "Query to SSM Parameter Context Provider",
+            "type": "object",
+            "properties": {
+                "account": {
+                    "description": "Query account",
+                    "type": "string"
+                },
+                "region": {
+                    "description": "Query region",
+                    "type": "string"
+                },
+                "parameterName": {
+                    "description": "Parameter name to query",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "account",
+                "parameterName",
+                "region"
+            ]
+        },
+        "VpcContextQuery": {
+            "description": "Query input for looking up a VPC",
+            "type": "object",
+            "properties": {
+                "account": {
+                    "description": "Query account",
+                    "type": "string"
+                },
+                "region": {
+                    "description": "Query region",
+                    "type": "string"
+                },
+                "filter": {
+                    "description": "Filters to apply to the VPC\n\nFilter parameters are the same as passed to DescribeVpcs.",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "returnAsymmetricSubnets": {
+                    "description": "Whether to populate the subnetGroups field of the {@link VpcContextResponse},\nwhich contains potentially asymmetric subnet groups.",
+                    "default": false,
+                    "type": "boolean"
+                },
+                "subnetGroupNameTag": {
+                    "description": "Optional tag for subnet group name.\nIf not provided, we'll look at the aws-cdk:subnet-name tag.\nIf the subnet does not have the specified tag,\nwe'll use its type as the name. (Default 'aws-cdk:subnet-name')",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "account",
+                "filter",
+                "region"
+            ]
+        },
+        "EndpointServiceAvailabilityZonesContextQuery": {
+            "description": "Query to endpoint service context provider",
+            "type": "object",
+            "properties": {
+                "account": {
+                    "description": "Query account",
+                    "type": "string"
+                },
+                "region": {
+                    "description": "Query region",
+                    "type": "string"
+                },
+                "serviceName": {
+                    "description": "Query service name",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "account",
+                "region",
+                "serviceName"
+            ]
+        },
+        "LoadBalancerContextQuery": {
+            "description": "Query input for looking up a load balancer",
+            "type": "object",
+            "properties": {
+                "account": {
+                    "description": "Query account",
+                    "type": "string"
+                },
+                "region": {
+                    "description": "Query region",
+                    "type": "string"
+                },
+                "loadBalancerType": {
+                    "$ref": "#/definitions/LoadBalancerType",
+                    "description": "Filter load balancers by their type"
+                },
+                "loadBalancerArn": {
+                    "description": "Find by load balancer's ARN (Default - does not search by load balancer arn)",
+                    "type": "string"
+                },
+                "loadBalancerTags": {
+                    "description": "Match load balancer tags (Default - does not match load balancers by tags)",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Tag"
+                    }
+                }
+            },
+            "required": [
+                "account",
+                "loadBalancerType",
+                "region"
+            ]
+        },
+        "LoadBalancerType": {
+            "description": "Type of load balancer",
+            "enum": [
+                "application",
+                "network"
+            ],
+            "type": "string"
+        },
+        "LoadBalancerListenerContextQuery": {
+            "description": "Query input for looking up a load balancer listener",
+            "type": "object",
+            "properties": {
+                "account": {
+                    "description": "Query account",
+                    "type": "string"
+                },
+                "region": {
+                    "description": "Query region",
+                    "type": "string"
+                },
+                "listenerArn": {
+                    "description": "Find by listener's arn (Default - does not find by listener arn)",
+                    "type": "string"
+                },
+                "listenerProtocol": {
+                    "description": "Filter by listener protocol (Default - does not filter by listener protocol)",
+                    "enum": [
+                        "HTTP",
+                        "HTTPS",
+                        "TCP",
+                        "TCP_UDP",
+                        "TLS",
+                        "UDP"
+                    ],
+                    "type": "string"
+                },
+                "listenerPort": {
+                    "description": "Filter listeners by listener port (Default - does not filter by a listener port)",
+                    "type": "number"
+                },
+                "loadBalancerType": {
+                    "$ref": "#/definitions/LoadBalancerType",
+                    "description": "Filter load balancers by their type"
+                },
+                "loadBalancerArn": {
+                    "description": "Find by load balancer's ARN (Default - does not search by load balancer arn)",
+                    "type": "string"
+                },
+                "loadBalancerTags": {
+                    "description": "Match load balancer tags (Default - does not match load balancers by tags)",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Tag"
+                    }
+                }
+            },
+            "required": [
+                "account",
+                "loadBalancerType",
+                "region"
+            ]
+        },
+        "SecurityGroupContextQuery": {
+            "description": "Query input for looking up a security group",
+            "type": "object",
+            "properties": {
+                "account": {
+                    "description": "Query account",
+                    "type": "string"
+                },
+                "region": {
+                    "description": "Query region",
+                    "type": "string"
+                },
+                "securityGroupId": {
+                    "description": "Security group id",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "account",
+                "region",
+                "securityGroupId"
             ]
         },
         "RuntimeInfo": {

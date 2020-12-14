@@ -1,5 +1,8 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-import { Construct, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
+import * as iam from '@aws-cdk/aws-iam';
+import { IResource, Lazy, Names, Resource, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
+import { StatesMetrics } from './stepfunctions-canned-metrics.generated';
 import { CfnActivity } from './stepfunctions.generated';
 
 /**
@@ -57,7 +60,7 @@ export class Activity extends Resource implements IActivity {
   constructor(scope: Construct, id: string, props: ActivityProps = {}) {
     super(scope, id, {
       physicalName: props.activityName ||
-                Lazy.stringValue({ produce: () => this.generateName() }),
+                Lazy.string({ produce: () => this.generateName() }),
     });
 
     const resource = new CfnActivity(this, 'Resource', {
@@ -71,6 +74,20 @@ export class Activity extends Resource implements IActivity {
       sep: ':',
     });
     this.activityName = this.getResourceNameAttribute(resource.attrName);
+  }
+
+  /**
+   * Grant the given identity permissions on this Activity
+   *
+   * @param identity The principal
+   * @param actions The list of desired actions
+   */
+  public grant(identity: iam.IGrantable, ...actions: string[]) {
+    return iam.Grant.addToPrincipal({
+      grantee: identity,
+      actions,
+      resourceArns: [this.activityArn],
+    });
   }
 
   /**
@@ -94,7 +111,7 @@ export class Activity extends Resource implements IActivity {
    * @default average over 5 minutes
    */
   public metricRunTime(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('ActivityRunTime', { statistic: 'avg', ...props });
+    return this.cannedMetric(StatesMetrics.activityRunTimeAverage, props);
   }
 
   /**
@@ -103,7 +120,7 @@ export class Activity extends Resource implements IActivity {
    * @default average over 5 minutes
    */
   public metricScheduleTime(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('ActivityScheduleTime', { statistic: 'avg', ...props });
+    return this.cannedMetric(StatesMetrics.activityScheduleTimeAverage, props);
   }
 
   /**
@@ -112,7 +129,7 @@ export class Activity extends Resource implements IActivity {
    * @default average over 5 minutes
    */
   public metricTime(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('ActivityTime', { statistic: 'avg', ...props });
+    return this.cannedMetric(StatesMetrics.activityTimeAverage, props);
   }
 
   /**
@@ -121,7 +138,7 @@ export class Activity extends Resource implements IActivity {
    * @default sum over 5 minutes
    */
   public metricScheduled(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('ActivitiesScheduled', props);
+    return this.cannedMetric(StatesMetrics.activitiesScheduledSum, props);
   }
 
   /**
@@ -130,7 +147,7 @@ export class Activity extends Resource implements IActivity {
    * @default sum over 5 minutes
    */
   public metricTimedOut(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('ActivitiesTimedOut', props);
+    return this.cannedMetric(StatesMetrics.activitiesTimedOutSum, props);
   }
 
   /**
@@ -139,7 +156,7 @@ export class Activity extends Resource implements IActivity {
    * @default sum over 5 minutes
    */
   public metricStarted(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('ActivitiesStarted', props);
+    return this.cannedMetric(StatesMetrics.activitiesStartedSum, props);
   }
 
   /**
@@ -148,7 +165,7 @@ export class Activity extends Resource implements IActivity {
    * @default sum over 5 minutes
    */
   public metricSucceeded(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('ActivitiesSucceeded', props);
+    return this.cannedMetric(StatesMetrics.activitiesSucceededSum, props);
   }
 
   /**
@@ -157,7 +174,7 @@ export class Activity extends Resource implements IActivity {
    * @default sum over 5 minutes
    */
   public metricFailed(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('ActivitiesFailed', props);
+    return this.cannedMetric(StatesMetrics.activitiesFailedSum, props);
   }
 
   /**
@@ -166,15 +183,24 @@ export class Activity extends Resource implements IActivity {
    * @default sum over 5 minutes
    */
   public metricHeartbeatTimedOut(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('ActivitiesHeartbeatTimedOut', props);
+    return this.cannedMetric(StatesMetrics.activitiesHeartbeatTimedOutSum, props);
   }
 
   private generateName(): string {
-    const name = this.node.uniqueId;
+    const name = Names.uniqueId(this);
     if (name.length > 80) {
       return name.substring(0, 40) + name.substring(name.length - 40);
     }
     return name;
+  }
+
+  private cannedMetric(
+    fn: (dims: { ActivityArn: string }) => cloudwatch.MetricProps,
+    props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return new cloudwatch.Metric({
+      ...fn({ ActivityArn: this.activityArn }),
+      ...props,
+    }).attachTo(this);
   }
 }
 

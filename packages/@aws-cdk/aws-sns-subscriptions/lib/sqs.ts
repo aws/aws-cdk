@@ -1,7 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as sns from '@aws-cdk/aws-sns';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { Construct, Stack } from '@aws-cdk/core';
+import { Construct, Names, Stack } from '@aws-cdk/core';
 import { SubscriptionProps } from './subscription';
 
 /**
@@ -25,6 +25,9 @@ export class SqsSubscription implements sns.ITopicSubscription {
   constructor(private readonly queue: sqs.IQueue, private readonly props: SqsSubscriptionProps = {}) {
   }
 
+  /**
+   * Returns a configuration for an SQS queue to subscribe to an SNS topic
+   */
   public bind(topic: sns.ITopic): sns.TopicSubscriptionConfig {
     // Create subscription under *consuming* construct to make sure it ends up
     // in the correct stack in cases of cross-stack subscriptions.
@@ -45,12 +48,13 @@ export class SqsSubscription implements sns.ITopicSubscription {
 
     return {
       subscriberScope: this.queue,
-      subscriberId: topic.node.uniqueId,
+      subscriberId: Names.nodeUniqueId(topic.node),
       endpoint: this.queue.queueArn,
       protocol: sns.SubscriptionProtocol.SQS,
       rawMessageDelivery: this.props.rawMessageDelivery,
       filterPolicy: this.props.filterPolicy,
       region: this.regionFromArn(topic),
+      deadLetterQueue: this.props.deadLetterQueue,
     };
   }
 

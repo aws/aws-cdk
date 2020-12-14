@@ -1,7 +1,8 @@
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
-import { Construct, Duration, IResource, Resource } from '@aws-cdk/core';
+import { Duration, IResource, Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { AliasTargetInstance } from './alias-target-instance';
-import { CnameInstance, CnameInstanceBaseProps  } from './cname-instance';
+import { CnameInstance, CnameInstanceBaseProps } from './cname-instance';
 import { IInstance } from './instance';
 import { IpInstance, IpInstanceBaseProps } from './ip-instance';
 import { INamespace, NamespaceType } from './namespace';
@@ -123,7 +124,7 @@ export interface DnsServiceProps extends BaseServiceProps {
 
 export interface ServiceProps extends DnsServiceProps {
   /**
-   * The ID of the namespace that you want to use for DNS configuration.
+   * The namespace that you want to use for DNS configuration.
    */
   readonly namespace: INamespace;
 }

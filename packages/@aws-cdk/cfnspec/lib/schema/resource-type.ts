@@ -38,7 +38,7 @@ export interface TaggableResource extends ResourceType {
   }
 }
 
-export type Attribute = PrimitiveAttribute | ListAttribute;
+export type Attribute = PrimitiveAttribute | ListAttribute | MapAttribute;
 
 export interface PrimitiveAttribute {
   PrimitiveType: PrimitiveType;
@@ -54,6 +54,13 @@ export interface PrimitiveListAttribute {
 export interface ComplexListAttribute {
   Type: 'List';
   ItemType: string;
+}
+
+export type MapAttribute = PrimitiveMapAttribute;
+
+export interface PrimitiveMapAttribute {
+  Type: 'Map';
+  PrimitiveItemType: PrimitiveType;
 }
 
 /**
@@ -83,12 +90,20 @@ export function isListAttribute(spec: Attribute): spec is ListAttribute {
   return (spec as ListAttribute).Type === 'List';
 }
 
+export function isMapAttribute(spec: Attribute): spec is MapAttribute {
+  return (spec as MapAttribute).Type === 'Map';
+}
+
 export function isPrimitiveListAttribute(spec: Attribute): spec is PrimitiveListAttribute {
   return isListAttribute(spec) && !!(spec as PrimitiveListAttribute).PrimitiveItemType;
 }
 
 export function isComplexListAttribute(spec: Attribute): spec is ComplexListAttribute {
   return isListAttribute(spec) && !!(spec as ComplexListAttribute).ItemType;
+}
+
+export function isPrimitiveMapAttribute(spec: Attribute): spec is PrimitiveMapAttribute {
+  return isMapAttribute(spec) && !!(spec as PrimitiveMapAttribute).PrimitiveItemType;
 }
 
 /**

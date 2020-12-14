@@ -1,0 +1,26 @@
+{
+  "Resources": {
+    "Bucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": { 
+          "Fn::Sub": "${ELB.SourceSecurityGroup.GroupName}"
+        }
+      }
+    },
+    "ELB": {
+      "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
+      "Properties": {
+        "AvailabilityZones": [
+          "us-east-1a"
+        ],
+        "CrossZone": "true",
+        "Listeners": [{
+          "LoadBalancerPort": "80",
+          "InstancePort": "80",
+          "Protocol": "HTTP"
+        }]
+      }
+    }
+  }
+}

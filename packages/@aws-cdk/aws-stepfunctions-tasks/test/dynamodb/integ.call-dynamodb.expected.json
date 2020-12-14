@@ -1,5 +1,29 @@
 {
   "Resources": {
+    "Messages804FA4EB": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+        "KeySchema": [
+          {
+            "AttributeName": "MessageId",
+            "KeyType": "HASH"
+          }
+        ],
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "MessageId",
+            "AttributeType": "S"
+          }
+        ],
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 10,
+          "WriteCapacityUnits": 5
+        },
+        "TableName": "Messages"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
     "StateMachineRoleB840431D": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -52,7 +76,10 @@
                     {
                       "Ref": "AWS::AccountId"
                     },
-                    ":table/Messages"
+                    ":table/",
+                    {
+                      "Ref": "Messages804FA4EB"
+                    }
                   ]
                 ]
               }
@@ -76,7 +103,10 @@
                     {
                       "Ref": "AWS::AccountId"
                     },
-                    ":table/Messages"
+                    ":table/",
+                    {
+                      "Ref": "Messages804FA4EB"
+                    }
                   ]
                 ]
               }
@@ -100,7 +130,10 @@
                     {
                       "Ref": "AWS::AccountId"
                     },
-                    ":table/Messages"
+                    ":table/",
+                    {
+                      "Ref": "Messages804FA4EB"
+                    }
                   ]
                 ]
               }
@@ -124,7 +157,10 @@
                     {
                       "Ref": "AWS::AccountId"
                     },
-                    ":table/Messages"
+                    ":table/",
+                    {
+                      "Ref": "Messages804FA4EB"
+                    }
                   ]
                 ]
               }
@@ -143,38 +179,58 @@
     "StateMachine2E01A3A5": {
       "Type": "AWS::StepFunctions::StateMachine",
       "Properties": {
-        "DefinitionString": {
-          "Fn::Join": [
-            "",
-            [
-              "{\"StartAt\":\"Start\",\"States\":{\"Start\":{\"Type\":\"Pass\",\"Result\":{\"bar\":\"SomeValue\"},\"Next\":\"PutItem\"},\"PutItem\":{\"Next\":\"GetItemAfterPut\",\"Parameters\":{\"Item\":{\"MessageId\":{\"S\":\"1234\"},\"Text\":{\"S.$\":\"$.bar\"},\"TotalCount\":{\"N\":\"18\"}},\"TableName\":\"Messages\"},\"Type\":\"Task\",\"Resource\":\"arn:",
-              {
-                "Ref": "AWS::Partition"
-              },
-              ":states:::dynamodb:putItem\"},\"GetItemAfterPut\":{\"Next\":\"UpdateItem\",\"Parameters\":{\"Key\":{\"MessageId\":{\"S\":\"1234\"}},\"TableName\":\"Messages\",\"ConsistentRead\":false},\"Type\":\"Task\",\"Resource\":\"arn:",
-              {
-                "Ref": "AWS::Partition"
-              },
-              ":states:::dynamodb:getItem\"},\"UpdateItem\":{\"Next\":\"GetItemAfterUpdate\",\"Parameters\":{\"Key\":{\"MessageId\":{\"S\":\"1234\"}},\"TableName\":\"Messages\",\"ExpressionAttributeValues\":{\":val\":{\"N.$\":\"$.Item.TotalCount.N\"},\":rand\":{\"N\":\"24\"}},\"UpdateExpression\":\"SET TotalCount = :val + :rand\"},\"Type\":\"Task\",\"Resource\":\"arn:",
-              {
-                "Ref": "AWS::Partition"
-              },
-              ":states:::dynamodb:updateItem\"},\"GetItemAfterUpdate\":{\"Next\":\"DeleteItem\",\"Parameters\":{\"Key\":{\"MessageId\":{\"S\":\"1234\"}},\"TableName\":\"Messages\",\"ConsistentRead\":false},\"OutputPath\":\"$.Item.TotalCount.N\",\"Type\":\"Task\",\"Resource\":\"arn:",
-              {
-                "Ref": "AWS::Partition"
-              },
-              ":states:::dynamodb:getItem\"},\"DeleteItem\":{\"End\":true,\"Parameters\":{\"Key\":{\"MessageId\":{\"S\":\"1234\"}},\"TableName\":\"Messages\"},\"Type\":\"Task\",\"Resource\":\"arn:",
-              {
-                "Ref": "AWS::Partition"
-              },
-              ":states:::dynamodb:deleteItem\",\"ResultPath\":null}}}"
-            ]
-          ]
-        },
         "RoleArn": {
           "Fn::GetAtt": [
             "StateMachineRoleB840431D",
             "Arn"
+          ]
+        },
+        "DefinitionString": {
+          "Fn::Join": [
+            "",
+            [
+              "{\"StartAt\":\"Start\",\"States\":{\"Start\":{\"Type\":\"Pass\",\"Result\":{\"bar\":\"SomeValue\"},\"Next\":\"PutItem\"},\"PutItem\":{\"Next\":\"GetItemAfterPut\",\"Type\":\"Task\",\"Resource\":\"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":states:::dynamodb:putItem\",\"Parameters\":{\"Item\":{\"MessageId\":{\"S\":\"1234\"},\"Text\":{\"S.$\":\"$.bar\"},\"TotalCount\":{\"N\":\"18\"},\"Activated\":{\"BOOL.$\":\"$.foo\"}},\"TableName\":\"",
+              {
+                "Ref": "Messages804FA4EB"
+              },
+              "\"}},\"GetItemAfterPut\":{\"Next\":\"UpdateItem\",\"Type\":\"Task\",\"Resource\":\"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":states:::dynamodb:getItem\",\"Parameters\":{\"Key\":{\"MessageId\":{\"S\":\"1234\"}},\"TableName\":\"",
+              {
+                "Ref": "Messages804FA4EB"
+              },
+              "\",\"ConsistentRead\":false}},\"UpdateItem\":{\"Next\":\"GetItemAfterUpdate\",\"Type\":\"Task\",\"Resource\":\"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":states:::dynamodb:updateItem\",\"Parameters\":{\"Key\":{\"MessageId\":{\"S\":\"1234\"}},\"TableName\":\"",
+              {
+                "Ref": "Messages804FA4EB"
+              },
+              "\",\"ExpressionAttributeValues\":{\":val\":{\"N.$\":\"$.Item.TotalCount.N\"},\":rand\":{\"N\":\"24\"}},\"UpdateExpression\":\"SET TotalCount = :val + :rand\"}},\"GetItemAfterUpdate\":{\"Next\":\"DeleteItem\",\"Type\":\"Task\",\"OutputPath\":\"$.Item.TotalCount.N\",\"Resource\":\"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":states:::dynamodb:getItem\",\"Parameters\":{\"Key\":{\"MessageId\":{\"S\":\"1234\"}},\"TableName\":\"",
+              {
+                "Ref": "Messages804FA4EB"
+              },
+              "\",\"ConsistentRead\":false}},\"DeleteItem\":{\"End\":true,\"Type\":\"Task\",\"ResultPath\":null,\"Resource\":\"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":states:::dynamodb:deleteItem\",\"Parameters\":{\"Key\":{\"MessageId\":{\"S\":\"1234\"}},\"TableName\":\"",
+              {
+                "Ref": "Messages804FA4EB"
+              },
+              "\"}}}}"
+            ]
           ]
         }
       },

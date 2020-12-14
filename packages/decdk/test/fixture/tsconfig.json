@@ -10,6 +10,7 @@
       "es2018"
     ],
     "module": "CommonJS",
+    "newLine": "lf",
     "noEmitOnError": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitAny": true,

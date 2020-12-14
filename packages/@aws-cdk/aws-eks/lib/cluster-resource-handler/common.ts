@@ -60,7 +60,7 @@ export abstract class ResourceHandler {
   }
 
   protected log(x: any) {
-    // tslint:disable-next-line: no-console
+    // eslint-disable-next-line no-console
     console.log(JSON.stringify(x, undefined, 2));
   }
 

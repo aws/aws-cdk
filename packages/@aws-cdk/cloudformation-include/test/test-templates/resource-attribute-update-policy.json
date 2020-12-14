@@ -1,0 +1,61 @@
+{
+  "Parameters": {
+    "WaitOnResourceSignals": {
+      "Type": "String",
+      "Default": "true"
+    }
+  },
+  "Resources": {
+    "CodeDeployApp": {
+      "Type": "AWS::CodeDeploy::Application"
+    },
+    "CodeDeployDg": {
+      "Type": "AWS::CodeDeploy::DeploymentGroup",
+      "Properties": {
+        "ApplicationName": { "Ref":  "CodeDeployApp" },
+        "ServiceRoleArn": "my-role-arn"
+      }
+    },
+    "Bucket": {
+      "Type": "AWS::S3::Bucket",
+      "UpdatePolicy": {
+        "AutoScalingReplacingUpdate": {
+          "WillReplace": false
+        },
+        "AutoScalingRollingUpdate": {
+          "MaxBatchSize" : 1,
+          "MinInstancesInService" : 2,
+          "MinSuccessfulInstancesPercent" : 3,
+          "PauseTime" : "PT4M3S",
+          "SuspendProcesses" : [
+            "Launch",
+            "Terminate",
+            "HealthCheck",
+            "ReplaceUnhealthy",
+            "AZRebalance",
+            "AlarmNotification",
+            "ScheduledActions",
+            "AddToLoadBalancer"
+          ],
+          "WaitOnResourceSignals" : {
+            "Fn::Equals": [
+              "true",
+              { "Ref":  "WaitOnResourceSignals" }
+            ]
+          }
+        },
+        "AutoScalingScheduledAction": {
+          "IgnoreUnmodifiedGroupSizeProperties": true
+        },
+        "CodeDeployLambdaAliasUpdate" : {
+          "AfterAllowTrafficHook" : "Lambda1",
+          "ApplicationName" : { "Ref": "CodeDeployApp" },
+          "BeforeAllowTrafficHook" : "Lambda2",
+          "DeploymentGroupName" : { "Ref": "CodeDeployDg" }
+        },
+        "EnableVersionUpgrade": "true",
+        "UseOnlineResharding": false
+      }
+    }
+  }
+}

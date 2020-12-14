@@ -2,6 +2,7 @@ import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
+import { BitBucketSourceAction } from '..';
 import { Action } from '../action';
 
 /**
@@ -76,6 +77,13 @@ export interface CodeBuildActionProps extends codepipeline.CommonAwsActionProps 
    * @default - No additional environment variables are specified.
    */
   readonly environmentVariables?: { [name: string]: codebuild.BuildEnvironmentVariable };
+
+  /**
+   * Trigger a batch build.
+   *
+   * @default false
+   */
+  readonly executeBatchBuild?: boolean;
 }
 
 /**
@@ -153,6 +161,19 @@ export class CodeBuildAction extends Action {
       });
     }
 
+    // if any of the inputs come from the BitBucketSourceAction
+    // with codeBuildCloneOutput=true,
+    // grant the Project's Role to use the connection
+    for (const inputArtifact of this.actionProperties.inputs || []) {
+      const connectionArn = inputArtifact.getMetadata(BitBucketSourceAction._CONNECTION_ARN_PROPERTY);
+      if (connectionArn) {
+        this.props.project.addToRolePolicy(new iam.PolicyStatement({
+          actions: ['codestar-connections:UseConnection'],
+          resources: [connectionArn],
+        }));
+      }
+    }
+
     const configuration: any = {
       ProjectName: this.props.project.projectName,
       EnvironmentVariables: this.props.environmentVariables &&
@@ -160,7 +181,10 @@ export class CodeBuildAction extends Action {
     };
     if ((this.actionProperties.inputs || []).length > 1) {
       // lazy, because the Artifact name might be generated lazily
-      configuration.PrimarySource = cdk.Lazy.stringValue({ produce: () => this.props.input.artifactName });
+      configuration.PrimarySource = cdk.Lazy.string({ produce: () => this.props.input.artifactName });
+    }
+    if (this.props.executeBatchBuild) {
+      configuration.BatchEnabled = 'true';
     }
     return {
       configuration,

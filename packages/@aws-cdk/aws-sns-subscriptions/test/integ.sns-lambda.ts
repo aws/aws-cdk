@@ -1,5 +1,6 @@
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sns from '@aws-cdk/aws-sns';
+import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
 import * as subs from '../lib';
 
@@ -15,7 +16,9 @@ class SnsToLambda extends cdk.Stack {
       code: lambda.Code.fromInline(`exports.handler = ${handler.toString()}`),
     });
 
-    topic.addSubscription(new subs.LambdaSubscription(fction));
+    topic.addSubscription(new subs.LambdaSubscription(fction, {
+      deadLetterQueue: new sqs.Queue(this, 'DeadLetterQueue'),
+    }));
 
     const fctionFiltered = new lambda.Function(this, 'Filtered', {
       handler: 'index.handler',
@@ -47,7 +50,7 @@ new SnsToLambda(app, 'aws-cdk-sns-lambda');
 app.synth();
 
 function handler(event: any, _context: any, callback: any) {
-  // tslint:disable:no-console
+  /* eslint-disable no-console */
   console.log('====================================================');
   console.log(JSON.stringify(event, undefined, 2));
   console.log('====================================================');

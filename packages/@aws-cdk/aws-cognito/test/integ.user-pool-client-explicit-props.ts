@@ -1,5 +1,5 @@
 import { App, Stack } from '@aws-cdk/core';
-import { OAuthScope, UserPool } from '../lib';
+import { OAuthScope, UserPool, AttributeSet } from '../lib';
 
 const app = new App();
 const stack = new Stack(app, 'integ-user-pool-client-explicit-props');
@@ -11,7 +11,6 @@ userpool.addClient('myuserpoolclient', {
   authFlows: {
     adminUserPassword: true,
     custom: true,
-    refreshToken: true,
     userPassword: true,
     userSrp: true,
   },
@@ -27,8 +26,9 @@ userpool.addClient('myuserpoolclient', {
       OAuthScope.OPENID,
       OAuthScope.PROFILE,
       OAuthScope.COGNITO_ADMIN,
-      OAuthScope.custom('my-resource-server/my-scope'),
     ],
-    callbackUrls: [ 'https://redirect-here.myapp.com' ],
+    callbackUrls: ['https://redirect-here.myapp.com'],
   },
+  preventUserExistenceErrors: true,
+  writeAttributes: AttributeSet.profileWritable(['custom:attribute_one', 'custom:attribute_two']),
 });

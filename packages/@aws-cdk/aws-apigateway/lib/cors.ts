@@ -104,12 +104,12 @@ export class Cors {
   /**
    * All origins.
    */
-  public static readonly ALL_ORIGINS = [ '*' ];
+  public static readonly ALL_ORIGINS = ['*'];
 
   /**
    * The set of default headers allowed for CORS and useful for API Gateway.
    */
-  public static readonly DEFAULT_HEADERS = [ 'Content-Type', 'X-Amz-Date', 'Authorization', 'X-Api-Key', 'X-Amz-Security-Token', 'X-Amz-User-Agent' ];
+  public static readonly DEFAULT_HEADERS = ['Content-Type', 'X-Amz-Date', 'Authorization', 'X-Api-Key', 'X-Amz-Security-Token', 'X-Amz-User-Agent'];
 
   // utility class
   private constructor() { }

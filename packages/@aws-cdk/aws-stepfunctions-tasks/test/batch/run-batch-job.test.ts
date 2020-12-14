@@ -1,9 +1,9 @@
+import * as path from 'path';
 import * as batch from '@aws-cdk/aws-batch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
-import * as path from 'path';
 import * as tasks from '../../lib';
 
 let stack: cdk.Stack;
@@ -86,7 +86,7 @@ test('Task with all the parameters', () => {
       },
       dependsOn: [{ jobId: '1234', type: 'some_type' }],
       payload: {
-        foo: sfn.Data.stringAt('$.bar'),
+        foo: sfn.JsonPath.stringAt('$.bar'),
       },
       attempts: 3,
       timeout: cdk.Duration.seconds(60),
@@ -136,11 +136,11 @@ test('supports tokens', () => {
   const task = new sfn.Task(stack, 'Task', {
     task: new tasks.RunBatchJob({
       jobDefinition: batchJobDefinition,
-      jobName: sfn.Data.stringAt('$.jobName'),
+      jobName: sfn.JsonPath.stringAt('$.jobName'),
       jobQueue: batchJobQueue,
-      arraySize: sfn.Data.numberAt('$.arraySize'),
-      timeout: cdk.Duration.seconds(sfn.Data.numberAt('$.timeout')),
-      attempts: sfn.Data.numberAt('$.attempts'),
+      arraySize: sfn.JsonPath.numberAt('$.arraySize'),
+      timeout: cdk.Duration.seconds(sfn.JsonPath.numberAt('$.timeout')),
+      attempts: sfn.JsonPath.numberAt('$.attempts'),
     }),
   });
 

@@ -4,16 +4,22 @@
 export interface StringConditions {
   /**
    * Match one or more values.
+   *
+   * @default - None
    */
   readonly whitelist?: string[];
 
   /**
    * Match any value that doesn't include any of the specified values.
+   *
+   * @default - None
    */
   readonly blacklist?: string[];
 
   /**
    * Matches values that begins with the specified prefixes.
+   *
+   * @default - None
    */
   readonly matchPrefixes?: string[];
 }
@@ -39,36 +45,50 @@ export interface BetweenCondition {
 export interface NumericConditions {
   /**
    * Match one or more values.
+   *
+   * @default - None
    */
   readonly whitelist?: number[];
 
   /**
    * Match values that are greater than the specified value.
+   *
+   * @default - None
    */
   readonly greaterThan?: number;
 
   /**
    * Match values that are greater than or equal to the specified value.
+   *
+   * @default - None
    */
   readonly greaterThanOrEqualTo?: number;
 
   /**
    * Match values that are less than the specified value.
+   *
+   * @default - None
    */
   readonly lessThan?: number;
 
   /**
    * Match values that are less than or equal to the specified value.
+   *
+   * @default - None
    */
   readonly lessThanOrEqualTo?: number;
 
   /**
    * Match values that are between the specified values.
+   *
+   * @default - None
    */
   readonly between?: BetweenCondition;
 
   /**
    * Match values that are strictly between the specified values.
+   *
+   * @default - None
    */
   readonly betweenStrict?: BetweenCondition;
 }
@@ -125,11 +145,11 @@ export class SubscriptionFilter {
     }
 
     if (numericConditions.between) {
-      conditions.push({ numeric: ['>=', numericConditions.between.start, '<=', numericConditions.between.stop ]});
+      conditions.push({ numeric: ['>=', numericConditions.between.start, '<=', numericConditions.between.stop] });
     }
 
     if (numericConditions.betweenStrict) {
-      conditions.push({ numeric: ['>', numericConditions.betweenStrict.start, '<', numericConditions.betweenStrict.stop ]});
+      conditions.push({ numeric: ['>', numericConditions.betweenStrict.start, '<', numericConditions.betweenStrict.stop] });
     }
 
     return new SubscriptionFilter(conditions);
@@ -142,5 +162,9 @@ export class SubscriptionFilter {
     return new SubscriptionFilter([{ exists: true }]);
   }
 
+  /**
+   *
+   * @param conditions conditions that specify the message attributes that should be included, excluded, matched, etc.
+   */
   constructor(public readonly conditions: any[] = []) {}
 }

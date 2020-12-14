@@ -1,3 +1,4 @@
+import '@aws-cdk/assert/jest';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
 import * as tasks from '../../lib';
@@ -11,13 +12,11 @@ beforeEach(() => {
 
 test('Modify an InstanceFleet with static ClusterId, InstanceFleetName, and InstanceFleetConfiguration', () => {
   // WHEN
-  const task = new sfn.Task(stack, 'Task', {
-    task: new tasks.EmrModifyInstanceFleetByName({
-      clusterId: 'ClusterId',
-      instanceFleetName: 'InstanceFleetName',
-      targetOnDemandCapacity: 2,
-      targetSpotCapacity: 0,
-    }),
+  const task = new tasks.EmrModifyInstanceFleetByName(stack, 'Task', {
+    clusterId: 'ClusterId',
+    instanceFleetName: 'InstanceFleetName',
+    targetOnDemandCapacity: 2,
+    targetSpotCapacity: 0,
   });
 
   // THEN
@@ -47,15 +46,61 @@ test('Modify an InstanceFleet with static ClusterId, InstanceFleetName, and Inst
   });
 });
 
+test('task policies are generated', () => {
+  // WHEN
+  const task = new tasks.EmrModifyInstanceFleetByName(stack, 'Task', {
+    clusterId: 'ClusterId',
+    instanceFleetName: 'InstanceFleetName',
+    targetOnDemandCapacity: 2,
+    targetSpotCapacity: 0,
+  });
+  new sfn.StateMachine(stack, 'SM', {
+    definition: task,
+  });
+
+  // THEN
+  expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: [
+            'elasticmapreduce:ModifyInstanceFleet',
+            'elasticmapreduce:ListInstanceFleets',
+          ],
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':elasticmapreduce:',
+                {
+                  Ref: 'AWS::Region',
+                },
+                ':',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':cluster/*',
+              ],
+            ],
+          },
+        },
+      ],
+    },
+  });
+});
+
 test('Modify an InstanceFleet with ClusterId from payload and static InstanceFleetName and InstanceFleetConfiguration', () => {
   // WHEN
-  const task = new sfn.Task(stack, 'Task', {
-    task: new tasks.EmrModifyInstanceFleetByName({
-      clusterId: sfn.Data.stringAt('$.ClusterId'),
-      instanceFleetName: 'InstanceFleetName',
-      targetOnDemandCapacity: 2,
-      targetSpotCapacity: 0,
-    }),
+  const task = new tasks.EmrModifyInstanceFleetByName(stack, 'Task', {
+    clusterId: sfn.JsonPath.stringAt('$.ClusterId'),
+    instanceFleetName: 'InstanceFleetName',
+    targetOnDemandCapacity: 2,
+    targetSpotCapacity: 0,
   });
 
   // THEN
@@ -87,13 +132,11 @@ test('Modify an InstanceFleet with ClusterId from payload and static InstanceFle
 
 test('Modify an InstanceFleet with static ClusterId and InstanceFleetConfigurateion and InstanceFleetName from payload', () => {
   // WHEN
-  const task = new sfn.Task(stack, 'Task', {
-    task: new tasks.EmrModifyInstanceFleetByName({
-      clusterId: 'ClusterId',
-      instanceFleetName: sfn.Data.stringAt('$.InstanceFleetName'),
-      targetOnDemandCapacity: 2,
-      targetSpotCapacity: 0,
-    }),
+  const task = new tasks.EmrModifyInstanceFleetByName(stack, 'Task', {
+    clusterId: 'ClusterId',
+    instanceFleetName: sfn.JsonPath.stringAt('$.InstanceFleetName'),
+    targetOnDemandCapacity: 2,
+    targetSpotCapacity: 0,
   });
 
   // THEN
@@ -125,13 +168,11 @@ test('Modify an InstanceFleet with static ClusterId and InstanceFleetConfigurate
 
 test('Modify an InstanceFleet with static ClusterId and InstanceFleetName and Target Capacities from payload', () => {
   // WHEN
-  const task = new sfn.Task(stack, 'Task', {
-    task: new tasks.EmrModifyInstanceFleetByName({
-      clusterId: 'ClusterId',
-      instanceFleetName: 'InstanceFleetName',
-      targetOnDemandCapacity: sfn.Data.numberAt('$.TargetOnDemandCapacity'),
-      targetSpotCapacity: sfn.Data.numberAt('$.TargetSpotCapacity'),
-    }),
+  const task = new tasks.EmrModifyInstanceFleetByName(stack, 'Task', {
+    clusterId: 'ClusterId',
+    instanceFleetName: 'InstanceFleetName',
+    targetOnDemandCapacity: sfn.JsonPath.numberAt('$.TargetOnDemandCapacity'),
+    targetSpotCapacity: sfn.JsonPath.numberAt('$.TargetSpotCapacity'),
   });
 
   // THEN

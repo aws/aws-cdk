@@ -12,7 +12,7 @@ export class UserPoolDomainTarget implements IAliasRecordTarget {
   public bind(_record: IRecordSet): AliasRecordTargetConfig {
     return {
       dnsName: this.domain.cloudFrontDomainName,
-      hostedZoneId: CloudFrontTarget.CLOUDFRONT_ZONE_ID,
+      hostedZoneId: CloudFrontTarget.getHostedZoneId(this.domain),
     };
   }
 }

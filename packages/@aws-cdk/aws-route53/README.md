@@ -1,5 +1,6 @@
-## Amazon Route53 Construct Library
+# Amazon Route53 Construct Library
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
@@ -7,6 +8,7 @@
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
 
 To add a public hosted zone:
@@ -37,9 +39,10 @@ const zone = new route53.PrivateHostedZone(this, 'HostedZone', {
 
 Additional VPCs can be added with `zone.addVpc()`.
 
-### Adding Records
+## Adding Records
 
 To add a TXT record to your zone:
+
 ```ts
 import * as route53 from '@aws-cdk/aws-route53';
 
@@ -58,6 +61,7 @@ new route53.TxtRecord(this, 'TXTRecord', {
 ```
 
 To add a A record to your zone:
+
 ```ts
 import * as route53 from '@aws-cdk/aws-route53';
 
@@ -68,6 +72,7 @@ new route53.ARecord(this, 'ARecord', {
 ```
 
 To add a AAAA record pointing to a CloudFront distribution:
+
 ```ts
 import * as route53 from '@aws-cdk/aws-route53';
 import * as targets from '@aws-cdk/aws-route53-targets';
@@ -83,7 +88,29 @@ Constructs are available for A, AAAA, CAA, CNAME, MX, NS, SRV and TXT records.
 Use the `CaaAmazonRecord` construct to easily restrict certificate authorities
 allowed to issue certificates for a domain to Amazon only.
 
-### Adding records to existing hosted zones
+## Imports
+
+If you don't know the ID of the Hosted Zone to import, you can use the 
+`HostedZone.fromLookup`:
+
+```ts
+HostedZone.fromLookup(this, 'MyZone', {
+  domainName: 'example.com'
+});
+```
+
+`HostedZone.fromLookup` requires an environment to be configured. Check
+out the [documentation](https://docs.aws.amazon.com/cdk/latest/guide/environments.html) for more documentation and examples. CDK 
+automatically looks into your `~/.aws/config` file for the `[default]` profile.
+If you want to specify a different account run `cdk deploy --profile [profile]`.
+
+```ts
+new MyDevStack(app, 'dev', { 
+  env: { 
+    account: process.env.CDK_DEFAULT_ACCOUNT, 
+    region: process.env.CDK_DEFAULT_REGION 
+}});
+```
 
 If you know the ID and Name of a Hosted Zone, you can import it directly:
 
@@ -94,11 +121,11 @@ const zone = HostedZone.fromHostedZoneAttributes(this, 'MyZone', {
 });
 ```
 
-If you don't know the ID of a Hosted Zone, you can use the `HostedZone.fromLookup`
-to discover and import it:
+Alternatively, use the `HostedZone.fromHostedZoneId` to import hosted zones if
+you know the ID and the retrieval for the `zoneName` is undesirable.
 
 ```ts
-HostedZone.fromLookup(this, 'MyZone', {
-  domainName: 'example.com'
+const zone = HostedZone.fromHostedZoneId(this, 'MyZone', {
+  hostedZoneId: 'ZOJJZC49E0EPZ',
 });
 ```

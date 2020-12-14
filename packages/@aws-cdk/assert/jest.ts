@@ -1,5 +1,6 @@
 import * as core from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
+import { countResources } from './lib';
 import { JestFriendlyAssertion } from './lib/assertion';
 import { haveOutput, HaveOutputProperties } from './lib/assertions/have-output';
 import { HaveResourceAssertion, ResourcePart } from './lib/assertions/have-resource';
@@ -25,6 +26,8 @@ declare global {
         comparison?: ResourcePart): R;
 
       toHaveOutput(props: HaveOutputProperties): R;
+
+      toCountResources(resourceType: string, count: number): R;
     }
   }
 }
@@ -76,6 +79,14 @@ expect.extend({
     props: HaveOutputProperties) {
 
     return applyAssertion(haveOutput(props), actual);
+  },
+
+  toCountResources(
+    actual: cxapi.CloudFormationStackArtifact | core.Stack,
+    resourceType: string,
+    count = 1) {
+
+    return applyAssertion(countResources(resourceType, count), actual);
   },
 });
 

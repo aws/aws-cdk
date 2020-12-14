@@ -1,11 +1,11 @@
-import { Assertion } from '../assertion';
+import { Assertion, JestFriendlyAssertion } from '../assertion';
 import { StackInspector } from '../inspector';
 import { isSuperObject } from './have-resource';
 
 /**
  * An assertion to check whether a resource of a given type and with the given properties exists, disregarding properties
  */
-export function countResources(resourceType: string, count = 1): Assertion<StackInspector> {
+export function countResources(resourceType: string, count = 1): JestFriendlyAssertion<StackInspector> {
   return new CountResourcesAssertion(resourceType, count);
 }
 
@@ -16,7 +16,7 @@ export function countResourcesLike(resourceType: string, count = 1, props: any):
   return new CountResourcesAssertion(resourceType, count, props);
 }
 
-class CountResourcesAssertion extends Assertion<StackInspector> {
+class CountResourcesAssertion extends JestFriendlyAssertion<StackInspector> {
   private inspected: number = 0;
   private readonly props: any;
 
@@ -46,6 +46,10 @@ class CountResourcesAssertion extends Assertion<StackInspector> {
     }
 
     return counted === this.count;
+  }
+
+  public generateErrorMessage(): string {
+    return this.description;
   }
 
   public get description(): string {

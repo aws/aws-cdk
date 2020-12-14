@@ -8,7 +8,7 @@ import { App, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as cpactions from '../../lib';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
   'CodeBuild action': {
@@ -193,6 +193,61 @@ export = {
                 'Name': 'Approve',
                 'Configuration': {
                   'CustomData': '#{Build_CodeBuild_NS.SomeVar}',
+                },
+              },
+            ],
+          },
+        ],
+      }));
+
+      test.done();
+    },
+
+    'sets the BatchEnabled configuration'(test: Test) {
+      const stack = new Stack();
+
+      const codeBuildProject = new codebuild.PipelineProject(stack, 'CodeBuild');
+
+      const sourceOutput = new codepipeline.Artifact();
+      new codepipeline.Pipeline(stack, 'Pipeline', {
+        stages: [
+          {
+            stageName: 'Source',
+            actions: [
+              new cpactions.S3SourceAction({
+                actionName: 'S3_Source',
+                bucket: new s3.Bucket(stack, 'Bucket'),
+                bucketKey: 'key',
+                output: sourceOutput,
+              }),
+            ],
+          },
+          {
+            stageName: 'Build',
+            actions: [
+              new cpactions.CodeBuildAction({
+                actionName: 'CodeBuild',
+                input: sourceOutput,
+                project: codeBuildProject,
+                executeBatchBuild: true,
+              }),
+            ],
+          },
+        ],
+      });
+
+      expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+        'Stages': [
+          {
+            'Name': 'Source',
+          },
+          {
+            'Name': 'Build',
+            'Actions': [
+              {
+                'Name': 'CodeBuild',
+                'Configuration': {
+                  'BatchEnabled': 'true',
                 },
               },
             ],

@@ -1,5 +1,6 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Chain } from '../chain';
 import { FieldUtils } from '../fields';
 import { StateGraph } from '../state-graph';
@@ -11,6 +12,8 @@ import { renderJsonPath, State } from './state';
 
 /**
  * Props that are common to all tasks
+ *
+ * @deprecated - replaced by service integration specific classes (i.e. LambdaInvoke, SnsPublish)
  */
 export interface TaskProps {
   /**
@@ -28,7 +31,7 @@ export interface TaskProps {
   /**
    * JSONPath expression to select part of the state to be the input to this state.
    *
-   * May also be the special value DISCARD, which will cause the effective
+   * May also be the special value JsonPath.DISCARD, which will cause the effective
    * input to be the empty object {}.
    *
    * @default $
@@ -38,7 +41,7 @@ export interface TaskProps {
   /**
    * JSONPath expression to select part of the state to be the output to this state.
    *
-   * May also be the special value DISCARD, which will cause the effective
+   * May also be the special value JsonPath.DISCARD, which will cause the effective
    * output to be the empty object {}.
    *
    * @default $
@@ -48,7 +51,7 @@ export interface TaskProps {
   /**
    * JSONPath expression to indicate where to inject the state's output
    *
-   * May also be the special value DISCARD, which will cause the state's
+   * May also be the special value JsonPath.DISCARD, which will cause the state's
    * input to become its output.
    *
    * @default $
@@ -98,13 +101,15 @@ export interface TaskProps {
  *
  * For some resource types, more specific subclasses of Task may be available
  * which are more convenient to use.
+ *
+ * @deprecated - replaced by service integration specific classes (i.e. LambdaInvoke, SnsPublish)
  */
 export class Task extends State implements INextable {
   public readonly endStates: INextable[];
   private readonly timeout?: cdk.Duration;
   private readonly taskProps: StepFunctionsTaskConfig;
 
-  constructor(scope: cdk.Construct, id: string, props: TaskProps) {
+  constructor(scope: Construct, id: string, props: TaskProps) {
     super(scope, id, props);
 
     this.timeout = props.timeout;

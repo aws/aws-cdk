@@ -1,7 +1,7 @@
 import { IResource } from '@aws-cdk/core';
 
 /**
- * Represents a CloudWatch Event Rule
+ * Represents an EventBridge Rule
  */
 export interface IRule extends IResource {
   /**

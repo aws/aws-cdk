@@ -83,11 +83,11 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
 
     if (this.integrationPattern === sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN
       && !sfn.FieldUtils.containsTaskToken(props.containerOverrides)) {
-      throw new Error('Task Token is missing in containerOverrides (pass Context.taskToken somewhere in containerOverrides)');
+      throw new Error('Task Token is missing in containerOverrides (pass JsonPath.taskToken somewhere in containerOverrides)');
     }
 
     for (const override of this.props.containerOverrides || []) {
-      const name = override.containerName;
+      const name = override.containerDefinition.containerName;
       if (!cdk.Token.isUnresolved(name)) {
         const cont = this.props.taskDefinition.node.tryFindChild(name);
         if (!cont) {
@@ -136,7 +136,7 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
       AwsvpcConfiguration: {
         AssignPublicIp: assignPublicIp !== undefined ? (assignPublicIp ? 'ENABLED' : 'DISABLED') : undefined,
         Subnets: vpc.selectSubnets(subnetSelection).subnetIds,
-        SecurityGroups: cdk.Lazy.listValue({ produce: () => [this.securityGroup!.securityGroupId] }),
+        SecurityGroups: cdk.Lazy.list({ produce: () => [this.securityGroup!.securityGroupId] }),
       },
     };
   }
@@ -156,7 +156,7 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
       }),
       new iam.PolicyStatement({
         actions: ['iam:PassRole'],
-        resources: cdk.Lazy.listValue({ produce: () => this.taskExecutionRoles().map(r => r.roleArn) }),
+        resources: cdk.Lazy.list({ produce: () => this.taskExecutionRoles().map(r => r.roleArn) }),
       }),
     ];
 
@@ -191,7 +191,7 @@ function renderOverrides(containerOverrides?: ContainerOverride[]) {
   const ret = new Array<any>();
   for (const override of containerOverrides) {
     ret.push({
-      Name: override.containerName,
+      Name: override.containerDefinition.containerName,
       Command: override.command,
       Cpu: override.cpu,
       Memory: override.memoryLimit,

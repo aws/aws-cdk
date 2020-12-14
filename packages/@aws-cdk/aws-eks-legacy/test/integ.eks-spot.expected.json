@@ -27,10 +27,6 @@
         "MapPublicIpOnLaunch": true,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "integ-eks-spot/vpc/PublicSubnet1"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Public"
           },
@@ -41,6 +37,10 @@
           {
             "Key": "kubernetes.io/role/elb",
             "Value": "1"
+          },
+          {
+            "Key": "Name",
+            "Value": "integ-eks-spot/vpc/PublicSubnet1"
           }
         ]
       }
@@ -53,12 +53,12 @@
         },
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "integ-eks-spot/vpc/PublicSubnet1"
-          },
-          {
             "Key": "kubernetes.io/role/elb",
             "Value": "1"
+          },
+          {
+            "Key": "Name",
+            "Value": "integ-eks-spot/vpc/PublicSubnet1"
           }
         ]
       }
@@ -95,12 +95,12 @@
         "Domain": "vpc",
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "integ-eks-spot/vpc/PublicSubnet1"
-          },
-          {
             "Key": "kubernetes.io/role/elb",
             "Value": "1"
+          },
+          {
+            "Key": "Name",
+            "Value": "integ-eks-spot/vpc/PublicSubnet1"
           }
         ]
       }
@@ -119,12 +119,12 @@
         },
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "integ-eks-spot/vpc/PublicSubnet1"
-          },
-          {
             "Key": "kubernetes.io/role/elb",
             "Value": "1"
+          },
+          {
+            "Key": "Name",
+            "Value": "integ-eks-spot/vpc/PublicSubnet1"
           }
         ]
       }
@@ -140,10 +140,6 @@
         "MapPublicIpOnLaunch": true,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "integ-eks-spot/vpc/PublicSubnet2"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Public"
           },
@@ -154,6 +150,10 @@
           {
             "Key": "kubernetes.io/role/elb",
             "Value": "1"
+          },
+          {
+            "Key": "Name",
+            "Value": "integ-eks-spot/vpc/PublicSubnet2"
           }
         ]
       }
@@ -166,12 +166,12 @@
         },
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "integ-eks-spot/vpc/PublicSubnet2"
-          },
-          {
             "Key": "kubernetes.io/role/elb",
             "Value": "1"
+          },
+          {
+            "Key": "Name",
+            "Value": "integ-eks-spot/vpc/PublicSubnet2"
           }
         ]
       }
@@ -208,12 +208,12 @@
         "Domain": "vpc",
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "integ-eks-spot/vpc/PublicSubnet2"
-          },
-          {
             "Key": "kubernetes.io/role/elb",
             "Value": "1"
+          },
+          {
+            "Key": "Name",
+            "Value": "integ-eks-spot/vpc/PublicSubnet2"
           }
         ]
       }
@@ -232,12 +232,12 @@
         },
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "integ-eks-spot/vpc/PublicSubnet2"
-          },
-          {
             "Key": "kubernetes.io/role/elb",
             "Value": "1"
+          },
+          {
+            "Key": "Name",
+            "Value": "integ-eks-spot/vpc/PublicSubnet2"
           }
         ]
       }
@@ -253,10 +253,6 @@
         "MapPublicIpOnLaunch": false,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "integ-eks-spot/vpc/PrivateSubnet1"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Private"
           },
@@ -267,6 +263,10 @@
           {
             "Key": "kubernetes.io/role/internal-elb",
             "Value": "1"
+          },
+          {
+            "Key": "Name",
+            "Value": "integ-eks-spot/vpc/PrivateSubnet1"
           }
         ]
       }
@@ -279,12 +279,12 @@
         },
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "integ-eks-spot/vpc/PrivateSubnet1"
-          },
-          {
             "Key": "kubernetes.io/role/internal-elb",
             "Value": "1"
+          },
+          {
+            "Key": "Name",
+            "Value": "integ-eks-spot/vpc/PrivateSubnet1"
           }
         ]
       }
@@ -323,10 +323,6 @@
         "MapPublicIpOnLaunch": false,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "integ-eks-spot/vpc/PrivateSubnet2"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Private"
           },
@@ -337,6 +333,10 @@
           {
             "Key": "kubernetes.io/role/internal-elb",
             "Value": "1"
+          },
+          {
+            "Key": "Name",
+            "Value": "integ-eks-spot/vpc/PrivateSubnet2"
           }
         ]
       }
@@ -349,12 +349,12 @@
         },
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "integ-eks-spot/vpc/PrivateSubnet2"
-          },
-          {
             "Key": "kubernetes.io/role/internal-elb",
             "Value": "1"
+          },
+          {
+            "Key": "Name",
+            "Value": "integ-eks-spot/vpc/PrivateSubnet2"
           }
         ]
       }
@@ -767,10 +767,6 @@
         ],
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "integ-eks-spot/myCluster/DefaultCapacity"
-          },
-          {
             "Key": {
               "Fn::Join": [
                 "",
@@ -783,6 +779,10 @@
               ]
             },
             "Value": "owned"
+          },
+          {
+            "Key": "Name",
+            "Value": "integ-eks-spot/myCluster/DefaultCapacity"
           }
         ],
         "VpcId": {
@@ -916,10 +916,6 @@
         ],
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "integ-eks-spot/myCluster/DefaultCapacity"
-          },
-          {
             "Key": {
               "Fn::Join": [
                 "",
@@ -932,6 +928,10 @@
               ]
             },
             "Value": "owned"
+          },
+          {
+            "Key": "Name",
+            "Value": "integ-eks-spot/myCluster/DefaultCapacity"
           }
         ]
       }
@@ -994,11 +994,6 @@
         },
         "Tags": [
           {
-            "Key": "Name",
-            "PropagateAtLaunch": true,
-            "Value": "integ-eks-spot/myCluster/DefaultCapacity"
-          },
-          {
             "Key": {
               "Fn::Join": [
                 "",
@@ -1012,6 +1007,11 @@
             },
             "PropagateAtLaunch": true,
             "Value": "owned"
+          },
+          {
+            "Key": "Name",
+            "PropagateAtLaunch": true,
+            "Value": "integ-eks-spot/myCluster/DefaultCapacity"
           }
         ],
         "VPCZoneIdentifier": [
@@ -1088,10 +1088,6 @@
         ],
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "integ-eks-spot/myCluster/spot"
-          },
-          {
             "Key": {
               "Fn::Join": [
                 "",
@@ -1104,6 +1100,10 @@
               ]
             },
             "Value": "owned"
+          },
+          {
+            "Key": "Name",
+            "Value": "integ-eks-spot/myCluster/spot"
           }
         ],
         "VpcId": {
@@ -1237,10 +1237,6 @@
         ],
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "integ-eks-spot/myCluster/spot"
-          },
-          {
             "Key": {
               "Fn::Join": [
                 "",
@@ -1253,6 +1249,10 @@
               ]
             },
             "Value": "owned"
+          },
+          {
+            "Key": "Name",
+            "Value": "integ-eks-spot/myCluster/spot"
           }
         ]
       }
@@ -1315,11 +1315,6 @@
         },
         "Tags": [
           {
-            "Key": "Name",
-            "PropagateAtLaunch": true,
-            "Value": "integ-eks-spot/myCluster/spot"
-          },
-          {
             "Key": {
               "Fn::Join": [
                 "",
@@ -1333,6 +1328,11 @@
             },
             "PropagateAtLaunch": true,
             "Value": "owned"
+          },
+          {
+            "Key": "Name",
+            "PropagateAtLaunch": true,
+            "Value": "integ-eks-spot/myCluster/spot"
           }
         ],
         "VPCZoneIdentifier": [

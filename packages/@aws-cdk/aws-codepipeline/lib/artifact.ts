@@ -1,6 +1,6 @@
 import * as s3 from '@aws-cdk/aws-s3';
 import { Lazy, Token } from '@aws-cdk/core';
-import * as validation from './validation';
+import * as validation from './private/validation';
 
 /**
  * An output artifact of an action. Artifacts can be used as input by some actions.
@@ -17,6 +17,7 @@ export class Artifact {
   }
 
   private _artifactName?: string;
+  private readonly metadata: { [key: string]: any } = {};
 
   constructor(artifactName?: string) {
     validation.validateArtifactName(artifactName);
@@ -80,6 +81,25 @@ export class Artifact {
     };
   }
 
+  /**
+   * Add arbitrary extra payload to the artifact under a given key.
+   * This can be used by CodePipeline actions to communicate data between themselves.
+   * If metadata was already present under the given key,
+   * it will be overwritten with the new value.
+   */
+  public setMetadata(key: string, value: any): void {
+    this.metadata[key] = value;
+  }
+
+  /**
+   * Retrieve the metadata stored in this artifact under the given key.
+   * If there is no metadata stored under the given key,
+   * null will be returned.
+   */
+  public getMetadata(key: string): any {
+    return this.metadata[key];
+  }
+
   public toString() {
     return this.artifactName;
   }
@@ -112,17 +132,17 @@ export class ArtifactPath {
   public get location() {
     const artifactName = this.artifact.artifactName
       ? this.artifact.artifactName
-      : Lazy.stringValue({ produce: () => this.artifact.artifactName });
+      : Lazy.string({ produce: () => this.artifact.artifactName });
     return `${artifactName}::${this.fileName}`;
   }
 }
 
 function artifactAttribute(artifact: Artifact, attributeName: string) {
-  const lazyArtifactName = Lazy.stringValue({ produce: () => artifact.artifactName });
+  const lazyArtifactName = Lazy.string({ produce: () => artifact.artifactName });
   return Token.asString({ 'Fn::GetArtifactAtt': [lazyArtifactName, attributeName] });
 }
 
 function artifactGetParam(artifact: Artifact, jsonFile: string, keyName: string) {
-  const lazyArtifactName = Lazy.stringValue({ produce: () => artifact.artifactName });
+  const lazyArtifactName = Lazy.string({ produce: () => artifact.artifactName });
   return Token.asString({ 'Fn::GetParam': [lazyArtifactName, jsonFile, keyName] });
 }

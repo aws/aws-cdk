@@ -6,7 +6,7 @@ import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as ecs from '../../lib';
-import { LaunchType, PropagatedTagSource } from '../../lib/base/base-service';
+import { DeploymentControllerType, LaunchType, PropagatedTagSource } from '../../lib/base/base-service';
 import { PlacementConstraint, PlacementStrategy } from '../../lib/placement';
 
 export = {
@@ -237,6 +237,165 @@ export = {
       test.done();
     },
 
+    'with multiple security groups, it correctly updates the cfn template'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
+        networkMode: ecs.NetworkMode.AWS_VPC,
+      });
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+      const securityGroup1 = new ec2.SecurityGroup(stack, 'SecurityGroup1', {
+        allowAllOutbound: true,
+        description: 'Example',
+        securityGroupName: 'Bingo',
+        vpc,
+      });
+      const securityGroup2 = new ec2.SecurityGroup(stack, 'SecurityGroup2', {
+        allowAllOutbound: false,
+        description: 'Example',
+        securityGroupName: 'Rolly',
+        vpc,
+      });
+
+      // WHEN
+      new ecs.Ec2Service(stack, 'Ec2Service', {
+        cluster,
+        taskDefinition,
+        desiredCount: 2,
+        assignPublicIp: true,
+        daemon: false,
+        securityGroups: [securityGroup1, securityGroup2],
+        serviceName: 'bonjour',
+        vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::ECS::Service', {
+        TaskDefinition: {
+          Ref: 'Ec2TaskDef0226F28C',
+        },
+        Cluster: {
+          Ref: 'EcsCluster97242B84',
+        },
+        DesiredCount: 2,
+        LaunchType: LaunchType.EC2,
+        NetworkConfiguration: {
+          AwsvpcConfiguration: {
+            AssignPublicIp: 'ENABLED',
+            SecurityGroups: [
+              {
+                'Fn::GetAtt': [
+                  'SecurityGroup1F554B36F',
+                  'GroupId',
+                ],
+              },
+              {
+                'Fn::GetAtt': [
+                  'SecurityGroup23BE86BB7',
+                  'GroupId',
+                ],
+              },
+            ],
+            Subnets: [
+              {
+                Ref: 'MyVpcPublicSubnet1SubnetF6608456',
+              },
+              {
+                Ref: 'MyVpcPublicSubnet2Subnet492B6BFB',
+              },
+            ],
+          },
+        },
+        SchedulingStrategy: 'REPLICA',
+        ServiceName: 'bonjour',
+      }));
+
+      expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
+        GroupDescription: 'Example',
+        GroupName: 'Bingo',
+        SecurityGroupEgress: [
+          {
+            CidrIp: '0.0.0.0/0',
+            Description: 'Allow all outbound traffic by default',
+            IpProtocol: '-1',
+          },
+        ],
+        VpcId: {
+          Ref: 'MyVpcF9F0CA6F',
+        },
+      }));
+
+      expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
+        GroupDescription: 'Example',
+        GroupName: 'Rolly',
+        SecurityGroupEgress: [
+          {
+            CidrIp: '255.255.255.255/32',
+            Description: 'Disallow all traffic',
+            FromPort: 252,
+            IpProtocol: 'icmp',
+            ToPort: 86,
+          },
+        ],
+        VpcId: {
+          Ref: 'MyVpcF9F0CA6F',
+        },
+      }));
+
+      test.done();
+    },
+
+    'throws when both securityGroup and securityGroups are supplied'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
+        networkMode: ecs.NetworkMode.AWS_VPC,
+      });
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+      const securityGroup1 = new ec2.SecurityGroup(stack, 'SecurityGroup1', {
+        allowAllOutbound: true,
+        description: 'Example',
+        securityGroupName: 'Bingo',
+        vpc,
+      });
+      const securityGroup2 = new ec2.SecurityGroup(stack, 'SecurityGroup2', {
+        allowAllOutbound: false,
+        description: 'Example',
+        securityGroupName: 'Rolly',
+        vpc,
+      });
+
+      // THEN
+      test.throws(() => {
+        new ecs.Ec2Service(stack, 'Ec2Service', {
+          cluster,
+          taskDefinition,
+          desiredCount: 2,
+          assignPublicIp: true,
+          maxHealthyPercent: 150,
+          minHealthyPercent: 55,
+          securityGroup: securityGroup1,
+          securityGroups: [securityGroup2],
+          serviceName: 'bonjour',
+          vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+        });
+      }, /Only one of SecurityGroup or SecurityGroups can be populated./);
+
+      test.done();
+    },
+
     'throws when task definition is not EC2 compatible'(test: Test) {
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -258,6 +417,45 @@ export = {
           taskDefinition,
         });
       }, /Supplied TaskDefinition is not configured for compatibility with EC2/);
+
+      test.done();
+    },
+
+    'ignore task definition and launch type if deployment controller is set to be EXTERNAL'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      const service = new ecs.Ec2Service(stack, 'Ec2Service', {
+        cluster,
+        taskDefinition,
+        deploymentController: {
+          type: DeploymentControllerType.EXTERNAL,
+        },
+      });
+
+      // THEN
+      test.deepEqual(service.node.metadata[0].data, 'taskDefinition and launchType are blanked out when using external deployment controller.');
+      expect(stack).to(haveResource('AWS::ECS::Service', {
+        Cluster: {
+          Ref: 'EcsCluster97242B84',
+        },
+        DeploymentConfiguration: {
+          MaximumPercent: 200,
+          MinimumHealthyPercent: 50,
+        },
+        DesiredCount: 1,
+        SchedulingStrategy: 'REPLICA',
+        EnableECSManagedTags: false,
+      }));
 
       test.done();
     },
@@ -312,7 +510,7 @@ export = {
       test.done();
     },
 
-    'errors if daemon and minimum not 0'(test: Test) {
+    'errors if minimum not less than maximum'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -330,9 +528,10 @@ export = {
           cluster,
           taskDefinition,
           daemon: true,
-          minHealthyPercent: 50,
+          minHealthyPercent: 100,
+          maxHealthyPercent: 100,
         });
-      }, /Minimum healthy percent must be 0 for daemon mode./);
+      }, /Minimum healthy percent must be less than maximum healthy percent./);
 
       test.done();
     },
@@ -466,7 +665,100 @@ export = {
             taskDefinition,
             assignPublicIp: true,
           });
+        }, /vpcSubnets, securityGroup\(s\) and assignPublicIp can only be used in AwsVpc networking mode/);
+
+        // THEN
+        test.done();
+      },
+
+      'it errors if vpc subnets is provided'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+        const subnet = new ec2.Subnet(stack, 'MySubnet', {
+          vpcId: vpc.vpcId,
+          availabilityZone: 'eu-central-1a',
+          cidrBlock: '10.10.0.0/20',
         });
+        const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+        cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+        const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
+          networkMode: ecs.NetworkMode.BRIDGE,
+        });
+        taskDefinition.addContainer('web', {
+          image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+          memoryLimitMiB: 512,
+        });
+
+        // THEN
+        test.throws(() => {
+          new ecs.Ec2Service(stack, 'Ec2Service', {
+            cluster,
+            taskDefinition,
+            vpcSubnets: {
+              subnets: [subnet],
+            },
+          });
+        }, /vpcSubnets, securityGroup\(s\) and assignPublicIp can only be used in AwsVpc networking mode/);
+
+        // THEN
+        test.done();
+      },
+
+      'it errors if security group is provided'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+        const securityGroup = new ec2.SecurityGroup(stack, 'MySG', { vpc });
+        const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+        cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+        const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
+          networkMode: ecs.NetworkMode.BRIDGE,
+        });
+        taskDefinition.addContainer('web', {
+          image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+          memoryLimitMiB: 512,
+        });
+
+        // THEN
+        test.throws(() => {
+          new ecs.Ec2Service(stack, 'Ec2Service', {
+            cluster,
+            taskDefinition,
+            securityGroup,
+          });
+        }, /vpcSubnets, securityGroup\(s\) and assignPublicIp can only be used in AwsVpc networking mode/);
+
+        // THEN
+        test.done();
+      },
+
+      'it errors if multiple security groups is provided'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+        const securityGroups = [
+          new ec2.SecurityGroup(stack, 'MyFirstSG', { vpc }),
+          new ec2.SecurityGroup(stack, 'MySecondSG', { vpc }),
+        ];
+        const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+        cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+        const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
+          networkMode: ecs.NetworkMode.BRIDGE,
+        });
+        taskDefinition.addContainer('web', {
+          image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+          memoryLimitMiB: 512,
+        });
+
+        // THEN
+        test.throws(() => {
+          new ecs.Ec2Service(stack, 'Ec2Service', {
+            cluster,
+            taskDefinition,
+            securityGroups,
+          });
+        }, /vpcSubnets, securityGroup\(s\) and assignPublicIp can only be used in AwsVpc networking mode/);
 
         // THEN
         test.done();

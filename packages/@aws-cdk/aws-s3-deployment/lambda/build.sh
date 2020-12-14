@@ -27,7 +27,7 @@ cd ${staging}
 # install python requirements
 # Must use --prefix to because --target cannot be used on
 # platforms that have a default --prefix set.
-pip3 install --ignore-installed --prefix ${piptemp} -r ${staging}/requirements.txt
+pip3 install --ignore-installed --prefix ${piptemp} --no-user -r ${staging}/requirements.txt
 mv ${piptemp}/lib/python*/*-packages/* .
 [ -d ${piptemp}/lib64 ] && mv ${piptemp}/lib64/python*/*-packages/* .
 rm -fr ./awscli/examples

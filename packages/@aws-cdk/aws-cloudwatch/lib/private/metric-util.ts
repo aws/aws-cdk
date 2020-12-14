@@ -109,7 +109,7 @@ export function metricPeriod(metric: IMetric): Duration {
  * repeated in all places where code needs to make a distinction on the type
  * of metric object that is being passed.
  */
-// tslint:disable-next-line:max-line-length
+// eslint-disable-next-line max-len
 export function dispatchMetric<A, B>(metric: IMetric, fns: { withStat: (x: MetricStatConfig, c: MetricConfig) => A, withExpression: (x: MetricExpressionConfig, c: MetricConfig) => B }): A | B {
   const conf = metric.toMetricConfig();
   if (conf.metricStat && conf.mathExpression) {

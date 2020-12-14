@@ -1,16 +1,15 @@
-import * as core from '@aws-cdk/core';
-import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as core from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 
 export class SynthUtils {
+  /**
+   * Returns the cloud assembly template artifact for a stack.
+   */
   public static synthesize(stack: core.Stack, options: core.SynthesisOptions = { }): cxapi.CloudFormationStackArtifact {
     // always synthesize against the root (be it an App or whatever) so all artifacts will be included
-    const root = stack.node.root;
-
-    // if the root is an app, invoke "synth" to avoid double synthesis
-    const assembly = root instanceof core.App ? root.synth() : core.ConstructNode.synth(root.node, options);
-
+    const assembly = synthesizeApp(stack, options);
     return assembly.getStackArtifact(stack.artifactId);
   }
 
@@ -51,10 +50,7 @@ export class SynthUtils {
    */
   public static _synthesizeWithNested(stack: core.Stack, options: core.SynthesisOptions = { }): cxapi.CloudFormationStackArtifact | object {
     // always synthesize against the root (be it an App or whatever) so all artifacts will be included
-    const root = stack.node.root;
-
-    // if the root is an app, invoke "synth" to avoid double synthesis
-    const assembly = root instanceof core.App ? root.synth() : core.ConstructNode.synth(root.node, options);
+    const assembly = synthesizeApp(stack, options);
 
     // if this is a nested stack (it has a parent), then just read the template as a string
     if (stack.nestedStackParent) {
@@ -63,6 +59,24 @@ export class SynthUtils {
 
     return assembly.getStackArtifact(stack.artifactId);
   }
+}
+
+/**
+ * Synthesizes the app in which a stack resides and returns the cloud assembly object.
+ */
+function synthesizeApp(stack: core.Stack, options: core.SynthesisOptions) {
+  const root = stack.node.root;
+  if (!core.Stage.isStage(root)) {
+    throw new Error('unexpected: all stacks must be part of a Stage or an App');
+  }
+
+  // to support incremental assertions (i.e. "expect(stack).toNotContainSomething(); doSomething(); expect(stack).toContainSomthing()")
+  const force = true;
+
+  return root.synth({
+    force,
+    ...options,
+  });
 }
 
 export interface SubsetOptions {

@@ -5,7 +5,7 @@ import { Test } from 'nodeunit';
 import * as sources from '../lib';
 import { TestFunction } from './test-function';
 
-// tslint:disable:object-literal-key-quotes
+/* eslint-disable quote-props */
 
 export = {
   'sufficiently complex example'(test: Test) {
@@ -16,7 +16,7 @@ export = {
 
     // WHEN
     fn.addEventSource(new sources.S3EventSource(bucket, {
-      events: [ s3.EventType.OBJECT_CREATED, s3.EventType.OBJECT_REMOVED ],
+      events: [s3.EventType.OBJECT_CREATED, s3.EventType.OBJECT_REMOVED],
       filters: [
         { prefix: 'prefix/' },
         { suffix: '.png' },

@@ -1,11 +1,11 @@
 #!/bin/bash
+#
+# Run our integration tests in regression mode against the
+# previous version of the framework, relative to the version being packed now.
+#
 set -euo pipefail
 integdir=$(cd $(dirname $0) && pwd)
 
-echo "Regression tests are currently disabled. We will re-enable after investigation"
-exit 0
+source ${integdir}/test-cli-regression.bash
 
-# run the regular regression test but pass the env variable that will
-# eventually instruct our runners and wrappers to install the framework
-# from npmjs.org rather then using the local code.
-USE_PUBLISHED_FRAMEWORK_VERSION=True ${integdir}/test-cli-regression-against-current-code.sh
+run_regression_against_framework_version PREVIOUS_VERSION

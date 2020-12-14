@@ -46,9 +46,9 @@ export class SecretValue extends Intrinsic {
     const parts = [
       secretId,
       'SecretString',
-      options.jsonField      || '',
+      options.jsonField || '',
       options.versionStage || '',
-      options.versionId    || '',
+      options.versionId || '',
     ];
 
     const dyref = new CfnDynamicReference(CfnDynamicReferenceService.SECRETS_MANAGER, parts.join(':'));
@@ -66,7 +66,7 @@ export class SecretValue extends Intrinsic {
    * AWS CloudFormation use the latest version of a parameter.
    */
   public static ssmSecure(parameterName: string, version: string): SecretValue {
-    const parts = [ parameterName, version ];
+    const parts = [parameterName, version];
     return this.cfnDynamicReference(new CfnDynamicReference(CfnDynamicReferenceService.SSM_SECURE, parts.join(':')));
   }
 

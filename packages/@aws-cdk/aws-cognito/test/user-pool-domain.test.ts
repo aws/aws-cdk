@@ -1,6 +1,6 @@
 import '@aws-cdk/assert/jest';
 import { Certificate } from '@aws-cdk/aws-certificatemanager';
-import { Stack } from '@aws-cdk/core';
+import { CfnParameter, Stack } from '@aws-cdk/core';
 import { UserPool, UserPoolDomain } from '../lib';
 
 describe('User Pool Client', () => {
@@ -92,7 +92,18 @@ describe('User Pool Client', () => {
     })).toThrow(/lowercase alphabets, numbers and hyphens/);
   });
 
-  test('custom resource is added when cloudFrontDistribution method is called', () => {
+  test('does not fail when domainPrefix is a token', () => {
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+
+    const parameter = new CfnParameter(stack, 'Paraeter');
+
+    expect(() => pool.addDomain('Domain', {
+      cognitoDomain: { domainPrefix: parameter.valueAsString },
+    })).not.toThrow();
+  });
+
+  test('custom resource is added when cloudFrontDomainName property is used', () => {
     // GIVEN
     const stack = new Stack();
     const pool = new UserPool(stack, 'Pool');
@@ -123,6 +134,96 @@ describe('User Pool Client', () => {
         }],
         Version: '2012-10-17',
       },
+    });
+  });
+
+  test('cloudFrontDomainName property can be called multiple times', () => {
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+    const domain = pool.addDomain('Domain', {
+      cognitoDomain: {
+        domainPrefix: 'cognito-domain-prefix',
+      },
+    });
+
+    const cfDomainNameFirst = domain.cloudFrontDomainName;
+    const cfDomainNameSecond = domain.cloudFrontDomainName;
+
+    expect(cfDomainNameSecond).toEqual(cfDomainNameFirst);
+  });
+
+  test('import', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const client = UserPoolDomain.fromDomainName(stack, 'Domain', 'domain-name-1');
+
+    // THEN
+    expect(client.domainName).toEqual('domain-name-1');
+    expect(stack).not.toHaveResource('AWS::Cognito::UserPoolDomain');
+  });
+
+  describe('signInUrl', () => {
+    test('returns the expected URL', () => {
+      // GIVEN
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'Pool');
+      const domain = pool.addDomain('Domain', {
+        cognitoDomain: {
+          domainPrefix: 'cognito-domain-prefix',
+        },
+      });
+      const client = pool.addClient('Client', {
+        oAuth: {
+          callbackUrls: ['https://example.com'],
+        },
+      });
+
+      // WHEN
+      const signInUrl = domain.signInUrl(client, {
+        redirectUri: 'https://example.com',
+      });
+
+      // THEN
+      expect(stack.resolve(signInUrl)).toEqual({
+        'Fn::Join': [
+          '', [
+            'https://',
+            { Ref: 'PoolDomainCFC71F56' },
+            '.auth.',
+            { Ref: 'AWS::Region' },
+            '.amazoncognito.com/login?client_id=',
+            { Ref: 'PoolClient8A3E5EB7' },
+            '&response_type=code&redirect_uri=https://example.com',
+          ],
+        ],
+      });
+    });
+
+    test('correctly uses the signInPath', () => {
+      // GIVEN
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'Pool');
+      const domain = pool.addDomain('Domain', {
+        cognitoDomain: {
+          domainPrefix: 'cognito-domain-prefix',
+        },
+      });
+      const client = pool.addClient('Client', {
+        oAuth: {
+          callbackUrls: ['https://example.com'],
+        },
+      });
+
+      // WHEN
+      const signInUrl = domain.signInUrl(client, {
+        redirectUri: 'https://example.com',
+        signInPath: '/testsignin',
+      });
+
+      // THEN
+      expect(signInUrl).toMatch(/amazoncognito\.com\/testsignin\?/);
     });
   });
 });

@@ -1,3 +1,4 @@
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Mode, SdkProvider } from '../api';
 import { debug } from '../logging';
@@ -8,7 +9,7 @@ export class HostedZoneContextProviderPlugin implements ContextProviderPlugin {
   constructor(private readonly aws: SdkProvider) {
   }
 
-  public async getValue(args: {[key: string]: any}): Promise<object> {
+  public async getValue(args: cxschema.HostedZoneContextQuery): Promise<object> {
     const account = args.account;
     const region = args.region;
     if (!this.isHostedZoneQuery(args)) {
@@ -35,7 +36,7 @@ export class HostedZoneContextProviderPlugin implements ContextProviderPlugin {
 
   private async filterZones(
     r53: AWS.Route53, zones: AWS.Route53.HostedZone[],
-    props: cxapi.HostedZoneContextQuery): Promise<AWS.Route53.HostedZone[]> {
+    props: cxschema.HostedZoneContextQuery): Promise<AWS.Route53.HostedZone[]> {
 
     let candidates: AWS.Route53.HostedZone[] = [];
     const domainName = props.domainName.endsWith('.') ? props.domainName : `${props.domainName}.`;
@@ -64,7 +65,7 @@ export class HostedZoneContextProviderPlugin implements ContextProviderPlugin {
     return candidates;
   }
 
-  private isHostedZoneQuery(props: cxapi.HostedZoneContextQuery | any): props is cxapi.HostedZoneContextQuery {
-    return (props as cxapi.HostedZoneContextQuery).domainName !== undefined;
+  private isHostedZoneQuery(props: cxschema.HostedZoneContextQuery | any): props is cxschema.HostedZoneContextQuery {
+    return (props as cxschema.HostedZoneContextQuery).domainName !== undefined;
   }
 }

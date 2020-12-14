@@ -1,8 +1,7 @@
-import * as fs from 'fs-extra';
 import * as util from 'util';
+import * as fs from 'fs-extra';
 
 /* eslint-disable @typescript-eslint/no-require-imports */
-// tslint:disable-next-line:no-var-requires
 const jsonDiff = require('json-diff').diff;
 /* eslint-enable */
 
@@ -140,7 +139,7 @@ async function main() {
       throw new Error('Unexpected update to a resource type. Expecting only "Properties" to change: ' + propertyType);
     }
 
-    for (const prop of Object.keys(update.Properties)) {
+    for (const prop of Object.keys(update.Properties ?? {})) {
       describeChanges(propertyType, prop, update.Properties[prop]).forEach(change => {
         propertyTypeChanges.push(change);
       });
