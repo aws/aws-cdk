@@ -11,7 +11,7 @@ import { EventInvokeConfigOptions } from './event-invoke-config';
 import { IEventSource } from './event-source';
 import { FileSystem } from './filesystem';
 import { FunctionAttributes, FunctionBase, IFunction } from './function-base';
-import { calculateFunctionHash, trimFromStart } from './function-hash';
+import * as fnhash from './function-hash';
 import { Version, VersionOptions } from './lambda-version';
 import { CfnFunction } from './lambda.generated';
 import { ILayerVersion } from './layers';
@@ -337,6 +337,15 @@ export class Function extends FunctionBase {
       return this._currentVersion;
     }
 
+    /*
+     * The `currentVersion()` API uses the function's hash as the function version's logical id.
+     * Any change to the hash logic will change its logical id and require a replacement.
+     * However, the Lambda service blocks creating new function versions when the function is unchanged.
+     *
+     * Inject this salt as an environment variable so that the function does change.
+     */
+    this.addEnvironment('CDK_ENVIRONMENT_SALT', fnhash.ENV_SALT, { removeInEdge: true });
+
     this._currentVersion = new Version(this, 'CurrentVersion', {
       lambda: this,
       ...this.currentVersionOptions,
@@ -350,8 +359,8 @@ export class Function extends FunctionBase {
 
     cfn.overrideLogicalId(Lazy.uncachedString({
       produce: () => {
-        const hash = calculateFunctionHash(this);
-        const logicalId = trimFromStart(originalLogicalId, 255 - 32);
+        const hash = fnhash.calculateFunctionHash(this);
+        const logicalId = fnhash.trimFromStart(originalLogicalId, 255 - 32);
         return `${logicalId}${hash}`;
       },
     }));

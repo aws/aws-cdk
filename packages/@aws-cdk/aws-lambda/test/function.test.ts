@@ -1757,6 +1757,43 @@ describe('function', () => {
       // includes the hash of function's configuration.
       expect(template1.Outputs.CurrentVersionArn.Value).not.toEqual(template2.Outputs.CurrentVersionArn.Value);
     });
+
+    test('salted environment variable is present', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new lambda.Function(stack, 'MyFn', {
+        handler: 'foo',
+        runtime: lambda.Runtime.NODEJS_12_X,
+        code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
+      });
+
+      // WHEN
+      fn.currentVersion;
+
+      // THEN
+      expect(stack).toHaveResource('AWS::Lambda::Function', {
+        Environment: {
+          Variables: {
+            CDK_ENVIRONMENT_SALT: '4b2bff42-e517-41d1-9b5f-92aacf41842b',
+          },
+        },
+      });
+    });
+
+    test('salted environment variable is not present by default', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      new lambda.Function(stack, 'MyFn', {
+        handler: 'foo',
+        runtime: lambda.Runtime.NODEJS_12_X,
+        code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
+      });
+
+      // THEN
+      expect(stack).toHaveResource('AWS::Lambda::Function', {
+        Environment: ABSENT,
+      });
+    });
   });
 
   describe('filesystem', () => {

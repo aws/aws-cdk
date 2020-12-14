@@ -3,6 +3,8 @@ import { CfnResource, Stack } from '@aws-cdk/core';
 import { Function as LambdaFunction } from './function';
 import { sortedStringify } from './private/sort';
 
+export const ENV_SALT = '4b2bff42-e517-41d1-9b5f-92aacf41842b';
+
 export function calculateFunctionHash(fn: LambdaFunction) {
   const stack = Stack.of(fn);
 
