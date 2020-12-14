@@ -170,7 +170,7 @@ This will help us avoid version quirks that might happen during the *post-releas
     - Download the previous version tarball from npm and extract the integration tests.
     - Export a `FRAMWORK_VERSION` env variable based on the caller, and execute the integration tests of the previous version.
 
-7. Our integration tests now run and have knowledge of which framework version they should [install](../test/integ/helpers/cdk.ts#L74).
+7. Our integration tests now run and have knowledge of which framework version they should [install](lib/cdk.ts#L74).
 
 That "basically" it, hope it makes sense...
 
