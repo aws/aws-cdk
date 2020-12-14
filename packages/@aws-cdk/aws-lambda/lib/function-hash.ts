@@ -5,31 +5,20 @@ import { sortedStringify } from './private/sort';
 
 export const ENV_SALT = '4b2bff42-e517-41d1-9b5f-92aacf41842b';
 
-export function calculateFunctionHash(fn: LambdaFunction) {
+export function calculateFunctionHash(hashAlgorithm: 'v1' | 'v2', fn: LambdaFunction) {
   const stack = Stack.of(fn);
 
   const functionResource = fn.node.defaultChild as CfnResource;
 
   // render the cloudformation resource from this function
   const config = stack.resolve((functionResource as any)._toCloudFormation());
-
   const hash = crypto.createHash('md5');
-  hash.update(JSON.stringify(config));
 
-  return hash.digest('hex');
-}
-
-export function calculateFunctionHashV2(fn: LambdaFunction) {
-  const stack = Stack.of(fn);
-
-  const functionResource = fn.node.defaultChild as CfnResource;
-
-  // render the cloudformation resource from this function
-  const cfn = stack.resolve((functionResource as any)._toCloudFormation());
-  const config = usefulKeys(cfn);
-
-  const hash = crypto.createHash('md5');
-  hash.update(sortedStringify(config));
+  if (hashAlgorithm === 'v2') {
+    hash.update(sortedStringify(usefulKeys(config)));
+  } else {
+    hash.update(JSON.stringify(config));
+  }
 
   return hash.digest('hex');
 }

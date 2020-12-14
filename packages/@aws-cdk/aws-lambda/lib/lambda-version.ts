@@ -232,21 +232,16 @@ export class Version extends QualifiedFunctionBase implements IVersion {
     // the function configuration changes.
     cfn.overrideLogicalId(Lazy.uncachedString({
       produce: () => {
-        let newLogicalId: string;
         if (this.hashConfig.hashAlgorithm === 'none') {
-          newLogicalId = originalLogicalId;
+          return originalLogicalId;
         } else {
           if (!this.hashConfig.function) {
             throw new Error('Unexpected error: Cannot compute function version logical id without the function.');
           }
           const logicalId = fnhash.trimFromStart(originalLogicalId, 255 - 32);
-          if (this.hashConfig.hashAlgorithm === 'v1') {
-            newLogicalId = `${logicalId}${fnhash.calculateFunctionHash(this.hashConfig.function)}`;
-          } else {
-            newLogicalId = `${logicalId}${fnhash.calculateFunctionHashV2(this.hashConfig.function)}`;
-          }
+          const hash = fnhash.calculateFunctionHash(this.hashConfig.hashAlgorithm, this.hashConfig.function);
+          return `${logicalId}${hash}`;
         }
-        return newLogicalId;
       },
     }));
   }
@@ -288,7 +283,15 @@ export class Version extends QualifiedFunctionBase implements IVersion {
       throw new Error('$LATEST function version cannot be used for Lambda@Edge');
     }
 
-    this.hashConfig.hashAlgorithm = 'v1';
+    if (this.hashConfig.hashAlgorithm === 'v2') {
+      // Downgrade to v1 when used in Lambda@Edge.
+      // In regular Lambda functions, a dummy environment variable is added as salt
+      // to move from 'v1' algorithm to 'v2'. This is required because lambda requires
+      // that new versions be created only if the function is modified.
+      // In Lambda@Edge, environment variables are unavailable, so they cannot be upgraded
+      // to 'v2'.
+      this.hashConfig.hashAlgorithm = 'v1';
+    }
 
     // Check compatibility at synthesis. It could be that the version was associated
     // with a CloudFront distribution first and made incompatible afterwards.

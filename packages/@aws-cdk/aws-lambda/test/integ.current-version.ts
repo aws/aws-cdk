@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { App, RemovalPolicy, Stack } from '@aws-cdk/core';
+import { App, CfnOutput, RemovalPolicy, Stack } from '@aws-cdk/core';
 import * as lambda from '../lib';
 
 class TestStack extends Stack {
@@ -17,6 +17,20 @@ class TestStack extends Stack {
     });
 
     handler.currentVersion.addAlias('live');
+
+    const edgeLambda = new lambda.Function(this, 'MyLambda@Edge', {
+      code: lambda.Code.fromAsset(path.join(__dirname, 'layer-code')),
+      handler: 'index.main',
+      runtime: lambda.Runtime.PYTHON_3_8,
+      currentVersionOptions: {
+        removalPolicy: RemovalPolicy.RETAIN,
+        retryAttempts: 1,
+      },
+    });
+
+    new CfnOutput(this, 'EdgeArn', {
+      value: edgeLambda.currentVersion.edgeArn,
+    });
   }
 }
 

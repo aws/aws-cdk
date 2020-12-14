@@ -181,4 +181,56 @@ describe('lambda version', () => {
     // THEN
     expect(() => app.synth()).toThrow(/KEY1,KEY2/);
   });
+
+  describe('hash config', () => {
+    test('algorithm is none when not using currentVersion()', () => {
+      const stack = new cdk.Stack();
+      const fn = new lambda.Function(stack, 'Fn', {
+        runtime: lambda.Runtime.NODEJS_12_X,
+        handler: 'index.handler',
+        code: lambda.Code.fromInline('foo'),
+      });
+      const version = new lambda.Version(fn, 'Version', {
+        lambda: fn,
+      });
+      expect((version as any).hashConfig.hashAlgorithm).toEqual('none');
+    });
+
+    test('algorithm is v2 when using currentVersion()', () => {
+      const stack = new cdk.Stack();
+      const fn = new lambda.Function(stack, 'Fn', {
+        runtime: lambda.Runtime.NODEJS_12_X,
+        handler: 'index.handler',
+        code: lambda.Code.fromInline('foo'),
+      });
+      const version = fn.currentVersion;
+      expect((version as any).hashConfig.hashAlgorithm).toEqual('v2');
+    });
+
+    test('algorithm is v1 when using currentVersion() + edgeArn()', () => {
+      const stack = new cdk.Stack();
+      const fn = new lambda.Function(stack, 'Fn', {
+        runtime: lambda.Runtime.NODEJS_12_X,
+        handler: 'index.handler',
+        code: lambda.Code.fromInline('foo'),
+      });
+      const version = fn.currentVersion;
+      version.edgeArn;
+      expect((version as any).hashConfig.hashAlgorithm).toEqual('v1');
+    });
+
+    test('algorithm is still none when using edgeArn()', () => {
+      const stack = new cdk.Stack();
+      const fn = new lambda.Function(stack, 'Fn', {
+        runtime: lambda.Runtime.NODEJS_12_X,
+        handler: 'index.handler',
+        code: lambda.Code.fromInline('foo'),
+      });
+      const version = new lambda.Version(fn, 'Version', {
+        lambda: fn,
+      });
+      version.edgeArn;
+      expect((version as any).hashConfig.hashAlgorithm).toEqual('none');
+    });
+  });
 });
