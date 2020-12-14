@@ -53,7 +53,7 @@ grants an IAM user access to call this API.
 import * as iam from '@aws-cdk/aws-iam';
 
 const user = new iam.User(this, 'User', { ... });
-AuthorizationToken.grantRead(user);
+iam.AuthorizationToken.grantRead(user);
 ```
 
 ## Automatically clean up repositories
