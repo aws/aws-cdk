@@ -1,7 +1,7 @@
+import * as acmpca from '@aws-cdk/aws-acmpca';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
-
 import * as appmesh from '../lib/';
 
 export const app = new cdk.App();
@@ -30,7 +30,7 @@ const virtualService = mesh.addVirtualService('service', {
 });
 
 const node = mesh.addVirtualNode('node', {
-  dnsHostName: `node1.${namespace.namespaceName}`,
+  serviceDiscovery: appmesh.ServiceDiscovery.dns(`node1.${namespace.namespaceName}`),
   listeners: [appmesh.VirtualNodeListener.http({
     healthCheck: {
       healthyThreshold: 3,
@@ -62,8 +62,10 @@ router.addRoute('route-1', {
   }),
 });
 
+const certificateAuthorityArn = 'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/12345678-1234-1234-1234-123456789012';
+
 const node2 = mesh.addVirtualNode('node2', {
-  dnsHostName: `node2.${namespace.namespaceName}`,
+  serviceDiscovery: appmesh.ServiceDiscovery.dns(`node2.${namespace.namespaceName}`),
   listeners: [appmesh.VirtualNodeListener.http({
     healthCheck: {
       healthyThreshold: 3,
@@ -75,6 +77,9 @@ const node2 = mesh.addVirtualNode('node2', {
       unhealthyThreshold: 2,
     },
   })],
+  backendsDefaultClientPolicy: appmesh.ClientPolicy.acmTrust({
+    certificateAuthorities: [acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'certificate', certificateAuthorityArn)],
+  }),
   backends: [
     new appmesh.VirtualService(stack, 'service-3', {
       virtualServiceName: 'service3.domain.local',
@@ -84,7 +89,7 @@ const node2 = mesh.addVirtualNode('node2', {
 });
 
 const node3 = mesh.addVirtualNode('node3', {
-  dnsHostName: `node3.${namespace.namespaceName}`,
+  serviceDiscovery: appmesh.ServiceDiscovery.dns(`node3.${namespace.namespaceName}`),
   listeners: [appmesh.VirtualNodeListener.http({
     healthCheck: {
       healthyThreshold: 3,
@@ -96,6 +101,9 @@ const node3 = mesh.addVirtualNode('node3', {
       unhealthyThreshold: 2,
     },
   })],
+  backendsDefaultClientPolicy: appmesh.ClientPolicy.fileTrust({
+    certificateChain: 'path-to-certificate',
+  }),
   accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
 });
 
@@ -131,7 +139,7 @@ const gateway = mesh.addVirtualGateway('gateway1', {
 
 new appmesh.VirtualGateway(stack, 'gateway2', {
   mesh: mesh,
-  listeners: [appmesh.VirtualGatewayListener.httpGatewayListener({
+  listeners: [appmesh.VirtualGatewayListener.http({
     port: 443,
     healthCheck: {
       interval: cdk.Duration.seconds(10),
@@ -140,19 +148,19 @@ new appmesh.VirtualGateway(stack, 'gateway2', {
 });
 
 gateway.addGatewayRoute('gateway1-route-http', {
-  routeSpec: appmesh.GatewayRouteSpec.httpRouteSpec({
+  routeSpec: appmesh.GatewayRouteSpec.http({
     routeTarget: virtualService,
   }),
 });
 
 gateway.addGatewayRoute('gateway1-route-http2', {
-  routeSpec: appmesh.GatewayRouteSpec.http2RouteSpec({
+  routeSpec: appmesh.GatewayRouteSpec.http2({
     routeTarget: virtualService,
   }),
 });
 
 gateway.addGatewayRoute('gateway1-route-grpc', {
-  routeSpec: appmesh.GatewayRouteSpec.grpcRouteSpec({
+  routeSpec: appmesh.GatewayRouteSpec.grpc({
     routeTarget: virtualService,
     match: {
       serviceName: virtualService.virtualServiceName,

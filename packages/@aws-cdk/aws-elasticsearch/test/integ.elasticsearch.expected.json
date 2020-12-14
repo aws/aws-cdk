@@ -1,52 +1,17 @@
 {
   "Resources": {
-    "Key961B73FD": {
-      "Type": "AWS::KMS::Key",
+    "DomainSlowSearchLogs5B35A97A": {
+      "Type": "AWS::Logs::LogGroup",
       "Properties": {
-        "KeyPolicy": {
-          "Statement": [
-            {
-              "Action": [
-                "kms:Create*",
-                "kms:Describe*",
-                "kms:Enable*",
-                "kms:List*",
-                "kms:Put*",
-                "kms:Update*",
-                "kms:Revoke*",
-                "kms:Disable*",
-                "kms:Get*",
-                "kms:Delete*",
-                "kms:ScheduleKeyDeletion",
-                "kms:CancelKeyDeletion",
-                "kms:GenerateDataKey",
-                "kms:TagResource",
-                "kms:UntagResource"
-              ],
-              "Effect": "Allow",
-              "Principal": {
-                "AWS": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":iam::",
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
-                      ":root"
-                    ]
-                  ]
-                }
-              },
-              "Resource": "*"
-            }
-          ],
-          "Version": "2012-10-17"
-        }
+        "RetentionInDays": 30
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
+    },
+    "DomainAppLogs21698C1B": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "RetentionInDays": 30
       },
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain"
@@ -98,14 +63,14 @@
                   "{\"Statement\":[{\"Action\":[\"logs:PutLogEvents\",\"logs:CreateLogStream\"],\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"es.amazonaws.com\"},\"Resource\":[\"",
                   {
                     "Fn::GetAtt": [
-                      "SlowSearchLogsE00DC2E7",
+                      "DomainSlowSearchLogs5B35A97A",
                       "Arn"
                     ]
                   },
                   "\",\"",
                   {
                     "Fn::GetAtt": [
-                      "AppLogsC5DF83A6",
+                      "DomainAppLogs21698C1B",
                       "Arn"
                     ]
                   },
@@ -130,14 +95,14 @@
                   "{\"Statement\":[{\"Action\":[\"logs:PutLogEvents\",\"logs:CreateLogStream\"],\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"es.amazonaws.com\"},\"Resource\":[\"",
                   {
                     "Fn::GetAtt": [
-                      "SlowSearchLogsE00DC2E7",
+                      "DomainSlowSearchLogs5B35A97A",
                       "Arn"
                     ]
                   },
                   "\",\"",
                   {
                     "Fn::GetAtt": [
-                      "AppLogsC5DF83A6",
+                      "DomainAppLogs21698C1B",
                       "Arn"
                     ]
                   },
@@ -189,16 +154,13 @@
         },
         "ElasticsearchVersion": "7.1",
         "EncryptionAtRestOptions": {
-          "Enabled": true,
-          "KmsKeyId": {
-            "Ref": "Key961B73FD"
-          }
+          "Enabled": true
         },
         "LogPublishingOptions": {
           "ES_APPLICATION_LOGS": {
             "CloudWatchLogsLogGroupArn": {
               "Fn::GetAtt": [
-                "AppLogsC5DF83A6",
+                "DomainAppLogs21698C1B",
                 "Arn"
               ]
             },
@@ -207,7 +169,7 @@
           "SEARCH_SLOW_LOGS": {
             "CloudWatchLogsLogGroupArn": {
               "Fn::GetAtt": [
-                "SlowSearchLogsE00DC2E7",
+                "DomainSlowSearchLogs5B35A97A",
                 "Arn"
               ]
             },
@@ -225,117 +187,6 @@
         "DomainESLogGroupPolicyCustomResourcePolicyB35C8E41",
         "DomainESLogGroupPolicy5373A2E8"
       ]
-    },
-    "DomainESAccessPolicyCustomResourcePolicy9747FC42": {
-      "Type": "AWS::IAM::Policy",
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": "es:UpdateElasticsearchDomainConfig",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "Domain66AC69E0",
-                  "Arn"
-                ]
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        },
-        "PolicyName": "DomainESAccessPolicyCustomResourcePolicy9747FC42",
-        "Roles": [
-          {
-            "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
-          }
-        ]
-      },
-      "DependsOn": [
-        "Domain66AC69E0"
-      ]
-    },
-    "DomainESAccessPolicy89986F33": {
-      "Type": "Custom::ElasticsearchAccessPolicy",
-      "Properties": {
-        "ServiceToken": {
-          "Fn::GetAtt": [
-            "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
-            "Arn"
-          ]
-        },
-        "Create": {
-          "action": "updateElasticsearchDomainConfig",
-          "service": "ES",
-          "parameters": {
-            "DomainName": {
-              "Ref": "Domain66AC69E0"
-            },
-            "AccessPolicies": "{\"Statement\":[{\"Action\":\"es:ESHttp*\",\"Effect\":\"Allow\",\"Principal\":\"*\",\"Resource\":\"*\"}],\"Version\":\"2012-10-17\"}"
-          },
-          "outputPath": "DomainConfig.ElasticsearchClusterConfig.AccessPolicies",
-          "physicalResourceId": {
-            "id": {
-              "Fn::Join": [
-                "",
-                [
-                  {
-                    "Ref": "Domain66AC69E0"
-                  },
-                  "AccessPolicy"
-                ]
-              ]
-            }
-          }
-        },
-        "Update": {
-          "action": "updateElasticsearchDomainConfig",
-          "service": "ES",
-          "parameters": {
-            "DomainName": {
-              "Ref": "Domain66AC69E0"
-            },
-            "AccessPolicies": "{\"Statement\":[{\"Action\":\"es:ESHttp*\",\"Effect\":\"Allow\",\"Principal\":\"*\",\"Resource\":\"*\"}],\"Version\":\"2012-10-17\"}"
-          },
-          "outputPath": "DomainConfig.ElasticsearchClusterConfig.AccessPolicies",
-          "physicalResourceId": {
-            "id": {
-              "Fn::Join": [
-                "",
-                [
-                  {
-                    "Ref": "Domain66AC69E0"
-                  },
-                  "AccessPolicy"
-                ]
-              ]
-            }
-          }
-        },
-        "InstallLatestAwsSdk": true
-      },
-      "DependsOn": [
-        "DomainESAccessPolicyCustomResourcePolicy9747FC42",
-        "Domain66AC69E0"
-      ],
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete"
-    },
-    "SlowSearchLogsE00DC2E7": {
-      "Type": "AWS::Logs::LogGroup",
-      "Properties": {
-        "RetentionInDays": 30
-      },
-      "UpdateReplacePolicy": "Retain",
-      "DeletionPolicy": "Retain"
-    },
-    "AppLogsC5DF83A6": {
-      "Type": "AWS::Logs::LogGroup",
-      "Properties": {
-        "RetentionInDays": 30
-      },
-      "UpdateReplacePolicy": "Retain",
-      "DeletionPolicy": "Retain"
     },
     "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2": {
       "Type": "AWS::IAM::Role",
@@ -364,36 +215,6 @@
                 ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
               ]
             ]
-          }
-        ]
-      }
-    },
-    "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleDefaultPolicyD28E1A5E": {
-      "Type": "AWS::IAM::Policy",
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": [
-                "kms:List*",
-                "kms:Describe*",
-                "kms:CreateGrant"
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "Key961B73FD",
-                  "Arn"
-                ]
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        },
-        "PolicyName": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleDefaultPolicyD28E1A5E",
-        "Roles": [
-          {
-            "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
           }
         ]
       }
@@ -450,7 +271,6 @@
         "Timeout": 120
       },
       "DependsOn": [
-        "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleDefaultPolicyD28E1A5E",
         "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
       ]
     }

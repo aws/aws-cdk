@@ -12,6 +12,7 @@ import { Construct } from 'constructs';
 import { IArtifacts } from './artifacts';
 import { BuildSpec } from './build-spec';
 import { Cache } from './cache';
+import { CodeBuildMetrics } from './codebuild-canned-metrics.generated';
 import { CfnProject } from './codebuild.generated';
 import { CodePipelineArtifacts } from './codepipeline-artifacts';
 import { IFileSystemLocation } from './file-location';
@@ -340,11 +341,8 @@ abstract class ProjectBase extends Resource implements IProject {
    *
    * @default sum over 5 minutes
    */
-  public metricBuilds(props?: cloudwatch.MetricOptions) {
-    return this.metric('Builds', {
-      statistic: 'sum',
-      ...props,
-    });
+  public metricBuilds(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(CodeBuildMetrics.buildsSum, props);
   }
 
   /**
@@ -356,11 +354,8 @@ abstract class ProjectBase extends Resource implements IProject {
    *
    * @default average over 5 minutes
    */
-  public metricDuration(props?: cloudwatch.MetricOptions) {
-    return this.metric('Duration', {
-      statistic: 'avg',
-      ...props,
-    });
+  public metricDuration(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(CodeBuildMetrics.durationAverage, props);
   }
 
   /**
@@ -372,11 +367,8 @@ abstract class ProjectBase extends Resource implements IProject {
    *
    * @default sum over 5 minutes
    */
-  public metricSucceededBuilds(props?: cloudwatch.MetricOptions) {
-    return this.metric('SucceededBuilds', {
-      statistic: 'sum',
-      ...props,
-    });
+  public metricSucceededBuilds(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(CodeBuildMetrics.succeededBuildsSum, props);
   }
 
   /**
@@ -389,11 +381,17 @@ abstract class ProjectBase extends Resource implements IProject {
    *
    * @default sum over 5 minutes
    */
-  public metricFailedBuilds(props?: cloudwatch.MetricOptions) {
-    return this.metric('FailedBuilds', {
-      statistic: 'sum',
+  public metricFailedBuilds(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(CodeBuildMetrics.failedBuildsSum, props);
+  }
+
+  private cannedMetric(
+    fn: (dims: { ProjectName: string }) => cloudwatch.MetricProps,
+    props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return new cloudwatch.Metric({
+      ...fn({ ProjectName: this.projectName }),
       ...props,
-    });
+    }).attachTo(this);
   }
 }
 
@@ -764,18 +762,18 @@ export class Project extends ProjectBase {
       artifacts: artifactsConfig.artifactsProperty,
       serviceRole: this.role.roleArn,
       environment: this.renderEnvironment(props.environment, environmentVariables),
-      fileSystemLocations: Lazy.anyValue({ produce: () => this.renderFileSystemLocations() }),
+      fileSystemLocations: Lazy.any({ produce: () => this.renderFileSystemLocations() }),
       // lazy, because we have a setter for it in setEncryptionKey
       // The 'alias/aws/s3' default is necessary because leaving the `encryptionKey` field
       // empty will not remove existing encryptionKeys during an update (ref. t/D17810523)
-      encryptionKey: Lazy.stringValue({ produce: () => this._encryptionKey ? this._encryptionKey.keyArn : 'alias/aws/s3' }),
+      encryptionKey: Lazy.string({ produce: () => this._encryptionKey ? this._encryptionKey.keyArn : 'alias/aws/s3' }),
       badgeEnabled: props.badge,
       cache: cache._toCloudFormation(),
       name: this.physicalName,
       timeoutInMinutes: props.timeout && props.timeout.toMinutes(),
-      secondarySources: Lazy.anyValue({ produce: () => this.renderSecondarySources() }),
-      secondarySourceVersions: Lazy.anyValue({ produce: () => this.renderSecondarySourceVersions() }),
-      secondaryArtifacts: Lazy.anyValue({ produce: () => this.renderSecondaryArtifacts() }),
+      secondarySources: Lazy.any({ produce: () => this.renderSecondarySources() }),
+      secondarySourceVersions: Lazy.any({ produce: () => this.renderSecondarySourceVersions() }),
+      secondaryArtifacts: Lazy.any({ produce: () => this.renderSecondaryArtifacts() }),
       triggers: sourceConfig.buildTriggers,
       sourceVersion: sourceConfig.sourceVersion,
       vpcConfig: this.configureVpc(props),
@@ -792,6 +790,7 @@ export class Project extends ProjectBase {
     this.projectName = this.getResourceNameAttribute(resource.ref);
 
     this.addToRolePolicy(this.createLoggingPermission());
+    this.addParameterStorePermission(props);
     // add permissions to create and use test report groups
     // with names starting with the project's name,
     // unless the customer explicitly opts out of it
@@ -921,6 +920,35 @@ export class Project extends ProjectBase {
       resources: [logGroupArn, logGroupStarArn],
       actions: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
     });
+  }
+
+  private addParameterStorePermission(props: ProjectProps) {
+    if (!props.environmentVariables) {
+      return;
+    }
+
+    const resources = Object.values(props.environmentVariables)
+      .filter(envVariable => envVariable.type === BuildEnvironmentVariableType.PARAMETER_STORE)
+      .map(envVariable =>
+        // If the parameter name starts with / the resource name is not separated with a double '/'
+        // arn:aws:ssm:region:1111111111:parameter/PARAM_NAME
+        (envVariable.value as string).startsWith('/')
+          ? (envVariable.value as string).substr(1)
+          : envVariable.value)
+      .map(envVariable => Stack.of(this).formatArn({
+        service: 'ssm',
+        resource: 'parameter',
+        resourceName: envVariable,
+      }));
+
+    if (resources.length === 0) {
+      return;
+    }
+
+    this.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['ssm:GetParameters'],
+      resources,
+    }));
   }
 
   private renderEnvironment(

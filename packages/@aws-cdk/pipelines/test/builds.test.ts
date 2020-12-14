@@ -149,6 +149,63 @@ test.each([['npm'], ['yarn']])('%s assumes no build step by default', (npmYarn) 
   });
 });
 
+test('complex setup with environemnt variables still renders correct project', () => {
+  // WHEN
+  new TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    sourceArtifact,
+    cloudAssemblyArtifact,
+    synthAction: new cdkp.SimpleSynthAction({
+      sourceArtifact,
+      cloudAssemblyArtifact,
+      environmentVariables: {
+        SOME_ENV_VAR: { value: 'SomeValue' },
+      },
+      environment: {
+        environmentVariables: {
+          INNER_VAR: { value: 'InnerValue' },
+        },
+        privileged: true,
+      },
+      installCommands: [
+        'install1',
+        'install2',
+      ],
+      synthCommand: 'synth',
+    }),
+  });
+
+  // THEN
+  expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Environment: objectLike({
+      PrivilegedMode: true,
+      EnvironmentVariables: [
+        {
+          Name: 'INNER_VAR',
+          Type: 'PLAINTEXT',
+          Value: 'InnerValue',
+        },
+        {
+          Name: 'SOME_ENV_VAR',
+          Type: 'PLAINTEXT',
+          Value: 'SomeValue',
+        },
+      ],
+    }),
+    Source: {
+      BuildSpec: encodedJson(deepObjectLike({
+        phases: {
+          pre_build: {
+            commands: ['install1', 'install2'],
+          },
+          build: {
+            commands: ['synth'],
+          },
+        },
+      })),
+    },
+  });
+});
+
 test.each([['npm'], ['yarn']])('%s can have its install command overridden', (npmYarn) => {
   // WHEN
   new TestGitHubNpmPipeline(pipelineStack, 'Cdk', {

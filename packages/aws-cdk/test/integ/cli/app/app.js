@@ -44,6 +44,19 @@ class YourStack extends cdk.Stack {
   }
 }
 
+class StackUsingContext extends cdk.Stack {
+  constructor(parent, id, props) {
+    super(parent, id, props);
+    new core.CfnResource(this, 'Handle', {
+      type: 'AWS::CloudFormation::WaitConditionHandle'
+    });
+
+    new core.CfnOutput(this, 'Output', {
+      value: this.availabilityZones,
+    });
+  }
+}
+
 class ParameterStack extends cdk.Stack {
   constructor(parent, id, props) {
     super(parent, id, props);
@@ -247,6 +260,14 @@ class SomeStage extends cdk.Stage {
   }
 }
 
+class StageUsingContext extends cdk.Stage {
+  constructor(parent, id, props) {
+    super(parent, id, props);
+
+    new StackUsingContext(this, 'StackInStage');
+  }
+}
+
 const app = new cdk.App();
 
 const defaultEnv = {
@@ -254,46 +275,68 @@ const defaultEnv = {
   region: process.env.CDK_DEFAULT_REGION
 };
 
-// Deploy all does a wildcard ${stackPrefix}-test-*
-new MyStack(app, `${stackPrefix}-test-1`, { env: defaultEnv });
-new YourStack(app, `${stackPrefix}-test-2`);
-// Deploy wildcard with parameters does ${stackPrefix}-param-test-*
-new ParameterStack(app, `${stackPrefix}-param-test-1`);
-new OtherParameterStack(app, `${stackPrefix}-param-test-2`);
-// Deploy stack with multiple parameters
-new MultiParameterStack(app, `${stackPrefix}-param-test-3`);
-// Deploy stack with outputs does ${stackPrefix}-outputs-test-*
-new OutputsStack(app, `${stackPrefix}-outputs-test-1`);
-new AnotherOutputsStack(app, `${stackPrefix}-outputs-test-2`);
-// Not included in wildcard
-new IamStack(app, `${stackPrefix}-iam-test`, { env: defaultEnv });
-const providing = new ProvidingStack(app, `${stackPrefix}-order-providing`);
-new ConsumingStack(app, `${stackPrefix}-order-consuming`, { providingStack: providing });
+// Sometimes we don't want to synthesize all stacks because it will impact the results
+const stackSet = process.env.INTEG_STACK_SET || 'default';
 
-new MissingSSMParameterStack(app, `${stackPrefix}-missing-ssm-parameter`, { env: defaultEnv });
+switch (stackSet) {
+  case 'default':
+    // Deploy all does a wildcard ${stackPrefix}-test-*
+    new MyStack(app, `${stackPrefix}-test-1`, { env: defaultEnv });
+    new YourStack(app, `${stackPrefix}-test-2`);
+    // Deploy wildcard with parameters does ${stackPrefix}-param-test-*
+    new ParameterStack(app, `${stackPrefix}-param-test-1`);
+    new OtherParameterStack(app, `${stackPrefix}-param-test-2`);
+    // Deploy stack with multiple parameters
+    new MultiParameterStack(app, `${stackPrefix}-param-test-3`);
+    // Deploy stack with outputs does ${stackPrefix}-outputs-test-*
+    new OutputsStack(app, `${stackPrefix}-outputs-test-1`);
+    new AnotherOutputsStack(app, `${stackPrefix}-outputs-test-2`);
+    // Not included in wildcard
+    new IamStack(app, `${stackPrefix}-iam-test`, { env: defaultEnv });
+    const providing = new ProvidingStack(app, `${stackPrefix}-order-providing`);
+    new ConsumingStack(app, `${stackPrefix}-order-consuming`, { providingStack: providing });
 
-new LambdaStack(app, `${stackPrefix}-lambda`);
-new DockerStack(app, `${stackPrefix}-docker`);
-new DockerStackWithCustomFile(app, `${stackPrefix}-docker-with-custom-file`);
-new FailedStack(app, `${stackPrefix}-failed`)
+    new MissingSSMParameterStack(app, `${stackPrefix}-missing-ssm-parameter`, { env: defaultEnv });
 
-if (process.env.ENABLE_VPC_TESTING) { // Gating so we don't do context fetching unless that's what we are here for
-  const env = { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION };
-  if (process.env.ENABLE_VPC_TESTING === 'DEFINE')
-    new DefineVpcStack(app, `${stackPrefix}-define-vpc`, { env });
-  if (process.env.ENABLE_VPC_TESTING === 'IMPORT')
-  new ImportVpcStack(app, `${stackPrefix}-import-vpc`, { env });
+    new LambdaStack(app, `${stackPrefix}-lambda`);
+    new DockerStack(app, `${stackPrefix}-docker`);
+    new DockerStackWithCustomFile(app, `${stackPrefix}-docker-with-custom-file`);
+    new FailedStack(app, `${stackPrefix}-failed`)
+
+    if (process.env.ENABLE_VPC_TESTING) { // Gating so we don't do context fetching unless that's what we are here for
+      const env = { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION };
+      if (process.env.ENABLE_VPC_TESTING === 'DEFINE')
+        new DefineVpcStack(app, `${stackPrefix}-define-vpc`, { env });
+      if (process.env.ENABLE_VPC_TESTING === 'IMPORT')
+      new ImportVpcStack(app, `${stackPrefix}-import-vpc`, { env });
+    }
+
+    new ConditionalResourceStack(app, `${stackPrefix}-conditional-resource`)
+
+    new StackWithNestedStack(app, `${stackPrefix}-with-nested-stack`);
+    new StackWithNestedStackUsingParameters(app, `${stackPrefix}-with-nested-stack-using-parameters`);
+
+    new YourStack(app, `${stackPrefix}-termination-protection`, {
+      terminationProtection: process.env.TERMINATION_PROTECTION !== 'FALSE' ? true : false,
+    });
+
+    new SomeStage(app, `${stackPrefix}-stage`);
+    break;
+
+  case 'stage-using-context':
+    // Cannot be combined with other test stacks, because we use this to test
+    // that stage context is propagated up and causes synth to fail when combined
+    // with '--no-lookups'.
+
+    // Needs a dummy stack at the top level because the CLI will fail otherwise
+    new YourStack(app, `${stackPrefix}-toplevel`, { env: defaultEnv });
+    new StageUsingContext(app, `${stackPrefix}-stage-using-context`, {
+      env: defaultEnv,
+    });
+    break;
+
+  default:
+    throw new Error(`Unrecognized INTEG_STACK_SET: '${stackSet}'`);
 }
-
-new ConditionalResourceStack(app, `${stackPrefix}-conditional-resource`)
-
-new StackWithNestedStack(app, `${stackPrefix}-with-nested-stack`);
-new StackWithNestedStackUsingParameters(app, `${stackPrefix}-with-nested-stack-using-parameters`);
-
-new YourStack(app, `${stackPrefix}-termination-protection`, {
-  terminationProtection: process.env.TERMINATION_PROTECTION !== 'FALSE' ? true : false,
-});
-
-new SomeStage(app, `${stackPrefix}-stage`);
 
 app.synth();

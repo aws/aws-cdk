@@ -155,7 +155,7 @@ nodeunitShim({
   'Doubly nested strings evaluate correctly in JSON context'(test: Test) {
     // WHEN
     const stack = new Stack();
-    const fidoSays = Lazy.stringValue({ produce: () => 'woof' });
+    const fidoSays = Lazy.string({ produce: () => 'woof' });
 
     // WHEN
     const resolved = stack.resolve(stack.toJsonString({
@@ -171,7 +171,7 @@ nodeunitShim({
   'Doubly nested intrinsics evaluate correctly in JSON context'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const fidoSays = Lazy.anyValue({ produce: () => ({ Ref: 'Something' }) });
+    const fidoSays = Lazy.any({ produce: () => ({ Ref: 'Something' }) });
 
     // WHEN
     const resolved = stack.resolve(stack.toJsonString({
@@ -188,7 +188,7 @@ nodeunitShim({
   'Quoted strings in embedded JSON context are escaped'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const fidoSays = Lazy.stringValue({ produce: () => '"woof"' });
+    const fidoSays = Lazy.string({ produce: () => '"woof"' });
 
     // WHEN
     const resolved = stack.resolve(stack.toJsonString({
@@ -235,6 +235,30 @@ nodeunitShim({
 
     test.done();
   },
+
+  'Every Token used inside a JSONified string is given an opportunity to be uncached'(test: Test) {
+    // Check that tokens aren't accidentally fully resolved by the first invocation/resolution
+    // of toJsonString(). On every evaluation, Tokens referenced inside the structure should be
+    // given a chance to be either cached or uncached.
+    //
+    // (NOTE: This does not check whether the implementation of toJsonString() itself is cached or
+    // not; that depends on aws/aws-cdk#11224 and should be done in a different PR).
+
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'Stack1');
+
+    // WHEN
+    let counter = 0;
+    const counterString = Token.asString({ resolve: () => `${++counter}` });
+    const jsonString = stack.toJsonString({ counterString });
+
+    // THEN
+    expect(stack.resolve(jsonString)).toEqual('{"counterString":"1"}');
+    expect(stack.resolve(jsonString)).toEqual('{"counterString":"2"}');
+
+    test.done();
+  },
 });
 
 /**
@@ -243,6 +267,6 @@ nodeunitShim({
 function tokensThatResolveTo(value: any): Token[] {
   return [
     new Intrinsic(value),
-    Lazy.anyValue({ produce: () => value }),
+    Lazy.any({ produce: () => value }),
   ];
 }

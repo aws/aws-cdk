@@ -250,18 +250,18 @@ describe('Kinesis data streams', () => {
     });
   }),
 
-  test('retention period must be between 24 and 168 hours', () => {
+  test('retention period must be between 24 and 8760 hours', () => {
     expect(() => {
       new Stream(new Stack(), 'MyStream', {
-        retentionPeriod: Duration.hours(169),
+        retentionPeriod: Duration.hours(8761),
       });
-    }).toThrow(/retentionPeriod must be between 24 and 168 hours. Received 169/);
+    }).toThrow(/retentionPeriod must be between 24 and 8760 hours. Received 8761/);
 
     expect(() => {
       new Stream(new Stack(), 'MyStream', {
         retentionPeriod: Duration.hours(23),
       });
-    }).toThrow(/retentionPeriod must be between 24 and 168 hours. Received 23/);
+    }).toThrow(/retentionPeriod must be between 24 and 8760 hours. Received 23/);
   }),
 
   test('uses Kinesis master key if MANAGED encryption type is provided', () => {
@@ -1292,7 +1292,7 @@ describe('Kinesis data streams', () => {
       type: 'Number',
       default: 48,
       minValue: 24,
-      maxValue: 168,
+      maxValue: 8760,
     });
 
     new Stream(stack, 'MyStream', {
@@ -1304,7 +1304,7 @@ describe('Kinesis data streams', () => {
         myretentionperiod: {
           Type: 'Number',
           Default: 48,
-          MaxValue: 168,
+          MaxValue: 8760,
           MinValue: 24,
         },
       },

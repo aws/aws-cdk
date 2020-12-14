@@ -56,7 +56,7 @@ fail() {
 
 # Verify all required tools are present before starting the build
 if [ "$check_prereqs" == "true" ]; then
-  /bin/bash ./scripts/check-prerequisites.sh
+  /bin/bash ./scripts/check-build-prerequisites.sh
 fi
 
 # Prepare for build with references

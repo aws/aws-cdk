@@ -85,7 +85,7 @@ export class AuthenticateCognitoAction extends elbv2.ListenerAction {
         onUnauthenticatedRequest: options.onUnauthenticatedRequest,
         scope: options.scope,
         sessionCookieName: options.sessionCookieName,
-        sessionTimeout: options.sessionTimeout?.toSeconds(),
+        sessionTimeout: options.sessionTimeout?.toSeconds().toString(),
       },
     }, options.next);
   }
