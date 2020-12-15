@@ -29,6 +29,10 @@ export = {
               virtualNode: node,
             },
           ],
+          timeout: {
+            idle: cdk.Duration.seconds(10),
+            perRequest: cdk.Duration.seconds(11),
+          },
         }),
       });
 
@@ -39,6 +43,10 @@ export = {
               virtualNode: node,
             },
           ],
+          timeout: {
+            idle: cdk.Duration.seconds(12),
+            perRequest: cdk.Duration.seconds(13),
+          },
         }),
       });
 
@@ -49,6 +57,9 @@ export = {
               virtualNode: node,
             },
           ],
+          timeout: {
+            idle: cdk.Duration.seconds(14),
+          },
         }),
       });
 
@@ -61,6 +72,10 @@ export = {
           ],
           match: {
             serviceName: 'test.svc.local',
+          },
+          timeout: {
+            idle: cdk.Duration.seconds(15),
+            perRequest: cdk.Duration.seconds(16),
           },
         }),
       });
@@ -84,6 +99,16 @@ export = {
             },
             Match: {
               Prefix: '/',
+            },
+            Timeout: {
+              Idle: {
+                Value: 10000,
+                Unit: 'ms',
+              },
+              PerRequest: {
+                Value: 11000,
+                Unit: 'ms',
+              },
             },
           },
         },
@@ -109,6 +134,16 @@ export = {
             Match: {
               Prefix: '/',
             },
+            Timeout: {
+              Idle: {
+                Value: 12000,
+                Unit: 'ms',
+              },
+              PerRequest: {
+                Value: 13000,
+                Unit: 'ms',
+              },
+            },
           },
         },
         RouteName: 'test-http2-route',
@@ -129,6 +164,12 @@ export = {
                   Weight: 1,
                 },
               ],
+            },
+            Timeout: {
+              Idle: {
+                Value: 14000,
+                Unit: 'ms',
+              },
             },
           },
         },
@@ -153,6 +194,16 @@ export = {
             },
             Match: {
               ServiceName: 'test.svc.local',
+            },
+            Timeout: {
+              Idle: {
+                Value: 15000,
+                Unit: 'ms',
+              },
+              PerRequest: {
+                Value: 16000,
+                Unit: 'ms',
+              },
             },
           },
         },
@@ -188,6 +239,10 @@ export = {
           match: {
             prefixPath: '/node',
           },
+          timeout: {
+            idle: cdk.Duration.seconds(10),
+            perRequest: cdk.Duration.seconds(11),
+          },
         }),
       });
 
@@ -210,6 +265,16 @@ export = {
             },
             Match: {
               Prefix: '/node',
+            },
+            Timeout: {
+              Idle: {
+                Value: 10000,
+                Unit: 'ms',
+              },
+              PerRequest: {
+                Value: 11000,
+                Unit: 'ms',
+              },
             },
           },
         },
