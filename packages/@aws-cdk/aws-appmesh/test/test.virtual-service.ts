@@ -36,4 +36,23 @@ export = {
     test.equal(virtualService.virtualServiceName, virtualServiceName);
     test.done();
   },
+  'When defining a VirtualServiceProvider': {
+    'Should throw when the VirtualService and Provider are in different meshes'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const mesh = new appmesh.Mesh(stack, 'mesh', {
+        meshName: 'test-mesh',
+      });
+      const mesh2 = new appmesh.Mesh(stack, 'mesh2', {
+        meshName: 'test-mesh-2',
+      });
+      const differentMeshVn = mesh2.addVirtualNode('testVn');
+      test.throws(() =>
+        mesh.addVirtualService('testVS', {
+          virtualServiceName: 'testVS',
+          virtualServiceProvider: appmesh.VirtualServiceProvider.virtualNode(differentMeshVn),
+        }), /VirtualService testVS and the provider must be in the same Mesh/);
+      test.done();
+    },
+  },
 };

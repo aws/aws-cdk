@@ -133,10 +133,13 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
       physicalName: props.virtualServiceName || cdk.Lazy.string({ produce: () => cdk.Names.uniqueId(this) }),
     });
 
-    const provider = props.virtualServiceProvider?.bind(this);
-
     this.mesh = props.mesh;
     this.clientPolicy = props.clientPolicy;
+    const provider = props.virtualServiceProvider?.bind(this);
+
+    if (provider && provider.mesh != this.mesh) {
+      throw new Error(`VirtualService ${this.physicalName} and the provider must be in the same Mesh`);
+    }
 
     const svc = new CfnVirtualService(this, 'Resource', {
       meshName: this.mesh.meshName,
@@ -199,6 +202,13 @@ export interface VirtualServiceProviderConfig {
    * @default - none
    */
   readonly virtualRouterProvider?: CfnVirtualService.VirtualRouterServiceProviderProperty;
+
+  /**
+   * Mesh the Provider is using
+   *
+   * @default - none
+   */
+  readonly mesh: IMesh;
 }
 
 /**
@@ -228,15 +238,23 @@ export abstract class VirtualServiceProvider {
 class VirtualServiceProviderImpl extends VirtualServiceProvider {
   private readonly virtualNode?: IVirtualNode;
   private readonly virtualRouter?: IVirtualRouter;
+  private readonly mesh: IMesh;
 
   constructor(virtualNode?: IVirtualNode, virtualRouter?: IVirtualRouter) {
     super();
     this.virtualNode = virtualNode;
     this.virtualRouter = virtualRouter;
+    const mesh = this.virtualNode?.mesh || this.virtualRouter?.mesh;
+    // Only occurs if VirtualNode or VirtualRouter is not provided during construction
+    if (!mesh) {
+      throw new Error('Mesh property not defined for VirtualServiceProviderImpl');
+    }
+    this.mesh = mesh;
   }
 
   public bind(_construct: cdk.Construct): VirtualServiceProviderConfig {
     return {
+      mesh: this.mesh,
       virtualNodeProvider: this.virtualNode
         ? {
           virtualNodeName: this.virtualNode.virtualNodeName,
