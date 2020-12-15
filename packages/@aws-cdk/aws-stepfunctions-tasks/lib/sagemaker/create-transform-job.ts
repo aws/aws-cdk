@@ -183,11 +183,11 @@ export class SageMakerCreateTransformJob extends sfn.TaskStateBase {
 
   private renderModelClientOptions(config: ModelClientOptions): { [key: string]: any } {
     const retries = config.invocationsMaxRetries;
-    if (retries? (0 >= retries || retries >= 3): false) {
+    if (retries? (retries < 0 || retries > 3): false) {
       throw new RangeError(`invocationsMaxRetries should be between 0 and 3, not ${retries}.`);
     }
     const timeout = config.invocationsTimeout?.toSeconds();
-    if (timeout? (1 >= timeout || timeout >= 3600): false) {
+    if (timeout? (timeout < 1 || timeout > 3600): false) {
       throw new RangeError(`invocationsTimeout should be between 1 and 3600 seconds, not ${timeout}.`);
     }
     return {
