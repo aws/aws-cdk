@@ -23,6 +23,7 @@ def apply_handler(event, context):
     manifest_text = props['Manifest']
     role_arn      = props['RoleArn']
     prune_label   = props.get('PruneLabel', None)
+    overwrite     = props.get('Overwrite', False)
 
     # "log in" to the cluster
     subprocess.check_call([ 'aws', 'eks', 'update-kubeconfig',
@@ -40,7 +41,16 @@ def apply_handler(event, context):
 
     logger.info("manifest written to: %s" % manifest_file)
 
-    if request_type == 'Create' or request_type == 'Update':
+    if request_type == 'Create':
+        # if "overwrite" is enabled, then we use "apply" for CREATE operations
+        # which technically means we can determine the desired state of an
+        # existing resource.
+        if overwrite:
+            kubectl('apply', manifest_file)
+        else:
+            # --save-config will allow us to use "apply" later
+            kubectl('create', manifest_file, '--save-config')
+    elif request_type == 'Update':
         opts = []
         if prune_label is not None:
             opts = ['--prune', '-l', prune_label]
