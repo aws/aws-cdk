@@ -142,10 +142,12 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
       meshName: this.mesh.meshName,
       virtualServiceName: this.physicalName,
       spec: {
-        provider: provider ? {
-          virtualNode: provider?.virtualNodeProvider,
-          virtualRouter: provider?.virtualRouterProvider,
-        }: undefined,
+        provider: provider
+          ? {
+            virtualNode: provider?.virtualNodeProvider,
+            virtualRouter: provider?.virtualRouterProvider,
+          }
+          : undefined,
       },
     });
 
@@ -235,12 +237,16 @@ class VirtualServiceProviderImpl extends VirtualServiceProvider {
 
   public bind(_construct: cdk.Construct): VirtualServiceProviderConfig {
     return {
-      virtualNodeProvider: this.virtualNode? {
-        virtualNodeName: this.virtualNode.virtualNodeName,
-      }: undefined,
-      virtualRouterProvider: this.virtualRouter? {
-        virtualRouterName: this.virtualRouter.virtualRouterName,
-      }: undefined,
+      virtualNodeProvider: this.virtualNode
+        ? {
+          virtualNodeName: this.virtualNode.virtualNodeName,
+        }
+        : undefined,
+      virtualRouterProvider: this.virtualRouter
+        ? {
+          virtualRouterName: this.virtualRouter.virtualRouterName,
+        }
+        : undefined,
     };
   }
 }
