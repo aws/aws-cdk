@@ -1702,6 +1702,12 @@
               "ClusterNodesInstanceSecurityGroup899246BD",
               "GroupId"
             ]
+          },
+          {
+            "Fn::GetAtt": [
+              "Cluster9EE0221C",
+              "ClusterSecurityGroupId"
+            ]
           }
         ],
         "UserData": {
@@ -2021,6 +2027,12 @@
               "ClusterNodesArmInstanceSecurityGroup599F388B",
               "GroupId"
             ]
+          },
+          {
+            "Fn::GetAtt": [
+              "Cluster9EE0221C",
+              "ClusterSecurityGroupId"
+            ]
           }
         ],
         "UserData": {
@@ -2339,6 +2351,12 @@
             "Fn::GetAtt": [
               "ClusterBottlerocketNodesInstanceSecurityGroup3794A94B",
               "GroupId"
+            ]
+          },
+          {
+            "Fn::GetAtt": [
+              "Cluster9EE0221C",
+              "ClusterSecurityGroupId"
             ]
           }
         ],
@@ -2672,6 +2690,12 @@
             "Fn::GetAtt": [
               "ClusterspotInstanceSecurityGroup01F7B1CE",
               "GroupId"
+            ]
+          },
+          {
+            "Fn::GetAtt": [
+              "Cluster9EE0221C",
+              "ClusterSecurityGroupId"
             ]
           }
         ],
@@ -3024,6 +3048,12 @@
             "Fn::GetAtt": [
               "ClusterInferenceInstancesInstanceSecurityGroupECB3FC45",
               "GroupId"
+            ]
+          },
+          {
+            "Fn::GetAtt": [
+              "Cluster9EE0221C",
+              "ClusterSecurityGroupId"
             ]
           }
         ],
