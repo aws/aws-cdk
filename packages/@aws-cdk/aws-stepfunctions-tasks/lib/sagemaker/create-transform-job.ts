@@ -181,12 +181,12 @@ export class SageMakerCreateTransformJob extends sfn.TaskStateBase {
     };
   }
 
-  private renderModelClientOptions(config: ModelClientOptions): { [key: string]: any } {
-    const retries = config.invocationsMaxRetries;
+  private renderModelClientOptions(options: ModelClientOptions): { [key: string]: any } {
+    const retries = options.invocationsMaxRetries;
     if (retries? (retries < 0 || retries > 3): false) {
       throw new RangeError(`invocationsMaxRetries should be between 0 and 3, not ${retries}.`);
     }
-    const timeout = config.invocationsTimeout?.toSeconds();
+    const timeout = options.invocationsTimeout?.toSeconds();
     if (timeout? (timeout < 1 || timeout > 3600): false) {
       throw new Error(`invocationsTimeout should be between 1 and 3600 seconds. Received: ${timeout}.`);
     }
