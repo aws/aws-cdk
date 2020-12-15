@@ -382,6 +382,31 @@ Here are a few useful commands:
    evaluate only the rule specified [awslint README](./packages/awslint/README.md)
    for details on include/exclude rule patterns.
 
+
+#### jsii-rosetta
+
+**jsii-rosetta** can be used to verify that all code examples included in documentation for a package (including those
+in `README.md`) successfully compile against the library they document. It is recommended to run it to ensure all
+examples are still accurate. Successfully building examples is also necessary to ensure the best possible translation to
+other supported languages (`C#`, `Java`, `Python`, ...).
+
+> Note that examples may use libraries that are not part of the `dependencies` or `devDependencies` of the documented
+> package. For example `@aws-cdk/core` contains mainy examples that leverage libraries built *on top of it* (such as
+> `@aws-cdk/aws-sns`). Such libraries must be built (using `yarn build`) before **jsii-rosetta** can verify that
+> examples are correct.
+
+To run **jsii-rosetta** in *strict* mode (so that it always fails when encountering examples that fail to compile), use
+the following command:
+
+```console
+$ yarn rosetta:extract --strict
+```
+
+For more information on how you can address examples that fail compiling due to missing fixtures (declarations that are
+necessary for the example to compile, but which would distract the reader away from what is being demonstrated), you
+might need to introduce [rosetta fixtures](https://github.com/aws/jsii/tree/main/packages/jsii-rosetta#fixtures). Refer
+to the [Examples](#examples) section.
+
 ### cfn2ts
 
 This tool is used to generate our low-level CloudFormation resources
@@ -685,6 +710,8 @@ can be used in these cases.
 
 ### Examples
 
+#### Fixture Files
+
 Examples typed in fenced code blocks (looking like `'''ts`, but then with backticks
 instead of regular quotes) will be automatically extrated, compiled and translated
 to other languages when the bindings are generated.
@@ -694,7 +721,7 @@ a *fixture*, which looks like this:
 
 ```
 '''ts fixture=with-bucket
-bucket.addLifecycleTransition({ ... });
+bucket.addLifecycleTransition({ ...props });
 '''
 ```
 
@@ -717,8 +744,8 @@ contain three slashes to achieve the same effect:
 ```
 /**
  * @example
- * /// fixture=with-bucket
- * bucket.addLifecycleTransition({ ... });
+ *   /// fixture=with-bucket
+ *   bucket.addLifecycleTransition({ ...props });
  */
 ```
 
@@ -732,12 +759,52 @@ the current package.
 For a practical example of how making sample code compilable works, see the
 `aws-ec2` package.
 
+#### Recommendations
+
+In order to offer a consistent documentation style throughout the AWS CDK
+codebase, example code should follow the following recommendations (there may be
+cases where some of those do not apply - good judgement is to be applied):
+
+- Types from the documented module should be **un-qualified**
+
+  ```ts
+  // An example in the @aws-cdk/core library, which defines Duration
+  Duration.minutes(15);
+  ```
+
+- Types from other modules should be **qualified**
+
+  ```ts
+  // An example in the @aws-cdk/core library, using something from @aws-cdk/aws-s3
+  const bucket = new s3.Bucket(this, 'Bucket');
+  // ...rest of the example...
+  ```
+
+- Within `.ts-fixture` files, make use of `declare` statements instead of
+  writing a compatible value (this will make your fixtures more durable):
+
+  ```ts
+  // An hypothetical 'rosetta/default.ts-fixture' file in `@aws-cdk/core`
+  import * as kms from '@aws-cdk/aws-kms';
+  import * as s3 from '@aws-cdk/aws-s3';
+  import { StackProps } from '@aws-cdk/core';
+
+  declare const kmsKey: kms.IKey;
+  declare const bucket: s3.Bucket;
+
+  declare const props: StackProps;
+  ```
+
+> Those recommendations are not verified or enforced by automated tooling. Pull
+> request reviewers may however request that new sample code is edited to meet
+> those requirements as needed.
+
+#### Checking a single package
+
 Examples of all packages are extracted and compiled as part of the packaging
 step. If you are working on getting rid of example compilation errors of a
-single package, you can run `scripts/compile-samples` on the package by itself.
-
-For now, non-compiling examples will not yet block the build, but at some point
-in the future they will.
+single package, you can run `yarn rosetta:extract --strict` in the package's
+directory (see the [**jsii-rosetta**](#jsii-rosetta) section).
 
 ### Feature Flags
 
