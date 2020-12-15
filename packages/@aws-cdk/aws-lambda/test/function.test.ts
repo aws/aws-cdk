@@ -5,6 +5,7 @@ import { ProfilingGroup } from '@aws-cdk/aws-codeguruprofiler';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as efs from '@aws-cdk/aws-efs';
 import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as sqs from '@aws-cdk/aws-sqs';
@@ -1567,6 +1568,40 @@ describe('function', () => {
     expect(version1).toEqual(version2);
     expect(stack.resolve(version1.functionArn)).toEqual(expectedArn);
     expect(stack.resolve(version2.functionArn)).toEqual(expectedArn);
+  });
+
+  test('default function with kmsKeyArn, environmentEncryption passed as props', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const key: kms.IKey = new kms.Key(stack, 'EnvVarEncryptKey', {
+      description: 'sample key',
+    });
+
+    // WHEN
+    new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_10_X,
+      environment: {
+        SOME: 'Variable',
+      },
+      environmentEncryption: key,
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::Lambda::Function', {
+      Environment: {
+        Variables: {
+          SOME: 'Variable',
+        },
+      },
+      KmsKeyArn: {
+        'Fn::GetAtt': [
+          'EnvVarEncryptKey1A7CABDB',
+          'Arn',
+        ],
+      },
+    });
   });
 
   describe('profiling group', () => {
