@@ -304,11 +304,11 @@ cluster.addAutoScalingGroupCapacity('frontend-nodes', {
 });
 ```
 
-To connect an already initialized auto-scaling group, use the `cluster.connectAutoScalingGroupCapacity` method:
+To connect an already initialized auto-scaling group, use the `cluster.connectAutoScalingGroupCapacity()` method:
 
 ```ts
 const asg = new ec2.AutoScalingGroup(...);
-cluster.addAutoScalingGroupCapacity(asg);
+cluster.connectAutoScalingGroupCapacity(asg);
 ```
 
 In both cases, the [cluster security group](https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html#cluster-sg) will be autoamtically attached to
