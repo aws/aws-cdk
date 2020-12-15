@@ -524,7 +524,6 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends CoreCon
   private createLoadBalancer(name: string, publicLoadBalancer?: boolean): ApplicationLoadBalancer {
     const internetFacing = publicLoadBalancer !== undefined ? publicLoadBalancer : true;
     const lbProps = {
-      loadBalancerName: name,
       vpc: this.cluster.vpc,
       internetFacing,
     };
