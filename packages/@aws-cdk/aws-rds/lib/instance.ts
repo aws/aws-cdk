@@ -116,7 +116,7 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
    */
   public static fromDatabaseInstanceAttributes(scope: Construct, id: string, attrs: DatabaseInstanceAttributes): IDatabaseInstance {
     class Import extends DatabaseInstanceBase implements IDatabaseInstance {
-      public readonly defaultPort = ec2.Port.tcp(attrs.port)
+      public readonly defaultPort = ec2.Port.tcp(attrs.port);
       public readonly connections = new ec2.Connections({
         securityGroups: attrs.securityGroups,
         defaultPort: this.defaultPort,
