@@ -3,6 +3,9 @@
   "description": "The end-to-end tests for the AWS CDK (libraries and CLI)",
   "version": "0.0.0",
   "private": true,
+  "pkglint": {
+    "ignore": true
+  },
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",

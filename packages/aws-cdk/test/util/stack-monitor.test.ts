@@ -1,5 +1,4 @@
 import { StackActivityMonitor, IActivityPrinter, StackActivity } from '../../lib/api/util/cloudformation/stack-activity-monitor';
-import { sleep } from '../integ/helpers/aws';
 import { MockSdk } from './mock-sdk';
 
 let sdk: MockSdk;
@@ -167,4 +166,8 @@ async function waitForCondition(cb: () => boolean): Promise<void> {
   while (!cb()) {
     await sleep(10);
   }
+}
+
+async function sleep(ms: number) {
+  return new Promise(ok => setTimeout(ok, ms));
 }
