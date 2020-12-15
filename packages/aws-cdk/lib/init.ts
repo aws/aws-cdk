@@ -160,7 +160,7 @@ export class InitTemplate {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const cdkVersion = require('../package.json').version.replace(MATCH_VER_BUILD, '');
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const constructsVersion = require('../package.json').dependencies.constructs.replace(MATCH_VER_BUILD, '');
+    const constructsVersion = require('../package.json').devDependencies.constructs.replace(MATCH_VER_BUILD, '');
     return template.replace(/%name%/g, project.name)
       .replace(/%name\.camelCased%/g, camelCase(project.name))
       .replace(/%name\.PascalCased%/g, camelCase(project.name, { pascalCase: true }))
