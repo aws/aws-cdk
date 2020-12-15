@@ -26,11 +26,13 @@ def apply_handler(event, context):
     overwrite     = props.get('Overwrite', False)
 
     # "log in" to the cluster
-    subprocess.check_call([ 'aws', 'eks', 'update-kubeconfig',
+    cmd = [ 'aws', 'eks', 'update-kubeconfig',
         '--role-arn', role_arn,
         '--name', cluster_name,
         '--kubeconfig', kubeconfig
-    ])
+    ]
+    logger.info(f'Running command: {cmd}')
+    subprocess.check_call(cmd)
 
     # write resource manifests in sequence: { r1 }{ r2 }{ r3 } (this is how
     # a stream of JSON objects can be included in a k8s manifest).
