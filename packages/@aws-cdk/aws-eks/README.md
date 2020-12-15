@@ -807,16 +807,29 @@ or through `cluster.addManifest()`) (e.g. `cluster.addManifest('foo', r1, r2,
 r3,...)`), these resources will be applied as a single manifest via `kubectl`
 and will be applied sequentially (the standard behavior in `kubectl`).
 
-----------------------
+---
 
 Since Kubernetes manifests are implemented as CloudFormation resources in the
 CDK. This means that if the manifest is deleted from your code (or the stack is
 deleted), the next `cdk deploy` will issue a `kubectl delete` command and the
 Kubernetes resources in that manifest will be deleted.
 
-#### Caveat
+#### Resource Pruning
 
-If you have multiple resources in a single `KubernetesManifest`, and one of those **resources** is removed from the manifest, it will not be deleted and will remain orphan. See [Support Object pruning](https://github.com/aws/aws-cdk/issues/10495) for more details.
+When a resource is deleted from a Kubernetes manifest, the EKS module will
+automatically delete these resources by injecting a _prune label_ to all
+manifest resources. This label is then passed to [`kubectl apply --prune`].
+
+[`kubectl apply --prune`]: https://kubernetes.io/docs/tasks/manage-kubernetes-objects/declarative-config/#alternative-kubectl-apply-f-directory-prune-l-your-label
+
+Pruning is enabled by default but can be disabled through the `prune` option
+when a cluster is defined:
+
+```ts
+new Cluster(this, 'MyCluster', {
+  prune: false
+});
+```
 
 ### Helm Charts
 
