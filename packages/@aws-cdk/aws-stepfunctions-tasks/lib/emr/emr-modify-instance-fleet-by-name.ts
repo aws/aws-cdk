@@ -1,6 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
-import { Aws } from '@aws-cdk/core';
+import { Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { integrationResourceArn } from '../private/task-utils';
 
@@ -58,7 +58,13 @@ export class EmrModifyInstanceFleetByName extends sfn.TaskStateBase {
           'elasticmapreduce:ModifyInstanceFleet',
           'elasticmapreduce:ListInstanceFleets',
         ],
-        resources: [`arn:aws:elasticmapreduce:${Aws.REGION}:${Aws.ACCOUNT_ID}:cluster/*`],
+        resources: [
+          Stack.of(this).formatArn({
+            service: 'elasticmapreduce',
+            resource: 'cluster',
+            resourceName: '*',
+          }),
+        ],
       }),
     ];
   }
