@@ -188,7 +188,7 @@ export class SageMakerCreateTransformJob extends sfn.TaskStateBase {
     }
     const timeout = config.invocationsTimeout?.toSeconds();
     if (timeout? (timeout < 1 || timeout > 3600): false) {
-      throw new RangeError(`invocationsTimeout should be between 1 and 3600 seconds, not ${timeout}.`);
+      throw new Error(`invocationsTimeout should be between 1 and 3600 seconds. Received: ${timeout}.`);
     }
     return {
       ModelClientConfig: {
