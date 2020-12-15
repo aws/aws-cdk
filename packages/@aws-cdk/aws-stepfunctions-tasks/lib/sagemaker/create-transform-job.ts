@@ -1,7 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
-import { Size, Stack } from '@aws-cdk/core';
+import { Size, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 import { BatchStrategy, ModelClientOptions, S3DataType, TransformInput, TransformOutput, TransformResources } from './base-types';
@@ -183,11 +183,11 @@ export class SageMakerCreateTransformJob extends sfn.TaskStateBase {
 
   private renderModelClientOptions(options: ModelClientOptions): { [key: string]: any } {
     const retries = options.invocationsMaxRetries;
-    if (retries? (retries < 0 || retries > 3): false) {
+    if (!Token.isUnresolved(retries) && retries? (retries < 0 || retries > 3): false) {
       throw new Error(`invocationsMaxRetries should be between 0 and 3. Received: ${retries}.`);
     }
     const timeout = options.invocationsTimeout?.toSeconds();
-    if (timeout? (timeout < 1 || timeout > 3600): false) {
+    if (!Token.isUnresolved(timeout) && timeout? (timeout < 1 || timeout > 3600): false) {
       throw new Error(`invocationsTimeout should be between 1 and 3600 seconds. Received: ${timeout}.`);
     }
     return {
