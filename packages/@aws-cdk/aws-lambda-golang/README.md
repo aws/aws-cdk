@@ -57,21 +57,19 @@ lamda-app
 With the above layout I could either provide the `entry` as `lambda-app/cmd/api` or `lambda-app/cmd/api/main.go`, either will work.
 When the construct builds the golang binary this will be translated `go build ./cmd/api` & `go build ./cmd/api/main.go` respectively.
 The construct will figure out where it needs to run the `go build` command from, in this example it would be from
-the `lambda-app` directory. It does this by determining the [project root](#project-root), which is explained in the
+the `lambda-app` directory. It does this by determining the [mod file path](#mod-file-path), which is explained in the
 next section.
 
-### Project root
+### mod file path
 
 The `GolangFunction` tries to automatically determine your project root, that is
 the root of your golang project. This is usually where the top level `go.mod` file or
 `vendor` folder of your project is located. When bundling in a Docker container, the
-project root is used as the source (`/asset-input`) for the volume mounted in
+`modFilePath` is used as the source (`/asset-input`) for the volume mounted in
 the container.
 
-The following folders are considered by walking up parent folders starting from
-the current working directory:
-
-* the folder containing a `go.mod` file
+The CDK will walk up parent folders starting from
+the current working directory until it finds a folder containing a `go.mod` file.
 
 Alternatively, you can specify the `modFilePath` prop manually. In this case you
 need to ensure that this path includes `entry` and any module/dependencies used
@@ -89,7 +87,7 @@ you name the handler `bootstrap` (which we do by default).
 
 The construct will attempt to figure out how to handle the dependencies for your function. It will
 do this by determining whether or not you are vendoring your dependencies. It makes this determination
-by looking to see if there is a `vendor` folder at the [project root](#project-root).
+by looking to see if there is a `vendor` folder at the [mod file path](#mod-file-path).
 
 With this information the construct can determine what commands to run. You will
 generally fall into two scenarios:
@@ -140,7 +138,7 @@ new lambda.GolangFunction(this, 'handler', {
 });
 ```
 
-Use the `bundlingDockerImage` prop to use a custom bundling image:
+Use the `bundling.dockerImage` prop to use a custom bundling image:
 
 ```ts
 new lambda.GolangFunction(this, 'handler', {
@@ -151,7 +149,7 @@ new lambda.GolangFunction(this, 'handler', {
 });
 ```
 
-Use the `goBuildFlags` prop to pass additional build flags to `go build`:
+Use the `bundling.goBuildFlags` prop to pass additional build flags to `go build`:
 
 ```ts
 new lambda.GolangFunction(this, 'handler', {
@@ -183,7 +181,6 @@ new lambda.GolangFunction(this, 'handler', {
 The following hooks are available:
 
 * `beforeBundling`: runs before all bundling commands
-* `beforeInstall`: does not run
 * `afterBundling`: runs after all bundling commands
 
 They all receive the directory containing the `go.mod` file (`inputDir`) and the

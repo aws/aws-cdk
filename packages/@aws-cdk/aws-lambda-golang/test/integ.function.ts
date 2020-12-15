@@ -13,26 +13,6 @@ class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    // new lambda.GolangFunction(this, 'go-handler-vendor', {
-    //   entry: path.join(__dirname, 'lambda-handler-vendor/cmd/api'),
-    //   bundling: {
-    //     assetHashType: AssetHashType.SOURCE,
-    //     commandHooks: {
-    //       afterBundling(): string[] {
-    //         return [];
-    //       },
-    //       beforeInstall(): string[] {
-    //         return [];
-    //       },
-    //       beforeBundling(): string[] {
-    //         return ['go test -mod=vendor ./cmd/api -v'];
-    //       },
-    //     },
-    //     goBuildFlags: ['-ldflags "-s -w"'],
-    //   },
-    //   runtime: Runtime.PROVIDED_AL2,
-    // });
-
     new lambda.GolangFunction(this, 'go-handler-docker', {
       entry: path.join(__dirname, 'lambda-handler-vendor/cmd/api'),
       bundling: {
@@ -44,9 +24,6 @@ class TestStack extends Stack {
         forcedDockerBundling: true,
         commandHooks: {
           afterBundling(): string[] {
-            return [];
-          },
-          beforeInstall(): string[] {
             return [];
           },
           beforeBundling(): string[] {

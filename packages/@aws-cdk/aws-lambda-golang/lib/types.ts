@@ -77,10 +77,9 @@ export interface BundlingOptions {
  *
  * @example
  * {
- *   // Copy a file from the input directory to the output directory
- *   // to include it in the bundled asset
- *   afterBundling(inputDir: string, outputDir: string): string[] {
- *     return [`cp ${inputDir}/my-binary.node ${outputDir}`];
+ *   // Run tests prior to bundling
+ *   beforeBundling(inputDir: string, outputDir: string): string[] {
+ *     return [`go test -mod=vendor ./...`];
  *   }
  *   // ...
  * }
@@ -92,15 +91,6 @@ export interface ICommandHooks {
    * Commands are chained with `&&`.
    */
   beforeBundling(inputDir: string, outputDir: string): string[];
-
-  /**
-   * Returns commands to run before installing node modules.
-   *
-   * This hook only runs when node modules are installed.
-   *
-   * Commands are chained with `&&`.
-   */
-  beforeInstall(inputDir: string, outputDir: string): string[];
 
   /**
    * Returns commands to run after bundling.
