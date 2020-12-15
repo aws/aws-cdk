@@ -183,9 +183,8 @@ export class SageMakerCreateTransformJob extends sfn.TaskStateBase {
 
   private renderModelClientOptions(config: ModelClientOptions): { [key: string]: any } {
     const retries = config.invocationsMaxRetries;
-
     if (retries? (0 >= retries || retries >= 3): false) {
-      throw new RangeError(`invocationsMaxRetries should be between 0 and 3, not ${retries}.`)
+      throw new RangeError(`invocationsMaxRetries should be between 0 and 3, not ${retries}.`);
     }
     return {
       ModelClientConfig: {
