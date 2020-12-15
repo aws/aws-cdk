@@ -290,6 +290,24 @@ nodeunitShim({
       test.done();
     },
 
+    'import/export without security group'(test: Test) {
+      // GIVEN
+      const stack2 = new Stack();
+
+      // WHEN
+      const importedEndpoint = InterfaceVpcEndpoint.fromInterfaceVpcEndpointAttributes(stack2, 'ImportedEndpoint', {
+        vpcEndpointId: 'vpc-endpoint-id',
+        port: 80,
+      });
+      importedEndpoint.connections.allowDefaultPortFromAnyIpv4();
+
+      // THEN
+      test.deepEqual(importedEndpoint.vpcEndpointId, 'vpc-endpoint-id');
+      test.deepEqual(importedEndpoint.connections.securityGroups.length, 0);
+
+      test.done();
+    },
+
     'with existing security groups'(test: Test) {
       // GIVEN
       const stack = new Stack();
