@@ -871,7 +871,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
         ClientId: this.stack.account,
       },
       ...props,
-    });
+    }).attachTo(this);
   }
 
   /**
@@ -1067,6 +1067,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
 
     return grant;
   }
+
 }
 
 
@@ -1377,7 +1378,7 @@ export class Domain extends DomainBase implements IDomain {
 
     if (props.logging?.slowSearchLogEnabled) {
       this.slowSearchLogGroup = props.logging.slowSearchLogGroup ??
-        new logs.LogGroup(scope, 'SlowSearchLogs', {
+        new logs.LogGroup(this, 'SlowSearchLogs', {
           retention: logs.RetentionDays.ONE_MONTH,
         });
 
@@ -1386,7 +1387,7 @@ export class Domain extends DomainBase implements IDomain {
 
     if (props.logging?.slowIndexLogEnabled) {
       this.slowIndexLogGroup = props.logging.slowIndexLogGroup ??
-        new logs.LogGroup(scope, 'SlowIndexLogs', {
+        new logs.LogGroup(this, 'SlowIndexLogs', {
           retention: logs.RetentionDays.ONE_MONTH,
         });
 
@@ -1395,7 +1396,7 @@ export class Domain extends DomainBase implements IDomain {
 
     if (props.logging?.appLogEnabled) {
       this.appLogGroup = props.logging.appLogGroup ??
-        new logs.LogGroup(scope, 'AppLogs', {
+        new logs.LogGroup(this, 'AppLogs', {
           retention: logs.RetentionDays.ONE_MONTH,
         });
 
@@ -1413,8 +1414,9 @@ export class Domain extends DomainBase implements IDomain {
 
       // Use a custom resource to set the log group resource policy since it is not supported by CDK and cfn.
       // https://github.com/aws/aws-cdk/issues/5343
-      logGroupResourcePolicy = new LogGroupResourcePolicy(this, 'ESLogGroupPolicy', {
-        policyName: 'ESLogPolicy',
+      logGroupResourcePolicy = new LogGroupResourcePolicy(this, `ESLogGroupPolicy${this.node.addr}`, {
+        // create a cloudwatch logs resource policy name that is unique to this domain instance
+        policyName: `ESLogPolicy${this.node.addr}`,
         policyStatements: [logPolicyStatement],
       });
     }
