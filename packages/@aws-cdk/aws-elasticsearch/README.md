@@ -174,6 +174,7 @@ const domain = new es.Domain(this, 'Domain', {
 const masterUserPassword = domain.masterUserPassword;
 ```
 
+
 ## Audit logs
 
 Audit logs can be enabled for a domain, but only when fine grained access control is enabled.
