@@ -157,6 +157,8 @@ export interface NodegroupOptions {
   readonly instanceType?: InstanceType;
   /**
    * The instance types to use for your node group.
+   * @default t3.medium will be used according to the cloudformation document.
+   * @see - https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eks-nodegroup.html#cfn-eks-nodegroup-instancetypes
    */
   readonly instanceTypes?: InstanceType[];
   /**

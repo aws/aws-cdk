@@ -181,6 +181,27 @@ export = {
     expect(stack).to(countResources('AWS::EKS::Nodegroup', 2));
     test.done();
   },
+  'create nodegroup with minimal property provided'(test: Test) {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+
+    // WHEN
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      kubectlEnabled: true,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+    new eks.Nodegroup(stack, 'Nodegroup', {
+      cluster,
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::EKS::Nodegroup', {
+    },
+    ));
+    test.done();
+  },
   'create nodegroup with instanceType provided'(test: Test) {
     // GIVEN
     const { stack, vpc } = testFixture();
@@ -265,6 +286,136 @@ export = {
     ));
     test.done();
   },
+  'create nodegroup with ondemand capacity type'(test: Test) {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+
+    // WHEN
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      kubectlEnabled: true,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+    new eks.Nodegroup(stack, 'Nodegroup', {
+      cluster,
+      instanceTypes: [
+        new ec2.InstanceType('m5.large'),
+        new ec2.InstanceType('t3.large'),
+        new ec2.InstanceType('c5.large'),
+      ],
+      capacityType: eks.CapacityType.ON_DEMAND,
+    });
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::EKS::Nodegroup', {
+      InstanceTypes: [
+        'm5.large',
+        't3.large',
+        'c5.large',
+      ],
+      CapacityType: 'ON_DEMAND',
+    },
+    ));
+    test.done();
+  },
+  'create nodegroup with both instanceTypes and instanceType defined'(test: Test) {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+
+    // WHEN
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      kubectlEnabled: true,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+    new eks.Nodegroup(stack, 'Nodegroup', {
+      cluster,
+      instanceType: new ec2.InstanceType('m5.large'),
+      instanceTypes: [
+        new ec2.InstanceType('m5.large'),
+        new ec2.InstanceType('t3.large'),
+        new ec2.InstanceType('c5.large'),
+      ],
+      capacityType: eks.CapacityType.SPOT,
+    });
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::EKS::Nodegroup', {
+      InstanceTypes: [
+        'm5.large',
+        't3.large',
+        'c5.large',
+      ],
+      CapacityType: 'SPOT',
+    },
+    ));
+    test.done();
+  },
+  'create nodegroup with either instanceTypes or instanceType defined'(test: Test) {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+
+    // WHEN
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      kubectlEnabled: true,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+    new eks.Nodegroup(stack, 'Nodegroup', {
+      cluster,
+      capacityType: eks.CapacityType.SPOT,
+    });
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::EKS::Nodegroup', {
+      CapacityType: 'SPOT',
+    },
+    ));
+    test.done();
+  },
+  'throws when instanceTypes provided with different CPU architrcture'(test: Test) {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      kubectlEnabled: true,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+    // THEN
+    test.throws(() => cluster.addNodegroupCapacity('ng', {
+      instanceTypes: [
+        // X86
+        new ec2.InstanceType('c5.large'),
+        new ec2.InstanceType('c5a.large'),
+        // ARM64
+        new ec2.InstanceType('m6g.large'),
+      ],
+    }), /instanceTypes of different CPU architectures not allowed/);
+    test.done();
+  },
+  'throws when amiType provided is incorrect'(test: Test) {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      kubectlEnabled: true,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+    // THEN
+    test.throws(() => cluster.addNodegroupCapacity('ng', {
+      instanceTypes: [
+        new ec2.InstanceType('c5.large'),
+        new ec2.InstanceType('c5a.large'),
+        new ec2.InstanceType('c5d.large'),
+      ],
+      // incorrect amiType
+      amiType: eks.NodegroupAmiType.AL2_ARM_64,
+    }), /amiType is not correct - should be/);
+    test.done();
+  },
+
   'remoteAccess without security group provided'(test: Test) {
     // GIVEN
     const { stack, vpc } = testFixture();
