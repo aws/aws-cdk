@@ -261,7 +261,6 @@ export class Nodegroup extends Resource implements INodegroup {
   private readonly desiredSize: number;
   private readonly maxSize: number;
   private readonly minSize: number;
-  private readonly instanceType: InstanceType[];
 
   constructor(scope: Construct, id: string, props: NodegroupProps) {
     super(scope, id, {
@@ -283,8 +282,8 @@ export class Nodegroup extends Resource implements INodegroup {
       throw new Error(`Minimum capacity ${this.minSize} can't be greater than desired size ${this.desiredSize}`);
     }
 
-    this.instanceType = props.instanceTypes ?? (props.instanceType ? [props.instanceType] : [DEFAULT_INSTANCE_TYPE]);
-    const determinedAmiType = determineAmiTypes(this.instanceType);
+    const instanceType = props.instanceTypes ?? (props.instanceType ? [props.instanceType] : [DEFAULT_INSTANCE_TYPE]);
+    const determinedAmiType = determineAmiTypes(instanceType);
     if (props.amiType && props.amiType !== determinedAmiType) {
       throw new Error(`amiType is not correct - should be ${determinedAmiType}`);
     }
