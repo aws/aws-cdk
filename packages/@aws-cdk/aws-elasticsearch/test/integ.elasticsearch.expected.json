@@ -157,6 +157,9 @@
           "Enabled": true
         },
         "LogPublishingOptions": {
+          "AUDIT_LOGS": {
+            "Enabled": false
+          },
           "ES_APPLICATION_LOGS": {
             "CloudWatchLogsLogGroupArn": {
               "Fn::GetAtt": [
@@ -431,6 +434,9 @@
           "Enabled": true
         },
         "LogPublishingOptions": {
+          "AUDIT_LOGS": {
+            "Enabled": false
+          },
           "ES_APPLICATION_LOGS": {
             "CloudWatchLogsLogGroupArn": {
               "Fn::GetAtt": [
