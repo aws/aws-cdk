@@ -247,7 +247,7 @@ export interface LoggingOptions {
 
   /**
    * Specify if Elasticsearch audit logging should be set up.
-   * Requires Elasticsearch version 6.7 or later.
+   * Requires Elasticsearch version 6.7 or later and fine grained access control to be enabled.
    *
    * @default - false
    */
