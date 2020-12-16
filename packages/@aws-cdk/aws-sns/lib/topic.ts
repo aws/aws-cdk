@@ -56,6 +56,11 @@ export class Topic extends TopicBase {
     return new Import(scope, id);
   }
 
+  /**
+   * If this topic is encrypted, this is the KMS encryption key.
+   */
+  readonly masterKey?: IKey;
+
   public readonly topicArn: string;
   public readonly topicName: string;
 
@@ -77,5 +82,6 @@ export class Topic extends TopicBase {
       resource: this.physicalName,
     });
     this.topicName = this.getResourceNameAttribute(resource.attrTopicName);
+    this.masterKey = props.masterKey;
   }
 }
