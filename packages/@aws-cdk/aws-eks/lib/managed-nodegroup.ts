@@ -282,8 +282,8 @@ export class Nodegroup extends Resource implements INodegroup {
       throw new Error(`Minimum capacity ${this.minSize} can't be greater than desired size ${this.desiredSize}`);
     }
 
-    const instanceType = props.instanceTypes ?? (props.instanceType ? [props.instanceType] : [DEFAULT_INSTANCE_TYPE]);
-    const determinedAmiType = determineAmiTypes(instanceType);
+    const instanceTypes = props.instanceTypes ?? (props.instanceType ? [props.instanceType] : [DEFAULT_INSTANCE_TYPE]);
+    const determinedAmiType = determineAmiTypes(instanceTypes);
     if (props.amiType && props.amiType !== determinedAmiType) {
       throw new Error(`amiType is not correct - should be ${determinedAmiType}`);
     }
