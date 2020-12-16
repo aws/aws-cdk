@@ -2,9 +2,9 @@ import '@aws-cdk/assert/jest';
 import { Metric, Statistic } from '@aws-cdk/aws-cloudwatch';
 import { Subnet, Vpc, EbsDeviceVolumeType } from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
+import * as logs from '@aws-cdk/aws-logs';
 import { App, Stack, Duration, SecretValue } from '@aws-cdk/core';
 import { Domain, ElasticsearchVersion } from '../lib';
-import * as logs from "@aws-cdk/aws-logs";
 
 let app: App;
 let stack: Stack;
