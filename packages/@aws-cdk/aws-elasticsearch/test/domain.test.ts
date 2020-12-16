@@ -81,7 +81,7 @@ describe('log groups', () => {
         SEARCH_SLOW_LOGS: {
           CloudWatchLogsLogGroupArn: {
             'Fn::GetAtt': [
-              'SlowSearchLogsE00DC2E7',
+              'DomainSlowSearchLogs5B35A97A',
               'Arn',
             ],
           },
@@ -113,7 +113,7 @@ describe('log groups', () => {
         INDEX_SLOW_LOGS: {
           CloudWatchLogsLogGroupArn: {
             'Fn::GetAtt': [
-              'SlowIndexLogsAD49DED0',
+              'DomainSlowIndexLogsFE2F1061',
               'Arn',
             ],
           },
@@ -136,7 +136,7 @@ describe('log groups', () => {
         ES_APPLICATION_LOGS: {
           CloudWatchLogsLogGroupArn: {
             'Fn::GetAtt': [
-              'AppLogsC5DF83A6',
+              'DomainAppLogs21698C1B',
               'Arn',
             ],
           },
@@ -147,6 +147,119 @@ describe('log groups', () => {
         },
         INDEX_SLOW_LOGS: {
           Enabled: false,
+        },
+      },
+    });
+  });
+
+  test('two domains with logging enabled can be created in same stack', () => {
+    new Domain(stack, 'Domain1', {
+      version: ElasticsearchVersion.V7_7,
+      logging: {
+        appLogEnabled: true,
+        slowSearchLogEnabled: true,
+        slowIndexLogEnabled: true,
+      },
+    });
+    new Domain(stack, 'Domain2', {
+      version: ElasticsearchVersion.V7_7,
+      logging: {
+        appLogEnabled: true,
+        slowSearchLogEnabled: true,
+        slowIndexLogEnabled: true,
+      },
+    });
+    expect(stack).toHaveResourceLike('AWS::Elasticsearch::Domain', {
+      LogPublishingOptions: {
+        ES_APPLICATION_LOGS: {
+          CloudWatchLogsLogGroupArn: {
+            'Fn::GetAtt': [
+              'Domain1AppLogs6E8D1D67',
+              'Arn',
+            ],
+          },
+          Enabled: true,
+        },
+        SEARCH_SLOW_LOGS: {
+          CloudWatchLogsLogGroupArn: {
+            'Fn::GetAtt': [
+              'Domain1SlowSearchLogs8F3B0506',
+              'Arn',
+            ],
+          },
+          Enabled: true,
+        },
+        INDEX_SLOW_LOGS: {
+          CloudWatchLogsLogGroupArn: {
+            'Fn::GetAtt': [
+              'Domain1SlowIndexLogs9354D098',
+              'Arn',
+            ],
+          },
+          Enabled: true,
+        },
+      },
+    });
+    expect(stack).toHaveResourceLike('AWS::Elasticsearch::Domain', {
+      LogPublishingOptions: {
+        ES_APPLICATION_LOGS: {
+          CloudWatchLogsLogGroupArn: {
+            'Fn::GetAtt': [
+              'Domain2AppLogs810876E2',
+              'Arn',
+            ],
+          },
+          Enabled: true,
+        },
+        SEARCH_SLOW_LOGS: {
+          CloudWatchLogsLogGroupArn: {
+            'Fn::GetAtt': [
+              'Domain2SlowSearchLogs0C75F64B',
+              'Arn',
+            ],
+          },
+          Enabled: true,
+        },
+        INDEX_SLOW_LOGS: {
+          CloudWatchLogsLogGroupArn: {
+            'Fn::GetAtt': [
+              'Domain2SlowIndexLogs0CB900D0',
+              'Arn',
+            ],
+          },
+          Enabled: true,
+        },
+      },
+    });
+  });
+
+  test('log group policy is uniquely named for each domain', () => {
+    new Domain(stack, 'Domain1', {
+      version: ElasticsearchVersion.V7_4,
+      logging: {
+        appLogEnabled: true,
+      },
+    });
+    new Domain(stack, 'Domain2', {
+      version: ElasticsearchVersion.V7_4,
+      logging: {
+        appLogEnabled: true,
+      },
+    });
+
+    // Domain1
+    expect(stack).toHaveResourceLike('Custom::CloudwatchLogResourcePolicy', {
+      Create: {
+        parameters: {
+          policyName: 'ESLogPolicyc836fd92f07ec41eb70c2f6f08dc4b43cfb7c25391',
+        },
+      },
+    });
+    // Domain2
+    expect(stack).toHaveResourceLike('Custom::CloudwatchLogResourcePolicy', {
+      Create: {
+        parameters: {
+          policyName: 'ESLogPolicyc8f05f015be3baf6ec1ee06cd1ee5cc8706ebbe5b2',
         },
       },
     });
