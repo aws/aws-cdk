@@ -1,6 +1,6 @@
 import { InstanceType, ISecurityGroup, SubnetSelection } from '@aws-cdk/aws-ec2';
 import { IRole, ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
-import { IResource, Resource } from '@aws-cdk/core';
+import { IResource, Resource, Annotations } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Cluster, ICluster } from './cluster';
 import { CfnNodegroup } from './eks.generated';
@@ -282,6 +282,9 @@ export class Nodegroup extends Resource implements INodegroup {
       throw new Error(`Minimum capacity ${this.minSize} can't be greater than desired size ${this.desiredSize}`);
     }
 
+    if (props.instanceType) {
+      Annotations.of(this).addWarning('instanceType will be deprecated, remember to use instanceTypes instead.');
+    }
     const instanceTypes = props.instanceTypes ?? (props.instanceType ? [props.instanceType] : [DEFAULT_INSTANCE_TYPE]);
     const determinedAmiType = determineAmiTypes(instanceTypes);
     if (props.amiType && props.amiType !== determinedAmiType) {
