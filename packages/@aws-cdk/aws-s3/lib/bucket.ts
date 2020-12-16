@@ -13,7 +13,7 @@ import { IBucketNotificationDestination } from './destination';
 import { BucketNotifications } from './notifications-resource';
 import * as perms from './perms';
 import { LifecycleRule } from './rule';
-import { CfnBucket, CfnBucketPolicy } from './s3.generated';
+import { CfnBucket } from './s3.generated';
 import { parseBucketArn, parseBucketName } from './util';
 
 const AUTO_DELETE_OBJECTS_RESOURCE_TYPE = 'Custom::S3AutoDeleteObjects';
@@ -1783,8 +1783,10 @@ export class Bucket extends BucketBase {
 
     // Ensure bucket policy is deleted AFTER the custom resource otherwise
     // we don't have permissions to list and delete in the bucket.
-    const policy = this.node.tryFindChild('Policy') as CfnBucketPolicy;
-    customResource.node.addDependency(policy);
+    // (add a `if` to make TS happy)
+    if (this.policy) {
+      customResource.node.addDependency(this.policy);
+    }
   }
 }
 
