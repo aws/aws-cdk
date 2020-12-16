@@ -284,7 +284,6 @@ export class Nodegroup extends Resource implements INodegroup {
     }
 
     this.instanceType = props.instanceTypes ?? (props.instanceType ? [props.instanceType] : [DEFAULT_INSTANCE_TYPE]);
-    // console.log(this.instanceType);
     const determinedAmiType = determineAmiTypes(this.instanceType);
     if (props.amiType && props.amiType !== determinedAmiType) {
       throw new Error(`amiType is not correct - should be ${determinedAmiType}`);
