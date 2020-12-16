@@ -3216,7 +3216,11 @@
             "Ref": "VpcPrivateSubnet3SubnetF258B56E"
           }
         ],
+        "AmiType": "AL2_x86_64",
         "ForceUpdateEnabled": true,
+        "InstanceTypes": [
+          "t3.small"
+        ],
         "ScalingConfig": {
           "DesiredSize": 1,
           "MaxSize": 1,

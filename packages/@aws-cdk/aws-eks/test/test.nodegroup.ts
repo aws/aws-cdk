@@ -194,7 +194,7 @@ export = {
     });
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
-      instanceType: [new ec2.InstanceType('m5.large')],
+      instanceType: new ec2.InstanceType('m5.large'),
     });
 
     // THEN
@@ -219,7 +219,7 @@ export = {
     });
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
-      instanceType: [new ec2.InstanceType('m5.large')],
+      instanceType: new ec2.InstanceType('m5.large'),
       capacityType: eks.CapacityType.ON_DEMAND,
     });
 
@@ -246,7 +246,7 @@ export = {
     });
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
-      instanceType: [
+      instanceTypes: [
         new ec2.InstanceType('m5.large'),
         new ec2.InstanceType('t3.large'),
         new ec2.InstanceType('c5.large'),

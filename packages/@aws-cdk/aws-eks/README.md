@@ -201,7 +201,7 @@ const cluster = new eks.Cluster(this, 'HelloEKS', {
 });
 
 cluster.addNodegroupCapacity('custom-node-group', {
-  instanceType: [new ec2.InstanceType('m5.large')],
+  instanceTypes: [new ec2.InstanceType('m5.large')],
   minSize: 4,
   diskSize: 100,
   amiType: eks.NodegroupAmiType.AL2_X86_64_GPU,
@@ -212,14 +212,14 @@ cluster.addNodegroupCapacity('custom-node-group', {
 #### Spot Instances Support
 
 Use `capacityType` to create the Spot managed node groups. To maximize the availability of your applications while using
-Spot Instances, we recommend that you configure a Spot managed node group to use multiple instance types. 
+Spot Instances, we recommend that you configure a Spot managed node group to use multiple instance types with `instanceTypes`. 
 
 > For more details visit [Managed node group capacity types](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html#managed-node-group-capacity-types).
 
 
 ```ts
 cluster.addNodegroupCapacity('extra-ng-spot', {
-  instanceType: [
+  instanceTypes: [
     new ec2.InstanceType('c5.large'),
     new ec2.InstanceType('c5a.large'),
     new ec2.InstanceType('c5d.large'),
@@ -257,7 +257,7 @@ cluster.addNodegroupCapacity('extra-ng', {
 });
 ```
 
-You may specify one or multiple instance types in either `instanceType` property of `NodeGroup` or in the launch template but not both.
+You may specify one or multiple instance types in either `instanceTypes` property of `NodeGroup` or in the launch template but not both.
 
 > For more details visit [Launch Template Support](https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html).
 
@@ -550,13 +550,13 @@ Amazon Linux 2 AMI for ARM64 will be automatically selected.
 ```ts
 // add a managed ARM64 nodegroup
 cluster.addNodegroupCapacity('extra-ng-arm', {
-  instanceType: [new ec2.InstanceType('m6g.medium')],
+  instanceTypes: [new ec2.InstanceType('m6g.medium')],
   minSize: 2,
 });
 
 // add a self-managed ARM64 nodegroup
 cluster.addAutoScalingGroupCapacity('self-ng-arm', {
-  instanceType: [new ec2.InstanceType('m6g.medium')],
+  instanceType: new ec2.InstanceType('m6g.medium'),
   minCapacity: 2,
 })
 ```

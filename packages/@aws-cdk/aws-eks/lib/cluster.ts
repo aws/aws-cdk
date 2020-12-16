@@ -1119,7 +1119,7 @@ export class Cluster extends ClusterBase {
         this.addAutoScalingGroupCapacity('DefaultCapacity', { instanceType, minCapacity }) : undefined;
 
       this.defaultNodegroup = props.defaultCapacityType !== DefaultCapacityType.EC2 ?
-        this.addNodegroupCapacity('DefaultCapacity', { instanceType: [instanceType], minSize: minCapacity }) : undefined;
+        this.addNodegroupCapacity('DefaultCapacity', { instanceTypes: [instanceType], minSize: minCapacity }) : undefined;
     }
 
     const outputConfigCommand = props.outputConfigCommand === undefined ? true : props.outputConfigCommand;

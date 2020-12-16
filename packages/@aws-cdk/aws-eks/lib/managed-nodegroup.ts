@@ -109,7 +109,7 @@ export interface NodegroupOptions {
   /**
    * The AMI type for your node group.
    *
-   * @default - auto-determined from the instanceType property.
+   * @default - auto-determined from the instanceTypes property.
    */
   readonly amiType?: NodegroupAmiType;
   /**
@@ -149,11 +149,16 @@ export interface NodegroupOptions {
   /**
    * The instance type to use for your node group. Currently, you can specify a single instance type for a node group.
    * The default value for this parameter is `t3.medium`. If you choose a GPU instance type, be sure to specify the
-   * `AL2_x86_64_GPU` with the amiType parameter.
+   * `AL2_x86_64_GPU` with the amiType parameter. This property will be ignored if `instanceTypes` is defined.
    *
    * @default t3.medium
+   * @deprecated Use `instanceTypes` instead.
    */
-  readonly instanceType?: InstanceType[];
+  readonly instanceType?: InstanceType;
+  /**
+   * The instance types to use for your node group.
+   */
+  readonly instanceTypes?: InstanceType[];
   /**
    * The Kubernetes labels to be applied to the nodes in the node group when they are created.
    *
@@ -254,6 +259,7 @@ export class Nodegroup extends Resource implements INodegroup {
   private readonly desiredSize: number;
   private readonly maxSize: number;
   private readonly minSize: number;
+  private readonly instanceType: InstanceType[];
 
   constructor(scope: Construct, id: string, props: NodegroupProps) {
     super(scope, id, {
@@ -266,11 +272,20 @@ export class Nodegroup extends Resource implements INodegroup {
     this.maxSize = props.maxSize ?? this.desiredSize;
     this.minSize = props.minSize ?? 1;
 
+    const DEFAULT_INSTANCE_TYPE = new InstanceType('t3.medium');
+
     if (this.desiredSize > this.maxSize) {
       throw new Error(`Desired capacity ${this.desiredSize} can't be greater than max size ${this.maxSize}`);
     }
     if (this.desiredSize < this.minSize) {
       throw new Error(`Minimum capacity ${this.minSize} can't be greater than desired size ${this.desiredSize}`);
+    }
+
+    this.instanceType = props.instanceTypes ?? (props.instanceType ? [props.instanceType] : [DEFAULT_INSTANCE_TYPE]);
+    // console.log(this.instanceType);
+    const determinedAmiType = determineAmiTypes(this.instanceType);
+    if (props.amiType && props.amiType !== determinedAmiType) {
+      throw new Error(`amiType is not correct - should be ${determinedAmiType}`);
     }
 
     if (!props.nodeRole) {
@@ -291,11 +306,12 @@ export class Nodegroup extends Resource implements INodegroup {
       nodegroupName: props.nodegroupName,
       nodeRole: this.role.roleArn,
       subnets: this.cluster.vpc.selectSubnets(props.subnets).subnetIds,
-      amiType: props.amiType ?? (props.instanceType ? getAmiTypeForInstanceType(props.instanceType[0]).toString() :
-        undefined),
+      // AmyType is not allowed by CFN when specifying an image id in your launch template.
+      amiType: props.launchTemplateSpec == undefined ? determinedAmiType : undefined,
       diskSize: props.diskSize,
       forceUpdateEnabled: props.forceUpdate ?? true,
-      instanceTypes: props.instanceType ? props.instanceType.map(t => t.toString()) : undefined,
+      instanceTypes: props.instanceTypes ? props.instanceTypes.map(t => t.toString()) :
+        props.instanceType ? [props.instanceType.toString()] : undefined,
       labels: props.labels,
       releaseVersion: props.releaseVersion,
       remoteAccess: props.remoteAccess ? {
@@ -364,3 +380,12 @@ function getAmiTypeForInstanceType(instanceType: InstanceType) {
           NodegroupAmiType.AL2_X86_64;
 }
 
+function determineAmiTypes(instanceType: InstanceType[]) {
+  const amiTypes = instanceType.map(i =>getAmiTypeForInstanceType(i));
+  const uniq = [...new Set(amiTypes)];
+  if (uniq.length > 1) {
+    throw new Error('instanceTypes of different CPU architectures not allowed');
+  } else {
+    return uniq[0];
+  }
+}
