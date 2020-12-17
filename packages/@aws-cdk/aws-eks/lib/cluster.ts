@@ -1464,11 +1464,14 @@ export class Cluster extends ClusterBase {
     if (!this._spotInterruptHandler) {
       this._spotInterruptHandler = this.addHelmChart('spot-interrupt-handler', {
         chart: 'aws-node-termination-handler',
-        version: '0.9.5',
+        version: '0.13.1',
         repository: 'https://aws.github.io/eks-charts',
         namespace: 'kube-system',
         values: {
           'nodeSelector.lifecycle': LifecycleLabel.SPOT,
+          'image': {
+            repository: 'public.ecr.aws/r6b0f9a1/aws-node-termination-handler',
+          },
         },
       });
     }

@@ -1241,7 +1241,8 @@ export = {
           expect(stack).to(haveResource(eks.HelmChart.RESOURCE_TYPE, {
             Release: 'stackclusterchartspotinterrupthandlerdec62e07',
             Chart: 'aws-node-termination-handler',
-            Values: '{\"nodeSelector.lifecycle\":\"Ec2Spot\"}',
+            Version: '0.13.1',
+            Values: '{\"nodeSelector.lifecycle\":\"Ec2Spot\",\"image\":{\"repository\":\"public.ecr.aws/r6b0f9a1/aws-node-termination-handler\"}}',
             Namespace: 'kube-system',
             Repository: 'https://aws.github.io/eks-charts',
           }));
