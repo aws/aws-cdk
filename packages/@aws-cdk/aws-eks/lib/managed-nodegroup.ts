@@ -227,6 +227,10 @@ export interface NodegroupProps extends NodegroupOptions {
  */
 export class Nodegroup extends Resource implements INodegroup {
   /**
+   * Default instanceTypes
+   */
+  public static readonly DEFAULT_INSTANCE_TYPES = [new InstanceType('t3.medium')];
+  /**
    * Import the Nodegroup from attributes
    */
   public static fromNodegroupName(scope: Construct, id: string, nodegroupName: string): INodegroup {
@@ -273,8 +277,6 @@ export class Nodegroup extends Resource implements INodegroup {
     this.maxSize = props.maxSize ?? this.desiredSize;
     this.minSize = props.minSize ?? 1;
 
-    const DEFAULT_INSTANCE_TYPE = new InstanceType('t3.medium');
-
     if (this.desiredSize > this.maxSize) {
       throw new Error(`Desired capacity ${this.desiredSize} can't be greater than max size ${this.maxSize}`);
     }
@@ -285,7 +287,7 @@ export class Nodegroup extends Resource implements INodegroup {
     if (props.instanceType) {
       Annotations.of(this).addWarning('instanceType will be deprecated, remember to use instanceTypes instead.');
     }
-    const instanceTypes = props.instanceTypes ?? (props.instanceType ? [props.instanceType] : [DEFAULT_INSTANCE_TYPE]);
+    const instanceTypes = props.instanceTypes ?? (props.instanceType ? [props.instanceType] : Nodegroup.DEFAULT_INSTANCE_TYPES);
     const determinedAmiType = determineAmiTypes(instanceTypes);
     if (props.amiType && props.amiType !== determinedAmiType) {
       throw new Error(`amiType is not correct - should be ${determinedAmiType}`);
@@ -310,7 +312,7 @@ export class Nodegroup extends Resource implements INodegroup {
       nodeRole: this.role.roleArn,
       subnets: this.cluster.vpc.selectSubnets(props.subnets).subnetIds,
       // AmyType is not allowed by CFN when specifying an image id in your launch template.
-      amiType: props.launchTemplateSpec == undefined ? determinedAmiType : undefined,
+      amiType: props.launchTemplateSpec === undefined ? determinedAmiType : undefined,
       diskSize: props.diskSize,
       forceUpdateEnabled: props.forceUpdate ?? true,
       instanceTypes: props.instanceTypes ? props.instanceTypes.map(t => t.toString()) :
