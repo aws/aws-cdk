@@ -163,7 +163,7 @@ test('esbuild bundling with esbuild options', () => {
     logLevel: LogLevel.SILENT,
     keepNames: true,
     tsconfig,
-    metaFile: true,
+    metafile: true,
     banner: '/* comments */',
     footer: '/* comments */',
     forceDockerBundling: true,

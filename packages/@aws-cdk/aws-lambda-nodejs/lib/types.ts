@@ -107,7 +107,7 @@ export interface BundlingOptions {
    * @see https://esbuild.github.io/api/#metafile
    * @default - false
    */
-  readonly metaFile?: boolean
+  readonly metafile?: boolean
 
   /**
    * Use this to insert an arbitrary string at the beginning of generated JavaScript files.
