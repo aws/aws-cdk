@@ -101,6 +101,12 @@
   "bundledDependencies": [
     "yaml"
   ],
+  "pkglint": {
+    "attribution": [
+      "kubectl",
+      "helm"
+    ]
+  },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/aws-autoscaling": "0.0.0",
