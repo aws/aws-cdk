@@ -54,7 +54,9 @@
     "rosetta:extract": "yarn --silent jsii-rosetta extract"
   },
   "cdk-build": {
-    "pre": [ "kubectl-layer/build.sh" ],
+    "pre": [
+      "kubectl-layer/build.sh"
+    ],
     "cloudformation": "AWS::EKS",
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
