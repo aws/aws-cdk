@@ -42,6 +42,31 @@ export interface BundlingOptions {
   readonly loader?: { [ext: string]: string };
 
   /**
+   * Log level for esbuild
+   *
+   * @default LogLevel.WARNING
+   */
+  readonly logLevel?: LogLevel;
+
+  /**
+   * Whether to preserve the original `name` values even in minified code.
+   *
+   * In JavaScript the `name` property on functions and classes defaults to a
+   * nearby identifier in the source code.
+   *
+   * However, minification renames symbols to reduce code size and bundling
+   * sometimes need to rename symbols to avoid collisions. That changes value of
+   * the `name` property for many of these cases. This is usually fine because
+   * the `name` property is normally only used for debugging. However, some
+   * frameworks rely on the `name` property for registration and binding purposes.
+   * If this is the case, you can enable this option to preserve the original
+   * `name` values even in minified code.
+   *
+   * @default false
+   */
+  readonly keepNames?: boolean;
+
+  /**
    * Environment variables defined when bundling runs.
    *
    * @default - no environment variables are defined.
@@ -151,4 +176,18 @@ export interface ICommandHooks {
    * Commands are chained with `&&`.
    */
   afterBundling(inputDir: string, outputDir: string): string[];
+}
+
+/**
+ * Log level for esbuild
+ */
+export enum LogLevel {
+  /** Show everything */
+  INFO = 'info',
+  /** Show warnings and errors */
+  WARNING = 'warning',
+  /** Show errors only */
+  ERROR = 'error',
+  /** Show nothing */
+  SILENT = 'silent',
 }
