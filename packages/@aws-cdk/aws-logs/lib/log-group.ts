@@ -154,7 +154,7 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
   }
 
   /**
-   * Give permissions to write to create and write to streams in this log group
+   * Give permissions to create and write to streams in this log group
    */
   public grantWrite(grantee: iam.IGrantable) {
     return this.grant(grantee, 'logs:CreateLogStream', 'logs:PutLogEvents');
