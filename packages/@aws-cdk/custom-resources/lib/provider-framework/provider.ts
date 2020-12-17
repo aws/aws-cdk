@@ -1,5 +1,6 @@
 import * as path from 'path';
 import * as cfn from '@aws-cdk/aws-cloudformation';
+import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as logs from '@aws-cdk/aws-logs';
 import { Construct as CoreConstruct, Duration } from '@aws-cdk/core';
@@ -70,6 +71,16 @@ export interface ProviderProps {
    * @default logs.RetentionDays.INFINITE
    */
   readonly logRetention?: logs.RetentionDays;
+
+  /**
+   * AWS Lambda execution role.
+   *
+   * The role that will be assumed by the AWS Lambda.
+   * Must be assumable by the 'lambda.amazonaws.com' service principal.
+   *
+   * @default - A default role will be created.
+   */
+  readonly role?: iam.Role;
 }
 
 /**
@@ -97,6 +108,7 @@ export class Provider extends CoreConstruct implements cfn.ICustomResourceProvid
 
   private readonly entrypoint: lambda.Function;
   private readonly logRetention?: logs.RetentionDays;
+  private readonly role?: iam.Role;
 
   constructor(scope: Construct, id: string, props: ProviderProps) {
     super(scope, id);
@@ -110,6 +122,8 @@ export class Provider extends CoreConstruct implements cfn.ICustomResourceProvid
     this.isCompleteHandler = props.isCompleteHandler;
 
     this.logRetention = props.logRetention;
+
+    this.role = props.role;
 
     const onEventFunction = this.createFunction(consts.FRAMEWORK_ON_EVENT_HANDLER_NAME);
 
@@ -153,6 +167,7 @@ export class Provider extends CoreConstruct implements cfn.ICustomResourceProvid
       handler: `framework.${entrypoint}`,
       timeout: FRAMEWORK_HANDLER_TIMEOUT,
       logRetention: this.logRetention,
+      role: this.role,
     });
 
     fn.addEnvironment(consts.USER_ON_EVENT_FUNCTION_ARN_ENV, this.onEventHandler.functionArn);

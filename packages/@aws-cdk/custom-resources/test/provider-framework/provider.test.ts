@@ -1,4 +1,5 @@
 import * as path from 'path';
+import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as logs from '@aws-cdk/aws-logs';
 import { Duration, Stack } from '@aws-cdk/core';
@@ -215,5 +216,59 @@ describe('log retention', () => {
 
     // THEN
     expect(stack).not.toHaveResource('Custom::LogRetention');
+  });
+});
+
+describe('role', () => {
+  it('uses custom role when present', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new cr.Provider(stack, 'MyProvider', {
+      onEventHandler: new lambda.Function(stack, 'MyHandler', {
+        code: lambda.Code.fromAsset(path.join(__dirname, './integration-test-fixtures/s3-file-handler')),
+        handler: 'index.onEvent',
+        runtime: lambda.Runtime.NODEJS_10_X,
+      }),
+      role: new iam.Role(stack, 'MyRole', {
+        assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+        managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole')],
+      }),
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::Lambda::Function', {
+      Role: {
+        'Fn::GetAtt': [
+          'MyRoleF48FFE04',
+          'Arn',
+        ],
+      },
+    });
+  });
+
+  it('uses default role otherwise', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new cr.Provider(stack, 'MyProvider', {
+      onEventHandler: new lambda.Function(stack, 'MyHandler', {
+        code: lambda.Code.fromAsset(path.join(__dirname, './integration-test-fixtures/s3-file-handler')),
+        handler: 'index.onEvent',
+        runtime: lambda.Runtime.NODEJS_10_X,
+      }),
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::Lambda::Function', {
+      Role: {
+        'Fn::GetAtt': [
+          'MyProviderframeworkonEventServiceRole8761E48D',
+          'Arn',
+        ],
+      },
+    });
   });
 });
