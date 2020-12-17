@@ -289,6 +289,7 @@ The `tcp()`, `http()` and `http2()` methods provide the spec necessary to define
 
 For HTTP based routes, the match field can be used to match on a route prefix.
 By default, an HTTP based route will match on `/`. All matches must start with a leading `/`.
+The timeout field can also be specified for `idle` and `perRequest` timeouts.
 
 ```ts
 router.addRoute('route-http', {
@@ -300,6 +301,10 @@ router.addRoute('route-http', {
     ],
     match: {
       serviceName: 'my-service.default.svc.cluster.local',
+    },
+    timeout:  {
+      idle : Duration.seconds(2),
+      perRequest: Duration.seconds(1),
     },
   }),
 });

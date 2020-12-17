@@ -371,6 +371,25 @@ scalableTarget.scaleOnMemoryUtilization('MemoryScaling', {
 });
 ```
 
+### Change the default Deployment Controller
+
+```ts
+import { ApplicationLoadBalancedFargateService } from './application-load-balanced-fargate-service';
+
+const loadBalancedFargateService = new ApplicationLoadBalancedFargateService(stack, 'Service', {
+  cluster,
+  memoryLimitMiB: 1024,
+  desiredCount: 1,
+  cpu: 512,
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  },
+  deploymentController: {
+    type: ecs.DeploymentControllerType.CODE_DEPLOY,
+  },
+});
+```
+
 ### Set deployment configuration on QueueProcessingService
 
 ```ts

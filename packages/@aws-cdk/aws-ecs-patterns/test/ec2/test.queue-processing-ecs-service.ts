@@ -183,6 +183,9 @@ export = {
       maxHealthyPercent: 150,
       serviceName: 'ecs-test-service',
       family: 'ecs-task-family',
+      deploymentController: {
+        type: ecs.DeploymentControllerType.CODE_DEPLOY,
+      },
     });
 
     // THEN - QueueWorker is of EC2 launch type, an SQS queue is created and all optional properties are set.
@@ -194,6 +197,9 @@ export = {
       },
       LaunchType: 'EC2',
       ServiceName: 'ecs-test-service',
+      DeploymentController: {
+        Type: 'CODE_DEPLOY',
+      },
     }));
 
     expect(stack).to(haveResource('AWS::SQS::Queue', {

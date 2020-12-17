@@ -59,6 +59,10 @@ router.addRoute('route-1', {
     match: {
       prefixPath: '/',
     },
+    timeout: {
+      idle: cdk.Duration.seconds(10),
+      perRequest: cdk.Duration.seconds(10),
+    },
   }),
 });
 
@@ -118,6 +122,10 @@ router.addRoute('route-2', {
     match: {
       prefixPath: '/path2',
     },
+    timeout: {
+      idle: cdk.Duration.seconds(11),
+      perRequest: cdk.Duration.seconds(11),
+    },
   }),
 });
 
@@ -129,6 +137,9 @@ router.addRoute('route-3', {
         weight: 20,
       },
     ],
+    timeout: {
+      idle: cdk.Duration.seconds(12),
+    },
   }),
 });
 
