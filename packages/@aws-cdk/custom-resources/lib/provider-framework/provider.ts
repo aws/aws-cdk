@@ -80,7 +80,7 @@ export interface ProviderProps {
    *
    * @default - A default role will be created.
    */
-  readonly role?: iam.Role;
+  readonly role?: iam.IRole;
 }
 
 /**
@@ -108,7 +108,7 @@ export class Provider extends CoreConstruct implements cfn.ICustomResourceProvid
 
   private readonly entrypoint: lambda.Function;
   private readonly logRetention?: logs.RetentionDays;
-  private readonly role?: iam.Role;
+  private readonly role?: iam.IRole;
 
   constructor(scope: Construct, id: string, props: ProviderProps) {
     super(scope, id);
