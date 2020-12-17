@@ -24,3 +24,7 @@ tsconfig.json
 **/cdk.out
 junit.xml
 test/
+
+# include only the output of the kubectl-layer build in the npm module (~40MiB)
+#kubectl-layer
+#kubectl-layer/layer.zip

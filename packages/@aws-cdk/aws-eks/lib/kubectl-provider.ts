@@ -5,7 +5,7 @@ import { Duration, Stack, NestedStack, Names } from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
 import { Construct } from 'constructs';
 import { ICluster, Cluster } from './cluster';
-import { KubectlLayer, KubectlLayerProps } from './kubectl-layer';
+import { KubectlLayer } from './kubectl-layer';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
 // eslint-disable-next-line
@@ -110,13 +110,13 @@ export class KubectlProvider extends NestedStack {
  *
  * (exported for unit tests).
  */
-export function getOrCreateKubectlLayer(scope: Construct, props: KubectlLayerProps = {}): KubectlLayer {
+export function getOrCreateKubectlLayer(scope: Construct): KubectlLayer {
   const stack = Stack.of(scope);
-  const id = 'kubectl-layer-' + (props.version ? props.version : '8C2542BC-BF2B-4DFE-B765-E181FD30A9A0');
+  const id = 'kubectl-layer';
   const exists = stack.node.tryFindChild(id) as KubectlLayer;
   if (exists) {
     return exists;
   }
 
-  return new KubectlLayer(stack, id, props);
+  return new KubectlLayer(stack, id);
 }
