@@ -58,7 +58,7 @@ peer_dependencies() {
     fi
 
     # Output the list of peer dependencies in the format "dep1@ver1 dep2@ver2"
-    node -p "Object.entries(require('$mdfile').peerDependencies || {}).map(e => \`\${e[0]}@\${e[1]}\`).join(' ')"
+    node -p "Object.entries(require('$mdfile').peerDependencies || {}).map(e => \`\${e[0]}@\${e[1]}\`).join('\n')"
 }
 
 export -f package_name
