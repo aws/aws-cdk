@@ -54,10 +54,11 @@ peer_dependencies() {
     local mddir=$(dirname "$mdfile")
     mkdir -p $mddir
     if [ ! -f "$mdfile" ]; then
+        # Directly curl'ing npmjs rather than 'npm view'. 'npm view' is slow.
         curl 2>/dev/null https://registry.npmjs.org/$pkg/$ver > "$mdfile"
     fi
 
-    # Output the list of peer dependencies in the format "dep1@ver1 dep2@ver2"
+    # Output the list of peer dependencies in the format "dep1@ver1\ndep2@ver2"
     node -p "Object.entries(require('$mdfile').peerDependencies || {}).map(e => \`\${e[0]}@\${e[1]}\`).join('\n')"
 }
 
