@@ -1822,6 +1822,7 @@ describe('function', () => {
 
       const fs = new efs.FileSystem(stack, 'Efs', {
         vpc,
+        vpcSubnets: vpc.selectSubnets(undefined),
       });
       const accessPoint = fs.addAccessPoint('AccessPoint');
       // WHEN
