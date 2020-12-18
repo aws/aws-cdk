@@ -173,3 +173,29 @@ const domain = new es.Domain(this, 'Domain', {
 
 const masterUserPassword = domain.masterUserPassword;
 ```
+
+
+
+## Audit logs
+
+Audit logs can be enabled for a domain, but only when fine grained access control is enabled.
+
+```ts
+const domain = new es.Domain(this, 'Domain', {
+    version: es.ElasticsearchVersion.V7_1,
+    enforceHttps: true,
+    nodeToNodeEncryption: true,
+    encryptionAtRest: {
+        enabled: true,
+    },
+    fineGrainedAccessControl: {
+        masterUserName: 'master-user',
+    },
+    logging: {
+        auditLogEnabled: true,
+        slowSearchLogEnabled: true,
+        appLogEnabled: true,
+        slowIndexLogEnabled: true,
+    },
+});
+```
