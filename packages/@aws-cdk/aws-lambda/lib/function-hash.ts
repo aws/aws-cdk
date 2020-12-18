@@ -17,7 +17,7 @@ export const ENV_SALT = '4b2bff42-e517-41d1-9b5f-92aacf41842b';
  * API, then it must be classified as true, otherwise false.
  * See https://docs.aws.amazon.com/lambda/latest/dg/API_UpdateFunctionConfiguration.html
  */
-const VERSION_PROP_CLASSIFICATION: { [key: string]: boolean } = {
+const VERSION_PROPS_CLASSIFICATION: { [key: string]: boolean } = {
   // locked to the version
   Code: true,
   DeadLetterConfig: true,
@@ -44,7 +44,7 @@ const VERSION_PROP_CLASSIFICATION: { [key: string]: boolean } = {
 export interface CalculateFunctionHashOptions {
   hashAlgorithm: 'v1' | 'v2';
   function: Function;
-  versionLockClassification?: { [key: string]: boolean };
+  additionalVersionPropsClassification?: { [key: string]: boolean };
 }
 
 export function calculateFunctionHash(options: CalculateFunctionHashOptions) {
@@ -57,7 +57,7 @@ export function calculateFunctionHash(options: CalculateFunctionHashOptions) {
   const hash = crypto.createHash('md5');
 
   if (options.hashAlgorithm === 'v2') {
-    hash.update(sortedStringify(usefulKeys(config, options.versionLockClassification)));
+    hash.update(sortedStringify(usefulKeys(config, options.additionalVersionPropsClassification)));
   } else {
     hash.update(JSON.stringify(config));
   }
@@ -73,14 +73,14 @@ function usefulKeys(cfnObject: any, additionalClassification?: { [key: string]: 
   const props = cfnObject.Resources[keys[0]].Properties;
 
   const classification = {
-    ...VERSION_PROP_CLASSIFICATION,
+    ...VERSION_PROPS_CLASSIFICATION,
     ...additionalClassification,
   };
 
   const unclassified = Object.keys(props).filter(p => !Object.keys(classification).includes(p));
   if (unclassified.length > 0) {
     throw new Error(`Keys [${unclassified}] are unclassified on whether they are version locked.`
-      + 'Use "versionLockClassification" property to classify them.');
+      + 'Use "additionalVersionPropsClassification" property to classify them.');
   }
   const notVersionLocked = Object.entries(classification).filter(e => !e[1]).map(e => e[0]);
   notVersionLocked.forEach(p => delete props[p]);

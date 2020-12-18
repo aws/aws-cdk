@@ -281,19 +281,6 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * @default false
    */
   readonly allowPublicSubnet?: boolean;
-
-  /**
-   * The list of properties under AWS::Lambda::Function are classified as whether they are version "locked" or not.
-   * A version locked property, will not take effect on previously created Versions. A new Version must be generated for the change to take effect.
-   * On the other hand, properties that are not version locked will take effect on all Versions of the Function.
-   *
-   * All properties need to be classified as version locked or not. Specify this for any properties that are not already classified in the CDK.
-   *
-   * All properties that are part of the UpdateFunctionConfiguration API are locked to the version.
-   * @see https://docs.aws.amazon.com/lambda/latest/dg/API_UpdateFunctionConfiguration.html
-   * @default - use only the version lock classification already encoded in the CDK.
-   */
-  readonly versionLockClassification?: { [key: string]: boolean };
 }
 
 export interface FunctionProps extends FunctionOptions {
@@ -363,7 +350,7 @@ export class Function extends FunctionBase {
       ...this.currentVersionOptions,
     });
 
-    this._currentVersion._appendHashToLogicalId(this, this.versionLockClassification);
+    this._currentVersion._appendHashToLogicalId(this);
 
     return this._currentVersion;
   }
@@ -521,7 +508,6 @@ export class Function extends FunctionBase {
   private readonly layers: ILayerVersion[] = [];
 
   private _logGroup?: logs.ILogGroup;
-  private readonly versionLockClassification?: { [key: string]: boolean };
 
   /**
    * Environment variables for this function
@@ -684,8 +670,6 @@ export class Function extends FunctionBase {
         ],
       );
     }
-
-    this.versionLockClassification = props.versionLockClassification;
   }
 
   /**

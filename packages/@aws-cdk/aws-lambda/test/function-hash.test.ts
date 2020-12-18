@@ -275,7 +275,7 @@ describe('function hash', () => {
           expect(calculateFunctionHash({
             hashAlgorithm: 'v2',
             function: fn,
-            versionLockClassification: {
+            additionalVersionPropsClassification: {
               Something: true,
             },
           })).toEqual('f162aac05c5ad8dc8af5d2d4164c1239');
@@ -300,7 +300,7 @@ describe('function hash', () => {
           expect(calculateFunctionHash({
             hashAlgorithm: 'v2',
             function: fn2,
-            versionLockClassification: {
+            additionalVersionPropsClassification: {
               Something: false,
             },
           })).toEqual(calculateFunctionHash({ hashAlgorithm: 'v2', function: fn1 }));

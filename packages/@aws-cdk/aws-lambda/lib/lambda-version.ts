@@ -68,6 +68,20 @@ export interface VersionOptions extends EventInvokeConfigOptions {
    * @default RemovalPolicy.DESTROY
    */
   readonly removalPolicy?: RemovalPolicy;
+
+  /**
+   * The list of properties under AWS::Lambda::Function that are classified as whether they are version "locked" or not.
+   * A version locked property, will not take effect on previously created Versions. A new Version must be generated for the change to take effect.
+   * On the other hand, properties that are not version locked will take effect on all Versions of the Function.
+   *
+   * All properties need to be classified as version locked or not. Specify this for any properties that are not already classified in the CDK.
+   * NOTE: This only applies when using `Function.currentVersion()`.
+   *
+   * All properties that are part of the UpdateFunctionConfiguration API are locked to the version.
+   * @see https://docs.aws.amazon.com/lambda/latest/dg/API_UpdateFunctionConfiguration.html
+   * @default - use only the version lock classification already encoded in the CDK.
+   */
+  readonly additionalVersionPropsClassification?: { [key: string]: boolean };
 }
 
 /**
@@ -181,6 +195,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
   protected readonly canCreatePermissions = true;
 
   private hashConfig?: fnhash.CalculateFunctionHashOptions;
+  private additionalVersionPropsClassification?: { [key: string]: boolean };
 
   constructor(scope: Construct, id: string, props: VersionProps) {
     super(scope, id);
@@ -204,6 +219,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
     this.functionArn = version.ref;
     this.functionName = `${this.lambda.functionName}:${this.version}`;
     this.qualifier = version.attrVersion;
+    this.additionalVersionPropsClassification = props.additionalVersionPropsClassification;
 
     if (props.onFailure || props.onSuccess || props.maxEventAge || props.retryAttempts !== undefined) {
       this.configureAsyncInvoke({
@@ -300,11 +316,11 @@ export class Version extends QualifiedFunctionBase implements IVersion {
    * the function configuration changes.
    * @internal
    */
-  public _appendHashToLogicalId(fn: Function, versionLockClassification?: { [key: string]: boolean}) {
+  public _appendHashToLogicalId(fn: Function) {
     this.hashConfig = {
       hashAlgorithm: 'v2',
       function: fn,
-      versionLockClassification,
+      additionalVersionPropsClassification: this.additionalVersionPropsClassification,
     };
   }
 

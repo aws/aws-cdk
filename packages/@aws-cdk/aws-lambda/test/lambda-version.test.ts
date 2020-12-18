@@ -266,8 +266,10 @@ describe('lambda version', () => {
         runtime: lambda.Runtime.NODEJS_12_X,
         code: lambda.Code.fromInline('foo'),
         handler: 'index.handler',
-        versionLockClassification: {
-          Something: true,
+        currentVersionOptions: {
+          additionalVersionPropsClassification: {
+            Something: true,
+          },
         },
       });
 
@@ -295,8 +297,10 @@ describe('lambda version', () => {
         runtime: lambda.Runtime.NODEJS_12_X,
         code: lambda.Code.fromInline('foo'),
         handler: 'index.handler',
-        versionLockClassification: {
-          Something: false,
+        currentVersionOptions: {
+          additionalVersionPropsClassification: {
+            Something: false,
+          },
         },
       });
 
