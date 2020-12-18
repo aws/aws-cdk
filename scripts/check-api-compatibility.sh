@@ -45,27 +45,9 @@ dirs_to_existing_names() {
     fi
 }
 
-peer_dependencies() {
-    local tmpdir="$1"
-    local pkg="$2"
-    local ver="${3:-latest}" # optional
-
-    local mdfile="$tmpdir/npm-metadata/$pkg@$ver.json"
-    local mddir=$(dirname "$mdfile")
-    mkdir -p $mddir
-    if [ ! -f "$mdfile" ]; then
-        # Directly curl'ing npmjs rather than 'npm view'. 'npm view' is slow.
-        curl 2>/dev/null https://registry.npmjs.org/$pkg/$ver > "$mdfile"
-    fi
-
-    # Output the list of peer dependencies in the format "dep1@ver1\ndep2@ver2"
-    node -p "Object.entries(require('$mdfile').peerDependencies || {}).map(e => \`\${e[0]}@\${e[1]}\`).join('\n')"
-}
-
 export -f package_name
 export -f package_exists_on_npm
 export -f dirs_to_existing_names
-export -f peer_dependencies
 
 if ! ${SKIP_DOWNLOAD:-false}; then
     echo "Filtering on existing packages on NPM..." >&2
@@ -75,23 +57,18 @@ if ! ${SKIP_DOWNLOAD:-false}; then
 
     current_version=$(node -p 'require("./lerna.json").version')
     echo "Current version in lerna.json is $current_version"
-
-    rm -rf $tmpdir
-    mkdir -p $tmpdir
-
-    echo "Collecting peer dependencies" >&2
-    peer_deps=$(echo "$existing_names" | xargs -n1 -I {} bash -c 'peer_dependencies "$@"' _ $tmpdir {} | sort | uniq | tr '\n' ' ')
-    echo " Done." >&2
-
     if ! ${DOWNLOAD_LATEST:-false} && package_exists_on_npm aws-cdk $current_version; then
         echo "Using package version ${current_version} as baseline"
         existing_names=$(echo "$existing_names" | sed -e "s/$/@$current_version/")
     else
-        echo "Using the latest version from NPM as the baseline"
+        echo "However, using the latest version from NPM as the baseline"
     fi
 
+    rm -rf $tmpdir
+    mkdir -p $tmpdir
+
     echo "Installing from NPM..." >&2
-    (cd $tmpdir && npm install --prefix $tmpdir $existing_names $peer_deps)
+    (cd $tmpdir && npm install --prefix $tmpdir $existing_names)
 fi
 
 #----------------------------------------------------------------------
