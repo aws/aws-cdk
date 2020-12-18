@@ -145,15 +145,11 @@ class EksClusterStack extends TestStack {
       cluster: this.cluster,
       manifest: [{
         apiVersion: 'v1',
-        kind: 'Service',
-        metadata: { name: 'hello-kubernetes-without-validation' },
-        spec: {
-          type: 'LoadBalancer',
-          ports: [{ port: 80, targetPort: 8080 }],
-          selector: { app: 'hello-kubernetes-without-validation' },
-        },
+        kind: 'ConfigMap',
+        data: { hello: 'world' },
+        metadata: { name: 'config-map' },
       }],
-      validate: false,
+      skipValidation: true,
     });
   }
   private assertNodeGroupX86() {
