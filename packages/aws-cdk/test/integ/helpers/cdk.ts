@@ -2,7 +2,7 @@ import * as child_process from 'child_process';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { outputFromStack, AwsClients } from './aws-helpers';
+import { outputFromStack, AwsClients } from './aws';
 import { ResourcePool } from './resource-pool';
 import { TestContext } from './test-helpers';
 
@@ -52,7 +52,7 @@ export function withCdkApp<A extends TestContext & AwsContext>(block: (context: 
     context.output.write(` Test directory: ${integTestDir}\n`);
     context.output.write(` Region:         ${context.aws.region}\n`);
 
-    await cloneDirectory(path.join(__dirname, 'app'), integTestDir, context.output);
+    await cloneDirectory(path.join(__dirname, '..', 'cli', 'app'), integTestDir, context.output);
     const fixture = new TestFixture(
       integTestDir,
       stackNamePrefix,
@@ -77,6 +77,51 @@ export function withCdkApp<A extends TestContext & AwsContext>(block: (context: 
       await fixture.shell(['npm', 'install', ...modules]);
 
       await ensureBootstrapped(fixture);
+
+      await block(fixture);
+    } catch (e) {
+      success = false;
+      throw e;
+    } finally {
+      if (process.env.INTEG_NO_CLEAN) {
+        process.stderr.write(`Left test directory in '${integTestDir}' ($INTEG_NO_CLEAN)\n`);
+      } else {
+        await fixture.dispose(success);
+      }
+    }
+  };
+}
+
+export function withMonolithicCfnIncludeCdkApp<A extends TestContext>(block: (context: TestFixture) => Promise<void>) {
+  return async (context: A) => {
+    const uberPackage = process.env.UBERPACKAGE;
+    if (!uberPackage) {
+      throw new Error('The UBERPACKAGE environment variable is required for running this test!');
+    }
+
+    const randy = randomString();
+    const stackNamePrefix = `cdk-uber-cfn-include-${randy}`;
+    const integTestDir = path.join(os.tmpdir(), `cdk-uber-cfn-include-${randy}`);
+
+    context.output.write(` Stack prefix:   ${stackNamePrefix}\n`);
+    context.output.write(` Test directory: ${integTestDir}\n`);
+
+    const awsClients = await AwsClients.default(context.output);
+    await cloneDirectory(path.join(__dirname, '..', 'uberpackage', 'cfn-include-app'), integTestDir, context.output);
+    const fixture = new TestFixture(
+      integTestDir,
+      stackNamePrefix,
+      context.output,
+      awsClients,
+    );
+
+    let success = true;
+    try {
+      let module = uberPackage;
+      if (FRAMEWORK_VERSION) {
+        module = `${module}@${FRAMEWORK_VERSION}`;
+      }
+      await fixture.shell(['npm', 'install', 'constructs', module]);
 
       await block(fixture);
     } catch (e) {
@@ -370,10 +415,11 @@ export async function shell(command: string[], options: ShellOptions = {}): Prom
     child.once('error', reject);
 
     child.once('close', code => {
+      const output = (Buffer.concat(stdout).toString('utf-8') + Buffer.concat(stderr).toString('utf-8')).trim();
       if (code === 0 || options.allowErrExit) {
-        resolve((Buffer.concat(stdout).toString('utf-8') + Buffer.concat(stderr).toString('utf-8')).trim());
+        resolve(output);
       } else {
-        reject(new Error(`'${command.join(' ')}' exited with error code ${code}`));
+        reject(new Error(`'${command.join(' ')}' exited with error code ${code}. Output: \n${output}`));
       }
     });
   });

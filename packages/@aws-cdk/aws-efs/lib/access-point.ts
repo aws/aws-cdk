@@ -22,7 +22,7 @@ export interface IAccessPoint extends IResource {
   readonly accessPointArn: string;
 
   /**
-   * The efs filesystem
+   * The EFS file system
    */
   readonly fileSystem: IFileSystem;
 }
@@ -120,7 +120,7 @@ export interface AccessPointProps extends AccessPointOptions {
 export interface AccessPointAttributes {
   /**
    * The ID of the AccessPoint
-   * One of this, of {@link accessPointArn} is required
+   * One of this, or {@link accessPointArn} is required
    *
    * @default - determined based on accessPointArn
    */
@@ -128,16 +128,16 @@ export interface AccessPointAttributes {
 
   /**
    * The ARN of the AccessPoint
-   * One of this, of {@link accessPointId} is required
+   * One of this, or {@link accessPointId} is required
    *
    * @default - determined based on accessPointId
    */
   readonly accessPointArn?: string;
 
   /**
-   * The EFS filesystem
+   * The EFS file system
    *
-   * @default - no EFS filesystem
+   * @default - no EFS file system
    */
   readonly fileSystem?: IFileSystem;
 }
@@ -156,7 +156,7 @@ abstract class AccessPointBase extends Resource implements IAccessPoint {
   public abstract readonly accessPointId: string;
 
   /**
-   * The filesystem of the access point
+   * The file system of the access point
    */
   public abstract readonly fileSystem: IFileSystem;
 }
@@ -194,7 +194,7 @@ export class AccessPoint extends AccessPointBase {
   public readonly accessPointId: string;
 
   /**
-   * The filesystem of the access point
+   * The file system of the access point
    */
   public readonly fileSystem: IFileSystem;
 

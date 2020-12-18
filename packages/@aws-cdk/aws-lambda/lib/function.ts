@@ -2,6 +2,7 @@ import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import { IProfilingGroup, ProfilingGroup, ComputePlatform } from '@aws-cdk/aws-codeguruprofiler';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as sqs from '@aws-cdk/aws-sqs';
 import { Annotations, CfnResource, Duration, Fn, Lazy, Names, Stack } from '@aws-cdk/core';
@@ -282,6 +283,13 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * @default false
    */
   readonly allowPublicSubnet?: boolean;
+
+  /**
+   * The AWS KMS key that's used to encrypt your function's environment variables.
+   *
+   * @default - AWS Lambda creates and uses an AWS managed customer master key (CMK).
+   */
+  readonly environmentEncryption?: kms.IKey;
 }
 
 export interface FunctionProps extends FunctionOptions {
@@ -625,6 +633,7 @@ export class Function extends FunctionBase {
         command: code.image?.cmd,
         entryPoint: code.image?.entrypoint,
       }),
+      kmsKeyArn: props.environmentEncryption?.keyArn,
     });
 
     // since patching the CFN spec to make Runtime and Handler optional causes a

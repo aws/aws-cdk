@@ -304,6 +304,19 @@ cluster.addAutoScalingGroupCapacity('frontend-nodes', {
 });
 ```
 
+To connect an already initialized auto-scaling group, use the `cluster.connectAutoScalingGroupCapacity()` method:
+
+```ts
+const asg = new ec2.AutoScalingGroup(...);
+cluster.connectAutoScalingGroupCapacity(asg);
+```
+
+In both cases, the [cluster security group](https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html#cluster-sg) will be autoamtically attached to
+the auto-scaling group, allowing for traffic to flow freely between managed and self-managed nodes.
+
+> **Note:** The default `updateType` for auto-scaling groups does not replace existing nodes. Since security groups are determined at launch time, self-managed nodes that were provisioned with version `1.78.0` or lower, will not be updated.
+> To apply the new configuration on all your self-managed nodes, you'll need to replace the nodes using the `UpdateType.REPLACING_UPDATE` policy for the [`updateType`](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-autoscaling.AutoScalingGroup.html#updatetypespan-classapi-icon-api-icon-deprecated-titlethis-api-element-is-deprecated-its-use-is-not-recommended%EF%B8%8Fspan) property.
+
 You can customize the [/etc/eks/boostrap.sh](https://github.com/awslabs/amazon-eks-ami/blob/master/files/bootstrap.sh) script, which is responsible
 for bootstrapping the node to the EKS cluster. For example, you can use `kubeletExtraArgs` to add custom node labels or taints.
 
