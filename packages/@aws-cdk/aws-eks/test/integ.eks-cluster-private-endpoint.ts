@@ -26,6 +26,7 @@ class EksClusterStack extends TestStack {
       defaultCapacity: 2,
       version: CLUSTER_VERSION,
       endpointAccess: eks.EndpointAccess.PRIVATE,
+      prune: false,
     });
 
     // this is the valdiation. it won't work if the private access is not setup properly.

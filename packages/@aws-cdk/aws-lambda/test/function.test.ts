@@ -5,6 +5,7 @@ import { ProfilingGroup } from '@aws-cdk/aws-codeguruprofiler';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as efs from '@aws-cdk/aws-efs';
 import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as sqs from '@aws-cdk/aws-sqs';
@@ -671,6 +672,22 @@ describe('function', () => {
 
     expect(stack).toHaveResource('AWS::Lambda::Function', {
       TracingConfig: ABSENT,
+    });
+  });
+
+  test('runtime and handler set to FROM_IMAGE are set to undefined in CloudFormation', () => {
+    const stack = new cdk.Stack();
+
+    new lambda.Function(stack, 'MyLambda', {
+      code: lambda.Code.fromAssetImage(path.join(__dirname, 'docker-lambda-handler')),
+      handler: lambda.Handler.FROM_IMAGE,
+      runtime: lambda.Runtime.FROM_IMAGE,
+    });
+
+    expect(stack).toHaveResource('AWS::Lambda::Function', {
+      Runtime: ABSENT,
+      Handler: ABSENT,
+      PackageType: 'Image',
     });
   });
 
@@ -1468,6 +1485,40 @@ describe('function', () => {
     expect(stack.resolve(version2.functionArn)).toEqual(expectedArn);
   });
 
+  test('default function with kmsKeyArn, environmentEncryption passed as props', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const key: kms.IKey = new kms.Key(stack, 'EnvVarEncryptKey', {
+      description: 'sample key',
+    });
+
+    // WHEN
+    new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_10_X,
+      environment: {
+        SOME: 'Variable',
+      },
+      environmentEncryption: key,
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::Lambda::Function', {
+      Environment: {
+        Variables: {
+          SOME: 'Variable',
+        },
+      },
+      KmsKeyArn: {
+        'Fn::GetAtt': [
+          'EnvVarEncryptKey1A7CABDB',
+          'Arn',
+        ],
+      },
+    });
+  });
+
   describe('profiling group', () => {
     test('default function with CDK created Profiling Group', () => {
       const stack = new cdk.Stack();
@@ -1763,6 +1814,130 @@ describe('function', () => {
             LocalMountPath: '/mnt/msg',
           },
         ],
+      });
+    });
+  });
+
+  describe('code config', () => {
+    class MyCode extends lambda.Code {
+      public readonly isInline: boolean;
+      constructor(private readonly config: lambda.CodeConfig) {
+        super();
+        this.isInline = 'inlineCode' in config;
+      }
+
+      public bind(_scope: constructs.Construct): lambda.CodeConfig {
+        return this.config;
+      }
+    }
+
+    test('only one of inline, s3 or imageConfig are allowed', () => {
+      const stack = new cdk.Stack();
+
+      expect(() => new lambda.Function(stack, 'Fn1', {
+        code: new MyCode({}),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.GO_1_X,
+      })).toThrow(/lambda.Code must specify exactly one of/);
+
+      expect(() => new lambda.Function(stack, 'Fn2', {
+        code: new MyCode({
+          inlineCode: 'foo',
+          image: { imageUri: 'bar' },
+        }),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.GO_1_X,
+      })).toThrow(/lambda.Code must specify exactly one of/);
+
+      expect(() => new lambda.Function(stack, 'Fn3', {
+        code: new MyCode({
+          image: { imageUri: 'baz' },
+          s3Location: { bucketName: 's3foo', objectKey: 's3bar' },
+        }),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.GO_1_X,
+      })).toThrow(/lambda.Code must specify exactly one of/);
+
+      expect(() => new lambda.Function(stack, 'Fn4', {
+        code: new MyCode({ inlineCode: 'baz', s3Location: { bucketName: 's3foo', objectKey: 's3bar' } }),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.GO_1_X,
+      })).toThrow(/lambda.Code must specify exactly one of/);
+    });
+
+    test('handler must be FROM_IMAGE when image asset is specified', () => {
+      const stack = new cdk.Stack();
+
+      expect(() => new lambda.Function(stack, 'Fn1', {
+        code: lambda.Code.fromAssetImage('test/docker-lambda-handler'),
+        handler: lambda.Handler.FROM_IMAGE,
+        runtime: lambda.Runtime.FROM_IMAGE,
+      })).not.toThrow();
+
+      expect(() => new lambda.Function(stack, 'Fn2', {
+        code: lambda.Code.fromAssetImage('test/docker-lambda-handler'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.FROM_IMAGE,
+      })).toThrow(/handler must be.*FROM_IMAGE/);
+    });
+
+    test('runtime must be FROM_IMAGE when image asset is specified', () => {
+      const stack = new cdk.Stack();
+
+      expect(() => new lambda.Function(stack, 'Fn1', {
+        code: lambda.Code.fromAssetImage('test/docker-lambda-handler'),
+        handler: lambda.Handler.FROM_IMAGE,
+        runtime: lambda.Runtime.FROM_IMAGE,
+      })).not.toThrow();
+
+      expect(() => new lambda.Function(stack, 'Fn2', {
+        code: lambda.Code.fromAssetImage('test/docker-lambda-handler'),
+        handler: lambda.Handler.FROM_IMAGE,
+        runtime: lambda.Runtime.GO_1_X,
+      })).toThrow(/runtime must be.*FROM_IMAGE/);
+    });
+
+    test('imageUri is correctly configured', () => {
+      const stack = new cdk.Stack();
+
+      new lambda.Function(stack, 'Fn1', {
+        code: new MyCode({
+          image: {
+            imageUri: 'ecr image uri',
+          },
+        }),
+        handler: lambda.Handler.FROM_IMAGE,
+        runtime: lambda.Runtime.FROM_IMAGE,
+      });
+
+      expect(stack).toHaveResource('AWS::Lambda::Function', {
+        Code: {
+          ImageUri: 'ecr image uri',
+        },
+        ImageConfig: ABSENT,
+      });
+    });
+
+    test('imageConfig is correctly configured', () => {
+      const stack = new cdk.Stack();
+
+      new lambda.Function(stack, 'Fn1', {
+        code: new MyCode({
+          image: {
+            imageUri: 'ecr image uri',
+            cmd: ['cmd', 'param1'],
+            entrypoint: ['entrypoint', 'param2'],
+          },
+        }),
+        handler: lambda.Handler.FROM_IMAGE,
+        runtime: lambda.Runtime.FROM_IMAGE,
+      });
+
+      expect(stack).toHaveResource('AWS::Lambda::Function', {
+        ImageConfig: {
+          Command: ['cmd', 'param1'],
+          EntryPoint: ['entrypoint', 'param2'],
+        },
       });
     });
   });

@@ -5,6 +5,7 @@ import { Code, Runtime } from '@aws-cdk/aws-lambda';
 import { AssetHashType, BundlingDockerImage } from '@aws-cdk/core';
 import { version as delayVersion } from 'delay/package.json';
 import { Bundling } from '../lib/bundling';
+import { LogLevel } from '../lib/types';
 import * as util from '../lib/util';
 
 jest.mock('@aws-cdk/aws-lambda');
@@ -33,7 +34,7 @@ test('esbuild bundling in Docker', () => {
     entry,
     depsLockFilePath,
     runtime: Runtime.NODEJS_12_X,
-    bundlingEnvironment: {
+    environment: {
       KEY: 'value',
     },
     loader: {
@@ -147,6 +148,39 @@ test('esbuild bundling with externals and dependencies', () => {
   });
 });
 
+test('esbuild bundling with esbuild options', () => {
+  Bundling.bundle({
+    entry,
+    depsLockFilePath,
+    runtime: Runtime.NODEJS_12_X,
+    minify: true,
+    sourceMap: true,
+    target: 'es2020',
+    loader: {
+      '.png': 'dataurl',
+    },
+    logLevel: LogLevel.SILENT,
+    keepNames: true,
+    forceDockerBundling: true,
+  });
+
+  // Correctly bundles with esbuild
+  expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(depsLockFilePath), {
+    assetHashType: AssetHashType.OUTPUT,
+    bundling: expect.objectContaining({
+      command: [
+        'bash', '-c',
+        [
+          'npx esbuild --bundle /asset-input/lib/handler.ts',
+          '--target=es2020 --platform=node --outfile=/asset-output/index.js',
+          '--minify --sourcemap --external:aws-sdk --loader:.png=dataurl',
+          '--log-level=silent --keep-names',
+        ].join(' '),
+      ],
+    }),
+  });
+});
+
 test('Detects yarn.lock', () => {
   const yarnLock = path.join(__dirname, '..', 'yarn.lock');
   Bundling.bundle({
@@ -200,7 +234,7 @@ test('Local bundling', () => {
     entry,
     depsLockFilePath,
     runtime: Runtime.NODEJS_12_X,
-    bundlingEnvironment: {
+    environment: {
       KEY: 'value',
     },
   });
@@ -244,7 +278,7 @@ test('Custom bundling docker image', () => {
     entry,
     depsLockFilePath,
     runtime: Runtime.NODEJS_12_X,
-    bundlingDockerImage: BundlingDockerImage.fromRegistry('my-custom-image'),
+    dockerImage: BundlingDockerImage.fromRegistry('my-custom-image'),
     forceDockerBundling: true,
   });
 
@@ -252,6 +286,39 @@ test('Custom bundling docker image', () => {
     assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       image: { image: 'my-custom-image' },
+    }),
+  });
+});
+
+test('with command hooks', () => {
+  Bundling.bundle({
+    entry,
+    depsLockFilePath,
+    runtime: Runtime.NODEJS_12_X,
+    commandHooks: {
+      beforeBundling(inputDir: string, outputDir: string): string[] {
+        return [
+          `echo hello > ${inputDir}/a.txt`,
+          `cp ${inputDir}/a.txt ${outputDir}`,
+        ];
+      },
+      afterBundling(inputDir: string, outputDir: string): string[] {
+        return [`cp ${inputDir}/b.txt ${outputDir}/txt`];
+      },
+      beforeInstall() {
+        return [];
+      },
+    },
+    forceDockerBundling: true,
+  });
+
+  expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(depsLockFilePath), {
+    assetHashType: AssetHashType.OUTPUT,
+    bundling: expect.objectContaining({
+      command: [
+        'bash', '-c',
+        expect.stringMatching(/^echo hello > \/asset-input\/a.txt && cp \/asset-input\/a.txt \/asset-output && .+ && cp \/asset-input\/b.txt \/asset-output\/txt$/),
+      ],
     }),
   });
 });

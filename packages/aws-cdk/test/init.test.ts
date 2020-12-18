@@ -93,6 +93,13 @@ describe.each(['1', '2'])('v%s tests', (majorVersion) => {
   });
 });
 
+test('when no version number is present (e.g., local development), the v1 templates are chosen by default', async () => {
+  mockMajorVersion = '0.0.0';
+  jest.resetAllMocks();
+
+  expect((await availableInitTemplates()).length).toBeGreaterThan(0);
+});
+
 function cliTest(name: string, handler: (dir: string) => void | Promise<any>): void {
   test(name, () => withTempDir(handler));
 }

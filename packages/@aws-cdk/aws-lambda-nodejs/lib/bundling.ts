@@ -65,14 +65,14 @@ export class Bundling implements cdk.BundlingOptions {
     this.relativeEntryPath = path.relative(projectRoot, path.resolve(props.entry));
 
     this.externals = [
-      ...this.props.externalModules ?? ['aws-sdk'], // Mark aws-sdk as external by default (available in the runtime)
-      ...this.props.nodeModules ?? [], // Mark the modules that we are going to install as externals also
+      ...props.externalModules ?? ['aws-sdk'], // Mark aws-sdk as external by default (available in the runtime)
+      ...props.nodeModules ?? [], // Mark the modules that we are going to install as externals also
     ];
 
     // Docker bundling
     const shouldBuildImage = props.forceDockerBundling || !Bundling.runsLocally;
     this.image = shouldBuildImage
-      ? props.bundlingDockerImage ?? cdk.BundlingDockerImage.fromAsset(path.join(__dirname, '../lib'), {
+      ? props.dockerImage ?? cdk.BundlingDockerImage.fromAsset(path.join(__dirname, '../lib'), {
         buildArgs: {
           ...props.buildArgs ?? {},
           IMAGE: props.runtime.bundlingDockerImage.image,
@@ -83,7 +83,7 @@ export class Bundling implements cdk.BundlingOptions {
 
     const bundlingCommand = this.createBundlingCommand(cdk.AssetStaging.BUNDLING_INPUT_DIR, cdk.AssetStaging.BUNDLING_OUTPUT_DIR);
     this.command = ['bash', '-c', bundlingCommand];
-    this.environment = props.bundlingEnvironment;
+    this.environment = props.environment;
 
     // Local bundling
     if (!props.forceDockerBundling) { // only if Docker is not forced
@@ -106,7 +106,7 @@ export class Bundling implements cdk.BundlingOptions {
               localCommand,
             ],
             {
-              env: { ...process.env, ...props.bundlingEnvironment ?? {} },
+              env: { ...process.env, ...props.environment ?? {} },
               stdio: [ // show output
                 'ignore', // ignore stdio
                 process.stderr, // redirect stdout to stderr
@@ -138,6 +138,8 @@ export class Bundling implements cdk.BundlingOptions {
       ...this.props.sourceMap ? ['--sourcemap'] : [],
       ...this.externals.map(external => `--external:${external}`),
       ...loaders.map(([ext, name]) => `--loader:${ext}=${name}`),
+      ...this.props.logLevel ? [`--log-level=${this.props.logLevel}`] : [],
+      ...this.props.keepNames ? ['--keep-names'] : [],
     ].join(' ');
 
     let depsCommand = '';
@@ -169,7 +171,13 @@ export class Bundling implements cdk.BundlingOptions {
       ]);
     }
 
-    return chain([esbuildCommand, depsCommand]);
+    return chain([
+      ...this.props.commandHooks?.beforeBundling(inputDir, outputDir) ?? [],
+      esbuildCommand,
+      ...(this.props.nodeModules && this.props.commandHooks?.beforeInstall(inputDir, outputDir)) ?? [],
+      depsCommand,
+      ...this.props.commandHooks?.afterBundling(inputDir, outputDir) ?? [],
+    ]);
   }
 }
 
