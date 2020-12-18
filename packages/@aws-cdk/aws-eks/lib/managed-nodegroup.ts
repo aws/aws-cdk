@@ -285,7 +285,7 @@ export class Nodegroup extends Resource implements INodegroup {
     }
 
     if (props.instanceType) {
-      Annotations.of(this).addWarning('instanceType will be deprecated, remember to use instanceTypes instead.');
+      Annotations.of(this).addWarning(`'instanceType' is deprecated and will be removed in the next major version. please use 'instanceTypes' instead`);
     }
     const instanceTypes = props.instanceTypes ?? (props.instanceType ? [props.instanceType] : Nodegroup.DEFAULT_INSTANCE_TYPES);
     const determinedAmiType = determineAmiTypes(instanceTypes);
