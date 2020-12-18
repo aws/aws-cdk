@@ -141,7 +141,10 @@
             },
             {
               "CustomOriginConfig": {
-                "OriginProtocolPolicy": "https-only"
+                "OriginProtocolPolicy": "https-only",
+                "OriginSSLProtocols": [
+                  "TLSv1.2"
+                ]
               },
               "DomainName": "www.example.com",
               "Id": "cloudfrontorigingroupDistributionOrigin2CCE5D500"
