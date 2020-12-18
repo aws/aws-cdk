@@ -93,14 +93,6 @@ export interface VersionAttributes {
 }
 
 /**
- * @internal
- */
-export interface HashConfig {
-  hashAlgorithm: 'none' | 'v1' | 'v2';
-  function?: Function;
-}
-
-/**
  * A single newly-deployed version of a Lambda function.
  *
  * This object exists to--at deploy time--query the "then-current" version of
@@ -188,9 +180,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
   protected readonly qualifier: string;
   protected readonly canCreatePermissions = true;
 
-  private hashConfig: HashConfig = {
-    hashAlgorithm: 'none',
-  };
+  private hashConfig?: fnhash.CalculateFunctionHashOptions;
 
   constructor(scope: Construct, id: string, props: VersionProps) {
     super(scope, id);
@@ -232,14 +222,11 @@ export class Version extends QualifiedFunctionBase implements IVersion {
     // the function configuration changes.
     cfn.overrideLogicalId(Lazy.uncachedString({
       produce: () => {
-        if (this.hashConfig.hashAlgorithm === 'none') {
+        if (!this.hashConfig) {
           return originalLogicalId;
         } else {
-          if (!this.hashConfig.function) {
-            throw new Error('Unexpected error: Cannot compute function version logical id without the function.');
-          }
           const logicalId = fnhash.trimFromStart(originalLogicalId, 255 - 32);
-          const hash = fnhash.calculateFunctionHash(this.hashConfig.hashAlgorithm, this.hashConfig.function);
+          const hash = fnhash.calculateFunctionHash(this.hashConfig);
           return `${logicalId}${hash}`;
         }
       },
@@ -283,7 +270,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
       throw new Error('$LATEST function version cannot be used for Lambda@Edge');
     }
 
-    if (this.hashConfig.hashAlgorithm === 'v2') {
+    if (this.hashConfig?.hashAlgorithm === 'v2') {
       // Downgrade to v1 when used in Lambda@Edge.
       // In regular Lambda functions, a dummy environment variable is added as salt
       // to move from 'v1' algorithm to 'v2'. This is required because lambda requires
@@ -313,9 +300,12 @@ export class Version extends QualifiedFunctionBase implements IVersion {
    * the function configuration changes.
    * @internal
    */
-  public _appendHashToLogicalId(fn: Function) {
-    this.hashConfig.hashAlgorithm = 'v2';
-    this.hashConfig.function = fn;
+  public _appendHashToLogicalId(fn: Function, versionLockClassification?: { [key: string]: boolean}) {
+    this.hashConfig = {
+      hashAlgorithm: 'v2',
+      function: fn,
+      versionLockClassification,
+    };
   }
 
   /**

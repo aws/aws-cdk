@@ -1,6 +1,6 @@
 import * as crypto from 'crypto';
 import { CfnResource, Stack } from '@aws-cdk/core';
-import { Function as LambdaFunction } from './function';
+import { Function } from './function';
 import { sortedStringify } from './private/sort';
 
 export const ENV_SALT = '4b2bff42-e517-41d1-9b5f-92aacf41842b';
@@ -41,17 +41,23 @@ const VERSION_PROP_CLASSIFICATION: { [key: string]: boolean } = {
   Tags: false,
 };
 
-export function calculateFunctionHash(hashAlgorithm: 'v1' | 'v2', fn: LambdaFunction) {
-  const stack = Stack.of(fn);
+export interface CalculateFunctionHashOptions {
+  hashAlgorithm: 'v1' | 'v2';
+  function: Function;
+  versionLockClassification?: { [key: string]: boolean };
+}
 
-  const functionResource = fn.node.defaultChild as CfnResource;
+export function calculateFunctionHash(options: CalculateFunctionHashOptions) {
+  const stack = Stack.of(options.function);
+
+  const functionResource = options.function.node.defaultChild as CfnResource;
 
   // render the cloudformation resource from this function
   const config = stack.resolve((functionResource as any)._toCloudFormation());
   const hash = crypto.createHash('md5');
 
-  if (hashAlgorithm === 'v2') {
-    hash.update(sortedStringify(usefulKeys(config)));
+  if (options.hashAlgorithm === 'v2') {
+    hash.update(sortedStringify(usefulKeys(config, options.versionLockClassification)));
   } else {
     hash.update(JSON.stringify(config));
   }
@@ -59,18 +65,24 @@ export function calculateFunctionHash(hashAlgorithm: 'v1' | 'v2', fn: LambdaFunc
   return hash.digest('hex');
 }
 
-function usefulKeys(cfnObject: any): any {
+function usefulKeys(cfnObject: any, additionalClassification?: { [key: string]: boolean }): any {
   const keys = Object.keys(cfnObject.Resources);
   if (keys.length !== 1) {
     throw new Error(`Expected one rendered CloudFormation resource but found ${keys.length}`);
   }
   const props = cfnObject.Resources[keys[0]].Properties;
 
-  const unclassified = Object.keys(props).filter(p => !Object.keys(VERSION_PROP_CLASSIFICATION).includes(p));
+  const classification = {
+    ...VERSION_PROP_CLASSIFICATION,
+    ...additionalClassification,
+  };
+
+  const unclassified = Object.keys(props).filter(p => !Object.keys(classification).includes(p));
   if (unclassified.length > 0) {
-    throw new Error(`Keys [${unclassified}] are unclassified on whether they are version locked. Use 'TBD' property to classify them.`);
+    throw new Error(`Keys [${unclassified}] are unclassified on whether they are version locked.`
+      + 'Use "versionLockClassification" property to classify them.');
   }
-  const notVersionLocked = Object.entries(VERSION_PROP_CLASSIFICATION).filter(e => !e[1]).map(e => e[0]);
+  const notVersionLocked = Object.entries(classification).filter(e => !e[1]).map(e => e[0]);
   notVersionLocked.forEach(p => delete props[p]);
   return props;
 }

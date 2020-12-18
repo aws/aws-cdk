@@ -37,11 +37,11 @@ describe('function hash', () => {
         handler: 'index.handler',
       });
 
-      expect(calculateFunctionHash('v1', fn1)).toEqual(calculateFunctionHash('v1', fn2));
-      expect(calculateFunctionHash('v1', fn1)).toEqual('aea5463dba236007afe91d2832b3c836');
+      expect(calculateFunctionHash({ hashAlgorithm: 'v1', function: fn1 })).toEqual(calculateFunctionHash({ hashAlgorithm: 'v1', function: fn2 }));
+      expect(calculateFunctionHash({ hashAlgorithm: 'v1', function: fn1 })).toEqual('aea5463dba236007afe91d2832b3c836');
 
-      expect(calculateFunctionHash('v2', fn1)).toEqual(calculateFunctionHash('v2', fn2));
-      expect(calculateFunctionHash('v2', fn1)).toEqual('e5235e3cb7a9b70c42c1a665a3ebd77c');
+      expect(calculateFunctionHash({ hashAlgorithm: 'v2', function: fn1 })).toEqual(calculateFunctionHash({ hashAlgorithm: 'v2', function: fn2 }));
+      expect(calculateFunctionHash({ hashAlgorithm: 'v2', function: fn1 })).toEqual('e5235e3cb7a9b70c42c1a665a3ebd77c');
     });
 
     test('code impacts hash', () => {
@@ -59,11 +59,11 @@ describe('function hash', () => {
         handler: 'index.handler',
       });
 
-      expect(calculateFunctionHash('v1', fn1)).toEqual('979b4a14c6f174c745cdbcd1036cf844');
-      expect(calculateFunctionHash('v1', fn1)).not.toEqual(calculateFunctionHash('v1', fn2));
+      expect(calculateFunctionHash({ hashAlgorithm: 'v1', function: fn1 })).toEqual('979b4a14c6f174c745cdbcd1036cf844');
+      expect(calculateFunctionHash({ hashAlgorithm: 'v1', function: fn1 })).not.toEqual(calculateFunctionHash({ hashAlgorithm: 'v1', function: fn2 }));
 
-      expect(calculateFunctionHash('v2', fn1)).toEqual('bb95ae2489ebc480a23ff373362e453a');
-      expect(calculateFunctionHash('v2', fn1)).not.toEqual(calculateFunctionHash('v2', fn2));
+      expect(calculateFunctionHash({ hashAlgorithm: 'v2', function: fn1 })).toEqual('bb95ae2489ebc480a23ff373362e453a');
+      expect(calculateFunctionHash({ hashAlgorithm: 'v2', function: fn1 })).not.toEqual(calculateFunctionHash({ hashAlgorithm: 'v2', function: fn2 }));
     });
 
     test('environment variables impact hash', () => {
@@ -87,13 +87,13 @@ describe('function hash', () => {
         },
       });
 
-      expect(calculateFunctionHash('v1', fn1)).toEqual('d1bc824ac5022b7d62d8b12dbae6580c');
-      expect(calculateFunctionHash('v1', fn2)).toEqual('3b683d05465012b0aa9c4ff53b32f014');
-      expect(calculateFunctionHash('v1', fn1)).not.toEqual(calculateFunctionHash('v1', fn2));
+      expect(calculateFunctionHash({ hashAlgorithm: 'v1', function: fn1 })).toEqual('d1bc824ac5022b7d62d8b12dbae6580c');
+      expect(calculateFunctionHash({ hashAlgorithm: 'v1', function: fn2 })).toEqual('3b683d05465012b0aa9c4ff53b32f014');
+      expect(calculateFunctionHash({ hashAlgorithm: 'v1', function: fn1 })).not.toEqual(calculateFunctionHash({ hashAlgorithm: 'v1', function: fn2 }));
 
-      expect(calculateFunctionHash('v2', fn1)).toEqual('c04c74d9b1f5e69fe89553046729d56c');
-      expect(calculateFunctionHash('v2', fn2)).toEqual('846d480578d941bf81c787064fed6d97');
-      expect(calculateFunctionHash('v2', fn1)).not.toEqual(calculateFunctionHash('v2', fn2));
+      expect(calculateFunctionHash({ hashAlgorithm: 'v2', function: fn1 })).toEqual('c04c74d9b1f5e69fe89553046729d56c');
+      expect(calculateFunctionHash({ hashAlgorithm: 'v2', function: fn2 })).toEqual('846d480578d941bf81c787064fed6d97');
+      expect(calculateFunctionHash({ hashAlgorithm: 'v2', function: fn1 })).not.toEqual(calculateFunctionHash({ hashAlgorithm: 'v2', function: fn2 }));
     });
 
     test('runtime impacts hash', () => {
@@ -117,13 +117,13 @@ describe('function hash', () => {
         },
       });
 
-      expect(calculateFunctionHash('v1', fn1)).toEqual('d1bc824ac5022b7d62d8b12dbae6580c');
-      expect(calculateFunctionHash('v1', fn2)).toEqual('0f168f0772463e8e547bb3800937e54d');
-      expect(calculateFunctionHash('v1', fn1)).not.toEqual(calculateFunctionHash('v1', fn2));
+      expect(calculateFunctionHash({ hashAlgorithm: 'v1', function: fn1 })).toEqual('d1bc824ac5022b7d62d8b12dbae6580c');
+      expect(calculateFunctionHash({ hashAlgorithm: 'v1', function: fn2 })).toEqual('0f168f0772463e8e547bb3800937e54d');
+      expect(calculateFunctionHash({ hashAlgorithm: 'v1', function: fn1 })).not.toEqual(calculateFunctionHash({ hashAlgorithm: 'v1', function: fn2 }));
 
-      expect(calculateFunctionHash('v2', fn1)).toEqual('c04c74d9b1f5e69fe89553046729d56c');
-      expect(calculateFunctionHash('v2', fn2)).toEqual('02ea61c7495c095816f88e42abaeb815');
-      expect(calculateFunctionHash('v2', fn1)).not.toEqual(calculateFunctionHash('v2', fn2));
+      expect(calculateFunctionHash({ hashAlgorithm: 'v2', function: fn1 })).toEqual('c04c74d9b1f5e69fe89553046729d56c');
+      expect(calculateFunctionHash({ hashAlgorithm: 'v2', function: fn2 })).toEqual('02ea61c7495c095816f88e42abaeb815');
+      expect(calculateFunctionHash({ hashAlgorithm: 'v2', function: fn1 })).not.toEqual(calculateFunctionHash({ hashAlgorithm: 'v2', function: fn2 }));
     });
 
     test('inline code change impacts the hash', () => {
@@ -141,9 +141,9 @@ describe('function hash', () => {
         handler: 'index.handler',
       });
 
-      expect(calculateFunctionHash('v1', fn1)).not.toEqual(calculateFunctionHash('v1', fn2));
+      expect(calculateFunctionHash({ hashAlgorithm: 'v1', function: fn1 })).not.toEqual(calculateFunctionHash({ hashAlgorithm: 'v1', function: fn2 }));
 
-      expect(calculateFunctionHash('v2', fn1)).not.toEqual(calculateFunctionHash('v2', fn2));
+      expect(calculateFunctionHash({ hashAlgorithm: 'v2', function: fn1 })).not.toEqual(calculateFunctionHash({ hashAlgorithm: 'v2', function: fn2 }));
     });
 
     describe('impact of env variables order on hash', () => {
@@ -174,9 +174,9 @@ describe('function hash', () => {
 
         new CfnOutput(stack2, 'VersionArn', { value: fn2.currentVersion.functionArn });
 
-        expect(calculateFunctionHash('v1', fn1)).toEqual(calculateFunctionHash('v1', fn2));
+        expect(calculateFunctionHash({ hashAlgorithm: 'v1', function: fn1 })).toEqual(calculateFunctionHash({ hashAlgorithm: 'v1', function: fn2 }));
 
-        expect(calculateFunctionHash('v2', fn1)).toEqual(calculateFunctionHash('v2', fn2));
+        expect(calculateFunctionHash({ hashAlgorithm: 'v2', function: fn1 })).toEqual(calculateFunctionHash({ hashAlgorithm: 'v2', function: fn2 }));
       });
     });
 
@@ -201,7 +201,7 @@ describe('function hash', () => {
           reservedConcurrentExecutions: 5,
         });
 
-        expect(calculateFunctionHash('v2', fn2)).toEqual(calculateFunctionHash('v2', fn1));
+        expect(calculateFunctionHash({ hashAlgorithm: 'v2', function: fn2 })).toEqual(calculateFunctionHash({ hashAlgorithm: 'v2', function: fn1 }));
       });
 
       test('tags do not affect function hash', () => {
@@ -231,7 +231,7 @@ describe('function hash', () => {
             { Key: 'key', Value: 'val' },
           ],
         });
-        expect(calculateFunctionHash('v2', fn2)).toEqual(calculateFunctionHash('v2', fn1));
+        expect(calculateFunctionHash({ hashAlgorithm: 'v2', function: fn2 })).toEqual(calculateFunctionHash({ hashAlgorithm: 'v2', function: fn1 }));
       });
 
       test('CloudFormation "DependsOn" does not affect function hash', () => {
@@ -241,24 +241,70 @@ describe('function hash', () => {
           code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
           handler: 'index.handler',
         });
-        const expected = calculateFunctionHash('v2', fn);
+        const expected = calculateFunctionHash({ hashAlgorithm: 'v2', function: fn });
         const role = new iam.User(stack, 'MyUser');
 
         fn.node.addDependency(role);
 
-        expect(calculateFunctionHash('v2', fn)).toEqual(expected);
+        expect(calculateFunctionHash({ hashAlgorithm: 'v2', function: fn })).toEqual(expected);
       });
 
-      test('throws an error when a unclassified property is encountered', () => {
-        const stack = new Stack();
-        const fn = new lambda.Function(stack, 'MyFunction', {
-          runtime: lambda.Runtime.NODEJS_12_X,
-          code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
-          handler: 'index.handler',
-        });
-        (fn.node.defaultChild as lambda.CfnFunction).addPropertyOverride('Something', 'Else');
+      describe('version lock property classification', () => {
+        test('throws an error when a unclassified property is encountered', () => {
+          const stack = new Stack();
+          const fn = new lambda.Function(stack, 'MyFunction', {
+            runtime: lambda.Runtime.NODEJS_12_X,
+            code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
+            handler: 'index.handler',
+          });
+          (fn.node.defaultChild as lambda.CfnFunction).addPropertyOverride('Something', 'Else');
 
-        expect(() => calculateFunctionHash('v2', fn)).toThrow(/unclassified/);
+          expect(() => calculateFunctionHash({ hashAlgorithm: 'v2', function: fn })).toThrow(/unclassified/);
+        });
+
+        test('accepts a manually specified property classification', () => {
+          const stack = new Stack();
+          const fn = new lambda.Function(stack, 'MyFunction', {
+            runtime: lambda.Runtime.NODEJS_12_X,
+            code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
+            handler: 'index.handler',
+          });
+
+          (fn.node.defaultChild as lambda.CfnFunction).addPropertyOverride('Something', 'Else');
+
+          expect(calculateFunctionHash({
+            hashAlgorithm: 'v2',
+            function: fn,
+            versionLockClassification: {
+              Something: true,
+            },
+          })).toEqual('f162aac05c5ad8dc8af5d2d4164c1239');
+        });
+
+        test('property classified as not version locked does not affect hash calculation', () => {
+          const stack1 = new Stack();
+          const fn1 = new lambda.Function(stack1, 'MyFunction', {
+            runtime: lambda.Runtime.NODEJS_12_X,
+            code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
+            handler: 'index.handler',
+          });
+          const stack2 = new Stack();
+          const fn2 = new lambda.Function(stack2, 'MyFunction', {
+            runtime: lambda.Runtime.NODEJS_12_X,
+            code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
+            handler: 'index.handler',
+          });
+
+          (fn2.node.defaultChild as lambda.CfnFunction).addPropertyOverride('Something', 'Else');
+
+          expect(calculateFunctionHash({
+            hashAlgorithm: 'v2',
+            function: fn2,
+            versionLockClassification: {
+              Something: false,
+            },
+          })).toEqual(calculateFunctionHash({ hashAlgorithm: 'v2', function: fn1 }));
+        });
       });
     });
   });

@@ -182,44 +182,60 @@ describe('lambda version', () => {
     expect(() => app.synth()).toThrow(/KEY1,KEY2/);
   });
 
-  describe('hash config', () => {
-    test('algorithm is none when not using currentVersion()', () => {
+  describe('function hash', () => {
+    test('no hashConfig is configured when currentVersion() is not used', () => {
+      // GIVEN
       const stack = new cdk.Stack();
       const fn = new lambda.Function(stack, 'Fn', {
         runtime: lambda.Runtime.NODEJS_12_X,
         handler: 'index.handler',
         code: lambda.Code.fromInline('foo'),
       });
+
+      // WHEN
       const version = new lambda.Version(fn, 'Version', {
         lambda: fn,
       });
-      expect((version as any).hashConfig.hashAlgorithm).toEqual('none');
+
+      // THEN
+      expect((version as any).hashConfig).toBeUndefined();
     });
 
     test('algorithm is v2 when using currentVersion()', () => {
+      // GIVEN
       const stack = new cdk.Stack();
       const fn = new lambda.Function(stack, 'Fn', {
         runtime: lambda.Runtime.NODEJS_12_X,
         handler: 'index.handler',
         code: lambda.Code.fromInline('foo'),
       });
+
+      // WHEN
       const version = fn.currentVersion;
+
+      // THEN
       expect((version as any).hashConfig.hashAlgorithm).toEqual('v2');
     });
 
     test('algorithm is v1 when using currentVersion() + edgeArn()', () => {
+      // GIVEN
       const stack = new cdk.Stack();
       const fn = new lambda.Function(stack, 'Fn', {
         runtime: lambda.Runtime.NODEJS_12_X,
         handler: 'index.handler',
         code: lambda.Code.fromInline('foo'),
       });
+
+      // WHEN
       const version = fn.currentVersion;
       version.edgeArn;
+
+      // THEN
       expect((version as any).hashConfig.hashAlgorithm).toEqual('v1');
     });
 
     test('algorithm is still none when using edgeArn()', () => {
+      // GIVEN
       const stack = new cdk.Stack();
       const fn = new lambda.Function(stack, 'Fn', {
         runtime: lambda.Runtime.NODEJS_12_X,
@@ -229,8 +245,68 @@ describe('lambda version', () => {
       const version = new lambda.Version(fn, 'Version', {
         lambda: fn,
       });
+
+      // WHEN
       version.edgeArn;
-      expect((version as any).hashConfig.hashAlgorithm).toEqual('none');
+
+      // THEN
+      expect((version as any).hashConfig).toBeUndefined();
+    });
+
+    test('function hash is impacted by additional property classified as locked', () => {
+      // GIVEN
+      const stack1 = new cdk.Stack();
+      const fn1 = new lambda.Function(stack1, 'MyFunction', {
+        runtime: lambda.Runtime.NODEJS_12_X,
+        code: lambda.Code.fromInline('foo'),
+        handler: 'index.handler',
+      });
+      const stack2 = new cdk.Stack();
+      const fn2 = new lambda.Function(stack2, 'MyFunction', {
+        runtime: lambda.Runtime.NODEJS_12_X,
+        code: lambda.Code.fromInline('foo'),
+        handler: 'index.handler',
+        versionLockClassification: {
+          Something: true,
+        },
+      });
+
+      // WHEN
+      (fn2.node.defaultChild as lambda.CfnFunction).addPropertyOverride('Something', 'Else');
+
+      // THEN
+      const fn2VerLogicalId = stack2.resolve((fn2.currentVersion.node.defaultChild as cdk.CfnResource).logicalId);
+      const fn1VerLogicalId = stack1.resolve((fn1.currentVersion.node.defaultChild as cdk.CfnResource).logicalId);
+      expect(fn2VerLogicalId).not.toEqual(fn1VerLogicalId);
+      expect(fn2VerLogicalId).toEqual('MyFunctionCurrentVersion197490AFc4062f80672ac83787e4ec071376cf16');
+      expect(fn1VerLogicalId).toEqual('MyFunctionCurrentVersion197490AF03d5d63f49b46433073c306e78e320c9');
+    });
+
+    test('function hash is not impacted by additional property classified as not locked', () => {
+      // GIVEN
+      const stack1 = new cdk.Stack();
+      const fn1 = new lambda.Function(stack1, 'MyFunction', {
+        runtime: lambda.Runtime.NODEJS_12_X,
+        code: lambda.Code.fromInline('foo'),
+        handler: 'index.handler',
+      });
+      const stack2 = new cdk.Stack();
+      const fn2 = new lambda.Function(stack2, 'MyFunction', {
+        runtime: lambda.Runtime.NODEJS_12_X,
+        code: lambda.Code.fromInline('foo'),
+        handler: 'index.handler',
+        versionLockClassification: {
+          Something: false,
+        },
+      });
+
+      // WHEN
+      (fn2.node.defaultChild as lambda.CfnFunction).addPropertyOverride('Something', 'Else');
+
+      // THEN
+      const fn2VerLogicalId = stack2.resolve((fn2.currentVersion.node.defaultChild as cdk.CfnResource).logicalId);
+      const fn1VerLogicalId = stack1.resolve((fn1.currentVersion.node.defaultChild as cdk.CfnResource).logicalId);
+      expect(fn2VerLogicalId).toEqual(fn1VerLogicalId);
     });
   });
 });
