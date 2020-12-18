@@ -286,7 +286,7 @@ export = {
     ));
     test.done();
   },
-  'create nodegroup with on-demand capacity type and multiple instances'(test: Test) {
+  'create nodegroup with on-demand capacity type and multiple instance types'(test: Test) {
     // GIVEN
     const { stack, vpc } = testFixture();
 
