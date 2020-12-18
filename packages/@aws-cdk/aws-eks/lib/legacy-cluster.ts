@@ -111,9 +111,15 @@ export class LegacyCluster extends Resource implements ICluster {
   public readonly clusterCertificateAuthorityData: string;
 
   /**
-   * The cluster security group that was created by Amazon EKS for the cluster.
+   * The id of the cluster security group that was created by Amazon EKS for the cluster.
    */
   public readonly clusterSecurityGroupId: string;
+
+  /**
+   * The cluster security group that was created by Amazon EKS for the cluster.
+   */
+  public readonly clusterSecurityGroup: ec2.ISecurityGroup;
+
 
   /**
    * Amazon Resource Name (ARN) or alias of the customer master key (CMK).
@@ -218,6 +224,7 @@ export class LegacyCluster extends Resource implements ICluster {
     this.clusterEndpoint = resource.attrEndpoint;
     this.clusterCertificateAuthorityData = resource.attrCertificateAuthorityData;
     this.clusterSecurityGroupId = resource.attrClusterSecurityGroupId;
+    this.clusterSecurityGroup = ec2.SecurityGroup.fromSecurityGroupId(this, 'ClusterSecurityGroup', this.clusterSecurityGroupId);
     this.clusterEncryptionConfigKeyArn = resource.attrEncryptionConfigKeyArn;
 
     const updateConfigCommandPrefix = `aws eks update-kubeconfig --name ${this.clusterName}`;
@@ -466,6 +473,11 @@ class ImportedCluster extends Resource implements ICluster {
       throw new Error('"vpc" is not defined for this imported cluster');
     }
     return this.props.vpc;
+  }
+
+  public get clusterSecurityGroup(): ec2.ISecurityGroup {
+    // we are getting rid of this class very soon, no real need to support this here.
+    throw new Error("Unsupported operation. Use 'clusterSecurityGroupId' instead.");
   }
 
   public get clusterSecurityGroupId(): string {
