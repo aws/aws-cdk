@@ -318,7 +318,7 @@ export = {
     ));
     test.done();
   },
-  'create nodegroup with both instanceTypes and instanceType defined'(test: Test) {
+  'throws when both instanceTypes and instanceType defined'(test: Test) {
     // GIVEN
     const { stack, vpc } = testFixture();
 
@@ -329,8 +329,8 @@ export = {
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
     });
-    new eks.Nodegroup(stack, 'Nodegroup', {
-      cluster,
+    // THEN
+    test.throws(() => cluster.addNodegroupCapacity('ng', {
       instanceType: new ec2.InstanceType('m5.large'),
       instanceTypes: [
         new ec2.InstanceType('m5.large'),
@@ -338,17 +338,7 @@ export = {
         new ec2.InstanceType('c5.large'),
       ],
       capacityType: eks.CapacityType.SPOT,
-    });
-    // THEN
-    expect(stack).to(haveResourceLike('AWS::EKS::Nodegroup', {
-      InstanceTypes: [
-        'm5.large',
-        't3.large',
-        'c5.large',
-      ],
-      CapacityType: 'SPOT',
-    },
-    ));
+    }), /"instanceType is deprecated, please use "instanceTypes" only/);
     test.done();
   },
   'create nodegroup with either instanceTypes or instanceType defined'(test: Test) {
@@ -391,7 +381,7 @@ export = {
         // ARM64
         new ec2.InstanceType('m6g.large'),
       ],
-    }), /instanceTypes of different CPU architectures not allowed/);
+    }), /instanceTypes of different CPU architectures is not allowed/);
     test.done();
   },
   'throws when amiType provided is incorrect'(test: Test) {
@@ -412,7 +402,7 @@ export = {
       ],
       // incorrect amiType
       amiType: eks.NodegroupAmiType.AL2_ARM_64,
-    }), /amiType is not correct - should be/);
+    }), /The specified AMI does not match the instance types architecture/);
     test.done();
   },
 

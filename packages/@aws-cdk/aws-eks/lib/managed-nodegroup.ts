@@ -149,7 +149,7 @@ export interface NodegroupOptions {
   /**
    * The instance type to use for your node group. Currently, you can specify a single instance type for a node group.
    * The default value for this parameter is `t3.medium`. If you choose a GPU instance type, be sure to specify the
-   * `AL2_x86_64_GPU` with the amiType parameter. This property will be ignored if `instanceTypes` is defined.
+   * `AL2_x86_64_GPU` with the amiType parameter.
    *
    * @default t3.medium
    * @deprecated Use `instanceTypes` instead.
@@ -284,11 +284,21 @@ export class Nodegroup extends Resource implements INodegroup {
       throw new Error(`Minimum capacity ${this.minSize} can't be greater than desired size ${this.desiredSize}`);
     }
 
+    if (props.instanceType && props.instanceTypes) {
+      throw new Error('"instanceType is deprecated, please use "instanceTypes" only.');
+    }
+
     if (props.instanceType) {
-      Annotations.of(this).addWarning(`'instanceType' is deprecated and will be removed in the next major version. please use 'instanceTypes' instead`);
+      Annotations.of(this).addWarning('"instanceType" is deprecated and will be removed in the next major version. please use "instanceTypes" instead');
     }
     const instanceTypes = props.instanceTypes ?? (props.instanceType ? [props.instanceType] : Nodegroup.DEFAULT_INSTANCE_TYPES);
-    const determinedAmiType = determineAmiTypes(instanceTypes);
+    // get unique AMI types from instanceTypes
+    const uniqAmiTypes = getAmiTypes(instanceTypes);
+    // uniqAmiTypes.length should be at least 1
+    if (uniqAmiTypes.length > 1) {
+      throw new Error('instanceTypes of different CPU architectures is not allowed');
+    }
+    const determinedAmiType = uniqAmiTypes[0];
     if (props.amiType && props.amiType !== determinedAmiType) {
       throw new Error(`The specified AMI does not match the instance types architecture, either specify ${determinedAmiType} or dont specify any`);
     }
@@ -385,12 +395,8 @@ function getAmiTypeForInstanceType(instanceType: InstanceType) {
           NodegroupAmiType.AL2_X86_64;
 }
 
-function determineAmiTypes(instanceType: InstanceType[]) {
+function getAmiTypes(instanceType: InstanceType[]) {
   const amiTypes = instanceType.map(i =>getAmiTypeForInstanceType(i));
-  const uniq = [...new Set(amiTypes)];
-  if (uniq.length > 1) {
-    throw new Error('instanceTypes of different CPU architectures not allowed');
-  } else {
-    return uniq[0];
-  }
+  // retuen unique AMI types
+  return [...new Set(amiTypes)];
 }
