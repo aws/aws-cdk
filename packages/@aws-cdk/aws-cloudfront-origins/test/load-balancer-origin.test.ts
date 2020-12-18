@@ -28,6 +28,9 @@ test('Renders minimal example with just a load balancer', () => {
     domainName: loadBalancer.loadBalancerDnsName,
     customOriginConfig: {
       originProtocolPolicy: 'https-only',
+      originSslProtocols: [
+        'TLSv1.2',
+      ],
     },
   });
 });
@@ -52,6 +55,9 @@ test('Can customize properties of the origin', () => {
     connectionTimeout: 5,
     customOriginConfig: {
       originProtocolPolicy: 'match-viewer',
+      originSslProtocols: [
+        'TLSv1.2',
+      ],
     },
   });
 });
