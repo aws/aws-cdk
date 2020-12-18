@@ -341,7 +341,7 @@ export = {
     }), /"instanceType is deprecated, please use "instanceTypes" only/);
     test.done();
   },
-  'create nodegroup with either instanceTypes or instanceType defined'(test: Test) {
+  'create nodegroup with neither instanceTypes nor instanceType defined'(test: Test) {
     // GIVEN
     const { stack, vpc } = testFixture();
 
