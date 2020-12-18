@@ -290,7 +290,7 @@ export class Nodegroup extends Resource implements INodegroup {
     const instanceTypes = props.instanceTypes ?? (props.instanceType ? [props.instanceType] : Nodegroup.DEFAULT_INSTANCE_TYPES);
     const determinedAmiType = determineAmiTypes(instanceTypes);
     if (props.amiType && props.amiType !== determinedAmiType) {
-      throw new Error(`amiType is not correct - should be ${determinedAmiType}`);
+      throw new Error(`The specified AMI does not match the instance types architecture, either specify ${determinedAmiType} or dont specify any`);
     }
 
     if (!props.nodeRole) {
