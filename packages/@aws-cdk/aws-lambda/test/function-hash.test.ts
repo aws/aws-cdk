@@ -248,6 +248,18 @@ describe('function hash', () => {
 
         expect(calculateFunctionHash('v2', fn)).toEqual(expected);
       });
+
+      test('throws an error when a unclassified property is encountered', () => {
+        const stack = new Stack();
+        const fn = new lambda.Function(stack, 'MyFunction', {
+          runtime: lambda.Runtime.NODEJS_12_X,
+          code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
+          handler: 'index.handler',
+        });
+        (fn.node.defaultChild as lambda.CfnFunction).addPropertyOverride('Something', 'Else');
+
+        expect(() => calculateFunctionHash('v2', fn)).toThrow(/unclassified/);
+      });
     });
   });
 });
