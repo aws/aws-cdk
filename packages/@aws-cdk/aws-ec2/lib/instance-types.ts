@@ -149,6 +149,16 @@ export enum InstanceClass {
   R5AD = 'r5a',
 
   /**
+   * Memory optimized instances that are also EBS-optimized, 5th generation
+   */
+  MEMORY5_EBS_OPTIMIZED = 'r5b',
+
+  /**
+   * Memory optimized instances that are also EBS-optimized, 5th generation
+   */
+  R5B = 'r5b',
+
+  /**
    * Memory optimized instances, 6th generation with Graviton2 processors
    */
   MEMORY6_GRAVITON = 'r6g',

@@ -515,6 +515,16 @@
             },
             "Match": {
               "Prefix": "/"
+            },
+            "Timeout": {
+              "Idle": {
+                "Unit": "ms",
+                "Value": 10000
+              },
+              "PerRequest": {
+                "Unit": "ms",
+                "Value": 10000
+              }
             }
           }
         },
@@ -553,6 +563,16 @@
             },
             "Match": {
               "Prefix": "/path2"
+            },
+            "Timeout": {
+              "Idle": {
+                "Unit": "ms",
+                "Value": 11000
+              },
+              "PerRequest": {
+                "Unit": "ms",
+                "Value": 11000
+              }
             }
           }
         },
@@ -588,6 +608,12 @@
                   "Weight": 20
                 }
               ]
+            },
+            "Timeout": {
+              "Idle": {
+                "Unit": "ms",
+                "Value": 12000
+              }
             }
           }
         },

@@ -131,6 +131,7 @@ export class ApplicationLoadBalancedEc2Service extends ApplicationLoadBalancedSe
       propagateTags: props.propagateTags,
       enableECSManagedTags: props.enableECSManagedTags,
       cloudMapOptions: props.cloudMapOptions,
+      deploymentController: props.deploymentController,
     });
     this.addServiceAsTarget(this.service);
   }

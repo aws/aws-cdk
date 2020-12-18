@@ -5,6 +5,7 @@ import { Code, Runtime } from '@aws-cdk/aws-lambda';
 import { AssetHashType, BundlingDockerImage } from '@aws-cdk/core';
 import { version as delayVersion } from 'delay/package.json';
 import { Bundling } from '../lib/bundling';
+import { LogLevel } from '../lib/types';
 import * as util from '../lib/util';
 
 jest.mock('@aws-cdk/aws-lambda');
@@ -142,6 +143,39 @@ test('esbuild bundling with externals and dependencies', () => {
           'cd /asset-output',
           'npm install',
         ].join(' && '),
+      ],
+    }),
+  });
+});
+
+test('esbuild bundling with esbuild options', () => {
+  Bundling.bundle({
+    entry,
+    depsLockFilePath,
+    runtime: Runtime.NODEJS_12_X,
+    minify: true,
+    sourceMap: true,
+    target: 'es2020',
+    loader: {
+      '.png': 'dataurl',
+    },
+    logLevel: LogLevel.SILENT,
+    keepNames: true,
+    forceDockerBundling: true,
+  });
+
+  // Correctly bundles with esbuild
+  expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(depsLockFilePath), {
+    assetHashType: AssetHashType.OUTPUT,
+    bundling: expect.objectContaining({
+      command: [
+        'bash', '-c',
+        [
+          'npx esbuild --bundle /asset-input/lib/handler.ts',
+          '--target=es2020 --platform=node --outfile=/asset-output/index.js',
+          '--minify --sourcemap --external:aws-sdk --loader:.png=dataurl',
+          '--log-level=silent --keep-names',
+        ].join(' '),
       ],
     }),
   });

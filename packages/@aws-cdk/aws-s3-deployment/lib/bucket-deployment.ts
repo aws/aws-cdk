@@ -2,6 +2,7 @@ import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
+import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
@@ -161,6 +162,21 @@ export interface BucketDeploymentProps {
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/ServerSideEncryptionCustomerKeys.html#sse-c-how-to-programmatically-intro
    */
   readonly serverSideEncryptionCustomerAlgorithm?: string;
+
+  /**
+   * The VPC network to place the deployment lambda handler in.
+   *
+   * @default None
+   */
+  readonly vpc?: ec2.IVpc;
+
+  /**
+   * Where in the VPC to place the deployment lambda handler.
+   * Only used if 'vpc' is supplied.
+   *
+   * @default - the Vpc default strategy if not specified
+   */
+  readonly vpcSubnets?: ec2.SubnetSelection;
 }
 
 export class BucketDeployment extends cdk.Construct {
@@ -182,6 +198,8 @@ export class BucketDeployment extends cdk.Construct {
       timeout: cdk.Duration.minutes(15),
       role: props.role,
       memorySize: props.memoryLimit,
+      vpc: props.vpc,
+      vpcSubnets: props.vpcSubnets,
     });
 
     const handlerRole = handler.role;

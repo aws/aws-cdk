@@ -64,10 +64,10 @@ class PublishingAws implements cdk_assets.IAws {
       region: options.region ?? this.targetEnv.region, // Default: same region as the stack
     };
 
-    return options.assumeRoleArn
-      ? this.aws.withAssumedRole(options.assumeRoleArn, options.assumeRoleExternalId, env, Mode.ForWriting)
-      : this.aws.forEnvironment(env, Mode.ForWriting);
-
+    return this.aws.forEnvironment(env, Mode.ForWriting, {
+      assumeRoleArn: options.assumeRoleArn,
+      assumeRoleExternalId: options.assumeRoleExternalId,
+    });
   }
 }
 
