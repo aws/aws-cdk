@@ -127,6 +127,25 @@ Creating a "production" Oracle database instance with option and parameter group
 
 [example of setting up a production oracle instance](test/integ.instance.lit.ts)
 
+## Setting Public Accessibility
+
+You can set public accessibility for the database instance using `publiclyAccessible` property. 
+If you specify `true`, it creates an instance with a publicly resolvable DNS name, which resolves to a public IP address. 
+If you specify `false`, it creates an internal instance with a DNS name that resolves to a private IP address.
+
+```ts
+new rds.DatabaseInstance(stack, 'Instance', {
+  engine: rds.DatabaseInstanceEngine.mysql({
+    version: rds.MysqlEngineVersion.VER_8_0_19,
+  }),
+  vpc,
+  vpcSubnets: {
+    subnetType: ec2.SubnetType.PUBLIC,
+  },
+  publiclyAccessible: true,
+});
+```
+
 ## Instance events
 
 To define Amazon CloudWatch event rules for database instances, use the `onEvent`
