@@ -9,7 +9,7 @@ const getNode = (stack: cdk.Stack) => {
     meshName: 'test-mesh',
   });
   return mesh.addVirtualNode(`virtual-node-${idCounter}`, {
-    dnsHostName: 'test-node',
+    serviceDiscovery: appmesh.ServiceDiscovery.dns('test-node'),
   });
 };
 
@@ -21,9 +21,9 @@ export = {
     const [min, max] = [5000, 300000];
 
     // WHEN
-    const toThrow = (millis: number) => getNode(stack).addListeners({
+    const toThrow = (millis: number) => getNode(stack).addListener(appmesh.VirtualNodeListener.http2({
       healthCheck: { interval: cdk.Duration.millis(millis) },
-    });
+    }));
 
     // THEN
     test.doesNotThrow(() => toThrow(min));
@@ -40,9 +40,9 @@ export = {
     const [min, max] = [2000, 60000];
 
     // WHEN
-    const toThrow = (millis: number) => getNode(stack).addListeners({
+    const toThrow = (millis: number) => getNode(stack).addListener(appmesh.VirtualNodeListener.http2({
       healthCheck: { timeout: cdk.Duration.millis(millis) },
-    });
+    }));
 
     // THEN
     test.doesNotThrow(() => toThrow(min));
@@ -59,9 +59,9 @@ export = {
     const [min, max] = [1, 65535];
 
     // WHEN
-    const toThrow = (port: number) => getNode(stack).addListeners({
+    const toThrow = (port: number) => getNode(stack).addListener(appmesh.VirtualNodeListener.http({
       healthCheck: { port },
-    });
+    }));
 
     // THEN
     test.doesNotThrow(() => toThrow(min));
@@ -79,9 +79,9 @@ export = {
     const [min, max] = [2, 10];
 
     // WHEN
-    const toThrow = (healthyThreshold: number) => getNode(stack).addListeners({
+    const toThrow = (healthyThreshold: number) => getNode(stack).addListener(appmesh.VirtualNodeListener.http({
       healthCheck: { healthyThreshold },
-    });
+    }));
 
     // THEN
     test.doesNotThrow(() => toThrow(min));
@@ -98,9 +98,9 @@ export = {
     const [min, max] = [2, 10];
 
     // WHEN
-    const toThrow = (unhealthyThreshold: number) => getNode(stack).addListeners({
+    const toThrow = (unhealthyThreshold: number) => getNode(stack).addListener(appmesh.VirtualNodeListener.http({
       healthCheck: { unhealthyThreshold },
-    });
+    }));
 
     // THEN
     test.doesNotThrow(() => toThrow(min));
@@ -115,12 +115,12 @@ export = {
     const stack = new cdk.Stack();
 
     // WHEN
-    const toThrow = (protocol: appmesh.Protocol) => getNode(stack).addListeners({
+    const toThrow = (protocol: appmesh.Protocol) => getNode(stack).addListener(appmesh.VirtualNodeListener.http({
       healthCheck: {
         protocol,
         path: '/',
       },
-    });
+    }));
 
     // THEN
     test.doesNotThrow(() => toThrow(appmesh.Protocol.HTTP));
@@ -134,12 +134,12 @@ export = {
     const stack = new cdk.Stack();
 
     // WHEN
-    const toThrow = (protocol: appmesh.Protocol) => getNode(stack).addListeners({
+    const toThrow = (protocol: appmesh.Protocol) => getNode(stack).addListener(appmesh.VirtualNodeListener.http({
       healthCheck: {
         protocol,
         path: '/',
       },
-    });
+    }));
 
     // THEN
     test.doesNotThrow(() => toThrow(appmesh.Protocol.HTTP));

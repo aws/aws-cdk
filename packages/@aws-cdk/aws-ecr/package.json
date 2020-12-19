@@ -50,7 +50,8 @@
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test",
     "compat": "cdk-compat",
-    "gen": "cfn2ts"
+    "gen": "cfn2ts",
+    "rosetta:extract": "yarn --silent jsii-rosetta extract"
   },
   "cdk-build": {
     "cloudformation": "AWS::ECR",
@@ -86,7 +87,6 @@
   "dependencies": {
     "@aws-cdk/aws-events": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
-    "@aws-cdk/custom-resources": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "constructs": "^3.2.0"
   },
@@ -94,7 +94,6 @@
   "peerDependencies": {
     "@aws-cdk/aws-events": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
-    "@aws-cdk/custom-resources": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "constructs": "^3.2.0"
   },

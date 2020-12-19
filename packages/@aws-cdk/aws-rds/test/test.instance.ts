@@ -319,6 +319,27 @@ export = {
       test.done();
     },
 
+    'fromGeneratedSecret'(test: Test) {
+      new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
+        snapshotIdentifier: 'my-snapshot',
+        engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+        vpc,
+        credentials: rds.SnapshotCredentials.fromGeneratedSecret('admin', {
+          excludeCharacters: '"@/\\',
+        }),
+      });
+
+      expect(stack).to(haveResourceLike('AWS::RDS::DBInstance', {
+        MasterUsername: ABSENT,
+        MasterUserPassword: {
+          // logical id of secret has a hash
+          'Fn::Join': ['', ['{{resolve:secretsmanager:', { Ref: 'InstanceSecretB6DFA6BE8ee0a797cad8a68dbeb85f8698cdb5bb' }, ':SecretString:password::}}']],
+        },
+      }));
+
+      test.done();
+    },
+
     'throws if generating a new password without a username'(test: Test) {
       test.throws(() => new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
         snapshotIdentifier: 'my-snapshot',
@@ -1137,5 +1158,50 @@ export = {
 
       test.done();
     },
+  },
+
+  'fromGeneratedSecret'(test: Test) {
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Database', {
+      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_12_3 }),
+      vpc,
+      credentials: rds.Credentials.fromGeneratedSecret('postgres'),
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::RDS::DBInstance', {
+      MasterUsername: 'postgres', // username is a string
+      MasterUserPassword: {
+        'Fn::Join': [
+          '',
+          [
+            '{{resolve:secretsmanager:',
+            {
+              Ref: 'DatabaseSecretC9203AE33fdaad7efa858a3daf9490cf0a702aeb', // logical id is a hash
+            },
+            ':SecretString:password::}}',
+          ],
+        ],
+      },
+    }));
+
+    test.done();
+  },
+
+  'fromPassword'(test: Test) {
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Database', {
+      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_12_3 }),
+      vpc,
+      credentials: rds.Credentials.fromPassword('postgres', cdk.SecretValue.ssmSecure('/dbPassword', '1')),
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::RDS::DBInstance', {
+      MasterUsername: 'postgres', // username is a string
+      MasterUserPassword: '{{resolve:ssm-secure:/dbPassword:1}}', // reference to SSM
+    }));
+
+    test.done();
   },
 };

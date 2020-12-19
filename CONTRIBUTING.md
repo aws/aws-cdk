@@ -39,7 +39,7 @@ and let us know if it's not up-to-date (even better, submit a PR with your  corr
   - [API Compatibility Checks](#api-compatibility-checks)
   - [Examples](#examples)
   - [Feature Flags](#feature-flags)
-  - [Versioning](#versioning)
+  - [Versioning and Release](#versioning-and-release)
 - [Troubleshooting](#troubleshooting)
 - [Debugging](#debugging)
   - [Connecting the VS Code Debugger](#connecting-the-vs-code-debugger)
@@ -173,6 +173,9 @@ Work your magic. Here are some guidelines:
   Feel free to start your contribution by copy&pasting files from that project,
   and then edit and rename them as appropriate -
   it might be easier to get started that way.
+* If your change includes code examples (in the `README.md` file or as part of regular TSDoc tags),
+  you should probably validate those examples can be successfully compiled and trans-literated by
+  running `yarn rosetta:extract` (this requires other packages used by code examples are built).
 
 #### Integration Tests
 
@@ -378,6 +381,31 @@ Here are a few useful commands:
  * `lerna run awslint -- -i <RULE>` will run awslint throughout the repo and
    evaluate only the rule specified [awslint README](./packages/awslint/README.md)
    for details on include/exclude rule patterns.
+
+
+#### jsii-rosetta
+
+**jsii-rosetta** can be used to verify that all code examples included in documentation for a package (including those
+in `README.md`) successfully compile against the library they document. It is recommended to run it to ensure all
+examples are still accurate. Successfully building examples is also necessary to ensure the best possible translation to
+other supported languages (`C#`, `Java`, `Python`, ...).
+
+> Note that examples may use libraries that are not part of the `dependencies` or `devDependencies` of the documented
+> package. For example `@aws-cdk/core` contains mainy examples that leverage libraries built *on top of it* (such as
+> `@aws-cdk/aws-sns`). Such libraries must be built (using `yarn build`) before **jsii-rosetta** can verify that
+> examples are correct.
+
+To run **jsii-rosetta** in *strict* mode (so that it always fails when encountering examples that fail to compile), use
+the following command:
+
+```console
+$ yarn rosetta:extract --strict
+```
+
+For more information on how you can address examples that fail compiling due to missing fixtures (declarations that are
+necessary for the example to compile, but which would distract the reader away from what is being demonstrated), you
+might need to introduce [rosetta fixtures](https://github.com/aws/jsii/tree/main/packages/jsii-rosetta#fixtures). Refer
+to the [Examples](#examples) section.
 
 ### cfn2ts
 
@@ -682,6 +710,8 @@ can be used in these cases.
 
 ### Examples
 
+#### Fixture Files
+
 Examples typed in fenced code blocks (looking like `'''ts`, but then with backticks
 instead of regular quotes) will be automatically extrated, compiled and translated
 to other languages when the bindings are generated.
@@ -691,7 +721,7 @@ a *fixture*, which looks like this:
 
 ```
 '''ts fixture=with-bucket
-bucket.addLifecycleTransition({ ... });
+bucket.addLifecycleTransition({ ...props });
 '''
 ```
 
@@ -714,8 +744,8 @@ contain three slashes to achieve the same effect:
 ```
 /**
  * @example
- * /// fixture=with-bucket
- * bucket.addLifecycleTransition({ ... });
+ *   /// fixture=with-bucket
+ *   bucket.addLifecycleTransition({ ...props });
  */
 ```
 
@@ -729,12 +759,52 @@ the current package.
 For a practical example of how making sample code compilable works, see the
 `aws-ec2` package.
 
+#### Recommendations
+
+In order to offer a consistent documentation style throughout the AWS CDK
+codebase, example code should follow the following recommendations (there may be
+cases where some of those do not apply - good judgement is to be applied):
+
+- Types from the documented module should be **un-qualified**
+
+  ```ts
+  // An example in the @aws-cdk/core library, which defines Duration
+  Duration.minutes(15);
+  ```
+
+- Types from other modules should be **qualified**
+
+  ```ts
+  // An example in the @aws-cdk/core library, using something from @aws-cdk/aws-s3
+  const bucket = new s3.Bucket(this, 'Bucket');
+  // ...rest of the example...
+  ```
+
+- Within `.ts-fixture` files, make use of `declare` statements instead of
+  writing a compatible value (this will make your fixtures more durable):
+
+  ```ts
+  // An hypothetical 'rosetta/default.ts-fixture' file in `@aws-cdk/core`
+  import * as kms from '@aws-cdk/aws-kms';
+  import * as s3 from '@aws-cdk/aws-s3';
+  import { StackProps } from '@aws-cdk/core';
+
+  declare const kmsKey: kms.IKey;
+  declare const bucket: s3.Bucket;
+
+  declare const props: StackProps;
+  ```
+
+> Those recommendations are not verified or enforced by automated tooling. Pull
+> request reviewers may however request that new sample code is edited to meet
+> those requirements as needed.
+
+#### Checking a single package
+
 Examples of all packages are extracted and compiled as part of the packaging
 step. If you are working on getting rid of example compilation errors of a
-single package, you can run `scripts/compile-samples` on the package by itself.
-
-For now, non-compiling examples will not yet block the build, but at some point
-in the future they will.
+single package, you can run `yarn rosetta:extract --strict` in the package's
+directory (see the [**jsii-rosetta**](#jsii-rosetta) section).
 
 ### Feature Flags
 
@@ -779,24 +849,59 @@ CDK](https://github.com/aws/aws-cdk/issues/3398) we will either remove the
 legacy behavior or flip the logic for all these features and then
 reset the `FEATURE_FLAGS` map for the next cycle.
 
-### Versioning
+### Versioning and Release
 
-All `package.json` files in this repo use a stable marker version of `0.0.0`.
-This means that when you declare dependencies, you should always use `0.0.0`.
-This makes it easier for us to bump a new version (the `bump.sh` script will
-just update the central version and create a CHANGELOG entry) and also reduces
-the chance of merge conflicts after a new version is released.
+The `release.json` file at the root of the repo determines which release line
+this branch belongs to.
 
-Additional scripts that take part in the versioning mechanism:
+```js
+{
+  "majorVersion": 1 | 2,
+  "releaseType": "stable" | "alpha" | "rc"
+}
+```
 
-- `scripts/get-version.js` can be used to obtain the actual version of the repo.
-  You can use either from JavaScript code by `require('./scripts/get-version')`
-  or from a shell script `node -p "require('./scripts/get-version')"`.
-- `scripts/get-version-marker.js` returns `0.0.0` and used to DRY the version
-  marker.
-- `scripts/align-version.sh` and `scripts/align-version.js` are used to align
-  all package.json files in the repo to the official version. This script is
-  invoked in CI builds and should not be used inside a development environment.
+To reduce merge conflicts in automatic merges between version branches, the
+current version number is stored under `version.vNN.json` (where `NN` is
+`majorVersion`) and changelogs are stored under `CHANGELOG.NN.md` (for
+historical reasons, the changelog for 1.x is under `CHANGELOG.md`).  When we
+fork to a new release branch (e.g. `v2-main`), we will update `release.json` in
+this branch to reflect the new version line, and this information will be used
+to determine how releases are cut.
+
+The actual `version` field in all `package.json` files should always be `0.0.0`.
+This means that local development builds will use version `0.0.0` instead of the
+official version from the version file.
+
+#### `./bump.sh`
+
+This script uses [standard-version] to update the version in `version.vNN.json`
+to the next version. By default it will perform a **minor** bump, but `./bump.sh
+patch` can be used to perform a patch release if that's needed.
+
+This script will also update the relevant changelog file.
+
+[standard-version]: https://github.com/conventional-changelog/standard-version
+
+#### `scripts/resolve-version.js`
+
+The script evaluates evaluates the configuration in `release.json` and exports an
+object like this:
+
+```js
+{
+  version: '2.0.0-alpha.1',          // the current version
+  versionFile: 'version.v2.json',    // the version file
+  changelogFile: 'CHANGELOG.v2.md',  // changelog file name
+  prerelease: 'alpha',               // prerelease tag (undefined for stable)
+  marker: '0.0.0'                    // version marker in package.json files
+}
+```
+
+#### scripts/align-version.sh
+
+In official builds, the `scripts/align-version.sh` is used to update all
+`package.json` files based on the version from `version.vNN.json`.
 
 ## Troubleshooting
 

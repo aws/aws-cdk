@@ -78,7 +78,7 @@ export class AwsIntegration extends Integration {
     super({
       type,
       integrationHttpMethod: props.integrationHttpMethod || 'POST',
-      uri: cdk.Lazy.stringValue({
+      uri: cdk.Lazy.string({
         produce: () => {
           if (!this.scope) { throw new Error('AwsIntegration must be used in API'); }
           return cdk.Stack.of(this.scope).formatArn({

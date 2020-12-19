@@ -5,8 +5,6 @@ import { HttpOrigin } from './http-origin';
 
 /**
  * Properties to use to customize an S3 Origin.
- *
- * @experimental
  */
 export interface S3OriginProps {
   /**
@@ -30,8 +28,6 @@ export interface S3OriginProps {
  * If the bucket is configured for website hosting, this origin will be configured to use the bucket as an
  * HTTP server origin and will use the bucket's configured website redirects and error handling. Otherwise,
  * the origin is created as a bucket origin and will use CloudFront's redirect and error handling.
- *
- * @experimental
  */
 export class S3Origin implements cloudfront.IOrigin {
   private readonly origin: cloudfront.IOrigin;
@@ -74,7 +70,7 @@ class S3BucketOrigin extends cloudfront.OriginBase {
       const bucketStack = cdk.Stack.of(this.bucket);
       const bucketInDifferentStack = bucketStack !== cdk.Stack.of(scope);
       const oaiScope = bucketInDifferentStack ? bucketStack : scope;
-      const oaiId = bucketInDifferentStack ? `${scope.node.uniqueId}S3Origin` : 'S3Origin';
+      const oaiId = bucketInDifferentStack ? `${cdk.Names.uniqueId(scope)}S3Origin` : 'S3Origin';
 
       this.originAccessIdentity = new cloudfront.OriginAccessIdentity(oaiScope, oaiId, {
         comment: `Identity for ${options.originId}`,
