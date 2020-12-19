@@ -1,7 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as serverless from '@aws-cdk/aws-sam';
-import { Duration, Stack, Token } from '@aws-cdk/core';
+import { Duration, Names, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { ISecret } from './secret';
 
@@ -224,7 +224,7 @@ export class SecretRotation extends CoreConstruct {
     }
 
     // Max length of 64 chars, get the last 64 chars
-    const uniqueId = this.node.uniqueId;
+    const uniqueId = Names.uniqueId(this);
     const rotationFunctionName = uniqueId.substring(Math.max(uniqueId.length - 64, 0), uniqueId.length);
 
     const securityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'SecurityGroup', {

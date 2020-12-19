@@ -82,7 +82,7 @@ export class StepScalingAction extends cdk.Construct {
     // properties, or the ScalingTargetId property, but not both.
     // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationautoscaling-scalingpolicy.html
     const resource = new CfnScalingPolicy(this, 'Resource', {
-      policyName: props.policyName || this.node.uniqueId,
+      policyName: props.policyName || cdk.Names.uniqueId(this),
       policyType: 'StepScaling',
       scalingTargetId: props.scalingTarget.scalableTargetId,
       stepScalingPolicyConfiguration: {
@@ -90,7 +90,7 @@ export class StepScalingAction extends cdk.Construct {
         cooldown: props.cooldown && props.cooldown.toSeconds(),
         minAdjustmentMagnitude: props.minAdjustmentMagnitude,
         metricAggregationType: props.metricAggregationType,
-        stepAdjustments: cdk.Lazy.anyValue({ produce: () => this.adjustments }),
+        stepAdjustments: cdk.Lazy.any({ produce: () => this.adjustments }),
       } as CfnScalingPolicy.StepScalingPolicyConfigurationProperty,
     });
 

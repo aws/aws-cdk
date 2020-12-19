@@ -777,6 +777,14 @@ describe('CDK Include', () => {
     });
   });
 
+  test('can ingest a template that uses Fn::FindInMap for the value of a boolean property', () => {
+    includeTestTemplate(stack, 'find-in-map-for-boolean-property.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('find-in-map-for-boolean-property.json'),
+    );
+  });
+
   test('can ingest a template that contains Rules, and allows retrieving those Rules', () => {
     const cfnTemplate = includeTestTemplate(stack, 'only-parameters-and-rule.json');
     const rule = cfnTemplate.getRule('TestVpcRule');
@@ -990,6 +998,14 @@ describe('CDK Include', () => {
         },
       });
     }).toThrow(/Parameter with logical ID 'FakeParameter' was not found in the template/);
+  });
+
+  test('can ingest a template that contains properties not in the current CFN spec, and output it unchanged', () => {
+    includeTestTemplate(stack, 'properties-not-in-cfn-spec.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('properties-not-in-cfn-spec.json'),
+    );
   });
 });
 

@@ -5,6 +5,88 @@ import { Test } from 'nodeunit';
 import * as appmesh from '../lib';
 
 export = {
+  'When creating a VirtualRouter': {
+    'should have appropriate defaults'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const mesh = new appmesh.Mesh(stack, 'mesh', {
+        meshName: 'test-mesh',
+      });
+      // WHEN
+      mesh.addVirtualRouter('http-router-listener');
+
+      expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualRouter', {
+        VirtualRouterName: 'meshhttprouterlistenerF57BCB2F',
+        Spec: {
+          Listeners: [
+            {
+              PortMapping: {
+                Port: 8080,
+                Protocol: appmesh.Protocol.HTTP,
+              },
+            },
+          ],
+        },
+      }));
+      test.done();
+    },
+    'should have protocol variant listeners'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const mesh = new appmesh.Mesh(stack, 'mesh', {
+        meshName: 'test-mesh',
+      });
+      // WHEN
+      mesh.addVirtualRouter('http-router-listener', {
+        listeners: [
+          appmesh.VirtualRouterListener.http(),
+        ],
+        virtualRouterName: 'http-router-listener',
+      });
+
+      mesh.addVirtualRouter('http2-router-listener', {
+        listeners: [
+          appmesh.VirtualRouterListener.http2(),
+        ],
+        virtualRouterName: 'http2-router-listener',
+      });
+
+      mesh.addVirtualRouter('grpc-router-listener', {
+        listeners: [
+          appmesh.VirtualRouterListener.grpc(),
+        ],
+        virtualRouterName: 'grpc-router-listener',
+      });
+
+      mesh.addVirtualRouter('tcp-router-listener', {
+        listeners: [
+          appmesh.VirtualRouterListener.tcp(),
+        ],
+        virtualRouterName: 'tcp-router-listener',
+      });
+
+      // THEN
+      const expectedPorts = [appmesh.Protocol.HTTP, appmesh.Protocol.HTTP2, appmesh.Protocol.GRPC, appmesh.Protocol.TCP];
+      expectedPorts.forEach(protocol => {
+        expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualRouter', {
+          VirtualRouterName: `${protocol}-router-listener`,
+          Spec: {
+            Listeners: [
+              {
+                PortMapping: {
+                  Port: 8080,
+                  Protocol: protocol,
+                },
+              },
+            ],
+          },
+        }));
+      });
+
+      test.done();
+    },
+  },
+
   'When adding route to existing VirtualRouter': {
     'should create route resource'(test: Test) {
       // GIVEN
@@ -23,25 +105,25 @@ export = {
       });
 
       const node = mesh.addVirtualNode('test-node', {
-        dnsHostName: 'test',
-        listener: {
-          portMapping:
-            {
-              port: 8080,
-              protocol: appmesh.Protocol.HTTP,
-            },
-        },
+        serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
+        listeners: [appmesh.VirtualNodeListener.http({
+          port: 8080,
+        })],
         backends: [service1],
       });
 
       router.addRoute('route-1', {
-        routeTargets: [
-          {
-            virtualNode: node,
-            weight: 50,
+        routeSpec: appmesh.RouteSpec.http({
+          weightedTargets: [
+            {
+              virtualNode: node,
+              weight: 50,
+            },
+          ],
+          match: {
+            prefixPath: '/',
           },
-        ],
-        prefix: '/',
+        }),
       });
 
       // THEN
@@ -96,73 +178,73 @@ export = {
       });
 
       const node = mesh.addVirtualNode('test-node', {
-        dnsHostName: 'test',
-        listener: {
-          portMapping:
-            {
-              port: 8080,
-              protocol: appmesh.Protocol.HTTP,
-            },
-        },
+        serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
+        listeners: [appmesh.VirtualNodeListener.http({
+          port: 8080,
+        })],
         backends: [
           service1,
         ],
       });
       const node2 = mesh.addVirtualNode('test-node2', {
-        dnsHostName: 'test',
-        listener: {
-          portMapping:
-            {
-              port: 8080,
-              protocol: appmesh.Protocol.HTTP,
-            },
-        },
+        serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
+        listeners: [appmesh.VirtualNodeListener.http({
+          port: 8080,
+        })],
         backends: [
           service2,
         ],
       });
       const node3 = mesh.addVirtualNode('test-node3', {
-        dnsHostName: 'test',
-        listener: {
-          portMapping:
-            {
-              port: 8080,
-              protocol: appmesh.Protocol.HTTP,
-            },
-        },
+        serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
+        listeners: [appmesh.VirtualNodeListener.http({
+          port: 8080,
+        })],
         backends: [
           service1,
         ],
       });
 
       router.addRoute('route-1', {
-        routeTargets: [
-          {
-            virtualNode: node,
-            weight: 50,
+        routeSpec: appmesh.RouteSpec.http({
+          weightedTargets: [
+            {
+              virtualNode: node,
+              weight: 50,
+            },
+          ],
+          match: {
+            prefixPath: '/',
           },
-        ],
-        prefix: '/',
+        }),
       });
 
       router.addRoute('route-2', {
-        routeTargets: [
-          {
-            virtualNode: node2,
-            weight: 30,
+        routeSpec: appmesh.RouteSpec.http({
+          weightedTargets: [
+            {
+              virtualNode: node2,
+              weight: 30,
+            },
+          ],
+          match: {
+            prefixPath: '/path2',
           },
-        ],
-        prefix: '/path2',
+        }),
       });
 
       router.addRoute('route-3', {
-        routeTargets: [
-          {
-            virtualNode: node3,
-            weight: 20,
+        routeSpec: appmesh.RouteSpec.http({
+          weightedTargets: [
+            {
+              virtualNode: node3,
+              weight: 20,
+            },
+          ],
+          match: {
+            prefixPath: '/path3',
           },
-        ],
-        prefix: '/path3',
+        }),
       });
 
       // THEN
@@ -254,26 +336,24 @@ export = {
       });
 
       const node = mesh.addVirtualNode('test-node', {
-        dnsHostName: 'test',
-        listener: {
-          portMapping:
-            {
-              port: 8080,
-              protocol: appmesh.Protocol.HTTP,
-            },
-        },
+        serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
+        listeners: [appmesh.VirtualNodeListener.http({
+          port: 8080,
+        })],
         backends: [
           service1,
         ],
       });
 
       router.addRoute('route-tcp-1', {
-        routeTargets: [
-          {
-            virtualNode: node,
-            weight: 50,
-          },
-        ],
+        routeSpec: appmesh.RouteSpec.tcp({
+          weightedTargets: [
+            {
+              virtualNode: node,
+              weight: 50,
+            },
+          ],
+        }),
       });
 
       // THEN
@@ -304,15 +384,38 @@ export = {
     },
   },
 
-  'can import a virtual router'(test: Test) {
+  'Can import Virtual Routers using an ARN'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
 
-    // WHEN
-    const vr = appmesh.VirtualRouter.fromVirtualRouterName(stack, 'Router', 'MyMesh', 'MyRouter');
+    const meshName = 'testMesh';
+    const virtualRouterName = 'virtual-router';
+    const arn = `arn:aws:appmesh:us-east-1:123456789012:mesh/${meshName}/virtualRouter/${virtualRouterName}`;
 
+    // WHEN
+    const virtualRouter = appmesh.VirtualRouter.fromVirtualRouterArn(
+      stack, 'importedVirtualRouter', arn);
     // THEN
-    test.ok(vr.mesh !== undefined);
+    test.equal(virtualRouter.mesh.meshName, meshName);
+    test.equal(virtualRouter.virtualRouterName, virtualRouterName);
+
+    test.done();
+  },
+  'Can import Virtual Routers using attributes'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    const meshName = 'testMesh';
+    const virtualRouterName = 'virtual-router';
+
+    // WHEN
+    const virtualRouter1 = appmesh.VirtualRouter.fromVirtualRouterAttributes(stack, 'importVirtualRouter', {
+      mesh: appmesh.Mesh.fromMeshName(stack, 'Mesh', meshName),
+      virtualRouterName: virtualRouterName,
+    });
+    // THEN
+    test.equal(virtualRouter1.mesh.meshName, meshName);
+    test.equal(virtualRouter1.virtualRouterName, virtualRouterName);
 
     test.done();
   },

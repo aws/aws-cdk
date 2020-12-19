@@ -918,6 +918,34 @@ describe('restapi', () => {
         },
       });
     });
+
+    test('addApiKey is supported', () => {
+      // GIVEN
+      const stack = new Stack();
+      const api = new apigw.SpecRestApi(stack, 'myapi', {
+        apiDefinition: apigw.ApiDefinition.fromInline({ foo: 'bar' }),
+      });
+      api.root.addMethod('OPTIONS');
+
+      // WHEN
+      api.addApiKey('myapikey', {
+        apiKeyName: 'myApiKey1',
+        value: '01234567890ABCDEFabcdef',
+      });
+
+      // THEN
+      expect(stack).toHaveResource('AWS::ApiGateway::ApiKey', {
+        Enabled: true,
+        Name: 'myApiKey1',
+        StageKeys: [
+          {
+            RestApiId: { Ref: 'myapi162F20B8' },
+            StageName: { Ref: 'myapiDeploymentStageprod329F21FF' },
+          },
+        ],
+        Value: '01234567890ABCDEFabcdef',
+      });
+    });
   });
 
   describe('Metrics', () => {

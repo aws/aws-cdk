@@ -3,6 +3,35 @@ import { CodeMaker } from 'codemaker';
 import * as genspec from './genspec';
 import { SpecName } from './spec-utils';
 
+/**
+ * Generate augmentation methods for the given types
+ *
+ * Augmentation consists of two parts:
+ *
+ * - Adding method declarations to an interface (IBucket)
+ * - Adding implementations for those methods to the base class (BucketBase)
+ *
+ * The augmentation file must be imported in `index.ts`.
+ *
+ * ----------------------------------------------------------
+ *
+ * Generates code similar to the following:
+ *
+ * ```
+ * import <Class>Base from './<class>-base';
+ *
+ * declare module './<class>-base' {
+ *   interface <IClass> {
+ *     method(...): Type;
+ *   }
+ *   interface <ClassBase> {
+ *     method(...): Type;
+ *   }
+ * }
+ *
+ * <ClassBase>.prototype.<method> = // ...impl...
+ * ```
+ */
 export class AugmentationGenerator {
   private readonly code = new CodeMaker();
   private readonly outputFile: string;

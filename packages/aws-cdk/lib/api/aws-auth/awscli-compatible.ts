@@ -40,7 +40,10 @@ export class AwsCliCompatible {
     if (options.profile) {
       await forceSdkToReadConfigIfPresent();
       const theProfile = options.profile;
-      return new AWS.CredentialProviderChain([() => profileCredentials(theProfile)]);
+      return new AWS.CredentialProviderChain([
+        () => profileCredentials(theProfile),
+        () => new AWS.ProcessCredentials({ profile: theProfile }),
+      ]);
     }
 
     const implicitProfile = process.env.AWS_PROFILE || process.env.AWS_DEFAULT_PROFILE || 'default';
@@ -55,14 +58,18 @@ export class AwsCliCompatible {
       // environment variable.
       await forceSdkToReadConfigIfPresent();
       sources.push(() => profileCredentials(implicitProfile));
+      sources.push(() => new AWS.ProcessCredentials({ profile: implicitProfile }));
     }
 
     if (options.containerCreds ?? hasEcsCredentials()) {
       sources.push(() => new AWS.ECSCredentials());
+    } else if (hasWebIdentityCredentials()) {
+      // else if: we have found WebIdentityCredentials as provided by EKS ServiceAccounts
+      sources.push(() => new AWS.TokenFileWebIdentityCredentials());
     } else if (options.ec2instance ?? await isEc2Instance()) {
-      // else if: don't get EC2 creds if we should have gotten ECS creds--ECS instances also
-      // run on EC2 boxes but the creds represent something different. Same behavior as
-      // upstream code.
+      // else if: don't get EC2 creds if we should have gotten ECS or EKS creds
+      // ECS and EKS instances also run on EC2 boxes but the creds represent something different.
+      // Same behavior as upstream code.
       sources.push(() => new AWS.EC2MetadataCredentials());
     }
 
@@ -150,6 +157,15 @@ export class AwsCliCompatible {
  */
 function hasEcsCredentials(): boolean {
   return (AWS.ECSCredentials.prototype as any).isConfiguredForEcsCredentials();
+}
+
+/**
+ * Return whether it looks like we'll have WebIdentityCredentials (that's what EKS uses) available
+ * No check like hasEcsCredentials available, so have to implement our own.
+ * @see https://github.com/aws/aws-sdk-js/blob/3ccfd94da07234ae87037f55c138392f38b6881d/lib/credentials/token_file_web_identity_credentials.js#L59
+ */
+function hasWebIdentityCredentials(): boolean {
+  return Boolean(process.env.AWS_ROLE_ARN && process.env.AWS_WEB_IDENTITY_TOKEN_FILE);
 }
 
 /**

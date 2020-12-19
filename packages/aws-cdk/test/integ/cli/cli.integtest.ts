@@ -1,9 +1,9 @@
 import { promises as fs } from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { retry, sleep } from './aws-helpers';
-import { cloneDirectory, shell, withDefaultFixture } from './cdk-helpers';
-import { integTest } from './test-helpers';
+import { retry, sleep } from '../helpers/aws';
+import { cloneDirectory, shell, withDefaultFixture } from '../helpers/cdk';
+import { integTest } from '../helpers/test-helpers';
 
 jest.setTimeout(600 * 1000);
 
@@ -91,6 +91,17 @@ integTest('context setting', withDefaultFixture(async (fixture) => {
   } finally {
     await fs.unlink(path.join(fixture.integTestDir, 'cdk.context.json'));
   }
+}));
+
+integTest('context in stage propagates to top', withDefaultFixture(async (fixture) => {
+  await expect(fixture.cdkSynth({
+    // This will make it error to prove that the context bubbles up, and also that we can fail on command
+    options: ['--no-lookups'],
+    modEnv: {
+      INTEG_STACK_SET: 'stage-using-context',
+    },
+    allowErrExit: true,
+  })).resolves.toContain('Context lookups have been disabled');
 }));
 
 integTest('deploy', withDefaultFixture(async (fixture) => {

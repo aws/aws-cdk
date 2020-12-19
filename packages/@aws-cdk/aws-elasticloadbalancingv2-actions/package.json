@@ -48,7 +48,8 @@
     "awslint": "cdk-awslint",
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test",
-    "compat": "cdk-compat"
+    "compat": "cdk-compat",
+    "rosetta:extract": "yarn --silent jsii-rosetta extract"
   },
   "keywords": [
     "aws",
@@ -67,7 +68,7 @@
     "@aws-cdk/assert": "0.0.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
-    "jest": "^26.6.1",
+    "jest": "^26.6.3",
     "pkglint": "0.0.0"
   },
   "dependencies": {

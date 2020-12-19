@@ -69,7 +69,7 @@ export class CrossAccountDestination extends cdk.Resource implements ILogSubscri
     super(scope, id, {
       physicalName: props.destinationName ||
         // In the underlying model, the name is not optional, but we make it so anyway.
-        cdk.Lazy.stringValue({ produce: () => this.generateUniqueName() }),
+        cdk.Lazy.string({ produce: () => this.generateUniqueName() }),
     });
 
     this.resource = new CfnDestination(this, 'Resource', {
@@ -109,7 +109,7 @@ export class CrossAccountDestination extends cdk.Resource implements ILogSubscri
    * Return a stringified JSON version of the PolicyDocument
    */
   private lazyStringifiedPolicyDocument(): string {
-    return cdk.Lazy.stringValue({
+    return cdk.Lazy.string({
       produce: () =>
         this.policyDocument.isEmpty ? '' : cdk.Stack.of(this).toJsonString(this.policyDocument),
     });

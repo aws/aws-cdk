@@ -1,8 +1,11 @@
 import { ITable } from '@aws-cdk/aws-dynamodb';
-import { IGrantable, IPrincipal, IRole, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
+import { Grant, IGrantable, IPrincipal, IRole, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { IFunction } from '@aws-cdk/aws-lambda';
-import { IResolvable } from '@aws-cdk/core';
+import { IDatabaseCluster } from '@aws-cdk/aws-rds';
+import { ISecret } from '@aws-cdk/aws-secretsmanager';
+import { IResolvable, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { BaseAppsyncFunctionProps, AppsyncFunction } from './appsync-function';
 import { CfnDataSource } from './appsync.generated';
 import { IGraphqlApi } from './graphqlapi-base';
 import { BaseResolverProps, Resolver } from './resolver';
@@ -123,7 +126,14 @@ export abstract class BaseDataSource extends CoreConstruct {
    * creates a new resolver for this datasource and API using the given properties
    */
   public createResolver(props: BaseResolverProps): Resolver {
-    return new Resolver(this, `${props.typeName}${props.fieldName}Resolver`, {
+    return this.api.createResolver({ dataSource: this, ...props });
+  }
+
+  /**
+   * creates a new appsync function for this datasource and API using the given properties
+   */
+  public createFunction(props: BaseAppsyncFunctionProps): AppsyncFunction {
+    return new AppsyncFunction(this, `${props.name}Function`, {
       api: this.api,
       dataSource: this,
       ...props,
@@ -170,7 +180,6 @@ export class NoneDataSource extends BaseDataSource {
 export interface DynamoDbDataSourceProps extends BackedDataSourceProps {
   /**
    * The DynamoDB table backing this data source
-   * [disable-awslint:ref-via-interface]
    */
   readonly table: ITable;
   /**
@@ -244,7 +253,7 @@ export interface HttpDataSourceProps extends BaseDataSourceProps {
 /**
  * An AppSync datasource backed by a http endpoint
  */
-export class HttpDataSource extends BaseDataSource {
+export class HttpDataSource extends BackedDataSource {
   constructor(scope: Construct, id: string, props: HttpDataSourceProps) {
     const authorizationConfig = props.authorizationConfig ? {
       authorizationType: 'AWS_IAM',
@@ -282,5 +291,57 @@ export class LambdaDataSource extends BackedDataSource {
       },
     });
     props.lambdaFunction.grantInvoke(this);
+  }
+}
+
+/**
+ * Properties for an AppSync RDS datasource
+ */
+export interface RdsDataSourceProps extends BackedDataSourceProps {
+  /**
+   * The database cluster to call to interact with this data source
+   */
+  readonly databaseCluster: IDatabaseCluster;
+  /**
+   * The secret containing the credentials for the database
+   */
+  readonly secretStore: ISecret;
+}
+
+/**
+ * An AppSync datasource backed by RDS
+ */
+export class RdsDataSource extends BackedDataSource {
+  constructor(scope: Construct, id: string, props: RdsDataSourceProps) {
+    super(scope, id, props, {
+      type: 'RELATIONAL_DATABASE',
+      relationalDatabaseConfig: {
+        rdsHttpEndpointConfig: {
+          awsRegion: props.databaseCluster.stack.region,
+          dbClusterIdentifier: props.databaseCluster.clusterIdentifier,
+          awsSecretStoreArn: props.secretStore.secretArn,
+        },
+        relationalDatabaseSourceType: 'RDS_HTTP_ENDPOINT',
+      },
+    });
+    props.secretStore.grantRead(this);
+    const clusterArn = Stack.of(this).formatArn({
+      service: 'rds',
+      resource: `cluster:${props.databaseCluster.clusterIdentifier}`,
+    });
+    // Change to grant with RDS grant becomes implemented
+    Grant.addToPrincipal({
+      grantee: this,
+      actions: [
+        'rds-data:DeleteItems',
+        'rds-data:ExecuteSql',
+        'rds-data:ExecuteStatement',
+        'rds-data:GetItems',
+        'rds-data:InsertItems',
+        'rds-data:UpdateItems',
+      ],
+      resourceArns: [clusterArn, `${clusterArn}:*`],
+      scope: this,
+    });
   }
 }
