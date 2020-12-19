@@ -148,6 +148,7 @@ class EksClusterStack extends TestStack {
         kind: 'ConfigMap',
         data: { hello: 'world' },
         metadata: { name: 'config-map' },
+        unknown: { key: 'value' },
       }],
       skipValidation: true,
     });

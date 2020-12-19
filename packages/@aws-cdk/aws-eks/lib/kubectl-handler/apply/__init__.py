@@ -44,23 +44,25 @@ def apply_handler(event, context):
 
     logger.info("manifest written to: %s" % manifest_file)
 
+    kubectl_opts = []
+    if skip_validation == 'true':
+        kubectl_opts.extend(['--validate=false'])
+
     if request_type == 'Create':
         # if "overwrite" is enabled, then we use "apply" for CREATE operations
         # which technically means we can determine the desired state of an
         # existing resource.
-        if overwrite:
-            kubectl('apply', manifest_file)
+        if overwrite == 'true':
+            kubectl('apply', manifest_file, *kubectl_opts)
         else:
             # --save-config will allow us to use "apply" later
-            kubectl('create', manifest_file, '--save-config')
+            kubectl_opts.extend(['--save-config'])
+            kubectl('create', manifest_file, *kubectl_opts)
     elif request_type == 'Update':
-        opts = []
         if prune_label is not None:
-            opts.extend(['--prune', '-l', prune_label])
-        if skip_validation is True:
-            opts.extend([f'--validate=false'])
+            kubectl_opts.extend(['--prune', '-l', prune_label])
 
-        kubectl('apply', manifest_file, *opts)
+        kubectl('apply', manifest_file, *kubectl_opts)
     elif request_type == "Delete":
         try:
             kubectl('delete', manifest_file)
