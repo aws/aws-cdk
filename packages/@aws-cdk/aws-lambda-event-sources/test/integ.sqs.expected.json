@@ -95,8 +95,7 @@
         "FunctionName": {
           "Ref": "FC4345940"
         },
-        "BatchSize": 5,
-        "MaximumBatchingWindowInSeconds": 180
+        "BatchSize": 5
       }
     },
     "Q63C6E3AB": {

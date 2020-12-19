@@ -1,6 +1,6 @@
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { Duration, Names } from '@aws-cdk/core';
+import { Duration, Names, Token } from '@aws-cdk/core';
 
 export interface SqsEventSourceProps {
   /**
@@ -15,7 +15,7 @@ export interface SqsEventSourceProps {
   readonly batchSize?: number;
 
   /**
-   * TThe maximum amount of time to gather records before invoking the function.
+   * The maximum amount of time to gather records before invoking the function.
    * Maximum of Duration.minutes(5)
    *
    * Valid Range: Minimum value of 0 minutes. Maximum value of 5 minutes.
@@ -39,12 +39,22 @@ export class SqsEventSource implements lambda.IEventSource {
   private _eventSourceMappingId?: string = undefined;
 
   constructor(readonly queue: sqs.IQueue, private readonly props: SqsEventSourceProps = { }) {
-    if (this.props.batchSize !== undefined) {
+    const maxBatchingWindow = this.props.maxBatchingWindow;
+    if (maxBatchingWindow !== undefined) {
+      if (queue.fifo) {
+        throw new Error('Batching window is not supported for FIFO queues');
+      }
+      if (maxBatchingWindow.toSeconds() < 0 || maxBatchingWindow.toSeconds() > 300) {
+        throw new Error(`Maximum batching window must be between 0 and 300 seconds (given ${maxBatchingWindow.toSeconds()})`);
+      }
+    }
+
+    if (this.props.batchSize !== undefined && !Token.isUnresolved(this.props.batchSize)) {
       if (this.props.maxBatchingWindow !== undefined && (this.props.batchSize < 1 || this.props.batchSize > 10000)) {
-        throw new Error(`Maximum batch size must be between 1 and 10000 inclusive (given ${this.props.batchSize})`);
+        throw new Error(`Maximum batch size must be between 1 and 10000 inclusive (given ${this.props.batchSize}) when batching window is specified.`);
       }
       if (this.props.maxBatchingWindow === undefined && (this.props.batchSize < 1 || this.props.batchSize > 10)) {
-        throw new Error(`Maximum batch size must be between 1 and 10 inclusive (given ${this.props.batchSize})`);
+        throw new Error(`Maximum batch size must be between 1 and 10 inclusive (given ${this.props.batchSize}) when batching window is not specified.`);
       }
     }
   }

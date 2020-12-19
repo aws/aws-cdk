@@ -85,6 +85,38 @@ export = {
     test.done();
   },
 
+  'unresolved batch size'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const q = new sqs.Queue(stack, 'Q');
+    let batchSize : number;
+
+    // WHEN
+    fn.addEventSource(new sources.SqsEventSource(q, {
+      batchSize: cdk.Lazy.number({
+        produce() {
+          return batchSize;
+        },
+      }),
+    }));
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::EventSourceMapping', {
+      'EventSourceArn': {
+        'Fn::GetAtt': [
+          'Q63C6E3AB',
+          'Arn',
+        ],
+      },
+      'FunctionName': {
+        'Ref': 'Fn9270CBC0',
+      },
+    }));
+
+    test.done();
+  },
+
   'fails if batch size is < 1'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -186,6 +218,22 @@ export = {
     test.done();
   },
 
+  'fails if batch window defined for FIFO queue'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const q = new sqs.Queue(stack, 'Q', {
+      fifo: true,
+    });
+
+    // WHEN/THEN
+    test.throws(() => fn.addEventSource(new sources.SqsEventSource(q, {
+      maxBatchingWindow: cdk.Duration.minutes(5),
+    })), /Batching window is not supported for FIFO queues/);
+
+    test.done();
+  },
+
   'fails if batch window is > 5'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -195,7 +243,7 @@ export = {
     // WHEN/THEN
     test.throws(() => fn.addEventSource(new sources.SqsEventSource(q, {
       maxBatchingWindow: cdk.Duration.minutes(7),
-    })), /maxBatchingWindow cannot be over 300 seconds, got 420/);
+    })), /Maximum batching window must be between 0 and 300 seconds \(given 420\)/);
 
     test.done();
   },
