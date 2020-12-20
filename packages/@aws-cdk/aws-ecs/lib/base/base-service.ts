@@ -161,6 +161,19 @@ export interface BaseServiceOptions {
    * @default - Rolling update (ECS)
    */
   readonly deploymentController?: DeploymentController;
+
+  /**
+   * Whether to enable the deplloyment circuit breaker
+   * @default true
+   */
+  readonly deploymentCircuitBreaker?: boolean;
+
+  /**
+   * Whether to enable Amazon ECS to roll back the service if a service deployment fails. If rollback is enabled,
+   * when a service deployment fails, the service is rolled back to the last deployment that completed successfully.
+   * @default true
+   */
+  readonly deploymentRollback?: boolean;
 }
 
 /**
@@ -355,6 +368,16 @@ export abstract class BaseService extends Resource
       serviceRegistries: Lazy.any({ produce: () => this.serviceRegistries }, { omitEmptyArray: true }),
       ...additionalProps,
     });
+
+    const deploymentConfiguration = {
+      DeploymentCircuitBreaker: {
+        Enable: props.deploymentCircuitBreaker ?? true,
+        Rollback: props.deploymentRollback ?? true,
+      },
+    };
+
+    // TODO: fix this when this property is available in CfnService
+    this.resource.addPropertyOverride('DeploymentConfiguration', deploymentConfiguration);
 
     if (props.deploymentController?.type === DeploymentControllerType.EXTERNAL) {
       Annotations.of(this).addWarning('taskDefinition and launchType are blanked out when using external deployment controller.');

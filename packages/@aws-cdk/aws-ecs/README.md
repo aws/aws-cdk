@@ -335,6 +335,35 @@ const service = new ecs.FargateService(this, 'Service', {
 `Services` by default will create a security group if not provided.
 If you'd like to specify which security groups to use you can override the `securityGroups` property.
 
+### Deployment circuit breaker
+
+By default, Amazon ECS [deployment circuit breaker](https://aws.amazon.com/tw/blogs/containers/announcing-amazon-ecs-deployment-circuit-breaker/)
+is enabled and will rollback on deployment failure. With this feature, Amazon ECS will automatically roll back unhealthy
+service deployments without the need for manual intervention. As this feature with AWS Fargate requires
+platform `1.4.0` or above. Make sure to specify the `platformVersion` to `1.4` as the current default version points to `1.3`.
+
+
+```ts
+const service = new ecs.FargateService(stack, 'Service', {
+  cluster,
+  taskDefinition,
+  platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
+});
+```
+
+To opt-out this feature, explicitly disable `deploymentCircuitBreaker` and `deploymentRollback`.
+
+  
+```ts
+const service = new ecs.FargateService(stack, 'Service', {
+  cluster,
+  taskDefinition,
+  deploymentCircuitBreaker: false,
+  deploymentRollback: false,
+});
+```
+
+
 ### Include an application/network load balancer
 
 `Services` are load balancing targets and can be added to a target group, which will be attached to an application/network load balancers:
