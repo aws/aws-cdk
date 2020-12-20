@@ -1137,7 +1137,7 @@ export class Cluster extends ClusterBase {
     });
 
     // map the IAM role to the `system:masters` group.
-    // this.awsAuth.addMastersRole(mastersRole);
+    this.awsAuth.addMastersRole(mastersRole);
 
     if (props.outputMastersRoleArn) {
       new CfnOutput(this, 'MastersRoleArn', { value: mastersRole.roleArn });
