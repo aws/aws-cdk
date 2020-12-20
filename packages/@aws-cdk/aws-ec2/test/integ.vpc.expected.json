@@ -10,7 +10,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-ec2-vpc/MyVpc"
+            "Value": "my-vpc"
           }
         ]
       }
@@ -498,7 +498,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-ec2-vpc/MyVpc"
+            "Value": "my-vpc"
           }
         ]
       }

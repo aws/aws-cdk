@@ -33,6 +33,14 @@ All default constructs require EC2 instances to be launched inside a VPC, so
 you should generally start by defining a VPC whenever you need to launch
 instances for your project.
 
+You can also specify an explicit name for the VPC.
+
+```ts
+const vpc = new ec2.Vpc(this, 'VPC', {
+  vpcName: 'my-vpc'
+});
+```
+
 ### Subnet Types
 
 A VPC consists of one or more subnets that instances can be placed into. CDK

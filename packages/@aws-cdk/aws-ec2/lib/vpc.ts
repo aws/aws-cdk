@@ -703,6 +703,11 @@ const NAME_TAG: string = 'Name';
 export interface VpcProps {
 
   /**
+   * The name of the VPC.
+   */
+  readonly vpcName?: string;
+
+  /**
    * The CIDR range to use for the VPC, e.g. '10.0.0.0/16'.
    *
    * Should be a minimum of /28 and maximum size of /16. The range will be
@@ -1209,7 +1214,11 @@ export class Vpc extends VpcBase {
     this.vpcDefaultSecurityGroup = this.resource.attrDefaultSecurityGroup;
     this.vpcIpv6CidrBlocks = this.resource.attrIpv6CidrBlocks;
 
-    Tags.of(this).add(NAME_TAG, this.node.path);
+    if (props.vpcName) {
+      Tags.of(this).add(NAME_TAG, props.vpcName);
+    } else {
+      Tags.of(this).add(NAME_TAG, this.node.path);
+    }
 
     this.availabilityZones = stack.availabilityZones;
 

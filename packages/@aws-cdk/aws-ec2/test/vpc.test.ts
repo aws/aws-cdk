@@ -1011,13 +1011,29 @@ nodeunitShim({
       test.done();
     },
   },
-
   'When creating a VPC with a custom CIDR range': {
     'vpc.vpcCidrBlock is the correct network range'(test: Test) {
       const stack = getTestStack();
       new Vpc(stack, 'TheVPC', { cidr: '192.168.0.0/16' });
       expect(stack).to(haveResource('AWS::EC2::VPC', {
         CidrBlock: '192.168.0.0/16',
+      }));
+      test.done();
+    },
+  },
+  'When creating a VPC with a specific name': {
+    'vpc.vpcName is not empty string'(test: Test) {
+      const stack = getTestStack();
+      new Vpc(stack, 'TheVPC', {
+        vpcName: 'my-vpc'
+      });
+      expect(stack).to(haveResource('AWS::EC2::VPC', {
+        Tags: [
+          {
+            Key: 'Name',
+            Value: 'my-vpc',
+          },
+        ],
       }));
       test.done();
     },
