@@ -22,6 +22,24 @@ const CLUSTER_VERSION = eks.KubernetesVersion.V1_18;
 
 export = {
 
+  'can specify custom environment to cluster resource handler'(test: Test) {
+
+    const { stack } = testFixture();
+
+    new eks.Cluster(stack, 'Cluster', {
+      version: CLUSTER_VERSION,
+      clusterHandlerEnvironment: {
+        foo: 'bar',
+      },
+    });
+
+    const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.ClusterResourceProvider') as cdk.NestedStack;
+
+    test.deepEqual(expect(nested).value.Resources.OnEventHandler42BEBAE0.Properties.Environment, { Variables: { foo: 'bar' } });
+    test.done();
+
+  },
+
   'throws when trying to place cluster handlers in a vpc with no private subnets'(test: Test) {
 
     const { stack } = testFixture();

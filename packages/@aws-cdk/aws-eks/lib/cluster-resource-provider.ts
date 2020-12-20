@@ -28,6 +28,11 @@ export interface ClusterResourceProviderProps {
    * The subnets to place the functions in.
    */
   readonly subnets?: ec2.ISubnet[];
+
+  /**
+   * Environment to add to the handler.
+   */
+  readonly environment?: { [key: string]: string };
 }
 
 /**
@@ -57,6 +62,7 @@ export class ClusterResourceProvider extends NestedStack {
       code: lambda.Code.fromAsset(HANDLER_DIR),
       description: 'onEvent handler for EKS cluster resource provider',
       runtime: HANDLER_RUNTIME,
+      environment: props.environment,
       handler: 'index.onEvent',
       timeout: Duration.minutes(1),
       vpc: props.subnets ? props.vpc : undefined,

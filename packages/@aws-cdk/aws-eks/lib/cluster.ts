@@ -429,6 +429,13 @@ export interface ClusterOptions extends CommonClusterOptions {
   readonly kubectlEnvironment?: { [key: string]: string };
 
   /**
+   * Custom environment variables when interacting with the EKS endpoint to manage the cluster lifecycle.
+   *
+   * @default - No environment variables.
+   */
+  readonly clusterHandlerEnvironment?: { [key: string]: string };
+
+  /**
    * An AWS Lambda Layer which includes `kubectl`, Helm and the AWS CLI.
    *
    * By default, the provider will use the layer included in the
@@ -867,7 +874,6 @@ export class Cluster extends ClusterBase {
 
   /**
    * Custom environment variables when running `kubectl` against this cluster.
-   * @default - no additional environment variables
    */
   public readonly kubectlEnvironment?: { [key: string]: string };
 
@@ -1036,6 +1042,7 @@ export class Cluster extends ClusterBase {
 
     const resource = this._clusterResource = new ClusterResource(this, 'Resource', {
       name: this.physicalName,
+      environment: props.clusterHandlerEnvironment,
       roleArn: this.role.roleArn,
       version: props.version.version,
       resourcesVpcConfig: {
@@ -1130,7 +1137,7 @@ export class Cluster extends ClusterBase {
     });
 
     // map the IAM role to the `system:masters` group.
-    this.awsAuth.addMastersRole(mastersRole);
+    // this.awsAuth.addMastersRole(mastersRole);
 
     if (props.outputMastersRoleArn) {
       new CfnOutput(this, 'MastersRoleArn', { value: mastersRole.roleArn });
