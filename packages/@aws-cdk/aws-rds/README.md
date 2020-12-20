@@ -129,11 +129,12 @@ Creating a "production" Oracle database instance with option and parameter group
 
 ## Setting Public Accessibility
 
-You can set public accessibility for the database instance using `publiclyAccessible` property. 
-If you specify `true`, it creates an instance with a publicly resolvable DNS name, which resolves to a public IP address. 
+You can set public accessibility for the database instance or cluster using the `publiclyAccessible` property.
+If you specify `true`, it creates an instance with a publicly resolvable DNS name, which resolves to a public IP address.
 If you specify `false`, it creates an internal instance with a DNS name that resolves to a private IP address.
 
 ```ts
+// Setting public accessibility for DB instance
 new rds.DatabaseInstance(stack, 'Instance', {
   engine: rds.DatabaseInstanceEngine.mysql({
     version: rds.MysqlEngineVersion.VER_8_0_19,
@@ -143,6 +144,18 @@ new rds.DatabaseInstance(stack, 'Instance', {
     subnetType: ec2.SubnetType.PUBLIC,
   },
   publiclyAccessible: true,
+});
+
+// Setting public accessibility for DB cluster
+new rds.DatabaseCluster(stack, 'DatabaseCluster', {
+  engine: DatabaseClusterEngine.AURORA,
+  instanceProps: {
+    vpc,
+    vpcSubnets: {
+      subnetType: ec2.SubnetType.PRIVATE,
+    },
+    publiclyAccessible: true,
+  },
 });
 ```
 
