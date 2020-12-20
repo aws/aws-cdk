@@ -15,12 +15,23 @@ test('Create Domain', () => {
   }));
 });
 
+test('Create Domain via id', () => {
+  const stack = new Stack();
+
+  new Domain(stack, 'ExampleDomain');
+
+  cdkassert.expect(stack).to(cdkassert.haveResource('AWS::CodeArtifact::Domain', {
+    DomainName: 'ExampleDomain',
+  }));
+});
+
 test('Domain from ARN', () => {
   const stack = new Stack();
 
   const domain = Domain.fromDomainArn(stack, 'repo-from-arn', 'arn:aws:codeartifact:region-id:123456789012:domain/my-domain');
-  expect(domain.domainName).toBe('my-domain');
+  expect(domain.domainName?.toString()).toBe('my-domain');
 });
+
 
 test('Domain from ARN w/ out domain name nor account id', () => {
   const stack = new Stack();
@@ -43,7 +54,6 @@ test('Create Domain w/ principal', () => {
   const stack = new Stack();
 
   const domain = new Domain(stack, 'domain', { domainName: 'ExampleDomain', principal: new AccountRootPrincipal() });
-
   expect(domain.domainName).toBe('ExampleDomain');
 });
 

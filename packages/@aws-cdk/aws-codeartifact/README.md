@@ -11,7 +11,11 @@
 
 ![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
 
-> The APIs of higher level constructs in this module are experimental and under active development. They are subject to non-backward compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be announced in the release notes. This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
+> The APIs of higher level constructs in this module are experimental and under active development.
+> They are subject to non-backward compatible changes or removal in any future version. These are
+> not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be
+> announced in the release notes. This means that while you may use them, you may need to update
+> your source code when upgrading to a newer version of this package.
 
 ---
 
@@ -54,12 +58,14 @@ domain.addRepositories(repo1, repo2);
 
 ```
 
-### External Connections
+## External Connections
+
 Extenal connections can be added by calling `.withExternalConnections(...)` method on a repository. It accepts and
 array of external connecitions. You can also pass the external connections when creating a repository by setting the
 `externalConnections` property.
 
 Add an external connection when constructing a new repository
+
 ```ts
 import * as codeartifact from '@aws-cdk/aws-codeartifact';
 
@@ -72,6 +78,7 @@ const repository = new codeartifact.Repository(stack, 'repository', {
 ```
 
 Add an external connection to an existing repository
+
 ```ts
 import * as codeartifact from '@aws-cdk/aws-codeartifact';
 
@@ -85,11 +92,13 @@ const repository = new codeartifact.Repository(stack, 'repository', {
 repository.withExternalConnections(codeartifact.ExternalConnection.NPM);
 ```
 
-### Upstream Repositories
+## Upstream Repositories
+
 Upstream repositories can be added by calling `.withUpstream(...)` method on a repository. It accepts an array of `IRepository`.
 You can also pass the upstream repositories in the `upstreams` property during construction.
 
 Add an upstream when constructing a new repository
+
 ```ts
 import * as codeartifact from '@aws-cdk/aws-codeartifact';
 
@@ -108,6 +117,7 @@ const repository = new codeartifact.Repository(stack, 'repository', {
 ```
 
 Add an upstream to an existing repository
+
 ```ts
 import * as codeartifact from '@aws-cdk/aws-codeartifact';
 

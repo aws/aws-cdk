@@ -89,13 +89,24 @@
             }
           ],
           "Version": "2012-10-17"
-        }
+        },
+        "Tags": [
+          {
+            "Key": "app:example",
+            "Value": "integ-test-tag"
+          }
+        ]
       }
     },
     "repository5D02F86B": {
       "Type": "AWS::CodeArtifact::Repository",
       "Properties": {
-        "DomainName": "example-domain",
+        "DomainName": {
+          "Fn::GetAtt": [
+            "domainFBFFA2F6",
+            "Name"
+          ]
+        },
         "RepositoryName": "repository",
         "ExternalConnections": [
           "public:npmjs"
@@ -164,16 +175,23 @@
           ],
           "Version": "2012-10-17"
         },
-        "Upstreams": []
-      },
-      "DependsOn": [
-        "domainFBFFA2F6"
-      ]
+        "Tags": [
+          {
+            "Key": "app:example",
+            "Value": "integ-test-tag"
+          }
+        ]
+      }
     },
     "subrepository65E28DB9": {
       "Type": "AWS::CodeArtifact::Repository",
       "Properties": {
-        "DomainName": "example-domain",
+        "DomainName": {
+          "Fn::GetAtt": [
+            "domainFBFFA2F6",
+            "Name"
+          ]
+        },
         "RepositoryName": "sub-repository",
         "PermissionsPolicyDocument": {
           "Statement": [
@@ -239,12 +257,17 @@
           ],
           "Version": "2012-10-17"
         },
+        "Tags": [
+          {
+            "Key": "app:example",
+            "Value": "integ-test-tag"
+          }
+        ],
         "Upstreams": [
           "repository"
         ]
       },
       "DependsOn": [
-        "domainFBFFA2F6",
         "repository5D02F86B"
       ]
     }

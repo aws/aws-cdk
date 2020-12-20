@@ -53,13 +53,13 @@ test('Domain w/ 2 Repositories via constructor, w/ upstream, and external connec
 
   cdkassert.expect(stack).to(cdkassert.haveResource('AWS::CodeArtifact::Repository', {
     RepositoryName: repo1.repositoryName,
-    DomainName: domain.domainName,
+    DomainName: stack.resolve(domain.domainNameAttr),
   }));
 
 
   cdkassert.expect(stack).to(cdkassert.haveResource('AWS::CodeArtifact::Repository', {
     RepositoryName: repo1.repositoryName,
-    DomainName: domain.domainName,
+    DomainName: stack.resolve(domain.domainNameAttr),
   }));
 });
 
@@ -81,13 +81,13 @@ test('Domain w/ 2 Repositories via addRepositories, w/ upstream, and external co
 
   cdkassert.expect(stack).to(cdkassert.haveResource('AWS::CodeArtifact::Repository', {
     RepositoryName: repo1.repositoryName,
-    DomainName: domain.domainName,
+    DomainName: stack.resolve(domain.domainNameAttr),
   }));
 
 
   cdkassert.expect(stack).to(cdkassert.haveResource('AWS::CodeArtifact::Repository', {
     RepositoryName: repo1.repositoryName,
-    DomainName: domain.domainName,
+    DomainName: stack.resolve(domain.domainNameAttr),
   }));
 });
 
@@ -103,6 +103,18 @@ test('Repository from ARN w/ out repository name nor account id', () => {
 
   expect(() => Repository.fromRepositoryArn(stack, 'repo-from-arn', 'arn:aws:codeartifact:region-id::repository')).toThrow(/'RepositoryName' is required and cannot be empty/);
 });
+
+test('Repository from ARN w/ Grant No-ops', () => {
+  const stack = new Stack();
+
+  const repo = Repository.fromRepositoryArn(stack, 'repo-from-arn', 'arn:aws:codeartifact:region-id:123456789012:repository/my-domain/my-repo');
+  expect(repo.repositoryName).toBe('my-repo');
+
+  repo.grantRead(new AccountRootPrincipal());
+  repo.grantWrite(new AccountRootPrincipal());
+  repo.grantReadWrite(new AccountRootPrincipal());
+});
+
 
 test('Grant AccountRootPrincipal read on Repository', () => {
   const stack = new Stack();

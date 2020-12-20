@@ -35,6 +35,12 @@ export interface IRepository extends IResource {
        */
   readonly repositoryName: string;
   /**
+     * Name the repository from CFN attribute
+       * @default Empty string
+       * @attribute
+     */
+  readonly repositoryNameAttr?: string,
+  /**
       * A text description of the repository.
       * @attribute
       */
@@ -148,6 +154,11 @@ export interface IDomain extends IResource {
    * @attribute
    */
   readonly domainName?: string;
+  /**
+   * The attribute name of the domain resource.
+   * @attribute
+   */
+  readonly domainNameAttr?: string;
 
   /**
    * The domain owner

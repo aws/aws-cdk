@@ -1,6 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { Resource, Stack, Lazy } from '@aws-cdk/core';
+import { Resource, Stack, Lazy, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnDomain } from './codeartifact.generated';
 import { IDomain, IRepository, DomainAttributes } from './interfaces';
@@ -14,8 +14,9 @@ import { validate } from './validation';
 export interface DomainProps {
   /**
   * The name of the domain
+  * @default Unique id
   */
-  readonly domainName: string;
+  readonly domainName?: string;
 
   /**
    * The KMS encryption key used for the domain resource.
@@ -78,41 +79,35 @@ export class Domain extends Resource implements IDomain {
     return instance;
   }
 
-
+  public readonly domainName?: string;
+  public readonly domainNameAttr?: string;
   public readonly domainArn: string = '';
-  public readonly domainName?: string = '';
   public readonly domainOwner?: string = '';
   public readonly domainEncryptionKey?: kms.IKey;
   public readonly policyDocument?: iam.PolicyDocument;
   private readonly cfnDomain: CfnDomain;
 
-  constructor(scope: Construct, id: string, props: DomainProps) {
+  constructor(scope: Construct, id: string, props?: DomainProps) {
     super(scope, id);
 
     // Set domain and encryption key as we will validate them before creation
-    this.domainName = props.domainName;
+    const domainName = props?.domainName ?? this.node.uniqueId;
+    const domainEncryptionKey = props?.domainEncryptionKey ?? null;
 
-    if (props.domainEncryptionKey) {
-      this.domainEncryptionKey = props.domainEncryptionKey;
-    }
+    this.validateProps(domainName, domainEncryptionKey);
 
-    this.policyDocument = props.policyDocument;
-
-    this.validateProps();
-
-    // Creae the CFN domain instance
+    // Create the CFN domain instance
     this.cfnDomain = new CfnDomain(this, 'Resource', {
-      domainName: props.domainName,
-      permissionsPolicyDocument: Lazy.anyValue({ produce: () => this.policyDocument?.toJSON() }),
+      domainName: domainName,
+      permissionsPolicyDocument: Lazy.anyValue({ produce: () => props?.policyDocument?.toJSON() }),
+      encryptionKey: domainEncryptionKey?.keyId,
     });
 
-    if (props.domainEncryptionKey) {
-      this.cfnDomain.encryptionKey = this.domainEncryptionKey?.keyId;
-    }
-
-    this.domainName = this.cfnDomain.domainName;
+    this.domainName = domainName;
+    this.domainNameAttr = this.cfnDomain.attrName;
     this.domainArn = this.cfnDomain.attrArn;
     this.domainOwner = this.cfnDomain.attrOwner;
+    this.policyDocument = props?.policyDocument;
   }
 
   /**
@@ -126,22 +121,18 @@ export class Domain extends Resource implements IDomain {
     return this;
   }
 
-  /**
-   * The underlying CloudFormation domain
-   * @attribute
-   */
-  cfn(): CfnDomain {
-    return this.cfnDomain;
-  }
+  private validateProps(domainName : string, domainEncryptionKey? : kms.IKey | null) {
+    if (Token.isUnresolved(domainName)) {
+      throw new Error(`'domainName' must resolve, got: '${domainName}'`);
+    }
 
-  private validateProps() {
     validate('DomainName',
       { required: true, minLength: 2, maxLength: 50, pattern: /[a-z][a-z0-9\-]{0,48}[a-z0-9]/gi, documentationLink: 'https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codeartifact-domain.html#cfn-codeartifact-domain-domainname' },
-      this.domainName);
+      domainName);
 
     validate('EncryptionKey',
       { minLength: 1, maxLength: 2048, pattern: /\S+/gi, documentationLink: 'https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codeartifact-domain.html#cfn-codeartifact-domain-encryptionkey' },
-      this.domainEncryptionKey?.keyArn || '');
+      domainEncryptionKey?.keyArn || '');
   }
 
   /**

@@ -1,6 +1,6 @@
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
-import { Resource, Stack, Aws } from '@aws-cdk/core';
+import { Resource, Stack, Aws, Fn, Token, Annotations } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnRepository } from './codeartifact.generated';
 import { ExternalConnection } from './external-connection';
@@ -15,8 +15,9 @@ import { validate } from './validation';
 export interface RepositoryProps {
   /**
      * Name the repository
+     * @default AWS Unique id
      */
-  readonly repositoryName: string,
+  readonly repositoryName?: string,
   /**
      * A text description of the repository.
      * @default ''
@@ -27,7 +28,7 @@ export interface RepositoryProps {
      * @attribute
      * @default None
      */
-  readonly domain?: IDomain,
+  readonly domain: IDomain,
   /**
      * Upstream repositories for the repository
      * @see https://docs.aws.amazon.com/codeartifact/latest/ug/repos-upstream.html
@@ -94,11 +95,15 @@ export class Repository extends Resource implements IRepository {
    */
   public static fromRepositoryAttributes(scope: Construct, id: string, attrs: RepositoryAttributes): IRepository {
     const stack = Stack.of(scope);
-    const parsed = stack.parseArn(attrs.repositoryArn || '');
+    const parsed = stack.parseArn(attrs.repositoryArn ?? '');
 
-    const spl = parsed.resourceName?.split('/') || [undefined, undefined];
-    const repositoryName = spl[1];
-    const domainName = spl[0];
+    if (Token.isUnresolved(attrs.repositoryArn)) {
+      throw new Error(`'repositoryArn' must resolve, got: '${attrs.repositoryArn}'`);
+    }
+
+    const spl = Fn.split('/', parsed.resourceName ?? '');
+    const domainName = Fn.select(0, spl);
+    const repositoryName = Fn.select(1, spl);
 
     if (!repositoryName || repositoryName == '') {
       throw new Error('\'RepositoryName\' is required and cannot be empty');
@@ -113,26 +118,31 @@ export class Repository extends Resource implements IRepository {
       repositoryDomainName?: string | undefined;
       repositoryArn = attrs.repositoryArn;
       repositoryName = repositoryName as string;
-      repositoryDomainOwner = parsed.account || '';
+      repositoryDomainOwner = parsed.account ?? '';
 
-      grantRead(_identity: iam.IGrantable): iam.Grant {
-        throw new Error('Method not implemented.');
+      grantFactory(operation: string, _identity: iam.IGrantable): iam.Grant {
+        Annotations.of(this).addWarning(`${operation} is a no-op`);
+        return iam.Grant.drop(_identity, 'no-op');
       }
-      grantWrite(_identity: iam.IGrantable): iam.Grant {
-        throw new Error('Method not implemented.');
-      }
-      grantReadWrite(_identity: iam.IGrantable): iam.Grant {
-        throw new Error('Method not implemented.');
-      }
+
+      grantRead(_identity: iam.IGrantable): iam.Grant { return this.grantFactory('grantRead', _identity); };
+
+      grantWrite(_identity: iam.IGrantable): iam.Grant { return this.grantFactory('grantWrite', _identity); };
+
+      grantReadWrite(_identity: iam.IGrantable): iam.Grant { return this.grantFactory('grantReadWrite', _identity); };
 
       onEvent(_id: string, _options?: events.OnEventOptions | undefined): events.Rule {
-        throw new Error('Method not implemented.');
+        return Repository._onEvent(this, _id, this, _options);
       }
+
       onPackageVersionStateChange(_id: string, _options?: events.OnEventOptions | undefined): events.Rule {
-        throw new Error('Method not implemented.');
+        return Repository._onPackageVersionStateChange(this, _id, this, _options);
       }
+
       assignDomain(_domain: IDomain): void {
-        throw new Error('Method not implemented.');
+        Annotations.of(this).addWarning('assignDomain is a no-op');
+        this.repositoryDomainName = _domain.domainName;
+        this.repositoryDomainOwner = _domain.domainOwner ?? '';
       }
     }
 
@@ -144,8 +154,39 @@ export class Repository extends Resource implements IRepository {
     return instance;
   }
 
+  /**
+     * Defines a CloudWatch event rule which triggers for repository events. Use
+     * `rule.addEventPattern(pattern)` to specify a filter.
+     */
+  private static _onEvent(scope : Resource, id: string, context : IRepository, options: events.OnEventOptions = {}) {
+    const rule = new events.Rule(scope, id, options);
+    rule.addEventPattern({
+      source: ['aws.codeartifact'],
+      detail: {
+        domainName: [context.repositoryDomainName],
+        domainOwner: [context.repositoryDomainOwner],
+        repositoryName: [context.repositoryName],
+      },
+    });
+    rule.addTarget(options.target);
+    return rule;
+  }
+
+  /**
+     * Defines a CloudWatch event rule which triggers when a "CodeArtifact Package
+     *  Version State Change" event occurs.
+     */
+  private static _onPackageVersionStateChange(scope : Resource, id: string, context : IRepository, options: events.OnEventOptions = {}): events.Rule {
+    const rule = Repository._onEvent(scope, id, context, options);
+    rule.addEventPattern({
+      detailType: ['CodeArtifact Package Version State Change'],
+    });
+    return rule;
+  }
+
   public readonly repositoryArn?: string;
   public readonly repositoryName: string;
+  public readonly repositoryNameAttr?: string;
   public readonly repositoryDomainOwner?: string;
   public readonly repositoryDomainName?: string;
   public readonly repositoryDescription?: string;
@@ -154,17 +195,17 @@ export class Repository extends Resource implements IRepository {
   constructor(scope: Construct, id: string, props: RepositoryProps) {
     super(scope, id, {});
 
-    this.repositoryDomainName = props?.domain?.domainName;
-    this.repositoryName = props.repositoryName;
-    this.repositoryDescription = props.description;
+    const repositoryDomainName = props?.domain?.domainNameAttr;
+    const repositoryName = props.repositoryName ?? this.node.uniqueId;
+    const repositoryDescription = props.description;
 
-    this.validateProps();
+    this.validateProps(repositoryName, repositoryDomainName, repositoryDescription);
 
     this.cfnRepository = new CfnRepository(this, id, {
-      domainName: props.domain?.domainName || '',
-      repositoryName: props.repositoryName,
-      description: props.description,
-      upstreams: props.upstreams ? props.upstreams.map(u => u.repositoryName) : [] as string[],
+      domainName: repositoryDomainName ?? '', //this is required but need coalesce. The validation will catch this.
+      repositoryName: repositoryName,
+      description: repositoryDescription,
+      upstreams: props.upstreams?.map(u => u.repositoryName),
       externalConnections: props.externalConnections,
     });
 
@@ -172,13 +213,12 @@ export class Repository extends Resource implements IRepository {
       props.upstreams.forEach(u => this.node.addDependency(u));
     }
 
-    if (props.domain) {
-      this.assignDomain(props.domain);
-    }
-
     this.repositoryArn = this.cfnRepository.attrArn;
+    this.repositoryName = repositoryName;
+    this.repositoryNameAttr = this.cfnRepository.attrName;
     this.repositoryDomainOwner = this.cfnRepository.attrDomainOwner;
     this.repositoryDomainName = this.cfnRepository.attrDomainName;
+    this.repositoryDescription = this.cfnRepository.description;
 
     if (!props.policyDocument) {
       const p = props.principal || new iam.AccountRootPrincipal();
@@ -194,8 +234,9 @@ export class Repository extends Resource implements IRepository {
    */
   public assignDomain(domain: IDomain): void {
     // This should be added to the L1 props soon, but until then this is required to create a Repository
-    this.cfnRepository.node.addDependency(domain);
-    this.cfnRepository.domainName = domain.domainName || '';
+    // this.cfnRepository.node.addDependency(domain);
+
+    this.cfnRepository.domainName = domain.domainNameAttr ?? '';
   }
 
   /**
@@ -267,18 +308,18 @@ export class Repository extends Resource implements IRepository {
     return rule;
   }
 
-  private validateProps() {
+  private validateProps(repositoryName : string, repositoryDomainName? : string, repositoryDescription? : string) {
     validate('Description',
       { maxLength: 1000, pattern: /\P{C}+/gi, documentationLink: 'https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codeartifact-repository.html#cfn-codeartifact-repository-description' },
-      this.repositoryDescription);
+      repositoryDescription);
 
     validate('DomainName',
       { required: true, minLength: 2, maxLength: 50, pattern: /[a-z][a-z0-9\-]{0,48}[a-z0-9]/gi, documentationLink: 'https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codeartifact-repository.html#cfn-codeartifact-repository-domainname' },
-      this.repositoryDomainName);
+      repositoryDomainName);
 
     validate('RepositoryName',
       { required: true, minLength: 2, maxLength: 100, pattern: /[A-Za-z0-9][A-Za-z0-9._\-]{1,99}/gi, documentationLink: 'https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codeartifact-repository.html#cfn-codeartifact-repository-repositoryname' },
-      this.repositoryName);
+      repositoryName);
   }
 
   private createPolicy(principal: iam.IPrincipal, iamActions: string[], resource: string = '*') {

@@ -9,6 +9,10 @@ export enum ExternalConnection {
    */
   NPM = 'public:npmjs',
   /**
+   * NuGet.org public registry
+   */
+  DOTNET_NUGETORG = 'public:nuget-org',
+  /**
    * Python Package Index
    */
   PYTHON_PYPI = 'public:pypi',
