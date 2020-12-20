@@ -24,6 +24,7 @@ intake and aggregation.
     - [Read Permissions](#read-permissions)
     - [Write Permissions](#write-permissions)
     - [Custom Permissions](#custom-permissions)
+  - [Metrics](#metrics)
 
 ## Streams
 
@@ -191,4 +192,75 @@ const stream = new Stream(stack, 'MyStream');
 
 // give my user permissions to list shards
 stream.grant(user, 'kinesis:ListShards');
+```
+
+### Metrics
+
+You can use common metrics from your stream to create alarms and/or dashboards.
+Read more about Kinesis metrics at [Creating and Managing Streams](https://docs.aws.amazon.com/streams/latest/dev/working-with-streams.html)
+
+You can find bellow a example of building a dashboard with the default metrics.
+
+```ts
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import { App, Stack } from '@aws-cdk/core';
+import { Stream } from '../lib';
+
+const app = new App();
+const stack = new Stack(app, 'integ-kinesis-stream-dashboard');
+
+const stream = new Stream(stack, 'myStream');
+
+const dashboard = new cloudwatch.Dashboard(stack, 'StreamDashboard');
+
+// helper function to create a GrapthWidget
+function graphWidget(title: string, metric: cloudwatch.Metric) {
+  return new cloudwatch.GraphWidget({
+    title,
+    left: [metric],
+    width: 12,
+    height: 5,
+  });
+}
+
+// helper function to create a GraphWidget of percentage ""(count / total) * 100"
+function percentGraphWidget(title: string, countMetric: cloudwatch.Metric, totalMetric: cloudwatch.Metric) {
+  return new cloudwatch.GraphWidget({
+    title,
+    left: [new cloudwatch.MathExpression({
+      expression: '( count / total ) * 100',
+      usingMetrics: {
+        count: countMetric,
+        total: totalMetric,
+      },
+    })],
+    width: 12,
+    height: 5,
+  });
+}
+
+// add widgets to build a dashboard that is similar to the one from Kinesis console
+dashboard.addWidgets(
+  graphWidget('Get records - sum (Bytes)', stream.metricGetRecordsBytes({ statistic: 'Sum' })),
+  graphWidget('Get records iterator age - maximum (Milliseconds)', stream.metricGetRecordsIteratorAgeMilliseconds()),
+  graphWidget('Get records latency - average (Milliseconds)', stream.metricGetRecordsLatency()),
+  graphWidget('Get records - sum (Count)', stream.metricGetRecords({ statistic: 'Sum' })),
+  graphWidget('Get records success - average (Percent)', stream.metricGetRecordsSuccess()),
+  graphWidget('Incoming data - sum (Bytes)', stream.metricIncomingBytes({ statistic: 'Sum' })),
+  graphWidget('Incoming records - sum (Count)', stream.metricIncomingRecords({ statistic: 'Sum' })),
+  graphWidget('Put record - sum (Bytes)', stream.metricPutRecordBytes({ statistic: 'Sum' })),
+  graphWidget('Put record latency - average (Milliseconds)', stream.metricPutRecordLatency()),
+  graphWidget('Put record success - average (Percent)', stream.metricPutRecordSuccess()),
+  graphWidget('Put records - sum (Bytes)', stream.metricPutRecordsBytes({ statistic: 'Sum' })),
+  graphWidget('Put records latency - average (Milliseconds)', stream.metricPutRecordsLatency()),
+  graphWidget('Read throughput exceeded - average (Percent)', stream.metricReadProvisionedThroughputExceeded()),
+  graphWidget('Write throughput exceeded - average (Count)', stream.metricWriteProvisionedThroughputExceeded()),
+  percentGraphWidget('Put records successful records - average (Percent)',
+    stream.metricPutRecordsSuccessfulRecords(), stream.metricPutRecordsTotalRecords()),
+  percentGraphWidget('Put records failed records - average (Percent)',
+    stream.metricPutRecordsFailedRecords(), stream.metricPutRecordsTotalRecords()),
+  percentGraphWidget('Put records throttled records - average (Percent)',
+    stream.metricPutRecordsThrottledRecords(), stream.metricPutRecordsTotalRecords()),
+);
+
 ```
