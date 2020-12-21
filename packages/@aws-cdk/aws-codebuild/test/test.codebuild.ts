@@ -726,12 +726,6 @@ export = {
             BuildType: 'BUILD_BATCH',
           },
         },
-        {
-          props: {},
-          expected: {
-            Webhook: false,
-          },
-        },
       ].forEach(({ props, expected }) => {
 
         const stack = new cdk.Stack();
