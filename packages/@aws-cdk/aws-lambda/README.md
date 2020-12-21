@@ -458,5 +458,5 @@ new lambda.Function(this, 'Function', {
 
 Language-specific higher level constructs are provided in separate modules:
 
-* Node.js: [`@aws-cdk/aws-lambda-nodejs`](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-lambda-nodejs)
-* Python: [`@aws-cdk/aws-lambda-python`](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-lambda-python)
+* Node.js: [`@aws-cdk/aws-lambda-nodejs`](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-lambda-nodejs-readme.html)
+* Python: [`@aws-cdk/aws-lambda-python`](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-lambda-python-readme.html)
