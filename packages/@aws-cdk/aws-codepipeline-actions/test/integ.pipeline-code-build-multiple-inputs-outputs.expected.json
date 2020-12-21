@@ -223,9 +223,7 @@
               ]
             },
             {
-              "Action": [
-                "codebuild:BatchGetBuilds"
-              ],
+              "Action": "codebuild:BatchGetBuilds",
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
