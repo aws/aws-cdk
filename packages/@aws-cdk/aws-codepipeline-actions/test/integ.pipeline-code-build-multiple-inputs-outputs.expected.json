@@ -224,7 +224,18 @@
             },
             {
               "Action": [
-                "codebuild:BatchGetBuilds",
+                "codebuild:BatchGetBuilds"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "MyBuildProject30DB9D6E",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": [
                 "codebuild:StartBuild",
                 "codebuild:StopBuild"
               ],
@@ -238,7 +249,6 @@
             },
             {
               "Action": [
-                "codebuild:BatchGetBuilds",
                 "codebuild:StartBuildBatch",
                 "codebuild:StopBuildBatch"
               ],
