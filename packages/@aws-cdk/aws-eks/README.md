@@ -462,6 +462,17 @@ If the endpoint does not expose private access (via `EndpointAccess.PUBLIC`) **o
 
 The `ClusterHandler` is a Lambda function responsible to interact with the EKS API in order to control the cluster lifecycle. To provision this function inside the VPC, set the `placeClusterHandlerInVpc` property to `true`. This will place the function inside the private subnets of the VPC based on the selection strategy specified in the [`vpcSubnets`](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-eks.Cluster.html#vpcsubnetsspan-classapi-icon-api-icon-experimental-titlethis-api-element-is-experimental-it-may-change-without-noticespan) property.
 
+You can configure the environment of this function by specifying it at cluster instantiation. For example, this can be useful in order to configure an http proxy:
+
+```ts
+const cluster = new eks.Cluster(this, 'hello-eks', {
+  version: eks.KubernetesVersion.V1_18,
+  clusterHandlerEnvironment: {
+    'http_proxy': 'http://proxy.myproxy.com'
+  }
+});
+```
+
 ### Kubectl Support
 
 The resources are created in the cluster by running `kubectl apply` from a python lambda function.
