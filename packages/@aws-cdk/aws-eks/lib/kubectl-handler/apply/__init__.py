@@ -23,13 +23,16 @@ def apply_handler(event, context):
     manifest_text = props['Manifest']
     role_arn      = props['RoleArn']
     prune_label   = props.get('PruneLabel', None)
+    overwrite     = props.get('Overwrite', False)
 
     # "log in" to the cluster
-    subprocess.check_call([ 'aws', 'eks', 'update-kubeconfig',
+    cmd = [ 'aws', 'eks', 'update-kubeconfig',
         '--role-arn', role_arn,
         '--name', cluster_name,
         '--kubeconfig', kubeconfig
-    ])
+    ]
+    logger.info(f'Running command: {cmd}')
+    subprocess.check_call(cmd)
 
     # write resource manifests in sequence: { r1 }{ r2 }{ r3 } (this is how
     # a stream of JSON objects can be included in a k8s manifest).
@@ -41,8 +44,14 @@ def apply_handler(event, context):
     logger.info("manifest written to: %s" % manifest_file)
 
     if request_type == 'Create':
-        # --save-config will allow us to use "apply" later
-        kubectl('create', manifest_file, '--save-config')
+        # if "overwrite" is enabled, then we use "apply" for CREATE operations
+        # which technically means we can determine the desired state of an
+        # existing resource.
+        if overwrite:
+            kubectl('apply', manifest_file)
+        else:
+            # --save-config will allow us to use "apply" later
+            kubectl('create', manifest_file, '--save-config')
     elif request_type == 'Update':
         opts = []
         if prune_label is not None:
