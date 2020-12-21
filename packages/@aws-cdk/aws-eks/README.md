@@ -304,6 +304,19 @@ cluster.addAutoScalingGroupCapacity('frontend-nodes', {
 });
 ```
 
+To connect an already initialized auto-scaling group, use the `cluster.connectAutoScalingGroupCapacity()` method:
+
+```ts
+const asg = new ec2.AutoScalingGroup(...);
+cluster.connectAutoScalingGroupCapacity(asg);
+```
+
+In both cases, the [cluster security group](https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html#cluster-sg) will be autoamtically attached to
+the auto-scaling group, allowing for traffic to flow freely between managed and self-managed nodes.
+
+> **Note:** The default `updateType` for auto-scaling groups does not replace existing nodes. Since security groups are determined at launch time, self-managed nodes that were provisioned with version `1.78.0` or lower, will not be updated.
+> To apply the new configuration on all your self-managed nodes, you'll need to replace the nodes using the `UpdateType.REPLACING_UPDATE` policy for the [`updateType`](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-autoscaling.AutoScalingGroup.html#updatetypespan-classapi-icon-api-icon-deprecated-titlethis-api-element-is-deprecated-its-use-is-not-recommended%EF%B8%8Fspan) property.
+
 You can customize the [/etc/eks/boostrap.sh](https://github.com/awslabs/amazon-eks-ami/blob/master/files/bootstrap.sh) script, which is responsible
 for bootstrapping the node to the EKS cluster. For example, you can use `kubeletExtraArgs` to add custom node labels or taints.
 
@@ -420,6 +433,8 @@ new eks.Cluster(this, 'HelloEKS', {
 });
 ```
 
+> Note: Isolated VPCs (i.e with no internet access) are not currently supported. See https://github.com/aws/aws-cdk/issues/12171
+
 If you do not specify a VPC, one will be created on your behalf, which you can then access via `cluster.vpc`. The cluster VPC will be associated to any EKS managed capacity (i.e Managed Node Groups and Fargate Profiles).
 
 If you allocate self managed capacity, you can specify which subnets should the auto-scaling group use:
@@ -431,8 +446,7 @@ cluster.addAutoScalingGroupCapacity('nodes', {
 });
 ```
 
-In addition to the cluster and the capacity, there are two additional components you might want to
-provision within a VPC.
+There are two additional components you might want to provision within the VPC.
 
 #### Kubectl Handler
 
@@ -446,7 +460,18 @@ If the endpoint does not expose private access (via `EndpointAccess.PUBLIC`) **o
 
 #### Cluster Handler
 
-The `ClusterHandler` is a Lambda function responsible to interact the EKS API in order to control the cluster lifecycle. At the moment, this function cannot be provisioned inside the VPC. See [Attach all Lambda Function to a VPC](https://github.com/aws/aws-cdk/issues/9509) for more details.
+The `ClusterHandler` is a Lambda function responsible to interact with the EKS API in order to control the cluster lifecycle. To provision this function inside the VPC, set the `placeClusterHandlerInVpc` property to `true`. This will place the function inside the private subnets of the VPC based on the selection strategy specified in the [`vpcSubnets`](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-eks.Cluster.html#vpcsubnetsspan-classapi-icon-api-icon-experimental-titlethis-api-element-is-experimental-it-may-change-without-noticespan) property.
+
+You can configure the environment of this function by specifying it at cluster instantiation. For example, this can be useful in order to configure an http proxy:
+
+```ts
+const cluster = new eks.Cluster(this, 'hello-eks', {
+  version: eks.KubernetesVersion.V1_18,
+  clusterHandlerEnvironment: {
+    'http_proxy': 'http://proxy.myproxy.com'
+  }
+});
+```
 
 ### Kubectl Support
 
@@ -1109,6 +1134,5 @@ Kubernetes [endpoint access](#endpoint-access), you must also specify:
 ## Known Issues and Limitations
 
 * [One cluster per stack](https://github.com/aws/aws-cdk/issues/10073)
-* [Object pruning](https://github.com/aws/aws-cdk/issues/10495)
 * [Service Account dependencies](https://github.com/aws/aws-cdk/issues/9910)
-* [Attach all Lambda Functions to VPC](https://github.com/aws/aws-cdk/issues/9509)
+* [Support isolated VPCs](https://github.com/aws/aws-cdk/issues/12171)

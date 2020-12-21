@@ -22,6 +22,151 @@ const CLUSTER_VERSION = eks.KubernetesVersion.V1_18;
 
 export = {
 
+  'can specify custom environment to cluster resource handler'(test: Test) {
+
+    const { stack } = testFixture();
+
+    new eks.Cluster(stack, 'Cluster', {
+      version: CLUSTER_VERSION,
+      clusterHandlerEnvironment: {
+        foo: 'bar',
+      },
+    });
+
+    const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.ClusterResourceProvider') as cdk.NestedStack;
+
+    test.deepEqual(expect(nested).value.Resources.OnEventHandler42BEBAE0.Properties.Environment, { Variables: { foo: 'bar' } });
+    test.done();
+
+  },
+
+  'throws when trying to place cluster handlers in a vpc with no private subnets'(test: Test) {
+
+    const { stack } = testFixture();
+
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+
+    test.throws(() => {
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        placeClusterHandlerInVpc: true,
+        vpc: vpc,
+        vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }],
+      });
+    }, /Cannot place cluster handler in the VPC since no private subnets could be selected/);
+
+    test.done();
+  },
+
+  'throws when accessing cluster security group for imported cluster without cluster security group id'(test: Test) {
+
+    const { stack } = testFixture();
+
+    const cluster = eks.Cluster.fromClusterAttributes(stack, 'Cluster', {
+      clusterName: 'cluster',
+    });
+
+    test.throws(() => cluster.clusterSecurityGroup, /"clusterSecurityGroup" is not defined for this imported cluster/);
+    test.done();
+
+  },
+
+  'can place cluster handlers in the cluster vpc'(test: Test) {
+
+    const { stack } = testFixture();
+
+    new eks.Cluster(stack, 'Cluster', {
+      version: CLUSTER_VERSION,
+      placeClusterHandlerInVpc: true,
+    });
+
+    const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.ClusterResourceProvider') as cdk.NestedStack;
+
+    function assertFunctionPlacedInVpc(id: string) {
+      test.deepEqual(expect(nested).value.Resources[id].Properties.VpcConfig.SubnetIds, [
+        { Ref: 'referencetoStackClusterDefaultVpcPrivateSubnet1SubnetA64D1BF0Ref' },
+        { Ref: 'referencetoStackClusterDefaultVpcPrivateSubnet2Subnet32D85AB8Ref' },
+      ]);
+    }
+
+    assertFunctionPlacedInVpc('OnEventHandler42BEBAE0');
+    assertFunctionPlacedInVpc('IsCompleteHandler7073F4DA');
+    assertFunctionPlacedInVpc('ProviderframeworkonEvent83C1D0A7');
+    assertFunctionPlacedInVpc('ProviderframeworkisComplete26D7B0CB');
+    assertFunctionPlacedInVpc('ProviderframeworkonTimeout0B47CA38');
+
+    test.done();
+  },
+
+  'can access cluster security group for imported cluster with cluster security group id'(test: Test) {
+
+    const { stack } = testFixture();
+
+    const clusterSgId = 'cluster-sg-id';
+
+    const cluster = eks.Cluster.fromClusterAttributes(stack, 'Cluster', {
+      clusterName: 'cluster',
+      clusterSecurityGroupId: clusterSgId,
+    });
+
+    const clusterSg = cluster.clusterSecurityGroup;
+
+    test.equal(clusterSg.securityGroupId, clusterSgId);
+    test.done();
+  },
+
+  'cluster security group is attached when adding self-managed nodes'(test: Test) {
+
+    // GIVEN
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+      prune: false,
+    });
+
+    // WHEN
+    cluster.addAutoScalingGroupCapacity('self-managed', {
+      instanceType: new ec2.InstanceType('t2.medium'),
+    });
+
+    test.deepEqual(expect(stack).value.Resources.ClusterselfmanagedLaunchConfigA5B57EF6.Properties.SecurityGroups, [
+      { 'Fn::GetAtt': ['ClusterselfmanagedInstanceSecurityGroup64468C3A', 'GroupId'] },
+      { 'Fn::GetAtt': ['Cluster9EE0221C', 'ClusterSecurityGroupId'] },
+    ]);
+    test.done();
+
+  },
+
+  'cluster security group is attached when connecting self-managed nodes'(test: Test) {
+
+    // GIVEN
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+      prune: false,
+    });
+
+    const selfManaged = new asg.AutoScalingGroup(stack, 'self-managed', {
+      instanceType: new ec2.InstanceType('t2.medium'),
+      vpc: vpc,
+      machineImage: new ec2.AmazonLinuxImage(),
+    });
+
+    // WHEN
+    cluster.connectAutoScalingGroupCapacity(selfManaged, {});
+
+    test.deepEqual(expect(stack).value.Resources.selfmanagedLaunchConfigD41289EB.Properties.SecurityGroups, [
+      { 'Fn::GetAtt': ['selfmanagedInstanceSecurityGroupEA6D80C9', 'GroupId'] },
+      { 'Fn::GetAtt': ['Cluster9EE0221C', 'ClusterSecurityGroupId'] },
+    ]);
+    test.done();
+
+  },
+
   'throws when a non cdk8s chart construct is added as cdk8s chart'(test: Test) {
 
     const { stack } = testFixture();

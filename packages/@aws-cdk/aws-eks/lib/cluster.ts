@@ -67,10 +67,16 @@ export interface ICluster extends IResource, ec2.IConnectable {
   readonly clusterCertificateAuthorityData: string;
 
   /**
-   * The cluster security group that was created by Amazon EKS for the cluster.
+   * The id of the cluster security group that was created by Amazon EKS for the cluster.
    * @attribute
    */
   readonly clusterSecurityGroupId: string;
+
+  /**
+   * The cluster security group that was created by Amazon EKS for the cluster.
+   * @attribute
+   */
+  readonly clusterSecurityGroup: ec2.ISecurityGroup;
 
   /**
    * Amazon Resource Name (ARN) or alias of the customer master key (CMK).
@@ -423,6 +429,13 @@ export interface ClusterOptions extends CommonClusterOptions {
   readonly kubectlEnvironment?: { [key: string]: string };
 
   /**
+   * Custom environment variables when interacting with the EKS endpoint to manage the cluster lifecycle.
+   *
+   * @default - No environment variables.
+   */
+  readonly clusterHandlerEnvironment?: { [key: string]: string };
+
+  /**
    * An AWS Lambda Layer which includes `kubectl`, Helm and the AWS CLI.
    *
    * By default, the provider will use the layer included in the
@@ -462,6 +475,14 @@ export interface ClusterOptions extends CommonClusterOptions {
    * @default true
    */
   readonly prune?: boolean;
+
+  /**
+   * If set to true, the cluster handler functions will be placed in the private subnets
+   * of the cluster vpc, subject to the `vpcSubnets` selection strategy.
+   *
+   * @default false
+   */
+  readonly placeClusterHandlerInVpc?: boolean;
 }
 
 /**
@@ -671,6 +692,7 @@ abstract class ClusterBase extends Resource implements ICluster {
   public abstract readonly clusterEndpoint: string;
   public abstract readonly clusterCertificateAuthorityData: string;
   public abstract readonly clusterSecurityGroupId: string;
+  public abstract readonly clusterSecurityGroup: ec2.ISecurityGroup;
   public abstract readonly clusterEncryptionConfigKeyArn: string;
   public abstract readonly kubectlRole?: iam.IRole;
   public abstract readonly kubectlEnvironment?: { [key: string]: string };
@@ -802,9 +824,14 @@ export class Cluster extends ClusterBase {
   public readonly clusterCertificateAuthorityData: string;
 
   /**
-   * The cluster security group that was created by Amazon EKS for the cluster.
+   * The id of the cluster security group that was created by Amazon EKS for the cluster.
    */
   public readonly clusterSecurityGroupId: string;
+
+  /**
+   * The cluster security group that was created by Amazon EKS for the cluster.
+   */
+  public readonly clusterSecurityGroup: ec2.ISecurityGroup;
 
   /**
    * Amazon Resource Name (ARN) or alias of the customer master key (CMK).
@@ -847,7 +874,6 @@ export class Cluster extends ClusterBase {
 
   /**
    * Custom environment variables when running `kubectl` against this cluster.
-   * @default - no additional environment variables
    */
   public readonly kubectlEnvironment?: { [key: string]: string };
 
@@ -1008,8 +1034,15 @@ export class Cluster extends ClusterBase {
       throw new Error('Vpc must contain private subnets when public endpoint access is restricted');
     }
 
+    const placeClusterHandlerInVpc = props.placeClusterHandlerInVpc ?? false;
+
+    if (placeClusterHandlerInVpc && privateSubents.length === 0) {
+      throw new Error('Cannot place cluster handler in the VPC since no private subnets could be selected');
+    }
+
     const resource = this._clusterResource = new ClusterResource(this, 'Resource', {
       name: this.physicalName,
+      environment: props.clusterHandlerEnvironment,
       roleArn: this.role.roleArn,
       version: props.version.version,
       resourcesVpcConfig: {
@@ -1029,6 +1062,7 @@ export class Cluster extends ClusterBase {
       publicAccessCidrs: this.endpointAccess._config.publicCidrs,
       secretsEncryptionKey: props.secretsEncryptionKey,
       vpc: this.vpc,
+      subnets: placeClusterHandlerInVpc ? privateSubents : undefined,
     });
 
     if (this.endpointAccess._config.privateAccess && privateSubents.length !== 0) {
@@ -1070,16 +1104,16 @@ export class Cluster extends ClusterBase {
     this.clusterSecurityGroupId = resource.attrClusterSecurityGroupId;
     this.clusterEncryptionConfigKeyArn = resource.attrEncryptionConfigKeyArn;
 
-    const clusterSecurityGroup = ec2.SecurityGroup.fromSecurityGroupId(this, 'ClusterSecurityGroup', this.clusterSecurityGroupId);
+    this.clusterSecurityGroup = ec2.SecurityGroup.fromSecurityGroupId(this, 'ClusterSecurityGroup', this.clusterSecurityGroupId);
 
     this.connections = new ec2.Connections({
-      securityGroups: [clusterSecurityGroup, securityGroup],
+      securityGroups: [this.clusterSecurityGroup, securityGroup],
       defaultPort: ec2.Port.tcp(443), // Control Plane has an HTTPS API
     });
 
     // we can use the cluster security group since its already attached to the cluster
     // and configured to allow connections from itself.
-    this.kubectlSecurityGroup = clusterSecurityGroup;
+    this.kubectlSecurityGroup = this.clusterSecurityGroup;
 
     // use the cluster creation role to issue kubectl commands against the cluster because when the
     // cluster is first created, that's the only role that has "system:masters" permissions
@@ -1253,6 +1287,9 @@ export class Cluster extends ClusterBase {
     autoScalingGroup.connections.allowToAnyIpv4(ec2.Port.allTcp());
     autoScalingGroup.connections.allowToAnyIpv4(ec2.Port.allUdp());
     autoScalingGroup.connections.allowToAnyIpv4(ec2.Port.allIcmp());
+
+    // allow traffic to/from managed node groups (eks attaches this security group to the managed nodes)
+    autoScalingGroup.addSecurityGroup(this.clusterSecurityGroup);
 
     const bootstrapEnabled = options.bootstrapEnabled !== undefined ? options.bootstrapEnabled : true;
     if (options.bootstrapOptions && !bootstrapEnabled) {
@@ -1693,6 +1730,10 @@ class ImportedCluster extends ClusterBase {
   public readonly kubectlMemory?: Size;
   public readonly prune: boolean;
 
+  // so that `clusterSecurityGroup` on `ICluster` can be configured without optionality, avoiding users from having
+  // to null check on an instance of `Cluster`, which will always have this configured.
+  private readonly _clusterSecurityGroup?: ec2.ISecurityGroup;
+
   constructor(scope: Construct, id: string, private readonly props: ClusterAttributes) {
     super(scope, id);
 
@@ -1713,7 +1754,8 @@ class ImportedCluster extends ClusterBase {
     }
 
     if (props.clusterSecurityGroupId) {
-      this.connections.addSecurityGroup(ec2.SecurityGroup.fromSecurityGroupId(this, 'ClusterSecurityGroup', props.clusterSecurityGroupId));
+      this._clusterSecurityGroup = ec2.SecurityGroup.fromSecurityGroupId(this, 'ClusterSecurityGroup', this.clusterSecurityGroupId);
+      this.connections.addSecurityGroup(this._clusterSecurityGroup);
     }
   }
 
@@ -1722,6 +1764,13 @@ class ImportedCluster extends ClusterBase {
       throw new Error('"vpc" is not defined for this imported cluster');
     }
     return this.props.vpc;
+  }
+
+  public get clusterSecurityGroup(): ec2.ISecurityGroup {
+    if (!this._clusterSecurityGroup) {
+      throw new Error('"clusterSecurityGroup" is not defined for this imported cluster');
+    }
+    return this._clusterSecurityGroup;
   }
 
   public get clusterSecurityGroupId(): string {
