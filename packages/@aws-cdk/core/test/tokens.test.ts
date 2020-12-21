@@ -656,7 +656,10 @@ nodeunitShim({
     }
 
     const previousValue = process.env.CDK_DEBUG;
+    const previousDisable = process.env.CDK_DISABLE_STACK_TRACE;
+
     process.env.CDK_DEBUG = 'true';
+    delete process.env.CDK_DISABLE_STACK_TRACE;
     const x = showMeInTheStackTrace();
     let message;
     try {
@@ -665,6 +668,7 @@ nodeunitShim({
       message = e.message;
     } finally {
       process.env.CDK_DEBUG = previousValue;
+      process.env.CDK_DISABLE_STACK_TRACE = previousDisable;
     }
 
     test.ok(message && message.includes('showMeInTheStackTrace'));

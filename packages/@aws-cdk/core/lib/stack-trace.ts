@@ -26,7 +26,7 @@ export function captureStackTrace(
   below: Function = captureStackTrace,
   limit = Number.MAX_SAFE_INTEGER,
 ): string[] {
-  if (process.env.CDK_DISABLE_STACK_TRACE && !debugModeEnabled()) {
+  if (process.env.CDK_DISABLE_STACK_TRACE || !debugModeEnabled()) {
     return ['stack traces disabled'];
   }
 
