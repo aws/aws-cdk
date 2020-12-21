@@ -40,10 +40,6 @@ export = {
         DeploymentConfiguration: {
           MaximumPercent: 200,
           MinimumHealthyPercent: 50,
-          DeploymentCircuitBreaker: {
-            Enable: true,
-            Rollback: true,
-          },
         },
         DesiredCount: 1,
         LaunchType: LaunchType.EC2,
@@ -185,10 +181,6 @@ export = {
         DeploymentConfiguration: {
           MaximumPercent: 150,
           MinimumHealthyPercent: 55,
-          DeploymentCircuitBreaker: {
-            Enable: true,
-            Rollback: true,
-          },
         },
         DeploymentController: {
           Type: ecs.DeploymentControllerType.CODE_DEPLOY,
@@ -459,10 +451,6 @@ export = {
         DeploymentConfiguration: {
           MaximumPercent: 200,
           MinimumHealthyPercent: 50,
-          DeploymentCircuitBreaker: {
-            Enable: true,
-            Rollback: true,
-          },
         },
         DesiredCount: 1,
         SchedulingStrategy: 'REPLICA',
@@ -618,10 +606,6 @@ export = {
         DeploymentConfiguration: {
           MaximumPercent: 100,
           MinimumHealthyPercent: 0,
-          DeploymentCircuitBreaker: {
-            Enable: true,
-            Rollback: true,
-          },
         },
       }));
 

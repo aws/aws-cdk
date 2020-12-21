@@ -39,10 +39,6 @@ export = {
         DeploymentConfiguration: {
           MaximumPercent: 200,
           MinimumHealthyPercent: 50,
-          DeploymentCircuitBreaker: {
-            Enable: true,
-            Rollback: true,
-          },
         },
         DesiredCount: 1,
         LaunchType: LaunchType.FARGATE,
@@ -216,6 +212,8 @@ export = {
         deploymentController: {
           type: ecs.DeploymentControllerType.CODE_DEPLOY,
         },
+        deploymentCircuitBreaker: true,
+        deploymentRollback: true,
         securityGroup: new ec2.SecurityGroup(stack, 'SecurityGroup1', {
           allowAllOutbound: true,
           description: 'Example',
@@ -363,10 +361,6 @@ export = {
         DeploymentConfiguration: {
           MaximumPercent: 200,
           MinimumHealthyPercent: 50,
-          DeploymentCircuitBreaker: {
-            Enable: true,
-            Rollback: true,
-          },
         },
         DeploymentController: {
           Type: 'EXTERNAL',
@@ -467,10 +461,6 @@ export = {
       expect(stack).to(haveResourceLike('AWS::ECS::Service', {
         DeploymentConfiguration: {
           MinimumHealthyPercent: 0,
-          DeploymentCircuitBreaker: {
-            Enable: true,
-            Rollback: true,
-          },
         },
       }));
 
@@ -553,10 +543,6 @@ export = {
         DeploymentConfiguration: {
           MaximumPercent: 200,
           MinimumHealthyPercent: 50,
-          DeploymentCircuitBreaker: {
-            Enable: true,
-            Rollback: true,
-          },
         },
         DesiredCount: 1,
         LaunchType: LaunchType.FARGATE,
@@ -1820,7 +1806,8 @@ export = {
       new ecs.FargateService(stack, 'EcsService', {
         cluster,
         taskDefinition,
-        platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
+        deploymentCircuitBreaker: true,
+        deploymentRollback: true,
       });
 
       // THEN
