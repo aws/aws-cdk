@@ -483,11 +483,11 @@ interface ThirdPartyGitSourceProps extends GitSourceProps {
   readonly webhook?: boolean;
 
   /**
-   * Start a batch build instead of a standard one.
+   * Trigger a batch build from a webhook instead of a standard one.
    *
    * @default false
    */
-  readonly startBatchBuild?: boolean;
+  readonly webhookTriggersBatchBuild?: boolean;
 
   /**
    * A list of webhook filters that can constraint what events in the repository will trigger a build.
@@ -507,7 +507,7 @@ abstract class ThirdPartyGitSource extends GitSource {
   protected readonly webhookFilters: FilterGroup[];
   private readonly reportBuildStatus: boolean;
   private readonly webhook?: boolean;
-  private readonly startBatchBuild?: boolean;
+  private readonly webhookTriggersBatchBuild?: boolean;
 
   protected constructor(props: ThirdPartyGitSourceProps) {
     super(props);
@@ -515,12 +515,12 @@ abstract class ThirdPartyGitSource extends GitSource {
     this.webhook = props.webhook;
     this.reportBuildStatus = props.reportBuildStatus === undefined ? true : props.reportBuildStatus;
     this.webhookFilters = props.webhookFilters || [];
-    this.startBatchBuild = props.startBatchBuild;
+    this.webhookTriggersBatchBuild = props.webhookTriggersBatchBuild;
   }
 
   public bind(_scope: CoreConstruct, _project: IProject): SourceConfig {
     const anyFilterGroupsProvided = this.webhookFilters.length > 0;
-    const webhook = this.webhook === undefined ? (anyFilterGroupsProvided ? true : undefined) : this.webhook;
+    const webhook = this.webhook === undefined ? (anyFilterGroupsProvided || this.webhookTriggersBatchBuild ? true : undefined) : this.webhook;
 
     const superConfig = super.bind(_scope, _project);
     return {
@@ -531,7 +531,7 @@ abstract class ThirdPartyGitSource extends GitSource {
       sourceVersion: superConfig.sourceVersion,
       buildTriggers: webhook === undefined ? undefined : {
         webhook,
-        buildType: this.startBatchBuild ? 'BUILD_BATCH' : undefined,
+        buildType: this.webhookTriggersBatchBuild ? 'BUILD_BATCH' : undefined,
         filterGroups: anyFilterGroupsProvided ? this.webhookFilters.map(fg => fg._toJson()) : undefined,
       },
     };

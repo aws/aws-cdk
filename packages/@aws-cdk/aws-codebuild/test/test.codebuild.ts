@@ -695,41 +695,59 @@ export = {
       test.done();
     },
 
-    'with startBatchBuild option'(test: Test) {
-      const stack = new cdk.Stack();
-
-      new codebuild.Project(stack, 'Project', {
-        source: codebuild.Source.gitHub({
-          owner: 'testowner',
-          repo: 'testrepo',
-          cloneDepth: 3,
-          fetchSubmodules: true,
-          webhook: true,
-          startBatchBuild: true,
-          reportBuildStatus: false,
-          webhookFilters: [
-            codebuild.FilterGroup.inEventOf(codebuild.EventAction.PUSH).andTagIsNot('stable'),
-            codebuild.FilterGroup.inEventOf(codebuild.EventAction.PULL_REQUEST_REOPENED).andBaseBranchIs('master'),
-          ],
-        }),
-      });
-
-      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
-        Triggers: {
-          Webhook: true,
-          BuildType: 'BUILD_BATCH',
-          FilterGroups: [
-            [
-              { Type: 'EVENT', Pattern: 'PUSH' },
-              { Type: 'HEAD_REF', Pattern: 'refs/tags/stable', ExcludeMatchedPattern: true },
-            ],
-            [
-              { Type: 'EVENT', Pattern: 'PULL_REQUEST_REOPENED' },
-              { Type: 'BASE_REF', Pattern: 'refs/heads/master' },
-            ],
-          ],
+    'with webhookTriggersBatchBuild option'(test: Test) {
+      [
+        {
+          props: {
+            webhook: true,
+            webhookTriggersBatchBuild: true,
+          },
+          expected: {
+            Webhook: true,
+            BuildType: 'BUILD_BATCH',
+          },
         },
-      }));
+        {
+          props: {
+            webhookTriggersBatchBuild: true,
+          },
+          expected: {
+            Webhook: true,
+            BuildType: 'BUILD_BATCH',
+          },
+        },
+        {
+          props: {
+            webhook: false,
+            webhookTriggersBatchBuild: true,
+          },
+          expected: {
+            Webhook: false,
+            BuildType: 'BUILD_BATCH',
+          },
+        },
+        {
+          props: {},
+          expected: {
+            Webhook: false,
+          },
+        },
+      ].forEach(({ props, expected }) => {
+
+        const stack = new cdk.Stack();
+
+        new codebuild.Project(stack, 'Project', {
+          source: codebuild.Source.gitHub({
+            owner: 'testowner',
+            repo: 'testrepo',
+            ...props,
+          }),
+        });
+
+        expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+          Triggers: expected,
+        }));
+      });
 
       test.done();
     },
