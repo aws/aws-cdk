@@ -73,7 +73,7 @@ export class KubectlProvider extends NestedStack {
       code: lambda.Code.fromAsset(path.join(__dirname, 'kubectl-handler')),
       runtime: lambda.Runtime.PYTHON_3_7,
       handler: 'index.handler',
-      timeout: Duration.seconds(10),
+      timeout: Duration.minutes(15),
       description: 'onEvent handler for EKS kubectl resource provider',
       layers: [layer],
       memorySize,
@@ -99,7 +99,6 @@ export class KubectlProvider extends NestedStack {
       onEventHandler: handler,
       vpc: cluster.kubectlPrivateSubnets ? cluster.vpc : undefined,
       vpcSubnets: cluster.kubectlPrivateSubnets ? { subnets: cluster.kubectlPrivateSubnets } : undefined,
-      securityGroups: cluster.kubectlSecurityGroup ? [cluster.kubectlSecurityGroup] : undefined,
     });
 
     this.serviceToken = provider.serviceToken;
