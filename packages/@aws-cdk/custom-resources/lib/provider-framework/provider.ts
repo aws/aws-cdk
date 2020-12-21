@@ -82,7 +82,10 @@ export interface ProviderProps {
   /**
    * Which subnets from the VPC to place the lambda functions in.
    *
-   * @default - functions are not provisioned inside a vpc.
+   * Only used if 'vpc' is supplied. Note: internet access for Lambdas
+   * requires a NAT gateway, so picking Public subnets is not allowed.
+   *
+   * @default - the Vpc default strategy if not specified
    */
   readonly vpcSubnets?: ec2.SubnetSelection;
 
