@@ -163,7 +163,7 @@ export interface BaseServiceOptions {
   readonly deploymentController?: DeploymentController;
 
   /**
-   * Whether to enable the deplloyment circuit breaker
+   * Whether to enable the deployment circuit breaker
    * @default false
    */
   readonly deploymentCircuitBreaker?: boolean;
