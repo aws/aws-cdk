@@ -138,6 +138,8 @@ export class Bundling implements cdk.BundlingOptions {
       ...this.props.sourceMap ? ['--sourcemap'] : [],
       ...this.externals.map(external => `--external:${external}`),
       ...loaders.map(([ext, name]) => `--loader:${ext}=${name}`),
+      ...this.props.logLevel ? [`--log-level=${this.props.logLevel}`] : [],
+      ...this.props.keepNames ? ['--keep-names'] : [],
     ].join(' ');
 
     let depsCommand = '';
