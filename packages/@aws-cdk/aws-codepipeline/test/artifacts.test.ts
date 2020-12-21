@@ -1,4 +1,4 @@
-import { expect, haveResourceLike } from '@aws-cdk/assert';
+import { expect, haveResourceLike, SynthUtils } from '@aws-cdk/assert';
 import * as cdk from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as codepipeline from '../lib';
@@ -40,6 +40,9 @@ nodeunitShim({
           },
         ],
       });
+
+      // synthesize - this is where names for artifact without names are allocated
+      SynthUtils.synthesize(stack, { skipValidation: true });
 
       const errors = pipeline.node.validate();
 
@@ -112,8 +115,9 @@ nodeunitShim({
         ],
       });
 
-      const errors = pipeline.node.validate();
+      SynthUtils.synthesize(stack, { skipValidation: true });
 
+      const errors = pipeline.node.validate();
       test.equal(errors.length, 1);
       const error = errors[0];
       test.equal(error, "Both Actions 'Source' and 'Build' are producting Artifact 'Artifact_Source_Source'. Every artifact can only be produced once.");

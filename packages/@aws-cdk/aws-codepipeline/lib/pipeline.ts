@@ -315,6 +315,8 @@ export class Pipeline extends PipelineBase {
     for (const stage of props.stages || []) {
       this.addStage(stage);
     }
+
+    this.node.addValidation({ validate: () => this.validatePipeline() });
   }
 
   /**
@@ -429,9 +431,8 @@ export class Pipeline extends PipelineBase {
    * Validation happens according to the rules documented at
    *
    * https://docs.aws.amazon.com/codepipeline/latest/userguide/reference-pipeline-structure.html#pipeline-requirements
-   * @override
    */
-  protected validate(): string[] {
+  private validatePipeline(): string[] {
     return [
       ...this.validateSourceActionLocations(),
       ...this.validateHasStages(),
