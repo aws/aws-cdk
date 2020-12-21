@@ -429,6 +429,13 @@ export interface ClusterOptions extends CommonClusterOptions {
   readonly kubectlEnvironment?: { [key: string]: string };
 
   /**
+   * Custom environment variables when interacting with the EKS endpoint to manage the cluster lifecycle.
+   *
+   * @default - No environment variables.
+   */
+  readonly clusterHandlerEnvironment?: { [key: string]: string };
+
+  /**
    * An AWS Lambda Layer which includes `kubectl`, Helm and the AWS CLI.
    *
    * By default, the provider will use the layer included in the
@@ -468,6 +475,14 @@ export interface ClusterOptions extends CommonClusterOptions {
    * @default true
    */
   readonly prune?: boolean;
+
+  /**
+   * If set to true, the cluster handler functions will be placed in the private subnets
+   * of the cluster vpc, subject to the `vpcSubnets` selection strategy.
+   *
+   * @default false
+   */
+  readonly placeClusterHandlerInVpc?: boolean;
 }
 
 /**
@@ -859,7 +874,6 @@ export class Cluster extends ClusterBase {
 
   /**
    * Custom environment variables when running `kubectl` against this cluster.
-   * @default - no additional environment variables
    */
   public readonly kubectlEnvironment?: { [key: string]: string };
 
@@ -1020,8 +1034,15 @@ export class Cluster extends ClusterBase {
       throw new Error('Vpc must contain private subnets when public endpoint access is restricted');
     }
 
+    const placeClusterHandlerInVpc = props.placeClusterHandlerInVpc ?? false;
+
+    if (placeClusterHandlerInVpc && privateSubents.length === 0) {
+      throw new Error('Cannot place cluster handler in the VPC since no private subnets could be selected');
+    }
+
     const resource = this._clusterResource = new ClusterResource(this, 'Resource', {
       name: this.physicalName,
+      environment: props.clusterHandlerEnvironment,
       roleArn: this.role.roleArn,
       version: props.version.version,
       resourcesVpcConfig: {
@@ -1041,6 +1062,7 @@ export class Cluster extends ClusterBase {
       publicAccessCidrs: this.endpointAccess._config.publicCidrs,
       secretsEncryptionKey: props.secretsEncryptionKey,
       vpc: this.vpc,
+      subnets: placeClusterHandlerInVpc ? privateSubents : undefined,
     });
 
     if (this.endpointAccess._config.privateAccess && privateSubents.length !== 0) {
