@@ -429,6 +429,13 @@ export interface ClusterOptions extends CommonClusterOptions {
   readonly kubectlEnvironment?: { [key: string]: string };
 
   /**
+   * Custom environment variables when interacting with the EKS endpoint to manage the cluster lifecycle.
+   *
+   * @default - No environment variables.
+   */
+  readonly clusterHandlerEnvironment?: { [key: string]: string };
+
+  /**
    * An AWS Lambda Layer which includes `kubectl`, Helm and the AWS CLI.
    *
    * By default, the provider will use the layer included in the
@@ -468,6 +475,14 @@ export interface ClusterOptions extends CommonClusterOptions {
    * @default true
    */
   readonly prune?: boolean;
+
+  /**
+   * If set to true, the cluster handler functions will be placed in the private subnets
+   * of the cluster vpc, subject to the `vpcSubnets` selection strategy.
+   *
+   * @default false
+   */
+  readonly placeClusterHandlerInVpc?: boolean;
 }
 
 /**
@@ -568,28 +583,6 @@ export class EndpointAccess {
  * Common configuration props for EKS clusters.
  */
 export interface ClusterProps extends ClusterOptions {
-  /**
-   * NOT SUPPORTED: We no longer allow disabling kubectl-support. Setting this
-   * option to `false` will throw an error.
-   *
-   * To temporary allow you to retain existing clusters created with
-   * `kubectlEnabled: false`, you can use `eks.LegacyCluster` class, which is a
-   * drop-in replacement for `eks.Cluster` with `kubectlEnabled: false`.
-   *
-   * Bear in mind that this is a temporary workaround. We have plans to remove
-   * `eks.LegacyCluster`. If you have a use case for using `eks.LegacyCluster`,
-   * please add a comment here https://github.com/aws/aws-cdk/issues/9332 and
-   * let us know so we can make sure to continue to support your use case with
-   * `eks.Cluster`. This issue also includes additional context into why this
-   * class is being removed.
-   *
-   * @deprecated `eks.LegacyCluster` is __temporarily__ provided as a drop-in
-   * replacement until you are able to migrate to `eks.Cluster`.
-   *
-   * @see https://github.com/aws/aws-cdk/issues/9332
-   * @default true
-   */
-  readonly kubectlEnabled?: boolean;
 
   /**
    * Number of instances to allocate as an initial capacity for this cluster.
@@ -859,7 +852,6 @@ export class Cluster extends ClusterBase {
 
   /**
    * Custom environment variables when running `kubectl` against this cluster.
-   * @default - no additional environment variables
    */
   public readonly kubectlEnvironment?: { [key: string]: string };
 
@@ -962,14 +954,6 @@ export class Cluster extends ClusterBase {
       physicalName: props.clusterName,
     });
 
-    if (props.kubectlEnabled === false) {
-      throw new Error(
-        'The "eks.Cluster" class no longer allows disabling kubectl support. ' +
-        'As a temporary workaround, you can use the drop-in replacement class `eks.LegacyCluster`, ' +
-        'but bear in mind that this class will soon be removed and will no longer receive additional ' +
-        'features or bugfixes. See https://github.com/aws/aws-cdk/issues/9332 for more details');
-    }
-
     const stack = Stack.of(this);
 
     this.prune = props.prune ?? true;
@@ -1020,8 +1004,15 @@ export class Cluster extends ClusterBase {
       throw new Error('Vpc must contain private subnets when public endpoint access is restricted');
     }
 
+    const placeClusterHandlerInVpc = props.placeClusterHandlerInVpc ?? false;
+
+    if (placeClusterHandlerInVpc && privateSubents.length === 0) {
+      throw new Error('Cannot place cluster handler in the VPC since no private subnets could be selected');
+    }
+
     const resource = this._clusterResource = new ClusterResource(this, 'Resource', {
       name: this.physicalName,
+      environment: props.clusterHandlerEnvironment,
       roleArn: this.role.roleArn,
       version: props.version.version,
       resourcesVpcConfig: {
@@ -1041,6 +1032,7 @@ export class Cluster extends ClusterBase {
       publicAccessCidrs: this.endpointAccess._config.publicCidrs,
       secretsEncryptionKey: props.secretsEncryptionKey,
       vpc: this.vpc,
+      subnets: placeClusterHandlerInVpc ? privateSubents : undefined,
     });
 
     if (this.endpointAccess._config.privateAccess && privateSubents.length !== 0) {
