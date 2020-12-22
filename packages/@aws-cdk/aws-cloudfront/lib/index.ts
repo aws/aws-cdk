@@ -6,7 +6,9 @@ export * from './origin_access_identity';
 export * from './origin-request-policy';
 export * from './web_distribution';
 
-export * as experimental from './experimental';
+export * from './experimental';
 
 // AWS::CloudFront CloudFormation Resources:
 export * from './cloudfront.generated';
+
+
