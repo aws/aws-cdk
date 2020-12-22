@@ -1,4 +1,4 @@
-import { countResources, expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
@@ -17,7 +17,6 @@ export = {
     // WHEN
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      kubectlEnabled: true,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
     });
@@ -59,7 +58,6 @@ export = {
     // WHEN
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      kubectlEnabled: true,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
     });
@@ -117,7 +115,6 @@ export = {
     // WHEN
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      kubectlEnabled: true,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
     });
@@ -152,7 +149,6 @@ export = {
     // WHEN
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      kubectlEnabled: true,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
     });
@@ -209,7 +205,6 @@ export = {
     // WHEN
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      kubectlEnabled: true,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
     });
@@ -466,7 +461,6 @@ export = {
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      kubectlEnabled: true,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
     });
@@ -508,7 +502,6 @@ export = {
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      kubectlEnabled: true,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
     });
@@ -521,7 +514,6 @@ export = {
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      kubectlEnabled: true,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
     });
@@ -536,7 +528,6 @@ export = {
     // WHEN
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      kubectlEnabled: true,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
     });
@@ -583,7 +574,6 @@ export = {
     // WHEN
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      kubectlEnabled: true,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
     });
@@ -608,6 +598,39 @@ export = {
           version: lt.attrDefaultVersionNumber,
         },
       }), /diskSize must be specified within the launch template/);
+    test.done();
+  },
+  'throws when both instanceType and launch template specified'(test: Test) {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+
+    // WHEN
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+    const userData = ec2.UserData.forLinux();
+    userData.addCommands(
+      'set -o xtrace',
+      `/etc/eks/bootstrap.sh ${cluster.clusterName}`,
+    );
+    const lt = new ec2.CfnLaunchTemplate(stack, 'LaunchTemplate', {
+      launchTemplateData: {
+        imageId: new eks.EksOptimizedImage().getImage(stack).imageId,
+        instanceType: new ec2.InstanceType('t3.small').toString(),
+        userData: cdk.Fn.base64(userData.render()),
+      },
+    });
+    // THEN
+    test.throws(() =>
+      cluster.addNodegroupCapacity('ng-lt', {
+        instanceType: new ec2.InstanceType('c5.large'),
+        launchTemplateSpec: {
+          id: lt.ref,
+          version: lt.attrDefaultVersionNumber,
+        },
+      }), /Instance types must be specified within the launch template/);
     test.done();
   },
 };
