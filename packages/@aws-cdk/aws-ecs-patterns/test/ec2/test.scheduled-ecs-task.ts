@@ -91,6 +91,7 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::Events::Rule', {
+      Name: 'sample-scheduled-task-rule',
       Targets: [
         {
           Arn: { 'Fn::GetAtt': ['EcsCluster97242B84', 'Arn'] },
@@ -99,7 +100,6 @@ export = {
             TaskDefinitionArn: { Ref: 'ScheduledEc2TaskScheduledTaskDef56328BA4' },
           },
           Id: 'Target0',
-          Name: 'sample-scheduled-task-rule',
           Input: '{}',
           RoleArn: { 'Fn::GetAtt': ['ScheduledEc2TaskScheduledTaskDefEventsRole64113C5F', 'Arn'] },
         },
