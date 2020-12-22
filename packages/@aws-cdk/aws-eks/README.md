@@ -257,7 +257,7 @@ cluster.addNodegroupCapacity('extra-ng', {
 });
 ```
 
-You may specify one or multiple instance types in either `instanceTypes` property of `NodeGroup` or in the launch template but not both.
+You may specify one or instance types in either the `instanceTypes` property of `NodeGroup` or in the launch template, **but not both**.
 
 > For more details visit [Launch Template Support](https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html).
 
