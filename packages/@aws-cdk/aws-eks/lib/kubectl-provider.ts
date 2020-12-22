@@ -97,6 +97,8 @@ export class KubectlProvider extends NestedStack {
 
     const provider = new cr.Provider(this, 'Provider', {
       onEventHandler: handler,
+      vpc: cluster.kubectlPrivateSubnets ? cluster.vpc : undefined,
+      vpcSubnets: cluster.kubectlPrivateSubnets ? { subnets: cluster.kubectlPrivateSubnets } : undefined,
     });
 
     this.serviceToken = provider.serviceToken;
