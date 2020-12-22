@@ -201,12 +201,33 @@ const cluster = new eks.Cluster(this, 'HelloEKS', {
 });
 
 cluster.addNodegroupCapacity('custom-node-group', {
-  instanceType: new ec2.InstanceType('m5.large'),
+  instanceTypes: [new ec2.InstanceType('m5.large')],
   minSize: 4,
   diskSize: 100,
   amiType: eks.NodegroupAmiType.AL2_X86_64_GPU,
   ...
 });
+```
+
+#### Spot Instances Support
+
+Use `capacityType` to create managed node groups comprised of spot instances. To maximize the availability of your applications while using
+Spot Instances, we recommend that you configure a Spot managed node group to use multiple instance types with the `instanceTypes` property. 
+
+> For more details visit [Managed node group capacity types](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html#managed-node-group-capacity-types).
+
+
+```ts
+cluster.addNodegroupCapacity('extra-ng-spot', {
+  instanceTypes: [
+    new ec2.InstanceType('c5.large'),
+    new ec2.InstanceType('c5a.large'),
+    new ec2.InstanceType('c5d.large'),
+  ],
+  minSize: 3,
+  capacityType: eks.CapacityType.SPOT,
+});
+
 ```
 
 #### Launch Template Support
@@ -236,7 +257,9 @@ cluster.addNodegroupCapacity('extra-ng', {
 });
 ```
 
-> For more details visit [Launch Template Support](https://docs.aws.amazon.com/en_ca/eks/latest/userguide/launch-templates.html).
+You may specify one or instance types in either the `instanceTypes` property of `NodeGroup` or in the launch template, **but not both**.
+
+> For more details visit [Launch Template Support](https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html).
 
 Graviton 2 instance types are supported including `c6g`, `m6g`, `r6g` and `t4g`.
 
@@ -433,6 +456,8 @@ new eks.Cluster(this, 'HelloEKS', {
 });
 ```
 
+> Note: Isolated VPCs (i.e with no internet access) are not currently supported. See https://github.com/aws/aws-cdk/issues/12171
+
 If you do not specify a VPC, one will be created on your behalf, which you can then access via `cluster.vpc`. The cluster VPC will be associated to any EKS managed capacity (i.e Managed Node Groups and Fargate Profiles).
 
 If you allocate self managed capacity, you can specify which subnets should the auto-scaling group use:
@@ -444,8 +469,7 @@ cluster.addAutoScalingGroupCapacity('nodes', {
 });
 ```
 
-In addition to the cluster and the capacity, there are two additional components you might want to
-provision within a VPC.
+There are two additional components you might want to provision within the VPC.
 
 #### Kubectl Handler
 
@@ -459,7 +483,18 @@ If the endpoint does not expose private access (via `EndpointAccess.PUBLIC`) **o
 
 #### Cluster Handler
 
-The `ClusterHandler` is a Lambda function responsible to interact the EKS API in order to control the cluster lifecycle. At the moment, this function cannot be provisioned inside the VPC. See [Attach all Lambda Function to a VPC](https://github.com/aws/aws-cdk/issues/9509) for more details.
+The `ClusterHandler` is a Lambda function responsible to interact with the EKS API in order to control the cluster lifecycle. To provision this function inside the VPC, set the `placeClusterHandlerInVpc` property to `true`. This will place the function inside the private subnets of the VPC based on the selection strategy specified in the [`vpcSubnets`](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-eks.Cluster.html#vpcsubnetsspan-classapi-icon-api-icon-experimental-titlethis-api-element-is-experimental-it-may-change-without-noticespan) property.
+
+You can configure the environment of this function by specifying it at cluster instantiation. For example, this can be useful in order to configure an http proxy:
+
+```ts
+const cluster = new eks.Cluster(this, 'hello-eks', {
+  version: eks.KubernetesVersion.V1_18,
+  clusterHandlerEnvironment: {
+    'http_proxy': 'http://proxy.myproxy.com'
+  }
+});
+```
 
 ### Kubectl Support
 
@@ -540,7 +575,7 @@ Amazon Linux 2 AMI for ARM64 will be automatically selected.
 ```ts
 // add a managed ARM64 nodegroup
 cluster.addNodegroupCapacity('extra-ng-arm', {
-  instanceType: new ec2.InstanceType('m6g.medium'),
+  instanceTypes: [new ec2.InstanceType('m6g.medium')],
   minSize: 2,
 });
 
@@ -844,6 +879,19 @@ new Cluster(this, 'MyCluster', {
 });
 ```
 
+#### Manifests Validation
+
+The `kubectl` CLI supports applying a manifest by skipping the validation.
+This can be accomplished by setting the `skipValidation` flag to `true` in the `KubernetesManifest` props.
+
+```ts
+new eks.KubernetesManifest(this, 'HelloAppWithoutValidation', {
+  cluster: this.cluster,
+  manifest: [ deployment, service ],
+  skipValidation: true,
+});
+```
+
 ### Helm Charts
 
 The `HelmChart` construct or `cluster.addHelmChart` method can be used
@@ -1122,6 +1170,5 @@ Kubernetes [endpoint access](#endpoint-access), you must also specify:
 ## Known Issues and Limitations
 
 * [One cluster per stack](https://github.com/aws/aws-cdk/issues/10073)
-* [Object pruning](https://github.com/aws/aws-cdk/issues/10495)
 * [Service Account dependencies](https://github.com/aws/aws-cdk/issues/9910)
-* [Attach all Lambda Functions to VPC](https://github.com/aws/aws-cdk/issues/9509)
+* [Support isolated VPCs](https://github.com/aws/aws-cdk/issues/12171)
