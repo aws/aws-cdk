@@ -81,6 +81,15 @@ export const SECRETS_MANAGER_PARSE_OWNED_SECRET_NAME = '@aws-cdk/aws-secretsmana
 export const KMS_DEFAULT_KEY_POLICIES = '@aws-cdk/aws-kms:defaultKeyPolicies';
 
 /**
+ * AWS CDK creates Stack without limit resources by default.
+ *
+ * If this flag is not set, the default behaviour is to synthezed the Stacks without limit.
+ * Otherwise, if this flag is set, the synthetizer will check the amount of resources inside a Stack, and
+ * it will raise a warning if at 80% and it will throw an error if exceeds the maximum of allowed Resources.
+ */
+export const VALIDATE_STACK_RESOURCE_LIMIT = '@aws-cdk/core:validateStackResourceLimit';
+
+/**
  * This map includes context keys and values for feature flags that enable
  * capabilities "from the future", which we could not introduce as the default
  * behavior due to backwards compatibility for existing projects.
@@ -100,6 +109,7 @@ export const FUTURE_FLAGS = {
   [DOCKER_IGNORE_SUPPORT]: true,
   [SECRETS_MANAGER_PARSE_OWNED_SECRET_NAME]: true,
   [KMS_DEFAULT_KEY_POLICIES]: true,
+  [VALIDATE_STACK_RESOURCE_LIMIT]: true,
 
   // We will advertise this flag when the feature is complete
   // [NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: 'true',
@@ -117,6 +127,7 @@ const FUTURE_FLAGS_DEFAULTS: { [key: string]: boolean } = {
   [DOCKER_IGNORE_SUPPORT]: false,
   [SECRETS_MANAGER_PARSE_OWNED_SECRET_NAME]: false,
   [KMS_DEFAULT_KEY_POLICIES]: false,
+  [VALIDATE_STACK_RESOURCE_LIMIT]: false,
 };
 
 export function futureFlagDefault(flag: string): boolean {

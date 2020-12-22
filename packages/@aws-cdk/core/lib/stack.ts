@@ -29,6 +29,8 @@ const MY_STACK_CACHE = Symbol.for('@aws-cdk/core.Stack.myStack');
 
 const VALID_STACK_NAME_REGEX = /^[A-Za-z][A-Za-z0-9-]*$/;
 
+const MAX_RESOURCES = 500;
+
 export interface StackProps {
   /**
    * A description of the stack.
@@ -139,6 +141,13 @@ export interface StackProps {
    * 'aws:cdk:version-reporting' context key
    */
   readonly analyticsReporting?: boolean;
+
+  /**
+   * The maximum of Resources inside a Stack.
+   *
+   * @default 500
+   */
+  readonly maxResources?: number;
 }
 
 /**
@@ -303,6 +312,11 @@ export class Stack extends CoreConstruct implements ITaggable {
   public readonly _versionReportingEnabled: boolean;
 
   /**
+   * The maximum of Resources inside a Stack.
+   */
+  public readonly maxResources: number;
+
+  /**
    * Logical ID generation strategy
    */
   private readonly _logicalIds: LogicalIDs;
@@ -357,6 +371,7 @@ export class Stack extends CoreConstruct implements ITaggable {
     this.region = region;
     this.environment = environment;
     this.terminationProtection = props.terminationProtection;
+    this.maxResources = props.maxResources ?? MAX_RESOURCES;
 
     if (props.description !== undefined) {
       // Max length 1024 bytes
@@ -753,7 +768,20 @@ export class Stack extends CoreConstruct implements ITaggable {
 
     // write the CloudFormation template as a JSON file
     const outPath = path.join(builder.outdir, this.templateFile);
-    fs.writeFileSync(outPath, JSON.stringify(template, undefined, 2));
+    const text = JSON.stringify(template, undefined, 2);
+
+    if (this.node.tryGetContext(cxapi.VALIDATE_STACK_RESOURCE_LIMIT)) {
+      const cfn = this._toCloudFormation();
+      const resources = cfn.Resources || {};
+      const numberOfResources = Object.keys(resources).length;
+
+      if (numberOfResources > this.maxResources) {
+        throw new Error(`Number of resources: ${numberOfResources} is greater than allowed maximum of ${this.maxResources}`);
+      } else if (numberOfResources >= (this.maxResources * 0.8)) {
+        Annotations.of(this).addWarning(`Number of resources: ${numberOfResources} is approaching allowed maximum of ${this.maxResources}`);
+      }
+    }
+    fs.writeFileSync(outPath, text);
 
     for (const ctx of this._missingContext) {
       builder.addMissing(ctx);

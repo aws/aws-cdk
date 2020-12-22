@@ -45,6 +45,73 @@ nodeunitShim({
     test.done();
   },
 
+  'when Feature Flag is disable, should not give error'(test: Test) {
+    // GIVEN
+    const app = new App({
+      context: {
+        [cxapi.VALIDATE_STACK_RESOURCE_LIMIT]: false,
+      },
+    });
+
+    const stack = new Stack(app, 'MyStack');
+
+    // WHEN
+    for (let index = 0; index < 1000; index++) {
+      new CfnResource(stack, `MyResource-${index}`, { type: 'MyResourceType' });
+    }
+
+    test.ok(() => {
+      app.synth();
+    });
+
+    test.done();
+  },
+
+  'when Feature Flag is enable, should give error'(test: Test) {
+    // GIVEN
+    const app = new App({
+      context: {
+        [cxapi.VALIDATE_STACK_RESOURCE_LIMIT]: true,
+      },
+    });
+
+    const stack = new Stack(app, 'MyStack');
+
+    // WHEN
+    for (let index = 0; index < 1000; index++) {
+      new CfnResource(stack, `MyResource-${index}`, { type: 'MyResourceType' });
+    }
+
+    test.throws(() => {
+      app.synth();
+      // eslint-disable-next-line max-len
+    }, 'Number of resources: 1000 is greater than allowed maximum of 500');
+
+    test.done();
+  },
+
+  'when Feature Flag is enable, and maxResources defined, should give the proper error'(test: Test) {
+    // GIVEN
+    const app = new App({
+      context: {
+        [cxapi.VALIDATE_STACK_RESOURCE_LIMIT]: true,
+      },
+    });
+
+    const stack = new Stack(app, 'MyStack', { maxResources: 100 });
+
+    // WHEN
+    for (let index = 0; index < 200; index++) {
+      new CfnResource(stack, `MyResource-${index}`, { type: 'MyResourceType' });
+    }
+
+    test.throws(() => {
+      app.synth();
+    }, 'Number of resources: 200 is greater than allowed maximum of 100');
+
+    test.done();
+  },
+
   'stack.templateOptions can be used to set template-level options'(test: Test) {
     const stack = new Stack();
 
