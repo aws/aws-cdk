@@ -339,7 +339,7 @@ If you'd like to specify which security groups to use you can override the `secu
 
 Amazon ECS [deployment circuit breaker](https://aws.amazon.com/tw/blogs/containers/announcing-amazon-ecs-deployment-circuit-breaker/)
 automatically rolls back unhealthy service deployments without the need for manual intervention. Use `circuitBreaker` to enable
-deployment circuit breaker and optionally enable `deploymentRollback` for automatically rollback. See [Using the deployment circuit breaker](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-type-ecs.html)
+deployment circuit breaker and optionally enable `rollback` for automatic rollback. See [Using the deployment circuit breaker](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-type-ecs.html)
 for more details.
 
 ```ts
