@@ -338,16 +338,15 @@ If you'd like to specify which security groups to use you can override the `secu
 ### Deployment circuit breaker and rollback
 
 Amazon ECS [deployment circuit breaker](https://aws.amazon.com/tw/blogs/containers/announcing-amazon-ecs-deployment-circuit-breaker/)
-automatically rolls back unhealthy service deployments without the need for manual intervention. Use `deploymentCircuitBreaker` to enable
-deployment circuit breaker and `deploymentRollback` for automatically rollback. See [Using the deployment circuit breaker](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-type-ecs.html)
+automatically rolls back unhealthy service deployments without the need for manual intervention. Use `circuitBreaker` to enable
+deployment circuit breaker and optionally enable `deploymentRollback` for automatically rollback. See [Using the deployment circuit breaker](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-type-ecs.html)
 for more details.
 
 ```ts
 const service = new ecs.FargateService(stack, 'Service', {
   cluster,
   taskDefinition,
-  deploymentCircuitBreaker: true,
-  deploymentRollback: true,
+  circuitBreaker: { rollback: true },
 });
 ```
 

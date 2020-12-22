@@ -44,6 +44,18 @@ export interface DeploymentController {
   readonly type?: DeploymentControllerType;
 }
 
+/**
+ * The deployment circuit breaker to use for the service
+ */
+export interface DeploymentCircuitBreaker {
+  /**
+   * Whether to enable rollback on deployment failure
+   * @default false
+   */
+  readonly rollback?: boolean;
+
+}
+
 export interface EcsTarget {
   /**
    * The name of the container.
@@ -164,16 +176,9 @@ export interface BaseServiceOptions {
 
   /**
    * Whether to enable the deployment circuit breaker
-   * @default false
+   * @default - disabled
    */
-  readonly deploymentCircuitBreaker?: boolean;
-
-  /**
-   * Whether to enable Amazon ECS to roll back the service if a service deployment fails. If rollback is enabled,
-   * when a service deployment fails, the service is rolled back to the last deployment that completed successfully.
-   * @default false
-   */
-  readonly deploymentRollback?: boolean;
+  readonly circuitBreaker?: DeploymentCircuitBreaker;
 }
 
 /**
@@ -369,19 +374,16 @@ export abstract class BaseService extends Resource
       ...additionalProps,
     });
 
-    const deploymentConfiguration = {
-      DeploymentCircuitBreaker: {
-        Enable: props.deploymentCircuitBreaker,
-        Rollback: props.deploymentRollback,
-      },
-    };
-
-    // TODO: fix this when this property is available in CfnService
-    // we only override this property if any of the props is defined
-    if (props.deploymentCircuitBreaker || props.deploymentRollback) {
+    if (props.circuitBreaker) {
+      const deploymentConfiguration = {
+        DeploymentCircuitBreaker: {
+          Enable: true,
+          Rollback: props.circuitBreaker.rollback ?? false,
+        },
+      };
+      // TODO: fix this when this property is available in CfnService
       this.resource.addPropertyOverride('DeploymentConfiguration', deploymentConfiguration);
-    }
-
+    };
     if (props.deploymentController?.type === DeploymentControllerType.EXTERNAL) {
       Annotations.of(this).addWarning('taskDefinition and launchType are blanked out when using external deployment controller.');
     }

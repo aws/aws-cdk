@@ -212,8 +212,7 @@ export = {
         deploymentController: {
           type: ecs.DeploymentControllerType.CODE_DEPLOY,
         },
-        deploymentCircuitBreaker: true,
-        deploymentRollback: true,
+        circuitBreaker: { rollback: true },
         securityGroup: new ec2.SecurityGroup(stack, 'SecurityGroup1', {
           allowAllOutbound: true,
           description: 'Example',
@@ -1806,8 +1805,7 @@ export = {
       new ecs.FargateService(stack, 'EcsService', {
         cluster,
         taskDefinition,
-        deploymentCircuitBreaker: true,
-        deploymentRollback: true,
+        circuitBreaker: { rollback: true },
       });
 
       // THEN
