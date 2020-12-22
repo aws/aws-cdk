@@ -212,7 +212,7 @@ cluster.addNodegroupCapacity('custom-node-group', {
 #### Spot Instances Support
 
 Use `capacityType` to create managed node groups comprised of spot instances. To maximize the availability of your applications while using
-Spot Instances, we recommend that you configure a Spot managed node group to use multiple instance types with `instanceTypes`. 
+Spot Instances, we recommend that you configure a Spot managed node group to use multiple instance types with the `instanceTypes` property. 
 
 > For more details visit [Managed node group capacity types](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html#managed-node-group-capacity-types).
 
