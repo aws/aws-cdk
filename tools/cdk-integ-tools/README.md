@@ -7,7 +7,7 @@ If deployment succeeds, the synthesized template is saved in a local file and
 "locked". During build, the test app is only synthesized and compared against
 the checked-in file to protect against regressions.
 
-### Setup
+## Setup
 
 Create any number of files called `integ.*.ts` in your `test` directory. These
 should be CDK apps containing a single stack.
@@ -43,7 +43,9 @@ This installs two tools into your scripts:
 
 Usage:
 
-    cdk-integ [TEST...] [--no-clean] [--verbose]
+```console
+cdk-integ [TEST...] [--no-clean] [--verbose]
+```
 
 Will deploy test stacks from `test/integ.*.js` and store the synthesized output
 under `test/integ.*.expected.json`.
