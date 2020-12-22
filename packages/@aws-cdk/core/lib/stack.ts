@@ -768,11 +768,9 @@ export class Stack extends CoreConstruct implements ITaggable {
 
     // write the CloudFormation template as a JSON file
     const outPath = path.join(builder.outdir, this.templateFile);
-    const text = JSON.stringify(template, undefined, 2);
 
     if (this.node.tryGetContext(cxapi.VALIDATE_STACK_RESOURCE_LIMIT)) {
-      const cfn = this._toCloudFormation();
-      const resources = cfn.Resources || {};
+      const resources = template.Resources || {};
       const numberOfResources = Object.keys(resources).length;
 
       if (numberOfResources > this.maxResources) {
@@ -781,7 +779,7 @@ export class Stack extends CoreConstruct implements ITaggable {
         Annotations.of(this).addWarning(`Number of resources: ${numberOfResources} is approaching allowed maximum of ${this.maxResources}`);
       }
     }
-    fs.writeFileSync(outPath, text);
+    fs.writeFileSync(outPath, JSON.stringify(template, undefined, 2));
 
     for (const ctx of this._missingContext) {
       builder.addMissing(ctx);
