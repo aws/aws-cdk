@@ -92,6 +92,23 @@ const globalTable = new dynamodb.Table(this, 'Table', {
 When doing so, a CloudFormation Custom Resource will be added to the stack in order to create the replica tables in the
 selected regions.
 
+The default billing mode for Global Tables is `PAY_PER_REQUEST`.
+If you want to use `PROVISIONED`,
+you have to make sure write auto-scaling is enabled for that Table:
+
+```ts
+const globalTable = new dynamodb.Table(this, 'Table', {
+  partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
+  replicationRegions: ['us-east-1', 'us-east-2', 'us-west-2'],
+  billingMode: BillingMode.PROVISIONED,
+});
+
+globalTable.autoScaleWriteCapacity({
+  minCapacity: 1,
+  maxCapacity: 10,
+}).scaleOnUtilization({ targetUtilizationPercent: 75 });
+```
+
 ## Encryption
 
 All user data stored in Amazon DynamoDB is fully encrypted at rest. When creating a new table, you can choose to encrypt using the following customer master keys (CMK) to encrypt your table:
