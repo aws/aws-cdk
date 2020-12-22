@@ -37,6 +37,13 @@ export interface KubernetesManifestOptions {
    * otherwise specified.
    */
   readonly prune?: boolean;
+
+  /**
+   * A flag to signify if the manifest validation should be skipped
+   *
+   * @default false
+   */
+  readonly skipValidation?: boolean;
 }
 
 /**
@@ -122,6 +129,7 @@ export class KubernetesManifest extends CoreConstruct {
         RoleArn: provider.roleArn, // TODO: bake into provider's environment
         PruneLabel: pruneLabel,
         Overwrite: props.overwrite,
+        SkipValidation: props.skipValidation,
       },
     });
   }
