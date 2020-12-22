@@ -11,6 +11,7 @@ import { CfnCluster, CfnClusterProps } from './eks.generated';
 import { HelmChartOptions, HelmChart } from './helm-chart';
 import { KubernetesManifest } from './k8s-manifest';
 import { Nodegroup, NodegroupOptions } from './managed-nodegroup';
+import { ServiceAccount, ServiceAccountOptions } from './service-account';
 import { renderAmazonLinuxUserData, renderBottlerocketUserData } from './user-data';
 
 // defaults are based on https://eksctl.io
@@ -110,9 +111,15 @@ export class LegacyCluster extends Resource implements ICluster {
   public readonly clusterCertificateAuthorityData: string;
 
   /**
-   * The cluster security group that was created by Amazon EKS for the cluster.
+   * The id of the cluster security group that was created by Amazon EKS for the cluster.
    */
   public readonly clusterSecurityGroupId: string;
+
+  /**
+   * The cluster security group that was created by Amazon EKS for the cluster.
+   */
+  public readonly clusterSecurityGroup: ec2.ISecurityGroup;
+
 
   /**
    * Amazon Resource Name (ARN) or alias of the customer master key (CMK).
@@ -145,6 +152,8 @@ export class LegacyCluster extends Resource implements ICluster {
    * `defaultCapacityType` is `NODEGROUP` but default capacity is set to 0.
    */
   public readonly defaultNodegroup?: Nodegroup;
+
+  public readonly prune: boolean = false;
 
   private readonly version: KubernetesVersion;
 
@@ -215,6 +224,7 @@ export class LegacyCluster extends Resource implements ICluster {
     this.clusterEndpoint = resource.attrEndpoint;
     this.clusterCertificateAuthorityData = resource.attrCertificateAuthorityData;
     this.clusterSecurityGroupId = resource.attrClusterSecurityGroupId;
+    this.clusterSecurityGroup = ec2.SecurityGroup.fromSecurityGroupId(this, 'ClusterSecurityGroup', this.clusterSecurityGroupId);
     this.clusterEncryptionConfigKeyArn = resource.attrEncryptionConfigKeyArn;
 
     const updateConfigCommandPrefix = `aws eks update-kubeconfig --name ${this.clusterName}`;
@@ -242,6 +252,18 @@ export class LegacyCluster extends Resource implements ICluster {
       new CfnOutput(this, 'ConfigCommand', { value: `${updateConfigCommandPrefix} ${postfix}` });
       new CfnOutput(this, 'GetTokenCommand', { value: `${getTokenCommandPrefix} ${postfix}` });
     }
+  }
+
+  public addServiceAccount(_id: string, _options?: ServiceAccountOptions): ServiceAccount {
+    throw new Error('legacy cluster does not support adding service accounts');
+  }
+
+  /**
+   * Since we dont really want to make it required on the top-level ICluster
+   * we do this trick here in return type to match interface type
+   */
+  public get openIdConnectProvider(): iam.IOpenIdConnectProvider {
+    throw new Error('legacy cluster does not support open id connect providers');
   }
 
   /**
@@ -363,7 +385,7 @@ export class LegacyCluster extends Resource implements ICluster {
     });
   }
 
-  public addManifest(_id: string, ..._manifest: any[]): KubernetesManifest {
+  public addManifest(_id: string, ..._manifest: Record<string, any>[]): KubernetesManifest {
     throw new Error('legacy cluster does not support adding kubernetes manifests');
   }
 
@@ -411,6 +433,7 @@ class ImportedCluster extends Resource implements ICluster {
   public readonly clusterName: string;
   public readonly clusterArn: string;
   public readonly connections = new ec2.Connections();
+  public readonly prune: boolean = false;
 
   constructor(scope: Construct, id: string, private readonly props: ClusterAttributes) {
     super(scope, id);
@@ -425,7 +448,7 @@ class ImportedCluster extends Resource implements ICluster {
     }
   }
 
-  public addManifest(_id: string, ..._manifest: any[]): KubernetesManifest {
+  public addManifest(_id: string, ..._manifest: Record<string, any>[]): KubernetesManifest {
     throw new Error('legacy cluster does not support adding kubernetes manifests');
   }
 
@@ -437,11 +460,24 @@ class ImportedCluster extends Resource implements ICluster {
     throw new Error('legacy cluster does not support adding cdk8s charts');
   }
 
+  public addServiceAccount(_id: string, _options?: ServiceAccountOptions): ServiceAccount {
+    throw new Error('legacy cluster does not support adding service accounts');
+  }
+
+  public get openIdConnectProvider(): iam.IOpenIdConnectProvider {
+    throw new Error('legacy cluster does not support open id connect providers');
+  }
+
   public get vpc() {
     if (!this.props.vpc) {
       throw new Error('"vpc" is not defined for this imported cluster');
     }
     return this.props.vpc;
+  }
+
+  public get clusterSecurityGroup(): ec2.ISecurityGroup {
+    // we are getting rid of this class very soon, no real need to support this here.
+    throw new Error("Unsupported operation. Use 'clusterSecurityGroupId' instead.");
   }
 
   public get clusterSecurityGroupId(): string {

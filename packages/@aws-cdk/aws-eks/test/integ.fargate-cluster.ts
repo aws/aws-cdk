@@ -13,6 +13,7 @@ class EksFargateClusterStack extends TestStack {
 
     new eks.FargateCluster(this, 'FargateCluster', {
       version: CLUSTER_VERSION,
+      prune: false,
     });
   }
 }

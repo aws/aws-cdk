@@ -6,6 +6,10 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
+    "diagnostics": {
+      "language-compatibility/member-name-conflicts-with-type-name": "error",
+      "language-compatibility/reserved-word": "error"
+    },
     "targets": {
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.APIGatewayv2",
@@ -51,7 +55,8 @@
     "compat": "cdk-compat",
     "build+test": "npm run build && npm test",
     "build+test+package": "npm run build+test && npm run package",
-    "gen": "cfn2ts"
+    "gen": "cfn2ts",
+    "rosetta:extract": "yarn --silent jsii-rosetta extract"
   },
   "cdk-build": {
     "cloudformation": "AWS::ApiGatewayV2",

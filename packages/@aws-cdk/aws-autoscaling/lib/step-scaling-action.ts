@@ -79,7 +79,7 @@ export class StepScalingAction extends CoreConstruct {
       adjustmentType: props.adjustmentType,
       minAdjustmentMagnitude: props.minAdjustmentMagnitude,
       metricAggregationType: props.metricAggregationType,
-      stepAdjustments: Lazy.anyValue({ produce: () => this.adjustments }),
+      stepAdjustments: Lazy.any({ produce: () => this.adjustments }),
     });
 
     this.scalingPolicyArn = resource.ref;

@@ -31,7 +31,7 @@ export class FakeSourceAction implements codepipeline.IAction {
       outputs: [props.output, ...props.extraOutputs || []],
     };
     this.variables = {
-      firstVariable: Lazy.stringValue({ produce: () => `#{${this.actionProperties.variablesNamespace}.FirstVariable}` }),
+      firstVariable: Lazy.string({ produce: () => `#{${this.actionProperties.variablesNamespace}.FirstVariable}` }),
     };
   }
 

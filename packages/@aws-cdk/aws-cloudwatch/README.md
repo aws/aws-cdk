@@ -1,5 +1,6 @@
-## Amazon CloudWatch Construct Library
+# Amazon CloudWatch Construct Library
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
@@ -7,6 +8,7 @@
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
 
 ## Metric objects
@@ -251,6 +253,8 @@ dashboard.addWidgets(new GraphWidget({
 }));
 ```
 
+Using the methods `addLeftMetric()` and `addRightMetric()` you can add metrics to a graph widget later on.
+
 Graph widgets can also display annotations attached to the left or the right y-axis.
 
 ```ts
@@ -284,6 +288,17 @@ dashboard.addWidgets(new GraphWidget({
   // ...
 
   liveData: true,
+}));
+```
+
+The graph view can be changed from default 'timeSeries' to 'bar' or 'pie'.
+
+```ts
+dashboard.addWidgets(new GraphWidget({
+  // ...
+  // ...
+
+  view: GraphWidgetView.BAR,
 }));
 ```
 

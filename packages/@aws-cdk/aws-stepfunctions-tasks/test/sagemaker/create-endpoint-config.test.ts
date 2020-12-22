@@ -69,7 +69,7 @@ test('create complex endpoint config', () => {
     {
       initialInstanceCount: 1,
       initialVariantWeight: 0.2,
-      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.XLARGE),
+      instanceType: new ec2.InstanceType(sfn.JsonPath.stringAt('$.Endpoint.InstanceType')),
       modelName: sfn.JsonPath.stringAt('$.Endpoint.Model'),
       variantName: 'awesome-variant-2',
     }],
@@ -110,7 +110,7 @@ test('create complex endpoint config', () => {
       {
         'InitialInstanceCount': 1,
         'InitialVariantWeight': 0.2,
-        'InstanceType': 'ml.m4.xlarge',
+        'InstanceType.$': '$.Endpoint.InstanceType',
         'ModelName.$': '$.Endpoint.Model',
         'VariantName': 'awesome-variant-2',
       }],

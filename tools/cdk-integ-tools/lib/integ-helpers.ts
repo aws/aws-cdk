@@ -337,6 +337,7 @@ export const DEFAULT_SYNTH_OPTIONS = {
         },
       ],
     },
+    '@aws-cdk/aws-ecr-assets:dockerIgnoreSupport': true,
   },
   env: {
     CDK_INTEG_ACCOUNT: '12345678',

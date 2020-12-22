@@ -229,7 +229,7 @@ export class SageMakerCreateModel extends sfn.TaskStateBase implements iam.IGran
     return this.vpc
       ? {
         VpcConfig: {
-          SecurityGroupIds: cdk.Lazy.listValue({ produce: () => this.securityGroups.map((sg) => sg.securityGroupId) }),
+          SecurityGroupIds: cdk.Lazy.list({ produce: () => this.securityGroups.map((sg) => sg.securityGroupId) }),
           Subnets: this.subnets,
         },
       }

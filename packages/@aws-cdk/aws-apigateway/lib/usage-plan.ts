@@ -156,7 +156,7 @@ export class UsagePlan extends Resource {
     let resource: CfnUsagePlan;
 
     resource = new CfnUsagePlan(this, 'Resource', {
-      apiStages: Lazy.anyValue({ produce: () => this.renderApiStages(this.apiStages) }),
+      apiStages: Lazy.any({ produce: () => this.renderApiStages(this.apiStages) }),
       description: props.description,
       quota: this.renderQuota(props),
       throttle: this.renderThrottle(props.throttle),

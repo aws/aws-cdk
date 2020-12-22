@@ -94,7 +94,7 @@ export class Dashboard extends Resource {
 
     new CfnDashboard(this, 'Resource', {
       dashboardName: this.physicalName,
-      dashboardBody: Lazy.stringValue({
+      dashboardBody: Lazy.string({
         produce: () => {
           const column = new Column(...this.rows);
           column.position(0, 0);

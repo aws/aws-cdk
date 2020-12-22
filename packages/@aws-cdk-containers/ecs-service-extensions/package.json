@@ -99,6 +99,6 @@
   "awscdkio": {
     "announce": false
   },
-  "maturity": "experimental",
-  "stability": "experimental"
+  "maturity": "stable",
+  "stability": "stable"
 }

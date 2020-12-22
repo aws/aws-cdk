@@ -67,7 +67,7 @@ nodeunitShim({
   'dont allow unresolved tokens to be used in construct IDs'(test: Test) {
     // GIVEN
     const root = new Root();
-    const token = Lazy.stringValue({ produce: () => 'lazy' });
+    const token = Lazy.string({ produce: () => 'lazy' });
 
     // WHEN + THEN
     test.throws(() => new Construct(root, `MyID: ${token}`), /Cannot use tokens in construct ID: MyID: \${Token/);

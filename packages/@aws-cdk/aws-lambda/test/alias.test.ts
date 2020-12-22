@@ -499,7 +499,7 @@ describe('alias', () => {
     // WHEN
     const target = alias.addAutoScaling({ maxCapacity: 5 });
 
-    target.scaleOnUtilization({ utilizationTarget: Lazy.numberValue({ produce: () => 0.95 }) });
+    target.scaleOnUtilization({ utilizationTarget: Lazy.number({ produce: () => 0.95 }) });
 
     // THEN: no exception
     expect(stack).toHaveResource('AWS::ApplicationAutoScaling::ScalingPolicy', {

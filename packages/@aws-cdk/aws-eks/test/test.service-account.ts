@@ -2,7 +2,7 @@ import { expect, haveResource } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
 import { Test } from 'nodeunit';
 import * as eks from '../lib';
-import { testFixtureCluster } from './util';
+import { testFixture, testFixtureCluster } from './util';
 
 /* eslint-disable max-len */
 
@@ -108,6 +108,70 @@ export = {
 
       // THEN
       test.throws(() => cluster.addServiceAccount('MyServiceAccount'));
+      test.done();
+    },
+    'addServiceAccount for imported cluster'(test: Test) {
+      const { stack } = testFixture();
+      const oidcProvider = new iam.OpenIdConnectProvider(stack, 'ClusterOpenIdConnectProvider', {
+        url: 'oidc_issuer',
+      });
+      const cluster = eks.Cluster.fromClusterAttributes(stack, 'Cluster', {
+        clusterName: 'Cluster',
+        openIdConnectProvider: oidcProvider,
+        kubectlRoleArn: 'arn:aws:iam::123456:role/service-role/k8sservicerole',
+      });
+
+      cluster.addServiceAccount('MyServiceAccount');
+
+      expect(stack).to(haveResource(eks.KubernetesManifest.RESOURCE_TYPE, {
+        ServiceToken: {
+          'Fn::GetAtt': [
+            'StackClusterF0EB02FAKubectlProviderNestedStackStackClusterF0EB02FAKubectlProviderNestedStackResource739D12C4',
+            'Outputs.StackStackClusterF0EB02FAKubectlProviderframeworkonEvent8377F076Arn',
+          ],
+        },
+        PruneLabel: 'aws.cdk.eks/prune-c8d8e1722a4f3ed332f8ac74cb3d962f01fbb62291',
+        Manifest: {
+          'Fn::Join': [
+            '',
+            [
+              '[{"apiVersion":"v1","kind":"ServiceAccount","metadata":{"name":"stackclustermyserviceaccount373b933c","namespace":"default","labels":{"aws.cdk.eks/prune-c8d8e1722a4f3ed332f8ac74cb3d962f01fbb62291":"","app.kubernetes.io/name":"stackclustermyserviceaccount373b933c"},"annotations":{"eks.amazonaws.com/role-arn":"',
+              {
+                'Fn::GetAtt': [
+                  'ClusterMyServiceAccountRole85337B29',
+                  'Arn',
+                ],
+              },
+              '"}}}]',
+            ],
+          ],
+        },
+      }));
+
+      expect(stack).to(haveResource(iam.CfnRole.CFN_RESOURCE_TYPE_NAME, {
+        AssumeRolePolicyDocument: {
+          Statement: [
+            {
+              Action: 'sts:AssumeRoleWithWebIdentity',
+              Condition: {
+                StringEquals: {
+                  'Fn::GetAtt': [
+                    'ClusterMyServiceAccountConditionJson671C0633',
+                    'Value',
+                  ],
+                },
+              },
+              Effect: 'Allow',
+              Principal: {
+                Federated: {
+                  Ref: 'ClusterOpenIdConnectProviderA8B8E987',
+                },
+              },
+            },
+          ],
+          Version: '2012-10-17',
+        },
+      }));
       test.done();
     },
   },

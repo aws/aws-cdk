@@ -70,7 +70,10 @@ test('encrypted file system is created correctly with custom KMS', () => {
   expectCDK(stack).to(haveResource('AWS::EFS::FileSystem', {
     Encrypted: true,
     KmsKeyId: {
-      Ref: 'customKeyFSDDB87C6D',
+      'Fn::GetAtt': [
+        'customKeyFSDDB87C6D',
+        'Arn',
+      ],
     },
   }));
 });

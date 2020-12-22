@@ -5,7 +5,7 @@ import { IPolicy } from './policy';
 const MAX_POLICY_NAME_LEN = 128;
 
 export function undefinedIfEmpty(f: () => string[]): string[] {
-  return Lazy.listValue({
+  return Lazy.list({
     produce: () => {
       const array = f();
       return (array && array.length > 0) ? array : undefined;

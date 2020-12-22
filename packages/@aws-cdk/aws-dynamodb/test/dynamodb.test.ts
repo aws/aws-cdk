@@ -1817,7 +1817,7 @@ describe('grants', () => {
     });
   });
 
-  test('"grant" allows adding arbitrary actions associated with this table resource', () => {
+  test('"grant" allows adding arbitrary actions associated with this table resource (via testGrant)', () => {
     testGrant(
       ['action1', 'action2'], (p, t) => t.grant(p, 'dynamodb:action1', 'dynamodb:action2'));
   });

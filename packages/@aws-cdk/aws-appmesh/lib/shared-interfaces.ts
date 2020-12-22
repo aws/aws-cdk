@@ -2,6 +2,56 @@ import * as cdk from '@aws-cdk/core';
 import { CfnVirtualGateway, CfnVirtualNode } from './appmesh.generated';
 
 /**
+ * Represents timeouts for HTTP protocols.
+ */
+export interface HttpTimeout {
+  /**
+   * Represents an idle timeout. The amount of time that a connection may be idle.
+   *
+   * @default - none
+   */
+  readonly idle?: cdk.Duration;
+
+  /**
+   * Represents per request timeout.
+   *
+   * @default - 15 s
+   */
+  readonly perRequest?: cdk.Duration;
+}
+
+/**
+ * Represents timeouts for GRPC protocols.
+ */
+export interface GrpcTimeout {
+  /**
+   * Represents an idle timeout. The amount of time that a connection may be idle.
+   *
+   * @default - none
+   */
+  readonly idle?: cdk.Duration;
+
+  /**
+   * Represents per request timeout.
+   *
+   * @default - 15 s
+   */
+  readonly perRequest?: cdk.Duration;
+}
+
+/**
+ * Represents timeouts for TCP protocols.
+ */
+export interface TcpTimeout {
+  /**
+   * Represents an idle timeout. The amount of time that a connection may be idle.
+   *
+   * @default - none
+   */
+  readonly idle?: cdk.Duration;
+}
+
+/**
  * Enum of supported AppMesh protocols
  */
 export enum Protocol {
@@ -66,44 +116,6 @@ export interface HealthCheck {
    * @default 2
    */
   readonly unhealthyThreshold?: number;
-}
-
-/**
- * Port mappings for resources that require these attributes, such as VirtualNodes and Routes
- */
-export interface PortMapping {
-  /**
-   * Port mapped to the VirtualNode / Route
-   *
-   * @default 8080
-   */
-  readonly port: number;
-
-  /**
-   * Protocol for the VirtualNode / Route, only GRPC, HTTP, HTTP2, or TCP is supported
-   *
-   * @default HTTP
-   */
-  readonly protocol: Protocol;
-}
-
-/**
- * Represents the properties needed to define healthy and active listeners for nodes
- */
-export interface VirtualNodeListener {
-  /**
-   * Array of PortMappingProps for the listener
-   *
-   * @default - HTTP port 8080
-   */
-  readonly portMapping?: PortMapping;
-
-  /**
-   * Health checking strategy upstream nodes should use when communicating with the listener
-   *
-   * @default - no healthcheck
-   */
-  readonly healthCheck?: HealthCheck;
 }
 
 /**
@@ -177,3 +189,4 @@ class FileAccessLog extends AccessLog {
     };
   }
 }
+

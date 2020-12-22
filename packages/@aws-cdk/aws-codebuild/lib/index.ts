@@ -1,6 +1,7 @@
 export * from './events';
 export * from './pipeline-project';
 export * from './project';
+export * from './project-logs';
 export * from './report-group';
 export * from './source';
 export * from './source-credentials';

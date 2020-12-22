@@ -77,6 +77,13 @@ export interface CodeBuildActionProps extends codepipeline.CommonAwsActionProps 
    * @default - No additional environment variables are specified.
    */
   readonly environmentVariables?: { [name: string]: codebuild.BuildEnvironmentVariable };
+
+  /**
+   * Trigger a batch build.
+   *
+   * @default false
+   */
+  readonly executeBatchBuild?: boolean;
 }
 
 /**
@@ -174,7 +181,10 @@ export class CodeBuildAction extends Action {
     };
     if ((this.actionProperties.inputs || []).length > 1) {
       // lazy, because the Artifact name might be generated lazily
-      configuration.PrimarySource = cdk.Lazy.stringValue({ produce: () => this.props.input.artifactName });
+      configuration.PrimarySource = cdk.Lazy.string({ produce: () => this.props.input.artifactName });
+    }
+    if (this.props.executeBatchBuild) {
+      configuration.BatchEnabled = 'true';
     }
     return {
       configuration,

@@ -71,6 +71,6 @@ test('zipDirectory follows symlinks', async () => {
   }
 });
 
-export function contentHash(data: string | Buffer | DataView) {
+function contentHash(data: string | Buffer | DataView) {
   return crypto.createHash('sha256').update(data).digest('hex');
 }

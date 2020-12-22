@@ -988,7 +988,22 @@ export interface Inventory {
    */
   readonly optionalFields?: string[];
 }
-
+/**
+   * The ObjectOwnership of the bucket.
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/about-object-ownership.html
+   *
+   */
+export enum ObjectOwnership {
+  /**
+   * Objects uploaded to the bucket change ownership to the bucket owner .
+   */
+  BUCKET_OWNER_PREFERRED = 'BucketOwnerPreferred',
+  /**
+   * The uploading account will own the object.
+   */
+  OBJECT_WRITER = 'ObjectWriter',
+}
 export interface BucketProps {
   /**
    * The kind of server-side encryption to apply to this bucket.
@@ -1136,6 +1151,15 @@ export interface BucketProps {
    * @default - No inventory configuration
    */
   readonly inventories?: Inventory[];
+  /**
+   * The objectOwnership of the bucket.
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/about-object-ownership.html
+   *
+   * @default - No ObjectOwnership configuration, uploading account will own the object.
+   *
+   */
+  readonly objectOwnership?: ObjectOwnership;
 }
 
 /**
@@ -1246,14 +1270,15 @@ export class Bucket extends BucketBase {
       bucketName: this.physicalName,
       bucketEncryption,
       versioningConfiguration: props.versioned ? { status: 'Enabled' } : undefined,
-      lifecycleConfiguration: Lazy.anyValue({ produce: () => this.parseLifecycleConfiguration() }),
+      lifecycleConfiguration: Lazy.any({ produce: () => this.parseLifecycleConfiguration() }),
       websiteConfiguration,
       publicAccessBlockConfiguration: props.blockPublicAccess,
-      metricsConfigurations: Lazy.anyValue({ produce: () => this.parseMetricConfiguration() }),
-      corsConfiguration: Lazy.anyValue({ produce: () => this.parseCorsConfiguration() }),
-      accessControl: Lazy.stringValue({ produce: () => this.accessControl }),
+      metricsConfigurations: Lazy.any({ produce: () => this.parseMetricConfiguration() }),
+      corsConfiguration: Lazy.any({ produce: () => this.parseCorsConfiguration() }),
+      accessControl: Lazy.string({ produce: () => this.accessControl }),
       loggingConfiguration: this.parseServerAccessLogs(props),
-      inventoryConfigurations: Lazy.anyValue({ produce: () => this.parseInventoryConfiguration() }),
+      inventoryConfigurations: Lazy.any({ produce: () => this.parseInventoryConfiguration() }),
+      ownershipControls: this.parseOwnershipControls(props),
     });
 
     resource.applyRemovalPolicy(props.removalPolicy);
@@ -1595,6 +1620,17 @@ export class Bucket extends BucketBase {
       key: tag,
       value: tagFilters[tag],
     }));
+  }
+
+  private parseOwnershipControls({ objectOwnership }: BucketProps): CfnBucket.OwnershipControlsProperty | undefined {
+    if (!objectOwnership) {
+      return undefined;
+    }
+    return {
+      rules: [{
+        objectOwnership,
+      }],
+    };
   }
 
   private renderWebsiteConfiguration(props: BucketProps): CfnBucket.WebsiteConfigurationProperty | undefined {

@@ -1,11 +1,11 @@
-import { ABSENT } from '@aws-cdk/assert';
+import { ABSENT, objectLike } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import { App, Duration, Stack } from '@aws-cdk/core';
 import { CfnDistribution, Distribution, GeoRestriction, HttpVersion, IOrigin, LambdaEdgeEventType, PriceClass } from '../lib';
-import { defaultOrigin } from './test-origin';
+import { defaultOrigin, defaultOriginGroup } from './test-origin';
 
 let app: App;
 let stack: Stack;
@@ -318,20 +318,6 @@ describe('certificates', () => {
 
 describe('custom error responses', () => {
 
-  test('should fail if responsePagePath is defined but responseCode is not', () => {
-    const origin = defaultOrigin();
-
-    expect(() => {
-      new Distribution(stack, 'Dist', {
-        defaultBehavior: { origin },
-        errorResponses: [{
-          httpStatus: 404,
-          responsePagePath: '/errors/404.html',
-        }],
-      });
-    }).toThrow(/\'responseCode\' must be provided if \'responsePagePath\' is defined/);
-  });
-
   test('should fail if only the error code is provided', () => {
     const origin = defaultOrigin();
 
@@ -340,7 +326,7 @@ describe('custom error responses', () => {
         defaultBehavior: { origin },
         errorResponses: [{ httpStatus: 404 }],
       });
-    }).toThrow(/A custom error response without either a \'responseCode\' or \'errorCachingMinTtl\' is not valid./);
+    }).toThrow(/A custom error response without either a \'responseHttpStatus\', \'ttl\' or \'responsePagePath\' is not valid./);
   });
 
   test('should render the array of error configs if provided', () => {
@@ -348,13 +334,20 @@ describe('custom error responses', () => {
     new Distribution(stack, 'Dist', {
       defaultBehavior: { origin },
       errorResponses: [{
+        // responseHttpStatus defaults to httpsStatus
         httpStatus: 404,
-        responseHttpStatus: 404,
         responsePagePath: '/errors/404.html',
       },
       {
+        // without responsePagePath
         httpStatus: 500,
         ttl: Duration.seconds(2),
+      },
+      {
+        // with responseHttpStatus different from httpStatus
+        httpStatus: 403,
+        responseHttpStatus: 200,
+        responsePagePath: '/index.html',
       }],
     });
 
@@ -369,6 +362,11 @@ describe('custom error responses', () => {
           {
             ErrorCachingMinTTL: 2,
             ErrorCode: 500,
+          },
+          {
+            ErrorCode: 403,
+            ResponseCode: 200,
+            ResponsePagePath: '/index.html',
           },
         ],
       },
@@ -706,5 +704,41 @@ test('escape hatches are supported', () => {
         },
       },
     },
+  });
+});
+
+describe('origin IDs', () => {
+  test('origin ID is limited to 128 characters', () => {
+    const nestedStack = new Stack(stack, 'LongNameThatWillEndUpGeneratingAUniqueNodeIdThatIsLongerThanTheOneHundredAndTwentyEightCharacterLimit');
+
+    new Distribution(nestedStack, 'AReallyAwesomeDistributionWithAMemorableNameThatIWillNeverForget', {
+      defaultBehavior: { origin: defaultOrigin() },
+    });
+
+    expect(nestedStack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        Origins: [objectLike({
+          Id: 'ngerThanTheOneHundredAndTwentyEightCharacterLimitAReallyAwesomeDistributionWithAMemorableNameThatIWillNeverForgetOrigin1D38031F9',
+        })],
+      },
+    });
+  });
+
+  test('origin group ID is limited to 128 characters', () => {
+    const nestedStack = new Stack(stack, 'LongNameThatWillEndUpGeneratingAUniqueNodeIdThatIsLongerThanTheOneHundredAndTwentyEightCharacterLimit');
+
+    new Distribution(nestedStack, 'AReallyAwesomeDistributionWithAMemorableNameThatIWillNeverForget', {
+      defaultBehavior: { origin: defaultOriginGroup() },
+    });
+
+    expect(nestedStack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        OriginGroups: {
+          Items: [objectLike({
+            Id: 'hanTheOneHundredAndTwentyEightCharacterLimitAReallyAwesomeDistributionWithAMemorableNameThatIWillNeverForgetOriginGroup1B5CE3FE6',
+          })],
+        },
+      },
+    });
   });
 });

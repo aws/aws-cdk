@@ -1,4 +1,5 @@
 import * as child_process from 'child_process';
+import * as crypto from 'crypto';
 import * as path from 'path';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as sinon from 'sinon';
@@ -46,11 +47,10 @@ nodeunitShim({
   },
 
   'bundling with image from asset'(test: Test) {
-    const imageId = 'sha256:abcdef123456';
     const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
       status: 0,
       stderr: Buffer.from('stderr'),
-      stdout: Buffer.from(imageId),
+      stdout: Buffer.from('stdout'),
       pid: 123,
       output: ['stdout', 'stderr'],
       signal: null,
@@ -67,30 +67,24 @@ nodeunitShim({
     });
     image.run();
 
+    const tagHash = crypto.createHash('sha256').update(JSON.stringify({
+      path: 'docker-path',
+      buildArgs: {
+        TEST_ARG: 'cdk-test',
+      },
+    })).digest('hex');
+    const tag = `cdk-${tagHash}`;
+
     test.ok(spawnSyncStub.firstCall.calledWith('docker', [
-      'build', '-q',
+      'build', '-t', tag,
       '--build-arg', 'TEST_ARG=cdk-test',
       'docker-path',
     ]));
 
     test.ok(spawnSyncStub.secondCall.calledWith('docker', [
       'run', '--rm',
-      imageId,
+      tag,
     ]));
-    test.done();
-  },
-
-  'throws if image id cannot be extracted from build output'(test: Test) {
-    sinon.stub(child_process, 'spawnSync').returns({
-      status: 0,
-      stderr: Buffer.from('stderr'),
-      stdout: Buffer.from('stdout'),
-      pid: 123,
-      output: ['stdout', 'stderr'],
-      signal: null,
-    });
-
-    test.throws(() => BundlingDockerImage.fromAsset('docker-path'), /Failed to extract image ID from Docker build output/);
     test.done();
   },
 
@@ -133,11 +127,10 @@ nodeunitShim({
   },
 
   'BundlerDockerImage json is the bundler image if building an image'(test: Test) {
-    const imageId = 'sha256:abcdef123456';
     sinon.stub(child_process, 'spawnSync').returns({
       status: 0,
       stderr: Buffer.from('stderr'),
-      stdout: Buffer.from(imageId),
+      stdout: Buffer.from('stdout'),
       pid: 123,
       output: ['stdout', 'stderr'],
       signal: null,
@@ -148,7 +141,11 @@ nodeunitShim({
 
     const image = BundlingDockerImage.fromAsset('docker-path');
 
-    test.equals(image.image, imageId);
+    const tagHash = crypto.createHash('sha256').update(JSON.stringify({
+      path: 'docker-path',
+    })).digest('hex');
+
+    test.equals(image.image, `cdk-${tagHash}`);
     test.equals(image.toJSON(), imageHash);
     test.ok(fingerprintStub.calledWith('docker-path', sinon.match({ extraHash: JSON.stringify({}) })));
     test.done();

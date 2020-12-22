@@ -163,11 +163,11 @@ nodeunitShim({
 
     const ports = [
       Port.tcp(1234),
-      Port.tcp(Lazy.numberValue({ produce: () => 5000 })),
+      Port.tcp(Lazy.number({ produce: () => 5000 })),
       Port.allTcp(),
       Port.tcpRange(80, 90),
       Port.udp(2345),
-      Port.udp(Lazy.numberValue({ produce: () => 7777 })),
+      Port.udp(Lazy.number({ produce: () => 7777 })),
       Port.allUdp(),
       Port.udpRange(85, 95),
       Port.icmpTypeAndCode(5, 1),
@@ -192,8 +192,8 @@ nodeunitShim({
 
   'if tokens are used in ports, `canInlineRule` should be false to avoid cycles'(test: Test) {
     // GIVEN
-    const p1 = Lazy.numberValue({ produce: () => 80 });
-    const p2 = Lazy.numberValue({ produce: () => 5000 });
+    const p1 = Lazy.number({ produce: () => 80 });
+    const p2 = Lazy.number({ produce: () => 5000 });
 
     // WHEN
     const ports = [
