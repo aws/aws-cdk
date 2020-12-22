@@ -42,7 +42,7 @@ const node = mesh.addVirtualNode('node', {
       path: '/check-path',
     },
     tlsCertificate: appmesh.TlsCertificate.acm({
-      acmCertificate: cert,
+      certificate: cert,
       tlsMode: appmesh.TlsMode.STRICT,
     }),
   })],
@@ -154,8 +154,8 @@ new appmesh.VirtualGateway(stack, 'gateway2', {
       interval: cdk.Duration.seconds(10),
     },
     tlsCertificate: appmesh.TlsCertificate.file({
-      certificateChain: 'path/to/certChain',
-      privateKey: 'path/to/privateKey',
+      certificateChainPath: 'path/to/certChain',
+      privateKeyPath: 'path/to/privateKey',
       tlsMode: appmesh.TlsMode.STRICT,
     }),
   })],

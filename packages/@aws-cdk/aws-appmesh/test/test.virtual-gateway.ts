@@ -174,7 +174,7 @@ export = {
           port: 8080,
           tlsCertificate: appmesh.TlsCertificate.acm({
             tlsMode: appmesh.TlsMode.STRICT,
-            acmCertificate: cert,
+            certificate: cert,
           }),
         })],
       });
@@ -217,8 +217,8 @@ export = {
         listeners: [appmesh.VirtualGatewayListener.grpc({
           port: 8080,
           tlsCertificate: appmesh.TlsCertificate.file({
-            certificateChain: 'path/to/certChain',
-            privateKey: 'path/to/privateKey',
+            certificateChainPath: 'path/to/certChain',
+            privateKeyPath: 'path/to/privateKey',
             tlsMode: appmesh.TlsMode.STRICT,
           }),
         })],
@@ -261,8 +261,8 @@ export = {
         listeners: [appmesh.VirtualGatewayListener.grpc({
           port: 8080,
           tlsCertificate: appmesh.TlsCertificate.file({
-            certificateChain: 'path/to/certChain',
-            privateKey: 'path/to/privateKey',
+            certificateChainPath: 'path/to/certChain',
+            privateKeyPath: 'path/to/privateKey',
             tlsMode: appmesh.TlsMode.PERMISSIVE,
           }),
         })],

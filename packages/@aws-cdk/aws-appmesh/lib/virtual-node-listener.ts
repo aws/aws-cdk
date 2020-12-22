@@ -2,7 +2,7 @@ import * as cdk from '@aws-cdk/core';
 import { CfnVirtualNode } from './appmesh.generated';
 import { validateHealthChecks } from './private/utils';
 import { HealthCheck, Protocol } from './shared-interfaces';
-import { TlsCertificate } from './tls-certificate';
+import { TlsCertificate, TlsCertificateConfig } from './tls-certificate';
 
 /**
  * Properties for a VirtualNode listener
@@ -165,16 +165,6 @@ export abstract class VirtualNodeListener {
 
 }
 
-/**
- * Renders the TLS config for a listener
- */
-function renderTls(scope: cdk.Construct, tlsCertificate: TlsCertificate): CfnVirtualNode.ListenerTlsProperty {
-  return {
-    certificate: tlsCertificate.bind(scope).tlsCertificate,
-    mode: tlsCertificate.tlsMode.toString(),
-  };
-}
-
 class VirtualNodeListenerImpl extends VirtualNodeListener {
   constructor(private readonly protocol: Protocol,
     private readonly healthCheck: HealthCheck | undefined,
@@ -183,6 +173,7 @@ class VirtualNodeListenerImpl extends VirtualNodeListener {
     private readonly tlsCertificate: TlsCertificate | undefined) { super(); }
 
   public bind(scope: cdk.Construct): VirtualNodeListenerConfig {
+    const tlsConfig = this.tlsCertificate?.bind(scope);
     return {
       listener: {
         portMapping: {
@@ -191,8 +182,20 @@ class VirtualNodeListenerImpl extends VirtualNodeListener {
         },
         healthCheck: this.healthCheck ? this.renderHealthCheck(this.healthCheck) : undefined,
         timeout: this.timeout ? this.renderTimeout(this.timeout) : undefined,
-        tls: this.tlsCertificate ? renderTls(scope, this.tlsCertificate) : undefined,
+        tls: this.renderTls(tlsConfig),
       },
+    };
+  }
+
+  /**
+   * Renders the TLS config for a listener
+   */
+  private renderTls(tlsCertificateConfig: TlsCertificateConfig | undefined): CfnVirtualNode.ListenerTlsProperty | undefined {
+    if (tlsCertificateConfig === undefined) { return undefined; }
+
+    return {
+      certificate: tlsCertificateConfig.tlsCertificate,
+      mode: tlsCertificateConfig.tlsMode.toString(),
     };
   }
 
@@ -237,3 +240,4 @@ class VirtualNodeListenerImpl extends VirtualNodeListener {
     });
   }
 }
+

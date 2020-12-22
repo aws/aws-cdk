@@ -281,7 +281,6 @@ export = {
         // THEN
         expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
           Spec: {
-
             BackendDefaults: {
               ClientPolicy: {
                 TLS: {
@@ -312,7 +311,6 @@ export = {
         const mesh = new appmesh.Mesh(stack, 'mesh', {
           meshName: 'test-mesh',
         });
-
 
         const node = new appmesh.VirtualNode(stack, 'test-node', {
           mesh,
@@ -380,7 +378,7 @@ export = {
           listeners: [appmesh.VirtualNodeListener.grpc({
             port: 80,
             tlsCertificate: appmesh.TlsCertificate.acm({
-              acmCertificate: cert,
+              certificate: cert,
               tlsMode: appmesh.TlsMode.STRICT,
             }),
           },
@@ -407,6 +405,7 @@ export = {
             ],
           },
         }));
+
         test.done();
       },
     },
@@ -426,8 +425,8 @@ export = {
           listeners: [appmesh.VirtualNodeListener.http({
             port: 80,
             tlsCertificate: appmesh.TlsCertificate.file({
-              certificateChain: 'path/to/certChain',
-              privateKey: 'path/to/privateKey',
+              certificateChainPath: 'path/to/certChain',
+              privateKeyPath: 'path/to/privateKey',
               tlsMode: appmesh.TlsMode.STRICT,
             }),
           })],
@@ -451,6 +450,7 @@ export = {
             ],
           },
         }));
+
         test.done();
       },
     },
@@ -470,8 +470,8 @@ export = {
           listeners: [appmesh.VirtualNodeListener.http({
             port: 80,
             tlsCertificate: appmesh.TlsCertificate.file({
-              certificateChain: 'path/to/certChain',
-              privateKey: 'path/to/privateKey',
+              certificateChainPath: 'path/to/certChain',
+              privateKeyPath: 'path/to/privateKey',
               tlsMode: appmesh.TlsMode.PERMISSIVE,
             }),
           })],

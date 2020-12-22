@@ -30,6 +30,11 @@ export interface TlsCertificateConfig {
    * The CFN shape for a listener TLS certificate
    */
   readonly tlsCertificate: CfnVirtualNode.ListenerTlsCertificateProperty,
+
+  /**
+   * The TLS mode.
+   */
+  readonly tlsMode: TlsMode;
 }
 
 /**
@@ -44,7 +49,7 @@ export interface AcmCertificateOptions {
   /**
    * The ACM certificate
    */
-  readonly acmCertificate: acm.ICertificate;
+  readonly certificate: acm.ICertificate;
 }
 
 /**
@@ -59,12 +64,12 @@ export interface FileCertificateOptions {
   /**
    * The file path of the certificate chain file.
    */
-  readonly certificateChain: string;
+  readonly certificateChainPath: string;
 
   /**
    * The file path of the private key file.
    */
-  readonly privateKey: string;
+  readonly privateKeyPath: string;
 }
 
 /**
@@ -84,11 +89,6 @@ export abstract class TlsCertificate {
   public static acm(props: AcmCertificateOptions): TlsCertificate {
     return new AcmTlsCertificate(props);
   }
-
-  /**
-   * The TLS mode.
-   */
-  public readonly abstract tlsMode: TlsMode;
 
   /**
    * Returns TLS certificate based provider.
@@ -116,7 +116,7 @@ class AcmTlsCertificate extends TlsCertificate {
   constructor(props: AcmCertificateOptions) {
     super();
     this.tlsMode = props.tlsMode ? props.tlsMode : TlsMode.DISABLED;
-    this.acmCertificate = props.acmCertificate;
+    this.acmCertificate = props.certificate;
   }
 
   bind(_scope: cdk.Construct): TlsCertificateConfig {
@@ -126,6 +126,7 @@ class AcmTlsCertificate extends TlsCertificate {
           certificateArn: this.acmCertificate.certificateArn,
         },
       },
+      tlsMode: this.tlsMode,
     };
   }
 }
@@ -154,8 +155,8 @@ class FileTlsCertificate extends TlsCertificate {
   constructor(props: FileCertificateOptions) {
     super();
     this.tlsMode = props.tlsMode ? props.tlsMode : TlsMode.DISABLED;
-    this.certificateChain = props.certificateChain;
-    this.privateKey = props.privateKey;
+    this.certificateChain = props.certificateChainPath;
+    this.privateKey = props.privateKeyPath;
   }
 
   bind(_scope: cdk.Construct): TlsCertificateConfig {
@@ -166,6 +167,7 @@ class FileTlsCertificate extends TlsCertificate {
           privateKey: this.privateKey,
         },
       },
+      tlsMode: this.tlsMode,
     };
   }
 }
