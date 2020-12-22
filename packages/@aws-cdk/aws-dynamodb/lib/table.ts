@@ -1064,15 +1064,14 @@ export class Table extends TableBase {
   private readonly indexScaling = new Map<string, ScalableAttributePair>();
   private readonly scalingRole: iam.IRole;
 
+  private readonly globalReplicaCustomResources = new Array<CustomResource>();
+
   constructor(scope: Construct, id: string, props: TableProps) {
     super(scope, id, {
       physicalName: props.tableName,
     });
 
     const { sseSpecification, encryptionKey } = this.parseEncryption(props);
-
-    this.billingMode = props.billingMode || BillingMode.PROVISIONED;
-    this.validateProvisioning(props);
 
     let streamSpecification: CfnTable.StreamSpecificationProperty | undefined;
     if (props.replicationRegions) {
@@ -1081,13 +1080,14 @@ export class Table extends TableBase {
       }
       streamSpecification = { streamViewType: StreamViewType.NEW_AND_OLD_IMAGES };
 
-      if (props.billingMode && props.billingMode !== BillingMode.PAY_PER_REQUEST) {
-        throw new Error('The `PAY_PER_REQUEST` billing mode must be used when specifying `replicationRegions`');
+      this.billingMode = props.billingMode ?? BillingMode.PAY_PER_REQUEST;
+    } else {
+      this.billingMode = props.billingMode ?? BillingMode.PROVISIONED;
+      if (props.stream) {
+        streamSpecification = { streamViewType: props.stream };
       }
-      this.billingMode = BillingMode.PAY_PER_REQUEST;
-    } else if (props.stream) {
-      streamSpecification = { streamViewType: props.stream };
     }
+    this.validateProvisioning(props);
 
     this.table = new CfnTable(this, 'Resource', {
       tableName: this.physicalName,
@@ -1222,13 +1222,17 @@ export class Table extends TableBase {
       throw new Error('AutoScaling is not available for tables with PAY_PER_REQUEST billing mode');
     }
 
-    return this.tableScaling.scalableWriteAttribute = new ScalableTableAttribute(this, 'WriteScaling', {
+    this.tableScaling.scalableWriteAttribute = new ScalableTableAttribute(this, 'WriteScaling', {
       serviceNamespace: appscaling.ServiceNamespace.DYNAMODB,
       resourceId: `table/${this.tableName}`,
       dimension: 'dynamodb:table:WriteCapacityUnits',
       role: this.scalingRole,
       ...props,
     });
+    for (const globalReplicaCustomResource of this.globalReplicaCustomResources) {
+      globalReplicaCustomResource.node.addDependency(this.tableScaling.scalableWriteAttribute);
+    }
+    return this.tableScaling.scalableWriteAttribute;
   }
 
   /**
@@ -1296,6 +1300,17 @@ export class Table extends TableBase {
     }
     if (this.localSecondaryIndexes.length > 0 && !this.tableSortKey) {
       errors.push('a sort key of the table must be specified to add local secondary indexes');
+    }
+
+    if (this.globalReplicaCustomResources.length > 0 && this.billingMode === BillingMode.PROVISIONED) {
+      const writeAutoScaleAttribute = this.tableScaling.scalableWriteAttribute;
+      if (!writeAutoScaleAttribute) {
+        errors.push('A global Table that uses PROVISIONED as the billing mode needs auto-scaled write capacity. ' +
+          'Use the autoScaleWriteCapacity() method to enable it.');
+      } else if (!writeAutoScaleAttribute._scalingPolicyCreated) {
+        errors.push('A global Table that uses PROVISIONED as the billing mode needs auto-scaled write capacity with a policy. ' +
+          'Call one of the scaleOn*() methods of the object returned from autoScaleWriteCapacity()');
+      }
     }
 
     return errors;
@@ -1467,6 +1482,7 @@ export class Table extends TableBase {
         onEventHandlerPolicy.policy,
         isCompleteHandlerPolicy.policy,
       );
+      this.globalReplicaCustomResources.push(currentRegion);
 
       // Deploy time check to prevent from creating a replica in the region
       // where this stack is deployed. Only needed for environment agnostic

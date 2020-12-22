@@ -86,10 +86,12 @@ export = {
       },
       desiredTaskCount: 2,
       schedule: events.Schedule.expression('rate(1 minute)'),
+      ruleName: 'sample-scheduled-task-rule',
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::Events::Rule', {
+      Name: 'sample-scheduled-task-rule',
       Targets: [
         {
           Arn: { 'Fn::GetAtt': ['EcsCluster97242B84', 'Arn'] },

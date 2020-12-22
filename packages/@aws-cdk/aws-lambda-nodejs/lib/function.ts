@@ -87,7 +87,10 @@ export class NodejsFunction extends lambda.Function {
       if (!fs.existsSync(props.depsLockFilePath)) {
         throw new Error(`Lock file at ${props.depsLockFilePath} doesn't exist`);
       }
-      depsLockFilePath = props.depsLockFilePath;
+      if (!fs.statSync(props.depsLockFilePath).isFile()) {
+        throw new Error('`depsLockFilePath` should point to a file');
+      }
+      depsLockFilePath = path.resolve(props.depsLockFilePath);
     } else {
       const lockFile = findUp(LockFile.YARN) ?? findUp(LockFile.NPM);
       if (!lockFile) {
