@@ -10,6 +10,7 @@ import {
   Aws,
   CfnAutoScalingRollingUpdate, CfnCreationPolicy, CfnUpdatePolicy,
   Duration, Fn, IResource, Lazy, PhysicalName, Resource, Stack, Tags,
+  Token,
   Tokenization, withResolved,
 } from '@aws-cdk/core';
 import { Construct } from 'constructs';
@@ -765,10 +766,24 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
 
     const resourceLabel = `${this.albTargetGroup.firstLoadBalancerFullName}/${this.albTargetGroup.targetGroupFullName}`;
 
+    if ((props.targetRequestsPerMinute === undefined) === (props.targetRequestsPerSecond === undefined)) {
+      throw new Error('Specify exactly one of \'targetRequestsPerMinute\' or \'targetRequestsPerSecond\'');
+    }
+
+    let rpm: number;
+    if (props.targetRequestsPerSecond !== undefined) {
+      if (Token.isUnresolved(props.targetRequestsPerSecond)) {
+        throw new Error('\'targetRequestsPerSecond\' cannot be an unresolved value; use \'targetRequestsPerMinute\' instead.');
+      }
+      rpm = props.targetRequestsPerSecond * 60;
+    } else {
+      rpm = props.targetRequestsPerMinute!;
+    }
+
     const policy = new TargetTrackingScalingPolicy(this, `ScalingPolicy${id}`, {
       autoScalingGroup: this,
       predefinedMetric: PredefinedMetric.ALB_REQUEST_COUNT_PER_TARGET,
-      targetValue: props.targetRequestsPerSecond,
+      targetValue: rpm,
       resourceLabel,
       ...props,
     });
@@ -921,8 +936,8 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     // use delayed evaluation
     const imageConfig = props.machineImage.getImage(this);
     this.userData = props.userData ?? imageConfig.userData;
-    const userDataToken = Lazy.stringValue({ produce: () => Fn.base64(this.userData.render()) });
-    const securityGroupsToken = Lazy.listValue({ produce: () => this.securityGroups.map(sg => sg.securityGroupId) });
+    const userDataToken = Lazy.string({ produce: () => Fn.base64(this.userData.render()) });
+    const securityGroupsToken = Lazy.list({ produce: () => this.securityGroups.map(sg => sg.securityGroupId) });
 
     const launchConfig = new CfnLaunchConfiguration(this, 'LaunchConfig', {
       imageId: imageConfig.imageId,
@@ -999,10 +1014,10 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       maxSize: Tokenization.stringifyNumber(maxCapacity),
       desiredCapacity: desiredCapacity !== undefined ? Tokenization.stringifyNumber(desiredCapacity) : undefined,
       launchConfigurationName: launchConfig.ref,
-      loadBalancerNames: Lazy.listValue({ produce: () => this.loadBalancerNames }, { omitEmpty: true }),
-      targetGroupArns: Lazy.listValue({ produce: () => this.targetGroupArns }, { omitEmpty: true }),
+      loadBalancerNames: Lazy.list({ produce: () => this.loadBalancerNames }, { omitEmpty: true }),
+      targetGroupArns: Lazy.list({ produce: () => this.targetGroupArns }, { omitEmpty: true }),
       notificationConfigurations: this.renderNotificationConfiguration(),
-      metricsCollection: Lazy.anyValue({ produce: () => this.renderMetricsCollection() }),
+      metricsCollection: Lazy.any({ produce: () => this.renderMetricsCollection() }),
       vpcZoneIdentifier: subnetIds,
       healthCheckType: props.healthCheck && props.healthCheck.type,
       healthCheckGracePeriod: props.healthCheck && props.healthCheck.gracePeriod && props.healthCheck.gracePeriod.toSeconds(),
@@ -1603,8 +1618,17 @@ export interface NetworkUtilizationScalingProps extends BaseTargetTrackingProps 
 export interface RequestCountScalingProps extends BaseTargetTrackingProps {
   /**
    * Target average requests/seconds on each instance
+   *
+   * @deprecated Use 'targetRequestsPerMinute' instead
+   * @default - Specify exactly one of 'targetRequestsPerSecond' and 'targetRequestsPerSecond'
    */
-  readonly targetRequestsPerSecond: number;
+  readonly targetRequestsPerSecond?: number;
+
+  /**
+   * Target average requests/minute on each instance
+   * @default - Specify exactly one of 'targetRequestsPerSecond' and 'targetRequestsPerSecond'
+   */
+  readonly targetRequestsPerMinute?: number;
 }
 
 /**

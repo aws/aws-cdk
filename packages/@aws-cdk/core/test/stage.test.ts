@@ -1,3 +1,4 @@
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import { App, CfnResource, Construct, IAspect, IConstruct, Stack, Stage, Aspects } from '../lib';
@@ -309,6 +310,40 @@ nodeunitShim({
     test.ok(Stage.isStage(externalStage));
     test.done();
   },
+});
+
+test('missing context in Stages is propagated up to root assembly', () => {
+  // GIVEN
+  const app = new App();
+  const stage = new Stage(app, 'Stage', {
+    env: { account: 'account', region: 'region' },
+  });
+  const stack = new Stack(stage, 'Stack');
+  new CfnResource(stack, 'Resource', { type: 'Something' });
+
+  // WHEN
+  stack.reportMissingContext({
+    key: 'missing-context-key',
+    provider: cxschema.ContextProvider.AVAILABILITY_ZONE_PROVIDER,
+    props: {
+      account: 'account',
+      region: 'region',
+    },
+  });
+
+  // THEN
+  const assembly = app.synth();
+
+  expect(assembly.manifest.missing).toEqual([
+    {
+      key: 'missing-context-key',
+      provider: cxschema.ContextProvider.AVAILABILITY_ZONE_PROVIDER,
+      props: {
+        account: 'account',
+        region: 'region',
+      },
+    },
+  ]);
 });
 
 class TouchingAspect implements IAspect {

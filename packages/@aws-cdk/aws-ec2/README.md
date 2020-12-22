@@ -1,6 +1,6 @@
-## Amazon EC2 Construct Library
-
+# Amazon EC2 Construct Library
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
@@ -8,7 +8,9 @@
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
+
 
 The `@aws-cdk/aws-ec2` package contains primitives for setting up networking and
 instances.
@@ -620,6 +622,23 @@ new VpcEndpointService(this, 'EndpointService', {
   whitelistedPrincipals: [new ArnPrincipal('arn:aws:iam::123456789012:root')]
 });
 ```
+
+Endpoint services support private DNS, which makes it easier for clients to connect to your service by automatically setting up DNS in their VPC.
+You can enable private DNS on an endpoint service like so:
+
+```ts
+import { VpcEndpointServiceDomainName } from '@aws-cdk/aws-route53';
+
+new VpcEndpointServiceDomainName(stack, 'EndpointDomain', {
+  endpointService: vpces,
+  domainName: 'my-stuff.aws-cdk.dev',
+  publicHostedZone: zone,
+});
+```
+
+Note: The domain name must be owned (registered through Route53) by the account the endpoint service is in, or delegated to the account.
+The VpcEndpointServiceDomainName will handle the AWS side of domain verification, the process for which can be found
+[here](https://docs.aws.amazon.com/vpc/latest/userguide/endpoint-services-dns-validation.html)
 
 ## Instances
 

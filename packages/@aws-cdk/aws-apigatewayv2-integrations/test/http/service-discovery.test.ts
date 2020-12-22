@@ -74,4 +74,24 @@ describe('HttpServiceDiscoveryIntegration', () => {
       IntegrationMethod: 'PATCH',
     });
   });
+
+  test('fails if vpcLink is not specified', () => {
+    const stack = new Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const namespace = new servicediscovery.PrivateDnsNamespace(stack, 'Namespace', {
+      name: 'foobar.com',
+      vpc,
+    });
+    const service = namespace.createService('Service');
+    const api = new HttpApi(stack, 'HttpApi');
+
+    expect(() => new HttpRoute(stack, 'HttpProxyPrivateRoute', {
+      httpApi: api,
+      integration: new HttpServiceDiscoveryIntegration({
+        service,
+        method: HttpMethod.PATCH,
+      }),
+      routeKey: HttpRouteKey.with('/pets'),
+    })).toThrow(/vpcLink property is mandatory/);
+  });
 });
