@@ -201,12 +201,33 @@ const cluster = new eks.Cluster(this, 'HelloEKS', {
 });
 
 cluster.addNodegroupCapacity('custom-node-group', {
-  instanceType: new ec2.InstanceType('m5.large'),
+  instanceTypes: [new ec2.InstanceType('m5.large')],
   minSize: 4,
   diskSize: 100,
   amiType: eks.NodegroupAmiType.AL2_X86_64_GPU,
   ...
 });
+```
+
+#### Spot Instances Support
+
+Use `capacityType` to create managed node groups comprised of spot instances. To maximize the availability of your applications while using
+Spot Instances, we recommend that you configure a Spot managed node group to use multiple instance types with the `instanceTypes` property. 
+
+> For more details visit [Managed node group capacity types](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html#managed-node-group-capacity-types).
+
+
+```ts
+cluster.addNodegroupCapacity('extra-ng-spot', {
+  instanceTypes: [
+    new ec2.InstanceType('c5.large'),
+    new ec2.InstanceType('c5a.large'),
+    new ec2.InstanceType('c5d.large'),
+  ],
+  minSize: 3,
+  capacityType: eks.CapacityType.SPOT,
+});
+
 ```
 
 #### Launch Template Support
@@ -236,7 +257,9 @@ cluster.addNodegroupCapacity('extra-ng', {
 });
 ```
 
-> For more details visit [Launch Template Support](https://docs.aws.amazon.com/en_ca/eks/latest/userguide/launch-templates.html).
+You may specify one or instance types in either the `instanceTypes` property of `NodeGroup` or in the launch template, **but not both**.
+
+> For more details visit [Launch Template Support](https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html).
 
 Graviton 2 instance types are supported including `c6g`, `m6g`, `r6g` and `t4g`.
 
@@ -552,7 +575,7 @@ Amazon Linux 2 AMI for ARM64 will be automatically selected.
 ```ts
 // add a managed ARM64 nodegroup
 cluster.addNodegroupCapacity('extra-ng-arm', {
-  instanceType: new ec2.InstanceType('m6g.medium'),
+  instanceTypes: [new ec2.InstanceType('m6g.medium')],
   minSize: 2,
 });
 
