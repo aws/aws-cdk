@@ -583,28 +583,6 @@ export class EndpointAccess {
  * Common configuration props for EKS clusters.
  */
 export interface ClusterProps extends ClusterOptions {
-  /**
-   * NOT SUPPORTED: We no longer allow disabling kubectl-support. Setting this
-   * option to `false` will throw an error.
-   *
-   * To temporary allow you to retain existing clusters created with
-   * `kubectlEnabled: false`, you can use `eks.LegacyCluster` class, which is a
-   * drop-in replacement for `eks.Cluster` with `kubectlEnabled: false`.
-   *
-   * Bear in mind that this is a temporary workaround. We have plans to remove
-   * `eks.LegacyCluster`. If you have a use case for using `eks.LegacyCluster`,
-   * please add a comment here https://github.com/aws/aws-cdk/issues/9332 and
-   * let us know so we can make sure to continue to support your use case with
-   * `eks.Cluster`. This issue also includes additional context into why this
-   * class is being removed.
-   *
-   * @deprecated `eks.LegacyCluster` is __temporarily__ provided as a drop-in
-   * replacement until you are able to migrate to `eks.Cluster`.
-   *
-   * @see https://github.com/aws/aws-cdk/issues/9332
-   * @default true
-   */
-  readonly kubectlEnabled?: boolean;
 
   /**
    * Number of instances to allocate as an initial capacity for this cluster.
@@ -975,14 +953,6 @@ export class Cluster extends ClusterBase {
     super(scope, id, {
       physicalName: props.clusterName,
     });
-
-    if (props.kubectlEnabled === false) {
-      throw new Error(
-        'The "eks.Cluster" class no longer allows disabling kubectl support. ' +
-        'As a temporary workaround, you can use the drop-in replacement class `eks.LegacyCluster`, ' +
-        'but bear in mind that this class will soon be removed and will no longer receive additional ' +
-        'features or bugfixes. See https://github.com/aws/aws-cdk/issues/9332 for more details');
-    }
 
     const stack = Stack.of(this);
 
