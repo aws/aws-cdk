@@ -57,7 +57,7 @@ export = {
 
   'When adding a Virtual Router to existing mesh': {
     'with at least one complete port mappings': {
-      'shoulld create proper router'(test: Test) {
+      'should create proper router'(test: Test) {
         // GIVEN
         const stack = new cdk.Stack();
 
@@ -105,7 +105,9 @@ export = {
     // WHEN
     new appmesh.VirtualNode(stack, 'test-node', {
       mesh,
-      cloudMapService: service,
+      serviceDiscovery: appmesh.ServiceDiscovery.cloudMap({
+        service: service,
+      }),
     });
 
     // THEN
@@ -136,7 +138,7 @@ export = {
 
         const testNode = new appmesh.VirtualNode(stack, 'test-node', {
           mesh,
-          dnsHostName: 'test-node',
+          serviceDiscovery: appmesh.ServiceDiscovery.dns('test-node'),
         });
 
         const testRouter = mesh.addVirtualRouter('router', {
@@ -207,13 +209,10 @@ export = {
         });
 
         const node = mesh.addVirtualNode('test-node', {
-          dnsHostName: 'test.domain.local',
-          listener: {
-            portMapping: {
-              port: 8080,
-              protocol: appmesh.Protocol.HTTP,
-            },
-          },
+          serviceDiscovery: appmesh.ServiceDiscovery.dns('test.domain.local'),
+          listeners: [appmesh.VirtualNodeListener.http({
+            port: 8080,
+          })],
         });
 
         mesh.addVirtualService('service2', {
@@ -252,7 +251,7 @@ export = {
         });
 
         mesh.addVirtualNode('test-node', {
-          dnsHostName: 'test.domain.local',
+          serviceDiscovery: appmesh.ServiceDiscovery.dns('test.domain.local'),
         });
 
         // THEN
@@ -286,13 +285,10 @@ export = {
         });
 
         mesh.addVirtualNode('test-node', {
-          dnsHostName: 'test.domain.local',
-          listener: {
-            portMapping: {
-              port: 8080,
-              protocol: appmesh.Protocol.HTTP,
-            },
-          },
+          serviceDiscovery: appmesh.ServiceDiscovery.dns('test.domain.local'),
+          listeners: [appmesh.VirtualNodeListener.http({
+            port: 8080,
+          })],
         });
 
         // THEN
@@ -328,12 +324,9 @@ export = {
         });
 
         mesh.addVirtualNode('test-node', {
-          dnsHostName: 'test.domain.local',
-          listener: {
-            portMapping: {
-              port: 8080,
-              protocol: appmesh.Protocol.HTTP,
-            },
+          serviceDiscovery: appmesh.ServiceDiscovery.dns('test.domain.local'),
+          listeners: [appmesh.VirtualNodeListener.http({
+            port: 8080,
             healthCheck: {
               healthyThreshold: 3,
               path: '/',
@@ -341,7 +334,7 @@ export = {
               timeout: cdk.Duration.seconds(2), // min
               unhealthyThreshold: 2,
             },
-          },
+          })],
         });
 
         // THEN
@@ -387,13 +380,10 @@ export = {
         });
 
         mesh.addVirtualNode('test-node', {
-          dnsHostName: 'test.domain.local',
-          listener: {
-            portMapping: {
-              port: 8080,
-              protocol: appmesh.Protocol.HTTP,
-            },
-          },
+          serviceDiscovery: appmesh.ServiceDiscovery.dns('test.domain.local'),
+          listeners: [appmesh.VirtualNodeListener.http({
+            port: 8080,
+          })],
           backends: [
             service1,
           ],

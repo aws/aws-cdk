@@ -1,6 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
-import * as cdk from '@aws-cdk/core';
+import { Duration, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { integrationResourceArn } from '../private/task-utils';
 import { EmrCreateCluster } from './emr-create-cluster';
@@ -45,8 +45,17 @@ export class EmrModifyInstanceGroupByName extends sfn.TaskStateBase {
     super(scope, id, props);
     this.taskPolicies = [
       new iam.PolicyStatement({
-        actions: ['elasticmapreduce:ModifyInstanceGroups', 'elasticmapreduce:ListInstanceGroups'],
-        resources: [`arn:aws:elasticmapreduce:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:cluster/*`],
+        actions: [
+          'elasticmapreduce:ModifyInstanceGroups',
+          'elasticmapreduce:ListInstanceGroups',
+        ],
+        resources: [
+          Stack.of(this).formatArn({
+            service: 'elasticmapreduce',
+            resource: 'cluster',
+            resourceName: '*',
+          }),
+        ],
       }),
     ];
   }
@@ -94,7 +103,7 @@ export namespace EmrModifyInstanceGroupByName {
      *
      * @default cdk.Duration.seconds
      */
-    readonly instanceTerminationTimeout?: cdk.Duration;
+    readonly instanceTerminationTimeout?: Duration;
   }
 
   /**
@@ -110,7 +119,7 @@ export namespace EmrModifyInstanceGroupByName {
      *
      * @default - EMR selected default
      */
-    readonly decommissionTimeout?: cdk.Duration;
+    readonly decommissionTimeout?: Duration;
 
     /**
      * Custom policy for requesting termination protection or termination of specific instances when shrinking an instance group.

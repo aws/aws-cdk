@@ -147,7 +147,7 @@ describe('deployment', () => {
 
     // tokens supported, and are resolved upon synthesis
     const value = 'hello hello';
-    deployment.addToLogicalId({ foo: Lazy.stringValue({ produce: () => value }) });
+    deployment.addToLogicalId({ foo: Lazy.string({ produce: () => value }) });
 
     const template2 = synthesize();
     expect(template2.Resources.deployment333819758d91bed959c6bd6268ba84f6d33e888e).toBeDefined();

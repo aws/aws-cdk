@@ -224,6 +224,8 @@ export enum AuroraCapacityUnit {
   ACU_1 = 1,
   /** 2 Aurora Capacity Units */
   ACU_2 = 2,
+  /** 4 Aurora Capacity Units */
+  ACU_4 = 4,
   /** 8 Aurora Capacity Units */
   ACU_8 = 8,
   /** 16 Aurora Capacity Units */

@@ -18,6 +18,7 @@ To use this package, you need to declare this package and the `constructs` packa
 dependencies.
 
 According to the kind of project you are developing:
+
 - For projects that are CDK libraries, declare them both under the `devDependencies`
   **and** `peerDependencies` sections.
 - For CDK apps, declare them under the `dependencies` section only.

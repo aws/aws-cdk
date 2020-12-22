@@ -42,7 +42,7 @@ nodeunitShim({
       value: {
         [other.ref]: 1234,
         world: {
-          bar: `this is a ${Lazy.stringValue({ produce: () => 'I am lazy' })}`,
+          bar: `this is a ${Lazy.string({ produce: () => 'I am lazy' })}`,
         },
       },
     });
@@ -62,7 +62,7 @@ nodeunitShim({
     const res = new CfnResource(stack, 'MyResource', { type: 'Foo' });
     const cfnjson = new CfnJson(stack, 'MyCfnJson', {
       value: {
-        [`ref=${res.ref}`]: `this is a ${Lazy.stringValue({ produce: () => 'I am lazy' })}`,
+        [`ref=${res.ref}`]: `this is a ${Lazy.string({ produce: () => 'I am lazy' })}`,
       },
     });
 

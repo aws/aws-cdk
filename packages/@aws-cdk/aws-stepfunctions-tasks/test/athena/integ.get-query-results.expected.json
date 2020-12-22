@@ -89,7 +89,7 @@
                 "s3:ListBucket",
                 "s3:GetBucketLocation",
                 "s3:GetObject"
-              ],              
+              ],
               "Effect": "Allow",
               "Resource": "*"
             },
@@ -208,7 +208,7 @@
                       {
                         "Ref": "AWS::AccountId"
                       },
-                      ":userdefinedfunction/mydatabase/*"
+                      ":userDefinedFunction/mydatabase/*"
                     ]
                   ]
                 }

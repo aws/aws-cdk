@@ -116,6 +116,7 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
       propagateTags: props.propagateTags,
       enableECSManagedTags: props.enableECSManagedTags,
       platformVersion: props.platformVersion,
+      deploymentController: props.deploymentController,
     });
     this.configureAutoscalingForService(this.service);
     this.grantPermissionsToService(this.service);
