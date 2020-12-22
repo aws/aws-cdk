@@ -889,5 +889,43 @@ export = {
 
       test.done();
     },
+
+    "grants the Project's Role read permissions to the  SecretsManager environment variables"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      new codebuild.PipelineProject(stack, 'Project', {
+        environmentVariables: {
+          'ENV_VAR1': {
+            type: codebuild.BuildEnvironmentVariableType.SECRETS_MANAGER,
+            value: 'my-secret',
+          },
+        },
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+        'PolicyDocument': {
+          'Statement': arrayWith({
+            'Action': 'secretsmanager:GetSecretValue',
+            'Effect': 'Allow',
+            'Resource': {
+              'Fn::Join': ['', [
+                'arn:',
+                { Ref: 'AWS::Partition' },
+                ':secretsmanager:',
+                { Ref: 'AWS::Region' },
+                ':',
+                { Ref: 'AWS::AccountId' },
+                ':secret:my-secret-??????',
+              ]],
+            },
+          }),
+        },
+      }));
+
+      test.done();
+    },
   },
 };
