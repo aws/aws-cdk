@@ -890,8 +890,6 @@ export = {
       test.done();
     },
 
-
-
     "grants the Project's Role read permissions to the  SecretsManager environment variables"(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
