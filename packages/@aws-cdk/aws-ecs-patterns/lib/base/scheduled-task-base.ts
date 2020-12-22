@@ -42,7 +42,7 @@ export interface ScheduledTaskBaseProps {
    * A name for the rule.
    *
    * @default - AWS CloudFormation generates a unique physical ID and uses that ID
-   * for the rule name. For more information, see Name Type.
+   * for the rule name. For more information, see [Name Type](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-name.html).
    */
   readonly ruleName?: string;
 
