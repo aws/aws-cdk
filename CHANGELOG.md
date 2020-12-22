@@ -8,8 +8,7 @@ All notable changes to this project will be documented in this file. See [standa
 ### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
 
 * **eks:** `LegacyCluster` was removed since it existed only for a transition period to allow gradual migration to the current cluster class.
-
-- eks: `kubectlEnabled` property was removed, all clusters now support `kubectl`. 
+* **eks:** `kubectlEnabled` property was removed, all clusters now support `kubectl`. 
 * **core:** Creation stack traces for `Lazy` values are no longer
 captured by default in order to speed up tests. Run with
 `CDK_DEBUG=true` (or `cdk --debug`) to capture stack traces.
