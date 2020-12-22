@@ -45,13 +45,9 @@ nodeunitShim({
     test.done();
   },
 
-  'when Feature Flag is disable, should not give error'(test: Test) {
+  'when Feature Flag is ommit, should not give error'(test: Test) {
     // GIVEN
-    const app = new App({
-      context: {
-        [cxapi.VALIDATE_STACK_RESOURCE_LIMIT]: false,
-      },
-    });
+    const app = new App({});
 
     const stack = new Stack(app, 'MyStack');
 

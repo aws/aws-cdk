@@ -81,10 +81,10 @@ export const SECRETS_MANAGER_PARSE_OWNED_SECRET_NAME = '@aws-cdk/aws-secretsmana
 export const KMS_DEFAULT_KEY_POLICIES = '@aws-cdk/aws-kms:defaultKeyPolicies';
 
 /**
- * AWS CDK creates Stack without limit resources by default.
+ * AWS CDK creates Stack without limiting resources by default.
  *
- * If this flag is not set, the default behaviour is to synthezed the Stacks without limit.
- * Otherwise, if this flag is set, the synthetizer will check the amount of resources inside a Stack, and
+ * If this flag is not set, the default behaviour is to synthesize the Stacks without limit.
+ * Otherwise, if this flag is set, the Synthesizer will check the amount of resources inside a Stack, and
  * it will raise a warning if at 80% and it will throw an error if exceeds the maximum of allowed Resources.
  */
 export const VALIDATE_STACK_RESOURCE_LIMIT = '@aws-cdk/core:validateStackResourceLimit';
