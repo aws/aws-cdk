@@ -226,9 +226,7 @@
               "Action": [
                 "codebuild:BatchGetBuilds",
                 "codebuild:StartBuild",
-                "codebuild:StopBuild",
-                "codebuild:StartBuildBatch",
-                "codebuild:StopBuildBatch"
+                "codebuild:StopBuild"
               ],
               "Effect": "Allow",
               "Resource": {

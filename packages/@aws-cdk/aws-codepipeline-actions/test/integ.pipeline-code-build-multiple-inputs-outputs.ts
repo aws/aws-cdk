@@ -65,7 +65,6 @@ const testAction = new cpactions.CodeBuildAction({
   type: cpactions.CodeBuildActionType.TEST,
   actionName: 'Build2',
   project,
-  executeBatchBuild: true,
   input: source2Output,
   extraInputs: [
     source1Output,
