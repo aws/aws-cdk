@@ -1098,7 +1098,7 @@ export class Project extends ProjectBase {
   private renderLoggingConfiguration(props: LoggingOptions | undefined): CfnProject.LogsConfigProperty | undefined {
     if (props === undefined) {
       return undefined;
-    };
+    }
 
     let s3Config: CfnProject.S3LogsConfigProperty|undefined = undefined;
     let cloudwatchConfig: CfnProject.CloudWatchLogsConfigProperty|undefined = undefined;
@@ -1107,9 +1107,10 @@ export class Project extends ProjectBase {
       const s3Logs = props.s3;
       s3Config = {
         status: (s3Logs.enabled ?? true) ? 'ENABLED' : 'DISABLED',
-        location: `${s3Logs.bucket.bucketName}/${s3Logs.prefix}`,
+        location: `${s3Logs.bucket.bucketName}` + (s3Logs.prefix ? `/${s3Logs.prefix}` : ''),
         encryptionDisabled: s3Logs.encrypted,
       };
+      s3Logs.bucket?.grantWrite(this);
     }
 
     if (props.cloudWatch) {
@@ -1119,6 +1120,7 @@ export class Project extends ProjectBase {
       if (status === 'ENABLED' && !(cloudWatchLogs.logGroup)) {
         throw new Error('Specifying a LogGroup is required if CloudWatch logging for CodeBuild is enabled');
       }
+      cloudWatchLogs.logGroup?.grantWrite(this);
 
       cloudwatchConfig = {
         status,

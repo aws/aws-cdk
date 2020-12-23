@@ -711,11 +711,9 @@ export = {
         logging: {
           cloudWatch: {
             logGroup,
-            prefix: '/my-logs',
           },
           s3: {
             bucket,
-            prefix: 'my-logs',
           },
         },
       });
@@ -726,10 +724,9 @@ export = {
           CloudWatchLogs: {
             GroupName: 'MyLogGroupName',
             Status: 'ENABLED',
-            StreamName: '/my-logs',
           },
           S3Logs: {
-            Location: 'MyBucketName/my-logs',
+            Location: 'MyBucketName',
             Status: 'ENABLED',
           },
         }),
