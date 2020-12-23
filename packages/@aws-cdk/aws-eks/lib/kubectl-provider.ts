@@ -3,6 +3,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Duration, Stack, NestedStack, Names } from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
+import { AwsCliLayer } from '@aws-cdk/lambda-layer-awscli';
 import { Construct } from 'constructs';
 import { ICluster, Cluster } from './cluster';
 import { KubectlLayer } from './kubectl-layer';
@@ -66,7 +67,6 @@ export class KubectlProvider extends NestedStack {
       throw new Error('"kubectlSecurityGroup" is required if "kubectlSubnets" is specified');
     }
 
-    const layer = cluster.kubectlLayer ?? getOrCreateKubectlLayer(this);
     const memorySize = cluster.kubectlMemory ? cluster.kubectlMemory.toMebibytes() : 1024;
 
     const handler = new lambda.Function(this, 'Handler', {
@@ -75,7 +75,6 @@ export class KubectlProvider extends NestedStack {
       handler: 'index.handler',
       timeout: Duration.minutes(15),
       description: 'onEvent handler for EKS kubectl resource provider',
-      layers: [layer],
       memorySize,
       environment: cluster.kubectlEnvironment,
 
@@ -85,9 +84,17 @@ export class KubectlProvider extends NestedStack {
       vpcSubnets: cluster.kubectlPrivateSubnets ? { subnets: cluster.kubectlPrivateSubnets } : undefined,
     });
 
+    // allow user to customize the layer
+    if (!props.cluster.kubectlLayer) {
+      handler.addLayers(new AwsCliLayer(this, 'AwsCliLayer'));
+      handler.addLayers(new KubectlLayer(this, 'KubectlLayer'));
+    } else {
+      handler.addLayers(props.cluster.kubectlLayer);
+    }
+
     this.handlerRole = handler.role!;
 
-    this.handlerRole.addToPolicy(new iam.PolicyStatement({
+    this.handlerRole.addToPrincipalPolicy(new iam.PolicyStatement({
       actions: ['eks:DescribeCluster'],
       resources: [cluster.clusterArn],
     }));
@@ -103,20 +110,4 @@ export class KubectlProvider extends NestedStack {
     this.roleArn = cluster.kubectlRole.roleArn;
   }
 
-}
-
-/**
- * Gets or create a singleton instance of KubectlLayer.
- *
- * (exported for unit tests).
- */
-export function getOrCreateKubectlLayer(scope: Construct): KubectlLayer {
-  const stack = Stack.of(scope);
-  const id = 'kubectl-layer';
-  const exists = stack.node.tryFindChild(id) as KubectlLayer;
-  if (exists) {
-    return exists;
-  }
-
-  return new KubectlLayer(stack, id);
 }

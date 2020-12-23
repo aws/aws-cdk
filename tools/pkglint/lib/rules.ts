@@ -147,7 +147,7 @@ export class ThirdPartyAttributions extends ValidationRule {
       return;
     }
     const bundled = pkg.getAllBundledDependencies().filter(dep => !dep.startsWith('@aws-cdk'));
-    const attribution = pkg.json.pkglint.attribution ?? [];
+    const attribution = pkg.json.pkglint?.attribution ?? [];
     const noticePath = path.join(pkg.packageRoot, 'NOTICE');
     const lines = fs.existsSync(noticePath)
       ? fs.readFileSync(noticePath, { encoding: 'utf8' }).split('\n')
