@@ -5,7 +5,7 @@ cd $(dirname $0)
 
 echo ">> Building AWS Lambda layer inside a docker image..."
 
-TAG='aws-lambda-layer-kubectl'
+TAG='aws-lambda-layer'
 
 docker build -t ${TAG} .
 

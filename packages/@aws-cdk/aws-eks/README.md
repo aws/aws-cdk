@@ -481,12 +481,12 @@ const cluster = new eks.Cluster(this, 'hello-eks', {
 #### Runtime
 
 The kubectl handler uses `kubectl`, `helm` and the `aws` CLI in order to
-interact with the cluster. These are bundled into an AWS Lambda layer that is
-included with the AWS CDK.
+interact with the cluster. These are bundled into AWS Lambda layers included in
+the `@aws-cdk/lambda-layer-awscli` and `@aws-cdk/lambda-layer-kubectl` modules.
 
-You can specify a different `lambda.LayerVersion` if you wish to use a different
+You can specify a custom `lambda.LayerVersion` if you wish to use a different
 version of these tools. The handler expects the layer to include the following
-executables:
+three executables:
 
 ```text
 helm/helm
@@ -494,13 +494,14 @@ kubectl/kubectl
 awscli/aws
 ```
 
-The `Dockerfile` used to build this layer can be found
-[here](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-eks/kubectl-layer).
-The `build.sh` script will produce a `layer.zip` file that can be used with a `LayerVersion` as an asset:
+See more information in the
+[Dockerfile for @aws-cdk/lambda-layer-awscli](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/lambda-layer-awscli/layer)
+and the
+[Dockerfile for @aws-cdk/lambda-layer-kubectl](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/lambda-layer-kubectl/layer)
 
 ```ts
 const layer = new lambda.LayerVersion(this, 'KubectlLayer', {
-  code: lambda.Code.fromAsset('layer.zip')),
+  code: lambda.Code.fromAsset('layer.zip'),
 });
 ```
 

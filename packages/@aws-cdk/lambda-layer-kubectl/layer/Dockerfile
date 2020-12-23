@@ -34,13 +34,6 @@ RUN chmod +x /opt/kubectl/kubectl
 RUN mkdir -p /tmp/helm && wget -qO- https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz | tar -xvz -C /tmp/helm
 RUN mkdir -p /opt/helm && cp /tmp/helm/linux-amd64/helm /opt/helm/helm
 
-# cleanup
-RUN rm -fr /opt/awscli.tmp
-RUN rm -rf \
-    /opt/awscli/pip* \
-    /opt/awscli/setuptools* \
-    /opt/awscli/awscli/examples
-
 #
 # create the bundle
 #

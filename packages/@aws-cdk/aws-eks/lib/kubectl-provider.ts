@@ -4,9 +4,9 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import { Duration, Stack, NestedStack, Names } from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
 import { AwsCliLayer } from '@aws-cdk/lambda-layer-awscli';
+import { KubectlLayer } from '@aws-cdk/lambda-layer-kubectl';
 import { Construct } from 'constructs';
 import { ICluster, Cluster } from './cluster';
-import { KubectlLayer } from './kubectl-layer';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
 // eslint-disable-next-line
