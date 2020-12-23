@@ -22,6 +22,42 @@ const CLUSTER_VERSION = eks.KubernetesVersion.V1_18;
 
 export = {
 
+  'can specify custom environment to cluster resource handler'(test: Test) {
+
+    const { stack } = testFixture();
+
+    new eks.Cluster(stack, 'Cluster', {
+      version: CLUSTER_VERSION,
+      clusterHandlerEnvironment: {
+        foo: 'bar',
+      },
+    });
+
+    const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.ClusterResourceProvider') as cdk.NestedStack;
+
+    test.deepEqual(expect(nested).value.Resources.OnEventHandler42BEBAE0.Properties.Environment, { Variables: { foo: 'bar' } });
+    test.done();
+
+  },
+
+  'throws when trying to place cluster handlers in a vpc with no private subnets'(test: Test) {
+
+    const { stack } = testFixture();
+
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+
+    test.throws(() => {
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        placeClusterHandlerInVpc: true,
+        vpc: vpc,
+        vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }],
+      });
+    }, /Cannot place cluster handler in the VPC since no private subnets could be selected/);
+
+    test.done();
+  },
+
   'throws when accessing cluster security group for imported cluster without cluster security group id'(test: Test) {
 
     const { stack } = testFixture();
@@ -33,6 +69,33 @@ export = {
     test.throws(() => cluster.clusterSecurityGroup, /"clusterSecurityGroup" is not defined for this imported cluster/);
     test.done();
 
+  },
+
+  'can place cluster handlers in the cluster vpc'(test: Test) {
+
+    const { stack } = testFixture();
+
+    new eks.Cluster(stack, 'Cluster', {
+      version: CLUSTER_VERSION,
+      placeClusterHandlerInVpc: true,
+    });
+
+    const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.ClusterResourceProvider') as cdk.NestedStack;
+
+    function assertFunctionPlacedInVpc(id: string) {
+      test.deepEqual(expect(nested).value.Resources[id].Properties.VpcConfig.SubnetIds, [
+        { Ref: 'referencetoStackClusterDefaultVpcPrivateSubnet1SubnetA64D1BF0Ref' },
+        { Ref: 'referencetoStackClusterDefaultVpcPrivateSubnet2Subnet32D85AB8Ref' },
+      ]);
+    }
+
+    assertFunctionPlacedInVpc('OnEventHandler42BEBAE0');
+    assertFunctionPlacedInVpc('IsCompleteHandler7073F4DA');
+    assertFunctionPlacedInVpc('ProviderframeworkonEvent83C1D0A7');
+    assertFunctionPlacedInVpc('ProviderframeworkisComplete26D7B0CB');
+    assertFunctionPlacedInVpc('ProviderframeworkonTimeout0B47CA38');
+
+    test.done();
   },
 
   'can access cluster security group for imported cluster with cluster security group id'(test: Test) {
