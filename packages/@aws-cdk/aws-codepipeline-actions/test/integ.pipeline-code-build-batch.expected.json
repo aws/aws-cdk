@@ -6,7 +6,7 @@
         "RepositoryName": "MyIntegTestTempRepo"
       }
     },
-    "MyRepoawscdkcodepipelinecodebuildmultipleinputsoutputsPipeline314D3A85EventRule9F75D675": {
+    "MyRepoawscdkcodepipelinecodebuildbatchPipeline674F06D4EventRuleD3DE52E7": {
       "Type": "AWS::Events::Rule",
       "Properties": {
         "EventPattern": {
@@ -164,66 +164,6 @@
             },
             {
               "Action": [
-                "s3:GetObject*",
-                "s3:GetBucket*",
-                "s3:List*"
-              ],
-              "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "MyBucketF68F3FF0",
-                    "Arn"
-                  ]
-                },
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      {
-                        "Fn::GetAtt": [
-                          "MyBucketF68F3FF0",
-                          "Arn"
-                        ]
-                      },
-                      "/*"
-                    ]
-                  ]
-                }
-              ]
-            },
-            {
-              "Action": [
-                "s3:DeleteObject*",
-                "s3:PutObject*",
-                "s3:Abort*"
-              ],
-              "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "MyBucketF68F3FF0",
-                    "Arn"
-                  ]
-                },
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      {
-                        "Fn::GetAtt": [
-                          "MyBucketF68F3FF0",
-                          "Arn"
-                        ]
-                      },
-                      "/*"
-                    ]
-                  ]
-                }
-              ]
-            },
-            {
-              "Action": [
                 "codebuild:BatchGetBuilds",
                 "codebuild:StartBuildBatch",
                 "codebuild:StopBuildBatch"
@@ -306,7 +246,7 @@
                   "ProjectName": {
                     "Ref": "MyBuildProject30DB9D6E"
                   },
-                  "PrimarySource": "Artifact_Source_Source"
+                  "BatchEnabled": "true"
                 },
                 "InputArtifacts": [
                   {
@@ -481,10 +421,7 @@
               "Action": [
                 "s3:GetObject*",
                 "s3:GetBucket*",
-                "s3:List*",
-                "s3:DeleteObject*",
-                "s3:PutObject*",
-                "s3:Abort*"
+                "s3:List*"
               ],
               "Effect": "Allow",
               "Resource": [
