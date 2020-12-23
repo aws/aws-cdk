@@ -18,4 +18,3 @@ nyc.config.js
 !.eslintrc.js
 
 junit.xml
-lib/kubectl-layer.zip
