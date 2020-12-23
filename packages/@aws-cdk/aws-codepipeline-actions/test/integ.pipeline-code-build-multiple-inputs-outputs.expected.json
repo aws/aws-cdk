@@ -226,19 +226,7 @@
               "Action": [
                 "codebuild:BatchGetBuilds",
                 "codebuild:StartBuild",
-                "codebuild:StopBuild"
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "MyBuildProject30DB9D6E",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": [
-                "codebuild:BatchGetBuilds",
+                "codebuild:StopBuild",
                 "codebuild:StartBuildBatch",
                 "codebuild:StopBuildBatch"
               ],
@@ -385,8 +373,7 @@
                   "ProjectName": {
                     "Ref": "MyBuildProject30DB9D6E"
                   },
-                  "PrimarySource": "Artifact_Source_Source2",
-                  "BatchEnabled": true
+                  "PrimarySource": "Artifact_Source_Source2"
                 },
                 "InputArtifacts": [
                   {
