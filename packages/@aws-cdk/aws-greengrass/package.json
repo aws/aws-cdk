@@ -55,7 +55,10 @@
     "rosetta:extract": "yarn --silent jsii-rosetta extract"
   },
   "cdk-build": {
-    "cloudformation": "AWS::Greengrass",
+    "cloudformation": [
+      "AWS::Greengrass",
+      "AWS::GreengrassV2"
+    ],
     "jest": true,
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
