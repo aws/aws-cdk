@@ -139,13 +139,6 @@ export class CodeBuildAction extends Action {
       resources: [this.props.project.projectArn],
       actions: [
         'codebuild:BatchGetBuilds',
-      ],
-    }));
-    // separate to the one above so that deduplication works nicely and the above statement
-    // is only added once
-    options.role.addToPolicy(new iam.PolicyStatement({
-      resources: [this.props.project.projectArn],
-      actions: [
         `codebuild:${this.props.executeBatchBuild ? 'StartBuildBatch' : 'StartBuild'}`,
         `codebuild:${this.props.executeBatchBuild ? 'StopBuildBatch' : 'StopBuild'}`,
       ],
