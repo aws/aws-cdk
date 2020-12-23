@@ -649,9 +649,8 @@ These command lines explained:
 > access to administrative credentials should be dropped as soon as possible.
 
 > **On the use of AdministratorAccess**: The use of the `AdministratorAccess` policy
-> by CDK Pipelines ensures that your pipeline can deploy every type of AWS resource
-> to your account, and can potentially make changes that affect your security posture.
-> Its use requires complete trust in the code and dependencies that make up your CDK app.
+> ensures that your pipeline can deploy every type of AWS resource to your account.
+> Make sure you trust all the code and dependencies that make up your CDK app.
 > Check with the appropriate department within your organization to decide on the
 > proper policy to use.
 
