@@ -1469,9 +1469,6 @@ export class Cluster extends ClusterBase {
         namespace: 'kube-system',
         values: {
           'nodeSelector.lifecycle': LifecycleLabel.SPOT,
-          'image': {
-            repository: 'public.ecr.aws/r6b0f9a1/aws-node-termination-handler',
-          },
         },
       });
     }
