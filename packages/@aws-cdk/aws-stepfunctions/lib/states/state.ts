@@ -183,6 +183,15 @@ export abstract class State extends Construct implements IChainable {
     this.parameters = props.parameters;
     this.outputPath = props.outputPath;
     this.resultPath = props.resultPath;
+
+    this.node.addValidation({ validate: () => this.validateState() });
+  }
+
+  /**
+   * Allows the state to validate itself.
+   */
+  protected validateState(): string[] {
+    return [];
   }
 
   public get id() {
