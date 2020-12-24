@@ -139,8 +139,8 @@ export class CodeBuildAction extends Action {
       resources: [this.props.project.projectArn],
       actions: [
         'codebuild:BatchGetBuilds',
-        'codebuild:StartBuild',
-        'codebuild:StopBuild',
+        `codebuild:${this.props.executeBatchBuild ? 'StartBuildBatch' : 'StartBuild'}`,
+        `codebuild:${this.props.executeBatchBuild ? 'StopBuildBatch' : 'StopBuild'}`,
       ],
     }));
 
