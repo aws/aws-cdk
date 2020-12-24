@@ -687,8 +687,8 @@ function createInstances(cluster: DatabaseClusterNew, props: DatabaseClusterBase
       props.clusterIdentifier != null ? `${props.clusterIdentifier}instance${instanceIndex}` :
         undefined;
 
-    const publiclyAccessible = instanceProps.publiclyAccessible ?? (instanceProps.vpcSubnets &&
-    instanceProps.vpcSubnets.subnetType === ec2.SubnetType.PUBLIC);
+    const publiclyAccessible = instanceProps.publiclyAccessible ??
+    (instanceProps.vpcSubnets && instanceProps.vpcSubnets.subnetType === ec2.SubnetType.PUBLIC);
 
     const instance = new CfnDBInstance(cluster, `Instance${instanceIndex}`, {
       // Link to cluster

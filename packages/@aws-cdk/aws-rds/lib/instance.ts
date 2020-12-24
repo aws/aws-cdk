@@ -593,10 +593,11 @@ export interface DatabaseInstanceNewProps {
    * @default - None
    */
   readonly s3ExportBuckets?: s3.IBucket[];
+
   /**
-   * Indicates whether the DB instance is an internet-facing instance
+   * Indicates whether the DB instance is an internet-facing instance.
    *
-   * @default - `true` if the instance is deployed in a `PUBLIC` subnet, `false` otherwise.
+   * @default - `true` if the instance is deployed in a `PUBLIC` subnet, `false` otherwise
    */
   readonly publiclyAccessible?: boolean;
 }

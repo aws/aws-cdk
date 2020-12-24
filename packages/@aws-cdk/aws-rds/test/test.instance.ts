@@ -1204,6 +1204,7 @@ export = {
 
     test.done();
   },
+
   'can set publiclyAccessible to false with public subnets'(test: Test) {
     new rds.DatabaseInstance(stack, 'Instance', {
       engine: rds.DatabaseInstanceEngine.mysql({
@@ -1222,6 +1223,7 @@ export = {
       },
       PubliclyAccessible: false,
     }));
+
     test.done();
   },
 
@@ -1243,6 +1245,7 @@ export = {
       },
       PubliclyAccessible: true,
     }));
+
     test.done();
   },
 };

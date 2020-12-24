@@ -1786,6 +1786,7 @@ export = {
       Engine: 'aurora',
       PubliclyAccessible: true,
     }));
+
     test.done();
   },
 
@@ -1810,8 +1811,10 @@ export = {
       Engine: 'aurora',
       PubliclyAccessible: false,
     }));
+
     test.done();
   },
+
   'database cluster instances in public subnet should by default have publiclyAccessible set to true'(test: Test) {
     // GIVEN
     const stack = testStack();
@@ -1832,6 +1835,7 @@ export = {
       Engine: 'aurora',
       PubliclyAccessible: true,
     }));
+
     test.done();
   },
 };
