@@ -520,7 +520,15 @@ abstract class ThirdPartyGitSource extends GitSource {
 
   public bind(_scope: CoreConstruct, _project: IProject): SourceConfig {
     const anyFilterGroupsProvided = this.webhookFilters.length > 0;
-    const webhook = this.webhook === undefined ? (anyFilterGroupsProvided || this.webhookTriggersBatchBuild ? true : undefined) : this.webhook;
+    const webhook = this.webhook === undefined ? (anyFilterGroupsProvided ? true : undefined) : this.webhook;
+
+    if (!webhook && anyFilterGroupsProvided) {
+      throw new Error('`webhookFilters` cannot be used when `webhook` is `false`');
+    }
+
+    if (!webhook && this.webhookTriggersBatchBuild) {
+      throw new Error('`webhookTriggersBatchBuild` cannot be used when `webhook` is `false`');
+    }
 
     const superConfig = super.bind(_scope, _project);
     return {
