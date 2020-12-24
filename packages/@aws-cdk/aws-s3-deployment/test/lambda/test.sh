@@ -15,5 +15,5 @@ cd ${staging}
 cp -f ${scriptdir}/../../lib/lambda/* $PWD
 cp -f ${scriptdir}/* $PWD
 
-# run our tests
-exec python3 test.py $@
+# this will run our tests inside the right environment
+docker build .
