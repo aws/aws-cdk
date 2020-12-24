@@ -35,6 +35,7 @@ export class AwsAuth extends Construct {
 
     new KubernetesManifest(this, 'manifest', {
       cluster: props.cluster,
+      overwrite: true, // this config map is auto-created by the cluster
       manifest: [
         {
           apiVersion: 'v1',
