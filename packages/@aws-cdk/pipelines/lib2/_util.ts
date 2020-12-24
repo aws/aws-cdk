@@ -38,3 +38,20 @@ export function* flatten<A>(xs: Iterable<A[]>): IterableIterator<A> {
     }
   }
 }
+
+export function filterEmpty(xs: Array<string | undefined>): string[] {
+  return xs.filter(x => x) as any;
+}
+
+export function mapValues<A, B>(xs: Record<string, A>, fn: (x: A) => B): Record<string, B> {
+  const ret: Record<string, B> = {};
+  for (const [k, v] of Object.entries(xs)) {
+    ret[k] = fn(v);
+  }
+  return ret;
+}
+
+export function noEmptyObject<A>(xs: Record<string, A>): Record<string, A> | undefined {
+  if (Object.keys(xs).length === 0) { return undefined; }
+  return xs;
+}

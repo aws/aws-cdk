@@ -62,6 +62,5 @@ export class GitHubSource extends Source {
       },
     });
     options.parent.add(action);
-    options.root.addSourceArtifact(action.outputArtifact);
   }
 }

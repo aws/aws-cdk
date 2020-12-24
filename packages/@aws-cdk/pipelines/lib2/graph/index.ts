@@ -1,5 +1,5 @@
-import { addAll, extract, flatMap } from '../_util';
-import { CommandImage } from '../image';
+import { addAll, extract, flatMap, flatten } from '../_util';
+import { ExecutionSourceAction } from './source-actions';
 import { topoSort } from './toposort';
 
 export abstract class ExecutionNode {
@@ -33,7 +33,8 @@ export abstract class ExecutionNode {
 }
 
 export class ExecutionGraph extends ExecutionNode {
-  private readonly nodes = new Set<ExecutionNode>();
+  protected readonly nodes = new Set<ExecutionNode>();
+
   constructor(name: string, nodes?: ExecutionNode[]) {
     super(name);
     if (nodes) {
@@ -126,15 +127,31 @@ export class ExecutionGraph extends ExecutionNode {
 }
 
 export class ExecutionPipeline extends ExecutionGraph {
-  public readonly sourceArtifacts: ExecutionArtifact[] = [];
+  public readonly sourceStage = new ExecutionGraph('Source');
+  public readonly synthStage = new ExecutionGraph('Synth');
   private _cloudAssemblyArtifact?: ExecutionArtifact;
 
   constructor() {
     super('Pipeline');
+    this.add(this.sourceStage);
+    this.add(this.synthStage);
   }
 
-  public addSourceArtifact(artifact: ExecutionArtifact) {
-    this.sourceArtifacts.push(artifact);
+  /**
+   * Return sorted list of non-predefined stages
+   */
+  public get sortedAdditionalStages() {
+    return Array.from(flatten(this.sortedChildren())).filter(n => n !== this.sourceStage && n !== this.synthStage);
+  }
+
+  public get sourceArtifacts() {
+    const ret: ExecutionArtifact[] = [];
+    for (const node of flatten(this.sourceStage.sortedLeaves())) {
+      if (node instanceof ExecutionSourceAction) {
+        ret.push(node.outputArtifact);
+      }
+    }
+    return ret;
   }
 
   public get cloudAssemblyArtifact() {
@@ -152,32 +169,25 @@ export class ExecutionPipeline extends ExecutionGraph {
 export class ExecutionAction extends ExecutionNode {
 }
 
-export interface ShellCommandArtifact {
-  readonly directory: string;
-  readonly artifact: ExecutionArtifact;
-}
-
-export interface ShellCommandActionProps {
-  readonly installCommands?: string[];
-  readonly buildCommands?: string[];
-  readonly testCommands?: string[];
-  readonly image?: CommandImage;
-  readonly buildsDockerImages?: boolean;
-  readonly testReports?: boolean;
-  readonly subdirectory?: string;
-  readonly environmentVariables?: Record<string, string>;
-  readonly inputArtifacts?: ShellCommandArtifact[];
-  readonly outputDirectories?: ShellCommandArtifact[];
-}
-
-export class ShellCommandAction extends ExecutionAction {
-  constructor(name: string, public readonly props: ShellCommandActionProps) {
-    super(name);
-  }
-}
-
 export class ExecutionArtifact {
-  constructor(public readonly name: string, public readonly producedBy: ExecutionAction) {
+  private _producedBy?: ExecutionAction;
+
+  constructor(public readonly name: string, producedBy?: ExecutionAction) {
+    this._producedBy = producedBy;
+  }
+
+  public get producedBy() {
+    if (!this._producedBy) {
+      throw new Error('Artifact doesn\'t have a producer');
+    }
+    return this._producedBy;
+  }
+
+  public recordProducer(producedBy?: ExecutionAction) {
+    if (this._producedBy) {
+      throw new Error('Artifact already has a producer');
+    }
+    this._producedBy = producedBy;
   }
 }
 
@@ -231,7 +241,7 @@ export function commonAncestor(xs: Iterable<ExecutionNode>) {
   return paths[0][0];
 }
 
-export function ancestorPath(x: ExecutionNode, upTo: ExecutionNode): ExecutionNode[]  {
+export function ancestorPath(x: ExecutionNode, upTo: ExecutionNode): ExecutionNode[] {
   const ret = [x];
   while (x.parentGraph && x.parentGraph !== upTo) {
     x = x.parentGraph;
@@ -250,3 +260,4 @@ function rootPath(x: ExecutionNode): ExecutionNode[] {
 }
 
 export * from './source-actions';
+export * from './shell-action';

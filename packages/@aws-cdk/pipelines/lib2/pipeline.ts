@@ -1,4 +1,5 @@
-import { Construct, Stage } from '@aws-cdk/core';
+import { Stage } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Approver } from './approver';
 import { AssetPublishingStrategy } from './asset-publishing';
 import { Backend } from './backend';
@@ -6,6 +7,10 @@ import { CdkStageDeployment } from './deployment/cdk-stage-deployment';
 import { ExecutionGraph, ExecutionPipeline } from './graph';
 import { Source } from './source';
 import { Synth } from './synth';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 
 //----------------------------------------------------------------------
@@ -49,7 +54,7 @@ export interface CdkPipelineProps {
   readonly backend?: Backend;
 }
 
-export class CdkPipeline extends Construct {
+export class CdkPipeline extends CoreConstruct {
   private readonly graph = new ExecutionPipeline();
   private readonly backend: Backend;
   private readonly assetPublishing: AssetPublishingStrategy;
@@ -61,18 +66,10 @@ export class CdkPipeline extends Construct {
     this.backend = props.backend ?? Backend.codePipeline();
     this.assetPublishing = props.assetPublishing ?? AssetPublishingStrategy.prepublishAll();
 
-    const sourceGraph = new ExecutionGraph('Source');
-    this.graph.add(sourceGraph);
-
-    const synthGraph = new ExecutionGraph('Synth');
-    this.graph.add(synthGraph);
-
-    synthGraph.dependOn(sourceGraph);
-
     for (const source of props.sources ?? []) {
-      source.addToExecutionGraph({ root: this.graph, parent: sourceGraph });
+      source.addToExecutionGraph({ root: this.graph, parent: this.graph.sourceStage });
     }
-    props.synth.addToExecutionGraph({ parent: synthGraph, root: this.graph });
+    props.synth.addToExecutionGraph({ parent: this.graph.synthStage, root: this.graph, scope: this });
   }
 
   public addApplicationStage(stage: Stage, options?: AddApplicationOptions): void {
