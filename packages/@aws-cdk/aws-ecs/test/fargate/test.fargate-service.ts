@@ -212,6 +212,7 @@ export = {
         deploymentController: {
           type: ecs.DeploymentControllerType.CODE_DEPLOY,
         },
+        circuitBreaker: { rollback: true },
         securityGroup: new ec2.SecurityGroup(stack, 'SecurityGroup1', {
           allowAllOutbound: true,
           description: 'Example',
@@ -235,6 +236,10 @@ export = {
         DeploymentConfiguration: {
           MaximumPercent: 150,
           MinimumHealthyPercent: 55,
+          DeploymentCircuitBreaker: {
+            Enable: true,
+            Rollback: true,
+          },
         },
         DeploymentController: {
           Type: ecs.DeploymentControllerType.CODE_DEPLOY,
@@ -1782,6 +1787,38 @@ export = {
       // THEN
       test.deepEqual(stack.resolve(service.serviceArn), stack.resolve(`arn:${pseudo.partition}:ecs:${pseudo.region}:${pseudo.accountId}:service/my-http-service`));
       test.equal(service.serviceName, 'my-http-service');
+
+      test.done();
+    },
+
+    'with circuit breaker'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const cluster = new ecs.Cluster(stack, 'EcsCluster');
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+
+      taskDefinition.addContainer('Container', {
+        image: ecs.ContainerImage.fromRegistry('hello'),
+      });
+
+      // WHEN
+      new ecs.FargateService(stack, 'EcsService', {
+        cluster,
+        taskDefinition,
+        circuitBreaker: { rollback: true },
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::ECS::Service', {
+        DeploymentConfiguration: {
+          MaximumPercent: 200,
+          MinimumHealthyPercent: 50,
+          DeploymentCircuitBreaker: {
+            Enable: true,
+            Rollback: true,
+          },
+        },
+      }));
 
       test.done();
     },

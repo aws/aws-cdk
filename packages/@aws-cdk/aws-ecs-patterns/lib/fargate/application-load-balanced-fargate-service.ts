@@ -166,6 +166,7 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
       enableECSManagedTags: props.enableECSManagedTags,
       cloudMapOptions: props.cloudMapOptions,
       platformVersion: props.platformVersion,
+      deploymentController: props.deploymentController,
       securityGroups: props.securityGroups,
       vpcSubnets: props.taskSubnets,
     });
