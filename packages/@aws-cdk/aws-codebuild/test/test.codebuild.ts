@@ -694,6 +694,48 @@ export = {
 
       test.done();
     },
+
+    'with webhookTriggersBatchBuild option'(test: Test) {
+      const stack = new cdk.Stack();
+
+      new codebuild.Project(stack, 'Project', {
+        source: codebuild.Source.gitHub({
+          owner: 'testowner',
+          repo: 'testrepo',
+          webhook: true,
+          webhookTriggersBatchBuild: true,
+        }),
+      });
+
+      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+        Triggers: {
+          Webhook: true,
+          BuildType: 'BUILD_BATCH',
+        },
+      }));
+
+      test.done();
+    },
+
+    'fail creating a Project when webhook false and webhookTriggersBatchBuild option'(test: Test) {
+      [false, undefined].forEach((webhook) => {
+        const stack = new cdk.Stack();
+
+        test.throws(() => {
+          new codebuild.Project(stack, 'Project', {
+            source: codebuild.Source.gitHub({
+              owner: 'testowner',
+              repo: 'testrepo',
+              webhook,
+              webhookTriggersBatchBuild: true,
+            }),
+          });
+        }, /`webhookTriggersBatchBuild` cannot be used when `webhook` is `false`/);
+      });
+
+      test.done();
+    },
+
     'fail creating a Project when no build spec is given'(test: Test) {
       const stack = new cdk.Stack();
 
@@ -1666,6 +1708,25 @@ export = {
       test.throws(() => {
         filterGroup.andBaseRefIs('.*');
       }, /A base reference condition cannot be added if a Group contains a PUSH event action/);
+
+      test.done();
+    },
+
+    'cannot be used when webhook is false'(test: Test) {
+      const stack = new cdk.Stack();
+
+      test.throws(() => {
+        new codebuild.Project(stack, 'Project', {
+          source: codebuild.Source.bitBucket({
+            owner: 'owner',
+            repo: 'repo',
+            webhook: false,
+            webhookFilters: [
+              codebuild.FilterGroup.inEventOf(codebuild.EventAction.PUSH),
+            ],
+          }),
+        });
+      }, /`webhookFilters` cannot be used when `webhook` is `false`/);
 
       test.done();
     },
