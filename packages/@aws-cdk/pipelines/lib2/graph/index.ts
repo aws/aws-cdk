@@ -126,7 +126,7 @@ export class ExecutionGraph extends ExecutionNode {
   }
 }
 
-export class ExecutionPipeline extends ExecutionGraph {
+export class PipelineGraph extends ExecutionGraph {
   public readonly sourceStage = new ExecutionGraph('Source');
   public readonly synthStage = new ExecutionGraph('Synth');
   private _cloudAssemblyArtifact?: ExecutionArtifact;
@@ -170,24 +170,24 @@ export class ExecutionAction extends ExecutionNode {
 }
 
 export class ExecutionArtifact {
-  private _producedBy?: ExecutionAction;
+  private _producer?: ExecutionAction;
 
-  constructor(public readonly name: string, producedBy?: ExecutionAction) {
-    this._producedBy = producedBy;
+  constructor(public readonly name: string, producer?: ExecutionAction) {
+    this._producer = producer;
   }
 
-  public get producedBy() {
-    if (!this._producedBy) {
+  public get producer() {
+    if (!this._producer) {
       throw new Error('Artifact doesn\'t have a producer');
     }
-    return this._producedBy;
+    return this._producer;
   }
 
-  public recordProducer(producedBy?: ExecutionAction) {
-    if (this._producedBy) {
+  public producedBy(producer?: ExecutionAction) {
+    if (this._producer) {
       throw new Error('Artifact already has a producer');
     }
-    this._producedBy = producedBy;
+    this._producer = producer;
   }
 }
 
@@ -261,3 +261,4 @@ function rootPath(x: ExecutionNode): ExecutionNode[] {
 
 export * from './source-actions';
 export * from './shell-action';
+export * from './cloudformation-actions';

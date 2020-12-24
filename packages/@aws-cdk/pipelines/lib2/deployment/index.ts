@@ -1,12 +1,15 @@
+import { Construct } from 'constructs';
 import { AssetPublishingStrategy } from '../asset-publishing';
-import { ExecutionGraph, ExecutionPipeline } from '../graph';
+import { ExecutionGraph, PipelineGraph } from '../graph';
 
 export abstract class Deployment {
-  public abstract addToExecutionGraph(options: AddDeploymentToGraphOptions): void;
+  public abstract produceExecutionGraph(options: AddDeploymentToGraphOptions): ExecutionGraph;
 }
 
 export interface AddDeploymentToGraphOptions {
-  readonly root: ExecutionPipeline;
-  readonly parent: ExecutionGraph;
+  readonly scope: Construct;
+  readonly pipelineGraph: PipelineGraph;
   readonly assetPublishing: AssetPublishingStrategy;
 }
+
+export * from './cdk-stage-deployment';

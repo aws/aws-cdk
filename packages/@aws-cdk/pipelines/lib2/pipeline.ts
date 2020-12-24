@@ -3,8 +3,8 @@ import { Construct } from 'constructs';
 import { Approver } from './approver';
 import { AssetPublishingStrategy } from './asset-publishing';
 import { Backend } from './backend';
-import { CdkStageDeployment } from './deployment/cdk-stage-deployment';
-import { ExecutionGraph, ExecutionPipeline } from './graph';
+import { Deployment, CdkStageDeployment } from './deployment';
+import { ExecutionGraph, PipelineGraph } from './graph';
 import { Source } from './source';
 import { Synth } from './synth';
 
@@ -55,7 +55,7 @@ export interface CdkPipelineProps {
 }
 
 export class CdkPipeline extends CoreConstruct {
-  private readonly graph = new ExecutionPipeline();
+  private readonly graph = new PipelineGraph();
   private readonly backend: Backend;
   private readonly assetPublishing: AssetPublishingStrategy;
   private built = false;
@@ -77,9 +77,7 @@ export class CdkPipeline extends CoreConstruct {
       throw new Error('Immutable');
     }
 
-    const phase = new ExecutionGraph(stage.stageName);
-    this.graph.add(phase);
-    new CdkStageDeployment(stage, options).addToExecutionGraph({ root: this.graph, parent: phase, assetPublishing: this.assetPublishing });
+    this.addDeployment(new CdkStageDeployment(stage, options));
   }
 
   public addDeploymentGroup(name: string): CdkPipelineDeploymentGroup {
@@ -92,12 +90,16 @@ export class CdkPipeline extends CoreConstruct {
     const self = this;
     return new class extends CdkPipelineDeploymentGroup {
       public addApplicationStage(stage: Stage, options?: AddApplicationOptions): void {
-        new CdkStageDeployment(stage, options).addToExecutionGraph({ root: self.graph, parent: phase, assetPublishing: self.assetPublishing });
+        this.addDeployment(new CdkStageDeployment(stage, options));
+      }
+
+      public addDeployment(deployment: Deployment): void {
+        phase.add(deployment.produceExecutionGraph({ scope: self, pipelineGraph: self.graph, assetPublishing: self.assetPublishing }));
       }
     }();
   }
 
-  public build() {
+  public renderToBackend() {
     if (this.built) {
       throw new Error('Can only call build() once');
     }
@@ -106,8 +108,13 @@ export class CdkPipeline extends CoreConstruct {
 
   protected prepare() {
     if (!this.built) {
-      this.build();
+      this.renderToBackend();
     }
+  }
+
+  private addDeployment(deployment: Deployment) {
+    // Deployments are expected to add an ExecutionGraph of their own
+    this.graph.add(deployment.produceExecutionGraph({ scope: this, pipelineGraph: this.graph, assetPublishing: this.assetPublishing }));
   }
 }
 

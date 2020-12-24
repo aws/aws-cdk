@@ -1,9 +1,9 @@
 import { Construct } from 'constructs';
-import { ExecutionGraph, ExecutionPipeline } from '../graph';
+import { ExecutionGraph, PipelineGraph } from '../graph';
 import { NpmSynth, StandardSynthProps } from './npm-synth';
 
 export interface AddSynthToGraphOptions {
-  readonly root: ExecutionPipeline;
+  readonly root: PipelineGraph;
   readonly parent: ExecutionGraph;
   readonly scope: Construct;
 }

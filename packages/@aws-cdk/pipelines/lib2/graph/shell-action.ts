@@ -37,9 +37,9 @@ export class ExecutionShellAction extends ExecutionAction {
     this.buildsDockerImages = props.buildsDockerImages ?? false;
     this.environmentVariables = props.environmentVariables ?? {};
 
-    this.dependOn(...this.inputs.map(i => i.artifact.producedBy));
+    this.dependOn(...this.inputs.map(i => i.artifact.producer));
     for (const output of this.outputs) {
-      output.artifact.recordProducer(this);
+      output.artifact.producedBy(this);
     }
   }
 }

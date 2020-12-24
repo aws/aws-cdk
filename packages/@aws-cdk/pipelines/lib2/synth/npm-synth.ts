@@ -62,7 +62,7 @@ export class NpmSynth extends Synth {
       ],
     });
 
-    asm.recordProducer(action);
+    asm.producedBy(action);
     options.parent.add(action);
     options.root.setCloudAssemblyArtifact(asm);
   }

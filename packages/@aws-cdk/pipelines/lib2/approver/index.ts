@@ -1,4 +1,4 @@
-import { ExecutionGraph, ExecutionPipeline } from '../graph';
+import { ExecutionGraph, PipelineGraph } from '../graph';
 
 export abstract class Approver {
   public static shellScript(): Approver {
@@ -8,7 +8,7 @@ export abstract class Approver {
 }
 
 export interface AddApproverToGraphOptions {
-  readonly root: ExecutionPipeline;
+  readonly pipelineGraph: PipelineGraph;
   readonly deploymentGraph: ExecutionGraph;
 }
 

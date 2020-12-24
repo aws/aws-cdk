@@ -2,10 +2,12 @@ import * as cp from '@aws-cdk/aws-codepipeline';
 import * as cpa from '@aws-cdk/aws-codepipeline-actions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { SecretValue, Stack } from '@aws-cdk/core';
+import { Aws, SecretValue, Stack } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
+import { Construct, Node } from 'constructs';
 import { embeddedAsmPath } from '../../lib/private/construct-internals';
 import { enumerate, expectProp, flatten } from '../_util';
-import { ExecutionAction, ExecutionGraph, ExecutionNode, ExecutionSourceAction, commonAncestor, SourceType, ancestorPath, ExecutionShellAction, ExecutionPipeline } from '../graph';
+import { ExecutionAction, ExecutionGraph, ExecutionNode, ExecutionSourceAction, commonAncestor, SourceType, ancestorPath, ExecutionShellAction, PipelineGraph, CreateChangeSetAction, ExecuteChangeSetAction } from '../graph';
 import { ArtifactMap } from './codepipeline/artifact-map';
 import { CodePipelineShellAction } from './codepipeline/shell-action';
 import { Backend, RenderBackendOptions } from './index';
@@ -75,7 +77,7 @@ export class CodePipelineBackend extends Backend {
     return this._pipeline;
   }
 
-  private addSelfMutateStage(executionGraph: ExecutionPipeline) {
+  private addSelfMutateStage(executionGraph: PipelineGraph) {
     const installSuffix = this.props.cdkCliVersion ? `@${this.props.cdkCliVersion}` : '';
     const pipelineStackName = Stack.of(this.pipeline);
 
@@ -160,6 +162,40 @@ export class CodePipelineBackend extends Backend {
       });
     }
 
+    const changeSetName = 'PipelineChange';
+
+    if (options.node instanceof CreateChangeSetAction) {
+      const changeSetProps = options.node.props;
+      return new cpa.CloudFormationCreateReplaceChangeSetAction({
+        actionName: actionName(options.node, options.sharedParent),
+        changeSetName,
+        runOrder: options.runOrder,
+        stackName: changeSetProps.stackName,
+        templatePath: this.artifacts.toCodePipeline(changeSetProps.templateArtifact).atPath(changeSetProps.templatePath),
+        adminPermissions: true,
+        role: this.roleFromPlaceholderArn(this.pipeline, changeSetProps.region, changeSetProps.account, changeSetProps.assumeRoleArn),
+        deploymentRole: this.roleFromPlaceholderArn(this.pipeline, changeSetProps.region, changeSetProps.account, changeSetProps.executionRoleArn),
+        region: changeSetProps.region,
+        templateConfiguration: changeSetProps.templateConfigurationPath
+          ? this.artifacts.toCodePipeline(changeSetProps.templateArtifact).atPath(changeSetProps.templateConfigurationPath)
+          : undefined,
+      });
+    }
+
+    if (options.node instanceof ExecuteChangeSetAction) {
+      const executeProps = options.node.props;
+      return new cpa.CloudFormationExecuteChangeSetAction({
+        actionName: actionName(options.node, options.sharedParent),
+        changeSetName,
+        runOrder: options.runOrder,
+        stackName: executeProps.stackName,
+        role: this.roleFromPlaceholderArn(this.pipeline, executeProps.region, executeProps.account, executeProps.assumeRoleArn),
+        region: executeProps.region,
+        outputFileName: executeProps.outputFileName,
+        output: executeProps.outputArtifact ? this.artifacts.toCodePipeline(executeProps.outputArtifact) : undefined,
+      });
+    }
+
     throw new Error(`Don't know how to make CodePipeline Action from ${options.node}`);
   }
 
@@ -182,6 +218,33 @@ export class CodePipelineBackend extends Backend {
       default:
         throw new Error(`Don't know how to make CodePipeline Source Action for ${sourceProps.type}`);
     }
+  }
+
+  private roleFromPlaceholderArn(scope: Construct, region: string | undefined,
+    account: string | undefined, arn: string): iam.IRole;
+  private roleFromPlaceholderArn(scope: Construct, region: string | undefined,
+    account: string | undefined, arn: string | undefined): iam.IRole | undefined;
+  private roleFromPlaceholderArn(scope: Construct, region: string | undefined,
+    account: string | undefined, arn: string | undefined): iam.IRole | undefined {
+
+    if (!arn) { return undefined; }
+
+    // Use placeholdered arn as construct ID.
+    const id = arn;
+
+    // https://github.com/aws/aws-cdk/issues/7255
+    let existingRole = Node.of(scope).tryFindChild(`ImmutableRole${id}`) as iam.IRole;
+    if (existingRole) { return existingRole; }
+    // For when #7255 is fixed.
+    existingRole = Node.of(scope).tryFindChild(id) as iam.IRole;
+    if (existingRole) { return existingRole; }
+
+    const arnToImport = cxapi.EnvironmentPlaceholders.replace(arn, {
+      region: region ?? Aws.REGION,
+      accountId: account ?? Aws.ACCOUNT_ID,
+      partition: Aws.PARTITION,
+    });
+    return iam.Role.fromRoleArn(scope, id, arnToImport, { mutable: false });
   }
 }
 

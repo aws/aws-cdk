@@ -1,10 +1,10 @@
 import { Construct } from 'constructs';
-import { ExecutionPipeline } from '../graph';
+import { PipelineGraph } from '../graph';
 import { CodePipelineBackend, CodePipelineBackendProps } from './codepipeline';
 
 export interface RenderBackendOptions {
   readonly scope: Construct;
-  readonly executionGraph: ExecutionPipeline;
+  readonly executionGraph: PipelineGraph;
 }
 
 

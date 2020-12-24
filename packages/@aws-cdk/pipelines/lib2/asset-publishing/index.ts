@@ -1,5 +1,5 @@
 import { AssetType } from '../../lib/actions/publish-assets-action';
-import { ExecutionGraph } from '../graph';
+import { ExecutionGraph, PipelineGraph } from '../graph';
 
 export abstract class AssetPublishingStrategy {
   public static prepublishAll(sharedCodeBuild: boolean = false): AssetPublishingStrategy {
@@ -14,6 +14,8 @@ export abstract class AssetPublishingStrategy {
 
 export interface PublishAssetOptions {
   readonly deploymentGraph: ExecutionGraph;
+
+  readonly pipelineGraph: PipelineGraph;
 
   /**
    * Asset manifest path

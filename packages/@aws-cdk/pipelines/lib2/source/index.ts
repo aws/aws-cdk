@@ -1,4 +1,4 @@
-import { ExecutionGraph, ExecutionPipeline } from '../graph';
+import { ExecutionGraph, PipelineGraph } from '../graph';
 import { GitHubSource, GitHubSourceProps } from './github-source';
 
 export abstract class Source {
@@ -9,6 +9,6 @@ export abstract class Source {
 }
 
 export interface AddSourceToGraphOptions {
-  readonly root: ExecutionPipeline;
+  readonly root: PipelineGraph;
   readonly parent: ExecutionGraph;
 }
