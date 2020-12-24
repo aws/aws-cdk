@@ -261,32 +261,16 @@ export interface ClusterAttributes {
   readonly openIdConnectProvider?: iam.IOpenIdConnectProvider;
 
   /**
-   * An AWS Lambda Layer which includes `kubectl`, Helm and the AWS CLI.
+   * An AWS Lambda Layer which includes `kubectl`, Helm and the AWS CLI. This layer
+   * is used by the kubectl handler to apply manifests and install helm charts.
    *
-   * By default, the provider will use the layer included in the
-   * "aws-lambda-layer-kubectl" SAR application which is available in all
-   * commercial regions.
+   * The handler expects the layer to include the following executables:
    *
-   * To deploy the layer locally, visit
-   * https://github.com/aws-samples/aws-lambda-layer-kubectl/blob/master/cdk/README.md
-   * for instructions on how to prepare the .zip file and then define it in your
-   * app as follows:
+   *    helm/helm
+   *    kubectl/kubectl
+   *    awscli/aws
    *
-   * ```ts
-   * const layer = new lambda.LayerVersion(this, 'kubectl-layer', {
-   *   code: lambda.Code.fromAsset(`${__dirname}/layer.zip`)),
-   *   compatibleRuntimes: [lambda.Runtime.PROVIDED]
-   * });
-   *
-   * Or you can use the standard layer like this (with options
-   * to customize the version and SAR application ID):
-   *
-   * ```ts
-   * const layer = new eks.KubectlLayer(this, 'KubectlLayer');
-   * ```
-   *
-   * @default - the layer provided by the `aws-lambda-layer-kubectl` SAR app.
-   * @see https://github.com/aws-samples/aws-lambda-layer-kubectl
+   * @default - a layer bundled with this module.
    */
   readonly kubectlLayer?: lambda.ILayerVersion;
 

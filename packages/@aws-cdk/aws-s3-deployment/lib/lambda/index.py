@@ -182,9 +182,9 @@ def create_metadata_args(raw_user_metadata, raw_system_metadata):
 #---------------------------------------------------------------------------------------------------
 # executes an "aws" cli command
 def aws_command(*args):
-    aws=os.path.join(os.path.dirname(os.path.realpath(__file__)), 'aws')
+    aws="/opt/awscli/aws" # from AwsCliLayer
     logger.info("| aws %s" % ' '.join(args))
-    subprocess.check_call(["python3", aws] + list(args))
+    subprocess.check_call([aws] + list(args))
 
 #---------------------------------------------------------------------------------------------------
 # sends a response to cloudformation
