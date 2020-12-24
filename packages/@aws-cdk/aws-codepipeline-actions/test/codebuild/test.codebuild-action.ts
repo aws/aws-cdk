@@ -296,6 +296,7 @@ export = {
         test.throws(() => {
           buildStage.addAction(buildAction);
         }, /Plaintext environment variable 'X' contains a secret value!/);
+
         test.done();
       },
 
