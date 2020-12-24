@@ -790,7 +790,7 @@ export class Project extends ProjectBase {
     this.projectName = this.getResourceNameAttribute(resource.ref);
 
     this.addToRolePolicy(this.createLoggingPermission());
-    this.addParameterStorePermission(props);
+    this.addEnvVariablesPermissions(props.environmentVariables);
     // add permissions to create and use test report groups
     // with names starting with the project's name,
     // unless the customer explicitly opts out of it
@@ -922,12 +922,13 @@ export class Project extends ProjectBase {
     });
   }
 
-  private addParameterStorePermission(props: ProjectProps) {
-    if (!props.environmentVariables) {
-      return;
-    }
+  private addEnvVariablesPermissions(environmentVariables: { [name: string]: BuildEnvironmentVariable } | undefined): void {
+    this.addParameterStorePermissions(environmentVariables);
+    this.addSecretsManagerPermissions(environmentVariables);
+  }
 
-    const resources = Object.values(props.environmentVariables)
+  private addParameterStorePermissions(environmentVariables: { [name: string]: BuildEnvironmentVariable } | undefined): void {
+    const resources = Object.values(environmentVariables || {})
       .filter(envVariable => envVariable.type === BuildEnvironmentVariableType.PARAMETER_STORE)
       .map(envVariable =>
         // If the parameter name starts with / the resource name is not separated with a double '/'
@@ -947,6 +948,27 @@ export class Project extends ProjectBase {
 
     this.addToRolePolicy(new iam.PolicyStatement({
       actions: ['ssm:GetParameters'],
+      resources,
+    }));
+  }
+
+  private addSecretsManagerPermissions(environmentVariables: { [name: string]: BuildEnvironmentVariable } | undefined): void {
+    const resources = Object.values(environmentVariables || {})
+      .filter(envVariable => envVariable.type === BuildEnvironmentVariableType.SECRETS_MANAGER)
+      .map(envVariable => Stack.of(this).formatArn({
+        service: 'secretsmanager',
+        resource: 'secret',
+        // we don't know the exact ARN of the Secret just from its name, but we can get close
+        resourceName: `${envVariable.value}-??????`,
+        sep: ':',
+      }));
+
+    if (resources.length === 0) {
+      return;
+    }
+
+    this.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['secretsmanager:GetSecretValue'],
       resources,
     }));
   }
@@ -1076,7 +1098,7 @@ export class Project extends ProjectBase {
   private renderLoggingConfiguration(props: LoggingOptions | undefined): CfnProject.LogsConfigProperty | undefined {
     if (props === undefined) {
       return undefined;
-    };
+    }
 
     let s3Config: CfnProject.S3LogsConfigProperty|undefined = undefined;
     let cloudwatchConfig: CfnProject.CloudWatchLogsConfigProperty|undefined = undefined;
@@ -1085,9 +1107,10 @@ export class Project extends ProjectBase {
       const s3Logs = props.s3;
       s3Config = {
         status: (s3Logs.enabled ?? true) ? 'ENABLED' : 'DISABLED',
-        location: `${s3Logs.bucket.bucketName}/${s3Logs.prefix}`,
+        location: `${s3Logs.bucket.bucketName}` + (s3Logs.prefix ? `/${s3Logs.prefix}` : ''),
         encryptionDisabled: s3Logs.encrypted,
       };
+      s3Logs.bucket?.grantWrite(this);
     }
 
     if (props.cloudWatch) {
@@ -1097,6 +1120,7 @@ export class Project extends ProjectBase {
       if (status === 'ENABLED' && !(cloudWatchLogs.logGroup)) {
         throw new Error('Specifying a LogGroup is required if CloudWatch logging for CodeBuild is enabled');
       }
+      cloudWatchLogs.logGroup?.grantWrite(this);
 
       cloudwatchConfig = {
         status,
