@@ -1,7 +1,7 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import * as AWS from 'aws-sdk';
+import { S3 } from 'aws-sdk';
 
-const s3 = new AWS.S3();
+const s3 = new S3();
 
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent) {
   switch (event.RequestType) {
