@@ -3977,11 +3977,7 @@
               },
               "/",
               {
-<<<<<<< HEAD
-                "Ref": "AssetParameters65be2ef43ca40d05e33189be5a34aa2f1ada48bbda42d21ca94ad3dae195ed5dS3Bucket93129944"
-=======
                 "Ref": "AssetParameters5b4a9f125b1d010c96760d55e0fc56362a73e6ca6da3af20a4d13ea27e369853S3Bucket3EB15EF2"
->>>>>>> upstream/master
               },
               "/",
               {
@@ -3991,11 +3987,7 @@
                     "Fn::Split": [
                       "||",
                       {
-<<<<<<< HEAD
-                        "Ref": "AssetParameters65be2ef43ca40d05e33189be5a34aa2f1ada48bbda42d21ca94ad3dae195ed5dS3VersionKey7845F6C1"
-=======
                         "Ref": "AssetParameters5b4a9f125b1d010c96760d55e0fc56362a73e6ca6da3af20a4d13ea27e369853S3VersionKeyD6A244FC"
->>>>>>> upstream/master
                       }
                     ]
                   }
@@ -4008,11 +4000,7 @@
                     "Fn::Split": [
                       "||",
                       {
-<<<<<<< HEAD
-                        "Ref": "AssetParameters65be2ef43ca40d05e33189be5a34aa2f1ada48bbda42d21ca94ad3dae195ed5dS3VersionKey7845F6C1"
-=======
                         "Ref": "AssetParameters5b4a9f125b1d010c96760d55e0fc56362a73e6ca6da3af20a4d13ea27e369853S3VersionKeyD6A244FC"
->>>>>>> upstream/master
                       }
                     ]
                   }
@@ -4821,19 +4809,6 @@
       "Type": "String",
       "Description": "Artifact hash for asset \"a69aadbed84d554dd9f2eb7987ffe5d8f76b53a86f1909059df07050e57bef0c\""
     },
-<<<<<<< HEAD
-    "AssetParameters65be2ef43ca40d05e33189be5a34aa2f1ada48bbda42d21ca94ad3dae195ed5dS3Bucket93129944": {
-      "Type": "String",
-      "Description": "S3 bucket for asset \"65be2ef43ca40d05e33189be5a34aa2f1ada48bbda42d21ca94ad3dae195ed5d\""
-    },
-    "AssetParameters65be2ef43ca40d05e33189be5a34aa2f1ada48bbda42d21ca94ad3dae195ed5dS3VersionKey7845F6C1": {
-      "Type": "String",
-      "Description": "S3 key for asset version \"65be2ef43ca40d05e33189be5a34aa2f1ada48bbda42d21ca94ad3dae195ed5d\""
-    },
-    "AssetParameters65be2ef43ca40d05e33189be5a34aa2f1ada48bbda42d21ca94ad3dae195ed5dArtifactHash17718271": {
-      "Type": "String",
-      "Description": "Artifact hash for asset \"65be2ef43ca40d05e33189be5a34aa2f1ada48bbda42d21ca94ad3dae195ed5d\""
-=======
     "AssetParameters5b4a9f125b1d010c96760d55e0fc56362a73e6ca6da3af20a4d13ea27e369853S3Bucket3EB15EF2": {
       "Type": "String",
       "Description": "S3 bucket for asset \"5b4a9f125b1d010c96760d55e0fc56362a73e6ca6da3af20a4d13ea27e369853\""
@@ -4845,7 +4820,6 @@
     "AssetParameters5b4a9f125b1d010c96760d55e0fc56362a73e6ca6da3af20a4d13ea27e369853ArtifactHashD763BE57": {
       "Type": "String",
       "Description": "Artifact hash for asset \"5b4a9f125b1d010c96760d55e0fc56362a73e6ca6da3af20a4d13ea27e369853\""
->>>>>>> upstream/master
     },
     "SsmParameterValueawsserviceeksoptimizedami118amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
       "Type": "AWS::SSM::Parameter::Value<String>",
