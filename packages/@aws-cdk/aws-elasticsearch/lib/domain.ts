@@ -66,6 +66,12 @@ export class ElasticsearchVersion {
   /** AWS Elasticsearch 7.7 */
   public static readonly V7_7 = ElasticsearchVersion.of('7.7');
 
+  /** AWS Elasticsearch 7.8 */
+  public static readonly V7_8 = ElasticsearchVersion.of('7.8');
+
+  /** AWS Elasticsearch 7.9 */
+  public static readonly V7_9 = ElasticsearchVersion.of('7.9');
+
   /**
    * Custom Elasticsearch version
    * @param version custom version number
