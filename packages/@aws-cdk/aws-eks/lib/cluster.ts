@@ -1440,7 +1440,7 @@ export class Cluster extends ClusterBase {
     if (!this._spotInterruptHandler) {
       this._spotInterruptHandler = this.addHelmChart('spot-interrupt-handler', {
         chart: 'aws-node-termination-handler',
-        version: '0.9.5',
+        version: '0.13.2',
         repository: 'https://aws.github.io/eks-charts',
         namespace: 'kube-system',
         values: {
@@ -1920,4 +1920,3 @@ function cpuArchForInstanceType(instanceType: ec2.InstanceType) {
     INSTANCE_TYPES.graviton.includes(instanceType.toString().substring(0, 2)) ? CpuArch.ARM_64 :
       CpuArch.X86_64;
 }
-
