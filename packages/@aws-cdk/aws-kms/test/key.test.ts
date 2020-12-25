@@ -283,6 +283,7 @@ test('key with some options', () => {
   const key = new kms.Key(stack, 'MyKey', {
     enableKeyRotation: true,
     enabled: false,
+    pendingWindow: 7,
   });
 
   cdk.Tags.of(key).add('tag1', 'value1');
@@ -292,6 +293,7 @@ test('key with some options', () => {
   expect(stack).toHaveResourceLike('AWS::KMS::Key', {
     Enabled: false,
     EnableKeyRotation: true,
+    PendingWindowInDays: 7,
     Tags: [
       {
         Key: 'tag1',
