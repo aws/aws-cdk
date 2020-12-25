@@ -656,6 +656,7 @@ nodeunitShim({
     }
 
     const previousValue = process.env.CDK_DEBUG;
+
     process.env.CDK_DEBUG = 'true';
     const x = showMeInTheStackTrace();
     let message;
