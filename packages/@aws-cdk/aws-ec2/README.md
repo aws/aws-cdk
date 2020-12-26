@@ -694,7 +694,6 @@ const endpoint = vpc.addClientVpnEndpoint('Endpoint', {
   cidr: '10.100.0.0/16',
   serverCertificate: acm.Certificate.fromCertificateArn(this, 'Server', 'server-arn'),
   userBasedAuthentication: ec2.ClientVpnUserBasedAuthentication.federated('saml-provider-arn'),
-  authorizeAllUsersToVpcCidr: false,
 });
 
 // Client-to-client access
