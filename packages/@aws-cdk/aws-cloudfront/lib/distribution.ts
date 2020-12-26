@@ -60,6 +60,21 @@ export interface DistributionAttributes {
   readonly distributionId: string;
 }
 
+/**
+ * Represents a certificate in AWS Certificate Manager
+ */
+export interface DistributionCertificate extends acm.ICertificate {
+  /**
+    * The minimum version of the SSL protocol that you want CloudFront to use for HTTPS connections.
+    *
+    * CloudFront serves your objects only to browsers or devices that support at
+    * least the SSL version that you specify.
+    *
+    * @default SecurityPolicyProtocol.TLS_V1_2_2019
+    */
+  readonly minimumProtocolVersion?: SecurityPolicyProtocol;
+}
+
 interface BoundOrigin extends OriginBindOptions, OriginBindConfig {
   readonly origin: IOrigin;
   readonly originGroupId?: string;
@@ -86,7 +101,7 @@ export interface DistributionProps {
    *
    * @default - the CloudFront wildcard certificate (*.cloudfront.net) will be used.
    */
-  readonly certificate?: acm.ICertificate;
+  readonly certificate?: DistributionCertificate;
 
   /**
    * Any comments you want to include about the distribution.
@@ -241,7 +256,7 @@ export class Distribution extends Resource implements IDistribution {
   private readonly originGroups: CfnDistribution.OriginGroupProperty[] = [];
 
   private readonly errorResponses: ErrorResponse[];
-  private readonly certificate?: acm.ICertificate;
+  private readonly certificate?: DistributionCertificate;
 
   constructor(scope: Construct, id: string, props: DistributionProps) {
     super(scope, id);
@@ -427,11 +442,11 @@ export class Distribution extends Resource implements IDistribution {
     } : undefined;
   }
 
-  private renderViewerCertificate(certificate: acm.ICertificate): CfnDistribution.ViewerCertificateProperty {
+  private renderViewerCertificate(certificate: DistributionCertificate): CfnDistribution.ViewerCertificateProperty {
     return {
       acmCertificateArn: certificate.certificateArn,
       sslSupportMethod: SSLMethod.SNI,
-      minimumProtocolVersion: SecurityPolicyProtocol.TLS_V1_2_2019,
+      minimumProtocolVersion: certificate.minimumProtocolVersion ?? SecurityPolicyProtocol.TLS_V1_2_2019,
     };
   }
 }
@@ -600,7 +615,7 @@ export enum LambdaEdgeEventType {
   VIEWER_REQUEST = 'viewer-request',
 
   /**
-   * The viewer-response specifies the outgoing reponse
+   * The viewer-response specifies the outgoing response
    */
   VIEWER_RESPONSE = 'viewer-response',
 }

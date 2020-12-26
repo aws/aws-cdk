@@ -109,6 +109,19 @@ new cloudfront.Distribution(this, 'myDist', {
 });
 ```
 
+However, you can customize the minimum protocol version for the certificate while creating the distribution.
+
+```ts
+new cloudfront.Distribution(this, 'myDist', {
+  defaultBehavior: { origin: new origins.S3Origin(myBucket) },
+  domainNames: ['www.example.com'],
+  certificate: {
+    ...myCertificate,
+    minimumProtocolVersion: SecurityPolicyProtocol.TLS_V1_2016
+  },
+});
+```
+
 ### Multiple Behaviors & Origins
 
 Each distribution has a default behavior which applies to all requests to that distribution; additional behaviors may be specified for a
