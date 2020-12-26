@@ -689,6 +689,80 @@ const deployStage = pipeline.addStage({
 });
 ```
 
+#### Invalidating Cloudfront Cache when deploying to S3
+
+There is currently no support in the S3DeployAction construct to invalidate the Cloudfront cache after upload.
+
+One workaround is to add another build step after the deploy step, to use the AWS CLI to invalidate the cache.
+
+```ts
+// Create a Cloudfront Web Distribution
+const cfDist = new cloudfront.CloudFrontWebDistribution(this, `CloudFrontDistribution`, {
+  originConfigs: [
+    {
+      // ...
+      behaviors : [ {isDefaultBehavior: true}]
+    },
+    // ...
+  ],
+});
+
+// Create the build project that will invalidate the cache
+const invalidateBuildProject = new codebuild.PipelineProject(this, `InvalidateProject`, {
+  buildSpec: codebuild.BuildSpec.fromObject({
+    version: '0.2',
+    phases: {
+      build: {
+        commands:[
+          'aws cloudfront create-invalidation --distribution-id ${CLOUDFRONT_ID} --paths "/*"',
+          // Choose whatever files or paths you'd like, or all files as specified here
+        ],
+      },
+    },
+  }),
+  environmentVariables: {
+    CLOUDFRONT_ID: { value: cfDist.distributionId },
+  },
+});
+
+// Add Cloudfront invalidation permissions to the project
+invalidateBuildProject.addToRolePolicy(
+  new iam.PolicyStatement({
+    effect: iam.Effect.ALLOW,
+    resources: ['*'],
+    actions: [
+      'cloudfront:CreateInvalidation',
+      'cloudfront:GetDistribution*',
+      'cloudfront:GetInvalidation',
+      'cloudfront:ListInvalidations',
+      'cloudfront:ListDistributions',
+    ],
+  })
+);
+
+// Create the pipeline (here only the S3 deploy and Invalidate cache build)
+new codepipeline.Pipeline(this, 'Pipeline', {
+  stages: [
+    // ...
+    {
+      stageName: 'Deploy',
+      actions: [
+        new codepipelineActions.S3DeployAction({
+          actionName: 'S3Deploy',
+          bucket: deployBucket,
+          input: deployInput,
+        }),
+        new codepipelineActions.CodeBuildAction({
+          actionName: 'InvalidateCache',
+          project: invalidateBuildProject,
+          input: invalidateOutput,
+        }),
+      ],
+    },
+  ],
+});
+```
+
 ### Alexa Skill
 
 You can deploy to Alexa using CodePipeline with the following Action:
