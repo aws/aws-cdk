@@ -264,8 +264,6 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
     })];
     this.connections = new Connections({ securityGroups });
 
-    const selfServicePortal = booleanToEnabledDisabled(props.selfServicePortal);
-
     const endpoint = new CfnClientVpnEndpoint(this, 'Resource', {
       authenticationOptions: renderAuthenticationOptions(props.clientCertificate, props.userBasedAuthentication),
       clientCidrBlock: props.cidr,
@@ -283,7 +281,7 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
       description: props.description,
       dnsServers: props.dnsServers,
       securityGroupIds: securityGroups.map(s => s.securityGroupId),
-      selfServicePortal,
+      selfServicePortal: booleanToEnabledDisabled(props.selfServicePortal),
       serverCertificateArn: props.serverCertificate.certificateArn,
       splitTunnel: props.splitTunnel,
       transportProtocol: props.transportProtocol,
@@ -293,7 +291,7 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
 
     this.endpointId = endpoint.ref;
 
-    if (props.userBasedAuthentication && (selfServicePortal ?? true)) {
+    if (props.userBasedAuthentication && (props.selfServicePortal ?? true)) {
       // Output self-service portal URL
       new CfnOutput(this, 'SelfServicePortalUrl', {
         value: `https://self-service.clientvpn.amazonaws.com/endpoints/${this.endpointId}`,
@@ -318,7 +316,7 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
   }
 
   /**
-   * Adds a authorization rule to this endpoint
+   * Adds an authorization rule to this endpoint
    */
   public addAuthorizationRule(id: string, props: ClientVpnAuthorizationRuleOptions): ClientVpnAuthorizationRule {
     return new ClientVpnAuthorizationRule(this, id, {
