@@ -255,6 +255,17 @@ test('throws when specifying logGroup with logging disabled', () => {
   })).toThrow(/Cannot specify `logGroup` or `logStream` when logging is disabled/);
 });
 
+test('throws with both active directory and federated', () => {
+  expect(() => vpc.addClientVpnEndpoint('Endpoint', {
+    cidr: '10.100.0.0/16',
+    serverCertificate: { certificateArn: 'server-certificate-arn' },
+    userBasedAuthentication: { // should not happen with static methods
+      directoryId: 'directory-id',
+      samlProviderArn: 'saml-provider-arn',
+    },
+  })).toThrow(/Cannot use both Active Directory and Federated authentication/);
+});
+
 test('throws without authentication options', () => {
   expect(() => vpc.addClientVpnEndpoint('Endpoint', {
     cidr: '10.100.0.0/16',

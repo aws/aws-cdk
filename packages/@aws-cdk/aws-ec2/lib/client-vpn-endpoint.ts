@@ -156,10 +156,7 @@ export abstract class ClientVpnUserBasedAuthentication {
    * Active Directory authentication
    */
   public static activeDirectory(directoryId: string): ClientVpnUserBasedAuthentication {
-    return {
-      type: 'directory-service-authentication',
-      directoryId,
-    };
+    return { directoryId };
   }
 
   /**
@@ -167,14 +164,11 @@ export abstract class ClientVpnUserBasedAuthentication {
    */
   public static federated(samlProviderArn: string, selfServiceSamlProviderArn?: string): ClientVpnUserBasedAuthentication {
     return {
-      type: 'federated-authentication',
       samlProviderArn,
       selfServiceSamlProviderArn,
     };
   }
 
-  /** The type of authentication */
-  public abstract readonly type: string;
   /** The ID of the Active Directory to be used for authentication */
   public abstract readonly directoryId?: string;
   /** The Amazon Resource Name (ARN) of the IAM SAML identity provider */
@@ -350,24 +344,26 @@ function renderAuthenticationOptions(
     });
   }
 
-  if (userBasedAuthentication) {
+  if (userBasedAuthentication?.directoryId && userBasedAuthentication.samlProviderArn) {
+    throw new Error('Cannot use both Active Directory and Federated authentication');
+  }
+
+  if (userBasedAuthentication?.directoryId) {
     authenticationOptions.push({
-      type: userBasedAuthentication.type,
-      ...userBasedAuthentication.directoryId
-        ? {
-          activeDirectory: {
-            directoryId: userBasedAuthentication.directoryId,
-          },
-        }
-        : {},
-      ...userBasedAuthentication.samlProviderArn
-        ? {
-          federatedAuthentication: {
-            samlProviderArn: userBasedAuthentication.samlProviderArn,
-            selfServiceSamlProviderArn: userBasedAuthentication.selfServiceSamlProviderArn,
-          },
-        }
-        : {},
+      type: 'directory-service-authentication',
+      activeDirectory: {
+        directoryId: userBasedAuthentication.directoryId,
+      },
+    });
+  }
+
+  if (userBasedAuthentication?.samlProviderArn) {
+    authenticationOptions.push({
+      type: 'federated-authentication',
+      federatedAuthentication: {
+        samlProviderArn: userBasedAuthentication.samlProviderArn,
+        selfServiceSamlProviderArn: userBasedAuthentication.selfServiceSamlProviderArn,
+      },
     });
   }
 
