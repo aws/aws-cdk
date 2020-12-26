@@ -63,7 +63,7 @@ export interface DistributionAttributes {
 /**
  * Represents a certificate in AWS Certificate Manager
  */
-export interface DistributionCertificate extends acm.ICertificate {
+export interface IDistributionCertificate extends acm.ICertificate {
   /**
     * The minimum version of the SSL protocol that you want CloudFront to use for HTTPS connections.
     *
@@ -101,7 +101,7 @@ export interface DistributionProps {
    *
    * @default - the CloudFront wildcard certificate (*.cloudfront.net) will be used.
    */
-  readonly certificate?: DistributionCertificate;
+  readonly certificate?: IDistributionCertificate;
 
   /**
    * Any comments you want to include about the distribution.
@@ -256,7 +256,7 @@ export class Distribution extends Resource implements IDistribution {
   private readonly originGroups: CfnDistribution.OriginGroupProperty[] = [];
 
   private readonly errorResponses: ErrorResponse[];
-  private readonly certificate?: DistributionCertificate;
+  private readonly certificate?: IDistributionCertificate;
 
   constructor(scope: Construct, id: string, props: DistributionProps) {
     super(scope, id);
@@ -442,7 +442,7 @@ export class Distribution extends Resource implements IDistribution {
     } : undefined;
   }
 
-  private renderViewerCertificate(certificate: DistributionCertificate): CfnDistribution.ViewerCertificateProperty {
+  private renderViewerCertificate(certificate: IDistributionCertificate): CfnDistribution.ViewerCertificateProperty {
     return {
       acmCertificateArn: certificate.certificateArn,
       sslSupportMethod: SSLMethod.SNI,
