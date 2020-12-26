@@ -303,7 +303,7 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
     this.targetNetworksAssociated = this._targetNetworksAssociated;
 
     if (props.authorizeAllUsersToVpcCidr ?? true) {
-      this.addAuthorizationRule('AuthorizationAll', {
+      this.addAuthorizationRule('AuthorizeAll', {
         cidr: props.vpc.vpcCidrBlock,
       });
     }
