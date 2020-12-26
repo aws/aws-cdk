@@ -567,7 +567,7 @@
         "ImportCertificatesDeleteCertificates6462F0A6"
       ]
     },
-    "VpcEndpointAuthorizationAll583F398C": {
+    "VpcEndpointAuthorizeAll70F0E613": {
       "Type": "AWS::EC2::ClientVpnAuthorizationRule",
       "Properties": {
         "ClientVpnEndpointId": {
