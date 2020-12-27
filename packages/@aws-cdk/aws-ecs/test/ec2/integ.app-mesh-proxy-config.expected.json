@@ -437,8 +437,6 @@
                 "ecs:Poll",
                 "ecs:StartTelemetrySession"
               ],
-              "Effect": "Allow",
-              "Resource": "*",
               "Condition": {
                 "ArnEquals": {
                   "ecs:cluster": {
@@ -448,7 +446,9 @@
                     ]
                   }
                 }
-              }
+              },
+              "Effect": "Allow",
+              "Resource": "*"
             },
             {
               "Action": [
@@ -636,8 +636,6 @@
                 "ecs:DescribeContainerInstances",
                 "ecs:DescribeTasks"
               ],
-              "Effect": "Allow",
-              "Resource": "*",
               "Condition": {
                 "ArnEquals": {
                   "ecs:cluster": {
@@ -647,7 +645,9 @@
                     ]
                   }
                 }
-              }
+              },
+              "Effect": "Allow",
+              "Resource": "*"
             },
             {
               "Action": [
@@ -874,8 +874,8 @@
         ],
         "Family": "awsecsintegTaskDef6FDFB69A",
         "IpcMode": "host",
-        "PidMode": "task",
         "NetworkMode": "awsvpc",
+        "PidMode": "task",
         "ProxyConfiguration": {
           "ContainerName": "envoy",
           "ProxyConfigurationProperties": [

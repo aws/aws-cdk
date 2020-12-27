@@ -12,6 +12,9 @@ from botocore.exceptions import ClientError
 from unittest.mock import MagicMock
 from unittest.mock import patch
 
+# set TEST_AWSCLI_PATH to point to the "aws" stub we have here
+scriptdir=os.path.dirname(os.path.realpath(__file__))
+os.environ['TEST_AWSCLI_PATH'] = os.path.join(scriptdir, 'aws')
 
 class TestHandler(unittest.TestCase):
     def setUp(self):
