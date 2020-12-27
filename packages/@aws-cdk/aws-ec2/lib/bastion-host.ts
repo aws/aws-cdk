@@ -1,10 +1,10 @@
 import { IPrincipal, IRole, PolicyStatement } from '@aws-cdk/aws-iam';
 import { CfnOutput, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { AmazonLinuxGeneration, InstanceClass, InstanceSize, InstanceType } from '.';
+import { AmazonLinuxGeneration, InstanceArchitecture, InstanceClass, InstanceSize, InstanceType } from '.';
 import { Connections } from './connections';
 import { IInstance, Instance } from './instance';
-import { IMachineImage, MachineImage } from './machine-image';
+import { AmazonLinuxCpuType, IMachineImage, MachineImage } from './machine-image';
 import { IPeer } from './peer';
 import { Port } from './port';
 import { ISecurityGroup } from './security-group';
@@ -146,14 +146,17 @@ export class BastionHostLinux extends Resource implements IInstance {
   constructor(scope: Construct, id: string, props: BastionHostLinuxProps) {
     super(scope, id);
     this.stack = Stack.of(scope);
-
+    const instanceType = props.instanceType ?? InstanceType.of(InstanceClass.T3, InstanceSize.NANO);
     this.instance = new Instance(this, 'Resource', {
       vpc: props.vpc,
       availabilityZone: props.availabilityZone,
       securityGroup: props.securityGroup,
       instanceName: props.instanceName ?? 'BastionHost',
-      instanceType: props.instanceType ?? InstanceType.of(InstanceClass.T3, InstanceSize.NANO),
-      machineImage: props.machineImage ?? MachineImage.latestAmazonLinux({ generation: AmazonLinuxGeneration.AMAZON_LINUX_2 }),
+      instanceType,
+      machineImage: props.machineImage ?? MachineImage.latestAmazonLinux({
+        generation: AmazonLinuxGeneration.AMAZON_LINUX_2,
+        cpuType: instanceType.architecture as string as AmazonLinuxCpuType,
+      }),
       vpcSubnets: props.subnetSelection ?? {},
       blockDevices: props.blockDevices ?? undefined,
     });
@@ -165,8 +168,6 @@ export class BastionHostLinux extends Resource implements IInstance {
       ],
       resources: ['*'],
     }));
-    this.instance.addUserData('yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm');
-
     this.connections = this.instance.connections;
     this.role = this.instance.role;
     this.grantPrincipal = this.instance.role;
@@ -176,11 +177,21 @@ export class BastionHostLinux extends Resource implements IInstance {
     this.instancePrivateDnsName = this.instance.instancePrivateDnsName;
     this.instancePublicIp = this.instance.instancePublicIp;
     this.instancePublicDnsName = this.instance.instancePublicDnsName;
+    this.applyUserData();
 
     new CfnOutput(this, 'BastionHostId', {
       description: 'Instance ID of the bastion host. Use this to connect via SSM Session Manager',
       value: this.instanceId,
     });
+  }
+
+  /**
+   * Install the architecture-appropriate SSM Agent package
+   */
+  private applyUserData(): void {
+    const instanceType = new InstanceType(this.instance.instance.instanceType!);
+    const ssmAgentArch = instanceType.architecture === InstanceArchitecture.ARM_64 ? 'linux_arm64' : 'linux_amd64';
+    this.instance.addUserData(`yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/${ssmAgentArch}/amazon-ssm-agent.rpm`);
   }
 
   /**

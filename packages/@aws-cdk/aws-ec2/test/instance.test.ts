@@ -8,7 +8,7 @@ import { Stack } from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import {
   AmazonLinuxImage, BlockDeviceVolume, CloudFormationInit,
-  EbsDeviceVolumeType, InitCommand, Instance, InstanceClass, InstanceSize, InstanceType, UserData, Vpc,
+  EbsDeviceVolumeType, InitCommand, Instance, InstanceArchitecture, InstanceClass, InstanceSize, InstanceType, UserData, Vpc,
 } from '../lib';
 
 
@@ -104,6 +104,34 @@ nodeunitShim({
         Version: '2012-10-17',
       },
     }));
+
+    test.done();
+  },
+  'instance architecture is correctly discerned for arm instances'(test: Test) {
+    // GIVEN
+    const sampleInstanceClasses = ['a1', 't4g', 'c6g', 'c6gd', 'c6gn', 'm6g', 'm6gd', 'r6g', 'r6gd']; // Graviton-based
+
+    for (const instanceClass of sampleInstanceClasses) {
+      // WHEN
+      const instanceType = InstanceType.of(instanceClass as InstanceClass, InstanceSize.NANO);
+
+      // THEN
+      expect(instanceType.architecture).toBe(InstanceArchitecture.ARM_64);
+    }
+
+    test.done();
+  },
+  'instance architecture is correctly discerned for x86-64 instance'(test: Test) {
+    // GIVEN
+    const sampleInstanceClasses = ['c5', 'm5ad', 'r5n', 'm6', 't3a']; // A sample of x86-64 instance classes
+
+    for (const instanceClass of sampleInstanceClasses) {
+      // WHEN
+      const instanceType = InstanceType.of(instanceClass as InstanceClass, InstanceSize.NANO);
+
+      // THEN
+      expect(instanceType.architecture).toBe(InstanceArchitecture.X86_64);
+    }
 
     test.done();
   },

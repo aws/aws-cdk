@@ -1,7 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import { Stack } from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';
-import { BastionHostLinux, BlockDeviceVolume, SubnetType, Vpc } from '../lib';
+import { BastionHostLinux, BlockDeviceVolume, InstanceClass, InstanceSize, InstanceType, SubnetType, Vpc } from '../lib';
 
 nodeunitShim({
   'default instance is created in basic'(test: Test) {
@@ -81,6 +81,45 @@ nodeunitShim({
           },
         },
       ],
+    }));
+
+    test.done();
+  },
+  'x86-64 instances use x86-64 ssm agent package'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const vpc = new Vpc(stack, 'VPC');
+
+    // WHEN
+    new BastionHostLinux(stack, 'Bastion', {
+      vpc,
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::EC2::Instance', {
+      UserData: {
+        'Fn::Base64': '#!/bin/bash\nyum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm',
+      },
+    }));
+
+    test.done();
+  },
+  'arm instances use arm ssm agent package'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const vpc = new Vpc(stack, 'VPC');
+
+    // WHEN
+    new BastionHostLinux(stack, 'Bastion', {
+      vpc,
+      instanceType: InstanceType.of(InstanceClass.T4G, InstanceSize.NANO),
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::EC2::Instance', {
+      UserData: {
+        'Fn::Base64': '#!/bin/bash\nyum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_arm64/amazon-ssm-agent.rpm',
+      },
     }));
 
     test.done();
