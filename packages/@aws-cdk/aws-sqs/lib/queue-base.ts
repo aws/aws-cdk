@@ -138,9 +138,7 @@ export abstract class QueueBase extends Resource implements IQueue {
   constructor(scope: Construct, id: string, props: ResourceProps = {}) {
     super(scope, id, props);
 
-    this.node.addValidation({
-      validate: () => this.policy?.document.validateForResourcePolicy() ?? [],
-    });
+    this.node.addValidation({ validate: () => this.policy?.document.validateForResourcePolicy() ?? [] });
   }
 
   /**

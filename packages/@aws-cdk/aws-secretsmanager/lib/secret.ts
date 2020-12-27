@@ -181,9 +181,7 @@ abstract class SecretBase extends Resource implements ISecret {
   constructor(scope: Construct, id: string, props: ResourceProps = {}) {
     super(scope, id, props);
 
-    this.node.addValidation({
-      validate: () => this.policy?.document.validateForResourcePolicy() ?? [],
-    });
+    this.node.addValidation({ validate: () => this.policy?.document.validateForResourcePolicy() ?? [] });
   }
 
   public get secretFullArn(): string | undefined { return this.secretArn; }

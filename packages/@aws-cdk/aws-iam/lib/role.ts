@@ -357,16 +357,7 @@ export class Role extends Resource implements IRole {
       return result;
     }
 
-    this.node.addValidation({
-      validate: () => {
-        const errors = new Array<string>();
-        errors.push(...this.assumeRolePolicy?.validateForResourcePolicy() || []);
-        for (const policy of Object.values(this.inlinePolicies)) {
-          errors.push(...policy.validateForIdentityPolicy());
-        }
-        return errors;
-      },
-    });
+    this.node.addValidation({ validate: () => this.validateRole() });
   }
 
   /**
@@ -439,6 +430,15 @@ export class Role extends Resource implements IRole {
     }
 
     return this.immutableRole;
+  }
+
+  private validateRole(): string[] {
+    const errors = new Array<string>();
+    errors.push(...this.assumeRolePolicy?.validateForResourcePolicy() ?? []);
+    for (const policy of Object.values(this.inlinePolicies)) {
+      errors.push(...policy.validateForIdentityPolicy());
+    }
+    return errors;
   }
 }
 

@@ -1133,6 +1133,8 @@ export class Table extends TableBase {
     if (props.replicationRegions && props.replicationRegions.length > 0) {
       this.createReplicaTables(props.replicationRegions);
     }
+
+    this.node.addValidation({ validate: () => this.validateTable() });
   }
 
   /**
@@ -1288,7 +1290,7 @@ export class Table extends TableBase {
    *
    * @returns an array of validation error message
    */
-  protected validate(): string[] {
+  private validateTable(): string[] {
     const errors = new Array<string>();
 
     if (!this.tablePartitionKey) {

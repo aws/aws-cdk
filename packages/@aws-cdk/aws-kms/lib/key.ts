@@ -95,9 +95,7 @@ abstract class KeyBase extends Resource implements IKey {
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
-    this.node.addValidation({
-      validate: () => this.policy?.validateForResourcePolicy() ?? [],
-    });
+    this.node.addValidation({ validate: () => this.policy?.validateForResourcePolicy() ?? [] });
   }
 
   /**

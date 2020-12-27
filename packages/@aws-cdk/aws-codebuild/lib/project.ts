@@ -812,6 +812,8 @@ export class Project extends ProjectBase {
     if (bindFunction) {
       bindFunction.call(this.buildImage, this, this, {});
     }
+
+    this.node.addValidation({ validate: () => this.validateProject() });
   }
 
   /**
@@ -879,10 +881,7 @@ export class Project extends ProjectBase {
     }
   }
 
-  /**
-   * @override
-   */
-  protected validate(): string[] {
+  private validateProject(): string[] {
     const ret = new Array<string>();
     if (this.source.type === CODEPIPELINE_SOURCE_ARTIFACTS_TYPE) {
       if (this._secondarySources.length > 0) {

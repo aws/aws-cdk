@@ -270,21 +270,7 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
     this.targetGroupName = this.resource.attrTargetGroupName;
     this.defaultPort = additionalProps.port;
 
-    this.node.addValidation({
-      validate: () => {
-        const ret = new Array<string>();
-
-        if (this.targetType === undefined && this.targetsJson.length === 0) {
-          cdk.Annotations.of(this).addWarning("When creating an empty TargetGroup, you should specify a 'targetType' (this warning may become an error in the future).");
-        }
-
-        if (this.targetType !== TargetType.LAMBDA && this.vpc === undefined) {
-          ret.push("'vpc' is required for a non-Lambda TargetGroup");
-        }
-
-        return ret;
-      },
-    });
+    this.node.addValidation({ validate: () => this.validateTargetGroup() });
   }
 
   /**
@@ -326,6 +312,20 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
     if (props.targetJson) {
       this.targetsJson.push(props.targetJson);
     }
+  }
+
+  private validateTargetGroup(): string[] {
+    const ret = new Array<string>();
+
+    if (this.targetType === undefined && this.targetsJson.length === 0) {
+      cdk.Annotations.of(this).addWarning("When creating an empty TargetGroup, you should specify a 'targetType' (this warning may become an error in the future).");
+    }
+
+    if (this.targetType !== TargetType.LAMBDA && this.vpc === undefined) {
+      ret.push("'vpc' is required for a non-Lambda TargetGroup");
+    }
+
+    return ret;
   }
 }
 

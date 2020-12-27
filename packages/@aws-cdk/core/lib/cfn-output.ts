@@ -58,14 +58,7 @@ export class CfnOutput extends CfnElement {
     this._condition = props.condition;
     this._exportName = props.exportName;
 
-    this.node.addValidation({
-      validate: () => {
-        if (this._exportName && !Token.isUnresolved(this._exportName) && this._exportName.length > 255) {
-          return [`Export name cannot exceed 255 characters (got ${this._exportName.length} characters)`];
-        }
-        return [];
-      },
-    });
+    this.node.addValidation({ validate: () => this.validateOutput() });
   }
 
   /**
@@ -171,6 +164,13 @@ export class CfnOutput extends CfnElement {
         },
       },
     };
+  }
+
+  private validateOutput(): string[] {
+    if (this._exportName && !Token.isUnresolved(this._exportName) && this._exportName.length > 255) {
+      return [`Export name cannot exceed 255 characters (got ${this._exportName.length} characters)`];
+    }
+    return [];
   }
 }
 

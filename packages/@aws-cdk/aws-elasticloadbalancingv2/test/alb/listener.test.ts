@@ -399,7 +399,7 @@ describe('tests', () => {
     });
 
     // THEN
-    const validationErrors: string[] = (group as any).validate();
+    const validationErrors: string[] = group.node.validate();
     expect(validationErrors).toEqual(["Health check protocol 'TCP' is not supported. Must be one of [HTTP, HTTPS]"]);
   });
 

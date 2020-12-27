@@ -113,7 +113,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
       this.addTarget(...(props.targets || []));
     }
 
-    this.node.addValidation({ validate: () => this.validate() });
+    this.node.addValidation({ validate: () => this.validateTargetGroup() });
   }
 
   /**
@@ -308,7 +308,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
     });
   }
 
-  private validate(): string[] {
+  private validateTargetGroup(): string[] {
     const ret = new Array<string>();
 
     if (this.targetType !== undefined && this.targetType !== TargetType.LAMBDA

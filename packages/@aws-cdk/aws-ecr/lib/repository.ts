@@ -438,9 +438,7 @@ export class Repository extends RepositoryBase {
       resourceName: this.physicalName,
     });
 
-    this.node.addValidation({
-      validate: () => this.policyDocument?.validateForResourcePolicy() ?? [],
-    });
+    this.node.addValidation({ validate: () => this.policyDocument?.validateForResourcePolicy() ?? [] });
   }
 
   public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {

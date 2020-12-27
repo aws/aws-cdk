@@ -260,6 +260,8 @@ export class ApplicationListenerRule extends Construct {
     }
 
     this.listenerRuleArn = resource.ref;
+
+    this.node.addValidation({ validate: () => this.validateListenerRule() });
   }
 
   /**
@@ -350,7 +352,7 @@ export class ApplicationListenerRule extends Construct {
   /**
    * Validate the rule
    */
-  protected validate() {
+  private validateListenerRule() {
     if (this.action === undefined) {
       return ['Listener rule needs at least one action'];
     }

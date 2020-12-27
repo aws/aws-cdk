@@ -372,7 +372,7 @@ export class Rule extends Resource implements IRule {
     return out;
   }
 
-  protected validateRule() {
+  private validateRule() {
     if (Object.keys(this.eventPattern).length === 0 && !this.scheduleExpression) {
       return ['Either \'eventPattern\' or \'schedule\' must be defined'];
     }
