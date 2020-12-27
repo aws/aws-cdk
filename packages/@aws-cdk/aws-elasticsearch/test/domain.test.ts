@@ -1,4 +1,6 @@
+/* eslint-disable jest/expect-expect */
 import '@aws-cdk/assert/jest';
+import { ResourcePart } from '@aws-cdk/assert';
 import { Metric, Statistic } from '@aws-cdk/aws-cloudwatch';
 import { Subnet, Vpc, EbsDeviceVolumeType } from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
@@ -65,6 +67,60 @@ test('minimal example renders correctly', () => {
       Enabled: false,
     },
   });
+});
+
+test('minimal example with resource props renders correctly', () => {
+  new Domain(stack, 'Domain', {
+    version: ElasticsearchVersion.V7_1,
+    enableVersionUpgrade: true,
+  });
+
+  expect(stack).toHaveResource('AWS::Elasticsearch::Domain', {
+    Properties: {
+      CognitoOptions: {
+        Enabled: false,
+      },
+      DomainEndpointOptions: {
+        EnforceHTTPS: false,
+        TLSSecurityPolicy: 'Policy-Min-TLS-1-0-2019-07',
+      },
+      EBSOptions: {
+        EBSEnabled: true,
+        VolumeSize: 10,
+        VolumeType: 'gp2',
+      },
+      ElasticsearchClusterConfig: {
+        DedicatedMasterEnabled: false,
+        InstanceCount: 1,
+        InstanceType: 'r5.large.elasticsearch',
+        ZoneAwarenessEnabled: false,
+      },
+      ElasticsearchVersion: '7.1',
+      EncryptionAtRestOptions: {
+        Enabled: false,
+      },
+      LogPublishingOptions: {
+        AUDIT_LOGS: {
+          Enabled: false,
+        },
+        ES_APPLICATION_LOGS: {
+          Enabled: false,
+        },
+        SEARCH_SLOW_LOGS: {
+          Enabled: false,
+        },
+        INDEX_SLOW_LOGS: {
+          Enabled: false,
+        },
+      },
+      NodeToNodeEncryptionOptions: {
+        Enabled: false,
+      },
+    },
+    UpdatePolicy: {
+      EnableVersionUpgrade: true,
+    },
+  }, ResourcePart.CompleteDefinition);
 });
 
 describe('log groups', () => {

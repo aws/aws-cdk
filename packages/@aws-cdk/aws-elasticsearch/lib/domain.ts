@@ -517,6 +517,15 @@ export interface DomainProps {
    * @default - false
    */
   readonly useUnsignedBasicAuth?: boolean;
+
+  /**
+   * To upgrade an Amazon ES domain to a new version of Elasticsearch rather than replacing the entire
+   * domain resource, use the EnableVersionUpgrade update policy.
+   *
+   * @default - false
+   */
+  readonly enableVersionUpgrade?: boolean;
+
 }
 
 /**
@@ -1540,6 +1549,13 @@ export class Domain extends DomainBase implements IDomain {
         }
         : undefined,
     });
+
+    if (props.enableVersionUpgrade) {
+      this.domain.cfnOptions.updatePolicy = {
+        ...this.domain.cfnOptions.updatePolicy,
+        enableVersionUpgrade: props.enableVersionUpgrade,
+      };
+    }
 
     if (logGroupResourcePolicy) { this.domain.node.addDependency(logGroupResourcePolicy); }
 
