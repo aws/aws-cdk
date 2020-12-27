@@ -239,7 +239,7 @@ export = {
     });
 
     // WHEN
-    const role = new Role(stack, 'DBRole', {
+    const role = new Role(stack, 'DBProxyRole', {
       assumedBy: new AccountPrincipal(stack.account),
     });
     proxy.grantConnect(role);
