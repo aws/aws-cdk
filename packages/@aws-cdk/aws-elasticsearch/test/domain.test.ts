@@ -69,7 +69,7 @@ test('minimal example renders correctly', () => {
   });
 });
 
-test('minimal example with resource props renders correctly', () => {
+test('can enable version upgrade update policy', () => {
   new Domain(stack, 'Domain', {
     version: ElasticsearchVersion.V7_1,
     enableVersionUpgrade: true,
