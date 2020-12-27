@@ -76,47 +76,6 @@ test('minimal example with resource props renders correctly', () => {
   });
 
   expect(stack).toHaveResource('AWS::Elasticsearch::Domain', {
-    Properties: {
-      CognitoOptions: {
-        Enabled: false,
-      },
-      DomainEndpointOptions: {
-        EnforceHTTPS: false,
-        TLSSecurityPolicy: 'Policy-Min-TLS-1-0-2019-07',
-      },
-      EBSOptions: {
-        EBSEnabled: true,
-        VolumeSize: 10,
-        VolumeType: 'gp2',
-      },
-      ElasticsearchClusterConfig: {
-        DedicatedMasterEnabled: false,
-        InstanceCount: 1,
-        InstanceType: 'r5.large.elasticsearch',
-        ZoneAwarenessEnabled: false,
-      },
-      ElasticsearchVersion: '7.1',
-      EncryptionAtRestOptions: {
-        Enabled: false,
-      },
-      LogPublishingOptions: {
-        AUDIT_LOGS: {
-          Enabled: false,
-        },
-        ES_APPLICATION_LOGS: {
-          Enabled: false,
-        },
-        SEARCH_SLOW_LOGS: {
-          Enabled: false,
-        },
-        INDEX_SLOW_LOGS: {
-          Enabled: false,
-        },
-      },
-      NodeToNodeEncryptionOptions: {
-        Enabled: false,
-      },
-    },
     UpdatePolicy: {
       EnableVersionUpgrade: true,
     },

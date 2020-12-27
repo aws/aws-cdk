@@ -37,7 +37,7 @@ const devDomain = new es.Domain(this, 'Domain', {
 });
 ```
 
-Allowing upgrading an Amazon ES domain to a new version of Elasticsearch rather than replacing the entire domain resource.
+To perform version upgrades without replacing the entire domain, specify the `enableVersionUpgrade` property.
 
 ```ts
 import * as es from '@aws-cdk/aws-elasticsearch';

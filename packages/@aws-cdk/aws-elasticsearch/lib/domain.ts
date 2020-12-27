@@ -522,6 +522,7 @@ export interface DomainProps {
    * To upgrade an Amazon ES domain to a new version of Elasticsearch rather than replacing the entire
    * domain resource, use the EnableVersionUpgrade update policy.
    *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-updatepolicy.html#cfn-attributes-updatepolicy-upgradeelasticsearchdomain
    * @default - false
    */
   readonly enableVersionUpgrade?: boolean;
