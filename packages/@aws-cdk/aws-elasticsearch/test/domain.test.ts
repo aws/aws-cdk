@@ -1,6 +1,6 @@
 import '@aws-cdk/assert/jest';
 import { Metric, Statistic } from '@aws-cdk/aws-cloudwatch';
-import { Subnet, Vpc, EbsDeviceVolumeType } from '@aws-cdk/aws-ec2';
+import { Subnet, Vpc, EbsDeviceVolumeType, SecurityGroup } from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import { App, Stack, Duration, SecretValue } from '@aws-cdk/core';
@@ -65,6 +65,65 @@ test('minimal example renders correctly', () => {
       Enabled: false,
     },
   });
+});
+
+test('dummy vpc is not validated', () => {
+
+  const vpc = Vpc.fromLookup(stack, 'VPC', { vpcId: 'vpc1' });
+
+  const esSg = new SecurityGroup(stack, 'ESSecurityGroup', { vpc });
+
+  new Domain(stack, 'ESDomain', {
+    version: ElasticsearchVersion.V7_7,
+    vpcOptions: {
+      securityGroups: [esSg],
+      subnets: vpc.privateSubnets,
+    },
+    zoneAwareness: {
+      enabled: true,
+      availabilityZoneCount: 3,
+    },
+  });
+
+  // make sure synth works
+  expect(stack).toHaveResourceLike('AWS::Elasticsearch::Domain');
+
+});
+
+test('concrete vpc is validated', () => {
+
+  // needed because otherwise the availiblity zones use dummy values, causing the domain
+  // to think the subnets come from a dummy vpc :\
+  stack.node.setContext(`availability-zones:account=${stack.account}:region=${stack.region}`, [
+    'us-east-1a',
+    'us-east-1b',
+    'us-east-1c',
+    'us-east-1d',
+    'us-east-1e',
+    'us-east-1f',
+  ]);
+
+  // this will create two subnets in each av
+  const vpc = new Vpc(stack, 'VPC', { maxAzs: 2 });
+
+  const esSg = new SecurityGroup(stack, 'ESSecurityGroup', { vpc });
+
+  // eslint-disable-next-line no-console
+  console.log(`subnets: ${vpc.privateSubnets.map(s => s.availabilityZone).join(',')}`);
+
+  expect(() => new Domain(stack, 'ESDomain', {
+    version: ElasticsearchVersion.V7_7,
+    vpcOptions: {
+      securityGroups: [esSg],
+      subnets: vpc.privateSubnets,
+    },
+    zoneAwareness: {
+      enabled: true,
+      // this should cause a failure because we only have two subnets.
+      availabilityZoneCount: 3,
+    },
+  })).toThrow(/When providing vpc options you need to provide a subnet for each AZ you are using/);
+
 });
 
 describe('log groups', () => {
