@@ -1228,10 +1228,7 @@ export class Domain extends DomainBase implements IDomain {
       props.zoneAwareness?.availabilityZoneCount != null;
 
     function isDummyVpc(vpcOptions: VpcOptions) {
-      const a = vpcOptions.subnets.filter(s => s.availabilityZone.includes('dummy')).length !== 0;
-      // eslint-disable-next-line no-console
-      console.log(`a: ${a}`);
-      return a;
+      return vpcOptions.subnets.filter(s => s.availabilityZone.includes('dummy')).length !== 0;
     }
 
     // If VPC options are supplied ensure that the number of subnets matches the number AZ
