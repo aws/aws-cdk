@@ -1,4 +1,6 @@
+/* eslint-disable jest/expect-expect */
 import '@aws-cdk/assert/jest';
+import { ResourcePart } from '@aws-cdk/assert';
 import { Metric, Statistic } from '@aws-cdk/aws-cloudwatch';
 import { Subnet, Vpc, EbsDeviceVolumeType } from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
@@ -65,6 +67,19 @@ test('minimal example renders correctly', () => {
       Enabled: false,
     },
   });
+});
+
+test('can enable version upgrade update policy', () => {
+  new Domain(stack, 'Domain', {
+    version: ElasticsearchVersion.V7_1,
+    enableVersionUpgrade: true,
+  });
+
+  expect(stack).toHaveResource('AWS::Elasticsearch::Domain', {
+    UpdatePolicy: {
+      EnableVersionUpgrade: true,
+    },
+  }, ResourcePart.CompleteDefinition);
 });
 
 describe('log groups', () => {
