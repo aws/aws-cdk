@@ -1,4 +1,6 @@
+/* eslint-disable jest/expect-expect */
 import '@aws-cdk/assert/jest';
+import { ResourcePart } from '@aws-cdk/assert';
 import { Metric, Statistic } from '@aws-cdk/aws-cloudwatch';
 import { Subnet, Vpc, EbsDeviceVolumeType, SecurityGroup } from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
@@ -124,6 +126,17 @@ test('concrete vpc is validated', () => {
     },
   })).toThrow(/When providing vpc options you need to provide a subnet for each AZ you are using/);
 
+test('can enable version upgrade update policy', () => {
+  new Domain(stack, 'Domain', {
+    version: ElasticsearchVersion.V7_1,
+    enableVersionUpgrade: true,
+  });
+
+  expect(stack).toHaveResource('AWS::Elasticsearch::Domain', {
+    UpdatePolicy: {
+      EnableVersionUpgrade: true,
+    },
+  }, ResourcePart.CompleteDefinition);
 });
 
 describe('log groups', () => {
