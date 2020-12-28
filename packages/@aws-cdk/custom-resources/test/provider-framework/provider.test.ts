@@ -1,4 +1,5 @@
 import * as path from 'path';
+import * as ec2 from '@aws-cdk/aws-ec2';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as logs from '@aws-cdk/aws-logs';
 import { Duration, Stack } from '@aws-cdk/core';
@@ -6,6 +7,61 @@ import * as cr from '../../lib';
 import * as util from '../../lib/provider-framework/util';
 
 import '@aws-cdk/assert/jest';
+
+test('vpc is applied to all framework functions', () => {
+
+  // GIVEN
+  const stack = new Stack();
+
+  const vpc = new ec2.Vpc(stack, 'Vpc');
+
+  // WHEN
+  new cr.Provider(stack, 'MyProvider', {
+    onEventHandler: new lambda.Function(stack, 'OnEvent', {
+      code: lambda.Code.fromInline('foo'),
+      handler: 'index.onEvent',
+      runtime: lambda.Runtime.NODEJS_10_X,
+    }),
+    isCompleteHandler: new lambda.Function(stack, 'IsComplete', {
+      code: lambda.Code.fromInline('foo'),
+      handler: 'index.isComplete',
+      runtime: lambda.Runtime.NODEJS_10_X,
+    }),
+    vpc: vpc,
+    vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE },
+  });
+
+  expect(stack).toHaveResourceLike('AWS::Lambda::Function', {
+    Handler: 'framework.onEvent',
+    VpcConfig: {
+      SubnetIds: [
+        { Ref: 'VpcPrivateSubnet1Subnet536B997A' },
+        { Ref: 'VpcPrivateSubnet2Subnet3788AAA1' },
+      ],
+    },
+  });
+
+  expect(stack).toHaveResourceLike('AWS::Lambda::Function', {
+    Handler: 'framework.isComplete',
+    VpcConfig: {
+      SubnetIds: [
+        { Ref: 'VpcPrivateSubnet1Subnet536B997A' },
+        { Ref: 'VpcPrivateSubnet2Subnet3788AAA1' },
+      ],
+    },
+  });
+
+  expect(stack).toHaveResourceLike('AWS::Lambda::Function', {
+    Handler: 'framework.onTimeout',
+    VpcConfig: {
+      SubnetIds: [
+        { Ref: 'VpcPrivateSubnet1Subnet536B997A' },
+        { Ref: 'VpcPrivateSubnet2Subnet3788AAA1' },
+      ],
+    },
+  });
+
+});
 
 test('minimal setup', () => {
   // GIVEN
