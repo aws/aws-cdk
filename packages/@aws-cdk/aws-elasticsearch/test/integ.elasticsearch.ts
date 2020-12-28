@@ -11,7 +11,7 @@ class TestStack extends Stack {
 
     const key = new kms.Key(this, 'Key');
 
-    new es.Domain(this, 'Domain', {
+    const domainProps: es.DomainProps = {
       version: es.ElasticsearchVersion.V7_1,
       ebs: {
         volumeSize: 10,
@@ -37,7 +37,11 @@ class TestStack extends Stack {
           resources: ['*'],
         }),
       ],
-    });
+    };
+
+    // create 2 elasticsearch domains to ensure that Cloudwatch Log Group policy names dont conflict
+    new es.Domain(this, 'Domain1', domainProps);
+    new es.Domain(this, 'Domain2', domainProps);
   }
 }
 

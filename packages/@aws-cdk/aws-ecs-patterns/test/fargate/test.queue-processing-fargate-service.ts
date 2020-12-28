@@ -228,6 +228,9 @@ export = {
       serviceName: 'fargate-test-service',
       family: 'fargate-task-family',
       platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
+      deploymentController: {
+        type: ecs.DeploymentControllerType.CODE_DEPLOY,
+      },
     });
 
     // THEN - QueueWorker is of FARGATE launch type, an SQS queue is created and all optional properties are set.
@@ -240,6 +243,9 @@ export = {
       LaunchType: 'FARGATE',
       ServiceName: 'fargate-test-service',
       PlatformVersion: ecs.FargatePlatformVersion.VERSION1_4,
+      DeploymentController: {
+        Type: 'CODE_DEPLOY',
+      },
     }));
 
     expect(stack).to(haveResource('AWS::SQS::Queue', { QueueName: 'fargate-test-sqs-queue' }));
@@ -275,6 +281,31 @@ export = {
         },
       ],
       Family: 'fargate-task-family',
+    }));
+
+    test.done();
+  },
+
+  'can set custom containerName'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+
+    // WHEN
+    new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {
+      cluster,
+      containerName: 'my-container',
+      image: ecs.ContainerImage.fromRegistry('test'),
+    });
+
+    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          Name: 'my-container',
+        },
+      ],
     }));
 
     test.done();

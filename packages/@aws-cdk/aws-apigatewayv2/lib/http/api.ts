@@ -19,6 +19,12 @@ export interface IHttpApi extends IResource {
   readonly httpApiId: string;
 
   /**
+   * The default endpoint for an API
+   * @attribute
+   */
+  readonly apiEndpoint: string;
+
+  /**
    * The default stage
    */
   readonly defaultStage?: HttpStage;
@@ -184,6 +190,7 @@ export interface AddRoutesOptions extends BatchHttpRouteOptions {
 abstract class HttpApiBase extends Resource implements IHttpApi { // note that this is not exported
 
   public abstract readonly httpApiId: string;
+  public abstract readonly apiEndpoint: string;
   private vpcLinks: Record<string, VpcLink> = {};
 
   public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
@@ -234,6 +241,21 @@ abstract class HttpApiBase extends Resource implements IHttpApi { // note that t
 }
 
 /**
+ * Attributes for importing an HttpApi into the CDK
+ */
+export interface HttpApiAttributes {
+  /**
+   * The identifier of the HttpApi
+   */
+  readonly httpApiId: string;
+  /**
+   * The endpoint URL of the HttpApi
+   * @default - throws an error if apiEndpoint is accessed.
+   */
+  readonly apiEndpoint?: string;
+}
+
+/**
  * Create a new API Gateway HTTP API endpoint.
  * @resource AWS::ApiGatewayV2::Api
  */
@@ -241,9 +263,17 @@ export class HttpApi extends HttpApiBase {
   /**
    * Import an existing HTTP API into this CDK app.
    */
-  public static fromApiId(scope: Construct, id: string, httpApiId: string): IHttpApi {
+  public static fromHttpApiAttributes(scope: Construct, id: string, attrs: HttpApiAttributes): IHttpApi {
     class Import extends HttpApiBase {
-      public readonly httpApiId = httpApiId;
+      public readonly httpApiId = attrs.httpApiId;
+      private readonly _apiEndpoint = attrs.apiEndpoint;
+
+      public get apiEndpoint(): string {
+        if (!this._apiEndpoint) {
+          throw new Error('apiEndpoint is not configured on the imported HttpApi.');
+        }
+        return this._apiEndpoint;
+      }
     }
     return new Import(scope, id);
   }
@@ -252,13 +282,7 @@ export class HttpApi extends HttpApiBase {
    * A human friendly name for this HTTP API. Note that this is different from `httpApiId`.
    */
   public readonly httpApiName?: string;
-
   public readonly httpApiId: string;
-
-  /**
-   * The default endpoint for an API
-   * @attribute
-   */
   public readonly apiEndpoint: string;
 
   /**
