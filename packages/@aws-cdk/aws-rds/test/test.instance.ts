@@ -1218,9 +1218,6 @@ export = {
     });
 
     expect(stack).to(haveResource('AWS::RDS::DBInstance', {
-      DBSubnetGroupName: {
-        Ref: 'InstanceSubnetGroupF2CBA54F',
-      },
       PubliclyAccessible: false,
     }));
 
@@ -1240,9 +1237,6 @@ export = {
     });
 
     expect(stack).to(haveResource('AWS::RDS::DBInstance', {
-      DBSubnetGroupName: {
-        Ref: 'InstanceSubnetGroupF2CBA54F',
-      },
       PubliclyAccessible: true,
     }));
 
