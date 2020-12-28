@@ -132,7 +132,8 @@ Creating a "production" Oracle database instance with option and parameter group
 You can set public accessibility for the database instance or cluster using the `publiclyAccessible` property.
 If you specify `true`, it creates an instance with a publicly resolvable DNS name, which resolves to a public IP address.
 If you specify `false`, it creates an internal instance with a DNS name that resolves to a private IP address.
-The default value depends on `vpcSubnets`. It will be `true` if `vpcSubnets` is `SubnetType.PUBLIC`, `false` otherwise.
+The default value depends on `vpcSubnets`.
+It will be `true` if `vpcSubnets` is `subnetType: SubnetType.PUBLIC`, `false` otherwise.
 
 ```ts
 // Setting public accessibility for DB instance

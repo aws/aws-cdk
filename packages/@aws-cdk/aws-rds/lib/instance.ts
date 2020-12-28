@@ -597,7 +597,7 @@ export interface DatabaseInstanceNewProps {
   /**
    * Indicates whether the DB instance is an internet-facing instance.
    *
-   * @default - `true` if the instance is deployed in a `PUBLIC` subnet, `false` otherwise
+   * @default - `true` if `vpcSubnets` is `subnetType: SubnetType.PUBLIC`, `false` otherwise
    */
   readonly publiclyAccessible?: boolean;
 }
