@@ -346,7 +346,7 @@ abstract class DatabaseProxyBase extends cdk.Resource implements IDatabaseProxy 
  * @resource AWS::RDS::DBProxy
  */
 export class DatabaseProxy extends DatabaseProxyBase
-  implements IDatabaseProxy, ec2.IConnectable, secretsmanager.ISecretAttachmentTarget {
+  implements ec2.IConnectable, secretsmanager.ISecretAttachmentTarget {
   /**
    * Import an existing database proxy.
    */
@@ -355,7 +355,7 @@ export class DatabaseProxy extends DatabaseProxyBase
     id: string,
     attrs: DatabaseProxyAttributes,
   ): IDatabaseProxy {
-    class Import extends DatabaseProxyBase implements IDatabaseProxy {
+    class Import extends DatabaseProxyBase {
       public readonly dbProxyName = attrs.dbProxyName;
       public readonly dbProxyArn = attrs.dbProxyArn;
       public readonly endpoint = attrs.endpoint;
