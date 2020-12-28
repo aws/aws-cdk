@@ -88,8 +88,8 @@ The following example uses custom asset bundling to convert a markdown file to h
 
 [Example of using asset bundling](./test/integ.assets.bundling.lit.ts).
 
-The bundling docker image (`image`) can either come from a registry (`BundlingDockerImage.fromRegistry`)
-or it can be built from a `Dockerfile` located inside your project (`BundlingDockerImage.fromAsset`).
+The bundling docker image (`image`) can either come from a registry (`DockerImage.fromRegistry`)
+or it can be built from a `Dockerfile` located inside your project (`DockerImage.fromBuild`).
 
 You can set the `CDK_DOCKER` environment variable in order to provide a custom
 docker program to execute. This may sometime be needed when building in
@@ -114,7 +114,7 @@ new assets.Asset(this, 'BundledAsset', {
       },
     },
     // Docker bundling fallback
-    image: BundlingDockerImage.fromRegistry('alpine'),
+    image: DockerImage.fromRegistry('alpine'),
     command: ['bundle'],
   },
 });

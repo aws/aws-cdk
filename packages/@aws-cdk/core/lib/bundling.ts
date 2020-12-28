@@ -89,6 +89,8 @@ export interface ILocalBundling {
 
 /**
  * A Docker image used for asset bundling
+ *
+ * @deprecated use DockerImage
  */
 export class BundlingDockerImage {
   /**
@@ -105,6 +107,8 @@ export class BundlingDockerImage {
    *
    * @param path The path to the directory containing the Docker file
    * @param options Docker build options
+   *
+   * @deprecated use DockerImage.fromBuild()
    */
   public static fromAsset(path: string, options: DockerBuildOptions = {}) {
     const buildArgs = options.buildArgs || {};
@@ -135,7 +139,7 @@ export class BundlingDockerImage {
   }
 
   /** @param image The Docker image */
-  private constructor(public readonly image: string, private readonly _imageHash?: string) {}
+  protected constructor(public readonly image: string, private readonly _imageHash?: string) {}
 
   /**
    * Provides a stable representation of this image for JSON serialization.
@@ -174,8 +178,8 @@ export class BundlingDockerImage {
   /**
    * Copies a file or directory out of the Docker image to the local filesystem
    */
-  public cp(imagePath: string, outputPath: string) {
-    const { stdout } = dockerExec(['create', this.image]);
+  public cp(imagePath: string, outputPath?: string): string {
+    const { stdout } = dockerExec(['create', this.image], {}); // Empty options to avoid stdout redirect here
     const match = stdout.toString().match(/([0-9a-f]{16,})/);
     if (!match) {
       throw new Error('Failed to extract container ID from Docker create output');
@@ -184,12 +188,29 @@ export class BundlingDockerImage {
     const containerId = match[1];
     const containerPath = `${containerId}:${imagePath}`;
     try {
-      dockerExec(['cp', containerPath, outputPath]);
+      const assetPath = outputPath ?? FileSystem.mkdtemp('cdk-docker-cp-');
+      dockerExec(['cp', containerPath, assetPath]);
+      return assetPath;
     } catch (err) {
       throw new Error(`Failed to copy files from ${containerPath} to ${outputPath}: ${err}`);
     } finally {
       dockerExec(['rm', '-v', containerId]);
     }
+  }
+}
+
+/**
+ * A Docker image
+ */
+export class DockerImage extends BundlingDockerImage {
+  /**
+   * Builds a Docker image
+   *
+   * @param path The path to the directory containing the Docker file
+   * @param options Docker build options
+   */
+  public static fromBuild(path: string, options: DockerBuildOptions = {}) {
+    return BundlingDockerImage.fromAsset(path, options);
   }
 }
 

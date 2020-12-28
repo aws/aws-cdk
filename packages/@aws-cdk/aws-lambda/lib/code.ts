@@ -54,6 +54,19 @@ export abstract class Code {
   }
 
   /**
+   * Loads the function code from an asset created by a Docker build.
+   *
+   * The asset is expected to be located at `/asset` in the image.
+   *
+   * @param path The path to the directory containing the Docker file
+   * @param options Docker build options
+   */
+  public static fromDockerBuildAsset(path: string, options: cdk.DockerBuildOptions = {}): AssetCode {
+    const assetPath = cdk.DockerImage.fromBuild(path, options).cp('/asset');
+    return new AssetCode(assetPath);
+  }
+
+  /**
    * DEPRECATED
    * @deprecated use `fromAsset`
    */
