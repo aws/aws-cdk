@@ -314,7 +314,7 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
     }
   }
 
-  private validateTargetGroup(): string[] {
+  protected validateTargetGroup(): string[] {
     const ret = new Array<string>();
 
     if (this.targetType === undefined && this.targetsJson.length === 0) {

@@ -83,7 +83,6 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
     }
 
     this.addTarget(...(props.targets || []));
-    this.node.addValidation({ validate: () => this.validateTargetGroup() });
   }
 
   /**
@@ -140,8 +139,8 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
     return loadBalancerNameFromListenerArn(this.listeners[0].listenerArn);
   }
 
-  private validateTargetGroup(): string[] {
-    const ret = new Array<string>();
+  protected validateTargetGroup(): string[] {
+    const ret = super.validateTargetGroup();
 
     const healthCheck: HealthCheck = this.healthCheck || {};
 
