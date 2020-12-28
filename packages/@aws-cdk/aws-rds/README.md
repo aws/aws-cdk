@@ -280,6 +280,24 @@ const role = new Role(stack, 'DBRole', { assumedBy: new AccountPrincipal(stack.a
 instance.grantConnect(role); // Grant the role connection access to the DB.
 ```
 
+The following example shows granting connection access for RDS Proxy to an IAM role.
+
+```ts
+const cluster = new rds.DatabaseCluster(stack, 'Database'{
+  engine: rds.DatabaseClusterEngine.AURORA,
+  instanceProps: { vpc },
+});
+
+const proxy = new rds.DatabaseProxy(stack, 'Proxy', {
+  proxyTarget: rds.ProxyTarget.fromCluster(cluster),
+  secrets: [cluster.secret!],
+  vpc,
+});
+
+const role = new Role(stack, 'DBProxyRole', { assumedBy: new AccountPrincipal(stack.account) });
+proxy.grantConnect(role); // Grant the role connection access to the DB Proxy.
+```
+
 **Note**: In addition to the setup above, a database user will need to be created to support IAM auth.
 See <https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.DBAccounts.html> for setup instructions.
 
