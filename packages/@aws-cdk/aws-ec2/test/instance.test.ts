@@ -209,27 +209,6 @@ nodeunitShim({
       test.done();
     },
 
-    'throws if volumeType === IO2 without iops'(test: Test) {
-      // THEN
-      test.throws(() => {
-        new Instance(stack, 'Instance', {
-          vpc,
-          machineImage: new AmazonLinuxImage(),
-          instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
-          blockDevices: [{
-            deviceName: 'ebs',
-            volume: BlockDeviceVolume.ebs(15, {
-              deleteOnTermination: true,
-              encrypted: true,
-              volumeType: EbsDeviceVolumeType.IO2,
-            }),
-          }],
-        });
-      }, /ops property is required with volumeType: EbsDeviceVolumeType.IO1/);
-
-      test.done();
-    },
-
     'warning if iops without volumeType'(test: Test) {
       const instance = new Instance(stack, 'Instance', {
         vpc,
@@ -247,7 +226,7 @@ nodeunitShim({
 
       // THEN
       test.deepEqual(instance.node.metadata[0].type, cxschema.ArtifactMetadataEntryType.WARN);
-      test.deepEqual(instance.node.metadata[0].data, 'iops will be ignored without volumeType: EbsDeviceVolumeType.IO1 or EbsDeviceVolumeType.IO2');
+      test.deepEqual(instance.node.metadata[0].data, 'iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
 
       test.done();
     },
@@ -271,29 +250,6 @@ nodeunitShim({
       // THEN
       test.deepEqual(instance.node.metadata[0].type, cxschema.ArtifactMetadataEntryType.WARN);
       test.deepEqual(instance.node.metadata[0].data, 'iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
-
-      test.done();
-    },
-
-    'warning if iops and volumeType !== IO2'(test: Test) {
-      const instance = new Instance(stack, 'Instance', {
-        vpc,
-        machineImage: new AmazonLinuxImage(),
-        instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
-        blockDevices: [{
-          deviceName: 'ebs',
-          volume: BlockDeviceVolume.ebs(15, {
-            deleteOnTermination: true,
-            encrypted: true,
-            volumeType: EbsDeviceVolumeType.GP2,
-            iops: 5000,
-          }),
-        }],
-      });
-
-      // THEN
-      test.deepEqual(instance.node.metadata[0].type, cxschema.ArtifactMetadataEntryType.WARN);
-      test.deepEqual(instance.node.metadata[0].data, 'iops will be ignored without volumeType: EbsDeviceVolumeType.IO2');
 
       test.done();
     },
