@@ -55,6 +55,7 @@ export class Bundling implements cdk.BundlingOptions {
   public readonly local?: cdk.ILocalBundling;
 
   private readonly relativeEntryPath: string;
+  private readonly relativeTsconfigPath?: string;
   private readonly externals: string[];
 
   constructor(private readonly props: BundlingProps) {
@@ -64,6 +65,10 @@ export class Bundling implements cdk.BundlingOptions {
 
     const projectRoot = path.dirname(props.depsLockFilePath);
     this.relativeEntryPath = path.relative(projectRoot, path.resolve(props.entry));
+
+    if (props.tsconfig) {
+      this.relativeTsconfigPath = path.relative(projectRoot, path.resolve(props.tsconfig));
+    }
 
     this.externals = [
       ...props.externalModules ?? ['aws-sdk'], // Mark aws-sdk as external by default (available in the runtime)
@@ -142,6 +147,12 @@ export class Bundling implements cdk.BundlingOptions {
       ...this.props.sourceMap ? ['--sourcemap'] : [],
       ...this.externals.map(external => `--external:${external}`),
       ...loaders.map(([ext, name]) => `--loader:${ext}=${name}`),
+      ...this.props.logLevel ? [`--log-level=${this.props.logLevel}`] : [],
+      ...this.props.keepNames ? ['--keep-names'] : [],
+      ...this.relativeTsconfigPath ? [`--tsconfig=${pathJoin(inputDir, this.relativeTsconfigPath)}`] : [],
+      ...this.props.metafile ? [`--metafile=${pathJoin(outputDir, 'index.meta.json')}`] : [],
+      ...this.props.banner ? [`--banner='${this.props.banner}'`] : [],
+      ...this.props.footer ? [`--footer='${this.props.footer}'`] : [],
     ].join(' ');
 
     let depsCommand = '';
