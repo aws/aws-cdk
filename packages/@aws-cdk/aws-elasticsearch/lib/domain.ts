@@ -66,6 +66,12 @@ export class ElasticsearchVersion {
   /** AWS Elasticsearch 7.7 */
   public static readonly V7_7 = ElasticsearchVersion.of('7.7');
 
+  /** AWS Elasticsearch 7.8 */
+  public static readonly V7_8 = ElasticsearchVersion.of('7.8');
+
+  /** AWS Elasticsearch 7.9 */
+  public static readonly V7_9 = ElasticsearchVersion.of('7.9');
+
   /**
    * Custom Elasticsearch version
    * @param version custom version number
@@ -511,6 +517,16 @@ export interface DomainProps {
    * @default - false
    */
   readonly useUnsignedBasicAuth?: boolean;
+
+  /**
+   * To upgrade an Amazon ES domain to a new version of Elasticsearch rather than replacing the entire
+   * domain resource, use the EnableVersionUpgrade update policy.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-updatepolicy.html#cfn-attributes-updatepolicy-upgradeelasticsearchdomain
+   * @default - false
+   */
+  readonly enableVersionUpgrade?: boolean;
+
 }
 
 /**
@@ -1534,6 +1550,13 @@ export class Domain extends DomainBase implements IDomain {
         }
         : undefined,
     });
+
+    if (props.enableVersionUpgrade) {
+      this.domain.cfnOptions.updatePolicy = {
+        ...this.domain.cfnOptions.updatePolicy,
+        enableVersionUpgrade: props.enableVersionUpgrade,
+      };
+    }
 
     if (logGroupResourcePolicy) { this.domain.node.addDependency(logGroupResourcePolicy); }
 
