@@ -695,7 +695,7 @@ function createInstances(cluster: DatabaseClusterNew, props: DatabaseClusterBase
       dbInstanceIdentifier: instanceIdentifier,
       // Instance properties
       dbInstanceClass: databaseInstanceType(instanceType),
-      publiclyAccessible: props.publiclyAccessible ?? (this.vpcPlacement && this.vpcPlacement.subnetType === ec2.SubnetType.PUBLIC),
+      publiclyAccessible: props.publiclyAccessible ?? (this.vpcSubnets && this.vpcSubnets.subnetType === ec2.SubnetType.PUBLIC),
       enablePerformanceInsights: enablePerformanceInsights || instanceProps.enablePerformanceInsights, // fall back to undefined if not set
       performanceInsightsKmsKeyId: instanceProps.performanceInsightEncryptionKey?.keyArn,
       performanceInsightsRetentionPeriod: enablePerformanceInsights
