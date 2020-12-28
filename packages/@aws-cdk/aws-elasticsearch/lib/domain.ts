@@ -66,6 +66,12 @@ export class ElasticsearchVersion {
   /** AWS Elasticsearch 7.7 */
   public static readonly V7_7 = ElasticsearchVersion.of('7.7');
 
+  /** AWS Elasticsearch 7.8 */
+  public static readonly V7_8 = ElasticsearchVersion.of('7.8');
+
+  /** AWS Elasticsearch 7.9 */
+  public static readonly V7_9 = ElasticsearchVersion.of('7.9');
+
   /**
    * Custom Elasticsearch version
    * @param version custom version number
@@ -244,6 +250,21 @@ export interface LoggingOptions {
    * @default - a new log group is created if app logging is enabled
    */
   readonly appLogGroup?: logs.ILogGroup;
+
+  /**
+   * Specify if Elasticsearch audit logging should be set up.
+   * Requires Elasticsearch version 6.7 or later and fine grained access control to be enabled.
+   *
+   * @default - false
+   */
+  readonly auditLogEnabled?: boolean;
+
+  /**
+   * Log Elasticsearch audit logs to this log group.
+   *
+   * @default - a new log group is created if audit logging is enabled
+   */
+  readonly auditLogGroup?: logs.ILogGroup;
 }
 
 /**
@@ -496,6 +517,16 @@ export interface DomainProps {
    * @default - false
    */
   readonly useUnsignedBasicAuth?: boolean;
+
+  /**
+   * To upgrade an Amazon ES domain to a new version of Elasticsearch rather than replacing the entire
+   * domain resource, use the EnableVersionUpgrade update policy.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-updatepolicy.html#cfn-attributes-updatepolicy-upgradeelasticsearchdomain
+   * @default - false
+   */
+  readonly enableVersionUpgrade?: boolean;
+
 }
 
 /**
@@ -1163,6 +1194,13 @@ export class Domain extends DomainBase implements IDomain {
   public readonly appLogGroup?: logs.ILogGroup;
 
   /**
+   * Log group that audit logs are logged to.
+   *
+   * @attribute
+   */
+  public readonly auditLogGroup?: logs.ILogGroup;
+
+  /**
    * Master user password if fine grained access control is configured.
    */
   public readonly masterUserPassword?: cdk.SecretValue;
@@ -1365,6 +1403,12 @@ export class Domain extends DomainBase implements IDomain {
       }
     }
 
+    // Validate fine grained access control enabled for audit logs, per
+    // https://aws.amazon.com/about-aws/whats-new/2020/09/elasticsearch-audit-logs-now-available-on-amazon-elasticsearch-service/
+    if (props.logging?.auditLogEnabled && !advancedSecurityEnabled) {
+      throw new Error('Fine-grained access control is required when audit logs publishing is enabled.');
+    }
+
     let cfnVpcOptions: CfnDomain.VPCOptionsProperty | undefined;
     if (props.vpcOptions) {
       cfnVpcOptions = {
@@ -1401,6 +1445,15 @@ export class Domain extends DomainBase implements IDomain {
         });
 
       logGroups.push(this.appLogGroup);
+    };
+
+    if (props.logging?.auditLogEnabled) {
+      this.auditLogGroup = props.logging.auditLogGroup ??
+          new logs.LogGroup(this, 'AuditLogs', {
+            retention: logs.RetentionDays.ONE_MONTH,
+          });
+
+      logGroups.push(this.auditLogGroup);
     };
 
     let logGroupResourcePolicy: LogGroupResourcePolicy | null = null;
@@ -1454,6 +1507,10 @@ export class Domain extends DomainBase implements IDomain {
       },
       nodeToNodeEncryptionOptions: { enabled: nodeToNodeEncryptionEnabled },
       logPublishingOptions: {
+        AUDIT_LOGS: {
+          enabled: this.auditLogGroup != null,
+          cloudWatchLogsLogGroupArn: this.auditLogGroup?.logGroupArn,
+        },
         ES_APPLICATION_LOGS: {
           enabled: this.appLogGroup != null,
           cloudWatchLogsLogGroupArn: this.appLogGroup?.logGroupArn,
@@ -1493,6 +1550,13 @@ export class Domain extends DomainBase implements IDomain {
         }
         : undefined,
     });
+
+    if (props.enableVersionUpgrade) {
+      this.domain.cfnOptions.updatePolicy = {
+        ...this.domain.cfnOptions.updatePolicy,
+        enableVersionUpgrade: props.enableVersionUpgrade,
+      };
+    }
 
     if (logGroupResourcePolicy) { this.domain.node.addDependency(logGroupResourcePolicy); }
 
