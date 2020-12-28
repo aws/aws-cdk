@@ -63,10 +63,10 @@ test('expression does not contain paths', () => {
   });
 });
 
-test('with dash in path', () => {
+test('with dash and underscore in path', () => {
   // WHEN
   const task = new tasks.EvaluateExpression(stack, 'Task', {
-    expression: '`${$.detail-type}`.trim()',
+    expression: '$.a_b + $.c-d + $[_e]',
   });
   new sfn.StateMachine(stack, 'SM', {
     definition: task,
@@ -81,7 +81,7 @@ test('with dash in path', () => {
           {
             'Fn::GetAtt': ['Evala0d2ce44871b4e7487a1f5e63d7c3bdc4DAC06E1', 'Arn'],
           },
-          '","Parameters":{"expression":"`${$.detail-type}`.trim()","expressionAttributeValues":{"$.detail-type.$":"$.detail-type"}}}}}',
+          '","Parameters":{"expression":"$.a_b + $.c-d + $[_e]","expressionAttributeValues":{"$.a_b.$":"$.a_b","$.c-d.$":"$.c-d","$[_e].$":"$[_e]"}}}}}',
         ],
       ],
     },
