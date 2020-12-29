@@ -264,7 +264,8 @@ const queueProcessingEc2Service = new QueueProcessingEc2Service(stack, 'Service'
     TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
   },
   queue,
-  maxScalingCapacity: 5
+  maxScalingCapacity: 5,
+  containerName: 'test',
 });
 ```
 
@@ -283,7 +284,8 @@ const queueProcessingFargateService = new QueueProcessingFargateService(stack, '
     TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
   },
   queue,
-  maxScalingCapacity: 5
+  maxScalingCapacity: 5,
+  containerName: 'test',
 });
 ```
 
@@ -302,7 +304,8 @@ const ecsScheduledTask = new ScheduledEc2Task(stack, 'ScheduledTask', {
     memoryLimitMiB: 256,
     environment: { name: 'TRIGGER', value: 'CloudWatch Events' },
   },
-  schedule: events.Schedule.expression('rate(1 minute)')
+  schedule: events.Schedule.expression('rate(1 minute)'),
+  ruleName: 'sample-scheduled-task-rule'
 });
 ```
 

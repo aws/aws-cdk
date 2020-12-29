@@ -12,7 +12,6 @@ import * as constructs from 'constructs';
 import { Test } from 'nodeunit';
 import * as YAML from 'yaml';
 import * as eks from '../lib';
-import * as kubectl from '../lib/kubectl-provider';
 import { BottleRocketImage } from '../lib/private/bottlerocket';
 import { testFixture, testFixtureNoVpc } from './util';
 
@@ -21,6 +20,42 @@ import { testFixture, testFixtureNoVpc } from './util';
 const CLUSTER_VERSION = eks.KubernetesVersion.V1_18;
 
 export = {
+
+  'can specify custom environment to cluster resource handler'(test: Test) {
+
+    const { stack } = testFixture();
+
+    new eks.Cluster(stack, 'Cluster', {
+      version: CLUSTER_VERSION,
+      clusterHandlerEnvironment: {
+        foo: 'bar',
+      },
+    });
+
+    const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.ClusterResourceProvider') as cdk.NestedStack;
+
+    test.deepEqual(expect(nested).value.Resources.OnEventHandler42BEBAE0.Properties.Environment, { Variables: { foo: 'bar' } });
+    test.done();
+
+  },
+
+  'throws when trying to place cluster handlers in a vpc with no private subnets'(test: Test) {
+
+    const { stack } = testFixture();
+
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+
+    test.throws(() => {
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        placeClusterHandlerInVpc: true,
+        vpc: vpc,
+        vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }],
+      });
+    }, /Cannot place cluster handler in the VPC since no private subnets could be selected/);
+
+    test.done();
+  },
 
   'throws when accessing cluster security group for imported cluster without cluster security group id'(test: Test) {
 
@@ -33,6 +68,33 @@ export = {
     test.throws(() => cluster.clusterSecurityGroup, /"clusterSecurityGroup" is not defined for this imported cluster/);
     test.done();
 
+  },
+
+  'can place cluster handlers in the cluster vpc'(test: Test) {
+
+    const { stack } = testFixture();
+
+    new eks.Cluster(stack, 'Cluster', {
+      version: CLUSTER_VERSION,
+      placeClusterHandlerInVpc: true,
+    });
+
+    const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.ClusterResourceProvider') as cdk.NestedStack;
+
+    function assertFunctionPlacedInVpc(id: string) {
+      test.deepEqual(expect(nested).value.Resources[id].Properties.VpcConfig.SubnetIds, [
+        { Ref: 'referencetoStackClusterDefaultVpcPrivateSubnet1SubnetA64D1BF0Ref' },
+        { Ref: 'referencetoStackClusterDefaultVpcPrivateSubnet2Subnet32D85AB8Ref' },
+      ]);
+    }
+
+    assertFunctionPlacedInVpc('OnEventHandler42BEBAE0');
+    assertFunctionPlacedInVpc('IsCompleteHandler7073F4DA');
+    assertFunctionPlacedInVpc('ProviderframeworkonEvent83C1D0A7');
+    assertFunctionPlacedInVpc('ProviderframeworkisComplete26D7B0CB');
+    assertFunctionPlacedInVpc('ProviderframeworkonTimeout0B47CA38');
+
+    test.done();
   },
 
   'can access cluster security group for imported cluster with cluster security group id'(test: Test) {
@@ -471,46 +533,6 @@ export = {
       },
     }));
 
-    test.done();
-  },
-
-  'create custom cluster correctly in any aws region'(test: Test) {
-    // GIVEN
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'stack', { env: { region: 'us-east-1' } });
-
-    // WHEN
-    const vpc = new ec2.Vpc(stack, 'VPC');
-    new eks.Cluster(stack, 'Cluster', { vpc, defaultCapacity: 0, version: CLUSTER_VERSION, prune: false });
-    kubectl.getOrCreateKubectlLayer(stack);
-
-    // THEN
-    expect(stack).to(haveResource('Custom::AWSCDK-EKS-Cluster'));
-    expect(stack).to(haveResourceLike('AWS::Serverless::Application', {
-      Location: {
-        ApplicationId: 'arn:aws:serverlessrepo:us-east-1:903779448426:applications/lambda-layer-kubectl',
-      },
-    }));
-    test.done();
-  },
-
-  'create custom cluster correctly in any aws region in china'(test: Test) {
-    // GIVEN
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'stack', { env: { region: 'cn-north-1' } });
-
-    // WHEN
-    const vpc = new ec2.Vpc(stack, 'VPC');
-    new eks.Cluster(stack, 'Cluster', { vpc, defaultCapacity: 0, version: CLUSTER_VERSION, prune: false });
-    kubectl.getOrCreateKubectlLayer(stack);
-
-    // THEN
-    expect(stack).to(haveResource('Custom::AWSCDK-EKS-Cluster'));
-    expect(stack).to(haveResourceLike('AWS::Serverless::Application', {
-      Location: {
-        ApplicationId: 'arn:aws-cn:serverlessrepo:cn-north-1:487369736442:applications/lambda-layer-kubectl',
-      },
-    }));
     test.done();
   },
 
@@ -2652,38 +2674,6 @@ export = {
     const providerStack = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
     expect(providerStack).to(haveResource('AWS::Lambda::Function', {
       Layers: ['arn:of:layer'],
-    }));
-
-    test.done();
-  },
-
-  'SAR-based kubectl layer can be customized'(test: Test) {
-    // GIVEN
-    const { stack } = testFixture();
-
-    // WHEN
-    const layer = new eks.KubectlLayer(stack, 'Kubectl', {
-      applicationId: 'custom:app:id',
-      version: '2.3.4',
-    });
-
-    new eks.Cluster(stack, 'Cluster1', {
-      version: CLUSTER_VERSION,
-      prune: false,
-      kubectlLayer: layer,
-    });
-
-    // THEN
-    const providerStack = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
-    expect(providerStack).to(haveResource('AWS::Lambda::Function', {
-      Layers: [{ Ref: 'referencetoStackKubectl7F29063EOutputsLayerVersionArn' }],
-    }));
-
-    expect(stack).to(haveResource('AWS::Serverless::Application', {
-      Location: {
-        ApplicationId: 'custom:app:id',
-        SemanticVersion: '2.3.4',
-      },
     }));
 
     test.done();

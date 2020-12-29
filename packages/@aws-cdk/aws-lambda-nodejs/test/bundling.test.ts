@@ -28,6 +28,7 @@ beforeEach(() => {
 
 let depsLockFilePath = '/project/yarn.lock';
 let entry = '/project/lib/handler.ts';
+let tsconfig = '/project/lib/custom-tsconfig.ts';
 
 test('esbuild bundling in Docker', () => {
   Bundling.bundle({
@@ -161,6 +162,10 @@ test('esbuild bundling with esbuild options', () => {
     },
     logLevel: LogLevel.SILENT,
     keepNames: true,
+    tsconfig,
+    metafile: true,
+    banner: '/* comments */',
+    footer: '/* comments */',
     forceDockerBundling: true,
   });
 
@@ -174,7 +179,8 @@ test('esbuild bundling with esbuild options', () => {
           'npx esbuild --bundle /asset-input/lib/handler.ts',
           '--target=es2020 --platform=node --outfile=/asset-output/index.js',
           '--minify --sourcemap --external:aws-sdk --loader:.png=dataurl',
-          '--log-level=silent --keep-names',
+          '--log-level=silent --keep-names --tsconfig=/asset-input/lib/custom-tsconfig.ts',
+          '--metafile=/asset-output/index.meta.json --banner=\'/* comments */\' --footer=\'/* comments */\'',
         ].join(' '),
       ],
     }),
