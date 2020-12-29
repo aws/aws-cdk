@@ -1764,6 +1764,80 @@ export = {
 
     test.done();
   },
+
+  'can set public accessibility for database cluster with instances in private subnet'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA,
+      instanceProps: {
+        vpc,
+        vpcSubnets: {
+          subnetType: ec2.SubnetType.PRIVATE,
+        },
+        publiclyAccessible: true,
+      },
+    });
+    // THEN
+    expect(stack).to(haveResource('AWS::RDS::DBInstance', {
+      Engine: 'aurora',
+      PubliclyAccessible: true,
+    }));
+
+    test.done();
+  },
+
+  'can set public accessibility for database cluster with instances in public subnet'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA,
+      instanceProps: {
+        vpc,
+        vpcSubnets: {
+          subnetType: ec2.SubnetType.PUBLIC,
+        },
+        publiclyAccessible: false,
+      },
+    });
+    // THEN
+    expect(stack).to(haveResource('AWS::RDS::DBInstance', {
+      Engine: 'aurora',
+      PubliclyAccessible: false,
+    }));
+
+    test.done();
+  },
+
+  'database cluster instances in public subnet should by default have publiclyAccessible set to true'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA,
+      instanceProps: {
+        vpc,
+        vpcSubnets: {
+          subnetType: ec2.SubnetType.PUBLIC,
+        },
+      },
+    });
+    // THEN
+    expect(stack).to(haveResource('AWS::RDS::DBInstance', {
+      Engine: 'aurora',
+      PubliclyAccessible: true,
+    }));
+
+    test.done();
+  },
 };
 
 function testStack() {
