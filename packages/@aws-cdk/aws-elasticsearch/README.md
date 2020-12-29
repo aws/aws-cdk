@@ -37,6 +37,17 @@ const devDomain = new es.Domain(this, 'Domain', {
 });
 ```
 
+To perform version upgrades without replacing the entire domain, specify the `enableVersionUpgrade` property.
+
+```ts
+import * as es from '@aws-cdk/aws-elasticsearch';
+
+const devDomain = new es.Domain(this, 'Domain', {
+    version: es.ElasticsearchVersion.V7_9,
+    enableVersionUpgrade: true // defaults to false
+});
+```
+
 Create a production grade cluster by also specifying things like capacity and az distribution
 
 ```ts
