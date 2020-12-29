@@ -1,5 +1,6 @@
 import { ABSENT, expect, haveResourceLike } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
+import { AccountPrincipal, Role } from '@aws-cdk/aws-iam';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
@@ -219,6 +220,45 @@ export = {
       DBClusterIdentifiers: [
         'my-cluster',
       ],
+    }));
+
+    test.done();
+  },
+
+  'grantConnect should add IAM Policy with action rds-db:connect'(test: Test) {
+    // GIVEN
+    const cluster = new rds.DatabaseCluster(stack, 'Database', {
+      engine: rds.DatabaseClusterEngine.AURORA,
+      instanceProps: { vpc },
+    });
+
+    const proxy = new rds.DatabaseProxy(stack, 'Proxy', {
+      proxyTarget: rds.ProxyTarget.fromCluster(cluster),
+      secrets: [cluster.secret!],
+      vpc,
+    });
+
+    // WHEN
+    const role = new Role(stack, 'DBProxyRole', {
+      assumedBy: new AccountPrincipal(stack.account),
+    });
+    proxy.grantConnect(role);
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [{
+          Effect: 'Allow',
+          Action: 'rds-db:connect',
+          Resource: {
+            'Fn::GetAtt': [
+              'ProxyCB0DFB71',
+              'DBProxyArn',
+            ],
+          },
+        }],
+        Version: '2012-10-17',
+      },
     }));
 
     test.done();
