@@ -716,21 +716,18 @@ const invalidateBuildProject = new codebuild.PipelineProject(this, `InvalidatePr
     },
   }),
   environmentVariables: {
-    CLOUDFRONT_ID: { value: cfDist.distributionId },
+    CLOUDFRONT_ID: { value: distribution.distributionId },
   },
 });
 
 // Add Cloudfront invalidation permissions to the project
+const distributionArn = `arn:aws:cloudfront::${this.account}:distribution/${distribution.distributionId}`;
 invalidateBuildProject.addToRolePolicy(
   new iam.PolicyStatement({
     effect: iam.Effect.ALLOW,
-    resources: ['*'],
+    resources: [distributionArn],
     actions: [
       'cloudfront:CreateInvalidation',
-      'cloudfront:GetDistribution*',
-      'cloudfront:GetInvalidation',
-      'cloudfront:ListInvalidations',
-      'cloudfront:ListDistributions',
     ],
   })
 );
@@ -746,11 +743,13 @@ new codepipeline.Pipeline(this, 'Pipeline', {
           actionName: 'S3Deploy',
           bucket: deployBucket,
           input: deployInput,
+          runOrder: 1,
         }),
         new codepipelineActions.CodeBuildAction({
           actionName: 'InvalidateCache',
           project: invalidateBuildProject,
           input: invalidateOutput,
+          runOrder: 2,
         }),
       ],
     },
