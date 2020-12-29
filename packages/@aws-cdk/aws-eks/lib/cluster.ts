@@ -1243,7 +1243,7 @@ export class Cluster extends ClusterBase {
     autoScalingGroup.connections.allowToAnyIpv4(ec2.Port.allIcmp());
 
     // allow traffic to/from managed node groups (eks attaches this security group to the managed nodes)
-    autoScalingGroup.addSecurityGroup(this.clusterSecurityGroup);
+    // autoScalingGroup.addSecurityGroup(this.clusterSecurityGroup);
 
     const bootstrapEnabled = options.bootstrapEnabled !== undefined ? options.bootstrapEnabled : true;
     if (options.bootstrapOptions && !bootstrapEnabled) {
@@ -1265,6 +1265,8 @@ export class Cluster extends ClusterBase {
     // https://docs.aws.amazon.com/eks/latest/userguide/worker.html
     Tags.of(autoScalingGroup).add(`kubernetes.io/cluster/${this.clusterName}`, 'owned', {
       applyToLaunchedInstances: true,
+      // exclude security groups to avoid multiple "owned" security groups.
+      // (the cluster security group already has this tag)
       excludeResourceTypes: ['AWS::EC2::SecurityGroup'],
     });
 
