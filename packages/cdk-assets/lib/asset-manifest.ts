@@ -1,8 +1,14 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import {
-  AssetManifest as AssetManifestSchema, DockerImageDestination, DockerImageSource,
-  FileDestination, FileSource, Manifest,
+  AssetManifest as AssetManifestSchema,
+  DockerImageDestination,
+  DockerImageSource,
+  ExternalDockerImageSource,
+  ExternalFileSource,
+  FileDestination,
+  FileSource,
+  Manifest,
 } from '@aws-cdk/cloud-assembly-schema';
 
 /**
@@ -170,7 +176,7 @@ export class FileManifestEntry implements IManifestEntry {
     /** Identifier for this asset */
     public readonly id: DestinationIdentifier,
     /** Source of the file asset */
-    public readonly source: FileSource,
+    public readonly source: FileSource | ExternalFileSource,
     /** Destination for the file asset */
     public readonly destination: FileDestination,
   ) {
@@ -191,7 +197,7 @@ export class DockerImageManifestEntry implements IManifestEntry {
     /** Identifier for this asset */
     public readonly id: DestinationIdentifier,
     /** Source of the file asset */
-    public readonly source: DockerImageSource,
+    public readonly source: DockerImageSource | ExternalDockerImageSource,
     /** Destination for the file asset */
     public readonly destination: DockerImageDestination,
   ) {

@@ -7,7 +7,7 @@ export interface DockerImageAsset {
   /**
    * Source description for file assets
    */
-  readonly source: DockerImageSource;
+  readonly source: DockerImageSource | ExternalDockerImageSource;
 
   /**
    * Destinations for this file asset
@@ -46,6 +46,17 @@ export interface DockerImageSource {
    * @default - No additional build arguments
    */
   readonly dockerBuildArgs?: { [name: string]: string };
+}
+
+/**
+ * Properties for how to produce a Docker image from an external source
+ */
+export interface ExternalDockerImageSource {
+  /**
+   * A command-line executable that returns the name of a local
+   * Docker image on stdout after being run.
+   */
+  readonly executable: string;
 }
 
 /**

@@ -2,7 +2,15 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
-import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetPackaging, FileAssetSource } from '../assets';
+import {
+  DockerImageAssetLocation,
+  DockerImageAssetSource,
+  ExternalDockerImageAssetSource,
+  ExternalFileAssetSource,
+  FileAssetLocation,
+  FileAssetPackaging,
+  FileAssetSource,
+} from '../assets';
 import { Fn } from '../cfn-fn';
 import { CfnParameter } from '../cfn-parameter';
 import { CfnRule } from '../cfn-rule';
@@ -225,8 +233,8 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
   private qualifier?: string;
   private bucketPrefix?: string
 
-  private readonly files: NonNullable<cxschema.AssetManifest['files']> = {};
-  private readonly dockerImages: NonNullable<cxschema.AssetManifest['dockerImages']> = {};
+  protected readonly files: NonNullable<cxschema.AssetManifest['files']> = {};
+  protected readonly dockerImages: NonNullable<cxschema.AssetManifest['dockerImages']> = {};
 
   constructor(private readonly props: DefaultStackSynthesizerProps = {}) {
     super();
@@ -268,26 +276,36 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
     /* eslint-enable max-len */
   }
 
-  public addFileAsset(asset: FileAssetSource): FileAssetLocation {
+  public addFileAsset(asset: ExternalFileAssetSource): FileAssetLocation;
+  public addFileAsset(asset: FileAssetSource): FileAssetLocation;
+  public addFileAsset(asset: FileAssetSource | ExternalFileAssetSource): FileAssetLocation {
     assertBound(this.stack);
     assertBound(this.bucketName);
+
     const objectKey = this.bucketPrefix + asset.sourceHash + (asset.packaging === FileAssetPackaging.ZIP_DIRECTORY ? '.zip' : '');
+
+    const destinations = {
+      [this.manifestEnvName]: {
+        bucketName: this.bucketName,
+        objectKey,
+        region: resolvedOr(this.stack.region, undefined),
+        assumeRoleArn: this.fileAssetPublishingRoleArn,
+        assumeRoleExternalId: this.props.fileAssetPublishingExternalId,
+      },
+    };
+
+    const source = isExternalSource(asset) ? {
+      executable: asset.executable,
+      packaging: asset.packaging,
+    } : {
+      path: asset.fileName,
+      packaging: asset.packaging,
+    };
 
     // Add to manifest
     this.files[asset.sourceHash] = {
-      source: {
-        path: asset.fileName,
-        packaging: asset.packaging,
-      },
-      destinations: {
-        [this.manifestEnvName]: {
-          bucketName: this.bucketName,
-          objectKey,
-          region: resolvedOr(this.stack.region, undefined),
-          assumeRoleArn: this.fileAssetPublishingRoleArn,
-          assumeRoleExternalId: this.props.fileAssetPublishingExternalId,
-        },
-      },
+      source,
+      destinations,
     };
 
     const { region, urlSuffix } = stackLocationOrInstrinsics(this.stack);
@@ -304,29 +322,37 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
     };
   }
 
-  public addDockerImageAsset(asset: DockerImageAssetSource): DockerImageAssetLocation {
+  public addDockerImageAsset(asset: ExternalDockerImageAssetSource): DockerImageAssetLocation;
+  public addDockerImageAsset(asset: DockerImageAssetSource): DockerImageAssetLocation;
+  public addDockerImageAsset(asset: DockerImageAssetSource | ExternalDockerImageAssetSource): DockerImageAssetLocation {
     assertBound(this.stack);
     assertBound(this.repositoryName);
 
     const imageTag = asset.sourceHash;
 
+    const destinations = {
+      [this.manifestEnvName]: {
+        repositoryName: this.repositoryName,
+        imageTag,
+        region: resolvedOr(this.stack.region, undefined),
+        assumeRoleArn: this.imageAssetPublishingRoleArn,
+        assumeRoleExternalId: this.props.imageAssetPublishingExternalId,
+      },
+    };
+
+    const source = isExternalSource(asset) ? {
+      executable: asset.executable,
+    } : {
+      directory: asset.directoryName,
+      dockerBuildArgs: asset.dockerBuildArgs,
+      dockerBuildTarget: asset.dockerBuildTarget,
+      dockerFile: asset.dockerFile,
+    };
+
     // Add to manifest
-    this.dockerImages[asset.sourceHash] = {
-      source: {
-        directory: asset.directoryName,
-        dockerBuildArgs: asset.dockerBuildArgs,
-        dockerBuildTarget: asset.dockerBuildTarget,
-        dockerFile: asset.dockerFile,
-      },
-      destinations: {
-        [this.manifestEnvName]: {
-          repositoryName: this.repositoryName,
-          imageTag,
-          region: resolvedOr(this.stack.region, undefined),
-          assumeRoleArn: this.imageAssetPublishingRoleArn,
-          assumeRoleExternalId: this.props.imageAssetPublishingExternalId,
-        },
-      },
+    this.dockerImages[imageTag] = {
+      source,
+      destinations,
     };
 
     const { account, region, urlSuffix } = stackLocationOrInstrinsics(this.stack);
@@ -463,6 +489,10 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
       resolvedOr(this.stack.region, 'current_region'),
     ].join('-');
   }
+}
+
+function isExternalSource(x: any): x is ExternalFileAssetSource | ExternalDockerImageAssetSource {
+  return x.hasOwnProperty('executable');
 }
 
 /**

@@ -33,8 +33,15 @@
             "type": "object",
             "properties": {
                 "source": {
-                    "$ref": "#/definitions/FileSource",
-                    "description": "Source description for file assets"
+                    "description": "Source description for file assets",
+                    "anyOf": [
+                        {
+                            "$ref": "#/definitions/FileSource"
+                        },
+                        {
+                            "$ref": "#/definitions/ExternalFileSource"
+                        }
+                    ]
                 },
                 "destinations": {
                     "description": "Destinations for this file asset",
@@ -68,6 +75,27 @@
             },
             "required": [
                 "path"
+            ]
+        },
+        "ExternalFileSource": {
+            "description": "Describe the source of an external file asset",
+            "type": "object",
+            "properties": {
+                "executable": {
+                    "description": "The filesystem object to upload\n\nThis path is relative to the asset manifest location.",
+                    "type": "string"
+                },
+                "packaging": {
+                    "description": "Packaging method (Default FILE)",
+                    "enum": [
+                        "file",
+                        "zip"
+                    ],
+                    "type": "string"
+                }
+            },
+            "required": [
+                "executable"
             ]
         },
         "FileDestination": {
@@ -105,8 +133,15 @@
             "type": "object",
             "properties": {
                 "source": {
-                    "$ref": "#/definitions/DockerImageSource",
-                    "description": "Source description for file assets"
+                    "description": "Source description for file assets",
+                    "anyOf": [
+                        {
+                            "$ref": "#/definitions/DockerImageSource"
+                        },
+                        {
+                            "$ref": "#/definitions/ExternalDockerImageSource"
+                        }
+                    ]
                 },
                 "destinations": {
                     "description": "Destinations for this file asset",
@@ -147,6 +182,19 @@
             },
             "required": [
                 "directory"
+            ]
+        },
+        "ExternalDockerImageSource": {
+            "description": "Properties for how to produce a Docker image from an external source",
+            "type": "object",
+            "properties": {
+                "executable": {
+                    "description": "A command-line executable that returns the name of a local\nDocker image on stdout after being run.",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "executable"
             ]
         },
         "DockerImageDestination": {

@@ -1,4 +1,11 @@
-import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
+import {
+  DockerImageAssetLocation,
+  DockerImageAssetSource,
+  ExternalDockerImageAssetSource,
+  ExternalFileAssetSource,
+  FileAssetLocation,
+  FileAssetSource,
+} from '../assets';
 import { ISynthesisSession } from '../construct-compat';
 import { assertBound } from './_shared';
 import { DefaultStackSynthesizer } from './default-synthesizer';
@@ -39,11 +46,11 @@ export class BootstraplessSynthesizer extends DefaultStackSynthesizer {
     });
   }
 
-  public addFileAsset(_asset: FileAssetSource): FileAssetLocation {
+  public addFileAsset(_asset: FileAssetSource | ExternalFileAssetSource): FileAssetLocation {
     throw new Error('Cannot add assets to a Stack that uses the BootstraplessSynthesizer');
   }
 
-  public addDockerImageAsset(_asset: DockerImageAssetSource): DockerImageAssetLocation {
+  public addDockerImageAsset(_asset: DockerImageAssetSource | ExternalDockerImageAssetSource): DockerImageAssetLocation {
     throw new Error('Cannot add assets to a Stack that uses the BootstraplessSynthesizer');
   }
 

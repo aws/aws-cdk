@@ -1,12 +1,13 @@
 import { createReadStream, promises as fs } from 'fs';
 import * as path from 'path';
-import { FileAssetPackaging } from '@aws-cdk/cloud-assembly-schema';
+import { ExternalFileSource, FileAssetPackaging } from '@aws-cdk/cloud-assembly-schema';
 import { FileManifestEntry } from '../../asset-manifest';
 import { EventType } from '../../progress';
 import { zipDirectory } from '../archive';
 import { IAssetHandler, IHandlerHost } from '../asset-handler';
 import { pathExists } from '../fs-extra';
 import { replaceAwsPlaceholders } from '../placeholders';
+import { shell } from '../shell';
 
 export class FileAssetHandler implements IAssetHandler {
   private readonly fileCacheRoot: string;
@@ -57,7 +58,7 @@ export class FileAssetHandler implements IAssetHandler {
 
   private async packageFile(): Promise<string> {
     const source = this.asset.source;
-    const fullPath = path.resolve(this.workDir, this.asset.source.path);
+    const fullPath = isExternalSource(source) ? await shell(source.executable.split(' ')) : path.resolve(this.workDir, source.path);
 
     if (source.packaging === FileAssetPackaging.ZIP_DIRECTORY) {
       await fs.mkdir(this.fileCacheRoot, { recursive: true });
@@ -75,6 +76,10 @@ export class FileAssetHandler implements IAssetHandler {
       return fullPath;
     }
   }
+}
+
+function isExternalSource(x: any): x is ExternalFileSource {
+  return x.hasOwnProperty('executable');
 }
 
 enum BucketOwnership {

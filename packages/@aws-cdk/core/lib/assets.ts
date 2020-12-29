@@ -119,6 +119,29 @@ export interface FileAssetSource {
   readonly packaging: FileAssetPackaging;
 }
 
+/**
+ * Represents an external source for a file asset.
+ */
+export interface ExternalFileAssetSource {
+  /**
+   * A hash on the content source. This hash is used to uniquely identify this
+   * asset throughout the system. If this value doesn't change, the asset will
+   * not be rebuilt or republished.
+   */
+  readonly sourceHash: string;
+
+  /**
+   * The executable to stage the asset, which returns
+   * the path of the asset on stdout.
+   */
+  readonly executable: string;
+
+  /**
+   * Which type of packaging to perform.
+   */
+  readonly packaging: FileAssetPackaging;
+}
+
 export interface DockerImageAssetSource {
   /**
    * The hash of the contents of the docker build context. This hash is used
@@ -172,6 +195,24 @@ export interface DockerImageAssetSource {
    * @deprecated repository name should be specified at the environment-level and not at the image level
    */
   readonly repositoryName?: string;
+}
+
+export interface ExternalDockerImageAssetSource {
+  /**
+   * The hash of the contents of the docker build context. This hash is used
+   * throughout the system to identify this image and avoid duplicate work
+   * in case the source did not change.
+   *
+   * NOTE: this means that if you wish to update your docker image, you
+   * must make a modification to the source (e.g. add some metadata to your Dockerfile).
+   */
+  readonly sourceHash: string;
+
+  /**
+   * The executable to build the asset, which returns
+   * the image name of the asset on stdout.
+   */
+  readonly executable: string;
 }
 
 /**

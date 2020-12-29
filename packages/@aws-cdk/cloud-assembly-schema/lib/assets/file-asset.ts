@@ -7,7 +7,7 @@ export interface FileAsset {
   /**
    * Source description for file assets
    */
-  readonly source: FileSource;
+  readonly source: FileSource | ExternalFileSource;
 
   /**
    * Destinations for this file asset
@@ -40,6 +40,25 @@ export interface FileSource {
    * This path is relative to the asset manifest location.
    */
   readonly path: string;
+
+  /**
+   * Packaging method
+   *
+   * @default FILE
+   */
+  readonly packaging?: FileAssetPackaging;
+}
+
+/**
+ * Describe the source of an external file asset
+ */
+export interface ExternalFileSource {
+  /**
+   * The filesystem object to upload
+   *
+   * This path is relative to the asset manifest location.
+   */
+  readonly executable: string;
 
   /**
    * Packaging method

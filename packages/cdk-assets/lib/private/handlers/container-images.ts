@@ -4,6 +4,8 @@ import { EventType } from '../../progress';
 import { IAssetHandler, IHandlerHost } from '../asset-handler';
 import { Docker } from '../docker';
 import { replaceAwsPlaceholders } from '../placeholders';
+import { ExternalDockerImageSource } from '@aws-cdk/cloud-assembly-schema';
+import { shell } from '../shell';
 
 export class ContainerImageAssetHandler implements IAssetHandler {
   private readonly localTagName: string;
@@ -29,7 +31,7 @@ export class ContainerImageAssetHandler implements IAssetHandler {
       throw new Error(`No ECR repository named '${destination.repositoryName}' in account ${account}. Is this account bootstrapped?`);
     }
 
-    const imageUri = `${repoUri}:${destination.imageTag}`;
+    const imageUri = isExternalSource(this.asset.source) ? await shell(this.asset.source.executable.split(' ')) : `${repoUri}:${destination.imageTag}`;
 
     this.host.emitMessage(EventType.CHECK, `Check ${imageUri}`);
     if (await imageExists(ecr, destination.repositoryName, destination.imageTag)) {
@@ -57,6 +59,10 @@ export class ContainerImageAssetHandler implements IAssetHandler {
 
     const source = this.asset.source;
 
+    if (isExternalSource(source)) {
+      return;
+    }
+
     const fullPath = path.resolve(this.workDir, source.directory);
     this.host.emitMessage(EventType.BUILD, `Building Docker image at ${fullPath}`);
 
@@ -68,6 +74,10 @@ export class ContainerImageAssetHandler implements IAssetHandler {
       file: source.dockerFile,
     });
   }
+}
+
+function isExternalSource(x: any): x is ExternalDockerImageSource {
+  return x.hasOwnProperty('executable');
 }
 
 async function imageExists(ecr: AWS.ECR, repositoryName: string, imageTag: string) {
