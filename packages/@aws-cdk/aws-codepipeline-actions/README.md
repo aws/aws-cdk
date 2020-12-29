@@ -692,7 +692,6 @@ const deployStage = pipeline.addStage({
 #### Invalidating the CloudFront cache when deploying to S3
 
 There is currently no native support in CodePipeline for invalidating a CloudFront cache after deployment.
-
 One workaround is to add another build step after the deploy step,
 and use the AWS CLI to invalidate the cache:
 
@@ -722,15 +721,12 @@ const invalidateBuildProject = new codebuild.PipelineProject(this, `InvalidatePr
 
 // Add Cloudfront invalidation permissions to the project
 const distributionArn = `arn:aws:cloudfront::${this.account}:distribution/${distribution.distributionId}`;
-invalidateBuildProject.addToRolePolicy(
-  new iam.PolicyStatement({
-    effect: iam.Effect.ALLOW,
-    resources: [distributionArn],
-    actions: [
-      'cloudfront:CreateInvalidation',
-    ],
-  })
-);
+invalidateBuildProject.addToRolePolicy(new iam.PolicyStatement({
+  resources: [distributionArn],
+  actions: [
+    'cloudfront:CreateInvalidation',
+  ],
+}));
 
 // Create the pipeline (here only the S3 deploy and Invalidate cache build)
 new codepipeline.Pipeline(this, 'Pipeline', {
@@ -748,7 +744,7 @@ new codepipeline.Pipeline(this, 'Pipeline', {
         new codepipelineActions.CodeBuildAction({
           actionName: 'InvalidateCache',
           project: invalidateBuildProject,
-          input: invalidateOutput,
+          input: deployInput,
           runOrder: 2,
         }),
       ],
