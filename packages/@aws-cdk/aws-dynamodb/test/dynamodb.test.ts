@@ -836,27 +836,40 @@ test('when specifying PAY_PER_REQUEST billing mode', () => {
   );
 });
 
-test('error when specifying read or write capacity with a PAY_PER_REQUEST billing mode', () => {
-  const stack = new Stack();
-  expect(() => new Table(stack, 'Table A', {
-    tableName: TABLE_NAME,
-    billingMode: BillingMode.PAY_PER_REQUEST,
-    partitionKey: TABLE_PARTITION_KEY,
-    readCapacity: 1,
-  })).toThrow(/PAY_PER_REQUEST/);
-  expect(() => new Table(stack, 'Table B', {
-    tableName: TABLE_NAME,
-    billingMode: BillingMode.PAY_PER_REQUEST,
-    partitionKey: TABLE_PARTITION_KEY,
-    writeCapacity: 1,
-  })).toThrow(/PAY_PER_REQUEST/);
-  expect(() => new Table(stack, 'Table C', {
-    tableName: TABLE_NAME,
-    billingMode: BillingMode.PAY_PER_REQUEST,
-    partitionKey: TABLE_PARTITION_KEY,
-    readCapacity: 1,
-    writeCapacity: 1,
-  })).toThrow(/PAY_PER_REQUEST/);
+describe('when billing mode is PAY_PER_REQUEST', () => {
+  let stack: Stack;
+
+  beforeEach(() => {
+    stack = new Stack();
+  });
+
+  test('creating the Table fails when readCapacity is specified', () => {
+    expect(() => new Table(stack, 'Table A', {
+      tableName: TABLE_NAME,
+      partitionKey: TABLE_PARTITION_KEY,
+      billingMode: BillingMode.PAY_PER_REQUEST,
+      readCapacity: 1,
+    })).toThrow(/PAY_PER_REQUEST/);
+  });
+
+  test('creating the Table fails when writeCapacity is specified', () => {
+    expect(() => new Table(stack, 'Table B', {
+      tableName: TABLE_NAME,
+      partitionKey: TABLE_PARTITION_KEY,
+      billingMode: BillingMode.PAY_PER_REQUEST,
+      writeCapacity: 1,
+    })).toThrow(/PAY_PER_REQUEST/);
+  });
+
+  test('creating the Table fails when both readCapacity and writeCapacity are specified', () => {
+    expect(() => new Table(stack, 'Table C', {
+      tableName: TABLE_NAME,
+      partitionKey: TABLE_PARTITION_KEY,
+      billingMode: BillingMode.PAY_PER_REQUEST,
+      readCapacity: 1,
+      writeCapacity: 1,
+    })).toThrow(/PAY_PER_REQUEST/);
+  });
 });
 
 test('when adding a global secondary index with hash key only', () => {
@@ -2766,12 +2779,12 @@ describe('global', () => {
     });
   });
 
-  test('throws with PROVISIONED billing mode', () => {
+  test('throws when PROVISIONED billing mode is used without auto-scaled writes', () => {
     // GIVEN
     const stack = new Stack();
 
-    // THEN
-    expect(() => new Table(stack, 'Table', {
+    // WHEN
+    new Table(stack, 'Table', {
       partitionKey: {
         name: 'id',
         type: AttributeType.STRING,
@@ -2781,7 +2794,65 @@ describe('global', () => {
         'eu-central-1',
       ],
       billingMode: BillingMode.PROVISIONED,
-    })).toThrow(/`PAY_PER_REQUEST`/);
+    });
+
+    // THEN
+    expect(() => {
+      SynthUtils.synthesize(stack);
+    }).toThrow(/A global Table that uses PROVISIONED as the billing mode needs auto-scaled write capacity/);
+  });
+
+  test('throws when PROVISIONED billing mode is used with auto-scaled writes, but without a policy', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const table = new Table(stack, 'Table', {
+      partitionKey: {
+        name: 'id',
+        type: AttributeType.STRING,
+      },
+      replicationRegions: [
+        'eu-west-2',
+        'eu-central-1',
+      ],
+      billingMode: BillingMode.PROVISIONED,
+    });
+    table.autoScaleWriteCapacity({
+      minCapacity: 1,
+      maxCapacity: 10,
+    });
+
+    // THEN
+    expect(() => {
+      SynthUtils.synthesize(stack);
+    }).toThrow(/A global Table that uses PROVISIONED as the billing mode needs auto-scaled write capacity with a policy/);
+  });
+
+  test('allows PROVISIONED billing mode when auto-scaled writes with a policy are specified', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const table = new Table(stack, 'Table', {
+      partitionKey: {
+        name: 'id',
+        type: AttributeType.STRING,
+      },
+      replicationRegions: [
+        'eu-west-2',
+        'eu-central-1',
+      ],
+      billingMode: BillingMode.PROVISIONED,
+    });
+    table.autoScaleWriteCapacity({
+      minCapacity: 1,
+      maxCapacity: 10,
+    }).scaleOnUtilization({ targetUtilizationPercent: 75 });
+
+    expect(stack).toHaveResourceLike('AWS::DynamoDB::Table', {
+      BillingMode: ABSENT, // PROVISIONED is the default
+    });
   });
 
   test('throws when stream is set and not set to NEW_AND_OLD_IMAGES', () => {

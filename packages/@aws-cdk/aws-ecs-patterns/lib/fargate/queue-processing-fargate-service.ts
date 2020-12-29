@@ -59,6 +59,13 @@ export interface QueueProcessingFargateServiceProps extends QueueProcessingServi
    * @default Latest
    */
   readonly platformVersion?: FargatePlatformVersion;
+
+  /**
+   * Optional name for the container added
+   *
+   * @default - QueueProcessingContainer
+   */
+  readonly containerName?: string;
 }
 
 /**
@@ -86,7 +93,10 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
       cpu: props.cpu || 256,
       family: props.family,
     });
-    this.taskDefinition.addContainer('QueueProcessingContainer', {
+
+    const containerName = props.containerName ?? 'QueueProcessingContainer';
+
+    this.taskDefinition.addContainer(containerName, {
       image: props.image,
       command: props.command,
       environment: this.environment,

@@ -257,32 +257,16 @@ export interface ClusterAttributes {
   readonly openIdConnectProvider?: iam.IOpenIdConnectProvider;
 
   /**
-   * An AWS Lambda Layer which includes `kubectl`, Helm and the AWS CLI.
+   * An AWS Lambda Layer which includes `kubectl`, Helm and the AWS CLI. This layer
+   * is used by the kubectl handler to apply manifests and install helm charts.
    *
-   * By default, the provider will use the layer included in the
-   * "aws-lambda-layer-kubectl" SAR application which is available in all
-   * commercial regions.
+   * The handler expects the layer to include the following executables:
    *
-   * To deploy the layer locally, visit
-   * https://github.com/aws-samples/aws-lambda-layer-kubectl/blob/master/cdk/README.md
-   * for instructions on how to prepare the .zip file and then define it in your
-   * app as follows:
+   *    helm/helm
+   *    kubectl/kubectl
+   *    awscli/aws
    *
-   * ```ts
-   * const layer = new lambda.LayerVersion(this, 'kubectl-layer', {
-   *   code: lambda.Code.fromAsset(`${__dirname}/layer.zip`)),
-   *   compatibleRuntimes: [lambda.Runtime.PROVIDED]
-   * });
-   *
-   * Or you can use the standard layer like this (with options
-   * to customize the version and SAR application ID):
-   *
-   * ```ts
-   * const layer = new eks.KubectlLayer(this, 'KubectlLayer');
-   * ```
-   *
-   * @default - the layer provided by the `aws-lambda-layer-kubectl` SAR app.
-   * @see https://github.com/aws-samples/aws-lambda-layer-kubectl
+   * @default - a layer bundled with this module.
    */
   readonly kubectlLayer?: lambda.ILayerVersion;
 
@@ -425,6 +409,13 @@ export interface ClusterOptions extends CommonClusterOptions {
   readonly kubectlEnvironment?: { [key: string]: string };
 
   /**
+   * Custom environment variables when interacting with the EKS endpoint to manage the cluster lifecycle.
+   *
+   * @default - No environment variables.
+   */
+  readonly clusterHandlerEnvironment?: { [key: string]: string };
+
+  /**
    * An AWS Lambda Layer which includes `kubectl`, Helm and the AWS CLI.
    *
    * By default, the provider will use the layer included in the
@@ -464,6 +455,14 @@ export interface ClusterOptions extends CommonClusterOptions {
    * @default true
    */
   readonly prune?: boolean;
+
+  /**
+   * If set to true, the cluster handler functions will be placed in the private subnets
+   * of the cluster vpc, subject to the `vpcSubnets` selection strategy.
+   *
+   * @default false
+   */
+  readonly placeClusterHandlerInVpc?: boolean;
 }
 
 /**
@@ -564,28 +563,6 @@ export class EndpointAccess {
  * Common configuration props for EKS clusters.
  */
 export interface ClusterProps extends ClusterOptions {
-  /**
-   * NOT SUPPORTED: We no longer allow disabling kubectl-support. Setting this
-   * option to `false` will throw an error.
-   *
-   * To temporary allow you to retain existing clusters created with
-   * `kubectlEnabled: false`, you can use `eks.LegacyCluster` class, which is a
-   * drop-in replacement for `eks.Cluster` with `kubectlEnabled: false`.
-   *
-   * Bear in mind that this is a temporary workaround. We have plans to remove
-   * `eks.LegacyCluster`. If you have a use case for using `eks.LegacyCluster`,
-   * please add a comment here https://github.com/aws/aws-cdk/issues/9332 and
-   * let us know so we can make sure to continue to support your use case with
-   * `eks.Cluster`. This issue also includes additional context into why this
-   * class is being removed.
-   *
-   * @deprecated `eks.LegacyCluster` is __temporarily__ provided as a drop-in
-   * replacement until you are able to migrate to `eks.Cluster`.
-   *
-   * @see https://github.com/aws/aws-cdk/issues/9332
-   * @default true
-   */
-  readonly kubectlEnabled?: boolean;
 
   /**
    * Number of instances to allocate as an initial capacity for this cluster.
@@ -855,7 +832,6 @@ export class Cluster extends ClusterBase {
 
   /**
    * Custom environment variables when running `kubectl` against this cluster.
-   * @default - no additional environment variables
    */
   public readonly kubectlEnvironment?: { [key: string]: string };
 
@@ -958,14 +934,6 @@ export class Cluster extends ClusterBase {
       physicalName: props.clusterName,
     });
 
-    if (props.kubectlEnabled === false) {
-      throw new Error(
-        'The "eks.Cluster" class no longer allows disabling kubectl support. ' +
-        'As a temporary workaround, you can use the drop-in replacement class `eks.LegacyCluster`, ' +
-        'but bear in mind that this class will soon be removed and will no longer receive additional ' +
-        'features or bugfixes. See https://github.com/aws/aws-cdk/issues/9332 for more details');
-    }
-
     const stack = Stack.of(this);
 
     this.prune = props.prune ?? true;
@@ -1016,8 +984,15 @@ export class Cluster extends ClusterBase {
       throw new Error('Vpc must contain private subnets when public endpoint access is restricted');
     }
 
+    const placeClusterHandlerInVpc = props.placeClusterHandlerInVpc ?? false;
+
+    if (placeClusterHandlerInVpc && privateSubents.length === 0) {
+      throw new Error('Cannot place cluster handler in the VPC since no private subnets could be selected');
+    }
+
     const resource = this._clusterResource = new ClusterResource(this, 'Resource', {
       name: this.physicalName,
+      environment: props.clusterHandlerEnvironment,
       roleArn: this.role.roleArn,
       version: props.version.version,
       resourcesVpcConfig: {
@@ -1037,6 +1012,7 @@ export class Cluster extends ClusterBase {
       publicAccessCidrs: this.endpointAccess._config.publicCidrs,
       secretsEncryptionKey: props.secretsEncryptionKey,
       vpc: this.vpc,
+      subnets: placeClusterHandlerInVpc ? privateSubents : undefined,
     });
 
     if (this.endpointAccess._config.privateAccess && privateSubents.length !== 0) {
@@ -1127,7 +1103,7 @@ export class Cluster extends ClusterBase {
         this.addAutoScalingGroupCapacity('DefaultCapacity', { instanceType, minCapacity }) : undefined;
 
       this.defaultNodegroup = props.defaultCapacityType !== DefaultCapacityType.EC2 ?
-        this.addNodegroupCapacity('DefaultCapacity', { instanceType, minSize: minCapacity }) : undefined;
+        this.addNodegroupCapacity('DefaultCapacity', { instanceTypes: [instanceType], minSize: minCapacity }) : undefined;
     }
 
     const outputConfigCommand = props.outputConfigCommand === undefined ? true : props.outputConfigCommand;
@@ -1460,7 +1436,7 @@ export class Cluster extends ClusterBase {
     if (!this._spotInterruptHandler) {
       this._spotInterruptHandler = this.addHelmChart('spot-interrupt-handler', {
         chart: 'aws-node-termination-handler',
-        version: '0.9.5',
+        version: '0.13.2',
         repository: 'https://aws.github.io/eks-charts',
         namespace: 'kube-system',
         values: {
@@ -1940,4 +1916,3 @@ function cpuArchForInstanceType(instanceType: ec2.InstanceType) {
     INSTANCE_TYPES.graviton.includes(instanceType.toString().substring(0, 2)) ? CpuArch.ARM_64 :
       CpuArch.X86_64;
 }
-
