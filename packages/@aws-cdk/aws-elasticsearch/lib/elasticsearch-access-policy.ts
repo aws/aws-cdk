@@ -46,6 +46,5 @@ export class ElasticsearchAccessPolicy extends cr.AwsCustomResource {
       },
       policy: cr.AwsCustomResourcePolicy.fromSdkCalls({ resources: [props.domainArn] }),
     });
-
   }
 }
