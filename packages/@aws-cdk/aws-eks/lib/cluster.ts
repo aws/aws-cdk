@@ -1243,7 +1243,7 @@ export class Cluster extends ClusterBase {
     autoScalingGroup.connections.allowToAnyIpv4(ec2.Port.allIcmp());
 
     // allow traffic to/from managed node groups (eks attaches this security group to the managed nodes)
-    // autoScalingGroup.addSecurityGroup(this.clusterSecurityGroup);
+    autoScalingGroup.addSecurityGroup(this.clusterSecurityGroup);
 
     const bootstrapEnabled = options.bootstrapEnabled !== undefined ? options.bootstrapEnabled : true;
     if (options.bootstrapOptions && !bootstrapEnabled) {
