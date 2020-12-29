@@ -1,5 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
+import * as constructs from 'constructs';
 import { Alarm, ComparisonOperator, TreatMissingData } from './alarm';
 import { Dimension, IMetric, MetricAlarmConfig, MetricConfig, MetricGraphConfig, Unit } from './metric-types';
 import { dispatchMetric, metricKey } from './private/metric-util';
@@ -272,7 +273,7 @@ export class Metric implements IMetric {
    * If the scope we attach to is in an environment-agnostic stack,
    * nothing is done and the same Metric object is returned.
    */
-  public attachTo(scope: cdk.Construct): Metric {
+  public attachTo(scope: constructs.IConstruct): Metric {
     const stack = cdk.Stack.of(scope);
 
     return this.with({

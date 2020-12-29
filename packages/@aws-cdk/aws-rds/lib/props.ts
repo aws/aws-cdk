@@ -84,6 +84,13 @@ export interface InstanceProps {
    * @default - true
    */
   readonly deleteAutomatedBackups?: boolean;
+
+  /**
+   * Indicates whether the DB instance is an internet-facing instance.
+   *
+   * @default - `true` if `vpcSubnets` is `subnetType: SubnetType.PUBLIC`, `false` otherwise
+   */
+  readonly publiclyAccessible?: boolean;
 }
 
 /**

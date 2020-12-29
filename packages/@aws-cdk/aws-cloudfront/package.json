@@ -109,18 +109,8 @@
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
   },
-  "stability": "experimental",
-  "maturity": "experimental",
-  "features": [
-    {
-      "name": "Higher level constructs for Distribution",
-      "stability": "Developer Preview"
-    },
-    {
-      "name": "Higher level constructs for CloudFrontWebDistribution",
-      "stability": "Stable"
-    }
-  ],
+  "stability": "stable",
+  "maturity": "stable",
   "awslint": {
     "exclude": [
       "props-physical-name:@aws-cdk/aws-cloudfront.Distribution",

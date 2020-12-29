@@ -37,6 +37,17 @@ const devDomain = new es.Domain(this, 'Domain', {
 });
 ```
 
+To perform version upgrades without replacing the entire domain, specify the `enableVersionUpgrade` property.
+
+```ts
+import * as es from '@aws-cdk/aws-elasticsearch';
+
+const devDomain = new es.Domain(this, 'Domain', {
+    version: es.ElasticsearchVersion.V7_9,
+    enableVersionUpgrade: true // defaults to false
+});
+```
+
 Create a production grade cluster by also specifying things like capacity and az distribution
 
 ```ts
@@ -172,4 +183,30 @@ const domain = new es.Domain(this, 'Domain', {
 });
 
 const masterUserPassword = domain.masterUserPassword;
+```
+
+
+
+## Audit logs
+
+Audit logs can be enabled for a domain, but only when fine grained access control is enabled.
+
+```ts
+const domain = new es.Domain(this, 'Domain', {
+    version: es.ElasticsearchVersion.V7_1,
+    enforceHttps: true,
+    nodeToNodeEncryption: true,
+    encryptionAtRest: {
+        enabled: true,
+    },
+    fineGrainedAccessControl: {
+        masterUserName: 'master-user',
+    },
+    logging: {
+        auditLogEnabled: true,
+        slowSearchLogEnabled: true,
+        appLogEnabled: true,
+        slowIndexLogEnabled: true,
+    },
+});
 ```
