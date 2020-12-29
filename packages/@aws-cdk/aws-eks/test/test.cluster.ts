@@ -12,7 +12,6 @@ import * as constructs from 'constructs';
 import { Test } from 'nodeunit';
 import * as YAML from 'yaml';
 import * as eks from '../lib';
-import * as kubectl from '../lib/kubectl-provider';
 import { BottleRocketImage } from '../lib/private/bottlerocket';
 import { testFixture, testFixtureNoVpc } from './util';
 
@@ -534,46 +533,6 @@ export = {
       },
     }));
 
-    test.done();
-  },
-
-  'create custom cluster correctly in any aws region'(test: Test) {
-    // GIVEN
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'stack', { env: { region: 'us-east-1' } });
-
-    // WHEN
-    const vpc = new ec2.Vpc(stack, 'VPC');
-    new eks.Cluster(stack, 'Cluster', { vpc, defaultCapacity: 0, version: CLUSTER_VERSION, prune: false });
-    kubectl.getOrCreateKubectlLayer(stack);
-
-    // THEN
-    expect(stack).to(haveResource('Custom::AWSCDK-EKS-Cluster'));
-    expect(stack).to(haveResourceLike('AWS::Serverless::Application', {
-      Location: {
-        ApplicationId: 'arn:aws:serverlessrepo:us-east-1:903779448426:applications/lambda-layer-kubectl',
-      },
-    }));
-    test.done();
-  },
-
-  'create custom cluster correctly in any aws region in china'(test: Test) {
-    // GIVEN
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'stack', { env: { region: 'cn-north-1' } });
-
-    // WHEN
-    const vpc = new ec2.Vpc(stack, 'VPC');
-    new eks.Cluster(stack, 'Cluster', { vpc, defaultCapacity: 0, version: CLUSTER_VERSION, prune: false });
-    kubectl.getOrCreateKubectlLayer(stack);
-
-    // THEN
-    expect(stack).to(haveResource('Custom::AWSCDK-EKS-Cluster'));
-    expect(stack).to(haveResourceLike('AWS::Serverless::Application', {
-      Location: {
-        ApplicationId: 'arn:aws-cn:serverlessrepo:cn-north-1:487369736442:applications/lambda-layer-kubectl',
-      },
-    }));
     test.done();
   },
 
@@ -2715,38 +2674,6 @@ export = {
     const providerStack = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
     expect(providerStack).to(haveResource('AWS::Lambda::Function', {
       Layers: ['arn:of:layer'],
-    }));
-
-    test.done();
-  },
-
-  'SAR-based kubectl layer can be customized'(test: Test) {
-    // GIVEN
-    const { stack } = testFixture();
-
-    // WHEN
-    const layer = new eks.KubectlLayer(stack, 'Kubectl', {
-      applicationId: 'custom:app:id',
-      version: '2.3.4',
-    });
-
-    new eks.Cluster(stack, 'Cluster1', {
-      version: CLUSTER_VERSION,
-      prune: false,
-      kubectlLayer: layer,
-    });
-
-    // THEN
-    const providerStack = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
-    expect(providerStack).to(haveResource('AWS::Lambda::Function', {
-      Layers: [{ Ref: 'referencetoStackKubectl7F29063EOutputsLayerVersionArn' }],
-    }));
-
-    expect(stack).to(haveResource('AWS::Serverless::Application', {
-      Location: {
-        ApplicationId: 'custom:app:id',
-        SemanticVersion: '2.3.4',
-      },
     }));
 
     test.done();

@@ -1,8 +1,12 @@
 import { EOL } from 'os';
+import * as path from 'path';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { Fn, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
+import {
+  Fn, IResource, Lazy, RemovalPolicy, Resource, Stack, Token,
+  CustomResource, CustomResourceProvider, CustomResourceProviderRuntime,
+} from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { BucketPolicy } from './bucket-policy';
 import { IBucketNotificationDestination } from './destination';
@@ -11,6 +15,8 @@ import * as perms from './perms';
 import { LifecycleRule } from './rule';
 import { CfnBucket } from './s3.generated';
 import { parseBucketArn, parseBucketName } from './util';
+
+const AUTO_DELETE_OBJECTS_RESOURCE_TYPE = 'Custom::S3AutoDeleteObjects';
 
 export interface IBucket extends IResource {
   /**
@@ -1042,6 +1048,16 @@ export interface BucketProps {
   readonly removalPolicy?: RemovalPolicy;
 
   /**
+   * Whether all objects should be automatically deleted when the bucket is
+   * removed from the stack or when the stack is deleted.
+   *
+   * Requires the `removalPolicy` to be set to `RemovalPolicy.DESTROY`.
+   *
+   * @default false
+   */
+  readonly autoDeleteObjects?: boolean;
+
+  /**
    * Whether this bucket should have versioning turned on or not.
    *
    * @default false
@@ -1325,6 +1341,14 @@ export class Bucket extends BucketBase {
 
     if (props.publicReadAccess) {
       this.grantPublicAccess();
+    }
+
+    if (props.autoDeleteObjects) {
+      if (props.removalPolicy !== RemovalPolicy.DESTROY) {
+        throw new Error('Cannot use \'autoDeleteObjects\' property on a bucket without setting removal policy to \'DESTROY\'.');
+      }
+
+      this.enableAutoDeleteObjects();
     }
   }
 
@@ -1727,6 +1751,42 @@ export class Bucket extends BucketBase {
         prefix: inventory.objectsPrefix,
       };
     });
+  }
+
+  private enableAutoDeleteObjects() {
+    const provider = CustomResourceProvider.getOrCreateProvider(this, AUTO_DELETE_OBJECTS_RESOURCE_TYPE, {
+      codeDirectory: path.join(__dirname, 'auto-delete-objects-handler'),
+      runtime: CustomResourceProviderRuntime.NODEJS_12,
+    });
+
+    // Use a bucket policy to allow the custom resource to delete
+    // objects in the bucket
+    this.addToResourcePolicy(new iam.PolicyStatement({
+      actions: [
+        ...perms.BUCKET_READ_ACTIONS, // list objects
+        ...perms.BUCKET_DELETE_ACTIONS, // and then delete them
+      ],
+      resources: [
+        this.bucketArn,
+        this.arnForObjects('*'),
+      ],
+      principals: [new iam.ArnPrincipal(provider.roleArn)],
+    }));
+
+    const customResource = new CustomResource(this, 'AutoDeleteObjectsCustomResource', {
+      resourceType: AUTO_DELETE_OBJECTS_RESOURCE_TYPE,
+      serviceToken: provider.serviceToken,
+      properties: {
+        BucketName: this.bucketName,
+      },
+    });
+
+    // Ensure bucket policy is deleted AFTER the custom resource otherwise
+    // we don't have permissions to list and delete in the bucket.
+    // (add a `if` to make TS happy)
+    if (this.policy) {
+      customResource.node.addDependency(this.policy);
+    }
   }
 }
 
