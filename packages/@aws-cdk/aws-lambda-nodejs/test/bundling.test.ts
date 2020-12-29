@@ -55,6 +55,7 @@ test('esbuild bundling in Docker', () => {
         'bash', '-c',
         'npx esbuild --bundle /asset-input/lib/handler.ts --target=node12 --platform=node --outfile=/asset-output/index.js --external:aws-sdk --loader:.png=dataurl',
       ],
+      workingDirectory: '/',
     }),
   });
 });
