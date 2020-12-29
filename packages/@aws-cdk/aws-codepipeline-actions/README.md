@@ -689,22 +689,17 @@ const deployStage = pipeline.addStage({
 });
 ```
 
-#### Invalidating Cloudfront Cache when deploying to S3
+#### Invalidating the CloudFront cache when deploying to S3
 
-There is currently no support in the S3DeployAction construct to invalidate the Cloudfront cache after upload.
+There is currently no native support in CodePipeline for invalidating a CloudFront cache after deployment.
 
-One workaround is to add another build step after the deploy step, to use the AWS CLI to invalidate the cache.
+One workaround is to add another build step after the deploy step,
+and use the AWS CLI to invalidate the cache:
 
 ```ts
 // Create a Cloudfront Web Distribution
-const cfDist = new cloudfront.CloudFrontWebDistribution(this, `CloudFrontDistribution`, {
-  originConfigs: [
-    {
-      // ...
-      behaviors : [ {isDefaultBehavior: true}]
-    },
-    // ...
-  ],
+const distribution = new cloudfront.Distribution(this, `Distribution`, {
+  // ...
 });
 
 // Create the build project that will invalidate the cache
