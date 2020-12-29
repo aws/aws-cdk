@@ -196,7 +196,7 @@ export class BundlingDockerImage {
     try {
       const destPath = outputPath ?? FileSystem.mkdtemp('cdk-docker-cp-');
       dockerExec(['cp', containerPath, destPath]);
-      return assetPath;
+      return destPath;
     } catch (err) {
       throw new Error(`Failed to copy files from ${containerPath} to ${outputPath}: ${err}`);
     } finally {
