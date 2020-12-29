@@ -176,7 +176,13 @@ export class BundlingDockerImage {
   }
 
   /**
-   * Copies a file or directory out of the Docker image to the local filesystem
+   * Copies a file or directory out of the Docker image to the local filesystem.
+   *
+   * If `outputPath` is omitted the destination path is a temporary directory.
+   *
+   * @param imagePath the path in the Docker image
+   * @param outputPath the destination path for the copy operation
+   * @returns the destination path
    */
   public cp(imagePath: string, outputPath?: string): string {
     const { stdout } = dockerExec(['create', this.image], {}); // Empty options to avoid stdout redirect here
@@ -188,8 +194,8 @@ export class BundlingDockerImage {
     const containerId = match[1];
     const containerPath = `${containerId}:${imagePath}`;
     try {
-      const assetPath = outputPath ?? FileSystem.mkdtemp('cdk-docker-cp-');
-      dockerExec(['cp', containerPath, assetPath]);
+      const destPath = outputPath ?? FileSystem.mkdtemp('cdk-docker-cp-');
+      dockerExec(['cp', containerPath, destPath]);
       return assetPath;
     } catch (err) {
       throw new Error(`Failed to copy files from ${containerPath} to ${outputPath}: ${err}`);
