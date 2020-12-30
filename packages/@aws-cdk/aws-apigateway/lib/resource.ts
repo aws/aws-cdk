@@ -276,7 +276,7 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
     //
     // statusCode
 
-    const statusCode = options.statusCode !== undefined ? options.statusCode : 204;
+    const statusCode = options.statusCode ?? 204;
 
     //
     // prepare responseParams
@@ -478,7 +478,7 @@ export class ProxyResource extends Resource {
       defaultMethodOptions: props.defaultMethodOptions,
     });
 
-    const anyMethod = props.anyMethod !== undefined ? props.anyMethod : true;
+    const anyMethod = props.anyMethod ?? true;
     if (anyMethod) {
       this.anyMethod = this.addMethod('ANY');
     }

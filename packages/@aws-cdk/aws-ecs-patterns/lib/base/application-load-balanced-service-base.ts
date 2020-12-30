@@ -366,21 +366,19 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
     }
     this.desiredCount = props.desiredCount || 1;
 
-    const internetFacing = props.publicLoadBalancer !== undefined ? props.publicLoadBalancer : true;
+    const internetFacing = props.publicLoadBalancer ?? true;
 
     const lbProps = {
       vpc: this.cluster.vpc,
       internetFacing,
     };
 
-    const loadBalancer = props.loadBalancer !== undefined ? props.loadBalancer
-      : new ApplicationLoadBalancer(this, 'LB', lbProps);
+    const loadBalancer = props.loadBalancer ?? new ApplicationLoadBalancer(this, 'LB', lbProps);
 
     if (props.certificate !== undefined && props.protocol !== undefined && props.protocol !== ApplicationProtocol.HTTPS) {
       throw new Error('The HTTPS protocol must be used when a certificate is given');
     }
-    const protocol = props.protocol !== undefined ? props.protocol :
-      (props.certificate ? ApplicationProtocol.HTTPS : ApplicationProtocol.HTTP);
+    const protocol = props.protocol ?? (props.certificate ? ApplicationProtocol.HTTPS : ApplicationProtocol.HTTP);
 
     if (protocol !== ApplicationProtocol.HTTPS && props.redirectHTTP === true) {
       throw new Error('The HTTPS protocol must be used when redirecting HTTP traffic');

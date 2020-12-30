@@ -400,7 +400,7 @@ abstract class BucketBase extends Resource implements IBucket {
       detailType: ['AWS API Call via CloudTrail'],
       detail: {
         resources: {
-          ARN: options.paths ? options.paths.map(p => this.arnForObjects(p)) : [this.bucketArn],
+          ARN: options.paths?.map(p => this.arnForObjects(p)) ?? [this.bucketArn],
         },
       },
     });
@@ -1560,13 +1560,13 @@ export class Bucket extends BucketBase {
     return { rules: this.lifecycleRules.map(parseLifecycleRule) };
 
     function parseLifecycleRule(rule: LifecycleRule): CfnBucket.RuleProperty {
-      const enabled = rule.enabled !== undefined ? rule.enabled : true;
+      const enabled = rule.enabled ?? true;
 
       const x: CfnBucket.RuleProperty = {
         // eslint-disable-next-line max-len
         abortIncompleteMultipartUpload: rule.abortIncompleteMultipartUploadAfter !== undefined ? { daysAfterInitiation: rule.abortIncompleteMultipartUploadAfter.toDays() } : undefined,
         expirationDate: rule.expirationDate,
-        expirationInDays: rule.expiration && rule.expiration.toDays(),
+        expirationInDays: rule.expiration?.toDays(),
         id: rule.id,
         noncurrentVersionExpirationInDays: rule.noncurrentVersionExpiration && rule.noncurrentVersionExpiration.toDays(),
         noncurrentVersionTransitions: mapOrUndefined(rule.noncurrentVersionTransitions, t => ({

@@ -366,7 +366,7 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
         maxvCpus: props.computeResources.maxvCpus || 256,
         minvCpus: props.computeResources.minvCpus || 0,
         securityGroupIds: this.buildSecurityGroupIds(props.computeResources.vpc, props.computeResources.securityGroups),
-        spotIamFleetRole: spotFleetRole ? spotFleetRole.roleArn : undefined,
+        spotIamFleetRole: spotFleetRole?.roleArn,
         subnets: props.computeResources.vpc.selectSubnets(props.computeResources.vpcSubnets).subnetIds,
         tags: props.computeResources.computeResourcesTags,
         type: props.computeResources.type || ComputeResourceType.ON_DEMAND,
@@ -376,9 +376,8 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
     const computeEnvironment = new CfnComputeEnvironment(this, 'Resource', {
       computeEnvironmentName: this.physicalName,
       computeResources,
-      serviceRole: props.serviceRole
-        ? props.serviceRole.roleArn
-        : new iam.Role(this, 'Resource-Service-Instance-Role', {
+      serviceRole: props.serviceRole?.roleArn
+        ?? new iam.Role(this, 'Resource-Service-Instance-Role', {
           managedPolicies: [
             iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSBatchServiceRole'),
           ],
@@ -401,7 +400,7 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
   }
 
   private isManaged(props: ComputeEnvironmentProps): boolean {
-    return props.managed === undefined ? true : props.managed;
+    return props.managed ?? true;
   }
 
   /**

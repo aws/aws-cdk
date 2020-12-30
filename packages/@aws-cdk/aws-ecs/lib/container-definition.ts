@@ -395,7 +395,7 @@ export class ContainerDefinition extends cdk.Construct {
         throw new Error('MemoryLimitMiB should not be less than MemoryReservationMiB.');
       }
     }
-    this.essential = props.essential !== undefined ? props.essential : true;
+    this.essential = props.essential ?? true;
     this.taskDefinition = props.taskDefinition;
     this.memoryLimitSpecified = props.memoryLimitMiB !== undefined || props.memoryReservationMiB !== undefined;
     this.linuxParameters = props.linuxParameters;
@@ -701,10 +701,10 @@ function renderEnvironmentFiles(environmentFiles: EnvironmentFileConfig[]): any[
 function renderHealthCheck(hc: HealthCheck): CfnTaskDefinition.HealthCheckProperty {
   return {
     command: getHealthCheckCommand(hc),
-    interval: hc.interval != null ? hc.interval.toSeconds() : 30,
-    retries: hc.retries !== undefined ? hc.retries : 3,
-    startPeriod: hc.startPeriod && hc.startPeriod.toSeconds(),
-    timeout: hc.timeout !== undefined ? hc.timeout.toSeconds() : 5,
+    interval: hc.interval?.toSeconds() ?? 30,
+    retries: hc.retries ?? 3,
+    startPeriod: hc.startPeriod?.toSeconds(),
+    timeout: hc.timeout?.toSeconds() ?? 5,
   };
 }
 

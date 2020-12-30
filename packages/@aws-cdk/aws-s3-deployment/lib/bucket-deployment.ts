@@ -223,7 +223,7 @@ export class BucketDeployment extends cdk.Construct {
         Prune: props.prune ?? true,
         UserMetadata: props.metadata ? mapUserMetadata(props.metadata) : undefined,
         SystemMetadata: mapSystemMetadata(props),
-        DistributionId: props.distribution ? props.distribution.distributionId : undefined,
+        DistributionId: props.distribution?.distributionId,
         DistributionPaths: props.distributionPaths,
       },
     });

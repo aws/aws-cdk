@@ -304,18 +304,15 @@ export abstract class NetworkLoadBalancedServiceBase extends cdk.Construct {
     }
     this.desiredCount = props.desiredCount || 1;
 
-    const internetFacing = props.publicLoadBalancer !== undefined ? props.publicLoadBalancer : true;
+    const internetFacing = props.publicLoadBalancer ?? true;
 
     const lbProps = {
       vpc: this.cluster.vpc,
       internetFacing,
     };
 
-    const loadBalancer = props.loadBalancer !== undefined ? props.loadBalancer :
-      new NetworkLoadBalancer(this, 'LB', lbProps);
-
-    const listenerPort = props.listenerPort !== undefined ? props.listenerPort : 80;
-
+    const loadBalancer = props.loadBalancer ?? new NetworkLoadBalancer(this, 'LB', lbProps);
+    const listenerPort = props.listenerPort ?? 80;
     const targetProps = {
       port: 80,
     };

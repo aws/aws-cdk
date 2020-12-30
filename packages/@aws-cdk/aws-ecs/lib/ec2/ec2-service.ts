@@ -181,15 +181,14 @@ export class Ec2Service extends BaseService implements IEc2Service {
       throw new Error('Only one of SecurityGroup or SecurityGroups can be populated.');
     }
 
-    const propagateTagsFromSource = props.propagateTaskTagsFrom !== undefined ? props.propagateTaskTagsFrom
-      : (props.propagateTags !== undefined ? props.propagateTags : PropagatedTagSource.NONE);
+    const propagateTagsFromSource = props.propagateTaskTagsFrom ?? props.propagateTags ?? PropagatedTagSource.NONE;
 
     super(scope, id, {
       ...props,
       // If daemon, desiredCount must be undefined and that's what we want. Otherwise, default to 1.
       desiredCount: props.daemon || props.desiredCount !== undefined ? props.desiredCount : 1,
-      maxHealthyPercent: props.daemon && props.maxHealthyPercent === undefined ? 100 : props.maxHealthyPercent,
-      minHealthyPercent: props.daemon && props.minHealthyPercent === undefined ? 0 : props.minHealthyPercent,
+      maxHealthyPercent: (props.daemon && props.maxHealthyPercent === undefined) ? 100 : props.maxHealthyPercent,
+      minHealthyPercent: (props.daemon && props.minHealthyPercent === undefined) ? 0 : props.minHealthyPercent,
       launchType: LaunchType.EC2,
       propagateTags: propagateTagsFromSource,
       enableECSManagedTags: props.enableECSManagedTags,
