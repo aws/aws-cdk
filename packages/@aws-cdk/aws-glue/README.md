@@ -33,6 +33,18 @@ new glue.Database(stack, 'MyDatabase', {
 });
 ```
 
+A `Database` can be created as a resource link to a database in an external account by specifying a `targetDatabase`:
+
+```ts
+new glue.Database(stack, 'MyResouceLink', {
+  databaseName: 'my_resource_link',
+  targetDatabase: {
+    catalogId: '123456789012',
+    databaseName: 'target_database'
+  }
+});
+```
+
 ## Table
 
 A Glue table describes a table of data in S3: its structure (column names and types), location of data (S3 objects with a common prefix in a S3 bucket), and format for the files (Json, Avro, Parquet, etc.):

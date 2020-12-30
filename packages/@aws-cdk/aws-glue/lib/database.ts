@@ -28,6 +28,22 @@ export interface IDatabase extends IResource {
   readonly databaseName: string;
 }
 
+/**
+ * Properties for a target database for resource linking.
+ */
+export interface TargetDatabase {
+
+  /**
+   * The ID of the Data Catalog in which the database resides.
+   */
+  readonly catalogId: string;
+
+  /**
+   * The name of the catalog database.
+   */
+  readonly databaseName: string;
+}
+
 export interface DatabaseProps {
   /**
    * The name of the database.
@@ -41,6 +57,13 @@ export interface DatabaseProps {
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-database-databaseinput.html
    */
   readonly locationUri?: string;
+
+  /**
+   * The target database for resource linking.
+   *
+   * @default undefined. The database will not be created as a resource link.
+   */
+  readonly targetDatabase?: TargetDatabase;
 }
 
 /**
@@ -86,6 +109,11 @@ export class Database extends Resource implements IDatabase {
    */
   public readonly locationUri?: string;
 
+  /**
+   * Target database for resource linking.
+   */
+  public readonly targetDatabase?: TargetDatabase;
+
   constructor(scope: Construct, id: string, props: DatabaseProps) {
     super(scope, id, {
       physicalName: props.databaseName,
@@ -95,11 +123,19 @@ export class Database extends Resource implements IDatabase {
       name: props.databaseName,
     };
 
-    if (props.locationUri !== undefined) {
+    if (props.locationUri !== undefined && props.targetDatabase !== undefined) {
+      throw new Error('locationUri cannot be specified for resource link databases');
+    } else if (props.locationUri !== undefined) {
       validateLocationUri(props.locationUri);
       this.locationUri = props.locationUri;
       databaseInput = {
         locationUri: this.locationUri,
+        ...databaseInput,
+      };
+    } else if (props.targetDatabase !== undefined) {
+      this.targetDatabase = props.targetDatabase;
+      databaseInput = {
+        targetDatabase: this.targetDatabase,
         ...databaseInput,
       };
     }

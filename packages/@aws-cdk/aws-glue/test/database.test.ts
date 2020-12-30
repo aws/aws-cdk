@@ -56,6 +56,39 @@ test('explicit locationURI', () => {
 
 });
 
+test('resource link database', () => {
+  const stack = new Stack();
+
+  new glue.Database(stack, 'Database', {
+    databaseName: 'test_database',
+    targetDatabase: {
+      catalogId: '123456789012',
+      databaseName: 'target_database',
+    },
+  });
+
+  expect(stack).toMatch({
+    Resources: {
+      DatabaseB269D8BB: {
+        Type: 'AWS::Glue::Database',
+        Properties: {
+          CatalogId: {
+            Ref: 'AWS::AccountId',
+          },
+          DatabaseInput: {
+            Name: 'test_database',
+            TargetDatabase: {
+              CatalogId: '123456789012',
+              DatabaseName: 'target_database',
+            },
+          },
+        },
+      },
+    },
+  });
+
+});
+
 test('fromDatabase', () => {
   // GIVEN
   const stack = new Stack();
@@ -89,6 +122,20 @@ test('locationUri length must be <= 1024', () => {
     new glue.Database(stack, 'Database', {
       databaseName: 'test_database',
       locationUri: 'a'.repeat(1025),
+    }),
+  );
+});
+
+test('cannot have a locationUri and a targetDatabase', () => {
+  const stack = new Stack();
+  throws(() =>
+    new glue.Database(stack, 'Database', {
+      databaseName: 'test_database',
+      locationUri: 's3://my-uri/',
+      targetDatabase: {
+        catalogId: '123456789012',
+        databaseName: 'target_database',
+      },
     }),
   );
 });
