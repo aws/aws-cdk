@@ -60,21 +60,6 @@ export interface DistributionAttributes {
   readonly distributionId: string;
 }
 
-/**
- * Represents a certificate in AWS Certificate Manager
- */
-export interface IDistributionCertificate extends acm.ICertificate {
-  /**
-    * The minimum version of the SSL protocol that you want CloudFront to use for HTTPS connections.
-    *
-    * CloudFront serves your objects only to browsers or devices that support at
-    * least the SSL version that you specify.
-    *
-    * @default SecurityPolicyProtocol.TLS_V1_2_2019
-    */
-  readonly minimumProtocolVersion?: SecurityPolicyProtocol;
-}
-
 interface BoundOrigin extends OriginBindOptions, OriginBindConfig {
   readonly origin: IOrigin;
   readonly originGroupId?: string;
@@ -101,7 +86,7 @@ export interface DistributionProps {
    *
    * @default - the CloudFront wildcard certificate (*.cloudfront.net) will be used.
    */
-  readonly certificate?: IDistributionCertificate;
+  readonly certificate?: acm.ICertificate;
 
   /**
    * Any comments you want to include about the distribution.
@@ -221,6 +206,16 @@ export interface DistributionProps {
    * @default - No custom error responses.
    */
   readonly errorResponses?: ErrorResponse[];
+
+  /**
+    * The minimum version of the SSL protocol that you want CloudFront to use for HTTPS connections.
+    *
+    * CloudFront serves your objects only to browsers or devices that support at
+    * least the SSL version that you specify.
+    *
+    * @default SecurityPolicyProtocol.TLS_V1_2_2019
+    */
+  readonly minimumProtocolVersion?: SecurityPolicyProtocol;
 }
 
 /**
@@ -256,7 +251,7 @@ export class Distribution extends Resource implements IDistribution {
   private readonly originGroups: CfnDistribution.OriginGroupProperty[] = [];
 
   private readonly errorResponses: ErrorResponse[];
-  private readonly certificate?: IDistributionCertificate;
+  private readonly certificate?: acm.ICertificate;
 
   constructor(scope: Construct, id: string, props: DistributionProps) {
     super(scope, id);
@@ -299,7 +294,7 @@ export class Distribution extends Resource implements IDistribution {
         logging: this.renderLogging(props),
         priceClass: props.priceClass ?? undefined,
         restrictions: this.renderRestrictions(props.geoRestriction),
-        viewerCertificate: this.certificate ? this.renderViewerCertificate(this.certificate) : undefined,
+        viewerCertificate: this.certificate ? this.renderViewerCertificate(this.certificate, props.minimumProtocolVersion) : undefined,
         webAclId: props.webAclId,
       },
     });
@@ -442,11 +437,12 @@ export class Distribution extends Resource implements IDistribution {
     } : undefined;
   }
 
-  private renderViewerCertificate(certificate: IDistributionCertificate): CfnDistribution.ViewerCertificateProperty {
+  private renderViewerCertificate(certificate: acm.ICertificate,
+    minimumProtocolVersion: SecurityPolicyProtocol = SecurityPolicyProtocol.TLS_V1_2_2019) : CfnDistribution.ViewerCertificateProperty {
     return {
       acmCertificateArn: certificate.certificateArn,
       sslSupportMethod: SSLMethod.SNI,
-      minimumProtocolVersion: certificate.minimumProtocolVersion ?? SecurityPolicyProtocol.TLS_V1_2_2019,
+      minimumProtocolVersion: minimumProtocolVersion,
     };
   }
 }

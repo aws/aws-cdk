@@ -320,7 +320,8 @@ describe('certificates', () => {
     new Distribution(stack, 'Dist', {
       defaultBehavior: { origin: defaultOrigin() },
       domainNames: ['www.example.com'],
-      certificate: { ...certificate, minimumProtocolVersion: SecurityPolicyProtocol.TLS_V1_2016 },
+      minimumProtocolVersion: SecurityPolicyProtocol.TLS_V1_2016,
+      certificate: certificate,
     });
 
     expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {

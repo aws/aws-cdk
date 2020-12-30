@@ -109,16 +109,13 @@ new cloudfront.Distribution(this, 'myDist', {
 });
 ```
 
-However, you can customize the minimum protocol version for the certificate while creating the distribution.
+However, you can customize the minimum protocol version for the certificate while creating the distribution using `minimumProtocolVersion` property.
 
 ```ts
 new cloudfront.Distribution(this, 'myDist', {
   defaultBehavior: { origin: new origins.S3Origin(myBucket) },
   domainNames: ['www.example.com'],
-  certificate: {
-    ...myCertificate,
-    minimumProtocolVersion: SecurityPolicyProtocol.TLS_V1_2016
-  },
+  minimumProtocolVersion: SecurityPolicyProtocol.TLS_V1_2016
 });
 ```
 
