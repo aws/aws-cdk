@@ -689,6 +689,70 @@ const deployStage = pipeline.addStage({
 });
 ```
 
+#### Invalidating the CloudFront cache when deploying to S3
+
+There is currently no native support in CodePipeline for invalidating a CloudFront cache after deployment.
+One workaround is to add another build step after the deploy step,
+and use the AWS CLI to invalidate the cache:
+
+```ts
+// Create a Cloudfront Web Distribution
+const distribution = new cloudfront.Distribution(this, `Distribution`, {
+  // ...
+});
+
+// Create the build project that will invalidate the cache
+const invalidateBuildProject = new codebuild.PipelineProject(this, `InvalidateProject`, {
+  buildSpec: codebuild.BuildSpec.fromObject({
+    version: '0.2',
+    phases: {
+      build: {
+        commands:[
+          'aws cloudfront create-invalidation --distribution-id ${CLOUDFRONT_ID} --paths "/*"',
+          // Choose whatever files or paths you'd like, or all files as specified here
+        ],
+      },
+    },
+  }),
+  environmentVariables: {
+    CLOUDFRONT_ID: { value: distribution.distributionId },
+  },
+});
+
+// Add Cloudfront invalidation permissions to the project
+const distributionArn = `arn:aws:cloudfront::${this.account}:distribution/${distribution.distributionId}`;
+invalidateBuildProject.addToRolePolicy(new iam.PolicyStatement({
+  resources: [distributionArn],
+  actions: [
+    'cloudfront:CreateInvalidation',
+  ],
+}));
+
+// Create the pipeline (here only the S3 deploy and Invalidate cache build)
+new codepipeline.Pipeline(this, 'Pipeline', {
+  stages: [
+    // ...
+    {
+      stageName: 'Deploy',
+      actions: [
+        new codepipelineActions.S3DeployAction({
+          actionName: 'S3Deploy',
+          bucket: deployBucket,
+          input: deployInput,
+          runOrder: 1,
+        }),
+        new codepipelineActions.CodeBuildAction({
+          actionName: 'InvalidateCache',
+          project: invalidateBuildProject,
+          input: deployInput,
+          runOrder: 2,
+        }),
+      ],
+    },
+  ],
+});
+```
+
 ### Alexa Skill
 
 You can deploy to Alexa using CodePipeline with the following Action:
