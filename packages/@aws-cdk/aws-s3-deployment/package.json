@@ -49,13 +49,9 @@
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test",
     "compat": "cdk-compat",
-    "gen": "/bin/bash lambda/build.sh",
     "rosetta:extract": "yarn --silent jsii-rosetta extract"
   },
   "cdk-build": {
-    "test": [
-      "/bin/bash lambda/test.sh"
-    ],
     "jest": true,
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
@@ -73,8 +69,7 @@
       "test/**",
       "examples/**",
       "lib/*.generated.js",
-      "build-tools/**",
-      "lambda/**"
+      "build-tools/**"
     ]
   },
   "author": {
@@ -98,6 +93,7 @@
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/aws-s3-assets": "0.0.0",
+    "@aws-cdk/lambda-layer-awscli": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "constructs": "^3.2.0"
   },
@@ -109,6 +105,7 @@
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/aws-s3-assets": "0.0.0",
+    "@aws-cdk/lambda-layer-awscli": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "constructs": "^3.2.0"
   },

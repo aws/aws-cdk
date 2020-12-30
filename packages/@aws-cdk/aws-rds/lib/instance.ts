@@ -593,6 +593,13 @@ export interface DatabaseInstanceNewProps {
    * @default - None
    */
   readonly s3ExportBuckets?: s3.IBucket[];
+
+  /**
+   * Indicates whether the DB instance is an internet-facing instance.
+   *
+   * @default - `true` if `vpcSubnets` is `subnetType: SubnetType.PUBLIC`, `false` otherwise
+   */
+  readonly publiclyAccessible?: boolean;
 }
 
 /**
@@ -704,7 +711,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       preferredBackupWindow: props.preferredBackupWindow,
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
       processorFeatures: props.processorFeatures && renderProcessorFeatures(props.processorFeatures),
-      publiclyAccessible: this.vpcPlacement && this.vpcPlacement.subnetType === ec2.SubnetType.PUBLIC,
+      publiclyAccessible: props.publiclyAccessible ?? (this.vpcPlacement && this.vpcPlacement.subnetType === ec2.SubnetType.PUBLIC),
       storageType,
       vpcSecurityGroups: securityGroups.map(s => s.securityGroupId),
       maxAllocatedStorage: props.maxAllocatedStorage,

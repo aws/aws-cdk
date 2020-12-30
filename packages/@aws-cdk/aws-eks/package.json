@@ -94,6 +94,8 @@
     "@aws-cdk/aws-ssm": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/custom-resources": "0.0.0",
+    "@aws-cdk/lambda-layer-awscli": "0.0.0",
+    "@aws-cdk/lambda-layer-kubectl": "0.0.0",
     "constructs": "^3.2.0",
     "yaml": "1.10.0"
   },
@@ -110,7 +112,9 @@
     "@aws-cdk/aws-ssm": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/custom-resources": "0.0.0",
-    "constructs": "^3.2.0"
+    "constructs": "^3.2.0",
+    "@aws-cdk/lambda-layer-awscli": "0.0.0",
+    "@aws-cdk/lambda-layer-kubectl": "0.0.0"
   },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
