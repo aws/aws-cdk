@@ -1,5 +1,5 @@
 import * as iam from '@aws-cdk/aws-iam';
-import { FeatureFlags, IResource, RemovalPolicy, Resource, Stack } from '@aws-cdk/core';
+import { FeatureFlags, IResource, RemovalPolicy, Resource, Stack, Duration } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { IConstruct, Construct } from 'constructs';
 import { Alias } from './alias';
@@ -345,7 +345,7 @@ export interface KeyProps {
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-key.html#cfn-kms-key-pendingwindowindays
    * @default - 30 days
    */
-  readonly pendingWindow?: number;
+  readonly pendingWindow?: Duration;
 }
 
 /**
@@ -416,12 +416,19 @@ export class Key extends KeyBase {
       }
     }
 
+    const pendingWindowInDays = props.pendingWindow?.toDays();
+    if (pendingWindowInDays) {
+      if (pendingWindowInDays < 7 || pendingWindowInDays > 30) {
+        throw new Error(`'pendingWindow' value must between 7 and 30 days. Received: ${pendingWindowInDays}`);
+      }
+    }
+
     const resource = new CfnKey(this, 'Resource', {
       description: props.description,
       enableKeyRotation: props.enableKeyRotation,
       enabled: props.enabled,
       keyPolicy: this.policy,
-      pendingWindowInDays: props.pendingWindow,
+      pendingWindowInDays: pendingWindowInDays,
     });
 
     this.keyArn = resource.attrArn;
