@@ -1267,7 +1267,7 @@ export class Cluster extends ClusterBase {
       applyToLaunchedInstances: true,
       // exclude security groups to avoid multiple "owned" security groups.
       // (the cluster security group already has this tag)
-      // excludeResourceTypes: ['AWS::EC2::SecurityGroup'],
+      excludeResourceTypes: ['AWS::EC2::SecurityGroup'],
     });
 
     // do not attempt to map the role if `kubectl` is not enabled for this

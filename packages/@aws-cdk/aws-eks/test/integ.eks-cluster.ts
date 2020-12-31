@@ -8,7 +8,7 @@ import * as kplus from 'cdk8s-plus';
 import * as constructs from 'constructs';
 import * as eks from '../lib';
 import * as hello from './hello-k8s';
-// import { Pinger } from './pinger/pinger';
+import { Pinger } from './pinger/pinger';
 import { TestStack } from './util';
 
 
@@ -71,9 +71,7 @@ class EksClusterStack extends TestStack {
 
     this.assertServiceAccount();
 
-    this.assertServiceLoadBalancerAddress('managed');
-
-    // this.assertServiceLoadBalancerAddress('unmanaged');
+    this.assertServiceLoadBalancerAddress();
 
     new CfnOutput(this, 'ClusterEndpoint', { value: this.cluster.clusterEndpoint });
     new CfnOutput(this, 'ClusterArn', { value: this.cluster.clusterArn });
@@ -267,64 +265,33 @@ class EksClusterStack extends TestStack {
 
   }
 
-  private assertServiceLoadBalancerAddress(nodes: 'managed' | 'unmanaged') {
+  private assertServiceLoadBalancerAddress() {
 
-    const serviceName = `webservice${nodes}`;
-    const namespaceName = `${serviceName}-namespace`;
-    const podName = `webpod${nodes}`;
+    const serviceName = 'webservice';
     const labels = { app: 'simple-web' };
     const containerPort = 80;
     const servicePort = 9000;
 
-    // create a dedicated namespace because the 'default' namespace is managed by fargate in this test
-    const namespace = this.cluster.addManifest(namespaceName, {
-      apiVersion: 'v1',
-      kind: 'Namespace',
-      metadata: {
-        name: namespaceName,
-      },
-    });
-
-    const pingerSecurityGroup = new ec2.SecurityGroup(this, `WebServiceSecurityGroup${serviceName}`, {
+    const pingerSecurityGroup = new ec2.SecurityGroup(this, 'WebServiceSecurityGroup', {
       vpc: this.vpc,
     });
 
     pingerSecurityGroup.addIngressRule(pingerSecurityGroup, ec2.Port.tcp(servicePort), `allow http ${servicePort} access from myself`);
 
-    const pod = this.cluster.addManifest(`pod-${serviceName}`, {
+    this.cluster.addManifest('simple-web-pod', {
       kind: 'Pod',
       apiVersion: 'v1',
-      metadata: { name: podName, labels: labels, namespace: namespaceName },
+      metadata: { name: 'webpod', labels: labels },
       spec: {
         containers: [{
           name: 'simplewebcontainer',
           image: 'nginx',
           ports: [{ containerPort: containerPort }],
         }],
-        // allow targeting self-managed nodes as well since they behave
-        // slightly different than managed ones with respect to network configuration.
-        affinity: {
-          nodeAffinity: {
-            requiredDuringSchedulingIgnoredDuringExecution: {
-              nodeSelectorTerms: [
-                {
-                  matchExpressions: [
-                    {
-                      key: 'eks.amazonaws.com/nodegroup',
-                      operator: nodes === 'managed' ? 'Exists' : 'DoesNotExist',
-                    },
-                  ],
-                },
-              ],
-            },
-          },
-        },
       },
     });
 
-    pod.node.addDependency(namespace);
-
-    const service = this.cluster.addManifest(`service-${serviceName}`, {
+    this.cluster.addManifest('simple-web-service', {
       kind: 'Service',
       apiVersion: 'v1',
       metadata: {
@@ -334,7 +301,6 @@ class EksClusterStack extends TestStack {
           'service.beta.kubernetes.io/aws-load-balancer-internal': 'true',
           'service.beta.kubernetes.io/aws-load-balancer-extra-security-groups': pingerSecurityGroup.securityGroupId,
         },
-        namespace: namespaceName,
       },
       spec: {
         type: 'LoadBalancer',
@@ -343,23 +309,21 @@ class EksClusterStack extends TestStack {
       },
     });
 
-    service.node.addDependency(pod);
+    const loadBalancerAddress = this.cluster.getServiceLoadBalancerAddress(serviceName);
 
-    // const loadBalancerAddress = this.cluster.getServiceLoadBalancerAddress(serviceName, { namespace: namespaceName });
+    // create a resource that hits the load balancer to make sure
+    // everything is wired properly.
+    const pinger = new Pinger(this, 'ServicePinger', {
+      url: `http://${loadBalancerAddress}:${servicePort}`,
+      securityGroup: pingerSecurityGroup,
+      vpc: this.vpc,
+    });
 
-    // // create a resource that hits the load balancer to make sure
-    // // everything is wired properly.
-    // const pinger = new Pinger(this, `ServicePinger${serviceName}`, {
-    //   url: `http://${loadBalancerAddress}:${servicePort}`,
-    //   securityGroup: pingerSecurityGroup,
-    //   vpc: this.vpc,
-    // });
-
-    // // this should display a proper nginx response
-    // // <title>Welcome to nginx!</title>...
-    // new CfnOutput(this, `Response${serviceName}`, {
-    //   value: pinger.response,
-    // });
+    // this should display a proper nginx response
+    // <title>Welcome to nginx!</title>...
+    new CfnOutput(this, 'Response', {
+      value: pinger.response,
+    });
 
   }
 }
