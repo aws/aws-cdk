@@ -648,6 +648,14 @@ These command lines explained:
 > account only to bootstrap it and provision the initial pipeline. Otherwise,
 > access to administrative credentials should be dropped as soon as possible.
 
+<br>
+
+> **On the use of AdministratorAccess**: The use of the `AdministratorAccess` policy
+> ensures that your pipeline can deploy every type of AWS resource to your account.
+> Make sure you trust all the code and dependencies that make up your CDK app.
+> Check with the appropriate department within your organization to decide on the
+> proper policy to use.
+
 ### Migrating from old bootstrap stack
 
 The bootstrap stack is a CloudFormation stack in your account named

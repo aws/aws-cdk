@@ -711,11 +711,9 @@ export = {
         logging: {
           cloudWatch: {
             logGroup,
-            prefix: '/my-logs',
           },
           s3: {
             bucket,
-            prefix: 'my-logs',
           },
         },
       });
@@ -726,10 +724,9 @@ export = {
           CloudWatchLogs: {
             GroupName: 'MyLogGroupName',
             Status: 'ENABLED',
-            StreamName: '/my-logs',
           },
           S3Logs: {
-            Location: 'MyBucketName/my-logs',
+            Location: 'MyBucketName',
             Status: 'ENABLED',
           },
         }),
@@ -924,6 +921,41 @@ export = {
           }),
         },
       }));
+
+      test.done();
+    },
+
+    'should fail creating when using a secret value in a plaintext variable'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // THEN
+      test.throws(() => {
+        new codebuild.PipelineProject(stack, 'Project', {
+          environmentVariables: {
+            'a': {
+              value: `a_${cdk.SecretValue.secretsManager('my-secret')}_b`,
+            },
+          },
+        });
+      }, /Plaintext environment variable 'a' contains a secret value!/);
+
+      test.done();
+    },
+
+    "should allow opting out of the 'secret value in a plaintext variable' validation"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // THEN
+      new codebuild.PipelineProject(stack, 'Project', {
+        environmentVariables: {
+          'b': {
+            value: cdk.SecretValue.secretsManager('my-secret'),
+          },
+        },
+        checkSecretsInPlainTextEnvVariables: false,
+      });
 
       test.done();
     },
