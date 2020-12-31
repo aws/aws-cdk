@@ -1,5 +1,3 @@
-/// !cdk-integ pragma:ignore-assets
-
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sns from '@aws-cdk/aws-sns';
 import * as sns_subscriptions from '@aws-cdk/aws-sns-subscriptions';
