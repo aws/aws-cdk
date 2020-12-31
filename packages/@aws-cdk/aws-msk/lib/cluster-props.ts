@@ -179,9 +179,13 @@ export enum ClusterMonitoringLevel {
    */
   PER_BROKER = 'PER_BROKER',
   /**
-   * Per Topic Per Broker metrics help you understand volume at the topic level,
+   * Per Topic Per Broker metrics help you understand volume at the topic level.
    */
   PER_TOPIC_PER_BROKER = 'PER_TOPIC_PER_BROKER',
+  /**
+   * Per Topic Per Partition metrics help you understand consumer group lag at the topic partition level.
+   */
+  PER_TOPIC_PER_PARTITION = 'PER_TOPIC_PER_PARTITION',
 }
 
 /**
