@@ -1,9 +1,11 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
+import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as core from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
 import * as constructs from 'constructs';
+import { addressOf } from 'constructs/lib/private/uniqueid';
 import {
   CfnCluster,
   KafkaVersion,
@@ -72,6 +74,7 @@ export class Cluster extends ClusterBase {
 
   public readonly clusterArn: string;
   public readonly clusterName: string;
+  public readonly saslScramAuthenticationKey?: kms.IKey;
 
   constructor(scope: constructs.Construct, id: string, props: ClusterProps) {
     super(scope, id, {
@@ -209,13 +212,14 @@ export class Cluster extends ClusterBase {
       props.clientAuthentication?.sasl?.scram &&
       props.clientAuthentication?.sasl?.key === undefined
     ) {
-      const key = new kms.Key(this, 'SASLKey', {
+      this.saslScramAuthenticationKey = new kms.Key(this, 'SASLKey', {
         description:
           'Used for encrypting MSK secrets for SASL/SCRAM authentication.',
         alias: 'msk/sasl/scram',
       });
 
-      key.addToResourcePolicy(
+      // https://docs.aws.amazon.com/kms/latest/developerguide/services-secrets-manager.html#asm-policies
+      this.saslScramAuthenticationKey.addToResourcePolicy(
         new iam.PolicyStatement({
           sid:
             'Allow access through AWS Secrets Manager for all principals in the account that are authorized to use AWS Secrets Manager',
@@ -417,5 +421,56 @@ export class Cluster extends ClusterBase {
    */
   public get bootstrapBrokersSaslScram(): string {
     return this._bootstrapBrokers('BootstrapBrokerStringSaslScram');
+  }
+
+  /**
+   * A list of usersnames to register with the cluster. The password will automatically be generated using Secrets
+   * Manager and the { username, password } JSON object stored in Secrets Manager as `AmazonMSK_username`.
+   *
+   * Must be using the SASL/SCRAM authentication mechanism.
+   *
+   * @param usernames - username(s) to register with the cluster
+   */
+  public addUser(...usernames: string[]): void {
+    if (this.saslScramAuthenticationKey) {
+      const MSK_SECRET_PREFIX = 'AmazonMSK_'; // Required
+      const secrets = usernames.map(
+        (username) =>
+          new secretsmanager.Secret(this, `KafkaUser${username}`, {
+            secretName: `${MSK_SECRET_PREFIX}${username}`,
+            generateSecretString: {
+              secretStringTemplate: JSON.stringify({ username }),
+              generateStringKey: 'password',
+            },
+            encryptionKey: this.saslScramAuthenticationKey,
+          }),
+      );
+
+      new cr.AwsCustomResource(this, `BatchAssociateScramSecrets${addressOf(usernames)}`, {
+        onUpdate: {
+          service: 'Kafka',
+          action: 'batchAssociateScramSecret',
+          parameters: {
+            ClusterArn: this.clusterArn,
+            SecretArnList: secrets.map((secret) => secret.secretArn),
+          },
+          physicalResourceId: cr.PhysicalResourceId.of('CreateUsers'),
+        },
+        policy: cr.AwsCustomResourcePolicy.fromStatements([
+          new iam.PolicyStatement({
+            actions: ['kms:CreateGrant'],
+            resources: [this.saslScramAuthenticationKey?.keyArn],
+          }),
+          new iam.PolicyStatement({
+            actions: ['kafka:BatchAssociateScramSecret'],
+            resources: [this.clusterArn],
+          }),
+        ]),
+      });
+    } else {
+      core.Annotations.of(this).addError(
+        'Cannot create users if an authentication KMS key has not been created/provided.',
+      );
+    }
   }
 }
