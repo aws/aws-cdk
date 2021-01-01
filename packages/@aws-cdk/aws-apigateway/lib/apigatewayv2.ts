@@ -1,4 +1,4 @@
-// Copyright 2012-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2012-2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // Originally generated from the AWS CloudFormation Resource Specification. Now, hand managed.
 
 /* eslint-disable max-len */
