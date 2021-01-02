@@ -102,6 +102,8 @@ export = {
         ],
       });
 
+      test.deepEqual(stack.resolve(repo.repositoryCloneUrlGrc), 'codecommit::us-west-2://my-repo');
+
       test.done();
     },
 
@@ -136,6 +138,17 @@ export = {
             '.',
             { Ref: 'AWS::URLSuffix' },
             '/v1/repos/my-repo',
+          ],
+        ],
+      });
+
+      test.deepEqual(stack.resolve(repo.repositoryCloneUrlGrc), {
+        'Fn::Join': [
+          '',
+          [
+            'codecommit::',
+            { Ref: 'AWS::Region' },
+            '://my-repo',
           ],
         ],
       });
@@ -184,6 +197,28 @@ export = {
           Version: '2012-10-17',
         },
       }));
+
+      test.done();
+    },
+
+    'HTTPS (GRC) clone URL'(test: Test) {
+      const stack = new Stack();
+
+      const repository = new Repository(stack, 'Repostiry', {
+        repositoryName: 'my-repo',
+      });
+
+      test.deepEqual(stack.resolve(repository.repositoryCloneUrlGrc), {
+        'Fn::Join': [
+          '',
+          [
+            'codecommit::',
+            { Ref: 'AWS::Region' },
+            '://',
+            { 'Fn::GetAtt': ['RepostiryBFEF3BB6', 'Name'] },
+          ],
+        ],
+      });
 
       test.done();
     },
