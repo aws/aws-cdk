@@ -116,7 +116,8 @@
       "docs-public-apis:@aws-cdk/aws-codecommit.RepositoryEventTrigger.ALL",
       "docs-public-apis:@aws-cdk/aws-codecommit.RepositoryEventTrigger.UPDATE_REF",
       "docs-public-apis:@aws-cdk/aws-codecommit.RepositoryEventTrigger.CREATE_REF",
-      "docs-public-apis:@aws-cdk/aws-codecommit.RepositoryEventTrigger.DELETE_REF"
+      "docs-public-apis:@aws-cdk/aws-codecommit.RepositoryEventTrigger.DELETE_REF",
+      "attribute-tag:@aws-cdk/aws-codecommit.Repository.repositoryCloneUrlGrc"
     ]
   },
   "awscdkio": {
