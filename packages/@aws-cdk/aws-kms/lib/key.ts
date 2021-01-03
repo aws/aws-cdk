@@ -416,8 +416,9 @@ export class Key extends KeyBase {
       }
     }
 
-    const pendingWindowInDays = props.pendingWindow?.toDays();
-    if (pendingWindowInDays) {
+    let pendingWindowInDays;
+    if (props.pendingWindow) {
+      pendingWindowInDays = props.pendingWindow.toDays();
       if (pendingWindowInDays < 7 || pendingWindowInDays > 30) {
         throw new Error(`'pendingWindow' value must between 7 and 30 days. Received: ${pendingWindowInDays}`);
       }
