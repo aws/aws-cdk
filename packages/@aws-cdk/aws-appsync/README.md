@@ -87,7 +87,7 @@ demoDS.createResolver({
 demoDS.createResolver({
   typeName: 'Mutation',
   fieldName: 'addDemo',
-  requestMappingTemplate: appsync.MappingTemplate.dynamoDbPutItem(PrimaryKey.partition('id').auto(), Values.projecting('demo')),
+  requestMappingTemplate: appsync.MappingTemplate.dynamoDbPutItem(appsync.PrimaryKey.partition('id').auto(), appsync.Values.projecting('demo')),
   responseMappingTemplate: appsync.MappingTemplate.dynamoDbResultItem(),
 });
 ```
