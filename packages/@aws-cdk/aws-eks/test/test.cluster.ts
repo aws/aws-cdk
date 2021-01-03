@@ -138,6 +138,28 @@ export = {
 
   },
 
+  'security group of self-managed asg is not tagged with owned'(test: Test) {
+
+    // GIVEN
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      version: CLUSTER_VERSION,
+    });
+
+    // WHEN
+    cluster.addAutoScalingGroupCapacity('self-managed', {
+      instanceType: new ec2.InstanceType('t2.medium'),
+    });
+
+    // make sure the "kubernetes.io/cluster/<CLUSTER_NAME>: owned" tag isn't here.
+    test.deepEqual(expect(stack).value.Resources.ClusterselfmanagedInstanceSecurityGroup64468C3A.Properties.Tags, [
+      { Key: 'Name', Value: 'Stack/Cluster/self-managed' },
+    ]);
+    test.done();
+
+  },
+
   'cluster security group is attached when connecting self-managed nodes'(test: Test) {
 
     // GIVEN
