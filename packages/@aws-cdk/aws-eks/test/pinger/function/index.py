@@ -20,5 +20,5 @@ def handler(event, context):
     # be functioning
     response = http.request('GET', url, retries=urllib3.Retry(10, backoff_factor=1))
     if response.status != 200:
-      raise RuntimeError(f'Request failed: {status} ({response.reason})')
+      raise RuntimeError(f'Request failed: {response.status} ({response.reason})')
     return {'Data': {'Value': response.data.decode('utf-8')}}
