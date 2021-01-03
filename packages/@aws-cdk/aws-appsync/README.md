@@ -79,16 +79,16 @@ const demoDS = api.addDynamoDbDataSource('demoDataSource', demoTable);
 demoDS.createResolver({
   typeName: 'Query',
   fieldName: 'getDemos',
-  requestMappingTemplate: MappingTemplate.dynamoDbScanTable(),
-  responseMappingTemplate: MappingTemplate.dynamoDbResultList(),
+  requestMappingTemplate: appsync.MappingTemplate.dynamoDbScanTable(),
+  responseMappingTemplate: appsync.MappingTemplate.dynamoDbResultList(),
 });
 
 // Resolver for the Mutation "addDemo" that puts the item into the DynamoDb table.
 demoDS.createResolver({
   typeName: 'Mutation',
   fieldName: 'addDemo',
-  requestMappingTemplate: MappingTemplate.dynamoDbPutItem(PrimaryKey.partition('id').auto(), Values.projecting('demo')),
-  responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
+  requestMappingTemplate: appsync.MappingTemplate.dynamoDbPutItem(PrimaryKey.partition('id').auto(), Values.projecting('demo')),
+  responseMappingTemplate: appsync.MappingTemplate.dynamoDbResultItem(),
 });
 ```
 
