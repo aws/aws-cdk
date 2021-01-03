@@ -1262,8 +1262,12 @@ export class Cluster extends ClusterBase {
     autoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryReadOnly'));
 
     // EKS Required Tags
+    // https://docs.aws.amazon.com/eks/latest/userguide/worker.html
     Tags.of(autoScalingGroup).add(`kubernetes.io/cluster/${this.clusterName}`, 'owned', {
       applyToLaunchedInstances: true,
+      // exclude security groups to avoid multiple "owned" security groups.
+      // (the cluster security group already has this tag)
+      excludeResourceTypes: ['AWS::EC2::SecurityGroup'],
     });
 
     // do not attempt to map the role if `kubectl` is not enabled for this
