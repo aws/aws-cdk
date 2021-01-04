@@ -109,6 +109,16 @@ new cloudfront.Distribution(this, 'myDist', {
 });
 ```
 
+However, you can customize the minimum protocol version for the certificate while creating the distribution using `minimumProtocolVersion` property.
+
+```ts
+new cloudfront.Distribution(this, 'myDist', {
+  defaultBehavior: { origin: new origins.S3Origin(myBucket) },
+  domainNames: ['www.example.com'],
+  minimumProtocolVersion: SecurityPolicyProtocol.TLS_V1_2016
+});
+```
+
 ### Multiple Behaviors & Origins
 
 Each distribution has a default behavior which applies to all requests to that distribution; additional behaviors may be specified for a
@@ -236,7 +246,7 @@ You can author Node.js or Python functions in the US East (N. Virginia) region,
 and then execute them in AWS locations globally that are closer to the viewer,
 without provisioning or managing servers.
 Lambda@Edge functions are associated with a specific behavior and event type.
-Lambda@Edge can be used rewrite URLs,
+Lambda@Edge can be used to rewrite URLs,
 alter responses based on headers or cookies,
 or authorize requests based on headers or authorization tokens.
 
