@@ -4,7 +4,7 @@ import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import { App, Duration, Stack } from '@aws-cdk/core';
-import { CfnDistribution, Distribution, GeoRestriction, HttpVersion, IOrigin, LambdaEdgeEventType, PriceClass } from '../lib';
+import { CfnDistribution, Distribution, GeoRestriction, HttpVersion, IOrigin, LambdaEdgeEventType, PriceClass, SecurityPolicyProtocol } from '../lib';
 import { defaultOrigin, defaultOriginGroup } from './test-origin';
 
 let app: App;
@@ -314,6 +314,27 @@ describe('certificates', () => {
       },
     });
   });
+
+  test('adding a certificate with non default security policy protocol', () => {
+    const certificate = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012');
+    new Distribution(stack, 'Dist', {
+      defaultBehavior: { origin: defaultOrigin() },
+      domainNames: ['www.example.com'],
+      minimumProtocolVersion: SecurityPolicyProtocol.TLS_V1_2016,
+      certificate: certificate,
+    });
+
+    expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        ViewerCertificate: {
+          AcmCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012',
+          SslSupportMethod: 'sni-only',
+          MinimumProtocolVersion: 'TLSv1_2016',
+        },
+      },
+    });
+  });
+
 });
 
 describe('custom error responses', () => {
@@ -615,7 +636,7 @@ describe('with Lambda@Edge functions', () => {
 
   test('with incompatible env vars', () => {
     const envLambdaFunction = new lambda.Function(stack, 'EnvFunction', {
-      runtime: lambda.Runtime.NODEJS,
+      runtime: lambda.Runtime.NODEJS_12_X,
       code: lambda.Code.fromInline('whateverwithenv'),
       handler: 'index.handler',
       environment: {
