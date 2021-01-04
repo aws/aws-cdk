@@ -236,7 +236,7 @@ You can author Node.js or Python functions in the US East (N. Virginia) region,
 and then execute them in AWS locations globally that are closer to the viewer,
 without provisioning or managing servers.
 Lambda@Edge functions are associated with a specific behavior and event type.
-Lambda@Edge can be used rewrite URLs,
+Lambda@Edge can be used to rewrite URLs,
 alter responses based on headers or cookies,
 or authorize requests based on headers or authorization tokens.
 
