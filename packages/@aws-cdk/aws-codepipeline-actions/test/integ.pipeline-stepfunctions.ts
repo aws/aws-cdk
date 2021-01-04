@@ -11,7 +11,7 @@ const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-stepfunctions');
 const sourceOutput = new codepipeline.Artifact();
 
 const startState = new stepfunctions.Pass(stack, 'StartState');
-const simpleStateMachine  = new stepfunctions.StateMachine(stack, 'SimpleStateMachine', {
+const simpleStateMachine = new stepfunctions.StateMachine(stack, 'SimpleStateMachine', {
   definition: startState,
 });
 

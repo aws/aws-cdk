@@ -260,7 +260,7 @@ nodeunitShim({
       }));
 
       expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
-        GroupDescription: 'VpcNetwork/EcrDocker/SecurityGroup',
+        GroupDescription: 'Default/VpcNetwork/EcrDocker/SecurityGroup',
         VpcId: {
           Ref: 'VpcNetworkB258E83A',
         },
@@ -286,6 +286,24 @@ nodeunitShim({
         GroupId: 'security-group-id',
       }));
       test.deepEqual(importedEndpoint.vpcEndpointId, 'vpc-endpoint-id');
+
+      test.done();
+    },
+
+    'import/export without security group'(test: Test) {
+      // GIVEN
+      const stack2 = new Stack();
+
+      // WHEN
+      const importedEndpoint = InterfaceVpcEndpoint.fromInterfaceVpcEndpointAttributes(stack2, 'ImportedEndpoint', {
+        vpcEndpointId: 'vpc-endpoint-id',
+        port: 80,
+      });
+      importedEndpoint.connections.allowDefaultPortFromAnyIpv4();
+
+      // THEN
+      test.deepEqual(importedEndpoint.vpcEndpointId, 'vpc-endpoint-id');
+      test.deepEqual(importedEndpoint.connections.securityGroups.length, 0);
 
       test.done();
     },
@@ -340,7 +358,7 @@ nodeunitShim({
       expect(stack).to(haveResourceLike('AWS::EC2::SecurityGroup', {
         SecurityGroupIngress: [
           {
-            CidrIp: { 'Fn::GetAtt': [ 'VpcNetworkB258E83A', 'CidrBlock' ] },
+            CidrIp: { 'Fn::GetAtt': ['VpcNetworkB258E83A', 'CidrBlock'] },
             FromPort: 443,
             IpProtocol: 'tcp',
             ToPort: 443,
@@ -375,9 +393,11 @@ nodeunitShim({
 
       // WHEN
       vpc.addInterfaceEndpoint('YourService', {
-        service: {name: 'com.amazonaws.vpce.us-east-1.vpce-svc-mktplacesvcwprdns',
+        service: {
+          name: 'com.amazonaws.vpce.us-east-1.vpce-svc-mktplacesvcwprdns',
           port: 443,
-          privateDnsDefault: true},
+          privateDnsDefault: true,
+        },
       });
 
       // THEN
@@ -414,7 +434,8 @@ nodeunitShim({
       vpc.addInterfaceEndpoint('YourService', {
         service: {
           name: 'com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc',
-          port: 443},
+          port: 443,
+        },
         lookupSupportedAzs: true,
       });
 
@@ -450,7 +471,8 @@ nodeunitShim({
       vpc.addInterfaceEndpoint('YourService', {
         service: {
           name: 'com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc',
-          port: 443},
+          port: 443,
+        },
         lookupSupportedAzs: true,
       });
 

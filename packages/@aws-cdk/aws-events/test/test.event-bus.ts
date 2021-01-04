@@ -1,6 +1,6 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
-import { CfnResource, Stack } from '@aws-cdk/core';
+import { Aws, CfnResource, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { EventBus } from '../lib';
 
@@ -166,6 +166,18 @@ export = {
     test.throws(() => {
       createInvalidBus();
     }, /'eventBusName' must satisfy: /);
+
+    test.done();
+  },
+
+  'does not throw if eventBusName is a token'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN / THEN
+    test.doesNotThrow(() => new EventBus(stack, 'EventBus', {
+      eventBusName: Aws.STACK_NAME,
+    }));
 
     test.done();
   },

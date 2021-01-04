@@ -1,6 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
+import { Lazy } from '@aws-cdk/core';
 import { Method } from './method';
-import { IVpcLink } from './vpc-link';
+import { IVpcLink, VpcLink } from './vpc-link';
 
 export interface IntegrationOptions {
   /**
@@ -90,7 +91,7 @@ export interface IntegrationOptions {
 
   /**
    * The type of network connection to the integration endpoint.
-   * @default ConnectionType.Internet
+   * @default - ConnectionType.VPC_LINK if `vpcLink` property is configured; ConnectionType.Internet otherwise.
    */
   readonly connectionType?: ConnectionType;
 
@@ -199,10 +200,34 @@ export class Integration {
    * being integrated, access the REST API object, method ARNs, etc.
    */
   public bind(_method: Method): IntegrationConfig {
+    let uri = this.props.uri;
+    const options = this.props.options;
+
+    if (options?.connectionType === ConnectionType.VPC_LINK && uri === undefined) {
+      uri = Lazy.string({
+        // needs to be a lazy since the targets can be added to the VpcLink construct after initialization.
+        produce: () => {
+          const vpcLink = options.vpcLink;
+          if (vpcLink instanceof VpcLink) {
+            const targets = vpcLink._targetDnsNames;
+            if (targets.length > 1) {
+              throw new Error("'uri' is required when there are more than one NLBs in the VPC Link");
+            } else {
+              return `http://${targets[0]}`;
+            }
+          } else {
+            throw new Error("'uri' is required when the 'connectionType' is VPC_LINK");
+          }
+        },
+      });
+    }
     return {
-      options: this.props.options,
+      options: {
+        ...options,
+        connectionType: options?.vpcLink ? ConnectionType.VPC_LINK : options?.connectionType,
+      },
       type: this.props.type,
-      uri: this.props.uri,
+      uri,
       integrationHttpMethod: this.props.integrationHttpMethod,
     };
   }

@@ -31,6 +31,13 @@ export interface AugmentationOptions {
   class?: string;
 
   /**
+   * The name of the file containing the interface to be "augmented".
+   *
+   * @default - same as ``classFile``.
+   */
+  interfaceFile?: string;
+
+  /**
    * The name of the interface to be "augmented".
    *
    * @default 'I' + CloudFormation resource name

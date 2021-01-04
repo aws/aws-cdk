@@ -1,12 +1,18 @@
-## AWS CDK Assets
+# AWS CDK Assets
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
 
-> The APIs of higher level constructs in this module are experimental and under active development. They are subject to non-backward compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be announced in the release notes. This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
+> The APIs of higher level constructs in this module are experimental and under active development.
+> They are subject to non-backward compatible changes or removal in any future version. These are
+> not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be
+> announced in the release notes. This means that while you may use them, you may need to update
+> your source code when upgrading to a newer version of this package.
 
 ---
+
 <!--END STABILITY BANNER-->
 
 Assets are local files or directories which are needed by a CDK app. A common
@@ -50,7 +56,7 @@ The following examples grants an IAM group read permissions on an asset:
 
 [Example of granting read access to an asset](./test/integ.assets.permissions.lit.ts)
 
-## How does it work?
+## How does it work
 
 When an asset is defined in a construct, a construct metadata entry
 `aws:cdk:asset` is emitted with instructions on where to find the asset and what
@@ -90,6 +96,33 @@ docker program to execute. This may sometime be needed when building in
 environments where the standard docker cannot be executed (see
 https://github.com/aws/aws-cdk/issues/8460 for details).
 
+Use `local` to specify a local bundling provider. The provider implements a
+method `tryBundle()` which should return `true` if local bundling was performed.
+If `false` is returned, docker bundling will be done:
+
+```ts
+new assets.Asset(this, 'BundledAsset', {
+  path: '/path/to/asset',
+  bundling: {
+    local: {
+      tryBundle(outputDir: string, options: BundlingOptions) {
+        if (canRunLocally) {
+          // perform local bundling here
+          return true;
+        }
+        return false;
+      },
+    },
+    // Docker bundling fallback
+    image: BundlingDockerImage.fromRegistry('alpine'),
+    command: ['bundle'],
+  },
+});
+```
+
+Although optional, it's recommended to provide a local bundling method which can
+greatly improve performance.
+
 ## CloudFormation Resource Metadata
 
 > NOTE: This section is relevant for authors of AWS Resource Constructs.
@@ -101,8 +134,8 @@ locally for debugging purposes.
 To enable such use cases, external tools will consult a set of metadata entries on AWS CloudFormation
 resources:
 
-- `aws:asset:path` points to the local path of the asset.
-- `aws:asset:property` is the name of the resource property where the asset is used
+* `aws:asset:path` points to the local path of the asset.
+* `aws:asset:property` is the name of the resource property where the asset is used
 
 Using these two metadata entries, tools will be able to identify that assets are used
 by a certain resource, and enable advanced local experiences.

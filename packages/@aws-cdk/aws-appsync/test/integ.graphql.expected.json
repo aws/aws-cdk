@@ -1,42 +1,5 @@
 {
   "Resources": {
-    "PoolsmsRoleC3352CE6": {
-      "Type": "AWS::IAM::Role",
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Condition": {
-                "StringEquals": {
-                  "sts:ExternalId": "awsappsyncintegPool5D14B05B"
-                }
-              },
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "cognito-idp.amazonaws.com"
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        },
-        "Policies": [
-          {
-            "PolicyDocument": {
-              "Statement": [
-                {
-                  "Action": "sns:Publish",
-                  "Effect": "Allow",
-                  "Resource": "*"
-                }
-              ],
-              "Version": "2012-10-17"
-            },
-            "PolicyName": "sns-publish"
-          }
-        ]
-      }
-    },
     "PoolD3F588B8": {
       "Type": "AWS::Cognito::UserPool",
       "Properties": {
@@ -57,15 +20,6 @@
         },
         "EmailVerificationMessage": "The verification code to your new account is {####}",
         "EmailVerificationSubject": "Verify your new account",
-        "SmsConfiguration": {
-          "ExternalId": "awsappsyncintegPool5D14B05B",
-          "SnsCallerArn": {
-            "Fn::GetAtt": [
-              "PoolsmsRoleC3352CE6",
-              "Arn"
-            ]
-          }
-        },
         "SmsVerificationMessage": "The verification code to your new account is {####}",
         "UserPoolName": "myPool",
         "VerificationMessageTemplate": {
@@ -97,18 +51,6 @@
         }
       }
     },
-    "ApiDefaultAPIKeyApiKey74F5313B": {
-      "Type": "AWS::AppSync::ApiKey",
-      "Properties": {
-        "ApiId": {
-          "Fn::GetAtt": [
-            "ApiF70053CD",
-            "ApiId"
-          ]
-        },
-        "Description": "Default API Key created by CDK"
-      }
-    },
     "ApiSchema510EECD7": {
       "Type": "AWS::AppSync::GraphQLSchema",
       "Properties": {
@@ -118,10 +60,24 @@
             "ApiId"
           ]
         },
-        "Definition": "type ServiceVersion @aws_api_key {\n  version: String!\n}\n\ntype Customer @aws_api_key {\n  id: String!\n  name: String!\n}\n\ninput SaveCustomerInput {\n  name: String!\n}\n\ntype Order @aws_api_key {\n  customer: String!\n  order: String!\n}\n\ntype Payment @aws_api_key {\n  id: String!\n  amount: String!\n}\n\ninput PaymentInput {\n  amount: String!\n}\n\ntype Query @aws_api_key {\n  getServiceVersion: ServiceVersion\n  getCustomers: [Customer]\n  getCustomer(id: String): Customer\n  getCustomerOrdersEq(customer: String): Order\n  getCustomerOrdersLt(customer: String): Order\n  getCustomerOrdersLe(customer: String): Order\n  getCustomerOrdersGt(customer: String): Order\n  getCustomerOrdersGe(customer: String): Order\n  getCustomerOrdersFilter(customer: String, order: String): Order\n  getCustomerOrdersBetween(customer: String, order1: String, order2: String): Order\n  getPayment(id: String): Payment\n}\n\ninput FirstOrderInput {\n  product: String!\n  quantity: Int!\n}\n\ntype Mutation @aws_api_key {\n  addCustomer(customer: SaveCustomerInput!): Customer\n  saveCustomer(id: String!, customer: SaveCustomerInput!): Customer\n  removeCustomer(id: String!): Customer\n  saveCustomerWithFirstOrder(customer: SaveCustomerInput!, order: FirstOrderInput!, referral: String): Order\n  savePayment(payment: PaymentInput!): Payment\n  doPostOnAws: String!\n}\n"
+        "Definition": "type ServiceVersion @aws_api_key {\n  version: String!\n}\n\ntype Customer @aws_api_key {\n  id: String!\n  name: String!\n}\n\ninput SaveCustomerInput {\n  name: String!\n}\n\ntype Order @aws_api_key {\n  customer: String!\n  order: String!\n}\n\ntype Payment @aws_api_key {\n  id: String!\n  amount: String!\n}\n\ninput PaymentInput {\n  amount: String!\n}\n\ntype Query @aws_api_key {\n  getServiceVersion: ServiceVersion\n  getCustomers: [Customer]\n  getCustomer(id: String): Customer\n  getCustomerOrdersEq(customer: String): Order\n  getCustomerOrdersLt(customer: String): Order\n  getCustomerOrdersLe(customer: String): Order\n  getCustomerOrdersGt(customer: String): Order\n  getCustomerOrdersGe(customer: String): Order\n  getCustomerOrdersFilter(customer: String, order: String): Order\n  getCustomerOrdersBetween(customer: String, order1: String, order2: String): Order\n  getOrderCustomersEq(order: String): [Customer]\n  getOrderCustomersLt(order: String): [Customer]\n  getOrderCustomersLe(order: String): [Customer]\n  getOrderCustomersGt(order: String): [Customer]\n  getOrderCustomersGe(order: String): [Customer]\n  getOrderCustomersFilter(order: String, customer: String): [Customer]\n  getOrderCustomersBetween(order: String, customer1: String, customer2: String): [Customer]\n  getPayment(id: String): Payment\n}\n\ninput FirstOrderInput {\n  product: String!\n  quantity: Int!\n}\n\ntype Mutation @aws_api_key {\n  addCustomer(customer: SaveCustomerInput!): Customer\n  saveCustomer(id: String!, customer: SaveCustomerInput!): Customer\n  removeCustomer(id: String!): Customer\n  saveCustomerWithFirstOrder(customer: SaveCustomerInput!, order: FirstOrderInput!, referral: String): Order\n  savePayment(payment: PaymentInput!): Payment\n  doPostOnAws: String!\n}\n"
       }
     },
-    "ApiNoneDSB4E6495F": {
+    "ApiDefaultApiKeyF991C37B": {
+      "Type": "AWS::AppSync::ApiKey",
+      "Properties": {
+        "ApiId": {
+          "Fn::GetAtt": [
+            "ApiF70053CD",
+            "ApiId"
+          ]
+        }
+      },
+      "DependsOn": [
+        "ApiSchema510EECD7"
+      ]
+    },
+    "Apinone1F55F3F3": {
       "Type": "AWS::AppSync::DataSource",
       "Properties": {
         "ApiId": {
@@ -131,11 +87,10 @@
           ]
         },
         "Name": "None",
-        "Type": "NONE",
-        "Description": "Dummy data source"
+        "Type": "NONE"
       }
     },
-    "ApiNoneDSQuerygetServiceVersionResolver4AF8FD42": {
+    "ApiQuerygetServiceVersionResolver269A74C1": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
@@ -152,11 +107,11 @@
         "ResponseMappingTemplate": "{\"version\":\"v1\"}"
       },
       "DependsOn": [
-        "ApiNoneDSB4E6495F",
+        "Apinone1F55F3F3",
         "ApiSchema510EECD7"
       ]
     },
-    "ApiCustomerDSServiceRoleA929BCF7": {
+    "ApicustomerDsServiceRole76CAD539": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -173,7 +128,7 @@
         }
       }
     },
-    "ApiCustomerDSServiceRoleDefaultPolicy8C927D33": {
+    "ApicustomerDsServiceRoleDefaultPolicyF8E72AE7": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -207,15 +162,15 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "ApiCustomerDSServiceRoleDefaultPolicy8C927D33",
+        "PolicyName": "ApicustomerDsServiceRoleDefaultPolicyF8E72AE7",
         "Roles": [
           {
-            "Ref": "ApiCustomerDSServiceRoleA929BCF7"
+            "Ref": "ApicustomerDsServiceRole76CAD539"
           }
         ]
       }
     },
-    "ApiCustomerDS8C23CB2D": {
+    "ApicustomerDsFE73DAC5": {
       "Type": "AWS::AppSync::DataSource",
       "Properties": {
         "ApiId": {
@@ -226,7 +181,6 @@
         },
         "Name": "Customer",
         "Type": "AMAZON_DYNAMODB",
-        "Description": "The customer data source",
         "DynamoDBConfig": {
           "AwsRegion": {
             "Ref": "AWS::Region"
@@ -237,139 +191,13 @@
         },
         "ServiceRoleArn": {
           "Fn::GetAtt": [
-            "ApiCustomerDSServiceRoleA929BCF7",
+            "ApicustomerDsServiceRole76CAD539",
             "Arn"
           ]
         }
       }
     },
-    "ApiCustomerDSQuerygetCustomersResolver0F8B3416": {
-      "Type": "AWS::AppSync::Resolver",
-      "Properties": {
-        "ApiId": {
-          "Fn::GetAtt": [
-            "ApiF70053CD",
-            "ApiId"
-          ]
-        },
-        "FieldName": "getCustomers",
-        "TypeName": "Query",
-        "DataSourceName": "Customer",
-        "Kind": "UNIT",
-        "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Scan\"}",
-        "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
-      },
-      "DependsOn": [
-        "ApiCustomerDS8C23CB2D",
-        "ApiSchema510EECD7"
-      ]
-    },
-    "ApiCustomerDSQuerygetCustomerResolver0DC795BE": {
-      "Type": "AWS::AppSync::Resolver",
-      "Properties": {
-        "ApiId": {
-          "Fn::GetAtt": [
-            "ApiF70053CD",
-            "ApiId"
-          ]
-        },
-        "FieldName": "getCustomer",
-        "TypeName": "Query",
-        "DataSourceName": "Customer",
-        "Kind": "UNIT",
-        "RequestMappingTemplate": "{\"version\": \"2017-02-28\", \"operation\": \"GetItem\", \"key\": {\"id\": $util.dynamodb.toDynamoDBJson($ctx.args.id)}}",
-        "ResponseMappingTemplate": "$util.toJson($ctx.result)"
-      },
-      "DependsOn": [
-        "ApiCustomerDS8C23CB2D",
-        "ApiSchema510EECD7"
-      ]
-    },
-    "ApiCustomerDSMutationaddCustomerResolverC9041B1C": {
-      "Type": "AWS::AppSync::Resolver",
-      "Properties": {
-        "ApiId": {
-          "Fn::GetAtt": [
-            "ApiF70053CD",
-            "ApiId"
-          ]
-        },
-        "FieldName": "addCustomer",
-        "TypeName": "Mutation",
-        "DataSourceName": "Customer",
-        "Kind": "UNIT",
-        "RequestMappingTemplate": "\n      #set($input = $ctx.args.customer)\n      \n      {\n        \"version\": \"2017-02-28\",\n        \"operation\": \"PutItem\",\n        \"key\" : {\n      \"id\" : $util.dynamodb.toDynamoDBJson($util.autoId())\n    },\n        \"attributeValues\": $util.dynamodb.toMapValuesJson($input)\n      }",
-        "ResponseMappingTemplate": "$util.toJson($ctx.result)"
-      },
-      "DependsOn": [
-        "ApiCustomerDS8C23CB2D",
-        "ApiSchema510EECD7"
-      ]
-    },
-    "ApiCustomerDSMutationsaveCustomerResolverB707057E": {
-      "Type": "AWS::AppSync::Resolver",
-      "Properties": {
-        "ApiId": {
-          "Fn::GetAtt": [
-            "ApiF70053CD",
-            "ApiId"
-          ]
-        },
-        "FieldName": "saveCustomer",
-        "TypeName": "Mutation",
-        "DataSourceName": "Customer",
-        "Kind": "UNIT",
-        "RequestMappingTemplate": "\n      #set($input = $ctx.args.customer)\n      \n      {\n        \"version\": \"2017-02-28\",\n        \"operation\": \"PutItem\",\n        \"key\" : {\n      \"id\" : $util.dynamodb.toDynamoDBJson($ctx.args.id)\n    },\n        \"attributeValues\": $util.dynamodb.toMapValuesJson($input)\n      }",
-        "ResponseMappingTemplate": "$util.toJson($ctx.result)"
-      },
-      "DependsOn": [
-        "ApiCustomerDS8C23CB2D",
-        "ApiSchema510EECD7"
-      ]
-    },
-    "ApiCustomerDSMutationsaveCustomerWithFirstOrderResolver8B1277A8": {
-      "Type": "AWS::AppSync::Resolver",
-      "Properties": {
-        "ApiId": {
-          "Fn::GetAtt": [
-            "ApiF70053CD",
-            "ApiId"
-          ]
-        },
-        "FieldName": "saveCustomerWithFirstOrder",
-        "TypeName": "Mutation",
-        "DataSourceName": "Customer",
-        "Kind": "UNIT",
-        "RequestMappingTemplate": "\n      #set($input = $ctx.args.order)\n      $util.qr($input.put(\"referral\", referral))\n      {\n        \"version\": \"2017-02-28\",\n        \"operation\": \"PutItem\",\n        \"key\" : {\n      \"order\" : $util.dynamodb.toDynamoDBJson($util.autoId()),\"customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer.id)\n    },\n        \"attributeValues\": $util.dynamodb.toMapValuesJson($input)\n      }",
-        "ResponseMappingTemplate": "$util.toJson($ctx.result)"
-      },
-      "DependsOn": [
-        "ApiCustomerDS8C23CB2D",
-        "ApiSchema510EECD7"
-      ]
-    },
-    "ApiCustomerDSMutationremoveCustomerResolverA0046C60": {
-      "Type": "AWS::AppSync::Resolver",
-      "Properties": {
-        "ApiId": {
-          "Fn::GetAtt": [
-            "ApiF70053CD",
-            "ApiId"
-          ]
-        },
-        "FieldName": "removeCustomer",
-        "TypeName": "Mutation",
-        "DataSourceName": "Customer",
-        "Kind": "UNIT",
-        "RequestMappingTemplate": "{\"version\": \"2017-02-28\", \"operation\": \"DeleteItem\", \"key\": {\"id\": $util.dynamodb.toDynamoDBJson($ctx.args.id)}}",
-        "ResponseMappingTemplate": "$util.toJson($ctx.result)"
-      },
-      "DependsOn": [
-        "ApiCustomerDS8C23CB2D",
-        "ApiSchema510EECD7"
-      ]
-    },
-    "ApiOrderDSServiceRole81A3E9E7": {
+    "ApiorderDsServiceRoleCC2040C0": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -386,7 +214,7 @@
         }
       }
     },
-    "ApiOrderDSServiceRoleDefaultPolicyDAB14B69": {
+    "ApiorderDsServiceRoleDefaultPolicy3315FCF4": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -413,22 +241,33 @@
                   ]
                 },
                 {
-                  "Ref": "AWS::NoValue"
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "OrderTable416EB896",
+                          "Arn"
+                        ]
+                      },
+                      "/index/*"
+                    ]
+                  ]
                 }
               ]
             }
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "ApiOrderDSServiceRoleDefaultPolicyDAB14B69",
+        "PolicyName": "ApiorderDsServiceRoleDefaultPolicy3315FCF4",
         "Roles": [
           {
-            "Ref": "ApiOrderDSServiceRole81A3E9E7"
+            "Ref": "ApiorderDsServiceRoleCC2040C0"
           }
         ]
       }
     },
-    "ApiOrderDS4B3EEEBA": {
+    "ApiorderDsB50C8AAD": {
       "Type": "AWS::AppSync::DataSource",
       "Properties": {
         "ApiId": {
@@ -439,7 +278,6 @@
         },
         "Name": "Order",
         "Type": "AMAZON_DYNAMODB",
-        "Description": "The order data source",
         "DynamoDBConfig": {
           "AwsRegion": {
             "Ref": "AWS::Region"
@@ -450,160 +288,13 @@
         },
         "ServiceRoleArn": {
           "Fn::GetAtt": [
-            "ApiOrderDSServiceRole81A3E9E7",
+            "ApiorderDsServiceRoleCC2040C0",
             "Arn"
           ]
         }
       }
     },
-    "ApiOrderDSQuerygetCustomerOrdersEqResolverFCC2003B": {
-      "Type": "AWS::AppSync::Resolver",
-      "Properties": {
-        "ApiId": {
-          "Fn::GetAtt": [
-            "ApiF70053CD",
-            "ApiId"
-          ]
-        },
-        "FieldName": "getCustomerOrdersEq",
-        "TypeName": "Query",
-        "DataSourceName": "Order",
-        "Kind": "UNIT",
-        "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\", \"query\" : {\n            \"expression\" : \"#customer = :customer\",\n            \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n            },\n            \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n            }\n        }}",
-        "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
-      },
-      "DependsOn": [
-        "ApiOrderDS4B3EEEBA",
-        "ApiSchema510EECD7"
-      ]
-    },
-    "ApiOrderDSQuerygetCustomerOrdersLtResolverE2C5E19E": {
-      "Type": "AWS::AppSync::Resolver",
-      "Properties": {
-        "ApiId": {
-          "Fn::GetAtt": [
-            "ApiF70053CD",
-            "ApiId"
-          ]
-        },
-        "FieldName": "getCustomerOrdersLt",
-        "TypeName": "Query",
-        "DataSourceName": "Order",
-        "Kind": "UNIT",
-        "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\", \"query\" : {\n            \"expression\" : \"#customer < :customer\",\n            \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n            },\n            \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n            }\n        }}",
-        "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
-      },
-      "DependsOn": [
-        "ApiOrderDS4B3EEEBA",
-        "ApiSchema510EECD7"
-      ]
-    },
-    "ApiOrderDSQuerygetCustomerOrdersLeResolver95C3D740": {
-      "Type": "AWS::AppSync::Resolver",
-      "Properties": {
-        "ApiId": {
-          "Fn::GetAtt": [
-            "ApiF70053CD",
-            "ApiId"
-          ]
-        },
-        "FieldName": "getCustomerOrdersLe",
-        "TypeName": "Query",
-        "DataSourceName": "Order",
-        "Kind": "UNIT",
-        "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\", \"query\" : {\n            \"expression\" : \"#customer <= :customer\",\n            \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n            },\n            \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n            }\n        }}",
-        "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
-      },
-      "DependsOn": [
-        "ApiOrderDS4B3EEEBA",
-        "ApiSchema510EECD7"
-      ]
-    },
-    "ApiOrderDSQuerygetCustomerOrdersGtResolver1B99CF3D": {
-      "Type": "AWS::AppSync::Resolver",
-      "Properties": {
-        "ApiId": {
-          "Fn::GetAtt": [
-            "ApiF70053CD",
-            "ApiId"
-          ]
-        },
-        "FieldName": "getCustomerOrdersGt",
-        "TypeName": "Query",
-        "DataSourceName": "Order",
-        "Kind": "UNIT",
-        "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\", \"query\" : {\n            \"expression\" : \"#customer > :customer\",\n            \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n            },\n            \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n            }\n        }}",
-        "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
-      },
-      "DependsOn": [
-        "ApiOrderDS4B3EEEBA",
-        "ApiSchema510EECD7"
-      ]
-    },
-    "ApiOrderDSQuerygetCustomerOrdersGeResolver5138C680": {
-      "Type": "AWS::AppSync::Resolver",
-      "Properties": {
-        "ApiId": {
-          "Fn::GetAtt": [
-            "ApiF70053CD",
-            "ApiId"
-          ]
-        },
-        "FieldName": "getCustomerOrdersGe",
-        "TypeName": "Query",
-        "DataSourceName": "Order",
-        "Kind": "UNIT",
-        "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\", \"query\" : {\n            \"expression\" : \"#customer >= :customer\",\n            \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n            },\n            \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n            }\n        }}",
-        "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
-      },
-      "DependsOn": [
-        "ApiOrderDS4B3EEEBA",
-        "ApiSchema510EECD7"
-      ]
-    },
-    "ApiOrderDSQuerygetCustomerOrdersFilterResolver4433E2B4": {
-      "Type": "AWS::AppSync::Resolver",
-      "Properties": {
-        "ApiId": {
-          "Fn::GetAtt": [
-            "ApiF70053CD",
-            "ApiId"
-          ]
-        },
-        "FieldName": "getCustomerOrdersFilter",
-        "TypeName": "Query",
-        "DataSourceName": "Order",
-        "Kind": "UNIT",
-        "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\", \"query\" : {\n            \"expression\" : \"#customer = :customer AND begins_with(#order, :order)\",\n            \"expressionNames\" : {\n                \"#customer\" : \"customer\", \"#order\" : \"order\"\n            },\n            \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer), \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n            }\n        }}",
-        "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
-      },
-      "DependsOn": [
-        "ApiOrderDS4B3EEEBA",
-        "ApiSchema510EECD7"
-      ]
-    },
-    "ApiOrderDSQuerygetCustomerOrdersBetweenResolver14F90CFD": {
-      "Type": "AWS::AppSync::Resolver",
-      "Properties": {
-        "ApiId": {
-          "Fn::GetAtt": [
-            "ApiF70053CD",
-            "ApiId"
-          ]
-        },
-        "FieldName": "getCustomerOrdersBetween",
-        "TypeName": "Query",
-        "DataSourceName": "Order",
-        "Kind": "UNIT",
-        "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\", \"query\" : {\n            \"expression\" : \"#customer = :customer AND #order BETWEEN :order1 AND :order2\",\n            \"expressionNames\" : {\n                \"#customer\" : \"customer\", \"#order\" : \"order\"\n            },\n            \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer), \":order1\" : $util.dynamodb.toDynamoDBJson($ctx.args.order1), \":order2\" : $util.dynamodb.toDynamoDBJson($ctx.args.order2)\n            }\n        }}",
-        "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
-      },
-      "DependsOn": [
-        "ApiOrderDS4B3EEEBA",
-        "ApiSchema510EECD7"
-      ]
-    },
-    "ApiPaymentDSServiceRole7A857DD9": {
+    "ApipaymentDsServiceRole0DAC58D6": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -620,7 +311,7 @@
         }
       }
     },
-    "ApiPaymentDSServiceRoleDefaultPolicy1BE875C5": {
+    "ApipaymentDsServiceRoleDefaultPolicy528E42B0": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -668,15 +359,15 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "ApiPaymentDSServiceRoleDefaultPolicy1BE875C5",
+        "PolicyName": "ApipaymentDsServiceRoleDefaultPolicy528E42B0",
         "Roles": [
           {
-            "Ref": "ApiPaymentDSServiceRole7A857DD9"
+            "Ref": "ApipaymentDsServiceRole0DAC58D6"
           }
         ]
       }
     },
-    "ApiPaymentDS69022256": {
+    "ApipaymentDs95C7AC36": {
       "Type": "AWS::AppSync::DataSource",
       "Properties": {
         "ApiId": {
@@ -687,7 +378,6 @@
         },
         "Name": "Payment",
         "Type": "AMAZON_DYNAMODB",
-        "Description": "The payment data source",
         "DynamoDBConfig": {
           "AwsRegion": {
             "Ref": "AWS::Region"
@@ -696,13 +386,433 @@
         },
         "ServiceRoleArn": {
           "Fn::GetAtt": [
-            "ApiPaymentDSServiceRole7A857DD9",
+            "ApipaymentDsServiceRole0DAC58D6",
             "Arn"
           ]
         }
       }
     },
-    "ApiPaymentDSQuerygetPaymentResolver25686F48": {
+    "ApiQuerygetCustomersResolver522EE433": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Fn::GetAtt": [
+            "ApiF70053CD",
+            "ApiId"
+          ]
+        },
+        "FieldName": "getCustomers",
+        "TypeName": "Query",
+        "DataSourceName": "Customer",
+        "Kind": "UNIT",
+        "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Scan\"}",
+        "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
+      },
+      "DependsOn": [
+        "ApicustomerDsFE73DAC5",
+        "ApiSchema510EECD7"
+      ]
+    },
+    "ApiQuerygetCustomerResolver007520DC": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Fn::GetAtt": [
+            "ApiF70053CD",
+            "ApiId"
+          ]
+        },
+        "FieldName": "getCustomer",
+        "TypeName": "Query",
+        "DataSourceName": "Customer",
+        "Kind": "UNIT",
+        "RequestMappingTemplate": "{\"version\": \"2017-02-28\", \"operation\": \"GetItem\", \"key\": {\"id\": $util.dynamodb.toDynamoDBJson($ctx.args.id)}}",
+        "ResponseMappingTemplate": "$util.toJson($ctx.result)"
+      },
+      "DependsOn": [
+        "ApicustomerDsFE73DAC5",
+        "ApiSchema510EECD7"
+      ]
+    },
+    "ApiMutationaddCustomerResolver53321A05": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Fn::GetAtt": [
+            "ApiF70053CD",
+            "ApiId"
+          ]
+        },
+        "FieldName": "addCustomer",
+        "TypeName": "Mutation",
+        "DataSourceName": "Customer",
+        "Kind": "UNIT",
+        "RequestMappingTemplate": "\n      #set($input = $ctx.args.customer)\n      \n      {\n        \"version\": \"2017-02-28\",\n        \"operation\": \"PutItem\",\n        \"key\" : {\n      \"id\" : $util.dynamodb.toDynamoDBJson($util.autoId())\n    },\n        \"attributeValues\": $util.dynamodb.toMapValuesJson($input)\n      }",
+        "ResponseMappingTemplate": "$util.toJson($ctx.result)"
+      },
+      "DependsOn": [
+        "ApicustomerDsFE73DAC5",
+        "ApiSchema510EECD7"
+      ]
+    },
+    "ApiMutationsaveCustomerResolver85516C23": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Fn::GetAtt": [
+            "ApiF70053CD",
+            "ApiId"
+          ]
+        },
+        "FieldName": "saveCustomer",
+        "TypeName": "Mutation",
+        "DataSourceName": "Customer",
+        "Kind": "UNIT",
+        "RequestMappingTemplate": "\n      #set($input = $ctx.args.customer)\n      \n      {\n        \"version\": \"2017-02-28\",\n        \"operation\": \"PutItem\",\n        \"key\" : {\n      \"id\" : $util.dynamodb.toDynamoDBJson($ctx.args.id)\n    },\n        \"attributeValues\": $util.dynamodb.toMapValuesJson($input)\n      }",
+        "ResponseMappingTemplate": "$util.toJson($ctx.result)"
+      },
+      "DependsOn": [
+        "ApicustomerDsFE73DAC5",
+        "ApiSchema510EECD7"
+      ]
+    },
+    "ApiMutationsaveCustomerWithFirstOrderResolver66DBDFD0": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Fn::GetAtt": [
+            "ApiF70053CD",
+            "ApiId"
+          ]
+        },
+        "FieldName": "saveCustomerWithFirstOrder",
+        "TypeName": "Mutation",
+        "DataSourceName": "Customer",
+        "Kind": "UNIT",
+        "RequestMappingTemplate": "\n      #set($input = $ctx.args.order)\n      $util.qr($input.put(\"referral\", referral))\n      {\n        \"version\": \"2017-02-28\",\n        \"operation\": \"PutItem\",\n        \"key\" : {\n      \"order\" : $util.dynamodb.toDynamoDBJson($util.autoId()),\"customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer.id)\n    },\n        \"attributeValues\": $util.dynamodb.toMapValuesJson($input)\n      }",
+        "ResponseMappingTemplate": "$util.toJson($ctx.result)"
+      },
+      "DependsOn": [
+        "ApicustomerDsFE73DAC5",
+        "ApiSchema510EECD7"
+      ]
+    },
+    "ApiMutationremoveCustomerResolver8435F803": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Fn::GetAtt": [
+            "ApiF70053CD",
+            "ApiId"
+          ]
+        },
+        "FieldName": "removeCustomer",
+        "TypeName": "Mutation",
+        "DataSourceName": "Customer",
+        "Kind": "UNIT",
+        "RequestMappingTemplate": "{\"version\": \"2017-02-28\", \"operation\": \"DeleteItem\", \"key\": {\"id\": $util.dynamodb.toDynamoDBJson($ctx.args.id)}}",
+        "ResponseMappingTemplate": "$util.toJson($ctx.result)"
+      },
+      "DependsOn": [
+        "ApicustomerDsFE73DAC5",
+        "ApiSchema510EECD7"
+      ]
+    },
+    "ApiQuerygetCustomerOrdersEqResolver6DA88A11": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Fn::GetAtt": [
+            "ApiF70053CD",
+            "ApiId"
+          ]
+        },
+        "FieldName": "getCustomerOrdersEq",
+        "TypeName": "Query",
+        "DataSourceName": "Order",
+        "Kind": "UNIT",
+        "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\", \"query\" : {\n            \"expression\" : \"#customer = :customer\",\n            \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n            },\n            \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n            }\n        }}",
+        "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
+      },
+      "DependsOn": [
+        "ApiorderDsB50C8AAD",
+        "ApiSchema510EECD7"
+      ]
+    },
+    "ApiQuerygetOrderCustomersEqResolverA8612570": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Fn::GetAtt": [
+            "ApiF70053CD",
+            "ApiId"
+          ]
+        },
+        "FieldName": "getOrderCustomersEq",
+        "TypeName": "Query",
+        "DataSourceName": "Order",
+        "Kind": "UNIT",
+        "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\", \"index\" : \"orderIndex\", \"query\" : {\n            \"expression\" : \"#order = :order\",\n            \"expressionNames\" : {\n                \"#order\" : \"order\"\n            },\n            \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n            }\n        }}",
+        "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
+      },
+      "DependsOn": [
+        "ApiorderDsB50C8AAD",
+        "ApiSchema510EECD7"
+      ]
+    },
+    "ApiQuerygetCustomerOrdersLtResolver284B37E8": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Fn::GetAtt": [
+            "ApiF70053CD",
+            "ApiId"
+          ]
+        },
+        "FieldName": "getCustomerOrdersLt",
+        "TypeName": "Query",
+        "DataSourceName": "Order",
+        "Kind": "UNIT",
+        "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\", \"query\" : {\n            \"expression\" : \"#customer < :customer\",\n            \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n            },\n            \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n            }\n        }}",
+        "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
+      },
+      "DependsOn": [
+        "ApiorderDsB50C8AAD",
+        "ApiSchema510EECD7"
+      ]
+    },
+    "ApiQuerygetOrderCustomersLtResolver618A88A9": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Fn::GetAtt": [
+            "ApiF70053CD",
+            "ApiId"
+          ]
+        },
+        "FieldName": "getOrderCustomersLt",
+        "TypeName": "Query",
+        "DataSourceName": "Order",
+        "Kind": "UNIT",
+        "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\", \"index\" : \"orderIndex\", \"query\" : {\n            \"expression\" : \"#order < :order\",\n            \"expressionNames\" : {\n                \"#order\" : \"order\"\n            },\n            \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n            }\n        }}",
+        "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
+      },
+      "DependsOn": [
+        "ApiorderDsB50C8AAD",
+        "ApiSchema510EECD7"
+      ]
+    },
+    "ApiQuerygetCustomerOrdersLeResolverFB2A506A": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Fn::GetAtt": [
+            "ApiF70053CD",
+            "ApiId"
+          ]
+        },
+        "FieldName": "getCustomerOrdersLe",
+        "TypeName": "Query",
+        "DataSourceName": "Order",
+        "Kind": "UNIT",
+        "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\", \"query\" : {\n            \"expression\" : \"#customer <= :customer\",\n            \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n            },\n            \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n            }\n        }}",
+        "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
+      },
+      "DependsOn": [
+        "ApiorderDsB50C8AAD",
+        "ApiSchema510EECD7"
+      ]
+    },
+    "ApiQuerygetOrderCustomersLeResolverFAA205B9": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Fn::GetAtt": [
+            "ApiF70053CD",
+            "ApiId"
+          ]
+        },
+        "FieldName": "getOrderCustomersLe",
+        "TypeName": "Query",
+        "DataSourceName": "Order",
+        "Kind": "UNIT",
+        "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\", \"index\" : \"orderIndex\", \"query\" : {\n            \"expression\" : \"#order <= :order\",\n            \"expressionNames\" : {\n                \"#order\" : \"order\"\n            },\n            \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n            }\n        }}",
+        "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
+      },
+      "DependsOn": [
+        "ApiorderDsB50C8AAD",
+        "ApiSchema510EECD7"
+      ]
+    },
+    "ApiQuerygetCustomerOrdersGtResolver13F90EA5": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Fn::GetAtt": [
+            "ApiF70053CD",
+            "ApiId"
+          ]
+        },
+        "FieldName": "getCustomerOrdersGt",
+        "TypeName": "Query",
+        "DataSourceName": "Order",
+        "Kind": "UNIT",
+        "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\", \"query\" : {\n            \"expression\" : \"#customer > :customer\",\n            \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n            },\n            \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n            }\n        }}",
+        "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
+      },
+      "DependsOn": [
+        "ApiorderDsB50C8AAD",
+        "ApiSchema510EECD7"
+      ]
+    },
+    "ApiQuerygetOrderCustomersGtResolver9487ECD9": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Fn::GetAtt": [
+            "ApiF70053CD",
+            "ApiId"
+          ]
+        },
+        "FieldName": "getOrderCustomersGt",
+        "TypeName": "Query",
+        "DataSourceName": "Order",
+        "Kind": "UNIT",
+        "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\", \"index\" : \"orderIndex\", \"query\" : {\n            \"expression\" : \"#order > :order\",\n            \"expressionNames\" : {\n                \"#order\" : \"order\"\n            },\n            \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n            }\n        }}",
+        "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
+      },
+      "DependsOn": [
+        "ApiorderDsB50C8AAD",
+        "ApiSchema510EECD7"
+      ]
+    },
+    "ApiQuerygetCustomerOrdersGeResolver2A181899": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Fn::GetAtt": [
+            "ApiF70053CD",
+            "ApiId"
+          ]
+        },
+        "FieldName": "getCustomerOrdersGe",
+        "TypeName": "Query",
+        "DataSourceName": "Order",
+        "Kind": "UNIT",
+        "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\", \"query\" : {\n            \"expression\" : \"#customer >= :customer\",\n            \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n            },\n            \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n            }\n        }}",
+        "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
+      },
+      "DependsOn": [
+        "ApiorderDsB50C8AAD",
+        "ApiSchema510EECD7"
+      ]
+    },
+    "ApiQuerygetOrderCustomersGeResolver8441E608": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Fn::GetAtt": [
+            "ApiF70053CD",
+            "ApiId"
+          ]
+        },
+        "FieldName": "getOrderCustomersGe",
+        "TypeName": "Query",
+        "DataSourceName": "Order",
+        "Kind": "UNIT",
+        "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\", \"index\" : \"orderIndex\", \"query\" : {\n            \"expression\" : \"#order >= :order\",\n            \"expressionNames\" : {\n                \"#order\" : \"order\"\n            },\n            \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n            }\n        }}",
+        "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
+      },
+      "DependsOn": [
+        "ApiorderDsB50C8AAD",
+        "ApiSchema510EECD7"
+      ]
+    },
+    "ApiQuerygetCustomerOrdersFilterResolver96245084": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Fn::GetAtt": [
+            "ApiF70053CD",
+            "ApiId"
+          ]
+        },
+        "FieldName": "getCustomerOrdersFilter",
+        "TypeName": "Query",
+        "DataSourceName": "Order",
+        "Kind": "UNIT",
+        "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\", \"query\" : {\n            \"expression\" : \"#customer = :customer AND begins_with(#order, :order)\",\n            \"expressionNames\" : {\n                \"#customer\" : \"customer\", \"#order\" : \"order\"\n            },\n            \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer), \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n            }\n        }}",
+        "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
+      },
+      "DependsOn": [
+        "ApiorderDsB50C8AAD",
+        "ApiSchema510EECD7"
+      ]
+    },
+    "ApiQuerygetCustomerOrdersBetweenResolver97B6D708": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Fn::GetAtt": [
+            "ApiF70053CD",
+            "ApiId"
+          ]
+        },
+        "FieldName": "getCustomerOrdersBetween",
+        "TypeName": "Query",
+        "DataSourceName": "Order",
+        "Kind": "UNIT",
+        "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\", \"query\" : {\n            \"expression\" : \"#customer = :customer AND #order BETWEEN :order1 AND :order2\",\n            \"expressionNames\" : {\n                \"#customer\" : \"customer\", \"#order\" : \"order\"\n            },\n            \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer), \":order1\" : $util.dynamodb.toDynamoDBJson($ctx.args.order1), \":order2\" : $util.dynamodb.toDynamoDBJson($ctx.args.order2)\n            }\n        }}",
+        "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
+      },
+      "DependsOn": [
+        "ApiorderDsB50C8AAD",
+        "ApiSchema510EECD7"
+      ]
+    },
+    "ApiQuerygetOrderCustomersFilterResolverF1015ABD": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Fn::GetAtt": [
+            "ApiF70053CD",
+            "ApiId"
+          ]
+        },
+        "FieldName": "getOrderCustomersFilter",
+        "TypeName": "Query",
+        "DataSourceName": "Order",
+        "Kind": "UNIT",
+        "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\", \"query\" : {\n            \"expression\" : \"#order = :order AND begins_with(#customer, :customer)\",\n            \"expressionNames\" : {\n                \"#order\" : \"order\", \"#customer\" : \"customer\"\n            },\n            \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order), \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n            }\n        }}",
+        "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
+      },
+      "DependsOn": [
+        "ApiorderDsB50C8AAD",
+        "ApiSchema510EECD7"
+      ]
+    },
+    "ApiQuerygetOrderCustomersBetweenResolver92680CEC": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Fn::GetAtt": [
+            "ApiF70053CD",
+            "ApiId"
+          ]
+        },
+        "FieldName": "getOrderCustomersBetween",
+        "TypeName": "Query",
+        "DataSourceName": "Order",
+        "Kind": "UNIT",
+        "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\", \"index\" : \"orderIndex\", \"query\" : {\n            \"expression\" : \"#order = :order AND #customer BETWEEN :customer1 AND :customer2\",\n            \"expressionNames\" : {\n                \"#order\" : \"order\", \"#customer\" : \"customer\"\n            },\n            \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order), \":customer1\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer1), \":customer2\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer2)\n            }\n        }}",
+        "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
+      },
+      "DependsOn": [
+        "ApiorderDsB50C8AAD",
+        "ApiSchema510EECD7"
+      ]
+    },
+    "ApiQuerygetPaymentResolver29598AC3": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
@@ -719,11 +829,11 @@
         "ResponseMappingTemplate": "$util.toJson($ctx.result)"
       },
       "DependsOn": [
-        "ApiPaymentDS69022256",
+        "ApipaymentDs95C7AC36",
         "ApiSchema510EECD7"
       ]
     },
-    "ApiPaymentDSMutationsavePaymentResolver08FBC62D": {
+    "ApiMutationsavePaymentResolver03088E76": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
@@ -740,11 +850,11 @@
         "ResponseMappingTemplate": "$util.toJson($ctx.result)"
       },
       "DependsOn": [
-        "ApiPaymentDS69022256",
+        "ApipaymentDs95C7AC36",
         "ApiSchema510EECD7"
       ]
     },
-    "ApihttpDSServiceRole8B5C9457": {
+    "ApidsServiceRoleADC7D124": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -761,7 +871,7 @@
         }
       }
     },
-    "ApihttpDS91F12990": {
+    "Apids0DB53FEA": {
       "Type": "AWS::AppSync::DataSource",
       "Properties": {
         "ApiId": {
@@ -772,19 +882,18 @@
         },
         "Name": "http",
         "Type": "HTTP",
-        "Description": "The http data source",
         "HttpConfig": {
           "Endpoint": "https://aws.amazon.com/"
         },
         "ServiceRoleArn": {
           "Fn::GetAtt": [
-            "ApihttpDSServiceRole8B5C9457",
+            "ApidsServiceRoleADC7D124",
             "Arn"
           ]
         }
       }
     },
-    "ApihttpDSMutationdoPostOnAwsResolverA9027953": {
+    "ApiMutationdoPostOnAwsResolverEDACEA42": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
@@ -801,7 +910,7 @@
         "ResponseMappingTemplate": "\n    ## Raise a GraphQL field error in case of a datasource invocation error\n    #if($ctx.error)\n      $util.error($ctx.error.message, $ctx.error.type)\n    #end\n    ## if the response status code is not 200, then return an error. Else return the body **\n    #if($ctx.result.statusCode == 200)\n        ## If response is 200, return the body.\n        $ctx.result.body\n    #else\n        ## If response is not 200, append the response to error block.\n        $utils.appendError($ctx.result.body, \"$ctx.result.statusCode\")\n    #end\n  "
       },
       "DependsOn": [
-        "ApihttpDS91F12990",
+        "Apids0DB53FEA",
         "ApiSchema510EECD7"
       ]
     },
@@ -848,7 +957,25 @@
             "AttributeType": "S"
           }
         ],
-        "BillingMode": "PAY_PER_REQUEST"
+        "BillingMode": "PAY_PER_REQUEST",
+        "GlobalSecondaryIndexes": [
+          {
+            "IndexName": "orderIndex",
+            "KeySchema": [
+              {
+                "AttributeName": "order",
+                "KeyType": "HASH"
+              },
+              {
+                "AttributeName": "customer",
+                "KeyType": "RANGE"
+              }
+            ],
+            "Projection": {
+              "ProjectionType": "ALL"
+            }
+          }
+        ]
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"

@@ -1,10 +1,15 @@
 import * as crypto from 'crypto';
 import { DnsValidatedCertificate, ICertificate } from '@aws-cdk/aws-certificatemanager';
 import { CloudFrontWebDistribution, OriginProtocolPolicy, PriceClass, ViewerProtocolPolicy } from '@aws-cdk/aws-cloudfront';
-import { ARecord, IHostedZone, RecordTarget } from '@aws-cdk/aws-route53';
+import { ARecord, AaaaRecord, IHostedZone, RecordTarget } from '@aws-cdk/aws-route53';
 import { CloudFrontTarget } from '@aws-cdk/aws-route53-targets';
-import { Bucket, RedirectProtocol } from '@aws-cdk/aws-s3';
-import { Construct, RemovalPolicy, Stack, Token } from '@aws-cdk/core';
+import { BlockPublicAccess, Bucket, RedirectProtocol } from '@aws-cdk/aws-s3';
+import { RemovalPolicy, Stack, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Properties to configure an HTTPS Redirect
@@ -50,7 +55,7 @@ export interface HttpsRedirectProps {
  * Allows creating a domainA -> domainB redirect using CloudFront and S3.
  * You can specify multiple domains to be redirected.
  */
-export class HttpsRedirect extends Construct {
+export class HttpsRedirect extends CoreConstruct {
   constructor(scope: Construct, id: string, props: HttpsRedirectProps) {
     super(scope, id);
 
@@ -76,6 +81,7 @@ export class HttpsRedirect extends Construct {
         protocol: RedirectProtocol.HTTPS,
       },
       removalPolicy: RemovalPolicy.DESTROY,
+      blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
     });
     const redirectDist = new CloudFrontWebDistribution(this, 'RedirectDistribution', {
       defaultRootObject: '',
@@ -97,11 +103,13 @@ export class HttpsRedirect extends Construct {
 
     domainNames.forEach((domainName) => {
       const hash = crypto.createHash('md5').update(domainName).digest('hex').substr(0, 6);
-      new ARecord(this, `RedirectAliasRecord${hash}`, {
+      const aliasProps = {
         recordName: domainName,
         zone: props.zone,
         target: RecordTarget.fromAlias(new CloudFrontTarget(redirectDist)),
-      });
+      };
+      new ARecord(this, `RedirectAliasRecord${hash}`, aliasProps);
+      new AaaaRecord(this, `RedirectAliasRecordSix${hash}`, aliasProps);
     });
   }
 }

@@ -1,12 +1,18 @@
-## AWS S3 Deployment Construct Library
+# AWS S3 Deployment Construct Library
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
 
-> The APIs of higher level constructs in this module are experimental and under active development. They are subject to non-backward compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be announced in the release notes. This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
+> The APIs of higher level constructs in this module are experimental and under active development.
+> They are subject to non-backward compatible changes or removal in any future version. These are
+> not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be
+> announced in the release notes. This means that while you may use them, you may need to update
+> your source code when upgrading to a newer version of this package.
 
 ---
+
 <!--END STABILITY BANNER-->
 
 > __Status: Experimental__
@@ -70,7 +76,7 @@ By default, files in the destination bucket that don't exist in the source will 
 when the `BucketDeployment` resource is created or updated. You can use the option `prune: false` to disable
 this behavior, in which case the files will not be deleted.
 
-```typescript
+```ts
 new s3deploy.BucketDeployment(this, 'DeployMeWithoutDeletingFilesOnDestination', {
   sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
   destinationBucket,
@@ -82,7 +88,7 @@ This option also enables you to specify multiple bucket deployments for the same
 each with its own characteristics. For example, you can set different cache-control headers
 based on file extensions:
 
-```typescript
+```ts
 new BucketDeployment(this, 'BucketDeployment', {
   sources: [Source.asset('./website', { exclude: ['index.html' })],
   destinationBucket: bucket,
@@ -91,7 +97,7 @@ new BucketDeployment(this, 'BucketDeployment', {
 });
 
 new BucketDeployment(this, 'HTMLBucketDeployment', {
-  sources: [Source.asset('./website', { exclude: ['!index.html'] })],
+  sources: [Source.asset('./website', { exclude: ['*', '!index.html'] })],
   destinationBucket: bucket,
   cacheControl: [CacheControl.fromString('max-age=0,no-cache,no-store,must-revalidate')],
   prune: false,
@@ -145,9 +151,30 @@ new s3deploy.BucketDeployment(this, 'DeployWebsite', {
 You can provide a CloudFront distribution and optional paths to invalidate after the bucket deployment finishes.
 
 ```ts
+import * as cloudfront from '@aws-cdk/aws-cloudfront';
+import * as origins from '@aws-cdk/aws-cloudfront-origins';
+
 const bucket = new s3.Bucket(this, 'Destination');
 
-const distribution = new cloudfront.CloudFrontWebDistribution(this, 'Distribution', {
+// Option 1 (Experimental): Handles buckets whether or not they are configured for website hosting.
+const distribution = new cloudfront.Distribution(this, 'Distribution', {
+  defaultBehavior: { origin: new origins.S3Origin(bucket) },
+});
+
+// Option 2 (Stable): Use this if the bucket has website hosting enabled.
+const distribution_for_website_bucket = new cloudfront.CloudFrontWebDistribution(this, 'DistributionForWebBucket', {
+  originConfigs: [
+    {
+      customOriginSource: {
+        domainName: bucket.bucketWebsiteDomainName,
+      },
+      behaviors : [ {isDefaultBehavior: true}]
+    }
+  ]
+});
+
+// Option 3 (Stable): Use this version if the bucket does not have website hosting enabled.
+const distribution_for_bucket = new cloudfront.CloudFrontWebDistribution(this, 'DistributionForBucket', {
   originConfigs: [
     {
       s3OriginSource: {
@@ -161,7 +188,7 @@ const distribution = new cloudfront.CloudFrontWebDistribution(this, 'Distributio
 new s3deploy.BucketDeployment(this, 'DeployWithInvalidation', {
   sources: [s3deploy.Source.asset('./website-dist')],
   destinationBucket: bucket,
-  distribution,
+  distribution, // or distribution_for_website_bucket or distribution_for_bucket
   distributionPaths: ['/images/*.png'],
 });
 ```
@@ -177,18 +204,18 @@ size of the AWS Lambda resource handler.
 
 ## Notes
 
- * This library uses an AWS CloudFormation custom resource which about 10MiB in
-   size. The code of this resource is bundled with this library.
- * AWS Lambda execution time is limited to 15min. This limits the amount of data which can
-   be deployed into the bucket by this timeout.
- * When the `BucketDeployment` is removed from the stack, the contents are retained
-   in the destination bucket ([#952](https://github.com/aws/aws-cdk/issues/952)).
- * Bucket deployment _only happens_ during stack create/update. This means that
-   if you wish to update the contents of the destination, you will need to
-   change the source s3 key (or bucket), so that the resource will be updated.
-   This is inline with best practices. If you use local disk assets, this will
-   happen automatically whenever you modify the asset, since the S3 key is based
-   on a hash of the asset contents.
+- This library uses an AWS CloudFormation custom resource which about 10MiB in
+  size. The code of this resource is bundled with this library.
+- AWS Lambda execution time is limited to 15min. This limits the amount of data
+  which can be deployed into the bucket by this timeout.
+- When the `BucketDeployment` is removed from the stack, the contents are retained
+  in the destination bucket ([#952](https://github.com/aws/aws-cdk/issues/952)).
+- Bucket deployment _only happens_ during stack create/update. This means that
+  if you wish to update the contents of the destination, you will need to
+  change the source s3 key (or bucket), so that the resource will be updated.
+  This is inline with best practices. If you use local disk assets, this will
+  happen automatically whenever you modify the asset, since the S3 key is based
+  on a hash of the asset contents.
 
 ## Development
 

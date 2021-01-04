@@ -121,7 +121,22 @@ export class Grant implements cdk.IDependable {
       scope: options.resource,
     });
 
-    if (result.success) { return result; }
+    const resourceAndPrincipalAccountComparison = options.grantee.grantPrincipal.principalAccount
+      ? cdk.Token.compareStrings(options.resource.env.account, options.grantee.grantPrincipal.principalAccount)
+      : undefined;
+    // if both accounts are tokens, we assume here they are the same
+    const equalOrBothUnresolved = resourceAndPrincipalAccountComparison === cdk.TokenComparison.SAME
+      || resourceAndPrincipalAccountComparison == cdk.TokenComparison.BOTH_UNRESOLVED;
+    const sameAccount: boolean = resourceAndPrincipalAccountComparison
+      ? equalOrBothUnresolved
+      // if the principal doesn't have an account (for example, a service principal),
+      // we should modify the resource's trust policy
+      : false;
+    // If we added to the principal AND we're in the same account, then we're done.
+    // If not, it's a different account and we must also add a trust policy on the resource.
+    if (result.success && sameAccount) {
+      return result;
+    }
 
     const statement = new PolicyStatement({
       actions: options.actions,
@@ -292,7 +307,7 @@ interface GrantProps {
 /**
  * A resource with a resource policy that can be added to
  */
-export interface IResourceWithPolicy extends cdk.IConstruct {
+export interface IResourceWithPolicy extends cdk.IResource {
   /**
    * Add a statement to the resource's resource policy
    */

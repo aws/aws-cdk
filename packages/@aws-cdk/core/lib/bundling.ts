@@ -1,4 +1,6 @@
 import { spawnSync, SpawnSyncOptions } from 'child_process';
+import * as crypto from 'crypto';
+import { FileSystem } from './fs';
 
 /**
  * Bundling options
@@ -12,7 +14,7 @@ export interface BundlingOptions {
   readonly image: BundlingDockerImage;
 
   /**
-   * The command to run in the container.
+   * The command to run in the Docker container.
    *
    * @example ['npm', 'install']
    *
@@ -30,21 +32,21 @@ export interface BundlingOptions {
   readonly volumes?: DockerVolume[];
 
   /**
-   * The environment variables to pass to the container.
+   * The environment variables to pass to the Docker container.
    *
    * @default - no environment variables.
    */
   readonly environment?: { [key: string]: string; };
 
   /**
-   * Working directory inside the container.
+   * Working directory inside the Docker container.
    *
    * @default /asset-input
    */
   readonly workingDirectory?: string;
 
   /**
-   * The user to use when running the container.
+   * The user to use when running the Docker container.
    *
    *   user | user:group | uid | uid:gid | user:gid | uid:group
    *
@@ -53,6 +55,36 @@ export interface BundlingOptions {
    * @default - uid:gid of the current user or 1000:1000 on Windows
    */
   readonly user?: string;
+
+  /**
+   * Local bundling provider.
+   *
+   * The provider implements a method `tryBundle()` which should return `true`
+   * if local bundling was performed. If `false` is returned, docker bundling
+   * will be done.
+   *
+   * @default - bundling will only be performed in a Docker container
+   *
+   * @experimental
+   */
+  readonly local?: ILocalBundling;
+}
+
+/**
+ * Local bundling
+ *
+ * @experimental
+ */
+export interface ILocalBundling {
+  /**
+   * This method is called before attempting docker bundling to allow the
+   * bundler to be executed locally. If the local bundler exists, and bundling
+   * was performed locally, return `true`. Otherwise, return `false`.
+   *
+   * @param outputDir the directory where the bundled asset should be output
+   * @param options bundling options for this asset
+   */
+  tryBundle(outputDir: string, options: BundlingOptions): boolean;
 }
 
 /**
@@ -77,32 +109,47 @@ export class BundlingDockerImage {
   public static fromAsset(path: string, options: DockerBuildOptions = {}) {
     const buildArgs = options.buildArgs || {};
 
+    // Image tag derived from path and build options
+    const tagHash = crypto.createHash('sha256').update(JSON.stringify({
+      path,
+      ...options,
+    })).digest('hex');
+    const tag = `cdk-${tagHash}`;
+
     const dockerArgs: string[] = [
-      'build', '-q',
+      'build', '-t', tag,
+      ...(options.file ? ['-f', options.file] : []),
       ...flatten(Object.entries(buildArgs).map(([k, v]) => ['--build-arg', `${k}=${v}`])),
       path,
     ];
 
-    const docker = dockerExec(dockerArgs);
+    dockerExec(dockerArgs);
 
-    const match = docker.stdout.toString().match(/sha256:([a-z0-9]+)/);
-
-    if (!match) {
-      throw new Error('Failed to extract image ID from Docker build output');
-    }
-
-    return new BundlingDockerImage(match[1]);
+    // Fingerprints the directory containing the Dockerfile we're building and
+    // differentiates the fingerprint based on build arguments. We do this so
+    // we can provide a stable image hash. Otherwise, the image ID will be
+    // different every time the Docker layer cache is cleared, due primarily to
+    // timestamps.
+    const hash = FileSystem.fingerprint(path, { extraHash: JSON.stringify(options) });
+    return new BundlingDockerImage(tag, hash);
   }
 
   /** @param image The Docker image */
-  private constructor(public readonly image: string) {}
+  private constructor(public readonly image: string, private readonly _imageHash?: string) {}
+
+  /**
+   * Provides a stable representation of this image for JSON serialization.
+   *
+   * @return The overridden image name if set or image hash name in that order
+   */
+  public toJSON() {
+    return this._imageHash ?? this.image;
+  }
 
   /**
    * Runs a Docker image
-   *
-   * @internal
    */
-  public _run(options: DockerRunOptions = {}) {
+  public run(options: DockerRunOptions = {}) {
     const volumes = options.volumes || [];
     const environment = options.environment || {};
     const command = options.command || [];
@@ -121,13 +168,28 @@ export class BundlingDockerImage {
       ...command,
     ];
 
-    dockerExec(dockerArgs, {
-      stdio: [ // show Docker output
-        'ignore', // ignore stdio
-        process.stderr, // redirect stdout to stderr
-        'inherit', // inherit stderr
-      ],
-    });
+    dockerExec(dockerArgs);
+  }
+
+  /**
+   * Copies a file or directory out of the Docker image to the local filesystem
+   */
+  public cp(imagePath: string, outputPath: string) {
+    const { stdout } = dockerExec(['create', this.image]);
+    const match = stdout.toString().match(/([0-9a-f]{16,})/);
+    if (!match) {
+      throw new Error('Failed to extract container ID from Docker create output');
+    }
+
+    const containerId = match[1];
+    const containerPath = `${containerId}:${imagePath}`;
+    try {
+      dockerExec(['cp', containerPath, outputPath]);
+    } catch (err) {
+      throw new Error(`Failed to copy files from ${containerPath} to ${outputPath}: ${err}`);
+    } finally {
+      dockerExec(['rm', '-v', containerId]);
+    }
   }
 }
 
@@ -175,7 +237,7 @@ export enum DockerVolumeConsistency {
 /**
  * Docker run options
  */
-interface DockerRunOptions {
+export interface DockerRunOptions {
   /**
    * The command to run in the container.
    *
@@ -222,6 +284,13 @@ export interface DockerBuildOptions {
    * @default - no build args
    */
   readonly buildArgs?: { [key: string]: string };
+
+  /**
+   * Name of the Dockerfile
+   *
+   * @default - The Dockerfile immediately within the build context path
+   */
+  readonly file?: string;
 }
 
 function flatten(x: string[][]) {
@@ -230,7 +299,13 @@ function flatten(x: string[][]) {
 
 function dockerExec(args: string[], options?: SpawnSyncOptions) {
   const prog = process.env.CDK_DOCKER ?? 'docker';
-  const proc = spawnSync(prog, args, options);
+  const proc = spawnSync(prog, args, options ?? {
+    stdio: [ // show Docker output
+      'ignore', // ignore stdio
+      process.stderr, // redirect stdout to stderr
+      'inherit', // inherit stderr
+    ],
+  });
 
   if (proc.error) {
     throw proc.error;

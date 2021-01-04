@@ -70,7 +70,7 @@ export function testAssembly(assembly: TestAssembly): cxapi.CloudAssembly {
 
     builder.addArtifact(stack.stackName, {
       type: cxschema.ArtifactType.AWS_CLOUDFORMATION_STACK,
-      environment: stack.env || 'aws://12345/here',
+      environment: stack.env || 'aws://123456789012/here',
 
       dependencies: stack.depends,
       metadata,
@@ -126,10 +126,60 @@ export function testStack(stack: TestStackArtifact) {
  * automatic detection of properties (as those exist on instances, not
  * classes).
  */
-export function classMockOf<A>(ctr: new (...args: any[]) => A): jest.Mocked<A> {
+export function instanceMockFrom<A>(ctr: new (...args: any[]) => A): jest.Mocked<A> {
   const ret: any = {};
   for (const methodName of Object.getOwnPropertyNames(ctr.prototype)) {
     ret[methodName] = jest.fn();
   }
   return ret;
+}
+
+/**
+ * Run an async block with a class (constructor) replaced with a mock
+ *
+ * The class constructor will be replaced with a constructor that returns
+ * a singleton, and the singleton will be passed to the block so that its
+ * methods can be mocked individually.
+ *
+ * Uses `instanceMockFrom` so is subject to the same limitations that hold
+ * for that function.
+ */
+export async function withMockedClassSingleton<A extends object, K extends keyof A, B>(
+  obj: A,
+  key: K,
+  cb: (mock: A[K] extends jest.Constructable ? jest.Mocked<InstanceType<A[K]>> : never) => Promise<B>,
+): Promise<B> {
+
+  const original = obj[key];
+  try {
+    const mock = instanceMockFrom(original as any);
+    obj[key] = jest.fn().mockReturnValue(mock) as any;
+    const ret = await cb(mock as any);
+    return ret;
+  } finally {
+    obj[key] = original;
+  }
+}
+
+export function withMocked<A extends object, K extends keyof A, B>(obj: A, key: K, block: (fn: jest.Mocked<A>[K]) => B): B {
+  const original = obj[key];
+  const mockFn = jest.fn();
+  (obj as any)[key] = mockFn;
+
+  let asyncFinally: boolean = false;
+  try {
+    const ret = block(mockFn as any);
+    if (!isPromise(ret)) { return ret; }
+
+    asyncFinally = true;
+    return ret.finally(() => { obj[key] = original; }) as any;
+  } finally {
+    if (!asyncFinally) {
+      obj[key] = original;
+    }
+  }
+}
+
+function isPromise<A>(object: any): object is Promise<A> {
+  return Promise.resolve(object) === object;
 }

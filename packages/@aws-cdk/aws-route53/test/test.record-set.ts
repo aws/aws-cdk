@@ -295,6 +295,36 @@ export = {
     test.done();
   },
 
+  'TXT record with value longer than 255 chars'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    const zone = new route53.HostedZone(stack, 'HostedZone', {
+      zoneName: 'myzone',
+    });
+
+    // WHEN
+    new route53.TxtRecord(stack, 'TXT', {
+      zone,
+      recordName: 'www',
+      values: ['hello'.repeat(52)],
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Route53::RecordSet', {
+      Name: 'www.myzone.',
+      Type: 'TXT',
+      HostedZoneId: {
+        Ref: 'HostedZoneDB99F866',
+      },
+      ResourceRecords: [
+        '"hellohellohellohellohellohellohellohellohellohellohellohellohellohellohellohellohellohellohellohellohellohellohellohellohellohellohellohellohellohellohellohellohellohellohellohellohellohellohellohellohellohellohellohellohellohellohellohellohellohellohello""hello"',
+      ],
+      TTL: '1800',
+    }));
+    test.done();
+  },
+
   'SRV record'(test: Test) {
     // GIVEN
     const stack = new Stack();

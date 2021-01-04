@@ -39,7 +39,7 @@ test('Cognito Action', () => {
     DefaultActions: [
       {
         AuthenticateCognitoConfig: {
-          UserPoolArn: { 'Fn::GetAtt': [ 'UserPool6BA7E5F2', 'Arn' ] },
+          UserPoolArn: { 'Fn::GetAtt': ['UserPool6BA7E5F2', 'Arn'] },
           UserPoolClientId: { Ref: 'Client4A7F64DF' },
           UserPoolDomain: { Ref: 'Domain66AC69E0' },
         },

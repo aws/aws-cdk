@@ -1,6 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { Aws, Construct, ContextProvider, IResource, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
+import { Aws, ContextProvider, IResource, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Connections, IConnectable } from './connections';
 import { CfnVPCEndpoint } from './ec2.generated';
 import { Peer } from './peer';
@@ -191,7 +192,7 @@ export class GatewayVpcEndpoint extends VpcEndpoint implements IGatewayVpcEndpoi
     }
 
     const endpoint = new CfnVPCEndpoint(this, 'Resource', {
-      policyDocument: Lazy.anyValue({ produce: () => this.policyDocument }),
+      policyDocument: Lazy.any({ produce: () => this.policyDocument }),
       routeTableIds,
       serviceName: props.service.name,
       vpcEndpointType: VpcEndpointType.GATEWAY,
@@ -256,6 +257,7 @@ export class InterfaceVpcEndpointService implements IInterfaceVpcEndpointService
  */
 export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointService {
   public static readonly SAGEMAKER_NOTEBOOK = new InterfaceVpcEndpointAwsService('notebook', 'aws.sagemaker');
+  public static readonly ATHENA = new InterfaceVpcEndpointAwsService('athena');
   public static readonly CLOUDFORMATION = new InterfaceVpcEndpointAwsService('cloudformation');
   public static readonly CLOUDTRAIL = new InterfaceVpcEndpointAwsService('cloudtrail');
   public static readonly CODEBUILD = new InterfaceVpcEndpointAwsService('codebuild');
@@ -279,7 +281,9 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly APIGATEWAY = new InterfaceVpcEndpointAwsService('execute-api');
   public static readonly CODECOMMIT_GIT = new InterfaceVpcEndpointAwsService('git-codecommit');
   public static readonly CODECOMMIT_GIT_FIPS = new InterfaceVpcEndpointAwsService('git-codecommit-fips');
+  public static readonly GLUE = new InterfaceVpcEndpointAwsService('glue');
   public static readonly KINESIS_STREAMS = new InterfaceVpcEndpointAwsService('kinesis-streams');
+  public static readonly KINESIS_FIREHOSE = new InterfaceVpcEndpointAwsService('kinesis-firehose');
   public static readonly KMS = new InterfaceVpcEndpointAwsService('kms');
   public static readonly CLOUDWATCH_LOGS = new InterfaceVpcEndpointAwsService('logs');
   public static readonly CLOUDWATCH = new InterfaceVpcEndpointAwsService('monitoring');
@@ -298,6 +302,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly REKOGNITION = new InterfaceVpcEndpointAwsService('rekognition');
   public static readonly REKOGNITION_FIPS = new InterfaceVpcEndpointAwsService('rekognition-fips');
   public static readonly STEP_FUNCTIONS = new InterfaceVpcEndpointAwsService('states');
+  public static readonly LAMBDA = new InterfaceVpcEndpointAwsService('lambda');
 
   /**
    * The name of the service.
@@ -315,7 +320,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public readonly privateDnsDefault?: boolean = true;
 
   constructor(name: string, prefix?: string, port?: number) {
-    const region = Lazy.stringValue({
+    const region = Lazy.uncachedString({
       produce: (context) => Stack.of(context.scope).region,
     });
     this.name = `${prefix || 'com.amazonaws'}.${region}.${name}`;
@@ -402,10 +407,6 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
    * Imports an existing interface VPC endpoint.
    */
   public static fromInterfaceVpcEndpointAttributes(scope: Construct, id: string, attrs: InterfaceVpcEndpointAttributes): IInterfaceVpcEndpoint {
-    if (!attrs.securityGroups && !attrs.securityGroupId) {
-      throw new Error('Either `securityGroups` or `securityGroupId` must be specified.');
-    }
-
     const securityGroups = attrs.securityGroupId
       ? [SecurityGroup.fromSecurityGroupId(scope, 'SecurityGroup', attrs.securityGroupId)]
       : attrs.securityGroups;
@@ -479,7 +480,7 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
 
     const endpoint = new CfnVPCEndpoint(this, 'Resource', {
       privateDnsEnabled: props.privateDnsEnabled ?? props.service.privateDnsDefault ?? true,
-      policyDocument: Lazy.anyValue({ produce: () => this.policyDocument }),
+      policyDocument: Lazy.any({ produce: () => this.policyDocument }),
       securityGroupIds: securityGroups.map(s => s.securityGroupId),
       serviceName: props.service.name,
       vpcEndpointType: VpcEndpointType.INTERFACE,
@@ -555,7 +556,7 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
     const availableAZs = ContextProvider.getValue(this, {
       provider: cxschema.ContextProvider.ENDPOINT_SERVICE_AVAILABILITY_ZONE_PROVIDER,
       dummyValue: this.stack.availabilityZones,
-      props: {serviceName},
+      props: { serviceName },
     }).value;
     if (!Array.isArray(availableAZs)) {
       throw new Error(`Discovered AZs for endpoint service ${serviceName} must be an array`);

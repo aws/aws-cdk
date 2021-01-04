@@ -1,16 +1,13 @@
-import * as crypto from 'crypto';
-import * as fs from 'fs';
 import * as path from 'path';
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
+import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
+import { AwsCliLayer } from '@aws-cdk/lambda-layer-awscli';
+import { Construct } from 'constructs';
 import { ISource, SourceConfig } from './source';
-
-const now = Date.now();
-const handlerCodeBundle = path.join(__dirname, '..', 'lambda', 'bundle.zip');
-const handlerSourceDirectory = path.join(__dirname, '..', 'lambda', 'src');
 
 export interface BucketDeploymentProps {
   /**
@@ -129,7 +126,7 @@ export interface BucketDeploymentProps {
    * @default - The objects in the distribution will not expire.
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
    */
-  readonly expires?: Expires;
+  readonly expires?: cdk.Expiration;
   /**
    * System-defined x-amz-server-side-encryption metadata to be set on all objects in the deployment.
    * @default - Server side encryption is not used.
@@ -161,27 +158,43 @@ export interface BucketDeploymentProps {
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/ServerSideEncryptionCustomerKeys.html#sse-c-how-to-programmatically-intro
    */
   readonly serverSideEncryptionCustomerAlgorithm?: string;
+
+  /**
+   * The VPC network to place the deployment lambda handler in.
+   *
+   * @default None
+   */
+  readonly vpc?: ec2.IVpc;
+
+  /**
+   * Where in the VPC to place the deployment lambda handler.
+   * Only used if 'vpc' is supplied.
+   *
+   * @default - the Vpc default strategy if not specified
+   */
+  readonly vpcSubnets?: ec2.SubnetSelection;
 }
 
 export class BucketDeployment extends cdk.Construct {
-  constructor(scope: cdk.Construct, id: string, props: BucketDeploymentProps) {
+  constructor(scope: Construct, id: string, props: BucketDeploymentProps) {
     super(scope, id);
 
     if (props.distributionPaths && !props.distribution) {
       throw new Error('Distribution must be specified if distribution paths are specified');
     }
 
-    const assetHash = calcSourceHash(handlerSourceDirectory);
-
     const handler = new lambda.SingletonFunction(this, 'CustomResourceHandler', {
       uuid: this.renderSingletonUuid(props.memoryLimit),
-      code: lambda.Code.fromAsset(handlerCodeBundle, { assetHash }),
+      code: lambda.Code.fromAsset(path.join(__dirname, 'lambda')),
+      layers: [new AwsCliLayer(this, 'AwsCliLayer')],
       runtime: lambda.Runtime.PYTHON_3_6,
       handler: 'index.handler',
       lambdaPurpose: 'Custom::CDKBucketDeployment',
       timeout: cdk.Duration.minutes(15),
       role: props.role,
       memorySize: props.memoryLimit,
+      vpc: props.vpc,
+      vpcSubnets: props.vpcSubnets,
     });
 
     const handlerRole = handler.role;
@@ -236,25 +249,6 @@ export class BucketDeployment extends cdk.Construct {
 }
 
 /**
- * We need a custom source hash calculation since the bundle.zip file
- * contains python dependencies installed during build and results in a
- * non-deterministic behavior.
- *
- * So we just take the `src/` directory of our custom resoruce code.
- */
-function calcSourceHash(srcDir: string): string {
-  const sha = crypto.createHash('sha256');
-  for (const file of fs.readdirSync(srcDir)) {
-    const data = fs.readFileSync(path.join(srcDir, file));
-    sha.update(`<file name=${file}>`);
-    sha.update(data);
-    sha.update('</file>');
-  }
-
-  return sha.digest('hex');
-}
-
-/**
  * Metadata
  */
 
@@ -271,7 +265,7 @@ function mapSystemMetadata(metadata: BucketDeploymentProps) {
   const res: { [key: string]: string } = {};
 
   if (metadata.cacheControl) { res['cache-control'] = metadata.cacheControl.map(c => c.value).join(', '); }
-  if (metadata.expires) { res.expires = metadata.expires.value; }
+  if (metadata.expires) { res.expires = metadata.expires.date.toUTCString(); }
   if (metadata.contentDisposition) { res['content-disposition'] = metadata.contentDisposition; }
   if (metadata.contentEncoding) { res['content-encoding'] = metadata.contentEncoding; }
   if (metadata.contentLanguage) { res['content-language'] = metadata.contentLanguage; }
@@ -298,7 +292,7 @@ export class CacheControl {
   public static proxyRevalidate() { return new CacheControl('proxy-revalidate'); }
   public static maxAge(t: cdk.Duration) { return new CacheControl(`max-age=${t.toSeconds()}`); }
   public static sMaxAge(t: cdk.Duration) { return new CacheControl(`s-maxage=${t.toSeconds()}`); }
-  public static fromString(s: string) {  return new CacheControl(s); }
+  public static fromString(s: string) { return new CacheControl(s); }
 
   private constructor(public readonly value: any) {}
 }
@@ -330,6 +324,8 @@ export enum StorageClass {
 /**
  * Used for HTTP expires header, which influences downstream caches. Does NOT influence deletion of the object.
  * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
+ *
+ * @deprecated use core.Expiration
  */
 export class Expires {
   /**
@@ -348,7 +344,7 @@ export class Expires {
    * Expire once the specified duration has passed since deployment time
    * @param t the duration to wait before expiring
    */
-  public static after(t: cdk.Duration) { return Expires.atDate(new Date(now + t.toMilliseconds())); }
+  public static after(t: cdk.Duration) { return Expires.atDate(new Date(Date.now() + t.toMilliseconds())); }
 
   public static fromString(s: string) { return new Expires(s); }
 

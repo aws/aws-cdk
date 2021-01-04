@@ -7,6 +7,7 @@ import { Mode, SdkProvider } from './aws-auth';
 import { deployStack, DeployStackResult, destroyStack } from './deploy-stack';
 import { ToolkitInfo } from './toolkit-info';
 import { CloudFormationStack, Template } from './util/cloudformation';
+import { StackActivityProgress } from './util/cloudformation/stack-activity-monitor';
 
 export interface DeployStackOptions {
   /**
@@ -88,6 +89,21 @@ export interface DeployStackOptions {
    * @default true
    */
   usePreviousParameters?: boolean;
+
+  /**
+   * Display mode for stack deployment progress.
+   *
+   * @default - StackActivityProgress.Bar - stack events will be displayed for
+   *   the resource currently being deployed.
+   */
+  progress?: StackActivityProgress;
+
+  /**
+   * Whether we are on a CI system
+   *
+   * @default false
+   */
+  readonly ci?: boolean;
 }
 
 export interface DestroyStackOptions {
@@ -156,6 +172,8 @@ export class CloudFormationDeployments {
       force: options.force,
       parameters: options.parameters,
       usePreviousParameters: options.usePreviousParameters,
+      progress: options.progress,
+      ci: options.ci,
     });
   }
 
@@ -201,9 +219,9 @@ export class CloudFormationDeployments {
       cloudFormationRoleArn: roleArn ?? stack.cloudFormationExecutionRoleArn,
     }, resolvedEnvironment);
 
-    const stackSdk = arns.assumeRoleArn
-      ? await this.sdkProvider.withAssumedRole(arns.assumeRoleArn, undefined, resolvedEnvironment.region)
-      : await this.sdkProvider.forEnvironment(resolvedEnvironment, mode);
+    const stackSdk = await this.sdkProvider.forEnvironment(resolvedEnvironment, mode, {
+      assumeRoleArn: arns.assumeRoleArn,
+    });
 
     return {
       stackSdk,
@@ -220,12 +238,12 @@ export class CloudFormationDeployments {
       accountId: () => Promise.resolve(env.account),
       region: () => Promise.resolve(env.region),
       partition: async () => {
-        // We need to do a rather complicated dance here to get the right
-        // partition value to substitute into placeholders :(
-        const defaultAccount = await this.sdkProvider.defaultAccount();
-        return env.account === defaultAccount?.accountId
-          ? defaultAccount.partition
-          : (await (await this.sdkProvider.forEnvironment(env, Mode.ForReading)).currentAccount()).partition;
+        // There's no good way to get the partition!
+        // We should have had it already, except we don't.
+        //
+        // Best we can do is ask the "base credentials" for this environment for their partition. Cross-partition
+        // AssumeRole'ing will never work anyway, so this answer won't be wrong (it will just be slow!)
+        return (await this.sdkProvider.baseCredentialsPartition(env, Mode.ForReading)) ?? 'aws';
       },
     });
   }

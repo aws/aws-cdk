@@ -4,8 +4,9 @@
 //
 const fs = require('fs');
 
-const marker = require('./get-version-marker');
-const repoVersion = require('./get-version');
+const ver = require('./resolve-version');
+const marker = ver.marker;
+const repoVersion = ver.version;
 
 for (const file of process.argv.splice(2)) {
   const pkg = JSON.parse(fs.readFileSync(file).toString());

@@ -1,5 +1,6 @@
 import * as events from '@aws-cdk/aws-events';
-import { Construct, Lazy } from '@aws-cdk/core';
+import { Lazy } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as codepipeline from '../lib';
 
 export interface IFakeSourceActionVariables {
@@ -30,7 +31,7 @@ export class FakeSourceAction implements codepipeline.IAction {
       outputs: [props.output, ...props.extraOutputs || []],
     };
     this.variables = {
-      firstVariable: Lazy.stringValue({ produce: () => `#{${this.actionProperties.variablesNamespace}.FirstVariable}` }),
+      firstVariable: Lazy.string({ produce: () => `#{${this.actionProperties.variablesNamespace}.FirstVariable}` }),
     };
   }
 

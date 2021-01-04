@@ -27,6 +27,12 @@ test('create HTTPS redirect', () => {
         Protocol: 'https',
       },
     },
+    PublicAccessBlockConfiguration: {
+      BlockPublicAcls: true,
+      BlockPublicPolicy: true,
+      IgnorePublicAcls: true,
+      RestrictPublicBuckets: true,
+    },
   });
   expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
     DistributionConfig: {
@@ -35,10 +41,22 @@ test('create HTTPS redirect', () => {
     },
   });
   expect(stack).toHaveResource('AWS::Route53::RecordSet', {
+    Type: 'A',
     Name: 'foo.example.com.',
     HostedZoneId: 'ID',
   });
   expect(stack).toHaveResource('AWS::Route53::RecordSet', {
+    Type: 'AAAA',
+    Name: 'foo.example.com.',
+    HostedZoneId: 'ID',
+  });
+  expect(stack).toHaveResource('AWS::Route53::RecordSet', {
+    Type: 'A',
+    Name: 'baz.example.com.',
+    HostedZoneId: 'ID',
+  });
+  expect(stack).toHaveResource('AWS::Route53::RecordSet', {
+    Type: 'AAAA',
     Name: 'baz.example.com.',
     HostedZoneId: 'ID',
   });
@@ -68,6 +86,11 @@ test('create HTTPS redirect for apex', () => {
     },
   });
   expect(stack).toHaveResource('AWS::Route53::RecordSet', {
+    Type: 'A',
+    Name: 'example.com.',
+  });
+  expect(stack).toHaveResource('AWS::Route53::RecordSet', {
+    Type: 'AAAA',
     Name: 'example.com.',
   });
 });

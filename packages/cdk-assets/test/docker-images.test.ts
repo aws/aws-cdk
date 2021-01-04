@@ -79,7 +79,7 @@ describe('with a complete manifest', () => {
     await pub.publish();
 
     expect(aws.mockEcr.describeImages).toHaveBeenCalledWith(expect.objectContaining({
-      imageIds: [{imageTag: 'abcdef'}],
+      imageIds: [{ imageTag: 'abcdef' }],
       repositoryName: 'repo',
     }));
   });

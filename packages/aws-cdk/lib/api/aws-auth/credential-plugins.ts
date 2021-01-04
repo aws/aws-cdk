@@ -15,9 +15,9 @@ import { CredentialProviderSource, Mode } from './credentials';
  * for the given account.
  */
 export class CredentialPlugins {
-  private readonly cache: {[key: string]: AWS.Credentials | undefined} = {};
+  private readonly cache: {[key: string]: PluginCredentials | undefined} = {};
 
-  public async fetchCredentialsFor(awsAccountId: string, mode: Mode): Promise<AWS.Credentials | undefined> {
+  public async fetchCredentialsFor(awsAccountId: string, mode: Mode): Promise<PluginCredentials | undefined> {
     const key = `${awsAccountId}-${mode}`;
     if (!(key in this.cache)) {
       this.cache[key] = await this.lookupCredentials(awsAccountId, mode);
@@ -29,7 +29,7 @@ export class CredentialPlugins {
     return PluginHost.instance.credentialProviderSources.map(s => s.name);
   }
 
-  private async lookupCredentials(awsAccountId: string, mode: Mode): Promise<AWS.Credentials | undefined> {
+  private async lookupCredentials(awsAccountId: string, mode: Mode): Promise<PluginCredentials | undefined> {
     const triedSources: CredentialProviderSource[] = [];
     // Otherwise, inspect the various credential sources we have
     for (const source of PluginHost.instance.credentialProviderSources) {
@@ -44,11 +44,15 @@ export class CredentialPlugins {
 
       // Backwards compatibility: if the plugin returns a ProviderChain, resolve that chain.
       // Otherwise it must have returned credentials.
-      if ((providerOrCreds as any).resolvePromise) {
-        return await (providerOrCreds as any).resolvePromise();
-      }
-      return providerOrCreds;
+      const credentials = (providerOrCreds as any).resolvePromise ? await (providerOrCreds as any).resolvePromise() : providerOrCreds;
+
+      return { credentials, pluginName: source.name };
     }
     return undefined;
   }
+}
+
+export interface PluginCredentials {
+  readonly credentials: AWS.Credentials;
+  readonly pluginName: string;
 }

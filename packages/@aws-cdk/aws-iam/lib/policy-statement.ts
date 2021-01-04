@@ -1,6 +1,8 @@
 import * as cdk from '@aws-cdk/core';
-import { AccountPrincipal, AccountRootPrincipal, Anyone, ArnPrincipal, CanonicalUserPrincipal,
-  FederatedPrincipal, IPrincipal, PrincipalBase, PrincipalPolicyFragment, ServicePrincipal, ServicePrincipalOpts } from './principals';
+import {
+  AccountPrincipal, AccountRootPrincipal, Anyone, ArnPrincipal, CanonicalUserPrincipal,
+  FederatedPrincipal, IPrincipal, PrincipalBase, PrincipalPolicyFragment, ServicePrincipal, ServicePrincipalOpts,
+} from './principals';
 import { mergePrincipal } from './util';
 
 const ensureArrayOrUndefined = (field: any) => {
@@ -35,8 +37,8 @@ export class PolicyStatement {
       effect: obj.Effect,
       notActions: ensureArrayOrUndefined(obj.NotAction),
       notResources: ensureArrayOrUndefined(obj.NotResource),
-      principals: obj.Principal ? [ new JsonPrincipal(obj.Principal) ] : undefined,
-      notPrincipals: obj.NotPrincipal ? [ new JsonPrincipal(obj.NotPrincipal) ] : undefined,
+      principals: obj.Principal ? [new JsonPrincipal(obj.Principal)] : undefined,
+      notPrincipals: obj.NotPrincipal ? [new JsonPrincipal(obj.NotPrincipal)] : undefined,
     });
   }
 
@@ -407,6 +409,42 @@ export class PolicyStatement {
       }
     }
     this.addConditions(conditions);
+  }
+
+  /**
+   * Validate that the policy statement satisfies base requirements for a policy.
+   */
+  public validateForAnyPolicy(): string[] {
+    const errors = new Array<string>();
+    if (this.action.length === 0 && this.notAction.length === 0) {
+      errors.push('A PolicyStatement must specify at least one \'action\' or \'notAction\'.');
+    }
+    return errors;
+  }
+
+  /**
+   * Validate that the policy statement satisfies all requirements for a resource-based policy.
+   */
+  public validateForResourcePolicy(): string[] {
+    const errors = this.validateForAnyPolicy();
+    if (Object.keys(this.principal).length === 0 && Object.keys(this.notPrincipal).length === 0) {
+      errors.push('A PolicyStatement used in a resource-based policy must specify at least one IAM principal.');
+    }
+    return errors;
+  }
+
+  /**
+   * Validate that the policy statement satisfies all requirements for an identity-based policy.
+   */
+  public validateForIdentityPolicy(): string[] {
+    const errors = this.validateForAnyPolicy();
+    if (Object.keys(this.principal).length > 0 || Object.keys(this.notPrincipal).length > 0) {
+      errors.push('A PolicyStatement used in an identity-based policy cannot specify any IAM principals.');
+    }
+    if (Object.keys(this.resource).length === 0 && Object.keys(this.notResource).length === 0) {
+      errors.push('A PolicyStatement used in an identity-based policy must specify at least one resource.');
+    }
+    return errors;
   }
 }
 

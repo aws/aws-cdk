@@ -21,7 +21,6 @@ export function addStackArtifactToAssembly(
 
   // nested stack tags are applied at the AWS::CloudFormation::Stack resource
   // level and are not needed in the cloud assembly.
-  // TODO: move these to the cloud assembly artifact properties instead of metadata
   if (stack.tags.hasTags()) {
     stack.node.addMetadata(cxschema.ArtifactMetadataEntryType.STACK_TAGS, stack.tags.renderTags());
   }
@@ -46,6 +45,7 @@ export function addStackArtifactToAssembly(
   const properties: cxschema.AwsCloudFormationStackProperties = {
     templateFile: stack.templateFile,
     terminationProtection: stack.terminationProtection,
+    tags: nonEmptyDict(stack.tags.tagValues()),
     ...stackProps,
     ...stackNameProperty,
   };
@@ -116,4 +116,8 @@ export function assertBound<A>(x: A | undefined): asserts x is NonNullable<A> {
   if (x === null && x === undefined) {
     throw new Error('You must call bindStack() first');
   }
+}
+
+function nonEmptyDict<A>(xs: Record<string, A>) {
+  return Object.keys(xs).length > 0 ? xs : undefined;
 }

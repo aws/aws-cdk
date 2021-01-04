@@ -1,4 +1,5 @@
-import { Construct, IResource, Resource } from '@aws-cdk/core';
+import { IResource, Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnClusterParameterGroup } from './redshift.generated';
 
 /**
@@ -68,7 +69,7 @@ export class ClusterParameterGroup extends ClusterParameterGroupBase {
       description: props.description || 'Cluster parameter group for family redshift-1.0',
       parameterGroupFamily: 'redshift-1.0',
       parameters: Object.entries(props.parameters).map(([name, value]) => {
-        return {parameterName: name, parameterValue: value};
+        return { parameterName: name, parameterValue: value };
       }),
     });
 

@@ -1,7 +1,9 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { AssetManifest as AssetManifestSchema, DockerImageDestination, DockerImageSource,
-  FileDestination, FileSource, Manifest } from '@aws-cdk/cloud-assembly-schema';
+import {
+  AssetManifest as AssetManifestSchema, DockerImageDestination, DockerImageSource,
+  FileDestination, FileSource, Manifest,
+} from '@aws-cdk/cloud-assembly-schema';
 
 /**
  * A manifest of assets
@@ -66,7 +68,7 @@ export class AssetManifest {
 
     for (const assetType of ASSET_TYPES) {
       for (const [assetId, asset] of Object.entries(this.manifest[assetType] || {})) {
-        const filteredDestinations =  filterDict(
+        const filteredDestinations = filterDict(
           asset.destinations,
           (_, destId) => selection.some(sel => sel.matches(new DestinationIdentifier(assetId, destId))));
 

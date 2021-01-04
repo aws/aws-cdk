@@ -12,6 +12,7 @@ export const AWS_REGIONS = [
   'us-gov-west-1',
   'us-iso-east-1',
   'us-isob-east-1',
+  'af-south-1',
   'ap-east-1',
   'ap-south-1',
   'ap-northeast-2',
@@ -26,6 +27,7 @@ export const AWS_REGIONS = [
   'eu-west-2',
   'eu-west-3',
   'eu-north-1',
+  'eu-south-1',
   'me-south-1',
   'sa-east-1',
 ].sort();

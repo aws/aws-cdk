@@ -20,7 +20,7 @@ const domain = userpool.addDomain('Domain', {
 
 const client = userpool.addClient('UserPoolClient', {
   oAuth: {
-    callbackUrls: [ 'https://example.com' ],
+    callbackUrls: ['https://example.com'],
   },
 });
 

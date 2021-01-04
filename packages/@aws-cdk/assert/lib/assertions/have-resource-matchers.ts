@@ -281,6 +281,105 @@ export function notMatching(matcher: any): PropertyMatcher {
   });
 }
 
+export type TypeValidator<T> = (x: any) => x is T;
+
+/**
+ * Captures a value onto an object if it matches a given inner matcher
+ *
+ * @example
+ *
+ * const someValue = Capture.aString();
+ * expect(stack).toHaveResource({
+ *    // ...
+ *    Value: someValue.capture(stringMatching('*a*')),
+ * });
+ * console.log(someValue.capturedValue);
+ */
+export class Capture<T=any> {
+  /**
+   * A Capture object that captures any type
+   */
+  public static anyType(): Capture<any> {
+    return new Capture();
+  }
+
+  /**
+   * A Capture object that captures a string type
+   */
+  public static aString(): Capture<string> {
+    return new Capture((x: any): x is string => {
+      if (typeof x !== 'string') {
+        throw new Error(`Expected to capture a string, got '${x}'`);
+      }
+      return true;
+    });
+  }
+
+  /**
+   * A Capture object that captures a custom type
+   */
+  // eslint-disable-next-line @typescript-eslint/no-shadow
+  public static a<T>(validator: TypeValidator<T>): Capture<T> {
+    return new Capture(validator);
+  }
+
+  private _value?: T;
+  private _didCapture = false;
+  private _wasInvoked = false;
+
+  protected constructor(private readonly typeValidator?: TypeValidator<T>) {
+  }
+
+  /**
+   * Capture the value if the inner matcher successfully matches it
+   *
+   * If no matcher is given, `anything()` is assumed.
+   *
+   * And exception will be thrown if the inner matcher returns `true` and
+   * the value turns out to be of a different type than the `Capture` object
+   * is expecting.
+   */
+  public capture(matcher?: any): PropertyMatcher {
+    if (matcher === undefined) {
+      matcher = anything();
+    }
+
+    return annotateMatcher({ $capture: matcher }, (value: any, failure: InspectionFailure) => {
+      this._wasInvoked = true;
+      const result = matcherFrom(matcher)(value, failure);
+      if (result) {
+        if (this.typeValidator && !this.typeValidator(value)) {
+          throw new Error(`Value not of the expected type: ${value}`);
+        }
+        this._didCapture = true;
+        this._value = value;
+      }
+      return result;
+    });
+  }
+
+  /**
+   * Whether a value was successfully captured
+   */
+  public get didCapture() {
+    return this._didCapture;
+  }
+
+  /**
+   * Return the value that was captured
+   *
+   * Throws an exception if now value was captured
+   */
+  public get capturedValue(): T {
+    // When this module is ported to jsii, the type parameter will obviously
+    // have to be dropped and this will have to turn into an `any`.
+    if (!this.didCapture) {
+      throw new Error(`Did not capture a value: ${this._wasInvoked ? 'inner matcher failed' : 'never invoked'}`);
+    }
+    return this._value!;
+  }
+}
+
 /**
  * Match on the innards of a JSON string, instead of the complete string
  */

@@ -4,12 +4,18 @@ import { getDocTag } from './util';
 const CORE_MODULE = '@aws-cdk/core';
 enum CoreTypesFqn {
   CfnResource = '@aws-cdk/core.CfnResource',
-  Construct = '@aws-cdk/core.Construct',
-  ConstructInterface = '@aws-cdk/core.IConstruct',
   Resource = '@aws-cdk/core.Resource',
   ResourceInterface = '@aws-cdk/core.IResource',
   ResolvableInterface = '@aws-cdk/core.IResolvable',
-  PhysicalName = '@aws-cdk/core.PhysicalName'
+  PhysicalName = '@aws-cdk/core.PhysicalName',
+
+  BaseConstruct = 'constructs.Construct',
+  BaseConstructInterface = 'constructs.Construct',
+
+  /** @deprecated - use BaseConstruct */
+  Construct = '@aws-cdk/core.Construct',
+  /** @deprecated - use BaseConstructInterface */
+  ConstructInterface = '@aws-cdk/core.IConstruct',
 }
 
 export class CoreTypes {
@@ -86,16 +92,32 @@ export class CoreTypes {
 
   /**
    * @returns `classType` for the core type Construct
+   * @deprecated - use `baseConstructClass()`
    */
   public get constructClass() {
     return this.sys.findClass(CoreTypesFqn.Construct);
   }
 
   /**
+   * @returns `classType` for the core type Construct
+   */
+  public get baseConstructClass() {
+    return this.sys.findClass(CoreTypesFqn.BaseConstruct);
+  }
+
+  /**
    * @returns `interfacetype` for the core type Construct
+   * @deprecated - use `baseConstructInterface()`
    */
   public get constructInterface() {
     return this.sys.findInterface(CoreTypesFqn.ConstructInterface);
+  }
+
+  /**
+   * @returns `interfacetype` for the core type Construct
+   */
+  public get baseConstructInterface() {
+    return this.sys.findInterface(CoreTypesFqn.BaseConstructInterface);
   }
 
   /**

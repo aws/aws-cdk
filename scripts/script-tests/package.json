@@ -1,0 +1,15 @@
+{
+  "name": "script-tests",
+  "private": true,
+  "version": "0.0.0",
+  "description": "various tests for development and build scripts",
+  "scripts": {
+    "build": "echo ok",
+    "test": "jest",
+    "build+test": "npm run build && npm test",
+    "build+test+package": "npm run build+test"
+  },
+  "devDependencies": {
+    "jest": "^26.6.3"
+  }
+}

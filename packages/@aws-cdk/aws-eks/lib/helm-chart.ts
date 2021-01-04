@@ -1,5 +1,11 @@
-import { Construct, CustomResource, Duration, Stack } from '@aws-cdk/core';
-import { Cluster } from './cluster';
+import { CustomResource, Duration, Names, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
+import { ICluster } from './cluster';
+import { KubectlProvider } from './kubectl-provider';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Helm Chart options.
@@ -70,7 +76,7 @@ export interface HelmChartProps extends HelmChartOptions {
    *
    * [disable-awslint:ref-via-interface]
    */
-  readonly cluster: Cluster;
+  readonly cluster: ICluster;
 }
 
 /**
@@ -78,7 +84,7 @@ export interface HelmChartProps extends HelmChartOptions {
  *
  * Applies/deletes the resources using `kubectl` in sync with the resource.
  */
-export class HelmChart extends Construct {
+export class HelmChart extends CoreConstruct {
   /**
    * The CloudFormation resource type.
    */
@@ -89,7 +95,7 @@ export class HelmChart extends Construct {
 
     const stack = Stack.of(this);
 
-    const provider = props.cluster._attachKubectlResourceScope(this);
+    const provider = KubectlProvider.getOrCreate(this, props.cluster);
 
     const timeout = props.timeout?.toSeconds();
     if (timeout && timeout > 900) {
@@ -106,8 +112,8 @@ export class HelmChart extends Construct {
       resourceType: HelmChart.RESOURCE_TYPE,
       properties: {
         ClusterName: props.cluster.clusterName,
-        RoleArn: props.cluster._kubectlCreationRole.roleArn,
-        Release: props.release ?? this.node.uniqueId.slice(-53).toLowerCase(), // Helm has a 53 character limit for the name
+        RoleArn: provider.roleArn, // TODO: bake into the provider's environment
+        Release: props.release ?? Names.uniqueId(this).slice(-53).toLowerCase(), // Helm has a 53 character limit for the name
         Chart: props.chart,
         Version: props.version,
         Wait: wait || undefined, // props are stringified so we encode “false” as undefined

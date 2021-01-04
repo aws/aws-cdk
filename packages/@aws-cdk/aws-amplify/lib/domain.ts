@@ -1,4 +1,5 @@
-import { Construct, Lazy, Resource, IResolvable } from '@aws-cdk/core';
+import { Lazy, Resource, IResolvable } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnDomain } from './amplify.generated';
 import { IApp } from './app';
 import { IBranch } from './branch';
@@ -104,7 +105,7 @@ export class Domain extends Resource {
     const domain = new CfnDomain(this, 'Resource', {
       appId: props.app.appId,
       domainName,
-      subDomainSettings: Lazy.anyValue({ produce: () => this.renderSubDomainSettings() }, { omitEmptyArray: true }),
+      subDomainSettings: Lazy.any({ produce: () => this.renderSubDomainSettings() }, { omitEmptyArray: true }),
     });
 
     this.arn = domain.attrArn;

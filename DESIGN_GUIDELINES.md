@@ -9,9 +9,10 @@ the AWS Construct Library in order to ensure a consistent and integrated
 experience across the entire AWS surface area.
 
 As much as possible, the guidelines in this document are enforced using the
-**awslint** tool which reflects on the APIs and verifies that the APIs adhere to
-the guidelines. When a guideline is backed by a linter rule, the rule name will
-be referenced like this: _[awslint:resource-class-is-construct]_.
+[**awslint** tool](https://www.npmjs.com/package/awslint) which reflects on the
+APIs and verifies that the APIs adhere to the guidelines. When a guideline is
+backed by a linter rule, the rule name will be referenced like this:
+_[awslint:resource-class-is-construct]_.
 
 For the purpose of this document we will use "Foo" to denote the official name
 of the resource as defined in the AWS CloudFormation resource specification
@@ -133,10 +134,10 @@ If all props are optional, the `props` argument must also be optional
 _[awslint:construct-ctor-props-optional]_.
 
 ```ts
-constructor(scope: cdk.Construct, id: string, props: FooProps = { })
+constructor(scope: cdk.Construct, id: string, props: FooProps = {})
 ```
 
-> Using `={}` as a default value is preferable to using an optional qualifier
+> Using `= {}` as a default value is preferable to using an optional qualifier
   (`?`) since it will ensure that props will never be `undefined` and therefore
   easier to parse in the method body.
 
@@ -147,9 +148,9 @@ behavior through interfaces and not through inheritance.
 Construct classes should extend only one of the following classes
 [_awslint:construct-inheritence_]:
 
-* The **Resource** class (if it represents an AWS resource) The **Construct**
-* class (if it represents an abstract component) The **XxxBase** class (which,
-* in turn extends **Resource**)
+* The **Resource** class (if it represents an AWS resource)
+* The **Construct** class (if it represents an abstract component)
+* The **XxxBase** class (which, in turn extends **Resource**)
 
 All constructs must define a static type check method called **isFoo** with the
 following implementation [_awslint:static-type-check_]:
@@ -202,13 +203,13 @@ expanding it's surface area. It also allows the **Key** class to change it's
 behavior (i.e. add an IAM action to enable encryption of certain types of keys)
 without affecting the API of the consumer.
 
-#### owned vs. unowned constructs
+#### Owned vs. Unowned Constructs
 
 Using object references instead of attribute references provides a richer API,
 but also introduces an inherent challenge: how do we reference constructs that
 are not defined inside the same app (“**owned**” by the app). These could be
 resources that were created by some other AWS CDK app, via the AWS console,
-etc. We call these “**unowned**”**constructs.**
+etc. We call these **“unowned” constructs.**
 
 In order to model this concept of owned and unowned constructs, all constructs
 in the AWS Construct Library should always have a corresponding **construct
@@ -232,7 +233,7 @@ AWS Construct Library) should extend **IResource** (which, transitively, extends
 #### Abstract Base
 
 It is recommended to implement an abstract base class **FooBase** for each
-resource **Foo****. **The base class would normally implement the entire
+resource **Foo**. The base class would normally implement the entire
 construct interface and leave attributes as abstract properties.
 
 ```ts
@@ -288,7 +289,7 @@ through a declarative interface [_awslint:props-coverage_].
 
 This section describes guidelines for construct props.
 
-#### types
+#### Types
 
 Use **strong types** (and specifically, construct interfaces) instead of
 physical attributes when referencing other resources. For example, instead of
@@ -305,14 +306,18 @@ be avoided wherever possible [_awslint:props-no-tokens_].
 **deCDK** allows users to synthesize CDK stacks through a CloudFormation-like
   template, similar to SAM. CDK constructs are represented in deCDK templates
   like CloudFormation resources. Technically, this means that when a construct
-  is defined, users supply an ID, type and a set of properties.****In order to
+  is defined, users supply an ID, type and a set of properties. In order to
   allow users to instantiate all AWS Construct Library constructs through the
   deCDK syntax, we pose restrictions on prop types _[awslint:props-decdk]_:
 
-* Primitives (string, number, boolean, date) Collections (list, map) Structs
-* Enums Enum-like classes Union-like classes References to other constructs
-* (through their construct interface) Integration interfaces (interfaces that
-* have a “**bind**” method)
+* Primitives (string, number, boolean, date)
+* Collections (list, map)
+* Structs
+* Enums
+* Enum-like classes
+* Union-like classes
+* References to other constructs (through their construct interface)
+* Integration interfaces (interfaces that have a “**bind**” method)
 
 #### Defaults
 
@@ -330,7 +335,7 @@ from harnessing the full power of the resource, and customizing its behavior.
 The **@default** documentation tag must be included on all optional properties
 of interfaces. Since there are cases where the default behavior is not a
 specific value but rather depends on circumstances/context, the default
-documentation tag must always begin with a **“**-"**** and then include a
+documentation tag must always begin with a “**-**" and then include a
 description of the default behavior _[awslint:props-default-doc]_.
 
 For example:
@@ -648,10 +653,11 @@ export interface IFoo {
 
 Notice that:
 
-* The method has an “add” prefix. It implies that users are adding something to
-* their stack.  The method is implemented on the construct interface (to allow
-* adding secondary resources to unowned constructs).  The method returns a “Bar”
-* instance (owned).
+* The method has an “add” prefix.
+  It implies that users are adding something to their stack.
+* The method is implemented on the construct interface
+  (to allow adding secondary resources to unowned constructs).
+* The method returns a “Bar” instance (owned).
 
 In order to reuse the set of props used to configure the secondary resource,
 define a base interface for **FooProps** called **FooOptions** to allow
@@ -681,12 +687,12 @@ their app.
 The signature of all “from” methods should adhere to the following rules
 _[awslint:from-signature]_:
 
-* First argument must be **scope** of type **Construct** Second argument is a
-* **string**. This string will be used to determine the ID of the new
-* construct. If the import method uses some value that is promised to be unique
-* within the stack scope (such as ARN, export name), this value can be reused as
-* the construct ID.  Returns an object that implements the construct interface
-* (**IFoo**).
+* First argument must be **scope** of type **Construct**
+* Second argument is a **string**. This string will be used to determine the
+  ID of the new construct. If the import method uses some value that is
+  promised to be unique within the stack scope (such as ARN, export name),
+  this value can be reused as the construct ID.
+* Returns an object that implements the construct interface (**IFoo**).
 
 #### “from” Methods
 
@@ -791,8 +797,6 @@ If the construct is unowned this method should no-op and issue a **permissions
 notice** (TODO) to the user indicating that they should ensure that the role of
 this resource should have the specified permission.
 
-TODO: add a few sentences on grantable
-
 Implementing **IGrantable** brings an implementation burden of **grantPrincipal:
 IPrincipal**. This property must be set to the **role** if available, or to a
 new **iam.ImportedResourcePrincipal** if the resource is imported and the role
@@ -896,8 +900,9 @@ cases. For example, **dynamodb.Table.grantPutItem**,
 **s3.Bucket.grantReadWrite**, etc. In such cases, the signature of the grant
 method should adhere to the following rules _[awslint:grant-signature]_:
 
-1. Name should have a “grant” prefix 2. Returns an **iam.Grant** object 3. First
-argument must be **grantee: iam.IGrantable**
+1. Name should have a “grant” prefix
+2. Returns an **iam.Grant** object
+3. First argument must be **grantee: iam.IGrantable**
 
 ```ts
 grantXxx(grantee: iam.IGrantable): iam.Grant;
@@ -940,9 +945,9 @@ metric(metricName: string, options?: cloudwatch.MetricOptions): cloudwatch.Metri
 Additional metric methods should be exposed with the official metric name as a
 suffix and adhere to the following rules _[awslint:metrics-method-signature]:_
 
-* Name should be “metricXxx” where “Xxx” is the official metric name Accepts a
-* single “options” argument of type **MetricOptions** Returns a **Metric**
-* object.
+* Name should be “metricXxx” where “Xxx” is the official metric name
+* Accepts a single “options” argument of type **MetricOptions**
+* Returns a **Metric** object.
 
 ```ts
 interface IFunction {
@@ -1033,9 +1038,9 @@ interface IEventSource {
 A method “addXxx” should be defined on the construct interface and adhere to the
 following rules _[awslint:integrations-add-method]:_
 
-* Should accept any object that implements the integrations interface Should not
-* return anything (void) Implementation should call “bind” on the integration
-* object
+* Should accept any object that implements the integrations interface
+* Should not return anything (void)
+* Implementation should call “bind” on the integration object
 
 ```ts
 interface IFunction extends IResource {
@@ -1122,11 +1127,11 @@ property **stateful** which returns **true** or **false** to allow runtime
 checks query whether a resource is persistent
 _[awslint:state-stateful-property]_.
 
-### Physical Names (NEW) - TODO
+### Physical Names - TODO
 
 See <https://github.com/awslabs/aws-cdk/issues/2283>
 
-### Tags (NEW)
+### Tags
 
 The AWS platform has a powerful tagging system that can be used to tag resources
 with key/values. The AWS CDK exposes this capability through the **Tag**
@@ -1140,7 +1145,7 @@ myConstruct.node.apply(new cdk.Tag("myKey", "myValue"));
 Constructs for AWS resources that can be tagged must have an optional **tags**
 hash in their props [_awslint:tags-prop_].
 
-### Secrets (NEW)
+### Secrets
 
 If you expect a secret in your API (such as passwords, tokens), use the
 **cdk.SecretValue** class to signal to users that they should not include
@@ -1154,10 +1159,11 @@ use the SecretValue type [_awslint:secret-token_].
 
 ### Code Organization
 
-* Code should be under `lib/` Entry point should be `lib/index.ts` and should
-* only contain “imports” for other files.  No need to put every class in a
-* separate file. Try to think of a reader-friendly organization of your source
-* files.
+* Code should be under `lib/`
+* Entry point should be `lib/index.ts` and should only contain “imports”
+  for other files.
+* No need to put every class in a separate file. Try to think of a
+  reader-friendly organization of your source files.
 
 ## Implementation
 
@@ -1166,11 +1172,14 @@ implementation of AWS constructs.
 
 ### General Principles
 
-* Do not future proof No fluent APIs Good APIs “speak” in the language of the
-* user. The terminology your API uses should be intuitive and represent the
-* mental model your user brings over, not one that you made up and you force
-* them to learn.  Multiple ways of achieving the same thing is legitimate
-* Constantly maintain the invariants Fewer “if statements” the better
+* Do not future proof.
+* No fluent APIs.
+* Good APIs “speak” in the language of the user. The terminology your API uses
+  should be intuitive and represent the mental model your user brings over,
+  not one that you made up and you force them to learn.
+* Multiple ways of achieving the same thing is legitimate.
+* Constantly maintain the invariants.
+* Fewer “if statements” the better.
 
 ### Construct IDs
 
@@ -1207,18 +1216,20 @@ for (const az of availabilityZones) {
 
 ### Errors
 
-#### input validation
+#### Input Validation
 
 Prefer to validate input as early as it is passed into your code (ctor, methods,
 etc) and bail out by throwing an **Error** (no need to create subclasses of
 Error since all errors in the CDK are unrecoverable):
 
 * All lowercase sentences (usually they are printed after “Error: \<message\>”)
-* Include a descriptive message Include the value provided Include the
-* expected/allowed values No need to include information that can be obtained
-* from the stack trace.  No need to add a period at the end of error messages.
+* Include a descriptive message
+* Include the value provided
+* Include the expected/allowed values
+* No need to include information that can be obtained from the stack trace.
+* No need to add a period at the end of error messages.
 
-#### avoid errors if possible
+#### Avoid Errors if Possible
 
 Always prefer to do the right thing for the user instead of raising an
 error. Only fail if the user has explicitly specified bad configuration. For
@@ -1226,7 +1237,7 @@ example, VPC has **enableDnsHostnames** and **enableDnsSupport**. DNS hostnames
 *require* DNS support, so only fail if the user enabled DNS hostnames but
 explicitly disabled DNS support. Otherwise, auto-enable DNS support for them.
 
-#### Never catch exceptions
+#### Never Catch Exceptions
 
 All CDK errors are unrecoverable.  If a method wishes to signal a recoverable
 error, this should be modeled in a return value and not through exceptions.
@@ -1237,12 +1248,12 @@ In the rare case where the integrity of your construct can only be checked right
 before synthesis, override the **Construct.validate()** method and return
 meaningful errors. Always prefer early input validation over post-validation.
 
-#### attached Errors/warnings
+#### Attached Errors/Warnings
 
 You can also “attach” an error or a warning to a construct via
-**node.addWarning(s)** or **node.addError(s)**. These methods will attach CDK
-metadata to your construct, which will be displayed to the user by the toolchain
-when the stack is deployed.
+the **Annotations** class. These methods (e.g., `Annotations.of(construct).addWarning`)
+will attach CDK metadata to your construct, which will be displayed to the user
+by the toolchain when the stack is deployed.
 
 Errors will not allow deployment and warnings will only be displayed in
 highlight (unless **--strict** mode is used).
@@ -1273,20 +1284,22 @@ Use the following JSDoc tags: **@param**, **@returns**, **@default**, **@see**,
 
 ### Readme
 
-* Header should include maturity level Example for the simple use case should be
-* almost the first thing If there are multiple common use cases, provide an
-* example for each one and describe what happens under the hood at a high level
-* (e.g. which resources are created).  Reference docs are not needed Use
-* literate (`.lit.ts`) integration tests into README file (see example in
+* Header should include maturity level.
+* Example for the simple use case should be almost the first thing.
+* If there are multiple common use cases, provide an example for each one and
+  describe what happens under the hood at a high level
+  (e.g. which resources are created).
+* Reference docs are not needed.
+* Use literate (`.lit.ts`) integration tests into README file.
 
 ## Testing
 
 ### Unit tests
 
 * Unit test utility functions and object models separately from constructs. If
-* you want them to be “package-private”, just put them in a separate file and
-* import `../lib/my-util` from your unit test code.  Failing tests should be
-* prefixed with “fails”
+  you want them to be “package-private”, just put them in a separate file and
+  import `../lib/my-util` from your unit test code.
+* Failing tests should be prefixed with “fails”
 
 ### Integration tests
 
@@ -1301,14 +1314,18 @@ Use the following JSDoc tags: **@param**, **@returns**, **@default**, **@see**,
 
 ### Naming Conventions
 
-* **Class names**: PascalCase Properties**: camelCase Methods (static and
-* **non-static)**: camelCase Interfaces** (“behavioral interface”) :
-* **IMyInterface Structs** (“data interfaces”): MyDataStruct Enums**:
-* **PascalCase,**Members**: SNAKE_UPPER
+* **Class names**: PascalCase
+* **Properties**: camelCase
+* **Methods (static and non-static)**: camelCase
+* **Interfaces** (“behavioral interface”): IMyInterface
+* **Structs** (“data interfaces”): MyDataStruct
+* **Enums**: PascalCase, **Members**: SNAKE_UPPER
 
 ### Coding Style
 
-* **Indentation**: 2 spaces Line length**: 150 String literals**: use
-* **single-quotes (`'`) or backticks (```) Semicolons**: at the end of each code
-* **statement and declaration (incl. properties and imports).  Comments**: start
-* **with lower-case, end with a period.
+* **Indentation**: 2 spaces
+* **Line length**: 150
+* **String literals**: use single-quotes (`'`) or backticks (```)
+* **Semicolons**: at the end of each code statement and declaration
+  (incl. properties and imports).
+* **Comments**: start with lower-case, end with a period.

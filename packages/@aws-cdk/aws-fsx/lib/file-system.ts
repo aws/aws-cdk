@@ -1,6 +1,6 @@
-import {Connections, IConnectable, ISecurityGroup,  IVpc} from '@aws-cdk/aws-ec2';
-import {IKey} from '@aws-cdk/aws-kms';
-import {Resource} from '@aws-cdk/core';
+import { Connections, IConnectable, ISecurityGroup, IVpc } from '@aws-cdk/aws-ec2';
+import { IKey } from '@aws-cdk/aws-kms';
+import { Resource } from '@aws-cdk/core';
 
 /**
  * Interface to implement FSx File Systems.

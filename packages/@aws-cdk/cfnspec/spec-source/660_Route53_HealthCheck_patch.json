@@ -1,0 +1,157 @@
+{
+  "PropertyTypes": {
+    "patch": {
+      "description": "Patch Route 53 HealthCheck casing regression - mirrors cfn-lint (https://github.com/aws-cloudformation/cfn-python-lint/blob/master/src/cfnlint/data/ExtendedSpecs/all/01_spec_patch.json) ",
+      "operations": [
+        {
+          "op": "add",
+          "path": "/AWS::Route53::HealthCheck.AlarmIdentifier",
+          "value": {
+            "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53-healthcheck-alarmidentifier.html",
+            "Properties": {
+              "Name": {
+                "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53-healthcheck-alarmidentifier.html#cfn-route53-healthcheck-alarmidentifier-name",
+                "PrimitiveType": "String",
+                "Required": true,
+                "UpdateType": "Mutable"
+              },
+              "Region": {
+                "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53-healthcheck-alarmidentifier.html#cfn-route53-healthcheck-alarmidentifier-region",
+                "PrimitiveType": "String",
+                "Required": true,
+                "UpdateType": "Mutable"
+              }
+            }
+          }
+        },
+        {
+          "op": "add",
+          "path": "/AWS::Route53::HealthCheck.HealthCheckConfig",
+          "value": {
+            "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53-healthcheck-healthcheckconfig.html",
+            "Properties": {
+              "AlarmIdentifier": {
+                "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53-healthcheck-healthcheckconfig.html#cfn-route53-healthcheck-healthcheckconfig-alarmidentifier",
+                "Required": false,
+                "Type": "AlarmIdentifier",
+                "UpdateType": "Mutable"
+              },
+              "ChildHealthChecks": {
+                "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53-healthcheck-healthcheckconfig.html#cfn-route53-healthcheck-healthcheckconfig-childhealthchecks",
+                "DuplicatesAllowed": false,
+                "PrimitiveItemType": "String",
+                "Required": false,
+                "Type": "List",
+                "UpdateType": "Mutable"
+              },
+              "EnableSNI": {
+                "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53-healthcheck-healthcheckconfig.html#cfn-route53-healthcheck-healthcheckconfig-enablesni",
+                "PrimitiveType": "Boolean",
+                "Required": false,
+                "UpdateType": "Mutable"
+              },
+              "FailureThreshold": {
+                "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53-healthcheck-healthcheckconfig.html#cfn-route53-healthcheck-healthcheckconfig-failurethreshold",
+                "PrimitiveType": "Integer",
+                "Required": false,
+                "UpdateType": "Mutable"
+              },
+              "FullyQualifiedDomainName": {
+                "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53-healthcheck-healthcheckconfig.html#cfn-route53-healthcheck-healthcheckconfig-fullyqualifieddomainname",
+                "PrimitiveType": "String",
+                "Required": false,
+                "UpdateType": "Mutable"
+              },
+              "HealthThreshold": {
+                "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53-healthcheck-healthcheckconfig.html#cfn-route53-healthcheck-healthcheckconfig-healththreshold",
+                "PrimitiveType": "Integer",
+                "Required": false,
+                "UpdateType": "Mutable"
+              },
+              "IPAddress": {
+                "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53-healthcheck-healthcheckconfig.html#cfn-route53-healthcheck-healthcheckconfig-ipaddress",
+                "PrimitiveType": "String",
+                "Required": false,
+                "UpdateType": "Mutable"
+              },
+              "InsufficientDataHealthStatus": {
+                "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53-healthcheck-healthcheckconfig.html#cfn-route53-healthcheck-healthcheckconfig-insufficientdatahealthstatus",
+                "PrimitiveType": "String",
+                "Required": false,
+                "UpdateType": "Mutable"
+              },
+              "Inverted": {
+                "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53-healthcheck-healthcheckconfig.html#cfn-route53-healthcheck-healthcheckconfig-inverted",
+                "PrimitiveType": "Boolean",
+                "Required": false,
+                "UpdateType": "Mutable"
+              },
+              "MeasureLatency": {
+                "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53-healthcheck-healthcheckconfig.html#cfn-route53-healthcheck-healthcheckconfig-measurelatency",
+                "PrimitiveType": "Boolean",
+                "Required": false,
+                "UpdateType": "Immutable"
+              },
+              "Port": {
+                "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53-healthcheck-healthcheckconfig.html#cfn-route53-healthcheck-healthcheckconfig-port",
+                "PrimitiveType": "Integer",
+                "Required": false,
+                "UpdateType": "Mutable"
+              },
+              "Regions": {
+                "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53-healthcheck-healthcheckconfig.html#cfn-route53-healthcheck-healthcheckconfig-regions",
+                "DuplicatesAllowed": false,
+                "PrimitiveItemType": "String",
+                "Required": false,
+                "Type": "List",
+                "UpdateType": "Mutable"
+              },
+              "RequestInterval": {
+                "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53-healthcheck-healthcheckconfig.html#cfn-route53-healthcheck-healthcheckconfig-requestinterval",
+                "PrimitiveType": "Integer",
+                "Required": false,
+                "UpdateType": "Immutable"
+              },
+              "ResourcePath": {
+                "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53-healthcheck-healthcheckconfig.html#cfn-route53-healthcheck-healthcheckconfig-resourcepath",
+                "PrimitiveType": "String",
+                "Required": false,
+                "UpdateType": "Mutable"
+              },
+              "SearchString": {
+                "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53-healthcheck-healthcheckconfig.html#cfn-route53-healthcheck-healthcheckconfig-searchstring",
+                "PrimitiveType": "String",
+                "Required": false,
+                "UpdateType": "Mutable"
+              },
+              "Type": {
+                "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53-healthcheck-healthcheckconfig.html#cfn-route53-healthcheck-healthcheckconfig-type",
+                "PrimitiveType": "String",
+                "Required": true,
+                "UpdateType": "Immutable"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "ResourceTypes": {
+    "AWS::Route53::HealthCheck": {
+      "patch": {
+        "description": "Patch Route 53 HealthCheck casing regression - mirrors cfn-lint (https://github.com/aws-cloudformation/cfn-python-lint/blob/master/src/cfnlint/data/ExtendedSpecs/all/01_spec_patch.json) ",
+        "operations": [
+          {
+            "op": "add",
+            "path": "/Properties/HealthCheckConfig/Type",
+            "value": "HealthCheckConfig"
+          },
+          {
+            "op": "remove",
+            "path": "/Properties/HealthCheckConfig/PrimitiveType"
+          }
+        ]
+      }
+    }
+  }
+}

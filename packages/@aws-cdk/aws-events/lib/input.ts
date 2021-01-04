@@ -1,5 +1,7 @@
-import { captureStackTrace, DefaultTokenResolver, IResolvable,
-  IResolveContext, Lazy, Stack, StringConcat, Token, Tokenization } from '@aws-cdk/core';
+import {
+  captureStackTrace, DefaultTokenResolver, IResolvable,
+  IResolveContext, Lazy, Stack, StringConcat, Token, Tokenization,
+} from '@aws-cdk/core';
 import { IRule } from './rule-ref';
 
 /**
@@ -217,7 +219,7 @@ class FieldAwareEventInput extends RuleTargetInput {
   private unquoteKeyPlaceholders(sub: string) {
     if (this.inputType !== InputType.Object) { return sub; }
 
-    return Lazy.stringValue({ produce: (ctx: IResolveContext) => Token.asString(deepUnquote(ctx.resolve(sub))) });
+    return Lazy.uncachedString({ produce: (ctx: IResolveContext) => Token.asString(deepUnquote(ctx.resolve(sub))) });
 
     function deepUnquote(resolved: any): any {
       if (Array.isArray(resolved)) {

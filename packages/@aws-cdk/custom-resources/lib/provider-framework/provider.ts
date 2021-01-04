@@ -1,8 +1,10 @@
 import * as path from 'path';
 import * as cfn from '@aws-cdk/aws-cloudformation';
+import * as ec2 from '@aws-cdk/aws-ec2';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as logs from '@aws-cdk/aws-logs';
-import { Construct, Duration } from '@aws-cdk/core';
+import { Construct as CoreConstruct, Duration } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as consts from './runtime/consts';
 import { calculateRetryPolicy } from './util';
 import { WaiterStateMachine } from './waiter-state-machine';
@@ -69,12 +71,30 @@ export interface ProviderProps {
    * @default logs.RetentionDays.INFINITE
    */
   readonly logRetention?: logs.RetentionDays;
+
+  /**
+   * The vpc to provision the lambda functions in.
+   *
+   * @default - functions are not provisioned inside a vpc.
+   */
+  readonly vpc?: ec2.IVpc;
+
+  /**
+   * Which subnets from the VPC to place the lambda functions in.
+   *
+   * Only used if 'vpc' is supplied. Note: internet access for Lambdas
+   * requires a NAT gateway, so picking Public subnets is not allowed.
+   *
+   * @default - the Vpc default strategy if not specified
+   */
+  readonly vpcSubnets?: ec2.SubnetSelection;
+
 }
 
 /**
  * Defines an AWS CloudFormation custom resource provider.
  */
-export class Provider extends Construct implements cfn.ICustomResourceProvider {
+export class Provider extends CoreConstruct implements cfn.ICustomResourceProvider {
 
   /**
    * The user-defined AWS Lambda function which is invoked for all resource
@@ -96,6 +116,8 @@ export class Provider extends Construct implements cfn.ICustomResourceProvider {
 
   private readonly entrypoint: lambda.Function;
   private readonly logRetention?: logs.RetentionDays;
+  private readonly vpc?: ec2.IVpc;
+  private readonly vpcSubnets?: ec2.SubnetSelection;
 
   constructor(scope: Construct, id: string, props: ProviderProps) {
     super(scope, id);
@@ -109,6 +131,8 @@ export class Provider extends Construct implements cfn.ICustomResourceProvider {
     this.isCompleteHandler = props.isCompleteHandler;
 
     this.logRetention = props.logRetention;
+    this.vpc = props.vpc;
+    this.vpcSubnets = props.vpcSubnets;
 
     const onEventFunction = this.createFunction(consts.FRAMEWORK_ON_EVENT_HANDLER_NAME);
 
@@ -138,7 +162,7 @@ export class Provider extends Construct implements cfn.ICustomResourceProvider {
    * Called by `CustomResource` which uses this provider.
    * @deprecated use `provider.serviceToken` instead
    */
-  public bind(_: Construct): cfn.CustomResourceProviderConfig {
+  public bind(_: CoreConstruct): cfn.CustomResourceProviderConfig {
     return {
       serviceToken: this.entrypoint.functionArn,
     };
@@ -152,6 +176,8 @@ export class Provider extends Construct implements cfn.ICustomResourceProvider {
       handler: `framework.${entrypoint}`,
       timeout: FRAMEWORK_HANDLER_TIMEOUT,
       logRetention: this.logRetention,
+      vpc: this.vpc,
+      vpcSubnets: this.vpcSubnets,
     });
 
     fn.addEnvironment(consts.USER_ON_EVENT_FUNCTION_ARN_ENV, this.onEventHandler.functionArn);

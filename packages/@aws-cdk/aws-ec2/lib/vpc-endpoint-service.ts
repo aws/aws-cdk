@@ -1,6 +1,7 @@
 import { ArnPrincipal } from '@aws-cdk/aws-iam';
-import { Aws, Construct, Fn, IResource, Resource, Stack, Token } from '@aws-cdk/core';
+import { Aws, Fn, IResource, Resource, Stack, Token } from '@aws-cdk/core';
 import { Default, RegionInfo } from '@aws-cdk/region-info';
+import { Construct } from 'constructs';
 import { CfnVPCEndpointService, CfnVPCEndpointServicePermissions } from './ec2.generated';
 
 /**
@@ -26,6 +27,14 @@ export interface IVpcEndpointService extends IResource {
    * @attribute
    */
   readonly vpcEndpointServiceName: string;
+
+  /**
+   * The id of the VPC Endpoint Service that clients use to connect to,
+   * like vpce-svc-xxxxxxxxxxxxxxxx
+   *
+   * @attribute
+   */
+  readonly vpcEndpointServiceId: string;
 }
 
 /**

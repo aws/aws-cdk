@@ -1,9 +1,9 @@
 import { format as formatUrl } from 'url';
 import * as jsonSchema from './json-schema';
 
-export const ALL_METHODS = [ 'OPTIONS', 'GET', 'PUT', 'POST', 'DELETE', 'PATCH', 'HEAD' ];
+export const ALL_METHODS = ['OPTIONS', 'GET', 'PUT', 'POST', 'DELETE', 'PATCH', 'HEAD'];
 
-const ALLOWED_METHODS = [ 'ANY', ...ALL_METHODS ];
+const ALLOWED_METHODS = ['ANY', ...ALL_METHODS];
 
 export function validateHttpMethod(method: string, messagePrefix: string = '') {
   if (!ALLOWED_METHODS.includes(method)) {

@@ -28,3 +28,4 @@ jest.config.js
 # exclude cdk artifacts
 **/cdk.out
 junit.xml
+test/

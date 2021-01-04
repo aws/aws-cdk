@@ -140,12 +140,12 @@ export = {
   'scope to resource'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const rule = new config.ManagedRule(stack, 'Rule', {
-      identifier: 'AWS_SUPER_COOL',
-    });
 
     // WHEN
-    rule.scopeToResource('AWS::EC2::Instance', 'i-1234');
+    new config.ManagedRule(stack, 'Rule', {
+      identifier: 'AWS_SUPER_COOL',
+      ruleScope: config.RuleScope.fromResource(config.ResourceType.EC2_INSTANCE, 'i-1234'),
+    });
 
     // THEN
     expect(stack).to(haveResource('AWS::Config::ConfigRule', {
@@ -163,12 +163,12 @@ export = {
   'scope to resources'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const rule = new config.ManagedRule(stack, 'Rule', {
-      identifier: 'AWS_SUPER_COOL',
-    });
 
     // WHEN
-    rule.scopeToResources('AWS::S3::Bucket', 'AWS::CloudFormation::Stack');
+    new config.ManagedRule(stack, 'Rule', {
+      identifier: 'AWS_SUPER_COOL',
+      ruleScope: config.RuleScope.fromResources([config.ResourceType.S3_BUCKET, config.ResourceType.CLOUDFORMATION_STACK]),
+    });
 
     // THEN
     expect(stack).to(haveResource('AWS::Config::ConfigRule', {
@@ -186,12 +186,12 @@ export = {
   'scope to tag'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const rule = new config.ManagedRule(stack, 'Rule', {
-      identifier: 'RULE',
-    });
 
     // WHEN
-    rule.scopeToTag('key', 'value');
+    new config.ManagedRule(stack, 'Rule', {
+      identifier: 'RULE',
+      ruleScope: config.RuleScope.fromTag('key', 'value'),
+    });
 
     // THEN
     expect(stack).to(haveResource('AWS::Config::ConfigRule', {
@@ -213,14 +213,12 @@ export = {
       runtime: lambda.Runtime.NODEJS_10_X,
     });
 
-    // WHEN
-    const rule = new config.CustomRule(stack, 'Rule', {
+    // THEN
+    test.doesNotThrow(() => new config.CustomRule(stack, 'Rule', {
       lambdaFunction: fn,
       periodic: true,
-    });
-
-    // THEN
-    test.doesNotThrow(() => rule.scopeToResource('resource'));
+      ruleScope: config.RuleScope.fromResources([config.ResourceType.of('resource')]),
+    }));
 
     test.done();
   },

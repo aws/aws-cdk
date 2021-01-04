@@ -120,7 +120,7 @@
           "BooksApi60AC975F"
         ]
       },
-      "BooksApiDeployment86CA39AFc1570c78b1ea90526c0309cd74b7b8d0": {
+      "BooksApiDeployment86CA39AF4ff82f86c127f53c9de94d266b1906be": {
         "Type": "AWS::ApiGateway::Deployment",
         "Properties": {
           "RestApiId": {
@@ -141,7 +141,7 @@
             "Ref": "BooksApi60AC975F"
           },
           "DeploymentId": {
-            "Ref": "BooksApiDeployment86CA39AFc1570c78b1ea90526c0309cd74b7b8d0"
+            "Ref": "BooksApiDeployment86CA39AF4ff82f86c127f53c9de94d266b1906be"
           },
           "StageName": "prod"
         }

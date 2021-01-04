@@ -305,19 +305,16 @@ describe('IAM Role.fromRoleArn', () => {
   });
 
   describe('imported with a dynamic ARN', () => {
-    const dynamicValue = Lazy.stringValue({ produce: () => 'role-arn' });
+    const dynamicValue = Lazy.string({ produce: () => 'role-arn' });
     const roleName: any = {
       'Fn::Select': [1,
         {
           'Fn::Split': ['/',
             {
               'Fn::Select': [5,
-                { 'Fn::Split': [':', 'role-arn'] },
-              ],
-            },
-          ],
-        },
-      ],
+                { 'Fn::Split': [':', 'role-arn'] }],
+            }],
+        }],
     };
 
     describe('into an env-agnostic stack', () => {

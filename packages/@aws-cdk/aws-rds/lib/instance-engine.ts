@@ -1,26 +1,90 @@
+import * as iam from '@aws-cdk/aws-iam';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as core from '@aws-cdk/core';
 import { IEngine } from './engine';
 import { EngineVersion } from './engine-version';
+import { IOptionGroup, OptionGroup } from './option-group';
 
 /**
  * The options passed to {@link IInstanceEngine.bind}.
  */
 export interface InstanceEngineBindOptions {
   /**
+   * The Active Directory directory ID to create the DB instance in.
+   *
+   * @default - none (it's an optional field)
+   */
+  readonly domain?: string;
+
+  /**
    * The timezone of the database, set by the customer.
    *
    * @default - none (it's an optional field)
    */
   readonly timezone?: string;
+
+  /**
+   * The role used for S3 importing.
+   *
+   * @default - none
+   */
+  readonly s3ImportRole?: iam.IRole;
+
+  /**
+   * The role used for S3 exporting.
+   *
+   * @default - none
+   */
+  readonly s3ExportRole?: iam.IRole;
+
+  /**
+   * The option group of the database
+   *
+   * @default - none
+   */
+  readonly optionGroup?: IOptionGroup;
 }
 
 /**
  * The type returned from the {@link IInstanceEngine.bind} method.
- * Empty for now,
- * but there might be fields added to it in the future.
  */
 export interface InstanceEngineConfig {
+  /**
+   * Features supported by the database engine.
+   *
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/APIReference/API_DBEngineVersion.html
+   *
+   * @default - no features
+   */
+  readonly features?: InstanceEngineFeatures;
+
+  /**
+   * Option group of the database.
+   *
+   * @default - none
+   */
+  readonly optionGroup?: IOptionGroup;
+}
+
+/**
+ * Represents Database Engine features
+ */
+export interface InstanceEngineFeatures {
+  /**
+   * Feature name for the DB instance that the IAM role to access the S3 bucket for import
+   * is to be associated with.
+   *
+   * @default - no s3Import feature name
+   */
+  readonly s3Import?: string;
+
+  /**
+   * Feature name for the DB instance that the IAM role to export to S3 bucket is to be
+   * associated with.
+   *
+   * @default - no s3Export feature name
+   */
+  readonly s3Export?: string;
 }
 
 /**
@@ -45,6 +109,8 @@ interface InstanceEngineBaseProps {
   readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
   readonly version?: EngineVersion;
   readonly parameterGroupFamily?: string;
+  readonly engineFamily?: string;
+  readonly features?: InstanceEngineFeatures;
 }
 
 abstract class InstanceEngineBase implements IInstanceEngine {
@@ -53,23 +119,33 @@ abstract class InstanceEngineBase implements IInstanceEngine {
   public readonly parameterGroupFamily?: string;
   public readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
   public readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
+  public readonly engineFamily?: string;
+
+  private readonly features?: InstanceEngineFeatures;
 
   constructor(props: InstanceEngineBaseProps) {
     this.engineType = props.engineType;
+    this.features = props.features;
     this.singleUserRotationApplication = props.singleUserRotationApplication;
     this.multiUserRotationApplication = props.multiUserRotationApplication;
     this.engineVersion = props.version;
     this.parameterGroupFamily = props.parameterGroupFamily ??
       (this.engineVersion ? `${this.engineType}${this.engineVersion.majorVersion}` : undefined);
+    this.engineFamily = props.engineFamily;
   }
 
   public bindToInstance(_scope: core.Construct, options: InstanceEngineBindOptions): InstanceEngineConfig {
-    if (options.timezone) {
-      throw new Error(`timezone property can be configured only for Microsoft SQL Server, not ${this.engineType}`);
+    if (options.timezone && !this.supportsTimezone) {
+      throw new Error(`timezone property can not be configured for ${this.engineType}`);
     }
     return {
+      features: this.features,
+      optionGroup: options.optionGroup,
     };
   }
+
+  /** Defines whether this Instance Engine can support timezone properties. */
+  protected get supportsTimezone() { return false; }
 }
 
 /**
@@ -184,6 +260,13 @@ class MariaDbInstanceEngine extends InstanceEngineBase {
         : undefined,
     });
   }
+
+  public bindToInstance(scope: core.Construct, options: InstanceEngineBindOptions): InstanceEngineConfig {
+    if (options.domain) {
+      throw new Error(`domain property cannot be configured for ${this.engineType}`);
+    }
+    return super.bindToInstance(scope, options);
+  }
 }
 
 /**
@@ -251,6 +334,8 @@ export class MysqlEngineVersion {
   public static readonly VER_5_7_28 = MysqlEngineVersion.of('5.7.28', '5.7');
   /** Version "5.7.30". */
   public static readonly VER_5_7_30 = MysqlEngineVersion.of('5.7.30', '5.7');
+  /** Version "5.7.31". */
+  public static readonly VER_5_7_31 = MysqlEngineVersion.of('5.7.31', '5.7');
 
   /** Version "8.0" (only a major version, without a specific minor version). */
   public static readonly VER_8_0 = MysqlEngineVersion.of('8.0', '8.0');
@@ -266,6 +351,10 @@ export class MysqlEngineVersion {
   public static readonly VER_8_0_17 = MysqlEngineVersion.of('8.0.17', '8.0');
   /** Version "8.0.19". */
   public static readonly VER_8_0_19 = MysqlEngineVersion.of('8.0.19', '8.0');
+  /** Version "8.0.20 ". */
+  public static readonly VER_8_0_20 = MysqlEngineVersion.of('8.0.20', '8.0');
+  /** Version "8.0.21 ". */
+  public static readonly VER_8_0_21 = MysqlEngineVersion.of('8.0.21', '8.0');
 
   /**
    * Create a new MysqlEngineVersion with an arbitrary version.
@@ -311,8 +400,21 @@ class MySqlInstanceEngine extends InstanceEngineBase {
           majorVersion: version.mysqlMajorVersion,
         }
         : undefined,
+      engineFamily: 'MYSQL',
     });
   }
+}
+
+/**
+ * Features supported by the Postgres database engine
+ */
+export interface PostgresEngineFeatures {
+  /**
+   * Whether this version of the Postgres engine supports the S3 data import feature.
+   *
+   * @default false
+   */
+  readonly s3Import?: boolean;
 }
 
 /**
@@ -354,6 +456,8 @@ export class PostgresEngineVersion {
   public static readonly VER_9_5_21 = PostgresEngineVersion.of('9.5.21', '9.5');
   /** Version "9.5.22". */
   public static readonly VER_9_5_22 = PostgresEngineVersion.of('9.5.22', '9.5');
+  /** Version "9.5.23". */
+  public static readonly VER_9_5_23 = PostgresEngineVersion.of('9.5.23', '9.5');
 
   /** Version "9.6" (only a major version, without a specific minor version). */
   public static readonly VER_9_6 = PostgresEngineVersion.of('9.6', '9.6');
@@ -387,6 +491,8 @@ export class PostgresEngineVersion {
   public static readonly VER_9_6_17 = PostgresEngineVersion.of('9.6.17', '9.6');
   /** Version "9.6.18". */
   public static readonly VER_9_6_18 = PostgresEngineVersion.of('9.6.18', '9.6');
+  /** Version "9.6.19". */
+  public static readonly VER_9_6_19 = PostgresEngineVersion.of('9.6.19', '9.6');
 
   /** Version "10" (only a major version, without a specific minor version). */
   public static readonly VER_10 = PostgresEngineVersion.of('10', '10');
@@ -401,41 +507,47 @@ export class PostgresEngineVersion {
   /** Version "10.6". */
   public static readonly VER_10_6 = PostgresEngineVersion.of('10.6', '10');
   /** Version "10.7". */
-  public static readonly VER_10_7 = PostgresEngineVersion.of('10.7', '10');
+  public static readonly VER_10_7 = PostgresEngineVersion.of('10.7', '10', { s3Import: true });
   /** Version "10.9". */
-  public static readonly VER_10_9 = PostgresEngineVersion.of('10.9', '10');
+  public static readonly VER_10_9 = PostgresEngineVersion.of('10.9', '10', { s3Import: true });
   /** Version "10.10". */
-  public static readonly VER_10_10 = PostgresEngineVersion.of('10.10', '10');
+  public static readonly VER_10_10 = PostgresEngineVersion.of('10.10', '10', { s3Import: true });
   /** Version "10.11". */
-  public static readonly VER_10_11 = PostgresEngineVersion.of('10.11', '10');
+  public static readonly VER_10_11 = PostgresEngineVersion.of('10.11', '10', { s3Import: true });
   /** Version "10.12". */
-  public static readonly VER_10_12 = PostgresEngineVersion.of('10.12', '10');
+  public static readonly VER_10_12 = PostgresEngineVersion.of('10.12', '10', { s3Import: true });
   /** Version "10.13". */
-  public static readonly VER_10_13 = PostgresEngineVersion.of('10.13', '10');
+  public static readonly VER_10_13 = PostgresEngineVersion.of('10.13', '10', { s3Import: true });
+  /** Version "10.14". */
+  public static readonly VER_10_14 = PostgresEngineVersion.of('10.14', '10', { s3Import: true });
 
   /** Version "11" (only a major version, without a specific minor version). */
-  public static readonly VER_11 = PostgresEngineVersion.of('11', '11');
+  public static readonly VER_11 = PostgresEngineVersion.of('11', '11', { s3Import: true });
   /** Version "11.1". */
-  public static readonly VER_11_1 = PostgresEngineVersion.of('11.1', '11');
+  public static readonly VER_11_1 = PostgresEngineVersion.of('11.1', '11', { s3Import: true });
   /** Version "11.2". */
-  public static readonly VER_11_2 = PostgresEngineVersion.of('11.2', '11');
+  public static readonly VER_11_2 = PostgresEngineVersion.of('11.2', '11', { s3Import: true });
   /** Version "11.4". */
-  public static readonly VER_11_4 = PostgresEngineVersion.of('11.4', '11');
+  public static readonly VER_11_4 = PostgresEngineVersion.of('11.4', '11', { s3Import: true });
   /** Version "11.5". */
-  public static readonly VER_11_5 = PostgresEngineVersion.of('11.5', '11');
+  public static readonly VER_11_5 = PostgresEngineVersion.of('11.5', '11', { s3Import: true });
   /** Version "11.6". */
-  public static readonly VER_11_6 = PostgresEngineVersion.of('11.6', '11');
+  public static readonly VER_11_6 = PostgresEngineVersion.of('11.6', '11', { s3Import: true });
   /** Version "11.7". */
-  public static readonly VER_11_7 = PostgresEngineVersion.of('11.7', '11');
+  public static readonly VER_11_7 = PostgresEngineVersion.of('11.7', '11', { s3Import: true });
   /** Version "11.8". */
-  public static readonly VER_11_8 = PostgresEngineVersion.of('11.8', '11');
+  public static readonly VER_11_8 = PostgresEngineVersion.of('11.8', '11', { s3Import: true });
+  /** Version "11.9". */
+  public static readonly VER_11_9 = PostgresEngineVersion.of('11.9', '11', { s3Import: true });
 
   /** Version "12" (only a major version, without a specific minor version). */
-  public static readonly VER_12 = PostgresEngineVersion.of('12', '12');
+  public static readonly VER_12 = PostgresEngineVersion.of('12', '12', { s3Import: true });
   /** Version "12.2". */
-  public static readonly VER_12_2 = PostgresEngineVersion.of('12.2', '12');
+  public static readonly VER_12_2 = PostgresEngineVersion.of('12.2', '12', { s3Import: true });
   /** Version "12.3". */
-  public static readonly VER_12_3 = PostgresEngineVersion.of('12.3', '12');
+  public static readonly VER_12_3 = PostgresEngineVersion.of('12.3', '12', { s3Import: true });
+  /** Version "12.4". */
+  public static readonly VER_12_4 = PostgresEngineVersion.of('12.4', '12', { s3Import: true });
 
   /**
    * Create a new PostgresEngineVersion with an arbitrary version.
@@ -445,8 +557,8 @@ export class PostgresEngineVersion {
    * @param postgresMajorVersion the major version of the engine,
    *   for example "13"
    */
-  public static of(postgresFullVersion: string, postgresMajorVersion: string): PostgresEngineVersion {
-    return new PostgresEngineVersion(postgresFullVersion, postgresMajorVersion);
+  public static of(postgresFullVersion: string, postgresMajorVersion: string, postgresFeatures?: PostgresEngineFeatures): PostgresEngineVersion {
+    return new PostgresEngineVersion(postgresFullVersion, postgresMajorVersion, postgresFeatures);
   }
 
   /** The full version string, for example, "13.11". */
@@ -454,9 +566,18 @@ export class PostgresEngineVersion {
   /** The major version of the engine, for example, "13". */
   public readonly postgresMajorVersion: string;
 
-  private constructor(postgresFullVersion: string, postgresMajorVersion: string) {
+  /**
+   * The supported features for the DB engine
+   * @internal
+   */
+  public readonly _features: InstanceEngineFeatures;
+
+  private constructor(postgresFullVersion: string, postgresMajorVersion: string, postgresFeatures?: PostgresEngineFeatures) {
     this.postgresFullVersion = postgresFullVersion;
     this.postgresMajorVersion = postgresMajorVersion;
+    this._features = {
+      s3Import: postgresFeatures?.s3Import ? 's3Import' : undefined,
+    };
   }
 }
 
@@ -473,6 +594,8 @@ export interface PostgresInstanceEngineProps {
  * The instance engine for PostgreSQL.
  */
 class PostgresInstanceEngine extends InstanceEngineBase {
+  public readonly defaultUsername = 'postgres';
+
   constructor(version?: PostgresEngineVersion) {
     super({
       engineType: 'postgres',
@@ -484,6 +607,8 @@ class PostgresInstanceEngine extends InstanceEngineBase {
           majorVersion: version.postgresMajorVersion,
         }
         : undefined,
+      features: version ? version?._features : { s3Import: 's3Import' },
+      engineFamily: 'POSTGRESQL',
     });
   }
 }
@@ -493,6 +618,8 @@ class PostgresInstanceEngine extends InstanceEngineBase {
  * (those returned by {@link DatabaseInstanceEngine.oracleSe}
  * and {@link DatabaseInstanceEngine.oracleSe1}).
  * Note: RDS will stop allowing creating new databases with this version in August 2020.
+ *
+ * @deprecated instances can no longer be created with these engine versions. See https://forums.aws.amazon.com/ann.jspa?annID=7341
  */
 export class OracleLegacyEngineVersion {
   /** Version "11.2" (only a major version, without a specific minor version). */
@@ -545,6 +672,8 @@ export class OracleLegacyEngineVersion {
   public static readonly VER_11_2_0_4_V23 = OracleLegacyEngineVersion.of('11.2.0.4.v23', '11.2');
   /** Version "11.2.0.4.v24". */
   public static readonly VER_11_2_0_4_V24 = OracleLegacyEngineVersion.of('11.2.0.4.v24', '11.2');
+  /** Version "11.2.0.4.v25". */
+  public static readonly VER_11_2_0_4_V25 = OracleLegacyEngineVersion.of('11.2.0.4.v25', '11.2');
 
   private static of(oracleLegacyFullVersion: string, oracleLegacyMajorVersion: string): OracleLegacyEngineVersion {
     return new OracleLegacyEngineVersion(oracleLegacyFullVersion, oracleLegacyMajorVersion);
@@ -609,6 +738,8 @@ export class OracleEngineVersion {
   public static readonly VER_12_1_0_2_V19 = OracleEngineVersion.of('12.1.0.2.v19', '12.1');
   /** Version "12.1.0.2.v20". */
   public static readonly VER_12_1_0_2_V20 = OracleEngineVersion.of('12.1.0.2.v20', '12.1');
+  /** Version "12.1.0.2.v21". */
+  public static readonly VER_12_1_0_2_V21 = OracleEngineVersion.of('12.1.0.2.v21', '12.1');
 
   /** Version "12.2" (only a major version, without a specific minor version). */
   public static readonly VER_12_2 = OracleEngineVersion.of('12.2', '12.2');
@@ -626,6 +757,8 @@ export class OracleEngineVersion {
   public static readonly VER_12_2_0_1_2020_01_R1 = OracleEngineVersion.of('12.2.0.1.ru-2020-01.rur-2020-01.r1', '12.2');
   /** Version "12.2.0.1.ru-2020-04.rur-2020-04.r1". */
   public static readonly VER_12_2_0_1_2020_04_R1 = OracleEngineVersion.of('12.2.0.1.ru-2020-04.rur-2020-04.r1', '12.2');
+  /** Version "12.2.0.1.ru-2020-07.rur-2020-07.r1". */
+  public static readonly VER_12_2_0_1_2020_07_R1 = OracleEngineVersion.of('12.2.0.1.ru-2020-07.rur-2020-07.r1', '12.2');
 
   /** Version "18" (only a major version, without a specific minor version). */
   public static readonly VER_18 = OracleEngineVersion.of('18', '18');
@@ -637,6 +770,8 @@ export class OracleEngineVersion {
   public static readonly VER_18_0_0_0_2020_01_R1 = OracleEngineVersion.of('18.0.0.0.ru-2020-01.rur-2020-01.r1', '18');
   /** Version "18.0.0.0.ru-2020-04.rur-2020-04.r1". */
   public static readonly VER_18_0_0_0_2020_04_R1 = OracleEngineVersion.of('18.0.0.0.ru-2020-04.rur-2020-04.r1', '18');
+  /** Version "18.0.0.0.ru-2020-07.rur-2020-07.r1". */
+  public static readonly VER_18_0_0_0_2020_07_R1 = OracleEngineVersion.of('18.0.0.0.ru-2020-07.rur-2020-07.r1', '18');
 
   /** Version "19" (only a major version, without a specific minor version). */
   public static readonly VER_19 = OracleEngineVersion.of('19', '19');
@@ -648,6 +783,8 @@ export class OracleEngineVersion {
   public static readonly VER_19_0_0_0_2020_01_R1 = OracleEngineVersion.of('19.0.0.0.ru-2020-01.rur-2020-01.r1', '19');
   /** Version "19.0.0.0.ru-2020-04.rur-2020-04.r1". */
   public static readonly VER_19_0_0_0_2020_04_R1 = OracleEngineVersion.of('19.0.0.0.ru-2020-04.rur-2020-04.r1', '19');
+  /** Version "19.0.0.0.ru-2020-07.rur-2020-07.r1". */
+  public static readonly VER_19_0_0_0_2020_07_R1 = OracleEngineVersion.of('19.0.0.0.ru-2020-07.rur-2020-07.r1', '19');
 
   /**
    * Creates a new OracleEngineVersion with an arbitrary version.
@@ -684,7 +821,35 @@ abstract class OracleInstanceEngineBase extends InstanceEngineBase {
       singleUserRotationApplication: secretsmanager.SecretRotationApplication.ORACLE_ROTATION_SINGLE_USER,
       multiUserRotationApplication: secretsmanager.SecretRotationApplication.ORACLE_ROTATION_MULTI_USER,
       parameterGroupFamily: props.version ? `${props.engineType}-${props.version.majorVersion}` : undefined,
+      features: {
+        s3Import: 'S3_INTEGRATION',
+        s3Export: 'S3_INTEGRATION',
+      },
     });
+  }
+
+  public bindToInstance(scope: core.Construct, options: InstanceEngineBindOptions): InstanceEngineConfig {
+    const config = super.bindToInstance(scope, options);
+
+    let optionGroup = options.optionGroup;
+    if (options.s3ImportRole || options.s3ExportRole) {
+      if (!optionGroup) {
+        optionGroup = new OptionGroup(scope, 'InstanceOptionGroup', {
+          engine: this,
+          configurations: [],
+        });
+      }
+      // https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/oracle-s3-integration.html
+      optionGroup.addConfiguration({
+        name: 'S3_INTEGRATION',
+        version: '1.0',
+      });
+    }
+
+    return {
+      ...config,
+      optionGroup,
+    };
   }
 }
 
@@ -696,12 +861,15 @@ interface OracleInstanceEngineProps {
 /**
  * Properties for Oracle Standard Edition instance engines.
  * Used in {@link DatabaseInstanceEngine.oracleSe}.
+ *
+ * @deprecated instances can no longer be created with this engine. See https://forums.aws.amazon.com/ann.jspa?annID=7341
  */
 export interface OracleSeInstanceEngineProps {
   /** The exact version of the engine to use. */
   readonly version: OracleLegacyEngineVersion;
 }
 
+/** @deprecated instances can no longer be created with this engine. See https://forums.aws.amazon.com/ann.jspa?annID=7341 */
 class OracleSeInstanceEngine extends OracleInstanceEngineBase {
   constructor(version?: OracleLegacyEngineVersion) {
     super({
@@ -721,12 +889,15 @@ class OracleSeInstanceEngine extends OracleInstanceEngineBase {
 /**
  * Properties for Oracle Standard Edition 1 instance engines.
  * Used in {@link DatabaseInstanceEngine.oracleSe1}.
+ *
+ * @deprecated instances can no longer be created with this engine. See https://forums.aws.amazon.com/ann.jspa?annID=7341
  */
 export interface OracleSe1InstanceEngineProps {
   /** The exact version of the engine to use. */
   readonly version: OracleLegacyEngineVersion;
 }
 
+/** @deprecated instances can no longer be created with this engine. See https://forums.aws.amazon.com/ann.jspa?annID=7341 */
 class OracleSe1InstanceEngine extends OracleInstanceEngineBase {
   constructor(version?: OracleLegacyEngineVersion) {
     super({
@@ -840,6 +1011,8 @@ export class SqlServerEngineVersion {
   public static readonly VER_13_00_5426_0_V1 = SqlServerEngineVersion.of('13.00.5426.0.v1', '13.00');
   /** Version "13.00.5598.27.v1". */
   public static readonly VER_13_00_5598_27_V1 = SqlServerEngineVersion.of('13.00.5598.27.v1', '13.00');
+  /** Version "13.00.5820.21.v1". */
+  public static readonly VER_13_00_5820_21_V1 = SqlServerEngineVersion.of('13.00.5820.21.v1', '13.00');
 
   /** Version "14.00" (only a major version, without a specific minor version). */
   public static readonly VER_14 = SqlServerEngineVersion.of('14.00', '14.00');
@@ -853,6 +1026,17 @@ export class SqlServerEngineVersion {
   public static readonly VER_14_00_3049_1_V1 = SqlServerEngineVersion.of('14.00.3049.1.v1', '14.00');
   /** Version "14.00.3192.2.v1". */
   public static readonly VER_14_00_3192_2_V1 = SqlServerEngineVersion.of('14.00.3192.2.v1', '14.00');
+  /** Version "14.00.3223.3.v1". */
+  public static readonly VER_14_00_3223_3_V1 = SqlServerEngineVersion.of('14.00.3223.3.v1', '14.00');
+  /** Version "14.00.3281.6.v1". */
+  public static readonly VER_14_00_3281_6_V1 = SqlServerEngineVersion.of('14.00.3281.6.v1', '14.00');
+  /** Version "14.00.3294.2.v1". */
+  public static readonly VER_14_00_3294_2_V1 = SqlServerEngineVersion.of('14.00.3294.2.v1', '14.00');
+
+  /** Version "15.00" (only a major version, without a specific minor version). */
+  public static readonly VER_15 = SqlServerEngineVersion.of('15.00', '15.00');
+  /** Version "15.00.4043.16.v1". */
+  public static readonly VER_15_00_4043_16_V1 = SqlServerEngineVersion.of('15.00.4043.16.v1', '15.00');
 
   /**
    * Create a new SqlServerEngineVersion with an arbitrary version.
@@ -906,13 +1090,43 @@ abstract class SqlServerInstanceEngineBase extends InstanceEngineBase {
           ? props.version.sqlServerMajorVersion.slice(0, -1)
           : props.version.sqlServerMajorVersion}`
         : undefined,
+      features: {
+        s3Import: 'S3_INTEGRATION',
+        s3Export: 'S3_INTEGRATION',
+      },
     });
   }
 
-  public bindToInstance(_scope: core.Construct, _options: InstanceEngineBindOptions): InstanceEngineConfig {
+  public bindToInstance(scope: core.Construct, options: InstanceEngineBindOptions): InstanceEngineConfig {
+    const config = super.bindToInstance(scope, options);
+
+    let optionGroup = options.optionGroup;
+    const s3Role = options.s3ImportRole ?? options.s3ExportRole;
+    if (s3Role) {
+      if (options.s3ImportRole && options.s3ExportRole && options.s3ImportRole !== options.s3ExportRole) {
+        throw new Error('S3 import and export roles must be the same for SQL Server engines');
+      }
+
+      if (!optionGroup) {
+        optionGroup = new OptionGroup(scope, 'InstanceOptionGroup', {
+          engine: this,
+          configurations: [],
+        });
+      }
+      // https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Appendix.SQLServer.Options.BackupRestore.html
+      optionGroup.addConfiguration({
+        name: 'SQLSERVER_BACKUP_RESTORE',
+        settings: { IAM_ROLE_ARN: s3Role.roleArn },
+      });
+    }
+
     return {
+      ...config,
+      optionGroup,
     };
   }
+
+  protected get supportsTimezone() { return true; }
 }
 
 /**
@@ -1019,16 +1233,14 @@ export class DatabaseInstanceEngine {
   /**
    * The unversioned 'oracle-se1' instance engine.
    *
-   * @deprecated using unversioned engines is an availability risk.
-   *   We recommend using versioned engines created using the {@link oracleSe1()} method
+   * @deprecated instances can no longer be created with this engine. See https://forums.aws.amazon.com/ann.jspa?annID=7341
    */
   public static readonly ORACLE_SE1: IInstanceEngine = new OracleSe1InstanceEngine();
 
   /**
    * The unversioned 'oracle-se' instance engine.
    *
-   * @deprecated using unversioned engines is an availability risk.
-   *   We recommend using versioned engines created using the {@link oracleSe()} method
+   * @deprecated instances can no longer be created with this engine. See https://forums.aws.amazon.com/ann.jspa?annID=7341
    */
   public static readonly ORACLE_SE: IInstanceEngine = new OracleSeInstanceEngine();
 
@@ -1087,12 +1299,18 @@ export class DatabaseInstanceEngine {
     return new PostgresInstanceEngine(props.version);
   }
 
-  /** Creates a new Oracle Standard Edition instance engine. */
+  /**
+   * Creates a new Oracle Standard Edition instance engine.
+   * @deprecated instances can no longer be created with this engine. See https://forums.aws.amazon.com/ann.jspa?annID=7341
+   */
   public static oracleSe(props: OracleSeInstanceEngineProps): IInstanceEngine {
     return new OracleSeInstanceEngine(props.version);
   }
 
-  /** Creates a new Oracle Standard Edition 1 instance engine. */
+  /**
+   * Creates a new Oracle Standard Edition 1 instance engine.
+   * @deprecated instances can no longer be created with this engine. See https://forums.aws.amazon.com/ann.jspa?annID=7341
+   */
   public static oracleSe1(props: OracleSe1InstanceEngineProps): IInstanceEngine {
     return new OracleSe1InstanceEngine(props.version);
   }

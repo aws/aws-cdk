@@ -89,6 +89,7 @@ export abstract class UserData {
     switch (os) {
       case OperatingSystemType.LINUX: return UserData.forLinux();
       case OperatingSystemType.WINDOWS: return UserData.forWindows();
+      case OperatingSystemType.UNKNOWN: throw new Error('Cannot determine UserData for unknown operating system type');
     }
   }
 
@@ -165,7 +166,7 @@ class LinuxUserData extends UserData {
     this.addCommands(
       'set -e',
       `chmod +x '${params.filePath}'`,
-      `'${params.filePath}' ${params.arguments}`,
+      `'${params.filePath}' ${params.arguments ?? ''}`.trim(),
     );
   }
 
@@ -177,7 +178,7 @@ class LinuxUserData extends UserData {
 
   private renderOnExitLines(): string[] {
     if ( this.onExitLines.length > 0 ) {
-      return [ 'function exitTrap(){', 'exitCode=$?', ...this.onExitLines, '}', 'trap exitTrap EXIT' ];
+      return ['function exitTrap(){', 'exitCode=$?', ...this.onExitLines, '}', 'trap exitTrap EXIT'];
     }
     return [];
   }
@@ -206,8 +207,7 @@ class WindowsUserData extends UserData {
     return `<powershell>${
       [...(this.renderOnExitLines()),
         ...this.lines,
-        ...( this.onExitLines.length > 0 ? ['throw "Success"'] : [] ),
-      ].join('\n')
+        ...( this.onExitLines.length > 0 ? ['throw "Success"'] : [] )].join('\n')
     }</powershell>`;
   }
 
@@ -222,7 +222,7 @@ class WindowsUserData extends UserData {
 
   public addExecuteFileCommand( params: ExecuteFileOptions): void {
     this.addCommands(
-      `&'${params.filePath}' ${params.arguments}`,
+      `&'${params.filePath}' ${params.arguments ?? ''}`.trim(),
       `if (!$?) { Write-Error 'Failed to execute the file "${params.filePath}"' -ErrorAction Stop }`,
     );
   }

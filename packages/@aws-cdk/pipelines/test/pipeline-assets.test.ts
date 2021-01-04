@@ -1,11 +1,13 @@
+import * as path from 'path';
 import { arrayWith, deepObjectLike, encodedJson, notMatching, objectLike, stringLike } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
+import * as cp from '@aws-cdk/aws-codepipeline';
 import * as ecr_assets from '@aws-cdk/aws-ecr-assets';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
-import { Construct, Stack, Stage, StageProps } from '@aws-cdk/core';
-import * as path from 'path';
+import { Stack, Stage, StageProps } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as cdkp from '../lib';
-import { BucketStack, PIPELINE_ENV, TestApp, TestGitHubNpmPipeline } from './testutil';
+import { BucketStack, PIPELINE_ENV, TestApp, TestGitHubAction, TestGitHubNpmPipeline } from './testutil';
 
 const FILE_ASSET_SOURCE_HASH = '8289faf53c7da377bb2b90615999171adef5e1d8f6b88810e5fef75e6ca09ba5';
 
@@ -35,12 +37,119 @@ test('no assets stage if the application has no assets', () => {
   });
 });
 
+describe('asset stage placement', () => {
+  test('assets stage comes before any user-defined stages', () => {
+    // WHEN
+    pipeline.addApplicationStage(new FileAssetApp(app, 'App'));
+
+    // THEN
+    expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      Stages: [
+        objectLike({ Name: 'Source' }),
+        objectLike({ Name: 'Build' }),
+        objectLike({ Name: 'UpdatePipeline' }),
+        objectLike({ Name: 'Assets' }),
+        objectLike({ Name: 'App' }),
+      ],
+    });
+  });
+
+  test('assets stage inserted after existing pipeline actions', () => {
+    // WHEN
+    const sourceArtifact = new cp.Artifact();
+    const cloudAssemblyArtifact = new cp.Artifact();
+    const existingCodePipeline = new cp.Pipeline(pipelineStack, 'CodePipeline', {
+      stages: [
+        {
+          stageName: 'CustomSource',
+          actions: [new TestGitHubAction(sourceArtifact)],
+        },
+        {
+          stageName: 'CustomBuild',
+          actions: [cdkp.SimpleSynthAction.standardNpmSynth({ sourceArtifact, cloudAssemblyArtifact })],
+        },
+      ],
+    });
+    pipeline = new cdkp.CdkPipeline(pipelineStack, 'CdkEmptyPipeline', {
+      cloudAssemblyArtifact: cloudAssemblyArtifact,
+      selfMutating: false,
+      codePipeline: existingCodePipeline,
+      // No source/build actions
+    });
+    pipeline.addApplicationStage(new FileAssetApp(app, 'App'));
+
+    // THEN
+    expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      Stages: [
+        objectLike({ Name: 'CustomSource' }),
+        objectLike({ Name: 'CustomBuild' }),
+        objectLike({ Name: 'Assets' }),
+        objectLike({ Name: 'App' }),
+      ],
+    });
+  });
+
+  test('up to 50 assets fit in a single stage', () => {
+    // WHEN
+    pipeline.addApplicationStage(new MegaAssetsApp(app, 'App', { numAssets: 50 }));
+
+    // THEN
+    expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      Stages: [
+        objectLike({ Name: 'Source' }),
+        objectLike({ Name: 'Build' }),
+        objectLike({ Name: 'UpdatePipeline' }),
+        objectLike({ Name: 'Assets' }),
+        objectLike({ Name: 'App' }),
+      ],
+    });
+  });
+
+  test('51 assets triggers a second stage', () => {
+    // WHEN
+    pipeline.addApplicationStage(new MegaAssetsApp(app, 'App', { numAssets: 51 }));
+
+    // THEN
+    expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      Stages: [
+        objectLike({ Name: 'Source' }),
+        objectLike({ Name: 'Build' }),
+        objectLike({ Name: 'UpdatePipeline' }),
+        objectLike({ Name: 'Assets' }),
+        objectLike({ Name: 'Assets2' }),
+        objectLike({ Name: 'App' }),
+      ],
+    });
+  });
+
+  test('101 assets triggers a third stage', () => {
+    // WHEN
+    pipeline.addApplicationStage(new MegaAssetsApp(app, 'App', { numAssets: 101 }));
+
+    // THEN
+    expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      Stages: [
+        objectLike({ Name: 'Source' }),
+        objectLike({ Name: 'Build' }),
+        objectLike({ Name: 'UpdatePipeline' }),
+        objectLike({ Name: 'Assets' }),
+        objectLike({ Name: 'Assets2' }),
+        objectLike({ Name: 'Assets3' }),
+        objectLike({ Name: 'App' }),
+      ],
+    });
+  });
+});
+
 test('command line properly locates assets in subassembly', () => {
   // WHEN
   pipeline.addApplicationStage(new FileAssetApp(app, 'FileAssetApp'));
 
   // THEN
   expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Environment: {
+      Image: 'aws/codebuild/standard:4.0',
+    },
     Source: {
       BuildSpec: encodedJson(deepObjectLike({
         phases: {
@@ -107,6 +216,7 @@ test('file image asset publishers do not use privilegedmode, have right AssumeRo
     },
     Environment: objectLike({
       PrivilegedMode: false,
+      Image: 'aws/codebuild/standard:4.0',
     }),
   });
 
@@ -137,6 +247,7 @@ test('docker image asset publishers use privilegedmode, have right AssumeRole', 
       })),
     },
     Environment: objectLike({
+      Image: 'aws/codebuild/standard:4.0',
       PrivilegedMode: true,
     }),
   });
@@ -151,6 +262,39 @@ test('docker image asset publishers use privilegedmode, have right AssumeRole', 
   });
 });
 
+test('docker image asset can use a VPC', () => {
+  // WHEN
+  pipeline.addApplicationStage(new DockerAssetApp(app, 'DockerAssetApp'));
+
+  // THEN
+  expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    VpcConfig: objectLike({
+      SecurityGroupIds: [
+        {
+          'Fn::GetAtt': [
+            'CdkAssetsDockerAsset1SecurityGroup078F5C66',
+            'GroupId',
+          ],
+        },
+      ],
+      Subnets: [
+        {
+          Ref: 'TestVpcPrivateSubnet1SubnetCC65D771',
+        },
+        {
+          Ref: 'TestVpcPrivateSubnet2SubnetDE0C64A2',
+        },
+        {
+          Ref: 'TestVpcPrivateSubnet3Subnet2311D32F',
+        },
+      ],
+      VpcId: {
+        Ref: 'TestVpcE77CE678',
+      },
+    }),
+  });
+});
+
 test('can control fix/CLI version used in pipeline selfupdate', () => {
   // WHEN
   const stack2 = new Stack(app, 'Stack2', { env: PIPELINE_ENV });
@@ -161,6 +305,9 @@ test('can control fix/CLI version used in pipeline selfupdate', () => {
 
   // THEN
   expect(stack2).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Environment: {
+      Image: 'aws/codebuild/standard:4.0',
+    },
     Source: {
       BuildSpec: encodedJson(deepObjectLike({
         phases: {
@@ -184,9 +331,11 @@ describe('asset roles and policies', () => {
           Effect: 'Allow',
           Principal: {
             Service: 'codebuild.amazonaws.com',
-            AWS: { 'Fn::Join': [ '', [
-              'arn:', { Ref: 'AWS::Partition' }, `:iam::${PIPELINE_ENV.account}:root`,
-            ] ] },
+            AWS: {
+              'Fn::Join': ['', [
+                'arn:', { Ref: 'AWS::Partition' }, `:iam::${PIPELINE_ENV.account}:root`,
+              ]],
+            },
           },
         }],
       },
@@ -205,9 +354,11 @@ describe('asset roles and policies', () => {
           Effect: 'Allow',
           Principal: {
             Service: 'codebuild.amazonaws.com',
-            AWS: { 'Fn::Join': [ '', [
-              'arn:', { Ref: 'AWS::Partition' }, `:iam::${PIPELINE_ENV.account}:root`,
-            ] ] },
+            AWS: {
+              'Fn::Join': ['', [
+                'arn:', { Ref: 'AWS::Partition' }, `:iam::${PIPELINE_ENV.account}:root`,
+              ]],
+            },
           },
         }],
       },
@@ -267,6 +418,32 @@ class DockerAssetApp extends Stage {
   }
 }
 
+interface MegaAssetsAppProps extends StageProps {
+  readonly numAssets: number;
+}
+
+// Creates a mix of file and image assets, up to a specified count
+class MegaAssetsApp extends Stage {
+  constructor(scope: Construct, id: string, props: MegaAssetsAppProps) {
+    super(scope, id, props);
+    const stack = new Stack(this, 'Stack');
+
+    let assetCount = 0;
+    for (; assetCount < props.numAssets / 2; assetCount++) {
+      new s3_assets.Asset(stack, `Asset${assetCount}`, {
+        path: path.join(__dirname, 'test-file-asset.txt'),
+        assetHash: `FileAsset${assetCount}`,
+      });
+    }
+    for (; assetCount < props.numAssets; assetCount++) {
+      new ecr_assets.DockerImageAsset(stack, `Asset${assetCount}`, {
+        directory: path.join(__dirname, 'test-docker-asset'),
+        extraHash: `FileAsset${assetCount}`,
+      });
+    }
+  }
+}
+
 function expectedAssetRolePolicy(assumeRolePattern: string, attachedRole: string) {
   return {
     PolicyDocument: {
@@ -276,18 +453,18 @@ function expectedAssetRolePolicy(assumeRolePattern: string, attachedRole: string
         Resource: {
           'Fn::Join': ['', [
             'arn:',
-            {Ref: 'AWS::Partition'},
+            { Ref: 'AWS::Partition' },
             `:logs:${PIPELINE_ENV.region}:${PIPELINE_ENV.account}:log-group:/aws/codebuild/*`,
           ]],
         },
       },
       {
-        Action: ['codebuild:CreateReportGroup', 'codebuild:CreateReport', 'codebuild:UpdateReport', 'codebuild:BatchPutTestCases'],
+        Action: ['codebuild:CreateReportGroup', 'codebuild:CreateReport', 'codebuild:UpdateReport', 'codebuild:BatchPutTestCases', 'codebuild:BatchPutCodeCoverages'],
         Effect: 'Allow',
         Resource: {
           'Fn::Join': ['', [
             'arn:',
-            {Ref: 'AWS::Partition'},
+            { Ref: 'AWS::Partition' },
             `:codebuild:${PIPELINE_ENV.region}:${PIPELINE_ENV.account}:report-group/*`,
           ]],
         },
@@ -306,16 +483,16 @@ function expectedAssetRolePolicy(assumeRolePattern: string, attachedRole: string
         Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
         Effect: 'Allow',
         Resource: [
-          { 'Fn::GetAtt': ['CdkPipelineArtifactsBucket7B46C7BF', 'Arn' ] },
-          { 'Fn::Join': ['', [{'Fn::GetAtt': ['CdkPipelineArtifactsBucket7B46C7BF', 'Arn']}, '/*']] },
+          { 'Fn::GetAtt': ['CdkPipelineArtifactsBucket7B46C7BF', 'Arn'] },
+          { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['CdkPipelineArtifactsBucket7B46C7BF', 'Arn'] }, '/*']] },
         ],
       },
       {
         Action: ['kms:Decrypt', 'kms:DescribeKey'],
         Effect: 'Allow',
-        Resource: { 'Fn::GetAtt': [ 'CdkPipelineArtifactsBucketEncryptionKeyDDD3258C', 'Arn' ]},
+        Resource: { 'Fn::GetAtt': ['CdkPipelineArtifactsBucketEncryptionKeyDDD3258C', 'Arn'] },
       }],
     },
-    Roles: [ {Ref: attachedRole} ],
+    Roles: [{ Ref: attachedRole }],
   };
 }

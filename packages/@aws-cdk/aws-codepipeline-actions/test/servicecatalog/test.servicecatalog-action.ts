@@ -8,7 +8,7 @@ import * as cpactions from '../../lib';
 /* eslint-disable quote-props */
 
 export = {
-  'addAction succesfully leads to creation of codepipeline service catalog action'(test: Test) {
+  'addAction succesfully leads to creation of codepipeline service catalog action with properly formatted TemplateFilePath'(test: Test) {
     // GIVEN
     const stack = new TestFixture();
     // WHEN
@@ -34,7 +34,7 @@ export = {
                 'Version': '1',
               },
               'Configuration': {
-                'TemplateFilePath': 'SourceArtifact::template.yaml',
+                'TemplateFilePath': 'template.yaml',
                 'ProductVersionDescription': 'This is a description of the version.',
                 'ProductVersionName': 'VersionName',
                 'ProductType': 'CLOUD_FORMATION_TEMPLATE',
@@ -79,7 +79,7 @@ export = {
                 'Version': '1',
               },
               'Configuration': {
-                'TemplateFilePath': 'SourceArtifact::template.yaml',
+                'TemplateFilePath': 'template.yaml',
                 'ProductVersionName': 'VersionName',
                 'ProductType': 'CLOUD_FORMATION_TEMPLATE',
                 'ProductId': 'prod-xxxxxxxxx',

@@ -1,8 +1,10 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
-import { Arn, Construct, Duration, IResource, Resource, Stack } from '@aws-cdk/core';
+import { Arn, Duration, IResource, Resource, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { StateGraph } from './state-graph';
+import { StatesMetrics } from './stepfunctions-canned-metrics.generated';
 import { CfnStateMachine } from './stepfunctions.generated';
 import { IChainable } from './types';
 
@@ -118,6 +120,13 @@ export interface StateMachineProps {
    * @default No logging
    */
   readonly logs?: LogOptions;
+
+  /**
+   * Specifies whether Amazon X-Ray tracing is enabled for this state machine.
+   *
+   * @default false
+   */
+  readonly tracingEnabled?: boolean;
 }
 
 /**
@@ -219,6 +228,98 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
     });
   }
 
+
+  /**
+   * Return the given named metric for this State Machine's executions
+   *
+   * @default - sum over 5 minutes
+   */
+  public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return new cloudwatch.Metric({
+      namespace: 'AWS/States',
+      metricName,
+      dimensions: { StateMachineArn: this.stateMachineArn },
+      statistic: 'sum',
+      ...props,
+    }).attachTo(this);
+  }
+
+  /**
+   * Metric for the number of executions that failed
+   *
+   * @default - sum over 5 minutes
+   */
+  public metricFailed(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(StatesMetrics.executionsFailedAverage, {
+      statistic: 'sum',
+      ...props,
+    });
+  }
+
+  /**
+   * Metric for the number of executions that were throttled
+   *
+   * @default - sum over 5 minutes
+   */
+  public metricThrottled(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    // There's a typo in the "canned" version of this
+    return this.metric('ExecutionThrottled', props);
+  }
+
+  /**
+   * Metric for the number of executions that were aborted
+   *
+   * @default - sum over 5 minutes
+   */
+  public metricAborted(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(StatesMetrics.executionsAbortedAverage, {
+      statistic: 'sum',
+      ...props,
+    });
+  }
+
+  /**
+   * Metric for the number of executions that succeeded
+   *
+   * @default - sum over 5 minutes
+   */
+  public metricSucceeded(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(StatesMetrics.executionsSucceededAverage, {
+      statistic: 'sum',
+      ...props,
+    });
+  }
+
+  /**
+   * Metric for the number of executions that timed out
+   *
+   * @default - sum over 5 minutes
+   */
+  public metricTimedOut(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(StatesMetrics.executionsTimedOutAverage, {
+      statistic: 'sum',
+      ...props,
+    });
+  }
+
+  /**
+   * Metric for the number of executions that were started
+   *
+   * @default - sum over 5 minutes
+   */
+  public metricStarted(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.metric('ExecutionsStarted', props);
+  }
+
+  /**
+   * Metric for the interval, in milliseconds, between the time the execution starts and the time it closes
+   *
+   * @default - average over 5 minutes
+   */
+  public metricTime(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(StatesMetrics.executionTimeAverage, props);
+  }
+
   /**
    * Returns the pattern for the execution ARN's of the state machine
    */
@@ -229,6 +330,15 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
       resourceName: Arn.parse(this.stateMachineArn, ':').resourceName,
       sep: ':',
     });
+  }
+
+  private cannedMetric(
+    fn: (dims: { StateMachineArn: string }) => cloudwatch.MetricProps,
+    props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return new cloudwatch.Metric({
+      ...fn({ StateMachineArn: this.stateMachineArn }),
+      ...props,
+    }).attachTo(this);
   }
 }
 
@@ -272,37 +382,13 @@ export class StateMachine extends StateMachineBase {
 
     this.stateMachineType = props.stateMachineType ? props.stateMachineType : StateMachineType.STANDARD;
 
-    let loggingConfiguration: CfnStateMachine.LoggingConfigurationProperty | undefined;
-    if (props.logs) {
-      const conf = props.logs;
-      loggingConfiguration = {
-        destinations: [{ cloudWatchLogsLogGroup: { logGroupArn: conf.destination.logGroupArn } }],
-        includeExecutionData: conf.includeExecutionData,
-        level: conf.level || 'ERROR',
-      };
-      // https://docs.aws.amazon.com/step-functions/latest/dg/cw-logs.html#cloudwatch-iam-policy
-      this.addToRolePolicy(new iam.PolicyStatement({
-        effect: iam.Effect.ALLOW,
-        actions: [
-          'logs:CreateLogDelivery',
-          'logs:GetLogDelivery',
-          'logs:UpdateLogDelivery',
-          'logs:DeleteLogDelivery',
-          'logs:ListLogDeliveries',
-          'logs:PutResourcePolicy',
-          'logs:DescribeResourcePolicies',
-          'logs:DescribeLogGroups',
-        ],
-        resources: ['*'],
-      }));
-    }
-
     const resource = new CfnStateMachine(this, 'Resource', {
       stateMachineName: this.physicalName,
       stateMachineType: props.stateMachineType ? props.stateMachineType : undefined,
       roleArn: this.role.roleArn,
       definitionString: Stack.of(this).toJsonString(graph.toGraphJson()),
-      loggingConfiguration,
+      loggingConfiguration: props.logs ? this.buildLoggingConfiguration(props.logs) : undefined,
+      tracingConfiguration: props.tracingEnabled ? this.buildTracingConfiguration() : undefined,
     });
 
     resource.node.addDependency(this.role);
@@ -324,85 +410,51 @@ export class StateMachine extends StateMachineBase {
    * Add the given statement to the role's policy
    */
   public addToRolePolicy(statement: iam.PolicyStatement) {
-    this.role.addToPolicy(statement);
+    this.role.addToPrincipalPolicy(statement);
   }
 
-  /**
-   * Return the given named metric for this State Machine's executions
-   *
-   * @default sum over 5 minutes
-   */
-  public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return new cloudwatch.Metric({
-      namespace: 'AWS/States',
-      metricName,
-      dimensions: { StateMachineArn: this.stateMachineArn },
-      statistic: 'sum',
-      ...props,
-    }).attachTo(this);
+  private buildLoggingConfiguration(logOptions: LogOptions): CfnStateMachine.LoggingConfigurationProperty {
+    // https://docs.aws.amazon.com/step-functions/latest/dg/cw-logs.html#cloudwatch-iam-policy
+    this.addToRolePolicy(new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      actions: [
+        'logs:CreateLogDelivery',
+        'logs:GetLogDelivery',
+        'logs:UpdateLogDelivery',
+        'logs:DeleteLogDelivery',
+        'logs:ListLogDeliveries',
+        'logs:PutResourcePolicy',
+        'logs:DescribeResourcePolicies',
+        'logs:DescribeLogGroups',
+      ],
+      resources: ['*'],
+    }));
+
+    return {
+      destinations: [{
+        cloudWatchLogsLogGroup: { logGroupArn: logOptions.destination.logGroupArn },
+      }],
+      includeExecutionData: logOptions.includeExecutionData,
+      level: logOptions.level || 'ERROR',
+    };
   }
 
-  /**
-   * Metric for the number of executions that failed
-   *
-   * @default sum over 5 minutes
-   */
-  public metricFailed(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('ExecutionsFailed', props);
-  }
+  private buildTracingConfiguration(): CfnStateMachine.TracingConfigurationProperty {
+    this.addToRolePolicy(new iam.PolicyStatement({
+      // https://docs.aws.amazon.com/xray/latest/devguide/security_iam_id-based-policy-examples.html#xray-permissions-resources
+      // https://docs.aws.amazon.com/step-functions/latest/dg/xray-iam.html
+      actions: [
+        'xray:PutTraceSegments',
+        'xray:PutTelemetryRecords',
+        'xray:GetSamplingRules',
+        'xray:GetSamplingTargets',
+      ],
+      resources: ['*'],
+    }));
 
-  /**
-   * Metric for the number of executions that were throttled
-   *
-   * @default sum over 5 minutes
-   */
-  public metricThrottled(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('ExecutionThrottled', props);
-  }
-
-  /**
-   * Metric for the number of executions that were aborted
-   *
-   * @default sum over 5 minutes
-   */
-  public metricAborted(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('ExecutionsAborted', props);
-  }
-
-  /**
-   * Metric for the number of executions that succeeded
-   *
-   * @default sum over 5 minutes
-   */
-  public metricSucceeded(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('ExecutionsSucceeded', props);
-  }
-
-  /**
-   * Metric for the number of executions that succeeded
-   *
-   * @default sum over 5 minutes
-   */
-  public metricTimedOut(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('ExecutionsTimedOut', props);
-  }
-
-  /**
-   * Metric for the number of executions that were started
-   *
-   * @default sum over 5 minutes
-   */
-  public metricStarted(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('ExecutionsStarted', props);
-  }
-
-  /**
-   * Metric for the interval, in milliseconds, between the time the execution starts and the time it closes
-   *
-   * @default sum over 5 minutes
-   */
-  public metricTime(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('ExecutionTime', props);
+    return {
+      enabled: true,
+    };
   }
 }
 
@@ -453,4 +505,60 @@ export interface IStateMachine extends IResource {
    * @param actions The list of desired actions
    */
   grant(identity: iam.IGrantable, ...actions: string[]): iam.Grant;
+
+  /**
+   * Return the given named metric for this State Machine's executions
+   *
+   * @default - sum over 5 minutes
+   */
+  metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * Metric for the number of executions that failed
+   *
+   * @default - sum over 5 minutes
+   */
+  metricFailed(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * Metric for the number of executions that were throttled
+   *
+   * @default sum over 5 minutes
+   */
+  metricThrottled(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * Metric for the number of executions that were aborted
+   *
+   * @default - sum over 5 minutes
+   */
+  metricAborted(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * Metric for the number of executions that succeeded
+   *
+   * @default - sum over 5 minutes
+   */
+  metricSucceeded(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * Metric for the number of executions that timed out
+   *
+   * @default - sum over 5 minutes
+   */
+  metricTimedOut(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * Metric for the number of executions that were started
+   *
+   * @default - sum over 5 minutes
+   */
+  metricStarted(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * Metric for the interval, in milliseconds, between the time the execution starts and the time it closes
+   *
+   * @default - sum over 5 minutes
+   */
+  metricTime(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 }

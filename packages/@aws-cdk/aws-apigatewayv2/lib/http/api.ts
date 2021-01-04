@@ -1,9 +1,12 @@
-import { Construct, Duration, IResource, Resource } from '@aws-cdk/core';
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import { Duration, IResource, Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnApi, CfnApiProps } from '../apigatewayv2.generated';
 import { DefaultDomainMappingOptions } from '../http/stage';
 import { IHttpRouteIntegration } from './integration';
 import { BatchHttpRouteOptions, HttpMethod, HttpRoute, HttpRouteKey } from './route';
 import { HttpStage, HttpStageOptions } from './stage';
+import { VpcLink, VpcLinkProps } from './vpc-link';
 
 /**
  * Represents an HTTP API
@@ -16,9 +19,72 @@ export interface IHttpApi extends IResource {
   readonly httpApiId: string;
 
   /**
+   * The default endpoint for an API
+   * @attribute
+   */
+  readonly apiEndpoint: string;
+
+  /**
    * The default stage
    */
   readonly defaultStage?: HttpStage;
+
+  /**
+   * Return the given named metric for this HTTP Api Gateway
+   *
+   * @default - average over 5 minutes
+   */
+  metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * Metric for the number of client-side errors captured in a given period.
+   *
+   * @default - sum over 5 minutes
+   */
+  metricClientError(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * Metric for the number of server-side errors captured in a given period.
+   *
+   * @default - sum over 5 minutes
+   */
+  metricServerError(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * Metric for the amount of data processed in bytes.
+   *
+   * @default - sum over 5 minutes
+   */
+  metricDataProcessed(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * Metric for the total number API requests in a given period.
+   *
+   * @default - SampleCount over 5 minutes
+   */
+  metricCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * Metric for the time between when API Gateway relays a request to the backend
+   * and when it receives a response from the backend.
+   *
+   * @default - no statistic
+   */
+  metricIntegrationLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * The time between when API Gateway receives a request from a client
+   * and when it returns a response to the client.
+   * The latency includes the integration latency and other API Gateway overhead.
+   *
+   * @default - no statistic
+   */
+  metricLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * Add a new VpcLink
+   */
+  addVpcLink(options: VpcLinkProps): VpcLink
 }
 
 /**
@@ -30,6 +96,12 @@ export interface HttpApiProps {
    * @default - id of the HttpApi construct.
    */
   readonly apiName?: string;
+
+  /**
+   * The description of the API.
+   * @default - none
+   */
+  readonly description?: string;
 
   /**
    * An integration that will be configured on the catch-all route ($default).
@@ -115,22 +187,104 @@ export interface AddRoutesOptions extends BatchHttpRouteOptions {
   readonly methods?: HttpMethod[];
 }
 
+abstract class HttpApiBase extends Resource implements IHttpApi { // note that this is not exported
+
+  public abstract readonly httpApiId: string;
+  public abstract readonly apiEndpoint: string;
+  private vpcLinks: Record<string, VpcLink> = {};
+
+  public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return new cloudwatch.Metric({
+      namespace: 'AWS/ApiGateway',
+      metricName,
+      dimensions: { ApiId: this.httpApiId },
+      ...props,
+    }).attachTo(this);
+  }
+
+  public metricClientError(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.metric('4XXError', { statistic: 'Sum', ...props });
+  }
+
+  public metricServerError(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.metric('5XXError', { statistic: 'Sum', ...props });
+  }
+
+  public metricDataProcessed(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.metric('DataProcessed', { statistic: 'Sum', ...props });
+  }
+
+  public metricCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.metric('Count', { statistic: 'SampleCount', ...props });
+  }
+
+  public metricIntegrationLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.metric('IntegrationLatency', props);
+  }
+
+  public metricLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.metric('Latency', props);
+  }
+
+  public addVpcLink(options: VpcLinkProps): VpcLink {
+    const { vpcId } = options.vpc;
+    if (vpcId in this.vpcLinks) {
+      return this.vpcLinks[vpcId];
+    }
+
+    const count = Object.keys(this.vpcLinks).length + 1;
+    const vpcLink = new VpcLink(this, `VpcLink-${count}`, options);
+    this.vpcLinks[vpcId] = vpcLink;
+
+    return vpcLink;
+  }
+}
+
+/**
+ * Attributes for importing an HttpApi into the CDK
+ */
+export interface HttpApiAttributes {
+  /**
+   * The identifier of the HttpApi
+   */
+  readonly httpApiId: string;
+  /**
+   * The endpoint URL of the HttpApi
+   * @default - throws an error if apiEndpoint is accessed.
+   */
+  readonly apiEndpoint?: string;
+}
+
 /**
  * Create a new API Gateway HTTP API endpoint.
  * @resource AWS::ApiGatewayV2::Api
  */
-export class HttpApi extends Resource implements IHttpApi {
+export class HttpApi extends HttpApiBase {
   /**
    * Import an existing HTTP API into this CDK app.
    */
-  public static fromApiId(scope: Construct, id: string, httpApiId: string): IHttpApi {
-    class Import extends Resource implements IHttpApi {
-      public readonly httpApiId = httpApiId;
+  public static fromHttpApiAttributes(scope: Construct, id: string, attrs: HttpApiAttributes): IHttpApi {
+    class Import extends HttpApiBase {
+      public readonly httpApiId = attrs.httpApiId;
+      private readonly _apiEndpoint = attrs.apiEndpoint;
+
+      public get apiEndpoint(): string {
+        if (!this._apiEndpoint) {
+          throw new Error('apiEndpoint is not configured on the imported HttpApi.');
+        }
+        return this._apiEndpoint;
+      }
     }
     return new Import(scope, id);
   }
 
+  /**
+   * A human friendly name for this HTTP API. Note that this is different from `httpApiId`.
+   */
+  public readonly httpApiName?: string;
   public readonly httpApiId: string;
+  public readonly apiEndpoint: string;
+
   /**
    * default stage of the api resource
    */
@@ -139,10 +293,14 @@ export class HttpApi extends Resource implements IHttpApi {
   constructor(scope: Construct, id: string, props?: HttpApiProps) {
     super(scope, id);
 
-    const apiName = props?.apiName ?? id;
+    this.httpApiName = props?.apiName ?? id;
 
     let corsConfiguration: CfnApi.CorsProperty | undefined;
     if (props?.corsPreflight) {
+      const cors = props.corsPreflight;
+      if (cors.allowOrigins && cors.allowOrigins.includes('*') && cors.allowCredentials) {
+        throw new Error("CORS preflight - allowCredentials is not supported when allowOrigin is '*'");
+      }
       const {
         allowCredentials,
         allowHeaders,
@@ -162,13 +320,15 @@ export class HttpApi extends Resource implements IHttpApi {
     }
 
     const apiProps: CfnApiProps = {
-      name: apiName,
+      name: this.httpApiName,
       protocolType: 'HTTP',
       corsConfiguration,
+      description: props?.description,
     };
 
     const resource = new CfnApi(this, 'Resource', apiProps);
     this.httpApiId = resource.ref;
+    this.apiEndpoint = resource.attrApiEndpoint;
 
     if (props?.defaultIntegration) {
       new HttpRoute(this, 'DefaultRoute', {
@@ -186,7 +346,7 @@ export class HttpApi extends Resource implements IHttpApi {
       });
 
       // to ensure the domain is ready before creating the default stage
-      if(props?.defaultDomainMapping) {
+      if (props?.defaultDomainMapping) {
         this.defaultStage.node.addDependency(props.defaultDomainMapping.domainName);
       }
     }
@@ -221,7 +381,7 @@ export class HttpApi extends Resource implements IHttpApi {
    * methods.
    */
   public addRoutes(options: AddRoutesOptions): HttpRoute[] {
-    const methods = options.methods ?? [ HttpMethod.ANY ];
+    const methods = options.methods ?? [HttpMethod.ANY];
     return methods.map((method) => new HttpRoute(this, `${method}${options.path}`, {
       httpApi: this,
       routeKey: HttpRouteKey.with(options.path, method),

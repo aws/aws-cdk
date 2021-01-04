@@ -145,11 +145,11 @@ export class SubscriptionFilter {
     }
 
     if (numericConditions.between) {
-      conditions.push({ numeric: ['>=', numericConditions.between.start, '<=', numericConditions.between.stop ]});
+      conditions.push({ numeric: ['>=', numericConditions.between.start, '<=', numericConditions.between.stop] });
     }
 
     if (numericConditions.betweenStrict) {
-      conditions.push({ numeric: ['>', numericConditions.betweenStrict.start, '<', numericConditions.betweenStrict.stop ]});
+      conditions.push({ numeric: ['>', numericConditions.betweenStrict.start, '<', numericConditions.betweenStrict.stop] });
     }
 
     return new SubscriptionFilter(conditions);

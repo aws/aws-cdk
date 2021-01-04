@@ -5,7 +5,8 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
-import { Construct, Duration, Size } from '@aws-cdk/core';
+import { Duration, Size } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 /**
  * Task to train a machine learning model using Amazon SageMaker
@@ -500,6 +501,28 @@ export enum CompressionType {
 //
 
 /**
+ * Configures the timeout and maximum number of retries for processing a transform job invocation.
+ *
+ *  @experimental
+ */
+export interface ModelClientOptions {
+
+  /**
+   * The maximum number of retries when invocation requests are failing.
+   *
+   * @default 0
+   */
+  readonly invocationsMaxRetries?: number;
+
+  /**
+   * The timeout duration for an invocation request.
+   *
+   * @default Duration.minutes(1)
+   */
+  readonly invocationsTimeout?: Duration;
+}
+
+/**
  *  Dataset to be transformed and the Amazon S3 location where it is stored.
  *
  *  @experimental
@@ -623,6 +646,218 @@ export interface TransformResources {
    * @default - None
    */
   readonly volumeEncryptionKey?: kms.IKey;
+}
+
+/**
+ * Properties to define a ContainerDefinition
+ *
+ * @see https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_ContainerDefinition.html
+ * @experimental
+ */
+export interface ContainerDefinitionOptions {
+  /**
+   * The Amazon EC2 Container Registry (Amazon ECR) path where inference code is stored.
+   *
+   * @default - None
+   */
+  readonly image?: DockerImage;
+  /**
+   * The environment variables to set in the Docker container
+   *
+   * @default - No variables
+   */
+  readonly environmentVariables?: sfn.TaskInput;
+  /**
+   * The name or Amazon Resource Name (ARN) of the model package to use to create the model.
+   *
+   * @default - None
+   */
+  readonly modelPackageName?: string;
+  /**
+   * Defines how many models the container hosts
+   *
+   * @default - Mode.SINGLE_MODEL
+   */
+  readonly mode?: Mode;
+  /**
+   * This parameter is ignored for models that contain only a PrimaryContainer.
+   * When a ContainerDefinition is part of an inference pipeline,
+   * the value of the parameter uniquely identifies the container for the purposes of logging and metrics.
+   *
+   * @default - None
+   */
+  readonly containerHostName?: string;
+  /**
+   * The S3 path where the model artifacts, which result from model training, are stored.
+   * This path must point to a single gzip compressed tar archive (.tar.gz suffix).
+   * The S3 path is required for Amazon SageMaker built-in algorithms, but not if you use your own algorithms.
+   *
+   * @default - None
+   */
+  readonly modelS3Location?: S3Location;
+}
+
+/**
+ * Describes the container, as part of model definition.
+ *
+ * @see https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_ContainerDefinition.html
+ * @experimental
+ */
+export class ContainerDefinition implements IContainerDefinition {
+
+  constructor(private readonly options: ContainerDefinitionOptions) {}
+
+  /**
+   * Called when the ContainerDefinition type configured on Sagemaker Task
+   */
+  public bind(task: ISageMakerTask): ContainerDefinitionConfig {
+    return {
+      parameters: {
+        ContainerHostname: this.options.containerHostName,
+        Image: this.options.image?.bind(task).imageUri,
+        Mode: this.options.mode,
+        ModelDataUrl: this.options.modelS3Location?.bind(task, { forReading: true }).uri,
+        ModelPackageName: this.options.modelPackageName,
+        Environment: this.options.environmentVariables?.value,
+      },
+    };
+  }
+}
+
+/**
+ * Configuration of the container used to host the model
+ *
+ * @see https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_ContainerDefinition.html
+ * @experimental
+ */
+export interface IContainerDefinition {
+  /**
+   * Called when the ContainerDefinition is used by a SageMaker task.
+   */
+  bind(task: ISageMakerTask): ContainerDefinitionConfig;
+}
+
+/**
+ * Configuration options for the ContainerDefinition
+ */
+export interface ContainerDefinitionConfig {
+  /**
+   * Additional parameters to pass to the base task
+   *
+   * @default - No additional parameters passed
+   */
+  readonly parameters?: { [key: string]: any };
+}
+
+/**
+ * Specifies how many models the container hosts
+ *
+ * @experimental
+ */
+export enum Mode {
+  /**
+   * Container hosts a single model
+   */
+  SINGLE_MODEL = 'SingleModel',
+  /**
+   * Container hosts multiple models
+   *
+   * @see https://docs.aws.amazon.com/sagemaker/latest/dg/multi-model-endpoints.html
+   */
+  MULTI_MODEL = 'MultiModel',
+}
+
+/**
+ * Identifies a model that you want to host and the resources to deploy for hosting it.
+ *
+ * @see  https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_ProductionVariant.html
+ * @experimental
+ */
+export interface ProductionVariant {
+  /**
+   * The size of the Elastic Inference (EI) instance to use for the production variant.
+   *
+   * @default - None
+   */
+  readonly acceleratorType?: AcceleratorType;
+  /**
+   * Number of instances to launch initially.
+   *
+   * @default - 1
+   */
+  readonly initialInstanceCount?: number;
+  /**
+   * Determines initial traffic distribution among all of the models that you specify in the endpoint configuration.
+   *
+   * @default - 1.0
+   */
+  readonly initialVariantWeight?: number;
+  /**
+   * The ML compute instance type
+   */
+  readonly instanceType: ec2.InstanceType;
+  /**
+   * The name of the production variant.
+   */
+  readonly variantName: string;
+  /**
+   * The name of the model that you want to host. This is the name that you specified when creating the model.
+   */
+  readonly modelName: string;
+}
+
+/**
+ * The generation of Elastic Inference (EI) instance
+ *
+ * @see https://docs.aws.amazon.com/sagemaker/latest/dg/ei.html
+ * @experimental
+ */
+export class AcceleratorClass {
+  /**
+   * Elastic Inference accelerator 1st generation
+   */
+  public static readonly EIA1 = AcceleratorClass.of('eia1');
+  /**
+   * Elastic Inference accelerator 2nd generation
+   */
+  public static readonly EIA2 = AcceleratorClass.of('eia2');
+  /**
+   * Custom AcceleratorType
+   * @param version - Elastic Inference accelerator generation
+  */
+  public static of(version: string) { return new AcceleratorClass(version); }
+  /**
+   * @param version - Elastic Inference accelerator generation
+   */
+  private constructor(public readonly version: string) { }
+}
+
+/**
+ * The size of the Elastic Inference (EI) instance to use for the production variant.
+ * EI instances provide on-demand GPU computing for inference
+ *
+ * @see https://docs.aws.amazon.com/sagemaker/latest/dg/ei.html
+ * @experimental
+ */
+export class AcceleratorType {
+  /**
+   * AcceleratorType
+   *
+   * This class takes a combination of a class and size.
+   */
+  public static of(acceleratorClass: AcceleratorClass, instanceSize: ec2.InstanceSize) {
+    return new AcceleratorType(`ml.${acceleratorClass}.${instanceSize}`);
+  }
+
+  constructor(private readonly instanceTypeIdentifier: string) {
+  }
+
+  /**
+   * Return the accelerator type as a dotted string
+   */
+  public toString(): string {
+    return this.instanceTypeIdentifier;
+  }
 }
 
 /**

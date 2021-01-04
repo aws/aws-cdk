@@ -86,13 +86,70 @@ export = {
 
       test.done();
     },
+
+    'Allows the pipeline to describe this stepfunction execution'(test: Test) {
+      const stack = new Stack();
+
+      minimalPipeline(stack);
+
+      expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {},
+            {
+              Action: 'states:DescribeExecution',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':states:',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    ':',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':execution:',
+                    {
+                      'Fn::Select': [
+                        6,
+                        {
+                          'Fn::Split': [
+                            ':',
+                            {
+                              Ref: 'SimpleStateMachineE8E2CF40',
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                    ':*',
+                  ],
+                ],
+              },
+              Effect: 'Allow',
+            },
+          ],
+        },
+      }));
+
+      expect(stack).to(haveResourceLike('AWS::IAM::Role'));
+
+      test.done();
+    },
+
   },
 };
 
 function minimalPipeline(stack: Stack): codepipeline.IStage {
   const sourceOutput = new codepipeline.Artifact();
   const startState = new stepfunction.Pass(stack, 'StartState');
-  const simpleStateMachine  = new stepfunction.StateMachine(stack, 'SimpleStateMachine', {
+  const simpleStateMachine = new stepfunction.StateMachine(stack, 'SimpleStateMachine', {
     definition: startState,
   });
   const pipeline = new codepipeline.Pipeline(stack, 'MyPipeline');
@@ -114,7 +171,7 @@ function minimalPipeline(stack: Stack): codepipeline.IStage {
       new cpactions.StepFunctionInvokeAction({
         actionName: 'Invoke',
         stateMachine: simpleStateMachine,
-        stateMachineInput: cpactions.StateMachineInput.literal({IsHelloWorldExample: true}),
+        stateMachineInput: cpactions.StateMachineInput.literal({ IsHelloWorldExample: true }),
       }),
     ],
   });

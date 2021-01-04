@@ -1,4 +1,5 @@
-import { Construct, Resource, ResourceProps } from '@aws-cdk/core';
+import { Resource, ResourceProps } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { AuthorizationType } from './method';
 import { IRestApi } from './restapi';
 

@@ -5,6 +5,8 @@ import * as sqs from '@aws-cdk/aws-sqs';
 import { App, CfnParameter, Construct, Stack } from '@aws-cdk/core';
 import * as cfn from '../lib';
 
+/* eslint-disable cdk/no-core-construct */
+
 interface MyNestedStackProps {
   readonly subscriber?: sqs.Queue;
   readonly siblingTopic?: sns.Topic; // a topic defined in a sibling nested stack
@@ -25,7 +27,7 @@ class MyNestedStack extends cfn.NestedStack {
     const topicNamePrefixParameter = new CfnParameter(this, 'TopicNamePrefix', { type: 'String' });
 
     for (let i = 0; i < props.topicCount; ++i) {
-      const topic = new sns.Topic(this, `topic-${i}`, { displayName: `${topicNamePrefixParameter.valueAsString}-${i}`});
+      const topic = new sns.Topic(this, `topic-${i}`, { displayName: `${topicNamePrefixParameter.valueAsString}-${i}` });
 
       // since the subscription resources are defined in the subscriber's stack, this
       // will add an SNS subscription resource to the parent stack that reference this topic.

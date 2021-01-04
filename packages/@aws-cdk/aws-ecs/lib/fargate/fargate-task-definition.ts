@@ -1,4 +1,5 @@
-import { Construct, Resource, Tokenization } from '@aws-cdk/core';
+import { Resource, Tokenization } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CommonTaskDefinitionProps, Compatibility, ITaskDefinition, NetworkMode, TaskDefinition } from '../base/task-definition';
 
 /**
@@ -11,9 +12,13 @@ export interface FargateTaskDefinitionProps extends CommonTaskDefinitionProps {
    * which determines your range of valid values for the memory parameter:
    *
    * 256 (.25 vCPU) - Available memory values: 512 (0.5 GB), 1024 (1 GB), 2048 (2 GB)
+   *
    * 512 (.5 vCPU) - Available memory values: 1024 (1 GB), 2048 (2 GB), 3072 (3 GB), 4096 (4 GB)
+   *
    * 1024 (1 vCPU) - Available memory values: 2048 (2 GB), 3072 (3 GB), 4096 (4 GB), 5120 (5 GB), 6144 (6 GB), 7168 (7 GB), 8192 (8 GB)
+   *
    * 2048 (2 vCPU) - Available memory values: Between 4096 (4 GB) and 16384 (16 GB) in increments of 1024 (1 GB)
+   *
    * 4096 (4 vCPU) - Available memory values: Between 8192 (8 GB) and 30720 (30 GB) in increments of 1024 (1 GB)
    *
    * @default 256
@@ -25,9 +30,13 @@ export interface FargateTaskDefinitionProps extends CommonTaskDefinitionProps {
    * this field is required and you must use one of the following values, which determines your range of valid values for the cpu parameter:
    *
    * 512 (0.5 GB), 1024 (1 GB), 2048 (2 GB) - Available cpu values: 256 (.25 vCPU)
+   *
    * 1024 (1 GB), 2048 (2 GB), 3072 (3 GB), 4096 (4 GB) - Available cpu values: 512 (.5 vCPU)
+   *
    * 2048 (2 GB), 3072 (3 GB), 4096 (4 GB), 5120 (5 GB), 6144 (6 GB), 7168 (7 GB), 8192 (8 GB) - Available cpu values: 1024 (1 vCPU)
+   *
    * Between 4096 (4 GB) and 16384 (16 GB) in increments of 1024 (1 GB) - Available cpu values: 2048 (2 vCPU)
+   *
    * Between 8192 (8 GB) and 30720 (30 GB) in increments of 1024 (1 GB) - Available cpu values: 4096 (4 vCPU)
    *
    * @default 512

@@ -76,9 +76,9 @@ function formatSecurityChangesWithBanner(formatter: Formatter, templateDiff: Tem
 }
 
 const ADDITION = colors.green('[+]');
-const CONTEXT  = colors.grey('[ ]');
-const UPDATE   = colors.yellow('[~]');
-const REMOVAL  = colors.red('[-]');
+const CONTEXT = colors.grey('[ ]');
+const UPDATE = colors.yellow('[~]');
+const REMOVAL = colors.red('[-]');
 
 class Formatter {
   constructor(
@@ -222,7 +222,7 @@ class Formatter {
     if (isPropertyDifference(diff)) {
       if (diff.changeImpact === ResourceImpact.MAY_REPLACE) {
         additionalInfo = ' (may cause replacement)';
-      } else if (diff.changeImpact ===  ResourceImpact.WILL_REPLACE) {
+      } else if (diff.changeImpact === ResourceImpact.WILL_REPLACE) {
         additionalInfo = ' (requires replacement)';
       }
     }

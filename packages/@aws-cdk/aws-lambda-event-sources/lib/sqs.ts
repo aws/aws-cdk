@@ -1,5 +1,6 @@
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sqs from '@aws-cdk/aws-sqs';
+import { Names } from '@aws-cdk/core';
 
 export interface SqsEventSourceProps {
   /**
@@ -12,6 +13,13 @@ export interface SqsEventSourceProps {
    * @default 10
    */
   readonly batchSize?: number;
+
+  /**
+   * If the SQS event source mapping should be enabled.
+   *
+   * @default true
+   */
+  readonly enabled?: boolean;
 }
 
 /**
@@ -27,8 +35,9 @@ export class SqsEventSource implements lambda.IEventSource {
   }
 
   public bind(target: lambda.IFunction) {
-    const eventSourceMapping = target.addEventSourceMapping(`SqsEventSource:${this.queue.node.uniqueId}`, {
+    const eventSourceMapping = target.addEventSourceMapping(`SqsEventSource:${Names.nodeUniqueId(this.queue.node)}`, {
       batchSize: this.props.batchSize,
+      enabled: this.props.enabled,
       eventSourceArn: this.queue.queueArn,
     });
     this._eventSourceMappingId = eventSourceMapping.eventSourceMappingId;
