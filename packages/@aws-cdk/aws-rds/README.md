@@ -459,7 +459,7 @@ new rds.OptionGroup(stack, 'Options', {
 
 ## Serverless
 
-[Amazon Aurora Serverless]((https://aws.amazon.com/rds/aurora/serverless/)) is an on-demand, auto-scaling configuration for Amazon
+[Amazon Aurora Serverless](https://aws.amazon.com/rds/aurora/serverless/) is an on-demand, auto-scaling configuration for Amazon
 Aurora. The database will automatically start up, shut down, and scale capacity
 up or down based on your application's needs. It enables you to run your database
 in the cloud without managing any database instances.
