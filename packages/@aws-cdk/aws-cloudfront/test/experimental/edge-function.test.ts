@@ -146,6 +146,18 @@ describe('stacks', () => {
     const fnStack = getFnStack();
     expect(fnStack).toCountResources('AWS::Lambda::Function', 2);
   });
+
+  test('can set the stack id for each function', () => {
+    const fn1StackId = 'edge-lambda-stack-testregion-1';
+    new cloudfront.experimental.EdgeFunction(stack, 'MyFn1', defaultEdgeFunctionProps(fn1StackId));
+    const fn2StackId = 'edge-lambda-stack-testregion-2';
+    new cloudfront.experimental.EdgeFunction(stack, 'MyFn2', defaultEdgeFunctionProps(fn2StackId));
+
+    const fn1Stack = app.node.findChild(fn1StackId) as cdk.Stack;
+    expect(fn1Stack).toCountResources('AWS::Lambda::Function', 1);
+    const fn2Stack = app.node.findChild(fn2StackId) as cdk.Stack;
+    expect(fn2Stack).toCountResources('AWS::Lambda::Function', 1);
+  });
 });
 
 test('addAlias() creates alias in function stack', () => {
@@ -189,11 +201,12 @@ test('metric methods', () => {
   }
 });
 
-function defaultEdgeFunctionProps() {
+function defaultEdgeFunctionProps(stackId?: string) {
   return {
     code: lambda.Code.fromInline('foo'),
     handler: 'index.handler',
     runtime: lambda.Runtime.NODEJS_12_X,
+    stackId: stackId ?? 'edge-lambda-stack-testregion',
   };
 }
 

@@ -35,8 +35,8 @@ test('placeholders are substituted in CloudFormation execution role', async () =
 });
 
 test('role with placeholders is assumed if assumerole is given', async () => {
-  const mockWithAssumedRole = jest.fn();
-  sdkProvider.withAssumedRole = mockWithAssumedRole;
+  const mockForEnvironment = jest.fn();
+  sdkProvider.forEnvironment = mockForEnvironment;
 
   await deployments.deployStack({
     stack: testStack({
@@ -47,7 +47,9 @@ test('role with placeholders is assumed if assumerole is given', async () => {
     }),
   });
 
-  expect(mockWithAssumedRole).toHaveBeenCalledWith('bloop:here:123456789012', undefined, expect.anything(), expect.anything());
+  expect(mockForEnvironment).toHaveBeenCalledWith(expect.anything(), expect.anything(), expect.objectContaining({
+    assumeRoleArn: 'bloop:here:123456789012',
+  }));
 });
 
 test('deployment fails if bootstrap stack is missing', async () => {

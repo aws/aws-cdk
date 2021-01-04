@@ -180,7 +180,10 @@
       "duration-prop-type:@aws-cdk/aws-appmesh.GrpcVirtualNodeListenerOptions.timeout",
       "duration-prop-type:@aws-cdk/aws-appmesh.HttpVirtualNodeListenerOptions.timeout",
       "duration-prop-type:@aws-cdk/aws-appmesh.Http2VirtualNodeListenerOptions.timeout",
-      "duration-prop-type:@aws-cdk/aws-appmesh.TcpVirtualNodeListenerOptions.timeout"
+      "duration-prop-type:@aws-cdk/aws-appmesh.TcpVirtualNodeListenerOptions.timeout",
+      "duration-prop-type:@aws-cdk/aws-appmesh.GrpcRouteSpecOptions.timeout",
+      "duration-prop-type:@aws-cdk/aws-appmesh.HttpRouteSpecOptions.timeout",
+      "duration-prop-type:@aws-cdk/aws-appmesh.TcpRouteSpecOptions.timeout"
     ]
   },
   "stability": "experimental",
