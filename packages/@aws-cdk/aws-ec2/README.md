@@ -964,3 +964,24 @@ const subnet = Subnet.fromSubnetAttributes(this, 'SubnetFromAttributes', {
 // Supply only subnet id
 const subnet = Subnet.fromSubnetId(this, 'SubnetFromId', 's-1234');
 ```
+
+## Launch Templates
+
+A Launch Template is a standardized template that contains the configuration information to launch an instance.
+They can be used when launching instances on their own, through Amazon EC2 Auto Scaling, EC2 Fleet, and Spot Fleet.
+Launch templates enable you to store launch parameters so that you do not have to specify them every time you launch
+an instance. For information on Launch Templates please see the
+[official documentation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-launch-templates.html).
+
+The following demonstrates how to create a launch template with an Amazon Machine Image, IAM Role, and security group.
+
+```ts
+const vpc = new ec2.Vpc(...);
+// ...
+const template = new ec2.LaunchTemplate(this, 'LaunchTemplate', {
+  machineImage: new ec2.AmazonMachineImage(),
+  securityGroup: new ec2.SecurityGroup(this, 'LaunchTemplateSG', {
+    vpc: vpc,
+  }),
+});
+```
