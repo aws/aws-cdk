@@ -4,7 +4,6 @@
 #
 # prepares a staging directory with the requirements
 set -e
-set -x
 scriptdir=$(cd $(dirname $0) && pwd)
 
 # prepare staging directory
@@ -13,11 +12,8 @@ mkdir -p ${staging}
 cd ${staging}
 
 # copy src and overlay with test
-cp -f ${scriptdir}/src/* $PWD
-cp -f ${scriptdir}/test/* $PWD
+cp -f ${scriptdir}/../../lib/lambda/* $PWD
+cp -f ${scriptdir}/* $PWD
 
-# install deps
-pip3 install --no-user -r requirements.txt -t .
-
-# run our tests
-exec python3 test.py $@
+# this will run our tests inside the right environment
+docker build .
