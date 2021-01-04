@@ -119,7 +119,10 @@ export class DynamoProjectionExpression {
 export class DynamoAttributeValue {
   /**
    * Sets an attribute of type String. For example:  "S": "Hello"
-   * Strings may be literal values or as JsonPath
+   * Strings may be literal values or as JsonPath.
+   *
+   * @example `DynamoAttributeValue.fromString('someValue')
+   * @example `DynamoAttributeValue.fromString(JsonPath.stringAt('$.bar'))
    */
   public static fromString(value: string) {
     return new DynamoAttributeValue({ S: value });
