@@ -130,7 +130,7 @@ and instead only depend on having a working Docker install.
 
 If there isn't one already, open an issue describing what you intend to contribute. It's useful to communicate in
 advance, because sometimes, someone is already working in this space, so maybe it's worth collaborating with them
-instead of duplicating the efforts. 
+instead of duplicating the efforts.
 
 ### Step 2: Design (optional)
 
