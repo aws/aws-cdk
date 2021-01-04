@@ -36,7 +36,8 @@ taskDefinition.addContainer('web', {
 });
 
 taskDefinition.addContainer('envoy', {
-  image: ecs.ContainerImage.fromRegistry('envoyproxy/envoy'),
+  // envoyproxy/envoy:latest tag gone from docker hub: https://github.com/envoyproxy/envoy/issues/6344
+  image: ecs.ContainerImage.fromRegistry('envoyproxy/envoy:v1.16.2'),
   memoryLimitMiB: 256,
 });
 
