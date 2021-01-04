@@ -286,6 +286,25 @@ const myFunc = new lambda.Function(this, 'MyFunction', {
 });
 ```
 
+If the stack is not in `us-east-1`, and you need references from different applications on the same account,
+you can also set a specific stack ID for each Lamba@Edge.
+
+```ts
+const myFunc1 = new cloudfront.experimental.EdgeFunction(this, 'MyFunction1', {
+  runtime: lambda.Runtime.NODEJS_10_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler1')),
+  stackId: 'edge-lambda-stack-id-1'
+});
+
+const myFunc2 = new cloudfront.experimental.EdgeFunction(this, 'MyFunction2', {
+  runtime: lambda.Runtime.NODEJS_10_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler2')),
+  stackId: 'edge-lambda-stack-id-2'
+});
+```
+
 Lambda@Edge functions can also be associated with additional behaviors,
 either at or after Distribution creation time.
 

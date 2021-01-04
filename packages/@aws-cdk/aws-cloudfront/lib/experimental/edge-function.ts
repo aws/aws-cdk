@@ -16,7 +16,14 @@ import { Construct } from 'constructs';
  * Properties for creating a Lambda@Edge function
  * @experimental
  */
-export interface EdgeFunctionProps extends lambda.FunctionProps { }
+export interface EdgeFunctionProps extends lambda.FunctionProps {
+  /**
+   * The stack ID of Lambda@Edge function.
+   *
+   * @default - `edge-lambda-stack-${region}`
+   */
+  readonly stackId?: string;
+}
 
 /**
  * A Lambda@Edge function.
@@ -139,10 +146,10 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
   }
 
   /** Create a support stack and function in us-east-1, and a SSM reader in-region */
-  private createCrossRegionFunction(id: string, props: lambda.FunctionProps): FunctionConfig {
+  private createCrossRegionFunction(id: string, props: EdgeFunctionProps): FunctionConfig {
     const parameterNamePrefix = 'EdgeFunctionArn';
     const parameterName = `${parameterNamePrefix}${id}`;
-    const functionStack = this.edgeStack();
+    const functionStack = this.edgeStack(props.stackId);
 
     const edgeFunction = new lambda.Function(functionStack, id, props);
     addEdgeLambdaToRoleTrustStatement(edgeFunction.role!);
@@ -193,7 +200,7 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
     return resource.getAttString('FunctionArn');
   }
 
-  private edgeStack(): Stack {
+  private edgeStack(stackId?: string): Stack {
     const stage = this.node.root;
     if (!stage || !Stage.isStage(stage)) {
       throw new Error('stacks which use EdgeFunctions must be part of a CDK app or stage');
@@ -203,7 +210,7 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
       throw new Error('stacks which use EdgeFunctions must have an explicitly set region');
     }
 
-    const edgeStackId = `edge-lambda-stack-${region}`;
+    const edgeStackId = stackId ?? `edge-lambda-stack-${region}`;
     let edgeStack = stage.node.tryFindChild(edgeStackId) as Stack;
     if (!edgeStack) {
       edgeStack = new Stack(stage, edgeStackId, {
