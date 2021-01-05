@@ -275,7 +275,7 @@ new cloudfront.Distribution(this, 'myDist', {
 > To make it easier to request functions for Lambda@Edge, the `EdgeFunction` construct can be used.
 > The `EdgeFunction` construct will automatically request a function in `us-east-1`, regardless of the region of the current stack.
 > `EdgeFunction` has the same interface as `Function` and can be created and used interchangably.
-> Please note that using `EdgeFunction` requires that the `us-east-1` region has been boostrapped.
+> Please note that using `EdgeFunction` requires that the `us-east-1` region has been bootstrapped.
 > See https://docs.aws.amazon.com/cdk/latest/guide/bootstrapping.html for more about bootstrapping regions.
 
 If the stack is in `us-east-1`, a "normal" `lambda.Function` can be used instead of an `EdgeFunction`.
