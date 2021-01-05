@@ -1,49 +1,37 @@
 import * as path from 'path';
+import { DockerImageDestination } from '@aws-cdk/cloud-assembly-schema';
 import { DockerImageManifestEntry } from '../../asset-manifest';
 import { EventType } from '../../progress';
 import { IAssetHandler, IHandlerHost } from '../asset-handler';
 import { Docker } from '../docker';
 import { replaceAwsPlaceholders } from '../placeholders';
-import { ExternalDockerImageSource } from '@aws-cdk/cloud-assembly-schema';
-import { shell } from '../shell';
 
 export class ContainerImageAssetHandler implements IAssetHandler {
   private readonly localTagName: string;
   private readonly docker = new Docker(m => this.host.emitMessage(EventType.DEBUG, m));
 
   constructor(
-    private readonly workDir: string,
-    private readonly asset: DockerImageManifestEntry,
-    private readonly host: IHandlerHost) {
+    protected readonly workDir: string,
+    protected readonly asset: DockerImageManifestEntry,
+    protected readonly host: IHandlerHost) {
 
     this.localTagName = `cdkasset-${this.asset.id.assetId.toLowerCase()}`;
   }
 
   public async publish(): Promise<void> {
     const destination = await replaceAwsPlaceholders(this.asset.destination, this.host.aws);
-
     const ecr = await this.host.aws.ecrClient(destination);
+    const imageUri = await this.getImageUri(ecr, destination);
 
-    const account = (await this.host.aws.discoverCurrentAccount()).accountId;
-
-    const repoUri = await repositoryUri(ecr, destination.repositoryName);
-    if (!repoUri) {
-      throw new Error(`No ECR repository named '${destination.repositoryName}' in account ${account}. Is this account bootstrapped?`);
-    }
-
-    const imageUri = isExternalSource(this.asset.source) ? await shell(this.asset.source.executable.split(' ')) : `${repoUri}:${destination.imageTag}`;
-
-    this.host.emitMessage(EventType.CHECK, `Check ${imageUri}`);
-    if (await imageExists(ecr, destination.repositoryName, destination.imageTag)) {
-      this.host.emitMessage(EventType.FOUND, `Found ${imageUri}`);
+    if (imageUri === null) {
       return;
     }
 
-    if (this.host.aborted) { return; }
-
     // Login before build so that the Dockerfile can reference images in the ECR repo
     await this.docker.login(ecr);
-    await this.buildImage();
+    if (!(await this.isImageCached())) {
+      await this.buildImage();
+    }
 
     this.host.emitMessage(EventType.UPLOAD, `Push ${imageUri}`);
     if (this.host.aborted) { return; }
@@ -51,18 +39,8 @@ export class ContainerImageAssetHandler implements IAssetHandler {
     await this.docker.push(imageUri);
   }
 
-  private async buildImage(): Promise<void> {
-    if (await this.docker.exists(this.localTagName)) {
-      this.host.emitMessage(EventType.CACHED, `Cached ${this.localTagName}`);
-      return;
-    }
-
-    const source = this.asset.source;
-
-    if (isExternalSource(source)) {
-      return;
-    }
-
+  protected async buildImage(): Promise<void> {
+    const source = this.asset.source!;
     const fullPath = path.resolve(this.workDir, source.directory);
     this.host.emitMessage(EventType.BUILD, `Building Docker image at ${fullPath}`);
 
@@ -74,10 +52,36 @@ export class ContainerImageAssetHandler implements IAssetHandler {
       file: source.dockerFile,
     });
   }
-}
 
-function isExternalSource(x: any): x is ExternalDockerImageSource {
-  return x.hasOwnProperty('executable');
+  protected async getImageUri(ecr: AWS.ECR, destination: DockerImageDestination): Promise<string | null> {
+    const account = (await this.host.aws.discoverCurrentAccount()).accountId;
+    const repoUri = await repositoryUri(ecr, destination.repositoryName);
+
+    if (!repoUri) {
+      throw new Error(`No ECR repository named '${destination.repositoryName}' in account ${account}. Is this account bootstrapped?`);
+    }
+
+    const imageUri = `${repoUri}:${destination.imageTag}`;
+
+    this.host.emitMessage(EventType.CHECK, `Check ${imageUri}`);
+    if (await imageExists(ecr, destination.repositoryName, destination.imageTag)) {
+      this.host.emitMessage(EventType.FOUND, `Found ${imageUri}`);
+      return null;
+    }
+
+    if (this.host.aborted) { return null; }
+
+    return imageUri;
+  }
+
+  protected async isImageCached(): Promise<boolean> {
+    if (await this.docker.exists(this.localTagName)) {
+      this.host.emitMessage(EventType.CACHED, `Cached ${this.localTagName}`);
+      return true;
+    }
+
+    return false;
+  }
 }
 
 async function imageExists(ecr: AWS.ECR, repositoryName: string, imageTag: string) {

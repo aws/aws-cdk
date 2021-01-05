@@ -142,6 +142,9 @@ export interface ExternalFileAssetSource {
   readonly packaging: FileAssetPackaging;
 }
 
+/**
+ * Represents a source for a Docker image asset.
+ */
 export interface DockerImageAssetSource {
   /**
    * The hash of the contents of the docker build context. This hash is used
@@ -197,6 +200,9 @@ export interface DockerImageAssetSource {
   readonly repositoryName?: string;
 }
 
+/**
+ * Represents an external source for a Docker image asset.
+ */
 export interface ExternalDockerImageAssetSource {
   /**
    * The hash of the contents of the docker build context. This hash is used

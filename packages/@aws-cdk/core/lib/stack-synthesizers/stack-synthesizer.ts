@@ -1,4 +1,11 @@
-import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
+import {
+  DockerImageAssetLocation,
+  DockerImageAssetSource,
+  ExternalDockerImageAssetSource,
+  ExternalFileAssetSource,
+  FileAssetLocation,
+  FileAssetSource,
+} from '../assets';
 import { ISynthesisSession } from '../construct-compat';
 import { Stack } from '../stack';
 import { addStackArtifactToAssembly } from './_shared';
@@ -28,11 +35,29 @@ export abstract class StackSynthesizer implements IStackSynthesizer {
   public abstract addFileAsset(asset: FileAssetSource): FileAssetLocation;
 
   /**
+   * Register an external File Asset
+   *
+   * Returns the parameters that can be used to refer to the asset inside the template.
+   */
+  public addExternalFileAsset(_: ExternalFileAssetSource): FileAssetLocation {
+    throw new Error('addExternalFileAsset not supported.');
+  }
+
+  /**
    * Register a Docker Image Asset
    *
    * Returns the parameters that can be used to refer to the asset inside the template.
    */
   public abstract addDockerImageAsset(asset: DockerImageAssetSource): DockerImageAssetLocation;
+
+  /**
+   * Register an external Docker Image Asset
+   *
+   * Returns the parameters that can be used to refer to the asset inside the template.
+   */
+  public addExternalDockerImageAsset(_: ExternalDockerImageAssetSource): DockerImageAssetLocation {
+    throw new Error('addExternalFileAsset not supported.');
+  }
 
   /**
    * Synthesize the associated stack to the session

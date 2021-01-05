@@ -276,9 +276,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
     /* eslint-enable max-len */
   }
 
-  public addFileAsset(asset: ExternalFileAssetSource): FileAssetLocation;
-  public addFileAsset(asset: FileAssetSource): FileAssetLocation;
-  public addFileAsset(asset: FileAssetSource | ExternalFileAssetSource): FileAssetLocation {
+  public addFileAsset(asset: FileAssetSource): FileAssetLocation {
     assertBound(this.stack);
     assertBound(this.bucketName);
 
@@ -294,10 +292,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
       },
     };
 
-    const source = isExternalSource(asset) ? {
-      executable: asset.executable,
-      packaging: asset.packaging,
-    } : {
+    const source = {
       path: asset.fileName,
       packaging: asset.packaging,
     };
@@ -322,9 +317,48 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
     };
   }
 
-  public addDockerImageAsset(asset: ExternalDockerImageAssetSource): DockerImageAssetLocation;
-  public addDockerImageAsset(asset: DockerImageAssetSource): DockerImageAssetLocation;
-  public addDockerImageAsset(asset: DockerImageAssetSource | ExternalDockerImageAssetSource): DockerImageAssetLocation {
+  public addExternalFileAsset(asset: ExternalFileAssetSource): FileAssetLocation {
+    assertBound(this.stack);
+    assertBound(this.bucketName);
+
+    const objectKey = this.bucketPrefix + asset.sourceHash + (asset.packaging === FileAssetPackaging.ZIP_DIRECTORY ? '.zip' : '');
+
+    const destinations = {
+      [this.manifestEnvName]: {
+        bucketName: this.bucketName,
+        objectKey,
+        region: resolvedOr(this.stack.region, undefined),
+        assumeRoleArn: this.fileAssetPublishingRoleArn,
+        assumeRoleExternalId: this.props.fileAssetPublishingExternalId,
+      },
+    };
+
+    const externalSource = {
+      executable: asset.executable,
+      packaging: asset.packaging,
+    };
+
+    // Add to manifest
+    this.files[asset.sourceHash] = {
+      externalSource,
+      destinations,
+    };
+
+    const { region, urlSuffix } = stackLocationOrInstrinsics(this.stack);
+    const httpUrl = cfnify(`https://s3.${region}.${urlSuffix}/${this.bucketName}/${objectKey}`);
+    const s3ObjectUrl = cfnify(`s3://${this.bucketName}/${objectKey}`);
+
+    // Return CFN expression
+    return {
+      bucketName: cfnify(this.bucketName),
+      objectKey,
+      httpUrl,
+      s3ObjectUrl,
+      s3Url: httpUrl,
+    };
+  }
+
+  public addExternalDockerImageAsset(asset: ExternalDockerImageAssetSource): DockerImageAssetLocation {
     assertBound(this.stack);
     assertBound(this.repositoryName);
 
@@ -340,9 +374,42 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
       },
     };
 
-    const source = isExternalSource(asset) ? {
+    const externalSource = {
       executable: asset.executable,
-    } : {
+    };
+
+    // Add to manifest
+    this.dockerImages[imageTag] = {
+      externalSource,
+      destinations,
+    };
+
+    const { account, region, urlSuffix } = stackLocationOrInstrinsics(this.stack);
+
+    // Return CFN expression
+    return {
+      repositoryName: cfnify(this.repositoryName),
+      imageUri: cfnify(`${account}.dkr.ecr.${region}.${urlSuffix}/${this.repositoryName}:${imageTag}`),
+    };
+  }
+
+  public addDockerImageAsset(asset: DockerImageAssetSource): DockerImageAssetLocation {
+    assertBound(this.stack);
+    assertBound(this.repositoryName);
+
+    const imageTag = asset.sourceHash;
+
+    const destinations = {
+      [this.manifestEnvName]: {
+        repositoryName: this.repositoryName,
+        imageTag,
+        region: resolvedOr(this.stack.region, undefined),
+        assumeRoleArn: this.imageAssetPublishingRoleArn,
+        assumeRoleExternalId: this.props.imageAssetPublishingExternalId,
+      },
+    };
+
+    const source = {
       directory: asset.directoryName,
       dockerBuildArgs: asset.dockerBuildArgs,
       dockerBuildTarget: asset.dockerBuildTarget,
@@ -489,10 +556,6 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
       resolvedOr(this.stack.region, 'current_region'),
     ].join('-');
   }
-}
-
-function isExternalSource(x: any): x is ExternalFileAssetSource | ExternalDockerImageAssetSource {
-  return x.hasOwnProperty('executable');
 }
 
 /**

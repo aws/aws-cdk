@@ -6,8 +6,15 @@ import { AwsDestination } from './aws-destination';
 export interface DockerImageAsset {
   /**
    * Source description for file assets
+   * @default none, must be defined if externalSource is undefined
    */
-  readonly source: DockerImageSource | ExternalDockerImageSource;
+  readonly source?: DockerImageSource;
+
+  /**
+   * External source description for file assets
+   * @default none, must be defined if source is undefined
+   */
+  readonly externalSource?: ExternalDockerImageSource;
 
   /**
    * Destinations for this file asset

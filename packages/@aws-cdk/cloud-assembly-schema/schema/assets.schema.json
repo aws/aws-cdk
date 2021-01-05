@@ -33,15 +33,12 @@
             "type": "object",
             "properties": {
                 "source": {
-                    "description": "Source description for file assets",
-                    "anyOf": [
-                        {
-                            "$ref": "#/definitions/FileSource"
-                        },
-                        {
-                            "$ref": "#/definitions/ExternalFileSource"
-                        }
-                    ]
+                    "description": "Source description for file assets (Default none, must be defined if externalSource is undefined)",
+                    "$ref": "#/definitions/FileSource"
+                },
+                "externalSource": {
+                    "description": "External source description for file assets (Default none, must be defined if source is undefined)",
+                    "$ref": "#/definitions/ExternalFileSource"
                 },
                 "destinations": {
                     "description": "Destinations for this file asset",
@@ -52,8 +49,7 @@
                 }
             },
             "required": [
-                "destinations",
-                "source"
+                "destinations"
             ]
         },
         "FileSource": {
@@ -133,15 +129,12 @@
             "type": "object",
             "properties": {
                 "source": {
-                    "description": "Source description for file assets",
-                    "anyOf": [
-                        {
-                            "$ref": "#/definitions/DockerImageSource"
-                        },
-                        {
-                            "$ref": "#/definitions/ExternalDockerImageSource"
-                        }
-                    ]
+                    "description": "Source description for file assets (Default none, must be defined if externalSource is undefined)",
+                    "$ref": "#/definitions/DockerImageSource"
+                },
+                "externalSource": {
+                    "description": "External source description for file assets (Default none, must be defined if source is undefined)",
+                    "$ref": "#/definitions/ExternalDockerImageSource"
                 },
                 "destinations": {
                     "description": "Destinations for this file asset",
@@ -152,8 +145,7 @@
                 }
             },
             "required": [
-                "destinations",
-                "source"
+                "destinations"
             ]
         },
         "DockerImageSource": {
