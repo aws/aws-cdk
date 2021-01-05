@@ -1,0 +1,21 @@
+{
+  "ResourceTypes": {
+    "AWS::Lambda::Function": {
+      "patch": {
+        "description": "Temporary patch to work around https://github.com/aws/aws-cdk/pull/12204, should be removed in the future",
+        "operations": [
+          {
+            "op": "replace",
+            "path": "/Properties/Handler/Required",
+            "value": true
+          },
+          {
+            "op": "replace",
+            "path": "/Properties/Runtime/Required",
+            "value": true
+          }
+        ]
+      }
+    }
+  }
+}
