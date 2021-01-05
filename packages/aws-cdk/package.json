@@ -47,7 +47,7 @@
     "@types/minimatch": "^3.0.3",
     "@types/mockery": "^1.4.29",
     "@types/node": "^10.17.48",
-    "@types/promptly": "^3.0.0",
+    "@types/promptly": "^3.0.1",
     "@types/semver": "^7.3.4",
     "@types/sinon": "^9.0.9",
     "@types/table": "^5.0.0",
@@ -86,7 +86,7 @@
     "proxy-agent": "^4.0.0",
     "semver": "^7.3.2",
     "source-map-support": "^0.5.19",
-    "table": "^6.0.4",
+    "table": "^6.0.7",
     "uuid": "^8.3.1",
     "wrap-ansi": "^7.0.0",
     "yargs": "^16.2.0"

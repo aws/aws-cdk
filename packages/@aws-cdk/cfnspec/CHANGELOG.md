@@ -1,3 +1,233 @@
+# CloudFormation Resource Specification v22.0.0
+
+## New Resource Types
+
+* AWS::AuditManager::Assessment
+* AWS::CloudFormation::ModuleDefaultVersion
+* AWS::CloudFormation::ModuleVersion
+* AWS::DevOpsGuru::NotificationChannel
+* AWS::DevOpsGuru::ResourceCollection
+* AWS::EC2::NetworkInsightsAnalysis
+* AWS::EC2::NetworkInsightsPath
+* AWS::ECR::PublicRepository
+* AWS::ElastiCache::User
+* AWS::ElastiCache::UserGroup
+* AWS::GreengrassV2::ComponentVersion
+* AWS::IoTSiteWise::AccessPolicy
+* AWS::IoTSiteWise::Dashboard
+* AWS::IoTSiteWise::Portal
+* AWS::IoTSiteWise::Project
+* AWS::IoTWireless::Destination
+* AWS::IoTWireless::DeviceProfile
+* AWS::IoTWireless::ServiceProfile
+* AWS::IoTWireless::WirelessDevice
+* AWS::IoTWireless::WirelessGateway
+* AWS::LicenseManager::Grant
+* AWS::LicenseManager::License
+* AWS::MWAA::Environment
+* AWS::SSO::InstanceAccessControlAttributeConfiguration
+* AWS::SageMaker::DataQualityJobDefinition
+* AWS::SageMaker::Device
+* AWS::SageMaker::DeviceFleet
+* AWS::SageMaker::ModelBiasJobDefinition
+* AWS::SageMaker::ModelExplainabilityJobDefinition
+* AWS::SageMaker::ModelPackageGroup
+* AWS::SageMaker::ModelQualityJobDefinition
+* AWS::SageMaker::Pipeline
+* AWS::SageMaker::Project
+
+## Attribute Changes
+
+* AWS::NetworkFirewall::LoggingConfiguration FirewallArn (__deleted__)
+* AWS::NetworkFirewall::LoggingConfiguration FirewallName (__deleted__)
+* AWS::NetworkFirewall::RuleGroup RuleGroupId (__added__)
+* AWS::SageMaker::MonitoringSchedule MonitoringScheduleArn (__added__)
+
+## Property Changes
+
+* AWS::AutoScaling::LaunchConfiguration MetadataOptions.Type (__changed__)
+  * Old: MetadataOption
+  * New: MetadataOptions
+* AWS::Batch::JobDefinition PlatformCapabilities (__added__)
+* AWS::Batch::JobDefinition PropagateTags (__added__)
+* AWS::CloudFormation::StackSet PermissionModel.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::CloudFormation::StackSet StackSetName.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::CodeArtifact::Domain EncryptionKey (__added__)
+* AWS::CodeArtifact::Repository DomainName (__added__)
+* AWS::CodeArtifact::Repository DomainOwner (__added__)
+* AWS::CodeGuruReviewer::RepositoryAssociation Tags (__added__)
+* AWS::DLM::LifecyclePolicy Tags (__added__)
+* AWS::EC2::Instance EnclaveOptions (__added__)
+* AWS::EC2::Volume Throughput (__added__)
+* AWS::EKS::Nodegroup CapacityType (__added__)
+* AWS::ElastiCache::ReplicationGroup UserGroupIds (__added__)
+* AWS::Events::Archive ArchiveName (__added__)
+* AWS::IoT::TopicRuleDestination VpcProperties (__added__)
+* AWS::Kendra::Index UserContextPolicy (__added__)
+* AWS::Kendra::Index UserTokenConfigurations (__added__)
+* AWS::Lambda::EventSourceMapping FunctionResponseTypes (__added__)
+* AWS::Lambda::EventSourceMapping SelfManagedEventSource (__added__)
+* AWS::Lambda::EventSourceMapping EventSourceArn.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Lambda::Function ImageConfig (__added__)
+* AWS::Lambda::Function PackageType (__added__)
+* AWS::Lambda::Function Handler.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Lambda::Function Runtime.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::NetworkFirewall::Firewall Tags.DuplicatesAllowed (__added__)
+* AWS::NetworkFirewall::Firewall Tags.ItemType (__added__)
+* AWS::NetworkFirewall::Firewall Tags.Type (__changed__)
+  * Old: Tags
+  * New: List
+* AWS::NetworkFirewall::FirewallPolicy Tags.DuplicatesAllowed (__added__)
+* AWS::NetworkFirewall::FirewallPolicy Tags.ItemType (__added__)
+* AWS::NetworkFirewall::FirewallPolicy Tags.Type (__changed__)
+  * Old: Tags
+  * New: List
+* AWS::NetworkFirewall::LoggingConfiguration FirewallArn (__added__)
+* AWS::NetworkFirewall::LoggingConfiguration FirewallName (__added__)
+* AWS::NetworkFirewall::RuleGroup RuleGroupId (__deleted__)
+* AWS::NetworkFirewall::RuleGroup Tags.DuplicatesAllowed (__added__)
+* AWS::NetworkFirewall::RuleGroup Tags.ItemType (__added__)
+* AWS::NetworkFirewall::RuleGroup Tags.Type (__changed__)
+  * Old: Tags
+  * New: List
+* AWS::SageMaker::Endpoint DeploymentConfig (__added__)
+* AWS::SageMaker::MonitoringSchedule MonitoringScheduleArn (__deleted__)
+* AWS::SageMaker::MonitoringSchedule MonitoringScheduleName.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+
+## Property Type Changes
+
+* AWS::AutoScaling::LaunchConfiguration.MetadataOption (__removed__)
+* AWS::Glue::Database.DataLakePrincipal (__removed__)
+* AWS::Glue::Database.PrincipalPrivileges (__removed__)
+* AWS::NetworkFirewall::Firewall.Tags (__removed__)
+* AWS::NetworkFirewall::FirewallPolicy.Tags (__removed__)
+* AWS::NetworkFirewall::RuleGroup.Tags (__removed__)
+* AWS::Transfer::Server.SecurityGroupId (__removed__)
+* AWS::AppFlow::Flow.IncrementalPullConfig (__added__)
+* AWS::AppFlow::Flow.UpsolverDestinationProperties (__added__)
+* AWS::AppFlow::Flow.UpsolverS3OutputFormatConfig (__added__)
+* AWS::ApplicationInsights::Application.JMXPrometheusExporter (__added__)
+* AWS::AutoScaling::LaunchConfiguration.MetadataOptions (__added__)
+* AWS::Batch::JobDefinition.FargatePlatformConfiguration (__added__)
+* AWS::Batch::JobDefinition.NetworkConfiguration (__added__)
+* AWS::Cognito::UserPool.CustomEmailSender (__added__)
+* AWS::Cognito::UserPool.CustomSMSSender (__added__)
+* AWS::EC2::Instance.EnclaveOptions (__added__)
+* AWS::EC2::SpotFleet.SpotCapacityRebalance (__added__)
+* AWS::EC2::SpotFleet.SpotMaintenanceStrategies (__added__)
+* AWS::ECS::Service.DeploymentCircuitBreaker (__added__)
+* AWS::Glue::Partition.SchemaId (__added__)
+* AWS::Glue::Partition.SchemaReference (__added__)
+* AWS::Glue::Table.SchemaId (__added__)
+* AWS::Glue::Table.SchemaReference (__added__)
+* AWS::IoT::TopicRuleDestination.VpcDestinationProperties (__added__)
+* AWS::Kendra::DataSource.ConfluenceAttachmentConfiguration (__added__)
+* AWS::Kendra::DataSource.ConfluenceAttachmentFieldMappingsList (__added__)
+* AWS::Kendra::DataSource.ConfluenceAttachmentToIndexFieldMapping (__added__)
+* AWS::Kendra::DataSource.ConfluenceBlogConfiguration (__added__)
+* AWS::Kendra::DataSource.ConfluenceBlogFieldMappingsList (__added__)
+* AWS::Kendra::DataSource.ConfluenceBlogToIndexFieldMapping (__added__)
+* AWS::Kendra::DataSource.ConfluenceConfiguration (__added__)
+* AWS::Kendra::DataSource.ConfluencePageConfiguration (__added__)
+* AWS::Kendra::DataSource.ConfluencePageFieldMappingsList (__added__)
+* AWS::Kendra::DataSource.ConfluencePageToIndexFieldMapping (__added__)
+* AWS::Kendra::DataSource.ConfluenceSpaceConfiguration (__added__)
+* AWS::Kendra::DataSource.ConfluenceSpaceFieldMappingsList (__added__)
+* AWS::Kendra::DataSource.ConfluenceSpaceList (__added__)
+* AWS::Kendra::DataSource.ConfluenceSpaceToIndexFieldMapping (__added__)
+* AWS::Kendra::Index.JsonTokenTypeConfiguration (__added__)
+* AWS::Kendra::Index.JwtTokenTypeConfiguration (__added__)
+* AWS::Kendra::Index.UserTokenConfiguration (__added__)
+* AWS::Kendra::Index.UserTokenConfigurationList (__added__)
+* AWS::Lambda::EventSourceMapping.Endpoints (__added__)
+* AWS::Lambda::EventSourceMapping.SelfManagedEventSource (__added__)
+* AWS::Lambda::Function.ImageConfig (__added__)
+* AWS::S3::Bucket.ReplicaModifications (__added__)
+* AWS::SageMaker::Endpoint.Alarm (__added__)
+* AWS::SageMaker::Endpoint.AutoRollbackConfig (__added__)
+* AWS::SageMaker::Endpoint.BlueGreenUpdatePolicy (__added__)
+* AWS::SageMaker::Endpoint.CapacitySize (__added__)
+* AWS::SageMaker::Endpoint.DeploymentConfig (__added__)
+* AWS::SageMaker::Endpoint.TrafficRoutingConfig (__added__)
+* AWS::AppFlow::Flow.DestinationConnectorProperties Upsolver (__added__)
+* AWS::AppFlow::Flow.SourceFlowConfig IncrementalPullConfig (__added__)
+* AWS::ApplicationInsights::Application.ConfigurationDetails JMXPrometheusExporter (__added__)
+* AWS::Batch::ComputeEnvironment.ComputeResources InstanceRole.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Batch::ComputeEnvironment.ComputeResources InstanceTypes.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Batch::ComputeEnvironment.ComputeResources MinvCpus.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Batch::ComputeEnvironment.ComputeResources SecurityGroupIds.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.ComputeResources Subnets.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::JobDefinition.ContainerProperties FargatePlatformConfiguration (__added__)
+* AWS::Batch::JobDefinition.ContainerProperties NetworkConfiguration (__added__)
+* AWS::Cognito::UserPool.LambdaConfig CustomEmailSender (__added__)
+* AWS::Cognito::UserPool.LambdaConfig CustomSMSSender (__added__)
+* AWS::Cognito::UserPool.LambdaConfig KMSKeyID (__added__)
+* AWS::EC2::SpotFleet.LaunchTemplateOverrides Priority (__added__)
+* AWS::EC2::SpotFleet.SpotFleetRequestConfigData InstancePoolsToUseCount (__added__)
+* AWS::EC2::SpotFleet.SpotFleetRequestConfigData OnDemandAllocationStrategy (__added__)
+* AWS::EC2::SpotFleet.SpotFleetRequestConfigData OnDemandMaxTotalPrice (__added__)
+* AWS::EC2::SpotFleet.SpotFleetRequestConfigData OnDemandTargetCapacity (__added__)
+* AWS::EC2::SpotFleet.SpotFleetRequestConfigData SpotMaintenanceStrategies (__added__)
+* AWS::EC2::SpotFleet.SpotFleetRequestConfigData SpotMaxTotalPrice (__added__)
+* AWS::ECS::Service.DeploymentConfiguration DeploymentCircuitBreaker (__added__)
+* AWS::Elasticsearch::Domain.DomainEndpointOptions CustomEndpoint (__added__)
+* AWS::Elasticsearch::Domain.DomainEndpointOptions CustomEndpointCertificateArn (__added__)
+* AWS::Elasticsearch::Domain.DomainEndpointOptions CustomEndpointEnabled (__added__)
+* AWS::Glue::Database.DatabaseInput CreateTableDefaultPermissions (__deleted__)
+* AWS::Glue::Partition.StorageDescriptor SchemaReference (__added__)
+* AWS::Glue::Table.StorageDescriptor SchemaReference (__added__)
+* AWS::Kendra::DataSource.DataSourceConfiguration ConfluenceConfiguration (__added__)
+* AWS::Kendra::DataSource.OneDriveConfiguration DisableLocalGroups (__added__)
+* AWS::Kendra::DataSource.SharePointConfiguration DisableLocalGroups (__added__)
+* AWS::Lambda::Function.Code ImageUri (__added__)
+* AWS::S3::Bucket.ServerSideEncryptionRule BucketKeyEnabled (__added__)
+* AWS::S3::Bucket.SourceSelectionCriteria ReplicaModifications (__added__)
+* AWS::SageMaker::MonitoringSchedule.MonitoringScheduleConfig MonitoringJobDefinitionName (__added__)
+* AWS::SageMaker::MonitoringSchedule.MonitoringScheduleConfig MonitoringType (__added__)
+* AWS::SageMaker::MonitoringSchedule.MonitoringScheduleConfig MonitoringJobDefinition.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Transfer::Server.EndpointDetails SecurityGroupIds.ItemType (__deleted__)
+* AWS::Transfer::Server.EndpointDetails SecurityGroupIds.PrimitiveItemType (__added__)
+
+# Serverless Application Model (SAM) Resource Specification v2016-10-31
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Serverless::Function ProvisionedConcurrencyConfig (__added__)
+
+## Property Type Changes
+
+* AWS::Serverless::Function.ProvisionedConcurrencyConfig (__added__)
+
 # CloudFormation Resource Specification v21.0.0
 
 ## New Resource Types
