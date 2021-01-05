@@ -115,7 +115,7 @@ export interface TargetTrackingScalingPolicyProps extends BasicTargetTrackingSca
   readonly scalingTarget: IScalableTarget;
 }
 
-export class TargetTrackingScalingPolicy extends cdk.Construct {
+export class TargetTrackingScalingPolicy extends Construct {
   /**
    * ARN of the scaling policy
    */

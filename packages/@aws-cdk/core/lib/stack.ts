@@ -11,7 +11,6 @@ import { CfnElement } from './cfn-element';
 import { Fn } from './cfn-fn';
 import { Aws, ScopedAws } from './cfn-pseudo';
 import { CfnResource, TagType } from './cfn-resource';
-import { ISynthesisSession } from './construct-compat';
 import { ContextProvider } from './context-provider';
 import { Environment } from './environment';
 import { FeatureFlags } from './feature-flags';
@@ -19,10 +18,6 @@ import { CLOUDFORMATION_TOKEN_RESOLVER, CloudFormationLang } from './private/clo
 import { LogicalIDs } from './private/logical-id';
 import { resolve } from './private/resolve';
 import { makeUniqueId } from './private/uniqueid';
-
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from './construct-compat';
 
 const STACK_SYMBOL = Symbol.for('@aws-cdk/core.Stack');
 const MY_STACK_CACHE = Symbol.for('@aws-cdk/core.Stack.myStack');
@@ -144,7 +139,7 @@ export interface StackProps {
 /**
  * A root construct which represents a single CloudFormation stack.
  */
-export class Stack extends CoreConstruct implements ITaggable {
+export class Stack extends Construct implements ITaggable {
   /**
    * Return whether the given object is a Stack.
    *
@@ -1118,18 +1113,22 @@ function makeStackName(components: string[]) {
   return makeUniqueId(components);
 }
 
-// These imports have to be at the end to prevent circular imports
-import { addDependency } from './deps';
-import { Reference } from './reference';
-import { IResolvable } from './resolvable';
-import { DefaultStackSynthesizer, IStackSynthesizer, LegacyStackSynthesizer } from './stack-synthesizers';
-import { Stage } from './stage';
-import { ITaggable, TagManager } from './tag-manager';
-import { Token } from './token';
-import { FileSystem } from './fs';
-import { Names } from './names';
 
 interface StackDependency {
   stack: Stack;
   reasons: string[];
 }
+
+
+// These imports have to be at the end to prevent circular imports
+/* eslint-disable import/order */
+
+import { addDependency } from './deps';
+import { Reference } from './reference';
+import { IResolvable } from './resolvable';
+import { DefaultStackSynthesizer, IStackSynthesizer, ISynthesisSession, LegacyStackSynthesizer } from './stack-synthesizers';
+import { Stage } from './stage';
+import { ITaggable, TagManager } from './tag-manager';
+import { Token } from './token';
+import { FileSystem } from './fs';
+import { Names } from './names';

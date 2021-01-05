@@ -1,5 +1,6 @@
 import * as cfn from '@aws-cdk/aws-cloudformation';
-import { Construct, Stack } from '@aws-cdk/core';
+import { Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Cluster } from './cluster';
 
 export interface KubernetesResourceProps {

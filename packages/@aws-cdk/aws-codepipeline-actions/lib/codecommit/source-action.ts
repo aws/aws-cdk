@@ -2,7 +2,8 @@ import * as codecommit from '@aws-cdk/aws-codecommit';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as targets from '@aws-cdk/aws-events-targets';
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct, Names, Token } from '@aws-cdk/core';
+import { Names, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Action } from '../action';
 import { sourceArtifactBounds } from '../common';
 

@@ -1,6 +1,6 @@
 import * as path from 'path';
 import * as lambda from '@aws-cdk/aws-lambda';
-import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { bundle } from './bundling';
 
 /**
@@ -26,7 +26,7 @@ export interface PythonLayerVersionProps extends lambda.LayerVersionOptions {
  * @experimental
  */
 export class PythonLayerVersion extends lambda.LayerVersion {
-  constructor(scope: cdk.Construct, id: string, props: PythonLayerVersionProps) {
+  constructor(scope: Construct, id: string, props: PythonLayerVersionProps) {
     const compatibleRuntimes = props.compatibleRuntimes ?? [lambda.Runtime.PYTHON_3_7];
 
     // Ensure that all compatible runtimes are python

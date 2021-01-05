@@ -1,7 +1,8 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Construct, Stack } from '@aws-cdk/core';
+import { Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Action } from '../action';
 
 /**

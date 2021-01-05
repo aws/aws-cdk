@@ -3,7 +3,7 @@ import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import {
-  Aws, CfnCondition, CfnCustomResource, Construct as CoreConstruct, CustomResource, Fn,
+  Aws, CfnCondition, CfnCustomResource, CustomResource, Fn,
   IResource, Lazy, Names, RemovalPolicy, Resource, Stack, Token,
 } from '@aws-cdk/core';
 import { Construct } from 'constructs';
@@ -1133,6 +1133,8 @@ export class Table extends TableBase {
     if (props.replicationRegions && props.replicationRegions.length > 0) {
       this.createReplicaTables(props.replicationRegions);
     }
+
+    this.node.addValidation({ validate: () => this.validateTable() });
   }
 
   /**
@@ -1292,7 +1294,7 @@ export class Table extends TableBase {
    *
    * @returns an array of validation error message
    */
-  protected validate(): string[] {
+  private validateTable(): string[] {
     const errors = new Array<string>();
 
     if (!this.tablePartitionKey) {
@@ -1664,7 +1666,7 @@ interface ScalableAttributePair {
  * policy resource), new permissions are in effect before clean up happens, and so replicas that
  * need to be dropped can no longer be due to lack of permissions.
  */
-class SourceTableAttachedPolicy extends CoreConstruct implements iam.IGrantable {
+class SourceTableAttachedPolicy extends Construct implements iam.IGrantable {
   public readonly grantPrincipal: iam.IPrincipal;
   public readonly policy: iam.IPolicy;
 
