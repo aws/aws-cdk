@@ -32,6 +32,20 @@ export interface TopicProps {
    * @default None
    */
   readonly masterKey?: IKey;
+
+  /**
+   * Enables content-based deduplication for FIFO topics.
+   *
+   * @default None
+   */
+  readonly contentBasedDeduplication?: boolean;
+
+  /**
+   * Set to true to create a FIFO topic.
+   *
+   * @default None
+   */
+  readonly fifo?: boolean;
 }
 
 /**
@@ -66,10 +80,16 @@ export class Topic extends TopicBase {
       physicalName: props.topicName,
     });
 
+    if (props.contentBasedDeduplication && !props.fifo) {
+      throw new Error('Content based deduplication can only be enabled for FIFO SNS topics.');
+    }
+
     const resource = new CfnTopic(this, 'Resource', {
       displayName: props.displayName,
       topicName: this.physicalName,
       kmsMasterKeyId: props.masterKey && props.masterKey.keyArn,
+      contentBasedDeduplication: props.contentBasedDeduplication,
+      fifoTopic: props.fifo,
     });
 
     this.topicArn = this.getResourceArnAttribute(resource.ref, {

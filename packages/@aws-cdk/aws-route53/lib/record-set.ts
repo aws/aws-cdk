@@ -172,7 +172,7 @@ export class RecordTarget {
 
   /**
    *
-   * @param values correspond with the chosen record type (e.g. for 'A' Type, specify one ore more IP addresses)
+   * @param values correspond with the chosen record type (e.g. for 'A' Type, specify one or more IP addresses)
    * @param aliasTarget alias for targets such as CloudFront distribution to route traffic to
    */
   protected constructor(public readonly values?: string[], public readonly aliasTarget?: IAliasRecordTarget) {

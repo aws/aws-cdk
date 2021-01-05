@@ -41,7 +41,6 @@ export = {
           MaximumPercent: 200,
           MinimumHealthyPercent: 50,
         },
-        DesiredCount: 1,
         LaunchType: LaunchType.EC2,
         SchedulingStrategy: 'REPLICA',
         EnableECSManagedTags: false,
@@ -452,7 +451,6 @@ export = {
           MaximumPercent: 200,
           MinimumHealthyPercent: 50,
         },
-        DesiredCount: 1,
         SchedulingStrategy: 'REPLICA',
         EnableECSManagedTags: false,
       }));
@@ -532,33 +530,6 @@ export = {
           maxHealthyPercent: 100,
         });
       }, /Minimum healthy percent must be less than maximum healthy percent./);
-
-      test.done();
-    },
-
-    'Output does not contain DesiredCount if daemon mode is set'(test: Test) {
-      // GIVEN
-      const stack = new cdk.Stack();
-      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
-      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
-      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
-      taskDefinition.addContainer('BaseContainer', {
-        image: ecs.ContainerImage.fromRegistry('test'),
-        memoryReservationMiB: 10,
-      });
-
-      // WHEN
-      new ecs.Ec2Service(stack, 'Ec2Service', {
-        cluster,
-        taskDefinition,
-        daemon: true,
-      });
-
-      // THEN
-      expect(stack).to(haveResource('AWS::ECS::Service', (service: any) => {
-        return service.LaunchType === LaunchType.EC2 && service.DesiredCount === undefined;
-      }));
 
       test.done();
     },

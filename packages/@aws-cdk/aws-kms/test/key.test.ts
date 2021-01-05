@@ -283,6 +283,7 @@ test('key with some options', () => {
   const key = new kms.Key(stack, 'MyKey', {
     enableKeyRotation: true,
     enabled: false,
+    pendingWindow: cdk.Duration.days(7),
   });
 
   cdk.Tags.of(key).add('tag1', 'value1');
@@ -292,6 +293,7 @@ test('key with some options', () => {
   expect(stack).toHaveResourceLike('AWS::KMS::Key', {
     Enabled: false,
     EnableKeyRotation: true,
+    PendingWindowInDays: 7,
     Tags: [
       {
         Key: 'tag1',
@@ -307,6 +309,11 @@ test('key with some options', () => {
       },
     ],
   });
+});
+
+test('setting pendingWindow value to not in allowed range will throw', () => {
+  expect(() => new kms.Key(stack, 'MyKey', { enableKeyRotation: true, pendingWindow: cdk.Duration.days(6) }))
+    .toThrow('\'pendingWindow\' value must between 7 and 30 days. Received: 6');
 });
 
 test('setting trustAccountIdentities to false will throw (when the defaultKeyPolicies feature flag is enabled)', () => {
@@ -435,6 +442,7 @@ describe('imported keys', () => {
 });
 
 describe('addToResourcePolicy allowNoOp and there is no policy', () => {
+  // eslint-disable-next-line jest/expect-expect
   test('succeed if set to true (default)', () => {
     const key = kms.Key.fromKeyArn(stack, 'Imported',
       'arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012');

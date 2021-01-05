@@ -1,0 +1,15 @@
+{
+  "ResourceTypes": {
+    "AWS::IoTSiteWise::Portal": {
+      "patch": {
+        "description": "Remove the PortalStatus attribute from the AWS::IoTSiteWise::Portal resource type, as it has a complex type",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Attributes/PortalStatus"
+          }
+        ]
+      }
+    }
+  }
+}

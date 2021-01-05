@@ -40,7 +40,6 @@ export = {
           MaximumPercent: 200,
           MinimumHealthyPercent: 50,
         },
-        DesiredCount: 1,
         LaunchType: LaunchType.FARGATE,
         EnableECSManagedTags: false,
         NetworkConfiguration: {
@@ -364,7 +363,6 @@ export = {
         DeploymentController: {
           Type: 'EXTERNAL',
         },
-        DesiredCount: 1,
         EnableECSManagedTags: false,
         NetworkConfiguration: {
           AwsvpcConfiguration: {
@@ -543,7 +541,6 @@ export = {
           MaximumPercent: 200,
           MinimumHealthyPercent: 50,
         },
-        DesiredCount: 1,
         LaunchType: LaunchType.FARGATE,
         EnableECSManagedTags: false,
         NetworkConfiguration: {

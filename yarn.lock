@@ -1675,10 +1675,10 @@
   resolved "https://registry.yarnpkg.com/@types/prettier/-/prettier-2.1.5.tgz#b6ab3bba29e16b821d84e09ecfaded462b816b00"
   integrity sha512-UEyp8LwZ4Dg30kVU2Q3amHHyTn1jEdhCIE59ANed76GaT1Vp76DD3ZWSAxgCrw6wJ0TqeoBpqmfUHiUDPs//HQ==
 
-"@types/promptly@^3.0.0":
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/@types/promptly/-/promptly-3.0.0.tgz#6978ffa3abb1796ad18ec31441d6b7629d96433c"
-  integrity sha512-YHotPqtmsmcGjO8I7z33W1P4tvGNqSmHmcUqwB5FdhghuTYUbN3enLeSEMG4Yyzbf9y84lQl2C9qEQnXBv1WJA==
+"@types/promptly@^3.0.1":
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/@types/promptly/-/promptly-3.0.1.tgz#206e29ebe55e2360f3e96067d4563efc8c29d8c7"
+  integrity sha512-NZkHlbRnB3ktYY9+dG38OpvXc04+eDMyFxiAr/LMLjD0bbDY9pW3HBctrXxLZUH0Tq6BkxWB6aMJJvaxQX36oA==
   dependencies:
     "@types/node" "*"
 
